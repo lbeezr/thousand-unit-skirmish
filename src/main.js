@@ -87,6 +87,12 @@ const ui = {
   selectedInfantry: document.querySelector('#selected-infantry'),
   selectedArchers: document.querySelector('#selected-archers-count'),
   selectedWaypoints: document.querySelector('#selected-waypoints'),
+  selectedBuildingCard: document.querySelector('#building-selection-card'),
+  selectedBuildingName: document.querySelector('#selected-building-name'),
+  selectedBuildingState: document.querySelector('#selected-building-state'),
+  selectedBuildingHealth: document.querySelector('#selected-building-health'),
+  selectedBuildingHealthBar: document.querySelector('#selected-building-health-bar'),
+  selectedBuildingProduction: document.querySelector('#selected-building-production'),
   aliveBlue: document.querySelector('#alive-blue'),
   aliveRed: document.querySelector('#alive-red'),
   foodStock: document.querySelector('#food-stock'),
@@ -318,6 +324,7 @@ let buildPlacementPending = false;
 let pendingBuildOrderToken = null;
 let pendingBuildBaseline = new Set();
 let toastTimer = 0;
+let fieldOrderFeedbackTimer = 0;
 let nextClientOrderToken = 1;
 let currentOrderToken = null;
 let orderStatusTimeout = null;
@@ -1847,6 +1854,33 @@ function setArmySize(count, showMessage = false) {
 }
 
 function updateSelectionUI() {
+  const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
+    && building.team === localTeam) || null;
+  ui.selectedBuildingCard.hidden = !selectedBuilding;
+  document.querySelector('#dock-selection').dataset.focus = selectedBuilding ? 'building' : 'units';
+  if (selectedBuilding) {
+    const maxHp = Math.max(1, Number(selectedBuilding.maxHp) || 1800);
+    const hp = Math.max(0, Math.min(maxHp, Number(selectedBuilding.hp) || 0));
+    const healthRatio = hp / maxHp;
+    const construction = Math.round(Math.max(0, Math.min(1, Number(selectedBuilding.progress) || 0)) * 100);
+    const queued = getBuildingQueueLength(selectedBuilding);
+    const troop = selectedBuilding.type === 'barracks' ? 'infantry' : 'archers';
+    const training = Math.round(Math.max(0, Math.min(1, Number(selectedBuilding.trainingProgress) || 0)) * 100);
+    ui.selectedBuildingName.textContent = `${buildingLabel(selectedBuilding.type)} #${selectedBuilding.id}`;
+    ui.selectedBuildingState.textContent = selectedBuilding.attackers > 0 ? 'UNDER ATTACK'
+      : selectedBuilding.complete ? 'READY' : `BUILDING · ${construction}%`;
+    ui.selectedBuildingCard.dataset.danger = healthRatio <= 0.25 || selectedBuilding.attackers > 0 ? 'high'
+      : healthRatio <= 0.55 ? 'medium' : 'none';
+    ui.selectedBuildingHealth.textContent = `${Math.round(hp).toLocaleString()} / ${Math.round(maxHp).toLocaleString()} HP`;
+    ui.selectedBuildingHealthBar.style.setProperty('--health-ratio', healthRatio);
+    ui.selectedBuildingHealthBar.setAttribute('aria-valuemax', String(Math.round(maxHp)));
+    ui.selectedBuildingHealthBar.setAttribute('aria-valuenow', String(Math.round(hp)));
+    ui.selectedBuildingProduction.textContent = !selectedBuilding.complete
+      ? 'Finish construction to unlock production.'
+      : selectedBuilding.productionBlocked ? 'Production blocked · clear the spawn area.'
+        : queued > 0 ? `${queued.toLocaleString()} ${troop} queued · ${training}% training`
+          : `Ready to train ${troop}.`;
+  }
   let blue = 0;
   let red = 0;
   let workers = 0;
@@ -2232,6 +2266,11 @@ function renderScenarioEventCountdown(now = performance.now()) {
   }
 }
 
+function syncMatchResultActions() {
+  document.querySelector('#match-play-again').hidden = !isHost;
+  document.querySelector('#match-waiting-for-host').hidden = isHost;
+}
+
 function updateMatchResult(winner, triggerId = null, reason = null) {
   const isDraw = winner === 2 && ['capture-hold', 'elimination', 'timed-control'].includes(reason);
   matchWinner = Number.isInteger(winner) && ([0, 1].includes(winner) || isDraw) ? winner : -1;
@@ -2241,51 +2280,45 @@ function updateMatchResult(winner, triggerId = null, reason = null) {
   if (!matchResult) return;
   matchResult.hidden = matchWinner < 0;
   if (matchWinner < 0) {
-    matchResult.textContent = '';
+    document.querySelector('#match-result-title').textContent = '';
+    document.querySelector('#match-result-detail').textContent = '';
     updateCommandUI();
     return;
   }
+  let outcome;
+  let detail;
   if (isDraw) {
     matchResult.dataset.team = 'neutral';
+    outcome = 'DRAW';
     if (reason === 'timed-control') {
       const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'THE ZONE';
-      matchResult.textContent = `DRAW · ${objectiveName.toUpperCase()} UNCLAIMED AT DEADLINE · RESET TO PLAY AGAIN`;
-    } else if (reason === 'capture-hold') {
-      matchResult.textContent = 'DRAW · BOTH TEAMS COMPLETED THE VICTORY HOLD · RESET TO PLAY AGAIN';
-    } else {
-      matchResult.textContent = 'DRAW · BOTH ARMIES ELIMINATED · RESET TO PLAY AGAIN';
-    }
-    updateCommandUI();
-    return;
-  }
-  const teamName = TEAM_NAMES[matchWinner].toUpperCase();
-  matchResult.dataset.team = TEAM_NAMES[matchWinner].toLowerCase();
-  const outcome = localTeam === null ? `${teamName} WINS` : localTeam === matchWinner ? 'VICTORY' : 'DEFEAT';
-  if (reason === 'elimination') {
-    const message = localTeam === matchWinner ? 'ENEMY ELIMINATED'
+      detail = `${objectiveName.toUpperCase()} UNCLAIMED AT DEADLINE`;
+    } else if (reason === 'capture-hold') detail = 'BOTH TEAMS COMPLETED THE VICTORY HOLD';
+    else detail = 'BOTH ARMIES ELIMINATED';
+  } else {
+    const teamName = TEAM_NAMES[matchWinner].toUpperCase();
+    matchResult.dataset.team = TEAM_NAMES[matchWinner].toLowerCase();
+    outcome = localTeam === null ? `${teamName} WINS` : localTeam === matchWinner ? 'VICTORY' : 'DEFEAT';
+    if (reason === 'elimination') detail = localTeam === matchWinner ? 'ENEMY ELIMINATED'
       : localTeam === null ? `${teamName} WINS · ENEMY ELIMINATED` : 'YOUR ARMY ELIMINATED';
-    matchResult.textContent = `${outcome} · ${message} · RESET TO PLAY AGAIN`;
-    updateCommandUI();
-    return;
+    else if (reason === 'timed-control') {
+      const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'THE ZONE';
+      detail = `${teamName} CONTROLLED ${objectiveName.toUpperCase()} AT DEADLINE`;
+    } else if (reason === 'capture-hold') {
+      const condition = mapDefinition?.victoryMode === 'all' ? 'ALL VICTORY ZONES' : 'A VICTORY ZONE';
+      const duration = formatVictoryHoldTime(mapDefinition?.victoryHoldSeconds ?? 0);
+      detail = `HELD ${condition} FOR ${duration.toUpperCase()}`;
+    } else {
+      const resultTrigger = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)
+        || mapDefinition?.triggers?.find((trigger) => trigger.victory === true);
+      const objectiveName = mapDefinition?.victoryMode === 'all'
+        ? 'ALL OBJECTIVES' : resultTrigger?.name || 'THE OBJECTIVE';
+      detail = `${teamName} SECURED ${objectiveName.toUpperCase()}`;
+    }
   }
-  if (reason === 'timed-control') {
-    const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'THE ZONE';
-    matchResult.textContent = `${outcome} · ${teamName} CONTROLLED ${objectiveName.toUpperCase()} AT DEADLINE · RESET TO PLAY AGAIN`;
-    updateCommandUI();
-    return;
-  }
-  if (reason === 'capture-hold') {
-    const condition = mapDefinition?.victoryMode === 'all' ? 'ALL VICTORY ZONES' : 'A VICTORY ZONE';
-    const duration = formatVictoryHoldTime(mapDefinition?.victoryHoldSeconds ?? 0);
-    matchResult.textContent = `${outcome} · HELD ${condition} FOR ${duration.toUpperCase()} · RESET TO PLAY AGAIN`;
-    updateCommandUI();
-    return;
-  }
-  const resultTrigger = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)
-    || mapDefinition?.triggers?.find((trigger) => trigger.victory === true);
-  const objectiveName = mapDefinition?.victoryMode === 'all'
-    ? 'ALL OBJECTIVES' : resultTrigger?.name || 'THE OBJECTIVE';
-  matchResult.textContent = `${outcome} · ${teamName} SECURED ${objectiveName.toUpperCase()} · RESET TO PLAY AGAIN`;
+  document.querySelector('#match-result-title').textContent = outcome;
+  document.querySelector('#match-result-detail').textContent = detail;
+  syncMatchResultActions();
   updateCommandUI();
 }
 
@@ -2702,7 +2735,9 @@ function setPlayer(player) {
   }
   updateControlGroupUI();
   isHost = Boolean(player.isHost);
+  syncMatchResultActions();
   ui.playerTeam.textContent = localTeam === null ? 'SPECTATOR' : TEAM_NAMES[localTeam].toUpperCase();
+  ui.playerTeam.dataset.team = localTeam === 0 ? 'azure' : localTeam === 1 ? 'ember' : 'spectator';
   for (const button of document.querySelectorAll('.size-options button')) {
     button.disabled = !isHost;
     button.title = isHost ? 'Change match size for both players' : 'Only the room host can change match size';
@@ -4180,6 +4215,8 @@ function downloadEditorMap() {
 }
 
 function showToast(message, duration = 1300) {
+  const fieldFeedback = document.querySelector('#field-order-feedback');
+  if (fieldFeedback && !fieldFeedback.hidden && fieldFeedback.textContent === message) return;
   toast.textContent = message;
   toast.classList.add('visible');
   window.clearTimeout(toastTimer);
@@ -4190,6 +4227,28 @@ function setOrderStatus(message, state = 'ready') {
   if (!ui.orderStatus) return;
   ui.orderStatus.textContent = message;
   ui.orderStatus.dataset.state = state;
+  const fieldFeedback = document.querySelector('#field-order-feedback');
+  const fieldHint = document.querySelector('.field-hint');
+  window.clearTimeout(fieldOrderFeedbackTimer);
+  if (!fieldFeedback || !fieldHint) return;
+  const tabbedDock = window.matchMedia('(max-width: 920px)').matches;
+  ui.orderStatus.setAttribute('aria-live', tabbedDock ? 'off' : 'polite');
+  fieldFeedback.setAttribute('aria-live', tabbedDock ? 'polite' : 'off');
+  if (state === 'ready') {
+    fieldFeedback.hidden = true;
+    fieldHint.hidden = false;
+    return;
+  }
+  toast.classList.remove('visible');
+  fieldFeedback.textContent = message;
+  fieldFeedback.dataset.state = state;
+  fieldFeedback.hidden = false;
+  fieldHint.hidden = true;
+  if (state === 'pending' || state === 'planning') return;
+  fieldOrderFeedbackTimer = window.setTimeout(() => {
+    fieldFeedback.hidden = true;
+    fieldHint.hidden = false;
+  }, state === 'failed' ? 6500 : 4500);
 }
 
 function armOrderStatusTimeout(token, timeoutMs = 20_000) {
@@ -4977,9 +5036,77 @@ function selectInfantry() { selectFriendlyUnitKind('infantry', 'INFANTRY'); }
 function selectArchers() { selectFriendlyUnitKind('archer', 'ARCHERS'); }
 function selectMilitary() { selectFriendlyUnitKinds(['infantry', 'archer'], 'MILITARY'); }
 
+const matchMenu = document.querySelector('#match-menu');
+const helpPanel = document.querySelector('#help-panel');
+const hudScrim = document.querySelector('#hud-scrim');
+const matchMenuToggle = document.querySelector('#match-menu-toggle');
+const helpToggle = document.querySelector('#help-toggle');
+const commandDock = document.querySelector('.control-dock');
+const dockTabs = [...document.querySelectorAll('[data-dock-tab]')];
+
+function closeHudPanels({ restoreFocus = false } = {}) {
+  const trigger = !matchMenu.hidden ? matchMenuToggle : !helpPanel.hidden ? helpToggle : null;
+  matchMenu.hidden = true;
+  helpPanel.hidden = true;
+  hudScrim.hidden = true;
+  matchMenuToggle.setAttribute('aria-expanded', 'false');
+  helpToggle.setAttribute('aria-expanded', 'false');
+  if (restoreFocus) trigger?.focus();
+}
+
+function toggleHudPanel(panel, trigger) {
+  const opening = panel.hidden;
+  closeHudPanels();
+  if (!opening) return;
+  panel.hidden = false;
+  hudScrim.hidden = false;
+  trigger.setAttribute('aria-expanded', 'true');
+  panel.querySelector('.hud-panel-close')?.focus();
+}
+
+function selectDockTab(name, focus = false) {
+  commandDock.dataset.activePanel = name;
+  for (const tab of dockTabs) {
+    const selected = tab.dataset.dockTab === name;
+    tab.setAttribute('aria-selected', String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+    if (focus && selected) tab.focus();
+  }
+}
+
+matchMenuToggle.addEventListener('click', () => toggleHudPanel(matchMenu, matchMenuToggle));
+helpToggle.addEventListener('click', () => toggleHudPanel(helpPanel, helpToggle));
+document.querySelector('#match-menu-close').addEventListener('click', () => closeHudPanels({ restoreFocus: true }));
+document.querySelector('#help-close').addEventListener('click', () => closeHudPanels({ restoreFocus: true }));
+hudScrim.addEventListener('click', () => closeHudPanels({ restoreFocus: true }));
+document.querySelector('#map-studio-open').addEventListener('click', () => closeHudPanels());
+for (const tab of dockTabs) {
+  tab.addEventListener('click', () => selectDockTab(tab.dataset.dockTab));
+  tab.addEventListener('keydown', (event) => {
+    const current = dockTabs.indexOf(tab);
+    const next = event.key === 'ArrowRight' ? (current + 1) % dockTabs.length
+      : event.key === 'ArrowLeft' ? (current + dockTabs.length - 1) % dockTabs.length
+        : event.key === 'Home' ? 0 : event.key === 'End' ? dockTabs.length - 1 : null;
+    if (next === null) return;
+    event.preventDefault();
+    selectDockTab(dockTabs[next].dataset.dockTab, true);
+  });
+}
+for (const button of document.querySelectorAll('[data-open-dock-tab]')) {
+  button.addEventListener('click', () => selectDockTab(button.dataset.openDockTab, true));
+}
+selectDockTab('selection');
+window.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape' || (matchMenu.hidden && helpPanel.hidden) || document.querySelector('dialog[open]')) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  closeHudPanels({ restoreFocus: true });
+}, true);
+
 function keyboardTargetIsEditing(event) {
   const target = event.target instanceof Element ? event.target : null;
-  return Boolean(target?.closest('input, textarea, select, [contenteditable], dialog'));
+  return !matchMenu.hidden || !helpPanel.hidden
+    || Boolean(target?.closest('input, textarea, select, [contenteditable], dialog, [role="tab"]'));
 }
 
 function controlGroupIndexFromKey(event) {
@@ -5090,6 +5217,7 @@ for (let index = 0; index < ui.controlGroups.length; index++) {
   ui.controlGroups[index].addEventListener('click', () => recallControlGroup(index));
 }
 document.querySelector('#reset-army').addEventListener('click', () => sendCommand({ type: 'reset' }));
+document.querySelector('#match-play-again').addEventListener('click', () => sendCommand({ type: 'reset' }));
 ui.mapSelect.addEventListener('change', () => sendCommand({ type: 'selectMap', mapId: ui.mapSelect.value }));
 ui.mapStudioOpen.addEventListener('click', openMapStudio);
 document.querySelector('#map-studio-close').addEventListener('click', () => ui.mapStudio.close());
