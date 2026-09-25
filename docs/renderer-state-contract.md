@@ -55,7 +55,7 @@ Barracks state is derived from existing fields: progress, complete, hp, maxHp, a
 
 ## Resource and construction-site state mapping
 
-Resource percentage is floor(clamp(stock / startingStock, 0, 1) * 100), using the map definition's starting stock and the latest visible resource-node snapshot. The stage names and inclusive integer bands are:
+Resource percentage is floor(clamp(stock / startingStock, 0, 1) * 100), using the map definition's starting stock and the latest visible resource-node snapshot. With fog enabled, the server sends stock only for nodes in cells currently visible to that team. Missing nodes are intentionally omitted; the renderer updates only returned IDs and preserves each omitted node's last-known stage until it becomes visible again. It must not infer stock changes offscreen. The stage names and inclusive integer bands are:
 
 | Stage | Percent |
 | --- | --- |
