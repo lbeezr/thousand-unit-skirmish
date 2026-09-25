@@ -1,0 +1,90 @@
+import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { copyFile, lstat, mkdir, mkdtemp, readdir, readFile, writeFile } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const args = process.argv.slice(2);
+if (args.length > 1 || (args[0] && args[0] !== '--allow-dirty')) {
+  throw new Error('Usage: node scripts/pack-railway-release.mjs [--allow-dirty]');
+}
+const allowDirty = args[0] === '--allow-dirty';
+
+function git(...command) {
+  const result = spawnSync('git', command, { cwd: root, encoding: 'utf8' });
+  if (result.status !== 0) throw new Error(`git ${command.join(' ')} failed: ${result.stderr.trim()}`);
+  return result.stdout.trim();
+}
+
+const revision = git('rev-parse', 'HEAD');
+const dirty = git('status', '--porcelain') !== '';
+if (dirty && !allowDirty) {
+  throw new Error('Release checkout has uncommitted changes. Commit and review them before packaging, or use --allow-dirty for a disposable test.');
+}
+
+// COPY sources are the runtime contract. Keep the package files for provenance,
+// even when the current Dockerfile does not install npm dependencies.
+const entries = new Set(['.dockerignore', 'Dockerfile', 'package.json', 'package-lock.json']);
+const dockerfile = await readFile(path.join(root, 'Dockerfile'), 'utf8');
+for (const line of dockerfile.split(/\r?\n/)) {
+  if (/^\s*ADD\s/i.test(line)) throw new Error('Use COPY instead of ADD so release sources can be audited');
+  if (!/^\s*COPY\s/i.test(line)) continue;
+  const tokens = line.trim().split(/\s+/).slice(1);
+  while (tokens[0]?.startsWith('--')) {
+    const option = tokens.shift();
+    if (option.startsWith('--from=')) throw new Error('Multi-stage COPY needs an explicit release packer update');
+  }
+  if (tokens.length < 2 || tokens.some((token) => /["'*?\[\]]/.test(token))) {
+    throw new Error(`Unsupported Docker COPY form: ${line.trim()}`);
+  }
+  for (const source of tokens.slice(0, -1)) {
+    const relative = source.replace(/^\.\//, '').replace(/\/$/, '');
+    if (!relative || path.isAbsolute(relative) || relative.split('/').includes('..')) {
+      throw new Error(`Unsafe Docker COPY source: ${source}`);
+    }
+    entries.add(relative);
+  }
+}
+try {
+  await lstat(path.join(root, 'railway.json'));
+  entries.add('railway.json');
+} catch (error) {
+  if (error.code !== 'ENOENT') throw error;
+}
+
+const destination = await mkdtemp(path.join(os.tmpdir(), 'rts-release-'));
+const copied = [];
+async function copyEntry(relative) {
+  const source = path.join(root, relative);
+  const info = await lstat(source);
+  if (info.isSymbolicLink()) throw new Error(`Release source cannot be a symlink: ${relative}`);
+  if (info.isDirectory()) {
+    await mkdir(path.join(destination, relative), { recursive: true });
+    for (const name of (await readdir(source)).sort()) await copyEntry(path.join(relative, name));
+    return;
+  }
+  if (!info.isFile()) throw new Error(`Release source is not a regular file: ${relative}`);
+  await mkdir(path.dirname(path.join(destination, relative)), { recursive: true });
+  await copyFile(source, path.join(destination, relative));
+  copied.push(relative);
+}
+
+for (const entry of [...entries].sort()) await copyEntry(entry);
+if (!allowDirty && git('status', '--porcelain') !== '') {
+  throw new Error('Release checkout changed during packaging; discard this directory and retry');
+}
+
+const digest = createHash('sha256');
+for (const relative of copied.sort()) {
+  digest.update(relative).update('\0').update(await readFile(path.join(destination, relative))).update('\0');
+}
+const manifest = {
+  sourceRevision: revision,
+  sourceDirty: dirty,
+  digest: `sha256:${digest.digest('hex')}`,
+  files: copied,
+};
+await writeFile(path.join(destination, 'release-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+console.log(JSON.stringify({ directory: destination, ...manifest }));
