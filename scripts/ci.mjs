@@ -56,7 +56,7 @@ const scenarios = [
   ['scripts/pve-opponent-scenario.mjs', 'PvE opponent seats'],
   ['scripts/visual-pack-path-safety-scenario.mjs', 'Visual pack path safety'],
   ['scripts/unit-lod-state-scenario.mjs', 'Unit LOD matrix updates'],
-  ['scripts/unit-visual-state-scenario.mjs', 'Unit pose priority'],
+  ['scripts/unit-visual-state-scenario.mjs', 'Unit visual state'],
   ['scripts/resource-visual-state-scenario.mjs', 'Resource visual state'],
   ['scripts/room-supervisor-scenario.mjs', 'Room supervisor integration'],
   ['scripts/railway-release-scenario.mjs', 'Railway release integration'],
