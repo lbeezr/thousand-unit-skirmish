@@ -126,12 +126,10 @@ try {
   const welcomesByTeam = [azureWelcome, emberWelcome];
   const winnerClient = clientsByTeam[winnerTeam];
   const loserClient = clientsByTeam[loserTeam];
-  const winnerUnits = nearestIds(welcomesByTeam[winnerTeam].state, winnerTeam,
-    flank.winner.x, flank.winner.z, 5);
-  const loserUnits = nearestIds(welcomesByTeam[loserTeam].state, loserTeam,
-    flank.loser.x, flank.loser.z, 5);
-  assert.equal(winnerUnits.length, 5);
-  assert.equal(loserUnits.length, 5);
+  const initialInfantryIds = welcomesByTeam.map((welcome, team) => new Set(
+    welcome.state.units
+      .filter(row => row[1] === team && row[4] > 0 && row[5] === 'infantry')
+      .map(row => row[0])));
 
   stage = 'opening economy for both teams';
   const workers = clientsByTeam.map((client, team) => welcomesByTeam[team].state.units
@@ -160,9 +158,29 @@ try {
     const building = barracks[team].buildings.find(row => row.team === team && row.type === 'barracks');
     clientsByTeam[team].socket.send(JSON.stringify({ type: 'train', buildingId: building.id }));
   }
-  await Promise.all(clientsByTeam.map((client, team) => client.waitState(state =>
+  const trainedStates = await Promise.all(clientsByTeam.map((client, team) => client.waitState(state =>
     state.units.filter(row => row[1] === team && row[5] === 'infantry' && row[4] > 0).length >= 9, 90000)));
-  logStep('both teams completed a barracks and trained one infantry');
+  const producedInfantryIds = trainedStates.map((state, team) => state.units
+    .filter(row => row[1] === team && row[4] > 0 && row[5] === 'infantry'
+      && !initialInfantryIds[team].has(row[0]))
+    .map(row => row[0]));
+  assert.deepEqual(producedInfantryIds.map(ids => ids.length), [1, 1],
+    'each team must receive exactly one new infantry from its completed barracks');
+  const winnerUnits = [
+    ...nearestIds(welcomesByTeam[winnerTeam].state, winnerTeam,
+      flank.winner.x, flank.winner.z, 4),
+    producedInfantryIds[winnerTeam][0],
+  ];
+  const loserUnits = [
+    ...nearestIds(welcomesByTeam[loserTeam].state, loserTeam,
+      flank.loser.x, flank.loser.z, 4),
+    producedInfantryIds[loserTeam][0],
+  ];
+  assert.equal(winnerUnits.length, 5);
+  assert.equal(loserUnits.length, 5);
+  assert.ok(winnerUnits.includes(producedInfantryIds[winnerTeam][0]));
+  assert.ok(loserUnits.includes(producedInfantryIds[loserTeam][0]));
+  logStep('both teams completed a barracks and sent its trained infantry to the objective front');
 
   stage = 'capturing opposite flank objectives';
   const winnerFlankCaptured = winnerClient.waitState(state => objective(state, flank.winner.id)?.owner === winnerTeam);
