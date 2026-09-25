@@ -382,6 +382,11 @@ try {
     'researched Archer hit to deal 8.4 damage', archerAttackTick);
   assert.ok(Math.abs(unit(upgradedArcherHit, 130)[4] - 91.6) < 0.001,
     'Archer Fletching should increase Archer damage from 7 to 8.4');
+  const strikeRow = unit(upgradedArcherHit, archer[0]);
+  assert.ok(Number.isInteger(strikeRow?.[11]) && strikeRow[11] > archerAttackTick,
+    'the authoritative Archer strike tick should accompany the damage snapshot');
+  assert.ok(Number.isFinite(strikeRow[12]) && Number.isFinite(strikeRow[13]),
+    'the owning team should receive the Archer strike target point');
 
   checkpoint = await waitForCheckpoint(checkpointPath, (saved) => (
     saved.schemaVersion === 9

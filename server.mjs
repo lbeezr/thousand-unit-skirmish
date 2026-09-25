@@ -1285,7 +1285,8 @@ function makeUnit(id, team, x, z, kind = 'infantry') {
   return {
     id, generation: nextUnitGeneration(id), team, x, z, hp: kind === 'archer' ? 70 : 100, path: [], pathIndex: 0,
     attackTargetId: -1, attackBuildingTargetId: -1, attackCooldown: ((id * 37) % 30) / 30,
-    repathTimer: 0, lastAttackCell: -1, orderRevision: 0,
+    repathTimer: 0, lastAttackCell: -1, lastAttackTick: -1,
+    lastAttackX: 0, lastAttackZ: 0, orderRevision: 0,
     attackMove: false, attackMoveRouteReady: false,
     attackMoveResumePath: null, attackMoveResumePathIndex: 0,
     movePlanningPending: false,
@@ -1441,6 +1442,13 @@ function snapshotUnits(viewTeam = null) {
       unit.cargoType, unit.generation,
     ];
     row.push(task, focusedByUnit[unit.id] || 0);
+    if (Number.isInteger(unit.lastAttackTick)
+      && unit.lastAttackTick >= 0 && tickNumber - unit.lastAttackTick <= STATE_EVERY_TICKS) {
+      const targetVisible = !mapDefinition.fogOfWar || viewTeam === null || unit.team === viewTeam;
+      row.push(unit.lastAttackTick,
+        targetVisible ? unit.lastAttackX : null,
+        targetVisible ? unit.lastAttackZ : null);
+    }
     rows.push(row);
   }
   return rows;
@@ -2192,6 +2200,9 @@ function validateMatchCheckpoint(snapshot) {
       && integerIn(unit.attackBuildingTargetId, -1, Number.MAX_SAFE_INTEGER)
       && finite(unit.attackCooldown) && finite(unit.repathTimer)
       && integerIn(unit.lastAttackCell, -1, cellCount - 1)
+      && (unit.lastAttackTick === undefined || integerIn(unit.lastAttackTick, -1, state.tickNumber))
+      && (unit.lastAttackX === undefined || finite(unit.lastAttackX))
+      && (unit.lastAttackZ === undefined || finite(unit.lastAttackZ))
       && integerIn(unit.orderRevision, 0, Number.MAX_SAFE_INTEGER), `invalid unit combat state ${index}`);
     assertSnapshot(typeof unit.attackMove === 'boolean' && typeof unit.attackMoveRouteReady === 'boolean'
       && typeof unit.movePlanningPending === 'boolean'
@@ -4864,6 +4875,9 @@ function simulateTick() {
           if (unit.attackCooldown <= 0) {
             target.hp = Math.max(0, target.hp - attackDamage);
             unit.attackCooldown = attackPeriod;
+            unit.lastAttackTick = tickNumber;
+            unit.lastAttackX = target.x;
+            unit.lastAttackZ = target.z;
             dirty = true;
             if (target.hp === 0) {
               clearAttackTarget(unit);
@@ -4913,6 +4927,9 @@ function simulateTick() {
           target.hp = Math.max(0,
             target.hp - (BUILDING_ATTACK_DAMAGE[unit.kind] || 1) * attackDamageMultiplierFor(unit));
           unit.attackCooldown = unit.kind === 'archer' ? ARCHER_ATTACK_PERIOD : ATTACK_PERIOD;
+          unit.lastAttackTick = tickNumber;
+          unit.lastAttackX = target.x;
+          unit.lastAttackZ = target.z;
           dirty = true;
           if (target.hp === 0) destroyBuilding(target);
         }
