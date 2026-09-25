@@ -551,7 +551,7 @@ let triggerStates = new Map();
 let scenarioEventStates = new Map();
 let matchElapsedSeconds = 0;
 let scenarioClockStarted = false;
-let victoryHoldState = { activeTeams: [false, false], progressSeconds: [0, 0] };
+let victoryHoldState = { activeTeams: [false, false], progressSeconds: [0, 0], triggerIds: [null, null] };
 let teamFood = [0, 0];
 let teamWood = [0, 0];
 let teamUpgrades = [
@@ -593,7 +593,7 @@ function resetScenarioEventClock() {
 }
 
 function resetVictoryHoldState() {
-  victoryHoldState = { activeTeams: [false, false], progressSeconds: [0, 0] };
+  victoryHoldState = { activeTeams: [false, false], progressSeconds: [0, 0], triggerIds: [null, null] };
 }
 
 function activateMap(definition) {
@@ -1376,7 +1376,9 @@ function resetArmy(count = currentArmySize) {
   }
   units.length = 0;
   const firstTeamCount = currentArmySize / 2;
-  const reservedWorkerCells = [new Set(), new Set()];
+  const reservedSpawnCells = [new Set(), new Set()];
+  const baseCells = spawnByTeam.map((spawn) => worldToCell(spawn.x, spawn.z));
+  const baseComponents = baseCells.map((cell) => walkableComponents[cell]);
   for (let id = 0; id < currentArmySize; id++) {
     const team = id < firstTeamCount ? 0 : 1;
     const slot = team === 0 ? id : id - firstTeamCount;
@@ -1390,22 +1392,20 @@ function resetArmy(count = currentArmySize) {
     const offset = WORKER_SPAWN_OFFSETS[slot];
     let x = spawn.x + (offset?.[0] ?? (column - (columns - 1) / 2) * spacing);
     let z = spawn.z + (offset?.[1] ?? (row - (rows - 1) / 2) * spacing);
-    if (slot < WORKER_SPAWN_OFFSETS.length) {
-      const desiredCell = worldToCell(x, z);
-      const baseComponent = walkableComponents[worldToCell(spawn.x, spawn.z)];
-      const reservedCells = reservedWorkerCells[team];
-      const insideMap = Math.abs(x) < MAP_HALF_X && Math.abs(z) < MAP_HALF_Z;
-      let workerCell = desiredCell;
-      if (!insideMap || walkableComponents[desiredCell] !== baseComponent || reservedCells.has(desiredCell)) {
-        workerCell = nearestOpenCellInComponent(
-          desiredCell, baseComponent, reservedCells, worldToCell(spawn.x, spawn.z),
-        );
-        const safePosition = cellToWorld(workerCell);
-        x = safePosition.x;
-        z = safePosition.z;
-      }
-      reservedCells.add(workerCell);
+    const desiredCell = worldToCell(x, z);
+    const reservedCells = reservedSpawnCells[team];
+    const insideMap = Math.abs(x) < MAP_HALF_X && Math.abs(z) < MAP_HALF_Z;
+    let spawnCell = desiredCell;
+    if (!insideMap || walkableComponents[desiredCell] !== baseComponents[team]
+      || (slot < WORKER_SPAWN_OFFSETS.length && reservedCells.has(desiredCell))) {
+      spawnCell = nearestOpenCellInComponent(
+        desiredCell, baseComponents[team], reservedCells, baseCells[team],
+      );
+      const safePosition = cellToWorld(spawnCell);
+      x = safePosition.x;
+      z = safePosition.z;
     }
+    reservedCells.add(spawnCell);
     units.push(makeUnit(id, team, x, z, slot < 4 ? 'worker' : 'infantry'));
   }
   for (const state of triggerStates.values()) {
@@ -1771,14 +1771,21 @@ function evaluateScenarioTriggers(deltaSeconds) {
         ? victoryTriggers.every((trigger) => triggerStates.get(trigger.id)?.owner === team)
         : victoryTriggers.some((trigger) => triggerStates.get(trigger.id)?.owner === team);
       if (!controlsVictoryCondition) {
-        if (victoryHoldState.activeTeams[team] || victoryHoldState.progressSeconds[team] > 0) {
+        if (victoryHoldState.activeTeams[team] || victoryHoldState.progressSeconds[team] > 0
+          || victoryHoldState.triggerIds[team] !== null) {
           victoryHoldState.activeTeams[team] = false;
           victoryHoldState.progressSeconds[team] = 0;
+          victoryHoldState.triggerIds[team] = null;
           dirty = true;
         }
       } else if (!victoryHoldState.activeTeams[team]) {
         victoryHoldState.activeTeams[team] = true;
         victoryHoldState.progressSeconds[team] = 0;
+        victoryHoldState.triggerIds[team] = [...victoryCaptures].reverse()
+          .find((capture) => capture.team === team)?.triggerId
+          ?? (mapDefinition.victoryMode === 'any'
+            ? victoryTriggers.find((trigger) => triggerStates.get(trigger.id)?.owner === team)?.id ?? null
+            : null);
         dirty = true;
       } else if (scenarioClockStarted) {
         const previousProgress = victoryHoldState.progressSeconds[team];
@@ -1791,9 +1798,10 @@ function evaluateScenarioTriggers(deltaSeconds) {
     if (completedTeams.length > 0) {
       winningTeam = completedTeams.length === 1 ? completedTeams[0] : 2;
       if (winningTeam < 2) {
-        winningTriggerId = victoryTriggers.find((trigger) => (
-          triggerStates.get(trigger.id)?.owner === winningTeam
-        ))?.id ?? null;
+        winningTriggerId = victoryHoldState.triggerIds[winningTeam]
+          ?? (mapDefinition.victoryMode === 'any'
+            ? victoryTriggers.find((trigger) => triggerStates.get(trigger.id)?.owner === winningTeam)?.id ?? null
+            : null);
         const winnerName = winningTeam === 0 ? 'AZURE' : 'EMBER';
         const heldRule = mapDefinition.victoryMode === 'all' ? 'ALL VICTORY ZONES' : 'A VICTORY ZONE';
         controlHoldAnnouncement = `${winnerName} WINS · HELD ${heldRule} FOR ${Math.ceil(victoryHoldSeconds)}S`;
@@ -2130,6 +2138,7 @@ function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
       victoryHoldState: {
         activeTeams: [...victoryHoldState.activeTeams],
         progressSeconds: [...victoryHoldState.progressSeconds],
+        triggerIds: [...victoryHoldState.triggerIds],
       },
       matchWinner,
       matchWinnerTriggerId,
@@ -2394,7 +2403,13 @@ function validateMatchCheckpoint(snapshot) {
     && Array.isArray(savedVictoryHold.progressSeconds) && savedVictoryHold.progressSeconds.length === 2
     && savedVictoryHold.progressSeconds.every((seconds, team) => finite(seconds)
       && seconds >= 0 && seconds <= holdDuration
-      && (savedVictoryHold.activeTeams[team] || seconds === 0)), 'invalid victory hold state');
+      && (savedVictoryHold.activeTeams[team] || seconds === 0))
+    && (savedVictoryHold.triggerIds === undefined
+      || (Array.isArray(savedVictoryHold.triggerIds) && savedVictoryHold.triggerIds.length === 2
+        && savedVictoryHold.triggerIds.every((id, team) => id === null
+          || (savedVictoryHold.activeTeams[team]
+            && definition.triggers.some((trigger) => trigger.id === id && trigger.victory === true))))),
+  'invalid victory hold state');
   assertSnapshot(finite(state.matchElapsedSeconds) && state.matchElapsedSeconds >= 0
     && typeof state.scenarioClockStarted === 'boolean'
     && integerIn(state.matchWinner, -1, 2)
@@ -2501,6 +2516,7 @@ function restoreMatchCheckpoint(snapshot) {
   victoryHoldState = {
     activeTeams: [...savedVictoryHold.activeTeams],
     progressSeconds: [...savedVictoryHold.progressSeconds],
+    triggerIds: savedVictoryHold.triggerIds ? [...savedVictoryHold.triggerIds] : [null, null],
   };
   matchWinner = state.matchWinner;
   matchWinnerTriggerId = state.matchWinnerTriggerId;
@@ -4370,7 +4386,20 @@ function assignAttack(player, command) {
     sendOrderNotice(player, command, 'ATTACK REJECTED · TARGET UNREACHABLE');
     return;
   }
+  const assignments = [];
   for (const unit of selectedUnits) {
+    const startCell = nearestOpenCell(worldToCell(unit.x, unit.z));
+    const distance = Math.hypot(target.x - unit.x, target.z - unit.z);
+    const attackRange = unit.kind === 'archer' ? ARCHER_ATTACK_RANGE : ATTACK_RANGE;
+    const path = pathFromAttackFlow(startCell, flowField);
+    if (path.length === 0 && startCell !== flowField.goal && distance > attackRange) continue;
+    assignments.push({ unit, path });
+  }
+  if (assignments.length === 0) {
+    sendOrderNotice(player, command, 'ATTACK REJECTED · TARGET UNREACHABLE');
+    return;
+  }
+  for (const { unit, path } of assignments) {
     cancelGatherOrder(unit);
     unit.queuedWaypoints.length = 0;
     unit.buildingTargetId = null;
@@ -4382,13 +4411,12 @@ function assignAttack(player, command) {
     unit.attackBuildingTargetId = -1;
     unit.repathTimer = 0.6;
     unit.lastAttackCell = targetCell;
-    unit.path = pathFromAttackFlow(worldToCell(unit.x, unit.z), flowField);
+    unit.path = path;
     unit.pathIndex = 0;
   }
-  if (selectedUnits.length) {
-    sendOrderNotice(player, command, `ATTACK ORDER · ${selectedUnits.length} UNITS`);
-    dirty = true;
-  }
+  const unreachableCount = selectedUnits.length - assignments.length;
+  sendOrderNotice(player, command, `ATTACK ORDER · ${assignments.length} UNITS${unreachableCount ? ` · ${unreachableCount} UNREACHABLE` : ''}`);
+  dirty = true;
 }
 
 function assignAttackBuilding(player, command) {
@@ -4585,7 +4613,9 @@ async function publishMap(player, rawDefinition, persist = false) {
 async function handleCommand(player, command) {
   if (shuttingDown || !command || typeof command.type !== 'string') return;
   if (matchWinner >= 0 && ['move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'train', 'build', 'trainArcher', 'trainWorker', 'setRallyPoint', 'researchUpgrade'].includes(command.type)) {
-    sendOrderNotice(player, command, 'MATCH OVER · RESET TO PLAY AGAIN');
+    sendOrderNotice(player, command, player.team === 0
+      ? 'MATCH OVER · RESET BATTLEFIELD TO PLAY AGAIN'
+      : 'MATCH OVER · WAIT FOR HOST TO RESET');
     return;
   }
   if (command.type === 'move') assignFormationMove(player, command);
@@ -4609,7 +4639,11 @@ async function handleCommand(player, command) {
     broadcast({ type: 'notice', message: `BATTLEFIELD RESET · ${count.toLocaleString()} UNITS` });
     broadcastState();
   }
-  if (command.type === 'reset' && player.team === 0) {
+  if (command.type === 'reset') {
+    if (player.team !== 0) {
+      sendOrderNotice(player, command, 'RESET REJECTED · ONLY THE HOST CAN RESET THE MATCH');
+      return;
+    }
     resetArmy(currentArmySize);
     broadcast({ type: 'notice', message: 'BATTLEFIELD RESET' });
     broadcastState();
