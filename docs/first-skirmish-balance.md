@@ -2,9 +2,9 @@
 
 Status: early tuning, 25 September 2026. This is a test plan and evidence
 record, not a claim that the skirmish is balanced. Scope follows the
-[game bible](game-bible.md) and [feature inventory](references/feature-coverage-inventory.md):
-one complete invite-first 1v1 scenario with a small roster. Large armies remain
-a separate stress workload.
+working Game Bible and RTS Feature Coverage Inventory, maintained by the
+product team: one complete invite-first 1v1 scenario with a small roster.
+Large armies remain a separate stress workload.
 
 ## Baseline found in the prototype
 
