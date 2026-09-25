@@ -402,6 +402,7 @@ const TICK_RATE = 30;
 const STEP_SECONDS = 1 / TICK_RATE;
 const STATE_EVERY_TICKS = 3;
 const TICK_SAMPLE_WINDOW = TICK_RATE * 10;
+const TICK_DIAGNOSTICS_ENABLED = process.env.RTS_TICK_DIAGNOSTICS === '1';
 const SEPARATION_DIAGNOSTICS_ENABLED = process.env.RTS_SEPARATION_DIAGNOSTICS === '1';
 const WALK_SPEED = 2.6;
 const MOVE_START_BROADCAST_DISTANCE = WALK_SPEED * STEP_SECONDS * 0.5;
@@ -711,6 +712,7 @@ let dirty = true;
 const pendingMoveStartBroadcasts = new Set();
 const tickDurationsMs = new Float32Array(TICK_SAMPLE_WINDOW);
 const tickStartLagsMs = new Float32Array(TICK_SAMPLE_WINDOW);
+const tickDiagnosticSamples = TICK_DIAGNOSTICS_ENABLED ? new Array(TICK_SAMPLE_WINDOW).fill(null) : null;
 const separationWorkSamples = SEPARATION_DIAGNOSTICS_ENABLED ? {
   candidateVisits: new Uint32Array(TICK_SAMPLE_WINDOW),
   distanceChecks: new Uint32Array(TICK_SAMPLE_WINDOW),
@@ -737,8 +739,9 @@ let movePlanningEpoch = 0;
 let nextMoveOrderId = 1;
 let navigationRevision = 0;
 
-function recordTickDuration(durationMs) {
+function recordTickDuration(durationMs, diagnostic = null) {
   tickDurationsMs[tickDurationCursor] = durationMs;
+  if (tickDiagnosticSamples) tickDiagnosticSamples[tickDurationCursor] = diagnostic;
   tickDurationCursor = (tickDurationCursor + 1) % TICK_SAMPLE_WINDOW;
   tickDurationCount = Math.min(TICK_SAMPLE_WINDOW, tickDurationCount + 1);
 }
@@ -752,6 +755,13 @@ function recordTickStartLag(lagMs) {
 function tickTimingPayload() {
   const count = tickDurationCount;
   const base = (tickDurationCursor - count + TICK_SAMPLE_WINDOW) % TICK_SAMPLE_WINDOW;
+  let slowestTick = null;
+  if (tickDiagnosticSamples) {
+    for (let index = 0; index < count; index++) {
+      const sample = tickDiagnosticSamples[(base + index) % TICK_SAMPLE_WINDOW];
+      if (sample && (!slowestTick || sample.durationMs > slowestTick.durationMs)) slowestTick = sample;
+    }
+  }
   const samples = Array.from({ length: count }, (_, index) => (
     tickDurationsMs[(base + index) % TICK_SAMPLE_WINDOW]
   )).sort((a, b) => a - b);
@@ -775,6 +785,7 @@ function tickTimingPayload() {
     maxMs: count ? Number(samples[count - 1].toFixed(3)) : null,
     startLagP95Ms: lagAt(0.95),
     startLagMaxMs: lagCount ? Number(lags[lagCount - 1].toFixed(3)) : null,
+    ...(tickDiagnosticSamples ? { slowestTick } : {}),
   };
 }
 
@@ -5748,6 +5759,7 @@ heartbeatTimer.unref();
 await initializeMatchFromCheckpoint();
 const simulationTimer = setInterval(() => {
   const tickStartedAt = performance.now();
+  const cpuStartedAt = tickDiagnosticSamples ? process.cpuUsage() : null;
   if (lastSimulationTickStartedAt !== null) {
     recordTickStartLag(Math.max(0, tickStartedAt - lastSimulationTickStartedAt - (1000 / TICK_RATE)));
   }
@@ -5755,16 +5767,36 @@ const simulationTimer = setInterval(() => {
   simulateTick();
   recordSeparationWorkSample();
   const moveStartBroadcastRequested = takeMoveStartBroadcastRequest();
+  const afterSimulation = tickDiagnosticSamples ? performance.now() : null;
+  let afterVision = afterSimulation;
   if (tickNumber % STATE_EVERY_TICKS === 0) {
     updateVisionMasks();
     evaluateScenarioTriggers(STATE_EVERY_TICKS * STEP_SECONDS);
+    if (tickDiagnosticSamples) afterVision = performance.now();
     if (dirty) broadcastState();
   } else if (moveStartBroadcastRequested && dirty) {
     updateVisionMasks();
+    if (tickDiagnosticSamples) afterVision = performance.now();
     broadcastState();
   }
+  const afterBroadcast = tickDiagnosticSamples ? performance.now() : null;
   if (tickNumber % MATCH_CHECKPOINT_INTERVAL_TICKS === 0) void queueMatchCheckpoint();
-  recordTickDuration(performance.now() - tickStartedAt);
+  const tickEndedAt = performance.now();
+  const durationMs = tickEndedAt - tickStartedAt;
+  let diagnostic = null;
+  if (tickDiagnosticSamples) {
+    const cpu = process.cpuUsage(cpuStartedAt);
+    diagnostic = {
+      tickNumber,
+      durationMs: Number(durationMs.toFixed(3)),
+      cpuMs: Number(((cpu.user + cpu.system) / 1000).toFixed(3)),
+      simulationMs: Number((afterSimulation - tickStartedAt).toFixed(3)),
+      visionMs: Number((afterVision - afterSimulation).toFixed(3)),
+      broadcastMs: Number((afterBroadcast - afterVision).toFixed(3)),
+      checkpointMs: Number((tickEndedAt - afterBroadcast).toFixed(3)),
+    };
+  }
+  recordTickDuration(durationMs, diagnostic);
 }, 1000 / TICK_RATE);
 
 let shutdownSockets = new Set();
