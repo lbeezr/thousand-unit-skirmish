@@ -721,6 +721,8 @@ function mapCatalogPayload() {
 activateMap(mapDefinition);
 
 const units = [];
+const pendingUnitDamage = new Float64Array(MAX_UNITS);
+const pendingBuildingDamage = new Map();
 const unitGenerationCounters = new Uint32Array(MAX_UNITS);
 unitGenerationCounters.fill(randomBytes(4).readUInt32LE(0));
 const peers = new Set();
@@ -1332,10 +1334,12 @@ function nextUnitGeneration(id) {
   return generation;
 }
 
-function makeUnit(id, team, x, z, kind = 'infantry') {
+function makeUnit(id, team, x, z, kind, teamSlot) {
   return {
     id, generation: nextUnitGeneration(id), team, x, z, hp: kind === 'archer' ? 70 : 100, path: [], pathIndex: 0,
-    attackTargetId: -1, attackBuildingTargetId: -1, attackCooldown: ((id * 37) % 30) / 30,
+    attackTargetId: -1, attackBuildingTargetId: -1,
+    // Mirror the opening attack cadence by roster slot, not the global unit ID.
+    attackCooldown: ((teamSlot * 37) % 30) / 30,
     repathTimer: 0, lastAttackCell: -1, lastAttackTick: -1,
     lastAttackX: 0, lastAttackZ: 0, orderRevision: 0,
     attackMove: false, attackMoveRouteReady: false,
@@ -1361,7 +1365,7 @@ function spawnProducedUnit(team, kind, x, z) {
   }
   if (id < 0) return false;
 
-  const unit = makeUnit(id, team, x, z, kind);
+  const unit = makeUnit(id, team, x, z, kind, teamSlots);
   if (id === units.length) units.push(unit);
   else {
     for (const other of units) {
@@ -1458,7 +1462,7 @@ function resetArmy(count = currentArmySize) {
       z = safePosition.z;
     }
     reservedCells.add(spawnCell);
-    units.push(makeUnit(id, team, x, z, slot < 4 ? 'worker' : 'infantry'));
+    units.push(makeUnit(id, team, x, z, slot < 4 ? 'worker' : 'infantry', slot));
   }
   for (const state of triggerStates.values()) {
     state.owner = -1;
@@ -4957,6 +4961,9 @@ function simulateTick() {
   if (scenarioClockStarted) matchElapsedSeconds += STEP_SECONDS;
   rebuildSpatialBuckets();
   const attackMoveFlowBudget = { built: 0 };
+  // Resolve attacks together so a lethal hit cannot cancel a same-tick counterattack.
+  pendingUnitDamage.fill(0, 0, units.length);
+  pendingBuildingDamage.clear();
 
   for (const unit of units) {
     if (unit.hp <= 0) continue;
@@ -4990,17 +4997,12 @@ function simulateTick() {
           unit.path = [];
           unit.pathIndex = 0;
           if (unit.attackCooldown <= 0) {
-            target.hp = Math.max(0, target.hp - attackDamage);
+            pendingUnitDamage[target.id] += attackDamage;
             unit.attackCooldown = attackPeriod;
             unit.lastAttackTick = tickNumber;
             unit.lastAttackX = target.x;
             unit.lastAttackZ = target.z;
             dirty = true;
-            if (target.hp === 0) {
-              clearAttackTarget(unit);
-              broadcastGameplayNotice(target.team, target.x, target.z,
-                `${target.team === 0 ? 'AZURE' : 'EMBER'} UNIT DEFEATED`);
-            }
           }
           continue;
         }
@@ -5041,14 +5043,14 @@ function simulateTick() {
         unit.path = [];
         unit.pathIndex = 0;
         if (unit.attackCooldown <= 0) {
-          target.hp = Math.max(0,
-            target.hp - (BUILDING_ATTACK_DAMAGE[unit.kind] || 1) * attackDamageMultiplierFor(unit));
+          pendingBuildingDamage.set(target,
+            (pendingBuildingDamage.get(target) || 0)
+              + (BUILDING_ATTACK_DAMAGE[unit.kind] || 1) * attackDamageMultiplierFor(unit));
           unit.attackCooldown = unit.kind === 'archer' ? ARCHER_ATTACK_PERIOD : ATTACK_PERIOD;
           unit.lastAttackTick = tickNumber;
           unit.lastAttackX = target.x;
           unit.lastAttackZ = target.z;
           dirty = true;
-          if (target.hp === 0) destroyBuilding(target);
         }
         continue;
       }
@@ -5093,6 +5095,26 @@ function simulateTick() {
           dirty = true;
         }
       }
+    }
+  }
+
+  for (const target of units) {
+    const damage = pendingUnitDamage[target.id];
+    if (damage <= 0 || target.hp <= 0) continue;
+    target.hp = Math.max(0, target.hp - damage);
+    if (target.hp === 0) {
+      broadcastGameplayNotice(target.team, target.x, target.z,
+        `${target.team === 0 ? 'AZURE' : 'EMBER'} UNIT DEFEATED`);
+    }
+  }
+  for (const [building, damage] of pendingBuildingDamage) {
+    if (buildingsById.get(building.id) !== building) continue;
+    building.hp = Math.max(0, building.hp - damage);
+    if (building.hp === 0) destroyBuilding(building);
+  }
+  for (const unit of units) {
+    if (unit.hp > 0 && unit.attackTargetId >= 0 && units[unit.attackTargetId]?.hp <= 0) {
+      clearAttackTarget(unit);
     }
   }
 
