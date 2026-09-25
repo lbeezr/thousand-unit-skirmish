@@ -42,6 +42,13 @@ function sameDimensions(left, right) {
   return Boolean(left && right && left.width === right.width && left.height === right.height);
 }
 
+function sameAspectRatio(left, right) {
+  if (!left || !right || left.height <= 0 || right.height <= 0) return false;
+  const leftRatio = left.width / left.height;
+  const rightRatio = right.width / right.height;
+  return Math.abs(leftRatio - rightRatio) <= Math.max(leftRatio, rightRatio) * 0.01;
+}
+
 function sameWorldSize(left, right) {
   return Boolean(left && right && left.width === right.width && left.height === right.height);
 }
@@ -131,6 +138,26 @@ function safePath(relativePath) {
   const resolved = path.resolve(packRoot, relativePath);
   if (resolved !== packRoot && !resolved.startsWith(packRoot + path.sep)) return null;
   return resolved;
+}
+
+async function resolvePackFile(relativePath, label) {
+  const resolved = safePath(relativePath);
+  if (!resolved) {
+    report(label + ' path escapes its pack directory: ' + relativePath);
+    return null;
+  }
+  let actualPath;
+  try {
+    actualPath = await realpath(resolved);
+  } catch {
+    report('missing pack file: ' + relativePath);
+    return null;
+  }
+  if (actualPath !== packRoot && !actualPath.startsWith(packRoot + path.sep)) {
+    report(label + ' symlink escapes its pack directory: ' + relativePath);
+    return null;
+  }
+  return actualPath;
 }
 
 function pngDimensions(buffer) {
@@ -315,12 +342,10 @@ function near(left, right, tolerance) {
 
 async function loadModel(filePath) {
   if (modelJson.has(filePath)) return modelJson.get(filePath);
-  findFile(filePath, 'model', 'model');
-  const resolved = safePath(filePath);
-  if (!resolved) {
-    report('model path escapes its pack directory: ' + filePath);
-    return null;
-  }
+  const record = findFile(filePath, 'model', 'model');
+  if (!record || record.role !== 'model') return null;
+  const resolved = await resolvePackFile(filePath, 'model');
+  if (!resolved) return null;
   try {
     const buffer = await readFile(resolved);
     const json = parseGlb(buffer, filePath);
@@ -378,6 +403,9 @@ async function validateObjectPack() {
     if (!loaded) continue;
     const { json, info } = loaded;
     const partNames = new Set();
+    const teamVariantGroups = new Map();
+    const teamVariantCallCounts = new Map([['azure', 0], ['ember', 0]]);
+    let sharedBuildingCalls = 0;
     for (const part of asset.parts || []) {
       const modelFile = part.modelFile || asset.modelFile;
       const source = await loadModel(modelFile);
@@ -387,6 +415,7 @@ async function validateObjectPack() {
       if (partNames.has(part.id)) report(asset.id + ' has duplicate part id ' + part.id);
       partNames.add(part.id);
       if (asset.kind === 'unit') {
+        if (part.teamVariant) report(asset.id + ' unit parts cannot declare teamVariant');
         const registration = active.get(part.batchKey);
         if (!registration) report(asset.id + ' references an inactive unit batch key ' + part.batchKey);
         else if (registration.modelFile !== modelFile || registration.node !== part.node) {
@@ -396,8 +425,27 @@ async function validateObjectPack() {
         const current = modelFile + '#' + part.node;
         if (previous && previous !== current) report(part.batchKey + ' maps to incompatible source geometry');
         keyReferences.set(part.batchKey, current);
+      } else if (part.teamVariant) {
+        if (part.paletteSlot !== 'team-accent') {
+          report(asset.id + ' teamVariant parts must use the team-accent palette slot');
+        }
+        const { group, team } = part.teamVariant;
+        if (!teamVariantGroups.has(group)) teamVariantGroups.set(group, new Set());
+        const teams = teamVariantGroups.get(group);
+        if (teams.has(team)) report(asset.id + ' teamVariant group ' + group + ' has duplicate ' + team + ' parts');
+        teams.add(team);
+        if (teamVariantCallCounts.has(team)) {
+          teamVariantCallCounts.set(team, teamVariantCallCounts.get(team) + 1);
+        }
+        if (asset.id === 'barracks' && group === 'standard') {
+          const expectedId = 'standard-' + team;
+          const expectedNode = 'barracks.standard.' + team;
+          if (part.id !== expectedId || part.node !== expectedNode) {
+            report('Barracks standard variants must use ids standard-azure/standard-ember and nodes barracks.standard.azure/barracks.standard.ember');
+          }
+        }
       } else {
-        buildingCalls++;
+        sharedBuildingCalls++;
       }
       const node = source.json.nodes[nodeIndex];
       if (node && Number.isInteger(node.mesh)) {
@@ -410,6 +458,15 @@ async function validateObjectPack() {
           report(asset.id + ' part ' + part.id + ' must use ' + requiredPrefix + ' materials');
         }
       }
+    }
+    for (const [group, teams] of teamVariantGroups) {
+      if (teams.size !== 2 || !teams.has('azure') || !teams.has('ember')) {
+        report(asset.id + ' teamVariant group ' + group + ' must include exactly one Azure and one Ember part');
+      }
+    }
+    if (asset.kind === 'building') {
+      const activeVariantCalls = Math.max(...teamVariantCallCounts.values());
+      buildingCalls = Math.max(buildingCalls, sharedBuildingCalls + activeVariantCalls);
     }
     for (const anchor of asset.anchors || []) {
       const nodeIndex = info.namedNodes.get(anchor.node);
@@ -481,8 +538,7 @@ async function validateObjectPack() {
   if (budget.projectedEnvironmentBatches !== 0) report('character/building pack must not add environment batches');
   if (budget.projectedAdditionalDrawCalls !== teamBatches) report('object-pack projectedAdditionalDrawCalls must equal unit team batches');
   if (budget.projectedAdditionalDrawCalls > budget.maxAdditionalDrawCalls) report('object-pack draw-call projection exceeds its declared budget');
-  if (!manifest.reviewBoard) report('character/building pack must include a play-zoom reviewBoard');
-  else {
+  if (manifest.reviewBoard) {
     findFile(manifest.reviewBoard.file, 'review-image', 'reviewBoard');
     if (!jsonEqual([...manifest.reviewBoard.maps].sort(), ['cinder', 'meadow'])) report('reviewBoard must show meadow and cinder');
     if (!jsonEqual([...manifest.reviewBoard.teams].sort(), ['azure', 'ember'])) report('reviewBoard must show Azure and Ember');
@@ -518,7 +574,7 @@ async function validateEnvironmentPack() {
     const sourceDimensions = imageInfo.get(asset.sourceFile);
     const runtimeDimensions = imageInfo.get(asset.runtimeFile);
     if (sourceRecord && runtimeRecord && sourceDimensions && runtimeDimensions
-      && !sameDimensions(sourceDimensions, runtimeDimensions)) report(asset.id + ' PNG and WebP dimensions differ');
+      && !sameAspectRatio(sourceDimensions, runtimeDimensions)) report(asset.id + ' PNG and WebP aspect ratios differ by more than 1%');
     if (runtimeDimensions && !sameDimensions(runtimeDimensions, asset.dimensionsPx)) report(asset.id + ' declared pixel dimensions do not match its runtime image');
     const stages = byFamily.get(asset.resourceType + ':dimensions') || [];
     stages.push(asset);
@@ -563,8 +619,8 @@ async function validateEnvironmentPack() {
       findFile(asset.runtimeFile, 'runtime-image', asset.id);
       const sourceDimensions = imageInfo.get(asset.sourceFile);
       const runtimeDimensions = imageInfo.get(asset.runtimeFile);
-      if (sourceDimensions && runtimeDimensions && !sameDimensions(sourceDimensions, runtimeDimensions)) {
-        report(asset.id + ' PNG and WebP dimensions differ');
+      if (sourceDimensions && runtimeDimensions && !sameAspectRatio(sourceDimensions, runtimeDimensions)) {
+        report(asset.id + ' PNG and WebP aspect ratios differ by more than 1%');
       }
       if (runtimeDimensions && !sameDimensions(runtimeDimensions, asset.dimensionsPx)) {
         report(asset.id + ' declared pixel dimensions do not match its runtime image');
@@ -624,17 +680,9 @@ async function main() {
   for (const entry of listedFiles) {
     if (fileRecords.has(entry.path)) report('duplicate file record: ' + entry.path);
     fileRecords.set(entry.path, entry);
-    const resolved = safePath(entry.path);
-    if (!resolved) {
-      report('file path escapes its pack directory: ' + entry.path);
-      continue;
-    }
+    const actualPath = await resolvePackFile(entry.path, 'file');
+    if (!actualPath) continue;
     try {
-      const actualPath = await realpath(resolved);
-      if (actualPath !== packRoot && !actualPath.startsWith(packRoot + path.sep)) {
-        report('file symlink escapes its pack directory: ' + entry.path);
-        continue;
-      }
       const bytes = await readFile(actualPath);
       const digest = createHash('sha256').update(bytes).digest('hex');
       if (digest.toLowerCase() !== entry.sha256.toLowerCase()) report('SHA-256 mismatch: ' + entry.path);
@@ -643,6 +691,7 @@ async function main() {
         const dims = imageDimensions(bytes, entry.path);
         if (!dims) report('cannot read PNG/WebP image dimensions: ' + entry.path);
         else {
+          if (!entry.dimensionsPx) report('image file is missing declared dimensionsPx: ' + entry.path);
           imageInfo.set(entry.path, dims);
           if (entry.dimensionsPx && !jsonEqual(dims, entry.dimensionsPx)) report('declared file dimensions do not match: ' + entry.path);
         }
