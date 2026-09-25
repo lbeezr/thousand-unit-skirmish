@@ -9,7 +9,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const mapPath = path.join(root, 'maps/forked-vale.json');
+const serverRoot = process.env.RTS_SERVER_ROOT || root;
+const mapPath = path.resolve(serverRoot, process.env.RTS_OPENING_MAP || 'maps/forked-vale.json');
 const fixtureMapId = 'gather-build-opening';
 // Set this to the exact Git SHA of the server source before running the scenario.
 const baselineCommit = process.env.RTS_BASELINE_COMMIT?.trim() || '';
@@ -19,21 +20,21 @@ if (!/^[0-9a-f]{40,64}$/i.test(baselineCommit)) {
 let checkoutCommit;
 try {
   checkoutCommit = execFileSync('git', ['rev-parse', 'HEAD'], {
-    cwd: root,
+    cwd: serverRoot,
     encoding: 'utf8',
   }).trim();
 } catch (error) {
-  throw new Error(`The scenario root must be a Git checkout to bind the baseline: ${error.message}`);
+  throw new Error(`RTS_SERVER_ROOT must be a Git checkout to bind the baseline: ${error.message}`);
 }
 if (checkoutCommit.toLowerCase() !== baselineCommit.toLowerCase()) {
-  throw new Error(`RTS_BASELINE_COMMIT ${baselineCommit} does not match scenario root HEAD ${checkoutCommit}.`);
+  throw new Error(`RTS_BASELINE_COMMIT ${baselineCommit} does not match RTS_SERVER_ROOT HEAD ${checkoutCommit}.`);
 }
 const trackedChanges = execFileSync('git', ['status', '--porcelain', '--untracked-files=all'], {
-  cwd: root,
+  cwd: serverRoot,
   encoding: 'utf8',
 }).trim();
 if (trackedChanges) {
-  throw new Error(`The scenario root has changes; exact baseline evidence requires a clean checkout:\n${trackedChanges}`);
+  throw new Error(`RTS_SERVER_ROOT has changes; exact baseline evidence requires a clean checkout:\n${trackedChanges}`);
 }
 const mapSourceText = await readFile(mapPath, 'utf8');
 const mapSourceSha256 = createHash('sha256').update(mapSourceText).digest('hex');
@@ -45,12 +46,12 @@ const port = listener.address().port;
 await new Promise((resolve, reject) => listener.close(error => error ? reject(error) : resolve()));
 
 const server = spawn(process.execPath, ['server.mjs'], {
-  cwd: root,
+  cwd: serverRoot,
   env: {
     ...process.env,
     PORT: String(port),
     RTS_HOST: '127.0.0.1',
-    RTS_MAP: 'maps/forked-vale.json',
+    RTS_MAP: path.relative(serverRoot, mapPath),
     RTS_MATCH_STATE_PATH: path.join(temporary, 'checkpoint.json'),
     RTS_CUSTOM_MAP_DIRECTORY: path.join(temporary, 'custom-maps'),
   },
@@ -664,7 +665,7 @@ try {
     scenario: 'gather-build-opening',
     event: 'complete',
     baselineCommit,
-    baseMap: mapPath,
+    baseMap: path.relative(serverRoot, mapPath),
     mapSourceSha256,
     fixtureMap: fixtureMapId,
     startingArmySize: 24,
