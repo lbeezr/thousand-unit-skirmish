@@ -12,8 +12,9 @@ import {
 } from './resource-visual-state.mjs';
 import { buildingProductionCueState } from './building-visual-state.mjs';
 import {
-  UNIT_LOD_ROLE_BITS, UNIT_LOD_ROLES, shouldUpdateUnitFullDetailTint,
-  shouldUpdateUnitTransformForFrame, unitLodRoleMatrixUpdateMask,
+  UNIT_LOD_ROLE_BITS, UNIT_LOD_ROLES, shouldUpdateUnitFocusMatrix,
+  shouldUpdateUnitFullDetailTint, shouldUpdateUnitTransformForFrame,
+  unitLodRoleMatrixUpdateMask,
 } from './unit-lod-state.mjs';
 import {
   capturePrerequisiteIds, findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
@@ -2579,15 +2580,20 @@ function updateUnitLodTransform(unit, visibleScale) {
 
 function updateUnitFocusVisual(unit) {
   const focused = unit.hp > 0 && unit.visible !== false && unit.targetedBy >= 2;
-  if (!focused && !unit.focused && unit.focusMatrixInitialized) return;
   const focusScale = focused
     ? unit.scale * (0.96 + Math.min(0.3, (unit.targetedBy - 2) * 0.018)) : 0;
+  if (!shouldUpdateUnitFocusMatrix(unit.focusMatrixInitialized, unit.focused, focused,
+    unit.focusVisualX, unit.focusVisualZ, unit.focusVisualScale,
+    unit.renderX, unit.renderZ, focusScale)) return;
   dummy.position.set(unit.renderX, 0.03, unit.renderZ);
   dummy.quaternion.copy(ringRotation);
   dummy.scale.setScalar(focusScale);
   dummy.updateMatrix();
   attackFocusMesh.setMatrixAt(unit.focusSlot, dummy.matrix);
   unit.focused = focused;
+  unit.focusVisualX = unit.renderX;
+  unit.focusVisualZ = unit.renderZ;
+  unit.focusVisualScale = focusScale;
   unit.focusMatrixInitialized = true;
   attackFocusDirty = true;
 }
@@ -7252,8 +7258,9 @@ function animate(now) {
       if (turning) unit.angle += THREE.MathUtils.clamp(turnDelta, -frameDelta * 9, frameDelta * 9);
       else unit.angle = unit.targetAngle;
     }
-    const working = !unitLowDetailActive && !walking && unit.kind === 'worker'
+    const working = !walking && unit.kind === 'worker'
       && (unit.task === 'gathering' || unit.task === 'building');
+    // Keep pose phase current in LOD so a zoom-in resumes without a swing reset.
     if (working) unit.motionPhase += frameDelta * (unit.task === 'building' ? 6 : 5);
     const activeAttack = unit.attackStartedAt > 0;
     const activeHit = unit.hitStartedAt > 0;

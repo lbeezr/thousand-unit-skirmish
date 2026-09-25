@@ -18,3 +18,11 @@ export function shouldUpdateUnitTransformForFrame(
 ) {
   return transformChanged || (!lowDetailActive && fullDetailAnimationDue);
 }
+
+export function shouldUpdateUnitFocusMatrix(
+  initialized, previousFocused, focused, previousX, previousZ, previousScale, x, z, scale,
+) {
+  if (!initialized) return true;
+  if (!focused && !previousFocused) return false;
+  return previousFocused !== focused || previousX !== x || previousZ !== z || previousScale !== scale;
+}

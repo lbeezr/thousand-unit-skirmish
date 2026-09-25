@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {
-  UNIT_LOD_ROLE_BITS, UNIT_LOD_ROLES, shouldUpdateUnitFullDetailTint,
-  shouldUpdateUnitTransformForFrame, unitLodRoleMatrixUpdateMask,
+  UNIT_LOD_ROLE_BITS, UNIT_LOD_ROLES, shouldUpdateUnitFocusMatrix,
+  shouldUpdateUnitFullDetailTint, shouldUpdateUnitTransformForFrame,
+  unitLodRoleMatrixUpdateMask,
 } from '../src/unit-lod-state.mjs';
 
 const allRoleBits = UNIT_LOD_ROLES.reduce((mask, role) => mask | UNIT_LOD_ROLE_BITS[role], 0);
@@ -28,5 +29,17 @@ assert.equal(shouldUpdateUnitTransformForFrame(false, false, true), true,
   'full-detail units should keep work, combat, and idle pose updates');
 assert.equal(shouldUpdateUnitTransformForFrame(false, false, false), false,
   'unchanged units should not rewrite their transform batches');
+assert.equal(shouldUpdateUnitFocusMatrix(false, false, false, 0, 0, 0, 0, 0, 0), true,
+  'focus matrices should initialize once');
+assert.equal(shouldUpdateUnitFocusMatrix(true, true, true, 4, 7, 1, 4, 7, 1), false,
+  'a stable focused unit should not rewrite its focus matrix');
+assert.equal(shouldUpdateUnitFocusMatrix(true, true, true, 4, 7, 1, 4, 7, 1.1), true,
+  'a changed focus scale should rewrite the focus matrix');
+assert.equal(shouldUpdateUnitFocusMatrix(true, true, true, 4, 7, 1, 4.5, 7, 1), true,
+  'a moving focused unit should rewrite the focus matrix');
+assert.equal(shouldUpdateUnitFocusMatrix(true, true, false, 4, 7, 1, 4, 7, 0), true,
+  'a lost focus state should clear the focus matrix');
+assert.equal(shouldUpdateUnitFocusMatrix(true, false, false, 4, 7, 0, 8, 9, 0), false,
+  'unfocused units should not rewrite their invisible focus matrix while moving');
 
 process.stdout.write('Unit LOD state scenario passed: stable roles write one role batch, transitions clear old slots, and LOD skips full-detail-only updates.\n');
