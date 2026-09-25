@@ -163,6 +163,15 @@ try {
   assert.equal(expiredTokenWelcome.player.team, null, 'an expired token must not reclaim a seat held by a replacement');
   assert.equal(expiredTokenWelcome.player.resumed, false, 'an expired token must not restore the old session');
 
+  const opponentToken = opponentWelcome.player.sessionToken;
+  await closeClient(opponent);
+  const resumedOpponent = createClient(port, ['rts-v1', `rts-resume.${opponentToken}`]);
+  clients.push(resumedOpponent);
+  await resumedOpponent.opened;
+  const resumedOpponentWelcome = await resumedOpponent.waitForMessage((message) => message.type === 'welcome');
+  assert.equal(resumedOpponentWelcome.player.team, 1, 'Ember should reclaim its original team');
+  assert.equal(resumedOpponentWelcome.player.resumed, true, 'Ember should retain its original session');
+
   console.log(JSON.stringify({
     passed: [
       'duplicate active token joins as spectator',
@@ -171,12 +180,14 @@ try {
       'original team and identity can be reclaimed inside the grace period',
       'new player can claim the seat after the grace period expires',
       'expired resume token cannot reclaim the replacement seat',
+      'opponent seat can independently reconnect inside the grace period',
     ],
     originalTeam: ownerWelcome.player.team,
     opponentTeam: opponentWelcome.player.team,
     resumedTeam: resumedWelcome.player.team,
     replacementTeam: replacementWelcome.player.team,
     expiredTokenTeam: expiredTokenWelcome.player.team,
+    resumedOpponentTeam: resumedOpponentWelcome.player.team,
   }, null, 2));
 } catch (error) {
   console.error(error);

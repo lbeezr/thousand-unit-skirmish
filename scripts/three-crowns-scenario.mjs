@@ -69,6 +69,13 @@ function createClient(team) {
       client.waiters.push(waiter);
     });
   };
+  client.waitNextState = (predicate, timeoutMs = 12000) => new Promise((resolve, reject) => {
+    const waiter = { predicate, resolve, timeout: setTimeout(() => {
+      client.waiters.splice(client.waiters.indexOf(waiter), 1);
+      reject(new Error(`new state timeout for team ${client.team}`));
+    }, timeoutMs) };
+    client.waiters.push(waiter);
+  });
   clients.push(client);
   return client;
 }
@@ -177,12 +184,25 @@ try {
     assert.deepEqual(state.objectives.filter(row => row.victory).map(row => row.owner),
       Array(3).fill(winnerTeam));
   }
+  stage = 'resetting the completed match for both player seats';
+  const resetStates = [azure, ember].map(client => client.waitNextState(state => (
+    state.mapId === 'three-crowns' && state.winner === -1
+      && state.objectives.filter(row => row.victory).every(row => row.owner === -1)
+  )));
+  azure.socket.send(JSON.stringify({ type: 'reset' }));
+  const [resetAzure, resetEmber] = await Promise.all(resetStates);
+  for (const [team, state] of [resetAzure, resetEmber].entries()) {
+    assert.equal(state.armySize, 1000, 'rematch must restore the selected army size');
+    assert.equal(state.alive[team], 500, 'rematch must restore the player army');
+    assert.equal(state.alive[1 - team], null, 'fog must keep the opponent roster private');
+    assert.equal(state.winnerReason, null, 'rematch must clear the victory reason');
+  }
   console.log(JSON.stringify({
     map: 'three-crowns', roster: finalAzure.armySize, testedWinner: winnerTeam,
     oppositeFlanks: [winnerTeam, loserTeam], lockedKeepSnapshots: gatedSnapshots.length,
     finalOwners: finalAzure.objectives.filter(row => row.victory).map(row => row.owner),
     winner: finalAzure.winner, winnerTriggerId: finalAzure.winnerTriggerId,
-    winnerReason: finalAzure.winnerReason,
+    winnerReason: finalAzure.winnerReason, rematchReset: 'both seats restored',
   }, null, 2));
 } catch (error) {
   console.error(JSON.stringify({ stage, error: error.message, log,
