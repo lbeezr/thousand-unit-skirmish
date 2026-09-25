@@ -203,7 +203,9 @@ async function issueTrackedOrder(client, command, expectedPrefix) {
   const token = nextOrderToken++;
   client.send({ ...command, clientOrderToken: token });
   const notice = await client.waitForMessage(message => message.type === 'notice'
-    && message.clientOrderToken === token, afterMessageIndex);
+    && message.clientOrderToken === token
+    && (message.message.startsWith(expectedPrefix)
+      || /REJECTED|UNREACHABLE|FAILED|SUPERSEDED|CANCELLED/i.test(message.message)), afterMessageIndex);
   assert.ok(notice.message.startsWith(expectedPrefix),
     `expected ${expectedPrefix} order acknowledgement, received ${notice.message}`);
   assert.ok(!/REJECTED|UNREACHABLE|FAILED|SUPERSEDED/i.test(notice.message),
