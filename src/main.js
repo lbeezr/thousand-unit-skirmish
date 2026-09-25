@@ -1,5 +1,9 @@
 import * as THREE from 'three';
 import {
+  addObstacleEnvironmentSprites, createEnvironmentSprite, createEnvironmentSpriteInstances,
+  createGroundSurfaces, environmentTheme, setEnvironmentSpriteInstance, TERRAIN_MATERIALS,
+} from './environment-art.mjs';
+import {
   capturePrerequisiteIds, findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
   findUnreachableCaptureZone, findUnreachableResourceNode, scenarioEventSourceIds,
 } from './map-utils.mjs';
@@ -166,6 +170,7 @@ const ui = {
   studioSummary: document.querySelector('#studio-summary'),
   studioWidth: document.querySelector('#studio-width'),
   studioHeight: document.querySelector('#studio-height'),
+  studioTerrainBase: document.querySelector('#studio-terrain-base'),
   studioStartingArmySize: document.querySelector('#studio-starting-army-size'),
   studioStartingFood: document.querySelector('#studio-starting-food'),
   studioStartingWood: document.querySelector('#studio-starting-wood'),
@@ -236,7 +241,7 @@ const combatAudioGate = new CombatAudioGate();
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x859175);
-scene.fog = new THREE.Fog(0x859175, 82, 150);
+scene.fog = new THREE.Fog(0x859175, 145, 235);
 
 const camera = new THREE.OrthographicCamera(-32, 32, 32, -32, 0.1, 300);
 const cameraTarget = new THREE.Vector3(0, 0, 0);
@@ -315,6 +320,7 @@ let editorDraftDirty = false;
 let editorDraftWriteTimer = 0;
 let editorCellMaterials = new Int8Array(0);
 let editorCellElevations = new Float64Array(0);
+let editorGroundMaterials = new Int8Array(0);
 let editorTriggers = [];
 let editorScenarioEvents = [];
 let selectedEditorTriggerId = null;
@@ -1078,18 +1084,9 @@ function addResourceNodeVisual(node) {
 
   const props = [];
   if (nodeType !== 'wood') {
-    const offsets = [[-0.23, -0.12], [0.1, -0.23], [0.22, 0.12], [-0.1, 0.23]];
-    for (let index = 0; index < offsets.length; index++) {
-      const berry = new THREE.Mesh(
-        new THREE.OctahedronGeometry(0.19, 0),
-        new THREE.MeshStandardMaterial({
-          color: index % 2 ? 0x9e4056 : 0x753b55, roughness: 0.7, flatShading: true,
-        }),
-      );
-      berry.position.set(node.x + offsets[index][0], 0.2 + (index % 2) * 0.04, node.z + offsets[index][1]);
-      addMapObject(berry);
-      props.push(berry);
-    }
+    const berries = createEnvironmentSprite('berries', 2.55, 1.56, node.x, node.z);
+    addMapObject(berries);
+    props.push(berries);
   }
   resourceNodeVisuals.set(node.id, { type: nodeType, ring, props, stock: node.stock });
 }
@@ -1111,11 +1108,7 @@ function setWoodNodeTreesVisible(id, visible) {
   if (!slots?.length) return;
   for (const slot of slots) {
     for (const mesh of woodTreeMeshes) {
-      dummy.position.set(slot.x, mesh.userData.treePart === 'canopy' ? 0.82 : 0.27, slot.z);
-      dummy.rotation.set(0, 0, 0);
-      dummy.scale.setScalar(visible ? 1 : 0);
-      dummy.updateMatrix();
-      mesh.setMatrixAt(slot.index, dummy.matrix);
+      setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z, visible ? slot.scale : 0);
     }
   }
   for (const mesh of woodTreeMeshes) mesh.instanceMatrix.needsUpdate = true;
@@ -1126,51 +1119,15 @@ function buildWoodNodeInstances(nodes = []) {
   woodTreeNodeSlots.clear();
   const woodNodes = nodes.filter((node) => node.type === 'wood');
   if (woodNodes.length === 0) return;
-  const capacity = woodNodes.length * 3;
-  const trunks = new THREE.InstancedMesh(
-    new THREE.CylinderGeometry(0.07, 0.1, 0.52, 5),
-    new THREE.MeshStandardMaterial({ color: 0x76583e, roughness: 0.95, flatShading: true }),
-    capacity,
-  );
-  const canopies = new THREE.InstancedMesh(
-    new THREE.ConeGeometry(0.46, 0.92, 6),
-    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9, flatShading: true }),
-    capacity,
-  );
-  const offsets = [[-0.24, -0.12], [0.18, -0.16], [0.02, 0.23]];
-  let slotIndex = 0;
-  for (const node of woodNodes) {
-    const slots = [];
-    for (let index = 0; index < offsets.length; index++) {
-      const [dx, dz] = offsets[index];
-      const x = node.x + dx;
-      const z = node.z + dz;
-      dummy.position.set(x, 0.27, z);
-      dummy.rotation.set(0, 0, 0);
-      dummy.scale.setScalar(1);
-      dummy.updateMatrix();
-      trunks.setMatrixAt(slotIndex, dummy.matrix);
-      dummy.position.set(x, 0.82, z);
-      dummy.scale.setScalar(1);
-      dummy.updateMatrix();
-      canopies.setMatrixAt(slotIndex, dummy.matrix);
-      color.setHex(index % 2 ? 0x47704a : 0x55794d);
-      canopies.setColorAt(slotIndex, color);
-      slots.push({ index: slotIndex, x, z });
-      slotIndex++;
-    }
-    woodTreeNodeSlots.set(node.id, slots);
+  const positions = woodNodes.map((node, index) => ({
+    x: node.x, z: node.z, scale: 0.85 + (index % 3) * 0.07,
+  }));
+  const trees = createEnvironmentSpriteInstances('oak', 4.1, 3.75, positions);
+  for (let index = 0; index < woodNodes.length; index++) {
+    woodTreeNodeSlots.set(woodNodes[index].id, [{ index, ...positions[index] }]);
   }
-  trunks.count = slotIndex;
-  canopies.count = slotIndex;
-  trunks.instanceMatrix.needsUpdate = true;
-  canopies.instanceMatrix.needsUpdate = true;
-  if (canopies.instanceColor) canopies.instanceColor.needsUpdate = true;
-  trunks.userData.treePart = 'trunk';
-  canopies.userData.treePart = 'canopy';
-  addMapObject(trunks);
-  addMapObject(canopies);
-  woodTreeMeshes = [trunks, canopies];
+  addMapObject(trees);
+  woodTreeMeshes = [trees];
 }
 
 function buildFogOverlay(definition) {
@@ -1268,56 +1225,35 @@ function buildMap(definition) {
 
   const base = new THREE.Mesh(
     new THREE.PlaneGeometry(MAP_WIDTH + 4, MAP_HEIGHT + 4),
-    new THREE.MeshStandardMaterial({ color: 0x616f56, roughness: 1 }),
+    new THREE.MeshStandardMaterial({ color: TERRAIN_COLORS[environmentTheme(definition)] || TERRAIN_COLORS.meadow, roughness: 1 }),
   );
   base.rotation.x = -Math.PI / 2;
   base.position.y = -0.075;
   addMapObject(base);
+  for (const surface of createGroundSurfaces(definition)) addMapObject(surface);
 
-  const tileCount = MAP_WIDTH * MAP_HEIGHT;
-  const tiles = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(0.988, 0.055, 0.988),
-    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 }),
-    tileCount,
-  );
-  let seed = definition.terrainSeed >>> 0;
-  const random = () => {
-    seed = (seed * 1664525 + 1013904223) >>> 0;
-    return seed / 4294967296;
-  };
-  for (let row = 0; row < MAP_HEIGHT; row++) {
-    for (let column = 0; column < MAP_WIDTH; column++) {
-      const index = row * MAP_WIDTH + column;
-      dummy.position.set(column - MAP_HALF_X + 0.5, -0.03, row - MAP_HALF_Z + 0.5);
-      dummy.rotation.set(0, 0, 0);
-      dummy.scale.setScalar(1);
-      dummy.updateMatrix();
-      tiles.setMatrixAt(index, dummy.matrix);
-      const variation = random();
-      color.setHex(variation > 0.92 ? 0x8f9b70 : variation > 0.56 ? 0x849270 : 0x7e8d6a);
-      tiles.setColorAt(index, color);
-    }
-  }
-  tiles.instanceMatrix.needsUpdate = true;
-  if (tiles.instanceColor) tiles.instanceColor.needsUpdate = true;
-  addMapObject(tiles);
-
-  const obstacleCount = definition.obstacles.reduce((count, obstacle) => count + obstacle.width * obstacle.height, 0);
+  // Rock silhouettes carry the visual boundary. Flat block tops made the ridge
+  // look like a strip of square tiles when viewed from the oblique camera.
+  const obstacleCount = definition.obstacles.reduce((count, obstacle) => (
+    count + (obstacle.material === 'stone' ? 0 : obstacle.width * obstacle.height)
+  ), 0);
   const obstacles = new THREE.InstancedMesh(
     new THREE.BoxGeometry(1.02, 1.12, 1.02),
     new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.94, flatShading: true }),
     obstacleCount,
   );
-  const obstacleTints = { stone: [0x69735f, 0x767b64], forest: [0x4e694a, 0x5c7552], water: [0x547b88, 0x608794] };
+  const obstacleTints = { stone: [0x444944, 0x55594f], forest: [0x304934, 0x38533b], water: [0x3e6570, 0x4d7982] };
   let obstacleIndex = 0;
   for (const obstacle of definition.obstacles) {
+    if (obstacle.material === 'stone') continue;
     const tints = obstacleTints[obstacle.material] || obstacleTints.stone;
-    const elevation = Number.isFinite(obstacle.elevation) ? obstacle.elevation : 1.12;
+    const visibleHeight = obstacle.material === 'forest' ? 0.17
+      : 0.025;
     for (let row = obstacle.row; row < obstacle.row + obstacle.height; row++) {
       for (let column = obstacle.column; column < obstacle.column + obstacle.width; column++) {
-        dummy.position.set(column - MAP_HALF_X + 0.5, elevation / 2, row - MAP_HALF_Z + 0.5);
+        dummy.position.set(column - MAP_HALF_X + 0.5, visibleHeight / 2, row - MAP_HALF_Z + 0.5);
         dummy.rotation.set(0, 0, 0);
-        dummy.scale.set(1, elevation / 1.12, 1);
+        dummy.scale.set(1, visibleHeight / 1.12, 1);
         dummy.updateMatrix();
         obstacles.setMatrixAt(obstacleIndex, dummy.matrix);
         color.setHex((row + column + obstacleIndex) % 3 === 0 ? tints[0] : tints[1]);
@@ -1331,12 +1267,21 @@ function buildMap(definition) {
   obstacles.castShadow = false;
   obstacles.receiveShadow = false;
   addMapObject(obstacles);
+  addObstacleEnvironmentSprites(definition, MAP_HALF_X, MAP_HALF_Z, addMapObject);
 
   for (const spawn of definition.spawnPoints || []) addTownCenterVisual(spawn);
   buildWoodNodeInstances(definition.resourceNodes || []);
   for (const node of definition.resourceNodes || []) {
     addResourceNodeVisual(node);
     latestResourceStocks.set(node.id, node.stock);
+  }
+
+  for (const trigger of definition.triggers || []) {
+    if (trigger.type !== 'capture-zone' || !trigger.zone) continue;
+    const zone = trigger.zone;
+    const x = zone.column - MAP_HALF_X + Math.min(zone.width - 0.5, 1.3);
+    const z = zone.row - MAP_HALF_Z + Math.min(zone.height - 0.5, 1.3);
+    addMapObject(createEnvironmentSprite('seamstone', 2.0, 2.6, x, z));
   }
 
   const edgeX = MAP_HALF_X;
@@ -1590,10 +1535,16 @@ function buildMinimapBackground(definition) {
   const height = minimapBackground.height;
   const rect = minimapMapRect(width, height, definition.width, definition.height);
   context.clearRect(0, 0, width, height);
-  context.fillStyle = '#202a21';
+  const baseTerrain = environmentTheme(definition);
+  context.fillStyle = '#20231f';
   context.fillRect(0, 0, width, height);
-  context.fillStyle = '#53664b';
+  context.fillStyle = TERRAIN_COLORS[baseTerrain] || TERRAIN_COLORS.meadow;
   context.fillRect(rect.left, rect.top, rect.width, rect.height);
+  for (const patch of definition.terrainPatches || []) {
+    context.fillStyle = TERRAIN_COLORS[patch.material] || TERRAIN_COLORS.meadow;
+    context.fillRect(rect.left + patch.column * rect.scale, rect.top + patch.row * rect.scale,
+      patch.width * rect.scale, patch.height * rect.scale);
+  }
 
   context.strokeStyle = 'rgba(220, 232, 193, 0.09)';
   context.lineWidth = 1;
@@ -1610,7 +1561,7 @@ function buildMinimapBackground(definition) {
   }
   context.stroke();
 
-  const obstacleColors = { stone: '#60695c', forest: '#304b32', water: '#286173' };
+  const obstacleColors = { stone: '#343936', forest: '#304b32', water: '#286173' };
   for (const obstacle of definition.obstacles) {
     context.fillStyle = obstacleColors[obstacle.material] || obstacleColors.stone;
     context.fillRect(
@@ -3197,6 +3148,10 @@ function setMapCatalog(maps, activeMapId) {
 
 const EDITOR_MATERIALS = ['stone', 'forest', 'water'];
 const EDITOR_MATERIAL_COLORS = ['#596653', '#496448', '#416a78'];
+const TERRAIN_COLORS = {
+  meadow: '#60734f', 'short-grass': '#6d7a45', 'long-grass': '#52643e',
+  dirt: '#806047', sand: '#ac936d', scree: '#55564d', cinder: '#554c3d',
+};
 const MAP_STUDIO_DRAFT_VERSION = 1;
 const MAP_STUDIO_DRAFT_DEBOUNCE_MS = 160;
 
@@ -3275,6 +3230,8 @@ function captureMapStudioDraft() {
     ...editorDefinition,
     id: ui.studioId.value,
     name: ui.studioName.value,
+    terrainBase: ui.studioTerrainBase.value,
+    terrainPatches: compressEditorGround(),
     obstacles: compressEditorObstacles(),
     resourceNodes: JSON.parse(JSON.stringify(editorResourceNodes)),
     triggers: JSON.parse(JSON.stringify(editorTriggers)),
@@ -3344,7 +3301,9 @@ function restoreMapStudioDraft(draft) {
   syncEditorTriggerControls();
   syncEditorScenarioEventControls();
   syncEditorResourceControls();
-  setEditorTool(EDITOR_MATERIALS.includes(state.editorTool) || ['erase', 'azure', 'ember', 'resource-food', 'resource-wood', 'objective'].includes(state.editorTool)
+  setEditorTool(EDITOR_MATERIALS.includes(state.editorTool) || ['rock', 'cliff', 'ground-reset', 'erase', 'azure', 'ember', 'resource-food', 'resource-wood', 'objective'].includes(state.editorTool)
+    || (typeof state.editorTool === 'string' && state.editorTool.startsWith('ground:')
+      && TERRAIN_MATERIALS.includes(state.editorTool.slice(7)))
     ? state.editorTool : 'stone');
   restoreMapStudioFormValues(state.formValues);
   if (editorTriggerCreationPending) {
@@ -4045,6 +4004,18 @@ function removeSelectedEditorResourceNode() {
 function populateMapEditor(definition, message) {
   editorDefinition = JSON.parse(JSON.stringify(definition));
   editorDefinition.fogOfWar ??= false;
+  editorDefinition.terrainBase ??= environmentTheme(definition);
+  ui.studioTerrainBase.value = editorDefinition.terrainBase;
+  editorGroundMaterials = new Int8Array(editorDefinition.width * editorDefinition.height);
+  editorGroundMaterials.fill(-1);
+  for (const patch of editorDefinition.terrainPatches || []) {
+    const material = TERRAIN_MATERIALS.indexOf(patch.material);
+    for (let row = patch.row; row < patch.row + patch.height; row++) {
+      for (let column = patch.column; column < patch.column + patch.width; column++) {
+        editorGroundMaterials[row * editorDefinition.width + column] = material;
+      }
+    }
+  }
   editorCellMaterials = new Int8Array(editorDefinition.width * editorDefinition.height);
   editorCellMaterials.fill(-1);
   editorCellElevations = new Float64Array(editorDefinition.width * editorDefinition.height);
@@ -4136,6 +4107,30 @@ function validateImportedMap(value) {
   if (!Number.isInteger(definition.width) || !Number.isInteger(definition.height)
     || definition.width < 16 || definition.height < 16 || definition.width > 256 || definition.height > 256) {
     throw new Error('Map width and height must be whole numbers between 16 and 256.');
+  }
+  if (definition.terrainBase !== undefined && !TERRAIN_MATERIALS.includes(definition.terrainBase)) {
+    throw new Error('Map has an invalid base ground material.');
+  }
+  const terrainPatches = definition.terrainPatches ?? [];
+  if (!Array.isArray(terrainPatches) || terrainPatches.length > 4096) {
+    throw new Error('Map must contain at most 4,096 ground paint patches.');
+  }
+  const paintedCells = new Uint8Array(definition.width * definition.height);
+  for (const patch of terrainPatches) {
+    const { column, row, width, height, material } = patch || {};
+    if (![column, row, width, height].every(Number.isInteger)
+      || column < 0 || row < 0 || width < 1 || height < 1
+      || column + width > definition.width || row + height > definition.height
+      || !TERRAIN_MATERIALS.includes(material)) {
+      throw new Error('Map has a ground paint patch outside its grid or with an invalid material.');
+    }
+    for (let paintedRow = row; paintedRow < row + height; paintedRow++) {
+      for (let paintedColumn = column; paintedColumn < column + width; paintedColumn++) {
+        const index = paintedRow * definition.width + paintedColumn;
+        if (paintedCells[index]) throw new Error('Map has overlapping ground paint patches.');
+        paintedCells[index] = 1;
+      }
+    }
   }
   if (!Array.isArray(definition.obstacles) || definition.obstacles.length > 4096) {
     throw new Error('Map must contain at most 4,096 terrain blocks.');
@@ -4361,7 +4356,9 @@ function setEditorTool(tool) {
     button.classList.toggle('active', button.dataset.mapTool === tool);
   }
   const hints = {
-    stone: 'DRAG TO PAINT STONE BLOCKS', forest: 'DRAG TO PAINT FOREST', water: 'DRAG TO PAINT WATER',
+    rock: 'DRAG TO PAINT LOW ROCK OUTCROPS', stone: 'DRAG TO PAINT BASALT RIDGES',
+    cliff: 'DRAG TO PAINT TALL CLIFFS', forest: 'DRAG TO PAINT FOREST', water: 'DRAG TO PAINT WATER',
+    'ground-reset': 'DRAG TO REVEAL THE BASE GROUND MATERIAL',
     erase: 'DRAG TO CLEAR TERRAIN', azure: 'CLICK TO PLACE AZURE SPAWN',
     ember: 'CLICK TO PLACE EMBER SPAWN', 'resource-food': 'CLICK EMPTY CELL TO PLACE · CLICK NODE TO EDIT',
     'resource-wood': 'CLICK EMPTY CELL TO PLACE · CLICK NODE TO EDIT',
@@ -4374,7 +4371,8 @@ function setEditorTool(tool) {
   }
   syncEditorResourceControls();
   const hint = ui.mapStudio.querySelector('.studio-grid-footer span:last-child');
-  if (hint) hint.textContent = hints[tool] || '';
+  if (hint) hint.textContent = tool.startsWith('ground:')
+    ? `DRAG TO PAINT ${tool.slice(7).replace('-', ' ').toUpperCase()}` : hints[tool] || '';
 }
 
 function resizeEditorMap() {
@@ -4396,15 +4394,19 @@ function resizeEditorMap() {
   const resizedResources = resizeWorldMarkers(editorResourceNodes, oldWidth, oldHeight, width, height);
   const resized = new Int8Array(width * height);
   resized.fill(-1);
+  const resizedGround = new Int8Array(width * height);
+  resizedGround.fill(-1);
   const resizedElevations = new Float64Array(width * height);
   resizedElevations.fill(1.12);
   for (let row = 0; row < Math.min(height, oldHeight); row++) {
     for (let column = 0; column < Math.min(width, oldWidth); column++) {
       resized[row * width + column] = editorCellMaterials[row * oldWidth + column];
+      resizedGround[row * width + column] = editorGroundMaterials[row * oldWidth + column];
       resizedElevations[row * width + column] = editorCellElevations[row * oldWidth + column];
     }
   }
   editorCellMaterials = resized;
+  editorGroundMaterials = resizedGround;
   editorCellElevations = resizedElevations;
   editorDefinition.width = width;
   editorDefinition.height = height;
@@ -4471,11 +4473,17 @@ function drawEditorGrid() {
   const scaleX = canvas.width / editorDefinition.width;
   const scaleY = canvas.height / editorDefinition.height;
   context.setTransform(scaleX, 0, 0, scaleY, 0, 0);
-  context.fillStyle = '#78866e';
+  context.fillStyle = TERRAIN_COLORS[ui.studioTerrainBase.value] || TERRAIN_COLORS.meadow;
   context.fillRect(0, 0, editorDefinition.width, editorDefinition.height);
   for (let row = 0; row < editorDefinition.height; row++) {
     for (let column = 0; column < editorDefinition.width; column++) {
-      const material = editorCellMaterials[row * editorDefinition.width + column];
+      const index = row * editorDefinition.width + column;
+      const ground = editorGroundMaterials[index];
+      if (ground >= 0) {
+        context.fillStyle = TERRAIN_COLORS[TERRAIN_MATERIALS[ground]];
+        context.fillRect(column, row, 1, 1);
+      }
+      const material = editorCellMaterials[index];
       if (material < 0) continue;
       context.fillStyle = EDITOR_MATERIAL_COLORS[material] || EDITOR_MATERIAL_COLORS[0];
       context.fillRect(column, row, 1, 1);
@@ -4557,7 +4565,8 @@ function drawEditorGrid() {
     context.fill();
     context.stroke();
   }
-  if (editorDrag && ['stone', 'forest', 'water', 'erase', 'objective'].includes(editorDrag.tool)) {
+  if (editorDrag && ['rock', 'stone', 'cliff', 'forest', 'water', 'erase', 'objective', 'ground-reset'].includes(editorDrag.tool)
+    || editorDrag?.tool.startsWith('ground:')) {
     const zone = editorDragRect(editorDrag);
     context.fillStyle = editorDrag.tool === 'objective' ? 'rgba(213,239,120,.28)' : 'rgba(255,255,255,.19)';
     context.strokeStyle = editorDrag.tool === 'objective' ? '#d5ef78' : 'rgba(242,246,221,.9)';
@@ -4566,6 +4575,40 @@ function drawEditorGrid() {
     context.strokeRect(zone.column + 0.06, zone.row + 0.06, zone.width - 0.12, zone.height - 0.12);
   }
   ui.studioGridSize.textContent = `${editorDefinition.width} × ${editorDefinition.height} CELLS`;
+}
+
+function compressEditorGround() {
+  const width = editorDefinition.width;
+  const height = editorDefinition.height;
+  const visited = new Uint8Array(width * height);
+  const patches = [];
+  for (let row = 0; row < height; row++) {
+    for (let column = 0; column < width; column++) {
+      const index = row * width + column;
+      const material = editorGroundMaterials[index];
+      if (material < 0 || visited[index]) continue;
+      let rectangleWidth = 1;
+      while (column + rectangleWidth < width
+        && editorGroundMaterials[row * width + column + rectangleWidth] === material
+        && !visited[row * width + column + rectangleWidth]) rectangleWidth++;
+      let rectangleHeight = 1;
+      while (row + rectangleHeight < height) {
+        let same = true;
+        for (let dx = 0; dx < rectangleWidth; dx++) {
+          const next = (row + rectangleHeight) * width + column + dx;
+          if (editorGroundMaterials[next] !== material || visited[next]) { same = false; break; }
+        }
+        if (!same) break;
+        rectangleHeight++;
+      }
+      for (let dy = 0; dy < rectangleHeight; dy++) {
+        for (let dx = 0; dx < rectangleWidth; dx++) visited[(row + dy) * width + column + dx] = 1;
+      }
+      patches.push({ column, row, width: rectangleWidth, height: rectangleHeight,
+        material: TERRAIN_MATERIALS[material] });
+    }
+  }
+  return patches;
 }
 
 function compressEditorObstacles() {
@@ -4630,6 +4673,8 @@ function collectEditorMap() {
     if (!name || name.length > 48) throw new Error('Map name must be between 1 and 48 characters.');
   const obstacles = compressEditorObstacles();
   if (obstacles.length > 4096) throw new Error('This map has too many separate terrain blocks.');
+  const terrainPatches = compressEditorGround();
+  if (terrainPatches.length > 4096) throw new Error('This map has too many separate ground paint patches.');
   const triggers = JSON.parse(JSON.stringify(editorTriggers));
   const scenarioEvents = JSON.parse(JSON.stringify(editorScenarioEvents));
   return validateImportedMap({
@@ -4639,6 +4684,8 @@ function collectEditorMap() {
       ? { victoryHoldSeconds: Number(ui.studioVictoryHoldSeconds.value) }
       : {}),
     fogOfWar: ui.studioFogOfWar.checked,
+    terrainBase: ui.studioTerrainBase.value,
+    terrainPatches,
     summary: ui.studioSummary.value.trim() || `${editorDefinition.width} × ${editorDefinition.height} · CUSTOM MAP`,
     obstacles,
     resourceNodes: JSON.parse(JSON.stringify(editorResourceNodes)),
@@ -5832,6 +5879,11 @@ ui.studioImportFile.addEventListener('change', async () => {
 });
 document.querySelector('#studio-width').addEventListener('change', resizeEditorMap);
 document.querySelector('#studio-height').addEventListener('change', resizeEditorMap);
+ui.studioTerrainBase.addEventListener('change', () => {
+  editorDefinition.terrainBase = ui.studioTerrainBase.value;
+  drawEditorGrid();
+  scheduleMapStudioDraftSave();
+});
 ui.studioVictoryMode.addEventListener('change', () => {
   saveSelectedEditorTriggerFields();
   editorDefinition.victoryMode = ui.studioVictoryMode.value;
@@ -6059,13 +6111,25 @@ function finishEditorPointer(event, commit) {
         syncEditorTriggerControls();
         ui.studioMessage.textContent = `Capture zone “${trigger.name}” set to ${bounds.width} × ${bounds.height} cells.`;
       }
+    } else if (drag.tool.startsWith('ground:') || drag.tool === 'ground-reset') {
+      const material = drag.tool === 'ground-reset' ? -1
+        : TERRAIN_MATERIALS.indexOf(drag.tool.slice(7));
+      for (let row = bounds.row; row < bounds.row + bounds.height; row++) {
+        for (let column = bounds.column; column < bounds.column + bounds.width; column++) {
+          editorGroundMaterials[row * editorDefinition.width + column] = material;
+        }
+      }
+      ui.studioMessage.textContent = material < 0 ? 'Base ground restored.'
+        : `${TERRAIN_MATERIALS[material].replace('-', ' ')} ground painted.`;
     } else {
-      const material = drag.tool === 'erase' ? -1 : EDITOR_MATERIALS.indexOf(drag.tool);
+      const material = drag.tool === 'erase' ? -1
+        : EDITOR_MATERIALS.indexOf(['rock', 'cliff'].includes(drag.tool) ? 'stone' : drag.tool);
+      const elevation = drag.tool === 'rock' ? 0.72 : drag.tool === 'cliff' ? 2.1 : 1.12;
       for (let row = bounds.row; row < bounds.row + bounds.height; row++) {
         for (let column = bounds.column; column < bounds.column + bounds.width; column++) {
           const index = row * editorDefinition.width + column;
           editorCellMaterials[index] = material;
-          editorCellElevations[index] = 1.12;
+          editorCellElevations[index] = elevation;
         }
       }
       let removedNodes = 0;
