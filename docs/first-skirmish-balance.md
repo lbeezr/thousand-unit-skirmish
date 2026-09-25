@@ -45,6 +45,16 @@ Walking, placement, congestion, and command time add delay. The resource
 allocation permits three infantry or two archers from the opening stock, before
 gathering. It does not establish that the two plans are equally strong.
 
+Construction progress adds once per nearby worker each tick. Committing all
+four starting workers can reduce the nominal build clock from 20 s to 5 s:
+the first infantry then appears about 17 s after arrival at the site, or the
+first archer about 12 s after arrival. This sacrifices early gathering while
+speeding a 5+5 **military** split between Forked Vale's two signal fords.
+Workers also count toward capture, so a player can split the starting roster
+earlier by exposing the economy units. Record builder count and worker presence
+at objectives in opening playtests; the one-worker times above are not
+universal.
+
 ## Measurable hypotheses for playtests
 
 1. **Opening clarity:** In at least 8 first-time 1v1 player seats, 6 can
@@ -63,8 +73,8 @@ gathering. It does not establish that the two plans are equally strong.
 4. **Pacing:** In contested games, first combat should occur by 2 min,
    first objective ownership by 3 min, and the median game should last
    6–10 min. At least 90% should finish within 15 min. Record both seats'
-   first building, first reinforcement, first contest, decisive objective,
-   and match-end times.
+   builder count, first building, first reinforcement, first contest,
+   decisive objective, and match-end times.
 5. **Victory incentive:** Players should move to contest objectives by
    4 min, and be able to explain why the final objective ended the game.
    A quiet base standoff beyond 4 min or a surprise victory is a scenario
