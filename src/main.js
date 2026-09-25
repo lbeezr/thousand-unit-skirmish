@@ -332,6 +332,7 @@ const unitLodTeamMeshes = [null, null];
 const unitLodMeshesByTeam = [[], []];
 const unitLodDirtyRoleMasks = [0, 0];
 const unitLodTeamDirty = [false, false];
+const unitCargoPackColorDirty = [false, false];
 let unitLowDetailActive = false;
 const mapObjects = [];
 const townCenterProductionLamps = [null, null];
@@ -2362,6 +2363,7 @@ function markUnitInstanceMatricesDirty(team) {
   } else {
     unitArtMeshes.forEach((pair) => { pair[team].instanceMatrix.needsUpdate = true; });
   }
+  flushUnitCargoPackColor(team);
 }
 
 function syncUnitDetailLevel() {
@@ -2612,6 +2614,7 @@ function updateUnitTransform(unit, now = performance.now()) {
   const isArcher = unit.kind === 'archer';
   if (unitLowDetailActive) {
     updateUnitLodTransform(unit, visibleScale);
+    updateUnitCargoCueColor(unit);
     updateUnitFocusVisual(unit);
     return;
   }
@@ -2703,6 +2706,7 @@ function updateUnitTransform(unit, now = performance.now()) {
   dummy.updateMatrix();
   quiverMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
 
+  updateUnitCargoCueColor(unit);
   updateUnitFocusVisual(unit);
 }
 
