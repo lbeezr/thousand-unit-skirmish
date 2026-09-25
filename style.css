@@ -283,6 +283,14 @@ h2 { font-size: 16px; font-weight: 700; }
 .keycap { padding: 2px 4px; border: 1px solid rgba(214,226,197,.16); border-radius: 2px; color: #c0c9b8; font: 8px 'DM Mono', monospace; }
 .footnote-sep { margin: 0 4px; color: #48574b; }
 .performance-section { padding-bottom: 13px; }
+.audio-section { display: grid; gap: 12px; color: #d9e3d3; font-size: 12px; }
+.audio-check, .audio-range { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.audio-check input { accent-color: var(--lime); width: 16px; height: 16px; margin: 0; }
+.audio-range input { flex: 1; min-width: 0; accent-color: var(--lime); }
+.audio-range output { min-width: 36px; text-align: right; color: #b8cba9; font-variant-numeric: tabular-nums; }
+.audio-status { color: #aebea5; font-size: 10px; letter-spacing: .07em; }
+.audio-status[data-state="running"] { color: var(--lime); }
+.audio-status[data-state="unavailable"], .audio-status[data-state="interrupted"] { color: #f0ad8c; }
 .perf-signal { color: var(--lime); font-size: 7px; text-shadow: 0 0 7px rgba(213,239,120,.7); }
 .metric-grid { display: grid; grid-template-columns: repeat(3,1fr); margin-top: 13px; }
 .metric { display: flex; flex-direction: column; gap: 4px; border-right: 1px solid var(--line); }

@@ -5550,7 +5550,7 @@ const server = createServer(async (request, response) => {
     response.end('Forbidden');
     return;
   }
-  const publicClientAsset = ['index.html', 'style.css', 'src/main.js', 'src/map-utils.mjs', 'src/map-resize.mjs', 'src/order-feedback.mjs', 'src/unit-selection.mjs'].includes(relative);
+  const publicClientAsset = ['index.html', 'style.css', 'src/main.js', 'src/map-utils.mjs', 'src/map-resize.mjs', 'src/order-feedback.mjs', 'src/unit-selection.mjs', 'src/audio.mjs', 'src/audio-policy.mjs'].includes(relative);
   const publicMapAsset = path.dirname(relative) === 'maps' && path.extname(relative) === '.json';
   if (!publicClientAsset && !publicMapAsset) {
     response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
