@@ -25,6 +25,10 @@ let MAP_HALF_X = MAP_WIDTH / 2;
 let MAP_HALF_Z = MAP_HEIGHT / 2;
 const MAX_UNITS = 2000;
 const MAX_PER_TEAM = MAX_UNITS / 2;
+const ATTACK_POSE_MS = 270;
+const SPAWN_POSE_MS = 330;
+const DEFEAT_POSE_MS = 430;
+const MAX_ARROW_TRACES = 96;
 const MAX_MAP_RESOURCE_NODES = 128;
 const MAX_MAP_TRIGGERS = 32;
 const MAX_MAP_SCENARIO_EVENTS = 32;
@@ -61,7 +65,6 @@ const ATTACK_UPGRADE_RULES = Object.freeze({
 });
 const TEAM_NAMES = ['Azure', 'Ember'];
 const TEAM_HEX = [0x5aa7d7, 0xe67a5e];
-const TEAM_LIGHT_HEX = [0xb9dcf2, 0xf5c2a9];
 
 const viewport = document.querySelector('#viewport');
 const selectionBox = document.querySelector('#selection-box');
@@ -253,9 +256,7 @@ const screenPoint = new THREE.Vector3();
 const dummy = new THREE.Object3D();
 const color = new THREE.Color();
 const workerBodyTint = new THREE.Color(0xe1bc63);
-const workerHeadTint = new THREE.Color(0xf4e3a4);
 const archerBodyTint = new THREE.Color(0xc3c995);
-const archerHeadTint = new THREE.Color(0xe6d8a5);
 const unitDamageFlashTint = new THREE.Color(0xffedc9);
 const facing = new THREE.Quaternion();
 const worldUp = new THREE.Vector3(0, 1, 0);
@@ -268,7 +269,14 @@ const controlGroups = Array.from({ length: 10 }, () => new Set());
 const bodyMeshes = [null, null];
 const headMeshes = [null, null];
 const bowMeshes = [null, null];
+const shieldMeshes = [null, null];
+const spearMeshes = [null, null];
+const toolMeshes = [null, null];
+const packMeshes = [null, null];
+const quiverMeshes = [null, null];
+const unitArtMeshes = [bodyMeshes, headMeshes, bowMeshes, shieldMeshes, spearMeshes, toolMeshes, packMeshes, quiverMeshes];
 const mapObjects = [];
+const townCenterProductionLamps = [null, null];
 let fogTexture = null;
 let fogMesh = null;
 let latestFogCells = null;
@@ -421,30 +429,45 @@ function clearMapObjects() {
     for (const material of materials) material?.dispose();
   }
   mapObjects.length = 0;
+  townCenterProductionLamps[0] = null;
+  townCenterProductionLamps[1] = null;
 }
 
 function addTownCenterVisual(spawn) {
   const outward = spawn.team === 0 ? -1 : 1;
   const x = THREE.MathUtils.clamp(spawn.x + outward * 3, -MAP_HALF_X + 1.5, MAP_HALF_X - 1.5);
-  const baseMaterial = new THREE.MeshStandardMaterial({ color: 0xc7bea0, roughness: 0.94, flatShading: true });
-  const roofMaterial = new THREE.MeshStandardMaterial({
-    color: spawn.team === 0 ? 0x467da0 : 0xa8503f,
-    roughness: 0.82,
-    flatShading: true,
-  });
-  const base = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.9, 1.8), baseMaterial);
-  base.position.set(x, 0.45, spawn.z);
-  addMapObject(base);
-  const roof = new THREE.Mesh(new THREE.ConeGeometry(1.25, 0.85, 4), roofMaterial);
-  roof.rotation.y = Math.PI / 4;
-  roof.position.set(x, 1.27, spawn.z);
-  addMapObject(roof);
-  const door = new THREE.Mesh(
-    new THREE.BoxGeometry(0.28, 0.52, 0.08),
-    new THREE.MeshStandardMaterial({ color: 0x574a38, roughness: 1 }),
+  const stone = new THREE.MeshBasicMaterial({ color: 0x9b9580 });
+  const slate = new THREE.MeshBasicMaterial({ color: 0x363d3f });
+  const timber = new THREE.MeshBasicMaterial({ color: 0x514333 });
+  const doorMaterial = new THREE.MeshBasicMaterial({ color: 0x2d302b });
+  const teamMaterial = new THREE.MeshBasicMaterial({ color: TEAM_HEX[spawn.team], side: THREE.DoubleSide });
+  const piece = (geometry, material, px, py, pz, angle = 0) => {
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x + px, py, spawn.z + pz);
+    mesh.rotation.z = angle;
+    addMapObject(mesh);
+    return mesh;
+  };
+  piece(new THREE.BoxGeometry(2.65, 0.22, 2.4), stone, 0, 0.11, 0);
+  piece(new THREE.BoxGeometry(2.1, 0.91, 1.85), stone, 0, 0.67, -0.14);
+  piece(new THREE.BoxGeometry(0.62, 0.67, 0.09), doorMaterial, 0, 0.56, 0.84);
+  piece(new THREE.BoxGeometry(0.82, 0.12, 0.21), timber, 0, 0.95, 0.88);
+  for (const side of [-1, 1]) {
+    piece(new THREE.BoxGeometry(1.25, 0.13, 2.32), slate, side * 0.51, 1.37, -0.14, -side * 0.48);
+    piece(new THREE.BoxGeometry(0.13, 0.88, 0.13), timber, side * 1.04, 0.68, 0.82);
+    piece(new THREE.BoxGeometry(0.13, 0.35, 0.08), teamMaterial, side * 0.88, 0.72, 0.84);
+  }
+  piece(new THREE.BoxGeometry(0.74, 1.64, 0.74), stone, -0.73, 1.03, -0.63);
+  piece(new THREE.ConeGeometry(0.67, 0.62, 4), slate, -0.73, 2.13, -0.63).rotation.y = Math.PI / 4;
+  piece(new THREE.BoxGeometry(0.38, 0.63, 0.055), teamMaterial, -0.73, 1.55, -0.23);
+  piece(new THREE.BoxGeometry(0.08, 0.76, 0.08), timber, -0.73, 1.68, -0.18);
+  const productionLamp = piece(
+    new THREE.OctahedronGeometry(0.15, 0),
+    new THREE.MeshBasicMaterial({ color: TEAM_HEX[spawn.team], transparent: true, opacity: 0.88 }),
+    0, 1.09, 0.93,
   );
-  door.position.set(x, 0.28, spawn.z + 0.94);
-  addMapObject(door);
+  productionLamp.visible = false;
+  townCenterProductionLamps[spawn.team] = productionLamp;
 }
 
 function clearBuildingVisuals() {
@@ -614,6 +637,10 @@ function updateBuildingCombatFeedback(visual, building) {
 function animateBuildingCombatFeedback(now) {
   const pulse = 0.5 + 0.5 * Math.sin(now * 0.0065);
   for (const visual of buildingVisuals.values()) {
+    if (visual.productionLamp?.visible) {
+      visual.productionLamp.scale.setScalar(0.82 + pulse * 0.33);
+      visual.productionLamp.material.opacity = 0.58 + pulse * 0.35;
+    }
     const feedback = visual.combatFeedback;
     if (!feedback) continue;
     if (feedback.attackerCount > 0) {
@@ -632,6 +659,27 @@ function animateBuildingCombatFeedback(now) {
     feedback.impactFlash.scale.set(scale, scale, scale);
     feedback.impactFlash.material.opacity = (1 - Math.max(0, age)) * 0.88;
   }
+  for (let team = 0; team < 2; team++) {
+    const lamp = townCenterProductionLamps[team];
+    if (!lamp) continue;
+    const production = latestWorkerProduction[team];
+    lamp.visible = Boolean(production?.queue > 0 && !production.productionBlocked);
+    if (lamp.visible) {
+      lamp.scale.setScalar(0.82 + pulse * 0.33);
+      lamp.material.opacity = 0.58 + pulse * 0.35;
+    }
+  }
+}
+
+function createBuildingProductionLamp(group, team, x, y, z) {
+  const lamp = new THREE.Mesh(
+    new THREE.OctahedronGeometry(0.13, 0),
+    new THREE.MeshBasicMaterial({ color: TEAM_HEX[team], transparent: true, opacity: 0.88 }),
+  );
+  lamp.position.set(x, y, z);
+  lamp.visible = false;
+  group.add(lamp);
+  return lamp;
 }
 
 function disposeBuildingVisual(visual) {
@@ -646,13 +694,37 @@ function disposeBuildingVisual(visual) {
   });
 }
 
+function addBuildingStandard(group, team, x, z, height = 1.85) {
+  const standard = new THREE.Group();
+  standard.position.set(x, 0, z);
+  const pole = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.035, 0.045, height, 5),
+    new THREE.MeshBasicMaterial({ color: 0x594938 }),
+  );
+  pole.position.y = height / 2;
+  standard.add(pole);
+  const flagShape = new THREE.Shape();
+  flagShape.moveTo(0, height - 0.13);
+  flagShape.lineTo(0.51, height - 0.13);
+  flagShape.lineTo(0.48, height - 0.58);
+  flagShape.lineTo(0.28, height - 0.48);
+  flagShape.lineTo(0.04, height - 0.58);
+  flagShape.closePath();
+  const flag = new THREE.Mesh(
+    new THREE.ShapeGeometry(flagShape),
+    new THREE.MeshBasicMaterial({ color: TEAM_HEX[team], side: THREE.DoubleSide }),
+  );
+  flag.position.z = 0.035;
+  standard.add(flag);
+  group.add(standard);
+  return standard;
+}
+
 function createArcheryRangeVisual(building) {
   const group = new THREE.Group();
   const teamColor = TEAM_HEX[building.team] || 0x9ba78b;
-  const timberMaterial = new THREE.MeshStandardMaterial({ color: 0x76583e, roughness: 0.94, flatShading: true });
-  const roofMaterial = new THREE.MeshStandardMaterial({
-    color: building.team === 0 ? 0x467da0 : 0xa8503f, roughness: 0.86, flatShading: true,
-  });
+  const timberMaterial = new THREE.MeshBasicMaterial({ color: 0x5a4837 });
+  const roofMaterial = new THREE.MeshBasicMaterial({ color: 0x454744 });
   const foundation = new THREE.Mesh(new THREE.BoxGeometry(2.9, 0.18, 2.9), timberMaterial);
   foundation.position.y = 0.12;
   group.add(foundation);
@@ -669,10 +741,29 @@ function createArcheryRangeVisual(building) {
   }
   posts.instanceMatrix.needsUpdate = true;
   group.add(posts);
-  const roof = new THREE.Mesh(new THREE.ConeGeometry(2.0, 0.95, 4), roofMaterial);
-  roof.rotation.y = Math.PI / 4;
+  const roof = new THREE.Mesh(new THREE.BoxGeometry(3.38, 0.13, 2.6), roofMaterial);
+  roof.rotation.x = -0.12;
   roof.position.y = 0.38;
   group.add(roof);
+  const finishPieces = [];
+  const targetRim = new THREE.Mesh(
+    new THREE.TorusGeometry(0.31, 0.065, 5, 12),
+    new THREE.MeshBasicMaterial({ color: 0xa3895b }),
+  );
+  targetRim.position.set(0.82, 0.82, 1.28);
+  group.add(targetRim);
+  finishPieces.push(targetRim);
+  const targetCore = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.12, 0.12, 0.045, 10),
+    new THREE.MeshBasicMaterial({ color: 0x7e5142 }),
+  );
+  targetCore.geometry.rotateX(Math.PI / 2);
+  targetCore.position.set(0.82, 0.82, 1.3);
+  group.add(targetCore);
+  finishPieces.push(targetCore);
+  const standard = addBuildingStandard(group, building.team, -1.18, 1.17, 2.02);
+  finishPieces.push(standard);
+  const productionLamp = createBuildingProductionLamp(group, building.team, -0.76, 1.35, 1.31);
 
   const outlinePoints = [
     new THREE.Vector3(-1.5, 0.025, -1.5), new THREE.Vector3(1.5, 0.025, -1.5),
@@ -692,7 +783,8 @@ function createArcheryRangeVisual(building) {
   const combatFeedback = createBuildingCombatFeedback();
   group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
   scene.add(group);
-  const visual = { group, posts, roof, teamColor, outline, rallyMarker, healthIndicator, combatFeedback };
+  const visual = { group, posts, roof, finishPieces, productionLamp,
+    teamColor, outline, rallyMarker, healthIndicator, combatFeedback };
   updateArcheryRangeVisual(visual, building);
   return visual;
 }
@@ -712,18 +804,20 @@ function updateArcheryRangeVisual(visual, building) {
     visual.posts.setMatrixAt(index, dummy.matrix);
   }
   visual.posts.instanceMatrix.needsUpdate = true;
-  visual.roof.position.y = 0.23 + postHeight + 0.48;
-  visual.roof.visible = building.complete === true || progress >= 0.9;
+  visual.roof.position.y = 0.23 + postHeight + 0.19;
+  const finished = building.complete === true || progress >= 0.9;
+  visual.roof.visible = finished;
+  for (const piece of visual.finishPieces) piece.visible = finished;
+  visual.productionLamp.visible = finished && getBuildingQueueLength(building) > 0
+    && building.productionBlocked !== true;
   updateBuildingHealthIndicator(visual, building);
 }
 
 function createBarracksVisual(building) {
   const group = new THREE.Group();
   const teamColor = TEAM_HEX[building.team] || 0x9ba78b;
-  const timberMaterial = new THREE.MeshStandardMaterial({ color: 0x76583e, roughness: 0.94, flatShading: true });
-  const roofMaterial = new THREE.MeshStandardMaterial({
-    color: building.team === 0 ? 0x527b68 : 0x9b5945, roughness: 0.88, flatShading: true,
-  });
+  const timberMaterial = new THREE.MeshBasicMaterial({ color: 0x504133 });
+  const roofMaterial = new THREE.MeshBasicMaterial({ color: 0x363e3d });
   const foundation = new THREE.Mesh(new THREE.BoxGeometry(2.9, 0.18, 2.9), timberMaterial);
   foundation.position.y = 0.12;
   group.add(foundation);
@@ -752,6 +846,25 @@ function createBarracksVisual(building) {
   const ridge = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.16, 3.18), roofMaterial);
   ridge.position.y = 1.63;
   group.add(ridge);
+  const finishPieces = [];
+  const gate = new THREE.Mesh(
+    new THREE.BoxGeometry(0.65, 0.77, 0.09),
+    new THREE.MeshBasicMaterial({ color: 0x252b29 }),
+  );
+  gate.position.set(0, 0.61, 1.19);
+  group.add(gate);
+  finishPieces.push(gate);
+  const shieldSign = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.21, 0.15, 0.055, 6),
+    new THREE.MeshBasicMaterial({ color: teamColor }),
+  );
+  shieldSign.geometry.rotateX(Math.PI / 2);
+  shieldSign.position.set(0, 1.12, 1.25);
+  group.add(shieldSign);
+  finishPieces.push(shieldSign);
+  const standard = addBuildingStandard(group, building.team, 1.24, 1.15, 2.06);
+  finishPieces.push(standard);
+  const productionLamp = createBuildingProductionLamp(group, building.team, 0, 1.17, 1.27);
 
   const outlinePoints = [
     new THREE.Vector3(-1.5, 0.025, -1.5), new THREE.Vector3(1.5, 0.025, -1.5),
@@ -771,7 +884,8 @@ function createBarracksVisual(building) {
   const combatFeedback = createBuildingCombatFeedback();
   group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
   scene.add(group);
-  const visual = { group, walls, roofPanels, ridge, teamColor, outline, rallyMarker, healthIndicator, combatFeedback };
+  const visual = { group, walls, roofPanels, ridge, finishPieces, productionLamp,
+    teamColor, outline, rallyMarker, healthIndicator, combatFeedback };
   updateBarracksVisual(visual, building);
   return visual;
 }
@@ -788,6 +902,9 @@ function updateBarracksVisual(visual, building) {
   const roofVisible = building.complete === true || progress >= 0.9;
   for (const panel of visual.roofPanels) panel.visible = roofVisible;
   visual.ridge.visible = roofVisible;
+  for (const piece of visual.finishPieces) piece.visible = roofVisible;
+  visual.productionLamp.visible = roofVisible && getBuildingQueueLength(building) > 0
+    && building.productionBlocked !== true;
   updateBuildingHealthIndicator(visual, building);
 }
 
@@ -1661,20 +1778,79 @@ function makeInstances(geometry, material, capacity) {
   return mesh;
 }
 
+function addPaintedFacets(geometry) {
+  const normals = geometry.getAttribute('normal');
+  const shades = new Float32Array(normals.count * 3);
+  for (let index = 0; index < normals.count; index++) {
+    const value = THREE.MathUtils.clamp(
+      0.77 - normals.getX(index) * 0.13 + normals.getY(index) * 0.17 + normals.getZ(index) * 0.06,
+      0.63, 1,
+    );
+    shades[index * 3] = value;
+    shades[index * 3 + 1] = value;
+    shades[index * 3 + 2] = value;
+  }
+  geometry.setAttribute('color', new THREE.BufferAttribute(shades, 3));
+  return geometry;
+}
+
 for (let team = 0; team < 2; team++) {
   bodyMeshes[team] = makeInstances(
-    new THREE.CylinderGeometry(0.16, 0.235, 0.48, 6, 1),
-    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.72, flatShading: true }),
+    addPaintedFacets(new THREE.CylinderGeometry(0.16, 0.235, 0.48, 6, 1)),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: true }),
     MAX_PER_TEAM,
   );
   headMeshes[team] = makeInstances(
-    new THREE.SphereGeometry(0.145, 7, 5),
-    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.78, flatShading: true }),
+    addPaintedFacets(new THREE.SphereGeometry(0.145, 7, 5)),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: true }),
     MAX_PER_TEAM,
   );
   bowMeshes[team] = makeInstances(
-    new THREE.TorusGeometry(0.2, 0.035, 4, 9, Math.PI * 1.1),
-    new THREE.MeshStandardMaterial({ color: 0xd6b975, roughness: 0.82, flatShading: true }),
+    new THREE.TorusGeometry(0.23, 0.027, 4, 9, Math.PI * 1.28),
+    new THREE.MeshBasicMaterial({ color: 0xb88c58 }),
+    MAX_PER_TEAM,
+  );
+  const shieldGeometry = new THREE.CylinderGeometry(0.3, 0.28, 0.065, 6);
+  shieldGeometry.rotateX(Math.PI / 2);
+  shieldMeshes[team] = makeInstances(
+    shieldGeometry,
+    new THREE.MeshBasicMaterial({ color: team === 0 ? 0x315b76 : 0x8a4639 }),
+    MAX_PER_TEAM,
+  );
+  const spearGeometry = new THREE.LatheGeometry([
+    new THREE.Vector2(0.025, 0), new THREE.Vector2(0.025, 0.69),
+    new THREE.Vector2(0.072, 0.76), new THREE.Vector2(0, 0.98),
+  ], 5);
+  spearGeometry.translate(0, -0.43, 0);
+  spearMeshes[team] = makeInstances(
+    spearGeometry,
+    new THREE.MeshBasicMaterial({ color: 0x5c5649 }),
+    MAX_PER_TEAM,
+  );
+  const toolShape = new THREE.Shape();
+  toolShape.moveTo(-0.027, -0.32);
+  toolShape.lineTo(0.027, -0.32);
+  toolShape.lineTo(0.027, 0.12);
+  toolShape.lineTo(0.19, 0.16);
+  toolShape.lineTo(0.19, 0.23);
+  toolShape.lineTo(-0.18, 0.23);
+  toolShape.lineTo(-0.18, 0.16);
+  toolShape.lineTo(-0.027, 0.12);
+  toolShape.closePath();
+  const toolGeometry = new THREE.ExtrudeGeometry(toolShape, { depth: 0.035, bevelEnabled: false });
+  toolMeshes[team] = makeInstances(
+    toolGeometry,
+    new THREE.MeshBasicMaterial({ color: 0x6f644d, side: THREE.DoubleSide }),
+    MAX_PER_TEAM,
+  );
+  packMeshes[team] = makeInstances(
+    new THREE.BoxGeometry(0.34, 0.32, 0.22),
+    new THREE.MeshBasicMaterial({ color: 0x9c754c }),
+    MAX_PER_TEAM,
+  );
+  quiverMeshes[team] = makeInstances(
+    new THREE.ConeGeometry(0.12, 0.43, 5),
+    new THREE.MeshBasicMaterial({ color: 0x75553d }),
     MAX_PER_TEAM,
   );
 }
@@ -1708,6 +1884,76 @@ moveMarker.visible = false;
 moveMarker.renderOrder = 3;
 scene.add(moveMarker);
 
+const arrowTraces = [];
+const arrowImpacts = [];
+const arrowAxis = new THREE.Vector3(0, 0, 1);
+const arrowDirection = new THREE.Vector3();
+const arrowMesh = makeInstances(
+  new THREE.BoxGeometry(0.035, 0.035, 0.28),
+  new THREE.MeshBasicMaterial({ color: 0xe9ce94, transparent: true, opacity: 0.86, depthWrite: false }),
+  MAX_ARROW_TRACES,
+);
+arrowMesh.renderOrder = 3;
+const arrowImpactMesh = makeInstances(
+  new THREE.RingGeometry(0.12, 0.2, 8),
+  new THREE.MeshBasicMaterial({
+    color: 0xe9ce94, side: THREE.DoubleSide, transparent: true, opacity: 0.72, depthWrite: false,
+  }),
+  MAX_ARROW_TRACES,
+);
+arrowImpactMesh.renderOrder = 3;
+
+function addArrowTrace(fromX, fromZ, toX, toZ, now) {
+  if (!Number.isFinite(fromX) || !Number.isFinite(fromZ)
+    || !Number.isFinite(toX) || !Number.isFinite(toZ)) return;
+  if (Math.hypot(toX - fromX, toZ - fromZ) < 0.45) return;
+  if (arrowTraces.length >= MAX_ARROW_TRACES) arrowTraces.shift();
+  arrowTraces.push({ fromX, fromZ, toX, toZ, startedAt: now });
+}
+
+function animateArrowEffects(now) {
+  let traceCount = 0;
+  for (let index = 0; index < arrowTraces.length; index++) {
+    const trace = arrowTraces[index];
+    const progress = (now - trace.startedAt) / 180;
+    if (progress >= 1) {
+      if (arrowImpacts.length >= MAX_ARROW_TRACES) arrowImpacts.shift();
+      arrowImpacts.push({ x: trace.toX, z: trace.toZ, startedAt: now });
+      continue;
+    }
+    arrowTraces[traceCount] = trace;
+    arrowDirection.set(trace.toX - trace.fromX, 0, trace.toZ - trace.fromZ).normalize();
+    dummy.position.set(
+      THREE.MathUtils.lerp(trace.fromX, trace.toX, progress),
+      0.46 + Math.sin(progress * Math.PI) * 0.12,
+      THREE.MathUtils.lerp(trace.fromZ, trace.toZ, progress),
+    );
+    dummy.quaternion.setFromUnitVectors(arrowAxis, arrowDirection);
+    dummy.scale.setScalar(1);
+    dummy.updateMatrix();
+    arrowMesh.setMatrixAt(traceCount++, dummy.matrix);
+  }
+  arrowTraces.length = traceCount;
+  arrowMesh.count = traceCount;
+  if (traceCount) arrowMesh.instanceMatrix.needsUpdate = true;
+
+  let impactCount = 0;
+  for (let index = 0; index < arrowImpacts.length; index++) {
+    const impact = arrowImpacts[index];
+    const progress = (now - impact.startedAt) / 170;
+    if (progress >= 1) continue;
+    arrowImpacts[impactCount] = impact;
+    dummy.position.set(impact.x, 0.045, impact.z);
+    dummy.quaternion.copy(ringRotation);
+    dummy.scale.setScalar(0.55 + progress * 1.25);
+    dummy.updateMatrix();
+    arrowImpactMesh.setMatrixAt(impactCount++, dummy.matrix);
+  }
+  arrowImpacts.length = impactCount;
+  arrowImpactMesh.count = impactCount;
+  if (impactCount) arrowImpactMesh.instanceMatrix.needsUpdate = true;
+}
+
 const placementGhost = new THREE.Group();
 const placementGhostMaterials = [
   new THREE.MeshBasicMaterial({ color: 0x9cdb8a, transparent: true, opacity: 0.25, depthWrite: false }),
@@ -1720,9 +1966,9 @@ placementGhost.add(ghostFootprint);
 const ghostFoundation = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.18, 2.8), placementGhostMaterials[1]);
 ghostFoundation.position.y = 0.13;
 placementGhost.add(ghostFoundation);
-const ghostRoof = new THREE.Mesh(new THREE.ConeGeometry(1.8, 0.8, 4), placementGhostMaterials[1]);
-ghostRoof.rotation.y = Math.PI / 4;
-ghostRoof.position.y = 0.72;
+const ghostRoof = new THREE.Mesh(new THREE.BoxGeometry(3.38, 0.13, 2.6), placementGhostMaterials[1]);
+ghostRoof.rotation.x = -0.12;
+ghostRoof.position.y = 1.3;
 placementGhost.add(ghostRoof);
 const ghostBarracksWalls = new THREE.Mesh(new THREE.BoxGeometry(2.35, 0.72, 2.35), placementGhostMaterials[1]);
 ghostBarracksWalls.position.y = 0.52;
@@ -1742,7 +1988,7 @@ scene.add(placementGhost);
 
 function setUnitTint(unit) {
   const health = Math.max(0, unit.hp) / 100;
-  const strength = unit.hp > 0 ? 0.7 + health * 0.3 : 0;
+  const strength = unit.hp > 0 ? 0.7 + health * 0.3 : unit.defeatStartedAt > 0 ? 0.58 : 0;
   const flashing = unit.damageFlashUntil > performance.now();
   color.setHex(TEAM_HEX[unit.team]);
   if (unit.kind === 'worker') color.lerp(workerBodyTint, 0.42);
@@ -1750,9 +1996,7 @@ function setUnitTint(unit) {
   if (flashing) color.lerp(unitDamageFlashTint, 0.78);
   color.multiplyScalar(unit.tintVariation * strength);
   bodyMeshes[unit.team].setColorAt(unit.slot, color);
-  color.setHex(TEAM_LIGHT_HEX[unit.team]);
-  if (unit.kind === 'worker') color.lerp(workerHeadTint, 0.36);
-  else if (unit.kind === 'archer') color.lerp(archerHeadTint, 0.22);
+  color.setHex(unit.kind === 'worker' ? 0xd7be8f : unit.kind === 'archer' ? 0x839477 : 0xabb2ad);
   if (flashing) color.lerp(unitDamageFlashTint, 0.82);
   color.multiplyScalar((0.91 + ((unit.id * 7) % 10) / 100) * strength);
   headMeshes[unit.team].setColorAt(unit.slot, color);
@@ -1760,19 +2004,40 @@ function setUnitTint(unit) {
   headMeshes[unit.team].instanceColor.needsUpdate = true;
 }
 
-function updateUnitTransform(unit) {
-  const visibleScale = unit.hp > 0 && unit.visible !== false ? unit.scale : 0;
+function updateUnitTransform(unit, now = performance.now()) {
+  const spawnProgress = unit.spawnStartedAt > 0
+    ? THREE.MathUtils.clamp((now - unit.spawnStartedAt) / SPAWN_POSE_MS, 0, 1) : 1;
+  const defeatProgress = unit.defeatStartedAt > 0
+    ? THREE.MathUtils.clamp((now - unit.defeatStartedAt) / DEFEAT_POSE_MS, 0, 1) : 0;
+  const visibleScale = unit.visible === false ? 0 : unit.hp > 0
+    ? unit.scale * (0.28 + spawnProgress * 0.72)
+    : unit.defeatStartedAt > 0 ? unit.scale * (1 - defeatProgress) : 0;
   const isWorker = unit.kind === 'worker';
   const isArcher = unit.kind === 'archer';
   const bodyScale = isWorker ? visibleScale * 0.82 : isArcher ? visibleScale * 0.9 : visibleScale;
+  const stride = unit.walking ? Math.sin(unit.motionPhase || 0) * 0.038 : 0;
+  const attackAge = unit.attackStartedAt > 0 ? (now - unit.attackStartedAt) / ATTACK_POSE_MS : 1;
+  const attackPose = attackAge >= 0 && attackAge < 1 ? Math.sin(attackAge * Math.PI) : 0;
+  const workSwing = isWorker && (unit.task === 'gathering' || unit.task === 'building')
+    ? Math.sin(unit.motionPhase || 0) * 0.46 : isWorker ? attackPose * 0.55 : 0;
+  const forwardX = Math.sin(unit.angle);
+  const forwardZ = Math.cos(unit.angle);
+  const sideX = Math.cos(unit.angle);
+  const sideZ = -Math.sin(unit.angle);
   facing.setFromAxisAngle(worldUp, unit.angle);
-  dummy.position.set(unit.renderX, isWorker ? 0.23 : isArcher ? 0.25 : 0.27, unit.renderZ);
+  dummy.position.set(unit.renderX + forwardX * attackPose * 0.05,
+    (isWorker ? 0.23 : isArcher ? 0.25 : 0.27) + Math.max(0, stride) - defeatProgress * 0.16,
+    unit.renderZ + forwardZ * attackPose * 0.05);
   dummy.quaternion.copy(facing);
+  dummy.rotateX(attackPose * (isArcher ? -0.13 : 0.18));
+  dummy.rotateZ(defeatProgress * 0.9);
   dummy.scale.setScalar(bodyScale);
   dummy.updateMatrix();
   bodyMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
 
-  dummy.position.set(unit.renderX, isWorker ? 0.48 : isArcher ? 0.54 : 0.61, unit.renderZ);
+  dummy.position.set(unit.renderX + sideX * defeatProgress * 0.16,
+    (isWorker ? 0.48 : isArcher ? 0.54 : 0.61) + Math.max(0, stride) - defeatProgress * 0.34,
+    unit.renderZ + sideZ * defeatProgress * 0.16);
   dummy.quaternion.identity();
   dummy.scale.setScalar(bodyScale);
   dummy.updateMatrix();
@@ -1785,9 +2050,46 @@ function updateUnitTransform(unit) {
     unit.renderZ + Math.cos(unit.angle) * 0.18,
   );
   dummy.quaternion.copy(facing);
+  dummy.rotateY(attackPose * 0.22);
   dummy.scale.setScalar(bowScale);
   dummy.updateMatrix();
   bowMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
+
+  dummy.position.set(unit.renderX - sideX * 0.235 + forwardX * 0.1, 0.42 + Math.max(0, stride),
+    unit.renderZ - sideZ * 0.235 + forwardZ * 0.1);
+  dummy.quaternion.copy(facing);
+  dummy.rotateX(-attackPose * 0.16);
+  dummy.scale.setScalar(isWorker || isArcher ? 0 : visibleScale);
+  dummy.updateMatrix();
+  shieldMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
+
+  dummy.position.set(unit.renderX + sideX * 0.24, 0.57 + Math.max(0, stride),
+    unit.renderZ + sideZ * 0.24);
+  dummy.quaternion.copy(facing);
+  dummy.rotateX(attackPose * 0.66);
+  dummy.scale.setScalar(isWorker || isArcher ? 0 : visibleScale);
+  dummy.updateMatrix();
+  spearMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
+
+  dummy.position.set(unit.renderX + sideX * 0.265, 0.43 + Math.max(0, stride), unit.renderZ + sideZ * 0.265);
+  dummy.quaternion.copy(facing);
+  dummy.rotateZ(-0.2 + workSwing);
+  dummy.scale.setScalar(isWorker ? visibleScale : 0);
+  dummy.updateMatrix();
+  toolMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
+
+  dummy.position.set(unit.renderX - forwardX * 0.19, 0.32 + Math.max(0, stride), unit.renderZ - forwardZ * 0.19);
+  dummy.quaternion.copy(facing);
+  dummy.scale.setScalar(isWorker ? visibleScale : 0);
+  dummy.updateMatrix();
+  packMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
+
+  dummy.position.set(unit.renderX - forwardX * 0.18 + sideX * 0.17, 0.42 + Math.max(0, stride),
+    unit.renderZ - forwardZ * 0.18 + sideZ * 0.17);
+  dummy.quaternion.copy(facing);
+  dummy.scale.setScalar(isArcher ? visibleScale : 0);
+  dummy.updateMatrix();
+  quiverMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
 
   const focused = unit.hp > 0 && unit.visible !== false && unit.targetedBy >= 2;
   if (focused || unit.focused || !unit.focusMatrixInitialized) {
@@ -1813,9 +2115,11 @@ function setArmySize(count, showMessage = false) {
   units.length = 0;
   teamUnits[0].length = 0;
   teamUnits[1].length = 0;
-  bodyMeshes.forEach((mesh) => { mesh.count = 0; });
-  headMeshes.forEach((mesh) => { mesh.count = 0; });
-  bowMeshes.forEach((mesh) => { mesh.count = 0; });
+  unitArtMeshes.forEach((pair) => pair.forEach((mesh) => { mesh.count = 0; }));
+  arrowTraces.length = 0;
+  arrowImpacts.length = 0;
+  arrowMesh.count = 0;
+  arrowImpactMesh.count = 0;
   attackFocusMesh.count = 0;
   attackFocusDirty = false;
   nextAttackFocusSlot = 0;
@@ -1839,22 +2143,20 @@ function setArmySize(count, showMessage = false) {
       hp: 100, generation: 0, scale: 0.94 + ((id * 17) % 12) / 100,
       tintVariation: 0.88 + ((id * 13) % 15) / 100, kind, cargo: 0, cargoType: null,
       targetedBy: 0, focused: false, focusMatrixInitialized: false,
+      walking: false, motionPhase: id * 1.7,
+      attackStartedAt: 0, spawnStartedAt: 0, defeatStartedAt: 0, lastPlayedAttackTick: -1,
       task: kind === 'worker' ? 'unknown' : null,
       visible: !mapDefinition?.fogOfWar || localTeam === null || team === localTeam,
       angle: team === 0 ? Math.PI / 2 : -Math.PI / 2,
     };
     units.push(unit);
     teamUnits[team].push(unit);
-    bodyMeshes[team].count = slot + 1;
-    headMeshes[team].count = slot + 1;
-    bowMeshes[team].count = slot + 1;
+    unitArtMeshes.forEach((pair) => { pair[team].count = slot + 1; });
     setUnitTint(unit);
     updateUnitTransform(unit);
   }
   for (let team = 0; team < 2; team++) {
-    bodyMeshes[team].instanceMatrix.needsUpdate = true;
-    headMeshes[team].instanceMatrix.needsUpdate = true;
-    bowMeshes[team].instanceMatrix.needsUpdate = true;
+    unitArtMeshes.forEach((pair) => { pair[team].instanceMatrix.needsUpdate = true; });
   }
   attackFocusMesh.count = nextAttackFocusSlot;
   if (attackFocusDirty) {
@@ -2361,7 +2663,7 @@ function updateCommandUI() {
   if (ui.formationSelect) ui.formationSelect.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding);
 }
 
-function appendUnitFromState(row) {
+function appendUnitFromState(row, animateSpawn = false) {
   const [id, team, x, z, hp, kind = 'infantry', cargo = 0, cargoType, generation = 0, taskStatus,
     targetedBy = 0] = row;
   if (!Number.isInteger(id) || id < 0 || id >= MAX_UNITS || ![0, 1].includes(team)) return null;
@@ -2374,6 +2676,9 @@ function appendUnitFromState(row) {
     targetedBy: Number.isInteger(targetedBy) ? Math.max(0, targetedBy) : 0,
     focused: false,
     focusMatrixInitialized: false,
+    walking: false, motionPhase: id * 1.7,
+    attackStartedAt: 0, spawnStartedAt: animateSpawn ? performance.now() : 0,
+    defeatStartedAt: 0, lastPlayedAttackTick: -1,
     damageFlashUntil: 0,
     kind, cargo, cargoType: cargoType === 'food' || cargoType === 'wood' ? cargoType : null,
     task: kind === 'worker' && WORKER_TASK_STATES.has(taskStatus) ? taskStatus
@@ -2388,9 +2693,7 @@ function appendUnitFromState(row) {
   if (id === units.length) units.push(unit);
   else units[id] = unit;
   teamUnits[team].push(unit);
-  bodyMeshes[team].count = slot + 1;
-  headMeshes[team].count = slot + 1;
-  bowMeshes[team].count = slot + 1;
+  unitArtMeshes.forEach((pair) => { pair[team].count = slot + 1; });
   attackFocusMesh.count = nextAttackFocusSlot;
   setUnitTint(unit);
   updateUnitTransform(unit);
@@ -2410,9 +2713,9 @@ function applyState(state, initial = false) {
   const visibleEnemyIds = new Set();
   for (const row of state.units || []) {
     const [id, team, x, z, hp, kind, cargo, cargoType, generation = 0, taskStatus,
-      targetedBy = 0] = row;
+      targetedBy = 0, attackTick = -1, attackX = null, attackZ = null] = row;
     const existingUnit = units[id];
-    const unit = existingUnit || appendUnitFromState(row);
+    const unit = existingUnit || appendUnitFromState(row, !initial);
     if (!unit || unit.team !== team) continue;
     const wasVisible = unit.visible !== false;
     unit.visible = true;
@@ -2430,6 +2733,10 @@ function applyState(state, initial = false) {
       unit.hp = hp;
       unit.targetedBy = Number.isInteger(targetedBy) ? Math.max(0, targetedBy) : 0;
       unit.damageFlashUntil = 0;
+      unit.attackStartedAt = 0;
+      unit.defeatStartedAt = 0;
+      unit.spawnStartedAt = initial ? 0 : performance.now();
+      unit.lastPlayedAttackTick = -1;
       unit.angle = team === 0 ? Math.PI / 2 : -Math.PI / 2;
       setUnitTint(unit);
       updateUnitTransform(unit);
@@ -2447,6 +2754,7 @@ function applyState(state, initial = false) {
       : unit.kind === 'worker' ? 'unknown' : null;
     if (unit.task !== nextTask) {
       unit.task = nextTask;
+      updateUnitTransform(unit);
       changed = true;
     }
     unit.cargo = Number.isFinite(cargo) ? cargo : unit.cargo || 0;
@@ -2458,12 +2766,29 @@ function applyState(state, initial = false) {
         friendlyDamage++;
         if (selected.has(id)) selectedDamage++;
       }
+      const defeated = unit.hp > 0 && hp <= 0;
       unit.hp = hp;
       unit.damageFlashUntil = tookDamage ? performance.now() + 220 : 0;
+      if (defeated) unit.defeatStartedAt = performance.now();
       setUnitTint(unit);
       updateUnitTransform(unit);
       if (hp <= 0) selected.delete(id);
       changed = true;
+    }
+    if (Number.isInteger(attackTick) && attackTick >= 0 && attackTick !== unit.lastPlayedAttackTick) {
+      unit.lastPlayedAttackTick = attackTick;
+      if (!initial && unit.hp > 0 && unit.visible !== false) {
+        const now = performance.now();
+        unit.attackStartedAt = now;
+        if (Number.isFinite(attackX) && Number.isFinite(attackZ)) {
+          unit.angle = Math.atan2(attackX - unit.renderX, attackZ - unit.renderZ);
+          if (unit.kind === 'archer' && (unit.id * 17 + attackTick) % 3 === 0) {
+            addArrowTrace(unit.renderX, unit.renderZ, attackX, attackZ, now);
+          }
+        }
+        updateUnitTransform(unit, now);
+        changed = true;
+      }
     }
     const nextTargetedBy = Number.isInteger(targetedBy) ? Math.max(0, targetedBy) : 0;
     if (unit.targetedBy !== nextTargetedBy) {
@@ -2489,9 +2814,7 @@ function applyState(state, initial = false) {
   if (Array.isArray(state.queuedWaypointCounts)) applyWaypointQueueCounts(state.queuedWaypointCounts);
   if (initial || changed) {
     for (let team = 0; team < 2; team++) {
-      bodyMeshes[team].instanceMatrix.needsUpdate = true;
-      headMeshes[team].instanceMatrix.needsUpdate = true;
-      bowMeshes[team].instanceMatrix.needsUpdate = true;
+      unitArtMeshes.forEach((pair) => { pair[team].instanceMatrix.needsUpdate = true; });
     }
   }
   if (attackFocusDirty) {
@@ -5859,6 +6182,7 @@ function animate(now) {
   }
   const alpha = 1 - Math.exp(-frameDelta * 16);
   let moved = false;
+  let artAnimated = false;
   for (const unit of units) {
     if (!unit || unit.visible === false) continue;
     if (unit.damageFlashUntil > 0 && now >= unit.damageFlashUntil) {
@@ -5867,28 +6191,43 @@ function animate(now) {
     }
     const dx = unit.serverX - unit.renderX;
     const dz = unit.serverZ - unit.renderZ;
-    if (Math.abs(dx) > 0.001 || Math.abs(dz) > 0.001) {
+    const walking = Math.abs(dx) > 0.001 || Math.abs(dz) > 0.001;
+    const wasWalking = unit.walking;
+    unit.walking = walking;
+    if (walking) {
       unit.renderX += dx * alpha;
       unit.renderZ += dz * alpha;
       if (Math.abs(dx) > Math.abs(dz)) unit.angle = dx >= 0 ? Math.PI / 2 : -Math.PI / 2;
       else unit.angle = dz >= 0 ? 0 : Math.PI;
-      updateUnitTransform(unit);
+      unit.motionPhase += frameDelta * 14;
       moved = true;
     }
-  }
-  if (moved) {
-    for (let team = 0; team < 2; team++) {
-      bodyMeshes[team].instanceMatrix.needsUpdate = true;
-      headMeshes[team].instanceMatrix.needsUpdate = true;
-      bowMeshes[team].instanceMatrix.needsUpdate = true;
+    const working = !walking && unit.kind === 'worker'
+      && (unit.task === 'gathering' || unit.task === 'building');
+    if (working) unit.motionPhase += frameDelta * (unit.task === 'building' ? 6 : 5);
+    const activeAttack = unit.attackStartedAt > 0;
+    const activeSpawn = unit.spawnStartedAt > 0;
+    const activeDefeat = unit.defeatStartedAt > 0;
+    if (activeAttack && now - unit.attackStartedAt >= ATTACK_POSE_MS) unit.attackStartedAt = 0;
+    if (activeSpawn && now - unit.spawnStartedAt >= SPAWN_POSE_MS) unit.spawnStartedAt = 0;
+    if (activeDefeat && now - unit.defeatStartedAt >= DEFEAT_POSE_MS) unit.defeatStartedAt = 0;
+    if (walking || wasWalking || working || activeAttack || activeSpawn || activeDefeat) {
+      updateUnitTransform(unit, now);
+      artAnimated = true;
     }
-    if (selected.size) selectionDirty = true;
   }
+  if (artAnimated) {
+    for (let team = 0; team < 2; team++) {
+      unitArtMeshes.forEach((pair) => { pair[team].instanceMatrix.needsUpdate = true; });
+    }
+  }
+  if (moved && selected.size) selectionDirty = true;
   if (attackFocusDirty) {
     attackFocusMesh.instanceMatrix.needsUpdate = true;
     attackFocusDirty = false;
   }
   if (selectionDirty) syncSelectionMesh();
+  animateArrowEffects(now);
   if (moveMarker.visible) {
     moveMarkerAge += frameDelta;
     moveMarker.scale.setScalar(1 + moveMarkerAge * 0.85);
