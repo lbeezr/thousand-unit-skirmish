@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const SERVER_PATH = path.join(ROOT, 'server.mjs');
 const TIMEOUT_MS = 15_000;
+const TEST_ARMY_SIZE = 250;
 
 async function reservePort() {
   const server = createServer();
@@ -137,7 +138,7 @@ async function publishMap(azure, ember, map) {
     'both clients should receive the victory hold rule');
   assert.equal(publishedNotice.mapId, map.id);
   await Promise.all([azure, ember].map((client) => client.waitForState((state) => (
-    state.mapId === map.id && state.winner === -1
+    state.mapId === map.id && state.winner === -1 && state.armySize === TEST_ARMY_SIZE
   ))));
 }
 
@@ -152,6 +153,7 @@ function scenarioMap(baseMap, { id, afterSeconds, captureVictory = false, zone =
     ...baseMap,
     id,
     name: id.replaceAll('-', ' ').toUpperCase(),
+    startingArmySize: TEST_ARMY_SIZE,
     fogOfWar: false,
     victoryMode: 'any',
     ...(holdSeconds > 0 ? { victoryHoldSeconds: holdSeconds } : {}),
@@ -184,8 +186,8 @@ try {
   const emberWelcome = await ember.waitForMessage((message) => message.type === 'welcome');
   assert.equal(emberWelcome.player.team, 1);
 
-  const armySizeStates = Promise.all([azure, ember].map((client) => client.waitForState((state) => state.armySize === 250)));
-  send(azure, { type: 'selectArmySize', count: 250 });
+  const armySizeStates = Promise.all([azure, ember].map((client) => client.waitForState((state) => state.armySize === TEST_ARMY_SIZE)));
+  send(azure, { type: 'selectArmySize', count: TEST_ARMY_SIZE });
   await armySizeStates;
 
   const baseMap = JSON.parse(await readFile(new URL('../maps/stone-pass.json', import.meta.url), 'utf8'));
