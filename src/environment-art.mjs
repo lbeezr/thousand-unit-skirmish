@@ -23,6 +23,10 @@ for (const name of ['oak', 'berries']) {
 }
 sprites.oak = sprites['oak-full'];
 sprites.berries = sprites['berries-full'];
+const constructionTextures = {
+  earthwork: loadSprite(`${INTERACTIVE_ASSET_ROOT}construction-earthwork.webp`),
+  foundation: loadSprite(`${INTERACTIVE_ASSET_ROOT}construction-foundation.webp`),
+};
 
 const grounds = Object.fromEntries(TERRAIN_MATERIALS.map((name) => {
   const texture = textureLoader.load(`${ASSET_ROOT}${name}.webp`);
@@ -38,6 +42,7 @@ const cameraFacing = new THREE.Quaternion().setFromUnitVectors(
   new THREE.Vector3(0.78, 1.12, 0.78).normalize(),
 );
 const instanceDummy = new THREE.Object3D();
+const constructionGroundRotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
 
 export function environmentTheme(definition) {
   return TERRAIN_MATERIALS.includes(definition.terrainBase)
@@ -178,6 +183,40 @@ export function setEnvironmentSpriteResourceStage(mesh, resourceType, stage) {
   if (!mesh?.material || !texture) return false;
   mesh.material.map = texture;
   mesh.material.needsUpdate = true;
+  return true;
+}
+
+export function createConstructionGroundInstances(stage, capacity) {
+  const texture = constructionTextures[stage];
+  if (!texture || !Number.isInteger(capacity) || capacity <= 0) return null;
+  const mesh = new THREE.InstancedMesh(
+    new THREE.PlaneGeometry(3, 3),
+    new THREE.MeshBasicMaterial({
+      map: texture, transparent: true, alphaTest: 0.04, depthWrite: false,
+      side: THREE.DoubleSide, toneMapped: false,
+    }),
+    capacity,
+  );
+  mesh.count = 0;
+  mesh.visible = false;
+  mesh.renderOrder = 8;
+  mesh.frustumCulled = false;
+  return mesh;
+}
+
+export function updateConstructionGroundInstances(mesh, positions) {
+  if (!mesh || positions.length > mesh.instanceMatrix.count) return false;
+  for (let index = 0; index < positions.length; index++) {
+    const point = positions[index];
+    instanceDummy.position.set(point.x, 0.002, point.z);
+    instanceDummy.quaternion.copy(constructionGroundRotation);
+    instanceDummy.scale.setScalar(1);
+    instanceDummy.updateMatrix();
+    mesh.setMatrixAt(index, instanceDummy.matrix);
+  }
+  mesh.count = positions.length;
+  mesh.visible = positions.length > 0;
+  mesh.instanceMatrix.needsUpdate = true;
   return true;
 }
 

@@ -1,11 +1,14 @@
 import * as THREE from 'three';
 import {
-  addObstacleEnvironmentSprites, createEnvironmentSprite, createEnvironmentSpriteInstances,
+  addObstacleEnvironmentSprites, createConstructionGroundInstances,
+  createEnvironmentSprite, createEnvironmentSpriteInstances,
   createGroundSurfaces, environmentTheme, setEnvironmentSpriteInstance,
-  setEnvironmentSpriteResourceStage, TERRAIN_MATERIALS,
+  setEnvironmentSpriteResourceStage, TERRAIN_MATERIALS, updateConstructionGroundInstances,
 } from './environment-art.mjs';
 import { unitActionPoseAllowed, unitCargoVisualState } from './unit-visual-state.mjs';
-import { RESOURCE_VISUAL_STAGES, resourceVisualStage } from './resource-visual-state.mjs';
+import {
+  constructionGroundStage, RESOURCE_VISUAL_STAGES, resourceVisualStage,
+} from './resource-visual-state.mjs';
 import {
   capturePrerequisiteIds, findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
   findUnreachableCaptureZone, findUnreachableResourceNode, scenarioEventSourceIds,
@@ -39,6 +42,7 @@ const DEFEAT_POSE_MS = 430;
 const IDLE_POSE_INTERVAL_MS = 75;
 const MAX_ARROW_TRACES = 96;
 const MAX_MAP_RESOURCE_NODES = 128;
+const MAX_MAP_BUILDINGS = 128;
 const MAX_MAP_TRIGGERS = 32;
 const MAX_MAP_SCENARIO_EVENTS = 32;
 const MAX_SCENARIO_EVENT_REPEATS = 20;
@@ -323,6 +327,8 @@ const resourceCalloutTextures = new Map();
 const woodTreeNodeSlots = new Map();
 const woodTreeNodeStages = new Map();
 const woodTreeStageCounts = new Map();
+const constructionGroundMeshes = new Map();
+const constructionGroundSignatures = new Map();
 const buildingVisuals = new Map();
 let woodTreeMeshes = new Map();
 let lastResourceCalloutUpdateAt = -Infinity;
@@ -1000,6 +1006,7 @@ function reconcileBuildings(buildings = [], initial = false) {
     updateBuildingSelectionVisual(visual, building.id === selectedBuildingId);
     updateBuildingCombatFeedback(visual, building);
   }
+  updateConstructionGroundBatches(rows);
   for (const [id, visual] of buildingVisuals) {
     if (seen.has(id)) continue;
     disposeBuildingVisual(visual);
@@ -1142,6 +1149,31 @@ function resizeResourceCallouts() {
   for (const visual of resourceNodeVisuals.values()) {
     if (!visual.callout) continue;
     visual.callout.scale.set(worldHeight * 4, worldHeight, 1);
+  }
+}
+
+function buildConstructionGroundBatches() {
+  constructionGroundMeshes.clear();
+  constructionGroundSignatures.clear();
+  for (const stage of ['earthwork', 'foundation']) {
+    const mesh = createConstructionGroundInstances(stage, MAX_MAP_BUILDINGS);
+    if (!mesh) continue;
+    addMapObject(mesh);
+    constructionGroundMeshes.set(stage, mesh);
+    constructionGroundSignatures.set(stage, '');
+  }
+}
+
+function updateConstructionGroundBatches(buildings) {
+  for (const stage of ['earthwork', 'foundation']) {
+    const stageBuildings = buildings
+      .filter((building) => constructionGroundStage(building.progress, building.complete) === stage)
+      .sort((left, right) => left.id - right.id);
+    const signature = stageBuildings.map((building) => `${building.id}:${building.x}:${building.z}`).join('|');
+    if (constructionGroundSignatures.get(stage) === signature) continue;
+    const mesh = constructionGroundMeshes.get(stage);
+    if (!updateConstructionGroundInstances(mesh, stageBuildings)) continue;
+    constructionGroundSignatures.set(stage, signature);
   }
 }
 
@@ -1384,6 +1416,8 @@ function updateFogFromState(state) {
 function buildMap(definition) {
   fogTexture?.dispose();
   clearMapObjects();
+  constructionGroundMeshes.clear();
+  constructionGroundSignatures.clear();
   objectiveVisuals.clear();
   scenarioEventVisuals.clear();
   timedVictoryVisual = null;
@@ -1413,6 +1447,7 @@ function buildMap(definition) {
   base.position.y = -0.075;
   addMapObject(base);
   for (const surface of createGroundSurfaces(definition)) addMapObject(surface);
+  buildConstructionGroundBatches();
 
   // Rock silhouettes carry the visual boundary. Flat block tops made the ridge
   // look like a strip of square tiles when viewed from the oblique camera.

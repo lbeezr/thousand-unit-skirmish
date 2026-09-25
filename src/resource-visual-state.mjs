@@ -9,3 +9,10 @@ export function resourceVisualStage(stock, startingStock) {
   if (percent > 0) return 'low';
   return 'depleted';
 }
+
+export function constructionGroundStage(progress, complete) {
+  if (complete === true || !Number.isFinite(progress)) return 'clear';
+  const amount = Math.max(0, Math.min(progress, 1));
+  if (amount >= 1) return 'clear';
+  return amount < 0.4 ? 'earthwork' : 'foundation';
+}

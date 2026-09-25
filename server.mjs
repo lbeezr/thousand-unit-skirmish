@@ -5716,7 +5716,8 @@ const server = createServer(async (request, response) => {
       'meadow', 'short-grass', 'long-grass', 'dirt', 'sand', 'scree', 'cinder'].includes(path.basename(relative, path.extname(relative)));
   const publicInteractiveEnvironmentAsset = path.dirname(relative) === 'assets/environment/frontier-interactive-v1'
     && path.extname(relative) === '.webp'
-    && /^(oak|berries)-(full|worked|low|depleted)$/.test(path.basename(relative, path.extname(relative)));
+    && /^(?:(?:oak|berries)-(?:full|worked|low|depleted)|construction-(?:earthwork|foundation))$/
+      .test(path.basename(relative, path.extname(relative)));
   const publicMapAsset = path.dirname(relative) === 'maps' && path.extname(relative) === '.json';
   if (!publicClientAsset && !publicEnvironmentModule && !publicEnvironmentAsset
     && !publicInteractiveEnvironmentAsset && !publicMapAsset) {
