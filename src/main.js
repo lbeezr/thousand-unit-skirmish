@@ -1333,7 +1333,7 @@ function buildMap(definition) {
     const time = `${Math.floor(wholeSeconds / 60)}:${String(wholeSeconds % 60).padStart(2, '0')}`;
     detail.textContent = `At ${time}, its current owner wins; unclaimed is a draw.`;
     card.append(heading, title, detail);
-    objectivePanel.append(card);
+    objectivePanel.prepend(card);
     timedVictoryVisual = { card, status, rule: definition.timedVictory, objective };
   }
 
@@ -1390,6 +1390,14 @@ function buildMap(definition) {
   const summary = document.querySelector('#map-summary');
   if (title) title.textContent = definition.name || definition.id.toUpperCase();
   if (summary) summary.textContent = definition.summary || `${MAP_WIDTH} × ${MAP_HEIGHT}`;
+  document.querySelector('#scenario-brief-name').textContent = definition.name || definition.id.toUpperCase();
+  document.querySelector('#scenario-brief-summary').textContent = definition.summary || 'Control the marked objectives and protect your army.';
+  const deadline = document.querySelector('#scenario-brief-deadline');
+  const decisiveZone = definition.triggers?.find((trigger) => trigger.id === definition.timedVictory?.objectiveId);
+  deadline.hidden = !definition.timedVictory;
+  deadline.textContent = definition.timedVictory
+    ? `DEADLINE · ${formatVictoryHoldTime(definition.timedVictory.afterSeconds)} · Hold ${decisiveZone?.name || 'the decisive zone'} when time expires. Unclaimed is a draw.`
+    : '';
   const footerMap = document.querySelector('#footer-map-name');
   if (footerMap) footerMap.textContent = definition.name || definition.id.toUpperCase();
   buildMinimapBackground(definition);
@@ -5038,6 +5046,8 @@ function selectMilitary() { selectFriendlyUnitKinds(['infantry', 'archer'], 'MIL
 
 const matchMenu = document.querySelector('#match-menu');
 const helpPanel = document.querySelector('#help-panel');
+const scenarioBriefPanel = document.querySelector('#scenario-brief-panel');
+const scenarioBriefToggle = document.querySelector('#scenario-brief-toggle');
 const hudScrim = document.querySelector('#hud-scrim');
 const matchMenuToggle = document.querySelector('#match-menu-toggle');
 const helpToggle = document.querySelector('#help-toggle');
@@ -5052,6 +5062,12 @@ function closeHudPanels({ restoreFocus = false } = {}) {
   matchMenuToggle.setAttribute('aria-expanded', 'false');
   helpToggle.setAttribute('aria-expanded', 'false');
   if (restoreFocus) trigger?.focus();
+}
+
+function closeScenarioBrief({ restoreFocus = false } = {}) {
+  scenarioBriefPanel.hidden = true;
+  scenarioBriefToggle.setAttribute('aria-expanded', 'false');
+  if (restoreFocus) scenarioBriefToggle.focus();
 }
 
 function toggleHudPanel(panel, trigger) {
@@ -5074,8 +5090,24 @@ function selectDockTab(name, focus = false) {
   }
 }
 
-matchMenuToggle.addEventListener('click', () => toggleHudPanel(matchMenu, matchMenuToggle));
-helpToggle.addEventListener('click', () => toggleHudPanel(helpPanel, helpToggle));
+matchMenuToggle.addEventListener('click', () => {
+  closeScenarioBrief();
+  toggleHudPanel(matchMenu, matchMenuToggle);
+});
+helpToggle.addEventListener('click', () => {
+  closeScenarioBrief();
+  toggleHudPanel(helpPanel, helpToggle);
+});
+scenarioBriefToggle.addEventListener('click', () => {
+  const opening = scenarioBriefPanel.hidden;
+  closeHudPanels();
+  closeScenarioBrief();
+  if (!opening) return;
+  scenarioBriefPanel.hidden = false;
+  scenarioBriefToggle.setAttribute('aria-expanded', 'true');
+  document.querySelector('#scenario-brief-close').focus();
+});
+document.querySelector('#scenario-brief-close').addEventListener('click', () => closeScenarioBrief({ restoreFocus: true }));
 document.querySelector('#match-menu-close').addEventListener('click', () => closeHudPanels({ restoreFocus: true }));
 document.querySelector('#help-close').addEventListener('click', () => closeHudPanels({ restoreFocus: true }));
 hudScrim.addEventListener('click', () => closeHudPanels({ restoreFocus: true }));
@@ -5097,15 +5129,17 @@ for (const button of document.querySelectorAll('[data-open-dock-tab]')) {
 }
 selectDockTab('selection');
 window.addEventListener('keydown', (event) => {
-  if (event.key !== 'Escape' || (matchMenu.hidden && helpPanel.hidden) || document.querySelector('dialog[open]')) return;
+  if (event.key !== 'Escape' || (matchMenu.hidden && helpPanel.hidden && scenarioBriefPanel.hidden)
+    || document.querySelector('dialog[open]')) return;
   event.preventDefault();
   event.stopImmediatePropagation();
-  closeHudPanels({ restoreFocus: true });
+  if (!scenarioBriefPanel.hidden) closeScenarioBrief({ restoreFocus: true });
+  else closeHudPanels({ restoreFocus: true });
 }, true);
 
 function keyboardTargetIsEditing(event) {
   const target = event.target instanceof Element ? event.target : null;
-  return !matchMenu.hidden || !helpPanel.hidden
+  return !matchMenu.hidden || !helpPanel.hidden || !scenarioBriefPanel.hidden
     || Boolean(target?.closest('input, textarea, select, [contenteditable], dialog, [role="tab"]'));
 }
 

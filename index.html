@@ -67,9 +67,15 @@
       <main class="workspace">
         <section id="viewport" class="viewport" aria-label="Isometric battlefield">
           <div class="viewport-wash" aria-hidden="true"></div>
-          <div class="map-label"><span class="map-label-dot"></span> <span id="map-label-title">LOADING MAP</span> <span class="map-label-sep">/</span> <span id="map-summary">WAITING FOR SERVER</span></div>
+          <div class="map-label"><span class="map-label-dot"></span> <span id="map-label-title">LOADING MAP</span> <span class="map-label-sep">/</span> <span id="map-summary">WAITING FOR SERVER</span><button id="scenario-brief-toggle" class="scenario-brief-toggle" type="button" aria-controls="scenario-brief-panel" aria-expanded="false">BRIEF <span>↗</span></button></div>
           <div class="compass" aria-hidden="true"><span>N</span><i></i></div>
-          <div id="objective-panel" class="objective-panel" role="region" aria-label="Scenario objectives" hidden></div>
+          <aside id="scenario-brief-panel" class="scenario-brief-panel" aria-label="Scenario briefing" hidden>
+            <div class="scenario-brief-heading"><span>FIELD BRIEF</span><button id="scenario-brief-close" type="button" aria-label="Close scenario briefing">×</button></div>
+            <strong id="scenario-brief-name"></strong>
+            <p id="scenario-brief-summary"></p>
+            <p id="scenario-brief-deadline" class="scenario-brief-deadline" hidden></p>
+          </aside>
+          <div id="objective-panel" class="objective-panel" role="region" aria-label="Scenario objectives" tabindex="0" hidden></div>
           <div id="match-result" class="match-result" role="status" aria-live="assertive" hidden>
             <div class="match-result-kicker">MATCH COMPLETE</div>
             <strong id="match-result-title" class="match-result-title"></strong>
