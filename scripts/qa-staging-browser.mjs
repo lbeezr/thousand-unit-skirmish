@@ -39,6 +39,18 @@ async function setField(cdp, selector, value) {
   })()`);
 }
 
+async function importMap(cdp, definition, filename) {
+  await cdp.evaluate(`(() => {
+    const file = new File([${JSON.stringify(JSON.stringify(definition))}], ${JSON.stringify(filename)},
+      { type: 'application/json' });
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    const input = document.querySelector('#studio-import-file');
+    input.files = transfer.files;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  })()`);
+}
+
 const readState = `(() => ({
   boot: document.documentElement.dataset.boot || null,
   team: document.querySelector('#player-team')?.textContent || null,
@@ -206,12 +218,32 @@ try {
     await writeFile(path.join(os.tmpdir(), `rts-qa-staging-${record.label}.png`), Buffer.from(shot.data, 'base64'));
   }
   let authoredMap = null;
+  let validationFeedback = null;
   if (authorMap) {
     const id = `qa-browser-${Date.now().toString(36)}`;
     const name = `QA Browser ${id}`;
     const downloadDir = path.join(tempRoot, 'downloads');
     await mkdir(downloadDir);
     await azure.cdp.call('Page.setDownloadBehavior', { behavior: 'allow', downloadPath: downloadDir });
+    await setField(azure.cdp, '#studio-id', 'Invalid Map ID!');
+    await azure.cdp.evaluate("document.querySelector('#studio-download').click()");
+    const invalidId = await azure.cdp.evaluate("document.querySelector('#studio-message').textContent");
+    assert.match(invalidId, /Map ID must use lowercase letters, numbers, and hyphens/,
+      'invalid map ID should name a concrete fix');
+    const sourceMap = JSON.parse(await readFile(new URL('../maps/stone-pass.json', import.meta.url), 'utf8'));
+    const unreachable = structuredClone(sourceMap);
+    unreachable.obstacles = [{ column: 31, row: 0, width: 2, height: unreachable.height, material: 'stone' }];
+    await importMap(azure.cdp, unreachable, 'unreachable.json');
+    const unreachableResource = await waitFor(async () => {
+      const message = await azure.cdp.evaluate("document.querySelector('#studio-message').textContent");
+      return /Resource node .* must be reachable from both team spawns/.test(message) ? message : null;
+    }, 'unreachable resource validation feedback');
+    validationFeedback = { invalidId, unreachableResource };
+    await importMap(azure.cdp, sourceMap, 'stone-pass.json');
+    await waitFor(async () => {
+      const message = await azure.cdp.evaluate("document.querySelector('#studio-message').textContent");
+      return message.startsWith('Loaded stone-pass.json.') ? message : null;
+    }, 'valid Stone Pass import');
     await setField(azure.cdp, '#studio-name', name);
     await setField(azure.cdp, '#studio-id', id);
     await setField(azure.cdp, '#studio-starting-food', '333');
@@ -256,14 +288,21 @@ try {
     status: 'passed', origin: base.origin,
     azure: azure.state, ember: ember.state,
     mapStudioHostOpen: studioOpen, mapStudioGuestDisabled: guestStudioDisabled,
-    authoredMap,
+    authoredMap, validationFeedback,
     diagnostics: browsers.map(({ label, diagnostics }) => ({ label, diagnostics })),
   }, null, 2));
 } finally {
   for (const record of browsers) {
     record.cdp?.close();
-    if (record.child.exitCode === null) record.child.kill('SIGTERM');
+    if (record.child.exitCode === null && record.child.signalCode === null) record.child.kill('SIGTERM');
   }
-  await sleep(500);
-  await rm(tempRoot, { recursive: true, force: true });
+  await Promise.all(browsers.map(({ child }) => new Promise((resolve) => {
+    if (child.exitCode !== null || child.signalCode !== null) return resolve();
+    child.once('exit', resolve);
+    setTimeout(resolve, 3000);
+  })));
+  for (const { child } of browsers) {
+    if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL');
+  }
+  await rm(tempRoot, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
 }
