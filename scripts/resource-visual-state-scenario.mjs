@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { buildingProductionCueState } from '../src/building-visual-state.mjs';
-import { constructionGroundStage, resourceVisualStage } from '../src/resource-visual-state.mjs';
+import {
+  constructionGroundStage, resourceVisualStage, resourceVisualTransitionStages,
+} from '../src/resource-visual-state.mjs';
 
 for (const [stock, startingStock, expected] of [
   [100, 100, 'full'], [67, 100, 'full'], [66, 100, 'worked'], [34, 100, 'worked'],
@@ -12,6 +14,12 @@ for (const [stock, startingStock, expected] of [
 }
 assert.equal(resourceVisualStage(Number.NaN, 100), 'depleted', 'invalid stock should fail closed to the depleted sprite');
 assert.equal(resourceVisualStage(100, 0), 'depleted', 'invalid starting stock should fail closed to the depleted sprite');
+assert.deepEqual(resourceVisualTransitionStages('full', 'worked'), ['full', 'worked'],
+  'a resource state swap should dirty only its previous and current state batches');
+assert.deepEqual(resourceVisualTransitionStages('low', 'low'), [],
+  'a stable resource state should not dirty any state batch');
+assert.deepEqual(resourceVisualTransitionStages('unknown', 'depleted'), ['depleted'],
+  'an unknown previous state should not dirty an unrelated batch');
 for (const [progress, complete, expected] of [
   [0, false, 'earthwork'], [0.3999, false, 'earthwork'], [0.4, false, 'foundation'],
   [0.999, false, 'foundation'], [1, false, 'clear'], [0.1, true, 'clear'],

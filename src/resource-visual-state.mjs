@@ -10,6 +10,14 @@ export function resourceVisualStage(stock, startingStock) {
   return 'depleted';
 }
 
+export function resourceVisualTransitionStages(previousStage, currentStage) {
+  if (previousStage === currentStage) return [];
+  const stages = [];
+  if (RESOURCE_VISUAL_STAGES.includes(previousStage)) stages.push(previousStage);
+  if (RESOURCE_VISUAL_STAGES.includes(currentStage)) stages.push(currentStage);
+  return stages;
+}
+
 export function constructionGroundStage(progress, complete) {
   if (complete === true || !Number.isFinite(progress)) return 'clear';
   const amount = Math.max(0, Math.min(progress, 1));

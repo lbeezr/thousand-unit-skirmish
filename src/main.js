@@ -8,6 +8,7 @@ import {
 import { unitActionPoseAllowed, unitCargoVisualState } from './unit-visual-state.mjs';
 import {
   constructionGroundStage, RESOURCE_VISUAL_STAGES, resourceVisualStage,
+  resourceVisualTransitionStages,
 } from './resource-visual-state.mjs';
 import { buildingProductionCueState } from './building-visual-state.mjs';
 import {
@@ -1400,13 +1401,20 @@ function setWoodNodeTreeStage(id, stage) {
   if (!previous || previous === stage) return;
   woodTreeStageCounts.set(previous, Math.max(0, (woodTreeStageCounts.get(previous) || 0) - 1));
   woodTreeStageCounts.set(stage, (woodTreeStageCounts.get(stage) || 0) + 1);
+  const changedStages = resourceVisualTransitionStages(previous, stage);
   for (const slot of slots) {
-    for (const [meshStage, mesh] of woodTreeMeshes) {
+    for (const meshStage of changedStages) {
+      const mesh = woodTreeMeshes.get(meshStage);
+      if (!mesh) continue;
       setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z,
         meshStage === stage ? slot.scale : 0);
-      mesh.instanceMatrix.needsUpdate = true;
-      mesh.visible = (woodTreeStageCounts.get(meshStage) || 0) > 0;
     }
+  }
+  for (const meshStage of changedStages) {
+    const mesh = woodTreeMeshes.get(meshStage);
+    if (!mesh) continue;
+    mesh.instanceMatrix.needsUpdate = true;
+    mesh.visible = (woodTreeStageCounts.get(meshStage) || 0) > 0;
   }
   woodTreeNodeStages.set(id, stage);
 }
@@ -1448,7 +1456,10 @@ function setBerryNodeStage(id, stage) {
   if (!previous || previous === stage) return;
   berryStageCounts.set(previous, Math.max(0, (berryStageCounts.get(previous) || 0) - 1));
   berryStageCounts.set(stage, (berryStageCounts.get(stage) || 0) + 1);
-  for (const [meshStage, mesh] of berrySpriteMeshes) {
+  const changedStages = resourceVisualTransitionStages(previous, stage);
+  for (const meshStage of changedStages) {
+    const mesh = berrySpriteMeshes.get(meshStage);
+    if (!mesh) continue;
     setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z,
       meshStage === stage ? slot.scale : 0);
     mesh.instanceMatrix.needsUpdate = true;
