@@ -171,7 +171,7 @@ try {
     const infantryTeam = 1 - workerTeam;
     const participants = [
       { team: workerTeam, kind: 'worker', units: group(state, workerTeam, 'worker') },
-      { team: infantryTeam, kind: 'infantry', units: group(state, infantryTeam, 'infantry') },
+      { team: infantryTeam, kind: 'infantry', units: group(state, infantryTeam, 'infantry').slice(0, 4) },
     ];
     assert.deepEqual(participants.map(row => row.units.length), [4, 4]);
 
@@ -242,7 +242,7 @@ try {
     map.id = teamZeroX < 0 ? 'worker-squad-left' : 'worker-squad-right';
     map.name = teamZeroX < 0 ? 'WORKER SQUAD LEFT' : 'WORKER SQUAD RIGHT';
     map.fogOfWar = false;
-    // Forked Vale gives each team four workers and eight infantry; both types cost 50 food.
+    // Match four workers against four of the eight infantry; both unit types cost 50 food.
     map.startingArmySize = 24;
     map.spawnPoints = [
       { team: 0, x: teamZeroX, z: 0 },
