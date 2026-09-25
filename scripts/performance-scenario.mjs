@@ -442,14 +442,16 @@ try {
       }
       const tickBudgetMs = health.tickTiming.budgetMs;
       const maxBlockingBudgetMs = tickBudgetMs * 3;
+      const tickDiagnostic = health.tickTiming.slowestTick
+        ? `; slowest tick ${JSON.stringify(health.tickTiming.slowestTick)}` : '';
       assert.ok(health.tickTiming.p95Ms <= tickBudgetMs,
         `server tick p95 should stay within ${tickBudgetMs} ms (saw ${health.tickTiming.p95Ms} ms)`);
       assert.ok(health.tickTiming.startLagP95Ms <= tickBudgetMs,
         `server tick-start lag p95 should stay within ${tickBudgetMs} ms (saw ${health.tickTiming.startLagP95Ms} ms)`);
       assert.ok(health.tickTiming.maxMs <= maxBlockingBudgetMs,
-        `a single server tick should stay within ${maxBlockingBudgetMs} ms (saw ${health.tickTiming.maxMs} ms)`);
+        `a single server tick should stay within ${maxBlockingBudgetMs} ms (saw ${health.tickTiming.maxMs} ms${tickDiagnostic})`);
       assert.ok(health.tickTiming.startLagMaxMs <= maxBlockingBudgetMs,
-        `a single tick-start lag should stay within ${maxBlockingBudgetMs} ms (saw ${health.tickTiming.startLagMaxMs} ms)`);
+        `a single tick-start lag should stay within ${maxBlockingBudgetMs} ms (saw ${health.tickTiming.startLagMaxMs} ms${tickDiagnostic}; checkpoint serialize ${health.checkpoint?.lastSerializeMs ?? 'unavailable'} ms)`);
       assert.ok(health.transport && Number.isFinite(health.transport.queuedBytes), 'transport queue metrics should be available');
       if (mode === 'move' || mode === 'attack-move' || mode === 'dense-clash') {
         const plannedOrders = health.movePlanning.filter((sample) => sample.orderId > previousMoveOrderId);

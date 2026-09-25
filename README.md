@@ -105,6 +105,8 @@ node scripts/checkpoint-performance-scenario.mjs 12 idle
 
 The sealed `checkpoint-move-2000` and `checkpoint-attack-move-2000` scenarios each repeat three 12-second windows and capture tick maxima plus checkpoint overhead for comparable performance runs. Their shared movement scenario enforces a 33.333 ms p95 budget for tick work and start lag, plus a 100 ms ceiling for single ticks, start-lag spikes, and each synchronous move-planning stage. The attack-move scenario puts both 1,000-unit armies close enough to engage, disables fog and map triggers for this diagnostic, and asserts that combat damage occurred during each window. The movement harness requires at least 10 seconds and starts that interval immediately before dispatching orders, so the full 300-tick server window covers the workload.
 
+The checkpoint and browser performance harnesses enable `RTS_TICK_DIAGNOSTICS=1` on their disposable servers. The `/health` tick report then includes the slowest wall tick in its current ten-second window, with process CPU time and simulation, vision, broadcast, and checkpoint phase times. Set the same environment variable when starting a server manually to inspect a slow run. The existing wall-time acceptance budgets still apply; a short CPU time alongside a long wall tick helps identify host scheduling delays without hiding the delay from the test.
+
 Measure movement-neighbor work while both 1,000-unit teams funnel into the trigger-free, four-cell choke on **Dense Clash**. Start a dedicated server with separation diagnostics enabled, then run one 10-second profile:
 
 ```sh
