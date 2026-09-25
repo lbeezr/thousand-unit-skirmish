@@ -140,9 +140,13 @@ function verifyPureContract() {
 
   const firstPolicy = createDeterministicPolicy(DEFAULT_OPPONENT_SEED);
   const secondPolicy = createDeterministicPolicy(DEFAULT_OPPONENT_SEED);
-  assert.deepEqual(firstPolicy.next(observation), secondPolicy.next(observation),
+  const firstCommands = firstPolicy.next(observation);
+  assert.deepEqual(firstCommands, secondPolicy.next(observation),
     'the same seed and observation must produce identical commands');
-  assert.deepEqual(firstPolicy.next(observation), secondPolicy.next(observation),
+  assert.deepEqual(firstCommands.filter(({ type }) => type === 'gather').map(({ nodeId }) => nodeId),
+    ['food-visible'], 'the policy may gather only from the peer-visible stocked node');
+  const followUpCommands = firstPolicy.next(observation);
+  assert.deepEqual(followUpCommands, secondPolicy.next(observation),
     'the same seed and observation history must produce identical follow-up commands');
   process.stdout.write('PvE DTO contract passed: team-only resources, units, buildings, objectives, and seeded decisions.\n');
 }
@@ -184,6 +188,76 @@ function createResetFixture() {
     objectives: [], winner: -1,
   };
   return { map, state };
+}
+
+function verifyIdleWorkerEconomyLoop() {
+  const { map, state } = createResetFixture();
+  const replacementFood = {
+    id: 'lifecycle-food-replacement', type: 'food', x: -5.5, z: -5.5, stock: 400,
+  };
+  const initial = toOpponentObservation(state, 0, map);
+  const initialWorkers = initial.units.friendly
+    .filter((unit) => unit.kind === 'worker' && unit.hp > 0 && unit.task === 'idle')
+    .map((unit) => unit.id)
+    .sort((left, right) => left - right);
+  const policy = createDeterministicPolicy(DEFAULT_OPPONENT_SEED);
+  const openingCommands = policy.next(initial).filter(({ type }) => type === 'gather');
+  assert.equal(openingCommands.length, 2, 'opening gathering groups workers by the two resource types');
+  const visibleNodes = new Map(initial.resourceNodes.map((node) => [node.id, node]));
+  const openingAssignments = openingCommands.flatMap((command) => command.ids);
+  assert.deepEqual([...openingAssignments].sort((left, right) => left - right), initialWorkers,
+    'every initially idle worker receives exactly one visible resource assignment');
+  assert.equal(new Set(openingAssignments).size, initialWorkers.length,
+    'opening gather orders never assign a worker twice');
+  const typeCounts = { food: 0, wood: 0 };
+  for (const command of openingCommands) {
+    const node = visibleNodes.get(command.nodeId);
+    assert.ok(node && node.stock > 0, 'gather orders target currently visible stocked nodes');
+    typeCounts[node.type] += command.ids.length;
+  }
+  assert.deepEqual(typeCounts, { food: 2, wood: 2 },
+    'the opening balances the four starting workers evenly between food and wood');
+  assert.deepEqual(policy.next(initial).map(({ type }) => type), ['attackMove'],
+    'a repeated snapshot does not duplicate pending gather orders');
+
+  const foodCommand = openingCommands.find(({ nodeId }) => visibleNodes.get(nodeId)?.type === 'food');
+  const woodCommand = openingCommands.find(({ nodeId }) => visibleNodes.get(nodeId)?.type === 'wood');
+  const foodWorkerIds = new Set(foodCommand.ids);
+  map.resourceNodes.push(replacementFood);
+  const afterFoodNodeDepletion = {
+    ...state,
+    tick: state.tick + 1,
+    units: state.units.map((row) => {
+      const next = [...row];
+      if (next[1] === 0 && next[5] === 'worker') {
+        next[9] = foodWorkerIds.has(next[0]) ? 'idle' : 'gathering';
+      }
+      return next;
+    }),
+    resourceNodes: [
+      ...state.resourceNodes.map((node) => (
+        node.id === foodCommand.nodeId ? { ...node, stock: 0 } : node
+      )),
+      { id: replacementFood.id, type: replacementFood.type, stock: replacementFood.stock },
+    ],
+  };
+  const replacementObservation = toOpponentObservation(afterFoodNodeDepletion, 0, map);
+  assert.deepEqual(policy.next(replacementObservation), [{
+    type: 'gather', ids: foodCommand.ids, nodeId: replacementFood.id,
+  }], 'idle workers move to another visible stocked node of their assigned resource type');
+
+  const afterFoodDepletion = {
+    ...afterFoodNodeDepletion,
+    tick: afterFoodNodeDepletion.tick + 100,
+    resourceNodes: afterFoodNodeDepletion.resourceNodes.map((node) => (
+      node.type === 'food' ? { ...node, stock: 0 } : node
+    )),
+  };
+  const fallbackObservation = toOpponentObservation(afterFoodDepletion, 0, map);
+  assert.deepEqual(policy.next(fallbackObservation), [{
+    type: 'gather', ids: foodCommand.ids, nodeId: woodCommand.nodeId,
+  }], 'idle workers use a visible stocked alternate when their resource type is exhausted');
+  process.stdout.write('PvE economy policy passed: balanced idle-worker gathering, depletion reassignment, and retry deduplication.\n');
 }
 
 class FakeSocket {
@@ -909,7 +983,27 @@ async function runSeatSmoke(botTeam) {
     assert.equal(errors.length, 0, `team ${botTeam} bot adapter errors: ${errors.map((e) => e.message).join('; ')}`);
     const gatherCommands = commands.filter(({ command }) => command.type === 'gather');
     const tacticalCommands = commands.filter(({ command }) => command.type === 'attackMove');
-    assert.equal(gatherCommands.length, 2, 'the opening sends food and wood gathering orders');
+    const openingGatherCommands = gatherCommands
+      .filter(({ command }) => command.clientOrderToken <= 2);
+    assert.equal(openingGatherCommands.length, 2, 'the opening sends one order for food and one for wood');
+    const initiallyIdleWorkerIds = initial.units.friendly
+      .filter((unit) => unit.kind === 'worker' && unit.hp > 0 && unit.task === 'idle')
+      .map((unit) => unit.id)
+      .sort((left, right) => left - right);
+    const openingWorkerIds = openingGatherCommands.flatMap(({ command }) => command.ids)
+      .sort((left, right) => left - right);
+    assert.deepEqual(openingWorkerIds, initiallyIdleWorkerIds,
+      `team ${botTeam} assigns every idle starting worker to a resource`);
+    assert.equal(new Set(openingWorkerIds).size, initiallyIdleWorkerIds.length,
+      `team ${botTeam} never assigns a worker twice in its opening`);
+    const openingNodes = openingGatherCommands.map(({ command }) => (
+      initial.resourceNodes.find((node) => node.id === command.nodeId)
+    ));
+    assert.ok(openingNodes.every((node) => node && node.stock > 0),
+      `team ${botTeam} gathers only at visible stocked nodes`);
+    assert.deepEqual([...new Set(openingNodes.map((node) => node.type))].sort(), ['food', 'wood'],
+      `team ${botTeam} balances its opening between food and wood`);
+    assert.ok(gatherCommands.length >= 2, 'the policy preserves its opening gather orders');
     assert.equal(tacticalCommands.length, 1, 'the opening sends one tactical advance order');
     for (const { command } of commands) {
       assert.equal(Object.hasOwn(command, 'team'), false, 'ordinary player commands do not carry a seat');
@@ -947,22 +1041,25 @@ async function runSeatSmoke(botTeam) {
     await rejection;
 
     const resetHost = botTeam === 0 ? bot : human;
+    const commandsBeforeReset = commands.length;
+    const nextPolicyToken = Math.max(0, ...commands.map(({ command }) => command.clientOrderToken)) + 1;
     const resetNotice = waitForMessage(bot,
       (message) => message.type === 'notice' && message.message === 'BATTLEFIELD RESET',
       `team ${botTeam} host reset notice`);
     const rematchGatherFood = waitForMessage(bot, (message) => message.type === 'notice'
-      && message.clientOrderToken === 4 && message.message?.startsWith('GATHER ORDER'),
+      && message.clientOrderToken === nextPolicyToken && message.message?.startsWith('GATHER ORDER'),
     `team ${botTeam} rematch food gather`);
     const rematchGatherWood = waitForMessage(bot, (message) => message.type === 'notice'
-      && message.clientOrderToken === 5 && message.message?.startsWith('GATHER ORDER'),
+      && message.clientOrderToken === nextPolicyToken + 1 && message.message?.startsWith('GATHER ORDER'),
     `team ${botTeam} rematch wood gather`);
     const rematchAttackMove = waitForMessage(bot, (message) => message.type === 'notice'
-      && message.clientOrderToken === 6 && message.message?.startsWith('PLANNING ATTACK MOVE'),
+      && message.clientOrderToken === nextPolicyToken + 2 && message.message?.startsWith('PLANNING ATTACK MOVE'),
     `team ${botTeam} rematch attack-move`);
     resetHost.socket.send(JSON.stringify({ type: 'reset' }));
     await Promise.all([resetNotice, rematchGatherFood, rematchGatherWood, rematchAttackMove]);
-    assert.deepEqual(commands.slice(3).map(({ command }) => command.type),
-      ['gather', 'gather', 'attackMove'], 'the deterministic policy reopens after a host reset');
+    const rematchCommands = commands.slice(commandsBeforeReset).map(({ command }) => command.type);
+    assert.deepEqual(rematchCommands, ['gather', 'gather', 'attackMove'],
+      'the deterministic policy reopens after a host reset');
 
     process.stdout.write(`${JSON.stringify({
       botTeam,
@@ -978,7 +1075,7 @@ async function runSeatSmoke(botTeam) {
           && Math.hypot(unit.x - before.x, unit.z - before.z) > 0.5;
       }).length,
       foreignUnitRejected: true,
-      rematchCommands: commands.slice(3).map(({ command }) => command.type),
+      rematchCommands,
     })}\n`);
   } catch (error) {
     throw new Error(`PvE smoke for team ${botTeam} failed: ${error.message}\n${serverOutput}`);
@@ -1092,13 +1189,22 @@ async function runProposalCommandSmoke() {
   }
 }
 
-if (process.argv.includes('--proposal-only')) {
+if (process.argv.includes('--policy-only')) {
+  verifyPureContract();
+  verifyIdleWorkerEconomyLoop();
+  process.stdout.write('PvE policy-only checks passed.\n');
+} else if (process.argv.includes('--proposal-only')) {
+  verifyPureContract();
+  verifyIdleWorkerEconomyLoop();
   verifyProposalSchema();
   await verifyProposalController();
 } else if (process.argv.includes('--proposal-smoke-only')) {
+  verifyPureContract();
+  verifyIdleWorkerEconomyLoop();
   await runProposalCommandSmoke();
 } else {
   verifyPureContract();
+  verifyIdleWorkerEconomyLoop();
   verifyProposalSchema();
   await verifyProposalController();
   await verifyLifecycleRecovery();
