@@ -286,6 +286,12 @@ h2 { font-size: 16px; font-weight: 700; }
 .command-card strong, .command-card small { display: block; }
 .command-card strong { color: #d5dccb; font-size: 10px; font-weight: 600; }
 .command-card small { margin-top: 3px; color: #7b897a; font-size: 8px; }
+.order-target-toggle { display: flex; width: 100%; min-height: 38px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; margin-top: 7px; padding: 5px 10px; border: 1px solid rgba(213,239,120,.42); border-radius: 4px; background: rgba(213,239,120,.11); color: #e3efbc; text-align: left; cursor: pointer; }
+.order-target-toggle span { font: 650 10px 'DM Mono', monospace; }
+.order-target-toggle small { color: #a9ba99; font: 500 8px 'DM Mono', monospace; }
+.order-target-toggle:hover:not(:disabled), .order-target-toggle.active { border-color: var(--lime); background: rgba(213,239,120,.2); }
+.order-target-toggle:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+.order-target-toggle:disabled { opacity: .4; cursor: not-allowed; }
 .order-status { display: flex; min-height: 23px; align-items: center; gap: 7px; margin-top: 7px; padding: 5px 8px; border: 1px solid rgba(214,226,197,.1); border-radius: 4px; background: rgba(255,255,255,.018); color: #778477; font: 500 7px/1.35 'DM Mono', monospace; letter-spacing: .045em; overflow-wrap: anywhere; }
 .order-status::before { width: 5px; height: 5px; flex: 0 0 5px; border-radius: 50%; background: #667466; content: ''; }
 .order-status[data-state="pending"], .order-status[data-state="planning"] { border-color: rgba(213,239,120,.24); color: #cad99b; }

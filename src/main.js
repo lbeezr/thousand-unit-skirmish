@@ -121,6 +121,8 @@ const ui = {
   resumeConstructionLabel: document.querySelector('#resume-construction-label'),
   resumeRangeProgress: document.querySelector('.resume-range-progress'),
   fieldHintAction: document.querySelector('#field-hint-action'),
+  fieldHintPrimaryKey: document.querySelector('#field-hint-primary-key'),
+  fieldHintSecondaryKey: document.querySelector('#field-hint-secondary-key'),
   fieldHintSecondary: document.querySelector('#field-hint-secondary'),
   fps: document.querySelector('#fps-value'),
   draws: document.querySelector('#draw-value'),
@@ -142,6 +144,7 @@ const ui = {
   commandHint: document.querySelector('#command-hint'),
   orderStatus: document.querySelector('#order-status'),
   attackMoveToggle: document.querySelector('#attack-move-toggle'),
+  orderTargetToggle: document.querySelector('#order-target-toggle'),
   formationSelect: document.querySelector('#formation-select'),
   playerTeam: document.querySelector('#player-team'),
   mapSelect: document.querySelector('#map-select'),
@@ -226,7 +229,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setClearColor(0x859175, 1);
 viewport.prepend(renderer.domElement);
-renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Push the pointer against a battlefield edge to scroll the camera, or middle-drag / Space-drag to pan. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets.');
+renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Push the pointer against a battlefield edge to scroll the camera, or middle-drag / Space-drag to pan. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
 renderer.domElement.tabIndex = 0;
 
 scene.add(new THREE.HemisphereLight(0xe5ebcb, 0x3e4935, 2.05));
@@ -277,6 +280,8 @@ let latestRosterSize = 1000;
 let matchWinner = -1;
 let matchWinnerReason = null;
 let attackMoveMode = false;
+let tapOrderArmed = false;
+let tapOrderPointer = null;
 let knownMaps = [];
 let editorDefinition = null;
 let editorDraftSourceMapId = null;
@@ -1104,6 +1109,7 @@ function buildMap(definition) {
   resourceNodeVisuals.clear();
   latestResourceStocks = new Map();
   objectivePanel.replaceChildren();
+  if (tapOrderArmed) setTapOrderArmed(false, false);
   MAP_WIDTH = definition.width;
   MAP_HEIGHT = definition.height;
   MAP_HALF_X = MAP_WIDTH / 2;
@@ -2307,7 +2313,10 @@ function updateMatchResult(winner, triggerId = null, reason = null) {
   matchWinner = Number.isInteger(winner) && ([0, 1].includes(winner) || isDraw) ? winner : -1;
   matchWinnerReason = matchWinner >= 0 ? reason : null;
   if (matchWinner >= 0 && buildPlacementActive) cancelBuildPlacement(false);
-  if (matchWinner >= 0) attackMoveMode = false;
+  if (matchWinner >= 0) {
+    attackMoveMode = false;
+    if (tapOrderArmed) setTapOrderArmed(false, false);
+  }
   if (!matchResult) return;
   matchResult.hidden = matchWinner < 0;
   if (matchWinner < 0) {
@@ -2369,9 +2378,14 @@ function updateCommandUI() {
   if (ui.commandTitle) ui.commandTitle.textContent = selectedBuilding
     ? `${buildingLabel(selectedBuilding.type)} #${selectedBuilding.id}`
     : attackMoveMode ? 'Advance and engage' : 'Move or attack';
-  if (ui.commandHint) ui.commandHint.textContent = selectedBuilding
-    ? (rallyCell >= 0 ? 'Right-click ground to move the production rally' : 'Right-click ground to set a production rally')
-    : attackMoveMode ? 'Right-click ground to advance and engage' : 'Right-click ground or an enemy';
+  const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+  if (ui.commandHint) ui.commandHint.textContent = tapOrderArmed
+    ? selectedBuilding ? 'Tap or click ground to set the rally point'
+      : attackMoveMode ? 'Tap or click ground to advance and engage' : 'Tap or click ground, an enemy, or a resource'
+    : selectedBuilding ? coarsePointer ? 'Use Set rally point, then tap ground'
+      : (rallyCell >= 0 ? 'Right-click ground to move the production rally' : 'Right-click ground to set a production rally')
+      : coarsePointer ? 'Use Target battlefield, then tap a target'
+        : attackMoveMode ? 'Right-click ground to advance and engage' : 'Right-click ground or an enemy';
   if (ui.buildingCommandDetails) ui.buildingCommandDetails.hidden = !selectedBuilding;
   if (ui.buildingRallyReadout) {
     if (rallyCell >= 0) {
@@ -2390,6 +2404,20 @@ function updateCommandUI() {
     ui.attackMoveToggle.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding);
   }
   if (ui.formationSelect) ui.formationSelect.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding);
+  syncTargetOrderUI();
+}
+
+function syncTargetOrderUI() {
+  if (!ui.orderTargetToggle) return;
+  const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
+    && building.team === localTeam) || null;
+  ui.orderTargetToggle.disabled = localTeam === null || matchWinner >= 0 || buildPlacementActive;
+  ui.orderTargetToggle.classList.toggle('active', tapOrderArmed);
+  ui.orderTargetToggle.setAttribute('aria-pressed', String(tapOrderArmed));
+  ui.orderTargetToggle.querySelector('span').textContent = tapOrderArmed ? 'Cancel target'
+    : selectedBuilding ? 'Set rally point' : 'Target battlefield';
+  ui.orderTargetToggle.querySelector('small').textContent = tapOrderArmed
+    ? 'Tap or click a battlefield target' : selectedBuilding ? 'Tap or click ground once' : 'Tap or click once to issue';
 }
 
 function appendUnitFromState(row) {
@@ -4441,7 +4469,7 @@ function selectBuilding(building) {
   for (const [id, visual] of buildingVisuals) updateBuildingSelectionVisual(visual, id === building.id);
   updateCommandUI();
   updateEconomyUI();
-  showToast(`${buildingLabel(building.type)} SELECTED · RIGHT-CLICK GROUND TO SET RALLY`);
+  showToast(`${buildingLabel(building.type)} SELECTED · ${window.matchMedia('(pointer: coarse)').matches ? 'USE SET RALLY POINT, THEN TAP GROUND' : 'RIGHT-CLICK GROUND TO SET RALLY'}`);
 }
 
 function pickFriendly(x, y, additive = false) {
@@ -4528,7 +4556,27 @@ function setAttackMoveMode(enabled, announce = true) {
   if (enabled && (localTeam === null || matchWinner >= 0)) return;
   attackMoveMode = Boolean(enabled);
   updateCommandUI();
-  if (announce) showToast(attackMoveMode ? 'ATTACK MOVE READY · RIGHT-CLICK GROUND' : 'MOVE MODE READY');
+  if (announce) showToast(attackMoveMode
+    ? `ATTACK MOVE READY · ${tapOrderArmed ? 'TAP OR CLICK GROUND' : window.matchMedia('(pointer: coarse)').matches ? 'USE TARGET BATTLEFIELD, THEN TAP GROUND' : 'RIGHT-CLICK GROUND'}`
+    : 'MOVE MODE READY');
+}
+
+function setTapOrderArmed(enabled, announce = true) {
+  if (enabled) {
+    if (localTeam === null || matchWinner >= 0) return;
+    if (buildPlacementActive) { showToast('FINISH OR CANCEL BUILD PLACEMENT FIRST'); return; }
+    if (selectedBuildingId === null && selectedIds().length === 0) {
+      showToast('SELECT YOUR UNITS BEFORE ISSUING AN ORDER');
+      return;
+    }
+  }
+  tapOrderArmed = Boolean(enabled);
+  tapOrderPointer = null;
+  updateCommandUI();
+  updateBuildPlacementHint();
+  if (announce) showToast(tapOrderArmed
+    ? selectedBuildingId !== null ? 'TAP OR CLICK GROUND TO SET RALLY' : 'TAP OR CLICK A BATTLEFIELD TARGET'
+    : 'TARGETING CANCELLED');
 }
 
 function issueMove(point, queueWaypoint = false) {
@@ -4600,6 +4648,36 @@ function issueGather(node) {
   if (sendTrackedOrder({ type: 'gather', ids: workers, nodeId: node.id }, 'GATHER', workers.length, 'WORKERS')) {
     setAttackMoveMode(false, false);
     showToast(`GATHER ${String(node.type || 'FOOD').toUpperCase()} · ${workers.length} WORKERS`);
+  }
+}
+
+function issueContextOrder(clientX, clientY, queueWaypoint = false) {
+  if (selectedBuildingId !== null) {
+    issueBuildingRallyPoint(clientX, clientY);
+    return;
+  }
+  const rect = renderer.domElement.getBoundingClientRect();
+  const x = clientX - rect.left;
+  const y = clientY - rect.top;
+  const enemyPick = localTeam === null ? null : pickAt(x, y, (unit) => unit.team !== localTeam);
+  const enemy = enemyPick?.unit || null;
+  if (enemy) {
+    issueAttack(enemy);
+    if (enemyPick.cycled && selectedIds().length > 0) {
+      showToast(`ATTACK TARGET ${enemyPick.stackIndex}/${enemyPick.stackCount}`);
+    }
+    return;
+  }
+  const enemyBuilding = localTeam === null ? null
+    : pickBuildingAt(x, y, (building) => building.team !== localTeam);
+  if (enemyBuilding) issueAttackBuilding(enemyBuilding);
+  else {
+    const node = pickResourceNodeAt(x, y);
+    if (node) issueGather(node);
+    else {
+      const point = worldAt(clientX, clientY);
+      if (point) issueMove(point, queueWaypoint);
+    }
   }
 }
 
@@ -4678,9 +4756,17 @@ function updateBuildPlacementGhost(clientX, clientY) {
 
 function updateBuildPlacementHint() {
   const activeLabel = buildingLabel(buildPlacementType);
-  if (ui.fieldHintAction) ui.fieldHintAction.textContent = buildPlacementActive ? `LMB PLACE ${activeLabel}` : 'DRAG TO SELECT';
-  if (ui.fieldHintSecondary) ui.fieldHintSecondary.textContent = buildPlacementActive ? 'RMB / ESC CANCEL' : 'MOVE / ATTACK';
-  renderer.domElement.style.cursor = buildPlacementActive ? 'crosshair' : '';
+  const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+  if (ui.fieldHintPrimaryKey) ui.fieldHintPrimaryKey.textContent = coarsePointer ? 'TAP' : 'LMB';
+  if (ui.fieldHintAction) ui.fieldHintAction.textContent = buildPlacementActive ? `PLACE ${activeLabel}`
+    : tapOrderArmed ? 'ISSUE ORDER' : coarsePointer ? 'SELECT UNITS' : 'DRAG TO SELECT';
+  if (ui.fieldHintSecondaryKey) ui.fieldHintSecondaryKey.textContent = buildPlacementActive
+    ? coarsePointer ? 'BUILD' : 'RMB / ESC' : tapOrderArmed ? 'ESC' : coarsePointer ? 'ORDERS' : 'RMB';
+  if (ui.fieldHintSecondary) ui.fieldHintSecondary.textContent = buildPlacementActive
+    ? coarsePointer ? 'TAP BUTTON TO CANCEL' : 'CANCEL'
+    : tapOrderArmed ? 'CANCEL TARGET' : coarsePointer ? 'TAP TARGET' : 'MOVE / ATTACK';
+  renderer.domElement.style.cursor = buildPlacementActive || tapOrderArmed ? 'crosshair' : '';
+  syncTargetOrderUI();
   if (ui.buildBarracks) {
     ui.buildBarracks.classList.toggle('active', buildPlacementActive && buildPlacementType === 'barracks');
     ui.buildBarracks.setAttribute('aria-pressed', String(buildPlacementActive && buildPlacementType === 'barracks'));
@@ -4705,6 +4791,7 @@ function cancelBuildPlacement(announce = true) {
 
 function beginBuildPlacement(type) {
   if (localTeam === null || matchWinner >= 0) return;
+  if (tapOrderArmed) setTapOrderArmed(false, false);
   const label = buildingLabel(type);
   const woodCost = buildingWoodCost(type);
   const workers = teamUnits[localTeam].filter((unit) => unit.kind === 'worker' && unit.hp > 0);
@@ -4892,30 +4979,8 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
       cancelBuildPlacement();
       return;
     }
-    if (selectedBuildingId !== null) {
-      issueBuildingRallyPoint(event.clientX, event.clientY);
-      return;
-    }
-    const enemyPick = localTeam === null ? null : pickAt(x, y, (unit) => unit.team !== localTeam);
-    const enemy = enemyPick?.unit || null;
-    if (enemy) {
-      issueAttack(enemy);
-      if (enemyPick.cycled && selectedIds().length > 0) {
-        showToast(`ATTACK TARGET ${enemyPick.stackIndex}/${enemyPick.stackCount}`);
-      }
-    } else {
-      const enemyBuilding = localTeam === null ? null
-        : pickBuildingAt(x, y, (building) => building.team !== localTeam);
-      if (enemyBuilding) issueAttackBuilding(enemyBuilding);
-      else {
-        const node = pickResourceNodeAt(x, y);
-        if (node) issueGather(node);
-        else {
-          const point = worldAt(event.clientX, event.clientY);
-          if (point) issueMove(point, event.shiftKey);
-        }
-      }
-    }
+    issueContextOrder(event.clientX, event.clientY, event.shiftKey);
+    if (tapOrderArmed) setTapOrderArmed(false, false);
     return;
   }
   if (event.button === 1 || (event.button === 0 && spaceDown)) {
@@ -4933,6 +4998,12 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
     submitBuildPlacement(event.clientX, event.clientY);
     return;
   }
+  if (tapOrderArmed) {
+    event.preventDefault();
+    tapOrderPointer = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    renderer.domElement.setPointerCapture(event.pointerId);
+    return;
+  }
   renderer.domElement.focus({ preventScroll: true });
   drag = { startX: x, startY: y, currentX: x, currentY: y, additive: event.shiftKey };
   movedPointer = false;
@@ -4947,6 +5018,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
 
 renderer.domElement.addEventListener('pointermove', (event) => {
   edgeScrollPointer = { x: event.clientX, y: event.clientY };
+  if (tapOrderPointer?.id === event.pointerId) return;
   if (pan) {
     const dx = event.clientX - pan.x;
     const dy = event.clientY - pan.y;
@@ -4973,7 +5045,17 @@ renderer.domElement.addEventListener('pointermove', (event) => {
   selectionBox.style.height = `${Math.abs(drag.currentY - drag.startY)}px`;
 });
 
-function finishPointer() {
+function finishPointer(event) {
+  if (tapOrderPointer?.id === event.pointerId) {
+    const wasTap = event.type === 'pointerup'
+      && Math.hypot(event.clientX - tapOrderPointer.x, event.clientY - tapOrderPointer.y) <= 12;
+    tapOrderPointer = null;
+    if (wasTap) {
+      issueContextOrder(event.clientX, event.clientY);
+      setTapOrderArmed(false, false);
+    }
+    return;
+  }
   if (pan) { pan = null; return; }
   if (!drag) return;
   const finished = drag;
@@ -5095,6 +5177,7 @@ function closeScenarioBrief({ restoreFocus = false } = {}) {
 
 function toggleHudPanel(panel, trigger) {
   const opening = panel.hidden;
+  if (tapOrderArmed) setTapOrderArmed(false, false);
   closeHudPanels();
   if (!opening) return;
   panel.hidden = false;
@@ -5104,6 +5187,7 @@ function toggleHudPanel(panel, trigger) {
 }
 
 function selectDockTab(name, focus = false) {
+  if (name !== 'command' && tapOrderArmed) setTapOrderArmed(false, false);
   commandDock.dataset.activePanel = name;
   for (const tab of dockTabs) {
     const selected = tab.dataset.dockTab === name;
@@ -5123,6 +5207,7 @@ helpToggle.addEventListener('click', () => {
 });
 scenarioBriefToggle.addEventListener('click', () => {
   const opening = scenarioBriefPanel.hidden;
+  if (tapOrderArmed) setTapOrderArmed(false, false);
   closeHudPanels();
   closeScenarioBrief();
   if (!opening) return;
@@ -5151,6 +5236,7 @@ for (const button of document.querySelectorAll('[data-open-dock-tab]')) {
   button.addEventListener('click', () => selectDockTab(button.dataset.openDockTab, true));
 }
 selectDockTab('selection');
+updateBuildPlacementHint();
 window.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape' || (matchMenu.hidden && helpPanel.hidden && scenarioBriefPanel.hidden)
     || document.querySelector('dialog[open]')) return;
@@ -5211,6 +5297,10 @@ window.addEventListener('keydown', (event) => {
   if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
     && event.key.toLowerCase() === 'a') selectWholeTeam();
   if (event.key === 'Escape') {
+    if (tapOrderArmed) {
+      setTapOrderArmed(false);
+      return;
+    }
     if (buildPlacementActive) {
       cancelBuildPlacement();
       return;
@@ -5224,6 +5314,7 @@ window.addEventListener('keydown', (event) => {
 });
 window.addEventListener('keyup', (event) => { if (event.code === 'Space') spaceDown = false; });
 window.addEventListener('blur', () => {
+  if (tapOrderArmed) setTapOrderArmed(false, false);
   spaceDown = false;
   pan = null;
   edgeScrollPointer = null;
@@ -5251,6 +5342,7 @@ ui.roomJoinForm.addEventListener('submit', (event) => {
 });
 document.querySelector('#select-all').addEventListener('click', selectWholeTeam);
 ui.attackMoveToggle?.addEventListener('click', () => setAttackMoveMode(!attackMoveMode));
+ui.orderTargetToggle?.addEventListener('click', () => setTapOrderArmed(!tapOrderArmed));
 ui.clearBuildingRally?.addEventListener('click', clearSelectedBuildingRally);
 ui.researchAttackUpgrade?.addEventListener('click', startSelectedAttackResearch);
 ui.selectWorkers?.addEventListener('click', selectWorkers);
