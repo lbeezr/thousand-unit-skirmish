@@ -1,16 +1,28 @@
 # Model-controlled opponent: research checkpoint
 
-**Status:** design draft only; no provider integration or game-server changes.
-**Baseline reviewed:** `216a466` (locally cached `origin/main` after merges #25/#27; performance reference data was collected on `f1d6482`).
+**Status:** provider-agnostic fake-injection prototype; default off, with no real provider or room-runtime activation.
+**Baseline reviewed:** `24bccdf` (locally cached `origin/main` after the PvE, gameplay, and QA checkpoint merges; performance reference data was collected on `f1d6482`).
 **Scope:** an optional opponent that proposes ordinary gameplay commands while the deterministic PvE bot remains the default and fallback.
 
 ## Decision and dependencies
 
 Keep inference outside the 30 Hz simulation callback. The model receives a compact, versioned observation for one bot seat and may return one schema-constrained proposal. The authoritative server validates that proposal using the same command contract as a player command. The model cannot mutate simulation state, call tools, or run code.
 
-The shared gameplay contract PR [#25](https://github.com/lbliii/thousand-unit-skirmish/pull/25) and PvE adapter PR [#27](https://github.com/lbliii/thousand-unit-skirmish/pull/27) are integrated in main at `216a466`; the exact #27 source head was `396f632`. This refresh checks the merged adapter and schema. Prototype work remains gated on producer approval of the concrete scope, provider, cadence, actions, and token/cost ceilings.
+The shared gameplay contract PR [#25](https://github.com/lbliii/thousand-unit-skirmish/pull/25) and PvE adapter PR [#27](https://github.com/lbliii/thousand-unit-skirmish/pull/27) are integrated in main; the exact #27 source head was `396f632`. The user authorized the bounded fake-only prototype below. A real provider, credentials, match activation, provider spend, and any cost-bearing evaluation remain separate decisions.
 
-This checkpoint does not edit runtime code. Model integration follows the merged PvE adapter and its gameplay contract, not a parallel command path.
+The prototype follows the merged PvE adapter and gameplay contract. It does not edit the simulation server or change the deterministic PvE default.
+
+## Fake-provider prototype
+
+`src/pve-model-proposal.mjs` adds `attachModelProposalOpponent`. It is inert unless a caller explicitly sets `enabled: true`; enabling it also requires an injected `provider`, a synchronous conservative `estimateRequest` method, and `reportsUsage: true`. The repository contains no provider client, endpoint, credential, or runtime caller. Tests inject a local fake provider only.
+
+The helper reads only the seat assigned by the WebSocket `welcome` message and derives every provider request through `toOpponentObservation` v1. It sends an immutable copy of the DTO plus a protocol version, opaque request ID, source tick, and output-token cap. It never forwards the welcome message, raw map, or other server payload. Responses must be exact JSON envelopes with one of `wait`, `gather`, or `attackMove`; extra fields, mismatched request IDs, hidden resource references, unowned units, out-of-bounds coordinates, and oversized outputs are rejected.
+
+Accepted actions use the same WebSocket command shapes as the deterministic bot and receive a trusted client order token. The server still owns the seat and performs normal command validation. Each slot dispatches at most one command. Provider errors, timeouts, stale results, schema failures, request/token/cost limits, and correlated command rejections hand the next due action to the deterministic policy. Late responses cannot dispatch after fallback, reset, or close.
+
+The helper enforces a 5-second minimum cadence, one in-flight request, 120 sent requests per match, a 256 KiB observation limit, 65,536 estimated input tokens, 256 output tokens / 4 KiB response JSON, a 2-second maximum deadline, a 60-tick decision-age limit, and a $1.00 conservative match reservation ceiling. Provider estimates must include fixed instructions/schema overhead and the full output allowance. Each completed response must report normalized input tokens, output tokens, and cost. Bounded metrics expose request counts, observation/response bytes, token estimates and usage, reserved/reported cost, response latency, decision age, and fallback/rejection reasons.
+
+`scripts/pve-opponent-scenario.mjs` covers strict schema and authority checks, default-off behavior, fake-provider success/failure/timeout, fallback, one-in-flight coalescing, stale results, request/token/cost caps, and a local fake-provider command that receives a normal server acknowledgement. No real provider request is made.
 
 ## Existing code seams and fog caveat
 
@@ -29,12 +41,12 @@ The adapter may inspect static map resource IDs/coordinates and public objective
 
 ## Proposal schema and command mapping
 
-The first experiment should follow the current bot contract's narrow action set: `wait`, `gather`, and `attackMove`. The deterministic PvE policy currently evaluates on a separate one-second interval with an explicit integer seed; model requests should use a slower, independently budgeted cadence. The provider response should be a strict JSON Schema discriminated union (`oneOf`, `additionalProperties: false`) with a proposal-protocol version, a server-generated request correlation ID, and exactly one action. The request ID is not a new PvE DTO field; the server binds it to the match, seat, DTO schema, and source tick. An envelope example is:
+The prototype follows the current bot contract's narrow action set: `wait`, `gather`, and `attackMove`. The deterministic PvE policy currently evaluates on a separate one-second interval with an explicit integer seed; proposal requests use a slower, independently budgeted cadence. The provider response uses a strict JSON Schema discriminated union (`oneOf`, `additionalProperties: false`) with a proposal-protocol version, an opaque request correlation ID, and exactly one action. The request ID is not a new PvE DTO field; the trusted opponent runtime binds it to the match epoch, assigned seat, DTO schema, and source tick. An envelope example is:
 
 ```json
 {
   "proposalSchemaVersion": 1,
-  "requestId": "server-issued opaque reference",
+"requestId": "trusted-runtime opaque reference",
   "action": {
     "type": "gather",
     "ids": [23],
@@ -50,25 +62,25 @@ A successful `wait` consumes that decision slot without issuing a command. Other
 { type: 'attackMove', ids: [unitId, ...], x: 0, z: 0 }
 ```
 
-The team is bound by the server-assigned bot seat and is not model-supplied. Do not let the model set `clientOrderToken`; the trusted bot adapter may attach one for acknowledgement. For large armies, derive any bounded model request view from the v1 DTO only, preserve a server-side mapping for every actionable unit/group reference, and reject actions that refer outside that exact view. Confirm grouping and per-action caps with the producer before prototype work.
+The team is bound from the server-assigned bot seat and is not model-supplied. Do not let the model set `clientOrderToken`; the trusted bot adapter attaches one for acknowledgement. The prototype sends the complete v1 DTO when it fits the byte cap and rejects the request otherwise; it does not truncate or group units. Each action is capped at 64 IDs, and references must come from that exact DTO.
 
 Each action variant has only its required typed fields. Unit IDs and resource-node IDs must come from the bound v1 observation; coordinates must be finite and within map bounds. Do not accept free-form commands, explanations, tool names, endpoint URLs, scripts, team/seat fields, client order tokens, or arbitrary nested payloads. Map each proposal to the deterministic bot's ordinary JSON command and send it through the existing WebSocket command path rather than creating a second game-command language.
 
-On receipt, the server checks the response size and schema, request-ID binding and age, DTO version, match and seat, action allow-list, reference ownership/visibility, numeric bounds, and gameplay preconditions. It then maps the action to the ordinary `gather` or `attackMove` JSON command and sends it through the trusted bot seat's WebSocket, where normal command validation and queueing still apply. A schema-valid proposal is not permission to skip server rules.
+The trusted opponent helper checks response size and schema, request-ID binding and age, DTO version, match epoch and assigned seat, action allow-list, observed unit/resource references, and numeric bounds. It maps an accepted proposal to the ordinary `gather` or `attackMove` JSON command and sends it through the assigned seat's WebSocket. The server then applies its existing ownership, visibility, gameplay, and command-queue checks. A schema-valid proposal does not bypass server rules.
 
 ## Cadence, budgets, and execution boundary
 
-Provisional limits for a local research prototype, for producer review only. These values do not authorize provider use; model mode stays off until the provider and limits are approved:
+These limits apply to the local fake-provider prototype. They do not authorize a real provider, match activation, or provider spend:
 
 - Ask for a model decision at most once every **5 seconds** per bot seat (12 requests/minute maximum), not on each regular state snapshot.
 - Permit **one in-flight request** per seat. Coalesce pending observations to the newest state; never build a backlog of stale decisions.
 - Cap a match at **120 sent requests**, **256 KiB** of serialized v1 observation per request, **65,536 estimated input tokens** per request (including the system prompt), and **256 output tokens / 4 KiB** of response JSON. Enforce both input limits; if either is exceeded, skip that proposal and let the deterministic policy act. Never truncate away observation fields to fit.
-- Propose a **$1.00 estimated-cost ceiling per match**. Before sending, reserve the provider-priced worst-case cost for the input estimate and full output allowance; settle against reported usage afterward. If the selected provider cannot give a conservative estimate or usage, or the reservation would exceed the remaining cap, do not send the request. Count every sent request, including timeouts, against the request cap; after any cap is reached, keep the deterministic bot active for the rest of the match.
+- Enforce a **$1.00 estimated-cost ceiling per match**. Before sending, reserve the provider-priced worst-case cost for the input estimate and full output allowance; compare reported usage with that reservation afterward. The helper retains reservations for the match rather than refunding unused estimates. If the selected provider cannot give a conservative estimate or report usage, or the reservation would exceed the remaining cap, do not send the request. Count every sent request, including timeouts, against the request cap; after any cap is reached, keep the deterministic bot active for the rest of the match.
 - The byte ceiling is a provisional envelope informed by the merged baseline's 120,744-byte p95 full snapshot at 2,000 visible moving units; it is not a measurement of the PvE DTO. Measure actual v1 DTO bytes and token estimates at each supported roster size before provider use. If an observation exceeds the envelope, skip inference rather than dropping visible state.
-- Use asynchronous request I/O outside `simulateTick()`. Do not await, call a provider, build a large prompt, or apply a model result in the simulation callback. Bound DTO preparation and response parsing; measure event-loop/tick-start lag, and offload heavier preparation if it moves the tick budget.
-- A result carries its request ID; the server-side request record binds that ID to the v1 DTO tick, seat, and match. Discard it if that binding changed, the response is stale, or a newer decision superseded it. Accepted results enter the same authoritative command queue as ordinary commands.
+- Use asynchronous request I/O outside `simulateTick()`. Do not await, call a provider, build a large prompt, or apply a model result in the simulation callback. Bound DTO preparation and response parsing; measure event-loop/tick-start lag, and use a separate trusted worker if heavier preparation affects the game process.
+- A result carries its request ID; the trusted opponent's request record binds it to the v1 DTO tick, seat, and match epoch. Discard it if that binding changed, the response is stale, or a newer decision superseded it. Accepted results enter the same authoritative command queue as ordinary commands.
 
-The provider adapter belongs server-side or in a separate trusted worker connected to the bot seat. Its credential belongs only in a server-side secret store or runtime environment. Never put provider I/O or its key in the browser, include the key in an observation, commit it, or log it. The experiment is off by default; CI and local deterministic tests use a fake provider. MCP may help with developer-time analysis but is not part of the match command path.
+The provider adapter belongs in a server-side process or separate trusted worker connected to the bot seat; it must not be bundled into the browser. Its credential belongs only in a server-side secret store or runtime environment. Never include a key in an observation, commit it, or log it. This prototype is off by default and uses a fake provider in tests. MCP may help with developer-time analysis but is not part of the match command path.
 
 ## Timeout and deterministic fallback
 
@@ -94,4 +106,4 @@ The merged `scripts/ci.mjs` includes `scripts/pve-opponent-scenario.mjs`. Its fo
 
 ## Review gate
 
-This note is the research checkpoint. Implementation starts only after the deterministic bot contract is stable and the producer approves the exact adapter, schema fields, provider, and budget. A prototype must remain optional, server-side, fog-safe, schema-constrained, and fully replaceable by the deterministic bot.
+This branch implements only the authorized fake-provider prototype. A real provider adapter, secret configuration, match runtime activation, and any paid evaluation still require separate authorization. Any future provider must remain optional, server-side or in a separate trusted worker, fog-safe, schema-constrained, budgeted, and fully replaceable by the deterministic bot.
