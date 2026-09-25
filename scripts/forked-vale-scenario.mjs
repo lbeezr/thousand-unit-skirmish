@@ -27,7 +27,7 @@ let log = '';
 child.stdout.on('data', chunk => { log += chunk.toString(); });
 child.stderr.on('data', chunk => { log += chunk.toString(); });
 const clients = [];
-let stage = 'starting isolated Three Crowns match';
+let stage = 'starting isolated Forked Vale match';
 
 function createClient(team) {
   const socket = new WebSocket(`ws://127.0.0.1:${port}/ws`, ['rts-v1']);
@@ -224,6 +224,14 @@ try {
       && state.units.filter(row => row[1] === team && row[4] > 0).length === 1000, 60000)));
     const positions = stressStarts.map((state, team) => new Map(state.units
       .filter(row => row[1] === team && row[4] > 0).map(row => [row[0], [row[2], row[3]]])));
+    const startingHealth = stressStarts.map((state, team) => new Map(state.units
+      .filter(row => row[1] === team && row[4] > 0).map(row => [row[0], row[4]])));
+    const damagedCount = (state, team) => {
+      const currentHealth = new Map(state.units.filter(row => row[1] === team && row[4] > 0)
+        .map(row => [row[0], row[4]]));
+      return [...startingHealth[team]].filter(([id, health]) =>
+        !currentHealth.has(id) || currentHealth.get(id) < health).length;
+    };
     for (const team of [0, 1]) {
       const ids = [...positions[team].keys()];
       assert.equal(ids.length, 1000);
@@ -239,7 +247,16 @@ try {
         && positions[team].has(row[0])
         && Math.hypot(row[2] - positions[team].get(row[0])[0],
           row[3] - positions[team].get(row[0])[1]) > 0.5).length }));
-    logStep('both 1,000-unit armies moved through separate crossings');
+    logStep('both 1,000-unit armies moved toward separate crossings');
+    stage = '2,000-unit contested attack-move engagement';
+    for (const team of [0, 1]) {
+      clientsByTeam[team].socket.send(JSON.stringify({ type: 'attackMove',
+        ids: [...positions[team].keys()], x: 0, z: 0 }));
+    }
+    const fighting = await Promise.all(clientsByTeam.map((client, team) => client.waitState(state =>
+      state.armySize === 2000 && damagedCount(state, team) >= 10, 120000)));
+    stressResult.forEach((result, team) => { result.damagedOrKilled = damagedCount(fighting[team], team); });
+    logStep('both 1,000-unit armies engaged with at least 10 units hurt or lost per team');
   }
   console.log(JSON.stringify({
     map: 'forked-vale', roster: finalAzure.armySize, testedWinner: winnerTeam,
