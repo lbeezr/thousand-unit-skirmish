@@ -1,18 +1,27 @@
 # Thousand Unit Skirmish — prototype 0.95
 
-A localhost multiplayer RTS field test. A Node room supervisor starts one isolated authoritative match process per invite room; open two browser tabs at the same address to join the default Azure and Ember match. Use **NEW ROOM** to create an invite-only match or **JOIN** to enter a room code/link. The map contains a two-cell stone wall with one six-cell pass, so move orders have to route through a chokepoint.
+An invite-only multiplayer RTS field test. A Node room supervisor starts one isolated authoritative match process per invite room; open two browser tabs at the same address to join the default Azure and Ember match. Use **NEW ROOM** to create an invite-only match or **JOIN** to enter a room code/link. The map contains a two-cell stone wall with one six-cell pass, so move orders have to route through a chokepoint.
 
 ## Run it
 
-Requires [Node.js 24 or newer](https://nodejs.org/en/about/previous-releases) and an internet connection for the pinned Three.js browser module. From this directory, run:
+Requires [Node.js 24 or newer](https://nodejs.org/en/about/previous-releases). Install the pinned Three.js dependency once, then run:
 
 ```sh
-node room-supervisor.mjs
+npm ci
+npm start
 ```
 
-The npm aliases are `npm start` for the server and `npm test` for the repository's CI checks. CI checks JavaScript syntax, the pure map/formation/selection scenarios, and the isolated room-supervisor integration scenario.
+The browser loads Three.js from this server at `/vendor/three.module.js`. `npm test` checks JavaScript syntax, game scenarios, room isolation, and the guarded Railway release path.
 
 For a reproducible container release, run `npm ci`, `npm test`, then `npm run release:pack` from a reviewed, committed checkout. The packer copies the Dockerfile's local `COPY` sources into a temporary directory and prints the source commit and a content digest. It refuses uncommitted changes; `--allow-dirty` is reserved for disposable local tests. CI verifies that a clean checkout can produce this package.
+
+## Railway playtest deployment
+
+The Railway `game` service runs in separate staging and production environments. Give each environment its own volume mounted at `/app/data` and a different `RTS_ACCESS_PASSWORD` of at least 16 characters. The default username is `players`; set `RTS_ACCESS_USER` to change it. The supervisor refuses to start on Railway without the volume and password. Match checkpoints, invite-room records, and authored maps live on the volume. Keep one service replica because each match is authoritative in this process and Railway volumes cannot be shared by replicas.
+
+The generated HTTPS domain serves `/ready` for deployment checks. The detailed `/health`, game assets, room API, and WebSocket require HTTP Basic Auth. Share the domain and credentials only with invited testers. This shared credential is for a playtest; individual accounts and public matchmaking are not implemented.
+
+After packaging a reviewed release, upload the **same release directory** to staging, wait for the deployment to report success, and run `npm run release:smoke -- --environment staging --project PROJECT_ID`. The smoke check reads the environment's password from Railway without printing it and verifies readiness, guarded HTTP, local Three.js and audio assets, and WebSocket access. Promote that exact directory to production only after staging passes. Preserve each environment's volume when redeploying; enable Railway volume backups before relying on snapshots for recovery. The current `railway.json` deployment config must be migrated before Railway retires legacy config support.
 
 Open <http://127.0.0.1:4173> in two tabs. The first connection is Azure and controls match size/reset/map; the second is Ember. A disconnected player can reclaim their seat for two minutes by default, and each tab retries a lost connection automatically. After checkpoint recovery, seats that were connected at the crash receive a full reclaim window from server restart; seats already disconnected keep their original expiry. Set `RTS_SESSION_GRACE_MS` to tune both reconnect and checkpoint-recovery windows from 1,000 to 3,600,000 milliseconds. Invite rooms run in separate Node processes, so units, maps, sessions, and match controls in one room cannot affect another. The default room plus four invite rooms are allowed by default; set `RTS_MAX_ROOMS` to tune that cap.
 
