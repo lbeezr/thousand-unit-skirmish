@@ -5708,7 +5708,7 @@ const server = createServer(async (request, response) => {
     response.end('Forbidden');
     return;
   }
-  const publicClientAsset = ['index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/map-utils.mjs', 'src/map-resize.mjs', 'src/order-feedback.mjs', 'src/unit-selection.mjs', 'src/audio.mjs', 'src/audio-policy.mjs'].includes(relative);
+  const publicClientAsset = ['index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/map-utils.mjs', 'src/map-resize.mjs', 'src/order-feedback.mjs', 'src/unit-selection.mjs', 'src/unit-visual-state.mjs', 'src/audio.mjs', 'src/audio-policy.mjs'].includes(relative);
   const publicEnvironmentModule = relative === 'src/environment-art.mjs';
   const publicEnvironmentAsset = path.dirname(relative) === 'assets/environment/frontier-v1'
     && ['.png', '.webp'].includes(path.extname(relative))

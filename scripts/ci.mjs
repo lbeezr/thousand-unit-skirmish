@@ -37,6 +37,7 @@ const syntaxFiles = [
 for (const file of syntaxFiles) run(['--check', file], `Syntax: ${file}`);
 
 const scenarios = [
+  ['scripts/client-asset-allowlist-scenario.mjs', 'Client static asset allowlist'],
   ['scripts/origin-policy-scenario.mjs', 'Origin policy'],
   ['scripts/origin-proxy-scenario.mjs', 'Origin policy through room proxy'],
   ['scripts/audio-policy-scenario.mjs', 'Audio policy'],
