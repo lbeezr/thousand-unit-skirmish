@@ -141,6 +141,26 @@ establish the intended 6–10-minute contested match length, opening win
 rates, human comprehension, or 2,000-unit sustained performance. Outside
 player sessions remain to be measured.
 
+## Combat-order fairness diagnostic
+
+On merged `main` at `158578b`,
+`node scripts/infantry-seat-combat-scenario.mjs` isolated an eight-infantry
+attack-move fight on Forked Vale with workers parked away and fog disabled.
+Across both spawn orientations and both command send orders, Azure had five
+survivors when Ember first fell to three. Azure/Ember remaining HP was
+340/260 with Azure spawning left and 370/300 with Azure spawning right.
+An isolated control that reversed the server's first per-unit simulation
+pass flipped one fixture to Azure 3/280 HP versus Ember 6/570 HP. This
+implicates processing order but does not isolate damage application from
+target acquisition or movement.
+
+The script's default mode records all four outcomes; `--single` runs one
+case quickly, and `--expect-parity` asserts at most one survivor and
+100 HP difference in each case for post-fix regression checks. These are
+controlled protocol fights, not player win rates. Roster costs and training
+times should not be tuned from opening results until the combat-order fix
+passes the mirrored check.
+
 ## Next tuning decisions
 
 - Measure worker losses and 4v4 worker-vs-infantry fights in the authored
