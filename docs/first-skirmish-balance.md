@@ -115,6 +115,25 @@ fight. `node scripts/worker-combat-scenario.mjs` records and asserts those
 outcomes. This is controlled combat evidence, not a claim about raids, worker
 survival in a full match, or player understanding.
 
+## Forked Vale scripted pacing check
+
+The scenario designer's first two-client, team-0-win playthrough reported
+these wall-clock checkpoints: both teams deposited food and wood by **18.3 s**;
+both completed a Barracks and trained one infantry by **51.4 s**; the two
+signals had opposing owners by **75.7 s**; the central Watch was verified
+locked at **86.5 s**; and the eventual winner recaptured the second signal
+by **100.5 s**. The 20-second hold then produced victory before the test's
+139.7-second final stress checkpoint. A subsequent 2,000-unit reset showed
+820 Azure and 1,000 Ember units moving more than 0.5 units toward separate
+fords in that observed state.
+
+This is a cooperative scripted rules playthrough: one team deliberately
+withdraws so the other can win, and there is no contested combat. It supports
+the opening and objective-order checks but cannot establish the intended
+6–10-minute contested match length, opening win rates, human comprehension,
+or 2,000-unit sustained performance. The reverse team assignment and outside
+player sessions remain to be measured.
+
 ## Next tuning decisions
 
 - Measure worker losses and 4v4 worker-vs-infantry fights in the authored
