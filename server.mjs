@@ -38,6 +38,7 @@ const MAP_DIRECTORY = path.join(ROOT, 'maps');
 const CUSTOM_MAP_DIRECTORY = path.resolve(ROOT, process.env.RTS_CUSTOM_MAP_DIRECTORY || 'custom-maps');
 const MATCH_STATE_PATH = process.env.RTS_MATCH_STATE_PATH ? path.resolve(process.env.RTS_MATCH_STATE_PATH) : null;
 const MAX_UNITS = 2000;
+const DEFAULT_STARTING_ARMY_SIZE = 1000;
 const MAX_QUEUED_WAYPOINTS = 8;
 const MAX_MAP_OBSTACLES = 4096;
 const MAX_RESOURCE_NODES = 128;
@@ -100,6 +101,13 @@ function validateMapDefinition(definition, filename) {
   definition.victoryMode ??= 'any';
   if (!['any', 'all'].includes(definition.victoryMode)) {
     throw new Error(`Map ${filename} victoryMode must be "any" or "all".`);
+  }
+  if (definition.startingArmySize !== undefined
+    && (!Number.isInteger(definition.startingArmySize)
+      || definition.startingArmySize < 8
+      || definition.startingArmySize > MAX_UNITS
+      || definition.startingArmySize % 2 !== 0)) {
+    throw new Error(`Map ${filename} startingArmySize must be an even total from 8 to ${MAX_UNITS}.`);
   }
   if (definition.startingResources !== undefined) {
     const resources = definition.startingResources;
@@ -691,7 +699,7 @@ let inboundControlPongsReceived = 0;
 let inboundControlRateLimitDisconnects = 0;
 let commandQueueLimitRejections = 0;
 const sessions = new Map();
-let currentArmySize = 1000;
+let currentArmySize = DEFAULT_STARTING_ARMY_SIZE;
 let nextPlayerId = 1;
 let tickNumber = 0;
 let dirty = true;
@@ -2709,7 +2717,7 @@ function initializeCleanMatch() {
   navigationRevision = 0;
   nextMoveOrderId = 1;
   activateMap(mapCatalog.get(defaultMapId));
-  resetArmy(1000);
+  resetArmy(mapDefinition.startingArmySize ?? DEFAULT_STARTING_ARMY_SIZE);
 }
 
 async function initializeMatchFromCheckpoint() {
@@ -4530,7 +4538,7 @@ function selectMap(player, mapId) {
   const nextMap = mapCatalog.get(String(mapId));
   if (!nextMap || nextMap.id === mapDefinition.id) return;
   activateMap(nextMap);
-  resetArmy(currentArmySize);
+  resetArmy(nextMap.startingArmySize ?? DEFAULT_STARTING_ARMY_SIZE);
   broadcastMapChange();
   broadcast({ type: 'notice', message: `MAP LOADED · ${mapDefinition.name}` });
   dirty = false;
@@ -4572,7 +4580,7 @@ async function publishMap(player, rawDefinition, persist = false) {
     runtimeMapIds.add(definition.id);
     if (persist) persistedMapIds.add(definition.id);
     activateMap(definition);
-    resetArmy(currentArmySize);
+    resetArmy(definition.startingArmySize ?? DEFAULT_STARTING_ARMY_SIZE);
     broadcastMapChange();
     broadcast({ type: 'notice', message: `${persist ? 'CUSTOM MAP SAVED' : 'CUSTOM MAP PUBLISHED'} · ${mapDefinition.name}` });
     player.sendJson({ type: 'mapPublished', mapId: mapDefinition.id, persisted: persist });
