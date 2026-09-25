@@ -1,6 +1,6 @@
 # First 1v1 vertical slice: QA and playtest plan
 
-Updated 25 September 2026. This is a living acceptance record for the first invite-only deployed build. The game bible defines the intended player experience. A passing local script is evidence for the behavior it checks; it does not prove a browser interaction, an internet connection, or an external player's understanding.
+Updated 25 September 2026. This is a living acceptance record for the first invite-only deployed build. The [game bible](game-bible.md) defines the intended player experience. A passing local script is evidence for the behavior it checks; it does not prove a browser interaction, an internet connection, or an external player's understanding.
 
 ## Acceptance matrix
 
@@ -66,6 +66,8 @@ Updated 25 September 2026. This is a living acceptance record for the first invi
 - Balance lead's separate cooperative Forked Vale script reported deposits by 18.3 s, first Barracks and infantry by 51.4 s, opposing ford owners by 75.7 s, and one victory before 139.7 s. No contested combat occurred. Human match length and the 6–10 minute target remain unproven; watch whether workers make early five-unit ford captures too strong.
 - Independent draft Forked Vale layout check on the scenario branch passed mirrored terrain and resources, equal cell-route distances to all three objectives (31/30/20 cells from either spawn), six wide crossing rows, and 1,000-unit starting footprints for both seats. This is geometric evidence; the local gameplay-plus-balance checkout also passed the QA-003 builder parity rerun. The draft scenario has not been deployed.
 - The production integration task reported that a disposable combined preview with foundation, gameplay, balance, QA, Forked Vale, HUD, audio, and art passed `npm test`. Its local 2,000-unit browser performance runs still breached gates: one 56 ms long task, then a 194.279 ms server tick on an immediate repeat. This is second-hand preview evidence, not a clean integrated release measurement; QA-002 remains open.
+- A cold AI browser review of the combined preview found team and objective immediately, worker selection by 0:45, right-click movement by 1:15, wood gathering by 1:45, and a route through the choke by 2:00. It completed a Barracks, food gathering, infantry production, victory, and host rematch. The reviewer had trouble seeing resource nodes among 500 units and tried four blocked Barracks sites before finding an open 3 × 3 area. These are usability leads for human confirmation, not external playtest results. On default Stone Pass, moving the starting 496 military through the choke ended the match before the economy mattered; use Forked Vale for the first contested economy playtest.
+- A separate two-seat scripted Forked Vale probe on combined preview `7b26789` split Azure's starting force into five infantry north and three infantry plus two workers south. Unopposed, both signals were Azure-owned by 24.4 s with no worker loss. When Ember sent five infantry south, that signal stayed neutral through 78.4 s while Azure took north; diverting two Azure workers cost about 40 food and 40 wood of net gathering against Ember's four-worker economy. One deterministic run per condition, with Ember using move rather than attack-move, does not establish a human response or combat outcome.
 
 ## Repeatable run sheet
 
@@ -97,3 +99,5 @@ A qualifying external run has both players finish a match, understand the result
 ## Balance measurement handoff
 
 For every complete match, send the gameplay balance lead: map, seat assignment, match duration, first gather/build/training/contest timestamps, periods when resources blocked a desired action, the two plans attempted by each seat, and the players' own explanation of why one plan worked. Do not use scripted capture times as evidence of human pacing.
+
+On Forked Vale, specifically watch whether one player sends five infantry to one signal and three infantry plus two workers to the other before production. Record whether both signals fall, what the opponent does to deny or punish the worker-heavy lane, worker losses, and the food/wood and build-time cost of the diversion.
