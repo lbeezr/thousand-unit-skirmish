@@ -475,6 +475,7 @@ async function main() {
         RTS_HOST: '127.0.0.1',
         RTS_MAP: 'maps/open-field.json',
         RTS_CUSTOM_MAP_DIRECTORY: customMapDirectory,
+        RTS_TICK_DIAGNOSTICS: '1',
       },
     });
 
