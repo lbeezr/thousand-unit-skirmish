@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {
   UNIT_LOD_ROLE_BITS, UNIT_LOD_ROLES, shouldUpdateUnitFullDetailTint,
-  unitLodRoleMatrixUpdateMask,
+  shouldUpdateUnitTransformForFrame, unitLodRoleMatrixUpdateMask,
 } from '../src/unit-lod-state.mjs';
 
 const allRoleBits = UNIT_LOD_ROLES.reduce((mask, role) => mask | UNIT_LOD_ROLE_BITS[role], 0);
@@ -20,5 +20,13 @@ assert.equal(shouldUpdateUnitFullDetailTint(true), false,
   'full-detail tints should not be written while role LOD is active');
 assert.equal(shouldUpdateUnitFullDetailTint(false), true,
   'full-detail tints should be written when full-detail units are active');
+assert.equal(shouldUpdateUnitTransformForFrame(true, false, true), false,
+  'low-detail units should skip full-detail-only work, combat, and idle pose updates');
+assert.equal(shouldUpdateUnitTransformForFrame(true, true, false), true,
+  'low-detail units should still refresh when position, facing, spawn, or defeat changes');
+assert.equal(shouldUpdateUnitTransformForFrame(false, false, true), true,
+  'full-detail units should keep work, combat, and idle pose updates');
+assert.equal(shouldUpdateUnitTransformForFrame(false, false, false), false,
+  'unchanged units should not rewrite their transform batches');
 
-process.stdout.write('Unit LOD state scenario passed: stable roles write one role batch, transitions clear old slots, and full-detail tints skip low-detail mode.\n');
+process.stdout.write('Unit LOD state scenario passed: stable roles write one role batch, transitions clear old slots, and LOD skips full-detail-only updates.\n');

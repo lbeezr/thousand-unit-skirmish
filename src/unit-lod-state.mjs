@@ -12,3 +12,9 @@ export function unitLodRoleMatrixUpdateMask(previousRole, currentRole) {
 export function shouldUpdateUnitFullDetailTint(lowDetailActive) {
   return !lowDetailActive;
 }
+
+export function shouldUpdateUnitTransformForFrame(
+  lowDetailActive, transformChanged, fullDetailAnimationDue,
+) {
+  return transformChanged || (!lowDetailActive && fullDetailAnimationDue);
+}

@@ -13,7 +13,7 @@ import {
 import { buildingProductionCueState } from './building-visual-state.mjs';
 import {
   UNIT_LOD_ROLE_BITS, UNIT_LOD_ROLES, shouldUpdateUnitFullDetailTint,
-  unitLodRoleMatrixUpdateMask,
+  shouldUpdateUnitTransformForFrame, unitLodRoleMatrixUpdateMask,
 } from './unit-lod-state.mjs';
 import {
   capturePrerequisiteIds, findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
@@ -7252,7 +7252,7 @@ function animate(now) {
       if (turning) unit.angle += THREE.MathUtils.clamp(turnDelta, -frameDelta * 9, frameDelta * 9);
       else unit.angle = unit.targetAngle;
     }
-    const working = !walking && unit.kind === 'worker'
+    const working = !unitLowDetailActive && !walking && unit.kind === 'worker'
       && (unit.task === 'gathering' || unit.task === 'building');
     if (working) unit.motionPhase += frameDelta * (unit.task === 'building' ? 6 : 5);
     const activeAttack = unit.attackStartedAt > 0;
@@ -7264,8 +7264,10 @@ function animate(now) {
     if (activeSpawn && now - unit.spawnStartedAt >= SPAWN_POSE_MS) unit.spawnStartedAt = 0;
     if (activeDefeat && now - unit.defeatStartedAt >= DEFEAT_POSE_MS) unit.defeatStartedAt = 0;
     const idle = idlePoseDue && unit.hp > 0 && !walking && !working;
-    if (walking || wasWalking || turning || working || activeAttack || activeHit
-      || activeSpawn || activeDefeat || idle) {
+    const transformChanged = walking || wasWalking || turning || activeSpawn || activeDefeat;
+    const fullDetailAnimationDue = working || activeAttack || activeHit || idle;
+    if (shouldUpdateUnitTransformForFrame(unitLowDetailActive,
+      transformChanged, fullDetailAnimationDue)) {
       updateUnitTransform(unit, now);
       artAnimated = true;
     }
