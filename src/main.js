@@ -151,8 +151,10 @@ const ui = {
   studioGrid: document.querySelector('#studio-grid'),
   studioName: document.querySelector('#studio-name'),
   studioId: document.querySelector('#studio-id'),
+  studioSummary: document.querySelector('#studio-summary'),
   studioWidth: document.querySelector('#studio-width'),
   studioHeight: document.querySelector('#studio-height'),
+  studioStartingArmySize: document.querySelector('#studio-starting-army-size'),
   studioStartingFood: document.querySelector('#studio-starting-food'),
   studioStartingWood: document.querySelector('#studio-starting-wood'),
   studioGridSize: document.querySelector('#studio-grid-size'),
@@ -3066,6 +3068,14 @@ function saveEditorStartingResourcesFields() {
   else editorDefinition.startingResources = { food, wood };
 }
 
+function saveEditorMatchOpeningFields() {
+  if (!editorDefinition) return;
+  editorDefinition.summary = ui.studioSummary.value.trim();
+  const size = Number(ui.studioStartingArmySize.value);
+  if (size === 1000) delete editorDefinition.startingArmySize;
+  else editorDefinition.startingArmySize = size;
+}
+
 function syncEditorTriggerControls() {
   const trigger = getSelectedEditorTrigger();
   const selectedPrerequisites = trigger ? capturePrerequisiteIds(trigger)
@@ -3642,8 +3652,10 @@ function populateMapEditor(definition, message) {
   selectedEditorResourceId = null;
   ui.studioName.value = editorDefinition.name;
   ui.studioId.value = editorDefinition.id;
+  ui.studioSummary.value = editorDefinition.summary || '';
   ui.studioWidth.value = editorDefinition.width;
   ui.studioHeight.value = editorDefinition.height;
+  ui.studioStartingArmySize.value = editorDefinition.startingArmySize ?? 1000;
   ui.studioStartingFood.value = editorDefinition.startingResources?.food ?? 0;
   ui.studioStartingWood.value = editorDefinition.startingResources?.wood ?? 0;
   editorDefinition.victoryMode ??= 'any';
@@ -3686,6 +3698,16 @@ function validateImportedMap(value) {
         || resources.wood < 0 || resources.wood > 100_000))) {
       throw new Error('Starting food and wood must be whole numbers from 0 to 100,000.');
     }
+  }
+  if (definition.startingArmySize !== undefined
+    && (!Number.isInteger(definition.startingArmySize)
+      || definition.startingArmySize < 8 || definition.startingArmySize > 2000
+      || definition.startingArmySize % 2 !== 0)) {
+    throw new Error('Starting army must be an even total from 8 to 2,000 units.');
+  }
+  if (definition.summary !== undefined
+    && (typeof definition.summary !== 'string' || definition.summary.length > 120)) {
+    throw new Error('Scenario brief must be 120 characters or fewer.');
   }
   if (typeof definition.id !== 'string' || definition.id.length > 48
     || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(definition.id)) {
@@ -4179,6 +4201,7 @@ function collectEditorMap() {
   saveEditorTimedVictoryFields();
   saveEditorVictoryHoldFields();
   saveEditorStartingResourcesFields();
+  saveEditorMatchOpeningFields();
   saveSelectedEditorScenarioEventFields();
   if (!saveSelectedEditorResourceStock()) throw new Error('Resource node stock must be a positive number.');
   if (editorTriggerCreationPending) throw new Error('Finish placing the new capture zone before exporting or publishing.');
@@ -4199,7 +4222,7 @@ function collectEditorMap() {
       ? { victoryHoldSeconds: Number(ui.studioVictoryHoldSeconds.value) }
       : {}),
     fogOfWar: ui.studioFogOfWar.checked,
-    summary: `${editorDefinition.width} × ${editorDefinition.height} · CUSTOM MAP`,
+    summary: ui.studioSummary.value.trim() || `${editorDefinition.width} × ${editorDefinition.height} · CUSTOM MAP`,
     obstacles,
     resourceNodes: JSON.parse(JSON.stringify(editorResourceNodes)),
     triggers,
@@ -5234,6 +5257,9 @@ ui.studioStartingFood.addEventListener('input', saveEditorStartingResourcesField
 ui.studioStartingFood.addEventListener('change', saveEditorStartingResourcesFields);
 ui.studioStartingWood.addEventListener('input', saveEditorStartingResourcesFields);
 ui.studioStartingWood.addEventListener('change', saveEditorStartingResourcesFields);
+ui.studioSummary.addEventListener('input', saveEditorMatchOpeningFields);
+ui.studioStartingArmySize.addEventListener('input', saveEditorMatchOpeningFields);
+ui.studioStartingArmySize.addEventListener('change', saveEditorMatchOpeningFields);
 ui.studioDeadlineObjective.addEventListener('change', () => {
   ui.studioDeadlineSeconds.disabled = !ui.studioDeadlineObjective.value;
   saveEditorTimedVictoryFields();

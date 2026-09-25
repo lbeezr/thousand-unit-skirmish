@@ -130,6 +130,10 @@ function validateMapDefinition(definition, filename) {
   if (typeof definition.name !== 'string' || !definition.name.trim() || definition.name.length > 48) {
     throw new Error(`Map ${filename} needs a display name.`);
   }
+  if (definition.summary !== undefined
+    && (typeof definition.summary !== 'string' || definition.summary.length > 120)) {
+    throw new Error(`Map ${filename} scenario brief must be 120 characters or fewer.`);
+  }
   if (!Number.isInteger(definition.width) || !Number.isInteger(definition.height)
     || definition.width < 16 || definition.height < 16
     || definition.width > 256 || definition.height > 256) {
@@ -385,7 +389,7 @@ for (const entry of persistedMapFiles) {
       throw new Error(`File name must be ${definition.id}.json.`);
     }
     if (mapCatalog.has(definition.id)) throw new Error(`Map id "${definition.id}" is already in use.`);
-    definition.summary = `${definition.width} × ${definition.height} · ${definition.obstacles.length} TERRAIN BLOCKS`;
+    definition.summary ||= `${definition.width} × ${definition.height} · ${definition.obstacles.length} TERRAIN BLOCKS`;
     mapCatalog.set(definition.id, definition);
     runtimeMapIds.add(definition.id);
     persistedMapIds.add(definition.id);
@@ -4634,7 +4638,7 @@ async function publishMap(player, rawDefinition, persist = false) {
     if (persistedMapIds.has(definition.id) && !persist) {
       throw new Error('This map is saved in the custom map library. Use Map Studio to save changes.');
     }
-    definition.summary = `${definition.width} × ${definition.height} · ${definition.obstacles.length} TERRAIN BLOCKS`;
+    definition.summary ||= `${definition.width} × ${definition.height} · ${definition.obstacles.length} TERRAIN BLOCKS`;
     if (persist) await persistCustomMap(definition);
     mapCatalog.set(definition.id, definition);
     runtimeMapIds.add(definition.id);
