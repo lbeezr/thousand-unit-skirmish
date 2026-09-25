@@ -43,6 +43,7 @@ const scenarios = [
   ['scripts/formation-assignment-scenario.mjs', 'Formation assignment'],
   ['scripts/unit-selection-scenario.mjs', 'Unit selection'],
   ['scripts/room-supervisor-scenario.mjs', 'Room supervisor integration'],
+  ['scripts/railway-release-scenario.mjs', 'Railway release integration'],
 ];
 
 for (const [file, label] of scenarios) run([file], label);

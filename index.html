@@ -30,7 +30,7 @@
     <script type="importmap">
       {
         "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"
+          "three": "./vendor/three.module.js"
         }
       }
     </script>
@@ -96,10 +96,10 @@
           <section class="minimap-panel" aria-label="Tactical map">
             <div class="minimap-heading"><span>TACTICAL MAP</span><span class="minimap-live">LIVE</span></div>
             <canvas id="minimap-canvas" width="384" height="384" tabindex="0" aria-label="Tactical map. Click or drag to move the camera; use arrow keys while focused to pan.">Tactical map.</canvas>
-            <div class="minimap-legend"><span><i class="blue-dot"></i>AZURE</span><span><i class="red-dot"></i>EMBER</span></div>
+            <div class="minimap-legend"><span><i class="blue-dot"></i>AZURE</span><span><i class="red-dot"></i>EMBER</span><span><i class="food-dot"></i>FOOD</span><span><i class="wood-dot"></i>WOOD</span></div>
           </section>
           <div id="selection-box" class="selection-box" aria-hidden="true"></div>
-          <div class="field-hint"><span id="field-hint-primary-key" class="hint-key">LMB</span> <span id="field-hint-action">DRAG TO SELECT</span> <span class="hint-divider">·</span> <span id="field-hint-secondary-key" class="hint-key">RMB</span> <span id="field-hint-secondary">MOVE / ATTACK</span></div>
+          <div class="field-hint"><span id="field-hint-primary-key" class="hint-key">LMB</span> <span id="field-hint-action">DRAG TO SELECT</span> <span class="hint-divider">·</span> <span id="field-hint-secondary-key" class="hint-key">RMB</span> <span id="field-hint-secondary">MOVE / ATTACK</span><span id="placement-status" class="placement-status" aria-live="off" hidden></span></div>
           <div id="field-order-feedback" class="field-order-feedback" data-state="ready" role="status" aria-live="off" hidden></div>
           <div id="toast" class="toast" role="status" aria-live="polite"></div>
           <div id="runtime-error" class="runtime-error" role="alert"></div>
@@ -194,9 +194,9 @@
                 <small id="barracks-status" class="barracks-status" role="status" aria-live="off">No Barracks built · 175 wood · 50 food per infantry.</small>
                 <small id="worker-production-status" class="worker-production-status" role="status" aria-live="off">TOWN CENTER · CONNECTING</small>
                 <button id="resume-range" class="resume-range-button" type="button" hidden>
-                  <span id="resume-construction-label">Resume construction</span><span class="resume-range-progress"></span>
+                  <span id="resume-construction-label">Send workers to construction</span><span class="resume-range-progress"></span>
                 </button>
-                <small id="economy-status" class="food-status" role="status" aria-live="polite">Train workers at the Town Center; gather food and wood; build ranges with wood.</small>
+                <small id="economy-status" class="food-status" role="status" aria-live="polite">Select Workers, then target food or wood.</small>
               </div>
             </div>
           </section>
@@ -283,6 +283,7 @@
           <div class="help-heading"><div><div class="eyebrow">FIELD GUIDE</div><h2>Controls</h2></div><button id="help-close" class="hud-panel-close" type="button" aria-label="Close controls">×</button></div>
           <p>Move the camera with middle drag or Space + drag. Scroll to zoom. Push the pointer against the battlefield edge to pan.</p>
           <p>Touch controls: select friendly units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource. Drag the tactical map to move the camera.</p>
+          <p>Gather food or wood: select workers, then right-click a resource, or use Orders → Target battlefield and tap it. Build a Barracks or Archery Range from Build &amp; train, then choose a clear site; the field hint explains why a spot is blocked.</p>
             <div class="command-footnote"><span class="keycap">PAUSE + CLICK</span> Cycle stack <span class="footnote-sep">·</span> <span class="keycap">DOUBLE-CLICK</span> Select type<br><span class="keycap">SHIFT + DOUBLE-CLICK</span> Add type <span class="footnote-sep">·</span> <span class="keycap">SHIFT + RMB</span> Queue waypoint<br><span class="keycap">L→R DRAG</span> Enclosed <span class="footnote-sep">·</span> <span class="keycap">R→L DRAG</span> Crossing<br><span class="keycap">SHIFT + DRAG</span> Add selection <span class="footnote-sep">·</span> <span class="keycap">A</span> Select all</div>
         </aside>
       </main>

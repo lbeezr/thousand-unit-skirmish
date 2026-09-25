@@ -74,7 +74,7 @@ let lastCheckpointBytes = 0;
 let lastCheckpointWriteMs = 0;
 let lastCheckpointCaptureMs = 0;
 let lastCheckpointSerializeMs = 0;
-const configuredMapPath = path.resolve(ROOT, process.env.RTS_MAP || 'maps/stone-pass.json');
+const configuredMapPath = path.resolve(ROOT, process.env.RTS_MAP || 'maps/forked-vale.json');
 if (!Number.isInteger(MAX_PEERS) || MAX_PEERS < 2 || MAX_PEERS > 256) {
   throw new Error('RTS_MAX_PEERS must be an integer between 2 and 256.');
 }
@@ -5678,13 +5678,16 @@ const server = createServer(async (request, response) => {
     return;
   }
   if (!relative) relative = 'index.html';
-  const target = path.resolve(ROOT, relative);
+  const vendorThreeAsset = relative === 'vendor/three.module.js' || relative === 'vendor/three.core.js';
+  const target = vendorThreeAsset
+    ? path.join(ROOT, 'node_modules/three/build', path.basename(relative))
+    : path.resolve(ROOT, relative);
   if (target !== ROOT && !target.startsWith(`${ROOT}${path.sep}`)) {
     response.writeHead(403);
     response.end('Forbidden');
     return;
   }
-  const publicClientAsset = ['index.html', 'style.css', 'src/main.js', 'src/map-utils.mjs', 'src/map-resize.mjs', 'src/order-feedback.mjs', 'src/unit-selection.mjs', 'src/audio.mjs', 'src/audio-policy.mjs'].includes(relative);
+  const publicClientAsset = ['index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/map-utils.mjs', 'src/map-resize.mjs', 'src/order-feedback.mjs', 'src/unit-selection.mjs', 'src/audio.mjs', 'src/audio-policy.mjs'].includes(relative);
   const publicEnvironmentModule = relative === 'src/environment-art.mjs';
   const publicEnvironmentAsset = path.dirname(relative) === 'assets/environment/frontier-v1'
     && ['.png', '.webp'].includes(path.extname(relative))

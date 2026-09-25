@@ -11,3 +11,7 @@
 !assets/environment/
 !assets/environment/frontier-v1/
 !assets/environment/frontier-v1/*.webp
+!package.json
+!package-lock.json
+!deploy/
+!deploy/entrypoint.sh
