@@ -328,6 +328,7 @@ h2 { font-size: 16px; font-weight: 700; }
 .studio-controls { display: flex; min-width: 0; flex-direction: column; gap: 13px; }
 .studio-fields { display: grid; gap: 10px; }
 .studio-fields.two-up { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.studio-wide-field { grid-column: 1 / -1; }
 .studio-fields label { display: flex; min-width: 0; flex-direction: column; gap: 5px; color: #829081; font: 500 8px 'DM Mono', monospace; letter-spacing: .08em; }
 .studio-fields input, .studio-fields select { width: 100%; height: 32px; min-width: 0; padding: 0 8px; border: 1px solid rgba(214,226,197,.13); border-radius: 4px; outline: 0; background: rgba(255,255,255,.035); color: #d5decb; font: 500 10px 'DM Mono', monospace; letter-spacing: 0; }
 .studio-fields input:focus, .studio-fields select:focus { border-color: rgba(213,239,120,.55); box-shadow: 0 0 0 2px rgba(213,239,120,.08); }

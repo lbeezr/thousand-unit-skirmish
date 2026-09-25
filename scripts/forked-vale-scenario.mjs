@@ -11,15 +11,15 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const winnerTeam = Number(process.argv[2] ?? 0);
 assert.ok([0, 1].includes(winnerTeam), 'pass the expected winner team as 0 or 1');
 const loserTeam = 1 - winnerTeam;
-const tempRoot = await mkdtemp(path.join(os.tmpdir(), 'three-crowns-playthrough-'));
+const tempRoot = await mkdtemp(path.join(os.tmpdir(), 'forked-vale-playthrough-'));
 const portListener = createServer();
-portListener.listen(Number(process.argv[3] || 0), '127.0.0.1');
+portListener.listen(Number.isFinite(Number(process.argv[3])) ? Number(process.argv[3]) : 0, '127.0.0.1');
 await once(portListener, 'listening');
 const port = portListener.address().port;
 await new Promise((resolve, reject) => portListener.close(error => error ? reject(error) : resolve()));
 const child = spawn(process.execPath, ['server.mjs'], {
   cwd: root,
-  env: { ...process.env, PORT: String(port), RTS_HOST: '127.0.0.1', RTS_MAP: 'maps/three-crowns.json',
+  env: { ...process.env, PORT: String(port), RTS_HOST: '127.0.0.1', RTS_MAP: 'maps/forked-vale.json',
     RTS_MATCH_STATE_PATH: path.join(tempRoot, 'match.json'), RTS_CUSTOM_MAP_DIRECTORY: path.join(tempRoot, 'maps') },
   stdio: ['ignore', 'pipe', 'pipe'],
 });
@@ -76,14 +76,16 @@ function createClient(team) {
 const objective = (state, id) => state.objectives.find(row => row.id === id);
 const move = (client, ids, x, z) => client.socket.send(JSON.stringify({ type: 'move', ids, x, z }));
 function nearestIds(state, team, x, z, count, exclude = new Set()) {
-  return state.units.filter(row => row[1] === team && row[4] > 0 && !exclude.has(row[0]))
+  return state.units.filter(row => row[1] === team && row[4] > 0 && row[5] === 'infantry' && !exclude.has(row[0]))
     .sort((a, b) => Math.hypot(a[2] - x, a[3] - z) - Math.hypot(b[2] - x, b[3] - z))
     .slice(0, count).map(row => row[0]);
 }
-const logStep = name => console.log(JSON.stringify({ stage: name }));
+const testStartedAt = Date.now();
+const logStep = name => console.log(JSON.stringify({ stage: name,
+  elapsedSeconds: Number(((Date.now() - testStartedAt) / 1000).toFixed(1)) }));
 const flank = winnerTeam === 0
-  ? { winner: { id: 'north-crown', x: 0, z: -20 }, loser: { id: 'south-crown', x: 0, z: 20 } }
-  : { winner: { id: 'south-crown', x: 0, z: 20 }, loser: { id: 'north-crown', x: 0, z: -20 } };
+  ? { winner: { id: 'capture-zone-1', x: 0, z: -16 }, loser: { id: 'capture-zone-2', x: 0, z: 16 } }
+  : { winner: { id: 'capture-zone-2', x: 0, z: 16 }, loser: { id: 'capture-zone-1', x: 0, z: -16 } };
 
 try {
   const healthDeadline = Date.now() + 15000;
@@ -103,20 +105,55 @@ try {
   const ember = createClient(1);
   const emberWelcome = await ember.welcome;
   assert.equal(emberWelcome.player.team, 1);
-  assert.equal(azureWelcome.map.id, 'three-crowns');
-  assert.equal(emberWelcome.map.id, 'three-crowns');
-  assert.equal(azureWelcome.state.armySize, 1000);
-  assert.equal(emberWelcome.state.armySize, 1000);
+  assert.equal(azureWelcome.map.id, 'forked-vale');
+  assert.equal(emberWelcome.map.id, 'forked-vale');
+  assert.equal(azureWelcome.state.armySize, 24);
+  assert.equal(emberWelcome.state.armySize, 24);
+  assert.deepEqual(azureWelcome.state.food, [150, null]);
+  assert.deepEqual(emberWelcome.state.food, [null, 150]);
+  assert.deepEqual(azureWelcome.state.wood, [250, null]);
+  assert.deepEqual(emberWelcome.state.wood, [null, 250]);
   const clientsByTeam = [azure, ember];
   const welcomesByTeam = [azureWelcome, emberWelcome];
   const winnerClient = clientsByTeam[winnerTeam];
   const loserClient = clientsByTeam[loserTeam];
   const winnerUnits = nearestIds(welcomesByTeam[winnerTeam].state, winnerTeam,
-    flank.winner.x, flank.winner.z, 8);
+    flank.winner.x, flank.winner.z, 5);
   const loserUnits = nearestIds(welcomesByTeam[loserTeam].state, loserTeam,
-    flank.loser.x, flank.loser.z, 8);
-  assert.equal(winnerUnits.length, 8);
-  assert.equal(loserUnits.length, 8);
+    flank.loser.x, flank.loser.z, 5);
+  assert.equal(winnerUnits.length, 5);
+  assert.equal(loserUnits.length, 5);
+
+  stage = 'opening economy for both teams';
+  const workers = clientsByTeam.map((client, team) => welcomesByTeam[team].state.units
+    .filter(row => row[1] === team && row[5] === 'worker' && row[4] > 0).map(row => row[0]));
+  assert.deepEqual(workers.map(row => row.length), [4, 4]);
+  for (const team of [0, 1]) {
+    const client = clientsByTeam[team];
+    client.socket.send(JSON.stringify({ type: 'gather', ids: [workers[team][0]],
+      nodeId: team === 0 ? 'food-17-39' : 'food-62-39' }));
+    client.socket.send(JSON.stringify({ type: 'gather', ids: [workers[team][1]],
+      nodeId: team === 0 ? 'wood-17-25' : 'wood-62-25' }));
+  }
+  await Promise.all(clientsByTeam.map((client, team) => client.waitState(state =>
+    state.food?.[team] > 150 && state.wood?.[team] > 250, 120000)));
+  logStep('both teams gathered food and wood from mirrored base nodes');
+
+  stage = 'building mirrored barracks and training infantry';
+  for (const team of [0, 1]) {
+    clientsByTeam[team].socket.send(JSON.stringify({ type: 'build', buildingType: 'barracks',
+      ids: workers[team].slice(2), x: team === 0 ? -21.5 : 21.5, z: 0.5 }));
+  }
+  const barracks = await Promise.all(clientsByTeam.map((client, team) => client.waitState(state =>
+    state.buildings?.some(building => building.team === team && building.type === 'barracks'
+      && building.complete === true), 120000)));
+  for (const team of [0, 1]) {
+    const building = barracks[team].buildings.find(row => row.team === team && row.type === 'barracks');
+    clientsByTeam[team].socket.send(JSON.stringify({ type: 'train', buildingId: building.id }));
+  }
+  await Promise.all(clientsByTeam.map((client, team) => client.waitState(state =>
+    state.units.filter(row => row[1] === team && row[5] === 'infantry' && row[4] > 0).length >= 9, 90000)));
+  logStep('both teams completed a barracks and trained one infantry');
 
   stage = 'capturing opposite flank objectives';
   const winnerFlankCaptured = winnerClient.waitState(state => objective(state, flank.winner.id)?.owner === winnerTeam);
@@ -130,59 +167,86 @@ try {
     ember.waitState(state => objective(state, flank.winner.id)?.owner === winnerTeam
       && objective(state, flank.loser.id)?.owner === loserTeam),
   ]);
-  assert.ok(opposingOwners.every(state => objective(state, 'heartland-keep')?.owner === -1));
+  assert.ok(opposingOwners.every(state => objective(state, 'capture-zone-3')?.owner === -1));
   logStep(`Team ${winnerTeam} owns ${flank.winner.id}; Team ${loserTeam} owns ${flank.loser.id}; keep remains neutral`);
 
   stage = 'attempting the gated keep before prerequisites are united';
-  const winnerKeepUnits = nearestIds(winnerClient.states.at(-1), winnerTeam, 0, 0, 8, new Set(winnerUnits));
+  const winnerKeepUnits = nearestIds(winnerClient.states.at(-1), winnerTeam, 0, 0, 8);
   assert.equal(winnerKeepUnits.length, 8);
   const beforeKeepOrder = winnerClient.states.length;
-  move(winnerClient, winnerUnits, 0, 0);
-  const gatedPresence = await winnerClient.waitState(state => objective(state, 'heartland-keep')?.unitCounts?.[winnerTeam] >= 8
-    && objective(state, 'heartland-keep')?.requiredOwners?.[0] === objective(state, 'north-crown')?.owner
-    && objective(state, 'heartland-keep')?.requiredOwners?.[1] === objective(state, 'south-crown')?.owner
-    && objective(state, 'north-crown')?.owner !== objective(state, 'south-crown')?.owner);
+  move(winnerClient, winnerKeepUnits, 0, 0);
+  const gatedPresence = await winnerClient.waitState(state => objective(state, 'capture-zone-3')?.unitCounts?.[winnerTeam] >= 8
+    && objective(state, 'capture-zone-3')?.requiredOwners?.[0] === objective(state, 'capture-zone-1')?.owner
+    && objective(state, 'capture-zone-3')?.requiredOwners?.[1] === objective(state, 'capture-zone-2')?.owner
+    && objective(state, 'capture-zone-1')?.owner !== objective(state, 'capture-zone-2')?.owner);
   const gatedTick = gatedPresence.tick;
   await new Promise(resolve => setTimeout(resolve, 1500));
   const gatedSnapshots = winnerClient.states.filter(state => state.tick >= gatedTick
-    && objective(state, 'heartland-keep')?.unitCounts?.[winnerTeam] >= 8);
+    && objective(state, 'capture-zone-3')?.unitCounts?.[winnerTeam] >= 8);
   assert.ok(winnerClient.states.length > beforeKeepOrder);
   assert.ok(gatedSnapshots.length >= 8, `expected repeated keep states, saw ${gatedSnapshots.length}`);
   assert.ok(gatedSnapshots.every(state => {
-    const keep = objective(state, 'heartland-keep');
+    const keep = objective(state, 'capture-zone-3');
     return keep.owner === -1 && keep.progressTeam === -1 && keep.progress === 0;
   }), `keep must not progress while Team ${loserTeam} owns one required flank`);
   logStep(`keep stayed locked for ${gatedSnapshots.length} snapshots with Team ${winnerTeam} units inside`);
 
   stage = `withdrawing Team ${loserTeam} and recapturing its flank`;
   const loserClearedFlank = loserClient.waitState(state => objective(state, flank.loser.id)?.unitCounts?.[loserTeam] === 0);
-  move(loserClient, loserUnits, loserTeam === 0 ? -24 : 24, 0);
+  move(loserClient, loserUnits, loserTeam === 0 ? -26.5 : 26.5, 0);
   await loserClearedFlank;
   const loserFlankRecaptured = Promise.all([
     azure.waitState(state => objective(state, flank.loser.id)?.owner === winnerTeam),
     ember.waitState(state => objective(state, flank.loser.id)?.owner === winnerTeam),
   ]);
-  move(winnerClient, winnerUnits, flank.loser.x, flank.loser.z);
+  move(winnerClient, winnerKeepUnits, flank.loser.x, flank.loser.z);
   await loserFlankRecaptured;
   logStep(`Team ${winnerTeam} retook ${flank.loser.id}; both prerequisite owners match`);
 
   stage = 'capturing the now-unlocked keep and resolving all-objectives victory';
   const azureVictory = azure.waitState(state => state.winner === winnerTeam
-    && state.winnerTriggerId === 'heartland-keep' && state.winnerReason === 'capture-hold');
+    && state.winnerTriggerId === 'capture-zone-3' && state.winnerReason === 'capture-hold');
   const emberVictory = ember.waitState(state => state.winner === winnerTeam
-    && state.winnerTriggerId === 'heartland-keep' && state.winnerReason === 'capture-hold');
+    && state.winnerTriggerId === 'capture-zone-3' && state.winnerReason === 'capture-hold');
   move(winnerClient, winnerKeepUnits, 0, 0);
   const [finalAzure, finalEmber] = await Promise.all([azureVictory, emberVictory]);
   for (const state of [finalAzure, finalEmber]) {
     assert.deepEqual(state.objectives.filter(row => row.victory).map(row => row.owner),
       Array(3).fill(winnerTeam));
   }
+  logStep(`Team ${winnerTeam} completed the 20-second all-zone victory hold`);
+  let stressResult = null;
+  if (process.argv.includes('--stress')) {
+    stage = '2,000-unit two-lane stress reset';
+    azure.socket.send(JSON.stringify({ type: 'selectArmySize', count: 2000 }));
+    const stressStarts = await Promise.all(clientsByTeam.map((client, team) => client.waitState(state =>
+      state.armySize === 2000 && state.winner === -1
+      && state.units.filter(row => row[1] === team && row[4] > 0).length === 1000, 60000)));
+    const positions = stressStarts.map((state, team) => new Map(state.units
+      .filter(row => row[1] === team && row[4] > 0).map(row => [row[0], [row[2], row[3]]])));
+    for (const team of [0, 1]) {
+      const ids = [...positions[team].keys()];
+      assert.equal(ids.length, 1000);
+      move(clientsByTeam[team], ids, 0, team === 0 ? -16 : 16);
+    }
+    const moving = await Promise.all(clientsByTeam.map((client, team) => client.waitState(state =>
+      state.armySize === 2000 && state.units.filter(row => row[1] === team && row[4] > 0
+        && positions[team].has(row[0])
+        && Math.hypot(row[2] - positions[team].get(row[0])[0],
+          row[3] - positions[team].get(row[0])[1]) > 0.5).length >= 100, 90000)));
+    stressResult = moving.map((state, team) => ({ team,
+      moved: state.units.filter(row => row[1] === team && row[4] > 0
+        && positions[team].has(row[0])
+        && Math.hypot(row[2] - positions[team].get(row[0])[0],
+          row[3] - positions[team].get(row[0])[1]) > 0.5).length }));
+    logStep('both 1,000-unit armies moved through separate crossings');
+  }
   console.log(JSON.stringify({
-    map: 'three-crowns', roster: finalAzure.armySize, testedWinner: winnerTeam,
+    map: 'forked-vale', roster: finalAzure.armySize, testedWinner: winnerTeam,
     oppositeFlanks: [winnerTeam, loserTeam], lockedKeepSnapshots: gatedSnapshots.length,
     finalOwners: finalAzure.objectives.filter(row => row.victory).map(row => row.owner),
     winner: finalAzure.winner, winnerTriggerId: finalAzure.winnerTriggerId,
-    winnerReason: finalAzure.winnerReason,
+    winnerReason: finalAzure.winnerReason, stressResult,
   }, null, 2));
 } catch (error) {
   console.error(JSON.stringify({ stage, error: error.message, log,
