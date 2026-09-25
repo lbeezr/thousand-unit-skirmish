@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const mapPath = path.join(root, 'maps/forked-vale.json');
 const fixtureMapId = 'gather-build-opening';
+const baselineCommit = process.env.RTS_BASELINE_COMMIT || 'not-supplied';
 const temporary = await mkdtemp(path.join(os.tmpdir(), 'rts-gather-build-opening-'));
 const listener = createServer();
 listener.listen(0, '127.0.0.1');
@@ -626,6 +627,7 @@ try {
     await emitJsonLine({
       scenario: 'gather-build-opening',
       event: 'round-complete',
+      baselineCommit,
       ...round,
     });
     if (index < matrix.length - 1) await resetOpening(24);
@@ -634,6 +636,7 @@ try {
   await emitJsonLine({
     scenario: 'gather-build-opening',
     event: 'complete',
+    baselineCommit,
     baseMap: mapPath,
     fixtureMap: fixtureMapId,
     startingArmySize: 24,
@@ -647,6 +650,7 @@ try {
   await emitJsonLine({
     scenario: 'gather-build-opening',
     event: 'failed',
+    baselineCommit,
     error: { name: error.name, message: error.message, stack: error.stack },
     completedRounds,
     latestTeamState: failureSnapshots(),
