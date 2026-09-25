@@ -127,6 +127,31 @@ function validateMapDefinition(definition, filename) {
     || definition.width > 256 || definition.height > 256) {
     throw new Error(`Map ${filename} width and height must be integers between 16 and 256.`);
   }
+  const terrainMaterials = ['meadow', 'short-grass', 'long-grass', 'dirt', 'sand', 'scree', 'cinder'];
+  if (definition.terrainBase !== undefined && !terrainMaterials.includes(definition.terrainBase)) {
+    throw new Error(`Map ${filename} has an invalid base terrain material.`);
+  }
+  const terrainPatches = definition.terrainPatches ?? [];
+  if (!Array.isArray(terrainPatches) || terrainPatches.length > 4096) {
+    throw new Error(`Map ${filename} has too many terrain paint patches.`);
+  }
+  const paintedCells = new Uint8Array(definition.width * definition.height);
+  for (const patch of terrainPatches) {
+    const { column, row, width, height, material } = patch || {};
+    if (![column, row, width, height].every(Number.isInteger)
+      || column < 0 || row < 0 || width < 1 || height < 1
+      || column + width > definition.width || row + height > definition.height
+      || !terrainMaterials.includes(material)) {
+      throw new Error(`Map ${filename} has an invalid terrain paint patch.`);
+    }
+    for (let paintedRow = row; paintedRow < row + height; paintedRow++) {
+      for (let paintedColumn = column; paintedColumn < column + width; paintedColumn++) {
+        const index = paintedRow * definition.width + paintedColumn;
+        if (paintedCells[index]) throw new Error(`Map ${filename} has overlapping terrain paint patches.`);
+        paintedCells[index] = 1;
+      }
+    }
+  }
   if (!Array.isArray(definition.obstacles) || definition.obstacles.length > MAX_MAP_OBSTACLES
     || !Array.isArray(definition.spawnPoints)) {
     throw new Error(`Map ${filename} must define obstacle and spawnPoints arrays.`);
@@ -504,6 +529,8 @@ const MIME_TYPES = {
   '.mjs': 'text/javascript; charset=utf-8',
   '.md': 'text/markdown; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
+  '.png': 'image/png',
+  '.webp': 'image/webp',
 };
 
 let mapDefinition = mapCatalog.get(defaultMapId);
@@ -5551,8 +5578,13 @@ const server = createServer(async (request, response) => {
     return;
   }
   const publicClientAsset = ['index.html', 'style.css', 'src/main.js', 'src/map-utils.mjs', 'src/map-resize.mjs', 'src/order-feedback.mjs', 'src/unit-selection.mjs'].includes(relative);
+  const publicEnvironmentModule = relative === 'src/environment-art.mjs';
+  const publicEnvironmentAsset = path.dirname(relative) === 'assets/environment/frontier-v1'
+    && ['.png', '.webp'].includes(path.extname(relative))
+    && ['oak', 'pine', 'berries', 'rock-outcrop', 'basalt-ridge', 'cliff', 'seamstone',
+      'meadow', 'short-grass', 'long-grass', 'dirt', 'sand', 'scree', 'cinder'].includes(path.basename(relative, path.extname(relative)));
   const publicMapAsset = path.dirname(relative) === 'maps' && path.extname(relative) === '.json';
-  if (!publicClientAsset && !publicMapAsset) {
+  if (!publicClientAsset && !publicEnvironmentModule && !publicEnvironmentAsset && !publicMapAsset) {
     response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
     response.end('Not found');
     return;

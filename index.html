@@ -262,9 +262,33 @@
                 </div>
                 <small>Both teams begin with these stocks. Set a larger reserve for quick-build or late-game custom matches.</small>
               </div>
-              <div class="studio-tool-heading">PAINT TOOL</div>
+              <div class="studio-tool-heading">GROUND MATERIALS</div>
+              <label>BASE GROUND
+                <select id="studio-terrain-base">
+                  <option value="meadow">Moss meadow</option>
+                  <option value="short-grass">Short grass</option>
+                  <option value="long-grass">Wild grass</option>
+                  <option value="dirt">Worn dirt</option>
+                  <option value="sand">Windworn sand</option>
+                  <option value="scree">Basalt scree</option>
+                  <option value="cinder">Cinder earth</option>
+                </select>
+              </label>
+              <div class="studio-tools" role="group" aria-label="Ground material brush">
+                <button type="button" data-map-tool="ground:meadow">Moss</button>
+                <button type="button" data-map-tool="ground:short-grass">Short grass</button>
+                <button type="button" data-map-tool="ground:long-grass">Wild grass</button>
+                <button type="button" data-map-tool="ground:dirt">Dirt</button>
+                <button type="button" data-map-tool="ground:sand">Sand</button>
+                <button type="button" data-map-tool="ground:scree">Scree</button>
+                <button type="button" data-map-tool="ground:cinder">Cinder</button>
+                <button type="button" data-map-tool="ground-reset">Base ground</button>
+              </div>
+              <div class="studio-tool-heading">OBSTACLES &amp; MARKERS</div>
               <div class="studio-tools" role="group" aria-label="Map paint tool">
-                <button type="button" data-map-tool="stone" class="active">Stone</button>
+                <button type="button" data-map-tool="rock">Rocks</button>
+                <button type="button" data-map-tool="stone" class="active">Ridge</button>
+                <button type="button" data-map-tool="cliff">Cliff</button>
                 <button type="button" data-map-tool="forest">Forest</button>
                 <button type="button" data-map-tool="water">Water</button>
                 <button type="button" data-map-tool="erase">Erase</button>

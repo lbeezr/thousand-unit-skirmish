@@ -7,3 +7,7 @@
 !src/**
 !maps/
 !maps/**
+!assets/
+!assets/environment/
+!assets/environment/frontier-v1/
+!assets/environment/frontier-v1/*.webp

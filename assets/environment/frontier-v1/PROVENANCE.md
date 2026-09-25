@@ -1,0 +1,80 @@
+# Frontier environment pack v1
+
+Original environment art generated for Thousand Unit Skirmish on 25 September 2026 with Codex ImageGen. No external reference images or third-party game assets were supplied. These PNGs are source sprites and textures for evaluation in the browser prototype. The generated image identifiers and SHA-256 hashes below bind the delivered files to their source outputs.
+
+| File | Generated image | SHA-256 |
+| --- | --- | --- |
+| `oak.png` | `exec-9188de90-03cc-40cf-a684-91d8b70287e1.png` | `e99f1c70c28cedd8406dea44b72186f25a40ef88c1a3f72d7690298f5e584753` |
+| `pine.png` | `exec-7851d3ec-891a-4bb0-a707-bce02ac0cb42.png` | `b6bb0453e1537eb3f82637518cf02764c4d615d14e1257a575324c583d17bacf` |
+| `berries.png` | `exec-dd127de7-f4a1-4d8c-b565-9c2c6c56357c.png` | `3ca2f8162316e1babcda9357cb51856fa56ce1ff7706d03ef8d95bbcb0a04787` |
+| `basalt-ridge.png` | `exec-af22d893-4e85-4b41-a6bd-2f906789753b.png` | `2f119bbe75f891229e5f8779b2ba5b400ab11d8c545186c87e915b97648ce16a` |
+| `seamstone.png` | `exec-32bbdcce-895a-4ba4-8f9c-225bce04548f.png` | `c2c3588efe69ed636b1fb861dab0dcc4eeae1a5ae9e4e926aa92093c92b08a64` |
+| `meadow.png` | `exec-addd5cc2-a03d-4419-ad12-29605e403978.png` | `9268abaa3304196ca0cd774c8ae137f2c57612d57ef8cff0f46e234432af6689` |
+| `cinder.png` | `exec-5f4d4837-9628-4e9d-b241-da937b3297b8.png` | `c8bfcf36f98d66d4bd07d4ae5a77fe05bd61e650854ff1ef5a926df49d7da67a` |
+| `short-grass.png` | `exec-98199c5e-302e-43f4-a4e9-c1c93ab958b6.png` | `e10a2bd76c8733c6037f743345c7a189686b78faa85a4affac9aaa2298955a2a` |
+| `long-grass.png` | `exec-f9166259-a969-46bb-a850-05784fd5a28e.png` | `b43fa5c95c2c00d0452eaca03b406429fb941d3f71be8895bac09d17b73b8de3` |
+| `dirt.png` | `exec-7ffb3c1e-d6ce-4546-9b2b-471449b76780.png` | `f442a560c029c431a61f5bdc358b550ecff3425ee6984053a33124c32e71b1dd` |
+| `sand.png` | `exec-98b2f839-b3cb-43b0-aff3-1a78e1f86675.png` | `e8a7e948f8ceb869b9a0fef00797f265559f1af3ddfdfa7a35c4f43805db1493` |
+| `scree.png` | `exec-cc494509-7f80-49f9-85fa-7388f3b273fe.png` | `4b9bab49e6d03c85256c2a9d8cf2ad32ba5600c4701558425894e342d560c5b7` |
+| `rock-outcrop.png` | `exec-8efb83ae-0eb9-475a-95e5-51dadc6c4b07.png` | `363f67ed00cee0a8eab0fed27dc38fe9ad8b80af48d2b5f2cb1aea1f1481664a` |
+| `cliff.png` | `exec-5d9fbb4c-ad08-4e74-8623-8c955c057f63.png` | `0df4bb2e35d44d1a074c99a50305a66eb278fb898c4471dfebbad8b2b12f4478` |
+
+The matching `.webp` files are quality-86 runtime encodes of these PNG sources. The browser loads WebP; PNGs remain editable source art. Ground textures repeat with mirrored wrapping and use global map coordinates, so a material's pattern continues across separate painted regions.
+
+## Exact generation prompts
+
+### oak.png
+
+> Use case: game asset. Asset type: transparent-background 2D environment sprite for an original oblique orthographic RTS. One single mature frontier oak tree only, whole tree visible from roots to crown, centered with generous transparent margin. Strong broad asymmetrical canopy silhouette in muted olive and moss green, weathered twisted trunk, small warm ochre leaf accents, subtly hand-painted sculptural 3D appearance, readable at small in-game size, modest detail, front three-quarter elevated game camera, neutral daylight. Actual transparent alpha background, no ground plane, no cast shadow beyond a subtle contact shadow in the asset, no text, no border, no other objects, no franchise resemblance.
+
+### pine.png
+
+> Use case: game asset. Asset type: transparent-background 2D environment sprite for an original oblique orthographic RTS. One single tall dark frontier pine tree only, whole tree visible from roots to tip, centered with generous transparent margin. Distinct narrow tiered silhouette with deep pine-green needles, sparse bronze dead branches, weathered trunk, hand-painted sculptural 3D appearance, readable at small in-game size, modest detail, front three-quarter elevated game camera, neutral daylight. Actual transparent alpha background, no ground plane, no cast shadow beyond a subtle contact shadow, no text, no border, no other objects, no franchise resemblance.
+
+### berries.png
+
+> Use case: game asset. Asset type: transparent-background 2D harvestable food resource sprite for an original oblique orthographic RTS. One compact berry thicket only, whole patch visible, centered with generous transparent margin. A cluster of low rounded dark-green shrubs with a few conspicuous warm rust-red berries, strong readable silhouette at small in-game size, weathered mossy frontier art direction, subtly hand-painted sculptural 3D appearance, front three-quarter elevated game camera, neutral daylight. Actual transparent alpha background, no ground plane, no labels, no ring, no text, no border, no other objects, no franchise resemblance.
+
+### basalt-ridge.png
+
+> Use case: game asset. Asset type: transparent-background 2D environment sprite for an original oblique orthographic RTS. One short modular outcrop of dark weathered basalt ridge, roughly twice as wide as tall, whole object centered with transparent padding. Faceted rock faces with moss on top and muted ochre grass at the base, natural irregular silhouette, stable flat-ish bottom edge for joining adjacent ridge segments. Grounded painterly sculptural 3D appearance, moderate details designed to read at gameplay zoom, elevated three-quarter game camera matching a top-down RTS. Actual transparent alpha background, no sky, no landscape, no text, no other objects, no oversized glow, no franchise resemblance.
+
+### seamstone.png
+
+> Use case: game asset. Asset type: transparent-background 2D neutral objective landmark sprite for an original oblique orthographic RTS. A pair of tall split dark-stone monolith slabs rising from one low circular weathered foundation, subtle thin warm amber light visible only in the split and a few mineral seams; moss, lichen and a little ochre grass. Clear distinctive silhouette and compact footprint, readable from far overhead, ancient landscape feature with no civilization symbols. Painterly sculptural 3D appearance, restrained fantasy, elevated three-quarter RTS game camera, neutral daylight. Actual transparent alpha background, no environment, no text, no rings, no UI, no other objects, no franchise resemblance.
+
+### meadow.png
+
+> Use case: game asset. Asset type: tileable environment ground texture for a stylized 3D oblique RTS. Perfectly seamless square TOP-DOWN orthographic flat albedo texture of weathered mossy meadow soil, muted olive grass, tiny tan dry grass flecks and sparse dark earth patches, no individual objects or stones bigger than a few pixels, even lighting and consistent value everywhere, no directional shadows, no vignette, no horizon, no perspective, no border. Painterly natural material, restrained color variation, low contrast so hundreds of blue and terracotta units remain legible. Full-bleed opaque square texture.
+
+### cinder.png
+
+> Use case: game asset. Asset type: tileable environment ground texture for a stylized 3D oblique RTS. Perfectly seamless square TOP-DOWN orthographic flat albedo texture of cinder upland soil: muted charcoal brown earth, scattered tiny basalt fragments, straw-ochre dry grasses and sparse moss, the same restrained brightness and fine texture scale as a meadow terrain swatch. Even lighting and consistent value everywhere, no individual objects larger than a few pixels, no directional shadows, no vignette, no horizon, no perspective, no border. Painterly natural material, low contrast so many blue and terracotta units remain legible. Full-bleed opaque square texture.
+
+### short-grass.png
+
+> Use case: game asset. Seamless top-down orthographic square albedo texture for an original oblique RTS terrain brush. SHORT MEADOW GRASS: compact olive-green fine grass with muted yellow-green variation and tiny sparse soil flecks. Flat material only, no identifiable objects, no horizon or perspective, no cast shadows, no large marks or vignette. Even color and value edge-to-edge, perfectly tileable infinite pattern. Grounded painterly natural material, restrained detail, low contrast under hundreds of units. Full bleed opaque square.
+
+### long-grass.png
+
+> Use case: game asset. Seamless top-down orthographic square albedo texture for an original oblique RTS terrain brush. LONG WILD GRASS: muted sage and olive blades with scattered straw-ochre tufts, slightly rougher and lighter than short meadow grass but still quiet at strategic zoom. Flat material only, no objects, no horizon or perspective, no cast shadows, no large motifs or vignette. Even color and value edge-to-edge, perfectly tileable infinite pattern. Painterly natural material, low contrast under hundreds of units. Full bleed opaque square.
+
+### dirt.png
+
+> Use case: game asset. Seamless top-down orthographic square albedo texture for an original oblique RTS terrain brush. WORN EARTH: medium warm umber and desaturated brown compacted soil, tiny mineral grains, faint foot-worn irregularities, almost no vegetation. Flat material only, no objects, no horizon or perspective, no cast shadows, no large cracks or vignette. Even color and value edge-to-edge, perfectly tileable infinite pattern. Painterly grounded frontier material, low contrast. Full bleed opaque square.
+
+### sand.png
+
+> Use case: game asset. Seamless top-down orthographic square albedo texture for an original oblique RTS terrain brush. WINDWORN SAND: desaturated tan and dusty ochre mineral grains, subtle small ripples no more than a few pixels, sparse dark flecks. Flat material only, no dunes, objects, horizon, perspective, directional shadows, large motifs, or vignette. Even color and value edge-to-edge, perfectly tileable infinite pattern. Painterly grounded fantasy frontier material, low contrast under blue and rust unit colors. Full bleed opaque square.
+
+### scree.png
+
+> Use case: game asset. Seamless top-down orthographic square albedo texture for an original oblique RTS terrain brush. BASALT SCREE: small dark slate and gray-green stone chips in compact earth, weathered surfaces, a hint of ochre dust and sparse lichen. Flat material only, no boulders, objects, horizon, perspective, directional shadows, large motifs, or vignette. Even color and value edge-to-edge, perfectly tileable infinite pattern. Painterly natural material, low contrast under large armies. Full bleed opaque square.
+
+### cliff.png
+
+> Use case: game asset. Transparent-background 2D environment sprite for an original oblique orthographic RTS. A single imposing weathered dark basalt CLIFF FACE segment, approximately twice as wide as tall, flat-ish joining edges and grounded irregular base, taller and more vertical than a low rocky outcrop. Moss in crevices, sparse ochre grasses, strong legible fractured silhouette, hand-painted sculptural appearance at strategic zoom, three-quarter elevated RTS camera. Transparent alpha background, no rectangular ground tile, no sky, no text, no border, no other objects, no franchise resemblance.
+
+### rock-outcrop.png
+
+> Use case: game asset. Transparent-background 2D environment sprite for an original oblique orthographic RTS. A low irregular ROCK OUTCROP cluster of three weathered dark slate stones, broad ground-hugging silhouette, roughly twice as wide as tall, tiny moss patches and ochre dry grass around its base, no tall cliff face. Strong readable shape at strategic zoom, painterly sculptural 3D appearance from a three-quarter elevated RTS camera. Actual transparent alpha background, no square ground plane or backdrop, no sky, no text, no border, no other objects, no franchise resemblance.
