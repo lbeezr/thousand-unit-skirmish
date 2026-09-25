@@ -150,7 +150,17 @@
         "node": { "type": "string", "minLength": 1 },
         "batchKey": { "type": "string", "minLength": 1 },
         "paletteSlot": { "enum": ["neutral", "team-accent"] },
-        "pivot": { "$ref": "#/$defs/vector3" }
+        "pivot": { "$ref": "#/$defs/vector3" },
+        "teamVariant": { "$ref": "#/$defs/teamVariant" }
+      }
+    },
+    "teamVariant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["group", "team"],
+      "properties": {
+        "group": { "type": "string", "minLength": 1 },
+        "team": { "enum": ["azure", "ember"] }
       }
     },
     "unitBatchRegistration": {
