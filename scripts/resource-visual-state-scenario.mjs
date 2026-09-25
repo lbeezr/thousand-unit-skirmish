@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { buildingProductionCueState } from '../src/building-visual-state.mjs';
 import { constructionGroundStage, resourceVisualStage } from '../src/resource-visual-state.mjs';
 
 for (const [stock, startingStock, expected] of [
@@ -19,5 +20,13 @@ for (const [progress, complete, expected] of [
   assert.equal(constructionGroundStage(progress, complete), expected,
     `building progress ${progress} (complete=${complete}) should use the ${expected} ground stage`);
 }
+for (const [complete, queueLength, productionBlocked, expected] of [
+  [false, 1, false, 'idle'], [true, 0, false, 'idle'], [true, -1, true, 'idle'],
+  [true, Number.NaN, false, 'idle'], [true, 1, false, 'active'],
+  [true, 1, true, 'blocked'], [true, 1, undefined, 'active'],
+]) {
+  assert.equal(buildingProductionCueState(complete, queueLength, productionBlocked), expected,
+    `complete=${complete}, queue=${queueLength}, blocked=${productionBlocked} should use the ${expected} cue`);
+}
 
-process.stdout.write('Resource/building visual-state scenario passed: stock bands and construction boundaries follow the contract.\n');
+process.stdout.write('Resource/building visual-state scenario passed: stock, construction, and production cue states follow the contract.\n');

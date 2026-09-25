@@ -49,7 +49,7 @@ The first authored review pack provides four concrete samples: Worker idle, Work
 | damage | hp and maxHp; hp changes identify a fresh hit | Derive health ratio and damage stage from hp/maxHp. Initial worn and critical cut points reuse the current UI breakpoints at 55% and 25%; art review may tune them. |
 | under attack | attackers count | Optional localized under-attack feedback. |
 | production active | building is complete, queue has at least one item, and productionBlocked is false | Show the renderer-owned cue at productionCue. Training progress may drive its pulse or fill. |
-| production blocked | building is complete, queue has at least one item, and productionBlocked is true | Keep the cue visibly paused or subdued. Do not show an active-production cue. |
+| production blocked | building is complete, queue has at least one item, and productionBlocked is true | Keep the cue visible, desaturated, and static. Do not show the active-production pulse. |
 
 Barracks state is derived from existing fields: progress, complete, hp, maxHp, attackers, queue, trainingProgress, and productionBlocked. Queue length is read from the current queue representation. State art must not obscure the footprint, selection outline, health indicator, or rally marker.
 

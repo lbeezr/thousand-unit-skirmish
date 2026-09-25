@@ -9,6 +9,7 @@ import { unitActionPoseAllowed, unitCargoVisualState } from './unit-visual-state
 import {
   constructionGroundStage, RESOURCE_VISUAL_STAGES, resourceVisualStage,
 } from './resource-visual-state.mjs';
+import { buildingProductionCueState } from './building-visual-state.mjs';
 import {
   capturePrerequisiteIds, findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
   findUnreachableCaptureZone, findUnreachableResourceNode, scenarioEventSourceIds,
@@ -80,6 +81,7 @@ const ATTACK_UPGRADE_RULES = Object.freeze({
 });
 const TEAM_NAMES = ['Azure', 'Ember'];
 const TEAM_HEX = [0x5aa7d7, 0xe67a5e];
+const pausedProductionCueColor = new THREE.Color(0xa8a797);
 
 const viewport = document.querySelector('#viewport');
 const selectionBox = document.querySelector('#selection-box');
@@ -497,6 +499,31 @@ function clearMapObjects() {
   townCenterProductionLamps[1] = null;
 }
 
+function applyProductionCueState(lamp, state, teamColor) {
+  if (!lamp || lamp.userData.productionCueState === state) return;
+  lamp.userData.productionCueState = state;
+  lamp.visible = state !== 'idle';
+  if (state === 'idle') return;
+  lamp.material.color.setHex(teamColor);
+  if (state === 'blocked') {
+    lamp.material.color.lerp(pausedProductionCueColor, 0.55);
+    lamp.material.opacity = 0.36;
+    lamp.scale.setScalar(0.74);
+    return;
+  }
+  lamp.material.opacity = 0.88;
+  lamp.scale.setScalar(1);
+}
+
+function updateBuildingProductionCue(visual, building) {
+  const state = buildingProductionCueState(
+    building.complete === true,
+    getBuildingQueueLength(building),
+    building.productionBlocked === true,
+  );
+  applyProductionCueState(visual.productionLamp, state, visual.teamColor);
+}
+
 function addTownCenterVisual(spawn) {
   const outward = spawn.team === 0 ? -1 : 1;
   const x = THREE.MathUtils.clamp(spawn.x + outward * 3, -MAP_HALF_X + 1.5, MAP_HALF_X - 1.5);
@@ -703,7 +730,7 @@ function updateBuildingCombatFeedback(visual, building) {
 function animateBuildingCombatFeedback(now) {
   const pulse = 0.5 + 0.5 * Math.sin(now * 0.0065);
   for (const visual of buildingVisuals.values()) {
-    if (visual.productionLamp?.visible) {
+    if (visual.productionLamp?.userData.productionCueState === 'active') {
       visual.productionLamp.scale.setScalar(0.82 + pulse * 0.33);
       visual.productionLamp.material.opacity = 0.58 + pulse * 0.35;
     }
@@ -729,8 +756,11 @@ function animateBuildingCombatFeedback(now) {
     const lamp = townCenterProductionLamps[team];
     if (!lamp) continue;
     const production = latestWorkerProduction[team];
-    lamp.visible = Boolean(production?.queue > 0 && !production.productionBlocked);
-    if (lamp.visible) {
+    const state = buildingProductionCueState(
+      true, production?.queue, production?.productionBlocked === true,
+    );
+    applyProductionCueState(lamp, state, TEAM_HEX[team]);
+    if (state === 'active') {
       lamp.scale.setScalar(0.82 + pulse * 0.33);
       lamp.material.opacity = 0.58 + pulse * 0.35;
     }
@@ -934,8 +964,7 @@ function updateArcheryRangeVisual(visual, building) {
   const finished = building.complete === true || progress >= 0.9;
   visual.roof.visible = finished;
   for (const piece of visual.finishPieces) piece.visible = finished;
-  visual.productionLamp.visible = building.complete === true && getBuildingQueueLength(building) > 0
-    && building.productionBlocked !== true;
+  updateBuildingProductionCue(visual, building);
   updateBuildingHealthIndicator(visual, building);
 }
 
@@ -1032,8 +1061,7 @@ function updateBarracksVisual(visual, building) {
   for (const panel of visual.roofPanels) panel.visible = roofVisible;
   visual.ridge.visible = roofVisible;
   for (const piece of visual.finishPieces) piece.visible = roofVisible;
-  visual.productionLamp.visible = building.complete === true && getBuildingQueueLength(building) > 0
-    && building.productionBlocked !== true;
+  updateBuildingProductionCue(visual, building);
   updateBuildingHealthIndicator(visual, building);
 }
 
