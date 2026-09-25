@@ -168,7 +168,9 @@ try {
 } finally {
   socket?.close();
   secondSocket?.close();
-  server.kill('SIGTERM');
-  await once(server, 'exit').catch(() => {});
+  if (server.exitCode === null && server.signalCode === null) {
+    server.kill('SIGTERM');
+    await once(server, 'exit').catch(() => {});
+  }
   await rm(temporary, { recursive: true, force: true });
 }
