@@ -114,6 +114,15 @@ try {
   assert.equal(environmentTexture.status, 200);
   assert.match(environmentTexture.headers.get('content-type'), /image\/webp/);
   assert.ok((await environmentTexture.arrayBuffer()).byteLength > 0);
+  const interactiveEnvironmentTexture = await fetch(`${base}/assets/environment/frontier-interactive-v1/oak-worked.webp`, {
+    headers: { authorization },
+  });
+  assert.equal(interactiveEnvironmentTexture.status, 200);
+  assert.match(interactiveEnvironmentTexture.headers.get('content-type'), /image\/webp/);
+  assert.ok((await interactiveEnvironmentTexture.arrayBuffer()).byteLength > 0);
+  const resourceStateModule = await fetch(`${base}/src/resource-visual-state.mjs`, { headers: { authorization } });
+  assert.equal(resourceStateModule.status, 200);
+  assert.match(await resourceStateModule.text(), /resourceVisualStage/);
   assert.equal(await upgrade(port), 401);
   assert.equal(await upgrade(port, authorization), 101);
 

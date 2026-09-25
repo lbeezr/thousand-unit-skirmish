@@ -1,17 +1,28 @@
 import * as THREE from 'three';
+import { RESOURCE_VISUAL_STAGES } from './resource-visual-state.mjs';
 
 const ASSET_ROOT = './assets/environment/frontier-v1/';
+const INTERACTIVE_ASSET_ROOT = './assets/environment/frontier-interactive-v1/';
 export const TERRAIN_MATERIALS = ['meadow', 'short-grass', 'long-grass', 'dirt', 'sand', 'scree', 'cinder'];
-const spriteNames = ['oak', 'pine', 'berries', 'rock-outcrop', 'basalt-ridge', 'cliff', 'seamstone'];
+const spriteNames = ['pine', 'rock-outcrop', 'basalt-ridge', 'cliff', 'seamstone'];
 const textureLoader = new THREE.TextureLoader();
 
-const sprites = Object.fromEntries(spriteNames.map((name) => {
-  const texture = textureLoader.load(`${ASSET_ROOT}${name}.webp`);
+function loadSprite(url) {
+  const texture = textureLoader.load(url);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.minFilter = THREE.LinearMipmapLinearFilter;
   texture.magFilter = THREE.LinearFilter;
-  return [name, texture];
-}));
+  return texture;
+}
+
+const sprites = Object.fromEntries(spriteNames.map((name) => [name, loadSprite(`${ASSET_ROOT}${name}.webp`)]));
+for (const name of ['oak', 'berries']) {
+  for (const stage of RESOURCE_VISUAL_STAGES) {
+    sprites[`${name}-${stage}`] = loadSprite(`${INTERACTIVE_ASSET_ROOT}${name}-${stage}.webp`);
+  }
+}
+sprites.oak = sprites['oak-full'];
+sprites.berries = sprites['berries-full'];
 
 const grounds = Object.fromEntries(TERRAIN_MATERIALS.map((name) => {
   const texture = textureLoader.load(`${ASSET_ROOT}${name}.webp`);
@@ -159,6 +170,15 @@ export function createEnvironmentSprite(name, width, height, x, z) {
   mesh.quaternion.copy(cameraFacing);
   mesh.position.set(x, 0, z);
   return mesh;
+}
+
+export function setEnvironmentSpriteResourceStage(mesh, resourceType, stage) {
+  const sprite = resourceType === 'wood' ? `oak-${stage}` : `berries-${stage}`;
+  const texture = sprites[sprite];
+  if (!mesh?.material || !texture) return false;
+  mesh.material.map = texture;
+  mesh.material.needsUpdate = true;
+  return true;
 }
 
 export function createEnvironmentSpriteInstances(name, width, height, positions) {

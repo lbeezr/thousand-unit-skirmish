@@ -1,9 +1,11 @@
 import * as THREE from 'three';
 import {
   addObstacleEnvironmentSprites, createEnvironmentSprite, createEnvironmentSpriteInstances,
-  createGroundSurfaces, environmentTheme, setEnvironmentSpriteInstance, TERRAIN_MATERIALS,
+  createGroundSurfaces, environmentTheme, setEnvironmentSpriteInstance,
+  setEnvironmentSpriteResourceStage, TERRAIN_MATERIALS,
 } from './environment-art.mjs';
 import { unitActionPoseAllowed, unitCargoVisualState } from './unit-visual-state.mjs';
+import { RESOURCE_VISUAL_STAGES, resourceVisualStage } from './resource-visual-state.mjs';
 import {
   capturePrerequisiteIds, findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
   findUnreachableCaptureZone, findUnreachableResourceNode, scenarioEventSourceIds,
@@ -319,8 +321,10 @@ let victoryHoldVisual = null;
 const resourceNodeVisuals = new Map();
 const resourceCalloutTextures = new Map();
 const woodTreeNodeSlots = new Map();
+const woodTreeNodeStages = new Map();
+const woodTreeStageCounts = new Map();
 const buildingVisuals = new Map();
-let woodTreeMeshes = [];
+let woodTreeMeshes = new Map();
 let lastResourceCalloutUpdateAt = -Infinity;
 let localTeam = null;
 let isHost = false;
@@ -1143,21 +1147,23 @@ function resizeResourceCallouts() {
 
 function addResourceNodeVisual(node) {
   const nodeType = node.type === 'wood' ? 'wood' : 'food';
+  const stage = resourceVisualStage(node.stock, node.stock);
   const ringColor = nodeType === 'wood' ? 0x9bb877 : 0xe4bd63;
   const ringMaterial = new THREE.MeshBasicMaterial({
     color: ringColor, side: THREE.DoubleSide, transparent: true, opacity: 0.78, depthWrite: false,
   });
   const ring = new THREE.Mesh(new THREE.RingGeometry(0.55, 0.66, 24), ringMaterial);
+  ring.material.color.setHex(node.stock > 0 ? ringColor : 0x77806b);
+  ring.material.opacity = node.stock > 0 ? 0.78 : 0.35;
   ring.rotation.x = -Math.PI / 2;
   ring.position.set(node.x, 0.035, node.z);
   ring.renderOrder = 2;
   addMapObject(ring);
 
-  const props = [];
+  let sprite = null;
   if (nodeType !== 'wood') {
-    const berries = createEnvironmentSprite('berries', 2.55, 1.56, node.x, node.z);
-    addMapObject(berries);
-    props.push(berries);
+    sprite = createEnvironmentSprite(`berries-${stage}`, 2.55, 1.56, node.x, node.z);
+    addMapObject(sprite);
   }
   const callout = new THREE.Sprite(new THREE.SpriteMaterial({
     map: resourceCalloutTexture(nodeType), transparent: true, depthTest: false,
@@ -1168,7 +1174,8 @@ function addResourceNodeVisual(node) {
   callout.visible = false;
   addMapObject(callout);
   resourceNodeVisuals.set(node.id, {
-    type: nodeType, ring, props, stock: node.stock, x: node.x, z: node.z, callout,
+    type: nodeType, ring, sprite, stock: node.stock, startingStock: node.stock, stage,
+    x: node.x, z: node.z, callout,
   });
 }
 
@@ -1177,11 +1184,14 @@ function updateResourceNodeVisual(id, stock) {
   const visual = resourceNodeVisuals.get(id);
   if (!visual) return;
   visual.stock = stock;
+  const stage = resourceVisualStage(stock, visual.startingStock);
+  if (visual.stage === stage) return;
+  visual.stage = stage;
   const nodeColor = visual.type === 'wood' ? 0x9bb877 : 0xe4bd63;
   visual.ring.material.color.setHex(stock > 0 ? nodeColor : 0x77806b);
   visual.ring.material.opacity = stock > 0 ? 0.78 : 0.35;
-  for (const prop of visual.props) prop.visible = stock > 0;
-  if (visual.type === 'wood') setWoodNodeTreesVisible(id, stock > 0);
+  if (visual.type === 'wood') setWoodNodeTreeStage(id, stage);
+  else setEnvironmentSpriteResourceStage(visual.sprite, visual.type, stage);
 }
 
 function updateResourceNodeCallouts(now, force = false) {
@@ -1252,31 +1262,52 @@ function updateResourceNodeCallouts(now, force = false) {
   }
 }
 
-function setWoodNodeTreesVisible(id, visible) {
+function setWoodNodeTreeStage(id, stage) {
   const slots = woodTreeNodeSlots.get(id);
   if (!slots?.length) return;
+  const previous = woodTreeNodeStages.get(id);
+  if (!previous || previous === stage) return;
+  woodTreeStageCounts.set(previous, Math.max(0, (woodTreeStageCounts.get(previous) || 0) - 1));
+  woodTreeStageCounts.set(stage, (woodTreeStageCounts.get(stage) || 0) + 1);
   for (const slot of slots) {
-    for (const mesh of woodTreeMeshes) {
-      setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z, visible ? slot.scale : 0);
+    for (const [meshStage, mesh] of woodTreeMeshes) {
+      setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z,
+        meshStage === stage ? slot.scale : 0);
+      mesh.instanceMatrix.needsUpdate = true;
+      mesh.visible = (woodTreeStageCounts.get(meshStage) || 0) > 0;
     }
   }
-  for (const mesh of woodTreeMeshes) mesh.instanceMatrix.needsUpdate = true;
+  woodTreeNodeStages.set(id, stage);
 }
 
 function buildWoodNodeInstances(nodes = []) {
-  woodTreeMeshes = [];
+  woodTreeMeshes = new Map();
   woodTreeNodeSlots.clear();
+  woodTreeNodeStages.clear();
+  woodTreeStageCounts.clear();
+  for (const stage of RESOURCE_VISUAL_STAGES) woodTreeStageCounts.set(stage, 0);
   const woodNodes = nodes.filter((node) => node.type === 'wood');
   if (woodNodes.length === 0) return;
   const positions = woodNodes.map((node, index) => ({
     x: node.x, z: node.z, scale: 0.85 + (index % 3) * 0.07,
   }));
-  const trees = createEnvironmentSpriteInstances('oak', 4.1, 3.75, positions);
   for (let index = 0; index < woodNodes.length; index++) {
+    const stage = resourceVisualStage(woodNodes[index].stock, woodNodes[index].stock);
     woodTreeNodeSlots.set(woodNodes[index].id, [{ index, ...positions[index] }]);
+    woodTreeNodeStages.set(woodNodes[index].id, stage);
+    woodTreeStageCounts.set(stage, woodTreeStageCounts.get(stage) + 1);
   }
-  addMapObject(trees);
-  woodTreeMeshes = [trees];
+  for (const stage of RESOURCE_VISUAL_STAGES) {
+    const stagePositions = positions.map((position, index) => ({
+      ...position,
+      scale: woodTreeNodeStages.get(woodNodes[index].id) === stage ? position.scale : 0,
+    }));
+    const trees = createEnvironmentSpriteInstances(`oak-${stage}`, 4.1, 3.75, stagePositions);
+    if (!trees) continue;
+    trees.visible = woodTreeStageCounts.get(stage) > 0;
+    addMapObject(trees);
+    woodTreeMeshes.set(stage, trees);
+  }
 }
 
 function buildFogOverlay(definition) {
@@ -1367,7 +1398,9 @@ function buildMap(definition) {
   MAP_HALF_Z = MAP_HEIGHT / 2;
   clearBuildingVisuals();
   woodTreeNodeSlots.clear();
-  woodTreeMeshes = [];
+  woodTreeMeshes = new Map();
+  woodTreeNodeStages.clear();
+  woodTreeStageCounts.clear();
   latestBuildings = [];
   latestWorkerProduction = [null, null];
   if (buildPlacementActive) cancelBuildPlacement(false);

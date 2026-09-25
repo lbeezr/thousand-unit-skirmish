@@ -5708,14 +5708,18 @@ const server = createServer(async (request, response) => {
     response.end('Forbidden');
     return;
   }
-  const publicClientAsset = ['index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/map-utils.mjs', 'src/map-resize.mjs', 'src/order-feedback.mjs', 'src/unit-selection.mjs', 'src/unit-visual-state.mjs', 'src/audio.mjs', 'src/audio-policy.mjs'].includes(relative);
+  const publicClientAsset = ['index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/map-utils.mjs', 'src/map-resize.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/unit-selection.mjs', 'src/unit-visual-state.mjs', 'src/audio.mjs', 'src/audio-policy.mjs'].includes(relative);
   const publicEnvironmentModule = relative === 'src/environment-art.mjs';
   const publicEnvironmentAsset = path.dirname(relative) === 'assets/environment/frontier-v1'
     && ['.png', '.webp'].includes(path.extname(relative))
     && ['oak', 'pine', 'berries', 'rock-outcrop', 'basalt-ridge', 'cliff', 'seamstone',
       'meadow', 'short-grass', 'long-grass', 'dirt', 'sand', 'scree', 'cinder'].includes(path.basename(relative, path.extname(relative)));
+  const publicInteractiveEnvironmentAsset = path.dirname(relative) === 'assets/environment/frontier-interactive-v1'
+    && path.extname(relative) === '.webp'
+    && /^(oak|berries)-(full|worked|low|depleted)$/.test(path.basename(relative, path.extname(relative)));
   const publicMapAsset = path.dirname(relative) === 'maps' && path.extname(relative) === '.json';
-  if (!publicClientAsset && !publicEnvironmentModule && !publicEnvironmentAsset && !publicMapAsset) {
+  if (!publicClientAsset && !publicEnvironmentModule && !publicEnvironmentAsset
+    && !publicInteractiveEnvironmentAsset && !publicMapAsset) {
     response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
     response.end('Not found');
     return;
