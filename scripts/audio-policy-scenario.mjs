@@ -152,11 +152,11 @@ try {
   const saturatedCount = oscillators;
   assert.equal(saturatedCount, 12, 'routine cues stop at twelve active voices');
   assert.equal(audio.play('objective'), true);
-  assert.equal(oscillators, 14, 'priority cue retains room above routine limit');
+  assert.equal(oscillators, 15, 'three-note objective cue retains room above routine limit');
   assert.equal(cues.at(-1), 'objective');
   doc.hidden = true;
   assert.equal(audio.play('defeat'), false, 'hidden tab does not schedule sounds');
-  assert.equal(oscillators, 14);
+  assert.equal(oscillators, 15);
   assert.ok(statuses.includes('muted') && statuses.includes('running'));
   audio.dispose();
 
@@ -187,6 +187,25 @@ try {
   const defeatPitches = new Set(defeatProfile.map(({ from }) => from));
   assert.ok(baseLostProfile.every(({ from }) => !defeatPitches.has(from)),
     'base loss and match defeat share no fundamentals');
+  const productionStart = createdContext.oscillatorNodes.length;
+  assert.equal(criticalAudio.play('complete'), true);
+  const productionProfile = profile(createdContext.oscillatorNodes.slice(productionStart));
+  assert.deepEqual(productionProfile, [
+    { wave: 'sine', from: 392, to: 392 },
+    { wave: 'sine', from: 587, to: 587 },
+  ]);
+  const productionPitches = new Set(productionProfile.map(({ from }) => from));
+  const objectiveStart = createdContext.oscillatorNodes.length;
+  assert.equal(criticalAudio.play('objective'), true);
+  const objectiveProfile = profile(createdContext.oscillatorNodes.slice(objectiveStart));
+  assert.deepEqual(objectiveProfile, [
+    { wave: 'sine', from: 440, to: 440 },
+    { wave: 'sine', from: 554.37, to: 554.37 },
+    { wave: 'sine', from: 659.25, to: 659.25 },
+  ], 'objective gain uses a rising A-major triad');
+  const objectivePitches = new Set(objectiveProfile.map(({ from }) => from));
+  assert.ok([...objectivePitches].every((pitch) => !productionPitches.has(pitch)),
+    'objective gain and production completion share no fundamentals');
   const victoryStart = createdContext.oscillatorNodes.length;
   assert.equal(criticalAudio.play('victory'), true);
   const victoryProfile = profile(createdContext.oscillatorNodes.slice(victoryStart));
@@ -197,8 +216,10 @@ try {
     { wave: 'sine', from: 1760, to: 1760 },
   ], 'match victory uses a bright, rising A-major fanfare');
   const victoryPitches = new Set(victoryProfile.map(({ from }) => from));
-  assert.ok([392, 493.88, 587.33].every((pitch) => !victoryPitches.has(pitch)),
+  assert.ok([392, 493.88, 587].every((pitch) => !victoryPitches.has(pitch)),
     'match victory shares no fundamentals with objective or production-complete cues');
+  assert.ok([...objectivePitches].every((pitch) => !victoryPitches.has(pitch)),
+    'objective gain and match victory share no fundamentals');
   assert.ok([...victoryPitches].every((pitch) => pitch > 780),
     'match victory stays above the selection cue sweep');
   criticalAudio.dispose();

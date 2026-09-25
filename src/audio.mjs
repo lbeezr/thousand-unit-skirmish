@@ -204,7 +204,11 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
       case 'battle-alert': tone(196, at, 0.17, { wave: 'triangle', gain: 0.14 }); tone(246.94, at + 0.17, 0.21, { wave: 'triangle', gain: 0.12 }); break;
       case 'selected-alert': tone(329.63, at, 0.11, { gain: 0.16 }); tone(220, at + 0.12, 0.22, { gain: 0.15 }); break;
       case 'base-alert': tone(174.61, at, 0.17, { wave: 'triangle', gain: 0.18 }); tone(174.61, at + 0.24, 0.22, { wave: 'triangle', gain: 0.15 }); break;
-      case 'objective': tone(392, at, 0.18, { gain: 0.16 }); tone(493.88, at + 0.17, 0.26, { gain: 0.13 }); break;
+      case 'objective':
+        tone(440, at, 0.16, { wave: 'sine', gain: 0.15 });
+        tone(554.37, at + 0.13, 0.2, { wave: 'sine', gain: 0.13 });
+        tone(659.25, at + 0.26, 0.28, { wave: 'sine', gain: 0.12 });
+        break;
       case 'objective-lost': tone(349.23, at, 0.18, { gain: 0.15 }); tone(261.63, at + 0.17, 0.27, { gain: 0.13 }); break;
       case 'resource-empty': tone(415.3, at, 0.11, { wave: 'triangle', endFrequency: 311.13, gain: 0.11 }); break;
       case 'base-lost':

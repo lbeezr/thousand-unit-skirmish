@@ -1,6 +1,6 @@
 # Audio direction · first 1v1 pass
 
-The audio palette is original procedural Web Audio synthesis in `src/audio.mjs`. There are no recorded samples, external assets, dependencies, or third party licenses. Cues use soft woodlike triangle tones for commands, clear sine intervals for production completion and objectives, and a short rough downward tone for rejection. A finished building uses its own low two-part cue: a soft 185 Hz triangle followed after a short rest by a quiet 277 Hz sine, a low open fifth with no shared fundamentals with the 196/247 Hz triangle battle alert. Building loss uses a rough low sliding cue with separate fundamentals from match defeat. Match victory uses an upper-register rising A-major phrase, separated from the objective, production-complete, and selection pitches. The synthesized wind and sparse three note phrases sit well below the effects mix.
+The audio palette is original procedural Web Audio synthesis in `src/audio.mjs`. There are no recorded samples, external assets, dependencies, or third party licenses. Cues use soft woodlike triangle tones for commands, clear sine intervals for production completion, a rising A-major triad for objective capture, and a short rough downward tone for rejection. A finished building uses its own low two-part cue: a soft 185 Hz triangle followed after a short rest by a quiet 277 Hz sine, a low open fifth with no shared fundamentals with the 196/247 Hz triangle battle alert. Building loss uses a rough low sliding cue with separate fundamentals from match defeat. Match victory uses an upper-register rising A-major phrase, separated from the objective, production-complete, and selection pitches. The synthesized wind and sparse three note phrases sit well below the effects mix.
 
 | Event | Player meaning | Trigger |
 | --- | --- | --- |
@@ -44,7 +44,11 @@ The earlier base-loss and defeat cues shared two fundamentals (261.63 Hz and 196
 
 ## Outcome cue separation · 25 September 2026
 
-The original victory phrase reused both objective-gain pitches (392/493.88 Hz) and both production-complete pitches (392/587.33 Hz), so a match-ending event could sound like a louder routine confirmation. Victory now rises through A5, C-sharp 6, E6, and A6 (880–1760 Hz), clear of the objective and production pitches and above the selection sweep's 780 Hz ceiling. The focused audio policy scenario guards the four pitches and those separations. Listening on ordinary laptop speakers remains open because the fanfare now sits higher in the spectrum.
+The original victory phrase reused both objective-gain pitches (392/493.88 Hz) and both production-complete pitches (392/587 Hz), so a match-ending event could sound like a louder routine confirmation. Victory now rises through A5, C-sharp 6, E6, and A6 (880–1760 Hz), clear of the objective and production pitches and above the selection sweep's 780 Hz ceiling. The focused audio policy scenario guards the four pitches and those separations. Listening on ordinary laptop speakers remains open because the fanfare now sits higher in the spectrum.
+
+## Objective cue separation · 25 September 2026
+
+Objective capture previously began on 392 Hz, the same note as production completion, and both used two rising sine tones. Capture now rises through A4, C-sharp 5, and E5 (440/554.37/659.25 Hz), a three-note A-major triad with no shared fundamentals with production completion or the match-victory fanfare. The focused audio policy scenario guards both cue profiles and their separation. Objective loss remains a separate lower, descending cue.
 
 ## Ambience loop seam · 25 September 2026
 
