@@ -93,6 +93,11 @@ try {
   assert.equal(resizeModule.status, 200, 'the browser map editor helper should remain on the static allowlist');
   const selectionModule = await fetch(`http://127.0.0.1:${port}/src/unit-selection.mjs`);
   assert.equal(selectionModule.status, 200, 'the browser unit selector should remain on the static allowlist');
+  for (const moduleName of ['audio.mjs', 'audio-policy.mjs']) {
+    const response = await fetch(`http://127.0.0.1:${port}/src/${moduleName}`);
+    assert.equal(response.status, 200, `${moduleName} should remain on the static allowlist`);
+    assert.match(response.headers.get('content-type') || '', /^text\/javascript/, `${moduleName} needs a JavaScript MIME type`);
+  }
 
   const crossOrigin = await openWebSocket('https://other-site.example');
   assert.equal(crossOrigin.status, 403, 'cross-origin browser handshakes should be rejected');
@@ -149,7 +154,7 @@ try {
   await closeNativePeer;
 
   console.log(JSON.stringify({
-    passed: ['static-file allowlist', 'browser map editor module delivery', 'browser unit selector delivery', 'malformed URL handling', 'same-origin guard', 'native client compatibility', 'peer cap', 'per-peer message-rate cap', 'per-peer control-frame-rate cap', 'per-peer pending command queue cap'],
+    passed: ['static-file allowlist', 'browser map editor module delivery', 'browser unit selector delivery', 'browser audio module delivery', 'malformed URL handling', 'same-origin guard', 'native client compatibility', 'peer cap', 'per-peer message-rate cap', 'per-peer control-frame-rate cap', 'per-peer pending command queue cap'],
     rejectedCrossOriginStatus: crossOrigin.status,
     overLimitStatus: overLimit.status,
     floodFramesBeforeDisconnect: 121,

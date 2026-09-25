@@ -37,7 +37,9 @@ const syntaxFiles = [
 for (const file of syntaxFiles) run(['--check', file], `Syntax: ${file}`);
 
 const scenarios = [
+  ['scripts/audio-policy-scenario.mjs', 'Audio policy'],
   ['scripts/map-utils-scenario.mjs', 'Map utilities'],
+  ['scripts/forked-vale-layout.mjs', 'Forked Vale layout'],
   ['scripts/formation-assignment-scenario.mjs', 'Formation assignment'],
   ['scripts/unit-selection-scenario.mjs', 'Unit selection'],
   ['scripts/room-supervisor-scenario.mjs', 'Room supervisor integration'],

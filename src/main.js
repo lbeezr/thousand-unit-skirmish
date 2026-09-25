@@ -9,6 +9,8 @@ import {
 } from './map-utils.mjs';
 import { resizeWorldMarkers } from './map-resize.mjs';
 import { classifyOrderNotice } from './order-feedback.mjs';
+import { createGameAudio } from './audio.mjs';
+import { CombatAudioGate, cueForNotice, isLocalRejection } from './audio-policy.mjs';
 import {
   chooseUnitPickCandidate,
   isSameUnitDoubleClick,
@@ -27,6 +29,10 @@ let MAP_HALF_X = MAP_WIDTH / 2;
 let MAP_HALF_Z = MAP_HEIGHT / 2;
 const MAX_UNITS = 2000;
 const MAX_PER_TEAM = MAX_UNITS / 2;
+const ATTACK_POSE_MS = 270;
+const SPAWN_POSE_MS = 330;
+const DEFEAT_POSE_MS = 430;
+const MAX_ARROW_TRACES = 96;
 const MAX_MAP_RESOURCE_NODES = 128;
 const MAX_MAP_TRIGGERS = 32;
 const MAX_MAP_SCENARIO_EVENTS = 32;
@@ -63,7 +69,6 @@ const ATTACK_UPGRADE_RULES = Object.freeze({
 });
 const TEAM_NAMES = ['Azure', 'Ember'];
 const TEAM_HEX = [0x5aa7d7, 0xe67a5e];
-const TEAM_LIGHT_HEX = [0xb9dcf2, 0xf5c2a9];
 
 const viewport = document.querySelector('#viewport');
 const selectionBox = document.querySelector('#selection-box');
@@ -91,6 +96,12 @@ const ui = {
   selectedInfantry: document.querySelector('#selected-infantry'),
   selectedArchers: document.querySelector('#selected-archers-count'),
   selectedWaypoints: document.querySelector('#selected-waypoints'),
+  selectedBuildingCard: document.querySelector('#building-selection-card'),
+  selectedBuildingName: document.querySelector('#selected-building-name'),
+  selectedBuildingState: document.querySelector('#selected-building-state'),
+  selectedBuildingHealth: document.querySelector('#selected-building-health'),
+  selectedBuildingHealthBar: document.querySelector('#selected-building-health-bar'),
+  selectedBuildingProduction: document.querySelector('#selected-building-production'),
   aliveBlue: document.querySelector('#alive-blue'),
   aliveRed: document.querySelector('#alive-red'),
   foodStock: document.querySelector('#food-stock'),
@@ -119,6 +130,8 @@ const ui = {
   resumeConstructionLabel: document.querySelector('#resume-construction-label'),
   resumeRangeProgress: document.querySelector('.resume-range-progress'),
   fieldHintAction: document.querySelector('#field-hint-action'),
+  fieldHintPrimaryKey: document.querySelector('#field-hint-primary-key'),
+  fieldHintSecondaryKey: document.querySelector('#field-hint-secondary-key'),
   fieldHintSecondary: document.querySelector('#field-hint-secondary'),
   fps: document.querySelector('#fps-value'),
   draws: document.querySelector('#draw-value'),
@@ -140,6 +153,7 @@ const ui = {
   commandHint: document.querySelector('#command-hint'),
   orderStatus: document.querySelector('#order-status'),
   attackMoveToggle: document.querySelector('#attack-move-toggle'),
+  orderTargetToggle: document.querySelector('#order-target-toggle'),
   formationSelect: document.querySelector('#formation-select'),
   playerTeam: document.querySelector('#player-team'),
   mapSelect: document.querySelector('#map-select'),
@@ -153,9 +167,11 @@ const ui = {
   studioGrid: document.querySelector('#studio-grid'),
   studioName: document.querySelector('#studio-name'),
   studioId: document.querySelector('#studio-id'),
+  studioSummary: document.querySelector('#studio-summary'),
   studioWidth: document.querySelector('#studio-width'),
   studioHeight: document.querySelector('#studio-height'),
   studioTerrainBase: document.querySelector('#studio-terrain-base'),
+  studioStartingArmySize: document.querySelector('#studio-starting-army-size'),
   studioStartingFood: document.querySelector('#studio-starting-food'),
   studioStartingWood: document.querySelector('#studio-starting-wood'),
   studioGridSize: document.querySelector('#studio-grid-size'),
@@ -208,7 +224,20 @@ const ui = {
   studioEventTechnologyReward: document.querySelector('#studio-event-technology-reward'),
   studioEventMessage: document.querySelector('#studio-event-message'),
   controlGroups: [...document.querySelectorAll('.control-group')],
+  audioEnabled: document.querySelector('#audio-enabled'),
+  audioVolume: document.querySelector('#audio-volume'),
+  audioVolumeValue: document.querySelector('#audio-volume-value'),
+  audioAmbience: document.querySelector('#audio-ambience'),
+  audioStatus: document.querySelector('#audio-status'),
 };
+const audio = createGameAudio({
+  onStatusChange: () => syncAudioControls(),
+  onCue: (cue) => {
+    ui.audioStatus.dataset.lastCue = cue;
+    ui.audioStatus.dataset.cueCount = String((Number(ui.audioStatus.dataset.cueCount) || 0) + 1);
+  },
+});
+const combatAudioGate = new CombatAudioGate();
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x859175);
@@ -225,7 +254,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setClearColor(0x859175, 1);
 viewport.prepend(renderer.domElement);
-renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Push the pointer against a battlefield edge to scroll the camera, or middle-drag / Space-drag to pan. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets.');
+renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Push the pointer against a battlefield edge to scroll the camera, or middle-drag / Space-drag to pan. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
 renderer.domElement.tabIndex = 0;
 
 scene.add(new THREE.HemisphereLight(0xe5ebcb, 0x3e4935, 2.05));
@@ -241,9 +270,7 @@ const screenPoint = new THREE.Vector3();
 const dummy = new THREE.Object3D();
 const color = new THREE.Color();
 const workerBodyTint = new THREE.Color(0xe1bc63);
-const workerHeadTint = new THREE.Color(0xf4e3a4);
 const archerBodyTint = new THREE.Color(0xc3c995);
-const archerHeadTint = new THREE.Color(0xe6d8a5);
 const unitDamageFlashTint = new THREE.Color(0xffedc9);
 const facing = new THREE.Quaternion();
 const worldUp = new THREE.Vector3(0, 1, 0);
@@ -256,7 +283,14 @@ const controlGroups = Array.from({ length: 10 }, () => new Set());
 const bodyMeshes = [null, null];
 const headMeshes = [null, null];
 const bowMeshes = [null, null];
+const shieldMeshes = [null, null];
+const spearMeshes = [null, null];
+const toolMeshes = [null, null];
+const packMeshes = [null, null];
+const quiverMeshes = [null, null];
+const unitArtMeshes = [bodyMeshes, headMeshes, bowMeshes, shieldMeshes, spearMeshes, toolMeshes, packMeshes, quiverMeshes];
 const mapObjects = [];
+const townCenterProductionLamps = [null, null];
 let fogTexture = null;
 let fogMesh = null;
 let latestFogCells = null;
@@ -276,6 +310,8 @@ let latestRosterSize = 1000;
 let matchWinner = -1;
 let matchWinnerReason = null;
 let attackMoveMode = false;
+let tapOrderArmed = false;
+let tapOrderPointer = null;
 let knownMaps = [];
 let editorDefinition = null;
 let editorDraftSourceMapId = null;
@@ -324,6 +360,7 @@ let buildPlacementPending = false;
 let pendingBuildOrderToken = null;
 let pendingBuildBaseline = new Set();
 let toastTimer = 0;
+let fieldOrderFeedbackTimer = 0;
 let nextClientOrderToken = 1;
 let currentOrderToken = null;
 let orderStatusTimeout = null;
@@ -410,30 +447,45 @@ function clearMapObjects() {
     for (const material of materials) material?.dispose();
   }
   mapObjects.length = 0;
+  townCenterProductionLamps[0] = null;
+  townCenterProductionLamps[1] = null;
 }
 
 function addTownCenterVisual(spawn) {
   const outward = spawn.team === 0 ? -1 : 1;
   const x = THREE.MathUtils.clamp(spawn.x + outward * 3, -MAP_HALF_X + 1.5, MAP_HALF_X - 1.5);
-  const baseMaterial = new THREE.MeshStandardMaterial({ color: 0xc7bea0, roughness: 0.94, flatShading: true });
-  const roofMaterial = new THREE.MeshStandardMaterial({
-    color: spawn.team === 0 ? 0x467da0 : 0xa8503f,
-    roughness: 0.82,
-    flatShading: true,
-  });
-  const base = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.9, 1.8), baseMaterial);
-  base.position.set(x, 0.45, spawn.z);
-  addMapObject(base);
-  const roof = new THREE.Mesh(new THREE.ConeGeometry(1.25, 0.85, 4), roofMaterial);
-  roof.rotation.y = Math.PI / 4;
-  roof.position.set(x, 1.27, spawn.z);
-  addMapObject(roof);
-  const door = new THREE.Mesh(
-    new THREE.BoxGeometry(0.28, 0.52, 0.08),
-    new THREE.MeshStandardMaterial({ color: 0x574a38, roughness: 1 }),
+  const stone = new THREE.MeshBasicMaterial({ color: 0x9b9580 });
+  const slate = new THREE.MeshBasicMaterial({ color: 0x363d3f });
+  const timber = new THREE.MeshBasicMaterial({ color: 0x514333 });
+  const doorMaterial = new THREE.MeshBasicMaterial({ color: 0x2d302b });
+  const teamMaterial = new THREE.MeshBasicMaterial({ color: TEAM_HEX[spawn.team], side: THREE.DoubleSide });
+  const piece = (geometry, material, px, py, pz, angle = 0) => {
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x + px, py, spawn.z + pz);
+    mesh.rotation.z = angle;
+    addMapObject(mesh);
+    return mesh;
+  };
+  piece(new THREE.BoxGeometry(2.65, 0.22, 2.4), stone, 0, 0.11, 0);
+  piece(new THREE.BoxGeometry(2.1, 0.91, 1.85), stone, 0, 0.67, -0.14);
+  piece(new THREE.BoxGeometry(0.62, 0.67, 0.09), doorMaterial, 0, 0.56, 0.84);
+  piece(new THREE.BoxGeometry(0.82, 0.12, 0.21), timber, 0, 0.95, 0.88);
+  for (const side of [-1, 1]) {
+    piece(new THREE.BoxGeometry(1.25, 0.13, 2.32), slate, side * 0.51, 1.37, -0.14, -side * 0.48);
+    piece(new THREE.BoxGeometry(0.13, 0.88, 0.13), timber, side * 1.04, 0.68, 0.82);
+    piece(new THREE.BoxGeometry(0.13, 0.35, 0.08), teamMaterial, side * 0.88, 0.72, 0.84);
+  }
+  piece(new THREE.BoxGeometry(0.74, 1.64, 0.74), stone, -0.73, 1.03, -0.63);
+  piece(new THREE.ConeGeometry(0.67, 0.62, 4), slate, -0.73, 2.13, -0.63).rotation.y = Math.PI / 4;
+  piece(new THREE.BoxGeometry(0.38, 0.63, 0.055), teamMaterial, -0.73, 1.55, -0.23);
+  piece(new THREE.BoxGeometry(0.08, 0.76, 0.08), timber, -0.73, 1.68, -0.18);
+  const productionLamp = piece(
+    new THREE.OctahedronGeometry(0.15, 0),
+    new THREE.MeshBasicMaterial({ color: TEAM_HEX[spawn.team], transparent: true, opacity: 0.88 }),
+    0, 1.09, 0.93,
   );
-  door.position.set(x, 0.28, spawn.z + 0.94);
-  addMapObject(door);
+  productionLamp.visible = false;
+  townCenterProductionLamps[spawn.team] = productionLamp;
 }
 
 function clearBuildingVisuals() {
@@ -603,6 +655,10 @@ function updateBuildingCombatFeedback(visual, building) {
 function animateBuildingCombatFeedback(now) {
   const pulse = 0.5 + 0.5 * Math.sin(now * 0.0065);
   for (const visual of buildingVisuals.values()) {
+    if (visual.productionLamp?.visible) {
+      visual.productionLamp.scale.setScalar(0.82 + pulse * 0.33);
+      visual.productionLamp.material.opacity = 0.58 + pulse * 0.35;
+    }
     const feedback = visual.combatFeedback;
     if (!feedback) continue;
     if (feedback.attackerCount > 0) {
@@ -621,6 +677,27 @@ function animateBuildingCombatFeedback(now) {
     feedback.impactFlash.scale.set(scale, scale, scale);
     feedback.impactFlash.material.opacity = (1 - Math.max(0, age)) * 0.88;
   }
+  for (let team = 0; team < 2; team++) {
+    const lamp = townCenterProductionLamps[team];
+    if (!lamp) continue;
+    const production = latestWorkerProduction[team];
+    lamp.visible = Boolean(production?.queue > 0 && !production.productionBlocked);
+    if (lamp.visible) {
+      lamp.scale.setScalar(0.82 + pulse * 0.33);
+      lamp.material.opacity = 0.58 + pulse * 0.35;
+    }
+  }
+}
+
+function createBuildingProductionLamp(group, team, x, y, z) {
+  const lamp = new THREE.Mesh(
+    new THREE.OctahedronGeometry(0.13, 0),
+    new THREE.MeshBasicMaterial({ color: TEAM_HEX[team], transparent: true, opacity: 0.88 }),
+  );
+  lamp.position.set(x, y, z);
+  lamp.visible = false;
+  group.add(lamp);
+  return lamp;
 }
 
 function disposeBuildingVisual(visual) {
@@ -635,13 +712,37 @@ function disposeBuildingVisual(visual) {
   });
 }
 
+function addBuildingStandard(group, team, x, z, height = 1.85) {
+  const standard = new THREE.Group();
+  standard.position.set(x, 0, z);
+  const pole = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.035, 0.045, height, 5),
+    new THREE.MeshBasicMaterial({ color: 0x594938 }),
+  );
+  pole.position.y = height / 2;
+  standard.add(pole);
+  const flagShape = new THREE.Shape();
+  flagShape.moveTo(0, height - 0.13);
+  flagShape.lineTo(0.51, height - 0.13);
+  flagShape.lineTo(0.48, height - 0.58);
+  flagShape.lineTo(0.28, height - 0.48);
+  flagShape.lineTo(0.04, height - 0.58);
+  flagShape.closePath();
+  const flag = new THREE.Mesh(
+    new THREE.ShapeGeometry(flagShape),
+    new THREE.MeshBasicMaterial({ color: TEAM_HEX[team], side: THREE.DoubleSide }),
+  );
+  flag.position.z = 0.035;
+  standard.add(flag);
+  group.add(standard);
+  return standard;
+}
+
 function createArcheryRangeVisual(building) {
   const group = new THREE.Group();
   const teamColor = TEAM_HEX[building.team] || 0x9ba78b;
-  const timberMaterial = new THREE.MeshStandardMaterial({ color: 0x76583e, roughness: 0.94, flatShading: true });
-  const roofMaterial = new THREE.MeshStandardMaterial({
-    color: building.team === 0 ? 0x467da0 : 0xa8503f, roughness: 0.86, flatShading: true,
-  });
+  const timberMaterial = new THREE.MeshBasicMaterial({ color: 0x5a4837 });
+  const roofMaterial = new THREE.MeshBasicMaterial({ color: 0x454744 });
   const foundation = new THREE.Mesh(new THREE.BoxGeometry(2.9, 0.18, 2.9), timberMaterial);
   foundation.position.y = 0.12;
   group.add(foundation);
@@ -658,10 +759,29 @@ function createArcheryRangeVisual(building) {
   }
   posts.instanceMatrix.needsUpdate = true;
   group.add(posts);
-  const roof = new THREE.Mesh(new THREE.ConeGeometry(2.0, 0.95, 4), roofMaterial);
-  roof.rotation.y = Math.PI / 4;
+  const roof = new THREE.Mesh(new THREE.BoxGeometry(3.38, 0.13, 2.6), roofMaterial);
+  roof.rotation.x = -0.12;
   roof.position.y = 0.38;
   group.add(roof);
+  const finishPieces = [];
+  const targetRim = new THREE.Mesh(
+    new THREE.TorusGeometry(0.31, 0.065, 5, 12),
+    new THREE.MeshBasicMaterial({ color: 0xa3895b }),
+  );
+  targetRim.position.set(0.82, 0.82, 1.28);
+  group.add(targetRim);
+  finishPieces.push(targetRim);
+  const targetCore = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.12, 0.12, 0.045, 10),
+    new THREE.MeshBasicMaterial({ color: 0x7e5142 }),
+  );
+  targetCore.geometry.rotateX(Math.PI / 2);
+  targetCore.position.set(0.82, 0.82, 1.3);
+  group.add(targetCore);
+  finishPieces.push(targetCore);
+  const standard = addBuildingStandard(group, building.team, -1.18, 1.17, 2.02);
+  finishPieces.push(standard);
+  const productionLamp = createBuildingProductionLamp(group, building.team, -0.76, 1.35, 1.31);
 
   const outlinePoints = [
     new THREE.Vector3(-1.5, 0.025, -1.5), new THREE.Vector3(1.5, 0.025, -1.5),
@@ -681,7 +801,8 @@ function createArcheryRangeVisual(building) {
   const combatFeedback = createBuildingCombatFeedback();
   group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
   scene.add(group);
-  const visual = { group, posts, roof, teamColor, outline, rallyMarker, healthIndicator, combatFeedback };
+  const visual = { group, posts, roof, finishPieces, productionLamp,
+    teamColor, outline, rallyMarker, healthIndicator, combatFeedback };
   updateArcheryRangeVisual(visual, building);
   return visual;
 }
@@ -701,18 +822,20 @@ function updateArcheryRangeVisual(visual, building) {
     visual.posts.setMatrixAt(index, dummy.matrix);
   }
   visual.posts.instanceMatrix.needsUpdate = true;
-  visual.roof.position.y = 0.23 + postHeight + 0.48;
-  visual.roof.visible = building.complete === true || progress >= 0.9;
+  visual.roof.position.y = 0.23 + postHeight + 0.19;
+  const finished = building.complete === true || progress >= 0.9;
+  visual.roof.visible = finished;
+  for (const piece of visual.finishPieces) piece.visible = finished;
+  visual.productionLamp.visible = finished && getBuildingQueueLength(building) > 0
+    && building.productionBlocked !== true;
   updateBuildingHealthIndicator(visual, building);
 }
 
 function createBarracksVisual(building) {
   const group = new THREE.Group();
   const teamColor = TEAM_HEX[building.team] || 0x9ba78b;
-  const timberMaterial = new THREE.MeshStandardMaterial({ color: 0x76583e, roughness: 0.94, flatShading: true });
-  const roofMaterial = new THREE.MeshStandardMaterial({
-    color: building.team === 0 ? 0x527b68 : 0x9b5945, roughness: 0.88, flatShading: true,
-  });
+  const timberMaterial = new THREE.MeshBasicMaterial({ color: 0x504133 });
+  const roofMaterial = new THREE.MeshBasicMaterial({ color: 0x363e3d });
   const foundation = new THREE.Mesh(new THREE.BoxGeometry(2.9, 0.18, 2.9), timberMaterial);
   foundation.position.y = 0.12;
   group.add(foundation);
@@ -741,6 +864,25 @@ function createBarracksVisual(building) {
   const ridge = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.16, 3.18), roofMaterial);
   ridge.position.y = 1.63;
   group.add(ridge);
+  const finishPieces = [];
+  const gate = new THREE.Mesh(
+    new THREE.BoxGeometry(0.65, 0.77, 0.09),
+    new THREE.MeshBasicMaterial({ color: 0x252b29 }),
+  );
+  gate.position.set(0, 0.61, 1.19);
+  group.add(gate);
+  finishPieces.push(gate);
+  const shieldSign = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.21, 0.15, 0.055, 6),
+    new THREE.MeshBasicMaterial({ color: teamColor }),
+  );
+  shieldSign.geometry.rotateX(Math.PI / 2);
+  shieldSign.position.set(0, 1.12, 1.25);
+  group.add(shieldSign);
+  finishPieces.push(shieldSign);
+  const standard = addBuildingStandard(group, building.team, 1.24, 1.15, 2.06);
+  finishPieces.push(standard);
+  const productionLamp = createBuildingProductionLamp(group, building.team, 0, 1.17, 1.27);
 
   const outlinePoints = [
     new THREE.Vector3(-1.5, 0.025, -1.5), new THREE.Vector3(1.5, 0.025, -1.5),
@@ -760,7 +902,8 @@ function createBarracksVisual(building) {
   const combatFeedback = createBuildingCombatFeedback();
   group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
   scene.add(group);
-  const visual = { group, walls, roofPanels, ridge, teamColor, outline, rallyMarker, healthIndicator, combatFeedback };
+  const visual = { group, walls, roofPanels, ridge, finishPieces, productionLamp,
+    teamColor, outline, rallyMarker, healthIndicator, combatFeedback };
   updateBarracksVisual(visual, building);
   return visual;
 }
@@ -777,20 +920,32 @@ function updateBarracksVisual(visual, building) {
   const roofVisible = building.complete === true || progress >= 0.9;
   for (const panel of visual.roofPanels) panel.visible = roofVisible;
   visual.ridge.visible = roofVisible;
+  for (const piece of visual.finishPieces) piece.visible = roofVisible;
+  visual.productionLamp.visible = roofVisible && getBuildingQueueLength(building) > 0
+    && building.productionBlocked !== true;
   updateBuildingHealthIndicator(visual, building);
 }
 
-function reconcileBuildings(buildings = []) {
+function reconcileBuildings(buildings = [], initial = false) {
   const rows = Array.isArray(buildings)
     ? buildings.filter((building) => building && ['archery-range', 'barracks'].includes(building.type)
       && [0, 1].includes(building.team) && Number.isFinite(building.x) && Number.isFinite(building.z))
     : [];
   const priorSelectedBuildingId = selectedBuildingId;
+  const previousBuildings = new Map(latestBuildings.map((building) => [building.id, building]));
+  let buildingDamage = 0;
+  let completedOwnBuilding = false;
   const priorSelectedRallyCell = latestBuildings.find((building) => building.id === selectedBuildingId)?.rallyCell ?? -1;
   if (selectedBuildingId !== null && !rows.some((building) => building.id === selectedBuildingId
     && building.team === localTeam)) selectedBuildingId = null;
   const seen = new Set();
   for (const building of rows) {
+    const previous = previousBuildings.get(building.id);
+    if (previous && building.team === localTeam) {
+      if (Number.isFinite(previous.hp) && Number.isFinite(building.hp) && building.hp < previous.hp) buildingDamage++;
+      if (previous.complete !== true && building.complete === true) completedOwnBuilding = true;
+      if (getBuildingQueueLength(previous) > getBuildingQueueLength(building)) completedOwnBuilding = true;
+    }
     seen.add(building.id);
     let visual = buildingVisuals.get(building.id);
     if (!visual) {
@@ -815,6 +970,7 @@ function reconcileBuildings(buildings = []) {
     buildingVisuals.delete(id);
   }
   latestBuildings = rows;
+  if (!initial && completedOwnBuilding) audio.play('complete');
   const selectedBuilding = rows.find((building) => building.id === selectedBuildingId
     && building.team === localTeam) || null;
   if (priorSelectedBuildingId !== selectedBuildingId
@@ -833,6 +989,7 @@ function reconcileBuildings(buildings = []) {
     showToast(`${buildingLabel(placed?.type || buildPlacementType)} PLACED · WORKERS CONSTRUCTING`, 1800);
   }
   drawMinimap(performance.now(), true);
+  return buildingDamage;
 }
 
 function getBuildingQueueLength(building) {
@@ -1054,6 +1211,7 @@ function buildMap(definition) {
   resourceNodeVisuals.clear();
   latestResourceStocks = new Map();
   objectivePanel.replaceChildren();
+  if (tapOrderArmed) setTapOrderArmed(false, false);
   MAP_WIDTH = definition.width;
   MAP_HEIGHT = definition.height;
   MAP_HALF_X = MAP_WIDTH / 2;
@@ -1271,7 +1429,7 @@ function buildMap(definition) {
     const time = `${Math.floor(wholeSeconds / 60)}:${String(wholeSeconds % 60).padStart(2, '0')}`;
     detail.textContent = `At ${time}, its current owner wins; unclaimed is a draw.`;
     card.append(heading, title, detail);
-    objectivePanel.append(card);
+    objectivePanel.prepend(card);
     timedVictoryVisual = { card, status, rule: definition.timedVictory, objective };
   }
 
@@ -1328,6 +1486,37 @@ function buildMap(definition) {
   const summary = document.querySelector('#map-summary');
   if (title) title.textContent = definition.name || definition.id.toUpperCase();
   if (summary) summary.textContent = definition.summary || `${MAP_WIDTH} × ${MAP_HEIGHT}`;
+  document.querySelector('#scenario-brief-name').textContent = definition.name || definition.id.toUpperCase();
+  document.querySelector('#scenario-brief-summary').textContent = definition.summary || 'Control the marked objectives and protect your army.';
+  const deadline = document.querySelector('#scenario-brief-deadline');
+  const decisiveZone = definition.triggers?.find((trigger) => trigger.id === definition.timedVictory?.objectiveId);
+  deadline.hidden = !definition.timedVictory;
+  deadline.textContent = definition.timedVictory
+    ? `DEADLINE · ${formatVictoryHoldTime(definition.timedVictory.afterSeconds)} · Hold ${decisiveZone?.name || 'the decisive zone'} when time expires. Unclaimed is a draw.`
+    : '';
+  const victoryZones = (definition.triggers || []).filter((trigger) => trigger.victory === true);
+  const holdSeconds = definition.victoryHoldSeconds ?? 0;
+  const target = victoryZones.length === 1 ? 'the victory zone'
+    : definition.victoryMode === 'all' ? `all ${victoryZones.length} victory zones` : 'any victory zone';
+  document.querySelector('#scenario-brief-win-rule').textContent = victoryZones.length === 0
+    ? 'Eliminate the opposing army to win.'
+    : `${holdSeconds > 0 ? 'Hold' : 'Capture'} ${target}${holdSeconds > 0 ? ` for ${formatVictoryHoldTime(holdSeconds)}` : ''} to win.${holdSeconds > 0 ? ' Losing control resets the hold.' : ''}`;
+  const briefZones = document.querySelector('#scenario-brief-zones');
+  const briefZoneList = document.querySelector('#scenario-brief-zone-list');
+  briefZones.hidden = !definition.triggers?.length;
+  briefZoneList.replaceChildren();
+  for (const trigger of definition.triggers || []) {
+    const item = document.createElement('li');
+    const name = document.createElement('strong');
+    name.textContent = trigger.name;
+    const details = document.createElement('small');
+    const prerequisites = capturePrerequisiteIds(trigger).map((id) => (
+      definition.triggers.find((zone) => zone.id === id)?.name || id
+    ));
+    details.textContent = `${trigger.victory === true ? 'Victory zone' : 'Capture zone'} · ${trigger.requiredUnits} units · ${trigger.captureSeconds}s to capture${prerequisites.length ? ` · requires ${prerequisites.join(' + ')}` : ''}`;
+    item.append(name, details);
+    briefZoneList.append(item);
+  }
   const footerMap = document.querySelector('#footer-map-name');
   if (footerMap) footerMap.textContent = definition.name || definition.id.toUpperCase();
   buildMinimapBackground(definition);
@@ -1584,20 +1773,79 @@ function makeInstances(geometry, material, capacity) {
   return mesh;
 }
 
+function addPaintedFacets(geometry) {
+  const normals = geometry.getAttribute('normal');
+  const shades = new Float32Array(normals.count * 3);
+  for (let index = 0; index < normals.count; index++) {
+    const value = THREE.MathUtils.clamp(
+      0.77 - normals.getX(index) * 0.13 + normals.getY(index) * 0.17 + normals.getZ(index) * 0.06,
+      0.63, 1,
+    );
+    shades[index * 3] = value;
+    shades[index * 3 + 1] = value;
+    shades[index * 3 + 2] = value;
+  }
+  geometry.setAttribute('color', new THREE.BufferAttribute(shades, 3));
+  return geometry;
+}
+
 for (let team = 0; team < 2; team++) {
   bodyMeshes[team] = makeInstances(
-    new THREE.CylinderGeometry(0.16, 0.235, 0.48, 6, 1),
-    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.72, flatShading: true }),
+    addPaintedFacets(new THREE.CylinderGeometry(0.16, 0.235, 0.48, 6, 1)),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: true }),
     MAX_PER_TEAM,
   );
   headMeshes[team] = makeInstances(
-    new THREE.SphereGeometry(0.145, 7, 5),
-    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.78, flatShading: true }),
+    addPaintedFacets(new THREE.SphereGeometry(0.145, 7, 5)),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: true }),
     MAX_PER_TEAM,
   );
   bowMeshes[team] = makeInstances(
-    new THREE.TorusGeometry(0.2, 0.035, 4, 9, Math.PI * 1.1),
-    new THREE.MeshStandardMaterial({ color: 0xd6b975, roughness: 0.82, flatShading: true }),
+    new THREE.TorusGeometry(0.23, 0.027, 4, 9, Math.PI * 1.28),
+    new THREE.MeshBasicMaterial({ color: 0xb88c58 }),
+    MAX_PER_TEAM,
+  );
+  const shieldGeometry = new THREE.CylinderGeometry(0.3, 0.28, 0.065, 6);
+  shieldGeometry.rotateX(Math.PI / 2);
+  shieldMeshes[team] = makeInstances(
+    shieldGeometry,
+    new THREE.MeshBasicMaterial({ color: team === 0 ? 0x315b76 : 0x8a4639 }),
+    MAX_PER_TEAM,
+  );
+  const spearGeometry = new THREE.LatheGeometry([
+    new THREE.Vector2(0.025, 0), new THREE.Vector2(0.025, 0.69),
+    new THREE.Vector2(0.072, 0.76), new THREE.Vector2(0, 0.98),
+  ], 5);
+  spearGeometry.translate(0, -0.43, 0);
+  spearMeshes[team] = makeInstances(
+    spearGeometry,
+    new THREE.MeshBasicMaterial({ color: 0x5c5649 }),
+    MAX_PER_TEAM,
+  );
+  const toolShape = new THREE.Shape();
+  toolShape.moveTo(-0.027, -0.32);
+  toolShape.lineTo(0.027, -0.32);
+  toolShape.lineTo(0.027, 0.12);
+  toolShape.lineTo(0.19, 0.16);
+  toolShape.lineTo(0.19, 0.23);
+  toolShape.lineTo(-0.18, 0.23);
+  toolShape.lineTo(-0.18, 0.16);
+  toolShape.lineTo(-0.027, 0.12);
+  toolShape.closePath();
+  const toolGeometry = new THREE.ExtrudeGeometry(toolShape, { depth: 0.035, bevelEnabled: false });
+  toolMeshes[team] = makeInstances(
+    toolGeometry,
+    new THREE.MeshBasicMaterial({ color: 0x6f644d, side: THREE.DoubleSide }),
+    MAX_PER_TEAM,
+  );
+  packMeshes[team] = makeInstances(
+    new THREE.BoxGeometry(0.34, 0.32, 0.22),
+    new THREE.MeshBasicMaterial({ color: 0x9c754c }),
+    MAX_PER_TEAM,
+  );
+  quiverMeshes[team] = makeInstances(
+    new THREE.ConeGeometry(0.12, 0.43, 5),
+    new THREE.MeshBasicMaterial({ color: 0x75553d }),
     MAX_PER_TEAM,
   );
 }
@@ -1631,6 +1879,76 @@ moveMarker.visible = false;
 moveMarker.renderOrder = 3;
 scene.add(moveMarker);
 
+const arrowTraces = [];
+const arrowImpacts = [];
+const arrowAxis = new THREE.Vector3(0, 0, 1);
+const arrowDirection = new THREE.Vector3();
+const arrowMesh = makeInstances(
+  new THREE.BoxGeometry(0.035, 0.035, 0.28),
+  new THREE.MeshBasicMaterial({ color: 0xe9ce94, transparent: true, opacity: 0.86, depthWrite: false }),
+  MAX_ARROW_TRACES,
+);
+arrowMesh.renderOrder = 3;
+const arrowImpactMesh = makeInstances(
+  new THREE.RingGeometry(0.12, 0.2, 8),
+  new THREE.MeshBasicMaterial({
+    color: 0xe9ce94, side: THREE.DoubleSide, transparent: true, opacity: 0.72, depthWrite: false,
+  }),
+  MAX_ARROW_TRACES,
+);
+arrowImpactMesh.renderOrder = 3;
+
+function addArrowTrace(fromX, fromZ, toX, toZ, now) {
+  if (!Number.isFinite(fromX) || !Number.isFinite(fromZ)
+    || !Number.isFinite(toX) || !Number.isFinite(toZ)) return;
+  if (Math.hypot(toX - fromX, toZ - fromZ) < 0.45) return;
+  if (arrowTraces.length >= MAX_ARROW_TRACES) arrowTraces.shift();
+  arrowTraces.push({ fromX, fromZ, toX, toZ, startedAt: now });
+}
+
+function animateArrowEffects(now) {
+  let traceCount = 0;
+  for (let index = 0; index < arrowTraces.length; index++) {
+    const trace = arrowTraces[index];
+    const progress = (now - trace.startedAt) / 180;
+    if (progress >= 1) {
+      if (arrowImpacts.length >= MAX_ARROW_TRACES) arrowImpacts.shift();
+      arrowImpacts.push({ x: trace.toX, z: trace.toZ, startedAt: now });
+      continue;
+    }
+    arrowTraces[traceCount] = trace;
+    arrowDirection.set(trace.toX - trace.fromX, 0, trace.toZ - trace.fromZ).normalize();
+    dummy.position.set(
+      THREE.MathUtils.lerp(trace.fromX, trace.toX, progress),
+      0.46 + Math.sin(progress * Math.PI) * 0.12,
+      THREE.MathUtils.lerp(trace.fromZ, trace.toZ, progress),
+    );
+    dummy.quaternion.setFromUnitVectors(arrowAxis, arrowDirection);
+    dummy.scale.setScalar(1);
+    dummy.updateMatrix();
+    arrowMesh.setMatrixAt(traceCount++, dummy.matrix);
+  }
+  arrowTraces.length = traceCount;
+  arrowMesh.count = traceCount;
+  if (traceCount) arrowMesh.instanceMatrix.needsUpdate = true;
+
+  let impactCount = 0;
+  for (let index = 0; index < arrowImpacts.length; index++) {
+    const impact = arrowImpacts[index];
+    const progress = (now - impact.startedAt) / 170;
+    if (progress >= 1) continue;
+    arrowImpacts[impactCount] = impact;
+    dummy.position.set(impact.x, 0.045, impact.z);
+    dummy.quaternion.copy(ringRotation);
+    dummy.scale.setScalar(0.55 + progress * 1.25);
+    dummy.updateMatrix();
+    arrowImpactMesh.setMatrixAt(impactCount++, dummy.matrix);
+  }
+  arrowImpacts.length = impactCount;
+  arrowImpactMesh.count = impactCount;
+  if (impactCount) arrowImpactMesh.instanceMatrix.needsUpdate = true;
+}
+
 const placementGhost = new THREE.Group();
 const placementGhostMaterials = [
   new THREE.MeshBasicMaterial({ color: 0x9cdb8a, transparent: true, opacity: 0.25, depthWrite: false }),
@@ -1643,9 +1961,9 @@ placementGhost.add(ghostFootprint);
 const ghostFoundation = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.18, 2.8), placementGhostMaterials[1]);
 ghostFoundation.position.y = 0.13;
 placementGhost.add(ghostFoundation);
-const ghostRoof = new THREE.Mesh(new THREE.ConeGeometry(1.8, 0.8, 4), placementGhostMaterials[1]);
-ghostRoof.rotation.y = Math.PI / 4;
-ghostRoof.position.y = 0.72;
+const ghostRoof = new THREE.Mesh(new THREE.BoxGeometry(3.38, 0.13, 2.6), placementGhostMaterials[1]);
+ghostRoof.rotation.x = -0.12;
+ghostRoof.position.y = 1.3;
 placementGhost.add(ghostRoof);
 const ghostBarracksWalls = new THREE.Mesh(new THREE.BoxGeometry(2.35, 0.72, 2.35), placementGhostMaterials[1]);
 ghostBarracksWalls.position.y = 0.52;
@@ -1665,7 +1983,7 @@ scene.add(placementGhost);
 
 function setUnitTint(unit) {
   const health = Math.max(0, unit.hp) / 100;
-  const strength = unit.hp > 0 ? 0.7 + health * 0.3 : 0;
+  const strength = unit.hp > 0 ? 0.7 + health * 0.3 : unit.defeatStartedAt > 0 ? 0.58 : 0;
   const flashing = unit.damageFlashUntil > performance.now();
   color.setHex(TEAM_HEX[unit.team]);
   if (unit.kind === 'worker') color.lerp(workerBodyTint, 0.42);
@@ -1673,9 +1991,7 @@ function setUnitTint(unit) {
   if (flashing) color.lerp(unitDamageFlashTint, 0.78);
   color.multiplyScalar(unit.tintVariation * strength);
   bodyMeshes[unit.team].setColorAt(unit.slot, color);
-  color.setHex(TEAM_LIGHT_HEX[unit.team]);
-  if (unit.kind === 'worker') color.lerp(workerHeadTint, 0.36);
-  else if (unit.kind === 'archer') color.lerp(archerHeadTint, 0.22);
+  color.setHex(unit.kind === 'worker' ? 0xd7be8f : unit.kind === 'archer' ? 0x839477 : 0xabb2ad);
   if (flashing) color.lerp(unitDamageFlashTint, 0.82);
   color.multiplyScalar((0.91 + ((unit.id * 7) % 10) / 100) * strength);
   headMeshes[unit.team].setColorAt(unit.slot, color);
@@ -1683,19 +1999,40 @@ function setUnitTint(unit) {
   headMeshes[unit.team].instanceColor.needsUpdate = true;
 }
 
-function updateUnitTransform(unit) {
-  const visibleScale = unit.hp > 0 && unit.visible !== false ? unit.scale : 0;
+function updateUnitTransform(unit, now = performance.now()) {
+  const spawnProgress = unit.spawnStartedAt > 0
+    ? THREE.MathUtils.clamp((now - unit.spawnStartedAt) / SPAWN_POSE_MS, 0, 1) : 1;
+  const defeatProgress = unit.defeatStartedAt > 0
+    ? THREE.MathUtils.clamp((now - unit.defeatStartedAt) / DEFEAT_POSE_MS, 0, 1) : 0;
+  const visibleScale = unit.visible === false ? 0 : unit.hp > 0
+    ? unit.scale * (0.28 + spawnProgress * 0.72)
+    : unit.defeatStartedAt > 0 ? unit.scale * (1 - defeatProgress) : 0;
   const isWorker = unit.kind === 'worker';
   const isArcher = unit.kind === 'archer';
   const bodyScale = isWorker ? visibleScale * 0.82 : isArcher ? visibleScale * 0.9 : visibleScale;
+  const stride = unit.walking ? Math.sin(unit.motionPhase || 0) * 0.038 : 0;
+  const attackAge = unit.attackStartedAt > 0 ? (now - unit.attackStartedAt) / ATTACK_POSE_MS : 1;
+  const attackPose = attackAge >= 0 && attackAge < 1 ? Math.sin(attackAge * Math.PI) : 0;
+  const workSwing = isWorker && (unit.task === 'gathering' || unit.task === 'building')
+    ? Math.sin(unit.motionPhase || 0) * 0.46 : isWorker ? attackPose * 0.55 : 0;
+  const forwardX = Math.sin(unit.angle);
+  const forwardZ = Math.cos(unit.angle);
+  const sideX = Math.cos(unit.angle);
+  const sideZ = -Math.sin(unit.angle);
   facing.setFromAxisAngle(worldUp, unit.angle);
-  dummy.position.set(unit.renderX, isWorker ? 0.23 : isArcher ? 0.25 : 0.27, unit.renderZ);
+  dummy.position.set(unit.renderX + forwardX * attackPose * 0.05,
+    (isWorker ? 0.23 : isArcher ? 0.25 : 0.27) + Math.max(0, stride) - defeatProgress * 0.16,
+    unit.renderZ + forwardZ * attackPose * 0.05);
   dummy.quaternion.copy(facing);
+  dummy.rotateX(attackPose * (isArcher ? -0.13 : 0.18));
+  dummy.rotateZ(defeatProgress * 0.9);
   dummy.scale.setScalar(bodyScale);
   dummy.updateMatrix();
   bodyMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
 
-  dummy.position.set(unit.renderX, isWorker ? 0.48 : isArcher ? 0.54 : 0.61, unit.renderZ);
+  dummy.position.set(unit.renderX + sideX * defeatProgress * 0.16,
+    (isWorker ? 0.48 : isArcher ? 0.54 : 0.61) + Math.max(0, stride) - defeatProgress * 0.34,
+    unit.renderZ + sideZ * defeatProgress * 0.16);
   dummy.quaternion.identity();
   dummy.scale.setScalar(bodyScale);
   dummy.updateMatrix();
@@ -1708,9 +2045,46 @@ function updateUnitTransform(unit) {
     unit.renderZ + Math.cos(unit.angle) * 0.18,
   );
   dummy.quaternion.copy(facing);
+  dummy.rotateY(attackPose * 0.22);
   dummy.scale.setScalar(bowScale);
   dummy.updateMatrix();
   bowMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
+
+  dummy.position.set(unit.renderX - sideX * 0.235 + forwardX * 0.1, 0.42 + Math.max(0, stride),
+    unit.renderZ - sideZ * 0.235 + forwardZ * 0.1);
+  dummy.quaternion.copy(facing);
+  dummy.rotateX(-attackPose * 0.16);
+  dummy.scale.setScalar(isWorker || isArcher ? 0 : visibleScale);
+  dummy.updateMatrix();
+  shieldMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
+
+  dummy.position.set(unit.renderX + sideX * 0.24, 0.57 + Math.max(0, stride),
+    unit.renderZ + sideZ * 0.24);
+  dummy.quaternion.copy(facing);
+  dummy.rotateX(attackPose * 0.66);
+  dummy.scale.setScalar(isWorker || isArcher ? 0 : visibleScale);
+  dummy.updateMatrix();
+  spearMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
+
+  dummy.position.set(unit.renderX + sideX * 0.265, 0.43 + Math.max(0, stride), unit.renderZ + sideZ * 0.265);
+  dummy.quaternion.copy(facing);
+  dummy.rotateZ(-0.2 + workSwing);
+  dummy.scale.setScalar(isWorker ? visibleScale : 0);
+  dummy.updateMatrix();
+  toolMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
+
+  dummy.position.set(unit.renderX - forwardX * 0.19, 0.32 + Math.max(0, stride), unit.renderZ - forwardZ * 0.19);
+  dummy.quaternion.copy(facing);
+  dummy.scale.setScalar(isWorker ? visibleScale : 0);
+  dummy.updateMatrix();
+  packMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
+
+  dummy.position.set(unit.renderX - forwardX * 0.18 + sideX * 0.17, 0.42 + Math.max(0, stride),
+    unit.renderZ - forwardZ * 0.18 + sideZ * 0.17);
+  dummy.quaternion.copy(facing);
+  dummy.scale.setScalar(isArcher ? visibleScale : 0);
+  dummy.updateMatrix();
+  quiverMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
 
   const focused = unit.hp > 0 && unit.visible !== false && unit.targetedBy >= 2;
   if (focused || unit.focused || !unit.focusMatrixInitialized) {
@@ -1736,9 +2110,11 @@ function setArmySize(count, showMessage = false) {
   units.length = 0;
   teamUnits[0].length = 0;
   teamUnits[1].length = 0;
-  bodyMeshes.forEach((mesh) => { mesh.count = 0; });
-  headMeshes.forEach((mesh) => { mesh.count = 0; });
-  bowMeshes.forEach((mesh) => { mesh.count = 0; });
+  unitArtMeshes.forEach((pair) => pair.forEach((mesh) => { mesh.count = 0; }));
+  arrowTraces.length = 0;
+  arrowImpacts.length = 0;
+  arrowMesh.count = 0;
+  arrowImpactMesh.count = 0;
   attackFocusMesh.count = 0;
   attackFocusDirty = false;
   nextAttackFocusSlot = 0;
@@ -1762,22 +2138,20 @@ function setArmySize(count, showMessage = false) {
       hp: 100, generation: 0, scale: 0.94 + ((id * 17) % 12) / 100,
       tintVariation: 0.88 + ((id * 13) % 15) / 100, kind, cargo: 0, cargoType: null,
       targetedBy: 0, focused: false, focusMatrixInitialized: false,
+      walking: false, motionPhase: id * 1.7,
+      attackStartedAt: 0, spawnStartedAt: 0, defeatStartedAt: 0, lastPlayedAttackTick: -1,
       task: kind === 'worker' ? 'unknown' : null,
       visible: !mapDefinition?.fogOfWar || localTeam === null || team === localTeam,
       angle: team === 0 ? Math.PI / 2 : -Math.PI / 2,
     };
     units.push(unit);
     teamUnits[team].push(unit);
-    bodyMeshes[team].count = slot + 1;
-    headMeshes[team].count = slot + 1;
-    bowMeshes[team].count = slot + 1;
+    unitArtMeshes.forEach((pair) => { pair[team].count = slot + 1; });
     setUnitTint(unit);
     updateUnitTransform(unit);
   }
   for (let team = 0; team < 2; team++) {
-    bodyMeshes[team].instanceMatrix.needsUpdate = true;
-    headMeshes[team].instanceMatrix.needsUpdate = true;
-    bowMeshes[team].instanceMatrix.needsUpdate = true;
+    unitArtMeshes.forEach((pair) => { pair[team].instanceMatrix.needsUpdate = true; });
   }
   attackFocusMesh.count = nextAttackFocusSlot;
   if (attackFocusDirty) {
@@ -1798,6 +2172,33 @@ function setArmySize(count, showMessage = false) {
 }
 
 function updateSelectionUI() {
+  const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
+    && building.team === localTeam) || null;
+  ui.selectedBuildingCard.hidden = !selectedBuilding;
+  document.querySelector('#dock-selection').dataset.focus = selectedBuilding ? 'building' : 'units';
+  if (selectedBuilding) {
+    const maxHp = Math.max(1, Number(selectedBuilding.maxHp) || 1800);
+    const hp = Math.max(0, Math.min(maxHp, Number(selectedBuilding.hp) || 0));
+    const healthRatio = hp / maxHp;
+    const construction = Math.round(Math.max(0, Math.min(1, Number(selectedBuilding.progress) || 0)) * 100);
+    const queued = getBuildingQueueLength(selectedBuilding);
+    const troop = selectedBuilding.type === 'barracks' ? 'infantry' : 'archers';
+    const training = Math.round(Math.max(0, Math.min(1, Number(selectedBuilding.trainingProgress) || 0)) * 100);
+    ui.selectedBuildingName.textContent = `${buildingLabel(selectedBuilding.type)} #${selectedBuilding.id}`;
+    ui.selectedBuildingState.textContent = selectedBuilding.attackers > 0 ? 'UNDER ATTACK'
+      : selectedBuilding.complete ? 'READY' : `BUILDING · ${construction}%`;
+    ui.selectedBuildingCard.dataset.danger = healthRatio <= 0.25 || selectedBuilding.attackers > 0 ? 'high'
+      : healthRatio <= 0.55 ? 'medium' : 'none';
+    ui.selectedBuildingHealth.textContent = `${Math.round(hp).toLocaleString()} / ${Math.round(maxHp).toLocaleString()} HP`;
+    ui.selectedBuildingHealthBar.style.setProperty('--health-ratio', healthRatio);
+    ui.selectedBuildingHealthBar.setAttribute('aria-valuemax', String(Math.round(maxHp)));
+    ui.selectedBuildingHealthBar.setAttribute('aria-valuenow', String(Math.round(hp)));
+    ui.selectedBuildingProduction.textContent = !selectedBuilding.complete
+      ? 'Finish construction to unlock production.'
+      : selectedBuilding.productionBlocked ? 'Production blocked · clear the spawn area.'
+        : queued > 0 ? `${queued.toLocaleString()} ${troop} queued · ${training}% training`
+          : `Ready to train ${troop}.`;
+  }
   let blue = 0;
   let red = 0;
   let workers = 0;
@@ -1973,6 +2374,7 @@ function recallControlGroup(index) {
   syncSelectionMesh();
   updateSelectionUI();
   updateControlGroupUI();
+  audio.play('select');
   if (centerOnGroup) {
     centerCameraOnControlGroup(groupUnits);
     showToast(`CENTERED ON GROUP ${controlGroupKeyLabel(index)} · ${groupUnits.length.toLocaleString()} UNITS`);
@@ -2183,60 +2585,66 @@ function renderScenarioEventCountdown(now = performance.now()) {
   }
 }
 
+function syncMatchResultActions() {
+  document.querySelector('#match-play-again').hidden = !isHost;
+  document.querySelector('#match-waiting-for-host').hidden = isHost;
+}
+
 function updateMatchResult(winner, triggerId = null, reason = null) {
+  const previousWinner = matchWinner;
   const isDraw = winner === 2 && ['capture-hold', 'elimination', 'timed-control'].includes(reason);
   matchWinner = Number.isInteger(winner) && ([0, 1].includes(winner) || isDraw) ? winner : -1;
+  if (previousWinner < 0 && matchWinner >= 0) {
+    audio.play(matchWinner === 2 ? 'draw' : matchWinner === localTeam ? 'victory' : 'defeat');
+  }
   matchWinnerReason = matchWinner >= 0 ? reason : null;
   if (matchWinner >= 0 && buildPlacementActive) cancelBuildPlacement(false);
-  if (matchWinner >= 0) attackMoveMode = false;
+  if (matchWinner >= 0) {
+    attackMoveMode = false;
+    if (tapOrderArmed) setTapOrderArmed(false, false);
+  }
   if (!matchResult) return;
   matchResult.hidden = matchWinner < 0;
   if (matchWinner < 0) {
-    matchResult.textContent = '';
+    document.querySelector('#match-result-title').textContent = '';
+    document.querySelector('#match-result-detail').textContent = '';
     updateCommandUI();
     return;
   }
+  let outcome;
+  let detail;
   if (isDraw) {
     matchResult.dataset.team = 'neutral';
+    outcome = 'DRAW';
     if (reason === 'timed-control') {
       const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'THE ZONE';
-      matchResult.textContent = `DRAW · ${objectiveName.toUpperCase()} UNCLAIMED AT DEADLINE · RESET TO PLAY AGAIN`;
-    } else if (reason === 'capture-hold') {
-      matchResult.textContent = 'DRAW · BOTH TEAMS COMPLETED THE VICTORY HOLD · RESET TO PLAY AGAIN';
-    } else {
-      matchResult.textContent = 'DRAW · BOTH ARMIES ELIMINATED · RESET TO PLAY AGAIN';
-    }
-    updateCommandUI();
-    return;
-  }
-  const teamName = TEAM_NAMES[matchWinner].toUpperCase();
-  matchResult.dataset.team = TEAM_NAMES[matchWinner].toLowerCase();
-  const outcome = localTeam === null ? `${teamName} WINS` : localTeam === matchWinner ? 'VICTORY' : 'DEFEAT';
-  if (reason === 'elimination') {
-    const message = localTeam === matchWinner ? 'ENEMY ELIMINATED'
+      detail = `${objectiveName.toUpperCase()} UNCLAIMED AT DEADLINE`;
+    } else if (reason === 'capture-hold') detail = 'BOTH TEAMS COMPLETED THE VICTORY HOLD';
+    else detail = 'BOTH ARMIES ELIMINATED';
+  } else {
+    const teamName = TEAM_NAMES[matchWinner].toUpperCase();
+    matchResult.dataset.team = TEAM_NAMES[matchWinner].toLowerCase();
+    outcome = localTeam === null ? `${teamName} WINS` : localTeam === matchWinner ? 'VICTORY' : 'DEFEAT';
+    if (reason === 'elimination') detail = localTeam === matchWinner ? 'ENEMY ELIMINATED'
       : localTeam === null ? `${teamName} WINS · ENEMY ELIMINATED` : 'YOUR ARMY ELIMINATED';
-    matchResult.textContent = `${outcome} · ${message} · RESET TO PLAY AGAIN`;
-    updateCommandUI();
-    return;
+    else if (reason === 'timed-control') {
+      const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'THE ZONE';
+      detail = `${teamName} CONTROLLED ${objectiveName.toUpperCase()} AT DEADLINE`;
+    } else if (reason === 'capture-hold') {
+      const condition = mapDefinition?.victoryMode === 'all' ? 'ALL VICTORY ZONES' : 'A VICTORY ZONE';
+      const duration = formatVictoryHoldTime(mapDefinition?.victoryHoldSeconds ?? 0);
+      detail = `HELD ${condition} FOR ${duration.toUpperCase()}`;
+    } else {
+      const resultTrigger = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)
+        || mapDefinition?.triggers?.find((trigger) => trigger.victory === true);
+      const objectiveName = mapDefinition?.victoryMode === 'all'
+        ? 'ALL OBJECTIVES' : resultTrigger?.name || 'THE OBJECTIVE';
+      detail = `${teamName} SECURED ${objectiveName.toUpperCase()}`;
+    }
   }
-  if (reason === 'timed-control') {
-    const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'THE ZONE';
-    matchResult.textContent = `${outcome} · ${teamName} CONTROLLED ${objectiveName.toUpperCase()} AT DEADLINE · RESET TO PLAY AGAIN`;
-    updateCommandUI();
-    return;
-  }
-  if (reason === 'capture-hold') {
-    const condition = mapDefinition?.victoryMode === 'all' ? 'ALL VICTORY ZONES' : 'A VICTORY ZONE';
-    const duration = formatVictoryHoldTime(mapDefinition?.victoryHoldSeconds ?? 0);
-    matchResult.textContent = `${outcome} · HELD ${condition} FOR ${duration.toUpperCase()} · RESET TO PLAY AGAIN`;
-    updateCommandUI();
-    return;
-  }
-  const resultTrigger = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)
-    || mapDefinition?.triggers?.find((trigger) => trigger.victory === true);
-  const objectiveName = mapDefinition?.victoryMode === 'all'
-    ? 'ALL OBJECTIVES' : resultTrigger?.name || 'THE OBJECTIVE';
-  matchResult.textContent = `${outcome} · ${teamName} SECURED ${objectiveName.toUpperCase()} · RESET TO PLAY AGAIN`;
+  document.querySelector('#match-result-title').textContent = outcome;
+  document.querySelector('#match-result-detail').textContent = detail;
+  syncMatchResultActions();
   updateCommandUI();
 }
 
@@ -2256,9 +2664,14 @@ function updateCommandUI() {
   if (ui.commandTitle) ui.commandTitle.textContent = selectedBuilding
     ? `${buildingLabel(selectedBuilding.type)} #${selectedBuilding.id}`
     : attackMoveMode ? 'Advance and engage' : 'Move or attack';
-  if (ui.commandHint) ui.commandHint.textContent = selectedBuilding
-    ? (rallyCell >= 0 ? 'Right-click ground to move the production rally' : 'Right-click ground to set a production rally')
-    : attackMoveMode ? 'Right-click ground to advance and engage' : 'Right-click ground or an enemy';
+  const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+  if (ui.commandHint) ui.commandHint.textContent = tapOrderArmed
+    ? selectedBuilding ? 'Tap or click ground to set the rally point'
+      : attackMoveMode ? 'Tap or click ground to advance and engage' : 'Tap or click ground, an enemy, or a resource'
+    : selectedBuilding ? coarsePointer ? 'Use Set rally point, then tap ground'
+      : (rallyCell >= 0 ? 'Right-click ground to move the production rally' : 'Right-click ground to set a production rally')
+      : coarsePointer ? 'Use Target battlefield, then tap a target'
+        : attackMoveMode ? 'Right-click ground to advance and engage' : 'Right-click ground or an enemy';
   if (ui.buildingCommandDetails) ui.buildingCommandDetails.hidden = !selectedBuilding;
   if (ui.buildingRallyReadout) {
     if (rallyCell >= 0) {
@@ -2277,9 +2690,23 @@ function updateCommandUI() {
     ui.attackMoveToggle.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding);
   }
   if (ui.formationSelect) ui.formationSelect.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding);
+  syncTargetOrderUI();
 }
 
-function appendUnitFromState(row) {
+function syncTargetOrderUI() {
+  if (!ui.orderTargetToggle) return;
+  const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
+    && building.team === localTeam) || null;
+  ui.orderTargetToggle.disabled = localTeam === null || matchWinner >= 0 || buildPlacementActive;
+  ui.orderTargetToggle.classList.toggle('active', tapOrderArmed);
+  ui.orderTargetToggle.setAttribute('aria-pressed', String(tapOrderArmed));
+  ui.orderTargetToggle.querySelector('span').textContent = tapOrderArmed ? 'Cancel target'
+    : selectedBuilding ? 'Set rally point' : 'Target battlefield';
+  ui.orderTargetToggle.querySelector('small').textContent = tapOrderArmed
+    ? 'Tap or click a battlefield target' : selectedBuilding ? 'Tap or click ground once' : 'Tap or click once to issue';
+}
+
+function appendUnitFromState(row, animateSpawn = false) {
   const [id, team, x, z, hp, kind = 'infantry', cargo = 0, cargoType, generation = 0, taskStatus,
     targetedBy = 0] = row;
   if (!Number.isInteger(id) || id < 0 || id >= MAX_UNITS || ![0, 1].includes(team)) return null;
@@ -2292,6 +2719,9 @@ function appendUnitFromState(row) {
     targetedBy: Number.isInteger(targetedBy) ? Math.max(0, targetedBy) : 0,
     focused: false,
     focusMatrixInitialized: false,
+    walking: false, motionPhase: id * 1.7,
+    attackStartedAt: 0, spawnStartedAt: animateSpawn ? performance.now() : 0,
+    defeatStartedAt: 0, lastPlayedAttackTick: -1,
     damageFlashUntil: 0,
     kind, cargo, cargoType: cargoType === 'food' || cargoType === 'wood' ? cargoType : null,
     task: kind === 'worker' && WORKER_TASK_STATES.has(taskStatus) ? taskStatus
@@ -2306,9 +2736,7 @@ function appendUnitFromState(row) {
   if (id === units.length) units.push(unit);
   else units[id] = unit;
   teamUnits[team].push(unit);
-  bodyMeshes[team].count = slot + 1;
-  headMeshes[team].count = slot + 1;
-  bowMeshes[team].count = slot + 1;
+  unitArtMeshes.forEach((pair) => { pair[team].count = slot + 1; });
   attackFocusMesh.count = nextAttackFocusSlot;
   setUnitTint(unit);
   updateUnitTransform(unit);
@@ -2317,15 +2745,20 @@ function appendUnitFromState(row) {
 
 function applyState(state, initial = false) {
   if (!state || (mapDefinition && state.mapId && state.mapId !== mapDefinition.id)) return;
+  const audioReset = initial || (state.armySize && state.armySize !== currentArmySize)
+    || (matchWinner >= 0 && state.winner === -1)
+    || (Number.isFinite(state.matchElapsedSeconds) && state.matchElapsedSeconds + 1 < latestMatchElapsedSeconds);
   if (state.armySize && state.armySize !== currentArmySize) setArmySize(state.armySize);
   let changed = false;
   let controlGroupsChanged = false;
+  let friendlyDamage = 0;
+  let selectedDamage = 0;
   const visibleEnemyIds = new Set();
   for (const row of state.units || []) {
     const [id, team, x, z, hp, kind, cargo, cargoType, generation = 0, taskStatus,
-      targetedBy = 0] = row;
+      targetedBy = 0, attackTick = -1, attackX = null, attackZ = null] = row;
     const existingUnit = units[id];
-    const unit = existingUnit || appendUnitFromState(row);
+    const unit = existingUnit || appendUnitFromState(row, !initial);
     if (!unit || unit.team !== team) continue;
     const wasVisible = unit.visible !== false;
     unit.visible = true;
@@ -2343,6 +2776,10 @@ function applyState(state, initial = false) {
       unit.hp = hp;
       unit.targetedBy = Number.isInteger(targetedBy) ? Math.max(0, targetedBy) : 0;
       unit.damageFlashUntil = 0;
+      unit.attackStartedAt = 0;
+      unit.defeatStartedAt = 0;
+      unit.spawnStartedAt = initial ? 0 : performance.now();
+      unit.lastPlayedAttackTick = -1;
       unit.angle = team === 0 ? Math.PI / 2 : -Math.PI / 2;
       setUnitTint(unit);
       updateUnitTransform(unit);
@@ -2360,6 +2797,7 @@ function applyState(state, initial = false) {
       : unit.kind === 'worker' ? 'unknown' : null;
     if (unit.task !== nextTask) {
       unit.task = nextTask;
+      updateUnitTransform(unit);
       changed = true;
     }
     unit.cargo = Number.isFinite(cargo) ? cargo : unit.cargo || 0;
@@ -2367,12 +2805,33 @@ function applyState(state, initial = false) {
     else if (cargoType === null) unit.cargoType = null;
     if (unit.hp !== hp) {
       const tookDamage = hp < unit.hp && hp > 0;
+      if (!audioReset && hp < unit.hp && unit.team === localTeam) {
+        friendlyDamage++;
+        if (selected.has(id)) selectedDamage++;
+      }
+      const defeated = unit.hp > 0 && hp <= 0;
       unit.hp = hp;
       unit.damageFlashUntil = tookDamage ? performance.now() + 220 : 0;
+      if (defeated) unit.defeatStartedAt = performance.now();
       setUnitTint(unit);
       updateUnitTransform(unit);
       if (hp <= 0) selected.delete(id);
       changed = true;
+    }
+    if (Number.isInteger(attackTick) && attackTick >= 0 && attackTick !== unit.lastPlayedAttackTick) {
+      unit.lastPlayedAttackTick = attackTick;
+      if (!initial && unit.hp > 0 && unit.visible !== false) {
+        const now = performance.now();
+        unit.attackStartedAt = now;
+        if (Number.isFinite(attackX) && Number.isFinite(attackZ)) {
+          unit.angle = Math.atan2(attackX - unit.renderX, attackZ - unit.renderZ);
+          if (unit.kind === 'archer' && (unit.id * 17 + attackTick) % 3 === 0) {
+            addArrowTrace(unit.renderX, unit.renderZ, attackX, attackZ, now);
+          }
+        }
+        updateUnitTransform(unit, now);
+        changed = true;
+      }
     }
     const nextTargetedBy = Number.isInteger(targetedBy) ? Math.max(0, targetedBy) : 0;
     if (unit.targetedBy !== nextTargetedBy) {
@@ -2398,9 +2857,7 @@ function applyState(state, initial = false) {
   if (Array.isArray(state.queuedWaypointCounts)) applyWaypointQueueCounts(state.queuedWaypointCounts);
   if (initial || changed) {
     for (let team = 0; team < 2; team++) {
-      bodyMeshes[team].instanceMatrix.needsUpdate = true;
-      headMeshes[team].instanceMatrix.needsUpdate = true;
-      bowMeshes[team].instanceMatrix.needsUpdate = true;
+      unitArtMeshes.forEach((pair) => { pair[team].instanceMatrix.needsUpdate = true; });
     }
   }
   if (attackFocusDirty) {
@@ -2415,13 +2872,18 @@ function applyState(state, initial = false) {
   if (Array.isArray(state.objectives)) updateObjectives(state.objectives);
   updateVictoryHoldCard(state.victoryHold, state.winner, state.winnerReason, state.scenarioClockStarted);
   updateScenarioEventCards(state.scenarioEvents || [], state.matchElapsedSeconds, state.scenarioClockStarted);
-  if (Array.isArray(state.buildings)) reconcileBuildings(state.buildings);
+  const buildingDamage = Array.isArray(state.buildings) ? reconcileBuildings(state.buildings, audioReset) : 0;
+  if (audioReset) combatAudioGate.reset();
+  else {
+    const cue = combatAudioGate.observe({ friendlyDamage, selectedDamage, buildingDamage }, performance.now());
+    if (cue) audio.play(cue);
+  }
   if (Number.isInteger(state.winner)) {
     updateMatchResult(state.winner, state.winnerTriggerId, state.winnerReason);
   }
   if (Number.isInteger(state.connected)) updateRoomUI(state.connected);
   if (Number.isFinite(state.rosterSize)) ui.total.textContent = state.rosterSize.toLocaleString();
-  updateEconomyUI(state);
+  updateEconomyUI(state, audioReset);
   revalidateControlGroups();
   if (controlGroupsChanged) updateControlGroupUI();
   selectionDirty = true;
@@ -2439,11 +2901,13 @@ function applyWaypointQueueCounts(rows = []) {
   updateSelectionUI();
 }
 
-function updateEconomyUI(state = {}) {
+function updateEconomyUI(state = {}, initial = false) {
   if (Number.isFinite(state.rosterSize)) latestRosterSize = Math.max(0, Math.floor(state.rosterSize));
   if (Array.isArray(state.food)) latestFood = [Number(state.food[0]) || 0, Number(state.food[1]) || 0];
   if (Array.isArray(state.wood)) latestWood = [Number(state.wood[0]) || 0, Number(state.wood[1]) || 0];
   if (Array.isArray(state.workerProduction)) {
+    if (!initial && localTeam !== null && Number.isFinite(latestWorkerProduction[localTeam]?.queue)
+      && Number(state.workerProduction[localTeam]?.queue) < latestWorkerProduction[localTeam].queue) audio.play('complete');
     latestWorkerProduction = [state.workerProduction[0] || null, state.workerProduction[1] || null];
   }
   if (Array.isArray(state.teamResearch)) {
@@ -2653,7 +3117,9 @@ function setPlayer(player) {
   }
   updateControlGroupUI();
   isHost = Boolean(player.isHost);
+  syncMatchResultActions();
   ui.playerTeam.textContent = localTeam === null ? 'SPECTATOR' : TEAM_NAMES[localTeam].toUpperCase();
+  ui.playerTeam.dataset.team = localTeam === 0 ? 'azure' : localTeam === 1 ? 'ember' : 'spectator';
   for (const button of document.querySelectorAll('.size-options button')) {
     button.disabled = !isHost;
     button.title = isHost ? 'Change match size for both players' : 'Only the room host can change match size';
@@ -2976,6 +3442,14 @@ function saveEditorStartingResourcesFields() {
   const wood = Number(woodValue);
   if (food === 0 && wood === 0) delete editorDefinition.startingResources;
   else editorDefinition.startingResources = { food, wood };
+}
+
+function saveEditorMatchOpeningFields() {
+  if (!editorDefinition) return;
+  editorDefinition.summary = ui.studioSummary.value.trim();
+  const size = Number(ui.studioStartingArmySize.value);
+  if (size === 1000) delete editorDefinition.startingArmySize;
+  else editorDefinition.startingArmySize = size;
 }
 
 function syncEditorTriggerControls() {
@@ -3566,8 +4040,10 @@ function populateMapEditor(definition, message) {
   selectedEditorResourceId = null;
   ui.studioName.value = editorDefinition.name;
   ui.studioId.value = editorDefinition.id;
+  ui.studioSummary.value = editorDefinition.summary || '';
   ui.studioWidth.value = editorDefinition.width;
   ui.studioHeight.value = editorDefinition.height;
+  ui.studioStartingArmySize.value = editorDefinition.startingArmySize ?? 1000;
   ui.studioStartingFood.value = editorDefinition.startingResources?.food ?? 0;
   ui.studioStartingWood.value = editorDefinition.startingResources?.wood ?? 0;
   editorDefinition.victoryMode ??= 'any';
@@ -3610,6 +4086,16 @@ function validateImportedMap(value) {
         || resources.wood < 0 || resources.wood > 100_000))) {
       throw new Error('Starting food and wood must be whole numbers from 0 to 100,000.');
     }
+  }
+  if (definition.startingArmySize !== undefined
+    && (!Number.isInteger(definition.startingArmySize)
+      || definition.startingArmySize < 8 || definition.startingArmySize > 2000
+      || definition.startingArmySize % 2 !== 0)) {
+    throw new Error('Starting army must be an even total from 8 to 2,000 units.');
+  }
+  if (definition.summary !== undefined
+    && (typeof definition.summary !== 'string' || definition.summary.length > 120)) {
+    throw new Error('Scenario brief must be 120 characters or fewer.');
   }
   if (typeof definition.id !== 'string' || definition.id.length > 48
     || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(definition.id)) {
@@ -4175,6 +4661,7 @@ function collectEditorMap() {
   saveEditorTimedVictoryFields();
   saveEditorVictoryHoldFields();
   saveEditorStartingResourcesFields();
+  saveEditorMatchOpeningFields();
   saveSelectedEditorScenarioEventFields();
   if (!saveSelectedEditorResourceStock()) throw new Error('Resource node stock must be a positive number.');
   if (editorTriggerCreationPending) throw new Error('Finish placing the new capture zone before exporting or publishing.');
@@ -4199,7 +4686,7 @@ function collectEditorMap() {
     fogOfWar: ui.studioFogOfWar.checked,
     terrainBase: ui.studioTerrainBase.value,
     terrainPatches,
-    summary: `${editorDefinition.width} × ${editorDefinition.height} · CUSTOM MAP`,
+    summary: ui.studioSummary.value.trim() || `${editorDefinition.width} × ${editorDefinition.height} · CUSTOM MAP`,
     obstacles,
     resourceNodes: JSON.parse(JSON.stringify(editorResourceNodes)),
     triggers,
@@ -4227,6 +4714,9 @@ function downloadEditorMap() {
 }
 
 function showToast(message, duration = 1300) {
+  if (isLocalRejection(message)) audio.play('reject');
+  const fieldFeedback = document.querySelector('#field-order-feedback');
+  if (fieldFeedback && !fieldFeedback.hidden && fieldFeedback.textContent === message) return;
   toast.textContent = message;
   toast.classList.add('visible');
   window.clearTimeout(toastTimer);
@@ -4237,6 +4727,28 @@ function setOrderStatus(message, state = 'ready') {
   if (!ui.orderStatus) return;
   ui.orderStatus.textContent = message;
   ui.orderStatus.dataset.state = state;
+  const fieldFeedback = document.querySelector('#field-order-feedback');
+  const fieldHint = document.querySelector('.field-hint');
+  window.clearTimeout(fieldOrderFeedbackTimer);
+  if (!fieldFeedback || !fieldHint) return;
+  const tabbedDock = window.matchMedia('(max-width: 920px)').matches;
+  ui.orderStatus.setAttribute('aria-live', tabbedDock ? 'off' : 'polite');
+  fieldFeedback.setAttribute('aria-live', tabbedDock ? 'polite' : 'off');
+  if (state === 'ready') {
+    fieldFeedback.hidden = true;
+    fieldHint.hidden = false;
+    return;
+  }
+  toast.classList.remove('visible');
+  fieldFeedback.textContent = message;
+  fieldFeedback.dataset.state = state;
+  fieldFeedback.hidden = false;
+  fieldHint.hidden = true;
+  if (state === 'pending' || state === 'planning') return;
+  fieldOrderFeedbackTimer = window.setTimeout(() => {
+    fieldFeedback.hidden = true;
+    fieldHint.hidden = false;
+  }, state === 'failed' ? 6500 : 4500);
 }
 
 function armOrderStatusTimeout(token, timeoutMs = 20_000) {
@@ -4286,7 +4798,13 @@ function applyOrderNotice(token, message) {
 
 function sendTrackedOrder(command, label, count, unitName = 'UNITS') {
   const token = beginOrderStatus(label, count, unitName);
-  if (sendCommand({ ...command, clientOrderToken: token })) return token;
+  if (sendCommand({ ...command, clientOrderToken: token })) {
+    audio.play(command.type === 'build' ? 'build'
+      : command.type === 'gather' ? 'gather'
+        : command.type === 'attack' || command.type === 'attackBuilding' || command.type === 'attackMove'
+          ? 'attack' : 'move');
+    return token;
+  }
   finishOrderStatus(token, 'ORDER NOT SENT · CONNECTION OFFLINE', 'failed');
   return null;
 }
@@ -4294,6 +4812,7 @@ function sendTrackedOrder(command, label, count, unitName = 'UNITS') {
 function sendCommand(command) {
   if (!socket || socket.readyState !== WebSocket.OPEN) {
     showToast('SERVER CONNECTION IS OFFLINE');
+    audio.play('reject');
     return false;
   }
   const payload = { ...command };
@@ -4308,6 +4827,7 @@ function sendCommand(command) {
     const message = 'Map JSON is too large to send safely. Keep the published map under 900 KB.';
     if (command.type === 'publishMap') ui.studioMessage.textContent = message;
     showToast('COMMAND TOO LARGE TO SEND');
+    audio.play('reject');
     return false;
   }
   socket.send(serialized);
@@ -4398,7 +4918,8 @@ function selectBuilding(building) {
   for (const [id, visual] of buildingVisuals) updateBuildingSelectionVisual(visual, id === building.id);
   updateCommandUI();
   updateEconomyUI();
-  showToast(`${buildingLabel(building.type)} SELECTED · RIGHT-CLICK GROUND TO SET RALLY`);
+  showToast(`${buildingLabel(building.type)} SELECTED · ${window.matchMedia('(pointer: coarse)').matches ? 'USE SET RALLY POINT, THEN TAP GROUND' : 'RIGHT-CLICK GROUND TO SET RALLY'}`);
+  audio.play('select');
 }
 
 function pickFriendly(x, y, additive = false) {
@@ -4440,6 +4961,7 @@ function pickFriendly(x, y, additive = false) {
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
+  if (found && selected.size > 0) audio.play('select');
 }
 
 function selectInRect(left, top, right, bottom, additive = false) {
@@ -4460,6 +4982,7 @@ function selectInRect(left, top, right, bottom, additive = false) {
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
+  if (boxSelection.ids.length > 0) audio.play('select');
 }
 
 function worldAt(clientX, clientY) {
@@ -4485,7 +5008,27 @@ function setAttackMoveMode(enabled, announce = true) {
   if (enabled && (localTeam === null || matchWinner >= 0)) return;
   attackMoveMode = Boolean(enabled);
   updateCommandUI();
-  if (announce) showToast(attackMoveMode ? 'ATTACK MOVE READY · RIGHT-CLICK GROUND' : 'MOVE MODE READY');
+  if (announce) showToast(attackMoveMode
+    ? `ATTACK MOVE READY · ${tapOrderArmed ? 'TAP OR CLICK GROUND' : window.matchMedia('(pointer: coarse)').matches ? 'USE TARGET BATTLEFIELD, THEN TAP GROUND' : 'RIGHT-CLICK GROUND'}`
+    : 'MOVE MODE READY');
+}
+
+function setTapOrderArmed(enabled, announce = true) {
+  if (enabled) {
+    if (localTeam === null || matchWinner >= 0) return;
+    if (buildPlacementActive) { showToast('FINISH OR CANCEL BUILD PLACEMENT FIRST'); return; }
+    if (selectedBuildingId === null && selectedIds().length === 0) {
+      showToast('SELECT YOUR UNITS BEFORE ISSUING AN ORDER');
+      return;
+    }
+  }
+  tapOrderArmed = Boolean(enabled);
+  tapOrderPointer = null;
+  updateCommandUI();
+  updateBuildPlacementHint();
+  if (announce) showToast(tapOrderArmed
+    ? selectedBuildingId !== null ? 'TAP OR CLICK GROUND TO SET RALLY' : 'TAP OR CLICK A BATTLEFIELD TARGET'
+    : 'TARGETING CANCELLED');
 }
 
 function issueMove(point, queueWaypoint = false) {
@@ -4557,6 +5100,36 @@ function issueGather(node) {
   if (sendTrackedOrder({ type: 'gather', ids: workers, nodeId: node.id }, 'GATHER', workers.length, 'WORKERS')) {
     setAttackMoveMode(false, false);
     showToast(`GATHER ${String(node.type || 'FOOD').toUpperCase()} · ${workers.length} WORKERS`);
+  }
+}
+
+function issueContextOrder(clientX, clientY, queueWaypoint = false) {
+  if (selectedBuildingId !== null) {
+    issueBuildingRallyPoint(clientX, clientY);
+    return;
+  }
+  const rect = renderer.domElement.getBoundingClientRect();
+  const x = clientX - rect.left;
+  const y = clientY - rect.top;
+  const enemyPick = localTeam === null ? null : pickAt(x, y, (unit) => unit.team !== localTeam);
+  const enemy = enemyPick?.unit || null;
+  if (enemy) {
+    issueAttack(enemy);
+    if (enemyPick.cycled && selectedIds().length > 0) {
+      showToast(`ATTACK TARGET ${enemyPick.stackIndex}/${enemyPick.stackCount}`);
+    }
+    return;
+  }
+  const enemyBuilding = localTeam === null ? null
+    : pickBuildingAt(x, y, (building) => building.team !== localTeam);
+  if (enemyBuilding) issueAttackBuilding(enemyBuilding);
+  else {
+    const node = pickResourceNodeAt(x, y);
+    if (node) issueGather(node);
+    else {
+      const point = worldAt(clientX, clientY);
+      if (point) issueMove(point, queueWaypoint);
+    }
   }
 }
 
@@ -4635,9 +5208,17 @@ function updateBuildPlacementGhost(clientX, clientY) {
 
 function updateBuildPlacementHint() {
   const activeLabel = buildingLabel(buildPlacementType);
-  if (ui.fieldHintAction) ui.fieldHintAction.textContent = buildPlacementActive ? `LMB PLACE ${activeLabel}` : 'DRAG TO SELECT';
-  if (ui.fieldHintSecondary) ui.fieldHintSecondary.textContent = buildPlacementActive ? 'RMB / ESC CANCEL' : 'MOVE / ATTACK';
-  renderer.domElement.style.cursor = buildPlacementActive ? 'crosshair' : '';
+  const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+  if (ui.fieldHintPrimaryKey) ui.fieldHintPrimaryKey.textContent = coarsePointer ? 'TAP' : 'LMB';
+  if (ui.fieldHintAction) ui.fieldHintAction.textContent = buildPlacementActive ? `PLACE ${activeLabel}`
+    : tapOrderArmed ? 'ISSUE ORDER' : coarsePointer ? 'SELECT UNITS' : 'DRAG TO SELECT';
+  if (ui.fieldHintSecondaryKey) ui.fieldHintSecondaryKey.textContent = buildPlacementActive
+    ? coarsePointer ? 'BUILD' : 'RMB / ESC' : tapOrderArmed ? 'ESC' : coarsePointer ? 'ORDERS' : 'RMB';
+  if (ui.fieldHintSecondary) ui.fieldHintSecondary.textContent = buildPlacementActive
+    ? coarsePointer ? 'TAP BUTTON TO CANCEL' : 'CANCEL'
+    : tapOrderArmed ? 'CANCEL TARGET' : coarsePointer ? 'TAP TARGET' : 'MOVE / ATTACK';
+  renderer.domElement.style.cursor = buildPlacementActive || tapOrderArmed ? 'crosshair' : '';
+  syncTargetOrderUI();
   if (ui.buildBarracks) {
     ui.buildBarracks.classList.toggle('active', buildPlacementActive && buildPlacementType === 'barracks');
     ui.buildBarracks.setAttribute('aria-pressed', String(buildPlacementActive && buildPlacementType === 'barracks'));
@@ -4662,6 +5243,7 @@ function cancelBuildPlacement(announce = true) {
 
 function beginBuildPlacement(type) {
   if (localTeam === null || matchWinner >= 0) return;
+  if (tapOrderArmed) setTapOrderArmed(false, false);
   const label = buildingLabel(type);
   const woodCost = buildingWoodCost(type);
   const workers = teamUnits[localTeam].filter((unit) => unit.kind === 'worker' && unit.hp > 0);
@@ -4849,30 +5431,8 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
       cancelBuildPlacement();
       return;
     }
-    if (selectedBuildingId !== null) {
-      issueBuildingRallyPoint(event.clientX, event.clientY);
-      return;
-    }
-    const enemyPick = localTeam === null ? null : pickAt(x, y, (unit) => unit.team !== localTeam);
-    const enemy = enemyPick?.unit || null;
-    if (enemy) {
-      issueAttack(enemy);
-      if (enemyPick.cycled && selectedIds().length > 0) {
-        showToast(`ATTACK TARGET ${enemyPick.stackIndex}/${enemyPick.stackCount}`);
-      }
-    } else {
-      const enemyBuilding = localTeam === null ? null
-        : pickBuildingAt(x, y, (building) => building.team !== localTeam);
-      if (enemyBuilding) issueAttackBuilding(enemyBuilding);
-      else {
-        const node = pickResourceNodeAt(x, y);
-        if (node) issueGather(node);
-        else {
-          const point = worldAt(event.clientX, event.clientY);
-          if (point) issueMove(point, event.shiftKey);
-        }
-      }
-    }
+    issueContextOrder(event.clientX, event.clientY, event.shiftKey);
+    if (tapOrderArmed) setTapOrderArmed(false, false);
     return;
   }
   if (event.button === 1 || (event.button === 0 && spaceDown)) {
@@ -4890,6 +5450,12 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
     submitBuildPlacement(event.clientX, event.clientY);
     return;
   }
+  if (tapOrderArmed) {
+    event.preventDefault();
+    tapOrderPointer = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    renderer.domElement.setPointerCapture(event.pointerId);
+    return;
+  }
   renderer.domElement.focus({ preventScroll: true });
   drag = { startX: x, startY: y, currentX: x, currentY: y, additive: event.shiftKey };
   movedPointer = false;
@@ -4904,6 +5470,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
 
 renderer.domElement.addEventListener('pointermove', (event) => {
   edgeScrollPointer = { x: event.clientX, y: event.clientY };
+  if (tapOrderPointer?.id === event.pointerId) return;
   if (pan) {
     const dx = event.clientX - pan.x;
     const dy = event.clientY - pan.y;
@@ -4930,7 +5497,17 @@ renderer.domElement.addEventListener('pointermove', (event) => {
   selectionBox.style.height = `${Math.abs(drag.currentY - drag.startY)}px`;
 });
 
-function finishPointer() {
+function finishPointer(event) {
+  if (tapOrderPointer?.id === event.pointerId) {
+    const wasTap = event.type === 'pointerup'
+      && Math.hypot(event.clientX - tapOrderPointer.x, event.clientY - tapOrderPointer.y) <= 12;
+    tapOrderPointer = null;
+    if (wasTap) {
+      issueContextOrder(event.clientX, event.clientY);
+      setTapOrderArmed(false, false);
+    }
+    return;
+  }
   if (pan) { pan = null; return; }
   if (!drag) return;
   const finished = drag;
@@ -4991,6 +5568,7 @@ function selectWholeTeam() {
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
+  if (selected.size > 0) audio.play('select');
   showToast(`YOUR ARMY SELECTED · ${selected.size.toLocaleString()}`);
 }
 
@@ -5002,6 +5580,7 @@ function selectFriendlyUnitKinds(kinds, label) {
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
+  if (selected.size > 0) audio.play('select');
   showToast(selected.size ? `${label} SELECTED · ${selected.size}` : `NO LIVING ${label}`);
 }
 
@@ -5018,15 +5597,136 @@ function selectIdleWorkers() {
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
+  if (selected.size > 0) audio.play('select');
   showToast(selected.size ? `IDLE WORKERS SELECTED · ${selected.size}` : 'NO IDLE WORKERS');
 }
 function selectInfantry() { selectFriendlyUnitKind('infantry', 'INFANTRY'); }
 function selectArchers() { selectFriendlyUnitKind('archer', 'ARCHERS'); }
 function selectMilitary() { selectFriendlyUnitKinds(['infantry', 'archer'], 'MILITARY'); }
 
+const matchMenu = document.querySelector('#match-menu');
+const helpPanel = document.querySelector('#help-panel');
+const scenarioBriefPanel = document.querySelector('#scenario-brief-panel');
+const scenarioBriefToggle = document.querySelector('#scenario-brief-toggle');
+const hudScrim = document.querySelector('#hud-scrim');
+const matchMenuToggle = document.querySelector('#match-menu-toggle');
+const helpToggle = document.querySelector('#help-toggle');
+const commandDock = document.querySelector('.control-dock');
+const dockTabs = [...document.querySelectorAll('[data-dock-tab]')];
+
+function closeHudPanels({ restoreFocus = false } = {}) {
+  const trigger = !matchMenu.hidden ? matchMenuToggle : !helpPanel.hidden ? helpToggle : null;
+  matchMenu.hidden = true;
+  helpPanel.hidden = true;
+  hudScrim.hidden = true;
+  matchMenuToggle.setAttribute('aria-expanded', 'false');
+  helpToggle.setAttribute('aria-expanded', 'false');
+  if (restoreFocus) trigger?.focus();
+}
+
+function closeScenarioBrief({ restoreFocus = false } = {}) {
+  scenarioBriefPanel.hidden = true;
+  scenarioBriefToggle.setAttribute('aria-expanded', 'false');
+  if (restoreFocus) scenarioBriefToggle.focus();
+}
+
+function toggleHudPanel(panel, trigger) {
+  const opening = panel.hidden;
+  if (tapOrderArmed) setTapOrderArmed(false, false);
+  closeHudPanels();
+  if (!opening) return;
+  panel.hidden = false;
+  hudScrim.hidden = false;
+  trigger.setAttribute('aria-expanded', 'true');
+  panel.querySelector('.hud-panel-close')?.focus();
+}
+
+function selectDockTab(name, focus = false) {
+  if (name !== 'command' && tapOrderArmed) setTapOrderArmed(false, false);
+  commandDock.dataset.activePanel = name;
+  for (const tab of dockTabs) {
+    const selected = tab.dataset.dockTab === name;
+    tab.setAttribute('aria-selected', String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+    if (focus && selected) tab.focus();
+  }
+}
+
+matchMenuToggle.addEventListener('click', () => {
+  closeScenarioBrief();
+  toggleHudPanel(matchMenu, matchMenuToggle);
+});
+helpToggle.addEventListener('click', () => {
+  closeScenarioBrief();
+  toggleHudPanel(helpPanel, helpToggle);
+});
+scenarioBriefToggle.addEventListener('click', () => {
+  const opening = scenarioBriefPanel.hidden;
+  if (tapOrderArmed) setTapOrderArmed(false, false);
+  closeHudPanels();
+  closeScenarioBrief();
+  if (!opening) return;
+  scenarioBriefPanel.hidden = false;
+  scenarioBriefToggle.setAttribute('aria-expanded', 'true');
+  document.querySelector('#scenario-brief-close').focus();
+});
+document.querySelector('#scenario-brief-close').addEventListener('click', () => closeScenarioBrief({ restoreFocus: true }));
+document.querySelector('#match-menu-close').addEventListener('click', () => closeHudPanels({ restoreFocus: true }));
+document.querySelector('#help-close').addEventListener('click', () => closeHudPanels({ restoreFocus: true }));
+hudScrim.addEventListener('click', () => closeHudPanels({ restoreFocus: true }));
+document.querySelector('#map-studio-open').addEventListener('click', () => closeHudPanels());
+for (const tab of dockTabs) {
+  tab.addEventListener('click', () => selectDockTab(tab.dataset.dockTab));
+  tab.addEventListener('keydown', (event) => {
+    const current = dockTabs.indexOf(tab);
+    const next = event.key === 'ArrowRight' ? (current + 1) % dockTabs.length
+      : event.key === 'ArrowLeft' ? (current + dockTabs.length - 1) % dockTabs.length
+        : event.key === 'Home' ? 0 : event.key === 'End' ? dockTabs.length - 1 : null;
+    if (next === null) return;
+    event.preventDefault();
+    selectDockTab(dockTabs[next].dataset.dockTab, true);
+  });
+}
+for (const button of document.querySelectorAll('[data-open-dock-tab]')) {
+  button.addEventListener('click', () => selectDockTab(button.dataset.openDockTab, true));
+}
+selectDockTab('selection');
+updateBuildPlacementHint();
+window.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape' || (matchMenu.hidden && helpPanel.hidden && scenarioBriefPanel.hidden)
+    || document.querySelector('dialog[open]')) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  if (!scenarioBriefPanel.hidden) closeScenarioBrief({ restoreFocus: true });
+  else closeHudPanels({ restoreFocus: true });
+}, true);
+
+function syncAudioControls() {
+  const settings = audio.getSettings();
+  ui.audioEnabled.checked = settings.enabled;
+  ui.audioVolume.value = String(Math.round(settings.volume * 100));
+  ui.audioVolumeValue.value = `${Math.round(settings.volume * 100)}%`;
+  ui.audioAmbience.checked = settings.ambience;
+  ui.audioVolume.disabled = !settings.enabled;
+  ui.audioAmbience.disabled = !settings.enabled;
+  const status = audio.getStatus();
+  ui.audioStatus.dataset.state = status;
+  ui.audioStatus.textContent = {
+    running: 'SOUND READY', waiting: 'SOUND STARTS WITH FIRST INPUT', muted: 'SOUND MUTED',
+    unavailable: 'AUDIO UNAVAILABLE IN THIS BROWSER', suspended: 'TAP TO RESUME AUDIO',
+    interrupted: 'AUDIO INTERRUPTED', closed: 'AUDIO UNAVAILABLE',
+  }[status] || 'SOUND STARTS WITH FIRST INPUT';
+}
+syncAudioControls();
+ui.audioEnabled.addEventListener('change', () => { audio.setSettings({ enabled: ui.audioEnabled.checked }); syncAudioControls(); });
+ui.audioVolume.addEventListener('input', () => { audio.setSettings({ volume: Number(ui.audioVolume.value) / 100 }); syncAudioControls(); });
+ui.audioAmbience.addEventListener('change', () => { audio.setSettings({ ambience: ui.audioAmbience.checked }); syncAudioControls(); });
+document.addEventListener('pointerdown', () => audio.unlock(), { capture: true, once: true });
+document.addEventListener('keydown', () => audio.unlock(), { capture: true, once: true });
 function keyboardTargetIsEditing(event) {
   const target = event.target instanceof Element ? event.target : null;
-  return Boolean(target?.closest('input, textarea, select, [contenteditable], dialog'));
+  return !matchMenu.hidden || !helpPanel.hidden || !scenarioBriefPanel.hidden
+    || Boolean(target?.closest('input, textarea, select, [contenteditable], dialog, [role="tab"]'));
 }
 
 function controlGroupIndexFromKey(event) {
@@ -5074,6 +5774,10 @@ window.addEventListener('keydown', (event) => {
   if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
     && event.key.toLowerCase() === 'a') selectWholeTeam();
   if (event.key === 'Escape') {
+    if (tapOrderArmed) {
+      setTapOrderArmed(false);
+      return;
+    }
     if (buildPlacementActive) {
       cancelBuildPlacement();
       return;
@@ -5087,6 +5791,7 @@ window.addEventListener('keydown', (event) => {
 });
 window.addEventListener('keyup', (event) => { if (event.code === 'Space') spaceDown = false; });
 window.addEventListener('blur', () => {
+  if (tapOrderArmed) setTapOrderArmed(false, false);
   spaceDown = false;
   pan = null;
   edgeScrollPointer = null;
@@ -5114,6 +5819,7 @@ ui.roomJoinForm.addEventListener('submit', (event) => {
 });
 document.querySelector('#select-all').addEventListener('click', selectWholeTeam);
 ui.attackMoveToggle?.addEventListener('click', () => setAttackMoveMode(!attackMoveMode));
+ui.orderTargetToggle?.addEventListener('click', () => setTapOrderArmed(!tapOrderArmed));
 ui.clearBuildingRally?.addEventListener('click', clearSelectedBuildingRally);
 ui.researchAttackUpgrade?.addEventListener('click', startSelectedAttackResearch);
 ui.selectWorkers?.addEventListener('click', selectWorkers);
@@ -5137,6 +5843,7 @@ for (let index = 0; index < ui.controlGroups.length; index++) {
   ui.controlGroups[index].addEventListener('click', () => recallControlGroup(index));
 }
 document.querySelector('#reset-army').addEventListener('click', () => sendCommand({ type: 'reset' }));
+document.querySelector('#match-play-again').addEventListener('click', () => sendCommand({ type: 'reset' }));
 ui.mapSelect.addEventListener('change', () => sendCommand({ type: 'selectMap', mapId: ui.mapSelect.value }));
 ui.mapStudioOpen.addEventListener('click', openMapStudio);
 document.querySelector('#map-studio-close').addEventListener('click', () => ui.mapStudio.close());
@@ -5202,6 +5909,9 @@ ui.studioStartingFood.addEventListener('input', saveEditorStartingResourcesField
 ui.studioStartingFood.addEventListener('change', saveEditorStartingResourcesFields);
 ui.studioStartingWood.addEventListener('input', saveEditorStartingResourcesFields);
 ui.studioStartingWood.addEventListener('change', saveEditorStartingResourcesFields);
+ui.studioSummary.addEventListener('input', saveEditorMatchOpeningFields);
+ui.studioStartingArmySize.addEventListener('input', saveEditorMatchOpeningFields);
+ui.studioStartingArmySize.addEventListener('change', saveEditorMatchOpeningFields);
 ui.studioDeadlineObjective.addEventListener('change', () => {
   ui.studioDeadlineSeconds.disabled = !ui.studioDeadlineObjective.value;
   saveEditorTimedVictoryFields();
@@ -5673,8 +6383,12 @@ function connectSocket() {
       return;
     }
     if (message.type === 'room') { updateRoomUI(message.connected); return; }
-    if (message.type === 'trigger') { showToast(message.message, 2400); return; }
-    if (message.type === 'scenarioEvent') { showToast(message.message, 3600); return; }
+    if (message.type === 'trigger') {
+      audio.play(localTeam !== null && message.team !== localTeam ? 'objective-lost' : 'objective');
+      showToast(message.message, 2400);
+      return;
+    }
+    if (message.type === 'scenarioEvent') { audio.play('objective'); showToast(message.message, 3600); return; }
     if (message.type === 'victory') {
       updateMatchResult(message.team, message.triggerId, message.reason);
       showToast(message.message, 3200);
@@ -5702,6 +6416,10 @@ function connectSocket() {
         pendingBuildOrderToken,
       });
       if (feedback.applyOrderStatus) applyOrderNotice(noticeToken, notice);
+      if (feedback.showToast) {
+        const cue = cueForNotice(notice, { localTeam, tokenized: noticeToken !== null });
+        if (cue) audio.play(cue);
+      }
       if (notice.startsWith('BUILD REJECTED ·')) {
         if (feedback.clearPendingBuild) {
           buildPlacementPending = false;
@@ -5805,6 +6523,7 @@ function animate(now) {
   }
   const alpha = 1 - Math.exp(-frameDelta * 16);
   let moved = false;
+  let artAnimated = false;
   for (const unit of units) {
     if (!unit || unit.visible === false) continue;
     if (unit.damageFlashUntil > 0 && now >= unit.damageFlashUntil) {
@@ -5813,28 +6532,43 @@ function animate(now) {
     }
     const dx = unit.serverX - unit.renderX;
     const dz = unit.serverZ - unit.renderZ;
-    if (Math.abs(dx) > 0.001 || Math.abs(dz) > 0.001) {
+    const walking = Math.abs(dx) > 0.001 || Math.abs(dz) > 0.001;
+    const wasWalking = unit.walking;
+    unit.walking = walking;
+    if (walking) {
       unit.renderX += dx * alpha;
       unit.renderZ += dz * alpha;
       if (Math.abs(dx) > Math.abs(dz)) unit.angle = dx >= 0 ? Math.PI / 2 : -Math.PI / 2;
       else unit.angle = dz >= 0 ? 0 : Math.PI;
-      updateUnitTransform(unit);
+      unit.motionPhase += frameDelta * 14;
       moved = true;
     }
-  }
-  if (moved) {
-    for (let team = 0; team < 2; team++) {
-      bodyMeshes[team].instanceMatrix.needsUpdate = true;
-      headMeshes[team].instanceMatrix.needsUpdate = true;
-      bowMeshes[team].instanceMatrix.needsUpdate = true;
+    const working = !walking && unit.kind === 'worker'
+      && (unit.task === 'gathering' || unit.task === 'building');
+    if (working) unit.motionPhase += frameDelta * (unit.task === 'building' ? 6 : 5);
+    const activeAttack = unit.attackStartedAt > 0;
+    const activeSpawn = unit.spawnStartedAt > 0;
+    const activeDefeat = unit.defeatStartedAt > 0;
+    if (activeAttack && now - unit.attackStartedAt >= ATTACK_POSE_MS) unit.attackStartedAt = 0;
+    if (activeSpawn && now - unit.spawnStartedAt >= SPAWN_POSE_MS) unit.spawnStartedAt = 0;
+    if (activeDefeat && now - unit.defeatStartedAt >= DEFEAT_POSE_MS) unit.defeatStartedAt = 0;
+    if (walking || wasWalking || working || activeAttack || activeSpawn || activeDefeat) {
+      updateUnitTransform(unit, now);
+      artAnimated = true;
     }
-    if (selected.size) selectionDirty = true;
   }
+  if (artAnimated) {
+    for (let team = 0; team < 2; team++) {
+      unitArtMeshes.forEach((pair) => { pair[team].instanceMatrix.needsUpdate = true; });
+    }
+  }
+  if (moved && selected.size) selectionDirty = true;
   if (attackFocusDirty) {
     attackFocusMesh.instanceMatrix.needsUpdate = true;
     attackFocusDirty = false;
   }
   if (selectionDirty) syncSelectionMesh();
+  animateArrowEffects(now);
   if (moveMarker.visible) {
     moveMarkerAge += frameDelta;
     moveMarker.scale.setScalar(1 + moveMarkerAge * 0.85);
