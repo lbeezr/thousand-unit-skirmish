@@ -117,21 +117,28 @@ survival in a full match, or player understanding.
 
 ## Forked Vale scripted pacing check
 
-The scenario designer's first two-client, team-0-win playthrough reported
-these wall-clock checkpoints: both teams deposited food and wood by **18.3 s**;
-both completed a Barracks and trained one infantry by **51.4 s**; the two
-signals had opposing owners by **75.7 s**; the central Watch was verified
-locked at **86.5 s**; and the eventual winner recaptured the second signal
-by **100.5 s**. The 20-second hold then produced victory before the test's
-139.7-second final stress checkpoint. A subsequent 2,000-unit reset showed
-820 Azure and 1,000 Ember units moving more than 0.5 units toward separate
-fords in that observed state.
+The scenario designer's mirrored two-client playthroughs reported these
+wall-clock checkpoints:
 
-This is a cooperative scripted rules playthrough: one team deliberately
-withdraws so the other can win, and there is no contested combat. It supports
-the opening and objective-order checks but cannot establish the intended
-6–10-minute contested match length, opening win rates, human comprehension,
-or 2,000-unit sustained performance. The reverse team assignment and outside
+| Checkpoint | Azure wins | Ember wins |
+| --- | ---: | ---: |
+| Both teams deposited food and wood | 18.3 s | 18.4 s |
+| Both completed a Barracks and trained one infantry | 51.4 s | 51.5 s |
+| The two signals had opposing owners | 75.7 s | 75.8 s |
+| The central Watch was verified locked | 86.5 s | 86.2 s |
+| Winner recaptured the second signal | 100.5 s | 100.6 s |
+| Hold victory | Before the 139.7 s stress checkpoint | 138.8 s |
+
+The Ember win also verified that the victory result attributes the central
+Watch after the 20-second hold. In the Azure run, a later 2,000-unit reset
+showed 820 Azure and 1,000 Ember units moving more than 0.5 units toward
+separate fords in the observed state.
+
+These are cooperative scripted rules playthroughs: one team deliberately
+withdraws so the other can win, and there is no contested combat. They
+support the opening, objective-order, and both-seat checks but cannot
+establish the intended 6–10-minute contested match length, opening win
+rates, human comprehension, or 2,000-unit sustained performance. Outside
 player sessions remain to be measured.
 
 ## Next tuning decisions
