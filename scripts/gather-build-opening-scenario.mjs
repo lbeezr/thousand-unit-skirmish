@@ -36,8 +36,9 @@ const trackedChanges = execFileSync('git', ['status', '--porcelain', '--untracke
 if (trackedChanges) {
   throw new Error(`RTS_SERVER_ROOT has changes; exact baseline evidence requires a clean checkout:\n${trackedChanges}`);
 }
-const mapSourceText = await readFile(mapPath, 'utf8');
-const mapSourceSha256 = createHash('sha256').update(mapSourceText).digest('hex');
+const mapSourceBytes = await readFile(mapPath);
+const mapSourceText = mapSourceBytes.toString('utf8');
+const mapSourceSha256 = createHash('sha256').update(mapSourceBytes).digest('hex');
 const temporary = await mkdtemp(path.join(os.tmpdir(), 'rts-gather-build-opening-'));
 const listener = createServer();
 listener.listen(0, '127.0.0.1');
