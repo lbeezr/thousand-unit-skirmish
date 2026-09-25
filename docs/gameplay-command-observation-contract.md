@@ -1,6 +1,6 @@
 # Gameplay command and observation contract
 
-Reviewed against merged `main` at `f1d6482` on 25 September 2026. This records the existing server contract and the v1 boundary for a deterministic PvE client. It does not change the WebSocket schema or gameplay rules.
+Reviewed against merged `main` at `8c05fde` on 25 September 2026. This records the server's authoritative command and observation contract, including fog-of-war capture-progress visibility, and the v1 boundary for a deterministic PvE client. The WebSocket message schema remains unchanged.
 
 ## Seat and command authority
 
