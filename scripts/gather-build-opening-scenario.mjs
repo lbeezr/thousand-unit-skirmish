@@ -326,6 +326,7 @@ function depositEventForState(client, state, team, type, gathererIds, spawn) {
     bankedStockBefore: stockBefore,
     bankedStockAfter: stockAfter,
     bankedDelta: amount,
+    cargoDelivered: cargoTransitionsAtBase.reduce((total, id) => total + unitById(previous, id)[6], 0),
     workersObservedDepositing: cargoTransitionsAtBase.map(id => {
       const previousUnit = unitById(previous, id);
       const currentUnit = unitById(state, id);
@@ -398,6 +399,8 @@ async function collectGatherMilestones(client, plan, orderRecords) {
       'each gathered resource must be credited to the team bank');
     assert.ok(deposit.workersObservedDepositing.length > 0,
       'banked stock increase must coincide with a gatherer deposit at the base');
+    assert.ok(Math.abs(deposit.bankedDelta - deposit.cargoDelivered) <= CARGO_EPSILON,
+      `${deposit.resourceType} bank credit must match cargo dropped off (${deposit.bankedDelta} vs ${deposit.cargoDelivered})`);
   }
   return { gatherers, firstDeposits: deposits };
 }
