@@ -8,6 +8,9 @@ export const OPPONENT_OBSERVATION_SCHEMA_VERSION = 1;
 export const DEFAULT_OPPONENT_SEED = 20260925;
 export const DEFAULT_OPPONENT_DECISION_INTERVAL_MS = 1_000;
 
+const RESOURCE_TYPES = ['food', 'wood'];
+const GATHER_ORDER_RETRY_TICKS = 20;
+
 function validTeam(team) {
   return Number.isInteger(team) && (team === 0 || team === 1);
 }
@@ -363,40 +366,124 @@ function nearestResource(nodes, worker) {
   ))[0] || null;
 }
 
-/** Create a tiny deterministic opening policy for smoke checks and early PvE. */
+/** Create a deterministic economy-and-tactics policy for an ordinary player seat. */
 export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
   if (!Number.isSafeInteger(seed)) throw new TypeError('Opponent seed must be a safe integer.');
   const normalizedSeed = seed >>> 0;
-  let economyStarted = false;
+  const gatherAssignments = new Map();
   let tacticsStarted = false;
+
+  function nextGatherCommands(observation) {
+    const workers = observation.units.friendly
+      .filter((unit) => unit.kind === 'worker' && unit.hp > 0)
+      .sort((left, right) => left.id - right.id);
+    const liveKeys = new Set(workers.map((worker) => `${worker.id}:${worker.generation}`));
+    for (const key of gatherAssignments.keys()) {
+      if (!liveKeys.has(key)) gatherAssignments.delete(key);
+    }
+
+    const nodesByType = { food: [], wood: [] };
+    for (const node of observation.resourceNodes) {
+      if (RESOURCE_TYPES.includes(node.type) && node.stock > 0
+        && Number.isFinite(node.x) && Number.isFinite(node.z)) {
+        nodesByType[node.type].push(node);
+      }
+    }
+    for (const nodes of Object.values(nodesByType)) {
+      nodes.sort((left, right) => left.id.localeCompare(right.id));
+    }
+    if (workers.length === 0 || RESOURCE_TYPES.every((type) => nodesByType[type].length === 0)) return [];
+
+    const tick = Number.isSafeInteger(observation.tick) ? observation.tick : 0;
+    const observedNodesById = new Map(observation.resourceNodes.map((node) => [node.id, node]));
+    const availableNodeIds = new Set(RESOURCE_TYPES.flatMap((type) => nodesByType[type].map((node) => node.id)));
+    const typeLoads = { food: 0, wood: 0 };
+    const nodeLoads = new Map();
+    const isGathering = (worker) => worker.task === 'gathering' || worker.task === 'returning';
+    const isGatherOrderPending = (assignment) => {
+      if (!assignment || !Number.isSafeInteger(assignment.pendingSinceTick)) return false;
+      const observedNode = observedNodesById.get(assignment.nodeId);
+      if (observedNode && observedNode.stock <= 0) return false;
+      return tick - assignment.pendingSinceTick < GATHER_ORDER_RETRY_TICKS;
+    };
+    const addLoad = (assignment) => {
+      if (!RESOURCE_TYPES.includes(assignment.type)) return;
+      typeLoads[assignment.type]++;
+      if (availableNodeIds.has(assignment.nodeId)) {
+        nodeLoads.set(assignment.nodeId, (nodeLoads.get(assignment.nodeId) || 0) + 1);
+      }
+    };
+
+    for (const worker of workers) {
+      const key = `${worker.id}:${worker.generation}`;
+      const assignment = gatherAssignments.get(key);
+      if (isGathering(worker)) {
+        if (assignment) {
+          assignment.pendingSinceTick = null;
+          addLoad(assignment);
+        } else if (RESOURCE_TYPES.includes(worker.cargoType)) {
+          typeLoads[worker.cargoType]++;
+        }
+        continue;
+      }
+      if (worker.task !== 'idle') {
+        gatherAssignments.delete(key);
+        continue;
+      }
+      if (isGatherOrderPending(assignment)) addLoad(assignment);
+    }
+
+    const commandsByNode = new Map();
+    const chosenNodeByType = new Map();
+    for (const worker of workers) {
+      if (worker.task !== 'idle') continue;
+      const key = `${worker.id}:${worker.generation}`;
+      const previous = gatherAssignments.get(key);
+      if (isGatherOrderPending(previous)) continue;
+
+      const availableTypes = RESOURCE_TYPES.filter((type) => nodesByType[type].length > 0);
+      const preferredType = availableTypes.includes(previous?.type) ? previous.type : null;
+      let type = preferredType;
+      if (!type) {
+        const leastLoad = Math.min(...availableTypes.map((candidate) => typeLoads[candidate]));
+        const leastLoadedTypes = availableTypes.filter((candidate) => typeLoads[candidate] === leastLoad);
+        type = leastLoadedTypes[seededIndex(normalizedSeed, observation.team, worker.id, leastLoadedTypes.length)];
+      }
+
+      const previousNode = previous && nodesByType[type].find((node) => node.id === previous.nodeId);
+      let node = previousNode || chosenNodeByType.get(type);
+      if (!node) {
+        const leastNodeLoad = Math.min(...nodesByType[type].map((candidate) => nodeLoads.get(candidate.id) || 0));
+        const leastLoadedNodes = nodesByType[type]
+          .filter((candidate) => (nodeLoads.get(candidate.id) || 0) === leastNodeLoad);
+        node = nearestResource(leastLoadedNodes, worker);
+        chosenNodeByType.set(type, node);
+      }
+      if (!node) continue;
+
+      gatherAssignments.set(key, { type, nodeId: node.id, pendingSinceTick: tick });
+      addLoad({ type, nodeId: node.id });
+      const ids = commandsByNode.get(node.id) || [];
+      ids.push(worker.id);
+      commandsByNode.set(node.id, ids);
+    }
+
+    return [...commandsByNode.entries()]
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([nodeId, ids]) => ({
+        type: 'gather',
+        ids: ids.sort((left, right) => left - right),
+        nodeId,
+      }));
+  }
 
   return {
     next(observation) {
       if (observation?.schemaVersion !== OPPONENT_OBSERVATION_SCHEMA_VERSION
         || !validTeam(observation.team)) throw new TypeError('Policy requires opponent observation schema v1.');
 
-      if (!economyStarted) {
-        const workers = observation.units.friendly
-          .filter((unit) => unit.kind === 'worker' && unit.hp > 0 && unit.task === 'idle')
-          .sort((left, right) => left.id - right.id);
-        const availableNodes = observation.resourceNodes.filter((node) => node.stock > 0);
-        const commands = [];
-        const assignedWorkers = new Set();
-        for (const [resourceType, stream] of [['food', 0], ['wood', 1]]) {
-          const nodes = availableNodes.filter((node) => node.type === resourceType);
-          const remainingWorkers = workers.filter((worker) => !assignedWorkers.has(worker.id));
-          if (nodes.length === 0 || remainingWorkers.length === 0) continue;
-          const worker = remainingWorkers[seededIndex(normalizedSeed, observation.team, stream, remainingWorkers.length)];
-          const node = nearestResource(nodes, worker);
-          if (!node) continue;
-          assignedWorkers.add(worker.id);
-          commands.push({ type: 'gather', ids: [worker.id], nodeId: node.id });
-        }
-        if (commands.length > 0) {
-          economyStarted = true;
-          return commands;
-        }
-      }
+      const gathering = nextGatherCommands(observation);
+      if (gathering.length > 0) return gathering;
 
       if (!tacticsStarted) {
         const soldiers = observation.units.friendly
