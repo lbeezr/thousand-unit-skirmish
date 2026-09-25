@@ -174,6 +174,11 @@ try {
       { team: infantryTeam, kind: 'infantry', units: group(state, infantryTeam, 'infantry').slice(0, 4) },
     ];
     assert.deepEqual(participants.map(row => row.units.length), [4, 4]);
+    const participantIds = new Map(participants.map(participant => [
+      participant.team, new Set(participant.units.map(row => row[0])),
+    ]));
+    const participantUnits = (snapshot, participant) => snapshot.units.filter(row =>
+      participantIds.get(participant.team).has(row[0]));
 
     const parking = [0, 1].map(team => ({
       team,
@@ -204,11 +209,11 @@ try {
       });
     }
     const resolved = await azure.waitFor(message => message.type === 'state'
-      && participants.some(participant => group(message, participant.team, participant.kind)
+      && participants.some(participant => participantUnits(message, participant)
         .filter(row => row[4] > 0).length === 0), battleAfter, 30_000);
 
     const combatGroups = participants.map(participant => {
-      const units = group(resolved, participant.team, participant.kind);
+      const units = participantUnits(resolved, participant);
       return {
         team: participant.team,
         kind: participant.kind,
