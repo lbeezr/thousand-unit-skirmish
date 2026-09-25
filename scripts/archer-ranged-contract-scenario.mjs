@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { execFileSync, spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
@@ -27,13 +28,15 @@ try {
 if (checkoutCommit.toLowerCase() !== baselineCommit.toLowerCase()) {
   throw new Error(`RTS_BASELINE_COMMIT ${baselineCommit} does not match RTS_SERVER_ROOT HEAD ${checkoutCommit}.`);
 }
-const trackedChanges = execFileSync('git', ['status', '--porcelain', '--untracked-files=no'], {
+const trackedChanges = execFileSync('git', ['status', '--porcelain', '--untracked-files=all'], {
   cwd: serverRoot,
   encoding: 'utf8',
 }).trim();
 if (trackedChanges) {
-  throw new Error(`RTS_SERVER_ROOT has tracked changes; exact baseline evidence requires a clean checkout:\n${trackedChanges}`);
+  throw new Error(`RTS_SERVER_ROOT has changes; exact baseline evidence requires a clean checkout:\n${trackedChanges}`);
 }
+const mapSourceText = await readFile(mapPath, 'utf8');
+const mapSourceSha256 = createHash('sha256').update(mapSourceText).digest('hex');
 const fixtureMapId = 'archer-ranged-contract';
 const temporary = await mkdtemp(path.join(os.tmpdir(), 'rts-archer-range-'));
 const listener = createServer();
@@ -251,7 +254,7 @@ try {
   assert.equal(azureWelcome.player.team, 0);
   assert.equal(emberWelcome.player.team, 1);
 
-  const map = JSON.parse(await readFile(mapPath, 'utf8'));
+  const map = JSON.parse(mapSourceText);
   assert.equal(map.id, 'open-field', 'ranged combat fixture uses Open Field geometry');
   map.id = fixtureMapId;
   map.name = 'ARCHER RANGED CONTRACT';
@@ -499,6 +502,7 @@ try {
     scenario: 'archer-ranged-contract',
     fixtureMap: fixtureMapId,
     baseMap: path.relative(serverRoot, mapPath),
+    mapSourceSha256,
     startingArmySize: 24,
     startingResources: { food: STARTING_FOOD, wood: STARTING_WOOD },
     fogOfWar: false,
@@ -514,6 +518,7 @@ try {
   console.error(JSON.stringify({
     baselineCommit,
     scenario: 'archer-ranged-contract',
+    mapSourceSha256,
     error: { name: error.name, message: error.message, stack: error.stack },
     latestTeamState: latestFailureState(),
   }));
