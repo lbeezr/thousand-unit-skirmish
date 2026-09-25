@@ -1,0 +1,18 @@
+{
+  "id": "dense-clash",
+  "name": "DENSE CLASH",
+  "summary": "64 × 64 · 4-CELL CHOKE · ELIMINATION",
+  "width": 64,
+  "height": 64,
+  "terrainSeed": 104,
+  "spawnPoints": [
+    { "team": 0, "x": -18, "z": 0 },
+    { "team": 1, "x": 18, "z": 0 }
+  ],
+  "resourceNodes": [],
+  "obstacles": [
+    { "id": "north-ridge", "column": 31, "row": 0, "width": 2, "height": 30, "elevation": 1.12, "material": "stone" },
+    { "id": "south-ridge", "column": 31, "row": 34, "width": 2, "height": 30, "elevation": 1.12, "material": "stone" }
+  ],
+  "triggers": []
+}

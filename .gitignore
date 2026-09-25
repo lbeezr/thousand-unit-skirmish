@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+
+node_modules/
+custom-maps/
+room-data/
+coverage/
+*.log
+capture.json
+.game-dev/goals/
+assets/generated/
+.DS_Store

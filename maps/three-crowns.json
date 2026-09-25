@@ -1,0 +1,75 @@
+{
+  "id": "three-crowns",
+  "name": "THREE CROWNS",
+  "summary": "64 × 64 · FOG · HOLD ALL 3 OBJECTIVES",
+  "width": 64,
+  "height": 64,
+  "terrainSeed": 1237,
+  "fogOfWar": true,
+  "victoryMode": "all",
+  "spawnPoints": [
+    { "team": 0, "x": -24, "z": 0 },
+    { "team": 1, "x": 24, "z": 0 }
+  ],
+  "resourceNodes": [
+    { "id": "azure-berries", "type": "food", "x": -21, "z": 6, "stock": 350 },
+    { "id": "azure-timber", "type": "wood", "x": -21, "z": -6, "stock": 350 },
+    { "id": "ember-berries", "type": "food", "x": 21, "z": 6, "stock": 350 },
+    { "id": "ember-timber", "type": "wood", "x": 21, "z": -6, "stock": 350 },
+    { "id": "north-market-food", "type": "food", "x": 0, "z": -14, "stock": 500 },
+    { "id": "south-market-wood", "type": "wood", "x": 0, "z": 14, "stock": 500 }
+  ],
+  "obstacles": [
+    { "id": "northwest-grove", "column": 11, "row": 7, "width": 5, "height": 7, "elevation": 1.25, "material": "forest" },
+    { "id": "southwest-grove", "column": 11, "row": 50, "width": 5, "height": 7, "elevation": 1.25, "material": "forest" },
+    { "id": "northeast-grove", "column": 48, "row": 7, "width": 5, "height": 7, "elevation": 1.25, "material": "forest" },
+    { "id": "southeast-grove", "column": 48, "row": 50, "width": 5, "height": 7, "elevation": 1.25, "material": "forest" }
+  ],
+  "triggers": [
+    {
+      "id": "north-crown",
+      "name": "North Crown",
+      "type": "capture-zone",
+      "zone": { "column": 27, "row": 7, "width": 10, "height": 10 },
+      "requiredUnits": 6,
+      "captureSeconds": 8,
+      "victory": true,
+      "message": "{team} SECURED THE NORTH CROWN"
+    },
+    {
+      "id": "south-crown",
+      "name": "South Crown",
+      "type": "capture-zone",
+      "zone": { "column": 27, "row": 47, "width": 10, "height": 10 },
+      "requiredUnits": 6,
+      "captureSeconds": 8,
+      "victory": true,
+      "message": "{team} SECURED THE SOUTH CROWN"
+    },
+    {
+      "id": "heartland-keep",
+      "name": "Heartland Keep",
+      "type": "capture-zone",
+      "zone": { "column": 28, "row": 27, "width": 8, "height": 10 },
+      "requiredUnits": 8,
+      "captureSeconds": 10,
+      "requiresAll": ["north-crown", "south-crown"],
+      "victory": true,
+      "message": "{team} HOLDS THE HEARTLAND KEEP"
+    }
+  ],
+  "scenarioEvents": [
+    {
+      "id": "crown-supply-drop",
+      "name": "Crown supply drop",
+      "type": "timed-supply",
+      "afterSeconds": 180,
+      "team": "both",
+      "foodReward": 150,
+      "woodReward": 100,
+      "unitCount": 2,
+      "unitKind": "archer",
+      "message": "{team} SUPPLY DROP · +{reward} FOOD · +{wood} WOOD · {units} {kind}"
+    }
+  ]
+}

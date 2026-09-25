@@ -1,0 +1,34 @@
+{
+  "id": "stone-pass",
+  "name": "STONE PASS",
+  "summary": "64 × 64 · 1 CHOKE",
+  "width": 64,
+  "height": 64,
+  "terrainSeed": 103,
+  "spawnPoints": [
+    { "team": 0, "x": -18, "z": 0 },
+    { "team": 1, "x": 18, "z": 0 }
+  ],
+  "resourceNodes": [
+    { "id": "azure-berries", "type": "food", "x": -14, "z": 4, "stock": 300 },
+    { "id": "ember-berries", "type": "food", "x": 14, "z": 4, "stock": 300 },
+    { "id": "azure-timber", "type": "wood", "x": -14, "z": -4, "stock": 300 },
+    { "id": "ember-timber", "type": "wood", "x": 14, "z": -4, "stock": 300 }
+  ],
+  "obstacles": [
+    { "id": "north-ridge", "column": 31, "row": 0, "width": 2, "height": 29, "elevation": 1.12, "material": "stone" },
+    { "id": "south-ridge", "column": 31, "row": 35, "width": 2, "height": 29, "elevation": 1.12, "material": "stone" }
+  ],
+  "triggers": [
+    {
+      "id": "pass-control",
+      "name": "Control the pass",
+      "type": "capture-zone",
+      "zone": { "column": 29, "row": 29, "width": 6, "height": 6 },
+      "requiredUnits": 8,
+      "captureSeconds": 3.5,
+      "victory": true,
+      "message": "{team} SECURED THE PASS"
+    }
+  ]
+}

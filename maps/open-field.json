@@ -1,0 +1,21 @@
+{
+  "id": "open-field",
+  "name": "OPEN FIELD",
+  "summary": "64 × 64 · ELIMINATION · FOG OF WAR",
+  "width": 64,
+  "height": 64,
+  "terrainSeed": 881,
+  "fogOfWar": true,
+  "spawnPoints": [
+    { "team": 0, "x": -20, "z": 0 },
+    { "team": 1, "x": 20, "z": 0 }
+  ],
+  "resourceNodes": [
+    { "id": "azure-berries", "type": "food", "x": -14, "z": 5, "stock": 300 },
+    { "id": "ember-berries", "type": "food", "x": 14, "z": 5, "stock": 300 },
+    { "id": "azure-timber", "type": "wood", "x": -14, "z": -5, "stock": 300 },
+    { "id": "ember-timber", "type": "wood", "x": 14, "z": -5, "stock": 300 }
+  ],
+  "obstacles": [],
+  "triggers": []
+}

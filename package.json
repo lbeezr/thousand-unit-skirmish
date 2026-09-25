@@ -1,0 +1,13 @@
+{
+  "name": "thousand-unit-skirmish",
+  "version": "0.95.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node room-supervisor.mjs",
+    "test": "node scripts/ci.mjs"
+  }
+}

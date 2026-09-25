@@ -1,0 +1,36 @@
+{
+  "id": "cinder-ridge",
+  "name": "CINDER RIDGE",
+  "summary": "80 × 56 · 1 PASS",
+  "width": 80,
+  "height": 56,
+  "terrainSeed": 517,
+  "spawnPoints": [
+    { "team": 0, "x": -24, "z": 0 },
+    { "team": 1, "x": 28, "z": 0 }
+  ],
+  "resourceNodes": [
+    { "id": "azure-berries", "type": "food", "x": -20, "z": 4, "stock": 300 },
+    { "id": "ember-berries", "type": "food", "x": 24, "z": 4, "stock": 300 },
+    { "id": "azure-timber", "type": "wood", "x": -20, "z": -4, "stock": 300 },
+    { "id": "ember-timber", "type": "wood", "x": 31, "z": -5, "stock": 300 }
+  ],
+  "obstacles": [
+    { "id": "north-ridge", "column": 39, "row": 0, "width": 3, "height": 21, "elevation": 1.38, "material": "stone" },
+    { "id": "south-ridge", "column": 39, "row": 34, "width": 3, "height": 22, "elevation": 1.38, "material": "stone" },
+    { "id": "west-outcrop", "column": 15, "row": 40, "width": 4, "height": 3, "elevation": 0.72, "material": "stone" },
+    { "id": "east-grove", "column": 60, "row": 24, "width": 5, "height": 6, "elevation": 1.5, "material": "forest" }
+  ],
+  "triggers": [
+    {
+      "id": "ridge-crossing",
+      "name": "Hold the crossing",
+      "type": "capture-zone",
+      "zone": { "column": 36, "row": 23, "width": 11, "height": 9 },
+      "requiredUnits": 8,
+      "captureSeconds": 4,
+      "victory": true,
+      "message": "{team} HOLDS THE RIDGE CROSSING"
+    }
+  ]
+}

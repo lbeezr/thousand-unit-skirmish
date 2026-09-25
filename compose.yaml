@@ -1,0 +1,58 @@
+services:
+  game:
+    build: .
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 10s
+    environment:
+      PORT: "4173"
+      RTS_HOST: 0.0.0.0
+      RTS_MAX_PEERS: ${RTS_MAX_PEERS:-16}
+      RTS_MAX_ROOMS: ${RTS_MAX_ROOMS:-4}
+    expose:
+      - "4173"
+    read_only: true
+    tmpfs:
+      - /tmp
+    volumes:
+      - custom_maps:/app/custom-maps
+      - room_data:/app/room-data
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:4173/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      game:
+        condition: service_healthy
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN to a DNS name pointing at this host}
+      RTS_ACCESS_USER: ${RTS_ACCESS_USER:?Set RTS_ACCESS_USER in .env}
+      RTS_ACCESS_PASSWORD_HASH: ${RTS_ACCESS_PASSWORD_HASH:?Set RTS_ACCESS_PASSWORD_HASH in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
+  custom_maps:
+  room_data:
