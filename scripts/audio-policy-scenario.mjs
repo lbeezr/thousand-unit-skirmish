@@ -87,7 +87,7 @@ try {
   assert.equal(createdContext, undefined, 'pre-gesture events must not create an audio context');
   audio.unlock();
   const ambience = createdContext.buffers[0].data;
-  assert.equal(ambience.length, 288, 'the 120 ms crossfade keeps the atmosphere loop near three seconds');
+  assert.equal(ambience.length, 1188, 'the 120 ms crossfade keeps the wind loop near twelve seconds');
   const ambienceSteps = [];
   for (let i = 1; i < ambience.length; i++) ambienceSteps.push(Math.abs(ambience[i] - ambience[i - 1]));
   ambienceSteps.sort((a, b) => a - b);
