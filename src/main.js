@@ -1816,7 +1816,7 @@ for (let team = 0; team < 2; team++) {
     MAX_PER_TEAM,
   );
   bowMeshes[team] = makeInstances(
-    new THREE.TorusGeometry(0.23, 0.027, 4, 9, Math.PI * 1.28),
+    new THREE.TorusGeometry(0.3, 0.04, 4, 9, Math.PI * 1.28),
     new THREE.MeshBasicMaterial({ color: 0xb88c58 }),
     MAX_PER_TEAM,
   );
@@ -1859,7 +1859,7 @@ for (let team = 0; team < 2; team++) {
     MAX_PER_TEAM,
   );
   quiverMeshes[team] = makeInstances(
-    new THREE.ConeGeometry(0.12, 0.43, 5),
+    new THREE.ConeGeometry(0.15, 0.52, 5),
     new THREE.MeshBasicMaterial({ color: 0x75553d }),
     MAX_PER_TEAM,
   );
@@ -2062,9 +2062,9 @@ function updateUnitTransform(unit, now = performance.now()) {
 
   const bowScale = isArcher ? visibleScale : 0;
   dummy.position.set(
-    unit.renderX + Math.sin(unit.angle) * 0.18,
+    unit.renderX + sideX * 0.25 + forwardX * 0.09,
     isArcher ? 0.43 : 0,
-    unit.renderZ + Math.cos(unit.angle) * 0.18,
+    unit.renderZ + sideZ * 0.25 + forwardZ * 0.09,
   );
   dummy.quaternion.copy(facing);
   dummy.rotateY(attackPose * 0.22);
@@ -2383,12 +2383,13 @@ function recallControlGroup(index) {
 function syncSelectionMesh() {
   if (!selectionDirty) return;
   let slot = 0;
+  const ringScale = selected.size > 80 ? 1.08 : 1.24;
   for (const id of selected) {
     const unit = units[id];
     if (!unit || unit.hp <= 0) continue;
     dummy.position.set(unit.renderX, 0.022, unit.renderZ);
     dummy.quaternion.copy(ringRotation);
-    dummy.scale.setScalar(unit.scale * 1.24);
+    dummy.scale.setScalar(unit.scale * ringScale);
     dummy.updateMatrix();
     selectionMesh.setMatrixAt(slot++, dummy.matrix);
   }

@@ -29,10 +29,10 @@ Stone Pass was reviewed in the browser at the normal game zoom and a closer base
 
 The final 2,000-unit headless Chrome movement benchmark passed on the isolated art branch on Apple M2 / Metal: 1,998 moving units, 16.8 ms frame interval p95, 3.5 ms animation callback p95, and no tasks over 50 ms across a 30.13-second measurement. These headless timings do not measure windowed presentation or GPU completion. `npm test` and the separate live Archer research/combat scenario passed on that branch.
 
-## Next art passes
-
-Review role recognition and building silhouettes at ordinary zoom on both meadow and cinder ground. Refine the brief combat poses from live two-player footage; the current arrow cue is intentionally sampled and has a fixed cap. Recheck the 2,000-unit movement budget after every increase in animated detail.
-
 ## Motion and readability refinement
 
-The follow-up pass eases unit facing toward movement or strike direction, adds a low-amplitude idle breath and a short hit recoil, and keeps their timing offset across the roster. Idle matrices update at a bounded cadence; walking units keep their normal frame-rate pose updates. Town Center roof trim and a larger banner, Barracks ridge color, and Range canopy trim carry team identity at a distance. Large selections lower ring opacity so the rings do not cover the unit silhouettes.
+The follow-up pass eases unit facing toward movement or strike direction, adds a low-amplitude idle breath and a short hit recoil, and keeps their timing offset across the roster. Idle matrices update at a bounded cadence; walking units keep their normal frame-rate pose updates. Town Center roof trim and a larger banner, Barracks ridge color, and Range canopy trim carry team identity at a distance. Large selections use smaller, fainter rings so the rings do not cover the unit silhouettes.
+
+## Remaining review
+
+Review role recognition and building silhouettes at ordinary zoom on both meadow and cinder ground with a more evenly mixed roster. Refine the brief combat poses from live two-player footage; the current arrow cue is intentionally sampled and has a fixed cap. Recheck the 2,000-unit movement budget after every increase in animated detail.
