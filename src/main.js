@@ -5,6 +5,8 @@ import {
 } from './map-utils.mjs';
 import { resizeWorldMarkers } from './map-resize.mjs';
 import { classifyOrderNotice } from './order-feedback.mjs';
+import { createGameAudio } from './audio.mjs';
+import { CombatAudioGate, cueForNotice, isLocalRejection } from './audio-policy.mjs';
 import {
   chooseUnitPickCandidate,
   isSameUnitDoubleClick,
@@ -212,7 +214,20 @@ const ui = {
   studioEventTechnologyReward: document.querySelector('#studio-event-technology-reward'),
   studioEventMessage: document.querySelector('#studio-event-message'),
   controlGroups: [...document.querySelectorAll('.control-group')],
+  audioEnabled: document.querySelector('#audio-enabled'),
+  audioVolume: document.querySelector('#audio-volume'),
+  audioVolumeValue: document.querySelector('#audio-volume-value'),
+  audioAmbience: document.querySelector('#audio-ambience'),
+  audioStatus: document.querySelector('#audio-status'),
 };
+const audio = createGameAudio({
+  onStatusChange: () => syncAudioControls(),
+  onCue: (cue) => {
+    ui.audioStatus.dataset.lastCue = cue;
+    ui.audioStatus.dataset.cueCount = String((Number(ui.audioStatus.dataset.cueCount) || 0) + 1);
+  },
+});
+const combatAudioGate = new CombatAudioGate();
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x859175);
@@ -786,17 +801,26 @@ function updateBarracksVisual(visual, building) {
   updateBuildingHealthIndicator(visual, building);
 }
 
-function reconcileBuildings(buildings = []) {
+function reconcileBuildings(buildings = [], initial = false) {
   const rows = Array.isArray(buildings)
     ? buildings.filter((building) => building && ['archery-range', 'barracks'].includes(building.type)
       && [0, 1].includes(building.team) && Number.isFinite(building.x) && Number.isFinite(building.z))
     : [];
   const priorSelectedBuildingId = selectedBuildingId;
+  const previousBuildings = new Map(latestBuildings.map((building) => [building.id, building]));
+  let buildingDamage = 0;
+  let completedOwnBuilding = false;
   const priorSelectedRallyCell = latestBuildings.find((building) => building.id === selectedBuildingId)?.rallyCell ?? -1;
   if (selectedBuildingId !== null && !rows.some((building) => building.id === selectedBuildingId
     && building.team === localTeam)) selectedBuildingId = null;
   const seen = new Set();
   for (const building of rows) {
+    const previous = previousBuildings.get(building.id);
+    if (previous && building.team === localTeam) {
+      if (Number.isFinite(previous.hp) && Number.isFinite(building.hp) && building.hp < previous.hp) buildingDamage++;
+      if (previous.complete !== true && building.complete === true) completedOwnBuilding = true;
+      if (getBuildingQueueLength(previous) > getBuildingQueueLength(building)) completedOwnBuilding = true;
+    }
     seen.add(building.id);
     let visual = buildingVisuals.get(building.id);
     if (!visual) {
@@ -821,6 +845,7 @@ function reconcileBuildings(buildings = []) {
     buildingVisuals.delete(id);
   }
   latestBuildings = rows;
+  if (!initial && completedOwnBuilding) audio.play('complete');
   const selectedBuilding = rows.find((building) => building.id === selectedBuildingId
     && building.team === localTeam) || null;
   if (priorSelectedBuildingId !== selectedBuildingId
@@ -839,6 +864,7 @@ function reconcileBuildings(buildings = []) {
     showToast(`${buildingLabel(placed?.type || buildPlacementType)} PLACED · WORKERS CONSTRUCTING`, 1800);
   }
   drawMinimap(performance.now(), true);
+  return buildingDamage;
 }
 
 function getBuildingQueueLength(building) {
@@ -2093,6 +2119,7 @@ function recallControlGroup(index) {
   syncSelectionMesh();
   updateSelectionUI();
   updateControlGroupUI();
+  audio.play('select');
   if (centerOnGroup) {
     centerCameraOnControlGroup(groupUnits);
     showToast(`CENTERED ON GROUP ${controlGroupKeyLabel(index)} · ${groupUnits.length.toLocaleString()} UNITS`);
@@ -2309,8 +2336,12 @@ function syncMatchResultActions() {
 }
 
 function updateMatchResult(winner, triggerId = null, reason = null) {
+  const previousWinner = matchWinner;
   const isDraw = winner === 2 && ['capture-hold', 'elimination', 'timed-control'].includes(reason);
   matchWinner = Number.isInteger(winner) && ([0, 1].includes(winner) || isDraw) ? winner : -1;
+  if (previousWinner < 0 && matchWinner >= 0) {
+    audio.play(matchWinner === 2 ? 'draw' : matchWinner === localTeam ? 'victory' : 'defeat');
+  }
   matchWinnerReason = matchWinner >= 0 ? reason : null;
   if (matchWinner >= 0 && buildPlacementActive) cancelBuildPlacement(false);
   if (matchWinner >= 0) {
@@ -2458,9 +2489,14 @@ function appendUnitFromState(row) {
 
 function applyState(state, initial = false) {
   if (!state || (mapDefinition && state.mapId && state.mapId !== mapDefinition.id)) return;
+  const audioReset = initial || (state.armySize && state.armySize !== currentArmySize)
+    || (matchWinner >= 0 && state.winner === -1)
+    || (Number.isFinite(state.matchElapsedSeconds) && state.matchElapsedSeconds + 1 < latestMatchElapsedSeconds);
   if (state.armySize && state.armySize !== currentArmySize) setArmySize(state.armySize);
   let changed = false;
   let controlGroupsChanged = false;
+  let friendlyDamage = 0;
+  let selectedDamage = 0;
   const visibleEnemyIds = new Set();
   for (const row of state.units || []) {
     const [id, team, x, z, hp, kind, cargo, cargoType, generation = 0, taskStatus,
@@ -2508,6 +2544,10 @@ function applyState(state, initial = false) {
     else if (cargoType === null) unit.cargoType = null;
     if (unit.hp !== hp) {
       const tookDamage = hp < unit.hp && hp > 0;
+      if (!audioReset && hp < unit.hp && unit.team === localTeam) {
+        friendlyDamage++;
+        if (selected.has(id)) selectedDamage++;
+      }
       unit.hp = hp;
       unit.damageFlashUntil = tookDamage ? performance.now() + 220 : 0;
       setUnitTint(unit);
@@ -2556,13 +2596,18 @@ function applyState(state, initial = false) {
   if (Array.isArray(state.objectives)) updateObjectives(state.objectives);
   updateVictoryHoldCard(state.victoryHold, state.winner, state.winnerReason, state.scenarioClockStarted);
   updateScenarioEventCards(state.scenarioEvents || [], state.matchElapsedSeconds, state.scenarioClockStarted);
-  if (Array.isArray(state.buildings)) reconcileBuildings(state.buildings);
+  const buildingDamage = Array.isArray(state.buildings) ? reconcileBuildings(state.buildings, audioReset) : 0;
+  if (audioReset) combatAudioGate.reset();
+  else {
+    const cue = combatAudioGate.observe({ friendlyDamage, selectedDamage, buildingDamage }, performance.now());
+    if (cue) audio.play(cue);
+  }
   if (Number.isInteger(state.winner)) {
     updateMatchResult(state.winner, state.winnerTriggerId, state.winnerReason);
   }
   if (Number.isInteger(state.connected)) updateRoomUI(state.connected);
   if (Number.isFinite(state.rosterSize)) ui.total.textContent = state.rosterSize.toLocaleString();
-  updateEconomyUI(state);
+  updateEconomyUI(state, audioReset);
   revalidateControlGroups();
   if (controlGroupsChanged) updateControlGroupUI();
   selectionDirty = true;
@@ -2580,11 +2625,13 @@ function applyWaypointQueueCounts(rows = []) {
   updateSelectionUI();
 }
 
-function updateEconomyUI(state = {}) {
+function updateEconomyUI(state = {}, initial = false) {
   if (Number.isFinite(state.rosterSize)) latestRosterSize = Math.max(0, Math.floor(state.rosterSize));
   if (Array.isArray(state.food)) latestFood = [Number(state.food[0]) || 0, Number(state.food[1]) || 0];
   if (Array.isArray(state.wood)) latestWood = [Number(state.wood[0]) || 0, Number(state.wood[1]) || 0];
   if (Array.isArray(state.workerProduction)) {
+    if (!initial && localTeam !== null && Number.isFinite(latestWorkerProduction[localTeam]?.queue)
+      && Number(state.workerProduction[localTeam]?.queue) < latestWorkerProduction[localTeam].queue) audio.play('complete');
     latestWorkerProduction = [state.workerProduction[0] || null, state.workerProduction[1] || null];
   }
   if (Array.isArray(state.teamResearch)) {
@@ -4274,6 +4321,7 @@ function downloadEditorMap() {
 }
 
 function showToast(message, duration = 1300) {
+  if (isLocalRejection(message)) audio.play('reject');
   const fieldFeedback = document.querySelector('#field-order-feedback');
   if (fieldFeedback && !fieldFeedback.hidden && fieldFeedback.textContent === message) return;
   toast.textContent = message;
@@ -4357,7 +4405,13 @@ function applyOrderNotice(token, message) {
 
 function sendTrackedOrder(command, label, count, unitName = 'UNITS') {
   const token = beginOrderStatus(label, count, unitName);
-  if (sendCommand({ ...command, clientOrderToken: token })) return token;
+  if (sendCommand({ ...command, clientOrderToken: token })) {
+    audio.play(command.type === 'build' ? 'build'
+      : command.type === 'gather' ? 'gather'
+        : command.type === 'attack' || command.type === 'attackBuilding' || command.type === 'attackMove'
+          ? 'attack' : 'move');
+    return token;
+  }
   finishOrderStatus(token, 'ORDER NOT SENT · CONNECTION OFFLINE', 'failed');
   return null;
 }
@@ -4365,6 +4419,7 @@ function sendTrackedOrder(command, label, count, unitName = 'UNITS') {
 function sendCommand(command) {
   if (!socket || socket.readyState !== WebSocket.OPEN) {
     showToast('SERVER CONNECTION IS OFFLINE');
+    audio.play('reject');
     return false;
   }
   const payload = { ...command };
@@ -4379,6 +4434,7 @@ function sendCommand(command) {
     const message = 'Map JSON is too large to send safely. Keep the published map under 900 KB.';
     if (command.type === 'publishMap') ui.studioMessage.textContent = message;
     showToast('COMMAND TOO LARGE TO SEND');
+    audio.play('reject');
     return false;
   }
   socket.send(serialized);
@@ -4470,6 +4526,7 @@ function selectBuilding(building) {
   updateCommandUI();
   updateEconomyUI();
   showToast(`${buildingLabel(building.type)} SELECTED · ${window.matchMedia('(pointer: coarse)').matches ? 'USE SET RALLY POINT, THEN TAP GROUND' : 'RIGHT-CLICK GROUND TO SET RALLY'}`);
+  audio.play('select');
 }
 
 function pickFriendly(x, y, additive = false) {
@@ -4511,6 +4568,7 @@ function pickFriendly(x, y, additive = false) {
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
+  if (found && selected.size > 0) audio.play('select');
 }
 
 function selectInRect(left, top, right, bottom, additive = false) {
@@ -4531,6 +4589,7 @@ function selectInRect(left, top, right, bottom, additive = false) {
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
+  if (boxSelection.ids.length > 0) audio.play('select');
 }
 
 function worldAt(clientX, clientY) {
@@ -5116,6 +5175,7 @@ function selectWholeTeam() {
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
+  if (selected.size > 0) audio.play('select');
   showToast(`YOUR ARMY SELECTED · ${selected.size.toLocaleString()}`);
 }
 
@@ -5127,6 +5187,7 @@ function selectFriendlyUnitKinds(kinds, label) {
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
+  if (selected.size > 0) audio.play('select');
   showToast(selected.size ? `${label} SELECTED · ${selected.size}` : `NO LIVING ${label}`);
 }
 
@@ -5143,6 +5204,7 @@ function selectIdleWorkers() {
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
+  if (selected.size > 0) audio.play('select');
   showToast(selected.size ? `IDLE WORKERS SELECTED · ${selected.size}` : 'NO IDLE WORKERS');
 }
 function selectInfantry() { selectFriendlyUnitKind('infantry', 'INFANTRY'); }
@@ -5246,6 +5308,28 @@ window.addEventListener('keydown', (event) => {
   else closeHudPanels({ restoreFocus: true });
 }, true);
 
+function syncAudioControls() {
+  const settings = audio.getSettings();
+  ui.audioEnabled.checked = settings.enabled;
+  ui.audioVolume.value = String(Math.round(settings.volume * 100));
+  ui.audioVolumeValue.value = `${Math.round(settings.volume * 100)}%`;
+  ui.audioAmbience.checked = settings.ambience;
+  ui.audioVolume.disabled = !settings.enabled;
+  ui.audioAmbience.disabled = !settings.enabled;
+  const status = audio.getStatus();
+  ui.audioStatus.dataset.state = status;
+  ui.audioStatus.textContent = {
+    running: 'SOUND READY', waiting: 'SOUND STARTS WITH FIRST INPUT', muted: 'SOUND MUTED',
+    unavailable: 'AUDIO UNAVAILABLE IN THIS BROWSER', suspended: 'TAP TO RESUME AUDIO',
+    interrupted: 'AUDIO INTERRUPTED', closed: 'AUDIO UNAVAILABLE',
+  }[status] || 'SOUND STARTS WITH FIRST INPUT';
+}
+syncAudioControls();
+ui.audioEnabled.addEventListener('change', () => { audio.setSettings({ enabled: ui.audioEnabled.checked }); syncAudioControls(); });
+ui.audioVolume.addEventListener('input', () => { audio.setSettings({ volume: Number(ui.audioVolume.value) / 100 }); syncAudioControls(); });
+ui.audioAmbience.addEventListener('change', () => { audio.setSettings({ ambience: ui.audioAmbience.checked }); syncAudioControls(); });
+document.addEventListener('pointerdown', () => audio.unlock(), { capture: true, once: true });
+document.addEventListener('keydown', () => audio.unlock(), { capture: true, once: true });
 function keyboardTargetIsEditing(event) {
   const target = event.target instanceof Element ? event.target : null;
   return !matchMenu.hidden || !helpPanel.hidden || !scenarioBriefPanel.hidden
@@ -5886,8 +5970,12 @@ function connectSocket() {
       return;
     }
     if (message.type === 'room') { updateRoomUI(message.connected); return; }
-    if (message.type === 'trigger') { showToast(message.message, 2400); return; }
-    if (message.type === 'scenarioEvent') { showToast(message.message, 3600); return; }
+    if (message.type === 'trigger') {
+      audio.play(localTeam !== null && message.team !== localTeam ? 'objective-lost' : 'objective');
+      showToast(message.message, 2400);
+      return;
+    }
+    if (message.type === 'scenarioEvent') { audio.play('objective'); showToast(message.message, 3600); return; }
     if (message.type === 'victory') {
       updateMatchResult(message.team, message.triggerId, message.reason);
       showToast(message.message, 3200);
@@ -5915,6 +6003,10 @@ function connectSocket() {
         pendingBuildOrderToken,
       });
       if (feedback.applyOrderStatus) applyOrderNotice(noticeToken, notice);
+      if (feedback.showToast) {
+        const cue = cueForNotice(notice, { localTeam, tokenized: noticeToken !== null });
+        if (cue) audio.play(cue);
+      }
       if (notice.startsWith('BUILD REJECTED ·')) {
         if (feedback.clearPendingBuild) {
           buildPlacementPending = false;

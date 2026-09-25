@@ -8,6 +8,7 @@
   },
   "scripts": {
     "start": "node room-supervisor.mjs",
-    "test": "node scripts/ci.mjs"
+    "test": "node scripts/ci.mjs",
+    "release:pack": "node scripts/pack-railway-release.mjs"
   }
 }

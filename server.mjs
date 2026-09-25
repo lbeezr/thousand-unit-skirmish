@@ -38,6 +38,7 @@ const MAP_DIRECTORY = path.join(ROOT, 'maps');
 const CUSTOM_MAP_DIRECTORY = path.resolve(ROOT, process.env.RTS_CUSTOM_MAP_DIRECTORY || 'custom-maps');
 const MATCH_STATE_PATH = process.env.RTS_MATCH_STATE_PATH ? path.resolve(process.env.RTS_MATCH_STATE_PATH) : null;
 const MAX_UNITS = 2000;
+const DEFAULT_STARTING_ARMY_SIZE = 1000;
 const MAX_QUEUED_WAYPOINTS = 8;
 const MAX_MAP_OBSTACLES = 4096;
 const MAX_RESOURCE_NODES = 128;
@@ -100,6 +101,13 @@ function validateMapDefinition(definition, filename) {
   definition.victoryMode ??= 'any';
   if (!['any', 'all'].includes(definition.victoryMode)) {
     throw new Error(`Map ${filename} victoryMode must be "any" or "all".`);
+  }
+  if (definition.startingArmySize !== undefined
+    && (!Number.isInteger(definition.startingArmySize)
+      || definition.startingArmySize < 8
+      || definition.startingArmySize > MAX_UNITS
+      || definition.startingArmySize % 2 !== 0)) {
+    throw new Error(`Map ${filename} startingArmySize must be an even total from 8 to ${MAX_UNITS}.`);
   }
   if (definition.startingResources !== undefined) {
     const resources = definition.startingResources;
@@ -396,6 +404,7 @@ const MOVE_START_BROADCAST_DISTANCE = WALK_SPEED * STEP_SECONDS * 0.5;
 const SPATIAL_BUCKET_SIZE = 1.2;
 const ATTACK_RANGE = 1.28;
 const ATTACK_DAMAGE = 10;
+const WORKER_ATTACK_DAMAGE = 4;
 const ATTACK_PERIOD = 0.85;
 const ARCHER_ATTACK_RANGE = 4.5;
 const ARCHER_ATTACK_DAMAGE = 7;
@@ -551,7 +560,7 @@ let triggerStates = new Map();
 let scenarioEventStates = new Map();
 let matchElapsedSeconds = 0;
 let scenarioClockStarted = false;
-let victoryHoldState = { activeTeams: [false, false], progressSeconds: [0, 0] };
+let victoryHoldState = { activeTeams: [false, false], progressSeconds: [0, 0], triggerIds: [null, null] };
 let teamFood = [0, 0];
 let teamWood = [0, 0];
 let teamUpgrades = [
@@ -593,7 +602,7 @@ function resetScenarioEventClock() {
 }
 
 function resetVictoryHoldState() {
-  victoryHoldState = { activeTeams: [false, false], progressSeconds: [0, 0] };
+  victoryHoldState = { activeTeams: [false, false], progressSeconds: [0, 0], triggerIds: [null, null] };
 }
 
 function activateMap(definition) {
@@ -691,7 +700,7 @@ let inboundControlPongsReceived = 0;
 let inboundControlRateLimitDisconnects = 0;
 let commandQueueLimitRejections = 0;
 const sessions = new Map();
-let currentArmySize = 1000;
+let currentArmySize = DEFAULT_STARTING_ARMY_SIZE;
 let nextPlayerId = 1;
 let tickNumber = 0;
 let dirty = true;
@@ -1376,7 +1385,9 @@ function resetArmy(count = currentArmySize) {
   }
   units.length = 0;
   const firstTeamCount = currentArmySize / 2;
-  const reservedWorkerCells = [new Set(), new Set()];
+  const reservedSpawnCells = [new Set(), new Set()];
+  const baseCells = spawnByTeam.map((spawn) => worldToCell(spawn.x, spawn.z));
+  const baseComponents = baseCells.map((cell) => walkableComponents[cell]);
   for (let id = 0; id < currentArmySize; id++) {
     const team = id < firstTeamCount ? 0 : 1;
     const slot = team === 0 ? id : id - firstTeamCount;
@@ -1390,22 +1401,20 @@ function resetArmy(count = currentArmySize) {
     const offset = WORKER_SPAWN_OFFSETS[slot];
     let x = spawn.x + (offset?.[0] ?? (column - (columns - 1) / 2) * spacing);
     let z = spawn.z + (offset?.[1] ?? (row - (rows - 1) / 2) * spacing);
-    if (slot < WORKER_SPAWN_OFFSETS.length) {
-      const desiredCell = worldToCell(x, z);
-      const baseComponent = walkableComponents[worldToCell(spawn.x, spawn.z)];
-      const reservedCells = reservedWorkerCells[team];
-      const insideMap = Math.abs(x) < MAP_HALF_X && Math.abs(z) < MAP_HALF_Z;
-      let workerCell = desiredCell;
-      if (!insideMap || walkableComponents[desiredCell] !== baseComponent || reservedCells.has(desiredCell)) {
-        workerCell = nearestOpenCellInComponent(
-          desiredCell, baseComponent, reservedCells, worldToCell(spawn.x, spawn.z),
-        );
-        const safePosition = cellToWorld(workerCell);
-        x = safePosition.x;
-        z = safePosition.z;
-      }
-      reservedCells.add(workerCell);
+    const desiredCell = worldToCell(x, z);
+    const reservedCells = reservedSpawnCells[team];
+    const insideMap = Math.abs(x) < MAP_HALF_X && Math.abs(z) < MAP_HALF_Z;
+    let spawnCell = desiredCell;
+    if (!insideMap || walkableComponents[desiredCell] !== baseComponents[team]
+      || (slot < WORKER_SPAWN_OFFSETS.length && reservedCells.has(desiredCell))) {
+      spawnCell = nearestOpenCellInComponent(
+        desiredCell, baseComponents[team], reservedCells, baseCells[team],
+      );
+      const safePosition = cellToWorld(spawnCell);
+      x = safePosition.x;
+      z = safePosition.z;
     }
+    reservedCells.add(spawnCell);
     units.push(makeUnit(id, team, x, z, slot < 4 ? 'worker' : 'infantry'));
   }
   for (const state of triggerStates.values()) {
@@ -1771,14 +1780,21 @@ function evaluateScenarioTriggers(deltaSeconds) {
         ? victoryTriggers.every((trigger) => triggerStates.get(trigger.id)?.owner === team)
         : victoryTriggers.some((trigger) => triggerStates.get(trigger.id)?.owner === team);
       if (!controlsVictoryCondition) {
-        if (victoryHoldState.activeTeams[team] || victoryHoldState.progressSeconds[team] > 0) {
+        if (victoryHoldState.activeTeams[team] || victoryHoldState.progressSeconds[team] > 0
+          || victoryHoldState.triggerIds[team] !== null) {
           victoryHoldState.activeTeams[team] = false;
           victoryHoldState.progressSeconds[team] = 0;
+          victoryHoldState.triggerIds[team] = null;
           dirty = true;
         }
       } else if (!victoryHoldState.activeTeams[team]) {
         victoryHoldState.activeTeams[team] = true;
         victoryHoldState.progressSeconds[team] = 0;
+        victoryHoldState.triggerIds[team] = [...victoryCaptures].reverse()
+          .find((capture) => capture.team === team)?.triggerId
+          ?? (mapDefinition.victoryMode === 'any'
+            ? victoryTriggers.find((trigger) => triggerStates.get(trigger.id)?.owner === team)?.id ?? null
+            : null);
         dirty = true;
       } else if (scenarioClockStarted) {
         const previousProgress = victoryHoldState.progressSeconds[team];
@@ -1791,9 +1807,10 @@ function evaluateScenarioTriggers(deltaSeconds) {
     if (completedTeams.length > 0) {
       winningTeam = completedTeams.length === 1 ? completedTeams[0] : 2;
       if (winningTeam < 2) {
-        winningTriggerId = victoryTriggers.find((trigger) => (
-          triggerStates.get(trigger.id)?.owner === winningTeam
-        ))?.id ?? null;
+        winningTriggerId = victoryHoldState.triggerIds[winningTeam]
+          ?? (mapDefinition.victoryMode === 'any'
+            ? victoryTriggers.find((trigger) => triggerStates.get(trigger.id)?.owner === winningTeam)?.id ?? null
+            : null);
         const winnerName = winningTeam === 0 ? 'AZURE' : 'EMBER';
         const heldRule = mapDefinition.victoryMode === 'all' ? 'ALL VICTORY ZONES' : 'A VICTORY ZONE';
         controlHoldAnnouncement = `${winnerName} WINS · HELD ${heldRule} FOR ${Math.ceil(victoryHoldSeconds)}S`;
@@ -2130,6 +2147,7 @@ function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
       victoryHoldState: {
         activeTeams: [...victoryHoldState.activeTeams],
         progressSeconds: [...victoryHoldState.progressSeconds],
+        triggerIds: [...victoryHoldState.triggerIds],
       },
       matchWinner,
       matchWinnerTriggerId,
@@ -2394,7 +2412,13 @@ function validateMatchCheckpoint(snapshot) {
     && Array.isArray(savedVictoryHold.progressSeconds) && savedVictoryHold.progressSeconds.length === 2
     && savedVictoryHold.progressSeconds.every((seconds, team) => finite(seconds)
       && seconds >= 0 && seconds <= holdDuration
-      && (savedVictoryHold.activeTeams[team] || seconds === 0)), 'invalid victory hold state');
+      && (savedVictoryHold.activeTeams[team] || seconds === 0))
+    && (savedVictoryHold.triggerIds === undefined
+      || (Array.isArray(savedVictoryHold.triggerIds) && savedVictoryHold.triggerIds.length === 2
+        && savedVictoryHold.triggerIds.every((id, team) => id === null
+          || (savedVictoryHold.activeTeams[team]
+            && definition.triggers.some((trigger) => trigger.id === id && trigger.victory === true))))),
+  'invalid victory hold state');
   assertSnapshot(finite(state.matchElapsedSeconds) && state.matchElapsedSeconds >= 0
     && typeof state.scenarioClockStarted === 'boolean'
     && integerIn(state.matchWinner, -1, 2)
@@ -2501,6 +2525,7 @@ function restoreMatchCheckpoint(snapshot) {
   victoryHoldState = {
     activeTeams: [...savedVictoryHold.activeTeams],
     progressSeconds: [...savedVictoryHold.progressSeconds],
+    triggerIds: savedVictoryHold.triggerIds ? [...savedVictoryHold.triggerIds] : [null, null],
   };
   matchWinner = state.matchWinner;
   matchWinnerTriggerId = state.matchWinnerTriggerId;
@@ -2709,7 +2734,7 @@ function initializeCleanMatch() {
   navigationRevision = 0;
   nextMoveOrderId = 1;
   activateMap(mapCatalog.get(defaultMapId));
-  resetArmy(1000);
+  resetArmy(mapDefinition.startingArmySize ?? DEFAULT_STARTING_ARMY_SIZE);
 }
 
 async function initializeMatchFromCheckpoint() {
@@ -4210,6 +4235,28 @@ function buildFormationSlots(selectedUnits, centerCell, formation) {
   return { slots, columns, rows, direction: { x: directionX, z: directionZ }, side: { x: sideX, z: sideZ } };
 }
 
+function nearestBuilderAccessCell(unit, componentId, accessCells, reservedCells) {
+  let nearestOpen = -1;
+  let nearestOpenDistance = Infinity;
+  let nearestShared = -1;
+  let nearestSharedDistance = Infinity;
+  for (const cell of accessCells) {
+    if (walkableComponents[cell] !== componentId) continue;
+    const point = cellToWorld(cell);
+    const distance = (unit.x - point.x) ** 2 + (unit.z - point.z) ** 2;
+    if (distance < nearestSharedDistance || (distance === nearestSharedDistance && cell < nearestShared)) {
+      nearestShared = cell;
+      nearestSharedDistance = distance;
+    }
+    if (!reservedCells.has(cell)
+      && (distance < nearestOpenDistance || (distance === nearestOpenDistance && cell < nearestOpen))) {
+      nearestOpen = cell;
+      nearestOpenDistance = distance;
+    }
+  }
+  return nearestOpen >= 0 ? nearestOpen : nearestShared;
+}
+
 function assignFormationMove(player, command, buildingTargetId = null, orderLabel = null) {
   if (player.team === null || !Array.isArray(command.ids)) {
     sendOrderNotice(player, command, 'MOVE REJECTED · NO VALID UNITS');
@@ -4246,8 +4293,14 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
   const center = worldToCell(centerX, centerZ);
   const centerColumn = center % MAP_WIDTH;
   const centerRow = Math.floor(center / MAP_WIDTH);
-  const formationLayout = buildFormationSlots(selectedUnits, center, formation);
-  const orderedUnits = orderUnitsForFormation(selectedUnits, formationLayout);
+  const targetBuilding = buildingTargetId === null ? null : buildingsById.get(buildingTargetId);
+  if (buildingTargetId !== null && !targetBuilding) {
+    sendOrderNotice(player, command, 'BUILD REJECTED · BUILDING UNAVAILABLE');
+    return;
+  }
+  const buildingAccess = targetBuilding ? buildingAccessCells(targetBuilding.footprint) : null;
+  const formationLayout = buildingAccess ? null : buildFormationSlots(selectedUnits, center, formation);
+  const orderedUnits = buildingAccess ? selectedUnits : orderUnitsForFormation(selectedUnits, formationLayout);
   const unitCells = orderedUnits.map((unit) => nearestOpenCell(worldToCell(unit.x, unit.z)));
   const unitComponents = unitCells.map((cell) => walkableComponents[cell]);
   let fallbackPools = null;
@@ -4257,10 +4310,12 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
   let queuedCount = 0;
 
   orderedUnits.forEach((unit, index) => {
-    const requestedCell = formationLayout.slots[index];
+    const requestedCell = buildingAccess ? -1 : formationLayout.slots[index];
     const componentId = unitComponents[index];
-    let destination = findAvailableCellNear(requestedCell, componentId, reservedDestinations);
-    if (destination < 0) {
+    let destination = buildingAccess
+      ? nearestBuilderAccessCell(unit, componentId, buildingAccess, reservedDestinations)
+      : findAvailableCellNear(requestedCell, componentId, reservedDestinations);
+    if (destination < 0 && !buildingAccess) {
       fallbackPools ||= buildMoveFallbackPools(unitComponents, centerColumn, centerRow);
       const candidates = fallbackPools.cellsByComponent.get(componentId) || [];
       let cursor = fallbackPools.cursors.get(componentId) || 0;
@@ -4268,6 +4323,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
       destination = candidates[cursor] ?? candidates[0] ?? unitCells[index];
       fallbackPools.cursors.set(componentId, cursor + 1);
     }
+    if (destination < 0) return;
     reservedDestinations.add(destination);
     if (queueWaypoint && canQueueBehindCurrentRoute(unit)) {
       unit.queuedWaypoints.push({ destination, attackMove });
@@ -4370,7 +4426,20 @@ function assignAttack(player, command) {
     sendOrderNotice(player, command, 'ATTACK REJECTED · TARGET UNREACHABLE');
     return;
   }
+  const assignments = [];
   for (const unit of selectedUnits) {
+    const startCell = nearestOpenCell(worldToCell(unit.x, unit.z));
+    const distance = Math.hypot(target.x - unit.x, target.z - unit.z);
+    const attackRange = unit.kind === 'archer' ? ARCHER_ATTACK_RANGE : ATTACK_RANGE;
+    const path = pathFromAttackFlow(startCell, flowField);
+    if (path.length === 0 && startCell !== flowField.goal && distance > attackRange) continue;
+    assignments.push({ unit, path });
+  }
+  if (assignments.length === 0) {
+    sendOrderNotice(player, command, 'ATTACK REJECTED · TARGET UNREACHABLE');
+    return;
+  }
+  for (const { unit, path } of assignments) {
     cancelGatherOrder(unit);
     unit.queuedWaypoints.length = 0;
     unit.buildingTargetId = null;
@@ -4382,13 +4451,12 @@ function assignAttack(player, command) {
     unit.attackBuildingTargetId = -1;
     unit.repathTimer = 0.6;
     unit.lastAttackCell = targetCell;
-    unit.path = pathFromAttackFlow(worldToCell(unit.x, unit.z), flowField);
+    unit.path = path;
     unit.pathIndex = 0;
   }
-  if (selectedUnits.length) {
-    sendOrderNotice(player, command, `ATTACK ORDER · ${selectedUnits.length} UNITS`);
-    dirty = true;
-  }
+  const unreachableCount = selectedUnits.length - assignments.length;
+  sendOrderNotice(player, command, `ATTACK ORDER · ${assignments.length} UNITS${unreachableCount ? ` · ${unreachableCount} UNREACHABLE` : ''}`);
+  dirty = true;
 }
 
 function assignAttackBuilding(player, command) {
@@ -4530,7 +4598,7 @@ function selectMap(player, mapId) {
   const nextMap = mapCatalog.get(String(mapId));
   if (!nextMap || nextMap.id === mapDefinition.id) return;
   activateMap(nextMap);
-  resetArmy(currentArmySize);
+  resetArmy(nextMap.startingArmySize ?? DEFAULT_STARTING_ARMY_SIZE);
   broadcastMapChange();
   broadcast({ type: 'notice', message: `MAP LOADED · ${mapDefinition.name}` });
   dirty = false;
@@ -4572,7 +4640,7 @@ async function publishMap(player, rawDefinition, persist = false) {
     runtimeMapIds.add(definition.id);
     if (persist) persistedMapIds.add(definition.id);
     activateMap(definition);
-    resetArmy(currentArmySize);
+    resetArmy(definition.startingArmySize ?? DEFAULT_STARTING_ARMY_SIZE);
     broadcastMapChange();
     broadcast({ type: 'notice', message: `${persist ? 'CUSTOM MAP SAVED' : 'CUSTOM MAP PUBLISHED'} · ${mapDefinition.name}` });
     player.sendJson({ type: 'mapPublished', mapId: mapDefinition.id, persisted: persist });
@@ -4585,7 +4653,9 @@ async function publishMap(player, rawDefinition, persist = false) {
 async function handleCommand(player, command) {
   if (shuttingDown || !command || typeof command.type !== 'string') return;
   if (matchWinner >= 0 && ['move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'train', 'build', 'trainArcher', 'trainWorker', 'setRallyPoint', 'researchUpgrade'].includes(command.type)) {
-    sendOrderNotice(player, command, 'MATCH OVER · RESET TO PLAY AGAIN');
+    sendOrderNotice(player, command, player.team === 0
+      ? 'MATCH OVER · RESET BATTLEFIELD TO PLAY AGAIN'
+      : 'MATCH OVER · WAIT FOR HOST TO RESET');
     return;
   }
   if (command.type === 'move') assignFormationMove(player, command);
@@ -4609,7 +4679,11 @@ async function handleCommand(player, command) {
     broadcast({ type: 'notice', message: `BATTLEFIELD RESET · ${count.toLocaleString()} UNITS` });
     broadcastState();
   }
-  if (command.type === 'reset' && player.team === 0) {
+  if (command.type === 'reset') {
+    if (player.team !== 0) {
+      sendOrderNotice(player, command, 'RESET REJECTED · ONLY THE HOST CAN RESET THE MATCH');
+      return;
+    }
     resetArmy(currentArmySize);
     broadcast({ type: 'notice', message: 'BATTLEFIELD RESET' });
     broadcastState();
@@ -4852,7 +4926,8 @@ function simulateTick() {
         const dz = target.z - unit.z;
         const distance = Math.hypot(dx, dz);
         const attackRange = unit.kind === 'archer' ? ARCHER_ATTACK_RANGE : ATTACK_RANGE;
-        const attackDamage = (unit.kind === 'archer' ? ARCHER_ATTACK_DAMAGE : ATTACK_DAMAGE)
+        const attackDamage = (unit.kind === 'archer' ? ARCHER_ATTACK_DAMAGE
+          : unit.kind === 'worker' ? WORKER_ATTACK_DAMAGE : ATTACK_DAMAGE)
           * attackDamageMultiplierFor(unit);
         const attackPeriod = unit.kind === 'archer' ? ARCHER_ATTACK_PERIOD : ATTACK_PERIOD;
         unit.attackCooldown -= STEP_SECONDS;
@@ -5550,7 +5625,7 @@ const server = createServer(async (request, response) => {
     response.end('Forbidden');
     return;
   }
-  const publicClientAsset = ['index.html', 'style.css', 'src/main.js', 'src/map-utils.mjs', 'src/map-resize.mjs', 'src/order-feedback.mjs', 'src/unit-selection.mjs'].includes(relative);
+  const publicClientAsset = ['index.html', 'style.css', 'src/main.js', 'src/map-utils.mjs', 'src/map-resize.mjs', 'src/order-feedback.mjs', 'src/unit-selection.mjs', 'src/audio.mjs', 'src/audio-policy.mjs'].includes(relative);
   const publicMapAsset = path.dirname(relative) === 'maps' && path.extname(relative) === '.json';
   if (!publicClientAsset && !publicMapAsset) {
     response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });

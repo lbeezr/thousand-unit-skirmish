@@ -29,3 +29,6 @@ jobs:
 
       - name: Run project checks and scenarios
         run: npm test
+
+      - name: Pack Railway release
+        run: npm run release:pack

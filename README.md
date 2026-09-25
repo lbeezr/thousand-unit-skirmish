@@ -12,6 +12,8 @@ node room-supervisor.mjs
 
 The npm aliases are `npm start` for the server and `npm test` for the repository's CI checks. CI checks JavaScript syntax, the pure map/formation/selection scenarios, and the isolated room-supervisor integration scenario.
 
+For a reproducible container release, run `npm ci`, `npm test`, then `npm run release:pack` from a reviewed, committed checkout. The packer copies the Dockerfile's local `COPY` sources into a temporary directory and prints the source commit and a content digest. It refuses uncommitted changes; `--allow-dirty` is reserved for disposable local tests. CI verifies that a clean checkout can produce this package.
+
 Open <http://127.0.0.1:4173> in two tabs. The first connection is Azure and controls match size/reset/map; the second is Ember. A disconnected player can reclaim their seat for two minutes by default, and each tab retries a lost connection automatically. After checkpoint recovery, seats that were connected at the crash receive a full reclaim window from server restart; seats already disconnected keep their original expiry. Set `RTS_SESSION_GRACE_MS` to tune both reconnect and checkpoint-recovery windows from 1,000 to 3,600,000 milliseconds. Invite rooms run in separate Node processes, so units, maps, sessions, and match controls in one room cannot affect another. The default room plus four invite rooms are allowed by default; set `RTS_MAX_ROOMS` to tune that cap.
 
 For a LAN match, bind the server to all local interfaces:
