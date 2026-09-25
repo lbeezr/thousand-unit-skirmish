@@ -37,7 +37,7 @@ The renderer derives these states from the current filtered state snapshots. No 
 | defeat | HP changes from positive to zero or below | One-shot defeat pose, then hide the unit. |
 | spawn | A reused unit ID has a new generation, or a produced unit first appears | Short spawn-in pose. |
 
-Attack and hit are transient overlays. Defeat takes precedence and is terminal for that generation. Movement, turning, worker task, cargo, and team remain separate facts so an attack cue does not erase task state. Enemy positions and attack target coordinates continue to follow the server's visibility filtering; the renderer does not infer hidden state.
+Attack and hit are transient overlays. Defeat takes precedence and is terminal for that generation. Movement, turning, worker task, cargo, and team remain separate facts so an attack cue does not erase task state. Movement takes precedence over a retained gather/build task for the worker's tool swing, so travel to a node does not look like active work. Enemy positions and attack target coordinates continue to follow the server's visibility filtering; the renderer does not infer hidden state.
 
 The first authored review pack provides four concrete samples: Worker idle, Worker build, Barracks mid-construction, and Barracks complete. A static review board is optional when browser policy disallows it; the game-rendered screenshots in the integration checkpoint are the appearance review. The manifest can add more state samples without changing the renderer contract.
 
