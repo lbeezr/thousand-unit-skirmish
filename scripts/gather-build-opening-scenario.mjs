@@ -9,7 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const serverRoot = process.env.RTS_SERVER_ROOT || root;
+const serverRoot = path.resolve(process.env.RTS_SERVER_ROOT || root);
 const mapPath = path.resolve(serverRoot, process.env.RTS_OPENING_MAP || 'maps/forked-vale.json');
 const fixtureMapId = 'gather-build-opening';
 // Set this to the exact Git SHA of the server source before running the scenario.
