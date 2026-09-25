@@ -1,0 +1,418 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thousand-unit-skirmish.local/schemas/renderer-asset-pack-v1.schema.json",
+  "title": "Thousand Unit Skirmish renderer asset pack v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "packId",
+    "packVersion",
+    "packKind",
+    "coordinateSystem",
+    "provenance",
+    "budgets",
+    "files",
+    "assets"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "packId": { "type": "string", "minLength": 1 },
+    "packVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "packKind": { "enum": ["character-building", "environment"] },
+    "coordinateSystem": { "$ref": "#/$defs/coordinateSystem" },
+    "provenance": { "$ref": "#/$defs/provenance" },
+    "budgets": { "$ref": "#/$defs/budgets" },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/file" }
+    },
+    "unitBatchRegistry": {
+      "type": "array",
+      "maxItems": 8,
+      "items": { "$ref": "#/$defs/unitBatchRegistration" }
+    },
+    "assets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          { "$ref": "#/$defs/unit" },
+          { "$ref": "#/$defs/building" },
+          { "$ref": "#/$defs/resourceSprite" },
+          { "$ref": "#/$defs/constructionGround" }
+        ]
+      }
+    },
+    "reviewBoard": { "$ref": "#/$defs/reviewImage" }
+  },
+  "$defs": {
+    "coordinateSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["units", "up", "forward", "right"],
+      "properties": {
+        "units": { "const": "world-unit" },
+        "up": { "const": "+Y" },
+        "forward": { "const": "+Z" },
+        "right": { "const": "+X" }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["license", "source"],
+      "properties": {
+        "license": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "minLength": 1 },
+        "authoringTool": { "type": "string", "minLength": 1 },
+        "notes": { "type": "string" }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxUnitPartBins",
+        "maxUnitTeamBatches",
+        "projectedUnitPartBins",
+        "projectedUnitTeamBatches",
+        "maxEnvironmentBatches",
+        "projectedEnvironmentBatches",
+        "maxTextureMemoryBytes",
+        "projectedTextureMemoryBytes",
+        "maxAdditionalDrawCalls",
+        "projectedAdditionalDrawCalls",
+        "projectedBuildingDrawCallsPerStructure"
+      ],
+      "properties": {
+        "maxUnitPartBins": { "const": 8 },
+        "maxUnitTeamBatches": { "const": 16 },
+        "projectedUnitPartBins": { "type": "integer", "minimum": 0, "maximum": 8 },
+        "projectedUnitTeamBatches": { "type": "integer", "minimum": 0, "maximum": 16 },
+        "maxEnvironmentBatches": { "type": "integer", "minimum": 0, "maximum": 10 },
+        "projectedEnvironmentBatches": { "type": "integer", "minimum": 0, "maximum": 10 },
+        "maxTextureMemoryBytes": { "type": "integer", "minimum": 0 },
+        "projectedTextureMemoryBytes": { "type": "integer", "minimum": 0 },
+        "maxAdditionalDrawCalls": { "type": "integer", "minimum": 0 },
+        "projectedAdditionalDrawCalls": { "type": "integer", "minimum": 0 },
+        "projectedBuildingDrawCallsPerStructure": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "role", "sha256", "license", "provenance"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "role": {
+          "enum": ["model", "source-image", "runtime-image", "review-image"]
+        },
+        "sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+        "license": { "type": "string", "minLength": 1 },
+        "provenance": { "type": "string", "minLength": 1 },
+        "dimensionsPx": { "$ref": "#/$defs/dimensionsPx" }
+      }
+    },
+    "dimensionsPx": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "vector3": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "type": "number" }
+    },
+    "boundsWorld": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height", "depth"],
+      "properties": {
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 },
+        "depth": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "part": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "node", "batchKey", "paletteSlot"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "modelFile": { "type": "string", "minLength": 1 },
+        "node": { "type": "string", "minLength": 1 },
+        "batchKey": { "type": "string", "minLength": 1 },
+        "paletteSlot": { "enum": ["neutral", "team-accent"] },
+        "pivot": { "$ref": "#/$defs/vector3" }
+      }
+    },
+    "unitBatchRegistration": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["batchKey", "status", "modelFile", "node"],
+          "properties": {
+            "batchKey": { "type": "string", "minLength": 1 },
+            "status": { "const": "active" },
+            "modelFile": { "type": "string", "minLength": 1 },
+            "node": { "type": "string", "minLength": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["batchKey", "status"],
+          "properties": {
+            "batchKey": { "type": "string", "minLength": 1 },
+            "status": { "const": "reserved" }
+          }
+        }
+      ]
+    },
+    "anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "node"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "node": { "type": "string", "minLength": 1 },
+        "position": { "$ref": "#/$defs/vector3" }
+      }
+    },
+    "sample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "poseId"],
+      "properties": {
+        "state": { "type": "string", "minLength": 1 },
+        "poseId": { "type": "string", "minLength": 1 },
+        "previewFile": { "type": "string", "minLength": 1 }
+      }
+    },
+    "unit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "modelFile",
+        "boundsWorld",
+        "bodyHeightWorld",
+        "groundAnchor",
+        "parts",
+        "anchors",
+        "stateSamples"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "const": "unit" },
+        "modelFile": { "type": "string", "minLength": 1 },
+        "boundsWorld": { "$ref": "#/$defs/boundsWorld" },
+        "bodyHeightWorld": { "type": "number", "minimum": 0.7, "maximum": 0.9 },
+        "groundAnchor": { "type": "string", "minLength": 1 },
+        "parts": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": { "$ref": "#/$defs/part" }
+        },
+        "anchors": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/anchor" }
+        },
+        "stateSamples": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/sample" }
+        }
+      }
+    },
+    "building": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "modelFile",
+        "boundsWorld",
+        "footprintWorld",
+        "groundAnchor",
+        "parts",
+        "anchors",
+        "stateSamples"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "const": "building" },
+        "modelFile": { "type": "string", "minLength": 1 },
+        "boundsWorld": { "$ref": "#/$defs/boundsWorld" },
+        "footprintWorld": { "$ref": "#/$defs/footprintWorld" },
+        "groundAnchor": { "type": "string", "minLength": 1 },
+        "parts": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/part" }
+        },
+        "anchors": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/anchor" }
+        },
+        "stateSamples": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/sample" }
+        }
+      }
+    },
+    "footprintWorld": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "depth"],
+      "properties": {
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "depth": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "worldSize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "resourceSprite": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "resourceType",
+        "stage",
+        "sourceFile",
+        "runtimeFile",
+        "dimensionsPx",
+        "worldSize",
+        "pivot",
+        "cameraFacing",
+        "alphaMode",
+        "stockPercent",
+        "batchKey"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "const": "resource-sprite" },
+        "resourceType": { "enum": ["wood", "food"] },
+        "stage": { "enum": ["full", "worked", "low", "depleted"] },
+        "sourceFile": { "type": "string", "minLength": 1 },
+        "runtimeFile": { "type": "string", "minLength": 1 },
+        "dimensionsPx": { "$ref": "#/$defs/dimensionsPx" },
+        "worldSize": { "$ref": "#/$defs/worldSize" },
+        "pivot": {
+          "type": "array",
+          "prefixItems": [{ "const": 0.5 }, { "const": 1.0 }],
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "cameraFacing": { "const": true },
+        "alphaMode": { "const": "cutout" },
+        "stockPercent": { "$ref": "#/$defs/percentRange" },
+        "batchKey": { "type": "string", "minLength": 1 }
+      }
+    },
+    "constructionGround": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "stage",
+        "sourceFile",
+        "runtimeFile",
+        "dimensionsPx",
+        "worldSize",
+        "pivot",
+        "cameraFacing",
+        "alphaMode",
+        "progressRange",
+        "batchKey"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "const": "construction-ground" },
+        "stage": { "enum": ["clear", "earthwork", "foundation"] },
+        "sourceFile": { "type": ["string", "null"] },
+        "runtimeFile": { "type": ["string", "null"] },
+        "dimensionsPx": { "oneOf": [{ "$ref": "#/$defs/dimensionsPx" }, { "type": "null" }] },
+        "worldSize": { "oneOf": [{ "$ref": "#/$defs/worldSize" }, { "type": "null" }] },
+        "pivot": {
+          "type": ["array", "null"],
+          "prefixItems": [{ "const": 0.5 }, { "const": 1.0 }],
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "cameraFacing": { "const": true },
+        "alphaMode": { "const": "cutout" },
+        "progressRange": {
+          "oneOf": [
+            { "$ref": "#/$defs/progressRange" },
+            { "type": "null" }
+          ]
+        },
+        "batchKey": { "type": "string", "minLength": 1 }
+      }
+    },
+    "percentRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max"],
+      "properties": {
+        "min": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "max": { "type": "integer", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "progressRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max"],
+      "properties": {
+        "min": { "type": "number", "minimum": 0, "maximum": 1 },
+        "max": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "reviewImage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "camera", "maps", "teams"],
+      "properties": {
+        "file": { "type": "string", "minLength": 1 },
+        "camera": { "const": "default" },
+        "maps": {
+          "type": "array",
+          "contains": { "const": "meadow" },
+          "items": { "enum": ["meadow", "cinder"] },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "teams": {
+          "type": "array",
+          "contains": { "const": "azure" },
+          "items": { "enum": ["azure", "ember"] },
+          "minItems": 2,
+          "maxItems": 2
+        }
+      }
+    }
+  }
+}
