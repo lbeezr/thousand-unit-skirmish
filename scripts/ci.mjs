@@ -42,6 +42,9 @@ const scenarios = [
   ['scripts/audio-policy-scenario.mjs', 'Audio policy'],
   ['scripts/map-utils-scenario.mjs', 'Map utilities'],
   ['scripts/objective-fog-visibility-scenario.mjs', 'Objective fog visibility'],
+  ['scripts/unreachable-attack-scenario.mjs', 'Authoritative orders and objective hold'],
+  ['scripts/worker-combat-scenario.mjs', 'Worker combat and seat parity'],
+  ['scripts/opening-production-scenario.mjs', 'Mirrored construction and production', '--expect-builder-parity'],
   ['scripts/forked-vale-layout.mjs', 'Forked Vale layout'],
   ['scripts/formation-assignment-scenario.mjs', 'Formation assignment'],
   ['scripts/unit-selection-scenario.mjs', 'Unit selection'],
@@ -50,6 +53,6 @@ const scenarios = [
   ['scripts/railway-release-scenario.mjs', 'Railway release integration'],
 ];
 
-for (const [file, label] of scenarios) run([file], label);
+for (const [file, label, ...args] of scenarios) run([file, ...args], label);
 
 process.stdout.write('\nCI checks passed.\n');
