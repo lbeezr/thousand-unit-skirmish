@@ -63,6 +63,11 @@ const EVENT_TIMEOUT_MS = 90_000;
 const MELEE_ATTACK_RANGE = 1.28;
 const ARCHER_ATTACK_RANGE = 4.5;
 const EXPECTED_ARCHER_DAMAGE = 7;
+const STARTING_FOOD = 600;
+const STARTING_WOOD = 600;
+const ARCHERY_RANGE_WOOD_COST = 150;
+const ARCHER_FOOD_COST = 25;
+const ARCHER_WOOD_COST = 45;
 let nextOrderToken = 1;
 
 function createClient() {
@@ -253,7 +258,7 @@ try {
   map.summary = 'Mirrored Archer shots against idle infantry at controlled ranged distance.';
   map.fogOfWar = false;
   map.startingArmySize = 24;
-  map.startingResources = { food: 600, wood: 600 };
+  map.startingResources = { food: STARTING_FOOD, wood: STARTING_WOOD };
   map.spawnPoints = [
     { team: 0, x: -20, z: 0 },
     { team: 1, x: 20, z: 0 },
@@ -275,8 +280,8 @@ try {
     assert.equal(ownUnits(change.state, team, 'infantry').length, 8);
     assert.equal(ownUnits(change.state, team, 'archer').length, 0);
     assert.equal(ownUnits(change.state, team).length, 12);
-    assert.equal(change.state.food[team], 600);
-    assert.equal(change.state.wood[team], 600);
+    assert.equal(change.state.food[team], STARTING_FOOD);
+    assert.equal(change.state.wood[team], STARTING_WOOD);
   }
 
   const buildSiteByTeam = [
@@ -315,6 +320,10 @@ try {
     }, opening.startTick);
     const building = buildingForTeam(state, opening.team);
     assert.ok(building);
+    assert.equal(state.food[opening.team], STARTING_FOOD,
+      `team ${opening.team} should not spend food to place an Archery Range`);
+    assert.equal(state.wood[opening.team], STARTING_WOOD - ARCHERY_RANGE_WOOD_COST,
+      `team ${opening.team} should pay the Archery Range wood cost once`);
     return { opening, state, building };
   }));
 
@@ -332,18 +341,29 @@ try {
       const current = candidate.buildings.find(row => row.id === building.id);
       return current?.queue > 0;
     }, queueNoticeIndex);
+    assert.equal(queued.food[opening.team], STARTING_FOOD - ARCHER_FOOD_COST,
+      `team ${opening.team} should pay the Archer food cost when queued`);
+    assert.equal(queued.wood[opening.team], STARTING_WOOD - ARCHERY_RANGE_WOOD_COST - ARCHER_WOOD_COST,
+      `team ${opening.team} should pay the Archer wood cost when queued`);
     const spawned = await client.waitForState(candidate => ownUnits(candidate, opening.team, 'archer').length === 1,
       queued.tick);
     const archer = ownUnits(spawned, opening.team, 'archer')[0];
     assert.ok(archer);
+    assert.equal(spawned.food[opening.team], queued.food[opening.team],
+      `team ${opening.team} food should not be charged again when the Archer spawns`);
+    assert.equal(spawned.wood[opening.team], queued.wood[opening.team],
+      `team ${opening.team} wood should not be charged again when the Archer spawns`);
     return {
       team: opening.team,
       buildingId: building.id,
       buildOrderToken: buildOrderByTeam.get(opening.team).token,
       buildOrder: buildOrderByTeam.get(opening.team).message,
       buildingCompleteAt: { tick: state.tick, matchClockSeconds: state.matchElapsedSeconds },
+      resourcesAfterBuilding: { food: state.food[opening.team], wood: state.wood[opening.team] },
       queueNotice: queueNotice.message,
       queuedAt: { tick: queued.tick, matchClockSeconds: queued.matchElapsedSeconds },
+      resourcesAfterQueue: { food: queued.food[opening.team], wood: queued.wood[opening.team] },
+      resourcesAfterSpawn: { food: spawned.food[opening.team], wood: spawned.wood[opening.team] },
       archer,
       archerSpawnedAt: { tick: spawned.tick, matchClockSeconds: spawned.matchElapsedSeconds },
     };
@@ -480,7 +500,7 @@ try {
     fixtureMap: fixtureMapId,
     baseMap: path.relative(serverRoot, mapPath),
     startingArmySize: 24,
-    startingResources: { food: 600, wood: 600 },
+    startingResources: { food: STARTING_FOOD, wood: STARTING_WOOD },
     fogOfWar: false,
     triggers: 'disabled',
     scenarioEvents: 'disabled',
