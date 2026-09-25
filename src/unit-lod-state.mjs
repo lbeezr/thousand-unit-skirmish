@@ -8,3 +8,7 @@ export function unitLodRoleMatrixUpdateMask(previousRole, currentRole) {
   const previousBit = UNIT_LOD_ROLE_BITS[previousRole] || 0;
   return previousBit ? previousBit | currentBit : ALL_UNIT_LOD_ROLE_BITS;
 }
+
+export function shouldUpdateUnitFullDetailTint(lowDetailActive) {
+  return !lowDetailActive;
+}

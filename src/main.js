@@ -11,7 +11,8 @@ import {
 } from './resource-visual-state.mjs';
 import { buildingProductionCueState } from './building-visual-state.mjs';
 import {
-  UNIT_LOD_ROLE_BITS, UNIT_LOD_ROLES, unitLodRoleMatrixUpdateMask,
+  UNIT_LOD_ROLE_BITS, UNIT_LOD_ROLES, shouldUpdateUnitFullDetailTint,
+  unitLodRoleMatrixUpdateMask,
 } from './unit-lod-state.mjs';
 import {
   capturePrerequisiteIds, findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
@@ -2352,6 +2353,7 @@ function markUnitInstanceMatricesDirty(team) {
 function syncUnitDetailLevel() {
   const useLowDetail = zoom <= UNIT_LOD_ZOOM_THRESHOLD;
   if (useLowDetail === unitLowDetailActive) return;
+  const restoreFullDetailTint = unitLowDetailActive && !useLowDetail;
   for (const pair of unitArtMeshes) {
     pair.forEach((mesh) => { mesh.visible = !useLowDetail; });
   }
@@ -2360,7 +2362,17 @@ function syncUnitDetailLevel() {
   }
   unitLowDetailActive = useLowDetail;
   const now = performance.now();
-  for (const unit of units) if (unit) updateUnitTransform(unit, now);
+  for (const unit of units) {
+    if (!unit) continue;
+    if (restoreFullDetailTint) setUnitTint(unit, false);
+    updateUnitTransform(unit, now);
+  }
+  if (restoreFullDetailTint) {
+    for (let team = 0; team < 2; team++) {
+      if (bodyMeshes[team].instanceColor) bodyMeshes[team].instanceColor.needsUpdate = true;
+      if (headMeshes[team].instanceColor) headMeshes[team].instanceColor.needsUpdate = true;
+    }
+  }
   for (let team = 0; team < 2; team++) markUnitInstanceMatricesDirty(team);
 }
 
@@ -2510,7 +2522,8 @@ function flushUnitCargoPackColor(team) {
   unitCargoPackColorDirty[team] = false;
 }
 
-function setUnitTint(unit) {
+function setUnitTint(unit, markBuffersDirty = true) {
+  if (!shouldUpdateUnitFullDetailTint(unitLowDetailActive)) return false;
   const health = Math.max(0, unit.hp) / 100;
   const strength = unit.hp > 0 ? 0.7 + health * 0.3 : unit.defeatStartedAt > 0 ? 0.58 : 0;
   const flashing = unit.damageFlashUntil > performance.now();
@@ -2524,8 +2537,11 @@ function setUnitTint(unit) {
   if (flashing) color.lerp(unitDamageFlashTint, 0.82);
   color.multiplyScalar((0.91 + ((unit.id * 7) % 10) / 100) * strength);
   headMeshes[unit.team].setColorAt(unit.slot, color);
-  bodyMeshes[unit.team].instanceColor.needsUpdate = true;
-  headMeshes[unit.team].instanceColor.needsUpdate = true;
+  if (markBuffersDirty) {
+    bodyMeshes[unit.team].instanceColor.needsUpdate = true;
+    headMeshes[unit.team].instanceColor.needsUpdate = true;
+  }
+  return true;
 }
 
 function updateUnitLodTransform(unit, visibleScale) {
