@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { once } from 'node:events';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { createServer } from 'node:net';
@@ -9,8 +10,58 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const serverRoot = process.env.RTS_SERVER_ROOT || root;
-const mapPath = process.env.RTS_SQUAD_MAP || path.join(serverRoot, 'maps/forked-vale.json');
-const baselineCommit = process.env.RTS_BASELINE_COMMIT || 'not-supplied';
+const mapPath = path.resolve(serverRoot, process.env.RTS_SQUAD_MAP || 'maps/forked-vale.json');
+// Set this to the exact Git SHA of the server source before running the scenario.
+const baselineCommit = process.env.RTS_BASELINE_COMMIT?.trim() || '';
+if (!/^[0-9a-f]{40,64}$/i.test(baselineCommit)) {
+  throw new Error('RTS_BASELINE_COMMIT must be the full 40- or 64-character server-source Git SHA.');
+}
+function cleanCheckoutCommit(directory, label) {
+  let commit;
+  try {
+    commit = execFileSync('git', ['rev-parse', 'HEAD'], {
+      cwd: directory,
+      encoding: 'utf8',
+    }).trim();
+  } catch (error) {
+    throw new Error(`${label} must be a Git checkout: ${error.message}`);
+  }
+  const changes = execFileSync('git', ['status', '--porcelain', '--untracked-files=all'], {
+    cwd: directory,
+    encoding: 'utf8',
+  }).trim();
+  if (changes) throw new Error(`${label} has changes; evidence requires a clean checkout:\n${changes}`);
+  return commit;
+}
+const harnessCommit = cleanCheckoutCommit(root, 'Scenario harness checkout');
+const checkoutCommit = cleanCheckoutCommit(serverRoot, 'RTS_SERVER_ROOT');
+if (checkoutCommit.toLowerCase() !== baselineCommit.toLowerCase()) {
+  throw new Error(`RTS_BASELINE_COMMIT ${baselineCommit} does not match RTS_SERVER_ROOT HEAD ${checkoutCommit}.`);
+}
+const relativeMapPath = path.relative(serverRoot, mapPath);
+if (!relativeMapPath || relativeMapPath === '..' || relativeMapPath.startsWith(`..${path.sep}`)
+  || path.isAbsolute(relativeMapPath)) {
+  throw new Error('RTS_SQUAD_MAP must resolve to a map inside RTS_SERVER_ROOT.');
+}
+try {
+  execFileSync('git', ['ls-files', '--error-unmatch', '--', relativeMapPath], {
+    cwd: serverRoot,
+    encoding: 'utf8',
+  });
+} catch {
+  throw new Error(`RTS_SQUAD_MAP must name a tracked baseline file: ${relativeMapPath}`);
+}
+const mapSourceBytes = await readFile(mapPath);
+const mapSourceText = mapSourceBytes.toString('utf8');
+const mapSourceSha256 = createHash('sha256').update(mapSourceBytes).digest('hex');
+const scenario = {
+  map: relativeMapPath,
+  mapSourceSha256,
+  startingArmySize: 24,
+  squadSize: 4,
+  fogOfWar: false,
+};
+const runtime = { node: process.version, platform: process.platform, arch: process.arch };
 const temporary = await mkdtemp(path.join(os.tmpdir(), 'rts-worker-squad-'));
 const listener = createServer();
 listener.listen(0, '127.0.0.1');
@@ -24,7 +75,7 @@ const server = spawn(process.execPath, ['server.mjs'], {
     ...process.env,
     PORT: String(port),
     RTS_HOST: '127.0.0.1',
-    RTS_MAP: 'maps/forked-vale.json',
+    RTS_MAP: relativeMapPath,
     RTS_MATCH_STATE_PATH: path.join(temporary, 'checkpoint.json'),
     RTS_CUSTOM_MAP_DIRECTORY: path.join(temporary, 'custom-maps'),
   },
@@ -36,6 +87,7 @@ server.stderr.on('data', chunk => { serverLog += chunk.toString(); });
 const clients = [];
 const single = process.argv.includes('--single');
 const expectedCaseCount = single ? 1 : 8;
+const results = [];
 
 async function connect() {
   const socket = new WebSocket(`ws://127.0.0.1:${port}/ws`, ['rts-v1']);
@@ -112,8 +164,7 @@ try {
   assert.equal(ember.team, 1);
   console.error('both seats connected');
   const clientsByTeam = [azure, ember];
-  const template = JSON.parse(await readFile(mapPath, 'utf8'));
-  const results = [];
+  const template = JSON.parse(mapSourceText);
 
   async function fight(teamZeroX, workerTeam, commandOrder) {
     const state = latestState(azure);
@@ -177,11 +228,11 @@ try {
       winner: workerResult.remainingHp > 0 ? 'worker'
         : infantryResult.remainingHp > 0 ? 'infantry' : 'draw',
     };
+    results.push(result);
     assert.ok(workerResult.remainingHp < 400 && infantryResult.remainingHp < 400,
       `both groups should take damage: ${JSON.stringify(result)}`);
     assert.equal(result.winner, 'infantry',
       `four workers should lose the equal-count, equal-cost fight: ${JSON.stringify(result)}`);
-    results.push(result);
     console.error(`squad result ${results.length}/${expectedCaseCount}: ${JSON.stringify(result)}`);
   }
 
@@ -220,18 +271,27 @@ try {
   }
 
   console.log(JSON.stringify({
+    event: 'complete',
     baselineCommit,
-    scenario: {
-      map: path.relative(serverRoot, mapPath),
-      startingArmySize: 24,
-      squadSize: 4,
-      fogOfWar: false,
-    },
-    runtime: { node: process.version, platform: process.platform, arch: process.arch },
+    harnessCommit,
+    scenario,
+    runtime,
     results,
   }));
 } catch (error) {
   console.error(serverLog);
+  console.log(JSON.stringify({
+    event: 'failed',
+    baselineCommit,
+    harnessCommit,
+    scenario,
+    runtime,
+    completedResults: results,
+    error: error instanceof Error
+      ? { name: error.name, message: error.message, stack: error.stack }
+      : { name: typeof error, message: String(error) },
+    serverLog,
+  }));
   throw error;
 } finally {
   for (const client of clients) client.socket.close();
