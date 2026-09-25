@@ -20,6 +20,7 @@ import {
   summarizeUnitComposition,
   visibleLivingUnitIdsOfKind,
 } from './unit-selection.mjs';
+import { getBuildingProductionCueState } from './building-production-cue.mjs';
 
 let mapDefinition = null;
 let edgeScrollPointer = null;
@@ -71,6 +72,7 @@ const ATTACK_UPGRADE_RULES = Object.freeze({
 });
 const TEAM_NAMES = ['Azure', 'Ember'];
 const TEAM_HEX = [0x5aa7d7, 0xe67a5e];
+const PRODUCTION_BLOCKED_HEX = 0xf0bd62;
 
 const viewport = document.querySelector('#viewport');
 const selectionBox = document.querySelector('#selection-box');
@@ -660,7 +662,7 @@ function updateBuildingCombatFeedback(visual, building) {
 function animateBuildingCombatFeedback(now) {
   const pulse = 0.5 + 0.5 * Math.sin(now * 0.0065);
   for (const visual of buildingVisuals.values()) {
-    if (visual.productionLamp?.visible) {
+    if (visual.productionLamp?.visible && visual.productionLamp.userData.cueState === 'active') {
       visual.productionLamp.scale.setScalar(0.82 + pulse * 0.33);
       visual.productionLamp.material.opacity = 0.58 + pulse * 0.35;
     }
@@ -703,6 +705,21 @@ function createBuildingProductionLamp(group, team, x, y, z) {
   lamp.visible = false;
   group.add(lamp);
   return lamp;
+}
+
+function updateBuildingProductionLamp(lamp, building) {
+  const cueState = getBuildingProductionCueState(building);
+  lamp.userData.cueState = cueState;
+  lamp.visible = cueState !== 'hidden';
+  if (cueState === 'blocked') {
+    lamp.material.color.setHex(PRODUCTION_BLOCKED_HEX);
+    lamp.material.opacity = 0.9;
+    lamp.scale.setScalar(1.2);
+    return;
+  }
+  lamp.material.color.setHex(TEAM_HEX[building.team] ?? 0x9ba78b);
+  lamp.material.opacity = 0.88;
+  lamp.scale.setScalar(1);
 }
 
 function disposeBuildingVisual(visual) {
@@ -837,8 +854,7 @@ function updateArcheryRangeVisual(visual, building) {
   const finished = building.complete === true || progress >= 0.9;
   visual.roof.visible = finished;
   for (const piece of visual.finishPieces) piece.visible = finished;
-  visual.productionLamp.visible = finished && getBuildingQueueLength(building) > 0
-    && building.productionBlocked !== true;
+  updateBuildingProductionLamp(visual.productionLamp, building);
   updateBuildingHealthIndicator(visual, building);
 }
 
@@ -935,8 +951,7 @@ function updateBarracksVisual(visual, building) {
   for (const panel of visual.roofPanels) panel.visible = roofVisible;
   visual.ridge.visible = roofVisible;
   for (const piece of visual.finishPieces) piece.visible = roofVisible;
-  visual.productionLamp.visible = roofVisible && getBuildingQueueLength(building) > 0
-    && building.productionBlocked !== true;
+  updateBuildingProductionLamp(visual.productionLamp, building);
   updateBuildingHealthIndicator(visual, building);
 }
 
