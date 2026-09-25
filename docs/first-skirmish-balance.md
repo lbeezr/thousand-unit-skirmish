@@ -281,10 +281,11 @@ still do not measure contested human pacing or strategic win rates.
 These ordinary local protocol checks ran from a clean checkout at
 `4930a818f1b17bcb180882acd2ea5601a9d89738` with Node `v24.9.0` on macOS
 arm64. The recorded process wall times are not in-game duration or performance
-measurements. Main later advanced to `f28f01f` with UI resource callouts, an
-audio setting, and PvE worker-gathering behavior. Those commits do not change
-the core server combat or economy rules exercised here; these manual two-seat
-fixtures do not evaluate the new PvE opponent behavior.
+measurements. Main later advanced to `01815b8`. The intervening commits add
+UI resource callouts, audio settings, PvE worker-gathering behavior, and the
+finite-resource scenario harness. They do not change the core server combat or
+economy rules or map files exercised here. These manual two-seat fixtures do
+not evaluate the new PvE opponent behavior or the finite-resource reset flow.
 
 ### Combat seat parity
 
