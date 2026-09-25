@@ -617,6 +617,15 @@ html, body { width: 100%; height: 100%; overflow: hidden; }
 .scenario-brief-panel > strong { display: block; margin-top: 11px; color: #eef2e5; font: 700 17px 'Manrope', sans-serif; }
 .scenario-brief-panel p { margin: 7px 0 0; color: #d2dec9; font-size: 12px; line-height: 1.5; }
 .scenario-brief-panel .scenario-brief-deadline { margin-top: 14px; padding: 9px 10px; border-left: 2px solid #d0ac63; background: rgba(208,172,99,.09); color: #e6d5af; font: 600 10px/1.45 'DM Mono', monospace; }
+.scenario-brief-rule, .scenario-brief-zones { margin-top: 15px; padding-top: 12px; border-top: 1px solid rgba(225,237,209,.15); }
+.scenario-brief-rule > span, .scenario-brief-zones > span { color: var(--lime); font: 650 9px 'DM Mono', monospace; letter-spacing: .12em; }
+.scenario-brief-rule p { margin-top: 7px; }
+.scenario-brief-zones[hidden] { display: none; }
+.scenario-brief-zones ul { display: grid; gap: 7px; margin: 9px 0 0; padding: 0; list-style: none; }
+.scenario-brief-zones li { padding: 8px 9px; border: 1px solid rgba(225,237,209,.13); border-radius: 3px; background: rgba(255,255,255,.035); }
+.scenario-brief-zones li strong, .scenario-brief-zones li small { display: block; }
+.scenario-brief-zones li strong { color: #edf1e4; font-size: 11px; }
+.scenario-brief-zones li small { margin-top: 3px; color: #aab9a1; font-size: 10px; line-height: 1.4; }
 .compass { top: 85px; right: 279px; }
 .objective-panel { top: 81px; right: 18px; width: 248px; max-height: min(330px, calc(100% - 390px)); }
 .objective-card { padding: 11px 12px; background: rgba(13,23,16,.86); }

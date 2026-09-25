@@ -1398,6 +1398,29 @@ function buildMap(definition) {
   deadline.textContent = definition.timedVictory
     ? `DEADLINE · ${formatVictoryHoldTime(definition.timedVictory.afterSeconds)} · Hold ${decisiveZone?.name || 'the decisive zone'} when time expires. Unclaimed is a draw.`
     : '';
+  const victoryZones = (definition.triggers || []).filter((trigger) => trigger.victory === true);
+  const holdSeconds = definition.victoryHoldSeconds ?? 0;
+  const target = victoryZones.length === 1 ? 'the victory zone'
+    : definition.victoryMode === 'all' ? `all ${victoryZones.length} victory zones` : 'any victory zone';
+  document.querySelector('#scenario-brief-win-rule').textContent = victoryZones.length === 0
+    ? 'Eliminate the opposing army to win.'
+    : `${holdSeconds > 0 ? 'Hold' : 'Capture'} ${target}${holdSeconds > 0 ? ` for ${formatVictoryHoldTime(holdSeconds)}` : ''} to win.${holdSeconds > 0 ? ' Losing control resets the hold.' : ''}`;
+  const briefZones = document.querySelector('#scenario-brief-zones');
+  const briefZoneList = document.querySelector('#scenario-brief-zone-list');
+  briefZones.hidden = !definition.triggers?.length;
+  briefZoneList.replaceChildren();
+  for (const trigger of definition.triggers || []) {
+    const item = document.createElement('li');
+    const name = document.createElement('strong');
+    name.textContent = trigger.name;
+    const details = document.createElement('small');
+    const prerequisites = capturePrerequisiteIds(trigger).map((id) => (
+      definition.triggers.find((zone) => zone.id === id)?.name || id
+    ));
+    details.textContent = `${trigger.victory === true ? 'Victory zone' : 'Capture zone'} · ${trigger.requiredUnits} units · ${trigger.captureSeconds}s to capture${prerequisites.length ? ` · requires ${prerequisites.join(' + ')}` : ''}`;
+    item.append(name, details);
+    briefZoneList.append(item);
+  }
   const footerMap = document.querySelector('#footer-map-name');
   if (footerMap) footerMap.textContent = definition.name || definition.id.toUpperCase();
   buildMinimapBackground(definition);
