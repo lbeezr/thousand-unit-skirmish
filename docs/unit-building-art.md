@@ -32,3 +32,7 @@ The final 2,000-unit headless Chrome movement benchmark passed on the isolated a
 ## Next art passes
 
 Review role recognition and building silhouettes at ordinary zoom on both meadow and cinder ground. Refine the brief combat poses from live two-player footage; the current arrow cue is intentionally sampled and has a fixed cap. Recheck the 2,000-unit movement budget after every increase in animated detail.
+
+## Motion and readability refinement
+
+The follow-up pass eases unit facing toward movement or strike direction, adds a low-amplitude idle breath and a short hit recoil, and keeps their timing offset across the roster. Idle matrices update at a bounded cadence; walking units keep their normal frame-rate pose updates. Town Center roof trim and a larger banner, Barracks ridge color, and Range canopy trim carry team identity at a distance. Large selections lower ring opacity so the rings do not cover the unit silhouettes.
