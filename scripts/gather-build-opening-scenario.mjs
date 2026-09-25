@@ -284,7 +284,9 @@ async function issueTrackedOrder(client, command, acceptedText) {
   const token = nextOrderToken++;
   client.send({ ...command, clientOrderToken: token });
   const notice = await client.waitForMessage(message => message.type === 'notice'
-    && message.clientOrderToken === token, afterMessageIndex);
+    && message.clientOrderToken === token
+    && (message.message.includes(acceptedText)
+      || /REJECTED|UNREACHABLE|NO VALID|RESOURCE NODE EMPTY|NO REACHABLE WORKERS SELECTED|FAILED|SUPERSEDED|CANCELLED/i.test(message.message)), afterMessageIndex);
   assert.ok(notice.message.includes(acceptedText), 'expected order acceptance: ' + notice.message);
   assert.ok(!/REJECTED|UNREACHABLE|NO VALID/i.test(notice.message),
     'order was rejected: ' + notice.message);
@@ -608,16 +610,16 @@ async function runRound(roundNumber, rolesByTeam, map) {
 }
 
 async function resetOpening(armySize) {
-  const previousStates = clients.map(client => client.latestState());
+  const afterMessageIndexes = clients.map(client => client.messages.length - 1);
   clients[0].send({ type: 'reset' });
-  await Promise.all(clients.map((client, team) => client.waitForState(state => (
+  await Promise.all(clients.map((client, team) => client.waitForStateAfterMessage(state => (
     state.mapId === fixtureMapId && state.armySize === armySize && state.winner === -1
       && state.buildings.length === 0 && state.food?.[team] === 150 && state.wood?.[team] === 250
       && ownUnits(state, team, 'worker').length === 4
       && ownUnits(state, team, 'infantry').length === 8
       && ownUnits(state, team, 'archer').length === 0
       && ownUnits(state, team).length === 12
-  ), previousStates[team].tick)));
+  ), afterMessageIndexes[team])));
 }
 
 try {
