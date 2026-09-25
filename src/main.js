@@ -10,7 +10,9 @@ import {
   constructionGroundStage, RESOURCE_VISUAL_STAGES, resourceVisualStage,
   resourceVisualTransitionStages,
 } from './resource-visual-state.mjs';
-import { buildingProductionCueState } from './building-visual-state.mjs';
+import {
+  buildingFinishedDetailsVisible, buildingProductionCueState,
+} from './building-visual-state.mjs';
 import {
   UNIT_LOD_ROLE_BITS, UNIT_LOD_ROLES, shouldUpdateUnitFocusMatrix,
   shouldUpdateUnitFullDetailTint, shouldUpdateUnitTransformForFrame,
@@ -970,7 +972,7 @@ function updateArcheryRangeVisual(visual, building) {
   }
   visual.posts.instanceMatrix.needsUpdate = true;
   visual.roof.position.y = 0.23 + postHeight + 0.19;
-  const finished = building.complete === true || progress >= 0.9;
+  const finished = buildingFinishedDetailsVisible(progress, building.complete);
   visual.roof.visible = finished;
   for (const piece of visual.finishPieces) piece.visible = finished;
   updateBuildingProductionCue(visual, building);
@@ -1066,7 +1068,7 @@ function updateBarracksVisual(visual, building) {
     wall.position.y = 0.23 + progress * 0.5;
     wall.visible = progress > 0.01;
   }
-  const roofVisible = building.complete === true || progress >= 0.9;
+  const roofVisible = buildingFinishedDetailsVisible(progress, building.complete);
   for (const panel of visual.roofPanels) panel.visible = roofVisible;
   visual.ridge.visible = roofVisible;
   for (const piece of visual.finishPieces) piece.visible = roofVisible;
