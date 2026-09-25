@@ -276,15 +276,87 @@ These current-main local protocol checks confirm the merged map metadata did
 not change the measured combat counter, seat parity, or opening economy. They
 still do not measure contested human pacing or strategic win rates.
 
+## Main snapshot recheck · `4930a81` (25 September 2026)
+
+These ordinary local protocol checks ran from a clean checkout at
+`4930a818f1b17bcb180882acd2ea5601a9d89738` with Node `v24.9.0` on macOS
+arm64. The recorded process wall times are not in-game duration or performance
+measurements. Main later advanced to `01815b8`. The intervening commits add
+UI resource callouts, audio settings, PvE worker-gathering behavior, and the
+finite-resource scenario harness. They do not change the core server combat or
+economy rules or map files exercised here. These manual two-seat fixtures do
+not evaluate the new PvE opponent behavior or the finite-resource reset flow.
+
+### Combat seat parity
+
+`node scripts/infantry-seat-combat-scenario.mjs --expect-parity` passed all
+four 8v8 attack-move cases at 12.3 in-game seconds. With team 0 spawning left,
+team 0 finished with 3 survivors / 300 HP and team 1 with 4 / 350 HP. With team
+0 spawning right, the result reversed to team 0 with 4 / 350 HP and team 1 with
+3 / 300 HP. Reversing command order changed neither result. The small edge
+followed spawn side, not team identity.
+
+The full output is retained as a task-local file at
+`/private/tmp/rts-balance-seat-parity-4930a.log`, SHA-256
+`e317187ac48e85b777edbf0be58146ce4daa1c431d77aa43033a18db0c911a6c`. The
+log is not checked into this repository.
+
+### Production opening
+
+The run command was:
+
+```sh
+RTS_OPENING_MAP=maps/forked-vale.json RTS_OPENING_BUILD_X=21.5 node scripts/opening-production-scenario.mjs --expect-builder-parity --verbose
+```
+
+It passed two 24-unit rounds with 4 workers, 8 infantry, 150 food, and 250 wood
+per team. Round one assigned team 0 a Barracks and team 1 an Archery Range;
+round two swapped those assignments. All four builds completed at 10.9
+seconds. The first infantry appeared at 23.0 seconds and the first archer at
+18.0 seconds on either seat. After the first unit, Barracks stocks were 100
+food / 75 wood and Range stocks were 125 food / 55 wood on either seat. At 10
+seconds, both assigned builders per team remained at work, 0.5 units from the
+building edge, with progress between 0.912 and 0.918.
+
+The full output is retained as a task-local file at
+`/private/tmp/rts-balance-opening-production-4930a.log`, SHA-256
+`bdc0a924b63008e2e045d7066041dea1152427b1495b8eafa2a31a62ac09eb1c`. The
+log is not checked into this repository.
+
+### Equal-cost worker counter
+
+PR #50 added `scripts/worker-squad-combat-scenario.mjs`. Its exact candidate
+`54463ecb7440e9cf4ba4ad4ad23a8bdca09bb971` ran against clean server baseline
+`e3d3268b91724224be5ad38b5ba9ad7e25eea690`, using
+`maps/forked-vale.json` with SHA-256
+`8e0105cbf0b6dcda04781f6798fbcff92ade2421b6247f49eeaa8b4c6ac23c4a`.
+All eight combinations of spawn side, worker seat, and command order passed.
+Four workers were eliminated by four infantry, which finished with three
+survivors and 280–284 HP. Both groups cost 200 food at 50 food per unit. This
+supports the intended direct-combat counter in this fixture; it does not
+measure raids, worker survival across a full match, or player win rates. The
+run output was not retained as a file; QA was told to classify it as an owner
+run, not an independent QA artifact. No combat-server or map files changed
+between baseline `e3d3268` and current main `4930a81`.
+
+### Tuning decision
+
+The current scripted evidence supports keeping combat damage, unit costs, and
+build times unchanged. It confirms the seat-parity and mirrored-construction
+checks, while the equal-cost duel gives infantry the expected frontline
+advantage. It does not show whether either production plan or worker-heavy
+opening wins more contested matches.
+
 ## Next tuning decisions
 
-- Measure worker losses and 4v4 worker-vs-infantry fights in the authored
-  scenario; adjust damage again if workers remain a substitute for infantry
-  or early raids erase the economy too easily.
+- In contested matches, record worker losses, raids, and the response that
+  punished or protected the economy. Keep the equal-cost 4v4 fixture as a
+  regression; change worker damage only if workers substitute for infantry or
+  raiding erases the economy too easily in match evidence.
 - Compare first reinforcement and income timing for Barracks and Range
-  openings in contested human matches. The scripted builder fixture now
-  completes symmetrically; adjust one cost or time at a time only if match
-  evidence supports it.
+  openings in contested human matches. The scripted builder fixture completes
+  symmetrically; adjust one cost or time at a time only if match evidence
+  supports it.
 - If objectives resolve before armies and economy matter, adjust capture
   prerequisites, hold time, or map routes in the authored scenario. Preserve
   an understandable ending and a reason to leave the base.
