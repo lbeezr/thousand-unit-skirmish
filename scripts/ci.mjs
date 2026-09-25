@@ -43,7 +43,7 @@ const scenarios = [
   ['scripts/map-utils-scenario.mjs', 'Map utilities'],
   ['scripts/objective-fog-visibility-scenario.mjs', 'Objective fog visibility'],
   ['scripts/unreachable-attack-scenario.mjs', 'Orders, 2k spawn clearance, and objective hold'],
-  ['scripts/worker-combat-scenario.mjs', 'Worker combat and seat parity'],
+  ['scripts/worker-combat-scenario.mjs', 'Worker combat across both seats'],
   ['scripts/infantry-seat-combat-scenario.mjs', 'Mirrored infantry combat parity', '--expect-parity'],
   ['scripts/opening-production-scenario.mjs', 'Mirrored construction and production', '--expect-builder-parity'],
   ['scripts/forked-vale-layout.mjs', 'Forked Vale layout'],
