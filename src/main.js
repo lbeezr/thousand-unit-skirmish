@@ -49,6 +49,8 @@ const MAX_SCENARIO_EVENT_REPEATS = 20;
 const MIN_SCENARIO_EVENT_REPEAT_SECONDS = 5;
 const CAMERA_EDGE_ZONE_PX = 28;
 const CAMERA_EDGE_SPEED_PX_PER_SECOND = 420;
+// Keep full meshes at ordinary zoom; use the role glyphs at the required 0.48 strategic view.
+const UNIT_LOD_ZOOM_THRESHOLD = 0.62;
 const MAX_OBJECTIVE_FOOD_REWARD = 10000;
 const MAX_TRIGGER_UNIT_REWARD = 25;
 const WORKERS_PER_TEAM = 4;
@@ -312,6 +314,13 @@ const toolMeshes = [null, null];
 const packMeshes = [null, null];
 const quiverMeshes = [null, null];
 const unitArtMeshes = [bodyMeshes, headMeshes, bowMeshes, shieldMeshes, spearMeshes, toolMeshes, packMeshes, quiverMeshes];
+const unitLodRoleMeshes = [
+  { worker: null, infantry: null, archer: null },
+  { worker: null, infantry: null, archer: null },
+];
+const unitLodTeamMeshes = [null, null];
+const unitLodMeshesByTeam = [[], []];
+let unitLowDetailActive = false;
 const mapObjects = [];
 const townCenterProductionLamps = [null, null];
 let fogTexture = null;
@@ -2026,6 +2035,62 @@ function addPaintedFacets(geometry) {
   return geometry;
 }
 
+function createGroundSilhouette(polygons) {
+  const positions = [];
+  const indices = [];
+  for (const points of polygons) {
+    const shape = new THREE.Shape();
+    shape.moveTo(points[0][0], points[0][1]);
+    for (const [x, y] of points.slice(1)) shape.lineTo(x, y);
+    shape.closePath();
+    const part = new THREE.ShapeGeometry(shape);
+    const attribute = part.getAttribute('position');
+    const partIndex = part.getIndex();
+    const offset = positions.length / 3;
+    for (let index = 0; index < attribute.count; index++) {
+      positions.push(attribute.getX(index), attribute.getY(index), attribute.getZ(index));
+    }
+    if (partIndex) {
+      for (let index = 0; index < partIndex.count; index++) indices.push(offset + partIndex.getX(index));
+    } else {
+      for (let index = 0; index < attribute.count; index++) indices.push(offset + index);
+    }
+    part.dispose();
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setIndex(indices);
+  geometry.rotateX(Math.PI / 2);
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
+const unitLodRoleGeometries = {
+  worker: createGroundSilhouette([
+    [[-0.14, -0.16], [-0.19, -0.05], [-0.16, 0.12], [-0.08, 0.21], [0.08, 0.21], [0.16, 0.12], [0.19, -0.05], [0.14, -0.16]],
+    [[-0.12, 0.22], [-0.1, 0.31], [0.1, 0.31], [0.12, 0.22]],
+    [[-0.18, -0.08], [-0.33, -0.2], [-0.28, -0.26], [-0.1, -0.14]],
+    [[0.08, 0.03], [0.35, 0.29], [0.31, 0.34], [0.04, 0.09]],
+    [[0.29, 0.38], [0.49, 0.43], [0.44, 0.25], [0.35, 0.23]],
+  ]),
+  infantry: createGroundSilhouette([
+    [[-0.14, -0.16], [-0.19, -0.05], [-0.16, 0.12], [-0.08, 0.21], [0.08, 0.21], [0.16, 0.12], [0.19, -0.05], [0.14, -0.16]],
+    [[-0.07, 0.14], [-0.03, 0.62], [0, 0.74], [0.03, 0.62], [0.07, 0.14]],
+    [[0.18, 0.1], [0.34, 0.18], [0.42, 0.08], [0.4, -0.13], [0.29, -0.28], [0.18, -0.13]],
+  ]),
+  archer: createGroundSilhouette([
+    [[-0.14, -0.16], [-0.19, -0.05], [-0.16, 0.12], [-0.08, 0.21], [0.08, 0.21], [0.16, 0.12], [0.19, -0.05], [0.14, -0.16]],
+    [[0.18, 0.47], [0.38, 0.4], [0.52, 0.2], [0.55, 0], [0.52, -0.2], [0.38, -0.4], [0.18, -0.47], [0.25, -0.37], [0.41, -0.24], [0.46, 0], [0.41, 0.24], [0.25, 0.37]],
+    [[-0.31, -0.2], [-0.23, -0.2], [-0.21, 0.3], [-0.29, 0.3]],
+    [[-0.31, 0.27], [-0.27, 0.39], [-0.23, 0.27]],
+    [[-0.3, 0.08], [-0.26, 0.2], [-0.22, 0.08]],
+  ]),
+};
+const unitLodMarkerGeometries = [
+  createGroundSilhouette([[[-0.5, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.5, 0.5]]]),
+  createGroundSilhouette([[[0, -0.62], [0.46, 0], [0, 0.62], [-0.46, 0]]]),
+];
+
 for (let team = 0; team < 2; team++) {
   bodyMeshes[team] = makeInstances(
     addPaintedFacets(new THREE.CylinderGeometry(0.16, 0.235, 0.48, 6, 1)),
@@ -2085,6 +2150,55 @@ for (let team = 0; team < 2; team++) {
     new THREE.MeshBasicMaterial({ color: 0x75553d }),
     MAX_PER_TEAM,
   );
+  unitLodTeamMeshes[team] = makeInstances(
+    unitLodMarkerGeometries[team],
+    new THREE.MeshBasicMaterial({
+      color: TEAM_HEX[team], side: THREE.DoubleSide, transparent: true, opacity: 0.48, depthWrite: false,
+    }),
+    MAX_PER_TEAM,
+  );
+  unitLodTeamMeshes[team].visible = false;
+  unitLodTeamMeshes[team].renderOrder = 0.8;
+  unitLodMeshesByTeam[team].push(unitLodTeamMeshes[team]);
+  for (const role of ['worker', 'infantry', 'archer']) {
+    const mesh = makeInstances(
+      unitLodRoleGeometries[role],
+      new THREE.MeshBasicMaterial({ color: 0xf3e8cd, side: THREE.DoubleSide }),
+      MAX_PER_TEAM,
+    );
+    mesh.visible = false;
+    mesh.renderOrder = 1;
+    unitLodRoleMeshes[team][role] = mesh;
+    unitLodMeshesByTeam[team].push(mesh);
+  }
+}
+
+function setUnitInstanceCount(team, count) {
+  unitArtMeshes.forEach((pair) => { pair[team].count = count; });
+  for (const mesh of unitLodMeshesByTeam[team]) mesh.count = count;
+}
+
+function markUnitInstanceMatricesDirty(team) {
+  if (unitLowDetailActive) {
+    for (const mesh of unitLodMeshesByTeam[team]) mesh.instanceMatrix.needsUpdate = true;
+  } else {
+    unitArtMeshes.forEach((pair) => { pair[team].instanceMatrix.needsUpdate = true; });
+  }
+}
+
+function syncUnitDetailLevel() {
+  const useLowDetail = zoom <= UNIT_LOD_ZOOM_THRESHOLD;
+  if (useLowDetail === unitLowDetailActive) return;
+  for (const pair of unitArtMeshes) {
+    pair.forEach((mesh) => { mesh.visible = !useLowDetail; });
+  }
+  for (const team of unitLodMeshesByTeam) {
+    for (const mesh of team) mesh.visible = useLowDetail;
+  }
+  unitLowDetailActive = useLowDetail;
+  const now = performance.now();
+  for (const unit of units) if (unit) updateUnitTransform(unit, now);
+  for (let team = 0; team < 2; team++) markUnitInstanceMatricesDirty(team);
 }
 
 const selectionMesh = makeInstances(
@@ -2251,6 +2365,38 @@ function setUnitTint(unit) {
   headMeshes[unit.team].instanceColor.needsUpdate = true;
 }
 
+function updateUnitLodTransform(unit, visibleScale) {
+  const role = unit.kind === 'worker' ? 'worker' : unit.kind === 'archer' ? 'archer' : 'infantry';
+  facing.setFromAxisAngle(worldUp, unit.angle);
+  for (const roleName of ['worker', 'infantry', 'archer']) {
+    dummy.position.set(unit.renderX, 0.07, unit.renderZ);
+    dummy.quaternion.copy(facing);
+    dummy.scale.setScalar(roleName === role ? visibleScale * 1.2 : 0);
+    dummy.updateMatrix();
+    unitLodRoleMeshes[unit.team][roleName].setMatrixAt(unit.slot, dummy.matrix);
+  }
+  dummy.position.set(unit.renderX, 0.035, unit.renderZ);
+  dummy.quaternion.identity();
+  dummy.scale.setScalar(visibleScale * 1.05);
+  dummy.updateMatrix();
+  unitLodTeamMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
+}
+
+function updateUnitFocusVisual(unit) {
+  const focused = unit.hp > 0 && unit.visible !== false && unit.targetedBy >= 2;
+  if (!focused && !unit.focused && unit.focusMatrixInitialized) return;
+  const focusScale = focused
+    ? unit.scale * (0.96 + Math.min(0.3, (unit.targetedBy - 2) * 0.018)) : 0;
+  dummy.position.set(unit.renderX, 0.03, unit.renderZ);
+  dummy.quaternion.copy(ringRotation);
+  dummy.scale.setScalar(focusScale);
+  dummy.updateMatrix();
+  attackFocusMesh.setMatrixAt(unit.focusSlot, dummy.matrix);
+  unit.focused = focused;
+  unit.focusMatrixInitialized = true;
+  attackFocusDirty = true;
+}
+
 function updateUnitTransform(unit, now = performance.now()) {
   const spawnProgress = unit.spawnStartedAt > 0
     ? THREE.MathUtils.clamp((now - unit.spawnStartedAt) / SPAWN_POSE_MS, 0, 1) : 1;
@@ -2261,6 +2407,11 @@ function updateUnitTransform(unit, now = performance.now()) {
     : unit.defeatStartedAt > 0 ? unit.scale * (1 - defeatProgress) : 0;
   const isWorker = unit.kind === 'worker';
   const isArcher = unit.kind === 'archer';
+  if (unitLowDetailActive) {
+    updateUnitLodTransform(unit, visibleScale);
+    updateUnitFocusVisual(unit);
+    return;
+  }
   const bodyScale = isWorker ? visibleScale * 0.82 : isArcher ? visibleScale * 0.9 : visibleScale;
   const actionPoseAllowed = unitActionPoseAllowed(unit.hp, unit.defeatStartedAt);
   const stride = actionPoseAllowed && unit.walking ? Math.sin(unit.motionPhase || 0) * 0.038 : 0;
@@ -2349,19 +2500,7 @@ function updateUnitTransform(unit, now = performance.now()) {
   dummy.updateMatrix();
   quiverMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
 
-  const focused = unit.hp > 0 && unit.visible !== false && unit.targetedBy >= 2;
-  if (focused || unit.focused || !unit.focusMatrixInitialized) {
-    const focusScale = focused
-      ? unit.scale * (0.96 + Math.min(0.3, (unit.targetedBy - 2) * 0.018)) : 0;
-    dummy.position.set(unit.renderX, 0.03, unit.renderZ);
-    dummy.quaternion.copy(ringRotation);
-    dummy.scale.setScalar(focusScale);
-    dummy.updateMatrix();
-    attackFocusMesh.setMatrixAt(unit.focusSlot, dummy.matrix);
-    unit.focused = focused;
-    unit.focusMatrixInitialized = true;
-    attackFocusDirty = true;
-  }
+  updateUnitFocusVisual(unit);
 }
 
 function setArmySize(count, showMessage = false) {
@@ -2373,7 +2512,7 @@ function setArmySize(count, showMessage = false) {
   units.length = 0;
   teamUnits[0].length = 0;
   teamUnits[1].length = 0;
-  unitArtMeshes.forEach((pair) => pair.forEach((mesh) => { mesh.count = 0; }));
+  for (let team = 0; team < 2; team++) setUnitInstanceCount(team, 0);
   arrowTraces.length = 0;
   arrowImpacts.length = 0;
   arrowMesh.count = 0;
@@ -2411,13 +2550,13 @@ function setArmySize(count, showMessage = false) {
     };
     units.push(unit);
     teamUnits[team].push(unit);
-    unitArtMeshes.forEach((pair) => { pair[team].count = slot + 1; });
+    setUnitInstanceCount(team, slot + 1);
     setUnitTint(unit);
     updateUnitTransform(unit);
     updateUnitCargoCueColor(unit);
   }
   for (let team = 0; team < 2; team++) {
-    unitArtMeshes.forEach((pair) => { pair[team].instanceMatrix.needsUpdate = true; });
+    markUnitInstanceMatricesDirty(team);
     flushUnitCargoPackColor(team);
   }
   attackFocusMesh.count = nextAttackFocusSlot;
@@ -3006,7 +3145,7 @@ function appendUnitFromState(row, animateSpawn = false) {
   if (id === units.length) units.push(unit);
   else units[id] = unit;
   teamUnits[team].push(unit);
-  unitArtMeshes.forEach((pair) => { pair[team].count = slot + 1; });
+  setUnitInstanceCount(team, slot + 1);
   attackFocusMesh.count = nextAttackFocusSlot;
   setUnitTint(unit);
   updateUnitTransform(unit);
@@ -3143,7 +3282,7 @@ function applyState(state, initial = false) {
   if (Array.isArray(state.queuedWaypointCounts)) applyWaypointQueueCounts(state.queuedWaypointCounts);
   if (initial || changed) {
     for (let team = 0; team < 2; team++) {
-      unitArtMeshes.forEach((pair) => { pair[team].instanceMatrix.needsUpdate = true; });
+      markUnitInstanceMatricesDirty(team);
     }
   }
   for (let team = 0; team < 2; team++) flushUnitCargoPackColor(team);
@@ -6857,6 +6996,7 @@ let renderStatsTime = 0;
 let lastIdlePoseStep = -1;
 function animate(now) {
   requestAnimationFrame(animate);
+  syncUnitDetailLevel();
   renderScenarioEventCountdown(now);
   animateBuildingCombatFeedback(now);
   const frameDelta = Math.min((now - previousTime) / 1000, 0.1);
@@ -6937,7 +7077,7 @@ function animate(now) {
   }
   if (artAnimated) {
     for (let team = 0; team < 2; team++) {
-      unitArtMeshes.forEach((pair) => { pair[team].instanceMatrix.needsUpdate = true; });
+      markUnitInstanceMatricesDirty(team);
     }
   }
   if (moved && selected.size) selectionDirty = true;
