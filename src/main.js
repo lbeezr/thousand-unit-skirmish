@@ -877,7 +877,7 @@ function updateArcheryRangeVisual(visual, building) {
   const finished = building.complete === true || progress >= 0.9;
   visual.roof.visible = finished;
   for (const piece of visual.finishPieces) piece.visible = finished;
-  visual.productionLamp.visible = finished && getBuildingQueueLength(building) > 0
+  visual.productionLamp.visible = building.complete === true && getBuildingQueueLength(building) > 0
     && building.productionBlocked !== true;
   updateBuildingHealthIndicator(visual, building);
 }
@@ -975,7 +975,7 @@ function updateBarracksVisual(visual, building) {
   for (const panel of visual.roofPanels) panel.visible = roofVisible;
   visual.ridge.visible = roofVisible;
   for (const piece of visual.finishPieces) piece.visible = roofVisible;
-  visual.productionLamp.visible = roofVisible && getBuildingQueueLength(building) > 0
+  visual.productionLamp.visible = building.complete === true && getBuildingQueueLength(building) > 0
     && building.productionBlocked !== true;
   updateBuildingHealthIndicator(visual, building);
 }
