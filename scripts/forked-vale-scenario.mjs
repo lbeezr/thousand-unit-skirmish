@@ -233,7 +233,7 @@ try {
       state.armySize === 2000 && state.units.filter(row => row[1] === team && row[4] > 0
         && positions[team].has(row[0])
         && Math.hypot(row[2] - positions[team].get(row[0])[0],
-          row[3] - positions[team].get(row[0])[1]) > 0.5).length >= 100, 90000)));
+          row[3] - positions[team].get(row[0])[1]) > 0.5).length >= 950, 90000)));
     stressResult = moving.map((state, team) => ({ team,
       moved: state.units.filter(row => row[1] === team && row[4] > 0
         && positions[team].has(row[0])

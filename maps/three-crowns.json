@@ -1,7 +1,7 @@
 {
   "id": "three-crowns",
   "name": "THREE CROWNS",
-  "summary": "Split to claim the outer crowns, then rally at the keep. Two stone shelves break a straight rush.",
+  "summary": "Claim the outer crowns, then hold the keep. At 15:00, its owner wins regardless of crowns; unclaimed is a draw.",
   "width": 64,
   "height": 64,
   "terrainSeed": 1237,

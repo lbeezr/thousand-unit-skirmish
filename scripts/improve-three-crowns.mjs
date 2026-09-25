@@ -328,7 +328,7 @@ try {
 
   await setField('#studio-id', 'three-crowns');
   await setField('#studio-name', 'THREE CROWNS');
-  await setField('#studio-summary', 'Split to claim the outer crowns, then rally at the keep. Two stone shelves break a straight rush.');
+  await setField('#studio-summary', 'Claim the outer crowns, then hold the keep. At 15:00, its owner wins regardless of crowns; unclaimed is a draw.');
   await setField('#studio-victory-hold-seconds', '20');
   await setField('#studio-deadline-objective', 'heartland-keep');
   await setField('#studio-deadline-seconds', '900');

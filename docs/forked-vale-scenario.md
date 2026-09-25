@@ -4,6 +4,8 @@ Forked Vale is an original 80 × 64 skirmish map. Both teams start with four wor
 
 ![Top-down tactical layout of Forked Vale](forked-vale-preview.svg)
 
+The host can choose **Forked Vale** in the battlefield picker, or launch it directly with `RTS_MAP=maps/forked-vale.json node server.mjs`.
+
 ## Tactical layout
 
 The Azure and Ember starts sit at mirrored positions, ±26.5 on the east-west axis. Each has a nearby 600-stock food node and 600-stock wood node. Each side also has mirrored 400-stock food and wood expansions closer to the fords. Water divides the center into a 13-cell north crossing, a 9-cell central crossing, and a 12-cell south crossing. Small corner groves add visual landmarks without hiding the routes.
@@ -27,7 +29,7 @@ The authored scenario brief appears in the map picker: “Claim both signal ford
 
 `node scripts/author-forked-vale.mjs` drives Map Studio in a local headless browser. It paints the terrain, places spawns and resources, sets every objective and event through editor controls, publishes the map, copies the editor-produced file to `maps/forked-vale.json`, and reopens it in Map Studio to check the round trip. It backs up an existing shipped file and restores it if authoring fails. No scenario JSON is hand edited.
 
-`node scripts/forked-vale-layout.mjs` checks mirrored terrain and resources, equal path distance from both spawns, open crossing cells, and the large-army starting footprint. `node scripts/forked-vale-scenario.mjs 0 --stress` and `node scripts/forked-vale-scenario.mjs 1` exercise both winner assignments, both teams' economy, opposed signal ownership, the locked watch, recapture, and victory. The stress option resets to 2,000 total units and checks both 1,000-unit armies move toward separate crossings. These are local simulation checks; match feel and internet performance still need player testing.
+`node scripts/forked-vale-layout.mjs` checks mirrored terrain and resources, equal path distance from both spawns, open crossing cells, and the large-army starting footprint. `node scripts/forked-vale-scenario.mjs 0 --stress` and `node scripts/forked-vale-scenario.mjs 1` exercise both winner assignments, both teams' economy, opposed signal ownership, the locked watch, recapture, and victory. The stress option resets to 2,000 total units and checks at least 950 units from each side move toward separate crossings. These are local simulation checks; match feel and internet performance still need player testing.
 
 `node scripts/render-forked-vale-preview.mjs` refreshes the top-down diagram from the editor-authored map file.
 
