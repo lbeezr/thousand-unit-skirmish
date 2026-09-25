@@ -10,7 +10,11 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const serverRoot = process.env.RTS_SERVER_ROOT || root;
 const mapPath = process.env.RTS_ARCHER_MAP || path.join(serverRoot, 'maps/open-field.json');
-const baselineCommit = process.env.RTS_BASELINE_COMMIT || 'not-supplied';
+// Set this to the exact Git SHA of the server source before running the scenario.
+const baselineCommit = process.env.RTS_BASELINE_COMMIT?.trim() || '';
+if (!/^[0-9a-f]{40,64}$/i.test(baselineCommit)) {
+  throw new Error('RTS_BASELINE_COMMIT must be the full 40- or 64-character server-source Git SHA.');
+}
 const fixtureMapId = 'archer-ranged-contract';
 const temporary = await mkdtemp(path.join(os.tmpdir(), 'rts-archer-range-'));
 const listener = createServer();
