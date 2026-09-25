@@ -93,7 +93,7 @@
         "projectedUnitTeamBatches": { "type": "integer", "minimum": 0, "maximum": 16 },
         "maxEnvironmentBatches": { "type": "integer", "minimum": 0, "maximum": 10 },
         "projectedEnvironmentBatches": { "type": "integer", "minimum": 0, "maximum": 10 },
-        "maxTextureMemoryBytes": { "type": "integer", "minimum": 0 },
+        "maxTextureMemoryBytes": { "type": "integer", "minimum": 0, "maximum": 100663296 },
         "projectedTextureMemoryBytes": { "type": "integer", "minimum": 0 },
         "maxAdditionalDrawCalls": { "type": "integer", "minimum": 0 },
         "projectedAdditionalDrawCalls": { "type": "integer", "minimum": 0 },

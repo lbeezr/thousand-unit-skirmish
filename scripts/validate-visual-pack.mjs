@@ -22,6 +22,7 @@ const expectedStages = {
   low: { min: 1, max: 33 },
   depleted: { min: 0, max: 0 },
 };
+const MAX_PACK_TEXTURE_MEMORY_BYTES = 96 * 1024 * 1024;
 const errors = [];
 const fileRecords = new Map();
 const imageInfo = new Map();
@@ -708,6 +709,9 @@ async function main() {
   }
   if (manifest.budgets && manifest.budgets.projectedTextureMemoryBytes !== textureMemoryBytes) {
     report('projectedTextureMemoryBytes does not match runtime WebP dimensions');
+  }
+  if (manifest.budgets && manifest.budgets.maxTextureMemoryBytes > MAX_PACK_TEXTURE_MEMORY_BYTES) {
+    report('maxTextureMemoryBytes exceeds the agreed 96 MiB per-pack budget');
   }
   if (manifest.budgets && textureMemoryBytes > manifest.budgets.maxTextureMemoryBytes) {
     report('runtime texture-memory estimate exceeds its declared budget');
