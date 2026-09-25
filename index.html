@@ -216,6 +216,14 @@
             <div class="render-note"><span class="render-icon">▦</span> Instanced rendering <i>ACTIVE</i></div>
           </section>
 
+          <section class="control-section audio-section" aria-label="Audio settings">
+            <div class="section-label"><span>AUDIO</span></div>
+            <label class="audio-check"><input id="audio-enabled" type="checkbox" checked><span>Enable audio</span></label>
+            <label class="audio-range" for="audio-volume"><span>Volume</span><input id="audio-volume" type="range" min="0" max="100" value="50"><output id="audio-volume-value" for="audio-volume">50%</output></label>
+            <label class="audio-check"><input id="audio-ambience" type="checkbox" checked><span>Ambience and music</span></label>
+            <small id="audio-status" class="audio-status" role="status">SOUND STARTS WITH FIRST INPUT</small>
+          </section>
+
           <div class="dock-spacer"></div>
           <button id="reset-army" class="reset-button"><span>↻</span> Reset battlefield</button>
             <div class="dock-footer"><span>PROTOTYPE BUILD 0.94</span><span>ONLINE PLAY</span></div>
