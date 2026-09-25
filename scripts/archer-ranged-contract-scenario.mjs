@@ -16,24 +16,27 @@ const baselineCommit = process.env.RTS_BASELINE_COMMIT?.trim() || '';
 if (!/^[0-9a-f]{40,64}$/i.test(baselineCommit)) {
   throw new Error('RTS_BASELINE_COMMIT must be the full 40- or 64-character server-source Git SHA.');
 }
-let checkoutCommit;
-try {
-  checkoutCommit = execFileSync('git', ['rev-parse', 'HEAD'], {
-    cwd: serverRoot,
+function cleanCheckoutCommit(directory, label) {
+  let commit;
+  try {
+    commit = execFileSync('git', ['rev-parse', 'HEAD'], {
+      cwd: directory,
+      encoding: 'utf8',
+    }).trim();
+  } catch (error) {
+    throw new Error(`${label} must be a Git checkout: ${error.message}`);
+  }
+  const changes = execFileSync('git', ['status', '--porcelain', '--untracked-files=all'], {
+    cwd: directory,
     encoding: 'utf8',
   }).trim();
-} catch (error) {
-  throw new Error(`RTS_SERVER_ROOT must be a Git checkout to bind the scenario baseline: ${error.message}`);
+  if (changes) throw new Error(`${label} has changes; evidence requires a clean checkout:\n${changes}`);
+  return commit;
 }
+const harnessCommit = cleanCheckoutCommit(root, 'Scenario harness checkout');
+const checkoutCommit = cleanCheckoutCommit(serverRoot, 'RTS_SERVER_ROOT');
 if (checkoutCommit.toLowerCase() !== baselineCommit.toLowerCase()) {
   throw new Error(`RTS_BASELINE_COMMIT ${baselineCommit} does not match RTS_SERVER_ROOT HEAD ${checkoutCommit}.`);
-}
-const trackedChanges = execFileSync('git', ['status', '--porcelain', '--untracked-files=all'], {
-  cwd: serverRoot,
-  encoding: 'utf8',
-}).trim();
-if (trackedChanges) {
-  throw new Error(`RTS_SERVER_ROOT has changes; exact baseline evidence requires a clean checkout:\n${trackedChanges}`);
 }
 const mapSourceBytes = await readFile(mapPath);
 const mapSourceText = mapSourceBytes.toString('utf8');
@@ -500,6 +503,7 @@ try {
 
   console.log(JSON.stringify({
     baselineCommit,
+    harnessCommit,
     scenario: 'archer-ranged-contract',
     fixtureMap: fixtureMapId,
     baseMap: path.relative(serverRoot, mapPath),
@@ -518,6 +522,7 @@ try {
 } catch (error) {
   console.error(JSON.stringify({
     baselineCommit,
+    harnessCommit,
     scenario: 'archer-ranged-contract',
     mapSourceSha256,
     error: { name: error.name, message: error.message, stack: error.stack },
