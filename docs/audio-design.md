@@ -1,6 +1,6 @@
 # Audio direction · first 1v1 pass
 
-The audio palette is original procedural Web Audio synthesis in `src/audio.mjs`. There are no recorded samples, external assets, dependencies, or third party licenses. Cues use soft woodlike triangle tones for commands, clear sine intervals for production completion and objectives, and a short rough downward tone for rejection. A finished building uses its own low two-part cue: a soft 185 Hz triangle followed after a short rest by a quiet 277 Hz sine, a low open fifth with no shared fundamentals with the 196/247 Hz triangle battle alert. Building loss uses a rough low sliding cue with separate fundamentals from match defeat. The synthesized wind and sparse three note phrases sit well below the effects mix.
+The audio palette is original procedural Web Audio synthesis in `src/audio.mjs`. There are no recorded samples, external assets, dependencies, or third party licenses. Cues use soft woodlike triangle tones for commands, clear sine intervals for production completion and objectives, and a short rough downward tone for rejection. A finished building uses its own low two-part cue: a soft 185 Hz triangle followed after a short rest by a quiet 277 Hz sine, a low open fifth with no shared fundamentals with the 196/247 Hz triangle battle alert. Building loss uses a rough low sliding cue with separate fundamentals from match defeat. Match victory uses an upper-register rising A-major phrase, separated from the objective, production-complete, and selection pitches. The synthesized wind and sparse three note phrases sit well below the effects mix.
 
 | Event | Player meaning | Trigger |
 | --- | --- | --- |
@@ -12,7 +12,7 @@ The audio palette is original procedural Web Audio synthesis in `src/audio.mjs`.
 | Production complete | A friendly unit or research queue finishes | Friendly production queue transition or team notice, with a shared 2.2-second cooldown |
 | Battle, selected unit, base alert | A new fight, selected force taking damage, or building under attack | Aggregated friendly snapshot damage |
 | Resource empty, base lost | Gathering must redirect or a friendly production building was destroyed | Server notice, with independent limits; base loss has its own rough low slide |
-| Objective gained or lost, victory, defeat, draw | Match state changed | Server event or winner transition |
+| Objective gained or lost, victory, defeat, draw | Match state changed | Server event or winner transition; victory has a distinct high four-note fanfare |
 
 Combat uses one event decision per snapshot. Ordinary damage only signals a new engagement after nine quiet seconds. Selected force and base alerts have independent twelve second limits. There are no per-unit attack, hit, death, gathering, or footstep sounds: those would mask orders and scale with 2,000 units. Routine cues cap at twelve oscillator voices; critical alerts may use up to twenty.
 
@@ -41,6 +41,10 @@ The first user gesture unlocks Web Audio. Match Controls has enable, volume, and
 ## Critical alert distinction · 25 September 2026
 
 The earlier base-loss and defeat cues shared two fundamentals (261.63 Hz and 196 Hz) and both descended as three-note motifs. Base loss now uses a low sawtooth-to-triangle slide with no shared fundamentals with the sine-based defeat motif. The focused audio policy scenario guards the exact oscillator profiles and pitch separation; speaker and headphone listening remains part of the broader mix review.
+
+## Outcome cue separation · 25 September 2026
+
+The original victory phrase reused both objective-gain pitches (392/493.88 Hz) and both production-complete pitches (392/587.33 Hz), so a match-ending event could sound like a louder routine confirmation. Victory now rises through A5, C-sharp 6, E6, and A6 (880–1760 Hz), clear of the objective and production pitches and above the selection sweep's 780 Hz ceiling. The focused audio policy scenario guards the four pitches and those separations. Listening on ordinary laptop speakers remains open because the fanfare now sits higher in the spectrum.
 
 ## Ambience loop seam · 25 September 2026
 

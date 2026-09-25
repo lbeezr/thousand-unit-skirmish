@@ -209,7 +209,7 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
         tone(138.59, at + 0.11, 0.26, { wave: 'triangle', endFrequency: 103.83, gain: 0.16 });
         tone(116.54, at + 0.31, 0.3, { wave: 'triangle', endFrequency: 87.31, gain: 0.13 });
         break;
-      case 'victory': for (const [i, hz] of [293.66, 392, 493.88, 587.33].entries()) tone(hz, at + i * 0.17, 0.48, { gain: 0.18 }); break;
+      case 'victory': for (const [i, hz] of [880, 1108.73, 1318.51, 1760].entries()) tone(hz, at + i * 0.17, 0.48, { gain: 0.18 }); break;
       case 'defeat': for (const [i, hz] of [329.63, 261.63, 196].entries()) tone(hz, at + i * 0.2, 0.4, { gain: 0.14 }); break;
       case 'draw': tone(293.66, at, 0.34, { gain: 0.13 }); tone(293.66, at + 0.34, 0.35, { gain: 0.11 }); break;
     }
