@@ -32,12 +32,12 @@ The renderer derives these states from the current filtered state snapshots. No 
 | turn | Client-facing angle changes | Turn pose or turn overlay; it may overlap a walk transition. |
 | gather | Worker task is gathering | Generic work pose until cargoType is known. Then wood maps to chopping and food maps to berry-gathering; no resource-specific cue is inferred before cargoType appears. |
 | build | Worker task is building | Work pose for construction. |
-| attack | A fresh lastAttackTick arrives | One-shot strike/release. The optional target point is used only when supplied by the fog-filtered snapshot. |
+| attack | A fresh `lastAttackTick` arrives; gameplay retains it in snapshots for up to three ticks. | Deduplicate by attack tick and play a one-shot strike/release. This is an attack event, not proof of damage; HP decrease is the separate hit signal. Use target coordinates only when supplied by the fog-filtered snapshot. |
 | hit | HP decreases and remains above zero | Brief recoil and damage flash. |
 | defeat | HP changes from positive to zero or below | One-shot defeat pose, then hide the unit. |
 | spawn | A reused unit ID has a new generation, or a produced unit first appears | Short spawn-in pose. |
 
-Attack and hit are transient overlays. Defeat takes precedence and is terminal for that generation. Movement, turning, worker task, cargo, and team remain separate facts so an attack cue does not erase task state. Movement takes precedence over a retained gather/build task for the worker's tool swing, so travel to a node does not look like active work. Enemy positions and attack target coordinates continue to follow the server's visibility filtering; the renderer does not infer hidden state.
+Attack and hit are transient overlays. Defeat takes precedence and is terminal for that generation. Movement, turning, worker task, cargo, and team remain separate facts so an attack cue does not erase task state. Worker task snapshots use `idle`, `moving`, `gathering`, `returning`, `building`, or `attacking`; under fog, enemy task details are withheld. Movement takes precedence over a retained gather/build task for the worker's tool swing, so travel to a node does not look like active work. Enemy positions and attack target coordinates continue to follow the server's visibility filtering; the renderer does not infer hidden state.
 
 The first authored review pack provides four concrete samples: Worker idle, Worker build, Barracks mid-construction, and Barracks complete. A static review board is optional when browser policy disallows it; the game-rendered screenshots in the integration checkpoint are the appearance review. The manifest can add more state samples without changing the renderer contract.
 
