@@ -29,6 +29,8 @@ assert.equal(unitCargoVisualState('infantry', 100, true, 4, 'wood'), 'none',
   'non-Workers do not inherit cargo cues');
 assert.equal(unitCargoVisualState('worker', 0, true, 4, 'wood'), 'none',
   'defeated Workers do not retain cargo cues');
+assert.equal(unitCargoVisualState('worker', Number.NaN, true, 4, 'wood'), 'none',
+  'invalid health does not expose a cargo cue');
 assert.equal(unitCargoVisualState('worker', 100, false, 4, 'food'), 'none',
   'fog-hidden Workers do not expose cargo cues');
 
