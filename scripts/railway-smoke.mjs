@@ -87,6 +87,7 @@ try {
   const checks = [await check('/ready', 200), await check('/', 401), await check('/health', 401)];
   for (const path of [
     '/', '/health', '/vendor/three.module.js', '/vendor/three.core.js', '/src/audio.mjs',
+    '/src/environment-art.mjs', '/assets/environment/frontier-v1/meadow.webp',
   ]) checks.push(await check(path, 200, true));
   checks.push(await checkWebSocket(false, 401));
   checks.push(await checkWebSocket(true, 101));

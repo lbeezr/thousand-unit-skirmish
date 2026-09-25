@@ -99,12 +99,21 @@ try {
   const threeCore = await fetch(`${base}/vendor/three.core.js`, { headers: { authorization } });
   assert.equal(threeCore.status, 200);
   assert.match(threeCore.headers.get('content-type'), /javascript/);
+  const environmentModule = await fetch(`${base}/src/environment-art.mjs`, { headers: { authorization } });
+  assert.equal(environmentModule.status, 200);
+  assert.match(environmentModule.headers.get('content-type'), /javascript/);
+  const environmentTexture = await fetch(`${base}/assets/environment/frontier-v1/meadow.webp`, {
+    headers: { authorization },
+  });
+  assert.equal(environmentTexture.status, 200);
+  assert.match(environmentTexture.headers.get('content-type'), /image\/webp/);
+  assert.ok((await environmentTexture.arrayBuffer()).byteLength > 0);
   assert.equal(await upgrade(port), 401);
   assert.equal(await upgrade(port, authorization), 101);
 
   assert.ok((await stat(path.join(volume, 'room-data', 'rooms.json'))).isFile());
   assert.ok((await stat(path.join(volume, 'custom-maps'))).isDirectory());
-  console.log('Railway release scenario passed: guarded startup, Basic Auth HTTP/WebSocket, local Three.js, and volume paths.');
+  console.log('Railway release scenario passed: guarded startup, Basic Auth HTTP/WebSocket, local Three.js, environment assets, and volume paths.');
 } finally {
   if (child && child.exitCode === null) {
     child.kill('SIGTERM');
