@@ -447,8 +447,12 @@ async function collectConstructionAndProduction(client, plan, startState, orderR
   ]);
   const startBuilding = buildingById(constructionStarted, buildingId);
   const completedBuilding = buildingById(completed, buildingId);
-  assert.ok(startBuilding.progress > 0, 'construction must make authoritative progress');
+  assert.ok(startBuilding.progress > 0 && startBuilding.progress < 1,
+    'construction must expose partial progress before completion');
+  assert.equal(startBuilding.complete, false, 'an in-progress structure must remain incomplete');
   assert.equal(completedBuilding.complete, true, 'building must complete');
+  assert.equal(completedBuilding.progress, 1,
+    'authoritative completion must coincide with full normalized construction progress');
 
   const preQueueState = client.latestState();
   const trainedKind = plan.buildingType === 'barracks' ? 'infantry' : 'archer';
@@ -501,6 +505,8 @@ async function collectConstructionAndProduction(client, plan, startState, orderR
       complete: {
         matchClockSeconds: completed.matchElapsedSeconds,
         tick: completed.tick,
+        progress: completedBuilding.progress,
+        buildingComplete: completedBuilding.complete,
       },
     },
     production: {
