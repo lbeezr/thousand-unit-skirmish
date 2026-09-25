@@ -1,4 +1,4 @@
-import { randomBytes } from 'node:crypto';
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { createServer, request as httpRequest } from 'node:http';
@@ -14,15 +14,40 @@ const PORT = Number(process.env.PORT || 4173);
 const MAX_ROOMS = Number(process.env.RTS_MAX_ROOMS || 4);
 const ROOM_IDLE_TTL_MS = Number(process.env.RTS_ROOM_IDLE_TTL_MS || 6 * 60 * 60 * 1000);
 const ROOM_ID_PATTERN = /^[A-Za-z0-9_-]{32}$/;
-const ROOM_DATA_DIRECTORY = path.resolve(ROOT, process.env.RTS_ROOM_DATA_DIRECTORY || 'room-data');
+const RAILWAY_DEPLOYMENT = Boolean(process.env.RAILWAY_PROJECT_ID || process.env.RAILWAY_ENVIRONMENT);
+const VOLUME_MOUNT_PATH = process.env.RAILWAY_VOLUME_MOUNT_PATH || null;
+const ACCESS_USER = process.env.RTS_ACCESS_USER || 'players';
+const ACCESS_PASSWORD = process.env.RTS_ACCESS_PASSWORD || null;
+const ACCESS_HASH = ACCESS_PASSWORD
+  ? createHash('sha256').update(`${ACCESS_USER}:${ACCESS_PASSWORD}`).digest() : null;
+const ROOM_DATA_DIRECTORY = path.resolve(ROOT, process.env.RTS_ROOM_DATA_DIRECTORY
+  || (VOLUME_MOUNT_PATH ? path.join(VOLUME_MOUNT_PATH, 'room-data') : 'room-data'));
 const ROOM_DIRECTORY = path.join(ROOM_DATA_DIRECTORY, 'rooms');
 const ROOM_INDEX_PATH = path.join(ROOM_DATA_DIRECTORY, 'rooms.json');
 const DEFAULT_MATCH_STATE_PATH = path.join(ROOM_DATA_DIRECTORY, 'default-match-state.json');
-const DEFAULT_MAP_DIRECTORY = path.resolve(ROOT, process.env.RTS_CUSTOM_MAP_DIRECTORY || 'custom-maps');
+const DEFAULT_MAP_DIRECTORY = path.resolve(ROOT, process.env.RTS_CUSTOM_MAP_DIRECTORY
+  || (VOLUME_MOUNT_PATH ? path.join(VOLUME_MOUNT_PATH, 'custom-maps') : 'custom-maps'));
 const WORKER_START_TIMEOUT_MS = 15_000;
 const WORKER_STOP_TIMEOUT_MS = 7_000;
 const INDEX_SAVE_INTERVAL_MS = 20_000;
 const ROOM_SWEEP_INTERVAL_MS = 60_000;
+
+if (RAILWAY_DEPLOYMENT && !VOLUME_MOUNT_PATH) {
+  throw new Error('Attach a Railway volume before starting the match service.');
+}
+if (VOLUME_MOUNT_PATH && !path.isAbsolute(VOLUME_MOUNT_PATH)) {
+  throw new Error('RAILWAY_VOLUME_MOUNT_PATH must be an absolute path.');
+}
+if (RAILWAY_DEPLOYMENT && (!ACCESS_PASSWORD || ACCESS_PASSWORD.length < 16)) {
+  throw new Error('Set RTS_ACCESS_PASSWORD to at least 16 characters before exposing the Railway service.');
+}
+if (VOLUME_MOUNT_PATH) {
+  const mount = path.resolve(VOLUME_MOUNT_PATH);
+  const onVolume = (directory) => directory.startsWith(`${mount}${path.sep}`);
+  if (!onVolume(ROOM_DATA_DIRECTORY) || !onVolume(DEFAULT_MAP_DIRECTORY)) {
+    throw new Error('Room data and custom maps must both be stored on the attached volume.');
+  }
+}
 
 if (!Number.isInteger(MAX_ROOMS) || MAX_ROOMS < 1 || MAX_ROOMS > 32) {
   throw new Error('RTS_MAX_ROOMS must be an integer between 1 and 32.');
@@ -169,6 +194,23 @@ function sameOrigin(request) {
     === `${trustedForwardedProto(request)}://${trustedForwardedHost(request)}`.toLowerCase();
 }
 
+function hasAccess(request) {
+  if (!ACCESS_HASH) return true;
+  const header = request.headers.authorization;
+  if (typeof header !== 'string' || header.length > 1024 || !/^Basic [A-Za-z0-9+/]+={0,2}$/.test(header)) return false;
+  const supplied = createHash('sha256').update(Buffer.from(header.slice(6), 'base64')).digest();
+  return timingSafeEqual(supplied, ACCESS_HASH);
+}
+
+function requireAccess(response) {
+  response.writeHead(401, {
+    'www-authenticate': 'Basic realm="Thousand Unit Skirmish", charset="UTF-8"',
+    'cache-control': 'no-store',
+    'content-type': 'text/plain; charset=utf-8',
+  });
+  response.end('Authentication required.');
+}
+
 function sendJson(response, status, value) {
   const body = Buffer.from(JSON.stringify(value));
   response.writeHead(status, {
@@ -220,10 +262,11 @@ function logWorkerOutput(label, stream, isError = false) {
 
 function startWorker(customMapDirectory, matchStatePath, label) {
   return new Promise((resolve, reject) => {
+    const { RTS_ACCESS_PASSWORD: _accessPassword, ...workerEnvironment } = process.env;
     const child = spawn(process.execPath, [WORKER_PATH], {
       cwd: ROOT,
       env: {
-        ...process.env,
+        ...workerEnvironment,
         PORT: '0',
         RTS_HOST: '127.0.0.1',
         RTS_CUSTOM_MAP_DIRECTORY: customMapDirectory,
@@ -303,6 +346,7 @@ async function ensureDefaultWorker() {
 function proxyHttp(request, response, worker) {
   const headers = { ...request.headers, host: `127.0.0.1:${worker.port}` };
   delete headers.connection;
+  delete headers.authorization;
   delete headers['x-forwarded-host'];
   delete headers['x-forwarded-proto'];
   const upstream = httpRequest({
@@ -350,7 +394,8 @@ function readWorkerHealth(worker) {
 
 function rejectUpgrade(socket, status, phrase) {
   const body = Buffer.from(`${phrase}\n`);
-  socket.end(`HTTP/1.1 ${status} ${phrase}\r\nConnection: close\r\nContent-Length: ${body.length}\r\nContent-Type: text/plain; charset=utf-8\r\n\r\n${body}`);
+  const challenge = status === 401 ? 'WWW-Authenticate: Basic realm="Thousand Unit Skirmish", charset="UTF-8"\r\n' : '';
+  socket.end(`HTTP/1.1 ${status} ${phrase}\r\n${challenge}Connection: close\r\nContent-Length: ${body.length}\r\nContent-Type: text/plain; charset=utf-8\r\n\r\n${body}`);
 }
 
 function proxyUpgrade(request, socket, head, worker, room = null) {
@@ -383,7 +428,7 @@ function proxyUpgrade(request, socket, head, worker, room = null) {
     for (let index = 0; index < request.rawHeaders.length; index += 2) {
       const name = request.rawHeaders[index];
       const lower = name.toLowerCase();
-      if (['x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-for', 'forwarded'].includes(lower)) continue;
+      if (['authorization', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-for', 'forwarded'].includes(lower)) continue;
       headers.push(`${name}: ${request.rawHeaders[index + 1]}`);
     }
     headers.push(`X-Forwarded-Host: ${trustedForwardedHost(request)}`);
@@ -416,11 +461,20 @@ async function handleRequest(request, response) {
   try { url = new URL(request.url || '/', `http://${request.headers.host || `${HOST}:${PORT}`}`); }
   catch { sendJson(response, 400, { error: 'Bad request.' }); return; }
 
-  if (url.pathname === '/health') {
+  if (url.pathname === '/ready' || url.pathname === '/health') {
+    if (request.method !== 'GET' && request.method !== 'HEAD') {
+      sendJson(response, 405, { error: 'Method not allowed.' });
+      return;
+    }
+    if (url.pathname === '/health' && !hasAccess(request)) { requireAccess(response); return; }
     let worker = null;
     try { worker = await ensureDefaultWorker(); } catch {}
     const matchHealth = await readWorkerHealth(worker);
     const ok = Boolean(matchHealth);
+    if (url.pathname === '/ready') {
+      sendJson(response, ok ? 200 : 503, { ok });
+      return;
+    }
     sendJson(response, ok ? 200 : 503, {
       ...(matchHealth || {}),
       ok,
@@ -431,6 +485,8 @@ async function handleRequest(request, response) {
     });
     return;
   }
+
+  if (!hasAccess(request)) { requireAccess(response); return; }
 
   if (url.pathname === '/api/rooms/status' && request.method === 'GET') {
     sendJson(response, 200, { enabled: true, roomCount: rooms.size, roomLimit: MAX_ROOMS });
@@ -473,6 +529,7 @@ async function handleRequest(request, response) {
 
 async function handleUpgrade(request, socket, head) {
   if (stopping) { rejectUpgrade(socket, 503, 'Service Unavailable'); return; }
+  if (!hasAccess(request)) { rejectUpgrade(socket, 401, 'Unauthorized'); return; }
   let url;
   try { url = new URL(request.url || '/', `http://${request.headers.host || `${HOST}:${PORT}`}`); }
   catch { rejectUpgrade(socket, 400, 'Bad Request'); return; }
