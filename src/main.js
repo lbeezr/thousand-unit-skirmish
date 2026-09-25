@@ -7,11 +7,10 @@ import {
 } from './environment-art.mjs';
 import { unitActionPoseAllowed, unitCargoVisualState } from './unit-visual-state.mjs';
 import {
-  constructionGroundStage, RESOURCE_VISUAL_STAGES, resourceVisualStage,
-  resourceVisualTransitionStages,
+  RESOURCE_VISUAL_STAGES, resourceVisualStage, resourceVisualTransitionStages,
 } from './resource-visual-state.mjs';
 import {
-  buildingFinishedDetailsVisible, buildingProductionCueState,
+  buildingFinishedDetailsVisible, buildingProductionCueState, constructionGroundStage,
 } from './building-visual-state.mjs';
 import {
   UNIT_LOD_ROLE_BITS, UNIT_LOD_ROLES, shouldUpdateUnitFocusMatrix,

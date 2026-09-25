@@ -17,10 +17,3 @@ export function resourceVisualTransitionStages(previousStage, currentStage) {
   if (RESOURCE_VISUAL_STAGES.includes(currentStage)) stages.push(currentStage);
   return stages;
 }
-
-export function constructionGroundStage(progress, complete) {
-  if (complete === true || !Number.isFinite(progress)) return 'clear';
-  const amount = Math.max(0, Math.min(progress, 1));
-  if (amount >= 1) return 'clear';
-  return amount < 0.4 ? 'earthwork' : 'foundation';
-}

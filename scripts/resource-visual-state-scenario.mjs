@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
-import { buildingProductionCueState } from '../src/building-visual-state.mjs';
 import {
-  constructionGroundStage, resourceVisualStage, resourceVisualTransitionStages,
+  buildingProductionCueState, constructionGroundStage,
+} from '../src/building-visual-state.mjs';
+import {
+  resourceVisualStage, resourceVisualTransitionStages,
 } from '../src/resource-visual-state.mjs';
 
 for (const [stock, startingStock, expected] of [
