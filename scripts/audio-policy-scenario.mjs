@@ -53,6 +53,7 @@ class FakeAudioContext {
   sampleRate = 100;
   destination = node();
   gains = [];
+  buffers = [];
   oscillatorNodes = [];
   createGain() { const gain = { ...node(), gain: parameter() }; this.gains.push(gain); return gain; }
   createOscillator() {
@@ -61,7 +62,11 @@ class FakeAudioContext {
     this.oscillatorNodes.push(oscillator);
     return oscillator;
   }
-  createBuffer() { return { getChannelData: () => new Float32Array(300) }; }
+  createBuffer(_channels, length, sampleRate) {
+    const data = new Float32Array(length);
+    this.buffers.push({ data, length, sampleRate });
+    return { getChannelData: () => data };
+  }
   createBufferSource() { return node(); }
   createBiquadFilter() { return { ...node(), frequency: parameter() }; }
   resume() { this.resumeCalls++; this.state = 'running'; return Promise.resolve(); }
@@ -81,6 +86,15 @@ try {
   assert.equal(audio.play('objective'), false, 'network events before a gesture cannot queue sounds');
   assert.equal(createdContext, undefined, 'pre-gesture events must not create an audio context');
   audio.unlock();
+  const ambience = createdContext.buffers[0].data;
+  assert.equal(ambience.length, 288, 'the 120 ms crossfade keeps the atmosphere loop near three seconds');
+  const ambienceSteps = [];
+  for (let i = 1; i < ambience.length; i++) ambienceSteps.push(Math.abs(ambience[i] - ambience[i - 1]));
+  ambienceSteps.sort((a, b) => a - b);
+  const normalStepP95 = ambienceSteps[Math.floor((ambienceSteps.length - 1) * 0.95)];
+  const loopSeamStep = Math.abs(ambience[0] - ambience.at(-1));
+  assert.ok(loopSeamStep <= normalStepP95 * 1.5,
+    `ambience loop seam (${loopSeamStep}) should stay near ordinary steps (${normalStepP95})`);
   assert.equal(audio.play('select'), true);
   assert.deepEqual(cues, ['select']);
   assert.equal(audio.getStatus(), 'running');

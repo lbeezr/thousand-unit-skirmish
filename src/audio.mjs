@@ -88,15 +88,34 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
   }
 
   function createAmbience() {
-    const length = Math.max(1, Math.floor(context.sampleRate * 3));
-    const buffer = context.createBuffer(1, length, context.sampleRate);
-    const data = buffer.getChannelData(0);
+    const sampleRate = context.sampleRate;
+    const sourceLength = Math.max(1, Math.floor(sampleRate * 3));
+    const source = new Float32Array(sourceLength);
     let random = 0x845ac17;
     let drift = 0;
-    for (let i = 0; i < length; i++) {
+    for (let i = 0; i < sourceLength; i++) {
       random ^= random << 13; random ^= random >>> 17; random ^= random << 5;
       drift = drift * 0.995 + ((random >>> 0) / 0xffffffff * 2 - 1) * 0.005;
-      data[i] = drift * 0.65;
+      source[i] = drift * 0.65;
+    }
+
+    // Join the tail to the head over 120 ms so the loop does not click every three seconds.
+    const candidateFadeLength = Math.min(Math.floor(sampleRate * 0.12), Math.floor(sourceLength / 8));
+    const fadeLength = candidateFadeLength >= 2 ? candidateFadeLength : 0;
+    const loopLength = sourceLength - fadeLength;
+    const buffer = context.createBuffer(1, loopLength, sampleRate);
+    const data = buffer.getChannelData(0);
+    if (fadeLength === 0) {
+      data.set(source);
+    } else {
+      const bodyLength = sourceLength - fadeLength * 2;
+      data.set(source.subarray(fadeLength, sourceLength - fadeLength));
+      for (let i = 0; i < fadeLength; i++) {
+        const progress = i / (fadeLength - 1);
+        const outgoing = Math.cos(progress * Math.PI / 2);
+        const incoming = Math.sin(progress * Math.PI / 2);
+        data[bodyLength + i] = source[sourceLength - fadeLength + i] * outgoing + source[i] * incoming;
+      }
     }
     const filter = context.createBiquadFilter();
     filter.type = 'lowpass';
