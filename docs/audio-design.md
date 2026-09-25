@@ -1,6 +1,6 @@
 # Audio direction · first 1v1 pass
 
-The audio palette is original procedural Web Audio synthesis in `src/audio.mjs`. There are no recorded samples, external assets, dependencies, or third party licenses. Cues use soft woodlike triangle tones for commands, clear sine intervals for production completion and objectives, and a short rough downward tone for rejection. A finished building uses its own low two-part cue: a soft 185 Hz triangle followed after a short rest by a quiet 277 Hz sine, a low open fifth with no shared fundamentals with the 196/247 Hz triangle battle alert. The synthesized wind and sparse three note phrases sit well below the effects mix.
+The audio palette is original procedural Web Audio synthesis in `src/audio.mjs`. There are no recorded samples, external assets, dependencies, or third party licenses. Cues use soft woodlike triangle tones for commands, clear sine intervals for production completion and objectives, and a short rough downward tone for rejection. A finished building uses its own low two-part cue: a soft 185 Hz triangle followed after a short rest by a quiet 277 Hz sine, a low open fifth with no shared fundamentals with the 196/247 Hz triangle battle alert. Building loss uses a rough low sliding cue with separate fundamentals from match defeat. The synthesized wind and sparse three note phrases sit well below the effects mix.
 
 | Event | Player meaning | Trigger |
 | --- | --- | --- |
@@ -11,7 +11,7 @@ The audio palette is original procedural Web Audio synthesis in `src/audio.mjs`.
 | Building complete | A friendly construction site becomes a finished production building | One friendly `complete: false` → `true` building transition; distinct low open-fifth cue with a 2.6-second cooldown |
 | Production complete | A friendly unit or research queue finishes | Friendly production queue transition or team notice, with a shared 2.2-second cooldown |
 | Battle, selected unit, base alert | A new fight, selected force taking damage, or building under attack | Aggregated friendly snapshot damage |
-| Resource empty, base lost | Gathering must redirect or a friendly production building was destroyed | Server notice, with independent limits |
+| Resource empty, base lost | Gathering must redirect or a friendly production building was destroyed | Server notice, with independent limits; base loss has its own rough low slide |
 | Objective gained or lost, victory, defeat, draw | Match state changed | Server event or winner transition |
 
 Combat uses one event decision per snapshot. Ordinary damage only signals a new engagement after nine quiet seconds. Selected force and base alerts have independent twelve second limits. There are no per-unit attack, hit, death, gathering, or footstep sounds: those would mask orders and scale with 2,000 units. Routine cues cap at twelve oscillator voices; critical alerts may use up to twenty.
@@ -37,6 +37,10 @@ At the end of the match, Azure had scheduled 11 cues and Ember six. This run con
 Producer review caught that the first building-completion draft reused the battle alert's 196/246.94 Hz fundamentals. The updated cue uses 185/277.18 Hz (F-sharp 3 to C-sharp 4), a low open fifth with separate fundamentals and a short rest. In a two-seat follow-up at 50% volume, Azure's completed Archery Range scheduled `building-complete`; the incoming Ember attack then scheduled `selected-alert` while Azure workers were selected. The focused audio scenario compares the construction and battle-alert oscillator pitches directly. This browser run exercised selected-force damage during the attack; the original combat pass separately exercised the aggregated battle alert. Neither run is a subjective listening test across speakers.
 
 The first user gesture unlocks Web Audio. Match Controls has enable, volume, and ambience/music controls, a playback status, and saved local settings. Muting, setting volume to zero, or hiding the tab suspends the audio context. Music phrases occur about every 34 seconds and yield for ten seconds after tactical alerts. The atmosphere ducks for 2.4 seconds under tactical alerts. The audio mix can be judged during a full 1v1 playtest; the current levels are a first pass, not a measured loudness master.
+
+## Critical alert distinction · 25 September 2026
+
+The earlier base-loss and defeat cues shared two fundamentals (261.63 Hz and 196 Hz) and both descended as three-note motifs. Base loss now uses a low sawtooth-to-triangle slide with no shared fundamentals with the sine-based defeat motif. The focused audio policy scenario guards the exact oscillator profiles and pitch separation; speaker and headphone listening remains part of the broader mix review.
 
 ## Ambience loop seam · 25 September 2026
 

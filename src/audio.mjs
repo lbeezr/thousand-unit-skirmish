@@ -204,7 +204,11 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
       case 'objective': tone(392, at, 0.18, { gain: 0.16 }); tone(493.88, at + 0.17, 0.26, { gain: 0.13 }); break;
       case 'objective-lost': tone(349.23, at, 0.18, { gain: 0.15 }); tone(261.63, at + 0.17, 0.27, { gain: 0.13 }); break;
       case 'resource-empty': tone(415.3, at, 0.11, { wave: 'triangle', endFrequency: 311.13, gain: 0.11 }); break;
-      case 'base-lost': for (const [i, hz] of [261.63, 196, 146.83].entries()) tone(hz, at + i * 0.15, 0.3, { wave: 'triangle', gain: 0.17 }); break;
+      case 'base-lost':
+        tone(233.08, at, 0.16, { wave: 'sawtooth', endFrequency: 155.56, gain: 0.13 });
+        tone(138.59, at + 0.11, 0.26, { wave: 'triangle', endFrequency: 103.83, gain: 0.16 });
+        tone(116.54, at + 0.31, 0.3, { wave: 'triangle', endFrequency: 87.31, gain: 0.13 });
+        break;
       case 'victory': for (const [i, hz] of [293.66, 392, 493.88, 587.33].entries()) tone(hz, at + i * 0.17, 0.48, { gain: 0.18 }); break;
       case 'defeat': for (const [i, hz] of [329.63, 261.63, 196].entries()) tone(hz, at + i * 0.2, 0.4, { gain: 0.14 }); break;
       case 'draw': tone(293.66, at, 0.34, { gain: 0.13 }); tone(293.66, at + 0.34, 0.35, { gain: 0.11 }); break;

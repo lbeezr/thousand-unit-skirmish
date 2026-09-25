@@ -151,6 +151,35 @@ try {
   assert.equal(oscillators, 14);
   assert.ok(statuses.includes('muted') && statuses.includes('running'));
   audio.dispose();
+
+  const criticalAudio = createGameAudio({
+    storage: { getItem: () => null, setItem() {} },
+    doc: { hidden: false, addEventListener() {}, removeEventListener() {} },
+  });
+  criticalAudio.unlock();
+  const baseLostStart = createdContext.oscillatorNodes.length;
+  assert.equal(criticalAudio.play('base-lost'), true);
+  const profile = (nodes) => nodes.map(({ type, frequency }) => ({
+    wave: type, from: frequency.scheduledValues[0], to: frequency.scheduledValues[1],
+  }));
+  const baseLostProfile = profile(createdContext.oscillatorNodes.slice(baseLostStart));
+  const defeatStart = createdContext.oscillatorNodes.length;
+  assert.equal(criticalAudio.play('defeat'), true);
+  const defeatProfile = profile(createdContext.oscillatorNodes.slice(defeatStart));
+  assert.deepEqual(baseLostProfile, [
+    { wave: 'sawtooth', from: 233.08, to: 155.56 },
+    { wave: 'triangle', from: 138.59, to: 103.83 },
+    { wave: 'triangle', from: 116.54, to: 87.31 },
+  ], 'base loss uses a rough, low sliding cue');
+  assert.deepEqual(defeatProfile.map(({ wave, from, to }) => ({ wave, from, to })), [
+    { wave: 'sine', from: 329.63, to: 329.63 },
+    { wave: 'sine', from: 261.63, to: 261.63 },
+    { wave: 'sine', from: 196, to: 196 },
+  ]);
+  const defeatPitches = new Set(defeatProfile.map(({ from }) => from));
+  assert.ok(baseLostProfile.every(({ from }) => !defeatPitches.has(from)),
+    'base loss and match defeat share no fundamentals');
+  criticalAudio.dispose();
 } finally {
   if (oldAudioContext === undefined) delete globalThis.AudioContext;
   else globalThis.AudioContext = oldAudioContext;
