@@ -49,8 +49,8 @@ const MAX_SCENARIO_EVENT_REPEATS = 20;
 const MIN_SCENARIO_EVENT_REPEAT_SECONDS = 5;
 const CAMERA_EDGE_ZONE_PX = 28;
 const CAMERA_EDGE_SPEED_PX_PER_SECOND = 420;
-// Initial cutover separates 0.91 and 0.48; tune from the in-game role-readability review.
-const UNIT_LOD_ZOOM_THRESHOLD = 0.62;
+// Full meshes failed the 0.91 worker-role gate; keep the role LOD through both required views.
+const UNIT_LOD_ZOOM_THRESHOLD = 0.91;
 const MAX_OBJECTIVE_FOOD_REWARD = 10000;
 const MAX_TRIGGER_UNIT_REWARD = 25;
 const WORKERS_PER_TEAM = 4;
