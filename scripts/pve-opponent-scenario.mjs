@@ -11,6 +11,12 @@ import {
   OPPONENT_OBSERVATION_SCHEMA_VERSION,
   toOpponentObservation,
 } from '../src/pve-opponent.mjs';
+import {
+  attachModelProposalOpponent,
+  MODEL_PROPOSAL_LIMITS,
+  MODEL_PROPOSAL_SCHEMA_VERSION,
+  parseModelProposal,
+} from '../src/pve-model-proposal.mjs';
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const SERVER_PATH = path.join(ROOT, 'server.mjs');
@@ -278,6 +284,340 @@ async function verifyLifecycleRecovery() {
   process.stdout.write('PvE lifecycle recovery passed: clean reset state, winner-clear transition, and map change.\n');
 }
 
+function proposalEnvelope(requestId, action, proposalSchemaVersion = MODEL_PROPOSAL_SCHEMA_VERSION) {
+  return JSON.stringify({ proposalSchemaVersion, requestId, action });
+}
+
+function verifyProposalSchema() {
+  const { map, state } = createResetFixture();
+  const observation = toOpponentObservation(state, 0, map);
+  const context = { requestId: 'request-1', team: 0, observation };
+  assert.deepEqual(parseModelProposal(proposalEnvelope('request-1', { type: 'wait' }), context), { type: 'wait' });
+  assert.deepEqual(parseModelProposal(proposalEnvelope('request-1', {
+    type: 'gather', ids: [0], nodeId: 'lifecycle-food',
+  }), context), { type: 'gather', ids: [0], nodeId: 'lifecycle-food' });
+  assert.deepEqual(parseModelProposal(proposalEnvelope('request-1', {
+    type: 'attackMove', ids: [4], x: 0, z: 0,
+  }), context), { type: 'attackMove', ids: [4], x: 0, z: 0 });
+
+  const invalid = [
+    [proposalEnvelope('other-request', { type: 'wait' }), context, /binding/],
+    [proposalEnvelope('request-1', { type: 'wait', text: 'attack north' }), context, /extra fields/],
+    [proposalEnvelope('request-1', { type: 'move', ids: [0], x: 0, z: 0 }), context, /Unsupported/],
+    [proposalEnvelope('request-1', { type: 'gather', ids: [6], nodeId: 'lifecycle-food' }), context, /non-owned/],
+    [proposalEnvelope('request-1', { type: 'gather', ids: [4], nodeId: 'lifecycle-food' }), context, /non-worker/],
+    [proposalEnvelope('request-1', { type: 'gather', ids: [0], nodeId: 'hidden-resource' }), context, /hidden/],
+    [proposalEnvelope('request-1', { type: 'attackMove', ids: [6], x: 0, z: 0 }), context, /non-owned/],
+    [proposalEnvelope('request-1', { type: 'attackMove', ids: [4], x: 9, z: 0 }), context, /within the observed map/],
+    [proposalEnvelope('request-1', { type: 'attackMove', ids: [4], x: Infinity, z: 0 }), context, /finite and within/],
+    [proposalEnvelope('request-1', { type: 'wait' }, 2), context, /schema/],
+    [proposalEnvelope('request-1', { type: 'wait' }), { ...context, team: 1 }, /assigned PvE v1 seat/],
+    ['{broken', context, /valid JSON/],
+  ];
+  for (const [content, binding, expected] of invalid) {
+    assert.throws(() => parseModelProposal(content, binding), expected);
+  }
+  assert.throws(() => parseModelProposal('"x"'.repeat(MODEL_PROPOSAL_LIMITS.maxResponseBytes), context), /4 KiB/);
+
+  const fogState = {
+    ...state,
+    fogOfWar: true,
+    visibility: setVisibility([[1, 1, 2]], map.width, map.height),
+  };
+  const fogObservation = toOpponentObservation(fogState, 0, map);
+  assert.deepEqual(fogObservation.resourceNodes.map(({ id }) => id), ['lifecycle-food']);
+  assert.throws(() => parseModelProposal(proposalEnvelope('request-1', {
+    type: 'gather', ids: [0], nodeId: 'lifecycle-wood',
+  }), { ...context, observation: fogObservation }), /hidden/);
+  process.stdout.write('PvE proposal schema passed: strict envelope, actions, seat binding, and visible references.\n');
+}
+
+function createControlledProposalOpponent(socket, options) {
+  return attachModelProposalOpponent(socket, {
+    ...options,
+    setInterval: (callback) => { socket.decisionTimer = callback; return callback; },
+    clearInterval: () => {},
+  });
+}
+
+async function verifyProposalController() {
+  const { map, state } = createResetFixture();
+  const disabledProvider = { estimateRequest() { throw new Error('disabled provider was inspected'); } };
+  const disabled = attachModelProposalOpponent(null, { provider: disabledProvider });
+  assert.equal((await disabled.requestDecision()).status, 'disabled');
+  assert.equal(disabled.getMetrics().requestsSent, 0);
+  assert.throws(() => attachModelProposalOpponent(new FakeSocket(), {
+    enabled: true,
+    provider: { estimateRequest: () => ({ inputTokens: 1, reservedCostUsd: 0 }), propose: async () => ({ content: '' }) },
+  }), /usage reporting/);
+
+  const requests = [];
+  const acceptedSocket = new FakeSocket();
+  let time = 100;
+  const provider = {
+    reportsUsage: true,
+    estimateRequest(request) {
+      return { inputTokens: Math.ceil(JSON.stringify(request).length / 4), reservedCostUsd: 0.002 };
+    },
+    async propose(request) {
+      requests.push(request);
+      return {
+        content: proposalEnvelope(request.requestId, {
+          type: 'gather', ids: [request.observation.units.friendly[0].id], nodeId: request.observation.resourceNodes[0].id,
+        }),
+        usage: { inputTokens: 40, outputTokens: 18, costUsd: 0.001 },
+      };
+    },
+  };
+  const errors = [];
+  const opponent = createControlledProposalOpponent(acceptedSocket, {
+    enabled: true, provider, now: () => time, createRequestId: () => 'fake-request-1',
+    onError: (error) => errors.push(error),
+  });
+  acceptedSocket.emit({ type: 'welcome', player: { team: 0 }, map, state });
+  const accepted = await opponent.requestDecision();
+  assert.equal(accepted.status, 'accepted');
+  assert.equal(opponent.team, 0);
+  assert.equal(requests.length, 1);
+  assert.deepEqual(Object.keys(requests[0].observation).sort(), [
+    'buildings', 'fogOfWar', 'map', 'objectives', 'research', 'resourceNodes', 'resources',
+    'schemaVersion', 'team', 'tick', 'units', 'visibility', 'workerProduction',
+  ]);
+  assert.equal(Object.hasOwn(requests[0].observation.map, 'spawnPoints'), false);
+  assert.deepEqual(acceptedSocket.sent, [{
+    type: 'gather', ids: [0], nodeId: 'lifecycle-food', clientOrderToken: 1,
+  }], 'model output re-enters the ordinary player command shape with a trusted order token');
+  const acceptedMetrics = opponent.getMetrics();
+  assert.equal(acceptedMetrics.requestsSent, 1);
+  assert.equal(acceptedMetrics.acceptedProposals, 1);
+  assert.equal(acceptedMetrics.fallbackSlots, 0);
+  assert.equal(acceptedMetrics.observationBytes, Buffer.byteLength(JSON.stringify(requests[0].observation)));
+  assert.equal(acceptedMetrics.estimatedInputTokens, Math.ceil(JSON.stringify(requests[0]).length / 4));
+  assert.equal(acceptedMetrics.responseBytes, Buffer.byteLength(proposalEnvelope('fake-request-1', {
+    type: 'gather', ids: [0], nodeId: 'lifecycle-food',
+  })));
+  assert.equal(acceptedMetrics.reservedCostUsd, 0.002);
+  assert.equal(acceptedMetrics.reportedCostUsd, 0.001);
+  assert.deepEqual(acceptedMetrics.latencyMs, [0]);
+  assert.deepEqual(acceptedMetrics.decisionAgeTicks, [0]);
+  assert.ok(acceptedMetrics.observationBytes > 0);
+  assert.equal(errors.length, 0);
+  time += MODEL_PROPOSAL_LIMITS.decisionIntervalMs - 1;
+  assert.equal((await opponent.requestDecision()).status, 'not-due');
+  acceptedSocket.emit({
+    type: 'notice', clientOrderToken: 1, message: 'GATHER REJECTED · NO VALID WORKERS',
+  });
+  time++;
+  assert.equal((await opponent.requestDecision()).status, 'fallback',
+    'a correlated server rejection routes the next slot through deterministic policy');
+  assert.equal(acceptedSocket.sent.length, 2);
+  assert.equal(acceptedSocket.sent[1].clientOrderToken, 2);
+  assert.equal(opponent.getMetrics().requestsSent, 1, 'rejection fallback does not make a second provider request');
+  assert.equal(opponent.getMetrics().fallbackReasons.command_rejected, 1);
+  opponent.close();
+
+  const fallbackSocket = new FakeSocket();
+  const fallbackProvider = {
+    reportsUsage: true,
+    estimateRequest: () => ({ inputTokens: 10, reservedCostUsd: 0.01 }),
+    async propose() { throw new Error('fake provider failure'); },
+  };
+  const fallback = createControlledProposalOpponent(fallbackSocket, {
+    enabled: true, provider: fallbackProvider, createRequestId: () => 'fake-failure',
+    now: () => time,
+  });
+  fallbackSocket.emit({ type: 'welcome', player: { team: 0 }, map, state });
+  assert.equal((await fallback.requestDecision()).status, 'fallback');
+  assert.equal(fallbackSocket.sent.length, 1, 'a failed model slot sends at most one fallback command');
+  assert.equal(fallbackSocket.sent[0].type, 'gather');
+  assert.equal(fallback.getMetrics().fallbackCommands, 1);
+  assert.equal(fallback.getMetrics().providerErrors, 1);
+  fallback.close();
+
+  let resolveLate;
+  const timeoutSocket = new FakeSocket();
+  const timeoutProvider = {
+    reportsUsage: true,
+    estimateRequest: () => ({ inputTokens: 10, reservedCostUsd: 0.01 }),
+    propose: () => new Promise((resolve) => { resolveLate = resolve; }),
+  };
+  const timeout = createControlledProposalOpponent(timeoutSocket, {
+    enabled: true, provider: timeoutProvider, requestTimeoutMs: 15,
+    createRequestId: () => 'fake-timeout', now: () => time,
+  });
+  timeoutSocket.emit({ type: 'welcome', player: { team: 0 }, map, state });
+  const timedOut = timeout.requestDecision();
+  await delay(25);
+  assert.equal((await timedOut).reason, 'timeout');
+  assert.equal(timeout.getMetrics().timeouts, 1);
+  assert.equal(timeoutSocket.sent.length, 1, 'timeout enters deterministic fallback once');
+  time += MODEL_PROPOSAL_LIMITS.decisionIntervalMs;
+  assert.equal((await timeout.requestDecision()).reason, 'provider_unsettled',
+    'a provider that ignores cancellation cannot overlap another request');
+  assert.equal(timeoutSocket.sent.length, 2, 'an unsettled provider still falls back one command per due slot');
+  resolveLate({ content: proposalEnvelope('fake-timeout', { type: 'wait' }) });
+  await delay(0);
+  assert.equal(timeoutSocket.sent.length, 2, 'a late provider result cannot dispatch after fallback');
+  timeout.close();
+
+  const budgetSocket = new FakeSocket();
+  let providerCalls = 0;
+  const overBudgetProvider = {
+    reportsUsage: true,
+    estimateRequest: () => ({ inputTokens: MODEL_PROPOSAL_LIMITS.maxInputTokens + 1, reservedCostUsd: 0.01 }),
+    async propose() { providerCalls++; return { content: '' }; },
+  };
+  const overBudget = createControlledProposalOpponent(budgetSocket, {
+    enabled: true, provider: overBudgetProvider, createRequestId: () => 'fake-over-budget',
+    now: () => time,
+  });
+  budgetSocket.emit({ type: 'welcome', player: { team: 0 }, map, state });
+  assert.equal((await overBudget.requestDecision()).reason, 'input_tokens');
+  assert.equal(providerCalls, 0, 'unaffordable input estimates skip provider dispatch');
+  assert.equal(overBudget.getMetrics().requestsSent, 0, 'skipped requests do not consume sent-request budget');
+  assert.equal(overBudget.getMetrics().fallbackSlots, 1);
+  overBudget.close();
+
+  const largeSocket = new FakeSocket();
+  let largeEstimateCalls = 0;
+  const largeProvider = {
+    reportsUsage: true,
+    estimateRequest() { largeEstimateCalls++; return { inputTokens: 1, reservedCostUsd: 0.001 }; },
+    async propose() { throw new Error('oversized observations must not reach the provider'); },
+  };
+  const largeObservation = createControlledProposalOpponent(largeSocket, {
+    enabled: true, provider: largeProvider, createRequestId: () => 'fake-large-observation',
+    now: () => time,
+  });
+  largeSocket.emit({
+    type: 'welcome', player: { team: 0 }, map,
+    state: { ...state, mapId: 'x'.repeat(MODEL_PROPOSAL_LIMITS.maxObservationBytes + 1) },
+  });
+  assert.equal((await largeObservation.requestDecision()).reason, 'observation_bytes');
+  assert.equal(largeEstimateCalls, 0, 'an oversized DTO is skipped before provider token/cost estimation');
+  assert.equal(largeObservation.getMetrics().skippedRequests, 1);
+  largeObservation.close();
+
+  const costSocket = new FakeSocket();
+  let costProviderCalls = 0;
+  const overCostProvider = {
+    reportsUsage: true,
+    estimateRequest: () => ({ inputTokens: 12, reservedCostUsd: MODEL_PROPOSAL_LIMITS.maxEstimatedCostUsd + 0.01 }),
+    async propose() { costProviderCalls++; return { content: '' }; },
+  };
+  const overCost = createControlledProposalOpponent(costSocket, {
+    enabled: true, provider: overCostProvider, createRequestId: () => 'fake-over-cost',
+    now: () => time,
+  });
+  costSocket.emit({ type: 'welcome', player: { team: 0 }, map, state });
+  assert.equal((await overCost.requestDecision()).reason, 'cost_budget');
+  assert.equal(costProviderCalls, 0, 'requests without room in the match cost budget are skipped');
+  overCost.close();
+
+  const violationSocket = new FakeSocket();
+  let violationCalls = 0;
+  const violationProvider = {
+    reportsUsage: true,
+    estimateRequest: () => ({ inputTokens: 12, reservedCostUsd: 0.01 }),
+    async propose(request) {
+      violationCalls++;
+      return {
+        content: proposalEnvelope(request.requestId, { type: 'wait' }),
+        usage: { inputTokens: 12, outputTokens: 2, costUsd: 0.02 },
+      };
+    },
+  };
+  const violation = createControlledProposalOpponent(violationSocket, {
+    enabled: true, provider: violationProvider, createRequestId: (() => { let next = 0; return () => `violation-${++next}`; })(),
+    now: () => time,
+  });
+  violationSocket.emit({ type: 'welcome', player: { team: 0 }, map, state });
+  assert.equal((await violation.requestDecision()).reason, 'provider_error');
+  assert.equal(violation.getMetrics().providerBudgetLocked, true,
+    'reported spend above the reservation locks provider use for the match');
+  time += MODEL_PROPOSAL_LIMITS.decisionIntervalMs;
+  assert.equal((await violation.requestDecision()).reason, 'provider_budget_locked');
+  assert.equal(violationCalls, 1);
+  violation.close();
+
+  const serializedProvider = {
+    reportsUsage: true,
+    estimateRequest: () => ({ inputTokens: 12, reservedCostUsd: 0.01 }),
+    async propose(request) {
+      return {
+        content: proposalEnvelope(request.requestId, { type: 'wait' }),
+        usage: { inputTokens: 12, outputTokens: 2, costUsd: 0.001 },
+      };
+    },
+  };
+  const deferredSocket = new FakeSocket();
+  let currentTime = 0;
+  let resolveFirst;
+  let providerCallsForCoalescing = 0;
+  const deferredProvider = {
+    reportsUsage: true,
+    estimateRequest: serializedProvider.estimateRequest,
+    propose(request) {
+      providerCallsForCoalescing++;
+      if (providerCallsForCoalescing === 1) return new Promise((resolve) => { resolveFirst = () => resolve({
+        content: proposalEnvelope(request.requestId, { type: 'wait' }),
+        usage: { inputTokens: 12, outputTokens: 2, costUsd: 0.001 },
+      }); });
+      return serializedProvider.propose(request);
+    },
+  };
+  const deferred = createControlledProposalOpponent(deferredSocket, {
+    enabled: true, provider: deferredProvider, now: () => currentTime,
+    createRequestId: (() => { let next = 0; return () => `coalesced-${++next}`; })(),
+  });
+  deferredSocket.emit({ type: 'welcome', player: { team: 0 }, map, state });
+  const firstPending = deferred.requestDecision();
+  await Promise.resolve();
+  currentTime = MODEL_PROPOSAL_LIMITS.decisionIntervalMs;
+  deferredSocket.emit({ type: 'state', ...state, tick: state.tick + MODEL_PROPOSAL_LIMITS.maxDecisionAgeTicks + 1 });
+  assert.equal((await deferred.requestDecision()).status, 'in-flight');
+  assert.equal(providerCallsForCoalescing, 1, 'one request may be in flight per seat');
+  resolveFirst();
+  assert.equal((await firstPending).reason, 'stale_response');
+  assert.equal(deferred.getMetrics().coalescedSlots, 1);
+  assert.equal(deferred.getMetrics().staleResponses, 1);
+  currentTime += MODEL_PROPOSAL_LIMITS.decisionIntervalMs;
+  assert.equal((await deferred.requestDecision()).status, 'accepted');
+  assert.equal(deferred.getMetrics().requestsSent, 2);
+  assert.equal(providerCallsForCoalescing, 2, 'the next slot uses the coalesced latest state');
+  deferred.close();
+
+  const requestBudgetSocket = new FakeSocket();
+  let budgetProviderCalls = 0;
+  const waitProvider = {
+    reportsUsage: true,
+    estimateRequest: () => ({ inputTokens: 8, reservedCostUsd: 0.005 }),
+    async propose(request) {
+      budgetProviderCalls++;
+      return {
+        content: proposalEnvelope(request.requestId, { type: 'wait' }),
+        usage: { inputTokens: 8, outputTokens: 2, costUsd: 0.001 },
+      };
+    },
+  };
+  let budgetTime = 0;
+  const requestBudget = createControlledProposalOpponent(requestBudgetSocket, {
+    enabled: true, provider: waitProvider, now: () => budgetTime,
+    createRequestId: (() => { let next = 0; return () => `budget-${++next}`; })(),
+  });
+  requestBudgetSocket.emit({ type: 'welcome', player: { team: 0 }, map, state });
+  for (let index = 0; index < MODEL_PROPOSAL_LIMITS.maxRequestsPerMatch; index++) {
+    budgetTime = index * MODEL_PROPOSAL_LIMITS.decisionIntervalMs;
+    assert.equal((await requestBudget.requestDecision()).status, 'accepted');
+  }
+  budgetTime = MODEL_PROPOSAL_LIMITS.maxRequestsPerMatch * MODEL_PROPOSAL_LIMITS.decisionIntervalMs;
+  assert.equal((await requestBudget.requestDecision()).reason, 'request_budget');
+  assert.equal(budgetProviderCalls, MODEL_PROPOSAL_LIMITS.maxRequestsPerMatch);
+  assert.equal(requestBudget.getMetrics().requestsSent, MODEL_PROPOSAL_LIMITS.maxRequestsPerMatch);
+  requestBudget.close();
+  process.stdout.write('PvE proposal controller passed: default-off, budgets, fallback, timeout, stale results, and coalescing.\n');
+}
+
 function createFeed(socket) {
   const feed = { latest: null, messages: [], stateWaiters: [], messageWaiters: [] };
   socket.addEventListener('message', (event) => {
@@ -354,13 +694,24 @@ async function findFreePort() {
   return port;
 }
 
-async function openClient(port, name, { botSeed = null, commands = null, errors = null } = {}) {
+async function openClient(port, name, {
+  botSeed = null,
+  proposalOptions = null,
+  commands = null,
+  errors = null,
+} = {}) {
   const deadline = Date.now() + CONNECT_TIMEOUT_MS;
   let lastError = null;
   while (Date.now() < deadline) {
     const socket = new WebSocket(ENDPOINT(port), ['rts-v1']);
     const client = { name, socket, feed: createFeed(socket), welcome: null, opponent: null };
-    if (botSeed !== null) {
+    if (proposalOptions) {
+      client.opponent = attachModelProposalOpponent(socket, {
+        ...proposalOptions,
+        onCommand: (entry) => commands.push(entry),
+        onError: (error) => errors.push(error),
+      });
+    } else if (botSeed !== null) {
       client.opponent = attachDeterministicOpponent(socket, {
         seed: botSeed,
         decisionIntervalMs: DECISION_INTERVAL_MS,
@@ -637,8 +988,122 @@ async function runSeatSmoke(botTeam) {
   }
 }
 
-verifyPureContract();
-await verifyLifecycleRecovery();
-await runSeatSmoke(0);
-await runSeatSmoke(1);
-process.stdout.write('PvE WebSocket smoke passed for Azure and Ember bot seats.\n');
+async function runProposalCommandSmoke() {
+  const port = await findFreePort();
+  const server = spawn(process.execPath, [SERVER_PATH], {
+    cwd: ROOT,
+    env: {
+      ...process.env,
+      PORT: String(port),
+      RTS_HOST: '127.0.0.1',
+      RTS_MAP: 'maps/forked-vale.json',
+    },
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  let serverOutput = '';
+  server.stdout.on('data', (chunk) => { serverOutput = `${serverOutput}${chunk}`.slice(-4_000); });
+  server.stderr.on('data', (chunk) => { serverOutput = `${serverOutput}${chunk}`.slice(-4_000); });
+  const clients = [];
+  const commands = [];
+  const errors = [];
+  const providerRequests = [];
+  const fakeProvider = {
+    reportsUsage: true,
+    estimateRequest(request) {
+      return {
+        inputTokens: Math.ceil(Buffer.byteLength(JSON.stringify(request), 'utf8') / 4),
+        reservedCostUsd: 0.001,
+      };
+    },
+    async propose(request) {
+      providerRequests.push(request);
+      const worker = request.observation.units.friendly.find((unit) => unit.kind === 'worker' && unit.hp > 0);
+      const node = request.observation.resourceNodes
+        .filter((entry) => entry.stock > 0)
+        .sort((left, right) => (
+          ((left.x - worker.x) ** 2 + (left.z - worker.z) ** 2)
+            - ((right.x - worker.x) ** 2 + (right.z - worker.z) ** 2)
+        ))[0];
+      return {
+        content: proposalEnvelope(request.requestId, {
+          type: 'gather', ids: [worker.id], nodeId: node.id,
+        }),
+        usage: { inputTokens: 64, outputTokens: 24, costUsd: 0.0005 },
+      };
+    },
+  };
+
+  try {
+    const host = await openClient(port, 'human-host');
+    clients.push(host);
+    const proposalSeat = await openClient(port, 'fake-proposal-seat', {
+      proposalOptions: {
+        enabled: true,
+        provider: fakeProvider,
+        createRequestId: () => 'fake-e2e-request',
+        setInterval: (callback) => callback,
+        clearInterval: () => {},
+      },
+      commands,
+      errors,
+    });
+    clients.push(proposalSeat);
+    assert.equal(proposalSeat.welcome.player.team, 1, 'the fake proposal peer takes the server-assigned second seat');
+    assert.equal(proposalSeat.opponent.team, 1, 'the proposal adapter binds its seat from welcome');
+    const initial = stateObservation(proposalSeat);
+    assert.ok(initial.units.friendly.some((unit) => unit.kind === 'worker'));
+    assert.ok(initial.resourceNodes.some((node) => node.stock > 0));
+    const firstWorker = initial.units.friendly.find((unit) => unit.kind === 'worker');
+    const nearestNode = initial.resourceNodes
+      .filter((entry) => entry.stock > 0)
+      .sort((left, right) => (
+        ((left.x - firstWorker.x) ** 2 + (left.z - firstWorker.z) ** 2)
+          - ((right.x - firstWorker.x) ** 2 + (right.z - firstWorker.z) ** 2)
+      ))[0];
+
+    const gatherNotice = waitForMessage(proposalSeat, (message) => message.type === 'notice'
+      && message.clientOrderToken === 1 && message.message?.startsWith('GATHER ORDER'),
+    'server-validated fake proposal gather order');
+    const outcome = await proposalSeat.opponent.requestDecision();
+    await gatherNotice;
+    assert.equal(outcome.status, 'accepted');
+    assert.equal(providerRequests.length, 1, 'only the injected fake provider receives a proposal request');
+    assert.equal(commands.length, 1, 'one proposal decision emits at most one normal player command');
+    assert.deepEqual(commands[0].command, {
+      type: 'gather', ids: [firstWorker.id], nodeId: nearestNode.id,
+      clientOrderToken: 1,
+    });
+    assert.equal(Object.hasOwn(commands[0].command, 'team'), false, 'the model cannot choose a seat');
+    assert.equal(proposalSeat.opponent.getMetrics().acceptedProposals, 1);
+    assert.equal(proposalSeat.opponent.getMetrics().requestsSent, 1);
+    assert.equal(errors.length, 0, `fake proposal adapter errors: ${errors.map((error) => error.message).join('; ')}`);
+    process.stdout.write(`${JSON.stringify({
+      proposalSeat: proposalSeat.opponent.team,
+      provider: 'injected fake',
+      command: commands[0].command.type,
+      serverAcknowledged: true,
+      metrics: proposalSeat.opponent.getMetrics(),
+    })}\n`);
+  } catch (error) {
+    throw new Error(`PvE fake proposal smoke failed: ${error.message}\n${serverOutput}`);
+  } finally {
+    for (const client of clients) await closeClient(client);
+    await stopServer(server);
+  }
+}
+
+if (process.argv.includes('--proposal-only')) {
+  verifyProposalSchema();
+  await verifyProposalController();
+} else if (process.argv.includes('--proposal-smoke-only')) {
+  await runProposalCommandSmoke();
+} else {
+  verifyPureContract();
+  verifyProposalSchema();
+  await verifyProposalController();
+  await verifyLifecycleRecovery();
+  await runSeatSmoke(0);
+  await runSeatSmoke(1);
+  await runProposalCommandSmoke();
+  process.stdout.write('PvE WebSocket smoke passed for Azure and Ember bot seats.\n');
+}
