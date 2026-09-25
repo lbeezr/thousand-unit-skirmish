@@ -4226,6 +4226,28 @@ function buildFormationSlots(selectedUnits, centerCell, formation) {
   return { slots, columns, rows, direction: { x: directionX, z: directionZ }, side: { x: sideX, z: sideZ } };
 }
 
+function nearestBuilderAccessCell(unit, componentId, accessCells, reservedCells) {
+  let nearestOpen = -1;
+  let nearestOpenDistance = Infinity;
+  let nearestShared = -1;
+  let nearestSharedDistance = Infinity;
+  for (const cell of accessCells) {
+    if (walkableComponents[cell] !== componentId) continue;
+    const point = cellToWorld(cell);
+    const distance = (unit.x - point.x) ** 2 + (unit.z - point.z) ** 2;
+    if (distance < nearestSharedDistance || (distance === nearestSharedDistance && cell < nearestShared)) {
+      nearestShared = cell;
+      nearestSharedDistance = distance;
+    }
+    if (!reservedCells.has(cell)
+      && (distance < nearestOpenDistance || (distance === nearestOpenDistance && cell < nearestOpen))) {
+      nearestOpen = cell;
+      nearestOpenDistance = distance;
+    }
+  }
+  return nearestOpen >= 0 ? nearestOpen : nearestShared;
+}
+
 function assignFormationMove(player, command, buildingTargetId = null, orderLabel = null) {
   if (player.team === null || !Array.isArray(command.ids)) {
     sendOrderNotice(player, command, 'MOVE REJECTED · NO VALID UNITS');
@@ -4262,8 +4284,14 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
   const center = worldToCell(centerX, centerZ);
   const centerColumn = center % MAP_WIDTH;
   const centerRow = Math.floor(center / MAP_WIDTH);
-  const formationLayout = buildFormationSlots(selectedUnits, center, formation);
-  const orderedUnits = orderUnitsForFormation(selectedUnits, formationLayout);
+  const targetBuilding = buildingTargetId === null ? null : buildingsById.get(buildingTargetId);
+  if (buildingTargetId !== null && !targetBuilding) {
+    sendOrderNotice(player, command, 'BUILD REJECTED · BUILDING UNAVAILABLE');
+    return;
+  }
+  const buildingAccess = targetBuilding ? buildingAccessCells(targetBuilding.footprint) : null;
+  const formationLayout = buildingAccess ? null : buildFormationSlots(selectedUnits, center, formation);
+  const orderedUnits = buildingAccess ? selectedUnits : orderUnitsForFormation(selectedUnits, formationLayout);
   const unitCells = orderedUnits.map((unit) => nearestOpenCell(worldToCell(unit.x, unit.z)));
   const unitComponents = unitCells.map((cell) => walkableComponents[cell]);
   let fallbackPools = null;
@@ -4273,10 +4301,12 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
   let queuedCount = 0;
 
   orderedUnits.forEach((unit, index) => {
-    const requestedCell = formationLayout.slots[index];
+    const requestedCell = buildingAccess ? -1 : formationLayout.slots[index];
     const componentId = unitComponents[index];
-    let destination = findAvailableCellNear(requestedCell, componentId, reservedDestinations);
-    if (destination < 0) {
+    let destination = buildingAccess
+      ? nearestBuilderAccessCell(unit, componentId, buildingAccess, reservedDestinations)
+      : findAvailableCellNear(requestedCell, componentId, reservedDestinations);
+    if (destination < 0 && !buildingAccess) {
       fallbackPools ||= buildMoveFallbackPools(unitComponents, centerColumn, centerRow);
       const candidates = fallbackPools.cellsByComponent.get(componentId) || [];
       let cursor = fallbackPools.cursors.get(componentId) || 0;
@@ -4284,6 +4314,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
       destination = candidates[cursor] ?? candidates[0] ?? unitCells[index];
       fallbackPools.cursors.set(componentId, cursor + 1);
     }
+    if (destination < 0) return;
     reservedDestinations.add(destination);
     if (queueWaypoint && canQueueBehindCurrentRoute(unit)) {
       unit.queuedWaypoints.push({ destination, attackMove });
