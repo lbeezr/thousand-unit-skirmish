@@ -29,7 +29,7 @@ The renderer derives these states from the current filtered state snapshots. No 
 | Visual state | Current source | Renderer interpretation |
 | --- | --- | --- |
 | idle | Living unit, no movement, work, or one-shot event | Rest pose; low-amplitude idle motion may continue at a bounded cadence. |
-| walk | Position changes between snapshots | Walk pose and stride phase. Worker task moving or returning uses this state. A renderer-owned cargo cue stays separate from the movement pose: in full detail the Worker backpack uses distinct colors for known wood and food cargo, while unknown cargo uses a neutral color; strategic role LOD remains neutral. |
+| walk | Position changes between snapshots | Walk pose and stride phase. Worker task moving or returning uses this state. A renderer-owned cargo cue stays separate from the movement pose: in full detail the Worker backpack uses the resource-palette colors (leaf green for wood, amber for food), while unknown cargo uses a neutral color; strategic role LOD remains neutral. |
 | turn | Client-facing angle changes | Turn pose or turn overlay; it may overlap a walk transition. |
 | gather | Worker task is gathering | Generic work pose until cargoType is known. Then wood maps to chopping and food maps to berry-gathering; no resource-specific work cue is inferred before cargoType appears. |
 | build | Worker task is building | Work pose for construction. |
