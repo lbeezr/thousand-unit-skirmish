@@ -17,24 +17,27 @@ const baselineCommit = process.env.RTS_BASELINE_COMMIT?.trim() || '';
 if (!/^[0-9a-f]{40,64}$/i.test(baselineCommit)) {
   throw new Error('RTS_BASELINE_COMMIT must be the full 40- or 64-character server-source Git SHA.');
 }
-let checkoutCommit;
-try {
-  checkoutCommit = execFileSync('git', ['rev-parse', 'HEAD'], {
-    cwd: serverRoot,
+function cleanCheckoutCommit(directory, label) {
+  let commit;
+  try {
+    commit = execFileSync('git', ['rev-parse', 'HEAD'], {
+      cwd: directory,
+      encoding: 'utf8',
+    }).trim();
+  } catch (error) {
+    throw new Error(`${label} must be a Git checkout: ${error.message}`);
+  }
+  const changes = execFileSync('git', ['status', '--porcelain', '--untracked-files=all'], {
+    cwd: directory,
     encoding: 'utf8',
   }).trim();
-} catch (error) {
-  throw new Error(`RTS_SERVER_ROOT must be a Git checkout to bind the baseline: ${error.message}`);
+  if (changes) throw new Error(`${label} has changes; evidence requires a clean checkout:\n${changes}`);
+  return commit;
 }
+const harnessCommit = cleanCheckoutCommit(root, 'Scenario harness checkout');
+const checkoutCommit = cleanCheckoutCommit(serverRoot, 'RTS_SERVER_ROOT');
 if (checkoutCommit.toLowerCase() !== baselineCommit.toLowerCase()) {
   throw new Error(`RTS_BASELINE_COMMIT ${baselineCommit} does not match RTS_SERVER_ROOT HEAD ${checkoutCommit}.`);
-}
-const trackedChanges = execFileSync('git', ['status', '--porcelain', '--untracked-files=all'], {
-  cwd: serverRoot,
-  encoding: 'utf8',
-}).trim();
-if (trackedChanges) {
-  throw new Error(`RTS_SERVER_ROOT has changes; exact baseline evidence requires a clean checkout:\n${trackedChanges}`);
 }
 const mapSourceBytes = await readFile(mapPath);
 const mapSourceText = mapSourceBytes.toString('utf8');
@@ -656,6 +659,7 @@ try {
       scenario: 'gather-build-opening',
       event: 'round-complete',
       baselineCommit,
+      harnessCommit,
       mapSourceSha256,
       ...round,
     });
@@ -666,6 +670,7 @@ try {
     scenario: 'gather-build-opening',
     event: 'complete',
     baselineCommit,
+    harnessCommit,
     baseMap: path.relative(serverRoot, mapPath),
     mapSourceSha256,
     fixtureMap: fixtureMapId,
@@ -681,6 +686,7 @@ try {
     scenario: 'gather-build-opening',
     event: 'failed',
     baselineCommit,
+    harnessCommit,
     mapSourceSha256,
     error: { name: error.name, message: error.message, stack: error.stack },
     completedRounds,
