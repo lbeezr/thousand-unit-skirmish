@@ -157,7 +157,6 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
 
   function play(cue) {
     if (!settings.enabled || settings.volume <= 0 || doc?.hidden) return false;
-    unlock();
     if (!context || context.state === 'closed' || !(cue in COOLDOWN_MS)) return false;
     const now = performance.now();
     if (now - (lastCueAt.get(cue) ?? -Infinity) < COOLDOWN_MS[cue]) return false;

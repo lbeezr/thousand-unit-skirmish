@@ -71,6 +71,9 @@ try {
   const cues = [];
   const audio = createGameAudio({ storage, doc, onStatusChange: (status) => statuses.push(status), onCue: (cue) => cues.push(cue) });
   assert.equal(audio.getStatus(), 'waiting');
+  assert.equal(audio.play('objective'), false, 'network events before a gesture cannot queue sounds');
+  assert.equal(createdContext, undefined, 'pre-gesture events must not create an audio context');
+  audio.unlock();
   assert.equal(audio.play('select'), true);
   assert.deepEqual(cues, ['select']);
   assert.equal(audio.getStatus(), 'running');
