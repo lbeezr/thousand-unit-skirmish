@@ -316,6 +316,7 @@ try {
     return {
       team: opening.team,
       buildingId: building.id,
+      buildOrderToken: buildOrderByTeam.get(opening.team).token,
       buildOrder: buildOrderByTeam.get(opening.team).message,
       buildingCompleteAt: { tick: state.tick, matchClockSeconds: state.matchElapsedSeconds },
       queueNotice: queueNotice.message,
