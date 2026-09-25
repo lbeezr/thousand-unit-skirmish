@@ -128,6 +128,7 @@ const server = startChild('checkpointed server', [SERVER_ENTRY], {
   RTS_MAP: mapRelativePath,
   RTS_CUSTOM_MAP_DIRECTORY: path.join(tempRoot, 'custom-maps'),
   RTS_MATCH_STATE_PATH: checkpointPath,
+  RTS_TICK_DIAGNOSTICS: '1',
 });
 let load = null;
 const clients = [];
@@ -183,6 +184,10 @@ try {
     assert.ok(Number.isFinite(measured.checkpoint.lastWriteMs), 'atomic filesystem write duration should be available');
     assert.equal(measured.tickTiming.sampleCount, 300, 'timing report should include a full ten-second window');
     assert.ok(Number.isFinite(measured.tickTiming.maxMs), 'tick maximum should be available');
+    assert.ok(Number.isFinite(measured.tickTiming.slowestTick?.cpuMs)
+      && Number.isFinite(measured.tickTiming.slowestTick?.simulationMs)
+      && Number.isFinite(measured.tickTiming.slowestTick?.broadcastMs),
+      'the slowest wall tick should report its process CPU and phase times');
   }
 
   const workloadSamples = measuredSamples.map((measured, index) => ({

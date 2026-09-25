@@ -94,6 +94,12 @@ const ui = {
   selectedInfantry: document.querySelector('#selected-infantry'),
   selectedArchers: document.querySelector('#selected-archers-count'),
   selectedWaypoints: document.querySelector('#selected-waypoints'),
+  selectedBuildingCard: document.querySelector('#building-selection-card'),
+  selectedBuildingName: document.querySelector('#selected-building-name'),
+  selectedBuildingState: document.querySelector('#selected-building-state'),
+  selectedBuildingHealth: document.querySelector('#selected-building-health'),
+  selectedBuildingHealthBar: document.querySelector('#selected-building-health-bar'),
+  selectedBuildingProduction: document.querySelector('#selected-building-production'),
   aliveBlue: document.querySelector('#alive-blue'),
   aliveRed: document.querySelector('#alive-red'),
   foodStock: document.querySelector('#food-stock'),
@@ -122,6 +128,8 @@ const ui = {
   resumeConstructionLabel: document.querySelector('#resume-construction-label'),
   resumeRangeProgress: document.querySelector('.resume-range-progress'),
   fieldHintAction: document.querySelector('#field-hint-action'),
+  fieldHintPrimaryKey: document.querySelector('#field-hint-primary-key'),
+  fieldHintSecondaryKey: document.querySelector('#field-hint-secondary-key'),
   fieldHintSecondary: document.querySelector('#field-hint-secondary'),
   fps: document.querySelector('#fps-value'),
   draws: document.querySelector('#draw-value'),
@@ -143,6 +151,7 @@ const ui = {
   commandHint: document.querySelector('#command-hint'),
   orderStatus: document.querySelector('#order-status'),
   attackMoveToggle: document.querySelector('#attack-move-toggle'),
+  orderTargetToggle: document.querySelector('#order-target-toggle'),
   formationSelect: document.querySelector('#formation-select'),
   playerTeam: document.querySelector('#player-team'),
   mapSelect: document.querySelector('#map-select'),
@@ -156,8 +165,10 @@ const ui = {
   studioGrid: document.querySelector('#studio-grid'),
   studioName: document.querySelector('#studio-name'),
   studioId: document.querySelector('#studio-id'),
+  studioSummary: document.querySelector('#studio-summary'),
   studioWidth: document.querySelector('#studio-width'),
   studioHeight: document.querySelector('#studio-height'),
+  studioStartingArmySize: document.querySelector('#studio-starting-army-size'),
   studioStartingFood: document.querySelector('#studio-starting-food'),
   studioStartingWood: document.querySelector('#studio-starting-wood'),
   studioGridSize: document.querySelector('#studio-grid-size'),
@@ -240,7 +251,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setClearColor(0x859175, 1);
 viewport.prepend(renderer.domElement);
-renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Push the pointer against a battlefield edge to scroll the camera, or middle-drag / Space-drag to pan. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets.');
+renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Push the pointer against a battlefield edge to scroll the camera, or middle-drag / Space-drag to pan. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
 renderer.domElement.tabIndex = 0;
 
 scene.add(new THREE.HemisphereLight(0xe5ebcb, 0x3e4935, 2.05));
@@ -296,6 +307,8 @@ let latestRosterSize = 1000;
 let matchWinner = -1;
 let matchWinnerReason = null;
 let attackMoveMode = false;
+let tapOrderArmed = false;
+let tapOrderPointer = null;
 let knownMaps = [];
 let editorDefinition = null;
 let editorDraftSourceMapId = null;
@@ -343,6 +356,7 @@ let buildPlacementPending = false;
 let pendingBuildOrderToken = null;
 let pendingBuildBaseline = new Set();
 let toastTimer = 0;
+let fieldOrderFeedbackTimer = 0;
 let nextClientOrderToken = 1;
 let currentOrderToken = null;
 let orderStatusTimeout = null;
@@ -1252,6 +1266,7 @@ function buildMap(definition) {
   resourceNodeVisuals.clear();
   latestResourceStocks = new Map();
   objectivePanel.replaceChildren();
+  if (tapOrderArmed) setTapOrderArmed(false, false);
   MAP_WIDTH = definition.width;
   MAP_HEIGHT = definition.height;
   MAP_HALF_X = MAP_WIDTH / 2;
@@ -1481,7 +1496,7 @@ function buildMap(definition) {
     const time = `${Math.floor(wholeSeconds / 60)}:${String(wholeSeconds % 60).padStart(2, '0')}`;
     detail.textContent = `At ${time}, its current owner wins; unclaimed is a draw.`;
     card.append(heading, title, detail);
-    objectivePanel.append(card);
+    objectivePanel.prepend(card);
     timedVictoryVisual = { card, status, rule: definition.timedVictory, objective };
   }
 
@@ -1538,6 +1553,37 @@ function buildMap(definition) {
   const summary = document.querySelector('#map-summary');
   if (title) title.textContent = definition.name || definition.id.toUpperCase();
   if (summary) summary.textContent = definition.summary || `${MAP_WIDTH} × ${MAP_HEIGHT}`;
+  document.querySelector('#scenario-brief-name').textContent = definition.name || definition.id.toUpperCase();
+  document.querySelector('#scenario-brief-summary').textContent = definition.summary || 'Control the marked objectives and protect your army.';
+  const deadline = document.querySelector('#scenario-brief-deadline');
+  const decisiveZone = definition.triggers?.find((trigger) => trigger.id === definition.timedVictory?.objectiveId);
+  deadline.hidden = !definition.timedVictory;
+  deadline.textContent = definition.timedVictory
+    ? `DEADLINE · ${formatVictoryHoldTime(definition.timedVictory.afterSeconds)} · Hold ${decisiveZone?.name || 'the decisive zone'} when time expires. Unclaimed is a draw.`
+    : '';
+  const victoryZones = (definition.triggers || []).filter((trigger) => trigger.victory === true);
+  const holdSeconds = definition.victoryHoldSeconds ?? 0;
+  const target = victoryZones.length === 1 ? 'the victory zone'
+    : definition.victoryMode === 'all' ? `all ${victoryZones.length} victory zones` : 'any victory zone';
+  document.querySelector('#scenario-brief-win-rule').textContent = victoryZones.length === 0
+    ? 'Eliminate the opposing army to win.'
+    : `${holdSeconds > 0 ? 'Hold' : 'Capture'} ${target}${holdSeconds > 0 ? ` for ${formatVictoryHoldTime(holdSeconds)}` : ''} to win.${holdSeconds > 0 ? ' Losing control resets the hold.' : ''}`;
+  const briefZones = document.querySelector('#scenario-brief-zones');
+  const briefZoneList = document.querySelector('#scenario-brief-zone-list');
+  briefZones.hidden = !definition.triggers?.length;
+  briefZoneList.replaceChildren();
+  for (const trigger of definition.triggers || []) {
+    const item = document.createElement('li');
+    const name = document.createElement('strong');
+    name.textContent = trigger.name;
+    const details = document.createElement('small');
+    const prerequisites = capturePrerequisiteIds(trigger).map((id) => (
+      definition.triggers.find((zone) => zone.id === id)?.name || id
+    ));
+    details.textContent = `${trigger.victory === true ? 'Victory zone' : 'Capture zone'} · ${trigger.requiredUnits} units · ${trigger.captureSeconds}s to capture${prerequisites.length ? ` · requires ${prerequisites.join(' + ')}` : ''}`;
+    item.append(name, details);
+    briefZoneList.append(item);
+  }
   const footerMap = document.querySelector('#footer-map-name');
   if (footerMap) footerMap.textContent = definition.name || definition.id.toUpperCase();
   buildMinimapBackground(definition);
@@ -2196,6 +2242,33 @@ function setArmySize(count, showMessage = false) {
 }
 
 function updateSelectionUI() {
+  const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
+    && building.team === localTeam) || null;
+  ui.selectedBuildingCard.hidden = !selectedBuilding;
+  document.querySelector('#dock-selection').dataset.focus = selectedBuilding ? 'building' : 'units';
+  if (selectedBuilding) {
+    const maxHp = Math.max(1, Number(selectedBuilding.maxHp) || 1800);
+    const hp = Math.max(0, Math.min(maxHp, Number(selectedBuilding.hp) || 0));
+    const healthRatio = hp / maxHp;
+    const construction = Math.round(Math.max(0, Math.min(1, Number(selectedBuilding.progress) || 0)) * 100);
+    const queued = getBuildingQueueLength(selectedBuilding);
+    const troop = selectedBuilding.type === 'barracks' ? 'infantry' : 'archers';
+    const training = Math.round(Math.max(0, Math.min(1, Number(selectedBuilding.trainingProgress) || 0)) * 100);
+    ui.selectedBuildingName.textContent = `${buildingLabel(selectedBuilding.type)} #${selectedBuilding.id}`;
+    ui.selectedBuildingState.textContent = selectedBuilding.attackers > 0 ? 'UNDER ATTACK'
+      : selectedBuilding.complete ? 'READY' : `BUILDING · ${construction}%`;
+    ui.selectedBuildingCard.dataset.danger = healthRatio <= 0.25 || selectedBuilding.attackers > 0 ? 'high'
+      : healthRatio <= 0.55 ? 'medium' : 'none';
+    ui.selectedBuildingHealth.textContent = `${Math.round(hp).toLocaleString()} / ${Math.round(maxHp).toLocaleString()} HP`;
+    ui.selectedBuildingHealthBar.style.setProperty('--health-ratio', healthRatio);
+    ui.selectedBuildingHealthBar.setAttribute('aria-valuemax', String(Math.round(maxHp)));
+    ui.selectedBuildingHealthBar.setAttribute('aria-valuenow', String(Math.round(hp)));
+    ui.selectedBuildingProduction.textContent = !selectedBuilding.complete
+      ? 'Finish construction to unlock production.'
+      : selectedBuilding.productionBlocked ? 'Production blocked · clear the spawn area.'
+        : queued > 0 ? `${queued.toLocaleString()} ${troop} queued · ${training}% training`
+          : `Ready to train ${troop}.`;
+  }
   let blue = 0;
   let red = 0;
   let workers = 0;
@@ -2584,6 +2657,11 @@ function renderScenarioEventCountdown(now = performance.now()) {
   }
 }
 
+function syncMatchResultActions() {
+  document.querySelector('#match-play-again').hidden = !isHost;
+  document.querySelector('#match-waiting-for-host').hidden = isHost;
+}
+
 function updateMatchResult(winner, triggerId = null, reason = null) {
   const previousWinner = matchWinner;
   const isDraw = winner === 2 && ['capture-hold', 'elimination', 'timed-control'].includes(reason);
@@ -2593,55 +2671,52 @@ function updateMatchResult(winner, triggerId = null, reason = null) {
   }
   matchWinnerReason = matchWinner >= 0 ? reason : null;
   if (matchWinner >= 0 && buildPlacementActive) cancelBuildPlacement(false);
-  if (matchWinner >= 0) attackMoveMode = false;
+  if (matchWinner >= 0) {
+    attackMoveMode = false;
+    if (tapOrderArmed) setTapOrderArmed(false, false);
+  }
   if (!matchResult) return;
   matchResult.hidden = matchWinner < 0;
   if (matchWinner < 0) {
-    matchResult.textContent = '';
+    document.querySelector('#match-result-title').textContent = '';
+    document.querySelector('#match-result-detail').textContent = '';
     updateCommandUI();
     return;
   }
+  let outcome;
+  let detail;
   if (isDraw) {
     matchResult.dataset.team = 'neutral';
+    outcome = 'DRAW';
     if (reason === 'timed-control') {
       const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'THE ZONE';
-      matchResult.textContent = `DRAW · ${objectiveName.toUpperCase()} UNCLAIMED AT DEADLINE · RESET TO PLAY AGAIN`;
-    } else if (reason === 'capture-hold') {
-      matchResult.textContent = 'DRAW · BOTH TEAMS COMPLETED THE VICTORY HOLD · RESET TO PLAY AGAIN';
-    } else {
-      matchResult.textContent = 'DRAW · BOTH ARMIES ELIMINATED · RESET TO PLAY AGAIN';
-    }
-    updateCommandUI();
-    return;
-  }
-  const teamName = TEAM_NAMES[matchWinner].toUpperCase();
-  matchResult.dataset.team = TEAM_NAMES[matchWinner].toLowerCase();
-  const outcome = localTeam === null ? `${teamName} WINS` : localTeam === matchWinner ? 'VICTORY' : 'DEFEAT';
-  if (reason === 'elimination') {
-    const message = localTeam === matchWinner ? 'ENEMY ELIMINATED'
+      detail = `${objectiveName.toUpperCase()} UNCLAIMED AT DEADLINE`;
+    } else if (reason === 'capture-hold') detail = 'BOTH TEAMS COMPLETED THE VICTORY HOLD';
+    else detail = 'BOTH ARMIES ELIMINATED';
+  } else {
+    const teamName = TEAM_NAMES[matchWinner].toUpperCase();
+    matchResult.dataset.team = TEAM_NAMES[matchWinner].toLowerCase();
+    outcome = localTeam === null ? `${teamName} WINS` : localTeam === matchWinner ? 'VICTORY' : 'DEFEAT';
+    if (reason === 'elimination') detail = localTeam === matchWinner ? 'ENEMY ELIMINATED'
       : localTeam === null ? `${teamName} WINS · ENEMY ELIMINATED` : 'YOUR ARMY ELIMINATED';
-    matchResult.textContent = `${outcome} · ${message} · RESET TO PLAY AGAIN`;
-    updateCommandUI();
-    return;
+    else if (reason === 'timed-control') {
+      const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'THE ZONE';
+      detail = `${teamName} CONTROLLED ${objectiveName.toUpperCase()} AT DEADLINE`;
+    } else if (reason === 'capture-hold') {
+      const condition = mapDefinition?.victoryMode === 'all' ? 'ALL VICTORY ZONES' : 'A VICTORY ZONE';
+      const duration = formatVictoryHoldTime(mapDefinition?.victoryHoldSeconds ?? 0);
+      detail = `HELD ${condition} FOR ${duration.toUpperCase()}`;
+    } else {
+      const resultTrigger = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)
+        || mapDefinition?.triggers?.find((trigger) => trigger.victory === true);
+      const objectiveName = mapDefinition?.victoryMode === 'all'
+        ? 'ALL OBJECTIVES' : resultTrigger?.name || 'THE OBJECTIVE';
+      detail = `${teamName} SECURED ${objectiveName.toUpperCase()}`;
+    }
   }
-  if (reason === 'timed-control') {
-    const objectiveName = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)?.name || 'THE ZONE';
-    matchResult.textContent = `${outcome} · ${teamName} CONTROLLED ${objectiveName.toUpperCase()} AT DEADLINE · RESET TO PLAY AGAIN`;
-    updateCommandUI();
-    return;
-  }
-  if (reason === 'capture-hold') {
-    const condition = mapDefinition?.victoryMode === 'all' ? 'ALL VICTORY ZONES' : 'A VICTORY ZONE';
-    const duration = formatVictoryHoldTime(mapDefinition?.victoryHoldSeconds ?? 0);
-    matchResult.textContent = `${outcome} · HELD ${condition} FOR ${duration.toUpperCase()} · RESET TO PLAY AGAIN`;
-    updateCommandUI();
-    return;
-  }
-  const resultTrigger = mapDefinition?.triggers?.find((trigger) => trigger.id === triggerId)
-    || mapDefinition?.triggers?.find((trigger) => trigger.victory === true);
-  const objectiveName = mapDefinition?.victoryMode === 'all'
-    ? 'ALL OBJECTIVES' : resultTrigger?.name || 'THE OBJECTIVE';
-  matchResult.textContent = `${outcome} · ${teamName} SECURED ${objectiveName.toUpperCase()} · RESET TO PLAY AGAIN`;
+  document.querySelector('#match-result-title').textContent = outcome;
+  document.querySelector('#match-result-detail').textContent = detail;
+  syncMatchResultActions();
   updateCommandUI();
 }
 
@@ -2661,9 +2736,14 @@ function updateCommandUI() {
   if (ui.commandTitle) ui.commandTitle.textContent = selectedBuilding
     ? `${buildingLabel(selectedBuilding.type)} #${selectedBuilding.id}`
     : attackMoveMode ? 'Advance and engage' : 'Move or attack';
-  if (ui.commandHint) ui.commandHint.textContent = selectedBuilding
-    ? (rallyCell >= 0 ? 'Right-click ground to move the production rally' : 'Right-click ground to set a production rally')
-    : attackMoveMode ? 'Right-click ground to advance and engage' : 'Right-click ground or an enemy';
+  const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+  if (ui.commandHint) ui.commandHint.textContent = tapOrderArmed
+    ? selectedBuilding ? 'Tap or click ground to set the rally point'
+      : attackMoveMode ? 'Tap or click ground to advance and engage' : 'Tap or click ground, an enemy, or a resource'
+    : selectedBuilding ? coarsePointer ? 'Use Set rally point, then tap ground'
+      : (rallyCell >= 0 ? 'Right-click ground to move the production rally' : 'Right-click ground to set a production rally')
+      : coarsePointer ? 'Use Target battlefield, then tap a target'
+        : attackMoveMode ? 'Right-click ground to advance and engage' : 'Right-click ground or an enemy';
   if (ui.buildingCommandDetails) ui.buildingCommandDetails.hidden = !selectedBuilding;
   if (ui.buildingRallyReadout) {
     if (rallyCell >= 0) {
@@ -2682,6 +2762,20 @@ function updateCommandUI() {
     ui.attackMoveToggle.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding);
   }
   if (ui.formationSelect) ui.formationSelect.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding);
+  syncTargetOrderUI();
+}
+
+function syncTargetOrderUI() {
+  if (!ui.orderTargetToggle) return;
+  const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
+    && building.team === localTeam) || null;
+  ui.orderTargetToggle.disabled = localTeam === null || matchWinner >= 0 || buildPlacementActive;
+  ui.orderTargetToggle.classList.toggle('active', tapOrderArmed);
+  ui.orderTargetToggle.setAttribute('aria-pressed', String(tapOrderArmed));
+  ui.orderTargetToggle.querySelector('span').textContent = tapOrderArmed ? 'Cancel target'
+    : selectedBuilding ? 'Set rally point' : 'Target battlefield';
+  ui.orderTargetToggle.querySelector('small').textContent = tapOrderArmed
+    ? 'Tap or click a battlefield target' : selectedBuilding ? 'Tap or click ground once' : 'Tap or click once to issue';
 }
 
 function appendUnitFromState(row, animateSpawn = false) {
@@ -3100,7 +3194,9 @@ function setPlayer(player) {
   }
   updateControlGroupUI();
   isHost = Boolean(player.isHost);
+  syncMatchResultActions();
   ui.playerTeam.textContent = localTeam === null ? 'SPECTATOR' : TEAM_NAMES[localTeam].toUpperCase();
+  ui.playerTeam.dataset.team = localTeam === 0 ? 'azure' : localTeam === 1 ? 'ember' : 'spectator';
   for (const button of document.querySelectorAll('.size-options button')) {
     button.disabled = !isHost;
     button.title = isHost ? 'Change match size for both players' : 'Only the room host can change match size';
@@ -3415,6 +3511,14 @@ function saveEditorStartingResourcesFields() {
   const wood = Number(woodValue);
   if (food === 0 && wood === 0) delete editorDefinition.startingResources;
   else editorDefinition.startingResources = { food, wood };
+}
+
+function saveEditorMatchOpeningFields() {
+  if (!editorDefinition) return;
+  editorDefinition.summary = ui.studioSummary.value.trim();
+  const size = Number(ui.studioStartingArmySize.value);
+  if (size === 1000) delete editorDefinition.startingArmySize;
+  else editorDefinition.startingArmySize = size;
 }
 
 function syncEditorTriggerControls() {
@@ -3993,8 +4097,10 @@ function populateMapEditor(definition, message) {
   selectedEditorResourceId = null;
   ui.studioName.value = editorDefinition.name;
   ui.studioId.value = editorDefinition.id;
+  ui.studioSummary.value = editorDefinition.summary || '';
   ui.studioWidth.value = editorDefinition.width;
   ui.studioHeight.value = editorDefinition.height;
+  ui.studioStartingArmySize.value = editorDefinition.startingArmySize ?? 1000;
   ui.studioStartingFood.value = editorDefinition.startingResources?.food ?? 0;
   ui.studioStartingWood.value = editorDefinition.startingResources?.wood ?? 0;
   editorDefinition.victoryMode ??= 'any';
@@ -4037,6 +4143,16 @@ function validateImportedMap(value) {
         || resources.wood < 0 || resources.wood > 100_000))) {
       throw new Error('Starting food and wood must be whole numbers from 0 to 100,000.');
     }
+  }
+  if (definition.startingArmySize !== undefined
+    && (!Number.isInteger(definition.startingArmySize)
+      || definition.startingArmySize < 8 || definition.startingArmySize > 2000
+      || definition.startingArmySize % 2 !== 0)) {
+    throw new Error('Starting army must be an even total from 8 to 2,000 units.');
+  }
+  if (definition.summary !== undefined
+    && (typeof definition.summary !== 'string' || definition.summary.length > 120)) {
+    throw new Error('Scenario brief must be 120 characters or fewer.');
   }
   if (typeof definition.id !== 'string' || definition.id.length > 48
     || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(definition.id)) {
@@ -4530,6 +4646,7 @@ function collectEditorMap() {
   saveEditorTimedVictoryFields();
   saveEditorVictoryHoldFields();
   saveEditorStartingResourcesFields();
+  saveEditorMatchOpeningFields();
   saveSelectedEditorScenarioEventFields();
   if (!saveSelectedEditorResourceStock()) throw new Error('Resource node stock must be a positive number.');
   if (editorTriggerCreationPending) throw new Error('Finish placing the new capture zone before exporting or publishing.');
@@ -4550,7 +4667,7 @@ function collectEditorMap() {
       ? { victoryHoldSeconds: Number(ui.studioVictoryHoldSeconds.value) }
       : {}),
     fogOfWar: ui.studioFogOfWar.checked,
-    summary: `${editorDefinition.width} × ${editorDefinition.height} · CUSTOM MAP`,
+    summary: ui.studioSummary.value.trim() || `${editorDefinition.width} × ${editorDefinition.height} · CUSTOM MAP`,
     obstacles,
     resourceNodes: JSON.parse(JSON.stringify(editorResourceNodes)),
     triggers,
@@ -4579,6 +4696,8 @@ function downloadEditorMap() {
 
 function showToast(message, duration = 1300) {
   if (isLocalRejection(message)) audio.play('reject');
+  const fieldFeedback = document.querySelector('#field-order-feedback');
+  if (fieldFeedback && !fieldFeedback.hidden && fieldFeedback.textContent === message) return;
   toast.textContent = message;
   toast.classList.add('visible');
   window.clearTimeout(toastTimer);
@@ -4589,6 +4708,28 @@ function setOrderStatus(message, state = 'ready') {
   if (!ui.orderStatus) return;
   ui.orderStatus.textContent = message;
   ui.orderStatus.dataset.state = state;
+  const fieldFeedback = document.querySelector('#field-order-feedback');
+  const fieldHint = document.querySelector('.field-hint');
+  window.clearTimeout(fieldOrderFeedbackTimer);
+  if (!fieldFeedback || !fieldHint) return;
+  const tabbedDock = window.matchMedia('(max-width: 920px)').matches;
+  ui.orderStatus.setAttribute('aria-live', tabbedDock ? 'off' : 'polite');
+  fieldFeedback.setAttribute('aria-live', tabbedDock ? 'polite' : 'off');
+  if (state === 'ready') {
+    fieldFeedback.hidden = true;
+    fieldHint.hidden = false;
+    return;
+  }
+  toast.classList.remove('visible');
+  fieldFeedback.textContent = message;
+  fieldFeedback.dataset.state = state;
+  fieldFeedback.hidden = false;
+  fieldHint.hidden = true;
+  if (state === 'pending' || state === 'planning') return;
+  fieldOrderFeedbackTimer = window.setTimeout(() => {
+    fieldFeedback.hidden = true;
+    fieldHint.hidden = false;
+  }, state === 'failed' ? 6500 : 4500);
 }
 
 function armOrderStatusTimeout(token, timeoutMs = 20_000) {
@@ -4758,7 +4899,7 @@ function selectBuilding(building) {
   for (const [id, visual] of buildingVisuals) updateBuildingSelectionVisual(visual, id === building.id);
   updateCommandUI();
   updateEconomyUI();
-  showToast(`${buildingLabel(building.type)} SELECTED · RIGHT-CLICK GROUND TO SET RALLY`);
+  showToast(`${buildingLabel(building.type)} SELECTED · ${window.matchMedia('(pointer: coarse)').matches ? 'USE SET RALLY POINT, THEN TAP GROUND' : 'RIGHT-CLICK GROUND TO SET RALLY'}`);
   audio.play('select');
 }
 
@@ -4848,7 +4989,27 @@ function setAttackMoveMode(enabled, announce = true) {
   if (enabled && (localTeam === null || matchWinner >= 0)) return;
   attackMoveMode = Boolean(enabled);
   updateCommandUI();
-  if (announce) showToast(attackMoveMode ? 'ATTACK MOVE READY · RIGHT-CLICK GROUND' : 'MOVE MODE READY');
+  if (announce) showToast(attackMoveMode
+    ? `ATTACK MOVE READY · ${tapOrderArmed ? 'TAP OR CLICK GROUND' : window.matchMedia('(pointer: coarse)').matches ? 'USE TARGET BATTLEFIELD, THEN TAP GROUND' : 'RIGHT-CLICK GROUND'}`
+    : 'MOVE MODE READY');
+}
+
+function setTapOrderArmed(enabled, announce = true) {
+  if (enabled) {
+    if (localTeam === null || matchWinner >= 0) return;
+    if (buildPlacementActive) { showToast('FINISH OR CANCEL BUILD PLACEMENT FIRST'); return; }
+    if (selectedBuildingId === null && selectedIds().length === 0) {
+      showToast('SELECT YOUR UNITS BEFORE ISSUING AN ORDER');
+      return;
+    }
+  }
+  tapOrderArmed = Boolean(enabled);
+  tapOrderPointer = null;
+  updateCommandUI();
+  updateBuildPlacementHint();
+  if (announce) showToast(tapOrderArmed
+    ? selectedBuildingId !== null ? 'TAP OR CLICK GROUND TO SET RALLY' : 'TAP OR CLICK A BATTLEFIELD TARGET'
+    : 'TARGETING CANCELLED');
 }
 
 function issueMove(point, queueWaypoint = false) {
@@ -4920,6 +5081,36 @@ function issueGather(node) {
   if (sendTrackedOrder({ type: 'gather', ids: workers, nodeId: node.id }, 'GATHER', workers.length, 'WORKERS')) {
     setAttackMoveMode(false, false);
     showToast(`GATHER ${String(node.type || 'FOOD').toUpperCase()} · ${workers.length} WORKERS`);
+  }
+}
+
+function issueContextOrder(clientX, clientY, queueWaypoint = false) {
+  if (selectedBuildingId !== null) {
+    issueBuildingRallyPoint(clientX, clientY);
+    return;
+  }
+  const rect = renderer.domElement.getBoundingClientRect();
+  const x = clientX - rect.left;
+  const y = clientY - rect.top;
+  const enemyPick = localTeam === null ? null : pickAt(x, y, (unit) => unit.team !== localTeam);
+  const enemy = enemyPick?.unit || null;
+  if (enemy) {
+    issueAttack(enemy);
+    if (enemyPick.cycled && selectedIds().length > 0) {
+      showToast(`ATTACK TARGET ${enemyPick.stackIndex}/${enemyPick.stackCount}`);
+    }
+    return;
+  }
+  const enemyBuilding = localTeam === null ? null
+    : pickBuildingAt(x, y, (building) => building.team !== localTeam);
+  if (enemyBuilding) issueAttackBuilding(enemyBuilding);
+  else {
+    const node = pickResourceNodeAt(x, y);
+    if (node) issueGather(node);
+    else {
+      const point = worldAt(clientX, clientY);
+      if (point) issueMove(point, queueWaypoint);
+    }
   }
 }
 
@@ -4998,9 +5189,17 @@ function updateBuildPlacementGhost(clientX, clientY) {
 
 function updateBuildPlacementHint() {
   const activeLabel = buildingLabel(buildPlacementType);
-  if (ui.fieldHintAction) ui.fieldHintAction.textContent = buildPlacementActive ? `LMB PLACE ${activeLabel}` : 'DRAG TO SELECT';
-  if (ui.fieldHintSecondary) ui.fieldHintSecondary.textContent = buildPlacementActive ? 'RMB / ESC CANCEL' : 'MOVE / ATTACK';
-  renderer.domElement.style.cursor = buildPlacementActive ? 'crosshair' : '';
+  const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+  if (ui.fieldHintPrimaryKey) ui.fieldHintPrimaryKey.textContent = coarsePointer ? 'TAP' : 'LMB';
+  if (ui.fieldHintAction) ui.fieldHintAction.textContent = buildPlacementActive ? `PLACE ${activeLabel}`
+    : tapOrderArmed ? 'ISSUE ORDER' : coarsePointer ? 'SELECT UNITS' : 'DRAG TO SELECT';
+  if (ui.fieldHintSecondaryKey) ui.fieldHintSecondaryKey.textContent = buildPlacementActive
+    ? coarsePointer ? 'BUILD' : 'RMB / ESC' : tapOrderArmed ? 'ESC' : coarsePointer ? 'ORDERS' : 'RMB';
+  if (ui.fieldHintSecondary) ui.fieldHintSecondary.textContent = buildPlacementActive
+    ? coarsePointer ? 'TAP BUTTON TO CANCEL' : 'CANCEL'
+    : tapOrderArmed ? 'CANCEL TARGET' : coarsePointer ? 'TAP TARGET' : 'MOVE / ATTACK';
+  renderer.domElement.style.cursor = buildPlacementActive || tapOrderArmed ? 'crosshair' : '';
+  syncTargetOrderUI();
   if (ui.buildBarracks) {
     ui.buildBarracks.classList.toggle('active', buildPlacementActive && buildPlacementType === 'barracks');
     ui.buildBarracks.setAttribute('aria-pressed', String(buildPlacementActive && buildPlacementType === 'barracks'));
@@ -5025,6 +5224,7 @@ function cancelBuildPlacement(announce = true) {
 
 function beginBuildPlacement(type) {
   if (localTeam === null || matchWinner >= 0) return;
+  if (tapOrderArmed) setTapOrderArmed(false, false);
   const label = buildingLabel(type);
   const woodCost = buildingWoodCost(type);
   const workers = teamUnits[localTeam].filter((unit) => unit.kind === 'worker' && unit.hp > 0);
@@ -5212,30 +5412,8 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
       cancelBuildPlacement();
       return;
     }
-    if (selectedBuildingId !== null) {
-      issueBuildingRallyPoint(event.clientX, event.clientY);
-      return;
-    }
-    const enemyPick = localTeam === null ? null : pickAt(x, y, (unit) => unit.team !== localTeam);
-    const enemy = enemyPick?.unit || null;
-    if (enemy) {
-      issueAttack(enemy);
-      if (enemyPick.cycled && selectedIds().length > 0) {
-        showToast(`ATTACK TARGET ${enemyPick.stackIndex}/${enemyPick.stackCount}`);
-      }
-    } else {
-      const enemyBuilding = localTeam === null ? null
-        : pickBuildingAt(x, y, (building) => building.team !== localTeam);
-      if (enemyBuilding) issueAttackBuilding(enemyBuilding);
-      else {
-        const node = pickResourceNodeAt(x, y);
-        if (node) issueGather(node);
-        else {
-          const point = worldAt(event.clientX, event.clientY);
-          if (point) issueMove(point, event.shiftKey);
-        }
-      }
-    }
+    issueContextOrder(event.clientX, event.clientY, event.shiftKey);
+    if (tapOrderArmed) setTapOrderArmed(false, false);
     return;
   }
   if (event.button === 1 || (event.button === 0 && spaceDown)) {
@@ -5253,6 +5431,12 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
     submitBuildPlacement(event.clientX, event.clientY);
     return;
   }
+  if (tapOrderArmed) {
+    event.preventDefault();
+    tapOrderPointer = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    renderer.domElement.setPointerCapture(event.pointerId);
+    return;
+  }
   renderer.domElement.focus({ preventScroll: true });
   drag = { startX: x, startY: y, currentX: x, currentY: y, additive: event.shiftKey };
   movedPointer = false;
@@ -5267,6 +5451,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
 
 renderer.domElement.addEventListener('pointermove', (event) => {
   edgeScrollPointer = { x: event.clientX, y: event.clientY };
+  if (tapOrderPointer?.id === event.pointerId) return;
   if (pan) {
     const dx = event.clientX - pan.x;
     const dy = event.clientY - pan.y;
@@ -5293,7 +5478,17 @@ renderer.domElement.addEventListener('pointermove', (event) => {
   selectionBox.style.height = `${Math.abs(drag.currentY - drag.startY)}px`;
 });
 
-function finishPointer() {
+function finishPointer(event) {
+  if (tapOrderPointer?.id === event.pointerId) {
+    const wasTap = event.type === 'pointerup'
+      && Math.hypot(event.clientX - tapOrderPointer.x, event.clientY - tapOrderPointer.y) <= 12;
+    tapOrderPointer = null;
+    if (wasTap) {
+      issueContextOrder(event.clientX, event.clientY);
+      setTapOrderArmed(false, false);
+    }
+    return;
+  }
   if (pan) { pan = null; return; }
   if (!drag) return;
   const finished = drag;
@@ -5390,6 +5585,103 @@ function selectInfantry() { selectFriendlyUnitKind('infantry', 'INFANTRY'); }
 function selectArchers() { selectFriendlyUnitKind('archer', 'ARCHERS'); }
 function selectMilitary() { selectFriendlyUnitKinds(['infantry', 'archer'], 'MILITARY'); }
 
+const matchMenu = document.querySelector('#match-menu');
+const helpPanel = document.querySelector('#help-panel');
+const scenarioBriefPanel = document.querySelector('#scenario-brief-panel');
+const scenarioBriefToggle = document.querySelector('#scenario-brief-toggle');
+const hudScrim = document.querySelector('#hud-scrim');
+const matchMenuToggle = document.querySelector('#match-menu-toggle');
+const helpToggle = document.querySelector('#help-toggle');
+const commandDock = document.querySelector('.control-dock');
+const dockTabs = [...document.querySelectorAll('[data-dock-tab]')];
+
+function closeHudPanels({ restoreFocus = false } = {}) {
+  const trigger = !matchMenu.hidden ? matchMenuToggle : !helpPanel.hidden ? helpToggle : null;
+  matchMenu.hidden = true;
+  helpPanel.hidden = true;
+  hudScrim.hidden = true;
+  matchMenuToggle.setAttribute('aria-expanded', 'false');
+  helpToggle.setAttribute('aria-expanded', 'false');
+  if (restoreFocus) trigger?.focus();
+}
+
+function closeScenarioBrief({ restoreFocus = false } = {}) {
+  scenarioBriefPanel.hidden = true;
+  scenarioBriefToggle.setAttribute('aria-expanded', 'false');
+  if (restoreFocus) scenarioBriefToggle.focus();
+}
+
+function toggleHudPanel(panel, trigger) {
+  const opening = panel.hidden;
+  if (tapOrderArmed) setTapOrderArmed(false, false);
+  closeHudPanels();
+  if (!opening) return;
+  panel.hidden = false;
+  hudScrim.hidden = false;
+  trigger.setAttribute('aria-expanded', 'true');
+  panel.querySelector('.hud-panel-close')?.focus();
+}
+
+function selectDockTab(name, focus = false) {
+  if (name !== 'command' && tapOrderArmed) setTapOrderArmed(false, false);
+  commandDock.dataset.activePanel = name;
+  for (const tab of dockTabs) {
+    const selected = tab.dataset.dockTab === name;
+    tab.setAttribute('aria-selected', String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+    if (focus && selected) tab.focus();
+  }
+}
+
+matchMenuToggle.addEventListener('click', () => {
+  closeScenarioBrief();
+  toggleHudPanel(matchMenu, matchMenuToggle);
+});
+helpToggle.addEventListener('click', () => {
+  closeScenarioBrief();
+  toggleHudPanel(helpPanel, helpToggle);
+});
+scenarioBriefToggle.addEventListener('click', () => {
+  const opening = scenarioBriefPanel.hidden;
+  if (tapOrderArmed) setTapOrderArmed(false, false);
+  closeHudPanels();
+  closeScenarioBrief();
+  if (!opening) return;
+  scenarioBriefPanel.hidden = false;
+  scenarioBriefToggle.setAttribute('aria-expanded', 'true');
+  document.querySelector('#scenario-brief-close').focus();
+});
+document.querySelector('#scenario-brief-close').addEventListener('click', () => closeScenarioBrief({ restoreFocus: true }));
+document.querySelector('#match-menu-close').addEventListener('click', () => closeHudPanels({ restoreFocus: true }));
+document.querySelector('#help-close').addEventListener('click', () => closeHudPanels({ restoreFocus: true }));
+hudScrim.addEventListener('click', () => closeHudPanels({ restoreFocus: true }));
+document.querySelector('#map-studio-open').addEventListener('click', () => closeHudPanels());
+for (const tab of dockTabs) {
+  tab.addEventListener('click', () => selectDockTab(tab.dataset.dockTab));
+  tab.addEventListener('keydown', (event) => {
+    const current = dockTabs.indexOf(tab);
+    const next = event.key === 'ArrowRight' ? (current + 1) % dockTabs.length
+      : event.key === 'ArrowLeft' ? (current + dockTabs.length - 1) % dockTabs.length
+        : event.key === 'Home' ? 0 : event.key === 'End' ? dockTabs.length - 1 : null;
+    if (next === null) return;
+    event.preventDefault();
+    selectDockTab(dockTabs[next].dataset.dockTab, true);
+  });
+}
+for (const button of document.querySelectorAll('[data-open-dock-tab]')) {
+  button.addEventListener('click', () => selectDockTab(button.dataset.openDockTab, true));
+}
+selectDockTab('selection');
+updateBuildPlacementHint();
+window.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape' || (matchMenu.hidden && helpPanel.hidden && scenarioBriefPanel.hidden)
+    || document.querySelector('dialog[open]')) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  if (!scenarioBriefPanel.hidden) closeScenarioBrief({ restoreFocus: true });
+  else closeHudPanels({ restoreFocus: true });
+}, true);
+
 function syncAudioControls() {
   const settings = audio.getSettings();
   ui.audioEnabled.checked = settings.enabled;
@@ -5414,7 +5706,8 @@ document.addEventListener('pointerdown', () => audio.unlock(), { capture: true, 
 document.addEventListener('keydown', () => audio.unlock(), { capture: true, once: true });
 function keyboardTargetIsEditing(event) {
   const target = event.target instanceof Element ? event.target : null;
-  return Boolean(target?.closest('input, textarea, select, [contenteditable], dialog'));
+  return !matchMenu.hidden || !helpPanel.hidden || !scenarioBriefPanel.hidden
+    || Boolean(target?.closest('input, textarea, select, [contenteditable], dialog, [role="tab"]'));
 }
 
 function controlGroupIndexFromKey(event) {
@@ -5462,6 +5755,10 @@ window.addEventListener('keydown', (event) => {
   if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
     && event.key.toLowerCase() === 'a') selectWholeTeam();
   if (event.key === 'Escape') {
+    if (tapOrderArmed) {
+      setTapOrderArmed(false);
+      return;
+    }
     if (buildPlacementActive) {
       cancelBuildPlacement();
       return;
@@ -5475,6 +5772,7 @@ window.addEventListener('keydown', (event) => {
 });
 window.addEventListener('keyup', (event) => { if (event.code === 'Space') spaceDown = false; });
 window.addEventListener('blur', () => {
+  if (tapOrderArmed) setTapOrderArmed(false, false);
   spaceDown = false;
   pan = null;
   edgeScrollPointer = null;
@@ -5502,6 +5800,7 @@ ui.roomJoinForm.addEventListener('submit', (event) => {
 });
 document.querySelector('#select-all').addEventListener('click', selectWholeTeam);
 ui.attackMoveToggle?.addEventListener('click', () => setAttackMoveMode(!attackMoveMode));
+ui.orderTargetToggle?.addEventListener('click', () => setTapOrderArmed(!tapOrderArmed));
 ui.clearBuildingRally?.addEventListener('click', clearSelectedBuildingRally);
 ui.researchAttackUpgrade?.addEventListener('click', startSelectedAttackResearch);
 ui.selectWorkers?.addEventListener('click', selectWorkers);
@@ -5525,6 +5824,7 @@ for (let index = 0; index < ui.controlGroups.length; index++) {
   ui.controlGroups[index].addEventListener('click', () => recallControlGroup(index));
 }
 document.querySelector('#reset-army').addEventListener('click', () => sendCommand({ type: 'reset' }));
+document.querySelector('#match-play-again').addEventListener('click', () => sendCommand({ type: 'reset' }));
 ui.mapSelect.addEventListener('change', () => sendCommand({ type: 'selectMap', mapId: ui.mapSelect.value }));
 ui.mapStudioOpen.addEventListener('click', openMapStudio);
 document.querySelector('#map-studio-close').addEventListener('click', () => ui.mapStudio.close());
@@ -5585,6 +5885,9 @@ ui.studioStartingFood.addEventListener('input', saveEditorStartingResourcesField
 ui.studioStartingFood.addEventListener('change', saveEditorStartingResourcesFields);
 ui.studioStartingWood.addEventListener('input', saveEditorStartingResourcesFields);
 ui.studioStartingWood.addEventListener('change', saveEditorStartingResourcesFields);
+ui.studioSummary.addEventListener('input', saveEditorMatchOpeningFields);
+ui.studioStartingArmySize.addEventListener('input', saveEditorMatchOpeningFields);
+ui.studioStartingArmySize.addEventListener('change', saveEditorMatchOpeningFields);
 ui.studioDeadlineObjective.addEventListener('change', () => {
   ui.studioDeadlineSeconds.disabled = !ui.studioDeadlineObjective.value;
   saveEditorTimedVictoryFields();
