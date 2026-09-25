@@ -9,8 +9,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const serverRoot = process.env.RTS_SERVER_ROOT || root;
-const mapPath = process.env.RTS_ARCHER_MAP || path.join(serverRoot, 'maps/open-field.json');
+const serverRoot = path.resolve(process.env.RTS_SERVER_ROOT || root);
+const mapPath = path.resolve(serverRoot, process.env.RTS_ARCHER_MAP || 'maps/open-field.json');
 // Set this to the exact Git SHA of the server source before running the scenario.
 const baselineCommit = process.env.RTS_BASELINE_COMMIT?.trim() || '';
 if (!/^[0-9a-f]{40,64}$/i.test(baselineCommit)) {
