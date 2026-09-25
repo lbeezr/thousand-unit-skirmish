@@ -135,6 +135,7 @@ const ui = {
   fieldHintPrimaryKey: document.querySelector('#field-hint-primary-key'),
   fieldHintSecondaryKey: document.querySelector('#field-hint-secondary-key'),
   fieldHintSecondary: document.querySelector('#field-hint-secondary'),
+  placementStatus: document.querySelector('#placement-status'),
   fps: document.querySelector('#fps-value'),
   draws: document.querySelector('#draw-value'),
   triangles: document.querySelector('#tri-value'),
@@ -1681,20 +1682,6 @@ function drawMinimap(now = performance.now(), force = false) {
     );
   }
 
-  for (const node of mapDefinition.resourceNodes || []) {
-    const point = minimapPoint(node.x, node.z, rect);
-    const stock = latestResourceStocks.get(node.id) ?? node.stock;
-    context.beginPath();
-    context.arc(point.x, point.y, Math.max(2.5, Math.min(5.5, rect.scale * 0.55)), 0, Math.PI * 2);
-    context.fillStyle = stock > 0
-      ? node.type === 'wood' ? '#9bb877' : '#e4bd63'
-      : '#717b68';
-    context.fill();
-    context.strokeStyle = 'rgba(17,25,18,.92)';
-    context.lineWidth = 1.5;
-    context.stroke();
-  }
-
   for (const building of latestBuildings) {
     const point = minimapPoint(building.x, building.z, rect);
     const radius = building.type === 'barracks' ? 5 : 4;
@@ -1737,6 +1724,28 @@ function drawMinimap(now = performance.now(), force = false) {
     }
     context.fill();
   }
+
+  // Resource markers stay legible when hundreds of unit dots cover the same area.
+  for (const node of mapDefinition.resourceNodes || []) {
+    const column = Math.floor(node.x + MAP_HALF_X);
+    const row = Math.floor(node.z + MAP_HALF_Z);
+    const fogState = latestFogCells?.[row * MAP_WIDTH + column] ?? 2;
+    if (fogState === 0) continue;
+    const point = minimapPoint(node.x, node.z, rect);
+    const stock = latestResourceStocks.get(node.id) ?? node.stock;
+    context.globalAlpha = fogState === 1 ? 0.55 : 1;
+    context.beginPath();
+    context.arc(point.x, point.y, 6, 0, Math.PI * 2);
+    context.fillStyle = 'rgba(13, 21, 15, .94)';
+    context.fill();
+    context.beginPath();
+    context.arc(point.x, point.y, 3.8, 0, Math.PI * 2);
+    context.fillStyle = stock > 0
+      ? node.type === 'wood' ? '#9bb877' : '#e4bd63'
+      : '#717b68';
+    context.fill();
+  }
+  context.globalAlpha = 1;
 
   const viewportCorners = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
   let hasAllCorners = true;
@@ -3050,7 +3059,7 @@ function updateEconomyUI(state = {}, initial = false) {
       ? `Send workers to finish ${buildingLabel(construction.type).toLowerCase()} ${construction.id}, ${progress} percent complete`
       : 'No unfinished friendly Barracks or archery range');
     if (ui.resumeConstructionLabel) ui.resumeConstructionLabel.textContent = construction
-      ? `Resume ${buildingLabel(construction.type).toLowerCase()}` : 'Resume construction';
+      ? `Send workers to ${buildingLabel(construction.type).toLowerCase()}` : 'Send workers to construction';
     if (ui.resumeRangeProgress) ui.resumeRangeProgress.textContent = construction ? `${progress}% · FOCUS` : '';
   }
   if (ui.buildingStatus) {
@@ -3104,7 +3113,9 @@ function updateEconomyUI(state = {}, initial = false) {
     else if (ownedWorkers.length === 0) {
       ui.foodStatus.textContent = 'No living workers remain.';
     } else if (teamRosterCount >= MAX_PER_TEAM) ui.foodStatus.textContent = 'Army limit reached.';
-    else ui.foodStatus.textContent = 'Train workers at the Town Center; gather food and wood; build Barracks and ranges with wood.';
+    else ui.foodStatus.textContent = window.matchMedia('(pointer: coarse)').matches
+      ? 'Select Workers, open Orders, then target food or wood.'
+      : 'Select Workers, then right-click food or wood.';
   }
   updateCommandUI();
 }
@@ -5174,32 +5185,33 @@ function buildPlacementAt(clientX, clientY) {
   const z = centerRow - MAP_HALF_Z + 0.5;
   const startColumn = centerColumn - Math.floor(footprint / 2);
   const startRow = centerRow - Math.floor(footprint / 2);
-  let valid = column >= 1 && column < MAP_WIDTH - 1 && row >= 1 && row < MAP_HEIGHT - 1;
-  valid &&= localTeam !== null && latestWood[localTeam] >= woodCost;
-  valid &&= selectedIds().some((id) => units[id]?.kind === 'worker');
+  let blockedReason = '';
+  if (column < 1 || column >= MAP_WIDTH - 1 || row < 1 || row >= MAP_HEIGHT - 1) blockedReason = 'TOO CLOSE TO MAP EDGE';
+  else if (localTeam === null || latestWood[localTeam] < woodCost) blockedReason = `NEED ${woodCost} WOOD`;
+  else if (!selectedIds().some((id) => units[id]?.kind === 'worker')) blockedReason = 'SELECT WORKERS';
   if (mapDefinition) {
     for (const obstacle of mapDefinition.obstacles || []) {
       const overlaps = startColumn < obstacle.column + obstacle.width
         && obstacle.column < startColumn + footprint
         && startRow < obstacle.row + obstacle.height
         && obstacle.row < startRow + footprint;
-      if (overlaps) { valid = false; break; }
+      if (overlaps) { blockedReason ||= 'TERRAIN BLOCKS THIS SITE'; break; }
     }
     for (const node of mapDefinition.resourceNodes || []) {
       const nodeColumn = Math.floor(node.x + MAP_HALF_X);
       const nodeRow = Math.floor(node.z + MAP_HALF_Z);
       if (nodeColumn >= startColumn && nodeColumn < startColumn + footprint
-        && nodeRow >= startRow && nodeRow < startRow + footprint) valid = false;
+        && nodeRow >= startRow && nodeRow < startRow + footprint) blockedReason ||= 'RESOURCE IN THIS SITE';
     }
     for (const trigger of mapDefinition.triggers || []) {
       const zone = trigger.zone;
       if (zone && startColumn < zone.column + zone.width && zone.column < startColumn + footprint
-        && startRow < zone.row + zone.height && zone.row < startRow + footprint) valid = false;
+        && startRow < zone.row + zone.height && zone.row < startRow + footprint) blockedReason ||= 'CAPTURE ZONE IN THIS SITE';
     }
     for (const spawn of mapDefinition.spawnPoints || []) {
       const outward = spawn.team === 0 ? -1 : 1;
       const townCenterX = THREE.MathUtils.clamp(spawn.x + outward * 3, -MAP_HALF_X + 1.5, MAP_HALF_X - 1.5);
-      if (Math.abs(x - townCenterX) < 2.8 && Math.abs(z - spawn.z) < 2.8) valid = false;
+      if (Math.abs(x - townCenterX) < 2.8 && Math.abs(z - spawn.z) < 2.8) blockedReason ||= 'TOWN CENTER TOO CLOSE';
     }
   }
   for (const team of teamUnits) {
@@ -5208,22 +5220,30 @@ function buildPlacementAt(clientX, clientY) {
       const unitColumn = Math.floor(unit.serverX + MAP_HALF_X);
       const unitRow = Math.floor(unit.serverZ + MAP_HALF_Z);
       if (unitColumn >= startColumn && unitColumn < startColumn + footprint
-        && unitRow >= startRow && unitRow < startRow + footprint) valid = false;
+        && unitRow >= startRow && unitRow < startRow + footprint) blockedReason ||= 'MOVE UNITS OUT OF THIS SITE';
     }
   }
   for (const building of latestBuildings) {
     const buildingColumn = Math.floor(building.x + MAP_HALF_X);
     const buildingRow = Math.floor(building.z + MAP_HALF_Z);
     if (Math.abs(centerColumn - buildingColumn) < footprint
-      && Math.abs(centerRow - buildingRow) < footprint) valid = false;
+      && Math.abs(centerRow - buildingRow) < footprint) blockedReason ||= 'ANOTHER BUILDING TOO CLOSE';
   }
-  return { x, z, column: centerColumn, row: centerRow, valid };
+  return { x, z, column: centerColumn, row: centerRow, valid: !blockedReason, blockedReason };
 }
 
 function updateBuildPlacementGhost(clientX, clientY) {
   if (!buildPlacementActive) return;
   const placement = buildPlacementAt(clientX, clientY);
   placementGhost.visible = Boolean(placement);
+  if (ui.placementStatus) {
+    const message = placement
+      ? placement.valid ? 'CLEAR 3 × 3 SITE' : `BLOCKED · ${placement.blockedReason}`
+      : 'CHOOSE A SITE ON THE BATTLEFIELD';
+    const state = placement?.valid ? 'clear' : 'blocked';
+    if (ui.placementStatus.textContent !== message) ui.placementStatus.textContent = message;
+    if (ui.placementStatus.dataset.state !== state) ui.placementStatus.dataset.state = state;
+  }
   if (!placement) return;
   placementGhost.position.set(placement.x, 0, placement.z);
   const tint = placement.valid ? 0x9cdb8a : 0xe7836d;
@@ -5245,6 +5265,11 @@ function updateBuildPlacementHint() {
   if (ui.fieldHintSecondary) ui.fieldHintSecondary.textContent = buildPlacementActive
     ? coarsePointer ? 'TAP BUTTON TO CANCEL' : 'CANCEL'
     : tapOrderArmed ? 'CANCEL TARGET' : coarsePointer ? 'TAP TARGET' : 'MOVE / ATTACK';
+  if (ui.placementStatus) {
+    ui.placementStatus.hidden = !buildPlacementActive;
+    ui.placementStatus.textContent = buildPlacementActive ? 'CHOOSE A CLEAR 3 × 3 SITE' : '';
+    ui.placementStatus.dataset.state = 'ready';
+  }
   renderer.domElement.style.cursor = buildPlacementActive || tapOrderArmed ? 'crosshair' : '';
   syncTargetOrderUI();
   if (ui.buildBarracks) {
@@ -5296,7 +5321,9 @@ function beginBuildPlacement(type) {
   pendingBuildBaseline = new Set(latestBuildings.filter((building) => building.team === localTeam).map((building) => building.id));
   updateBuildPlacementHint();
   updateEconomyUI();
-  showToast(`${label} SITE · LEFT-CLICK TO PLACE · ESC TO CANCEL`, 2000);
+  showToast(window.matchMedia('(pointer: coarse)').matches
+    ? `${label} SITE · TAP TO PLACE · TAP BUILD AGAIN TO CANCEL`
+    : `${label} SITE · LEFT-CLICK TO PLACE · ESC TO CANCEL`, 2000);
 }
 
 function submitBuildPlacement(clientX, clientY) {
@@ -5304,7 +5331,7 @@ function submitBuildPlacement(clientX, clientY) {
   const placement = buildPlacementAt(clientX, clientY);
   if (!placement) { showToast('MOVE THE POINTER OVER THE BATTLEFIELD'); return; }
   if (!placement.valid) {
-    showToast(`${buildingLabel(buildPlacementType)} SITE BLOCKED · CHOOSE AN OPEN 3 × 3 AREA`);
+    showToast(`${buildingLabel(buildPlacementType)} SITE BLOCKED · ${placement.blockedReason}`);
     return;
   }
   const ids = selectedIds().filter((id) => units[id]?.kind === 'worker');
