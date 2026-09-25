@@ -1,6 +1,6 @@
 # Audio direction · first 1v1 pass
 
-The audio palette is original procedural Web Audio synthesis in `src/audio.mjs`. There are no recorded samples, external assets, dependencies, or third party licenses. Cues use soft woodlike triangle tones for commands, clear sine intervals for production completion, a rising A-major triad for objective capture, and a short rough downward tone for rejection. A finished building uses its own low two-part cue: a soft 185 Hz triangle followed after a short rest by a quiet 277 Hz sine, a low open fifth with no shared fundamentals with the 196/247 Hz triangle battle alert. Building loss uses a rough low sliding cue with separate fundamentals from match defeat. Match victory uses an upper-register rising A-major phrase, separated from the objective, production-complete, and selection pitches. The synthesized wind and sparse three note phrases sit well below the effects mix.
+The audio palette is original procedural Web Audio synthesis in `src/audio.mjs`. There are no recorded samples, external assets, dependencies, or third party licenses. Cues use soft woodlike triangle tones for commands, clear sine intervals for production completion, a rising triangle C-minor triad for research completion, a rising A-major triad for objective capture, and a short rough downward tone for rejection. A finished building uses its own low two-part cue: a soft 185 Hz triangle followed after a short rest by a quiet 277 Hz sine, a low open fifth with no shared fundamentals with the 196/247 Hz triangle battle alert. Building loss uses a rough low sliding cue with separate fundamentals from match defeat. Match victory uses an upper-register rising A-major phrase, separated from the objective, production-complete, and selection pitches. The synthesized wind and sparse three note phrases sit well below the effects mix.
 
 | Event | Player meaning | Trigger |
 | --- | --- | --- |
@@ -9,7 +9,8 @@ The audio palette is original procedural Web Audio synthesis in `src/audio.mjs`.
 | Reject | The order or production request failed | Server notice or offline send |
 | Queue | Production or research began | Server confirmation |
 | Building complete | A friendly construction site becomes a finished production building | One friendly `complete: false` → `true` building transition; distinct low open-fifth cue with a 2.6-second cooldown |
-| Production complete | A friendly unit or research queue finishes | Friendly production queue transition or team notice, with a shared 2.2-second cooldown |
+| Production complete | A friendly unit finishes production | Friendly production queue transition or team notice, with a 2.2-second cooldown |
+| Research complete | A friendly attack upgrade finishes | Friendly research completion notice; distinct rising triangle C-minor triad with a 2.6-second cooldown |
 | Battle, selected unit, base alert | A new fight, selected force taking damage, or building under attack | Aggregated friendly snapshot damage |
 | Resource empty, base lost | Gathering must redirect or a friendly production building was destroyed | Server notice, with independent limits; base loss has its own rough low slide |
 | Objective gained or lost, victory, defeat, draw | Match state changed | Server event or winner transition; victory has a distinct high four-note fanfare |
@@ -49,6 +50,10 @@ The original victory phrase reused both objective-gain pitches (392/493.88 Hz) a
 ## Objective cue separation · 25 September 2026
 
 Objective capture previously began on 392 Hz, the same note as production completion, and both used two rising sine tones. Capture now rises through A4, C-sharp 5, and E5 (440/554.37/659.25 Hz), a three-note A-major triad with no shared fundamentals with production completion or the match-victory fanfare. The focused audio policy scenario guards both cue profiles and their separation. Objective loss remains a separate lower, descending cue.
+
+## Research completion cue · 25 September 2026
+
+Research previously shared the two-note production-complete cue. Friendly Infantry Forging and Archer Fletching completions now use a separate three-note triangle C-minor arpeggio (C5/D-sharp 5/G5 at 523.25/622.25/783.99 Hz). It has no shared fundamentals with production completion, objective capture, or match victory. The audio policy scenario checks friendly-team routing, note profile, separation, and cooldown; enemy research notices remain silent.
 
 ## Ambience loop seam · 25 September 2026
 
