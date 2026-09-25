@@ -2035,10 +2035,13 @@ function addPaintedFacets(geometry) {
   return geometry;
 }
 
-function createGroundSilhouette(polygons) {
+function createGroundSilhouette(polygons, baseColor = 0xf3e8cd, polygonColors = {}) {
   const positions = [];
+  const colors = [];
   const indices = [];
-  for (const points of polygons) {
+  for (let polygonIndex = 0; polygonIndex < polygons.length; polygonIndex++) {
+    const points = polygons[polygonIndex];
+    const polygonColor = new THREE.Color(polygonColors[polygonIndex] ?? baseColor);
     const shape = new THREE.Shape();
     shape.moveTo(points[0][0], points[0][1]);
     for (const [x, y] of points.slice(1)) shape.lineTo(x, y);
@@ -2049,6 +2052,7 @@ function createGroundSilhouette(polygons) {
     const offset = positions.length / 3;
     for (let index = 0; index < attribute.count; index++) {
       positions.push(attribute.getX(index), attribute.getY(index), attribute.getZ(index));
+      colors.push(polygonColor.r, polygonColor.g, polygonColor.b);
     }
     if (partIndex) {
       for (let index = 0; index < partIndex.count; index++) indices.push(offset + partIndex.getX(index));
@@ -2059,6 +2063,7 @@ function createGroundSilhouette(polygons) {
   }
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   geometry.setIndex(indices);
   geometry.rotateX(Math.PI / 2);
   geometry.computeVertexNormals();
@@ -2072,7 +2077,7 @@ const unitLodRoleGeometries = {
     [[-0.18, -0.08], [-0.33, -0.2], [-0.28, -0.26], [-0.1, -0.14]],
     [[0.08, 0.03], [0.35, 0.29], [0.31, 0.34], [0.04, 0.09]],
     [[0.29, 0.38], [0.49, 0.43], [0.44, 0.25], [0.35, 0.23]],
-  ]),
+  ], 0xf3e8cd, { 3: 0x6f644d, 4: 0x6f644d }),
   infantry: createGroundSilhouette([
     [[-0.14, -0.16], [-0.19, -0.05], [-0.16, 0.12], [-0.08, 0.21], [0.08, 0.21], [0.16, 0.12], [0.19, -0.05], [0.14, -0.16]],
     [[-0.07, 0.14], [-0.03, 0.62], [0, 0.74], [0.03, 0.62], [0.07, 0.14]],
@@ -2163,7 +2168,7 @@ for (let team = 0; team < 2; team++) {
   for (const role of ['worker', 'infantry', 'archer']) {
     const mesh = makeInstances(
       unitLodRoleGeometries[role],
-      new THREE.MeshBasicMaterial({ color: 0xf3e8cd, side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: true, side: THREE.DoubleSide }),
       MAX_PER_TEAM,
     );
     mesh.visible = false;
