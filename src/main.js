@@ -11,6 +11,9 @@ import {
 } from './resource-visual-state.mjs';
 import { buildingProductionCueState } from './building-visual-state.mjs';
 import {
+  UNIT_LOD_ROLE_BITS, UNIT_LOD_ROLES, unitLodRoleMatrixUpdateMask,
+} from './unit-lod-state.mjs';
+import {
   capturePrerequisiteIds, findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
   findUnreachableCaptureZone, findUnreachableResourceNode, scenarioEventSourceIds,
 } from './map-utils.mjs';
@@ -322,6 +325,8 @@ const unitLodRoleMeshes = [
 ];
 const unitLodTeamMeshes = [null, null];
 const unitLodMeshesByTeam = [[], []];
+const unitLodDirtyRoleMasks = [0, 0];
+const unitLodTeamDirty = [false, false];
 let unitLowDetailActive = false;
 const mapObjects = [];
 const townCenterProductionLamps = [null, null];
@@ -2308,7 +2313,7 @@ for (let team = 0; team < 2; team++) {
   unitLodTeamMeshes[team].visible = false;
   unitLodTeamMeshes[team].renderOrder = 0.8;
   unitLodMeshesByTeam[team].push(unitLodTeamMeshes[team]);
-  for (const role of ['worker', 'infantry', 'archer']) {
+  for (const role of UNIT_LOD_ROLES) {
     const mesh = makeInstances(
       unitLodRoleGeometries[role],
       new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: true, side: THREE.DoubleSide }),
@@ -2328,7 +2333,17 @@ function setUnitInstanceCount(team, count) {
 
 function markUnitInstanceMatricesDirty(team) {
   if (unitLowDetailActive) {
-    for (const mesh of unitLodMeshesByTeam[team]) mesh.instanceMatrix.needsUpdate = true;
+    const dirtyRoles = unitLodDirtyRoleMasks[team];
+    for (const role of UNIT_LOD_ROLES) {
+      if (dirtyRoles & UNIT_LOD_ROLE_BITS[role]) {
+        unitLodRoleMeshes[team][role].instanceMatrix.needsUpdate = true;
+      }
+    }
+    unitLodDirtyRoleMasks[team] = 0;
+    if (unitLodTeamDirty[team]) {
+      unitLodTeamMeshes[team].instanceMatrix.needsUpdate = true;
+      unitLodTeamDirty[team] = false;
+    }
   } else {
     unitArtMeshes.forEach((pair) => { pair[team].instanceMatrix.needsUpdate = true; });
   }
@@ -2515,19 +2530,24 @@ function setUnitTint(unit) {
 
 function updateUnitLodTransform(unit, visibleScale) {
   const role = unit.kind === 'worker' ? 'worker' : unit.kind === 'archer' ? 'archer' : 'infantry';
+  const roleUpdateMask = unitLodRoleMatrixUpdateMask(unit.lodRole, role);
   facing.setFromAxisAngle(worldUp, unit.angle);
-  for (const roleName of ['worker', 'infantry', 'archer']) {
+  for (const roleName of UNIT_LOD_ROLES) {
+    if (!(roleUpdateMask & UNIT_LOD_ROLE_BITS[roleName])) continue;
     dummy.position.set(unit.renderX, 0.07, unit.renderZ);
     dummy.quaternion.copy(facing);
     dummy.scale.setScalar(roleName === role ? visibleScale * 1.2 : 0);
     dummy.updateMatrix();
     unitLodRoleMeshes[unit.team][roleName].setMatrixAt(unit.slot, dummy.matrix);
+    unitLodDirtyRoleMasks[unit.team] |= UNIT_LOD_ROLE_BITS[roleName];
   }
+  unit.lodRole = role;
   dummy.position.set(unit.renderX, 0.035, unit.renderZ);
   dummy.quaternion.identity();
   dummy.scale.setScalar(visibleScale * 1.05);
   dummy.updateMatrix();
   unitLodTeamMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
+  unitLodTeamDirty[unit.team] = true;
 }
 
 function updateUnitFocusVisual(unit) {

@@ -94,7 +94,7 @@ try {
   assert.equal(resizeModule.status, 200, 'the browser map editor helper should remain on the static allowlist');
   const selectionModule = await fetch(`http://127.0.0.1:${port}/src/unit-selection.mjs`);
   assert.equal(selectionModule.status, 200, 'the browser unit selector should remain on the static allowlist');
-  for (const moduleName of ['audio.mjs', 'audio-policy.mjs', 'building-visual-state.mjs']) {
+  for (const moduleName of ['audio.mjs', 'audio-policy.mjs', 'building-visual-state.mjs', 'unit-lod-state.mjs']) {
     const response = await fetch(`http://127.0.0.1:${port}/src/${moduleName}`);
     assert.equal(response.status, 200, `${moduleName} should remain on the static allowlist`);
     assert.match(response.headers.get('content-type') || '', /^text\/javascript/, `${moduleName} needs a JavaScript MIME type`);
