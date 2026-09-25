@@ -404,6 +404,7 @@ const MOVE_START_BROADCAST_DISTANCE = WALK_SPEED * STEP_SECONDS * 0.5;
 const SPATIAL_BUCKET_SIZE = 1.2;
 const ATTACK_RANGE = 1.28;
 const ATTACK_DAMAGE = 10;
+const WORKER_ATTACK_DAMAGE = 4;
 const ATTACK_PERIOD = 0.85;
 const ARCHER_ATTACK_RANGE = 4.5;
 const ARCHER_ATTACK_DAMAGE = 7;
@@ -4860,7 +4861,8 @@ function simulateTick() {
         const dz = target.z - unit.z;
         const distance = Math.hypot(dx, dz);
         const attackRange = unit.kind === 'archer' ? ARCHER_ATTACK_RANGE : ATTACK_RANGE;
-        const attackDamage = (unit.kind === 'archer' ? ARCHER_ATTACK_DAMAGE : ATTACK_DAMAGE)
+        const attackDamage = (unit.kind === 'archer' ? ARCHER_ATTACK_DAMAGE
+          : unit.kind === 'worker' ? WORKER_ATTACK_DAMAGE : ATTACK_DAMAGE)
           * attackDamageMultiplierFor(unit);
         const attackPeriod = unit.kind === 'archer' ? ARCHER_ATTACK_PERIOD : ATTACK_PERIOD;
         unit.attackCooldown -= STEP_SECONDS;

@@ -1,6 +1,6 @@
 # First 1v1 skirmish balance ledger
 
-Status: first tuning pass, 25 September 2026. This is a test plan and evidence
+Status: early tuning, 25 September 2026. This is a test plan and evidence
 record, not a claim that the skirmish is balanced. Scope follows the
 [game bible](game-bible.md) and [feature inventory](references/feature-coverage-inventory.md):
 one complete invite-first 1v1 scenario with a small roster. Large armies remain
@@ -13,17 +13,16 @@ a separate stress workload.
 | Default start | 1,000 total, 500 per team | Opening economy and production have little leverage. |
 | Initial workers | 4 per team | There are 496 starting infantry per team at the default size. |
 | Starting resources on shipped maps | 0 food, 0 wood | Players must gather before placing either production building. |
-| Worker | 100 HP, 10 damage / 0.85 s, range 1.28; 50 food, 25 s | Same combat numbers as infantry. Worker protection has little incentive. |
+| Worker | 100 HP, 10 damage / 0.85 s, range 1.28; 50 food, 25 s | Original unit combat numbers matched infantry. Worker protection had little incentive. |
 | Infantry | 100 HP, 10 damage / 0.85 s, range 1.28; 50 food, 12 s | Fast food-only frontline and building attacker. |
 | Archer | 70 HP, 7 damage / 1 s, range 4.5; 25 food + 45 wood, 7 s | Ranged support needs space or a frontline; wood gates mass production. |
 | Barracks / Archery Range | 175 / 150 wood, 20 s construction | First building is a real wood allocation if starting wood is limited. |
 | Gathering | 1 resource/s, 10 carried per trip | Travel and drop-off time lower the effective income rate. |
 | Three Crowns | 6 / 6 / 8 units, 8 / 8 / 10 s capture; no hold | A large starting army can take objectives before production matters. |
 
-Numbers above come from `server.mjs`, `src/main.js`, and
-`maps/three-crowns.json`. The worker/infantry equality is a likely role
-problem, not yet a measured win-rate finding. Archers' range suggests a
-positioning role; it does not prove they are cost-effective.
+Numbers above record the original rules from `server.mjs`, `src/main.js`,
+and `maps/three-crowns.json`. Archers' range suggests a positioning role;
+it does not prove they are cost-effective.
 
 ## First focused change
 
@@ -57,9 +56,10 @@ gathering. It does not establish that the two plans are equally strong.
    neither opening should exceed 70% wins; treat this as a tuning trigger,
    not a statistical proof.
 3. **Role clarity:** Players can describe infantry as the close frontline,
-   archers as ranged support, and workers as economy after one match. Test
-   whether 4 workers versus 4 infantry is an unwanted even fight; if so,
-   reduce worker combat value in the next isolated change.
+   archers as ranged support, and workers as economy after one match. In a
+   controlled duel, infantry should beat a worker from either team seat while
+   taking some damage. In a later group test, 4 workers should not be an
+   efficient replacement for 4 infantry.
 4. **Pacing:** In contested games, first combat should occur by 2 min,
    first objective ownership by 3 min, and the median game should last
    6–10 min. At least 90% should finish within 15 min. Record both seats'
@@ -88,10 +88,28 @@ themselves.
   the local command protocol. It is not a two-human balance playtest or
   hosted-network measurement.
 
+## Second isolated change: worker combat role
+
+A two-seat direct-attack duel with 100 HP on both unit types measured the
+original parity. The Azure worker defeated an Ember infantry unit with 10 HP
+left. With sides reversed, Azure infantry defeated an Ember worker with 10 HP
+left. Team assignment and attack order, rather than unit role, decided the
+matchup.
+
+Worker damage against units is now **4 per 0.85 s**, versus infantry's
+**10 per 0.85 s**. Worker HP remains 100, so existing unit health presentation
+is unchanged. The same two mirrored duels now finish with infantry winning:
+Ember infantry has 60 HP left in the first, and Azure infantry has 64 HP left
+in the second. The worker can still hurt an attacker but loses the equal-cost
+fight. `node scripts/worker-combat-scenario.mjs` records and asserts those
+outcomes. This is controlled combat evidence, not a claim about raids, worker
+survival in a full match, or player understanding.
+
 ## Next tuning decisions
 
-- Measure worker-vs-infantry combat and tune worker survivability/damage if
-  the current combat parity lets economic units substitute for frontline units.
+- Measure worker losses and 4v4 worker-vs-infantry fights in the authored
+  scenario; adjust damage again if workers remain a substitute for infantry
+  or early raids erase the economy too easily.
 - Compare first reinforcement and income timing for barracks and range
   openings. Adjust one cost or time at a time, then rerun mirrored matches.
 - If objectives resolve before armies and economy matter, adjust capture
