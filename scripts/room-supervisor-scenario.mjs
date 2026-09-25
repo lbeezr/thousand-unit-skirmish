@@ -354,7 +354,10 @@ try {
   clients.push(rootAzure);
   const rootWelcome = await welcome(rootAzure);
   assert.equal(rootWelcome.player.team, 0, 'the default match should assign its first player to Azure');
-  assert.equal(rootWelcome.state.armySize, 1000);
+  assert.equal(rootWelcome.state.mapId, 'forked-vale');
+  assert.equal(rootWelcome.state.armySize, 24);
+  assert.deepEqual(rootWelcome.state.food, [150, null]);
+  assert.deepEqual(rootWelcome.state.wood, [250, null]);
 
   const crossOriginCreate = await fetch(`http://127.0.0.1:${port}/api/rooms`, {
     method: 'POST', headers: { Origin: 'https://other-site.example', 'Content-Type': 'application/json' }, body: '{}',
@@ -380,6 +383,8 @@ try {
   clients.push(roomAzure);
   const roomWelcome = await welcome(roomAzure);
   assert.equal(roomWelcome.player.team, 0, 'the invite room should have an independent Azure seat');
+  assert.equal(roomWelcome.state.mapId, 'forked-vale');
+  assert.equal(roomWelcome.state.armySize, 24);
   assert.notEqual(roomWelcome.player.sessionToken, rootWelcome.player.sessionToken,
     'seat tokens should be scoped to the match process');
 
@@ -774,14 +779,14 @@ try {
     'rejected snapshots should start an explicitly new match');
   assert.equal(fallbackWelcome.player.team, 0);
   assert.equal(fallbackWelcome.player.resumed, false);
-  assert.equal(fallbackWelcome.state.mapId, 'stone-pass');
-  assert.equal(fallbackWelcome.state.armySize, 1000);
+  assert.equal(fallbackWelcome.state.mapId, 'forked-vale');
+  assert.equal(fallbackWelcome.state.armySize, 24);
   assert.ok(!await readFile(secondRoomCheckpointPath, 'utf8').then(() => true, () => false),
     'rejected checkpoint should be removed so subsequent restarts do not loop on it');
 
   const fallbackCheckpoint = await waitForCheckpoint(secondRoomCheckpointPath, (snapshot) => (
     snapshot.matchId === fallbackWelcome.matchId
-      && snapshot.state?.currentArmySize === 1000
+      && snapshot.state?.currentArmySize === 24
       && snapshot.state?.seatSessions?.some((session) => session.team === 0 && session.connected)
   ));
   const fallbackWorkerPid = await waitForWorkerPid(supervisor, `room ${created[1].slice(0, 8)}`);
@@ -857,8 +862,10 @@ try {
   assert.notEqual(fallbackOverCapacityWelcome.matchId, fallbackWelcome.matchId,
     'an over-cap checkpoint should start a new match');
   assert.equal(fallbackOverCapacityWelcome.player.resumed, false);
-  assert.equal(fallbackOverCapacityWelcome.state.armySize, 1000);
-  assert.equal(fallbackOverCapacityWelcome.state.units.filter((unit) => unit[4] > 0).length, 1000);
+  assert.equal(fallbackOverCapacityWelcome.state.armySize, 24);
+  assert.equal(fallbackOverCapacityWelcome.state.units.filter((unit) => unit[1] === 0 && unit[4] > 0).length, 12);
+  assert.equal(fallbackOverCapacityWelcome.state.units.filter((unit) => unit[1] === 1 && unit[4] > 0).length, 0,
+    'the fresh Forked Vale match should preserve fog for the opposing army');
 
   const defaultAzure = createClient(port, '/ws', [
     'rts-v1', `rts-resume.${rootWelcome.player.sessionToken}`,
