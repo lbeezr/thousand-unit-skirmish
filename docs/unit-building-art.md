@@ -18,6 +18,7 @@ Azure stays sky blue and Ember rust red. Team color is concentrated in cloth, sh
 ## Motion and signals
 
 - Walking units have an offset stride phase so mass movement does not pulse in lockstep. Only moving units update their pose each frame.
+- At full detail, known cargo tints the existing Worker backpack batch: leaf green for wood, amber for food, and neutral when unknown. Strategic role LOD keeps role glyphs and equipment, including the small backpack facet, neutral; Azure identity remains in a separate team-colored square marker, and Ember identity in a team-colored diamond marker. The facet reuses the existing Worker role batch and adds no unit draw batch. These renderer cues are source-only and still need runtime visual review.
 - Workers swing their tool while the server reports gathering or building. Server-reported strikes drive a short infantry spear thrust, archer bow release, or worker tool swing. A capped, sampled arrow trace marks some archer shots without filling a mass battle with projectiles.
 - Newly produced units scale in briefly. Defeated units tilt and shrink before disappearing. The server sends a strike tick and target point only while the event is fresh; target coordinates stay private under fog when the attacker is an enemy.
 - Existing damage flashes, focused-fire rings, building impact flashes, and construction progress remain localized cues. Finished building details appear with the roof. Small team-color lamps pulse on a Town Center, Barracks, or Range while its production queue is active.
