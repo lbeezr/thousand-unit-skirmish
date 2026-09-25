@@ -16,6 +16,7 @@ import {
   shouldUpdateUnitFullDetailTint, shouldUpdateUnitTransformForFrame,
   unitLodRoleMatrixUpdateMask,
 } from './unit-lod-state.mjs';
+import { unitActionPoseAllowed } from './unit-visual-state.mjs';
 import {
   capturePrerequisiteIds, findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
   findUnreachableCaptureZone, findUnreachableResourceNode, scenarioEventSourceIds,
