@@ -30,8 +30,10 @@ let MAP_HALF_Z = MAP_HEIGHT / 2;
 const MAX_UNITS = 2000;
 const MAX_PER_TEAM = MAX_UNITS / 2;
 const ATTACK_POSE_MS = 270;
+const HIT_POSE_MS = 240;
 const SPAWN_POSE_MS = 330;
 const DEFEAT_POSE_MS = 430;
+const IDLE_POSE_INTERVAL_MS = 75;
 const MAX_ARROW_TRACES = 96;
 const MAX_MAP_RESOURCE_NODES = 128;
 const MAX_MAP_TRIGGERS = 32;
@@ -475,9 +477,10 @@ function addTownCenterVisual(spawn) {
     piece(new THREE.BoxGeometry(0.13, 0.88, 0.13), timber, side * 1.04, 0.68, 0.82);
     piece(new THREE.BoxGeometry(0.13, 0.35, 0.08), teamMaterial, side * 0.88, 0.72, 0.84);
   }
+  piece(new THREE.BoxGeometry(0.16, 0.08, 2.24), teamMaterial, 0, 1.67, -0.14);
   piece(new THREE.BoxGeometry(0.74, 1.64, 0.74), stone, -0.73, 1.03, -0.63);
   piece(new THREE.ConeGeometry(0.67, 0.62, 4), slate, -0.73, 2.13, -0.63).rotation.y = Math.PI / 4;
-  piece(new THREE.BoxGeometry(0.38, 0.63, 0.055), teamMaterial, -0.73, 1.55, -0.23);
+  piece(new THREE.BoxGeometry(0.56, 0.83, 0.055), teamMaterial, -0.73, 1.45, -0.23);
   piece(new THREE.BoxGeometry(0.08, 0.76, 0.08), timber, -0.73, 1.68, -0.18);
   const productionLamp = piece(
     new THREE.OctahedronGeometry(0.15, 0),
@@ -723,10 +726,10 @@ function addBuildingStandard(group, team, x, z, height = 1.85) {
   standard.add(pole);
   const flagShape = new THREE.Shape();
   flagShape.moveTo(0, height - 0.13);
-  flagShape.lineTo(0.51, height - 0.13);
-  flagShape.lineTo(0.48, height - 0.58);
-  flagShape.lineTo(0.28, height - 0.48);
-  flagShape.lineTo(0.04, height - 0.58);
+  flagShape.lineTo(0.67, height - 0.13);
+  flagShape.lineTo(0.63, height - 0.7);
+  flagShape.lineTo(0.32, height - 0.58);
+  flagShape.lineTo(0.04, height - 0.7);
   flagShape.closePath();
   const flag = new THREE.Mesh(
     new THREE.ShapeGeometry(flagShape),
@@ -762,6 +765,12 @@ function createArcheryRangeVisual(building) {
   const roof = new THREE.Mesh(new THREE.BoxGeometry(3.38, 0.13, 2.6), roofMaterial);
   roof.rotation.x = -0.12;
   roof.position.y = 0.38;
+  const canopyTrim = new THREE.Mesh(
+    new THREE.BoxGeometry(3.42, 0.105, 0.13),
+    new THREE.MeshBasicMaterial({ color: teamColor }),
+  );
+  canopyTrim.position.set(0, 0, 1.27);
+  roof.add(canopyTrim);
   group.add(roof);
   const finishPieces = [];
   const targetRim = new THREE.Mesh(
@@ -861,7 +870,10 @@ function createBarracksVisual(building) {
     group.add(panel);
     return panel;
   });
-  const ridge = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.16, 3.18), roofMaterial);
+  const ridge = new THREE.Mesh(
+    new THREE.BoxGeometry(0.16, 0.16, 3.18),
+    new THREE.MeshBasicMaterial({ color: teamColor }),
+  );
   ridge.position.y = 1.63;
   group.add(ridge);
   const finishPieces = [];
@@ -1801,7 +1813,7 @@ for (let team = 0; team < 2; team++) {
     MAX_PER_TEAM,
   );
   bowMeshes[team] = makeInstances(
-    new THREE.TorusGeometry(0.23, 0.027, 4, 9, Math.PI * 1.28),
+    new THREE.TorusGeometry(0.3, 0.04, 4, 9, Math.PI * 1.28),
     new THREE.MeshBasicMaterial({ color: 0xb88c58 }),
     MAX_PER_TEAM,
   );
@@ -1844,7 +1856,7 @@ for (let team = 0; team < 2; team++) {
     MAX_PER_TEAM,
   );
   quiverMeshes[team] = makeInstances(
-    new THREE.ConeGeometry(0.12, 0.43, 5),
+    new THREE.ConeGeometry(0.15, 0.52, 5),
     new THREE.MeshBasicMaterial({ color: 0x75553d }),
     MAX_PER_TEAM,
   );
@@ -2011,8 +2023,13 @@ function updateUnitTransform(unit, now = performance.now()) {
   const isArcher = unit.kind === 'archer';
   const bodyScale = isWorker ? visibleScale * 0.82 : isArcher ? visibleScale * 0.9 : visibleScale;
   const stride = unit.walking ? Math.sin(unit.motionPhase || 0) * 0.038 : 0;
+  const idleBreath = unit.hp > 0 && !unit.walking
+    && unit.task !== 'gathering' && unit.task !== 'building' && unit.attackStartedAt === 0
+    ? Math.sin(now * 0.0024 + unit.id * 1.7) * 0.018 : 0;
   const attackAge = unit.attackStartedAt > 0 ? (now - unit.attackStartedAt) / ATTACK_POSE_MS : 1;
   const attackPose = attackAge >= 0 && attackAge < 1 ? Math.sin(attackAge * Math.PI) : 0;
+  const hitAge = unit.hitStartedAt > 0 ? (now - unit.hitStartedAt) / HIT_POSE_MS : 1;
+  const hitPose = hitAge >= 0 && hitAge < 1 ? Math.sin(hitAge * Math.PI) : 0;
   const workSwing = isWorker && (unit.task === 'gathering' || unit.task === 'building')
     ? Math.sin(unit.motionPhase || 0) * 0.46 : isWorker ? attackPose * 0.55 : 0;
   const forwardX = Math.sin(unit.angle);
@@ -2020,18 +2037,20 @@ function updateUnitTransform(unit, now = performance.now()) {
   const sideX = Math.cos(unit.angle);
   const sideZ = -Math.sin(unit.angle);
   facing.setFromAxisAngle(worldUp, unit.angle);
-  dummy.position.set(unit.renderX + forwardX * attackPose * 0.05,
-    (isWorker ? 0.23 : isArcher ? 0.25 : 0.27) + Math.max(0, stride) - defeatProgress * 0.16,
-    unit.renderZ + forwardZ * attackPose * 0.05);
+  dummy.position.set(unit.renderX + forwardX * (attackPose * 0.05 - hitPose * 0.075),
+    (isWorker ? 0.23 : isArcher ? 0.25 : 0.27) + Math.max(0, stride) + idleBreath
+      - defeatProgress * 0.16,
+    unit.renderZ + forwardZ * (attackPose * 0.05 - hitPose * 0.075));
   dummy.quaternion.copy(facing);
-  dummy.rotateX(attackPose * (isArcher ? -0.13 : 0.18));
+  dummy.rotateX(attackPose * (isArcher ? -0.13 : 0.18) - hitPose * 0.18);
   dummy.rotateZ(defeatProgress * 0.9);
   dummy.scale.setScalar(bodyScale);
   dummy.updateMatrix();
   bodyMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
 
   dummy.position.set(unit.renderX + sideX * defeatProgress * 0.16,
-    (isWorker ? 0.48 : isArcher ? 0.54 : 0.61) + Math.max(0, stride) - defeatProgress * 0.34,
+    (isWorker ? 0.48 : isArcher ? 0.54 : 0.61) + Math.max(0, stride) + idleBreath * 0.7
+      - hitPose * 0.035 - defeatProgress * 0.34,
     unit.renderZ + sideZ * defeatProgress * 0.16);
   dummy.quaternion.identity();
   dummy.scale.setScalar(bodyScale);
@@ -2040,9 +2059,9 @@ function updateUnitTransform(unit, now = performance.now()) {
 
   const bowScale = isArcher ? visibleScale : 0;
   dummy.position.set(
-    unit.renderX + Math.sin(unit.angle) * 0.18,
+    unit.renderX + sideX * 0.25 + forwardX * 0.09,
     isArcher ? 0.43 : 0,
-    unit.renderZ + Math.cos(unit.angle) * 0.18,
+    unit.renderZ + sideZ * 0.25 + forwardZ * 0.09,
   );
   dummy.quaternion.copy(facing);
   dummy.rotateY(attackPose * 0.22);
@@ -2053,7 +2072,7 @@ function updateUnitTransform(unit, now = performance.now()) {
   dummy.position.set(unit.renderX - sideX * 0.235 + forwardX * 0.1, 0.42 + Math.max(0, stride),
     unit.renderZ - sideZ * 0.235 + forwardZ * 0.1);
   dummy.quaternion.copy(facing);
-  dummy.rotateX(-attackPose * 0.16);
+  dummy.rotateX(-attackPose * 0.16 + hitPose * 0.22);
   dummy.scale.setScalar(isWorker || isArcher ? 0 : visibleScale);
   dummy.updateMatrix();
   shieldMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
@@ -2139,10 +2158,12 @@ function setArmySize(count, showMessage = false) {
       tintVariation: 0.88 + ((id * 13) % 15) / 100, kind, cargo: 0, cargoType: null,
       targetedBy: 0, focused: false, focusMatrixInitialized: false,
       walking: false, motionPhase: id * 1.7,
-      attackStartedAt: 0, spawnStartedAt: 0, defeatStartedAt: 0, lastPlayedAttackTick: -1,
+      attackStartedAt: 0, hitStartedAt: 0, spawnStartedAt: 0,
+      defeatStartedAt: 0, lastPlayedAttackTick: -1,
       task: kind === 'worker' ? 'unknown' : null,
       visible: !mapDefinition?.fogOfWar || localTeam === null || team === localTeam,
       angle: team === 0 ? Math.PI / 2 : -Math.PI / 2,
+      targetAngle: team === 0 ? Math.PI / 2 : -Math.PI / 2,
     };
     units.push(unit);
     teamUnits[team].push(unit);
@@ -2386,16 +2407,18 @@ function recallControlGroup(index) {
 function syncSelectionMesh() {
   if (!selectionDirty) return;
   let slot = 0;
+  const ringScale = selected.size > 80 ? 1.08 : 1.24;
   for (const id of selected) {
     const unit = units[id];
     if (!unit || unit.hp <= 0) continue;
     dummy.position.set(unit.renderX, 0.022, unit.renderZ);
     dummy.quaternion.copy(ringRotation);
-    dummy.scale.setScalar(unit.scale * 1.24);
+    dummy.scale.setScalar(unit.scale * ringScale);
     dummy.updateMatrix();
     selectionMesh.setMatrixAt(slot++, dummy.matrix);
   }
   selectionMesh.count = slot;
+  selectionMesh.material.opacity = slot > 80 ? 0.48 : slot > 24 ? 0.68 : 0.9;
   selectionMesh.instanceMatrix.needsUpdate = true;
   selectionDirty = false;
 }
@@ -2720,7 +2743,7 @@ function appendUnitFromState(row, animateSpawn = false) {
     focused: false,
     focusMatrixInitialized: false,
     walking: false, motionPhase: id * 1.7,
-    attackStartedAt: 0, spawnStartedAt: animateSpawn ? performance.now() : 0,
+    attackStartedAt: 0, hitStartedAt: 0, spawnStartedAt: animateSpawn ? performance.now() : 0,
     defeatStartedAt: 0, lastPlayedAttackTick: -1,
     damageFlashUntil: 0,
     kind, cargo, cargoType: cargoType === 'food' || cargoType === 'wood' ? cargoType : null,
@@ -2731,6 +2754,7 @@ function appendUnitFromState(row, animateSpawn = false) {
     tintVariation: 0.88 + ((id * 13) % 15) / 100,
     visible: true,
     angle: team === 0 ? Math.PI / 2 : -Math.PI / 2,
+    targetAngle: team === 0 ? Math.PI / 2 : -Math.PI / 2,
   };
   while (units.length < id) units.push(null);
   if (id === units.length) units.push(unit);
@@ -2777,10 +2801,12 @@ function applyState(state, initial = false) {
       unit.targetedBy = Number.isInteger(targetedBy) ? Math.max(0, targetedBy) : 0;
       unit.damageFlashUntil = 0;
       unit.attackStartedAt = 0;
+      unit.hitStartedAt = 0;
       unit.defeatStartedAt = 0;
       unit.spawnStartedAt = initial ? 0 : performance.now();
       unit.lastPlayedAttackTick = -1;
       unit.angle = team === 0 ? Math.PI / 2 : -Math.PI / 2;
+      unit.targetAngle = unit.angle;
       setUnitTint(unit);
       updateUnitTransform(unit);
       changed = true;
@@ -2810,9 +2836,11 @@ function applyState(state, initial = false) {
         if (selected.has(id)) selectedDamage++;
       }
       const defeated = unit.hp > 0 && hp <= 0;
+      const damageAt = performance.now();
       unit.hp = hp;
-      unit.damageFlashUntil = tookDamage ? performance.now() + 220 : 0;
-      if (defeated) unit.defeatStartedAt = performance.now();
+      unit.damageFlashUntil = tookDamage ? damageAt + 220 : 0;
+      unit.hitStartedAt = tookDamage ? damageAt : 0;
+      if (defeated) unit.defeatStartedAt = damageAt;
       setUnitTint(unit);
       updateUnitTransform(unit);
       if (hp <= 0) selected.delete(id);
@@ -2824,7 +2852,7 @@ function applyState(state, initial = false) {
         const now = performance.now();
         unit.attackStartedAt = now;
         if (Number.isFinite(attackX) && Number.isFinite(attackZ)) {
-          unit.angle = Math.atan2(attackX - unit.renderX, attackZ - unit.renderZ);
+          unit.targetAngle = Math.atan2(attackX - unit.renderX, attackZ - unit.renderZ);
           if (unit.kind === 'archer' && (unit.id * 17 + attackTick) % 3 === 0) {
             addArrowTrace(unit.renderX, unit.renderZ, attackX, attackZ, now);
           }
@@ -6491,6 +6519,7 @@ let previousTime = performance.now();
 let fpsFrames = 0;
 let fpsTime = 0;
 let renderStatsTime = 0;
+let lastIdlePoseStep = -1;
 function animate(now) {
   requestAnimationFrame(animate);
   renderScenarioEventCountdown(now);
@@ -6522,6 +6551,9 @@ function animate(now) {
     }
   }
   const alpha = 1 - Math.exp(-frameDelta * 16);
+  const idlePoseStep = Math.floor(now / IDLE_POSE_INTERVAL_MS);
+  const idlePoseDue = idlePoseStep !== lastIdlePoseStep;
+  lastIdlePoseStep = idlePoseStep;
   let moved = false;
   let artAnimated = false;
   for (const unit of units) {
@@ -6538,21 +6570,32 @@ function animate(now) {
     if (walking) {
       unit.renderX += dx * alpha;
       unit.renderZ += dz * alpha;
-      if (Math.abs(dx) > Math.abs(dz)) unit.angle = dx >= 0 ? Math.PI / 2 : -Math.PI / 2;
-      else unit.angle = dz >= 0 ? 0 : Math.PI;
+      unit.targetAngle = Math.atan2(dx, dz);
       unit.motionPhase += frameDelta * 14;
       moved = true;
+    }
+    let turning = false;
+    if (unit.targetAngle !== unit.angle) {
+      const turnDelta = Math.atan2(Math.sin(unit.targetAngle - unit.angle),
+        Math.cos(unit.targetAngle - unit.angle));
+      turning = Math.abs(turnDelta) > 0.01;
+      if (turning) unit.angle += THREE.MathUtils.clamp(turnDelta, -frameDelta * 9, frameDelta * 9);
+      else unit.angle = unit.targetAngle;
     }
     const working = !walking && unit.kind === 'worker'
       && (unit.task === 'gathering' || unit.task === 'building');
     if (working) unit.motionPhase += frameDelta * (unit.task === 'building' ? 6 : 5);
     const activeAttack = unit.attackStartedAt > 0;
+    const activeHit = unit.hitStartedAt > 0;
     const activeSpawn = unit.spawnStartedAt > 0;
     const activeDefeat = unit.defeatStartedAt > 0;
     if (activeAttack && now - unit.attackStartedAt >= ATTACK_POSE_MS) unit.attackStartedAt = 0;
+    if (activeHit && now - unit.hitStartedAt >= HIT_POSE_MS) unit.hitStartedAt = 0;
     if (activeSpawn && now - unit.spawnStartedAt >= SPAWN_POSE_MS) unit.spawnStartedAt = 0;
     if (activeDefeat && now - unit.defeatStartedAt >= DEFEAT_POSE_MS) unit.defeatStartedAt = 0;
-    if (walking || wasWalking || working || activeAttack || activeSpawn || activeDefeat) {
+    const idle = idlePoseDue && unit.hp > 0 && !walking && !working;
+    if (walking || wasWalking || turning || working || activeAttack || activeHit
+      || activeSpawn || activeDefeat || idle) {
       updateUnitTransform(unit, now);
       artAnimated = true;
     }
