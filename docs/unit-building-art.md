@@ -37,4 +37,4 @@ The current renderer still uses procedural objects until an authored-pack integr
 
 ## Current review gates
 
-Review role recognition and building silhouettes at zoom 0.91 and strategic zoom 0.48, on Meadow and Cinder, with both teams and fog-safe visibility. Confirm the production cue's idle, active, and blocked states and the four resource stages. Measure the 2,000-unit browser run on the renderer candidate. Zoom 2.3 is optional close-up review and cannot replace either required view or the performance measurement. The renderer contract records the full evidence requirements and current open reviews.
+Review a mixed Worker/Infantry/Archer roster and building silhouettes at zoom 0.91 and strategic zoom 0.48, on Meadow and Cinder, with both teams and fog-safe visibility. Confirm the production cue's idle, active, and blocked states and the four resource stages. Measure the 2,000-unit browser run on the renderer candidate. Zoom 2.3 is optional close-up review and cannot replace either required view or the performance measurement. The renderer contract records the full evidence requirements and current open reviews.

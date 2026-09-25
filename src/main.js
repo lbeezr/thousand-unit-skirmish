@@ -2189,13 +2189,15 @@ function addPaintedFacets(geometry) {
   return geometry;
 }
 
-function createGroundSilhouette(polygons, baseColor = 0xf3e8cd, polygonColors = {}) {
+function createGroundSilhouette(polygons, baseColor = 0xf3e8cd, polygonColors = {}, polygonLifts = {}) {
   const positions = [];
   const colors = [];
   const indices = [];
   for (let polygonIndex = 0; polygonIndex < polygons.length; polygonIndex++) {
     const points = polygons[polygonIndex];
     const polygonColor = new THREE.Color(polygonColors[polygonIndex] ?? baseColor);
+    // Negative local depth becomes positive world height after the ground-plane rotation.
+    const polygonLift = polygonLifts[polygonIndex] ?? 0;
     const shape = new THREE.Shape();
     shape.moveTo(points[0][0], points[0][1]);
     for (const [x, y] of points.slice(1)) shape.lineTo(x, y);
@@ -2205,7 +2207,7 @@ function createGroundSilhouette(polygons, baseColor = 0xf3e8cd, polygonColors = 
     const partIndex = part.getIndex();
     const offset = positions.length / 3;
     for (let index = 0; index < attribute.count; index++) {
-      positions.push(attribute.getX(index), attribute.getY(index), attribute.getZ(index));
+      positions.push(attribute.getX(index), attribute.getY(index), attribute.getZ(index) - polygonLift);
       colors.push(polygonColor.r, polygonColor.g, polygonColor.b);
     }
     if (partIndex) {
@@ -2229,9 +2231,10 @@ const unitLodRoleGeometries = {
     [[-0.14, -0.16], [-0.19, -0.05], [-0.16, 0.12], [-0.08, 0.21], [0.08, 0.21], [0.16, 0.12], [0.19, -0.05], [0.14, -0.16]],
     [[-0.12, 0.22], [-0.1, 0.31], [0.1, 0.31], [0.12, 0.22]],
     [[-0.18, -0.08], [-0.33, -0.2], [-0.28, -0.26], [-0.1, -0.14]],
+    [[-0.25, -0.07], [-0.1, -0.09], [-0.07, 0.05], [-0.12, 0.17], [-0.24, 0.13], [-0.28, 0.02]],
     [[0.08, 0.1], [0.14, 0.03], [0.52, 0.45], [0.45, 0.52]],
     [[0.34, 0.55], [0.4, 0.63], [0.7, 0.38], [0.64, 0.31]],
-  ], 0xf3e8cd, { 3: 0x6f644d, 4: 0x6f644d }),
+  ], 0xf3e8cd, { 3: 0x9c754c, 4: 0x6f644d, 5: 0x6f644d }, { 3: 0.006 }),
   infantry: createGroundSilhouette([
     [[-0.14, -0.16], [-0.19, -0.05], [-0.16, 0.12], [-0.08, 0.21], [0.08, 0.21], [0.16, 0.12], [0.19, -0.05], [0.14, -0.16]],
     [[-0.1, 0.12], [-0.05, 0.72], [0, 0.98], [0.05, 0.72], [0.1, 0.12]],
