@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { createServer } from 'node:net';
@@ -14,6 +14,25 @@ const mapPath = process.env.RTS_ARCHER_MAP || path.join(serverRoot, 'maps/open-f
 const baselineCommit = process.env.RTS_BASELINE_COMMIT?.trim() || '';
 if (!/^[0-9a-f]{40,64}$/i.test(baselineCommit)) {
   throw new Error('RTS_BASELINE_COMMIT must be the full 40- or 64-character server-source Git SHA.');
+}
+let checkoutCommit;
+try {
+  checkoutCommit = execFileSync('git', ['rev-parse', 'HEAD'], {
+    cwd: serverRoot,
+    encoding: 'utf8',
+  }).trim();
+} catch (error) {
+  throw new Error(`RTS_SERVER_ROOT must be a Git checkout to bind the scenario baseline: ${error.message}`);
+}
+if (checkoutCommit.toLowerCase() !== baselineCommit.toLowerCase()) {
+  throw new Error(`RTS_BASELINE_COMMIT ${baselineCommit} does not match RTS_SERVER_ROOT HEAD ${checkoutCommit}.`);
+}
+const trackedChanges = execFileSync('git', ['status', '--porcelain', '--untracked-files=no'], {
+  cwd: serverRoot,
+  encoding: 'utf8',
+}).trim();
+if (trackedChanges) {
+  throw new Error(`RTS_SERVER_ROOT has tracked changes; exact baseline evidence requires a clean checkout:\n${trackedChanges}`);
 }
 const fixtureMapId = 'archer-ranged-contract';
 const temporary = await mkdtemp(path.join(os.tmpdir(), 'rts-archer-range-'));
