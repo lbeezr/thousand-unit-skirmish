@@ -1,6 +1,6 @@
 // All sounds are synthesized here with Web Audio. No sampled or licensed media is used.
 const STORAGE_KEY = 'tus-audio-v1';
-const DEFAULT_SETTINGS = Object.freeze({ enabled: true, volume: 0.5, ambience: true });
+const DEFAULT_SETTINGS = Object.freeze({ enabled: true, volume: 0.5, ambience: true, ambienceLevel: 1 });
 const COOLDOWN_MS = Object.freeze({
   select: 90, move: 90, attack: 120, gather: 140, build: 170,
   queue: 170, complete: 2200, reject: 250, objective: 1200, 'objective-lost': 1200,
@@ -20,6 +20,8 @@ export function readAudioSettings(storage = browserStorage()) {
       enabled: typeof saved.enabled === 'boolean' ? saved.enabled : DEFAULT_SETTINGS.enabled,
       volume: Number.isFinite(saved.volume) ? Math.max(0, Math.min(1, saved.volume)) : DEFAULT_SETTINGS.volume,
       ambience: typeof saved.ambience === 'boolean' ? saved.ambience : DEFAULT_SETTINGS.ambience,
+      ambienceLevel: Number.isFinite(saved.ambienceLevel)
+        ? Math.max(0, Math.min(2, saved.ambienceLevel)) : DEFAULT_SETTINGS.ambienceLevel,
     };
   } catch { return { ...DEFAULT_SETTINGS }; }
 }
@@ -58,7 +60,8 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
     const at = context.currentTime;
     master.gain.setTargetAtTime(settings.enabled ? settings.volume * 0.78 : 0, at, 0.045);
     const ducked = performance.now() < duckUntil;
-    atmosphere.gain.setTargetAtTime(settings.enabled && settings.ambience ? (ducked ? 0.045 : 0.18) : 0, at, ducked ? 0.04 : 0.25);
+    atmosphere.gain.setTargetAtTime(settings.enabled && settings.ambience
+      ? (ducked ? 0.045 : 0.18) * settings.ambienceLevel : 0, at, ducked ? 0.04 : 0.25);
   }
 
   function makeContext() {
@@ -160,7 +163,7 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
   }
 
   function scheduleMusic() {
-    if (!context || context.state !== 'running' || !settings.enabled || settings.volume <= 0 || !settings.ambience
+    if (!context || context.state !== 'running' || !settings.enabled || settings.volume <= 0 || !settings.ambience || settings.ambienceLevel <= 0
       || doc?.hidden || performance.now() - lastAlertAt < 10000) return;
     const start = context.currentTime + 0.08;
     const chords = [[146.83, 220, 293.66], [130.81, 196, 261.63], [164.81, 246.94, 329.63]];
@@ -234,6 +237,8 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
       enabled: typeof next.enabled === 'boolean' ? next.enabled : settings.enabled,
       volume: Number.isFinite(next.volume) ? Math.max(0, Math.min(1, next.volume)) : settings.volume,
       ambience: typeof next.ambience === 'boolean' ? next.ambience : settings.ambience,
+      ambienceLevel: Number.isFinite(next.ambienceLevel)
+        ? Math.max(0, Math.min(2, next.ambienceLevel)) : settings.ambienceLevel,
     };
     save();
     applyLevels();

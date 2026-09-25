@@ -32,8 +32,10 @@ gate.reset();
 assert.equal(gate.observe({ friendlyDamage: 1 }, 30050), 'battle-alert');
 
 const saved = { getItem: () => JSON.stringify({ enabled: false, volume: 4, ambience: false }) };
-assert.deepEqual(readAudioSettings(saved), { enabled: false, volume: 1, ambience: false });
-assert.deepEqual(readAudioSettings({ getItem: () => '{' }), { enabled: true, volume: 0.5, ambience: true });
+assert.deepEqual(readAudioSettings(saved), { enabled: false, volume: 1, ambience: false, ambienceLevel: 1 });
+assert.deepEqual(readAudioSettings({ getItem: () => '{' }), { enabled: true, volume: 0.5, ambience: true, ambienceLevel: 1 });
+assert.equal(readAudioSettings({ getItem: () => JSON.stringify({ ambienceLevel: 4 }) }).ambienceLevel, 2,
+  'stored ambience level is capped at twice the reference mix');
 
 let oscillators = 0;
 let createdContext;
@@ -83,9 +85,11 @@ try {
   const cues = [];
   const audio = createGameAudio({ storage, doc, onStatusChange: (status) => statuses.push(status), onCue: (cue) => cues.push(cue) });
   assert.equal(audio.getStatus(), 'waiting');
+  assert.equal(audio.getSettings().ambienceLevel, 1, 'new control preserves the existing ambience mix by default');
   assert.equal(audio.play('objective'), false, 'network events before a gesture cannot queue sounds');
   assert.equal(createdContext, undefined, 'pre-gesture events must not create an audio context');
   audio.unlock();
+  assert.equal(createdContext.gains[2].gain.lastTarget, 0.18, 'the default ambience level preserves the existing atmosphere gain');
   const ambience = createdContext.buffers[0].data;
   assert.equal(ambience.length, 1188, 'the 120 ms crossfade keeps the wind loop near twelve seconds');
   const ambienceSteps = [];
@@ -132,12 +136,16 @@ try {
   audio.setSettings({ enabled: true, volume: 0.3, ambience: false });
   assert.equal(audio.getStatus(), 'running');
   assert.equal(createdContext.resumeCalls, 1);
-  assert.deepEqual(readAudioSettings(storage), { enabled: true, volume: 0.3, ambience: false });
+  assert.deepEqual(readAudioSettings(storage), { enabled: true, volume: 0.3, ambience: false, ambienceLevel: 1 });
   assert.equal(createdContext.gains[0].gain.lastTarget, 0.3 * 0.78);
   assert.equal(createdContext.gains[2].gain.lastTarget, 0);
-  audio.setSettings({ ambience: true });
+  audio.setSettings({ ambience: true, ambienceLevel: 0.4 });
+  assert.equal(createdContext.gains[2].gain.lastTarget, 0.045 * 0.4, 'ambience level scales only the already-ducked atmosphere bus');
+  assert.equal(createdContext.gains[0].gain.lastTarget, 0.3 * 0.78, 'ambience level leaves overall volume unchanged');
+  assert.equal(createdContext.gains[1].gain.value, 0.52, 'ambience level leaves the effects bus unchanged');
+  assert.deepEqual(readAudioSettings(storage), { enabled: true, volume: 0.3, ambience: true, ambienceLevel: 0.4 });
   assert.equal(audio.play('base-lost'), true);
-  assert.equal(createdContext.gains[2].gain.lastTarget, 0.045, 'tactical alert ducks ambience');
+  assert.equal(createdContext.gains[2].gain.lastTarget, 0.045 * 0.4, 'tactical alert ducks the selected ambience level');
   assert.equal(audio.play('base-lost'), false, 'repeated building losses are rate limited');
   assert.equal(audio.play('resource-empty'), true);
   for (const cue of ['attack', 'gather', 'build', 'queue']) audio.play(cue);

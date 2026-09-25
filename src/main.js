@@ -233,6 +233,8 @@ const ui = {
   audioVolume: document.querySelector('#audio-volume'),
   audioVolumeValue: document.querySelector('#audio-volume-value'),
   audioAmbience: document.querySelector('#audio-ambience'),
+  audioAmbienceLevel: document.querySelector('#audio-ambience-level'),
+  audioAmbienceLevelValue: document.querySelector('#audio-ambience-level-value'),
   audioStatus: document.querySelector('#audio-status'),
 };
 const audio = createGameAudio({
@@ -5850,8 +5852,11 @@ function syncAudioControls() {
   ui.audioVolume.value = String(Math.round(settings.volume * 100));
   ui.audioVolumeValue.value = `${Math.round(settings.volume * 100)}%`;
   ui.audioAmbience.checked = settings.ambience;
+  ui.audioAmbienceLevel.value = String(Math.round(settings.ambienceLevel * 100));
+  ui.audioAmbienceLevelValue.value = `${Math.round(settings.ambienceLevel * 100)}%`;
   ui.audioVolume.disabled = !settings.enabled;
   ui.audioAmbience.disabled = !settings.enabled;
+  ui.audioAmbienceLevel.disabled = !settings.enabled || !settings.ambience;
   const status = audio.getStatus();
   ui.audioStatus.dataset.state = status;
   ui.audioStatus.textContent = {
@@ -5864,6 +5869,7 @@ syncAudioControls();
 ui.audioEnabled.addEventListener('change', () => { audio.setSettings({ enabled: ui.audioEnabled.checked }); syncAudioControls(); });
 ui.audioVolume.addEventListener('input', () => { audio.setSettings({ volume: Number(ui.audioVolume.value) / 100 }); syncAudioControls(); });
 ui.audioAmbience.addEventListener('change', () => { audio.setSettings({ ambience: ui.audioAmbience.checked }); syncAudioControls(); });
+ui.audioAmbienceLevel.addEventListener('input', () => { audio.setSettings({ ambienceLevel: Number(ui.audioAmbienceLevel.value) / 100 }); syncAudioControls(); });
 document.addEventListener('pointerdown', () => audio.unlock(), { capture: true, once: true });
 document.addEventListener('keydown', () => audio.unlock(), { capture: true, once: true });
 function keyboardTargetIsEditing(event) {
