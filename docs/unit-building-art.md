@@ -13,7 +13,7 @@ This is the first original game-object kit for the 1v1 vertical slice. It follow
 | Barracks | Enclosed timber walls, pitched ridge roof, shield over gate | Dark timber and slate, team standard |
 | Archery Range | Open corner posts, single sloped canopy, target at the front | Dark timber and slate, team standard |
 
-Azure stays sky blue and Ember rust red. Team color is concentrated in cloth, shields, standards, and ownership outlines. Stone, slate, wood, leather, and metal stay shared so the teams occupy one world. Shapes and equipment distinguish roles when color is hard to see.
+Azure stays sky blue and Ember rust red. Authored unit packs reserve team tint for the dedicated sash; tools, shields, packs, and weapons stay neutral. Building walls, roofs, shields, and trim also stay neutral; compact standards and ownership outlines carry team identity. Azure standards use a straight-cut pennant with one centered bar, while Ember standards use a forked-tail pennant with a split bar. Stone, slate, wood, leather, and metal stay shared so the teams occupy one world. Shapes and equipment distinguish roles when color is hard to see. The procedural full-detail renderer keeps its current body/shield tint until a side-by-side review approves migration.
 
 ## Motion and signals
 

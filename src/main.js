@@ -486,9 +486,11 @@ function addMapObject(object) {
 function clearMapObjects() {
   for (const object of mapObjects) {
     scene.remove(object);
-    object.geometry?.dispose();
-    const materials = Array.isArray(object.material) ? object.material : [object.material];
-    for (const material of materials) material?.dispose();
+    object.traverse((child) => {
+      child.geometry?.dispose();
+      const materials = Array.isArray(child.material) ? child.material : [child.material];
+      for (const material of materials) material?.dispose();
+    });
   }
   mapObjects.length = 0;
   townCenterProductionLamps[0] = null;
@@ -502,7 +504,6 @@ function addTownCenterVisual(spawn) {
   const slate = new THREE.MeshBasicMaterial({ color: 0x363d3f });
   const timber = new THREE.MeshBasicMaterial({ color: 0x514333 });
   const doorMaterial = new THREE.MeshBasicMaterial({ color: 0x2d302b });
-  const teamMaterial = new THREE.MeshBasicMaterial({ color: TEAM_HEX[spawn.team], side: THREE.DoubleSide });
   const piece = (geometry, material, px, py, pz, angle = 0) => {
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x + px, py, spawn.z + pz);
@@ -517,13 +518,15 @@ function addTownCenterVisual(spawn) {
   for (const side of [-1, 1]) {
     piece(new THREE.BoxGeometry(1.25, 0.13, 2.32), slate, side * 0.51, 1.37, -0.14, -side * 0.48);
     piece(new THREE.BoxGeometry(0.13, 0.88, 0.13), timber, side * 1.04, 0.68, 0.82);
-    piece(new THREE.BoxGeometry(0.13, 0.35, 0.08), teamMaterial, side * 0.88, 0.72, 0.84);
+    piece(new THREE.BoxGeometry(0.13, 0.35, 0.08), timber, side * 0.88, 0.72, 0.84);
   }
-  piece(new THREE.BoxGeometry(0.16, 0.08, 2.24), teamMaterial, 0, 1.67, -0.14);
+  piece(new THREE.BoxGeometry(0.16, 0.08, 2.24), slate, 0, 1.67, -0.14);
   piece(new THREE.BoxGeometry(0.74, 1.64, 0.74), stone, -0.73, 1.03, -0.63);
   piece(new THREE.ConeGeometry(0.67, 0.62, 4), slate, -0.73, 2.13, -0.63).rotation.y = Math.PI / 4;
-  piece(new THREE.BoxGeometry(0.56, 0.83, 0.055), teamMaterial, -0.73, 1.45, -0.23);
-  piece(new THREE.BoxGeometry(0.08, 0.76, 0.08), timber, -0.73, 1.68, -0.18);
+  const standardRoot = new THREE.Group();
+  standardRoot.position.set(x - 0.73, 0, spawn.z - 0.23);
+  addBuildingStandard(standardRoot, spawn.team, 0, 0, 2.06);
+  addMapObject(standardRoot);
   const productionLamp = piece(
     new THREE.OctahedronGeometry(0.15, 0),
     new THREE.MeshBasicMaterial({ color: TEAM_HEX[spawn.team], transparent: true, opacity: 0.88 }),
@@ -767,15 +770,69 @@ function addBuildingStandard(group, team, x, z, height = 1.85) {
   pole.position.y = height / 2;
   standard.add(pole);
   const flagShape = new THREE.Shape();
-  flagShape.moveTo(0, height - 0.13);
-  flagShape.lineTo(0.67, height - 0.13);
-  flagShape.lineTo(0.63, height - 0.7);
-  flagShape.lineTo(0.32, height - 0.58);
-  flagShape.lineTo(0.04, height - 0.7);
+  const top = height - 0.13;
+  const bottom = height - 0.7;
+  const middle = (top + bottom) / 2;
+  flagShape.moveTo(0, top);
+  flagShape.lineTo(0.67, top);
+  if (team === 0) {
+    flagShape.lineTo(0.67, bottom);
+    flagShape.lineTo(0, bottom);
+  } else {
+    flagShape.lineTo(0.67, bottom + 0.13);
+    flagShape.lineTo(0.39, bottom + 0.13);
+    flagShape.lineTo(0.335, bottom);
+    flagShape.lineTo(0.28, bottom + 0.13);
+    flagShape.lineTo(0, bottom + 0.13);
+  }
   flagShape.closePath();
+
+  const barShape = (x0, x1) => {
+    const shape = new THREE.Shape();
+    shape.moveTo(x0, middle - 0.045);
+    shape.lineTo(x1, middle - 0.045);
+    shape.lineTo(x1, middle + 0.045);
+    shape.lineTo(x0, middle + 0.045);
+    shape.closePath();
+    return shape;
+  };
+  const shapeParts = [
+    { shape: flagShape, color: TEAM_HEX[team], z: 0 },
+    ...(team === 0
+      ? [{ shape: barShape(0.15, 0.52), color: 0xe8ddc5, z: 0.002 }]
+      : [
+        { shape: barShape(0.13, 0.29), color: 0xe8ddc5, z: 0.002 },
+        { shape: barShape(0.38, 0.54), color: 0xe8ddc5, z: 0.002 },
+      ]),
+  ];
+  const vertices = [];
+  const colors = [];
+  const indices = [];
+  for (const part of shapeParts) {
+    const geometry = new THREE.ShapeGeometry(part.shape);
+    const positionAttribute = geometry.getAttribute('position');
+    const sourceIndex = geometry.getIndex();
+    const offset = vertices.length / 3;
+    const partColor = new THREE.Color(part.color);
+    for (let index = 0; index < positionAttribute.count; index++) {
+      vertices.push(positionAttribute.getX(index), positionAttribute.getY(index), part.z);
+      colors.push(partColor.r, partColor.g, partColor.b);
+    }
+    if (sourceIndex) {
+      for (let index = 0; index < sourceIndex.count; index++) indices.push(offset + sourceIndex.getX(index));
+    } else {
+      for (let index = 0; index < positionAttribute.count; index++) indices.push(offset + index);
+    }
+    geometry.dispose();
+  }
+  const flagGeometry = new THREE.BufferGeometry();
+  flagGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  flagGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  flagGeometry.setIndex(indices);
+  flagGeometry.computeVertexNormals();
   const flag = new THREE.Mesh(
-    new THREE.ShapeGeometry(flagShape),
-    new THREE.MeshBasicMaterial({ color: TEAM_HEX[team], side: THREE.DoubleSide }),
+    flagGeometry,
+    new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: true, side: THREE.DoubleSide }),
   );
   flag.position.z = 0.035;
   standard.add(flag);
@@ -809,7 +866,7 @@ function createArcheryRangeVisual(building) {
   roof.position.y = 0.38;
   const canopyTrim = new THREE.Mesh(
     new THREE.BoxGeometry(3.42, 0.105, 0.13),
-    new THREE.MeshBasicMaterial({ color: teamColor }),
+    timberMaterial,
   );
   canopyTrim.position.set(0, 0, 1.27);
   roof.add(canopyTrim);
@@ -914,7 +971,7 @@ function createBarracksVisual(building) {
   });
   const ridge = new THREE.Mesh(
     new THREE.BoxGeometry(0.16, 0.16, 3.18),
-    new THREE.MeshBasicMaterial({ color: teamColor }),
+    roofMaterial,
   );
   ridge.position.y = 1.63;
   group.add(ridge);
@@ -928,7 +985,7 @@ function createBarracksVisual(building) {
   finishPieces.push(gate);
   const shieldSign = new THREE.Mesh(
     new THREE.CylinderGeometry(0.21, 0.15, 0.055, 6),
-    new THREE.MeshBasicMaterial({ color: teamColor }),
+    new THREE.MeshBasicMaterial({ color: 0x6f644d }),
   );
   shieldSign.geometry.rotateX(Math.PI / 2);
   shieldSign.position.set(0, 1.12, 1.25);
