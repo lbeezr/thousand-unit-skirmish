@@ -74,7 +74,7 @@ let lastCheckpointBytes = 0;
 let lastCheckpointWriteMs = 0;
 let lastCheckpointCaptureMs = 0;
 let lastCheckpointSerializeMs = 0;
-const configuredMapPath = path.resolve(ROOT, process.env.RTS_MAP || 'maps/stone-pass.json');
+const configuredMapPath = path.resolve(ROOT, process.env.RTS_MAP || 'maps/forked-vale.json');
 if (!Number.isInteger(MAX_PEERS) || MAX_PEERS < 2 || MAX_PEERS > 256) {
   throw new Error('RTS_MAX_PEERS must be an integer between 2 and 256.');
 }
