@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { execFileSync, spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { createServer } from 'node:net';
@@ -10,7 +11,32 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const mapPath = path.join(root, 'maps/forked-vale.json');
 const fixtureMapId = 'gather-build-opening';
-const baselineCommit = process.env.RTS_BASELINE_COMMIT || 'not-supplied';
+// Set this to the exact Git SHA of the server source before running the scenario.
+const baselineCommit = process.env.RTS_BASELINE_COMMIT?.trim() || '';
+if (!/^[0-9a-f]{40,64}$/i.test(baselineCommit)) {
+  throw new Error('RTS_BASELINE_COMMIT must be the full 40- or 64-character server-source Git SHA.');
+}
+let checkoutCommit;
+try {
+  checkoutCommit = execFileSync('git', ['rev-parse', 'HEAD'], {
+    cwd: root,
+    encoding: 'utf8',
+  }).trim();
+} catch (error) {
+  throw new Error(`The scenario root must be a Git checkout to bind the baseline: ${error.message}`);
+}
+if (checkoutCommit.toLowerCase() !== baselineCommit.toLowerCase()) {
+  throw new Error(`RTS_BASELINE_COMMIT ${baselineCommit} does not match scenario root HEAD ${checkoutCommit}.`);
+}
+const trackedChanges = execFileSync('git', ['status', '--porcelain', '--untracked-files=all'], {
+  cwd: root,
+  encoding: 'utf8',
+}).trim();
+if (trackedChanges) {
+  throw new Error(`The scenario root has changes; exact baseline evidence requires a clean checkout:\n${trackedChanges}`);
+}
+const mapSourceText = await readFile(mapPath, 'utf8');
+const mapSourceSha256 = createHash('sha256').update(mapSourceText).digest('hex');
 const temporary = await mkdtemp(path.join(os.tmpdir(), 'rts-gather-build-opening-'));
 const listener = createServer();
 listener.listen(0, '127.0.0.1');
@@ -596,7 +622,7 @@ try {
   assert.equal(azureWelcome.player.team, 0);
   assert.equal(emberWelcome.player.team, 1);
 
-  const map = JSON.parse(await readFile(mapPath, 'utf8'));
+  const map = JSON.parse(mapSourceText);
   assert.equal(map.id, 'forked-vale', 'economy fixture must use Forked Vale geometry');
   map.id = fixtureMapId;
   map.name = 'GATHER BUILD OPENING';
@@ -628,6 +654,7 @@ try {
       scenario: 'gather-build-opening',
       event: 'round-complete',
       baselineCommit,
+      mapSourceSha256,
       ...round,
     });
     if (index < matrix.length - 1) await resetOpening(24);
@@ -638,6 +665,7 @@ try {
     event: 'complete',
     baselineCommit,
     baseMap: mapPath,
+    mapSourceSha256,
     fixtureMap: fixtureMapId,
     startingArmySize: 24,
     startingResources: { food: 150, wood: 250 },
@@ -651,6 +679,7 @@ try {
     scenario: 'gather-build-opening',
     event: 'failed',
     baselineCommit,
+    mapSourceSha256,
     error: { name: error.name, message: error.message, stack: error.stack },
     completedRounds,
     latestTeamState: failureSnapshots(),
