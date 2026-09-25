@@ -33,64 +33,106 @@ export function environmentTheme(definition) {
     ? definition.terrainBase : definition.id === 'cinder-ridge' ? 'cinder' : 'meadow';
 }
 
-function groundRectangleGeometry(rectangles, definition, y, feather = false) {
-  const vertices = [];
-  const uvs = [];
-  const colors = [];
-  const indices = [];
-  for (const rect of rectangles) {
-    const x0 = rect.column - definition.width / 2;
-    const x1 = x0 + rect.width;
-    const z0 = rect.row - definition.height / 2;
-    const z1 = z0 + rect.height;
-    const edgeX = feather ? Math.min(0.7, rect.width / 2) : 0;
-    const edgeZ = feather ? Math.min(0.7, rect.height / 2) : 0;
-    const xs = feather ? [x0, x0 + edgeX, x1 - edgeX, x1] : [x0, x1];
-    const zs = feather ? [z0, z0 + edgeZ, z1 - edgeZ, z1] : [z0, z1];
-    const first = vertices.length / 3;
-    for (let zi = 0; zi < zs.length; zi++) {
-      for (let xi = 0; xi < xs.length; xi++) {
-        const x = xs[xi];
-        const z = zs[zi];
-        vertices.push(x, y, z);
-        uvs.push((x + definition.width / 2) / 12, (z + definition.height / 2) / 12);
-        if (feather) colors.push(1, 1, 1,
-          xi === 0 || xi === xs.length - 1 || zi === 0 || zi === zs.length - 1 ? 0 : 1);
-      }
-    }
-    for (let zi = 0; zi < zs.length - 1; zi++) {
-      for (let xi = 0; xi < xs.length - 1; xi++) {
-        const a = first + zi * xs.length + xi;
-        const b = a + 1;
-        const c = a + xs.length;
-        const d = c + 1;
-        indices.push(a, d, b, a, c, d);
-      }
-    }
+function addGroundQuad(buffer, definition, x0, z0, x1, z1, y, alpha = [1, 1, 1, 1]) {
+  const first = buffer.vertices.length / 3;
+  for (const [x, z, opacity] of [
+    [x0, z0, alpha[0]], [x1, z0, alpha[1]],
+    [x0, z1, alpha[2]], [x1, z1, alpha[3]],
+  ]) {
+    buffer.vertices.push(x, y, z);
+    // Every region samples the same world-space texture coordinates.
+    buffer.uvs.push((x + definition.width / 2) / 12, (z + definition.height / 2) / 12);
+    buffer.colors.push(1, 1, 1, opacity);
   }
+  buffer.indices.push(first, first + 3, first + 1, first, first + 2, first + 3);
+}
+
+function finishGroundGeometry(buffer) {
   const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-  geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-  if (feather) geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 4));
-  geometry.setIndex(indices);
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(buffer.vertices, 3));
+  geometry.setAttribute('uv', new THREE.Float32BufferAttribute(buffer.uvs, 2));
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(buffer.colors, 4));
+  geometry.setIndex(buffer.indices);
   geometry.computeVertexNormals();
   return geometry;
 }
 
+function groundBuffer() {
+  return { vertices: [], uvs: [], colors: [], indices: [] };
+}
+
+function paintedGroundGeometry(rectangles, definition, materialIndex, materialGrid) {
+  const buffer = groundBuffer();
+  const halfX = definition.width / 2;
+  const halfZ = definition.height / 2;
+  const feather = 0.42;
+  const y = -0.019;
+  for (const rect of rectangles) {
+    const x0 = rect.column - halfX;
+    const z0 = rect.row - halfZ;
+    addGroundQuad(buffer, definition, x0, z0, x0 + rect.width, z0 + rect.height, y);
+  }
+  // Feather only the outside of the material union. Adjacent rectangles of the
+  // same paint stay fully opaque, so compression cannot introduce hairline seams.
+  for (const rect of rectangles) {
+    for (let row = rect.row; row < rect.row + rect.height; row++) {
+      for (let column = rect.column; column < rect.column + rect.width; column++) {
+        const index = row * definition.width + column;
+        const left = column > 0 && materialGrid[index - 1] !== materialIndex;
+        const right = column + 1 < definition.width && materialGrid[index + 1] !== materialIndex;
+        const top = row > 0 && materialGrid[index - definition.width] !== materialIndex;
+        const bottom = row + 1 < definition.height
+          && materialGrid[index + definition.width] !== materialIndex;
+        if (!(left || right || top || bottom)) continue;
+        const x0 = column - halfX;
+        const x1 = x0 + 1;
+        const z0 = row - halfZ;
+        const z1 = z0 + 1;
+        if (left) addGroundQuad(buffer, definition, x0 - feather, z0, x0, z1, y, [0, 1, 0, 1]);
+        if (right) addGroundQuad(buffer, definition, x1, z0, x1 + feather, z1, y, [1, 0, 1, 0]);
+        if (top) addGroundQuad(buffer, definition, x0, z0 - feather, x1, z0, y, [0, 0, 1, 1]);
+        if (bottom) addGroundQuad(buffer, definition, x0, z1, x1, z1 + feather, y, [1, 1, 0, 0]);
+        if (left && top) addGroundQuad(buffer, definition, x0 - feather, z0 - feather, x0, z0, y, [0, 0, 0, 1]);
+        if (right && top) addGroundQuad(buffer, definition, x1, z0 - feather, x1 + feather, z0, y, [0, 0, 1, 0]);
+        if (left && bottom) addGroundQuad(buffer, definition, x0 - feather, z1, x0, z1 + feather, y, [0, 1, 0, 0]);
+        if (right && bottom) addGroundQuad(buffer, definition, x1, z1, x1 + feather, z1 + feather, y, [1, 0, 0, 0]);
+      }
+    }
+  }
+  return finishGroundGeometry(buffer);
+}
+
 export function createGroundSurfaces(definition) {
   const base = environmentTheme(definition);
+  const baseBuffer = groundBuffer();
+  addGroundQuad(baseBuffer, definition,
+    -definition.width / 2, -definition.height / 2,
+    definition.width / 2, definition.height / 2, -0.025);
   const meshes = [new THREE.Mesh(
-    groundRectangleGeometry([{ column: 0, row: 0, width: definition.width, height: definition.height }], definition, -0.025),
+    finishGroundGeometry(baseBuffer),
     new THREE.MeshBasicMaterial({ map: grounds[base], color: 0xd2d4bd }),
   )];
-  for (const material of TERRAIN_MATERIALS) {
+  const materialGrid = new Int8Array(definition.width * definition.height);
+  materialGrid.fill(-1);
+  for (const patch of definition.terrainPatches || []) {
+    const materialIndex = TERRAIN_MATERIALS.indexOf(patch.material);
+    if (materialIndex < 0) continue;
+    for (let row = patch.row; row < patch.row + patch.height; row++) {
+      for (let column = patch.column; column < patch.column + patch.width; column++) {
+        materialGrid[row * definition.width + column] = materialIndex;
+      }
+    }
+  }
+  for (const [materialIndex, material] of TERRAIN_MATERIALS.entries()) {
     const rectangles = (definition.terrainPatches || []).filter((patch) => patch.material === material);
     if (!rectangles.length) continue;
-    meshes.push(new THREE.Mesh(
-      groundRectangleGeometry(rectangles, definition, -0.019, true),
+    const mesh = new THREE.Mesh(
+      paintedGroundGeometry(rectangles, definition, materialIndex, materialGrid),
       new THREE.MeshBasicMaterial({ map: grounds[material], color: 0xd2d4bd,
         vertexColors: true, transparent: true, depthWrite: false }),
-    ));
+    );
+    mesh.renderOrder = materialIndex + 1;
+    meshes.push(mesh);
   }
   return meshes;
 }

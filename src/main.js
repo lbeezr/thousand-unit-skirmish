@@ -174,6 +174,7 @@ const ui = {
   studioWidth: document.querySelector('#studio-width'),
   studioHeight: document.querySelector('#studio-height'),
   studioTerrainBase: document.querySelector('#studio-terrain-base'),
+  studioGroundBrushSize: document.querySelector('#studio-ground-brush-size'),
   studioStartingArmySize: document.querySelector('#studio-starting-army-size'),
   studioStartingFood: document.querySelector('#studio-starting-food'),
   studioStartingWood: document.querySelector('#studio-starting-wood'),
@@ -4389,6 +4390,10 @@ async function importEditorMap(file) {
   drawEditorGrid();
 }
 
+function isGroundEditorTool(tool) {
+  return tool === 'ground-reset' || tool.startsWith('ground:');
+}
+
 function setEditorTool(tool) {
   editorTool = tool;
   for (const button of document.querySelectorAll('[data-map-tool]')) {
@@ -4397,7 +4402,7 @@ function setEditorTool(tool) {
   const hints = {
     rock: 'DRAG TO PAINT LOW ROCK OUTCROPS', stone: 'DRAG TO PAINT BASALT RIDGES',
     cliff: 'DRAG TO PAINT TALL CLIFFS', forest: 'DRAG TO PAINT FOREST', water: 'DRAG TO PAINT WATER',
-    'ground-reset': 'DRAG TO REVEAL THE BASE GROUND MATERIAL',
+    'ground-reset': 'DRAG TO BRUSH THE BASE GROUND MATERIAL',
     erase: 'DRAG TO CLEAR TERRAIN', azure: 'CLICK TO PLACE AZURE SPAWN',
     ember: 'CLICK TO PLACE EMBER SPAWN', 'resource-food': 'CLICK EMPTY CELL TO PLACE · CLICK NODE TO EDIT',
     'resource-wood': 'CLICK EMPTY CELL TO PLACE · CLICK NODE TO EDIT',
@@ -4411,7 +4416,7 @@ function setEditorTool(tool) {
   syncEditorResourceControls();
   const hint = ui.mapStudio.querySelector('.studio-grid-footer span:last-child');
   if (hint) hint.textContent = tool.startsWith('ground:')
-    ? `DRAG TO PAINT ${tool.slice(7).replace('-', ' ').toUpperCase()}` : hints[tool] || '';
+    ? `DRAG TO BRUSH ${tool.slice(7).replace('-', ' ').toUpperCase()}` : hints[tool] || '';
 }
 
 function resizeEditorMap() {
@@ -4494,6 +4499,27 @@ function editorDragRect(drag) {
     width: Math.abs(drag.current.column - drag.start.column) + 1,
     height: Math.abs(drag.current.row - drag.start.row) + 1,
   };
+}
+
+function paintEditorGroundStroke(drag, next) {
+  const from = drag.current;
+  const steps = Math.max(Math.abs(next.column - from.column), Math.abs(next.row - from.row));
+  const radius = (Number(ui.studioGroundBrushSize.value) - 1) / 2;
+  const limit = (radius + 0.2) ** 2;
+  for (let step = 0; step <= steps; step++) {
+    const column = Math.round(from.column + (next.column - from.column) * step / Math.max(1, steps));
+    const row = Math.round(from.row + (next.row - from.row) * step / Math.max(1, steps));
+    for (let dy = -radius; dy <= radius; dy++) {
+      for (let dx = -radius; dx <= radius; dx++) {
+        if (dx * dx + dy * dy > limit) continue;
+        const paintedColumn = column + dx;
+        const paintedRow = row + dy;
+        if (paintedColumn < 0 || paintedRow < 0
+          || paintedColumn >= editorDefinition.width || paintedRow >= editorDefinition.height) continue;
+        drag.paintCells.add(paintedRow * editorDefinition.width + paintedColumn);
+      }
+    }
+  }
 }
 
 function drawEditorGrid() {
@@ -4604,8 +4630,15 @@ function drawEditorGrid() {
     context.fill();
     context.stroke();
   }
-  if (editorDrag && ['rock', 'stone', 'cliff', 'forest', 'water', 'erase', 'objective', 'ground-reset'].includes(editorDrag.tool)
-    || editorDrag?.tool.startsWith('ground:')) {
+  if (editorDrag && isGroundEditorTool(editorDrag.tool)) {
+    const material = editorDrag.tool === 'ground-reset' ? ui.studioTerrainBase.value : editorDrag.tool.slice(7);
+    context.fillStyle = TERRAIN_COLORS[material] || TERRAIN_COLORS.meadow;
+    context.globalAlpha = 0.78;
+    for (const index of editorDrag.paintCells) {
+      context.fillRect(index % editorDefinition.width, Math.floor(index / editorDefinition.width), 1, 1);
+    }
+    context.globalAlpha = 1;
+  } else if (editorDrag && ['rock', 'stone', 'cliff', 'forest', 'water', 'erase', 'objective'].includes(editorDrag.tool)) {
     const zone = editorDragRect(editorDrag);
     context.fillStyle = editorDrag.tool === 'objective' ? 'rgba(213,239,120,.28)' : 'rgba(255,255,255,.19)';
     context.strokeStyle = editorDrag.tool === 'objective' ? '#d5ef78' : 'rgba(242,246,221,.9)';
@@ -5934,6 +5967,10 @@ ui.studioImportFile.addEventListener('change', async () => {
 });
 document.querySelector('#studio-width').addEventListener('change', resizeEditorMap);
 document.querySelector('#studio-height').addEventListener('change', resizeEditorMap);
+ui.studioGroundBrushSize.addEventListener('change', () => {
+  setEditorTool(editorTool);
+  scheduleMapStudioDraftSave();
+});
 ui.studioTerrainBase.addEventListener('change', () => {
   editorDefinition.terrainBase = ui.studioTerrainBase.value;
   drawEditorGrid();
@@ -6114,13 +6151,21 @@ ui.studioGrid.addEventListener('pointerdown', (event) => {
   }
   if (editorTool === 'objective' && !getSelectedEditorTrigger() && !editorTriggerCreationPending) return;
   editorDrag = { tool: editorTool, start: cell, current: cell };
+  if (isGroundEditorTool(editorTool)) {
+    editorDrag.paintCells = new Set();
+    paintEditorGroundStroke(editorDrag, cell);
+  }
   ui.studioGrid.setPointerCapture(event.pointerId);
   drawEditorGrid();
   event.preventDefault();
 });
 ui.studioGrid.addEventListener('pointermove', (event) => {
   if (!editorDrag) return;
-  editorDrag.current = editorCellFromPointer(event) || editorDrag.current;
+  const next = editorCellFromPointer(event);
+  if (next) {
+    if (isGroundEditorTool(editorDrag.tool)) paintEditorGroundStroke(editorDrag, next);
+    editorDrag.current = next;
+  }
   drawEditorGrid();
 });
 function finishEditorPointer(event, commit) {
@@ -6128,7 +6173,9 @@ function finishEditorPointer(event, commit) {
   const drag = editorDrag;
   editorDrag = null;
   if (commit) {
-    drag.current = editorCellFromPointer(event) || drag.current;
+    const next = editorCellFromPointer(event) || drag.current;
+    if (isGroundEditorTool(drag.tool)) paintEditorGroundStroke(drag, next);
+    drag.current = next;
     const bounds = editorDragRect(drag);
     if (drag.tool === 'objective') {
       const zone = {
@@ -6166,14 +6213,10 @@ function finishEditorPointer(event, commit) {
         syncEditorTriggerControls();
         ui.studioMessage.textContent = `Capture zone “${trigger.name}” set to ${bounds.width} × ${bounds.height} cells.`;
       }
-    } else if (drag.tool.startsWith('ground:') || drag.tool === 'ground-reset') {
+    } else if (isGroundEditorTool(drag.tool)) {
       const material = drag.tool === 'ground-reset' ? -1
         : TERRAIN_MATERIALS.indexOf(drag.tool.slice(7));
-      for (let row = bounds.row; row < bounds.row + bounds.height; row++) {
-        for (let column = bounds.column; column < bounds.column + bounds.width; column++) {
-          editorGroundMaterials[row * editorDefinition.width + column] = material;
-        }
-      }
+      for (const index of drag.paintCells) editorGroundMaterials[index] = material;
       ui.studioMessage.textContent = material < 0 ? 'Base ground restored.'
         : `${TERRAIN_MATERIALS[material].replace('-', ' ')} ground painted.`;
     } else {
