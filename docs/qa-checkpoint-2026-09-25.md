@@ -1,6 +1,6 @@
 # QA checkpoint — 25 September 2026
 
-This checkpoint supplements the [vertical-slice acceptance record](qa-vertical-slice.md). It separates the `f1d6482` staging browser run, the latest `322e68e` read-only staging check, production identity, local synthetic runs, and human playtests. No deployment or external human session was performed.
+This checkpoint supplements the [vertical-slice acceptance record](qa-vertical-slice.md). It separates the `f1d6482` staging browser run, the latest `322e68e` read-only staging check, production identity, local synthetic runs, and human playtests. QA did not initiate a deployment or conduct an external human session; staging automatically advanced to `322e68e` after PRs #24 and #28 merged.
 
 ## Deployment identity
 
@@ -11,6 +11,19 @@ This checkpoint supplements the [vertical-slice acceptance record](qa-vertical-s
 
 Staging's latest health response reported 8/8 room records and zero connected invite peers. The default Stone Pass worker had one connected seat, so QA did not join it or change its match. One disposable QA invite room remains stored. There is no delete endpoint; do not create another invite room until the room-cap follow-up establishes safe expiry and capacity.
 
+## Current-main synthetic rechecks
+
+QA-003 builder parity, the worker counter, and QA-005 seat parity were retested against current main `322e68e`. The separate both-winner Forked Vale scenario ran on PR #28 head `bbfdc81` before that change merged; its map/scenario update is now included in `322e68e`. These local two-seat fixtures are synthetic protocol checks, not human matches or hosted network evidence. The `f1d6482` to `322e68e` delta did not change `server.mjs`.
+
+| Gate | Current-main result | Evidence boundary |
+| --- | --- | --- |
+| QA-003 builder parity | Four swapped Forked Vale Barracks/Range builds completed at 10.9 s; first infantry/archer appeared at 23.0/18.0 s on either seat. Both workers were 0.5 units from the building edge at the 10 s sample. | Local scripted protocol result; contested human opening pace remains unknown. |
+| Worker counter | Infantry beat workers with 60 HP remaining for the winner under both team assignments. | Local controlled combat fixture; does not establish raid value or full-match worker survival. |
+| QA-005 seat parity | All four 8v8 attack-move cases passed at 12.3 s. The 3/4-survivor, 300/350-HP edge followed spawn side; command order did not change results. | Local scripted fixture; no strategic win-rate or human balance claim. |
+| Forked Vale winner/reset follow-up | Both winner assignments passed the objective sequence, 20 s hold, and paired reset to the authored 24-unit opening roster. | Scenario branch `bbfdc81`, later merged into `322e68e`; runner time is wall-clock process time, not in-game match duration. |
+
+The detailed current-main results and raw scenario definitions are recorded in the [balance evidence PR #23](https://github.com/lbliii/thousand-unit-skirmish/pull/23). These passes close the specific local builder and simulation-order regressions. They do not close the human-playtest gates.
+
 ## Staging result and rematch
 
 Two isolated headless Chrome 153 profiles used the staging `f1d6482` default Stone Pass room at 1280 × 600. Both showed `ROOM LIVE`, `2 / 2 PLAYERS`, and the same map. A scripted game-protocol order moved eight Azure infantry into the capture zone; the authoritative match ended with Azure as winner. The flow preceded staging's redeploy to `322e68e`; that commit changed no app code or Stone Pass data, and the served UI asset hashes are unchanged. This is browser-rendered staging evidence with a synthetic order, not a human playtest or a fresh WSS run on `322e68e`.
@@ -20,7 +33,7 @@ Two isolated headless Chrome 153 profiles used the staging `f1d6482` default Sto
 | Azure | `VICTORY` — `AZURE SECURED CONTROL THE PASS` | x=440–840, y=90–284 | `Play again`, y=221–263 | y=316–586 |
 | Ember | `DEFEAT` — `AZURE SECURED CONTROL THE PASS` | y=104–270 | `WAITING FOR HOST TO RESET`, y=235–249 | y=316–586 |
 
-Both result areas remained visible and hit-testable above the dock. Clicking Azure's real `Play again` action returned both clients to neutral objectives and the complete 1,000-unit roster. QA-004's original 1280 × 600 overlap no longer reproduces on staging.
+Both result areas remained visible and hit-testable above the dock. Clicking Azure's real `Play again` action returned both clients to neutral objectives and the full 1,000-unit total roster (500 per seat). QA-004's original 1280 × 600 overlap no longer reproduces on staging.
 
 | Capture | Resolution |
 | --- | --- |
@@ -65,15 +78,15 @@ Read-only staging checks used a syntactically valid, nonexistent 32-character ro
 
 This shows the staging edge prevents client-supplied values from changing the origin decision; the statuses cannot distinguish whether it strips or overwrites those headers. The requests did not create a room, start an invite worker, or connect to a match. Railway's edge currently protects staging, but that does not fix the app-level bypass if exposed behind a proxy that passes the spoofed values.
 
-**Candidate retest:** Exact PR #31 head `3b8d2a26fadf7c1d51a5e9538bbd00f63959da45` passed `node scripts/origin-policy-scenario.mjs` (14 assertions), including a negative `Origin: http://attacker.example:4173` / `Host: attacker.example:4173` DNS-rebinding case and positive 127.0.0.1, localhost, and ::1 cases. `node scripts/origin-proxy-scenario.mjs` passed through the disposable supervisor and worker: the configured staging domain returned 101 despite forged forwarded headers, while attacker Origin plus spoofed X-Forwarded-Host/Proto returned 403. The full `npm test` suite passed. The clean release pack reported source `3b8d2a2`, `sourceDirty:false`, and included `origin-policy.mjs`. No deployment was performed. The candidate passes; the release blocker remains until the fix is merged and verified in a deployment.
+**Candidate retest:** Exact PR #31 head `3b8d2a26fadf7c1d51a5e9538bbd00f63959da45` passed `node scripts/origin-policy-scenario.mjs` (14 assertions), including a negative `Origin: http://attacker.example:4173` / `Host: attacker.example:4173` DNS-rebinding case and positive 127.0.0.1, localhost, and ::1 cases. `node scripts/origin-proxy-scenario.mjs` passed through the disposable supervisor and worker: the configured staging domain returned 101 despite forged forwarded headers, while attacker Origin plus spoofed X-Forwarded-Host/Proto returned 403. The full `npm test` suite passed. The clean release pack reported source `3b8d2a2`, `sourceDirty:false`, and included `origin-policy.mjs`. QA did not initiate or perform an origin-fix deployment. The candidate passes; the release blocker remains until the fix is merged and verified in a deployment.
 
 **Routing:** The verified candidate uses an explicit public-origin allowlist and restricts unconfigured local fallback to loopback hosts. Railway documents `RAILWAY_PUBLIC_DOMAIN` as the bare public service domain, which the candidate normalizes to HTTPS; see the [Railway variables reference](https://docs.railway.com/variables/reference). Staging's current edge result is defense in depth, not a fix for direct app exposure. Keep the gate open until the change is merged and the release's public-origin configuration is confirmed.
 
 ## Next acceptance work
 
-1. **P0 — QA-007:** After the fix is merged, verify the deployed public-origin configuration and repeat the external trust-boundary smoke. PR #31's exact local head already passes the policy, proxy, full-suite, and release-pack checks.
-2. **P0 — seat recovery:** Repeat staging reload and worker-restart recovery with the original seat tokens in a room that can be safely reused. The failed attempt after closing temporary profiles does not establish a reconnect result.
-3. **P0 — release identity:** Resolve production's source SHA and run production asset/WSS smoke before claiming the deployed first slice is verified.
-4. **P0 — human playtest:** Run two novice pairs, swap seats, and record spontaneous observations separately from prompts. Complete the authored scenario and exit interview.
-5. **P1 — scale/network:** Local current-main samples are mixed: movement, browser rendering, and snapshot profiles passed individually; attack-move exceeded the 100 ms diagnostic ceiling at 187.704 ms. A hosted 2,000-unit run on current staging remains pending. Before scheduling it, agree the 80 ms RTT / 1% loss profile, Railway machine, CPU and egress budgets, hard stop thresholds, and a staging window with the infrastructure owner. Current staging is at its 8-room cap.
-6. **P1 — accessibility/readability:** Review the saved square/diamond candidate evidence at both numeric zooms on meadow and Cinder Ridge, then conduct the human two-army readability review.
+1. **P0 — QA-007 release integration:** PR #31's exact local head already passes policy, proxy, full-suite, and release-pack checks. After direct merge authorization, the release owner must confirm the public-origin configuration in staging and repeat the allowlisted-origin and forged-attacker-origin handshake checks. Do not promote production as part of this QA checkpoint.
+2. **P0 — seat recovery:** After infrastructure confirms a safe reusable invite room and preserves both seat tokens, use two separate browser profiles to test reload and worker restart one step at a time. Confirm the original seat and match state return and the other client remains in control. The failed attempt after the profiles lost their tokens is inconclusive; staging is currently at its 8-room cap.
+3. **P0 — production identity:** Obtain the exact source SHA or immutable image/artifact digest for the manually promoted deployment, compare its release manifest and served asset hashes to that artifact, then perform read-only production asset and WSS smoke. `/ready`, `/health`, or matching individual static files alone do not prove a complete build identity.
+4. **P0 — human playtest:** Run two novice pairs through the authored Forked Vale scenario, swap seats between rounds, and record unprompted team/objective/route/control identification within two minutes, first building/contest, win time, starvation, and two viable responses per seat. Mark observations as spontaneous or prompted; finish each pair with the decision/alternative exit interview. Keep these results separate from scripted protocol checks.
+5. **P1 — scale/network:** One local attack-move diagnostic exceeded the 99.999 ms ceiling at 187.704 ms. A later 170.599 ms bundle may have overlapped a balance run and is not a clean repeat; see QA-002. After all local suites and server processes exit, run one isolated local repeat. For hosted validation, first agree the 80 ms RTT / 1% loss profile, Railway machine, CPU and egress budgets, hard stop thresholds, and room-capacity window with infrastructure; current staging is at its 8-room cap.
+6. **P1 — accessibility/readability:** Review the square/diamond minimap candidate at both numeric zooms on meadow and Cinder Ridge, then conduct the human two-army readability review. Candidate screenshots remain inline in the UI task and were not included with these staging-baseline captures.
