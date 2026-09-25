@@ -67,6 +67,9 @@ server.stderr.on('data', chunk => { serverLog += chunk.toString(); });
 
 const EVENT_TIMEOUT_MS = 120_000;
 const RESOURCE_INTERACTION_RANGE = 1.5;
+// Economy deposits run before movement; three-tick snapshots can observe a worker
+// up to 0.26 world units into its return-to-node route after a valid deposit.
+const DEPOSIT_SNAPSHOT_POSITION_TOLERANCE = 0.3;
 const BUILDING_INTERACTION_RANGE = 1.4;
 const CARGO_EPSILON = 0.0001;
 const clients = [];
@@ -316,7 +319,8 @@ function depositEventForState(client, state, team, type, gathererIds, spawn) {
     return previousUnit && currentUnit
       && previousUnit[6] > CARGO_EPSILON && previousUnit[7] === type
       && currentUnit[6] <= CARGO_EPSILON
-      && distance(currentUnit[2], currentUnit[3], spawn.x, spawn.z) <= RESOURCE_INTERACTION_RANGE;
+      && distance(currentUnit[2], currentUnit[3], spawn.x, spawn.z)
+        <= RESOURCE_INTERACTION_RANGE + DEPOSIT_SNAPSHOT_POSITION_TOLERANCE;
   });
   if (cargoTransitionsAtBase.length === 0) return null;
   return {
@@ -334,8 +338,9 @@ function depositEventForState(client, state, team, type, gathererIds, spawn) {
         id,
         cargoBefore: previousUnit[6],
         cargoTypeBefore: previousUnit[7],
-        positionAtDeposit: { x: currentUnit[2], z: currentUnit[3] },
-        distanceToSpawn: distance(currentUnit[2], currentUnit[3], spawn.x, spawn.z),
+        positionObservedAfterDeposit: { x: currentUnit[2], z: currentUnit[3] },
+        distanceToSpawnAtObservation: distance(currentUnit[2], currentUnit[3], spawn.x, spawn.z),
+        maxAcceptedDistanceAtObservation: RESOURCE_INTERACTION_RANGE + DEPOSIT_SNAPSHOT_POSITION_TOLERANCE,
       };
     }),
   };
@@ -636,8 +641,11 @@ try {
   map.name = 'GATHER BUILD OPENING';
   map.startingArmySize = 24;
   map.startingResources = { food: 150, wood: 250 };
-  // Forked Vale's 120-second Relief Caravan would contaminate bank-delta measurements.
+  // Disable map-wide income while preserving Forked Vale's objective/timed-victory structure.
+  map.triggers = map.triggers.map(trigger => ({ ...trigger, foodReward: 0, woodReward: 0 }));
   map.scenarioEvents = [];
+  assert.ok(map.triggers.every(trigger => trigger.foodReward === 0 && trigger.woodReward === 0),
+    'capture rewards must be disabled for bank-delta measurements');
   assert.equal(map.scenarioEvents.length, 0, 'scripted scenario events must be disabled');
   const afterPublish = clients.map(client => client.messages.length - 1);
   azure.send({ type: 'publishMap', map });
@@ -680,6 +688,7 @@ try {
     startingArmySize: 24,
     startingResources: { food: 150, wood: 250 },
     builderGathererMatrix: 'counterbalanced across both teams and both building types',
+    captureResourceRewardsDisabled: true,
     scriptedScenarioEventsDisabled: true,
     measurementNote: 'Raw match-clock milestones only; no balance timing threshold is asserted.',
     rounds: completedRounds,
