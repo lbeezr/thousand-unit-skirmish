@@ -179,6 +179,20 @@ try {
   const defeatPitches = new Set(defeatProfile.map(({ from }) => from));
   assert.ok(baseLostProfile.every(({ from }) => !defeatPitches.has(from)),
     'base loss and match defeat share no fundamentals');
+  const victoryStart = createdContext.oscillatorNodes.length;
+  assert.equal(criticalAudio.play('victory'), true);
+  const victoryProfile = profile(createdContext.oscillatorNodes.slice(victoryStart));
+  assert.deepEqual(victoryProfile, [
+    { wave: 'sine', from: 880, to: 880 },
+    { wave: 'sine', from: 1108.73, to: 1108.73 },
+    { wave: 'sine', from: 1318.51, to: 1318.51 },
+    { wave: 'sine', from: 1760, to: 1760 },
+  ], 'match victory uses a bright, rising A-major fanfare');
+  const victoryPitches = new Set(victoryProfile.map(({ from }) => from));
+  assert.ok([392, 493.88, 587.33].every((pitch) => !victoryPitches.has(pitch)),
+    'match victory shares no fundamentals with objective or production-complete cues');
+  assert.ok([...victoryPitches].every((pitch) => pitch > 780),
+    'match victory stays above the selection cue sweep');
   criticalAudio.dispose();
 } finally {
   if (oldAudioContext === undefined) delete globalThis.AudioContext;
