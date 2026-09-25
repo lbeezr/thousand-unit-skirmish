@@ -3113,7 +3113,9 @@ function updateEconomyUI(state = {}, initial = false) {
     else if (ownedWorkers.length === 0) {
       ui.foodStatus.textContent = 'No living workers remain.';
     } else if (teamRosterCount >= MAX_PER_TEAM) ui.foodStatus.textContent = 'Army limit reached.';
-    else ui.foodStatus.textContent = 'Train workers at the Town Center; gather food and wood; build Barracks and ranges with wood.';
+    else ui.foodStatus.textContent = window.matchMedia('(pointer: coarse)').matches
+      ? 'Select Workers, open Orders, then target food or wood.'
+      : 'Select Workers, then right-click food or wood.';
   }
   updateCommandUI();
 }

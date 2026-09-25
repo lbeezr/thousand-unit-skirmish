@@ -237,7 +237,7 @@ h2 { font-size: 16px; font-weight: 700; }
 .worker-select-button { min-width: 0; min-height: 24px; margin-left: 0; padding: 0 3px; border: 1px solid rgba(115,184,232,.2); border-radius: 3px; background: rgba(115,184,232,.045); color: #9fc8e2; font: 500 6.5px 'DM Mono', monospace; letter-spacing: .02em; white-space: nowrap; cursor: pointer; transition: .15s ease; }
 .worker-select-button:hover:not(:disabled) { border-color: rgba(115,184,232,.48); background: rgba(115,184,232,.1); color: #c4e4f6; }
 .worker-select-button:focus-visible { outline: 1px solid var(--blue); outline-offset: 2px; }
-.worker-select-button:disabled { opacity: .38; cursor: not-allowed; }
+.worker-select-button:disabled { opacity: .64; cursor: not-allowed; }
 .worker-select-button:first-child { margin-left: 0; }
 .idle-worker-select-button { border-color: rgba(213,239,120,.24); background: rgba(213,239,120,.055); color: var(--lime); }
 .idle-worker-select-button:hover:not(:disabled) { border-color: rgba(213,239,120,.56); background: rgba(213,239,120,.12); color: #e3f5a8; }
@@ -250,7 +250,7 @@ h2 { font-size: 16px; font-weight: 700; }
 .economy-action { display: flex; min-width: 0; min-height: 32px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 3px; padding: 5px 7px; border: 1px solid rgba(213,239,120,.17); border-radius: 4px; background: rgba(213,239,120,.035); color: #bdc9ae; text-align: left; font-size: 8px; cursor: pointer; transition: .15s ease; }
 .economy-action:hover:not(:disabled), .economy-action.active { border-color: rgba(213,239,120,.48); background: rgba(213,239,120,.09); color: var(--lime); }
 .economy-action:focus-visible { outline: 1px solid var(--lime); outline-offset: 2px; }
-.economy-action:disabled { opacity: .38; cursor: not-allowed; }
+.economy-action:disabled { opacity: .78; cursor: not-allowed; }
 .build-action { grid-column: span 2; flex-direction: row; align-items: center; justify-content: space-between; }
 .barracks-build-action { border-color: rgba(168,137,98,.26); background: rgba(168,137,98,.055); }
 .barracks-build-action:hover:not(:disabled), .barracks-build-action.active { border-color: rgba(190,158,115,.55); background: rgba(168,137,98,.14); color: #e0c194; }
@@ -293,7 +293,7 @@ h2 { font-size: 16px; font-weight: 700; }
 .order-target-toggle small { color: #a9ba99; font: 500 8px 'DM Mono', monospace; }
 .order-target-toggle:hover:not(:disabled), .order-target-toggle.active { border-color: var(--lime); background: rgba(213,239,120,.2); }
 .order-target-toggle:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
-.order-target-toggle:disabled { opacity: .4; cursor: not-allowed; }
+.order-target-toggle:disabled { opacity: .65; cursor: not-allowed; }
 .order-status { display: flex; min-height: 23px; align-items: center; gap: 7px; margin-top: 7px; padding: 5px 8px; border: 1px solid rgba(214,226,197,.1); border-radius: 4px; background: rgba(255,255,255,.018); color: #778477; font: 500 7px/1.35 'DM Mono', monospace; letter-spacing: .045em; overflow-wrap: anywhere; }
 .order-status::before { width: 5px; height: 5px; flex: 0 0 5px; border-radius: 50%; background: #667466; content: ''; }
 .order-status[data-state="pending"], .order-status[data-state="planning"] { border-color: rgba(213,239,120,.24); color: #cad99b; }
@@ -311,7 +311,7 @@ h2 { font-size: 16px; font-weight: 700; }
 .attack-move-toggle { display: flex; width: 100%; min-height: 31px; align-items: center; justify-content: space-between; margin-top: 8px; padding: 0 9px; border: 1px solid rgba(214,226,197,.15); border-radius: 4px; background: rgba(255,255,255,.025); color: #aab6a2; text-align: left; font-size: 9px; cursor: pointer; transition: .15s ease; }
 .attack-move-toggle:hover:not(:disabled), .attack-move-toggle.active { border-color: rgba(239,174,112,.46); background: rgba(239,174,112,.08); color: #f0b47c; }
 .attack-move-toggle:focus-visible { outline: 1px solid #f0b47c; outline-offset: 2px; }
-.attack-move-toggle:disabled { opacity: .38; cursor: not-allowed; }
+.attack-move-toggle:disabled { opacity: .65; cursor: not-allowed; }
 .attack-move-key { min-width: 16px; padding: 3px 5px; border: 1px solid rgba(214,226,197,.17); border-radius: 3px; color: inherit; text-align: center; font: 8px 'DM Mono', monospace; }
 .command-footnote { margin-top: 10px; color: #798677; font-size: 8px; line-height: 1.65; white-space: normal; }
 .keycap { padding: 2px 4px; border: 1px solid rgba(214,226,197,.16); border-radius: 2px; color: #c0c9b8; font: 8px 'DM Mono', monospace; }
@@ -702,25 +702,27 @@ html, body { width: 100%; height: 100%; overflow: hidden; }
 .control-group-count { font-size: 8px; }
 .control-group-hint { font-size: 7px; }
 .army-select-actions { margin-top: 8px; }
-.army-select-actions .text-button { font-size: 9px; }
+.army-select-actions .text-button { font-size: 11px; }
 .worker-tools { gap: 4px; margin-top: 8px; }
 .worker-select-button { min-height: 29px; font-size: 10px; }
-.worker-load { margin-top: 5px; font-size: 7px; }
+.worker-load { margin-top: 5px; font-size: 9px; }
 .economy-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 6px; }
-.economy-action { min-height: 53px; font-size: 10px; }
+.economy-action { min-height: 55px; font-size: 12px; line-height: 1.18; }
 .economy-actions .build-action, .economy-actions .archer-action { grid-column: auto; flex-direction: column; align-items: flex-start; justify-content: center; }
 .economy-statuses { display: flex; min-width: 0; flex-direction: column; }
 .economy-statuses .food-status { order: -1; }
-.action-cost { font-size: 8px; }
-.economy-section small { font-size: 8px; }
+.action-cost { font-size: 10px; }
+.economy-section small { font-size: 9px; }
 .economy-section .food-status { color: #a4b69a; }
 .command-card { margin-top: 8px; padding: 8px; }
-.command-card strong { font-size: 11px; }
-.command-card small { font-size: 9px; }
-.order-status { font-size: 8px; }
+.command-card strong { font-size: 13px; }
+.command-card small { font-size: 10px; }
+.order-target-toggle span { font-size: 12px; }
+.order-target-toggle small { font-size: 9px; }
+.order-status { font-size: 10px; }
 .formation-picker label { font-size: 9px; }
-.formation-picker select { height: 32px; font-size: 10px; }
-.attack-move-toggle { min-height: 34px; font-size: 10px; }
+.formation-picker select { height: 32px; font-size: 11px; }
+.attack-move-toggle { min-height: 34px; font-size: 11px; }
 .building-command-details { font-size: 8px; }
 
 .hud-scrim { position: absolute; z-index: 11; inset: 0; width: 100%; height: 100%; border: 0; background: rgba(4,9,5,.48); cursor: default; }
