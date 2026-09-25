@@ -3,7 +3,7 @@ import {
   addObstacleEnvironmentSprites, createConstructionGroundInstances,
   createEnvironmentSprite, createEnvironmentSpriteInstances,
   createGroundSurfaces, environmentTheme, setEnvironmentSpriteInstance,
-  setEnvironmentSpriteResourceStage, TERRAIN_MATERIALS, updateConstructionGroundInstances,
+  TERRAIN_MATERIALS, updateConstructionGroundInstances,
 } from './environment-art.mjs';
 import { unitActionPoseAllowed, unitCargoVisualState } from './unit-visual-state.mjs';
 import {
@@ -336,11 +336,15 @@ const resourceCalloutTextures = new Map();
 const woodTreeNodeSlots = new Map();
 const woodTreeNodeStages = new Map();
 const woodTreeStageCounts = new Map();
+const berryNodeSlots = new Map();
+const berryNodeStages = new Map();
+const berryStageCounts = new Map();
 const constructionGroundMeshes = new Map();
 const constructionGroundSignatures = new Map();
 const buildingVisuals = new Map();
 let woodTreeMeshes = new Map();
 let lastResourceCalloutUpdateAt = -Infinity;
+let berrySpriteMeshes = new Map();
 let localTeam = null;
 let isHost = false;
 let currentArmySize = 1000;
@@ -1201,11 +1205,6 @@ function addResourceNodeVisual(node) {
   ring.renderOrder = 2;
   addMapObject(ring);
 
-  let sprite = null;
-  if (nodeType !== 'wood') {
-    sprite = createEnvironmentSprite(`berries-${stage}`, 2.55, 1.56, node.x, node.z);
-    addMapObject(sprite);
-  }
   const callout = new THREE.Sprite(new THREE.SpriteMaterial({
     map: resourceCalloutTexture(nodeType), transparent: true, depthTest: false,
     depthWrite: false, fog: false, toneMapped: false,
@@ -1215,7 +1214,7 @@ function addResourceNodeVisual(node) {
   callout.visible = false;
   addMapObject(callout);
   resourceNodeVisuals.set(node.id, {
-    type: nodeType, ring, sprite, stock: node.stock, startingStock: node.stock, stage,
+    type: nodeType, ring, stock: node.stock, startingStock: node.stock, stage,
     x: node.x, z: node.z, callout,
   });
 }
@@ -1232,7 +1231,7 @@ function updateResourceNodeVisual(id, stock) {
   visual.ring.material.color.setHex(stock > 0 ? nodeColor : 0x77806b);
   visual.ring.material.opacity = stock > 0 ? 0.78 : 0.35;
   if (visual.type === 'wood') setWoodNodeTreeStage(id, stage);
-  else setEnvironmentSpriteResourceStage(visual.sprite, visual.type, stage);
+  else setBerryNodeStage(id, stage);
 }
 
 function updateResourceNodeCallouts(now, force = false) {
@@ -1351,6 +1350,50 @@ function buildWoodNodeInstances(nodes = []) {
   }
 }
 
+function setBerryNodeStage(id, stage) {
+  const slot = berryNodeSlots.get(id);
+  if (!slot) return;
+  const previous = berryNodeStages.get(id);
+  if (!previous || previous === stage) return;
+  berryStageCounts.set(previous, Math.max(0, (berryStageCounts.get(previous) || 0) - 1));
+  berryStageCounts.set(stage, (berryStageCounts.get(stage) || 0) + 1);
+  for (const [meshStage, mesh] of berrySpriteMeshes) {
+    setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z,
+      meshStage === stage ? slot.scale : 0);
+    mesh.instanceMatrix.needsUpdate = true;
+    mesh.visible = (berryStageCounts.get(meshStage) || 0) > 0;
+  }
+  berryNodeStages.set(id, stage);
+}
+
+function buildBerryNodeInstances(nodes = []) {
+  berrySpriteMeshes = new Map();
+  berryNodeSlots.clear();
+  berryNodeStages.clear();
+  berryStageCounts.clear();
+  for (const stage of RESOURCE_VISUAL_STAGES) berryStageCounts.set(stage, 0);
+  const berryNodes = nodes.filter((node) => node.type === 'food');
+  if (berryNodes.length === 0) return;
+  const positions = berryNodes.map((node) => ({ x: node.x, z: node.z, scale: 1 }));
+  for (let index = 0; index < berryNodes.length; index++) {
+    const stage = resourceVisualStage(berryNodes[index].stock, berryNodes[index].stock);
+    berryNodeSlots.set(berryNodes[index].id, { index, ...positions[index] });
+    berryNodeStages.set(berryNodes[index].id, stage);
+    berryStageCounts.set(stage, berryStageCounts.get(stage) + 1);
+  }
+  for (const stage of RESOURCE_VISUAL_STAGES) {
+    const stagePositions = positions.map((position, index) => ({
+      ...position,
+      scale: berryNodeStages.get(berryNodes[index].id) === stage ? position.scale : 0,
+    }));
+    const sprites = createEnvironmentSpriteInstances(`berries-${stage}`, 2.55, 1.56, stagePositions);
+    if (!sprites) continue;
+    sprites.visible = berryStageCounts.get(stage) > 0;
+    addMapObject(sprites);
+    berrySpriteMeshes.set(stage, sprites);
+  }
+}
+
 function buildFogOverlay(definition) {
   const pixels = new Uint8Array(MAP_WIDTH * MAP_HEIGHT * 4);
   for (let index = 0; index < MAP_WIDTH * MAP_HEIGHT; index++) {
@@ -1444,6 +1487,10 @@ function buildMap(definition) {
   woodTreeMeshes = new Map();
   woodTreeNodeStages.clear();
   woodTreeStageCounts.clear();
+  berryNodeSlots.clear();
+  berrySpriteMeshes = new Map();
+  berryNodeStages.clear();
+  berryStageCounts.clear();
   latestBuildings = [];
   latestWorkerProduction = [null, null];
   if (buildPlacementActive) cancelBuildPlacement(false);
@@ -1497,6 +1544,7 @@ function buildMap(definition) {
 
   for (const spawn of definition.spawnPoints || []) addTownCenterVisual(spawn);
   buildWoodNodeInstances(definition.resourceNodes || []);
+  buildBerryNodeInstances(definition.resourceNodes || []);
   for (const node of definition.resourceNodes || []) {
     addResourceNodeVisual(node);
     latestResourceStocks.set(node.id, node.stock);

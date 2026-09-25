@@ -177,15 +177,6 @@ export function createEnvironmentSprite(name, width, height, x, z) {
   return mesh;
 }
 
-export function setEnvironmentSpriteResourceStage(mesh, resourceType, stage) {
-  const sprite = resourceType === 'wood' ? `oak-${stage}` : `berries-${stage}`;
-  const texture = sprites[sprite];
-  if (!mesh?.material || !texture) return false;
-  mesh.material.map = texture;
-  mesh.material.needsUpdate = true;
-  return true;
-}
-
 export function createConstructionGroundInstances(stage, capacity) {
   const texture = constructionTextures[stage];
   if (!texture || !Number.isInteger(capacity) || capacity <= 0) return null;
