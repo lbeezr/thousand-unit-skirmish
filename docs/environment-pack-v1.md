@@ -2,7 +2,7 @@
 
 This is the first playable environment art library for the RTS. It treats the world as an old, contested frontier: living meadow, exhausted cinder upland, windworn sand, weathered basalt, mature trees, and an ancient split stone at contested objectives. The mood is grounded and somber, while warm moss, ochre grass, and small amber accents keep the field inviting.
 
-The rendering is **not pixel art**. Seven opaque ground textures repeat across an orthographic 3D battlefield. Their mirrored repeat pattern is mathematically continuous, and every painted region samples the same global world coordinates. Brush edges feather into the base material. Trees, berry thickets, rocks, and landmarks are transparent painterly cutout sprites that face the fixed camera. Repeated props are grouped into instanced batches so a large army still has room in the draw-call budget.
+The rendering is **not pixel art**. Seven opaque ground textures repeat across an orthographic 3D battlefield. Their mirrored repeat pattern is mathematically continuous, and every painted region samples the same global world coordinates. Brush edges feather around the outside of each material region; adjoining patches of the same material stay continuous. Trees, berry thickets, rocks, and landmarks are transparent painterly cutout sprites that face the fixed camera. Repeated props are grouped into instanced batches so a large army still has room in the draw-call budget.
 
 ## Asset roles
 
@@ -22,7 +22,7 @@ Source PNGs, hashes, and generation prompts are in [`assets/environment/frontier
 
 1. Start the game with `npm start` and open **Match Controls**.
 2. Choose **Frontier Materials** to compare all seven ground materials and all three rock heights in the same lighting. **Stone Pass** and **Cinder Ridge** show the two original regional palettes in normal play.
-3. Open **Map Studio**. Choose a **Base Ground** material, then choose a ground brush and drag on the map grid. **Base ground** clears a painted region back to the base. Rocks, Ridge, and Cliff brushes paint collision obstacles separately; ground paint leaves resources and passability intact.
+3. Open **Map Studio**. Choose a **Base Ground** material, then choose a 1, 3, or 5-cell ground brush and draw across the map grid. **Base ground** brushes a region back to the base. Rocks, Ridge, and Cliff retain rectangle painting for collision obstacles; ground paint leaves resources and passability intact.
 4. Save and play a custom map, then reopen it. Painted regions and obstacle height survive export, server validation, and map reload.
 5. Zoom between ordinary strategic view and closer inspection with the mouse wheel. Compare these questions: Are brush boundaries quiet? Are rock heights unmistakable? Are berry and wood nodes obvious beside a 1,000-unit army? Does the objective read as a world feature without masking units or the capture outline? Are Azure and Ember still the first colors you notice?
 
@@ -31,7 +31,7 @@ The first review pass found that raised square stone blocks made the ridge look 
 ## Current limits and next art tests
 
 - Each rock height currently has one silhouette, flipped and scaled across a barrier. Additional modules and cap/corner pieces would make long cliffs more natural.
-- Ground brushes use rectangles with a short feathered edge. Organic brush shapes, roads, shorelines, and hand-directed transitions are the next map-making pass.
+- Ground brushes now draw connected strokes with soft outer edges. More varied transitions, roads, and shorelines remain for the next map-making pass.
 - Sprites face the fixed oblique camera. They suit this prototype camera, but free camera rotation would need new views or 3D props.
 - Harvestable oaks and impassable forests share the same species; their isolation/density and resource rings distinguish their gameplay roles. We should test whether players read that distinction during a real match.
 - Runtime WebP files are smaller than the source PNGs; measure downloads and texture memory on intended playtest devices before widening distribution.
