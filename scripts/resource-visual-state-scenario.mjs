@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {
-  buildingProductionCueState, constructionGroundStage,
+  barracksModelStage, buildingProductionCueState, constructionGroundStage,
 } from '../src/building-visual-state.mjs';
 import {
   resourceVisualScale, resourceVisualStage, resourceVisualTransitionStages,
@@ -34,6 +34,15 @@ for (const [progress, complete, expected] of [
   assert.equal(constructionGroundStage(progress, complete), expected,
     `building progress ${progress} (complete=${complete}) should use the ${expected} ground stage`);
 }
+for (const [progress, complete, expected] of [
+  [0, false, 'foundation'], [0.2499, false, 'foundation'], [0.25, false, 'frame'],
+  [0.4999, false, 'frame'], [0.5, false, 'walls'], [0.7499, false, 'walls'],
+  [0.75, false, 'roof'], [0.9999, false, 'roof'], [1, false, 'complete'],
+  [1.2, false, 'complete'], [0.1, true, 'complete'], [Number.NaN, false, null],
+]) {
+  assert.equal(barracksModelStage(progress, complete), expected,
+    `Barracks progress ${progress} (complete=${complete}) should select ${expected}`);
+}
 for (const [complete, queueLength, productionBlocked, expected] of [
   [false, 1, false, 'idle'], [true, 0, false, 'idle'], [true, -1, true, 'idle'],
   [true, Number.NaN, false, 'idle'], [true, 1, false, 'active'],
@@ -43,4 +52,4 @@ for (const [complete, queueLength, productionBlocked, expected] of [
     `complete=${complete}, queue=${queueLength}, blocked=${productionBlocked} should use the ${expected} cue`);
 }
 
-process.stdout.write('Resource/building visual-state scenario passed: stock, construction, and production cue states follow the contract.\n');
+process.stdout.write('Resource/building visual-state scenario passed: stock, construction, Barracks model stages, and production cues follow the contract.\n');
