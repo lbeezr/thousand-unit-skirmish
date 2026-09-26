@@ -25,6 +25,10 @@ import {
   findUnreachableCaptureZone, findUnreachableResourceNode, scenarioEventSourceIds,
 } from './map-utils.mjs';
 import { resizeWorldMarkers } from './map-resize.mjs';
+import {
+  clampMapStudioZoom, mapStudioCanvasSize, mapStudioCellAtPointer,
+  mapStudioScrollAtPan, mapStudioScrollAtZoom,
+} from './map-studio-viewport.mjs';
 import { classifyOrderNotice } from './order-feedback.mjs';
 import { AMBIENCE_PREVIEW_DURATION_MS, createGameAudio } from './audio.mjs';
 import { CombatAudioGate, cueForNotice, cueForScenarioEvent, isLocalRejection } from './audio-policy.mjs';
@@ -195,6 +199,12 @@ const ui = {
   studioDraftRecoveryMessage: document.querySelector('#studio-draft-recovery-message'),
   studioDraftStatus: document.querySelector('#studio-draft-status'),
   studioGrid: document.querySelector('#studio-grid'),
+  studioGridViewport: document.querySelector('#studio-grid-viewport'),
+  studioGridPosition: document.querySelector('#studio-grid-position'),
+  studioGridZoomLevel: document.querySelector('#studio-grid-zoom-level'),
+  studioGridZoomIn: document.querySelector('#studio-grid-zoom-in'),
+  studioGridZoomOut: document.querySelector('#studio-grid-zoom-out'),
+  studioGridZoomFit: document.querySelector('#studio-grid-zoom-fit'),
   studioName: document.querySelector('#studio-name'),
   studioId: document.querySelector('#studio-id'),
   studioSummary: document.querySelector('#studio-summary'),
@@ -399,6 +409,8 @@ let editorResourceNodes = [];
 let selectedEditorResourceId = null;
 let editorTool = 'stone';
 let editorDrag = null;
+let editorViewZoom = 1;
+let editorPanDrag = null;
 let socket = null;
 let connectedPlayers = 0;
 let waitingForResume = false;
@@ -4049,7 +4061,7 @@ function restoreMapStudioDraft(draft) {
   syncEditorTriggerControls();
   syncEditorScenarioEventControls();
   syncEditorResourceControls();
-  setEditorTool(EDITOR_MATERIALS.includes(state.editorTool) || ['rock', 'cliff', 'ground-reset', 'erase', 'azure', 'ember', 'resource-food', 'resource-wood', 'objective'].includes(state.editorTool)
+  setEditorTool(EDITOR_MATERIALS.includes(state.editorTool) || ['rock', 'cliff', 'ground-reset', 'erase', 'azure', 'ember', 'resource-food', 'resource-wood', 'objective', 'pan'].includes(state.editorTool)
     || (typeof state.editorTool === 'string' && state.editorTool.startsWith('ground:')
       && TERRAIN_MATERIALS.includes(state.editorTool.slice(7)))
     ? state.editorTool : 'stone');
@@ -4804,6 +4816,8 @@ function populateMapEditor(definition, message) {
   ui.studioMessage.textContent = message;
   ui.studioPublish.disabled = false;
   editorDrag = null;
+  editorPanDrag = null;
+  fitMapStudioViewport();
   setEditorTool('stone');
 }
 
@@ -5104,8 +5118,11 @@ function isGroundEditorTool(tool) {
 
 function setEditorTool(tool) {
   editorTool = tool;
+  ui.studioGrid.dataset.editorTool = tool;
   for (const button of document.querySelectorAll('[data-map-tool]')) {
-    button.classList.toggle('active', button.dataset.mapTool === tool);
+    const active = button.dataset.mapTool === tool;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
   }
   const hints = {
     rock: 'DRAG TO PAINT LOW ROCK OUTCROPS', stone: 'DRAG TO PAINT BASALT RIDGES',
@@ -5114,6 +5131,7 @@ function setEditorTool(tool) {
     erase: 'DRAG TO CLEAR TERRAIN', azure: 'CLICK TO PLACE AZURE SPAWN',
     ember: 'CLICK TO PLACE EMBER SPAWN', 'resource-food': 'CLICK EMPTY CELL TO PLACE · CLICK NODE TO EDIT',
     'resource-wood': 'CLICK EMPTY CELL TO PLACE · CLICK NODE TO EDIT',
+    pan: 'DRAG TO PAN · WHEEL TO ZOOM',
     objective: editorTriggerCreationPending ? 'DRAG TO PLACE A NEW CAPTURE ZONE'
       : getSelectedEditorTrigger() ? 'DRAG TO RESIZE THE SELECTED CAPTURE ZONE' : 'ADD A CAPTURE ZONE, THEN DRAG TO PLACE IT',
   };
@@ -5125,6 +5143,56 @@ function setEditorTool(tool) {
   const hint = ui.mapStudio.querySelector('.studio-grid-footer span:last-child');
   if (hint) hint.textContent = tool.startsWith('ground:')
     ? `DRAG TO BRUSH ${tool.slice(7).replace('-', ' ').toUpperCase()}` : hints[tool] || '';
+}
+
+function mapStudioViewportSize() {
+  const viewport = ui.studioGridViewport;
+  const style = window.getComputedStyle(viewport);
+  const borderWidth = Number.parseFloat(style.borderLeftWidth) + Number.parseFloat(style.borderRightWidth);
+  const borderHeight = Number.parseFloat(style.borderTopWidth) + Number.parseFloat(style.borderBottomWidth);
+  return {
+    width: Math.max(0, viewport.offsetWidth - borderWidth),
+    height: Math.max(0, viewport.offsetHeight - borderHeight),
+  };
+}
+
+function updateMapStudioZoomControls() {
+  ui.studioGridZoomLevel.value = `${Math.round(editorViewZoom * 100)}%`;
+  ui.studioGridZoomOut.disabled = editorViewZoom <= MIN_MAP_STUDIO_ZOOM;
+  ui.studioGridZoomIn.disabled = editorViewZoom >= MAX_MAP_STUDIO_ZOOM;
+}
+
+function setMapStudioZoom(zoom, anchorX, anchorY) {
+  if (!editorDefinition) return;
+  const viewport = ui.studioGridViewport;
+  const fromZoom = editorViewZoom;
+  const toZoom = clampMapStudioZoom(zoom);
+  if (toZoom === fromZoom) return;
+  const x = Number.isFinite(anchorX) ? anchorX : viewport.clientWidth / 2;
+  const y = Number.isFinite(anchorY) ? anchorY : viewport.clientHeight / 2;
+  const scroll = mapStudioScrollAtZoom({
+    scrollLeft: viewport.scrollLeft,
+    scrollTop: viewport.scrollTop,
+    anchorX: x,
+    anchorY: y,
+    fromZoom,
+    toZoom,
+  });
+  editorViewZoom = toZoom;
+  updateMapStudioZoomControls();
+  drawEditorGrid();
+  if (scroll) {
+    viewport.scrollLeft = scroll.left;
+    viewport.scrollTop = scroll.top;
+  }
+}
+
+function fitMapStudioViewport() {
+  editorViewZoom = MIN_MAP_STUDIO_ZOOM;
+  updateMapStudioZoomControls();
+  ui.studioGridViewport.scrollLeft = 0;
+  ui.studioGridViewport.scrollTop = 0;
+  drawEditorGrid();
 }
 
 function resizeEditorMap() {
@@ -5189,14 +5257,18 @@ function resizeEditorMap() {
 
 function editorCellFromPointer(event) {
   if (!editorDefinition) return null;
-  const rect = ui.studioGrid.getBoundingClientRect();
-  if (rect.width <= 0 || rect.height <= 0) return null;
-  return {
-    column: Math.max(0, Math.min(editorDefinition.width - 1,
-      Math.floor((event.clientX - rect.left) / rect.width * editorDefinition.width))),
-    row: Math.max(0, Math.min(editorDefinition.height - 1,
-      Math.floor((event.clientY - rect.top) / rect.height * editorDefinition.height))),
-  };
+  return mapStudioCellAtPointer({
+    clientX: event.clientX,
+    clientY: event.clientY,
+    rect: ui.studioGrid.getBoundingClientRect(),
+    mapWidth: editorDefinition.width,
+    mapHeight: editorDefinition.height,
+  });
+}
+
+function updateMapStudioCellReadout(cell) {
+  ui.studioGridPosition.textContent = cell
+    ? `CELL ${cell.column + 1}, ${cell.row + 1}` : 'CELL —';
 }
 
 function editorDragRect(drag) {
@@ -5233,11 +5305,22 @@ function paintEditorGroundStroke(drag, next) {
 function drawEditorGrid() {
   if (!editorDefinition) return;
   const canvas = ui.studioGrid;
+  const viewportSize = mapStudioViewportSize();
+  const size = mapStudioCanvasSize({
+    mapWidth: editorDefinition.width,
+    mapHeight: editorDefinition.height,
+    viewportWidth: viewportSize.width,
+    viewportHeight: viewportSize.height,
+    zoom: editorViewZoom,
+  });
+  if (!size || size.width < 2 || size.height < 2) return;
+  canvas.style.width = `${size.width}px`;
+  canvas.style.height = `${size.height}px`;
   const rect = canvas.getBoundingClientRect();
   if (rect.width < 2 || rect.height < 2) return;
-  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-  const pixelWidth = Math.round(rect.width * pixelRatio);
-  const pixelHeight = Math.round(rect.height * pixelRatio);
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, editorViewZoom > 2 ? 1 : 2);
+  const pixelWidth = Math.round(size.width * pixelRatio);
+  const pixelHeight = Math.round(size.height * pixelRatio);
   if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
     canvas.width = pixelWidth;
     canvas.height = pixelHeight;
@@ -5355,6 +5438,7 @@ function drawEditorGrid() {
     context.strokeRect(zone.column + 0.06, zone.row + 0.06, zone.width - 0.12, zone.height - 0.12);
   }
   ui.studioGridSize.textContent = `${editorDefinition.width} × ${editorDefinition.height} CELLS`;
+  updateMapStudioZoomControls();
 }
 
 function compressEditorGround() {
@@ -6948,7 +7032,22 @@ for (const button of document.querySelectorAll('[data-map-tool]')) {
   button.addEventListener('click', () => setEditorTool(button.dataset.mapTool));
 }
 ui.studioGrid.addEventListener('pointerdown', (event) => {
-  if (!editorDefinition || event.button !== 0) return;
+  if (!editorDefinition) return;
+  const shouldPan = event.button === 1 || (event.button === 0 && editorTool === 'pan');
+  if (shouldPan) {
+    editorPanDrag = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      scrollLeft: ui.studioGridViewport.scrollLeft,
+      scrollTop: ui.studioGridViewport.scrollTop,
+    };
+    ui.studioGrid.classList.add('is-panning');
+    ui.studioGrid.setPointerCapture(event.pointerId);
+    event.preventDefault();
+    return;
+  }
+  if (event.button !== 0) return;
   const cell = editorCellFromPointer(event);
   if (!cell) return;
   if (editorTool === 'resource-food' || editorTool === 'resource-wood') {
@@ -7018,15 +7117,41 @@ ui.studioGrid.addEventListener('pointerdown', (event) => {
   event.preventDefault();
 });
 ui.studioGrid.addEventListener('pointermove', (event) => {
+  const cell = editorCellFromPointer(event);
+  updateMapStudioCellReadout(cell);
+  if (editorPanDrag) {
+    if (editorPanDrag.pointerId !== event.pointerId) return;
+    const scroll = mapStudioScrollAtPan({
+      scrollLeft: editorPanDrag.scrollLeft,
+      scrollTop: editorPanDrag.scrollTop,
+      startX: editorPanDrag.startX,
+      startY: editorPanDrag.startY,
+      clientX: event.clientX,
+      clientY: event.clientY,
+    });
+    if (scroll) {
+      ui.studioGridViewport.scrollLeft = scroll.left;
+      ui.studioGridViewport.scrollTop = scroll.top;
+    }
+    return;
+  }
   if (!editorDrag) return;
-  const next = editorCellFromPointer(event);
-  if (next) {
-    if (isGroundEditorTool(editorDrag.tool)) paintEditorGroundStroke(editorDrag, next);
-    editorDrag.current = next;
+  if (cell) {
+    if (isGroundEditorTool(editorDrag.tool)) paintEditorGroundStroke(editorDrag, cell);
+    editorDrag.current = cell;
   }
   drawEditorGrid();
 });
+ui.studioGrid.addEventListener('pointerleave', () => {
+  if (!editorDrag && !editorPanDrag) updateMapStudioCellReadout(null);
+});
 function finishEditorPointer(event, commit) {
+  if (editorPanDrag) {
+    if (editorPanDrag.pointerId !== event.pointerId) return;
+    editorPanDrag = null;
+    ui.studioGrid.classList.remove('is-panning');
+    return;
+  }
   if (!editorDrag) return;
   const drag = editorDrag;
   editorDrag = null;
@@ -7112,11 +7237,24 @@ function finishEditorPointer(event, commit) {
 }
 ui.studioGrid.addEventListener('pointerup', (event) => finishEditorPointer(event, true));
 ui.studioGrid.addEventListener('pointercancel', (event) => finishEditorPointer(event, false));
+ui.studioGridZoomIn.addEventListener('click', () => setMapStudioZoom(editorViewZoom * 1.25));
+ui.studioGridZoomOut.addEventListener('click', () => setMapStudioZoom(editorViewZoom / 1.25));
+ui.studioGridZoomFit.addEventListener('click', fitMapStudioViewport);
+ui.studioGridViewport.addEventListener('wheel', (event) => {
+  if (!editorDefinition || !ui.mapStudio.open) return;
+  event.preventDefault();
+  const rect = ui.studioGridViewport.getBoundingClientRect();
+  const anchorX = event.clientX - rect.left - ui.studioGridViewport.clientLeft;
+  const anchorY = event.clientY - rect.top - ui.studioGridViewport.clientTop;
+  setMapStudioZoom(editorViewZoom * Math.exp(-event.deltaY * 0.0015), anchorX, anchorY);
+}, { passive: false });
 ui.mapStudio.addEventListener('close', () => {
   window.clearTimeout(editorDraftWriteTimer);
   editorDraftWriteTimer = 0;
   persistMapStudioDraft(true);
   editorDrag = null;
+  editorPanDrag = null;
+  ui.studioGrid.classList.remove('is-panning');
   ui.studioPublish.disabled = false;
   editorDefinition = null;
   editorDraftSourceMapId = null;
