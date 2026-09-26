@@ -11,7 +11,6 @@ COPY --chown=node:node server.mjs room-supervisor.mjs origin-policy.mjs index.ht
 COPY --chown=node:node src/ ./src/
 COPY --chown=node:node maps/ ./maps/
 COPY --chown=node:node assets/environment/frontier-v1/ ./assets/environment/frontier-v1/
-COPY --chown=node:node assets/environment/frontier-interactive-v1/ ./assets/environment/frontier-interactive-v1/
 COPY deploy/entrypoint.sh ./deploy/entrypoint.sh
 RUN mkdir -p /app/custom-maps /app/room-data && chown node:node /app/custom-maps /app/room-data
 
