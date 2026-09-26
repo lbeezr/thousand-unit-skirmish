@@ -29,6 +29,11 @@ const ZOOMS = Object.freeze([
   { label: '091', value: 0.91 },
   { label: '048', value: 0.48 },
 ]);
+const PREVIEW_MODE = process.argv[2] || 'all-v1';
+const PREVIEW_QUERY = Object.freeze({
+  'all-v1': 'unitSpritePreview=1',
+  'worker-v2': 'workerSpritePreview=1',
+});
 
 const children = new Set();
 let tempRoot = null;
@@ -56,7 +61,10 @@ function assertGameDevContext() {
   assert.ok(GAME_DEV_RUN_DIR && GAME_DEV_RUN_ID && GAME_DEV_ADAPTER_ID && GAME_DEV_SCENARIO_ID,
     'run this opt-in capture through game-dev scenario run');
   assert.equal(GAME_DEV_ADAPTER_ID, 'thousand-unit-skirmish', 'unexpected adapter context');
-  assert.equal(GAME_DEV_SCENARIO_ID, 'renderer-appearance-lod', 'unexpected scenario context');
+  const expectedScenario = PREVIEW_MODE === 'worker-v2'
+    ? 'renderer-worker-sprite-v2'
+    : 'renderer-appearance-lod';
+  assert.equal(GAME_DEV_SCENARIO_ID, expectedScenario, 'scenario ID should match its sprite preview mode');
 }
 
 function startChild(label, command, args, options = {}) {
@@ -515,7 +523,10 @@ async function writeFrame(browser, runDirectory, frameIndex, mapLabel, zoom) {
   };
 }
 
-async function writeCaptureManifest(frames, renderer, runDirectory) {
+async function writeCaptureManifest(frames, renderer, runDirectory, previewMode) {
+  const previewDescription = previewMode === 'worker-v2'
+    ? 'Worker v2 sprites only via ?workerSpritePreview=1; other unit roles use the normal renderer.'
+    : 'Worker, Infantry, and Archer v1 sprites via ?unitSpritePreview=1.';
   const manifest = {
     schema: 'game_dev.capture.v1',
     runId: GAME_DEV_RUN_ID,
@@ -533,6 +544,7 @@ async function writeCaptureManifest(frames, renderer, runDirectory) {
       pixelVisualInspectionPerformed: false,
       notes: [
         'Appearance-only capture; no performance measurements were collected.',
+        `Sprite preview mode: ${previewDescription}`,
         'Frames were captured from Azure and Ember player clients with server-provided fog visibility masks.',
         'Human review is required to assess role silhouette and team-marker readability.',
       ],
@@ -542,7 +554,7 @@ async function writeCaptureManifest(frames, renderer, runDirectory) {
   return manifest;
 }
 
-async function captureMapMatrix({ map, browsers, frames, runDirectory, preflight }) {
+async function captureMapMatrix({ map, browsers, frames, runDirectory, preflight, previewMode }) {
   await selectMap(browsers[0], map.id);
   const states = await Promise.all(browsers.map((browser) => waitForSnapshot(browser, (state) => (
     state.mapId === map.id && state.fogOfWar === true && state.units?.length === 12
@@ -563,7 +575,10 @@ async function captureMapMatrix({ map, browsers, frames, runDirectory, preflight
         snapshot.mapId === map.id && snapshot.fogOfWar === true && snapshot.units?.length === 12
       ), `${browser.teamLabel} capture-ready roster on ${map.id}`);
       preflight.push(validateViewerSnapshot(state, browser.team, map.id));
-      frames.push(await writeFrame(browser, runDirectory, frames.length, map.terrainBase, zoom));
+      const mapLabel = previewMode === 'worker-v2'
+        ? `worker-v2-${map.terrainBase}`
+        : map.terrainBase;
+      frames.push(await writeFrame(browser, runDirectory, frames.length, mapLabel, zoom));
     }
   }
 }
@@ -601,6 +616,7 @@ function runStaticPreflight() {
 
 async function run() {
   assertGameDevContext();
+  assert.ok(PREVIEW_QUERY[PREVIEW_MODE], `unsupported renderer preview mode: ${PREVIEW_MODE}`);
   const runDirectory = path.resolve(GAME_DEV_RUN_DIR);
   tempRoot = await mkdtemp(path.join(os.tmpdir(), 'rts-renderer-appearance-lod-'));
   const customMapDirectory = path.join(tempRoot, 'custom-maps');
@@ -612,7 +628,7 @@ async function run() {
   try {
     const maps = await writeReviewMaps(customMapDirectory);
     const serverPort = await reservePort();
-    const gameUrl = `http://127.0.0.1:${serverPort}/?unitSpritePreview=1`;
+    const gameUrl = `http://127.0.0.1:${serverPort}/?${PREVIEW_QUERY[PREVIEW_MODE]}`;
     server = startChild('server', process.execPath, [SERVER_ENTRY], {
       env: {
         ...process.env,
@@ -640,13 +656,14 @@ async function run() {
     assert.ok(renderer.webglVersion === 1 || renderer.webglVersion === 2,
       'appearance renderer should expose WebGL');
 
-    await captureMapMatrix({ map: maps[0], browsers, frames, runDirectory, preflight });
-    await captureMapMatrix({ map: maps[1], browsers, frames, runDirectory, preflight });
+    await captureMapMatrix({ map: maps[0], browsers, frames, runDirectory, preflight, previewMode: PREVIEW_MODE });
+    await captureMapMatrix({ map: maps[1], browsers, frames, runDirectory, preflight, previewMode: PREVIEW_MODE });
     assert.equal(frames.length, 8, 'appearance capture should contain all eight review frames');
-    const manifest = await writeCaptureManifest(frames, renderer, runDirectory);
+    const manifest = await writeCaptureManifest(frames, renderer, runDirectory, PREVIEW_MODE);
     assert.equal(manifest.measurements.length, 0, 'appearance capture must not report performance metrics');
     console.log(JSON.stringify({
       scenario: GAME_DEV_SCENARIO_ID,
+      previewMode: PREVIEW_MODE,
       maps: maps.map((map) => ({ id: map.id, terrainBase: map.terrainBase, fogOfWar: map.fogOfWar })),
       viewerRosterChecks: preflight,
       frames: frames.map((frame) => frame.label),
