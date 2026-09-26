@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "packId": "unit.infantry-sprite-exploration",
+  "packVersion": "0.1.0",
+  "packKind": "source-only-unit-sprite-atlas",
+  "status": "exploration",
+  "runtimeReady": false,
+  "provenance": {
+    "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+    "source": "OpenAI ImageGen output exec-1361d4d2-fa43-4ae8-8420-48b3e5c799de.",
+    "authoringTool": "OpenAI ImageGen.",
+    "notes": "The image is a transparent RGBA source sheet. The prompt requested seven rows; the generated sheet contains six visible rows. It is a concept atlas and needs manual frame, facing, pivot, and animation review before it can be integrated."
+  },
+  "coordinateSystem": {
+    "imageOrigin": "top-left",
+    "worldUp": "+Y",
+    "worldForward": "+Z",
+    "worldRight": "+X",
+    "camera": "fixed oblique orthographic"
+  },
+  "atlas": {
+    "path": "infantry-atlas-source.png",
+    "role": "source-image",
+    "sha256": "191aaf6b5f825c581ce145c034a26f81fbc128c29d50719f7cd124919847bfc1",
+    "dimensionsPx": {
+      "width": 1199,
+      "height": 1312
+    },
+    "format": "PNG",
+    "channels": "rgba8",
+    "colorSpace": "srgb",
+    "alphaMode": "straight",
+    "frameGrid": {
+      "columns": 8,
+      "rows": 6,
+      "edgeRule": "floor(index * atlasDimension / cellCount)",
+      "columnEdgesPx": [0, 149, 299, 449, 599, 749, 899, 1049, 1199],
+      "rowEdgesPx": [0, 218, 437, 656, 874, 1093, 1312],
+      "gutterPx": 0,
+      "note": "The generated dimensions do not divide evenly by the cell counts; the preview partitions the full image with the edge rule above."
+    }
+  },
+  "facingColumns": [
+    { "column": 0, "direction": "north", "reviewStatus": "approximate" },
+    { "column": 1, "direction": "north-east", "reviewStatus": "approximate" },
+    { "column": 2, "direction": "east", "reviewStatus": "approximate" },
+    { "column": 3, "direction": "south-east", "reviewStatus": "approximate" },
+    { "column": 4, "direction": "south", "reviewStatus": "approximate" },
+    { "column": 5, "direction": "south-west", "reviewStatus": "approximate" },
+    { "column": 6, "direction": "west", "reviewStatus": "approximate" },
+    { "column": 7, "direction": "north-west", "reviewStatus": "approximate" }
+  ],
+  "rows": [
+    { "row": 0, "id": "idle-ready", "state": "idle", "framesPerFacing": 1 },
+    { "row": 1, "id": "walk-step-a", "state": "walk", "framesPerFacing": 1 },
+    { "row": 2, "id": "walk-step-b", "state": "walk", "framesPerFacing": 1 },
+    { "row": 3, "id": "attack-windup", "state": "attack", "framesPerFacing": 1 },
+    { "row": 4, "id": "attack-strike", "state": "attack", "framesPerFacing": 1 },
+    { "row": 5, "id": "defeated-corpse", "state": "defeated", "framesPerFacing": 1 }
+  ],
+  "animationHints": {
+    "idle": { "rows": [0], "loop": true, "fps": 0 },
+    "walk": { "rows": [1, 2], "loop": true, "fps": 6 },
+    "attack": { "rows": [3, 4], "loop": false, "fps": 6 },
+    "defeated": { "rows": [5], "loop": false, "fps": 0 }
+  },
+  "teamTreatment": {
+    "bakedTeam": "azure",
+    "accent": "sky-blue cloth sash",
+    "emberVariant": "not supplied",
+    "tintMask": "not supplied"
+  },
+  "anchors": {
+    "status": "not calibrated",
+    "standingProposal": "bottom-center at the feet",
+    "defeatedNote": "The dead pose will need a frame-specific pivot or a renderer-owned ground-anchor rule."
+  },
+  "integration": {
+    "runtime": false,
+    "rendererChanges": false,
+    "notes": "No atlas selector, frame batching, team mask, hit/work poses, Ember variant, or zoom-scale assets are included."
+  }
+}
