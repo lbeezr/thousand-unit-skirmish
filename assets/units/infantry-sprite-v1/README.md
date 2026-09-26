@@ -4,7 +4,7 @@ This source-only sheet explores an illustrated cutout Infantry for the fixed obl
 
 ![Eight-facing Infantry sprite atlas](infantry-atlas-source.png)
 
-The atlas has eight approximate facing columns and six rows. See [`manifest.json`](manifest.json) for the intended order, row definitions, pixel-edge partition, hash, and current limitations. Open [`preview.html`](preview.html) to inspect a frame and loop the two walk poses. Check the source pack with:
+The atlas has eight approximate facing columns and six rows. See [`manifest.json`](manifest.json) for the intended order, row definitions, pixel-edge partition, hash, and current limitations. Open [`preview.html`](preview.html) to inspect individual frames, and the shared [animation test](../sprite-animation-test.html) to see the three roles move. Check the source pack with:
 
 ```sh
 node scripts/validate-unit-sprite-atlas.mjs assets/units/infantry-sprite-v1/manifest.json

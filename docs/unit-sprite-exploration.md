@@ -15,17 +15,19 @@ The work shifts rather than disappears. A sprite needs a consistent frame for ev
 - The existing unit batches do not have a per-instance atlas-frame selector. A production sprite route would need an instanced quad atlas path with per-unit facing/state/frame data, or an equivalent frame-texture-array design. Creating one Three.js object per soldier would work against the large-army renderer.
 - An eight-view set preserves recognizable turns better than a four-view set, but every added state multiplies the art frames. A 32-view set or separate zoom levels would multiply the atlas more; start with eight and measure before widening it.
 
-## First sample
+## Sprite roster and animation check
 
-The [Infantry atlas](../assets/units/infantry-sprite-v1/infantry-atlas-source.png) is a source-only 8-column, 6-row study: idle, two walk poses, attack wind-up, attack strike, and defeated corpse. The pack includes a manifest, prompt/provenance notes, and an interactive frame preview, following the building-art sample's source/manifest/preview/validation workflow. The building sample's GLB material schema is not reused because its material bindings do not describe sprite frame grids.
+Source-only eight-facing studies now cover all three unit roles: [Worker](../assets/units/worker-sprite-v1/README.md), [Infantry](../assets/units/infantry-sprite-v1/README.md), and [Archer](../assets/units/archer-sprite-v1/README.md). Each sheet has six rows: idle, two walk poses, role-specific action poses, and a defeated pose. The [animation test](../assets/units/sprite-animation-test.html) puts the three sheets on a small battlefield: Worker walks to gather/build sites, Infantry walks and thrusts at a practice post, and Archer walks, draws/releases, and repositions. It includes pause, replay, size/speed, and defeat controls.
 
-The sheet is transparent RGBA and about 1.4 MB as a PNG. Its decoded pixel buffer is about 6.0 MiB before mipmaps, roughly 8.0 MiB with a full mip chain. That is just one role/team sheet. Atlas memory, alpha overdraw, filtering, and batching need a measured runtime comparison before claiming a performance benefit.
+The sheets include manifests, prompts, provenance, previews, and a small pack validator, following the building-art sample's source/manifest/preview/validation workflow. The building sample's GLB material schema is not reused because its material bindings do not describe sprite frame grids.
+
+All three PNGs are about 1.4 MB on disk. Their combined decoded pixel buffer is about 18.0 MiB before mipmaps, roughly 24.0 MiB with a full mip chain for one team. Baked variants for both teams would double those numbers. Atlas memory, alpha overdraw, filtering, and batching need a measured runtime comparison before claiming a performance benefit.
 
 ## Next production slice
 
-1. Correct and inspect the eight facing columns and the frame pivots; confirm the soldier still reads at the game's ordinary and strategic zooms.
-2. Make a longer walk cycle and separate strike, hit, defeat, and corpse states. Decide whether Azure/Ember use baked variants or a shared accent mask.
-3. Expand only after the Infantry sheet and one browser preview establish a repeatable 2D source workflow. Do not require Blender as the source tool.
-4. If the sample holds up, integrate a small mixed-role runtime slice with an atlas selector and compare it against current instanced units at ordinary zoom. Measure a 2,000-unit browser run before attributing a speedup to sprites.
+1. Use the animation test to correct facing order, character scale, and frame pivots; inspect it at game-like zoom before changing renderer code.
+2. Replace the two-frame walk with a longer cycle and add temporal gather/build/attack, hit, spawn, and defeat transitions. Decide whether Azure/Ember use baked variants or a shared accent mask.
+3. Once the art timing and pivots are credible, integrate an instanced atlas selector for the mixed-role runtime slice and compare it against current instanced units at ordinary zoom.
+4. Measure a 2,000-unit browser run before attributing a speedup to sprites. Keep Blender optional as an alternate source tool, not a prerequisite.
 
 The paused GLB exploration remains source-only in its own worktree. This pilot does not move, delete, publish, or merge that pack and does not make a production switch for unit rendering.

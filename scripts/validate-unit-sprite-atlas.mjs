@@ -23,7 +23,8 @@ try {
   const rows = grid.rows;
 
   check(manifest.schemaVersion === 1, 'schemaVersion must be 1');
-  check(manifest.packId === 'unit.infantry-sprite-exploration', 'unexpected packId');
+  check(/^unit\.(worker|infantry|archer)-sprite-exploration$/.test(manifest.packId || ''),
+    'packId must identify a Worker, Infantry, or Archer sprite exploration');
   check(manifest.packKind === 'source-only-unit-sprite-atlas', 'unexpected packKind');
   check(atlas.role === 'source-image', 'atlas role must be source-image');
   check(typeof atlas.path === 'string' && atlas.path.length > 0, 'atlas path is required');
