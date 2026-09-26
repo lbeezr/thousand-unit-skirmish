@@ -2,6 +2,7 @@
 !server.mjs
 !room-supervisor.mjs
 !origin-policy.mjs
+!simulation-scheduler.mjs
 !index.html
 !style.css
 !src/
