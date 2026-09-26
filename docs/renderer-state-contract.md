@@ -1,0 +1,96 @@
+# Renderer visual-state and asset-pack contract v1
+
+This contract separates authoritative match state from the visual cues that consume it. It is the integration boundary for character/building GLB packs and environment state sprites. The current procedural Three.js objects remain the shipped visual baseline until a later renderer-integration checkpoint.
+
+The machine-readable manifest shape is in [renderer-asset-pack-v1.schema.json](../schemas/renderer-asset-pack-v1.schema.json). Validate a pack with:
+
+    node scripts/validate-visual-pack.mjs path/to/manifest.json
+
+## Coordinate, material, and batching rules
+
+- Project world units are map-cell units. Three-dimensional assets use +Y up, +Z forward, +X right, with a ground-center root at (0, 0, 0) and no baked root rotation.
+- A worker is about 0.8 world units tall. The Barracks footprint is 3 by 3 world units.
+- The character/building source pack uses glTF 2.0 binary files. Unit meshes are static rigid geometry with stable part node names and pivots. The renderer flattens those parts once and updates per-instance matrices; no per-unit Three.js objects, per-unit materials, skinning, or morph targets.
+- Character/building GLBs use flat base colors and vertex colors in v1, without embedded image textures. This keeps the palette slots explicit and avoids another texture-memory path in the first pack.
+- Unit parts use a shared geometry set across Azure and Ember. There are at most eight distinct unit batch keys across all unit roles and at most sixteen team-part batches total. Authored unit GLBs reserve one shared `team-accent` palette slot for a named sash; tools, shields, packs, weapons, and other role gear stay neutral. This rule applies to the authored pack, not the current procedural baseline, which keeps its existing team-tinted body and shield until a side-by-side review at 0.91 and 0.48 approves a migration. The role LOD uses neutral gear accents and square/diamond team-marker batches.
+- Cargo color is a renderer-owned state tint on the existing Worker backpack batch in full detail. Strategic role LOD keeps the Worker glyph neutral while the square and diamond markers preserve Azure/Ember identity; cargo state adds no draw batches. Color buffers update only when the cue state changes and flush once per team after snapshot reconciliation. Authored source materials remain neutral.
+- The camera keeps its 0.48 strategic zoom. A full-mesh capture at 0.91 with 1,000 units showed team hue but failed to separate the Worker backpack/tool from its body. The current LOD cutoff is therefore zoom 0.91: renderer-owned instanced Worker body/backpack/tool, Infantry spear/shield, and Archer bow/quiver silhouettes are active at both required views. The Worker backpack is a small neutral facet in the existing Worker geometry and role batch. Role gear uses neutral material accents; Azure and Ember hue stay in the square and diamond team markers. The LOD keeps eight fixed batches (three roles for each team plus two team markers). The Worker glyph remains neutral and the team marker remains team-colored in role LOD; cargo state adds no draw batches. These replace the full unit batches at these zooms and create no per-unit objects or text. Steady LOD updates write only the active role batch and team marker; role changes clear the old and new role slots, and only dirty batches are uploaded. LOD matrices refresh for position, facing, spawn, and defeat changes; work swings, attack/hit poses, and idle breathing update full-detail meshes only. Focus-ring instance matrices update only when focus, position, or scale changes. Full-detail body/head tint writes are skipped while LOD is active, then refreshed for all units once when switching back to full detail. The 6faef55 local review still did not make Workers reliably identifiable in the dense 0.91 view, and individual roles were too small to verify at 0.48. That reset roster had no Archers; the reviewer saw team cues in the minimap and legend but did not confirm their in-world readability. The broader Worker glyph and role/marker contrast candidates remain pending runtime review; confirm all three roles and both team markers on Meadow and Cinder before signoff.
+- GLB material names begin with neutral- or team-accent- to match the corresponding manifest paletteSlot. Each part node contains one palette slot so the renderer can tint only the intended surfaces.
+- The shared v1 unit-key registry is: unit.humanoid-core, unit.team-accent, unit.worker.backpack, unit.worker.tool, unit.infantry.shield, unit.infantry.spear, unit.archer.bow, and unit.archer.quiver. The first Worker sample uses the first four keys; the last four are reserved for the later Infantry and Archer samples. Reusing a key requires the exact same source model file and node, not a role-specific lookalike.
+- Building meshes are grouped per structure because building counts are low. Building walls, roofs, shields, and trim use neutral materials; the small Azure/Ember standard carries team identity, while the renderer-owned footprint outline and active production cue remain state indicators. The Town Center, Barracks, and Archery Range use the same pennant language: Azure has a straight-cut flag with one centered bar, and Ember has a forked tail with a split bar. The Barracks model provides ground, gate, standard, rally, and productionCue anchors. The production cue is a renderer-owned signal attached at productionCue and is not baked into the model. A building part may declare `teamVariant: { group, team }` only for a team-specific standard silhouette. Each group must have one Azure and one Ember part in the `team-accent` palette slot. For the Barracks standard, the GLB nodes are `barracks.standard.azure` and `barracks.standard.ember`; the manifest part IDs are `standard-azure` and `standard-ember`, both in group `standard`. Runtime includes shared parts plus only the variant matching the building owner. Unit parts cannot use `teamVariant`.
+- Environment props remain fixed-camera, camera-facing transparent cutouts. Each state has a full-resolution source PNG and runtime WebP, batched by asset and state. Oak and berry nodes move their existing instance slot between four state batches; a stage transition updates only its previous and current batches, and only batches with visible nodes render, so draw calls do not grow with resource-node count. Runtime WebPs may be downsampled; each file records its own pixel dimensions, aspect ratio must stay within 1%, and the asset `dimensionsPx` records the runtime size. Variants in one resource family share runtime pixel dimensions, world dimensions, and the bottom-center [0.5, 1.0] pivot. Runtime width and height are declared in world units. This keeps the current texture loader and avoids a custom atlas shader.
+- Team color never tints ground or environment cutouts. Azure uses #5AA7D7 and Ember uses #E67A5E in the world. The brighter #73B8E8 and #EF886C values are UI-only.
+- Every source and runtime file records its SHA-256, license, and provenance. Paths are relative to the manifest directory.
+
+## Unit state mapping
+
+The renderer derives these states from the current filtered state snapshots. No new server fields are required.
+
+| Visual state | Current source | Renderer interpretation |
+| --- | --- | --- |
+| idle | Living unit, no movement, work, or one-shot event | Rest pose; low-amplitude idle motion may continue at a bounded cadence. |
+| walk | Position changes between snapshots | Walk pose and stride phase. Worker task moving or returning uses this state. A renderer-owned cargo cue stays separate from the movement pose: in full detail the Worker backpack uses the resource-palette colors (leaf green for wood, amber for food), while unknown cargo uses a neutral color; strategic role LOD remains neutral. |
+| turn | Client-facing angle changes | Turn pose or turn overlay; it may overlap a walk transition. |
+| gather | Worker task is gathering | Generic work pose until cargoType is known. Then wood maps to chopping and food maps to berry-gathering; no resource-specific work cue is inferred before cargoType appears. |
+| build | Worker task is building | Work pose for construction. |
+| attack | A fresh `lastAttackTick` arrives; gameplay retains it in snapshots for up to three ticks. | Deduplicate by attack tick and play a one-shot strike/release. This is an attack event, not proof of damage; HP decrease is the separate hit signal. Use target coordinates only when supplied by the fog-filtered snapshot. |
+| hit | HP decreases and remains above zero | Brief recoil and damage flash. |
+| defeat | HP changes from positive to zero or below | One-shot defeat pose, then hide the unit. |
+| spawn | A reused unit ID has a new generation, or a produced unit first appears | Short spawn-in pose. |
+
+Attack and hit are transient overlays. Defeat takes precedence and is terminal for that generation. Movement, turning, worker task, cargo, and team remain separate facts so an attack cue does not erase task state. Worker task snapshots use `idle`, `moving`, `gathering`, `returning`, `building`, or `attacking`; under fog, enemy task details are withheld. Movement takes precedence over a retained gather/build task for the worker's tool swing, so travel to a node does not look like active work. Enemy positions and attack target coordinates continue to follow the server's visibility filtering; the renderer does not infer hidden state.
+
+The first authored review pack provides four concrete samples: Worker idle, Worker build, Barracks mid-construction, and Barracks complete. A static review board is optional when browser policy disallows it; the game-rendered screenshots in the integration checkpoint are the appearance review. The manifest can add more state samples without changing the renderer contract.
+
+## Building state mapping
+
+| Visual state | Current source | Renderer interpretation |
+| --- | --- | --- |
+| construction | progress in [0, 1] and complete | Reveal construction layers from normalized progress. Roofs and finished details appear at 90% progress (or whenever complete is true); the earthwork/foundation ground cue remains until authoritative completion. |
+| damage | hp and maxHp; hp changes identify a fresh hit | Derive health ratio and damage stage from hp/maxHp. Initial worn and critical cut points reuse the current UI breakpoints at 55% and 25%; art review may tune them. |
+| under attack | attackers count | Optional localized under-attack feedback. |
+| production active | building is complete, queue has at least one item, and productionBlocked is false | Show the renderer-owned cue at productionCue. Training progress may drive its pulse or fill. |
+| production blocked | building is complete, queue has at least one item, and productionBlocked is true | Keep the cue visible, desaturated, and static. Do not show the active-production pulse. |
+
+Barracks state is derived from existing fields: progress, complete, hp, maxHp, attackers, queue, trainingProgress, and productionBlocked. Queue length is read from the current queue representation. State art must not obscure the footprint, selection outline, health indicator, or rally marker.
+
+## Resource and construction-site state mapping
+
+Resource percentage is floor(clamp(stock / startingStock, 0, 1) * 100), using the map definition's starting stock and the latest visible resource-node snapshot. With fog enabled, the server sends stock only for nodes in cells currently visible to that team. Missing nodes are intentionally omitted; the renderer updates only returned IDs and preserves each omitted node's last-known stage until it becomes visible again. It must not infer stock changes offscreen. The stage names and inclusive integer bands are:
+
+| Stage | Percent |
+| --- | --- |
+| full | 67–100 |
+| worked | 34–66 |
+| low | 1–33 |
+| depleted | 0 |
+
+The environment manifest contains these four stages for wood and food nodes. Within a resource family, all stages use the same runtime pixel dimensions, world dimensions, and pivot so swapping stages does not move the prop. A depleted wood or food node remains an understandable map feature; its existing resource ring can continue to communicate stock state.
+
+Construction ground treatment uses the same server progress:
+
+| Stage | Condition |
+| --- | --- |
+| clear | No incomplete building or building is complete; no decal is rendered. |
+| earthwork | Incomplete building and progress below 0.4. |
+| foundation | Incomplete building and progress from 0.4 up to, but not including, 1. |
+
+The clear state has no image file. Site decals are grouped by state and remain under the building footprint. The structure may reveal its roof and finished details at 90% progress while the foundation cue stays visible until the server marks the building complete.
+
+## Manifest budgets and validation
+
+The manifest validator is intentionally scoped to these first packs. It checks the v1 shape, per-file hashes and provenance, GLB part and anchor names, declared dimensions and origins, source/runtime image dimensions and pivots, estimated runtime texture memory, and projected instancing/draw-call counts. Character/building manifests include the eight-key unit registry with active or reserved entries. Every active key resolves to one model file and node; unit assets reference those exact entries. Barracks draw calls count shared parts plus the larger of the two team-specific variant sets, since only one set is shown for a structure at runtime.
+
+Runtime texture memory is estimated as unique runtime image pixels times four bytes per pixel with a 4/3 mip allowance. This is a conservative RGBA8 estimate, not compressed download size. The agreed budget for the first environment state pack is 100,663,296 bytes (96 MiB) per pack. Its current 83,884,376-byte projection leaves about 20% headroom; this is not a whole-application GPU cap. The integration review still measures actual residency at 2× display density and max camera zoom 2.3. If that exceeds the pack budget or the states need more detail, compare 768- and 512-pixel longest-edge runtime WebPs while retaining the PNG masters. Unit batch projection is the count of active unique unit batch keys times two teams. Environment projection is the count of distinct non-empty asset/state batches. Building projection is the shared part count plus the maximum team-variant part count for one structure, because each structure is a small grouped object.
+
+## Clean-checkout dependency checkpoint
+
+On 2026-09-25, renderer commit `dc67d12` was paired in a temporary clean candidate with committed environment-pack commit `d6716a5c18d8` from `codex/environment-interactive-v1`. The check excluded the local untracked asset directory. All eight resource-state WebPs and both construction-ground WebPs matched the non-null `runtimeFile` entries in the manifest, all ten files were present, and `validate-visual-pack.mjs` passed with an 83,884,376-byte runtime texture estimate and ten environment state batches. This confirms path and manifest pairing for these two commits; the pack is not yet part of the renderer branch, and the check does not approve its in-game appearance or performance.
+
+After the producer clears the publication hold and confirms the asset head, integrate that exact committed pack into the renderer candidate, rerun the state scenarios and manifest validator, then capture both required zooms on Meadow and Cinder with both teams and fog-safe visibility, and complete the 2,000-unit browser measurement. Keep the integration review open until those visual and performance gates have evidence.
+
+The renderer may use its generic base sprites and procedural construction ground cues while the held interactive pack is unavailable. That fallback is runtime continuity only and is not an art preview. The environment capture preflight verifies the ten runtime WebPs against the local manifest by hash and decoded dimensions and lays out the 40-frame matrix. The GPU scenario must then verify that both browser clients fetched and decoded all ten exact files, and that each sampled resource or building row is present and currently visible under fog, before saving any screenshot. It samples resources through normal gathering from starting stock 100 at 100, 50, 20, and 0; construction captures earthwork and foundation only. The completed-building clear state is asserted in the same run with no decal instance and no screenshot frame. Each capture uses a 1280x720 CSS viewport at DPR 2 and verifies that the resulting PNG is 2560x1440 pixels.
+
+Use `renderer-environment-state-preflight` for CPU-only checks and `renderer-environment-state` for the separate GPU appearance run. A missing, mismatched, or undecoded runtime file leaves the generic fallback active and makes the GPU scenario fail before its first screenshot. Runtime image files count as art evidence only when their matching manifest and provenance are present in the candidate checkout.
+
+The game-rendered play-zoom view is the appearance gate for the sample pack. The next renderer-code checkpoint must show a mixed Worker/Infantry/Archer roster for both teams at zoom 0.91 and strategic zoom 0.48 on Meadow and Cinder, with fog-safe visibility, plus a measured 2,000-unit browser run. Zoom 2.3 is optional close-up review and cannot substitute for either required view. Every runtime image path counted as pack appearance evidence must resolve from the candidate checkout with its matching manifest and provenance; files available only in a developer worktree do not satisfy the gate. Contract documentation and manifest validation do not substitute for runtime appearance evidence.

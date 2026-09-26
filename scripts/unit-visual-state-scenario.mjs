@@ -5,8 +5,12 @@ import {
 
 assert.equal(unitActionPoseAllowed(100, 0), true,
   'living units may show their current action pose');
+assert.equal(unitActionPoseAllowed(1, 0), true,
+  'living units at low health may show their current action pose');
 assert.equal(unitActionPoseAllowed(0, 0), false,
   'defeated units must not show action poses');
+assert.equal(unitActionPoseAllowed(-1, 0), false,
+  'units below zero health must not show action poses');
 assert.equal(unitActionPoseAllowed(100, 1234), false,
   'an active defeat animation takes precedence over another action pose');
 
@@ -25,7 +29,12 @@ assert.equal(unitCargoVisualState('infantry', 100, true, 4, 'wood'), 'none',
   'non-Workers do not inherit cargo cues');
 assert.equal(unitCargoVisualState('worker', 0, true, 4, 'wood'), 'none',
   'defeated Workers do not retain cargo cues');
+assert.equal(unitCargoVisualState('worker', Number.NaN, true, 4, 'wood'), 'none',
+  'invalid health does not expose a cargo cue');
 assert.equal(unitCargoVisualState('worker', 100, false, 4, 'food'), 'none',
   'fog-hidden Workers do not expose cargo cues');
+
+assert.equal(unitActionPoseAllowed(0, 1234), false,
+  'defeated units must not show action poses during their defeat animation');
 
 process.stdout.write('Unit visual-state scenario passed: defeat priority and fog-safe cargo mapping.\n');

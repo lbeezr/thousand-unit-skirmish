@@ -1,39 +1,40 @@
 # Unit and building art — frontier kit v1
 
-This is the first original game-object kit for the 1v1 vertical slice. It follows the game bible's oblique camera, Azure and Ember team colors, and illustrated frontier materials. Terrain and neutral landmarks are owned by the environment art track.
+This document defines the authored character and building kit for the 1v1 vertical slice. It follows the oblique camera, Azure and Ember team colors, and illustrated frontier materials. Terrain and neutral landmarks belong to the environment art track. The state mapping, manifest, batching limits, and runtime gates are specified in [the renderer contract](renderer-state-contract.md).
 
-## Shape language
+## Authored shape language
 
 | Object | Readable cue at play zoom | Material and color cue |
 | --- | --- | --- |
-| Worker | Short body, warm cap, back pack, broad hand tool | Ochre leather and worn timber over team cloth |
-| Infantry | Full-height body, dark six-sided shield, upright spear | Steel-grey cap, deep team shield, dark shaft |
-| Archer | Narrower body, bow on the forward side, back quiver | Moss hood, weathered wood over team cloth |
-| Town Center | Wide stone hall with a high rear tower | Pale weathered stone, charcoal slate, team doorway trim and tower banner |
-| Barracks | Enclosed timber walls, pitched ridge roof, shield over gate | Dark timber and slate, team standard |
-| Archery Range | Open corner posts, single sloped canopy, target at the front | Dark timber and slate, team standard |
+| Worker | Short body, warm cap, backpack, broad hand tool | Neutral ochre leather and worn timber; the sash is the only team-tinted surface |
+| Infantry | Full-height body, dark six-sided shield, upright spear | Steel-grey cap, neutral shield and dark shaft; the sash is the only team-tinted surface |
+| Archer | Narrower body, bow on the forward side, back quiver | Moss hood and weathered wood; the sash is the only team-tinted surface |
+| Town Center | Wide stone hall, high rear tower, compact standard | Pale weathered stone and charcoal slate; shared architecture with an owner-selected standard |
+| Barracks | Enclosed timber walls, pitched ridge roof, gate, compact standard | Dark timber and slate; shared architecture with an owner-selected standard |
+| Archery Range | Open corner posts, single sloped canopy, front target, compact standard | Dark timber and slate; shared architecture with an owner-selected standard |
 
-Azure stays sky blue and Ember rust red. Team color is concentrated in cloth, shields, standards, and ownership outlines. Stone, slate, wood, leather, and metal stay shared so the teams occupy one world. Shapes and equipment distinguish roles when color is hard to see.
+Azure stays sky blue and Ember rust red. Authored units reserve team tint for the named sash; shields, packs, tools, bows, quivers, and weapons remain neutral. Building walls, roofs, shields, trim, and other architecture also remain neutral. The compact standard carries building ownership: Azure uses a straight-cut pennant with one centered bar, while Ember uses a forked tail with a split bar. Shapes and equipment distinguish roles when color is hard to see. Unit and building state cues remain renderer-owned so they cannot be confused with baked model details.
 
-## Motion and signals
+## Renderer motion and signals
 
-- Walking units have an offset stride phase so mass movement does not pulse in lockstep. Only moving units update their pose each frame.
-- At full detail, known cargo tints the existing Worker backpack batch: leaf green for wood, amber for food, and neutral when unknown. Strategic role LOD keeps role glyphs and equipment, including the small backpack facet, neutral; Azure identity remains in a separate team-colored square marker, and Ember identity in a team-colored diamond marker. The facet reuses the existing Worker role batch and adds no unit draw batch. These renderer cues are source-only and still need runtime visual review.
-- Workers swing their tool while the server reports gathering or building. Server-reported strikes drive a short infantry spear thrust, archer bow release, or worker tool swing. A capped, sampled arrow trace marks some archer shots without filling a mass battle with projectiles.
-- Newly produced units scale in briefly. Defeated units tilt and shrink before disappearing. The server sends a strike tick and target point only while the event is fresh; target coordinates stay private under fog when the attacker is an enemy.
-- Existing damage flashes, focused-fire rings, building impact flashes, and construction progress remain localized cues. Finished building details appear with the roof. Small team-color lamps pulse on a Town Center, Barracks, or Range while its production queue is active.
-- Unit pieces are instanced per team; no unit owns an individual Three.js object. The extra gear raises a fixed draw-call count, independent of roster size. The 2,000-unit browser benchmark remains the gate for further detail.
+- Full-detail walking units use an offset stride phase. Workers use gathering and construction poses only while the server reports those tasks; movement takes precedence over the tool swing. Known cargo tints the existing Worker backpack batch leaf green for wood, amber for food, and neutral when unknown. Resource-specific work is shown only after `cargoType` is known.
+- At strategic zoom, role glyphs and equipment, including the small backpack facet, stay neutral. Azure and Ember identity use separate team-colored square and diamond markers. The facet reuses the existing Worker role batch and adds no unit draw batch. These renderer cues are source-only and still need runtime visual review.
+- A fresh server attack tick drives the short infantry spear thrust, archer bow release, or worker tool swing. The renderer deduplicates the tick; the animation signals an attack event, while an HP decrease signals a hit. A capped, sampled arrow trace marks some archer shots without filling a mass battle with projectiles. Attack and hit are transient overlays; defeat takes precedence and ends the pose for that unit generation.
+- Newly produced units scale in briefly. Defeated units tilt and shrink before disappearing. Strike ticks and target positions are consumed only from the filtered snapshot; hidden enemy positions and targets are not inferred.
+- Building construction uses earthwork and foundation ground stages. Finished details appear with the roof. Health, focused attackers, selection, rally position, and production remain separate cues.
+- A renderer-owned production cue is attached at the authored `productionCue` anchor and is not baked into the building model. It is hidden while idle, pulses in team color for active production, and stays visible, muted, and static when production is blocked. Town Center worker production follows the same state language.
+- Resource visuals use the four manifest stages `full`, `worked`, `low`, and `depleted`, derived from starting stock and the latest visible snapshot. Fog-omitted nodes keep their last-known stage until they become visible again.
+- Unit pieces are instanced; there are no per-unit Three.js objects. Resource state sprites are batched by asset and stage. The renderer contract sets the batch budgets and requires a candidate-checkout 2,000-unit browser measurement.
 
-## First-pass review
+## Procedural renderer baseline — historical notes
 
-Stone Pass was reviewed in the browser at the normal game zoom and a closer base view with 250 and 1,000 units. Team color, the Town Center roof, and the massed spear silhouette read clearly. In a 250-unit mixed-roster preview, workers completed a Range and Barracks, an archer and infantry appeared after training, and the Town Center and Barracks showed active production. The Range's open canopy and target distinguish it from the enclosed Barracks at closer zoom. The isolated branch was also reviewed at ordinary zoom on Stone Pass and Cinder Ridge; team colors remain distinct over both grounds, while small role gear calls for closer viewing.
+The current renderer still uses procedural objects until an authored-pack integration checkpoint is reviewed. The notes below describe older procedural renders and isolated-branch experiments. They are not palette rules for authored assets and do not substitute for visual or performance evidence on the current renderer candidate.
 
-The final 2,000-unit headless Chrome movement benchmark passed on the isolated art branch on Apple M2 / Metal: 1,998 moving units, 16.8 ms frame interval p95, 3.5 ms animation callback p95, and no tasks over 50 ms across a 30.13-second measurement. These headless timings do not measure windowed presentation or GPU completion. `npm test` and the separate live Archer research/combat scenario passed on that branch.
+- Earlier procedural passes used team-tinted bodies and shields, Town Center doorway or tower accents, and team-colored roof or canopy trim. Those details remain part of the procedural baseline pending side-by-side migration review; authored units use sash-only team tint, and authored building architecture remains neutral.
+- A first-pass browser review on an isolated art branch covered Stone Pass at ordinary zoom and a closer base view with 250 and 1,000 units. It reported readable team color, Town Center roof, and massed spear silhouette. A 250-unit mixed-roster preview exercised Range and Barracks construction, Archer and Infantry training, and active Town Center/Barracks production. An ordinary-zoom review also covered Stone Pass and Cinder Ridge. These are historical observations from that branch.
+- A historical headless Chrome movement benchmark on the isolated art branch reported 1,998 moving units, 16.8 ms frame-interval p95, 3.5 ms animation-callback p95, and no tasks over 50 ms during a 30.13-second measurement on Apple M2 / Metal. The measurement did not cover windowed presentation or GPU completion and does not satisfy the current candidate's browser gate.
+- A later procedural refinement added easing for facing, idle breathing, hit recoil, and team-colored Town Center roof trim/banner, Barracks ridge, and Range canopy. Those choices describe that procedural pass, not the authored material contract above.
 
-## Motion and readability refinement
+## Current review gates
 
-The follow-up pass eases unit facing toward movement or strike direction, adds a low-amplitude idle breath and a short hit recoil, and keeps their timing offset across the roster. Idle matrices update at a bounded cadence; walking units keep their normal frame-rate pose updates. Town Center roof trim and a larger banner, Barracks ridge color, and Range canopy trim carry team identity at a distance. Large selections use smaller, fainter rings so the rings do not cover the unit silhouettes.
-
-## Remaining review
-
-Review role recognition and building silhouettes at ordinary zoom on both meadow and cinder ground with a more evenly mixed roster. Refine the brief combat poses from live two-player footage; the current arrow cue is intentionally sampled and has a fixed cap. Recheck the 2,000-unit movement budget after every increase in animated detail.
+Review a mixed Worker/Infantry/Archer roster and building silhouettes at zoom 0.91 and strategic zoom 0.48, on Meadow and Cinder, with both teams and fog-safe visibility. Confirm the production cue's idle, active, and blocked states and the four resource stages. Measure the 2,000-unit browser run on the renderer candidate. Zoom 2.3 is optional close-up review and cannot replace either required view or the performance measurement. The renderer contract records the full evidence requirements and current open reviews.

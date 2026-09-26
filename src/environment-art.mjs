@@ -1,17 +1,183 @@
 import * as THREE from 'three';
+import { RESOURCE_VISUAL_STAGES } from './resource-visual-state.mjs';
 
 const ASSET_ROOT = './assets/environment/frontier-v1/';
+const INTERACTIVE_ASSET_ROOT = './assets/environment/frontier-interactive-v1/';
 export const TERRAIN_MATERIALS = ['meadow', 'short-grass', 'long-grass', 'dirt', 'sand', 'scree', 'cinder'];
-const spriteNames = ['oak', 'pine', 'berries', 'rock-outcrop', 'basalt-ridge', 'cliff', 'seamstone'];
+const spriteNames = ['pine', 'rock-outcrop', 'basalt-ridge', 'cliff', 'seamstone'];
 const textureLoader = new THREE.TextureLoader();
+const spriteMaterials = new Map();
+const constructionTextures = new Map();
+const constructionMaterials = new Map();
+const constructionInstances = new Map();
 
-const sprites = Object.fromEntries(spriteNames.map((name) => {
-  const texture = textureLoader.load(`${ASSET_ROOT}${name}.webp`);
+function loadSprite(url) {
+  const texture = textureLoader.load(url);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.minFilter = THREE.LinearMipmapLinearFilter;
   texture.magFilter = THREE.LinearFilter;
-  return [name, texture];
-}));
+  return texture;
+}
+
+const sprites = Object.fromEntries(spriteNames.map((name) => [name, loadSprite(`${ASSET_ROOT}${name}.webp`)]));
+sprites.oak = loadSprite(`${ASSET_ROOT}oak.webp`);
+sprites.berries = loadSprite(`${ASSET_ROOT}berries.webp`);
+for (const family of ['oak', 'berries']) {
+  for (const stage of RESOURCE_VISUAL_STAGES) sprites[`${family}-${stage}`] = sprites[family];
+}
+
+const REQUIRED_RESOURCE_STATE_FILES = Object.freeze([
+  ...['oak', 'berries'].flatMap((family) => RESOURCE_VISUAL_STAGES.map((stage) => `${family}-${stage}.webp`)),
+  'construction-earthwork.webp', 'construction-foundation.webp',
+]);
+export let RESOURCE_STATE_ASSETS_AVAILABLE = false;
+export let RESOURCE_STATE_ASSET_STATUS = {
+  ready: false,
+  state: 'loading',
+  packId: 'environment.frontier-interactive',
+  packVersion: null,
+  loadedFiles: [],
+  reason: 'manifest loading',
+};
+
+function textureMaterials(registry, key) {
+  let materials = registry.get(key);
+  if (!materials) {
+    materials = new Set();
+    registry.set(key, materials);
+  }
+  return materials;
+}
+
+function registerTextureMaterial(registry, key, material) {
+  const materials = textureMaterials(registry, key);
+  materials.add(material);
+  material.addEventListener('dispose', () => materials.delete(material));
+}
+
+function updateSpriteTexture(name, texture) {
+  sprites[name] = texture;
+  for (const material of spriteMaterials.get(name) || []) {
+    material.map = texture;
+    material.needsUpdate = true;
+  }
+}
+
+async function fetchVerifiedRuntimeImage(path, entry) {
+  if (!entry || entry.role !== 'runtime-image'
+    || !Number.isInteger(entry.dimensionsPx?.width) || entry.dimensionsPx.width <= 0
+    || !Number.isInteger(entry.dimensionsPx?.height) || entry.dimensionsPx.height <= 0
+    || !/^[a-f0-9]{64}$/i.test(entry.sha256 || '')) {
+    throw new Error(`Interactive environment manifest has an invalid runtime entry for ${path}`);
+  }
+  const response = await fetch(`${INTERACTIVE_ASSET_ROOT}${path}`, { cache: 'force-cache' });
+  if (!response.ok) throw new Error(`${path} returned HTTP ${response.status}`);
+  const bytes = await response.arrayBuffer();
+  if (!globalThis.crypto?.subtle) throw new Error('Web Crypto is unavailable for runtime asset verification');
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  const actualSha256 = [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, '0')).join('');
+  if (actualSha256 !== entry.sha256.toLowerCase()) {
+    throw new Error(`${path} SHA-256 differs from its manifest entry`);
+  }
+  const texture = await new Promise((resolve, reject) => {
+    textureLoader.load(`${INTERACTIVE_ASSET_ROOT}${path}`, resolve, undefined, reject);
+  });
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  const image = texture.image;
+  const dimensions = {
+    width: image?.naturalWidth || image?.width || 0,
+    height: image?.naturalHeight || image?.height || 0,
+  };
+  if (dimensions.width !== entry.dimensionsPx.width || dimensions.height !== entry.dimensionsPx.height) {
+    texture.dispose();
+    throw new Error(`${path} decoded as ${dimensions.width}x${dimensions.height}; manifest declares `
+      + `${entry.dimensionsPx.width}x${entry.dimensionsPx.height}`);
+  }
+  return { texture, dimensions, sha256: actualSha256 };
+}
+
+async function loadResourceStateAssets() {
+  const loaded = new Map();
+  const loadedFiles = [];
+  try {
+    const response = await fetch(`${INTERACTIVE_ASSET_ROOT}manifest.json`, { cache: 'force-cache' });
+    if (!response.ok) {
+      RESOURCE_STATE_ASSET_STATUS = {
+        ...RESOURCE_STATE_ASSET_STATUS, state: 'unavailable',
+        reason: `Interactive environment manifest returned HTTP ${response.status}`,
+      };
+      return RESOURCE_STATE_ASSET_STATUS;
+    }
+    const manifest = await response.json();
+    if (manifest.schemaVersion !== 1 || manifest.packId !== 'environment.frontier-interactive'
+      || !Array.isArray(manifest.files)) {
+      throw new Error('Interactive environment manifest has an unsupported schema or pack ID');
+    }
+    const runtimeFiles = manifest.files.filter((entry) => entry?.role === 'runtime-image');
+    const runtimeByPath = new Map(runtimeFiles.map((entry) => [entry.path, entry]));
+    if (runtimeFiles.length !== REQUIRED_RESOURCE_STATE_FILES.length
+      || runtimeByPath.size !== REQUIRED_RESOURCE_STATE_FILES.length
+      || REQUIRED_RESOURCE_STATE_FILES.some((path) => !runtimeByPath.has(path))) {
+      throw new Error('Interactive environment manifest must list exactly the ten required runtime images');
+    }
+    RESOURCE_STATE_ASSET_STATUS = {
+      ...RESOURCE_STATE_ASSET_STATUS, packVersion: manifest.packVersion || null,
+    };
+    for (const path of REQUIRED_RESOURCE_STATE_FILES) {
+      const result = await fetchVerifiedRuntimeImage(path, runtimeByPath.get(path));
+      loaded.set(path, result.texture);
+      loadedFiles.push({ path, sha256: result.sha256, dimensionsPx: result.dimensions });
+    }
+
+    for (const family of ['oak', 'berries']) {
+      for (const stage of RESOURCE_VISUAL_STAGES) {
+        const name = `${family}-${stage}`;
+        const texture = loaded.get(`${name}.webp`);
+        updateSpriteTexture(name, texture);
+      }
+    }
+    for (const stage of ['earthwork', 'foundation']) {
+      const texture = loaded.get(`construction-${stage}.webp`);
+      constructionTextures.set(stage, texture);
+      for (const material of constructionMaterials.get(stage) || []) {
+        material.map = texture;
+        material.color.setHex(0xffffff);
+        material.opacity = 1;
+        material.alphaTest = 0.04;
+        material.needsUpdate = true;
+      }
+      for (const mesh of constructionInstances.get(stage) || []) {
+        if (mesh.geometry.type === 'RingGeometry') {
+          mesh.geometry.dispose();
+          mesh.geometry = new THREE.PlaneGeometry(3, 3);
+        }
+      }
+    }
+    RESOURCE_STATE_ASSETS_AVAILABLE = true;
+    RESOURCE_STATE_ASSET_STATUS = {
+      ready: true,
+      state: 'ready',
+      packId: manifest.packId,
+      packVersion: manifest.packVersion,
+      loadedFiles,
+      reason: null,
+    };
+  } catch (error) {
+    for (const texture of loaded.values()) texture.dispose();
+    RESOURCE_STATE_ASSET_STATUS = {
+      ...RESOURCE_STATE_ASSET_STATUS,
+      ready: false,
+      state: 'load-failed',
+      loadedFiles,
+      reason: error?.message || String(error),
+    };
+  }
+  return RESOURCE_STATE_ASSET_STATUS;
+}
+
+export const resourceStateAssetsReady = loadResourceStateAssets();
 
 const grounds = Object.fromEntries(TERRAIN_MATERIALS.map((name) => {
   const texture = textureLoader.load(`${ASSET_ROOT}${name}.webp`);
@@ -27,6 +193,7 @@ const cameraFacing = new THREE.Quaternion().setFromUnitVectors(
   new THREE.Vector3(0.78, 1.12, 0.78).normalize(),
 );
 const instanceDummy = new THREE.Object3D();
+const constructionGroundRotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
 
 export function environmentTheme(definition) {
   return TERRAIN_MATERIALS.includes(definition.terrainBase)
@@ -144,7 +311,7 @@ function spriteGeometry(width, height) {
 }
 
 function spriteMaterial(name) {
-  return new THREE.MeshBasicMaterial({
+  const material = new THREE.MeshBasicMaterial({
     map: sprites[name],
     side: THREE.DoubleSide,
     transparent: true,
@@ -152,6 +319,8 @@ function spriteMaterial(name) {
     depthWrite: true,
     toneMapped: false,
   });
+  registerTextureMaterial(spriteMaterials, name, material);
+  return material;
 }
 
 export function createEnvironmentSprite(name, width, height, x, z) {
@@ -159,6 +328,47 @@ export function createEnvironmentSprite(name, width, height, x, z) {
   mesh.quaternion.copy(cameraFacing);
   mesh.position.set(x, 0, z);
   return mesh;
+}
+
+export function createConstructionGroundInstances(stage, capacity) {
+  const texture = constructionTextures.get(stage) || null;
+  if (!['earthwork', 'foundation'].includes(stage) || !Number.isInteger(capacity) || capacity <= 0) return null;
+  const mesh = new THREE.InstancedMesh(
+    texture || stage === 'foundation'
+      ? new THREE.PlaneGeometry(3, 3) : new THREE.RingGeometry(1.55, 1.92, 28),
+    new THREE.MeshBasicMaterial({
+      map: texture,
+      color: texture ? 0xffffff : stage === 'earthwork' ? 0x72583b : 0x8c8170,
+      transparent: true,
+      alphaTest: texture ? 0.04 : 0,
+      opacity: texture ? 1 : stage === 'earthwork' ? 0.52 : 0.42,
+      depthWrite: false, side: THREE.DoubleSide, toneMapped: false,
+    }),
+    capacity,
+  );
+  registerTextureMaterial(constructionMaterials, stage, mesh.material);
+  textureMaterials(constructionInstances, stage).add(mesh);
+  mesh.count = 0;
+  mesh.visible = false;
+  mesh.renderOrder = 8;
+  mesh.frustumCulled = false;
+  return mesh;
+}
+
+export function updateConstructionGroundInstances(mesh, positions) {
+  if (!mesh || positions.length > mesh.instanceMatrix.count) return false;
+  for (let index = 0; index < positions.length; index++) {
+    const point = positions[index];
+    instanceDummy.position.set(point.x, 0.002, point.z);
+    instanceDummy.quaternion.copy(constructionGroundRotation);
+    instanceDummy.scale.setScalar(1);
+    instanceDummy.updateMatrix();
+    mesh.setMatrixAt(index, instanceDummy.matrix);
+  }
+  mesh.count = positions.length;
+  mesh.visible = positions.length > 0;
+  mesh.instanceMatrix.needsUpdate = true;
+  return true;
 }
 
 export function createEnvironmentSpriteInstances(name, width, height, positions) {

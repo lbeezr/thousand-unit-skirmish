@@ -9,6 +9,7 @@
   "scripts": {
     "start": "node room-supervisor.mjs",
     "test": "node scripts/ci.mjs",
+    "validate:visual-pack": "node scripts/validate-visual-pack.mjs",
     "release:pack": "node scripts/pack-railway-release.mjs",
     "release:smoke": "node scripts/railway-smoke.mjs"
   },

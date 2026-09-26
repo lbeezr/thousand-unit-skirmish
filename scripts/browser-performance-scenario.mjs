@@ -1,7 +1,9 @@
+#!/usr/bin/env node
+
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createServer as createNetServer } from 'node:net';
-import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -448,6 +450,46 @@ async function pollHeapUntilScenarioEnds(debugConnection, harness) {
   return samples;
 }
 
+async function writeGameDevCapture(report) {
+  const runDir = process.env.GAME_DEV_RUN_DIR;
+  if (!runDir) return;
+  const runId = process.env.GAME_DEV_RUN_ID;
+  const adapterId = process.env.GAME_DEV_ADAPTER_ID;
+  const scenarioId = process.env.GAME_DEV_SCENARIO_ID;
+  if (!runId || !adapterId || !scenarioId) throw new Error('game-dev run context is incomplete');
+
+  const screenshot = await cdp.call('Page.captureScreenshot', { format: 'png' });
+  await writeFile(path.join(runDir, 'color.png'), Buffer.from(screenshot.data, 'base64'));
+  const intervalP95 = report.rendering.rawAnimationFrameInterval.p95Ms;
+  const callbackP95 = report.rendering.animateCallbackCpuDuration.p95Ms;
+  const longTaskCount = report.rendering.longTasksOver50Ms.count;
+  const measurements = [
+    { metric: 'render.animation_frame_interval', value: intervalP95, unit: 'ms', aggregation: 'p95' },
+    { metric: 'render.animate_callback_cpu', value: callbackP95, unit: 'ms', aggregation: 'p95' },
+    { metric: 'render.long_task_count', value: longTaskCount, unit: 'count', aggregation: 'max' },
+  ];
+  if (!measurements.every((measurement) => Number.isFinite(measurement.value))) {
+    throw new Error('browser performance report is missing finite capture measurements');
+  }
+  await writeFile(path.join(runDir, 'capture.json'), JSON.stringify({
+    schema: 'game_dev.capture.v1', runId, adapterId, scenarioId,
+    sourceFormat: 'game-dev-capture-v1',
+    frames: [{ index: 0, label: 'performance-context-moving-2000-unit-match', attachments: [
+      { kind: 'color', path: 'color.png', encoding: 'png' },
+    ] }],
+    measurements,
+    adapterEvidence: {
+      windowless: true,
+      graphicsApi: report.browser.webgl.webglVersion === 2 ? 'WebGL2' : 'WebGL1',
+      hardwarePerformanceReported: false,
+      gpuExecutionReported: false,
+      gpuCompletionIdentityReported: false,
+      pixelVisualInspectionPerformed: false,
+      notes: report.limitations,
+    },
+  }, null, 2));
+}
+
 async function main() {
   let browserCapture = {
     visiblePageUnits: 0,
@@ -572,7 +614,7 @@ async function main() {
 
     const heapUsages = heapSamples.filter((sample) => Number.isFinite(sample.usedBytes));
     const lastHeap = heapUsages.at(-1) || null;
-    console.log(JSON.stringify({
+    const report = {
       workload: 'headless Chrome spectator rendering a moving 2,000-unit multiplayer match',
       requestedMovementWaveSeconds: durationSeconds,
       movementWaves: MOVEMENT_WAVES,
@@ -630,7 +672,9 @@ async function main() {
         'Animation callback duration is main-thread CPU time and does not measure GPU completion or display presentation latency.',
         'V8 heap is JavaScript heap usage, not total browser-process or GPU memory.',
       ],
-    }, null, 2));
+    };
+    await writeGameDevCapture(report);
+    console.log(JSON.stringify(report, null, 2));
     assert.ok(frameIntervalP95Passed,
       `animation-frame interval p95 exceeded ${FRAME_INTERVAL_P95_BUDGET_MS} ms budget (measured ${frameIntervalP95Ms} ms)`);
     assert.ok(animateCallbackP95Passed,

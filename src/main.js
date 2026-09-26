@@ -1,8 +1,22 @@
 import * as THREE from 'three';
 import {
-  addObstacleEnvironmentSprites, createEnvironmentSprite, createEnvironmentSpriteInstances,
-  createGroundSurfaces, environmentTheme, setEnvironmentSpriteInstance, TERRAIN_MATERIALS,
+  addObstacleEnvironmentSprites, createConstructionGroundInstances,
+  createEnvironmentSprite, createEnvironmentSpriteInstances,
+  createGroundSurfaces, environmentTheme, setEnvironmentSpriteInstance,
+  TERRAIN_MATERIALS, updateConstructionGroundInstances,
+  RESOURCE_STATE_ASSETS_AVAILABLE, RESOURCE_STATE_ASSET_STATUS, resourceStateAssetsReady,
 } from './environment-art.mjs';
+import {
+  RESOURCE_VISUAL_STAGES, resourceVisualScale, resourceVisualStage, resourceVisualTransitionStages,
+} from './resource-visual-state.mjs';
+import {
+  buildingFinishedDetailsVisible, buildingProductionCueState, constructionGroundStage,
+} from './building-visual-state.mjs';
+import {
+  UNIT_LOD_ROLE_BITS, UNIT_LOD_ROLES, shouldUpdateUnitFocusMatrix,
+  shouldUpdateUnitFullDetailTint, shouldUpdateUnitTransformForFrame,
+  unitLodRoleMatrixUpdateMask,
+} from './unit-lod-state.mjs';
 import { unitActionPoseAllowed, unitCargoVisualState } from './unit-visual-state.mjs';
 import {
   capturePrerequisiteIds, findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
@@ -37,12 +51,15 @@ const DEFEAT_POSE_MS = 430;
 const IDLE_POSE_INTERVAL_MS = 75;
 const MAX_ARROW_TRACES = 96;
 const MAX_MAP_RESOURCE_NODES = 128;
+const MAX_MAP_BUILDINGS = 128;
 const MAX_MAP_TRIGGERS = 32;
 const MAX_MAP_SCENARIO_EVENTS = 32;
 const MAX_SCENARIO_EVENT_REPEATS = 20;
 const MIN_SCENARIO_EVENT_REPEAT_SECONDS = 5;
 const CAMERA_EDGE_ZONE_PX = 28;
 const CAMERA_EDGE_SPEED_PX_PER_SECOND = 420;
+// Full meshes failed the 0.91 worker-role gate; keep the role LOD through both required views.
+const UNIT_LOD_ZOOM_THRESHOLD = 0.91;
 const MAX_OBJECTIVE_FOOD_REWARD = 10000;
 const MAX_TRIGGER_UNIT_REWARD = 25;
 const WORKERS_PER_TEAM = 4;
@@ -72,6 +89,7 @@ const ATTACK_UPGRADE_RULES = Object.freeze({
 });
 const TEAM_NAMES = ['Azure', 'Ember'];
 const TEAM_HEX = [0x5aa7d7, 0xe67a5e];
+const pausedProductionCueColor = new THREE.Color(0xa8a797);
 
 const viewport = document.querySelector('#viewport');
 const selectionBox = document.querySelector('#selection-box');
@@ -306,6 +324,15 @@ const toolMeshes = [null, null];
 const packMeshes = [null, null];
 const quiverMeshes = [null, null];
 const unitArtMeshes = [bodyMeshes, headMeshes, bowMeshes, shieldMeshes, spearMeshes, toolMeshes, packMeshes, quiverMeshes];
+const unitLodRoleMeshes = [
+  { worker: null, infantry: null, archer: null },
+  { worker: null, infantry: null, archer: null },
+];
+const unitLodTeamMeshes = [null, null];
+const unitLodMeshesByTeam = [[], []];
+const unitLodDirtyRoleMasks = [0, 0];
+const unitLodTeamDirty = [false, false];
+let unitLowDetailActive = false;
 const mapObjects = [];
 const townCenterProductionLamps = [null, null];
 let fogTexture = null;
@@ -319,9 +346,17 @@ let victoryHoldVisual = null;
 const resourceNodeVisuals = new Map();
 const resourceCalloutTextures = new Map();
 const woodTreeNodeSlots = new Map();
+const woodTreeNodeStages = new Map();
+const woodTreeStageCounts = new Map();
+const berryNodeSlots = new Map();
+const berryNodeStages = new Map();
+const berryStageCounts = new Map();
+const constructionGroundMeshes = new Map();
+const constructionGroundSignatures = new Map();
 const buildingVisuals = new Map();
-let woodTreeMeshes = [];
+let woodTreeMeshes = new Map();
 let lastResourceCalloutUpdateAt = -Infinity;
+let berrySpriteMeshes = new Map();
 let localTeam = null;
 let isHost = false;
 let currentArmySize = 1000;
@@ -463,13 +498,40 @@ function addMapObject(object) {
 function clearMapObjects() {
   for (const object of mapObjects) {
     scene.remove(object);
-    object.geometry?.dispose();
-    const materials = Array.isArray(object.material) ? object.material : [object.material];
-    for (const material of materials) material?.dispose();
+    object.traverse((child) => {
+      child.geometry?.dispose();
+      const materials = Array.isArray(child.material) ? child.material : [child.material];
+      for (const material of materials) material?.dispose();
+    });
   }
   mapObjects.length = 0;
   townCenterProductionLamps[0] = null;
   townCenterProductionLamps[1] = null;
+}
+
+function applyProductionCueState(lamp, state, teamColor) {
+  if (!lamp || lamp.userData.productionCueState === state) return;
+  lamp.userData.productionCueState = state;
+  lamp.visible = state !== 'idle';
+  if (state === 'idle') return;
+  lamp.material.color.setHex(teamColor);
+  if (state === 'blocked') {
+    lamp.material.color.lerp(pausedProductionCueColor, 0.55);
+    lamp.material.opacity = 0.36;
+    lamp.scale.setScalar(0.74);
+    return;
+  }
+  lamp.material.opacity = 0.88;
+  lamp.scale.setScalar(1);
+}
+
+function updateBuildingProductionCue(visual, building) {
+  const state = buildingProductionCueState(
+    building.complete === true,
+    getBuildingQueueLength(building),
+    building.productionBlocked === true,
+  );
+  applyProductionCueState(visual.productionLamp, state, visual.teamColor);
 }
 
 function addTownCenterVisual(spawn) {
@@ -479,7 +541,6 @@ function addTownCenterVisual(spawn) {
   const slate = new THREE.MeshBasicMaterial({ color: 0x363d3f });
   const timber = new THREE.MeshBasicMaterial({ color: 0x514333 });
   const doorMaterial = new THREE.MeshBasicMaterial({ color: 0x2d302b });
-  const teamMaterial = new THREE.MeshBasicMaterial({ color: TEAM_HEX[spawn.team], side: THREE.DoubleSide });
   const piece = (geometry, material, px, py, pz, angle = 0) => {
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x + px, py, spawn.z + pz);
@@ -494,13 +555,15 @@ function addTownCenterVisual(spawn) {
   for (const side of [-1, 1]) {
     piece(new THREE.BoxGeometry(1.25, 0.13, 2.32), slate, side * 0.51, 1.37, -0.14, -side * 0.48);
     piece(new THREE.BoxGeometry(0.13, 0.88, 0.13), timber, side * 1.04, 0.68, 0.82);
-    piece(new THREE.BoxGeometry(0.13, 0.35, 0.08), teamMaterial, side * 0.88, 0.72, 0.84);
+    piece(new THREE.BoxGeometry(0.13, 0.35, 0.08), timber, side * 0.88, 0.72, 0.84);
   }
-  piece(new THREE.BoxGeometry(0.16, 0.08, 2.24), teamMaterial, 0, 1.67, -0.14);
+  piece(new THREE.BoxGeometry(0.16, 0.08, 2.24), slate, 0, 1.67, -0.14);
   piece(new THREE.BoxGeometry(0.74, 1.64, 0.74), stone, -0.73, 1.03, -0.63);
   piece(new THREE.ConeGeometry(0.67, 0.62, 4), slate, -0.73, 2.13, -0.63).rotation.y = Math.PI / 4;
-  piece(new THREE.BoxGeometry(0.56, 0.83, 0.055), teamMaterial, -0.73, 1.45, -0.23);
-  piece(new THREE.BoxGeometry(0.08, 0.76, 0.08), timber, -0.73, 1.68, -0.18);
+  const standardRoot = new THREE.Group();
+  standardRoot.position.set(x - 0.73, 0, spawn.z - 0.23);
+  addBuildingStandard(standardRoot, spawn.team, 0, 0, 2.06);
+  addMapObject(standardRoot);
   const productionLamp = piece(
     new THREE.OctahedronGeometry(0.15, 0),
     new THREE.MeshBasicMaterial({ color: TEAM_HEX[spawn.team], transparent: true, opacity: 0.88 }),
@@ -677,7 +740,7 @@ function updateBuildingCombatFeedback(visual, building) {
 function animateBuildingCombatFeedback(now) {
   const pulse = 0.5 + 0.5 * Math.sin(now * 0.0065);
   for (const visual of buildingVisuals.values()) {
-    if (visual.productionLamp?.visible) {
+    if (visual.productionLamp?.userData.productionCueState === 'active') {
       visual.productionLamp.scale.setScalar(0.82 + pulse * 0.33);
       visual.productionLamp.material.opacity = 0.58 + pulse * 0.35;
     }
@@ -703,8 +766,11 @@ function animateBuildingCombatFeedback(now) {
     const lamp = townCenterProductionLamps[team];
     if (!lamp) continue;
     const production = latestWorkerProduction[team];
-    lamp.visible = Boolean(production?.queue > 0 && !production.productionBlocked);
-    if (lamp.visible) {
+    const state = buildingProductionCueState(
+      true, production?.queue, production?.productionBlocked === true,
+    );
+    applyProductionCueState(lamp, state, TEAM_HEX[team]);
+    if (state === 'active') {
       lamp.scale.setScalar(0.82 + pulse * 0.33);
       lamp.material.opacity = 0.58 + pulse * 0.35;
     }
@@ -744,15 +810,69 @@ function addBuildingStandard(group, team, x, z, height = 1.85) {
   pole.position.y = height / 2;
   standard.add(pole);
   const flagShape = new THREE.Shape();
-  flagShape.moveTo(0, height - 0.13);
-  flagShape.lineTo(0.67, height - 0.13);
-  flagShape.lineTo(0.63, height - 0.7);
-  flagShape.lineTo(0.32, height - 0.58);
-  flagShape.lineTo(0.04, height - 0.7);
+  const top = height - 0.13;
+  const bottom = height - 0.7;
+  const middle = (top + bottom) / 2;
+  flagShape.moveTo(0, top);
+  flagShape.lineTo(0.67, top);
+  if (team === 0) {
+    flagShape.lineTo(0.67, bottom);
+    flagShape.lineTo(0, bottom);
+  } else {
+    flagShape.lineTo(0.67, bottom + 0.13);
+    flagShape.lineTo(0.39, bottom + 0.13);
+    flagShape.lineTo(0.335, bottom);
+    flagShape.lineTo(0.28, bottom + 0.13);
+    flagShape.lineTo(0, bottom + 0.13);
+  }
   flagShape.closePath();
+
+  const barShape = (x0, x1) => {
+    const shape = new THREE.Shape();
+    shape.moveTo(x0, middle - 0.045);
+    shape.lineTo(x1, middle - 0.045);
+    shape.lineTo(x1, middle + 0.045);
+    shape.lineTo(x0, middle + 0.045);
+    shape.closePath();
+    return shape;
+  };
+  const shapeParts = [
+    { shape: flagShape, color: TEAM_HEX[team], z: 0 },
+    ...(team === 0
+      ? [{ shape: barShape(0.15, 0.52), color: 0xe8ddc5, z: 0.002 }]
+      : [
+        { shape: barShape(0.13, 0.29), color: 0xe8ddc5, z: 0.002 },
+        { shape: barShape(0.38, 0.54), color: 0xe8ddc5, z: 0.002 },
+      ]),
+  ];
+  const vertices = [];
+  const colors = [];
+  const indices = [];
+  for (const part of shapeParts) {
+    const geometry = new THREE.ShapeGeometry(part.shape);
+    const positionAttribute = geometry.getAttribute('position');
+    const sourceIndex = geometry.getIndex();
+    const offset = vertices.length / 3;
+    const partColor = new THREE.Color(part.color);
+    for (let index = 0; index < positionAttribute.count; index++) {
+      vertices.push(positionAttribute.getX(index), positionAttribute.getY(index), part.z);
+      colors.push(partColor.r, partColor.g, partColor.b);
+    }
+    if (sourceIndex) {
+      for (let index = 0; index < sourceIndex.count; index++) indices.push(offset + sourceIndex.getX(index));
+    } else {
+      for (let index = 0; index < positionAttribute.count; index++) indices.push(offset + index);
+    }
+    geometry.dispose();
+  }
+  const flagGeometry = new THREE.BufferGeometry();
+  flagGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  flagGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  flagGeometry.setIndex(indices);
+  flagGeometry.computeVertexNormals();
   const flag = new THREE.Mesh(
-    new THREE.ShapeGeometry(flagShape),
-    new THREE.MeshBasicMaterial({ color: TEAM_HEX[team], side: THREE.DoubleSide }),
+    flagGeometry,
+    new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: true, side: THREE.DoubleSide }),
   );
   flag.position.z = 0.035;
   standard.add(flag);
@@ -786,7 +906,7 @@ function createArcheryRangeVisual(building) {
   roof.position.y = 0.38;
   const canopyTrim = new THREE.Mesh(
     new THREE.BoxGeometry(3.42, 0.105, 0.13),
-    new THREE.MeshBasicMaterial({ color: teamColor }),
+    timberMaterial,
   );
   canopyTrim.position.set(0, 0, 1.27);
   roof.add(canopyTrim);
@@ -851,11 +971,10 @@ function updateArcheryRangeVisual(visual, building) {
   }
   visual.posts.instanceMatrix.needsUpdate = true;
   visual.roof.position.y = 0.23 + postHeight + 0.19;
-  const finished = building.complete === true || progress >= 0.9;
+  const finished = buildingFinishedDetailsVisible(progress, building.complete);
   visual.roof.visible = finished;
   for (const piece of visual.finishPieces) piece.visible = finished;
-  visual.productionLamp.visible = finished && getBuildingQueueLength(building) > 0
-    && building.productionBlocked !== true;
+  updateBuildingProductionCue(visual, building);
   updateBuildingHealthIndicator(visual, building);
 }
 
@@ -891,7 +1010,7 @@ function createBarracksVisual(building) {
   });
   const ridge = new THREE.Mesh(
     new THREE.BoxGeometry(0.16, 0.16, 3.18),
-    new THREE.MeshBasicMaterial({ color: teamColor }),
+    roofMaterial,
   );
   ridge.position.y = 1.63;
   group.add(ridge);
@@ -905,7 +1024,7 @@ function createBarracksVisual(building) {
   finishPieces.push(gate);
   const shieldSign = new THREE.Mesh(
     new THREE.CylinderGeometry(0.21, 0.15, 0.055, 6),
-    new THREE.MeshBasicMaterial({ color: teamColor }),
+    new THREE.MeshBasicMaterial({ color: 0x6f644d }),
   );
   shieldSign.geometry.rotateX(Math.PI / 2);
   shieldSign.position.set(0, 1.12, 1.25);
@@ -948,12 +1067,11 @@ function updateBarracksVisual(visual, building) {
     wall.position.y = 0.23 + progress * 0.5;
     wall.visible = progress > 0.01;
   }
-  const roofVisible = building.complete === true || progress >= 0.9;
+  const roofVisible = buildingFinishedDetailsVisible(progress, building.complete);
   for (const panel of visual.roofPanels) panel.visible = roofVisible;
   visual.ridge.visible = roofVisible;
   for (const piece of visual.finishPieces) piece.visible = roofVisible;
-  visual.productionLamp.visible = roofVisible && getBuildingQueueLength(building) > 0
-    && building.productionBlocked !== true;
+  updateBuildingProductionCue(visual, building);
   updateBuildingHealthIndicator(visual, building);
 }
 
@@ -996,6 +1114,7 @@ function reconcileBuildings(buildings = [], initial = false) {
     updateBuildingSelectionVisual(visual, building.id === selectedBuildingId);
     updateBuildingCombatFeedback(visual, building);
   }
+  updateConstructionGroundBatches(rows);
   for (const [id, visual] of buildingVisuals) {
     if (seen.has(id)) continue;
     disposeBuildingVisual(visual);
@@ -1141,24 +1260,46 @@ function resizeResourceCallouts() {
   }
 }
 
+function buildConstructionGroundBatches() {
+  constructionGroundMeshes.clear();
+  constructionGroundSignatures.clear();
+  for (const stage of ['earthwork', 'foundation']) {
+    const mesh = createConstructionGroundInstances(stage, MAX_MAP_BUILDINGS);
+    if (!mesh) continue;
+    addMapObject(mesh);
+    constructionGroundMeshes.set(stage, mesh);
+    constructionGroundSignatures.set(stage, '');
+  }
+}
+
+function updateConstructionGroundBatches(buildings) {
+  for (const stage of ['earthwork', 'foundation']) {
+    const stageBuildings = buildings
+      .filter((building) => constructionGroundStage(building.progress, building.complete) === stage)
+      .sort((left, right) => left.id - right.id);
+    const signature = stageBuildings.map((building) => `${building.id}:${building.x}:${building.z}`).join('|');
+    if (constructionGroundSignatures.get(stage) === signature) continue;
+    const mesh = constructionGroundMeshes.get(stage);
+    if (!updateConstructionGroundInstances(mesh, stageBuildings)) continue;
+    constructionGroundSignatures.set(stage, signature);
+  }
+}
+
 function addResourceNodeVisual(node) {
   const nodeType = node.type === 'wood' ? 'wood' : 'food';
+  const stage = resourceVisualStage(node.stock, node.stock);
   const ringColor = nodeType === 'wood' ? 0x9bb877 : 0xe4bd63;
   const ringMaterial = new THREE.MeshBasicMaterial({
     color: ringColor, side: THREE.DoubleSide, transparent: true, opacity: 0.78, depthWrite: false,
   });
   const ring = new THREE.Mesh(new THREE.RingGeometry(0.55, 0.66, 24), ringMaterial);
+  ring.material.color.setHex(node.stock > 0 ? ringColor : 0x77806b);
+  ring.material.opacity = node.stock > 0 ? 0.78 : 0.35;
   ring.rotation.x = -Math.PI / 2;
   ring.position.set(node.x, 0.035, node.z);
   ring.renderOrder = 2;
   addMapObject(ring);
 
-  const props = [];
-  if (nodeType !== 'wood') {
-    const berries = createEnvironmentSprite('berries', 2.55, 1.56, node.x, node.z);
-    addMapObject(berries);
-    props.push(berries);
-  }
   const callout = new THREE.Sprite(new THREE.SpriteMaterial({
     map: resourceCalloutTexture(nodeType), transparent: true, depthTest: false,
     depthWrite: false, fog: false, toneMapped: false,
@@ -1168,7 +1309,8 @@ function addResourceNodeVisual(node) {
   callout.visible = false;
   addMapObject(callout);
   resourceNodeVisuals.set(node.id, {
-    type: nodeType, ring, props, stock: node.stock, x: node.x, z: node.z, callout,
+    type: nodeType, ring, stock: node.stock, startingStock: node.stock, stage,
+    x: node.x, z: node.z, callout,
   });
 }
 
@@ -1177,11 +1319,14 @@ function updateResourceNodeVisual(id, stock) {
   const visual = resourceNodeVisuals.get(id);
   if (!visual) return;
   visual.stock = stock;
+  const stage = resourceVisualStage(stock, visual.startingStock);
+  if (visual.stage === stage) return;
+  visual.stage = stage;
   const nodeColor = visual.type === 'wood' ? 0x9bb877 : 0xe4bd63;
   visual.ring.material.color.setHex(stock > 0 ? nodeColor : 0x77806b);
   visual.ring.material.opacity = stock > 0 ? 0.78 : 0.35;
-  for (const prop of visual.props) prop.visible = stock > 0;
-  if (visual.type === 'wood') setWoodNodeTreesVisible(id, stock > 0);
+  if (visual.type === 'wood') setWoodNodeTreeStage(id, stage);
+  else setBerryNodeStage(id, stage);
 }
 
 function updateResourceNodeCallouts(now, force = false) {
@@ -1252,32 +1397,145 @@ function updateResourceNodeCallouts(now, force = false) {
   }
 }
 
-function setWoodNodeTreesVisible(id, visible) {
+function setWoodNodeTreeStage(id, stage) {
   const slots = woodTreeNodeSlots.get(id);
   if (!slots?.length) return;
+  const previous = woodTreeNodeStages.get(id);
+  if (!previous || previous === stage) return;
+  woodTreeStageCounts.set(previous, Math.max(0, (woodTreeStageCounts.get(previous) || 0) - 1));
+  woodTreeStageCounts.set(stage, (woodTreeStageCounts.get(stage) || 0) + 1);
+  const changedStages = resourceVisualTransitionStages(previous, stage);
   for (const slot of slots) {
-    for (const mesh of woodTreeMeshes) {
-      setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z, visible ? slot.scale : 0);
+  for (const meshStage of changedStages) {
+    const mesh = woodTreeMeshes.get(meshStage);
+    if (!mesh) continue;
+    setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z,
+      meshStage === stage
+        ? slot.scale * (RESOURCE_STATE_ASSETS_AVAILABLE ? 1 : resourceVisualScale(stage)) : 0);
     }
   }
-  for (const mesh of woodTreeMeshes) mesh.instanceMatrix.needsUpdate = true;
+  for (const meshStage of changedStages) {
+    const mesh = woodTreeMeshes.get(meshStage);
+    if (!mesh) continue;
+    mesh.instanceMatrix.needsUpdate = true;
+    mesh.visible = (woodTreeStageCounts.get(meshStage) || 0) > 0;
+  }
+  woodTreeNodeStages.set(id, stage);
 }
 
 function buildWoodNodeInstances(nodes = []) {
-  woodTreeMeshes = [];
+  woodTreeMeshes = new Map();
   woodTreeNodeSlots.clear();
+  woodTreeNodeStages.clear();
+  woodTreeStageCounts.clear();
+  for (const stage of RESOURCE_VISUAL_STAGES) woodTreeStageCounts.set(stage, 0);
   const woodNodes = nodes.filter((node) => node.type === 'wood');
   if (woodNodes.length === 0) return;
   const positions = woodNodes.map((node, index) => ({
     x: node.x, z: node.z, scale: 0.85 + (index % 3) * 0.07,
   }));
-  const trees = createEnvironmentSpriteInstances('oak', 4.1, 3.75, positions);
   for (let index = 0; index < woodNodes.length; index++) {
+    const stage = resourceVisualStage(woodNodes[index].stock, woodNodes[index].stock);
     woodTreeNodeSlots.set(woodNodes[index].id, [{ index, ...positions[index] }]);
+    woodTreeNodeStages.set(woodNodes[index].id, stage);
+    woodTreeStageCounts.set(stage, woodTreeStageCounts.get(stage) + 1);
   }
-  addMapObject(trees);
-  woodTreeMeshes = [trees];
+  for (const stage of RESOURCE_VISUAL_STAGES) {
+    const stagePositions = positions.map((position, index) => ({
+      ...position,
+      scale: woodTreeNodeStages.get(woodNodes[index].id) === stage
+        ? position.scale * (RESOURCE_STATE_ASSETS_AVAILABLE ? 1 : resourceVisualScale(stage)) : 0,
+    }));
+    const trees = createEnvironmentSpriteInstances(`oak-${stage}`, 4.1, 3.75, stagePositions);
+    if (!trees) continue;
+    trees.visible = woodTreeStageCounts.get(stage) > 0;
+    addMapObject(trees);
+    woodTreeMeshes.set(stage, trees);
+  }
 }
+
+function setBerryNodeStage(id, stage) {
+  const slot = berryNodeSlots.get(id);
+  if (!slot) return;
+  const previous = berryNodeStages.get(id);
+  if (!previous || previous === stage) return;
+  berryStageCounts.set(previous, Math.max(0, (berryStageCounts.get(previous) || 0) - 1));
+  berryStageCounts.set(stage, (berryStageCounts.get(stage) || 0) + 1);
+  const changedStages = resourceVisualTransitionStages(previous, stage);
+  for (const meshStage of changedStages) {
+    const mesh = berrySpriteMeshes.get(meshStage);
+    if (!mesh) continue;
+    setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z,
+      meshStage === stage
+        ? slot.scale * (RESOURCE_STATE_ASSETS_AVAILABLE ? 1 : resourceVisualScale(stage)) : 0);
+    mesh.instanceMatrix.needsUpdate = true;
+    mesh.visible = (berryStageCounts.get(meshStage) || 0) > 0;
+  }
+  berryNodeStages.set(id, stage);
+}
+
+function buildBerryNodeInstances(nodes = []) {
+  berrySpriteMeshes = new Map();
+  berryNodeSlots.clear();
+  berryNodeStages.clear();
+  berryStageCounts.clear();
+  for (const stage of RESOURCE_VISUAL_STAGES) berryStageCounts.set(stage, 0);
+  const berryNodes = nodes.filter((node) => node.type === 'food');
+  if (berryNodes.length === 0) return;
+  const positions = berryNodes.map((node) => ({ x: node.x, z: node.z, scale: 1 }));
+  for (let index = 0; index < berryNodes.length; index++) {
+    const stage = resourceVisualStage(berryNodes[index].stock, berryNodes[index].stock);
+    berryNodeSlots.set(berryNodes[index].id, { index, ...positions[index] });
+    berryNodeStages.set(berryNodes[index].id, stage);
+    berryStageCounts.set(stage, berryStageCounts.get(stage) + 1);
+  }
+  for (const stage of RESOURCE_VISUAL_STAGES) {
+    const stagePositions = positions.map((position, index) => ({
+      ...position,
+      scale: berryNodeStages.get(berryNodes[index].id) === stage
+        ? position.scale * (RESOURCE_STATE_ASSETS_AVAILABLE ? 1 : resourceVisualScale(stage)) : 0,
+    }));
+    const sprites = createEnvironmentSpriteInstances(`berries-${stage}`, 2.55, 1.56, stagePositions);
+    if (!sprites) continue;
+    sprites.visible = berryStageCounts.get(stage) > 0;
+    addMapObject(sprites);
+    berrySpriteMeshes.set(stage, sprites);
+  }
+}
+
+function refreshResourceStateFallbackTransforms() {
+  for (const [id, slots] of woodTreeNodeSlots) {
+    const stage = woodTreeNodeStages.get(id);
+    for (const meshStage of RESOURCE_VISUAL_STAGES) {
+      const mesh = woodTreeMeshes.get(meshStage);
+      if (!mesh) continue;
+      for (const slot of slots) {
+        setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z,
+          meshStage === stage ? slot.scale : 0);
+      }
+    }
+  }
+  for (const [id, slot] of berryNodeSlots) {
+    const stage = berryNodeStages.get(id);
+    for (const meshStage of RESOURCE_VISUAL_STAGES) {
+      const mesh = berrySpriteMeshes.get(meshStage);
+      if (!mesh) continue;
+      setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z,
+        meshStage === stage ? slot.scale : 0);
+    }
+  }
+  for (const mesh of [...woodTreeMeshes.values(), ...berrySpriteMeshes.values()]) {
+    mesh.instanceMatrix.needsUpdate = true;
+  }
+}
+
+resourceStateAssetsReady.then((status) => {
+  if (status.ready) refreshResourceStateFallbackTransforms();
+  if (roomPageUrl.searchParams.get('rendererCapture') === 'environment-state') {
+    window.__rtsEnvironmentAssetStatus = status;
+    window.__rtsEnvironmentCaptureCommand = (command) => sendCommand(command);
+  }
+});
 
 function buildFogOverlay(definition) {
   const pixels = new Uint8Array(MAP_WIDTH * MAP_HEIGHT * 4);
@@ -1353,6 +1611,8 @@ function updateFogFromState(state) {
 function buildMap(definition) {
   fogTexture?.dispose();
   clearMapObjects();
+  constructionGroundMeshes.clear();
+  constructionGroundSignatures.clear();
   objectiveVisuals.clear();
   scenarioEventVisuals.clear();
   timedVictoryVisual = null;
@@ -1367,7 +1627,13 @@ function buildMap(definition) {
   MAP_HALF_Z = MAP_HEIGHT / 2;
   clearBuildingVisuals();
   woodTreeNodeSlots.clear();
-  woodTreeMeshes = [];
+  woodTreeMeshes = new Map();
+  woodTreeNodeStages.clear();
+  woodTreeStageCounts.clear();
+  berryNodeSlots.clear();
+  berrySpriteMeshes = new Map();
+  berryNodeStages.clear();
+  berryStageCounts.clear();
   latestBuildings = [];
   latestWorkerProduction = [null, null];
   if (buildPlacementActive) cancelBuildPlacement(false);
@@ -1380,6 +1646,7 @@ function buildMap(definition) {
   base.position.y = -0.075;
   addMapObject(base);
   for (const surface of createGroundSurfaces(definition)) addMapObject(surface);
+  buildConstructionGroundBatches();
 
   // Rock silhouettes carry the visual boundary. Flat block tops made the ridge
   // look like a strip of square tiles when viewed from the oblique camera.
@@ -1420,6 +1687,7 @@ function buildMap(definition) {
 
   for (const spawn of definition.spawnPoints || []) addTownCenterVisual(spawn);
   buildWoodNodeInstances(definition.resourceNodes || []);
+  buildBerryNodeInstances(definition.resourceNodes || []);
   for (const node of definition.resourceNodes || []) {
     addResourceNodeVisual(node);
     latestResourceStocks.set(node.id, node.stock);
@@ -1958,6 +2226,80 @@ function addPaintedFacets(geometry) {
   return geometry;
 }
 
+function createGroundSilhouette(polygons, baseColor = 0xf3e8cd, polygonColors = {}, polygonLifts = {}) {
+  const positions = [];
+  const colors = [];
+  const indices = [];
+  for (let polygonIndex = 0; polygonIndex < polygons.length; polygonIndex++) {
+    const points = polygons[polygonIndex];
+    const polygonColor = new THREE.Color(polygonColors[polygonIndex] ?? baseColor);
+    // Negative local depth becomes positive world height after the ground-plane rotation.
+    const polygonLift = polygonLifts[polygonIndex] ?? 0;
+    const shape = new THREE.Shape();
+    shape.moveTo(points[0][0], points[0][1]);
+    for (const [x, y] of points.slice(1)) shape.lineTo(x, y);
+    shape.closePath();
+    const part = new THREE.ShapeGeometry(shape);
+    const attribute = part.getAttribute('position');
+    const partIndex = part.getIndex();
+    const offset = positions.length / 3;
+    for (let index = 0; index < attribute.count; index++) {
+      positions.push(attribute.getX(index), attribute.getY(index), attribute.getZ(index) - polygonLift);
+      colors.push(polygonColor.r, polygonColor.g, polygonColor.b);
+    }
+    if (partIndex) {
+      for (let index = 0; index < partIndex.count; index++) indices.push(offset + partIndex.getX(index));
+    } else {
+      for (let index = 0; index < attribute.count; index++) indices.push(offset + index);
+    }
+    part.dispose();
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geometry.setIndex(indices);
+  geometry.rotateX(Math.PI / 2);
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
+const unitLodRoleGeometries = {
+  worker: createGroundSilhouette([
+    [[-0.14, -0.16], [-0.19, -0.05], [-0.16, 0.12], [-0.08, 0.21], [0.08, 0.21], [0.16, 0.12], [0.19, -0.05], [0.14, -0.16]],
+    [[-0.12, 0.22], [-0.1, 0.31], [0.1, 0.31], [0.12, 0.22]],
+    [[-0.18, -0.08], [-0.33, -0.2], [-0.28, -0.26], [-0.1, -0.14]],
+    [[-0.25, -0.07], [-0.1, -0.09], [-0.07, 0.05], [-0.12, 0.17], [-0.24, 0.13], [-0.28, 0.02]],
+    [[0.08, 0.1], [0.14, 0.03], [0.52, 0.45], [0.45, 0.52]],
+    [[0.34, 0.55], [0.4, 0.63], [0.7, 0.38], [0.64, 0.31]],
+  ], 0xf3e8cd, { 3: 0x9c754c, 4: 0x6f644d, 5: 0x6f644d }, { 3: 0.006 }),
+  infantry: createGroundSilhouette([
+    [[-0.14, -0.16], [-0.19, -0.05], [-0.16, 0.12], [-0.08, 0.21], [0.08, 0.21], [0.16, 0.12], [0.19, -0.05], [0.14, -0.16]],
+    [[-0.1, 0.12], [-0.05, 0.72], [0, 0.98], [0.05, 0.72], [0.1, 0.12]],
+    [[0.18, 0.12], [0.34, 0.22], [0.5, 0.13], [0.5, -0.18], [0.34, -0.4], [0.18, -0.18]],
+  ], 0xf3e8cd, { 1: 0x5c5649, 2: 0x6f644d }),
+  archer: createGroundSilhouette([
+    [[-0.14, -0.16], [-0.19, -0.05], [-0.16, 0.12], [-0.08, 0.21], [0.08, 0.21], [0.16, 0.12], [0.19, -0.05], [0.14, -0.16]],
+    [[0.18, 0.55], [0.43, 0.44], [0.61, 0.21], [0.64, 0], [0.61, -0.21], [0.43, -0.44], [0.18, -0.55], [0.29, -0.43], [0.47, -0.25], [0.51, 0], [0.47, 0.25], [0.29, 0.43]],
+    [[-0.35, -0.24], [-0.21, -0.24], [-0.19, 0.38], [-0.33, 0.38]],
+    [[-0.36, 0.35], [-0.29, 0.51], [-0.22, 0.35]],
+    [[-0.35, 0.11], [-0.28, 0.31], [-0.21, 0.11]],
+  ], 0xf3e8cd, { 1: 0xb88c58, 2: 0x75553d, 3: 0x75553d, 4: 0x75553d }),
+};
+const unitLodMarkerGeometries = [
+  createGroundSilhouette([
+    [[-0.5, 0.5], [0.5, 0.5], [0.5, 0.38], [-0.5, 0.38]],
+    [[0.5, 0.38], [0.5, -0.38], [0.38, -0.38], [0.38, 0.38]],
+    [[0.5, -0.5], [-0.5, -0.5], [-0.5, -0.38], [0.5, -0.38]],
+    [[-0.5, -0.38], [-0.5, 0.38], [-0.38, 0.38], [-0.38, -0.38]],
+  ]),
+  createGroundSilhouette([
+    [[0, 0.62], [0.46, 0], [0.32, 0], [0, 0.43]],
+    [[0.46, 0], [0, -0.62], [0, -0.43], [0.32, 0]],
+    [[0, -0.62], [-0.46, 0], [-0.32, 0], [0, -0.43]],
+    [[-0.46, 0], [0, 0.62], [0, 0.43], [-0.32, 0]],
+  ]),
+];
+
 for (let team = 0; team < 2; team++) {
   bodyMeshes[team] = makeInstances(
     addPaintedFacets(new THREE.CylinderGeometry(0.16, 0.235, 0.48, 6, 1)),
@@ -2017,6 +2359,77 @@ for (let team = 0; team < 2; team++) {
     new THREE.MeshBasicMaterial({ color: 0x75553d }),
     MAX_PER_TEAM,
   );
+  unitLodTeamMeshes[team] = makeInstances(
+    unitLodMarkerGeometries[team],
+    new THREE.MeshBasicMaterial({
+      color: TEAM_HEX[team], side: THREE.DoubleSide, transparent: true, opacity: 0.9, depthWrite: false,
+    }),
+    MAX_PER_TEAM,
+  );
+  unitLodTeamMeshes[team].visible = false;
+  unitLodTeamMeshes[team].renderOrder = 0.8;
+  unitLodMeshesByTeam[team].push(unitLodTeamMeshes[team]);
+  for (const role of UNIT_LOD_ROLES) {
+    const mesh = makeInstances(
+      unitLodRoleGeometries[role],
+      new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: true, side: THREE.DoubleSide }),
+      MAX_PER_TEAM,
+    );
+    mesh.visible = false;
+    mesh.renderOrder = 1;
+    unitLodRoleMeshes[team][role] = mesh;
+    unitLodMeshesByTeam[team].push(mesh);
+  }
+}
+
+function setUnitInstanceCount(team, count) {
+  unitArtMeshes.forEach((pair) => { pair[team].count = count; });
+  for (const mesh of unitLodMeshesByTeam[team]) mesh.count = count;
+}
+
+function markUnitInstanceMatricesDirty(team) {
+  if (unitLowDetailActive) {
+    const dirtyRoles = unitLodDirtyRoleMasks[team];
+    for (const role of UNIT_LOD_ROLES) {
+      if (dirtyRoles & UNIT_LOD_ROLE_BITS[role]) {
+        unitLodRoleMeshes[team][role].instanceMatrix.needsUpdate = true;
+      }
+    }
+    unitLodDirtyRoleMasks[team] = 0;
+    if (unitLodTeamDirty[team]) {
+      unitLodTeamMeshes[team].instanceMatrix.needsUpdate = true;
+      unitLodTeamDirty[team] = false;
+    }
+  } else {
+    unitArtMeshes.forEach((pair) => { pair[team].instanceMatrix.needsUpdate = true; });
+  }
+  flushUnitCargoPackColor(team);
+}
+
+function syncUnitDetailLevel() {
+  const useLowDetail = zoom <= UNIT_LOD_ZOOM_THRESHOLD;
+  if (useLowDetail === unitLowDetailActive) return;
+  const restoreFullDetailTint = unitLowDetailActive && !useLowDetail;
+  for (const pair of unitArtMeshes) {
+    pair.forEach((mesh) => { mesh.visible = !useLowDetail; });
+  }
+  for (const team of unitLodMeshesByTeam) {
+    for (const mesh of team) mesh.visible = useLowDetail;
+  }
+  unitLowDetailActive = useLowDetail;
+  const now = performance.now();
+  for (const unit of units) {
+    if (!unit) continue;
+    if (restoreFullDetailTint) setUnitTint(unit, false);
+    updateUnitTransform(unit, now);
+  }
+  if (restoreFullDetailTint) {
+    for (let team = 0; team < 2; team++) {
+      if (bodyMeshes[team].instanceColor) bodyMeshes[team].instanceColor.needsUpdate = true;
+      if (headMeshes[team].instanceColor) headMeshes[team].instanceColor.needsUpdate = true;
+    }
+  }
+  for (let team = 0; team < 2; team++) markUnitInstanceMatricesDirty(team);
 }
 
 const selectionMesh = makeInstances(
@@ -2165,7 +2578,8 @@ function flushUnitCargoPackColor(team) {
   unitCargoPackColorDirty[team] = false;
 }
 
-function setUnitTint(unit) {
+function setUnitTint(unit, markBuffersDirty = true) {
+  if (!shouldUpdateUnitFullDetailTint(unitLowDetailActive)) return false;
   const health = Math.max(0, unit.hp) / 100;
   const strength = unit.hp > 0 ? 0.7 + health * 0.3 : unit.defeatStartedAt > 0 ? 0.58 : 0;
   const flashing = unit.damageFlashUntil > performance.now();
@@ -2179,8 +2593,53 @@ function setUnitTint(unit) {
   if (flashing) color.lerp(unitDamageFlashTint, 0.82);
   color.multiplyScalar((0.91 + ((unit.id * 7) % 10) / 100) * strength);
   headMeshes[unit.team].setColorAt(unit.slot, color);
-  bodyMeshes[unit.team].instanceColor.needsUpdate = true;
-  headMeshes[unit.team].instanceColor.needsUpdate = true;
+  if (markBuffersDirty) {
+    bodyMeshes[unit.team].instanceColor.needsUpdate = true;
+    headMeshes[unit.team].instanceColor.needsUpdate = true;
+  }
+  return true;
+}
+
+function updateUnitLodTransform(unit, visibleScale) {
+  const role = unit.kind === 'worker' ? 'worker' : unit.kind === 'archer' ? 'archer' : 'infantry';
+  const roleUpdateMask = unitLodRoleMatrixUpdateMask(unit.lodRole, role);
+  facing.setFromAxisAngle(worldUp, unit.angle);
+  for (const roleName of UNIT_LOD_ROLES) {
+    if (!(roleUpdateMask & UNIT_LOD_ROLE_BITS[roleName])) continue;
+    dummy.position.set(unit.renderX, 0.07, unit.renderZ);
+    dummy.quaternion.copy(facing);
+    dummy.scale.setScalar(roleName === role ? visibleScale * 1.2 : 0);
+    dummy.updateMatrix();
+    unitLodRoleMeshes[unit.team][roleName].setMatrixAt(unit.slot, dummy.matrix);
+    unitLodDirtyRoleMasks[unit.team] |= UNIT_LOD_ROLE_BITS[roleName];
+  }
+  unit.lodRole = role;
+  dummy.position.set(unit.renderX, 0.035, unit.renderZ);
+  dummy.quaternion.identity();
+  dummy.scale.setScalar(visibleScale * 1.05);
+  dummy.updateMatrix();
+  unitLodTeamMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
+  unitLodTeamDirty[unit.team] = true;
+}
+
+function updateUnitFocusVisual(unit) {
+  const focused = unit.hp > 0 && unit.visible !== false && unit.targetedBy >= 2;
+  const focusScale = focused
+    ? unit.scale * (0.96 + Math.min(0.3, (unit.targetedBy - 2) * 0.018)) : 0;
+  if (!shouldUpdateUnitFocusMatrix(unit.focusMatrixInitialized, unit.focused, focused,
+    unit.focusVisualX, unit.focusVisualZ, unit.focusVisualScale,
+    unit.renderX, unit.renderZ, focusScale)) return;
+  dummy.position.set(unit.renderX, 0.03, unit.renderZ);
+  dummy.quaternion.copy(ringRotation);
+  dummy.scale.setScalar(focusScale);
+  dummy.updateMatrix();
+  attackFocusMesh.setMatrixAt(unit.focusSlot, dummy.matrix);
+  unit.focused = focused;
+  unit.focusVisualX = unit.renderX;
+  unit.focusVisualZ = unit.renderZ;
+  unit.focusVisualScale = focusScale;
+  unit.focusMatrixInitialized = true;
+  attackFocusDirty = true;
 }
 
 function updateUnitTransform(unit, now = performance.now()) {
@@ -2193,6 +2652,12 @@ function updateUnitTransform(unit, now = performance.now()) {
     : unit.defeatStartedAt > 0 ? unit.scale * (1 - defeatProgress) : 0;
   const isWorker = unit.kind === 'worker';
   const isArcher = unit.kind === 'archer';
+  if (unitLowDetailActive) {
+    updateUnitLodTransform(unit, visibleScale);
+    updateUnitCargoCueColor(unit);
+    updateUnitFocusVisual(unit);
+    return;
+  }
   const bodyScale = isWorker ? visibleScale * 0.82 : isArcher ? visibleScale * 0.9 : visibleScale;
   const actionPoseAllowed = unitActionPoseAllowed(unit.hp, unit.defeatStartedAt);
   const stride = actionPoseAllowed && unit.walking ? Math.sin(unit.motionPhase || 0) * 0.038 : 0;
@@ -2281,19 +2746,8 @@ function updateUnitTransform(unit, now = performance.now()) {
   dummy.updateMatrix();
   quiverMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
 
-  const focused = unit.hp > 0 && unit.visible !== false && unit.targetedBy >= 2;
-  if (focused || unit.focused || !unit.focusMatrixInitialized) {
-    const focusScale = focused
-      ? unit.scale * (0.96 + Math.min(0.3, (unit.targetedBy - 2) * 0.018)) : 0;
-    dummy.position.set(unit.renderX, 0.03, unit.renderZ);
-    dummy.quaternion.copy(ringRotation);
-    dummy.scale.setScalar(focusScale);
-    dummy.updateMatrix();
-    attackFocusMesh.setMatrixAt(unit.focusSlot, dummy.matrix);
-    unit.focused = focused;
-    unit.focusMatrixInitialized = true;
-    attackFocusDirty = true;
-  }
+  updateUnitCargoCueColor(unit);
+  updateUnitFocusVisual(unit);
 }
 
 function setArmySize(count, showMessage = false) {
@@ -2305,7 +2759,7 @@ function setArmySize(count, showMessage = false) {
   units.length = 0;
   teamUnits[0].length = 0;
   teamUnits[1].length = 0;
-  unitArtMeshes.forEach((pair) => pair.forEach((mesh) => { mesh.count = 0; }));
+  for (let team = 0; team < 2; team++) setUnitInstanceCount(team, 0);
   arrowTraces.length = 0;
   arrowImpacts.length = 0;
   arrowMesh.count = 0;
@@ -2343,13 +2797,13 @@ function setArmySize(count, showMessage = false) {
     };
     units.push(unit);
     teamUnits[team].push(unit);
-    unitArtMeshes.forEach((pair) => { pair[team].count = slot + 1; });
+    setUnitInstanceCount(team, slot + 1);
     setUnitTint(unit);
     updateUnitTransform(unit);
     updateUnitCargoCueColor(unit);
   }
   for (let team = 0; team < 2; team++) {
-    unitArtMeshes.forEach((pair) => { pair[team].instanceMatrix.needsUpdate = true; });
+    markUnitInstanceMatricesDirty(team);
     flushUnitCargoPackColor(team);
   }
   attackFocusMesh.count = nextAttackFocusSlot;
@@ -2938,7 +3392,7 @@ function appendUnitFromState(row, animateSpawn = false) {
   if (id === units.length) units.push(unit);
   else units[id] = unit;
   teamUnits[team].push(unit);
-  unitArtMeshes.forEach((pair) => { pair[team].count = slot + 1; });
+  setUnitInstanceCount(team, slot + 1);
   attackFocusMesh.count = nextAttackFocusSlot;
   setUnitTint(unit);
   updateUnitTransform(unit);
@@ -3075,7 +3529,7 @@ function applyState(state, initial = false) {
   if (Array.isArray(state.queuedWaypointCounts)) applyWaypointQueueCounts(state.queuedWaypointCounts);
   if (initial || changed) {
     for (let team = 0; team < 2; team++) {
-      unitArtMeshes.forEach((pair) => { pair[team].instanceMatrix.needsUpdate = true; });
+      markUnitInstanceMatricesDirty(team);
     }
   }
   for (let team = 0; team < 2; team++) flushUnitCargoPackColor(team);
@@ -3103,11 +3557,47 @@ function applyState(state, initial = false) {
   if (Number.isInteger(state.connected)) updateRoomUI(state.connected);
   if (Number.isFinite(state.rosterSize)) ui.total.textContent = state.rosterSize.toLocaleString();
   updateEconomyUI(state, audioReset);
+  updateEnvironmentStateCaptureSnapshot(state);
   revalidateControlGroups();
   if (controlGroupsChanged) updateControlGroupUI();
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
+}
+
+function updateEnvironmentStateCaptureSnapshot(state) {
+  if (roomPageUrl.searchParams.get('rendererCapture') !== 'environment-state') return;
+  const resourceNodes = (Array.isArray(state.resourceNodes) ? state.resourceNodes : []).map((node) => {
+    const definitionNode = mapDefinition?.resourceNodes?.find((row) => row.id === node.id);
+    const visual = resourceNodeVisuals.get(node.id);
+    const startingStock = definitionNode?.stock ?? visual?.startingStock ?? null;
+    return {
+      id: node.id, type: node.type, stock: node.stock, startingStock,
+      stage: resourceVisualStage(node.stock, startingStock),
+      x: definitionNode?.x ?? visual?.x ?? null, z: definitionNode?.z ?? visual?.z ?? null,
+    };
+  });
+  const buildings = (Array.isArray(state.buildings) ? state.buildings : []).map((building) => ({
+    id: building.id, team: building.team, type: building.type,
+    x: building.x, z: building.z, progress: building.progress, complete: building.complete,
+    groundStage: constructionGroundStage(building.progress, building.complete),
+  }));
+  const workerRows = (Array.isArray(state.units) ? state.units : []).filter((row) => row?.[5] === 'worker')
+    .map((row) => ({ id: row[0], team: row[1], x: row[2], z: row[3], task: row[9] || 'idle' }));
+  window.__rtsEnvironmentStateSnapshot = {
+    mapId: state.mapId,
+    team: localTeam,
+    fogOfWar: state.fogOfWar === true,
+    visibility: state.visibility || null,
+    assetStatus: RESOURCE_STATE_ASSET_STATUS,
+    resourceNodes,
+    workers: workerRows,
+    buildings,
+    constructionDraws: [...constructionGroundMeshes].map(([stage, mesh]) => ({
+      stage, count: mesh.count, visible: mesh.visible,
+      buildingIds: buildings.filter((building) => building.groundStage === stage).map((building) => building.id),
+    })),
+  };
 }
 
 function applyWaypointQueueCounts(rows = []) {
@@ -6789,6 +7279,7 @@ let renderStatsTime = 0;
 let lastIdlePoseStep = -1;
 function animate(now) {
   requestAnimationFrame(animate);
+  syncUnitDetailLevel();
   renderScenarioEventCountdown(now);
   animateBuildingCombatFeedback(now);
   const frameDelta = Math.min((now - previousTime) / 1000, 0.1);
@@ -6851,6 +7342,7 @@ function animate(now) {
     }
     const working = !walking && unit.kind === 'worker'
       && (unit.task === 'gathering' || unit.task === 'building');
+    // Keep pose phase current in LOD so a zoom-in resumes without a swing reset.
     if (working) unit.motionPhase += frameDelta * (unit.task === 'building' ? 6 : 5);
     const activeAttack = unit.attackStartedAt > 0;
     const activeHit = unit.hitStartedAt > 0;
@@ -6861,15 +7353,17 @@ function animate(now) {
     if (activeSpawn && now - unit.spawnStartedAt >= SPAWN_POSE_MS) unit.spawnStartedAt = 0;
     if (activeDefeat && now - unit.defeatStartedAt >= DEFEAT_POSE_MS) unit.defeatStartedAt = 0;
     const idle = idlePoseDue && unit.hp > 0 && !walking && !working;
-    if (walking || wasWalking || turning || working || activeAttack || activeHit
-      || activeSpawn || activeDefeat || idle) {
+    const transformChanged = walking || wasWalking || turning || activeSpawn || activeDefeat;
+    const fullDetailAnimationDue = working || activeAttack || activeHit || idle;
+    if (shouldUpdateUnitTransformForFrame(unitLowDetailActive,
+      transformChanged, fullDetailAnimationDue)) {
       updateUnitTransform(unit, now);
       artAnimated = true;
     }
   }
   if (artAnimated) {
     for (let team = 0; team < 2; team++) {
-      unitArtMeshes.forEach((pair) => { pair[team].instanceMatrix.needsUpdate = true; });
+      markUnitInstanceMatricesDirty(team);
     }
   }
   if (moved && selected.size) selectionDirty = true;
