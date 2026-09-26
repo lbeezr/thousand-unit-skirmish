@@ -1,10 +1,8 @@
-# Historical unit and building art format and finish review
+# Unit and building art format and finish review
 
-**Status:** historical recommendation, superseded for new production on 26 September 2026. New unit/building art uses painterly 2D/2.5D sprites under the [sprite atlas contract](sprite-atlas-contract-v1.md). Do not start Blender, 3D, UV, or GLB production. Existing GLB packs/runtime remain intact as references. Do not operate on the specifically held unit/building pack.
+**Status:** source-based recommendation for the current sample. The v0.2.0 pack is a source-review sample, not runtime-ready: its authoring manifest does not match the renderer v1 schema, GLBs embed separate atlas copies, and loader integration remains a later checkpoint. This does not change runtime code or supersede the open renderer contract draft.
 
-The v0.2.0 pack findings below describe a source-review sample, not a runtime-ready asset. This document preserves the earlier evidence and options; it is not an active art-production plan.
-
-## Previous recommendation (superseded)
+## Recommendation
 
 Keep the current hybrid for this sample: Blender-authored rigid GLB geometry for units and buildings in the live oblique Three.js renderer, with fixed-camera cutout sprites for the environment. The different media are not a style decision by themselves. The current source-based pose transforms and continuous unit facing benefit from live geometry; the flat-color finish is the part that fails to sit comfortably beside the painterly environment sprites.
 
@@ -20,7 +18,7 @@ The current v1 GLBs are a geometry and batching experiment, not the target finis
 - In the rendered meadow preview, the Worker collapses into a small color cluster at play zoom and the Barracks reads as a plain shed. The close-camera frames expose the geometry, but cannot establish fit at ordinary zoom.
 - The meshes already have vertex-color attributes and UV coordinates, but the v1 UV assignment is coordinate-projected rather than a packed painted material atlas. The proposed atlas needs deliberate UV islands and a texture-sharing rule in the manifest/renderer contract.
 
-## Previous painted 3D treatment (reference only)
+## Painted 3D treatment
 
 A small painted atlas can harmonize the live GLBs without trying to reproduce every detail of a 1024-pixel oak cutout on a 12-pixel unit. Use broad, hand-painted swatches for wool, leather, skin, timber, slate, stone, and iron, with one consistent light direction, soft baked occlusion, and restrained edge wear. The atlas should carry low-frequency brush variation; vertex colors should retain the large color blocks and per-face light/shadow shapes that survive downsampling. Preserve matte, unlit shading to avoid adding a specular style the environment images do not use.
 
@@ -28,7 +26,7 @@ Use one 512×512 or 1024×1024 RGBA8 atlas for the first shared material set. Wi
 
 At game zoom, silhouette, pose, and large value/color regions matter more than texture grain. The Worker needs a readable head/body/tool/backpack outline; buildings need distinct rooflines, entrances, and construction silhouettes. Enlarged close views are useful for craft checks only. Strategic zoom keeps the role silhouette and team cue in the renderer-owned LOD at the same world scale.
 
-## Previous sprite-output analysis (planning context)
+## Sprite-output alternative
 
 Blender can also remain the editable source while the runtime receives prerendered transparent sprites. This matches the environment's cutout medium, but it changes the runtime representation and its direction/state machinery:
 
@@ -44,10 +42,10 @@ Sprite quads could reduce per-unit geometry to two triangles and use one or a fe
 
 There is no single medium across the Age of Empires and Warcraft series. World's Edge describes *Age of Empires: Definitive Edition* as a 2D isometric game that models units/buildings/trees in 3D and renders them to 2D images; its original directional set had eight views, while Definitive Edition expanded to 32 and added three zoom levels. That is a strong precedent for Blender-as-source and sprites-as-runtime, with a clear cost in baked directions and zoom assets ([official Age of Empires explanation](https://www.ageofempires.com/news/age-empires-definitive-edition-3d-2d-game/)). Blizzard's *Warcraft III: Reforged* art write-up describes reviewing live 3D models for scale, color, readability, and silhouette, then polishing their animation ([official Blizzard art write-up](https://news.blizzard.com/en-gb/article/23150111/tales-from-the-smithy-reforging-the-night-elves)). Both approaches are valid; our current renderer and state model favor the latter for this sample.
 
-## Historical next slices and milestone evidence (superseded)
+## Next slices and milestone evidence
 
-For new work, use painted sprite pages, explicit frame rectangles, stable ground anchors, source/runtime hashes, optional team masks and depth layers, and the shared sprite manifest. Choose canvases, directions, states, and counts from pilot evidence. Existing source images, GLBs, and runtime parts remain read-only references under the current user-held restriction.
+Keep GLB as the current runtime candidate. Unit and building artists can ship separate small asset families; Technical Art can iterate on a shared painted-material atlas and UV/export conventions independently. Keep source images, source `.blend`, anchors, pose samples, team rules, provenance, hashes, and texture-memory estimates with each versioned sample as applicable. A source sample can merge with documented runtime and visual limits.
 
-The [renderer contract](renderer-state-contract.md) remains the current v1 runtime reference. The sprite atlas contract is authoring/packaging guidance; it does not claim renderer integration, M2 appearance, M3 performance, or production readiness.
+The current [renderer contract](renderer-state-contract.md) describes v1 textureless runtime compatibility; the painted atlas is a candidate extension, not a reason to hold a source sample. When a specific format conflicts with runtime code, affected owners should record the smallest compatible choice or versioned extension and continue other work. A scoped `src/main.js` integration can merge under the standing staging authorization with proportionate checks and a stated limitation. Actual game captures at ordinary and strategic zoom establish M2 appearance evidence; a measured 2,000-unit run establishes M3 performance evidence, without becoming blanket PR gates.
 
-Any older release statement in this document is superseded by the current instruction to leave the specifically held unit/building pack untouched. This document grants no asset, capture, or production-promotion authorization.
+On 26 September 2026, the user explicitly released the original Worker/Barracks v0.2 sample pack for a focused PR and author-owned merge with known visual limits. This release does not itself run a separate GPU capture or promote production.

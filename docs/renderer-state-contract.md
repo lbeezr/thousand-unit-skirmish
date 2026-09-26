@@ -1,6 +1,6 @@
 # Renderer visual-state and asset-pack contract v1
 
-This contract separates authoritative match state from the visual cues that consume it. It remains the v1 runtime reference for existing unit/building geometry parts and environment state sprites; it does not describe the new sprite-atlas authoring contract. New unit/building work uses [sprite-atlas-pack-v1](sprite-atlas-contract-v1.md), but the current renderer has not integrated that format. A source-only art sample may merge with documented incompatibilities; a runtime integration PR uses the applicable manifest and proportionate checks. The broader game-zoom and 2,000-unit observations support M2/M3 claims, not every scoped PR merge.
+This contract separates authoritative match state from the visual cues that consume it. It is the v1 runtime integration boundary for unit/building GLB packs and environment state sprites. The current procedural Three.js objects remain the shipped visual baseline until an authored asset path is integrated. A source-only art sample may merge with documented v1 incompatibilities; a runtime integration PR uses the applicable manifest and proportionate checks. The broader game-zoom and 2,000-unit observations support M2/M3 claims, not every scoped PR merge.
 
 The machine-readable manifest shape is in [renderer-asset-pack-v1.schema.json](../schemas/renderer-asset-pack-v1.schema.json). Validate a pack with:
 

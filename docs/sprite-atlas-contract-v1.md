@@ -2,9 +2,13 @@
 
 **Status:** shared authoring and packaging contract for new painterly 2D/2.5D
 unit, building, and prop art. It is not a renderer integration or production
-promotion. The existing GLB packs, current GLB runtime path, and environment
-packs remain intact as references while sprite pilots establish their actual
-canvas sizes, frame counts, and state coverage.
+promotion. Existing GLB authoring packs and environment packs remain references
+while sprite pilots establish their canvas sizes, frame counts, and state
+coverage.
+
+This cutout-sprite contract is separate from the current GLB/material-atlas
+path. It does not replace the roadmap's shared painted-material atlas or its
+UV, export, and manifest checks.
 
 The normative shape is
 [`schemas/sprite-atlas-pack-v1.schema.json`](../schemas/sprite-atlas-pack-v1.schema.json).
@@ -104,22 +108,27 @@ occupancy, culling, selection, or the stable ground anchor.
 
 ## Pilot evidence and limits
 
-The current infantry sprite exploration is source-only and explicitly uses an
-exploratory 8-by-6 irregular grid. Its pivots are heuristic, unreviewed
-candidates; its aligned grayscale team-accent mask exists as source data but
-has not been runtime-validated. The exploration's `spriteRuntime` fields are
-not the canonical consumer shape defined here; a migration or narrow adapter
-must map them into this contract. Those values are evidence about that sample
-only; they do not set this contract's canvas, grid, state, direction, or frame
-counts. The environment v1 manifests use separate transparent images with
-family-specific dimensions and remain unchanged. The specifically held
-unit/building pack and berry candidate capture are outside this work.
+The available Worker, Infantry, and Archer sprite explorations now have
+`runtime-candidate` manifests with source/runtime atlas pages, aligned team
+masks, full-frame fallbacks, explicit actor crops, and named clips. The
+canonical validator accepts all three packs. This verifies their declared
+files and geometry; it does not mean that the live renderer loads them or that
+their appearance has been approved. The Infantry README records its six-row
+sheet, approximate facings and cell edges, heuristic unreviewed pivots, and
+short two-frame walk. Its aligned grayscale mask has not been visually
+reviewed in-game. The older `spriteRuntime` fields in the exploration
+manifests are not the canonical consumer shape defined here.
 
-The first conforming art pilot should record which canvas sizes, directions,
-states, and layers it actually needs, then update its manifest. Renderer
-integration, appearance claims, staging, and production promotion are separate
-decisions. No Blender/3D production or external provider spend is part of this
-sprite contract.
+Those values are evidence about these pilots only; they do not set this
+contract's canvas, grid, state, direction, or frame counts. The environment v1
+manifests use separate transparent images with family-specific dimensions and
+remain unchanged. The specifically held unit/building pack and berry candidate
+capture are outside this sprite-contract work.
+
+For each new pilot, record the canvas sizes, directions, states, and layers it
+actually needs. Renderer integration, appearance claims, staging, and
+production promotion are separate decisions. This sprite contract does not
+authorize external provider spending.
 
 ## Minimal manifest example
 
