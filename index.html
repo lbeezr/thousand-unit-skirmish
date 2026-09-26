@@ -355,8 +355,24 @@
           </aside>
           <div class="studio-layout">
             <section class="studio-grid-section" aria-label="Map grid editor">
-              <canvas id="studio-grid" aria-label="Top-down editable map grid"></canvas>
-              <div class="studio-grid-footer"><span id="studio-grid-size">64 × 64 CELLS</span><span>DRAG TO PAINT A RECTANGLE</span></div>
+              <div class="studio-grid-navigation">
+                <button id="studio-grid-pan" type="button" data-map-tool="pan" aria-pressed="false" title="Drag the map to pan">PAN</button>
+                <div class="studio-grid-view-controls" role="group" aria-label="Map zoom controls">
+                  <button id="studio-grid-zoom-out" type="button" aria-label="Zoom out" title="Zoom out">−</button>
+                  <output id="studio-grid-zoom-level" aria-live="polite">100%</output>
+                  <button id="studio-grid-zoom-in" type="button" aria-label="Zoom in" title="Zoom in">+</button>
+                  <button id="studio-grid-zoom-fit" type="button" title="Fit the full map">FIT</button>
+                </div>
+              </div>
+              <div id="studio-grid-viewport" class="studio-grid-viewport" tabindex="0"
+                aria-label="Scrollable map canvas. Use the zoom controls and Pan tool to navigate.">
+                <canvas id="studio-grid" aria-label="Top-down editable map grid"></canvas>
+              </div>
+              <div class="studio-grid-footer">
+                <span id="studio-grid-size">64 × 64 CELLS</span>
+                <span id="studio-grid-position" aria-live="polite">CELL —</span>
+                <span>DRAG TO PAINT · WHEEL TO ZOOM</span>
+              </div>
             </section>
             <section class="studio-controls" aria-label="Map properties and tools">
               <div class="studio-fields two-up">
