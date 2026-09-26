@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { CombatAudioGate, cueForNotice, isLocalRejection } from '../src/audio-policy.mjs';
+import { CombatAudioGate, cueForNotice, cueForScenarioEvent, isLocalRejection } from '../src/audio-policy.mjs';
 import { createGameAudio, readAudioSettings } from '../src/audio.mjs';
 
 assert.equal(cueForNotice('MOVE ORDER · 400 UNITS', { localTeam: 0, tokenized: true }), null);
@@ -17,6 +17,15 @@ assert.equal(cueForNotice('RESOURCE NODE EMPTY · OAK-2', { localTeam: 0 }), 're
 assert.equal(cueForNotice('AZURE WORKER READY', { localTeam: 0 }), 'complete');
 assert.equal(cueForNotice('UNIT CAP REACHED · TRAINING BLOCKED', { localTeam: 0 }), 'reject');
 assert.equal(cueForNotice('ORDER CANCELLED · TARGET LOST', { localTeam: 0 }), 'reject');
+assert.equal(cueForScenarioEvent({ team: 'both', rewardTeams: [0, 1] }, { localTeam: 0 }), 'scenario-reward');
+assert.equal(cueForScenarioEvent({ team: 0, rewardTeams: [0] }, { localTeam: 0 }), 'scenario-reward');
+assert.equal(cueForScenarioEvent({ team: 1, rewardTeams: [1] }, { localTeam: 0 }), null,
+  'an opponent-only timed reward does not play as a friendly reward');
+assert.equal(cueForScenarioEvent({ team: 'capturing', rewardTeams: [1] }, { localTeam: 0 }), null,
+  'capture-triggered rewards route using the actual affected team');
+assert.equal(cueForScenarioEvent({ team: 'capturing', rewardTeams: [1] }, { localTeam: 1 }), 'scenario-reward');
+assert.equal(cueForScenarioEvent({ team: 'capturing' }, { localTeam: 0 }), null,
+  'ambiguous capture rewards do not guess which team received the reward');
 assert.equal(isLocalRejection('SELECT YOUR UNITS BEFORE ISSUING AN ORDER'), true);
 assert.equal(isLocalRejection('BARRACKS SITE BLOCKED · CHOOSE AN OPEN 3 × 3 AREA'), true);
 assert.equal(isLocalRejection('YOUR ARMY SELECTED · 500'), false);
@@ -246,6 +255,21 @@ try {
   'research completion shares no fundamentals with production, objective, or victory cues');
   assert.equal(researchAudio.play('research-complete'), false, 'repeated research cues are rate limited');
   researchAudio.dispose();
+
+  const rewardAudio = createGameAudio({
+    storage: { getItem: () => null, setItem() {} },
+    doc: { hidden: false, addEventListener() {}, removeEventListener() {} },
+  });
+  rewardAudio.unlock();
+  const rewardStart = createdContext.oscillatorNodes.length;
+  assert.equal(rewardAudio.play('scenario-reward'), true, 'scenario rewards schedule a distinct short cue');
+  const rewardProfile = profile(createdContext.oscillatorNodes.slice(rewardStart));
+  assert.deepEqual(rewardProfile, [
+    { wave: 'triangle', from: 493.88, to: 493.88 },
+    { wave: 'sine', from: 739.99, to: 739.99 },
+  ], 'scenario rewards use a light two-note confirmation distinct from the objective chord');
+  assert.equal(rewardAudio.play('scenario-reward'), false, 'repeated scenario reward cues are rate limited');
+  rewardAudio.dispose();
 } finally {
   if (oldAudioContext === undefined) delete globalThis.AudioContext;
   else globalThis.AudioContext = oldAudioContext;

@@ -11,7 +11,7 @@ import {
 import { resizeWorldMarkers } from './map-resize.mjs';
 import { classifyOrderNotice } from './order-feedback.mjs';
 import { createGameAudio } from './audio.mjs';
-import { CombatAudioGate, cueForNotice, isLocalRejection } from './audio-policy.mjs';
+import { CombatAudioGate, cueForNotice, cueForScenarioEvent, isLocalRejection } from './audio-policy.mjs';
 import {
   chooseUnitPickCandidate,
   isSameUnitDoubleClick,
@@ -6668,7 +6668,12 @@ function connectSocket() {
       showToast(message.message, 2400);
       return;
     }
-    if (message.type === 'scenarioEvent') { audio.play('objective'); showToast(message.message, 3600); return; }
+    if (message.type === 'scenarioEvent') {
+      const cue = cueForScenarioEvent(message, { localTeam });
+      if (cue) audio.play(cue);
+      showToast(message.message, 3600);
+      return;
+    }
     if (message.type === 'victory') {
       updateMatchResult(message.team, message.triggerId, message.reason);
       showToast(message.message, 3200);
