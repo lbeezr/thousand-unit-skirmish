@@ -114,6 +114,27 @@
           <div id="runtime-error" class="runtime-error" role="alert"></div>
         </section>
 
+        <div class="contextual-command-bar" role="region" aria-label="Selection commands">
+          <div class="contextual-summary" data-context-summary></div>
+          <div class="contextual-actions">
+            <button type="button" data-context-proxy="select-idle-workers">Idle workers</button>
+            <button type="button" data-context-proxy="select-military">Army</button>
+            <button type="button" data-context-panel="economy">Production</button>
+            <button type="button" data-context-panel="selection">Groups</button>
+            <span data-context-groups class="contextual-groups"></span>
+            <button type="button" data-context-proxy="order-target-toggle">Target battlefield</button>
+            <button type="button" data-context-proxy="attack-move-toggle">Attack move · M</button>
+            <button type="button" data-context-proxy="select-workers">Select workers</button>
+            <button type="button" data-context-build data-context-panel="economy">Build</button>
+            <button type="button" data-context-proxy="train-infantry">Train infantry · 50 food</button>
+            <button type="button" data-context-proxy="train-archer">Train archer · 25 food / 45 wood</button>
+            <button type="button" data-context-proxy="clear-building-rally">Clear rally</button>
+            <button type="button" data-context-proxy="research-attack-upgrade">Research attack</button>
+            <button type="button" data-context-details data-context-panel="command">Details / formation</button>
+          </div>
+          <small data-context-reason></small>
+          <small data-context-research hidden></small>
+        </div>
         <nav class="hud-quick-access" aria-label="Quick commands">
           <button id="dock-toggle" type="button" aria-controls="command-deck" aria-expanded="false">Commands</button>
           <button type="button" data-open-dock-tab="economy">Production</button>
@@ -152,6 +173,7 @@
             <div id="selected-waypoints" class="selected-waypoints" aria-live="polite" hidden></div>
             <div class="control-groups" aria-label="Control groups">
               <div class="control-groups-heading"><span>CONTROL GROUPS</span><span>CTRL/⌘ REPLACE · SHIFT ADD</span></div>
+              <div class="group-assignment"><label for="assign-group-slot">Assign selection to group</label><select id="assign-group-slot"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9">0</option></select><button type="button" id="assign-selected-group">Assign</button></div>
               <div class="control-group-grid" role="group" aria-label="Recall control groups">
                 <button class="control-group" type="button" data-control-group="1" aria-label="Control group 1: 0 units" aria-pressed="false"><span class="control-group-number">1</span><span class="control-group-count">0</span></button>
                 <button class="control-group" type="button" data-control-group="2" aria-label="Control group 2: 0 units" aria-pressed="false"><span class="control-group-number">2</span><span class="control-group-count">0</span></button>
