@@ -12,6 +12,9 @@
 !assets/environment/
 !assets/environment/frontier-v1/
 !assets/environment/frontier-v1/*.webp
+!assets/environment/frontier-interactive-v1/
+!assets/environment/frontier-interactive-v1/manifest.json
+!assets/environment/frontier-interactive-v1/*.webp
 !assets/ui/
 !assets/ui/**
 !package.json
