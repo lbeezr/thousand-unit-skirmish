@@ -200,7 +200,7 @@ export function createGameAudio({
   }
 
   function noiseBurst(start, duration, { centerFrequency = 1400, gain = 0.04, destination = effects } = {}) {
-    if (!context || voiceCount >= voiceLimit || transientVoiceCount >= 2) return;
+    if (!context || transientVoiceCount >= 2) return;
     transientVoiceCount++;
     let source;
     let filter;
