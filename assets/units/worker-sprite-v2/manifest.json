@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
   "packId": "unit.worker-sprite-exploration",
-  "packVersion": "0.1.0",
+  "packVersion": "0.2.0",
   "packKind": "source-only-unit-sprite-atlas",
   "status": "exploration",
   "runtimeReady": false,
   "provenance": {
     "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
-    "source": "OpenAI ImageGen output exec-fcf36d84-c483-4152-90b0-e9dfdadbdf58.",
+    "source": "OpenAI ImageGen output exec-371af906-8516-4adc-9b11-ffa2e40d52c8.png, edited from the project-owned v1 Worker atlas to reduce the pack and clarify the humanoid silhouette.",
     "authoringTool": "OpenAI ImageGen.",
-    "notes": "Transparent RGBA 8-by-6 concept atlas. All three view and pose sequences need facing, frame, pivot, and game-scale review before integration."
+    "notes": "Transparent 8-by-6 concept atlas. The revision keeps the same worker, facings, and action rows while making the pack compact; facing, row consistency, pivots, team mask, and game-scale readability still need review."
   },
   "unitRole": "worker",
   "coordinateSystem": {
@@ -22,7 +22,7 @@
   "atlas": {
     "path": "worker-atlas-source.png",
     "role": "source-image",
-    "sha256": "c86f3c614f1d3fe4789ce2dd378d0dde9ed43577920bc2c3b4307c565a151f5f",
+    "sha256": "4e7511dabbaa19044a652d0d3e00d6b5959a4f0a7f4bbae786c6a5382cf51615",
     "dimensionsPx": {
       "width": 1448,
       "height": 1086
@@ -58,7 +58,7 @@
       "gutterPx": 0
     },
     "runtimePath": "worker-atlas-runtime.png",
-    "runtimeSha256": "5948892be64fce5993930c444262025b1d2f15711213460616a98e9b289cbbcb"
+    "runtimeSha256": "137155a75a8511cccbda59c6ff064c8569f3cedb13892008c1f7166b9e1c4921"
   },
   "facingColumns": [
     {
@@ -200,8 +200,8 @@
         "preserveSource": 0
       },
       "source": "deterministic blue sash classification plus warm linen pixels in the cell-local torso ROI x=0.3-0.71, y=0.4-0.78",
-      "sha256": "198c74b866e7fcd0919cd14b51a65460169510337c54586f91cf6dce1c15066d",
-      "classifiedPixels": 52090
+      "sha256": "58f11aef032d32e7e3cd23061186dbfe4f26ad6496a14051bcedc09aa95a8dab",
+      "classifiedPixels": 71257
     }
   },
   "anchors": {
@@ -693,23 +693,23 @@
         "pose": "idle-ready",
         "facing": "north",
         "rectPx": {
-          "x": 67,
-          "y": 18,
-          "width": 94,
-          "height": 163
+          "x": 70,
+          "y": 15,
+          "width": 101,
+          "height": 166
         },
         "alphaBoundsPx": {
-          "x": 69,
-          "y": 20,
-          "width": 92,
-          "height": 161
+          "x": 73,
+          "y": 16,
+          "width": 98,
+          "height": 165
         },
         "sourceCell": {
           "column": 0,
           "row": 0
         },
         "groundPivotPx": {
-          "x": 115,
+          "x": 120,
           "y": 180
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -720,23 +720,23 @@
         "pose": "idle-ready",
         "facing": "north-east",
         "rectPx": {
-          "x": 244,
-          "y": 22,
-          "width": 102,
-          "height": 159
+          "x": 246,
+          "y": 18,
+          "width": 115,
+          "height": 163
         },
         "alphaBoundsPx": {
-          "x": 246,
-          "y": 24,
-          "width": 98,
-          "height": 157
+          "x": 249,
+          "y": 19,
+          "width": 112,
+          "height": 162
         },
         "sourceCell": {
           "column": 1,
           "row": 0
         },
         "groundPivotPx": {
-          "x": 294,
+          "x": 302,
           "y": 180
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -747,23 +747,23 @@
         "pose": "idle-ready",
         "facing": "east",
         "rectPx": {
-          "x": 420,
-          "y": 26,
-          "width": 98,
-          "height": 155
+          "x": 429,
+          "y": 16,
+          "width": 107,
+          "height": 165
         },
         "alphaBoundsPx": {
-          "x": 420,
-          "y": 27,
-          "width": 97,
-          "height": 154
+          "x": 431,
+          "y": 17,
+          "width": 104,
+          "height": 164
         },
         "sourceCell": {
           "column": 2,
           "row": 0
         },
         "groundPivotPx": {
-          "x": 471,
+          "x": 481,
           "y": 180
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -774,23 +774,23 @@
         "pose": "idle-ready",
         "facing": "south-east",
         "rectPx": {
-          "x": 590,
-          "y": 31,
-          "width": 106,
-          "height": 150
+          "x": 607,
+          "y": 20,
+          "width": 116,
+          "height": 161
         },
         "alphaBoundsPx": {
-          "x": 592,
-          "y": 31,
-          "width": 103,
-          "height": 150
+          "x": 609,
+          "y": 23,
+          "width": 113,
+          "height": 158
         },
         "sourceCell": {
           "column": 3,
           "row": 0
         },
         "groundPivotPx": {
-          "x": 645,
+          "x": 667,
           "y": 180
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -801,23 +801,23 @@
         "pose": "idle-ready",
         "facing": "south",
         "rectPx": {
-          "x": 768,
-          "y": 26,
-          "width": 98,
-          "height": 155
+          "x": 783,
+          "y": 18,
+          "width": 113,
+          "height": 163
         },
         "alphaBoundsPx": {
-          "x": 769,
-          "y": 26,
-          "width": 97,
-          "height": 155
+          "x": 785,
+          "y": 19,
+          "width": 111,
+          "height": 162
         },
         "sourceCell": {
           "column": 4,
           "row": 0
         },
         "groundPivotPx": {
-          "x": 817,
+          "x": 843,
           "y": 180
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -828,23 +828,23 @@
         "pose": "idle-ready",
         "facing": "south-west",
         "rectPx": {
-          "x": 933,
-          "y": 27,
-          "width": 99,
-          "height": 154
+          "x": 957,
+          "y": 18,
+          "width": 107,
+          "height": 163
         },
         "alphaBoundsPx": {
-          "x": 934,
-          "y": 27,
-          "width": 98,
-          "height": 154
+          "x": 959,
+          "y": 18,
+          "width": 104,
+          "height": 163
         },
         "sourceCell": {
           "column": 5,
           "row": 0
         },
         "groundPivotPx": {
-          "x": 979,
+          "x": 1011,
           "y": 180
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -855,23 +855,23 @@
         "pose": "idle-ready",
         "facing": "west",
         "rectPx": {
-          "x": 1104,
-          "y": 25,
-          "width": 103,
-          "height": 156
+          "x": 1142,
+          "y": 18,
+          "width": 105,
+          "height": 163
         },
         "alphaBoundsPx": {
-          "x": 1106,
-          "y": 25,
-          "width": 99,
-          "height": 156
+          "x": 1143,
+          "y": 19,
+          "width": 103,
+          "height": 162
         },
         "sourceCell": {
           "column": 6,
           "row": 0
         },
         "groundPivotPx": {
-          "x": 1154,
+          "x": 1195,
           "y": 180
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -882,23 +882,23 @@
         "pose": "idle-ready",
         "facing": "north-west",
         "rectPx": {
-          "x": 1285,
-          "y": 20,
-          "width": 96,
-          "height": 161
+          "x": 1322,
+          "y": 17,
+          "width": 105,
+          "height": 164
         },
         "alphaBoundsPx": {
-          "x": 1286,
-          "y": 20,
-          "width": 93,
-          "height": 161
+          "x": 1324,
+          "y": 18,
+          "width": 101,
+          "height": 163
         },
         "sourceCell": {
           "column": 7,
           "row": 0
         },
         "groundPivotPx": {
-          "x": 1331,
+          "x": 1375,
           "y": 180
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -909,23 +909,23 @@
         "pose": "walk-step-a",
         "facing": "north",
         "rectPx": {
-          "x": 63,
+          "x": 64,
           "y": 181,
-          "width": 93,
-          "height": 177
+          "width": 106,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 63,
+          "x": 65,
           "y": 181,
-          "width": 90,
-          "height": 177
+          "width": 104,
+          "height": 181
         },
         "sourceCell": {
           "column": 0,
           "row": 1
         },
         "groundPivotPx": {
-          "x": 115,
+          "x": 120,
           "y": 361
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -936,23 +936,23 @@
         "pose": "walk-step-a",
         "facing": "north-east",
         "rectPx": {
-          "x": 235,
+          "x": 238,
           "y": 181,
-          "width": 102,
-          "height": 178
+          "width": 118,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 237,
+          "x": 239,
           "y": 181,
-          "width": 99,
-          "height": 177
+          "width": 116,
+          "height": 181
         },
         "sourceCell": {
           "column": 1,
           "row": 1
         },
         "groundPivotPx": {
-          "x": 294,
+          "x": 302,
           "y": 361
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -963,23 +963,23 @@
         "pose": "walk-step-a",
         "facing": "east",
         "rectPx": {
-          "x": 411,
+          "x": 410,
           "y": 181,
-          "width": 104,
-          "height": 176
+          "width": 130,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 412,
+          "x": 413,
           "y": 181,
-          "width": 102,
-          "height": 175
+          "width": 126,
+          "height": 181
         },
         "sourceCell": {
           "column": 2,
           "row": 1
         },
         "groundPivotPx": {
-          "x": 471,
+          "x": 481,
           "y": 361
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -990,15 +990,15 @@
         "pose": "walk-step-a",
         "facing": "south-east",
         "rectPx": {
-          "x": 590,
+          "x": 601,
           "y": 181,
-          "width": 103,
+          "width": 120,
           "height": 181
         },
         "alphaBoundsPx": {
-          "x": 591,
+          "x": 604,
           "y": 181,
-          "width": 101,
+          "width": 116,
           "height": 181
         },
         "sourceCell": {
@@ -1006,7 +1006,7 @@
           "row": 1
         },
         "groundPivotPx": {
-          "x": 645,
+          "x": 667,
           "y": 361
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1017,15 +1017,15 @@
         "pose": "walk-step-a",
         "facing": "south",
         "rectPx": {
-          "x": 768,
+          "x": 786,
           "y": 181,
-          "width": 98,
+          "width": 108,
           "height": 181
         },
         "alphaBoundsPx": {
-          "x": 769,
+          "x": 786,
           "y": 181,
-          "width": 97,
+          "width": 108,
           "height": 181
         },
         "sourceCell": {
@@ -1033,7 +1033,7 @@
           "row": 1
         },
         "groundPivotPx": {
-          "x": 817,
+          "x": 843,
           "y": 361
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1044,15 +1044,15 @@
         "pose": "walk-step-a",
         "facing": "south-west",
         "rectPx": {
-          "x": 934,
+          "x": 954,
           "y": 181,
-          "width": 99,
+          "width": 115,
           "height": 181
         },
         "alphaBoundsPx": {
-          "x": 934,
+          "x": 956,
           "y": 181,
-          "width": 99,
+          "width": 112,
           "height": 181
         },
         "sourceCell": {
@@ -1060,7 +1060,7 @@
           "row": 1
         },
         "groundPivotPx": {
-          "x": 979,
+          "x": 1011,
           "y": 361
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1071,23 +1071,23 @@
         "pose": "walk-step-a",
         "facing": "west",
         "rectPx": {
-          "x": 1110,
+          "x": 1144,
           "y": 181,
-          "width": 101,
-          "height": 177
+          "width": 118,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 1110,
+          "x": 1144,
           "y": 181,
-          "width": 100,
-          "height": 177
+          "width": 117,
+          "height": 181
         },
         "sourceCell": {
           "column": 6,
           "row": 1
         },
         "groundPivotPx": {
-          "x": 1154,
+          "x": 1195,
           "y": 361
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1098,23 +1098,23 @@
         "pose": "walk-step-a",
         "facing": "north-west",
         "rectPx": {
-          "x": 1291,
+          "x": 1326,
           "y": 181,
-          "width": 93,
-          "height": 180
+          "width": 110,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 1293,
+          "x": 1329,
           "y": 181,
-          "width": 89,
-          "height": 178
+          "width": 107,
+          "height": 181
         },
         "sourceCell": {
           "column": 7,
           "row": 1
         },
         "groundPivotPx": {
-          "x": 1331,
+          "x": 1375,
           "y": 361
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1125,23 +1125,23 @@
         "pose": "walk-step-b",
         "facing": "north",
         "rectPx": {
-          "x": 62,
-          "y": 377,
-          "width": 94,
-          "height": 161
+          "x": 63,
+          "y": 362,
+          "width": 113,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 63,
-          "y": 378,
-          "width": 91,
-          "height": 159
+          "x": 64,
+          "y": 362,
+          "width": 111,
+          "height": 181
         },
         "sourceCell": {
           "column": 0,
           "row": 2
         },
         "groundPivotPx": {
-          "x": 115,
+          "x": 120,
           "y": 542
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1152,23 +1152,23 @@
         "pose": "walk-step-b",
         "facing": "north-east",
         "rectPx": {
-          "x": 243,
-          "y": 377,
-          "width": 94,
-          "height": 161
+          "x": 236,
+          "y": 362,
+          "width": 118,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 245,
-          "y": 378,
-          "width": 92,
-          "height": 159
+          "x": 238,
+          "y": 362,
+          "width": 116,
+          "height": 181
         },
         "sourceCell": {
           "column": 1,
           "row": 2
         },
         "groundPivotPx": {
-          "x": 294,
+          "x": 302,
           "y": 542
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1179,23 +1179,23 @@
         "pose": "walk-step-b",
         "facing": "east",
         "rectPx": {
-          "x": 413,
-          "y": 382,
-          "width": 100,
-          "height": 154
+          "x": 410,
+          "y": 362,
+          "width": 122,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 414,
-          "y": 383,
-          "width": 97,
-          "height": 153
+          "x": 413,
+          "y": 362,
+          "width": 118,
+          "height": 181
         },
         "sourceCell": {
           "column": 2,
           "row": 2
         },
         "groundPivotPx": {
-          "x": 471,
+          "x": 481,
           "y": 542
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1206,23 +1206,23 @@
         "pose": "walk-step-b",
         "facing": "south-east",
         "rectPx": {
-          "x": 589,
+          "x": 597,
           "y": 362,
-          "width": 105,
-          "height": 177
+          "width": 125,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 591,
+          "x": 598,
           "y": 362,
-          "width": 102,
-          "height": 176
+          "width": 122,
+          "height": 181
         },
         "sourceCell": {
           "column": 3,
           "row": 2
         },
         "groundPivotPx": {
-          "x": 645,
+          "x": 667,
           "y": 542
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1233,23 +1233,23 @@
         "pose": "walk-step-b",
         "facing": "south",
         "rectPx": {
-          "x": 773,
+          "x": 788,
           "y": 362,
-          "width": 96,
-          "height": 179
+          "width": 114,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 773,
+          "x": 789,
           "y": 362,
-          "width": 96,
-          "height": 179
+          "width": 112,
+          "height": 181
         },
         "sourceCell": {
           "column": 4,
           "row": 2
         },
         "groundPivotPx": {
-          "x": 817,
+          "x": 843,
           "y": 542
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1260,23 +1260,23 @@
         "pose": "walk-step-b",
         "facing": "south-west",
         "rectPx": {
-          "x": 933,
+          "x": 953,
           "y": 362,
-          "width": 101,
-          "height": 177
+          "width": 124,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 935,
+          "x": 955,
           "y": 362,
-          "width": 99,
-          "height": 176
+          "width": 122,
+          "height": 181
         },
         "sourceCell": {
           "column": 5,
           "row": 2
         },
         "groundPivotPx": {
-          "x": 979,
+          "x": 1011,
           "y": 542
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1287,23 +1287,23 @@
         "pose": "walk-step-b",
         "facing": "west",
         "rectPx": {
-          "x": 1112,
-          "y": 379,
-          "width": 93,
-          "height": 159
+          "x": 1144,
+          "y": 362,
+          "width": 114,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 1114,
-          "y": 380,
-          "width": 90,
-          "height": 157
+          "x": 1147,
+          "y": 362,
+          "width": 111,
+          "height": 181
         },
         "sourceCell": {
           "column": 6,
           "row": 2
         },
         "groundPivotPx": {
-          "x": 1154,
+          "x": 1195,
           "y": 542
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1314,23 +1314,23 @@
         "pose": "walk-step-b",
         "facing": "north-west",
         "rectPx": {
-          "x": 1295,
-          "y": 377,
-          "width": 90,
-          "height": 160
+          "x": 1324,
+          "y": 362,
+          "width": 110,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 1297,
-          "y": 378,
-          "width": 88,
-          "height": 159
+          "x": 1327,
+          "y": 362,
+          "width": 106,
+          "height": 181
         },
         "sourceCell": {
           "column": 7,
           "row": 2
         },
         "groundPivotPx": {
-          "x": 1331,
+          "x": 1375,
           "y": 542
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1342,22 +1342,22 @@
         "facing": "north",
         "rectPx": {
           "x": 67,
-          "y": 549,
-          "width": 78,
-          "height": 175
+          "y": 543,
+          "width": 89,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 69,
-          "y": 550,
-          "width": 75,
-          "height": 174
+          "x": 68,
+          "y": 543,
+          "width": 86,
+          "height": 181
         },
         "sourceCell": {
           "column": 0,
           "row": 3
         },
         "groundPivotPx": {
-          "x": 115,
+          "x": 120,
           "y": 723
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1368,23 +1368,23 @@
         "pose": "gather-chop",
         "facing": "north-east",
         "rectPx": {
-          "x": 249,
-          "y": 551,
-          "width": 72,
-          "height": 173
+          "x": 253,
+          "y": 543,
+          "width": 95,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 251,
-          "y": 551,
-          "width": 70,
-          "height": 173
+          "x": 255,
+          "y": 543,
+          "width": 92,
+          "height": 181
         },
         "sourceCell": {
           "column": 1,
           "row": 3
         },
         "groundPivotPx": {
-          "x": 294,
+          "x": 302,
           "y": 723
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1395,23 +1395,23 @@
         "pose": "gather-chop",
         "facing": "east",
         "rectPx": {
-          "x": 428,
-          "y": 549,
-          "width": 82,
-          "height": 175
+          "x": 429,
+          "y": 543,
+          "width": 101,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 428,
-          "y": 550,
-          "width": 79,
-          "height": 174
+          "x": 430,
+          "y": 543,
+          "width": 99,
+          "height": 181
         },
         "sourceCell": {
           "column": 2,
           "row": 3
         },
         "groundPivotPx": {
-          "x": 471,
+          "x": 481,
           "y": 723
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1422,23 +1422,23 @@
         "pose": "gather-chop",
         "facing": "south-east",
         "rectPx": {
-          "x": 604,
-          "y": 549,
-          "width": 81,
-          "height": 175
+          "x": 613,
+          "y": 543,
+          "width": 96,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 607,
-          "y": 550,
-          "width": 75,
-          "height": 174
+          "x": 614,
+          "y": 543,
+          "width": 94,
+          "height": 181
         },
         "sourceCell": {
           "column": 3,
           "row": 3
         },
         "groundPivotPx": {
-          "x": 645,
+          "x": 667,
           "y": 723
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1449,23 +1449,23 @@
         "pose": "gather-chop",
         "facing": "south",
         "rectPx": {
-          "x": 774,
-          "y": 556,
-          "width": 75,
-          "height": 168
+          "x": 788,
+          "y": 543,
+          "width": 92,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 774,
-          "y": 558,
-          "width": 73,
-          "height": 166
+          "x": 789,
+          "y": 543,
+          "width": 88,
+          "height": 181
         },
         "sourceCell": {
           "column": 4,
           "row": 3
         },
         "groundPivotPx": {
-          "x": 817,
+          "x": 843,
           "y": 723
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1476,23 +1476,23 @@
         "pose": "gather-chop",
         "facing": "south-west",
         "rectPx": {
-          "x": 936,
-          "y": 551,
-          "width": 83,
-          "height": 173
+          "x": 960,
+          "y": 543,
+          "width": 100,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 939,
-          "y": 551,
-          "width": 80,
-          "height": 173
+          "x": 961,
+          "y": 543,
+          "width": 97,
+          "height": 181
         },
         "sourceCell": {
           "column": 5,
           "row": 3
         },
         "groundPivotPx": {
-          "x": 979,
+          "x": 1011,
           "y": 723
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1503,23 +1503,23 @@
         "pose": "gather-chop",
         "facing": "west",
         "rectPx": {
-          "x": 1119,
-          "y": 551,
-          "width": 85,
-          "height": 173
+          "x": 1147,
+          "y": 543,
+          "width": 101,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 1120,
-          "y": 552,
-          "width": 82,
-          "height": 172
+          "x": 1150,
+          "y": 543,
+          "width": 98,
+          "height": 181
         },
         "sourceCell": {
           "column": 6,
           "row": 3
         },
         "groundPivotPx": {
-          "x": 1154,
+          "x": 1195,
           "y": 723
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1530,23 +1530,23 @@
         "pose": "gather-chop",
         "facing": "north-west",
         "rectPx": {
-          "x": 1304,
-          "y": 550,
-          "width": 78,
-          "height": 174
+          "x": 1341,
+          "y": 543,
+          "width": 90,
+          "height": 181
         },
         "alphaBoundsPx": {
-          "x": 1304,
-          "y": 550,
-          "width": 77,
-          "height": 174
+          "x": 1344,
+          "y": 543,
+          "width": 86,
+          "height": 181
         },
         "sourceCell": {
           "column": 7,
           "row": 3
         },
         "groundPivotPx": {
-          "x": 1331,
+          "x": 1375,
           "y": 723
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1563,9 +1563,9 @@
           "height": 181
         },
         "alphaBoundsPx": {
-          "x": 57,
+          "x": 56,
           "y": 724,
-          "width": 124,
+          "width": 125,
           "height": 181
         },
         "sourceCell": {
@@ -1573,7 +1573,7 @@
           "row": 4
         },
         "groundPivotPx": {
-          "x": 115,
+          "x": 120,
           "y": 904
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1584,15 +1584,15 @@
         "pose": "build-strike",
         "facing": "north-east",
         "rectPx": {
-          "x": 235,
+          "x": 181,
           "y": 724,
-          "width": 127,
+          "width": 181,
           "height": 181
         },
         "alphaBoundsPx": {
-          "x": 236,
+          "x": 181,
           "y": 724,
-          "width": 126,
+          "width": 181,
           "height": 181
         },
         "sourceCell": {
@@ -1600,7 +1600,7 @@
           "row": 4
         },
         "groundPivotPx": {
-          "x": 294,
+          "x": 302,
           "y": 904
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1613,13 +1613,13 @@
         "rectPx": {
           "x": 362,
           "y": 724,
-          "width": 171,
+          "width": 181,
           "height": 181
         },
         "alphaBoundsPx": {
-          "x": 409,
+          "x": 362,
           "y": 724,
-          "width": 124,
+          "width": 181,
           "height": 181
         },
         "sourceCell": {
@@ -1627,7 +1627,7 @@
           "row": 4
         },
         "groundPivotPx": {
-          "x": 471,
+          "x": 481,
           "y": 904
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1638,15 +1638,15 @@
         "pose": "build-strike",
         "facing": "south-east",
         "rectPx": {
-          "x": 588,
+          "x": 543,
           "y": 724,
-          "width": 117,
+          "width": 181,
           "height": 181
         },
         "alphaBoundsPx": {
-          "x": 589,
+          "x": 543,
           "y": 724,
-          "width": 115,
+          "width": 181,
           "height": 181
         },
         "sourceCell": {
@@ -1654,7 +1654,7 @@
           "row": 4
         },
         "groundPivotPx": {
-          "x": 645,
+          "x": 667,
           "y": 904
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1665,15 +1665,15 @@
         "pose": "build-strike",
         "facing": "south",
         "rectPx": {
-          "x": 769,
+          "x": 724,
           "y": 724,
-          "width": 74,
+          "width": 152,
           "height": 181
         },
         "alphaBoundsPx": {
-          "x": 769,
+          "x": 724,
           "y": 724,
-          "width": 73,
+          "width": 151,
           "height": 181
         },
         "sourceCell": {
@@ -1681,7 +1681,7 @@
           "row": 4
         },
         "groundPivotPx": {
-          "x": 817,
+          "x": 843,
           "y": 904
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1692,15 +1692,15 @@
         "pose": "build-strike",
         "facing": "south-west",
         "rectPx": {
-          "x": 909,
+          "x": 937,
           "y": 724,
-          "width": 177,
+          "width": 125,
           "height": 181
         },
         "alphaBoundsPx": {
-          "x": 911,
+          "x": 939,
           "y": 724,
-          "width": 175,
+          "width": 123,
           "height": 181
         },
         "sourceCell": {
@@ -1708,7 +1708,7 @@
           "row": 4
         },
         "groundPivotPx": {
-          "x": 979,
+          "x": 1011,
           "y": 904
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1719,15 +1719,15 @@
         "pose": "build-strike",
         "facing": "west",
         "rectPx": {
-          "x": 1086,
+          "x": 1121,
           "y": 724,
-          "width": 181,
+          "width": 140,
           "height": 181
         },
         "alphaBoundsPx": {
-          "x": 1086,
+          "x": 1123,
           "y": 724,
-          "width": 181,
+          "width": 137,
           "height": 181
         },
         "sourceCell": {
@@ -1735,7 +1735,7 @@
           "row": 4
         },
         "groundPivotPx": {
-          "x": 1154,
+          "x": 1195,
           "y": 904
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1746,15 +1746,15 @@
         "pose": "build-strike",
         "facing": "north-west",
         "rectPx": {
-          "x": 1267,
+          "x": 1305,
           "y": 724,
-          "width": 122,
+          "width": 135,
           "height": 181
         },
         "alphaBoundsPx": {
-          "x": 1267,
+          "x": 1305,
           "y": 724,
-          "width": 122,
+          "width": 134,
           "height": 181
         },
         "sourceCell": {
@@ -1762,7 +1762,7 @@
           "row": 4
         },
         "groundPivotPx": {
-          "x": 1331,
+          "x": 1375,
           "y": 904
         },
         "groundAnchorMode": "standing-feet-root-shared-across-poses"
@@ -1773,16 +1773,16 @@
         "pose": "defeated-corpse",
         "facing": "north",
         "rectPx": {
-          "x": 26,
+          "x": 22,
           "y": 905,
-          "width": 152,
-          "height": 158
+          "width": 159,
+          "height": 165
         },
         "alphaBoundsPx": {
-          "x": 28,
+          "x": 24,
           "y": 905,
-          "width": 149,
-          "height": 158
+          "width": 157,
+          "height": 164
         },
         "sourceCell": {
           "column": 0,
@@ -1790,7 +1790,7 @@
         },
         "groundPivotPx": {
           "x": 90,
-          "y": 1062
+          "y": 1068
         },
         "groundAnchorMode": "defeated-body-ground"
       },
@@ -1800,16 +1800,16 @@
         "pose": "defeated-corpse",
         "facing": "north-east",
         "rectPx": {
-          "x": 205,
+          "x": 181,
           "y": 905,
-          "width": 157,
-          "height": 160
+          "width": 181,
+          "height": 165
         },
         "alphaBoundsPx": {
-          "x": 207,
+          "x": 181,
           "y": 905,
-          "width": 155,
-          "height": 158
+          "width": 181,
+          "height": 164
         },
         "sourceCell": {
           "column": 1,
@@ -1817,7 +1817,7 @@
         },
         "groundPivotPx": {
           "x": 271,
-          "y": 1062
+          "y": 1068
         },
         "groundAnchorMode": "defeated-body-ground"
       },
@@ -1829,14 +1829,14 @@
         "rectPx": {
           "x": 362,
           "y": 905,
-          "width": 179,
-          "height": 160
+          "width": 181,
+          "height": 165
         },
         "alphaBoundsPx": {
           "x": 362,
           "y": 905,
-          "width": 178,
-          "height": 158
+          "width": 181,
+          "height": 164
         },
         "sourceCell": {
           "column": 2,
@@ -1844,7 +1844,7 @@
         },
         "groundPivotPx": {
           "x": 452,
-          "y": 1062
+          "y": 1068
         },
         "groundAnchorMode": "defeated-body-ground"
       },
@@ -1854,16 +1854,16 @@
         "pose": "defeated-corpse",
         "facing": "south-east",
         "rectPx": {
-          "x": 569,
+          "x": 543,
           "y": 905,
-          "width": 145,
-          "height": 160
+          "width": 181,
+          "height": 166
         },
         "alphaBoundsPx": {
-          "x": 571,
+          "x": 543,
           "y": 905,
-          "width": 142,
-          "height": 159
+          "width": 181,
+          "height": 166
         },
         "sourceCell": {
           "column": 3,
@@ -1871,7 +1871,7 @@
         },
         "groundPivotPx": {
           "x": 633,
-          "y": 1063
+          "y": 1070
         },
         "groundAnchorMode": "defeated-body-ground"
       },
@@ -1881,16 +1881,16 @@
         "pose": "defeated-corpse",
         "facing": "south",
         "rectPx": {
-          "x": 747,
+          "x": 724,
           "y": 905,
-          "width": 158,
-          "height": 152
+          "width": 168,
+          "height": 161
         },
         "alphaBoundsPx": {
-          "x": 748,
+          "x": 724,
           "y": 905,
-          "width": 157,
-          "height": 152
+          "width": 166,
+          "height": 160
         },
         "sourceCell": {
           "column": 4,
@@ -1898,7 +1898,7 @@
         },
         "groundPivotPx": {
           "x": 814,
-          "y": 1056
+          "y": 1064
         },
         "groundAnchorMode": "defeated-body-ground"
       },
@@ -1908,16 +1908,16 @@
         "pose": "defeated-corpse",
         "facing": "south-west",
         "rectPx": {
-          "x": 905,
+          "x": 916,
           "y": 905,
-          "width": 181,
-          "height": 160
+          "width": 170,
+          "height": 164
         },
         "alphaBoundsPx": {
-          "x": 905,
+          "x": 916,
           "y": 905,
-          "width": 152,
-          "height": 159
+          "width": 170,
+          "height": 164
         },
         "sourceCell": {
           "column": 5,
@@ -1925,7 +1925,7 @@
         },
         "groundPivotPx": {
           "x": 995,
-          "y": 1063
+          "y": 1068
         },
         "groundAnchorMode": "defeated-body-ground"
       },
@@ -1937,14 +1937,14 @@
         "rectPx": {
           "x": 1086,
           "y": 905,
-          "width": 155,
-          "height": 161
+          "width": 181,
+          "height": 165
         },
         "alphaBoundsPx": {
           "x": 1086,
           "y": 905,
-          "width": 155,
-          "height": 159
+          "width": 181,
+          "height": 164
         },
         "sourceCell": {
           "column": 6,
@@ -1952,7 +1952,7 @@
         },
         "groundPivotPx": {
           "x": 1176,
-          "y": 1063
+          "y": 1068
         },
         "groundAnchorMode": "defeated-body-ground"
       },
@@ -1962,16 +1962,16 @@
         "pose": "defeated-corpse",
         "facing": "north-west",
         "rectPx": {
-          "x": 1269,
+          "x": 1267,
           "y": 905,
-          "width": 152,
-          "height": 159
+          "width": 181,
+          "height": 164
         },
         "alphaBoundsPx": {
-          "x": 1269,
+          "x": 1267,
           "y": 905,
-          "width": 151,
-          "height": 157
+          "width": 181,
+          "height": 164
         },
         "sourceCell": {
           "column": 7,
@@ -1979,7 +1979,7 @@
         },
         "groundPivotPx": {
           "x": 1357,
-          "y": 1061
+          "y": 1068
         },
         "groundAnchorMode": "defeated-body-ground"
       }
@@ -1995,11 +1995,11 @@
     },
     "presentation": {
       "referenceStandingHeightWorld": 0.8,
-      "referenceStandingHeightPx": 156,
+      "referenceStandingHeightPx": 163,
       "referenceStandingHeightSource": "Worker follows the 0.8-world-unit character baseline in docs/renderer-state-contract.md; Infantry and Archer are pilot candidates for game-zoom review",
       "artBoundsWorld": {
-        "maxWidth": 1.1538,
-        "maxHeight": 0.9282,
+        "maxWidth": 1.2221,
+        "maxHeight": 0.8883,
         "includesToolsAndWeapons": true
       },
       "visibleGroundSpanWorld": {
@@ -2012,10 +2012,10 @@
         "shape": "sphere",
         "center": [
           0,
-          0.4641,
+          0.4442,
           0
         ],
-        "radius": 0.7404,
+        "radius": 0.7554,
         "coversAllFrames": true
       },
       "selectionBoundsWorld": {

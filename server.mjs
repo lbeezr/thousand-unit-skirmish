@@ -5909,7 +5909,7 @@ const server = createServer(async (request, response) => {
     response.end('Forbidden');
     return;
   }
-  const publicClientAsset = ['index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs', 'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs', 'src/unit-visual-state.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs'].includes(relative);
+  const publicClientAsset = ['index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs', 'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs'].includes(relative);
   const publicUiAsset = [
     'assets/ui/preview.html', 'assets/ui/cursors/manifest.json',
     'assets/ui/cursors/select.png', 'assets/ui/cursors/select.svg',
@@ -5935,8 +5935,16 @@ const server = createServer(async (request, response) => {
         && /^(?:(?:oak|berries)-(?:full|worked|low|depleted)|construction-(?:earthwork|foundation))$/
           .test(path.basename(relative, path.extname(relative)))));
   const publicMapAsset = path.dirname(relative) === 'maps' && path.extname(relative) === '.json';
+  const publicUnitSpriteAssets = ['worker', 'infantry', 'archer'].some((role) => {
+    const directory = `assets/units/${role}-sprite-v1`;
+    return [
+      `${directory}/sprite-atlas-pack-v1.json`,
+      `${directory}/${role}-atlas-runtime.png`,
+      `${directory}/team-accent-mask.png`,
+    ].includes(relative);
+  });
   if (!publicClientAsset && !publicEnvironmentModule && !publicEnvironmentAsset && !publicUiAsset
-    && !publicInteractiveEnvironmentAsset && !publicMapAsset) {
+    && !publicInteractiveEnvironmentAsset && !publicMapAsset && !publicUnitSpriteAssets) {
     response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
     response.end('Not found');
     return;

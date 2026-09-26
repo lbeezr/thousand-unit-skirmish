@@ -323,6 +323,9 @@ async function createBrowser(teamLabel, profileDirectory, executable, gameUrl) {
   await cdp.call('Runtime.enable');
   await cdp.call('Page.enable');
   await cdp.call('Network.enable');
+  await cdp.call('Emulation.setDeviceMetricsOverride', {
+    width: VIEWPORT_WIDTH, height: VIEWPORT_HEIGHT, deviceScaleFactor: 1, mobile: false,
+  });
   const browser = {
     teamLabel, team: null, currentZoom: INITIAL_ZOOM, chrome, browserCdp, cdp,
     latestState: null, lastFrameError: null,
@@ -609,7 +612,7 @@ async function run() {
   try {
     const maps = await writeReviewMaps(customMapDirectory);
     const serverPort = await reservePort();
-    const gameUrl = `http://127.0.0.1:${serverPort}/`;
+    const gameUrl = `http://127.0.0.1:${serverPort}/?workerSpritePreview=1`;
     server = startChild('server', process.execPath, [SERVER_ENTRY], {
       env: {
         ...process.env,

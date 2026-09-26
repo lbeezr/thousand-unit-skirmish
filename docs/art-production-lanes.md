@@ -4,7 +4,7 @@ The [roadmap](roadmap.md) names long-running outcomes. These lanes divide the cu
 
 ## Current runtime
 
-The game uses painted ground textures and fixed-camera cutout sprites for most environment art, with repeated props instanced by the renderer. New unit-character art follows the user's painterly sprite direction; the live game still shows its current instanced 3D placeholders until the atlas renderer is integrated. Existing GLB samples remain separate historical/building-art material. Buildings continue in their own lane. A rigging and skinning specialist is not a prerequisite for the sprite unit path.
+The game uses painted ground textures and fixed-camera cutout sprites for most environment art, with repeated props instanced by the renderer. New unit-character art follows the user's painterly sprite direction. An opt-in Worker atlas pilot is available with `?workerSpritePreview=1`; the normal game path and the Infantry/Archer presentation remain unchanged while the Worker view is reviewed. Existing GLB samples remain separate historical/building-art material. Buildings continue in their own lane. A rigging and skinning specialist is not a prerequisite for the sprite unit path.
 
 ## Who makes what
 

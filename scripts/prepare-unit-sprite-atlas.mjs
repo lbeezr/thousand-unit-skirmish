@@ -15,6 +15,10 @@ const PIVOT_ALPHA_THRESHOLD = 96;
 const ACCENT_HUE_MIN = 180;
 const ACCENT_HUE_MAX = 250;
 const ACCENT_SATURATION_MIN = 0.24;
+const WORKER_PANEL_HUE_MIN = 34;
+const WORKER_PANEL_HUE_MAX = 62;
+const WORKER_PANEL_X_RANGE = Object.freeze([0.3, 0.71]);
+const WORKER_PANEL_Y_RANGE = Object.freeze([0.4, 0.78]);
 const FOOT_HUE_MIN = 8;
 const FOOT_HUE_MAX = 62;
 // Keep the Worker aligned with the authored-unit contract; the other roles are pilot candidates.
@@ -232,16 +236,30 @@ function smoothstep(min, max, value) {
   return t * t * (3 - 2 * t);
 }
 
-function accentMaskValue(red, green, blue, alpha) {
+function accentMaskValue(red, green, blue, alpha, workerGarmentPanel) {
   if (alpha < 8) return 0;
   const { hue, saturation, value } = rgbToHsv(red, green, blue);
-  if (hue < ACCENT_HUE_MIN || hue > ACCENT_HUE_MAX || value < 0.045) return 0;
-  const hueCoverage = Math.min(
-    smoothstep(ACCENT_HUE_MIN, ACCENT_HUE_MIN + 14, hue),
-    1 - smoothstep(ACCENT_HUE_MAX - 14, ACCENT_HUE_MAX, hue),
+  let blueAccent = 0;
+  if (hue >= ACCENT_HUE_MIN && hue <= ACCENT_HUE_MAX && value >= 0.045) {
+    const hueCoverage = Math.min(
+      smoothstep(ACCENT_HUE_MIN, ACCENT_HUE_MIN + 14, hue),
+      1 - smoothstep(ACCENT_HUE_MAX - 14, ACCENT_HUE_MAX, hue),
+    );
+    const saturationCoverage = smoothstep(ACCENT_SATURATION_MIN, 0.43, saturation);
+    blueAccent = Math.round(255 * (alpha / 255) * hueCoverage * saturationCoverage);
+  }
+  if (!workerGarmentPanel || hue < WORKER_PANEL_HUE_MIN || hue > WORKER_PANEL_HUE_MAX || value < 0.12) {
+    return blueAccent;
+  }
+  const panelHueCoverage = Math.min(
+    smoothstep(WORKER_PANEL_HUE_MIN, WORKER_PANEL_HUE_MIN + 7, hue),
+    1 - smoothstep(WORKER_PANEL_HUE_MAX - 7, WORKER_PANEL_HUE_MAX, hue),
   );
-  const saturationCoverage = smoothstep(ACCENT_SATURATION_MIN, 0.43, saturation);
-  return Math.round(255 * (alpha / 255) * hueCoverage * saturationCoverage);
+  const panelSaturationCoverage = smoothstep(0.2, 0.42, saturation);
+  const panelValueCoverage = smoothstep(0.16, 0.34, value);
+  const garmentAccent = Math.round(255 * (alpha / 255)
+    * panelHueCoverage * panelSaturationCoverage * panelValueCoverage);
+  return Math.max(blueAccent, garmentAccent);
 }
 
 function alphaBounds(image, x0, y0, x1, y1, threshold) {
@@ -614,10 +632,24 @@ async function prepare(manifestArgument) {
 
   const maskPixels = new Uint8Array(image.width * image.height);
   let maskedPixelCount = 0;
+  const frameGrid = manifest.atlas.frameGrid;
   for (let pixel = 0; pixel < maskPixels.length; pixel++) {
     const source = pixel * 4;
+    const x = pixel % image.width;
+    const y = Math.floor(pixel / image.width);
+    const column = Math.min(frameGrid.columns - 1, Math.floor(x * frameGrid.columns / image.width));
+    const row = Math.min(frameGrid.rows - 1, Math.floor(y * frameGrid.rows / image.height));
+    const cellX = frameGrid.columnEdgesPx[column];
+    const cellY = frameGrid.rowEdgesPx[row];
+    const cellWidth = frameGrid.columnEdgesPx[column + 1] - cellX;
+    const cellHeight = frameGrid.rowEdgesPx[row + 1] - cellY;
+    const localX = (x - cellX) / cellWidth;
+    const localY = (y - cellY) / cellHeight;
+    const workerGarmentPanel = manifest.unitRole === 'worker'
+      && localX >= WORKER_PANEL_X_RANGE[0] && localX <= WORKER_PANEL_X_RANGE[1]
+      && localY >= WORKER_PANEL_Y_RANGE[0] && localY <= WORKER_PANEL_Y_RANGE[1];
     const mask = accentMaskValue(image.pixels[source], image.pixels[source + 1], image.pixels[source + 2],
-      image.pixels[source + 3]);
+      image.pixels[source + 3], workerGarmentPanel);
     maskPixels[pixel] = mask;
     if (mask > 0) maskedPixelCount++;
   }
@@ -669,6 +701,9 @@ async function prepare(manifestArgument) {
   };
   manifest.teamTreatment = {
     ...manifest.teamTreatment,
+    accent: manifest.unitRole === 'worker'
+      ? 'sky-blue sash and warm linen tunic panel'
+      : manifest.teamTreatment.accent,
     emberVariant: 'runtime accent-mask recolor',
     tintMask: TEAM_MASK_PATH,
     accentMask: {
@@ -681,7 +716,9 @@ async function prepare(manifestArgument) {
       colorSpace: 'linear-data',
       tintPolicy: 'white applies full team hue while preserving source luminance and alpha; gray applies proportional tint; black preserves source RGB',
       values: { fullTeamTint: 255, preserveSource: 0 },
-      source: 'deterministic blue-hue/saturation classification of the Azure sash pixels',
+      source: manifest.unitRole === 'worker'
+        ? `deterministic blue sash classification plus warm linen pixels in the cell-local torso ROI x=${WORKER_PANEL_X_RANGE.join('-')}, y=${WORKER_PANEL_Y_RANGE.join('-')}`
+        : 'deterministic blue-hue/saturation classification of the Azure accent pixels',
       sha256: sha256(maskBytes),
       classifiedPixels: maskedPixelCount,
     },
