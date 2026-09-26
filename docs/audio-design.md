@@ -43,7 +43,7 @@ The first user gesture unlocks Web Audio. Match Controls has enable, overall vol
 
 ## Critical sound captions · 26 September 2026
 
-Match Controls can optionally show short captions for major audio cues, including combat warnings, objective changes, depleted resources, production milestones, scenario rewards, and match outcomes. Captions follow cues that were scheduled successfully and stay independent of the audio mute and volume controls. Frequent command acknowledgements and selection sounds are left out because the interface already shows those actions and captions for them would crowd the battlefield.
+Match Controls can optionally show short captions for major audio cues, including combat warnings, objective changes, depleted resources, production milestones, scenario rewards, and match outcomes. Captions follow gameplay cue decisions, so they remain available when effects are muted, audio is unavailable, or playback has not yet been unlocked. Frequent command acknowledgements and selection sounds are left out because the interface already shows those actions and captions for them would crowd the battlefield. The match-result card has a higher stacking order than the transient caption and already displays the outcome.
 
 ## Critical alert distinction · 25 September 2026
 
