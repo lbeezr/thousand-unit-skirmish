@@ -232,6 +232,7 @@ const ui = {
   audioEnabled: document.querySelector('#audio-enabled'),
   audioVolume: document.querySelector('#audio-volume'),
   audioVolumeValue: document.querySelector('#audio-volume-value'),
+  audioPreview: document.querySelector('#audio-preview'),
   audioAmbience: document.querySelector('#audio-ambience'),
   audioAmbienceLevel: document.querySelector('#audio-ambience-level'),
   audioAmbienceLevelValue: document.querySelector('#audio-ambience-level-value'),
@@ -5980,6 +5981,7 @@ function syncAudioControls() {
   ui.audioAmbienceLevel.disabled = !settings.enabled || !settings.ambience;
   const status = audio.getStatus();
   ui.audioStatus.dataset.state = status;
+  ui.audioPreview.disabled = status === 'muted' || status === 'unavailable' || status === 'closed';
   ui.audioStatus.textContent = {
     running: 'SOUND READY', waiting: 'SOUND STARTS WITH FIRST INPUT', muted: 'SOUND MUTED',
     unavailable: 'AUDIO UNAVAILABLE IN THIS BROWSER', suspended: 'TAP TO RESUME AUDIO',
@@ -5989,6 +5991,7 @@ function syncAudioControls() {
 syncAudioControls();
 ui.audioEnabled.addEventListener('change', () => { audio.setSettings({ enabled: ui.audioEnabled.checked }); syncAudioControls(); });
 ui.audioVolume.addEventListener('input', () => { audio.setSettings({ volume: Number(ui.audioVolume.value) / 100 }); syncAudioControls(); });
+ui.audioPreview.addEventListener('click', () => { audio.unlock(); audio.play('select'); });
 ui.audioAmbience.addEventListener('change', () => { audio.setSettings({ ambience: ui.audioAmbience.checked }); syncAudioControls(); });
 ui.audioAmbienceLevel.addEventListener('input', () => { audio.setSettings({ ambienceLevel: Number(ui.audioAmbienceLevel.value) / 100 }); syncAudioControls(); });
 document.addEventListener('pointerdown', () => audio.unlock(), { capture: true, once: true });
