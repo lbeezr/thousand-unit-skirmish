@@ -4,7 +4,7 @@
 
 ## Current baseline
 
-This audit reads the shipped maps on `main` at `0067c31`. “Forest” counts blocked cells whose obstacle material is `forest`; it does not count individual harvestable wood nodes. Open Field and Dense Clash are diagnostic maps and should remain simple.
+This audit reads the shipped maps on `main` at `a8bd1e9`. “Forest” counts blocked cells whose obstacle material is `forest`; it does not count individual harvestable wood nodes. Open Field and Dense Clash are diagnostic maps and should remain simple.
 
 | Map | Cells | Harvestable food + wood nodes | Forest cells |
 | --- | ---: | ---: | ---: |
@@ -40,9 +40,9 @@ A **224 × 224 Epic** variant can follow as a separate scale probe or authored s
 
 ## Make large maps authorable
 
-Map Studio currently displays the whole map in a canvas no taller than 510 CSS pixels. A 160-cell side gets at most about 3.2 pixels per cell, and a 224-cell side about 2.3; precise placement is difficult. Ground brush sizes stop at 5 cells and resources are placed one node at a time.
+Map Studio now supports scrollable zoom and pan navigation through [PR #93](https://github.com/lbliii/thousand-unit-skirmish/pull/93): the canvas has Pan and Fit controls, wheel zoom, and a 1×–4× range. At the 510 CSS-pixel viewport-height cap, a fitted 160-cell side gets at most about 3.2 pixels per cell and a 224-cell side about 2.3; 4× raises those upper bounds to about 12.8 and 9.1 pixels. Narrower viewports can reduce the fit size. Ground brush sizes still stop at 5 cells and resources are placed one node at a time.
 
-Interface and Maps can independently improve this with zoom/pan, larger brushes or region fill, and a repeatable forest/resource-cluster stamp. A script-generated first draft imported into Map Studio is a reasonable fast path; the editor should still round-trip and allow local edits. Keep the actual map and authoring-tool changes separate if that helps both owners merge sooner.
+The next authoring improvements are larger brushes or region fill and a repeatable forest/resource-cluster stamp. A script-generated first draft imported into Map Studio is a reasonable fast path; the editor should still round-trip and allow local edits. Keep the actual map and authoring-tool changes separate if that helps both owners merge sooner.
 
 The renderer currently instances one tree sprite for every blocked forest cell. On a 160 × 160 map, 12–20% forest would mean about **3,100–5,100** tree instances, compared with 140 forest cells in the fullest shipped map. Renderer and Environment can use instancing, distance detail, and canopy treatment to keep the view full and readable. Decorative forest and harvestable edge trees need related silhouettes so the visual promise matches the economic action.
 

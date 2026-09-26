@@ -389,9 +389,10 @@ fixture establishes which opening wins contested matches.
   and player explanations. Keep the synthetic within-threshold +X edge as a
   test note; do not use it alone to change costs or combat stats.
 - When the 160 × 160 Frontier pilot is playable, compare observed two-seat
-  matches from both seats. Record first meaningful contact, first expansion,
-  resource stock and use by region, objective travel from each spawn, and the
-  routes players choose. Check whether each seat can still use two distinct
+  matches from both seats. Start with the [static map audit](map-scale-density.md#what-to-measure-while-building)
+  for initial stock and path geometry. Then record first meaningful contact,
+  first expansion, resource stock and use by region, objective travel from each
+  spawn, and the routes players choose. Check whether each seat can still use two distinct
   viable routes to expand or contest. Use those match timings and outcomes to
   evaluate the existing 15-minute scenario deadline and other compact-map
   timers; change them only when observed pacing shows they no longer fit,
