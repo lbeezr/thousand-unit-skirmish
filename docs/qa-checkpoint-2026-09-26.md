@@ -2,7 +2,7 @@
 
 This snapshot supplements the vertical-slice acceptance record and the 25 September QA checkpoint. Older captures and fingerprints keep their original build and environment scope; this checkpoint does not relabel them as current-build evidence.
 
-## Current source and deployments
+## Source and deployment snapshot — 26 September 2026, 16:02 UTC
 
 | Environment | Identity | Verification and limits |
 | --- | --- | --- |
@@ -12,6 +12,28 @@ This snapshot supplements the vertical-slice acceptance record and the 25 Septem
 
 PR #85 integrated the interactive environment pack, and PR #88 added Docker and `.dockerignore` entries for the manifest and runtime WebPs. Current staging source `a8bd1e9` includes those `COPY` steps and passed `/ready`. QA fetched the manifest and all ten runtime WebPs with staging authentication; every response was HTTP 200 and every image hash matched the manifest. This establishes that the assets are served by the current image. It does not establish renderer-state selection or visual quality; no browser or GPU capture was run. Production remains untouched.
 
+## Live deployment recheck — 26 September 2026, 16:24 UTC
+
+Railway's current metadata reports main at `c931e692f000d9567de4ff459595605190f9d020` (PR #97) and staging deployment `b245b6c4-831f-47cf-a477-496eebcee365` as `SUCCESS` from that exact SHA. The staging service is online with one of one replicas and `/ready` configured as its healthcheck. Since PR #95's merge `9f4568a`, PR #96 added documentation and `scripts/map-balance-audit.mjs`, PRs #98–99 updated documentation, and PR #97 changed `src/pve-opponent.mjs` and its scenario. No browser-client or map files changed; the server-side PvE behavior did. This establishes source alignment from Railway metadata, not a fresh runtime-file fingerprint.
+
+The latest direct asset verification remains the earlier deployment `3507c1ba` at source `a8bd1e9`: its manifest and ten WebPs returned HTTP 200 and the hashes matched. A fresh public GET to both staging and production failed at DNS resolution from this QA environment, so `/ready`, served assets, and WSS were not directly rechecked on the latest deployment. Do not carry the old GET result forward as a runtime check for `b245b6c4`.
+
+The roadmap records PR #97's owner-run seeded Forked Vale trace for signal progression, prerequisite-gated Vale Watch, and retake after ownership loss, plus live WebSocket smoke for both bot seat assignments. QA has not independently reproduced those results on `c931e69`; they remain synthetic owner evidence, not human solo-play or two-player match evidence. One solo-play observation remains for the PvE lane.
+
+Production remains on manual redeploy `014448c3-4a3b-4942-9d96-6d77515d0d61`, still `SUCCESS` and online with one of one replicas. Current Railway metadata has reason `redeploy`, with no source SHA, branch, or immutable image digest. The prior read-only 52-file container manifest for this same deployment matched application files at `2530714869a342e37cdd0fee17bd33ac757b7a88` and lacked `origin-policy.mjs`; this identifies the observed app-file tree but does not prove Railway's image/build provenance. Staging and production are not verified as the same build. No production action was taken.
+
+Infra's latest host sample is `2026-09-26T16:23:43Z`: 1/5/15-minute loads `11.17 / 10.07 / 8.48`. The 1-minute load is still above `2.0`; the required two readings at or below `2.0`, at least 60 seconds apart, and explicit Infra release are absent. No scenario or browser run is active in the QA task, and none was started for this checkpoint.
+
+## Live deployment recheck — 26 September 2026, 16:32 UTC
+
+After fetching `origin/main`, the latest observed main source is `d11680b0d7f4dca8ffb47b659881654e1c45cd5a` (PR #101, `audio: add cue recognition check`). Railway reports staging deployment `5f0efbb8-00c8-423c-8f89-ab6fda22bed0` as `SUCCESS` from that exact SHA. At `16:31:53Z`, direct unauthenticated GETs to both staging and production `/ready` returned HTTP 200 with `{"ok":true}`. The interactive asset manifest returned HTTP 401 from both environments because it requires Basic Authentication; no credentials were used, so current asset hashes were not verified. No WSS, room, browser, or match check was run.
+
+Production remains on deployment `014448c3-4a3b-4942-9d96-6d77515d0d61`, `SUCCESS`, reason `redeploy`, with no source SHA, branch, or immutable image digest. Its `/ready` success proves health only; it does not establish build identity or alignment with staging. The prior 52-file manifest for that deployment still identifies the app-file tree observed at `2530714869a342e37cdd0fee17bd33ac757b7a88`, not Railway image provenance.
+
+PR #101 adds the Audio settings recognition check: six randomized guess-before-reveal trials, two each for move, attack, and match-result cues. The current UI shows a per-category score but keeps responses in page memory, so record each player's answers and misreads before the session ends. The CI scenario is wired to the check; QA has not run it or observed a fresh player's recognition. No result should be described as player comprehension evidence yet.
+
+The latest read-only host sample is `2026-09-26T16:30:05Z`, loads `5.91 / 6.88 / 7.47` (1/5/15 minutes). The 1-minute value is above `2.0`; no qualifying pair or explicit Infra release is recorded. No QA scenario or browser run is active, and none was started for this checkpoint.
+
 ## CI runner availability
 
 The GitHub Verify Node 24 project check failed before runner assignment on merged PRs #76, #77, #78, #79, #81, #82, #83, and #84. For each job, the Actions job API reported runner_id 0, an empty runner name, and no steps; each completed in about two seconds. These runs provide no assertion or test result. CI status for PRs #85–93 was not verified for this checkpoint. See [PR #76](https://github.com/lbliii/thousand-unit-skirmish/pull/76), [PR #77](https://github.com/lbliii/thousand-unit-skirmish/pull/77), [PR #78](https://github.com/lbliii/thousand-unit-skirmish/pull/78), [PR #79](https://github.com/lbliii/thousand-unit-skirmish/pull/79), [PR #81](https://github.com/lbliii/thousand-unit-skirmish/pull/81), and [PR #82](https://github.com/lbliii/thousand-unit-skirmish/pull/82), [PR #83](https://github.com/lbliii/thousand-unit-skirmish/pull/83), [PR #84](https://github.com/lbliii/thousand-unit-skirmish/pull/84), [PR #85](https://github.com/lbliii/thousand-unit-skirmish/pull/85), [PR #86](https://github.com/lbliii/thousand-unit-skirmish/pull/86), [PR #87](https://github.com/lbliii/thousand-unit-skirmish/pull/87), [PR #88](https://github.com/lbliii/thousand-unit-skirmish/pull/88), [PR #89](https://github.com/lbliii/thousand-unit-skirmish/pull/89), [PR #90](https://github.com/lbliii/thousand-unit-skirmish/pull/90), [PR #91](https://github.com/lbliii/thousand-unit-skirmish/pull/91), [PR #92](https://github.com/lbliii/thousand-unit-skirmish/pull/92), and [PR #93](https://github.com/lbliii/thousand-unit-skirmish/pull/93).
@@ -19,6 +41,12 @@ The GitHub Verify Node 24 project check failed before runner assignment on merge
 PR #79 moved critical caption decisions ahead of the audio enabled, volume, and effects-level early return. PR #83 records the focused pre-unlock, muted, and zero-output regression as passed on PR #79, and this code is included in current staging. That is focused regression evidence, not an independent QA browser check or player cue-recognition observation on the current staging build. The GitHub CI job did not reach a runner.
 
 PR #90 now shows mapped captions for critical sample previews when captions are enabled; attack and move sample cues remain audio-only. This behavior is in current main/staging, but QA has not observed player cue recognition on the current build.
+
+PR #101 adds a six-trial, guess-before-reveal recognition check for move, attack, and match-result cues, with two trials per category and a per-category score. Responses are page-memory only; QA has not run the check or collected fresh-player observations on staging.
+
+PR #95's Verify Node 24 job failed before runner assignment: the job API reported runner ID 0, no runner name, and no steps, so no assertions ran. PR #96's CI result was not verified.
+
+An earlier source trace on `085948e` found that every `scenarioEvent`, including the non-capture Relief Caravan timed supply, used the objective-capture cue. Current main contains the correction from `a6e5063` (`audio: distinguish scenario reward cue`): `src/main.js` routes the event through `cueForScenarioEvent`, which selects `scenario-reward` only for an affected seat, and `scripts/audio-policy-scenario.mjs` asserts team-specific routing. That script is wired into CI, but QA has not independently run it or verified the audible/caption behavior in a browser. The source-level misroute is no longer an open current-main bug; current-build browser and player-recognition evidence remain open.
 
 ## Renderer environment-state pilot
 
@@ -32,7 +60,7 @@ No environment-state capture is registered in the current game-dev capture list.
 
 ## Host and player evidence gates
 
-Infra's latest host sample, at 2026-09-26T15:57:26Z, was 6.21 / 5.07 / 5.98 for the 1/5/15-minute load averages. The 1-minute value is above the <=2.0 threshold. The required two readings at or below 2.0, at least 60 seconds apart, plus explicit Infra release have not been recorded. No performance scenario, browser run, or renderer capture was started for this checkpoint.
+Infra's latest host sample, at 2026-09-26T16:30:05Z, was 5.91 / 6.88 / 7.47 for the 1/5/15-minute load averages. The 1-minute value is above the <=2.0 threshold. The required two readings at or below 2.0, at least 60 seconds apart, plus explicit Infra release have not been recorded. No performance scenario, browser run, or renderer capture was started for this checkpoint.
 
 No new two-seat WSS/reconnect/rematch run or complete Forked Vale match was conducted on the current staging build. The earlier f1d6482/1d74cae results remain historical evidence. The novice external playtest remains pending; no testers were contacted. Keep synthetic scenario results, browser automation, and player observations as separate evidence classes.
 
@@ -61,10 +89,10 @@ Include the build SHA, map revision, seat actions, and any missed resources or u
 
 ## Next QA proof
 
-1. After Infra releases a safe host window and room, run the current-main two-seat Forked Vale path: both seats gather, build, produce, choose routes, contest a signal, observe the same winner, reconnect, and rematch. Record the deployment SHA, seat actions, failures, and both clients' result.
-2. On the same current build, verify critical captions with audio disabled and with volume/effects at zero. Record the visible caption and cue on both settings paths; then observe whether players recognize the key cues.
-3. After Infra releases the host gate, run the renderer capture. Staging asset delivery is now verified; capture the selected Meadow/Cinder states at both zooms and review the oak edge.
-4. When the living-land prototype is runnable, record the exact build/map revision, both-seat paths, site-control time, harvest/exchange totals, resource state through leave/reconnect/restart/rematch, and player explanations; this experiment evidence does not gate unrelated PRs or current M1–M4 work.
-5. When the large authored map is runnable, record the exact build/map revision, both-seat routes, explored areas, discovered resources, building spaces, first contact, and whether players find the map large or empty. This iteration evidence is not a PR gate.
-6. Keep the 2,000-unit hosted gate separate: use a comparable intended-host run with server tick, browser frame, egress, order acknowledgement, and reconnect evidence after the quiet-host release.
-7. Schedule the novice-pair protocol only after the outstanding tester availability choice is resolved; record player words without developer coaching.
+1. **P0 — Verify current staging online behavior.** After Infra provides a safe disposable room/seat and releases the host window, use two isolated browser profiles against deployment `5f0efbb8` / source `d11680b`. The unauthenticated `/ready` GET passed at 16:31:53Z, but the current asset manifest returned 401 without credentials and no WSS or browser match check was run. Verify authenticated assets and hashes, allowlisted WSS, both-seat join/state agreement, room isolation, gather/build/production/orders/objective winner, reload/reconnect/restart, and synchronized rematch. Save both-seat captures, timestamps, room counts, failures, and exact deployment SHA; don't reuse the historical `f1d6482` browser result or PR #97's owner-run bot smoke as current QA match proof.
+2. **P0 — Close production identity as a read-only audit.** Obtain the manually promoted deployment's exact source SHA or immutable image digest, compare its full application-file manifest and served asset hashes with the artifact, and record the gap from staging. Keep production manual; this acceptance checkpoint authorizes no deployment or promotion.
+3. **P0 — Complete the human match.** Once tester availability and outreach authorization are resolved, run the two novice pairs and seat swaps in Forked Vale. Keep the first two minutes uncoached; record both seats' opening/contest/result/rematch, explanations, two viable responses, and exact player words separately from scripted evidence.
+4. **P1 — Reproduce the 2,000-unit tick gate locally.** Wait for two host readings with 1-minute load <=2.0 at least 60 seconds apart, no competing scenario/browser run, and explicit Infra release. Recheck exact main SHA, machine, Node, map, workload, and instrumentation; run checkpointed movement then attack-move serially. Preserve verified run bundles. Pass only when each 12-second window keeps tick-p95 and tick-start-lag-p95 <=33.333 ms, maxima for tick/start-lag/planning <=100 ms, has zero checkpoint failures, and records combat damage. Distinguish these synthetic localhost numbers from hardware capacity.
+5. **P1 — Measure hosted capacity separately.** Agree the target Railway machine/CPU budget, CPU/egress stop thresholds, and 80 ms RTT / 1% loss profile with Infra. Use one closed 2,000-total-unit staging room first; record ack p50/p95, tick p50/p95/max, per-seat snapshots/egress, and reconnect time; stop at the first agreed threshold or room cap. Do not infer capacity from the historical 10-second 100-snapshot-per-seat smoke.
+6. **P1 — Finish current-build visual/audio acceptance.** After Infra releases a safe browser window, check captions with audio disabled and volume/effects at zero. With fresh players, run the six-trial guess-before-reveal check twice per person with captions off, then repeat with captions on; manually record every answer, per-category score, caption state, and misread before the page session ends. Capture Meadow/Cinder at both zooms, inspect the unresolved oak edge and team-shape cues, and keep player recognition results separate from visual review.
+7. **Iteration evidence, not release gates.** When the living-land or 160 x 160 map is runnable, record exact build/map revisions, both-seat routes, resource use/site control, building space/first contact, and player explanations. The static map audit is layout evidence only; it does not establish playability or human preference.
