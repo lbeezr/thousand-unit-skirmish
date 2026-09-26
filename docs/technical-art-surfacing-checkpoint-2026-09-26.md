@@ -2,15 +2,18 @@
 
 ## Local branch
 
-- Current remote main: `020a707` (`Add tapered tall-cliff endpoint caps`).
-- This task's branch: `codex/sprite-atlas-contract-20260926`, local HEAD `a21cec6`.
+- Current remote main: `86f9b06` (PR #127, Archery Range construction sample).
+- This task's branch, `codex/sprite-atlas-contract-20260926`, is rebased onto
+  that main revision. The rejected push was attempted earlier, at local HEAD
+  `a21cec6`.
 - The branch contains the sprite-atlas schema, validator, HTML preview, and
   scope clarification that keeps cutout sprites separate from the painted
   GLB/material-atlas direction. The focused validator accepts the canonical
   Worker, Infantry, and Archer `sprite-atlas-pack-v1.json` files. The legacy
   `manifest.json` files in those packs use a different shape and are not the
   canonical validator inputs.
-- `git diff --check FETCH_HEAD...HEAD` passed; the working tree was clean.
+- `git diff --check origin/main...HEAD` passed after the rebase; the working
+  tree was clean before this checkpoint update.
 
 ## Painted-material evidence
 
