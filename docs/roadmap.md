@@ -1,6 +1,6 @@
 # Thousand Unit Skirmish roadmap
 
-Updated 26 September 2026 from `main` at `a8bd1e9`; balance evidence includes
+Updated 26 September 2026 from `main` at `30d5dc3`; balance evidence includes
 the QA recheck at `fcc7bcac`, the `4930a81` production-opening run, and the
 [larger-map pilot](map-scale-density.md). This is the team's shared **next-work
 guide**. The [game bible](game-bible.md) defines the product, and the [QA
@@ -44,7 +44,7 @@ These are product outcomes, not main-merge gates. Art, playability, and scale wo
 | **Art direction** | One coherent visual language across world, units, buildings, UI, and audio mood. | Review the next runtime pilot at ordinary/strategic zoom and name the few changes that most improve team/role/objective recognition. | Annotated captures and concrete corrections; review helps the owning lane move, without a standing signoff. |
 | **Infrastructure and online** | Staging follows main reliably; invite rooms and recovery are understandable; large-match budgets are measurable. | Keep merge-triggered staging deploys healthy and determine a safe two-seat WSS/reconnect run when room capacity allows; separately prepare comparable hosted M3 measurements. | Deployment SHA, `/ready`, asset/WSS result, room-safe recovery observation, and measured host/network profile. |
 | **QA and playtest** | Turn the game bible into current-build observations and reproducible bugs. | After Infra opens a safe host window and room, run one complete two-seat Forked Vale path, then the first novice pair; keep source-level regressions specific. Track living-land and map-scale player evidence separately from milestone acceptance. | Staging `a8bd1e9` (`3507c1ba`) passed `/ready`; authenticated GETs returned the manifest and all ten interactive WebPs with hashes matching. No current-build two-seat match or player-comprehension evidence yet. Infra's latest sample at 15:57:26Z was 6.21 / 5.07 / 5.98; the browser/scenario/GPU gate remains closed. See the [QA checkpoint](qa-checkpoint-2026-09-26.md) and [acceptance matrix](qa-vertical-slice.md). |
-| **Deterministic PvE** | A useful solo opponent that obeys fog, commands, and scenario rules. | On an authored map, have the bot complete an opening, contest an objective, and respond to defeat; this can run alongside the invite-match work. | Repeatable seeded match trace plus one solo-play observation; this lane can continue without blocking M1. |
+| **Deterministic PvE** | A useful solo opponent that obeys fog, commands, and scenario rules. | Observe one solo Forked Vale session; confirm the bot opens, contests objectives, and responds after an enemy takes a signal, then tune from play. | Local seeded Forked Vale trace passes signal progression, prerequisite-gated Vale Watch, and retake after ownership loss; live WebSocket smoke for both seat assignments confirms each bot enters its selected objective with 8 units. One solo-play observation remains before claiming the lane checkpoint. |
 | **Model opponent experiment** | Compare an optional model-driven opponent with deterministic PvE on quality, latency, and cost. | Keep the adapter default-off; design a replayable evaluation before any paid provider run. | Reproducible offline comparison proposal. Spending requires its separate user decision. |
 
 ## Candidate experiment
