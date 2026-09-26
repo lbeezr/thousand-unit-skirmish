@@ -232,6 +232,8 @@ const ui = {
   audioEnabled: document.querySelector('#audio-enabled'),
   audioVolume: document.querySelector('#audio-volume'),
   audioVolumeValue: document.querySelector('#audio-volume-value'),
+  audioEffectsLevel: document.querySelector('#audio-effects-level'),
+  audioEffectsLevelValue: document.querySelector('#audio-effects-level-value'),
   audioPreview: document.querySelector('#audio-preview'),
   audioAmbience: document.querySelector('#audio-ambience'),
   audioAmbienceLevel: document.querySelector('#audio-ambience-level'),
@@ -5973,15 +5975,19 @@ function syncAudioControls() {
   ui.audioEnabled.checked = settings.enabled;
   ui.audioVolume.value = String(Math.round(settings.volume * 100));
   ui.audioVolumeValue.value = `${Math.round(settings.volume * 100)}%`;
+  ui.audioEffectsLevel.value = String(Math.round(settings.effectsLevel * 100));
+  ui.audioEffectsLevelValue.value = `${Math.round(settings.effectsLevel * 100)}%`;
   ui.audioAmbience.checked = settings.ambience;
   ui.audioAmbienceLevel.value = String(Math.round(settings.ambienceLevel * 100));
   ui.audioAmbienceLevelValue.value = `${Math.round(settings.ambienceLevel * 100)}%`;
   ui.audioVolume.disabled = !settings.enabled;
+  ui.audioEffectsLevel.disabled = !settings.enabled;
   ui.audioAmbience.disabled = !settings.enabled;
   ui.audioAmbienceLevel.disabled = !settings.enabled || !settings.ambience;
   const status = audio.getStatus();
   ui.audioStatus.dataset.state = status;
-  ui.audioPreview.disabled = status === 'muted' || status === 'unavailable' || status === 'closed';
+  ui.audioPreview.disabled = status === 'muted' || status === 'unavailable' || status === 'closed'
+    || settings.effectsLevel <= 0;
   ui.audioStatus.textContent = {
     running: 'SOUND READY', waiting: 'SOUND STARTS WITH FIRST INPUT', muted: 'SOUND MUTED',
     unavailable: 'AUDIO UNAVAILABLE IN THIS BROWSER', suspended: 'TAP TO RESUME AUDIO',
@@ -5991,6 +5997,7 @@ function syncAudioControls() {
 syncAudioControls();
 ui.audioEnabled.addEventListener('change', () => { audio.setSettings({ enabled: ui.audioEnabled.checked }); syncAudioControls(); });
 ui.audioVolume.addEventListener('input', () => { audio.setSettings({ volume: Number(ui.audioVolume.value) / 100 }); syncAudioControls(); });
+ui.audioEffectsLevel.addEventListener('input', () => { audio.setSettings({ effectsLevel: Number(ui.audioEffectsLevel.value) / 100 }); syncAudioControls(); });
 ui.audioPreview.addEventListener('click', () => { audio.unlock(); audio.play('select'); });
 ui.audioAmbience.addEventListener('change', () => { audio.setSettings({ ambience: ui.audioAmbience.checked }); syncAudioControls(); });
 ui.audioAmbienceLevel.addEventListener('input', () => { audio.setSettings({ ambienceLevel: Number(ui.audioAmbienceLevel.value) / 100 }); syncAudioControls(); });
