@@ -256,6 +256,8 @@ const ui = {
   studioEventMessage: document.querySelector('#studio-event-message'),
   controlGroups: [...document.querySelectorAll('.control-group')],
   audioEnabled: document.querySelector('#audio-enabled'),
+  audioCaptions: document.querySelector('#audio-captions'),
+  audioCaption: document.querySelector('#audio-caption'),
   audioVolume: document.querySelector('#audio-volume'),
   audioVolumeValue: document.querySelector('#audio-volume-value'),
   audioEffectsLevel: document.querySelector('#audio-effects-level'),
@@ -274,6 +276,7 @@ const audio = createGameAudio({
   onCue: (cue) => {
     ui.audioStatus.dataset.lastCue = cue;
     ui.audioStatus.dataset.cueCount = String((Number(ui.audioStatus.dataset.cueCount) || 0) + 1);
+    showAudioCaption(cue);
   },
 });
 const combatAudioGate = new CombatAudioGate();
@@ -426,6 +429,7 @@ let buildPlacementPending = false;
 let pendingBuildOrderToken = null;
 let pendingBuildBaseline = new Set();
 let toastTimer = 0;
+let audioCaptionTimer = 0;
 let fieldOrderFeedbackTimer = 0;
 let nextClientOrderToken = 1;
 let currentOrderToken = null;
@@ -6562,9 +6566,45 @@ window.addEventListener('keydown', (event) => {
   else closeHudPanels({ restoreFocus: true });
 }, true);
 
+const AUDIO_CAPTIONS = Object.freeze({
+  complete: 'UNIT READY',
+  'building-complete': 'BUILDING COMPLETE',
+  'research-complete': 'RESEARCH COMPLETE',
+  'scenario-reward': 'SCENARIO REWARD',
+  objective: 'OBJECTIVE CAPTURED',
+  'objective-lost': 'OBJECTIVE LOST',
+  'resource-empty': 'RESOURCE NODE DEPLETED',
+  'base-lost': 'PRODUCTION BUILDING LOST',
+  'battle-alert': 'BATTLE NEARBY',
+  'selected-alert': 'SELECTED FORCE UNDER ATTACK',
+  'base-alert': 'BASE UNDER ATTACK',
+  victory: 'MATCH VICTORY',
+  defeat: 'MATCH DEFEAT',
+  draw: 'MATCH DRAW',
+});
+
+function clearAudioCaption() {
+  window.clearTimeout(audioCaptionTimer);
+  audioCaptionTimer = 0;
+  ui.audioCaption.hidden = true;
+}
+
+function showAudioCaption(cue) {
+  if (!audio.getSettings().captions) return;
+  const caption = AUDIO_CAPTIONS[cue];
+  if (!caption) return;
+  ui.audioCaption.textContent = `SOUND · ${caption}`;
+  ui.audioCaption.hidden = false;
+  window.clearTimeout(audioCaptionTimer);
+  audioCaptionTimer = window.setTimeout(clearAudioCaption,
+    ['victory', 'defeat', 'draw'].includes(cue) ? 4000 : 2600);
+}
+
 function syncAudioControls() {
   const settings = audio.getSettings();
   ui.audioEnabled.checked = settings.enabled;
+  ui.audioCaptions.checked = settings.captions;
+  if (!settings.captions) clearAudioCaption();
   ui.audioVolume.value = String(Math.round(settings.volume * 100));
   ui.audioVolumeValue.value = `${Math.round(settings.volume * 100)}%`;
   ui.audioEffectsLevel.value = String(Math.round(settings.effectsLevel * 100));
@@ -6593,6 +6633,10 @@ function syncAudioControls() {
 }
 syncAudioControls();
 ui.audioEnabled.addEventListener('change', () => { audio.setSettings({ enabled: ui.audioEnabled.checked }); syncAudioControls(); });
+ui.audioCaptions.addEventListener('change', () => {
+  audio.setSettings({ captions: ui.audioCaptions.checked });
+  syncAudioControls();
+});
 ui.audioVolume.addEventListener('input', () => { audio.setSettings({ volume: Number(ui.audioVolume.value) / 100 }); syncAudioControls(); });
 ui.audioEffectsLevel.addEventListener('input', () => { audio.setSettings({ effectsLevel: Number(ui.audioEffectsLevel.value) / 100 }); syncAudioControls(); });
 ui.audioPreview.addEventListener('click', () => { audio.unlock(); audio.preview(ui.audioPreviewCue.value); });
