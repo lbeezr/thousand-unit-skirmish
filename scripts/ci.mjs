@@ -71,6 +71,7 @@ const scenarios = [
   ['scripts/resource-visual-state-scenario.mjs', 'Resource visual state'],
   ['scripts/harvestable-woodland-scenario.mjs', 'Harvestable woodland gameplay'],
   ['scripts/room-supervisor-scenario.mjs', 'Room supervisor integration'],
+  ['scripts/pve-room-launch-scenario.mjs', 'PvE room launch and rematch integration'],
   ['scripts/railway-release-scenario.mjs', 'Railway release integration'],
 ];
 

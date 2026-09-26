@@ -13,6 +13,10 @@ import {
   toOpponentObservation,
 } from '../src/pve-opponent.mjs';
 import {
+  PVE_MAP_IDS, parseUint32Seed, readPveLaunchOptions, selectPveMapId,
+} from '../src/pve-match.mjs';
+import { createPveRoomUrl } from '../src/pve-entry.mjs';
+import {
   attachModelProposalOpponent,
   MODEL_PROPOSAL_LIMITS,
   MODEL_PROPOSAL_SCHEMA_VERSION,
@@ -22,6 +26,7 @@ import {
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const SERVER_PATH = path.join(ROOT, 'server.mjs');
 const FORKED_VALE_MAP = JSON.parse(readFileSync(path.join(ROOT, 'maps/forked-vale.json'), 'utf8'));
+const WOODLAND_EXPANSE_MAP = JSON.parse(readFileSync(path.join(ROOT, 'maps/woodland-expanse.json'), 'utf8'));
 const ENDPOINT = (port) => `ws://127.0.0.1:${port}/ws`;
 const CONNECT_TIMEOUT_MS = 15_000;
 const COMMAND_TIMEOUT_MS = 8_000;
@@ -29,6 +34,47 @@ const ECONOMY_TIMEOUT_MS = 20_000;
 const TACTICS_TIMEOUT_MS = 15_000;
 const OBJECTIVE_CONTEST_TIMEOUT_MS = 45_000;
 const DECISION_INTERVAL_MS = 1_000;
+const PVE_RUNTIME_TIMEOUT_MS = 20_000;
+
+function verifyPveLaunchRules() {
+  assert.deepEqual(PVE_MAP_IDS, ['forked-vale', 'woodland-expanse'],
+    'the solo pool contains only the two authored small-army scenarios');
+  const authoredMaps = new Map([
+    [FORKED_VALE_MAP.id, FORKED_VALE_MAP],
+    [WOODLAND_EXPANSE_MAP.id, WOODLAND_EXPANSE_MAP],
+  ]);
+  for (const mapId of PVE_MAP_IDS) {
+    const map = authoredMaps.get(mapId);
+    assert.ok(map, `${mapId} is a shipped authored map`);
+    assert.equal(map.startingArmySize, 24, `${mapId} has the lightweight 24-unit scenario roster`);
+    assert.ok(map.resourceNodes.length >= 2, `${mapId} supports the deterministic opening economy`);
+    assert.ok(map.triggers.length > 0, `${mapId} has an authored objective for the opponent to contest`);
+  }
+  assert.equal(selectPveMapId(0), 'forked-vale');
+  assert.equal(selectPveMapId(1), 'woodland-expanse');
+  assert.equal(selectPveMapId(0xffff_ffff), 'woodland-expanse');
+  assert.equal(parseUint32Seed('4294967295'), 0xffff_ffff);
+  assert.throws(() => parseUint32Seed(-1), /unsigned 32-bit/);
+  assert.throws(() => parseUint32Seed('4294967296'), /unsigned 32-bit/);
+  assert.throws(() => selectPveMapId(1, []), /map pool/);
+  assert.equal(readPveLaunchOptions({ RTS_GAME_MODE: 'pvp' }), null);
+  assert.deepEqual(readPveLaunchOptions({
+    RTS_GAME_MODE: 'pve', RTS_PVE_MAP_SEED: '1', RTS_PVE_POLICY_SEED: '20260926',
+  }), {
+    mode: 'pve', mapSeed: 1, policySeed: 20260926, mapId: 'woodland-expanse',
+  });
+  assert.throws(() => readPveLaunchOptions({ RTS_GAME_MODE: 'pve', RTS_PVE_MAP_SEED: '1' }),
+    /RTS_PVE_POLICY_SEED/);
+  const roomUrl = createPveRoomUrl('https://game.example/?mode=pvp#overview', {
+    roomId: 'a'.repeat(32), mode: 'pve', mapSeed: '1', policySeed: '20260926',
+  });
+  assert.equal(roomUrl.searchParams.get('mode'), 'pve');
+  assert.equal(roomUrl.searchParams.get('mapSeed'), '1');
+  assert.equal(roomUrl.searchParams.get('policySeed'), '20260926');
+  assert.equal(roomUrl.searchParams.get('room'), 'a'.repeat(32));
+  assert.equal(roomUrl.hash, '', 'the feedback URL does not preserve a stale fragment');
+  process.stdout.write('PvE launch rules passed: curated maps and repeatable uint32 map/policy seeds.\n');
+}
 
 function setVisibility(cells, columns, rows) {
   const packed = Buffer.alloc(Math.ceil(columns * rows / 4));
@@ -1015,6 +1061,7 @@ async function runSeatSmoke(botTeam) {
       ...process.env,
       PORT: String(port),
       RTS_HOST: '127.0.0.1',
+      RTS_GAME_MODE: 'pvp',
       RTS_MAP: 'maps/forked-vale.json',
     },
     stdio: ['ignore', 'pipe', 'pipe'],
@@ -1213,6 +1260,107 @@ async function runSeatSmoke(botTeam) {
   }
 }
 
+async function readHealth(port) {
+  const response = await fetch(`http://127.0.0.1:${port}/health`, { cache: 'no-store' });
+  if (!response.ok) throw new Error(`PvE health endpoint returned ${response.status}.`);
+  return response.json();
+}
+
+async function waitForCondition(predicate, description, timeoutMs = PVE_RUNTIME_TIMEOUT_MS) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const result = await predicate();
+    if (result) return result;
+    await delay(100);
+  }
+  throw new Error(`Timed out waiting for ${description}.`);
+}
+
+async function runRuntimePveSmoke(mapSeed = 1) {
+  const port = await findFreePort();
+  const policySeed = 20260926;
+  const selectedMapId = selectPveMapId(mapSeed);
+  const server = spawn(process.execPath, [SERVER_PATH], {
+    cwd: ROOT,
+    env: {
+      ...process.env,
+      PORT: String(port),
+      RTS_HOST: '127.0.0.1',
+      RTS_GAME_MODE: 'pve',
+      RTS_PVE_MAP_SEED: String(mapSeed),
+      RTS_PVE_POLICY_SEED: String(policySeed),
+      RTS_MATCH_STATE_PATH: '',
+    },
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  let serverOutput = '';
+  server.stdout.on('data', (chunk) => { serverOutput = `${serverOutput}${chunk}`.slice(-4_000); });
+  server.stderr.on('data', (chunk) => { serverOutput = `${serverOutput}${chunk}`.slice(-4_000); });
+
+  const clients = [];
+  try {
+    const unassigned = await waitForCondition(async () => {
+      try { return await readHealth(port); } catch { return null; }
+    }, 'PvE worker startup');
+    assert.deepEqual(unassigned.pve, {
+      enabled: true, active: false,
+      mapSeed, policySeed, mapId: selectedMapId, commandsIssued: 0, error: null,
+    }, 'the selected map and seeds are visible before a human seat is assigned');
+    assert.equal(unassigned.armySize, 24, 'the selected authored map sets its playable opening roster');
+
+    const human = await openClient(port, 'pve-human');
+    clients.push(human);
+    assert.equal(human.welcome.player.team, 0, 'the human receives the host seat');
+    assert.equal(human.welcome.map.id, selectedMapId, 'the map seed selects an authored pool map');
+    const spectator = await openClient(port, 'pve-spectator');
+    clients.push(spectator);
+    assert.equal(spectator.welcome.player.team, null, 'the virtual opponent reserves team 1 from humans');
+    assert.equal(human.feed.latest.connected, 2, 'the virtual opponent fills the second room seat');
+
+    const initial = spectator.welcome.state;
+    const teamOneSpawn = spectator.welcome.map.spawnPoints.find((spawn) => spawn.team === 1);
+    assert.ok(teamOneSpawn, 'the selected map defines the reserved opponent spawn');
+    const openingHealth = await waitForCondition(async () => {
+      const health = await readHealth(port);
+      return health.pve.active && health.pve.commandsIssued >= 3 ? health : null;
+    }, 'server-owned opponent opening orders');
+    const acted = await waitForState(spectator, (state) => (
+      state.units.some((unit) => unit[1] === 1 && unit[5] === 'worker'
+        && ['gathering', 'returning'].includes(unit[9]))
+      && state.units.some((unit) => {
+        if (unit[1] !== 1 || unit[5] === 'worker' || unit[4] <= 0) return false;
+        return Math.hypot(unit[2] - teamOneSpawn.x, unit[3] - teamOneSpawn.z) > 2;
+      })
+    ), 'server-owned gathering and tactical movement', PVE_RUNTIME_TIMEOUT_MS);
+    assert.ok(acted.tick > initial.tick);
+    assert.equal(openingHealth.pve.error, null);
+
+    const resetTick = spectator.feed.latest.tick;
+    const resetNotice = waitForMessage(human,
+      (message) => message.type === 'notice' && message.message === 'BATTLEFIELD RESET',
+      'PvE rematch reset');
+    human.socket.send(JSON.stringify({ type: 'reset' }));
+    await resetNotice;
+    const rematchHealth = await waitForCondition(async () => {
+      const health = await readHealth(port);
+      return health.pve.active && health.pve.commandsIssued >= 3 ? health : null;
+    }, 'the deterministic opponent to restart after rematch');
+    assert.equal(rematchHealth.pve.mapSeed, mapSeed);
+    assert.equal(rematchHealth.pve.policySeed, policySeed);
+    assert.equal(rematchHealth.map, selectedMapId, 'rematch keeps its selected map');
+    await waitForState(spectator, (state) => state.tick > resetTick
+      && state.units.some((unit) => unit[1] === 1 && unit[5] === 'worker'
+        && ['gathering', 'returning'].includes(unit[9])),
+    'PvE rematch economy orders', PVE_RUNTIME_TIMEOUT_MS);
+    process.stdout.write(`PvE runtime passed (${selectedMapId}): seeded map, reserved AI seat, gathering, movement, and repeatable rematch.\n`);
+  } catch (error) {
+    throw new Error(`Server-owned PvE runtime smoke failed: ${error.message}\n${serverOutput}`);
+  } finally {
+    for (const client of clients) await closeClient(client);
+    await stopServer(server);
+  }
+}
+
 async function runProposalCommandSmoke() {
   const port = await findFreePort();
   const server = spawn(process.execPath, [SERVER_PATH], {
@@ -1221,6 +1369,7 @@ async function runProposalCommandSmoke() {
       ...process.env,
       PORT: String(port),
       RTS_HOST: '127.0.0.1',
+      RTS_GAME_MODE: 'pvp',
       RTS_MAP: 'maps/forked-vale.json',
     },
     stdio: ['ignore', 'pipe', 'pipe'],
@@ -1317,7 +1466,12 @@ async function runProposalCommandSmoke() {
   }
 }
 
-if (process.argv.includes('--policy-only')) {
+verifyPveLaunchRules();
+
+if (process.argv.includes('--runtime-only')) {
+  await runRuntimePveSmoke(0);
+  await runRuntimePveSmoke(1);
+} else if (process.argv.includes('--policy-only')) {
   verifyPureContract();
   verifyIdleWorkerEconomyLoop();
   verifyObjectiveContestPolicy();
@@ -1340,6 +1494,8 @@ if (process.argv.includes('--policy-only')) {
   verifyProposalSchema();
   await verifyProposalController();
   await verifyLifecycleRecovery();
+  await runRuntimePveSmoke(0);
+  await runRuntimePveSmoke(1);
   await runSeatSmoke(0);
   await runSeatSmoke(1);
   await runProposalCommandSmoke();

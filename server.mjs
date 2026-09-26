@@ -14,6 +14,8 @@ import {
   BASE_ELEVATION_PATH_COST, canTraverseElevation, elevationPathCost, hasElevation,
 } from './src/elevation.mjs';
 import { orderUnitsForFormation } from './src/formation-assignment.mjs';
+import { createDeterministicPolicy, toOpponentObservation } from './src/pve-opponent.mjs';
+import { readPveLaunchOptions } from './src/pve-match.mjs';
 import { townCenterSpawnPosition } from './src/town-center-spawn.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -72,6 +74,8 @@ const RESEARCH_RULES = Object.freeze({
 });
 const SHARED_MOVE_PATHS = process.env.RTS_SHARED_MOVE_PATHS !== '0';
 const SERVER_INSTANCE_ID = randomBytes(16).toString('base64url');
+const pveLaunchOptions = readPveLaunchOptions();
+const PVE_DECISION_INTERVAL_MS = 1_000;
 let matchId = randomBytes(16).toString('base64url');
 let recoveredFromCheckpoint = false;
 let checkpointSequence = 0;
@@ -591,7 +595,11 @@ const MIME_TYPES = {
   '.webp': 'image/webp',
 };
 
-let mapDefinition = mapCatalog.get(defaultMapId);
+const configuredMatchMapId = pveLaunchOptions?.mapId ?? defaultMapId;
+let mapDefinition = mapCatalog.get(configuredMatchMapId);
+if (!mapDefinition) {
+  throw new Error(`The selected PvE map "${pveLaunchOptions?.mapId}" is not shipped with this server.`);
+}
 let MAP_WIDTH = 0;
 let MAP_HEIGHT = 0;
 let MAP_HALF_X = 0;
@@ -798,6 +806,12 @@ let inboundControlPongsReceived = 0;
 let inboundControlRateLimitDisconnects = 0;
 let commandQueueLimitRejections = 0;
 const sessions = new Map();
+let pveOpponentActive = false;
+let pvePolicy = pveLaunchOptions ? createDeterministicPolicy(pveLaunchOptions.policySeed) : null;
+let pveCommandsIssued = 0;
+let pveOpponentError = null;
+let pveDecisionInFlight = false;
+const pveOpponentPlayer = Object.freeze({ team: 1, sendJson() {} });
 let currentArmySize = DEFAULT_STARTING_ARMY_SIZE;
 let nextPlayerId = 1;
 let tickNumber = 0;
@@ -1516,6 +1530,13 @@ function commandUnits(command) {
   return resolved;
 }
 
+function resetPvePolicy() {
+  if (!pveLaunchOptions) return;
+  pvePolicy = createDeterministicPolicy(pveLaunchOptions.policySeed);
+  pveCommandsIssued = 0;
+  pveOpponentError = null;
+}
+
 function resetArmy(count = currentArmySize) {
   cancelMovePlanningJobs('MATCH RESET');
   matchWinner = -1;
@@ -1547,6 +1568,7 @@ function resetArmy(count = currentArmySize) {
     if (state) state.stock = node.stock;
   }
   units.length = 0;
+  resetPvePolicy();
   const firstTeamCount = currentArmySize / 2;
   const reservedSpawnCells = [new Set(), new Set()];
   const baseCells = spawnByTeam.map((spawn) => worldToCell(spawn.x, spawn.z));
@@ -2191,7 +2213,13 @@ function evaluateScenarioTriggers(deltaSeconds) {
 function connectedCount() {
   let count = 0;
   for (const peer of peers) if (peer.team !== null && !peer.closed) count++;
-  return count;
+  return count + (pveOpponentActive ? 1 : 0);
+}
+
+function activatePveOpponent() {
+  if (!pveLaunchOptions || pveOpponentActive) return;
+  pveOpponentActive = true;
+  resetPvePolicy();
 }
 
 function roomPayload(viewTeam = null, includeWaypointCounts = true) {
@@ -2695,6 +2723,9 @@ function validateMatchCheckpoint(snapshot) {
 
 function restoreMatchCheckpoint(snapshot) {
   const { definition, state, explored } = validateMatchCheckpoint(snapshot);
+  if (pveLaunchOptions && definition.id !== pveLaunchOptions.mapId) {
+    throw new Error('PvE checkpoint map does not match its launch seed.');
+  }
   if (shippedMapIds.has(definition.id)) {
     const shippedDefinition = mapCatalog.get(definition.id);
     assertSnapshot(matchMapHash(shippedDefinition) === snapshot.mapHash, 'shipped map changed since checkpoint');
@@ -2982,7 +3013,7 @@ function initializeCleanMatch() {
   tickNumber = 0;
   navigationRevision = 0;
   nextMoveOrderId = 1;
-  activateMap(mapCatalog.get(defaultMapId));
+  activateMap(mapCatalog.get(configuredMatchMapId));
   resetArmy(mapDefinition.startingArmySize ?? DEFAULT_STARTING_ARMY_SIZE);
 }
 
@@ -5025,6 +5056,10 @@ function advanceQueuedWaypoints() {
 
 function selectMap(player, mapId) {
   if (player.team !== 0) return;
+  if (pveLaunchOptions) {
+    sendOrderNotice(player, 0, 'PLAY VS AI MAP IS LOCKED FOR THIS MATCH');
+    return;
+  }
   const nextMap = mapCatalog.get(String(mapId));
   if (!nextMap || nextMap.id === mapDefinition.id) return;
   activateMap(nextMap);
@@ -5052,6 +5087,10 @@ async function persistCustomMap(definition) {
 
 async function publishMap(player, rawDefinition, persist = false) {
   if (player.team !== 0 || !rawDefinition || typeof rawDefinition !== 'object') return;
+  if (pveLaunchOptions) {
+    player.sendJson({ type: 'mapRejected', message: 'Play vs AI uses the map selected by its launch seed.' });
+    return;
+  }
   try {
     const definition = validateMapDefinition(rawDefinition, 'custom map');
     if (shippedMapIds.has(definition.id)
@@ -5102,6 +5141,10 @@ async function handleCommand(player, command) {
   if (command.type === 'selectMap' && player.team === 0) selectMap(player, command.mapId);
   if (command.type === 'publishMap') await publishMap(player, command.map, command.persist === true);
   if (command.type === 'selectArmySize' && player.team === 0) {
+    if (pveLaunchOptions) {
+      sendOrderNotice(player, command, 'PLAY VS AI ARMY SIZE IS LOCKED FOR THIS MATCH');
+      return;
+    }
     const allowed = [250, 500, 1000, 2000];
     const count = Number(command.count);
     if (!allowed.includes(count)) return;
@@ -5117,6 +5160,26 @@ async function handleCommand(player, command) {
     resetArmy(currentArmySize);
     broadcast({ type: 'notice', message: 'BATTLEFIELD RESET' });
     broadcastState();
+  }
+}
+
+async function drivePveOpponent() {
+  if (!pveLaunchOptions || !pveOpponentActive || !pvePolicy || pveOpponentError
+    || pveDecisionInFlight || matchWinner >= 0) return;
+  pveDecisionInFlight = true;
+  try {
+    const observation = toOpponentObservation(roomPayload(1), 1, mapDefinition);
+    const commands = pvePolicy.next(observation);
+    for (const command of commands) {
+      if (matchWinner >= 0) break;
+      await handleCommand(pveOpponentPlayer, command);
+      pveCommandsIssued++;
+    }
+  } catch (error) {
+    pveOpponentError = String(error?.message || error).slice(0, 240);
+    console.error('Deterministic PvE opponent stopped:', pveOpponentError);
+  } finally {
+    pveDecisionInFlight = false;
   }
 }
 
@@ -6060,6 +6123,7 @@ function createPeer(socket, resumeToken, compressionEnabled = false) {
       const taken = new Set([...sessions.values()]
         .filter((entry) => (entry.peer && !entry.peer.closed) || (!entry.peer && entry.expiresAt > now))
         .map((entry) => entry.team));
+      if (pveLaunchOptions) taken.add(1);
       const team = [0, 1].find((candidate) => !taken.has(candidate)) ?? null;
       if (team !== null) {
         const token = randomBytes(32).toString('base64url');
@@ -6081,6 +6145,7 @@ function createPeer(socket, resumeToken, compressionEnabled = false) {
     peer.id = `spectator-${nextPlayerId++}`;
   }
   peers.add(peer);
+  if (peer.team === 0) activatePveOpponent();
   return peer;
 }
 
@@ -6140,6 +6205,13 @@ const server = createServer(async (request, response) => {
       ok: true, tickRate: TICK_RATE, connected: connectedCount(), armySize: currentArmySize,
       matchId,
       map: mapDefinition.id, width: MAP_WIDTH, height: MAP_HEIGHT, maps: mapCatalog.size,
+      pve: {
+        enabled: Boolean(pveLaunchOptions), active: pveOpponentActive,
+        mapSeed: pveLaunchOptions?.mapSeed ?? null,
+        policySeed: pveLaunchOptions?.policySeed ?? null,
+        mapId: pveLaunchOptions?.mapId ?? null,
+        commandsIssued: pveCommandsIssued, error: pveOpponentError,
+      },
       checkpoint: {
         enabled: Boolean(MATCH_STATE_PATH), sequence: checkpointSequence,
         intervalMs: MATCH_CHECKPOINT_INTERVAL_TICKS * (1000 / TICK_RATE),
@@ -6209,7 +6281,7 @@ const server = createServer(async (request, response) => {
     response.end('Forbidden');
     return;
   }
-  const publicClientAsset = ['index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs', 'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs', 'src/unit-visual-state.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs'].includes(relative);
+  const publicClientAsset = ['index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/pve-entry.mjs', 'src/pve-match.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs', 'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs', 'src/unit-visual-state.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs'].includes(relative);
   const publicUiAsset = [
     'assets/ui/preview.html', 'assets/ui/cursors/manifest.json',
     'assets/ui/cursors/select.png', 'assets/ui/cursors/select.svg',
@@ -6334,6 +6406,10 @@ const heartbeatTimer = setInterval(() => {
 heartbeatTimer.unref();
 
 await initializeMatchFromCheckpoint();
+const pveOpponentTimer = pveLaunchOptions
+  ? setInterval(() => { void drivePveOpponent(); }, PVE_DECISION_INTERVAL_MS)
+  : null;
+pveOpponentTimer?.unref();
 const simulationTimer = setInterval(() => {
   const tickStartedAt = performance.now();
   const cpuStartedAt = tickDiagnosticSamples ? process.cpuUsage() : null;
@@ -6386,6 +6462,7 @@ function shutdown(signal) {
   }
   shuttingDown = true;
   clearInterval(heartbeatTimer);
+  if (pveOpponentTimer) clearInterval(pveOpponentTimer);
   clearInterval(simulationTimer);
   cancelMovePlanningJobs();
   const finalCheckpoint = queueMatchCheckpoint();
@@ -6426,6 +6503,7 @@ server.listen(PORT, HOST, () => {
   const address = server.address();
   console.log(`RTS prototype server listening at http://${HOST}:${address.port} · map ${mapDefinition.id}`);
   if (process.env.RTS_MANAGED_WORKER === '1' && process.connected) {
-    process.send({ type: 'ready', port: address.port });
+    process.send({ type: 'ready', port: address.port,
+      ...(pveLaunchOptions ? { roomMetadata: { mapId: mapDefinition.id } } : {}) });
   }
 });
