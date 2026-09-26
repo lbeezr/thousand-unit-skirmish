@@ -1,0 +1,56 @@
+{
+  "schema": "thousand-unit-skirmish.sprite-grid.v1",
+  "asset": "town-center",
+  "status": "source-and-runtime-frames-ready; renderer-integration-pending",
+  "assetRole": "static-spawn-landmark",
+  "sourceView": {
+    "camera": "fixed elevated orthographic three-quarter",
+    "azimuthDegrees": 45,
+    "elevationDegrees": 46,
+    "viewCount": 1,
+    "cameraRotationSupported": false
+  },
+  "worldGrid": {
+    "cellUnits": 1,
+    "gameplayFootprintCells": null,
+    "visualBaseCells": [4, 4],
+    "anchor": "center of visible ground-contact base",
+    "occupancy": "The current Town Center is a decorative spawn landmark and has no gameplay footprint."
+  },
+  "spriteFrame": {
+    "gridCells": [5, 5],
+    "pixels": [640, 640],
+    "worldUnits": [5, 5],
+    "pixelsPerWorldUnit": 128,
+    "anchorNormalizedFromBottomLeft": [0.5, 0.4125],
+    "anchorPixelFromTopLeft": [320, 376],
+    "anchorIsProjectedGroundCenter": true,
+    "fitPixels": 560,
+    "bottomMarginPixels": 4,
+    "renderBoundsWorldUnits": [5, 5]
+  },
+  "stateMapping": {
+    "currentRuntimeState": "complete",
+    "authoredStates": ["complete"],
+    "lifecycle": "The current map-spawn prop has no construction or health lifecycle."
+  },
+  "variants": {
+    "teams": ["azure", "ember"],
+    "season": ["neutral"],
+    "lighting": ["neutral-day"],
+    "futureDimensions": ["view", "season", "lighting", "wear", "team-trim"]
+  },
+  "runtimeFrames": {
+    "pathPattern": "runtime/town-center-{state}-{team}.webp",
+    "states": ["complete"],
+    "teams": ["azure", "ember"],
+    "textureColorSpace": "srgb",
+    "alphaMode": "straight"
+  },
+  "knownLimits": [
+    "One 45-degree azimuth is authored; other gallery angles must not pretend to rotate this image.",
+    "Alpha frames are camera-authored cutouts without per-pixel scene depth; depth/occlusion integration is pending.",
+    "No construction or damage frames are included because this object is currently a static map landmark.",
+    "Season and lighting variants are not authored in this pack."
+  ]
+}
