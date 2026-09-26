@@ -1,0 +1,49 @@
+# Thousand Unit Skirmish roadmap
+
+Updated 26 September 2026 from `main` at `3458fac`. This is the team's shared **next-work guide**. The [game bible](game-bible.md) defines the product, and the [QA plan](qa-vertical-slice.md) records acceptance evidence. Recheck live code and task history before claiming a checkpoint complete; this snapshot will age as agents merge.
+
+## How to use it
+
+Each owner has a long-running goal and chooses the next independently useful slice in its lane. Start with the first unmet checkpoint below, or a better slice that advances the same player outcome. Make a scoped PR, run checks proportionate to its change, merge it yourself when useful under repository rules and the user's standing staging authorization, and fix forward if staging breaks. A PR or a local script is progress, but claim a milestone only with the observation listed for it.
+
+A shared interface change calls for direct coordination with the affected owner. A blocked host, asset, or browser test should not idle unrelated source work. QA records evidence and defects; Art, Infrastructure, and the producer help on their own scopes. None is a default approval queue for another owner's ordinary PR. There is no limit on parallel work or required number of PRs. Specific user-held publication, disclosure, production, and paid-provider decisions remain in force for their named scopes.
+
+When a checkpoint changes materially, the owner can update its row and link the PR, build, capture, or result. This update is useful context, not a prerequisite for merging code. If a row has become stale, improve it rather than following it mechanically. Record evidence with commit or deployed build, environment, result, and link; use **implemented**, **merged**, **observed on staging**, and **demonstrated by players** precisely.
+
+## Milestones
+
+These are product outcomes, not main-merge gates. Art, playability, and scale work can proceed in parallel; the first external test needs a playable match, not every polish item.
+
+| Milestone | Observable checkpoint | Evidence now / next proof |
+| --- | --- | --- |
+| **M1 · Complete invite match** | Two people on one deployed build can join Forked Vale, gather, build, produce, choose routes, contest signals, see the same winner, reconnect, and rematch. A host can save and reload the scenario through Map Studio. | The mechanics and scripted pieces are merged; a current-build, unassisted two-seat match is still needed. Use the [QA match protocol](qa-vertical-slice.md#lightweight-external-playtest-protocol) and record both seats, build SHA, decisions, failures, and result. |
+| **M2 · Readable authored battlefield** | At ordinary and strategic zoom, players distinguish teams, Worker/Infantry/Archer roles, resources, objective, construction and depletion without losing command clarity. The authored world, cursor/UI, and feedback feel coherent in the running game. | Art samples and renderer contracts exist; integrated runtime appearance and player comprehension need proof. Capture representative Meadow/Cinder scenes with both teams, then ask fresh players what they can identify. |
+| **M3 · Dependable large match** | A 2,000-total-unit match on intended hosting hardware meets measured simulation, browser, and network budgets while both seats can issue orders and recover from a disconnect. | Local measurements are mixed and a short hosted protocol run exists. Agree a host/network budget, then collect one comparable hosted two-seat run with tick, frame, egress, order acknowledgement, and recovery evidence. See the [performance baseline](performance-reliability-baseline-2026-09-25.md). |
+| **M4 · External playtest learns something** | Two novice pairs can finish a match, explain one consequential decision and another option, and identify their main confusion without developer coaching. | Pending. Run the [QA protocol](qa-vertical-slice.md#lightweight-external-playtest-protocol), record exact observations, and turn the largest repeated confusion into the next lane checkpoint. |
+
+## Parallel work lanes
+
+“Next checkpoint” is the default next build or measurement, not an assignment to wait for another role. After it lands, choose the next gap in that lane against M1–M4.
+
+| Lane and owner | Long-running goal | Next demonstrable checkpoint | Proof to record |
+| --- | --- | --- | --- |
+| **Gameplay systems** | Predictable authoritative orders, economy, combat, construction, and match recovery. | Make the custom-map Town Center spawn route work regardless of base orientation; then follow the highest-impact failed command or match-flow observation. | Mirrored custom-map scenario on both seats, relevant regression, and a current-build result when practical. |
+| **Balance** | Both seats have fair openings and more than one viable response. | Compare mirrored Forked Vale economy/combat on current main; gather first real match timings before tuning costs. | Seed/map/seat-swapped results and human first gather/build/contest and win times; distinguish fixture parity from player balance. |
+| **Maps and scenarios** | One authored scenario offers visible choices and a complete contest; Map Studio makes it reproducible. | Keep Forked Vale's brief, routes, resources, signals, victory, and reset coherent in a full match; fix the first actual authoring or playtest confusion. | Editor round trip, both-seat scenario result, and players' stated route/strategy choices. |
+| **Interface and controls** | New players can discover, issue, and understand commands at normal desktop sizes. | Observe first-glance select/move, edge scroll/fullscreen, objective, and result/rematch comprehension; fix the largest miss. | Short two-seat screen capture or timed novice observation, including window size and build. |
+| **Audio and feedback** | Important orders and events have distinct, restrained, accessible feedback. | Check that critical captions still appear when audio is muted, then test whether players recognize key command/result cues. | Focused mute regression plus an in-game observation; more cue variants should answer a specific missed event. |
+| **Renderer and animation** | Efficient, fog-safe visual state mapping from authoritative game state to a readable battlefield. | Put one representative resource/construction or unit art pilot into the running game and compare ordinary and strategic zoom before expanding the matrix. | Exact asset/renderer revision, fetched runtime files, paired captures, and the state transition observed in play. Full 2,000-unit evidence belongs to M3. |
+| **Environment art** | Original terrain, props, resources, and landmarks with legible depletion and construction states. | Refine the oak/berry and construction pilot from play-zoom feedback; make a versioned source/runtime handoff with manifest and provenance when its specific publication hold is cleared. | Small named comparison at game zoom, source/runtime hashes, and renderer handoff; local previews do not claim runtime integration. |
+| **Character and building art** | Recognizable unit roles, team identity, and construction stages at game zoom. | Improve Worker/Barracks silhouettes from the six-frame preview, then hand a small usable sample to the renderer before broadening the pack. | Source/GLB manifest and named ordinary-zoom comparison; runtime capture once integrated. |
+| **Art direction** | One coherent visual language across world, units, buildings, UI, and audio mood. | Review the next runtime pilot at ordinary/strategic zoom and name the few changes that most improve team/role/objective recognition. | Annotated captures and concrete corrections; review helps the owning lane move, without a standing signoff. |
+| **Infrastructure and online** | Staging follows main reliably; invite rooms and recovery are understandable; large-match budgets are measurable. | Keep merge-triggered staging deploys healthy and determine a safe two-seat WSS/reconnect run when room capacity allows; separately prepare comparable hosted M3 measurements. | Deployment SHA, `/ready`, asset/WSS result, room-safe recovery observation, and measured host/network profile. |
+| **QA and playtest** | Turn the game bible into current-build observations and reproducible bugs. | Run one complete two-seat Forked Vale path when a safe room is available, then the first novice pair; meanwhile keep source-level regressions specific. | Both seats, build, steps, expected/actual, screenshots or logs, and player words. Update the [acceptance matrix](qa-vertical-slice.md) without becoming a routine merge gate. |
+| **Deterministic PvE** | A useful solo opponent that obeys fog, commands, and scenario rules. | On an authored map, have the bot complete an opening, contest an objective, and respond to defeat; this can run alongside the invite-match work. | Repeatable seeded match trace plus one solo-play observation; this lane can continue without blocking M1. |
+| **Model opponent experiment** | Compare an optional model-driven opponent with deterministic PvE on quality, latency, and cost. | Keep the adapter default-off; design a replayable evaluation before any paid provider run. | Reproducible offline comparison proposal. Spending requires its separate user decision. |
+
+## Choosing the next slice
+
+1. Prefer the first missing player observation in the milestone your lane serves. If the environment cannot support that observation today, ship a source or local pilot that makes it easier.
+2. Keep dependencies narrow: agree on a manifest, schema, or API directly with the affected owner and continue independent work.
+3. If a checkpoint fails, record one reproducible failure and let the owning lane fix forward. Keep the other lanes moving.
+4. Promote production only as a separate release decision. Normal author merges to `main` may trigger staging and are expected.
