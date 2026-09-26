@@ -4,10 +4,11 @@ import {
   createEnvironmentSprite, createEnvironmentSpriteInstances,
   createGroundSurfaces, environmentTheme, setEnvironmentSpriteInstance,
   TERRAIN_MATERIALS, updateConstructionGroundInstances,
+  RESOURCE_STATE_ASSETS_AVAILABLE, RESOURCE_STATE_ASSET_STATUS, resourceStateAssetsReady,
 } from './environment-art.mjs';
 import { unitActionPoseAllowed, unitCargoVisualState } from './unit-visual-state.mjs';
 import {
-  RESOURCE_VISUAL_STAGES, resourceVisualStage, resourceVisualTransitionStages,
+  RESOURCE_VISUAL_STAGES, resourceVisualScale, resourceVisualStage, resourceVisualTransitionStages,
 } from './resource-visual-state.mjs';
 import {
   buildingFinishedDetailsVisible, buildingProductionCueState, constructionGroundStage,
@@ -1407,11 +1408,12 @@ function setWoodNodeTreeStage(id, stage) {
   woodTreeStageCounts.set(stage, (woodTreeStageCounts.get(stage) || 0) + 1);
   const changedStages = resourceVisualTransitionStages(previous, stage);
   for (const slot of slots) {
-    for (const meshStage of changedStages) {
-      const mesh = woodTreeMeshes.get(meshStage);
-      if (!mesh) continue;
-      setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z,
-        meshStage === stage ? slot.scale : 0);
+  for (const meshStage of changedStages) {
+    const mesh = woodTreeMeshes.get(meshStage);
+    if (!mesh) continue;
+    setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z,
+      meshStage === stage
+        ? slot.scale * (RESOURCE_STATE_ASSETS_AVAILABLE ? 1 : resourceVisualScale(stage)) : 0);
     }
   }
   for (const meshStage of changedStages) {
@@ -1443,7 +1445,8 @@ function buildWoodNodeInstances(nodes = []) {
   for (const stage of RESOURCE_VISUAL_STAGES) {
     const stagePositions = positions.map((position, index) => ({
       ...position,
-      scale: woodTreeNodeStages.get(woodNodes[index].id) === stage ? position.scale : 0,
+      scale: woodTreeNodeStages.get(woodNodes[index].id) === stage
+        ? position.scale * (RESOURCE_STATE_ASSETS_AVAILABLE ? 1 : resourceVisualScale(stage)) : 0,
     }));
     const trees = createEnvironmentSpriteInstances(`oak-${stage}`, 4.1, 3.75, stagePositions);
     if (!trees) continue;
@@ -1465,7 +1468,8 @@ function setBerryNodeStage(id, stage) {
     const mesh = berrySpriteMeshes.get(meshStage);
     if (!mesh) continue;
     setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z,
-      meshStage === stage ? slot.scale : 0);
+      meshStage === stage
+        ? slot.scale * (RESOURCE_STATE_ASSETS_AVAILABLE ? 1 : resourceVisualScale(stage)) : 0);
     mesh.instanceMatrix.needsUpdate = true;
     mesh.visible = (berryStageCounts.get(meshStage) || 0) > 0;
   }
@@ -1490,7 +1494,8 @@ function buildBerryNodeInstances(nodes = []) {
   for (const stage of RESOURCE_VISUAL_STAGES) {
     const stagePositions = positions.map((position, index) => ({
       ...position,
-      scale: berryNodeStages.get(berryNodes[index].id) === stage ? position.scale : 0,
+      scale: berryNodeStages.get(berryNodes[index].id) === stage
+        ? position.scale * (RESOURCE_STATE_ASSETS_AVAILABLE ? 1 : resourceVisualScale(stage)) : 0,
     }));
     const sprites = createEnvironmentSpriteInstances(`berries-${stage}`, 2.55, 1.56, stagePositions);
     if (!sprites) continue;
@@ -1499,6 +1504,40 @@ function buildBerryNodeInstances(nodes = []) {
     berrySpriteMeshes.set(stage, sprites);
   }
 }
+
+function refreshResourceStateFallbackTransforms() {
+  for (const [id, slots] of woodTreeNodeSlots) {
+    const stage = woodTreeNodeStages.get(id);
+    for (const meshStage of RESOURCE_VISUAL_STAGES) {
+      const mesh = woodTreeMeshes.get(meshStage);
+      if (!mesh) continue;
+      for (const slot of slots) {
+        setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z,
+          meshStage === stage ? slot.scale : 0);
+      }
+    }
+  }
+  for (const [id, slot] of berryNodeSlots) {
+    const stage = berryNodeStages.get(id);
+    for (const meshStage of RESOURCE_VISUAL_STAGES) {
+      const mesh = berrySpriteMeshes.get(meshStage);
+      if (!mesh) continue;
+      setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z,
+        meshStage === stage ? slot.scale : 0);
+    }
+  }
+  for (const mesh of [...woodTreeMeshes.values(), ...berrySpriteMeshes.values()]) {
+    mesh.instanceMatrix.needsUpdate = true;
+  }
+}
+
+resourceStateAssetsReady.then((status) => {
+  if (status.ready) refreshResourceStateFallbackTransforms();
+  if (roomPageUrl.searchParams.get('rendererCapture') === 'environment-state') {
+    window.__rtsEnvironmentAssetStatus = status;
+    window.__rtsEnvironmentCaptureCommand = (command) => sendCommand(command);
+  }
+});
 
 function buildFogOverlay(definition) {
   const pixels = new Uint8Array(MAP_WIDTH * MAP_HEIGHT * 4);
@@ -3520,11 +3559,47 @@ function applyState(state, initial = false) {
   if (Number.isInteger(state.connected)) updateRoomUI(state.connected);
   if (Number.isFinite(state.rosterSize)) ui.total.textContent = state.rosterSize.toLocaleString();
   updateEconomyUI(state, audioReset);
+  updateEnvironmentStateCaptureSnapshot(state);
   revalidateControlGroups();
   if (controlGroupsChanged) updateControlGroupUI();
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
+}
+
+function updateEnvironmentStateCaptureSnapshot(state) {
+  if (roomPageUrl.searchParams.get('rendererCapture') !== 'environment-state') return;
+  const resourceNodes = (Array.isArray(state.resourceNodes) ? state.resourceNodes : []).map((node) => {
+    const definitionNode = mapDefinition?.resourceNodes?.find((row) => row.id === node.id);
+    const visual = resourceNodeVisuals.get(node.id);
+    const startingStock = definitionNode?.stock ?? visual?.startingStock ?? null;
+    return {
+      id: node.id, type: node.type, stock: node.stock, startingStock,
+      stage: resourceVisualStage(node.stock, startingStock),
+      x: definitionNode?.x ?? visual?.x ?? null, z: definitionNode?.z ?? visual?.z ?? null,
+    };
+  });
+  const buildings = (Array.isArray(state.buildings) ? state.buildings : []).map((building) => ({
+    id: building.id, team: building.team, type: building.type,
+    x: building.x, z: building.z, progress: building.progress, complete: building.complete,
+    groundStage: constructionGroundStage(building.progress, building.complete),
+  }));
+  const workerRows = (Array.isArray(state.units) ? state.units : []).filter((row) => row?.[5] === 'worker')
+    .map((row) => ({ id: row[0], team: row[1], x: row[2], z: row[3], task: row[9] || 'idle' }));
+  window.__rtsEnvironmentStateSnapshot = {
+    mapId: state.mapId,
+    team: localTeam,
+    fogOfWar: state.fogOfWar === true,
+    visibility: state.visibility || null,
+    assetStatus: RESOURCE_STATE_ASSET_STATUS,
+    resourceNodes,
+    workers: workerRows,
+    buildings,
+    constructionDraws: [...constructionGroundMeshes].map(([stage, mesh]) => ({
+      stage, count: mesh.count, visible: mesh.visible,
+      buildingIds: buildings.filter((building) => building.groundStage === stage).map((building) => building.id),
+    })),
+  };
 }
 
 function applyWaypointQueueCounts(rows = []) {

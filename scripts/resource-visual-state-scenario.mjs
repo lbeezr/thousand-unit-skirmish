@@ -3,7 +3,7 @@ import {
   buildingProductionCueState, constructionGroundStage,
 } from '../src/building-visual-state.mjs';
 import {
-  resourceVisualStage, resourceVisualTransitionStages,
+  resourceVisualScale, resourceVisualStage, resourceVisualTransitionStages,
 } from '../src/resource-visual-state.mjs';
 
 for (const [stock, startingStock, expected] of [
@@ -22,6 +22,10 @@ assert.deepEqual(resourceVisualTransitionStages('low', 'low'), [],
   'a stable resource state should not dirty any state batch');
 assert.deepEqual(resourceVisualTransitionStages('unknown', 'depleted'), ['depleted'],
   'an unknown previous state should not dirty an unrelated batch');
+assert.deepEqual(
+  ['full', 'worked', 'low', 'depleted'].map(resourceVisualScale), [1, 0.84, 0.62, 0.22],
+  'generic resource fallback should keep depleted props visible with a restrained stage size cue',
+);
 for (const [progress, complete, expected] of [
   [0, false, 'earthwork'], [0.3999, false, 'earthwork'], [0.4, false, 'foundation'],
   [0.999, false, 'foundation'], [1, false, 'clear'], [0.1, true, 'clear'],
