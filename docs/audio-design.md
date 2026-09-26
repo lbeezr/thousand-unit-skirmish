@@ -6,6 +6,7 @@ The audio palette is original procedural Web Audio synthesis in `src/audio.mjs`.
 | --- | --- | --- |
 | Selection | The new unit or building selection registered | Explicit selection action only |
 | Move, attack, gather, build | The command was sent | Local command, once per order regardless of unit count |
+| Rally point | A production building's spawn destination changed or cleared | Confirmed rally-point notice; distinct short two-note cue |
 | Reject | The order or production request failed | Server notice or offline send |
 | Queue | Production or research began | Server confirmation |
 | Building complete | A friendly construction site becomes a finished production building | One friendly `complete: false` → `true` building transition; distinct low open-fifth cue with a 2.6-second cooldown |
@@ -59,6 +60,10 @@ Research previously shared the two-note production-complete cue. Friendly Infant
 ## Scenario reward cue · 26 September 2026
 
 Timed scenario rewards previously reused the objective-capture cue. They now use a short triangle/sine pair at 493.88 and 739.99 Hz. The server includes the actual affected team list so both-team, team-specific, and capture-triggered rewards route to the right player; opponent-only and ambiguous rewards stay silent. Objective capture remains tied to the separate ownership-change message. The focused audio policy scenario checks routing, profile, and cooldown.
+
+## Rally point cue · 26 September 2026
+
+Rally-point changes previously reused the worker-gather cue. Confirmed set and clear notices now use a short rising triangle/sine fifth at 466.16 and 698.46 Hz, with a 550 ms cooldown. Rejected rally orders keep the reject cue. The focused audio policy scenario checks notice routing, profile, and repeated-order limiting.
 
 ## Ambience loop seam · 25 September 2026
 

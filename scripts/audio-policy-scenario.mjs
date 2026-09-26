@@ -5,6 +5,9 @@ import { createGameAudio, readAudioSettings } from '../src/audio.mjs';
 assert.equal(cueForNotice('MOVE ORDER · 400 UNITS', { localTeam: 0, tokenized: true }), null);
 assert.equal(cueForNotice('MOVE REJECTED · TARGET UNREACHABLE', { localTeam: 0, tokenized: true }), 'reject');
 assert.equal(cueForNotice('WORKER QUEUED · 1/5 · 50 FOOD', { localTeam: 0 }), 'queue');
+assert.equal(cueForNotice('RALLY POINT SET', { localTeam: 0 }), 'rally');
+assert.equal(cueForNotice('RALLY POINT CLEARED', { localTeam: 0 }), 'rally');
+assert.equal(cueForNotice('RALLY POINT REJECTED · CHOOSE GROUND ON THE MAP', { localTeam: 0 }), 'reject');
 assert.equal(cueForNotice('AZURE BARRACKS COMPLETE · TRAIN INFANTRY', { localTeam: 0 }), 'complete');
 assert.equal(cueForNotice('EMBER BARRACKS COMPLETE · TRAIN INFANTRY', { localTeam: 0 }), null);
 assert.equal(cueForNotice('AZURE INFANTRY FORGING COMPLETE · +20% ATTACK', { localTeam: 0 }), 'research-complete');
@@ -270,6 +273,21 @@ try {
   ], 'scenario rewards use a light two-note confirmation distinct from the objective chord');
   assert.equal(rewardAudio.play('scenario-reward'), false, 'repeated scenario reward cues are rate limited');
   rewardAudio.dispose();
+
+  const rallyAudio = createGameAudio({
+    storage: { getItem: () => null, setItem() {} },
+    doc: { hidden: false, addEventListener() {}, removeEventListener() {} },
+  });
+  rallyAudio.unlock();
+  const rallyStart = createdContext.oscillatorNodes.length;
+  assert.equal(rallyAudio.play('rally'), true, 'rally point changes schedule their own confirmation');
+  const rallyProfile = profile(createdContext.oscillatorNodes.slice(rallyStart));
+  assert.deepEqual(rallyProfile, [
+    { wave: 'triangle', from: 466.16, to: 466.16 },
+    { wave: 'sine', from: 698.46, to: 698.46 },
+  ], 'rally confirmation is a short rising fifth with a distinct two-part contour');
+  assert.equal(rallyAudio.play('rally'), false, 'rapid repeated rally changes are rate limited');
+  rallyAudio.dispose();
 } finally {
   if (oldAudioContext === undefined) delete globalThis.AudioContext;
   else globalThis.AudioContext = oldAudioContext;

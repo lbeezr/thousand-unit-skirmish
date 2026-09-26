@@ -7,7 +7,7 @@ export function cueForNotice(message, { localTeam = null, tokenized = false } = 
   if (teamName && notice.startsWith(`${teamName} `) && notice.includes(' DESTROYED ·')) return 'base-lost';
   if (notice.startsWith('RESOURCE NODE EMPTY ·')) return 'resource-empty';
   if (/(REJECTED|FAILED|UNAVAILABLE|UNREACHABLE|SERVER BUSY|CANCELLED|SUPERSEDED|MATCH OVER|UNIT CAP REACHED)/.test(notice)) return 'reject';
-  if (notice.startsWith('RALLY POINT ')) return 'gather';
+  if (notice.startsWith('RALLY POINT ')) return 'rally';
   if (/^(WORKER|INFANTRY|ARCHER) QUEUED ·/.test(notice)) return 'queue';
   if (/^.+ STARTED ·/.test(notice) && !notice.startsWith('PLANNING ')) return 'queue';
   if (teamName && (notice.startsWith(`${teamName} INFANTRY FORGING COMPLETE ·`)
