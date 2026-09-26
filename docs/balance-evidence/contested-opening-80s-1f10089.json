@@ -1,0 +1,606 @@
+{
+  "baselineCommit": "1f100897923e3befbbe9d8dbd81d880a500b9db4",
+  "harnessCommit": "e580c4512f95134ced92984d64f1edcddd59d445",
+  "map": "maps/forked-vale.json",
+  "mapSourceSha256": "8e0105cbf0b6dcda04781f6798fbcff92ade2421b6247f49eeaa8b4c6ac23c4a",
+  "runtime": {
+    "node": "v24.9.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "scenario": "scripted Forked Vale worker-split versus five-infantry attack-move response, followed by post-contest Barracks builds; no human input",
+  "synthetic": true,
+  "humanInput": false,
+  "observationSeconds": 80,
+  "startingResources": {
+    "food": 150,
+    "wood": 250
+  },
+  "timedSupplyAtSeconds": 120,
+  "firstHpLossSampleNote": "The first HP-loss sample is a 0.1-second state observation, not an exact server attack event; teamsTakingDamage can include both sides in that sample.",
+  "rawStdoutPath": "/private/tmp/rts-contested-opening-80s-1f10089.jsonl",
+  "rawStdoutSha256": "c94012626756d55e48ec78de8f5a0886353c209039d1ccce965bfc74d92131a6",
+  "cases": [
+    {
+      "splitTeam": 0,
+      "responseTeam": 1,
+      "commandOrder": "split-first",
+      "southSignalFirstArrivalByTeam": [
+        {
+          "team": 0,
+          "atSeconds": 12.6,
+          "tick": 378,
+          "unitsPresent": 1
+        },
+        {
+          "team": 1,
+          "atSeconds": 12.6,
+          "tick": 378,
+          "unitsPresent": 2
+        }
+      ],
+      "southArrivalGapSeconds": 0,
+      "firstDamageAtSeconds": 15.2,
+      "firstHpLossSample": {
+        "tick": 456,
+        "atSeconds": 15.2,
+        "teamsTakingDamage": [
+          1
+        ]
+      },
+      "firstSplitWorkerLossAtSeconds": 19.4,
+      "northSignalOwner": {
+        "atSeconds": 24.3,
+        "team": 0
+      },
+      "resourcesAt80": [
+        {
+          "team": 0,
+          "food": 265,
+          "wood": 340,
+          "foodDelivered": 115,
+          "woodDelivered": 90,
+          "objectiveFoodReward": 75,
+          "objectiveWoodReward": 50,
+          "bankedFoodFromGathering": 40,
+          "bankedWoodFromGathering": 40,
+          "workerCargoFood": 9.7,
+          "workerCargoWood": 9.77,
+          "estimatedHarvestedFood": 49.7,
+          "estimatedHarvestedWood": 49.77
+        },
+        {
+          "team": 1,
+          "food": 230,
+          "wood": 330,
+          "foodDelivered": 80,
+          "woodDelivered": 80,
+          "objectiveFoodReward": 0,
+          "objectiveWoodReward": 0,
+          "bankedFoodFromGathering": 80,
+          "bankedWoodFromGathering": 80,
+          "workerCargoFood": 18.83,
+          "workerCargoWood": 18.83,
+          "estimatedHarvestedFood": 98.83,
+          "estimatedHarvestedWood": 98.83
+        }
+      ],
+      "participantsAt80": {
+        "splitNorthInfantry": {
+          "total": 5,
+          "survivors": 5,
+          "remainingHp": 500
+        },
+        "splitSouthInfantry": {
+          "total": 3,
+          "survivors": 0,
+          "remainingHp": 0
+        },
+        "splitSouthWorkers": {
+          "total": 2,
+          "survivors": 0,
+          "remainingHp": 0
+        },
+        "splitGatherers": {
+          "total": 2,
+          "survivors": 2,
+          "remainingHp": 200
+        },
+        "responseSouthInfantry": {
+          "total": 5,
+          "survivors": 3,
+          "remainingHp": 260
+        },
+        "responseGatherers": {
+          "total": 4,
+          "survivors": 4,
+          "remainingHp": 400
+        }
+      },
+      "barracksAfterContest": [
+        {
+          "team": 0,
+          "role": "split",
+          "workersAssigned": 2,
+          "woodAtIssue": 340,
+          "completedAtSeconds": 91.7,
+          "elapsedFromContestCheckpointSeconds": 11.7,
+          "complete": true,
+          "skipped": null
+        },
+        {
+          "team": 1,
+          "role": "response",
+          "workersAssigned": 4,
+          "woodAtIssue": 330,
+          "completedAtSeconds": 86.9,
+          "elapsedFromContestCheckpointSeconds": 6.9,
+          "complete": true,
+          "skipped": null
+        }
+      ]
+    },
+    {
+      "splitTeam": 1,
+      "responseTeam": 0,
+      "commandOrder": "split-first",
+      "southSignalFirstArrivalByTeam": [
+        {
+          "team": 0,
+          "atSeconds": 12.9,
+          "tick": 390,
+          "unitsPresent": 1
+        },
+        {
+          "team": 1,
+          "atSeconds": 13.2,
+          "tick": 399,
+          "unitsPresent": 1
+        }
+      ],
+      "southArrivalGapSeconds": -0.3,
+      "firstDamageAtSeconds": 15.7,
+      "firstHpLossSample": {
+        "tick": 474,
+        "atSeconds": 15.7,
+        "teamsTakingDamage": [
+          0,
+          1
+        ]
+      },
+      "firstSplitWorkerLossAtSeconds": 17.5,
+      "northSignalOwner": {
+        "atSeconds": 24.3,
+        "team": 1
+      },
+      "resourcesAt80": [
+        {
+          "team": 0,
+          "food": 230,
+          "wood": 330,
+          "foodDelivered": 80,
+          "woodDelivered": 80,
+          "objectiveFoodReward": 0,
+          "objectiveWoodReward": 0,
+          "bankedFoodFromGathering": 80,
+          "bankedWoodFromGathering": 80,
+          "workerCargoFood": 18.97,
+          "workerCargoWood": 18.97,
+          "estimatedHarvestedFood": 98.97,
+          "estimatedHarvestedWood": 98.97
+        },
+        {
+          "team": 1,
+          "food": 265,
+          "wood": 340,
+          "foodDelivered": 115,
+          "woodDelivered": 90,
+          "objectiveFoodReward": 75,
+          "objectiveWoodReward": 50,
+          "bankedFoodFromGathering": 40,
+          "bankedWoodFromGathering": 40,
+          "workerCargoFood": 10,
+          "workerCargoWood": 8.97,
+          "estimatedHarvestedFood": 50,
+          "estimatedHarvestedWood": 48.97
+        }
+      ],
+      "participantsAt80": {
+        "splitNorthInfantry": {
+          "total": 5,
+          "survivors": 5,
+          "remainingHp": 500
+        },
+        "splitSouthInfantry": {
+          "total": 3,
+          "survivors": 0,
+          "remainingHp": 0
+        },
+        "splitSouthWorkers": {
+          "total": 2,
+          "survivors": 0,
+          "remainingHp": 0
+        },
+        "splitGatherers": {
+          "total": 2,
+          "survivors": 2,
+          "remainingHp": 200
+        },
+        "responseSouthInfantry": {
+          "total": 5,
+          "survivors": 3,
+          "remainingHp": 270
+        },
+        "responseGatherers": {
+          "total": 4,
+          "survivors": 4,
+          "remainingHp": 400
+        }
+      },
+      "barracksAfterContest": [
+        {
+          "team": 0,
+          "role": "response",
+          "workersAssigned": 4,
+          "woodAtIssue": 330,
+          "completedAtSeconds": 86.8,
+          "elapsedFromContestCheckpointSeconds": 6.8,
+          "complete": true,
+          "skipped": null
+        },
+        {
+          "team": 1,
+          "role": "split",
+          "workersAssigned": 2,
+          "woodAtIssue": 340,
+          "completedAtSeconds": 91.5,
+          "elapsedFromContestCheckpointSeconds": 11.5,
+          "complete": true,
+          "skipped": null
+        }
+      ]
+    },
+    {
+      "splitTeam": 0,
+      "responseTeam": 1,
+      "commandOrder": "response-first",
+      "southSignalFirstArrivalByTeam": [
+        {
+          "team": 0,
+          "atSeconds": 12.6,
+          "tick": 381,
+          "unitsPresent": 1
+        },
+        {
+          "team": 1,
+          "atSeconds": 12.6,
+          "tick": 381,
+          "unitsPresent": 2
+        }
+      ],
+      "southArrivalGapSeconds": 0,
+      "firstDamageAtSeconds": 15.2,
+      "firstHpLossSample": {
+        "tick": 459,
+        "atSeconds": 15.2,
+        "teamsTakingDamage": [
+          1
+        ]
+      },
+      "firstSplitWorkerLossAtSeconds": 19.4,
+      "northSignalOwner": {
+        "atSeconds": 24.3,
+        "team": 0
+      },
+      "resourcesAt80": [
+        {
+          "team": 0,
+          "food": 265,
+          "wood": 340,
+          "foodDelivered": 115,
+          "woodDelivered": 90,
+          "objectiveFoodReward": 75,
+          "objectiveWoodReward": 50,
+          "bankedFoodFromGathering": 40,
+          "bankedWoodFromGathering": 40,
+          "workerCargoFood": 9.73,
+          "workerCargoWood": 9.8,
+          "estimatedHarvestedFood": 49.73,
+          "estimatedHarvestedWood": 49.8
+        },
+        {
+          "team": 1,
+          "food": 230,
+          "wood": 330,
+          "foodDelivered": 80,
+          "woodDelivered": 80,
+          "objectiveFoodReward": 0,
+          "objectiveWoodReward": 0,
+          "bankedFoodFromGathering": 80,
+          "bankedWoodFromGathering": 80,
+          "workerCargoFood": 18.9,
+          "workerCargoWood": 18.9,
+          "estimatedHarvestedFood": 98.9,
+          "estimatedHarvestedWood": 98.9
+        }
+      ],
+      "participantsAt80": {
+        "splitNorthInfantry": {
+          "total": 5,
+          "survivors": 5,
+          "remainingHp": 500
+        },
+        "splitSouthInfantry": {
+          "total": 3,
+          "survivors": 0,
+          "remainingHp": 0
+        },
+        "splitSouthWorkers": {
+          "total": 2,
+          "survivors": 0,
+          "remainingHp": 0
+        },
+        "splitGatherers": {
+          "total": 2,
+          "survivors": 2,
+          "remainingHp": 200
+        },
+        "responseSouthInfantry": {
+          "total": 5,
+          "survivors": 3,
+          "remainingHp": 260
+        },
+        "responseGatherers": {
+          "total": 4,
+          "survivors": 4,
+          "remainingHp": 400
+        }
+      },
+      "barracksAfterContest": [
+        {
+          "team": 0,
+          "role": "split",
+          "workersAssigned": 2,
+          "woodAtIssue": 340,
+          "completedAtSeconds": 91.7,
+          "elapsedFromContestCheckpointSeconds": 11.7,
+          "complete": true,
+          "skipped": null
+        },
+        {
+          "team": 1,
+          "role": "response",
+          "workersAssigned": 4,
+          "woodAtIssue": 330,
+          "completedAtSeconds": 86.9,
+          "elapsedFromContestCheckpointSeconds": 6.9,
+          "complete": true,
+          "skipped": null
+        }
+      ]
+    },
+    {
+      "splitTeam": 1,
+      "responseTeam": 0,
+      "commandOrder": "response-first",
+      "southSignalFirstArrivalByTeam": [
+        {
+          "team": 0,
+          "atSeconds": 13,
+          "tick": 390,
+          "unitsPresent": 1
+        },
+        {
+          "team": 1,
+          "atSeconds": 13.3,
+          "tick": 399,
+          "unitsPresent": 3
+        }
+      ],
+      "southArrivalGapSeconds": -0.3,
+      "firstDamageAtSeconds": 15.7,
+      "firstHpLossSample": {
+        "tick": 471,
+        "atSeconds": 15.7,
+        "teamsTakingDamage": [
+          0
+        ]
+      },
+      "firstSplitWorkerLossAtSeconds": 17.6,
+      "northSignalOwner": {
+        "atSeconds": 24.3,
+        "team": 1
+      },
+      "resourcesAt80": [
+        {
+          "team": 0,
+          "food": 230,
+          "wood": 330,
+          "foodDelivered": 80,
+          "woodDelivered": 80,
+          "objectiveFoodReward": 0,
+          "objectiveWoodReward": 0,
+          "bankedFoodFromGathering": 80,
+          "bankedWoodFromGathering": 80,
+          "workerCargoFood": 18.83,
+          "workerCargoWood": 18.83,
+          "estimatedHarvestedFood": 98.83,
+          "estimatedHarvestedWood": 98.83
+        },
+        {
+          "team": 1,
+          "food": 265,
+          "wood": 340,
+          "foodDelivered": 115,
+          "woodDelivered": 90,
+          "objectiveFoodReward": 75,
+          "objectiveWoodReward": 50,
+          "bankedFoodFromGathering": 40,
+          "bankedWoodFromGathering": 40,
+          "workerCargoFood": 10,
+          "workerCargoWood": 8.9,
+          "estimatedHarvestedFood": 50,
+          "estimatedHarvestedWood": 48.9
+        }
+      ],
+      "participantsAt80": {
+        "splitNorthInfantry": {
+          "total": 5,
+          "survivors": 5,
+          "remainingHp": 500
+        },
+        "splitSouthInfantry": {
+          "total": 3,
+          "survivors": 0,
+          "remainingHp": 0
+        },
+        "splitSouthWorkers": {
+          "total": 2,
+          "survivors": 0,
+          "remainingHp": 0
+        },
+        "splitGatherers": {
+          "total": 2,
+          "survivors": 2,
+          "remainingHp": 200
+        },
+        "responseSouthInfantry": {
+          "total": 5,
+          "survivors": 3,
+          "remainingHp": 270
+        },
+        "responseGatherers": {
+          "total": 4,
+          "survivors": 4,
+          "remainingHp": 400
+        }
+      },
+      "barracksAfterContest": [
+        {
+          "team": 0,
+          "role": "response",
+          "workersAssigned": 4,
+          "woodAtIssue": 330,
+          "completedAtSeconds": 86.8,
+          "elapsedFromContestCheckpointSeconds": 6.8,
+          "complete": true,
+          "skipped": null
+        },
+        {
+          "team": 1,
+          "role": "split",
+          "workersAssigned": 2,
+          "woodAtIssue": 340,
+          "completedAtSeconds": 91.5,
+          "elapsedFromContestCheckpointSeconds": 11.5,
+          "complete": true,
+          "skipped": null
+        }
+      ]
+    }
+  ],
+  "staticMapAudit": {
+    "sourceCommit": "1f100897923e3befbbe9d8dbd81d880a500b9db4",
+    "command": "node scripts/map-balance-audit.mjs maps/forked-vale.json",
+    "southSignalPrimaryRouteCellsByTeam": [
+      30,
+      30
+    ],
+    "southSignalNominalWalkSecondsByTeam": [
+      11.5,
+      11.5
+    ],
+    "initialFoodStockByNearestSpawn": [
+      1000,
+      1000
+    ],
+    "initialWoodStockByNearestSpawn": [
+      1000,
+      1000
+    ],
+    "scope": "Static orthogonal-grid path estimate; excludes formation movement, interaction separation, attack-move targeting, and command delay."
+  },
+  "currentMainCiRun": {
+    "id": 36261916112,
+    "sourceCommit": "1f100897923e3befbbe9d8dbd81d880a500b9db4",
+    "conclusion": "success",
+    "covers": [
+      "mirrored 8v8 infantry combat parity",
+      "mirrored Barracks/Archery Range opening",
+      "Forked Vale economy-to-victory for both winner assignments"
+    ]
+  },
+  "latestFlatMapRecheck": {
+    "date": "2026-09-26",
+    "sourceCommit": "117284e2c71469fcbeb669ddfa32a1eea65aa258",
+    "mapSourceSha256": "8e0105cbf0b6dcda04781f6798fbcff92ade2421b6247f49eeaa8b4c6ac23c4a",
+    "runtime": {
+      "node": "v24.9.0",
+      "platform": "darwin",
+      "arch": "arm64"
+    },
+    "scope": "Direct local protocol scenarios only; Forked Vale has no elevation patches. Not a full CI run or human match.",
+    "combatParity": {
+      "command": "node scripts/infantry-seat-combat-scenario.mjs --expect-parity",
+      "passed": true,
+      "cases": [
+        {
+          "teamZeroSpawnSide": "left",
+          "commandOrder": [0, 1],
+          "battleSeconds": 10.7,
+          "team0": { "survivors": 3, "remainingHp": 260 },
+          "team1": { "survivors": 4, "remainingHp": 230 }
+        },
+        {
+          "teamZeroSpawnSide": "left",
+          "commandOrder": [1, 0],
+          "battleSeconds": 10.7,
+          "team0": { "survivors": 3, "remainingHp": 260 },
+          "team1": { "survivors": 4, "remainingHp": 230 }
+        },
+        {
+          "teamZeroSpawnSide": "right",
+          "commandOrder": [0, 1],
+          "battleSeconds": 10.3,
+          "team0": { "survivors": 4, "remainingHp": 260 },
+          "team1": { "survivors": 3, "remainingHp": 250 }
+        },
+        {
+          "teamZeroSpawnSide": "right",
+          "commandOrder": [1, 0],
+          "battleSeconds": 10.3,
+          "team0": { "survivors": 4, "remainingHp": 260 },
+          "team1": { "survivors": 3, "remainingHp": 250 }
+        }
+      ]
+    },
+    "productionOpening": {
+      "command": "RTS_OPENING_MAP=maps/forked-vale.json RTS_OPENING_BUILD_X=21.5 node scripts/opening-production-scenario.mjs --expect-builder-parity",
+      "passed": true,
+      "startingResources": { "food": 150, "wood": 250 },
+      "armySize": 24,
+      "rounds": [
+        {
+          "team0Building": "barracks",
+          "team1Building": "archery-range",
+          "team0BuildSeconds": 10.9,
+          "team1BuildSeconds": 10.9,
+          "team0FirstUnitSeconds": 23,
+          "team1FirstUnitSeconds": 18,
+          "team0Stock": { "food": 100, "wood": 75 },
+          "team1Stock": { "food": 125, "wood": 55 }
+        },
+        {
+          "team0Building": "archery-range",
+          "team1Building": "barracks",
+          "team0BuildSeconds": 10.9,
+          "team1BuildSeconds": 10.9,
+          "team0FirstUnitSeconds": 18,
+          "team1FirstUnitSeconds": 23,
+          "team0Stock": { "food": 125, "wood": 55 },
+          "team1Stock": { "food": 100, "wood": 75 }
+        }
+      ]
+    }
+  }
+}
