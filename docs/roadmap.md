@@ -1,6 +1,12 @@
 # Thousand Unit Skirmish roadmap
 
-Updated 26 September 2026 from `main` at `05901de`. This is the team's shared **next-work guide**. The [game bible](game-bible.md) defines the product, and the [QA plan](qa-vertical-slice.md) records acceptance evidence. Recheck live code and task history before claiming a checkpoint complete; this snapshot will age as agents merge.
+Updated 26 September 2026 from `main` at `6a56cef`; balance evidence includes
+the QA recheck at `fcc7bcac`, the `4930a81` production-opening run, and the
+[larger-map pilot](map-scale-density.md). This is the team's shared **next-work
+guide**. The [game bible](game-bible.md) defines the product, and the [QA
+plan](qa-vertical-slice.md) records acceptance evidence. Recheck live code and
+task history before claiming a checkpoint complete; this snapshot will age as
+agents merge.
 
 ## How to use it
 
@@ -28,7 +34,7 @@ These are product outcomes, not main-merge gates. Art, playability, and scale wo
 | Lane and owner | Long-running goal | Next demonstrable checkpoint | Proof to record |
 | --- | --- | --- | --- |
 | **Gameplay systems** | Predictable authoritative orders, economy, combat, construction, and match recovery. | Make the custom-map Town Center spawn route work regardless of base orientation; then follow the highest-impact failed command or match-flow observation. | Mirrored custom-map scenario on both seats, relevant regression, and a current-build result when practical. |
-| **Balance** | Both seats have fair openings and more than one viable response. | Compare mirrored Forked Vale economy/combat on current main; gather first real match timings before tuning costs. | Seed/map/seat-swapped results and human first gather/build/contest and win times; distinguish fixture parity from player balance. |
+| **Balance** | Both seats have fair openings and more than one viable response. | Keep Forked Vale parity/opening fixtures as no-tune baselines; capture contested-opening timings. On the 160 × 160 Frontier, compare first contact, expansion, regional resource stock/use, objective travel, and two viable routes from both seats. Revisit compact-map timers from observed matches. When Highland Grove is playable, compare coffee-grove with ordinary openings. | QA’s four-case 8v8 rerun at `fcc7bcac` passed the current bounds but retained a +X edge (4/350 vs −X 3/300 at 12.3 s). The production opening last ran at `4930a81`; its map, runner, and relevant economy rules are unchanged through `6a56cef`, but it is not a fresh run. For human matches, record build SHA, both seats, first-contact/expansion/first-control/harvest/exchange/contest/win timings, regional stock/use, objective travel, routes and player explanations; for Grove also record protection and whether first control snowballs. Distinguish scripted from human results. |
 | **Maps and scenarios** | Authored maps offer visible choices, recognizable regions, and a complete contest at several scales. | Ship a selectable 160 × 160 map with shaped forests, working resource clusters, multiple routes, and a lake or stream region using today's assets. Iterate from play; a distinct 224 × 224 scale probe can follow. | Map counts and editor round trip for the first pass; then first-contact, expansion, route-use, and both-seat observations. |
 | **Interface and controls** | New players can discover, issue, and understand commands at normal desktop sizes. | Observe first-glance select/move, edge scroll/fullscreen, objective, and result/rematch comprehension; fix the largest miss. | Short two-seat screen capture or timed novice observation, including window size and build. |
 | **Audio and feedback** | Important orders and events have distinct, restrained, accessible feedback. | Observe whether fresh players recognize attack, move, and match-result cues using the existing Audio sample previews, first with captions off and then on; change a cue only for a specific misread. | The focused pre-unlock/muted/zero-output regression passed on [PR #79](https://github.com/lbliii/thousand-unit-skirmish/pull/79) and is included in current staging build `05901de` (`/ready` healthy). No player-recognition observation has been run yet; record each player's cue guess, caption state, and any misread. |
