@@ -158,8 +158,12 @@ def prepare_pack(asset: str) -> None:
     for state in states:
         source_path = source_dir / f"{asset}-{state}.png"
         original = Image.open(source_path).convert("RGBA")
-        for team, source in (("azure", original), ("ember", recolor_ember(original))):
-            frame = normalize_frame(source, reference_width)
+        normalized_source = normalize_frame(original, reference_width)
+        normalized_source_path = source_dir / "normalized" / f"{asset}-{state}.png"
+        normalized_source_path.parent.mkdir(parents=True, exist_ok=True)
+        normalized_source.save(normalized_source_path, "PNG", optimize=True)
+        for team, source in (("azure", normalized_source), ("ember", recolor_ember(original))):
+            frame = source if team == "azure" else normalize_frame(source, reference_width)
             target = runtime_dir / f"{asset}-{state}-{team}.webp"
             write_runtime(frame, target)
     for team in ("azure", "ember"):

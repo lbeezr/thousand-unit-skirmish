@@ -293,7 +293,7 @@ export async function validateSpriteAtlas(manifestPath) {
   return { manifest, packRoot, filePaths, errors };
 }
 
-/** Build a lossless, machine-readable handoff view from a successful validation. */
+/** Build a machine-readable handoff report from a successful validation. */
 export function createSpriteAtlasHandoff(validation) {
   if (!validation?.manifest || !Array.isArray(validation.errors) || validation.errors.length > 0) {
     throw new Error('A valid sprite-atlas manifest is required to create a handoff report');
@@ -344,7 +344,15 @@ export function createSpriteAtlasHandoff(validation) {
       frameRectsPx: frame.frameRectsPx || [],
     }));
     const depthCrops = frames.flatMap((frame) => frame.frameRectsPx
-      .filter((rect) => layerById.get(rect.layerId)?.drawLayer !== 'actor')
+      .filter((rect) => {
+        const layer = layerById.get(rect.layerId);
+        const isSplitFrame = frame.frameRectsPx.length > 1;
+        const isFullCanvas = rect.rectPx.width === frame.canvasPx.width
+          && rect.rectPx.height === frame.canvasPx.height
+          && rect.offsetPx.x === 0
+          && rect.offsetPx.y === 0;
+        return layer?.drawLayer !== 'actor' && (isSplitFrame || !isFullCanvas);
+      })
       .map((rect) => {
         const layer = layerById.get(rect.layerId);
         return {
