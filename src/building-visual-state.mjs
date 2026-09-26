@@ -27,7 +27,7 @@ export function barracksModelVisualState(progress, complete) {
     frameVisible: stage === 'frame',
     wallsVisible,
     roofVisible,
-    finishedDetailsVisible: stage === 'complete',
+    finishedDetailsVisible: buildingFinishedDetailsVisible(progress, complete),
   };
 }
 

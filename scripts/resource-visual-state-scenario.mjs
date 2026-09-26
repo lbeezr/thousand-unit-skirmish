@@ -48,6 +48,8 @@ for (const [progress, expected] of [
   [0.25, ['frame', true, false, false, false]],
   [0.5, ['walls', false, true, false, false]],
   [0.75, ['roof', false, true, true, false]],
+  [0.8999, ['roof', false, true, true, false]],
+  [0.9, ['roof', false, true, true, true]],
   [1, ['complete', false, true, true, true]],
 ]) {
   const state = barracksModelVisualState(progress, false);
