@@ -12,6 +12,8 @@
 !assets/environment/
 !assets/environment/frontier-v1/
 !assets/environment/frontier-v1/*.webp
+!assets/ui/
+!assets/ui/**
 !package.json
 !package-lock.json
 !deploy/
