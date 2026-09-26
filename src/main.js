@@ -1,5 +1,6 @@
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences } from './hud-layout.mjs';
 import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
+import { selectionContext } from './selection-context.mjs';
 import * as THREE from 'three';
 import {
   addObstacleEnvironmentSprites, createConstructionGroundInstances,
@@ -3158,6 +3159,53 @@ function updateSelectionUI() {
     ui.selectedWaypoints.hidden = selected.size === 0 || queuedWaypointTotal === 0;
     ui.selectedWaypoints.textContent = `${queuedWaypointTotal.toLocaleString()} QUEUED WAYPOINTS · ${unitsWithQueuedWaypoints.toLocaleString()} UNITS`;
   }
+  updateContextualCommands();
+}
+
+function updateContextualCommands() {
+  const bar = document.querySelector('.contextual-command-bar');
+  if (!bar) return;
+  const building = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
+  const context = selectionContext(units, selected, localTeam, building);
+  bar.dataset.context = context.kind;
+  document.querySelector('#assign-selected-group').disabled = !context.total;
+  bar.querySelector('[data-context-summary]').textContent = building
+    ? `${buildingLabel(building.type)} · ${ui.selectedBuildingHealth.textContent} · ${ui.selectedBuildingProduction.textContent}`
+    : context.total ? `${context.total} selected${context.kind === 'military' || context.kind === 'mixed' ? ` · ${ui.formationSelect.value} formation` : ''} · ${Object.entries(context.counts).filter(([, n]) => n).map(([role, n]) => `${n} ${role}`).join(' · ')}${context.counts.worker ? ` · Cargo ${Math.floor(context.cargo.food)} food / ${Math.floor(context.cargo.wood)} wood` : ''}` : '';
+  for (const button of bar.querySelectorAll('[data-context-proxy]')) {
+    const source = document.getElementById(button.dataset.contextProxy);
+    const action = button.dataset.contextProxy;
+    button.hidden = action === 'order-target-toggle' ? context.kind === 'none'
+      : action === 'attack-move-toggle' ? !['military', 'mixed'].includes(context.kind)
+      : action === 'train-infantry' ? building?.type !== 'barracks'
+      : action === 'train-archer' ? building?.type !== 'archery-range'
+      : ['research-attack-upgrade', 'clear-building-rally'].includes(action) ? !building || source.hidden
+      : action === 'select-workers' ? context.kind !== 'mixed' : false;
+    button.disabled = source.disabled || (action.startsWith('train-') && building && (!building.complete || building.productionBlocked));
+    if (source.hasAttribute('aria-pressed')) button.setAttribute('aria-pressed', source.getAttribute('aria-pressed'));
+    if (action === 'order-target-toggle') button.textContent = tapOrderArmed ? 'Cancel target' : building ? 'Set rally' : context.kind === 'workers' ? 'Gather / move' : 'Target battlefield';
+    if (action.startsWith('train-')) {
+      button.setAttribute('aria-describedby', 'context-action-reason');
+      const reason = !building?.complete ? 'Finish construction' : building.productionBlocked ? 'Clear spawn area'
+        : source.disabled ? source.dataset.disabledReason || source.getAttribute('aria-label') : '';
+      bar.querySelector('[data-context-reason]').textContent = button.hidden ? bar.querySelector('[data-context-reason]').textContent : reason;
+    }
+  }
+  if (!building) bar.querySelector('[data-context-reason]').textContent = '';
+  bar.querySelector('[data-context-build]').hidden = context.kind !== 'workers';
+  bar.querySelector('[data-context-details]').hidden = context.kind === 'none';
+  bar.querySelector('[data-context-details]').textContent = building ? 'Rally / upgrade details' : 'Formation / route';
+  const research = bar.querySelector('[data-context-research]');
+  research.hidden = !building;
+  research.textContent = building ? `${ui.buildingRallyReadout.textContent} · ${ui.buildingResearchReadout.textContent}` : '';
+  const groups = bar.querySelector('[data-context-groups]');
+  for (let index = 0; index < 10; index++) {
+    const button = groups.children[index];
+    if (!button) continue;
+    button.hidden = !controlGroups[index].size;
+    button.textContent = `${controlGroupKeyLabel(index)} · ${controlGroups[index].size}`;
+    button.setAttribute('aria-label', `Recall group ${controlGroupKeyLabel(index)}, ${controlGroups[index].size} units`);
+  }
 }
 
 function updateControlGroupUI() {
@@ -3183,6 +3231,7 @@ function updateControlGroupUI() {
     button.title = `${count.toLocaleString()} living units · ${compositionLabel} · Ctrl/⌘ + ${number} replaces · Shift + ${number} adds · ${number} recalls`;
     button.disabled = localTeam === null;
   }
+  updateContextualCommands();
 }
 
 function controlGroupKeyLabel(index) {
@@ -3648,6 +3697,7 @@ function updateCommandUI() {
   if (ui.formationSelect) ui.formationSelect.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding);
   syncTargetOrderUI();
   syncBattlefieldCursor();
+  updateContextualCommands();
 }
 
 function syncTargetOrderUI() {
@@ -4094,6 +4144,21 @@ function updateEconomyUI(state = {}, initial = false) {
     else ui.foodStatus.textContent = window.matchMedia('(pointer: coarse)').matches
       ? 'Select Workers, open Orders, then target food or wood.'
       : 'Select Workers, then right-click food or wood.';
+  }
+  for (const [button, costFood, costWood, producer, queue, limit] of [
+    [ui.trainWorker, WORKER_FOOD_COST, 0, true, workerQueue, WORKER_QUEUE_LIMIT],
+    [ui.trainInfantry, INFANTRY_FOOD_COST, 0, trainableBarracks, infantryQueueLength, BARRACKS_QUEUE_LIMIT],
+    [ui.trainArcher, ARCHER_FOOD_COST, ARCHER_WOOD_COST, trainableRange, queueLength, ARCHERY_RANGE_QUEUE_LIMIT],
+  ]) {
+    if (!button) continue;
+    const reason = localTeam === null ? 'Join a team' : matchWinner >= 0 ? 'Match finished'
+      : !producer ? 'Complete a production building with spawn space'
+      : queue >= limit ? 'Queue full' : unitCapReached ? 'Unit cap reached'
+      : food < costFood || wood < costWood ? `Need ${Math.max(0, costFood - food)} food / ${Math.max(0, costWood - wood)} wood` : '';
+    button.dataset.disabledReason = reason;
+    let note = button.querySelector('.action-disabled-reason');
+    if (!note) { note = document.createElement('small'); note.className = 'action-disabled-reason'; button.append(note); }
+    note.textContent = reason;
   }
   updateCommandUI();
 }
@@ -6579,6 +6644,7 @@ function cancelBuildPlacement(announce = true) {
   pendingBuildBaseline = new Set();
   placementGhost.visible = false;
   updateBuildPlacementHint();
+  if (typeof closeDockDetails === 'function') closeDockDetails({ restoreFocus: false });
   updateEconomyUI();
   if (announce && wasActive) showToast(`${buildingLabel(buildPlacementType)} PLACEMENT CANCELLED`);
 }
@@ -6609,6 +6675,7 @@ function beginBuildPlacement(type) {
   pendingBuildOrderToken = null;
   pendingBuildBaseline = new Set(latestBuildings.filter((building) => building.team === localTeam).map((building) => building.id));
   updateBuildPlacementHint();
+  if (typeof closeDockDetails === 'function') closeDockDetails({ restoreFocus: false });
   updateEconomyUI();
   showToast(window.matchMedia('(pointer: coarse)').matches
     ? `${label} SITE · TAP TO PLACE · TAP BUILD AGAIN TO CANCEL`
@@ -8540,3 +8607,21 @@ function animate(now) {
 }
 
 requestAnimationFrame(animate);
+
+for (const button of document.querySelectorAll('[data-context-proxy]')) {
+  button.addEventListener('click', () => { document.getElementById(button.dataset.contextProxy).click(); updateContextualCommands(); });
+}
+for (const button of document.querySelectorAll('[data-context-panel]')) {
+  button.addEventListener('click', () => selectDockTab(button.dataset.contextPanel, true));
+}
+for (let index = 0; index < 10; index++) {
+  const button = document.createElement('button');
+  button.type = 'button'; button.hidden = true;
+  button.addEventListener('click', () => recallControlGroup(index));
+  document.querySelector('[data-context-groups]').append(button);
+}
+document.querySelector('#assign-selected-group').addEventListener('click', () => {
+  assignControlGroup(Number(document.querySelector('#assign-group-slot').value));
+  updateContextualCommands();
+});
+updateContextualCommands();
