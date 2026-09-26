@@ -5,8 +5,18 @@ const DIRECTIONS = Object.freeze([
 const SPRITE_ROOT = '/assets/units';
 const SPRITE_GROUND_LIFT = 0.018;
 
-function atlasPath(role) {
-  return `${SPRITE_ROOT}/${role}-sprite-v1/sprite-atlas-pack-v1.json`;
+function spriteDirectory(role, version) {
+  if (!['v1', 'v2'].includes(version)) {
+    throw new Error(`Unsupported ${role} sprite version: ${version}`);
+  }
+  if (version === 'v2' && role !== 'worker') {
+    throw new Error(`No ${role} sprite pack is available for ${version}`);
+  }
+  return `${role}-sprite-${version}`;
+}
+
+function atlasPath(role, version) {
+  return `${SPRITE_ROOT}/${spriteDirectory(role, version)}/sprite-atlas-pack-v1.json`;
 }
 
 function loadJson(url) {
@@ -113,12 +123,12 @@ diffuseColor.rgb = mix(diffuseColor.rgb, unitTintedColor, unitAccent);`);
   return material;
 }
 
-function makeTextureUrl(role, file) {
-  return `${SPRITE_ROOT}/${role}-sprite-v1/${file}`;
+function makeTextureUrl(role, version, file) {
+  return `${SPRITE_ROOT}/${spriteDirectory(role, version)}/${file}`;
 }
 
-function loadRolePack(THREE, loader, role) {
-  return loadJson(atlasPath(role)).then(async (pack) => {
+function loadRolePack(THREE, loader, role, version) {
+  return loadJson(atlasPath(role, version)).then(async (pack) => {
     const asset = pack.assets?.find((candidate) => candidate.id === role && candidate.kind === 'unit');
     if (!asset) throw new Error(`Sprite pack ${role} has no unit asset`);
     const page = pack.pages?.find((candidate) => candidate.id === asset.frames?.[0]?.fallbackRectPx?.pageId)
@@ -127,21 +137,23 @@ function loadRolePack(THREE, loader, role) {
     const maskFile = pack.files?.find((file) => file.id === page?.maskFileId);
     if (!page || !colorFile || !maskFile) throw new Error(`Sprite pack ${role} has incomplete page files`);
     const [map, mask] = await Promise.all([
-      loadTexture(THREE, loader, makeTextureUrl(role, colorFile.path), THREE.SRGBColorSpace),
-      loadTexture(THREE, loader, makeTextureUrl(role, maskFile.path), THREE.NoColorSpace),
+      loadTexture(THREE, loader, makeTextureUrl(role, version, colorFile.path), THREE.SRGBColorSpace),
+      loadTexture(THREE, loader, makeTextureUrl(role, version, maskFile.path), THREE.NoColorSpace),
     ]);
     const frameById = new Map(asset.frames.map((frame) => [frame.id, frame]));
     const clipByKey = new Map(asset.clips.map((clip) => [`${clip.stateId}|${clip.directionId}`, clip]));
     const layerId = asset.layers?.find((layer) => layer.drawLayer === 'actor')?.id || 'actor';
     const maxAlphaHeight = Math.max(1, ...asset.frames.map((frame) => frame.alphaBoundsPx?.height || frame.canvasPx.height));
     return {
-      role, asset, page, map, mask, frameById, clipByKey, layerId,
+      role, version, asset, page, map, mask, frameById, clipByKey, layerId,
       worldPerPixel: asset.heightWorld / maxAlphaHeight,
     };
   });
 }
 
-export function createUnitSpriteRuntime({ THREE, scene, capacity, teamHex, cameraQuaternion, roles = UNIT_ROLES }) {
+export function createUnitSpriteRuntime({
+  THREE, scene, capacity, teamHex, cameraQuaternion, roles = UNIT_ROLES, roleSpriteVersions = {},
+}) {
   const loader = new THREE.TextureLoader();
   const pendingCounts = [0, 0];
   const batchesByTeam = [new Map(), new Map()];
@@ -224,7 +236,9 @@ export function createUnitSpriteRuntime({ THREE, scene, capacity, teamHex, camer
   }
 
   const zeroMatrix = new THREE.Matrix4().makeScale(0, 0, 0);
-  const readyPromise = Promise.all(roles.map((role) => loadRolePack(THREE, loader, role)))
+  const readyPromise = Promise.all(roles.map((role) => loadRolePack(
+    THREE, loader, role, roleSpriteVersions[role] || 'v1',
+  )))
     .then((packs) => {
       for (const pack of packs) rolePacks.set(pack.role, pack);
       const teamColors = teamHex.map((value) => new THREE.Color(value));

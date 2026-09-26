@@ -6307,8 +6307,10 @@ const server = createServer(async (request, response) => {
         && /^(?:(?:oak|berries)-(?:full|worked|low|depleted)|construction-(?:earthwork|foundation))$/
           .test(path.basename(relative, path.extname(relative)))));
   const publicMapAsset = path.dirname(relative) === 'maps' && path.extname(relative) === '.json';
-  const publicUnitSpriteAssets = ['worker', 'infantry', 'archer'].some((role) => {
-    const directory = `assets/units/${role}-sprite-v1`;
+  const publicUnitSpriteAssets = [
+    ['worker', 'v1'], ['worker', 'v2'], ['infantry', 'v1'], ['archer', 'v1'],
+  ].some(([role, version]) => {
+    const directory = `assets/units/${role}-sprite-${version}`;
     return [
       `${directory}/sprite-atlas-pack-v1.json`,
       `${directory}/${role}-atlas-runtime.png`,

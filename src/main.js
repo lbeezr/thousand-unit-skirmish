@@ -134,6 +134,7 @@ const unitSpritePreview = roomPageUrl.searchParams.get('unitSpritePreview') === 
 const unitSpritePreviewRoles = unitSpritePreview
   ? ['worker', 'infantry', 'archer']
   : workerSpritePreview ? ['worker'] : [];
+const unitSpritePreviewVersions = workerSpritePreview && !unitSpritePreview ? { worker: 'v2' } : {};
 const unitSpritePreviewRoleSet = new Set(unitSpritePreviewRoles);
 const ROOM_ID = roomPageUrl.searchParams.get('room');
 const HAS_ROOM_PARAMETER = roomPageUrl.searchParams.has('room');
@@ -408,6 +409,7 @@ let unitSpriteMarkersActive = false;
 const unitSpriteRuntime = createUnitSpriteRuntime({
   THREE, scene, capacity: MAX_PER_TEAM, teamHex: TEAM_HEX, cameraQuaternion: camera.quaternion,
   roles: unitSpritePreviewRoles,
+  roleSpriteVersions: unitSpritePreviewVersions,
 });
 unitSpriteRuntime.ready.then((loaded) => {
   if (!loaded) return;
