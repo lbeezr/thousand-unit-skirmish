@@ -1,6 +1,6 @@
 # Environment state play-zoom pilot
 
-Captured 2026-09-26 with the `renderer-environment-state-pilot` scenario against game source `c9e4791`. Main later advanced to `96b557d`; the intervening `src/main.js` edit only changes audio-recognition feedback, with no change to environment rendering, resource-state mapping, assets, or the capture scenario.
+Captured 2026-09-26 with the `renderer-environment-state-pilot` scenario against game source `c9e4791`. At integration, `main` is `4c83e6a`. Since the capture revision, `src/environment-art.mjs` gained rock-obstacle rendering and `src/main.js` changed audio-recognition feedback. Main also updated static plan/preflight reporting in the capture runner. These changes do not affect the resource pack, stock-to-stage mapping, worker gather poses, or live capture path used here; the sprite-atlas contract work is unrelated to this preview.
 
 The capture-only runner was updated in the accompanying change to place detailed state records in a sidecar, keeping the `game_dev.capture.v1` manifest within the current schema. No game renderer or asset content was changed for this capture.
 
