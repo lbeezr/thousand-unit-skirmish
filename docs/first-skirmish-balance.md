@@ -3,7 +3,7 @@
 Status: early tuning; no numeric change is justified. QA reran the combat
 parity fixture on local `main` at `fcc7bcac` on 26 September 2026. The
 Forked Vale production opening was last run at `4930a81`; its map, runner,
-and relevant economy logic are unchanged through current `main` at `71c41fb`,
+and relevant economy logic are unchanged through current `main` at `6a56cef`,
 but that remains prior-run evidence. This is a test plan and evidence record,
 not a claim that the skirmish is balanced. Scope follows the
 working Game Bible and RTS Feature Coverage Inventory, maintained by the
@@ -367,10 +367,10 @@ The handoff associates the result with the retained JSON at
 `/private/tmp/rts-balance-seat-parity-4930a.log` (SHA-256
 `e317187ac48e85b777edbf0be58146ce4daa1c431d77aa43033a18db0c911a6c`). The
 JSON does not embed the source commit, so the run-to-commit association comes
-from QA's report. Current `main` is `71c41fb`; the combat code, Forked Vale
+from QA's report. Current `main` is `6a56cef`; the combat code, Forked Vale
 map, and scenario are unchanged from `fcc7bcac`. The last production-opening
 run remains `4930a81`; the tested map, runner, and relevant economy logic are
-unchanged through `71c41fb`, but no post-#63 opening rerun is claimed here.
+unchanged through `6a56cef`, but no post-#63 opening rerun is claimed here.
 
 ## Current tuning decision
 
@@ -378,7 +378,7 @@ The current scripted evidence supports keeping combat damage, unit costs, and
 build times unchanged. The post-#63 QA recheck still passes the seat-parity
 bounds, but its repeatable +X edge is a fairness note rather than a stat-tuning
 trigger. The Forked Vale production opening remains symmetric in its latest
-4930a81 run, and the relevant rules remain unchanged through `71c41fb`; neither
+4930a81 run, and the relevant rules remain unchanged through `6a56cef`; neither
 fixture establishes which opening wins contested matches.
 
 ## Next tuning decisions
