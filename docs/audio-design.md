@@ -79,4 +79,4 @@ When overall audio is enabled but both effects and ambience output are set to ze
 
 ## Settings audition samples · 26 September 2026
 
-The settings panel can preview representative selection, order, progress, tactical, objective, and victory cues at the current effects and master levels. Preview playback bypasses gameplay cooldowns and does not trigger ambience ducking or increment the in-match cue counter, so players can compare samples without changing match feedback state.
+The settings panel can preview every gameplay cue at the current effects and master levels, grouped into commands, progress, tactics, and match results. Preview playback bypasses gameplay cooldowns and does not trigger ambience ducking or increment the in-match cue counter, so players can compare the entire palette without changing match feedback state.
