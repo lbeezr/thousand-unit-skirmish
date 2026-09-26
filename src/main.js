@@ -17,7 +17,9 @@ import {
   shouldUpdateUnitFullDetailTint, shouldUpdateUnitTransformForFrame,
   unitLodRoleMatrixUpdateMask,
 } from './unit-lod-state.mjs';
-import { unitActionPoseAllowed, unitCargoVisualState } from './unit-visual-state.mjs';
+import {
+  unitActionPoseAllowed, unitCargoVisualState, unitWorkerActionPose,
+} from './unit-visual-state.mjs';
 import {
   capturePrerequisiteIds, findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
   findUnreachableCaptureZone, findUnreachableResourceNode, scenarioEventSourceIds,
@@ -2662,6 +2664,9 @@ function updateUnitTransform(unit, now = performance.now()) {
   }
   const bodyScale = isWorker ? visibleScale * 0.82 : isArcher ? visibleScale * 0.9 : visibleScale;
   const actionPoseAllowed = unitActionPoseAllowed(unit.hp, unit.defeatStartedAt);
+  const workerActionPose = actionPoseAllowed && isWorker
+    ? unitWorkerActionPose(unit.kind, unit.visible, unit.task, unit.cargoType, unit.walking)
+    : 'none';
   const stride = actionPoseAllowed && unit.walking ? Math.sin(unit.motionPhase || 0) * 0.038 : 0;
   const idleBreath = actionPoseAllowed && !unit.walking
     && unit.task !== 'gathering' && unit.task !== 'building' && unit.attackStartedAt === 0
@@ -2672,9 +2677,12 @@ function updateUnitTransform(unit, now = performance.now()) {
   const hitAge = actionPoseAllowed && unit.hitStartedAt > 0
     ? (now - unit.hitStartedAt) / HIT_POSE_MS : 1;
   const hitPose = hitAge >= 0 && hitAge < 1 ? Math.sin(hitAge * Math.PI) : 0;
-  const workSwing = actionPoseAllowed && isWorker && !unit.walking
-    && (unit.task === 'gathering' || unit.task === 'building')
-    ? Math.sin(unit.motionPhase || 0) * 0.46 : isWorker ? attackPose * 0.55 : 0;
+  const workCycle = Math.sin(unit.motionPhase || 0);
+  const workSwing = workerActionPose === 'chopping' ? workCycle * 0.66
+    : workerActionPose === 'berry-gathering' ? workCycle * 0.14
+      : workerActionPose === 'construction' ? workCycle * 0.46
+        : workerActionPose === 'gathering' ? workCycle * 0.32
+          : isWorker ? attackPose * 0.55 : 0;
   const forwardX = Math.sin(unit.angle);
   const forwardZ = Math.cos(unit.angle);
   const sideX = Math.cos(unit.angle);
@@ -2685,7 +2693,9 @@ function updateUnitTransform(unit, now = performance.now()) {
       - defeatProgress * 0.16,
     unit.renderZ + forwardZ * (attackPose * 0.05 - hitPose * 0.075));
   dummy.quaternion.copy(facing);
-  dummy.rotateX(attackPose * (isArcher ? -0.13 : 0.18) - hitPose * 0.18);
+  const workLean = workerActionPose === 'berry-gathering' ? -0.075
+    : workerActionPose === 'chopping' ? Math.max(0, workCycle) * 0.045 : 0;
+  dummy.rotateX(attackPose * (isArcher ? -0.13 : 0.18) - hitPose * 0.18 + workLean);
   dummy.rotateZ(defeatProgress * 0.9);
   dummy.scale.setScalar(bodyScale);
   dummy.updateMatrix();
@@ -2728,8 +2738,11 @@ function updateUnitTransform(unit, now = performance.now()) {
   dummy.updateMatrix();
   spearMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
 
-  dummy.position.set(unit.renderX + sideX * 0.265, 0.43 + Math.max(0, stride), unit.renderZ + sideZ * 0.265);
+  const berryReach = workerActionPose === 'berry-gathering' ? 0.075 : 0;
+  dummy.position.set(unit.renderX + sideX * 0.265 + forwardX * berryReach,
+    0.43 + Math.max(0, stride), unit.renderZ + sideZ * 0.265 + forwardZ * berryReach);
   dummy.quaternion.copy(facing);
+  if (workerActionPose === 'berry-gathering') dummy.rotateX(-0.12 + workCycle * 0.06);
   dummy.rotateZ(-0.2 + workSwing);
   dummy.scale.setScalar(isWorker ? visibleScale : 0);
   dummy.updateMatrix();
