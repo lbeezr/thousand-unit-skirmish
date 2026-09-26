@@ -1,9 +1,11 @@
 # First 1v1 skirmish balance ledger
 
 Status: early tuning; no numeric change is justified. On 26 September 2026,
-the combat parity and Forked Vale production-opening fixtures were rerun on
-local `main` at `30d5dc353c49387bacdd05ef6afb1500c9519555` with Node `v24.9.0`
-on macOS arm64. See the owner-run results below; scripted checks are not human
+combat parity and the Forked Vale production opening were rerun on local
+`main` at `30d5dc353c49387bacdd05ef6afb1500c9519555`; the equal-cost group
+counter was rerun on the later merged `main` at
+`c931e692f000d9567de4ff459595605190f9d020`. All runs used Node `v24.9.0` on
+macOS arm64. See the owner-run results below; scripted checks are not human
 match evidence and do not establish that the skirmish is balanced. Scope
 follows the working Game Bible and RTS Feature Coverage Inventory, maintained
 by the product team: one complete invite-first 1v1 scenario with a small
@@ -405,13 +407,38 @@ This owner-run reproduction confirms the prior fixture results on current
 main. It does not measure contested human pacing, route choices, or strategic
 win rates.
 
+## Equal-cost worker squad recheck on merged main: `c931e69` (26 September 2026)
+
+The exact-source fixture was run from a clean checkout with:
+
+```sh
+RTS_BASELINE_COMMIT=c931e692f000d9567de4ff459595605190f9d020 \
+  node scripts/worker-squad-combat-scenario.mjs
+```
+
+The harness and server source both matched `c931e69`; Node was `v24.9.0` on
+macOS arm64.
+It used the tracked Forked Vale map (SHA-256
+`8e0105cbf0b6dcda04781f6798fbcff92ade2421b6247f49eeaa8b4c6ac23c4a`), a
+24-unit roster, four workers against four infantry, and disabled fog. Both
+groups cost 200 food at 50 food per unit.
+
+All eight combinations of spawn orientation, worker seat, and command order
+passed. The workers were eliminated in 15.6–16.4 in-game seconds; the infantry
+finished with three survivors and 280–284 HP. The winner did not change with
+seat assignment or command order. The 4 HP spread followed the right-hand
+spawn; it is far below the 100 HP tolerance used by the 8v8 seat-parity
+fixture. This confirms the direct infantry counter in this group fixture; it
+does not measure worker raids, objective capture, or human match value.
+
 ## Current tuning decision
 
 The current scripted evidence supports keeping combat damage, unit costs, and
 build and training times unchanged. The `30d5dc3` owner rerun reproduces the
 within-bound +X edge and the seat-symmetric build and reinforcement timings;
-neither fixture establishes which opening wins contested matches. Do not use
-the small synthetic combat edge alone to change unit stats.
+the `c931e69` group check confirms the intended equal-cost infantry counter.
+Neither fixture establishes which opening wins contested matches. Do not use
+the small synthetic combat edge alone to change unit stats or worker costs.
 
 ## Next tuning decisions
 
