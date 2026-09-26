@@ -70,6 +70,16 @@ PR #109 expands the Audio settings recognition check to ten randomized trials: t
 
 The latest read-only host sample is `2026-09-26T16:52:34Z`, loads `13.18 / 16.39 / 13.56` (1/5/15 minutes). The 1-minute value exceeds `2.0`; there are no two qualifying readings or explicit Infra release. No QA scenario or browser run is active, and none was started.
 
+## Live deployment recheck — 26 September 2026, 16:57 UTC
+
+Railway still reports staging deployment `62f4718b-3522-4e68-857b-2f4ab5a3e162` as `SUCCESS` from source `4a0deb5bd89d7ad9e189b0c0dbe07af92ccd6e31`, the same deployed source recorded at 16:53. The current GitHub main tip could not be confirmed. Production remains on manual redeploy `014448c3-4a3b-4942-9d96-6d77515d0d61`, `SUCCESS`, with reason `redeploy` and no source SHA, branch, or immutable image digest.
+
+The read-only production service config identifies `lbliii/thousand-unit-skirmish`, Railpack/V3, `/ready` health checking, one `us-west2` replica, and a persistent volume mounted at `/app/data`. Deployment logs say the default Stone Pass match was restored from checkpoint 5366 at tick 160891. This is evidence of runtime state restoration, not deployment identity or acceptance. No production action was taken.
+
+GitHub fetch and `gh pr view 100` could not reach `api.github.com` at 16:57 UTC, so the live `origin/main` and PR #100 state could not be refreshed. Do not infer that the PR remains open or draft from this snapshot. Railway's staging metadata still confirms the exact source SHA above.
+
+The latest read-only host sample is `2026-09-26T16:57:15Z`, loads `12.35 / 14.34 / 13.43` (1/5/15 minutes). The 1-minute value remains above `2.0`; there are no two qualifying readings or explicit Infra release. No QA scenario, browser run, WSS connection, or match was started.
+
 ## CI runner availability
 
 The GitHub Verify Node 24 project check failed before runner assignment on merged PRs #76, #77, #78, #79, #81, #82, #83, and #84. For each job, the Actions job API reported runner_id 0, an empty runner name, and no steps; each completed in about two seconds. These runs provide no assertion or test result. CI status for PRs #85–93 was not verified for this checkpoint. See [PR #76](https://github.com/lbliii/thousand-unit-skirmish/pull/76), [PR #77](https://github.com/lbliii/thousand-unit-skirmish/pull/77), [PR #78](https://github.com/lbliii/thousand-unit-skirmish/pull/78), [PR #79](https://github.com/lbliii/thousand-unit-skirmish/pull/79), [PR #81](https://github.com/lbliii/thousand-unit-skirmish/pull/81), and [PR #82](https://github.com/lbliii/thousand-unit-skirmish/pull/82), [PR #83](https://github.com/lbliii/thousand-unit-skirmish/pull/83), [PR #84](https://github.com/lbliii/thousand-unit-skirmish/pull/84), [PR #85](https://github.com/lbliii/thousand-unit-skirmish/pull/85), [PR #86](https://github.com/lbliii/thousand-unit-skirmish/pull/86), [PR #87](https://github.com/lbliii/thousand-unit-skirmish/pull/87), [PR #88](https://github.com/lbliii/thousand-unit-skirmish/pull/88), [PR #89](https://github.com/lbliii/thousand-unit-skirmish/pull/89), [PR #90](https://github.com/lbliii/thousand-unit-skirmish/pull/90), [PR #91](https://github.com/lbliii/thousand-unit-skirmish/pull/91), [PR #92](https://github.com/lbliii/thousand-unit-skirmish/pull/92), and [PR #93](https://github.com/lbliii/thousand-unit-skirmish/pull/93).
@@ -96,7 +106,7 @@ No environment-state capture is registered in the current game-dev capture list.
 
 ## Host and player evidence gates
 
-Infra's latest host sample, at 2026-09-26T16:52:34Z, was 13.18 / 16.39 / 13.56 for the 1/5/15-minute load averages. The 1-minute value is above the <=2.0 threshold. The required two readings at or below 2.0, at least 60 seconds apart, plus explicit Infra release have not been recorded. No performance scenario, browser run, or renderer capture was started for this checkpoint.
+Infra's latest host sample, at 2026-09-26T16:57:15Z, was 12.35 / 14.34 / 13.43 for the 1/5/15-minute load averages. The 1-minute value is above the <=2.0 threshold. The required two readings at or below 2.0, at least 60 seconds apart, plus explicit Infra release have not been recorded. No performance scenario, browser run, or renderer capture was started for this checkpoint.
 
 No new two-seat WSS/reconnect/rematch run or complete Forked Vale match was conducted on the current staging build. The earlier f1d6482/1d74cae results remain historical evidence. The novice external playtest remains pending; no testers were contacted. Keep synthetic scenario results, browser automation, and player observations as separate evidence classes.
 
