@@ -2,6 +2,8 @@
 
 Use this workflow when creating or revising a building sprite pack. It captures the approach used for the Barracks, Archery Range, and Town Center samples: settle the finished building's look first, then derive its other visual states against that approved design and a measured world grid.
 
+For a Meshy-assisted workflow that processes each state as a separate 3D model and captures registered perspectives, see the [building asset production pipeline](building-asset-production-pipeline.md).
+
 ## Production sequence
 
 1. **Confirm the game's contract.** Read the current art and renderer guidance, inspect the building's actual footprint and lifecycle, and record what is gameplay occupancy versus visible support/base. Do not invent construction, damage, or destruction states the game does not represent. A static map landmark may correctly have only a complete frame.

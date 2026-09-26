@@ -32,7 +32,33 @@
   "stateMapping": {
     "currentRuntimeState": "complete",
     "authoredStates": ["complete"],
-    "lifecycle": "The current map-spawn prop has no construction or health lifecycle."
+    "lifecycle": "The current runtime remains complete-only because the Town Center is a static map landmark. Four matching construction and damage concepts are exploratory source art, not supported runtime states.",
+    "conceptOnlyStates": [
+      {
+        "state": "foundation",
+        "buildProgress": 0.05,
+        "concept": "../town-center-state-concepts-v1/source/town-center-foundation.png",
+        "status": "concept-only; Meshy-processing-pending"
+      },
+      {
+        "state": "frame",
+        "buildProgress": 0.5,
+        "concept": "../town-center-state-concepts-v1/source/town-center-frame.png",
+        "status": "concept-only; Meshy-processing-pending"
+      },
+      {
+        "state": "damaged",
+        "healthRatio": 0.6,
+        "concept": "../town-center-state-concepts-v1/source/town-center-damaged.png",
+        "status": "concept-only; Meshy-processing-pending"
+      },
+      {
+        "state": "critical",
+        "healthRatio": 0.3,
+        "concept": "../town-center-state-concepts-v1/source/town-center-critical.png",
+        "status": "concept-only; Meshy-processing-pending"
+      }
+    ]
   },
   "variants": {
     "teams": ["azure", "ember"],
@@ -50,7 +76,7 @@
   "knownLimits": [
     "One 45-degree azimuth is authored; other gallery angles must not pretend to rotate this image.",
     "Alpha frames are camera-authored cutouts without per-pixel scene depth; depth/occlusion integration is pending.",
-    "No construction or damage frames are included because this object is currently a static map landmark.",
+    "Construction and damage concepts are source-only; no lifecycle model or runtime sprite frames are included.",
     "Season and lighting variants are not authored in this pack."
   ]
 }
