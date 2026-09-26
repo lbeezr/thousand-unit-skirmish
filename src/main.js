@@ -1662,38 +1662,37 @@ function buildMap(definition) {
   // Rock silhouettes carry the visual boundary. Flat block tops made the ridge
   // look like a strip of square tiles when viewed from the oblique camera.
   const obstacleCount = definition.obstacles.reduce((count, obstacle) => (
-    count + (obstacle.material === 'stone' ? 0 : obstacle.width * obstacle.height)
+    count + (obstacle.material === 'forest' ? obstacle.width * obstacle.height : 0)
   ), 0);
-  const obstacles = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(1.02, 1.12, 1.02),
-    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.94, flatShading: true }),
-    obstacleCount,
-  );
-  const obstacleTints = { stone: [0x444944, 0x55594f], forest: [0x304934, 0x38533b], water: [0x3e6570, 0x4d7982] };
-  let obstacleIndex = 0;
-  for (const obstacle of definition.obstacles) {
-    if (obstacle.material === 'stone') continue;
-    const tints = obstacleTints[obstacle.material] || obstacleTints.stone;
-    const visibleHeight = obstacle.material === 'forest' ? 0.17
-      : 0.025;
-    for (let row = obstacle.row; row < obstacle.row + obstacle.height; row++) {
-      for (let column = obstacle.column; column < obstacle.column + obstacle.width; column++) {
-        dummy.position.set(column - MAP_HALF_X + 0.5, visibleHeight / 2, row - MAP_HALF_Z + 0.5);
-        dummy.rotation.set(0, 0, 0);
-        dummy.scale.set(1, visibleHeight / 1.12, 1);
-        dummy.updateMatrix();
-        obstacles.setMatrixAt(obstacleIndex, dummy.matrix);
-        color.setHex((row + column + obstacleIndex) % 3 === 0 ? tints[0] : tints[1]);
-        obstacles.setColorAt(obstacleIndex, color);
-        obstacleIndex++;
+  if (obstacleCount > 0) {
+    const obstacles = new THREE.InstancedMesh(
+      new THREE.BoxGeometry(1.02, 1.12, 1.02),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.94, flatShading: true }),
+      obstacleCount,
+    );
+    const tints = [0x304934, 0x38533b];
+    let obstacleIndex = 0;
+    for (const obstacle of definition.obstacles) {
+      if (obstacle.material !== 'forest') continue;
+      for (let row = obstacle.row; row < obstacle.row + obstacle.height; row++) {
+        for (let column = obstacle.column; column < obstacle.column + obstacle.width; column++) {
+          dummy.position.set(column - MAP_HALF_X + 0.5, 0.17 / 2, row - MAP_HALF_Z + 0.5);
+          dummy.rotation.set(0, 0, 0);
+          dummy.scale.set(1, 0.17 / 1.12, 1);
+          dummy.updateMatrix();
+          obstacles.setMatrixAt(obstacleIndex, dummy.matrix);
+          color.setHex((row + column + obstacleIndex) % 3 === 0 ? tints[0] : tints[1]);
+          obstacles.setColorAt(obstacleIndex, color);
+          obstacleIndex++;
+        }
       }
     }
+    obstacles.instanceMatrix.needsUpdate = true;
+    if (obstacles.instanceColor) obstacles.instanceColor.needsUpdate = true;
+    obstacles.castShadow = false;
+    obstacles.receiveShadow = false;
+    addMapObject(obstacles);
   }
-  obstacles.instanceMatrix.needsUpdate = true;
-  if (obstacles.instanceColor) obstacles.instanceColor.needsUpdate = true;
-  obstacles.castShadow = false;
-  obstacles.receiveShadow = false;
-  addMapObject(obstacles);
   addObstacleEnvironmentSprites(definition, MAP_HALF_X, MAP_HALF_Z, addMapObject);
 
   for (const spawn of definition.spawnPoints || []) addTownCenterVisual(spawn);
