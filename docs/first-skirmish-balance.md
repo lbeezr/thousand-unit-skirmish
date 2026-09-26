@@ -7,10 +7,14 @@ opening were rerun on local `main` at
 `30d5dc353c49387bacdd05ef6afb1500c9519555`; the equal-cost group counter was
 rerun on later merged `main` at
 `c931e692f000d9567de4ff459595605190f9d020`. The contested worker-diversion
-probe ran on exact main source `a3426c1271eabb4b8d8c2097d6ae7659d9972951`.
-Main later advanced to `6a4dc00`; `server.mjs` and Forked Vale's map are
-unchanged since the tested commit. The intervening map-utils change only adds
-optional elevation helpers; existing flat-map path functions are unchanged.
+probe first ran on exact main source
+`a3426c1271eabb4b8d8c2097d6ae7659d9972951`. An 80-second follow-up ran on
+`c9e4791885f2a7d569dcd42cf6ea086465834590` after PR #124; `server.mjs` and
+Forked Vale's map are byte-identical to the original tested commit. The
+current main later advanced through PR #129 to `97b8587`; `server.mjs` and the
+map remain byte-identical there as well. The intervening map-utils change only
+adds optional elevation helpers; existing flat-map path functions are
+unchanged.
 All runs used Node `v24.9.0` on macOS arm64. Scripted checks are not human
 match evidence and do not establish that the skirmish is balanced. Scope
 follows the working Game Bible and RTS Feature Coverage Inventory, maintained
@@ -466,9 +470,10 @@ side captured North at 24.3–24.4 seconds; South remained neutral through 40
 seconds. First damage appeared at 15.2–15.8 seconds and the first diverted
 worker died at 17.5–19.8 seconds. All three southern split infantry and both
 diverted workers died. On `a3426c1`, the response finished 4 / 310 HP and 3 /
-300 HP on the right, and 3 / 230 HP in both left-side command orders. All four
-cases are within the equal-force fixture's one-unit and 100 HP bounds. Two
-earlier batched matrices on `6aa39fa` had one 2 / 130 HP left-side result
+300 HP on the right, and 3 / 230 HP in both left-side command orders. Those
+outcomes fall within the equal-force fixture's one-unit and 100 HP comparison
+thresholds, but this deliberately uneven-group scenario is not itself a
+parity result. Two earlier batched matrices on `6aa39fa` had one 2 / 130 HP left-side result
 against the right's 3 / 300 HP; that 170 HP difference did not recur on
 `a3426c1`. Treat it as unconfirmed run-to-run variation in this unequal-group
 attack-move scenario, not a stable parity failure or unit-stat tuning result.
@@ -502,16 +507,64 @@ latest-main rerun used harness commit `d0e61e9067816883eacef9c078794dd8aecfe30c`
 and is retained at `/private/tmp/rts-contested-opening-build-40s-a3426c1.jsonl`
 (SHA-256 `b9fc908070e11d2c96c3ca93ba9bcca7d54dd43ded80d6c0fbff8d9df9fe451e`).
 
+## Eighty-second contested follow-up on main: `c9e4791` (26 September 2026)
+
+The same harness ran on a clean checkout of `c9e4791885f2a7d569dcd42cf6ea086465834590` with
+`RTS_CONTEST_SECONDS=80`. The harness, server, and map were all from that
+commit. The map hash remained
+`8e0105cbf0b6dcda04781f6798fbcff92ade2421b6247f49eeaa8b4c6ac23c4a`; runtime
+was Node `v24.9.0` on macOS arm64. The 120-second timed supply was outside the
+observation window. The four cases again swapped the split team and command
+send order.
+
+Reproduce from a clean `c9e4791` checkout:
+
+```sh
+RTS_CONTEST_SECONDS=80 \
+RTS_BASELINE_COMMIT=c9e4791885f2a7d569dcd42cf6ea086465834590 \
+  node scripts/balance-contested-worker-opening-scenario.mjs
+```
+
+All four cases captured North at 24.3–24.4 seconds and left South neutral
+through 80 seconds. First damage came at 15.2–15.7 seconds and the first
+diverted worker died at 17.5–19.9 seconds. The three southern split infantry
+and both diverted workers died in every case; all five northern split infantry
+survived. Three of the five responding southern infantry survived in each
+case (230–300 HP). The four responding workers survived.
+
+At 80 seconds, the split side's bank had grown by 115 food / 90 wood, including
+the one-time North reward of 75 food / 50 wood; gathering contributed 40 / 40
+to its bank. The responding bank grew by 80 / 80 from gathering. Counting
+worker cargo still in transit, estimated worker harvest was 49.6–50.0 food /
+48.9–49.7 wood for the split against 98.6–98.8 of each for the response.
+Including the objective reward, the split had about 26 more food and 1 more
+wood earned or carried at this checkpoint. The award therefore offsets the
+measured resource gap through 80 seconds in this fixed line, while the split
+has lost three infantry and two workers.
+
+After the checkpoint, the split's two remaining workers completed a Barracks
+in 11.5–11.7 seconds; the response's four completed theirs in 7.0 seconds.
+Both could pay the 175-wood cost. This is the same scripted post-contest build
+comparison, not a human decision or match outcome.
+
+The four-case result summary JSON is committed at
+[`docs/balance-evidence/contested-opening-80s-c9e4791.json`](balance-evidence/contested-opening-80s-c9e4791.json)
+(SHA-256 `de7423cb056523e9a1660a70417930ac0d6921a4dc75a6818ff2be0c8e261767`).
+The exact runner stdout from which it was summarized had SHA-256
+`e4763f92ff6c1108ad2e8809971b34f3b21ebdb091562e3fb756635d80373515`.
+
 ## Current tuning decision
 
 The direct equal-cost worker-counter fixture and the 8v8 combat-parity fixture
-remain their own baselines. The current-main contested split supports a
-measurable worker loss, objective reward, harvest gap, and post-contest build
-delay. The earlier above-bound HP outlier did not recur on latest main; the
-current 70–80 HP right-side edge is within the existing parity bound. First-
-attack and arrival timing could explain that remaining gap. No human match has
-established which opening wins or whether the objective reward compensates for
-the long-term worker loss.
+remain their own baselines. The 40- and 80-second contested runs support a
+measurable worker loss, one-time objective reward, harvest gap, and post-contest
+build delay. In this scripted line, the award offsets the resource acquisition
+gap through 80 seconds; the run does not value the lost army or establish the
+longer-term match result. The earlier above-bound HP outlier did not recur.
+The uneven-group attack-move fight is not an equal-force parity measure, and
+first-attack or arrival timing remains unrecorded. No human match has
+established which opening wins. Keep current resource awards and unit stats as
+no-tune baselines until a contested human match provides that evidence.
 
 ## Next tuning decisions
 
