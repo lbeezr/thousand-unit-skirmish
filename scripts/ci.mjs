@@ -42,6 +42,7 @@ const scenarios = [
   ['scripts/origin-proxy-scenario.mjs', 'Origin policy through room proxy'],
   ['scripts/audio-policy-scenario.mjs', 'Audio policy'],
   ['scripts/map-utils-scenario.mjs', 'Map utilities'],
+  ['scripts/camera-controls-scenario.mjs', 'Camera controls'],
   ['scripts/objective-fog-visibility-scenario.mjs', 'Objective fog visibility'],
   ['scripts/unreachable-attack-scenario.mjs', 'Orders, 2k spawn clearance, and objective hold'],
   ['scripts/worker-combat-scenario.mjs', 'Worker combat across both seats'],

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-label="Attack">
+  <circle cx="12" cy="12" r="8.35" fill="none" stroke="#ef886c" stroke-width="1.8"/>
+  <circle cx="12" cy="12" r="4.15" fill="none" stroke="#ef886c" stroke-width="1.5"/>
+  <path d="M3 21 14.6 9.4m0 0V5.8m0 3.6h3.6M4.3 19.7l-1.1 1.1" fill="none" stroke="#e5e8d7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="12" cy="12" r="1.2" fill="#d5ef78"/>
+</svg>
