@@ -2,7 +2,7 @@
 const STORAGE_KEY = 'tus-audio-v1';
 const DEFAULT_SETTINGS = Object.freeze({ enabled: true, volume: 0.5, ambience: true, ambienceLevel: 1 });
 const COOLDOWN_MS = Object.freeze({
-  select: 90, move: 90, attack: 120, gather: 140, build: 170,
+  select: 90, move: 90, attack: 120, gather: 140, rally: 550, build: 170,
   queue: 170, complete: 2200, 'research-complete': 2600, 'scenario-reward': 2400,
   reject: 250, objective: 1200, 'objective-lost': 1200,
   'resource-empty': 8000, 'base-lost': 2000, 'building-complete': 2600,
@@ -194,6 +194,10 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
       case 'move': tone(310, at, 0.09, { wave: 'triangle', endFrequency: 390, gain: 0.19 }); break;
       case 'attack': tone(260, at, 0.11, { wave: 'triangle', endFrequency: 205, gain: 0.23 }); tone(490, at + 0.025, 0.07, { endFrequency: 370, gain: 0.1 }); break;
       case 'gather': tone(420, at, 0.07, { wave: 'triangle', endFrequency: 550, gain: 0.14 }); break;
+      case 'rally':
+        tone(466.16, at, 0.09, { wave: 'triangle', gain: 0.12 });
+        tone(698.46, at + 0.1, 0.14, { wave: 'sine', gain: 0.1 });
+        break;
       case 'build': tone(175, at, 0.16, { wave: 'triangle', endFrequency: 147, gain: 0.19 }); tone(350, at + 0.055, 0.09, { gain: 0.09 }); break;
       case 'queue': tone(470, at, 0.06, { wave: 'triangle', gain: 0.12 }); tone(590, at + 0.095, 0.07, { wave: 'triangle', gain: 0.1 }); break;
       case 'complete': tone(392, at, 0.13, { gain: 0.17 }); tone(587, at + 0.13, 0.23, { gain: 0.15 }); break;
