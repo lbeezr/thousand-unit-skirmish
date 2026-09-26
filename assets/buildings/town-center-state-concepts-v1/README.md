@@ -13,3 +13,5 @@ This package contains a matched Town Center design for each visible construction
 See [state-concepts.json](state-concepts.json) for hashes and processing status. Foundation, Frame, Damaged, and Critical are concept-ready only: they have not been uploaded to Meshy, converted to models, optimized, or rendered into sprite maps. The previous Meshy credit authorization applied to the finished-state pilot only. This package does not include the pilot's GLB files. Since the game currently uses Town Centers as static map landmarks, these concepts are exploratory and do not imply supported runtime lifecycle states.
 
 The four lifecycle concepts were generated individually with Codex ImageGen on 2026-09-26. The generation prompts are not yet recorded in this package; source-file hashes are recorded in the manifest.
+
+See the [Building Variant Atlas](../../../building-map.html) for the Meshy pilot views, current game sprites, and these unprocessed state designs side by side.

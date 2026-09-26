@@ -1,8 +1,8 @@
 # Building sprite production workflow
 
-Use this workflow when creating or revising a building sprite pack. It captures the approach used for the Barracks, Archery Range, and Town Center samples: settle the finished building's look first, then derive its other visual states against that approved design and a measured world grid.
+Use this workflow to understand the current 2D sprite packs and their renderer conventions. For new building art, the preferred workflow is to process each matched state through Meshy, optimize its model, then capture registered perspectives as documented in the [building asset production pipeline](building-asset-production-pipeline.md). Use direct 2D authoring as a fallback when modeling does not improve the asset.
 
-For a Meshy-assisted workflow that processes each state as a separate 3D model and captures registered perspectives, see the [building asset production pipeline](building-asset-production-pipeline.md).
+The Barracks, Archery Range, and current Town Center packs remain useful baselines for state thresholds, team treatment, sprite anchors, and gameplay comparison.
 
 ## Production sequence
 
