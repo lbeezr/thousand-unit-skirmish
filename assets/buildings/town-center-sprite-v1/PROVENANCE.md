@@ -5,7 +5,7 @@
 - Third-party reference art: none. The original project Barracks sprite was supplied only as a style, material, and camera reference.
 - Camera: fixed elevated orthographic three-quarter view, 45-degree azimuth and 46-degree downward pitch.
 - Source format: 1254 × 1254 RGBA PNG.
-- Runtime processing: [`scripts/prepare-building-sprite-pack.py`](../../../scripts/prepare-building-sprite-pack.py) fixes scale from the complete source, crops transparent bounds without axis stretching, aligns the visible base to the 4 × 4 support diamond, writes two 640 × 640 team WebP frames, and builds the preview.
+- Runtime processing: [`scripts/prepare-building-sprite-pack.py`](../../../scripts/prepare-building-sprite-pack.py) fixes scale from the complete source, crops transparent bounds without axis stretching, aligns the visible base to the 4 × 4 visual support guide, writes lossless normalized PNG and two 640 × 640 team WebP frames, builds the review strips, and regenerates the canonical sprite-atlas sidecar from `sprite-grid.json`. The sidecar does not declare a gameplay footprint.
 - Coverage and anchor: see [`sprite-grid.json`](sprite-grid.json). The game currently treats Town Centers as decorative spawn landmarks without placement, construction, or damage lifecycle.
 
 ## Exact generation prompt (`exec-51f8626e-8e6c-47bf-8f4f-4417f710c22c`)

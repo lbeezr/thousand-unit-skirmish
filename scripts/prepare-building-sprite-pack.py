@@ -2,6 +2,8 @@
 """Normalize building sprite source art to the shared 5×5 world-unit grid."""
 
 from argparse import ArgumentParser
+import hashlib
+import json
 from math import cos, radians, sin, sqrt
 from pathlib import Path
 
@@ -18,13 +20,9 @@ CAMERA_ELEVATION_DEGREES = 46
 PACKS = {
     "archery-range": {
         "root": ROOT / "assets/buildings/archery-range-sprite-v1",
-        "states": ("foundation", "frame", "complete", "damaged", "critical"),
-        "footprint_cells": 3,
     },
     "town-center": {
         "root": ROOT / "assets/buildings/town-center-sprite-v1",
-        "states": ("complete",),
-        "footprint_cells": 4,
     },
 }
 
@@ -91,29 +89,35 @@ def project_ground_point(x: float, z: float, footprint_cells: int) -> tuple[floa
     return screen_x, screen_y
 
 
-def draw_footprint(draw: ImageDraw.ImageDraw, footprint_cells: int, x_offset: int = 0) -> None:
-    half = footprint_cells / 2
-    coords = [-half + cell for cell in range(footprint_cells + 1)]
+def draw_support_grid(draw: ImageDraw.ImageDraw, support_cells: tuple[int, int],
+                      x_offset: int = 0) -> None:
+    width_cells, depth_cells = support_cells
+    if width_cells <= 0 or depth_cells <= 0:
+        return
+    half_width = width_cells / 2
+    half_depth = depth_cells / 2
+    x_coords = [-half_width + cell for cell in range(width_cells + 1)]
+    z_coords = [-half_depth + cell for cell in range(depth_cells + 1)]
     inside = (242, 237, 194, 120)
     outline = (216, 244, 123, 230)
-    for x in coords:
-        points = [project_ground_point(x, -half, footprint_cells),
-                  project_ground_point(x, half, footprint_cells)]
+    for x in x_coords:
+        points = [project_ground_point(x, -half_depth, depth_cells),
+                  project_ground_point(x, half_depth, depth_cells)]
         draw.line([(round(px + x_offset), round(py)) for px, py in points], fill=inside, width=1)
-    for z in coords:
-        points = [project_ground_point(-half, z, footprint_cells),
-                  project_ground_point(half, z, footprint_cells)]
+    for z in z_coords:
+        points = [project_ground_point(-half_width, z, depth_cells),
+                  project_ground_point(half_width, z, depth_cells)]
         draw.line([(round(px + x_offset), round(py)) for px, py in points], fill=inside, width=1)
-    corners = [project_ground_point(-half, -half, footprint_cells),
-               project_ground_point(half, -half, footprint_cells),
-               project_ground_point(half, half, footprint_cells),
-               project_ground_point(-half, half, footprint_cells)]
+    corners = [project_ground_point(-half_width, -half_depth, depth_cells),
+               project_ground_point(half_width, -half_depth, depth_cells),
+               project_ground_point(half_width, half_depth, depth_cells),
+               project_ground_point(-half_width, half_depth, depth_cells)]
     draw.line([(round(px + x_offset), round(py)) for px, py in (*corners, corners[0])],
               fill=outline, width=3)
 
 
 def build_contact_sheet(root: Path, states: tuple[str, ...], team: str,
-                        footprint_cells: int) -> None:
+                        support_cells: tuple[int, int], guide_label: str) -> None:
     width = FRAME_PX * len(states)
     sheet = Image.new("RGBA", (width, FRAME_PX + 48), (87, 105, 70, 255))
     draw = ImageDraw.Draw(sheet)
@@ -132,19 +136,188 @@ def build_contact_sheet(root: Path, states: tuple[str, ...], team: str,
             draw.line((x_offset, coordinate, x_offset + FRAME_PX, coordinate),
                       fill=(231, 237, 205, 58), width=1)
         sheet.alpha_composite(frame, (x_offset, 0))
-        draw_footprint(draw, footprint_cells, x_offset)
+        draw_support_grid(draw, support_cells, x_offset)
         label = state.replace("-", " ").upper()
         draw.text((x_offset + 12, FRAME_PX + 14), label, fill=(249, 244, 223, 255), font=font)
+    try:
+        guide_font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 12)
+    except OSError:
+        guide_font = ImageFont.load_default()
+    draw.text((12, FRAME_PX + 32), guide_label, fill=(249, 244, 223, 230), font=guide_font)
     preview = root / "preview"
     preview.mkdir(parents=True, exist_ok=True)
     sheet.convert("RGB").save(preview / f"{team}-grid.png", optimize=True)
 
 
+def image_file_record(root: Path, file_id: str, relative_path: str, usage: str) -> dict:
+    image_path = root / relative_path
+    with Image.open(image_path) as image:
+        dimensions = {"width": image.width, "height": image.height}
+    return {
+        "id": file_id,
+        "path": relative_path,
+        "usage": usage,
+        "format": image_path.suffix.lstrip(".").lower(),
+        "sha256": hashlib.sha256(image_path.read_bytes()).hexdigest(),
+        "dimensionsPx": dimensions,
+    }
+
+
+def alpha_bounds(image: Image.Image) -> dict:
+    visible = image.getchannel("A").point(lambda value: 255 if value >= 96 else 0)
+    bounds = visible.getbbox()
+    if bounds is None:
+        raise ValueError("runtime sprite is fully transparent")
+    return {"x": bounds[0], "y": bounds[1],
+            "width": bounds[2] - bounds[0], "height": bounds[3] - bounds[1]}
+
+
+def write_sprite_atlas_manifest(root: Path, grid: dict) -> None:
+    asset = grid["asset"]
+    states = tuple(grid["runtimeFrames"]["states"])
+    teams = tuple(grid["runtimeFrames"]["teams"])
+    width_px, height_px = grid["spriteFrame"]["pixels"]
+    anchor_x, anchor_y = grid["spriteFrame"]["anchorPixelFromTopLeft"]
+    _, world_depth = grid["spriteFrame"]["worldUnits"]
+    render_width, render_height = grid["spriteFrame"]["renderBoundsWorldUnits"]
+    gameplay_footprint = grid["worldGrid"].get("gameplayFootprintCells")
+    if gameplay_footprint:
+        support_cells = tuple(gameplay_footprint)
+        guide_label = "GAMEPLAY FOOTPRINT HINT"
+    else:
+        visual_base = grid["worldGrid"].get("visualBaseCells")
+        support_cells = tuple(visual_base) if visual_base else (0, 0)
+        guide_label = "VISUAL BASE GUIDE · NO GAMEPLAY OCCUPANCY"
+
+    files = []
+    for state in states:
+        original = f"source/{asset}-{state}.png"
+        normalized = f"source/normalized/{asset}-{state}.png"
+        files.append(image_file_record(root, f"{state}-source-original", original, "source"))
+        files.append(image_file_record(root, f"{state}-source-grid", normalized, "source"))
+        for team in teams:
+            runtime = f"runtime/{asset}-{state}-{team}.webp"
+            files.append(image_file_record(root, f"{state}-{team}-runtime", runtime, "runtime"))
+
+    pages = []
+    frames = []
+    clips = []
+    for state in states:
+        for team in teams:
+            page_id = f"{state}-{team}-page"
+            runtime_id = f"{state}-{team}-runtime"
+            frame_id = f"{state}-{team}"
+            pages.append({
+                "id": page_id,
+                "sourceFileId": f"{state}-source-grid",
+                "runtimeFileId": runtime_id,
+                "dimensionsPx": {"width": width_px, "height": height_px},
+                "colorSpace": grid["runtimeFrames"]["textureColorSpace"],
+                "pixelFormat": "rgba8",
+                "alphaMode": grid["runtimeFrames"]["alphaMode"],
+                "edgeRule": "zero-rgb-under-transparent",
+                "gutterPx": 0,
+                "gutterRule": "none",
+                "wrapMode": "clamp",
+                "sampling": {
+                    "generateMipmaps": False,
+                    "minFilter": "linear",
+                    "magFilter": "linear",
+                    "uvInsetPx": 0.5,
+                    "maxMipLevel": 0,
+                },
+            })
+            with Image.open(root / f"runtime/{asset}-{state}-{team}.webp") as runtime_image:
+                measured_alpha_bounds = alpha_bounds(runtime_image.convert("RGBA"))
+            full_rect = {"x": 0, "y": 0, "width": width_px, "height": height_px}
+            frames.append({
+                "id": frame_id,
+                "canvasPx": {"width": width_px, "height": height_px},
+                "groundPivotPx": {"x": anchor_x, "y": anchor_y},
+                "groundPivotStatus": "unreviewed-estimate",
+                "alphaBoundsPx": measured_alpha_bounds,
+                "fallbackRectPx": {"pageId": page_id, "rectPx": full_rect},
+                "frameRectsPx": [{
+                    "layerId": "building",
+                    "pageId": page_id,
+                    "rectPx": full_rect,
+                    "offsetPx": {"x": 0, "y": 0},
+                }],
+            })
+            clips.append({
+                "stateId": state,
+                "teamId": team,
+                "loop": False,
+                "sequence": [{"frameId": frame_id, "durationMs": 1000}],
+            })
+
+    occupancy_note = grid["worldGrid"].get("occupancy")
+    if gameplay_footprint:
+        occupancy_note = (
+            f"The {gameplay_footprint[0]}×{gameplay_footprint[1]} recommended footprint is only a hint; "
+            "map/gameplay data owns occupied cells."
+        )
+    if not occupancy_note:
+        occupancy_note = "No gameplay occupancy footprint is authored in this sprite pack."
+    notes = (
+        f"{len(states)} static state(s): {', '.join(states)}. {occupancy_note} "
+        f"The [{anchor_x}, {anchor_y}] projected ground-center pivot is an unreviewed estimate. "
+        f"Fixed {grid['sourceView']['azimuthDegrees']}° azimuth; no per-pixel depth; renderer integration remains pending."
+    )
+    half_width = render_width / 2
+    half_depth = world_depth / 2
+    manifest = {
+        "schemaVersion": 1,
+        "packId": root.name,
+        "packVersion": "1.0.0",
+        "maturity": "runtime-candidate",
+        "provenance": {
+            "license": "project-owned; original AI-generated artwork",
+            "source": f"Original {asset.replace('-', ' ').title()} source frames and unchanged sprite-grid.json; team runtime variants from the existing pack.",
+            "authoringTool": "OpenAI ImageGen; Pillow source normalization and team recolor; WebP packaging.",
+            "notes": notes,
+        },
+        "files": files,
+        "pages": pages,
+        "assets": [{
+            "id": asset,
+            "kind": "building",
+            **({"recommendedTileFootprint": {
+                "widthTiles": gameplay_footprint[0],
+                "heightTiles": gameplay_footprint[1],
+            }} if gameplay_footprint else {}),
+            "artBoundsWorld": {
+                "min": [-half_width, 0, -half_depth],
+                "max": [half_width, render_height, half_depth],
+            },
+            "heightWorld": render_height,
+            "sortAnchorWorld": [0, 0, 0],
+            "layers": [{
+                "id": "building",
+                "drawLayer": "midground",
+                "batchKey": f"building.{asset}",
+                "depthBiasWorld": 0,
+            }],
+            "frames": frames,
+            "clips": clips,
+        }],
+    }
+    (root / "sprite-atlas-pack-v1.json").write_text(json.dumps(manifest, indent=2) + "\n")
+
+
 def prepare_pack(asset: str) -> None:
     pack = PACKS[asset]
     root = pack["root"]
-    states = pack["states"]
-    footprint_cells = pack["footprint_cells"]
+    grid = json.loads((root / "sprite-grid.json").read_text())
+    if grid.get("asset") != asset:
+        raise ValueError(f"{root / 'sprite-grid.json'} names asset {grid.get('asset')!r}, expected {asset!r}")
+    states = tuple(grid["runtimeFrames"]["states"])
+    teams = tuple(grid["runtimeFrames"]["teams"])
+    gameplay_footprint = grid["worldGrid"].get("gameplayFootprintCells")
+    visual_base = grid["worldGrid"].get("visualBaseCells")
+    support_cells = tuple(gameplay_footprint or visual_base or (0, 0))
+    guide_label = ("GAMEPLAY FOOTPRINT HINT" if gameplay_footprint
+                   else "VISUAL BASE GUIDE · NO GAMEPLAY OCCUPANCY")
     source_dir = root / "source"
     runtime_dir = root / "runtime"
     runtime_dir.mkdir(parents=True, exist_ok=True)
@@ -162,16 +335,24 @@ def prepare_pack(asset: str) -> None:
         normalized_source_path = source_dir / "normalized" / f"{asset}-{state}.png"
         normalized_source_path.parent.mkdir(parents=True, exist_ok=True)
         normalized_source.save(normalized_source_path, "PNG", optimize=True)
-        for team, source in (("azure", normalized_source), ("ember", recolor_ember(original))):
-            frame = source if team == "azure" else normalize_frame(source, reference_width)
+        for team in teams:
+            if team == "azure":
+                source = original
+            elif team == "ember":
+                source = recolor_ember(original)
+            else:
+                raise ValueError(f"unsupported building sprite team variant {team!r}")
+            frame = normalized_source if team == "azure" else normalize_frame(source, reference_width)
             target = runtime_dir / f"{asset}-{state}-{team}.webp"
             write_runtime(frame, target)
-    for team in ("azure", "ember"):
-        build_contact_sheet(root, states, team, footprint_cells)
+    for team in teams:
+        build_contact_sheet(root, states, team, support_cells, guide_label)
+    write_sprite_atlas_manifest(root, grid)
     print(
-        f"{asset}: wrote {len(states) * 2} {FRAME_PX}×{FRAME_PX} runtime frames; "
+        f"{asset}: wrote {len(states) * len(teams)} {FRAME_PX}×{FRAME_PX} runtime frames and canonical sprite-atlas-pack-v1.json; "
         f"reference alpha width {reference_width}px; "
-        f"{footprint_cells}×{footprint_cells} anchor y={ground_anchor_y(footprint_cells)}px."
+        f"{support_cells[0]}×{support_cells[1]} visual support guide; "
+        f"anchor y={ground_anchor_y(support_cells[1])}px."
     )
 
 
