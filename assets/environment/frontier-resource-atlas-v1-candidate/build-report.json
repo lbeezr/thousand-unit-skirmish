@@ -1,0 +1,266 @@
+{
+  "sourceLineage": {
+    "oak-full": {
+      "path": "assets/environment/frontier-interactive-v1/oak-full.png",
+      "sha256": "e99f1c70c28cedd8406dea44b72186f25a40ef88c1a3f72d7690298f5e584753",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      }
+    },
+    "oak-worked": {
+      "path": "assets/environment/frontier-interactive-v1/oak-worked.png",
+      "sha256": "17f433b67aa6a4a0784ecac1293aba4796c3f2ab7491b6bf3bcf61f49de8018f",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      }
+    },
+    "oak-low": {
+      "path": "assets/environment/frontier-interactive-v1/oak-low.png",
+      "sha256": "ea255be33ebc77d62a5fb1176175565ef56745ef6568b74a75ed228022127528",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      }
+    },
+    "oak-depleted": {
+      "path": "assets/environment/frontier-interactive-v1/oak-depleted.png",
+      "sha256": "65c38d012c7184d01761bf53144be407fa03c215e66c150e9893e5a35c0c1371",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      }
+    },
+    "berries-full": {
+      "path": "assets/environment/frontier-interactive-v1/berries-full.png",
+      "sha256": "3ca2f8162316e1babcda9357cb51856fa56ce1ff7706d03ef8d95bbcb0a04787",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    "berries-worked": {
+      "path": "assets/environment/frontier-interactive-v1/berries-worked.png",
+      "sha256": "aa883e92ba69f16a0e43cdf23669961a9608c56dd731a330290012242f4afb18",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    "berries-low": {
+      "path": "assets/environment/frontier-interactive-v1/berries-low.png",
+      "sha256": "9a0ad21aa4b29f73a5a54df779dbe2a73cfecf8ff8a4ad31b610fad2d8b54e12",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    "berries-depleted": {
+      "path": "assets/environment/frontier-interactive-v1/berries-depleted.png",
+      "sha256": "7a601be8035a3af2ede958b170bf001a11add395c4c1431d5d84ac0751923011",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      }
+    }
+  },
+  "frames": {
+    "oak-full": {
+      "alphaBoundsPxThreshold96": {
+        "x": 37,
+        "y": 40,
+        "width": 1164,
+        "height": 1188
+      },
+      "layerBoundsPx": {
+        "foliage-back": {
+          "x": 32,
+          "y": 35,
+          "width": 1176,
+          "height": 1199
+        },
+        "wood-structure": {
+          "x": 0,
+          "y": 19,
+          "width": 1212,
+          "height": 1264
+        }
+      },
+      "visibleRgbaReconstruction": "exact"
+    },
+    "oak-worked": {
+      "alphaBoundsPxThreshold96": {
+        "x": 61,
+        "y": 36,
+        "width": 1131,
+        "height": 1194
+      },
+      "layerBoundsPx": {
+        "foliage-back": {
+          "x": 58,
+          "y": 33,
+          "width": 1137,
+          "height": 1199
+        },
+        "wood-structure": {
+          "x": 55,
+          "y": 21,
+          "width": 1151,
+          "height": 1230
+        }
+      },
+      "visibleRgbaReconstruction": "exact"
+    },
+    "oak-low": {
+      "alphaBoundsPxThreshold96": {
+        "x": 59,
+        "y": 33,
+        "width": 1136,
+        "height": 1202
+      },
+      "layerBoundsPx": {
+        "foliage-back": {
+          "x": 60,
+          "y": 30,
+          "width": 1136,
+          "height": 1207
+        },
+        "wood-structure": {
+          "x": 0,
+          "y": 23,
+          "width": 1199,
+          "height": 1215
+        }
+      },
+      "visibleRgbaReconstruction": "exact"
+    },
+    "oak-depleted": {
+      "alphaBoundsPxThreshold96": {
+        "x": 301,
+        "y": 869,
+        "width": 696,
+        "height": 374
+      },
+      "layerBoundsPx": {
+        "wood-structure": {
+          "x": 76,
+          "y": 39,
+          "width": 1025,
+          "height": 1244
+        }
+      },
+      "visibleRgbaReconstruction": "exact"
+    },
+    "berries-full": {
+      "alphaBoundsPxThreshold96": {
+        "x": 191,
+        "y": 147,
+        "width": 1153,
+        "height": 740
+      },
+      "layerBoundsPx": {
+        "foliage-back": {
+          "x": 89,
+          "y": 143,
+          "width": 1413,
+          "height": 857
+        },
+        "wood-structure": {
+          "x": 177,
+          "y": 32,
+          "width": 1279,
+          "height": 938
+        },
+        "fruit-front": {
+          "x": 296,
+          "y": 253,
+          "width": 978,
+          "height": 727
+        }
+      },
+      "visibleRgbaReconstruction": "exact"
+    },
+    "berries-worked": {
+      "alphaBoundsPxThreshold96": {
+        "x": 53,
+        "y": 68,
+        "width": 1432,
+        "height": 900
+      },
+      "layerBoundsPx": {
+        "foliage-back": {
+          "x": 49,
+          "y": 62,
+          "width": 1473,
+          "height": 962
+        },
+        "wood-structure": {
+          "x": 72,
+          "y": 35,
+          "width": 1345,
+          "height": 941
+        },
+        "fruit-front": {
+          "x": 163,
+          "y": 163,
+          "width": 1222,
+          "height": 773
+        }
+      },
+      "visibleRgbaReconstruction": "exact"
+    },
+    "berries-low": {
+      "alphaBoundsPxThreshold96": {
+        "x": 35,
+        "y": 26,
+        "width": 1469,
+        "height": 959
+      },
+      "layerBoundsPx": {
+        "foliage-back": {
+          "x": 0,
+          "y": 17,
+          "width": 1524,
+          "height": 977
+        },
+        "wood-structure": {
+          "x": 88,
+          "y": 70,
+          "width": 1363,
+          "height": 900
+        },
+        "fruit-front": {
+          "x": 164,
+          "y": 105,
+          "width": 1284,
+          "height": 861
+        }
+      },
+      "visibleRgbaReconstruction": "exact"
+    },
+    "berries-depleted": {
+      "alphaBoundsPxThreshold96": {
+        "x": 43,
+        "y": 40,
+        "width": 1446,
+        "height": 953
+      },
+      "layerBoundsPx": {
+        "foliage-back": {
+          "x": 38,
+          "y": 37,
+          "width": 1456,
+          "height": 963
+        },
+        "wood-structure": {
+          "x": 0,
+          "y": 29,
+          "width": 1485,
+          "height": 947
+        }
+      },
+      "visibleRgbaReconstruction": "exact"
+    }
+  }
+}
