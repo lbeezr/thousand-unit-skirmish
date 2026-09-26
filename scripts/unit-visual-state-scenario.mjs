@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {
-  unitActionPoseAllowed, unitCargoVisualState,
+  unitActionPoseAllowed, unitCargoVisualState, unitWorkerActionPose,
 } from '../src/unit-visual-state.mjs';
 
 assert.equal(unitActionPoseAllowed(100, 0), true,
@@ -37,4 +37,21 @@ assert.equal(unitCargoVisualState('worker', 100, false, 4, 'food'), 'none',
 assert.equal(unitActionPoseAllowed(0, 1234), false,
   'defeated units must not show action poses during their defeat animation');
 
-process.stdout.write('Unit visual-state scenario passed: defeat priority and fog-safe cargo mapping.\n');
+assert.equal(unitWorkerActionPose('worker', true, 'gathering', 'wood', false), 'chopping',
+  'wood gatherers use the broad chopping cue');
+assert.equal(unitWorkerActionPose('worker', true, 'gathering', 'food', false), 'berry-gathering',
+  'food gatherers use the shorter berry-picking cue');
+assert.equal(unitWorkerActionPose('worker', true, 'gathering', null, false), 'gathering',
+  'gathering without a known resource uses a neutral cue');
+assert.equal(unitWorkerActionPose('worker', true, 'building', 'wood', false), 'construction',
+  'building keeps the construction cue regardless of carried cargo');
+assert.equal(unitWorkerActionPose('worker', true, 'returning', 'food', false), 'none',
+  'workers returning to base do not swing');
+assert.equal(unitWorkerActionPose('worker', true, 'gathering', 'wood', true), 'none',
+  'workers moving to a resource do not swing');
+assert.equal(unitWorkerActionPose('worker', false, 'gathering', 'wood', false), 'none',
+  'fog-hidden workers do not expose an action pose');
+assert.equal(unitWorkerActionPose('infantry', true, 'gathering', 'wood', false), 'none',
+  'non-workers do not inherit worker action poses');
+
+process.stdout.write('Unit visual-state scenario passed: defeat priority, fog safety, and worker action mapping.\n');
