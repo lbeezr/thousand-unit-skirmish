@@ -17,8 +17,11 @@ The battlefield canvas exposes `data-cursor-mode` values consumed by `style.css`
 | `pan` | native cursor | — | — | grab |
 | `panning` | native cursor | — | — | grabbing |
 
-Cursor images use transparent backgrounds. `style.css` points each mode at its
-runtime PNG and retains the manifest's keyword fallback, for example:
+Cursor images use transparent backgrounds. The ordinary pointer is a neutral
+field standard, with the command state carried by the badge; its spear tip stays
+at the existing `(3, 3)` hotspot. `box-select` remains a centered frame.
+`style.css` points each mode at its runtime PNG and retains the manifest's
+keyword fallback, for example:
 
 ```css
 --cursor-select: url('/assets/ui/cursors/select.png') 3 3, crosshair;
