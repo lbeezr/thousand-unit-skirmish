@@ -10,6 +10,8 @@ export function cueForNotice(message, { localTeam = null, tokenized = false } = 
   if (notice.startsWith('RALLY POINT ')) return 'gather';
   if (/^(WORKER|INFANTRY|ARCHER) QUEUED ·/.test(notice)) return 'queue';
   if (/^.+ STARTED ·/.test(notice) && !notice.startsWith('PLANNING ')) return 'queue';
+  if (teamName && (notice.startsWith(`${teamName} INFANTRY FORGING COMPLETE ·`)
+    || notice.startsWith(`${teamName} ARCHER FLETCHING COMPLETE ·`))) return 'research-complete';
   if (notice.includes(' COMPLETE ·') && teamName && notice.startsWith(`${teamName} `)) return 'complete';
   if (teamName && notice.startsWith(`${teamName} `) && notice.endsWith(' READY')) return 'complete';
   if (notice.includes(' PLACED ·') && tokenized) return 'build';

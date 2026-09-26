@@ -7,6 +7,9 @@ assert.equal(cueForNotice('MOVE REJECTED · TARGET UNREACHABLE', { localTeam: 0,
 assert.equal(cueForNotice('WORKER QUEUED · 1/5 · 50 FOOD', { localTeam: 0 }), 'queue');
 assert.equal(cueForNotice('AZURE BARRACKS COMPLETE · TRAIN INFANTRY', { localTeam: 0 }), 'complete');
 assert.equal(cueForNotice('EMBER BARRACKS COMPLETE · TRAIN INFANTRY', { localTeam: 0 }), null);
+assert.equal(cueForNotice('AZURE INFANTRY FORGING COMPLETE · +20% ATTACK', { localTeam: 0 }), 'research-complete');
+assert.equal(cueForNotice('EMBER ARCHER FLETCHING COMPLETE · +20% ATTACK', { localTeam: 0 }), null);
+assert.equal(cueForNotice('EMBER ARCHER FLETCHING COMPLETE · +20% ATTACK', { localTeam: 1 }), 'research-complete');
 assert.equal(cueForNotice('ARCHERY RANGE PLACED · WORKERS BUILDING', { localTeam: 0, tokenized: true }), 'build');
 assert.equal(cueForNotice('AZURE BARRACKS DESTROYED · PRODUCTION QUEUE LOST', { localTeam: 0 }), 'base-lost');
 assert.equal(cueForNotice('EMBER BARRACKS DESTROYED · PRODUCTION QUEUE LOST', { localTeam: 0 }), null);
@@ -223,6 +226,26 @@ try {
   assert.ok([...victoryPitches].every((pitch) => pitch > 780),
     'match victory stays above the selection cue sweep');
   criticalAudio.dispose();
+
+  const researchAudio = createGameAudio({
+    storage: { getItem: () => null, setItem() {} },
+    doc: { hidden: false, addEventListener() {}, removeEventListener() {} },
+  });
+  researchAudio.unlock();
+  const researchStart = createdContext.oscillatorNodes.length;
+  assert.equal(researchAudio.play('research-complete'), true, 'research completion schedules its own cue');
+  const researchProfile = profile(createdContext.oscillatorNodes.slice(researchStart));
+  assert.deepEqual(researchProfile, [
+    { wave: 'triangle', from: 523.25, to: 523.25 },
+    { wave: 'triangle', from: 622.25, to: 622.25 },
+    { wave: 'triangle', from: 783.99, to: 783.99 },
+  ], 'research completion uses a rising C-minor triad');
+  const researchPitches = new Set(researchProfile.map(({ from }) => from));
+  assert.ok([...researchPitches].every((pitch) => !productionPitches.has(pitch)
+    && !objectivePitches.has(pitch) && !victoryPitches.has(pitch)),
+  'research completion shares no fundamentals with production, objective, or victory cues');
+  assert.equal(researchAudio.play('research-complete'), false, 'repeated research cues are rate limited');
+  researchAudio.dispose();
 } finally {
   if (oldAudioContext === undefined) delete globalThis.AudioContext;
   else globalThis.AudioContext = oldAudioContext;
