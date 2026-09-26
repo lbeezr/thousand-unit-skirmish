@@ -1174,9 +1174,8 @@ async function runStaticPilotPlan() {
       frames: [],
       measurements: [],
       adapterEvidence: {
-        pilotPlan: report,
         notes: [
-          'Plan-only output; no server, browser, WebGL context, or screenshots were started.',
+          'Plan-only output; the structured plan is retained in stdout.log. No server, browser, WebGL context, or screenshots were started.',
           'The GPU capture command is opt-in and is not executed by this plan scenario.',
         ],
       },
@@ -1250,9 +1249,8 @@ async function runStaticPreflight() {
       frames: [],
       measurements: [],
       adapterEvidence: {
-        preflight: report,
         notes: [
-          'CPU-only static preflight; no server, browser, WebGL context, or screenshots were started.',
+          'CPU-only static preflight; the structured report is retained in stdout.log. No server, browser, WebGL context, or screenshots were started.',
           'The 40-frame plan is a declaration only and is not capture evidence.',
           'The GPU capture scenario separately verifies browser fetches and fog-visible map rows before every screenshot.',
         ],
