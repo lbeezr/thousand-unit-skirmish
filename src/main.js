@@ -52,6 +52,10 @@ import {
   shouldBlockEdgeScrollForFocus,
 } from './camera-controls.mjs';
 import {
+  cameraArrowInputAllowed, cameraTargetDeltaForScreenFocus, createCameraArrowKeys,
+  getNavigationSettings, mapFitZoom, setNavigationSettings,
+} from './navigation-settings.mjs';
+import {
   chooseUnitPickCandidate,
   isSameUnitDoubleClick,
   livingIdleWorkerIds,
@@ -63,6 +67,10 @@ import {
 
 let mapDefinition = null;
 let edgeScrollPointer = null;
+const heldCameraKeys = createCameraArrowKeys();
+let lastKeyboardPanTime = 0;
+let cameraMinZoom = 0.48;
+let mapFitActive = false;
 let MAP_WIDTH = 64;
 let MAP_HEIGHT = 64;
 let MAP_HALF_X = MAP_WIDTH / 2;
@@ -345,7 +353,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setClearColor(0x859175, 1);
 viewport.prepend(renderer.domElement);
-renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Push the mouse against any screen edge to scroll the camera, middle-drag / Space-drag to pan, or scroll to zoom toward the pointer. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
+renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Use the arrow keys to move the camera, middle drag or Space + drag to pan, scroll to zoom toward the pointer, or push the mouse against any screen edge to scroll when edge scroll is enabled. Use Center selection, Home base, or Fit map to navigate. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
 renderer.domElement.dataset.cursorMode = 'select';
 renderer.domElement.tabIndex = 0;
 
@@ -523,12 +531,107 @@ function setCamera() {
     z: cameraTarget.z,
     halfX: MAP_HALF_X,
     halfZ: MAP_HALF_Z,
+    anchorOffset: cameraTargetHudSafeOffset(),
   });
   if (clampedTarget.x !== cameraTarget.x || clampedTarget.z !== cameraTarget.z) {
     cameraTarget.x = clampedTarget.x;
     cameraTarget.z = clampedTarget.z;
     setCamera();
   }
+}
+
+function cameraSafeRect() {
+  const bounds = renderer.domElement.getBoundingClientRect();
+  const dock = document.querySelector('.control-dock')?.getBoundingClientRect();
+  const toolbar = document.querySelector('.camera-toolbar')?.getBoundingClientRect();
+  const objective = objectivePanel?.hidden ? null : objectivePanel.getBoundingClientRect();
+  const minimap = document.querySelector('.minimap-panel')?.getBoundingClientRect();
+  const right = Math.min(bounds.right - 12,
+    dock && dock.width ? dock.right - 8 : bounds.right - 12,
+    objective && objective.width ? objective.left - 8 : bounds.right - 12,
+    minimap && minimap.width ? minimap.left - 8 : bounds.right - 12);
+  const topbarBottom = document.querySelector('.topbar')?.getBoundingClientRect().bottom ?? bounds.top;
+  const labelBottom = document.querySelector('.map-label')?.getBoundingClientRect().bottom ?? bounds.top;
+  const toolbarIsUpper = window.matchMedia('(max-width: 920px)').matches;
+  const top = Math.max(bounds.top + 8, topbarBottom + 8, labelBottom + 8,
+    toolbarIsUpper && toolbar?.height ? toolbar.bottom + 8 : bounds.top);
+  const bottom = Math.min(bounds.bottom - 8,
+    !toolbarIsUpper && toolbar?.height ? toolbar.top - 8 : bounds.bottom - 8,
+    dock && dock.height ? dock.top - 8 : bounds.bottom - 8);
+  return { left: bounds.left + 12, top, right, bottom, width: Math.max(1, right - (bounds.left + 12)), height: Math.max(1, bottom - top) };
+}
+
+function cameraTargetHudSafeOffset() {
+  const rect = renderer.domElement.getBoundingClientRect();
+  const safe = cameraSafeRect();
+  const centerWorld = worldAt(rect.left + rect.width / 2, rect.top + rect.height / 2);
+  const safeWorld = worldAt(safe.left + safe.width / 2, safe.top + safe.height / 2);
+  if (!centerWorld || !safeWorld) return { x: 0, z: 0 };
+  return { x: centerWorld.x - safeWorld.x, z: centerWorld.z - safeWorld.z };
+}
+
+function projectedMapBounds() {
+  const bounds = { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity };
+  const width = Math.max(1, renderer.domElement.clientWidth);
+  const height = Math.max(1, renderer.domElement.clientHeight);
+  for (const x of [-MAP_HALF_X, MAP_HALF_X]) {
+    for (const z of [-MAP_HALF_Z, MAP_HALF_Z]) {
+      const projected = new THREE.Vector3(x, 0, z).project(camera);
+      const pixelX = width * (projected.x + 1) / 2;
+      const pixelY = height * (1 - projected.y) / 2;
+      bounds.left = Math.min(bounds.left, pixelX);
+      bounds.right = Math.max(bounds.right, pixelX);
+      bounds.top = Math.min(bounds.top, pixelY);
+      bounds.bottom = Math.max(bounds.bottom, pixelY);
+    }
+  }
+  return bounds;
+}
+
+function getMapFitZoom() {
+  if (!mapDefinition) return 0.48;
+  const priorZoom = camera.zoom;
+  camera.zoom = 1;
+  camera.updateProjectionMatrix();
+  setCamera();
+  const projected = projectedMapBounds();
+  const safe = cameraSafeRect();
+  const fitZoom = mapFitZoom(projected, safe.width, safe.height);
+  camera.zoom = priorZoom;
+  camera.updateProjectionMatrix();
+  setCamera();
+  return fitZoom || 0.48;
+}
+
+function focusGroundPointAtScreen(point, clientX, clientY) {
+  mapFitActive = false;
+  const rect = renderer.domElement.getBoundingClientRect();
+  const projected = new THREE.Vector3(point.x, 0, point.z).project(camera);
+  const pointX = rect.left + (projected.x + 1) * rect.width / 2;
+  const pointY = rect.top + (1 - projected.y) * rect.height / 2;
+  const underPoint = worldAt(pointX, pointY);
+  const atTarget = worldAt(clientX, clientY);
+  if (!underPoint || !atTarget) return;
+  const delta = cameraTargetDeltaForScreenFocus(underPoint, atTarget);
+  cameraTarget.x += delta.x;
+  cameraTarget.z += delta.z;
+  setCamera();
+}
+
+function fitMapToViewport() {
+  if (!mapDefinition) return;
+  const safe = cameraSafeRect();
+  const fitZoom = getMapFitZoom();
+  cameraMinZoom = Math.min(0.48, fitZoom);
+  zoom = fitZoom;
+  camera.zoom = zoom;
+  camera.updateProjectionMatrix();
+  setCamera();
+  focusGroundPointAtScreen({ x: 0, z: 0 }, safe.left + safe.width / 2, safe.top + safe.height / 2);
+  mapFitActive = true;
+  resizeResourceCallouts();
+  updateResourceNodeCallouts(performance.now(), true);
+  drawMinimap(performance.now(), true);
 }
 
 function resize() {
@@ -543,6 +646,14 @@ function resize() {
   camera.zoom = zoom;
   camera.updateProjectionMatrix();
   renderer.setSize(width, height, false);
+  cameraMinZoom = Math.min(0.48, getMapFitZoom());
+  if (mapFitActive && mapDefinition) {
+    fitMapToViewport();
+  } else if (zoom < cameraMinZoom) {
+    zoom = cameraMinZoom;
+    camera.zoom = zoom;
+    camera.updateProjectionMatrix();
+  }
   setCamera();
   resizeResourceCallouts();
   updateResourceNodeCallouts(performance.now(), true);
@@ -2354,6 +2465,7 @@ function drawMinimap(now = performance.now(), force = false) {
 }
 
 function focusCameraFromMinimap(event) {
+  mapFitActive = false;
   const rect = minimapCanvas.getBoundingClientRect();
   const mapRect = minimapMapRect(rect.width, rect.height);
   const pixelX = THREE.MathUtils.clamp(event.clientX - rect.left, 0, rect.width);
@@ -6634,8 +6746,9 @@ document.addEventListener('pointerout', (event) => {
 renderer.domElement.addEventListener('wheel', (event) => {
   event.preventDefault();
   lastUnitPickState = null;
-  const nextZoom = THREE.MathUtils.clamp(zoom * Math.exp(-event.deltaY * 0.001), 0.48, 2.3);
+  const nextZoom = THREE.MathUtils.clamp(zoom * Math.exp(-event.deltaY * 0.001), cameraMinZoom, 2.3);
   if (nextZoom === zoom) return;
+  mapFitActive = false;
   const anchorBeforeZoom = worldAt(event.clientX, event.clientY);
   zoom = nextZoom;
   camera.zoom = zoom;
@@ -6682,6 +6795,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
   if (event.button === 1 || (event.button === 0 && spaceDown)) {
     lastFriendlyUnitClick = null;
     lastUnitPickState = null;
+    mapFitActive = false;
     pan = { x: event.clientX, y: event.clientY };
     syncBattlefieldCursor();
     renderer.domElement.setPointerCapture(event.pointerId);
@@ -6868,6 +6982,9 @@ const matchMenuToggle = document.querySelector('#match-menu-toggle');
 const helpToggle = document.querySelector('#help-toggle');
 const appShell = document.querySelector('.app-shell');
 const fullscreenToggle = document.querySelector('#fullscreen-toggle');
+const cameraSpeedInput = document.querySelector('#camera-speed');
+const cameraSpeedValue = document.querySelector('#camera-speed-value');
+const edgeScrollInput = document.querySelector('#edge-scroll-enabled');
 const fullscreenSupported = Boolean(document.fullscreenEnabled
   && typeof appShell?.requestFullscreen === 'function'
   && typeof document.exitFullscreen === 'function');
@@ -6886,6 +7003,58 @@ function syncFullscreenToggle() {
 }
 
 syncFullscreenToggle();
+function syncNavigationControls() {
+  const settings = getNavigationSettings();
+  cameraSpeedInput.value = String(Math.round(settings.cameraSpeed * 100));
+  cameraSpeedValue.value = `${Math.round(settings.cameraSpeed * 100)}%`;
+  edgeScrollInput.checked = settings.edgeScrollEnabled;
+}
+syncNavigationControls();
+cameraSpeedInput.addEventListener('input', () => {
+  setNavigationSettings({ cameraSpeed: Number(cameraSpeedInput.value) / 100 });
+  syncNavigationControls();
+});
+edgeScrollInput.addEventListener('change', () => {
+  setNavigationSettings({ edgeScrollEnabled: edgeScrollInput.checked });
+  if (!edgeScrollInput.checked) edgeScrollPointer = null;
+});
+
+function centerCameraOnSelection() {
+  const building = latestBuildings.find((item) => item.id === selectedBuildingId && item.team === localTeam);
+  if (building) {
+    const safe = cameraSafeRect();
+    focusGroundPointAtScreen({ x: building.x, z: building.z },
+      safe.left + safe.width / 2, safe.top + safe.height / 2);
+    drawMinimap(performance.now(), true);
+    return;
+  }
+  const selectedUnits = [...selected].map((id) => units[id]).filter((unit) => unit && unit.hp > 0);
+  if (selectedUnits.length === 0) {
+    showToast('SELECT A UNIT OR BUILDING FIRST');
+    return;
+  }
+  const point = selectedUnits.reduce((center, unit) => ({ x: center.x + unit.renderX, z: center.z + unit.renderZ }), { x: 0, z: 0 });
+  point.x /= selectedUnits.length;
+  point.z /= selectedUnits.length;
+  const safe = cameraSafeRect();
+  focusGroundPointAtScreen(point, safe.left + safe.width / 2, safe.top + safe.height / 2);
+  drawMinimap(performance.now(), true);
+}
+
+function centerCameraOnHomeBase() {
+  if (!mapDefinition || localTeam === null) {
+    showToast('YOUR TOWN CENTER IS NOT AVAILABLE');
+    return;
+  }
+  const point = townCenterSpawnPosition(mapDefinition.spawnPoints, localTeam, MAP_WIDTH, MAP_HEIGHT);
+  const safe = cameraSafeRect();
+  focusGroundPointAtScreen(point, safe.left + safe.width / 2, safe.top + safe.height / 2);
+  drawMinimap(performance.now(), true);
+}
+
+document.querySelector('#camera-center-selection').addEventListener('click', centerCameraOnSelection);
+document.querySelector('#camera-home-base').addEventListener('click', centerCameraOnHomeBase);
+document.querySelector('#camera-fit-map').addEventListener('click', fitMapToViewport);
 fullscreenToggle.addEventListener('click', async () => {
   if (!fullscreenSupported) return;
   try {
@@ -6908,12 +7077,14 @@ function closeHudPanels({ restoreFocus = false } = {}) {
   hudScrim.hidden = true;
   matchMenuToggle.setAttribute('aria-expanded', 'false');
   helpToggle.setAttribute('aria-expanded', 'false');
+  clearHeldCameraKeys();
   if (restoreFocus) trigger?.focus();
 }
 
 function closeScenarioBrief({ restoreFocus = false } = {}) {
   scenarioBriefPanel.hidden = true;
   scenarioBriefToggle.setAttribute('aria-expanded', 'false');
+  clearHeldCameraKeys();
   if (restoreFocus) scenarioBriefToggle.focus();
 }
 
@@ -7218,6 +7389,61 @@ function keyboardTargetIsEditing(event) {
     || Boolean(target?.closest('input, textarea, select, [contenteditable], dialog, [role="tab"]'));
 }
 
+function clearHeldCameraKeys() {
+  heldCameraKeys.clear();
+  lastKeyboardPanTime = 0;
+}
+
+function cameraNavigationKeydown(event) {
+  if (!cameraArrowInputAllowed({
+    key: event.key,
+    altKey: event.altKey,
+    ctrlKey: event.ctrlKey,
+    metaKey: event.metaKey,
+    shiftKey: event.shiftKey,
+    defaultPrevented: event.defaultPrevented,
+    mapAvailable: Boolean(mapDefinition),
+    pageVisible: document.visibilityState === 'visible',
+    dialogOpen: Boolean(document.querySelector('dialog[open]')),
+    menuOpen: !matchMenu.hidden || !helpPanel.hidden || !scenarioBriefPanel.hidden,
+    mapStudioOpen: ui.mapStudio.open,
+    buildPlacement: buildPlacementActive,
+    selectionDragging: Boolean(drag),
+    manualPan: Boolean(pan),
+    targetOrder: Boolean(tapOrderArmed || tapOrderPointer),
+    editingTarget: keyboardTargetIsEditing(event),
+  })) return false;
+  heldCameraKeys.press(event.key);
+  event.preventDefault();
+  return true;
+}
+
+function moveKeyboardCamera(now) {
+  if (heldCameraKeys.pressed.length === 0) return;
+  if (document.visibilityState !== 'visible' || keyboardTargetIsEditing({ target: document.activeElement })
+    || ui.mapStudio.open || document.querySelector('dialog[open]') || buildPlacementActive
+    || drag || pan || tapOrderArmed || tapOrderPointer) {
+    clearHeldCameraKeys();
+    return;
+  }
+  const elapsed = lastKeyboardPanTime ? Math.min(0.1, (now - lastKeyboardPanTime) / 1000) : 0;
+  lastKeyboardPanTime = now;
+  if (elapsed <= 0) return;
+  const direction = heldCameraKeys.direction();
+  const pixels = 650 * getNavigationSettings().cameraSpeed * elapsed;
+  const delta = cameraPanDeltaFromScreen({
+    dx: -direction.x * pixels,
+    dy: -direction.y * pixels,
+    viewportHeight: Math.max(1, viewport.clientHeight),
+    baseFrustum,
+    zoom,
+  });
+  mapFitActive = false;
+  cameraTarget.x += delta.x;
+  cameraTarget.z += delta.z;
+  setCamera();
+}
+
 function controlGroupIndexFromKey(event) {
   const digitCode = /^(?:Digit|Numpad)([0-9])$/.exec(event.code);
   const digit = digitCode?.[1] ?? (/^[0-9]$/.test(event.key) ? event.key : null);
@@ -7231,6 +7457,7 @@ window.addEventListener('keydown', (event) => {
   lastUnitPickState = null;
   if (document.fullscreenElement === appShell && event.key === 'Escape') return;
   const editing = keyboardTargetIsEditing(event);
+  if (cameraNavigationKeydown(event)) return;
   const buttonFocused = event.target instanceof Element && Boolean(event.target.closest('button'));
   if (event.code === 'Space') {
     if (!editing && !buttonFocused) {
@@ -7284,6 +7511,7 @@ window.addEventListener('keydown', (event) => {
   }
 });
 window.addEventListener('keyup', (event) => {
+  if (event.key.startsWith('Arrow')) heldCameraKeys.release(event.key);
   if (event.code !== 'Space') return;
   spaceDown = false;
   syncBattlefieldCursor();
@@ -7291,6 +7519,7 @@ window.addEventListener('keyup', (event) => {
 window.addEventListener('blur', () => {
   if (tapOrderArmed) setTapOrderArmed(false, false);
   spaceDown = false;
+  clearHeldCameraKeys();
   pan = null;
   edgeScrollPointer = null;
   syncBattlefieldCursor();
@@ -7299,7 +7528,14 @@ window.addEventListener('blur', () => {
   lastUnitPickState = null;
 });
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState !== 'visible') edgeScrollPointer = null;
+  if (document.visibilityState !== 'visible') {
+    edgeScrollPointer = null;
+    clearHeldCameraKeys();
+  }
+});
+document.addEventListener('focusin', (event) => {
+  if (event.target instanceof Element
+    && event.target.closest('input, textarea, select, [contenteditable], dialog, [role="tab"]')) clearHeldCameraKeys();
 });
 
 for (const button of document.querySelectorAll('.size-options button')) {
@@ -8087,6 +8323,7 @@ let renderStatsTime = 0;
 let lastIdlePoseStep = -1;
 function animate(now) {
   requestAnimationFrame(animate);
+  moveKeyboardCamera(now);
   syncUnitDetailLevel();
   renderScenarioEventCountdown(now);
   animateBuildingCombatFeedback(now);
@@ -8110,11 +8347,12 @@ function animate(now) {
           'button, a[href], [role="button"], [role="tab"], [tabindex]:not([tabindex="-1"])',
         ) && activeElement.matches(':focus-visible'),
       });
+    const settings = getNavigationSettings();
     const eligible = canEdgeScroll({
       pointerType: edgeScrollPointer.pointerType,
       buttons: edgeScrollPointer.buttons,
       insideViewport,
-      mapAvailable: Boolean(mapDefinition),
+      mapAvailable: Boolean(mapDefinition) && settings.edgeScrollEnabled,
       pageVisible: document.visibilityState === 'visible',
       selectionDragging: Boolean(drag),
       manualPan: Boolean(pan),
@@ -8129,11 +8367,12 @@ function animate(now) {
     if (eligible) {
       const direction = edgeScrollDirection(localX, localY, rect.width, rect.height, CAMERA_EDGE_ZONE_PX);
       if (direction.x || direction.y) {
-        const pixels = CAMERA_EDGE_SPEED_PX_PER_SECOND * frameDelta;
+        const pixels = CAMERA_EDGE_SPEED_PX_PER_SECOND * settings.cameraSpeed * frameDelta;
         const unitsPerPixel = baseFrustum / (Math.max(1, viewport.clientHeight) * zoom);
         const delta = edgeScrollCameraDelta(direction.x, direction.y, pixels, unitsPerPixel);
         cameraTarget.x += delta.x;
         cameraTarget.z += delta.z;
+        mapFitActive = false;
         setCamera();
       }
     }

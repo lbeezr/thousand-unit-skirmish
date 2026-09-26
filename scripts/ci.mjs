@@ -37,6 +37,7 @@ const syntaxFiles = [
 for (const file of syntaxFiles) run(['--check', file], `Syntax: ${file}`);
 
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
+run(['--test', 'scripts/navigation-settings.test.mjs'], 'Camera navigation settings and controls');
 
 const scenarios = [
   ['scripts/client-asset-allowlist-scenario.mjs', 'Client static asset allowlist'],
