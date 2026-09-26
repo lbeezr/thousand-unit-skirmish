@@ -9,6 +9,16 @@
   --lime: #d5ef78;
   --blue: #73b8e8;
   --ember: #ef886c;
+  --cursor-select: crosshair;
+  --cursor-box-select: crosshair;
+  --cursor-move: crosshair;
+  --cursor-attack-move: crosshair;
+  --cursor-gather: crosshair;
+  --cursor-rally: crosshair;
+  --cursor-build-valid: crosshair;
+  --cursor-build-blocked: not-allowed;
+  --cursor-pan: grab;
+  --cursor-panning: grabbing;
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -61,6 +71,16 @@ h2 { font-size: 16px; font-weight: 700; }
 .workspace { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; padding: 18px 0 14px; }
 .viewport { position: relative; min-width: 0; min-height: 420px; overflow: hidden; border: 1px solid rgba(214,226,197,.13); border-radius: 8px; background: #77836b; box-shadow: 0 18px 60px rgba(0,0,0,.2), inset 0 0 70px rgba(15,25,17,.15); }
 .viewport canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; outline: none; }
+.viewport canvas[data-cursor-mode="select"] { cursor: var(--cursor-select, crosshair); }
+.viewport canvas[data-cursor-mode="box-select"] { cursor: var(--cursor-box-select, crosshair); }
+.viewport canvas[data-cursor-mode="move"] { cursor: var(--cursor-move, crosshair); }
+.viewport canvas[data-cursor-mode="attack-move"] { cursor: var(--cursor-attack-move, crosshair); }
+.viewport canvas[data-cursor-mode="gather"] { cursor: var(--cursor-gather, crosshair); }
+.viewport canvas[data-cursor-mode="rally"] { cursor: var(--cursor-rally, crosshair); }
+.viewport canvas[data-cursor-mode="build-valid"] { cursor: var(--cursor-build-valid, crosshair); }
+.viewport canvas[data-cursor-mode="build-blocked"] { cursor: var(--cursor-build-blocked, not-allowed); }
+.viewport canvas[data-cursor-mode="pan"] { cursor: var(--cursor-pan, grab); }
+.viewport canvas[data-cursor-mode="panning"] { cursor: var(--cursor-panning, grabbing); }
 .viewport > canvas:focus-visible { outline: 1px solid var(--lime); outline-offset: -2px; }
 .viewport-wash { pointer-events: none; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(16,24,17,.2), transparent 17%, transparent 76%, rgba(14,22,15,.27)); }
 .map-label { position: absolute; z-index: 2; top: 17px; left: 18px; display: flex; align-items: center; gap: 7px; color: rgba(242,246,221,.85); text-shadow: 0 1px 5px rgba(0,0,0,.25); font: 500 9px 'DM Mono', monospace; letter-spacing: .12em; pointer-events: none; }
@@ -596,6 +616,7 @@ h2 { font-size: 16px; font-weight: 700; }
 /* Battlefield HUD: the world owns the window; controls sit on its edges. */
 html, body { width: 100%; height: 100%; overflow: hidden; }
 .app-shell { position: relative; width: 100%; height: 100dvh; min-width: 0; padding: 0; overflow: hidden; background: #4f6349; }
+.app-shell:fullscreen { width: 100vw; height: 100vh; height: 100dvh; }
 .workspace { position: absolute; inset: 0; display: block; min-height: 0; padding: 0; }
 .viewport { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; overflow: hidden; border: 0; border-radius: 0; box-shadow: none; }
 .viewport-wash { background: linear-gradient(180deg, rgba(10,19,13,.33), transparent 25%, transparent 58%, rgba(9,17,11,.23)); }
@@ -739,6 +760,10 @@ html, body { width: 100%; height: 100%; overflow: hidden; }
 .match-menu .dock-spacer { display: none; }
 .match-menu .reset-button { min-height: 38px; }
 .match-menu .dock-footer { margin-top: 14px; }
+.fullscreen-toggle { width: 100%; min-height: 38px; border: 1px solid rgba(225,237,209,.2); border-radius: 4px; background: rgba(255,255,255,.04); color: #d9e3d3; font: 600 11px 'DM Mono', monospace; cursor: pointer; }
+.fullscreen-toggle:hover:not(:disabled) { border-color: var(--lime); color: var(--lime); background: rgba(213,239,120,.08); }
+.fullscreen-toggle:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+.fullscreen-toggle:disabled { color: #a5b0a0; cursor: not-allowed; }
 .hud-panel-close { width: 29px; height: 29px; display: grid; place-items: center; padding: 0; border: 1px solid rgba(225,237,209,.2); border-radius: 4px; background: rgba(255,255,255,.04); color: #d9e3d3; font-size: 21px; cursor: pointer; }
 .hud-panel-close:hover { border-color: var(--lime); color: var(--lime); }
 .hud-panel-close:focus-visible, .dock-tabs button:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }

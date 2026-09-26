@@ -27,6 +27,12 @@ import { classifyOrderNotice } from './order-feedback.mjs';
 import { createGameAudio } from './audio.mjs';
 import { CombatAudioGate, cueForNotice, cueForScenarioEvent, isLocalRejection } from './audio-policy.mjs';
 import {
+  canEdgeScroll,
+  clampCameraTargetToGroundBounds,
+  edgeScrollCameraDelta,
+  edgeScrollDirection,
+} from './camera-controls.mjs';
+import {
   chooseUnitPickCandidate,
   isSameUnitDoubleClick,
   livingIdleWorkerIds,
@@ -283,6 +289,7 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setClearColor(0x859175, 1);
 viewport.prepend(renderer.domElement);
 renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Push the pointer against a battlefield edge to scroll the camera, or middle-drag / Space-drag to pan. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
+renderer.domElement.dataset.cursorMode = 'select';
 renderer.domElement.tabIndex = 0;
 
 scene.add(new THREE.HemisphereLight(0xe5ebcb, 0x3e4935, 2.05));
@@ -435,21 +442,16 @@ function setCamera() {
 
   const bounds = cameraGroundBounds();
   if (!bounds) return;
-  const minOffsetX = bounds.left - cameraTarget.x;
-  const maxOffsetX = bounds.right - cameraTarget.x;
-  const minOffsetZ = bounds.top - cameraTarget.z;
-  const maxOffsetZ = bounds.bottom - cameraTarget.z;
-  const minTargetX = -MAP_HALF_X - minOffsetX;
-  const maxTargetX = MAP_HALF_X - maxOffsetX;
-  const minTargetZ = -MAP_HALF_Z - minOffsetZ;
-  const maxTargetZ = MAP_HALF_Z - maxOffsetZ;
-  const clampedX = minTargetX <= maxTargetX
-    ? THREE.MathUtils.clamp(cameraTarget.x, minTargetX, maxTargetX) : 0;
-  const clampedZ = minTargetZ <= maxTargetZ
-    ? THREE.MathUtils.clamp(cameraTarget.z, minTargetZ, maxTargetZ) : 0;
-  if (clampedX !== cameraTarget.x || clampedZ !== cameraTarget.z) {
-    cameraTarget.x = clampedX;
-    cameraTarget.z = clampedZ;
+  const clampedTarget = clampCameraTargetToGroundBounds({
+    x: cameraTarget.x,
+    z: cameraTarget.z,
+    halfX: MAP_HALF_X,
+    halfZ: MAP_HALF_Z,
+    bounds,
+  });
+  if (clampedTarget.x !== cameraTarget.x || clampedTarget.z !== cameraTarget.z) {
+    cameraTarget.x = clampedTarget.x;
+    cameraTarget.z = clampedTarget.z;
     camera.position.copy(cameraTarget).addScaledVector(cameraOffset, distance);
     camera.lookAt(cameraTarget);
     camera.updateMatrixWorld();
@@ -3346,6 +3348,7 @@ function updateCommandUI() {
   }
   if (ui.formationSelect) ui.formationSelect.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding);
   syncTargetOrderUI();
+  syncBattlefieldCursor();
 }
 
 function syncTargetOrderUI() {
@@ -5948,6 +5951,7 @@ function updateBuildPlacementGhost(clientX, clientY) {
     if (ui.placementStatus.textContent !== message) ui.placementStatus.textContent = message;
     if (ui.placementStatus.dataset.state !== state) ui.placementStatus.dataset.state = state;
   }
+  syncBattlefieldCursor();
   if (!placement) return;
   placementGhost.position.set(placement.x, 0, placement.z);
   const tint = placement.valid ? 0x9cdb8a : 0xe7836d;
@@ -5974,8 +5978,8 @@ function updateBuildPlacementHint() {
     ui.placementStatus.textContent = buildPlacementActive ? 'CHOOSE A CLEAR 3 × 3 SITE' : '';
     ui.placementStatus.dataset.state = 'ready';
   }
-  renderer.domElement.style.cursor = buildPlacementActive || tapOrderArmed ? 'crosshair' : '';
   syncTargetOrderUI();
+  syncBattlefieldCursor();
   if (ui.buildBarracks) {
     ui.buildBarracks.classList.toggle('active', buildPlacementActive && buildPlacementType === 'barracks');
     ui.buildBarracks.setAttribute('aria-pressed', String(buildPlacementActive && buildPlacementType === 'barracks'));
@@ -5984,6 +5988,23 @@ function updateBuildPlacementHint() {
     ui.buildRange.classList.toggle('active', buildPlacementActive && buildPlacementType === 'archery-range');
     ui.buildRange.setAttribute('aria-pressed', String(buildPlacementActive && buildPlacementType === 'archery-range'));
   }
+}
+
+function setBattlefieldCursor(mode) {
+  renderer.domElement.dataset.cursorMode = mode;
+}
+
+function syncBattlefieldCursor({ hoveringResource = false } = {}) {
+  if (pan) setBattlefieldCursor('panning');
+  else if (spaceDown) setBattlefieldCursor('pan');
+  else if (drag && movedPointer) setBattlefieldCursor('box-select');
+  else if (buildPlacementActive) {
+    setBattlefieldCursor(ui.placementStatus?.dataset.state === 'blocked' ? 'build-blocked' : 'build-valid');
+  } else if (tapOrderArmed) {
+    const selectedBuilding = selectedBuildingId !== null;
+    setBattlefieldCursor(selectedBuilding ? 'rally' : hoveringResource ? 'gather' : attackMoveMode ? 'attack-move' : 'move');
+  } else if (attackMoveMode) setBattlefieldCursor('attack-move');
+  else setBattlefieldCursor('select');
 }
 
 function cancelBuildPlacement(announce = true) {
@@ -6155,12 +6176,26 @@ let pan = null;
 let spaceDown = false;
 let movedPointer = false;
 renderer.domElement.addEventListener('contextmenu', (event) => event.preventDefault());
-renderer.domElement.addEventListener('pointerenter', (event) => {
-  edgeScrollPointer = { x: event.clientX, y: event.clientY };
-});
-renderer.domElement.addEventListener('pointerleave', () => {
-  edgeScrollPointer = null;
-});
+function updateEdgeScrollPointer(event) {
+  if (event.pointerType !== 'mouse') {
+    edgeScrollPointer = null;
+    return;
+  }
+  edgeScrollPointer = {
+    x: event.clientX,
+    y: event.clientY,
+    pointerType: event.pointerType,
+    buttons: event.buttons ?? 0,
+  };
+}
+document.addEventListener('pointermove', updateEdgeScrollPointer, true);
+document.addEventListener('pointerover', updateEdgeScrollPointer, true);
+document.addEventListener('pointerdown', updateEdgeScrollPointer, true);
+document.addEventListener('pointerup', updateEdgeScrollPointer, true);
+document.addEventListener('pointercancel', updateEdgeScrollPointer, true);
+document.addEventListener('pointerout', (event) => {
+  if (event.pointerType === 'mouse' && !event.relatedTarget) edgeScrollPointer = null;
+}, true);
 renderer.domElement.addEventListener('wheel', (event) => {
   event.preventDefault();
   lastUnitPickState = null;
@@ -6198,6 +6233,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
     lastFriendlyUnitClick = null;
     lastUnitPickState = null;
     pan = { x: event.clientX, y: event.clientY };
+    syncBattlefieldCursor();
     renderer.domElement.setPointerCapture(event.pointerId);
     event.preventDefault();
     return;
@@ -6218,6 +6254,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
   renderer.domElement.focus({ preventScroll: true });
   drag = { startX: x, startY: y, currentX: x, currentY: y, additive: event.shiftKey };
   movedPointer = false;
+  syncBattlefieldCursor();
   renderer.domElement.setPointerCapture(event.pointerId);
   selectionBox.style.display = 'block';
   selectionBox.dataset.mode = 'window';
@@ -6228,7 +6265,6 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
 });
 
 renderer.domElement.addEventListener('pointermove', (event) => {
-  edgeScrollPointer = { x: event.clientX, y: event.clientY };
   if (tapOrderPointer?.id === event.pointerId) return;
   if (pan) {
     const dx = event.clientX - pan.x;
@@ -6244,12 +6280,19 @@ renderer.domElement.addEventListener('pointermove', (event) => {
     updateBuildPlacementGhost(event.clientX, event.clientY);
     return;
   }
-  if (!drag) return;
   const rect = renderer.domElement.getBoundingClientRect();
+  if (!drag) {
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const hoveringResource = tapOrderArmed && selectedBuildingId === null && Boolean(pickResourceNodeAt(x, y));
+    syncBattlefieldCursor({ hoveringResource });
+    return;
+  }
   drag.currentX = event.clientX - rect.left;
   drag.currentY = event.clientY - rect.top;
   selectionBox.dataset.mode = drag.currentX < drag.startX ? 'crossing' : 'window';
   if (Math.abs(drag.currentX - drag.startX) + Math.abs(drag.currentY - drag.startY) > 5) movedPointer = true;
+  syncBattlefieldCursor();
   selectionBox.style.left = `${Math.min(drag.startX, drag.currentX)}px`;
   selectionBox.style.top = `${Math.min(drag.startY, drag.currentY)}px`;
   selectionBox.style.width = `${Math.abs(drag.currentX - drag.startX)}px`;
@@ -6267,7 +6310,11 @@ function finishPointer(event) {
     }
     return;
   }
-  if (pan) { pan = null; return; }
+  if (pan) {
+    pan = null;
+    syncBattlefieldCursor();
+    return;
+  }
   if (!drag) return;
   const finished = drag;
   drag = null;
@@ -6275,17 +6322,9 @@ function finishPointer(event) {
   selectionBox.removeAttribute('data-mode');
   if (movedPointer) selectInRect(finished.startX, finished.startY, finished.currentX, finished.currentY, finished.additive);
   else pickFriendly(finished.startX, finished.startY, finished.additive);
+  syncBattlefieldCursor();
 }
 
-function edgeScrollStrength(position, size) {
-  if (position < CAMERA_EDGE_ZONE_PX) {
-    return -1 + Math.max(0, position) / CAMERA_EDGE_ZONE_PX;
-  }
-  if (position > size - CAMERA_EDGE_ZONE_PX) {
-    return 1 - Math.max(0, size - position) / CAMERA_EDGE_ZONE_PX;
-  }
-  return 0;
-}
 renderer.domElement.addEventListener('pointerup', finishPointer);
 renderer.domElement.addEventListener('pointercancel', finishPointer);
 
@@ -6370,8 +6409,40 @@ const scenarioBriefToggle = document.querySelector('#scenario-brief-toggle');
 const hudScrim = document.querySelector('#hud-scrim');
 const matchMenuToggle = document.querySelector('#match-menu-toggle');
 const helpToggle = document.querySelector('#help-toggle');
+const appShell = document.querySelector('.app-shell');
+const fullscreenToggle = document.querySelector('#fullscreen-toggle');
+const fullscreenSupported = Boolean(document.fullscreenEnabled
+  && typeof appShell?.requestFullscreen === 'function'
+  && typeof document.exitFullscreen === 'function');
 const commandDock = document.querySelector('.control-dock');
 const dockTabs = [...document.querySelectorAll('[data-dock-tab]')];
+
+function syncFullscreenToggle() {
+  const isFullscreen = document.fullscreenElement === appShell;
+  fullscreenToggle.disabled = !fullscreenSupported;
+  fullscreenToggle.textContent = fullscreenSupported
+    ? (isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen')
+    : 'Fullscreen unavailable';
+  fullscreenToggle.setAttribute('aria-pressed', String(isFullscreen));
+  fullscreenToggle.title = fullscreenSupported
+    ? '' : 'Fullscreen is unavailable in this browser';
+}
+
+syncFullscreenToggle();
+fullscreenToggle.addEventListener('click', async () => {
+  if (!fullscreenSupported) return;
+  try {
+    if (document.fullscreenElement === appShell) await document.exitFullscreen();
+    else await appShell.requestFullscreen();
+  } catch {
+    showToast('FULLSCREEN COULD NOT BE CHANGED');
+  }
+});
+document.addEventListener('fullscreenchange', () => {
+  syncFullscreenToggle();
+  resize();
+});
+document.addEventListener('fullscreenerror', syncFullscreenToggle);
 
 function closeHudPanels({ restoreFocus = false } = {}) {
   const trigger = !matchMenu.hidden ? matchMenuToggle : !helpPanel.hidden ? helpToggle : null;
@@ -6452,6 +6523,7 @@ for (const button of document.querySelectorAll('[data-open-dock-tab]')) {
 selectDockTab('selection');
 updateBuildPlacementHint();
 window.addEventListener('keydown', (event) => {
+  if (document.fullscreenElement === appShell && event.key === 'Escape') return;
   if (event.key !== 'Escape' || (matchMenu.hidden && helpPanel.hidden && scenarioBriefPanel.hidden)
     || document.querySelector('dialog[open]')) return;
   event.preventDefault();
@@ -6510,10 +6582,15 @@ function controlGroupIndexFromKey(event) {
 window.addEventListener('keydown', (event) => {
   lastFriendlyUnitClick = null;
   lastUnitPickState = null;
+  if (document.fullscreenElement === appShell && event.key === 'Escape') return;
   const editing = keyboardTargetIsEditing(event);
   const buttonFocused = event.target instanceof Element && Boolean(event.target.closest('button'));
   if (event.code === 'Space') {
-    if (!editing && !buttonFocused) { spaceDown = true; event.preventDefault(); }
+    if (!editing && !buttonFocused) {
+      spaceDown = true;
+      syncBattlefieldCursor();
+      event.preventDefault();
+    }
     return;
   }
   if (event.repeat || editing) return;
@@ -6559,15 +6636,23 @@ window.addEventListener('keydown', (event) => {
     updateSelectionUI();
   }
 });
-window.addEventListener('keyup', (event) => { if (event.code === 'Space') spaceDown = false; });
+window.addEventListener('keyup', (event) => {
+  if (event.code !== 'Space') return;
+  spaceDown = false;
+  syncBattlefieldCursor();
+});
 window.addEventListener('blur', () => {
   if (tapOrderArmed) setTapOrderArmed(false, false);
   spaceDown = false;
   pan = null;
   edgeScrollPointer = null;
+  syncBattlefieldCursor();
   lastControlGroupRecall = null;
   lastFriendlyUnitClick = null;
   lastUnitPickState = null;
+});
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') edgeScrollPointer = null;
 });
 
 for (const button of document.querySelectorAll('.size-options button')) {
@@ -7284,26 +7369,39 @@ function animate(now) {
   animateBuildingCombatFeedback(now);
   const frameDelta = Math.min((now - previousTime) / 1000, 0.1);
   previousTime = now;
-  if (edgeScrollPointer && mapDefinition && document.visibilityState === 'visible'
-    && !drag && !pan && !buildPlacementActive && !ui.mapStudio.open) {
+  if (edgeScrollPointer && mapDefinition) {
     const rect = renderer.domElement.getBoundingClientRect();
     const localX = edgeScrollPointer.x - rect.left;
     const localY = edgeScrollPointer.y - rect.top;
-    if (localX >= 0 && localX <= rect.width && localY >= 0 && localY <= rect.height) {
-      let screenX = edgeScrollStrength(localX, rect.width);
-      let screenY = edgeScrollStrength(localY, rect.height);
-      const directionLength = Math.hypot(screenX, screenY);
-      if (directionLength > 0) {
-        if (directionLength > 1) {
-          screenX /= directionLength;
-          screenY /= directionLength;
-        }
+    const insideViewport = localX >= 0 && localX <= rect.width && localY >= 0 && localY <= rect.height;
+    const hoveredElement = insideViewport ? document.elementFromPoint(edgeScrollPointer.x, edgeScrollPointer.y) : null;
+    const hudControlHovered = hoveredElement instanceof Element
+      && Boolean(hoveredElement.closest(
+        'button, a[href], input, select, textarea, [contenteditable="true"], [role="button"], [role="tab"], .control-dock, .minimap-panel, .objective-panel',
+      ));
+    const eligible = canEdgeScroll({
+      pointerType: edgeScrollPointer.pointerType,
+      buttons: edgeScrollPointer.buttons,
+      insideViewport,
+      mapAvailable: Boolean(mapDefinition),
+      pageVisible: document.visibilityState === 'visible',
+      selectionDragging: Boolean(drag),
+      manualPan: Boolean(pan),
+      targetOrder: Boolean(tapOrderArmed || tapOrderPointer),
+      buildPlacement: buildPlacementActive,
+      mapStudioOpen: ui.mapStudio.open,
+      dialogOpen: Boolean(document.querySelector('dialog[open]')),
+      hudPanelOpen: !matchMenu.hidden || !helpPanel.hidden || !scenarioBriefPanel.hidden || !hudScrim.hidden,
+      hudControlHovered,
+    });
+    if (eligible) {
+      const direction = edgeScrollDirection(localX, localY, rect.width, rect.height, CAMERA_EDGE_ZONE_PX);
+      if (direction.x || direction.y) {
         const pixels = CAMERA_EDGE_SPEED_PX_PER_SECOND * frameDelta;
-        const dx = -screenX * pixels;
-        const dy = -screenY * pixels;
         const unitsPerPixel = baseFrustum / (Math.max(1, viewport.clientHeight) * zoom);
-        cameraTarget.x -= (dx - dy * 0.65) * unitsPerPixel * 0.7;
-        cameraTarget.z += (dx + dy * 0.65) * unitsPerPixel * 0.7;
+        const delta = edgeScrollCameraDelta(direction.x, direction.y, pixels, unitsPerPixel);
+        cameraTarget.x += delta.x;
+        cameraTarget.z += delta.z;
         setCamera();
       }
     }
