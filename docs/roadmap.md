@@ -41,6 +41,10 @@ These are product outcomes, not main-merge gates. Art, playability, and scale wo
 | **Deterministic PvE** | A useful solo opponent that obeys fog, commands, and scenario rules. | On an authored map, have the bot complete an opening, contest an objective, and respond to defeat; this can run alongside the invite-match work. | Repeatable seeded match trace plus one solo-play observation; this lane can continue without blocking M1. |
 | **Model opponent experiment** | Compare an optional model-driven opponent with deterministic PvE on quality, latency, and cost. | Keep the adapter default-off; design a replayable evaluation before any paid provider run. | Reproducible offline comparison proposal. Spending requires its separate user decision. |
 
+## Candidate experiment
+
+[Living land: elevation, regional crops, and regrowth](living-land-experiment.md) is a bounded 1v1 design pilot. Owners can ship its independent slices alongside M1–M4 work; it adds no new completion or merge gate.
+
 ## Choosing the next slice
 
 1. Prefer the first missing player observation in the milestone your lane serves. If the environment cannot support that observation today, ship a source or local pilot that makes it easier.
