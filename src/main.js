@@ -6,7 +6,6 @@ import {
   TERRAIN_MATERIALS, updateConstructionGroundInstances,
   RESOURCE_STATE_ASSETS_AVAILABLE, RESOURCE_STATE_ASSET_STATUS, resourceStateAssetsReady,
 } from './environment-art.mjs';
-import { unitActionPoseAllowed, unitCargoVisualState } from './unit-visual-state.mjs';
 import {
   RESOURCE_VISUAL_STAGES, resourceVisualScale, resourceVisualStage, resourceVisualTransitionStages,
 } from './resource-visual-state.mjs';
@@ -333,7 +332,6 @@ const unitLodTeamMeshes = [null, null];
 const unitLodMeshesByTeam = [[], []];
 const unitLodDirtyRoleMasks = [0, 0];
 const unitLodTeamDirty = [false, false];
-const unitCargoPackColorDirty = [false, false];
 let unitLowDetailActive = false;
 const mapObjects = [];
 const townCenterProductionLamps = [null, null];

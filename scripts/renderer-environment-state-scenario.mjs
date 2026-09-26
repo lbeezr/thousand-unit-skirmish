@@ -29,6 +29,9 @@ const ZOOM_WHEEL_SCALE = 0.001;
 const ZOOM_SETTLE_MS = 250;
 const VIEWPORT_WIDTH = 1280;
 const VIEWPORT_HEIGHT = 720;
+const DEVICE_PIXEL_RATIO = 2;
+const PNG_PIXEL_WIDTH = VIEWPORT_WIDTH * DEVICE_PIXEL_RATIO;
+const PNG_PIXEL_HEIGHT = VIEWPORT_HEIGHT * DEVICE_PIXEL_RATIO;
 const TEAMS = Object.freeze(['azure', 'ember']);
 const RESOURCE_FAMILIES = Object.freeze([
   { id: 'oak', nodeType: 'wood', workerSlot: 0 },
@@ -375,7 +378,7 @@ async function createBrowser(teamLabel, profileDirectory, executable, gameUrl) {
     '--headless=new', '--no-first-run', '--no-default-browser-check',
     '--disable-background-timer-throttling', '--disable-backgrounding-occluded-windows',
     '--disable-renderer-backgrounding', '--enable-precise-memory-info',
-    '--window-size=1280,720', '--force-device-scale-factor=1',
+    '--window-size=1280,720', '--force-device-scale-factor=2',
     '--remote-debugging-address=127.0.0.1', '--remote-debugging-port=0',
     '--remote-allow-origins=*', `--user-data-dir=${profileDirectory}`, 'about:blank',
   ];
@@ -389,6 +392,12 @@ async function createBrowser(teamLabel, profileDirectory, executable, gameUrl) {
   await cdp.call('Runtime.enable');
   await cdp.call('Page.enable');
   await cdp.call('Network.enable');
+  await cdp.call('Emulation.setDeviceMetricsOverride', {
+    width: VIEWPORT_WIDTH,
+    height: VIEWPORT_HEIGHT,
+    deviceScaleFactor: DEVICE_PIXEL_RATIO,
+    mobile: false,
+  });
   const browser = {
     teamLabel, team: null, currentZoom: INITIAL_ZOOM, chrome, browserCdp, cdp,
     latestState: null, lastFrameError: null,
@@ -604,6 +613,7 @@ async function writeFrame(browser, runDirectory, frameIndex, mapLabel, stateId, 
     return {
       width: window.innerWidth,
       height: window.innerHeight,
+      devicePixelRatio: window.devicePixelRatio,
       team: team?.textContent?.trim().toUpperCase() || null,
       teamBounds: bounds(team),
       minimapBounds: bounds(minimap),
@@ -612,6 +622,8 @@ async function writeFrame(browser, runDirectory, frameIndex, mapLabel, stateId, 
   })()`);
   assert.equal(composition.width, VIEWPORT_WIDTH, `review viewport width should be ${VIEWPORT_WIDTH}`);
   assert.equal(composition.height, VIEWPORT_HEIGHT, `review viewport height should be ${VIEWPORT_HEIGHT}`);
+  assert.equal(composition.devicePixelRatio, DEVICE_PIXEL_RATIO,
+    `review viewport device pixel ratio should be ${DEVICE_PIXEL_RATIO}`);
   assert.equal(composition.team, browser.team === 0 ? 'AZURE' : 'EMBER',
     `full review image should identify its ${browser.teamLabel} player view`);
   assert.ok(composition.teamBounds?.visible, `team HUD label should be visible for ${frameLabel}`);
@@ -620,15 +632,33 @@ async function writeFrame(browser, runDirectory, frameIndex, mapLabel, stateId, 
   const screenshot = await browser.cdp.call('Page.captureScreenshot', {
     format: 'png', fromSurface: true, captureBeyondViewport: false,
   });
-  await writeFile(destination, Buffer.from(screenshot.data, 'base64'));
+  const pngBytes = Buffer.from(screenshot.data, 'base64');
+  assert.equal(pngBytes.toString('hex', 0, 8), '89504e470d0a1a0a',
+    `screenshot should be a PNG for ${frameLabel}`);
+  assert.equal(pngBytes.toString('ascii', 12, 16), 'IHDR',
+    `screenshot should include a PNG IHDR chunk for ${frameLabel}`);
+  const pngPixelDimensions = {
+    width: pngBytes.readUInt32BE(16),
+    height: pngBytes.readUInt32BE(20),
+  };
+  assert.deepEqual(pngPixelDimensions, { width: PNG_PIXEL_WIDTH, height: PNG_PIXEL_HEIGHT },
+    `screenshot should be ${PNG_PIXEL_WIDTH}x${PNG_PIXEL_HEIGHT} pixels for ${frameLabel}`);
+  await writeFile(destination, pngBytes);
   capturedFrameKeys.push(`${mapLabel}:${stateId}:${zoom.value}`);
-  capturedFrameEvidence.push({ index: frameIndex, mapLabel, stateId, zoom: zoom.value, viewer: viewerLabel, evidence });
+  capturedFrameEvidence.push({
+    index: frameIndex, mapLabel, stateId, zoom: zoom.value, viewer: viewerLabel,
+    viewport: {
+      cssWidth: composition.width, cssHeight: composition.height,
+      devicePixelRatio: composition.devicePixelRatio, pngPixelDimensions,
+    },
+    evidence,
+  });
   return {
     index: frameIndex,
     label: frameLabel,
     attachments: [{
       kind: 'color', path: relativePath, encoding: 'png',
-      description: `${mapLabel} ${stateId} full 1280x720 viewport from the ${viewerLabel} fog-filtered client at zoom ${zoom.value}; HUD and minimap are included.`,
+      description: `${mapLabel} ${stateId} 1280x720 CSS viewport at DPR 2 (2560x1440 PNG) from the ${viewerLabel} fog-filtered client at zoom ${zoom.value}; HUD and minimap are included.`,
     }],
   };
 }
@@ -663,6 +693,13 @@ async function writeCaptureManifest(frames, renderer, runDirectory) {
         constructionImages: ['earthwork', 'foundation'],
         constructionClearImage: null,
         constructionClearAssertedWithoutScreenshot: true,
+      },
+      screenshotViewport: {
+        cssWidth: VIEWPORT_WIDTH,
+        cssHeight: VIEWPORT_HEIGHT,
+        devicePixelRatio: DEVICE_PIXEL_RATIO,
+        pngPixelWidth: PNG_PIXEL_WIDTH,
+        pngPixelHeight: PNG_PIXEL_HEIGHT,
       },
       environmentFrameEvidence: capturedFrameEvidence,
     },
@@ -921,6 +958,13 @@ async function runStaticPreflight() {
     stockSamples: [100, 50, 20, 0],
     resourceNodeStocksStartAt: 100,
     constructionClear: { image: null, screenshotFrames: 0, assertionRequired: true },
+    screenshotViewport: {
+      cssWidth: VIEWPORT_WIDTH,
+      cssHeight: VIEWPORT_HEIGHT,
+      devicePixelRatio: DEVICE_PIXEL_RATIO,
+      pngPixelWidth: PNG_PIXEL_WIDTH,
+      pngPixelHeight: PNG_PIXEL_HEIGHT,
+    },
     runtimeAssets: {
       packId: manifest.packId, packVersion: manifest.packVersion,
       count: verified.length, paths: verified.map((file) => file.path),
