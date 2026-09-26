@@ -1,5 +1,12 @@
 # Unit and building art — frontier kit v1
 
+**Current art direction:** new unit/building production uses painterly 2D/2.5D
+sprites. Do not start Blender, 3D, UV, or GLB production. Use the shared
+[sprite atlas contract](sprite-atlas-contract-v1.md) for frame/pivot/manifest
+details; this kit's palette, silhouette, camera, and readability rules remain
+useful. Keep the existing GLB work and runtime intact as reference, and do not
+operate on the specifically held unit/building pack.
+
 This document defines the authored unit and building kit for the 1v1 vertical slice. The unit character artist owns Worker, Infantry, and Archer assets; the building artist owns Town Center, Barracks, and Archery Range assets. Both can ship useful slices independently. The kit follows the oblique camera, Azure and Ember team colors, and illustrated frontier materials. Terrain and neutral landmarks belong to the environment art track. The current runtime mapping and v1 manifest compatibility rules are in [the renderer contract](renderer-state-contract.md); [the unit and building art format review](unit-building-art-output-proposal.md) records candidate finish choices and milestone evidence.
 
 ## Authored shape language
@@ -15,7 +22,7 @@ This document defines the authored unit and building kit for the 1v1 vertical sl
 
 Azure stays sky blue and Ember rust red. Authored units reserve team tint for the named sash; shields, packs, tools, bows, quivers, and weapons remain neutral. Building walls, roofs, shields, trim, and other architecture also remain neutral. The compact standard carries building ownership: Azure uses a straight-cut pennant with one centered bar, while Ember uses a forked tail with a split bar. Shapes and equipment distinguish roles when color is hard to see. Unit and building state cues remain renderer-owned so they cannot be confused with baked model details.
 
-## Renderer motion and signals
+## Renderer motion and signals — current runtime reference
 
 - Full-detail walking units use an offset stride phase. Workers use gathering and construction poses only while the server reports those tasks; movement takes precedence over the tool swing. Known cargo tints the existing Worker backpack batch leaf green for wood, amber for food, and neutral when unknown. Resource-specific work is shown only after `cargoType` is known.
 - At strategic zoom, role glyphs and equipment, including the small backpack facet, stay neutral. Azure and Ember identity use separate team-colored square and diamond markers. The facet reuses the existing Worker role batch and adds no unit draw batch. These renderer cues are source-only and still need runtime visual review.
