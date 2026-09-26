@@ -396,6 +396,9 @@ const unitLodTeamDirty = [false, false];
 let unitLowDetailActive = false;
 const mapObjects = [];
 let forestTreeSlots = new Map();
+let forestStumpSlots = new Map();
+let forestStumpMesh = null;
+let forestStumpCount = 0;
 const townCenterProductionLamps = [null, null];
 let fogTexture = null;
 let fogMesh = null;
@@ -1595,7 +1598,10 @@ function refreshResourceStateFallbackTransforms() {
 }
 
 resourceStateAssetsReady.then((status) => {
-  if (status.ready) refreshResourceStateFallbackTransforms();
+  if (status.ready) {
+    refreshResourceStateFallbackTransforms();
+    refreshForestStumpTransforms();
+  }
   if (roomPageUrl.searchParams.get('rendererCapture') === 'environment-state') {
     window.__rtsEnvironmentAssetStatus = status;
     window.__rtsEnvironmentCaptureCommand = (command) => sendCommand(command);
@@ -1676,9 +1682,34 @@ function updateFogFromState(state) {
 function setForestTreeVisual(cell, stock) {
   const slot = forestTreeSlots.get(cell);
   if (!slot) return;
+  const depleted = stock <= 0;
   setEnvironmentSpriteInstance(slot.mesh, slot.index, slot.x, slot.z,
-    stock <= 0 ? 0 : slot.scale, slot.flip);
+    depleted ? 0 : slot.scale, slot.flip);
   slot.mesh.instanceMatrix.needsUpdate = true;
+  const stump = forestStumpSlots.get(cell);
+  if (!stump || !forestStumpMesh) return;
+  const showStump = depleted && RESOURCE_STATE_ASSETS_AVAILABLE;
+  if (showStump !== stump.visible) {
+    forestStumpCount = Math.max(0, forestStumpCount + (showStump ? 1 : -1));
+    stump.visible = showStump;
+  }
+  setEnvironmentSpriteInstance(forestStumpMesh, stump.index, stump.x, stump.z,
+    showStump ? stump.scale : 0, stump.flip);
+  forestStumpMesh.instanceMatrix.needsUpdate = true;
+  forestStumpMesh.visible = forestStumpCount > 0;
+}
+
+function refreshForestStumpTransforms() {
+  if (!forestStumpMesh) return;
+  forestStumpCount = 0;
+  for (const [cell, stump] of forestStumpSlots) {
+    stump.visible = latestForestStocks.get(cell) === 0 && RESOURCE_STATE_ASSETS_AVAILABLE;
+    if (stump.visible) forestStumpCount++;
+    setEnvironmentSpriteInstance(forestStumpMesh, stump.index, stump.x, stump.z,
+      stump.visible ? stump.scale : 0, stump.flip);
+  }
+  forestStumpMesh.instanceMatrix.needsUpdate = true;
+  forestStumpMesh.visible = forestStumpCount > 0;
 }
 
 function applyForestState(state) {
@@ -1725,6 +1756,9 @@ function buildMap(definition) {
   latestForestStocks.clear();
   latestForestEpoch = null;
   forestTreeSlots = new Map();
+  forestStumpSlots = new Map();
+  forestStumpMesh = null;
+  forestStumpCount = 0;
   latestResourceStocks = new Map();
   objectivePanel.replaceChildren();
   if (tapOrderArmed) setTapOrderArmed(false, false);
@@ -1789,6 +1823,18 @@ function buildMap(definition) {
   obstacles.receiveShadow = false;
   addMapObject(obstacles);
   forestTreeSlots = addObstacleEnvironmentSprites(definition, MAP_HALF_X, MAP_HALF_Z, addMapObject);
+  const stumpPositions = [...forestTreeSlots].map(([cell, slot], index) => {
+    forestStumpSlots.set(cell, {
+      index, x: slot.x, z: slot.z, scale: slot.scale * 0.48,
+      flip: slot.flip, visible: false,
+    });
+    return { x: slot.x, z: slot.z, scale: 0, flip: slot.flip };
+  });
+  forestStumpMesh = createEnvironmentSpriteInstances('oak-depleted', 4.1, 3.75, stumpPositions);
+  if (forestStumpMesh) {
+    forestStumpMesh.visible = false;
+    addMapObject(forestStumpMesh);
+  }
 
   for (const spawn of definition.spawnPoints || []) addTownCenterVisual(spawn, definition);
   buildWoodNodeInstances(definition.resourceNodes || []);
