@@ -550,6 +550,7 @@ const MIME_TYPES = {
   '.md': 'text/markdown; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
   '.png': 'image/png',
+  '.svg': 'image/svg+xml',
   '.webp': 'image/webp',
 };
 
@@ -5709,6 +5710,18 @@ const server = createServer(async (request, response) => {
     return;
   }
   const publicClientAsset = ['index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/map-utils.mjs', 'src/map-resize.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs', 'src/unit-visual-state.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/camera-controls.mjs'].includes(relative);
+  const publicUiAsset = [
+    'assets/ui/preview.html', 'assets/ui/cursors/manifest.json',
+    'assets/ui/cursors/select.png', 'assets/ui/cursors/select.svg',
+    'assets/ui/cursors/box-select.png', 'assets/ui/cursors/box-select.svg',
+    'assets/ui/cursors/move.png', 'assets/ui/cursors/move.svg',
+    'assets/ui/cursors/attack-move.png', 'assets/ui/cursors/attack-move.svg',
+    'assets/ui/cursors/gather.png', 'assets/ui/cursors/gather.svg',
+    'assets/ui/cursors/build-valid.png', 'assets/ui/cursors/build-valid.svg',
+    'assets/ui/cursors/build-blocked.png', 'assets/ui/cursors/build-blocked.svg',
+    'assets/ui/icons/wood.svg', 'assets/ui/icons/food.svg', 'assets/ui/icons/move.svg',
+    'assets/ui/icons/attack.svg', 'assets/ui/icons/gather.svg', 'assets/ui/icons/build.svg',
+  ].includes(relative);
   const publicEnvironmentModule = relative === 'src/environment-art.mjs';
   const publicEnvironmentAsset = path.dirname(relative) === 'assets/environment/frontier-v1'
     && ['.png', '.webp'].includes(path.extname(relative))
@@ -5719,7 +5732,7 @@ const server = createServer(async (request, response) => {
     && /^(?:(?:oak|berries)-(?:full|worked|low|depleted)|construction-(?:earthwork|foundation))$/
       .test(path.basename(relative, path.extname(relative)));
   const publicMapAsset = path.dirname(relative) === 'maps' && path.extname(relative) === '.json';
-  if (!publicClientAsset && !publicEnvironmentModule && !publicEnvironmentAsset
+  if (!publicClientAsset && !publicEnvironmentModule && !publicEnvironmentAsset && !publicUiAsset
     && !publicInteractiveEnvironmentAsset && !publicMapAsset) {
     response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
     response.end('Not found');

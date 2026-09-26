@@ -288,7 +288,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setClearColor(0x859175, 1);
 viewport.prepend(renderer.domElement);
-renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Push the pointer against a battlefield edge to scroll the camera, or middle-drag / Space-drag to pan. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
+renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Push the mouse against any screen edge to scroll the camera, or middle-drag / Space-drag to pan. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
 renderer.domElement.dataset.cursorMode = 'select';
 renderer.domElement.tabIndex = 0;
 
@@ -3315,7 +3315,21 @@ function updateCommandUI() {
     ui.commandMode.dataset.mode = selectedBuilding ? 'rally' : attackMoveMode ? 'attack-move' : 'move';
   }
   if (ui.commandIcon) {
-    ui.commandIcon.textContent = selectedBuilding ? '⚑' : attackMoveMode ? '⚔' : '⌖';
+    const iconMode = selectedBuilding ? 'build' : attackMoveMode ? 'attack' : 'move';
+    const fallbackGlyph = selectedBuilding ? '⚑' : attackMoveMode ? '⚔' : '⌖';
+    const iconImage = ui.commandIcon.querySelector('.command-icon-image');
+    const iconFallback = ui.commandIcon.querySelector('.command-icon-fallback');
+    if (iconFallback) iconFallback.textContent = fallbackGlyph;
+    if (iconImage) {
+      const iconPath = `/assets/ui/icons/${iconMode}.svg`;
+      if (iconImage.dataset.source !== iconPath) {
+        iconImage.dataset.source = iconPath;
+        ui.commandIcon.classList.remove('has-image');
+        iconImage.onload = () => ui.commandIcon.classList.add('has-image');
+        iconImage.onerror = () => ui.commandIcon.classList.remove('has-image');
+        iconImage.src = iconPath;
+      }
+    }
     ui.commandIcon.classList.toggle('attack-move', !selectedBuilding && attackMoveMode);
   }
   if (ui.commandTitle) ui.commandTitle.textContent = selectedBuilding

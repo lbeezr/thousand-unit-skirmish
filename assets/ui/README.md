@@ -15,36 +15,15 @@ A compact cursor and HUD icon study for the Thousand Unit Skirmish field interfa
 ## Cursor use
 
 ```css
-.viewport[data-cursor-mode="select"] canvas {
-  cursor: url("/assets/ui/cursors/select.png") 3 3, crosshair;
-}
-
-.viewport[data-cursor-mode="move"] canvas {
-  cursor: url("/assets/ui/cursors/move.png") 3 3, crosshair;
-}
-
-.viewport[data-cursor-mode="attack-move"] canvas {
-  cursor: url("/assets/ui/cursors/attack-move.png") 3 3, crosshair;
-}
-
-.viewport[data-cursor-mode="gather"] canvas {
-  cursor: url("/assets/ui/cursors/gather.png") 3 3, crosshair;
-}
-
-.viewport[data-cursor-mode="build-valid"] canvas {
-  cursor: url("/assets/ui/cursors/build-valid.png") 3 3, crosshair;
-}
-
-.viewport[data-cursor-mode="build-blocked"] canvas {
-  cursor: url("/assets/ui/cursors/build-blocked.png") 3 3, crosshair;
-}
-
-.viewport[data-cursor-mode="box-select"] canvas {
-  cursor: url("/assets/ui/cursors/box-select.png") 16 16, crosshair;
-}
-
-.viewport[data-pan-mode="ready"] canvas { cursor: grab; }
-.viewport[data-pan-mode="dragging"] canvas { cursor: grabbing; }
+.viewport canvas[data-cursor-mode="select"] { cursor: url("/assets/ui/cursors/select.png") 3 3, crosshair; }
+.viewport canvas[data-cursor-mode="box-select"] { cursor: url("/assets/ui/cursors/box-select.png") 16 16, crosshair; }
+.viewport canvas[data-cursor-mode="move"] { cursor: url("/assets/ui/cursors/move.png") 3 3, crosshair; }
+.viewport canvas[data-cursor-mode="attack-move"] { cursor: url("/assets/ui/cursors/attack-move.png") 3 3, crosshair; }
+.viewport canvas[data-cursor-mode="gather"] { cursor: url("/assets/ui/cursors/gather.png") 3 3, crosshair; }
+.viewport canvas[data-cursor-mode="build-valid"] { cursor: url("/assets/ui/cursors/build-valid.png") 3 3, crosshair; }
+.viewport canvas[data-cursor-mode="build-blocked"] { cursor: url("/assets/ui/cursors/build-blocked.png") 3 3, crosshair; }
+.viewport canvas[data-cursor-mode="pan"] { cursor: grab; }
+.viewport canvas[data-cursor-mode="panning"] { cursor: grabbing; }
 ```
 
 The arrow-led cursors use `(3, 3)`, at the arrow tip. `box-select` is centered at `(16, 16)`. Keep the text and accessible names on HUD controls when adding these icons. The handoff retains native `grab` and `grabbing` for manual pan, along with existing `auto` fallbacks on ordinary controls.

@@ -9,14 +9,14 @@
   --lime: #d5ef78;
   --blue: #73b8e8;
   --ember: #ef886c;
-  --cursor-select: crosshair;
-  --cursor-box-select: crosshair;
-  --cursor-move: crosshair;
-  --cursor-attack-move: crosshair;
-  --cursor-gather: crosshair;
+  --cursor-select: url('/assets/ui/cursors/select.png') 3 3, crosshair;
+  --cursor-box-select: url('/assets/ui/cursors/box-select.png') 16 16, crosshair;
+  --cursor-move: url('/assets/ui/cursors/move.png') 3 3, crosshair;
+  --cursor-attack-move: url('/assets/ui/cursors/attack-move.png') 3 3, crosshair;
+  --cursor-gather: url('/assets/ui/cursors/gather.png') 3 3, crosshair;
   --cursor-rally: crosshair;
-  --cursor-build-valid: crosshair;
-  --cursor-build-blocked: not-allowed;
+  --cursor-build-valid: url('/assets/ui/cursors/build-valid.png') 3 3, crosshair;
+  --cursor-build-blocked: url('/assets/ui/cursors/build-blocked.png') 3 3, crosshair;
   --cursor-pan: grab;
   --cursor-panning: grabbing;
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -252,6 +252,7 @@ h2 { font-size: 16px; font-weight: 700; }
 .resource-stocks { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 8px; }
 .resource-stock { display: flex; align-items: baseline; gap: 5px; padding: 5px 7px; border: 1px solid rgba(214,226,197,.08); border-radius: 3px; background: rgba(255,255,255,.025); color: #7b897a; font: 500 7px 'DM Mono', monospace; letter-spacing: .08em; }
 .resource-stock strong { color: #e4bd63; font: 600 13px 'Manrope', sans-serif; letter-spacing: -.02em; }
+.resource-icon { display: block; width: 13px; height: 13px; flex: 0 0 13px; }
 .wood-stock strong { color: #a8c381; }
 .worker-tools { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; margin-top: 7px; }
 .worker-select-button { min-width: 0; min-height: 24px; margin-left: 0; padding: 0 3px; border: 1px solid rgba(115,184,232,.2); border-radius: 3px; background: rgba(115,184,232,.045); color: #9fc8e2; font: 500 6.5px 'DM Mono', monospace; letter-spacing: .02em; white-space: nowrap; cursor: pointer; transition: .15s ease; }
@@ -303,7 +304,11 @@ h2 { font-size: 16px; font-weight: 700; }
 .building-command-details button:hover:not(:disabled) { border-color: rgba(213,239,120,.4); color: var(--lime); }
 .building-command-details button:focus-visible { outline: 1px solid var(--lime); outline-offset: 2px; }
 .building-command-details button:disabled { opacity: .4; cursor: not-allowed; }
-.command-icon { width: 29px; height: 29px; display: grid; place-items: center; border: 1px solid rgba(213,239,120,.16); border-radius: 4px; color: var(--lime); font-size: 20px; }
+.command-icon { position: relative; width: 29px; height: 29px; display: grid; place-items: center; border: 1px solid rgba(213,239,120,.16); border-radius: 4px; color: var(--lime); font-size: 20px; }
+.command-icon-fallback { grid-area: 1 / 1; }
+.command-icon-image { position: absolute; inset: 0; width: 19px; height: 19px; margin: auto; opacity: 0; }
+.command-icon.has-image .command-icon-fallback { opacity: 0; }
+.command-icon.has-image .command-icon-image { opacity: 1; }
 .command-icon.attack-move { border-color: rgba(239,174,112,.42); color: #f0b47c; }
 .command-card strong, .command-card small { display: block; }
 .command-card strong { color: #d5dccb; font-size: 10px; font-weight: 600; }

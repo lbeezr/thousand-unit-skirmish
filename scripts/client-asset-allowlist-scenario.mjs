@@ -9,6 +9,9 @@ const server = readFileSync(path.join(root, 'server.mjs'), 'utf8');
 const clientAllowlist = server.match(/const publicClientAsset = \[([\s\S]*?)\]\.includes\(relative\);/);
 assert.ok(clientAllowlist, 'server static client asset allowlist should be declared');
 const allowed = new Set([...clientAllowlist[1].matchAll(/'([^']+)'/g)].map((match) => match[1]));
+const uiAllowlist = server.match(/const publicUiAsset = \[([\s\S]*?)\]\.includes\(relative\);/);
+assert.ok(uiAllowlist, 'server UI asset allowlist should be declared');
+const allowedUi = new Set([...uiAllowlist[1].matchAll(/'([^']+)'/g)].map((match) => match[1]));
 const environmentModule = server.match(/const publicEnvironmentModule = relative === '([^']+)'/)?.[1];
 assert.ok(environmentModule, 'server should explicitly allow the environment renderer module');
 
@@ -37,6 +40,35 @@ while (pending.length > 0) {
 
 for (const resource of ['index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js']) {
   assert.ok(allowed.has(resource), `required client resource is missing from the server static allowlist: ${resource}`);
+}
+for (const resource of [
+  'assets/ui/preview.html', 'assets/ui/cursors/manifest.json',
+  'assets/ui/cursors/select.png', 'assets/ui/cursors/box-select.png',
+  'assets/ui/cursors/move.png', 'assets/ui/cursors/attack-move.png',
+  'assets/ui/cursors/gather.png', 'assets/ui/cursors/build-valid.png',
+  'assets/ui/cursors/build-blocked.png', 'assets/ui/icons/wood.svg',
+  'assets/ui/icons/food.svg', 'assets/ui/icons/move.svg',
+  'assets/ui/icons/attack.svg', 'assets/ui/icons/gather.svg', 'assets/ui/icons/build.svg',
+]) {
+  assert.ok(allowedUi.has(resource), `UI asset is missing from the server allowlist: ${resource}`);
+}
+assert.match(server, /'\.svg': 'image\/svg\+xml'/, 'SVG icons need the correct response MIME type');
+for (const resource of allowedUi) {
+  assert.ok(statSync(path.join(root, resource)).isFile(), `allowlisted UI asset is missing: ${resource}`);
+}
+const cursorManifest = JSON.parse(readFileSync(path.join(root, 'assets/ui/cursors/manifest.json'), 'utf8'));
+const style = readFileSync(path.join(root, 'style.css'), 'utf8');
+for (const [state, cursor] of Object.entries(cursorManifest.cursors)) {
+  assert.ok(allowedUi.has(cursor.runtime), `runtime cursor is not allowlisted: ${cursor.runtime}`);
+  const image = readFileSync(path.join(root, cursor.runtime));
+  assert.deepEqual([image.readUInt32BE(16), image.readUInt32BE(20)], [32, 32],
+    `runtime cursor must be 32 × 32: ${cursor.runtime}`);
+  const [hotspotX, hotspotY] = cursor.hotspot;
+  assert.ok(style.includes(`--cursor-${state}: url('/${cursor.runtime}') ${hotspotX} ${hotspotY}, ${cursor.fallback}`),
+    `CSS cursor hotspot and fallback must match the manifest for ${state}`);
+}
+for (const icon of cursorManifest.icons.paths) {
+  assert.ok(allowedUi.has(icon), `runtime icon is not allowlisted: ${icon}`);
 }
 
 process.stdout.write(`Client asset allowlist scenario passed: ${visited.size} imported client modules are served.\n`);
