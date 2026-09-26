@@ -18,6 +18,14 @@ export function cueForNotice(message, { localTeam = null, tokenized = false } = 
   return null;
 }
 
+export function cueForScenarioEvent(message, { localTeam = null } = {}) {
+  if (localTeam !== 0 && localTeam !== 1) return null;
+  const affectedTeams = Array.isArray(message?.rewardTeams) ? message.rewardTeams
+    : message?.team === 'both' ? [0, 1]
+      : message?.team === 0 || message?.team === 1 ? [message.team] : [];
+  return affectedTeams.includes(localTeam) ? 'scenario-reward' : null;
+}
+
 export function isLocalRejection(message) {
   return /^(NO |SELECT YOUR|SELECT WORKERS|SELECT MILITARY|SPECTATORS CANNOT|SERVER CONNECTION IS OFFLINE|COMMAND TOO LARGE|MOVE THE POINTER OVER)/
     .test(String(message || '').toUpperCase())

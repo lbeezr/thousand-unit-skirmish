@@ -11,6 +11,7 @@ The audio palette is original procedural Web Audio synthesis in `src/audio.mjs`.
 | Building complete | A friendly construction site becomes a finished production building | One friendly `complete: false` → `true` building transition; distinct low open-fifth cue with a 2.6-second cooldown |
 | Production complete | A friendly unit finishes production | Friendly production queue transition or team notice, with a 2.2-second cooldown |
 | Research complete | A friendly attack upgrade finishes | Friendly research completion notice; distinct rising triangle C-minor triad with a 2.6-second cooldown |
+| Scenario reward | A timed event grants resources, units, or technology to the local team | Event notification lists affected teams; a light two-note cue is used, while opponent-only rewards stay silent |
 | Battle, selected unit, base alert | A new fight, selected force taking damage, or building under attack | Aggregated friendly snapshot damage |
 | Resource empty, base lost | Gathering must redirect or a friendly production building was destroyed | Server notice, with independent limits; base loss has its own rough low slide |
 | Objective gained or lost, victory, defeat, draw | Match state changed | Server event or winner transition; victory has a distinct high four-note fanfare |
@@ -54,6 +55,10 @@ Objective capture previously began on 392 Hz, the same note as production comple
 ## Research completion cue · 25 September 2026
 
 Research previously shared the two-note production-complete cue. Friendly Infantry Forging and Archer Fletching completions now use a separate three-note triangle C-minor arpeggio (C5/D-sharp 5/G5 at 523.25/622.25/783.99 Hz). It has no shared fundamentals with production completion, objective capture, or match victory. The audio policy scenario checks friendly-team routing, note profile, separation, and cooldown; enemy research notices remain silent.
+
+## Scenario reward cue · 26 September 2026
+
+Timed scenario rewards previously reused the objective-capture cue. They now use a short triangle/sine pair at 493.88 and 739.99 Hz. The server includes the actual affected team list so both-team, team-specific, and capture-triggered rewards route to the right player; opponent-only and ambiguous rewards stay silent. Objective capture remains tied to the separate ownership-change message. The focused audio policy scenario checks routing, profile, and cooldown.
 
 ## Ambience loop seam · 25 September 2026
 

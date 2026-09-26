@@ -3,7 +3,8 @@ const STORAGE_KEY = 'tus-audio-v1';
 const DEFAULT_SETTINGS = Object.freeze({ enabled: true, volume: 0.5, ambience: true, ambienceLevel: 1 });
 const COOLDOWN_MS = Object.freeze({
   select: 90, move: 90, attack: 120, gather: 140, build: 170,
-  queue: 170, complete: 2200, 'research-complete': 2600, reject: 250, objective: 1200, 'objective-lost': 1200,
+  queue: 170, complete: 2200, 'research-complete': 2600, 'scenario-reward': 2400,
+  reject: 250, objective: 1200, 'objective-lost': 1200,
   'resource-empty': 8000, 'base-lost': 2000, 'building-complete': 2600,
   victory: 5000, defeat: 5000, draw: 5000,
   'battle-alert': 9000, 'selected-alert': 11000, 'base-alert': 11000,
@@ -200,6 +201,10 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
         tone(523.25, at, 0.13, { wave: 'triangle', gain: 0.14 });
         tone(622.25, at + 0.14, 0.17, { wave: 'triangle', gain: 0.12 });
         tone(783.99, at + 0.29, 0.25, { wave: 'triangle', gain: 0.11 });
+        break;
+      case 'scenario-reward':
+        tone(493.88, at, 0.15, { wave: 'triangle', gain: 0.12 });
+        tone(739.99, at + 0.12, 0.22, { wave: 'sine', gain: 0.1 });
         break;
       case 'building-complete':
         tone(185, at, 0.1, { wave: 'triangle', gain: 0.11 });

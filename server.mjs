@@ -2000,7 +2000,7 @@ function evaluateScenarioTriggers(deltaSeconds) {
       }
       broadcast({
         type: 'scenarioEvent', eventId: event.id, team: event.team, message,
-        deliveredUnitCount, unitKind, technologyReward: event.technologyReward ?? null,
+        rewardTeams: teams, deliveredUnitCount, unitKind, technologyReward: event.technologyReward ?? null,
       });
       if (repeating) {
         state.fireCount++;
