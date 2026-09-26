@@ -10,6 +10,7 @@ import {
   findUnreachableCaptureZone, findUnreachableResourceNode, scenarioEventSourceIds,
 } from './src/map-utils.mjs';
 import { orderUnitsForFormation } from './src/formation-assignment.mjs';
+import { townCenterSpawnPosition } from './src/town-center-spawn.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const HOST = process.env.RTS_HOST || '127.0.0.1';
@@ -145,7 +146,7 @@ function validateMapDefinition(definition, filename) {
     || definition.width > 256 || definition.height > 256) {
     throw new Error(`Map ${filename} width and height must be integers between 16 and 256.`);
   }
-  const terrainMaterials = ['meadow', 'short-grass', 'long-grass', 'dirt', 'sand', 'scree', 'cinder'];
+  const terrainMaterials = ['meadow', 'short-grass', 'long-grass', 'forest-floor', 'dirt', 'sand', 'scree', 'cinder'];
   if (definition.terrainBase !== undefined && !terrainMaterials.includes(definition.terrainBase)) {
     throw new Error(`Map ${filename} has an invalid base terrain material.`);
   }
@@ -990,10 +991,8 @@ function findAvailableCellNear(startCell, componentId, reservedCells, maxRadius 
 function findTownCenterProductionSpawnCell(team) {
   const spawn = spawnByTeam[team];
   if (!spawn) return -1;
-  const outward = team === 0 ? -1 : 1;
-  const townCenterX = Math.max(-MAP_HALF_X + 1.5,
-    Math.min(MAP_HALF_X - 1.5, spawn.x + outward * 3));
-  const townCenterCell = worldToCell(townCenterX, spawn.z);
+  const townCenterPosition = townCenterSpawnPosition(spawnByTeam, team, MAP_WIDTH, MAP_HEIGHT);
+  const townCenterCell = worldToCell(townCenterPosition.x, townCenterPosition.z);
   const teamSpawnCell = nearestOpenCell(worldToCell(spawn.x, spawn.z));
   const componentId = walkableComponents[teamSpawnCell];
   if (componentId < 0) return -1;
@@ -5709,7 +5708,7 @@ const server = createServer(async (request, response) => {
     response.end('Forbidden');
     return;
   }
-  const publicClientAsset = ['index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/map-utils.mjs', 'src/map-resize.mjs', 'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs', 'src/unit-visual-state.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs'].includes(relative);
+  const publicClientAsset = ['index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/map-utils.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs', 'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs', 'src/unit-visual-state.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs'].includes(relative);
   const publicUiAsset = [
     'assets/ui/preview.html', 'assets/ui/cursors/manifest.json',
     'assets/ui/cursors/select.png', 'assets/ui/cursors/select.svg',
@@ -5725,8 +5724,9 @@ const server = createServer(async (request, response) => {
   const publicEnvironmentModule = relative === 'src/environment-art.mjs';
   const publicEnvironmentAsset = path.dirname(relative) === 'assets/environment/frontier-v1'
     && ['.png', '.webp'].includes(path.extname(relative))
-    && ['oak', 'pine', 'berries', 'rock-outcrop', 'basalt-ridge', 'cliff', 'seamstone',
-      'meadow', 'short-grass', 'long-grass', 'dirt', 'sand', 'scree', 'cinder'].includes(path.basename(relative, path.extname(relative)));
+    && ['oak', 'pine', 'silver-birch', 'field-maple', 'hazel-thicket',
+      'berries', 'rock-outcrop', 'basalt-ridge', 'cliff', 'seamstone',
+      'meadow', 'short-grass', 'long-grass', 'forest-floor', 'dirt', 'sand', 'scree', 'cinder'].includes(path.basename(relative, path.extname(relative)));
   const publicInteractiveEnvironmentAsset = path.dirname(relative) === 'assets/environment/frontier-interactive-v1'
     && (relative === 'assets/environment/frontier-interactive-v1/manifest.json'
       || (path.extname(relative) === '.webp'

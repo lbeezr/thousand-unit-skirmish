@@ -24,6 +24,7 @@ import {
   capturePrerequisiteIds, findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
   findUnreachableCaptureZone, findUnreachableResourceNode, scenarioEventSourceIds,
 } from './map-utils.mjs';
+import { townCenterSpawnPosition } from './town-center-spawn.mjs';
 import { resizeWorldMarkers } from './map-resize.mjs';
 import {
   clampMapStudioZoom, mapStudioCanvasSize, mapStudioCellAtPointer,
@@ -33,7 +34,7 @@ import { classifyOrderNotice } from './order-feedback.mjs';
 import { AMBIENCE_PREVIEW_DURATION_MS, createGameAudio } from './audio.mjs';
 import { CombatAudioGate, cueForNotice, cueForScenarioEvent, isLocalRejection } from './audio-policy.mjs';
 import {
-  AUDIO_RECOGNITION_CUE_LABELS, createAudioRecognitionRound,
+  AUDIO_RECOGNITION_CUE_LABELS, copyAudioRecognitionText, createAudioRecognitionRound,
   summarizeAudioRecognitionResponses,
 } from './audio-recognition-check.mjs';
 import {
@@ -584,16 +585,18 @@ function updateBuildingProductionCue(visual, building) {
   applyProductionCueState(visual.productionLamp, state, visual.teamColor);
 }
 
-function addTownCenterVisual(spawn) {
-  const outward = spawn.team === 0 ? -1 : 1;
-  const x = THREE.MathUtils.clamp(spawn.x + outward * 3, -MAP_HALF_X + 1.5, MAP_HALF_X - 1.5);
+function addTownCenterVisual(spawn, definition) {
+  const townCenter = townCenterSpawnPosition(
+    definition.spawnPoints, spawn.team, definition.width, definition.height,
+  );
+  const { x, z } = townCenter;
   const stone = new THREE.MeshBasicMaterial({ color: 0x9b9580 });
   const slate = new THREE.MeshBasicMaterial({ color: 0x363d3f });
   const timber = new THREE.MeshBasicMaterial({ color: 0x514333 });
   const doorMaterial = new THREE.MeshBasicMaterial({ color: 0x2d302b });
   const piece = (geometry, material, px, py, pz, angle = 0) => {
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(x + px, py, spawn.z + pz);
+    mesh.position.set(x + px, py, z + pz);
     mesh.rotation.z = angle;
     addMapObject(mesh);
     return mesh;
@@ -1701,20 +1704,18 @@ function buildMap(definition) {
   // Rock silhouettes carry the visual boundary. Flat block tops made the ridge
   // look like a strip of square tiles when viewed from the oblique camera.
   const obstacleCount = definition.obstacles.reduce((count, obstacle) => (
-    count + (obstacle.material === 'stone' ? 0 : obstacle.width * obstacle.height)
+    count + (obstacle.material === 'water' ? obstacle.width * obstacle.height : 0)
   ), 0);
   const obstacles = new THREE.InstancedMesh(
     new THREE.BoxGeometry(1.02, 1.12, 1.02),
     new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.94, flatShading: true }),
     obstacleCount,
   );
-  const obstacleTints = { stone: [0x444944, 0x55594f], forest: [0x304934, 0x38533b], water: [0x3e6570, 0x4d7982] };
+  const obstacleTints = [0x3e6570, 0x4d7982];
   let obstacleIndex = 0;
   for (const obstacle of definition.obstacles) {
-    if (obstacle.material === 'stone') continue;
-    const tints = obstacleTints[obstacle.material] || obstacleTints.stone;
-    const visibleHeight = obstacle.material === 'forest' ? 0.17
-      : 0.025;
+    if (obstacle.material !== 'water') continue;
+    const visibleHeight = 0.025;
     for (let row = obstacle.row; row < obstacle.row + obstacle.height; row++) {
       for (let column = obstacle.column; column < obstacle.column + obstacle.width; column++) {
         dummy.position.set(column - MAP_HALF_X + 0.5, visibleHeight / 2, row - MAP_HALF_Z + 0.5);
@@ -1722,7 +1723,7 @@ function buildMap(definition) {
         dummy.scale.set(1, visibleHeight / 1.12, 1);
         dummy.updateMatrix();
         obstacles.setMatrixAt(obstacleIndex, dummy.matrix);
-        color.setHex((row + column + obstacleIndex) % 3 === 0 ? tints[0] : tints[1]);
+        color.setHex((row + column + obstacleIndex) % 3 === 0 ? obstacleTints[0] : obstacleTints[1]);
         obstacles.setColorAt(obstacleIndex, color);
         obstacleIndex++;
       }
@@ -1735,7 +1736,7 @@ function buildMap(definition) {
   addMapObject(obstacles);
   addObstacleEnvironmentSprites(definition, MAP_HALF_X, MAP_HALF_Z, addMapObject);
 
-  for (const spawn of definition.spawnPoints || []) addTownCenterVisual(spawn);
+  for (const spawn of definition.spawnPoints || []) addTownCenterVisual(spawn, definition);
   buildWoodNodeInstances(definition.resourceNodes || []);
   buildBerryNodeInstances(definition.resourceNodes || []);
   for (const node of definition.resourceNodes || []) {
@@ -3937,6 +3938,7 @@ const EDITOR_MATERIALS = ['stone', 'forest', 'water'];
 const EDITOR_MATERIAL_COLORS = ['#596653', '#496448', '#416a78'];
 const TERRAIN_COLORS = {
   meadow: '#60734f', 'short-grass': '#6d7a45', 'long-grass': '#52643e',
+  'forest-floor': '#4b5136',
   dirt: '#806047', sand: '#ac936d', scree: '#55564d', cinder: '#554c3d',
 };
 const MAP_STUDIO_DRAFT_VERSION = 1;
@@ -6061,9 +6063,12 @@ function buildPlacementAt(clientX, clientY) {
         && startRow < zone.row + zone.height && zone.row < startRow + footprint) blockedReason ||= 'CAPTURE ZONE IN THIS SITE';
     }
     for (const spawn of mapDefinition.spawnPoints || []) {
-      const outward = spawn.team === 0 ? -1 : 1;
-      const townCenterX = THREE.MathUtils.clamp(spawn.x + outward * 3, -MAP_HALF_X + 1.5, MAP_HALF_X - 1.5);
-      if (Math.abs(x - townCenterX) < 2.8 && Math.abs(z - spawn.z) < 2.8) blockedReason ||= 'TOWN CENTER TOO CLOSE';
+      const townCenter = townCenterSpawnPosition(
+        mapDefinition.spawnPoints, spawn.team, mapDefinition.width, mapDefinition.height,
+      );
+      if (Math.abs(x - townCenter.x) < 2.8 && Math.abs(z - townCenter.z) < 2.8) {
+        blockedReason ||= 'TOWN CENTER TOO CLOSE';
+      }
     }
   }
   for (const team of teamUnits) {
@@ -6862,11 +6867,9 @@ ui.audioRecognitionEnd.addEventListener('click', () => {
 });
 ui.audioRecognitionCopy.addEventListener('click', async () => {
   if (!audioRecognitionLastReport) return;
-  try {
-    if (typeof navigator.clipboard?.writeText !== 'function') throw new Error('Clipboard unavailable');
-    await navigator.clipboard.writeText(audioRecognitionLastReport);
+  if (await copyAudioRecognitionText(audioRecognitionLastReport)) {
     ui.audioRecognitionCopyStatus.textContent = 'Copied. Paste these notes into the audio playtest log.';
-  } catch {
+  } else {
     ui.audioRecognitionCopyStatus.textContent = 'Clipboard unavailable. Open trial notes and copy them manually.';
   }
 });
