@@ -546,6 +546,8 @@ function cameraSafeRect() {
   const toolbar = document.querySelector('.camera-toolbar')?.getBoundingClientRect();
   const objective = objectivePanel?.hidden ? null : objectivePanel.getBoundingClientRect();
   const minimap = document.querySelector('.minimap-panel')?.getBoundingClientRect();
+  const fieldHint = document.querySelector('.field-hint')?.getBoundingClientRect();
+  const orderFeedback = document.querySelector('.field-order-feedback')?.getBoundingClientRect();
   const right = Math.min(bounds.right - 12,
     dock && dock.width ? dock.right - 8 : bounds.right - 12,
     objective && objective.width ? objective.left - 8 : bounds.right - 12,
@@ -557,7 +559,9 @@ function cameraSafeRect() {
     toolbarIsUpper && toolbar?.height ? toolbar.bottom + 8 : bounds.top);
   const bottom = Math.min(bounds.bottom - 8,
     !toolbarIsUpper && toolbar?.height ? toolbar.top - 8 : bounds.bottom - 8,
-    dock && dock.height ? dock.top - 8 : bounds.bottom - 8);
+    dock && dock.height ? dock.top - 8 : bounds.bottom - 8,
+    fieldHint && fieldHint.width && fieldHint.height ? fieldHint.top - 8 : bounds.bottom - 8,
+    orderFeedback && orderFeedback.width && orderFeedback.height ? orderFeedback.top - 8 : bounds.bottom - 8);
   return { left: bounds.left + 12, top, right, bottom, width: Math.max(1, right - (bounds.left + 12)), height: Math.max(1, bottom - top) };
 }
 
