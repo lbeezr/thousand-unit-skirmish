@@ -43,7 +43,9 @@ export function readAudioSettings(storage = browserStorage()) {
   } catch { return { ...DEFAULT_SETTINGS }; }
 }
 
-export function createGameAudio({ storage = browserStorage(), doc = globalThis.document, onStatusChange, onCue } = {}) {
+export function createGameAudio({
+  storage = browserStorage(), doc = globalThis.document, onStatusChange, onCue, onCueDecision,
+} = {}) {
   let settings = readAudioSettings(storage);
   let context = null;
   let master = null;
@@ -270,8 +272,12 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
   }
 
   function play(cue, { preview = false } = {}) {
+    if (!(cue in COOLDOWN_MS)) return false;
+    if (!preview && !doc?.hidden) {
+      try { onCueDecision?.(cue); } catch {}
+    }
     if (!settings.enabled || settings.volume <= 0 || settings.effectsLevel <= 0 || doc?.hidden) return false;
-    if (!context || context.state === 'closed' || !(cue in COOLDOWN_MS)) return false;
+    if (!context || context.state === 'closed') return false;
     const now = performance.now();
     if (!preview && now - (lastCueAt.get(cue) ?? -Infinity) < COOLDOWN_MS[cue]) return false;
     const at = context.currentTime + 0.005;

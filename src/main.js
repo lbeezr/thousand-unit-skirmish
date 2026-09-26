@@ -273,10 +273,10 @@ const ui = {
 let ambiencePreviewPlaying = false;
 const audio = createGameAudio({
   onStatusChange: () => syncAudioControls(),
+  onCueDecision: (cue) => showAudioCaption(cue),
   onCue: (cue) => {
     ui.audioStatus.dataset.lastCue = cue;
     ui.audioStatus.dataset.cueCount = String((Number(ui.audioStatus.dataset.cueCount) || 0) + 1);
-    showAudioCaption(cue);
   },
 });
 const combatAudioGate = new CombatAudioGate();

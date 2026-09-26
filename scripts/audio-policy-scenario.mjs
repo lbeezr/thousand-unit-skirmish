@@ -48,11 +48,13 @@ assert.equal(gate.observe({ friendlyDamage: 1 }, 30050), 'battle-alert');
 
 const saved = { getItem: () => JSON.stringify({ enabled: false, volume: 4, ambience: false }) };
 assert.deepEqual(readAudioSettings(saved), {
-  enabled: false, volume: 1, effectsLevel: 1, ambience: false, ambienceLevel: 1,
+  enabled: false, captions: false, volume: 1, effectsLevel: 1, ambience: false, ambienceLevel: 1,
 });
 assert.deepEqual(readAudioSettings({ getItem: () => '{' }), {
-  enabled: true, volume: 0.5, effectsLevel: 1, ambience: true, ambienceLevel: 1,
+  enabled: true, captions: false, volume: 0.5, effectsLevel: 1, ambience: true, ambienceLevel: 1,
 });
+assert.equal(readAudioSettings({ getItem: () => JSON.stringify({ captions: true }) }).captions, true,
+  'saved critical sound captions stay enabled independently of audio output');
 assert.equal(readAudioSettings({ getItem: () => JSON.stringify({ ambienceLevel: 4 }) }).ambienceLevel, 2,
   'stored ambience level is capped at twice the reference mix');
 assert.equal(readAudioSettings({ getItem: () => JSON.stringify({ effectsLevel: 4 }) }).effectsLevel, 2,
@@ -106,10 +108,17 @@ try {
   const doc = { hidden: false, addEventListener() {}, removeEventListener() {} };
   const statuses = [];
   const cues = [];
-  const audio = createGameAudio({ storage, doc, onStatusChange: (status) => statuses.push(status), onCue: (cue) => cues.push(cue) });
+  const cueDecisions = [];
+  const audio = createGameAudio({
+    storage, doc,
+    onStatusChange: (status) => statuses.push(status),
+    onCue: (cue) => cues.push(cue),
+    onCueDecision: (cue) => cueDecisions.push(cue),
+  });
   assert.equal(audio.getStatus(), 'waiting');
   assert.equal(audio.getSettings().ambienceLevel, 1, 'new control preserves the existing ambience mix by default');
   assert.equal(audio.play('objective'), false, 'network events before a gesture cannot queue sounds');
+  assert.deepEqual(cueDecisions, ['objective'], 'a gameplay cue decision remains visible before audio is unlocked');
   assert.equal(createdContext, undefined, 'pre-gesture events must not create an audio context');
   audio.unlock();
   assert.equal(createdContext.gains[2].gain.lastTarget, 0.18, 'the default ambience level preserves the existing atmosphere gain');
@@ -150,17 +159,28 @@ try {
   audio.setSettings({ enabled: false });
   assert.equal(audio.getStatus(), 'muted');
   assert.equal(createdContext.suspendCalls, 1);
+  const scheduledBeforeMute = cues.length;
   assert.equal(audio.play('objective'), false);
+  assert.equal(cueDecisions.at(-1), 'objective', 'mute suppresses playback, not the critical cue decision');
+  assert.equal(cues.length, scheduledBeforeMute, 'muted decisions do not count as scheduled sounds');
   assert.equal(oscillators, 6);
   audio.setSettings({ enabled: true, volume: 0 });
   assert.equal(createdContext.suspendCalls, 2);
+  const scheduledAtZeroVolume = cues.length;
   assert.equal(audio.play('victory'), false);
+  assert.equal(cueDecisions.at(-1), 'victory', 'zero overall volume does not suppress an outcome caption decision');
+  assert.equal(cues.length, scheduledAtZeroVolume, 'zero-volume decisions do not count as scheduled sounds');
   assert.equal(oscillators, 6);
-  audio.setSettings({ enabled: true, volume: 0.3, ambience: false });
+  audio.setSettings({ enabled: true, volume: 0.3, effectsLevel: 0, ambience: false });
+  const scheduledAtZeroEffects = cues.length;
+  assert.equal(audio.play('scenario-reward'), false);
+  assert.equal(cueDecisions.at(-1), 'scenario-reward', 'zero effects level preserves the visual reward caption');
+  assert.equal(cues.length, scheduledAtZeroEffects, 'zero-effects decisions do not count as scheduled sounds');
+  audio.setSettings({ effectsLevel: 1 });
   assert.equal(audio.getStatus(), 'running');
   assert.equal(createdContext.resumeCalls, 1);
   assert.deepEqual(readAudioSettings(storage), {
-    enabled: true, volume: 0.3, effectsLevel: 1, ambience: false, ambienceLevel: 1,
+    enabled: true, captions: false, volume: 0.3, effectsLevel: 1, ambience: false, ambienceLevel: 1,
   });
   assert.equal(createdContext.gains[0].gain.lastTarget, 0.3 * 0.78);
   assert.equal(createdContext.gains[1].gain.lastTarget, 0.52);
@@ -172,7 +192,7 @@ try {
   assert.equal(createdContext.gains[0].gain.lastTarget, 0.3 * 0.78, 'ambience level leaves overall volume unchanged');
   assert.equal(createdContext.gains[1].gain.value, 0.52, 'effects level leaves the initial effects bus headroom unchanged');
   assert.deepEqual(readAudioSettings(storage), {
-    enabled: true, volume: 0.3, effectsLevel: 1.5, ambience: true, ambienceLevel: 0.4,
+    enabled: true, captions: false, volume: 0.3, effectsLevel: 1.5, ambience: true, ambienceLevel: 0.4,
   });
   assert.equal(audio.play('base-lost'), true);
   assert.equal(createdContext.gains[2].gain.lastTarget, 0.045 * 0.4, 'tactical alert ducks the selected ambience level');
