@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { cameraTargetForZoomAnchor } from '../src/camera-controls.mjs';
+import { cameraDepthSafePlanes, cameraTargetForZoomAnchor } from '../src/camera-controls.mjs';
 import {
   cameraArrowInputAllowed,
   cameraTargetDeltaForScreenFocus,
@@ -61,4 +61,18 @@ test('fit zoom fits both map dimensions and screen focus uses the matching camer
   assert.deepEqual(cameraTargetDeltaForScreenFocus({ x: 7, z: -2 }, { x: 4, z: 5 }), { x: 3, z: -7 });
   assert.deepEqual(cameraTargetForZoomAnchor({ x: 1, z: 2 }, { x: 4, z: 5 }, { x: 3, z: 2 }), { x: 2, z: 5 });
   assert.equal(mapFitZoom({ left: 0, right: 100, top: 0, bottom: 100 }, 1000, 1000), 2.3);
+});
+
+test('256 × 256 map corners stay inside dynamic camera clip planes at the HUD-safe target offset', () => {
+  const horizontal = 0.78 / Math.hypot(0.78, 1.12, 0.78);
+  const clipPlanes = cameraDepthSafePlanes({
+    halfX: 128,
+    halfZ: 128,
+    targetX: 140,
+    targetZ: -140,
+    cameraOffsetX: horizontal,
+    cameraOffsetZ: horizontal,
+  });
+  assert.ok(clipPlanes.distance - clipPlanes.extent >= 12);
+  assert.ok(clipPlanes.far - clipPlanes.distance >= clipPlanes.extent + 24);
 });
