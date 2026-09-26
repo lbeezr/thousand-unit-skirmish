@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { createServer as createNetServer } from 'node:net';
-import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { link, mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,6 +13,7 @@ import { constructionGroundStage } from '../src/building-visual-state.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SERVER_ENTRY = path.join(ROOT, 'server.mjs');
+const QA_EVIDENCE_ROOT = path.join(ROOT, 'docs/qa-evidence/environment-state-pack-v1');
 const ENVIRONMENT_PACK_ROOT = path.join(ROOT, 'assets/environment/frontier-interactive-v1');
 const ENVIRONMENT_MANIFEST_PATH = path.join(ENVIRONMENT_PACK_ROOT, 'manifest.json');
 const GAME_DEV_RUN_DIR = process.env.GAME_DEV_RUN_DIR;
@@ -56,6 +57,12 @@ const EXPECTED_FRAME_COUNT = (RESOURCE_FAMILIES.length * STOCK_STAGES.length + C
 const ZOOMS = Object.freeze([
   { label: '091', value: 0.91 },
   { label: '048', value: 0.48 },
+]);
+const PILOT_FRAME_SPECS = Object.freeze([
+  Object.freeze({ mapId: 'renderer-env-meadow', zoom: 0.91, familyId: 'oak', stageId: 'worked', sample: 50 }),
+  Object.freeze({ mapId: 'renderer-env-meadow', zoom: 0.48, familyId: 'berries', stageId: 'worked', sample: 50 }),
+  Object.freeze({ mapId: 'renderer-env-cinder', zoom: 0.91, familyId: 'oak', stageId: 'depleted', sample: 0 }),
+  Object.freeze({ mapId: 'renderer-env-cinder', zoom: 0.48, familyId: 'berries', stageId: 'low', sample: 20 }),
 ]);
 
 const children = new Set();
@@ -663,7 +670,12 @@ async function writeFrame(browser, runDirectory, frameIndex, mapLabel, stateId, 
   };
 }
 
-async function writeCaptureManifest(frames, renderer, runDirectory) {
+async function writeCaptureManifest(frames, renderer, runDirectory, { pilotPlan = null, qaEvidence = null } = {}) {
+  const isPilot = pilotPlan !== null;
+  if (!isPilot) {
+    assert.ok(qaEvidence?.complete === true && qaEvidence.frameCount === EXPECTED_FRAME_COUNT,
+      'full-matrix capture manifest requires its 40-file QA evidence handoff');
+  }
   const manifest = {
     schema: 'game_dev.capture.v1',
     runId: GAME_DEV_RUN_ID,
@@ -679,20 +691,37 @@ async function writeCaptureManifest(frames, renderer, runDirectory) {
       gpuExecutionReported: false,
       gpuCompletionIdentityReported: false,
       pixelVisualInspectionPerformed: false,
-      notes: [
+      notes: isPilot ? [
+        'Four-frame environment pilot preview only; it does not satisfy final 40-frame evidence requirements.',
+        'No performance measurements were collected.',
+        'Every image was captured from an in-game client with a server-provided fog visibility mask.',
+        'All ten runtime images were fetched, SHA-256 checked, decoded, and dimension-matched before capture.',
+        'Resource stock changed through normal gathering from startingStock 100.',
+        'The pilot includes active wood and food gathering frames.',
+        'Human review is required to assess authored art appearance.',
+      ] : [
         'Environment appearance capture; no performance measurements were collected.',
         'Every image state was captured from an in-game client with a server-provided fog visibility mask.',
         'All ten runtime images were fetched, SHA-256 checked, decoded, and dimension-matched before capture.',
         'Resource stock changed through normal gathering from startingStock 100.',
         'Construction clear was asserted to have no decal or instance and has no screenshot frame.',
+        `All 40 full-matrix PNGs were copied to ${qaEvidence?.directory || 'the documented QA evidence directory'}.`,
         'Human review is required to assess authored art appearance.',
       ],
-      environmentStateCoverage: {
+      environmentStateCoverage: isPilot ? {
+        mode: 'pilot-preview',
+        acceptanceStatus: 'preview-only',
+        satisfiesFinalEvidenceRequirement: false,
+        tuples: pilotPlan,
+      } : {
+        mode: 'full-matrix',
+        acceptanceStatus: 'awaiting-human-art-review',
         resourceFamilies: RESOURCE_FAMILIES.map(({ id }) => id),
         stockSamples: [100, 50, 20, 0],
         constructionImages: ['earthwork', 'foundation'],
         constructionClearImage: null,
         constructionClearAssertedWithoutScreenshot: true,
+        qaEvidence,
       },
       screenshotViewport: {
         cssWidth: VIEWPORT_WIDTH,
@@ -749,7 +778,7 @@ async function validateCaptureHook(browser, map, expected) {
   return hook;
 }
 
-async function captureResourceState({ map, family, stage, sample, browsers, frames, runDirectory, evidence }) {
+async function captureResourceState({ map, family, stage, sample, browsers, frames, runDirectory, evidence, zooms = ZOOMS }) {
   const states = await Promise.all(browsers.map((browser) => waitForMapState(
     browser, map,
     (state) => resourceSampleReady(state, map, family, stage, sample, browser.team),
@@ -758,7 +787,7 @@ async function captureResourceState({ map, family, stage, sample, browsers, fram
   const validated = states.map((state, index) => validateResourceSnapshot(
     state, browsers[index], map, family, stage, sample,
   ));
-  for (const zoom of ZOOMS) {
+  for (const zoom of zooms) {
     assertLoadGate();
     checkInterrupted();
     await Promise.all(browsers.map((browser) => setZoom(browser, zoom.value)));
@@ -898,6 +927,46 @@ async function captureEnvironmentMap({ map, browsers, frames, runDirectory, veri
   return clearAssertion;
 }
 
+async function captureEnvironmentPilot({ maps, browsers, frames, runDirectory, verifiedPack, evidence }) {
+  const plan = buildPilotFramePlan(maps);
+  let activeMapId = null;
+  for (const frame of plan) {
+    assertLoadGate();
+    checkInterrupted();
+    const map = maps.find((candidate) => candidate.id === frame.mapId);
+    const family = RESOURCE_FAMILIES.find((candidate) => candidate.id === frame.resourceFamily);
+    const stage = STOCK_STAGES.find((candidate) => candidate.id === frame.stage);
+    const zoom = ZOOMS.find((candidate) => candidate.value === frame.zoom);
+    assert.ok(map && family && stage && zoom, `pilot frame ${frame.index} should resolve before capture`);
+
+    if (activeMapId !== map.id) {
+      await selectMap(browsers[0], map.id);
+      activeMapId = map.id;
+    }
+    await Promise.all(browsers.map((browser) => waitForSnapshot(browser, (state) => (
+      state.mapId === map.id && state.fogOfWar === true
+        && state.units?.filter((unit) => unit[1] === browser.team && unit[5] === 'worker').length === 4
+        && state.resourceNodes?.some((node) => (
+          node.id === resourceNodeId(family, browser.team) && node.stock === 100
+        ))
+    ), `${browser.teamLabel} initial ${family.id} stock on ${map.id}`)));
+    await Promise.all(browsers.map((browser) => waitForRuntimeAssets(browser, verifiedPack)));
+
+    await Promise.all(browsers.map((browser) => sendCaptureCommand(browser, {
+      type: 'gather', ids: [browser.team * 4 + family.workerSlot],
+      nodeId: resourceNodeId(family, browser.team),
+    })));
+    await captureResourceState({
+      map, family, stage, sample: frame.targetStockSample, browsers, frames, runDirectory, evidence,
+      zooms: [zoom],
+    });
+  }
+  const expectedKeys = plan.map((frame) => `${frame.mapLabel}:${frame.resourceFamily}-${frame.stage}:${frame.zoom}`);
+  assert.deepEqual([...capturedFrameKeys].slice(-plan.length).sort(), [...expectedKeys].sort(),
+    'pilot screenshots should match the declared four-tuple plan');
+  return plan;
+}
+
 function buildFramePlan(maps) {
   const frames = [];
   for (const map of maps) {
@@ -919,6 +988,214 @@ function buildFramePlan(maps) {
     }
   }
   return frames;
+}
+
+async function preserveFullMatrixEvidence({ maps, frames, runDirectory }) {
+  assert.equal(frames.length, EXPECTED_FRAME_COUNT,
+    'persistent QA evidence should only be copied after all 40 frames exist');
+  const evidenceRows = capturedFrameEvidence.slice(-frames.length);
+  assert.equal(evidenceRows.length, EXPECTED_FRAME_COUNT, 'all full-matrix frames need capture evidence');
+  assert.equal(new Set(frames.map((frame) => frame.index)).size, EXPECTED_FRAME_COUNT,
+    'full-matrix frame indexes must be unique');
+
+  const expectedFrames = buildFramePlan(maps);
+  const expectedDestinations = expectedFrames.map(({ mapLabel, stateId, zoom }) => (
+    path.posix.join(mapLabel, `zoom-${zoom.toFixed(2)}`, `${stateId}.png`)
+  ));
+  const expectedKeys = new Set(expectedFrames.map((frame) => `${frame.mapLabel}:${frame.stateId}:${frame.zoom}`));
+  const evidenceByIndex = new Map(evidenceRows.map((row) => [row.index, row]));
+  const files = frames.map((frame) => {
+    const evidence = evidenceByIndex.get(frame.index);
+    assert.ok(evidence, `frame ${frame.index} must have its map, state, and zoom evidence`);
+    const key = `${evidence.mapLabel}:${evidence.stateId}:${evidence.zoom}`;
+    assert.ok(expectedKeys.has(key), `frame ${frame.index} is outside the full-matrix plan`);
+    const attachment = frame.attachments?.find((item) => item.kind === 'color' && item.encoding === 'png');
+    assert.ok(attachment, `frame ${frame.index} must include a PNG attachment`);
+    const sourcePath = path.resolve(runDirectory, attachment.path);
+    assert.ok(sourcePath.startsWith(`${runDirectory}${path.sep}`),
+      `frame ${frame.index} attachment should stay inside the game-dev run directory`);
+    return {
+      key,
+      sourcePath,
+      relativePath: path.posix.join(
+        evidence.mapLabel,
+        `zoom-${evidence.zoom.toFixed(2)}`,
+        `${evidence.stateId}.png`,
+      ),
+    };
+  });
+  const destinationNames = files.map((file) => file.relativePath);
+  assert.equal(new Set(destinationNames).size, EXPECTED_FRAME_COUNT,
+    'the 40 documented destination names must be unique');
+  assert.deepEqual([...destinationNames].sort(), [...expectedDestinations].sort(),
+    'destination files must cover every state, theme, and zoom in the full matrix');
+  assert.equal(new Set(files.map((file) => file.key)).size, EXPECTED_FRAME_COUNT,
+    'each full-matrix state/theme/zoom tuple must map to exactly one destination');
+
+  await mkdir(QA_EVIDENCE_ROOT, { recursive: true });
+  const destinationPaths = files.map((file) => path.join(QA_EVIDENCE_ROOT, ...file.relativePath.split('/')));
+  const assertDestinationsAvailable = async () => {
+    const occupied = [];
+    for (const [index, destinationPath] of destinationPaths.entries()) {
+      try {
+        await stat(destinationPath);
+        occupied.push(files[index].relativePath);
+      } catch (error) {
+        if (error.code !== 'ENOENT') throw error;
+      }
+    }
+    assert.deepEqual(occupied, [],
+      `refusing to overwrite existing environment QA evidence: ${occupied.join(', ')}`);
+  };
+  await assertDestinationsAvailable();
+  const stagingRoot = await mkdtemp(path.join(QA_EVIDENCE_ROOT, '.environment-state-pack-v1-pending-'));
+  const publishedPaths = [];
+  try {
+    for (const file of files) {
+      const stagedPath = path.join(stagingRoot, ...file.relativePath.split('/'));
+      await mkdir(path.dirname(stagedPath), { recursive: true });
+      const imageBytes = await readFile(file.sourcePath);
+      file.sha256 = createHash('sha256').update(imageBytes).digest('hex');
+      await writeFile(stagedPath, imageBytes);
+    }
+    await assertDestinationsAvailable();
+    try {
+      for (const [index, file] of files.entries()) {
+        const destinationPath = destinationPaths[index];
+        await mkdir(path.dirname(destinationPath), { recursive: true });
+        await link(path.join(stagingRoot, ...file.relativePath.split('/')), destinationPath);
+        publishedPaths.push(destinationPath);
+      }
+    } catch (error) {
+      const rollbackErrors = [];
+      for (const destinationPath of publishedPaths.reverse()) {
+        try { await rm(destinationPath, { force: true }); } catch (rollbackError) { rollbackErrors.push(rollbackError); }
+      }
+      if (rollbackErrors.length > 0) {
+        throw new AggregateError([error, ...rollbackErrors],
+          'environment QA evidence publish failed and could not fully roll back');
+      }
+      throw error;
+    }
+  } finally {
+    await rm(stagingRoot, { recursive: true, force: true });
+  }
+
+  return {
+    complete: true,
+    directory: 'docs/qa-evidence/environment-state-pack-v1',
+    runId: GAME_DEV_RUN_ID,
+    frameCount: files.length,
+    files: files.map(({ relativePath, sha256 }) => ({ path: relativePath, sha256 })),
+  };
+}
+
+function buildPilotFramePlan(maps) {
+  const frames = PILOT_FRAME_SPECS.map((spec, index) => {
+    const map = maps.find((candidate) => candidate.id === spec.mapId);
+    const family = RESOURCE_FAMILIES.find((candidate) => candidate.id === spec.familyId);
+    const stage = STOCK_STAGES.find((candidate) => candidate.id === spec.stageId);
+    const zoom = ZOOMS.find((candidate) => candidate.value === spec.zoom);
+    assert.ok(map && family && stage && zoom, `pilot tuple ${index + 1} must resolve to a map, resource, stage, and zoom`);
+    assert.equal(resourceVisualStage(spec.sample, 100), stage.id,
+      `pilot tuple ${index + 1} sample should map to ${stage.id}`);
+    const stateId = `${family.id}-${stage.id}`;
+    const frameLabel = `${map.terrainBase}-${stateId}-azure-zoom-${zoom.label}`;
+    return {
+      index: index + 1,
+      mapId: map.id,
+      mapName: map.terrainBase === 'meadow' ? 'Meadow' : 'Cinder',
+      mapLabel: map.terrainBase,
+      zoom: zoom.value,
+      zoomLabel: zoom.label,
+      resourceFamily: family.id,
+      resourceType: family.nodeType,
+      stage: stage.id,
+      targetStockSample: spec.sample,
+      stockSampleTolerance: spec.sample === 0 ? 0 : 5,
+      stockScope: 'per-team-resource-node',
+      gatherOrder: {
+        type: 'gather',
+        teamClients: ['azure', 'ember'],
+        workerSlotsPerTeam: [family.workerSlot],
+        workerIds: [family.workerSlot, 4 + family.workerSlot],
+      },
+      verifiedTeamViews: ['azure', 'ember'],
+      screenshotViewer: 'azure',
+      workerInteraction: stage.id === 'depleted'
+        ? 'worker-visible-near-node-after-depletion'
+        : 'active-gathering-or-returning',
+      fogOfWarRequired: true,
+      outputPath: `frames/${String(index + 1).padStart(2, '0')}-${frameLabel}.png`,
+    };
+  });
+  assert.equal(frames.length, 4, 'the pilot must contain exactly four frames');
+  assert.deepEqual([...new Set(frames.map((frame) => frame.mapName))].sort(), ['Cinder', 'Meadow']);
+  assert.deepEqual([...new Set(frames.map((frame) => frame.zoom))].sort((a, b) => b - a), [0.91, 0.48]);
+  assert.ok(frames.some((frame) => frame.resourceFamily === 'oak' && frame.stage === 'worked'
+    && frame.workerInteraction === 'active-gathering-or-returning'),
+  'the pilot must include an active wood gathering interaction');
+  assert.ok(frames.some((frame) => frame.resourceFamily === 'berries' && frame.stage === 'worked'
+    && frame.workerInteraction === 'active-gathering-or-returning'),
+  'the pilot must include an active food gathering interaction');
+  return frames;
+}
+
+async function runStaticPilotPlan() {
+  const maps = [
+    makeReviewMap('renderer-env-meadow', 'Environment State Meadow', 'meadow', 881),
+    makeReviewMap('renderer-env-cinder', 'Environment State Cinder', 'cinder', 517),
+  ];
+  const frames = buildPilotFramePlan(maps);
+  const report = {
+    ok: true,
+    mode: 'pilot-plan-only',
+    acceptanceStatus: 'preview-only',
+    scenarioId: 'renderer-environment-state-pilot',
+    captureExecuted: false,
+    serverLaunched: false,
+    browserLaunched: false,
+    webglContextCreated: false,
+    framesCaptured: 0,
+    tuples: frames,
+    output: {
+      gameDevCaptureManifest: 'capture.json',
+      framePaths: frames.map((frame) => frame.outputPath),
+    },
+    runtimeAssets: {
+      packRoot: 'assets/environment/frontier-interactive-v1',
+      expectedFiles: REQUIRED_RUNTIME_FILES,
+      verifiedDuringPlan: false,
+    },
+    captureGate: {
+      requiredFlags: ['--confirm', '--allow-gpu'],
+      excludedFlags: ['--allow-performance'],
+      maximumOneMinuteLoadAverage: LOAD_AVERAGE_LIMIT,
+    },
+    captureCommand: 'game-dev scenario run renderer-environment-state-pilot --project . --confirm --allow-gpu --jsonl',
+  };
+  if (GAME_DEV_RUN_DIR) {
+    assertGameDevContext('renderer-environment-state-pilot-plan');
+    const runDirectory = path.resolve(GAME_DEV_RUN_DIR);
+    await mkdir(runDirectory, { recursive: true });
+    await writeFile(path.join(runDirectory, 'capture.json'), JSON.stringify({
+      schema: 'game_dev.capture.v1',
+      runId: GAME_DEV_RUN_ID,
+      adapterId: GAME_DEV_ADAPTER_ID,
+      scenarioId: GAME_DEV_SCENARIO_ID,
+      sourceFormat: 'game-dev-capture-v1',
+      frames: [],
+      measurements: [],
+      adapterEvidence: {
+        pilotPlan: report,
+        notes: [
+          'Plan-only output; no server, browser, WebGL context, or screenshots were started.',
+          'The capture command is gated separately and is not executed by this plan scenario.',
+        ],
+      },
+    }, null, 2));
+  }
+  console.log(JSON.stringify(report, null, 2));
 }
 
 async function runStaticPreflight() {
@@ -998,8 +1275,9 @@ async function runStaticPreflight() {
   console.log(JSON.stringify(report, null, 2));
 }
 
-async function run() {
-  assertGameDevContext('renderer-environment-state');
+async function run({ pilot = false } = {}) {
+  const scenarioId = pilot ? 'renderer-environment-state-pilot' : 'renderer-environment-state';
+  assertGameDevContext(scenarioId);
   assertLoadGate();
   const verifiedPack = await verifyEnvironmentPack();
   const runDirectory = path.resolve(GAME_DEV_RUN_DIR);
@@ -1042,38 +1320,68 @@ async function run() {
     assert.ok(renderer.webglVersion === 1 || renderer.webglVersion === 2,
       'environment renderer should expose WebGL');
 
-    const clearAssertions = [];
-    for (const map of maps) {
-      clearAssertions.push(await captureEnvironmentMap({
-        map, browsers, frames, runDirectory, verifiedPack, evidence,
-      }));
+    if (pilot) {
+      const pilotPlan = await captureEnvironmentPilot({
+        maps, browsers, frames, runDirectory, verifiedPack, evidence,
+      });
+      assert.equal(frames.length, pilotPlan.length, 'pilot capture should contain exactly four planned frames');
+      const manifest = await writeCaptureManifest(frames, renderer, runDirectory, { pilotPlan });
+      assert.equal(manifest.measurements.length, 0, 'environment appearance capture must not report performance metrics');
+      console.log(JSON.stringify({
+        scenario: GAME_DEV_SCENARIO_ID,
+        mode: 'pilot-capture',
+        captureExecuted: true,
+        acceptanceStatus: 'preview-only',
+        maps: maps.map((map) => ({ id: map.id, terrainBase: map.terrainBase, fogOfWar: map.fogOfWar })),
+        environmentPack: {
+          packId: verifiedPack.manifest.packId,
+          packVersion: verifiedPack.manifest.packVersion,
+          browserClients: browsers.length,
+          runtimeImagesFetchedAndDecodedPerClient: REQUIRED_RUNTIME_FILES.length,
+        },
+        stateChecks: evidence,
+        pilotPlan,
+        frames: frames.map((frame) => frame.label),
+        capturePath: path.join(runDirectory, 'capture.json'),
+        humanArtReviewPending: true,
+      }, null, 2));
+    } else {
+      const clearAssertions = [];
+      for (const map of maps) {
+        clearAssertions.push(await captureEnvironmentMap({
+          map, browsers, frames, runDirectory, verifiedPack, evidence,
+        }));
+      }
+      assert.equal(frames.length, EXPECTED_FRAME_COUNT,
+        'environment capture should contain all ten image states across both maps and zooms');
+      const actualFrameKeys = capturedFrameKeys;
+      const expectedFrameKeys = buildFramePlan(maps).map((frame) => (
+        `${frame.mapLabel}:${frame.stateId}:${frame.zoom}`
+      ));
+      assert.deepEqual([...actualFrameKeys].sort(), [...expectedFrameKeys].sort(),
+        'captured frame roster must exactly match the 40-state matrix');
+      assert.equal(clearAssertions.length, 2, 'clear-state assertions should pass on both maps');
+      const qaEvidence = await preserveFullMatrixEvidence({ maps, frames, runDirectory });
+      const manifest = await writeCaptureManifest(frames, renderer, runDirectory, { qaEvidence });
+      assert.equal(manifest.measurements.length, 0, 'environment appearance capture must not report performance metrics');
+      console.log(JSON.stringify({
+        scenario: GAME_DEV_SCENARIO_ID,
+        maps: maps.map((map) => ({ id: map.id, terrainBase: map.terrainBase, fogOfWar: map.fogOfWar })),
+        environmentPack: {
+          packId: verifiedPack.manifest.packId,
+          packVersion: verifiedPack.manifest.packVersion,
+          browserClients: browsers.length,
+          runtimeImagesFetchedAndDecodedPerClient: REQUIRED_RUNTIME_FILES.length,
+        },
+        stateChecks: evidence,
+        constructionClearAssertions: clearAssertions,
+        frames: frames.map((frame) => frame.label),
+        acceptanceStatus: 'awaiting-human-art-review',
+        qaEvidence,
+        capturePath: path.join(runDirectory, 'capture.json'),
+        humanArtReviewPending: true,
+      }, null, 2));
     }
-    assert.equal(frames.length, EXPECTED_FRAME_COUNT,
-      'environment capture should contain all ten image states across both maps and zooms');
-    const actualFrameKeys = capturedFrameKeys;
-    const expectedFrameKeys = buildFramePlan(maps).map((frame) => (
-      `${frame.mapLabel}:${frame.stateId}:${frame.zoom}`
-    ));
-    assert.deepEqual([...actualFrameKeys].sort(), [...expectedFrameKeys].sort(),
-      'captured frame roster must exactly match the 40-state matrix');
-    assert.equal(clearAssertions.length, 2, 'clear-state assertions should pass on both maps');
-    const manifest = await writeCaptureManifest(frames, renderer, runDirectory);
-    assert.equal(manifest.measurements.length, 0, 'environment appearance capture must not report performance metrics');
-    console.log(JSON.stringify({
-      scenario: GAME_DEV_SCENARIO_ID,
-      maps: maps.map((map) => ({ id: map.id, terrainBase: map.terrainBase, fogOfWar: map.fogOfWar })),
-      environmentPack: {
-        packId: verifiedPack.manifest.packId,
-        packVersion: verifiedPack.manifest.packVersion,
-        browserClients: browsers.length,
-        runtimeImagesFetchedAndDecodedPerClient: REQUIRED_RUNTIME_FILES.length,
-      },
-      stateChecks: evidence,
-      constructionClearAssertions: clearAssertions,
-      frames: frames.map((frame) => frame.label),
-      capturePath: path.join(runDirectory, 'capture.json'),
-      humanArtReviewPending: true,
-    }, null, 2));
   } finally {
     for (const browser of browsers) {
       browser.cdp?.close();
@@ -1089,7 +1397,17 @@ async function run() {
   }
 }
 
-if (process.argv[2] === '--preflight') {
+if (process.argv[2] === '--pilot-plan') {
+  runStaticPilotPlan().catch((error) => {
+    console.error(error.stack || error.message || error);
+    process.exitCode = 1;
+  });
+} else if (process.argv[2] === '--pilot') {
+  run({ pilot: true }).catch((error) => {
+    console.error(error.stack || error.message || error);
+    process.exitCode = interruptSignal ? 130 : 1;
+  });
+} else if (process.argv[2] === '--preflight') {
   runStaticPreflight().catch((error) => {
     console.error(error.stack || error.message || error);
     process.exitCode = 1;
