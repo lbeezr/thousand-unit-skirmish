@@ -4,7 +4,7 @@
 
 ## Current baseline
 
-This audit reads the shipped maps on `main` at `2871a43`. “Forest” counts blocked cells whose obstacle material is `forest`; it does not count individual harvestable wood nodes. Open Field and Dense Clash are diagnostic maps and should remain simple.
+This audit reads the shipped maps on `main` at `0067c31`. “Forest” counts blocked cells whose obstacle material is `forest`; it does not count individual harvestable wood nodes. Open Field and Dense Clash are diagnostic maps and should remain simple.
 
 | Map | Cells | Harvestable food + wood nodes | Forest cells |
 | --- | ---: | ---: | ---: |
@@ -16,6 +16,14 @@ This audit reads the shipped maps on `main` at `2871a43`. “Forest” counts bl
 | Open Field / Dense Clash | 64 × 64 | 4 / 0 | 0 / 0 |
 
 A 160 × 160 map has **6.25 times** the area of today's 64 × 64 maps; 224 × 224 has **12.25 times** the area. Both sizes are already inside the Map Studio and server limit of 16–256 cells per side. Map JSON allows at most 128 resource nodes, 4,096 obstacle rectangles, and 4,096 ground-paint patches. Those are schema limits, not evidence that a crowded 2,000-unit match at 224 performs well.
+
+The static audit on `0067c31` gives a compact-map geometry reference for
+`maps/forked-vale.json`: both seats have 30–31-cell shortest paths to the
+Signals (11.5–11.9 nominal seconds at current single-unit speed) and a
+20-cell path to the Vale Watch (7.7 seconds). The Watch has a 21-cell
+edge-disjoint alternate. Each spawn is nearest to 1,000 food and 1,000 wood
+stock, plus 150 starting food and 250 starting wood. This describes layout,
+not observed first contact, harvesting, or strategic route viability.
 
 ## Build one full-sized map now
 
@@ -40,6 +48,14 @@ The renderer currently instances one tree sprite for every blocked forest cell. 
 
 ## What to measure while building
 
+- Run `node scripts/map-balance-audit.mjs maps/<map-file>.json` for a static
+  two-seat report of initial stock by nearest spawn, nominal travel estimates
+  to resources/objectives, and an edge-disjoint alternative after the shortest
+  route is excluded when one is found. These are layout estimates. First
+  contact, expansion, route viability under an opponent, and actual stock use
+  still need a match observation. A missing alternate means this deterministic
+  shortest route had no edge-disjoint path after its edges were removed; it is
+  not a proof that no other pair of routes exists.
 - **Map design:** cells by terrain/obstacle region, resource nodes and stock by region, paths and travel time from each spawn, available building footprints, objective approach widths, and actual player routes.
 - **Runtime:** editor responsiveness at 160 and 224; map load and memory; A* expanded cells and order acknowledgement on long cross-map commands; server tick p95/max, vision/fog cost, two-seat snapshot bytes; browser frame and minimap legibility with dense forests and 2,000 units when a valid test window is available.
 - **Network implication:** fog uses 2 bits per map cell in each state snapshot. Its packed data is 1,024 bytes on 64 × 64, 6,400 on 160 × 160, and 12,544 on 224 × 224 before base64. The map area expands this cost even when unit count stays fixed.
