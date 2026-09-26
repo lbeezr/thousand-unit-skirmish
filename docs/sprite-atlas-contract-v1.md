@@ -131,6 +131,14 @@ the 3 × 3 occupancy hint. Its single full-canvas midground layer is not a
 depth split. The ground pivot remains an unreviewed estimate, and renderer
 integration is pending; a generated browser preview is stored with the pack.
 
+The standalone Town Center sprite pack now uses the same exporter to generate
+its canonical sidecar directly from `sprite-grid.json`. It records one static
+`complete` state for Azure and Ember, hashes the original, normalized, and
+runtime files, and keeps the projected pivot unreviewed. Its 4 × 4 visual base
+is only a review guide: the pack omits `recommendedTileFootprint` because the
+map-spawn landmark has no gameplay occupancy. Renderer integration and visual
+pivot review remain pending; the generated preview is stored with the pack.
+
 The available Worker, Infantry, and Archer sprite explorations now have
 `runtime-candidate` manifests with source/runtime atlas pages, aligned team
 masks, full-frame fallbacks, explicit actor crops, and named clips. The
