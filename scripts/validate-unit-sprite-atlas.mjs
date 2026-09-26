@@ -145,8 +145,8 @@ async function validateSpriteRuntime(manifest, width, height, manifestDirectory)
   check(Number.isFinite(presentation.artBoundsWorld?.maxWidth) && presentation.artBoundsWorld.maxWidth > 0
     && Number.isFinite(presentation.artBoundsWorld?.maxHeight) && presentation.artBoundsWorld.maxHeight > 0,
   'presentation.artBoundsWorld maxWidth and maxHeight must be positive');
-  check(presentation.tileFootprint?.width > 0 && presentation.tileFootprint?.depth > 0,
-    'presentation.tileFootprint must be separate positive width/depth metadata');
+  check(presentation.visibleGroundSpanWorld?.width > 0 && presentation.visibleGroundSpanWorld?.depth > 0,
+    'presentation.visibleGroundSpanWorld must be separate positive width/depth metadata');
   check(presentation.cullingBoundsWorld?.coversAllFrames === true,
     'presentation.cullingBoundsWorld must cover every frame');
   check(presentation.selectionBoundsWorld?.shape === 'circle',
@@ -226,8 +226,34 @@ try {
   check(grid.gutterPx === 0, 'this validator currently expects a zero-gutter atlas');
   await validateSpriteRuntime(manifest, width, height, dirname(manifestPath));
 
+  const runtimePath = resolve(dirname(manifestPath), atlas.runtimePath || '.');
+  check(isInsideDirectory(runtimePath, dirname(manifestPath)), 'runtime atlas path must stay inside the pack directory');
+  if (isInsideDirectory(runtimePath, dirname(manifestPath))) {
+    const runtimeBytes = await readFile(runtimePath);
+    const runtimeHeader = readPngHeader(runtimeBytes, 'runtime atlas');
+    check(runtimeHeader.width === width && runtimeHeader.height === height,
+      'runtime atlas dimensions must match the source atlas');
+    check(runtimeHeader.bitDepth === 8 && runtimeHeader.colorType === 6,
+      'runtime atlas must be 8-bit RGBA PNG');
+    check(createHash('sha256').update(runtimeBytes).digest('hex') === atlas.runtimeSha256,
+      'runtime atlas SHA-256 does not match manifest');
+  }
+
+  const canonicalPath = resolve(dirname(manifestPath), 'sprite-atlas-pack-v1.json');
+  const canonical = JSON.parse(await readFile(canonicalPath, 'utf8'));
+  check(canonical.schemaVersion === 1, 'canonical sprite-atlas pack schemaVersion must be 1');
+  check(canonical.packId === manifest.packId && canonical.packVersion === manifest.packVersion,
+    'canonical sprite-atlas pack identity must match the source manifest');
+  const canonicalAsset = canonical.assets?.find((asset) => asset.id === manifest.unitRole);
+  check(Boolean(canonicalAsset), 'canonical sprite-atlas pack must contain this unit role');
+  check(canonicalAsset?.frames?.length === manifest.spriteRuntime?.frames?.length,
+    'canonical pack frame count must match the frame analysis');
+  check(canonicalAsset?.clips?.length === manifest.spriteRuntime?.animations?.length,
+    'canonical pack clip count must match the animation analysis');
+  check(canonical?.pages?.[0]?.maskFileId, 'canonical color page must reference its aligned team mask');
+
   if (failures.length) throw new Error(failures.join('\n'));
-  console.log(`PASS ${manifest.packId} ${width}x${height} RGBA, ${columns}x${rows}, sha256 ${sha256}`);
+  console.log(`PASS ${manifest.packId} ${width}x${height} RGBA, ${columns}x${rows}, canonical frames ${canonicalAsset.frames.length}, sha256 ${sha256}`);
 } catch (error) {
   console.error(`FAIL ${error.message}`);
   process.exitCode = 1;

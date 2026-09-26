@@ -1,6 +1,6 @@
 # Archer sprite exploration v1
 
-Painterly Archer cutout exploration for the fixed oblique RTS camera. The atlas remains source art; explicit runtime metadata and a derived team-accent mask are now packaged beside it.
+Painterly Archer cutout exploration for the fixed oblique RTS camera. The atlas remains source art; a canonical runtime-candidate manifest, a visibility-preserving runtime page, and a derived team-accent mask are packaged beside it.
 
 ![Eight-facing Archer sprite atlas](archer-atlas-source.png)
 
@@ -11,6 +11,8 @@ node scripts/validate-unit-sprite-atlas.mjs assets/units/archer-sprite-v1/manife
 ```
 
 See [`manifest.json`](manifest.json), [`PROMPT.md`](PROMPT.md), and [`PROVENANCE.md`](PROVENANCE.md) for frame metadata and source details.
+
+The renderer-facing manifest is [`sprite-atlas-pack-v1.json`](sprite-atlas-pack-v1.json). It records full-cell fallback cutouts, explicit actor crops, estimated stable ground pivots, eight-direction clips, separate visual bounds, and an aligned team mask. The zero-gutter pilot declares linear filtering, no mipmaps, and the same half-texel inset for color and mask. `archer-atlas-runtime.png` changes only RGB beneath fully transparent pixels; visible source pixels and alpha are unchanged.
 
 The manifest records 48 frame rectangles, pose bounds, bottom-center ground pivots, eight-direction idle/walk/attack/defeat sequences, and world bounds. `team-accent-mask.png` is a derived gray8 mask: black preserves the source and white applies the team hue while preserving luminance and alpha. The source atlas is unchanged.
 

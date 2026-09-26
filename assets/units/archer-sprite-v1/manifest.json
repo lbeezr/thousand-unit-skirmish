@@ -56,7 +56,9 @@
         1086
       ],
       "gutterPx": 0
-    }
+    },
+    "runtimePath": "archer-atlas-runtime.png",
+    "runtimeSha256": "c45958f4bc972449b19936aab0ee0ede57e350f5d305a36cfd1742705c13d167"
   },
   "facingColumns": [
     {
@@ -204,7 +206,7 @@
   "integration": {
     "runtime": false,
     "rendererChanges": false,
-    "notes": "Frame rects, pivots, state sequences, bounds, and an Ember accent mask are prepared; renderer integration is pending."
+    "notes": "Canonical sprite-atlas-pack-v1.json, an alpha-preserving edge-bled runtime page, frame metadata, pivots, clips, bounds, and a team-accent mask are prepared; renderer integration is pending."
   },
   "spriteRuntime": {
     "contractVersion": 1,
@@ -1911,11 +1913,11 @@
         "maxHeight": 0.9412,
         "includesToolsAndWeapons": true
       },
-      "tileFootprint": {
+      "visibleGroundSpanWorld": {
         "width": 0.78,
         "depth": 0.78,
-        "unit": "map-tile",
-        "purpose": "visual footprint reference; unit navigation remains point-based"
+        "unit": "world-unit",
+        "purpose": "visual size cue only; map movement and occupancy remain point-based"
       },
       "cullingBoundsWorld": {
         "shape": "sphere",

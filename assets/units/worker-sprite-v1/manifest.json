@@ -56,7 +56,9 @@
         1086
       ],
       "gutterPx": 0
-    }
+    },
+    "runtimePath": "worker-atlas-runtime.png",
+    "runtimeSha256": "5948892be64fce5993930c444262025b1d2f15711213460616a98e9b289cbbcb"
   },
   "facingColumns": [
     {
@@ -210,7 +212,7 @@
   "integration": {
     "runtime": false,
     "rendererChanges": false,
-    "notes": "Frame rects, pivots, state sequences, bounds, and an Ember accent mask are prepared; renderer integration is pending."
+    "notes": "Canonical sprite-atlas-pack-v1.json, an alpha-preserving edge-bled runtime page, frame metadata, pivots, clips, bounds, and a team-accent mask are prepared; renderer integration is pending."
   },
   "spriteRuntime": {
     "contractVersion": 1,
@@ -2000,11 +2002,11 @@
         "maxHeight": 0.9282,
         "includesToolsAndWeapons": true
       },
-      "tileFootprint": {
+      "visibleGroundSpanWorld": {
         "width": 0.78,
         "depth": 0.78,
-        "unit": "map-tile",
-        "purpose": "visual footprint reference; unit navigation remains point-based"
+        "unit": "world-unit",
+        "purpose": "visual size cue only; map movement and occupancy remain point-based"
       },
       "cullingBoundsWorld": {
         "shape": "sphere",

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
+import { basename, dirname, resolve } from 'node:path';
 import { deflateSync, inflateSync } from 'node:zlib';
 
 const ROOT = resolve(import.meta.dirname, '..');
@@ -134,6 +134,80 @@ function encodeGray8(width, height, pixels) {
     pngChunk('IDAT', deflateSync(scanlines, { level: 9 })),
     pngChunk('IEND', Buffer.alloc(0)),
   ]);
+}
+
+function encodeRgba8(width, height, pixels) {
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(width, 0);
+  header.writeUInt32BE(height, 4);
+  header[8] = 8;
+  header[9] = 6;
+  const stride = width * 4;
+  const scanlines = Buffer.alloc(height * (stride + 1));
+  for (let y = 0; y < height; y++) {
+    const offset = y * (stride + 1);
+    scanlines[offset] = 0;
+    Buffer.from(pixels.buffer, pixels.byteOffset + y * stride, stride).copy(scanlines, offset + 1);
+  }
+  return Buffer.concat([
+    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+    pngChunk('IHDR', header),
+    pngChunk('IDAT', deflateSync(scanlines, { level: 9 })),
+    pngChunk('IEND', Buffer.alloc(0)),
+  ]);
+}
+
+function bleedTransparentRgbByCell(image, frameGrid) {
+  const pixels = new Uint8Array(image.pixels);
+  for (let row = 0; row < frameGrid.rows; row++) {
+    for (let column = 0; column < frameGrid.columns; column++) {
+      const x0 = frameGrid.columnEdgesPx[column];
+      const y0 = frameGrid.rowEdgesPx[row];
+      const width = frameGrid.columnEdgesPx[column + 1] - x0;
+      const height = frameGrid.rowEdgesPx[row + 1] - y0;
+      const cellLength = width * height;
+      const visited = new Uint8Array(cellLength);
+      const queue = new Int32Array(cellLength);
+      let head = 0;
+      let tail = 0;
+      for (let localY = 0; localY < height; localY++) {
+        for (let localX = 0; localX < width; localX++) {
+          const local = localY * width + localX;
+          const alphaOffset = ((y0 + localY) * image.width + x0 + localX) * 4 + 3;
+          if (image.pixels[alphaOffset] === 0) continue;
+          visited[local] = 1;
+          queue[tail++] = local;
+        }
+      }
+      if (tail === 0) throw new Error(`cannot bleed an empty frame cell ${row}/${column}`);
+      while (head < tail) {
+        const sourceLocal = queue[head++];
+        const localX = sourceLocal % width;
+        const localY = Math.floor(sourceLocal / width);
+        const neighbors = [
+          localY > 0 ? sourceLocal - width : -1,
+          localX + 1 < width ? sourceLocal + 1 : -1,
+          localY + 1 < height ? sourceLocal + width : -1,
+          localX > 0 ? sourceLocal - 1 : -1,
+        ];
+        const sourceOffset = ((y0 + localY) * image.width + x0 + localX) * 4;
+        for (const neighbor of neighbors) {
+          if (neighbor < 0 || visited[neighbor]) continue;
+          visited[neighbor] = 1;
+          const targetX = neighbor % width;
+          const targetY = Math.floor(neighbor / width);
+          const targetOffset = ((y0 + targetY) * image.width + x0 + targetX) * 4;
+          if (image.pixels[targetOffset + 3] === 0) {
+            pixels[targetOffset] = pixels[sourceOffset];
+            pixels[targetOffset + 1] = pixels[sourceOffset + 1];
+            pixels[targetOffset + 2] = pixels[sourceOffset + 2];
+          }
+          queue[tail++] = neighbor;
+        }
+      }
+    }
+  }
+  return pixels;
 }
 
 function rgbToHsv(red, green, blue) {
@@ -370,11 +444,11 @@ function buildFrameData(manifest, image) {
         maxHeight: Number(maxHeightWorld.toFixed(4)),
         includesToolsAndWeapons: true,
       },
-      tileFootprint: {
+      visibleGroundSpanWorld: {
         width: 0.78,
         depth: 0.78,
-        unit: 'map-tile',
-        purpose: 'visual footprint reference; unit navigation remains point-based',
+        unit: 'world-unit',
+        purpose: 'visual size cue only; map movement and occupancy remain point-based',
       },
       cullingBoundsWorld: {
         shape: 'sphere',
@@ -386,6 +460,141 @@ function buildFrameData(manifest, image) {
       renderLayers: [{ id: 'character', type: 'single-cutout', plane: 'camera-facing' }],
     },
     bindings: animationBindings(manifest.unitRole),
+  };
+}
+
+function canonicalFrame(frame, grid, pageId) {
+  const { column, row } = frame.sourceCell;
+  const cell = {
+    x: grid.columnEdgesPx[column],
+    y: grid.rowEdgesPx[row],
+    width: grid.columnEdgesPx[column + 1] - grid.columnEdgesPx[column],
+    height: grid.rowEdgesPx[row + 1] - grid.rowEdgesPx[row],
+  };
+  return {
+      id: frame.id,
+      canvasPx: { width: cell.width, height: cell.height },
+      groundPivotPx: { x: frame.groundPivotPx.x - cell.x, y: frame.groundPivotPx.y - cell.y },
+      groundPivotStatus: 'unreviewed-estimate',
+    alphaBoundsPx: {
+      x: frame.alphaBoundsPx.x - cell.x,
+      y: frame.alphaBoundsPx.y - cell.y,
+      width: frame.alphaBoundsPx.width,
+      height: frame.alphaBoundsPx.height,
+    },
+    fallbackRectPx: {
+      pageId,
+      rectPx: { x: cell.x, y: cell.y, width: cell.width, height: cell.height },
+    },
+    frameRectsPx: [{
+      layerId: 'actor',
+      pageId,
+      rectPx: frame.rectPx,
+      offsetPx: { x: frame.rectPx.x - cell.x, y: frame.rectPx.y - cell.y },
+    }],
+  };
+}
+
+function canonicalWorldBounds(manifest, frameData) {
+  const grid = manifest.atlas.frameGrid;
+  const worldPerPixel = frameData.presentation.referenceStandingHeightWorld
+    / frameData.presentation.referenceStandingHeightPx;
+  let minPlaneX = Infinity;
+  let maxPlaneX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  for (const frame of frameData.frames) {
+    const column = frame.sourceCell.column;
+    const row = frame.sourceCell.row;
+    const cellX = grid.columnEdgesPx[column];
+    const cellY = grid.rowEdgesPx[row];
+    const pivotX = frame.groundPivotPx.x - cellX;
+    const pivotY = frame.groundPivotPx.y - cellY;
+    const left = frame.rectPx.x - cellX;
+    const top = frame.rectPx.y - cellY;
+    const right = left + frame.rectPx.width;
+    const bottom = top + frame.rectPx.height;
+    minPlaneX = Math.min(minPlaneX, (left - pivotX) * worldPerPixel);
+    maxPlaneX = Math.max(maxPlaneX, (right - pivotX) * worldPerPixel);
+    minY = Math.min(minY, (pivotY - bottom) * worldPerPixel);
+    maxY = Math.max(maxY, (pivotY - top) * worldPerPixel);
+  }
+  const horizontalExtent = Math.max(Math.abs(minPlaneX), Math.abs(maxPlaneX));
+  const worldBounds = {
+    min: [-horizontalExtent, minY, -horizontalExtent].map((value) => Number(value.toFixed(4))),
+    max: [horizontalExtent, maxY, horizontalExtent].map((value) => Number(value.toFixed(4))),
+  };
+  return { worldBounds, heightWorld: Number((maxY - minY).toFixed(4)) };
+}
+
+function buildCanonicalPack(manifest, frameData, image, runtimeBytes, maskBytes) {
+  const role = manifest.unitRole;
+  const pageId = `${role}-color`;
+  const sourceFileId = `${role}-atlas-source`;
+  const runtimeFileId = `${role}-atlas-runtime`;
+  const maskFileId = `${role}-team-accent-mask`;
+  const sourcePath = manifest.atlas.path;
+  const runtimePath = basename(sourcePath).replace(/-source\.png$/i, '-runtime.png');
+  const bounds = canonicalWorldBounds(manifest, frameData);
+  const pageDimensions = { width: image.width, height: image.height };
+  const files = [
+    { id: sourceFileId, path: sourcePath, usage: 'source', format: 'png', sha256: manifest.atlas.sha256, dimensionsPx: pageDimensions },
+    { id: runtimeFileId, path: runtimePath, usage: 'runtime', format: 'png', sha256: sha256(runtimeBytes), dimensionsPx: pageDimensions },
+    { id: maskFileId, path: TEAM_MASK_PATH, usage: 'team-mask', format: 'png', sha256: sha256(maskBytes), dimensionsPx: pageDimensions },
+  ];
+  const clips = frameData.animations.map((animation) => ({
+    stateId: animation.state,
+    directionId: animation.facing,
+    loop: animation.loop,
+    sequence: animation.frameIds.map((frameId) => ({
+      frameId,
+      durationMs: animation.frameDurationMs > 0 ? animation.frameDurationMs : 1000,
+    })),
+  }));
+
+  return {
+    schemaVersion: 1,
+    packId: manifest.packId,
+    packVersion: manifest.packVersion,
+    maturity: 'runtime-candidate',
+    provenance: manifest.provenance,
+    files,
+    pages: [{
+      id: pageId,
+      sourceFileId,
+      runtimeFileId,
+      maskFileId,
+      dimensionsPx: pageDimensions,
+      colorSpace: 'srgb',
+      pixelFormat: 'rgba8',
+      alphaMode: 'straight',
+      edgeRule: 'bleed-rgb-under-transparent',
+      gutterRule: 'none',
+      gutterPx: manifest.atlas.frameGrid.gutterPx,
+      wrapMode: 'clamp',
+      sampling: {
+        generateMipmaps: false,
+        minFilter: 'linear',
+        magFilter: 'linear',
+        uvInsetPx: 0.5,
+        maxMipLevel: 0,
+      },
+    }],
+    assets: [{
+      id: role,
+      kind: 'unit',
+      artBoundsWorld: bounds.worldBounds,
+      heightWorld: bounds.heightWorld,
+      sortAnchorWorld: [0, 0, 0],
+      cullingBoundsWorld: bounds.worldBounds,
+      selectionBoundsWorld: {
+        min: [-0.39, 0, -0.39],
+        max: [0.39, 0.04, 0.39],
+      },
+      layers: [{ id: 'actor', drawLayer: 'actor', batchKey: `unit.${role}` }],
+      frames: frameData.frames.map((frame) => canonicalFrame(frame, manifest.atlas.frameGrid, pageId)),
+      clips,
+    }],
   };
 }
 
@@ -418,6 +627,26 @@ async function prepare(manifestArgument) {
   await writeFile(maskPath, maskBytes);
 
   const frameData = buildFrameData(manifest, image);
+  const runtimePixels = bleedTransparentRgbByCell(image, manifest.atlas.frameGrid);
+  let bledTransparentPixels = 0;
+  for (let pixel = 0; pixel < image.width * image.height; pixel++) {
+    const offset = pixel * 4;
+    if (image.pixels[offset + 3] === 0
+      && (image.pixels[offset] !== runtimePixels[offset]
+        || image.pixels[offset + 1] !== runtimePixels[offset + 1]
+        || image.pixels[offset + 2] !== runtimePixels[offset + 2])) bledTransparentPixels++;
+  }
+  const runtimeBytes = encodeRgba8(image.width, image.height, runtimePixels);
+  const sourceName = basename(manifest.atlas.path);
+  const runtimeName = sourceName.replace(/-source\.png$/i, '-runtime.png');
+  const runtimePath = resolve(manifestDirectory, runtimeName);
+  await writeFile(runtimePath, runtimeBytes);
+  manifest.atlas.runtimePath = runtimeName;
+  manifest.atlas.runtimeSha256 = sha256(runtimeBytes);
+  const canonicalPack = buildCanonicalPack(manifest, frameData, image, runtimeBytes, maskBytes);
+  const canonicalManifestPath = resolve(manifestDirectory, 'sprite-atlas-pack-v1.json');
+  await writeFile(canonicalManifestPath, `${JSON.stringify(canonicalPack, null, 2)}\n`);
+
   manifest.spriteRuntime = {
     contractVersion: 1,
     imageOrigin: 'top-left',
@@ -466,11 +695,13 @@ async function prepare(manifestArgument) {
     ...manifest.integration,
     runtime: false,
     rendererChanges: false,
-    notes: 'Frame rects, pivots, state sequences, bounds, and an Ember accent mask are prepared; renderer integration is pending.',
+    notes: 'Canonical sprite-atlas-pack-v1.json, an alpha-preserving edge-bled runtime page, frame metadata, pivots, clips, bounds, and a team-accent mask are prepared; renderer integration is pending.',
   };
   manifest.runtimeReady = false;
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
-  console.log(`PREPARED ${manifest.packId}: ${frameData.frames.length} frames, ${frameData.animations.length} animations, ${maskedPixelCount} mask pixels, sha256 ${sha256(maskBytes)}`);
+  console.log(`PREPARED ${manifest.packId}: ${frameData.frames.length} frames, ${frameData.animations.length} clips, ${maskedPixelCount} mask pixels, ${bledTransparentPixels} transparent edge pixels bled`);
+  console.log(`PACK ${canonicalManifestPath}`);
+  console.log(`RUNTIME ${runtimeName} sha256 ${sha256(runtimeBytes)}`);
 }
 
 const manifestArguments = process.argv.slice(2);

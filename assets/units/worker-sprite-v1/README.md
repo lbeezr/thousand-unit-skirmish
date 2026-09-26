@@ -1,6 +1,6 @@
 # Worker sprite exploration v1
 
-Painterly Worker cutout exploration for the fixed oblique RTS camera. The atlas remains source art; explicit runtime metadata and a derived team-accent mask are now packaged beside it.
+Painterly Worker cutout exploration for the fixed oblique RTS camera. The atlas remains source art; a canonical runtime-candidate manifest, a visibility-preserving runtime page, and a derived team-accent mask are packaged beside it.
 
 ![Eight-facing Worker sprite atlas](worker-atlas-source.png)
 
@@ -12,6 +12,6 @@ node scripts/validate-unit-sprite-atlas.mjs assets/units/worker-sprite-v1/manife
 
 See [`manifest.json`](manifest.json), [`PROMPT.md`](PROMPT.md), and [`PROVENANCE.md`](PROVENANCE.md) for frame metadata and source details.
 
-The manifest now records 48 frame rectangles, thresholded pose bounds, bottom-center ground pivots, eight-direction idle/walk/gather/build/defeat sequences, and world bounds. `team-accent-mask.png` is a derived gray8 mask: black preserves the source and white applies the team hue while preserving luminance and alpha. The source atlas is unchanged.
+[`sprite-atlas-pack-v1.json`](sprite-atlas-pack-v1.json) is the renderer-facing manifest; `manifest.json` keeps the source-sheet row analysis used by its deterministic adapter. The canonical pack records 48 logical frames, full-cell fallback cutouts, explicit actor crops, cell-local pivots, eight-direction idle/walk/gather/build/defeat clips, and separate visual bounds. The zero-gutter page declares linear filtering, no mipmaps, and a shared half-texel inset for color and mask sampling. `worker-atlas-runtime.png` copies the source page while bleeding nearest edge RGB into fully transparent pixels within each cell; visible RGBA pixels and alpha are unchanged. `team-accent-mask.png` is gray8: black preserves source RGB and white applies full team hue while retaining source luminance and alpha.
 
-The Worker silhouette uses the unit kit's warm cap, backpack, broad tool, and Azure sash. Gather and build remain single action poses, not timed action loops. There is no food-carry state or combat attack pose, and the metadata is not yet consumed by the live renderer.
+The Worker silhouette uses the unit kit's warm cap, backpack, broad tool, and Azure sash. Gather and build remain single action poses, not timed action loops. There is no food-carry state or combat attack pose. The live renderer has not consumed this runtime candidate yet.

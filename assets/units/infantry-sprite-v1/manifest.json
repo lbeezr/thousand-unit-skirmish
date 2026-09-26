@@ -57,7 +57,9 @@
       ],
       "gutterPx": 0,
       "note": "The generated dimensions do not divide evenly by the cell counts; the preview partitions the full image with the edge rule above."
-    }
+    },
+    "runtimePath": "infantry-atlas-runtime.png",
+    "runtimeSha256": "ca50f3f2369da3d4798bd4b099414e05a8804f381e9b8cebe4c92a3ab224fec4"
   },
   "facingColumns": [
     {
@@ -205,7 +207,7 @@
   "integration": {
     "runtime": false,
     "rendererChanges": false,
-    "notes": "Frame rects, pivots, state sequences, bounds, and an Ember accent mask are prepared; renderer integration is pending."
+    "notes": "Canonical sprite-atlas-pack-v1.json, an alpha-preserving edge-bled runtime page, frame metadata, pivots, clips, bounds, and a team-accent mask are prepared; renderer integration is pending."
   },
   "spriteRuntime": {
     "contractVersion": 1,
@@ -1912,11 +1914,11 @@
         "maxHeight": 1.049,
         "includesToolsAndWeapons": true
       },
-      "tileFootprint": {
+      "visibleGroundSpanWorld": {
         "width": 0.78,
         "depth": 0.78,
-        "unit": "map-tile",
-        "purpose": "visual footprint reference; unit navigation remains point-based"
+        "unit": "world-unit",
+        "purpose": "visual size cue only; map movement and occupancy remain point-based"
       },
       "cullingBoundsWorld": {
         "shape": "sphere",
