@@ -1,3 +1,4 @@
+import { visibleHudRects, hudSafeRect, normalizeHudPreferences } from './hud-layout.mjs';
 import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import * as THREE from 'three';
 import {
@@ -546,28 +547,7 @@ function setCamera() {
 }
 
 function cameraSafeRect() {
-  const bounds = renderer.domElement.getBoundingClientRect();
-  const dock = document.querySelector('.control-dock')?.getBoundingClientRect();
-  const toolbar = document.querySelector('.camera-toolbar')?.getBoundingClientRect();
-  const objective = objectivePanel?.hidden ? null : objectivePanel.getBoundingClientRect();
-  const minimap = document.querySelector('.minimap-panel')?.getBoundingClientRect();
-  const fieldHint = document.querySelector('.field-hint')?.getBoundingClientRect();
-  const orderFeedback = document.querySelector('.field-order-feedback')?.getBoundingClientRect();
-  const right = Math.min(bounds.right - 12,
-    dock && dock.width ? dock.right - 8 : bounds.right - 12,
-    objective && objective.width ? objective.left - 8 : bounds.right - 12,
-    minimap && minimap.width ? minimap.left - 8 : bounds.right - 12);
-  const topbarBottom = document.querySelector('.topbar')?.getBoundingClientRect().bottom ?? bounds.top;
-  const labelBottom = document.querySelector('.map-label')?.getBoundingClientRect().bottom ?? bounds.top;
-  const toolbarIsUpper = window.matchMedia('(max-width: 920px)').matches;
-  const top = Math.max(bounds.top + 8, topbarBottom + 8, labelBottom + 8,
-    toolbarIsUpper && toolbar?.height ? toolbar.bottom + 8 : bounds.top);
-  const bottom = Math.min(bounds.bottom - 8,
-    !toolbarIsUpper && toolbar?.height ? toolbar.top - 8 : bounds.bottom - 8,
-    dock && dock.height ? dock.top - 8 : bounds.bottom - 8,
-    fieldHint && fieldHint.width && fieldHint.height ? fieldHint.top - 8 : bounds.bottom - 8,
-    orderFeedback && orderFeedback.width && orderFeedback.height ? orderFeedback.top - 8 : bounds.bottom - 8);
-  return { left: bounds.left + 12, top, right, bottom, width: Math.max(1, right - (bounds.left + 12)), height: Math.max(1, bottom - top) };
+  return hudSafeRect(renderer.domElement.getBoundingClientRect(), visibleHudRects());
 }
 
 function cameraTargetHudSafeOffset() {
@@ -1517,13 +1497,7 @@ function updateResourceNodeCallouts(now, force = false) {
   const crowdThreshold = 8;
   const viewportRect = renderer.domElement.getBoundingClientRect();
   const pixelsPerWorldUnit = viewportRect.height * zoom / baseFrustum;
-  const occlusionRects = [...document.querySelectorAll(
-    '.topbar, .map-label, .topbar-center, .scenario-brief-panel, .objective-panel, .minimap-panel, .field-hint, .field-order-feedback, .control-dock, .toast, .match-result, .compass',
-  )].filter((element) => {
-    if (element.hidden || element.getClientRects().length === 0) return false;
-    const style = getComputedStyle(element);
-    return style.visibility !== 'hidden' && Number(style.opacity) !== 0;
-  }).map((element) => element.getBoundingClientRect());
+  const occlusionRects = visibleHudRects();
   for (const visual of resourceNodeVisuals.values()) {
     if (visual.stock <= 0) {
       visual.callout.visible = false;
@@ -4046,6 +4020,9 @@ function updateEconomyUI(state = {}, initial = false) {
   if (ui.selectWorkers) ui.selectWorkers.disabled = localTeam === null
     || ownedWorkers.length === 0;
   if (ui.selectIdleWorkers) {
+    const quickIdle = document.querySelector('#quick-idle');
+    quickIdle.disabled = idleWorkerIds.length === 0;
+    quickIdle.textContent = `Idle · ${idleWorkerIds.length}`;
     ui.selectIdleWorkers.disabled = idleWorkerIds.length === 0;
     ui.selectIdleWorkers.textContent = `Idle · ${idleWorkerIds.length}`;
     ui.selectIdleWorkers.setAttribute('aria-label', `Select idle workers (${idleWorkerIds.length})`);
@@ -4124,6 +4101,7 @@ function updateEconomyUI(state = {}, initial = false) {
 function updateRoomUI(connected) {
   connectedPlayers = connected;
   ui.playersOnline.textContent = `${connected} / 2 PLAYERS`;
+  ui.networkStatus.parentElement.dataset.urgent = String(waitingForResume);
   ui.matchStatus.textContent = waitingForResume ? 'WAITING TO REJOIN' : connected >= 2 ? '2 / 2 ONLINE' : `${connected} / 2 ONLINE`;
   ui.matchStatus.classList.toggle('full', connected >= 2);
   ui.networkStatus.textContent = waitingForResume
@@ -4135,6 +4113,7 @@ function updateRoomUI(connected) {
 }
 
 function setConnection(status) {
+  ui.networkStatus.parentElement.dataset.urgent = String(['OFFLINE', 'RECONNECTING', 'SEAT ACTIVE ELSEWHERE', 'INVALID ROOM LINK', 'ROOM NOT FOUND'].includes(status));
   ui.networkStatus.textContent = status;
   ui.matchStatus.textContent = status;
   const waiting = status === 'CONNECTING' || status === 'RECONNECTING' || status === 'WAITING FOR PLAYER 2';
@@ -7028,6 +7007,48 @@ const fullscreenSupported = Boolean(document.fullscreenEnabled
   && typeof document.exitFullscreen === 'function');
 const commandDock = document.querySelector('.control-dock');
 const dockTabs = [...document.querySelectorAll('[data-dock-tab]')];
+const dockToggle = document.querySelector('#dock-toggle');
+const contextualBar = document.querySelector('.contextual-command-bar');
+if (contextualBar) {
+  const syncContextHeight = () => document.querySelector('.workspace').style.setProperty('--context-bar-height', `${contextualBar.getBoundingClientRect().height}px`);
+  new ResizeObserver(syncContextHeight).observe(contextualBar);
+  syncContextHeight();
+}
+let dockOpener = dockToggle;
+function closeDockDetails({ restoreFocus = false } = {}) {
+  commandDock.hidden = true;
+  dockToggle.setAttribute('aria-expanded', 'false');
+  clearHeldCameraKeys();
+  if (restoreFocus) (dockOpener?.isConnected && dockOpener.getClientRects().length ? dockOpener : document.querySelector('.contextual-command-bar button') || dockToggle).focus();
+}
+dockToggle.addEventListener('click', () => {
+  if (commandDock.hidden) selectDockTab(commandDock.dataset.activePanel || 'selection', true);
+  else closeDockDetails({ restoreFocus: true });
+});
+document.querySelector('#dock-close').addEventListener('click', () => closeDockDetails({ restoreFocus: true }));
+document.querySelector('#quick-army').addEventListener('click', selectMilitary);
+document.querySelector('#quick-idle').addEventListener('click', () => ui.selectIdleWorkers.click());
+let hudPreferences;
+try { hudPreferences = normalizeHudPreferences(JSON.parse(localStorage.getItem('skirmish-hud') || '{}')); }
+catch { hudPreferences = normalizeHudPreferences(); }
+function applyHudPreferences(changes = {}) {
+  hudPreferences = normalizeHudPreferences({ ...hudPreferences, ...changes });
+  appShell.dataset.hudDensity = hudPreferences.density;
+  appShell.dataset.minimapSize = hudPreferences.minimap;
+  document.querySelector('.minimap-panel').hidden = hudPreferences.minimap === 'hidden';
+  document.querySelector('#minimap-reopen').hidden = hudPreferences.minimap !== 'hidden';
+  document.querySelector('#hud-density').value = hudPreferences.density;
+  document.querySelector('#hud-minimap').value = hudPreferences.minimap;
+  document.querySelector('#minimap-size-toggle').setAttribute('aria-label', hudPreferences.minimap === 'large' ? 'Shrink tactical map' : 'Enlarge tactical map');
+  document.querySelector('#minimap-size-toggle').textContent = hudPreferences.minimap === 'large' ? '−' : '+';
+  try { localStorage.setItem('skirmish-hud', JSON.stringify(hudPreferences)); } catch { /* Storage may be unavailable. */ }
+}
+applyHudPreferences();
+document.querySelector('#hud-density').addEventListener('change', (event) => applyHudPreferences({ density: event.target.value }));
+document.querySelector('#hud-minimap').addEventListener('change', (event) => applyHudPreferences({ minimap: event.target.value }));
+document.querySelector('#minimap-size-toggle').addEventListener('click', () => applyHudPreferences({ minimap: hudPreferences.minimap === 'large' ? 'small' : 'large' }));
+document.querySelector('#minimap-hide').addEventListener('click', () => { applyHudPreferences({ minimap: 'hidden' }); document.querySelector('#minimap-reopen').focus(); });
+document.querySelector('#minimap-reopen').addEventListener('click', () => { applyHudPreferences({ minimap: 'small' }); document.querySelector('#minimap-size-toggle').focus(); });
 
 function syncFullscreenToggle() {
   const isFullscreen = document.fullscreenElement === appShell;
@@ -7130,6 +7151,7 @@ function toggleHudPanel(panel, trigger) {
   const opening = panel.hidden;
   if (tapOrderArmed) setTapOrderArmed(false, false);
   closeHudPanels();
+  closeDockDetails();
   if (!opening) return;
   panel.hidden = false;
   hudScrim.hidden = false;
@@ -7139,7 +7161,12 @@ function toggleHudPanel(panel, trigger) {
 
 function selectDockTab(name, focus = false) {
   if (name !== 'command' && tapOrderArmed) setTapOrderArmed(false, false);
+  if (commandDock.hidden) dockOpener = document.activeElement instanceof HTMLElement && document.activeElement.matches('button, [tabindex]') && !commandDock.contains(document.activeElement) ? document.activeElement : document.querySelector('.contextual-command-bar button') || dockToggle;
+  closeScenarioBrief();
+  commandDock.hidden = false;
+  dockToggle.setAttribute('aria-expanded', 'true');
   commandDock.dataset.activePanel = name;
+  for (const panel of commandDock.querySelectorAll(':scope > [role="tabpanel"]')) panel.hidden = panel.id !== `dock-${name}`;
   for (const tab of dockTabs) {
     const selected = tab.dataset.dockTab === name;
     tab.setAttribute('aria-selected', String(selected));
@@ -7161,6 +7188,7 @@ scenarioBriefToggle.addEventListener('click', () => {
   if (tapOrderArmed) setTapOrderArmed(false, false);
   closeHudPanels();
   closeScenarioBrief();
+  closeDockDetails();
   if (!opening) return;
   scenarioBriefPanel.hidden = false;
   scenarioBriefToggle.setAttribute('aria-expanded', 'true');
@@ -7187,6 +7215,7 @@ for (const button of document.querySelectorAll('[data-open-dock-tab]')) {
   button.addEventListener('click', () => selectDockTab(button.dataset.openDockTab, true));
 }
 selectDockTab('selection');
+closeDockDetails();
 document.querySelector('#guidance-toggle').addEventListener('click', () => {
   guidanceDismissed = !guidanceDismissed;
   try { localStorage.setItem('rts-guidance-dismissed', String(guidanceDismissed)); } catch {}
@@ -7195,12 +7224,13 @@ document.querySelector('#guidance-toggle').addEventListener('click', () => {
 updateBuildPlacementHint();
 window.addEventListener('keydown', (event) => {
   if (document.fullscreenElement === appShell && event.key === 'Escape') return;
-  if (event.key !== 'Escape' || (matchMenu.hidden && helpPanel.hidden && scenarioBriefPanel.hidden)
+  if (event.key !== 'Escape' || (matchMenu.hidden && helpPanel.hidden && scenarioBriefPanel.hidden && commandDock.hidden)
     || document.querySelector('dialog[open]')) return;
   event.preventDefault();
   event.stopImmediatePropagation();
   if (!scenarioBriefPanel.hidden) closeScenarioBrief({ restoreFocus: true });
-  else closeHudPanels({ restoreFocus: true });
+  else if (!matchMenu.hidden || !helpPanel.hidden) closeHudPanels({ restoreFocus: true });
+  else closeDockDetails({ restoreFocus: true });
 }, true);
 
 const AUDIO_CAPTIONS = Object.freeze({
@@ -8380,7 +8410,7 @@ function animate(now) {
     const hoveredElement = insideViewport ? document.elementFromPoint(edgeScrollPointer.x, edgeScrollPointer.y) : null;
     const hudControlHovered = hoveredElement instanceof Element
       && Boolean(hoveredElement.closest(
-        'button, a[href], input, select, textarea, [contenteditable="true"], [role="button"], [role="tab"], .control-dock, #minimap-canvas, .minimap-panel, .objective-panel, .scenario-brief-panel, .match-result, #art-review-panel',
+        'button, a[href], input, select, textarea, [contenteditable="true"], [role="button"], [role="tab"], .control-dock, .hud-quick-access, .contextual-command-bar, #minimap-canvas, .minimap-panel, .objective-panel, .scenario-brief-panel, .match-result, #art-review-panel',
       ));
     const activeElement = document.activeElement;
     const hudControlFocused = activeElement instanceof Element

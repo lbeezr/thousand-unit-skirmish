@@ -47,7 +47,7 @@
             <h1>Thousand Unit Skirmish</h1>
           </div>
         </div>
-        <div class="topbar-center"><span id="connection-dot" class="live-dot waiting"></span><span id="network-status">CONNECTING</span><span class="topbar-divider">/</span><span id="players-online">0 / 2 PLAYERS</span></div>
+        <div class="topbar-center"><span id="connection-dot" class="live-dot waiting"></span><span id="network-status">CONNECTING</span><span class="topbar-divider">/</span></div>
         <div class="hud-readouts" aria-label="Team resources and field strength">
           <div class="hud-team">TEAM <b id="player-team">CONNECTING</b></div>
           <div class="resource-stocks">
@@ -101,10 +101,11 @@
             </div>
           </div>
           <section class="minimap-panel" aria-label="Tactical map">
-            <div class="minimap-heading"><span>TACTICAL MAP</span><span class="minimap-live">LIVE</span></div>
+            <div class="minimap-heading"><span>MAP</span><button id="minimap-size-toggle" type="button" aria-label="Enlarge tactical map">+</button><button id="minimap-hide" type="button" aria-label="Hide tactical map">−</button></div>
             <canvas id="minimap-canvas" width="384" height="384" tabindex="0" aria-label="Tactical map. Azure units use square markers and Ember units use diamond markers; food, wood, and high ground are named in the legend. Click or drag to move the camera; use arrow keys while focused to pan.">Tactical map.</canvas>
             <div class="minimap-legend"><span><i class="blue-dot"></i>AZURE</span><span><i class="red-dot"></i>EMBER</span><span><i class="food-dot"></i>FOOD</span><span><i class="wood-dot"></i>WOOD</span><span id="minimap-elevation-legend" hidden><i class="elevation-dot"></i>HIGH GROUND</span></div>
           </section>
+          <button id="minimap-reopen" class="minimap-reopen" type="button" hidden>Map</button>
           <div id="selection-box" class="selection-box" aria-hidden="true"></div>
           <div class="field-hint"><button id="guidance-toggle" type="button" aria-expanded="true">Hide hints</button><span id="field-hint-primary-key" class="hint-key">LMB</span> <span id="field-hint-action">DRAG TO SELECT</span> <span class="hint-divider">·</span> <span id="field-hint-secondary-key" class="hint-key">RMB</span> <span id="field-hint-secondary">MOVE / ATTACK</span><span id="placement-status" class="placement-status" aria-live="off" hidden></span></div>
           <div id="field-order-feedback" class="field-order-feedback" data-state="ready" role="status" aria-live="off" hidden></div>
@@ -113,7 +114,14 @@
           <div id="runtime-error" class="runtime-error" role="alert"></div>
         </section>
 
-        <aside class="control-dock">
+        <nav class="hud-quick-access" aria-label="Quick commands">
+          <button id="dock-toggle" type="button" aria-controls="command-deck" aria-expanded="false">Commands</button>
+          <button type="button" data-open-dock-tab="economy">Production</button>
+          <button id="quick-army" type="button">Army</button>
+          <button id="quick-idle" type="button" disabled>Idle · 0</button>
+        </nav>
+        <aside id="command-deck" class="control-dock" hidden>
+          <button id="dock-close" class="hud-panel-close" type="button" aria-label="Close command details">×</button>
           <div class="dock-tabs" role="tablist" aria-label="Command deck">
             <button type="button" role="tab" id="dock-tab-selection" aria-controls="dock-selection" aria-selected="true" data-dock-tab="selection">Selection</button>
             <button type="button" role="tab" id="dock-tab-economy" aria-controls="dock-economy" aria-selected="false" data-dock-tab="economy">Build &amp; train</button>
@@ -247,7 +255,7 @@
           <div class="dock-heading">
             <div>
               <div class="eyebrow">MATCH <span>·</span> OPTIONS</div>
-              <h2>Match Controls</h2>
+              <h2>Match Controls</h2><span id="players-online">0 / 2 PLAYERS</span>
             </div>
             <div id="match-status" class="match-state"><i></i> CONNECTING</div>
           </div>
@@ -287,7 +295,9 @@
           </section>
 
           <section class="control-section fullscreen-section" aria-label="Display settings">
-            <div class="section-label"><span>DISPLAY</span></div>
+            <div class="section-label"><span>THOUSAND UNIT SKIRMISH · DISPLAY</span></div>
+            <label class="hud-preference">HUD spacing <select id="hud-density"><option value="compact">Compact</option><option value="comfortable">Comfortable</option></select></label>
+            <label class="hud-preference">Tactical map <select id="hud-minimap"><option value="small">Small</option><option value="large">Large</option><option value="hidden">Hidden</option></select></label>
             <button id="fullscreen-toggle" class="fullscreen-toggle" type="button" aria-pressed="false">Enter fullscreen</button>
           </section>
 
