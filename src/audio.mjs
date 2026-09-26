@@ -238,11 +238,11 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
     if (context.state === 'suspended') context.resume().then(emitStatus).catch(() => {});
   }
 
-  function play(cue) {
+  function play(cue, { preview = false } = {}) {
     if (!settings.enabled || settings.volume <= 0 || settings.effectsLevel <= 0 || doc?.hidden) return false;
     if (!context || context.state === 'closed' || !(cue in COOLDOWN_MS)) return false;
     const now = performance.now();
-    if (now - (lastCueAt.get(cue) ?? -Infinity) < COOLDOWN_MS[cue]) return false;
+    if (!preview && now - (lastCueAt.get(cue) ?? -Infinity) < COOLDOWN_MS[cue]) return false;
     const at = context.currentTime + 0.005;
     const scheduledBefore = scheduledVoiceSerial;
     voiceLimit = cue.includes('alert') || ['base-lost', 'objective', 'objective-lost', 'victory', 'defeat', 'draw'].includes(cue)
@@ -303,18 +303,22 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
     voiceLimit = 12;
     const scheduled = scheduledVoiceSerial > scheduledBefore;
     if (scheduled) {
-      lastCueAt.set(cue, now);
-      if (cue.includes('alert') || ['victory', 'defeat', 'draw', 'objective', 'objective-lost', 'base-lost'].includes(cue)) {
+      if (!preview) lastCueAt.set(cue, now);
+      if (!preview && (cue.includes('alert') || ['victory', 'defeat', 'draw', 'objective', 'objective-lost', 'base-lost'].includes(cue))) {
         lastAlertAt = now;
         duckUntil = now + 2400;
         applyLevels();
         if (duckTimer !== null) globalThis.clearTimeout(duckTimer);
         duckTimer = globalThis.setTimeout(() => { duckTimer = null; applyLevels(); }, 2450);
       }
-      try { onCue?.(cue); } catch {}
+      if (!preview) {
+        try { onCue?.(cue); } catch {}
+      }
     }
     return scheduled;
   }
+
+  function preview(cue) { return play(cue, { preview: true }); }
 
   function setSettings(next) {
     settings = {
@@ -342,7 +346,7 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
   doc?.addEventListener?.('visibilitychange', onVisibilityChange);
 
   return {
-    play, unlock, setSettings,
+    play, preview, unlock, setSettings,
     getSettings: () => ({ ...settings }), getStatus: status,
     dispose() {
       doc?.removeEventListener?.('visibilitychange', onVisibilityChange);
