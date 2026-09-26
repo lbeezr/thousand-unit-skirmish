@@ -274,6 +274,23 @@ try {
     'match victory stays above the selection cue sweep');
   criticalAudio.dispose();
 
+  const previewDecisions = [];
+  const previewCues = [];
+  const captionPreviewAudio = createGameAudio({
+    storage: { getItem: () => null, setItem() {} },
+    doc: { hidden: false, addEventListener() {}, removeEventListener() {} },
+    onCue: (cue) => previewCues.push(cue),
+    onCueDecision: (cue) => previewDecisions.push(cue),
+  });
+  captionPreviewAudio.unlock();
+  assert.equal(captionPreviewAudio.preview('victory'), true, 'sample previews play while captions are off');
+  assert.deepEqual(previewDecisions, [], 'caption-off previews do not create captions');
+  captionPreviewAudio.setSettings({ captions: true });
+  assert.equal(captionPreviewAudio.preview('victory'), true, 'captioned sample previews remain audible');
+  assert.deepEqual(previewDecisions, ['victory'], 'enabled captions describe a critical sample preview');
+  assert.deepEqual(previewCues, [], 'sample previews do not count as scheduled gameplay cues');
+  captionPreviewAudio.dispose();
+
   const researchAudio = createGameAudio({
     storage: { getItem: () => null, setItem() {} },
     doc: { hidden: false, addEventListener() {}, removeEventListener() {} },
