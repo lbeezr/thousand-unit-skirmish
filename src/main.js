@@ -259,6 +259,7 @@ const ui = {
   audioEffectsLevel: document.querySelector('#audio-effects-level'),
   audioEffectsLevelValue: document.querySelector('#audio-effects-level-value'),
   audioPreview: document.querySelector('#audio-preview'),
+  audioPreviewCue: document.querySelector('#audio-preview-cue'),
   audioAmbience: document.querySelector('#audio-ambience'),
   audioAmbienceLevel: document.querySelector('#audio-ambience-level'),
   audioAmbienceLevelValue: document.querySelector('#audio-ambience-level-value'),
@@ -6562,8 +6563,10 @@ function syncAudioControls() {
   ui.audioAmbienceLevel.disabled = !settings.enabled || !settings.ambience;
   const status = audio.getStatus();
   ui.audioStatus.dataset.state = status;
-  ui.audioPreview.disabled = status === 'muted' || status === 'unavailable' || status === 'closed'
+  const previewDisabled = status === 'muted' || status === 'unavailable' || status === 'closed'
     || settings.effectsLevel <= 0;
+  ui.audioPreview.disabled = previewDisabled;
+  ui.audioPreviewCue.disabled = previewDisabled;
   ui.audioStatus.textContent = {
     running: 'SOUND READY', waiting: 'SOUND STARTS WITH FIRST INPUT', muted: 'SOUND MUTED',
     silent: 'NO AUDIBLE CHANNELS',
@@ -6575,7 +6578,7 @@ syncAudioControls();
 ui.audioEnabled.addEventListener('change', () => { audio.setSettings({ enabled: ui.audioEnabled.checked }); syncAudioControls(); });
 ui.audioVolume.addEventListener('input', () => { audio.setSettings({ volume: Number(ui.audioVolume.value) / 100 }); syncAudioControls(); });
 ui.audioEffectsLevel.addEventListener('input', () => { audio.setSettings({ effectsLevel: Number(ui.audioEffectsLevel.value) / 100 }); syncAudioControls(); });
-ui.audioPreview.addEventListener('click', () => { audio.unlock(); audio.play('select'); });
+ui.audioPreview.addEventListener('click', () => { audio.unlock(); audio.preview(ui.audioPreviewCue.value); });
 ui.audioAmbience.addEventListener('change', () => { audio.setSettings({ ambience: ui.audioAmbience.checked }); syncAudioControls(); });
 ui.audioAmbienceLevel.addEventListener('input', () => { audio.setSettings({ ambienceLevel: Number(ui.audioAmbienceLevel.value) / 100 }); syncAudioControls(); });
 document.addEventListener('pointerdown', () => audio.unlock(), { capture: true, once: true });

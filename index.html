@@ -277,7 +277,31 @@
             <label class="audio-check"><input id="audio-enabled" type="checkbox" checked><span>Enable audio</span></label>
             <label class="audio-range" for="audio-volume"><span>Overall volume</span><input id="audio-volume" type="range" min="0" max="100" value="50"><output id="audio-volume-value" for="audio-volume">50%</output></label>
             <label class="audio-range" for="audio-effects-level"><span>Effects level</span><input id="audio-effects-level" type="range" min="0" max="200" value="100"><output id="audio-effects-level-value" for="audio-effects-level">100%</output></label>
-            <button id="audio-preview" class="audio-preview" type="button">Preview sound</button>
+            <div class="audio-preview-controls">
+              <label for="audio-preview-cue">Sample</label>
+              <select id="audio-preview-cue" class="audio-preview-cue">
+                <option value="select">Selection</option>
+                <optgroup label="Orders">
+                  <option value="move">Move order</option>
+                  <option value="attack">Attack order</option>
+                  <option value="build">Build order</option>
+                </optgroup>
+                <optgroup label="Progress">
+                  <option value="complete">Unit ready</option>
+                  <option value="building-complete">Building complete</option>
+                  <option value="research-complete">Research complete</option>
+                </optgroup>
+                <optgroup label="Tactics">
+                  <option value="battle-alert">Battle alert</option>
+                  <option value="base-alert">Base under attack</option>
+                  <option value="objective">Objective captured</option>
+                </optgroup>
+                <optgroup label="Match result">
+                  <option value="victory">Victory</option>
+                </optgroup>
+              </select>
+              <button id="audio-preview" class="audio-preview" type="button">Play preview</button>
+            </div>
             <label class="audio-check"><input id="audio-ambience" type="checkbox" checked><span>Ambience and music</span></label>
             <label class="audio-range" for="audio-ambience-level"><span>Ambience level</span><input id="audio-ambience-level" type="range" min="0" max="200" value="100"><output id="audio-ambience-level-value" for="audio-ambience-level">100%</output></label>
             <small id="audio-status" class="audio-status" role="status">SOUND STARTS WITH FIRST INPUT</small>
