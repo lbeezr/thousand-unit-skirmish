@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thousand-unit-skirmish.local/schemas/painted-material-atlas-v1.schema.json",
+  "title": "Thousand Unit Skirmish painted material atlas v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "packId", "packVersion", "provenance", "files", "layout", "page", "materials"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "packId": { "const": "frontier-painted-material-atlas-v1" },
+    "packVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "provenance": { "$ref": "#/$defs/provenance" },
+    "files": { "type": "array", "minItems": 16, "maxItems": 16, "items": { "$ref": "#/$defs/file" } },
+    "layout": { "$ref": "#/$defs/layout" },
+    "page": { "$ref": "#/$defs/page" },
+    "materials": { "type": "array", "minItems": 8, "maxItems": 8, "items": { "$ref": "#/$defs/material" } }
+  },
+  "$defs": {
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["license", "source", "generator"],
+      "properties": {
+        "license": { "const": "project-owned" },
+        "source": { "type": "string", "minLength": 1 },
+        "generator": { "type": "string", "minLength": 1 }
+      }
+    },
+    "dimensionsPx": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "rectPx": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": { "type": "integer", "minimum": 0 },
+        "y": { "type": "integer", "minimum": 0 },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "uvRectTopLeft": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max"],
+      "properties": {
+        "min": { "$ref": "#/$defs/pointUv" },
+        "max": { "$ref": "#/$defs/pointUv" }
+      }
+    },
+    "pointUv": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["u", "v"],
+      "properties": {
+        "u": { "type": "number", "minimum": 0, "maximum": 1 },
+        "v": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "usage", "format", "sha256", "dimensionsPx"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1, "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)" },
+        "usage": { "enum": ["source", "runtime", "preview"] },
+        "format": { "enum": ["png", "webp"] },
+        "sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+        "dimensionsPx": { "$ref": "#/$defs/dimensionsPx" }
+      }
+    },
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["columns", "rows", "materialSizePx", "gutterPx", "gutterRule", "order"],
+      "properties": {
+        "columns": { "const": 3 },
+        "rows": { "const": 3 },
+        "materialSizePx": { "const": 512 },
+        "gutterPx": { "const": 64 },
+        "gutterRule": { "const": "mirrored-repeat" },
+        "order": { "type": "array", "minItems": 8, "maxItems": 8, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "sourceFileId", "dimensionsPx", "colorSpace", "pixelFormat", "alphaMode", "wrapMode", "gutterPx", "gutterRule", "sampling", "mipLevels"],
+      "properties": {
+        "id": { "const": "frontier-ground-materials" },
+        "sourceFileId": { "type": "string", "minLength": 1 },
+        "dimensionsPx": { "$ref": "#/$defs/pageDimensionsPx" },
+        "colorSpace": { "const": "srgb" },
+        "pixelFormat": { "const": "rgb8" },
+        "alphaMode": { "const": "opaque" },
+        "wrapMode": { "const": "clamp" },
+        "gutterPx": { "const": 64 },
+        "gutterRule": { "const": "mirrored-repeat" },
+        "sampling": { "$ref": "#/$defs/sampling" },
+        "mipLevels": { "type": "array", "minItems": 6, "maxItems": 6, "items": { "$ref": "#/$defs/mipLevel" } }
+      }
+    },
+    "pageDimensionsPx": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "const": 1920 },
+        "height": { "const": 1920 }
+      }
+    },
+    "sampling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generateMipmaps", "minFilter", "magFilter", "uvInsetPx", "maxMipLevel"],
+      "properties": {
+        "generateMipmaps": { "const": false },
+        "minFilter": { "const": "linear-mipmap-linear" },
+        "magFilter": { "const": "linear" },
+        "uvInsetPx": { "const": 0.5 },
+        "maxMipLevel": { "const": 5 }
+      }
+    },
+    "mipLevel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "fileId", "dimensionsPx"],
+      "properties": {
+        "level": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "fileId": { "type": "string", "minLength": 1 },
+        "dimensionsPx": { "$ref": "#/$defs/dimensionsPx" }
+      }
+    },
+    "material": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "sourceFileId", "slotRectPx", "rectPx", "uvRectTopLeft", "repeatMode", "worldRepeatUnits"],
+      "properties": {
+        "id": { "enum": ["meadow", "short-grass", "long-grass", "forest-floor", "dirt", "sand", "scree", "cinder"] },
+        "sourceFileId": { "type": "string", "minLength": 1 },
+        "slotRectPx": { "$ref": "#/$defs/rectPx" },
+        "rectPx": { "$ref": "#/$defs/rectPx" },
+        "uvRectTopLeft": { "$ref": "#/$defs/uvRectTopLeft" },
+        "repeatMode": { "const": "mirrored-repeat" },
+        "worldRepeatUnits": { "const": 12 }
+      }
+    }
+  }
+}

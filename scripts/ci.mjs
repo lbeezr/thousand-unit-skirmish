@@ -37,6 +37,11 @@ const syntaxFiles = [
 for (const file of syntaxFiles) run(['--check', file], `Syntax: ${file}`);
 
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
+run(['--test', 'scripts/pve-entry.test.mjs'], 'PvE entry observer settling');
+run(['--test', 'scripts/hud-layout.test.mjs'], 'Visible HUD layout');
+run(['--test', 'scripts/objective-summary.test.mjs'], 'Compact objectives and notice history');
+run(['--test', 'scripts/selection-context.test.mjs'], 'Contextual selection');
+run(['--test', 'scripts/navigation-settings.test.mjs'], 'Camera navigation settings and controls');
 
 const scenarios = [
   ['scripts/client-asset-allowlist-scenario.mjs', 'Client static asset allowlist'],
@@ -51,6 +56,8 @@ const scenarios = [
   ['scripts/objective-fog-visibility-scenario.mjs', 'Objective fog visibility'],
   ['scripts/unreachable-attack-scenario.mjs', 'Orders, 2k spawn clearance, and objective hold'],
   ['scripts/elimination-scenario.mjs', 'Terminal elimination and reconnect'],
+  ['scripts/queued-waypoint-scenario.mjs', 'Queued waypoint checkpoint recovery'],
+  ['scripts/live-attack-move-repair-scenario.mjs', 'Live attack-move route repair'],
   ['scripts/worker-combat-scenario.mjs', 'Worker combat across both seats'],
   ['scripts/worker-production-spawn-scenario.mjs', 'Town Center worker exits across map orientations'],
   ['scripts/infantry-seat-combat-scenario.mjs', 'Mirrored infantry combat parity', '--expect-parity'],
@@ -65,6 +72,8 @@ const scenarios = [
   ['scripts/unit-selection-scenario.mjs', 'Unit selection'],
   ['scripts/pve-opponent-scenario.mjs', 'PvE opponent seats'],
   ['scripts/visual-pack-path-safety-scenario.mjs', 'Visual pack path safety'],
+  ['scripts/painted-material-atlas-scenario.mjs', 'Painted-material atlas manifest and file contract'],
+  ['scripts/painted-material-atlas-uv-scenario.mjs', 'Painted-material atlas mirrored UV mapping'],
   ['scripts/sprite-atlas-handoff-scenario.mjs', 'Sprite-atlas handoff audit'],
   ['scripts/archery-range-sprite-atlas-scenario.mjs', 'Archery Range sprite-atlas handoff'],
   ['scripts/town-center-sprite-atlas-scenario.mjs', 'Town Center sprite-atlas handoff'],

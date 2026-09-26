@@ -1,3 +1,6 @@
+import { visibleHudRects, hudSafeRect, normalizeHudPreferences } from './hud-layout.mjs';
+import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
+import { selectionContext } from './selection-context.mjs';
 import * as THREE from 'three';
 import {
   createCapturedBuildingSprite, disposeCapturedBuildingSprite,
@@ -46,12 +49,19 @@ import {
   summarizeAudioRecognitionResponses,
 } from './audio-recognition-check.mjs';
 import {
+  cameraDepthSafePlanes,
+  cameraPanDeltaFromScreen,
   cameraTargetForZoomAnchor,
   canEdgeScroll,
   clampCameraTargetToGroundBounds,
   edgeScrollCameraDelta,
   edgeScrollDirection,
+  shouldBlockEdgeScrollForFocus,
 } from './camera-controls.mjs';
+import {
+  cameraArrowInputAllowed, cameraTargetDeltaForScreenFocus, createCameraArrowKeys,
+  getNavigationSettings, mapFitZoom, setNavigationSettings,
+} from './navigation-settings.mjs';
 import {
   chooseUnitPickCandidate,
   isSameUnitDoubleClick,
@@ -64,6 +74,10 @@ import {
 
 let mapDefinition = null;
 let edgeScrollPointer = null;
+const heldCameraKeys = createCameraArrowKeys();
+let lastKeyboardPanTime = 0;
+let cameraMinZoom = 0.48;
+let mapFitActive = false;
 let MAP_WIDTH = 64;
 let MAP_HEIGHT = 64;
 let MAP_HALF_X = MAP_WIDTH / 2;
@@ -82,8 +96,8 @@ const MAX_MAP_TRIGGERS = 32;
 const MAX_MAP_SCENARIO_EVENTS = 32;
 const MAX_SCENARIO_EVENT_REPEATS = 20;
 const MIN_SCENARIO_EVENT_REPEAT_SECONDS = 5;
-const CAMERA_EDGE_ZONE_PX = 28;
-const CAMERA_EDGE_SPEED_PX_PER_SECOND = 420;
+const CAMERA_EDGE_ZONE_PX = 40;
+const CAMERA_EDGE_SPEED_PX_PER_SECOND = 650;
 // Full meshes failed the 0.91 worker-role gate; keep the role LOD through both required views.
 const UNIT_LOD_ZOOM_THRESHOLD = 0.91;
 const MAX_OBJECTIVE_FOOD_REWARD = 10000;
@@ -129,6 +143,10 @@ minimapBackground.height = minimapCanvas.height;
 const minimapBackgroundContext = minimapBackground.getContext('2d');
 const minimapFogCanvas = document.createElement('canvas');
 const minimapFogContext = minimapFogCanvas.getContext('2d');
+let objectiveHoldSummary = null;
+let noticeHistory = [];
+let guidanceDismissed = false;
+try { guidanceDismissed = localStorage.getItem('rts-guidance-dismissed') === 'true'; } catch {}
 const objectivePanel = document.querySelector('#objective-panel');
 const roomPageUrl = new URL(window.location.href);
 const ROOM_ID = roomPageUrl.searchParams.get('room');
@@ -346,7 +364,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setClearColor(0x859175, 1);
 viewport.prepend(renderer.domElement);
-renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Push the mouse against any screen edge to scroll the camera, middle-drag / Space-drag to pan, or scroll to zoom toward the pointer. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
+renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Use the arrow keys to move the camera, middle drag or Space + drag to pan, scroll to zoom toward the pointer, or push the mouse against any screen edge to scroll when edge scroll is enabled. Use Center selection, Home base, or Fit map to navigate. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
 renderer.domElement.dataset.cursorMode = 'select';
 renderer.domElement.tabIndex = 0;
 
@@ -503,44 +521,112 @@ const ROOM_INSTANCE_STORAGE_KEY = `${SESSION_STORAGE_KEY}:instance:${location.ho
 const ROOM_MATCH_STORAGE_KEY = `${SESSION_STORAGE_KEY}:match:${location.host}:${ROOM_ID || 'default'}`;
 
 function setCamera() {
-  const distance = 125;
-  camera.position.copy(cameraTarget).addScaledVector(cameraOffset, distance);
+  const clipPlanes = cameraDepthSafePlanes({
+    halfX: MAP_HALF_X,
+    halfZ: MAP_HALF_Z,
+    targetX: cameraTarget.x,
+    targetZ: cameraTarget.z,
+    cameraOffsetX: cameraOffset.x,
+    cameraOffsetZ: cameraOffset.z,
+  });
+  if (camera.far !== clipPlanes.far) {
+    camera.far = clipPlanes.far;
+    camera.updateProjectionMatrix();
+  }
+  camera.position.copy(cameraTarget).addScaledVector(cameraOffset, clipPlanes.distance);
   camera.lookAt(cameraTarget);
   camera.updateMatrixWorld();
   if (!mapDefinition) return;
 
-  const bounds = cameraGroundBounds();
-  if (!bounds) return;
   const clampedTarget = clampCameraTargetToGroundBounds({
     x: cameraTarget.x,
     z: cameraTarget.z,
     halfX: MAP_HALF_X,
     halfZ: MAP_HALF_Z,
-    bounds,
+    anchorOffset: cameraTargetHudSafeOffset(),
   });
   if (clampedTarget.x !== cameraTarget.x || clampedTarget.z !== cameraTarget.z) {
     cameraTarget.x = clampedTarget.x;
     cameraTarget.z = clampedTarget.z;
-    camera.position.copy(cameraTarget).addScaledVector(cameraOffset, distance);
-    camera.lookAt(cameraTarget);
-    camera.updateMatrixWorld();
+    setCamera();
   }
 }
 
-function cameraGroundBounds() {
-  const corners = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
+function cameraSafeRect() {
+  return hudSafeRect(renderer.domElement.getBoundingClientRect(), visibleHudRects());
+}
+
+function cameraTargetHudSafeOffset() {
+  const rect = renderer.domElement.getBoundingClientRect();
+  const safe = cameraSafeRect();
+  const centerWorld = worldAt(rect.left + rect.width / 2, rect.top + rect.height / 2);
+  const safeWorld = worldAt(safe.left + safe.width / 2, safe.top + safe.height / 2);
+  if (!centerWorld || !safeWorld) return { x: 0, z: 0 };
+  return { x: centerWorld.x - safeWorld.x, z: centerWorld.z - safeWorld.z };
+}
+
+function projectedMapBounds() {
   const bounds = { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity };
-  for (const [x, y] of corners) {
-    pointerNdc.set(x, y);
-    raycaster.setFromCamera(pointerNdc, camera);
-    const point = raycaster.ray.intersectPlane(groundPlane, groundHit);
-    if (!point) return null;
-    bounds.left = Math.min(bounds.left, point.x);
-    bounds.right = Math.max(bounds.right, point.x);
-    bounds.top = Math.min(bounds.top, point.z);
-    bounds.bottom = Math.max(bounds.bottom, point.z);
+  const width = Math.max(1, renderer.domElement.clientWidth);
+  const height = Math.max(1, renderer.domElement.clientHeight);
+  for (const x of [-MAP_HALF_X, MAP_HALF_X]) {
+    for (const z of [-MAP_HALF_Z, MAP_HALF_Z]) {
+      const projected = new THREE.Vector3(x, 0, z).project(camera);
+      const pixelX = width * (projected.x + 1) / 2;
+      const pixelY = height * (1 - projected.y) / 2;
+      bounds.left = Math.min(bounds.left, pixelX);
+      bounds.right = Math.max(bounds.right, pixelX);
+      bounds.top = Math.min(bounds.top, pixelY);
+      bounds.bottom = Math.max(bounds.bottom, pixelY);
+    }
   }
   return bounds;
+}
+
+function getMapFitZoom() {
+  if (!mapDefinition) return 0.48;
+  const priorZoom = camera.zoom;
+  camera.zoom = 1;
+  camera.updateProjectionMatrix();
+  setCamera();
+  const projected = projectedMapBounds();
+  const safe = cameraSafeRect();
+  const fitZoom = mapFitZoom(projected, safe.width, safe.height);
+  camera.zoom = priorZoom;
+  camera.updateProjectionMatrix();
+  setCamera();
+  return fitZoom || 0.48;
+}
+
+function focusGroundPointAtScreen(point, clientX, clientY) {
+  mapFitActive = false;
+  const rect = renderer.domElement.getBoundingClientRect();
+  const projected = new THREE.Vector3(point.x, 0, point.z).project(camera);
+  const pointX = rect.left + (projected.x + 1) * rect.width / 2;
+  const pointY = rect.top + (1 - projected.y) * rect.height / 2;
+  const underPoint = worldAt(pointX, pointY);
+  const atTarget = worldAt(clientX, clientY);
+  if (!underPoint || !atTarget) return;
+  const delta = cameraTargetDeltaForScreenFocus(underPoint, atTarget);
+  cameraTarget.x += delta.x;
+  cameraTarget.z += delta.z;
+  setCamera();
+}
+
+function fitMapToViewport() {
+  if (!mapDefinition) return;
+  const safe = cameraSafeRect();
+  const fitZoom = getMapFitZoom();
+  cameraMinZoom = Math.min(0.48, fitZoom);
+  zoom = fitZoom;
+  camera.zoom = zoom;
+  camera.updateProjectionMatrix();
+  setCamera();
+  focusGroundPointAtScreen({ x: 0, z: 0 }, safe.left + safe.width / 2, safe.top + safe.height / 2);
+  mapFitActive = true;
+  resizeResourceCallouts();
+  updateResourceNodeCallouts(performance.now(), true);
+  drawMinimap(performance.now(), true);
 }
 
 function resize() {
@@ -555,6 +641,14 @@ function resize() {
   camera.zoom = zoom;
   camera.updateProjectionMatrix();
   renderer.setSize(width, height, false);
+  cameraMinZoom = Math.min(0.48, getMapFitZoom());
+  if (mapFitActive && mapDefinition) {
+    fitMapToViewport();
+  } else if (zoom < cameraMinZoom) {
+    zoom = cameraMinZoom;
+    camera.zoom = zoom;
+    camera.updateProjectionMatrix();
+  }
   setCamera();
   resizeResourceCallouts();
   updateResourceNodeCallouts(performance.now(), true);
@@ -1425,13 +1519,7 @@ function updateResourceNodeCallouts(now, force = false) {
   const crowdThreshold = 8;
   const viewportRect = renderer.domElement.getBoundingClientRect();
   const pixelsPerWorldUnit = viewportRect.height * zoom / baseFrustum;
-  const occlusionRects = [...document.querySelectorAll(
-    '.topbar, .map-label, .topbar-center, .scenario-brief-panel, .objective-panel, .minimap-panel, .field-hint, .field-order-feedback, .control-dock, .toast, .match-result, .compass',
-  )].filter((element) => {
-    if (element.hidden || element.getClientRects().length === 0) return false;
-    const style = getComputedStyle(element);
-    return style.visibility !== 'hidden' && Number(style.opacity) !== 0;
-  }).map((element) => element.getBoundingClientRect());
+  const occlusionRects = visibleHudRects();
   for (const visual of resourceNodeVisuals.values()) {
     if (visual.stock <= 0) {
       visual.callout.visible = false;
@@ -2075,7 +2163,7 @@ function buildMap(definition) {
   const title = document.querySelector('#map-label-title');
   const summary = document.querySelector('#map-summary');
   if (title) title.textContent = definition.name || definition.id.toUpperCase();
-  if (summary) summary.textContent = definition.summary || `${MAP_WIDTH} × ${MAP_HEIGHT}`;
+  if (summary) summary.textContent = 'Open objectives for the win rule';
   document.querySelector('#scenario-brief-name').textContent = definition.name || definition.id.toUpperCase();
   document.querySelector('#scenario-brief-summary').textContent = definition.summary || 'Control the marked objectives and protect your army.';
   const deadline = document.querySelector('#scenario-brief-deadline');
@@ -2111,6 +2199,9 @@ function buildMap(definition) {
   if (footerMap) footerMap.textContent = definition.name || definition.id.toUpperCase();
   buildMinimapBackground(definition);
   buildFogOverlay(definition);
+  objectiveHoldSummary = null;
+  noticeHistory = [];
+  document.querySelector('#notice-history').replaceChildren();
   latestObjectiveStates = new Map();
   latestScenarioEventStates = new Map();
   latestMatchElapsedSeconds = 0;
@@ -2382,6 +2473,7 @@ function drawMinimap(now = performance.now(), force = false) {
 }
 
 function focusCameraFromMinimap(event) {
+  mapFitActive = false;
   const rect = minimapCanvas.getBoundingClientRect();
   const mapRect = minimapMapRect(rect.width, rect.height);
   const pixelX = THREE.MathUtils.clamp(event.clientX - rect.left, 0, rect.width);
@@ -3088,6 +3180,53 @@ function updateSelectionUI() {
     ui.selectedWaypoints.hidden = selected.size === 0 || queuedWaypointTotal === 0;
     ui.selectedWaypoints.textContent = `${queuedWaypointTotal.toLocaleString()} QUEUED WAYPOINTS · ${unitsWithQueuedWaypoints.toLocaleString()} UNITS`;
   }
+  updateContextualCommands();
+}
+
+function updateContextualCommands() {
+  const bar = document.querySelector('.contextual-command-bar');
+  if (!bar) return;
+  const building = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
+  const context = selectionContext(units, selected, localTeam, building);
+  bar.dataset.context = context.kind;
+  document.querySelector('#assign-selected-group').disabled = !context.total;
+  bar.querySelector('[data-context-summary]').textContent = building
+    ? `${buildingLabel(building.type)} · ${ui.selectedBuildingHealth.textContent} · ${ui.selectedBuildingProduction.textContent}`
+    : context.total ? `${context.total} selected${context.kind === 'military' || context.kind === 'mixed' ? ` · ${ui.formationSelect.value} formation` : ''} · ${Object.entries(context.counts).filter(([, n]) => n).map(([role, n]) => `${n} ${role}`).join(' · ')}${context.counts.worker ? ` · Cargo ${Math.floor(context.cargo.food)} food / ${Math.floor(context.cargo.wood)} wood` : ''}` : '';
+  for (const button of bar.querySelectorAll('[data-context-proxy]')) {
+    const source = document.getElementById(button.dataset.contextProxy);
+    const action = button.dataset.contextProxy;
+    button.hidden = action === 'order-target-toggle' ? context.kind === 'none'
+      : action === 'attack-move-toggle' ? !['military', 'mixed'].includes(context.kind)
+      : action === 'train-infantry' ? building?.type !== 'barracks'
+      : action === 'train-archer' ? building?.type !== 'archery-range'
+      : ['research-attack-upgrade', 'clear-building-rally'].includes(action) ? !building || source.hidden
+      : action === 'select-workers' ? context.kind !== 'mixed' : false;
+    button.disabled = source.disabled || (action.startsWith('train-') && building && (!building.complete || building.productionBlocked));
+    if (source.hasAttribute('aria-pressed')) button.setAttribute('aria-pressed', source.getAttribute('aria-pressed'));
+    if (action === 'order-target-toggle') button.textContent = tapOrderArmed ? 'Cancel target' : building ? 'Set rally' : context.kind === 'workers' ? 'Gather / move' : 'Target battlefield';
+    if (action.startsWith('train-')) {
+      button.setAttribute('aria-describedby', 'context-action-reason');
+      const reason = !building?.complete ? 'Finish construction' : building.productionBlocked ? 'Clear spawn area'
+        : source.disabled ? source.dataset.disabledReason || source.getAttribute('aria-label') : '';
+      bar.querySelector('[data-context-reason]').textContent = button.hidden ? bar.querySelector('[data-context-reason]').textContent : reason;
+    }
+  }
+  if (!building) bar.querySelector('[data-context-reason]').textContent = '';
+  bar.querySelector('[data-context-build]').hidden = context.kind !== 'workers';
+  bar.querySelector('[data-context-details]').hidden = context.kind === 'none';
+  bar.querySelector('[data-context-details]').textContent = building ? 'Rally / upgrade details' : 'Formation / route';
+  const research = bar.querySelector('[data-context-research]');
+  research.hidden = !building;
+  research.textContent = building ? `${ui.buildingRallyReadout.textContent} · ${ui.buildingResearchReadout.textContent}` : '';
+  const groups = bar.querySelector('[data-context-groups]');
+  for (let index = 0; index < 10; index++) {
+    const button = groups.children[index];
+    if (!button) continue;
+    button.hidden = !controlGroups[index].size;
+    button.textContent = `${controlGroupKeyLabel(index)} · ${controlGroups[index].size}`;
+    button.setAttribute('aria-label', `Recall group ${controlGroupKeyLabel(index)}, ${controlGroups[index].size} units`);
+  }
 }
 
 function updateControlGroupUI() {
@@ -3113,6 +3252,7 @@ function updateControlGroupUI() {
     button.title = `${count.toLocaleString()} living units · ${compositionLabel} · Ctrl/⌘ + ${number} replaces · Shift + ${number} adds · ${number} recalls`;
     button.disabled = localTeam === null;
   }
+  updateContextualCommands();
 }
 
 function controlGroupKeyLabel(index) {
@@ -3309,6 +3449,7 @@ function formatVictoryHoldTime(seconds) {
 }
 
 function updateVictoryHoldCard(hold = null, winner = -1, winnerReason = null, clockStarted = false) {
+  objectiveHoldSummary = hold;
   if (!victoryHoldVisual) return;
   const { card, status, progressFill, durationSeconds } = victoryHoldVisual;
   const activeTeams = Array.isArray(hold?.activeTeams) ? hold.activeTeams : [false, false];
@@ -3425,6 +3566,7 @@ function renderScenarioEventCountdown(now = performance.now()) {
       visual.status.textContent = remaining <= 0.1 ? `${delivery}DUE` : `${delivery}IN ${time}`;
     }
   }
+  renderObjectiveSummary(elapsed);
   if (timedVictoryVisual) {
     const { card, status, rule } = timedVictoryVisual;
     if (matchWinner >= 0) {
@@ -3443,6 +3585,16 @@ function renderScenarioEventCountdown(now = performance.now()) {
       status.textContent = remaining <= 0.1 ? 'RESOLVING' : `IN ${time}`;
     }
   }
+}
+
+function renderObjectiveSummary(elapsed = latestMatchElapsedSeconds) {
+  const summary = objectiveSummary(mapDefinition || {}, [...latestObjectiveStates.values()], {
+    team: localTeam, hold: objectiveHoldSummary, elapsed, started: latestScenarioClockStarted, winner: matchWinner,
+  });
+  document.querySelector('#map-summary').textContent = summary.action;
+  const urgent = document.querySelector('#objective-urgent');
+  urgent.textContent = summary.urgent;
+  urgent.hidden = !summary.urgent;
 }
 
 function syncMatchResultActions() {
@@ -3566,6 +3718,7 @@ function updateCommandUI() {
   if (ui.formationSelect) ui.formationSelect.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding);
   syncTargetOrderUI();
   syncBattlefieldCursor();
+  updateContextualCommands();
 }
 
 function syncTargetOrderUI() {
@@ -3938,6 +4091,9 @@ function updateEconomyUI(state = {}, initial = false) {
   if (ui.selectWorkers) ui.selectWorkers.disabled = localTeam === null
     || ownedWorkers.length === 0;
   if (ui.selectIdleWorkers) {
+    const quickIdle = document.querySelector('#quick-idle');
+    quickIdle.disabled = idleWorkerIds.length === 0;
+    quickIdle.textContent = `Idle · ${idleWorkerIds.length}`;
     ui.selectIdleWorkers.disabled = idleWorkerIds.length === 0;
     ui.selectIdleWorkers.textContent = `Idle · ${idleWorkerIds.length}`;
     ui.selectIdleWorkers.setAttribute('aria-label', `Select idle workers (${idleWorkerIds.length})`);
@@ -4010,12 +4166,28 @@ function updateEconomyUI(state = {}, initial = false) {
       ? 'Select Workers, open Orders, then target food or wood.'
       : 'Select Workers, then right-click food or wood.';
   }
+  for (const [button, costFood, costWood, producer, queue, limit] of [
+    [ui.trainWorker, WORKER_FOOD_COST, 0, true, workerQueue, WORKER_QUEUE_LIMIT],
+    [ui.trainInfantry, INFANTRY_FOOD_COST, 0, trainableBarracks, infantryQueueLength, BARRACKS_QUEUE_LIMIT],
+    [ui.trainArcher, ARCHER_FOOD_COST, ARCHER_WOOD_COST, trainableRange, queueLength, ARCHERY_RANGE_QUEUE_LIMIT],
+  ]) {
+    if (!button) continue;
+    const reason = localTeam === null ? 'Join a team' : matchWinner >= 0 ? 'Match finished'
+      : !producer ? 'Complete a production building with spawn space'
+      : queue >= limit ? 'Queue full' : unitCapReached ? 'Unit cap reached'
+      : food < costFood || wood < costWood ? `Need ${Math.max(0, costFood - food)} food / ${Math.max(0, costWood - wood)} wood` : '';
+    button.dataset.disabledReason = reason;
+    let note = button.querySelector('.action-disabled-reason');
+    if (!note) { note = document.createElement('small'); note.className = 'action-disabled-reason'; button.append(note); }
+    note.textContent = reason;
+  }
   updateCommandUI();
 }
 
 function updateRoomUI(connected) {
   connectedPlayers = connected;
   ui.playersOnline.textContent = `${connected} / 2 PLAYERS`;
+  ui.networkStatus.parentElement.dataset.urgent = String(waitingForResume);
   ui.matchStatus.textContent = waitingForResume ? 'WAITING TO REJOIN' : connected >= 2 ? '2 / 2 ONLINE' : `${connected} / 2 ONLINE`;
   ui.matchStatus.classList.toggle('full', connected >= 2);
   ui.networkStatus.textContent = waitingForResume
@@ -4027,6 +4199,7 @@ function updateRoomUI(connected) {
 }
 
 function setConnection(status) {
+  ui.networkStatus.parentElement.dataset.urgent = String(['OFFLINE', 'RECONNECTING', 'SEAT ACTIVE ELSEWHERE', 'INVALID ROOM LINK', 'ROOM NOT FOUND'].includes(status));
   ui.networkStatus.textContent = status;
   ui.matchStatus.textContent = status;
   const waiting = status === 'CONNECTING' || status === 'RECONNECTING' || status === 'WAITING FOR PLAYER 2';
@@ -5879,6 +6052,13 @@ function downloadEditorMap() {
 }
 
 function showToast(message, duration = 1300) {
+  noticeHistory = rememberNotice(noticeHistory, message);
+  const history = document.querySelector('#notice-history');
+  history.replaceChildren(...noticeHistory.map((notice) => {
+    const item = document.createElement('li');
+    item.textContent = notice.text + (notice.count > 1 ? ` ×${notice.count}` : '');
+    return item;
+  }));
   if (isLocalRejection(message)) audio.play('reject');
   const fieldFeedback = document.querySelector('#field-order-feedback');
   if (fieldFeedback && !fieldFeedback.hidden && fieldFeedback.textContent === message) return;
@@ -6426,6 +6606,13 @@ function updateBuildPlacementGhost(clientX, clientY) {
 }
 
 function updateBuildPlacementHint() {
+  const guidance = document.querySelector('.field-hint');
+  const forced = buildPlacementActive || tapOrderArmed;
+  guidance.classList.toggle('guidance-dismissed', guidanceDismissed && !forced);
+  const guidanceToggle = document.querySelector('#guidance-toggle');
+  guidanceToggle.hidden = forced;
+  guidanceToggle.textContent = guidanceDismissed ? 'Show hints' : 'Hide hints';
+  guidanceToggle.setAttribute('aria-expanded', String(!guidanceDismissed));
   const activeLabel = buildingLabel(buildPlacementType);
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
   if (ui.fieldHintPrimaryKey) ui.fieldHintPrimaryKey.textContent = coarsePointer ? 'TAP' : 'LMB';
@@ -6478,6 +6665,7 @@ function cancelBuildPlacement(announce = true) {
   pendingBuildBaseline = new Set();
   placementGhost.visible = false;
   updateBuildPlacementHint();
+  if (typeof closeDockDetails === 'function') closeDockDetails({ restoreFocus: false });
   updateEconomyUI();
   if (announce && wasActive) showToast(`${buildingLabel(buildPlacementType)} PLACEMENT CANCELLED`);
 }
@@ -6508,6 +6696,7 @@ function beginBuildPlacement(type) {
   pendingBuildOrderToken = null;
   pendingBuildBaseline = new Set(latestBuildings.filter((building) => building.team === localTeam).map((building) => building.id));
   updateBuildPlacementHint();
+  if (typeof closeDockDetails === 'function') closeDockDetails({ restoreFocus: false });
   updateEconomyUI();
   showToast(window.matchMedia('(pointer: coarse)').matches
     ? `${label} SITE · TAP TO PLACE · TAP BUILD AGAIN TO CANCEL`
@@ -6662,8 +6851,9 @@ document.addEventListener('pointerout', (event) => {
 renderer.domElement.addEventListener('wheel', (event) => {
   event.preventDefault();
   lastUnitPickState = null;
-  const nextZoom = THREE.MathUtils.clamp(zoom * Math.exp(-event.deltaY * 0.001), 0.48, 2.3);
+  const nextZoom = THREE.MathUtils.clamp(zoom * Math.exp(-event.deltaY * 0.001), cameraMinZoom, 2.3);
   if (nextZoom === zoom) return;
+  mapFitActive = false;
   const anchorBeforeZoom = worldAt(event.clientX, event.clientY);
   zoom = nextZoom;
   camera.zoom = zoom;
@@ -6710,6 +6900,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
   if (event.button === 1 || (event.button === 0 && spaceDown)) {
     lastFriendlyUnitClick = null;
     lastUnitPickState = null;
+    mapFitActive = false;
     pan = { x: event.clientX, y: event.clientY };
     syncBattlefieldCursor();
     renderer.domElement.setPointerCapture(event.pointerId);
@@ -6747,9 +6938,15 @@ renderer.domElement.addEventListener('pointermove', (event) => {
   if (pan) {
     const dx = event.clientX - pan.x;
     const dy = event.clientY - pan.y;
-    const unitsPerPixel = baseFrustum / (viewport.clientHeight * zoom);
-    cameraTarget.x -= (dx - dy * 0.65) * unitsPerPixel * 0.7;
-    cameraTarget.z += (dx + dy * 0.65) * unitsPerPixel * 0.7;
+    const delta = cameraPanDeltaFromScreen({
+      dx,
+      dy,
+      viewportHeight: viewport.clientHeight,
+      baseFrustum,
+      zoom,
+    });
+    cameraTarget.x += delta.x;
+    cameraTarget.z += delta.z;
     pan = { x: event.clientX, y: event.clientY };
     setCamera();
     return;
@@ -6890,11 +7087,56 @@ const matchMenuToggle = document.querySelector('#match-menu-toggle');
 const helpToggle = document.querySelector('#help-toggle');
 const appShell = document.querySelector('.app-shell');
 const fullscreenToggle = document.querySelector('#fullscreen-toggle');
+const cameraSpeedInput = document.querySelector('#camera-speed');
+const cameraSpeedValue = document.querySelector('#camera-speed-value');
+const edgeScrollInput = document.querySelector('#edge-scroll-enabled');
 const fullscreenSupported = Boolean(document.fullscreenEnabled
   && typeof appShell?.requestFullscreen === 'function'
   && typeof document.exitFullscreen === 'function');
 const commandDock = document.querySelector('.control-dock');
 const dockTabs = [...document.querySelectorAll('[data-dock-tab]')];
+const dockToggle = document.querySelector('#dock-toggle');
+const contextualBar = document.querySelector('.contextual-command-bar');
+if (contextualBar) {
+  const syncContextHeight = () => document.querySelector('.workspace').style.setProperty('--context-bar-height', `${contextualBar.getBoundingClientRect().height}px`);
+  new ResizeObserver(syncContextHeight).observe(contextualBar);
+  syncContextHeight();
+}
+let dockOpener = dockToggle;
+function closeDockDetails({ restoreFocus = false } = {}) {
+  commandDock.hidden = true;
+  dockToggle.setAttribute('aria-expanded', 'false');
+  clearHeldCameraKeys();
+  if (restoreFocus) (dockOpener?.isConnected && dockOpener.getClientRects().length ? dockOpener : document.querySelector('.contextual-command-bar button') || dockToggle).focus();
+}
+dockToggle.addEventListener('click', () => {
+  if (commandDock.hidden) selectDockTab(commandDock.dataset.activePanel || 'selection', true);
+  else closeDockDetails({ restoreFocus: true });
+});
+document.querySelector('#dock-close').addEventListener('click', () => closeDockDetails({ restoreFocus: true }));
+document.querySelector('#quick-army').addEventListener('click', selectMilitary);
+document.querySelector('#quick-idle').addEventListener('click', () => ui.selectIdleWorkers.click());
+let hudPreferences;
+try { hudPreferences = normalizeHudPreferences(JSON.parse(localStorage.getItem('skirmish-hud') || '{}')); }
+catch { hudPreferences = normalizeHudPreferences(); }
+function applyHudPreferences(changes = {}) {
+  hudPreferences = normalizeHudPreferences({ ...hudPreferences, ...changes });
+  appShell.dataset.hudDensity = hudPreferences.density;
+  appShell.dataset.minimapSize = hudPreferences.minimap;
+  document.querySelector('.minimap-panel').hidden = hudPreferences.minimap === 'hidden';
+  document.querySelector('#minimap-reopen').hidden = hudPreferences.minimap !== 'hidden';
+  document.querySelector('#hud-density').value = hudPreferences.density;
+  document.querySelector('#hud-minimap').value = hudPreferences.minimap;
+  document.querySelector('#minimap-size-toggle').setAttribute('aria-label', hudPreferences.minimap === 'large' ? 'Shrink tactical map' : 'Enlarge tactical map');
+  document.querySelector('#minimap-size-toggle').textContent = hudPreferences.minimap === 'large' ? '−' : '+';
+  try { localStorage.setItem('skirmish-hud', JSON.stringify(hudPreferences)); } catch { /* Storage may be unavailable. */ }
+}
+applyHudPreferences();
+document.querySelector('#hud-density').addEventListener('change', (event) => applyHudPreferences({ density: event.target.value }));
+document.querySelector('#hud-minimap').addEventListener('change', (event) => applyHudPreferences({ minimap: event.target.value }));
+document.querySelector('#minimap-size-toggle').addEventListener('click', () => applyHudPreferences({ minimap: hudPreferences.minimap === 'large' ? 'small' : 'large' }));
+document.querySelector('#minimap-hide').addEventListener('click', () => { applyHudPreferences({ minimap: 'hidden' }); document.querySelector('#minimap-reopen').focus(); });
+document.querySelector('#minimap-reopen').addEventListener('click', () => { applyHudPreferences({ minimap: 'small' }); document.querySelector('#minimap-size-toggle').focus(); });
 
 function syncFullscreenToggle() {
   const isFullscreen = document.fullscreenElement === appShell;
@@ -6908,6 +7150,58 @@ function syncFullscreenToggle() {
 }
 
 syncFullscreenToggle();
+function syncNavigationControls() {
+  const settings = getNavigationSettings();
+  cameraSpeedInput.value = String(Math.round(settings.cameraSpeed * 100));
+  cameraSpeedValue.value = `${Math.round(settings.cameraSpeed * 100)}%`;
+  edgeScrollInput.checked = settings.edgeScrollEnabled;
+}
+syncNavigationControls();
+cameraSpeedInput.addEventListener('input', () => {
+  setNavigationSettings({ cameraSpeed: Number(cameraSpeedInput.value) / 100 });
+  syncNavigationControls();
+});
+edgeScrollInput.addEventListener('change', () => {
+  setNavigationSettings({ edgeScrollEnabled: edgeScrollInput.checked });
+  if (!edgeScrollInput.checked) edgeScrollPointer = null;
+});
+
+function centerCameraOnSelection() {
+  const building = latestBuildings.find((item) => item.id === selectedBuildingId && item.team === localTeam);
+  if (building) {
+    const safe = cameraSafeRect();
+    focusGroundPointAtScreen({ x: building.x, z: building.z },
+      safe.left + safe.width / 2, safe.top + safe.height / 2);
+    drawMinimap(performance.now(), true);
+    return;
+  }
+  const selectedUnits = [...selected].map((id) => units[id]).filter((unit) => unit && unit.hp > 0);
+  if (selectedUnits.length === 0) {
+    showToast('SELECT A UNIT OR BUILDING FIRST');
+    return;
+  }
+  const point = selectedUnits.reduce((center, unit) => ({ x: center.x + unit.renderX, z: center.z + unit.renderZ }), { x: 0, z: 0 });
+  point.x /= selectedUnits.length;
+  point.z /= selectedUnits.length;
+  const safe = cameraSafeRect();
+  focusGroundPointAtScreen(point, safe.left + safe.width / 2, safe.top + safe.height / 2);
+  drawMinimap(performance.now(), true);
+}
+
+function centerCameraOnHomeBase() {
+  if (!mapDefinition || localTeam === null) {
+    showToast('YOUR TOWN CENTER IS NOT AVAILABLE');
+    return;
+  }
+  const point = townCenterSpawnPosition(mapDefinition.spawnPoints, localTeam, MAP_WIDTH, MAP_HEIGHT);
+  const safe = cameraSafeRect();
+  focusGroundPointAtScreen(point, safe.left + safe.width / 2, safe.top + safe.height / 2);
+  drawMinimap(performance.now(), true);
+}
+
+document.querySelector('#camera-center-selection').addEventListener('click', centerCameraOnSelection);
+document.querySelector('#camera-home-base').addEventListener('click', centerCameraOnHomeBase);
+document.querySelector('#camera-fit-map').addEventListener('click', fitMapToViewport);
 fullscreenToggle.addEventListener('click', async () => {
   if (!fullscreenSupported) return;
   try {
@@ -6930,12 +7224,14 @@ function closeHudPanels({ restoreFocus = false } = {}) {
   hudScrim.hidden = true;
   matchMenuToggle.setAttribute('aria-expanded', 'false');
   helpToggle.setAttribute('aria-expanded', 'false');
+  clearHeldCameraKeys();
   if (restoreFocus) trigger?.focus();
 }
 
 function closeScenarioBrief({ restoreFocus = false } = {}) {
   scenarioBriefPanel.hidden = true;
   scenarioBriefToggle.setAttribute('aria-expanded', 'false');
+  clearHeldCameraKeys();
   if (restoreFocus) scenarioBriefToggle.focus();
 }
 
@@ -6943,6 +7239,7 @@ function toggleHudPanel(panel, trigger) {
   const opening = panel.hidden;
   if (tapOrderArmed) setTapOrderArmed(false, false);
   closeHudPanels();
+  closeDockDetails();
   if (!opening) return;
   panel.hidden = false;
   hudScrim.hidden = false;
@@ -6952,7 +7249,12 @@ function toggleHudPanel(panel, trigger) {
 
 function selectDockTab(name, focus = false) {
   if (name !== 'command' && tapOrderArmed) setTapOrderArmed(false, false);
+  if (commandDock.hidden) dockOpener = document.activeElement instanceof HTMLElement && document.activeElement.matches('button, [tabindex]') && !commandDock.contains(document.activeElement) ? document.activeElement : document.querySelector('.contextual-command-bar button') || dockToggle;
+  closeScenarioBrief();
+  commandDock.hidden = false;
+  dockToggle.setAttribute('aria-expanded', 'true');
   commandDock.dataset.activePanel = name;
+  for (const panel of commandDock.querySelectorAll(':scope > [role="tabpanel"]')) panel.hidden = panel.id !== `dock-${name}`;
   for (const tab of dockTabs) {
     const selected = tab.dataset.dockTab === name;
     tab.setAttribute('aria-selected', String(selected));
@@ -6974,6 +7276,7 @@ scenarioBriefToggle.addEventListener('click', () => {
   if (tapOrderArmed) setTapOrderArmed(false, false);
   closeHudPanels();
   closeScenarioBrief();
+  closeDockDetails();
   if (!opening) return;
   scenarioBriefPanel.hidden = false;
   scenarioBriefToggle.setAttribute('aria-expanded', 'true');
@@ -7000,15 +7303,22 @@ for (const button of document.querySelectorAll('[data-open-dock-tab]')) {
   button.addEventListener('click', () => selectDockTab(button.dataset.openDockTab, true));
 }
 selectDockTab('selection');
+closeDockDetails();
+document.querySelector('#guidance-toggle').addEventListener('click', () => {
+  guidanceDismissed = !guidanceDismissed;
+  try { localStorage.setItem('rts-guidance-dismissed', String(guidanceDismissed)); } catch {}
+  updateBuildPlacementHint();
+});
 updateBuildPlacementHint();
 window.addEventListener('keydown', (event) => {
   if (document.fullscreenElement === appShell && event.key === 'Escape') return;
-  if (event.key !== 'Escape' || (matchMenu.hidden && helpPanel.hidden && scenarioBriefPanel.hidden)
+  if (event.key !== 'Escape' || (matchMenu.hidden && helpPanel.hidden && scenarioBriefPanel.hidden && commandDock.hidden)
     || document.querySelector('dialog[open]')) return;
   event.preventDefault();
   event.stopImmediatePropagation();
   if (!scenarioBriefPanel.hidden) closeScenarioBrief({ restoreFocus: true });
-  else closeHudPanels({ restoreFocus: true });
+  else if (!matchMenu.hidden || !helpPanel.hidden) closeHudPanels({ restoreFocus: true });
+  else closeDockDetails({ restoreFocus: true });
 }, true);
 
 const AUDIO_CAPTIONS = Object.freeze({
@@ -7240,6 +7550,61 @@ function keyboardTargetIsEditing(event) {
     || Boolean(target?.closest('input, textarea, select, [contenteditable], dialog, [role="tab"]'));
 }
 
+function clearHeldCameraKeys() {
+  heldCameraKeys.clear();
+  lastKeyboardPanTime = 0;
+}
+
+function cameraNavigationKeydown(event) {
+  if (!cameraArrowInputAllowed({
+    key: event.key,
+    altKey: event.altKey,
+    ctrlKey: event.ctrlKey,
+    metaKey: event.metaKey,
+    shiftKey: event.shiftKey,
+    defaultPrevented: event.defaultPrevented,
+    mapAvailable: Boolean(mapDefinition),
+    pageVisible: document.visibilityState === 'visible',
+    dialogOpen: Boolean(document.querySelector('dialog[open]')),
+    menuOpen: !matchMenu.hidden || !helpPanel.hidden || !scenarioBriefPanel.hidden,
+    mapStudioOpen: ui.mapStudio.open,
+    buildPlacement: buildPlacementActive,
+    selectionDragging: Boolean(drag),
+    manualPan: Boolean(pan),
+    targetOrder: Boolean(tapOrderArmed || tapOrderPointer),
+    editingTarget: keyboardTargetIsEditing(event),
+  })) return false;
+  heldCameraKeys.press(event.key);
+  event.preventDefault();
+  return true;
+}
+
+function moveKeyboardCamera(now) {
+  if (heldCameraKeys.pressed.length === 0) return;
+  if (document.visibilityState !== 'visible' || keyboardTargetIsEditing({ target: document.activeElement })
+    || ui.mapStudio.open || document.querySelector('dialog[open]') || buildPlacementActive
+    || drag || pan || tapOrderArmed || tapOrderPointer) {
+    clearHeldCameraKeys();
+    return;
+  }
+  const elapsed = lastKeyboardPanTime ? Math.min(0.1, (now - lastKeyboardPanTime) / 1000) : 0;
+  lastKeyboardPanTime = now;
+  if (elapsed <= 0) return;
+  const direction = heldCameraKeys.direction();
+  const pixels = 650 * getNavigationSettings().cameraSpeed * elapsed;
+  const delta = cameraPanDeltaFromScreen({
+    dx: -direction.x * pixels,
+    dy: -direction.y * pixels,
+    viewportHeight: Math.max(1, viewport.clientHeight),
+    baseFrustum,
+    zoom,
+  });
+  mapFitActive = false;
+  cameraTarget.x += delta.x;
+  cameraTarget.z += delta.z;
+  setCamera();
+}
+
 function controlGroupIndexFromKey(event) {
   const digitCode = /^(?:Digit|Numpad)([0-9])$/.exec(event.code);
   const digit = digitCode?.[1] ?? (/^[0-9]$/.test(event.key) ? event.key : null);
@@ -7253,6 +7618,7 @@ window.addEventListener('keydown', (event) => {
   lastUnitPickState = null;
   if (document.fullscreenElement === appShell && event.key === 'Escape') return;
   const editing = keyboardTargetIsEditing(event);
+  if (cameraNavigationKeydown(event)) return;
   const buttonFocused = event.target instanceof Element && Boolean(event.target.closest('button'));
   if (event.code === 'Space') {
     if (!editing && !buttonFocused) {
@@ -7306,6 +7672,7 @@ window.addEventListener('keydown', (event) => {
   }
 });
 window.addEventListener('keyup', (event) => {
+  if (event.key.startsWith('Arrow')) heldCameraKeys.release(event.key);
   if (event.code !== 'Space') return;
   spaceDown = false;
   syncBattlefieldCursor();
@@ -7313,6 +7680,7 @@ window.addEventListener('keyup', (event) => {
 window.addEventListener('blur', () => {
   if (tapOrderArmed) setTapOrderArmed(false, false);
   spaceDown = false;
+  clearHeldCameraKeys();
   pan = null;
   edgeScrollPointer = null;
   syncBattlefieldCursor();
@@ -7321,7 +7689,14 @@ window.addEventListener('blur', () => {
   lastUnitPickState = null;
 });
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState !== 'visible') edgeScrollPointer = null;
+  if (document.visibilityState !== 'visible') {
+    edgeScrollPointer = null;
+    clearHeldCameraKeys();
+  }
+});
+document.addEventListener('focusin', (event) => {
+  if (event.target instanceof Element
+    && event.target.closest('input, textarea, select, [contenteditable], dialog, [role="tab"]')) clearHeldCameraKeys();
 });
 
 for (const button of document.querySelectorAll('.size-options button')) {
@@ -8109,6 +8484,7 @@ let renderStatsTime = 0;
 let lastIdlePoseStep = -1;
 function animate(now) {
   requestAnimationFrame(animate);
+  moveKeyboardCamera(now);
   syncUnitDetailLevel();
   renderScenarioEventCountdown(now);
   animateBuildingCombatFeedback(now);
@@ -8122,13 +8498,22 @@ function animate(now) {
     const hoveredElement = insideViewport ? document.elementFromPoint(edgeScrollPointer.x, edgeScrollPointer.y) : null;
     const hudControlHovered = hoveredElement instanceof Element
       && Boolean(hoveredElement.closest(
-        'button, a[href], input, select, textarea, [contenteditable="true"], [role="button"], [role="tab"], .control-dock, .minimap-panel, .objective-panel',
+        'button, a[href], input, select, textarea, [contenteditable="true"], [role="button"], [role="tab"], .control-dock, .hud-quick-access, .contextual-command-bar, #minimap-canvas, .minimap-panel, .objective-panel, .scenario-brief-panel, .match-result, #art-review-panel',
       ));
+    const activeElement = document.activeElement;
+    const hudControlFocused = activeElement instanceof Element
+      && shouldBlockEdgeScrollForFocus({
+        editable: activeElement.matches('input, select, textarea, [contenteditable="true"]'),
+        keyboardFocusedControl: activeElement.matches(
+          'button, a[href], [role="button"], [role="tab"], [tabindex]:not([tabindex="-1"])',
+        ) && activeElement.matches(':focus-visible'),
+      });
+    const settings = getNavigationSettings();
     const eligible = canEdgeScroll({
       pointerType: edgeScrollPointer.pointerType,
       buttons: edgeScrollPointer.buttons,
       insideViewport,
-      mapAvailable: Boolean(mapDefinition),
+      mapAvailable: Boolean(mapDefinition) && settings.edgeScrollEnabled,
       pageVisible: document.visibilityState === 'visible',
       selectionDragging: Boolean(drag),
       manualPan: Boolean(pan),
@@ -8138,15 +8523,17 @@ function animate(now) {
       dialogOpen: Boolean(document.querySelector('dialog[open]')),
       hudPanelOpen: !matchMenu.hidden || !helpPanel.hidden || !scenarioBriefPanel.hidden || !hudScrim.hidden,
       hudControlHovered,
+      hudControlFocused,
     });
     if (eligible) {
       const direction = edgeScrollDirection(localX, localY, rect.width, rect.height, CAMERA_EDGE_ZONE_PX);
       if (direction.x || direction.y) {
-        const pixels = CAMERA_EDGE_SPEED_PX_PER_SECOND * frameDelta;
+        const pixels = CAMERA_EDGE_SPEED_PX_PER_SECOND * settings.cameraSpeed * frameDelta;
         const unitsPerPixel = baseFrustum / (Math.max(1, viewport.clientHeight) * zoom);
         const delta = edgeScrollCameraDelta(direction.x, direction.y, pixels, unitsPerPixel);
         cameraTarget.x += delta.x;
         cameraTarget.z += delta.z;
+        mapFitActive = false;
         setCamera();
       }
     }
@@ -8245,3 +8632,21 @@ function animate(now) {
 }
 
 requestAnimationFrame(animate);
+
+for (const button of document.querySelectorAll('[data-context-proxy]')) {
+  button.addEventListener('click', () => { document.getElementById(button.dataset.contextProxy).click(); updateContextualCommands(); });
+}
+for (const button of document.querySelectorAll('[data-context-panel]')) {
+  button.addEventListener('click', () => selectDockTab(button.dataset.contextPanel, true));
+}
+for (let index = 0; index < 10; index++) {
+  const button = document.createElement('button');
+  button.type = 'button'; button.hidden = true;
+  button.addEventListener('click', () => recallControlGroup(index));
+  document.querySelector('[data-context-groups]').append(button);
+}
+document.querySelector('#assign-selected-group').addEventListener('click', () => {
+  assignControlGroup(Number(document.querySelector('#assign-group-slot').value));
+  updateContextualCommands();
+});
+updateContextualCommands();

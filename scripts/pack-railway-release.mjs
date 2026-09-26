@@ -86,7 +86,7 @@ for (const [source, pattern] of dockerSources) {
     throw new Error(`Docker COPY source is excluded by .dockerignore: ${source}`);
   }
 }
-for (const runtimeSource of ['room-supervisor.mjs', 'server.mjs', 'origin-policy.mjs']) {
+for (const runtimeSource of ['room-supervisor.mjs', 'server.mjs', 'origin-policy.mjs', 'simulation-scheduler.mjs']) {
   if (!entries.has(runtimeSource)) {
     throw new Error(`Dockerfile COPY sources must include runtime source ${runtimeSource}`);
   }
