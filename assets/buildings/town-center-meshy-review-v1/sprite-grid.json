@@ -1,11 +1,20 @@
 {
   "schema": "thousand-unit-skirmish.sprite-grid.v1",
   "asset": "town-center-meshy-review",
-  "status": "review-only; production-renderer-integration-pending",
+  "status": "review-only; complete-state-runtime-copy-in-lifecycle-pack",
   "assetRole": "directional reference sprite",
   "sourceView": {
     "camera": "orthographic elevated three-quarter",
-    "azimuthDegrees": [0, 45, 90, 135, 180, 225, 270, 315],
+    "azimuthDegrees": [
+      0,
+      45,
+      90,
+      135,
+      180,
+      225,
+      270,
+      315
+    ],
     "elevationDegrees": 46,
     "viewCount": 8,
     "cameraRotationSupported": true
@@ -13,59 +22,100 @@
   "worldGrid": {
     "cellUnits": 1,
     "gameplayFootprintCells": null,
-    "visualBaseCells": [4, 4],
+    "visualBaseCells": [
+      4,
+      4
+    ],
     "anchor": "center of visible ground-contact base",
     "occupancy": "Art-review gallery sample only; no gameplay occupancy."
   },
   "spriteFrame": {
-    "gridCells": [5, 5],
-    "pixels": [640, 640],
-    "worldUnits": [5, 5],
+    "gridCells": [
+      5,
+      5
+    ],
+    "pixels": [
+      640,
+      640
+    ],
+    "worldUnits": [
+      5,
+      5
+    ],
     "pixelsPerWorldUnit": 128,
-    "anchorNormalizedFromBottomLeft": [0.5, 0.4125],
-    "anchorPixelFromTopLeft": [320, 376],
+    "anchorNormalizedFromBottomLeft": [
+      0.5,
+      0.4125
+    ],
+    "anchorPixelFromTopLeft": [
+      320,
+      376
+    ],
     "anchorIsProjectedGroundCenter": true
   },
   "stateMapping": {
     "currentRuntimeState": "complete",
-    "authoredStates": ["complete"],
+    "authoredStates": [
+      "complete"
+    ],
     "plannedStates": [
       {
         "state": "foundation",
         "buildProgress": 0.05,
         "concept": "../town-center-state-concepts-v1/source/town-center-foundation.png",
-        "status": "concept-ready; Meshy-processing-pending"
+        "status": "runtime-state-ready; awaits-building-lifecycle-input"
       },
       {
         "state": "frame",
         "buildProgress": 0.5,
         "concept": "../town-center-state-concepts-v1/source/town-center-frame.png",
-        "status": "concept-ready; Meshy-processing-pending"
+        "status": "runtime-state-ready; awaits-building-lifecycle-input"
       },
       {
         "state": "damaged",
         "healthRatio": 0.6,
         "concept": "../town-center-state-concepts-v1/source/town-center-damaged.png",
-        "status": "concept-ready; Meshy-processing-pending"
+        "status": "runtime-state-ready; awaits-building-lifecycle-input"
       },
       {
         "state": "critical",
         "healthRatio": 0.3,
         "concept": "../town-center-state-concepts-v1/source/town-center-critical.png",
-        "status": "concept-ready; Meshy-processing-pending"
+        "status": "runtime-state-ready; awaits-building-lifecycle-input"
       }
     ],
-    "lifecycle": "Only the finished, intact Town Center is in the Meshy reference sprite pack. Four additional construction and damage concepts are ready for individual processing."
+    "lifecycle": "All five Town Center states have optimized Meshy model references. Complete is the gameplay default for the static Town Center landmark; the sibling lifecycle pack contains the unified runtime frames and masks. Foundation, Frame, Damaged, and Critical are selectable when gameplay supplies lifecycle values."
   },
   "variants": {
-    "teams": ["azure-gold heraldry"],
-    "season": ["neutral"],
-    "lighting": ["neutral-day"],
-    "futureDimensions": ["view", "season", "lighting", "wear", "team-trim"]
+    "teams": [
+      "azure-gold heraldry"
+    ],
+    "season": [
+      "neutral"
+    ],
+    "lighting": [
+      "neutral-day"
+    ],
+    "futureDimensions": [
+      "view",
+      "season",
+      "lighting",
+      "wear",
+      "team-trim"
+    ]
   },
   "runtimeFrames": {
     "pathPattern": "runtime/town-center-view-{view}.webp",
-    "views": [0, 1, 2, 3, 4, 5, 6, 7],
+    "views": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
     "textureColorSpace": "srgb",
     "alphaMode": "straight"
   },
