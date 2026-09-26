@@ -1,5 +1,7 @@
 # Thousand Unit Skirmish — prototype 0.95
 
+For team priorities and the next independently shippable checkpoint in each workstream, see the [living roadmap](docs/roadmap.md). The [game bible](docs/game-bible.md) defines the player experience; the [QA plan](docs/qa-vertical-slice.md) records milestone evidence.
+
 An invite-only multiplayer RTS field test. A Node room supervisor starts one isolated authoritative match process per invite room; open two browser tabs at the same address to join the default Azure and Ember match. Use **NEW ROOM** to create an invite-only match or **JOIN** to enter a room code/link. The map contains a two-cell stone wall with one six-cell pass, so move orders have to route through a chokepoint.
 
 ## Run it
