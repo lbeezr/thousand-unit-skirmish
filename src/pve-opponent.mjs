@@ -366,12 +366,94 @@ function nearestResource(nodes, worker) {
   ))[0] || null;
 }
 
+function objectiveWorldPoint(objective, map) {
+  const zone = objective?.zone;
+  if (!Number.isInteger(map?.width) || map.width < 1
+    || !Number.isInteger(map?.height) || map.height < 1
+    || !Number.isInteger(zone?.column) || !Number.isInteger(zone?.row)
+    || !Number.isInteger(zone?.width) || zone.width < 1
+    || !Number.isInteger(zone?.height) || zone.height < 1
+    || zone.column < 0 || zone.row < 0
+    || zone.column + zone.width > map.width || zone.row + zone.height > map.height) return null;
+  return {
+    x: zone.column + zone.width / 2 - map.width / 2,
+    z: zone.row + zone.height / 2 - map.height / 2,
+  };
+}
+
+function objectivePrerequisitesMet(objective, team) {
+  const ids = Array.isArray(objective?.requiresAll) ? objective.requiresAll
+    : typeof objective?.requires === 'string' ? [objective.requires] : [];
+  if (ids.length === 0) return true;
+  const owners = Array.isArray(objective.requiredOwners) ? objective.requiredOwners
+    : typeof objective.requires === 'string' ? [objective.requiredOwner] : [];
+  return owners.length === ids.length && owners.every((owner) => owner === team);
+}
+
+function nearestObjective(objectives, team, soldiers, map, lostObjectiveIds) {
+  if (soldiers.length === 0) return null;
+  const armyCenter = soldiers.reduce((center, unit) => ({
+    x: center.x + unit.x / soldiers.length,
+    z: center.z + unit.z / soldiers.length,
+  }), { x: 0, z: 0 });
+  const enemyTeam = 1 - team;
+  const candidates = objectives.flatMap((objective) => {
+    if (typeof objective?.id !== 'string'
+      || !Number.isInteger(objective.owner)
+      || objective.owner === team
+      || ![-1, enemyTeam].includes(objective.owner)
+      || !objectivePrerequisitesMet(objective, team)) return [];
+    const point = objectiveWorldPoint(objective, map);
+    if (!point) return [];
+    const recentlyLost = lostObjectiveIds.has(objective.id);
+    const priority = recentlyLost ? 0
+      : objective.victory === true ? (objective.owner === enemyTeam ? 1 : 2)
+        : (objective.owner === enemyTeam ? 3 : 4);
+    return [{
+      id: objective.id,
+      point,
+      priority,
+      distance: (point.x - armyCenter.x) ** 2 + (point.z - armyCenter.z) ** 2,
+    }];
+  });
+  return candidates.sort((left, right) => (
+    left.priority - right.priority
+      || left.distance - right.distance
+      || left.id.localeCompare(right.id)
+  ))[0] || null;
+}
+
 /** Create a deterministic economy-and-tactics policy for an ordinary player seat. */
 export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
   if (!Number.isSafeInteger(seed)) throw new TypeError('Opponent seed must be a safe integer.');
   const normalizedSeed = seed >>> 0;
   const gatherAssignments = new Map();
-  let tacticsStarted = false;
+  const objectiveOwners = new Map();
+  const lostObjectiveIds = new Set();
+  let tacticalObjectiveId = null;
+  let fallbackTacticsStarted = false;
+
+  function recordObjectiveOwnership(observation) {
+    const objectives = Array.isArray(observation.objectives) ? observation.objectives : [];
+    const observedIds = new Set();
+    for (const objective of objectives) {
+      if (typeof objective?.id !== 'string' || !Number.isInteger(objective.owner)) continue;
+      observedIds.add(objective.id);
+      const previousOwner = objectiveOwners.get(objective.id);
+      if (previousOwner === observation.team && objective.owner !== observation.team) {
+        lostObjectiveIds.add(objective.id);
+      } else if (objective.owner === observation.team) {
+        lostObjectiveIds.delete(objective.id);
+      }
+      objectiveOwners.set(objective.id, objective.owner);
+    }
+    for (const id of objectiveOwners.keys()) {
+      if (!observedIds.has(id)) {
+        objectiveOwners.delete(id);
+        lostObjectiveIds.delete(id);
+      }
+    }
+  }
 
   function nextGatherCommands(observation) {
     const workers = observation.units.friendly
@@ -482,29 +564,46 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
       if (observation?.schemaVersion !== OPPONENT_OBSERVATION_SCHEMA_VERSION
         || !validTeam(observation.team)) throw new TypeError('Policy requires opponent observation schema v1.');
 
+      recordObjectiveOwnership(observation);
       const gathering = nextGatherCommands(observation);
       if (gathering.length > 0) return gathering;
 
-      if (!tacticsStarted) {
-        const soldiers = observation.units.friendly
-          .filter((unit) => unit.kind !== 'worker' && unit.hp > 0)
-          .map((unit) => unit.id)
-          .sort((left, right) => left - right);
-        if (soldiers.length > 0) {
-          const visibleTarget = observation.units.visibleEnemies
-            .filter((unit) => unit.hp > 0)
-            .sort((left, right) => left.id - right.id)[0];
-          tacticsStarted = true;
+      const soldiers = observation.units.friendly
+        .filter((unit) => unit.kind !== 'worker' && unit.hp > 0)
+        .sort((left, right) => left.id - right.id);
+      const objectives = Array.isArray(observation.objectives) ? observation.objectives : [];
+      const target = nearestObjective(
+        objectives, observation.team, soldiers, observation.map, lostObjectiveIds,
+      );
+      if (target) {
+        const mustReissue = target.id !== tacticalObjectiveId || lostObjectiveIds.has(target.id);
+        tacticalObjectiveId = target.id;
+        if (mustReissue) {
+          lostObjectiveIds.delete(target.id);
           return [{
             type: 'attackMove',
-            ids: soldiers,
-            x: visibleTarget?.x ?? 0,
-            z: visibleTarget?.z ?? 0,
+            ids: soldiers.map((unit) => unit.id),
+            x: target.point.x,
+            z: target.point.z,
           }];
         }
+        return [];
       }
 
-      return [];
+      tacticalObjectiveId = null;
+      if (objectives.length > 0 || fallbackTacticsStarted || soldiers.length === 0) return [];
+
+      const visibleTarget = observation.units.visibleEnemies
+        .filter((unit) => unit.hp > 0)
+        .sort((left, right) => left.id - right.id)[0];
+      fallbackTacticsStarted = true;
+      return [{
+        type: 'attackMove',
+        ids: soldiers.map((unit) => unit.id),
+        x: visibleTarget?.x ?? 0,
+        z: visibleTarget?.z ?? 0,
+      }];
+
     },
   };
 }

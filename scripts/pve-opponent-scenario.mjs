@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
+import { readFileSync } from 'node:fs';
 import { createServer } from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -20,11 +21,13 @@ import {
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const SERVER_PATH = path.join(ROOT, 'server.mjs');
+const FORKED_VALE_MAP = JSON.parse(readFileSync(path.join(ROOT, 'maps/forked-vale.json'), 'utf8'));
 const ENDPOINT = (port) => `ws://127.0.0.1:${port}/ws`;
 const CONNECT_TIMEOUT_MS = 15_000;
 const COMMAND_TIMEOUT_MS = 8_000;
 const ECONOMY_TIMEOUT_MS = 20_000;
 const TACTICS_TIMEOUT_MS = 15_000;
+const OBJECTIVE_CONTEST_TIMEOUT_MS = 45_000;
 const DECISION_INTERVAL_MS = 1_000;
 
 function setVisibility(cells, columns, rows) {
@@ -258,6 +261,102 @@ function verifyIdleWorkerEconomyLoop() {
     type: 'gather', ids: foodCommand.ids, nodeId: woodCommand.nodeId,
   }], 'idle workers use a visible stocked alternate when their resource type is exhausted');
   process.stdout.write('PvE economy policy passed: balanced idle-worker gathering, depletion reassignment, and retry deduplication.\n');
+}
+
+function verifyObjectiveContestPolicy() {
+  const { map: fixtureMap, state: fixtureState } = createResetFixture();
+  const map = {
+    ...FORKED_VALE_MAP,
+    resourceNodes: fixtureMap.resourceNodes,
+  };
+  const state = {
+    ...fixtureState,
+    mapId: map.id,
+    units: fixtureState.units.map((row) => {
+      const next = [...row];
+      if (next[1] === 0 && next[5] === 'infantry') {
+        next[2] = 0;
+        next[3] = -15.5;
+      }
+      return next;
+    }),
+  };
+  const policy = createDeterministicPolicy(DEFAULT_OPPONENT_SEED);
+  const targetAt = (observation, id) => {
+    const objective = observation.objectives.find((candidate) => candidate.id === id);
+    assert.ok(objective, `authored objective ${id} is present in the public observation`);
+    return {
+      x: objective.zone.column + objective.zone.width / 2 - map.width / 2,
+      z: objective.zone.row + objective.zone.height / 2 - map.height / 2,
+    };
+  };
+  const makeObservation = (tick, owners, units = state.units) => {
+    const objectives = map.triggers.map((trigger) => ({
+      id: trigger.id,
+      owner: owners[trigger.id] ?? -1,
+      progressTeam: -1,
+      progress: 0,
+      unitCounts: [0, 0],
+      victory: trigger.victory === true,
+      requires: trigger.requires ?? null,
+      requiredOwner: trigger.requires ? (owners[trigger.requires] ?? -1) : -1,
+      ...(Array.isArray(trigger.requiresAll) ? {
+        requiresAll: [...trigger.requiresAll],
+        requiredOwners: trigger.requiresAll.map((id) => owners[id] ?? -1),
+      } : {}),
+    }));
+    return toOpponentObservation({
+      ...state,
+      tick,
+      units,
+      objectives,
+    }, 0, map);
+  };
+  const onlyTactical = (commands) => commands.find(({ type }) => type === 'attackMove');
+
+  const opening = makeObservation(1, {});
+  assert.equal(policy.next(opening).filter(({ type }) => type === 'gather').length, 2,
+    'the bot completes its ordinary two-resource opening on Forked Vale');
+  const openingAdvance = onlyTactical(policy.next(opening));
+  assert.deepEqual({ x: openingAdvance?.x, z: openingAdvance?.z }, targetAt(opening, 'capture-zone-1'),
+    'the bot chooses the closest unlocked authored victory objective');
+
+  const gatheringUnits = state.units.map((row) => {
+    const next = [...row];
+    if (next[1] === 0 && next[5] === 'worker') next[9] = 'gathering';
+    return next;
+  });
+  const northHeld = makeObservation(2, { 'capture-zone-1': 0 }, gatheringUnits);
+  const southAdvance = onlyTactical(policy.next(northHeld));
+  assert.deepEqual({ x: southAdvance?.x, z: southAdvance?.z }, targetAt(northHeld, 'capture-zone-2'),
+    'after the first signal is held, the bot advances to the second unlocked signal');
+
+  const bothSignalsHeld = makeObservation(3, {
+    'capture-zone-1': 0,
+    'capture-zone-2': 0,
+  }, gatheringUnits);
+  const watchAdvance = onlyTactical(policy.next(bothSignalsHeld));
+  assert.deepEqual({ x: watchAdvance?.x, z: watchAdvance?.z }, targetAt(bothSignalsHeld, 'capture-zone-3'),
+    'the bot advances to Vale Watch only after both authored prerequisites are team-owned');
+
+  const lossDuringGather = state.units.map((row) => {
+    const next = [...row];
+    if (next[1] === 0 && next[5] === 'worker') next[9] = next[0] === 0 ? 'idle' : 'gathering';
+    if (next[0] === 4) next[4] = 0;
+    return next;
+  });
+  const northLost = makeObservation(25, {
+    'capture-zone-1': 1,
+    'capture-zone-2': 0,
+  }, lossDuringGather);
+  assert.ok(policy.next(northLost).some(({ type }) => type === 'gather'),
+    'the ordinary economy can emit a retry while ownership changes');
+  const retake = onlyTactical(policy.next(northLost));
+  assert.deepEqual(retake, {
+    type: 'attackMove', ids: [5], ...targetAt(northLost, 'capture-zone-1'),
+  }, 'after observing a lost signal, the surviving army retakes it with a normal attack-move');
+  assert.deepEqual(policy.next(northLost), [], 'the retake order is not duplicated for an unchanged observation');
+  process.stdout.write('PvE objective policy passed: Forked Vale opening, unlocked objective contest, gate progression, and retake after defeat.\n');
 }
 
 class FakeSocket {
@@ -1005,6 +1104,21 @@ async function runSeatSmoke(botTeam) {
       `team ${botTeam} balances its opening between food and wood`);
     assert.ok(gatherCommands.length >= 2, 'the policy preserves its opening gather orders');
     assert.equal(tacticalCommands.length, 1, 'the opening sends one tactical advance order');
+    const openingTactical = tacticalCommands.find(({ command }) => command.clientOrderToken === 3)?.command;
+    assert.ok(openingTactical, 'the first tactical command is the third validated order');
+    const openingObjective = initial.objectives.find((objective) => {
+      if (![-1, 1 - botTeam].includes(objective.owner)) return false;
+      const prerequisiteIds = Array.isArray(objective.requiresAll) ? objective.requiresAll
+        : typeof objective.requires === 'string' ? [objective.requires] : [];
+      const prerequisiteOwners = Array.isArray(objective.requiredOwners) ? objective.requiredOwners
+        : typeof objective.requires === 'string' ? [objective.requiredOwner] : [];
+      if (prerequisiteIds.length > 0 && (prerequisiteOwners.length !== prerequisiteIds.length
+        || prerequisiteOwners.some((owner) => owner !== botTeam))) return false;
+      const x = objective.zone.column + objective.zone.width / 2 - bot.welcome.map.width / 2;
+      const z = objective.zone.row + objective.zone.height / 2 - bot.welcome.map.height / 2;
+      return openingTactical.x === x && openingTactical.z === z;
+    });
+    assert.ok(openingObjective, 'the opening order targets an unlocked authored objective');
     for (const { command } of commands) {
       assert.equal(Object.hasOwn(command, 'team'), false, 'ordinary player commands do not carry a seat');
       assert.ok(Number.isSafeInteger(command.clientOrderToken), 'ordinary command acknowledgement token is present');
@@ -1028,6 +1142,14 @@ async function runSeatSmoke(botTeam) {
       });
     }, `team ${botTeam} tactical movement`, TACTICS_TIMEOUT_MS);
     const tactical = toOpponentObservation(tacticalState, botTeam, bot.welcome.map);
+
+    const contestedState = await waitForState(bot, (state) => {
+      const observation = toOpponentObservation(state, botTeam, bot.welcome.map);
+      const objective = observation.objectives.find(({ id }) => id === openingObjective.id);
+      return objective && objective.unitCounts[botTeam] > 0;
+    }, `team ${botTeam} entering ${openingObjective.id}`, OBJECTIVE_CONTEST_TIMEOUT_MS);
+    const contestedObjective = toOpponentObservation(contestedState, botTeam, bot.welcome.map)
+      .objectives.find(({ id }) => id === openingObjective.id);
 
     const foreignUnit = human.feed.latest.units.find((unit) => unit[1] === human.welcome.player.team);
     assert.ok(foreignUnit, 'the passive peer has a unit to use for the ownership rejection check');
@@ -1069,6 +1191,12 @@ async function runSeatSmoke(botTeam) {
       visibleResourceNodes: initial.resourceNodes.map(({ id }) => id),
       hiddenResourceNodesOmitted: allMapNodeIds.size - visibleNodeIds.size,
       economy: { food: economy.resources.food, wood: economy.resources.wood },
+      objective: {
+        id: openingObjective.id,
+        command: { x: openingTactical.x, z: openingTactical.z },
+        botUnitsInZone: contestedObjective.unitCounts[botTeam],
+        owner: contestedObjective.owner,
+      },
       tacticalUnitsMoved: tactical.units.friendly.filter((unit) => {
         const before = initialSoldierPositions.get(unit.id);
         return before && unit.kind !== 'worker'
@@ -1192,19 +1320,23 @@ async function runProposalCommandSmoke() {
 if (process.argv.includes('--policy-only')) {
   verifyPureContract();
   verifyIdleWorkerEconomyLoop();
+  verifyObjectiveContestPolicy();
   process.stdout.write('PvE policy-only checks passed.\n');
 } else if (process.argv.includes('--proposal-only')) {
   verifyPureContract();
   verifyIdleWorkerEconomyLoop();
+  verifyObjectiveContestPolicy();
   verifyProposalSchema();
   await verifyProposalController();
 } else if (process.argv.includes('--proposal-smoke-only')) {
   verifyPureContract();
   verifyIdleWorkerEconomyLoop();
+  verifyObjectiveContestPolicy();
   await runProposalCommandSmoke();
 } else {
   verifyPureContract();
   verifyIdleWorkerEconomyLoop();
+  verifyObjectiveContestPolicy();
   verifyProposalSchema();
   await verifyProposalController();
   await verifyLifecycleRecovery();
