@@ -3185,6 +3185,7 @@ function updateContextualCommands() {
     if (source.hasAttribute('aria-pressed')) button.setAttribute('aria-pressed', source.getAttribute('aria-pressed'));
     if (action === 'order-target-toggle') button.textContent = tapOrderArmed ? 'Cancel target' : building ? 'Set rally' : context.kind === 'workers' ? 'Gather / move' : 'Target battlefield';
     if (action.startsWith('train-')) {
+      button.setAttribute('aria-describedby', 'context-action-reason');
       const reason = !building?.complete ? 'Finish construction' : building.productionBlocked ? 'Clear spawn area'
         : source.disabled ? source.dataset.disabledReason || source.getAttribute('aria-label') : '';
       bar.querySelector('[data-context-reason]').textContent = button.hidden ? bar.querySelector('[data-context-reason]').textContent : reason;
@@ -3193,7 +3194,7 @@ function updateContextualCommands() {
   if (!building) bar.querySelector('[data-context-reason]').textContent = '';
   bar.querySelector('[data-context-build]').hidden = context.kind !== 'workers';
   bar.querySelector('[data-context-details]').hidden = context.kind === 'none';
-  bar.querySelector('[data-context-details]').textContent = building ? 'Queue / upgrade details' : 'Formation / route';
+  bar.querySelector('[data-context-details]').textContent = building ? 'Rally / upgrade details' : 'Formation / route';
   const research = bar.querySelector('[data-context-research]');
   research.hidden = !building;
   research.textContent = building ? `${ui.buildingRallyReadout.textContent} · ${ui.buildingResearchReadout.textContent}` : '';
