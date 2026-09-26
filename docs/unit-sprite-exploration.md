@@ -2,7 +2,7 @@
 
 ## Recommendation
 
-On 26 September 2026, the user selected painterly cutout sprites as the unit-art direction and asked to pause new 3D unit-art exploration. The normal game path still uses its current instanced 3D placeholders and role markers; this exploration adds an opt-in Worker preview with `?workerSpritePreview=1`. Building-art choices remain a separate lane.
+On 26 September 2026, the user selected painterly cutout sprites as the unit-art direction and asked to pause new 3D unit-art exploration. The normal game path still uses its current instanced 3D placeholders and role markers; this exploration adds an opt-in full-roster preview with `?unitSpritePreview=1` and a Worker-only comparison with `?workerSpritePreview=1`. Building-art choices remain a separate lane.
 
 The choice fits the project's existing environment art: painted transparent cutouts already sit on camera-facing planes, and the battlefield uses a fixed oblique orthographic camera. A 2D illustration can spend its effort on silhouette, materials, and team accents without requiring the team to become proficient Blender modelers.
 
@@ -25,14 +25,14 @@ All three RGBA atlases are about 1.4 MB on disk apiece. Their combined decoded p
 
 ## Local game preview — 26 September 2026
 
-The first Worker atlas consumer is wired into the local renderer. Add `?workerSpritePreview=1` to the game URL to replace only Workers with batched camera-facing sprites at both play and strategic zoom; Infantry and Archer retain the current renderer. The normal game URL keeps the existing unit presentation. Fog filtering continues to come from the current unit visibility state. Worker facing, walking, gathering/building, and defeat select the matching directional atlas clips.
+The local renderer has an opt-in three-role atlas preview: add `?unitSpritePreview=1` to replace Worker, Infantry, and Archer with batched camera-facing sprites; `?workerSpritePreview=1` retains a Worker-only comparison. The normal game URL keeps the existing unit presentation. Fog filtering continues to come from each unit's visibility state. The atlas runtime maps facing, walking, role action, and defeat to directional clips for all three roles. Team/role LOD glyphs remain visible below zoom 0.6 while strategic sprite readability is being evaluated.
 
-The `renderer-appearance-lod` game-dev run completed on both Meadow and Cinder, for Azure and Ember clients at zoom 0.91 and 0.48: [capture manifest](../assets/generated/.game-dev/runs/run_1790448685854_c83d72220eb843e2ac0630e70ce256d5/capture.json), [Meadow at play zoom](../assets/generated/.game-dev/runs/run_1790448685854_c83d72220eb843e2ac0630e70ce256d5/frames/01-meadow-azure-zoom-091.png). This confirms the earlier Worker pack rendered in the actual game camera at both zooms while other roles kept their current presentation. The capture predates the broadened Worker garment-tint mask and remains static; it does not verify movement or action transitions. The current opt-in wiring maps Worker facing, walking, gathering/building, and defeat to directional clips, but the updated tint and transitions still need a fresh in-game capture.
+An all-role `renderer-appearance-lod` capture now covers Meadow and Cinder, both teams, and zooms 0.91 and 0.48: [capture manifest](../assets/generated/.game-dev/runs/run_unit_sprite_roster_markers_20260926/capture.json), [Meadow/Azure at play zoom](../assets/generated/.game-dev/runs/run_unit_sprite_roster_markers_20260926/frames/01-meadow-azure-zoom-091.png), and [Cinder/Ember at strategic zoom](../assets/generated/.game-dev/runs/run_unit_sprite_roster_markers_20260926/frames/08-cinder-ember-zoom-048.png). All three sprite atlases load in the actual game renderer for both fog-filtered clients. The wide 64×64 review map makes the sprites small at play zoom; strategic team/role glyphs remain as a fallback. This capture is static and does not verify movement or action transitions, and it is not a performance measurement.
 
 ## Next production slice
 
-1. Review Worker scale, ground pivot, facing, and team tint in the local game view; compare both teams against light and dark terrain before widening the pilot. Keep v2 out of the renderer until its edge contamination is cleaned up.
-2. Observe walking and gather/build transitions during orders, then extend the two-frame walk or work poses where the game view needs more motion. Capture military attacks and defeat when enabling the other roles.
+1. Review all three roles' scale, ground pivot, facing, and team tint at both zooms and against light and dark terrain. Keep Worker v2 out of the renderer until its edge contamination is cleaned up.
+2. Observe walking, Worker gather/build, military attacks, and defeat transitions under live orders; extend the two-frame walk or action sequences where the game view needs more motion.
 3. Measure a 2,000-unit browser run before attributing a speedup to sprites. Blender is not a prerequisite for new unit art.
 
 The paused GLB unit exploration remains separate. Existing files are retained as historical samples; this sprite pilot does not make a runtime production switch until the integrated art is visible and reviewed in game.
@@ -41,8 +41,8 @@ The paused GLB unit exploration remains separate. Existing files are retained as
 
 - **Direction:** continue with painterly directional sprites for units. This fits the fixed oblique camera and avoids making Blender modeling a prerequisite.
 - **Ready to inspect:** the three source atlases and [`sprite-animation-test.html`](../assets/units/sprite-animation-test.html) show all roles walking and performing their main actions. The page is an illustrative mock battlefield, not proof of game behavior.
-- **In-game scope:** `?workerSpritePreview=1` opts only Workers into the batched atlas renderer. Infantry and Archer still use the existing presentation; the normal URL is unchanged. The Worker v1 pack is the pilot input.
+- **In-game scope:** `?unitSpritePreview=1` opts all three roles into the batched atlas renderer; `?workerSpritePreview=1` selects only the Worker for comparison. The normal URL is unchanged. Worker v1 is the runtime input; Worker v2 remains parked.
 - **What looks promising:** eight directional columns preserve more turns than four, role equipment reads in the sheets, gray8 masks separate team color from the authored art, and deterministic packing makes frame/pivot metadata repeatable.
-- **What remains weak:** eight facings are approximate, walk loops have only two frames, action poses are short/static, and direction-to-direction anatomy is not perfectly consistent. The Worker v2 pass has conspicuous colored edge contamination. No 2,000-unit performance claim has been measured.
-- **Next decision:** look at the opt-in Worker in a fresh game capture at play and strategic zoom, then decide whether to clean/revise the source and integrate the military roles or leave this as a source-art direction checkpoint. Do not describe it as the production renderer until that visual review is done.
+- **What remains weak:** eight facings are approximate, walk loops have only two frames, action poses are short/static, and direction-to-direction anatomy is not perfectly consistent. The 64×64 game capture reads small at play zoom; the Worker v2 pass has conspicuous colored edge contamination. No 2,000-unit performance claim has been measured.
+- **Next decision:** assess the all-role game capture at ordinary and strategic zoom, then correct sprite scale/readability and source issues before changing the default renderer. Do not describe it as production-ready until that visual review is done.
 - **Repeatable pack check:** `node scripts/validate-unit-sprite-atlas.mjs assets/units/<role>-sprite-v1/manifest.json`; use `worker-sprite-v2/manifest.json` only to inspect that parked alternative.

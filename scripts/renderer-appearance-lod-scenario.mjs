@@ -612,7 +612,7 @@ async function run() {
   try {
     const maps = await writeReviewMaps(customMapDirectory);
     const serverPort = await reservePort();
-    const gameUrl = `http://127.0.0.1:${serverPort}/?workerSpritePreview=1`;
+    const gameUrl = `http://127.0.0.1:${serverPort}/?unitSpritePreview=1`;
     server = startChild('server', process.execPath, [SERVER_ENTRY], {
       env: {
         ...process.env,

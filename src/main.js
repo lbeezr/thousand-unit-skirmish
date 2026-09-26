@@ -81,8 +81,9 @@ const MAX_SCENARIO_EVENT_REPEATS = 20;
 const MIN_SCENARIO_EVENT_REPEAT_SECONDS = 5;
 const CAMERA_EDGE_ZONE_PX = 28;
 const CAMERA_EDGE_SPEED_PX_PER_SECOND = 420;
-// The opt-in Worker sprite pilot leaves the normal 3D/marker renderer unchanged.
+// Keep instanced 3D units as the default; sprite previews are selected by URL flags.
 const UNIT_LOD_ZOOM_THRESHOLD = 0.91;
+const UNIT_SPRITE_MARKER_ZOOM_THRESHOLD = 0.6;
 const MAX_OBJECTIVE_FOOD_REWARD = 10000;
 const MAX_TRIGGER_UNIT_REWARD = 25;
 const WORKERS_PER_TEAM = 4;
@@ -129,6 +130,11 @@ const minimapFogContext = minimapFogCanvas.getContext('2d');
 const objectivePanel = document.querySelector('#objective-panel');
 const roomPageUrl = new URL(window.location.href);
 const workerSpritePreview = roomPageUrl.searchParams.get('workerSpritePreview') === '1';
+const unitSpritePreview = roomPageUrl.searchParams.get('unitSpritePreview') === '1';
+const unitSpritePreviewRoles = unitSpritePreview
+  ? ['worker', 'infantry', 'archer']
+  : workerSpritePreview ? ['worker'] : [];
+const unitSpritePreviewRoleSet = new Set(unitSpritePreviewRoles);
 const ROOM_ID = roomPageUrl.searchParams.get('room');
 const HAS_ROOM_PARAMETER = roomPageUrl.searchParams.has('room');
 const ROOM_ID_PATTERN = /^[A-Za-z0-9_-]{32}$/;
@@ -397,10 +403,11 @@ const unitLodDirtyRoleMasks = [0, 0];
 const unitLodTeamDirty = [false, false];
 let unitLowDetailActive = false;
 let unitSpriteReady = false;
-let unitWorkerSpriteActive = false;
+let unitSpritePreviewActive = false;
+let unitSpriteMarkersActive = false;
 const unitSpriteRuntime = createUnitSpriteRuntime({
   THREE, scene, capacity: MAX_PER_TEAM, teamHex: TEAM_HEX, cameraQuaternion: camera.quaternion,
-  roles: workerSpritePreview ? ['worker'] : [],
+  roles: unitSpritePreviewRoles,
 });
 unitSpriteRuntime.ready.then((loaded) => {
   if (!loaded) return;
@@ -2471,7 +2478,7 @@ function setUnitInstanceCount(team, count) {
 }
 
 function markUnitInstanceMatricesDirty(team) {
-  if (unitWorkerSpriteActive) unitSpriteRuntime.markTeamDirty(team);
+  if (unitSpritePreviewActive) unitSpriteRuntime.markTeamDirty(team);
   if (unitLowDetailActive) {
     const dirtyRoles = unitLodDirtyRoleMasks[team];
     for (const role of UNIT_LOD_ROLES) {
@@ -2492,8 +2499,10 @@ function markUnitInstanceMatricesDirty(team) {
 
 function syncUnitDetailLevel() {
   const useLowDetail = zoom <= UNIT_LOD_ZOOM_THRESHOLD;
-  const useWorkerSprites = workerSpritePreview && unitSpriteReady;
-  if (useLowDetail === unitLowDetailActive && useWorkerSprites === unitWorkerSpriteActive) return;
+  const useUnitSprites = unitSpritePreviewRoles.length > 0 && unitSpriteReady;
+  const useSpriteMarkers = useUnitSprites && zoom <= UNIT_SPRITE_MARKER_ZOOM_THRESHOLD;
+  if (useLowDetail === unitLowDetailActive && useUnitSprites === unitSpritePreviewActive
+    && useSpriteMarkers === unitSpriteMarkersActive) return;
   const restoreFullDetailTint = unitLowDetailActive && !useLowDetail;
   for (const pair of unitArtMeshes) {
     pair.forEach((mesh) => { mesh.visible = !useLowDetail; });
@@ -2502,8 +2511,9 @@ function syncUnitDetailLevel() {
     for (const mesh of team) mesh.visible = useLowDetail;
   }
   unitLowDetailActive = useLowDetail;
-  unitWorkerSpriteActive = useWorkerSprites;
-  unitSpriteRuntime.setVisible(useWorkerSprites);
+  unitSpritePreviewActive = useUnitSprites;
+  unitSpriteMarkersActive = useSpriteMarkers;
+  unitSpriteRuntime.setVisible(useUnitSprites);
   const now = performance.now();
   for (const unit of units) {
     if (!unit) continue;
@@ -2739,8 +2749,8 @@ function updateUnitTransform(unit, now = performance.now()) {
     : unit.defeatStartedAt > 0 ? unit.scale * (1 - defeatProgress) : 0;
   const isWorker = unit.kind === 'worker';
   const isArcher = unit.kind === 'archer';
-  if (unitWorkerSpriteActive && isWorker) {
-    updateUnitLodTransform(unit, 0);
+  if (unitSpritePreviewActive && unitSpritePreviewRoleSet.has(unit.kind)) {
+    updateUnitLodTransform(unit, unitSpriteMarkersActive ? visibleScale : 0);
     dummy.position.set(unit.renderX, 0, unit.renderZ);
     dummy.quaternion.identity();
     dummy.scale.set(0, 0, 0);
