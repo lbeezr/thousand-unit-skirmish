@@ -165,7 +165,9 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
     ambienceSource.start();
   }
 
-  function tone(frequency, start, duration, { wave = 'sine', gain = 0.2, endFrequency = frequency, destination = effects } = {}) {
+  function tone(frequency, start, duration, {
+    wave = 'sine', gain = 0.2, endFrequency = frequency, destination = effects, percussive = false,
+  } = {}) {
     if (!context || voiceCount >= voiceLimit) return;
     voiceCount++;
     let oscillator;
@@ -177,7 +179,8 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
       oscillator.frequency.setValueAtTime(frequency, start);
       oscillator.frequency.exponentialRampToValueAtTime(Math.max(1, endFrequency), start + duration);
       envelope.gain.setValueAtTime(0.0001, start);
-      envelope.gain.exponentialRampToValueAtTime(Math.max(0.0002, gain), start + Math.min(0.018, duration * 0.25));
+      const attackTime = percussive ? Math.min(0.003, duration * 0.12) : Math.min(0.018, duration * 0.25);
+      envelope.gain.exponentialRampToValueAtTime(Math.max(0.0002, gain), start + attackTime);
       envelope.gain.exponentialRampToValueAtTime(0.0001, start + duration);
       oscillator.connect(envelope);
       envelope.connect(destination);
@@ -279,9 +282,10 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
       case 'select': tone(620, at, 0.055, { endFrequency: 780, gain: 0.13 }); break;
       case 'move': tone(310, at, 0.09, { wave: 'triangle', endFrequency: 390, gain: 0.19 }); break;
       case 'attack':
-        noiseBurst(at, 0.045, { centerFrequency: 1550, gain: 0.045 });
-        tone(260, at, 0.11, { wave: 'triangle', endFrequency: 205, gain: 0.23 });
-        tone(490, at + 0.025, 0.07, { endFrequency: 370, gain: 0.1 });
+        noiseBurst(at, 0.028, { centerFrequency: 420, gain: 0.025 });
+        tone(260, at, 0.11, { wave: 'triangle', endFrequency: 205, gain: 0.18, percussive: true });
+        tone(490, at + 0.008, 0.085, { endFrequency: 370, gain: 0.07, percussive: true });
+        noiseBurst(at + 0.018, 0.045, { centerFrequency: 1550, gain: 0.018 });
         break;
       case 'gather': tone(420, at, 0.07, { wave: 'triangle', endFrequency: 550, gain: 0.14 }); break;
       case 'rally':

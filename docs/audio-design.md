@@ -75,7 +75,7 @@ The wind texture now draws from a 12-second procedural buffer and crossfades its
 
 ## Command texture · 26 September 2026
 
-Attack and build acknowledgements now layer a quiet, short bandpass-noise transient under their existing pitched cues. One deterministic 90 ms noise buffer is generated lazily and reused; the attack and build filters emphasize different bands. This adds tactile weight without downloading or licensing samples. Transients have their own two-source cap and do not reduce the twelve-voice tonal budget. Listening across speakers remains needed to judge the blend.
+The attack acknowledgement now has a sharper 3 ms onset and fast descending two-tone woodlike twang, with a quiet low impact and a brief airy noise tail. The build acknowledgement keeps its softer single transient. Both reuse one deterministic 90 ms noise buffer; transients have their own two-source cap and do not reduce the twelve-voice tonal budget. This stays local to Web Audio with no runtime download or asset license. Listening across speakers remains needed to judge the blend.
 
 ## Silent output state · 26 September 2026
 
