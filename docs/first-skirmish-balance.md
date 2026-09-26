@@ -3,7 +3,7 @@
 Status: early tuning; no numeric change is justified. QA reran the combat
 parity fixture on local `main` at `fcc7bcac` on 26 September 2026. The
 Forked Vale production opening was last run at `4930a81`; its map, runner,
-and relevant economy logic are unchanged through current `main` at `2871a43`,
+and relevant economy logic are unchanged through current `main` at `71c41fb`,
 but that remains prior-run evidence. This is a test plan and evidence record,
 not a claim that the skirmish is balanced. Scope follows the
 working Game Bible and RTS Feature Coverage Inventory, maintained by the
@@ -367,10 +367,10 @@ The handoff associates the result with the retained JSON at
 `/private/tmp/rts-balance-seat-parity-4930a.log` (SHA-256
 `e317187ac48e85b777edbf0be58146ce4daa1c431d77aa43033a18db0c911a6c`). The
 JSON does not embed the source commit, so the run-to-commit association comes
-from QA's report. Current `main` is `2871a43`; the combat code, Forked Vale
+from QA's report. Current `main` is `71c41fb`; the combat code, Forked Vale
 map, and scenario are unchanged from `fcc7bcac`. The last production-opening
 run remains `4930a81`; the tested map, runner, and relevant economy logic are
-unchanged through `2871a43`, but no post-#63 opening rerun is claimed here.
+unchanged through `71c41fb`, but no post-#63 opening rerun is claimed here.
 
 ## Current tuning decision
 
@@ -378,7 +378,7 @@ The current scripted evidence supports keeping combat damage, unit costs, and
 build times unchanged. The post-#63 QA recheck still passes the seat-parity
 bounds, but its repeatable +X edge is a fairness note rather than a stat-tuning
 trigger. The Forked Vale production opening remains symmetric in its latest
-4930a81 run, and the relevant rules remain unchanged on current `main`; neither
+4930a81 run, and the relevant rules remain unchanged through `71c41fb`; neither
 fixture establishes which opening wins contested matches.
 
 ## Next tuning decisions
@@ -388,11 +388,28 @@ fixture establishes which opening wins contested matches.
   first reinforcement, first contest, and win times, plus the chosen openings
   and player explanations. Keep the synthetic within-threshold +X edge as a
   test note; do not use it alone to change costs or combat stats.
+- When the 160 × 160 Frontier pilot is playable, compare observed two-seat
+  matches from both seats. Record first meaningful contact, first expansion,
+  resource stock and use by region, objective travel from each spawn, and the
+  routes players choose. Check whether each seat can still use two distinct
+  viable routes to expand or contest. Use those match timings and outcomes to
+  evaluate the existing 15-minute scenario deadline and other compact-map
+  timers; change them only when observed pacing shows they no longer fit,
+  rather than carrying compact-map timing over mechanically.
 - When the Highland Grove pilot is playable, compare coffee-grove control
   with ordinary economy/objective openings from both seats. Record first
   control, harvest/exchange totals, route and protection choices, whether the
   first control snowballs, contest/win times, and player explanations. Treat the
   experiment's proposed trade values as hypotheses, not tuning commitments.
+- Treat the elevation prototype's 15% one-level uphill edge cost as a trial
+  value. Verify it changes clear routes as well as A* detours: current main
+  returns an unobstructed Manhattan route before running A*, so weighted
+  terrain must account for that shortcut. For sight, I recommend a fixed
+  8.5-cell radius on elevated sources as the first small trial, with no
+  per-level or per-unit stacking. Current 8-cell sight covers 197 grid cells;
+  8.5 covers 225 (about 14% more), while 9 covers 253 (about 28% more), before
+  blockers. Compare visibility and first contact from both seats; treat the
+  values as experiment settings, not balance findings.
 - In contested matches, record worker losses, raids, and the response that
   punished or protected the economy. Keep the equal-cost 4v4 fixture as a
   regression; change worker damage only if workers substitute for infantry or
