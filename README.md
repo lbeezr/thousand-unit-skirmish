@@ -15,6 +15,10 @@ npm start
 
 The browser loads Three.js from this server at `/vendor/three.module.js`. `npm test` checks JavaScript syntax, game scenarios, room isolation, and the guarded Railway release path.
 
+## Building art review
+
+Open **Match Controls → Building Variant Atlas** to compare the preferred Meshy model-and-capture workflow with current sprites and other building states. The Town Center's four lifecycle images remain concepts until each has a separate Meshy model and review.
+
 For a reproducible container release, run `npm ci`, `npm test`, then `npm run release:pack` from a reviewed, committed checkout. The packer copies the Dockerfile's local `COPY` sources into a temporary directory and prints the source commit and a content digest. It refuses uncommitted changes; `--allow-dirty` is reserved for disposable local tests. CI verifies that a clean checkout can produce this package.
 
 ## Railway playtest deployment

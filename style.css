@@ -183,6 +183,7 @@ h2 { font-size: 16px; font-weight: 700; }
 .map-studio-open span { float: right; color: var(--lime); }
 .map-studio-open:hover:not(:disabled) { border-color: rgba(213,239,120,.48); color: var(--lime); background: rgba(213,239,120,.08); }
 .map-studio-open:disabled { opacity: .4; cursor: not-allowed; }
+.building-map-open { display: block; text-decoration: none; }
 .selection-section { padding-bottom: 13px; }
 .selection-pip { width: 5px; height: 5px; border-radius: 50%; background: #596b5b; }
 .selection-count { display: flex; align-items: baseline; gap: 7px; margin: 10px 0 12px; }
