@@ -106,7 +106,7 @@ PR #101 adds a six-trial, guess-before-reveal recognition check for move, attack
 
 PR #95's Verify Node 24 job failed before runner assignment: the job API reported runner ID 0, no runner name, and no steps, so no assertions ran. PR #96's CI result was not verified.
 
-The GitHub recheck confirmed PR #100 remains open and draft at head `f006b32`; its Verify Node 24 job failed before runner assignment (`runner_id: 0`, empty runner name, no steps; run `36257640261`, job `108447340471`). Merged PRs #111, #112, and #114 likewise show failed Verify Node 24 jobs with runner ID 0 and no steps (runs `36257253682`, `36257345808`, and `36257519987`). These jobs ran no assertions. The refreshed QA commit will trigger a new PR #100 check; its result is not yet available.
+After the `04a1e2e` checkpoint push, PR #100 remained open and draft; its Verify Node 24 job failed before runner assignment (`runner_id: 0`, empty runner name, no steps; run `36259378043`, job `108452139562`). The earlier `f006b32` run also failed before runner assignment (run `36257640261`, job `108447340471`). Merged PRs #111, #112, and #114 likewise show failed Verify Node 24 jobs with runner ID 0 and no steps (runs `36257253682`, `36257345808`, and `36257519987`). These jobs ran no assertions. The failure is infrastructure allocation evidence and does not establish that assertions passed or failed.
 
 PR #117's Verify Node 24 job also failed before runner assignment (run `36259032985`, job `108451182363`, runner ID 0, no steps). Its Map Studio round-trip scenario therefore has no CI result. The script `node scripts/frontier-160-map-studio-roundtrip.mjs` uses a temporary local map directory and Chrome profile; QA has not run it or verified the merged feature in a browser.
 
