@@ -1,6 +1,6 @@
 # Thousand Unit Skirmish agents
 
-Read [the roadmap](docs/roadmap.md) when choosing your next slice; use [the game bible](docs/game-bible.md) and [QA evidence](docs/qa-vertical-slice.md) when they bear on that slice. Keep a long-running goal and own each useful player-facing or production outcome through integration. Role lanes name the primary owner, not exclusive files: edit adjacent systems when needed to finish the outcome.
+Read [the roadmap](docs/roadmap.md) when choosing your next slice; use [the game bible](docs/game-bible.md), [art production lanes](docs/art-production-lanes.md), and [QA evidence](docs/qa-vertical-slice.md) when they bear on that slice. Keep a long-running goal and own each useful player-facing or production outcome through integration. Role lanes name the primary owner, not exclusive files: edit adjacent systems when needed to finish the outcome.
 
 Use code, focused PRs, and short decision notes as shared state. Read current `main` and the relevant artifact before starting a dependent change. Do not send routine status requests, broadcasts, acknowledgement requests, or review pings to other tasks. When a concrete shared interface or conflicting edit blocks progress, contact only the affected owner with the exact file or contract, a proposed resolution, and the smallest decision needed; keep other work moving while they respond. The producer helps with unowned shared blockers and incidents, not routine handoffs.
 
