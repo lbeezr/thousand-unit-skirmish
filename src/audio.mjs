@@ -50,9 +50,15 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
   let duckTimer = null;
   const lastCueAt = new Map();
 
+  function hasAudibleOutput() {
+    return settings.enabled && settings.volume > 0
+      && (settings.effectsLevel > 0 || (settings.ambience && settings.ambienceLevel > 0));
+  }
+
   function status() {
     if (!(globalThis.AudioContext || globalThis.webkitAudioContext)) return 'unavailable';
     if (!settings.enabled || settings.volume <= 0) return 'muted';
+    if (settings.effectsLevel <= 0 && (!settings.ambience || settings.ambienceLevel <= 0)) return 'silent';
     return context?.state || 'waiting';
   }
 
@@ -227,13 +233,13 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
   }
 
   function unlock() {
-    if (!settings.enabled || settings.volume <= 0 || doc?.hidden) return;
+    if (!hasAudibleOutput() || doc?.hidden) return;
     if (!context && !makeContext()) return;
     if (context.state === 'suspended') context.resume().then(emitStatus).catch(() => {});
   }
 
   function play(cue) {
-    if (!settings.enabled || settings.volume <= 0 || doc?.hidden) return false;
+    if (!settings.enabled || settings.volume <= 0 || settings.effectsLevel <= 0 || doc?.hidden) return false;
     if (!context || context.state === 'closed' || !(cue in COOLDOWN_MS)) return false;
     const now = performance.now();
     if (now - (lastCueAt.get(cue) ?? -Infinity) < COOLDOWN_MS[cue]) return false;
@@ -322,7 +328,7 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
     };
     save();
     applyLevels();
-    if (settings.enabled && settings.volume > 0) unlock();
+    if (hasAudibleOutput()) unlock();
     else context?.suspend().catch(() => {});
     emitStatus();
     return { ...settings };
@@ -331,7 +337,7 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
   function onVisibilityChange() {
     if (!context) return;
     if (doc?.hidden) context.suspend().then(emitStatus).catch(() => {});
-    else if (settings.enabled && settings.volume > 0) context.resume().then(emitStatus).catch(() => {});
+    else if (hasAudibleOutput()) context.resume().then(emitStatus).catch(() => {});
   }
   doc?.addEventListener?.('visibilitychange', onVisibilityChange);
 

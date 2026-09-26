@@ -6566,6 +6566,7 @@ function syncAudioControls() {
     || settings.effectsLevel <= 0;
   ui.audioStatus.textContent = {
     running: 'SOUND READY', waiting: 'SOUND STARTS WITH FIRST INPUT', muted: 'SOUND MUTED',
+    silent: 'NO AUDIBLE CHANNELS',
     unavailable: 'AUDIO UNAVAILABLE IN THIS BROWSER', suspended: 'TAP TO RESUME AUDIO',
     interrupted: 'AUDIO INTERRUPTED', closed: 'AUDIO UNAVAILABLE',
   }[status] || 'SOUND STARTS WITH FIRST INPUT';

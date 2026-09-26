@@ -72,3 +72,7 @@ The wind texture now draws from a 12-second procedural buffer and crossfades its
 ## Command texture · 26 September 2026
 
 Attack and build acknowledgements now layer a quiet, short bandpass-noise transient under their existing pitched cues. One deterministic 90 ms noise buffer is generated lazily and reused; the attack and build filters emphasize different bands. This adds tactile weight without downloading or licensing samples. Transients have their own two-source cap and do not reduce the twelve-voice tonal budget. Listening across speakers remains needed to judge the blend.
+
+## Silent output state · 26 September 2026
+
+When overall audio is enabled but both effects and ambience output are set to zero, the settings status reports `NO AUDIBLE CHANNELS` and the audio context stays suspended. Effects cues are not scheduled when the effects level is zero, so silent alerts do not duck audible ambience.
