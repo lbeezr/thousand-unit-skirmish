@@ -1,0 +1,250 @@
+{
+  "schemaVersion": 1,
+  "packId": "town-center-sprite-v1",
+  "packVersion": "1.0.0",
+  "maturity": "runtime-candidate",
+  "provenance": {
+    "license": "project-owned; original AI-generated artwork",
+    "source": "Original Town Center source frames and unchanged sprite-grid.json; team runtime variants from the existing pack.",
+    "authoringTool": "OpenAI ImageGen; Pillow source normalization and team recolor; WebP packaging.",
+    "notes": "1 static state(s): complete. The current Town Center is a decorative spawn landmark and has no gameplay footprint. The [320, 376] projected ground-center pivot is an unreviewed estimate. Fixed 45\u00b0 azimuth; no per-pixel depth; renderer integration remains pending."
+  },
+  "files": [
+    {
+      "id": "complete-source-original",
+      "path": "source/town-center-complete.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "7b69eff0c2fdb033248b8ae606b3d9fae0ff593e2423002d93fbf3f9b5cae8a5",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "complete-source-grid",
+      "path": "source/normalized/town-center-complete.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "755a556e163eb71f6846a76410dabdc1f2104c43b5e6780765819b4e99601152",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "complete-azure-runtime",
+      "path": "runtime/town-center-complete-azure.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "9905ce978102a194db384356e6f3bcad2ba03144e24b2b09375dcccfbf11590e",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "complete-ember-runtime",
+      "path": "runtime/town-center-complete-ember.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "9cc174d22a53cb4b66b351bf3a10eaf7b0d3f484dc86b5098ca600248b90845b",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    }
+  ],
+  "pages": [
+    {
+      "id": "complete-azure-page",
+      "sourceFileId": "complete-source-grid",
+      "runtimeFileId": "complete-azure-runtime",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    },
+    {
+      "id": "complete-ember-page",
+      "sourceFileId": "complete-source-grid",
+      "runtimeFileId": "complete-ember-runtime",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    }
+  ],
+  "assets": [
+    {
+      "id": "town-center",
+      "kind": "building",
+      "artBoundsWorld": {
+        "min": [
+          -2.5,
+          0,
+          -2.5
+        ],
+        "max": [
+          2.5,
+          5,
+          2.5
+        ]
+      },
+      "heightWorld": 5,
+      "sortAnchorWorld": [
+        0,
+        0,
+        0
+      ],
+      "layers": [
+        {
+          "id": "building",
+          "drawLayer": "midground",
+          "batchKey": "building.town-center",
+          "depthBiasWorld": 0
+        }
+      ],
+      "frames": [
+        {
+          "id": "complete-azure",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 376
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 43,
+            "y": 64,
+            "width": 556,
+            "height": 571
+          },
+          "fallbackRectPx": {
+            "pageId": "complete-azure-page",
+            "rectPx": {
+              "x": 0,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "building",
+              "pageId": "complete-azure-page",
+              "rectPx": {
+                "x": 0,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "complete-ember",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 376
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 43,
+            "y": 64,
+            "width": 556,
+            "height": 571
+          },
+          "fallbackRectPx": {
+            "pageId": "complete-ember-page",
+            "rectPx": {
+              "x": 0,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "building",
+              "pageId": "complete-ember-page",
+              "rectPx": {
+                "x": 0,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        }
+      ],
+      "clips": [
+        {
+          "stateId": "complete",
+          "teamId": "azure",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "complete-azure",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "complete",
+          "teamId": "ember",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "complete-ember",
+              "durationMs": 1000
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

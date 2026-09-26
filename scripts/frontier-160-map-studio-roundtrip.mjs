@@ -428,6 +428,7 @@ try {
 
   const legacyMap = JSON.parse(await readFile(path.join(ROOT, 'maps/stone-pass.json'), 'utf8'));
   const frontierMap = JSON.parse(await readFile(path.join(ROOT, 'maps/frontier-160.json'), 'utf8'));
+  const highlandGroveMap = JSON.parse(await readFile(path.join(ROOT, 'maps/highland-grove.json'), 'utf8'));
   const elevationFixture = {
     ...legacyMap,
     id: 'elevation-brush-roundtrip',
@@ -480,6 +481,7 @@ try {
     },
   });
   const frontierExport = await roundTripMap(frontierMap, downloadsDirectory);
+  const highlandGroveExport = await roundTripMap(highlandGroveMap, downloadsDirectory);
 
   console.log(JSON.stringify({
     status: 'passed',
@@ -496,6 +498,15 @@ try {
     frontierObjectives: frontierExport.triggers.length,
     frontierElevationLevels: [...new Set(buildElevationGrid(
       frontierExport.width, frontierExport.height, frontierExport.elevationPatches,
+    ))],
+    highlandGroveMap: highlandGroveExport.id,
+    highlandGroveDimensions: `${highlandGroveExport.width} × ${highlandGroveExport.height}`,
+    highlandGrovePlaceholder: highlandGroveExport.resourceNodes.find(
+      node => node.id === 'highland-coffee-placeholder',
+    ),
+    highlandGroveObjectives: highlandGroveExport.triggers.map(trigger => trigger.id),
+    highlandGroveElevationLevels: [...new Set(buildElevationGrid(
+      highlandGroveExport.width, highlandGroveExport.height, highlandGroveExport.elevationPatches,
     ))],
   }, null, 2));
 } catch (error) {

@@ -12,14 +12,19 @@ probe first ran on exact main source
 `c9e4791885f2a7d569dcd42cf6ea086465834590` after PR #124; `server.mjs` and
 Forked Vale's map are byte-identical to the original tested commit. The
 current main later advanced through PR #129 to `97b8587`; `server.mjs` and the
-map remain byte-identical there as well. The intervening map-utils change only
-adds optional elevation helpers; existing flat-map path functions are
-unchanged.
-All runs used Node `v24.9.0` on macOS arm64. Scripted checks are not human
-match evidence and do not establish that the skirmish is balanced. Scope
-follows the working Game Bible and RTS Feature Coverage Inventory, maintained
-by the product team: one complete invite-first 1v1 scenario with a small
-roster. Large armies remain a separate stress workload.
+map remained byte-identical there. PR #132 then changed attack-move target
+reacquisition and spacing while units attack, gather, or build. The current
+merged-main recheck at `1f100897923e3befbbe9d8dbd81d880a500b9db4` is recorded
+below. PR #131 later added elevation-aware pathing and sight. Direct combat
+parity and production-opening checks were rerun on current main
+`117284e2c71469fcbeb669ddfa32a1eea65aa258`; Forked Vale has no elevation
+patches, so those checks exercise its flat-map rules.
+Local scenario runs used Node `v24.9.0` on macOS arm64; the current-main CI
+recheck used the GitHub Node 24 runner. Scripted checks are not human match
+evidence and do not establish that the skirmish is balanced. Scope follows the
+working Game Bible and RTS Feature Coverage Inventory, maintained by the
+product team: one complete invite-first 1v1 scenario with a small roster. Large
+armies remain a separate stress workload.
 
 ## Baseline found in the prototype
 
@@ -553,27 +558,126 @@ The four-case result summary JSON is committed at
 The exact runner stdout from which it was summarized had SHA-256
 `e4763f92ff6c1108ad2e8809971b34f3b21ebdb091562e3fb756635d80373515`.
 
+## Revalidation after attack-move interaction changes · `1f10089` (26 September 2026)
+
+PR #132 changed attack-move retargeting, closed the final chase gap, and added
+in-range spacing for attackers, gatherers, and builders. Current-main CI run
+[36261916112](https://github.com/lbliii/thousand-unit-skirmish/actions/runs/36261916112)
+passed `npm test` and the Railway release pack at exact source
+`1f100897923e3befbbe9d8dbd81d880a500b9db4`.
+
+### Mirrored combat parity
+
+The 8v8 infantry fixture passed its existing bound of at most one survivor and
+100 HP difference in all four orientation/order cases. The fight resolved
+10.3–10.7 seconds after engagement; reversing command-send order did not
+change the outcome within either orientation.
+
+| Team 0 spawn side | Command order | Battle | Team 0 | Team 1 |
+| --- | --- | ---: | --- | --- |
+| Left | `[0,1]` | 10.7 s | 3 survivors / 260 HP | 4 / 230 HP |
+| Left | `[1,0]` | 10.7 s | 3 / 260 HP | 4 / 230 HP |
+| Right | `[0,1]` | 10.3 s | 4 / 260 HP | 3 / 250 HP |
+| Right | `[1,0]` | 10.3 s | 4 / 260 HP | 3 / 250 HP |
+
+The fixture passes, with Team 0 retaining a small 10–30 HP lead in both spawn
+orientations. That is within the current regression bound; it is a signal to
+watch, not a strategy win-rate result.
+
+### Barracks and Range opening
+
+The 24-unit Forked Vale opening used 4 workers, 8 infantry, and 150 food / 250
+wood per team. Across both seat assignments, Barracks and Archery Range
+construction each completed in 10.9 seconds. The first infantry appeared at
+23 seconds and the first archer at 18 seconds. Post-training stock remained
+100 food / 75 wood for infantry, and 125 food / 55 wood for archers. The
+attack-move interaction change did not alter this scripted opening result.
+
+### Contested worker-diversion replay
+
+I reran the four split-seat/command-order cases on clean server source
+`1f100897923e3befbbe9d8dbd81d880a500b9db4`, using harness commit
+`e580c4512f95134ced92984d64f1edcddd59d445`, Node `v24.9.0`, macOS arm64, and
+the tracked Forked Vale map (SHA-256
+`8e0105cbf0b6dcda04781f6798fbcff92ade2421b6247f49eeaa8b4c6ac23c4a`). Each
+case used 150 food / 250 wood per team, observed 80 seconds, then issued
+post-contest Barracks orders. No human input was used. The summary is
+[`docs/balance-evidence/contested-opening-80s-1f10089.json`](balance-evidence/contested-opening-80s-1f10089.json);
+raw stdout SHA-256 is
+`c94012626756d55e48ec78de8f5a0886353c209039d1ccce965bfc74d92131a6`.
+
+The first observed South Signal arrivals were tied at 12.6 seconds when Team
+0/left was the split. When Team 1/right was the split, Team 0/left arrived
+0.3 seconds earlier in both command orders. The first HP-loss sample occurred
+at 15.2 seconds in the Team 0 split cases and 15.7 seconds in the Team 1 split
+cases. It showed damage to Team 1, Team 0, or both within the first sampled
+state; it is a 0.1-second observation, not an exact attack-event timestamp.
+The two exposed split workers first died at 19.4 seconds from the left, versus
+17.5–17.6 seconds from the right, regardless of command order.
+
+The static [`map-balance-audit`](map-scale-density.md#what-to-measure-while-building)
+reports equal 30-cell South Signal routes and equal starting map stock by
+nearest spawn (1,000 food and 1,000 wood each). That estimate excludes
+formation movement and attack-move interaction. The repeated timing spread is
+a candidate formation/interaction-side effect; this fixture does not establish
+its cause or human strategic value.
+
+At 80 seconds, the split captured North Signal at 24.3 seconds, lost all three
+south infantry and two exposed workers, and kept five north infantry and two
+gatherers. The response lost two of five south infantry and kept all four
+workers. The split's capture award again offset the measured gathering gap:
+it had about 26 more food and 1 more wood earned or carried. With two surviving
+builders, its Barracks completed in 11.4–11.7 seconds; the response's four
+builders completed theirs in 6.7–6.9 seconds. This remains an uneven scripted
+trade-off, not a match winner or justification for unit or reward changes.
+
+## Latest flat-map protocol recheck · `117284e` (26 September 2026)
+
+Current main includes PR #131's elevation-aware pathing and sight changes.
+Forked Vale has no elevation patches; its tracked map hash remains
+`8e0105cbf0b6dcda04781f6798fbcff92ade2421b6247f49eeaa8b4c6ac23c4a`. I reran
+the two direct protocol scenarios below against exact server source
+`117284e2c71469fcbeb669ddfa32a1eea65aa258`, with Node `v24.9.0`. These
+targeted checks cover the flat-map combat and opening paths; they are not a
+full CI run, contested human match, or test of elevated maps.
+
+The four cases from
+`node scripts/infantry-seat-combat-scenario.mjs --expect-parity` reproduced
+the prior results. Team 0 kept a small 10–30 HP lead across orientations, and
+swapping command-send order did not change either outcome:
+
+| Team 0 spawn side | Battle | Team 0 | Team 1 |
+| --- | ---: | --- | --- |
+| Left | 10.7 s | 3 survivors / 260 HP | 4 / 230 HP |
+| Right | 10.3 s | 4 survivors / 260 HP | 3 / 250 HP |
+
+The 24-unit opening also passed with
+`RTS_OPENING_MAP=maps/forked-vale.json RTS_OPENING_BUILD_X=21.5 node scripts/opening-production-scenario.mjs --expect-builder-parity`.
+With 150 food and 250 wood per team, both Barracks and Range builds completed
+at 10.9 seconds in both seat assignments. First infantry appeared at 23
+seconds and the first archer at 18 seconds. Stocks after training were 100
+food / 75 wood for infantry and 125 food / 55 wood for archers.
+
 ## Current tuning decision
 
-The direct equal-cost worker-counter fixture and the 8v8 combat-parity fixture
-remain their own baselines. The 40- and 80-second contested runs support a
-measurable worker loss, one-time objective reward, harvest gap, and post-contest
-build delay. In this scripted line, the award offsets the resource acquisition
-gap through 80 seconds; the run does not value the lost army or establish the
-longer-term match result. The earlier above-bound HP outlier did not recur.
-The uneven-group attack-move fight is not an equal-force parity measure, and
-first-attack or arrival timing remains unrecorded. No human match has
-established which opening wins. Keep current resource awards and unit stats as
-no-tune baselines until a contested human match provides that evidence.
+The direct equal-cost worker-counter fixture and mirrored 8v8 fixture remain
+separate baselines. Parity and opening checks pass on current flat-map main
+`117284e`, while the latest full CI record above targets `1f10089`.
+The contested replay now records first objective arrivals and the first
+sampled HP loss; it shows a small side-correlated timing spread despite equal
+static route lengths. The cause still needs isolation, and the uneven groups
+do not establish which human opening wins. Keep unit stats, costs, and resource
+awards as no-tune baselines until a human seat-swapped match supports a change.
 
 ## Next tuning decisions
 
-- The next Balance-lane proof is a contested two-seat human match on a current
-  build, supporting M1 and M4. Record the build SHA, both seats' first gather, build,
-  first reinforcement, first contest, and win times, plus the chosen openings
-  and player explanations. Collect first-attack and arrival timing if the
-  contested fixture's left-seat spread repeats; do not adjust unit stats from
-  this uneven-group run alone.
+- Recheck the repeated left/right interaction timing in a controlled mirrored
+  formation case, then in a human seat-swapped Forked Vale match. Record the
+  build SHA, each seat's first gather, first building, first reinforcement,
+  first contest, and match-end times, plus chosen openings and player
+  explanations. The current HP-loss sample is not an exact attack event;
+  inspect attack and arrival events if the spread persists. Do not adjust unit
+  stats from this uneven-group run alone.
 - When the 160 × 160 Frontier pilot is playable, compare observed two-seat
   matches from both seats. Start with the [static map audit](map-scale-density.md#what-to-measure-while-building)
   for initial stock and path geometry. Then record first meaningful contact,

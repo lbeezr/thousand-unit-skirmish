@@ -415,6 +415,10 @@ unitSpriteRuntime.ready.then((loaded) => {
   syncUnitDetailLevel();
 });
 const mapObjects = [];
+let forestTreeSlots = new Map();
+let forestStumpSlots = new Map();
+let forestStumpMesh = null;
+let forestStumpCount = 0;
 const townCenterProductionLamps = [null, null];
 let fogTexture = null;
 let fogMesh = null;
@@ -425,6 +429,8 @@ const scenarioEventVisuals = new Map();
 let timedVictoryVisual = null;
 let victoryHoldVisual = null;
 const resourceNodeVisuals = new Map();
+let latestForestStocks = new Map();
+let latestForestEpoch = null;
 const resourceCalloutTextures = new Map();
 const woodTreeNodeSlots = new Map();
 const woodTreeNodeStages = new Map();
@@ -1612,7 +1618,10 @@ function refreshResourceStateFallbackTransforms() {
 }
 
 resourceStateAssetsReady.then((status) => {
-  if (status.ready) refreshResourceStateFallbackTransforms();
+  if (status.ready) {
+    refreshResourceStateFallbackTransforms();
+    refreshForestStumpTransforms();
+  }
   if (roomPageUrl.searchParams.get('rendererCapture') === 'environment-state') {
     window.__rtsEnvironmentAssetStatus = status;
     window.__rtsEnvironmentCaptureCommand = (command) => sendCommand(command);
@@ -1690,6 +1699,70 @@ function updateFogFromState(state) {
   drawMinimap(performance.now(), true);
 }
 
+function setForestTreeVisual(cell, stock) {
+  const slot = forestTreeSlots.get(cell);
+  if (!slot) return;
+  const depleted = stock <= 0;
+  setEnvironmentSpriteInstance(slot.mesh, slot.index, slot.x, slot.z,
+    depleted ? 0 : slot.scale, slot.flip);
+  slot.mesh.instanceMatrix.needsUpdate = true;
+  const stump = forestStumpSlots.get(cell);
+  if (!stump || !forestStumpMesh) return;
+  const showStump = depleted && RESOURCE_STATE_ASSETS_AVAILABLE;
+  if (showStump !== stump.visible) {
+    forestStumpCount = Math.max(0, forestStumpCount + (showStump ? 1 : -1));
+    stump.visible = showStump;
+  }
+  setEnvironmentSpriteInstance(forestStumpMesh, stump.index, stump.x, stump.z,
+    showStump ? stump.scale : 0, stump.flip);
+  forestStumpMesh.instanceMatrix.needsUpdate = true;
+  forestStumpMesh.visible = forestStumpCount > 0;
+}
+
+function refreshForestStumpTransforms() {
+  if (!forestStumpMesh) return;
+  forestStumpCount = 0;
+  for (const [cell, stump] of forestStumpSlots) {
+    stump.visible = latestForestStocks.get(cell) === 0 && RESOURCE_STATE_ASSETS_AVAILABLE;
+    if (stump.visible) forestStumpCount++;
+    setEnvironmentSpriteInstance(forestStumpMesh, stump.index, stump.x, stump.z,
+      stump.visible ? stump.scale : 0, stump.flip);
+  }
+  forestStumpMesh.instanceMatrix.needsUpdate = true;
+  forestStumpMesh.visible = forestStumpCount > 0;
+}
+
+function applyForestState(state) {
+  if (!Number.isSafeInteger(state.forestEpoch)) return;
+  let visualChanged = false;
+  if (latestForestEpoch !== state.forestEpoch) {
+    for (const [cell, stock] of latestForestStocks) {
+      if (stock <= 0) {
+        setForestTreeVisual(cell, 1);
+        visualChanged = true;
+      }
+    }
+    latestForestStocks.clear();
+    latestForestEpoch = state.forestEpoch;
+  }
+  if (Array.isArray(state.forestStocks)) {
+    for (const row of state.forestStocks) {
+      if (!Array.isArray(row) || row.length !== 2) continue;
+      const [cell, stock] = row;
+      if (!Number.isInteger(cell) || cell < 0 || cell >= MAP_WIDTH * MAP_HEIGHT
+        || !forestTreeSlots.has(cell) || !Number.isFinite(stock) || stock < 0) continue;
+      const previousStock = latestForestStocks.get(cell);
+      if (previousStock === stock) continue;
+      latestForestStocks.set(cell, stock);
+      if ((previousStock === 0) !== (stock === 0)) {
+        setForestTreeVisual(cell, stock);
+        visualChanged = true;
+      }
+    }
+  }
+  if (visualChanged) drawMinimap(performance.now(), true);
+}
+
 function buildMap(definition) {
   fogTexture?.dispose();
   clearMapObjects();
@@ -1700,6 +1773,12 @@ function buildMap(definition) {
   timedVictoryVisual = null;
   victoryHoldVisual = null;
   resourceNodeVisuals.clear();
+  latestForestStocks.clear();
+  latestForestEpoch = null;
+  forestTreeSlots = new Map();
+  forestStumpSlots = new Map();
+  forestStumpMesh = null;
+  forestStumpCount = 0;
   latestResourceStocks = new Map();
   objectivePanel.replaceChildren();
   if (tapOrderArmed) setTapOrderArmed(false, false);
@@ -1763,7 +1842,19 @@ function buildMap(definition) {
   obstacles.castShadow = false;
   obstacles.receiveShadow = false;
   addMapObject(obstacles);
-  addObstacleEnvironmentSprites(definition, MAP_HALF_X, MAP_HALF_Z, addMapObject);
+  forestTreeSlots = addObstacleEnvironmentSprites(definition, MAP_HALF_X, MAP_HALF_Z, addMapObject);
+  const stumpPositions = [...forestTreeSlots].map(([cell, slot], index) => {
+    forestStumpSlots.set(cell, {
+      index, x: slot.x, z: slot.z, scale: slot.scale * 0.48,
+      flip: slot.flip, visible: false,
+    });
+    return { x: slot.x, z: slot.z, scale: 0, flip: slot.flip };
+  });
+  forestStumpMesh = createEnvironmentSpriteInstances('oak-depleted', 4.1, 3.75, stumpPositions);
+  if (forestStumpMesh) {
+    forestStumpMesh.visible = false;
+    addMapObject(forestStumpMesh);
+  }
 
   for (const spawn of definition.spawnPoints || []) addTownCenterVisual(spawn, definition);
   buildWoodNodeInstances(definition.resourceNodes || []);
@@ -2159,6 +2250,19 @@ function drawMinimap(now = performance.now(), force = false) {
   const height = minimapCanvas.height;
   const rect = minimapMapRect(width, height);
   context.drawImage(minimapBackground, 0, 0);
+
+  context.fillStyle = '#727e5a';
+  for (const [cell, stock] of latestForestStocks) {
+    if (stock > 0) continue;
+    const column = cell % MAP_WIDTH;
+    const row = Math.floor(cell / MAP_WIDTH);
+    context.fillRect(
+      rect.left + column * rect.scale,
+      rect.top + row * rect.scale,
+      Math.max(1, rect.scale),
+      Math.max(1, rect.scale),
+    );
+  }
 
   for (const trigger of mapDefinition.triggers || []) {
     const state = latestObjectiveStates.get(trigger.id);
@@ -3677,6 +3781,7 @@ function applyState(state, initial = false) {
     ui.aliveRed.textContent = Number.isFinite(state.alive[1]) ? state.alive[1].toLocaleString() : '—';
   }
   updateFogFromState(state);
+  applyForestState(state);
   if (Array.isArray(state.objectives)) updateObjectives(state.objectives);
   updateVictoryHoldCard(state.victoryHold, state.winner, state.winnerReason, state.scenarioClockStarted);
   updateScenarioEventCards(state.scenarioEvents || [], state.matchElapsedSeconds, state.scenarioClockStarted);
@@ -5963,6 +6068,29 @@ function pickResourceNodeAt(x, y) {
   return nearest;
 }
 
+function pickForestCellAt(x, y) {
+  if (localTeam === null || forestTreeSlots.size === 0) return null;
+  const rect = renderer.domElement.getBoundingClientRect();
+  let nearestCell = null;
+  let nearestDistance = 30 * 30;
+  for (const [cell, slot] of forestTreeSlots) {
+    if (latestForestStocks.get(cell) === 0) continue;
+    if (mapDefinition?.fogOfWar && latestFogCells?.[cell] !== 2) continue;
+    screenPoint.set(slot.x, 1.25, slot.z).project(camera);
+    if (screenPoint.z < -1 || screenPoint.z > 1) continue;
+    const treeX = (screenPoint.x * 0.5 + 0.5) * rect.width;
+    const treeY = (-screenPoint.y * 0.5 + 0.5) * rect.height;
+    const dx = treeX - x;
+    const dy = treeY - y;
+    const distance = dx * dx + dy * dy;
+    if (distance < nearestDistance) {
+      nearestCell = cell;
+      nearestDistance = distance;
+    }
+  }
+  return nearestCell;
+}
+
 function pickBuildingAt(x, y, predicate = (building) => building.team === localTeam) {
   if (localTeam === null) return null;
   const rect = renderer.domElement.getBoundingClientRect();
@@ -6182,6 +6310,20 @@ function issueGather(node) {
   }
 }
 
+function issueForestGather(cell) {
+  if (localTeam === null) { showToast('SPECTATORS CANNOT ISSUE COMMANDS'); return; }
+  const workers = selectedIds().filter((id) => units[id]?.kind === 'worker');
+  if (workers.length === 0) {
+    showToast('SELECT WORKERS FIRST · USE THE SELECT WORKERS BUTTON');
+    return;
+  }
+  if (sendTrackedOrder({ type: 'gather', ids: workers, forestCell: cell },
+    'GATHER WOOD', workers.length, 'WORKERS')) {
+    setAttackMoveMode(false, false);
+    showToast(`GATHER WOOD · ${workers.length} WORKERS`);
+  }
+}
+
 function issueContextOrder(clientX, clientY, queueWaypoint = false) {
   if (selectedBuildingId !== null) {
     issueBuildingRallyPoint(clientX, clientY);
@@ -6206,8 +6348,12 @@ function issueContextOrder(clientX, clientY, queueWaypoint = false) {
     const node = pickResourceNodeAt(x, y);
     if (node) issueGather(node);
     else {
-      const point = worldAt(clientX, clientY);
-      if (point) issueMove(point, queueWaypoint);
+      const forestCell = pickForestCellAt(x, y);
+      if (forestCell !== null) issueForestGather(forestCell);
+      else {
+        const point = worldAt(clientX, clientY);
+        if (point) issueMove(point, queueWaypoint);
+      }
     }
   }
 }
@@ -6635,7 +6781,8 @@ renderer.domElement.addEventListener('pointermove', (event) => {
   if (!drag) {
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-    const hoveringResource = tapOrderArmed && selectedBuildingId === null && Boolean(pickResourceNodeAt(x, y));
+    const hoveringResource = tapOrderArmed && selectedBuildingId === null
+      && (Boolean(pickResourceNodeAt(x, y)) || pickForestCellAt(x, y) !== null);
     syncBattlefieldCursor({ hoveringResource });
     return;
   }

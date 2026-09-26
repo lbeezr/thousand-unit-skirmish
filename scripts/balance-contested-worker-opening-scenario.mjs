@@ -402,6 +402,29 @@ async function runCase(splitTeam, commandOrder) {
         unitCounts: objective.unitCounts,
       } : null];
     }));
+    const objectiveArrivalByTeam = Object.fromEntries(['capture-zone-1', 'capture-zone-2'].map((id) => {
+      const teams = [0, 1].map((team) => {
+        const state = states.find((candidate) => {
+          const objective = candidate.objectives.find((row) => row.id === id);
+          return objective && objective.unitCounts[team] > 0;
+        });
+        const objective = state?.objectives.find((row) => row.id === id);
+        return state ? {
+          team,
+          atSeconds: Number(state.matchElapsedSeconds.toFixed(3)),
+          tick: state.tick,
+          unitsPresent: objective.unitCounts[team],
+        } : null;
+      });
+      return [id, teams];
+    }));
+    const southArrivals = objectiveArrivalByTeam['capture-zone-2'];
+    const southArrivalGapSeconds = southArrivals.every(Boolean)
+      ? Number((southArrivals[responseTeam].atSeconds - southArrivals[splitTeam].atSeconds).toFixed(3))
+      : null;
+    const firstHpLossTeams = firstDamageState ? [0, 1].filter((team) => (
+      firstDamageState.units.some((row) => involvedIds.has(row[0]) && row[1] === team && row[4] < 100)
+    )) : [];
     const firstOwner = Object.fromEntries(['capture-zone-1', 'capture-zone-2'].map((id) => {
       const state = states.find((candidate) => {
         const objective = candidate.objectives.find((row) => row.id === id);
@@ -416,26 +439,22 @@ async function runCase(splitTeam, commandOrder) {
 
     const workersAtBuildStart = [0, 1].map((team) => contestFinalState.units
       .filter((row) => row[1] === team && row[5] === 'worker' && row[4] > 0));
-    assert.equal(workersAtBuildStart[splitTeam].length, 2,
-      'only the two unexposed split workers should remain to build');
-    assert.equal(workersAtBuildStart[responseTeam].length, 4,
-      'all four response workers should remain to build');
+    const teamsWithBuilders = [0, 1].filter((team) => workersAtBuildStart[team].length > 0);
     const buildAfter = clientsByTeam.map((client) => client.messages.length);
-    const firstBuildingSnapshots = clientsByTeam.map((client, team) => client.waitFor(
-      (message, state) => state?.mapId === map.id && state.buildings.some((building) => (
-        building.team === team && building.type === 'barracks'
-      )),
-      15_000,
-      buildAfter[team],
-    ));
-    const completedBuildingSnapshots = clientsByTeam.map((client, team) => client.waitFor(
-      (message, state) => state?.mapId === map.id && state.buildings.some((building) => (
-        building.team === team && building.type === 'barracks' && building.complete
-      )),
-      60_000,
-      buildAfter[team],
-    ));
-    const buildOrderAcks = clientsByTeam.map((client, team) => {
+    const firstBuildingSnapshots = new Map(teamsWithBuilders.map((team) => [team,
+      clientsByTeam[team].waitFor((message, state) => state?.mapId === map.id
+        && state.buildings.some((building) => building.team === team && building.type === 'barracks'),
+      15_000, buildAfter[team]),
+    ]));
+    const completedBuildingSnapshots = new Map(teamsWithBuilders.map((team) => [team,
+      clientsByTeam[team].waitFor((message, state) => state?.mapId === map.id
+        && state.buildings.some((building) => (
+          building.team === team && building.type === 'barracks' && building.complete
+        )),
+      60_000, buildAfter[team]),
+    ]));
+    const buildOrderAcks = teamsWithBuilders.map((team) => {
+      const client = clientsByTeam[team];
       const token = 99;
       const ack = client.waitFor((message) => message.type === 'notice'
         && message.clientOrderToken === token, 12_000, buildAfter[team]);
@@ -454,13 +473,26 @@ async function runCase(splitTeam, commandOrder) {
       });
     });
     const acceptedBuildOrders = await Promise.all(buildOrderAcks);
-    const firstBuildingStates = await Promise.all(firstBuildingSnapshots);
-    const completedBuildingStates = await Promise.all(completedBuildingSnapshots);
+    const firstBuildingStates = new Map(await Promise.all([...firstBuildingSnapshots].map(
+      async ([team, snapshot]) => [team, await snapshot],
+    )));
+    const completedBuildingStates = new Map(await Promise.all([...completedBuildingSnapshots].map(
+      async ([team, snapshot]) => [team, await snapshot],
+    )));
     const barracksAfterContest = {
       issuedAtSeconds: Number(contestFinalState.matchElapsedSeconds.toFixed(1)),
       teams: [0, 1].map((team) => {
-        const initialState = firstBuildingStates[team].state;
-        const completionState = completedBuildingStates[team].state;
+        if (workersAtBuildStart[team].length === 0) {
+          return {
+            team,
+            role: team === splitTeam ? 'split' : 'response',
+            workersAssigned: 0,
+            woodAtIssue: contestFinalState.wood[team],
+            skipped: 'no surviving workers',
+          };
+        }
+        const initialState = firstBuildingStates.get(team).state;
+        const completionState = completedBuildingStates.get(team).state;
         const initialBuilding = initialState.buildings.find((building) => (
           building.team === team && building.type === 'barracks'
         ));
@@ -533,8 +565,15 @@ async function runCase(splitTeam, commandOrder) {
       startingResources: { food: 150, wood: 250 },
       opening: '5 infantry north; 3 infantry + 2 workers south; 2 workers gather. Response: 5 infantry attack-move south; 4 workers gather.',
       objectiveEntry: firstObjectiveEntry,
+      objectiveArrivalByTeam,
+      southArrivalGapSeconds,
       firstDamageAtSeconds: firstDamageState
         ? Number(firstDamageState.matchElapsedSeconds.toFixed(1)) : null,
+      firstHpLossSample: firstDamageState ? {
+        tick: firstDamageState.tick,
+        atSeconds: Number(firstDamageState.matchElapsedSeconds.toFixed(3)),
+        teamsTakingDamage: firstHpLossTeams,
+      } : null,
       firstSplitWorkerLossAtSeconds: firstWorkerLossState
         ? Number(firstWorkerLossState.matchElapsedSeconds.toFixed(1)) : null,
       firstOwner,

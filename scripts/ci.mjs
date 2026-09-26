@@ -36,6 +36,8 @@ const syntaxFiles = [
 
 for (const file of syntaxFiles) run(['--check', file], `Syntax: ${file}`);
 
+run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
+
 const scenarios = [
   ['scripts/client-asset-allowlist-scenario.mjs', 'Client static asset allowlist'],
   ['scripts/docker-ui-assets-context-scenario.mjs', 'Docker UI asset context'],
@@ -57,15 +59,21 @@ const scenarios = [
   ['scripts/forked-vale-scenario.mjs', 'Forked Vale economy-to-victory (Team 1)', '1'],
   ['scripts/forked-vale-layout.mjs', 'Forked Vale layout'],
   ['scripts/frontier-160-layout.mjs', 'Frontier 160 layout'],
+  ['scripts/generate-highland-grove.mjs', 'Highland Grove playable layout', '--check'],
   ['scripts/three-crowns-layout.mjs', 'Three Crowns layout'],
   ['scripts/formation-assignment-scenario.mjs', 'Formation assignment'],
   ['scripts/unit-selection-scenario.mjs', 'Unit selection'],
   ['scripts/pve-opponent-scenario.mjs', 'PvE opponent seats'],
   ['scripts/visual-pack-path-safety-scenario.mjs', 'Visual pack path safety'],
+  ['scripts/sprite-atlas-handoff-scenario.mjs', 'Sprite-atlas handoff audit'],
+  ['scripts/archery-range-sprite-atlas-scenario.mjs', 'Archery Range sprite-atlas handoff'],
+  ['scripts/town-center-sprite-atlas-scenario.mjs', 'Town Center sprite-atlas handoff'],
   ['scripts/unit-lod-state-scenario.mjs', 'Unit LOD matrix updates'],
   ['scripts/unit-visual-state-scenario.mjs', 'Unit visual state'],
   ['scripts/resource-visual-state-scenario.mjs', 'Resource visual state'],
+  ['scripts/harvestable-woodland-scenario.mjs', 'Harvestable woodland gameplay'],
   ['scripts/room-supervisor-scenario.mjs', 'Room supervisor integration'],
+  ['scripts/pve-room-launch-scenario.mjs', 'PvE room launch and rematch integration'],
   ['scripts/railway-release-scenario.mjs', 'Railway release integration'],
 ];
 

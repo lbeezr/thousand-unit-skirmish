@@ -27,7 +27,7 @@ Concept design, modeling, UVs, texturing, rigging, animation, scene composition,
 - A terrain slice can be one water/shoreline treatment that reads on an authored map, with a source asset and runtime view.
 - A surfacing slice can be one shared atlas and a repeatable UV/export/manifest path on a small sample. It should remove manual work for later assets; it is not a mandatory preflight service for other authors.
 - A unit slice can deliver a manifest-driven Worker/Infantry/Archer sprite pilot with a representative game-zoom view; new unit GLBs are paused by the current art direction.
-- A building slice can improve one Barracks construction silhouette or one other structure. The original Worker/Barracks v0.2 source sample is cleared for a focused PR with its known limits; it does not need to claim the full M2 appearance or M3 performance milestone.
+- A building sprite slice can establish one complete building design, then derive its construction and damage frames on a shared world grid. Follow the [building sprite production workflow](building-sprite-production-workflow.md) for the complete-first design, state review, and reproducible pack. The original Worker/Barracks v0.2 source sample is cleared for a focused PR with its known limits; it does not need to claim the full M2 appearance or M3 performance milestone.
 
 Merge useful source samples before their runtime loader or final visual treatment is finished; state that limit in the PR and continue with the next slice. Runtime integration uses the applicable manifest and proportionate local validation; milestone captures and large-match measurements remain separate claims. Do not silently hold an asset pack for polish, a preview window, or another lane's future integration.
 
