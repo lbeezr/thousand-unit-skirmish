@@ -4081,6 +4081,7 @@ function updateEconomyUI(state = {}, initial = false) {
 function updateRoomUI(connected) {
   connectedPlayers = connected;
   ui.playersOnline.textContent = `${connected} / 2 PLAYERS`;
+  ui.networkStatus.parentElement.dataset.urgent = String(waitingForResume);
   ui.matchStatus.textContent = waitingForResume ? 'WAITING TO REJOIN' : connected >= 2 ? '2 / 2 ONLINE' : `${connected} / 2 ONLINE`;
   ui.matchStatus.classList.toggle('full', connected >= 2);
   ui.networkStatus.textContent = waitingForResume
@@ -4092,6 +4093,7 @@ function updateRoomUI(connected) {
 }
 
 function setConnection(status) {
+  ui.networkStatus.parentElement.dataset.urgent = String(['OFFLINE', 'RECONNECTING', 'SEAT ACTIVE ELSEWHERE'].includes(status));
   ui.networkStatus.textContent = status;
   ui.matchStatus.textContent = status;
   const waiting = status === 'CONNECTING' || status === 'RECONNECTING' || status === 'WAITING FOR PLAYER 2';
