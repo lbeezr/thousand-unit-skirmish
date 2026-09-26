@@ -1,3 +1,4 @@
+import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences } from './hud-layout.mjs';
 import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
@@ -6167,7 +6168,7 @@ function projectUnit(unit, rect) {
   };
 }
 
-function pickAt(x, y, predicate) {
+function pickAt(x, y, predicate, { advance = true } = {}) {
   const rect = renderer.domElement.getBoundingClientRect();
   const candidates = [];
   for (const unit of units) {
@@ -6181,19 +6182,24 @@ function pickAt(x, y, predicate) {
     if (distance < 19 * 19) candidates.push({ id: unit.id, distanceSquared: distance, depth: point.depth });
   }
   const pick = chooseUnitPickCandidate(candidates, lastUnitPickState, x, y, performance.now());
-  lastUnitPickState = pick.state;
+  if (advance) lastUnitPickState = pick.state;
   return {
     ...pick,
     unit: pick.id === null ? null : units[pick.id],
   };
 }
 
-function pickResourceNodeAt(x, y) {
+function pickResourceNodeAt(x, y, { visibleOnly = false } = {}) {
   if (localTeam === null || !Array.isArray(mapDefinition?.resourceNodes)) return null;
   const rect = renderer.domElement.getBoundingClientRect();
   let nearest = null;
   let nearestDistance = 26 * 26;
   for (const node of mapDefinition.resourceNodes) {
+    if (visibleOnly && mapDefinition.fogOfWar) {
+      const column = Math.floor(node.x + MAP_WIDTH / 2);
+      const row = Math.floor(node.z + MAP_HEIGHT / 2);
+      if (latestFogCells?.[row * MAP_WIDTH + column] !== 2) continue;
+    }
     screenPoint.set(node.x, 0.22, node.z).project(camera);
     const nodeX = (screenPoint.x * 0.5 + 0.5) * rect.width;
     const nodeY = (-screenPoint.y * 0.5 + 0.5) * rect.height;
@@ -6620,20 +6626,43 @@ function updateBuildPlacementHint() {
 }
 
 function setBattlefieldCursor(mode) {
-  renderer.domElement.dataset.cursorMode = mode;
+  if (renderer.domElement.dataset.cursorMode !== mode) renderer.domElement.dataset.cursorMode = mode;
 }
 
-function syncBattlefieldCursor({ hoveringResource = false } = {}) {
-  if (pan) setBattlefieldCursor('panning');
-  else if (spaceDown) setBattlefieldCursor('pan');
-  else if (drag && movedPointer) setBattlefieldCursor('box-select');
-  else if (buildPlacementActive) {
-    setBattlefieldCursor(ui.placementStatus?.dataset.state === 'blocked' ? 'build-blocked' : 'build-valid');
-  } else if (tapOrderArmed) {
-    const selectedBuilding = selectedBuildingId !== null;
-    setBattlefieldCursor(selectedBuilding ? 'rally' : hoveringResource ? 'gather' : attackMoveMode ? 'attack-move' : 'move');
-  } else if (attackMoveMode) setBattlefieldCursor('attack-move');
-  else setBattlefieldCursor('select');
+function syncBattlefieldCursor() {
+  const ids = selectedIds();
+  const ownedBuilding = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
+  const state = {
+    panning: Boolean(pan), panReady: spaceDown, dragging: Boolean(drag && movedPointer),
+    crossing: Boolean(drag && drag.currentX < drag.startX),
+    canOrder: localTeam !== null && matchWinner < 0,
+    building: buildPlacementActive, buildValid: ui.placementStatus?.dataset.state === 'clear',
+    selectedBuilding: selectedBuildingId !== null,
+    rallySupported: Boolean(ownedBuilding && ['barracks', 'archery-range'].includes(ownedBuilding.type)),
+    count: ids.length, workers: ids.some((id) => units[id].kind === 'worker'),
+    military: ids.some((id) => units[id].kind !== 'worker'),
+    attackMove: attackMoveMode, armed: tapOrderArmed, shift: cursorShift,
+  };
+  // Picking is read-only here: hovering must never cycle an overlapping target stack.
+  if (cursorPointer && state.canOrder && !state.panning && !state.panReady && !state.dragging
+      && !state.building && !state.selectedBuilding) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    const x = cursorPointer.x - rect.left, y = cursorPointer.y - rect.top;
+    if (ids.length) {
+      state.enemy = Boolean(pickAt(x, y, (unit) => unit.team !== localTeam, { advance: false }).unit);
+      if (!state.enemy) state.enemyBuilding = Boolean(pickBuildingAt(x, y, (building) => building.team !== localTeam));
+      if (!state.enemy && !state.enemyBuilding) {
+        state.resource = pickResourceNodeAt(x, y, { visibleOnly: true })?.type;
+        if (!state.resource) state.forest = pickForestCellAt(x, y) !== null;
+      }
+    }
+    if (cursorShift) {
+      const friendly = pickAt(x, y, (unit) => unit.team === localTeam, { advance: false }).unit;
+      state.friendly = Boolean(friendly);
+      state.alreadySelected = Boolean(friendly && selected.has(friendly.id));
+    }
+  }
+  setBattlefieldCursor(battlefieldCursor(state));
 }
 
 function cancelBuildPlacement(announce = true) {
@@ -6802,6 +6831,9 @@ function resumeConstruction() {
   }
 }
 
+let cursorPointer = null;
+let cursorShift = false;
+let lastCursorSample = 0;
 let drag = null;
 let pan = null;
 let spaceDown = false;
@@ -6912,7 +6944,10 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
   selectionBox.style.height = '0px';
 });
 
+renderer.domElement.addEventListener('pointerleave', () => { cursorPointer = null; });
 renderer.domElement.addEventListener('pointermove', (event) => {
+  cursorPointer = { x: event.clientX, y: event.clientY };
+  cursorShift = event.shiftKey;
   if (tapOrderPointer?.id === event.pointerId) return;
   if (pan) {
     const dx = event.clientX - pan.x;
@@ -6936,11 +6971,10 @@ renderer.domElement.addEventListener('pointermove', (event) => {
   }
   const rect = renderer.domElement.getBoundingClientRect();
   if (!drag) {
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    const hoveringResource = tapOrderArmed && selectedBuildingId === null
-      && (Boolean(pickResourceNodeAt(x, y)) || pickForestCellAt(x, y) !== null);
-    syncBattlefieldCursor({ hoveringResource });
+    if (performance.now() - lastCursorSample >= 80) {
+      lastCursorSample = performance.now();
+      syncBattlefieldCursor();
+    }
     return;
   }
   drag.currentX = event.clientX - rect.left;
@@ -7650,13 +7684,19 @@ window.addEventListener('keydown', (event) => {
     updateSelectionUI();
   }
 });
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Shift') { cursorShift = true; syncBattlefieldCursor(); }
+});
 window.addEventListener('keyup', (event) => {
+  if (event.key === 'Shift') { cursorShift = false; syncBattlefieldCursor(); }
   if (event.key.startsWith('Arrow')) heldCameraKeys.release(event.key);
   if (event.code !== 'Space') return;
   spaceDown = false;
   syncBattlefieldCursor();
 });
 window.addEventListener('blur', () => {
+  cursorPointer = null;
+  cursorShift = false;
   if (tapOrderArmed) setTapOrderArmed(false, false);
   spaceDown = false;
   clearHeldCameraKeys();
@@ -8462,6 +8502,11 @@ let fpsTime = 0;
 let renderStatsTime = 0;
 let lastIdlePoseStep = -1;
 function animate(now) {
+  if (cursorPointer && now - lastCursorSample >= 100) {
+    lastCursorSample = now;
+    if (buildPlacementActive) updateBuildPlacementGhost(cursorPointer.x, cursorPointer.y);
+    else syncBattlefieldCursor();
+  }
   requestAnimationFrame(animate);
   moveKeyboardCamera(now);
   syncUnitDetailLevel();

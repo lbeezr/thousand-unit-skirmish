@@ -75,9 +75,12 @@ const style = readFileSync(path.join(root, 'style.css'), 'utf8');
 for (const [state, cursor] of Object.entries(cursorManifest.cursors)) {
   assert.ok(allowedUi.has(cursor.runtime), `runtime cursor is not allowlisted: ${cursor.runtime}`);
   const image = readFileSync(path.join(root, cursor.runtime));
-  assert.deepEqual([image.readUInt32BE(16), image.readUInt32BE(20)], [32, 32],
-    `runtime cursor must be 32 × 32: ${cursor.runtime}`);
+  assert.deepEqual([image.readUInt32BE(16), image.readUInt32BE(20)], cursorManifest.cursorSize,
+    `runtime cursor must match manifest dimensions: ${cursor.runtime}`);
   const [hotspotX, hotspotY] = cursor.hotspot;
+  assert.ok(cursorManifest.cursorSize.every((n) => n > 0 && n <= 64));
+  assert.ok(Number.isInteger(hotspotX) && hotspotX >= 0 && hotspotX < cursorManifest.cursorSize[0]);
+  assert.ok(Number.isInteger(hotspotY) && hotspotY >= 0 && hotspotY < cursorManifest.cursorSize[1]);
   assert.ok(style.includes(`--cursor-${state}: url('/${cursor.runtime}') ${hotspotX} ${hotspotY}, ${cursor.fallback}`),
     `CSS cursor hotspot and fallback must match the manifest for ${state}`);
 }
