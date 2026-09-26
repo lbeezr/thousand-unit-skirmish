@@ -11,3 +11,5 @@ python3 scripts/prepare-building-sprite-pack.py --asset town-center
 ```
 
 See [`sprite-grid.json`](sprite-grid.json) for the anchor and coverage, and [`PROVENANCE.md`](PROVENANCE.md) for the source prompt and hashes.
+
+See the [building sprite production workflow](../../../docs/building-sprite-production-workflow.md) for the reusable complete-first design, lifecycle derivation, grid, review, and packaging method. This static landmark demonstrates the workflow's rule to author only states represented by gameplay.

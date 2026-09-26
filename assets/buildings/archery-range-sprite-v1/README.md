@@ -18,3 +18,5 @@ python3 scripts/prepare-building-sprite-pack.py --asset archery-range
 - Runtime frame generation is complete, but the game has not yet been switched from the Archery Range model to this pack.
 
 See [`PROVENANCE.md`](PROVENANCE.md) for source prompts, output IDs, and file hashes.
+
+See the [building sprite production workflow](../../../docs/building-sprite-production-workflow.md) for the reusable complete-first design, lifecycle derivation, grid, review, and packaging method.

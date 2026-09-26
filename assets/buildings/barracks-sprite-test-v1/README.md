@@ -13,3 +13,5 @@ python3 scripts/prepare-barracks-sprite-test.py
 ```
 
 See [`sprite-grid.json`](sprite-grid.json) for dimensions and view limits, and [`PROVENANCE.md`](PROVENANCE.md) for generation prompts and hashes.
+
+See the [building sprite production workflow](../../../docs/building-sprite-production-workflow.md) for the reusable complete-first design, lifecycle derivation, grid, review, and packaging method.
