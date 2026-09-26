@@ -292,3 +292,135 @@ export async function validateSpriteAtlas(manifestPath) {
 
   return { manifest, packRoot, filePaths, errors };
 }
+
+/** Build a lossless, machine-readable handoff view from a successful validation. */
+export function createSpriteAtlasHandoff(validation) {
+  if (!validation?.manifest || !Array.isArray(validation.errors) || validation.errors.length > 0) {
+    throw new Error('A valid sprite-atlas manifest is required to create a handoff report');
+  }
+  const { manifest } = validation;
+  const filesById = new Map(manifest.files.map((file) => [file.id, file]));
+  const verifiedFileIds = new Set(validation.filePaths?.keys?.() || []);
+  const fileRecord = (fileId) => {
+    if (!fileId) return null;
+    const file = filesById.get(fileId);
+    if (!file) return { id: fileId, missing: true };
+    return {
+      id: file.id,
+      path: file.path,
+      usage: file.usage,
+      format: file.format,
+      dimensionsPx: file.dimensionsPx,
+      sha256: file.sha256.toLowerCase(),
+      sha256Verified: verifiedFileIds.has(file.id),
+    };
+  };
+  const pagesById = new Map(manifest.pages.map((page) => [page.id, page]));
+  const pages = manifest.pages.map((page) => ({
+    id: page.id,
+    dimensionsPx: page.dimensionsPx,
+    colorSpace: page.colorSpace,
+    pixelFormat: page.pixelFormat,
+    alphaMode: page.alphaMode,
+    edgeRule: page.edgeRule,
+    gutterPx: page.gutterPx,
+    gutterRule: page.gutterRule,
+    wrapMode: page.wrapMode,
+    sampling: page.sampling,
+    sourceFile: fileRecord(page.sourceFileId),
+    runtimeFile: fileRecord(page.runtimeFileId),
+    teamMaskFile: fileRecord(page.maskFileId),
+  }));
+  const assets = manifest.assets.map((asset) => {
+    const layers = asset.layers || [];
+    const layerById = new Map(layers.map((layer) => [layer.id, layer]));
+    const frames = asset.frames.map((frame) => ({
+      id: frame.id,
+      canvasPx: frame.canvasPx,
+      groundPivotPx: frame.groundPivotPx,
+      groundPivotStatus: frame.groundPivotStatus,
+      alphaBoundsPx: frame.alphaBoundsPx || null,
+      fallbackRectPx: frame.fallbackRectPx,
+      frameRectsPx: frame.frameRectsPx || [],
+    }));
+    const depthCrops = frames.flatMap((frame) => frame.frameRectsPx
+      .filter((rect) => layerById.get(rect.layerId)?.drawLayer !== 'actor')
+      .map((rect) => {
+        const layer = layerById.get(rect.layerId);
+        return {
+          frameId: frame.id,
+          layerId: rect.layerId,
+          drawLayer: layer?.drawLayer || null,
+          batchKey: layer?.batchKey || null,
+          depthBiasWorld: layer?.depthBiasWorld ?? null,
+          pageId: rect.pageId,
+          rectPx: rect.rectPx,
+          offsetPx: rect.offsetPx,
+        };
+      }));
+    const unreviewedPivotFrameIds = frames
+      .filter((frame) => frame.groundPivotStatus !== 'reviewed')
+      .map((frame) => frame.id);
+    const usedPageIds = new Set(frames.flatMap((frame) => [
+      frame.fallbackRectPx.pageId,
+      ...frame.frameRectsPx.map((rect) => rect.pageId),
+    ]));
+    const teamMaskPages = [...usedPageIds]
+      .map((pageId) => pagesById.get(pageId))
+      .filter((page) => page?.maskFileId)
+      .map((page) => ({ pageId: page.id, file: fileRecord(page.maskFileId) }));
+    const teamVariantIds = [...new Set(asset.clips.map((clip) => clip.teamId).filter(Boolean))];
+    return {
+      id: asset.id,
+      kind: asset.kind,
+      mapPlacement: {
+        occupancyAuthority: 'map/gameplay data; this art manifest does not define occupied cells',
+        recommendedTileFootprintHint: asset.recommendedTileFootprint || null,
+        artBoundsWorld: asset.artBoundsWorld,
+        heightWorld: asset.heightWorld,
+        sortAnchorWorld: asset.sortAnchorWorld || null,
+        cullingBoundsWorld: asset.cullingBoundsWorld || null,
+        selectionBoundsWorld: asset.selectionBoundsWorld || null,
+      },
+      layers,
+      frames,
+      clips: asset.clips.map((clip) => ({
+        stateId: clip.stateId,
+        directionId: clip.directionId || null,
+        teamId: clip.teamId || null,
+        loop: clip.loop,
+        sequence: clip.sequence,
+      })),
+      teamCueEvidence: {
+        maskPages: teamMaskPages,
+        teamVariantIds,
+      },
+      depthCrops,
+      review: {
+        groundPivotsReviewed: unreviewedPivotFrameIds.length === 0,
+        unreviewedPivotFrameIds,
+      },
+    };
+  });
+  const hashesVerified = manifest.files.every((file) => verifiedFileIds.has(file.id));
+  return {
+    reportVersion: 1,
+    pack: {
+      schemaVersion: manifest.schemaVersion,
+      packId: manifest.packId,
+      packVersion: manifest.packVersion,
+      maturity: manifest.maturity,
+      provenance: manifest.provenance,
+    },
+    integrity: {
+      status: hashesVerified ? 'passed' : 'incomplete',
+      declaredFileCount: manifest.files.length,
+      verifiedFileCount: verifiedFileIds.size,
+      allManifestHashesVerified: hashesVerified,
+    },
+    files: manifest.files.map((file) => fileRecord(file.id)),
+    pages,
+    assets,
+    scopeLimit: 'Integrity and declared handoff metadata only; this report does not establish visual approval or renderer integration.',
+  };
+}

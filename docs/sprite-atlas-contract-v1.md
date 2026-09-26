@@ -16,6 +16,13 @@ Use `node scripts/validate-sprite-atlas.mjs <manifest.json>` for file integrity
 and bounds checks. Use `node scripts/preview-sprite-atlas.mjs <manifest.json>`
 to generate a local HTML preview with state/direction selection, layer
 composition, frame rectangles, pivots, alpha bounds, and team-mask inspection.
+Use `node scripts/report-sprite-atlas-handoff.mjs <manifest.json>` to emit a
+machine-readable handoff containing verified file hashes, exact page/frame
+rectangles and dimensions, pivot review state, alpha bounds, state/direction/
+team sequences, masks, depth crops, and the separation between art bounds and
+map-owned occupancy. Add `--require-reviewed-pivots` when a handoff requires
+every frame's ground pivot to be visually reviewed; the report still prints
+before that gate returns a nonzero exit status.
 
 ## Authoring rules
 
@@ -107,6 +114,14 @@ defaults to the ground root when absent; it does not alter
 occupancy, culling, selection, or the stable ground anchor.
 
 ## Pilot evidence and limits
+
+The handoff report validates declarations and file integrity; it does not
+review pixels or mark an estimated pivot as approved. For example, the
+current-main Archery Range construction pack reports five `640 × 640` frames,
+a shared team-mask page, five static construction clips, no depth-split crops,
+and five `unreviewed-estimate` pivots. Its `3 × 3` footprint remains a hint;
+the map continues to own occupied cells. The CI handoff scenario checks these
+fields against the versioned manifest so changes remain visible in review.
 
 The available Worker, Infantry, and Archer sprite explorations now have
 `runtime-candidate` manifests with source/runtime atlas pages, aligned team
