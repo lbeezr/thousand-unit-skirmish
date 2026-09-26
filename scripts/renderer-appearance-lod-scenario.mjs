@@ -479,7 +479,9 @@ async function setZoom(browser, targetZoom) {
 async function writeFrame(browser, runDirectory, frameIndex, mapLabel, zoom) {
   const viewerLabel = TEAMS[browser.team];
   const frameLabel = `${mapLabel}-${viewerLabel}-zoom-${zoom.label}`;
-  const relativePath = `frames/${String(frameIndex + 1).padStart(2, '0')}-${frameLabel}.png`;
+  const hasDetailCrop = mapLabel.startsWith('worker-v2-');
+  const fullFrameIndex = hasDetailCrop ? frameIndex * 2 : frameIndex;
+  const relativePath = `frames/${String(fullFrameIndex + 1).padStart(2, '0')}-${frameLabel}.png`;
   const destination = path.join(runDirectory, relativePath);
   await mkdir(path.dirname(destination), { recursive: true });
   const composition = await browser.cdp.evaluate(`(() => {
@@ -513,14 +515,32 @@ async function writeFrame(browser, runDirectory, frameIndex, mapLabel, zoom) {
     format: 'png', fromSurface: true, captureBeyondViewport: false,
   });
   await writeFile(destination, Buffer.from(screenshot.data, 'base64'));
-  return {
-    index: frameIndex,
+  const fullFrame = {
+    index: fullFrameIndex,
     label: frameLabel,
     attachments: [{
       kind: 'color', path: relativePath, encoding: 'png',
       description: `${mapLabel} full 1280x720 game viewport from the ${viewerLabel} fog-filtered client at zoom ${zoom.value}; HUD labels and minimap are included.`,
     }],
   };
+  if (hasDetailCrop) {
+    const detailFrameIndex = fullFrameIndex + 1;
+    const detailRelativePath = `frames/${String(detailFrameIndex + 1).padStart(2, '0')}-${frameLabel}-unit-closeup-4x.png`;
+    const detail = await browser.cdp.call('Page.captureScreenshot', {
+      format: 'png', fromSurface: true, captureBeyondViewport: false,
+      clip: { x: 540, y: 275, width: 160, height: 140, scale: 4 },
+    });
+    await writeFile(path.join(runDirectory, detailRelativePath), Buffer.from(detail.data, 'base64'));
+    return [fullFrame, {
+      index: detailFrameIndex,
+      label: `${frameLabel}-unit-closeup-4x`,
+      attachments: [{
+        kind: 'color', path: detailRelativePath, encoding: 'png',
+        description: `${mapLabel} unit-cluster gameplay close-up from the same ${viewerLabel} client at zoom ${zoom.value}; direct 4x CDP crop of x=540, y=275, 160x140 CSS pixels, with no post-capture image edits. This magnified view helps inspect the sprite and does not change its standard-scale readability.`,
+      }],
+    }];
+  }
+  return fullFrame;
 }
 
 async function writeCaptureManifest(frames, renderer, runDirectory, previewMode) {
@@ -546,6 +566,7 @@ async function writeCaptureManifest(frames, renderer, runDirectory, previewMode)
         'Appearance-only capture; no performance measurements were collected.',
         `Sprite preview mode: ${previewDescription}`,
         'Frames were captured from Azure and Ember player clients with server-provided fog visibility masks.',
+        'Each Worker v2 full viewport frame has a separate 4x unit-cluster CDP crop frame for close sprite inspection; those magnified crops do not demonstrate standard-scale readability.',
         'Human review is required to assess role silhouette and team-marker readability.',
       ],
     },
@@ -578,7 +599,9 @@ async function captureMapMatrix({ map, browsers, frames, runDirectory, preflight
       const mapLabel = previewMode === 'worker-v2'
         ? `worker-v2-${map.terrainBase}`
         : map.terrainBase;
-      frames.push(await writeFrame(browser, runDirectory, frames.length, mapLabel, zoom));
+      const sceneIndex = frames.length / (previewMode === 'worker-v2' ? 2 : 1);
+      const capturedFrames = await writeFrame(browser, runDirectory, sceneIndex, mapLabel, zoom);
+      frames.push(...(Array.isArray(capturedFrames) ? capturedFrames : [capturedFrames]));
     }
   }
 }
@@ -658,7 +681,9 @@ async function run() {
 
     await captureMapMatrix({ map: maps[0], browsers, frames, runDirectory, preflight, previewMode: PREVIEW_MODE });
     await captureMapMatrix({ map: maps[1], browsers, frames, runDirectory, preflight, previewMode: PREVIEW_MODE });
-    assert.equal(frames.length, 8, 'appearance capture should contain all eight review frames');
+    const expectedFrameCount = PREVIEW_MODE === 'worker-v2' ? 16 : 8;
+    assert.equal(frames.length, expectedFrameCount,
+      `appearance capture should contain ${expectedFrameCount} review frames for ${PREVIEW_MODE}`);
     const manifest = await writeCaptureManifest(frames, renderer, runDirectory, PREVIEW_MODE);
     assert.equal(manifest.measurements.length, 0, 'appearance capture must not report performance metrics');
     console.log(JSON.stringify({
