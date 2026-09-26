@@ -17,6 +17,20 @@ export function barracksModelStage(progress, complete) {
   return BARRACKS_PROGRESS_STAGES[Math.floor(amount * BARRACKS_PROGRESS_STAGES.length)];
 }
 
+export function barracksModelVisualState(progress, complete) {
+  const stage = barracksModelStage(progress, complete);
+  if (stage === null) return null;
+  const wallsVisible = ['walls', 'roof', 'complete'].includes(stage);
+  const roofVisible = ['roof', 'complete'].includes(stage);
+  return {
+    stage,
+    frameVisible: stage === 'frame',
+    wallsVisible,
+    roofVisible,
+    finishedDetailsVisible: stage === 'complete',
+  };
+}
+
 export function constructionGroundStage(progress, complete) {
   if (complete === true || !Number.isFinite(progress)) return 'clear';
   const amount = Math.max(0, Math.min(progress, 1));

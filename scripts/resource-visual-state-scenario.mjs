@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {
-  barracksModelStage, buildingProductionCueState, constructionGroundStage,
+  barracksModelStage, barracksModelVisualState, buildingProductionCueState, constructionGroundStage,
 } from '../src/building-visual-state.mjs';
 import {
   resourceVisualScale, resourceVisualStage, resourceVisualTransitionStages,
@@ -43,6 +43,22 @@ for (const [progress, complete, expected] of [
   assert.equal(barracksModelStage(progress, complete), expected,
     `Barracks progress ${progress} (complete=${complete}) should select ${expected}`);
 }
+for (const [progress, expected] of [
+  [0, ['foundation', false, false, false, false]],
+  [0.25, ['frame', true, false, false, false]],
+  [0.5, ['walls', false, true, false, false]],
+  [0.75, ['roof', false, true, true, false]],
+  [1, ['complete', false, true, true, true]],
+]) {
+  const state = barracksModelVisualState(progress, false);
+  assert.deepEqual([
+    state.stage, state.frameVisible, state.wallsVisible, state.roofVisible, state.finishedDetailsVisible,
+  ], expected, `Barracks progress ${progress} should expose the expected model parts`);
+}
+assert.equal(barracksModelVisualState(0.1, true).finishedDetailsVisible, true,
+  'completed Barracks should expose all finished model parts');
+assert.equal(barracksModelVisualState(Number.NaN, false), null,
+  'invalid Barracks progress should not select model parts');
 for (const [complete, queueLength, productionBlocked, expected] of [
   [false, 1, false, 'idle'], [true, 0, false, 'idle'], [true, -1, true, 'idle'],
   [true, Number.NaN, false, 'idle'], [true, 1, false, 'active'],
