@@ -57,6 +57,7 @@ const scenarios = [
   ['scripts/forked-vale-scenario.mjs', 'Forked Vale economy-to-victory (Team 1)', '1'],
   ['scripts/forked-vale-layout.mjs', 'Forked Vale layout'],
   ['scripts/frontier-160-layout.mjs', 'Frontier 160 layout'],
+  ['scripts/generate-highland-grove.mjs', 'Highland Grove playable layout', '--check'],
   ['scripts/three-crowns-layout.mjs', 'Three Crowns layout'],
   ['scripts/formation-assignment-scenario.mjs', 'Formation assignment'],
   ['scripts/unit-selection-scenario.mjs', 'Unit selection'],
