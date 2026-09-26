@@ -280,24 +280,35 @@
             <div class="audio-preview-controls">
               <label for="audio-preview-cue">Sample</label>
               <select id="audio-preview-cue" class="audio-preview-cue">
-                <option value="select">Selection</option>
-                <optgroup label="Orders">
+                <optgroup label="Commands">
+                  <option value="select">Selection</option>
                   <option value="move">Move order</option>
                   <option value="attack">Attack order</option>
+                  <option value="gather">Gather order</option>
+                  <option value="rally">Rally point</option>
                   <option value="build">Build order</option>
+                  <option value="reject">Rejected order</option>
                 </optgroup>
                 <optgroup label="Progress">
+                  <option value="queue">Production started</option>
                   <option value="complete">Unit ready</option>
                   <option value="building-complete">Building complete</option>
                   <option value="research-complete">Research complete</option>
+                  <option value="scenario-reward">Scenario reward</option>
                 </optgroup>
                 <optgroup label="Tactics">
                   <option value="battle-alert">Battle alert</option>
+                  <option value="selected-alert">Selected force under attack</option>
                   <option value="base-alert">Base under attack</option>
                   <option value="objective">Objective captured</option>
+                  <option value="objective-lost">Objective lost</option>
+                  <option value="resource-empty">Resource depleted</option>
+                  <option value="base-lost">Production building lost</option>
                 </optgroup>
                 <optgroup label="Match result">
                   <option value="victory">Victory</option>
+                  <option value="defeat">Defeat</option>
+                  <option value="draw">Draw</option>
                 </optgroup>
               </select>
               <button id="audio-preview" class="audio-preview" type="button">Play preview</button>
