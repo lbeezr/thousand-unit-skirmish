@@ -2,7 +2,7 @@
 
 ## Recommendation
 
-On 26 September 2026, the user first selected painterly cutout sprites and paused new 3D unit-art exploration. Later the same day, they asked to stop further Worker capture iteration and learn the Meshy-assisted building method for unit art. The candidate is now Meshy-generated and animated character models rendered into directional sprite frames; the runtime-art choice remains sprites. No character Meshy job has been started. The normal game path still uses instanced 3D placeholders and role markers; this exploration adds opt-in previews with `?unitSpritePreview=1` and `?workerSpritePreview=1`.
+On 26 September 2026, the user selected painterly cutout sprites and paused further Worker capture iteration. They then asked to learn the Meshy-assisted building method. That request is recorded as a workflow comparison; it does not change the 2D production direction or authorize character generation. The normal game path still uses instanced 3D placeholders and role markers; this exploration adds opt-in previews with `?unitSpritePreview=1` and `?workerSpritePreview=1`.
 
 The choice fits the project's existing environment art: painted transparent cutouts already sit on camera-facing planes, and the battlefield uses a fixed oblique orthographic camera. A 2D illustration can spend its effort on silhouette, materials, and team accents without requiring the team to become proficient Blender modelers.
 
@@ -34,18 +34,18 @@ The dedicated `renderer-worker-sprite-v2` scenario now records eight full game v
 ## Next production slice
 
 1. Stop Worker v2 capture iteration here. Keep its wide frames and 4× diagnostic crops as a record of the readability gap; the crops help inspect art but do not prove standard-scale legibility.
-2. Follow the [unit character Meshy-to-sprite checkpoint](unit-character-meshy-pipeline.md) for one role before expanding the roster. The pilot should test an A/T-pose model, rigging, walk and attack clips, and fixed-camera frame rendering.
-3. Compare the generated frames with the existing sprite atlas in the opt-in game path. Review ordinary gameplay scale and real state transitions; treat 2,000-unit performance as a separate claim, not a source-art publication gate.
+2. Continue painterly 2D production with an independent Infantry or Archer silhouette/action sample. Keep the [Meshy workflow note](unit-character-meshy-pipeline.md) as a comparison only unless the user explicitly changes the production direction.
+3. Review useful source art at ordinary gameplay scale and capture live state transitions when returning to runtime validation; treat 2,000-unit performance as a separate claim, not a source-art publication gate.
 
-The earlier Blender-authored GLB sample remains historical. A Meshy character model would be an intermediate source for sprite production, not a request to replace the current game renderer with skinned GLBs.
+The earlier Blender-authored GLB sample remains historical. If Meshy character work is reopened, its model would be an intermediate source for sprite production, not a request to replace the current game renderer with skinned GLBs.
 
 ## Resume checkpoint
 
-- **Direction:** keep sprites as the runtime target while evaluating Meshy as a 3D modeling and animation source. The building workflow's eight-view capture uses a local Three.js browser renderer, so manual Blender modeling is not part of the proposed pilot.
+- **Direction:** painterly 2D directional sprites remain the production target. The Meshy building workflow is documented for comparison only; no unit model, rig, or motion job is scheduled.
 - **Ready to inspect:** the three source atlases and [`sprite-animation-test.html`](../assets/units/sprite-animation-test.html) show all roles walking and performing their main actions. The page is an illustrative mock battlefield, not proof of game behavior. The Worker v2 game run now has a 4× close-up at each zoom for art inspection.
 - **In-game scope:** `?workerSpritePreview=1` opts only the Worker into the batched renderer using Worker v2. `?unitSpritePreview=1` previews all three roles using their v1 packs. Both flags leave the normal game path unchanged, and the role/version map in `src/main.js` keeps the two comparisons independent. The server allowlist exposes only the required atlas/runtime/mask files.
 - **What looks promising:** eight directional columns preserve more turns than four, role equipment reads in the sheets, gray8 masks separate team color from the authored art, and deterministic packing makes frame/pivot metadata repeatable.
 - **What remains weak:** eight facings are approximate, walk loops have only two frames, action poses are short/static, and direction-to-direction anatomy is not perfectly consistent. The full 64×64 game views leave workers too small to judge at both camera zooms; the 4× crops help inspect the art but are not standard-scale readability proof. Worker v2 still has conspicuous colored edge contamination and heuristic pivots. No 2,000-unit performance claim has been measured.
-- **Next decision:** test the Meshy-to-sprite method on one role, then compare its frames with the existing hand-authored atlas. Keep the readability gap and action-transition limits explicit; they are product evidence gaps, not default merge gates for a scoped source sample. Do not describe either pack as production-ready.
+- **Next decision:** produce the next independent Infantry or Archer source sample in 2D. Keep the readability gap and action-transition limits explicit; they are product evidence gaps, not default merge gates for a scoped source sample. Do not describe either pack as production-ready.
 - **Repeatable pack check:** `node scripts/validate-unit-sprite-atlas.mjs assets/units/<role>-sprite-v1/manifest.json`; run the same validator against `assets/units/worker-sprite-v2/manifest.json` for the Worker v2 experiment.
 - **Merge checkpoint:** current `main` (`c4c1374`, #161) is merged into local branch `codex/unit-sprite-exploration-20260926` at `6f260e6`. The branch has no published PR. A prior GitHub write returned 403 and the user directed that no alternate write route be used. The wide views do not establish standard-scale readability; that limitation is recorded, not a publication hold for a scoped source sample.

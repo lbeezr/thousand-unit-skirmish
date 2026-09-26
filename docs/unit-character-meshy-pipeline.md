@@ -1,6 +1,6 @@
 # Unit character Meshy-to-sprite feasibility checkpoint
 
-**Status:** workflow study only. The user asked to stop further Worker capture iteration and learn the Meshy-assisted method used for building references. No character Meshy task has been submitted; no character generation credits were used. The runtime target under study remains directional sprites.
+**Status:** comparison only. The user asked to stop further Worker capture iteration and learn the Meshy-assisted method used for building references. This does not change the painterly 2D production direction. No character Meshy task has been submitted and no character generation credits were used.
 
 ## What the building method actually does
 
@@ -8,7 +8,9 @@ The [building asset pipeline](building-asset-production-pipeline.md) starts with
 
 Those views were rendered with the project's local Three.js browser renderer, not by manually modeling each view in Blender. The PR gallery displays the saved frames; it does not generate them or replace the in-game Town Center. The separate `frontier-glb-sample-v2` unit/building pack was authored in Blender and uses rigid parts without skeletal skinning, so it is not a Meshy rigging example.
 
-## Adapt the sequence for one animated character
+## What a future character comparison would test
+
+If a later user instruction explicitly reopens Meshy character production, adapt the building sequence as follows:
 
 1. **Choose one role and lock its visual contract.** Start with Infantry: the six-sided shield, spear, steel-grey cap, neutral gear, and team sash give the pilot a specific silhouette and a clear attack to judge. Make the character reference clean and full-body, with a rig-friendly A-pose or T-pose. Include front, side, back, and three-quarter views when possible; a single three-quarter image leaves unseen equipment and back details to inference. Keep the sash as an isolated material or mask so Azure/Ember does not require two models.
 2. **Generate and inspect the 3D source.** Use Meshy's image-to-3D workflow from the approved character reference. Inspect the face, hands, feet, shield, spear, pack, and silhouette from all around before accepting it. Keep the model and task metadata with the source image, prompt/settings, and hashes.
@@ -17,9 +19,9 @@ Those views were rendered with the project's local Three.js browser renderer, no
 5. **Render the animated model into sprite frames.** Extend the building capture approach to advance each clip at fixed timestamps and render eight azimuths, 45 degrees apart, at the established 46-degree elevation. Keep world scale, orthographic camera, studio light, canvas, and ground pivot fixed across frames. Save transparent PNG source frames; create compressed runtime pages, contact sheets, gray8 sash masks, explicit frame rectangles, pivots, clip timing, hashes, and a manifest using the existing sprite-atlas contract.
 6. **Review in the existing opt-in game path.** Compare native game-scale Infantry frames with the current atlas on Meadow/Cinder, both teams, and both zoom settings. Check role silhouette, weapon attachment, foot/root stability, team tint, frame continuity, edge quality, and actual order-driven attack/defeat transitions. Keep the default renderer unchanged until a useful candidate is integrated; do not claim performance savings without a comparable large-army measurement.
 
-The likely division of labor is Meshy for model creation, remeshing, rigging, and motion; a saved Three.js capture tool for repeatable turntable animation renders; and the existing sprite packer/runtime for frame metadata, masks, batching, and gameplay preview. Blender modeling is not required for this route.
+If the user later reopens this method, the likely division of labor is Meshy for model creation, remeshing, rigging, and motion; a saved Three.js capture tool for repeatable turntable animation renders; and the existing sprite packer/runtime for frame metadata, masks, batching, and gameplay preview. Blender modeling would not be required for that route.
 
-## What the pilot must settle
+## Questions a future pilot would settle
 
 - Whether Meshy produces a clean, recognizable Infantry from the project's reference art, especially from rear and side views.
 - Whether auto-rigging preserves the shield and spear through walking, attacking, hit, and defeat clips, or whether those props need a separate attachment contract.
@@ -27,7 +29,7 @@ The likely division of labor is Meshy for model creation, remeshing, rigging, an
 - Whether the rendered sprite frames retain the desired painterly fit and read at actual gameplay scale. Higher-resolution modeling does not by itself solve the current small-on-screen readability problem.
 - How much atlas memory and alpha overdraw the direction × clip-frame set requires. A sprite output still needs the current batched sprite runtime; Meshy does not solve runtime animation selection.
 
-Do not generate the full roster first. One Infantry pilot covering idle, walk, spear attack, and defeat is enough to find out whether this source method is worth carrying to Worker and Archer. Retain the current hand-authored atlas as the side-by-side control. This checkpoint records the method; it does not authorize additional paid provider work or select Meshy as the final art source.
+If the user later explicitly changes the production direction, one Infantry comparison covering idle, walk, spear attack, and defeat would be a bounded first check beside the existing hand-authored atlas. That is not the current production plan. This note records the method only; it does not authorize paid provider work or select Meshy as the final art source.
 
 ## References
 
