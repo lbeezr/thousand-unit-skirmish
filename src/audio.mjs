@@ -11,6 +11,17 @@ const COOLDOWN_MS = Object.freeze({
   victory: 5000, defeat: 5000, draw: 5000,
   'battle-alert': 9000, 'selected-alert': 11000, 'base-alert': 11000,
 });
+const AMBIENCE_CHORDS = Object.freeze([
+  Object.freeze([146.83, 220, 293.66]),
+  Object.freeze([130.81, 196, 261.63]),
+  Object.freeze([164.81, 246.94, 329.63]),
+]);
+const MUSIC_NOTE_SPACING_SECONDS = 0.58;
+const MUSIC_NOTE_DURATION_SECONDS = 1.85;
+const MUSIC_SCHEDULE_AHEAD_SECONDS = 0.08;
+export const AMBIENCE_PREVIEW_DURATION_MS = Math.ceil((MUSIC_SCHEDULE_AHEAD_SECONDS
+  + MUSIC_NOTE_SPACING_SECONDS * (AMBIENCE_CHORDS[0].length - 1)
+  + MUSIC_NOTE_DURATION_SECONDS + 0.01) * 1000);
 
 function browserStorage() {
   try { return globalThis.localStorage; } catch { return null; }
@@ -37,6 +48,7 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
   let master = null;
   let effects = null;
   let atmosphere = null;
+  let atmospherePreview = null;
   let ambienceSource = null;
   let impactNoise = null;
   let musicTimer = null;
@@ -74,8 +86,10 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
     master.gain.setTargetAtTime(settings.enabled ? settings.volume * 0.78 : 0, at, 0.045);
     effects.gain.setTargetAtTime(0.52 * settings.effectsLevel, at, 0.045);
     const ducked = performance.now() < duckUntil;
-    atmosphere.gain.setTargetAtTime(settings.enabled && settings.ambience
+    const ambienceEnabled = settings.enabled && settings.ambience;
+    atmosphere.gain.setTargetAtTime(ambienceEnabled
       ? (ducked ? 0.045 : 0.18) * settings.ambienceLevel : 0, at, ducked ? 0.04 : 0.25);
+    atmospherePreview.gain.setTargetAtTime(ambienceEnabled ? 0.18 * settings.ambienceLevel : 0, at, 0.045);
   }
 
   function makeContext() {
@@ -87,10 +101,13 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
       master = context.createGain();
       effects = context.createGain();
       atmosphere = context.createGain();
+      atmospherePreview = context.createGain();
       effects.gain.value = 0.52;
       atmosphere.gain.value = 0;
+      atmospherePreview.gain.value = 0;
       effects.connect(master);
       atmosphere.connect(master);
+      atmospherePreview.connect(master);
       master.connect(context.destination);
       applyLevels();
       createAmbience();
@@ -221,15 +238,25 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
     }
   }
 
+  function playMusicPhrase(notes, destination) {
+    const start = context.currentTime + MUSIC_SCHEDULE_AHEAD_SECONDS;
+    for (let i = 0; i < notes.length; i++) {
+      tone(notes[i], start + i * MUSIC_NOTE_SPACING_SECONDS, MUSIC_NOTE_DURATION_SECONDS, { wave: 'sine', gain: 0.06, destination });
+    }
+  }
+
   function scheduleMusic() {
     if (!context || context.state !== 'running' || !settings.enabled || settings.volume <= 0 || !settings.ambience || settings.ambienceLevel <= 0
       || doc?.hidden || performance.now() - lastAlertAt < 10000) return;
-    const start = context.currentTime + 0.08;
-    const chords = [[146.83, 220, 293.66], [130.81, 196, 261.63], [164.81, 246.94, 329.63]];
-    const notes = chords[phraseNumber++ % chords.length];
-    for (let i = 0; i < notes.length; i++) {
-      tone(notes[i], start + i * 0.58, 1.85, { wave: 'sine', gain: 0.06, destination: atmosphere });
-    }
+    playMusicPhrase(AMBIENCE_CHORDS[phraseNumber++ % AMBIENCE_CHORDS.length], atmosphere);
+  }
+
+  function previewAmbience() {
+    if (!context || context.state === 'closed' || !settings.enabled || settings.volume <= 0 || !settings.ambience
+      || settings.ambienceLevel <= 0 || doc?.hidden) return false;
+    const scheduledBefore = scheduledVoiceSerial;
+    playMusicPhrase(AMBIENCE_CHORDS[phraseNumber % AMBIENCE_CHORDS.length], atmospherePreview);
+    return scheduledVoiceSerial > scheduledBefore;
   }
 
   function unlock() {
@@ -346,7 +373,7 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
   doc?.addEventListener?.('visibilitychange', onVisibilityChange);
 
   return {
-    play, preview, unlock, setSettings,
+    play, preview, previewAmbience, unlock, setSettings,
     getSettings: () => ({ ...settings }), getStatus: status,
     dispose() {
       doc?.removeEventListener?.('visibilitychange', onVisibilityChange);
