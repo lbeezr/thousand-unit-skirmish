@@ -1,0 +1,64 @@
+{
+  "kit": "frontier-command-kit-v1",
+  "cursorSize": [32, 32],
+  "cursors": {
+    "select": {
+      "source": "assets/ui/cursors/select.svg",
+      "runtime": "assets/ui/cursors/select.png",
+      "hotspot": [3, 3],
+      "fallback": "crosshair"
+    },
+    "box-select": {
+      "source": "assets/ui/cursors/box-select.svg",
+      "runtime": "assets/ui/cursors/box-select.png",
+      "hotspot": [16, 16],
+      "fallback": "crosshair"
+    },
+    "move": {
+      "source": "assets/ui/cursors/move.svg",
+      "runtime": "assets/ui/cursors/move.png",
+      "hotspot": [3, 3],
+      "fallback": "crosshair"
+    },
+    "attack-move": {
+      "source": "assets/ui/cursors/attack-move.svg",
+      "runtime": "assets/ui/cursors/attack-move.png",
+      "hotspot": [3, 3],
+      "fallback": "crosshair"
+    },
+    "gather": {
+      "source": "assets/ui/cursors/gather.svg",
+      "runtime": "assets/ui/cursors/gather.png",
+      "hotspot": [3, 3],
+      "fallback": "crosshair"
+    },
+    "build-valid": {
+      "source": "assets/ui/cursors/build-valid.svg",
+      "runtime": "assets/ui/cursors/build-valid.png",
+      "hotspot": [3, 3],
+      "fallback": "crosshair"
+    },
+    "build-blocked": {
+      "source": "assets/ui/cursors/build-blocked.svg",
+      "runtime": "assets/ui/cursors/build-blocked.png",
+      "hotspot": [3, 3],
+      "fallback": "crosshair"
+    }
+  },
+  "pan": {
+    "open": "grab",
+    "dragging": "grabbing",
+    "customCursor": false
+  },
+  "icons": {
+    "size": [24, 24],
+    "paths": [
+      "assets/ui/icons/wood.svg",
+      "assets/ui/icons/food.svg",
+      "assets/ui/icons/move.svg",
+      "assets/ui/icons/attack.svg",
+      "assets/ui/icons/gather.svg",
+      "assets/ui/icons/build.svg"
+    ]
+  }
+}
