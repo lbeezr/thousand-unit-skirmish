@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
+import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildElevationGrid, validateElevationPatches } from '../src/map-utils.mjs';
 
-// Keep this as a layout preview until the server accepts the agreed trade-node schema.
+// The playable interim map uses a supported food node as a clearly labeled coffee placeholder.
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const WIDTH = 129;
 const HEIGHT = 97;
@@ -174,19 +175,18 @@ for (const [type, points] of [
 ]) {
   for (const [column, row] of points) addResourcePair('expansion', type, column, row, 300);
 }
-resources.sort((a, b) => a.id.localeCompare(b.id));
 const coffeeCell = index(64, 48);
-assert.equal(obstacleByCell[coffeeCell], null, 'The coffee grove should sit on open ground.');
-assert.equal(levelsByCell[coffeeCell], 2, 'The coffee grove should sit on the high terrace.');
-resources.push({
-  id: 'highland-coffee-grove',
-  type: 'trade',
-  species: 'coffee',
+assert.equal(obstacleByCell[coffeeCell], null, 'The coffee placeholder should sit on open ground.');
+assert.equal(levelsByCell[coffeeCell], 2, 'The coffee placeholder should sit on the high terrace.');
+const coffeePlaceholder = {
+  id: 'highland-coffee-placeholder',
+  type: 'food',
   x: 0,
   z: 0,
   stock: 60,
-  capacity: 60,
-});
+};
+resources.push(coffeePlaceholder);
+resources.sort((a, b) => a.id.localeCompare(b.id));
 
 const obstacles = compressCells(obstacleByCell, material => material !== null)
   .map(({ column, row, width, height, value: material }) => ({ column, row, width, height, material }));
@@ -202,10 +202,12 @@ const forestCount = obstacleByCell.filter(material => material === 'forest').len
 const forestPercent = forestCount / CELL_COUNT * 100;
 assert.ok(forestPercent >= 12 && forestPercent <= 20,
   `Forest coverage ${forestPercent.toFixed(1)}% must stay within the 12–20% map range.`);
-assert.equal(resources.length, 33, 'Highland Grove should have 32 ordinary sites and one specialty site.');
-assert.equal(resources.filter(node => node.type === 'food').length, 16);
+assert.equal(resources.length, 33, 'Highland Grove should have 32 ordinary sites and one coffee-placeholder site.');
+assert.equal(resources.filter(node => node.type === 'food').length, 17);
 assert.equal(resources.filter(node => node.type === 'wood').length, 16);
-assert.equal(resources.filter(node => node.type === 'trade' && node.species === 'coffee').length, 1);
+assert.equal(resources.filter(node => node.type === 'trade').length, 0,
+  'The playable interim map must not serialize unsupported trade nodes.');
+assert.equal(resources.find(node => node.id === coffeePlaceholder.id)?.type, 'food');
 for (let row = 0; row < HEIGHT; row++) {
   for (let column = 0; column < WIDTH / 2; column++) {
     const left = index(column, row);
@@ -290,10 +292,37 @@ function shortestPathCosts(start) {
   return distances;
 }
 
+const triggers = [
+  {
+    id: 'north-signal',
+    name: 'North Signal',
+    type: 'capture-zone',
+    zone: { column: 61, row: 24, width: 7, height: 7 },
+    requiredUnits: 16,
+    captureSeconds: 8,
+    foodReward: 50,
+    woodReward: 25,
+    victory: true,
+    message: '{team} SECURED THE NORTH SIGNAL',
+  },
+  {
+    id: 'south-signal',
+    name: 'South Signal',
+    type: 'capture-zone',
+    zone: { column: 61, row: 66, width: 7, height: 7 },
+    requiredUnits: 16,
+    captureSeconds: 8,
+    foodReward: 50,
+    woodReward: 25,
+    victory: true,
+    message: '{team} SECURED THE SOUTH SIGNAL',
+  },
+];
+
 const definition = {
   id: 'highland-grove',
   name: 'Highland Grove',
-  summary: 'Two shaded approaches rise to a shared central terrace.',
+  summary: 'Hold both route signals. The terrace food site previews a future coffee grove.',
   width: WIDTH,
   height: HEIGHT,
   terrainSeed: 907,
@@ -303,7 +332,7 @@ const definition = {
   startingArmySize: 1000,
   startingResources: { food: 200, wood: 150 },
   fogOfWar: true,
-  victoryMode: 'any',
+  victoryMode: 'all',
   victoryHoldSeconds: 20,
   spawnPoints: [
     { team: 0, x: 20.5 - WIDTH / 2, z: 48.5 - HEIGHT / 2 },
@@ -311,7 +340,7 @@ const definition = {
   ],
   resourceNodes: resources,
   obstacles,
-  triggers: [],
+  triggers,
   scenarioEvents: [],
 };
 
@@ -330,14 +359,37 @@ for (const [name, cell] of [['north', northApproachCell], ['south', southApproac
   assert.equal(spawnCosts[0][cell], spawnCosts[1][cell],
     `The ${name} approach travel cost should match between both seats.`);
 }
+const objectiveTravelCosts = {};
+for (const trigger of definition.triggers) {
+  const zoneCells = [];
+  for (let row = trigger.zone.row; row < trigger.zone.row + trigger.zone.height; row++) {
+    for (let column = trigger.zone.column; column < trigger.zone.column + trigger.zone.width; column++) {
+      const cell = index(column, row);
+      assert.equal(obstacleByCell[cell], null, `${trigger.name} should have a clear capture area.`);
+      zoneCells.push(cell);
+    }
+  }
+  const costs = spawnCosts.map(distances => Math.min(...zoneCells.map(cell => distances[cell])));
+  assert.ok(costs.every(Number.isFinite), `${trigger.name} should be reachable from both spawns.`);
+  assert.equal(costs[0], costs[1], `${trigger.name} approach travel cost should match between both seats.`);
+  objectiveTravelCosts[trigger.id] = costs;
+  assert.ok(!zoneCells.includes(coffeeCell), `${trigger.name} must stay separate from the terrace food placeholder.`);
+}
 for (const node of resources) {
   const cell = pointCell(node);
   assert.ok(spawnCosts.every(costs => Number.isFinite(costs[cell])),
     `${node.id} should be reachable from both seats.`);
 }
 
-if (process.argv.includes('--write')) {
-  throw new Error('Highland Grove stays preview-only until Gameplay supports trade nodes on the server.');
+const outputPath = path.join(ROOT, 'maps', 'highland-grove.json');
+const writeRequested = process.argv.includes('--write');
+const checkRequested = process.argv.includes('--check');
+assert.ok(!(writeRequested && checkRequested), 'Choose either --write or --check.');
+if (writeRequested) {
+  await writeFile(outputPath, `${JSON.stringify(definition, null, 2)}\n`);
+} else if (checkRequested) {
+  const saved = JSON.parse(await readFile(outputPath, 'utf8'));
+  assert.deepEqual(saved, definition, 'Committed Highland Grove JSON should match the validated layout generator.');
 }
 console.log(JSON.stringify({
   map: definition.id,
@@ -345,10 +397,18 @@ console.log(JSON.stringify({
   forestCells: forestCount,
   forestPercent: Number(forestPercent.toFixed(1)),
   ordinaryResources: resources.length - 1,
-  specialtyNode: resources.find(node => node.species === 'coffee'),
+  coffeePlaceholder: { id: coffeePlaceholder.id, type: coffeePlaceholder.type, stock: coffeePlaceholder.stock },
   elevationPatches: elevationPatches.length,
   terrainCostToTerrace: [spawnCosts[0][terraceCell], spawnCosts[1][terraceCell]],
   terrainCostToNorthApproach: [spawnCosts[0][northApproachCell], spawnCosts[1][northApproachCell]],
   terrainCostToSouthApproach: [spawnCosts[0][southApproachCell], spawnCosts[1][southApproachCell]],
-  output: 'preview only; map JSON not written',
+  objectives: definition.triggers.map(trigger => ({
+    id: trigger.id,
+    name: trigger.name,
+    travelCost: objectiveTravelCosts[trigger.id],
+    victory: trigger.victory,
+  })),
+  output: writeRequested ? 'wrote maps/highland-grove.json'
+    : checkRequested ? 'maps/highland-grove.json matches generated layout'
+      : 'layout analysis only; pass --write to materialize the playable map',
 }, null, 2));
