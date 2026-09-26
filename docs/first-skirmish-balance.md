@@ -1,8 +1,11 @@
 # First 1v1 skirmish balance ledger
 
-Status: early tuning; merged-baseline evidence retested at `f1d6482` on
-25 September 2026. This is a test plan and evidence record, not a claim that
-the skirmish is balanced. Scope follows the
+Status: early tuning; no numeric change is justified. QA reran the combat
+parity fixture on local `main` at `fcc7bcac` on 26 September 2026. The
+Forked Vale production opening was last run at `4930a81`; its map, runner,
+and relevant economy logic are unchanged through current `main` at `2871a43`,
+but that remains prior-run evidence. This is a test plan and evidence record,
+not a claim that the skirmish is balanced. Scope follows the
 working Game Bible and RTS Feature Coverage Inventory, maintained by the
 product team: one complete invite-first 1v1 scenario with a small roster.
 Large armies remain a separate stress workload.
@@ -276,12 +279,13 @@ These current-main local protocol checks confirm the merged map metadata did
 not change the measured combat counter, seat parity, or opening economy. They
 still do not measure contested human pacing or strategic win rates.
 
-## Main snapshot recheck · `4930a81` (25 September 2026)
+## Historical main snapshot recheck · `4930a81` (25 September 2026)
 
 These ordinary local protocol checks ran from a clean checkout at
 `4930a818f1b17bcb180882acd2ea5601a9d89738` with Node `v24.9.0` on macOS
 arm64. The recorded process wall times are not in-game duration or performance
-measurements. Main later advanced to `01815b8`. The intervening commits add
+measurements. Main later advanced to `2871a43`; a post-#63 QA combat recheck
+is recorded below. The intervening commits add
 UI resource callouts, audio settings, PvE worker-gathering behavior, and the
 finite-resource scenario harness. They do not change the core server combat or
 economy rules or map files exercised here. These manual two-seat fixtures do
@@ -339,16 +343,56 @@ run output was not retained as a file; QA was told to classify it as an owner
 run, not an independent QA artifact. No combat-server or map files changed
 between baseline `e3d3268` and current main `4930a81`.
 
-### Tuning decision
+### Post-#63 QA combat recheck · `fcc7bcac` (26 September 2026)
+
+QA reran `node scripts/infantry-seat-combat-scenario.mjs --expect-parity`
+on local main commit `fcc7bcac99bb3115e36e9a5cdf83545f35472c17`, using
+Forked Vale with eight infantry per side, workers parked, and fog disabled.
+All four fights resolved at 12.3 in-game seconds. With team 0 spawning at
+`x=-7`, the left side finished with 3 survivors / 300 HP and the right side
+with 4 / 350 HP. With team 0 spawning at `x=7`, the right side again finished
+with 4 / 350 HP and the left side with 3 / 300 HP. Reversing command send
+order changed neither result. The edge followed the +X/right side, not team
+identity.
+
+Each result remains within the fixture's `--expect-parity` bounds of at most
+one survivor and 100 HP difference. Classify this as a repeatable,
+within-threshold fairness signal, not a parity failure or a reason to tune
+unit stats. The scenario output does not record first target acquisition,
+first attack, or route-arrival timing; those would need test telemetry before
+attributing the edge to a server mechanic. Same-tick combat damage is already
+applied as a batch.
+
+The handoff associates the result with the retained JSON at
+`/private/tmp/rts-balance-seat-parity-4930a.log` (SHA-256
+`e317187ac48e85b777edbf0be58146ce4daa1c431d77aa43033a18db0c911a6c`). The
+JSON does not embed the source commit, so the run-to-commit association comes
+from QA's report. Current `main` is `2871a43`; the combat code, Forked Vale
+map, and scenario are unchanged from `fcc7bcac`. The last production-opening
+run remains `4930a81`; the tested map, runner, and relevant economy logic are
+unchanged through `2871a43`, but no post-#63 opening rerun is claimed here.
+
+## Current tuning decision
 
 The current scripted evidence supports keeping combat damage, unit costs, and
-build times unchanged. It confirms the seat-parity and mirrored-construction
-checks, while the equal-cost duel gives infantry the expected frontline
-advantage. It does not show whether either production plan or worker-heavy
-opening wins more contested matches.
+build times unchanged. The post-#63 QA recheck still passes the seat-parity
+bounds, but its repeatable +X edge is a fairness note rather than a stat-tuning
+trigger. The Forked Vale production opening remains symmetric in its latest
+4930a81 run, and the relevant rules remain unchanged on current `main`; neither
+fixture establishes which opening wins contested matches.
 
 ## Next tuning decisions
 
+- The next Balance-lane proof is a contested two-seat match on a current build,
+  supporting M1 and M4. Record the build SHA, both seats' first gather, build,
+  first reinforcement, first contest, and win times, plus the chosen openings
+  and player explanations. Keep the synthetic within-threshold +X edge as a
+  test note; do not use it alone to change costs or combat stats.
+- When the Highland Grove pilot is playable, compare coffee-grove control
+  with ordinary economy/objective openings from both seats. Record first
+  control, harvest/exchange totals, route and protection choices, whether the
+  first control snowballs, contest/win times, and player explanations. Treat the
+  experiment's proposed trade values as hypotheses, not tuning commitments.
 - In contested matches, record worker losses, raids, and the response that
   punished or protected the economy. Keep the equal-cost 4v4 fixture as a
   regression; change worker damage only if workers substitute for infantry or
