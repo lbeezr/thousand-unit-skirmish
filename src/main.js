@@ -26,7 +26,7 @@ import {
 } from './map-utils.mjs';
 import { resizeWorldMarkers } from './map-resize.mjs';
 import { classifyOrderNotice } from './order-feedback.mjs';
-import { createGameAudio } from './audio.mjs';
+import { AMBIENCE_PREVIEW_DURATION_MS, createGameAudio } from './audio.mjs';
 import { CombatAudioGate, cueForNotice, cueForScenarioEvent, isLocalRejection } from './audio-policy.mjs';
 import {
   canEdgeScroll,
@@ -263,10 +263,12 @@ const ui = {
   audioPreview: document.querySelector('#audio-preview'),
   audioPreviewCue: document.querySelector('#audio-preview-cue'),
   audioAmbience: document.querySelector('#audio-ambience'),
+  audioAmbiencePreview: document.querySelector('#audio-ambience-preview'),
   audioAmbienceLevel: document.querySelector('#audio-ambience-level'),
   audioAmbienceLevelValue: document.querySelector('#audio-ambience-level-value'),
   audioStatus: document.querySelector('#audio-status'),
 };
+let ambiencePreviewPlaying = false;
 const audio = createGameAudio({
   onStatusChange: () => syncAudioControls(),
   onCue: (cue) => {
@@ -6580,6 +6582,8 @@ function syncAudioControls() {
     || settings.effectsLevel <= 0;
   ui.audioPreview.disabled = previewDisabled;
   ui.audioPreviewCue.disabled = previewDisabled;
+  ui.audioAmbiencePreview.disabled = ambiencePreviewPlaying || status === 'muted' || status === 'unavailable' || status === 'closed'
+    || !settings.ambience || settings.ambienceLevel <= 0;
   ui.audioStatus.textContent = {
     running: 'SOUND READY', waiting: 'SOUND STARTS WITH FIRST INPUT', muted: 'SOUND MUTED',
     silent: 'NO AUDIBLE CHANNELS',
@@ -6593,6 +6597,18 @@ ui.audioVolume.addEventListener('input', () => { audio.setSettings({ volume: Num
 ui.audioEffectsLevel.addEventListener('input', () => { audio.setSettings({ effectsLevel: Number(ui.audioEffectsLevel.value) / 100 }); syncAudioControls(); });
 ui.audioPreview.addEventListener('click', () => { audio.unlock(); audio.preview(ui.audioPreviewCue.value); });
 ui.audioAmbience.addEventListener('change', () => { audio.setSettings({ ambience: ui.audioAmbience.checked }); syncAudioControls(); });
+ui.audioAmbiencePreview.addEventListener('click', () => {
+  audio.unlock();
+  if (!audio.previewAmbience()) return;
+  ambiencePreviewPlaying = true;
+  ui.audioAmbiencePreview.textContent = 'Phrase playing';
+  syncAudioControls();
+  globalThis.setTimeout(() => {
+    ambiencePreviewPlaying = false;
+    ui.audioAmbiencePreview.textContent = 'Preview phrase';
+    syncAudioControls();
+  }, AMBIENCE_PREVIEW_DURATION_MS);
+});
 ui.audioAmbienceLevel.addEventListener('input', () => { audio.setSettings({ ambienceLevel: Number(ui.audioAmbienceLevel.value) / 100 }); syncAudioControls(); });
 document.addEventListener('pointerdown', () => audio.unlock(), { capture: true, once: true });
 document.addEventListener('keydown', () => audio.unlock(), { capture: true, once: true });
