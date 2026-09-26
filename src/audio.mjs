@@ -1,7 +1,7 @@
 // All sounds are synthesized here with Web Audio. No sampled or licensed media is used.
 const STORAGE_KEY = 'tus-audio-v1';
 const DEFAULT_SETTINGS = Object.freeze({
-  enabled: true, volume: 0.5, effectsLevel: 1, ambience: true, ambienceLevel: 1,
+  enabled: true, captions: false, volume: 0.5, effectsLevel: 1, ambience: true, ambienceLevel: 1,
 });
 const COOLDOWN_MS = Object.freeze({
   select: 90, move: 90, attack: 120, gather: 140, rally: 550, build: 170,
@@ -32,6 +32,7 @@ export function readAudioSettings(storage = browserStorage()) {
     const saved = JSON.parse(storage?.getItem(STORAGE_KEY) || '{}');
     return {
       enabled: typeof saved.enabled === 'boolean' ? saved.enabled : DEFAULT_SETTINGS.enabled,
+      captions: typeof saved.captions === 'boolean' ? saved.captions : DEFAULT_SETTINGS.captions,
       volume: Number.isFinite(saved.volume) ? Math.max(0, Math.min(1, saved.volume)) : DEFAULT_SETTINGS.volume,
       effectsLevel: Number.isFinite(saved.effectsLevel)
         ? Math.max(0, Math.min(2, saved.effectsLevel)) : DEFAULT_SETTINGS.effectsLevel,
@@ -350,6 +351,7 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
   function setSettings(next) {
     settings = {
       enabled: typeof next.enabled === 'boolean' ? next.enabled : settings.enabled,
+      captions: typeof next.captions === 'boolean' ? next.captions : settings.captions,
       volume: Number.isFinite(next.volume) ? Math.max(0, Math.min(1, next.volume)) : settings.volume,
       effectsLevel: Number.isFinite(next.effectsLevel)
         ? Math.max(0, Math.min(2, next.effectsLevel)) : settings.effectsLevel,

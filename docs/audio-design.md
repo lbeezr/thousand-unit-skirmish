@@ -41,6 +41,10 @@ Producer review caught that the first building-completion draft reused the battl
 
 The first user gesture unlocks Web Audio. Match Controls has enable, overall volume, effects level, cue previews, an ambience/music toggle, a separate ambience level, playback status, and saved local settings. Effects and ambience levels each range from 0% to 200%; their 100% defaults preserve the existing mix. Cue previews use the current effects and master levels. The music phrase can be previewed on demand at the current ambience and master levels; this does not advance the periodic phrase sequence or change tactical ducking. An ambience level of zero skips scheduled music phrases. Muting, setting overall volume to zero, disabling both output paths, or hiding the tab suspends the audio context. Music phrases occur about every 34 seconds and yield for ten seconds after tactical alerts. The atmosphere ducks for 2.4 seconds under tactical alerts while respecting the selected ambience level. The audio mix can be judged during a full 1v1 playtest; the current levels are a first pass, not a measured loudness master.
 
+## Critical sound captions · 26 September 2026
+
+Match Controls can optionally show short captions for major audio cues, including combat warnings, objective changes, depleted resources, production milestones, scenario rewards, and match outcomes. Captions follow cues that were scheduled successfully and stay independent of the audio mute and volume controls. Frequent command acknowledgements and selection sounds are left out because the interface already shows those actions and captions for them would crowd the battlefield.
+
 ## Critical alert distinction · 25 September 2026
 
 The earlier base-loss and defeat cues shared two fundamentals (261.63 Hz and 196 Hz) and both descended as three-note motifs. Base loss now uses a low sawtooth-to-triangle slide with no shared fundamentals with the sine-based defeat motif. The focused audio policy scenario guards the exact oscillator profiles and pitch separation; speaker and headphone listening remains part of the broader mix review.

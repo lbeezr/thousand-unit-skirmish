@@ -102,6 +102,7 @@
           <div class="field-hint"><span id="field-hint-primary-key" class="hint-key">LMB</span> <span id="field-hint-action">DRAG TO SELECT</span> <span class="hint-divider">·</span> <span id="field-hint-secondary-key" class="hint-key">RMB</span> <span id="field-hint-secondary">MOVE / ATTACK</span><span id="placement-status" class="placement-status" aria-live="off" hidden></span></div>
           <div id="field-order-feedback" class="field-order-feedback" data-state="ready" role="status" aria-live="off" hidden></div>
           <div id="toast" class="toast" role="status" aria-live="polite"></div>
+          <div id="audio-caption" class="audio-caption" role="status" aria-live="off" hidden></div>
           <div id="runtime-error" class="runtime-error" role="alert"></div>
         </section>
 
@@ -275,6 +276,7 @@
           <section class="control-section audio-section" aria-label="Audio settings">
             <div class="section-label"><span>AUDIO</span></div>
             <label class="audio-check"><input id="audio-enabled" type="checkbox" checked><span>Enable audio</span></label>
+            <label class="audio-check"><input id="audio-captions" type="checkbox"><span>Caption important sounds</span></label>
             <label class="audio-range" for="audio-volume"><span>Overall volume</span><input id="audio-volume" type="range" min="0" max="100" value="50"><output id="audio-volume-value" for="audio-volume">50%</output></label>
             <label class="audio-range" for="audio-effects-level"><span>Effects level</span><input id="audio-effects-level" type="range" min="0" max="200" value="100"><output id="audio-effects-level-value" for="audio-effects-level">100%</output></label>
             <div class="audio-preview-controls">
