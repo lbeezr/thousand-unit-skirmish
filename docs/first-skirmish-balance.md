@@ -1,14 +1,13 @@
 # First 1v1 skirmish balance ledger
 
-Status: early tuning; no numeric change is justified. QA reran the combat
-parity fixture on local `main` at `fcc7bcac` on 26 September 2026. The
-Forked Vale production opening was last run at `4930a81`; its map, runner,
-and relevant economy logic are unchanged through current `main` at `6a56cef`,
-but that remains prior-run evidence. This is a test plan and evidence record,
-not a claim that the skirmish is balanced. Scope follows the
-working Game Bible and RTS Feature Coverage Inventory, maintained by the
-product team: one complete invite-first 1v1 scenario with a small roster.
-Large armies remain a separate stress workload.
+Status: early tuning; no numeric change is justified. On 26 September 2026,
+the combat parity and Forked Vale production-opening fixtures were rerun on
+local `main` at `30d5dc353c49387bacdd05ef6afb1500c9519555` with Node `v24.9.0`
+on macOS arm64. See the owner-run results below; scripted checks are not human
+match evidence and do not establish that the skirmish is balanced. Scope
+follows the working Game Bible and RTS Feature Coverage Inventory, maintained
+by the product team: one complete invite-first 1v1 scenario with a small
+roster. Large armies remain a separate stress workload.
 
 ## Baseline found in the prototype
 
@@ -372,14 +371,47 @@ map, and scenario are unchanged from `fcc7bcac`. The last production-opening
 run remains `4930a81`; the tested map, runner, and relevant economy logic are
 unchanged through `6a56cef`, but no post-#63 opening rerun is claimed here.
 
+## Fresh owner rerun on merged main: `30d5dc3` (26 September 2026)
+
+Both fixtures were run from a clean disposable checkout at
+`30d5dc353c49387bacdd05ef6afb1500c9519555`, using Node `v24.9.0` on macOS
+arm64.
+
+### Combat seat parity
+
+`node scripts/infantry-seat-combat-scenario.mjs --expect-parity` passed all
+four 8v8 attack-move cases at 12.3 in-game seconds. Team 0 spawning left
+finished with 3 survivors / 300 HP against team 1's 4 / 350 HP; swapping the
+spawns reversed those results. Both command orders produced the same result.
+The repeated edge follows the +X/right spawn and remains within the fixture's
+limits of one survivor and 100 HP. This was an owner-run local reproduction,
+not an independent QA run or a human contest.
+
+### Forked Vale production opening
+
+```sh
+RTS_OPENING_MAP=maps/forked-vale.json RTS_OPENING_BUILD_X=21.5 \
+  node scripts/opening-production-scenario.mjs --expect-builder-parity --verbose
+```
+
+It passed both 24-unit rounds with 4 workers, 8 infantry, and 150 food / 250
+wood per team. The Barracks and Range each completed at 10.9 seconds from
+either seat. The first infantry appeared at 23 seconds and the first archer at
+18 seconds, whichever seat received that building. Both assigned builders
+remained in work range and contributed. Post-unit stocks were 100 food / 75
+wood for Barracks and 125 food / 55 wood for Range on either seat.
+
+This owner-run reproduction confirms the prior fixture results on current
+main. It does not measure contested human pacing, route choices, or strategic
+win rates.
+
 ## Current tuning decision
 
 The current scripted evidence supports keeping combat damage, unit costs, and
-build times unchanged. The post-#63 QA recheck still passes the seat-parity
-bounds, but its repeatable +X edge is a fairness note rather than a stat-tuning
-trigger. The Forked Vale production opening remains symmetric in its latest
-4930a81 run, and the relevant rules remain unchanged through `6a56cef`; neither
-fixture establishes which opening wins contested matches.
+build and training times unchanged. The `30d5dc3` owner rerun reproduces the
+within-bound +X edge and the seat-symmetric build and reinforcement timings;
+neither fixture establishes which opening wins contested matches. Do not use
+the small synthetic combat edge alone to change unit stats.
 
 ## Next tuning decisions
 
