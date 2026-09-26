@@ -1,6 +1,8 @@
 // All sounds are synthesized here with Web Audio. No sampled or licensed media is used.
 const STORAGE_KEY = 'tus-audio-v1';
-const DEFAULT_SETTINGS = Object.freeze({ enabled: true, volume: 0.5, ambience: true, ambienceLevel: 1 });
+const DEFAULT_SETTINGS = Object.freeze({
+  enabled: true, volume: 0.5, effectsLevel: 1, ambience: true, ambienceLevel: 1,
+});
 const COOLDOWN_MS = Object.freeze({
   select: 90, move: 90, attack: 120, gather: 140, rally: 550, build: 170,
   queue: 170, complete: 2200, 'research-complete': 2600, 'scenario-reward': 2400,
@@ -20,6 +22,8 @@ export function readAudioSettings(storage = browserStorage()) {
     return {
       enabled: typeof saved.enabled === 'boolean' ? saved.enabled : DEFAULT_SETTINGS.enabled,
       volume: Number.isFinite(saved.volume) ? Math.max(0, Math.min(1, saved.volume)) : DEFAULT_SETTINGS.volume,
+      effectsLevel: Number.isFinite(saved.effectsLevel)
+        ? Math.max(0, Math.min(2, saved.effectsLevel)) : DEFAULT_SETTINGS.effectsLevel,
       ambience: typeof saved.ambience === 'boolean' ? saved.ambience : DEFAULT_SETTINGS.ambience,
       ambienceLevel: Number.isFinite(saved.ambienceLevel)
         ? Math.max(0, Math.min(2, saved.ambienceLevel)) : DEFAULT_SETTINGS.ambienceLevel,
@@ -60,6 +64,7 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
     if (!context) return;
     const at = context.currentTime;
     master.gain.setTargetAtTime(settings.enabled ? settings.volume * 0.78 : 0, at, 0.045);
+    effects.gain.setTargetAtTime(0.52 * settings.effectsLevel, at, 0.045);
     const ducked = performance.now() < duckUntil;
     atmosphere.gain.setTargetAtTime(settings.enabled && settings.ambience
       ? (ducked ? 0.045 : 0.18) * settings.ambienceLevel : 0, at, ducked ? 0.04 : 0.25);
@@ -254,6 +259,8 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
     settings = {
       enabled: typeof next.enabled === 'boolean' ? next.enabled : settings.enabled,
       volume: Number.isFinite(next.volume) ? Math.max(0, Math.min(1, next.volume)) : settings.volume,
+      effectsLevel: Number.isFinite(next.effectsLevel)
+        ? Math.max(0, Math.min(2, next.effectsLevel)) : settings.effectsLevel,
       ambience: typeof next.ambience === 'boolean' ? next.ambience : settings.ambience,
       ambienceLevel: Number.isFinite(next.ambienceLevel)
         ? Math.max(0, Math.min(2, next.ambienceLevel)) : settings.ambienceLevel,

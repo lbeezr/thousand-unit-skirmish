@@ -47,10 +47,18 @@ gate.reset();
 assert.equal(gate.observe({ friendlyDamage: 1 }, 30050), 'battle-alert');
 
 const saved = { getItem: () => JSON.stringify({ enabled: false, volume: 4, ambience: false }) };
-assert.deepEqual(readAudioSettings(saved), { enabled: false, volume: 1, ambience: false, ambienceLevel: 1 });
-assert.deepEqual(readAudioSettings({ getItem: () => '{' }), { enabled: true, volume: 0.5, ambience: true, ambienceLevel: 1 });
+assert.deepEqual(readAudioSettings(saved), {
+  enabled: false, volume: 1, effectsLevel: 1, ambience: false, ambienceLevel: 1,
+});
+assert.deepEqual(readAudioSettings({ getItem: () => '{' }), {
+  enabled: true, volume: 0.5, effectsLevel: 1, ambience: true, ambienceLevel: 1,
+});
 assert.equal(readAudioSettings({ getItem: () => JSON.stringify({ ambienceLevel: 4 }) }).ambienceLevel, 2,
   'stored ambience level is capped at twice the reference mix');
+assert.equal(readAudioSettings({ getItem: () => JSON.stringify({ effectsLevel: 4 }) }).effectsLevel, 2,
+  'stored effects level is capped at twice the reference mix');
+assert.equal(readAudioSettings({ getItem: () => JSON.stringify({ effectsLevel: -1 }) }).effectsLevel, 0,
+  'stored effects level cannot go below mute');
 
 let oscillators = 0;
 let createdContext;
@@ -151,14 +159,21 @@ try {
   audio.setSettings({ enabled: true, volume: 0.3, ambience: false });
   assert.equal(audio.getStatus(), 'running');
   assert.equal(createdContext.resumeCalls, 1);
-  assert.deepEqual(readAudioSettings(storage), { enabled: true, volume: 0.3, ambience: false, ambienceLevel: 1 });
+  assert.deepEqual(readAudioSettings(storage), {
+    enabled: true, volume: 0.3, effectsLevel: 1, ambience: false, ambienceLevel: 1,
+  });
   assert.equal(createdContext.gains[0].gain.lastTarget, 0.3 * 0.78);
+  assert.equal(createdContext.gains[1].gain.lastTarget, 0.52);
   assert.equal(createdContext.gains[2].gain.lastTarget, 0);
-  audio.setSettings({ ambience: true, ambienceLevel: 0.4 });
+  audio.setSettings({ effectsLevel: 1.5, ambience: true, ambienceLevel: 0.4 });
+  assert.equal(createdContext.gains[1].gain.lastTarget, 0.52 * 1.5,
+    'effects level scales only the effects bus');
   assert.equal(createdContext.gains[2].gain.lastTarget, 0.045 * 0.4, 'ambience level scales only the already-ducked atmosphere bus');
   assert.equal(createdContext.gains[0].gain.lastTarget, 0.3 * 0.78, 'ambience level leaves overall volume unchanged');
-  assert.equal(createdContext.gains[1].gain.value, 0.52, 'ambience level leaves the effects bus unchanged');
-  assert.deepEqual(readAudioSettings(storage), { enabled: true, volume: 0.3, ambience: true, ambienceLevel: 0.4 });
+  assert.equal(createdContext.gains[1].gain.value, 0.52, 'effects level leaves the initial effects bus headroom unchanged');
+  assert.deepEqual(readAudioSettings(storage), {
+    enabled: true, volume: 0.3, effectsLevel: 1.5, ambience: true, ambienceLevel: 0.4,
+  });
   assert.equal(audio.play('base-lost'), true);
   assert.equal(createdContext.gains[2].gain.lastTarget, 0.045 * 0.4, 'tactical alert ducks the selected ambience level');
   assert.equal(audio.play('base-lost'), false, 'repeated building losses are rate limited');
