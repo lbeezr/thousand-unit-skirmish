@@ -38,8 +38,10 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
   let effects = null;
   let atmosphere = null;
   let ambienceSource = null;
+  let impactNoise = null;
   let musicTimer = null;
   let voiceCount = 0;
+  let transientVoiceCount = 0;
   let voiceLimit = 12;
   let scheduledVoiceSerial = 0;
   let phraseNumber = 0;
@@ -168,6 +170,51 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
     }
   }
 
+  function noiseBurst(start, duration, { centerFrequency = 1400, gain = 0.04, destination = effects } = {}) {
+    if (!context || voiceCount >= voiceLimit || transientVoiceCount >= 2) return;
+    transientVoiceCount++;
+    let source;
+    let filter;
+    let envelope;
+    try {
+      if (!impactNoise) {
+        const length = Math.max(1, Math.floor(context.sampleRate * 0.09));
+        impactNoise = context.createBuffer(1, length, context.sampleRate);
+        const samples = impactNoise.getChannelData(0);
+        let random = 0x6d2b79f5;
+        for (let i = 0; i < samples.length; i++) {
+          random ^= random << 13; random ^= random >>> 17; random ^= random << 5;
+          const fade = 1 - i / samples.length;
+          samples[i] = ((random >>> 0) / 0x7fffffff - 1) * fade;
+        }
+      }
+      source = context.createBufferSource();
+      source.buffer = impactNoise;
+      filter = context.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = centerFrequency;
+      if (filter.Q) filter.Q.value = 0.65;
+      envelope = context.createGain();
+      envelope.gain.setValueAtTime(0.0001, start);
+      envelope.gain.exponentialRampToValueAtTime(Math.max(0.0002, gain), start + Math.min(0.004, duration * 0.2));
+      envelope.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      source.connect(filter);
+      filter.connect(envelope);
+      envelope.connect(destination);
+      source.onended = () => {
+        source.disconnect(); filter.disconnect(); envelope.disconnect(); transientVoiceCount--;
+      };
+      source.start(start);
+      source.stop(start + duration + 0.01);
+      scheduledVoiceSerial++;
+    } catch {
+      if (source) source.onended = null;
+      try { source?.stop(); } catch {}
+      source?.disconnect(); filter?.disconnect(); envelope?.disconnect();
+      transientVoiceCount--;
+    }
+  }
+
   function scheduleMusic() {
     if (!context || context.state !== 'running' || !settings.enabled || settings.volume <= 0 || !settings.ambience || settings.ambienceLevel <= 0
       || doc?.hidden || performance.now() - lastAlertAt < 10000) return;
@@ -197,13 +244,21 @@ export function createGameAudio({ storage = browserStorage(), doc = globalThis.d
     switch (cue) {
       case 'select': tone(620, at, 0.055, { endFrequency: 780, gain: 0.13 }); break;
       case 'move': tone(310, at, 0.09, { wave: 'triangle', endFrequency: 390, gain: 0.19 }); break;
-      case 'attack': tone(260, at, 0.11, { wave: 'triangle', endFrequency: 205, gain: 0.23 }); tone(490, at + 0.025, 0.07, { endFrequency: 370, gain: 0.1 }); break;
+      case 'attack':
+        noiseBurst(at, 0.045, { centerFrequency: 1550, gain: 0.045 });
+        tone(260, at, 0.11, { wave: 'triangle', endFrequency: 205, gain: 0.23 });
+        tone(490, at + 0.025, 0.07, { endFrequency: 370, gain: 0.1 });
+        break;
       case 'gather': tone(420, at, 0.07, { wave: 'triangle', endFrequency: 550, gain: 0.14 }); break;
       case 'rally':
         tone(466.16, at, 0.09, { wave: 'triangle', gain: 0.12 });
         tone(698.46, at + 0.1, 0.14, { wave: 'sine', gain: 0.1 });
         break;
-      case 'build': tone(175, at, 0.16, { wave: 'triangle', endFrequency: 147, gain: 0.19 }); tone(350, at + 0.055, 0.09, { gain: 0.09 }); break;
+      case 'build':
+        noiseBurst(at, 0.035, { centerFrequency: 900, gain: 0.032 });
+        tone(175, at, 0.16, { wave: 'triangle', endFrequency: 147, gain: 0.19 });
+        tone(350, at + 0.055, 0.09, { gain: 0.09 });
+        break;
       case 'queue': tone(470, at, 0.06, { wave: 'triangle', gain: 0.12 }); tone(590, at + 0.095, 0.07, { wave: 'triangle', gain: 0.1 }); break;
       case 'complete': tone(392, at, 0.13, { gain: 0.17 }); tone(587, at + 0.13, 0.23, { gain: 0.15 }); break;
       case 'research-complete':
