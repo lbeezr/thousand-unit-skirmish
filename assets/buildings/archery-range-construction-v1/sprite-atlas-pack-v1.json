@@ -34,6 +34,17 @@
     },
     {
       "id": "source-frame",
+      "path": "source/generated-v2/archery-range-frame.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "7bbb3291e879a62c7d111bd81d8e48182e978c923fdb912124e16b67d712ff6a",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "source-frame-original",
       "path": "source/generated/archery-range-frame.png",
       "usage": "source",
       "format": "png",
@@ -48,7 +59,7 @@
       "path": "source/frames/archery-range-frame.png",
       "usage": "source",
       "format": "png",
-      "sha256": "6ea885726470a54abee400be4ebff34aeb7a8e7f773f1067fb392417c5c5f024",
+      "sha256": "5822fbcdcdb84eab5a6633de17320a5d80b52ff970d9ee57cd009fedb878a171",
       "dimensionsPx": {
         "width": 640,
         "height": 640
@@ -56,6 +67,17 @@
     },
     {
       "id": "source-rails",
+      "path": "source/generated-v2/archery-range-rails.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "6ae422dc7bda0299b95c03bac4dcb0a5282aa247954e34f069ee602fcf937da4",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "source-rails-original",
       "path": "source/generated/archery-range-rails.png",
       "usage": "source",
       "format": "png",
@@ -70,7 +92,7 @@
       "path": "source/frames/archery-range-rails.png",
       "usage": "source",
       "format": "png",
-      "sha256": "ff549e9ba577eca05be2b5c8b5f4dbf9034a6ae45ece472c4e9bbc26682376f5",
+      "sha256": "190b50990c19c2c910a9828a7b0778943df5c1bb9f3ca6b068b4b0bfa8b0b8e1",
       "dimensionsPx": {
         "width": 640,
         "height": 640
@@ -78,6 +100,17 @@
     },
     {
       "id": "source-canopy",
+      "path": "source/generated-v2/archery-range-canopy.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "ba6886568741d94db837576f74e7b2ed81799823422442e8e7e96d3c745d5f51",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "source-canopy-original",
       "path": "source/generated/archery-range-canopy.png",
       "usage": "source",
       "format": "png",
@@ -92,7 +125,7 @@
       "path": "source/frames/archery-range-canopy.png",
       "usage": "source",
       "format": "png",
-      "sha256": "eaafa7a3ad3a9745ef207c50931b86123a37c1704517d3d7d11f63fc7ad62270",
+      "sha256": "b15691161cddcacc83c289c480be80b07648853edcc3da895303c72cdb8b8402",
       "dimensionsPx": {
         "width": 640,
         "height": 640
@@ -125,7 +158,7 @@
       "path": "source/archery-range-construction-atlas.png",
       "usage": "source",
       "format": "png",
-      "sha256": "1283cf5c8fcc3a1ee72114ac1396b69b132eb230d9d230d7e2f7ac347d27a963",
+      "sha256": "ca51b8f05484fbe4acf601b32834cdb3b4cf1a4b1d977d66b3e188a92060a388",
       "dimensionsPx": {
         "width": 3200,
         "height": 640
@@ -136,7 +169,7 @@
       "path": "runtime/archery-range-construction-atlas.webp",
       "usage": "runtime",
       "format": "webp",
-      "sha256": "0ae4044f71d81bf503533a18dc73ee8db19feb437f138c1c093940d501c2f0e9",
+      "sha256": "1079d974955d20a4c6473bece17aef068b5dac4e230c299adb2c95a1993226ab",
       "dimensionsPx": {
         "width": 3200,
         "height": 640
@@ -147,7 +180,7 @@
       "path": "source/archery-range-team-mask.png",
       "usage": "team-mask",
       "format": "png",
-      "sha256": "ef7ae77a2b06ecbb44d0171ea9a6194b36a6dc12335ddfd1aa64148ce63b060a",
+      "sha256": "3a765c05104c7e1038bfdf1aa39c56a0ef170b2b737ea02ec66de31366c971d2",
       "dimensionsPx": {
         "width": 3200,
         "height": 640
@@ -269,10 +302,10 @@
           },
           "groundPivotStatus": "unreviewed-estimate",
           "alphaBoundsPx": {
-            "x": 40,
-            "y": 112,
-            "width": 561,
-            "height": 524
+            "x": 39,
+            "y": 108,
+            "width": 563,
+            "height": 527
           },
           "fallbackRectPx": {
             "pageId": "archery-range-construction-color",
@@ -313,9 +346,9 @@
           "groundPivotStatus": "unreviewed-estimate",
           "alphaBoundsPx": {
             "x": 38,
-            "y": 110,
-            "width": 562,
-            "height": 525
+            "y": 106,
+            "width": 564,
+            "height": 530
           },
           "fallbackRectPx": {
             "pageId": "archery-range-construction-color",
@@ -355,10 +388,10 @@
           },
           "groundPivotStatus": "unreviewed-estimate",
           "alphaBoundsPx": {
-            "x": 38,
-            "y": 110,
-            "width": 563,
-            "height": 526
+            "x": 37,
+            "y": 109,
+            "width": 564,
+            "height": 527
           },
           "fallbackRectPx": {
             "pageId": "archery-range-construction-color",

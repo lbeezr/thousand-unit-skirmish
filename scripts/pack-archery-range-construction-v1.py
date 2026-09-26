@@ -14,10 +14,18 @@ from PIL import Image, ImageChops, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parents[1]
 PACK = ROOT / "assets/buildings/archery-range-construction-v1"
 SOURCE = PACK / "source/generated"
+REVISION_SOURCE = PACK / "source/generated-v2"
 NORMALIZED = PACK / "source/frames"
 RUNTIME = PACK / "runtime"
 PREVIEW = PACK / "previews"
 STATES = ("foundation", "frame", "rails", "canopy", "complete")
+PLAYZOOM_STATES = ("frame", "rails", "complete")
+TEAM_PENNANT_REGIONS = {
+    "frame": (650, 700, 850, 980),
+    "rails": (650, 700, 850, 980),
+    "canopy": (650, 700, 850, 980),
+    "complete": (470, 300, 650, 530),
+}
 FRAME_PX = 640
 FIT_PX = 560
 FOOTPRINT_CELLS = 3
@@ -25,6 +33,13 @@ CAMERA_ELEVATION_DEGREES = 46
 BOTTOM_MARGIN_PX = 4
 GROUND_PIVOT = {"x": 320, "y": 441}
 ATLAS_WIDTH = FRAME_PX * len(STATES)
+
+
+def source_path(state: str) -> Path:
+    revision = REVISION_SOURCE / f"archery-range-{state}.png"
+    if revision.exists():
+        return revision
+    return SOURCE / f"archery-range-{state}.png"
 
 
 def alpha_bounds(image: Image.Image, threshold: int = 8) -> tuple[int, int, int, int]:
@@ -50,17 +65,17 @@ def normalize(image: Image.Image, reference_width: int) -> tuple[Image.Image, tu
     return frame, bounds, (x, y, size[0], size[1])
 
 
-def banner_mask(source: Image.Image) -> Image.Image:
-    """Mask only the blue cloth pennant, leaving target and arrow colors alone."""
+def banner_mask(source: Image.Image, region_box: tuple[int, int, int, int]) -> Image.Image:
+    """Mask the blue cloth pennant, leaving target, arrows, and other details alone."""
     source = source.convert("RGBA")
     hsv = source.convert("RGB").convert("HSV")
     hue, saturation, value = hsv.split()
     blue = hue.point([255 if 126 <= channel <= 190 else 0 for channel in range(256)])
     saturated = saturation.point([255 if channel >= 52 else 0 for channel in range(256)])
     visible = source.getchannel("A").point([0] + [255] * 255)
-    region = Image.new("L", source.size, 0)
-    ImageDraw.Draw(region).rectangle((470, 300, 650, 530), fill=255)
-    result = ImageChops.multiply(ImageChops.multiply(blue, saturated), region)
+    region_mask = Image.new("L", source.size, 0)
+    ImageDraw.Draw(region_mask).rectangle(region_box, fill=255)
+    result = ImageChops.multiply(ImageChops.multiply(blue, saturated), region_mask)
     return ImageChops.multiply(result, visible)
 
 
@@ -128,7 +143,25 @@ def build_map_preview(frame: Image.Image, mask: Image.Image, zoom: str, team: st
     y = round(anchor[1] - GROUND_PIVOT["y"] * canvas_height / FRAME_PX)
     capture.alpha_composite(scaled, (x, y))
     PREVIEW.mkdir(parents=True, exist_ok=True)
-    capture.save(PREVIEW / f"archery-range-meadow-zoom-{zoom}-{team}.png", optimize=True)
+    preview_label = "azure" if team == "azure" else "ember-pennant-azure-hud"
+    capture.save(PREVIEW / f"archery-range-meadow-zoom-{zoom}-{preview_label}.png", optimize=True)
+
+
+def build_playzoom_comparison(frames: dict[str, Image.Image], masks: dict[str, Image.Image]) -> None:
+    """Place unlabeled stages on one captured Meadow view at the 0.91 play zoom."""
+    capture = Image.open(PACK / "source/map-captures/meadow-zoom-091.png").convert("RGBA")
+    canvas_width = 56
+    baseline_y = 355
+    anchors = (515, 610, 705)
+    for state, center_x in zip(PLAYZOOM_STATES, anchors):
+        variant = tint_for_preview(frames[state], masks[state], "azure")
+        scaled = variant.resize((canvas_width, canvas_width), Image.Resampling.LANCZOS)
+        x = round(center_x - canvas_width / 2)
+        y = round(baseline_y - GROUND_PIVOT["y"] * canvas_width / FRAME_PX)
+        capture.alpha_composite(scaled, (x, y))
+    PREVIEW.mkdir(parents=True, exist_ok=True)
+    crop = capture.crop((460, 250, 770, 425))
+    crop.save(PREVIEW / "archery-range-identity-playzoom-unlabeled.png", optimize=True)
 
 
 def image_record(file_id: str, relative_path: str, usage: str) -> dict:
@@ -148,7 +181,11 @@ def image_record(file_id: str, relative_path: str, usage: str) -> dict:
 def build_manifest(frames: dict[str, Image.Image]) -> None:
     file_specs = []
     for state in STATES:
-        file_specs.append((f"source-{state}", f"source/generated/archery-range-{state}.png", "source"))
+        active_path = source_path(state).relative_to(PACK).as_posix()
+        file_specs.append((f"source-{state}", active_path, "source"))
+        original_path = f"source/generated/archery-range-{state}.png"
+        if active_path != original_path:
+            file_specs.append((f"source-{state}-original", original_path, "source"))
         file_specs.append((f"frame-{state}", f"source/frames/archery-range-{state}.png", "source"))
     file_specs.extend([
         ("color-source", "source/archery-range-construction-atlas.png", "source"),
@@ -228,7 +265,7 @@ def main() -> None:
     NORMALIZED.mkdir(parents=True, exist_ok=True)
     RUNTIME.mkdir(parents=True, exist_ok=True)
     PREVIEW.mkdir(parents=True, exist_ok=True)
-    originals = {state: Image.open(SOURCE / f"archery-range-{state}.png").convert("RGBA") for state in STATES}
+    originals = {state: Image.open(source_path(state)).convert("RGBA") for state in STATES}
     complete_bounds = alpha_bounds(originals["complete"])
     reference_width = complete_bounds[2] - complete_bounds[0]
     frames: dict[str, Image.Image] = {}
@@ -242,13 +279,15 @@ def main() -> None:
         frame.save(NORMALIZED / f"archery-range-{state}.png", optimize=True)
 
     mask = Image.new("L", (ATLAS_WIDTH, FRAME_PX), 0)
+    masks: dict[str, Image.Image] = {}
     for index, state in enumerate(STATES):
         frame = frames[state]
-        if state == "complete":
-            raw_mask = banner_mask(originals[state])
+        if state in TEAM_PENNANT_REGIONS:
+            raw_mask = banner_mask(originals[state], TEAM_PENNANT_REGIONS[state])
             mask_frame = normalize_mask(raw_mask, bounds_map[state], transforms[state], reference_width)
         else:
             mask_frame = Image.new("L", (FRAME_PX, FRAME_PX), 0)
+        masks[state] = mask_frame
         mask.paste(mask_frame, (index * FRAME_PX, 0))
 
     atlas = Image.new("RGBA", (ATLAS_WIDTH, FRAME_PX), (0, 0, 0, 0))
@@ -261,6 +300,7 @@ def main() -> None:
     build_contact_sheet(frames)
     build_map_preview(frames["complete"], mask.crop((4 * FRAME_PX, 0, 5 * FRAME_PX, FRAME_PX)), "091", "azure", (540, 355), 56)
     build_map_preview(frames["complete"], mask.crop((4 * FRAME_PX, 0, 5 * FRAME_PX, FRAME_PX)), "048", "ember", (590, 348), 30)
+    build_playzoom_comparison(frames, masks)
     build_manifest(frames)
     write_checksums()
     print(f"Packaged {len(STATES)} frames into {PACK.relative_to(ROOT)}")
