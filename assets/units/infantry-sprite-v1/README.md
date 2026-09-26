@@ -1,6 +1,6 @@
 # Infantry sprite exploration v1
 
-This source-only sheet explores an illustrated cutout Infantry for the fixed oblique RTS camera. It is a visual and packaging sample; the live unit renderer has not been changed.
+This sheet explores a painterly cutout Infantry for the fixed oblique RTS camera. The atlas remains source art; the live unit renderer has not been changed.
 
 ![Eight-facing Infantry sprite atlas](infantry-atlas-source.png)
 
@@ -22,13 +22,15 @@ node scripts/validate-unit-sprite-atlas.mjs assets/units/infantry-sprite-v1/mani
 - The painterly cutout style can sit beside the existing painted environment assets without requiring a Blender-authored runtime model.
 - An eight-view atlas can express facing changes for the locked battlefield camera.
 - The pack can follow the building-art workflow's source image, manifest, provenance, and browser-preview conventions.
+- The manifest records frame rectangles, pose alpha bounds, bottom-center ground pivots, per-facing idle/walk/attack/defeat sequences, and separate footprint/art/culling/selection bounds.
+- A derived gray8 `team-accent-mask.png` marks the sash. Black preserves source RGB; white applies full team hue while preserving source luminance and alpha.
 
 ## What is still unresolved
 
 - The ImageGen prompt asked for seven rows but produced six; directions and cell edges are only approximate and need cleanup.
 - Walking has only two frames, so the loop will look rough. Gathering, building, hit, spawn, and fuller attack/defeat sequences are absent.
-- There is only an Azure-blue sash. There is no Ember version, aligned tint mask, or validated team-color treatment.
-- Frame pivots, pixel padding, alpha cleanup, export sizes, and ordinary-zoom readability have not been approved.
-- This image is not a production atlas and is not loaded by the game.
+- There is only an Azure-blue sash in the source. The aligned mask supports runtime team recoloring, but the treatment has not been visually reviewed in-game.
+- Eight facings are approximate; animation still has a two-frame walk and two attack poses. Pixel art cleanup and ordinary-zoom readability have not been approved.
+- The metadata and masks are not yet loaded by the game.
 
-Do not count this source sheet as runtime appearance or performance evidence. If the direction is promising, the next art pass should correct the eight facings and pivots, produce a longer walk cycle, add an Ember-compatible team treatment, and then compare an integrated small roster at ordinary game zoom before broadening the role pack.
+Do not count this sheet as runtime appearance or performance evidence. The next slice is an integrated small roster at ordinary game zoom, followed by corrections to the most visible facing, pivot, scale, and team-color errors.

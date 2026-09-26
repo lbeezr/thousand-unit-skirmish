@@ -1,6 +1,6 @@
 # Worker sprite exploration v1
 
-Source-only Worker cutout study for the fixed oblique RTS camera.
+Painterly Worker cutout exploration for the fixed oblique RTS camera. The atlas remains source art; explicit runtime metadata and a derived team-accent mask are now packaged beside it.
 
 ![Eight-facing Worker sprite atlas](worker-atlas-source.png)
 
@@ -12,4 +12,6 @@ node scripts/validate-unit-sprite-atlas.mjs assets/units/worker-sprite-v1/manife
 
 See [`manifest.json`](manifest.json), [`PROMPT.md`](PROMPT.md), and [`PROVENANCE.md`](PROVENANCE.md) for frame metadata and source details.
 
-The Worker silhouette uses the unit kit's warm cap, backpack, broad tool, and Azure sash. The work poses are single stills, not gather/build animation loops. There is no food-gathering pose, cargo state, Ember variant, team mask, calibrated pivot, or runtime integration.
+The manifest now records 48 frame rectangles, thresholded pose bounds, bottom-center ground pivots, eight-direction idle/walk/gather/build/defeat sequences, and world bounds. `team-accent-mask.png` is a derived gray8 mask: black preserves the source and white applies the team hue while preserving luminance and alpha. The source atlas is unchanged.
+
+The Worker silhouette uses the unit kit's warm cap, backpack, broad tool, and Azure sash. Gather and build remain single action poses, not timed action loops. There is no food-carry state or combat attack pose, and the metadata is not yet consumed by the live renderer.

@@ -1,6 +1,6 @@
 # Archer sprite exploration v1
 
-Source-only Archer cutout study for the fixed oblique RTS camera.
+Painterly Archer cutout exploration for the fixed oblique RTS camera. The atlas remains source art; explicit runtime metadata and a derived team-accent mask are now packaged beside it.
 
 ![Eight-facing Archer sprite atlas](archer-atlas-source.png)
 
@@ -12,4 +12,6 @@ node scripts/validate-unit-sprite-atlas.mjs assets/units/archer-sprite-v1/manife
 
 See [`manifest.json`](manifest.json), [`PROMPT.md`](PROMPT.md), and [`PROVENANCE.md`](PROVENANCE.md) for frame metadata and source details.
 
-The Archer silhouette uses a moss hood, bow, quiver, and Azure sash. Attack states are two still poses without a projectile. There is no Ember variant, team mask, calibrated pivot, hit/spawn state, or runtime integration.
+The manifest records 48 frame rectangles, pose bounds, bottom-center ground pivots, eight-direction idle/walk/attack/defeat sequences, and world bounds. `team-accent-mask.png` is a derived gray8 mask: black preserves the source and white applies the team hue while preserving luminance and alpha. The source atlas is unchanged.
+
+The Archer silhouette uses a moss hood, bow, quiver, and Azure sash. Its attack state is two still poses without an authored arrow; the preview supplies a simple illustrative projectile. Hit and spawn states and live renderer integration are not included.

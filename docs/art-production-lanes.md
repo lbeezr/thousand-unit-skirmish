@@ -4,7 +4,7 @@ The [roadmap](roadmap.md) names long-running outcomes. These lanes divide the cu
 
 ## Current runtime
 
-The game uses painted ground textures and fixed-camera cutout sprites for most environment art, with repeated props instanced by the renderer. Units and buildings currently use instanced rigid parts; the [authored unit/building proposal](unit-building-art-output-proposal.md) explores Blender-authored GLBs and a shared painted atlas. A rigging and skinning specialist becomes useful if the game adopts skeletal deformation. It is not a prerequisite for more trees, terrain, buildings, or the current rigid-part motion.
+The game uses painted ground textures and fixed-camera cutout sprites for most environment art, with repeated props instanced by the renderer. New unit-character art follows the user's painterly sprite direction; the live game still shows its current instanced 3D placeholders until the atlas renderer is integrated. Existing GLB samples remain separate historical/building-art material. Buildings continue in their own lane. A rigging and skinning specialist is not a prerequisite for the sprite unit path.
 
 ## Who makes what
 
@@ -12,9 +12,9 @@ The game uses painted ground textures and fixed-camera cutout sprites for most e
 | --- | --- | --- |
 | Environment art | Ground and regional material sets, water and shorelines, large terrain landmarks | Maps for placement; vegetation for biome fit; renderer for display |
 | Vegetation and world props | Reusable tree, shrub, rock, and resource families, variants, and relevant depletion states | Environment for palette; Maps for density and spacing; renderer for instancing |
-| Unit character art | Worker, Infantry, and Archer silhouettes, equipment, team cues, and action pose samples | Technical art for shared surfacing; renderer for runtime poses |
+| Unit character art | Worker, Infantry, and Archer painterly directional atlases, equipment, gray8 team-accent masks, and action poses | Technical art for frame metadata and masks; renderer for batched runtime animation |
 | Building architecture art | Town Center, Barracks, and Archery Range geometry, ownership cues, construction and damage variants | Technical art for materials/export; renderer for runtime states |
-| Technical art and surfacing | Shared painted materials or atlases, UV and export conventions, asset manifests, repeatable previews and packaging checks | Asset makers for source examples; renderer for loader and batch behavior |
+| Technical art and surfacing | Frame and pivot metadata, tint masks, asset manifests, repeatable previews and packaging checks | Asset makers for source examples; renderer for loader and batch behavior |
 | Art direction | Style examples and concise feedback on the few changes that improve gameplay readability | All visual lanes; no standing signoff |
 | Maps and scenarios | Placement, traversal, forest density, lakes and routes in playable maps | Environment and vegetation for reusable assets |
 | Renderer and animation | Efficient runtime loading, instancing, visual-state mapping and camera-scale behavior | Asset makers for representative samples |
@@ -26,7 +26,7 @@ Concept design, modeling, UVs, texturing, rigging, animation, scene composition,
 - A vegetation slice can be a few compatible tree or shrub silhouettes, source files, runtime files, a simple manifest/provenance record, and one forest view at ordinary zoom. Maps can place them immediately.
 - A terrain slice can be one water/shoreline treatment that reads on an authored map, with a source asset and runtime view.
 - A surfacing slice can be one shared atlas and a repeatable UV/export/manifest path on a small sample. It should remove manual work for later assets; it is not a mandatory preflight service for other authors.
-- A unit slice can make Infantry or Archer recognizable at ordinary zoom and include a candidate GLB and source while the existing Worker sample is being published.
+- A unit slice can deliver a manifest-driven Worker/Infantry/Archer sprite pilot with a representative game-zoom view; new unit GLBs are paused by the current art direction.
 - A building slice can improve one Barracks construction silhouette or one other structure. The original Worker/Barracks v0.2 source sample is cleared for a focused PR with its known limits; it does not need to claim the full M2 appearance or M3 performance milestone.
 
 Merge useful source samples before their runtime loader or final visual treatment is finished; state that limit in the PR and continue with the next slice. Runtime integration uses the applicable manifest and proportionate local validation; milestone captures and large-match measurements remain separate claims. Do not silently hold an asset pack for polish, a preview window, or another lane's future integration.
