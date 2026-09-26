@@ -50,7 +50,7 @@ Production remains on manual redeploy `014448c3-4a3b-4942-9d96-6d77515d0d61`, `S
 
 PR #105 makes the audio-recognition report copyable from the UI; copying is a player action and nothing is sent automatically. The six randomized trials still sample move, attack, and victory/result twice each. QA has not collected fresh-player answers or visually checked PR #107's source-only art on staging.
 
-The latest read-only host sample is `2026-09-26T16:40:51Z`, loads `8.01 / 7.04 / 7.35` (1/5/15 minutes). The 1-minute value exceeds `2.0`; no qualifying pair or explicit Infra release is recorded. No QA scenario or browser run is active, and none was started.
+The latest read-only host sample is `2026-09-26T16:44:08Z`, loads `16.03 / 10.31 / 8.65` (1/5/15 minutes). The 1-minute value exceeds `2.0`; no qualifying pair or explicit Infra release is recorded. No QA scenario or browser run is active, and none was started.
 
 ## CI runner availability
 
@@ -78,7 +78,7 @@ No environment-state capture is registered in the current game-dev capture list.
 
 ## Host and player evidence gates
 
-Infra's latest host sample, at 2026-09-26T16:40:51Z, was 8.01 / 7.04 / 7.35 for the 1/5/15-minute load averages. The 1-minute value is above the <=2.0 threshold. The required two readings at or below 2.0, at least 60 seconds apart, plus explicit Infra release have not been recorded. No performance scenario, browser run, or renderer capture was started for this checkpoint.
+Infra's latest host sample, at 2026-09-26T16:44:08Z, was 16.03 / 10.31 / 8.65 for the 1/5/15-minute load averages. The 1-minute value is above the <=2.0 threshold. The required two readings at or below 2.0, at least 60 seconds apart, plus explicit Infra release have not been recorded. No performance scenario, browser run, or renderer capture was started for this checkpoint.
 
 No new two-seat WSS/reconnect/rematch run or complete Forked Vale match was conducted on the current staging build. The earlier f1d6482/1d74cae results remain historical evidence. The novice external playtest remains pending; no testers were contacted. Keep synthetic scenario results, browser automation, and player observations as separate evidence classes.
 
