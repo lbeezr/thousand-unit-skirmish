@@ -4093,7 +4093,7 @@ function updateRoomUI(connected) {
 }
 
 function setConnection(status) {
-  ui.networkStatus.parentElement.dataset.urgent = String(['OFFLINE', 'RECONNECTING', 'SEAT ACTIVE ELSEWHERE'].includes(status));
+  ui.networkStatus.parentElement.dataset.urgent = String(['OFFLINE', 'RECONNECTING', 'SEAT ACTIVE ELSEWHERE', 'INVALID ROOM LINK', 'ROOM NOT FOUND'].includes(status));
   ui.networkStatus.textContent = status;
   ui.matchStatus.textContent = status;
   const waiting = status === 'CONNECTING' || status === 'RECONNECTING' || status === 'WAITING FOR PLAYER 2';
