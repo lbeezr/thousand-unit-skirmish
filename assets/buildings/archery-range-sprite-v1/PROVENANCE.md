@@ -5,8 +5,9 @@
 - Third-party reference art: none. The original project Barracks sprite was supplied only as a style and camera reference.
 - Camera: fixed elevated orthographic three-quarter view, 45-degree azimuth and 46-degree downward pitch.
 - Source format: 1254 × 1254 RGBA PNG per state.
-- Runtime processing: [`scripts/prepare-building-sprite-pack.py`](../../../scripts/prepare-building-sprite-pack.py) applies one scale calibrated from the complete frame, crops transparent bounds without axis stretching, aligns each state to a common bottom contact edge, writes 640 × 640 team/state WebP frames, and builds the labeled previews.
+- Runtime processing: [`scripts/prepare-building-sprite-pack.py`](../../../scripts/prepare-building-sprite-pack.py) applies one scale calibrated from the complete frame, crops transparent bounds without axis stretching, aligns each state to a common bottom contact edge, writes lossless 640 × 640 normalized source PNG pages and team/state WebP frames, and builds the labeled previews. The original 1254 × 1254 files remain unchanged.
 - Grid and gameplay state mapping: see [`sprite-grid.json`](sprite-grid.json).
+- Canonical page/frame handoff: see [`sprite-atlas-pack-v1.json`](sprite-atlas-pack-v1.json). Its separate manifest hashes cover all original sources, normalized source pages, and runtime variants.
 
 ## Source generation prompts
 
@@ -39,6 +40,11 @@
 | `source/archery-range-frame.png` | `92f9c2f7ddbad8a763a1430329a30f0b004d15f5a3965f995433db281cbdab22` |
 | `source/archery-range-damaged.png` | `394fefd49bc727718685f016c168d1e18544ab879be0baaa311d3c126bd74f75` |
 | `source/archery-range-critical.png` | `342d58e0459bce425dab516a6d365d5d7d3658cb670a6109cb34c16f82b5343f` |
+| `source/normalized/archery-range-foundation.png` | `746d29a4eaf9fc92ac183b621bb1db44d4089e4c4ad3a9d101cd7275ae0c96a1` |
+| `source/normalized/archery-range-frame.png` | `76aee9151d4d2422e3fe47a98999135b35ce9a350984f5d73c338b7402ff9d21` |
+| `source/normalized/archery-range-complete.png` | `3de3041f1c8d53d6116c4167f99a425dbefc4dd1fc7fb0c40f16f68e90d07861` |
+| `source/normalized/archery-range-damaged.png` | `fc0d5583507387b58c4644b98b97245e1bc128bf06a89da777379ff42850bdc8` |
+| `source/normalized/archery-range-critical.png` | `908a083038eeb921b3ffac59c08e64373a596e0678c54b29efccbe3ac234b4d6` |
 | `runtime/archery-range-foundation-azure.webp` | `fec3e5f83328904b68f41e352da400bf673a78ba6de72821c80352f768743e37` |
 | `runtime/archery-range-foundation-ember.webp` | `708baf656fadb51ab6c53e8cb9f5fad068001e407fcac47f5881d82ef43a0c7e` |
 | `runtime/archery-range-frame-azure.webp` | `04e781d4de4d1f76489bd8a975b75bfaf7c4c474576c25270d0bb42e8ac17f74` |

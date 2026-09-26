@@ -123,6 +123,14 @@ and five `unreviewed-estimate` pivots. Its `3 × 3` footprint remains a hint;
 the map continues to own occupied cells. The CI handoff scenario checks these
 fields against the versioned manifest so changes remain visible in review.
 
+The complete-first Archery Range pack now also has a canonical sidecar with
+five lifecycle states and Azure/Ember runtime variants. It keeps the original
+1254 × 1254 source frames, adds aligned lossless 640 × 640 source pages for
+the runtime pages, and preserves the existing 5 × 5 art grid separately from
+the 3 × 3 occupancy hint. Its single full-canvas midground layer is not a
+depth split. The ground pivot remains an unreviewed estimate, and renderer
+integration is pending; a generated browser preview is stored with the pack.
+
 The available Worker, Infantry, and Archer sprite explorations now have
 `runtime-candidate` manifests with source/runtime atlas pages, aligned team
 masks, full-frame fallbacks, explicit actor crops, and named clips. The
