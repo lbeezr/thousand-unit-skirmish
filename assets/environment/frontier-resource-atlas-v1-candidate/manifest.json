@@ -1,0 +1,902 @@
+{
+  "schemaVersion": 1,
+  "packId": "environment.frontier-resource-atlas-candidate",
+  "packVersion": "0.1.0",
+  "maturity": "source-only",
+  "provenance": {
+    "license": "Project-owned derivative of original Thousand Unit Skirmish art; no third-party source imagery.",
+    "source": "Lossless color-matte layer extraction from the approved frontier-interactive-v1 oak and berries source PNGs.",
+    "authoringTool": "Pillow 10.4.0; PNG atlas packing with source-pixel-preserving layer masks.",
+    "notes": "Original source paths and SHA-256 values: assets/environment/frontier-interactive-v1/oak-full.png=e99f1c70c28cedd8406dea44b72186f25a40ef88c1a3f72d7690298f5e584753; assets/environment/frontier-interactive-v1/oak-worked.png=17f433b67aa6a4a0784ecac1293aba4796c3f2ab7491b6bf3bcf61f49de8018f; assets/environment/frontier-interactive-v1/oak-low.png=ea255be33ebc77d62a5fb1176175565ef56745ef6568b74a75ed228022127528; assets/environment/frontier-interactive-v1/oak-depleted.png=65c38d012c7184d01761bf53144be407fa03c215e66c150e9893e5a35c0c1371; assets/environment/frontier-interactive-v1/berries-full.png=3ca2f8162316e1babcda9357cb51856fa56ce1ff7706d03ef8d95bbcb0a04787; assets/environment/frontier-interactive-v1/berries-worked.png=aa883e92ba69f16a0e43cdf23669961a9608c56dd731a330290012242f4afb18; assets/environment/frontier-interactive-v1/berries-low.png=9a0ad21aa4b29f73a5a54df779dbe2a73cfecf8ff8a4ad31b610fad2d8b54e12; assets/environment/frontier-interactive-v1/berries-depleted.png=7a601be8035a3af2ede958b170bf001a11add395c4c1431d5d84ac0751923011"
+  },
+  "files": [
+    {
+      "id": "oak-fallback-source",
+      "path": "pages/oak-fallback.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "a134ccc0d1ef46e1e33845e20a08e59662f951677f68461d2cf6004d4ae15110",
+      "dimensionsPx": {
+        "width": 4904,
+        "height": 1283
+      }
+    },
+    {
+      "id": "oak-foliage-back-source",
+      "path": "pages/oak-foliage-back.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "5873cd4bc4a54077007e7b9fa851ce64c56c0f5595b5ffc05518dc0f5285f1ab",
+      "dimensionsPx": {
+        "width": 4904,
+        "height": 1283
+      }
+    },
+    {
+      "id": "oak-wood-structure-source",
+      "path": "pages/oak-wood-structure.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "ff29c7f49d570b1e3dded2c0a65c910b0f90ed30a376124d96bc5a639d93953f",
+      "dimensionsPx": {
+        "width": 4904,
+        "height": 1283
+      }
+    },
+    {
+      "id": "berries-fallback-source",
+      "path": "pages/berries-fallback.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "9e9f7655f8bb1cf42fc0a4d3718165ecb8d2f5a492f93cce5f7f0ca12d728297",
+      "dimensionsPx": {
+        "width": 6144,
+        "height": 1024
+      }
+    },
+    {
+      "id": "berries-foliage-back-source",
+      "path": "pages/berries-foliage-back.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "1a9477b5d396a83832c922b794275a42b3b62fc7d79da8a2cadc1ddd91560178",
+      "dimensionsPx": {
+        "width": 6144,
+        "height": 1024
+      }
+    },
+    {
+      "id": "berries-wood-structure-source",
+      "path": "pages/berries-wood-structure.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "30979e05ec33a591e7da1d1f5145b48363c6a71b0e301cbbf91d0eceec51ec7f",
+      "dimensionsPx": {
+        "width": 6144,
+        "height": 1024
+      }
+    },
+    {
+      "id": "berries-fruit-front-source",
+      "path": "pages/berries-fruit-front.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "23d0b47ac79025df6e9159894322cd8caedc2f8917c869a87f6c666e3bdad0e3",
+      "dimensionsPx": {
+        "width": 6144,
+        "height": 1024
+      }
+    }
+  ],
+  "pages": [
+    {
+      "id": "oak-fallback",
+      "sourceFileId": "oak-fallback-source",
+      "dimensionsPx": {
+        "width": 4904,
+        "height": 1283
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    },
+    {
+      "id": "oak-foliage-back",
+      "sourceFileId": "oak-foliage-back-source",
+      "dimensionsPx": {
+        "width": 4904,
+        "height": 1283
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    },
+    {
+      "id": "oak-wood-structure",
+      "sourceFileId": "oak-wood-structure-source",
+      "dimensionsPx": {
+        "width": 4904,
+        "height": 1283
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    },
+    {
+      "id": "berries-fallback",
+      "sourceFileId": "berries-fallback-source",
+      "dimensionsPx": {
+        "width": 6144,
+        "height": 1024
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    },
+    {
+      "id": "berries-foliage-back",
+      "sourceFileId": "berries-foliage-back-source",
+      "dimensionsPx": {
+        "width": 6144,
+        "height": 1024
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    },
+    {
+      "id": "berries-wood-structure",
+      "sourceFileId": "berries-wood-structure-source",
+      "dimensionsPx": {
+        "width": 6144,
+        "height": 1024
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    },
+    {
+      "id": "berries-fruit-front",
+      "sourceFileId": "berries-fruit-front-source",
+      "dimensionsPx": {
+        "width": 6144,
+        "height": 1024
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    }
+  ],
+  "assets": [
+    {
+      "id": "oak",
+      "kind": "resource",
+      "recommendedTileFootprint": {
+        "widthTiles": 1,
+        "heightTiles": 1
+      },
+      "artBoundsWorld": {
+        "min": [
+          -2.598709842135647,
+          -0.4843667041689526,
+          -3.6889193555368296
+        ],
+        "max": [
+          1.7126731881680508,
+          2.9621089446257374,
+          1.0171722796177598
+        ]
+      },
+      "heightWorld": 3.44647564879469,
+      "sortAnchorWorld": [
+        0,
+        0,
+        0
+      ],
+      "layers": [
+        {
+          "id": "foliage-back",
+          "drawLayer": "background",
+          "batchKey": "environment.resource.oak.foliage"
+        },
+        {
+          "id": "wood-structure",
+          "drawLayer": "actor",
+          "batchKey": "environment.resource.oak.structure"
+        }
+      ],
+      "frames": [
+        {
+          "id": "full",
+          "canvasPx": {
+            "width": 1226,
+            "height": 1283
+          },
+          "groundPivotPx": {
+            "x": 613.0,
+            "y": 1283
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 37,
+            "y": 40,
+            "width": 1164,
+            "height": 1188
+          },
+          "fallbackRectPx": {
+            "pageId": "oak-fallback",
+            "rectPx": {
+              "x": 0,
+              "y": 0,
+              "width": 1226,
+              "height": 1283
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "foliage-back",
+              "pageId": "oak-foliage-back",
+              "rectPx": {
+                "x": 32,
+                "y": 35,
+                "width": 1176,
+                "height": 1199
+              },
+              "offsetPx": {
+                "x": 32,
+                "y": 35
+              }
+            },
+            {
+              "layerId": "wood-structure",
+              "pageId": "oak-wood-structure",
+              "rectPx": {
+                "x": 0,
+                "y": 19,
+                "width": 1212,
+                "height": 1264
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 19
+              }
+            }
+          ]
+        },
+        {
+          "id": "worked",
+          "canvasPx": {
+            "width": 1226,
+            "height": 1283
+          },
+          "groundPivotPx": {
+            "x": 613.0,
+            "y": 1283
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 61,
+            "y": 36,
+            "width": 1131,
+            "height": 1194
+          },
+          "fallbackRectPx": {
+            "pageId": "oak-fallback",
+            "rectPx": {
+              "x": 1226,
+              "y": 0,
+              "width": 1226,
+              "height": 1283
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "foliage-back",
+              "pageId": "oak-foliage-back",
+              "rectPx": {
+                "x": 1284,
+                "y": 33,
+                "width": 1137,
+                "height": 1199
+              },
+              "offsetPx": {
+                "x": 58,
+                "y": 33
+              }
+            },
+            {
+              "layerId": "wood-structure",
+              "pageId": "oak-wood-structure",
+              "rectPx": {
+                "x": 1281,
+                "y": 21,
+                "width": 1151,
+                "height": 1230
+              },
+              "offsetPx": {
+                "x": 55,
+                "y": 21
+              }
+            }
+          ]
+        },
+        {
+          "id": "low",
+          "canvasPx": {
+            "width": 1226,
+            "height": 1283
+          },
+          "groundPivotPx": {
+            "x": 613.0,
+            "y": 1283
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 59,
+            "y": 33,
+            "width": 1136,
+            "height": 1202
+          },
+          "fallbackRectPx": {
+            "pageId": "oak-fallback",
+            "rectPx": {
+              "x": 2452,
+              "y": 0,
+              "width": 1226,
+              "height": 1283
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "foliage-back",
+              "pageId": "oak-foliage-back",
+              "rectPx": {
+                "x": 2512,
+                "y": 30,
+                "width": 1136,
+                "height": 1207
+              },
+              "offsetPx": {
+                "x": 60,
+                "y": 30
+              }
+            },
+            {
+              "layerId": "wood-structure",
+              "pageId": "oak-wood-structure",
+              "rectPx": {
+                "x": 2452,
+                "y": 23,
+                "width": 1199,
+                "height": 1215
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 23
+              }
+            }
+          ]
+        },
+        {
+          "id": "depleted",
+          "canvasPx": {
+            "width": 1226,
+            "height": 1283
+          },
+          "groundPivotPx": {
+            "x": 613.0,
+            "y": 1283
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 301,
+            "y": 869,
+            "width": 696,
+            "height": 374
+          },
+          "fallbackRectPx": {
+            "pageId": "oak-fallback",
+            "rectPx": {
+              "x": 3678,
+              "y": 0,
+              "width": 1226,
+              "height": 1283
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "wood-structure",
+              "pageId": "oak-wood-structure",
+              "rectPx": {
+                "x": 3754,
+                "y": 39,
+                "width": 1025,
+                "height": 1244
+              },
+              "offsetPx": {
+                "x": 76,
+                "y": 39
+              }
+            }
+          ]
+        }
+      ],
+      "clips": [
+        {
+          "stateId": "full",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "full",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "worked",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "worked",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "low",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "low",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "depleted",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "depleted",
+              "durationMs": 1000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "berries",
+      "kind": "resource",
+      "recommendedTileFootprint": {
+        "widthTiles": 1,
+        "heightTiles": 1
+      },
+      "artBoundsWorld": {
+        "min": [
+          -1.4337904260574785,
+          -0.30125246234898273,
+          -1.7440783233445982
+        ],
+        "max": [
+          1.0651991780069585,
+          1.3319932343790053,
+          0.6326315397622652
+        ]
+      },
+      "heightWorld": 1.633245696727988,
+      "sortAnchorWorld": [
+        0,
+        0,
+        0
+      ],
+      "layers": [
+        {
+          "id": "foliage-back",
+          "drawLayer": "background",
+          "batchKey": "environment.resource.berries.foliage"
+        },
+        {
+          "id": "wood-structure",
+          "drawLayer": "actor",
+          "batchKey": "environment.resource.berries.structure"
+        },
+        {
+          "id": "fruit-front",
+          "drawLayer": "foreground",
+          "batchKey": "environment.resource.berries.fruit"
+        }
+      ],
+      "frames": [
+        {
+          "id": "full",
+          "canvasPx": {
+            "width": 1536,
+            "height": 1024
+          },
+          "groundPivotPx": {
+            "x": 768.0,
+            "y": 1024
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 191,
+            "y": 147,
+            "width": 1153,
+            "height": 740
+          },
+          "fallbackRectPx": {
+            "pageId": "berries-fallback",
+            "rectPx": {
+              "x": 0,
+              "y": 0,
+              "width": 1536,
+              "height": 1024
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "foliage-back",
+              "pageId": "berries-foliage-back",
+              "rectPx": {
+                "x": 89,
+                "y": 143,
+                "width": 1413,
+                "height": 857
+              },
+              "offsetPx": {
+                "x": 89,
+                "y": 143
+              }
+            },
+            {
+              "layerId": "wood-structure",
+              "pageId": "berries-wood-structure",
+              "rectPx": {
+                "x": 177,
+                "y": 32,
+                "width": 1279,
+                "height": 938
+              },
+              "offsetPx": {
+                "x": 177,
+                "y": 32
+              }
+            },
+            {
+              "layerId": "fruit-front",
+              "pageId": "berries-fruit-front",
+              "rectPx": {
+                "x": 296,
+                "y": 253,
+                "width": 978,
+                "height": 727
+              },
+              "offsetPx": {
+                "x": 296,
+                "y": 253
+              }
+            }
+          ]
+        },
+        {
+          "id": "worked",
+          "canvasPx": {
+            "width": 1536,
+            "height": 1024
+          },
+          "groundPivotPx": {
+            "x": 768.0,
+            "y": 1024
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 53,
+            "y": 68,
+            "width": 1432,
+            "height": 900
+          },
+          "fallbackRectPx": {
+            "pageId": "berries-fallback",
+            "rectPx": {
+              "x": 1536,
+              "y": 0,
+              "width": 1536,
+              "height": 1024
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "foliage-back",
+              "pageId": "berries-foliage-back",
+              "rectPx": {
+                "x": 1585,
+                "y": 62,
+                "width": 1473,
+                "height": 962
+              },
+              "offsetPx": {
+                "x": 49,
+                "y": 62
+              }
+            },
+            {
+              "layerId": "wood-structure",
+              "pageId": "berries-wood-structure",
+              "rectPx": {
+                "x": 1608,
+                "y": 35,
+                "width": 1345,
+                "height": 941
+              },
+              "offsetPx": {
+                "x": 72,
+                "y": 35
+              }
+            },
+            {
+              "layerId": "fruit-front",
+              "pageId": "berries-fruit-front",
+              "rectPx": {
+                "x": 1699,
+                "y": 163,
+                "width": 1222,
+                "height": 773
+              },
+              "offsetPx": {
+                "x": 163,
+                "y": 163
+              }
+            }
+          ]
+        },
+        {
+          "id": "low",
+          "canvasPx": {
+            "width": 1536,
+            "height": 1024
+          },
+          "groundPivotPx": {
+            "x": 768.0,
+            "y": 1024
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 35,
+            "y": 26,
+            "width": 1469,
+            "height": 959
+          },
+          "fallbackRectPx": {
+            "pageId": "berries-fallback",
+            "rectPx": {
+              "x": 3072,
+              "y": 0,
+              "width": 1536,
+              "height": 1024
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "foliage-back",
+              "pageId": "berries-foliage-back",
+              "rectPx": {
+                "x": 3072,
+                "y": 17,
+                "width": 1524,
+                "height": 977
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 17
+              }
+            },
+            {
+              "layerId": "wood-structure",
+              "pageId": "berries-wood-structure",
+              "rectPx": {
+                "x": 3160,
+                "y": 70,
+                "width": 1363,
+                "height": 900
+              },
+              "offsetPx": {
+                "x": 88,
+                "y": 70
+              }
+            },
+            {
+              "layerId": "fruit-front",
+              "pageId": "berries-fruit-front",
+              "rectPx": {
+                "x": 3236,
+                "y": 105,
+                "width": 1284,
+                "height": 861
+              },
+              "offsetPx": {
+                "x": 164,
+                "y": 105
+              }
+            }
+          ]
+        },
+        {
+          "id": "depleted",
+          "canvasPx": {
+            "width": 1536,
+            "height": 1024
+          },
+          "groundPivotPx": {
+            "x": 768.0,
+            "y": 1024
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 43,
+            "y": 40,
+            "width": 1446,
+            "height": 953
+          },
+          "fallbackRectPx": {
+            "pageId": "berries-fallback",
+            "rectPx": {
+              "x": 4608,
+              "y": 0,
+              "width": 1536,
+              "height": 1024
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "foliage-back",
+              "pageId": "berries-foliage-back",
+              "rectPx": {
+                "x": 4646,
+                "y": 37,
+                "width": 1456,
+                "height": 963
+              },
+              "offsetPx": {
+                "x": 38,
+                "y": 37
+              }
+            },
+            {
+              "layerId": "wood-structure",
+              "pageId": "berries-wood-structure",
+              "rectPx": {
+                "x": 4608,
+                "y": 29,
+                "width": 1485,
+                "height": 947
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 29
+              }
+            }
+          ]
+        }
+      ],
+      "clips": [
+        {
+          "stateId": "full",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "full",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "worked",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "worked",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "low",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "low",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "depleted",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "depleted",
+              "durationMs": 1000
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
