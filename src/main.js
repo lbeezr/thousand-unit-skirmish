@@ -1,4 +1,5 @@
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences } from './hud-layout.mjs';
+import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import * as THREE from 'three';
 import {
   addObstacleEnvironmentSprites, createConstructionGroundInstances,
@@ -137,6 +138,10 @@ minimapBackground.height = minimapCanvas.height;
 const minimapBackgroundContext = minimapBackground.getContext('2d');
 const minimapFogCanvas = document.createElement('canvas');
 const minimapFogContext = minimapFogCanvas.getContext('2d');
+let objectiveHoldSummary = null;
+let noticeHistory = [];
+let guidanceDismissed = false;
+try { guidanceDismissed = localStorage.getItem('rts-guidance-dismissed') === 'true'; } catch {}
 const objectivePanel = document.querySelector('#objective-panel');
 const roomPageUrl = new URL(window.location.href);
 const ROOM_ID = roomPageUrl.searchParams.get('room');
@@ -2136,7 +2141,7 @@ function buildMap(definition) {
   const title = document.querySelector('#map-label-title');
   const summary = document.querySelector('#map-summary');
   if (title) title.textContent = definition.name || definition.id.toUpperCase();
-  if (summary) summary.textContent = definition.summary || `${MAP_WIDTH} × ${MAP_HEIGHT}`;
+  if (summary) summary.textContent = 'Open objectives for the win rule';
   document.querySelector('#scenario-brief-name').textContent = definition.name || definition.id.toUpperCase();
   document.querySelector('#scenario-brief-summary').textContent = definition.summary || 'Control the marked objectives and protect your army.';
   const deadline = document.querySelector('#scenario-brief-deadline');
@@ -2172,6 +2177,9 @@ function buildMap(definition) {
   if (footerMap) footerMap.textContent = definition.name || definition.id.toUpperCase();
   buildMinimapBackground(definition);
   buildFogOverlay(definition);
+  objectiveHoldSummary = null;
+  noticeHistory = [];
+  document.querySelector('#notice-history').replaceChildren();
   latestObjectiveStates = new Map();
   latestScenarioEventStates = new Map();
   latestMatchElapsedSeconds = 0;
@@ -3371,6 +3379,7 @@ function formatVictoryHoldTime(seconds) {
 }
 
 function updateVictoryHoldCard(hold = null, winner = -1, winnerReason = null, clockStarted = false) {
+  objectiveHoldSummary = hold;
   if (!victoryHoldVisual) return;
   const { card, status, progressFill, durationSeconds } = victoryHoldVisual;
   const activeTeams = Array.isArray(hold?.activeTeams) ? hold.activeTeams : [false, false];
@@ -3487,6 +3496,7 @@ function renderScenarioEventCountdown(now = performance.now()) {
       visual.status.textContent = remaining <= 0.1 ? `${delivery}DUE` : `${delivery}IN ${time}`;
     }
   }
+  renderObjectiveSummary(elapsed);
   if (timedVictoryVisual) {
     const { card, status, rule } = timedVictoryVisual;
     if (matchWinner >= 0) {
@@ -3505,6 +3515,16 @@ function renderScenarioEventCountdown(now = performance.now()) {
       status.textContent = remaining <= 0.1 ? 'RESOLVING' : `IN ${time}`;
     }
   }
+}
+
+function renderObjectiveSummary(elapsed = latestMatchElapsedSeconds) {
+  const summary = objectiveSummary(mapDefinition || {}, [...latestObjectiveStates.values()], {
+    team: localTeam, hold: objectiveHoldSummary, elapsed, started: latestScenarioClockStarted, winner: matchWinner,
+  });
+  document.querySelector('#map-summary').textContent = summary.action;
+  const urgent = document.querySelector('#objective-urgent');
+  urgent.textContent = summary.urgent;
+  urgent.hidden = !summary.urgent;
 }
 
 function syncMatchResultActions() {
@@ -5946,6 +5966,13 @@ function downloadEditorMap() {
 }
 
 function showToast(message, duration = 1300) {
+  noticeHistory = rememberNotice(noticeHistory, message);
+  const history = document.querySelector('#notice-history');
+  history.replaceChildren(...noticeHistory.map((notice) => {
+    const item = document.createElement('li');
+    item.textContent = notice.text + (notice.count > 1 ? ` ×${notice.count}` : '');
+    return item;
+  }));
   if (isLocalRejection(message)) audio.play('reject');
   const fieldFeedback = document.querySelector('#field-order-feedback');
   if (fieldFeedback && !fieldFeedback.hidden && fieldFeedback.textContent === message) return;
@@ -6493,6 +6520,13 @@ function updateBuildPlacementGhost(clientX, clientY) {
 }
 
 function updateBuildPlacementHint() {
+  const guidance = document.querySelector('.field-hint');
+  const forced = buildPlacementActive || tapOrderArmed;
+  guidance.classList.toggle('guidance-dismissed', guidanceDismissed && !forced);
+  const guidanceToggle = document.querySelector('#guidance-toggle');
+  guidanceToggle.hidden = forced;
+  guidanceToggle.textContent = guidanceDismissed ? 'Show hints' : 'Hide hints';
+  guidanceToggle.setAttribute('aria-expanded', String(!guidanceDismissed));
   const activeLabel = buildingLabel(buildPlacementType);
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
   if (ui.fieldHintPrimaryKey) ui.fieldHintPrimaryKey.textContent = coarsePointer ? 'TAP' : 'LMB';
@@ -7182,6 +7216,11 @@ for (const button of document.querySelectorAll('[data-open-dock-tab]')) {
 }
 selectDockTab('selection');
 closeDockDetails();
+document.querySelector('#guidance-toggle').addEventListener('click', () => {
+  guidanceDismissed = !guidanceDismissed;
+  try { localStorage.setItem('rts-guidance-dismissed', String(guidanceDismissed)); } catch {}
+  updateBuildPlacementHint();
+});
 updateBuildPlacementHint();
 window.addEventListener('keydown', (event) => {
   if (document.fullscreenElement === appShell && event.key === 'Escape') return;
