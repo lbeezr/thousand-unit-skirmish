@@ -1,0 +1,394 @@
+#!/usr/bin/env node
+
+import { mkdir, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { validateSpriteAtlas } from './sprite-atlas-contract.mjs';
+
+const args = process.argv.slice(2);
+let manifestPath = '';
+let outputPath = '';
+let runtimeMode = false;
+for (let index = 0; index < args.length; index += 1) {
+  const arg = args[index];
+  if (arg === '--runtime') runtimeMode = true;
+  else if (arg === '--out' && args[index + 1]) outputPath = args[++index];
+  else if (!manifestPath) manifestPath = arg;
+  else {
+    console.error(`Unknown argument: ${arg}`);
+    process.exit(2);
+  }
+}
+
+if (!manifestPath) {
+  console.error('Usage: node scripts/preview-sprite-atlas.mjs <manifest.json> [--runtime] [--out preview.html]');
+  process.exit(2);
+}
+
+const result = await validateSpriteAtlas(manifestPath);
+if (result.errors.length) {
+  console.error('Sprite-atlas preview not generated because validation failed:');
+  for (const error of result.errors) console.error(`- ${error}`);
+  process.exit(1);
+}
+
+const manifest = result.manifest;
+const manifestAbsolute = path.resolve(manifestPath);
+const safePackName = manifest.packId.replace(/[^A-Za-z0-9._-]+/g, '-');
+const htmlPath = path.resolve(outputPath || path.join(result.packRoot, `${safePackName}-preview.html`));
+if (htmlPath === manifestAbsolute || [...result.filePaths.values()].includes(htmlPath)) {
+  console.error('Preview output must not overwrite the manifest or a declared image file.');
+  process.exit(2);
+}
+
+const htmlDirectory = path.dirname(htmlPath);
+const fileUrls = Object.fromEntries(manifest.files.map((file) => {
+  const absoluteFile = result.filePaths.get(file.id);
+  const relative = path.relative(htmlDirectory, absoluteFile).split(path.sep).join('/');
+  const url = relative.split('/').map((segment) => segment === '..' ? segment : encodeURIComponent(segment)).join('/');
+  return [file.id, url.startsWith('.') ? url : `./${url}`];
+}));
+const safeJson = JSON.stringify({ manifest, fileUrls, runtimeMode })
+  .replaceAll('<', '\\u003c').replaceAll('\u2028', '\\u2028').replaceAll('\u2029', '\\u2029');
+const packLabel = manifest.packId.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+const html = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>${packLabel} sprite atlas preview</title>
+  <style>
+    :root { color-scheme: dark; font: 14px/1.45 system-ui, sans-serif; background: #161a1c; color: #e8e4db; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    header { position: sticky; z-index: 2; top: 0; padding: 14px 20px; border-bottom: 1px solid #3c4547; background: #202628; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+    h1 { font-size: 17px; margin: 0; }
+    header span { color: #aeb8b6; }
+    main { display: grid; grid-template-columns: minmax(360px, 1.1fr) minmax(360px, .9fr); gap: 16px; padding: 16px; }
+    .controls { grid-column: 1 / -1; display: flex; gap: 10px; flex-wrap: wrap; align-items: end; padding: 12px; background: #242c2e; border: 1px solid #3b4648; border-radius: 8px; }
+    label { display: grid; gap: 4px; color: #afbfbc; font-size: 12px; }
+    select, button { min-height: 34px; border: 1px solid #566264; border-radius: 5px; padding: 5px 9px; color: #f5f2ea; background: #151b1d; font: inherit; }
+    button { cursor: pointer; }
+    .toggle { display: flex; align-items: center; gap: 7px; min-height: 34px; }
+    .panel { min-width: 0; padding: 13px; border: 1px solid #3b4648; border-radius: 8px; background: #202628; }
+    h2 { font-size: 14px; margin: 0 0 10px; }
+    .subtle { color: #aeb8b6; }
+    .previewStage { min-height: 330px; overflow: auto; display: grid; place-items: center; border: 1px solid #566264; border-radius: 6px; padding: 20px; }
+    .light { background: #eee8db; }
+    .dark { background: #292e30; }
+    .checker { background-color: #d7d3c9; background-image: linear-gradient(45deg,#b9b5ab 25%,transparent 25%),linear-gradient(-45deg,#b9b5ab 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#b9b5ab 75%),linear-gradient(-45deg,transparent 75%,#b9b5ab 75%); background-size: 24px 24px; background-position: 0 0,0 12px,12px -12px,-12px 0; }
+    .spriteCanvas { position: relative; flex: none; box-shadow: 0 2px 12px #0006; overflow: hidden; }
+    .spriteLayer { position: absolute; background-repeat: no-repeat; }
+    .pivot { position: absolute; z-index: 5; width: 18px; height: 18px; transform: translate(-50%,-50%); border: 2px solid #ffdf5d; border-radius: 50%; box-shadow: 0 0 0 1px #181818; }
+    .pivot::before,.pivot::after { content: ''; position: absolute; background: #ffdf5d; box-shadow: 0 0 0 1px #181818; }
+    .pivot::before { width: 28px; height: 1px; left: -7px; top: 6px; }
+    .pivot::after { width: 1px; height: 28px; left: 6px; top: -7px; }
+    .alphaBounds { position: absolute; z-index: 4; border: 1px dashed #ff5968; pointer-events: none; }
+    .layerTag { position: absolute; z-index: 3; left: 3px; top: 3px; padding: 1px 4px; border-radius: 3px; font-size: 10px; color: white; background: #111c; }
+    .facts { display: grid; grid-template-columns: 150px minmax(0,1fr); gap: 6px 10px; margin-top: 12px; }
+    .facts dt { color: #aeb8b6; }
+    .facts dd { margin: 0; overflow-wrap: anywhere; }
+    code { color: #e8d49b; }
+    .tileGrid { border: 1px solid #8f9b98; background-image: linear-gradient(to right,#76817f 1px,transparent 1px),linear-gradient(to bottom,#76817f 1px,transparent 1px); background-color: #455452; }
+    .pageGrid { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 10px; }
+    figure { margin: 0; min-width: 0; }
+    figcaption { margin-bottom: 5px; color: #b8c2bf; font-size: 12px; overflow-wrap: anywhere; }
+    .pageSurface { position: relative; width: fit-content; max-width: 100%; overflow: auto; border: 1px solid #63716e; background-color: #343b3d; background-image: linear-gradient(45deg,#41484a 25%,transparent 25%),linear-gradient(-45deg,#41484a 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#41484a 75%),linear-gradient(-45deg,transparent 75%,#41484a 75%); background-size: 20px 20px; background-position: 0 0,0 10px,10px -10px,-10px 0; }
+    .pageSurface img { display: block; max-width: none; }
+    .pageOverlay { position: absolute; left: 0; top: 0; pointer-events: none; }
+    .pageOverlay rect { fill: #ffcf46; fill-opacity: .12; stroke: #ffcf46; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+    .pageOverlay rect.fallback { fill: none; stroke: #d5d9d8; stroke-dasharray: 5 3; }
+    .pageOverlay rect.inset { fill: none; stroke: #69d8df; stroke-width: 1; stroke-dasharray: 3 2; }
+    .caption { margin: 8px 0 0; color: #aeb8b6; font-size: 12px; }
+    @media (max-width: 900px) { main { grid-template-columns: 1fr; } .controls { grid-column: 1; } }
+  </style>
+</head>
+<body>
+  <header><h1>${packLabel} · sprite-atlas preview</h1><span>v${manifest.packVersion} · ${manifest.maturity} · ${runtimeMode ? 'runtime files when present' : 'source files'}</span></header>
+  <main>
+    <section class="controls">
+      <label>Asset<select id="asset"></select></label>
+      <label>State<select id="state"></select></label>
+      <label>Direction<select id="direction"></select></label>
+      <label>Team variant<select id="team"></select></label>
+      <label>Frame<select id="frame"></select></label>
+      <button id="previous" type="button">Previous</button><button id="play" type="button">Play</button><button id="next" type="button">Next</button>
+      <label>Background<select id="background"><option value="checker">Checker</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+      <label class="toggle"><input id="mask" type="checkbox"> Show team mask</label>
+    </section>
+    <section class="panel"><h2>Composed frame</h2><div id="stage" class="previewStage checker"><div id="canvas" class="spriteCanvas"></div></div><p id="mode" class="caption"></p><dl id="facts" class="facts"></dl></section>
+    <section class="panel"><h2>Source page rectangles</h2><div id="pages" class="pageGrid"></div><p class="caption">Yellow boxes show split-layer rectangles; gray dashed boxes show the full-frame fallback. Cyan outlines show the half-texel inset. Rectangles are explicit; the tool does not infer a grid.</p></section>
+  </main>
+  <script>
+    const { manifest, fileUrls, runtimeMode } = ${safeJson};
+    const pagesById = new Map(manifest.pages.map((page) => [page.id, page]));
+    const els = Object.fromEntries(['asset','state','direction','team','frame','previous','play','next','background','mask','stage','canvas','mode','facts','pages'].map((id) => [id, document.getElementById(id)]));
+    let currentAsset;
+    let currentClip;
+    let currentSequenceIndex = 0;
+    let playTimer = null;
+
+    function addOptions(select, values, labelFor = (value) => value) {
+      select.replaceChildren();
+      for (const value of values) {
+        const option = document.createElement('option');
+        option.value = value.value;
+        option.textContent = value.label ?? labelFor(value.value);
+        select.append(option);
+      }
+      select.disabled = values.length <= 1;
+    }
+
+    function selectedFileId(page) {
+      if (els.mask.checked && page.maskFileId) return page.maskFileId;
+      return runtimeMode && page.runtimeFileId ? page.runtimeFileId : page.sourceFileId;
+    }
+
+    function selectedUrl(fileId) {
+      return fileUrls[fileId];
+    }
+
+    function selectedClip() {
+      return currentAsset.clips.find((clip) => clip.stateId === els.state.value
+        && (clip.directionId || '') === els.direction.value
+        && (clip.teamId || '') === els.team.value);
+    }
+
+    function refreshClipControls() {
+      const stateIds = [...new Set(currentAsset.clips.map((clip) => clip.stateId))].sort();
+      addOptions(els.state, stateIds.map((value) => ({ value })));
+      refreshDirections();
+    }
+
+    function refreshDirections() {
+      const matchingState = currentAsset.clips.filter((clip) => clip.stateId === els.state.value);
+      const directions = [...new Set(matchingState.map((clip) => clip.directionId || ''))].sort();
+      addOptions(els.direction, directions.map((value) => ({ value, label: value || 'Shared / all directions' })));
+      refreshTeams();
+    }
+
+    function refreshTeams() {
+      const matching = currentAsset.clips.filter((clip) => clip.stateId === els.state.value
+        && (clip.directionId || '') === els.direction.value);
+      const teams = [...new Set(matching.map((clip) => clip.teamId || ''))].sort();
+      addOptions(els.team, teams.map((value) => ({ value, label: value || 'Shared / no team variant' })));
+      currentClip = selectedClip();
+      currentSequenceIndex = 0;
+      updateFrameOptions();
+    }
+
+    function updateFrameOptions() {
+      if (!currentClip) return;
+      addOptions(els.frame, currentClip.sequence.map((step, index) => ({
+        value: String(index),
+        label: \`\${String(index + 1).padStart(2, '0')} · \${step.frameId} · \${step.durationMs} ms\`,
+      })));
+      els.frame.disabled = currentClip.sequence.length <= 1;
+      renderFrame();
+    }
+
+    function layerOrder(layerId) {
+      const layer = (currentAsset.layers || []).find((entry) => entry.id === layerId) || { drawLayer: 'actor', depthBiasWorld: 0 };
+      const rank = { background: 0, midground: 1, actor: 2, foreground: 3 }[layer.drawLayer] ?? 2;
+      return [rank, Number(layer.depthBiasWorld || 0), layer.id || ''];
+    }
+
+    function currentFrame() {
+      const frameId = currentClip.sequence[Number(els.frame.value) || 0].frameId;
+      return currentAsset.frames.find((frame) => frame.id === frameId);
+    }
+
+    function renderFrame() {
+      if (!currentClip) return;
+      currentSequenceIndex = Number(els.frame.value) || 0;
+      const frame = currentFrame();
+      const scale = Math.min(3, 640 / Math.max(frame.canvasPx.width, frame.canvasPx.height));
+      els.canvas.replaceChildren();
+      els.canvas.style.width = \`\${frame.canvasPx.width * scale}px\`;
+      els.canvas.style.height = \`\${frame.canvasPx.height * scale}px\`;
+      els.canvas.className = 'spriteCanvas';
+      const split = frame.frameRectsPx && frame.frameRectsPx.length > 0;
+      const rects = split
+        ? [...frame.frameRectsPx].sort((a, b) => {
+            const left = layerOrder(a.layerId); const right = layerOrder(b.layerId);
+            return left[0] - right[0] || left[1] - right[1] || String(left[2]).localeCompare(String(right[2]));
+          })
+        : [{ layerId: 'fallback', pageId: frame.fallbackRectPx.pageId, rectPx: frame.fallbackRectPx.rectPx, offsetPx: { x: 0, y: 0 } }];
+      for (const entry of rects) {
+        const page = pagesById.get(entry.pageId);
+        const fileId = selectedFileId(page);
+        const sprite = document.createElement('div');
+        sprite.className = 'spriteLayer';
+        sprite.style.left = \`\${entry.offsetPx.x * scale}px\`;
+        sprite.style.top = \`\${entry.offsetPx.y * scale}px\`;
+        sprite.style.width = \`\${entry.rectPx.width * scale}px\`;
+        sprite.style.height = \`\${entry.rectPx.height * scale}px\`;
+        sprite.style.backgroundImage = \`url(\${JSON.stringify(selectedUrl(fileId))})\`;
+        sprite.style.backgroundSize = \`\${page.dimensionsPx.width * scale}px \${page.dimensionsPx.height * scale}px\`;
+        sprite.style.backgroundPosition = \`\${-entry.rectPx.x * scale}px \${-entry.rectPx.y * scale}px\`;
+        els.canvas.append(sprite);
+        const tag = document.createElement('span');
+        tag.className = 'layerTag';
+        const layer = (currentAsset.layers || []).find((item) => item.id === entry.layerId);
+        tag.textContent = layer ? \`\${layer.drawLayer} · \${entry.layerId}\` : 'full cutout fallback';
+        sprite.append(tag);
+      }
+      if (frame.alphaBoundsPx) {
+        const alpha = document.createElement('div');
+        alpha.className = 'alphaBounds';
+        alpha.style.left = \`\${frame.alphaBoundsPx.x * scale}px\`;
+        alpha.style.top = \`\${frame.alphaBoundsPx.y * scale}px\`;
+        alpha.style.width = \`\${frame.alphaBoundsPx.width * scale}px\`;
+        alpha.style.height = \`\${frame.alphaBoundsPx.height * scale}px\`;
+        els.canvas.append(alpha);
+      }
+      const pivot = document.createElement('div');
+      pivot.className = 'pivot';
+      pivot.style.left = \`\${frame.groundPivotPx.x * scale}px\`;
+      pivot.style.top = \`\${frame.groundPivotPx.y * scale}px\`;
+      pivot.title = 'Authored ground/root anchor';
+      els.canvas.append(pivot);
+      els.stage.className = \`previewStage \${els.background.value}\`;
+      els.mode.textContent = split
+        ? 'Showing split layers in background → midground → actor → foreground order. The full transparent cutout remains stored as review/fallback art.'
+        : 'Showing the full transparent cutout fallback. Yellow crosshair: authored ground/root pivot. Red dashed box: informational alpha bounds.';
+      renderFacts(frame);
+      renderPages(frame, rects);
+    }
+
+    function renderFacts(frame) {
+      const facts = [
+        ['Asset', \`\${currentAsset.id} · \${currentAsset.kind}\`],
+        ['State / direction / team', \`\${currentClip.stateId} / \${currentClip.directionId || 'shared'} / \${currentClip.teamId || 'shared'}\`],
+        ['Frame / canvas', \`\${frame.id} · \${frame.canvasPx.width} × \${frame.canvasPx.height} px\`],
+        ['Ground pivot', \`\${frame.groundPivotPx.x}, \${frame.groundPivotPx.y} px · \${frame.groundPivotStatus}\`],
+        ['Alpha bounds', frame.alphaBoundsPx ? \`\${frame.alphaBoundsPx.x}, \${frame.alphaBoundsPx.y}, \${frame.alphaBoundsPx.width} × \${frame.alphaBoundsPx.height} px\` : 'not declared'],
+        ['Recommended footprint', currentAsset.recommendedTileFootprint ? \`\${currentAsset.recommendedTileFootprint.widthTiles} × \${currentAsset.recommendedTileFootprint.heightTiles} tiles · non-authoritative hint\` : 'not declared · map/gameplay owns occupancy'],
+        ['Art bounds', JSON.stringify(currentAsset.artBoundsWorld)],
+        ['Height / sort anchor', \`\${currentAsset.heightWorld} world units · \${JSON.stringify(currentAsset.sortAnchorWorld || 'ground pivot')}\`],
+        ['Culling / selection', \`\${JSON.stringify(currentAsset.cullingBoundsWorld || 'renderer-derived')} · \${JSON.stringify(currentAsset.selectionBoundsWorld || 'renderer-derived')}\`],
+        ['Sequence', \`\${currentSequenceIndex + 1} / \${currentClip.sequence.length} · \${currentClip.sequence[currentSequenceIndex].durationMs} ms · \${currentClip.loop ? 'loop' : 'once'}\`],
+      ];
+      els.facts.replaceChildren();
+      for (const [term, detail] of facts) {
+        const dt = document.createElement('dt'); dt.textContent = term;
+        const dd = document.createElement('dd'); dd.textContent = detail;
+        els.facts.append(dt, dd);
+      }
+      if (currentAsset.recommendedTileFootprint?.widthTiles && currentAsset.recommendedTileFootprint?.heightTiles) {
+        const dt = document.createElement('dt'); dt.textContent = 'Recommended tiles';
+        const dd = document.createElement('dd');
+        const scale = Math.min(22, 300 / Math.max(currentAsset.recommendedTileFootprint.widthTiles, currentAsset.recommendedTileFootprint.heightTiles));
+        const grid = document.createElement('div'); grid.className = 'tileGrid';
+        grid.style.width = \`\${currentAsset.recommendedTileFootprint.widthTiles * scale}px\`;
+        grid.style.height = \`\${currentAsset.recommendedTileFootprint.heightTiles * scale}px\`;
+        grid.style.backgroundSize = \`\${scale}px \${scale}px\`;
+        dd.append(grid); els.facts.append(dt, dd);
+      }
+    }
+
+    function renderPages(frame, rects) {
+      const grouped = new Map();
+      for (const entry of rects) {
+        if (!grouped.has(entry.pageId)) grouped.set(entry.pageId, []);
+        grouped.get(entry.pageId).push({ rect: entry.rectPx, role: entry.layerId === 'fallback' ? 'fallback' : 'layer' });
+      }
+      if (frame.frameRectsPx && frame.frameRectsPx.length > 0) {
+        const pageId = frame.fallbackRectPx.pageId;
+        if (!grouped.has(pageId)) grouped.set(pageId, []);
+        grouped.get(pageId).push({ rect: frame.fallbackRectPx.rectPx, role: 'fallback' });
+      }
+      els.pages.replaceChildren();
+      for (const [pageId, rectangles] of grouped) {
+        const page = pagesById.get(pageId);
+        const fileId = selectedFileId(page);
+        const scale = Math.min(1, 620 / page.dimensionsPx.width, 340 / page.dimensionsPx.height);
+        const figure = document.createElement('figure');
+        const caption = document.createElement('figcaption');
+        caption.textContent = \`\${page.id} · \${page.dimensionsPx.width} × \${page.dimensionsPx.height} px\${els.mask.checked && page.maskFileId ? ' · team mask' : ''}\`;
+        const surface = document.createElement('div'); surface.className = 'pageSurface';
+        surface.style.width = \`\${page.dimensionsPx.width * scale}px\`;
+        surface.style.height = \`\${page.dimensionsPx.height * scale}px\`;
+        const image = document.createElement('img');
+        image.src = selectedUrl(fileId); image.alt = \`\${page.id} page\`;
+        image.style.width = \`\${page.dimensionsPx.width * scale}px\`;
+        image.style.height = \`\${page.dimensionsPx.height * scale}px\`;
+        surface.append(image);
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'pageOverlay'); svg.setAttribute('width', String(page.dimensionsPx.width * scale));
+        svg.setAttribute('height', String(page.dimensionsPx.height * scale));
+        svg.setAttribute('viewBox', \`0 0 \${page.dimensionsPx.width} \${page.dimensionsPx.height}\`);
+        for (const entry of rectangles) {
+          const rect = entry.rect;
+          const box = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          if (entry.role === 'fallback') box.setAttribute('class', 'fallback');
+          box.setAttribute('x', String(rect.x)); box.setAttribute('y', String(rect.y));
+          box.setAttribute('width', String(rect.width)); box.setAttribute('height', String(rect.height));
+          svg.append(box);
+          const inset = page.sampling.uvInsetPx;
+          const inner = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          inner.setAttribute('class', 'inset');
+          inner.setAttribute('x', String(rect.x + inset)); inner.setAttribute('y', String(rect.y + inset));
+          inner.setAttribute('width', String(rect.width - 2 * inset)); inner.setAttribute('height', String(rect.height - 2 * inset));
+          svg.append(inner);
+        }
+        surface.append(svg); figure.append(caption, surface); els.pages.append(figure);
+      }
+    }
+
+    function setFrame(index) {
+      currentSequenceIndex = (index + currentClip.sequence.length) % currentClip.sequence.length;
+      els.frame.value = String(currentSequenceIndex);
+      renderFrame();
+    }
+
+    function stopPlayback() {
+      if (playTimer) clearTimeout(playTimer);
+      playTimer = null;
+      els.play.textContent = 'Play';
+    }
+
+    function schedulePlayback() {
+      const step = currentClip.sequence[currentSequenceIndex];
+      playTimer = setTimeout(() => {
+        const next = currentSequenceIndex + 1;
+        if (next >= currentClip.sequence.length && !currentClip.loop) { stopPlayback(); return; }
+        setFrame(next % currentClip.sequence.length);
+        schedulePlayback();
+      }, step.durationMs);
+    }
+
+    function startPlayback() {
+      stopPlayback();
+      els.play.textContent = 'Pause';
+      schedulePlayback();
+    }
+
+    function selectAsset(assetId) {
+      stopPlayback();
+      currentAsset = manifest.assets.find((asset) => asset.id === assetId);
+      refreshClipControls();
+    }
+
+    addOptions(els.asset, manifest.assets.map((asset) => ({ value: asset.id, label: \`\${asset.id} · \${asset.kind}\` })));
+    const hasMask = manifest.pages.some((page) => page.maskFileId);
+    els.mask.disabled = !hasMask;
+    els.asset.addEventListener('change', () => selectAsset(els.asset.value));
+    els.state.addEventListener('change', () => { stopPlayback(); refreshDirections(); });
+    els.direction.addEventListener('change', () => { stopPlayback(); refreshTeams(); });
+    els.team.addEventListener('change', () => { stopPlayback(); currentClip = selectedClip(); currentSequenceIndex = 0; updateFrameOptions(); });
+    els.frame.addEventListener('change', renderFrame);
+    els.previous.addEventListener('click', () => setFrame(currentSequenceIndex - 1));
+    els.next.addEventListener('click', () => setFrame(currentSequenceIndex + 1));
+    els.play.addEventListener('click', () => playTimer ? stopPlayback() : startPlayback());
+    els.background.addEventListener('change', renderFrame);
+    els.mask.addEventListener('change', renderFrame);
+    selectAsset(manifest.assets[0].id);
+  </script>
+</body>
+</html>
+`;
+
+await mkdir(htmlDirectory, { recursive: true });
+await writeFile(htmlPath, html, 'utf8');
+console.log(`Sprite-atlas preview written to ${htmlPath}`);
