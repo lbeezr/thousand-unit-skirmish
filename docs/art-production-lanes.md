@@ -12,7 +12,8 @@ The game uses painted ground textures and fixed-camera cutout sprites for most e
 | --- | --- | --- |
 | Environment art | Ground and regional material sets, water and shorelines, large terrain landmarks | Maps for placement; vegetation for biome fit; renderer for display |
 | Vegetation and world props | Reusable tree, shrub, rock, and resource families, variants, and relevant depletion states | Environment for palette; Maps for density and spacing; renderer for instancing |
-| Character and building art | Unit and structure silhouettes, geometry, team accents, construction and damage variants, pose samples | Technical art for surfacing/export; renderer for runtime poses |
+| Unit character art | Worker, Infantry, and Archer silhouettes, equipment, team cues, and action pose samples | Technical art for shared surfacing; renderer for runtime poses |
+| Building architecture art | Town Center, Barracks, and Archery Range geometry, ownership cues, construction and damage variants | Technical art for materials/export; renderer for runtime states |
 | Technical art and surfacing | Shared painted materials or atlases, UV and export conventions, asset manifests, repeatable previews and packaging checks | Asset makers for source examples; renderer for loader and batch behavior |
 | Art direction | Style examples and concise feedback on the few changes that improve gameplay readability | All visual lanes; no standing signoff |
 | Maps and scenarios | Placement, traversal, forest density, lakes and routes in playable maps | Environment and vegetation for reusable assets |
@@ -25,6 +26,9 @@ Concept design, modeling, UVs, texturing, rigging, animation, scene composition,
 - A vegetation slice can be a few compatible tree or shrub silhouettes, source files, runtime files, a simple manifest/provenance record, and one forest view at ordinary zoom. Maps can place them immediately.
 - A terrain slice can be one water/shoreline treatment that reads on an authored map, with a source asset and runtime view.
 - A surfacing slice can be one shared atlas and a repeatable UV/export/manifest path on a small sample. It should remove manual work for later assets; it is not a mandatory preflight service for other authors.
-- A character or building slice can improve one role or structure at ordinary zoom and integrate the relevant runtime state, even while the rest of the pack is unfinished.
+- A unit slice can make Infantry or Archer recognizable at ordinary zoom and include a candidate GLB and source while the existing Worker sample is being published.
+- A building slice can improve one Barracks construction silhouette or one other structure. The original Worker/Barracks v0.2 source sample is cleared for a focused PR with its known limits; it does not need to claim the full M2 appearance or M3 performance milestone.
+
+Source samples may merge before their runtime loader or final visual treatment is finished when the PR states that limit clearly. Runtime integration uses the applicable manifest and proportionate local validation; milestone captures and large-match measurements remain separate claims.
 
 Use source assets, focused PRs, and named game-zoom captures as asynchronous shared state. Ask only an affected owner when a specific format, shader, placement rule, or conflicting edit blocks the current slice; include a proposed resolution and continue other work. Observe broader readability and 2,000-unit performance for milestone claims, without making them blanket PR merge gates. Respect any still-held user decision only for its named asset or action.
