@@ -65,6 +65,7 @@ const scenarios = [
   ['scripts/unit-selection-scenario.mjs', 'Unit selection'],
   ['scripts/pve-opponent-scenario.mjs', 'PvE opponent seats'],
   ['scripts/visual-pack-path-safety-scenario.mjs', 'Visual pack path safety'],
+  ['scripts/sprite-atlas-handoff-scenario.mjs', 'Sprite-atlas handoff audit'],
   ['scripts/unit-lod-state-scenario.mjs', 'Unit LOD matrix updates'],
   ['scripts/unit-visual-state-scenario.mjs', 'Unit visual state'],
   ['scripts/resource-visual-state-scenario.mjs', 'Resource visual state'],
