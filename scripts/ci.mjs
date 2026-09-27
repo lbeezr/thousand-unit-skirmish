@@ -57,6 +57,7 @@ run(['--test', 'scripts/building-sprites.test.mjs'], 'Default building sprites')
 run(['--test', 'scripts/ci-sharding.test.mjs'], 'CI shard coverage');
 run(['--test', 'scripts/browser-performance-instrumentation.test.mjs'], 'Browser timing attribution');
 run(['--test', 'scripts/performance-order-window.test.mjs'], 'Performance planning wave boundaries');
+run(['--test', 'scripts/waypoint-backpressure.test.mjs'], 'Waypoint metadata under backpressure');
 
 run(['--test', 'scripts/battlefield-cursor.test.mjs'], 'Battlefield cursor states');
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
@@ -91,6 +92,8 @@ const scenarios = [
   ['scripts/construction-connectivity-scenario.mjs', 'Construction preserves existing terrain connections'],
   ['scripts/elimination-scenario.mjs', 'Terminal elimination and reconnect'],
   ['scripts/queued-waypoint-scenario.mjs', 'Queued waypoint checkpoint recovery'],
+  ['scripts/hold-clock-recovery-scenario.mjs', 'Checkpoint hold clock recovery (Azure)'],
+  ['scripts/hold-clock-recovery-scenario.mjs', 'Checkpoint hold clock recovery (Ember)', '1'],
   ['scripts/live-attack-move-repair-scenario.mjs', 'Live attack-move route repair'],
   ['scripts/worker-combat-scenario.mjs', 'Worker combat across both seats'],
   ['scripts/worker-production-spawn-scenario.mjs', 'Town Center worker exits across map orientations'],
