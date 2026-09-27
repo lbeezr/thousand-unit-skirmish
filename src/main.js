@@ -14,7 +14,8 @@ import {
   RESOURCE_VISUAL_STAGES, resourceVisualScale, resourceVisualStage, resourceVisualTransitionStages,
 } from './resource-visual-state.mjs';
 import {
-  buildingFinishedDetailsVisible, buildingProductionCueState, constructionGroundStage,
+  barracksModelVisualState, buildingFinishedDetailsVisible,
+  buildingProductionCueState, constructionGroundStage,
 } from './building-visual-state.mjs';
 import {
   UNIT_LOD_ROLE_BITS, UNIT_LOD_ROLES, shouldUpdateUnitFocusMatrix,
@@ -1150,6 +1151,35 @@ function createBarracksVisual(building) {
   foundation.position.y = 0.12;
   group.add(foundation);
 
+  const frame = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), timberMaterial, 8);
+  frame.instanceMatrix.setUsage(THREE.StaticDrawUsage);
+  let frameIndex = 0;
+  for (const x of [-1.12, 1.12]) {
+    for (const z of [-1.12, 1.12]) {
+      dummy.position.set(x, 0.70, z);
+      dummy.rotation.set(0, 0, 0);
+      dummy.scale.set(0.12, 0.96, 0.12);
+      dummy.updateMatrix();
+      frame.setMatrixAt(frameIndex++, dummy.matrix);
+    }
+  }
+  for (const z of [-1.12, 1.12]) {
+    dummy.position.set(0, 1.18, z);
+    dummy.rotation.set(0, 0, 0);
+    dummy.scale.set(2.35, 0.12, 0.12);
+    dummy.updateMatrix();
+    frame.setMatrixAt(frameIndex++, dummy.matrix);
+  }
+  for (const x of [-1.12, 1.12]) {
+    dummy.position.set(x, 1.18, 0);
+    dummy.rotation.set(0, 0, 0);
+    dummy.scale.set(0.12, 0.12, 2.15);
+    dummy.updateMatrix();
+    frame.setMatrixAt(frameIndex++, dummy.matrix);
+  }
+  frame.computeBoundingSphere();
+  group.add(frame);
+
   const wallSpecs = [
     [2.35, 1, 0.18, 0, 0, -1.12],
     [0.18, 1, 2.15, -1.12, 0, 0],
@@ -1215,7 +1245,7 @@ function createBarracksVisual(building) {
   const combatFeedback = createBuildingCombatFeedback();
   group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
   scene.add(group);
-  const visual = { group, walls, roofPanels, ridge, finishPieces, productionLamp,
+  const visual = { group, frame, walls, roofPanels, ridge, finishPieces, productionLamp,
     teamColor, outline, rallyMarker, healthIndicator, combatFeedback };
   updateBarracksVisual(visual, building);
   return visual;
@@ -1223,17 +1253,21 @@ function createBarracksVisual(building) {
 
 function updateBarracksVisual(visual, building) {
   const progress = THREE.MathUtils.clamp(Number(building.progress) || 0, 0, 1);
+  const state = barracksModelVisualState(progress, building.complete);
   visual.group.position.set(building.x, 0, building.z);
   visual.group.visible = true;
+  visual.frame.visible = state.frameVisible;
+
   for (const wall of visual.walls) {
-    wall.scale.y = progress;
-    wall.position.y = 0.23 + progress * 0.5;
-    wall.visible = progress > 0.01;
+    wall.scale.y = 1;
+    wall.position.y = 0.23 + wall.scale.y * 0.5;
+    wall.visible = state.wallsVisible;
   }
-  const roofVisible = buildingFinishedDetailsVisible(progress, building.complete);
-  for (const panel of visual.roofPanels) panel.visible = roofVisible;
-  visual.ridge.visible = roofVisible;
-  for (const piece of visual.finishPieces) piece.visible = roofVisible;
+  for (const panel of visual.roofPanels) {
+    panel.visible = state.roofVisible;
+  }
+  visual.ridge.visible = state.roofVisible;
+  for (const piece of visual.finishPieces) piece.visible = state.finishedDetailsVisible;
   updateBuildingProductionCue(visual, building);
   updateBuildingHealthIndicator(visual, building);
 }

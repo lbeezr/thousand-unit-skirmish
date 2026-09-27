@@ -38,3 +38,9 @@ The current renderer still uses procedural objects until an authored asset path 
 ## Milestone evidence
 
 For M2, review a mixed Worker/Infantry/Archer roster and building silhouettes at zoom 0.91 and strategic zoom 0.48, on Meadow and Cinder, with both teams and fog-safe visibility. Confirm the production cue's idle, active, and blocked states and the four resource stages. For M3, measure the 2,000-unit browser run on the integrated renderer candidate. Zoom 2.3 is optional close-up review and cannot replace either required view or the performance measurement. These observations establish milestone claims; they are not blanket merge gates for a smaller source, geometry, or integration PR.
+
+## Authored pack checkpoint v0.2.0
+
+The [v0.2.0 character and Barracks sample pack](../assets/units-buildings/frontier-glb-sample-v2/README.md) records the authored GLB, source scene and generator, material atlas, provenance, anchors, variants, pose/state samples, previews, and file digests. Its source renders cover one Worker and five same-camera Barracks stages at gameplay zoom 0.91 over Meadow. The building samples use a shared footprint and origin: foundation, frame, walls, roof, and complete. Exactly one owner-matched standard is selected on completion; `productionCue` remains an anchor for renderer-owned queue feedback.
+
+The focused review found that the 75% roof and complete Barracks are too similar at about 50 pixels wide, and the completed preview included a temporary cyan renderer cue. A follow-up source revision widens the neutral gate/front trim and team standards, and removes the cue; its six replacement frames are pending a fresh render clearance. The Worker is about 12 pixels tall in the full-field frame, so its pack and tool still need a closer approved gameplay-scale review. The current renderer remains procedural: GLB loading, in-game appearance, and 2,000-unit performance evidence are open.
