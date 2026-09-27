@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { RESOURCE_VISUAL_STAGES } from './resource-visual-state.mjs';
 import { buildWaterSurfaceGeometry } from './water-surface-geometry.mjs';
 
+const meshyResourcesEnabled = new URLSearchParams(globalThis.location?.search ?? '').get('meshyResources') !== '0';
+
 const ASSET_ROOT = './assets/environment/frontier-v1/';
 const INTERACTIVE_ASSET_ROOT = './assets/environment/frontier-interactive-v1/';
 const GROUND_RENDER_ORDER = -20;
@@ -28,6 +30,11 @@ function loadSprite(url) {
 const sprites = Object.fromEntries(spriteNames.map((name) => [name, loadSprite(`${ASSET_ROOT}${name}.webp`)]));
 sprites.oak = loadSprite(`${ASSET_ROOT}oak.webp`);
 sprites.berries = loadSprite(`${ASSET_ROOT}berries.webp`);
+if (meshyResourcesEnabled) {
+  for (const family of ['oak', 'pine', 'berries']) {
+    sprites[family] = loadSprite(`./assets/environment/frontier-meshy-sprites-v1/${family}/runtime/${family}-01.webp`);
+  }
+}
 for (const family of ['oak', 'berries']) {
   for (const stage of RESOURCE_VISUAL_STAGES) sprites[`${family}-${stage}`] = sprites[family];
 }
@@ -140,7 +147,7 @@ async function loadResourceStateAssets() {
     for (const family of ['oak', 'berries']) {
       for (const stage of RESOURCE_VISUAL_STAGES) {
         const name = `${family}-${stage}`;
-        const texture = loaded.get(`${name}.webp`);
+        const texture = meshyResourcesEnabled && stage === 'full' ? sprites[family] : loaded.get(`${name}.webp`);
         updateSpriteTexture(name, texture);
       }
     }
@@ -340,7 +347,19 @@ export function createGroundSurfaces(definition) {
   return meshes;
 }
 
-function spriteGeometry(width, height) {
+function spriteGeometry(width, height, name) {
+  if (meshyResourcesEnabled && ['oak', 'pine', 'berries', 'oak-full', 'berries-full'].includes(name)) {
+    // Preserve 128 px/world-unit and the baked (320,480) ground pivot.
+    const geometry = new THREE.PlaneGeometry(5, 5, 1, 4);
+    geometry.translate(0, 1.25, 0);
+    const positions = geometry.attributes.position;
+    const slope = Math.hypot(0.78, 0.78) / 1.12;
+    for (let i = 0; i < positions.count; i++) {
+      positions.setZ(i, -Math.min(0, positions.getY(i)) * slope);
+    }
+    positions.needsUpdate = true;
+    return geometry;
+  }
   const geometry = new THREE.PlaneGeometry(width, height);
   geometry.translate(0, height / 2, 0);
   return geometry;
@@ -360,7 +379,7 @@ function spriteMaterial(name) {
 }
 
 export function createEnvironmentSprite(name, width, height, x, z) {
-  const mesh = new THREE.Mesh(spriteGeometry(width, height), spriteMaterial(name));
+  const mesh = new THREE.Mesh(spriteGeometry(width, height, name), spriteMaterial(name));
   mesh.quaternion.copy(cameraFacing);
   mesh.position.set(x, 0, z);
   return mesh;
@@ -410,7 +429,7 @@ export function updateConstructionGroundInstances(mesh, positions) {
 export function createEnvironmentSpriteInstances(name, width, height, positions) {
   if (positions.length === 0) return null;
   const mesh = new THREE.InstancedMesh(
-    spriteGeometry(width, height), spriteMaterial(name), positions.length,
+    spriteGeometry(width, height, name), spriteMaterial(name), positions.length,
   );
   for (let index = 0; index < positions.length; index++) {
     const point = positions[index];
@@ -468,6 +487,12 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
             flip: variation(index + 43) < 0.5,
             yaw: (variation(index + 53) - 0.5) * 0.3,
           };
+          if (meshyResourcesEnabled && definition.id === 'meshy-resource-review') {
+            point.scale = 0.72 + scaleVariation * 0.32;
+            point.yaw = 0;
+            (treeType < 0.45 ? oaks : pines).push(point);
+            continue;
+          }
           if (treeType < 0.2) {
             point.scale = 0.76 + scaleVariation * 0.2;
             oaks.push(point);

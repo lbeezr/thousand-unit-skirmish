@@ -1,0 +1,219 @@
+{
+  "name": "berries",
+  "status": "review-candidate",
+  "sourceModel": "meshy_output/20260926_212220_tree-resource-sprites_01a0e074/berries-optimized.glb",
+  "sourceModelSha256": "a7345a4726631b6521b75a50a011589a946566efaade12dc09cd79d44a5be9c8",
+  "meshTask": "01a0e075-2aea-7523-adcb-859b642f6991",
+  "remeshTask": "01a0e07a-d117-7650-a903-4d7601a3a286",
+  "atlas": "berries-atlas.png",
+  "atlasPixels": [
+    2560,
+    1280
+  ],
+  "framePixels": [
+    640,
+    640
+  ],
+  "captureMode": "camera-orbit",
+  "projection": "orthographic",
+  "elevationDegrees": 46,
+  "frameWorldUnits": [
+    5,
+    5
+  ],
+  "pixelsPerWorldUnit": 128,
+  "anchorPixelFromTopLeft": [
+    320,
+    480
+  ],
+  "lighting": "Building pilot: hemisphere 1.6; warm key 2.5; cool fill 1.0; rim 0.7; ACES exposure 1.",
+  "viewConvention": "Camera azimuth 0 looks from +Z; 90 from +X. Model is not rotated.",
+  "stats": {
+    "rawBounds": {
+      "min": [
+        -0.9510790705680847,
+        -0.4353339672088623,
+        -0.9108500480651855
+      ],
+      "max": [
+        0.9469950795173645,
+        0.4262550175189972,
+        0.8218259811401367
+      ],
+      "size": [
+        1.8980741500854492,
+        0.8615889847278595,
+        1.7326760292053223
+      ]
+    },
+    "normalizedSize": [
+      2.3767278560325344,
+      1.0788632996036038,
+      2.1696198664876913
+    ],
+    "baseScale": 1.3434670083279947,
+    "fitScale": 0.932050139620602,
+    "effectiveScale": 1.2521786126877799,
+    "triangleCount": 104491,
+    "framePixels": 640,
+    "pixelsPerWorldUnit": 128,
+    "anchorPixelFromTopLeft": [
+      320,
+      480
+    ],
+    "viewAzimuthsDegrees": [
+      0,
+      45,
+      90,
+      135,
+      180,
+      225,
+      270,
+      315
+    ],
+    "projectedBoundsBeforeFit": {
+      "minX": 99.25628383659901,
+      "minY": 218.28821905377634,
+      "maxX": 540.7437161634011,
+      "maxY": 638.7897407109928
+    }
+  },
+  "frames": [
+    {
+      "index": 0,
+      "cameraAzimuthDegrees": 0,
+      "rect": [
+        0,
+        0,
+        640,
+        640
+      ],
+      "alphaBounds": [
+        168,
+        355,
+        472,
+        573
+      ],
+      "sha256": "49893bea37a57121a2b11fbb1c3a798a67412da4676fa64bfbd6f8a53525791b"
+    },
+    {
+      "index": 1,
+      "cameraAzimuthDegrees": 45,
+      "rect": [
+        640,
+        0,
+        640,
+        640
+      ],
+      "alphaBounds": [
+        174,
+        361,
+        443,
+        568
+      ],
+      "sha256": "13ef5398be1a18e34fa632255cef7c72c421766b0e78383447703722256a1c79"
+    },
+    {
+      "index": 2,
+      "cameraAzimuthDegrees": 90,
+      "rect": [
+        1280,
+        0,
+        640,
+        640
+      ],
+      "alphaBounds": [
+        181,
+        331,
+        459,
+        574
+      ],
+      "sha256": "93a9053262229e7ca66cbe462e2b5797b0d827af850449d45b3b04c274834780"
+    },
+    {
+      "index": 3,
+      "cameraAzimuthDegrees": 135,
+      "rect": [
+        1920,
+        0,
+        640,
+        640
+      ],
+      "alphaBounds": [
+        190,
+        337,
+        429,
+        555
+      ],
+      "sha256": "0dd07a158c17b7c111aaeb105a06f1d29ef23a6b326b3b3303d6900d0e84ba23"
+    },
+    {
+      "index": 4,
+      "cameraAzimuthDegrees": 180,
+      "rect": [
+        0,
+        640,
+        640,
+        640
+      ],
+      "alphaBounds": [
+        168,
+        329,
+        472,
+        573
+      ],
+      "sha256": "6988180e6bb1dcbb750652e094dbc9e9ffb89a828b52c96ee190270c5953d5ab"
+    },
+    {
+      "index": 5,
+      "cameraAzimuthDegrees": 225,
+      "rect": [
+        640,
+        640,
+        640,
+        640
+      ],
+      "alphaBounds": [
+        197,
+        331,
+        467,
+        550
+      ],
+      "sha256": "9708e7efcb28598fb9b63f18543766f8c6215661bccdf7bcccfc3f7a5b51d5f2"
+    },
+    {
+      "index": 6,
+      "cameraAzimuthDegrees": 270,
+      "rect": [
+        1280,
+        640,
+        640,
+        640
+      ],
+      "alphaBounds": [
+        181,
+        334,
+        459,
+        573
+      ],
+      "sha256": "639d847e3de3f1a19a1ffe7531183d8c9396f20a47f7b219298a63c68e1528b0"
+    },
+    {
+      "index": 7,
+      "cameraAzimuthDegrees": 315,
+      "rect": [
+        1920,
+        640,
+        640,
+        640
+      ],
+      "alphaBounds": [
+        211,
+        351,
+        450,
+        566
+      ],
+      "sha256": "2e597a1932d88e3875ccce68c12018721585b544926e4771e82e8cb45190a8bc"
+    }
+  ]
+}

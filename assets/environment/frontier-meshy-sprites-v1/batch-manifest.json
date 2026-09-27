@@ -1,0 +1,56 @@
+{
+  "assets": [
+    {
+      "name": "oak",
+      "source": "assets/environment/frontier-v1/oak.png",
+      "sourceSha256": "e99f1c70c28cedd8406dea44b72186f25a40ef88c1a3f72d7690298f5e584753",
+      "requestedWidth": 3.05,
+      "sourceTask": "01a0e074-8896-722b-ad83-416065416628",
+      "remeshTask": "01a0e07d-f988-7772-810b-ed7a1e40bf8d",
+      "status": "captured",
+      "spritePack": "assets/environment/frontier-meshy-sprites-v1/oak",
+      "consumedCredits": 35
+    },
+    {
+      "name": "pine",
+      "source": "assets/environment/frontier-v1/pine.png",
+      "sourceSha256": "b6bb0453e1537eb3f82637518cf02764c4d615d14e1257a575324c583d17bacf",
+      "requestedWidth": 2.25,
+      "sourceTask": "01a0e074-dcd7-74dd-a8b1-3a7b20ed3268",
+      "remeshTask": "01a0e079-d166-76cc-b3a7-42ab091febf7",
+      "status": "captured",
+      "spritePack": "assets/environment/frontier-meshy-sprites-v1/pine",
+      "consumedCredits": 35
+    },
+    {
+      "name": "berries",
+      "source": "assets/environment/frontier-v1/berries.png",
+      "sourceSha256": "3ca2f8162316e1babcda9357cb51856fa56ce1ff7706d03ef8d95bbcb0a04787",
+      "requestedWidth": 2.55,
+      "sourceTask": "01a0e075-2aea-7523-adcb-859b642f6991",
+      "remeshTask": "01a0e07a-d117-7650-a903-4d7601a3a286",
+      "status": "captured",
+      "spritePack": "assets/environment/frontier-meshy-sprites-v1/berries",
+      "consumedCredits": 35
+    }
+  ],
+  "estimatedCredits": 105,
+  "sourceCreditsEach": 30,
+  "remeshCreditsEach": 5,
+  "viewAzimuthsDegrees": [
+    0,
+    45,
+    90,
+    135,
+    180,
+    225,
+    270,
+    315
+  ],
+  "elevationDegrees": 46,
+  "framePixels": 640,
+  "status": "completed-review-candidate",
+  "unitTask": "01a0de8f-b25b-76d1-a313-a448eea408a3",
+  "unitNote": "Existing active task has its own Infantry/Worker directional capture; avoid duplicate paid jobs.",
+  "consumedCredits": 105
+}
