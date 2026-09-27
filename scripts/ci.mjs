@@ -45,6 +45,7 @@ run(['--test', 'scripts/selection-context.test.mjs'], 'Contextual selection');
 run(['--test', 'scripts/navigation-settings.test.mjs'], 'Camera navigation settings and controls');
 
 const scenarios = [
+  ['scripts/building-production-cue-scenario.mjs', 'Building production cue'],
   ['scripts/client-asset-allowlist-scenario.mjs', 'Client static asset allowlist'],
   ['scripts/docker-ui-assets-context-scenario.mjs', 'Docker UI asset context'],
   ['scripts/origin-policy-scenario.mjs', 'Origin policy'],
