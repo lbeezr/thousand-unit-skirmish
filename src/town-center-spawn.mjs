@@ -33,3 +33,15 @@ export function townCenterSpawnPosition(spawnPoints, team, width, height) {
       -halfHeight + TOWN_CENTER_EDGE_MARGIN, halfHeight - TOWN_CENTER_EDGE_MARGIN),
   };
 }
+
+// Four world cells match the authored Town Center's visible stone base.
+export function townCenterFootprintCells(spawnPoints, team, width, height) {
+  const { x, z } = townCenterSpawnPosition(spawnPoints, team, width, height);
+  const cells = [];
+  for (let row = Math.max(0, Math.ceil(z + height / 2 - 2.5)); row < Math.min(height, z + height / 2 + 1.5); row++) {
+    for (let column = Math.max(0, Math.ceil(x + width / 2 - 2.5)); column < Math.min(width, x + width / 2 + 1.5); column++) {
+      cells.push(row * width + column);
+    }
+  }
+  return cells;
+}

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { applyBuildingGroundDepth } from './building-sprites.mjs';
 
 const DEFAULT_MANIFEST_URL = new URL(
   '../assets/buildings/town-center-lifecycle-meshy-v1/lifecycle-grid.json',
@@ -165,6 +166,7 @@ export function createCapturedBuildingSprite({
     depthWrite: false,
     toneMapped: false,
   });
+  applyBuildingGroundDepth(material);
   const sprite = new THREE.Sprite(material);
   sprite.visible = false;
   sprite.renderOrder = 0.9;
@@ -232,8 +234,9 @@ function requestCurrentFrame(sprite, data) {
   const pixelsPerWorldUnit = data.manifest.camera.pixelsPerWorldUnit;
   if (Number.isFinite(pixelsPerWorldUnit) && pixelsPerWorldUnit > 0) {
     sprite.scale.set(dimensions[0] / pixelsPerWorldUnit, dimensions[1] / pixelsPerWorldUnit, 1);
-    sprite.position.y = (data.manifest.camera.anchorPixelFromTopLeft[1] - dimensions[1] / 2)
-      / pixelsPerWorldUnit;
+    sprite.center.set(data.manifest.camera.anchorPixelFromTopLeft[0] / dimensions[0],
+      1 - data.manifest.camera.anchorPixelFromTopLeft[1] / dimensions[1]);
+    sprite.position.y = 0.035;
   }
 
   composeFrame(view, data.teamColor, data.manifestUrl).then((canvas) => {

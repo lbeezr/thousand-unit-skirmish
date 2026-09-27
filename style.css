@@ -1140,3 +1140,21 @@ html, body { width: 100%; height: 100%; overflow: hidden; }
 #guidance-toggle { color: inherit; background: transparent; border: 1px solid #70816a; border-radius: 3px; padding: 6px; cursor: pointer; }
 .field-hint.guidance-dismissed > span { display: none; }
 @media (pointer: coarse) { #guidance-toggle, .scenario-brief-toggle, .scenario-brief-heading button { min-height: 44px; min-width: 44px; } }
+
+/* Size the wrapped header to its contents and stack narrow HUD rows using
+   measured heights, including wrapped objective text and live deadlines. */
+.topbar { height: auto; min-height: 54px; flex-wrap: wrap; align-content: flex-start; padding-top: 5px; padding-bottom: 5px; }
+.topbar .hud-readouts { width: auto; }
+.map-label { top: calc(var(--hud-header-height, 54px) + 8px); max-width: calc(100% - 380px); }
+.camera-toolbar { top: calc(var(--hud-header-height, 54px) + 8px); }
+.match-menu, .help-panel { top: calc(var(--hud-header-height, 54px) + 8px); max-height: calc(100% - var(--hud-header-height, 54px) - 22px); }
+.scenario-brief-panel { top: calc(var(--hud-controls-bottom, 154px) + 8px); max-height: calc(100% - var(--hud-controls-bottom, 154px) - 22px); }
+@media (max-width: 920px) {
+  .map-label { max-width: calc(100% - 20px); }
+  .camera-toolbar { top: calc(var(--hud-header-height, 54px) + var(--hud-objective-height, 44px) + 16px); max-width: calc(100% - 20px); flex-wrap: wrap; }
+  .topbar .topbar-center[data-urgent="true"] { position: static; order: 3; margin-left: auto; }
+}
+@media (max-width: 620px) {
+  .topbar .hud-readouts { flex-basis: 100%; justify-content: flex-start; }
+  .topbar .room-actions { margin-left: 0; max-width: 100%; flex-wrap: wrap; }
+}
