@@ -22,6 +22,9 @@ COPY --chown=node:node assets/buildings/archery-range-sprite-v1/runtime/ ./asset
 COPY --chown=node:node assets/buildings/town-center-meshy-review-v1/runtime/ ./assets/buildings/town-center-meshy-review-v1/runtime/
 COPY --chown=node:node assets/buildings/town-center-lifecycle-meshy-v1/lifecycle-grid.json ./assets/buildings/town-center-lifecycle-meshy-v1/lifecycle-grid.json
 COPY --chown=node:node assets/buildings/town-center-lifecycle-meshy-v1/runtime/ ./assets/buildings/town-center-lifecycle-meshy-v1/runtime/
+COPY --chown=node:node assets/environment/frontier-meshy-sprites-v1/oak/runtime/ ./assets/environment/frontier-meshy-sprites-v1/oak/runtime/
+COPY --chown=node:node assets/environment/frontier-meshy-sprites-v1/pine/runtime/ ./assets/environment/frontier-meshy-sprites-v1/pine/runtime/
+COPY --chown=node:node assets/environment/frontier-meshy-sprites-v1/berries/runtime/ ./assets/environment/frontier-meshy-sprites-v1/berries/runtime/
 COPY deploy/entrypoint.sh ./deploy/entrypoint.sh
 RUN mkdir -p /app/custom-maps /app/room-data && chown node:node /app/custom-maps /app/room-data
 
