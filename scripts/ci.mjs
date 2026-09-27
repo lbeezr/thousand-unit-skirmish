@@ -36,6 +36,7 @@ const syntaxFiles = [
 
 for (const file of syntaxFiles) run(['--check', file], `Syntax: ${file}`);
 
+run(['--test', 'scripts/battlefield-cursor.test.mjs'], 'Battlefield cursor states');
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
 run(['--test', 'scripts/pve-entry.test.mjs'], 'PvE entry observer settling');
 run(['--test', 'scripts/hud-layout.test.mjs'], 'Visible HUD layout');
@@ -44,6 +45,7 @@ run(['--test', 'scripts/selection-context.test.mjs'], 'Contextual selection');
 run(['--test', 'scripts/navigation-settings.test.mjs'], 'Camera navigation settings and controls');
 
 const scenarios = [
+  ['scripts/building-production-cue-scenario.mjs', 'Building production cue'],
   ['scripts/client-asset-allowlist-scenario.mjs', 'Client static asset allowlist'],
   ['scripts/docker-ui-assets-context-scenario.mjs', 'Docker UI asset context'],
   ['scripts/origin-policy-scenario.mjs', 'Origin policy'],
@@ -80,6 +82,7 @@ const scenarios = [
   ['scripts/unit-lod-state-scenario.mjs', 'Unit LOD matrix updates'],
   ['scripts/unit-visual-state-scenario.mjs', 'Unit visual state'],
   ['scripts/resource-visual-state-scenario.mjs', 'Resource visual state'],
+  ['scripts/water-surface-scenario.mjs', 'Batched water surface and shore geometry'],
   ['scripts/harvestable-woodland-scenario.mjs', 'Harvestable woodland gameplay'],
   ['scripts/room-supervisor-scenario.mjs', 'Room supervisor integration'],
   ['scripts/pve-room-launch-scenario.mjs', 'PvE room launch and rematch integration'],

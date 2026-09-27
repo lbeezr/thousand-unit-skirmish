@@ -46,7 +46,7 @@ The first authored review pack provides four concrete samples: Worker idle, Work
 
 | Visual state | Current source | Renderer interpretation |
 | --- | --- | --- |
-| construction | progress in [0, 1] and complete | Reveal construction layers from normalized progress. Roofs and finished details appear at 90% progress (or whenever complete is true); the earthwork/foundation ground cue remains until authoritative completion. |
+| construction | progress in [0, 1] and complete | Barracks selects foundation, frame, walls, and roof at 0%, 25%, 50%, and 75%; finished details appear at 90% (or whenever complete is true). Other buildings retain their 90% roof reveal; the earthwork/foundation ground cue remains until authoritative completion. |
 | damage | hp and maxHp; hp changes identify a fresh hit | Derive health ratio and damage stage from hp/maxHp. Initial worn and critical cut points reuse the current UI breakpoints at 55% and 25%; art review may tune them. |
 | under attack | attackers count | Optional localized under-attack feedback. |
 | production active | building is complete, queue has at least one item, and productionBlocked is false | Show the renderer-owned cue at productionCue. Training progress may drive its pulse or fill. |
@@ -75,7 +75,7 @@ Construction ground treatment uses the same server progress:
 | earthwork | Incomplete building and progress below 0.4. |
 | foundation | Incomplete building and progress from 0.4 up to, but not including, 1. |
 
-The clear state has no image file. Site decals are grouped by state and remain under the building footprint. The structure may reveal its roof and finished details at 90% progress while the foundation cue stays visible until the server marks the building complete.
+The clear state has no image file. Site decals are grouped by state and remain under the building footprint. Barracks reveals its roof at 75% progress and finished details at 90%; other structures may reveal both at 90% while the foundation cue stays visible until the server marks the building complete.
 
 ## Manifest budgets and validation
 

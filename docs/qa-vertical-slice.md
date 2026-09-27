@@ -2,6 +2,8 @@
 
 Updated 26 September 2026. This is a living acceptance record for the first invite-only deployed build. The [game bible](game-bible.md) defines the intended player experience. A passing local script is evidence for the behavior it checks; it does not prove a browser interaction, an internet connection, or an external player's understanding. The [26 September QA checkpoint](qa-checkpoint-2026-09-26.md) records the latest main and staging identities, runner failures, and open capture gates; earlier dated evidence below retains its original scope.
 
+The [25 September application-file fingerprints](qa-checkpoint-2026-09-25.md#follow-up-application-file-fingerprints--25-september-2026) identify historical container contents separately from platform build provenance. They do not replace the newer deployment evidence above.
+
 ## Acceptance matrix
 
 `P0` blocks the first external playtest; `P1` blocks calling the vertical slice complete. Record the build commit, environment, result, and evidence for every run. `Pending` means no qualifying evidence has been collected.

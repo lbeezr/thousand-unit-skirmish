@@ -1,3 +1,4 @@
+import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences } from './hud-layout.mjs';
 import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
@@ -17,7 +18,8 @@ import {
   RESOURCE_VISUAL_STAGES, resourceVisualScale, resourceVisualStage, resourceVisualTransitionStages,
 } from './resource-visual-state.mjs';
 import {
-  buildingFinishedDetailsVisible, buildingProductionCueState, constructionGroundStage,
+  barracksModelVisualState, buildingFinishedDetailsVisible,
+  buildingProductionCueState, constructionGroundStage,
 } from './building-visual-state.mjs';
 import {
   UNIT_LOD_ROLE_BITS, UNIT_LOD_ROLES, shouldUpdateUnitFocusMatrix,
@@ -1170,6 +1172,35 @@ function createBarracksVisual(building) {
   foundation.position.y = 0.12;
   group.add(foundation);
 
+  const frame = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), timberMaterial, 8);
+  frame.instanceMatrix.setUsage(THREE.StaticDrawUsage);
+  let frameIndex = 0;
+  for (const x of [-1.12, 1.12]) {
+    for (const z of [-1.12, 1.12]) {
+      dummy.position.set(x, 0.70, z);
+      dummy.rotation.set(0, 0, 0);
+      dummy.scale.set(0.12, 0.96, 0.12);
+      dummy.updateMatrix();
+      frame.setMatrixAt(frameIndex++, dummy.matrix);
+    }
+  }
+  for (const z of [-1.12, 1.12]) {
+    dummy.position.set(0, 1.18, z);
+    dummy.rotation.set(0, 0, 0);
+    dummy.scale.set(2.35, 0.12, 0.12);
+    dummy.updateMatrix();
+    frame.setMatrixAt(frameIndex++, dummy.matrix);
+  }
+  for (const x of [-1.12, 1.12]) {
+    dummy.position.set(x, 1.18, 0);
+    dummy.rotation.set(0, 0, 0);
+    dummy.scale.set(0.12, 0.12, 2.15);
+    dummy.updateMatrix();
+    frame.setMatrixAt(frameIndex++, dummy.matrix);
+  }
+  frame.computeBoundingSphere();
+  group.add(frame);
+
   const wallSpecs = [
     [2.35, 1, 0.18, 0, 0, -1.12],
     [0.18, 1, 2.15, -1.12, 0, 0],
@@ -1235,7 +1266,7 @@ function createBarracksVisual(building) {
   const combatFeedback = createBuildingCombatFeedback();
   group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
   scene.add(group);
-  const visual = { group, walls, roofPanels, ridge, finishPieces, productionLamp,
+  const visual = { group, frame, walls, roofPanels, ridge, finishPieces, productionLamp,
     teamColor, outline, rallyMarker, healthIndicator, combatFeedback };
   updateBarracksVisual(visual, building);
   return visual;
@@ -1243,17 +1274,21 @@ function createBarracksVisual(building) {
 
 function updateBarracksVisual(visual, building) {
   const progress = THREE.MathUtils.clamp(Number(building.progress) || 0, 0, 1);
+  const state = barracksModelVisualState(progress, building.complete);
   visual.group.position.set(building.x, 0, building.z);
   visual.group.visible = true;
+  visual.frame.visible = state.frameVisible;
+
   for (const wall of visual.walls) {
-    wall.scale.y = progress;
-    wall.position.y = 0.23 + progress * 0.5;
-    wall.visible = progress > 0.01;
+    wall.scale.y = 1;
+    wall.position.y = 0.23 + wall.scale.y * 0.5;
+    wall.visible = state.wallsVisible;
   }
-  const roofVisible = buildingFinishedDetailsVisible(progress, building.complete);
-  for (const panel of visual.roofPanels) panel.visible = roofVisible;
-  visual.ridge.visible = roofVisible;
-  for (const piece of visual.finishPieces) piece.visible = roofVisible;
+  for (const panel of visual.roofPanels) {
+    panel.visible = state.roofVisible;
+  }
+  visual.ridge.visible = state.roofVisible;
+  for (const piece of visual.finishPieces) piece.visible = state.finishedDetailsVisible;
   updateBuildingProductionCue(visual, building);
   updateBuildingHealthIndicator(visual, building);
 }
@@ -1793,7 +1828,7 @@ function setForestTreeVisual(cell, stock) {
   if (!slot) return;
   const depleted = stock <= 0;
   setEnvironmentSpriteInstance(slot.mesh, slot.index, slot.x, slot.z,
-    depleted ? 0 : slot.scale, slot.flip);
+    depleted ? 0 : slot.scale, slot.flip, slot.yaw);
   slot.mesh.instanceMatrix.needsUpdate = true;
   const stump = forestStumpSlots.get(cell);
   if (!stump || !forestStumpMesh) return;
@@ -1898,39 +1933,6 @@ function buildMap(definition) {
   for (const surface of createGroundSurfaces(definition)) addMapObject(surface);
   buildConstructionGroundBatches();
 
-  // Rock silhouettes carry the visual boundary. Flat block tops made the ridge
-  // look like a strip of square tiles when viewed from the oblique camera.
-  const obstacleCount = definition.obstacles.reduce((count, obstacle) => (
-    count + (obstacle.material === 'water' ? obstacle.width * obstacle.height : 0)
-  ), 0);
-  const obstacles = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(1.02, 1.12, 1.02),
-    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.94, flatShading: true }),
-    obstacleCount,
-  );
-  const obstacleTints = [0x3e6570, 0x4d7982];
-  let obstacleIndex = 0;
-  for (const obstacle of definition.obstacles) {
-    if (obstacle.material !== 'water') continue;
-    const visibleHeight = 0.025;
-    for (let row = obstacle.row; row < obstacle.row + obstacle.height; row++) {
-      for (let column = obstacle.column; column < obstacle.column + obstacle.width; column++) {
-        dummy.position.set(column - MAP_HALF_X + 0.5, visibleHeight / 2, row - MAP_HALF_Z + 0.5);
-        dummy.rotation.set(0, 0, 0);
-        dummy.scale.set(1, visibleHeight / 1.12, 1);
-        dummy.updateMatrix();
-        obstacles.setMatrixAt(obstacleIndex, dummy.matrix);
-        color.setHex((row + column + obstacleIndex) % 3 === 0 ? obstacleTints[0] : obstacleTints[1]);
-        obstacles.setColorAt(obstacleIndex, color);
-        obstacleIndex++;
-      }
-    }
-  }
-  obstacles.instanceMatrix.needsUpdate = true;
-  if (obstacles.instanceColor) obstacles.instanceColor.needsUpdate = true;
-  obstacles.castShadow = false;
-  obstacles.receiveShadow = false;
-  addMapObject(obstacles);
   forestTreeSlots = addObstacleEnvironmentSprites(definition, MAP_HALF_X, MAP_HALF_Z, addMapObject);
   const stumpPositions = [...forestTreeSlots].map(([cell, slot], index) => {
     forestStumpSlots.set(cell, {
@@ -6188,7 +6190,7 @@ function projectUnit(unit, rect) {
   };
 }
 
-function pickAt(x, y, predicate) {
+function pickAt(x, y, predicate, { advance = true } = {}) {
   const rect = renderer.domElement.getBoundingClientRect();
   const candidates = [];
   for (const unit of units) {
@@ -6202,19 +6204,24 @@ function pickAt(x, y, predicate) {
     if (distance < 19 * 19) candidates.push({ id: unit.id, distanceSquared: distance, depth: point.depth });
   }
   const pick = chooseUnitPickCandidate(candidates, lastUnitPickState, x, y, performance.now());
-  lastUnitPickState = pick.state;
+  if (advance) lastUnitPickState = pick.state;
   return {
     ...pick,
     unit: pick.id === null ? null : units[pick.id],
   };
 }
 
-function pickResourceNodeAt(x, y) {
+function pickResourceNodeAt(x, y, { visibleOnly = false } = {}) {
   if (localTeam === null || !Array.isArray(mapDefinition?.resourceNodes)) return null;
   const rect = renderer.domElement.getBoundingClientRect();
   let nearest = null;
   let nearestDistance = 26 * 26;
   for (const node of mapDefinition.resourceNodes) {
+    if (visibleOnly && mapDefinition.fogOfWar) {
+      const column = Math.floor(node.x + MAP_WIDTH / 2);
+      const row = Math.floor(node.z + MAP_HEIGHT / 2);
+      if (latestFogCells?.[row * MAP_WIDTH + column] !== 2) continue;
+    }
     screenPoint.set(node.x, 0.22, node.z).project(camera);
     const nodeX = (screenPoint.x * 0.5 + 0.5) * rect.width;
     const nodeY = (-screenPoint.y * 0.5 + 0.5) * rect.height;
@@ -6641,20 +6648,43 @@ function updateBuildPlacementHint() {
 }
 
 function setBattlefieldCursor(mode) {
-  renderer.domElement.dataset.cursorMode = mode;
+  if (renderer.domElement.dataset.cursorMode !== mode) renderer.domElement.dataset.cursorMode = mode;
 }
 
-function syncBattlefieldCursor({ hoveringResource = false } = {}) {
-  if (pan) setBattlefieldCursor('panning');
-  else if (spaceDown) setBattlefieldCursor('pan');
-  else if (drag && movedPointer) setBattlefieldCursor('box-select');
-  else if (buildPlacementActive) {
-    setBattlefieldCursor(ui.placementStatus?.dataset.state === 'blocked' ? 'build-blocked' : 'build-valid');
-  } else if (tapOrderArmed) {
-    const selectedBuilding = selectedBuildingId !== null;
-    setBattlefieldCursor(selectedBuilding ? 'rally' : hoveringResource ? 'gather' : attackMoveMode ? 'attack-move' : 'move');
-  } else if (attackMoveMode) setBattlefieldCursor('attack-move');
-  else setBattlefieldCursor('select');
+function syncBattlefieldCursor() {
+  const ids = selectedIds();
+  const ownedBuilding = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
+  const state = {
+    panning: Boolean(pan), panReady: spaceDown, dragging: Boolean(drag && movedPointer),
+    crossing: Boolean(drag && drag.currentX < drag.startX),
+    canOrder: localTeam !== null && matchWinner < 0,
+    building: buildPlacementActive, buildValid: ui.placementStatus?.dataset.state === 'clear',
+    selectedBuilding: selectedBuildingId !== null,
+    rallySupported: Boolean(ownedBuilding && ['barracks', 'archery-range'].includes(ownedBuilding.type)),
+    count: ids.length, workers: ids.some((id) => units[id].kind === 'worker'),
+    military: ids.some((id) => units[id].kind !== 'worker'),
+    attackMove: attackMoveMode, armed: tapOrderArmed, shift: cursorShift,
+  };
+  // Picking is read-only here: hovering must never cycle an overlapping target stack.
+  if (cursorPointer && state.canOrder && !state.panning && !state.panReady && !state.dragging
+      && !state.building && !state.selectedBuilding) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    const x = cursorPointer.x - rect.left, y = cursorPointer.y - rect.top;
+    if (ids.length) {
+      state.enemy = Boolean(pickAt(x, y, (unit) => unit.team !== localTeam, { advance: false }).unit);
+      if (!state.enemy) state.enemyBuilding = Boolean(pickBuildingAt(x, y, (building) => building.team !== localTeam));
+      if (!state.enemy && !state.enemyBuilding) {
+        state.resource = pickResourceNodeAt(x, y, { visibleOnly: true })?.type;
+        if (!state.resource) state.forest = pickForestCellAt(x, y) !== null;
+      }
+    }
+    if (cursorShift) {
+      const friendly = pickAt(x, y, (unit) => unit.team === localTeam, { advance: false }).unit;
+      state.friendly = Boolean(friendly);
+      state.alreadySelected = Boolean(friendly && selected.has(friendly.id));
+    }
+  }
+  setBattlefieldCursor(battlefieldCursor(state));
 }
 
 function cancelBuildPlacement(announce = true) {
@@ -6823,6 +6853,9 @@ function resumeConstruction() {
   }
 }
 
+let cursorPointer = null;
+let cursorShift = false;
+let lastCursorSample = 0;
 let drag = null;
 let pan = null;
 let spaceDown = false;
@@ -6933,7 +6966,10 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
   selectionBox.style.height = '0px';
 });
 
+renderer.domElement.addEventListener('pointerleave', () => { cursorPointer = null; });
 renderer.domElement.addEventListener('pointermove', (event) => {
+  cursorPointer = { x: event.clientX, y: event.clientY };
+  cursorShift = event.shiftKey;
   if (tapOrderPointer?.id === event.pointerId) return;
   if (pan) {
     const dx = event.clientX - pan.x;
@@ -6957,11 +6993,10 @@ renderer.domElement.addEventListener('pointermove', (event) => {
   }
   const rect = renderer.domElement.getBoundingClientRect();
   if (!drag) {
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    const hoveringResource = tapOrderArmed && selectedBuildingId === null
-      && (Boolean(pickResourceNodeAt(x, y)) || pickForestCellAt(x, y) !== null);
-    syncBattlefieldCursor({ hoveringResource });
+    if (performance.now() - lastCursorSample >= 80) {
+      lastCursorSample = performance.now();
+      syncBattlefieldCursor();
+    }
     return;
   }
   drag.currentX = event.clientX - rect.left;
@@ -7671,13 +7706,19 @@ window.addEventListener('keydown', (event) => {
     updateSelectionUI();
   }
 });
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Shift') { cursorShift = true; syncBattlefieldCursor(); }
+});
 window.addEventListener('keyup', (event) => {
+  if (event.key === 'Shift') { cursorShift = false; syncBattlefieldCursor(); }
   if (event.key.startsWith('Arrow')) heldCameraKeys.release(event.key);
   if (event.code !== 'Space') return;
   spaceDown = false;
   syncBattlefieldCursor();
 });
 window.addEventListener('blur', () => {
+  cursorPointer = null;
+  cursorShift = false;
   if (tapOrderArmed) setTapOrderArmed(false, false);
   spaceDown = false;
   clearHeldCameraKeys();
@@ -8483,6 +8524,11 @@ let fpsTime = 0;
 let renderStatsTime = 0;
 let lastIdlePoseStep = -1;
 function animate(now) {
+  if (cursorPointer && now - lastCursorSample >= 100) {
+    lastCursorSample = now;
+    if (buildPlacementActive) updateBuildPlacementGhost(cursorPointer.x, cursorPointer.y);
+    else syncBattlefieldCursor();
+  }
   requestAnimationFrame(animate);
   moveKeyboardCamera(now);
   syncUnitDetailLevel();
