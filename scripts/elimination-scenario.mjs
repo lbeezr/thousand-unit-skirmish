@@ -179,7 +179,7 @@ try {
     startingArmySize: 24,
     startingResources: { food: 0, wood: 0 },
     spawnPoints: [{ team: 0, x: -5, z: 0 }, { team: 1, x: 5, z: 0 }],
-    resourceNodes: [{ id: FOOD_NODE_ID, type: 'food', x: -8.5, z: 0.5, stock: FOOD_NODE_STOCK }],
+    resourceNodes: [{ id: FOOD_NODE_ID, type: 'food', x: -8.5, z: 3.5, stock: FOOD_NODE_STOCK }],
     obstacles: [],
     triggers: [],
     fogOfWar: false,

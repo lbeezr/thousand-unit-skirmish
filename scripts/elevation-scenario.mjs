@@ -253,10 +253,12 @@ try {
     elevationPatches: ridgePatches,
   });
   await publishMap(azure, clients, weightedMap);
-  const initialUnit = azure.latestState.units.find((unit) => unit[0] === 0);
-  const flowUnit = azure.latestState.units.find((unit) => unit[0] === 1);
+  // Use inward-facing workers and goals outside the Town Center footprints,
+  // so this compares elevation costs rather than detours around buildings.
+  const initialUnit = azure.latestState.units.find((unit) => unit[0] === 1);
+  const flowUnit = azure.latestState.units.find((unit) => unit[0] === 3);
   const flowTarget = azure.latestState.units.find((unit) => unit[0] === 4);
-  const mirrorUnit = ember.latestState.units.find((unit) => unit[0] === 5);
+  const mirrorUnit = ember.latestState.units.find((unit) => unit[0] === 4);
   assert.ok(initialUnit);
   assert.ok(flowUnit && flowTarget && mirrorUnit);
   const weightedStartCell = cellForWorld(initialUnit[2], initialUnit[3], 64, 64);
@@ -282,16 +284,16 @@ try {
     && message.clientOrderToken === 1 && message.message === 'MOVE ORDER · 1 UNITS');
   send(azure, {
     type: 'move', ids: [initialUnit[0]], unitGenerations: [initialUnit[8]],
-    x: 30.5, z: -1.5, clientOrderToken: 1,
+    x: 27.5, z: -1.5, clientOrderToken: 1,
   });
   await orderAck;
   const weightedCheckpoint = await checkpointWith(checkpointPath, (snapshot) => {
-    const unit = snapshot.state?.units?.[0];
+    const unit = snapshot.state?.units?.[initialUnit[0]];
     return snapshot.mapDefinition?.id === weightedMap.id && unit?.path?.length > 0
       && unit.pathIndex < unit.path.length;
   });
-  const weighted = verifyPath(weightedCheckpoint, weightedMap, 0, weightedStartCell);
-  const weightedGoal = cellForWorld(30.5, -1.5, 64, 64);
+  const weighted = verifyPath(weightedCheckpoint, weightedMap, initialUnit[0], weightedStartCell);
+  const weightedGoal = cellForWorld(27.5, -1.5, 64, 64);
   const directCost = horizontalPathCost(weighted.levels, weightedStartCell, weightedGoal, 64);
   assert.ok(weighted.cost < directCost,
     'A* should prefer a slightly longer flat route over repeated uphill climbs');
@@ -302,7 +304,7 @@ try {
     && message.clientOrderToken === 20 && message.message === 'MOVE ORDER · 1 UNITS');
   send(ember, {
     type: 'move', ids: [mirrorUnit[0]], unitGenerations: [mirrorUnit[8]],
-    x: -30.5, z: -1.5, clientOrderToken: 20,
+    x: -27.5, z: -1.5, clientOrderToken: 20,
   });
   await mirrorOrderAck;
   const mirrorCheckpoint = await checkpointWith(checkpointPath, (snapshot) => {
@@ -311,7 +313,7 @@ try {
       && unit.pathIndex < unit.path.length;
   });
   const mirrored = verifyPath(mirrorCheckpoint, weightedMap, mirrorUnit[0], mirrorStartCell);
-  const mirrorGoal = cellForWorld(-30.5, -1.5, 64, 64);
+  const mirrorGoal = cellForWorld(-27.5, -1.5, 64, 64);
   assert.ok(mirrored.cost < horizontalPathCost(mirrored.levels, mirrorStartCell, mirrorGoal, 64),
     'the opposite seat should prefer the same lower-cost flat bypass');
   assert.ok(mirrored.unit.path.some((cell) => cellRow(cell, 64) === 28),

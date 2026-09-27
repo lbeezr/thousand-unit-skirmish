@@ -3,6 +3,7 @@ import { visibleHudRects, hudSafeRect, normalizeHudPreferences } from './hud-lay
 import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import * as THREE from 'three';
+import { attachBuildingSprite } from './building-sprites.mjs';
 import {
   createCapturedBuildingSprite, disposeCapturedBuildingSprite,
   updateCapturedBuildingSprite,
@@ -664,10 +665,11 @@ function addMapObject(object) {
 
 function clearMapObjects() {
   for (const object of mapObjects) {
+    object.userData.buildingSprite?.dispose();
     scene.remove(object);
     object.traverse((child) => {
       if (child.isSprite) disposeCapturedBuildingSprite(child);
-      child.geometry?.dispose();
+      if (!child.isSprite) child.geometry?.dispose();
       const materials = Array.isArray(child.material) ? child.material : [child.material];
       for (const material of materials) material?.dispose();
     });
@@ -761,9 +763,10 @@ function addTownCenterVisual(spawn, definition) {
 function clearBuildingVisuals() {
   selectedBuildingId = null;
   for (const visual of buildingVisuals.values()) {
+    visual.authoredSprite?.dispose();
     scene.remove(visual.group);
     visual.group.traverse((object) => {
-      object.geometry?.dispose();
+      if (!object.isSprite) object.geometry?.dispose();
       const materials = Array.isArray(object.material) ? object.material : [object.material];
       for (const material of materials) material?.dispose();
     });
@@ -974,12 +977,13 @@ function createBuildingProductionLamp(group, team, x, y, z) {
 }
 
 function disposeBuildingVisual(visual) {
+  visual.authoredSprite?.dispose();
   scene.remove(visual.group);
   visual.group.traverse((object) => {
     if (!object.isSprite) object.geometry?.dispose();
     const materials = Array.isArray(object.material) ? object.material : [object.material];
     for (const material of materials) {
-      material?.map?.dispose();
+      if (!material?.map?.userData?.sharedBuildingSprite) material?.map?.dispose();
       material?.dispose();
     }
   });
@@ -1114,6 +1118,7 @@ function createArcheryRangeVisual(building) {
   finishPieces.push(targetCore);
   const standard = addBuildingStandard(group, building.team, -1.18, 1.17, 2.02);
   finishPieces.push(standard);
+  const authoredSprite = attachBuildingSprite(group, [...group.children], building);
   const productionLamp = createBuildingProductionLamp(group, building.team, -0.76, 1.35, 1.31);
 
   const outlinePoints = [
@@ -1134,7 +1139,7 @@ function createArcheryRangeVisual(building) {
   const combatFeedback = createBuildingCombatFeedback();
   group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
   scene.add(group);
-  const visual = { group, posts, roof, finishPieces, productionLamp,
+  const visual = { group, authoredSprite, posts, roof, finishPieces, productionLamp,
     teamColor, outline, rallyMarker, healthIndicator, combatFeedback };
   updateArcheryRangeVisual(visual, building);
   return visual;
@@ -1159,6 +1164,7 @@ function updateArcheryRangeVisual(visual, building) {
   const finished = buildingFinishedDetailsVisible(progress, building.complete);
   visual.roof.visible = finished;
   for (const piece of visual.finishPieces) piece.visible = finished;
+  visual.authoredSprite.update(building);
   updateBuildingProductionCue(visual, building);
   updateBuildingHealthIndicator(visual, building);
 }
@@ -1246,6 +1252,7 @@ function createBarracksVisual(building) {
   finishPieces.push(shieldSign);
   const standard = addBuildingStandard(group, building.team, 1.24, 1.15, 2.06);
   finishPieces.push(standard);
+  const authoredSprite = attachBuildingSprite(group, [...group.children], building);
   const productionLamp = createBuildingProductionLamp(group, building.team, 0, 1.17, 1.27);
 
   const outlinePoints = [
@@ -1266,7 +1273,7 @@ function createBarracksVisual(building) {
   const combatFeedback = createBuildingCombatFeedback();
   group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
   scene.add(group);
-  const visual = { group, frame, walls, roofPanels, ridge, finishPieces, productionLamp,
+  const visual = { group, authoredSprite, frame, walls, roofPanels, ridge, finishPieces, productionLamp,
     teamColor, outline, rallyMarker, healthIndicator, combatFeedback };
   updateBarracksVisual(visual, building);
   return visual;
@@ -7131,6 +7138,24 @@ const fullscreenSupported = Boolean(document.fullscreenEnabled
 const commandDock = document.querySelector('.control-dock');
 const dockTabs = [...document.querySelectorAll('[data-dock-tab]')];
 const dockToggle = document.querySelector('#dock-toggle');
+const hudHeader = document.querySelector('.topbar');
+const hudObjective = document.querySelector('.map-label');
+const hudCamera = document.querySelector('.camera-toolbar');
+function syncHudRows() {
+  const headerHeight = hudHeader.getBoundingClientRect().height;
+  const objectiveHeight = hudObjective.getBoundingClientRect().height;
+  const cameraHeight = hudCamera.getBoundingClientRect().height;
+  const narrow = appShell.clientWidth <= 920;
+  const controlsBottom = headerHeight + (narrow
+    ? objectiveHeight + cameraHeight + 16
+    : Math.max(objectiveHeight, cameraHeight) + 8);
+  appShell.style.setProperty('--hud-header-height', `${headerHeight}px`);
+  appShell.style.setProperty('--hud-objective-height', `${objectiveHeight}px`);
+  appShell.style.setProperty('--hud-controls-bottom', `${controlsBottom}px`);
+}
+const hudRowObserver = new ResizeObserver(syncHudRows);
+for (const element of [hudHeader, hudObjective, hudCamera, appShell]) hudRowObserver.observe(element);
+syncHudRows();
 const contextualBar = document.querySelector('.contextual-command-bar');
 if (contextualBar) {
   const syncContextHeight = () => document.querySelector('.workspace').style.setProperty('--context-bar-height', `${contextualBar.getBoundingClientRect().height}px`);

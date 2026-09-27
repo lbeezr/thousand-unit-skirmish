@@ -17,6 +17,11 @@ COPY --chown=node:node assets/environment/frontier-interactive-v1/construction-e
 COPY --chown=node:node assets/environment/frontier-interactive-v1/oak-full.webp assets/environment/frontier-interactive-v1/oak-low.webp assets/environment/frontier-interactive-v1/oak-worked.webp ./assets/environment/frontier-interactive-v1/
 COPY --chown=node:node assets/ui/ ./assets/ui/
 COPY --chown=node:node assets/environment/frontier-cliff-pilot-v1/runtime/ ./assets/environment/frontier-cliff-pilot-v1/runtime/
+COPY --chown=node:node assets/buildings/barracks-sprite-test-v1/runtime/ ./assets/buildings/barracks-sprite-test-v1/runtime/
+COPY --chown=node:node assets/buildings/archery-range-sprite-v1/runtime/ ./assets/buildings/archery-range-sprite-v1/runtime/
+COPY --chown=node:node assets/buildings/town-center-meshy-review-v1/runtime/ ./assets/buildings/town-center-meshy-review-v1/runtime/
+COPY --chown=node:node assets/buildings/town-center-lifecycle-meshy-v1/lifecycle-grid.json ./assets/buildings/town-center-lifecycle-meshy-v1/lifecycle-grid.json
+COPY --chown=node:node assets/buildings/town-center-lifecycle-meshy-v1/runtime/ ./assets/buildings/town-center-lifecycle-meshy-v1/runtime/
 COPY deploy/entrypoint.sh ./deploy/entrypoint.sh
 RUN mkdir -p /app/custom-maps /app/room-data && chown node:node /app/custom-maps /app/room-data
 
