@@ -1,36 +1,55 @@
-# Building sprite production workflow
+# Direct 2D building sprites
 
-Use this workflow to understand the current 2D sprite packs and their renderer conventions. For new building art, the preferred workflow is to process each matched state through Meshy, optimize its model, then capture registered perspectives as documented in the [building asset production pipeline](building-asset-production-pipeline.md). Use direct 2D authoring as a fallback when modeling does not improve the asset.
+[Documentation index](README.md) · [Preferred model/capture pipeline](building-asset-production-pipeline.md)
 
-The Barracks, Archery Range, and current Town Center packs remain useful baselines for state thresholds, team treatment, sprite anchors, and gameplay comparison.
+Use this fallback path for camera-authored building images and for maintaining
+the existing direct-sprite packs.
 
-## Production sequence
+## Author the state family
 
-1. **Confirm the game's contract.** Read the current art and renderer guidance, inspect the building's actual footprint and lifecycle, and record what is gameplay occupancy versus visible support/base. Do not invent construction, damage, or destruction states the game does not represent. A static map landmark may correctly have only a complete frame.
-2. **Lock the view and grid.** Start from the building sprite profile used by the current samples: a 5 × 5 world-unit frame, 640 × 640 pixels, 128 source pixels per world unit, fixed 45-degree azimuth and 46-degree downward view. Treat this as a measured baseline, not a rule that every asset must fill the frame. Record any justified change. Keep the gameplay footprint separate from the visible base. Define a projected ground-contact anchor and keep its world meaning consistent across every frame of that building; record its pixel and normalized coordinates. Pixel anchor height may differ between different buildings when their bases differ.
-3. **Design the complete, undamaged building first.** Make one clear hero image the source of truth for silhouette, proportions, roofline, materials, team cue, palette, camera, and scale. Review it at the intended game size and against its footprint/grid before making lifecycle frames. Resolve aesthetic and identity issues here; later stages should inherit this design rather than become separate interpretations.
-4. **Derive lifecycle frames from the approved complete image.** Use the complete image as an explicit visual reference when creating earlier and damaged forms. For the common building lifecycle, produce foundation, frame, complete, damaged, and critical. The Town Center sample is intentionally complete-only because it is currently a static map landmark. Keep camera, canvas, scale, anchor, light, and recognizable architectural features fixed. Remove or add construction elements deliberately; show damage through localized wear and missing/broken components while retaining the building's identity. Add a destroyed/wreck frame only when gameplay retains a destroyed structure as a visible state.
-5. **Review the state sequence together.** Make a labeled contact sheet with the projected gameplay footprint. Check ground alignment, apparent scale, silhouettes, stage readability, team cue, and whether the complete image still reads as the same building in every state. Correct source frames before runtime normalization if any state shifts or changes camera. Review packs across buildings side by side when establishing a family style.
-6. **Factor out small independent cues when worthwhile.** Prefer one shared building image plus a tightly cropped transparent overlay for a small, purely team-colored pennant, badge, or trim when it can be aligned and occluded correctly. Keep dynamic selection, ownership, and footprint rings in renderer/UI effects rather than baking them into the art. If a cue changes the building's lighting, wear, silhouette, or state-specific damage—or needs complex occlusion—keep it baked into the relevant frame. Record each layer's source/runtime path, crop, anchor or offset, draw order, alpha mode, and variant mapping. The current samples use flattened frames; they do not yet define a runtime layer contract.
-7. **Measure the tradeoff.** Layers can avoid storing two complete team-colored versions, but do not assume they save space. A full-canvas transparent overlay may compress well on disk while still allocating its full decoded dimensions on the GPU, and a separately rendered layer can add draw calls. Compare package bytes, decoded texture pixels, and draw count for flattened versus cropped-layer output before claiming a win. If no runtime layering support exists yet, preserve the layered sources and generate flattened runtime previews/frames as the compatibility output.
-8. **Keep variants orthogonal.** Keep state, team, view direction, season, lighting, and wear as separate dimensions in metadata. Use a mask or color transform for controlled team changes; do not prompt-generate every possible combination independently. Add seasonal or day/night layers later when a concrete game need exists.
-9. **Normalize and package repeatably.** Preserve full-size transparent source PNGs. Generate same-sized runtime frames without stretching: use the complete frame to establish scale, crop transparent bounds only as needed, and align every lifecycle/team frame to the recorded anchor and canvas. Keep the preparation script, runtime frames or layers, labeled preview, `sprite-grid.json`, and `PROVENANCE.md` with source prompts/output identifiers and SHA-256 hashes. A reviewer should be able to regenerate the runtime files from the checked-in source and command.
-10. **State integration limits plainly.** Record how many views exist and what the pack does not support. A single camera-authored image cannot be rotated to create a new perspective. Camera/building rotation requires separately authored directional views sharing the same frame, scale, anchor, and corresponding lifecycle states. Alpha sprites have no per-pixel scene depth; terrain elevation and occlusion require renderer handling. A source/runtime pack being ready does not mean it has been integrated or visually validated in the game.
+1. Read the actual gameplay footprint and lifecycle. Separate collision from
+   visible support/base and author only meaningful states.
+2. Start with the complete building. Establish identity, scale, material, team
+   accent, view, light, and ground pivot before deriving other frames.
+3. Derive foundation, frame, damage, or critical images from that complete
+   reference. Keep canvas, camera, anchor, and architecture consistent.
+4. Compare all states on a labeled grid at game size. Correct source drift before
+   runtime normalization.
+5. Preserve full-size PNG sources and regenerate aligned runtime frames with the
+   checked-in preparation script.
+6. Record coverage, provenance, hashes, and integration status in the pack.
 
-## Pack acceptance checklist
+The existing samples use a 5 × 5 world-unit art frame, 640 × 640 runtime pixels,
+128 pixels/world unit, 45° azimuth, and 46° downward view. These are measured
+sample conventions, not a requirement to stretch every building to fill its frame.
+Store pixel and normalized ground pivots; a different base can require a different
+pivot height.
 
-- The complete frame establishes a recognizable, approved silhouette and material/palette treatment.
-- Every required construction and damage frame is derived from the same design and reads in the correct lifecycle order.
-- Canvas dimensions, pixels per world unit, view parameters, footprint, visible base, anchor, team variants, and state mapping are recorded in `sprite-grid.json`.
-- Team variants preserve neutral surfaces and shading; missing future dimensions are not implied to exist.
-- Small cues are separate layers only when alignment, occlusion, decoded texture cost, and added draw work make that a clear tradeoff; dynamic rings stay renderer-owned.
-- Source, runtime, preview, generation script, provenance, and file hashes are present and reproducible.
-- The preview shows the state sequence on the grid, and the notes distinguish source readiness from renderer integration and in-game appearance evidence.
+## Team cues, layers, and bounds
 
-## Current examples
+A small cropped pennant/mask can avoid storing two whole images, but measure
+decoded pixels and draw calls before claiming a saving. Full-canvas transparency
+can still consume full GPU texture storage. Keep dynamic rings and queue/health
+feedback in the renderer.
 
-- [Barracks sprite sample](../assets/buildings/barracks-sprite-test-v1/README.md)
-- [Archery Range sprite pack](../assets/buildings/archery-range-sprite-v1/README.md)
-- [Town Center sprite pack](../assets/buildings/town-center-sprite-v1/README.md)
+Retain layered sources and produce flattened compatibility frames until the
+runtime supports the layer contract. State, team, direction, lighting, and wear
+are independent metadata dimensions. A one-view image cannot become another
+perspective by rotating its quad.
 
-The current samples are source/runtime art packs with one fixed view. They establish the production method and measured frame conventions; they do not by themselves prove directional rotation, elevation/occlusion behavior, or renderer integration.
+Use [sprite-atlas v1](sprite-atlas-contract-v1.md) for pages, clips, cropped layers,
+mask alignment, bounds, and pivot review. Gameplay owns occupancy and collision.
+Alpha alone supplies no per-pixel scene depth; occlusion needs renderer support.
+
+## Package checklist
+
+- Complete design and derived state sequence retain one identity and registration.
+- Source, normalized runtime, contact sheet, and rebuild command are present.
+- Grid/manifest records canvas, scale, camera, anchor, bounds, state thresholds,
+  team variants, and unsupported directions.
+- Exact prompts/output IDs and hashes remain in provenance.
+- README distinguishes source/candidate readiness from actual loading and in-game review.
+
+Examples: [Barracks](../assets/buildings/barracks-sprite-test-v1/README.md),
+[Archery Range](../assets/buildings/archery-range-sprite-v1/README.md), and
+[legacy Town Center](../assets/buildings/town-center-sprite-v1/README.md).

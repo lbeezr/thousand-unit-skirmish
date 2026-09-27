@@ -16,7 +16,8 @@
     "preview:sprite-atlas": "node scripts/preview-sprite-atlas.mjs",
     "report:sprite-atlas-handoff": "node scripts/report-sprite-atlas-handoff.mjs",
     "release:pack": "node scripts/pack-railway-release.mjs",
-    "release:smoke": "node scripts/railway-smoke.mjs"
+    "release:smoke": "node scripts/railway-smoke.mjs",
+    "docs:check": "node scripts/check-docs.mjs"
   },
   "dependencies": {
     "three": "0.180.0"

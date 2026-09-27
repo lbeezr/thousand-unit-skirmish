@@ -1,74 +1,71 @@
-# Thousand Unit Skirmish roadmap
+# Roadmap
 
-Updated 26 September 2026 from `main` at `3a52f2c`; balance evidence includes
-the QA recheck at `fcc7bcac`, the `4930a81` production-opening run, and the
-[larger-map pilot](map-scale-density.md). This is the team's shared **next-work
-guide**. The [game bible](game-bible.md) defines the product, and the [QA
-plan](qa-vertical-slice.md) records acceptance evidence. Recheck live code and
-task history before claiming a checkpoint complete; this snapshot will age as
-agents merge.
+[Documentation index](README.md) · [Game bible](game-bible.md) · [QA plan](qa-vertical-slice.md)
 
-## How to use it
+## Current priority
 
-Each owner has a long-running goal and chooses the next independently useful slice in its lane. Start with the first unmet checkpoint below, or a better slice that advances the same player outcome. Make a scoped PR, run checks proportionate to its change, merge it yourself when useful under repository rules and the user's standing staging authorization, and fix forward if staging breaks. A PR or a local script is progress, but claim a milestone only with the observation listed for it. Art makers can use the [art production lanes](art-production-lanes.md) to find a small asset family to ship without waiting for a whole pack.
+Prove a dependable RTS core in solo and human 1v1 matches. Prefer concrete
+problems in orders, movement, combat, economy, scenario rules, visibility,
+results, recovery, and large-match behavior. Maps and art should help expose and
+explain those systems.
 
-Own a useful outcome through integration, even when its slice touches an adjacent lane's files. Use current code, PRs, and a short recorded decision as the normal way to share work. Contact an affected owner only when a concrete shared-interface choice or conflicting edit blocks progress; send the exact issue and a proposed resolution, then keep other work moving. Do not request routine status, acknowledgement, or review from peer tasks. A blocked host, asset, or browser test should not idle unrelated source work. QA records evidence and defects; Art, Infrastructure, and the producer help on their own scopes. None is a default approval queue for another owner's ordinary PR. There is no limit on parallel work or required number of PRs. At this checkpoint, the separate decisions are PR #37's fingerprint/provenance disclosure, the berry candidate capture, the held producer-plan publication, production promotion, and paid-provider spending. None holds ordinary source/assets or staging merges; record any new specific restriction where its owner and the user can see it.
-
-There is no producer checkpoint handoff. Owners keep working and merge their own useful slices; the producer reads PRs, `main`, and deployments when an exception needs attention. A denied cross-task message does not become a reason to stop the owner's work or ask the user to authorize a routine report.
-
-When a checkpoint changes materially, the owner can update its row and link the PR, build, capture, or result. This update is useful context, not a prerequisite for merging code. If a row has become stale, improve it rather than following it mechanically. Record evidence with commit or deployed build, environment, result, and link; use **implemented**, **merged**, **observed on staging**, and **demonstrated by players** precisely.
-
-## Current priority · prove the RTS core in play
-
-Build an excellent, reusable match engine and test it in real games before scaling to many factions, civilizations, or art aesthetics. A solo match against the deterministic opponent is a fast feedback path; unassisted human 1v1 matches reveal strategy, comprehension, and online failures the bot cannot. Keep both paths easy to start on staging and turn their concrete failures into the next useful slices.
-
-For now, favor reliable selection and orders, formation movement and pathfinding, combat and targeting, gathering and production, map and scenario rules, fog, victory/rematch, reconnect and checkpoint recovery, and measured behavior at intended army sizes. A new map, asset, or control should exercise one of those systems in play and make the outcome clearer. When adding content, keep its data and runtime contracts explicit so a second faction or visual treatment can reuse the same simulation; generalize from actual second examples rather than speculative breadth.
-
-The working loop is: play a fresh match; record its build, map, seed when applicable, and the decisive or confusing moment; reproduce the largest problem; ship a focused improvement; play again. Real-match observations guide priority. Scripted scenarios protect known behavior, and representative art keeps the match readable. Neither a full content catalog nor a milestone proof is a blanket merge gate for useful intermediate work in any lane.
+The working loop is: play, record the build/map and decisive or confusing moment,
+reproduce the largest problem, ship a focused improvement, and play again.
+Scripted scenarios protect known rules; human matches establish whether those
+rules create understandable choices.
 
 ## Milestones
 
-These are product outcomes, not main-merge gates. Art, playability, and scale work can proceed in parallel; the first external test needs a playable match, not every polish item.
+These are product evidence targets. Scoped changes can ship before a whole
+milestone is demonstrated. The linked QA records describe evidence at named
+builds; they do not certify today's deployment.
 
-| Milestone | Observable checkpoint | Evidence now / next proof |
+| Milestone | Observable outcome | Next proof |
 | --- | --- | --- |
-| **M1 · Complete invite match** | Two people on one deployed build can join Forked Vale, gather, build, produce, choose routes, contest signals, see the same winner, reconnect, and rematch. A host can save and reload the scenario through Map Studio. | The mechanics and scripted pieces are merged; a current-build, unassisted two-seat match is still needed. Use the [QA match protocol](qa-vertical-slice.md#lightweight-external-playtest-protocol) and record both seats, build SHA, decisions, failures, and result. |
-| **M2 · Readable authored battlefield** | At ordinary and strategic zoom, players distinguish teams, Worker/Infantry/Archer roles, resources, objective, construction and depletion without losing command clarity. The authored world, cursor/UI, and feedback feel coherent in the running game. | Art samples and renderer contracts exist; integrated runtime appearance and player comprehension need proof. Capture representative Meadow/Cinder scenes with both teams, then ask fresh players what they can identify. |
-| **M3 · Dependable large match** | A 2,000-total-unit match on intended hosting hardware meets measured simulation, browser, and network budgets while both seats can issue orders and recover from a disconnect. | Local measurements are mixed and a short hosted protocol run exists. Agree a host/network budget, then collect one comparable hosted two-seat run with tick, frame, egress, order acknowledgement, and recovery evidence. See the [performance baseline](performance-reliability-baseline-2026-09-25.md). |
-| **M4 · External playtest learns something** | Two novice pairs can finish a match, explain one consequential decision and another option, and identify their main confusion without developer coaching. | Pending. Run the [QA protocol](qa-vertical-slice.md#lightweight-external-playtest-protocol), record exact observations, and turn the largest repeated confusion into the next lane checkpoint. |
+| **M1 — Complete invite match** | Two people join Forked Vale, gather, build, produce, contest, agree on the result, reconnect, and rematch. Map Studio saves and reloads the scenario. | A complete unassisted two-seat session on one identified deployed build. |
+| **M2 — Readable authored battlefield** | Players distinguish teams, unit roles, resources, objectives, construction, and depletion at normal and strategic zoom. | Representative mixed-role captures on Meadow/Cinder followed by fresh-player identification. |
+| **M3 — Dependable large match** | A 2,000-total-unit match meets simulation, browser, network, and recovery budgets on intended hosting hardware. | Comparable hosted two-seat measurements with named hardware/network conditions and agreed limits. |
+| **M4 — Useful external playtest** | Two novice pairs finish a match and explain a consequential decision, an alternative, and their main confusion. | The [external protocol](qa-vertical-slice.md#lightweight-external-playtest-protocol), followed by fixes for repeated failures. |
 
-## Parallel work lanes
+## Work areas
 
-“Next checkpoint” is the default next build or measurement, not an assignment to wait for another role. After it lands, choose the next gap in that lane against M1–M4.
+| Area | Useful next outcome | Record |
+| --- | --- | --- |
+| Gameplay | Fix a reproduced command, combat, economy, pathing, or recovery failure. | Build, reproduction, both-seat regression. |
+| Balance | Observe contested openings without changing established baselines prematurely. | [Opening and combat evidence](first-skirmish-balance.md), timings, losses, stocks, player explanations. |
+| Maps | Test Frontier Reach and Highland Grove routes, resources, elevation, and forest access in a match. | Layout/round-trip checks and actual route choices. |
+| Interface | Make selection, production, objectives, and rematches discoverable in the compact HUD. | Viewport, interaction capture, novice observation. |
+| Audio | Check recognition of move, attack, victory, defeat, and draw cues. | Ten-trial results with mix/caption settings. |
+| Renderer | Integrate useful asset states while preserving fog, batching, and camera readability. | Exact pack/revision, representative runtime frame, focused checks. |
+| Art | Finish small independent unit, building, environment, vegetation, or material samples. | Source/runtime status, manifests, provenance, known limits. See [art lanes](art-production-lanes.md). |
+| Infrastructure | Keep staging healthy and measure hosted match/recovery behavior. | Deployment identity, ready/assets/WSS smoke, recovery and capacity evidence. |
+| QA | Convert player failures into repeatable defects and current-build observations. | [QA protocol](qa-vertical-slice.md) and dated evidence. |
+| PvE | Observe and improve the seeded opponent's opening, objective contest, and retake behavior. | Seeds, assigned seats, trace, solo-match observation. |
+| Model research | Design an offline comparison with deterministic PvE. | Default-off fake-provider tests; paid provider use remains a separate decision. |
 
-| Lane and owner | Long-running goal | Next demonstrable checkpoint | Proof to record |
-| --- | --- | --- | --- |
-| **Gameplay systems** | Predictable authoritative orders, economy, combat, construction, and match recovery. | Prototype server-authoritative elevation pathing and sight on the living-land map field; then profile long cross-map orders and A* expansion when the 160 × 160 Frontier is playable. | Town Center exits pass the reversed-orientation two-seat scenario. The elevation scenario checks both-seat weighted A* and attack-flow routes, cliff/ramp traversal, high-ground radius with fog privacy, unchanged unit row shapes, and map-field checkpoint/rematch determinism; map utilities check reachability on slopes and cliffs. |
-| **Balance** | Both seats have fair openings and more than one viable response. | Keep Forked Vale parity/opening fixtures as no-tune baselines; capture contested-opening timings. On the 160 × 160 Frontier, compare first contact, expansion, regional resource stock/use, objective travel, and two viable routes from both seats. Revisit compact-map timers from observed matches. On Highland Grove, compare route-signal and ordinary-resource openings; once coffee runtime exists, compare the coffee opening with those baselines. | QA’s four-case 8v8 rerun at `fcc7bcac` passed the current bounds but retained a +X edge. The balance owner reran both fixtures on `30d5dc3` (26 Sep 2026): combat again passed within bounds at 12.3 s (right 4/350 vs left 3/300), and all four swapped Barracks/Range builds completed at 10.9 s with seat-symmetric first-unit times. An exact-source 4v4 worker/infantry check on `c931e69` then passed all eight spawn, seat, and command-order combinations: infantry won each equal-cost fight. A four-case worker-diversion rerun on exact main `a3426c1` captured North at 24.3–24.4 s while South stayed neutral at 40 s; all three south infantry and both diverted workers died. After separating the 75 food / 50 wood North reward and counting cargo in transit, two gatherers produced about 23 food / 22–23 wood against about 45.3 of each for four gatherers. The post-contest Barracks took 11.7 s with two survivors and 7.0 s with four. An 80-second four-case follow-up on exact main `c9e4791` again captured North by 24.3–24.4 s while South stayed neutral through 80 s. The reward kept the split's bank 35 food / 10 wood ahead (about 26 / 1 ahead including cargo), despite three infantry and two worker losses; its Barracks finished 4.5–4.7 s later. The 120-second supply was excluded. In the 40-second matrix, response groups finished 3–4/230–310 HP across seat/order cases, within configured comparison tolerances; their unequal sizes make this a trade-off probe, not a parity result. One above-bound result from two earlier `6aa39fa` matrices did not recur. Keep it as unconfirmed run-to-run variation; the scripted trade-off does not show which opening wins or justify a numeric tune. No human contest has established the winner. For human matches, record build SHA, both seats, first-contact/expansion/first-control/harvest/exchange/contest/win timings, regional stock/use, objective travel, routes and player explanations; for Grove also record protection and whether first control snowballs. Distinguish scripted from human results. See the [balance ledger](first-skirmish-balance.md#eighty-second-contested-follow-up-on-main-c9e4791-26-september-2026), earlier [40-second evidence](first-skirmish-balance.md#contested-worker-diversion-and-build-follow-up-on-main-a3426c1-26-september-2026), and [QA record](qa-vertical-slice.md). |
-| **Maps and scenarios** | Authored maps offer visible choices, recognizable regions, and a complete contest at several scales. | The 160 × 160 Frontier map and flat/elevation Map Studio round-trip are merged. Highland Grove now has a playable 129 × 97 elevation and route slice with a supported 60-stock food placeholder and two separate victory signals. Observe route, settlement, and resource choices from both seats in a real match; replace the placeholder with coffee only after the trade-node runtime contract exists. Then author an irregular forest-opening scenario where workers can cut a useful route; consider a distinct 224 × 224 probe when match evidence justifies it. | PR #117 added the 160 × 160 Frontier, a legacy-flat round-trip with `elevationPatches` omitted, synthetic levels 0–2 after reload, and mirrored static objective distances (73 / 50 / 73 cells). PR #125 merged Highland Grove preview validation and art-bounds guidance. The current Highland Grove generator checks mirrored approach costs, objective reachability, and the central optional site; its Map Studio round-trip preserves objectives and elevation. Human match observations remain to be recorded. |
-| **Interface and controls** | New players can discover, issue, and understand commands at normal desktop sizes. | Observe first-glance select/move, edge scroll/fullscreen, objective, and result/rematch comprehension; fix the largest miss. | Short two-seat screen capture or timed novice observation, including window size and build. |
-| **Audio and feedback** | Important orders and events have distinct, restrained, accessible feedback. | Run the ten-trial Audio check with fresh players to see whether they recognize move, attack, and match-result cues. Compare captions off with the normal caption-on experience; use “Not sure” separately from a confident misread and change a cue only for a specific observation. | The focused pre-unlock/muted/zero-output regression passed on [PR #79](https://github.com/lbliii/thousand-unit-skirmish/pull/79). Critical sample previews show their mapped caption when captions are enabled. Audio settings has ten shuffled trials across five cues, mix-aware copyable results, and a distinct “Not sure” answer; no fresh-player observation has been recorded yet. |
-| **Renderer and animation** | Efficient, fog-safe visual state mapping from authoritative game state to a readable battlefield. | Support the small resource-state staging integration and independently improve water surfaces, shoreline transitions, and varied trees for dense 160 × 160 maps. Ship separate useful slices. | Exact asset/renderer revision, one representative state transition and water/forest view at game zoom; full 2,000-unit evidence belongs to M3. |
-| **Environment art** | Original ground, water, shorelines, and regional material language across a varied battlefield. | Ship a small water and shoreline slice that works on the 160 × 160 map; continue regional terrain and landmark variety independently of the vegetation lane. | Versioned runtime files and one representative game-zoom view; record what is merged versus actually visible on staging. |
-| **Vegetation and world props** | Dense, readable forests and repeatable tree, shrub, rock, and harvestable-resource families. | Continue tree and shrub diversity in dense maps. Give cut trees and fruitless-then-cut berry bushes legible states so every woody sprite's resource role is understandable. | Editable source and runtime assets, plus an ordinary-zoom forest, clearing, and berry transition on a named build. |
-| **Unit character art** | Worker, Infantry, and Archer silhouettes, equipment, team cues, and readable action poses at game zoom. | Ship an independent Infantry or Archer authored sample with editable source, runtime candidate, and clear known limits; broaden the roster without waiting for the existing Worker/Barracks branch. | Source and asset manifest plus a named ordinary-zoom comparison when available; identify source sample versus integrated runtime. |
-| **Building architecture art** | Distinct Town Center, Barracks, and Archery Range shapes with readable construction and ownership cues. | Merge the focused Worker/Barracks v0.2 source sample with its known limits, then ship a building-only Barracks silhouette or construction-state improvement and continue to Town Center/Range. | Versioned source/GLB and manifest, one named building-state comparison when available, and a runtime view once integrated. Record known limits without treating the full M2/M3 proof as a PR gate. |
-| **Technical art and surfacing** | Make authored assets easy to finish, package, and display consistently at game zoom. | Establish a small shared painted-material atlas and repeatable UV/export/manifest checks using an unrestricted small sample; improve one actual runtime asset path with the renderer owner when useful. | Versioned editable sample, atlas and runtime files, repeatable validation, and a named ordinary-zoom comparison. A 2,000-unit measurement belongs to M3, not every art PR. |
-| **Art direction** | One coherent visual language across world, units, buildings, UI, and audio mood. | Review the next runtime pilot at ordinary/strategic zoom and name the few changes that most improve team/role/objective recognition. | Annotated captures and concrete corrections; review helps the owning lane move, without a standing signoff. |
-| **Infrastructure and online** | Staging follows main reliably; invite rooms and recovery are understandable; large-match budgets are measurable. | Keep merge-triggered staging deploys healthy and determine a safe two-seat WSS/reconnect run when room capacity allows; separately prepare comparable hosted M3 measurements. | Deployment SHA, `/ready`, asset/WSS result, room-safe recovery observation, and measured host/network profile. |
-| **QA and playtest** | Turn the game bible into current-build observations and reproducible bugs. | Run an available local or staged two-seat Forked Vale path when a room is available, then the first novice pair; keep source-level regressions specific. Track living-land and map-scale player evidence separately from milestone acceptance. | Staging deployment `334e6b2f` is `SUCCESS` from main `3a52f2c`; `/ready` returned 200 at 19:36Z. Authenticated GETs verified the core app files, Highland Grove map, six updated cursor PNG/SVG pairs, three Frontier rock runtime images, interactive manifest, and all ten interactive WebPs against local source or manifest hashes. The current-main Map Studio round trip passed locally, including Highland Grove; staging authoring and human usability remain pending. No current-build WSS/invite/match or player-comprehension run was made. Production remains manual redeploy `014448c3` with no source SHA or image digest; its core files match commit `2530714`, while the current Highland Grove map, cursor assets, interactive pack, and Frontier runtime images return 404. The latest host sample near 19:30Z was `9.80 / 13.70 / 13.87`; the 2,000-unit gate remains closed. See the [QA checkpoint](qa-checkpoint-2026-09-26.md) and [acceptance matrix](qa-vertical-slice.md). |
-| **Deterministic PvE** | A useful solo opponent that obeys fog, commands, and scenario rules. | Observe one solo Forked Vale session; confirm the bot opens, contests objectives, and responds after an enemy takes a signal, then tune from play. | [PR #97](https://github.com/lbliii/thousand-unit-skirmish/pull/97) adds a seeded Forked Vale trace for signal progression, prerequisite-gated Vale Watch, and retake after ownership loss; live WebSocket smoke for both seat assignments confirms each bot enters its selected objective with 8 units. One solo-play observation remains before claiming the lane checkpoint. |
-| **Model opponent experiment** | Compare an optional model-driven opponent with deterministic PvE on quality, latency, and cost. | Keep the adapter default-off; design a replayable evaluation before any paid provider run. | Reproducible offline comparison proposal. Spending requires its separate user decision. |
+## Experiments
 
-## Candidate experiment
+- [Living land](living-land-experiment.md): elevation is implemented; specialty
+  crops and regrowth remain proposals. Highland Grove currently uses a food placeholder.
+- [Map scale and density](map-scale-density.md): Frontier Reach and Woodland
+  Expanse provide larger layouts; another size needs observed gameplay reasons.
+- [Harvestable woodland](harvestable-woodland-pilot.md): forest-cell gathering and
+  clearing are implemented; berry brushwood and organic forest-opening work remain follow-ups.
 
-[Living land: elevation, regional crops, and regrowth](living-land-experiment.md) is a bounded 1v1 design pilot. Owners can ship its independent slices alongside M1–M4 work; it adds no new completion or merge gate.
+## How to choose and finish a slice
 
-[Larger, lived-in maps](map-scale-density.md) starts with a selectable 160 × 160 map with woodland and working resource clusters, then probes a distinct 224 × 224 scenario. Map, environment, interface, and renderer owners can ship their slices independently while measuring actual travel and scale.
+1. Start from current code and a concrete player observation or reproducible gap.
+2. Own the useful outcome through integration and proportionate checks.
+3. Use code, a focused PR, and a short decision note as shared state. Contact an
+   affected owner only for a specific blocking interface or conflicting edit.
+4. Record whether work is implemented, merged, observed on a deployment, or
+   demonstrated by players. These are different claims.
+5. Keep source samples moving with their limits stated. Ordinary appearance
+   captures do not require quiet-host approval; comparable performance work does
+   need controlled conditions.
+6. Follow [repository working rules](../AGENTS.md). Staging integration and
+   production promotion remain separate decisions.
 
-## Choosing the next slice
-
-1. Prefer a concrete core-system failure or uncertainty seen in a solo or human match, or the smallest change that makes such a match easy to run. If the environment cannot support that observation today, ship a source or local pilot that makes it easier.
-2. Keep dependencies narrow: agree on a manifest, schema, or API directly with the affected owner and continue independent work.
-3. If a checkpoint fails, record one reproducible failure and let the owning lane fix forward. Keep the other lanes moving.
-4. Promote production only as a separate release decision. Normal author merges to `main` may trigger staging and are expected.
+The previous task-by-task ledger is preserved in the
+[September roadmap archive](archive/2026-09/roadmap.md). Use it to trace past
+choices, rather than copying its dated statuses into new work.

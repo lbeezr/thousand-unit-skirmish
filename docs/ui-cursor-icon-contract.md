@@ -1,45 +1,50 @@
-# UI cursor and icon integration contract
+# Cursor and icon contract
 
-## Cursors
+[Documentation index](README.md) · [UI pack](../assets/ui/README.md)
 
-The battlefield canvas exposes `data-cursor-mode` values consumed by `style.css`:
+## Current runtime cursors
 
-| Mode | Asset path | Size | Hotspot | System fallback |
-| --- | --- | --- | --- | --- |
-| `select` | `assets/ui/cursors/select.png` | 32 × 32 PNG | 3, 3 | crosshair |
-| `box-select` | `assets/ui/cursors/box-select.png` | 32 × 32 PNG | 16, 16 | crosshair |
-| `move` | `assets/ui/cursors/move.png` | 32 × 32 PNG | 3, 3 | crosshair |
-| `attack-move` | `assets/ui/cursors/attack-move.png` | 32 × 32 PNG | 3, 3 | crosshair |
-| `gather` | `assets/ui/cursors/gather.png` | 32 × 32 PNG | 3, 3 | crosshair |
-| `rally` | native cursor | — | — | crosshair |
-| `build-valid` | `assets/ui/cursors/build-valid.png` | 32 × 32 PNG | 3, 3 | crosshair |
-| `build-blocked` | `assets/ui/cursors/build-blocked.png` | 32 × 32 PNG | 3, 3 | crosshair |
-| `pan` | native cursor | — | — | grab |
-| `panning` | native cursor | — | — | grabbing |
+The battlefield canvas exposes `data-cursor-mode`; `src/battlefield-cursor.mjs`
+resolves the mode and `style.css` maps it to the native browser cursor.
+The authoritative size/path/hotspot record is
+[assets/ui/cursors/manifest.json](../assets/ui/cursors/manifest.json).
 
-Cursor images use transparent backgrounds. The ordinary pointer is a neutral
-field standard, with the command state carried by the badge; its spear tip stays
-at the existing `(3, 3)` hotspot. `box-select` remains a centered frame.
-`style.css` points each mode at its runtime PNG and retains the manifest's
-keyword fallback, for example:
+Current custom cursors are **40 × 40 PNGs**, built from Meshy pointer/hammer
+renders with command marks. Older 32 × 32 SVGs are retained as legacy sources.
 
-```css
---cursor-select: url('/assets/ui/cursors/select.png') 3 3, crosshair;
-```
+| Modes | Hotspot | Keyword fallback |
+| --- | --- | --- |
+| `select`, `select-add`, `select-remove`, `box-select`, `box-crossing` | `(4,4)` | `default` |
+| `move`, `move-queued`, `attack`, `attack-move`, `attack-move-queued` | `(4,4)` | `default` |
+| `gather`, `gather-wood`, `rally` | `(4,4)` | `default` |
+| `build-valid` | `(6,6)` | `default` |
+| `build-blocked` | `(6,6)` | `not-allowed` |
+| `unavailable` | `(4,4)` | `not-allowed` |
+| `pan`, `panning` | Native | `grab`, `grabbing` |
+
+Runtime files are `assets/ui/cursors/<mode>.png`. Keep a CSS keyword fallback.
+Enemy targeting precedes resource targeting; only movement modes show the Shift
+queue mark. Hover resolution must not advance overlap selection.
 
 ## Icons
 
-Use 24 × 24 SVG files under `assets/ui/icons/`: `wood.svg`, `food.svg`,
-`move.svg`, `attack.svg`, `gather.svg`, and `build.svg`. The initial runtime
-integration scope is the command-mode symbol and the HUD food/wood readouts.
-Keep the visible `FOOD` and `WOOD` labels, command title and hint, and written
-resource costs so the art remains supplementary and the controls stay clear.
+The 24 × 24 SVG icons are `wood`, `food`, `move`, `attack`, `gather`, and `build`
+under `assets/ui/icons/`. Preserve resource labels, command title/hint, written
+costs, and accessible names. Icons supplement those meanings.
 
-The kit includes editable cursor sources, icon SVGs, the hotspot manifest,
-provenance, and a static preview. The UI uses the command icon and food/wood
-readout icons while retaining the visible labels and text fallback glyph.
+## Build and verify
 
-The production server serves client files through an explicit allowlist. The
-runtime cursor exports, their editable SVGs, the manifest, icon SVGs, and static
-preview are listed there; the export script and provenance notes remain source
-materials in the repository.
+```sh
+python3 scripts/build-cursor-pack.py
+node --test scripts/battlefield-cursor.test.mjs
+node scripts/docker-ui-assets-context-scenario.mjs
+```
+
+The builder needs Pillow and spends no provider credits. Source renders/provenance
+are in [art/cursor-sources](../art/cursor-sources/README.md). The old Swift SVG
+export is not the current PNG build path.
+
+Check hotspots, contrast, modifiers, targeting precedence, fallback, and pan in
+the actual browser. The static `assets/ui/preview.html` is a review composition.
+The server's explicit allowlist and Docker/release inputs must include new runtime
+assets; source-only production files do not need public serving.

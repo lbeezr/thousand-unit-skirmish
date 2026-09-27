@@ -1,21 +1,19 @@
-# Technical art and surfacing checkpoint · 26 September 2026
+# Technical-art checkpoint — 26 September 2026
 
-## Sprite-atlas contract slice
+[Documentation index](README.md) · [Sprite-atlas contract](sprite-atlas-contract-v1.md)
 
-- Current main is `3a52f2c` (PR #139, Archery Range sprite atlas). This branch
-  includes that main revision.
-- The user confirmed that `codex/sprite-atlas-contract-20260926` was published
-  to `origin` at `333769f`. The local remote-tracking ref records that head.
-- The branch adds the sprite-atlas schema, validator, HTML preview, and authoring
-  contract. Cutout sprites remain separate from the painted-material GLB path.
-- The independent painted-material study and GLB runtime work are excluded from
-  this PR.
+**Historical scope:** the sprite-atlas schema, validator, preview, and authoring
+contract at branch `333769f`, with main `3a52f2c` included. The painted-material
+study and GLB runtime integration were separate work.
 
-## Validation
+The recorded validation passed the Archery Range construction manifest with
+13 files, one page, and one asset. The branch diff check also passed.
 
-- `node scripts/validate-sprite-atlas.mjs assets/buildings/archery-range-construction-v1/sprite-atlas-pack-v1.json`
-  passed against the current-main Archery Range pack: 13 files, one page, one
-  asset.
-- `git diff --check origin/main...HEAD` passed after merging current main.
-- Validator acceptance establishes manifest, file, and bounds integrity. It
-  does not establish renderer integration or appearance approval.
+Reproduce package validation with:
+
+```sh
+node scripts/validate-sprite-atlas.mjs assets/buildings/archery-range-construction-v1/sprite-atlas-pack-v1.json
+```
+
+This establishes manifest/file/bounds integrity. Renderer adoption, pivot review,
+appearance, and performance require their own evidence.

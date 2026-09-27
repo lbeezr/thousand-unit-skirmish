@@ -1,80 +1,81 @@
-# Interactive environment state pack v1
+# Interactive environment states
 
-Asset-only checkpoint for the existing oak and berry resource nodes, with two construction-ground samples. `assets/environment/frontier-interactive-v1/manifest.json` follows renderer asset-pack schema v1 and records each source/runtime file, pixel dimensions, world dimensions, pivot, stock range, batch key, SHA-256, and provenance. No renderer code or map/resource placement data changes are included.
+[Documentation index](README.md) · [Renderer contract](renderer-state-contract.md)
 
-## Resource state mapping
+The integrated `assets/environment/frontier-interactive-v1/manifest.json` describes
+oak/berry depletion and construction-ground images. It uses renderer asset-pack v1.
+The manifest owns exact file hashes, dimensions, bounds, pivots, ranges, and batches.
 
-Select the stage from the integer stock percentage `floor(clamp(stock / startingStock, 0, 1) * 100)`. `startingStock` is the node's map-defined initial stock; the live snapshot provides the current stock. The map definition publicly includes resource placement and starting stock, while match-state snapshots include live stock only for nodes whose cells are visible to that team. A hidden node therefore retains its starting or last-seen art under fog until it becomes visible again, when the current stage is sent. The server keeps visible nodes at stock zero in snapshots, so the depleted stump or bare berry shrub can remain visible.
+## Resource mapping
 
-| Stage | Stock percent | Oak appearance | Berry appearance |
+Use `floor(clamp(stock / startingStock, 0, 1) * 100)`. Initial stock comes from
+the map; current stock comes only from visible snapshot rows. Hidden nodes retain
+their last-known image. Visible stock zero remains a meaningful depleted feature.
+
+| Stage | Integer percent | Oak | Berries |
 | --- | ---: | --- | --- |
-| `full` | 67–100 | Full leafy crown | Full fruit clusters |
-| `worked` | 34–66 | Reduced crown, more exposed branches | Fewer fruits, foliage retained |
-| `low` | 1–33 | Sparse foliage islands | Very few fruits, opened canopy |
-| `depleted` | 0 | Harvested stump and roots | Fruitless, sparse woody shrub |
+| `full` | 67–100 | Full crown | Full fruit clusters |
+| `worked` | 34–66 | Reduced crown | Fewer fruits |
+| `low` | 1–33 | Sparse foliage | Very few fruits |
+| `depleted` | 0 | Stump and roots | Fruitless woody shrub |
 
-The current game uses `task: "gathering"` for both resource types. When `cargoType` is unknown, keep a generic gathering cue. For known values, `wood` maps to an overhead chopping swing at oak, and `food` maps to a shorter forward pick at berry bushes. Building keeps a separate construction swing; moving or returning workers do not swing. Visible worker rows already carry `cargoType` (`food`/`wood`), so this mapping requires no gameplay-schema change. The environment pack supplies resource-node state images. The renderer pose checkpoint is merged in PR #72 (`30a386b`). The first play-zoom runtime pilot is now captured; see [the pilot evidence](qa-evidence/environment-state-pack-v1/pilot/README.md).
+Worker task drives a generic gather pose until cargo type is known; wood/food
+then select chopping/picking. Moving/returning suppresses work swings. The pack
+supplies resource art, not new simulation rules or regrowth.
 
-## Construction ground mapping
+## Construction ground
 
-| Stage | Progress | Meaning |
-| --- | --- | --- |
-| `clear` | No active construction or progress ≥ 1 | No decal; the manifest row has null files and dimensions. |
-| `earthwork` | 0 ≤ progress < 0.4 | Disturbed soil pad. |
-| `foundation` | 0.4 ≤ progress < 1 | Stone foundation sample. |
+| Stage | Condition |
+| --- | --- |
+| `clear` | No incomplete building; no image/batch. |
+| `earthwork` | Progress below 0.4. |
+| `foundation` | Progress from 0.4 until completion. |
 
-The schema stores earthwork as `{ "min": 0, "max": 0.4 }` and foundation as `{ "min": 0.4, "max": 1 }`; the table defines the exclusive upper boundaries used at runtime.
+Upper bounds are exclusive. Authoritative completion removes the decal even if
+a procedural roof appeared earlier.
 
-## Dimensions and anchors
+## Registration and budget
 
-All sprites are RGBA cutouts. Resource sprites are camera-facing and use the shared bottom-center pivot `[0.5, 1.0]`; state variants in each family keep the same source canvas and world size. The construction decals also share their canvas, world size, and pivot.
+| Family | Pixels | World width × height | Pivot |
+| --- | --- | --- | --- |
+| Oak | 1226 × 1283 | 4.1 × 3.75 | `[0.5,1.0]` |
+| Berries | 1536 × 1024 | 2.55 × 1.56 | `[0.5,1.0]` |
+| Construction | 1254 × 1254 | 3 × 3 | `[0.5,1.0]` |
 
-| Family | Pixel canvas | World size | Pivot |
-| --- | ---: | ---: | --- |
-| Oak | 1226 × 1283 | 4.1 × 3.75 | `[0.5, 1.0]` |
-| Berries | 1536 × 1024 | 2.55 × 1.56 | `[0.5, 1.0]` |
-| Construction ground | 1254 × 1254 | 3.0 × 3.0 | `[0.5, 1.0]` |
+All variants in a family share registration. Ten image-bearing states project
+ten batches, 3,798,100 WebP bytes, and 83,884,376 decoded RGBA8 bytes including a
+4/3 mip allowance. The planning cap is 96 MiB (100,663,296 bytes), leaving
+16,778,920 bytes. This is a pack estimate, not measured GPU residency or an app cap.
 
-The construction `clear` row is a no-image routing state and does not create a render batch.
+```sh
+node scripts/validate-visual-pack.mjs assets/environment/frontier-interactive-v1/manifest.json
+```
 
-## Budgets
+## Evidence and next review
 
-- 10 environment state batches: four oak stages, four berry stages, and two visible construction states.
-- 10 projected additional draw calls under the renderer contract; construction `clear` adds none.
-- 3,798,100 compressed WebP bytes across the ten runtime textures.
-- 83,884,376 bytes (79.998 MiB) estimated texture memory, calculated by the renderer validator as `ceil(width × height × 4 × 4/3)` per unique runtime WebP.
-- 100,663,296 bytes (96 MiB) first-pack planning cap, leaving 16,778,920 bytes of headroom. This is not a whole-app GPU cap or a measured residency result; the renderer should measure actual residency and review readability at DPR 2 in the required in-game views: ordinary zoom 0.91 and strategic zoom 0.48, on meadow and cinder. Zoom 2.3 is optional close craft review and cannot replace either acceptance view. If measured residency exceeds this budget or either required view shows artifacts, compare 768 px and 512 px longest-edge runtime images before changing the current full-resolution set.
+The [four-frame runtime pilot](qa-evidence/environment-state-pack-v1/pilot/README.md)
+verified exact texture loads and visible stock-driven transitions on a named
+build. The complete forty-frame matrix remains a separate review:
 
-## Review status
+- Ten image-bearing states × Meadow/Cinder × zoom 0.91/0.48.
+- Stock 100/50/20/0 for representative full/worked/low/depleted frames.
+- Actual visible state rows and exact manifest-listed runtime textures.
+- 1280 × 720 CSS viewport at DPR 2; saved PNGs 2560 × 1440 with HUD/minimap.
+- A no-overlay assertion for `construction-clear`, without an extra image.
+- Visible wood/food interactions where practical and a ground/army contrast check.
 
-An independent source-integrity audit on 2026-09-25 matched all 20 manifest file records to their on-disk SHA-256 hashes and decoded pixel dimensions. It confirmed all eight oak and berry resource rows cover the four stages, keep one world size per resource family, and use the shared bottom-center pivot `[0.5, 1.0]`. This verifies the source package record; it does not establish runtime readability, play-zoom evidence, or measured GPU residency.
+Use the adapter's preflight, pilot, and full capture scenarios described in the
+[renderer contract](renderer-state-contract.md#appearance-checks). Contact sheets,
+mockups, or scaled legacy sprites do not establish this pack's runtime appearance.
+Ordinary appearance review needs no numeric host-load clearance; measured
+residency and performance remain separate work.
 
-On 2026-09-25, the Art Direction owner flagged a source-preview contrast risk: Meadow's high-frequency ground mottling fills much of the view, while Workers occupy only a few pixels at normal and strategic zooms. Check ground/army contrast in the authorized play-zoom frames; this observation is not runtime signoff and does not imply a v1 art or manifest change.
+## Source edge findings
 
-The source PNGs were reviewed individually. In the latest source-only palette pass, the art director found `berries-full.png`, `berries-depleted.png`, `construction-earthwork.png`, and `construction-foundation.png` consistent with the painterly frontier palette; this does not establish in-game readability. The art director also confirmed that saturated red/orange pixels protruding beyond the leafy oak alpha silhouette are edge contamination; subdued yellow-green highlights within the silhouette are intentional and should remain. The v1 files are unchanged. ImageGen cleanup candidates were rejected because they retained some fringe and changed the alpha mask by 311,512–702,622 pixels per stage, violating the exact-silhouette requirement. Any correction must preserve the source alpha mask and alter only protruding fringe colors, then pass edge review on black and light backgrounds before files, hashes, and manifest entries are updated. On 2026-09-25, the Art Director accepted `assets/environment/frontier-interactive-v1-candidates/oak-edge-candidate-01/` as a source-only cleanup proposal for runtime evaluation after black/light review. They confirmed the remaining warmer pixels at reviewed canopy, bark, and stump edges are intentional and must remain. The candidate is not in the v1 manifest or runtime path and does not count as in-game approval.
-
-### First in-game pilot
-
-The renderer already has a four-frame `renderer-environment-state-pilot` scenario on `main`. Use it first to confirm that the exact pack textures load and that live stock changes produce distinct art at ordinary and strategic zoom. It covers Meadow oak `worked` at 0.91, Meadow berries `worked` at 0.48, Cinder oak `depleted` at 0.91, and Cinder berries `low` at 0.48. Keep the active worker interaction visible where the scenario provides one.
-
-The four-frame pilot is saved under `docs/qa-evidence/environment-state-pack-v1/pilot/`. It records the renderer revision, both clients' fetched runtime files, and observed stock transitions. The remaining 40-frame art matrix is a separate review; ordinary appearance captures do not require a numeric host-load threshold.
-
-### Expanded in-game review matrix
-
-The full art review can follow the pilot; it is not a prerequisite for merging the approved source/runtime pack.
-
-- Capture each of the 10 image-bearing states—four oak, four berry, and construction earthwork/foundation—on both Meadow and Cinder at zoom 0.91 and 0.48. This produces 40 standalone frames.
-- `open-field` and `cinder-ridge` are the current production-map references for Meadow and Cinder. A dedicated review map may be used when needed for state setup or fog visibility, provided its explicit `terrainBase` resolves to the same `meadow` or `cinder` texture through `environmentTheme`.
-- Store one full-resolution PNG per state/theme/zoom tuple at `docs/qa-evidence/environment-state-pack-v1/<theme>/zoom-<value>/<state>.png`; for example, `docs/qa-evidence/environment-state-pack-v1/meadow/zoom-0.91/oak-full.png`. Keep the team HUD label and minimap visible in each frame.
-- Capture against a renderer build that implements all four stock stages. A full/empty-only renderer cannot produce valid `worked` or `low` frames. For a review node with `startingStock` 100, use visible live-stock values 100, 50, 20, and 0 as representative `full`, `worked`, `low`, and `depleted` cases.
-- Each image-bearing environment frame must render the matching manifest-listed v1 `runtimeFile` for that resource or construction state. Scaling a full oak/berry sprite to imitate another stage, or substituting procedural construction geometry, is not evidence for this pack's art review.
-- Verify that each target resource's live stock row is present in the observing player's match snapshot before saving its frame. Include the Meadow ground/army contrast check recorded above.
-- Keep the active gatherer visible beside oak and berry nodes in non-depleted views where practical. Across the required zooms, show at least one wood interaction and one food interaction so the same matrix reviews chopping/gathering cues; depleted states need no active worker.
-- `construction-clear` has null source/runtime files. Verify it with a runtime no-overlay assertion during the same capture run; it does not need an additional screenshot.
-- Contact sheets, composite boards, source renders, and browser mockups do not establish runtime readability. Zoom 2.3 is optional close craft review and cannot substitute for either required view.
-
-The four-frame in-game pilot is complete. The expanded 40-frame review remains pending an owner-run capture. It requires a working browser and GPU, but no numeric host-load clearance; performance and measured GPU-residency claims remain separate.
-
-The separate `renderer-appearance-lod` scenario captures eight fog-safe unit-role views across two maps, two team viewers, and two zooms. Its review maps contain no resource nodes, so those images do not count toward this environment-state matrix.
-
-The renderer loader, stock-state mapping, and four-frame pilot are on `main` (PR #77). The loader verifies the ten manifest-listed WebP files and uses them for resource and construction states when the manifest is available; if they are unavailable, it falls back to the legacy single oak and berry textures. The versioned pack contains ten runtime WebPs, ten source PNGs, a manifest, provenance, and prompts. The user approved the source art on 2026-09-26. The pilot verifies representative runtime loads and stock-driven state changes, while the full art review and measured GPU residency remain open for their respective milestones.
+Original v1 files retain their source alpha. Source review identified some oak
+edge-color contamination but also intentional warm canopy/bark highlights.
+Rejected cleanup generations changed too much of the silhouette. An accepted
+source-only oak candidate remains outside the manifest/runtime path; adoption
+needs black/light edge review and matching file/hash changes. Berry source
+comparisons supported leaving v1 alpha unchanged. Neither finding substitutes
+for the required game-zoom views.

@@ -1,74 +1,35 @@
-# Warcraft RTS Feature Coverage Inventory
+# Warcraft RTS study
 
-- **Purpose:** track what the Warcraft RTS games can teach this project, and where their feature mix differs from our large-army skirmish.
-- **Checked:** 25 September 2026.
-- **Related documents:** [Game Bible](../game-bible.md) · [RTS Feature Coverage Inventory](feature-coverage-inventory.md) · [Openage Source Study](openage-study.md).
+[Documentation index](../README.md) · [RTS coverage](feature-coverage-inventory.md)
 
-## Reference boundary
+**Historical reference study:** 25 September 2026. Its scope is Warcraft I–III
+and their recorded remaster/Reforged presentations, rather than World of Warcraft,
+Rumble, or Heroes of the Storm. This project uses original setting, assets, names,
+maps, and writing.
 
-This study covers **Warcraft: Orcs & Humans**, **Warcraft II: Tides of Darkness / Beyond the Dark Portal**, and **Warcraft III: Reign of Chaos / The Frozen Throne**, including their current remastered or Reforged presentations where relevant. It does not cover *World of Warcraft*, *Warcraft Rumble*, or *Heroes of the Storm*. These games are design references only: this project will use original setting, factions, names, art, sound, maps, and writing.
+The [full reference ledger](../archive/2026-09/warcraft-rts-inventory.md) retains
+the original feature comparisons and official source links. Those observations
+are dated research; they do not assert current upstream product features.
 
-Warcraft I and II are useful references for direct army orders, faction identity, and how to modernize classic controls. Warcraft II adds naval warfare and map control across sea routes. Warcraft III shifts the mix toward hero-led armies, strong faction asymmetry, active abilities, neutral map sites, and user-authored game types. Those are distinct directions to evaluate; none is an automatic product requirement.
+## Questions to carry into this project
 
-## What the games put on the feature map
+| Study topic | Project question |
+| --- | --- |
+| Direct orders and classic-control improvements | Are selection, right-click orders, feedback, and information comfortable at our much larger group sizes? |
+| Distinct unit/faction silhouettes | Can players identify role and ownership at normal/strategic zoom without relying on hue alone? |
+| Naval map play | Would another traversal family improve a proven land game enough to justify its pathing/transport/content scope? |
+| Heroes, items, abilities, and neutral sites | Would a focal unit or site clarify the large-army game or distract from it? Test later, separately. |
+| Scenario editors and custom modes | Can Map Studio expose useful objectives/events while remaining understandable and validated? |
+| HUD, hotkeys, and feedback | Can players discover actions without giving up fast keyboard control? |
+| Online service/replay features | Which observed playtest need warrants accounts, ranking, replay, or public discovery? |
 
-| Reference | Feature emphasis to study | Implication for our tracker |
-| --- | --- | --- |
-| **Warcraft I: Orcs & Humans** | Two-sided Human/Orc conflict, campaign and custom skirmish play, base building and army control. The remaster adds right-click movement, box selection, faster game speed, tooltips, health bars, mission selection, and a higher unit-selection limit. | Study the basic command loop and the improvements needed to make a classic RTS comfortable now. Our selection and order model needs to work at very large group sizes, beyond legacy limits. |
-| **Warcraft II: Tides of Darkness / Beyond the Dark Portal** | Human/Orc war expands to ships and sea routes, with more Alliance/Horde peoples and naval units. Current remastered material calls out continued multiplayer and legacy custom-map compatibility. | Naval combat is a major additional simulation and map-design family: water traversability, ship movement, coastal access, transport, and land/sea objectives. Keep it as a later candidate until land combat is proven. |
-| **Warcraft III: Reign of Chaos / The Frozen Throne** | Four playable races, strong race-specific play styles, hero-focused strategy, progression/abilities, items, neutral units/buildings, and multiplayer modes. The World Editor spans terrain, object data, triggers/scripts, sound, AI, and custom assets. | Study faction readability, hero scale versus army scale, map objectives, and scenario authoring. Our Map Studio should remain easier and safer for the target player, even if that means less freedom than a full game-engine editor. |
-| **Modern Warcraft remasters / Reforged** | Real-time classic/remastered art switching, updated controls, hotkey customization, configurable HUD and information, saved match history/replays, ranked progression, profiles, and map filters. Warcraft III: Definitive Edition highlights bold silhouettes, iconic unit identity, stylized charm, verticality, dynamic lighting, fog, and day/night transitions. | Separate enduring game design from presentation and service upgrades. Study the clarity goals and quality-of-life patterns; implement only those that serve our browser-first, invite-first game. |
+## Scope decisions
 
-## Feature ledger
+Selection, readable teams, economy, production, objectives, editor usability, and
+reliable invite play support the current slice. Heroes, naval combat, broad faction
+asymmetry, items, and large ability systems remain later candidates. Campaigns
+and public ranked service remain outside the first slice.
 
-Statuses describe prototype 0.95. **Slice** means needed for the first complete multiplayer scenario. **Candidate** means evaluate through a later playtest or measured need. **Open** means decide after the core match is playable. **Out** means outside the current goal.
-
-| System | Warcraft feature inventory | Prototype 0.95 | Project disposition |
-| --- | --- | --- | --- |
-| **Core RTS loop** | Worker economy, construction, production, upgrades, map expansion, and combat form the recurring real-time loop across the series. | **Partial** — food/wood gathering, two military unit types, three current production buildings, upgrades, and objectives. | **Slice** — make this compact loop finish a complete match before widening it. |
-| **Faction identity** | Warcraft I starts with Humans and Orcs; Warcraft II grows the Alliance/Horde rosters; Warcraft III has Humans, Orcs, Night Elves, and Undead with distinct play styles. | **Partial** — two team colors with a small shared roster; no faction-specific rules or content families. | **Open/Candidate** — settle visual identity first; test asymmetry only after shared army control works. All factions and units must be original. |
-| **Selection and commands** | Modern Warcraft I adds right-click move and box selection; Warcraft I/II remasters raise selection capacity; Warcraft III offers configurable hotkeys and an optional squad-formation setting. A 2026 Warcraft III update reports a unit selection limit change from 12 to 24. | **Partial** — box, single, class, double-click, control-group selection, move/attack/attack-move, waypoints, and box/line/column destination layouts. | **Slice** — retain quick, direct controls; our large selection model must support hundreds of units without adopting the reference caps. Test squad cohesion separately from formation destination shapes. |
-| **Heroes and progression** | Warcraft III is explicitly described by Blizzard as hero-focused; hero levels/XP, active abilities, items, and revival are part of its match vocabulary. | **Absent.** | **Open** — decide whether one controllable champion adds meaningful tactical choice without pulling the game away from commanding large armies. No hero is required for the first slice. |
-| **Unit abilities and counters** | Warcraft III uses race-specific abilities, upgrades, spells, items, summons, and counters; the live balance notes show effects across damage, healing, control, movement, armor, and resource costs. | **Partial** — basic attacks and selected attack upgrades; no active spell layer, item inventory, or race-specific counters. | **Candidate** — start with a few readable, server-authoritative abilities only if ordinary combat needs more tactical decisions. |
-| **Naval play** | Warcraft II brings fleets and sea routes into the land-war loop. | **Absent.** | **Candidate/Later** — requires boats, water pathfinding, shoreline rules, transport, and maps designed around sea control; do not slip this into the first vertical slice. |
-| **Terrain and map control** | Warcraft III's editor supports terrain geometry, cliffs, doodads, regions, neutral buildings, start locations, and test-in-game iteration. Official mapmaking guidance emphasizes fair spacing, chokes, map size, symmetry, and strategic neutral sites. | **Partial** — tile maps, obstacles, resources, spawns, fog, objective zones, minimap, and terrain painting; no elevation or neutral shops/waygates. | **Slice** — keep routes, starts, objectives, and map fairness legible. **Candidate** — elevation and neutral strategic sites when a scenario demonstrates their value. |
-| **Objectives and neutral world** | Warcraft III maps can use neutral buildings such as taverns/markets and waygates, alongside scripted map events and custom game rules. Neutral creatures/camps and rewards provide contestable map value. | **Partial** — capture zones, prerequisite chains, timed victory, event triggers, rewards, and announcements; no neutral shops, recruitable mercenaries, or hero item economy. | **Slice** — author clear objectives and event feedback. **Candidate** — neutral sites as an alternative to capture zones; avoid copying Warcraft-specific buildings or terminology. |
-| **Map and scenario editor** | Warcraft III's World Editor includes terrain, unit/doodad placement, regions, object editing for units/abilities/buildings, scripted triggers/events, AI settings, sound, asset management, custom game types, and test-map launch. | **Partial** — Map Studio edits terrain, resources, spawns, objectives, triggers, settings, import/export, local drafts, and publish-to-room. It has no general script runtime or custom unit/object editor. | **Slice** — a host can create, validate, save, reload, and play a useful scenario without JSON edits. **Candidate** — custom units/abilities or a broader event language only after editor playtests. Keep authoring approachable and validation strong. |
-| **Custom games and sharing** | Warcraft III custom games support user maps and game types; maps can be tested, saved, and shared with friends. The editor can create experiences beyond standard melee, including scripted maps and cinematics. Warcraft II remasters retain legacy custom-map compatibility. | **Partial** — host-published JSON maps and scenarios persist within invite rooms; no public map browser, custom game-type runtime, or cross-room catalog. | **Slice** — reliable invite-based play on the host's authored map. **Candidate** — map package versioning and broader sharing after moderation and compatibility needs are understood. |
-| **Multiplayer modes and social** | Warcraft II has multiplayer; Warcraft III supports custom games and versus modes including 1v1, team games, and free-for-all. Modern Reforged features include ranked/unranked queues, matchmaking, profiles, leaderboards, match history, and tournaments. | **Partial** — invite-only two-player rooms, authoritative isolated workers, reconnect, checkpoint recovery, result, and reset; no accounts, chat, FFA, public matchmaking, ranked ladder, or replay UI. | **Slice** — prove reliable deployed 1v1 and make reconnect/end-of-match clear. **Candidate/Later** — wider team sizes or service features from demonstrated player demand. Ranked play and accounts remain later. |
-| **Network trust and continuity** | Blizzard's Warcraft III development updates call out client desynchronization as a severe match-ending reliability problem and discuss ongoing work to diagnose and fix it. | **Partial** — server-authoritative simulation, room isolation, reconnect windows, and periodic checkpoints; only local performance is measured. | **Slice** — validate internet latency, packet loss, server recovery, and match continuity with real clients. Borrow the lesson that sync failures destroy trust; choose our own protocol and authority model. |
-| **Interface and feedback** | Modern updates add hotkey customization, scalable HUD, optional health bars, in-game timers, worker counts, ping/FPS/APM, idle-worker camera focus, replay/history access, and graphics toggles. Warcraft I/II remasters add tooltips and health bars. | **Partial** — selection/command feedback, objective cards, minimap, camera controls, basic result state; no hotkey customization, replay, or full status settings. | **Slice** — raise text legibility and explain every important order/result. **Candidate** — scalable HUD, configurable keys, replay, or extra diagnostic overlays as playtests justify. |
-| **Visual style and character** | Warcraft's current official art direction calls out readable silhouettes, strong unit identity, stylized charm, detailed environments, verticality, lighting, and day/night/fog. Earlier remasters support switching between classic and remastered visuals. | **Partial** — Azure/Ember identities, oblique camera, low-poly placeholders, instanced units, simple buildings and terrain. | **Slice** — make unit roles and teams readable at army zoom; use bold original silhouettes and a coherent world palette. Preserve tactical clarity over visual density. |
-| **AI and solo play** | Warcraft III provides an AI Editor for map/campaign settings; user maps may define computer opponents and custom behavior. | **Absent** — current product is human-versus-human. | **Candidate/Open** — a test opponent or solo skirmish may broaden access after the human multiplayer match is sound. |
-| **Campaign and narrative** | Warcraft I–III are known for authored campaigns, cinematics, mission progression, and character-led storytelling; Warcraft III also supports custom campaigns. | **Absent.** | **Out** — campaign development and campaign editing remain outside the current goal. Short scenario context and match callouts may use original writing. |
-
-## The Warcraft questions to carry into playtests
-
-- Does Warcraft I/II's quick, direct control model still feel good when a selection contains hundreds of units?
-- Does a Warcraft III-style hero make the battle easier to read and plan, or pull focus from the army?
-- Do neutral sites create meaningful map routes and contestable decisions beyond our current capture zones?
-- Would elevation or naval lanes create stronger authored scenarios enough to justify their pathfinding and editor cost?
-- Which quality-of-life controls matter first: customizable keys, zoom limits, idle-unit camera focus, health-bar settings, or replay/history?
-- How much faction difference can the game support while preserving predictable large-group commands?
-
-These remain playtest questions. Warcraft's campaign structure, lore, races, unit names, art, sounds, maps, and proprietary data are not project content.
-
-## Source map
-
-Use Blizzard's official material for high-level facts and current product changes. It does not replace hands-on play or a complete game-mechanics manual; mark details that still need inspection rather than treating this source set as exhaustive.
-
-- [Warcraft 30th Anniversary Direct: Warcraft RTS overview and remaster quality-of-life changes](https://news.blizzard.com/en-gb/article/24148499/catch-up-on-the-future-of-warcraft-with-the-warcraft-30th-anniversary-direct)
-- [Warcraft: Orcs & Humans and Warcraft II rerelease overview, naval play, races, and legacy multiplayer](https://news.blizzard.com/en-us/article/22940764/warcraft-orcs-humans-and-warcraft-ii-battle-net-edition-now-available-on-gog-com)
-- [Three Warcraft titles: official product descriptions for Warcraft I Remastered, Warcraft II Remastered, and Warcraft III: Reforged](https://news.blizzard.com/en-us/article/24217479/three-warcraft-titles-now-available-on-pc-game-pass)
-- [Revisiting the Warcraft III Editor: terrain, triggers, object data, AI, assets, custom games, and map design](https://news.blizzard.com/en-us/article/23395649/revisiting-the-warcraft-iii-editor)
-- [Warcraft III Developer Update: hero focus, race asymmetry, ranked matchmaking, modes, and desync concerns](https://news.blizzard.com/en-us/article/23411981/warcraft-iii-reforged-developer-update)
-- [Warcraft III Patch 1.33: ranked play, player profiles, leaderboards, custom games, and zoom](https://news.blizzard.com/en-us/article/23816417/warcraft-iii-reforged-patch-1-33-0-now-live)
-- [Warcraft III Patch 1.32.6: custom-map/editor support, mercenary camps, items, and abilities](https://news.blizzard.com/en-gb/article/23445051/warcraft-iii-reforged-patch-notes-version-1-32-6)
-- [Warcraft III Patch 1.35: balance methodology, custom campaigns, abilities, and items](https://news.blizzard.com/en-gb/article/23896791/warcraft-iii-reforged-patch-1-35-0-now-live)
-- [Warcraft III Patch 2.0: customizable hotkeys, HUD and information settings, multiplayer progression, and asset options](https://news.blizzard.com/en-gb/article/24167122/warcraft-iii-reforged-patch-notes-patch-2-0-0)
-- [Warcraft III Patch 1.36.1: online save/load, observer details, and tournament support](https://news.blizzard.com/en-us/article/23987390/warcraft-iii-reforged-patch-notes-version-1-36-1)
-- [Warcraft III: Forsaken Kingdom deep dive: current visual direction, day/night and terrain features, and 12-to-24 unit-selection limit change](https://news.blizzard.com/en-us/article/24298590/warcraft-iii-reforged-forsaken-kingdom-deep-dive-recap)
-
-## Maintenance rule
-
-When a playtest changes a project decision, update this ledger and the [Game Bible](../game-bible.md). Record what Warcraft does separately from what we decide to build. Treat mechanics not established by the official sources above as study prompts until verified in game.
+Judge a borrowed principle against the [game bible](../game-bible.md), then test
+it in an original scenario. Keep historical reference descriptions separate from
+current project coverage and milestone evidence.
