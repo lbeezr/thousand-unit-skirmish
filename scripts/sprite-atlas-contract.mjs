@@ -56,6 +56,11 @@ function checkSchema(value, schema, resourceRoot, label = '$', schemaResources =
   for (const child of schema.allOf || []) {
     issues.push(...checkSchema(value, child, resourceRoot, label, schemaResources));
   }
+  if (schema.anyOf?.length && !schema.anyOf.some((child) => (
+    checkSchema(value, child, resourceRoot, label, schemaResources).length === 0
+  ))) {
+    issues.push(`${label} must match at least one allowed schema`);
+  }
   if (schema.if) {
     const matches = checkSchema(value, schema.if, resourceRoot, label, schemaResources).length === 0;
     const branch = matches ? schema.then : schema.else;
@@ -85,6 +90,10 @@ function checkSchema(value, schema, resourceRoot, label = '$', schemaResources =
   if (Array.isArray(value)) {
     if (schema.minItems !== undefined && value.length < schema.minItems) issues.push(label + ' has too few items');
     if (schema.maxItems !== undefined && value.length > schema.maxItems) issues.push(label + ' has too many items');
+    if (schema.uniqueItems && value.some((entry, index) => value
+      .slice(0, index).some((previous) => JSON.stringify(previous) === JSON.stringify(entry)))) {
+      issues.push(label + ' must not contain duplicate items');
+    }
     if (schema.items) value.forEach((entry, index) => issues.push(...checkSchema(entry, schema.items, resourceRoot, `${label}[${index}]`, schemaResources)));
   }
   if (value && typeof value === 'object' && !Array.isArray(value)) {

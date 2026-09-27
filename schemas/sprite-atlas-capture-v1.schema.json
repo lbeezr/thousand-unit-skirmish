@@ -5,16 +5,13 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "captureMode",
     "sourceModelSha256",
-    "sourceAssets",
     "projection",
-    "cameraElevationDegrees",
+    "elevationDegrees",
     "framePixels",
     "frameWorldUnits",
     "pixelsPerWorldUnit",
-    "anchorPixelFromTopLeft",
-    "frameRecords"
+    "anchorPixelFromTopLeft"
   ],
   "properties": {
     "captureMode": { "enum": ["camera-orbit", "model-pose"] },
@@ -24,7 +21,14 @@
       "items": { "$ref": "#/$defs/sourceAsset" }
     },
     "projection": { "const": "orthographic" },
-    "cameraElevationDegrees": { "type": "number", "minimum": 0, "maximum": 90 },
+    "azimuthDegrees": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": { "type": "number", "minimum": 0, "exclusiveMaximum": 360 }
+    },
+    "elevationDegrees": { "type": "number", "minimum": 0, "maximum": 90 },
     "fixedCameraAzimuthDegrees": { "type": "number", "minimum": 0, "exclusiveMaximum": 360 },
     "framePixels": { "$ref": "#/$defs/dimensionsPx" },
     "frameWorldUnits": { "$ref": "#/$defs/dimensionsWorld" },
@@ -38,8 +42,12 @@
   },
   "allOf": [
     {
-      "if": { "properties": { "captureMode": { "const": "camera-orbit" } } },
+      "if": {
+        "required": ["captureMode"],
+        "properties": { "captureMode": { "const": "camera-orbit" } }
+      },
       "then": {
+        "required": ["azimuthDegrees"],
         "properties": {
           "frameRecords": {
             "items": { "required": ["cameraAzimuthDegrees"] }
@@ -49,13 +57,31 @@
       }
     },
     {
-      "if": { "properties": { "captureMode": { "const": "model-pose" } } },
+      "if": {
+        "required": ["captureMode"],
+        "properties": { "captureMode": { "const": "model-pose" } }
+      },
       "then": {
-        "required": ["fixedCameraAzimuthDegrees"],
+        "required": ["fixedCameraAzimuthDegrees", "frameRecords"],
         "properties": {
           "frameRecords": {
-            "items": { "required": ["modelYawDegrees"] }
+            "items": {
+              "required": ["modelYawDegrees", "animationClipId", "clipTimeSeconds"]
+            }
           }
+        },
+        "not": { "required": ["azimuthDegrees"] }
+      }
+    },
+    {
+      "if": { "not": { "required": ["captureMode"] } },
+      "then": {
+        "required": ["azimuthDegrees"],
+        "not": {
+          "anyOf": [
+            { "required": ["fixedCameraAzimuthDegrees"] },
+            { "required": ["frameRecords"] }
+          ]
         }
       }
     }

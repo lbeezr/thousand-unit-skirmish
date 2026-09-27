@@ -32,4 +32,6 @@ The [Meshy Terms of Use](https://www.meshy.ai/terms-of-use) distinguish output r
 
 Before treating the candidate as Infantry, decide how to address the missing spear and shield without rerunning paid Meshy stages. If the visual is still useful as a baseline, the next no-provider-cost experiment is to bake a small, deterministic eight-heading sample from the existing clips, with stable camera, ground pivot, transparent frames, and clip timing. A full atlas and integration are still separate work. Preserve the current game path until a sprite candidate is reviewed in-game at ordinary and strategic zoom.
 
+The canonical sprite pack now reserves an optional [`capture` record](../schemas/sprite-atlas-capture-v1.schema.json) for source GLB hashes, fixed-camera framing, and per-frame model yaw and clip sample time. Legacy building camera-orbit records may omit `captureMode`; the unit baker should use `model-pose` and include its frame records when that tool is built.
+
 The prior sprite-source readability and live transition gaps remain in [`unit-sprite-exploration.md`](unit-sprite-exploration.md). This pilot does not replace that evidence or claim an in-game result.

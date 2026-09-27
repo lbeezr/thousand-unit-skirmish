@@ -53,7 +53,10 @@ before that gate returns a nonzero exit status.
   It records model/camera capture mode, source-model and optional animation-GLB
   hashes, fixed framing, and per-frame pose provenance. Building camera orbits
   use `camera-orbit`; fixed-camera unit facings use `model-pose`. It supplements
-  pack provenance and clip mapping without replacing either one.
+  pack provenance and clip mapping without replacing either one. Legacy
+  camera-orbit records may omit `captureMode` and `frameRecords` while retaining
+  their `azimuthDegrees` and `elevationDegrees` fields; new model-pose records
+  require per-frame yaw, clip, and sample time.
 - Optional `recommendedTileFootprint` records the artist's non-authoritative
   footprint suggestion for preview and asset/map consistency checks. Unit
   sprites may omit it. Map/gameplay data remains authoritative for placement;
