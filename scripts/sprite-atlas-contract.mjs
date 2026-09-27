@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const schemaPath = fileURLToPath(new URL('../schemas/sprite-atlas-pack-v1.schema.json', import.meta.url));
+const captureSchemaPath = fileURLToPath(new URL('../schemas/sprite-atlas-capture-v1.schema.json', import.meta.url));
 
 function isType(value, expected) {
   if (expected === 'object') return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -13,11 +14,60 @@ function isType(value, expected) {
   return typeof value === expected;
 }
 
-function checkSchema(value, schema, rootSchema, label = '$') {
+function resolveSchemaReference(reference, resourceRoot, schemaResources) {
+  if (reference.startsWith('#')) {
+    const pointer = reference.slice(1);
+    if (!pointer) return { schema: resourceRoot, resourceRoot };
+    if (!pointer.startsWith('/')) return null;
+    const target = pointer.slice(1).split('/').reduce((current, part) => {
+      if (current === undefined || current === null) return undefined;
+      const key = part.replaceAll('~1', '/').replaceAll('~0', '~');
+      return current[key];
+    }, resourceRoot);
+    return target ? { schema: target, resourceRoot } : null;
+  }
+
+  let resolved;
+  try {
+    resolved = new URL(reference, resourceRoot.$id);
+  } catch {
+    return null;
+  }
+  const fragment = resolved.hash;
+  resolved.hash = '';
+  const targetRoot = schemaResources.get(resolved.href);
+  if (!targetRoot) return null;
+  if (!fragment) return { schema: targetRoot, resourceRoot: targetRoot };
+  const target = fragment.slice(1).split('/').filter(Boolean).reduce((current, part) => {
+    if (current === undefined || current === null) return undefined;
+    const key = decodeURIComponent(part).replaceAll('~1', '/').replaceAll('~0', '~');
+    return current[key];
+  }, targetRoot);
+  return target ? { schema: target, resourceRoot: targetRoot } : null;
+}
+
+function checkSchema(value, schema, resourceRoot, label = '$', schemaResources = new Map()) {
   const issues = [];
   if (schema.$ref) {
-    const name = schema.$ref.slice('#/$defs/'.length);
-    return checkSchema(value, rootSchema.$defs[name], rootSchema, label);
+    const target = resolveSchemaReference(schema.$ref, resourceRoot, schemaResources);
+    if (!target) return [`${label} has an unresolved schema reference ${schema.$ref}`];
+    return checkSchema(value, target.schema, target.resourceRoot, label, schemaResources);
+  }
+  for (const child of schema.allOf || []) {
+    issues.push(...checkSchema(value, child, resourceRoot, label, schemaResources));
+  }
+  if (schema.anyOf?.length && !schema.anyOf.some((child) => (
+    checkSchema(value, child, resourceRoot, label, schemaResources).length === 0
+  ))) {
+    issues.push(`${label} must match at least one allowed schema`);
+  }
+  if (schema.if) {
+    const matches = checkSchema(value, schema.if, resourceRoot, label, schemaResources).length === 0;
+    const branch = matches ? schema.then : schema.else;
+    if (branch) issues.push(...checkSchema(value, branch, resourceRoot, label, schemaResources));
+  }
+  if (schema.not && checkSchema(value, schema.not, resourceRoot, label, schemaResources).length === 0) {
+    issues.push(`${label} matches a disallowed schema`);
   }
   if (schema.type && ![].concat(schema.type).some((type) => isType(value, type))) {
     issues.push(label + ' must be ' + [].concat(schema.type).join(' or '));
@@ -35,16 +85,28 @@ function checkSchema(value, schema, rootSchema, label = '$') {
     if (schema.minimum !== undefined && value < schema.minimum) issues.push(label + ' is below its minimum');
     if (schema.maximum !== undefined && value > schema.maximum) issues.push(label + ' exceeds its maximum');
     if (schema.exclusiveMinimum !== undefined && value <= schema.exclusiveMinimum) issues.push(label + ' must be greater than ' + schema.exclusiveMinimum);
+    if (schema.exclusiveMaximum !== undefined && value >= schema.exclusiveMaximum) issues.push(label + ' must be less than ' + schema.exclusiveMaximum);
   }
   if (Array.isArray(value)) {
     if (schema.minItems !== undefined && value.length < schema.minItems) issues.push(label + ' has too few items');
     if (schema.maxItems !== undefined && value.length > schema.maxItems) issues.push(label + ' has too many items');
-    if (schema.items) value.forEach((entry, index) => issues.push(...checkSchema(entry, schema.items, rootSchema, `${label}[${index}]`)));
+    if (schema.uniqueItems && value.some((entry, index) => value
+      .slice(0, index).some((previous) => JSON.stringify(previous) === JSON.stringify(entry)))) {
+      issues.push(label + ' must not contain duplicate items');
+    }
+    if (schema.items) value.forEach((entry, index) => issues.push(...checkSchema(entry, schema.items, resourceRoot, `${label}[${index}]`, schemaResources)));
   }
   if (value && typeof value === 'object' && !Array.isArray(value)) {
     for (const required of schema.required || []) if (!Object.hasOwn(value, required)) issues.push(`${label}.${required} is required`);
     for (const [key, childSchema] of Object.entries(schema.properties || {})) {
-      if (Object.hasOwn(value, key)) issues.push(...checkSchema(value[key], childSchema, rootSchema, `${label}.${key}`));
+      if (Object.hasOwn(value, key)) issues.push(...checkSchema(value[key], childSchema, resourceRoot, `${label}.${key}`, schemaResources));
+    }
+    for (const [key, dependencies] of Object.entries(schema.dependentRequired || {})) {
+      if (Object.hasOwn(value, key)) {
+        for (const dependency of dependencies) {
+          if (!Object.hasOwn(value, dependency)) issues.push(`${label}.${dependency} is required when ${key} is present`);
+        }
+      }
     }
     if (schema.additionalProperties === false) {
       const allowed = new Set(Object.keys(schema.properties || {}));
@@ -133,17 +195,23 @@ export async function validateSpriteAtlas(manifestPath) {
   let manifest;
   let packRoot;
   let schema;
+  let captureSchema;
   try {
-    [manifest, schema] = await Promise.all([
+    [manifest, schema, captureSchema] = await Promise.all([
       readFile(absoluteManifest, 'utf8').then(JSON.parse),
       readFile(schemaPath, 'utf8').then(JSON.parse),
+      readFile(captureSchemaPath, 'utf8').then(JSON.parse),
     ]);
     packRoot = await realpath(path.dirname(absoluteManifest));
   } catch (error) {
     return { manifest: null, packRoot: null, errors: ['cannot read sprite-atlas manifest or schema: ' + error.message] };
   }
 
-  errors.push(...checkSchema(manifest, schema, schema));
+  const schemaResources = new Map([
+    [schema.$id, schema],
+    [captureSchema.$id, captureSchema],
+  ]);
+  errors.push(...checkSchema(manifest, schema, schema, '$', schemaResources));
   if (errors.length) return { manifest, packRoot, errors };
 
   const files = uniqueIndex(manifest.files, 'file', errors);

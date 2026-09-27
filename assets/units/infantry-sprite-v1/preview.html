@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Infantry sprite exploration v1</title>
+  <style>
+    :root { color-scheme: dark; font: 15px/1.45 system-ui, sans-serif; background: #17201d; color: #e8e3d2; }
+    body { max-width: 1280px; margin: 0 auto; padding: 24px; }
+    h1, h2 { line-height: 1.2; }
+    .note { color: #c9c2ad; max-width: 80ch; }
+    .checker { background-color: #262f2b; background-image: linear-gradient(45deg,#303b35 25%,transparent 25%),linear-gradient(-45deg,#303b35 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#303b35 75%),linear-gradient(-45deg,transparent 75%,#303b35 75%); background-size: 18px 18px; background-position: 0 0,0 9px,9px -9px,-9px 0; }
+    #atlas { display: block; width: 100%; height: auto; border: 1px solid #617066; }
+    .layout { display: grid; grid-template-columns: minmax(210px, 300px) 1fr; gap: 28px; align-items: start; margin-top: 26px; }
+    .selected { width: 100%; max-width: 300px; height: auto; border: 1px solid #617066; }
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+    button { color: #f1ead7; background: #324039; border: 1px solid #68786b; border-radius: 5px; padding: 8px 12px; cursor: pointer; }
+    button:hover, button:focus-visible { outline: 2px solid #a8ca83; outline-offset: 2px; }
+    button[aria-pressed="true"] { background: #53664c; border-color: #bad59b; }
+    #frames { display: grid; gap: 12px; }
+    .row { display: grid; grid-template-columns: 148px repeat(8, minmax(58px, 1fr)); gap: 5px; align-items: center; }
+    .row-title { color: #ded5bf; font-size: 13px; }
+    .frame { padding: 4px; min-width: 0; }
+    .frame canvas { display: block; width: 100%; height: 108px; }
+    .direction { display: block; font-size: 10px; color: #c6c3b7; }
+    .meta { font: 12px/1.5 ui-monospace, monospace; color: #bdb9ab; overflow-wrap: anywhere; }
+    @media (max-width: 800px) { body { padding: 14px; } .layout { grid-template-columns: 1fr; } .row { grid-template-columns: 92px repeat(8, minmax(40px, 1fr)); gap: 3px; } .row-title { font-size: 11px; } .frame canvas { height: 78px; } }
+  </style>
+</head>
+<body>
+  <h1>Infantry sprite exploration v1</h1>
+  <p class="note">Source-only 8-facing cutout study. Choose a frame below, then play the two-pose walk loop or the short attack. The atlas has no approved pivots or runtime mapping.</p>
+  <h2>Source atlas</h2>
+  <canvas id="atlas" class="checker" aria-label="Transparent Infantry atlas, eight columns by six rows"></canvas>
+  <div class="layout">
+    <section>
+      <h2 id="selected-title">Selected frame</h2>
+      <canvas id="selected" class="selected checker" width="300" height="360"></canvas>
+      <div class="controls">
+        <button id="walk">Play walk</button>
+        <button id="attack">Play attack</button>
+        <button id="stop">Stop</button>
+      </div>
+      <div class="meta" id="frame-meta"></div>
+    </section>
+    <section>
+      <h2>Frames by pose and facing</h2>
+      <div id="frames" aria-label="Sprite frames"></div>
+    </section>
+  </div>
+  <img id="source" src="infantry-atlas-source.png" alt="" hidden>
+  <script>
+    const cols = 8;
+    const rowNames = ['Idle ready', 'Walk step A', 'Walk step B', 'Attack wind-up', 'Attack strike', 'Defeated corpse'];
+    const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    const image = document.querySelector('#source');
+    const atlas = document.querySelector('#atlas');
+    const selected = document.querySelector('#selected');
+    const title = document.querySelector('#selected-title');
+    const meta = document.querySelector('#frame-meta');
+    let timer = null;
+    let selectedRow = 0;
+    let selectedCol = 0;
+    let sequence = [];
+    let sequenceIndex = 0;
+
+    function rect(row, col) {
+      const x0 = Math.floor(col * image.naturalWidth / cols);
+      const x1 = Math.floor((col + 1) * image.naturalWidth / cols);
+      const y0 = Math.floor(row * image.naturalHeight / rowNames.length);
+      const y1 = Math.floor((row + 1) * image.naturalHeight / rowNames.length);
+      return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
+    }
+
+    function drawCell(canvas, row, col) {
+      const ctx = canvas.getContext('2d');
+      const r = rect(row, col);
+      const maxW = canvas.width - 14;
+      const maxH = canvas.height - 14;
+      const scale = Math.min(maxW / r.width, maxH / r.height);
+      const w = r.width * scale;
+      const h = r.height * scale;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(image, r.x, r.y, r.width, r.height,
+        (canvas.width - w) / 2, canvas.height - h - 5, w, h);
+    }
+
+    function selectFrame(row, col) {
+      selectedRow = row;
+      selectedCol = col;
+      drawCell(selected, row, col);
+      const r = rect(row, col);
+      title.textContent = `${rowNames[row]} · ${dirs[col]}`;
+      meta.textContent = `source rect: x=${r.x}, y=${r.y}, w=${r.width}, h=${r.height}`;
+      document.querySelectorAll('.frame').forEach((button) => {
+        const active = Number(button.dataset.row) === row && Number(button.dataset.col) === col;
+        button.setAttribute('aria-pressed', String(active));
+      });
+    }
+
+    function stop() {
+      if (timer !== null) clearInterval(timer);
+      timer = null;
+      sequence = [];
+    }
+
+    function play(rows, loop) {
+      stop();
+      sequence = rows.map((row) => ({ row, col: selectedCol }));
+      sequenceIndex = 0;
+      selectFrame(sequence[0].row, sequence[0].col);
+      timer = setInterval(() => {
+        sequenceIndex += 1;
+        if (sequenceIndex >= sequence.length) {
+          if (!loop) { stop(); return; }
+          sequenceIndex = 0;
+        }
+        const frame = sequence[sequenceIndex];
+        selectFrame(frame.row, frame.col);
+      }, 1000 / 6);
+    }
+
+    image.addEventListener('load', () => {
+      atlas.width = image.naturalWidth;
+      atlas.height = image.naturalHeight;
+      const ctx = atlas.getContext('2d');
+      ctx.drawImage(image, 0, 0);
+      const colEdges = Array.from({ length: cols + 1 }, (_, i) => Math.floor(i * atlas.width / cols));
+      const rowEdges = Array.from({ length: rowNames.length + 1 }, (_, i) => Math.floor(i * atlas.height / rowNames.length));
+      ctx.strokeStyle = 'rgba(219,232,207,.8)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      colEdges.forEach((x) => { ctx.moveTo(x + .5, 0); ctx.lineTo(x + .5, atlas.height); });
+      rowEdges.forEach((y) => { ctx.moveTo(0, y + .5); ctx.lineTo(atlas.width, y + .5); });
+      ctx.stroke();
+
+      const frameGrid = document.querySelector('#frames');
+      rowNames.forEach((name, row) => {
+        const line = document.createElement('div');
+        line.className = 'row';
+        const label = document.createElement('div');
+        label.className = 'row-title';
+        label.textContent = `${row} · ${name}`;
+        line.append(label);
+        dirs.forEach((dir, col) => {
+          const button = document.createElement('button');
+          button.className = 'frame checker';
+          button.type = 'button';
+          button.dataset.row = row;
+          button.dataset.col = col;
+          button.setAttribute('aria-label', `${name}, facing ${dir}`);
+          button.setAttribute('aria-pressed', 'false');
+          const canvas = document.createElement('canvas');
+          canvas.width = 96;
+          canvas.height = 108;
+          drawCell(canvas, row, col);
+          const caption = document.createElement('span');
+          caption.className = 'direction';
+          caption.textContent = dir;
+          button.append(canvas, caption);
+          button.addEventListener('click', () => { stop(); selectFrame(row, col); });
+          line.append(button);
+        });
+        frameGrid.append(line);
+      });
+      selectFrame(0, 0);
+    }, { once: true });
+    image.addEventListener('error', () => { meta.textContent = 'Could not load infantry-atlas-source.png'; });
+    document.querySelector('#walk').addEventListener('click', () => play([1, 2], true));
+    document.querySelector('#attack').addEventListener('click', () => play([3, 4], false));
+    document.querySelector('#stop').addEventListener('click', () => { stop(); selectFrame(selectedRow, selectedCol); });
+  </script>
+</body>
+</html>

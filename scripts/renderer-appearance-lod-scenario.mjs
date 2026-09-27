@@ -29,6 +29,11 @@ const ZOOMS = Object.freeze([
   { label: '091', value: 0.91 },
   { label: '048', value: 0.48 },
 ]);
+const PREVIEW_MODE = process.argv[2] || 'all-v1';
+const PREVIEW_QUERY = Object.freeze({
+  'all-v1': 'unitSpritePreview=1',
+  'worker-v2': 'workerSpritePreview=1',
+});
 
 const children = new Set();
 let tempRoot = null;
@@ -56,7 +61,10 @@ function assertGameDevContext() {
   assert.ok(GAME_DEV_RUN_DIR && GAME_DEV_RUN_ID && GAME_DEV_ADAPTER_ID && GAME_DEV_SCENARIO_ID,
     'run this opt-in capture through game-dev scenario run');
   assert.equal(GAME_DEV_ADAPTER_ID, 'thousand-unit-skirmish', 'unexpected adapter context');
-  assert.equal(GAME_DEV_SCENARIO_ID, 'renderer-appearance-lod', 'unexpected scenario context');
+  const expectedScenario = PREVIEW_MODE === 'worker-v2'
+    ? 'renderer-worker-sprite-v2'
+    : 'renderer-appearance-lod';
+  assert.equal(GAME_DEV_SCENARIO_ID, expectedScenario, 'scenario ID should match its sprite preview mode');
 }
 
 function startChild(label, command, args, options = {}) {
@@ -323,6 +331,9 @@ async function createBrowser(teamLabel, profileDirectory, executable, gameUrl) {
   await cdp.call('Runtime.enable');
   await cdp.call('Page.enable');
   await cdp.call('Network.enable');
+  await cdp.call('Emulation.setDeviceMetricsOverride', {
+    width: VIEWPORT_WIDTH, height: VIEWPORT_HEIGHT, deviceScaleFactor: 1, mobile: false,
+  });
   const browser = {
     teamLabel, team: null, currentZoom: INITIAL_ZOOM, chrome, browserCdp, cdp,
     latestState: null, lastFrameError: null,
@@ -468,7 +479,9 @@ async function setZoom(browser, targetZoom) {
 async function writeFrame(browser, runDirectory, frameIndex, mapLabel, zoom) {
   const viewerLabel = TEAMS[browser.team];
   const frameLabel = `${mapLabel}-${viewerLabel}-zoom-${zoom.label}`;
-  const relativePath = `frames/${String(frameIndex + 1).padStart(2, '0')}-${frameLabel}.png`;
+  const hasDetailCrop = mapLabel.startsWith('worker-v2-');
+  const fullFrameIndex = hasDetailCrop ? frameIndex * 2 : frameIndex;
+  const relativePath = `frames/${String(fullFrameIndex + 1).padStart(2, '0')}-${frameLabel}.png`;
   const destination = path.join(runDirectory, relativePath);
   await mkdir(path.dirname(destination), { recursive: true });
   const composition = await browser.cdp.evaluate(`(() => {
@@ -502,17 +515,38 @@ async function writeFrame(browser, runDirectory, frameIndex, mapLabel, zoom) {
     format: 'png', fromSurface: true, captureBeyondViewport: false,
   });
   await writeFile(destination, Buffer.from(screenshot.data, 'base64'));
-  return {
-    index: frameIndex,
+  const fullFrame = {
+    index: fullFrameIndex,
     label: frameLabel,
     attachments: [{
       kind: 'color', path: relativePath, encoding: 'png',
       description: `${mapLabel} full 1280x720 game viewport from the ${viewerLabel} fog-filtered client at zoom ${zoom.value}; HUD labels and minimap are included.`,
     }],
   };
+  if (hasDetailCrop) {
+    const detailFrameIndex = fullFrameIndex + 1;
+    const detailRelativePath = `frames/${String(detailFrameIndex + 1).padStart(2, '0')}-${frameLabel}-unit-closeup-4x.png`;
+    const detail = await browser.cdp.call('Page.captureScreenshot', {
+      format: 'png', fromSurface: true, captureBeyondViewport: false,
+      clip: { x: 540, y: 275, width: 160, height: 140, scale: 4 },
+    });
+    await writeFile(path.join(runDirectory, detailRelativePath), Buffer.from(detail.data, 'base64'));
+    return [fullFrame, {
+      index: detailFrameIndex,
+      label: `${frameLabel}-unit-closeup-4x`,
+      attachments: [{
+        kind: 'color', path: detailRelativePath, encoding: 'png',
+        description: `${mapLabel} unit-cluster gameplay close-up from the same ${viewerLabel} client at zoom ${zoom.value}; direct 4x CDP crop of x=540, y=275, 160x140 CSS pixels, with no post-capture image edits. This magnified view helps inspect the sprite and does not change its standard-scale readability.`,
+      }],
+    }];
+  }
+  return fullFrame;
 }
 
-async function writeCaptureManifest(frames, renderer, runDirectory) {
+async function writeCaptureManifest(frames, renderer, runDirectory, previewMode) {
+  const previewDescription = previewMode === 'worker-v2'
+    ? 'Worker v2 sprites only via ?workerSpritePreview=1; other unit roles use the normal renderer.'
+    : 'Worker, Infantry, and Archer v1 sprites via ?unitSpritePreview=1.';
   const manifest = {
     schema: 'game_dev.capture.v1',
     runId: GAME_DEV_RUN_ID,
@@ -530,7 +564,9 @@ async function writeCaptureManifest(frames, renderer, runDirectory) {
       pixelVisualInspectionPerformed: false,
       notes: [
         'Appearance-only capture; no performance measurements were collected.',
+        `Sprite preview mode: ${previewDescription}`,
         'Frames were captured from Azure and Ember player clients with server-provided fog visibility masks.',
+        'Each Worker v2 full viewport frame has a separate 4x unit-cluster CDP crop frame for close sprite inspection; those magnified crops do not demonstrate standard-scale readability.',
         'Human review is required to assess role silhouette and team-marker readability.',
       ],
     },
@@ -539,7 +575,7 @@ async function writeCaptureManifest(frames, renderer, runDirectory) {
   return manifest;
 }
 
-async function captureMapMatrix({ map, browsers, frames, runDirectory, preflight }) {
+async function captureMapMatrix({ map, browsers, frames, runDirectory, preflight, previewMode }) {
   await selectMap(browsers[0], map.id);
   const states = await Promise.all(browsers.map((browser) => waitForSnapshot(browser, (state) => (
     state.mapId === map.id && state.fogOfWar === true && state.units?.length === 12
@@ -560,7 +596,12 @@ async function captureMapMatrix({ map, browsers, frames, runDirectory, preflight
         snapshot.mapId === map.id && snapshot.fogOfWar === true && snapshot.units?.length === 12
       ), `${browser.teamLabel} capture-ready roster on ${map.id}`);
       preflight.push(validateViewerSnapshot(state, browser.team, map.id));
-      frames.push(await writeFrame(browser, runDirectory, frames.length, map.terrainBase, zoom));
+      const mapLabel = previewMode === 'worker-v2'
+        ? `worker-v2-${map.terrainBase}`
+        : map.terrainBase;
+      const sceneIndex = frames.length / (previewMode === 'worker-v2' ? 2 : 1);
+      const capturedFrames = await writeFrame(browser, runDirectory, sceneIndex, mapLabel, zoom);
+      frames.push(...(Array.isArray(capturedFrames) ? capturedFrames : [capturedFrames]));
     }
   }
 }
@@ -598,6 +639,7 @@ function runStaticPreflight() {
 
 async function run() {
   assertGameDevContext();
+  assert.ok(PREVIEW_QUERY[PREVIEW_MODE], `unsupported renderer preview mode: ${PREVIEW_MODE}`);
   const runDirectory = path.resolve(GAME_DEV_RUN_DIR);
   tempRoot = await mkdtemp(path.join(os.tmpdir(), 'rts-renderer-appearance-lod-'));
   const customMapDirectory = path.join(tempRoot, 'custom-maps');
@@ -609,7 +651,7 @@ async function run() {
   try {
     const maps = await writeReviewMaps(customMapDirectory);
     const serverPort = await reservePort();
-    const gameUrl = `http://127.0.0.1:${serverPort}/`;
+    const gameUrl = `http://127.0.0.1:${serverPort}/?${PREVIEW_QUERY[PREVIEW_MODE]}`;
     server = startChild('server', process.execPath, [SERVER_ENTRY], {
       env: {
         ...process.env,
@@ -637,13 +679,16 @@ async function run() {
     assert.ok(renderer.webglVersion === 1 || renderer.webglVersion === 2,
       'appearance renderer should expose WebGL');
 
-    await captureMapMatrix({ map: maps[0], browsers, frames, runDirectory, preflight });
-    await captureMapMatrix({ map: maps[1], browsers, frames, runDirectory, preflight });
-    assert.equal(frames.length, 8, 'appearance capture should contain all eight review frames');
-    const manifest = await writeCaptureManifest(frames, renderer, runDirectory);
+    await captureMapMatrix({ map: maps[0], browsers, frames, runDirectory, preflight, previewMode: PREVIEW_MODE });
+    await captureMapMatrix({ map: maps[1], browsers, frames, runDirectory, preflight, previewMode: PREVIEW_MODE });
+    const expectedFrameCount = PREVIEW_MODE === 'worker-v2' ? 16 : 8;
+    assert.equal(frames.length, expectedFrameCount,
+      `appearance capture should contain ${expectedFrameCount} review frames for ${PREVIEW_MODE}`);
+    const manifest = await writeCaptureManifest(frames, renderer, runDirectory, PREVIEW_MODE);
     assert.equal(manifest.measurements.length, 0, 'appearance capture must not report performance metrics');
     console.log(JSON.stringify({
       scenario: GAME_DEV_SCENARIO_ID,
+      previewMode: PREVIEW_MODE,
       maps: maps.map((map) => ({ id: map.id, terrainBase: map.terrainBase, fogOfWar: map.fogOfWar })),
       viewerRosterChecks: preflight,
       frames: frames.map((frame) => frame.label),

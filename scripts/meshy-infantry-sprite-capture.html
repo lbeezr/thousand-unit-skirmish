@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Meshy unit sprite bake</title>
+  <style>
+    :root { color-scheme: dark; font: 15px/1.5 system-ui, sans-serif; background: #12191b; color: #e8e4d8; }
+    body { margin: 0; padding: 28px; }
+    main { max-width: 1100px; margin: auto; }
+    h1 { margin: 0 0 4px; font-size: 24px; }
+    p { color: #aab7ae; max-width: 760px; }
+    button, select { border: 1px solid #61776b; border-radius: 6px; padding: 9px 14px; background: #263a32; color: #f1f0e8; font: inherit; }
+    button:disabled { opacity: .5; }
+    #status { margin: 18px 0 10px; min-height: 25px; color: #c9ddbf; }
+    progress { display: block; width: min(760px, 100%); height: 12px; accent-color: #9bbb76; }
+    #output { margin-top: 24px; display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 20px; align-items: start; }
+    #viewer { width: 160px; height: 160px; image-rendering: pixelated; background: repeating-conic-gradient(#333 0 25%, #252525 0 50%) 50% / 16px 16px; border: 1px solid #5f6e63; }
+    #atlas { display: block; width: 100%; max-height: 70vh; object-fit: contain; object-position: top left; image-rendering: pixelated; background: repeating-conic-gradient(#333 0 25%, #252525 0 50%) 50% / 16px 16px; border: 1px solid #43564b; }
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .small { font-size: 13px; color: #96a69d; }
+    a { color: #a7d1ee; }
+    .error { color: #ff9c8f !important; }
+    @media (max-width: 720px) { body { padding: 16px; } #output { grid-template-columns: 1fr; } }
+  </style>
+  <script type="importmap">
+    {"imports":{"three":"/__three__/build/three.module.js","three/addons/":"/__three__/examples/jsm/"}}
+  </script>
+</head>
+<body>
+  <main>
+    <h1>Meshy Infantry pilot → Worker sprite</h1>
+    <p>Uses the existing Meshy model and paid clips only. It captures a fixed isometric camera, eight unit headings, and idle, walk, attack, and defeat states, then saves local Infantry and Worker packs. The Worker pack reuses the swing as gather/build motion for this role-fit check.</p>
+    <p class="small">This is an exploratory body-only bake. The generated model omitted the spear and shield. Meshy API access indicates paid-plan output ownership under current Meshy terms; the account receipt was not retained. See the pipeline note for the rights basis. Frame pivots still need game review.</p>
+    <div class="controls">
+      <button id="bake">Bake atlas and install local packs</button>
+      <label>State <select id="state" disabled></select></label>
+      <label>Facing <select id="direction" disabled></select></label>
+      <button id="play" disabled>Play</button>
+    </div>
+    <div id="status" role="status" aria-live="polite">Ready. This local bake uses no additional Meshy credits.</div>
+    <progress id="progress" max="200" value="0"></progress>
+    <div id="output" hidden>
+      <canvas id="viewer" width="128" height="128" aria-label="Selected sprite animation preview"></canvas>
+      <div>
+        <div class="small" id="summary"></div>
+        <img id="atlas" alt="Generated Infantry sprite atlas">
+        <p class="small"><a href="http://127.0.0.1:4174/" target="_blank" rel="noreferrer">Open the game with the Meshy Worker sprite</a> (start the local game server from this worktree on port 4174 first).</p>
+      </div>
+    </div>
+    <canvas id="render" width="128" height="128" hidden></canvas>
+  </main>
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+    const CELL = 128;
+    const COLUMNS = 16;
+    const DIRECTIONS = [
+      ['north', 0], ['north-east', 45], ['east', 90], ['south-east', 135],
+      ['south', 180], ['south-west', -135], ['west', -90], ['north-west', -45],
+    ];
+    const FRAME_COUNTS = { idle: 1, walk: 8, attack: 16, defeat: 8 };
+    const STATE_DURATIONS_MS = { idle: 1000, walk: 1067, attack: 900, defeat: 430 };
+    const FRAME_COUNT = DIRECTIONS.length * Object.values(FRAME_COUNTS).reduce((sum, count) => sum + count, 0);
+    const ATLAS_WIDTH = COLUMNS * CELL;
+    const ROWS = Math.ceil(FRAME_COUNT / COLUMNS);
+    const ATLAS_HEIGHT = ROWS * CELL;
+    const INITIAL_PROBE_WORLD_UNITS = 2.6;
+    const TARGET_MODEL_HEIGHT = 1.05;
+    const GAME_CAMERA_OFFSET = new THREE.Vector3(0.78, 1.12, 0.78).normalize();
+    const ELEVATION_DEGREES = Math.atan2(1.12, Math.hypot(0.78, 0.78)) * 180 / Math.PI;
+    const contexts = {};
+    const records = [];
+    const status = document.querySelector('#status');
+    const progress = document.querySelector('#progress');
+    const bakeButton = document.querySelector('#bake');
+    const atlasCanvas = document.createElement('canvas');
+    atlasCanvas.width = ATLAS_WIDTH;
+    atlasCanvas.height = ATLAS_HEIGHT;
+    const atlasContext = atlasCanvas.getContext('2d', { willReadFrequently: true });
+    const rendererCanvas = document.querySelector('#render');
+    const viewer = document.querySelector('#viewer');
+    const viewerContext = viewer.getContext('2d');
+    const renderer = new THREE.WebGLRenderer({ canvas: rendererCanvas, alpha: true, antialias: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(1);
+    renderer.setSize(CELL, CELL, false);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.setClearColor(0x000000, 0);
+    const scene = new THREE.Scene();
+    const target = new THREE.Vector3(0, 0.51, 0);
+    const camera = new THREE.OrthographicCamera(
+      -INITIAL_PROBE_WORLD_UNITS / 2, INITIAL_PROBE_WORLD_UNITS / 2,
+      INITIAL_PROBE_WORLD_UNITS / 2, -INITIAL_PROBE_WORLD_UNITS / 2, 0.01, 30,
+    );
+    camera.position.copy(target).addScaledVector(GAME_CAMERA_OFFSET, 8);
+    camera.lookAt(target);
+    scene.add(new THREE.HemisphereLight(0xe6edf4, 0x3e4238, 1.55));
+    const keyLight = new THREE.DirectionalLight(0xfff0d6, 2.1);
+    keyLight.position.set(-4, 8, 5);
+    scene.add(keyLight);
+    const fillLight = new THREE.DirectionalLight(0x9fc7ef, 0.55);
+    fillLight.position.set(4, 3, -5);
+    scene.add(fillLight);
+
+    const loader = new GLTFLoader();
+    let playerTimer = 0;
+
+    function setStatus(message, isError = false) {
+      status.textContent = message;
+      status.classList.toggle('error', isError);
+    }
+
+    function setCameraFrame(frameWorldUnits) {
+      camera.left = -frameWorldUnits / 2;
+      camera.right = frameWorldUnits / 2;
+      camera.top = frameWorldUnits / 2;
+      camera.bottom = -frameWorldUnits / 2;
+      camera.updateProjectionMatrix();
+    }
+
+    async function sourceManifest() {
+      const response = await fetch('/__pilot__/manifest.json');
+      if (!response.ok) throw new Error('Could not read the local Meshy pilot files');
+      return response.json();
+    }
+
+    async function loadContext(id, file, displayName, normalizedOrigin, scale) {
+      const gltf = await loader.loadAsync(`/__pilot__/${file}`);
+      const actor = gltf.scene;
+      actor.position.set(-normalizedOrigin.x * scale, -normalizedOrigin.y * scale, -normalizedOrigin.z * scale);
+      actor.scale.setScalar(scale);
+      const pivot = new THREE.Group();
+      pivot.add(actor);
+      pivot.visible = false;
+      scene.add(pivot);
+      const clip = gltf.animations[0];
+      if (!clip) throw new Error(`${displayName} has no animation clip`);
+      const mixer = new THREE.AnimationMixer(actor);
+      const action = mixer.clipAction(clip);
+      action.play();
+      const hips = actor.getObjectByName('Hips');
+      contexts[id] = {
+        id, file, name: clip.name || displayName, duration: clip.duration, pivot, mixer,
+        hips, rootMotionRest: hips ? hips.position.clone() : null,
+      };
+    }
+
+    function frameDuration(state, index, count) {
+      const total = STATE_DURATIONS_MS[state];
+      const base = Math.floor(total / count);
+      const remainder = total - base * count;
+      return base + (index < remainder ? 1 : 0);
+    }
+
+    function alphaBounds(imageData, x0, y0) {
+      let minX = CELL;
+      let minY = CELL;
+      let maxX = -1;
+      let maxY = -1;
+      for (let y = 0; y < CELL; y++) {
+        for (let x = 0; x < CELL; x++) {
+          const alpha = imageData.data[((y0 + y) * ATLAS_WIDTH + x0 + x) * 4 + 3];
+          if (alpha < 8) continue;
+          minX = Math.min(minX, x);
+          minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x);
+          maxY = Math.max(maxY, y);
+        }
+      }
+      if (maxX < minX || maxY < minY) return null;
+      return { x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1 };
+    }
+
+    async function renderAllFrames(contextsByState) {
+      const frameRecords = [];
+      progress.value = 0;
+      atlasContext.clearRect(0, 0, ATLAS_WIDTH, ATLAS_HEIGHT);
+      let outputIndex = 0;
+      for (const [directionId, yawDegrees] of DIRECTIONS) {
+        for (const stateId of ['idle', 'walk', 'attack', 'defeat']) {
+          const context = contextsByState[stateId];
+          context.pivot.visible = true;
+          context.pivot.rotation.y = THREE.MathUtils.degToRad(yawDegrees);
+          const count = FRAME_COUNTS[stateId];
+          for (let frame = 0; frame < count; frame++) {
+            const durationMs = frameDuration(stateId, frame, count);
+            const sampleFraction = stateId === 'walk' ? frame / count : frame / (count - 1);
+            const clipTimeSeconds = stateId === 'idle' ? 0 : Math.min(context.duration - 0.001, context.duration * sampleFraction);
+            context.mixer.setTime(clipTimeSeconds);
+            if (context.hips && context.rootMotionRest) context.hips.position.copy(context.rootMotionRest);
+            scene.updateMatrixWorld(true);
+            renderer.setRenderTarget(null);
+            renderer.clear(true, true, true);
+            renderer.render(scene, camera);
+            const cellX = (outputIndex % COLUMNS) * CELL;
+            const cellY = Math.floor(outputIndex / COLUMNS) * CELL;
+            atlasContext.drawImage(rendererCanvas, cellX, cellY, CELL, CELL);
+            const frameId = `${stateId}-${directionId}-${frame}`;
+            frameRecords.push({
+              frameId, stateId, directionId,
+              durationMs, sourceAssetId: `infantry-${stateId === 'attack' ? 'attack' : stateId === 'defeat' ? 'defeat' : 'walking'}`,
+              modelYawDegrees: yawDegrees, animationClipId: context.name, clipTimeSeconds,
+            });
+            outputIndex++;
+            progress.max = FRAME_COUNT;
+            progress.value = outputIndex;
+            setStatus(`Rendering ${stateId} · ${directionId} · frame ${frame + 1}/${count} (${outputIndex}/${FRAME_COUNT})`);
+            await new Promise((resolve) => requestAnimationFrame(resolve));
+          }
+          context.pivot.visible = false;
+        }
+      }
+      const imageData = atlasContext.getImageData(0, 0, ATLAS_WIDTH, ATLAS_HEIGHT);
+      for (let index = 0; index < frameRecords.length; index++) {
+        const cellX = (index % COLUMNS) * CELL;
+        const cellY = Math.floor(index / COLUMNS) * CELL;
+        frameRecords[index].alphaBoundsPx = alphaBounds(imageData, cellX, cellY);
+      }
+      return { frameRecords, imageData };
+    }
+
+    function hueSaturation(red, green, blue) {
+      const r = red / 255;
+      const g = green / 255;
+      const b = blue / 255;
+      const maximum = Math.max(r, g, b);
+      const minimum = Math.min(r, g, b);
+      const delta = maximum - minimum;
+      let hue = 0;
+      if (delta > 0) {
+        if (maximum === r) hue = 60 * (((g - b) / delta) % 6);
+        else if (maximum === g) hue = 60 * ((b - r) / delta + 2);
+        else hue = 60 * ((r - g) / delta + 4);
+      }
+      if (hue < 0) hue += 360;
+      return { hue, saturation: maximum > 0 ? delta / maximum : 0 };
+    }
+
+    function encodeBase64(bytes) {
+      let binary = '';
+      const chunkSize = 0x8000;
+      for (let start = 0; start < bytes.length; start += chunkSize) {
+        binary += String.fromCharCode(...bytes.subarray(start, start + chunkSize));
+      }
+      return btoa(binary);
+    }
+
+    async function bake() {
+      bakeButton.disabled = true;
+      progress.max = FRAME_COUNT;
+      progress.value = 0;
+      records.length = 0;
+      atlasContext.clearRect(0, 0, ATLAS_WIDTH, ATLAS_HEIGHT);
+      setStatus('Loading the existing Meshy model and animation clips…');
+      try {
+        const base = await loader.loadAsync('/__pilot__/infantry-model.glb');
+        base.scene.updateMatrixWorld(true);
+        const bounds = new THREE.Box3().setFromObject(base.scene);
+        const size = bounds.getSize(new THREE.Vector3());
+        if (size.y <= 0) throw new Error('The Meshy model has no measurable height');
+        const center = bounds.getCenter(new THREE.Vector3());
+        const origin = new THREE.Vector3(center.x, bounds.min.y, center.z);
+        const scale = TARGET_MODEL_HEIGHT / size.y;
+        base.scene.traverse((node) => {
+          if (node.geometry) node.geometry.dispose();
+          const materials = Array.isArray(node.material) ? node.material : node.material ? [node.material] : [];
+          for (const material of materials) {
+            for (const value of Object.values(material)) if (value?.isTexture) value.dispose();
+            material.dispose();
+          }
+        });
+        await Promise.all([
+          loadContext('walk', 'infantry-walking.glb', 'Walk', origin, scale),
+          loadContext('attack', 'infantry-attack.glb', 'Attack', origin, scale),
+          loadContext('defeat', 'infantry-defeat.glb', 'Defeat', origin, scale),
+        ]);
+        const contextsByState = { idle: contexts.walk, walk: contexts.walk, attack: contexts.attack, defeat: contexts.defeat };
+        setStatus('Finding a shared frame size for the full set of poses…');
+        let probeWorldUnits = INITIAL_PROBE_WORLD_UNITS;
+        let probeResult = null;
+        let union = null;
+        for (let attempt = 0; attempt < 5; attempt++) {
+          setCameraFrame(probeWorldUnits);
+          probeResult = await renderAllFrames(contextsByState);
+          const validBounds = probeResult.frameRecords.map((record) => record.alphaBoundsPx);
+          const touchesEdge = validBounds.some((alpha) => !alpha || alpha.x <= 2 || alpha.y <= 2
+            || alpha.x + alpha.width >= CELL - 2 || alpha.y + alpha.height >= CELL - 2);
+          if (touchesEdge) {
+            probeWorldUnits *= 1.7;
+            continue;
+          }
+          union = validBounds.reduce((boundsSoFar, alpha) => ({
+            minX: Math.min(boundsSoFar.minX, alpha.x), minY: Math.min(boundsSoFar.minY, alpha.y),
+            maxX: Math.max(boundsSoFar.maxX, alpha.x + alpha.width),
+            maxY: Math.max(boundsSoFar.maxY, alpha.y + alpha.height),
+          }), { minX: CELL, minY: CELL, maxX: 0, maxY: 0 });
+          break;
+        }
+        if (!union || !probeResult) throw new Error('Could not capture a complete shared animation envelope');
+        const envelopeWidthPx = union.maxX - union.minX;
+        const envelopeHeightPx = union.maxY - union.minY;
+        const finalFrameWorldUnits = probeWorldUnits * Math.max(envelopeWidthPx, envelopeHeightPx) / (CELL * 0.84);
+        const probePixelsPerWorldUnit = CELL / probeWorldUnits;
+        const cameraRight = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+        const cameraUp = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+        const envelopeCenterX = (union.minX + union.maxX) / 2;
+        const envelopeCenterY = (union.minY + union.maxY) / 2;
+        const cameraShift = cameraRight.multiplyScalar((envelopeCenterX - CELL / 2) / probePixelsPerWorldUnit)
+          .add(cameraUp.multiplyScalar((CELL / 2 - envelopeCenterY) / probePixelsPerWorldUnit));
+        target.add(cameraShift);
+        camera.position.add(cameraShift);
+        camera.lookAt(target);
+        camera.updateMatrixWorld(true);
+        setCameraFrame(finalFrameWorldUnits);
+        setStatus(`Fitted full motion envelope to ${finalFrameWorldUnits.toFixed(2)} world units; rendering final atlas…`);
+        const finalResult = await renderAllFrames(contextsByState);
+        if (finalResult.frameRecords.some((record) => !record.alphaBoundsPx)) {
+          throw new Error('The fitted final pass still has an empty pose frame');
+        }
+        records.splice(0, records.length, ...finalResult.frameRecords);
+        setStatus('Measuring frame bounds and the blue team accent…');
+        const imageData = finalResult.imageData;
+        const teamMask = new Uint8Array(ATLAS_WIDTH * ATLAS_HEIGHT);
+        let classifiedPixels = 0;
+        for (let index = 0; index < records.length; index++) {
+          const cellX = (index % COLUMNS) * CELL;
+          const cellY = Math.floor(index / COLUMNS) * CELL;
+          if (!records[index].alphaBoundsPx) throw new Error(`${records[index].frameId} is fully transparent after auto-fit`);
+          for (let y = 0; y < CELL; y++) {
+            for (let x = 0; x < CELL; x++) {
+              const pixelOffset = ((cellY + y) * ATLAS_WIDTH + cellX + x) * 4;
+              if (imageData.data[pixelOffset + 3] < 24) continue;
+              const { hue, saturation } = hueSaturation(
+                imageData.data[pixelOffset], imageData.data[pixelOffset + 1], imageData.data[pixelOffset + 2],
+              );
+              if (hue >= 180 && hue <= 255 && saturation >= 0.22) {
+                teamMask[(cellY + y) * ATLAS_WIDTH + cellX + x] = 255;
+                classifiedPixels++;
+              }
+            }
+          }
+        }
+        if (classifiedPixels < 24) throw new Error(`Only ${classifiedPixels} blue accent pixels were found; adjust the mask threshold before wiring this preview`);
+        const animationClipIds = Object.fromEntries(Object.entries(contexts).map(([id, context]) => [
+          `infantry-${id}`, context.name,
+        ]));
+        const originPixel = new THREE.Vector3(0, 0, 0).project(camera);
+        const payload = {
+          width: ATLAS_WIDTH, height: ATLAS_HEIGHT, cellSize: CELL, columns: COLUMNS, rows: ROWS,
+          directions: DIRECTIONS.map(([direction]) => direction), captureRecords: records,
+          classifiedPixels, maskPixelsBase64: encodeBase64(teamMask), atlasPngBase64: atlasCanvas.toDataURL('image/png').split(',')[1],
+          anchorPixel: {
+            x: (originPixel.x + 1) * CELL / 2,
+            y: (1 - originPixel.y) * CELL / 2,
+          },
+          unitHeightWorld: 1.05, frameWorldUnits: finalFrameWorldUnits,
+          elevationDegrees: ELEVATION_DEGREES, animationClipIds,
+        };
+        const saveResponse = await fetch('/__save__', {
+          method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload),
+        });
+        const result = await saveResponse.json();
+        if (!saveResponse.ok || !result.ok) throw new Error(result.error || 'Could not save the local atlas');
+        document.querySelector('#output').hidden = false;
+        const previewImage = document.querySelector('#atlas');
+        previewImage.src = atlasCanvas.toDataURL('image/png');
+        const outputSummary = result.outputs.map((output) => `${output.role}: ${output.clips} clips in ${output.path}/`).join(' · ');
+        document.querySelector('#summary').textContent = `${result.frames} frames · ${result.clips} · ${result.classifiedTeamPixels.toLocaleString()} masked sash pixels · ${outputSummary} · atlas SHA-256 ${result.atlasSha256}`;
+        setStatus(`Saved the ${result.frames}-frame pilot atlas. No Meshy credits were used for this bake.`);
+        setupPlayer();
+      } catch (error) {
+        setStatus(error.message || String(error), true);
+      } finally {
+        bakeButton.disabled = false;
+      }
+    }
+
+    function setupPlayer() {
+      const stateSelect = document.querySelector('#state');
+      const directionSelect = document.querySelector('#direction');
+      stateSelect.disabled = false;
+      directionSelect.disabled = false;
+      document.querySelector('#play').disabled = false;
+      stateSelect.innerHTML = ['idle', 'walk', 'attack', 'defeat'].map((state) => `<option value="${state}">${state}</option>`).join('');
+      directionSelect.innerHTML = DIRECTIONS.map(([direction]) => `<option value="${direction}">${direction}</option>`).join('');
+      stateSelect.addEventListener('change', playSelection);
+      directionSelect.addEventListener('change', playSelection);
+      playSelection();
+    }
+
+    function playSelection() {
+      clearInterval(playerTimer);
+      const state = document.querySelector('#state').value;
+      const direction = document.querySelector('#direction').value;
+      const frames = records.filter((record) => record.stateId === state && record.directionId === direction);
+      const frameIds = new Map(records.map((record, index) => [record.frameId, index]));
+      let frameIndex = 0;
+      const draw = () => {
+        const atlasIndex = frameIds.get(frames[frameIndex].frameId);
+        const x = (atlasIndex % COLUMNS) * CELL;
+        const y = Math.floor(atlasIndex / COLUMNS) * CELL;
+        viewerContext.clearRect(0, 0, CELL, CELL);
+        viewerContext.drawImage(atlasCanvas, x, y, CELL, CELL, 0, 0, CELL, CELL);
+        frameIndex = (frameIndex + 1) % frames.length;
+      };
+      draw();
+      if (frames.length > 1) {
+        const frameMs = STATE_DURATIONS_MS[state] / frames.length;
+        playerTimer = setInterval(draw, frameMs);
+      }
+    }
+
+    bakeButton.addEventListener('click', bake);
+    document.querySelector('#play').addEventListener('click', playSelection);
+    void sourceManifest().then((manifest) => {
+      const summary = manifest.assets.map((asset) => `${asset.filename}: ${(asset.bytes / 1024 / 1024).toFixed(1)} MB`).join(' · ');
+      document.querySelector('#summary').textContent = summary;
+    }).catch((error) => setStatus(error.message, true));
+  </script>
+</body>
+</html>
