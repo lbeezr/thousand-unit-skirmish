@@ -1,4 +1,5 @@
 import { formatResourceStock, formatResourceRequirement } from './resource-format.mjs';
+import { validateMapAudioReference } from './audio-event-profile.mjs';
 import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences } from './hud-layout.mjs';
 import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
@@ -260,6 +261,8 @@ const ui = {
   studioName: document.querySelector('#studio-name'),
   studioId: document.querySelector('#studio-id'),
   studioSummary: document.querySelector('#studio-summary'),
+  studioAudioPack: document.querySelector('#studio-audio-pack'),
+  studioAudioProfile: document.querySelector('#studio-audio-profile'),
   studioWidth: document.querySelector('#studio-width'),
   studioHeight: document.querySelector('#studio-height'),
   studioTerrainBase: document.querySelector('#studio-terrain-base'),
@@ -349,6 +352,11 @@ const ui = {
   audioAmbienceLevel: document.querySelector('#audio-ambience-level'),
   audioAmbienceLevelValue: document.querySelector('#audio-ambience-level-value'),
   audioStatus: document.querySelector('#audio-status'),
+  audioPackStatus: document.querySelector('#audio-pack-status'),
+  audioVoiceLevel: document.querySelector('#audio-voice-level'),
+  audioVoiceLevelValue: document.querySelector('#audio-voice-level-value'),
+  audioMusicLevel: document.querySelector('#audio-music-level'),
+  audioMusicLevelValue: document.querySelector('#audio-music-level-value'),
 };
 let ambiencePreviewPlaying = false;
 let audioRecognitionActive = false;
@@ -362,6 +370,8 @@ const audioRecognitionAnswerButtons = [...ui.audioRecognitionAnswers.querySelect
 const audio = createGameAudio({
   onStatusChange: () => syncAudioControls(),
   onCueDecision: (cue) => showAudioCaption(cue),
+  onProfileCaption: (caption) => showProfileAudioCaption(caption),
+  onPackStatus: (message) => { ui.audioPackStatus.textContent = message; },
   onCue: (cue) => {
     ui.audioStatus.dataset.lastCue = cue;
     ui.audioStatus.dataset.cueCount = String((Number(ui.audioStatus.dataset.cueCount) || 0) + 1);
@@ -1380,8 +1390,8 @@ function reconcileBuildings(buildings = [], initial = false) {
     buildingVisuals.delete(id);
   }
   latestBuildings = rows;
-  if (!initial && finishedFriendlyConstruction) audio.play('building-complete');
-  if (!initial && finishedFriendlyProduction) audio.play('complete');
+  if (!initial && finishedFriendlyConstruction) audio.playEvent({ cue: 'building-complete' });
+  if (!initial && finishedFriendlyProduction) audio.playEvent({ cue: 'complete' });
   const selectedBuilding = rows.find((building) => building.id === selectedBuildingId
     && building.team === localTeam) || null;
   if (priorSelectedBuildingId !== selectedBuildingId
@@ -3440,7 +3450,7 @@ function recallControlGroup(index) {
   syncSelectionMesh();
   updateSelectionUI();
   updateControlGroupUI();
-  audio.play('select');
+  audio.playEvent({ cue: 'select', kind: groupUnits[0]?.kind });
   if (centerOnGroup) {
     centerCameraOnControlGroup(groupUnits);
     showToast(`CENTERED ON GROUP ${controlGroupKeyLabel(index)} · ${groupUnits.length.toLocaleString()} UNITS`);
@@ -3675,7 +3685,7 @@ function updateMatchResult(winner, triggerId = null, reason = null) {
   const isDraw = winner === 2 && ['capture-hold', 'elimination', 'timed-control'].includes(reason);
   matchWinner = Number.isInteger(winner) && ([0, 1].includes(winner) || isDraw) ? winner : -1;
   if (previousWinner < 0 && matchWinner >= 0) {
-    audio.play(matchWinner === 2 ? 'draw' : matchWinner === localTeam ? 'victory' : 'defeat');
+    audio.playEvent({ cue: matchWinner === 2 ? 'draw' : matchWinner === localTeam ? 'victory' : 'defeat' });
   }
   matchWinnerReason = matchWinner >= 0 ? reason : null;
   if (matchWinner >= 0 && buildPlacementActive) cancelBuildPlacement(false);
@@ -3993,7 +4003,7 @@ function applyState(state, initial = false) {
   if (audioReset) combatAudioGate.reset();
   else {
     const cue = combatAudioGate.observe({ friendlyDamage, selectedDamage, buildingDamage }, performance.now());
-    if (cue) audio.play(cue);
+    if (cue) audio.playEvent({ cue });
   }
   if (Number.isInteger(state.winner)) {
     updateMatchResult(state.winner, state.winnerTriggerId, state.winnerReason);
@@ -4060,7 +4070,7 @@ function updateEconomyUI(state = {}, initial = false) {
   if (Array.isArray(state.wood)) latestWood = [Number(state.wood[0]) || 0, Number(state.wood[1]) || 0];
   if (Array.isArray(state.workerProduction)) {
     if (!initial && localTeam !== null && Number.isFinite(latestWorkerProduction[localTeam]?.queue)
-      && Number(state.workerProduction[localTeam]?.queue) < latestWorkerProduction[localTeam].queue) audio.play('complete');
+      && Number(state.workerProduction[localTeam]?.queue) < latestWorkerProduction[localTeam].queue) audio.playEvent({ cue: 'complete' });
     latestWorkerProduction = [state.workerProduction[0] || null, state.workerProduction[1] || null];
   }
   if (Array.isArray(state.teamResearch)) {
@@ -4416,6 +4426,7 @@ function captureMapStudioDraft() {
     resourceNodes: JSON.parse(JSON.stringify(editorResourceNodes)),
     triggers: JSON.parse(JSON.stringify(editorTriggers)),
     scenarioEvents: JSON.parse(JSON.stringify(editorScenarioEvents)),
+    audio: selectedStudioAudio({ allowIncomplete: true }),
   });
   return {
     version: MAP_STUDIO_DRAFT_VERSION,
@@ -4487,6 +4498,9 @@ function restoreMapStudioDraft(draft) {
       && TERRAIN_MATERIALS.includes(state.editorTool.slice(7)))
     ? state.editorTool : 'stone');
   restoreMapStudioFormValues(state.formValues);
+  void refreshStudioAudioPacks(state.formValues?.['studio-audio-pack']?.value
+    ? { packId: state.formValues['studio-audio-pack'].value, profileId: state.formValues?.['studio-audio-profile']?.value || '' }
+    : undefined);
   if (editorTriggerCreationPending) {
     const selectedIds = new Set(Array.isArray(state.selectedPrerequisiteIds) ? state.selectedPrerequisiteIds : []);
     for (const input of ui.studioObjectiveRequires.querySelectorAll('input[type="checkbox"]')) {
@@ -5182,6 +5196,94 @@ function removeSelectedEditorResourceNode() {
   ui.studioMessage.textContent = `Removed ${removed.type} node ${removed.id}.`;
 }
 
+let audioLibraryStorePromise = null;
+async function getAudioLibraryStore() {
+  audioLibraryStorePromise ||= import('./audio-library-store.mjs')
+    .then(({ createAudioLibraryStore }) => createAudioLibraryStore());
+  return audioLibraryStorePromise;
+}
+let mapAudioRequest = 0;
+async function loadMapAudio(reference) {
+  const request = ++mapAudioRequest;
+  if (!reference) { await audio.setMapAudio(null); return; }
+  try {
+    const store = await getAudioLibraryStore();
+    if (request === mapAudioRequest) await audio.setMapAudio(reference, store);
+  } catch (error) {
+    if (request === mapAudioRequest) ui.audioPackStatus.textContent = `Audio library unavailable: ${error.message}. Synthesized feedback remains available.`;
+  }
+}
+function selectedStudioAudio({ allowIncomplete = false } = {}) {
+  const packId = ui.studioAudioPack.value;
+  const profileId = ui.studioAudioProfile.value;
+  if (!packId) return undefined;
+  if (!profileId) {
+    if (allowIncomplete) return undefined;
+    throw new Error('Choose an audio profile for this map.');
+  }
+  return validateMapAudioReference({ packId, profileId });
+}
+let studioAudioPackRequest = 0;
+let studioAudioProfileRequest = 0;
+async function refreshStudioAudioPacks(reference) {
+  const request = ++studioAudioPackRequest;
+  const select = ui.studioAudioPack;
+  select.replaceChildren(new Option('Synthesized default', ''));
+  if (reference) {
+    select.add(new Option(`Loading pack: ${reference.packId}`, reference.packId));
+    select.value = reference.packId;
+    ui.studioAudioProfile.replaceChildren(new Option(`Loading profile: ${reference.profileId}`, reference.profileId));
+  }
+  try {
+    const library = await getAudioLibraryStore();
+    const packs = await library.listPacks();
+    if (request !== studioAudioPackRequest) return;
+    const chosen = select.value;
+    select.replaceChildren(new Option('Synthesized default', ''));
+    for (const pack of packs) select.add(new Option(pack.name || pack.id, pack.id));
+    if (reference && !packs.some((pack) => pack.id === reference.packId)) {
+      select.add(new Option(`Missing pack: ${reference.packId}`, reference.packId));
+    }
+    select.value = chosen;
+    await refreshStudioAudioProfiles(chosen === reference?.packId ? reference?.profileId : '');
+  } catch (error) {
+    if (request !== studioAudioPackRequest) return;
+    if (reference && select.value === reference.packId) {
+      const existing = [...select.options].find((option) => option.value === reference.packId);
+      if (existing) existing.text = `Missing pack: ${reference.packId}`;
+      else select.add(new Option(`Missing pack: ${reference.packId}`, reference.packId));
+      select.value = reference.packId;
+      ui.studioAudioProfile.replaceChildren(new Option(`Missing profile: ${reference.profileId}`, reference.profileId));
+    }
+    ui.studioMessage.textContent = `Audio library unavailable: ${error.message}`;
+  }
+}
+async function refreshStudioAudioProfiles(selectedId = '') {
+  const request = ++studioAudioProfileRequest;
+  const select = ui.studioAudioProfile;
+  select.replaceChildren(new Option('Choose profile', ''));
+  const packId = ui.studioAudioPack.value;
+  if (!packId) return;
+  try {
+    const loaded = await (await getAudioLibraryStore()).loadPack(packId);
+    if (request !== studioAudioProfileRequest || packId !== ui.studioAudioPack.value) return;
+    for (const profile of loaded?.pack?.profiles || []) select.add(new Option(profile.name || profile.id, profile.id));
+    if (selectedId && ![...(loaded?.pack?.profiles || [])].some((profile) => profile.id === selectedId)) {
+      select.add(new Option(`Missing profile: ${selectedId}`, selectedId));
+    }
+    select.value = selectedId || select.options[1]?.value || '';
+  } catch (error) {
+    if (request !== studioAudioProfileRequest || packId !== ui.studioAudioPack.value) return;
+    if (selectedId) {
+      select.add(new Option(`Missing profile: ${selectedId}`, selectedId));
+      select.value = selectedId;
+    }
+    ui.studioMessage.textContent = `Audio profiles unavailable: ${error.message}`;
+  }
+}
+ui.studioAudioPack.addEventListener('change', () => { void refreshStudioAudioProfiles(); scheduleMapStudioDraftSave(); });
+ui.studioAudioProfile.addEventListener('change', scheduleMapStudioDraftSave);
+
 function populateMapEditor(definition, message) {
   editorDefinition = JSON.parse(JSON.stringify(definition));
   editorDefinition.fogOfWar ??= false;
@@ -5224,6 +5326,7 @@ function populateMapEditor(definition, message) {
   ui.studioName.value = editorDefinition.name;
   ui.studioId.value = editorDefinition.id;
   ui.studioSummary.value = editorDefinition.summary || '';
+  void refreshStudioAudioPacks(editorDefinition.audio);
   ui.studioWidth.value = editorDefinition.width;
   ui.studioHeight.value = editorDefinition.height;
   ui.studioStartingArmySize.value = editorDefinition.startingArmySize ?? 1000;
@@ -5247,6 +5350,7 @@ function populateMapEditor(definition, message) {
 function validateImportedMap(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('JSON must contain a map object.');
   const definition = JSON.parse(JSON.stringify(value));
+  validateMapAudioReference(definition.audio);
   definition.victoryMode ??= 'any';
   definition.fogOfWar ??= false;
   if (typeof definition.fogOfWar !== 'boolean') {
@@ -6086,7 +6190,7 @@ function collectEditorMap() {
   const scenarioEvents = JSON.parse(JSON.stringify(editorScenarioEvents));
   const definition = withCurrentEditorElevation({
     ...editorDefinition,
-    id, name, victoryMode: ui.studioVictoryMode.value,
+    id, name, audio: selectedStudioAudio(), victoryMode: ui.studioVictoryMode.value,
     ...(Number(ui.studioVictoryHoldSeconds.value) > 0
       ? { victoryHoldSeconds: Number(ui.studioVictoryHoldSeconds.value) }
       : {}),
@@ -6129,7 +6233,7 @@ function showToast(message, duration = 1300) {
     item.textContent = notice.text + (notice.count > 1 ? ` ×${notice.count}` : '');
     return item;
   }));
-  if (isLocalRejection(message)) audio.play('reject');
+  if (isLocalRejection(message)) audio.playEvent({ cue: 'reject' });
   const fieldFeedback = document.querySelector('#field-order-feedback');
   if (fieldFeedback && !fieldFeedback.hidden && fieldFeedback.textContent === message) return;
   toast.textContent = message;
@@ -6214,10 +6318,12 @@ function applyOrderNotice(token, message) {
 function sendTrackedOrder(command, label, count, unitName = 'UNITS') {
   const token = beginOrderStatus(label, count, unitName);
   if (sendCommand({ ...command, clientOrderToken: token })) {
-    audio.play(command.type === 'build' ? 'build'
+    audio.playEvent({ cue: command.type === 'build' ? 'build'
       : command.type === 'gather' ? 'gather'
         : command.type === 'attack' || command.type === 'attackBuilding' || command.type === 'attackMove'
-          ? 'attack' : 'move');
+          ? 'attack' : 'move', kind: units[command.ids?.[0]]?.kind,
+      resource: command.type === 'gather' ? (command.forestCell !== undefined ? 'wood'
+        : mapDefinition?.resourceNodes?.find((node) => node.id === command.nodeId)?.type) : undefined });
     return token;
   }
   finishOrderStatus(token, 'ORDER NOT SENT · CONNECTION OFFLINE', 'failed');
@@ -6227,7 +6333,7 @@ function sendTrackedOrder(command, label, count, unitName = 'UNITS') {
 function sendCommand(command) {
   if (!socket || socket.readyState !== WebSocket.OPEN) {
     showToast('SERVER CONNECTION IS OFFLINE');
-    audio.play('reject');
+    audio.playEvent({ cue: 'reject' });
     return false;
   }
   const payload = { ...command };
@@ -6242,7 +6348,7 @@ function sendCommand(command) {
     const message = 'Map JSON is too large to send safely. Keep the published map under 900 KB.';
     if (command.type === 'publishMap') ui.studioMessage.textContent = message;
     showToast('COMMAND TOO LARGE TO SEND');
-    audio.play('reject');
+    audio.playEvent({ cue: 'reject' });
     return false;
   }
   socket.send(serialized);
@@ -6362,7 +6468,7 @@ function selectBuilding(building) {
   updateCommandUI();
   updateEconomyUI();
   showToast(`${buildingLabel(building.type)} SELECTED · ${window.matchMedia('(pointer: coarse)').matches ? 'USE SET RALLY POINT, THEN TAP GROUND' : 'RIGHT-CLICK GROUND TO SET RALLY'}`);
-  audio.play('select');
+  audio.playEvent({ cue: 'select', buildingType: building.type });
 }
 
 function pickFriendly(x, y, additive = false) {
@@ -6404,7 +6510,7 @@ function pickFriendly(x, y, additive = false) {
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
-  if (found && selected.size > 0) audio.play('select');
+  if (found && selected.size > 0) audio.playEvent({ cue: 'select', kind: found.kind });
 }
 
 function selectInRect(left, top, right, bottom, additive = false) {
@@ -6425,7 +6531,7 @@ function selectInRect(left, top, right, bottom, additive = false) {
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
-  if (boxSelection.ids.length > 0) audio.play('select');
+  if (boxSelection.ids.length > 0) audio.playEvent({ cue: 'select', kind: units[boxSelection.ids[0]]?.kind });
 }
 
 function worldAt(clientX, clientY) {
@@ -7145,7 +7251,7 @@ function selectWholeTeam() {
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
-  if (selected.size > 0) audio.play('select');
+  if (selected.size > 0) audio.playEvent({ cue: 'select', kind: units[selected.values().next().value]?.kind });
   showToast(`YOUR ARMY SELECTED · ${selected.size.toLocaleString()}`);
 }
 
@@ -7157,7 +7263,7 @@ function selectFriendlyUnitKinds(kinds, label) {
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
-  if (selected.size > 0) audio.play('select');
+  if (selected.size > 0) audio.playEvent({ cue: 'select', kind: units[selected.values().next().value]?.kind });
   showToast(selected.size ? `${label} SELECTED · ${selected.size}` : `NO LIVING ${label}`);
 }
 
@@ -7174,7 +7280,7 @@ function selectIdleWorkers() {
   selectionDirty = true;
   syncSelectionMesh();
   updateSelectionUI();
-  if (selected.size > 0) audio.play('select');
+  if (selected.size > 0) audio.playEvent({ cue: 'select', kind: units[selected.values().next().value]?.kind });
   showToast(selected.size ? `IDLE WORKERS SELECTED · ${selected.size}` : 'NO IDLE WORKERS');
 }
 function selectInfantry() { selectFriendlyUnitKind('infantry', 'INFANTRY'); }
@@ -7465,6 +7571,14 @@ function clearAudioCaption() {
   ui.audioCaption.hidden = true;
 }
 
+function showProfileAudioCaption(caption) {
+  if (!audio.getSettings().captions || !caption) return;
+  ui.audioCaption.textContent = `SOUND · ${caption}`;
+  ui.audioCaption.hidden = false;
+  window.clearTimeout(audioCaptionTimer);
+  audioCaptionTimer = window.setTimeout(clearAudioCaption, 3000);
+}
+
 function showAudioCaption(cue) {
   if (!audio.getSettings().captions) return;
   const caption = AUDIO_CAPTIONS[cue];
@@ -7483,6 +7597,10 @@ function syncAudioControls() {
   if (!settings.captions) clearAudioCaption();
   ui.audioVolume.value = String(Math.round(settings.volume * 100));
   ui.audioVolumeValue.value = `${Math.round(settings.volume * 100)}%`;
+  ui.audioVoiceLevel.value = String(Math.round(settings.voiceLevel * 100));
+  ui.audioVoiceLevelValue.value = `${Math.round(settings.voiceLevel * 100)}%`;
+  ui.audioMusicLevel.value = String(Math.round(settings.musicLevel * 100));
+  ui.audioMusicLevelValue.value = `${Math.round(settings.musicLevel * 100)}%`;
   ui.audioEffectsLevel.value = String(Math.round(settings.effectsLevel * 100));
   ui.audioEffectsLevelValue.value = `${Math.round(settings.effectsLevel * 100)}%`;
   ui.audioAmbience.checked = settings.ambience;
@@ -7492,6 +7610,8 @@ function syncAudioControls() {
   ui.audioCaptions.disabled = audioRecognitionActive;
   ui.audioVolume.disabled = !settings.enabled || audioRecognitionActive;
   ui.audioEffectsLevel.disabled = !settings.enabled || audioRecognitionActive;
+  ui.audioVoiceLevel.disabled = !settings.enabled || audioRecognitionActive;
+  ui.audioMusicLevel.disabled = !settings.enabled || audioRecognitionActive;
   ui.audioAmbience.disabled = !settings.enabled || audioRecognitionActive;
   ui.audioAmbienceLevel.disabled = !settings.enabled || !settings.ambience || audioRecognitionActive;
   const status = audio.getStatus();
@@ -7507,7 +7627,7 @@ function syncAudioControls() {
     button.disabled = previewDisabled || !audioRecognitionTrialPlayed;
   }
   ui.audioAmbiencePreview.disabled = ambiencePreviewPlaying || status === 'muted' || status === 'unavailable' || status === 'closed'
-    || !settings.ambience || settings.ambienceLevel <= 0 || audioRecognitionActive;
+    || settings.musicLevel <= 0 || audioRecognitionActive;
   ui.audioStatus.textContent = {
     running: 'SOUND READY', waiting: 'SOUND STARTS WITH FIRST INPUT', muted: 'SOUND MUTED',
     silent: 'NO AUDIBLE CHANNELS',
@@ -7522,6 +7642,8 @@ ui.audioCaptions.addEventListener('change', () => {
   syncAudioControls();
 });
 ui.audioVolume.addEventListener('input', () => { audio.setSettings({ volume: Number(ui.audioVolume.value) / 100 }); syncAudioControls(); });
+ui.audioVoiceLevel.addEventListener('input', () => { audio.setSettings({ voiceLevel: Number(ui.audioVoiceLevel.value) / 100 }); syncAudioControls(); });
+ui.audioMusicLevel.addEventListener('input', () => { audio.setSettings({ musicLevel: Number(ui.audioMusicLevel.value) / 100 }); syncAudioControls(); });
 ui.audioEffectsLevel.addEventListener('input', () => { audio.setSettings({ effectsLevel: Number(ui.audioEffectsLevel.value) / 100 }); syncAudioControls(); });
 ui.audioPreview.addEventListener('click', () => { audio.unlock(); audio.preview(ui.audioPreviewCue.value); });
 function renderAudioRecognitionTrial() {
@@ -8442,6 +8564,7 @@ function connectSocket() {
       const matchWasReset = !message.recoveredFromCheckpoint && (matchIdentityChanged || matchInstanceChanged);
       const matchWasRestored = message.recoveredFromCheckpoint === true && matchInstanceChanged
         && !matchIdentityChanged;
+      void loadMapAudio(message.map.audio);
       if (mapChanged) {
         mapDefinition = message.map;
         buildMap(mapDefinition);
@@ -8490,6 +8613,7 @@ function connectSocket() {
       return;
     }
     if (message.type === 'mapChange') {
+      void loadMapAudio(message.map.audio);
       mapDefinition = message.map;
       buildMap(mapDefinition);
       setMapCatalog(message.maps, mapDefinition.id);
@@ -8506,13 +8630,13 @@ function connectSocket() {
     }
     if (message.type === 'room') { updateRoomUI(message.connected); return; }
     if (message.type === 'trigger') {
-      audio.play(localTeam !== null && message.team !== localTeam ? 'objective-lost' : 'objective');
+      audio.playEvent({ cue: localTeam !== null && message.team !== localTeam ? 'objective-lost' : 'objective' });
       showToast(message.message, 2400);
       return;
     }
     if (message.type === 'scenarioEvent') {
       const cue = cueForScenarioEvent(message, { localTeam });
-      if (cue) audio.play(cue);
+      if (cue) audio.playEvent({ cue });
       showToast(message.message, 3600);
       return;
     }
@@ -8545,7 +8669,7 @@ function connectSocket() {
       if (feedback.applyOrderStatus) applyOrderNotice(noticeToken, notice);
       if (feedback.showToast) {
         const cue = cueForNotice(notice, { localTeam, tokenized: noticeToken !== null });
-        if (cue) audio.play(cue);
+        if (cue) audio.playEvent({ cue });
       }
       if (notice.startsWith('BUILD REJECTED ·')) {
         if (feedback.clearPendingBuild) {
