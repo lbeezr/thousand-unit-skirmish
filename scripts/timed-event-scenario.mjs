@@ -430,6 +430,7 @@ try {
   'team-targeted event should reward Azure with food and wood only');
   const azureNotice = azure.messages.find((message) => message.type === 'scenarioEvent'
     && message.eventId === 'azure-cache');
+  assert.deepEqual(azureNotice.rewardTeams, [0], 'team-targeted rewards identify only the affected team');
   assert.equal(azureNotice.message, 'Azure Cache · +25 FOOD · +8 WOOD TO AZURE · 2/2 WORKER UNITS DELIVERED',
     'food and wood placeholders should resolve alongside actual reinforcement delivery');
   assert.equal(azureNotice.deliveredUnitCount, 2,
@@ -476,6 +477,7 @@ try {
   assert.equal(liveUnitCount(secondRewardStates[0], 1, 'archer'), 1);
   const sharedNotice = azure.messages.find((message) => message.type === 'scenarioEvent'
     && message.eventId === 'shared-rations');
+  assert.deepEqual(sharedNotice.rewardTeams, [0, 1], 'shared rewards identify both affected teams');
   assert.equal(sharedNotice.deliveredUnitCount, 2,
     'both-team reinforcement event should report its total delivered count');
   assert.equal(Object.hasOwn(sharedNotice, 'deliveredByTeam'), false,
@@ -521,6 +523,7 @@ try {
       && eventFired(state, 'ember-wood-drop')
   ))));
   const woodOnlyNotices = await Promise.all(woodOnlyNoticeWaits);
+  assert.deepEqual(woodOnlyNotices[0].rewardTeams, [1], 'opponent-only rewards identify the opponent team');
   assert.equal(woodOnlyNotices[0].message, 'Ember Wood Drop · +7 WOOD TO EMBER',
     'wood-only events should use their default wood announcement without implying food');
   assert.deepEqual(woodOnlyStates[0].wood, [18, 17]);
@@ -612,6 +615,8 @@ try {
       && eventFired(state, 'capture-cache') && liveUnitCount(state, 0, 'worker') === 7
   ))));
   const captureNotices = await Promise.all(captureNoticeWaits);
+  assert.deepEqual(captureNotices.map((message) => message.rewardTeams), [[0], [0]],
+    'capture-triggered rewards identify the actual capturing team');
   assert.ok(captureRewardStates.every((state) => state.units.length === 1006),
     'the capture-triggered drop should deliver its worker after the configured delay');
   assert.equal(captureNotices[0].team, 'capturing');

@@ -1,0 +1,345 @@
+{
+  "packId": "frontier-archery-range-construction",
+  "packVersion": "1.0.0",
+  "manifestKind": "source-review-only",
+  "runtimeReady": false,
+  "license": "LicenseRef-Thousand-Unit-Skirmish-Internal-Review",
+  "coordinateSystem": {
+    "units": "world-unit",
+    "up": "+Y",
+    "forward": "+Z",
+    "right": "+X"
+  },
+  "source": {
+    "authoringTool": "5.2.1 LTS",
+    "generator": "source/build_archery_range_construction_v1.py",
+    "provider": "none; locally authored in Blender",
+    "externalDependencies": [
+      {
+        "path": "assets/units-buildings/frontier-glb-sample-v2/source/base_build_sample_v0_1_2.py",
+        "sha256": "bfa0c8b5769830012ef36d6af6fcef90a93c36f788cda402a0e5e1e12866b3e5"
+      },
+      {
+        "path": "assets/units-buildings/frontier-glb-sample-v2/source/build_frontier_character_pack_v2.py",
+        "sha256": "c9f4a72b49075219341355d52e33d6a47d3d70ef454cf7f3468dd95979b0583c"
+      }
+    ]
+  },
+  "asset": {
+    "id": "archery-range",
+    "modelFile": "models/archery-range-construction-v1.glb",
+    "boundsWorld": {
+      "min": [
+        -1.6,
+        0.0,
+        -1.6
+      ],
+      "max": [
+        1.6,
+        3.18,
+        1.6
+      ],
+      "size": [
+        3.2,
+        3.18,
+        3.2
+      ]
+    },
+    "footprintWorld": {
+      "width": 3.2,
+      "depth": 3.2
+    },
+    "origin": "ground-center",
+    "parts": [
+      {
+        "id": "archery-range.foundation",
+        "node": "archery-range.foundation",
+        "batchKey": "building.archery-range.foundation",
+        "teamVariant": null,
+        "notes": null
+      },
+      {
+        "id": "archery-range.construction.frame",
+        "node": "archery-range.construction.frame",
+        "batchKey": "building.archery-range.construction-frame",
+        "teamVariant": null,
+        "notes": null
+      },
+      {
+        "id": "archery-range.construction.rails",
+        "node": "archery-range.construction.rails",
+        "batchKey": "building.archery-range.practice-rails",
+        "teamVariant": null,
+        "notes": null
+      },
+      {
+        "id": "archery-range.construction.roof-frame",
+        "node": "archery-range.construction.roof-frame",
+        "batchKey": "building.archery-range.roof-frame",
+        "teamVariant": null,
+        "notes": null
+      },
+      {
+        "id": "archery-range.complete.canopy",
+        "node": "archery-range.complete.canopy",
+        "batchKey": "building.archery-range.complete-canopy",
+        "teamVariant": null,
+        "notes": null
+      },
+      {
+        "id": "archery-range.complete.target",
+        "node": "archery-range.complete.target",
+        "batchKey": "building.archery-range.complete-target",
+        "teamVariant": null,
+        "notes": null
+      },
+      {
+        "id": "archery-range.standard.azure",
+        "node": "archery-range.standard.azure",
+        "batchKey": "building.archery-range.standard.azure",
+        "teamVariant": "azure",
+        "notes": "straight-cut-pennant"
+      },
+      {
+        "id": "archery-range.standard.ember",
+        "node": "archery-range.standard.ember",
+        "batchKey": "building.archery-range.standard.ember",
+        "teamVariant": "ember",
+        "notes": "forked-tail-pennant"
+      }
+    ],
+    "anchors": [
+      {
+        "id": "ground",
+        "node": "archery-range.anchor.ground",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "gate",
+        "node": "archery-range.anchor.gate",
+        "position": [
+          0,
+          0,
+          1.52
+        ]
+      },
+      {
+        "id": "standard",
+        "node": "archery-range.anchor.standard",
+        "position": [
+          -0.98,
+          3.18,
+          1.0
+        ]
+      },
+      {
+        "id": "productionCue",
+        "node": "archery-range.anchor.productionCue",
+        "position": [
+          0,
+          1.4,
+          1.55
+        ]
+      },
+      {
+        "id": "rallyPoint",
+        "node": "archery-range.anchor.rallyPoint",
+        "position": [
+          0,
+          0,
+          2.35
+        ]
+      }
+    ],
+    "stateSamples": [
+      {
+        "id": "archery-range-00-foundation",
+        "state": "foundation",
+        "buildingProgress": 0.0,
+        "visibleNodes": [
+          "archery-range.foundation"
+        ],
+        "reviewFile": "previews/archery-range-00-foundation-meadow-zoom-0.91-1280x720.png",
+        "reviewStatus": "rendered-source-review",
+        "notes": "A raised stone footprint anchors the construction site."
+      },
+      {
+        "id": "archery-range-25-frame",
+        "state": "frame",
+        "buildingProgress": 0.25,
+        "visibleNodes": [
+          "archery-range.foundation",
+          "archery-range.construction.frame"
+        ],
+        "reviewFile": "previews/archery-range-25-frame-meadow-zoom-0.91-1280x720.png",
+        "reviewStatus": "rendered-source-review",
+        "notes": "Four open corner posts and cross-braces establish the covered practice bay."
+      },
+      {
+        "id": "archery-range-50-rails",
+        "state": "rails",
+        "buildingProgress": 0.5,
+        "visibleNodes": [
+          "archery-range.foundation",
+          "archery-range.construction.frame",
+          "archery-range.construction.rails"
+        ],
+        "reviewFile": "previews/archery-range-50-rails-meadow-zoom-0.91-1280x720.png",
+        "reviewStatus": "rendered-source-review",
+        "notes": "Low side rails and a rear rack shape the practice lane while it stays open."
+      },
+      {
+        "id": "archery-range-75-canopy",
+        "state": "canopy",
+        "buildingProgress": 0.75,
+        "visibleNodes": [
+          "archery-range.foundation",
+          "archery-range.construction.frame",
+          "archery-range.construction.rails",
+          "archery-range.construction.roof-frame"
+        ],
+        "reviewFile": "previews/archery-range-75-canopy-meadow-zoom-0.91-1280x720.png",
+        "reviewStatus": "rendered-source-review",
+        "notes": "Exposed rafters and one partial canopy plane distinguish the unfinished roof from completion."
+      },
+      {
+        "id": "archery-range-100-complete",
+        "state": "complete",
+        "buildingProgress": 1.0,
+        "visibleNodes": [
+          "archery-range.foundation",
+          "archery-range.construction.frame",
+          "archery-range.construction.rails",
+          "archery-range.complete.canopy",
+          "archery-range.complete.target",
+          "archery-range.standard.azure"
+        ],
+        "reviewFile": "previews/archery-range-100-complete-meadow-zoom-0.91-1280x720.png",
+        "reviewStatus": "rendered-source-review",
+        "notes": "A single sloped canopy, front bullseye, and one owner-selected standard finish the Range."
+      }
+    ],
+    "stateSelection": "Renderer-owned: clamp progress to [0,1], select one of five ordered stateSamples; exactly one matching team standard is visible at completion.",
+    "teamVariants": [
+      {
+        "team": "azure",
+        "node": "archery-range.standard.azure",
+        "shape": "straight-cut pennant with one centered bar",
+        "color": "#5AA7D7"
+      },
+      {
+        "team": "ember",
+        "node": "archery-range.standard.ember",
+        "shape": "forked pennant with split bar",
+        "color": "#E67A5E"
+      }
+    ]
+  },
+  "review": {
+    "camera": {
+      "ground": "meadow",
+      "zoom": 0.91,
+      "resolution": [
+        1280,
+        720
+      ]
+    },
+    "scope": "Five individually rendered construction states at a common game camera, footprint, and origin.",
+    "knownLimits": [
+      "Source render only; renderer still uses procedural buildings and does not load this GLB.",
+      "No authored-GLB 2,000-unit performance result is claimed.",
+      "Only Azure Meadow construction views are rendered; Ember and Cinder visual review remains open."
+    ]
+  },
+  "files": [
+    {
+      "path": "PROVENANCE.md",
+      "role": "source-review-file",
+      "sha256": "c91d56fe3a1a60cfe532b26d7f39ee4202cc5215091fcec9637963d271e15760"
+    },
+    {
+      "path": "README.md",
+      "role": "source-review-file",
+      "sha256": "a2780daa8c9ba7c86227f746e82959709c3f503525eb2e5ea9666b29b290e57a"
+    },
+    {
+      "path": "models/archery-range-construction-v1.glb",
+      "role": "source-review-file",
+      "sha256": "051f9623ea44012421a4bdb82f10644829df529215c46721f38d8668b3ebade9"
+    },
+    {
+      "path": "previews/archery-range-00-foundation-meadow-zoom-0.91-1280x720.png",
+      "role": "source-review-file",
+      "sha256": "4c0015f57c827f68afed35680e2ac8c7d8c10f98193064c5c8803487187d6104"
+    },
+    {
+      "path": "previews/archery-range-100-complete-meadow-zoom-0.91-1280x720.png",
+      "role": "source-review-file",
+      "sha256": "8d482fa0f2bc64080e149fa5dc38aec342fde998db23bc8f0ca8e61619fa3189"
+    },
+    {
+      "path": "previews/archery-range-25-frame-meadow-zoom-0.91-1280x720.png",
+      "role": "source-review-file",
+      "sha256": "81183b931e358f47db9b6cb8fff5c3418b86152d3f53348d7ffde94b2b05576f"
+    },
+    {
+      "path": "previews/archery-range-50-rails-meadow-zoom-0.91-1280x720.png",
+      "role": "source-review-file",
+      "sha256": "6f4f955283cc7d46e6ac9f790854da5aff37d578c5bf1ebdbc785d8eb02194c3"
+    },
+    {
+      "path": "previews/archery-range-75-canopy-meadow-zoom-0.91-1280x720.png",
+      "role": "source-review-file",
+      "sha256": "8fbe06957d4dcd177ff810b66982585a51433bdbe0b447fc38fce132bfdc470f"
+    },
+    {
+      "path": "source/archery-range-construction-v1.blend",
+      "role": "source-review-file",
+      "sha256": "54492598d14197d13b3296e19c2b6d16c3b408debbf9ece5d015ce15afbbe199"
+    },
+    {
+      "path": "source/build_archery_range_construction_v1.py",
+      "role": "source-review-file",
+      "sha256": "d21f64945f0dbaf91bbf85b7d13db0a666f1f07e77a7208d745725ec17f31502"
+    },
+    {
+      "path": "source/environment/oak.webp",
+      "role": "source-review-file",
+      "sha256": "dca6d091bc585e501eb19f07dc969757f0bfddd629a0bf0a9adee0bcf621a35c"
+    },
+    {
+      "path": "source/environment/pine.webp",
+      "role": "source-review-file",
+      "sha256": "1aac042f2d0aeb1ebdb93c1196a92c7628630837f2fc0496c39686f90c40b600"
+    },
+    {
+      "path": "source/environment/rock-outcrop.webp",
+      "role": "source-review-file",
+      "sha256": "2faf182a4ef467a7cea0b081d88b8efb840de9440efaf39b7e9f0385e6419cec"
+    },
+    {
+      "path": "source/frontier-material-atlas.png",
+      "role": "source-review-file",
+      "sha256": "5ebc8411d26eca453db2c2ab889e4ad8c6b3554ee8f9a6270265b8997022cef3"
+    },
+    {
+      "path": "source/game-dev-package-archery-range.json",
+      "role": "source-review-file",
+      "sha256": "a35c592287c667fa183a7996dd807d1ac67331b263b5f89be99a5dae519ac78f"
+    },
+    {
+      "path": "source/pose-samples.json",
+      "role": "source-review-file",
+      "sha256": "ea89397d76b925a459a2e5e90db013d216ae6e51aaf0e48ad123d6fc0fffc256"
+    },
+    {
+      "path": "source/terrain/meadow.png",
+      "role": "source-review-file",
+      "sha256": "9268abaa3304196ca0cd774c8ae137f2c57612d57ef8cff0f46e234432af6689"
+    }
+  ]
+}

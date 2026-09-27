@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Frontier commander cursor review</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101713;color:#f6e7c8;font:15px system-ui}main{max-width:1100px;margin:auto;padding:40px}h1{font-size:30px}p{color:#b4beab;line-height:1.6}section{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}article{border:1px solid #59634e;border-radius:8px;overflow:hidden}h2{font-size:14px;font-weight:500;margin:14px}.samples{display:flex}.samples div{flex:1;display:grid;place-items:center;height:90px}.dark{background:#19231c}.grass{background:#708258}.sand{background:#c4b38d}img{width:40px;height:40px}a{color:#dfb06b}
+</style><main><p>THOUSAND UNIT SKIRMISH · FRONTIER COMMANDER</p><h1>Native cursor pack</h1><p>Hover over each sample to try its cursor. All images are shown at their native 40 px size on dark ground, grass and sand. The pointer tip or construction reticle marks the click position.</p><section id="pack"></section><p><a href="/">Return to the battlefield</a></p></main>
+<script type="module">
+const manifest=await fetch('/assets/ui/cursors/manifest.json').then(r=>r.json());
+for(const [state,cursor] of Object.entries(manifest.cursors)){
+ const card=document.createElement('article');
+ card.style.cursor=`url('/${cursor.runtime}') ${cursor.hotspot.join(' ')}, ${cursor.fallback}`;
+ const title=document.createElement('h2');title.textContent=state.replaceAll('-',' ');card.append(title);
+ const samples=document.createElement('div');samples.className='samples';
+ for(const bg of ['dark','grass','sand']){const sample=document.createElement('div');sample.className=bg;const img=new Image();img.src='/'+cursor.runtime;img.alt=state;sample.append(img);samples.append(sample)}
+ card.append(samples);document.querySelector('#pack').append(card);
+}
+</script></html>

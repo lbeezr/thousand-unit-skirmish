@@ -139,6 +139,10 @@ try {
   assert.deepEqual(azureInitial.alive, [125, null], 'hidden enemy survival count is withheld');
   assert.deepEqual(emberInitial.alive, [null, 125]);
   assert.deepEqual(azureInitial.food, [0, null], 'enemy resource totals are withheld');
+  assert.equal(azureInitial.resourceNodes.find((node) => node.id === 'vision-wood')?.stock, 600,
+    'Azure should receive starting stock for a resource node inside its sight');
+  assert.equal(emberInitial.resourceNodes.some((node) => node.id === 'vision-wood'), false,
+    'Ember must not receive a resource node outside its sight');
   assert.equal(azureInitial.workerProduction[0]?.team, 0, 'Azure can inspect its Town Center queue');
   assert.equal(azureInitial.workerProduction[1], null, 'Azure cannot inspect Ember Town Center production');
   assert.equal(emberInitial.workerProduction[0], null, 'Ember cannot inspect Azure Town Center production');
@@ -224,9 +228,14 @@ try {
 
   const gatherOrder = azure.waitForMessage((message) => message.type === 'notice'
     && message.message === 'GATHER ORDER · 4 WORKERS' && message.clientOrderToken === 5);
-  const enoughWood = azure.waitForState((state) => state.mapId === map.id && state.wood?.[0] >= 150);
+  const enoughWood = azure.waitForState((state) => state.mapId === map.id && state.wood?.[0] >= 150
+    && state.resourceNodes.some((node) => node.id === 'vision-wood' && node.stock < 600));
   send(azure.socket, { type: 'gather', ids: [0, 1, 2, 3], nodeId: 'vision-wood', clientOrderToken: 5 });
-  await Promise.all([gatherOrder, enoughWood]);
+  const [, azureGathered] = await Promise.all([gatherOrder, enoughWood]);
+  const emberAfterAzureGather = await ember.waitForState((state) => state.mapId === map.id
+    && state.tick >= azureGathered.tick);
+  assert.equal(emberAfterAzureGather.resourceNodes.some((node) => node.id === 'vision-wood'), false,
+    'gathering must not expose the changed stock to Ember while the node remains out of sight');
 
   const rangePlaced = azure.waitForMessage((message) => message.type === 'notice'
     && message.message === 'ARCHERY RANGE PLACED · WORKERS BUILDING' && message.clientOrderToken === 6);
@@ -273,7 +282,7 @@ try {
   'fog-of-war snapshots should retain task status for friendly workers');
 
   console.log(JSON.stringify({
-    passed: ['team-specific snapshots', 'enemy count/resource redaction', 'Town Center production privacy', 'hidden-target rejection without ID probing', 'tall ridge occlusion', 'shared sight reveal', 'attack-move fog filtering', 'low outcrop visibility', 'water transparency', 'building sight after builders retreat', 'worker task status privacy'],
+    passed: ['team-specific snapshots', 'enemy count/economy redaction', 'visible resource-node stock under fog', 'Town Center production privacy', 'hidden-target rejection without ID probing', 'tall ridge occlusion', 'shared sight reveal', 'attack-move fog filtering', 'low outcrop visibility', 'water transparency', 'building sight after builders retreat', 'worker task status privacy'],
     visibleEmberUnits: azureRevealed.units.filter((unit) => unit[1] === 1).length,
     totalEmberUnits: 125,
   }, null, 2));

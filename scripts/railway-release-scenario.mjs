@@ -1,23 +1,28 @@
 import assert from 'node:assert/strict';
-import { randomBytes } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import { request as httpRequest } from 'node:http';
 import { createServer } from 'node:net';
-import { mkdtemp, rm, stat } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const entry = path.join(root, 'room-supervisor.mjs');
+const dockerfile = await readFile(path.join(root, 'Dockerfile'), 'utf8');
+assert.match(dockerfile, /^\s*COPY\b[^\n]*\borigin-policy\.mjs\b/m,
+  'the shared origin policy must be included in the Railway image');
 const secret = 'test-release-password-please-change';
 const volume = await mkdtemp(path.join(os.tmpdir(), 'rts-railway-release-'));
 const environment = {
   ...process.env,
   RAILWAY_ENVIRONMENT: 'production',
+  RAILWAY_PUBLIC_DOMAIN: 'game-production.up.railway.app',
   RAILWAY_VOLUME_MOUNT_PATH: volume,
   RTS_ACCESS_USER: 'players',
   RTS_ACCESS_PASSWORD: secret,
+  RTS_PUBLIC_ORIGINS: '',
   RTS_HOST: '127.0.0.1',
 };
 delete environment.RTS_ROOM_DATA_DIRECTORY;
@@ -48,7 +53,7 @@ function upgrade(port, authorization) {
       connection: 'Upgrade', upgrade: 'websocket',
       'sec-websocket-version': '13',
       'sec-websocket-key': randomBytes(16).toString('base64'),
-      origin: `http://127.0.0.1:${port}`,
+      origin: `https://${environment.RAILWAY_PUBLIC_DOMAIN}`,
     };
     if (authorization) headers.authorization = authorization;
     const request = httpRequest({ hostname: '127.0.0.1', port, path: '/ws', headers });
@@ -64,6 +69,7 @@ let child;
 try {
   rejectsMissingConfiguration({ RAILWAY_VOLUME_MOUNT_PATH: '' }, /Attach a Railway volume/);
   rejectsMissingConfiguration({ RTS_ACCESS_PASSWORD: '' }, /RTS_ACCESS_PASSWORD/);
+  rejectsMissingConfiguration({ RAILWAY_PUBLIC_DOMAIN: '' }, /RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS/);
 
   const port = await availablePort();
   child = spawn(process.execPath, [entry], {
@@ -108,12 +114,63 @@ try {
   assert.equal(environmentTexture.status, 200);
   assert.match(environmentTexture.headers.get('content-type'), /image\/webp/);
   assert.ok((await environmentTexture.arrayBuffer()).byteLength > 0);
+  const interactiveManifestResponse = await fetch(
+    `${base}/assets/environment/frontier-interactive-v1/manifest.json`, {
+      headers: { authorization },
+    });
+  let interactiveManifestOnDisk = false;
+  try {
+    interactiveManifestOnDisk = (await stat(
+      path.join(root, 'assets/environment/frontier-interactive-v1/manifest.json'))).isFile();
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error;
+  }
+  const interactiveAssetPaths = [
+    ...['oak', 'berries'].flatMap((family) => ['full', 'worked', 'low', 'depleted']
+      .map((stage) => `${family}-${stage}.webp`)),
+    'construction-earthwork.webp', 'construction-foundation.webp',
+  ];
+  if (interactiveManifestResponse.status === 404) {
+    assert.equal(interactiveManifestOnDisk, false,
+      'an interactive manifest present on disk must be served rather than treated as an absent pack');
+    for (const assetPath of interactiveAssetPaths) {
+      const response = await fetch(`${base}/assets/environment/frontier-interactive-v1/${assetPath}`, {
+        headers: { authorization },
+      });
+      assert.equal(response.status, 404, `${assetPath} should be absent with the optional manifest`);
+    }
+  } else {
+    assert.equal(interactiveManifestResponse.status, 200);
+    assert.match(interactiveManifestResponse.headers.get('content-type'), /application\/json/);
+    const manifest = await interactiveManifestResponse.json();
+    assert.equal(manifest.schemaVersion, 1);
+    assert.equal(manifest.packId, 'environment.frontier-interactive');
+    assert.ok(Array.isArray(manifest.files));
+    const runtimeEntries = manifest.files.filter((entry) => entry?.role === 'runtime-image');
+    assert.deepEqual(runtimeEntries.map((entry) => entry.path).sort(), [...interactiveAssetPaths].sort());
+    for (const entry of runtimeEntries) {
+      assert.match(entry.sha256 || '', /^[a-f0-9]{64}$/i, `${entry.path} must declare a SHA-256`);
+      const response = await fetch(
+        `${base}/assets/environment/frontier-interactive-v1/${entry.path}`, {
+          headers: { authorization },
+        });
+      assert.equal(response.status, 200, `${entry.path} must be served when the manifest is present`);
+      assert.match(response.headers.get('content-type'), /image\/webp/);
+      const bytes = Buffer.from(await response.arrayBuffer());
+      assert.ok(bytes.length > 0, `${entry.path} must not be empty`);
+      assert.equal(createHash('sha256').update(bytes).digest('hex'), entry.sha256.toLowerCase(),
+        `${entry.path} must match its manifest hash`);
+    }
+  }
+  const resourceStateModule = await fetch(`${base}/src/resource-visual-state.mjs`, { headers: { authorization } });
+  assert.equal(resourceStateModule.status, 200);
+  assert.match(await resourceStateModule.text(), /resourceVisualStage/);
   assert.equal(await upgrade(port), 401);
   assert.equal(await upgrade(port, authorization), 101);
 
   assert.ok((await stat(path.join(volume, 'room-data', 'rooms.json'))).isFile());
   assert.ok((await stat(path.join(volume, 'custom-maps'))).isDirectory());
-  console.log('Railway release scenario passed: guarded startup, Basic Auth HTTP/WebSocket, local Three.js, environment assets, and volume paths.');
+  console.log('Railway release scenario passed: guarded startup, Basic Auth HTTP/WebSocket, local Three.js, base environment assets, optional manifest-backed environment states, and volume paths.');
 } finally {
   if (child && child.exitCode === null) {
     child.kill('SIGTERM');

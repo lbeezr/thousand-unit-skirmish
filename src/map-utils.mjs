@@ -1,4 +1,6 @@
-function findWalkableComponents(width, height, blockedCells) {
+import { canTraverseElevation } from './elevation.mjs';
+
+function findWalkableComponents(width, height, blockedCells, elevationLevels) {
   const cellCount = width * height;
   const components = new Int32Array(cellCount);
   components.fill(-1);
@@ -22,7 +24,9 @@ function findWalkableComponents(width, height, blockedCells) {
         row + 1 < height ? cell + width : -1,
       ];
       for (const neighbour of neighbours) {
-        if (neighbour < 0 || blockedCells[neighbour] || components[neighbour] >= 0) continue;
+        if (neighbour < 0 || blockedCells[neighbour]
+          || (elevationLevels && !canTraverseElevation(elevationLevels, cell, neighbour))
+          || components[neighbour] >= 0) continue;
         components[neighbour] = nextComponent;
         queue[tail++] = neighbour;
       }
@@ -31,6 +35,56 @@ function findWalkableComponents(width, height, blockedCells) {
   }
 
   return components;
+}
+
+export const MAX_ELEVATION_PATCHES = 4096;
+
+/**
+ * Validate the optional authored ground-height grid. Missing elevationPatches
+ * keeps older maps flat; the map editor and authoritative server share this
+ * check so a draft cannot pass one boundary and fail the other.
+ */
+export function validateElevationPatches(width, height, elevationPatches) {
+  if (elevationPatches === undefined) return null;
+  if (!Array.isArray(elevationPatches)) return { reason: 'shape' };
+  if (elevationPatches.length > MAX_ELEVATION_PATCHES) return { reason: 'limit' };
+
+  const claimedCells = new Uint8Array(width * height);
+  for (let patchIndex = 0; patchIndex < elevationPatches.length; patchIndex++) {
+    const patch = elevationPatches[patchIndex];
+    const { column, row, width: patchWidth, height: patchHeight, level } = patch || {};
+    if (![column, row, patchWidth, patchHeight].every(Number.isInteger)
+      || column < 0 || row < 0 || patchWidth < 1 || patchHeight < 1
+      || column + patchWidth > width || row + patchHeight > height) {
+      return { patchIndex, reason: 'bounds' };
+    }
+    if (!Number.isInteger(level) || level < 0 || level > 2) {
+      return { patchIndex, reason: 'level' };
+    }
+
+    for (let paintedRow = row; paintedRow < row + patchHeight; paintedRow++) {
+      for (let paintedColumn = column; paintedColumn < column + patchWidth; paintedColumn++) {
+        const index = paintedRow * width + paintedColumn;
+        if (claimedCells[index]) return { patchIndex, reason: 'overlap' };
+        claimedCells[index] = 1;
+      }
+    }
+  }
+  return null;
+}
+
+/** Expand a validated map's optional rectangle patches into one logical level per cell. */
+export function buildElevationGrid(width, height, elevationPatches) {
+  const invalid = validateElevationPatches(width, height, elevationPatches);
+  if (invalid) throw new Error(`Invalid elevation patches: ${invalid.reason}.`);
+
+  const levels = new Uint8Array(width * height);
+  for (const { column, row, width: patchWidth, height: patchHeight, level } of elevationPatches || []) {
+    for (let paintedRow = row; paintedRow < row + patchHeight; paintedRow++) {
+      levels.fill(level, paintedRow * width + column, paintedRow * width + column + patchWidth);
+    }
+  }
+  return levels;
 }
 
 function getTeamSpawnComponents(width, height, components, spawnPoints) {
@@ -42,10 +96,12 @@ function getTeamSpawnComponents(width, height, components, spawnPoints) {
   });
 }
 
-export function findUnreachableResourceNode(width, height, blockedCells, spawnPoints, resourceNodes) {
+export function findUnreachableResourceNode(
+  width, height, blockedCells, spawnPoints, resourceNodes, elevationLevels,
+) {
   if (!resourceNodes.length) return null;
 
-  const components = findWalkableComponents(width, height, blockedCells);
+  const components = findWalkableComponents(width, height, blockedCells, elevationLevels);
   const teamSpawnComponents = getTeamSpawnComponents(width, height, components, spawnPoints);
   for (const node of resourceNodes) {
     const column = Math.floor(node.x + width / 2);
@@ -60,10 +116,12 @@ export function findUnreachableResourceNode(width, height, blockedCells, spawnPo
   return null;
 }
 
-export function findUnreachableCaptureZone(width, height, blockedCells, spawnPoints, triggers) {
+export function findUnreachableCaptureZone(
+  width, height, blockedCells, spawnPoints, triggers, elevationLevels,
+) {
   if (!triggers.length) return null;
 
-  const components = findWalkableComponents(width, height, blockedCells);
+  const components = findWalkableComponents(width, height, blockedCells, elevationLevels);
   const teamSpawnComponents = getTeamSpawnComponents(width, height, components, spawnPoints);
   for (const trigger of triggers) {
     const { column: zoneColumn, row: zoneRow, width: zoneWidth, height: zoneHeight } = trigger.zone;
