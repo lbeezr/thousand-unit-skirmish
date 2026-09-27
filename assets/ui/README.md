@@ -26,7 +26,7 @@ A compact cursor and HUD icon study for the Thousand Unit Skirmish field interfa
 .viewport canvas[data-cursor-mode="panning"] { cursor: grabbing; }
 ```
 
-The arrow-led cursors use `(3, 3)`, at the arrow tip. `box-select` is centered at `(16, 16)`. Keep the text and accessible names on HUD controls when adding these icons. The handoff retains native `grab` and `grabbing` for manual pan, along with existing `auto` fallbacks on ordinary controls.
+The field-standard cursors use `(3, 3)`, at the spear tip. `box-select` is centered at `(16, 16)`. Keep the text and accessible names on HUD controls when adding these icons. The handoff retains native `grab` and `grabbing` for manual pan, along with existing `auto` fallbacks on ordinary controls.
 
 SVGs are the editable source; PNGs are the fixed-size cursor exports. Use the PNG files for runtime cursor URLs and retain a CSS keyword fallback; do not leave a cursor declaration without a fallback.
 

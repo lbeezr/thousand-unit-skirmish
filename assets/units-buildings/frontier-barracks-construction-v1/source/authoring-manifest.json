@@ -1,0 +1,343 @@
+{
+  "packId": "frontier-barracks-construction",
+  "packVersion": "1.0.0",
+  "manifestKind": "source-review-only",
+  "runtimeReady": false,
+  "license": "LicenseRef-Thousand-Unit-Skirmish-Internal-Review",
+  "coordinateSystem": {
+    "units": "world-unit",
+    "up": "+Y",
+    "forward": "+Z",
+    "right": "+X"
+  },
+  "source": {
+    "authoringTool": "5.2.1 LTS",
+    "generator": "source/build_barracks_construction_v1.py",
+    "provider": "none; locally authored in Blender",
+    "externalDependencies": [
+      {
+        "path": "assets/units-buildings/frontier-glb-sample-v2/source/base_build_sample_v0_1_2.py",
+        "sha256": "bfa0c8b5769830012ef36d6af6fcef90a93c36f788cda402a0e5e1e12866b3e5"
+      },
+      {
+        "path": "assets/units-buildings/frontier-glb-sample-v2/source/build_frontier_character_pack_v2.py",
+        "sha256": "c9f4a72b49075219341355d52e33d6a47d3d70ef454cf7f3468dd95979b0583c"
+      }
+    ]
+  },
+  "asset": {
+    "id": "barracks",
+    "modelFile": "models/barracks-construction-v1.glb",
+    "boundsWorld": {
+      "min": [
+        -1.6,
+        0.0,
+        -1.73
+      ],
+      "max": [
+        1.6,
+        2.87,
+        1.73
+      ],
+      "size": [
+        3.2,
+        2.87,
+        3.46
+      ]
+    },
+    "footprintWorld": {
+      "width": 3.2,
+      "depth": 3.2
+    },
+    "origin": "ground-center",
+    "parts": [
+      {
+        "id": "barracks.foundation",
+        "node": "barracks.foundation",
+        "batchKey": "building.barracks.foundation",
+        "teamVariant": null,
+        "notes": null
+      },
+      {
+        "id": "barracks.construction.frame",
+        "node": "barracks.construction.frame",
+        "batchKey": "building.barracks.construction-frame",
+        "teamVariant": null,
+        "notes": null
+      },
+      {
+        "id": "barracks.construction.walls",
+        "node": "barracks.construction.walls",
+        "batchKey": "building.barracks.walls",
+        "teamVariant": null,
+        "notes": null
+      },
+      {
+        "id": "barracks.construction.roof-frame",
+        "node": "barracks.construction.roof-frame",
+        "batchKey": "building.barracks.roof-frame",
+        "teamVariant": null,
+        "notes": null
+      },
+      {
+        "id": "barracks.complete.roof",
+        "node": "barracks.complete.roof",
+        "batchKey": "building.barracks.complete-roof",
+        "teamVariant": null,
+        "notes": null
+      },
+      {
+        "id": "barracks.complete.gate",
+        "node": "barracks.complete.gate",
+        "batchKey": "building.barracks.complete-gate",
+        "teamVariant": null,
+        "notes": null
+      },
+      {
+        "id": "barracks.standard.azure",
+        "node": "barracks.standard.azure",
+        "batchKey": "building.barracks.standard.azure",
+        "teamVariant": "azure",
+        "notes": "straight-cut-pennant"
+      },
+      {
+        "id": "barracks.standard.ember",
+        "node": "barracks.standard.ember",
+        "batchKey": "building.barracks.standard.ember",
+        "teamVariant": "ember",
+        "notes": "forked-tail-pennant"
+      }
+    ],
+    "anchors": [
+      {
+        "id": "ground",
+        "node": "barracks.anchor.ground",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "gate",
+        "node": "barracks.anchor.gate",
+        "position": [
+          0,
+          0,
+          1.45
+        ]
+      },
+      {
+        "id": "standard",
+        "node": "barracks.anchor.banner",
+        "position": [
+          0.82,
+          2.84,
+          0.92
+        ]
+      },
+      {
+        "id": "productionCue",
+        "node": "barracks.anchor.productionCue",
+        "position": [
+          0,
+          1.3,
+          1.22
+        ]
+      },
+      {
+        "id": "rallyPoint",
+        "node": "barracks.anchor.rallyPoint",
+        "position": [
+          0,
+          0,
+          2.2
+        ]
+      }
+    ],
+    "stateSamples": [
+      {
+        "id": "barracks-00-foundation",
+        "state": "foundation",
+        "buildingProgress": 0.0,
+        "visibleNodes": [
+          "barracks.foundation"
+        ],
+        "reviewFile": "previews/barracks-00-foundation-meadow-zoom-0.91-1280x720.png",
+        "reviewStatus": "rendered-source-review",
+        "notes": "A raised stone footprint anchors the construction site."
+      },
+      {
+        "id": "barracks-25-frame",
+        "state": "frame",
+        "buildingProgress": 0.25,
+        "visibleNodes": [
+          "barracks.foundation",
+          "barracks.construction.frame"
+        ],
+        "reviewFile": "previews/barracks-25-frame-meadow-zoom-0.91-1280x720.png",
+        "reviewStatus": "rendered-source-review",
+        "notes": "Tall posts and cross-braces give the early frame a distinct open silhouette."
+      },
+      {
+        "id": "barracks-50-walls",
+        "state": "walls",
+        "buildingProgress": 0.5,
+        "visibleNodes": [
+          "barracks.foundation",
+          "barracks.construction.walls"
+        ],
+        "reviewFile": "previews/barracks-50-walls-meadow-zoom-0.91-1280x720.png",
+        "reviewStatus": "rendered-source-review",
+        "notes": "Enclosed timber walls rise while the roof and finished gate remain absent."
+      },
+      {
+        "id": "barracks-75-roof",
+        "state": "roof",
+        "buildingProgress": 0.75,
+        "visibleNodes": [
+          "barracks.foundation",
+          "barracks.construction.walls",
+          "barracks.construction.roof-frame"
+        ],
+        "reviewFile": "previews/barracks-75-roof-meadow-zoom-0.91-1280x720.png",
+        "reviewStatus": "rendered-source-review",
+        "notes": "Exposed rafters and one covered slope distinguish the unfinished roof from completion."
+      },
+      {
+        "id": "barracks-100-complete",
+        "state": "complete",
+        "buildingProgress": 1.0,
+        "visibleNodes": [
+          "barracks.foundation",
+          "barracks.construction.walls",
+          "barracks.complete.roof",
+          "barracks.complete.gate",
+          "barracks.standard.azure",
+          "barracks.standard.ember"
+        ],
+        "reviewFile": "previews/barracks-100-complete-meadow-zoom-0.91-1280x720.png",
+        "reviewStatus": "rendered-source-review",
+        "notes": "Both slate slopes, the pale framed gate, and one owner-selected standard finish the Barracks."
+      }
+    ],
+    "stateSelection": "Renderer-owned: clamp progress to [0,1], select one of five ordered stateSamples; exactly one matching team standard is visible at completion.",
+    "teamVariants": [
+      {
+        "team": "azure",
+        "node": "barracks.standard.azure",
+        "shape": "straight-cut pennant with one centered bar",
+        "color": "#5AA7D7"
+      },
+      {
+        "team": "ember",
+        "node": "barracks.standard.ember",
+        "shape": "forked pennant with split bar",
+        "color": "#E67A5E"
+      }
+    ]
+  },
+  "review": {
+    "camera": {
+      "ground": "meadow",
+      "zoom": 0.91,
+      "resolution": [
+        1280,
+        720
+      ]
+    },
+    "scope": "Five individually rendered construction states at a common game camera, footprint, and origin.",
+    "knownLimits": [
+      "Source render only; renderer still uses procedural buildings and does not load this GLB.",
+      "No authored-GLB 2,000-unit performance result is claimed.",
+      "Only Azure Meadow construction views are rendered; Ember and Cinder visual review remains open."
+    ]
+  },
+  "files": [
+    {
+      "path": "PROVENANCE.md",
+      "role": "source-review-file",
+      "sha256": "00460f751020763b85d105ba3665e4e7a7a68f6e50195cda4715bf68fc39d604"
+    },
+    {
+      "path": "README.md",
+      "role": "source-review-file",
+      "sha256": "45593ab45d0478154e76ca1baf425948d1e2eee3a5292ae9f03b968f6774a1bc"
+    },
+    {
+      "path": "models/barracks-construction-v1.glb",
+      "role": "source-review-file",
+      "sha256": "0770d047807666696ecad744fdf55230feb53689e6e63711ce5b79789dd98aef"
+    },
+    {
+      "path": "previews/barracks-00-foundation-meadow-zoom-0.91-1280x720.png",
+      "role": "source-review-file",
+      "sha256": "b46109396cd6e673ec4e9e4774196daead147b0dd126b1efa78afa798ca3080e"
+    },
+    {
+      "path": "previews/barracks-100-complete-meadow-zoom-0.91-1280x720.png",
+      "role": "source-review-file",
+      "sha256": "88e63f55e91acabe9570bd257c4ad1f4934f3080c82c7e320e5cc390bdf8cd48"
+    },
+    {
+      "path": "previews/barracks-25-frame-meadow-zoom-0.91-1280x720.png",
+      "role": "source-review-file",
+      "sha256": "ebee2605a7e42d302ab5a839e9eeefe32c2bd5fc32fcd77796b93de3463f0918"
+    },
+    {
+      "path": "previews/barracks-50-walls-meadow-zoom-0.91-1280x720.png",
+      "role": "source-review-file",
+      "sha256": "a3af447f6e5bd7a81ebf6904faa87c2b7afdbffd86005b7d7227ce38c4685c82"
+    },
+    {
+      "path": "previews/barracks-75-roof-meadow-zoom-0.91-1280x720.png",
+      "role": "source-review-file",
+      "sha256": "7aa8821273af4f2f2d081adae2c8aa00155860b43629637779f010dfd03a286c"
+    },
+    {
+      "path": "source/barracks-construction-v1.blend",
+      "role": "source-review-file",
+      "sha256": "7abb77b63ad0bf7ca4dd9ce04d280a8c71e3d0109cfd95f4f386ece680ba1f3e"
+    },
+    {
+      "path": "source/build_barracks_construction_v1.py",
+      "role": "source-review-file",
+      "sha256": "63ddc3221f1987c87b12c18fb47f08b60863329a409115bc9e629ad997dadb93"
+    },
+    {
+      "path": "source/environment/oak.webp",
+      "role": "source-review-file",
+      "sha256": "dca6d091bc585e501eb19f07dc969757f0bfddd629a0bf0a9adee0bcf621a35c"
+    },
+    {
+      "path": "source/environment/pine.webp",
+      "role": "source-review-file",
+      "sha256": "1aac042f2d0aeb1ebdb93c1196a92c7628630837f2fc0496c39686f90c40b600"
+    },
+    {
+      "path": "source/environment/rock-outcrop.webp",
+      "role": "source-review-file",
+      "sha256": "2faf182a4ef467a7cea0b081d88b8efb840de9440efaf39b7e9f0385e6419cec"
+    },
+    {
+      "path": "source/frontier-material-atlas.png",
+      "role": "source-review-file",
+      "sha256": "5ebc8411d26eca453db2c2ab889e4ad8c6b3554ee8f9a6270265b8997022cef3"
+    },
+    {
+      "path": "source/game-dev-package-barracks.json",
+      "role": "source-review-file",
+      "sha256": "a35c592287c667fa183a7996dd807d1ac67331b263b5f89be99a5dae519ac78f"
+    },
+    {
+      "path": "source/pose-samples.json",
+      "role": "source-review-file",
+      "sha256": "5bb7bd4013adc077499eb05a6c367ae7fc09324866ef098f794cc683885a7133"
+    },
+    {
+      "path": "source/terrain/meadow.png",
+      "role": "source-review-file",
+      "sha256": "9268abaa3304196ca0cd774c8ae137f2c57612d57ef8cff0f46e234432af6689"
+    }
+  ]
+}

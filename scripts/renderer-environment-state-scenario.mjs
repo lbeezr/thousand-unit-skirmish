@@ -20,7 +20,6 @@ const GAME_DEV_RUN_DIR = process.env.GAME_DEV_RUN_DIR;
 const GAME_DEV_RUN_ID = process.env.GAME_DEV_RUN_ID;
 const GAME_DEV_ADAPTER_ID = process.env.GAME_DEV_ADAPTER_ID;
 const GAME_DEV_SCENARIO_ID = process.env.GAME_DEV_SCENARIO_ID;
-const LOAD_AVERAGE_LIMIT = 2;
 const HEALTH_TIMEOUT_MS = 15_000;
 const PAGE_TIMEOUT_MS = 20_000;
 const STATE_TIMEOUT_MS = 180_000;
@@ -94,13 +93,6 @@ function assertGameDevContext(expectedScenario = 'renderer-environment-state') {
     'run this opt-in capture through game-dev scenario run');
   assert.equal(GAME_DEV_ADAPTER_ID, 'thousand-unit-skirmish', 'unexpected adapter context');
   assert.equal(GAME_DEV_SCENARIO_ID, expectedScenario, 'unexpected adapter scenario context');
-}
-
-function assertLoadGate() {
-  const oneMinuteLoad = os.loadavg()[0];
-  if (Number.isFinite(oneMinuteLoad) && oneMinuteLoad > LOAD_AVERAGE_LIMIT) {
-    throw new Error(`appearance capture requires 1-minute load average <= ${LOAD_AVERAGE_LIMIT}; saw ${oneMinuteLoad.toFixed(2)}`);
-  }
 }
 
 function startChild(label, command, args, options = {}) {
@@ -676,6 +668,35 @@ async function writeCaptureManifest(frames, renderer, runDirectory, { pilotPlan 
     assert.ok(qaEvidence?.complete === true && qaEvidence.frameCount === EXPECTED_FRAME_COUNT,
       'full-matrix capture manifest requires its 40-file QA evidence handoff');
   }
+  const environmentStateCoverage = isPilot ? {
+    mode: 'pilot-preview',
+    acceptanceStatus: 'preview-only',
+    satisfiesFinalEvidenceRequirement: false,
+    tuples: pilotPlan,
+  } : {
+    mode: 'full-matrix',
+    acceptanceStatus: 'awaiting-human-art-review',
+    resourceFamilies: RESOURCE_FAMILIES.map(({ id }) => id),
+    stockSamples: [100, 50, 20, 0],
+    constructionImages: ['earthwork', 'foundation'],
+    constructionClearImage: null,
+    constructionClearAssertedWithoutScreenshot: true,
+    qaEvidence,
+  };
+  const screenshotViewport = {
+    cssWidth: VIEWPORT_WIDTH,
+    cssHeight: VIEWPORT_HEIGHT,
+    devicePixelRatio: DEVICE_PIXEL_RATIO,
+    pngPixelWidth: PNG_PIXEL_WIDTH,
+    pngPixelHeight: PNG_PIXEL_HEIGHT,
+  };
+  await writeFile(path.join(runDirectory, 'environment-state-evidence.json'), JSON.stringify({
+    schema: 'rts.environment-state-evidence.v1',
+    scenarioId: GAME_DEV_SCENARIO_ID,
+    environmentStateCoverage,
+    screenshotViewport,
+    environmentFrameEvidence: capturedFrameEvidence,
+  }, null, 2));
   const manifest = {
     schema: 'game_dev.capture.v1',
     runId: GAME_DEV_RUN_ID,
@@ -698,6 +719,7 @@ async function writeCaptureManifest(frames, renderer, runDirectory, { pilotPlan 
         'All ten runtime images were fetched, SHA-256 checked, decoded, and dimension-matched before capture.',
         'Resource stock changed through normal gathering from startingStock 100.',
         'The pilot includes active wood and food gathering frames.',
+        'Detailed state coverage, screenshot parameters, and snapshot checks are in environment-state-evidence.json.',
         'Human review is required to assess authored art appearance.',
       ] : [
         'Environment appearance capture; no performance measurements were collected.',
@@ -706,31 +728,9 @@ async function writeCaptureManifest(frames, renderer, runDirectory, { pilotPlan 
         'Resource stock changed through normal gathering from startingStock 100.',
         'Construction clear was asserted to have no decal or instance and has no screenshot frame.',
         `All 40 full-matrix PNGs were copied to ${qaEvidence?.directory || 'the documented QA evidence directory'}.`,
+        'Detailed state coverage, screenshot parameters, and snapshot checks are in environment-state-evidence.json.',
         'Human review is required to assess authored art appearance.',
       ],
-      environmentStateCoverage: isPilot ? {
-        mode: 'pilot-preview',
-        acceptanceStatus: 'preview-only',
-        satisfiesFinalEvidenceRequirement: false,
-        tuples: pilotPlan,
-      } : {
-        mode: 'full-matrix',
-        acceptanceStatus: 'awaiting-human-art-review',
-        resourceFamilies: RESOURCE_FAMILIES.map(({ id }) => id),
-        stockSamples: [100, 50, 20, 0],
-        constructionImages: ['earthwork', 'foundation'],
-        constructionClearImage: null,
-        constructionClearAssertedWithoutScreenshot: true,
-        qaEvidence,
-      },
-      screenshotViewport: {
-        cssWidth: VIEWPORT_WIDTH,
-        cssHeight: VIEWPORT_HEIGHT,
-        devicePixelRatio: DEVICE_PIXEL_RATIO,
-        pngPixelWidth: PNG_PIXEL_WIDTH,
-        pngPixelHeight: PNG_PIXEL_HEIGHT,
-      },
-      environmentFrameEvidence: capturedFrameEvidence,
     },
   };
   await writeFile(path.join(runDirectory, 'capture.json'), JSON.stringify(manifest, null, 2));
@@ -788,7 +788,6 @@ async function captureResourceState({ map, family, stage, sample, browsers, fram
     state, browsers[index], map, family, stage, sample,
   ));
   for (const zoom of zooms) {
-    assertLoadGate();
     checkInterrupted();
     await Promise.all(browsers.map((browser) => setZoom(browser, zoom.value)));
     const currentStates = await Promise.all(browsers.map((browser) => waitForMapState(
@@ -830,7 +829,6 @@ async function captureConstructionState({ map, stage, browsers, frames, runDirec
   `${stage.id} building remains in the visible ${map.id} snapshot`)
     .then((state) => state.buildings.find((row) => row.id === buildingId.id));
   for (const zoom of ZOOMS) {
-    assertLoadGate();
     checkInterrupted();
     await Promise.all(browsers.map((browser) => setZoom(browser, zoom.value)));
     const state = await waitForSnapshot(host, (snapshot) => snapshot.mapId === map.id
@@ -881,7 +879,6 @@ async function assertConstructionClearWithoutImage(map, host) {
 }
 
 async function captureEnvironmentMap({ map, browsers, frames, runDirectory, verifiedPack, evidence }) {
-  assertLoadGate();
   await selectMap(browsers[0], map.id);
   await Promise.all(browsers.map((browser) => waitForSnapshot(browser, (state) => (
     state.mapId === map.id && state.fogOfWar === true
@@ -931,7 +928,6 @@ async function captureEnvironmentPilot({ maps, browsers, frames, runDirectory, v
   const plan = buildPilotFramePlan(maps);
   let activeMapId = null;
   for (const frame of plan) {
-    assertLoadGate();
     checkInterrupted();
     const map = maps.find((candidate) => candidate.id === frame.mapId);
     const family = RESOURCE_FAMILIES.find((candidate) => candidate.id === frame.resourceFamily);
@@ -1170,7 +1166,6 @@ async function runStaticPilotPlan() {
     captureGate: {
       requiredFlags: ['--confirm', '--allow-gpu'],
       excludedFlags: ['--allow-performance'],
-      maximumOneMinuteLoadAverage: LOAD_AVERAGE_LIMIT,
     },
     captureCommand: 'game-dev scenario run renderer-environment-state-pilot --project . --confirm --allow-gpu --jsonl',
   };
@@ -1178,6 +1173,7 @@ async function runStaticPilotPlan() {
     assertGameDevContext('renderer-environment-state-pilot-plan');
     const runDirectory = path.resolve(GAME_DEV_RUN_DIR);
     await mkdir(runDirectory, { recursive: true });
+    await writeFile(path.join(runDirectory, 'pilot-plan-report.json'), JSON.stringify(report, null, 2));
     await writeFile(path.join(runDirectory, 'capture.json'), JSON.stringify({
       schema: 'game_dev.capture.v1',
       runId: GAME_DEV_RUN_ID,
@@ -1187,10 +1183,10 @@ async function runStaticPilotPlan() {
       frames: [],
       measurements: [],
       adapterEvidence: {
-        pilotPlan: report,
         notes: [
+          'Structured pilot plan is in pilot-plan-report.json; the plan is also retained in stdout.log.',
           'Plan-only output; no server, browser, WebGL context, or screenshots were started.',
-          'The capture command is gated separately and is not executed by this plan scenario.',
+          'The GPU capture command is opt-in and is not executed by this plan scenario.',
         ],
       },
     }, null, 2));
@@ -1254,6 +1250,7 @@ async function runStaticPreflight() {
     assertGameDevContext('renderer-environment-state-preflight');
     const runDirectory = path.resolve(GAME_DEV_RUN_DIR);
     await mkdir(runDirectory, { recursive: true });
+    await writeFile(path.join(runDirectory, 'preflight-report.json'), JSON.stringify(report, null, 2));
     await writeFile(path.join(runDirectory, 'capture.json'), JSON.stringify({
       schema: 'game_dev.capture.v1',
       runId: GAME_DEV_RUN_ID,
@@ -1263,8 +1260,8 @@ async function runStaticPreflight() {
       frames: [],
       measurements: [],
       adapterEvidence: {
-        preflight: report,
         notes: [
+          'Structured CPU preflight is in preflight-report.json; the report is also retained in stdout.log.',
           'CPU-only static preflight; no server, browser, WebGL context, or screenshots were started.',
           'The 40-frame plan is a declaration only and is not capture evidence.',
           'The GPU capture scenario separately verifies browser fetches and fog-visible map rows before every screenshot.',
@@ -1278,7 +1275,6 @@ async function runStaticPreflight() {
 async function run({ pilot = false } = {}) {
   const scenarioId = pilot ? 'renderer-environment-state-pilot' : 'renderer-environment-state';
   assertGameDevContext(scenarioId);
-  assertLoadGate();
   const verifiedPack = await verifyEnvironmentPack();
   const runDirectory = path.resolve(GAME_DEV_RUN_DIR);
   await mkdir(runDirectory, { recursive: true });

@@ -1,3 +1,7 @@
+import { battlefieldCursor } from './battlefield-cursor.mjs';
+import { visibleHudRects, hudSafeRect, normalizeHudPreferences } from './hud-layout.mjs';
+import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
+import { selectionContext } from './selection-context.mjs';
 import * as THREE from 'three';
 import {
   addObstacleEnvironmentSprites, createConstructionGroundInstances,
@@ -22,19 +26,40 @@ import {
   unitActionPoseAllowed, unitCargoVisualState, unitWorkerActionPose,
 } from './unit-visual-state.mjs';
 import {
-  capturePrerequisiteIds, findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
+  MAX_ELEVATION_PATCHES, buildElevationGrid, capturePrerequisiteIds,
+  findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
   findUnreachableCaptureZone, findUnreachableResourceNode, scenarioEventSourceIds,
+  validateElevationPatches,
 } from './map-utils.mjs';
+import { townCenterSpawnPosition } from './town-center-spawn.mjs';
 import { resizeWorldMarkers } from './map-resize.mjs';
+import {
+  MAX_MAP_STUDIO_ZOOM, MIN_MAP_STUDIO_ZOOM, clampMapStudioZoom,
+  mapStudioCanvasSize, mapStudioCellAtPointer,
+  mapStudioScrollAtPan, mapStudioScrollAtZoom,
+} from './map-studio-viewport.mjs';
 import { classifyOrderNotice } from './order-feedback.mjs';
 import { AMBIENCE_PREVIEW_DURATION_MS, createGameAudio } from './audio.mjs';
 import { CombatAudioGate, cueForNotice, cueForScenarioEvent, isLocalRejection } from './audio-policy.mjs';
 import {
+  AUDIO_RECOGNITION_CUE_LABELS, AUDIO_RECOGNITION_UNSURE_ANSWER,
+  copyAudioRecognitionText, createAudioRecognitionRound,
+  summarizeAudioRecognitionResponses,
+} from './audio-recognition-check.mjs';
+import {
+  cameraDepthSafePlanes,
+  cameraPanDeltaFromScreen,
+  cameraTargetForZoomAnchor,
   canEdgeScroll,
   clampCameraTargetToGroundBounds,
   edgeScrollCameraDelta,
   edgeScrollDirection,
+  shouldBlockEdgeScrollForFocus,
 } from './camera-controls.mjs';
+import {
+  cameraArrowInputAllowed, cameraTargetDeltaForScreenFocus, createCameraArrowKeys,
+  getNavigationSettings, mapFitZoom, setNavigationSettings,
+} from './navigation-settings.mjs';
 import {
   chooseUnitPickCandidate,
   isSameUnitDoubleClick,
@@ -47,6 +72,10 @@ import {
 
 let mapDefinition = null;
 let edgeScrollPointer = null;
+const heldCameraKeys = createCameraArrowKeys();
+let lastKeyboardPanTime = 0;
+let cameraMinZoom = 0.48;
+let mapFitActive = false;
 let MAP_WIDTH = 64;
 let MAP_HEIGHT = 64;
 let MAP_HALF_X = MAP_WIDTH / 2;
@@ -65,8 +94,8 @@ const MAX_MAP_TRIGGERS = 32;
 const MAX_MAP_SCENARIO_EVENTS = 32;
 const MAX_SCENARIO_EVENT_REPEATS = 20;
 const MIN_SCENARIO_EVENT_REPEAT_SECONDS = 5;
-const CAMERA_EDGE_ZONE_PX = 28;
-const CAMERA_EDGE_SPEED_PX_PER_SECOND = 420;
+const CAMERA_EDGE_ZONE_PX = 40;
+const CAMERA_EDGE_SPEED_PX_PER_SECOND = 650;
 // Full meshes failed the 0.91 worker-role gate; keep the role LOD through both required views.
 const UNIT_LOD_ZOOM_THRESHOLD = 0.91;
 const MAX_OBJECTIVE_FOOD_REWARD = 10000;
@@ -112,6 +141,10 @@ minimapBackground.height = minimapCanvas.height;
 const minimapBackgroundContext = minimapBackground.getContext('2d');
 const minimapFogCanvas = document.createElement('canvas');
 const minimapFogContext = minimapFogCanvas.getContext('2d');
+let objectiveHoldSummary = null;
+let noticeHistory = [];
+let guidanceDismissed = false;
+try { guidanceDismissed = localStorage.getItem('rts-guidance-dismissed') === 'true'; } catch {}
 const objectivePanel = document.querySelector('#objective-panel');
 const roomPageUrl = new URL(window.location.href);
 const ROOM_ID = roomPageUrl.searchParams.get('room');
@@ -196,6 +229,12 @@ const ui = {
   studioDraftRecoveryMessage: document.querySelector('#studio-draft-recovery-message'),
   studioDraftStatus: document.querySelector('#studio-draft-status'),
   studioGrid: document.querySelector('#studio-grid'),
+  studioGridViewport: document.querySelector('#studio-grid-viewport'),
+  studioGridPosition: document.querySelector('#studio-grid-position'),
+  studioGridZoomLevel: document.querySelector('#studio-grid-zoom-level'),
+  studioGridZoomIn: document.querySelector('#studio-grid-zoom-in'),
+  studioGridZoomOut: document.querySelector('#studio-grid-zoom-out'),
+  studioGridZoomFit: document.querySelector('#studio-grid-zoom-fit'),
   studioName: document.querySelector('#studio-name'),
   studioId: document.querySelector('#studio-id'),
   studioSummary: document.querySelector('#studio-summary'),
@@ -203,6 +242,7 @@ const ui = {
   studioHeight: document.querySelector('#studio-height'),
   studioTerrainBase: document.querySelector('#studio-terrain-base'),
   studioGroundBrushSize: document.querySelector('#studio-ground-brush-size'),
+  studioElevationBrushSize: document.querySelector('#studio-elevation-brush-size'),
   studioStartingArmySize: document.querySelector('#studio-starting-army-size'),
   studioStartingFood: document.querySelector('#studio-starting-food'),
   studioStartingWood: document.querySelector('#studio-starting-wood'),
@@ -263,8 +303,25 @@ const ui = {
   audioVolumeValue: document.querySelector('#audio-volume-value'),
   audioEffectsLevel: document.querySelector('#audio-effects-level'),
   audioEffectsLevelValue: document.querySelector('#audio-effects-level-value'),
+  audioPreviewControls: document.querySelector('#audio-preview-controls'),
   audioPreview: document.querySelector('#audio-preview'),
   audioPreviewCue: document.querySelector('#audio-preview-cue'),
+  audioRecognitionStart: document.querySelector('#audio-recognition-start'),
+  audioRecognitionRun: document.querySelector('#audio-recognition-run'),
+  audioRecognitionCondition: document.querySelector('#audio-recognition-condition'),
+  audioRecognitionProgress: document.querySelector('#audio-recognition-progress'),
+  audioRecognitionPrompt: document.querySelector('#audio-recognition-prompt'),
+  audioRecognitionPlay: document.querySelector('#audio-recognition-play'),
+  audioRecognitionAnswers: document.querySelector('#audio-recognition-answers'),
+  audioRecognitionFeedback: document.querySelector('#audio-recognition-feedback'),
+  audioRecognitionNext: document.querySelector('#audio-recognition-next'),
+  audioRecognitionEnd: document.querySelector('#audio-recognition-end'),
+  audioRecognitionResults: document.querySelector('#audio-recognition-results'),
+  audioRecognitionScore: document.querySelector('#audio-recognition-score'),
+  audioRecognitionResultConditions: document.querySelector('#audio-recognition-result-conditions'),
+  audioRecognitionReport: document.querySelector('#audio-recognition-report'),
+  audioRecognitionCopy: document.querySelector('#audio-recognition-copy'),
+  audioRecognitionCopyStatus: document.querySelector('#audio-recognition-copy-status'),
   audioAmbience: document.querySelector('#audio-ambience'),
   audioAmbiencePreview: document.querySelector('#audio-ambience-preview'),
   audioAmbienceLevel: document.querySelector('#audio-ambience-level'),
@@ -272,6 +329,14 @@ const ui = {
   audioStatus: document.querySelector('#audio-status'),
 };
 let ambiencePreviewPlaying = false;
+let audioRecognitionActive = false;
+let audioRecognitionTrialPlayed = false;
+let audioRecognitionAwaitingNext = false;
+let audioRecognitionCaptionState = false;
+let audioRecognitionMixSettings = null;
+let audioRecognitionRound = null;
+let audioRecognitionLastReport = '';
+const audioRecognitionAnswerButtons = [...ui.audioRecognitionAnswers.querySelectorAll('[data-audio-recognition-answer]')];
 const audio = createGameAudio({
   onStatusChange: () => syncAudioControls(),
   onCueDecision: (cue) => showAudioCaption(cue),
@@ -297,7 +362,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setClearColor(0x859175, 1);
 viewport.prepend(renderer.domElement);
-renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Push the mouse against any screen edge to scroll the camera, or middle-drag / Space-drag to pan. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
+renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Use the arrow keys to move the camera, middle drag or Space + drag to pan, scroll to zoom toward the pointer, or push the mouse against any screen edge to scroll when edge scroll is enabled. Use Center selection, Home base, or Fit map to navigate. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
 renderer.domElement.dataset.cursorMode = 'select';
 renderer.domElement.tabIndex = 0;
 
@@ -350,6 +415,10 @@ const unitLodDirtyRoleMasks = [0, 0];
 const unitLodTeamDirty = [false, false];
 let unitLowDetailActive = false;
 const mapObjects = [];
+let forestTreeSlots = new Map();
+let forestStumpSlots = new Map();
+let forestStumpMesh = null;
+let forestStumpCount = 0;
 const townCenterProductionLamps = [null, null];
 let fogTexture = null;
 let fogMesh = null;
@@ -360,6 +429,8 @@ const scenarioEventVisuals = new Map();
 let timedVictoryVisual = null;
 let victoryHoldVisual = null;
 const resourceNodeVisuals = new Map();
+let latestForestStocks = new Map();
+let latestForestEpoch = null;
 const resourceCalloutTextures = new Map();
 const woodTreeNodeSlots = new Map();
 const woodTreeNodeStages = new Map();
@@ -391,6 +462,7 @@ let editorDraftWriteTimer = 0;
 let editorCellMaterials = new Int8Array(0);
 let editorCellElevations = new Float64Array(0);
 let editorGroundMaterials = new Int8Array(0);
+let editorGroundLevels = new Uint8Array(0);
 let editorTriggers = [];
 let editorScenarioEvents = [];
 let selectedEditorTriggerId = null;
@@ -400,6 +472,8 @@ let editorResourceNodes = [];
 let selectedEditorResourceId = null;
 let editorTool = 'stone';
 let editorDrag = null;
+let editorViewZoom = 1;
+let editorPanDrag = null;
 let socket = null;
 let connectedPlayers = 0;
 let waitingForResume = false;
@@ -444,44 +518,112 @@ const ROOM_INSTANCE_STORAGE_KEY = `${SESSION_STORAGE_KEY}:instance:${location.ho
 const ROOM_MATCH_STORAGE_KEY = `${SESSION_STORAGE_KEY}:match:${location.host}:${ROOM_ID || 'default'}`;
 
 function setCamera() {
-  const distance = 125;
-  camera.position.copy(cameraTarget).addScaledVector(cameraOffset, distance);
+  const clipPlanes = cameraDepthSafePlanes({
+    halfX: MAP_HALF_X,
+    halfZ: MAP_HALF_Z,
+    targetX: cameraTarget.x,
+    targetZ: cameraTarget.z,
+    cameraOffsetX: cameraOffset.x,
+    cameraOffsetZ: cameraOffset.z,
+  });
+  if (camera.far !== clipPlanes.far) {
+    camera.far = clipPlanes.far;
+    camera.updateProjectionMatrix();
+  }
+  camera.position.copy(cameraTarget).addScaledVector(cameraOffset, clipPlanes.distance);
   camera.lookAt(cameraTarget);
   camera.updateMatrixWorld();
   if (!mapDefinition) return;
 
-  const bounds = cameraGroundBounds();
-  if (!bounds) return;
   const clampedTarget = clampCameraTargetToGroundBounds({
     x: cameraTarget.x,
     z: cameraTarget.z,
     halfX: MAP_HALF_X,
     halfZ: MAP_HALF_Z,
-    bounds,
+    anchorOffset: cameraTargetHudSafeOffset(),
   });
   if (clampedTarget.x !== cameraTarget.x || clampedTarget.z !== cameraTarget.z) {
     cameraTarget.x = clampedTarget.x;
     cameraTarget.z = clampedTarget.z;
-    camera.position.copy(cameraTarget).addScaledVector(cameraOffset, distance);
-    camera.lookAt(cameraTarget);
-    camera.updateMatrixWorld();
+    setCamera();
   }
 }
 
-function cameraGroundBounds() {
-  const corners = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
+function cameraSafeRect() {
+  return hudSafeRect(renderer.domElement.getBoundingClientRect(), visibleHudRects());
+}
+
+function cameraTargetHudSafeOffset() {
+  const rect = renderer.domElement.getBoundingClientRect();
+  const safe = cameraSafeRect();
+  const centerWorld = worldAt(rect.left + rect.width / 2, rect.top + rect.height / 2);
+  const safeWorld = worldAt(safe.left + safe.width / 2, safe.top + safe.height / 2);
+  if (!centerWorld || !safeWorld) return { x: 0, z: 0 };
+  return { x: centerWorld.x - safeWorld.x, z: centerWorld.z - safeWorld.z };
+}
+
+function projectedMapBounds() {
   const bounds = { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity };
-  for (const [x, y] of corners) {
-    pointerNdc.set(x, y);
-    raycaster.setFromCamera(pointerNdc, camera);
-    const point = raycaster.ray.intersectPlane(groundPlane, groundHit);
-    if (!point) return null;
-    bounds.left = Math.min(bounds.left, point.x);
-    bounds.right = Math.max(bounds.right, point.x);
-    bounds.top = Math.min(bounds.top, point.z);
-    bounds.bottom = Math.max(bounds.bottom, point.z);
+  const width = Math.max(1, renderer.domElement.clientWidth);
+  const height = Math.max(1, renderer.domElement.clientHeight);
+  for (const x of [-MAP_HALF_X, MAP_HALF_X]) {
+    for (const z of [-MAP_HALF_Z, MAP_HALF_Z]) {
+      const projected = new THREE.Vector3(x, 0, z).project(camera);
+      const pixelX = width * (projected.x + 1) / 2;
+      const pixelY = height * (1 - projected.y) / 2;
+      bounds.left = Math.min(bounds.left, pixelX);
+      bounds.right = Math.max(bounds.right, pixelX);
+      bounds.top = Math.min(bounds.top, pixelY);
+      bounds.bottom = Math.max(bounds.bottom, pixelY);
+    }
   }
   return bounds;
+}
+
+function getMapFitZoom() {
+  if (!mapDefinition) return 0.48;
+  const priorZoom = camera.zoom;
+  camera.zoom = 1;
+  camera.updateProjectionMatrix();
+  setCamera();
+  const projected = projectedMapBounds();
+  const safe = cameraSafeRect();
+  const fitZoom = mapFitZoom(projected, safe.width, safe.height);
+  camera.zoom = priorZoom;
+  camera.updateProjectionMatrix();
+  setCamera();
+  return fitZoom || 0.48;
+}
+
+function focusGroundPointAtScreen(point, clientX, clientY) {
+  mapFitActive = false;
+  const rect = renderer.domElement.getBoundingClientRect();
+  const projected = new THREE.Vector3(point.x, 0, point.z).project(camera);
+  const pointX = rect.left + (projected.x + 1) * rect.width / 2;
+  const pointY = rect.top + (1 - projected.y) * rect.height / 2;
+  const underPoint = worldAt(pointX, pointY);
+  const atTarget = worldAt(clientX, clientY);
+  if (!underPoint || !atTarget) return;
+  const delta = cameraTargetDeltaForScreenFocus(underPoint, atTarget);
+  cameraTarget.x += delta.x;
+  cameraTarget.z += delta.z;
+  setCamera();
+}
+
+function fitMapToViewport() {
+  if (!mapDefinition) return;
+  const safe = cameraSafeRect();
+  const fitZoom = getMapFitZoom();
+  cameraMinZoom = Math.min(0.48, fitZoom);
+  zoom = fitZoom;
+  camera.zoom = zoom;
+  camera.updateProjectionMatrix();
+  setCamera();
+  focusGroundPointAtScreen({ x: 0, z: 0 }, safe.left + safe.width / 2, safe.top + safe.height / 2);
+  mapFitActive = true;
+  resizeResourceCallouts();
+  updateResourceNodeCallouts(performance.now(), true);
+  drawMinimap(performance.now(), true);
 }
 
 function resize() {
@@ -496,6 +638,14 @@ function resize() {
   camera.zoom = zoom;
   camera.updateProjectionMatrix();
   renderer.setSize(width, height, false);
+  cameraMinZoom = Math.min(0.48, getMapFitZoom());
+  if (mapFitActive && mapDefinition) {
+    fitMapToViewport();
+  } else if (zoom < cameraMinZoom) {
+    zoom = cameraMinZoom;
+    camera.zoom = zoom;
+    camera.updateProjectionMatrix();
+  }
   setCamera();
   resizeResourceCallouts();
   updateResourceNodeCallouts(performance.now(), true);
@@ -546,16 +696,18 @@ function updateBuildingProductionCue(visual, building) {
   applyProductionCueState(visual.productionLamp, state, visual.teamColor);
 }
 
-function addTownCenterVisual(spawn) {
-  const outward = spawn.team === 0 ? -1 : 1;
-  const x = THREE.MathUtils.clamp(spawn.x + outward * 3, -MAP_HALF_X + 1.5, MAP_HALF_X - 1.5);
+function addTownCenterVisual(spawn, definition) {
+  const townCenter = townCenterSpawnPosition(
+    definition.spawnPoints, spawn.team, definition.width, definition.height,
+  );
+  const { x, z } = townCenter;
   const stone = new THREE.MeshBasicMaterial({ color: 0x9b9580 });
   const slate = new THREE.MeshBasicMaterial({ color: 0x363d3f });
   const timber = new THREE.MeshBasicMaterial({ color: 0x514333 });
   const doorMaterial = new THREE.MeshBasicMaterial({ color: 0x2d302b });
   const piece = (geometry, material, px, py, pz, angle = 0) => {
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(x + px, py, spawn.z + pz);
+    mesh.position.set(x + px, py, z + pz);
     mesh.rotation.z = angle;
     addMapObject(mesh);
     return mesh;
@@ -1381,13 +1533,7 @@ function updateResourceNodeCallouts(now, force = false) {
   const crowdThreshold = 8;
   const viewportRect = renderer.domElement.getBoundingClientRect();
   const pixelsPerWorldUnit = viewportRect.height * zoom / baseFrustum;
-  const occlusionRects = [...document.querySelectorAll(
-    '.topbar, .map-label, .topbar-center, .scenario-brief-panel, .objective-panel, .minimap-panel, .field-hint, .field-order-feedback, .control-dock, .toast, .match-result, .compass',
-  )].filter((element) => {
-    if (element.hidden || element.getClientRects().length === 0) return false;
-    const style = getComputedStyle(element);
-    return style.visibility !== 'hidden' && Number(style.opacity) !== 0;
-  }).map((element) => element.getBoundingClientRect());
+  const occlusionRects = visibleHudRects();
   for (const visual of resourceNodeVisuals.values()) {
     if (visual.stock <= 0) {
       visual.callout.visible = false;
@@ -1575,7 +1721,10 @@ function refreshResourceStateFallbackTransforms() {
 }
 
 resourceStateAssetsReady.then((status) => {
-  if (status.ready) refreshResourceStateFallbackTransforms();
+  if (status.ready) {
+    refreshResourceStateFallbackTransforms();
+    refreshForestStumpTransforms();
+  }
   if (roomPageUrl.searchParams.get('rendererCapture') === 'environment-state') {
     window.__rtsEnvironmentAssetStatus = status;
     window.__rtsEnvironmentCaptureCommand = (command) => sendCommand(command);
@@ -1653,6 +1802,70 @@ function updateFogFromState(state) {
   drawMinimap(performance.now(), true);
 }
 
+function setForestTreeVisual(cell, stock) {
+  const slot = forestTreeSlots.get(cell);
+  if (!slot) return;
+  const depleted = stock <= 0;
+  setEnvironmentSpriteInstance(slot.mesh, slot.index, slot.x, slot.z,
+    depleted ? 0 : slot.scale, slot.flip);
+  slot.mesh.instanceMatrix.needsUpdate = true;
+  const stump = forestStumpSlots.get(cell);
+  if (!stump || !forestStumpMesh) return;
+  const showStump = depleted && RESOURCE_STATE_ASSETS_AVAILABLE;
+  if (showStump !== stump.visible) {
+    forestStumpCount = Math.max(0, forestStumpCount + (showStump ? 1 : -1));
+    stump.visible = showStump;
+  }
+  setEnvironmentSpriteInstance(forestStumpMesh, stump.index, stump.x, stump.z,
+    showStump ? stump.scale : 0, stump.flip);
+  forestStumpMesh.instanceMatrix.needsUpdate = true;
+  forestStumpMesh.visible = forestStumpCount > 0;
+}
+
+function refreshForestStumpTransforms() {
+  if (!forestStumpMesh) return;
+  forestStumpCount = 0;
+  for (const [cell, stump] of forestStumpSlots) {
+    stump.visible = latestForestStocks.get(cell) === 0 && RESOURCE_STATE_ASSETS_AVAILABLE;
+    if (stump.visible) forestStumpCount++;
+    setEnvironmentSpriteInstance(forestStumpMesh, stump.index, stump.x, stump.z,
+      stump.visible ? stump.scale : 0, stump.flip);
+  }
+  forestStumpMesh.instanceMatrix.needsUpdate = true;
+  forestStumpMesh.visible = forestStumpCount > 0;
+}
+
+function applyForestState(state) {
+  if (!Number.isSafeInteger(state.forestEpoch)) return;
+  let visualChanged = false;
+  if (latestForestEpoch !== state.forestEpoch) {
+    for (const [cell, stock] of latestForestStocks) {
+      if (stock <= 0) {
+        setForestTreeVisual(cell, 1);
+        visualChanged = true;
+      }
+    }
+    latestForestStocks.clear();
+    latestForestEpoch = state.forestEpoch;
+  }
+  if (Array.isArray(state.forestStocks)) {
+    for (const row of state.forestStocks) {
+      if (!Array.isArray(row) || row.length !== 2) continue;
+      const [cell, stock] = row;
+      if (!Number.isInteger(cell) || cell < 0 || cell >= MAP_WIDTH * MAP_HEIGHT
+        || !forestTreeSlots.has(cell) || !Number.isFinite(stock) || stock < 0) continue;
+      const previousStock = latestForestStocks.get(cell);
+      if (previousStock === stock) continue;
+      latestForestStocks.set(cell, stock);
+      if ((previousStock === 0) !== (stock === 0)) {
+        setForestTreeVisual(cell, stock);
+        visualChanged = true;
+      }
+    }
+  }
+  if (visualChanged) drawMinimap(performance.now(), true);
+}
+
 function buildMap(definition) {
   fogTexture?.dispose();
   clearMapObjects();
@@ -1663,6 +1876,12 @@ function buildMap(definition) {
   timedVictoryVisual = null;
   victoryHoldVisual = null;
   resourceNodeVisuals.clear();
+  latestForestStocks.clear();
+  latestForestEpoch = null;
+  forestTreeSlots = new Map();
+  forestStumpSlots = new Map();
+  forestStumpMesh = null;
+  forestStumpCount = 0;
   latestResourceStocks = new Map();
   objectivePanel.replaceChildren();
   if (tapOrderArmed) setTapOrderArmed(false, false);
@@ -1696,20 +1915,18 @@ function buildMap(definition) {
   // Rock silhouettes carry the visual boundary. Flat block tops made the ridge
   // look like a strip of square tiles when viewed from the oblique camera.
   const obstacleCount = definition.obstacles.reduce((count, obstacle) => (
-    count + (obstacle.material === 'stone' ? 0 : obstacle.width * obstacle.height)
+    count + (obstacle.material === 'water' ? obstacle.width * obstacle.height : 0)
   ), 0);
   const obstacles = new THREE.InstancedMesh(
     new THREE.BoxGeometry(1.02, 1.12, 1.02),
     new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.94, flatShading: true }),
     obstacleCount,
   );
-  const obstacleTints = { stone: [0x444944, 0x55594f], forest: [0x304934, 0x38533b], water: [0x3e6570, 0x4d7982] };
+  const obstacleTints = [0x3e6570, 0x4d7982];
   let obstacleIndex = 0;
   for (const obstacle of definition.obstacles) {
-    if (obstacle.material === 'stone') continue;
-    const tints = obstacleTints[obstacle.material] || obstacleTints.stone;
-    const visibleHeight = obstacle.material === 'forest' ? 0.17
-      : 0.025;
+    if (obstacle.material !== 'water') continue;
+    const visibleHeight = 0.025;
     for (let row = obstacle.row; row < obstacle.row + obstacle.height; row++) {
       for (let column = obstacle.column; column < obstacle.column + obstacle.width; column++) {
         dummy.position.set(column - MAP_HALF_X + 0.5, visibleHeight / 2, row - MAP_HALF_Z + 0.5);
@@ -1717,7 +1934,7 @@ function buildMap(definition) {
         dummy.scale.set(1, visibleHeight / 1.12, 1);
         dummy.updateMatrix();
         obstacles.setMatrixAt(obstacleIndex, dummy.matrix);
-        color.setHex((row + column + obstacleIndex) % 3 === 0 ? tints[0] : tints[1]);
+        color.setHex((row + column + obstacleIndex) % 3 === 0 ? obstacleTints[0] : obstacleTints[1]);
         obstacles.setColorAt(obstacleIndex, color);
         obstacleIndex++;
       }
@@ -1728,9 +1945,21 @@ function buildMap(definition) {
   obstacles.castShadow = false;
   obstacles.receiveShadow = false;
   addMapObject(obstacles);
-  addObstacleEnvironmentSprites(definition, MAP_HALF_X, MAP_HALF_Z, addMapObject);
+  forestTreeSlots = addObstacleEnvironmentSprites(definition, MAP_HALF_X, MAP_HALF_Z, addMapObject);
+  const stumpPositions = [...forestTreeSlots].map(([cell, slot], index) => {
+    forestStumpSlots.set(cell, {
+      index, x: slot.x, z: slot.z, scale: slot.scale * 0.48,
+      flip: slot.flip, visible: false,
+    });
+    return { x: slot.x, z: slot.z, scale: 0, flip: slot.flip };
+  });
+  forestStumpMesh = createEnvironmentSpriteInstances('oak-depleted', 4.1, 3.75, stumpPositions);
+  if (forestStumpMesh) {
+    forestStumpMesh.visible = false;
+    addMapObject(forestStumpMesh);
+  }
 
-  for (const spawn of definition.spawnPoints || []) addTownCenterVisual(spawn);
+  for (const spawn of definition.spawnPoints || []) addTownCenterVisual(spawn, definition);
   buildWoodNodeInstances(definition.resourceNodes || []);
   buildBerryNodeInstances(definition.resourceNodes || []);
   for (const node of definition.resourceNodes || []) {
@@ -1948,7 +2177,7 @@ function buildMap(definition) {
   const title = document.querySelector('#map-label-title');
   const summary = document.querySelector('#map-summary');
   if (title) title.textContent = definition.name || definition.id.toUpperCase();
-  if (summary) summary.textContent = definition.summary || `${MAP_WIDTH} × ${MAP_HEIGHT}`;
+  if (summary) summary.textContent = 'Open objectives for the win rule';
   document.querySelector('#scenario-brief-name').textContent = definition.name || definition.id.toUpperCase();
   document.querySelector('#scenario-brief-summary').textContent = definition.summary || 'Control the marked objectives and protect your army.';
   const deadline = document.querySelector('#scenario-brief-deadline');
@@ -1984,6 +2213,9 @@ function buildMap(definition) {
   if (footerMap) footerMap.textContent = definition.name || definition.id.toUpperCase();
   buildMinimapBackground(definition);
   buildFogOverlay(definition);
+  objectiveHoldSummary = null;
+  noticeHistory = [];
+  document.querySelector('#notice-history').replaceChildren();
   latestObjectiveStates = new Map();
   latestScenarioEventStates = new Map();
   latestMatchElapsedSeconds = 0;
@@ -2005,6 +2237,15 @@ function buildMinimapBackground(definition) {
   context.fillRect(rect.left, rect.top, rect.width, rect.height);
   for (const patch of definition.terrainPatches || []) {
     context.fillStyle = TERRAIN_COLORS[patch.material] || TERRAIN_COLORS.meadow;
+    context.fillRect(rect.left + patch.column * rect.scale, rect.top + patch.row * rect.scale,
+      patch.width * rect.scale, patch.height * rect.scale);
+  }
+  const elevationLegend = document.querySelector('#minimap-elevation-legend');
+  const elevationPatches = definition.elevationPatches || [];
+  if (elevationLegend) elevationLegend.hidden = !elevationPatches.some((patch) => patch.level > 0);
+  for (const patch of elevationPatches) {
+    if (patch.level <= 0) continue;
+    context.fillStyle = ELEVATION_LEVEL_COLORS[patch.level];
     context.fillRect(rect.left + patch.column * rect.scale, rect.top + patch.row * rect.scale,
       patch.width * rect.scale, patch.height * rect.scale);
   }
@@ -2115,6 +2356,19 @@ function drawMinimap(now = performance.now(), force = false) {
   const height = minimapCanvas.height;
   const rect = minimapMapRect(width, height);
   context.drawImage(minimapBackground, 0, 0);
+
+  context.fillStyle = '#727e5a';
+  for (const [cell, stock] of latestForestStocks) {
+    if (stock > 0) continue;
+    const column = cell % MAP_WIDTH;
+    const row = Math.floor(cell / MAP_WIDTH);
+    context.fillRect(
+      rect.left + column * rect.scale,
+      rect.top + row * rect.scale,
+      Math.max(1, rect.scale),
+      Math.max(1, rect.scale),
+    );
+  }
 
   for (const trigger of mapDefinition.triggers || []) {
     const state = latestObjectiveStates.get(trigger.id);
@@ -2233,6 +2487,7 @@ function drawMinimap(now = performance.now(), force = false) {
 }
 
 function focusCameraFromMinimap(event) {
+  mapFitActive = false;
   const rect = minimapCanvas.getBoundingClientRect();
   const mapRect = minimapMapRect(rect.width, rect.height);
   const pixelX = THREE.MathUtils.clamp(event.clientX - rect.left, 0, rect.width);
@@ -2939,6 +3194,53 @@ function updateSelectionUI() {
     ui.selectedWaypoints.hidden = selected.size === 0 || queuedWaypointTotal === 0;
     ui.selectedWaypoints.textContent = `${queuedWaypointTotal.toLocaleString()} QUEUED WAYPOINTS · ${unitsWithQueuedWaypoints.toLocaleString()} UNITS`;
   }
+  updateContextualCommands();
+}
+
+function updateContextualCommands() {
+  const bar = document.querySelector('.contextual-command-bar');
+  if (!bar) return;
+  const building = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
+  const context = selectionContext(units, selected, localTeam, building);
+  bar.dataset.context = context.kind;
+  document.querySelector('#assign-selected-group').disabled = !context.total;
+  bar.querySelector('[data-context-summary]').textContent = building
+    ? `${buildingLabel(building.type)} · ${ui.selectedBuildingHealth.textContent} · ${ui.selectedBuildingProduction.textContent}`
+    : context.total ? `${context.total} selected${context.kind === 'military' || context.kind === 'mixed' ? ` · ${ui.formationSelect.value} formation` : ''} · ${Object.entries(context.counts).filter(([, n]) => n).map(([role, n]) => `${n} ${role}`).join(' · ')}${context.counts.worker ? ` · Cargo ${Math.floor(context.cargo.food)} food / ${Math.floor(context.cargo.wood)} wood` : ''}` : '';
+  for (const button of bar.querySelectorAll('[data-context-proxy]')) {
+    const source = document.getElementById(button.dataset.contextProxy);
+    const action = button.dataset.contextProxy;
+    button.hidden = action === 'order-target-toggle' ? context.kind === 'none'
+      : action === 'attack-move-toggle' ? !['military', 'mixed'].includes(context.kind)
+      : action === 'train-infantry' ? building?.type !== 'barracks'
+      : action === 'train-archer' ? building?.type !== 'archery-range'
+      : ['research-attack-upgrade', 'clear-building-rally'].includes(action) ? !building || source.hidden
+      : action === 'select-workers' ? context.kind !== 'mixed' : false;
+    button.disabled = source.disabled || (action.startsWith('train-') && building && (!building.complete || building.productionBlocked));
+    if (source.hasAttribute('aria-pressed')) button.setAttribute('aria-pressed', source.getAttribute('aria-pressed'));
+    if (action === 'order-target-toggle') button.textContent = tapOrderArmed ? 'Cancel target' : building ? 'Set rally' : context.kind === 'workers' ? 'Gather / move' : 'Target battlefield';
+    if (action.startsWith('train-')) {
+      button.setAttribute('aria-describedby', 'context-action-reason');
+      const reason = !building?.complete ? 'Finish construction' : building.productionBlocked ? 'Clear spawn area'
+        : source.disabled ? source.dataset.disabledReason || source.getAttribute('aria-label') : '';
+      bar.querySelector('[data-context-reason]').textContent = button.hidden ? bar.querySelector('[data-context-reason]').textContent : reason;
+    }
+  }
+  if (!building) bar.querySelector('[data-context-reason]').textContent = '';
+  bar.querySelector('[data-context-build]').hidden = context.kind !== 'workers';
+  bar.querySelector('[data-context-details]').hidden = context.kind === 'none';
+  bar.querySelector('[data-context-details]').textContent = building ? 'Rally / upgrade details' : 'Formation / route';
+  const research = bar.querySelector('[data-context-research]');
+  research.hidden = !building;
+  research.textContent = building ? `${ui.buildingRallyReadout.textContent} · ${ui.buildingResearchReadout.textContent}` : '';
+  const groups = bar.querySelector('[data-context-groups]');
+  for (let index = 0; index < 10; index++) {
+    const button = groups.children[index];
+    if (!button) continue;
+    button.hidden = !controlGroups[index].size;
+    button.textContent = `${controlGroupKeyLabel(index)} · ${controlGroups[index].size}`;
+    button.setAttribute('aria-label', `Recall group ${controlGroupKeyLabel(index)}, ${controlGroups[index].size} units`);
+  }
 }
 
 function updateControlGroupUI() {
@@ -2964,6 +3266,7 @@ function updateControlGroupUI() {
     button.title = `${count.toLocaleString()} living units · ${compositionLabel} · Ctrl/⌘ + ${number} replaces · Shift + ${number} adds · ${number} recalls`;
     button.disabled = localTeam === null;
   }
+  updateContextualCommands();
 }
 
 function controlGroupKeyLabel(index) {
@@ -3160,6 +3463,7 @@ function formatVictoryHoldTime(seconds) {
 }
 
 function updateVictoryHoldCard(hold = null, winner = -1, winnerReason = null, clockStarted = false) {
+  objectiveHoldSummary = hold;
   if (!victoryHoldVisual) return;
   const { card, status, progressFill, durationSeconds } = victoryHoldVisual;
   const activeTeams = Array.isArray(hold?.activeTeams) ? hold.activeTeams : [false, false];
@@ -3276,6 +3580,7 @@ function renderScenarioEventCountdown(now = performance.now()) {
       visual.status.textContent = remaining <= 0.1 ? `${delivery}DUE` : `${delivery}IN ${time}`;
     }
   }
+  renderObjectiveSummary(elapsed);
   if (timedVictoryVisual) {
     const { card, status, rule } = timedVictoryVisual;
     if (matchWinner >= 0) {
@@ -3294,6 +3599,16 @@ function renderScenarioEventCountdown(now = performance.now()) {
       status.textContent = remaining <= 0.1 ? 'RESOLVING' : `IN ${time}`;
     }
   }
+}
+
+function renderObjectiveSummary(elapsed = latestMatchElapsedSeconds) {
+  const summary = objectiveSummary(mapDefinition || {}, [...latestObjectiveStates.values()], {
+    team: localTeam, hold: objectiveHoldSummary, elapsed, started: latestScenarioClockStarted, winner: matchWinner,
+  });
+  document.querySelector('#map-summary').textContent = summary.action;
+  const urgent = document.querySelector('#objective-urgent');
+  urgent.textContent = summary.urgent;
+  urgent.hidden = !summary.urgent;
 }
 
 function syncMatchResultActions() {
@@ -3417,6 +3732,7 @@ function updateCommandUI() {
   if (ui.formationSelect) ui.formationSelect.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding);
   syncTargetOrderUI();
   syncBattlefieldCursor();
+  updateContextualCommands();
 }
 
 function syncTargetOrderUI() {
@@ -3613,6 +3929,7 @@ function applyState(state, initial = false) {
     ui.aliveRed.textContent = Number.isFinite(state.alive[1]) ? state.alive[1].toLocaleString() : '—';
   }
   updateFogFromState(state);
+  applyForestState(state);
   if (Array.isArray(state.objectives)) updateObjectives(state.objectives);
   updateVictoryHoldCard(state.victoryHold, state.winner, state.winnerReason, state.scenarioClockStarted);
   updateScenarioEventCards(state.scenarioEvents || [], state.matchElapsedSeconds, state.scenarioClockStarted);
@@ -3788,6 +4105,9 @@ function updateEconomyUI(state = {}, initial = false) {
   if (ui.selectWorkers) ui.selectWorkers.disabled = localTeam === null
     || ownedWorkers.length === 0;
   if (ui.selectIdleWorkers) {
+    const quickIdle = document.querySelector('#quick-idle');
+    quickIdle.disabled = idleWorkerIds.length === 0;
+    quickIdle.textContent = `Idle · ${idleWorkerIds.length}`;
     ui.selectIdleWorkers.disabled = idleWorkerIds.length === 0;
     ui.selectIdleWorkers.textContent = `Idle · ${idleWorkerIds.length}`;
     ui.selectIdleWorkers.setAttribute('aria-label', `Select idle workers (${idleWorkerIds.length})`);
@@ -3860,12 +4180,28 @@ function updateEconomyUI(state = {}, initial = false) {
       ? 'Select Workers, open Orders, then target food or wood.'
       : 'Select Workers, then right-click food or wood.';
   }
+  for (const [button, costFood, costWood, producer, queue, limit] of [
+    [ui.trainWorker, WORKER_FOOD_COST, 0, true, workerQueue, WORKER_QUEUE_LIMIT],
+    [ui.trainInfantry, INFANTRY_FOOD_COST, 0, trainableBarracks, infantryQueueLength, BARRACKS_QUEUE_LIMIT],
+    [ui.trainArcher, ARCHER_FOOD_COST, ARCHER_WOOD_COST, trainableRange, queueLength, ARCHERY_RANGE_QUEUE_LIMIT],
+  ]) {
+    if (!button) continue;
+    const reason = localTeam === null ? 'Join a team' : matchWinner >= 0 ? 'Match finished'
+      : !producer ? 'Complete a production building with spawn space'
+      : queue >= limit ? 'Queue full' : unitCapReached ? 'Unit cap reached'
+      : food < costFood || wood < costWood ? `Need ${Math.max(0, costFood - food)} food / ${Math.max(0, costWood - wood)} wood` : '';
+    button.dataset.disabledReason = reason;
+    let note = button.querySelector('.action-disabled-reason');
+    if (!note) { note = document.createElement('small'); note.className = 'action-disabled-reason'; button.append(note); }
+    note.textContent = reason;
+  }
   updateCommandUI();
 }
 
 function updateRoomUI(connected) {
   connectedPlayers = connected;
   ui.playersOnline.textContent = `${connected} / 2 PLAYERS`;
+  ui.networkStatus.parentElement.dataset.urgent = String(waitingForResume);
   ui.matchStatus.textContent = waitingForResume ? 'WAITING TO REJOIN' : connected >= 2 ? '2 / 2 ONLINE' : `${connected} / 2 ONLINE`;
   ui.matchStatus.classList.toggle('full', connected >= 2);
   ui.networkStatus.textContent = waitingForResume
@@ -3877,6 +4213,7 @@ function updateRoomUI(connected) {
 }
 
 function setConnection(status) {
+  ui.networkStatus.parentElement.dataset.urgent = String(['OFFLINE', 'RECONNECTING', 'SEAT ACTIVE ELSEWHERE', 'INVALID ROOM LINK', 'ROOM NOT FOUND'].includes(status));
   ui.networkStatus.textContent = status;
   ui.matchStatus.textContent = status;
   const waiting = status === 'CONNECTING' || status === 'RECONNECTING' || status === 'WAITING FOR PLAYER 2';
@@ -3932,8 +4269,13 @@ const EDITOR_MATERIALS = ['stone', 'forest', 'water'];
 const EDITOR_MATERIAL_COLORS = ['#596653', '#496448', '#416a78'];
 const TERRAIN_COLORS = {
   meadow: '#60734f', 'short-grass': '#6d7a45', 'long-grass': '#52643e',
+  'forest-floor': '#4b5136',
   dirt: '#806047', sand: '#ac936d', scree: '#55564d', cinder: '#554c3d',
 };
+const ELEVATION_LEVEL_COLORS = [null, 'rgba(255, 211, 109, .34)', 'rgba(246, 140, 90, .46)'];
+const ELEVATION_EDITOR_TOOLS = new Set([
+  'elevation:raise', 'elevation:lower', 'elevation:0', 'elevation:1', 'elevation:2',
+]);
 const MAP_STUDIO_DRAFT_VERSION = 1;
 const MAP_STUDIO_DRAFT_DEBOUNCE_MS = 160;
 
@@ -4008,7 +4350,7 @@ function captureMapStudioDraft() {
   saveEditorVictoryHoldFields();
   saveEditorStartingResourcesFields();
   saveSelectedEditorResourceStock();
-  const definition = {
+  const definition = withCurrentEditorElevation({
     ...editorDefinition,
     id: ui.studioId.value,
     name: ui.studioName.value,
@@ -4018,7 +4360,7 @@ function captureMapStudioDraft() {
     resourceNodes: JSON.parse(JSON.stringify(editorResourceNodes)),
     triggers: JSON.parse(JSON.stringify(editorTriggers)),
     scenarioEvents: JSON.parse(JSON.stringify(editorScenarioEvents)),
-  };
+  });
   return {
     version: MAP_STUDIO_DRAFT_VERSION,
     sourceMapId: editorDraftSourceMapId,
@@ -4083,7 +4425,8 @@ function restoreMapStudioDraft(draft) {
   syncEditorTriggerControls();
   syncEditorScenarioEventControls();
   syncEditorResourceControls();
-  setEditorTool(EDITOR_MATERIALS.includes(state.editorTool) || ['rock', 'cliff', 'ground-reset', 'erase', 'azure', 'ember', 'resource-food', 'resource-wood', 'objective'].includes(state.editorTool)
+  setEditorTool(EDITOR_MATERIALS.includes(state.editorTool) || ['rock', 'cliff', 'ground-reset', 'erase', 'azure', 'ember', 'resource-food', 'resource-wood', 'objective', 'pan'].includes(state.editorTool)
+    || ELEVATION_EDITOR_TOOLS.has(state.editorTool)
     || (typeof state.editorTool === 'string' && state.editorTool.startsWith('ground:')
       && TERRAIN_MATERIALS.includes(state.editorTool.slice(7)))
     ? state.editorTool : 'stone');
@@ -4800,6 +5143,8 @@ function populateMapEditor(definition, message) {
   }
   editorCellMaterials = new Int8Array(editorDefinition.width * editorDefinition.height);
   editorCellMaterials.fill(-1);
+  editorGroundLevels = buildElevationGrid(editorDefinition.width, editorDefinition.height,
+    editorDefinition.elevationPatches);
   editorCellElevations = new Float64Array(editorDefinition.width * editorDefinition.height);
   editorCellElevations.fill(1.12);
   for (const obstacle of editorDefinition.obstacles) {
@@ -4838,6 +5183,8 @@ function populateMapEditor(definition, message) {
   ui.studioMessage.textContent = message;
   ui.studioPublish.disabled = false;
   editorDrag = null;
+  editorPanDrag = null;
+  fitMapStudioViewport();
   setEditorTool('stone');
 }
 
@@ -4889,6 +5236,17 @@ function validateImportedMap(value) {
   if (!Number.isInteger(definition.width) || !Number.isInteger(definition.height)
     || definition.width < 16 || definition.height < 16 || definition.width > 256 || definition.height > 256) {
     throw new Error('Map width and height must be whole numbers between 16 and 256.');
+  }
+  const invalidElevationPatches = validateElevationPatches(
+    definition.width, definition.height, definition.elevationPatches,
+  );
+  if (invalidElevationPatches) {
+    const reason = invalidElevationPatches.reason === 'limit' ? 'more than 4,096 patches'
+      : invalidElevationPatches.reason === 'overlap' ? 'overlapping patches'
+        : invalidElevationPatches.reason === 'level' ? 'a level outside 0–2'
+          : invalidElevationPatches.reason === 'bounds' ? 'a patch outside the map grid'
+            : 'an invalid patch list';
+    throw new Error(`Map has invalid elevation patches: ${reason}.`);
   }
   if (definition.terrainBase !== undefined && !TERRAIN_MATERIALS.includes(definition.terrainBase)) {
     throw new Error('Map has an invalid base ground material.');
@@ -4970,8 +5328,11 @@ function validateImportedMap(value) {
     const row = Math.floor(node.z + definition.height / 2);
     if (blockedCells[row * definition.width + column]) throw new Error(`Resource node ${node.id} is on blocked terrain.`);
   }
+  const elevationLevels = (definition.elevationPatches || []).some((patch) => patch.level > 0)
+    ? buildElevationGrid(definition.width, definition.height, definition.elevationPatches) : null;
   const unreachableNode = findUnreachableResourceNode(
     definition.width, definition.height, blockedCells, definition.spawnPoints, definition.resourceNodes,
+    elevationLevels,
   );
   if (unreachableNode) {
     throw new Error(`Resource node ${unreachableNode.nodeId} must be reachable from both team spawns.`);
@@ -5041,6 +5402,7 @@ function validateImportedMap(value) {
   }
   const unreachableTrigger = findUnreachableCaptureZone(
     definition.width, definition.height, blockedCells, definition.spawnPoints, definition.triggers,
+    elevationLevels,
   );
   if (unreachableTrigger) {
     throw new Error(`Capture zone ${unreachableTrigger.triggerId} is unreachable from team ${unreachableTrigger.team}.`);
@@ -5136,10 +5498,23 @@ function isGroundEditorTool(tool) {
   return tool === 'ground-reset' || tool.startsWith('ground:');
 }
 
+function isElevationEditorTool(tool) {
+  return ELEVATION_EDITOR_TOOLS.has(tool);
+}
+
+function elevationBrushTarget(tool, currentLevel) {
+  if (tool === 'elevation:raise') return Math.min(2, currentLevel + 1);
+  if (tool === 'elevation:lower') return Math.max(0, currentLevel - 1);
+  return Number(tool.slice('elevation:'.length));
+}
+
 function setEditorTool(tool) {
   editorTool = tool;
+  ui.studioGrid.dataset.editorTool = tool;
   for (const button of document.querySelectorAll('[data-map-tool]')) {
-    button.classList.toggle('active', button.dataset.mapTool === tool);
+    const active = button.dataset.mapTool === tool;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
   }
   const hints = {
     rock: 'DRAG TO PAINT LOW ROCK OUTCROPS', stone: 'DRAG TO PAINT BASALT RIDGES',
@@ -5148,6 +5523,12 @@ function setEditorTool(tool) {
     erase: 'DRAG TO CLEAR TERRAIN', azure: 'CLICK TO PLACE AZURE SPAWN',
     ember: 'CLICK TO PLACE EMBER SPAWN', 'resource-food': 'CLICK EMPTY CELL TO PLACE · CLICK NODE TO EDIT',
     'resource-wood': 'CLICK EMPTY CELL TO PLACE · CLICK NODE TO EDIT',
+    pan: 'DRAG TO PAN · WHEEL TO ZOOM',
+    'elevation:raise': 'DRAG TO RAISE GROUND ONE LEVEL · MAX 2',
+    'elevation:lower': 'DRAG TO LOWER GROUND ONE LEVEL · MIN 0',
+    'elevation:0': 'DRAG TO LEVEL GROUND AT 0',
+    'elevation:1': 'DRAG TO LEVEL GROUND AT 1',
+    'elevation:2': 'DRAG TO LEVEL GROUND AT 2',
     objective: editorTriggerCreationPending ? 'DRAG TO PLACE A NEW CAPTURE ZONE'
       : getSelectedEditorTrigger() ? 'DRAG TO RESIZE THE SELECTED CAPTURE ZONE' : 'ADD A CAPTURE ZONE, THEN DRAG TO PLACE IT',
   };
@@ -5159,6 +5540,56 @@ function setEditorTool(tool) {
   const hint = ui.mapStudio.querySelector('.studio-grid-footer span:last-child');
   if (hint) hint.textContent = tool.startsWith('ground:')
     ? `DRAG TO BRUSH ${tool.slice(7).replace('-', ' ').toUpperCase()}` : hints[tool] || '';
+}
+
+function mapStudioViewportSize() {
+  const viewport = ui.studioGridViewport;
+  const style = window.getComputedStyle(viewport);
+  const borderWidth = Number.parseFloat(style.borderLeftWidth) + Number.parseFloat(style.borderRightWidth);
+  const borderHeight = Number.parseFloat(style.borderTopWidth) + Number.parseFloat(style.borderBottomWidth);
+  return {
+    width: Math.max(0, viewport.offsetWidth - borderWidth),
+    height: Math.max(0, viewport.offsetHeight - borderHeight),
+  };
+}
+
+function updateMapStudioZoomControls() {
+  ui.studioGridZoomLevel.value = `${Math.round(editorViewZoom * 100)}%`;
+  ui.studioGridZoomOut.disabled = editorViewZoom <= MIN_MAP_STUDIO_ZOOM;
+  ui.studioGridZoomIn.disabled = editorViewZoom >= MAX_MAP_STUDIO_ZOOM;
+}
+
+function setMapStudioZoom(zoom, anchorX, anchorY) {
+  if (!editorDefinition) return;
+  const viewport = ui.studioGridViewport;
+  const fromZoom = editorViewZoom;
+  const toZoom = clampMapStudioZoom(zoom);
+  if (toZoom === fromZoom) return;
+  const x = Number.isFinite(anchorX) ? anchorX : viewport.clientWidth / 2;
+  const y = Number.isFinite(anchorY) ? anchorY : viewport.clientHeight / 2;
+  const scroll = mapStudioScrollAtZoom({
+    scrollLeft: viewport.scrollLeft,
+    scrollTop: viewport.scrollTop,
+    anchorX: x,
+    anchorY: y,
+    fromZoom,
+    toZoom,
+  });
+  editorViewZoom = toZoom;
+  updateMapStudioZoomControls();
+  drawEditorGrid();
+  if (scroll) {
+    viewport.scrollLeft = scroll.left;
+    viewport.scrollTop = scroll.top;
+  }
+}
+
+function fitMapStudioViewport() {
+  editorViewZoom = MIN_MAP_STUDIO_ZOOM;
+  updateMapStudioZoomControls();
+  ui.studioGridViewport.scrollLeft = 0;
+  ui.studioGridViewport.scrollTop = 0;
+  drawEditorGrid();
 }
 
 function resizeEditorMap() {
@@ -5182,17 +5613,20 @@ function resizeEditorMap() {
   resized.fill(-1);
   const resizedGround = new Int8Array(width * height);
   resizedGround.fill(-1);
+  const resizedGroundLevels = new Uint8Array(width * height);
   const resizedElevations = new Float64Array(width * height);
   resizedElevations.fill(1.12);
   for (let row = 0; row < Math.min(height, oldHeight); row++) {
     for (let column = 0; column < Math.min(width, oldWidth); column++) {
       resized[row * width + column] = editorCellMaterials[row * oldWidth + column];
       resizedGround[row * width + column] = editorGroundMaterials[row * oldWidth + column];
+      resizedGroundLevels[row * width + column] = editorGroundLevels[row * oldWidth + column];
       resizedElevations[row * width + column] = editorCellElevations[row * oldWidth + column];
     }
   }
   editorCellMaterials = resized;
   editorGroundMaterials = resizedGround;
+  editorGroundLevels = resizedGroundLevels;
   editorCellElevations = resizedElevations;
   editorDefinition.width = width;
   editorDefinition.height = height;
@@ -5223,14 +5657,19 @@ function resizeEditorMap() {
 
 function editorCellFromPointer(event) {
   if (!editorDefinition) return null;
-  const rect = ui.studioGrid.getBoundingClientRect();
-  if (rect.width <= 0 || rect.height <= 0) return null;
-  return {
-    column: Math.max(0, Math.min(editorDefinition.width - 1,
-      Math.floor((event.clientX - rect.left) / rect.width * editorDefinition.width))),
-    row: Math.max(0, Math.min(editorDefinition.height - 1,
-      Math.floor((event.clientY - rect.top) / rect.height * editorDefinition.height))),
-  };
+  return mapStudioCellAtPointer({
+    clientX: event.clientX,
+    clientY: event.clientY,
+    rect: ui.studioGrid.getBoundingClientRect(),
+    mapWidth: editorDefinition.width,
+    mapHeight: editorDefinition.height,
+  });
+}
+
+function updateMapStudioCellReadout(cell) {
+  ui.studioGridPosition.textContent = cell
+    ? `CELL ${cell.column + 1}, ${cell.row + 1} · LEVEL ${editorGroundLevels[cell.row * editorDefinition.width + cell.column]}`
+    : 'CELL —';
 }
 
 function editorDragRect(drag) {
@@ -5264,14 +5703,46 @@ function paintEditorGroundStroke(drag, next) {
   }
 }
 
+function paintEditorElevationStroke(drag, next) {
+  const from = drag.current;
+  const steps = Math.max(Math.abs(next.column - from.column), Math.abs(next.row - from.row));
+  const radius = (Number(ui.studioElevationBrushSize.value) - 1) / 2;
+  const limit = (radius + 0.2) ** 2;
+  for (let step = 0; step <= steps; step++) {
+    const column = Math.round(from.column + (next.column - from.column) * step / Math.max(1, steps));
+    const row = Math.round(from.row + (next.row - from.row) * step / Math.max(1, steps));
+    for (let dy = -radius; dy <= radius; dy++) {
+      for (let dx = -radius; dx <= radius; dx++) {
+        if (dx * dx + dy * dy > limit) continue;
+        const paintedColumn = column + dx;
+        const paintedRow = row + dy;
+        if (paintedColumn < 0 || paintedRow < 0
+          || paintedColumn >= editorDefinition.width || paintedRow >= editorDefinition.height) continue;
+        drag.paintCells.add(paintedRow * editorDefinition.width + paintedColumn);
+      }
+    }
+  }
+}
+
 function drawEditorGrid() {
   if (!editorDefinition) return;
   const canvas = ui.studioGrid;
+  const viewportSize = mapStudioViewportSize();
+  const size = mapStudioCanvasSize({
+    mapWidth: editorDefinition.width,
+    mapHeight: editorDefinition.height,
+    viewportWidth: viewportSize.width,
+    viewportHeight: viewportSize.height,
+    zoom: editorViewZoom,
+  });
+  if (!size || size.width < 2 || size.height < 2) return;
+  canvas.style.width = `${size.width}px`;
+  canvas.style.height = `${size.height}px`;
   const rect = canvas.getBoundingClientRect();
   if (rect.width < 2 || rect.height < 2) return;
-  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-  const pixelWidth = Math.round(rect.width * pixelRatio);
-  const pixelHeight = Math.round(rect.height * pixelRatio);
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, editorViewZoom > 2 ? 1 : 2);
+  const pixelWidth = Math.round(size.width * pixelRatio);
+  const pixelHeight = Math.round(size.height * pixelRatio);
   if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
     canvas.width = pixelWidth;
     canvas.height = pixelHeight;
@@ -5282,6 +5753,7 @@ function drawEditorGrid() {
   context.setTransform(scaleX, 0, 0, scaleY, 0, 0);
   context.fillStyle = TERRAIN_COLORS[ui.studioTerrainBase.value] || TERRAIN_COLORS.meadow;
   context.fillRect(0, 0, editorDefinition.width, editorDefinition.height);
+  const cellPixels = Math.min(size.width / editorDefinition.width, size.height / editorDefinition.height);
   for (let row = 0; row < editorDefinition.height; row++) {
     for (let column = 0; column < editorDefinition.width; column++) {
       const index = row * editorDefinition.width + column;
@@ -5289,6 +5761,18 @@ function drawEditorGrid() {
       if (ground >= 0) {
         context.fillStyle = TERRAIN_COLORS[TERRAIN_MATERIALS[ground]];
         context.fillRect(column, row, 1, 1);
+      }
+      const level = editorGroundLevels[index];
+      if (level > 0) {
+        context.fillStyle = ELEVATION_LEVEL_COLORS[level];
+        context.fillRect(column, row, 1, 1);
+        if (cellPixels >= 10 && editorCellMaterials[index] < 0) {
+          context.fillStyle = 'rgba(24, 28, 20, .92)';
+          context.font = '0.55px monospace';
+          context.textAlign = 'center';
+          context.textBaseline = 'middle';
+          context.fillText(String(level), column + 0.5, row + 0.5);
+        }
       }
       const material = editorCellMaterials[index];
       if (material < 0) continue;
@@ -5298,6 +5782,8 @@ function drawEditorGrid() {
       context.fillRect(column + 0.06, row + 0.06, 0.88, 0.08);
     }
   }
+  context.textAlign = 'start';
+  context.textBaseline = 'alphabetic';
   for (let column = 0; column <= editorDefinition.width; column += editorDefinition.width > 128 ? 8 : 1) {
     context.beginPath();
     context.strokeStyle = column % 8 === 0 ? 'rgba(226,237,211,.32)' : 'rgba(226,237,211,.11)';
@@ -5372,7 +5858,13 @@ function drawEditorGrid() {
     context.fill();
     context.stroke();
   }
-  if (editorDrag && isGroundEditorTool(editorDrag.tool)) {
+  if (editorDrag && isElevationEditorTool(editorDrag.tool)) {
+    for (const index of editorDrag.paintCells) {
+      const level = elevationBrushTarget(editorDrag.tool, editorGroundLevels[index]);
+      context.fillStyle = level > 0 ? ELEVATION_LEVEL_COLORS[level] : 'rgba(224, 239, 202, .35)';
+      context.fillRect(index % editorDefinition.width, Math.floor(index / editorDefinition.width), 1, 1);
+    }
+  } else if (editorDrag && isGroundEditorTool(editorDrag.tool)) {
     const material = editorDrag.tool === 'ground-reset' ? ui.studioTerrainBase.value : editorDrag.tool.slice(7);
     context.fillStyle = TERRAIN_COLORS[material] || TERRAIN_COLORS.meadow;
     context.globalAlpha = 0.78;
@@ -5389,6 +5881,7 @@ function drawEditorGrid() {
     context.strokeRect(zone.column + 0.06, zone.row + 0.06, zone.width - 0.12, zone.height - 0.12);
   }
   ui.studioGridSize.textContent = `${editorDefinition.width} × ${editorDefinition.height} CELLS`;
+  updateMapStudioZoomControls();
 }
 
 function compressEditorGround() {
@@ -5423,6 +5916,50 @@ function compressEditorGround() {
     }
   }
   return patches;
+}
+
+function compressEditorElevation() {
+  const width = editorDefinition.width;
+  const height = editorDefinition.height;
+  const visited = new Uint8Array(width * height);
+  const patches = [];
+  for (let row = 0; row < height; row++) {
+    for (let column = 0; column < width; column++) {
+      const index = row * width + column;
+      const level = editorGroundLevels[index];
+      if (level === 0 || visited[index]) continue;
+      let rectangleWidth = 1;
+      while (column + rectangleWidth < width
+        && editorGroundLevels[row * width + column + rectangleWidth] === level
+        && !visited[row * width + column + rectangleWidth]) rectangleWidth++;
+      let rectangleHeight = 1;
+      while (row + rectangleHeight < height) {
+        let same = true;
+        for (let dx = 0; dx < rectangleWidth; dx++) {
+          const next = (row + rectangleHeight) * width + column + dx;
+          if (editorGroundLevels[next] !== level || visited[next]) { same = false; break; }
+        }
+        if (!same) break;
+        rectangleHeight++;
+      }
+      for (let dy = 0; dy < rectangleHeight; dy++) {
+        for (let dx = 0; dx < rectangleWidth; dx++) visited[(row + dy) * width + column + dx] = 1;
+      }
+      patches.push({ column, row, width: rectangleWidth, height: rectangleHeight, level });
+      if (patches.length > MAX_ELEVATION_PATCHES) return patches;
+    }
+  }
+  return patches;
+}
+
+function withCurrentEditorElevation(definition) {
+  const elevationPatches = compressEditorElevation();
+  if (elevationPatches.length > MAX_ELEVATION_PATCHES) {
+    throw new Error(`This map has more than ${MAX_ELEVATION_PATCHES} separate elevation patches.`);
+  }
+  if (elevationPatches.length > 0) definition.elevationPatches = elevationPatches;
+  else delete definition.elevationPatches;
+  return definition;
 }
 
 function compressEditorObstacles() {
@@ -5491,7 +6028,7 @@ function collectEditorMap() {
   if (terrainPatches.length > 4096) throw new Error('This map has too many separate ground paint patches.');
   const triggers = JSON.parse(JSON.stringify(editorTriggers));
   const scenarioEvents = JSON.parse(JSON.stringify(editorScenarioEvents));
-  return validateImportedMap({
+  const definition = withCurrentEditorElevation({
     ...editorDefinition,
     id, name, victoryMode: ui.studioVictoryMode.value,
     ...(Number(ui.studioVictoryHoldSeconds.value) > 0
@@ -5506,6 +6043,7 @@ function collectEditorMap() {
     triggers,
     scenarioEvents,
   });
+  return validateImportedMap(definition);
 }
 
 function downloadEditorMap() {
@@ -5528,6 +6066,13 @@ function downloadEditorMap() {
 }
 
 function showToast(message, duration = 1300) {
+  noticeHistory = rememberNotice(noticeHistory, message);
+  const history = document.querySelector('#notice-history');
+  history.replaceChildren(...noticeHistory.map((notice) => {
+    const item = document.createElement('li');
+    item.textContent = notice.text + (notice.count > 1 ? ` ×${notice.count}` : '');
+    return item;
+  }));
   if (isLocalRejection(message)) audio.play('reject');
   const fieldFeedback = document.querySelector('#field-order-feedback');
   if (fieldFeedback && !fieldFeedback.hidden && fieldFeedback.textContent === message) return;
@@ -5657,7 +6202,7 @@ function projectUnit(unit, rect) {
   };
 }
 
-function pickAt(x, y, predicate) {
+function pickAt(x, y, predicate, { advance = true } = {}) {
   const rect = renderer.domElement.getBoundingClientRect();
   const candidates = [];
   for (const unit of units) {
@@ -5671,19 +6216,24 @@ function pickAt(x, y, predicate) {
     if (distance < 19 * 19) candidates.push({ id: unit.id, distanceSquared: distance, depth: point.depth });
   }
   const pick = chooseUnitPickCandidate(candidates, lastUnitPickState, x, y, performance.now());
-  lastUnitPickState = pick.state;
+  if (advance) lastUnitPickState = pick.state;
   return {
     ...pick,
     unit: pick.id === null ? null : units[pick.id],
   };
 }
 
-function pickResourceNodeAt(x, y) {
+function pickResourceNodeAt(x, y, { visibleOnly = false } = {}) {
   if (localTeam === null || !Array.isArray(mapDefinition?.resourceNodes)) return null;
   const rect = renderer.domElement.getBoundingClientRect();
   let nearest = null;
   let nearestDistance = 26 * 26;
   for (const node of mapDefinition.resourceNodes) {
+    if (visibleOnly && mapDefinition.fogOfWar) {
+      const column = Math.floor(node.x + MAP_WIDTH / 2);
+      const row = Math.floor(node.z + MAP_HEIGHT / 2);
+      if (latestFogCells?.[row * MAP_WIDTH + column] !== 2) continue;
+    }
     screenPoint.set(node.x, 0.22, node.z).project(camera);
     const nodeX = (screenPoint.x * 0.5 + 0.5) * rect.width;
     const nodeY = (-screenPoint.y * 0.5 + 0.5) * rect.height;
@@ -5696,6 +6246,29 @@ function pickResourceNodeAt(x, y) {
     }
   }
   return nearest;
+}
+
+function pickForestCellAt(x, y) {
+  if (localTeam === null || forestTreeSlots.size === 0) return null;
+  const rect = renderer.domElement.getBoundingClientRect();
+  let nearestCell = null;
+  let nearestDistance = 30 * 30;
+  for (const [cell, slot] of forestTreeSlots) {
+    if (latestForestStocks.get(cell) === 0) continue;
+    if (mapDefinition?.fogOfWar && latestFogCells?.[cell] !== 2) continue;
+    screenPoint.set(slot.x, 1.25, slot.z).project(camera);
+    if (screenPoint.z < -1 || screenPoint.z > 1) continue;
+    const treeX = (screenPoint.x * 0.5 + 0.5) * rect.width;
+    const treeY = (-screenPoint.y * 0.5 + 0.5) * rect.height;
+    const dx = treeX - x;
+    const dy = treeY - y;
+    const distance = dx * dx + dy * dy;
+    if (distance < nearestDistance) {
+      nearestCell = cell;
+      nearestDistance = distance;
+    }
+  }
+  return nearestCell;
 }
 
 function pickBuildingAt(x, y, predicate = (building) => building.team === localTeam) {
@@ -5917,6 +6490,20 @@ function issueGather(node) {
   }
 }
 
+function issueForestGather(cell) {
+  if (localTeam === null) { showToast('SPECTATORS CANNOT ISSUE COMMANDS'); return; }
+  const workers = selectedIds().filter((id) => units[id]?.kind === 'worker');
+  if (workers.length === 0) {
+    showToast('SELECT WORKERS FIRST · USE THE SELECT WORKERS BUTTON');
+    return;
+  }
+  if (sendTrackedOrder({ type: 'gather', ids: workers, forestCell: cell },
+    'GATHER WOOD', workers.length, 'WORKERS')) {
+    setAttackMoveMode(false, false);
+    showToast(`GATHER WOOD · ${workers.length} WORKERS`);
+  }
+}
+
 function issueContextOrder(clientX, clientY, queueWaypoint = false) {
   if (selectedBuildingId !== null) {
     issueBuildingRallyPoint(clientX, clientY);
@@ -5941,8 +6528,12 @@ function issueContextOrder(clientX, clientY, queueWaypoint = false) {
     const node = pickResourceNodeAt(x, y);
     if (node) issueGather(node);
     else {
-      const point = worldAt(clientX, clientY);
-      if (point) issueMove(point, queueWaypoint);
+      const forestCell = pickForestCellAt(x, y);
+      if (forestCell !== null) issueForestGather(forestCell);
+      else {
+        const point = worldAt(clientX, clientY);
+        if (point) issueMove(point, queueWaypoint);
+      }
     }
   }
 }
@@ -5984,9 +6575,12 @@ function buildPlacementAt(clientX, clientY) {
         && startRow < zone.row + zone.height && zone.row < startRow + footprint) blockedReason ||= 'CAPTURE ZONE IN THIS SITE';
     }
     for (const spawn of mapDefinition.spawnPoints || []) {
-      const outward = spawn.team === 0 ? -1 : 1;
-      const townCenterX = THREE.MathUtils.clamp(spawn.x + outward * 3, -MAP_HALF_X + 1.5, MAP_HALF_X - 1.5);
-      if (Math.abs(x - townCenterX) < 2.8 && Math.abs(z - spawn.z) < 2.8) blockedReason ||= 'TOWN CENTER TOO CLOSE';
+      const townCenter = townCenterSpawnPosition(
+        mapDefinition.spawnPoints, spawn.team, mapDefinition.width, mapDefinition.height,
+      );
+      if (Math.abs(x - townCenter.x) < 2.8 && Math.abs(z - townCenter.z) < 2.8) {
+        blockedReason ||= 'TOWN CENTER TOO CLOSE';
+      }
     }
   }
   for (const team of teamUnits) {
@@ -6031,6 +6625,13 @@ function updateBuildPlacementGhost(clientX, clientY) {
 }
 
 function updateBuildPlacementHint() {
+  const guidance = document.querySelector('.field-hint');
+  const forced = buildPlacementActive || tapOrderArmed;
+  guidance.classList.toggle('guidance-dismissed', guidanceDismissed && !forced);
+  const guidanceToggle = document.querySelector('#guidance-toggle');
+  guidanceToggle.hidden = forced;
+  guidanceToggle.textContent = guidanceDismissed ? 'Show hints' : 'Hide hints';
+  guidanceToggle.setAttribute('aria-expanded', String(!guidanceDismissed));
   const activeLabel = buildingLabel(buildPlacementType);
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
   if (ui.fieldHintPrimaryKey) ui.fieldHintPrimaryKey.textContent = coarsePointer ? 'TAP' : 'LMB';
@@ -6059,20 +6660,43 @@ function updateBuildPlacementHint() {
 }
 
 function setBattlefieldCursor(mode) {
-  renderer.domElement.dataset.cursorMode = mode;
+  if (renderer.domElement.dataset.cursorMode !== mode) renderer.domElement.dataset.cursorMode = mode;
 }
 
-function syncBattlefieldCursor({ hoveringResource = false } = {}) {
-  if (pan) setBattlefieldCursor('panning');
-  else if (spaceDown) setBattlefieldCursor('pan');
-  else if (drag && movedPointer) setBattlefieldCursor('box-select');
-  else if (buildPlacementActive) {
-    setBattlefieldCursor(ui.placementStatus?.dataset.state === 'blocked' ? 'build-blocked' : 'build-valid');
-  } else if (tapOrderArmed) {
-    const selectedBuilding = selectedBuildingId !== null;
-    setBattlefieldCursor(selectedBuilding ? 'rally' : hoveringResource ? 'gather' : attackMoveMode ? 'attack-move' : 'move');
-  } else if (attackMoveMode) setBattlefieldCursor('attack-move');
-  else setBattlefieldCursor('select');
+function syncBattlefieldCursor() {
+  const ids = selectedIds();
+  const ownedBuilding = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
+  const state = {
+    panning: Boolean(pan), panReady: spaceDown, dragging: Boolean(drag && movedPointer),
+    crossing: Boolean(drag && drag.currentX < drag.startX),
+    canOrder: localTeam !== null && matchWinner < 0,
+    building: buildPlacementActive, buildValid: ui.placementStatus?.dataset.state === 'clear',
+    selectedBuilding: selectedBuildingId !== null,
+    rallySupported: Boolean(ownedBuilding && ['barracks', 'archery-range'].includes(ownedBuilding.type)),
+    count: ids.length, workers: ids.some((id) => units[id].kind === 'worker'),
+    military: ids.some((id) => units[id].kind !== 'worker'),
+    attackMove: attackMoveMode, armed: tapOrderArmed, shift: cursorShift,
+  };
+  // Picking is read-only here: hovering must never cycle an overlapping target stack.
+  if (cursorPointer && state.canOrder && !state.panning && !state.panReady && !state.dragging
+      && !state.building && !state.selectedBuilding) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    const x = cursorPointer.x - rect.left, y = cursorPointer.y - rect.top;
+    if (ids.length) {
+      state.enemy = Boolean(pickAt(x, y, (unit) => unit.team !== localTeam, { advance: false }).unit);
+      if (!state.enemy) state.enemyBuilding = Boolean(pickBuildingAt(x, y, (building) => building.team !== localTeam));
+      if (!state.enemy && !state.enemyBuilding) {
+        state.resource = pickResourceNodeAt(x, y, { visibleOnly: true })?.type;
+        if (!state.resource) state.forest = pickForestCellAt(x, y) !== null;
+      }
+    }
+    if (cursorShift) {
+      const friendly = pickAt(x, y, (unit) => unit.team === localTeam, { advance: false }).unit;
+      state.friendly = Boolean(friendly);
+      state.alreadySelected = Boolean(friendly && selected.has(friendly.id));
+    }
+  }
+  setBattlefieldCursor(battlefieldCursor(state));
 }
 
 function cancelBuildPlacement(announce = true) {
@@ -6083,6 +6707,7 @@ function cancelBuildPlacement(announce = true) {
   pendingBuildBaseline = new Set();
   placementGhost.visible = false;
   updateBuildPlacementHint();
+  if (typeof closeDockDetails === 'function') closeDockDetails({ restoreFocus: false });
   updateEconomyUI();
   if (announce && wasActive) showToast(`${buildingLabel(buildPlacementType)} PLACEMENT CANCELLED`);
 }
@@ -6113,6 +6738,7 @@ function beginBuildPlacement(type) {
   pendingBuildOrderToken = null;
   pendingBuildBaseline = new Set(latestBuildings.filter((building) => building.team === localTeam).map((building) => building.id));
   updateBuildPlacementHint();
+  if (typeof closeDockDetails === 'function') closeDockDetails({ restoreFocus: false });
   updateEconomyUI();
   showToast(window.matchMedia('(pointer: coarse)').matches
     ? `${label} SITE · TAP TO PLACE · TAP BUILD AGAIN TO CANCEL`
@@ -6239,6 +6865,9 @@ function resumeConstruction() {
   }
 }
 
+let cursorPointer = null;
+let cursorShift = false;
+let lastCursorSample = 0;
 let drag = null;
 let pan = null;
 let spaceDown = false;
@@ -6267,8 +6896,24 @@ document.addEventListener('pointerout', (event) => {
 renderer.domElement.addEventListener('wheel', (event) => {
   event.preventDefault();
   lastUnitPickState = null;
-  zoom = THREE.MathUtils.clamp(zoom * Math.exp(-event.deltaY * 0.001), 0.48, 2.3);
-  resize();
+  const nextZoom = THREE.MathUtils.clamp(zoom * Math.exp(-event.deltaY * 0.001), cameraMinZoom, 2.3);
+  if (nextZoom === zoom) return;
+  mapFitActive = false;
+  const anchorBeforeZoom = worldAt(event.clientX, event.clientY);
+  zoom = nextZoom;
+  camera.zoom = zoom;
+  camera.updateProjectionMatrix();
+  setCamera();
+  const anchorAfterZoom = worldAt(event.clientX, event.clientY);
+  if (anchorBeforeZoom && anchorAfterZoom) {
+    const target = cameraTargetForZoomAnchor(cameraTarget, anchorBeforeZoom, anchorAfterZoom);
+    cameraTarget.x = target.x;
+    cameraTarget.z = target.z;
+    setCamera();
+  }
+  resizeResourceCallouts();
+  updateResourceNodeCallouts(performance.now(), true);
+  drawMinimap(performance.now(), true);
 }, { passive: false });
 
 document.addEventListener('pointerdown', (event) => {
@@ -6300,6 +6945,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
   if (event.button === 1 || (event.button === 0 && spaceDown)) {
     lastFriendlyUnitClick = null;
     lastUnitPickState = null;
+    mapFitActive = false;
     pan = { x: event.clientX, y: event.clientY };
     syncBattlefieldCursor();
     renderer.domElement.setPointerCapture(event.pointerId);
@@ -6332,14 +6978,23 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
   selectionBox.style.height = '0px';
 });
 
+renderer.domElement.addEventListener('pointerleave', () => { cursorPointer = null; });
 renderer.domElement.addEventListener('pointermove', (event) => {
+  cursorPointer = { x: event.clientX, y: event.clientY };
+  cursorShift = event.shiftKey;
   if (tapOrderPointer?.id === event.pointerId) return;
   if (pan) {
     const dx = event.clientX - pan.x;
     const dy = event.clientY - pan.y;
-    const unitsPerPixel = baseFrustum / (viewport.clientHeight * zoom);
-    cameraTarget.x -= (dx - dy * 0.65) * unitsPerPixel * 0.7;
-    cameraTarget.z += (dx + dy * 0.65) * unitsPerPixel * 0.7;
+    const delta = cameraPanDeltaFromScreen({
+      dx,
+      dy,
+      viewportHeight: viewport.clientHeight,
+      baseFrustum,
+      zoom,
+    });
+    cameraTarget.x += delta.x;
+    cameraTarget.z += delta.z;
     pan = { x: event.clientX, y: event.clientY };
     setCamera();
     return;
@@ -6350,10 +7005,10 @@ renderer.domElement.addEventListener('pointermove', (event) => {
   }
   const rect = renderer.domElement.getBoundingClientRect();
   if (!drag) {
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    const hoveringResource = tapOrderArmed && selectedBuildingId === null && Boolean(pickResourceNodeAt(x, y));
-    syncBattlefieldCursor({ hoveringResource });
+    if (performance.now() - lastCursorSample >= 80) {
+      lastCursorSample = performance.now();
+      syncBattlefieldCursor();
+    }
     return;
   }
   drag.currentX = event.clientX - rect.left;
@@ -6479,11 +7134,56 @@ const matchMenuToggle = document.querySelector('#match-menu-toggle');
 const helpToggle = document.querySelector('#help-toggle');
 const appShell = document.querySelector('.app-shell');
 const fullscreenToggle = document.querySelector('#fullscreen-toggle');
+const cameraSpeedInput = document.querySelector('#camera-speed');
+const cameraSpeedValue = document.querySelector('#camera-speed-value');
+const edgeScrollInput = document.querySelector('#edge-scroll-enabled');
 const fullscreenSupported = Boolean(document.fullscreenEnabled
   && typeof appShell?.requestFullscreen === 'function'
   && typeof document.exitFullscreen === 'function');
 const commandDock = document.querySelector('.control-dock');
 const dockTabs = [...document.querySelectorAll('[data-dock-tab]')];
+const dockToggle = document.querySelector('#dock-toggle');
+const contextualBar = document.querySelector('.contextual-command-bar');
+if (contextualBar) {
+  const syncContextHeight = () => document.querySelector('.workspace').style.setProperty('--context-bar-height', `${contextualBar.getBoundingClientRect().height}px`);
+  new ResizeObserver(syncContextHeight).observe(contextualBar);
+  syncContextHeight();
+}
+let dockOpener = dockToggle;
+function closeDockDetails({ restoreFocus = false } = {}) {
+  commandDock.hidden = true;
+  dockToggle.setAttribute('aria-expanded', 'false');
+  clearHeldCameraKeys();
+  if (restoreFocus) (dockOpener?.isConnected && dockOpener.getClientRects().length ? dockOpener : document.querySelector('.contextual-command-bar button') || dockToggle).focus();
+}
+dockToggle.addEventListener('click', () => {
+  if (commandDock.hidden) selectDockTab(commandDock.dataset.activePanel || 'selection', true);
+  else closeDockDetails({ restoreFocus: true });
+});
+document.querySelector('#dock-close').addEventListener('click', () => closeDockDetails({ restoreFocus: true }));
+document.querySelector('#quick-army').addEventListener('click', selectMilitary);
+document.querySelector('#quick-idle').addEventListener('click', () => ui.selectIdleWorkers.click());
+let hudPreferences;
+try { hudPreferences = normalizeHudPreferences(JSON.parse(localStorage.getItem('skirmish-hud') || '{}')); }
+catch { hudPreferences = normalizeHudPreferences(); }
+function applyHudPreferences(changes = {}) {
+  hudPreferences = normalizeHudPreferences({ ...hudPreferences, ...changes });
+  appShell.dataset.hudDensity = hudPreferences.density;
+  appShell.dataset.minimapSize = hudPreferences.minimap;
+  document.querySelector('.minimap-panel').hidden = hudPreferences.minimap === 'hidden';
+  document.querySelector('#minimap-reopen').hidden = hudPreferences.minimap !== 'hidden';
+  document.querySelector('#hud-density').value = hudPreferences.density;
+  document.querySelector('#hud-minimap').value = hudPreferences.minimap;
+  document.querySelector('#minimap-size-toggle').setAttribute('aria-label', hudPreferences.minimap === 'large' ? 'Shrink tactical map' : 'Enlarge tactical map');
+  document.querySelector('#minimap-size-toggle').textContent = hudPreferences.minimap === 'large' ? '−' : '+';
+  try { localStorage.setItem('skirmish-hud', JSON.stringify(hudPreferences)); } catch { /* Storage may be unavailable. */ }
+}
+applyHudPreferences();
+document.querySelector('#hud-density').addEventListener('change', (event) => applyHudPreferences({ density: event.target.value }));
+document.querySelector('#hud-minimap').addEventListener('change', (event) => applyHudPreferences({ minimap: event.target.value }));
+document.querySelector('#minimap-size-toggle').addEventListener('click', () => applyHudPreferences({ minimap: hudPreferences.minimap === 'large' ? 'small' : 'large' }));
+document.querySelector('#minimap-hide').addEventListener('click', () => { applyHudPreferences({ minimap: 'hidden' }); document.querySelector('#minimap-reopen').focus(); });
+document.querySelector('#minimap-reopen').addEventListener('click', () => { applyHudPreferences({ minimap: 'small' }); document.querySelector('#minimap-size-toggle').focus(); });
 
 function syncFullscreenToggle() {
   const isFullscreen = document.fullscreenElement === appShell;
@@ -6497,6 +7197,58 @@ function syncFullscreenToggle() {
 }
 
 syncFullscreenToggle();
+function syncNavigationControls() {
+  const settings = getNavigationSettings();
+  cameraSpeedInput.value = String(Math.round(settings.cameraSpeed * 100));
+  cameraSpeedValue.value = `${Math.round(settings.cameraSpeed * 100)}%`;
+  edgeScrollInput.checked = settings.edgeScrollEnabled;
+}
+syncNavigationControls();
+cameraSpeedInput.addEventListener('input', () => {
+  setNavigationSettings({ cameraSpeed: Number(cameraSpeedInput.value) / 100 });
+  syncNavigationControls();
+});
+edgeScrollInput.addEventListener('change', () => {
+  setNavigationSettings({ edgeScrollEnabled: edgeScrollInput.checked });
+  if (!edgeScrollInput.checked) edgeScrollPointer = null;
+});
+
+function centerCameraOnSelection() {
+  const building = latestBuildings.find((item) => item.id === selectedBuildingId && item.team === localTeam);
+  if (building) {
+    const safe = cameraSafeRect();
+    focusGroundPointAtScreen({ x: building.x, z: building.z },
+      safe.left + safe.width / 2, safe.top + safe.height / 2);
+    drawMinimap(performance.now(), true);
+    return;
+  }
+  const selectedUnits = [...selected].map((id) => units[id]).filter((unit) => unit && unit.hp > 0);
+  if (selectedUnits.length === 0) {
+    showToast('SELECT A UNIT OR BUILDING FIRST');
+    return;
+  }
+  const point = selectedUnits.reduce((center, unit) => ({ x: center.x + unit.renderX, z: center.z + unit.renderZ }), { x: 0, z: 0 });
+  point.x /= selectedUnits.length;
+  point.z /= selectedUnits.length;
+  const safe = cameraSafeRect();
+  focusGroundPointAtScreen(point, safe.left + safe.width / 2, safe.top + safe.height / 2);
+  drawMinimap(performance.now(), true);
+}
+
+function centerCameraOnHomeBase() {
+  if (!mapDefinition || localTeam === null) {
+    showToast('YOUR TOWN CENTER IS NOT AVAILABLE');
+    return;
+  }
+  const point = townCenterSpawnPosition(mapDefinition.spawnPoints, localTeam, MAP_WIDTH, MAP_HEIGHT);
+  const safe = cameraSafeRect();
+  focusGroundPointAtScreen(point, safe.left + safe.width / 2, safe.top + safe.height / 2);
+  drawMinimap(performance.now(), true);
+}
+
+document.querySelector('#camera-center-selection').addEventListener('click', centerCameraOnSelection);
+document.querySelector('#camera-home-base').addEventListener('click', centerCameraOnHomeBase);
+document.querySelector('#camera-fit-map').addEventListener('click', fitMapToViewport);
 fullscreenToggle.addEventListener('click', async () => {
   if (!fullscreenSupported) return;
   try {
@@ -6519,12 +7271,14 @@ function closeHudPanels({ restoreFocus = false } = {}) {
   hudScrim.hidden = true;
   matchMenuToggle.setAttribute('aria-expanded', 'false');
   helpToggle.setAttribute('aria-expanded', 'false');
+  clearHeldCameraKeys();
   if (restoreFocus) trigger?.focus();
 }
 
 function closeScenarioBrief({ restoreFocus = false } = {}) {
   scenarioBriefPanel.hidden = true;
   scenarioBriefToggle.setAttribute('aria-expanded', 'false');
+  clearHeldCameraKeys();
   if (restoreFocus) scenarioBriefToggle.focus();
 }
 
@@ -6532,6 +7286,7 @@ function toggleHudPanel(panel, trigger) {
   const opening = panel.hidden;
   if (tapOrderArmed) setTapOrderArmed(false, false);
   closeHudPanels();
+  closeDockDetails();
   if (!opening) return;
   panel.hidden = false;
   hudScrim.hidden = false;
@@ -6541,7 +7296,12 @@ function toggleHudPanel(panel, trigger) {
 
 function selectDockTab(name, focus = false) {
   if (name !== 'command' && tapOrderArmed) setTapOrderArmed(false, false);
+  if (commandDock.hidden) dockOpener = document.activeElement instanceof HTMLElement && document.activeElement.matches('button, [tabindex]') && !commandDock.contains(document.activeElement) ? document.activeElement : document.querySelector('.contextual-command-bar button') || dockToggle;
+  closeScenarioBrief();
+  commandDock.hidden = false;
+  dockToggle.setAttribute('aria-expanded', 'true');
   commandDock.dataset.activePanel = name;
+  for (const panel of commandDock.querySelectorAll(':scope > [role="tabpanel"]')) panel.hidden = panel.id !== `dock-${name}`;
   for (const tab of dockTabs) {
     const selected = tab.dataset.dockTab === name;
     tab.setAttribute('aria-selected', String(selected));
@@ -6563,6 +7323,7 @@ scenarioBriefToggle.addEventListener('click', () => {
   if (tapOrderArmed) setTapOrderArmed(false, false);
   closeHudPanels();
   closeScenarioBrief();
+  closeDockDetails();
   if (!opening) return;
   scenarioBriefPanel.hidden = false;
   scenarioBriefToggle.setAttribute('aria-expanded', 'true');
@@ -6589,15 +7350,22 @@ for (const button of document.querySelectorAll('[data-open-dock-tab]')) {
   button.addEventListener('click', () => selectDockTab(button.dataset.openDockTab, true));
 }
 selectDockTab('selection');
+closeDockDetails();
+document.querySelector('#guidance-toggle').addEventListener('click', () => {
+  guidanceDismissed = !guidanceDismissed;
+  try { localStorage.setItem('rts-guidance-dismissed', String(guidanceDismissed)); } catch {}
+  updateBuildPlacementHint();
+});
 updateBuildPlacementHint();
 window.addEventListener('keydown', (event) => {
   if (document.fullscreenElement === appShell && event.key === 'Escape') return;
-  if (event.key !== 'Escape' || (matchMenu.hidden && helpPanel.hidden && scenarioBriefPanel.hidden)
+  if (event.key !== 'Escape' || (matchMenu.hidden && helpPanel.hidden && scenarioBriefPanel.hidden && commandDock.hidden)
     || document.querySelector('dialog[open]')) return;
   event.preventDefault();
   event.stopImmediatePropagation();
   if (!scenarioBriefPanel.hidden) closeScenarioBrief({ restoreFocus: true });
-  else closeHudPanels({ restoreFocus: true });
+  else if (!matchMenu.hidden || !helpPanel.hidden) closeHudPanels({ restoreFocus: true });
+  else closeDockDetails({ restoreFocus: true });
 }, true);
 
 const AUDIO_CAPTIONS = Object.freeze({
@@ -6646,18 +7414,26 @@ function syncAudioControls() {
   ui.audioAmbience.checked = settings.ambience;
   ui.audioAmbienceLevel.value = String(Math.round(settings.ambienceLevel * 100));
   ui.audioAmbienceLevelValue.value = `${Math.round(settings.ambienceLevel * 100)}%`;
-  ui.audioVolume.disabled = !settings.enabled;
-  ui.audioEffectsLevel.disabled = !settings.enabled;
-  ui.audioAmbience.disabled = !settings.enabled;
-  ui.audioAmbienceLevel.disabled = !settings.enabled || !settings.ambience;
+  ui.audioEnabled.disabled = audioRecognitionActive;
+  ui.audioCaptions.disabled = audioRecognitionActive;
+  ui.audioVolume.disabled = !settings.enabled || audioRecognitionActive;
+  ui.audioEffectsLevel.disabled = !settings.enabled || audioRecognitionActive;
+  ui.audioAmbience.disabled = !settings.enabled || audioRecognitionActive;
+  ui.audioAmbienceLevel.disabled = !settings.enabled || !settings.ambience || audioRecognitionActive;
   const status = audio.getStatus();
   ui.audioStatus.dataset.state = status;
   const previewDisabled = status === 'muted' || status === 'unavailable' || status === 'closed'
     || settings.effectsLevel <= 0;
-  ui.audioPreview.disabled = previewDisabled;
-  ui.audioPreviewCue.disabled = previewDisabled;
+  ui.audioPreview.disabled = previewDisabled || audioRecognitionActive;
+  ui.audioPreviewCue.disabled = previewDisabled || audioRecognitionActive;
+  ui.audioPreviewControls.hidden = audioRecognitionActive;
+  ui.audioRecognitionStart.disabled = previewDisabled || audioRecognitionActive;
+  ui.audioRecognitionPlay.disabled = previewDisabled || !audioRecognitionActive || audioRecognitionAwaitingNext;
+  for (const button of audioRecognitionAnswerButtons) {
+    button.disabled = previewDisabled || !audioRecognitionTrialPlayed;
+  }
   ui.audioAmbiencePreview.disabled = ambiencePreviewPlaying || status === 'muted' || status === 'unavailable' || status === 'closed'
-    || !settings.ambience || settings.ambienceLevel <= 0;
+    || !settings.ambience || settings.ambienceLevel <= 0 || audioRecognitionActive;
   ui.audioStatus.textContent = {
     running: 'SOUND READY', waiting: 'SOUND STARTS WITH FIRST INPUT', muted: 'SOUND MUTED',
     silent: 'NO AUDIBLE CHANNELS',
@@ -6674,6 +7450,131 @@ ui.audioCaptions.addEventListener('change', () => {
 ui.audioVolume.addEventListener('input', () => { audio.setSettings({ volume: Number(ui.audioVolume.value) / 100 }); syncAudioControls(); });
 ui.audioEffectsLevel.addEventListener('input', () => { audio.setSettings({ effectsLevel: Number(ui.audioEffectsLevel.value) / 100 }); syncAudioControls(); });
 ui.audioPreview.addEventListener('click', () => { audio.unlock(); audio.preview(ui.audioPreviewCue.value); });
+function renderAudioRecognitionTrial() {
+  const trial = audioRecognitionRound?.current();
+  if (!trial) return false;
+  audioRecognitionTrialPlayed = false;
+  audioRecognitionAwaitingNext = false;
+  ui.audioRecognitionProgress.textContent = `SAMPLE ${trial.position} OF ${trial.total}`;
+  ui.audioRecognitionPrompt.textContent = 'Play the sample, then choose what it means.';
+  ui.audioRecognitionPlay.textContent = 'Play sample';
+  ui.audioRecognitionAnswers.hidden = false;
+  ui.audioRecognitionFeedback.textContent = 'No cue label is shown until you answer.';
+  ui.audioRecognitionNext.hidden = true;
+  syncAudioControls();
+  return true;
+}
+
+function endAudioRecognitionCheck({ showResults = false } = {}) {
+  if (showResults && audioRecognitionRound) {
+    const responses = audioRecognitionRound.responses;
+    const summary = summarizeAudioRecognitionResponses(responses, {
+      captionsEnabled: audioRecognitionCaptionState,
+      mixSettings: audioRecognitionMixSettings,
+    });
+    ui.audioRecognitionScore.textContent = summary.score;
+    ui.audioRecognitionResultConditions.textContent = summary.conditions ? `MIX · ${summary.conditions}` : '';
+    audioRecognitionLastReport = summary.report;
+    ui.audioRecognitionReport.textContent = summary.report;
+    ui.audioRecognitionCopyStatus.textContent = 'Copies only when you choose; nothing is sent.';
+    ui.audioRecognitionResults.hidden = false;
+    ui.audioRecognitionStart.textContent = 'Run again';
+  } else {
+    audioRecognitionLastReport = '';
+    ui.audioRecognitionResultConditions.textContent = '';
+    ui.audioRecognitionResults.hidden = true;
+    ui.audioRecognitionStart.textContent = 'Start check';
+  }
+  audioRecognitionActive = false;
+  audioRecognitionTrialPlayed = false;
+  audioRecognitionAwaitingNext = false;
+  audioRecognitionRound = null;
+  audioRecognitionMixSettings = null;
+  ui.audioRecognitionRun.hidden = true;
+  ui.audioRecognitionNext.hidden = true;
+  clearAudioCaption();
+  syncAudioControls();
+}
+
+ui.audioRecognitionStart.addEventListener('click', () => {
+  audio.unlock();
+  clearAudioCaption();
+  audioRecognitionLastReport = '';
+  audioRecognitionRound = createAudioRecognitionRound();
+  const settings = audio.getSettings();
+  audioRecognitionCaptionState = settings.captions;
+  audioRecognitionMixSettings = {
+    volume: settings.volume,
+    effectsLevel: settings.effectsLevel,
+    ambience: settings.ambience,
+    ambienceLevel: settings.ambienceLevel,
+  };
+  audioRecognitionActive = true;
+  ui.audioRecognitionCondition.textContent = audioRecognitionCaptionState
+    ? 'CAPTIONS ON · NORMAL CAPTIONS ARE PART OF THIS CHECK'
+    : 'CAPTIONS OFF · FIXED FOR THIS CHECK';
+  ui.audioRecognitionResults.hidden = true;
+  ui.audioRecognitionRun.hidden = false;
+  ui.audioRecognitionNext.hidden = true;
+  renderAudioRecognitionTrial();
+  syncAudioControls();
+  ui.audioRecognitionPlay.focus();
+});
+
+ui.audioRecognitionPlay.addEventListener('click', () => {
+  const trial = audioRecognitionRound?.current();
+  if (!audioRecognitionActive || !trial) return;
+  audio.unlock();
+  if (!audio.preview(trial.cue)) {
+    ui.audioRecognitionFeedback.textContent = 'The sample did not play. Check the audio output settings and try again.';
+    return;
+  }
+  audioRecognitionTrialPlayed = true;
+  ui.audioRecognitionPlay.textContent = 'Replay sample';
+  ui.audioRecognitionFeedback.textContent = 'Choose what you heard.';
+  syncAudioControls();
+});
+
+for (const button of audioRecognitionAnswerButtons) {
+  button.addEventListener('click', () => {
+    if (!audioRecognitionActive || !audioRecognitionTrialPlayed) return;
+    const response = audioRecognitionRound.submit(button.dataset.audioRecognitionAnswer);
+    if (!response) return;
+    audioRecognitionTrialPlayed = false;
+    audioRecognitionAwaitingNext = true;
+    ui.audioRecognitionAnswers.hidden = true;
+    const answerFeedback = response.answer === AUDIO_RECOGNITION_UNSURE_ANSWER
+      ? 'Marked not sure.'
+      : response.correct ? 'Correct.' : 'Not quite.';
+    ui.audioRecognitionFeedback.textContent = `${answerFeedback} It was ${AUDIO_RECOGNITION_CUE_LABELS[response.cue]}.`;
+    ui.audioRecognitionNext.textContent = audioRecognitionRound.current() ? 'Next sample' : 'See results';
+    ui.audioRecognitionNext.hidden = false;
+    syncAudioControls();
+  });
+}
+
+ui.audioRecognitionNext.addEventListener('click', () => {
+  if (audioRecognitionRound?.current()) {
+    renderAudioRecognitionTrial();
+    ui.audioRecognitionPlay.focus();
+    return;
+  }
+  endAudioRecognitionCheck({ showResults: true });
+  ui.audioRecognitionStart.focus();
+});
+
+ui.audioRecognitionEnd.addEventListener('click', () => {
+  endAudioRecognitionCheck();
+  ui.audioRecognitionStart.focus();
+});
+ui.audioRecognitionCopy.addEventListener('click', async () => {
+  if (!audioRecognitionLastReport) return;
+  if (await copyAudioRecognitionText(audioRecognitionLastReport)) {
+    ui.audioRecognitionCopyStatus.textContent = 'Copied. Paste these notes into the audio playtest log.';
+  } else {
+    ui.audioRecognitionCopyStatus.textContent = 'Clipboard unavailable. Open trial notes and copy them manually.';
+  }
+});
 ui.audioAmbience.addEventListener('change', () => { audio.setSettings({ ambience: ui.audioAmbience.checked }); syncAudioControls(); });
 ui.audioAmbiencePreview.addEventListener('click', () => {
   audio.unlock();
@@ -6696,6 +7597,61 @@ function keyboardTargetIsEditing(event) {
     || Boolean(target?.closest('input, textarea, select, [contenteditable], dialog, [role="tab"]'));
 }
 
+function clearHeldCameraKeys() {
+  heldCameraKeys.clear();
+  lastKeyboardPanTime = 0;
+}
+
+function cameraNavigationKeydown(event) {
+  if (!cameraArrowInputAllowed({
+    key: event.key,
+    altKey: event.altKey,
+    ctrlKey: event.ctrlKey,
+    metaKey: event.metaKey,
+    shiftKey: event.shiftKey,
+    defaultPrevented: event.defaultPrevented,
+    mapAvailable: Boolean(mapDefinition),
+    pageVisible: document.visibilityState === 'visible',
+    dialogOpen: Boolean(document.querySelector('dialog[open]')),
+    menuOpen: !matchMenu.hidden || !helpPanel.hidden || !scenarioBriefPanel.hidden,
+    mapStudioOpen: ui.mapStudio.open,
+    buildPlacement: buildPlacementActive,
+    selectionDragging: Boolean(drag),
+    manualPan: Boolean(pan),
+    targetOrder: Boolean(tapOrderArmed || tapOrderPointer),
+    editingTarget: keyboardTargetIsEditing(event),
+  })) return false;
+  heldCameraKeys.press(event.key);
+  event.preventDefault();
+  return true;
+}
+
+function moveKeyboardCamera(now) {
+  if (heldCameraKeys.pressed.length === 0) return;
+  if (document.visibilityState !== 'visible' || keyboardTargetIsEditing({ target: document.activeElement })
+    || ui.mapStudio.open || document.querySelector('dialog[open]') || buildPlacementActive
+    || drag || pan || tapOrderArmed || tapOrderPointer) {
+    clearHeldCameraKeys();
+    return;
+  }
+  const elapsed = lastKeyboardPanTime ? Math.min(0.1, (now - lastKeyboardPanTime) / 1000) : 0;
+  lastKeyboardPanTime = now;
+  if (elapsed <= 0) return;
+  const direction = heldCameraKeys.direction();
+  const pixels = 650 * getNavigationSettings().cameraSpeed * elapsed;
+  const delta = cameraPanDeltaFromScreen({
+    dx: -direction.x * pixels,
+    dy: -direction.y * pixels,
+    viewportHeight: Math.max(1, viewport.clientHeight),
+    baseFrustum,
+    zoom,
+  });
+  mapFitActive = false;
+  cameraTarget.x += delta.x;
+  cameraTarget.z += delta.z;
+  setCamera();
+}
+
 function controlGroupIndexFromKey(event) {
   const digitCode = /^(?:Digit|Numpad)([0-9])$/.exec(event.code);
   const digit = digitCode?.[1] ?? (/^[0-9]$/.test(event.key) ? event.key : null);
@@ -6709,6 +7665,7 @@ window.addEventListener('keydown', (event) => {
   lastUnitPickState = null;
   if (document.fullscreenElement === appShell && event.key === 'Escape') return;
   const editing = keyboardTargetIsEditing(event);
+  if (cameraNavigationKeydown(event)) return;
   const buttonFocused = event.target instanceof Element && Boolean(event.target.closest('button'));
   if (event.code === 'Space') {
     if (!editing && !buttonFocused) {
@@ -6761,14 +7718,22 @@ window.addEventListener('keydown', (event) => {
     updateSelectionUI();
   }
 });
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Shift') { cursorShift = true; syncBattlefieldCursor(); }
+});
 window.addEventListener('keyup', (event) => {
+  if (event.key === 'Shift') { cursorShift = false; syncBattlefieldCursor(); }
+  if (event.key.startsWith('Arrow')) heldCameraKeys.release(event.key);
   if (event.code !== 'Space') return;
   spaceDown = false;
   syncBattlefieldCursor();
 });
 window.addEventListener('blur', () => {
+  cursorPointer = null;
+  cursorShift = false;
   if (tapOrderArmed) setTapOrderArmed(false, false);
   spaceDown = false;
+  clearHeldCameraKeys();
   pan = null;
   edgeScrollPointer = null;
   syncBattlefieldCursor();
@@ -6777,7 +7742,14 @@ window.addEventListener('blur', () => {
   lastUnitPickState = null;
 });
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState !== 'visible') edgeScrollPointer = null;
+  if (document.visibilityState !== 'visible') {
+    edgeScrollPointer = null;
+    clearHeldCameraKeys();
+  }
+});
+document.addEventListener('focusin', (event) => {
+  if (event.target instanceof Element
+    && event.target.closest('input, textarea, select, [contenteditable], dialog, [role="tab"]')) clearHeldCameraKeys();
 });
 
 for (const button of document.querySelectorAll('.size-options button')) {
@@ -6860,6 +7832,10 @@ ui.studioImportFile.addEventListener('change', async () => {
 document.querySelector('#studio-width').addEventListener('change', resizeEditorMap);
 document.querySelector('#studio-height').addEventListener('change', resizeEditorMap);
 ui.studioGroundBrushSize.addEventListener('change', () => {
+  setEditorTool(editorTool);
+  scheduleMapStudioDraftSave();
+});
+ui.studioElevationBrushSize.addEventListener('change', () => {
   setEditorTool(editorTool);
   scheduleMapStudioDraftSave();
 });
@@ -6982,7 +7958,22 @@ for (const button of document.querySelectorAll('[data-map-tool]')) {
   button.addEventListener('click', () => setEditorTool(button.dataset.mapTool));
 }
 ui.studioGrid.addEventListener('pointerdown', (event) => {
-  if (!editorDefinition || event.button !== 0) return;
+  if (!editorDefinition) return;
+  const shouldPan = event.button === 1 || (event.button === 0 && editorTool === 'pan');
+  if (shouldPan) {
+    editorPanDrag = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      scrollLeft: ui.studioGridViewport.scrollLeft,
+      scrollTop: ui.studioGridViewport.scrollTop,
+    };
+    ui.studioGrid.classList.add('is-panning');
+    ui.studioGrid.setPointerCapture(event.pointerId);
+    event.preventDefault();
+    return;
+  }
+  if (event.button !== 0) return;
   const cell = editorCellFromPointer(event);
   if (!cell) return;
   if (editorTool === 'resource-food' || editorTool === 'resource-wood') {
@@ -7046,27 +8037,58 @@ ui.studioGrid.addEventListener('pointerdown', (event) => {
   if (isGroundEditorTool(editorTool)) {
     editorDrag.paintCells = new Set();
     paintEditorGroundStroke(editorDrag, cell);
+  } else if (isElevationEditorTool(editorTool)) {
+    editorDrag.paintCells = new Set();
+    paintEditorElevationStroke(editorDrag, cell);
   }
   ui.studioGrid.setPointerCapture(event.pointerId);
   drawEditorGrid();
   event.preventDefault();
 });
 ui.studioGrid.addEventListener('pointermove', (event) => {
+  const cell = editorCellFromPointer(event);
+  updateMapStudioCellReadout(cell);
+  if (editorPanDrag) {
+    if (editorPanDrag.pointerId !== event.pointerId) return;
+    const scroll = mapStudioScrollAtPan({
+      scrollLeft: editorPanDrag.scrollLeft,
+      scrollTop: editorPanDrag.scrollTop,
+      startX: editorPanDrag.startX,
+      startY: editorPanDrag.startY,
+      clientX: event.clientX,
+      clientY: event.clientY,
+    });
+    if (scroll) {
+      ui.studioGridViewport.scrollLeft = scroll.left;
+      ui.studioGridViewport.scrollTop = scroll.top;
+    }
+    return;
+  }
   if (!editorDrag) return;
-  const next = editorCellFromPointer(event);
-  if (next) {
-    if (isGroundEditorTool(editorDrag.tool)) paintEditorGroundStroke(editorDrag, next);
-    editorDrag.current = next;
+  if (cell) {
+    if (isGroundEditorTool(editorDrag.tool)) paintEditorGroundStroke(editorDrag, cell);
+    else if (isElevationEditorTool(editorDrag.tool)) paintEditorElevationStroke(editorDrag, cell);
+    editorDrag.current = cell;
   }
   drawEditorGrid();
 });
+ui.studioGrid.addEventListener('pointerleave', () => {
+  if (!editorDrag && !editorPanDrag) updateMapStudioCellReadout(null);
+});
 function finishEditorPointer(event, commit) {
+  if (editorPanDrag) {
+    if (editorPanDrag.pointerId !== event.pointerId) return;
+    editorPanDrag = null;
+    ui.studioGrid.classList.remove('is-panning');
+    return;
+  }
   if (!editorDrag) return;
   const drag = editorDrag;
   editorDrag = null;
   if (commit) {
     const next = editorCellFromPointer(event) || drag.current;
     if (isGroundEditorTool(drag.tool)) paintEditorGroundStroke(drag, next);
+    else if (isElevationEditorTool(drag.tool)) paintEditorElevationStroke(drag, next);
     drag.current = next;
     const bounds = editorDragRect(drag);
     if (drag.tool === 'objective') {
@@ -7105,6 +8127,19 @@ function finishEditorPointer(event, commit) {
         syncEditorTriggerControls();
         ui.studioMessage.textContent = `Capture zone “${trigger.name}” set to ${bounds.width} × ${bounds.height} cells.`;
       }
+    } else if (isElevationEditorTool(drag.tool)) {
+      let changedCells = 0;
+      for (const index of drag.paintCells) {
+        const nextLevel = elevationBrushTarget(drag.tool, editorGroundLevels[index]);
+        if (nextLevel === editorGroundLevels[index]) continue;
+        editorGroundLevels[index] = nextLevel;
+        changedCells++;
+      }
+      const action = drag.tool === 'elevation:raise' ? 'Raised'
+        : drag.tool === 'elevation:lower' ? 'Lowered' : `Set to level ${drag.tool.slice('elevation:'.length)} at`;
+      ui.studioMessage.textContent = changedCells > 0
+        ? `${action} ${changedCells} ground cell${changedCells === 1 ? '' : 's'}.`
+        : 'No ground levels changed.';
     } else if (isGroundEditorTool(drag.tool)) {
       const material = drag.tool === 'ground-reset' ? -1
         : TERRAIN_MATERIALS.indexOf(drag.tool.slice(7));
@@ -7146,11 +8181,24 @@ function finishEditorPointer(event, commit) {
 }
 ui.studioGrid.addEventListener('pointerup', (event) => finishEditorPointer(event, true));
 ui.studioGrid.addEventListener('pointercancel', (event) => finishEditorPointer(event, false));
+ui.studioGridZoomIn.addEventListener('click', () => setMapStudioZoom(editorViewZoom * 1.25));
+ui.studioGridZoomOut.addEventListener('click', () => setMapStudioZoom(editorViewZoom / 1.25));
+ui.studioGridZoomFit.addEventListener('click', fitMapStudioViewport);
+ui.studioGridViewport.addEventListener('wheel', (event) => {
+  if (!editorDefinition || !ui.mapStudio.open) return;
+  event.preventDefault();
+  const rect = ui.studioGridViewport.getBoundingClientRect();
+  const anchorX = event.clientX - rect.left - ui.studioGridViewport.clientLeft;
+  const anchorY = event.clientY - rect.top - ui.studioGridViewport.clientTop;
+  setMapStudioZoom(editorViewZoom * Math.exp(-event.deltaY * 0.0015), anchorX, anchorY);
+}, { passive: false });
 ui.mapStudio.addEventListener('close', () => {
   window.clearTimeout(editorDraftWriteTimer);
   editorDraftWriteTimer = 0;
   persistMapStudioDraft(true);
   editorDrag = null;
+  editorPanDrag = null;
+  ui.studioGrid.classList.remove('is-panning');
   ui.studioPublish.disabled = false;
   editorDefinition = null;
   editorDraftSourceMapId = null;
@@ -7488,7 +8536,13 @@ let fpsTime = 0;
 let renderStatsTime = 0;
 let lastIdlePoseStep = -1;
 function animate(now) {
+  if (cursorPointer && now - lastCursorSample >= 100) {
+    lastCursorSample = now;
+    if (buildPlacementActive) updateBuildPlacementGhost(cursorPointer.x, cursorPointer.y);
+    else syncBattlefieldCursor();
+  }
   requestAnimationFrame(animate);
+  moveKeyboardCamera(now);
   syncUnitDetailLevel();
   renderScenarioEventCountdown(now);
   animateBuildingCombatFeedback(now);
@@ -7502,13 +8556,22 @@ function animate(now) {
     const hoveredElement = insideViewport ? document.elementFromPoint(edgeScrollPointer.x, edgeScrollPointer.y) : null;
     const hudControlHovered = hoveredElement instanceof Element
       && Boolean(hoveredElement.closest(
-        'button, a[href], input, select, textarea, [contenteditable="true"], [role="button"], [role="tab"], .control-dock, .minimap-panel, .objective-panel',
+        'button, a[href], input, select, textarea, [contenteditable="true"], [role="button"], [role="tab"], .control-dock, .hud-quick-access, .contextual-command-bar, #minimap-canvas, .minimap-panel, .objective-panel, .scenario-brief-panel, .match-result, #art-review-panel',
       ));
+    const activeElement = document.activeElement;
+    const hudControlFocused = activeElement instanceof Element
+      && shouldBlockEdgeScrollForFocus({
+        editable: activeElement.matches('input, select, textarea, [contenteditable="true"]'),
+        keyboardFocusedControl: activeElement.matches(
+          'button, a[href], [role="button"], [role="tab"], [tabindex]:not([tabindex="-1"])',
+        ) && activeElement.matches(':focus-visible'),
+      });
+    const settings = getNavigationSettings();
     const eligible = canEdgeScroll({
       pointerType: edgeScrollPointer.pointerType,
       buttons: edgeScrollPointer.buttons,
       insideViewport,
-      mapAvailable: Boolean(mapDefinition),
+      mapAvailable: Boolean(mapDefinition) && settings.edgeScrollEnabled,
       pageVisible: document.visibilityState === 'visible',
       selectionDragging: Boolean(drag),
       manualPan: Boolean(pan),
@@ -7518,15 +8581,17 @@ function animate(now) {
       dialogOpen: Boolean(document.querySelector('dialog[open]')),
       hudPanelOpen: !matchMenu.hidden || !helpPanel.hidden || !scenarioBriefPanel.hidden || !hudScrim.hidden,
       hudControlHovered,
+      hudControlFocused,
     });
     if (eligible) {
       const direction = edgeScrollDirection(localX, localY, rect.width, rect.height, CAMERA_EDGE_ZONE_PX);
       if (direction.x || direction.y) {
-        const pixels = CAMERA_EDGE_SPEED_PX_PER_SECOND * frameDelta;
+        const pixels = CAMERA_EDGE_SPEED_PX_PER_SECOND * settings.cameraSpeed * frameDelta;
         const unitsPerPixel = baseFrustum / (Math.max(1, viewport.clientHeight) * zoom);
         const delta = edgeScrollCameraDelta(direction.x, direction.y, pixels, unitsPerPixel);
         cameraTarget.x += delta.x;
         cameraTarget.z += delta.z;
+        mapFitActive = false;
         setCamera();
       }
     }
@@ -7621,3 +8686,21 @@ function animate(now) {
 }
 
 requestAnimationFrame(animate);
+
+for (const button of document.querySelectorAll('[data-context-proxy]')) {
+  button.addEventListener('click', () => { document.getElementById(button.dataset.contextProxy).click(); updateContextualCommands(); });
+}
+for (const button of document.querySelectorAll('[data-context-panel]')) {
+  button.addEventListener('click', () => selectDockTab(button.dataset.contextPanel, true));
+}
+for (let index = 0; index < 10; index++) {
+  const button = document.createElement('button');
+  button.type = 'button'; button.hidden = true;
+  button.addEventListener('click', () => recallControlGroup(index));
+  document.querySelector('[data-context-groups]').append(button);
+}
+document.querySelector('#assign-selected-group').addEventListener('click', () => {
+  assignControlGroup(Number(document.querySelector('#assign-group-slot').value));
+  updateContextualCommands();
+});
+updateContextualCommands();

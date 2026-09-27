@@ -200,7 +200,7 @@ export function createGameAudio({
   }
 
   function noiseBurst(start, duration, { centerFrequency = 1400, gain = 0.04, destination = effects } = {}) {
-    if (!context || voiceCount >= voiceLimit || transientVoiceCount >= 2) return;
+    if (!context || transientVoiceCount >= 2) return;
     transientVoiceCount++;
     let source;
     let filter;
@@ -273,7 +273,7 @@ export function createGameAudio({
 
   function play(cue, { preview = false } = {}) {
     if (!(cue in COOLDOWN_MS)) return false;
-    if (!preview && !doc?.hidden) {
+    if (!doc?.hidden && (!preview || settings.captions)) {
       try { onCueDecision?.(cue); } catch {}
     }
     if (!settings.enabled || settings.volume <= 0 || settings.effectsLevel <= 0 || doc?.hidden) return false;

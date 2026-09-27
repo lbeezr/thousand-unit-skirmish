@@ -7,6 +7,14 @@ import { mkdir, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/p
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { configuredPublicOrigins, sameOriginRequest } from './origin-policy.mjs';
+import {
+  buildRoomWorkerEnvironment,
+  completeRoomLaunchOptions,
+  normalizeRoomIndex,
+  normalizeRoomMetadata,
+  roomIndexDocument,
+  roomResponseMetadata,
+} from './src/room-launch-options.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const WORKER_PATH = path.join(ROOT, 'server.mjs');
@@ -31,6 +39,7 @@ const DEFAULT_MAP_DIRECTORY = path.resolve(ROOT, process.env.RTS_CUSTOM_MAP_DIRE
   || (VOLUME_MOUNT_PATH ? path.join(VOLUME_MOUNT_PATH, 'custom-maps') : 'custom-maps'));
 const WORKER_START_TIMEOUT_MS = 15_000;
 const WORKER_STOP_TIMEOUT_MS = 7_000;
+const MAX_ROOM_OPTIONS_BYTES = 4096;
 const INDEX_SAVE_INTERVAL_MS = 20_000;
 const ROOM_SWEEP_INTERVAL_MS = 60_000;
 
@@ -69,15 +78,18 @@ let defaultWorker = null;
 let defaultWorkerStarting = null;
 let indexSaveQueue = Promise.resolve();
 
-function makeRoom(id, timestamps = {}) {
+function makeRoom(id, values = {}) {
   const directory = path.join(ROOM_DIRECTORY, id);
+  const roomMetadata = normalizeRoomMetadata({ mapId: values.mapId });
   return {
     id,
     directory,
     customMapDirectory: path.join(directory, 'custom-maps'),
     matchStatePath: path.join(directory, 'match-state.json'),
-    createdAt: Number.isFinite(timestamps.createdAt) ? timestamps.createdAt : Date.now(),
-    lastActiveAt: Number.isFinite(timestamps.lastActiveAt) ? timestamps.lastActiveAt : Date.now(),
+    createdAt: Number.isFinite(values.createdAt) ? values.createdAt : Date.now(),
+    lastActiveAt: Number.isFinite(values.lastActiveAt) ? values.lastActiveAt : Date.now(),
+    launchOptions: completeRoomLaunchOptions(values.launchOptions),
+    mapId: roomMetadata?.mapId ?? null,
     lastIndexWriteAt: 0,
     activeConnections: 0,
     worker: null,
@@ -87,10 +99,7 @@ function makeRoom(id, timestamps = {}) {
 
 function persistRoomIndex() {
   const operation = indexSaveQueue.catch(() => {}).then(async () => {
-    const payload = {
-      version: 1,
-      rooms: [...rooms.values()].map(({ id, createdAt, lastActiveAt }) => ({ id, createdAt, lastActiveAt })),
-    };
+    const payload = roomIndexDocument([...rooms.values()]);
     await mkdir(ROOM_DATA_DIRECTORY, { recursive: true });
     const temporaryPath = `${ROOM_INDEX_PATH}.${process.pid}.tmp`;
     await writeFile(temporaryPath, JSON.stringify(payload), { mode: 0o600 });
@@ -108,21 +117,11 @@ async function loadRooms() {
   try {
     const index = JSON.parse(await readFile(ROOM_INDEX_PATH, 'utf8'));
     indexState = 'invalid';
-    if (index?.version === 1 && Array.isArray(index.rooms)) {
-      const seenIds = new Set();
-      validIndex = index.rooms.every((entry) => {
-        const valid = entry && typeof entry === 'object'
-          && ROOM_ID_PATTERN.test(entry.id || '')
-          && Number.isFinite(entry.createdAt)
-          && Number.isFinite(entry.lastActiveAt)
-          && !seenIds.has(entry.id);
-        if (valid) seenIds.add(entry.id);
-        return valid;
-      });
-      if (validIndex) {
-        savedRooms = index.rooms;
-        indexState = 'valid';
-      }
+    const normalized = normalizeRoomIndex(index);
+    if (normalized) {
+      validIndex = true;
+      savedRooms = normalized.rooms;
+      indexState = 'valid';
     }
   } catch (error) {
     if (error.code !== 'ENOENT') indexState = 'invalid';
@@ -140,10 +139,7 @@ async function loadRooms() {
       try {
         if (!(await stat(directory)).isDirectory()) continue;
       } catch { continue; }
-      rooms.set(entry.id, makeRoom(entry.id, {
-        createdAt: entry.createdAt,
-        lastActiveAt: entry.lastActiveAt,
-      }));
+      rooms.set(entry.id, makeRoom(entry.id, entry));
       retained.add(entry.id);
     }
   } else {
@@ -213,7 +209,41 @@ function sendJson(response, status, value) {
   response.end(body);
 }
 
-async function createRoom() {
+async function readRoomLaunchOptions(request) {
+  const chunks = [];
+  let byteLength = 0;
+  let tooLarge = false;
+  for await (const chunk of request) {
+    byteLength += chunk.length;
+    if (byteLength > MAX_ROOM_OPTIONS_BYTES) {
+      tooLarge = true;
+      continue;
+    }
+    chunks.push(chunk);
+  }
+  if (tooLarge) {
+    const error = new Error('Room launch options are too large.');
+    error.statusCode = 413;
+    throw error;
+  }
+  const body = Buffer.concat(chunks).toString('utf8').trim();
+  if (!body) return completeRoomLaunchOptions();
+  let value;
+  try { value = JSON.parse(body); }
+  catch {
+    const error = new Error('Room launch options must be valid JSON.');
+    error.statusCode = 400;
+    throw error;
+  }
+  try { return completeRoomLaunchOptions(value); }
+  catch (cause) {
+    const error = new Error(String(cause.message || cause));
+    error.statusCode = 400;
+    throw error;
+  }
+}
+
+async function createRoom(launchOptions = { mode: 'pvp' }) {
   if (rooms.size >= MAX_ROOMS) {
     const error = new Error('Room capacity reached. Close an idle invite room and try again later.');
     error.statusCode = 429;
@@ -221,7 +251,7 @@ async function createRoom() {
   }
   let id;
   do { id = randomBytes(24).toString('base64url'); } while (rooms.has(id));
-  const room = makeRoom(id);
+  const room = makeRoom(id, { launchOptions: completeRoomLaunchOptions(launchOptions) });
   rooms.set(id, room);
   try {
     await mkdir(room.customMapDirectory, { recursive: true });
@@ -251,9 +281,10 @@ function logWorkerOutput(label, stream, isError = false) {
   });
 }
 
-function startWorker(customMapDirectory, matchStatePath, label) {
+function startWorker(customMapDirectory, matchStatePath, label, launchOptions = { mode: 'pvp' }) {
   return new Promise((resolve, reject) => {
-    const { RTS_ACCESS_PASSWORD: _accessPassword, ...workerEnvironment } = process.env;
+    const { RTS_ACCESS_PASSWORD: _accessPassword, ...parentEnvironment } = process.env;
+    const workerEnvironment = buildRoomWorkerEnvironment(parentEnvironment, launchOptions);
     const child = spawn(process.execPath, [WORKER_PATH], {
       cwd: ROOT,
       env: {
@@ -284,7 +315,8 @@ function startWorker(customMapDirectory, matchStatePath, label) {
       if (settled || message?.type !== 'ready' || !Number.isInteger(message.port) || message.port < 1) return;
       settled = true;
       clearTimeout(timeout);
-      resolve({ child, port: message.port });
+      const roomMetadata = normalizeRoomMetadata(message.roomMetadata);
+      resolve({ child, port: message.port, ...(roomMetadata ? { roomMetadata } : {}) });
     });
     child.once('error', fail);
     child.once('exit', (code, signal) => {
@@ -299,8 +331,14 @@ async function ensureRoomWorker(room) {
   if (room.starting) return room.starting;
   room.starting = (async () => {
     await mkdir(room.customMapDirectory, { recursive: true });
-    const worker = await startWorker(room.customMapDirectory, room.matchStatePath, `room ${room.id.slice(0, 8)}`);
+    const worker = await startWorker(
+      room.customMapDirectory, room.matchStatePath, `room ${room.id.slice(0, 8)}`, room.launchOptions,
+    );
     room.worker = worker;
+    if (worker.roomMetadata?.mapId && room.mapId !== worker.roomMetadata.mapId) {
+      room.mapId = worker.roomMetadata.mapId;
+      void persistRoomIndex().catch((error) => console.error('Could not save room index:', error));
+    }
     worker.child.once('exit', () => {
       if (room.worker !== worker) return;
       room.worker = null;
@@ -319,7 +357,9 @@ async function ensureDefaultWorker() {
   if (defaultWorkerStarting) return defaultWorkerStarting;
   defaultWorkerStarting = (async () => {
     await mkdir(DEFAULT_MAP_DIRECTORY, { recursive: true });
-    const worker = await startWorker(DEFAULT_MAP_DIRECTORY, DEFAULT_MATCH_STATE_PATH, 'default room');
+    const worker = await startWorker(
+      DEFAULT_MAP_DIRECTORY, DEFAULT_MATCH_STATE_PATH, 'default room', { mode: 'pvp' },
+    );
     defaultWorker = worker;
     worker.child.once('exit', (code, signal) => {
       if (defaultWorker !== worker) return;
@@ -483,11 +523,15 @@ async function handleRequest(request, response) {
   }
 
   if (url.pathname === '/api/rooms' && request.method === 'POST') {
-    if (!sameOrigin(request)) { sendJson(response, 403, { error: 'Cross-origin room creation is not allowed.' }); return; }
-    request.resume();
+    if (!sameOrigin(request)) {
+      request.resume();
+      sendJson(response, 403, { error: 'Cross-origin room creation is not allowed.' });
+      return;
+    }
     try {
-      const room = await createRoom();
-      sendJson(response, 201, { roomId: room.id });
+      const launchOptions = await readRoomLaunchOptions(request);
+      const room = await createRoom(launchOptions);
+      sendJson(response, 201, { roomId: room.id, ...roomResponseMetadata(room) });
     } catch (error) {
       sendJson(response, Number.isInteger(error.statusCode) ? error.statusCode : 500, { error: String(error.message || error) });
     }
@@ -504,7 +548,7 @@ async function handleRequest(request, response) {
       sendJson(response, 404, { error: 'Room expired.' });
       return;
     }
-    sendJson(response, 200, { ok: true, roomId: room.id });
+    sendJson(response, 200, { ok: true, roomId: room.id, ...roomResponseMetadata(room) });
     return;
   }
 

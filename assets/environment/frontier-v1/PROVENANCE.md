@@ -13,6 +13,7 @@ Original environment art generated for Thousand Unit Skirmish on 25 September 20
 | `cinder.png` | `exec-5f4d4837-9628-4e9d-b241-da937b3297b8.png` | `c8bfcf36f98d66d4bd07d4ae5a77fe05bd61e650854ff1ef5a926df49d7da67a` |
 | `short-grass.png` | `exec-98199c5e-302e-43f4-a4e9-c1c93ab958b6.png` | `e10a2bd76c8733c6037f743345c7a189686b78faa85a4affac9aaa2298955a2a` |
 | `long-grass.png` | `exec-f9166259-a969-46bb-a850-05784fd5a28e.png` | `b43fa5c95c2c00d0452eaca03b406429fb941d3f71be8895bac09d17b73b8de3` |
+| `forest-floor.png` | `exec-f350bdbe-e15e-4332-a2a8-02f247521708.png` | `e091cea3db9dd870e7b1c39b67504cd8daf798d9e87d75bb2bad32d4ce187a70` |
 | `dirt.png` | `exec-7ffb3c1e-d6ce-4546-9b2b-471449b76780.png` | `f442a560c029c431a61f5bdc358b550ecff3425ee6984053a33124c32e71b1dd` |
 | `sand.png` | `exec-98b2f839-b3cb-43b0-aff3-1a78e1f86675.png` | `e8a7e948f8ceb869b9a0fef00797f265559f1af3ddfdfa7a35c4f43805db1493` |
 | `scree.png` | `exec-cc494509-7f80-49f9-85fa-7388f3b273fe.png` | `4b9bab49e6d03c85256c2a9d8cf2ad32ba5600c4701558425894e342d560c5b7` |
@@ -20,6 +21,28 @@ Original environment art generated for Thousand Unit Skirmish on 25 September 20
 | `cliff.png` | `exec-5d9fbb4c-ad08-4e74-8623-8c955c057f63.png` | `0df4bb2e35d44d1a074c99a50305a66eb278fb898c4471dfebbad8b2b12f4478` |
 
 The matching `.webp` files are quality-86 runtime encodes of these PNG sources. The browser loads WebP; PNGs remain editable source art. Ground textures repeat with mirrored wrapping and use global map coordinates, so a material's pattern continues across separate painted regions.
+
+## Rock module addition — 26 September 2026
+
+Two original transparent rock modules add a low boulder scatter and tapered medium-ridge end cap. The output identifiers and SHA-256 hashes bind the source PNGs to the generated outputs; [`rock-manifest.json`](rock-manifest.json) records source/runtime dimensions, world size, pivot, alpha mode, role, and deterministic variation range. [`ROCK-PROMPTS.md`](ROCK-PROMPTS.md) keeps the art brief for each source. Pillow 12.3.0 resized the RGBA sources to a 1024-pixel maximum edge and encoded quality-86 WebPs with alpha retained.
+
+| Source | ImageGen output | SHA-256 |
+| --- | --- | --- |
+| `rock-boulder-cluster.png` | `exec-3d0deef4-b10f-41cf-b794-41781ba3862e.png` | `df16e1b829b75b61cae2c4c92d57530c5497d20800e8532c38844190a7e3b035` |
+| `basalt-ridge-cap.png` | `exec-d1b4a6a6-8300-48e1-aefd-628c9660477f.png` | `dc1966fc1e7f07ad710cc3b6af9c4993be30249cb7a5b9becacba6e35a6ef734` |
+| `cliff-end-cap.png` | `exec-9721362a-531f-4a06-ae0d-dd07d754054f.png` | `b6cc8d096ce3113dc4aade59eb01d77135aedf391e6e19d927101b354c0c1b10` |
+
+The tall cliff endpoint closes each authored cliff barrier with a tapered rubble edge facing outward and a sheer face oriented into the barrier. Its runtime WebP uses the same Pillow 12.3.0 RGBA resize and quality-86 encode settings; the versioned rock manifest records both file hashes and the 4.2 × 4.6 world size.
+
+## Vegetation addition — 26 September 2026
+
+Three original forest cutouts extend the existing oak and pine silhouettes. Source PNG masters and their optimized runtime WebPs are listed with hashes, dimensions, world size, pivot, and scale range in [`vegetation-manifest.json`](vegetation-manifest.json). Exact prompts are in [`VEGETATION-PROMPTS.md`](VEGETATION-PROMPTS.md). The PNG masters are editable raster sources; WebPs were encoded with Pillow 12.3.0 at quality 86 after resizing to a 1024-pixel maximum edge. All three use actual transparent alpha and contain no external reference imagery.
+
+| Source | ImageGen output | SHA-256 |
+| --- | --- | --- |
+| `silver-birch.png` | `exec-1cbfa37d-1e3d-4798-9493-fe87798ca21a.png` | `9ffb93a6c18feea2e68269b749fd4ff0010202dd93c1bc41b565e0cad6703fe2` |
+| `field-maple.png` | `exec-dcfce9e6-96dd-4fa2-b5a6-159640d5e836.png` | `345fb61f06c97948501a830a684fa95d4e90375c6c37817deb339c8f6099fea2` |
+| `hazel-thicket.png` | `exec-05e50d97-58a1-441c-b707-114129b084a1.png` | `a4ba3fc6a1c5c3913fab1eec03366623e3472fc6c2f78d8a426df929434baa47` |
 
 ## Exact generation prompts
 
@@ -58,6 +81,10 @@ The matching `.webp` files are quality-86 runtime encodes of these PNG sources. 
 ### long-grass.png
 
 > Use case: game asset. Seamless top-down orthographic square albedo texture for an original oblique RTS terrain brush. LONG WILD GRASS: muted sage and olive blades with scattered straw-ochre tufts, slightly rougher and lighter than short meadow grass but still quiet at strategic zoom. Flat material only, no objects, no horizon or perspective, no cast shadows, no large motifs or vignette. Even color and value edge-to-edge, perfectly tileable infinite pattern. Painterly natural material, low contrast under hundreds of units. Full bleed opaque square.
+
+### forest-floor.png
+
+> Seamless tileable square top-down opaque forest floor albedo texture for a painterly strategy game: fine moss, muted leaf litter, tiny pine needles and earthy specks, deep olive and dark warm brown, understated contrast, no directional light, shadows, trees, objects, horizon, vignette or border. Full bleed, evenly patterned, game-ready material.
 
 ### dirt.png
 
