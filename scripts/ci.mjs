@@ -55,6 +55,8 @@ run(['scripts/check-docs.mjs'], 'Documentation links');
 run(['--test', 'scripts/unit-sprite-clock.test.mjs'], 'Sprite animation clock');
 run(['--test', 'scripts/building-sprites.test.mjs'], 'Default building sprites');
 run(['--test', 'scripts/ci-sharding.test.mjs'], 'CI shard coverage');
+run(['--test', 'scripts/browser-performance-instrumentation.test.mjs'], 'Browser timing attribution');
+run(['--test', 'scripts/performance-order-window.test.mjs'], 'Performance planning wave boundaries');
 
 run(['--test', 'scripts/battlefield-cursor.test.mjs'], 'Battlefield cursor states');
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
@@ -83,6 +85,8 @@ const scenarios = [
   ['scripts/ranged-building-attack-scenario.mjs', 'Building attacks across disconnected terrain'],
   ['scripts/ranged-building-attack-scenario.mjs', 'In-range building attacks survive construction repair', '--edge-range-repair'],
   ['scripts/archer-firing-approach-scenario.mjs', 'Archers approach firing positions across gaps'],
+  ['scripts/cliff-pursuit-scenario.mjs', 'Direct pursuit after unreachable retreats', '--direct'],
+  ['scripts/cliff-pursuit-scenario.mjs', 'Attack-move alternatives across elevation'],
   ['scripts/construction-connectivity-scenario.mjs', 'Construction preserves existing terrain connections'],
   ['scripts/elimination-scenario.mjs', 'Terminal elimination and reconnect'],
   ['scripts/queued-waypoint-scenario.mjs', 'Queued waypoint checkpoint recovery'],
@@ -109,6 +113,7 @@ const scenarios = [
   ['scripts/pve-barracks-recovery-scenario.mjs', 'PvE replacement after producer destruction'],
   ['scripts/pve-objective-recovery-runtime-scenario.mjs', 'PvE objective recovery (Azure)', '0', '20260925'],
   ['scripts/pve-objective-recovery-runtime-scenario.mjs', 'PvE objective recovery (Ember)', '1', '20260925'],
+  ['scripts/pve-contested-match-scenario.mjs', 'Contested seeded PvE match', '300', '20260925', '4294967295'],
   ['scripts/pve-production-runtime-scenario.mjs', 'PvE production on Forked Vale', 'forked-vale'],
   ['scripts/pve-production-runtime-scenario.mjs', 'PvE production on Woodland Expanse', 'woodland-expanse'],
   ['scripts/visual-pack-path-safety-scenario.mjs', 'Visual pack path safety'],
