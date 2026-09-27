@@ -6292,8 +6292,17 @@ const server = createServer(async (request, response) => {
     response.end('Forbidden');
     return;
   }
-  const publicClientAsset = ['environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs', 'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/pve-entry.mjs', 'src/pve-match.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs', 'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs', 'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs', 'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs'].includes(relative);
+  const publicClientAsset = ['environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs', 'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs', 'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs', 'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs', 'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs'].includes(relative);
   const publicUiAsset = [
+    'assets/ui/cursors/select-add.png',
+    'assets/ui/cursors/select-remove.png',
+    'assets/ui/cursors/box-crossing.png',
+    'assets/ui/cursors/move-queued.png',
+    'assets/ui/cursors/attack.png',
+    'assets/ui/cursors/attack-move-queued.png',
+    'assets/ui/cursors/gather-wood.png',
+    'assets/ui/cursors/rally.png',
+    'assets/ui/cursors/unavailable.png',
     'assets/ui/preview.html', 'assets/ui/cursors/manifest.json',
     'assets/ui/cursors/select.png', 'assets/ui/cursors/select.svg',
     'assets/ui/cursors/box-select.png', 'assets/ui/cursors/box-select.svg',

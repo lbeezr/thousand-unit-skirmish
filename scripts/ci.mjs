@@ -36,6 +36,7 @@ const syntaxFiles = [
 
 for (const file of syntaxFiles) run(['--check', file], `Syntax: ${file}`);
 
+run(['--test', 'scripts/battlefield-cursor.test.mjs'], 'Battlefield cursor states');
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
 run(['--test', 'scripts/pve-entry.test.mjs'], 'PvE entry observer settling');
 run(['--test', 'scripts/hud-layout.test.mjs'], 'Visible HUD layout');
