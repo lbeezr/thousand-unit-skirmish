@@ -14,7 +14,7 @@ The committed `batch-manifest.json` records concept hashes, job identifiers, and
 
 Reproduce capture with `scripts/render-resource-sprite-pack.py --help`. The script includes a standalone copy of the Town Center pilot renderer in `scripts/resource-sprite-capture.html` and preserves its lighting. Install project dependencies and Python Pillow first; place the matching optimized GLB inside the checkout. `--serve` prints a local browser URL, waits for its capture, then packs and checks all frames. It makes no provider calls. Use a fresh output directory for a new capture. Headless mode defaults to Chrome on macOS; `--serve` works with an existing WebGL browser.
 
-This is an intact-state art review package. An opt-in runtime preview is included; see `preview/README.md`. Depletion variants and per-pixel depth passes are not included. Default gameplay art is unchanged. The separate active character-unit task owns the existing Meshy Infantry model and directional animation bake; this batch makes no duplicate character generation requests.
+This is an intact-state art review package. The intact-state sprites are the runtime default; see `preview/README.md`. Depletion variants and per-pixel depth passes are not included. Worked, low, and depleted resource states still use the older interactive pack. The separate active character-unit task owns the existing Meshy Infantry model and directional animation bake; this batch makes no duplicate character generation requests.
 
 ## Completed batch
 

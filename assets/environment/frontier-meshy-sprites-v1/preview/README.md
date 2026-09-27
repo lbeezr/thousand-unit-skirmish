@@ -6,7 +6,7 @@ From the repository root, after `npm ci`:
 PORT=4182 RTS_MAP=maps/meshy-resource-review.json node server.mjs
 ```
 
-Open http://127.0.0.1:4182/?meshyResources=1 and start a match. The query flag opts into the Meshy oak, pine, and berries on this client. Without it the existing environment art remains in use.
+Open http://127.0.0.1:4182/?meshyResources=1 and start a match. Meshy oak, pine, and full berries are enabled by default. Use `?meshyResources=0` to compare the older art.
 
 The 48×48 map has 394 blocked forest cells, varied oak/pine sizes, forest-floor texture, open paths, and a base clearing. Full resource states use Meshy sprites; worked/low/depleted states retain the existing art. This change in style and silhouette during harvesting is an unfinished review limitation.
 
