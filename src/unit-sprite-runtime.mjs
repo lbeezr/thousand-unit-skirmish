@@ -6,11 +6,13 @@ const SPRITE_ROOT = '/assets/units';
 const SPRITE_GROUND_LIFT = 0.018;
 
 function spriteDirectory(role, version) {
-  if (!['v1', 'v2'].includes(version)) {
+  const supportedVersions = {
+    worker: ['v1', 'v2', 'v3'],
+    infantry: ['v1', 'v2'],
+    archer: ['v1'],
+  };
+  if (!supportedVersions[role]?.includes(version)) {
     throw new Error(`Unsupported ${role} sprite version: ${version}`);
-  }
-  if (version === 'v2' && role !== 'worker') {
-    throw new Error(`No ${role} sprite pack is available for ${version}`);
   }
   return `${role}-sprite-${version}`;
 }
@@ -74,18 +76,17 @@ function activeState(unit, now) {
     if (unit.task === 'gathering') return 'gather';
     return 'idle';
   }
-  return unit.attackStartedAt > 0 && now - unit.attackStartedAt < 270 ? 'attack' : 'idle';
+  return unit.attackStartedAt > 0 && now - unit.attackStartedAt < 900 ? 'attack' : 'idle';
 }
 
 function animationTime(unit, state, clip, now) {
   if (!clip?.sequence?.length) return 0;
-  if (state === 'walk') {
+  if (state === 'walk' || state === 'gather' || state === 'build') {
     const cycleMs = clip.sequence.reduce((sum, item) => sum + item.durationMs, 0);
     return ((unit.motionPhase || 0) / (Math.PI * 2)) * cycleMs;
   }
   if (state === 'attack') return now - unit.attackStartedAt;
   if (state === 'defeat') return now - unit.defeatStartedAt;
-  if (state === 'gather' || state === 'build') return now + unit.id * 83;
   return now + unit.id * 37;
 }
 

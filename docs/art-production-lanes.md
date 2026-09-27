@@ -24,9 +24,9 @@ or conflicting edit that blocks the work.
 The [asset guide](assets.md#know-what-is-actually-in-game) owns loader status.
 Building sprites now have runtime and packaging paths. Building work should
 check registration, state transitions, team cues, and ground contact in that
-path. Unit GLBs still need a bounded integration that demonstrates role
-readability and batching at game scale. Environment work should preserve
-resource/depletion meaning, routes, and forest-clearing feedback.
+path. Unit character work should build from the manifest-driven sprite runtime
+and check role readability, action mapping, and batching at game scale. Environment
+work should preserve resource/depletion meaning, routes, and forest-clearing feedback.
 
 Choose one visible outcome, name its pack and consuming loader, and state the
 smallest useful proof. When a source sample has no loader yet, identify that

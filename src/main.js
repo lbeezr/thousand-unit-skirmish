@@ -88,7 +88,7 @@ let MAP_HALF_X = MAP_WIDTH / 2;
 let MAP_HALF_Z = MAP_HEIGHT / 2;
 const MAX_UNITS = 2000;
 const MAX_PER_TEAM = MAX_UNITS / 2;
-const ATTACK_POSE_MS = 270;
+const ATTACK_POSE_MS = 900;
 const HIT_POSE_MS = 240;
 const SPAWN_POSE_MS = 330;
 const DEFEAT_POSE_MS = 430;
@@ -157,10 +157,16 @@ const objectivePanel = document.querySelector('#objective-panel');
 const roomPageUrl = new URL(window.location.href);
 const workerSpritePreview = roomPageUrl.searchParams.get('workerSpritePreview') === '1';
 const unitSpritePreview = roomPageUrl.searchParams.get('unitSpritePreview') === '1';
-const unitSpritePreviewRoles = unitSpritePreview
+const meshyInfantrySpritePreview = roomPageUrl.searchParams.get('meshyInfantrySpritePreview') === '1';
+const unitSpritePreviewRoles = meshyInfantrySpritePreview
+  ? ['infantry']
+  : unitSpritePreview
   ? ['worker', 'infantry', 'archer']
-  : workerSpritePreview ? ['worker'] : [];
-const unitSpritePreviewVersions = workerSpritePreview && !unitSpritePreview ? { worker: 'v2' } : {};
+  : ['worker'];
+const unitSpritePreviewVersions = meshyInfantrySpritePreview
+  ? { infantry: 'v2' }
+  : workerSpritePreview && !unitSpritePreview ? { worker: 'v2' }
+    : !unitSpritePreview ? { worker: 'v3' } : {};
 const unitSpritePreviewRoleSet = new Set(unitSpritePreviewRoles);
 const ROOM_ID = roomPageUrl.searchParams.get('room');
 const HAS_ROOM_PARAMETER = roomPageUrl.searchParams.has('room');
