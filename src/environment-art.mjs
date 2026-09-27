@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { RESOURCE_VISUAL_STAGES } from './resource-visual-state.mjs';
 import { buildWaterSurfaceGeometry } from './water-surface-geometry.mjs';
 
-const meshyResourcePreview = new URLSearchParams(globalThis.location?.search ?? '').get('meshyResources') === '1';
+const meshyResourcesEnabled = new URLSearchParams(globalThis.location?.search ?? '').get('meshyResources') !== '0';
 
 const ASSET_ROOT = './assets/environment/frontier-v1/';
 const INTERACTIVE_ASSET_ROOT = './assets/environment/frontier-interactive-v1/';
@@ -30,7 +30,7 @@ function loadSprite(url) {
 const sprites = Object.fromEntries(spriteNames.map((name) => [name, loadSprite(`${ASSET_ROOT}${name}.webp`)]));
 sprites.oak = loadSprite(`${ASSET_ROOT}oak.webp`);
 sprites.berries = loadSprite(`${ASSET_ROOT}berries.webp`);
-if (meshyResourcePreview) {
+if (meshyResourcesEnabled) {
   for (const family of ['oak', 'pine', 'berries']) {
     sprites[family] = loadSprite(`./assets/environment/frontier-meshy-sprites-v1/${family}/runtime/${family}-01.webp`);
   }
@@ -147,7 +147,7 @@ async function loadResourceStateAssets() {
     for (const family of ['oak', 'berries']) {
       for (const stage of RESOURCE_VISUAL_STAGES) {
         const name = `${family}-${stage}`;
-        const texture = meshyResourcePreview && stage === 'full' ? sprites[family] : loaded.get(`${name}.webp`);
+        const texture = meshyResourcesEnabled && stage === 'full' ? sprites[family] : loaded.get(`${name}.webp`);
         updateSpriteTexture(name, texture);
       }
     }
@@ -348,7 +348,7 @@ export function createGroundSurfaces(definition) {
 }
 
 function spriteGeometry(width, height, name) {
-  if (meshyResourcePreview && ['oak', 'pine', 'berries', 'oak-full', 'berries-full'].includes(name)) {
+  if (meshyResourcesEnabled && ['oak', 'pine', 'berries', 'oak-full', 'berries-full'].includes(name)) {
     // Preserve 128 px/world-unit and the baked (320,480) ground pivot.
     const geometry = new THREE.PlaneGeometry(5, 5, 1, 4);
     geometry.translate(0, 1.25, 0);
@@ -487,7 +487,7 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
             flip: variation(index + 43) < 0.5,
             yaw: (variation(index + 53) - 0.5) * 0.3,
           };
-          if (meshyResourcePreview && definition.id === 'meshy-resource-review') {
+          if (meshyResourcesEnabled && definition.id === 'meshy-resource-review') {
             point.scale = 0.72 + scaleVariation * 0.32;
             point.yaw = 0;
             (treeType < 0.45 ? oaks : pines).push(point);

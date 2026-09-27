@@ -3,12 +3,19 @@ import { createHash, randomBytes } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import { request as httpRequest } from 'node:http';
 import { createServer } from 'node:net';
-import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, stat, symlink } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const sourceRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+// Exercise Docker COPY output so a source-only asset cannot hide a broken release.
+const packed = spawnSync(process.execPath, ['scripts/pack-railway-release.mjs', '--allow-dirty'], {
+  cwd: sourceRoot, encoding: 'utf8',
+});
+assert.equal(packed.status, 0, packed.stderr);
+const root = JSON.parse(packed.stdout).directory;
+await symlink(path.join(sourceRoot, 'node_modules'), path.join(root, 'node_modules'), 'dir');
 const entry = path.join(root, 'room-supervisor.mjs');
 const dockerfile = await readFile(path.join(root, 'Dockerfile'), 'utf8');
 assert.match(dockerfile, /^\s*COPY\b[^\n]*\borigin-policy\.mjs\b/m,
@@ -175,12 +182,45 @@ try {
     assert.equal(response.status, 200, asset);
     assert.ok((await response.arrayBuffer()).byteLength > 100, asset);
   }
+  for (const family of ['oak', 'pine', 'berries']) {
+    for (let view = 0; view < 8; view++) {
+      const asset = `assets/environment/frontier-meshy-sprites-v1/${family}/runtime/${family}-0${view}.webp`;
+      const response = await fetch(`${base}/${asset}`, { headers: { authorization } });
+      assert.equal(response.status, 200, asset);
+      assert.match(response.headers.get('content-type'), /image\/webp/);
+      assert.ok((await response.arrayBuffer()).byteLength > 100, asset);
+    }
+  }
+  for (const [role, version] of [
+    ['worker', 'v1'], ['worker', 'v2'], ['worker', 'v3'],
+    ['infantry', 'v1'], ['infantry', 'v2'], ['archer', 'v1'],
+  ]) {
+    const directory = `assets/units/${role}-sprite-${version}`;
+    const manifestResponse = await fetch(`${base}/${directory}/sprite-atlas-pack-v1.json`, {
+      headers: { authorization },
+    });
+    assert.equal(manifestResponse.status, 200, directory);
+    const manifest = await manifestResponse.json();
+    for (const name of [`${role}-atlas-runtime.png`, 'team-accent-mask.png']) {
+      const entry = manifest.files.find(file => file.path === name);
+      assert.ok(entry, `${directory}/${name} must be declared`);
+      const response = await fetch(`${base}/${directory}/${name}`, { headers: { authorization } });
+      assert.equal(response.status, 200, `${directory}/${name}`);
+      assert.match(response.headers.get('content-type'), /image\/png/);
+      const bytes = Buffer.from(await response.arrayBuffer());
+      assert.equal(createHash('sha256').update(bytes).digest('hex'), entry.sha256,
+        `${directory}/${name} must match its manifest`);
+    }
+    assert.equal((await fetch(`${base}/${directory}/${role}-atlas-source.png`, {
+      headers: { authorization },
+    })).status, 404, 'source atlases must remain private');
+  }
   assert.equal(await upgrade(port), 401);
   assert.equal(await upgrade(port, authorization), 101);
 
   assert.ok((await stat(path.join(volume, 'room-data', 'rooms.json'))).isFile());
   assert.ok((await stat(path.join(volume, 'custom-maps'))).isDirectory());
-  console.log('Railway release scenario passed: guarded startup, Basic Auth HTTP/WebSocket, local Three.js, base environment assets, optional manifest-backed environment states, and volume paths.');
+  console.log('Railway release scenario passed: guarded startup, Basic Auth HTTP/WebSocket, local Three.js, packaged environment and unit sprites, verified atlas hashes, environment states, and volume paths.');
 } finally {
   if (child && child.exitCode === null) {
     child.kill('SIGTERM');
@@ -191,4 +231,5 @@ try {
     if (child.exitCode === null) child.kill('SIGKILL');
   }
   await rm(volume, { recursive: true, force: true });
+  await rm(root, { recursive: true, force: true });
 }

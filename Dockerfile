@@ -25,6 +25,12 @@ COPY --chown=node:node assets/buildings/town-center-lifecycle-meshy-v1/runtime/ 
 COPY --chown=node:node assets/environment/frontier-meshy-sprites-v1/oak/runtime/ ./assets/environment/frontier-meshy-sprites-v1/oak/runtime/
 COPY --chown=node:node assets/environment/frontier-meshy-sprites-v1/pine/runtime/ ./assets/environment/frontier-meshy-sprites-v1/pine/runtime/
 COPY --chown=node:node assets/environment/frontier-meshy-sprites-v1/berries/runtime/ ./assets/environment/frontier-meshy-sprites-v1/berries/runtime/
+COPY --chown=node:node assets/units/worker-sprite-v1/sprite-atlas-pack-v1.json assets/units/worker-sprite-v1/worker-atlas-runtime.png assets/units/worker-sprite-v1/team-accent-mask.png ./assets/units/worker-sprite-v1/
+COPY --chown=node:node assets/units/worker-sprite-v2/sprite-atlas-pack-v1.json assets/units/worker-sprite-v2/worker-atlas-runtime.png assets/units/worker-sprite-v2/team-accent-mask.png ./assets/units/worker-sprite-v2/
+COPY --chown=node:node assets/units/worker-sprite-v3/sprite-atlas-pack-v1.json assets/units/worker-sprite-v3/worker-atlas-runtime.png assets/units/worker-sprite-v3/team-accent-mask.png ./assets/units/worker-sprite-v3/
+COPY --chown=node:node assets/units/infantry-sprite-v1/sprite-atlas-pack-v1.json assets/units/infantry-sprite-v1/infantry-atlas-runtime.png assets/units/infantry-sprite-v1/team-accent-mask.png ./assets/units/infantry-sprite-v1/
+COPY --chown=node:node assets/units/infantry-sprite-v2/sprite-atlas-pack-v1.json assets/units/infantry-sprite-v2/infantry-atlas-runtime.png assets/units/infantry-sprite-v2/team-accent-mask.png ./assets/units/infantry-sprite-v2/
+COPY --chown=node:node assets/units/archer-sprite-v1/sprite-atlas-pack-v1.json assets/units/archer-sprite-v1/archer-atlas-runtime.png assets/units/archer-sprite-v1/team-accent-mask.png ./assets/units/archer-sprite-v1/
 COPY deploy/entrypoint.sh ./deploy/entrypoint.sh
 RUN mkdir -p /app/custom-maps /app/room-data && chown node:node /app/custom-maps /app/room-data
 

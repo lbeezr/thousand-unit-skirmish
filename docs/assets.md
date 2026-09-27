@@ -19,12 +19,16 @@
 
 ## Know what is actually in game
 
-At the documentation baseline `eef9aa4`:
+Current runtime defaults:
 
-- Environment art uses painted ground and instanced cutouts, including the
-  interactive oak/berry/construction state pack.
-- Units use procedural instanced geometry and strategic role/marker batches.
-  Authored GLB samples remain source candidates.
+- Oak, pine, and full berry resource sprites use the captured Meshy pack by
+  default. `?meshyResources=0` restores the older art for comparison. Worked,
+  low, and depleted resource states still use the interactive state pack; their
+  Meshy replacements remain unfinished. Other tree species retain their art.
+- Workers use the eight-direction Meshy Worker v3 sprite atlas by default.
+  Infantry and Archers retain procedural geometry unless a sprite preview is
+  selected. All supported unit sprite manifests, runtime atlases, and team masks
+  are included in the Docker image; source atlases are excluded.
 - Town Centers use the eight-view captured lifecycle pack, with procedural
   fallback. Gameplay supplies only their Complete landmark state.
 - Barracks and Archery Ranges load their direct WebP sprites by default through
