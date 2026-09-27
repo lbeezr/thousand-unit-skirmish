@@ -47,6 +47,7 @@ run(['--test', 'scripts/hud-layout.test.mjs'], 'Visible HUD layout');
 run(['--test', 'scripts/objective-summary.test.mjs'], 'Compact objectives and notice history');
 run(['--test', 'scripts/selection-context.test.mjs'], 'Contextual selection');
 run(['--test', 'scripts/client-build-recovery.test.mjs'], 'Build placement connection recovery');
+run(['--test', 'scripts/client-rematch-recovery.test.mjs'], 'Client roster and ownership after rematch');
 run(['--test', 'scripts/client-camera-recovery.test.mjs'], 'Camera ownership through seat recovery');
 run(['--test', 'scripts/navigation-settings.test.mjs'], 'Camera navigation settings and controls');
 
@@ -63,11 +64,16 @@ const scenarios = [
   ['scripts/camera-controls-scenario.mjs', 'Camera controls'],
   ['scripts/objective-fog-visibility-scenario.mjs', 'Objective fog visibility'],
   ['scripts/unreachable-attack-scenario.mjs', 'Orders, 2k spawn clearance, and objective hold'],
+  ['scripts/ranged-building-attack-scenario.mjs', 'Building attacks across disconnected terrain'],
+  ['scripts/ranged-building-attack-scenario.mjs', 'In-range building attacks survive construction repair', '--edge-range-repair'],
+  ['scripts/archer-firing-approach-scenario.mjs', 'Archers approach firing positions across gaps'],
+  ['scripts/construction-connectivity-scenario.mjs', 'Construction preserves existing terrain connections'],
   ['scripts/elimination-scenario.mjs', 'Terminal elimination and reconnect'],
   ['scripts/queued-waypoint-scenario.mjs', 'Queued waypoint checkpoint recovery'],
   ['scripts/live-attack-move-repair-scenario.mjs', 'Live attack-move route repair'],
   ['scripts/worker-combat-scenario.mjs', 'Worker combat across both seats'],
   ['scripts/worker-production-spawn-scenario.mjs', 'Town Center worker exits across map orientations'],
+  ['scripts/production-lifecycle-scenario.mjs', 'Producer destruction and population reservations'],
   ['scripts/infantry-seat-combat-scenario.mjs', 'Mirrored infantry combat parity', '--expect-parity'],
   ['scripts/opening-production-scenario.mjs', 'Mirrored construction and production', '--expect-builder-parity'],
   ['scripts/forked-vale-scenario.mjs', 'Forked Vale economy-to-victory (Team 0)', '0'],
@@ -79,6 +85,14 @@ const scenarios = [
   ['scripts/formation-assignment-scenario.mjs', 'Formation assignment'],
   ['scripts/unit-selection-scenario.mjs', 'Unit selection'],
   ['scripts/pve-opponent-scenario.mjs', 'PvE opponent seats'],
+  ['scripts/pve-decision-fairness-scenario.mjs', 'PvE tactical decisions during gather retries'],
+  ['scripts/pve-tactical-retry-scenario.mjs', 'Bounded PvE tactical retries'],
+  ['scripts/pve-reinforcement-recovery-scenario.mjs', 'Stranded PvE reinforcements retry independently'],
+  ['scripts/pve-tactical-stall-runtime-scenario.mjs', 'PvE stalled-army recovery through the server'],
+  ['scripts/pve-production-scenario.mjs', 'PvE production budgets and retry limits'],
+  ['scripts/pve-barracks-recovery-scenario.mjs', 'PvE replacement after producer destruction'],
+  ['scripts/pve-production-runtime-scenario.mjs', 'PvE production on Forked Vale', 'forked-vale'],
+  ['scripts/pve-production-runtime-scenario.mjs', 'PvE production on Woodland Expanse', 'woodland-expanse'],
   ['scripts/visual-pack-path-safety-scenario.mjs', 'Visual pack path safety'],
   ['scripts/painted-material-atlas-scenario.mjs', 'Painted-material atlas manifest and file contract'],
   ['scripts/painted-material-atlas-uv-scenario.mjs', 'Painted-material atlas mirrored UV mapping'],
@@ -91,6 +105,7 @@ const scenarios = [
   ['scripts/water-surface-scenario.mjs', 'Batched water surface and shore geometry'],
   ['scripts/harvestable-woodland-scenario.mjs', 'Harvestable woodland gameplay'],
   ['scripts/room-supervisor-scenario.mjs', 'Room supervisor integration'],
+  ['scripts/room-expiry-scenario.mjs', 'Invite expiry and pending reconnect protection'],
   ['scripts/pve-room-launch-scenario.mjs', 'PvE room launch and rematch integration'],
   ['scripts/railway-release-scenario.mjs', 'Railway release integration'],
 ];
