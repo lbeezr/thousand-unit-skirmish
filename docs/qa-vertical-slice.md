@@ -114,3 +114,23 @@ record without routine cross-task reports.
 On Forked Vale, watch the five-infantry versus three-infantry/two-worker split.
 Record what the defender does, whether both Signals fall, and the economic cost
 of worker diversion. Scripted capture timings do not establish human strategy.
+
+## Meshy forest checkpoint — 2026-09-26
+
+On base `d27ce33`, `maps/meshy-resource-review.json` with `?meshyResources=1`
+shows the captured oak, pine, and berries around a base clearing with 394 blocked
+forest cells. The owner inspected the checkpoint in the browser at gameplay view;
+no browser warnings/errors were reported. Default art remains behind the existing
+path when the query flag is absent. The earlier local composition also included
+Worker v3 from the separate character task; those assets are not in this checkpoint.
+
+All 24 source frame hashes, transparent alpha ranges, atlas cells, and runtime WebP
+images were checked. All runtime frames returned HTTP 200 with WebP MIME; manifest,
+capture-page, and mismatched-family requests were denied. Client asset allowlist,
+Railway release scenario, syntax, documentation links, and whitespace checks passed.
+The standalone capture script's help/import path was checked; its extracted renderer
+was used for the original captures, but a full GLB rebake was not repeated here.
+
+This is an art review checkpoint. Harvesting still switches to the existing depleted
+art. Unit readability, exact camera-elevation alignment, and resource lifecycle art
+remain subsequent work. See the pack's `preview/README.md` for the startup command.
