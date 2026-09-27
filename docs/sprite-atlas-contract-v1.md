@@ -48,6 +48,12 @@ before that gate returns a nonzero exit status.
 - Clips name a `stateId`, optional `directionId`, and an explicit frame
   sequence with per-frame durations. No direction count, frame count, or
   animation rate is implied by the schema. Static art is a one-frame clip.
+- A pack may include the optional top-level `capture` record defined by
+  [`sprite-atlas-capture-v1.schema.json`](../schemas/sprite-atlas-capture-v1.schema.json).
+  It records model/camera capture mode, source-model and optional animation-GLB
+  hashes, fixed framing, and per-frame pose provenance. Building camera orbits
+  use `camera-orbit`; fixed-camera unit facings use `model-pose`. It supplements
+  pack provenance and clip mapping without replacing either one.
 - Optional `recommendedTileFootprint` records the artist's non-authoritative
   footprint suggestion for preview and asset/map consistency checks. Unit
   sprites may omit it. Map/gameplay data remains authoritative for placement;

@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thousand-unit-skirmish.local/schemas/sprite-atlas-capture-v1.schema.json",
+  "title": "Thousand Unit Skirmish sprite-atlas capture provenance v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "captureMode",
+    "sourceModelSha256",
+    "sourceAssets",
+    "projection",
+    "cameraElevationDegrees",
+    "framePixels",
+    "frameWorldUnits",
+    "pixelsPerWorldUnit",
+    "anchorPixelFromTopLeft",
+    "frameRecords"
+  ],
+  "properties": {
+    "captureMode": { "enum": ["camera-orbit", "model-pose"] },
+    "sourceModelSha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+    "sourceAssets": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/sourceAsset" }
+    },
+    "projection": { "const": "orthographic" },
+    "cameraElevationDegrees": { "type": "number", "minimum": 0, "maximum": 90 },
+    "fixedCameraAzimuthDegrees": { "type": "number", "minimum": 0, "exclusiveMaximum": 360 },
+    "framePixels": { "$ref": "#/$defs/dimensionsPx" },
+    "frameWorldUnits": { "$ref": "#/$defs/dimensionsWorld" },
+    "pixelsPerWorldUnit": { "type": "number", "exclusiveMinimum": 0 },
+    "anchorPixelFromTopLeft": { "$ref": "#/$defs/pointPx" },
+    "frameRecords": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/frameRecord" }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "captureMode": { "const": "camera-orbit" } } },
+      "then": {
+        "properties": {
+          "frameRecords": {
+            "items": { "required": ["cameraAzimuthDegrees"] }
+          }
+        },
+        "not": { "required": ["fixedCameraAzimuthDegrees"] }
+      }
+    },
+    {
+      "if": { "properties": { "captureMode": { "const": "model-pose" } } },
+      "then": {
+        "required": ["fixedCameraAzimuthDegrees"],
+        "properties": {
+          "frameRecords": {
+            "items": { "required": ["modelYawDegrees"] }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "dimensionsPx": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "dimensionsWorld": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "pointPx": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y"],
+      "properties": {
+        "x": { "type": "number", "minimum": 0 },
+        "y": { "type": "number", "minimum": 0 }
+      }
+    },
+    "sourceAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "sha256", "animationClipId"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+        "animationClipId": { "type": "string", "minLength": 1 }
+      }
+    },
+    "frameRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["frameId", "stateId", "directionId"],
+      "properties": {
+        "frameId": { "type": "string", "minLength": 1 },
+        "stateId": { "type": "string", "minLength": 1 },
+        "directionId": { "type": "string", "minLength": 1 },
+        "sourceAssetId": { "type": "string", "minLength": 1 },
+        "cameraAzimuthDegrees": { "type": "number", "minimum": 0, "exclusiveMaximum": 360 },
+        "modelYawDegrees": { "type": "number", "minimum": -360, "maximum": 360 },
+        "animationClipId": { "type": "string", "minLength": 1 },
+        "clipTimeSeconds": { "type": "number", "minimum": 0 }
+      },
+      "dependentRequired": {
+        "animationClipId": ["clipTimeSeconds"],
+        "clipTimeSeconds": ["animationClipId"]
+      }
+    }
+  }
+}
