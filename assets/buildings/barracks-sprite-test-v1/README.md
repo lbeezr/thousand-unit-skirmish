@@ -1,17 +1,40 @@
-# Barracks sprite pack v1
+# Barracks sprites v1
 
-This is the first complete building-sprite sample for Thousand Unit Skirmish. It contains foundation, frame, complete, damaged, and critical art, each with Azure and Ember team cloth. The same fixed scale and anchor are used across its 5 × 5 world-unit art frame; the gameplay footprint remains 3 × 3 cells.
+**Status:** default gameplay artwork, with procedural loading/error fallback.
+[Workflow](../../../docs/building-sprite-production-workflow.md) · [Provenance](PROVENANCE.md)
 
-The 640 × 640 WebP runtime frames use 128 source pixels per world unit. Construction progress selects foundation below 20%, frame from 20% to below 90%, and complete from 90%. Completed health selects complete at 66% or more, damaged from 33% to below 66%, and critical below 33%.
+## Coverage
 
-The pack contains one view at 45-degree azimuth and 46-degree downward pitch. It is ready as sprite source and runtime imagery, but the production renderer still needs sprite-atlas integration, world depth/occlusion handling, and a directional view set before camera rotation is supported. The surrounding terrain and gameplay coordinates remain world-space concerns.
+Five states—foundation, frame, complete, damaged, critical—each have Azure/Ember
+cloth. The art frame is 5 × 5 world units, 640 × 640 pixels, at 128 pixels/world
+unit. Gameplay footprint is 3 × 3 cells. View: 45° azimuth and 46° downward pitch.
+All states share scale and ground registration.
 
-Regenerate the two team variants and contact sheets with:
+| Selector | Frame |
+| --- | --- |
+| Construction <20% | Foundation |
+| Construction 20%–<90% | Frame |
+| Construction ≥90% | Complete |
+| Completed health ≥66% | Complete |
+| Completed health 33%–<66% | Damaged |
+| Completed health <33% | Critical |
+
+The direct-sprite loader uses these thresholds. The procedural fallback keeps
+its own damage thresholds.
+See [sprite-grid.json](sprite-grid.json) for exact registration.
+
+## Rebuild
 
 ```sh
 python3 scripts/prepare-barracks-sprite-test.py
 ```
 
-See [`sprite-grid.json`](sprite-grid.json) for dimensions and view limits, and [`PROVENANCE.md`](PROVENANCE.md) for generation prompts and hashes.
+Run from the repository root to regenerate team variants and contact sheets.
 
-See the [building sprite production workflow](../../../docs/building-sprite-production-workflow.md) for the reusable complete-first design, lifecycle derivation, grid, review, and packaging method.
+## Limits
+
+One camera-authored view; no directional rotation or authored per-pixel depth.
+`src/building-sprites.mjs` loads individual WebPs with depth testing and a ground
+depth correction. It does not consume the generic sprite-atlas format. Selection,
+health, rally, production, and fog remain renderer-owned. Docker includes these
+frames; judge appearance with a capture of the actual build.

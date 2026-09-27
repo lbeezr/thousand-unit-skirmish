@@ -1,4 +1,13 @@
+import { battlefieldCursor } from './battlefield-cursor.mjs';
+import { visibleHudRects, hudSafeRect, normalizeHudPreferences } from './hud-layout.mjs';
+import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
+import { selectionContext } from './selection-context.mjs';
 import * as THREE from 'three';
+import { attachBuildingSprite } from './building-sprites.mjs';
+import {
+  createCapturedBuildingSprite, disposeCapturedBuildingSprite,
+  updateCapturedBuildingSprite,
+} from './captured-building-art.mjs';
 import {
   addObstacleEnvironmentSprites, createConstructionGroundInstances,
   createEnvironmentSprite, createEnvironmentSpriteInstances,
@@ -10,7 +19,8 @@ import {
   RESOURCE_VISUAL_STAGES, resourceVisualScale, resourceVisualStage, resourceVisualTransitionStages,
 } from './resource-visual-state.mjs';
 import {
-  buildingFinishedDetailsVisible, buildingProductionCueState, constructionGroundStage,
+  barracksModelVisualState, buildingFinishedDetailsVisible,
+  buildingProductionCueState, constructionGroundStage,
 } from './building-visual-state.mjs';
 import {
   UNIT_LOD_ROLE_BITS, UNIT_LOD_ROLES, shouldUpdateUnitFocusMatrix,
@@ -139,6 +149,10 @@ minimapBackground.height = minimapCanvas.height;
 const minimapBackgroundContext = minimapBackground.getContext('2d');
 const minimapFogCanvas = document.createElement('canvas');
 const minimapFogContext = minimapFogCanvas.getContext('2d');
+let objectiveHoldSummary = null;
+let noticeHistory = [];
+let guidanceDismissed = false;
+try { guidanceDismissed = localStorage.getItem('rts-guidance-dismissed') === 'true'; } catch {}
 const objectivePanel = document.querySelector('#objective-panel');
 const roomPageUrl = new URL(window.location.href);
 const workerSpritePreview = roomPageUrl.searchParams.get('workerSpritePreview') === '1';
@@ -429,6 +443,7 @@ unitSpriteRuntime.ready.then((loaded) => {
   syncUnitDetailLevel();
 });
 const mapObjects = [];
+const capturedBuildingVisuals = [];
 let forestTreeSlots = new Map();
 let forestStumpSlots = new Map();
 let forestStumpMesh = null;
@@ -564,28 +579,7 @@ function setCamera() {
 }
 
 function cameraSafeRect() {
-  const bounds = renderer.domElement.getBoundingClientRect();
-  const dock = document.querySelector('.control-dock')?.getBoundingClientRect();
-  const toolbar = document.querySelector('.camera-toolbar')?.getBoundingClientRect();
-  const objective = objectivePanel?.hidden ? null : objectivePanel.getBoundingClientRect();
-  const minimap = document.querySelector('.minimap-panel')?.getBoundingClientRect();
-  const fieldHint = document.querySelector('.field-hint')?.getBoundingClientRect();
-  const orderFeedback = document.querySelector('.field-order-feedback')?.getBoundingClientRect();
-  const right = Math.min(bounds.right - 12,
-    dock && dock.width ? dock.right - 8 : bounds.right - 12,
-    objective && objective.width ? objective.left - 8 : bounds.right - 12,
-    minimap && minimap.width ? minimap.left - 8 : bounds.right - 12);
-  const topbarBottom = document.querySelector('.topbar')?.getBoundingClientRect().bottom ?? bounds.top;
-  const labelBottom = document.querySelector('.map-label')?.getBoundingClientRect().bottom ?? bounds.top;
-  const toolbarIsUpper = window.matchMedia('(max-width: 920px)').matches;
-  const top = Math.max(bounds.top + 8, topbarBottom + 8, labelBottom + 8,
-    toolbarIsUpper && toolbar?.height ? toolbar.bottom + 8 : bounds.top);
-  const bottom = Math.min(bounds.bottom - 8,
-    !toolbarIsUpper && toolbar?.height ? toolbar.top - 8 : bounds.bottom - 8,
-    dock && dock.height ? dock.top - 8 : bounds.bottom - 8,
-    fieldHint && fieldHint.width && fieldHint.height ? fieldHint.top - 8 : bounds.bottom - 8,
-    orderFeedback && orderFeedback.width && orderFeedback.height ? orderFeedback.top - 8 : bounds.bottom - 8);
-  return { left: bounds.left + 12, top, right, bottom, width: Math.max(1, right - (bounds.left + 12)), height: Math.max(1, bottom - top) };
+  return hudSafeRect(renderer.domElement.getBoundingClientRect(), visibleHudRects());
 }
 
 function cameraTargetHudSafeOffset() {
@@ -694,14 +688,17 @@ function addMapObject(object) {
 
 function clearMapObjects() {
   for (const object of mapObjects) {
+    object.userData.buildingSprite?.dispose();
     scene.remove(object);
     object.traverse((child) => {
-      child.geometry?.dispose();
+      if (child.isSprite) disposeCapturedBuildingSprite(child);
+      if (!child.isSprite) child.geometry?.dispose();
       const materials = Array.isArray(child.material) ? child.material : [child.material];
       for (const material of materials) material?.dispose();
     });
   }
   mapObjects.length = 0;
+  capturedBuildingVisuals.length = 0;
   townCenterProductionLamps[0] = null;
   townCenterProductionLamps[1] = null;
 }
@@ -736,15 +733,19 @@ function addTownCenterVisual(spawn, definition) {
     definition.spawnPoints, spawn.team, definition.width, definition.height,
   );
   const { x, z } = townCenter;
+  const group = new THREE.Group();
+  group.position.set(x, 0, z);
+  const fallbackRoot = new THREE.Group();
+  group.add(fallbackRoot);
   const stone = new THREE.MeshBasicMaterial({ color: 0x9b9580 });
   const slate = new THREE.MeshBasicMaterial({ color: 0x363d3f });
   const timber = new THREE.MeshBasicMaterial({ color: 0x514333 });
   const doorMaterial = new THREE.MeshBasicMaterial({ color: 0x2d302b });
   const piece = (geometry, material, px, py, pz, angle = 0) => {
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(x + px, py, z + pz);
+    mesh.position.set(px, py, pz);
     mesh.rotation.z = angle;
-    addMapObject(mesh);
+    fallbackRoot.add(mesh);
     return mesh;
   };
   piece(new THREE.BoxGeometry(2.65, 0.22, 2.4), stone, 0, 0.11, 0);
@@ -760,24 +761,35 @@ function addTownCenterVisual(spawn, definition) {
   piece(new THREE.BoxGeometry(0.74, 1.64, 0.74), stone, -0.73, 1.03, -0.63);
   piece(new THREE.ConeGeometry(0.67, 0.62, 4), slate, -0.73, 2.13, -0.63).rotation.y = Math.PI / 4;
   const standardRoot = new THREE.Group();
-  standardRoot.position.set(x - 0.73, 0, spawn.z - 0.23);
+  standardRoot.position.set(-0.73, 0, -0.23);
   addBuildingStandard(standardRoot, spawn.team, 0, 0, 2.06);
-  addMapObject(standardRoot);
-  const productionLamp = piece(
+  fallbackRoot.add(standardRoot);
+
+  const capturedSprite = createCapturedBuildingSprite({ teamColor: TEAM_HEX[spawn.team] });
+  group.add(capturedSprite);
+  const productionLamp = new THREE.Mesh(
     new THREE.OctahedronGeometry(0.15, 0),
     new THREE.MeshBasicMaterial({ color: TEAM_HEX[spawn.team], transparent: true, opacity: 0.88 }),
-    0, 1.09, 0.93,
   );
+  productionLamp.position.set(0, 1.09, 0.93);
   productionLamp.visible = false;
+  group.add(productionLamp);
+  addMapObject(group);
+  capturedBuildingVisuals.push({
+    sprite: capturedSprite,
+    fallbackRoot,
+    lifecycleInput: { complete: true, progress: 1 },
+  });
   townCenterProductionLamps[spawn.team] = productionLamp;
 }
 
 function clearBuildingVisuals() {
   selectedBuildingId = null;
   for (const visual of buildingVisuals.values()) {
+    visual.authoredSprite?.dispose();
     scene.remove(visual.group);
     visual.group.traverse((object) => {
-      object.geometry?.dispose();
+      if (!object.isSprite) object.geometry?.dispose();
       const materials = Array.isArray(object.material) ? object.material : [object.material];
       for (const material of materials) material?.dispose();
     });
@@ -988,12 +1000,13 @@ function createBuildingProductionLamp(group, team, x, y, z) {
 }
 
 function disposeBuildingVisual(visual) {
+  visual.authoredSprite?.dispose();
   scene.remove(visual.group);
   visual.group.traverse((object) => {
     if (!object.isSprite) object.geometry?.dispose();
     const materials = Array.isArray(object.material) ? object.material : [object.material];
     for (const material of materials) {
-      material?.map?.dispose();
+      if (!material?.map?.userData?.sharedBuildingSprite) material?.map?.dispose();
       material?.dispose();
     }
   });
@@ -1128,6 +1141,7 @@ function createArcheryRangeVisual(building) {
   finishPieces.push(targetCore);
   const standard = addBuildingStandard(group, building.team, -1.18, 1.17, 2.02);
   finishPieces.push(standard);
+  const authoredSprite = attachBuildingSprite(group, [...group.children], building);
   const productionLamp = createBuildingProductionLamp(group, building.team, -0.76, 1.35, 1.31);
 
   const outlinePoints = [
@@ -1148,7 +1162,7 @@ function createArcheryRangeVisual(building) {
   const combatFeedback = createBuildingCombatFeedback();
   group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
   scene.add(group);
-  const visual = { group, posts, roof, finishPieces, productionLamp,
+  const visual = { group, authoredSprite, posts, roof, finishPieces, productionLamp,
     teamColor, outline, rallyMarker, healthIndicator, combatFeedback };
   updateArcheryRangeVisual(visual, building);
   return visual;
@@ -1173,6 +1187,7 @@ function updateArcheryRangeVisual(visual, building) {
   const finished = buildingFinishedDetailsVisible(progress, building.complete);
   visual.roof.visible = finished;
   for (const piece of visual.finishPieces) piece.visible = finished;
+  visual.authoredSprite.update(building);
   updateBuildingProductionCue(visual, building);
   updateBuildingHealthIndicator(visual, building);
 }
@@ -1185,6 +1200,35 @@ function createBarracksVisual(building) {
   const foundation = new THREE.Mesh(new THREE.BoxGeometry(2.9, 0.18, 2.9), timberMaterial);
   foundation.position.y = 0.12;
   group.add(foundation);
+
+  const frame = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), timberMaterial, 8);
+  frame.instanceMatrix.setUsage(THREE.StaticDrawUsage);
+  let frameIndex = 0;
+  for (const x of [-1.12, 1.12]) {
+    for (const z of [-1.12, 1.12]) {
+      dummy.position.set(x, 0.70, z);
+      dummy.rotation.set(0, 0, 0);
+      dummy.scale.set(0.12, 0.96, 0.12);
+      dummy.updateMatrix();
+      frame.setMatrixAt(frameIndex++, dummy.matrix);
+    }
+  }
+  for (const z of [-1.12, 1.12]) {
+    dummy.position.set(0, 1.18, z);
+    dummy.rotation.set(0, 0, 0);
+    dummy.scale.set(2.35, 0.12, 0.12);
+    dummy.updateMatrix();
+    frame.setMatrixAt(frameIndex++, dummy.matrix);
+  }
+  for (const x of [-1.12, 1.12]) {
+    dummy.position.set(x, 1.18, 0);
+    dummy.rotation.set(0, 0, 0);
+    dummy.scale.set(0.12, 0.12, 2.15);
+    dummy.updateMatrix();
+    frame.setMatrixAt(frameIndex++, dummy.matrix);
+  }
+  frame.computeBoundingSphere();
+  group.add(frame);
 
   const wallSpecs = [
     [2.35, 1, 0.18, 0, 0, -1.12],
@@ -1231,6 +1275,7 @@ function createBarracksVisual(building) {
   finishPieces.push(shieldSign);
   const standard = addBuildingStandard(group, building.team, 1.24, 1.15, 2.06);
   finishPieces.push(standard);
+  const authoredSprite = attachBuildingSprite(group, [...group.children], building);
   const productionLamp = createBuildingProductionLamp(group, building.team, 0, 1.17, 1.27);
 
   const outlinePoints = [
@@ -1251,7 +1296,7 @@ function createBarracksVisual(building) {
   const combatFeedback = createBuildingCombatFeedback();
   group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
   scene.add(group);
-  const visual = { group, walls, roofPanels, ridge, finishPieces, productionLamp,
+  const visual = { group, authoredSprite, frame, walls, roofPanels, ridge, finishPieces, productionLamp,
     teamColor, outline, rallyMarker, healthIndicator, combatFeedback };
   updateBarracksVisual(visual, building);
   return visual;
@@ -1259,17 +1304,21 @@ function createBarracksVisual(building) {
 
 function updateBarracksVisual(visual, building) {
   const progress = THREE.MathUtils.clamp(Number(building.progress) || 0, 0, 1);
+  const state = barracksModelVisualState(progress, building.complete);
   visual.group.position.set(building.x, 0, building.z);
   visual.group.visible = true;
+  visual.frame.visible = state.frameVisible;
+
   for (const wall of visual.walls) {
-    wall.scale.y = progress;
-    wall.position.y = 0.23 + progress * 0.5;
-    wall.visible = progress > 0.01;
+    wall.scale.y = 1;
+    wall.position.y = 0.23 + wall.scale.y * 0.5;
+    wall.visible = state.wallsVisible;
   }
-  const roofVisible = buildingFinishedDetailsVisible(progress, building.complete);
-  for (const panel of visual.roofPanels) panel.visible = roofVisible;
-  visual.ridge.visible = roofVisible;
-  for (const piece of visual.finishPieces) piece.visible = roofVisible;
+  for (const panel of visual.roofPanels) {
+    panel.visible = state.roofVisible;
+  }
+  visual.ridge.visible = state.roofVisible;
+  for (const piece of visual.finishPieces) piece.visible = state.finishedDetailsVisible;
   updateBuildingProductionCue(visual, building);
   updateBuildingHealthIndicator(visual, building);
 }
@@ -1535,13 +1584,7 @@ function updateResourceNodeCallouts(now, force = false) {
   const crowdThreshold = 8;
   const viewportRect = renderer.domElement.getBoundingClientRect();
   const pixelsPerWorldUnit = viewportRect.height * zoom / baseFrustum;
-  const occlusionRects = [...document.querySelectorAll(
-    '.topbar, .map-label, .topbar-center, .scenario-brief-panel, .objective-panel, .minimap-panel, .field-hint, .field-order-feedback, .control-dock, .toast, .match-result, .compass',
-  )].filter((element) => {
-    if (element.hidden || element.getClientRects().length === 0) return false;
-    const style = getComputedStyle(element);
-    return style.visibility !== 'hidden' && Number(style.opacity) !== 0;
-  }).map((element) => element.getBoundingClientRect());
+  const occlusionRects = visibleHudRects();
   for (const visual of resourceNodeVisuals.values()) {
     if (visual.stock <= 0) {
       visual.callout.visible = false;
@@ -1815,7 +1858,7 @@ function setForestTreeVisual(cell, stock) {
   if (!slot) return;
   const depleted = stock <= 0;
   setEnvironmentSpriteInstance(slot.mesh, slot.index, slot.x, slot.z,
-    depleted ? 0 : slot.scale, slot.flip);
+    depleted ? 0 : slot.scale, slot.flip, slot.yaw);
   slot.mesh.instanceMatrix.needsUpdate = true;
   const stump = forestStumpSlots.get(cell);
   if (!stump || !forestStumpMesh) return;
@@ -1920,39 +1963,6 @@ function buildMap(definition) {
   for (const surface of createGroundSurfaces(definition)) addMapObject(surface);
   buildConstructionGroundBatches();
 
-  // Rock silhouettes carry the visual boundary. Flat block tops made the ridge
-  // look like a strip of square tiles when viewed from the oblique camera.
-  const obstacleCount = definition.obstacles.reduce((count, obstacle) => (
-    count + (obstacle.material === 'water' ? obstacle.width * obstacle.height : 0)
-  ), 0);
-  const obstacles = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(1.02, 1.12, 1.02),
-    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.94, flatShading: true }),
-    obstacleCount,
-  );
-  const obstacleTints = [0x3e6570, 0x4d7982];
-  let obstacleIndex = 0;
-  for (const obstacle of definition.obstacles) {
-    if (obstacle.material !== 'water') continue;
-    const visibleHeight = 0.025;
-    for (let row = obstacle.row; row < obstacle.row + obstacle.height; row++) {
-      for (let column = obstacle.column; column < obstacle.column + obstacle.width; column++) {
-        dummy.position.set(column - MAP_HALF_X + 0.5, visibleHeight / 2, row - MAP_HALF_Z + 0.5);
-        dummy.rotation.set(0, 0, 0);
-        dummy.scale.set(1, visibleHeight / 1.12, 1);
-        dummy.updateMatrix();
-        obstacles.setMatrixAt(obstacleIndex, dummy.matrix);
-        color.setHex((row + column + obstacleIndex) % 3 === 0 ? obstacleTints[0] : obstacleTints[1]);
-        obstacles.setColorAt(obstacleIndex, color);
-        obstacleIndex++;
-      }
-    }
-  }
-  obstacles.instanceMatrix.needsUpdate = true;
-  if (obstacles.instanceColor) obstacles.instanceColor.needsUpdate = true;
-  obstacles.castShadow = false;
-  obstacles.receiveShadow = false;
-  addMapObject(obstacles);
   forestTreeSlots = addObstacleEnvironmentSprites(definition, MAP_HALF_X, MAP_HALF_Z, addMapObject);
   const stumpPositions = [...forestTreeSlots].map(([cell, slot], index) => {
     forestStumpSlots.set(cell, {
@@ -2185,7 +2195,7 @@ function buildMap(definition) {
   const title = document.querySelector('#map-label-title');
   const summary = document.querySelector('#map-summary');
   if (title) title.textContent = definition.name || definition.id.toUpperCase();
-  if (summary) summary.textContent = definition.summary || `${MAP_WIDTH} × ${MAP_HEIGHT}`;
+  if (summary) summary.textContent = 'Open objectives for the win rule';
   document.querySelector('#scenario-brief-name').textContent = definition.name || definition.id.toUpperCase();
   document.querySelector('#scenario-brief-summary').textContent = definition.summary || 'Control the marked objectives and protect your army.';
   const deadline = document.querySelector('#scenario-brief-deadline');
@@ -2221,6 +2231,9 @@ function buildMap(definition) {
   if (footerMap) footerMap.textContent = definition.name || definition.id.toUpperCase();
   buildMinimapBackground(definition);
   buildFogOverlay(definition);
+  objectiveHoldSummary = null;
+  noticeHistory = [];
+  document.querySelector('#notice-history').replaceChildren();
   latestObjectiveStates = new Map();
   latestScenarioEventStates = new Map();
   latestMatchElapsedSeconds = 0;
@@ -3219,6 +3232,53 @@ function updateSelectionUI() {
     ui.selectedWaypoints.hidden = selected.size === 0 || queuedWaypointTotal === 0;
     ui.selectedWaypoints.textContent = `${queuedWaypointTotal.toLocaleString()} QUEUED WAYPOINTS · ${unitsWithQueuedWaypoints.toLocaleString()} UNITS`;
   }
+  updateContextualCommands();
+}
+
+function updateContextualCommands() {
+  const bar = document.querySelector('.contextual-command-bar');
+  if (!bar) return;
+  const building = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
+  const context = selectionContext(units, selected, localTeam, building);
+  bar.dataset.context = context.kind;
+  document.querySelector('#assign-selected-group').disabled = !context.total;
+  bar.querySelector('[data-context-summary]').textContent = building
+    ? `${buildingLabel(building.type)} · ${ui.selectedBuildingHealth.textContent} · ${ui.selectedBuildingProduction.textContent}`
+    : context.total ? `${context.total} selected${context.kind === 'military' || context.kind === 'mixed' ? ` · ${ui.formationSelect.value} formation` : ''} · ${Object.entries(context.counts).filter(([, n]) => n).map(([role, n]) => `${n} ${role}`).join(' · ')}${context.counts.worker ? ` · Cargo ${Math.floor(context.cargo.food)} food / ${Math.floor(context.cargo.wood)} wood` : ''}` : '';
+  for (const button of bar.querySelectorAll('[data-context-proxy]')) {
+    const source = document.getElementById(button.dataset.contextProxy);
+    const action = button.dataset.contextProxy;
+    button.hidden = action === 'order-target-toggle' ? context.kind === 'none'
+      : action === 'attack-move-toggle' ? !['military', 'mixed'].includes(context.kind)
+      : action === 'train-infantry' ? building?.type !== 'barracks'
+      : action === 'train-archer' ? building?.type !== 'archery-range'
+      : ['research-attack-upgrade', 'clear-building-rally'].includes(action) ? !building || source.hidden
+      : action === 'select-workers' ? context.kind !== 'mixed' : false;
+    button.disabled = source.disabled || (action.startsWith('train-') && building && (!building.complete || building.productionBlocked));
+    if (source.hasAttribute('aria-pressed')) button.setAttribute('aria-pressed', source.getAttribute('aria-pressed'));
+    if (action === 'order-target-toggle') button.textContent = tapOrderArmed ? 'Cancel target' : building ? 'Set rally' : context.kind === 'workers' ? 'Gather / move' : 'Target battlefield';
+    if (action.startsWith('train-')) {
+      button.setAttribute('aria-describedby', 'context-action-reason');
+      const reason = !building?.complete ? 'Finish construction' : building.productionBlocked ? 'Clear spawn area'
+        : source.disabled ? source.dataset.disabledReason || source.getAttribute('aria-label') : '';
+      bar.querySelector('[data-context-reason]').textContent = button.hidden ? bar.querySelector('[data-context-reason]').textContent : reason;
+    }
+  }
+  if (!building) bar.querySelector('[data-context-reason]').textContent = '';
+  bar.querySelector('[data-context-build]').hidden = context.kind !== 'workers';
+  bar.querySelector('[data-context-details]').hidden = context.kind === 'none';
+  bar.querySelector('[data-context-details]').textContent = building ? 'Rally / upgrade details' : 'Formation / route';
+  const research = bar.querySelector('[data-context-research]');
+  research.hidden = !building;
+  research.textContent = building ? `${ui.buildingRallyReadout.textContent} · ${ui.buildingResearchReadout.textContent}` : '';
+  const groups = bar.querySelector('[data-context-groups]');
+  for (let index = 0; index < 10; index++) {
+    const button = groups.children[index];
+    if (!button) continue;
+    button.hidden = !controlGroups[index].size;
+    button.textContent = `${controlGroupKeyLabel(index)} · ${controlGroups[index].size}`;
+    button.setAttribute('aria-label', `Recall group ${controlGroupKeyLabel(index)}, ${controlGroups[index].size} units`);
+  }
 }
 
 function updateControlGroupUI() {
@@ -3244,6 +3304,7 @@ function updateControlGroupUI() {
     button.title = `${count.toLocaleString()} living units · ${compositionLabel} · Ctrl/⌘ + ${number} replaces · Shift + ${number} adds · ${number} recalls`;
     button.disabled = localTeam === null;
   }
+  updateContextualCommands();
 }
 
 function controlGroupKeyLabel(index) {
@@ -3440,6 +3501,7 @@ function formatVictoryHoldTime(seconds) {
 }
 
 function updateVictoryHoldCard(hold = null, winner = -1, winnerReason = null, clockStarted = false) {
+  objectiveHoldSummary = hold;
   if (!victoryHoldVisual) return;
   const { card, status, progressFill, durationSeconds } = victoryHoldVisual;
   const activeTeams = Array.isArray(hold?.activeTeams) ? hold.activeTeams : [false, false];
@@ -3556,6 +3618,7 @@ function renderScenarioEventCountdown(now = performance.now()) {
       visual.status.textContent = remaining <= 0.1 ? `${delivery}DUE` : `${delivery}IN ${time}`;
     }
   }
+  renderObjectiveSummary(elapsed);
   if (timedVictoryVisual) {
     const { card, status, rule } = timedVictoryVisual;
     if (matchWinner >= 0) {
@@ -3574,6 +3637,16 @@ function renderScenarioEventCountdown(now = performance.now()) {
       status.textContent = remaining <= 0.1 ? 'RESOLVING' : `IN ${time}`;
     }
   }
+}
+
+function renderObjectiveSummary(elapsed = latestMatchElapsedSeconds) {
+  const summary = objectiveSummary(mapDefinition || {}, [...latestObjectiveStates.values()], {
+    team: localTeam, hold: objectiveHoldSummary, elapsed, started: latestScenarioClockStarted, winner: matchWinner,
+  });
+  document.querySelector('#map-summary').textContent = summary.action;
+  const urgent = document.querySelector('#objective-urgent');
+  urgent.textContent = summary.urgent;
+  urgent.hidden = !summary.urgent;
 }
 
 function syncMatchResultActions() {
@@ -3697,6 +3770,7 @@ function updateCommandUI() {
   if (ui.formationSelect) ui.formationSelect.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding);
   syncTargetOrderUI();
   syncBattlefieldCursor();
+  updateContextualCommands();
 }
 
 function syncTargetOrderUI() {
@@ -4069,6 +4143,9 @@ function updateEconomyUI(state = {}, initial = false) {
   if (ui.selectWorkers) ui.selectWorkers.disabled = localTeam === null
     || ownedWorkers.length === 0;
   if (ui.selectIdleWorkers) {
+    const quickIdle = document.querySelector('#quick-idle');
+    quickIdle.disabled = idleWorkerIds.length === 0;
+    quickIdle.textContent = `Idle · ${idleWorkerIds.length}`;
     ui.selectIdleWorkers.disabled = idleWorkerIds.length === 0;
     ui.selectIdleWorkers.textContent = `Idle · ${idleWorkerIds.length}`;
     ui.selectIdleWorkers.setAttribute('aria-label', `Select idle workers (${idleWorkerIds.length})`);
@@ -4141,12 +4218,28 @@ function updateEconomyUI(state = {}, initial = false) {
       ? 'Select Workers, open Orders, then target food or wood.'
       : 'Select Workers, then right-click food or wood.';
   }
+  for (const [button, costFood, costWood, producer, queue, limit] of [
+    [ui.trainWorker, WORKER_FOOD_COST, 0, true, workerQueue, WORKER_QUEUE_LIMIT],
+    [ui.trainInfantry, INFANTRY_FOOD_COST, 0, trainableBarracks, infantryQueueLength, BARRACKS_QUEUE_LIMIT],
+    [ui.trainArcher, ARCHER_FOOD_COST, ARCHER_WOOD_COST, trainableRange, queueLength, ARCHERY_RANGE_QUEUE_LIMIT],
+  ]) {
+    if (!button) continue;
+    const reason = localTeam === null ? 'Join a team' : matchWinner >= 0 ? 'Match finished'
+      : !producer ? 'Complete a production building with spawn space'
+      : queue >= limit ? 'Queue full' : unitCapReached ? 'Unit cap reached'
+      : food < costFood || wood < costWood ? `Need ${Math.max(0, costFood - food)} food / ${Math.max(0, costWood - wood)} wood` : '';
+    button.dataset.disabledReason = reason;
+    let note = button.querySelector('.action-disabled-reason');
+    if (!note) { note = document.createElement('small'); note.className = 'action-disabled-reason'; button.append(note); }
+    note.textContent = reason;
+  }
   updateCommandUI();
 }
 
 function updateRoomUI(connected) {
   connectedPlayers = connected;
   ui.playersOnline.textContent = `${connected} / 2 PLAYERS`;
+  ui.networkStatus.parentElement.dataset.urgent = String(waitingForResume);
   ui.matchStatus.textContent = waitingForResume ? 'WAITING TO REJOIN' : connected >= 2 ? '2 / 2 ONLINE' : `${connected} / 2 ONLINE`;
   ui.matchStatus.classList.toggle('full', connected >= 2);
   ui.networkStatus.textContent = waitingForResume
@@ -4158,6 +4251,7 @@ function updateRoomUI(connected) {
 }
 
 function setConnection(status) {
+  ui.networkStatus.parentElement.dataset.urgent = String(['OFFLINE', 'RECONNECTING', 'SEAT ACTIVE ELSEWHERE', 'INVALID ROOM LINK', 'ROOM NOT FOUND'].includes(status));
   ui.networkStatus.textContent = status;
   ui.matchStatus.textContent = status;
   const waiting = status === 'CONNECTING' || status === 'RECONNECTING' || status === 'WAITING FOR PLAYER 2';
@@ -6010,6 +6104,13 @@ function downloadEditorMap() {
 }
 
 function showToast(message, duration = 1300) {
+  noticeHistory = rememberNotice(noticeHistory, message);
+  const history = document.querySelector('#notice-history');
+  history.replaceChildren(...noticeHistory.map((notice) => {
+    const item = document.createElement('li');
+    item.textContent = notice.text + (notice.count > 1 ? ` ×${notice.count}` : '');
+    return item;
+  }));
   if (isLocalRejection(message)) audio.play('reject');
   const fieldFeedback = document.querySelector('#field-order-feedback');
   if (fieldFeedback && !fieldFeedback.hidden && fieldFeedback.textContent === message) return;
@@ -6139,7 +6240,7 @@ function projectUnit(unit, rect) {
   };
 }
 
-function pickAt(x, y, predicate) {
+function pickAt(x, y, predicate, { advance = true } = {}) {
   const rect = renderer.domElement.getBoundingClientRect();
   const candidates = [];
   for (const unit of units) {
@@ -6153,19 +6254,24 @@ function pickAt(x, y, predicate) {
     if (distance < 19 * 19) candidates.push({ id: unit.id, distanceSquared: distance, depth: point.depth });
   }
   const pick = chooseUnitPickCandidate(candidates, lastUnitPickState, x, y, performance.now());
-  lastUnitPickState = pick.state;
+  if (advance) lastUnitPickState = pick.state;
   return {
     ...pick,
     unit: pick.id === null ? null : units[pick.id],
   };
 }
 
-function pickResourceNodeAt(x, y) {
+function pickResourceNodeAt(x, y, { visibleOnly = false } = {}) {
   if (localTeam === null || !Array.isArray(mapDefinition?.resourceNodes)) return null;
   const rect = renderer.domElement.getBoundingClientRect();
   let nearest = null;
   let nearestDistance = 26 * 26;
   for (const node of mapDefinition.resourceNodes) {
+    if (visibleOnly && mapDefinition.fogOfWar) {
+      const column = Math.floor(node.x + MAP_WIDTH / 2);
+      const row = Math.floor(node.z + MAP_HEIGHT / 2);
+      if (latestFogCells?.[row * MAP_WIDTH + column] !== 2) continue;
+    }
     screenPoint.set(node.x, 0.22, node.z).project(camera);
     const nodeX = (screenPoint.x * 0.5 + 0.5) * rect.width;
     const nodeY = (-screenPoint.y * 0.5 + 0.5) * rect.height;
@@ -6557,6 +6663,13 @@ function updateBuildPlacementGhost(clientX, clientY) {
 }
 
 function updateBuildPlacementHint() {
+  const guidance = document.querySelector('.field-hint');
+  const forced = buildPlacementActive || tapOrderArmed;
+  guidance.classList.toggle('guidance-dismissed', guidanceDismissed && !forced);
+  const guidanceToggle = document.querySelector('#guidance-toggle');
+  guidanceToggle.hidden = forced;
+  guidanceToggle.textContent = guidanceDismissed ? 'Show hints' : 'Hide hints';
+  guidanceToggle.setAttribute('aria-expanded', String(!guidanceDismissed));
   const activeLabel = buildingLabel(buildPlacementType);
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
   if (ui.fieldHintPrimaryKey) ui.fieldHintPrimaryKey.textContent = coarsePointer ? 'TAP' : 'LMB';
@@ -6585,20 +6698,43 @@ function updateBuildPlacementHint() {
 }
 
 function setBattlefieldCursor(mode) {
-  renderer.domElement.dataset.cursorMode = mode;
+  if (renderer.domElement.dataset.cursorMode !== mode) renderer.domElement.dataset.cursorMode = mode;
 }
 
-function syncBattlefieldCursor({ hoveringResource = false } = {}) {
-  if (pan) setBattlefieldCursor('panning');
-  else if (spaceDown) setBattlefieldCursor('pan');
-  else if (drag && movedPointer) setBattlefieldCursor('box-select');
-  else if (buildPlacementActive) {
-    setBattlefieldCursor(ui.placementStatus?.dataset.state === 'blocked' ? 'build-blocked' : 'build-valid');
-  } else if (tapOrderArmed) {
-    const selectedBuilding = selectedBuildingId !== null;
-    setBattlefieldCursor(selectedBuilding ? 'rally' : hoveringResource ? 'gather' : attackMoveMode ? 'attack-move' : 'move');
-  } else if (attackMoveMode) setBattlefieldCursor('attack-move');
-  else setBattlefieldCursor('select');
+function syncBattlefieldCursor() {
+  const ids = selectedIds();
+  const ownedBuilding = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
+  const state = {
+    panning: Boolean(pan), panReady: spaceDown, dragging: Boolean(drag && movedPointer),
+    crossing: Boolean(drag && drag.currentX < drag.startX),
+    canOrder: localTeam !== null && matchWinner < 0,
+    building: buildPlacementActive, buildValid: ui.placementStatus?.dataset.state === 'clear',
+    selectedBuilding: selectedBuildingId !== null,
+    rallySupported: Boolean(ownedBuilding && ['barracks', 'archery-range'].includes(ownedBuilding.type)),
+    count: ids.length, workers: ids.some((id) => units[id].kind === 'worker'),
+    military: ids.some((id) => units[id].kind !== 'worker'),
+    attackMove: attackMoveMode, armed: tapOrderArmed, shift: cursorShift,
+  };
+  // Picking is read-only here: hovering must never cycle an overlapping target stack.
+  if (cursorPointer && state.canOrder && !state.panning && !state.panReady && !state.dragging
+      && !state.building && !state.selectedBuilding) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    const x = cursorPointer.x - rect.left, y = cursorPointer.y - rect.top;
+    if (ids.length) {
+      state.enemy = Boolean(pickAt(x, y, (unit) => unit.team !== localTeam, { advance: false }).unit);
+      if (!state.enemy) state.enemyBuilding = Boolean(pickBuildingAt(x, y, (building) => building.team !== localTeam));
+      if (!state.enemy && !state.enemyBuilding) {
+        state.resource = pickResourceNodeAt(x, y, { visibleOnly: true })?.type;
+        if (!state.resource) state.forest = pickForestCellAt(x, y) !== null;
+      }
+    }
+    if (cursorShift) {
+      const friendly = pickAt(x, y, (unit) => unit.team === localTeam, { advance: false }).unit;
+      state.friendly = Boolean(friendly);
+      state.alreadySelected = Boolean(friendly && selected.has(friendly.id));
+    }
+  }
+  setBattlefieldCursor(battlefieldCursor(state));
 }
 
 function cancelBuildPlacement(announce = true) {
@@ -6609,6 +6745,7 @@ function cancelBuildPlacement(announce = true) {
   pendingBuildBaseline = new Set();
   placementGhost.visible = false;
   updateBuildPlacementHint();
+  if (typeof closeDockDetails === 'function') closeDockDetails({ restoreFocus: false });
   updateEconomyUI();
   if (announce && wasActive) showToast(`${buildingLabel(buildPlacementType)} PLACEMENT CANCELLED`);
 }
@@ -6639,6 +6776,7 @@ function beginBuildPlacement(type) {
   pendingBuildOrderToken = null;
   pendingBuildBaseline = new Set(latestBuildings.filter((building) => building.team === localTeam).map((building) => building.id));
   updateBuildPlacementHint();
+  if (typeof closeDockDetails === 'function') closeDockDetails({ restoreFocus: false });
   updateEconomyUI();
   showToast(window.matchMedia('(pointer: coarse)').matches
     ? `${label} SITE · TAP TO PLACE · TAP BUILD AGAIN TO CANCEL`
@@ -6765,6 +6903,9 @@ function resumeConstruction() {
   }
 }
 
+let cursorPointer = null;
+let cursorShift = false;
+let lastCursorSample = 0;
 let drag = null;
 let pan = null;
 let spaceDown = false;
@@ -6875,7 +7016,10 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
   selectionBox.style.height = '0px';
 });
 
+renderer.domElement.addEventListener('pointerleave', () => { cursorPointer = null; });
 renderer.domElement.addEventListener('pointermove', (event) => {
+  cursorPointer = { x: event.clientX, y: event.clientY };
+  cursorShift = event.shiftKey;
   if (tapOrderPointer?.id === event.pointerId) return;
   if (pan) {
     const dx = event.clientX - pan.x;
@@ -6899,11 +7043,10 @@ renderer.domElement.addEventListener('pointermove', (event) => {
   }
   const rect = renderer.domElement.getBoundingClientRect();
   if (!drag) {
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    const hoveringResource = tapOrderArmed && selectedBuildingId === null
-      && (Boolean(pickResourceNodeAt(x, y)) || pickForestCellAt(x, y) !== null);
-    syncBattlefieldCursor({ hoveringResource });
+    if (performance.now() - lastCursorSample >= 80) {
+      lastCursorSample = performance.now();
+      syncBattlefieldCursor();
+    }
     return;
   }
   drag.currentX = event.clientX - rect.left;
@@ -7037,6 +7180,66 @@ const fullscreenSupported = Boolean(document.fullscreenEnabled
   && typeof document.exitFullscreen === 'function');
 const commandDock = document.querySelector('.control-dock');
 const dockTabs = [...document.querySelectorAll('[data-dock-tab]')];
+const dockToggle = document.querySelector('#dock-toggle');
+const hudHeader = document.querySelector('.topbar');
+const hudObjective = document.querySelector('.map-label');
+const hudCamera = document.querySelector('.camera-toolbar');
+function syncHudRows() {
+  const headerHeight = hudHeader.getBoundingClientRect().height;
+  const objectiveHeight = hudObjective.getBoundingClientRect().height;
+  const cameraHeight = hudCamera.getBoundingClientRect().height;
+  const narrow = appShell.clientWidth <= 920;
+  const controlsBottom = headerHeight + (narrow
+    ? objectiveHeight + cameraHeight + 16
+    : Math.max(objectiveHeight, cameraHeight) + 8);
+  appShell.style.setProperty('--hud-header-height', `${headerHeight}px`);
+  appShell.style.setProperty('--hud-objective-height', `${objectiveHeight}px`);
+  appShell.style.setProperty('--hud-controls-bottom', `${controlsBottom}px`);
+}
+const hudRowObserver = new ResizeObserver(syncHudRows);
+for (const element of [hudHeader, hudObjective, hudCamera, appShell]) hudRowObserver.observe(element);
+syncHudRows();
+const contextualBar = document.querySelector('.contextual-command-bar');
+if (contextualBar) {
+  const syncContextHeight = () => document.querySelector('.workspace').style.setProperty('--context-bar-height', `${contextualBar.getBoundingClientRect().height}px`);
+  new ResizeObserver(syncContextHeight).observe(contextualBar);
+  syncContextHeight();
+}
+let dockOpener = dockToggle;
+function closeDockDetails({ restoreFocus = false } = {}) {
+  commandDock.hidden = true;
+  dockToggle.setAttribute('aria-expanded', 'false');
+  clearHeldCameraKeys();
+  if (restoreFocus) (dockOpener?.isConnected && dockOpener.getClientRects().length ? dockOpener : document.querySelector('.contextual-command-bar button') || dockToggle).focus();
+}
+dockToggle.addEventListener('click', () => {
+  if (commandDock.hidden) selectDockTab(commandDock.dataset.activePanel || 'selection', true);
+  else closeDockDetails({ restoreFocus: true });
+});
+document.querySelector('#dock-close').addEventListener('click', () => closeDockDetails({ restoreFocus: true }));
+document.querySelector('#quick-army').addEventListener('click', selectMilitary);
+document.querySelector('#quick-idle').addEventListener('click', () => ui.selectIdleWorkers.click());
+let hudPreferences;
+try { hudPreferences = normalizeHudPreferences(JSON.parse(localStorage.getItem('skirmish-hud') || '{}')); }
+catch { hudPreferences = normalizeHudPreferences(); }
+function applyHudPreferences(changes = {}) {
+  hudPreferences = normalizeHudPreferences({ ...hudPreferences, ...changes });
+  appShell.dataset.hudDensity = hudPreferences.density;
+  appShell.dataset.minimapSize = hudPreferences.minimap;
+  document.querySelector('.minimap-panel').hidden = hudPreferences.minimap === 'hidden';
+  document.querySelector('#minimap-reopen').hidden = hudPreferences.minimap !== 'hidden';
+  document.querySelector('#hud-density').value = hudPreferences.density;
+  document.querySelector('#hud-minimap').value = hudPreferences.minimap;
+  document.querySelector('#minimap-size-toggle').setAttribute('aria-label', hudPreferences.minimap === 'large' ? 'Shrink tactical map' : 'Enlarge tactical map');
+  document.querySelector('#minimap-size-toggle').textContent = hudPreferences.minimap === 'large' ? '−' : '+';
+  try { localStorage.setItem('skirmish-hud', JSON.stringify(hudPreferences)); } catch { /* Storage may be unavailable. */ }
+}
+applyHudPreferences();
+document.querySelector('#hud-density').addEventListener('change', (event) => applyHudPreferences({ density: event.target.value }));
+document.querySelector('#hud-minimap').addEventListener('change', (event) => applyHudPreferences({ minimap: event.target.value }));
+document.querySelector('#minimap-size-toggle').addEventListener('click', () => applyHudPreferences({ minimap: hudPreferences.minimap === 'large' ? 'small' : 'large' }));
+document.querySelector('#minimap-hide').addEventListener('click', () => { applyHudPreferences({ minimap: 'hidden' }); document.querySelector('#minimap-reopen').focus(); });
+document.querySelector('#minimap-reopen').addEventListener('click', () => { applyHudPreferences({ minimap: 'small' }); document.querySelector('#minimap-size-toggle').focus(); });
 
 function syncFullscreenToggle() {
   const isFullscreen = document.fullscreenElement === appShell;
@@ -7139,6 +7342,7 @@ function toggleHudPanel(panel, trigger) {
   const opening = panel.hidden;
   if (tapOrderArmed) setTapOrderArmed(false, false);
   closeHudPanels();
+  closeDockDetails();
   if (!opening) return;
   panel.hidden = false;
   hudScrim.hidden = false;
@@ -7148,7 +7352,12 @@ function toggleHudPanel(panel, trigger) {
 
 function selectDockTab(name, focus = false) {
   if (name !== 'command' && tapOrderArmed) setTapOrderArmed(false, false);
+  if (commandDock.hidden) dockOpener = document.activeElement instanceof HTMLElement && document.activeElement.matches('button, [tabindex]') && !commandDock.contains(document.activeElement) ? document.activeElement : document.querySelector('.contextual-command-bar button') || dockToggle;
+  closeScenarioBrief();
+  commandDock.hidden = false;
+  dockToggle.setAttribute('aria-expanded', 'true');
   commandDock.dataset.activePanel = name;
+  for (const panel of commandDock.querySelectorAll(':scope > [role="tabpanel"]')) panel.hidden = panel.id !== `dock-${name}`;
   for (const tab of dockTabs) {
     const selected = tab.dataset.dockTab === name;
     tab.setAttribute('aria-selected', String(selected));
@@ -7170,6 +7379,7 @@ scenarioBriefToggle.addEventListener('click', () => {
   if (tapOrderArmed) setTapOrderArmed(false, false);
   closeHudPanels();
   closeScenarioBrief();
+  closeDockDetails();
   if (!opening) return;
   scenarioBriefPanel.hidden = false;
   scenarioBriefToggle.setAttribute('aria-expanded', 'true');
@@ -7196,15 +7406,22 @@ for (const button of document.querySelectorAll('[data-open-dock-tab]')) {
   button.addEventListener('click', () => selectDockTab(button.dataset.openDockTab, true));
 }
 selectDockTab('selection');
+closeDockDetails();
+document.querySelector('#guidance-toggle').addEventListener('click', () => {
+  guidanceDismissed = !guidanceDismissed;
+  try { localStorage.setItem('rts-guidance-dismissed', String(guidanceDismissed)); } catch {}
+  updateBuildPlacementHint();
+});
 updateBuildPlacementHint();
 window.addEventListener('keydown', (event) => {
   if (document.fullscreenElement === appShell && event.key === 'Escape') return;
-  if (event.key !== 'Escape' || (matchMenu.hidden && helpPanel.hidden && scenarioBriefPanel.hidden)
+  if (event.key !== 'Escape' || (matchMenu.hidden && helpPanel.hidden && scenarioBriefPanel.hidden && commandDock.hidden)
     || document.querySelector('dialog[open]')) return;
   event.preventDefault();
   event.stopImmediatePropagation();
   if (!scenarioBriefPanel.hidden) closeScenarioBrief({ restoreFocus: true });
-  else closeHudPanels({ restoreFocus: true });
+  else if (!matchMenu.hidden || !helpPanel.hidden) closeHudPanels({ restoreFocus: true });
+  else closeDockDetails({ restoreFocus: true });
 }, true);
 
 const AUDIO_CAPTIONS = Object.freeze({
@@ -7557,13 +7774,19 @@ window.addEventListener('keydown', (event) => {
     updateSelectionUI();
   }
 });
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Shift') { cursorShift = true; syncBattlefieldCursor(); }
+});
 window.addEventListener('keyup', (event) => {
+  if (event.key === 'Shift') { cursorShift = false; syncBattlefieldCursor(); }
   if (event.key.startsWith('Arrow')) heldCameraKeys.release(event.key);
   if (event.code !== 'Space') return;
   spaceDown = false;
   syncBattlefieldCursor();
 });
 window.addEventListener('blur', () => {
+  cursorPointer = null;
+  cursorShift = false;
   if (tapOrderArmed) setTapOrderArmed(false, false);
   spaceDown = false;
   clearHeldCameraKeys();
@@ -8369,6 +8592,11 @@ let fpsTime = 0;
 let renderStatsTime = 0;
 let lastIdlePoseStep = -1;
 function animate(now) {
+  if (cursorPointer && now - lastCursorSample >= 100) {
+    lastCursorSample = now;
+    if (buildPlacementActive) updateBuildPlacementGhost(cursorPointer.x, cursorPointer.y);
+    else syncBattlefieldCursor();
+  }
   requestAnimationFrame(animate);
   moveKeyboardCamera(now);
   syncUnitDetailLevel();
@@ -8384,7 +8612,7 @@ function animate(now) {
     const hoveredElement = insideViewport ? document.elementFromPoint(edgeScrollPointer.x, edgeScrollPointer.y) : null;
     const hudControlHovered = hoveredElement instanceof Element
       && Boolean(hoveredElement.closest(
-        'button, a[href], input, select, textarea, [contenteditable="true"], [role="button"], [role="tab"], .control-dock, #minimap-canvas, .minimap-panel, .objective-panel, .scenario-brief-panel, .match-result, #art-review-panel',
+        'button, a[href], input, select, textarea, [contenteditable="true"], [role="button"], [role="tab"], .control-dock, .hud-quick-access, .contextual-command-bar, #minimap-canvas, .minimap-panel, .objective-panel, .scenario-brief-panel, .match-result, #art-review-panel',
       ));
     const activeElement = document.activeElement;
     const hudControlFocused = activeElement instanceof Element
@@ -8496,6 +8724,10 @@ function animate(now) {
     if (moveMarkerAge > 1.05) moveMarker.visible = false;
   }
   updateResourceNodeCallouts(now);
+  for (const visual of capturedBuildingVisuals) {
+    updateCapturedBuildingSprite(visual.sprite, camera, visual.lifecycleInput);
+    if (visual.sprite.visible) visual.fallbackRoot.visible = false;
+  }
   renderer.render(scene, camera);
   drawMinimap(now);
   fpsFrames++;
@@ -8514,3 +8746,21 @@ function animate(now) {
 }
 
 requestAnimationFrame(animate);
+
+for (const button of document.querySelectorAll('[data-context-proxy]')) {
+  button.addEventListener('click', () => { document.getElementById(button.dataset.contextProxy).click(); updateContextualCommands(); });
+}
+for (const button of document.querySelectorAll('[data-context-panel]')) {
+  button.addEventListener('click', () => selectDockTab(button.dataset.contextPanel, true));
+}
+for (let index = 0; index < 10; index++) {
+  const button = document.createElement('button');
+  button.type = 'button'; button.hidden = true;
+  button.addEventListener('click', () => recallControlGroup(index));
+  document.querySelector('[data-context-groups]').append(button);
+}
+document.querySelector('#assign-selected-group').addEventListener('click', () => {
+  assignControlGroup(Number(document.querySelector('#assign-group-slot').value));
+  updateContextualCommands();
+});
+updateContextualCommands();

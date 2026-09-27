@@ -1,33 +1,45 @@
-# Frontier resource sprite-atlas candidate v0.1.0
+# Resource sprite-atlas candidate
 
-**Maturity:** source-only. This additive candidate keeps `frontier-interactive-v1` and its runtime path unchanged. Renderer adoption, runtime encodes, and in-game layer ordering remain separate work.
+**Status:** source-only v0.1.0. The active interactive environment pack is unchanged.
+[Sprite contract](../../../docs/sprite-atlas-contract-v1.md)
 
 ## Contents
 
-The manifest contains two canonical `kind: "resource"` assets, `oak` and `berries`, each with static clips named `full`, `worked`, `low`, and `depleted`. Every state retains a full-cutout fallback and provides canvas-local cropped layer rectangles with explicit `layerId` and `offsetPx` values.
+Two resource assets, oak and berries, each provide static full/worked/low/depleted
+clips. Seven lossless PNG pages retain a full-cutout fallback and cropped layers
+with explicit canvas offsets. Oak canvas: 1226 × 1283; berries: 1536 × 1024.
+Bottom-center pivots are unreviewed estimates. A 1 × 1 footprint is an art hint,
+not gameplay occupancy.
 
-The original canvases are retained: oak is 1226 × 1283 px and berries is 1536 × 1024 px. Each frame uses the existing bottom-center registration as `groundPivotPx` (`x = canvas width / 2`, `y = canvas height`); the pivot is marked `unreviewed-estimate` until a human reviews ground contact. `recommendedTileFootprint` is a 1 × 1 hint only; map/gameplay placement remains authoritative.
+| Asset | Layer | Draw role |
+| --- | --- | --- |
+| Oak | `foliage-back` | Background canopy |
+| Oak | `wood-structure` | Actor trunk/branches/roots |
+| Berries | `foliage-back` | Background foliage |
+| Berries | `wood-structure` | Actor woody body |
+| Berries | `fruit-front` | Foreground red fruit; omitted for depletion |
 
-| Asset | Layer ID | Draw layer | Contents |
-| --- | --- | --- | --- |
-| Oak | `foliage-back` | `background` | Green and yellow-green canopy pixels |
-| Oak | `wood-structure` | `actor` | Trunk, branches, roots, and remaining pixels |
-| Berries | `foliage-back` | `background` | Green and yellow-green foliage pixels |
-| Berries | `wood-structure` | `actor` | Woody base and remaining pixels |
-| Berries | `fruit-front` | `foreground` | Saturated red fruit pixels; omitted from the depleted frame |
+## Layer method
 
-## Source and layer method
+`build_atlas.py` reuses the eight approved interactive-pack PNGs without repainting.
+HSV mattes assign foliage (hue 20–120, saturation ≥18/255) and fruit (hue 0–12 or
+246–255, saturation ≥64/255). Remaining pixels are woody structure; the depleted
+oak stays entirely there. Crops use alpha-nonzero bounds and original offsets.
 
-All eight inputs are the approved PNG states from `assets/environment/frontier-interactive-v1/`. `build_atlas.py` packs them into lossless source pages and assigns existing pixels with HSV color mattes; it does not repaint, generate, or retouch the art. Foliage uses hue 20–120 with saturation at least 18/255. Berry fruit uses hue 0–12 or 246–255 with saturation at least 64/255, except in the depleted state. Remaining visible pixels go to the woody structure; the depleted oak stump is kept entirely in that layer.
+The recorded recomposition check reconstructs every visible RGBA pixel exactly.
+Only fully transparent RGB is zeroed. `build-report.json` retains input hashes
+and dimensions; source edge artifacts are preserved. Color-based layers are an
+occlusion proposal, not a reviewed semantic depth matte.
 
-The full-cutout fallback is included for each state. The build report records all eight original input hashes and dimensions. Layer rectangles use the smallest alpha-nonzero crop and its original canvas offset. A recomposition check passed for all eight frames: every visible source RGBA pixel and alpha value is reconstructed exactly. RGB is zeroed only where alpha is exactly zero, matching the declared `zero-rgb-under-transparent` page rule.
+## Validate and preview
 
-This is a deterministic color-based depth proposal, not a hand-painted semantic matte. Its composited appearance matches the approved sprites; whether foliage, wood, and fruit should occlude workers in this order is for art and renderer review. The source contains existing edge color artifacts, which this candidate preserves rather than silently correcting.
+From the repository root:
 
-Source lineage hashes are included in `manifest.json` provenance notes and `build-report.json`. The manifest records SHA-256, format, and dimensions for all seven atlas source pages. Runtime hashes are absent by design because this pack is `source-only`; any runtime encodes belong to a later renderer-owned adoption step.
+```sh
+node scripts/validate-sprite-atlas.mjs assets/environment/frontier-resource-atlas-v1-candidate/manifest.json
+```
 
-## Atlas and validation
-
-Seven RGBA8 PNG source pages use sRGB, straight alpha, zero RGB under fully transparent pixels, no gutters, no mipmaps, linear sampling, and a 0.5 px UV inset. Each four-state family is laid out horizontally; manifest rectangles and offsets point to the individual fallback or layer crop.
-
-Validated with `scripts/validate-sprite-atlas.mjs` from Technical Art contract worktree commit `a21cec6bda2cc92e87e85667a0f4d04c63167e37`: **7 files, 7 pages, 2 assets; valid**. The HTML preview shows state clips, layer composition, page rectangles, alpha bounds, and the unreviewed pivot.
+[preview.html](preview.html) exposes states, layers, rectangles, alpha bounds,
+and pivots. Pages use sRGB/straight alpha, no gutter or mipmaps, linear sampling,
+and half-pixel UV inset. Runtime encodes/hashes are absent because the pack is
+source-only. Adoption needs pivot/layer-order review, runtime exports, and a loader.

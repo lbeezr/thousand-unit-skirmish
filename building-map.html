@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101713">
+    <title>Building Variant Atlas — Thousand Unit Skirmish</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="./building-map.css">
+    <script type="module" src="./building-map.js"></script>
+  </head>
+  <body>
+    <div class="atlas-shell">
+      <header class="atlas-header">
+        <a class="back-link" href="./" aria-label="Return to the game">← GAME</a>
+        <div class="brand">
+          <span class="eyebrow">MESHY PIPELINE · 01</span>
+          <h1>Building Variant Atlas</h1>
+          <p>Start with an optimized 3D model, then capture consistent views for sprite review.</p>
+        </div>
+        <span class="review-stamp">REVIEW ONLY</span>
+      </header>
+
+      <main>
+        <section class="notice" aria-label="Asset status note">
+          <span class="notice-mark" aria-hidden="true">i</span>
+          <p><strong>All five Town Center states now have optimized Meshy models and matched view captures.</strong> The four new construction and damage models were processed as separate jobs. These are art-review references; the game still uses its existing runtime sprites.</p>
+        </section>
+
+        <ol class="pipeline-steps" aria-label="Town Center Meshy pipeline status">
+          <li><span>01</span><strong>Design</strong><small>Matched source</small></li>
+          <li><span>02</span><strong>Generate</strong><small>One model per state</small></li>
+          <li><span>03</span><strong>Optimize</strong><small>~100K triangles each</small></li>
+          <li><span>04</span><strong>Capture</strong><small>8 views × 5 states</small></li>
+          <li class="pending"><span>05</span><strong>Integrate</strong><small>Review-only; gameplay unchanged</small></li>
+        </ol>
+
+        <nav class="filters" aria-label="Filter building variants">
+          <button type="button" data-building-filter="all" aria-pressed="true">All buildings</button>
+          <button type="button" data-building-filter="town-center" aria-pressed="false">Town Center</button>
+          <button type="button" data-building-filter="barracks" aria-pressed="false">Barracks</button>
+          <button type="button" data-building-filter="archery-range" aria-pressed="false">Archery Range</button>
+          <span id="filter-status" class="filter-status" role="status" aria-live="polite">Showing all building variants</span>
+        </nav>
+
+        <div id="building-sections" class="building-sections">
+          <section class="building-section" data-building="town-center" aria-labelledby="town-center-heading">
+            <div class="section-heading">
+              <div>
+                <span class="eyebrow">MESHY PILOT · FINISHED STATE</span>
+                <h2 id="town-center-heading">Town Center</h2>
+              </div>
+              <span class="section-count">5 STATES · 40 MESHY VIEWS</span>
+            </div>
+
+            <div class="subsection-heading">
+              <h3>Optimized Meshy models · captured views by state</h3>
+              <span>45° azimuth steps · 46° elevation</span>
+            </div>
+            <div id="town-center-meshy" class="variant-grid state-review-grid"></div>
+
+            <div class="subsection-heading">
+              <h3>Current team sprites</h3>
+              <span>Complete state · current game art</span>
+            </div>
+            <div id="town-center-runtime" class="variant-grid runtime-grid"></div>
+
+            <div class="subsection-heading">
+              <h3>Source designs</h3>
+              <span>Matched source concepts used for Meshy models</span>
+            </div>
+            <div id="town-center-concepts" class="variant-grid concept-grid"></div>
+          </section>
+
+          <section class="building-section" data-building="barracks" aria-labelledby="barracks-heading">
+            <div class="section-heading">
+              <div>
+                <span class="eyebrow">CONSTRUCTION · DAMAGE · TEAM TRIM</span>
+                <h2 id="barracks-heading">Barracks</h2>
+              </div>
+              <span class="section-count">5 STATES · 2 TEAMS</span>
+            </div>
+            <div id="barracks-states" class="variant-grid state-grid"></div>
+          </section>
+
+          <section class="building-section" data-building="archery-range" aria-labelledby="archery-heading">
+            <div class="section-heading">
+              <div>
+                <span class="eyebrow">CONSTRUCTION · DAMAGE · TEAM TRIM</span>
+                <h2 id="archery-heading">Archery Range</h2>
+              </div>
+              <span class="section-count">5 STATES · 2 TEAMS</span>
+            </div>
+            <div id="archery-range-states" class="variant-grid state-grid"></div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="atlas-footer">
+        <a href="./docs/building-asset-production-pipeline.md">Building asset production pipeline ↗</a>
+        <span>Preferred direction: one model per state, optimized and rendered to registered sprite views.</span>
+      </footer>
+    </div>
+  </body>
+</html>

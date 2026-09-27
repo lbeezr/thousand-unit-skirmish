@@ -1,48 +1,153 @@
 {
-  "kit": "frontier-command-kit-v1",
-  "cursorSize": [32, 32],
+  "kit": "frontier-commander-meshy-v1",
+  "cursorSize": [
+    40,
+    40
+  ],
   "cursors": {
     "select": {
-      "source": "assets/ui/cursors/select.svg",
+      "source": "scripts/build-cursor-pack.py",
       "runtime": "assets/ui/cursors/select.png",
-      "hotspot": [3, 3],
-      "fallback": "crosshair"
+      "hotspot": [
+        4,
+        4
+      ],
+      "fallback": "default"
+    },
+    "select-add": {
+      "source": "scripts/build-cursor-pack.py",
+      "runtime": "assets/ui/cursors/select-add.png",
+      "hotspot": [
+        4,
+        4
+      ],
+      "fallback": "default"
+    },
+    "select-remove": {
+      "source": "scripts/build-cursor-pack.py",
+      "runtime": "assets/ui/cursors/select-remove.png",
+      "hotspot": [
+        4,
+        4
+      ],
+      "fallback": "default"
     },
     "box-select": {
-      "source": "assets/ui/cursors/box-select.svg",
+      "source": "scripts/build-cursor-pack.py",
       "runtime": "assets/ui/cursors/box-select.png",
-      "hotspot": [16, 16],
-      "fallback": "crosshair"
+      "hotspot": [
+        4,
+        4
+      ],
+      "fallback": "default"
+    },
+    "box-crossing": {
+      "source": "scripts/build-cursor-pack.py",
+      "runtime": "assets/ui/cursors/box-crossing.png",
+      "hotspot": [
+        4,
+        4
+      ],
+      "fallback": "default"
     },
     "move": {
-      "source": "assets/ui/cursors/move.svg",
+      "source": "scripts/build-cursor-pack.py",
       "runtime": "assets/ui/cursors/move.png",
-      "hotspot": [3, 3],
-      "fallback": "crosshair"
+      "hotspot": [
+        4,
+        4
+      ],
+      "fallback": "default"
+    },
+    "move-queued": {
+      "source": "scripts/build-cursor-pack.py",
+      "runtime": "assets/ui/cursors/move-queued.png",
+      "hotspot": [
+        4,
+        4
+      ],
+      "fallback": "default"
+    },
+    "attack": {
+      "source": "scripts/build-cursor-pack.py",
+      "runtime": "assets/ui/cursors/attack.png",
+      "hotspot": [
+        4,
+        4
+      ],
+      "fallback": "default"
     },
     "attack-move": {
-      "source": "assets/ui/cursors/attack-move.svg",
+      "source": "scripts/build-cursor-pack.py",
       "runtime": "assets/ui/cursors/attack-move.png",
-      "hotspot": [3, 3],
-      "fallback": "crosshair"
+      "hotspot": [
+        4,
+        4
+      ],
+      "fallback": "default"
+    },
+    "attack-move-queued": {
+      "source": "scripts/build-cursor-pack.py",
+      "runtime": "assets/ui/cursors/attack-move-queued.png",
+      "hotspot": [
+        4,
+        4
+      ],
+      "fallback": "default"
     },
     "gather": {
-      "source": "assets/ui/cursors/gather.svg",
+      "source": "scripts/build-cursor-pack.py",
       "runtime": "assets/ui/cursors/gather.png",
-      "hotspot": [3, 3],
-      "fallback": "crosshair"
+      "hotspot": [
+        4,
+        4
+      ],
+      "fallback": "default"
+    },
+    "gather-wood": {
+      "source": "scripts/build-cursor-pack.py",
+      "runtime": "assets/ui/cursors/gather-wood.png",
+      "hotspot": [
+        4,
+        4
+      ],
+      "fallback": "default"
+    },
+    "rally": {
+      "source": "scripts/build-cursor-pack.py",
+      "runtime": "assets/ui/cursors/rally.png",
+      "hotspot": [
+        4,
+        4
+      ],
+      "fallback": "default"
     },
     "build-valid": {
-      "source": "assets/ui/cursors/build-valid.svg",
+      "source": "scripts/build-cursor-pack.py",
       "runtime": "assets/ui/cursors/build-valid.png",
-      "hotspot": [3, 3],
-      "fallback": "crosshair"
+      "hotspot": [
+        6,
+        6
+      ],
+      "fallback": "default"
     },
     "build-blocked": {
-      "source": "assets/ui/cursors/build-blocked.svg",
+      "source": "scripts/build-cursor-pack.py",
       "runtime": "assets/ui/cursors/build-blocked.png",
-      "hotspot": [3, 3],
-      "fallback": "crosshair"
+      "hotspot": [
+        6,
+        6
+      ],
+      "fallback": "not-allowed"
+    },
+    "unavailable": {
+      "source": "scripts/build-cursor-pack.py",
+      "runtime": "assets/ui/cursors/unavailable.png",
+      "hotspot": [
+        4,
+        4
+      ],
+      "fallback": "not-allowed"
     }
   },
   "pan": {
@@ -51,7 +156,10 @@
     "customCursor": false
   },
   "icons": {
-    "size": [24, 24],
+    "size": [
+      24,
+      24
+    ],
     "paths": [
       "assets/ui/icons/wood.svg",
       "assets/ui/icons/food.svg",

@@ -1,148 +1,116 @@
-# First 1v1 vertical slice: QA and playtest plan
+# QA and external playtests
 
-Updated 26 September 2026. This is a living acceptance record for the first invite-only deployed build. The [game bible](game-bible.md) defines the intended player experience. A passing local script is evidence for the behavior it checks; it does not prove a browser interaction, an internet connection, or an external player's understanding. The [26 September QA checkpoint](qa-checkpoint-2026-09-26.md) records the latest main and staging identities, runner failures, and open capture gates; earlier dated evidence below retains its original scope.
+[Documentation index](README.md) · [Testing commands](testing.md) · [Roadmap](roadmap.md)
+
+## Evidence standard
+
+Record the source commit or deployed build, map, seats/seeds, environment,
+steps, expected result, actual result, and evidence location. Keep credentials
+out of reports. A local scenario pass does not establish browser behavior,
+hosted capacity, or player comprehension.
+
+`P0` blocks the first external playtest; `P1` blocks declaring the slice complete.
+The matrix defines acceptance, while dated records below describe actual runs.
+Recheck a relevant gate after changes rather than carrying forward a blanket pass.
+
+## Match evidence to the claim
+
+| Claim | Minimum supporting record |
+| --- | --- |
+| A rule is implemented | Source revision and a focused reproduction or regression result. |
+| An asset is integrated | Loader and packaged paths, plus the relevant state selection check. |
+| A build works when hosted | Deployment identity and direct readiness, asset, WebSocket, and seat observations. |
+| A player understands the match | Uncoached session, interventions, result, and the player's explanation. |
+| A large match meets a budget | Named hardware/network, fixed conditions, measurement method, agreed limits, and both-seat results. |
+
+Use “not observed” when evidence is missing. Carry a historical result forward
+only as a regression reference. P0/P1 classify playtest and slice acceptance;
+ordinary PRs use checks proportionate to their changes under
+[repository working rules](../AGENTS.md).
 
 ## Acceptance matrix
 
-`P0` blocks the first external playtest; `P1` blocks calling the vertical slice complete. Record the build commit, environment, result, and evidence for every run. `Pending` means no qualifying evidence has been collected.
+| Priority | Gate | Required observation |
+| --- | --- | --- |
+| P0 | Invite and isolation | Two players enter the same room, claim opposite seats, and share state; another room stays independent. |
+| P0 | First glance | A newcomer identifies team, objective, route, selection, and move controls within two minutes without coaching. |
+| P0 | Complete match | Both seats gather, build, train, contest objectives, and reach the same winner/reason. |
+| P0 | Fair construction | Mirrored two-worker Barracks/Range openings complete within two seconds of each other. |
+| P0 | Combat authority | Mirrored equal-force fights pass the established seat/command-order bounds. |
+| P0 | Result and rematch | Host sees a usable rematch action, guest understands the wait, and reset restores neutral objectives and usable commands. |
+| P0 | Recovery | Each seat survives reload, temporary disconnect, and worker recovery; the other retains control. |
+| P0 | Authoring | Host saves, exports, reloads, and plays a custom scenario; invalid maps name a fix. |
+| P0 | Release | Mounted storage, access control, readiness, game assets, and HTTPS WebSockets work on the identified release. |
+| P1 | Impaired network | A measured latency/loss profile causes no silent orders, divergent results, or unrecoverable seat loss. |
+| P1 | Large match | 2,000 units meet agreed server, browser, bandwidth, and order-latency budgets on intended hardware. |
+| P1 | Readability | Teams, roles, selection, health, resources, and objectives remain distinguishable at required zooms. |
+| P1 | Audio recognition | Fresh players identify the five cue categories with caption/mix settings recorded. |
+| P1 | Strategic understanding | Players explain one consequential decision and one alternative after a match. |
 
-| Priority | Gate and observable pass condition | Coverage and current evidence | Status |
-| --- | --- | --- | --- |
-| P0 | Two invited players join the **same** room, claim Azure and Ember, see the same map and match state; another room remains isolated. | Prior local and staging browser checks passed on earlier builds. Staging `3a52f2c` is healthy and its static assets match source, but no current-build invite room, WSS, two-seat state, or isolation check was run in this refresh. | Prior pass; current-build invite/WSS/state verification pending |
-| P0 | A new player can identify their team, the objective, a route, and the basic select/move controls within 2 minutes without coaching. | Silent first-glance task in the external protocol below; capture each player's words. | Pending external playtest |
-| P0 | Both seats can gather, build, produce, issue army orders, contest the objective, and complete one authored scenario. Record first building, first contest, win time, starvation, and two distinct viable responses per seat. | Economy and Three Crowns scripts cover mechanics in isolation. A complete unassisted human match is still required. | Pending end-to-end playtest |
-| P0 | Mirrored two-worker openings reach building work range and complete equivalent Barracks/Range builds within 2 seconds on both seats. | QA-003's pre-fix Forked Vale result was 20.5 s versus 11.1 s. On `322e68e`, all four swapped 24-unit builds completed at 10.9 s. The balance owner reran `scripts/opening-production-scenario.mjs --expect-builder-parity --verbose` on `30d5dc3` (26 Sep 2026): all four builds again completed at 10.9 s, with first infantry at 23 s and first archer at 18 s regardless of seat. Both builders per team were in work range and contributing. | Current-main owner-run local pass; human contest pending |
-| P0 | Mirrored equal-force combat does not favor a seat because of simulation order. | The pre-fix fixture gave Azure 5 survivors and Ember 3 in all four cases. The balance owner reran `scripts/infantry-seat-combat-scenario.mjs --expect-parity` on `30d5dc3` (26 Sep 2026): all four 8v8 cases pass, with 3 or 4 survivors per side, a repeatable +X edge of 4 / 350 HP versus 3 / 300 HP at 12.3 s, and no command-order effect. The edge flips when spawn sides swap. | Current-main owner-run local pass within existing bounds; human contest pending |
-| P0 | A match ends on both clients with the same winner and reason; the next match starts with neutral objectives, full rosters, and usable commands. Both players understand who can start it. | `scripts/three-crowns-scenario.mjs 0` and `1` passed victory followed by synchronized host reset. Staging protocol passed elimination victory and reset. A two-browser Stone Pass staging run on `f1d6482` showed Azure's `Play again`, Ember's `WAITING FOR HOST TO RESET`, and both clients returning to neutral objectives and 500 units per seat. See the [checkpoint captures](qa-checkpoint-2026-09-25.md#staging-result-and-rematch). The 18:11Z full staging QA smoke is tied to `1d74cae`; a later docs-only PR #36 deployment is reported healthy but was not fully smoked. Result/rematch has not been captured on the `1d74` code checkpoint. Human understanding remains unverified. | Prior staging and local protocol pass; human playtest and latest-build result/rematch capture pending |
-| P0 | Either player can reconnect to their original seat and current match after tab reload, temporary disconnect, and worker restart. The other player retains control. | `npm test` covers worker recovery and queued-waypoint checkpoint recovery, including interrupted attack-move planning, schema-2 migration, and Azure/Ember seat reclaim. It also covers a live attack-move route blocked by a building during combat, repaired after the target is defeated, and followed through the queued destination. Expanded `scripts/resume-session-scenario.mjs` and an earlier staging smoke passed independent Azure/Ember reconnect. A later browser attempt lost its seat tokens before reload/restart coverage; it is inconclusive. The room list was at its 8-record cap during the 18:11Z smoke. | Protocol pass; deployed browser/restart pending |
-| P0 | The host can author a valid map and scenario in Map Studio, validate it, export/save it, reload it, and invite a second player into it. Invalid or unreachable setups name a fix. | `node scripts/frontier-160-map-studio-roundtrip.mjs` passed on current main `3a52f2c` in an isolated local Chrome profile for legacy Stone Pass, elevation levels `[0, 2, 1]`, Frontier 160 with 64 resources and three objectives, and Highland Grove 129 × 97 with its supported 60-stock food placeholder, two objectives, and levels `[0, 1, 2]`. This is local editor evidence; current staging authoring, invitation, and human usability remain unverified. | Current-main local round trip pass; staging authoring and human usability pending |
-| P0 | The release image starts with a mounted persistent volume and access control; /ready is healthy, game assets load, and HTTPS WebSockets connect. | Staging deployment `334e6b2f-8fa8-453d-a12b-6120be68d55f` is `SUCCESS` from exact source `3a52f2c98072f07087b8a7ae27e5fd356f8b66ca`; `/ready` returned HTTP 200 at 19:36 UTC. Authenticated GETs verified the core app files, Highland Grove map, six cursor PNG/SVG pairs, Frontier runtime rock images, interactive manifest, and ten runtime WebPs against local or manifest hashes. This verifies static delivery only; current-build WSS/browser/match behavior remains pending. Production `/ready` returned 200, but its manual redeploy `014448c3-4a3b-4942-9d96-6d77515d0d61` has no source SHA or image digest; current map, cursors, and runtime packs return 404 there. | Staging deployment/readiness/static assets observed; WSS/browser smoke and production source identity pending |
-| P1 | A deployed match tolerates a measured latency/loss profile without silent orders, divergent winner, unrecoverable disconnect, or unusable control. | Test both seats at baseline, then about 80 ms RTT and 1% packet loss using browser network emulation; record order acknowledgement p50/p95 and recovery time. Agree the final profile with the infrastructure owner before gating. | Pending deployed measurement |
-| P1 | A 2,000-total-unit match has stable server ticks, snapshots, and browser interaction on intended hardware. | Earlier combined-load attempts breached the 100 ms diagnostic ceiling; the clean verified attack-move failure was 187.704 ms. A separate 170.599 ms bundle may overlap a balance run and is excluded as an independent reproduction. The latest recorded host load near 19:30 UTC was `9.80 / 13.70 / 13.87` (1/5/15-minute averages); the 1-minute value exceeds `2.0`. Two readings at or below `2.0` at least 60 seconds apart and explicit Infra release are not recorded. No 2,000-unit performance run was started at this checkpoint. | Local mixed; fresh repeat held for quiet-host release; hosted 2,000-unit run pending |
-| P1 | Fresh players can identify move, attack, victory, defeat, and draw cues before the labels are revealed, with caption state recorded. | PR #101 adds the Audio settings check; PR #109 expands it to ten randomized trials (two per cue category) with per-category scores. PR #118 records mix conditions; PR #123 separates “Not sure” from confident misses. Run once with captions off and once on per player; PR #105 adds the opt-in copy action, with nothing sent automatically. PR #123's CI job failed before runner assignment, and no fresh-player recognition observation has been collected on current staging. | Pending current-build player observation |
-| P1 | Units, ownership, health, selection, and objective changes remain readable at the ordinary zoom with two full armies at a choke. | Observe both seats during the 2,000-unit playtest and capture misread calls. A supplemental cold AI browser review found resource nodes hard to spot among 500 units. The short-viewport QA-004 overlap did not reproduce in a real staging result/rematch at 1280 × 600 on `f1d6482`; minimap markers are deployed in `1d74cae` (docs-only after `8c05fde`), with visual inspection and human review pending. | Army readability and latest-build visual review pending |
-| P1 | A new player can describe at least one consequential decision and one possible alternative after the match. | Exit interview in the external protocol. | Pending external playtest |
+## Known findings and historical evidence
 
-## Reproducible findings
+| ID | Finding | Recorded disposition |
+| --- | --- | --- |
+| QA-001 | Guest was told to reset despite lacking permission. | Fixed and observed on an earlier two-browser build; retain result/rematch regression. |
+| QA-002 | Some 2,000-unit runs exceeded the 100 ms maximum-tick diagnostic ceiling. | Open measurement question; host contention prevents causal conclusions. |
+| QA-003 | Mirrored builders completed about ten seconds apart. | Later mirrored fixtures passed; preserve both-seat construction checks. |
+| QA-004 | Layout probe predicted a result-card overlap. | Did not reproduce in the recorded 1280 × 600 browser run; test actual layouts after HUD changes. |
+| QA-005 | Combat update order favored Azure. | Simultaneous damage and later parity checks address the original defect; current bounds still permit a small spatial edge. |
+| QA-006 | Minimap ownership depended too heavily on hue. | Shape markers were added; human recognition still needs observation. |
+| QA-007 | WebSocket origin validation through the proxy. | Fix and no-state checks recorded; retain direct/proxy regressions. |
 
-### QA-001 · Result prompt gives Ember an unavailable reset action · P1
-
-**Reproduce:** Start a fresh two-client room; Azure claims the first seat and Ember the second. Finish a capture or elimination victory. Inspect the result text on Ember, then open the match menu.
-
-**Observed:** The result says `RESET TO PLAY AGAIN` on both seats. The reset button is in the match menu and is disabled for Ember; only Azure can send the reset command. The result does not explain that Ember must wait for Azure. This also leaves the host's reset action hidden behind the menu at the moment it is needed.
-
-**Expected:** The host has an obvious rematch/reset action at the result. Ember sees a waiting-for-host state and receives a clear update when the new match starts. The server should give a specific response to a guest reset attempt.
-
-**Evidence:** The original source built `RESET TO PLAY AGAIN` for both seats while only team 0 could reset. The Three Crowns regression verifies that a host reset restores both server states. An integrated-main two-browser local retest then showed Azure `MATCH COMPLETE`, `VICTORY`, `AZURE SECURED CONTROL THE PASS`, and `↻ Play again`; Ember showed `MATCH COMPLETE`, `DEFEAT`, `AZURE SECURED CONTROL THE PASS`, and `WAITING FOR HOST TO RESET`, without a reset button. Azure's reset returned both clients to neutral objectives and 500:500 rosters. A separate staging layout probe confirmed that a shorter viewport can hide Ember's wait text (QA-004).
-
-**Routing:** Gameplay and interface changes have merged. The unavailable-action wording is fixed in the local two-browser retest. In a real two-seat staging result/rematch on `f1d6482`, the guest wait line and host action were visible above the dock at 1280 × 600, and Azure's reset restored both clients to neutral objectives and 500:500 rosters. QA-004's original overlap did not reproduce in that run. The full staging QA smoke is tied to `1d74cae` at 18:11 UTC; a later docs-only PR #36 deployment is reported healthy but was not fully smoked. Result/rematch has not been captured on the `1d74` code checkpoint, and human comprehension remains open. See the [checkpoint evidence](qa-checkpoint-2026-09-25.md#staging-result-and-rematch).
-
-### QA-002 · Intermittent 2,000-unit tick over 100 ms diagnostic ceiling · P1 investigation
-
-**Reproduce:** On the local Apple M2 / Node 24.9 checkout, run `node scripts/browser-performance-scenario.mjs 10`. Also run `node scripts/network-snapshot-scenario.mjs 43987 10` against a fresh `PORT=43987 RTS_HOST=127.0.0.1 RTS_MAP=maps/open-field.json node server.mjs` instance. Each run uses two moving 1,000-unit teams; the browser harness adds a headless Chrome spectator.
-
-**Observed:** The first combined Chrome/server run aborted on a 130.008 ms tick against its 99.999 ms maximum. Immediate repeat passed all three waves, with server tick maxima 25.725/16.157/38.994 ms. A separate network-snapshot run reported a 119.743 ms maximum and 86.479 ms maximum tick-start lag, despite 4.313 ms tick p95. An isolated checkpointed movement run passed at 5.9 ms p95 and 12.703 ms max. A later attack-move run produced a verified 187.704 ms over-limit tick. Another bundle recorded 170.599 ms but may have overlapped a balance run, so it is not counted as a clean repeat. Cause is not established.
-
-**Expected:** Repeatable 2,000-unit runs meet the agreed tick and network budgets on intended hosting hardware, including maximum spikes, while both clients receive usable snapshots.
-
-**Routing:** Gameplay systems owner received commands, map, and measurements for tick-path profiling; infrastructure owner received the staging/network implications. Infrastructure deferred the planned isolated 4v4 repeat on `3755fb5` during gameplay PR #35. QA has not started another simulation; the repeat waits for two one-minute system-load readings at or below 2.0, at least a minute apart, with no active scenario or browser run, then an explicit Infra go-ahead. Keep this gate open until a bounded staging run and server-hardware budget are recorded.
-
-### QA-003 · Mirrored two-worker building time differs by about 10 seconds · P0
-
-**Reproduce:** On the balance lead's mirrored 24-unit open-field setup, order two workers per team to build equivalent production buildings. Repeat on Forked Vale with symmetric Barracks/Range placements at ±21.5. Measure completion time and each worker's distance from the building edge.
-
-**Observed before fix:** The balance lead reported roughly 20.0 s for Azure against 10.4 s for Ember on open field, and roughly 20.5 s against 11.1 s on Forked Vale. One Azure worker parked 1.5 units from the building edge, outside the 1.4 work threshold, while still marked as building. The difference persisted when Barracks and Range assignments were swapped.
-
-**Expected:** Both workers reach work range and contribute. Equivalent mirrored builds finish within 2 seconds on both seats, with no worker stalled just outside the threshold.
-
-**Merged-main retest:** Commit `e28907b` is included in `f1d6482`. Run:
-
-```sh
-RTS_OPENING_MAP=maps/forked-vale.json RTS_OPENING_BUILD_X=21.5 node scripts/opening-production-scenario.mjs --expect-builder-parity --verbose
-```
-
-With 24 total units, four workers and eight infantry per seat, Azure and Ember each completed both the Barracks and Range at 10.9 s when assignments were swapped. First infantry appeared at 23.0 s and first archer at 18.0 s for either seat. At 10 s, each pair of builders was still marked `building`; progress was 0.915–0.918 and measured distance to the building edge was 0.5. The first-unit stocks matched costs: Barracks 100 food/75 wood and Range 125 food/55 wood. This is a local scripted opening, not a contested human match or deployed retest.
-
-### QA-004 · Layout-only probe predicted result-card overlap · P1 visual follow-up
-
-**Reproduce:** On deployed staging, open a two-seat room in a 1280 × 600 desktop viewport and finish a match. Inspect Ember's `WAITING FOR HOST TO RESET` line and Azure's `Play again` button. A layout-only CDP probe reproduced the guest result DOM in the live page without declaring a server-side winner; the [probe screenshot](qa-evidence/result-card-1280x600.png) is therefore visual evidence only, not a completed-match claim.
-
-**Observed:** The guest result card spans y=217–383, its waiting text spans y=348–362, and the command dock spans y=316–586. A hit test at the waiting text returns a dock button, so the instruction is fully covered. At 1280 × 720 the text remains visible, although the dock covers the card's bottom edge by about 7 px. The styles give `.match-result` z-index 5 and `.control-dock` z-index 6.
-
-**Expected:** The complete result, including host rematch and guest waiting state, remains visible and actionable at supported desktop window sizes.
-
-**Routing:** Interface owner has the historical screenshot and bounds. This is not an open release defect at the measured viewport; keep a current-main result-card capture with the next safe two-seat browser run.
-
-**Staging follow-up:** The real two-seat result/rematch on `f1d6482` at 1280 × 600 showed the Azure `Play again` action and Ember wait state above the dock; both clients returned to neutral objectives and 500:500 rosters. The reported layout-only overlap did not reproduce in this staging flow. Keep the captured layout-only probe as historical evidence, not as an open release defect.
-
-### QA-005 · Equal infantry fight favors Azure due to combat update order · P0
-
-**Reproduce:** Run `node scripts/infantry-seat-combat-scenario.mjs --expect-parity` on the merged baseline. The fixture reverses Azure's spawn side and both client command-send orders across four 8v8 infantry-only attack-move fights.
-
-**Observed before fix:** On `158578b`, Azure had five survivors and Ember three in all four cases. Reversing the first per-unit simulation pass flipped the advantage; this was a balance-lead measurement.
-
-**Merged-main retest:** On `f1d6482`, all four runs resolved at 12.3 s. With Azure spawning left, Azure had 3 survivors/300 HP and Ember 4/350 HP under both command orders. With Azure spawning right, Azure had 4/350 HP and Ember 3/300 HP under both orders. The fixture's one-survivor/50-HP edge tracks spawn side, not team identity or command order; `--expect-parity` passed.
-
-**Expected:** Mirrored equal forces resolve without a consistent seat advantage caused by update order.
-
-**Routing:** The simultaneous-damage and mirrored-cadence fix is in merged commit `f1d6482`. The local fixture passed again on `322e68e`; later `3755fb5` changes include origin hardening, so do not describe this as a new current-main full-suite pass. It does not establish strategic balance or human opening win rates.
-
-### QA-006 · Hue-independent minimap team markers need visual review · P1
-
-PR #29 merged at `3755fb5` with square Azure and diamond Ember minimap markers. The 18:11 UTC full QA smoke at `1d74cae` verified that UI code through the served `src/main.js` hash. A later docs-only PR #36 deployment is reported healthy but was not fully smoked. QA has no saved staging screenshots. Inspect meadow and Cinder Ridge at zoom 0.91 and 0.48, save four labeled captures, then complete the human two-army readability review. The detailed deployment boundary is in the [checkpoint](qa-checkpoint-2026-09-25.md#team-identity-and-readability-gate).
-
-### QA-007 · Merged WebSocket origin fix deployed; no-state checks pass · P0
-
-At `f1d6482`, QA reproduced an application-level forwarded-header bypass: an attacker Origin returned 403 without spoofing and 101 with forged `X-Forwarded-Host` and `X-Forwarded-Proto`. The exact PR #31 candidate later passed 14 origin-policy assertions, the supervisor/worker proxy scenario, `npm test`, and clean release packing. PR #31 and the PR #34 Docker-context correction are verified in the full QA smoke checkpoint at source `1d74cae` (documentation-only after code checkpoint `8c05fde`).
-
-**Deployed checks:** At the 18:11Z full smoke checkpoint, `/ready`, authenticated `/health`, and the HTML/JavaScript/CSS assets returned 200 and matched source `1d74cae`. With a random valid-format nonexistent room ID, the allowlisted staging Origin plus forged forwarded headers reached room lookup and returned 404; attacker Origin plus forged forwarded host/proto returned 403; health showed no room-count change. A valid hosted WSS 101 was not attempted because the room list was at its 8-room cap and connecting to an existing room could claim a seat or alter match activity. The producer later reported a docs-only PR #36 deployment as healthy at `/ready`; this is not a claim that all checks were repeated on that build. Production's readiness, authenticated health, and assets returned 200 at 18:11 UTC, but its source identity is unknown and its assets differ from staging. The exact candidate's isolated local supervisor/worker test already passed a real allowed-origin 101 and forged-attacker 403. Do not promote production during this checkpoint. See QA-007 in the [checkpoint](qa-checkpoint-2026-09-25.md#qa-007-websocket-origin-guard-deployed-and-no-state-checks-pass-p0) for deployment IDs and complete status evidence.
-
-## Baseline record · 25 September 2026
-
-- Checkout: `691c6d2` plus the role worktree's inherited edits and QA changes; macOS arm64 / Apple M2, Node 24.9, headless Chrome 153. `npm ci && npm test` passed after the pinned Three.js dependency was installed.
-- Local gameplay: Three Crowns winner 0 and winner 1 each passed mirrored objective capture and both-seat reset. Map Studio draft recovery, saved-map restart, and independent Azure/Ember seat reclaim passed.
-- Local 2,000 units: checkpointed box movement moved 1,998 units; tick p95/max 5.9/12.703 ms over 300 ticks. The successful 30-second Chrome run rendered 2,000 visible units, 16.7 ms frame p95, 1.6 ms animation-callback p95, and zero tasks over 50 ms. Its three server wave tick maxima were 25.725/16.157/38.994 ms; the previous attempt failed with QA-002.
-- Local network snapshot: 9.8 snapshots/s per seat, about 119,802 JSON payload bytes per snapshot, and 307.68 KiB/s combined compressed WebSocket egress (frame bytes only; excludes TCP/IP and TLS). Tick max 119.743 ms is included in QA-002.
-- Staging: [game-staging-21f9.up.railway.app](https://game-staging-21f9.up.railway.app), deployment `860d7387`. The disposable-room protocol smoke passed authenticated assets, both seats, both reconnects, custom-map save/reload, elimination victory, and synchronized reset. A reused closed QA room ran 2,000 units through Dense Clash for 10 seconds: each seat received 100 snapshots (10/s), 120,141-byte p95 JSON payloads, and 109 ms p95 receive interval; the largest gaps were 527 ms for Azure and 296 ms for Ember. Railway's one-hour metric summary showed no obvious sustained CPU saturation, but its 30-second samples cannot explain individual gaps. This was an automated client check, not a human browser playtest. Staging room creation hit the default four-room cap after repeated QA runs; reuse a closed QA room for further load checks.
-- Deployed browser: two isolated headless Chrome profiles loaded the same saved QA room at 1440 × 900. Both reached `ROOM LIVE` and `2 / 2 PLAYERS`, rendered a canvas with Stone Pass, and logged WebSocket HTTP 101 without JS or asset-load errors. The host opened Map Studio; the guest's editor button was disabled. The editor rejected `Invalid Map ID!` with `Map ID must use lowercase letters, numbers, and hyphens.` It also rejected a wall that cut off a resource with `Resource node azure-berries must be reachable from both team spawns.` After importing a valid Stone Pass baseline, the host changed starting food, added a clock-triggered supply event, downloaded and parsed the JSON, saved the map, and both browsers saw it. After both tabs reloaded, each reclaimed its original seat and still saw the saved map. This confirms the scripted browser flow, not player comprehension.
-- Balance lead's separate cooperative Forked Vale script reported deposits by 18.3 s, first Barracks and infantry by 51.4 s, opposing ford owners by 75.7 s, and one victory before 139.7 s. No contested combat occurred. Human match length and the 6–10 minute target remain unproven; watch whether workers make early five-unit ford captures too strong.
-- Independent draft Forked Vale layout check on the scenario branch passed mirrored terrain and resources, equal cell-route distances to all three objectives (31/30/20 cells from either spawn), six wide crossing rows, and 1,000-unit starting footprints for both seats. This is geometric evidence; the local gameplay-plus-balance checkout also passed the QA-003 builder parity rerun. The draft scenario has not been deployed.
-- The production integration task reported that a disposable combined preview with foundation, gameplay, balance, QA, Forked Vale, HUD, audio, and art passed `npm test`. Its local 2,000-unit browser performance runs still breached gates: one 56 ms long task, then a 194.279 ms server tick on an immediate repeat. This is second-hand preview evidence, not a clean integrated release measurement; QA-002 remains open.
-- A cold AI browser review of the combined preview found team and objective immediately, worker selection by 0:45, right-click movement by 1:15, wood gathering by 1:45, and a route through the choke by 2:00. It completed a Barracks, food gathering, infantry production, victory, and host rematch. The reviewer had trouble seeing resource nodes among 500 units and tried four blocked Barracks sites before finding an open 3 × 3 area. These are usability leads for human confirmation, not external playtest results. On default Stone Pass, moving the starting 496 military through the choke ended the match before the economy mattered; use Forked Vale for the first contested economy playtest.
-- Historical combined-preview probe `7b26789`: Azure split five infantry north and three infantry plus two workers south. Both signals were Azure-owned by 24.4 s when unopposed; with Ember's five infantry moved south, South stayed neutral through 78.4 s while Azure took North. It used `move` rather than attack-move and only one run per condition, so it did not establish worker losses, combat outcome, or a human response.
-- Current-source scripted follow-up on `a3426c1` uses attack-move, swaps both seats and command-send order, and separates the Signal's 75 food / 50 wood reward from worker harvest. The split took North at 24.3–24.4 s, South stayed neutral through 40 s, and the three south infantry plus both diverted workers died. Harvest including carried cargo was about 23 food / 22–23 wood for the split's two surviving gatherers versus about 45.3 of each for the response's four workers. A post-contest Barracks completed in 11.7 s with the split's two surviving workers and 7.0 s with the response's four, including their return walk. In this 40-second matrix, response groups finished with 3–4 survivors and 230–310 HP across seat/order cases, inside the configured comparison tolerances; the deliberately uneven groups make this a trade-off probe, not a parity result. One above-bound result from two earlier `6aa39fa` matrices did not recur. See the [balance ledger](first-skirmish-balance.md#contested-worker-diversion-and-build-follow-up-on-main-a3426c1-26-september-2026). This is a scripted local result, not a human opening or a unit-stat tuning trigger.
-- An 80-second four-case follow-up on clean main `c9e4791` reused the same server and map blobs, swapped split seat and command order, and stopped before the map's 120-second supply. North was captured at 24.3–24.4 s and South stayed neutral through 80 s. The three southern split infantry and two diverted workers died; all five northern split infantry survived, as did all four response workers. At 80 s, the split bank was up 115 food / 90 wood including the 75 / 50 capture reward; the response bank was up 80 / 80. After counting cargo, estimated total food and wood acquired (including the reward) was about 125 / 99 for the split versus 99 / 99 for the response. Both could pay for a Barracks, which took 11.5–11.7 s with two workers and 7.0 s with four. This shows a meaningful scripted resource/army/build trade-off through 80 s; it does not establish human win rates or justify a reward change. See the [80-second balance follow-up](first-skirmish-balance.md#eighty-second-contested-follow-up-on-main-c9e4791-26-september-2026).
-- Staging release `0ab11d63` at source commit `8624887` passed the production coordinator's public smoke, two-seat protocol, 2,000-unit short stress, and two-browser Map Studio flow. QA independently reran `qa-staging-browser.mjs` in an existing room: both seats showed `ROOM LIVE` and `2 / 2 PLAYERS`, the same authored map and canvas; the host editor opened, guest editor remained disabled, both WSS upgrades returned HTTP 101, and there were no JS or asset-load errors. The staging room cap is now eight; seven records were in use after this run. This release does not yet include Forked Vale as the new-room default. The short-viewport visual probe found QA-004.
+Detailed reproductions and original dispositions are in the
+[archived QA ledger](archive/2026-09/qa-vertical-slice.md).
+The [25 September](qa-checkpoint-2026-09-25.md) and
+[26 September](qa-checkpoint-2026-09-26.md) checkpoints preserve deployment and
+browser evidence. The [balance summary](first-skirmish-balance.md) and
+[performance baseline](performance-reliability-baseline-2026-09-25.md) retain
+measured limits. None is a live service-status page.
 
 ## Repeatable run sheet
 
-1. Record commit SHA, deployed URL/build identifier, Node/browser versions, device, server hardware, and network profile. Never put room access credentials in the report.
-2. Run `npm ci && npm test`. Then run Three Crowns with winner `0` and `1`, Map Studio draft/persistence, resume session, and the 2,000-unit scripts listed above. Keep raw JSON output or logs with the run record.
-3. On deployed HTTPS, use two separate browser profiles and a fresh invite room. Repeat join, both-seat commands, reload/reconnect, Map Studio save/reload, victory, and reset. Confirm both screens after each transition.
-4. Repeat the deployed match with controlled latency/loss. Record each failed, delayed, or duplicated order with client time, team, order token, expected result, and server response.
-5. File each failure with build, environment, exact steps, expected/actual behavior, screenshot or log reference, frequency, and affected seat. Mark fixed only after the original reproduction and its paired-seat regression pass.
+1. Identify the build, device, browser, server, map, roster, and network profile.
+2. Run the relevant [repository scenarios](testing.md) and retain logs.
+3. Use two browser profiles and a disposable invite room on HTTPS. Exercise both
+   seats' orders, authoring, reload/reconnect, victory, and reset.
+4. Repeat under a controlled network profile. The earlier plan proposed about
+   80 ms RTT and 1% packet loss; record the actual impairment tool and measured
+   conditions rather than assuming browser throttling simulates packet loss.
+5. Record each failed order with seat, time/token, expected result, and response.
+6. Mark a defect fixed after its original reproduction and paired-seat regression pass.
 
-For staging protocol smoke, run `scripts/qa-staging-smoke.mjs` through `railway run` with the staging service variables injected; pass the staging HTTPS origin and optionally `--stress` for a bounded 10-second, 2,000-unit window. The script prints no access credentials. It creates an invite room by default; pass `--room-id=<existing closed QA room>` when the staging room cap is full.
+For deployed checks, inject service variables through `railway run`:
 
-For deployed browser coverage, run `scripts/qa-staging-browser.mjs <HTTPS origin> <saved QA room ID> --author` through `railway run` with the same staging service variables. It opens two isolated headless Chrome profiles, verifies both seats, downloads a new map into temporary storage, publishes it, and reloads both tabs. It modifies the chosen QA room's active map; use a disposable room. Omit `--author` for a join/access check without changing the map. It writes two screenshots to the operating system's temporary directory and prints no access credentials.
+- `node scripts/qa-staging-smoke.mjs <HTTPS-origin>` creates an invite room by
+  default. `--room-id=<closed-QA-room>` reuses a disposable room; `--stress` adds
+  a bounded 2,000-unit workload.
+- `node scripts/qa-staging-browser.mjs <HTTPS-origin> <QA-room-id>` checks two
+  browser seats. `--author` publishes and reloads a map in that room.
+
+These scripts exercise live service state. Use an explicitly designated test room.
+Screenshots/logs must retain the build and the script's scope.
 
 ## Lightweight external playtest protocol
 
-Use two pairs of people who have not worked on the game. Give them a URL, access credentials, and a room invite only. Run one pair per room; swap Azure and Ember for the second match. An observer watches without coaching except to recover a broken test. Ask participants to think aloud, and log prompts separately from spontaneous discoveries.
+Use two pairs of newcomers. Give each pair the URL, credentials, and room invite.
+Observe without coaching except to recover a broken test; log any intervention.
+Swap Azure/Ember for the second match.
 
-| Moment | Observer records |
+| Moment | Record |
 | --- | --- |
-| First 2 minutes | Time to identify team, objective, route, selection, move order, and where to get help; exact confusing words. |
-| Opening | Time of first gather, first completed building, first trained unit; food/wood stocks when progress stalls; whether the player notices available production. |
-| Mid-game | First objective contest, first opposing response, command misfires, unclear feedback, and whether each seat finds a distinct viable plan. |
-| Ending | Match duration, winner/reason shown on both screens, whether each player can explain why it ended, time and prompts needed to start the next match. |
-| Recovery | At an agreed point, reload one tab; later interrupt its connection for 10 seconds. Record seat reclaim time, state continuity, and what the other player sees. |
-| Exit | Ask: “What were you trying to do?”, “What decided the match?”, “What else could you have tried?”, and “What was confusing?” Record verbatim answers. |
+| First two minutes | Time to identify team, objective, route, selection, movement, and help; exact confusing wording. |
+| Opening | First gather, completed building, trained unit, and resource stall. |
+| Mid-game | First contest, response, misfires, unclear feedback, routes, and attempted plans. |
+| Ending | Duration, winner/reason on both screens, explanation, and time to rematch. |
+| Recovery | Reload one tab, then separately interrupt it for ten seconds; record reclaim time and both screens. |
+| Exit | “What were you trying to do?”, “What decided the match?”, “What else could you try?”, “What was confusing?” |
 
-A qualifying external run has both players finish a match, understand the result, and complete a rematch without developer intervention. Record failures even if the pair eventually succeeds. Match length, economy pacing, and network bandwidth targets remain measured decisions with the balance and infrastructure owners.
+A qualifying session includes a completed match, understood result, and rematch
+without developer intervention. Record failures even when players eventually succeed.
+Keep balance observations in the same record: timings, stock/cargo, losses,
+production, routes, and player explanations. The balance owner can retrieve that
+record without routine cross-task reports.
 
-## Balance measurement handoff
-
-For every complete match, send the gameplay balance lead: map, seat assignment, match duration, first gather/build/training/contest timestamps, periods when resources blocked a desired action, the two plans attempted by each seat, and the players' own explanation of why one plan worked. Do not use scripted capture times as evidence of human pacing.
-
-On Forked Vale, specifically watch whether one player sends five infantry to one signal and three infantry plus two workers to the other before production. Record whether both signals fall, what the opponent does to deny or punish the worker-heavy lane, worker losses, and the food/wood and build-time cost of the diversion.
+On Forked Vale, watch the five-infantry versus three-infantry/two-worker split.
+Record what the defender does, whether both Signals fall, and the economic cost
+of worker diversion. Scripted capture timings do not establish human strategy.

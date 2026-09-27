@@ -1,15 +1,32 @@
-# Town Center State Concepts
+# Town Center state concepts
 
-This package contains a matched Town Center design for each visible construction and damage state. The images are separate transparent 1254 × 1254 PNGs and keep the same Azure heraldry, materials, footprint, and elevated three-quarter camera. The complete-state image is included as the visual baseline.
+**Status:** matched 2D sources, subsequently modeled for the
+[captured lifecycle pack](../town-center-lifecycle-meshy-v1/README.md).
 
-| State | Reference condition | Concept |
-|---|---:|---|
-| Foundation | 5% construction | [town-center-foundation.png](source/town-center-foundation.png) |
-| Frame | 50% construction | [town-center-frame.png](source/town-center-frame.png) |
-| Complete | Finished reference | [town-center-complete.png](source/town-center-complete.png) |
-| Damaged | 60% health | [town-center-damaged.png](source/town-center-damaged.png) |
-| Critical | 30% health | [town-center-critical.png](source/town-center-critical.png) |
+## Designs
 
-See [state-concepts.json](state-concepts.json) for hashes and processing status. Foundation, Frame, Damaged, and Critical are concept-ready only: they have not been uploaded to Meshy, converted to models, optimized, or rendered into sprite maps. The previous Meshy credit authorization applied to the finished-state pilot only. This package does not include the pilot's GLB files. Since the game currently uses Town Centers as static map landmarks, these concepts are exploratory and do not imply supported runtime lifecycle states.
+Each transparent PNG is 1254 × 1254 with matching Azure heraldry, materials,
+footprint, and elevated three-quarter camera.
 
-The four lifecycle concepts were generated individually with Codex ImageGen on 2026-09-26. The generation prompts are not yet recorded in this package; source-file hashes are recorded in the manifest.
+| State | Reference condition | Source |
+| --- | --- | --- |
+| Foundation | 5% construction | [PNG](source/town-center-foundation.png) |
+| Frame | 50% construction | [PNG](source/town-center-frame.png) |
+| Complete | Finished baseline | [PNG](source/town-center-complete.png) |
+| Damaged | 60% health | [PNG](source/town-center-damaged.png) |
+| Critical | 30% health | [PNG](source/town-center-critical.png) |
+
+[state-concepts.json](state-concepts.json) contains hashes and processing status.
+Each added state used its own Meshy generation/optimization jobs. Optimized GLBs
+remain in local production storage; checked-in captured views are in the sibling
+lifecycle pack.
+
+## Provenance and limits
+
+The four lifecycle concepts were generated individually with Codex ImageGen on
+26 September 2026. Source hashes are recorded; exact generation prompts have not
+been recovered into this package.
+
+Use the [local Building Variant Atlas preview](../../../docs/assets.md#review-locally) to compare concepts and captured models. The game
+uses captured Complete art; Town Center landmarks do not yet expose the other
+lifecycle states in gameplay.

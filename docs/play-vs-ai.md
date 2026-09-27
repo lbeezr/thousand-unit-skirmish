@@ -1,7 +1,41 @@
-# Play vs AI feedback runs
+# Play vs AI
 
-Play vs AI creates an isolated room with two unsigned 32-bit seeds. The map seed selects from the stable pool in [`src/pve-match.mjs`](../src/pve-match.mjs): Forked Vale and Woodland Expanse. Both authored maps start with 24 total units, resource nodes, and capture objectives; scale and fog differ. Stress and art-review maps are excluded.
+[Documentation index](README.md) · [Player guide](playing.md)
 
-The room URL carries both seeds so a feedback report can identify the same setup. The server uses the policy seed for its deterministic opponent and gives it the normal server command path. It reserves Team 1 and activates the opponent only after Team 0 is assigned. A rematch keeps the room, map, and seeds and resets the policy to its opening state. New Map creates a fresh room with newly generated seeds.
+Choose **Play vs AI** to create an isolated room. You take Azure (Team 0); the
+server reserves Ember (Team 1) for the deterministic opponent and starts its
+policy after the human seat is assigned.
 
-No model provider is used. The policy receives the Team 1 observation, including only enemy units and buildings visible through that team’s fog view.
+## Reproducible setup
+
+Two unsigned 32-bit seeds identify the setup:
+
+- **Map seed:** selects from the stable pool in `src/pve-match.mjs`: Forked Vale
+  and Woodland Expanse. Both start with 24 total units, resources, and objectives.
+- **Policy seed:** controls deterministic opponent choices.
+
+The room URL carries both seeds. Include them, the map, build, and observed
+behavior in a feedback report. Rematch keeps the room, map, and seeds and resets
+the policy. New Map creates a new room and seeds.
+
+## Authority and limits
+
+The bot uses the normal authoritative command path and a Team 1 observation.
+Enemy units, buildings, and resources remain subject to fog filtering. Public
+objective metadata is available; hidden capture progress is omitted.
+
+Normal solo play uses no model provider. The optional
+[model-proposal experiment](model-controlled-opponent-research.md) is separate
+and default-off. See the [command contract](gameplay-command-observation-contract.md)
+for the exact observation boundary.
+
+## Verify
+
+```sh
+node scripts/pve-opponent-scenario.mjs
+node scripts/pve-room-launch-scenario.mjs
+```
+
+Follow these with a solo match: observe the opening, objective contest, retake
+response, result, and rematch. A deterministic trace does not establish a fun or
+understandable opponent.

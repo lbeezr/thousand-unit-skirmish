@@ -1,0 +1,129 @@
+{
+  "schema": "thousand-unit-skirmish.sprite-grid.v1",
+  "asset": "town-center-meshy-review",
+  "status": "review-only; complete-state-runtime-copy-in-lifecycle-pack",
+  "assetRole": "directional reference sprite",
+  "sourceView": {
+    "camera": "orthographic elevated three-quarter",
+    "azimuthDegrees": [
+      0,
+      45,
+      90,
+      135,
+      180,
+      225,
+      270,
+      315
+    ],
+    "elevationDegrees": 46,
+    "viewCount": 8,
+    "cameraRotationSupported": true
+  },
+  "worldGrid": {
+    "cellUnits": 1,
+    "gameplayFootprintCells": null,
+    "visualBaseCells": [
+      4,
+      4
+    ],
+    "anchor": "center of visible ground-contact base",
+    "occupancy": "Art-review gallery sample only; no gameplay occupancy."
+  },
+  "spriteFrame": {
+    "gridCells": [
+      5,
+      5
+    ],
+    "pixels": [
+      640,
+      640
+    ],
+    "worldUnits": [
+      5,
+      5
+    ],
+    "pixelsPerWorldUnit": 128,
+    "anchorNormalizedFromBottomLeft": [
+      0.5,
+      0.4125
+    ],
+    "anchorPixelFromTopLeft": [
+      320,
+      376
+    ],
+    "anchorIsProjectedGroundCenter": true
+  },
+  "stateMapping": {
+    "currentRuntimeState": "complete",
+    "authoredStates": [
+      "complete"
+    ],
+    "plannedStates": [
+      {
+        "state": "foundation",
+        "buildProgress": 0.05,
+        "concept": "../town-center-state-concepts-v1/source/town-center-foundation.png",
+        "status": "runtime-state-ready; awaits-building-lifecycle-input"
+      },
+      {
+        "state": "frame",
+        "buildProgress": 0.5,
+        "concept": "../town-center-state-concepts-v1/source/town-center-frame.png",
+        "status": "runtime-state-ready; awaits-building-lifecycle-input"
+      },
+      {
+        "state": "damaged",
+        "healthRatio": 0.6,
+        "concept": "../town-center-state-concepts-v1/source/town-center-damaged.png",
+        "status": "runtime-state-ready; awaits-building-lifecycle-input"
+      },
+      {
+        "state": "critical",
+        "healthRatio": 0.3,
+        "concept": "../town-center-state-concepts-v1/source/town-center-critical.png",
+        "status": "runtime-state-ready; awaits-building-lifecycle-input"
+      }
+    ],
+    "lifecycle": "All five Town Center states have optimized Meshy model references. Complete is the gameplay default for the static Town Center landmark; the sibling lifecycle pack contains the unified runtime frames and masks. Foundation, Frame, Damaged, and Critical are selectable when gameplay supplies lifecycle values."
+  },
+  "variants": {
+    "teams": [
+      "azure-gold heraldry"
+    ],
+    "season": [
+      "neutral"
+    ],
+    "lighting": [
+      "neutral-day"
+    ],
+    "futureDimensions": [
+      "view",
+      "season",
+      "lighting",
+      "wear",
+      "team-trim"
+    ]
+  },
+  "runtimeFrames": {
+    "pathPattern": "runtime/town-center-view-{view}.webp",
+    "views": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "textureColorSpace": "srgb",
+    "alphaMode": "straight"
+  },
+  "knownLimits": [
+    "The 3D model was generated from one three-quarter image, so unseen and rear details are inferred.",
+    "The Meshy reference has blue and gold heraldry and is not team-recolorable.",
+    "The current Town Center comparison sprite stays at its authored 45-degree view while the Meshy reference advances through eight views.",
+    "Sprites are camera-facing cutouts without per-pixel scene depth; terrain and unit occlusion are not validated.",
+    "This pack is used in the local art-review gallery and is not assigned to gameplay buildings."
+  ]
+}
