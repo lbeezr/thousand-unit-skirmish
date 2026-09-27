@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { createServer } from 'node:http';
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -7,10 +7,13 @@ import { fileURLToPath } from 'node:url';
 import { deflateSync } from 'node:zlib';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const OUTPUT_ROOT = path.join(ROOT, 'meshy_output', 'unit-sprite-captures');
+const RUN_ID = `${new Date().toISOString().replace(/[:.]/g, '-')}-${randomUUID().slice(0, 8)}`;
+const RUN_ROOT = path.join(OUTPUT_ROOT, RUN_ID);
 const OUTPUTS = Object.freeze([
   { role: 'infantry', directory: 'infantry-sprite-v2' },
   { role: 'worker', directory: 'worker-sprite-v3' },
-].map((output) => ({ ...output, path: path.join(ROOT, 'assets/units', output.directory) })));
+].map((output) => ({ ...output, path: path.join(RUN_ROOT, output.directory) })));
 const INPUTS = Object.freeze([
   ['infantry-model', 'infantry-model.glb', 'base-pose'],
   ['infantry-walking', 'infantry-walking.glb', 'Walk'],
@@ -187,10 +190,10 @@ function buildManifest(payload, atlasBytes, maskBytes, hashes, role = 'infantry'
     packVersion: '0.1.0',
     maturity: 'runtime-candidate',
     provenance: {
-      license: 'Meshy API output; paid-plan ownership inferred because Meshy states free-plan users cannot use the API. See README.md for source links and attribution.',
+      license: 'Pending rights verification before promotion from local staging into tracked game assets. See README.md.',
       source: 'One-image Meshy Infantry pilot, baked locally from the textured model and generated action GLBs',
       authoringTool: 'Three.js 0.180.0 browser capture tool',
-      notes: `${workerNote} The capture tool fits a shared camera envelope across every sampled pose and facing, and strips Hips root translation so simulation movement stays authoritative. Rights inference and source links are recorded in README.md; pivots and team mask still need visual review.`,
+      notes: `${workerNote} The capture tool fits a shared camera envelope across every sampled pose and facing, and strips Hips root translation so simulation movement stays authoritative. Output is staged locally with rights pending; pivots and team mask still need visual review.`,
     },
     files: [
       { id: sourceFileId, path: sourceFileName, usage: 'source', format: 'png', sha256: sha256(atlasBytes), dimensionsPx: { width, height } },
@@ -309,7 +312,11 @@ const handler = async (request, response) => {
             role === 'worker'
               ? 'The attack swing is reused as looping gather and build motion. The body has no tools; review the role fit in a live match.'
               : 'The model has walk, attack, and defeat states and remains body-only; the source spear and shield are missing.',
-            'Meshy rights note: this pilot used Meshy API access, which Meshy states is unavailable on its free plan; paid-plan customers own output. The generation plan receipt was not captured. Free-plan fallback: CC BY 4.0. Attribution: “Model created with Meshy – CC BY 4.0 License.” See the unit-character-meshy-pipeline.md rights section.',
+            '## Rights and promotion',
+            '',
+            'Status: pending verification. This pack is in ignored local staging under `meshy_output/` and is not installed in the game. Before promotion, verify the plan and terms that applied when the source was generated, check any attribution requirements, and record the provider task IDs and evidence in its provenance. Meshy states that Free-plan outputs use CC BY 4.0 and paid-plan customers own their Customer Output; do not assume which applies without checking the source run.',
+            '',
+            'After rights are verified, manually promote only the reviewed pack into `assets/units/` and update its manifest and source documentation. See `docs/unit-character-meshy-pipeline.md`.',
             'Frame pivots and the blue team-accent mask are generated estimates awaiting in-game visual review.', '',
           ].join('\n')),
         ]);
@@ -320,6 +327,8 @@ const handler = async (request, response) => {
       }));
       send(response, 200, JSON.stringify({
         ok: true,
+        rightsStatus: 'pending-verification',
+        stagingRoot: path.relative(ROOT, RUN_ROOT),
         outputs: outputRecords,
         frames: outputRecords[0].frames,
         clips: outputRecords.map(({ role, clips }) => `${role}: ${clips} clips`).join(' · '),
@@ -337,5 +346,5 @@ const handler = async (request, response) => {
 const server = createServer((request, response) => { void handler(request, response); });
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`Meshy Infantry sprite capture at http://127.0.0.1:${PORT}/capture`);
-  console.log(`Local outputs: ${OUTPUTS.map(({ path: outputPath }) => path.relative(ROOT, outputPath)).join(', ')}`);
+  console.log(`Ignored local staging root: ${path.relative(ROOT, RUN_ROOT)}`);
 });

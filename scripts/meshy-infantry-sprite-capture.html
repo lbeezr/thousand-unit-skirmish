@@ -30,10 +30,10 @@
 <body>
   <main>
     <h1>Meshy Infantry pilot → Worker sprite</h1>
-    <p>Uses the existing Meshy model and paid clips only. It captures a fixed isometric camera, eight unit headings, and idle, walk, attack, and defeat states, then saves local Infantry and Worker packs. The Worker pack reuses the swing as gather/build motion for this role-fit check.</p>
-    <p class="small">This is an exploratory body-only bake. The generated model omitted the spear and shield. Meshy API access indicates paid-plan output ownership under current Meshy terms; the account receipt was not retained. See the pipeline note for the rights basis. Frame pivots still need game review.</p>
+    <p>Uses the existing Meshy model and clips only. It captures a fixed isometric camera, eight unit headings, and idle, walk, attack, and defeat states, then saves Infantry and Worker candidates to ignored local staging. The Worker pack reuses the swing as gather/build motion for this role-fit check.</p>
+    <p class="small">This is an exploratory body-only bake; the generated model omitted the spear and shield. New output stays local with rights pending and is not installed in the game. Verify generation rights and attribution before manually promoting a reviewed pack. Frame pivots still need game review.</p>
     <div class="controls">
-      <button id="bake">Bake atlas and install local packs</button>
+      <button id="bake">Bake candidates to local staging</button>
       <label>State <select id="state" disabled></select></label>
       <label>Facing <select id="direction" disabled></select></label>
       <button id="play" disabled>Play</button>
@@ -45,7 +45,7 @@
       <div>
         <div class="small" id="summary"></div>
         <img id="atlas" alt="Generated Infantry sprite atlas">
-        <p class="small"><a href="http://127.0.0.1:4174/" target="_blank" rel="noreferrer">Open the game with the Meshy Worker sprite</a> (start the local game server from this worktree on port 4174 first).</p>
+        <p class="small" id="staging"></p>
       </div>
     </div>
     <canvas id="render" width="128" height="128" hidden></canvas>
@@ -73,6 +73,7 @@
     const contexts = {};
     const records = [];
     const status = document.querySelector('#status');
+    const staging = document.querySelector('#staging');
     const progress = document.querySelector('#progress');
     const bakeButton = document.querySelector('#bake');
     const atlasCanvas = document.createElement('canvas');
@@ -367,6 +368,7 @@
         previewImage.src = atlasCanvas.toDataURL('image/png');
         const outputSummary = result.outputs.map((output) => `${output.role}: ${output.clips} clips in ${output.path}/`).join(' · ');
         document.querySelector('#summary').textContent = `${result.frames} frames · ${result.clips} · ${result.classifiedTeamPixels.toLocaleString()} masked sash pixels · ${outputSummary} · atlas SHA-256 ${result.atlasSha256}`;
+        staging.textContent = `Saved to ignored local staging: ${result.stagingRoot}. Rights status: ${result.rightsStatus}. Review the pack and verify its generation rights before manually promoting it into assets/units.`;
         setStatus(`Saved the ${result.frames}-frame pilot atlas. No Meshy credits were used for this bake.`);
         setupPlayer();
       } catch (error) {
