@@ -82,6 +82,7 @@ const scenarios = [
   ['scripts/unit-lod-state-scenario.mjs', 'Unit LOD matrix updates'],
   ['scripts/unit-visual-state-scenario.mjs', 'Unit visual state'],
   ['scripts/resource-visual-state-scenario.mjs', 'Resource visual state'],
+  ['scripts/water-surface-scenario.mjs', 'Batched water surface and shore geometry'],
   ['scripts/harvestable-woodland-scenario.mjs', 'Harvestable woodland gameplay'],
   ['scripts/room-supervisor-scenario.mjs', 'Room supervisor integration'],
   ['scripts/pve-room-launch-scenario.mjs', 'PvE room launch and rematch integration'],

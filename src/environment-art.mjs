@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { RESOURCE_VISUAL_STAGES } from './resource-visual-state.mjs';
+import { buildWaterSurfaceGeometry } from './water-surface-geometry.mjs';
 
 const ASSET_ROOT = './assets/environment/frontier-v1/';
 const INTERACTIVE_ASSET_ROOT = './assets/environment/frontier-interactive-v1/';
@@ -198,6 +199,8 @@ const cameraFacing = new THREE.Quaternion().setFromUnitVectors(
   new THREE.Vector3(0.78, 1.12, 0.78).normalize(),
 );
 const instanceDummy = new THREE.Object3D();
+const spriteUpAxis = new THREE.Vector3(0, 1, 0);
+const spriteYawRotation = new THREE.Quaternion();
 const constructionGroundRotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
 
 export function environmentTheme(definition) {
@@ -283,6 +286,16 @@ export function createGroundSurfaces(definition) {
     finishGroundGeometry(baseBuffer),
     new THREE.MeshBasicMaterial({ map: grounds[base], color: 0xd2d4bd }),
   )];
+  const waterGeometry = buildWaterSurfaceGeometry(definition);
+  if (waterGeometry) {
+    const water = new THREE.Mesh(waterGeometry, new THREE.MeshBasicMaterial({
+      vertexColors: true,
+      side: THREE.DoubleSide,
+      toneMapped: false,
+    }));
+    water.renderOrder = 5;
+    meshes.push(water);
+  }
   const materialGrid = new Int8Array(definition.width * definition.height);
   materialGrid.fill(-1);
   for (const patch of definition.terrainPatches || []) {
@@ -401,16 +414,21 @@ export function createEnvironmentSpriteInstances(name, width, height, positions)
   );
   for (let index = 0; index < positions.length; index++) {
     const point = positions[index];
-    setEnvironmentSpriteInstance(mesh, index, point.x, point.z, point.scale ?? 1, point.flip ?? false);
+    setEnvironmentSpriteInstance(mesh, index, point.x, point.z,
+      point.scale ?? 1, point.flip ?? false, point.yaw ?? 0);
   }
   mesh.instanceMatrix.needsUpdate = true;
   mesh.frustumCulled = false;
   return mesh;
 }
 
-export function setEnvironmentSpriteInstance(mesh, index, x, z, scale, flip = false) {
+export function setEnvironmentSpriteInstance(mesh, index, x, z, scale, flip = false, yaw = 0) {
   instanceDummy.position.set(x, 0, z);
   instanceDummy.quaternion.copy(cameraFacing);
+  if (yaw) {
+    spriteYawRotation.setFromAxisAngle(spriteUpAxis, yaw);
+    instanceDummy.quaternion.multiply(spriteYawRotation);
+  }
   instanceDummy.scale.set(flip ? -scale : scale, scale, scale);
   instanceDummy.updateMatrix();
   mesh.setMatrixAt(index, instanceDummy.matrix);
@@ -448,6 +466,7 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
             x: x + (variation(index) - 0.5) * 0.28,
             z: z + (variation(index + 19) - 0.5) * 0.28,
             flip: variation(index + 43) < 0.5,
+            yaw: (variation(index + 53) - 0.5) * 0.3,
           };
           if (treeType < 0.2) {
             point.scale = 0.76 + scaleVariation * 0.2;

@@ -15,6 +15,7 @@ assert.ok(uiAllowlist, 'server UI asset allowlist should be declared');
 const allowedUi = new Set([...uiAllowlist[1].matchAll(/'([^']+)'/g)].map((match) => match[1]));
 const environmentModule = server.match(/const publicEnvironmentModule = relative === '([^']+)'/)?.[1];
 assert.ok(environmentModule, 'server should explicitly allow the environment renderer module');
+assert.ok(allowed.has('src/water-surface-geometry.mjs'), 'water geometry module should be statically served');
 const spriteNames = environmentArt.match(/const spriteNames = \[([\s\S]*?)\];/);
 assert.ok(spriteNames, 'environment renderer should declare its environment sprite families');
 const servedEnvironmentAssets = server.match(/const publicEnvironmentAsset = ([\s\S]*?);\n  const publicInteractiveEnvironmentAsset/);

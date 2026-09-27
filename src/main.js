@@ -1807,7 +1807,7 @@ function setForestTreeVisual(cell, stock) {
   if (!slot) return;
   const depleted = stock <= 0;
   setEnvironmentSpriteInstance(slot.mesh, slot.index, slot.x, slot.z,
-    depleted ? 0 : slot.scale, slot.flip);
+    depleted ? 0 : slot.scale, slot.flip, slot.yaw);
   slot.mesh.instanceMatrix.needsUpdate = true;
   const stump = forestStumpSlots.get(cell);
   if (!stump || !forestStumpMesh) return;
@@ -1912,39 +1912,6 @@ function buildMap(definition) {
   for (const surface of createGroundSurfaces(definition)) addMapObject(surface);
   buildConstructionGroundBatches();
 
-  // Rock silhouettes carry the visual boundary. Flat block tops made the ridge
-  // look like a strip of square tiles when viewed from the oblique camera.
-  const obstacleCount = definition.obstacles.reduce((count, obstacle) => (
-    count + (obstacle.material === 'water' ? obstacle.width * obstacle.height : 0)
-  ), 0);
-  const obstacles = new THREE.InstancedMesh(
-    new THREE.BoxGeometry(1.02, 1.12, 1.02),
-    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.94, flatShading: true }),
-    obstacleCount,
-  );
-  const obstacleTints = [0x3e6570, 0x4d7982];
-  let obstacleIndex = 0;
-  for (const obstacle of definition.obstacles) {
-    if (obstacle.material !== 'water') continue;
-    const visibleHeight = 0.025;
-    for (let row = obstacle.row; row < obstacle.row + obstacle.height; row++) {
-      for (let column = obstacle.column; column < obstacle.column + obstacle.width; column++) {
-        dummy.position.set(column - MAP_HALF_X + 0.5, visibleHeight / 2, row - MAP_HALF_Z + 0.5);
-        dummy.rotation.set(0, 0, 0);
-        dummy.scale.set(1, visibleHeight / 1.12, 1);
-        dummy.updateMatrix();
-        obstacles.setMatrixAt(obstacleIndex, dummy.matrix);
-        color.setHex((row + column + obstacleIndex) % 3 === 0 ? obstacleTints[0] : obstacleTints[1]);
-        obstacles.setColorAt(obstacleIndex, color);
-        obstacleIndex++;
-      }
-    }
-  }
-  obstacles.instanceMatrix.needsUpdate = true;
-  if (obstacles.instanceColor) obstacles.instanceColor.needsUpdate = true;
-  obstacles.castShadow = false;
-  obstacles.receiveShadow = false;
-  addMapObject(obstacles);
   forestTreeSlots = addObstacleEnvironmentSprites(definition, MAP_HALF_X, MAP_HALF_Z, addMapObject);
   const stumpPositions = [...forestTreeSlots].map(([cell, slot], index) => {
     forestStumpSlots.set(cell, {
