@@ -21,7 +21,7 @@
 
 ## Visual decisions
 
-- Cursors use a warm ivory arrow with a deep pine outline so the pointer stays readable over both bright grass and dark forest. The badge carries the action meaning: three-way movement, target, pick, check, or blocked cross.
+- The click pointer is a compact field standard: a neutral spear tip and pale pennant with pine outlines, a brass-toned staff, and a leaf-green seam. Its (3, 3) hotspot remains at the point. This gives orders an in-world marker without making the commander a named hero. Action badges retain the state meaning: movement, target, gather, valid build, or blocked build.
 - Box-select uses a centered four-corner frame rather than a second arrow. This keeps its hotspot aligned to the drag origin.
 - Wood is shown as bound cut logs; food as a berry-and-leaf cluster, matching the existing field resource vocabulary. Command glyphs are distinct at 24 px and use one accent rather than team colors.
 - Azure and Ember team colors are not used to encode command state. Valid and blocked use the established lime and ember status colors.

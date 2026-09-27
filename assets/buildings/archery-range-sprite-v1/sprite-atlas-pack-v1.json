@@ -1,0 +1,1058 @@
+{
+  "schemaVersion": 1,
+  "packId": "archery-range-sprite-v1",
+  "packVersion": "1.0.0",
+  "maturity": "runtime-candidate",
+  "provenance": {
+    "license": "project-owned; original AI-generated artwork",
+    "source": "Original Archery Range source frames and the unchanged sprite-grid.json; Azure and Ember runtime variants from the existing pack.",
+    "authoringTool": "OpenAI ImageGen; Pillow source normalization and team recolor; WebP packaging.",
+    "notes": "Original 1254×1254 PNGs remain preserved and hashed. Canonical 640×640 source pages are lossless aligned outputs from scripts/prepare-building-sprite-pack.py. Construction maps foundation below 20%, frame below 90%, and complete at 100%; health maps complete at ≥66%, damaged at ≥33%, and critical below 33%, as declared in sprite-grid.json. The 3×3 recommended footprint is a hint; map/gameplay data owns occupied cells. The [320, 441] projected ground-center pivot is an unreviewed estimate. Fixed 45° azimuth; no per-pixel depth; renderer integration remains pending."
+  },
+  "files": [
+    {
+      "id": "foundation-source-original",
+      "path": "source/archery-range-foundation.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "507dc653b0fd843360d2d272a2a4e0fe3ef00521d6fd3ef87f3781902358dc8d",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "frame-source-original",
+      "path": "source/archery-range-frame.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "92f9c2f7ddbad8a763a1430329a30f0b004d15f5a3965f995433db281cbdab22",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "complete-source-original",
+      "path": "source/archery-range-complete.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "9bcf0c09129140bbb6cb701028ece6e884630a105dc0aa39827536bcf282367c",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "damaged-source-original",
+      "path": "source/archery-range-damaged.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "394fefd49bc727718685f016c168d1e18544ab879be0baaa311d3c126bd74f75",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "critical-source-original",
+      "path": "source/archery-range-critical.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "342d58e0459bce425dab516a6d365d5d7d3658cb670a6109cb34c16f82b5343f",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "foundation-source-grid",
+      "path": "source/normalized/archery-range-foundation.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "746d29a4eaf9fc92ac183b621bb1db44d4089e4c4ad3a9d101cd7275ae0c96a1",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "frame-source-grid",
+      "path": "source/normalized/archery-range-frame.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "76aee9151d4d2422e3fe47a98999135b35ce9a350984f5d73c338b7402ff9d21",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "complete-source-grid",
+      "path": "source/normalized/archery-range-complete.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "3de3041f1c8d53d6116c4167f99a425dbefc4dd1fc7fb0c40f16f68e90d07861",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "damaged-source-grid",
+      "path": "source/normalized/archery-range-damaged.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "fc0d5583507387b58c4644b98b97245e1bc128bf06a89da777379ff42850bdc8",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "critical-source-grid",
+      "path": "source/normalized/archery-range-critical.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "908a083038eeb921b3ffac59c08e64373a596e0678c54b29efccbe3ac234b4d6",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "foundation-azure-runtime",
+      "path": "runtime/archery-range-foundation-azure.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "fec3e5f83328904b68f41e352da400bf673a78ba6de72821c80352f768743e37",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "foundation-ember-runtime",
+      "path": "runtime/archery-range-foundation-ember.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "708baf656fadb51ab6c53e8cb9f5fad068001e407fcac47f5881d82ef43a0c7e",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "frame-azure-runtime",
+      "path": "runtime/archery-range-frame-azure.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "04e781d4de4d1f76489bd8a975b75bfaf7c4c474576c25270d0bb42e8ac17f74",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "frame-ember-runtime",
+      "path": "runtime/archery-range-frame-ember.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "e51c320823f93410bf587cc5929fa805d4094146e3e2f1c18be4dddf36722730",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "complete-azure-runtime",
+      "path": "runtime/archery-range-complete-azure.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "025037e0a482b071a5deb4438ae4ed5c59add165c4ddbb29363eea9b7fc41997",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "complete-ember-runtime",
+      "path": "runtime/archery-range-complete-ember.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "28131b76c7228a9d29f1424bf3bc80f266b4b17cfed92342827c3b6f44ee3d47",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "damaged-azure-runtime",
+      "path": "runtime/archery-range-damaged-azure.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "586c3c500b9e6a428f568fc47931277253838c88c79b8eb047877484ca848310",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "damaged-ember-runtime",
+      "path": "runtime/archery-range-damaged-ember.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "c746701ed570f3f4bed875f1cbb5a9ccfd815db0cb264036000bed30a2625df6",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "critical-azure-runtime",
+      "path": "runtime/archery-range-critical-azure.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "535bce37d9db4e45d6abac249600a4cc1f9f84760613d2e36abb35913fc820c9",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "critical-ember-runtime",
+      "path": "runtime/archery-range-critical-ember.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "cf6ebeda5e2c35737bc07a3cb619db55e1ef26f0fdc0beda4a275b8ec9445c48",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    }
+  ],
+  "pages": [
+    {
+      "id": "foundation-azure-page",
+      "sourceFileId": "foundation-source-grid",
+      "runtimeFileId": "foundation-azure-runtime",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    },
+    {
+      "id": "foundation-ember-page",
+      "sourceFileId": "foundation-source-grid",
+      "runtimeFileId": "foundation-ember-runtime",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    },
+    {
+      "id": "frame-azure-page",
+      "sourceFileId": "frame-source-grid",
+      "runtimeFileId": "frame-azure-runtime",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    },
+    {
+      "id": "frame-ember-page",
+      "sourceFileId": "frame-source-grid",
+      "runtimeFileId": "frame-ember-runtime",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    },
+    {
+      "id": "complete-azure-page",
+      "sourceFileId": "complete-source-grid",
+      "runtimeFileId": "complete-azure-runtime",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    },
+    {
+      "id": "complete-ember-page",
+      "sourceFileId": "complete-source-grid",
+      "runtimeFileId": "complete-ember-runtime",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    },
+    {
+      "id": "damaged-azure-page",
+      "sourceFileId": "damaged-source-grid",
+      "runtimeFileId": "damaged-azure-runtime",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    },
+    {
+      "id": "damaged-ember-page",
+      "sourceFileId": "damaged-source-grid",
+      "runtimeFileId": "damaged-ember-runtime",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    },
+    {
+      "id": "critical-azure-page",
+      "sourceFileId": "critical-source-grid",
+      "runtimeFileId": "critical-azure-runtime",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    },
+    {
+      "id": "critical-ember-page",
+      "sourceFileId": "critical-source-grid",
+      "runtimeFileId": "critical-ember-runtime",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    }
+  ],
+  "assets": [
+    {
+      "id": "archery-range",
+      "kind": "building",
+      "recommendedTileFootprint": {
+        "widthTiles": 3,
+        "heightTiles": 3
+      },
+      "artBoundsWorld": {
+        "min": [
+          -2.5,
+          0,
+          -2.5
+        ],
+        "max": [
+          2.5,
+          5,
+          2.5
+        ]
+      },
+      "heightWorld": 5,
+      "sortAnchorWorld": [
+        0,
+        0,
+        0
+      ],
+      "cullingBoundsWorld": {
+        "min": [
+          -2.5,
+          0,
+          -2.5
+        ],
+        "max": [
+          2.5,
+          5,
+          2.5
+        ]
+      },
+      "layers": [
+        {
+          "id": "building",
+          "drawLayer": "midground",
+          "batchKey": "building.archery-range",
+          "depthBiasWorld": 0
+        }
+      ],
+      "frames": [
+        {
+          "id": "foundation-azure",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 441
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 57,
+            "y": 75,
+            "width": 557,
+            "height": 546
+          },
+          "fallbackRectPx": {
+            "pageId": "foundation-azure-page",
+            "rectPx": {
+              "x": 0,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "building",
+              "pageId": "foundation-azure-page",
+              "rectPx": {
+                "x": 0,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "foundation-ember",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 441
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 57,
+            "y": 75,
+            "width": 557,
+            "height": 546
+          },
+          "fallbackRectPx": {
+            "pageId": "foundation-ember-page",
+            "rectPx": {
+              "x": 0,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "building",
+              "pageId": "foundation-ember-page",
+              "rectPx": {
+                "x": 0,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "frame-azure",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 441
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 29,
+            "y": 66,
+            "width": 582,
+            "height": 550
+          },
+          "fallbackRectPx": {
+            "pageId": "frame-azure-page",
+            "rectPx": {
+              "x": 0,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "building",
+              "pageId": "frame-azure-page",
+              "rectPx": {
+                "x": 0,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "frame-ember",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 441
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 29,
+            "y": 66,
+            "width": 582,
+            "height": 550
+          },
+          "fallbackRectPx": {
+            "pageId": "frame-ember-page",
+            "rectPx": {
+              "x": 0,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "building",
+              "pageId": "frame-ember-page",
+              "rectPx": {
+                "x": 0,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "complete-azure",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 441
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 40,
+            "y": 67,
+            "width": 560,
+            "height": 547
+          },
+          "fallbackRectPx": {
+            "pageId": "complete-azure-page",
+            "rectPx": {
+              "x": 0,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "building",
+              "pageId": "complete-azure-page",
+              "rectPx": {
+                "x": 0,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "complete-ember",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 441
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 40,
+            "y": 67,
+            "width": 560,
+            "height": 547
+          },
+          "fallbackRectPx": {
+            "pageId": "complete-ember-page",
+            "rectPx": {
+              "x": 0,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "building",
+              "pageId": "complete-ember-page",
+              "rectPx": {
+                "x": 0,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "damaged-azure",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 441
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 39,
+            "y": 68,
+            "width": 561,
+            "height": 568
+          },
+          "fallbackRectPx": {
+            "pageId": "damaged-azure-page",
+            "rectPx": {
+              "x": 0,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "building",
+              "pageId": "damaged-azure-page",
+              "rectPx": {
+                "x": 0,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "damaged-ember",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 441
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 39,
+            "y": 68,
+            "width": 561,
+            "height": 568
+          },
+          "fallbackRectPx": {
+            "pageId": "damaged-ember-page",
+            "rectPx": {
+              "x": 0,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "building",
+              "pageId": "damaged-ember-page",
+              "rectPx": {
+                "x": 0,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "critical-azure",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 441
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 53,
+            "y": 73,
+            "width": 562,
+            "height": 557
+          },
+          "fallbackRectPx": {
+            "pageId": "critical-azure-page",
+            "rectPx": {
+              "x": 0,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "building",
+              "pageId": "critical-azure-page",
+              "rectPx": {
+                "x": 0,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "critical-ember",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 441
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 53,
+            "y": 73,
+            "width": 562,
+            "height": 557
+          },
+          "fallbackRectPx": {
+            "pageId": "critical-ember-page",
+            "rectPx": {
+              "x": 0,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "building",
+              "pageId": "critical-ember-page",
+              "rectPx": {
+                "x": 0,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        }
+      ],
+      "clips": [
+        {
+          "stateId": "foundation",
+          "teamId": "azure",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "foundation-azure",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "foundation",
+          "teamId": "ember",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "foundation-ember",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "frame",
+          "teamId": "azure",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "frame-azure",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "frame",
+          "teamId": "ember",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "frame-ember",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "complete",
+          "teamId": "azure",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "complete-azure",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "complete",
+          "teamId": "ember",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "complete-ember",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "damaged",
+          "teamId": "azure",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "damaged-azure",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "damaged",
+          "teamId": "ember",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "damaged-ember",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "critical",
+          "teamId": "azure",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "critical-azure",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "critical",
+          "teamId": "ember",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "critical-ember",
+              "durationMs": 1000
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

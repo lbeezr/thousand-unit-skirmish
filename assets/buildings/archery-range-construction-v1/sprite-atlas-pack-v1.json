@@ -1,0 +1,520 @@
+{
+  "schemaVersion": 1,
+  "packId": "archery-range-construction-v1",
+  "packVersion": "1.0.0",
+  "maturity": "runtime-candidate",
+  "provenance": {
+    "license": "project-owned; original AI-generated artwork",
+    "source": "OpenAI ImageGen edits of the project's original Archery Range complete sprite; no third-party or Age of Empires II sprite pixels used",
+    "authoringTool": "OpenAI ImageGen; Pillow atlas and mask packaging",
+    "notes": "Five static construction stages. 3\u00d73 occupancy remains owned by map/gameplay data. Ground pivot is an unreviewed camera-space estimate. Team tint mask selects only the complete-state pennant."
+  },
+  "files": [
+    {
+      "id": "source-foundation",
+      "path": "source/generated/archery-range-foundation.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "2ce534cc20c8502373a06b71b90bbdf6a2b85685b7d43661a062bfb167206cc2",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "frame-foundation",
+      "path": "source/frames/archery-range-foundation.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "791c07ccfda7de5531d2dfb2af27f8a48449c78e54c9550c9e3ae3d1a7ba7a7f",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "source-frame",
+      "path": "source/generated-v2/archery-range-frame.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "7bbb3291e879a62c7d111bd81d8e48182e978c923fdb912124e16b67d712ff6a",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "source-frame-original",
+      "path": "source/generated/archery-range-frame.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "f56707aa967b506add3343adac6a2bd5cd4d4f64c053f5545c2106a790078169",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "frame-frame",
+      "path": "source/frames/archery-range-frame.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "5822fbcdcdb84eab5a6633de17320a5d80b52ff970d9ee57cd009fedb878a171",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "source-rails",
+      "path": "source/generated-v2/archery-range-rails.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "6ae422dc7bda0299b95c03bac4dcb0a5282aa247954e34f069ee602fcf937da4",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "source-rails-original",
+      "path": "source/generated/archery-range-rails.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "9fde6b5ffdcd3711129c65c5de897de7ebc250e5ae92f17dfbca0f852ea1863e",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "frame-rails",
+      "path": "source/frames/archery-range-rails.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "190b50990c19c2c910a9828a7b0778943df5c1bb9f3ca6b068b4b0bfa8b0b8e1",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "source-canopy",
+      "path": "source/generated-v2/archery-range-canopy.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "ba6886568741d94db837576f74e7b2ed81799823422442e8e7e96d3c745d5f51",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "source-canopy-original",
+      "path": "source/generated/archery-range-canopy.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "314e4f3983223aef6f3440117449c18d9c7b64a003eba769d9c289b9b607a0b0",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "frame-canopy",
+      "path": "source/frames/archery-range-canopy.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "b15691161cddcacc83c289c480be80b07648853edcc3da895303c72cdb8b8402",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "source-complete",
+      "path": "source/generated/archery-range-complete.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "9bcf0c09129140bbb6cb701028ece6e884630a105dc0aa39827536bcf282367c",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "frame-complete",
+      "path": "source/frames/archery-range-complete.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "c2644c4fecc79887812bb937e577a1c50e6605287fb61bb7cff88fce12f7191f",
+      "dimensionsPx": {
+        "width": 640,
+        "height": 640
+      }
+    },
+    {
+      "id": "color-source",
+      "path": "source/archery-range-construction-atlas.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "ca51b8f05484fbe4acf601b32834cdb3b4cf1a4b1d977d66b3e188a92060a388",
+      "dimensionsPx": {
+        "width": 3200,
+        "height": 640
+      }
+    },
+    {
+      "id": "color-runtime",
+      "path": "runtime/archery-range-construction-atlas.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "1079d974955d20a4c6473bece17aef068b5dac4e230c299adb2c95a1993226ab",
+      "dimensionsPx": {
+        "width": 3200,
+        "height": 640
+      }
+    },
+    {
+      "id": "team-mask",
+      "path": "source/archery-range-team-mask.png",
+      "usage": "team-mask",
+      "format": "png",
+      "sha256": "3a765c05104c7e1038bfdf1aa39c56a0ef170b2b737ea02ec66de31366c971d2",
+      "dimensionsPx": {
+        "width": 3200,
+        "height": 640
+      }
+    }
+  ],
+  "pages": [
+    {
+      "id": "archery-range-construction-color",
+      "sourceFileId": "color-source",
+      "runtimeFileId": "color-runtime",
+      "maskFileId": "team-mask",
+      "dimensionsPx": {
+        "width": 3200,
+        "height": 640
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "zero-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    }
+  ],
+  "assets": [
+    {
+      "id": "archery-range-construction",
+      "kind": "building",
+      "recommendedTileFootprint": {
+        "widthTiles": 3,
+        "heightTiles": 3
+      },
+      "artBoundsWorld": {
+        "min": [
+          -2.5,
+          0,
+          -2.5
+        ],
+        "max": [
+          2.5,
+          4.5,
+          2.5
+        ]
+      },
+      "heightWorld": 4.5,
+      "sortAnchorWorld": [
+        0,
+        0,
+        0
+      ],
+      "layers": [
+        {
+          "id": "actor",
+          "drawLayer": "actor",
+          "batchKey": "building.archery-range-construction"
+        }
+      ],
+      "frames": [
+        {
+          "id": "foundation",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 441
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 43,
+            "y": 283,
+            "width": 555,
+            "height": 353
+          },
+          "fallbackRectPx": {
+            "pageId": "archery-range-construction-color",
+            "rectPx": {
+              "x": 0,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "archery-range-construction-color",
+              "rectPx": {
+                "x": 0,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "frame",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 441
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 39,
+            "y": 108,
+            "width": 563,
+            "height": 527
+          },
+          "fallbackRectPx": {
+            "pageId": "archery-range-construction-color",
+            "rectPx": {
+              "x": 640,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "archery-range-construction-color",
+              "rectPx": {
+                "x": 640,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "rails",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 441
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 38,
+            "y": 106,
+            "width": 564,
+            "height": 530
+          },
+          "fallbackRectPx": {
+            "pageId": "archery-range-construction-color",
+            "rectPx": {
+              "x": 1280,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "archery-range-construction-color",
+              "rectPx": {
+                "x": 1280,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "canopy",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 441
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 37,
+            "y": 109,
+            "width": 564,
+            "height": 527
+          },
+          "fallbackRectPx": {
+            "pageId": "archery-range-construction-color",
+            "rectPx": {
+              "x": 1920,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "archery-range-construction-color",
+              "rectPx": {
+                "x": 1920,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "complete",
+          "canvasPx": {
+            "width": 640,
+            "height": 640
+          },
+          "groundPivotPx": {
+            "x": 320,
+            "y": 441
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 40,
+            "y": 90,
+            "width": 559,
+            "height": 546
+          },
+          "fallbackRectPx": {
+            "pageId": "archery-range-construction-color",
+            "rectPx": {
+              "x": 2560,
+              "y": 0,
+              "width": 640,
+              "height": 640
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "archery-range-construction-color",
+              "rectPx": {
+                "x": 2560,
+                "y": 0,
+                "width": 640,
+                "height": 640
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        }
+      ],
+      "clips": [
+        {
+          "stateId": "foundation",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "foundation",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "frame",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "frame",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "rails",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "rails",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "canopy",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "canopy",
+              "durationMs": 1000
+            }
+          ]
+        },
+        {
+          "stateId": "complete",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "complete",
+              "durationMs": 1000
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

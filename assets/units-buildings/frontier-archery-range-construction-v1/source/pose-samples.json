@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "assetId": "frontier-archery-range-construction",
+  "origin": "ground-center",
+  "samples": [
+    {
+      "id": "archery-range-00-foundation",
+      "state": "foundation",
+      "buildingProgress": 0.0,
+      "visibleNodes": [
+        "archery-range.foundation"
+      ],
+      "notes": "A raised stone footprint anchors the construction site."
+    },
+    {
+      "id": "archery-range-25-frame",
+      "state": "frame",
+      "buildingProgress": 0.25,
+      "visibleNodes": [
+        "archery-range.foundation",
+        "archery-range.construction.frame"
+      ],
+      "notes": "Four open corner posts and cross-braces establish the covered practice bay."
+    },
+    {
+      "id": "archery-range-50-rails",
+      "state": "rails",
+      "buildingProgress": 0.5,
+      "visibleNodes": [
+        "archery-range.foundation",
+        "archery-range.construction.frame",
+        "archery-range.construction.rails"
+      ],
+      "notes": "Low side rails and a rear rack shape the practice lane while it stays open."
+    },
+    {
+      "id": "archery-range-75-canopy",
+      "state": "canopy",
+      "buildingProgress": 0.75,
+      "visibleNodes": [
+        "archery-range.foundation",
+        "archery-range.construction.frame",
+        "archery-range.construction.rails",
+        "archery-range.construction.roof-frame"
+      ],
+      "notes": "Exposed rafters and one partial canopy plane distinguish the unfinished roof from completion."
+    },
+    {
+      "id": "archery-range-100-complete",
+      "state": "complete",
+      "buildingProgress": 1.0,
+      "visibleNodes": [
+        "archery-range.foundation",
+        "archery-range.construction.frame",
+        "archery-range.construction.rails",
+        "archery-range.complete.canopy",
+        "archery-range.complete.target",
+        "archery-range.standard.azure"
+      ],
+      "notes": "A single sloped canopy, front bullseye, and one owner-selected standard finish the Range."
+    }
+  ]
+}

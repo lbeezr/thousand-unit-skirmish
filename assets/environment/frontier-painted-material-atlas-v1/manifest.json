@@ -1,0 +1,502 @@
+{
+  "schemaVersion": 1,
+  "packId": "frontier-painted-material-atlas-v1",
+  "packVersion": "1.0.0",
+  "provenance": {
+    "license": "project-owned",
+    "source": "The eight original ground-material source PNGs in assets/environment/frontier-v1; no third-party source imagery.",
+    "generator": "scripts/build-painted-material-atlas.py; Python 3.14.0; Pillow 12.3.0; LANCZOS resize; WebP quality 86 mips 0-3, lossless mips 4-5."
+  },
+  "files": [
+    {
+      "id": "source-meadow",
+      "path": "assets/environment/frontier-v1/meadow.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "9268abaa3304196ca0cd774c8ae137f2c57612d57ef8cff0f46e234432af6689",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "source-short-grass",
+      "path": "assets/environment/frontier-v1/short-grass.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "e10a2bd76c8733c6037f743345c7a189686b78faa85a4affac9aaa2298955a2a",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "source-long-grass",
+      "path": "assets/environment/frontier-v1/long-grass.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "b43fa5c95c2c00d0452eaca03b406429fb941d3f71be8895bac09d17b73b8de3",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "source-forest-floor",
+      "path": "assets/environment/frontier-v1/forest-floor.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "e091cea3db9dd870e7b1c39b67504cd8daf798d9e87d75bb2bad32d4ce187a70",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "source-dirt",
+      "path": "assets/environment/frontier-v1/dirt.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "f442a560c029c431a61f5bdc358b550ecff3425ee6984053a33124c32e71b1dd",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "source-sand",
+      "path": "assets/environment/frontier-v1/sand.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "e8a7e948f8ceb869b9a0fef00797f265559f1af3ddfdfa7a35c4f43805db1493",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "source-scree",
+      "path": "assets/environment/frontier-v1/scree.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "4b9bab49e6d03c85256c2a9d8cf2ad32ba5600c4701558425894e342d560c5b7",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "source-cinder",
+      "path": "assets/environment/frontier-v1/cinder.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "c8bfcf36f98d66d4bd07d4ae5a77fe05bd61e650854ff1ef5a926df49d7da67a",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "atlas-source",
+      "path": "assets/environment/frontier-painted-material-atlas-v1/frontier-painted-material-atlas.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "a561b85630c580a34cd78caaf96fb12bdf3f5bddce6cc48bcb0c32482ba7d178",
+      "dimensionsPx": {
+        "width": 1920,
+        "height": 1920
+      }
+    },
+    {
+      "id": "atlas-mip-0",
+      "path": "assets/environment/frontier-painted-material-atlas-v1/frontier-painted-material-atlas-mip-0.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "ada3f253ef001ee5164267ab5a55d04175d4a99182f2caec1d1bdfb2449de433",
+      "dimensionsPx": {
+        "width": 1920,
+        "height": 1920
+      }
+    },
+    {
+      "id": "atlas-mip-1",
+      "path": "assets/environment/frontier-painted-material-atlas-v1/frontier-painted-material-atlas-mip-1.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "a70bc73eb88d8616a4bee1be85f68c7b6dbb56a731f78545741434fbf9f077ee",
+      "dimensionsPx": {
+        "width": 960,
+        "height": 960
+      }
+    },
+    {
+      "id": "atlas-mip-2",
+      "path": "assets/environment/frontier-painted-material-atlas-v1/frontier-painted-material-atlas-mip-2.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "568c64c921d9564b464202d2e4f8873638a830e3714d75efaeb4ee4c71379fe2",
+      "dimensionsPx": {
+        "width": 480,
+        "height": 480
+      }
+    },
+    {
+      "id": "atlas-mip-3",
+      "path": "assets/environment/frontier-painted-material-atlas-v1/frontier-painted-material-atlas-mip-3.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "c3e18cf34c00b53e9a468b409f17f109d011bb4d1d1647ad2b8b7b4f6afbe93e",
+      "dimensionsPx": {
+        "width": 240,
+        "height": 240
+      }
+    },
+    {
+      "id": "atlas-mip-4",
+      "path": "assets/environment/frontier-painted-material-atlas-v1/frontier-painted-material-atlas-mip-4.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "dfa54b53e7ec4bb15472c0c1b4d85b147cbcea043a3159043977c1e28a3ae1d6",
+      "dimensionsPx": {
+        "width": 120,
+        "height": 120
+      }
+    },
+    {
+      "id": "atlas-mip-5",
+      "path": "assets/environment/frontier-painted-material-atlas-v1/frontier-painted-material-atlas-mip-5.webp",
+      "usage": "runtime",
+      "format": "webp",
+      "sha256": "a708b56e0983605dc3ea31ac21fd8881163ca0802aa8a7d387ed9f19326380fe",
+      "dimensionsPx": {
+        "width": 60,
+        "height": 60
+      }
+    },
+    {
+      "id": "preview-sheet",
+      "path": "assets/environment/frontier-painted-material-atlas-v1/preview.png",
+      "usage": "preview",
+      "format": "png",
+      "sha256": "7c78218ac395ef8541cc178d5962c13075130415a53ae4ad78088c23c4f40fa7",
+      "dimensionsPx": {
+        "width": 1900,
+        "height": 1050
+      }
+    }
+  ],
+  "layout": {
+    "columns": 3,
+    "rows": 3,
+    "materialSizePx": 512,
+    "gutterPx": 64,
+    "gutterRule": "mirrored-repeat",
+    "order": [
+      "meadow",
+      "short-grass",
+      "long-grass",
+      "forest-floor",
+      "dirt",
+      "sand",
+      "scree",
+      "cinder"
+    ]
+  },
+  "page": {
+    "id": "frontier-ground-materials",
+    "sourceFileId": "atlas-source",
+    "dimensionsPx": {
+      "width": 1920,
+      "height": 1920
+    },
+    "colorSpace": "srgb",
+    "pixelFormat": "rgb8",
+    "alphaMode": "opaque",
+    "wrapMode": "clamp",
+    "gutterPx": 64,
+    "gutterRule": "mirrored-repeat",
+    "sampling": {
+      "generateMipmaps": false,
+      "minFilter": "linear-mipmap-linear",
+      "magFilter": "linear",
+      "uvInsetPx": 0.5,
+      "maxMipLevel": 5
+    },
+    "mipLevels": [
+      {
+        "level": 0,
+        "fileId": "atlas-mip-0",
+        "dimensionsPx": {
+          "width": 1920,
+          "height": 1920
+        }
+      },
+      {
+        "level": 1,
+        "fileId": "atlas-mip-1",
+        "dimensionsPx": {
+          "width": 960,
+          "height": 960
+        }
+      },
+      {
+        "level": 2,
+        "fileId": "atlas-mip-2",
+        "dimensionsPx": {
+          "width": 480,
+          "height": 480
+        }
+      },
+      {
+        "level": 3,
+        "fileId": "atlas-mip-3",
+        "dimensionsPx": {
+          "width": 240,
+          "height": 240
+        }
+      },
+      {
+        "level": 4,
+        "fileId": "atlas-mip-4",
+        "dimensionsPx": {
+          "width": 120,
+          "height": 120
+        }
+      },
+      {
+        "level": 5,
+        "fileId": "atlas-mip-5",
+        "dimensionsPx": {
+          "width": 60,
+          "height": 60
+        }
+      }
+    ]
+  },
+  "materials": [
+    {
+      "id": "meadow",
+      "sourceFileId": "source-meadow",
+      "slotRectPx": {
+        "x": 0,
+        "y": 0,
+        "width": 640,
+        "height": 640
+      },
+      "rectPx": {
+        "x": 64,
+        "y": 64,
+        "width": 512,
+        "height": 512
+      },
+      "uvRectTopLeft": {
+        "min": {
+          "u": 0.03359375,
+          "v": 0.03359375
+        },
+        "max": {
+          "u": 0.29973958333333334,
+          "v": 0.29973958333333334
+        }
+      },
+      "repeatMode": "mirrored-repeat",
+      "worldRepeatUnits": 12
+    },
+    {
+      "id": "short-grass",
+      "sourceFileId": "source-short-grass",
+      "slotRectPx": {
+        "x": 640,
+        "y": 0,
+        "width": 640,
+        "height": 640
+      },
+      "rectPx": {
+        "x": 704,
+        "y": 64,
+        "width": 512,
+        "height": 512
+      },
+      "uvRectTopLeft": {
+        "min": {
+          "u": 0.36692708333333335,
+          "v": 0.03359375
+        },
+        "max": {
+          "u": 0.6330729166666667,
+          "v": 0.29973958333333334
+        }
+      },
+      "repeatMode": "mirrored-repeat",
+      "worldRepeatUnits": 12
+    },
+    {
+      "id": "long-grass",
+      "sourceFileId": "source-long-grass",
+      "slotRectPx": {
+        "x": 1280,
+        "y": 0,
+        "width": 640,
+        "height": 640
+      },
+      "rectPx": {
+        "x": 1344,
+        "y": 64,
+        "width": 512,
+        "height": 512
+      },
+      "uvRectTopLeft": {
+        "min": {
+          "u": 0.7002604166666667,
+          "v": 0.03359375
+        },
+        "max": {
+          "u": 0.96640625,
+          "v": 0.29973958333333334
+        }
+      },
+      "repeatMode": "mirrored-repeat",
+      "worldRepeatUnits": 12
+    },
+    {
+      "id": "forest-floor",
+      "sourceFileId": "source-forest-floor",
+      "slotRectPx": {
+        "x": 0,
+        "y": 640,
+        "width": 640,
+        "height": 640
+      },
+      "rectPx": {
+        "x": 64,
+        "y": 704,
+        "width": 512,
+        "height": 512
+      },
+      "uvRectTopLeft": {
+        "min": {
+          "u": 0.03359375,
+          "v": 0.36692708333333335
+        },
+        "max": {
+          "u": 0.29973958333333334,
+          "v": 0.6330729166666667
+        }
+      },
+      "repeatMode": "mirrored-repeat",
+      "worldRepeatUnits": 12
+    },
+    {
+      "id": "dirt",
+      "sourceFileId": "source-dirt",
+      "slotRectPx": {
+        "x": 640,
+        "y": 640,
+        "width": 640,
+        "height": 640
+      },
+      "rectPx": {
+        "x": 704,
+        "y": 704,
+        "width": 512,
+        "height": 512
+      },
+      "uvRectTopLeft": {
+        "min": {
+          "u": 0.36692708333333335,
+          "v": 0.36692708333333335
+        },
+        "max": {
+          "u": 0.6330729166666667,
+          "v": 0.6330729166666667
+        }
+      },
+      "repeatMode": "mirrored-repeat",
+      "worldRepeatUnits": 12
+    },
+    {
+      "id": "sand",
+      "sourceFileId": "source-sand",
+      "slotRectPx": {
+        "x": 1280,
+        "y": 640,
+        "width": 640,
+        "height": 640
+      },
+      "rectPx": {
+        "x": 1344,
+        "y": 704,
+        "width": 512,
+        "height": 512
+      },
+      "uvRectTopLeft": {
+        "min": {
+          "u": 0.7002604166666667,
+          "v": 0.36692708333333335
+        },
+        "max": {
+          "u": 0.96640625,
+          "v": 0.6330729166666667
+        }
+      },
+      "repeatMode": "mirrored-repeat",
+      "worldRepeatUnits": 12
+    },
+    {
+      "id": "scree",
+      "sourceFileId": "source-scree",
+      "slotRectPx": {
+        "x": 0,
+        "y": 1280,
+        "width": 640,
+        "height": 640
+      },
+      "rectPx": {
+        "x": 64,
+        "y": 1344,
+        "width": 512,
+        "height": 512
+      },
+      "uvRectTopLeft": {
+        "min": {
+          "u": 0.03359375,
+          "v": 0.7002604166666667
+        },
+        "max": {
+          "u": 0.29973958333333334,
+          "v": 0.96640625
+        }
+      },
+      "repeatMode": "mirrored-repeat",
+      "worldRepeatUnits": 12
+    },
+    {
+      "id": "cinder",
+      "sourceFileId": "source-cinder",
+      "slotRectPx": {
+        "x": 640,
+        "y": 1280,
+        "width": 640,
+        "height": 640
+      },
+      "rectPx": {
+        "x": 704,
+        "y": 1344,
+        "width": 512,
+        "height": 512
+      },
+      "uvRectTopLeft": {
+        "min": {
+          "u": 0.36692708333333335,
+          "v": 0.7002604166666667
+        },
+        "max": {
+          "u": 0.6330729166666667,
+          "v": 0.96640625
+        }
+      },
+      "repeatMode": "mirrored-repeat",
+      "worldRepeatUnits": 12
+    }
+  ]
+}

@@ -35,6 +35,7 @@
       }
     </script>
     <script type="module" src="./src/main.js" onerror="window.reportPrototypeError('Could not load src/main.js')"></script>
+    <script type="module" src="./src/pve-entry.mjs" onerror="window.reportPrototypeError('Could not load src/pve-entry.mjs')"></script>
   </head>
   <body>
     <div class="app-shell">
@@ -46,7 +47,7 @@
             <h1>Thousand Unit Skirmish</h1>
           </div>
         </div>
-        <div class="topbar-center"><span id="connection-dot" class="live-dot waiting"></span><span id="network-status">CONNECTING</span><span class="topbar-divider">/</span><span id="players-online">0 / 2 PLAYERS</span></div>
+        <div class="topbar-center"><span id="connection-dot" class="live-dot waiting"></span><span id="network-status">CONNECTING</span><span class="topbar-divider">/</span></div>
         <div class="hud-readouts" aria-label="Team resources and field strength">
           <div class="hud-team">TEAM <b id="player-team">CONNECTING</b></div>
           <div class="resource-stocks">
@@ -67,7 +68,12 @@
       <main class="workspace">
         <section id="viewport" class="viewport" aria-label="Isometric battlefield">
           <div class="viewport-wash" aria-hidden="true"></div>
-          <div class="map-label"><span class="map-label-dot"></span> <span id="map-label-title">LOADING MAP</span> <span class="map-label-sep">/</span> <span id="map-summary">WAITING FOR SERVER</span><button id="scenario-brief-toggle" class="scenario-brief-toggle" type="button" aria-controls="scenario-brief-panel" aria-expanded="false">BRIEF <span>↗</span></button></div>
+          <div class="map-label"><span class="map-label-dot"></span> <span id="map-label-title">LOADING MAP</span> <span class="map-label-sep">/</span> <span id="map-summary">WAITING FOR SERVER</span><span id="objective-urgent" hidden></span><button id="scenario-brief-toggle" class="scenario-brief-toggle" type="button" aria-label="Open the scenario win rule and capture zone details" title="See how to win and what each capture zone requires" aria-controls="scenario-brief-panel" aria-expanded="false">Objectives <span aria-hidden="true">↗</span></button></div>
+          <nav class="camera-toolbar" aria-label="Camera navigation">
+            <button id="camera-center-selection" type="button" title="Center the camera on your selected units or building">Center selection</button>
+            <button id="camera-home-base" type="button" title="Center the camera on your Town Center">Home base</button>
+            <button id="camera-fit-map" type="button" title="Show the full map in the clear space between the controls">Fit map</button>
+          </nav>
           <div class="compass" aria-hidden="true"><span>N</span><i></i></div>
           <aside id="scenario-brief-panel" class="scenario-brief-panel" aria-label="Scenario briefing" hidden>
             <div class="scenario-brief-heading"><span>FIELD BRIEF</span><button id="scenario-brief-close" type="button" aria-label="Close scenario briefing">×</button></div>
@@ -82,8 +88,9 @@
               <span>CAPTURE ZONES</span>
               <ul id="scenario-brief-zone-list"></ul>
             </div>
+            <div id="objective-panel" class="objective-panel" role="region" aria-label="Live objective progress" tabindex="0" hidden></div>
+            <details class="notice-history"><summary>Recent notices</summary><ol id="notice-history"></ol></details>
           </aside>
-          <div id="objective-panel" class="objective-panel" role="region" aria-label="Scenario objectives" tabindex="0" hidden></div>
           <div id="match-result" class="match-result" role="status" aria-live="assertive" hidden>
             <div class="match-result-kicker">MATCH COMPLETE</div>
             <strong id="match-result-title" class="match-result-title"></strong>
@@ -94,19 +101,48 @@
             </div>
           </div>
           <section class="minimap-panel" aria-label="Tactical map">
-            <div class="minimap-heading"><span>TACTICAL MAP</span><span class="minimap-live">LIVE</span></div>
-            <canvas id="minimap-canvas" width="384" height="384" tabindex="0" aria-label="Tactical map. Azure units use square markers and Ember units use diamond markers; food and wood are named in the legend. Click or drag to move the camera; use arrow keys while focused to pan.">Tactical map.</canvas>
-            <div class="minimap-legend"><span><i class="blue-dot"></i>AZURE</span><span><i class="red-dot"></i>EMBER</span><span><i class="food-dot"></i>FOOD</span><span><i class="wood-dot"></i>WOOD</span></div>
+            <div class="minimap-heading"><span>MAP</span><button id="minimap-size-toggle" type="button" aria-label="Enlarge tactical map">+</button><button id="minimap-hide" type="button" aria-label="Hide tactical map">−</button></div>
+            <canvas id="minimap-canvas" width="384" height="384" tabindex="0" aria-label="Tactical map. Azure units use square markers and Ember units use diamond markers; food, wood, and high ground are named in the legend. Click or drag to move the camera; use arrow keys while focused to pan.">Tactical map.</canvas>
+            <div class="minimap-legend"><span><i class="blue-dot"></i>AZURE</span><span><i class="red-dot"></i>EMBER</span><span><i class="food-dot"></i>FOOD</span><span><i class="wood-dot"></i>WOOD</span><span id="minimap-elevation-legend" hidden><i class="elevation-dot"></i>HIGH GROUND</span></div>
           </section>
+          <button id="minimap-reopen" class="minimap-reopen" type="button" hidden>Map</button>
           <div id="selection-box" class="selection-box" aria-hidden="true"></div>
-          <div class="field-hint"><span id="field-hint-primary-key" class="hint-key">LMB</span> <span id="field-hint-action">DRAG TO SELECT</span> <span class="hint-divider">·</span> <span id="field-hint-secondary-key" class="hint-key">RMB</span> <span id="field-hint-secondary">MOVE / ATTACK</span><span id="placement-status" class="placement-status" aria-live="off" hidden></span></div>
+          <div class="field-hint"><button id="guidance-toggle" type="button" aria-expanded="true">Hide hints</button><span id="field-hint-primary-key" class="hint-key">LMB</span> <span id="field-hint-action">DRAG TO SELECT</span> <span class="hint-divider">·</span> <span id="field-hint-secondary-key" class="hint-key">RMB</span> <span id="field-hint-secondary">MOVE / ATTACK</span><span id="placement-status" class="placement-status" aria-live="off" hidden></span></div>
           <div id="field-order-feedback" class="field-order-feedback" data-state="ready" role="status" aria-live="off" hidden></div>
           <div id="toast" class="toast" role="status" aria-live="polite"></div>
           <div id="audio-caption" class="audio-caption" role="status" aria-live="off" hidden></div>
           <div id="runtime-error" class="runtime-error" role="alert"></div>
         </section>
 
-        <aside class="control-dock">
+        <div class="contextual-command-bar" role="region" aria-label="Selection commands">
+          <div class="contextual-summary" data-context-summary></div>
+          <div class="contextual-actions">
+            <button type="button" data-context-proxy="select-idle-workers">Idle workers</button>
+            <button type="button" data-context-proxy="select-military">Army</button>
+            <button type="button" data-context-panel="economy">Production</button>
+            <button type="button" data-context-panel="selection">Groups</button>
+            <span data-context-groups class="contextual-groups"></span>
+            <button type="button" data-context-proxy="order-target-toggle">Target battlefield</button>
+            <button type="button" data-context-proxy="attack-move-toggle">Attack move · M</button>
+            <button type="button" data-context-proxy="select-workers">Select workers</button>
+            <button type="button" data-context-build data-context-panel="economy">Build</button>
+            <button type="button" data-context-proxy="train-infantry">Train infantry · 50 food</button>
+            <button type="button" data-context-proxy="train-archer">Train archer · 25 food / 45 wood</button>
+            <button type="button" data-context-proxy="clear-building-rally">Clear rally</button>
+            <button type="button" data-context-proxy="research-attack-upgrade">Research attack</button>
+            <button type="button" data-context-details data-context-panel="command">Details / formation</button>
+          </div>
+          <small id="context-action-reason" data-context-reason></small>
+          <small data-context-research hidden></small>
+        </div>
+        <nav class="hud-quick-access" aria-label="Quick commands">
+          <button id="dock-toggle" type="button" aria-controls="command-deck" aria-expanded="false">Commands</button>
+          <button type="button" data-open-dock-tab="economy">Production</button>
+          <button id="quick-army" type="button">Army</button>
+          <button id="quick-idle" type="button" disabled>Idle · 0</button>
+        </nav>
+        <aside id="command-deck" class="control-dock" hidden>
+          <button id="dock-close" class="hud-panel-close" type="button" aria-label="Close command details">×</button>
           <div class="dock-tabs" role="tablist" aria-label="Command deck">
             <button type="button" role="tab" id="dock-tab-selection" aria-controls="dock-selection" aria-selected="true" data-dock-tab="selection">Selection</button>
             <button type="button" role="tab" id="dock-tab-economy" aria-controls="dock-economy" aria-selected="false" data-dock-tab="economy">Build &amp; train</button>
@@ -137,6 +173,7 @@
             <div id="selected-waypoints" class="selected-waypoints" aria-live="polite" hidden></div>
             <div class="control-groups" aria-label="Control groups">
               <div class="control-groups-heading"><span>CONTROL GROUPS</span><span>CTRL/⌘ REPLACE · SHIFT ADD</span></div>
+              <div class="group-assignment"><label for="assign-group-slot">Assign selection to group</label><select id="assign-group-slot"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option><option value="4">5</option><option value="5">6</option><option value="6">7</option><option value="7">8</option><option value="8">9</option><option value="9">0</option></select><button type="button" id="assign-selected-group">Assign</button></div>
               <div class="control-group-grid" role="group" aria-label="Recall control groups">
                 <button class="control-group" type="button" data-control-group="1" aria-label="Control group 1: 0 units" aria-pressed="false"><span class="control-group-number">1</span><span class="control-group-count">0</span></button>
                 <button class="control-group" type="button" data-control-group="2" aria-label="Control group 2: 0 units" aria-pressed="false"><span class="control-group-number">2</span><span class="control-group-count">0</span></button>
@@ -240,7 +277,7 @@
           <div class="dock-heading">
             <div>
               <div class="eyebrow">MATCH <span>·</span> OPTIONS</div>
-              <h2>Match Controls</h2>
+              <h2>Match Controls</h2><span id="players-online">0 / 2 PLAYERS</span>
             </div>
             <div id="match-status" class="match-state"><i></i> CONNECTING</div>
           </div>
@@ -256,6 +293,8 @@
             <div class="size-note">Evenly split between two teams</div>
             <div class="map-picker"><label for="map-select">BATTLEFIELD</label><select id="map-select" aria-label="Battlefield map"><option>Loading maps…</option></select></div>
             <button id="map-studio-open" class="map-studio-open" type="button" disabled>MAP STUDIO <span>↗</span></button>
+            <a class="map-studio-open building-map-open" href="./building-map.html" target="_blank" rel="noopener">BUILDING VARIANT ATLAS <span>↗</span></a>
+            <a class="map-studio-open" href="./environment-review.html" target="_blank" rel="noopener">TERRAIN ART PILOT <span>↗</span></a>
           </section>
 
           <section class="control-section performance-section">
@@ -268,8 +307,20 @@
             <div class="render-note"><span class="render-icon">▦</span> Instanced rendering <i>ACTIVE</i></div>
           </section>
 
+          <section class="control-section navigation-settings-section" aria-label="Camera navigation settings">
+            <div class="section-label">CAMERA NAVIGATION</div>
+            <label class="navigation-speed-control" for="camera-speed">
+              <span>Camera speed <output id="camera-speed-value" for="camera-speed">100%</output></span>
+              <input id="camera-speed" type="range" min="50" max="200" step="10" value="100">
+            </label>
+            <label class="audio-check"><input id="edge-scroll-enabled" type="checkbox"><span>Edge scroll</span></label>
+            <small>Arrow keys move the camera while the battlefield is active. Edge scroll uses a 40 px screen band.</small>
+          </section>
+
           <section class="control-section fullscreen-section" aria-label="Display settings">
-            <div class="section-label"><span>DISPLAY</span></div>
+            <div class="section-label"><span>THOUSAND UNIT SKIRMISH · DISPLAY</span></div>
+            <label class="hud-preference">HUD spacing <select id="hud-density"><option value="compact">Compact</option><option value="comfortable">Comfortable</option></select></label>
+            <label class="hud-preference">Tactical map <select id="hud-minimap"><option value="small">Small</option><option value="large">Large</option><option value="hidden">Hidden</option></select></label>
             <button id="fullscreen-toggle" class="fullscreen-toggle" type="button" aria-pressed="false">Enter fullscreen</button>
           </section>
 
@@ -279,7 +330,7 @@
             <label class="audio-check"><input id="audio-captions" type="checkbox"><span>Caption important sounds</span></label>
             <label class="audio-range" for="audio-volume"><span>Overall volume</span><input id="audio-volume" type="range" min="0" max="100" value="50"><output id="audio-volume-value" for="audio-volume">50%</output></label>
             <label class="audio-range" for="audio-effects-level"><span>Effects level</span><input id="audio-effects-level" type="range" min="0" max="200" value="100"><output id="audio-effects-level-value" for="audio-effects-level">100%</output></label>
-            <div class="audio-preview-controls">
+            <div id="audio-preview-controls" class="audio-preview-controls">
               <label for="audio-preview-cue">Sample</label>
               <select id="audio-preview-cue" class="audio-preview-cue">
                 <optgroup label="Commands">
@@ -315,6 +366,48 @@
               </select>
               <button id="audio-preview" class="audio-preview" type="button">Play preview</button>
             </div>
+            <div class="audio-recognition-card">
+              <div class="audio-recognition-heading">
+                <div>
+                  <strong>Sound recognition</strong>
+                  <small>Ten shuffled samples, including victory, defeat, and draw. Choose “Not sure” if you cannot identify a cue.</small>
+                </div>
+                <button id="audio-recognition-start" class="audio-preview" type="button">Start check</button>
+              </div>
+              <div id="audio-recognition-run" class="audio-recognition-run" hidden>
+                <small id="audio-recognition-condition" class="audio-recognition-condition"></small>
+                <div id="audio-recognition-progress" class="audio-recognition-progress"></div>
+                <p id="audio-recognition-prompt">Play the sample, then choose what it means.</p>
+                <button id="audio-recognition-play" class="audio-preview" type="button">Play sample</button>
+                <div id="audio-recognition-answers" class="audio-recognition-answers" role="group" aria-label="Choose what the sound means">
+                  <button type="button" data-audio-recognition-answer="move" disabled>Move order</button>
+                  <button type="button" data-audio-recognition-answer="attack" disabled>Attack order</button>
+                  <button type="button" data-audio-recognition-answer="victory" disabled>Victory</button>
+                  <button type="button" data-audio-recognition-answer="defeat" disabled>Defeat</button>
+                  <button type="button" data-audio-recognition-answer="draw" disabled>Draw</button>
+                  <button type="button" data-audio-recognition-answer="unsure" disabled>Not sure</button>
+                </div>
+                <small id="audio-recognition-feedback" class="audio-recognition-feedback" role="status" aria-live="polite"></small>
+                <div class="audio-recognition-actions">
+                  <button id="audio-recognition-next" class="audio-preview" type="button" hidden>Next sample</button>
+                  <button id="audio-recognition-end" class="audio-preview" type="button">End check</button>
+                </div>
+              </div>
+              <div id="audio-recognition-results" class="audio-recognition-results" role="status" hidden>
+                <strong>Check results</strong>
+                <p id="audio-recognition-score"></p>
+                <small id="audio-recognition-result-conditions"></small>
+                <small>Run again with the other caption setting to compare.</small>
+                <details class="audio-recognition-report-details">
+                  <summary>View trial notes</summary>
+                  <pre id="audio-recognition-report"></pre>
+                </details>
+                <div class="audio-recognition-result-actions">
+                  <button id="audio-recognition-copy" class="audio-preview" type="button">Copy trial notes</button>
+                  <small id="audio-recognition-copy-status" role="status" aria-live="polite">Copies only when you choose; nothing is sent.</small>
+                </div>
+              </div>
+            </div>
             <label class="audio-check"><input id="audio-ambience" type="checkbox" checked><span>Ambience and music</span></label>
             <div class="audio-preview-controls audio-ambience-preview-controls">
               <label for="audio-ambience-preview">Music layer</label>
@@ -330,7 +423,7 @@
         </aside>
         <aside id="help-panel" class="help-panel" aria-label="Game controls" hidden>
           <div class="help-heading"><div><div class="eyebrow">FIELD GUIDE</div><h2>Controls</h2></div><button id="help-close" class="hud-panel-close" type="button" aria-label="Close controls">×</button></div>
-          <p>Move the camera with middle drag or Space + drag. Scroll to zoom. Push the mouse against any screen edge to pan.</p>
+          <p>Hold the arrow keys to move the camera. Middle drag or Space + drag also pans; scroll to zoom toward the pointer. Edge scroll is on by default and can be changed in Match Controls. Use the Center selection, Home base, and Fit map buttons on the battlefield.</p>
           <p>Touch controls: select friendly units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource. Drag the tactical map to move the camera.</p>
           <p>Gather food or wood: select workers, then right-click a resource, or use Orders → Target battlefield and tap it. Build a Barracks or Archery Range from Build &amp; train, then choose a clear site; the field hint explains why a spot is blocked.</p>
             <div class="command-footnote"><span class="keycap">PAUSE + CLICK</span> Cycle stack <span class="footnote-sep">·</span> <span class="keycap">DOUBLE-CLICK</span> Select type<br><span class="keycap">SHIFT + DOUBLE-CLICK</span> Add type <span class="footnote-sep">·</span> <span class="keycap">SHIFT + RMB</span> Queue waypoint<br><span class="keycap">L→R DRAG</span> Enclosed <span class="footnote-sep">·</span> <span class="keycap">R→L DRAG</span> Crossing<br><span class="keycap">SHIFT + DRAG</span> Add selection <span class="footnote-sep">·</span> <span class="keycap">A</span> Select all</div>
@@ -402,6 +495,7 @@
                   <option value="meadow">Moss meadow</option>
                   <option value="short-grass">Short grass</option>
                   <option value="long-grass">Wild grass</option>
+                  <option value="forest-floor">Forest floor</option>
                   <option value="dirt">Worn dirt</option>
                   <option value="sand">Windworn sand</option>
                   <option value="scree">Basalt scree</option>
@@ -419,11 +513,32 @@
                 <button type="button" data-map-tool="ground:meadow">Moss</button>
                 <button type="button" data-map-tool="ground:short-grass">Short grass</button>
                 <button type="button" data-map-tool="ground:long-grass">Wild grass</button>
+                <button type="button" data-map-tool="ground:forest-floor">Forest floor</button>
                 <button type="button" data-map-tool="ground:dirt">Dirt</button>
                 <button type="button" data-map-tool="ground:sand">Sand</button>
                 <button type="button" data-map-tool="ground:scree">Scree</button>
                 <button type="button" data-map-tool="ground:cinder">Cinder</button>
                 <button type="button" data-map-tool="ground-reset">Base ground</button>
+              </div>
+              <div class="studio-tool-heading">GROUND LEVEL</div>
+              <label>ELEVATION BRUSH SIZE
+                <select id="studio-elevation-brush-size">
+                  <option value="1" selected>Fine · 1 cell</option>
+                  <option value="3">Medium · 3 cells</option>
+                  <option value="5">Broad · 5 cells</option>
+                </select>
+              </label>
+              <div class="studio-tools" role="group" aria-label="Ground elevation brush">
+                <button type="button" data-map-tool="elevation:raise">Raise +1</button>
+                <button type="button" data-map-tool="elevation:lower">Lower −1</button>
+                <button type="button" data-map-tool="elevation:0">Level 0</button>
+                <button type="button" data-map-tool="elevation:1">Level 1</button>
+                <button type="button" data-map-tool="elevation:2">Level 2</button>
+              </div>
+              <div class="studio-elevation-key" aria-label="Elevation level colors">
+                <span><i class="elevation-level-one"></i>LEVEL 1</span>
+                <span><i class="elevation-level-two"></i>LEVEL 2</span>
+                <small>Two-step edges form cliffs; paint a level-1 ramp between them.</small>
               </div>
               <div class="studio-tool-heading">OBSTACLES &amp; MARKERS</div>
               <div class="studio-tools" role="group" aria-label="Map paint tool">

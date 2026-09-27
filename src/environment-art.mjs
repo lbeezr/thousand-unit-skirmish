@@ -4,8 +4,13 @@ import { buildWaterSurfaceGeometry } from './water-surface-geometry.mjs';
 
 const ASSET_ROOT = './assets/environment/frontier-v1/';
 const INTERACTIVE_ASSET_ROOT = './assets/environment/frontier-interactive-v1/';
-export const TERRAIN_MATERIALS = ['meadow', 'short-grass', 'long-grass', 'dirt', 'sand', 'scree', 'cinder'];
-const spriteNames = ['pine', 'rock-outcrop', 'basalt-ridge', 'cliff', 'seamstone'];
+const GROUND_RENDER_ORDER = -20;
+export const TERRAIN_MATERIALS = ['meadow', 'short-grass', 'long-grass', 'forest-floor', 'dirt', 'sand', 'scree', 'cinder'];
+const spriteNames = [
+  'pine', 'silver-birch', 'field-maple', 'hazel-thicket',
+  'rock-outcrop', 'basalt-ridge', 'cliff', 'seamstone',
+  'rock-boulder-cluster', 'basalt-ridge-cap', 'cliff-end-cap',
+];
 const textureLoader = new THREE.TextureLoader();
 const spriteMaterials = new Map();
 const constructionTextures = new Map();
@@ -231,12 +236,11 @@ function groundBuffer() {
   return { vertices: [], uvs: [], colors: [], indices: [] };
 }
 
-function paintedGroundGeometry(rectangles, definition, materialIndex, materialGrid) {
+function paintedGroundGeometry(rectangles, definition, materialIndex, materialGrid, y = -0.019) {
   const buffer = groundBuffer();
   const halfX = definition.width / 2;
   const halfZ = definition.height / 2;
   const feather = 0.42;
-  const y = -0.019;
   for (const rect of rectangles) {
     const x0 = rect.column - halfX;
     const z0 = rect.row - halfZ;
@@ -311,8 +315,27 @@ export function createGroundSurfaces(definition) {
       new THREE.MeshBasicMaterial({ map: grounds[material], color: 0xd2d4bd,
         vertexColors: true, transparent: true, depthWrite: false }),
     );
-    mesh.renderOrder = materialIndex + 1;
+    // Transparent ground paints must draw before transparent props and units.
+    mesh.renderOrder = GROUND_RENDER_ORDER + materialIndex;
     meshes.push(mesh);
+  }
+  const forestRects = (definition.obstacles || []).filter((obstacle) => obstacle.material === 'forest');
+  if (forestRects.length) {
+    const forestGrid = new Uint8Array(definition.width * definition.height);
+    for (const rect of forestRects) {
+      for (let row = rect.row; row < rect.row + rect.height; row++) {
+        for (let column = rect.column; column < rect.column + rect.width; column++) {
+          forestGrid[row * definition.width + column] = 1;
+        }
+      }
+    }
+    const forestFloor = new THREE.Mesh(
+      paintedGroundGeometry(forestRects, definition, 1, forestGrid, -0.012),
+      new THREE.MeshBasicMaterial({ map: grounds['forest-floor'], color: 0xd2d4bd,
+        vertexColors: true, transparent: true, depthWrite: false }),
+    );
+    forestFloor.renderOrder = GROUND_RENDER_ORDER + TERRAIN_MATERIALS.length;
+    meshes.push(forestFloor);
   }
   return meshes;
 }
@@ -417,11 +440,18 @@ function variation(index) {
 }
 
 export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObject) {
+  const forestTreeSlots = new Map();
   const pines = [];
   const oaks = [];
+  const birches = [];
+  const maples = [];
+  const hazelThickets = [];
   const outcrops = [];
+  const boulderClusters = [];
   const ridges = [];
+  const ridgeCaps = [];
   const cliffs = [];
+  const cliffCaps = [];
   for (const obstacle of definition.obstacles) {
     for (let row = obstacle.row; row < obstacle.row + obstacle.height; row++) {
       for (let column = obstacle.column; column < obstacle.column + obstacle.width; column++) {
@@ -429,30 +459,67 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
         const x = column - halfX + 0.5;
         const z = row - halfZ + 0.5;
         if (obstacle.material === 'forest') {
+          const treeType = variation(index + 7);
+          const scaleVariation = variation(index + 31);
           const point = {
+            cell: index,
             x: x + (variation(index) - 0.5) * 0.28,
             z: z + (variation(index + 19) - 0.5) * 0.28,
-            scale: 0.78 + variation(index + 31) * 0.17,
-            flip: variation(index + 47) < 0.5,
+            flip: variation(index + 43) < 0.5,
             yaw: (variation(index + 53) - 0.5) * 0.3,
           };
-          if (variation(index + 7) < 0.28) oaks.push(point);
-          else pines.push(point);
+          if (treeType < 0.2) {
+            point.scale = 0.76 + scaleVariation * 0.2;
+            oaks.push(point);
+          } else if (treeType < 0.4) {
+            point.scale = 0.76 + scaleVariation * 0.2;
+            pines.push(point);
+          } else if (treeType < 0.6) {
+            point.scale = 0.68 + scaleVariation * 0.3;
+            birches.push(point);
+          } else if (treeType < 0.8) {
+            point.scale = 0.68 + scaleVariation * 0.3;
+            maples.push(point);
+          } else {
+            point.scale = 0.62 + scaleVariation * 0.24;
+            hazelThickets.push(point);
+          }
         } else if (obstacle.material === 'stone') {
           const vertical = obstacle.height >= obstacle.width;
           const centerLine = vertical
             ? column === obstacle.column + Math.floor(obstacle.width / 2)
             : row === obstacle.row + Math.floor(obstacle.height / 2);
           const along = vertical ? row - obstacle.row : column - obstacle.column;
-          if (centerLine && along % 2 === 0) {
+          const barrierLength = vertical ? obstacle.height : obstacle.width;
+          const atBarrierEnd = along === 0 || along === barrierLength - 1;
+          if (centerLine && (along % 2 === 0 || atBarrierEnd)) {
             const point = {
               x, z,
               scale: 0.88 + variation(index + 13) * 0.24,
               flip: variation(index + 41) < 0.5,
             };
-            if ((obstacle.elevation ?? 1.12) < 1) outcrops.push(point);
-            else if ((obstacle.elevation ?? 1.12) >= 1.75) cliffs.push(point);
-            else ridges.push(point);
+            if ((obstacle.elevation ?? 1.12) < 1) {
+              if (variation(index + 59) < 0.5) {
+                boulderClusters.push({
+                  ...point,
+                  scale: 0.82 + variation(index + 61) * 0.3,
+                });
+              } else outcrops.push(point);
+            } else if ((obstacle.elevation ?? 1.12) >= 1.75) {
+              if (atBarrierEnd) {
+                cliffCaps.push({
+                  ...point,
+                  scale: 0.92 + variation(index + 73) * 0.16,
+                  flip: along === 0,
+                });
+              } else cliffs.push(point);
+            } else if (atBarrierEnd) {
+              ridgeCaps.push({
+                ...point,
+                scale: 0.88 + variation(index + 71) * 0.22,
+                flip: along === 0,
+              });
+            } else ridges.push(point);
           }
         }
       }
@@ -461,11 +528,24 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
   for (const [name, width, height, points] of [
     ['pine', 2.25, 3.4, pines],
     ['oak', 3.05, 2.86, oaks],
+    ['silver-birch', 2.3, 3.45, birches],
+    ['field-maple', 3.05, 3.25, maples],
+    ['hazel-thicket', 3.1, 2.07, hazelThickets],
     ['rock-outcrop', 3.5, 2.2, outcrops],
+    ['rock-boulder-cluster', 2.7, 1.8, boulderClusters],
     ['basalt-ridge', 3.6, 3.05, ridges],
+    ['basalt-ridge-cap', 3.4, 2.25, ridgeCaps],
     ['cliff', 4.2, 4.6, cliffs],
+    ['cliff-end-cap', 4.2, 4.6, cliffCaps],
   ]) {
     const mesh = createEnvironmentSpriteInstances(name, width, height, points);
-    if (mesh) addObject(mesh);
+    if (!mesh) continue;
+    for (let index = 0; index < points.length; index++) {
+      const point = points[index];
+      if (!Number.isInteger(point.cell)) continue;
+      forestTreeSlots.set(point.cell, { mesh, index, ...point });
+    }
+    addObject(mesh);
   }
+  return forestTreeSlots;
 }

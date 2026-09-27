@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const html = readFileSync(path.join(root, 'index.html'), 'utf8');
 const server = readFileSync(path.join(root, 'server.mjs'), 'utf8');
+const environmentArt = readFileSync(path.join(root, 'src/environment-art.mjs'), 'utf8');
 const clientAllowlist = server.match(/const publicClientAsset = \[([\s\S]*?)\]\.includes\(relative\);/);
 assert.ok(clientAllowlist, 'server static client asset allowlist should be declared');
 const allowed = new Set([...clientAllowlist[1].matchAll(/'([^']+)'/g)].map((match) => match[1]));
@@ -15,6 +16,19 @@ const allowedUi = new Set([...uiAllowlist[1].matchAll(/'([^']+)'/g)].map((match)
 const environmentModule = server.match(/const publicEnvironmentModule = relative === '([^']+)'/)?.[1];
 assert.ok(environmentModule, 'server should explicitly allow the environment renderer module');
 assert.ok(allowed.has('src/water-surface-geometry.mjs'), 'water geometry module should be statically served');
+const spriteNames = environmentArt.match(/const spriteNames = \[([\s\S]*?)\];/);
+assert.ok(spriteNames, 'environment renderer should declare its environment sprite families');
+const servedEnvironmentAssets = server.match(/const publicEnvironmentAsset = ([\s\S]*?);\n  const publicInteractiveEnvironmentAsset/);
+assert.ok(servedEnvironmentAssets, 'server should explicitly allow environment sprites');
+const allowedEnvironmentNames = new Set([...servedEnvironmentAssets[1].matchAll(/'([^']+)'/g)]
+  .map((match) => match[1]));
+const rendererSpriteNames = new Set([...spriteNames[1].matchAll(/'([^']+)'/g)]
+  .map((match) => match[1]));
+rendererSpriteNames.add('oak');
+rendererSpriteNames.add('berries');
+for (const name of rendererSpriteNames) {
+  assert.ok(allowedEnvironmentNames.has(name), `environment sprite ${name} is loaded by the renderer but missing from the server asset allowlist`);
+}
 
 const entryModules = [...html.matchAll(/<script\s+type="module"\s+src="\.\/([^\"]+)"/g)]
   .map((match) => match[1]);
@@ -62,9 +76,12 @@ const style = readFileSync(path.join(root, 'style.css'), 'utf8');
 for (const [state, cursor] of Object.entries(cursorManifest.cursors)) {
   assert.ok(allowedUi.has(cursor.runtime), `runtime cursor is not allowlisted: ${cursor.runtime}`);
   const image = readFileSync(path.join(root, cursor.runtime));
-  assert.deepEqual([image.readUInt32BE(16), image.readUInt32BE(20)], [32, 32],
-    `runtime cursor must be 32 × 32: ${cursor.runtime}`);
+  assert.deepEqual([image.readUInt32BE(16), image.readUInt32BE(20)], cursorManifest.cursorSize,
+    `runtime cursor must match manifest dimensions: ${cursor.runtime}`);
   const [hotspotX, hotspotY] = cursor.hotspot;
+  assert.ok(cursorManifest.cursorSize.every((n) => n > 0 && n <= 64));
+  assert.ok(Number.isInteger(hotspotX) && hotspotX >= 0 && hotspotX < cursorManifest.cursorSize[0]);
+  assert.ok(Number.isInteger(hotspotY) && hotspotY >= 0 && hotspotY < cursorManifest.cursorSize[1]);
   assert.ok(style.includes(`--cursor-${state}: url('/${cursor.runtime}') ${hotspotX} ${hotspotY}, ${cursor.fallback}`),
     `CSS cursor hotspot and fallback must match the manifest for ${state}`);
 }
