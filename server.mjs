@@ -6341,6 +6341,7 @@ const server = createServer(async (request, response) => {
       || (path.extname(relative) === '.webp'
         && /^(?:(?:oak|berries)-(?:full|worked|low|depleted)|construction-(?:earthwork|foundation))$/
           .test(path.basename(relative, path.extname(relative)))));
+  const publicMeshyResourceAsset = /^assets\/environment\/frontier-meshy-sprites-v1\/(oak|pine|berries)\/runtime\/\1-0[0-7]\.webp$/.test(relative);
   const publicEnvironmentPilotAsset = path.dirname(relative) === 'assets/environment/frontier-cliff-pilot-v1/runtime'
     && /^(cliff-color-0[0-7]\.webp|cliff-depth-0[0-7]\.png)$/.test(path.basename(relative));
   const publicBuildingSpriteAsset = (
@@ -6355,7 +6356,7 @@ const server = createServer(async (request, response) => {
   const publicBuildingLifecycleRuntimeAsset = path.dirname(relative) === `${buildingPackRoot}/runtime`
     && /^(?:town-center-(?:foundation|frame|complete|damaged|critical)-view-\d{2}\.webp|team-mask-(?:foundation|frame|complete|damaged|critical)-view-\d{2}\.png)$/.test(path.basename(relative));
   if (!publicClientAsset && !publicEnvironmentModule && !publicEnvironmentAsset && !publicUiAsset
-    && !publicInteractiveEnvironmentAsset && !publicEnvironmentPilotAsset && !publicBuildingSpriteAsset && !publicMapAsset
+    && !publicMeshyResourceAsset && !publicInteractiveEnvironmentAsset && !publicEnvironmentPilotAsset && !publicBuildingSpriteAsset && !publicMapAsset
     && !publicBuildingLifecycleManifest && !publicBuildingLifecycleRuntimeAsset) {
     response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
     response.end('Not found');
