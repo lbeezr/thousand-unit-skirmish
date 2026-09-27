@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { randomBytes } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import { request as httpRequest } from 'node:http';
 import { createServer } from 'node:net';
@@ -114,12 +114,63 @@ try {
   assert.equal(environmentTexture.status, 200);
   assert.match(environmentTexture.headers.get('content-type'), /image\/webp/);
   assert.ok((await environmentTexture.arrayBuffer()).byteLength > 0);
+  const interactiveManifestResponse = await fetch(
+    `${base}/assets/environment/frontier-interactive-v1/manifest.json`, {
+      headers: { authorization },
+    });
+  let interactiveManifestOnDisk = false;
+  try {
+    interactiveManifestOnDisk = (await stat(
+      path.join(root, 'assets/environment/frontier-interactive-v1/manifest.json'))).isFile();
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error;
+  }
+  const interactiveAssetPaths = [
+    ...['oak', 'berries'].flatMap((family) => ['full', 'worked', 'low', 'depleted']
+      .map((stage) => `${family}-${stage}.webp`)),
+    'construction-earthwork.webp', 'construction-foundation.webp',
+  ];
+  if (interactiveManifestResponse.status === 404) {
+    assert.equal(interactiveManifestOnDisk, false,
+      'an interactive manifest present on disk must be served rather than treated as an absent pack');
+    for (const assetPath of interactiveAssetPaths) {
+      const response = await fetch(`${base}/assets/environment/frontier-interactive-v1/${assetPath}`, {
+        headers: { authorization },
+      });
+      assert.equal(response.status, 404, `${assetPath} should be absent with the optional manifest`);
+    }
+  } else {
+    assert.equal(interactiveManifestResponse.status, 200);
+    assert.match(interactiveManifestResponse.headers.get('content-type'), /application\/json/);
+    const manifest = await interactiveManifestResponse.json();
+    assert.equal(manifest.schemaVersion, 1);
+    assert.equal(manifest.packId, 'environment.frontier-interactive');
+    assert.ok(Array.isArray(manifest.files));
+    const runtimeEntries = manifest.files.filter((entry) => entry?.role === 'runtime-image');
+    assert.deepEqual(runtimeEntries.map((entry) => entry.path).sort(), [...interactiveAssetPaths].sort());
+    for (const entry of runtimeEntries) {
+      assert.match(entry.sha256 || '', /^[a-f0-9]{64}$/i, `${entry.path} must declare a SHA-256`);
+      const response = await fetch(
+        `${base}/assets/environment/frontier-interactive-v1/${entry.path}`, {
+          headers: { authorization },
+        });
+      assert.equal(response.status, 200, `${entry.path} must be served when the manifest is present`);
+      assert.match(response.headers.get('content-type'), /image\/webp/);
+      const bytes = Buffer.from(await response.arrayBuffer());
+      assert.ok(bytes.length > 0, `${entry.path} must not be empty`);
+      assert.equal(createHash('sha256').update(bytes).digest('hex'), entry.sha256.toLowerCase(),
+        `${entry.path} must match its manifest hash`);
+    }
+  }
+  const resourceStateModule = await fetch(`${base}/src/resource-visual-state.mjs`, { headers: { authorization } });
+  assert.equal(resourceStateModule.status, 200);
+  assert.match(await resourceStateModule.text(), /resourceVisualStage/);
   assert.equal(await upgrade(port), 401);
   assert.equal(await upgrade(port, authorization), 101);
 
   assert.ok((await stat(path.join(volume, 'room-data', 'rooms.json'))).isFile());
   assert.ok((await stat(path.join(volume, 'custom-maps'))).isDirectory());
-  console.log('Railway release scenario passed: guarded startup, Basic Auth HTTP/WebSocket, local Three.js, environment assets, and volume paths.');
+  console.log('Railway release scenario passed: guarded startup, Basic Auth HTTP/WebSocket, local Three.js, base environment assets, optional manifest-backed environment states, and volume paths.');
 } finally {
   if (child && child.exitCode === null) {
     child.kill('SIGTERM');

@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>archery-range-sprite-v1 sprite atlas preview</title>
+  <style>
+    :root { color-scheme: dark; font: 14px/1.45 system-ui, sans-serif; background: #161a1c; color: #e8e4db; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    header { position: sticky; z-index: 2; top: 0; padding: 14px 20px; border-bottom: 1px solid #3c4547; background: #202628; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+    h1 { font-size: 17px; margin: 0; }
+    header span { color: #aeb8b6; }
+    main { display: grid; grid-template-columns: minmax(360px, 1.1fr) minmax(360px, .9fr); gap: 16px; padding: 16px; }
+    .controls { grid-column: 1 / -1; display: flex; gap: 10px; flex-wrap: wrap; align-items: end; padding: 12px; background: #242c2e; border: 1px solid #3b4648; border-radius: 8px; }
+    label { display: grid; gap: 4px; color: #afbfbc; font-size: 12px; }
+    select, button { min-height: 34px; border: 1px solid #566264; border-radius: 5px; padding: 5px 9px; color: #f5f2ea; background: #151b1d; font: inherit; }
+    button { cursor: pointer; }
+    .toggle { display: flex; align-items: center; gap: 7px; min-height: 34px; }
+    .panel { min-width: 0; padding: 13px; border: 1px solid #3b4648; border-radius: 8px; background: #202628; }
+    h2 { font-size: 14px; margin: 0 0 10px; }
+    .subtle { color: #aeb8b6; }
+    .previewStage { min-height: 330px; overflow: auto; display: grid; place-items: center; border: 1px solid #566264; border-radius: 6px; padding: 20px; }
+    .light { background: #eee8db; }
+    .dark { background: #292e30; }
+    .checker { background-color: #d7d3c9; background-image: linear-gradient(45deg,#b9b5ab 25%,transparent 25%),linear-gradient(-45deg,#b9b5ab 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#b9b5ab 75%),linear-gradient(-45deg,transparent 75%,#b9b5ab 75%); background-size: 24px 24px; background-position: 0 0,0 12px,12px -12px,-12px 0; }
+    .spriteCanvas { position: relative; flex: none; box-shadow: 0 2px 12px #0006; overflow: hidden; }
+    .spriteLayer { position: absolute; background-repeat: no-repeat; }
+    .pivot { position: absolute; z-index: 5; width: 18px; height: 18px; transform: translate(-50%,-50%); border: 2px solid #ffdf5d; border-radius: 50%; box-shadow: 0 0 0 1px #181818; }
+    .pivot::before,.pivot::after { content: ''; position: absolute; background: #ffdf5d; box-shadow: 0 0 0 1px #181818; }
+    .pivot::before { width: 28px; height: 1px; left: -7px; top: 6px; }
+    .pivot::after { width: 1px; height: 28px; left: 6px; top: -7px; }
+    .alphaBounds { position: absolute; z-index: 4; border: 1px dashed #ff5968; pointer-events: none; }
+    .layerTag { position: absolute; z-index: 3; left: 3px; top: 3px; padding: 1px 4px; border-radius: 3px; font-size: 10px; color: white; background: #111c; }
+    .facts { display: grid; grid-template-columns: 150px minmax(0,1fr); gap: 6px 10px; margin-top: 12px; }
+    .facts dt { color: #aeb8b6; }
+    .facts dd { margin: 0; overflow-wrap: anywhere; }
+    code { color: #e8d49b; }
+    .tileGrid { border: 1px solid #8f9b98; background-image: linear-gradient(to right,#76817f 1px,transparent 1px),linear-gradient(to bottom,#76817f 1px,transparent 1px); background-color: #455452; }
+    .pageGrid { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 10px; }
+    figure { margin: 0; min-width: 0; }
+    figcaption { margin-bottom: 5px; color: #b8c2bf; font-size: 12px; overflow-wrap: anywhere; }
+    .pageSurface { position: relative; width: fit-content; max-width: 100%; overflow: auto; border: 1px solid #63716e; background-color: #343b3d; background-image: linear-gradient(45deg,#41484a 25%,transparent 25%),linear-gradient(-45deg,#41484a 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#41484a 75%),linear-gradient(-45deg,transparent 75%,#41484a 75%); background-size: 20px 20px; background-position: 0 0,0 10px,10px -10px,-10px 0; }
+    .pageSurface img { display: block; max-width: none; }
+    .pageOverlay { position: absolute; left: 0; top: 0; pointer-events: none; }
+    .pageOverlay rect { fill: #ffcf46; fill-opacity: .12; stroke: #ffcf46; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+    .pageOverlay rect.fallback { fill: none; stroke: #d5d9d8; stroke-dasharray: 5 3; }
+    .pageOverlay rect.inset { fill: none; stroke: #69d8df; stroke-width: 1; stroke-dasharray: 3 2; }
+    .caption { margin: 8px 0 0; color: #aeb8b6; font-size: 12px; }
+    @media (max-width: 900px) { main { grid-template-columns: 1fr; } .controls { grid-column: 1; } }
+  </style>
+</head>
+<body>
+  <header><h1>archery-range-sprite-v1 · sprite-atlas preview</h1><span>v1.0.0 · runtime-candidate · runtime files when present</span></header>
+  <main>
+    <section class="controls">
+      <label>Asset<select id="asset"></select></label>
+      <label>State<select id="state"></select></label>
+      <label>Direction<select id="direction"></select></label>
+      <label>Team variant<select id="team"></select></label>
+      <label>Frame<select id="frame"></select></label>
+      <button id="previous" type="button">Previous</button><button id="play" type="button">Play</button><button id="next" type="button">Next</button>
+      <label>Background<select id="background"><option value="checker">Checker</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+      <label class="toggle"><input id="mask" type="checkbox"> Show team mask</label>
+    </section>
+    <section class="panel"><h2>Composed frame</h2><div id="stage" class="previewStage checker"><div id="canvas" class="spriteCanvas"></div></div><p id="mode" class="caption"></p><dl id="facts" class="facts"></dl></section>
+    <section class="panel"><h2>Source page rectangles</h2><div id="pages" class="pageGrid"></div><p class="caption">Yellow boxes show split-layer rectangles; gray dashed boxes show the full-frame fallback. Cyan outlines show the half-texel inset. Rectangles are explicit; the tool does not infer a grid.</p></section>
+  </main>
+  <script>
+    const { manifest, fileUrls, runtimeMode } = {"manifest":{"schemaVersion":1,"packId":"archery-range-sprite-v1","packVersion":"1.0.0","maturity":"runtime-candidate","provenance":{"license":"project-owned; original AI-generated artwork","source":"Original Archery Range source frames and the unchanged sprite-grid.json; Azure and Ember runtime variants from the existing pack.","authoringTool":"OpenAI ImageGen; Pillow source normalization and team recolor; WebP packaging.","notes":"Original 1254×1254 PNGs remain preserved and hashed. Canonical 640×640 source pages are lossless aligned outputs from scripts/prepare-building-sprite-pack.py. Construction maps foundation below 20%, frame below 90%, and complete at 100%; health maps complete at ≥66%, damaged at ≥33%, and critical below 33%, as declared in sprite-grid.json. The 3×3 recommended footprint is a hint; map/gameplay data owns occupied cells. The [320, 441] projected ground-center pivot is an unreviewed estimate. Fixed 45° azimuth; no per-pixel depth; renderer integration remains pending."},"files":[{"id":"foundation-source-original","path":"source/archery-range-foundation.png","usage":"source","format":"png","sha256":"507dc653b0fd843360d2d272a2a4e0fe3ef00521d6fd3ef87f3781902358dc8d","dimensionsPx":{"width":1254,"height":1254}},{"id":"frame-source-original","path":"source/archery-range-frame.png","usage":"source","format":"png","sha256":"92f9c2f7ddbad8a763a1430329a30f0b004d15f5a3965f995433db281cbdab22","dimensionsPx":{"width":1254,"height":1254}},{"id":"complete-source-original","path":"source/archery-range-complete.png","usage":"source","format":"png","sha256":"9bcf0c09129140bbb6cb701028ece6e884630a105dc0aa39827536bcf282367c","dimensionsPx":{"width":1254,"height":1254}},{"id":"damaged-source-original","path":"source/archery-range-damaged.png","usage":"source","format":"png","sha256":"394fefd49bc727718685f016c168d1e18544ab879be0baaa311d3c126bd74f75","dimensionsPx":{"width":1254,"height":1254}},{"id":"critical-source-original","path":"source/archery-range-critical.png","usage":"source","format":"png","sha256":"342d58e0459bce425dab516a6d365d5d7d3658cb670a6109cb34c16f82b5343f","dimensionsPx":{"width":1254,"height":1254}},{"id":"foundation-source-grid","path":"source/normalized/archery-range-foundation.png","usage":"source","format":"png","sha256":"746d29a4eaf9fc92ac183b621bb1db44d4089e4c4ad3a9d101cd7275ae0c96a1","dimensionsPx":{"width":640,"height":640}},{"id":"frame-source-grid","path":"source/normalized/archery-range-frame.png","usage":"source","format":"png","sha256":"76aee9151d4d2422e3fe47a98999135b35ce9a350984f5d73c338b7402ff9d21","dimensionsPx":{"width":640,"height":640}},{"id":"complete-source-grid","path":"source/normalized/archery-range-complete.png","usage":"source","format":"png","sha256":"3de3041f1c8d53d6116c4167f99a425dbefc4dd1fc7fb0c40f16f68e90d07861","dimensionsPx":{"width":640,"height":640}},{"id":"damaged-source-grid","path":"source/normalized/archery-range-damaged.png","usage":"source","format":"png","sha256":"fc0d5583507387b58c4644b98b97245e1bc128bf06a89da777379ff42850bdc8","dimensionsPx":{"width":640,"height":640}},{"id":"critical-source-grid","path":"source/normalized/archery-range-critical.png","usage":"source","format":"png","sha256":"908a083038eeb921b3ffac59c08e64373a596e0678c54b29efccbe3ac234b4d6","dimensionsPx":{"width":640,"height":640}},{"id":"foundation-azure-runtime","path":"runtime/archery-range-foundation-azure.webp","usage":"runtime","format":"webp","sha256":"fec3e5f83328904b68f41e352da400bf673a78ba6de72821c80352f768743e37","dimensionsPx":{"width":640,"height":640}},{"id":"foundation-ember-runtime","path":"runtime/archery-range-foundation-ember.webp","usage":"runtime","format":"webp","sha256":"708baf656fadb51ab6c53e8cb9f5fad068001e407fcac47f5881d82ef43a0c7e","dimensionsPx":{"width":640,"height":640}},{"id":"frame-azure-runtime","path":"runtime/archery-range-frame-azure.webp","usage":"runtime","format":"webp","sha256":"04e781d4de4d1f76489bd8a975b75bfaf7c4c474576c25270d0bb42e8ac17f74","dimensionsPx":{"width":640,"height":640}},{"id":"frame-ember-runtime","path":"runtime/archery-range-frame-ember.webp","usage":"runtime","format":"webp","sha256":"e51c320823f93410bf587cc5929fa805d4094146e3e2f1c18be4dddf36722730","dimensionsPx":{"width":640,"height":640}},{"id":"complete-azure-runtime","path":"runtime/archery-range-complete-azure.webp","usage":"runtime","format":"webp","sha256":"025037e0a482b071a5deb4438ae4ed5c59add165c4ddbb29363eea9b7fc41997","dimensionsPx":{"width":640,"height":640}},{"id":"complete-ember-runtime","path":"runtime/archery-range-complete-ember.webp","usage":"runtime","format":"webp","sha256":"28131b76c7228a9d29f1424bf3bc80f266b4b17cfed92342827c3b6f44ee3d47","dimensionsPx":{"width":640,"height":640}},{"id":"damaged-azure-runtime","path":"runtime/archery-range-damaged-azure.webp","usage":"runtime","format":"webp","sha256":"586c3c500b9e6a428f568fc47931277253838c88c79b8eb047877484ca848310","dimensionsPx":{"width":640,"height":640}},{"id":"damaged-ember-runtime","path":"runtime/archery-range-damaged-ember.webp","usage":"runtime","format":"webp","sha256":"c746701ed570f3f4bed875f1cbb5a9ccfd815db0cb264036000bed30a2625df6","dimensionsPx":{"width":640,"height":640}},{"id":"critical-azure-runtime","path":"runtime/archery-range-critical-azure.webp","usage":"runtime","format":"webp","sha256":"535bce37d9db4e45d6abac249600a4cc1f9f84760613d2e36abb35913fc820c9","dimensionsPx":{"width":640,"height":640}},{"id":"critical-ember-runtime","path":"runtime/archery-range-critical-ember.webp","usage":"runtime","format":"webp","sha256":"cf6ebeda5e2c35737bc07a3cb619db55e1ef26f0fdc0beda4a275b8ec9445c48","dimensionsPx":{"width":640,"height":640}}],"pages":[{"id":"foundation-azure-page","sourceFileId":"foundation-source-grid","runtimeFileId":"foundation-azure-runtime","dimensionsPx":{"width":640,"height":640},"colorSpace":"srgb","pixelFormat":"rgba8","alphaMode":"straight","edgeRule":"zero-rgb-under-transparent","gutterPx":0,"gutterRule":"none","wrapMode":"clamp","sampling":{"generateMipmaps":false,"minFilter":"linear","magFilter":"linear","uvInsetPx":0.5,"maxMipLevel":0}},{"id":"foundation-ember-page","sourceFileId":"foundation-source-grid","runtimeFileId":"foundation-ember-runtime","dimensionsPx":{"width":640,"height":640},"colorSpace":"srgb","pixelFormat":"rgba8","alphaMode":"straight","edgeRule":"zero-rgb-under-transparent","gutterPx":0,"gutterRule":"none","wrapMode":"clamp","sampling":{"generateMipmaps":false,"minFilter":"linear","magFilter":"linear","uvInsetPx":0.5,"maxMipLevel":0}},{"id":"frame-azure-page","sourceFileId":"frame-source-grid","runtimeFileId":"frame-azure-runtime","dimensionsPx":{"width":640,"height":640},"colorSpace":"srgb","pixelFormat":"rgba8","alphaMode":"straight","edgeRule":"zero-rgb-under-transparent","gutterPx":0,"gutterRule":"none","wrapMode":"clamp","sampling":{"generateMipmaps":false,"minFilter":"linear","magFilter":"linear","uvInsetPx":0.5,"maxMipLevel":0}},{"id":"frame-ember-page","sourceFileId":"frame-source-grid","runtimeFileId":"frame-ember-runtime","dimensionsPx":{"width":640,"height":640},"colorSpace":"srgb","pixelFormat":"rgba8","alphaMode":"straight","edgeRule":"zero-rgb-under-transparent","gutterPx":0,"gutterRule":"none","wrapMode":"clamp","sampling":{"generateMipmaps":false,"minFilter":"linear","magFilter":"linear","uvInsetPx":0.5,"maxMipLevel":0}},{"id":"complete-azure-page","sourceFileId":"complete-source-grid","runtimeFileId":"complete-azure-runtime","dimensionsPx":{"width":640,"height":640},"colorSpace":"srgb","pixelFormat":"rgba8","alphaMode":"straight","edgeRule":"zero-rgb-under-transparent","gutterPx":0,"gutterRule":"none","wrapMode":"clamp","sampling":{"generateMipmaps":false,"minFilter":"linear","magFilter":"linear","uvInsetPx":0.5,"maxMipLevel":0}},{"id":"complete-ember-page","sourceFileId":"complete-source-grid","runtimeFileId":"complete-ember-runtime","dimensionsPx":{"width":640,"height":640},"colorSpace":"srgb","pixelFormat":"rgba8","alphaMode":"straight","edgeRule":"zero-rgb-under-transparent","gutterPx":0,"gutterRule":"none","wrapMode":"clamp","sampling":{"generateMipmaps":false,"minFilter":"linear","magFilter":"linear","uvInsetPx":0.5,"maxMipLevel":0}},{"id":"damaged-azure-page","sourceFileId":"damaged-source-grid","runtimeFileId":"damaged-azure-runtime","dimensionsPx":{"width":640,"height":640},"colorSpace":"srgb","pixelFormat":"rgba8","alphaMode":"straight","edgeRule":"zero-rgb-under-transparent","gutterPx":0,"gutterRule":"none","wrapMode":"clamp","sampling":{"generateMipmaps":false,"minFilter":"linear","magFilter":"linear","uvInsetPx":0.5,"maxMipLevel":0}},{"id":"damaged-ember-page","sourceFileId":"damaged-source-grid","runtimeFileId":"damaged-ember-runtime","dimensionsPx":{"width":640,"height":640},"colorSpace":"srgb","pixelFormat":"rgba8","alphaMode":"straight","edgeRule":"zero-rgb-under-transparent","gutterPx":0,"gutterRule":"none","wrapMode":"clamp","sampling":{"generateMipmaps":false,"minFilter":"linear","magFilter":"linear","uvInsetPx":0.5,"maxMipLevel":0}},{"id":"critical-azure-page","sourceFileId":"critical-source-grid","runtimeFileId":"critical-azure-runtime","dimensionsPx":{"width":640,"height":640},"colorSpace":"srgb","pixelFormat":"rgba8","alphaMode":"straight","edgeRule":"zero-rgb-under-transparent","gutterPx":0,"gutterRule":"none","wrapMode":"clamp","sampling":{"generateMipmaps":false,"minFilter":"linear","magFilter":"linear","uvInsetPx":0.5,"maxMipLevel":0}},{"id":"critical-ember-page","sourceFileId":"critical-source-grid","runtimeFileId":"critical-ember-runtime","dimensionsPx":{"width":640,"height":640},"colorSpace":"srgb","pixelFormat":"rgba8","alphaMode":"straight","edgeRule":"zero-rgb-under-transparent","gutterPx":0,"gutterRule":"none","wrapMode":"clamp","sampling":{"generateMipmaps":false,"minFilter":"linear","magFilter":"linear","uvInsetPx":0.5,"maxMipLevel":0}}],"assets":[{"id":"archery-range","kind":"building","recommendedTileFootprint":{"widthTiles":3,"heightTiles":3},"artBoundsWorld":{"min":[-2.5,0,-2.5],"max":[2.5,5,2.5]},"heightWorld":5,"sortAnchorWorld":[0,0,0],"cullingBoundsWorld":{"min":[-2.5,0,-2.5],"max":[2.5,5,2.5]},"layers":[{"id":"building","drawLayer":"midground","batchKey":"building.archery-range","depthBiasWorld":0}],"frames":[{"id":"foundation-azure","canvasPx":{"width":640,"height":640},"groundPivotPx":{"x":320,"y":441},"groundPivotStatus":"unreviewed-estimate","alphaBoundsPx":{"x":57,"y":75,"width":557,"height":546},"fallbackRectPx":{"pageId":"foundation-azure-page","rectPx":{"x":0,"y":0,"width":640,"height":640}},"frameRectsPx":[{"layerId":"building","pageId":"foundation-azure-page","rectPx":{"x":0,"y":0,"width":640,"height":640},"offsetPx":{"x":0,"y":0}}]},{"id":"foundation-ember","canvasPx":{"width":640,"height":640},"groundPivotPx":{"x":320,"y":441},"groundPivotStatus":"unreviewed-estimate","alphaBoundsPx":{"x":57,"y":75,"width":557,"height":546},"fallbackRectPx":{"pageId":"foundation-ember-page","rectPx":{"x":0,"y":0,"width":640,"height":640}},"frameRectsPx":[{"layerId":"building","pageId":"foundation-ember-page","rectPx":{"x":0,"y":0,"width":640,"height":640},"offsetPx":{"x":0,"y":0}}]},{"id":"frame-azure","canvasPx":{"width":640,"height":640},"groundPivotPx":{"x":320,"y":441},"groundPivotStatus":"unreviewed-estimate","alphaBoundsPx":{"x":29,"y":66,"width":582,"height":550},"fallbackRectPx":{"pageId":"frame-azure-page","rectPx":{"x":0,"y":0,"width":640,"height":640}},"frameRectsPx":[{"layerId":"building","pageId":"frame-azure-page","rectPx":{"x":0,"y":0,"width":640,"height":640},"offsetPx":{"x":0,"y":0}}]},{"id":"frame-ember","canvasPx":{"width":640,"height":640},"groundPivotPx":{"x":320,"y":441},"groundPivotStatus":"unreviewed-estimate","alphaBoundsPx":{"x":29,"y":66,"width":582,"height":550},"fallbackRectPx":{"pageId":"frame-ember-page","rectPx":{"x":0,"y":0,"width":640,"height":640}},"frameRectsPx":[{"layerId":"building","pageId":"frame-ember-page","rectPx":{"x":0,"y":0,"width":640,"height":640},"offsetPx":{"x":0,"y":0}}]},{"id":"complete-azure","canvasPx":{"width":640,"height":640},"groundPivotPx":{"x":320,"y":441},"groundPivotStatus":"unreviewed-estimate","alphaBoundsPx":{"x":40,"y":67,"width":560,"height":547},"fallbackRectPx":{"pageId":"complete-azure-page","rectPx":{"x":0,"y":0,"width":640,"height":640}},"frameRectsPx":[{"layerId":"building","pageId":"complete-azure-page","rectPx":{"x":0,"y":0,"width":640,"height":640},"offsetPx":{"x":0,"y":0}}]},{"id":"complete-ember","canvasPx":{"width":640,"height":640},"groundPivotPx":{"x":320,"y":441},"groundPivotStatus":"unreviewed-estimate","alphaBoundsPx":{"x":40,"y":67,"width":560,"height":547},"fallbackRectPx":{"pageId":"complete-ember-page","rectPx":{"x":0,"y":0,"width":640,"height":640}},"frameRectsPx":[{"layerId":"building","pageId":"complete-ember-page","rectPx":{"x":0,"y":0,"width":640,"height":640},"offsetPx":{"x":0,"y":0}}]},{"id":"damaged-azure","canvasPx":{"width":640,"height":640},"groundPivotPx":{"x":320,"y":441},"groundPivotStatus":"unreviewed-estimate","alphaBoundsPx":{"x":39,"y":68,"width":561,"height":568},"fallbackRectPx":{"pageId":"damaged-azure-page","rectPx":{"x":0,"y":0,"width":640,"height":640}},"frameRectsPx":[{"layerId":"building","pageId":"damaged-azure-page","rectPx":{"x":0,"y":0,"width":640,"height":640},"offsetPx":{"x":0,"y":0}}]},{"id":"damaged-ember","canvasPx":{"width":640,"height":640},"groundPivotPx":{"x":320,"y":441},"groundPivotStatus":"unreviewed-estimate","alphaBoundsPx":{"x":39,"y":68,"width":561,"height":568},"fallbackRectPx":{"pageId":"damaged-ember-page","rectPx":{"x":0,"y":0,"width":640,"height":640}},"frameRectsPx":[{"layerId":"building","pageId":"damaged-ember-page","rectPx":{"x":0,"y":0,"width":640,"height":640},"offsetPx":{"x":0,"y":0}}]},{"id":"critical-azure","canvasPx":{"width":640,"height":640},"groundPivotPx":{"x":320,"y":441},"groundPivotStatus":"unreviewed-estimate","alphaBoundsPx":{"x":53,"y":73,"width":562,"height":557},"fallbackRectPx":{"pageId":"critical-azure-page","rectPx":{"x":0,"y":0,"width":640,"height":640}},"frameRectsPx":[{"layerId":"building","pageId":"critical-azure-page","rectPx":{"x":0,"y":0,"width":640,"height":640},"offsetPx":{"x":0,"y":0}}]},{"id":"critical-ember","canvasPx":{"width":640,"height":640},"groundPivotPx":{"x":320,"y":441},"groundPivotStatus":"unreviewed-estimate","alphaBoundsPx":{"x":53,"y":73,"width":562,"height":557},"fallbackRectPx":{"pageId":"critical-ember-page","rectPx":{"x":0,"y":0,"width":640,"height":640}},"frameRectsPx":[{"layerId":"building","pageId":"critical-ember-page","rectPx":{"x":0,"y":0,"width":640,"height":640},"offsetPx":{"x":0,"y":0}}]}],"clips":[{"stateId":"foundation","teamId":"azure","loop":false,"sequence":[{"frameId":"foundation-azure","durationMs":1000}]},{"stateId":"foundation","teamId":"ember","loop":false,"sequence":[{"frameId":"foundation-ember","durationMs":1000}]},{"stateId":"frame","teamId":"azure","loop":false,"sequence":[{"frameId":"frame-azure","durationMs":1000}]},{"stateId":"frame","teamId":"ember","loop":false,"sequence":[{"frameId":"frame-ember","durationMs":1000}]},{"stateId":"complete","teamId":"azure","loop":false,"sequence":[{"frameId":"complete-azure","durationMs":1000}]},{"stateId":"complete","teamId":"ember","loop":false,"sequence":[{"frameId":"complete-ember","durationMs":1000}]},{"stateId":"damaged","teamId":"azure","loop":false,"sequence":[{"frameId":"damaged-azure","durationMs":1000}]},{"stateId":"damaged","teamId":"ember","loop":false,"sequence":[{"frameId":"damaged-ember","durationMs":1000}]},{"stateId":"critical","teamId":"azure","loop":false,"sequence":[{"frameId":"critical-azure","durationMs":1000}]},{"stateId":"critical","teamId":"ember","loop":false,"sequence":[{"frameId":"critical-ember","durationMs":1000}]}]}]},"fileUrls":{"foundation-source-original":"../source/archery-range-foundation.png","frame-source-original":"../source/archery-range-frame.png","complete-source-original":"../source/archery-range-complete.png","damaged-source-original":"../source/archery-range-damaged.png","critical-source-original":"../source/archery-range-critical.png","foundation-source-grid":"../source/normalized/archery-range-foundation.png","frame-source-grid":"../source/normalized/archery-range-frame.png","complete-source-grid":"../source/normalized/archery-range-complete.png","damaged-source-grid":"../source/normalized/archery-range-damaged.png","critical-source-grid":"../source/normalized/archery-range-critical.png","foundation-azure-runtime":"../runtime/archery-range-foundation-azure.webp","foundation-ember-runtime":"../runtime/archery-range-foundation-ember.webp","frame-azure-runtime":"../runtime/archery-range-frame-azure.webp","frame-ember-runtime":"../runtime/archery-range-frame-ember.webp","complete-azure-runtime":"../runtime/archery-range-complete-azure.webp","complete-ember-runtime":"../runtime/archery-range-complete-ember.webp","damaged-azure-runtime":"../runtime/archery-range-damaged-azure.webp","damaged-ember-runtime":"../runtime/archery-range-damaged-ember.webp","critical-azure-runtime":"../runtime/archery-range-critical-azure.webp","critical-ember-runtime":"../runtime/archery-range-critical-ember.webp"},"runtimeMode":true};
+    const pagesById = new Map(manifest.pages.map((page) => [page.id, page]));
+    const els = Object.fromEntries(['asset','state','direction','team','frame','previous','play','next','background','mask','stage','canvas','mode','facts','pages'].map((id) => [id, document.getElementById(id)]));
+    let currentAsset;
+    let currentClip;
+    let currentSequenceIndex = 0;
+    let playTimer = null;
+
+    function addOptions(select, values, labelFor = (value) => value) {
+      select.replaceChildren();
+      for (const value of values) {
+        const option = document.createElement('option');
+        option.value = value.value;
+        option.textContent = value.label ?? labelFor(value.value);
+        select.append(option);
+      }
+      select.disabled = values.length <= 1;
+    }
+
+    function selectedFileId(page) {
+      if (els.mask.checked && page.maskFileId) return page.maskFileId;
+      return runtimeMode && page.runtimeFileId ? page.runtimeFileId : page.sourceFileId;
+    }
+
+    function selectedUrl(fileId) {
+      return fileUrls[fileId];
+    }
+
+    function selectedClip() {
+      return currentAsset.clips.find((clip) => clip.stateId === els.state.value
+        && (clip.directionId || '') === els.direction.value
+        && (clip.teamId || '') === els.team.value);
+    }
+
+    function refreshClipControls() {
+      const stateIds = [...new Set(currentAsset.clips.map((clip) => clip.stateId))].sort();
+      addOptions(els.state, stateIds.map((value) => ({ value })));
+      refreshDirections();
+    }
+
+    function refreshDirections() {
+      const matchingState = currentAsset.clips.filter((clip) => clip.stateId === els.state.value);
+      const directions = [...new Set(matchingState.map((clip) => clip.directionId || ''))].sort();
+      addOptions(els.direction, directions.map((value) => ({ value, label: value || 'Shared / all directions' })));
+      refreshTeams();
+    }
+
+    function refreshTeams() {
+      const matching = currentAsset.clips.filter((clip) => clip.stateId === els.state.value
+        && (clip.directionId || '') === els.direction.value);
+      const teams = [...new Set(matching.map((clip) => clip.teamId || ''))].sort();
+      addOptions(els.team, teams.map((value) => ({ value, label: value || 'Shared / no team variant' })));
+      currentClip = selectedClip();
+      currentSequenceIndex = 0;
+      updateFrameOptions();
+    }
+
+    function updateFrameOptions() {
+      if (!currentClip) return;
+      addOptions(els.frame, currentClip.sequence.map((step, index) => ({
+        value: String(index),
+        label: `${String(index + 1).padStart(2, '0')} · ${step.frameId} · ${step.durationMs} ms`,
+      })));
+      els.frame.disabled = currentClip.sequence.length <= 1;
+      renderFrame();
+    }
+
+    function layerOrder(layerId) {
+      const layer = (currentAsset.layers || []).find((entry) => entry.id === layerId) || { drawLayer: 'actor', depthBiasWorld: 0 };
+      const rank = { background: 0, midground: 1, actor: 2, foreground: 3 }[layer.drawLayer] ?? 2;
+      return [rank, Number(layer.depthBiasWorld || 0), layer.id || ''];
+    }
+
+    function currentFrame() {
+      const frameId = currentClip.sequence[Number(els.frame.value) || 0].frameId;
+      return currentAsset.frames.find((frame) => frame.id === frameId);
+    }
+
+    function renderFrame() {
+      if (!currentClip) return;
+      currentSequenceIndex = Number(els.frame.value) || 0;
+      const frame = currentFrame();
+      const scale = Math.min(3, 640 / Math.max(frame.canvasPx.width, frame.canvasPx.height));
+      els.canvas.replaceChildren();
+      els.canvas.style.width = `${frame.canvasPx.width * scale}px`;
+      els.canvas.style.height = `${frame.canvasPx.height * scale}px`;
+      els.canvas.className = 'spriteCanvas';
+      const split = frame.frameRectsPx && frame.frameRectsPx.length > 0;
+      const rects = split
+        ? [...frame.frameRectsPx].sort((a, b) => {
+            const left = layerOrder(a.layerId); const right = layerOrder(b.layerId);
+            return left[0] - right[0] || left[1] - right[1] || String(left[2]).localeCompare(String(right[2]));
+          })
+        : [{ layerId: 'fallback', pageId: frame.fallbackRectPx.pageId, rectPx: frame.fallbackRectPx.rectPx, offsetPx: { x: 0, y: 0 } }];
+      for (const entry of rects) {
+        const page = pagesById.get(entry.pageId);
+        const fileId = selectedFileId(page);
+        const sprite = document.createElement('div');
+        sprite.className = 'spriteLayer';
+        sprite.style.left = `${entry.offsetPx.x * scale}px`;
+        sprite.style.top = `${entry.offsetPx.y * scale}px`;
+        sprite.style.width = `${entry.rectPx.width * scale}px`;
+        sprite.style.height = `${entry.rectPx.height * scale}px`;
+        sprite.style.backgroundImage = `url(${JSON.stringify(selectedUrl(fileId))})`;
+        sprite.style.backgroundSize = `${page.dimensionsPx.width * scale}px ${page.dimensionsPx.height * scale}px`;
+        sprite.style.backgroundPosition = `${-entry.rectPx.x * scale}px ${-entry.rectPx.y * scale}px`;
+        els.canvas.append(sprite);
+        const tag = document.createElement('span');
+        tag.className = 'layerTag';
+        const layer = (currentAsset.layers || []).find((item) => item.id === entry.layerId);
+        tag.textContent = layer ? `${layer.drawLayer} · ${entry.layerId}` : 'full cutout fallback';
+        sprite.append(tag);
+      }
+      if (frame.alphaBoundsPx) {
+        const alpha = document.createElement('div');
+        alpha.className = 'alphaBounds';
+        alpha.style.left = `${frame.alphaBoundsPx.x * scale}px`;
+        alpha.style.top = `${frame.alphaBoundsPx.y * scale}px`;
+        alpha.style.width = `${frame.alphaBoundsPx.width * scale}px`;
+        alpha.style.height = `${frame.alphaBoundsPx.height * scale}px`;
+        els.canvas.append(alpha);
+      }
+      const pivot = document.createElement('div');
+      pivot.className = 'pivot';
+      pivot.style.left = `${frame.groundPivotPx.x * scale}px`;
+      pivot.style.top = `${frame.groundPivotPx.y * scale}px`;
+      pivot.title = 'Authored ground/root anchor';
+      els.canvas.append(pivot);
+      els.stage.className = `previewStage ${els.background.value}`;
+      els.mode.textContent = split
+        ? 'Showing split layers in background → midground → actor → foreground order. The full transparent cutout remains stored as review/fallback art.'
+        : 'Showing the full transparent cutout fallback. Yellow crosshair: authored ground/root pivot. Red dashed box: informational alpha bounds.';
+      renderFacts(frame);
+      renderPages(frame, rects);
+    }
+
+    function renderFacts(frame) {
+      const facts = [
+        ['Asset', `${currentAsset.id} · ${currentAsset.kind}`],
+        ['State / direction / team', `${currentClip.stateId} / ${currentClip.directionId || 'shared'} / ${currentClip.teamId || 'shared'}`],
+        ['Frame / canvas', `${frame.id} · ${frame.canvasPx.width} × ${frame.canvasPx.height} px`],
+        ['Ground pivot', `${frame.groundPivotPx.x}, ${frame.groundPivotPx.y} px · ${frame.groundPivotStatus}`],
+        ['Alpha bounds', frame.alphaBoundsPx ? `${frame.alphaBoundsPx.x}, ${frame.alphaBoundsPx.y}, ${frame.alphaBoundsPx.width} × ${frame.alphaBoundsPx.height} px` : 'not declared'],
+        ['Recommended footprint', currentAsset.recommendedTileFootprint ? `${currentAsset.recommendedTileFootprint.widthTiles} × ${currentAsset.recommendedTileFootprint.heightTiles} tiles · non-authoritative hint` : 'not declared · map/gameplay owns occupancy'],
+        ['Art bounds', JSON.stringify(currentAsset.artBoundsWorld)],
+        ['Height / sort anchor', `${currentAsset.heightWorld} world units · ${JSON.stringify(currentAsset.sortAnchorWorld || 'ground pivot')}`],
+        ['Culling / selection', `${JSON.stringify(currentAsset.cullingBoundsWorld || 'renderer-derived')} · ${JSON.stringify(currentAsset.selectionBoundsWorld || 'renderer-derived')}`],
+        ['Sequence', `${currentSequenceIndex + 1} / ${currentClip.sequence.length} · ${currentClip.sequence[currentSequenceIndex].durationMs} ms · ${currentClip.loop ? 'loop' : 'once'}`],
+      ];
+      els.facts.replaceChildren();
+      for (const [term, detail] of facts) {
+        const dt = document.createElement('dt'); dt.textContent = term;
+        const dd = document.createElement('dd'); dd.textContent = detail;
+        els.facts.append(dt, dd);
+      }
+      if (currentAsset.recommendedTileFootprint?.widthTiles && currentAsset.recommendedTileFootprint?.heightTiles) {
+        const dt = document.createElement('dt'); dt.textContent = 'Recommended tiles';
+        const dd = document.createElement('dd');
+        const scale = Math.min(22, 300 / Math.max(currentAsset.recommendedTileFootprint.widthTiles, currentAsset.recommendedTileFootprint.heightTiles));
+        const grid = document.createElement('div'); grid.className = 'tileGrid';
+        grid.style.width = `${currentAsset.recommendedTileFootprint.widthTiles * scale}px`;
+        grid.style.height = `${currentAsset.recommendedTileFootprint.heightTiles * scale}px`;
+        grid.style.backgroundSize = `${scale}px ${scale}px`;
+        dd.append(grid); els.facts.append(dt, dd);
+      }
+    }
+
+    function renderPages(frame, rects) {
+      const grouped = new Map();
+      for (const entry of rects) {
+        if (!grouped.has(entry.pageId)) grouped.set(entry.pageId, []);
+        grouped.get(entry.pageId).push({ rect: entry.rectPx, role: entry.layerId === 'fallback' ? 'fallback' : 'layer' });
+      }
+      if (frame.frameRectsPx && frame.frameRectsPx.length > 0) {
+        const pageId = frame.fallbackRectPx.pageId;
+        if (!grouped.has(pageId)) grouped.set(pageId, []);
+        grouped.get(pageId).push({ rect: frame.fallbackRectPx.rectPx, role: 'fallback' });
+      }
+      els.pages.replaceChildren();
+      for (const [pageId, rectangles] of grouped) {
+        const page = pagesById.get(pageId);
+        const fileId = selectedFileId(page);
+        const scale = Math.min(1, 620 / page.dimensionsPx.width, 340 / page.dimensionsPx.height);
+        const figure = document.createElement('figure');
+        const caption = document.createElement('figcaption');
+        caption.textContent = `${page.id} · ${page.dimensionsPx.width} × ${page.dimensionsPx.height} px${els.mask.checked && page.maskFileId ? ' · team mask' : ''}`;
+        const surface = document.createElement('div'); surface.className = 'pageSurface';
+        surface.style.width = `${page.dimensionsPx.width * scale}px`;
+        surface.style.height = `${page.dimensionsPx.height * scale}px`;
+        const image = document.createElement('img');
+        image.src = selectedUrl(fileId); image.alt = `${page.id} page`;
+        image.style.width = `${page.dimensionsPx.width * scale}px`;
+        image.style.height = `${page.dimensionsPx.height * scale}px`;
+        surface.append(image);
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'pageOverlay'); svg.setAttribute('width', String(page.dimensionsPx.width * scale));
+        svg.setAttribute('height', String(page.dimensionsPx.height * scale));
+        svg.setAttribute('viewBox', `0 0 ${page.dimensionsPx.width} ${page.dimensionsPx.height}`);
+        for (const entry of rectangles) {
+          const rect = entry.rect;
+          const box = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          if (entry.role === 'fallback') box.setAttribute('class', 'fallback');
+          box.setAttribute('x', String(rect.x)); box.setAttribute('y', String(rect.y));
+          box.setAttribute('width', String(rect.width)); box.setAttribute('height', String(rect.height));
+          svg.append(box);
+          const inset = page.sampling.uvInsetPx;
+          const inner = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          inner.setAttribute('class', 'inset');
+          inner.setAttribute('x', String(rect.x + inset)); inner.setAttribute('y', String(rect.y + inset));
+          inner.setAttribute('width', String(rect.width - 2 * inset)); inner.setAttribute('height', String(rect.height - 2 * inset));
+          svg.append(inner);
+        }
+        surface.append(svg); figure.append(caption, surface); els.pages.append(figure);
+      }
+    }
+
+    function setFrame(index) {
+      currentSequenceIndex = (index + currentClip.sequence.length) % currentClip.sequence.length;
+      els.frame.value = String(currentSequenceIndex);
+      renderFrame();
+    }
+
+    function stopPlayback() {
+      if (playTimer) clearTimeout(playTimer);
+      playTimer = null;
+      els.play.textContent = 'Play';
+    }
+
+    function schedulePlayback() {
+      const step = currentClip.sequence[currentSequenceIndex];
+      playTimer = setTimeout(() => {
+        const next = currentSequenceIndex + 1;
+        if (next >= currentClip.sequence.length && !currentClip.loop) { stopPlayback(); return; }
+        setFrame(next % currentClip.sequence.length);
+        schedulePlayback();
+      }, step.durationMs);
+    }
+
+    function startPlayback() {
+      stopPlayback();
+      els.play.textContent = 'Pause';
+      schedulePlayback();
+    }
+
+    function selectAsset(assetId) {
+      stopPlayback();
+      currentAsset = manifest.assets.find((asset) => asset.id === assetId);
+      refreshClipControls();
+    }
+
+    addOptions(els.asset, manifest.assets.map((asset) => ({ value: asset.id, label: `${asset.id} · ${asset.kind}` })));
+    const hasMask = manifest.pages.some((page) => page.maskFileId);
+    els.mask.disabled = !hasMask;
+    els.asset.addEventListener('change', () => selectAsset(els.asset.value));
+    els.state.addEventListener('change', () => { stopPlayback(); refreshDirections(); });
+    els.direction.addEventListener('change', () => { stopPlayback(); refreshTeams(); });
+    els.team.addEventListener('change', () => { stopPlayback(); currentClip = selectedClip(); currentSequenceIndex = 0; updateFrameOptions(); });
+    els.frame.addEventListener('change', renderFrame);
+    els.previous.addEventListener('click', () => setFrame(currentSequenceIndex - 1));
+    els.next.addEventListener('click', () => setFrame(currentSequenceIndex + 1));
+    els.play.addEventListener('click', () => playTimer ? stopPlayback() : startPlayback());
+    els.background.addEventListener('change', renderFrame);
+    els.mask.addEventListener('change', renderFrame);
+    selectAsset(manifest.assets[0].id);
+  </script>
+</body>
+</html>

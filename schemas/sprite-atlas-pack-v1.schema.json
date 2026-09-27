@@ -1,0 +1,213 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thousand-unit-skirmish.local/schemas/sprite-atlas-pack-v1.schema.json",
+  "title": "Thousand Unit Skirmish sprite atlas pack v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "packId", "packVersion", "maturity", "provenance", "files", "pages", "assets"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "packId": { "type": "string", "minLength": 1 },
+    "packVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "maturity": { "enum": ["source-only", "runtime-candidate"] },
+    "provenance": { "$ref": "#/$defs/provenance" },
+    "files": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/file" } },
+    "pages": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/page" } },
+    "assets": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/asset" } }
+  },
+  "$defs": {
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["license", "source"],
+      "properties": {
+        "license": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "minLength": 1 },
+        "authoringTool": { "type": "string", "minLength": 1 },
+        "notes": { "type": "string" }
+      }
+    },
+    "dimensionsPx": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "pointPx": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y"],
+      "properties": {
+        "x": { "type": "number", "minimum": 0 },
+        "y": { "type": "number", "minimum": 0 }
+      }
+    },
+    "rectPx": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": { "type": "integer", "minimum": 0 },
+        "y": { "type": "integer", "minimum": 0 },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "vector3": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": { "type": "number" }
+    },
+    "boundsWorld": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max"],
+      "properties": {
+        "min": { "$ref": "#/$defs/vector3" },
+        "max": { "$ref": "#/$defs/vector3" }
+      }
+    },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "usage", "format", "sha256", "dimensionsPx"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1, "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)" },
+        "usage": { "enum": ["source", "runtime", "team-mask"] },
+        "format": { "enum": ["png", "webp"] },
+        "sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+        "dimensionsPx": { "$ref": "#/$defs/dimensionsPx" }
+      }
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "sourceFileId", "dimensionsPx", "colorSpace", "pixelFormat", "alphaMode", "edgeRule", "gutterPx", "gutterRule", "wrapMode", "sampling"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "sourceFileId": { "type": "string", "minLength": 1 },
+        "runtimeFileId": { "type": "string", "minLength": 1 },
+        "maskFileId": { "type": "string", "minLength": 1 },
+        "dimensionsPx": { "$ref": "#/$defs/dimensionsPx" },
+        "colorSpace": { "enum": ["srgb", "linear"] },
+        "pixelFormat": { "enum": ["rgba8", "rgb8", "gray8"] },
+        "alphaMode": { "enum": ["straight", "premultiplied", "opaque"] },
+        "edgeRule": { "enum": ["bleed-rgb-under-transparent", "zero-rgb-under-transparent", "opaque"] },
+        "gutterPx": { "type": "integer", "minimum": 0 },
+        "gutterRule": { "enum": ["none", "edge-extended"] },
+        "wrapMode": { "const": "clamp" },
+        "sampling": { "$ref": "#/$defs/sampling" }
+      }
+    },
+    "sampling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generateMipmaps", "minFilter", "magFilter", "uvInsetPx", "maxMipLevel"],
+      "properties": {
+        "generateMipmaps": { "type": "boolean" },
+        "minFilter": { "enum": ["nearest", "linear", "nearest-mipmap-nearest", "linear-mipmap-linear"] },
+        "magFilter": { "enum": ["nearest", "linear"] },
+        "uvInsetPx": { "const": 0.5 },
+        "maxMipLevel": { "type": "integer", "minimum": 0, "maximum": 12 }
+      }
+    },
+    "tileFootprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["widthTiles", "heightTiles"],
+      "properties": {
+        "widthTiles": { "type": "integer", "minimum": 1 },
+        "heightTiles": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "drawLayer"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "drawLayer": { "enum": ["background", "midground", "actor", "foreground"] },
+        "batchKey": { "type": "string", "minLength": 1 },
+        "depthBiasWorld": { "type": "number" }
+      }
+    },
+    "frameRect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["layerId", "pageId", "rectPx", "offsetPx"],
+      "properties": {
+        "layerId": { "type": "string", "minLength": 1 },
+        "pageId": { "type": "string", "minLength": 1 },
+        "rectPx": { "$ref": "#/$defs/rectPx" },
+        "offsetPx": { "$ref": "#/$defs/pointPx" }
+      }
+    },
+    "fallbackRect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pageId", "rectPx"],
+      "properties": {
+        "pageId": { "type": "string", "minLength": 1 },
+        "rectPx": { "$ref": "#/$defs/rectPx" }
+      }
+    },
+    "frame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "canvasPx", "groundPivotPx", "groundPivotStatus", "fallbackRectPx"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "canvasPx": { "$ref": "#/$defs/dimensionsPx" },
+        "groundPivotPx": { "$ref": "#/$defs/pointPx" },
+        "groundPivotStatus": { "enum": ["unreviewed-estimate", "reviewed"] },
+        "alphaBoundsPx": { "$ref": "#/$defs/rectPx" },
+        "fallbackRectPx": { "$ref": "#/$defs/fallbackRect" },
+        "frameRectsPx": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/frameRect" } }
+      }
+    },
+    "sequenceFrame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["frameId", "durationMs"],
+      "properties": {
+        "frameId": { "type": "string", "minLength": 1 },
+        "durationMs": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "clip": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stateId", "loop", "sequence"],
+      "properties": {
+        "stateId": { "type": "string", "minLength": 1 },
+        "directionId": { "type": "string", "minLength": 1 },
+        "teamId": { "type": "string", "minLength": 1 },
+        "loop": { "type": "boolean" },
+        "sequence": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/sequenceFrame" } }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "artBoundsWorld", "heightWorld", "frames", "clips"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["unit", "building", "prop", "resource", "environment", "effect", "decal"] },
+        "recommendedTileFootprint": { "$ref": "#/$defs/tileFootprint" },
+        "artBoundsWorld": { "$ref": "#/$defs/boundsWorld" },
+        "heightWorld": { "type": "number", "exclusiveMinimum": 0 },
+        "sortAnchorWorld": { "$ref": "#/$defs/vector3" },
+        "cullingBoundsWorld": { "$ref": "#/$defs/boundsWorld" },
+        "selectionBoundsWorld": { "$ref": "#/$defs/boundsWorld" },
+        "layers": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/layer" } },
+        "frames": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/frame" } },
+        "clips": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/clip" } }
+      }
+    }
+  }
+}

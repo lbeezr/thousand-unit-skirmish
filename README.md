@@ -1,4 +1,6 @@
-# Thousand Unit Skirmish — prototype 0.95
+# Thousand Unit Skirmish — prototype 0.96
+
+For team priorities and the next independently shippable checkpoint in each workstream, see the [living roadmap](docs/roadmap.md). The [game bible](docs/game-bible.md) defines the player experience; the [QA plan](docs/qa-vertical-slice.md) records milestone evidence.
 
 An invite-only multiplayer RTS field test. A Node room supervisor starts one isolated authoritative match process per invite room; open two browser tabs at the same address to join the default Azure and Ember match. Use **NEW ROOM** to create an invite-only match or **JOIN** to enter a room code/link. The map contains a two-cell stone wall with one six-cell pass, so move orders have to route through a chokepoint.
 
@@ -12,6 +14,10 @@ npm start
 ```
 
 The browser loads Three.js from this server at `/vendor/three.module.js`. `npm test` checks JavaScript syntax, game scenarios, room isolation, and the guarded Railway release path.
+
+## Building art review
+
+Open **Match Controls → Building Variant Atlas** to compare the preferred Meshy model-and-capture workflow with current sprites and other building states. The Town Center's four lifecycle images remain concepts until each has a separate Meshy model and review.
 
 For a reproducible container release, run `npm ci`, `npm test`, then `npm run release:pack` from a reviewed, committed checkout. The packer copies the Dockerfile's local `COPY` sources into a temporary directory and prints the source commit and a content digest. It refuses uncommitted changes; `--allow-dirty` is reserved for disposable local tests. CI verifies that a clean checkout can produce this package.
 
@@ -80,6 +86,12 @@ Exercise gathering, Archery Range and Barracks construction, Archer, Infantry, a
 ```sh
 PORT=4174 node server.mjs
 node scripts/building-economy-scenario.mjs 4174
+```
+
+Exercise Town Center worker production on a custom map with diagonal, reversed team spawns:
+
+```sh
+node scripts/worker-production-spawn-scenario.mjs
 ```
 
 Exercise both building-researched attack upgrades and a capture-triggered technology reward through two live clients, including costs, progress, combat damage, fog privacy, one-shot behavior, map persistence, and checkpoint recovery:
@@ -176,7 +188,7 @@ node scripts/unit-selection-scenario.mjs
 
 An optional map-level `victoryHoldSeconds` value (0.5–3,600) makes the selected any/all victory condition require continuous control for a set duration; leaving it out keeps capture wins immediate. Losing the condition resets that team's timer. Marked zones can also arm capture-triggered supply drops while a nonzero hold is in progress. Map Studio authors the duration, the objective panel shows hold progress, and checkpoint recovery preserves it.
 
-The server loads every `*.json` file in `maps/` into the host's **Battlefield** picker. `maps/forked-vale.json` is the default 24-unit 1v1 scenario; `maps/stone-pass.json` remains a 64 × 64 large-army stress map; `maps/cinder-ridge.json` is an 80 × 56 rectangular sample with different obstacle shapes; `maps/frontier-materials.json` shows the seven ground materials and three rock heights for art review; `maps/open-field.json` is an open-field deathmatch map with fog of war; `maps/three-crowns.json` is a fogged, three-objective scenario where the Heartland Keep unlocks after both flank zones and victory requires holding all three. It also gives both teams a timed supply drop. Add your own JSON map to `maps/` and restart the server to add it to the catalog. The host can switch the active battlefield in the picker, and both clients receive the new map and reset army together. See [the environment pack guide](docs/environment-pack-v1.md) for brush roles and review questions.
+The server loads every `*.json` file in `maps/` into the host's **Battlefield** picker. `maps/forked-vale.json` is the default 24-unit 1v1 scenario; `maps/stone-pass.json` remains a 64 × 64 large-army stress map; `maps/cinder-ridge.json` is an 80 × 56 rectangular sample with different obstacle shapes; `maps/frontier-materials.json` shows the ground materials and three rock heights for art review; `maps/open-field.json` is an open-field deathmatch map with fog of war; `maps/three-crowns.json` is a fogged, three-objective scenario where the Heartland Keep unlocks after both flank zones and victory requires holding all three. It also gives both teams a timed supply drop. Add your own JSON map to `maps/` and restart the server to add it to the catalog. The host can switch the active battlefield in the picker, and both clients receive the new map and reset army together. See [the environment pack guide](docs/environment-pack-v1.md) for brush roles and review questions.
 
 Exercise the Three Crowns objective chain with two live clients and that map's 1,000-unit roster. The scenario captures opposite flanks, confirms the keep stays locked while its prerequisites have different owners, recaptures the second flank, and verifies the all-objectives victory reaches both clients. Pass the expected winner team and run both directions to check symmetry:
 
@@ -193,7 +205,7 @@ RTS_MAP=maps/cinder-ridge.json node server.mjs
 
 Replace the path with `maps/my-map.json` for your own map. The host can still switch to any other loaded map from the picker.
 
-The same map definition drives server collision/pathfinding, vision, and client terrain rendering. A map has an `id`, display `name`, `width` and `height` in cells (16–256), a deterministic `terrainSeed`, one `{ "team": 0|1, "x": number, "z": number }` spawn point per team, and `obstacles`. Optional `terrainBase` chooses the repeated ground material (`meadow`, `short-grass`, `long-grass`, `dirt`, `sand`, `scree`, or `cinder`); `terrainPatches` paints nonoverlapping `{ "column", "row", "width", "height", "material" }` rectangles over it. Ground paint is visual and passable; obstacles still control collision and sight. Optional `startingResources: { "food": number, "wood": number }` gives both teams equal starting stocks; each value is a whole number from 0 to 100,000, and omitted values default to zero. Set optional `fogOfWar` to `true` to enable team-shared sight with persistent exploration. Living units and buildings reveal a radius of eight cells. Stone and forest obstacles at least 1.0 world units high block sight; lower obstacles can be seen over, and water does not block sight. Each obstacle is a blocked rectangle with `column`, `row`, `width`, `height`, and optional `elevation` and `material` (`stone`, `forest`, or `water`). World origin is at map center; cell coordinates begin at the northwest corner. The server rejects out-of-bounds rectangles, maps with more than 4,096 obstacle or terrain paint rectangles, and spawn points on blocked cells.
+The same map definition drives server collision/pathfinding, vision, and client terrain rendering. A map has an `id`, display `name`, `width` and `height` in cells (16–256), a deterministic `terrainSeed`, one `{ "team": 0|1, "x": number, "z": number }` spawn point per team, and `obstacles`. Optional `terrainBase` chooses the repeated ground material (`meadow`, `short-grass`, `long-grass`, `forest-floor`, `dirt`, `sand`, `scree`, or `cinder`); `terrainPatches` paints nonoverlapping `{ "column", "row", "width", "height", "material" }` rectangles over it. Ground paint is visual and passable; obstacles still control collision and sight. Optional `startingResources: { "food": number, "wood": number }` gives both teams equal starting stocks; each value is a whole number from 0 to 100,000, and omitted values default to zero. Set optional `fogOfWar` to `true` to enable team-shared sight with persistent exploration. Living units and buildings reveal a radius of eight cells. Stone and forest obstacles at least 1.0 world units high block sight; lower obstacles can be seen over, and water does not block sight. Each obstacle is a blocked rectangle with `column`, `row`, `width`, `height`, and optional `elevation` and `material` (`stone`, `forest`, or `water`). World origin is at map center; cell coordinates begin at the northwest corner. The server rejects out-of-bounds rectangles, maps with more than 4,096 obstacle or terrain paint rectangles, and spawn points on blocked cells.
 
 Maps may define up to 128 finite `food` or `wood` resource nodes with an `id`, world `x`/`z`, and starting `stock`. Each node must be reachable from both team spawns. Map Studio's **Food node** and **Wood node** tools place nodes with adjustable starting stock (defaults: 300 food and 500 wood); click an existing node to select it and edit its stock, or use **Remove selected** to delete it. Painting terrain over a node removes it.
 
@@ -236,11 +248,10 @@ This scenario publishes a temporary fog-enabled map and resets the room, so use 
 
 ## Elimination scenario
 
-Run the two-client elimination, terminal-order, and reconnect-persistence scenario against a disposable local room. It publishes a temporary no-objective map and resets the room to 250 units:
+Run the isolated two-client elimination, terminal-order, and reconnect-persistence scenario. It starts its own temporary server, publishes a 24-unit no-objective map, gathers food for one side to check post-match production rejection, and removes its temporary data when finished:
 
 ```sh
-PORT=4178 node server.mjs
-node scripts/elimination-scenario.mjs 4178
+node scripts/elimination-scenario.mjs
 ```
 
 
@@ -391,11 +402,11 @@ node scripts/network-snapshot-scenario.mjs 4174 40
 
 A 40-second Node 24.9.0 / arm64 run delivered 754 compressed state frames across two clients (377 per client) for 2,000 units. Combined JSON WebSocket egress was 247 KiB/s, compared with 2,144 KiB/s for the same JSON frames at their uncompressed sizes, an 88.5% reduction before TCP/TLS overhead. Tick p95 / maximum in the final 10-second window was 3.573 / 5.867 ms. The scenario verifies the clients still parse full state and that server tick p95 remains within its 33.333 ms budget. These are local measurements, not internet-hosting guarantees.
 
-Verify attack acquisition, route resumption after target death or a leash break, and manual move cancellation with two clients on a disposable local server:
+Check consecutive attack-move targets plus combat and shared-node harvest spacing on a disposable open-field server:
 
 ```sh
-PORT=4174 node server.mjs
-node scripts/attack-move-scenario.mjs 4174
+RTS_MAP=maps/open-field.json PORT=4174 node server.mjs
+node scripts/interaction-spacing-scenario.mjs 4174
 ```
 
 Verify that attack-move acquires a reachable enemy after 65 earlier out-of-range candidates in one crowded spatial bucket:
@@ -588,6 +599,8 @@ Prototype 0.91 starts the recovery grace period for connected seats when the wor
 Prototype 0.92 lets Map Studio join event branches with an all-of completion trigger. The server starts the joined event's delay only when every source has finished its repeat deliveries, preserves partially completed joins through checkpoints, rejects cycles and duplicate or missing sources, and carries the capturing team only when all branches share the same capture-root event.
 
 Prototype 0.93 adds standard directional RTS box selection. Left-to-right selects units enclosed by the box; right-to-left selects friendlies whose projected footprint crosses it. The box color and dashed outline show crossing mode while dragging, Shift adds either selection to the current group, and the crossing radius scales with camera zoom and viewport size.
+
+Prototype 0.96 places Town Centers and newly trained workers on the home side of each spawn, using the direction from the opposing spawn instead of assuming team 0 is west and team 1 east. Reversed and diagonal Map Studio layouts now keep production exits away from mid-map; normal shipped map placement stays the same. A two-seat server scenario checks both queues, the 50-food cost, one-worker roster change, and the produced worker's home-side position.
 
 Prototype 0.95 hardens the sustained Stone Pass scenario with explicit per-team flow and balance thresholds, failure messages that report observed counts and child-server logs, and cleanup on SIGTERM/SIGINT. A sealed 60-second Node 24.9 arm64 run passed with 1,000/1,000 units crossing per side and zero units below 24 world units of forward progress. Tick p95 was 8.741 ms and max 11.804 ms, within the 33.333 ms p95 and 100 ms max budgets; the earlier local capture read 7.177 ms p95 and 9.133 ms max. These are single local samples with no admitted hardware-performance evidence.
 

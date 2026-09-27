@@ -7,13 +7,23 @@ export function cueForNotice(message, { localTeam = null, tokenized = false } = 
   if (teamName && notice.startsWith(`${teamName} `) && notice.includes(' DESTROYED ·')) return 'base-lost';
   if (notice.startsWith('RESOURCE NODE EMPTY ·')) return 'resource-empty';
   if (/(REJECTED|FAILED|UNAVAILABLE|UNREACHABLE|SERVER BUSY|CANCELLED|SUPERSEDED|MATCH OVER|UNIT CAP REACHED)/.test(notice)) return 'reject';
-  if (notice.startsWith('RALLY POINT ')) return 'gather';
+  if (notice.startsWith('RALLY POINT ')) return 'rally';
   if (/^(WORKER|INFANTRY|ARCHER) QUEUED ·/.test(notice)) return 'queue';
   if (/^.+ STARTED ·/.test(notice) && !notice.startsWith('PLANNING ')) return 'queue';
+  if (teamName && (notice.startsWith(`${teamName} INFANTRY FORGING COMPLETE ·`)
+    || notice.startsWith(`${teamName} ARCHER FLETCHING COMPLETE ·`))) return 'research-complete';
   if (notice.includes(' COMPLETE ·') && teamName && notice.startsWith(`${teamName} `)) return 'complete';
   if (teamName && notice.startsWith(`${teamName} `) && notice.endsWith(' READY')) return 'complete';
   if (notice.includes(' PLACED ·') && tokenized) return 'build';
   return null;
+}
+
+export function cueForScenarioEvent(message, { localTeam = null } = {}) {
+  if (localTeam !== 0 && localTeam !== 1) return null;
+  const affectedTeams = Array.isArray(message?.rewardTeams) ? message.rewardTeams
+    : message?.team === 'both' ? [0, 1]
+      : message?.team === 0 || message?.team === 1 ? [message.team] : [];
+  return affectedTeams.includes(localTeam) ? 'scenario-reward' : null;
 }
 
 export function isLocalRejection(message) {

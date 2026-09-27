@@ -8,6 +8,9 @@ export const OPPONENT_OBSERVATION_SCHEMA_VERSION = 1;
 export const DEFAULT_OPPONENT_SEED = 20260925;
 export const DEFAULT_OPPONENT_DECISION_INTERVAL_MS = 1_000;
 
+const RESOURCE_TYPES = ['food', 'wood'];
+const GATHER_ORDER_RETRY_TICKS = 20;
+
 function validTeam(team) {
   return Number.isInteger(team) && (team === 0 || team === 1);
 }
@@ -363,61 +366,244 @@ function nearestResource(nodes, worker) {
   ))[0] || null;
 }
 
-/** Create a tiny deterministic opening policy for smoke checks and early PvE. */
+function objectiveWorldPoint(objective, map) {
+  const zone = objective?.zone;
+  if (!Number.isInteger(map?.width) || map.width < 1
+    || !Number.isInteger(map?.height) || map.height < 1
+    || !Number.isInteger(zone?.column) || !Number.isInteger(zone?.row)
+    || !Number.isInteger(zone?.width) || zone.width < 1
+    || !Number.isInteger(zone?.height) || zone.height < 1
+    || zone.column < 0 || zone.row < 0
+    || zone.column + zone.width > map.width || zone.row + zone.height > map.height) return null;
+  return {
+    x: zone.column + zone.width / 2 - map.width / 2,
+    z: zone.row + zone.height / 2 - map.height / 2,
+  };
+}
+
+function objectivePrerequisitesMet(objective, team) {
+  const ids = Array.isArray(objective?.requiresAll) ? objective.requiresAll
+    : typeof objective?.requires === 'string' ? [objective.requires] : [];
+  if (ids.length === 0) return true;
+  const owners = Array.isArray(objective.requiredOwners) ? objective.requiredOwners
+    : typeof objective.requires === 'string' ? [objective.requiredOwner] : [];
+  return owners.length === ids.length && owners.every((owner) => owner === team);
+}
+
+function nearestObjective(objectives, team, soldiers, map, lostObjectiveIds) {
+  if (soldiers.length === 0) return null;
+  const armyCenter = soldiers.reduce((center, unit) => ({
+    x: center.x + unit.x / soldiers.length,
+    z: center.z + unit.z / soldiers.length,
+  }), { x: 0, z: 0 });
+  const enemyTeam = 1 - team;
+  const candidates = objectives.flatMap((objective) => {
+    if (typeof objective?.id !== 'string'
+      || !Number.isInteger(objective.owner)
+      || objective.owner === team
+      || ![-1, enemyTeam].includes(objective.owner)
+      || !objectivePrerequisitesMet(objective, team)) return [];
+    const point = objectiveWorldPoint(objective, map);
+    if (!point) return [];
+    const recentlyLost = lostObjectiveIds.has(objective.id);
+    const priority = recentlyLost ? 0
+      : objective.victory === true ? (objective.owner === enemyTeam ? 1 : 2)
+        : (objective.owner === enemyTeam ? 3 : 4);
+    return [{
+      id: objective.id,
+      point,
+      priority,
+      distance: (point.x - armyCenter.x) ** 2 + (point.z - armyCenter.z) ** 2,
+    }];
+  });
+  return candidates.sort((left, right) => (
+    left.priority - right.priority
+      || left.distance - right.distance
+      || left.id.localeCompare(right.id)
+  ))[0] || null;
+}
+
+/** Create a deterministic economy-and-tactics policy for an ordinary player seat. */
 export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
   if (!Number.isSafeInteger(seed)) throw new TypeError('Opponent seed must be a safe integer.');
   const normalizedSeed = seed >>> 0;
-  let economyStarted = false;
-  let tacticsStarted = false;
+  const gatherAssignments = new Map();
+  const objectiveOwners = new Map();
+  const lostObjectiveIds = new Set();
+  let tacticalObjectiveId = null;
+  let fallbackTacticsStarted = false;
+
+  function recordObjectiveOwnership(observation) {
+    const objectives = Array.isArray(observation.objectives) ? observation.objectives : [];
+    const observedIds = new Set();
+    for (const objective of objectives) {
+      if (typeof objective?.id !== 'string' || !Number.isInteger(objective.owner)) continue;
+      observedIds.add(objective.id);
+      const previousOwner = objectiveOwners.get(objective.id);
+      if (previousOwner === observation.team && objective.owner !== observation.team) {
+        lostObjectiveIds.add(objective.id);
+      } else if (objective.owner === observation.team) {
+        lostObjectiveIds.delete(objective.id);
+      }
+      objectiveOwners.set(objective.id, objective.owner);
+    }
+    for (const id of objectiveOwners.keys()) {
+      if (!observedIds.has(id)) {
+        objectiveOwners.delete(id);
+        lostObjectiveIds.delete(id);
+      }
+    }
+  }
+
+  function nextGatherCommands(observation) {
+    const workers = observation.units.friendly
+      .filter((unit) => unit.kind === 'worker' && unit.hp > 0)
+      .sort((left, right) => left.id - right.id);
+    const liveKeys = new Set(workers.map((worker) => `${worker.id}:${worker.generation}`));
+    for (const key of gatherAssignments.keys()) {
+      if (!liveKeys.has(key)) gatherAssignments.delete(key);
+    }
+
+    const nodesByType = { food: [], wood: [] };
+    for (const node of observation.resourceNodes) {
+      if (RESOURCE_TYPES.includes(node.type) && node.stock > 0
+        && Number.isFinite(node.x) && Number.isFinite(node.z)) {
+        nodesByType[node.type].push(node);
+      }
+    }
+    for (const nodes of Object.values(nodesByType)) {
+      nodes.sort((left, right) => left.id.localeCompare(right.id));
+    }
+    if (workers.length === 0 || RESOURCE_TYPES.every((type) => nodesByType[type].length === 0)) return [];
+
+    const tick = Number.isSafeInteger(observation.tick) ? observation.tick : 0;
+    const observedNodesById = new Map(observation.resourceNodes.map((node) => [node.id, node]));
+    const availableNodeIds = new Set(RESOURCE_TYPES.flatMap((type) => nodesByType[type].map((node) => node.id)));
+    const typeLoads = { food: 0, wood: 0 };
+    const nodeLoads = new Map();
+    const isGathering = (worker) => worker.task === 'gathering' || worker.task === 'returning';
+    const isGatherOrderPending = (assignment) => {
+      if (!assignment || !Number.isSafeInteger(assignment.pendingSinceTick)) return false;
+      const observedNode = observedNodesById.get(assignment.nodeId);
+      if (observedNode && observedNode.stock <= 0) return false;
+      return tick - assignment.pendingSinceTick < GATHER_ORDER_RETRY_TICKS;
+    };
+    const addLoad = (assignment) => {
+      if (!RESOURCE_TYPES.includes(assignment.type)) return;
+      typeLoads[assignment.type]++;
+      if (availableNodeIds.has(assignment.nodeId)) {
+        nodeLoads.set(assignment.nodeId, (nodeLoads.get(assignment.nodeId) || 0) + 1);
+      }
+    };
+
+    for (const worker of workers) {
+      const key = `${worker.id}:${worker.generation}`;
+      const assignment = gatherAssignments.get(key);
+      if (isGathering(worker)) {
+        if (assignment) {
+          assignment.pendingSinceTick = null;
+          addLoad(assignment);
+        } else if (RESOURCE_TYPES.includes(worker.cargoType)) {
+          typeLoads[worker.cargoType]++;
+        }
+        continue;
+      }
+      if (worker.task !== 'idle') {
+        gatherAssignments.delete(key);
+        continue;
+      }
+      if (isGatherOrderPending(assignment)) addLoad(assignment);
+    }
+
+    const commandsByNode = new Map();
+    const chosenNodeByType = new Map();
+    for (const worker of workers) {
+      if (worker.task !== 'idle') continue;
+      const key = `${worker.id}:${worker.generation}`;
+      const previous = gatherAssignments.get(key);
+      if (isGatherOrderPending(previous)) continue;
+
+      const availableTypes = RESOURCE_TYPES.filter((type) => nodesByType[type].length > 0);
+      const preferredType = availableTypes.includes(previous?.type) ? previous.type : null;
+      let type = preferredType;
+      if (!type) {
+        const leastLoad = Math.min(...availableTypes.map((candidate) => typeLoads[candidate]));
+        const leastLoadedTypes = availableTypes.filter((candidate) => typeLoads[candidate] === leastLoad);
+        type = leastLoadedTypes[seededIndex(normalizedSeed, observation.team, worker.id, leastLoadedTypes.length)];
+      }
+
+      const previousNode = previous && nodesByType[type].find((node) => node.id === previous.nodeId);
+      let node = previousNode || chosenNodeByType.get(type);
+      if (!node) {
+        const leastNodeLoad = Math.min(...nodesByType[type].map((candidate) => nodeLoads.get(candidate.id) || 0));
+        const leastLoadedNodes = nodesByType[type]
+          .filter((candidate) => (nodeLoads.get(candidate.id) || 0) === leastNodeLoad);
+        node = nearestResource(leastLoadedNodes, worker);
+        chosenNodeByType.set(type, node);
+      }
+      if (!node) continue;
+
+      gatherAssignments.set(key, { type, nodeId: node.id, pendingSinceTick: tick });
+      addLoad({ type, nodeId: node.id });
+      const ids = commandsByNode.get(node.id) || [];
+      ids.push(worker.id);
+      commandsByNode.set(node.id, ids);
+    }
+
+    return [...commandsByNode.entries()]
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([nodeId, ids]) => ({
+        type: 'gather',
+        ids: ids.sort((left, right) => left - right),
+        nodeId,
+      }));
+  }
 
   return {
     next(observation) {
       if (observation?.schemaVersion !== OPPONENT_OBSERVATION_SCHEMA_VERSION
         || !validTeam(observation.team)) throw new TypeError('Policy requires opponent observation schema v1.');
 
-      if (!economyStarted) {
-        const workers = observation.units.friendly
-          .filter((unit) => unit.kind === 'worker' && unit.hp > 0 && unit.task === 'idle')
-          .sort((left, right) => left.id - right.id);
-        const availableNodes = observation.resourceNodes.filter((node) => node.stock > 0);
-        const commands = [];
-        const assignedWorkers = new Set();
-        for (const [resourceType, stream] of [['food', 0], ['wood', 1]]) {
-          const nodes = availableNodes.filter((node) => node.type === resourceType);
-          const remainingWorkers = workers.filter((worker) => !assignedWorkers.has(worker.id));
-          if (nodes.length === 0 || remainingWorkers.length === 0) continue;
-          const worker = remainingWorkers[seededIndex(normalizedSeed, observation.team, stream, remainingWorkers.length)];
-          const node = nearestResource(nodes, worker);
-          if (!node) continue;
-          assignedWorkers.add(worker.id);
-          commands.push({ type: 'gather', ids: [worker.id], nodeId: node.id });
-        }
-        if (commands.length > 0) {
-          economyStarted = true;
-          return commands;
-        }
-      }
+      recordObjectiveOwnership(observation);
+      const gathering = nextGatherCommands(observation);
+      if (gathering.length > 0) return gathering;
 
-      if (!tacticsStarted) {
-        const soldiers = observation.units.friendly
-          .filter((unit) => unit.kind !== 'worker' && unit.hp > 0)
-          .map((unit) => unit.id)
-          .sort((left, right) => left - right);
-        if (soldiers.length > 0) {
-          const visibleTarget = observation.units.visibleEnemies
-            .filter((unit) => unit.hp > 0)
-            .sort((left, right) => left.id - right.id)[0];
-          tacticsStarted = true;
+      const soldiers = observation.units.friendly
+        .filter((unit) => unit.kind !== 'worker' && unit.hp > 0)
+        .sort((left, right) => left.id - right.id);
+      const objectives = Array.isArray(observation.objectives) ? observation.objectives : [];
+      const target = nearestObjective(
+        objectives, observation.team, soldiers, observation.map, lostObjectiveIds,
+      );
+      if (target) {
+        const mustReissue = target.id !== tacticalObjectiveId || lostObjectiveIds.has(target.id);
+        tacticalObjectiveId = target.id;
+        if (mustReissue) {
+          lostObjectiveIds.delete(target.id);
           return [{
             type: 'attackMove',
-            ids: soldiers,
-            x: visibleTarget?.x ?? 0,
-            z: visibleTarget?.z ?? 0,
+            ids: soldiers.map((unit) => unit.id),
+            x: target.point.x,
+            z: target.point.z,
           }];
         }
+        return [];
       }
 
-      return [];
+      tacticalObjectiveId = null;
+      if (objectives.length > 0 || fallbackTacticsStarted || soldiers.length === 0) return [];
+
+      const visibleTarget = observation.units.visibleEnemies
+        .filter((unit) => unit.hp > 0)
+        .sort((left, right) => left.id - right.id)[0];
+      fallbackTacticsStarted = true;
+      return [{
+        type: 'attackMove',
+        ids: soldiers.map((unit) => unit.id),
+        x: visibleTarget?.x ?? 0,
+        z: visibleTarget?.z ?? 0,
+      }];
+
     },
   };
 }
