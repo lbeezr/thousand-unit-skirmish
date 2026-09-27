@@ -6292,7 +6292,7 @@ const server = createServer(async (request, response) => {
     response.end('Forbidden');
     return;
   }
-  const publicClientAsset = ['environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs', 'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs', 'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs', 'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs', 'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs', 'src/water-surface-geometry.mjs'].includes(relative);
+  const publicClientAsset = ['environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs', 'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs', 'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs', 'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs', 'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs', 'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs'].includes(relative);
   const publicUiAsset = [
     'assets/ui/cursors/select-add.png',
     'assets/ui/cursors/select-remove.png',
@@ -6329,8 +6329,13 @@ const server = createServer(async (request, response) => {
   const publicEnvironmentPilotAsset = path.dirname(relative) === 'assets/environment/frontier-cliff-pilot-v1/runtime'
     && /^(cliff-color-0[0-7]\.webp|cliff-depth-0[0-7]\.png)$/.test(path.basename(relative));
   const publicMapAsset = path.dirname(relative) === 'maps' && path.extname(relative) === '.json';
+  const buildingPackRoot = 'assets/buildings/town-center-lifecycle-meshy-v1';
+  const publicBuildingLifecycleManifest = relative === `${buildingPackRoot}/lifecycle-grid.json`;
+  const publicBuildingLifecycleRuntimeAsset = path.dirname(relative) === `${buildingPackRoot}/runtime`
+    && /^(?:town-center-(?:foundation|frame|complete|damaged|critical)-view-\d{2}\.webp|team-mask-(?:foundation|frame|complete|damaged|critical)-view-\d{2}\.png)$/.test(path.basename(relative));
   if (!publicClientAsset && !publicEnvironmentModule && !publicEnvironmentAsset && !publicUiAsset
-    && !publicInteractiveEnvironmentAsset && !publicEnvironmentPilotAsset && !publicMapAsset) {
+    && !publicInteractiveEnvironmentAsset && !publicEnvironmentPilotAsset && !publicMapAsset
+    && !publicBuildingLifecycleManifest && !publicBuildingLifecycleRuntimeAsset) {
     response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
     response.end('Not found');
     return;

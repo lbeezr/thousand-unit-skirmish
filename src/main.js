@@ -4,6 +4,10 @@ import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import * as THREE from 'three';
 import {
+  createCapturedBuildingSprite, disposeCapturedBuildingSprite,
+  updateCapturedBuildingSprite,
+} from './captured-building-art.mjs';
+import {
   addObstacleEnvironmentSprites, createConstructionGroundInstances,
   createEnvironmentSprite, createEnvironmentSpriteInstances,
   createGroundSurfaces, environmentTheme, setEnvironmentSpriteInstance,
@@ -415,6 +419,7 @@ const unitLodDirtyRoleMasks = [0, 0];
 const unitLodTeamDirty = [false, false];
 let unitLowDetailActive = false;
 const mapObjects = [];
+const capturedBuildingVisuals = [];
 let forestTreeSlots = new Map();
 let forestStumpSlots = new Map();
 let forestStumpMesh = null;
@@ -661,12 +666,14 @@ function clearMapObjects() {
   for (const object of mapObjects) {
     scene.remove(object);
     object.traverse((child) => {
+      if (child.isSprite) disposeCapturedBuildingSprite(child);
       child.geometry?.dispose();
       const materials = Array.isArray(child.material) ? child.material : [child.material];
       for (const material of materials) material?.dispose();
     });
   }
   mapObjects.length = 0;
+  capturedBuildingVisuals.length = 0;
   townCenterProductionLamps[0] = null;
   townCenterProductionLamps[1] = null;
 }
@@ -701,15 +708,19 @@ function addTownCenterVisual(spawn, definition) {
     definition.spawnPoints, spawn.team, definition.width, definition.height,
   );
   const { x, z } = townCenter;
+  const group = new THREE.Group();
+  group.position.set(x, 0, z);
+  const fallbackRoot = new THREE.Group();
+  group.add(fallbackRoot);
   const stone = new THREE.MeshBasicMaterial({ color: 0x9b9580 });
   const slate = new THREE.MeshBasicMaterial({ color: 0x363d3f });
   const timber = new THREE.MeshBasicMaterial({ color: 0x514333 });
   const doorMaterial = new THREE.MeshBasicMaterial({ color: 0x2d302b });
   const piece = (geometry, material, px, py, pz, angle = 0) => {
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(x + px, py, z + pz);
+    mesh.position.set(px, py, pz);
     mesh.rotation.z = angle;
-    addMapObject(mesh);
+    fallbackRoot.add(mesh);
     return mesh;
   };
   piece(new THREE.BoxGeometry(2.65, 0.22, 2.4), stone, 0, 0.11, 0);
@@ -725,15 +736,25 @@ function addTownCenterVisual(spawn, definition) {
   piece(new THREE.BoxGeometry(0.74, 1.64, 0.74), stone, -0.73, 1.03, -0.63);
   piece(new THREE.ConeGeometry(0.67, 0.62, 4), slate, -0.73, 2.13, -0.63).rotation.y = Math.PI / 4;
   const standardRoot = new THREE.Group();
-  standardRoot.position.set(x - 0.73, 0, spawn.z - 0.23);
+  standardRoot.position.set(-0.73, 0, -0.23);
   addBuildingStandard(standardRoot, spawn.team, 0, 0, 2.06);
-  addMapObject(standardRoot);
-  const productionLamp = piece(
+  fallbackRoot.add(standardRoot);
+
+  const capturedSprite = createCapturedBuildingSprite({ teamColor: TEAM_HEX[spawn.team] });
+  group.add(capturedSprite);
+  const productionLamp = new THREE.Mesh(
     new THREE.OctahedronGeometry(0.15, 0),
     new THREE.MeshBasicMaterial({ color: TEAM_HEX[spawn.team], transparent: true, opacity: 0.88 }),
-    0, 1.09, 0.93,
   );
+  productionLamp.position.set(0, 1.09, 0.93);
   productionLamp.visible = false;
+  group.add(productionLamp);
+  addMapObject(group);
+  capturedBuildingVisuals.push({
+    sprite: capturedSprite,
+    fallbackRoot,
+    lifecycleInput: { complete: true, progress: 1 },
+  });
   townCenterProductionLamps[spawn.team] = productionLamp;
 }
 
@@ -8635,6 +8656,10 @@ function animate(now) {
     if (moveMarkerAge > 1.05) moveMarker.visible = false;
   }
   updateResourceNodeCallouts(now);
+  for (const visual of capturedBuildingVisuals) {
+    updateCapturedBuildingSprite(visual.sprite, camera, visual.lifecycleInput);
+    if (visual.sprite.visible) visual.fallbackRoot.visible = false;
+  }
   renderer.render(scene, camera);
   drawMinimap(now);
   fpsFrames++;

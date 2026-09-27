@@ -1,0 +1,583 @@
+{
+  "schema": "thousand-unit-skirmish.building-lifecycle-reference.v1",
+  "asset": "town-center",
+  "status": "runtime-integrated; complete-state-live; lifecycle-selection-ready",
+  "camera": {
+    "projection": "orthographic",
+    "framePixels": [
+      640,
+      640
+    ],
+    "pixelsPerWorldUnit": 128,
+    "elevationDegrees": 46,
+    "azimuthDegrees": [
+      0,
+      45,
+      90,
+      135,
+      180,
+      225,
+      270,
+      315
+    ],
+    "anchorPixelFromTopLeft": [
+      320,
+      376
+    ],
+    "background": "transparent"
+  },
+  "stateOrder": [
+    "foundation",
+    "frame",
+    "complete",
+    "damaged",
+    "critical"
+  ],
+  "creditSummary": {
+    "newStates": 4,
+    "imageTo3D": 120,
+    "optimization": 20,
+    "totalNewSpend": 140,
+    "completePilotSpend": 35,
+    "cumulativeTownCenterMeshySpend": 175
+  },
+  "runtimeFrames": {
+    "pathPattern": "runtime/town-center-{state}-view-{view}.webp",
+    "format": "WebP",
+    "pixels": [
+      640,
+      640
+    ],
+    "quality": 92,
+    "teamColorMaskFormat": "RGBA PNG; alpha selects team-color regions"
+  },
+  "completeState": {
+    "state": "complete",
+    "label": "Complete",
+    "buildProgress": 1.0,
+    "status": "gameplay-runtime; default-visual-for-static-town-center",
+    "referencePack": "../town-center-meshy-review-v1",
+    "contactSheet": "previews/town-center-complete-eight-view.webp",
+    "contactSheetSha256": "21eb268abba18781df8e4cf3131b450c4715de40972feb02fe2657ff76ad3c7d",
+    "views": [
+      {
+        "index": 0,
+        "azimuthDegrees": 0,
+        "path": "runtime/town-center-complete-view-00.webp",
+        "sha256": "48dfad36d5287fad943d4ff1b779046c33ebb473cef2dc3d3ce1fcf0812da03c",
+        "bytes": 31996,
+        "teamMaskPath": "runtime/team-mask-complete-view-00.png",
+        "teamMaskSha256": "a75c9f4768601d1898ef0931da9b282be4fd17f7b27a8e242016410ba64d5fe6",
+        "teamMaskBytes": 2866
+      },
+      {
+        "index": 1,
+        "azimuthDegrees": 45,
+        "path": "runtime/town-center-complete-view-01.webp",
+        "sha256": "fd7b81ef02be3d6f79409644f200d18fa64515a14498459459467440b502f121",
+        "bytes": 37714,
+        "teamMaskPath": "runtime/team-mask-complete-view-01.png",
+        "teamMaskSha256": "6c15b623ef149d539a8312b7ac6ccc61eff7cf2f25c01dad0e5b234185704d45",
+        "teamMaskBytes": 2843
+      },
+      {
+        "index": 2,
+        "azimuthDegrees": 90,
+        "path": "runtime/town-center-complete-view-02.webp",
+        "sha256": "f7af60700bc7264b931c9648ce88135af4eb6e4081aeb327df916cc534501cdf",
+        "bytes": 27452,
+        "teamMaskPath": "runtime/team-mask-complete-view-02.png",
+        "teamMaskSha256": "2224bcc75f96e7e0bf70f1c9fbbd701661c9184814f7971b1686ec7c397337b7",
+        "teamMaskBytes": 2554
+      },
+      {
+        "index": 3,
+        "azimuthDegrees": 135,
+        "path": "runtime/town-center-complete-view-03.webp",
+        "sha256": "ff99c01f1cca72a131f7d6ca3acc272ce66b3557893f97349a4507a5c33bfa59",
+        "bytes": 34154,
+        "teamMaskPath": "runtime/team-mask-complete-view-03.png",
+        "teamMaskSha256": "9be96cc11c7ce4fba242859a1491d2b23a6a7b5e351e139ce06225fe989bad6e",
+        "teamMaskBytes": 2715
+      },
+      {
+        "index": 4,
+        "azimuthDegrees": 180,
+        "path": "runtime/town-center-complete-view-04.webp",
+        "sha256": "7ad6ba07556ae97bf221aa715f124ad5479451862a3004681af8dc6ef7ccfa22",
+        "bytes": 28606,
+        "teamMaskPath": "runtime/team-mask-complete-view-04.png",
+        "teamMaskSha256": "4b256dff99ebb9a27a47596167bc26c3491db2f0e346c36f1e16caeead5082fe",
+        "teamMaskBytes": 2726
+      },
+      {
+        "index": 5,
+        "azimuthDegrees": 225,
+        "path": "runtime/town-center-complete-view-05.webp",
+        "sha256": "8a0081d32ef6626c7d7bd60f209927865ee27bc43b2d4ad910cb0251e2c96968",
+        "bytes": 35992,
+        "teamMaskPath": "runtime/team-mask-complete-view-05.png",
+        "teamMaskSha256": "5ff033068cd226837cbff658871031ed81e4c41cc61df909b55ed84fb1cf6976",
+        "teamMaskBytes": 2680
+      },
+      {
+        "index": 6,
+        "azimuthDegrees": 270,
+        "path": "runtime/town-center-complete-view-06.webp",
+        "sha256": "68fede05b23acfdb451c6fb7a827d4e9737d2de1314eb49b18f9ec41f87c1ab6",
+        "bytes": 28212,
+        "teamMaskPath": "runtime/team-mask-complete-view-06.png",
+        "teamMaskSha256": "2224bcc75f96e7e0bf70f1c9fbbd701661c9184814f7971b1686ec7c397337b7",
+        "teamMaskBytes": 2554
+      },
+      {
+        "index": 7,
+        "azimuthDegrees": 315,
+        "path": "runtime/town-center-complete-view-07.webp",
+        "sha256": "5acc9400861970b839c68c1165eb685495448ba5db4e00742f7d4e79c0ab9419",
+        "bytes": 37268,
+        "teamMaskPath": "runtime/team-mask-complete-view-07.png",
+        "teamMaskSha256": "fe7b8654b53b431c828839874a6cd81292927d4a9570644368db54f8f22464e7",
+        "teamMaskBytes": 2809
+      }
+    ]
+  },
+  "states": [
+    {
+      "state": "foundation",
+      "label": "Foundation",
+      "buildProgress": 0.05,
+      "status": "runtime-state-ready; awaits-building-lifecycle-input",
+      "sourceConcept": "../town-center-state-concepts-v1/source/town-center-foundation.png",
+      "sourceConceptSha256": "2be54448fade7ea0cbbc2687cca47dce5561655985f93e2bc85ca25c1bcdbd87",
+      "generationTaskId": "01a0dfa4-d488-73f7-8704-54ccfba44fb0",
+      "optimizationTaskId": "01a0dfaa-e5ce-7361-bec9-7b349507ac38",
+      "credits": {
+        "imageTo3D": 30,
+        "optimization": 5,
+        "total": 35
+      },
+      "optimizedModel": {
+        "localProductionOutput": "meshy_output/town-center-lifecycle-v1/models/town-center-foundation-optimized.glb",
+        "sha256": "3b448a38bb1552b094b5b9dee6e341e19886e5ae01495a6f5940fd427b102c3e",
+        "bytes": 61915288,
+        "triangles": 100459
+      },
+      "contactSheet": "previews/town-center-foundation-eight-view.webp",
+      "contactSheetSha256": "105e57b6a97a4a473516a57825193776a16ba291c5f4e43d01f76acc688eb39b",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/town-center-foundation-view-00.webp",
+          "sha256": "4189c1e696e1c6f66b848e6b79a7a905f329482387a8c7e9d99f6cf4ce11ec0c",
+          "bytes": 55056,
+          "teamMaskPath": "runtime/team-mask-foundation-view-00.png",
+          "teamMaskSha256": "5b9e177200ac5ceb5bc740fa5744dc2637a7add68bbedf83c8d987ccbd8d6020",
+          "teamMaskBytes": 2775
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/town-center-foundation-view-01.webp",
+          "sha256": "f13e2ded2bf92175e778e99360fab76d31e768841d7d36e9f0faa00692cb640d",
+          "bytes": 60692,
+          "teamMaskPath": "runtime/team-mask-foundation-view-01.png",
+          "teamMaskSha256": "c4ca7e689c67b99c9d3053f67c91d490869d8e8dcfa3202572df037b195c2b7a",
+          "teamMaskBytes": 2820
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/town-center-foundation-view-02.webp",
+          "sha256": "b1bf59080b34af2750c9995634fb5fbef33e0d7f677c325d9395fef10b0ac2df",
+          "bytes": 51188,
+          "teamMaskPath": "runtime/team-mask-foundation-view-02.png",
+          "teamMaskSha256": "1f1f603e8336eca97480df79c2fe06a8fbc4d2080a75b8fc27d0b3af49e527cb",
+          "teamMaskBytes": 2569
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/town-center-foundation-view-03.webp",
+          "sha256": "c4d515f4921251fc1cda4225fbc440798fe420fc5070511afc76188cc9bd294a",
+          "bytes": 55204,
+          "teamMaskPath": "runtime/team-mask-foundation-view-03.png",
+          "teamMaskSha256": "33e8941cbc744462c17a287b326ae685b6ded043602827333e06d8f3bcb95246",
+          "teamMaskBytes": 2728
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/town-center-foundation-view-04.webp",
+          "sha256": "5840964a13781a0eb4a6241f61c1dd2579d25317a1f81b5921744c7669b24651",
+          "bytes": 49542,
+          "teamMaskPath": "runtime/team-mask-foundation-view-04.png",
+          "teamMaskSha256": "495c1abe695ba922d2bf0440e5ddadd6d3ebf76fc91abf0a166739cba709765a",
+          "teamMaskBytes": 2677
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/town-center-foundation-view-05.webp",
+          "sha256": "e275e9473ee7d0fc5849685c9c419c7e5183abf1c78ab0eea2a1da04d7a45051",
+          "bytes": 55510,
+          "teamMaskPath": "runtime/team-mask-foundation-view-05.png",
+          "teamMaskSha256": "d5dab8d619fc8da8fc0953af0c94b693f01cdcd67277bf3c53ab3cf70b8be7d0",
+          "teamMaskBytes": 2711
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/town-center-foundation-view-06.webp",
+          "sha256": "11912ad6bef1a244946fff5615e181bffe6a6e5535fe5aa3dd5954b0823b5c11",
+          "bytes": 50064,
+          "teamMaskPath": "runtime/team-mask-foundation-view-06.png",
+          "teamMaskSha256": "26f704a1faf2eaffecaf8587ca69517edde50d3d4c0b544635006198fa13b34f",
+          "teamMaskBytes": 2573
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/town-center-foundation-view-07.webp",
+          "sha256": "b34804d3ef0363693ba14f7451866f5893f9a342ac8dcb12366359b5a1aa7de4",
+          "bytes": 59622,
+          "teamMaskPath": "runtime/team-mask-foundation-view-07.png",
+          "teamMaskSha256": "b4b5428340871b87aebf85d67bf6590965b673ddba38d536e432398fa6b7d826",
+          "teamMaskBytes": 2844
+        }
+      ]
+    },
+    {
+      "state": "frame",
+      "label": "Frame",
+      "buildProgress": 0.5,
+      "status": "runtime-state-ready; awaits-building-lifecycle-input",
+      "sourceConcept": "../town-center-state-concepts-v1/source/town-center-frame.png",
+      "sourceConceptSha256": "713f0b200c732aa2c5da1d977255899bee5690382ee2c5c636bb247aca4344f8",
+      "generationTaskId": "01a0dfaf-69e6-7051-a101-40cf327e8809",
+      "optimizationTaskId": "01a0dfb7-2e73-74c1-835f-d7e008d1b350",
+      "credits": {
+        "imageTo3D": 30,
+        "optimization": 5,
+        "total": 35
+      },
+      "optimizedModel": {
+        "localProductionOutput": "meshy_output/town-center-lifecycle-v1/models/town-center-frame-optimized.glb",
+        "sha256": "8b8ef42c61443e06b65c87276297c0b2d64e3de27db287a8cdd352d1b11a81ad",
+        "bytes": 34568232,
+        "triangles": 100207
+      },
+      "contactSheet": "previews/town-center-frame-eight-view.webp",
+      "contactSheetSha256": "8e9224be6584520b12230b9737b7520d7ea8c5af76e5b92698342007becd29bb",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/town-center-frame-view-00.webp",
+          "sha256": "2d81e8dbda394b3f7822e27f59a3827bd7963d2d6cd5c7fa9975778e4dc2bce6",
+          "bytes": 39450,
+          "teamMaskPath": "runtime/team-mask-frame-view-00.png",
+          "teamMaskSha256": "655e90cb0e307bf5edf27aaa35ce02af32eef7f6672d726c98ccb6187442a37c",
+          "teamMaskBytes": 2829
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/town-center-frame-view-01.webp",
+          "sha256": "248238376dce3bc46cf1717f836ce2a709fe470ceb7356d0c4af77f7ca3c539a",
+          "bytes": 45378,
+          "teamMaskPath": "runtime/team-mask-frame-view-01.png",
+          "teamMaskSha256": "96b93af62d15b66c4a1284ad90cf89afd989329bc5fd8368f27cf57f44fbc213",
+          "teamMaskBytes": 2831
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/town-center-frame-view-02.webp",
+          "sha256": "8f86916f7c6dac831431460740ec1afafc45f75fbb1f531e5365fce6a16996e7",
+          "bytes": 34550,
+          "teamMaskPath": "runtime/team-mask-frame-view-02.png",
+          "teamMaskSha256": "71fc217f94c6e1b8e4a00e96d567e887e176726cc28a05c5a854229fa907f766",
+          "teamMaskBytes": 2587
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/town-center-frame-view-03.webp",
+          "sha256": "76740a844b2e1a838959e27c1b50c14dda5c28e4d0cf0591b3ea9c7ae7308c91",
+          "bytes": 46342,
+          "teamMaskPath": "runtime/team-mask-frame-view-03.png",
+          "teamMaskSha256": "5d7c644119622cfb9320576db818464322a3325fb24c8fa18c3d1514f448cd3c",
+          "teamMaskBytes": 2762
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/town-center-frame-view-04.webp",
+          "sha256": "2031c9d98a4eff72c5c5b9e4bc9041ac391fc562de3fb045296d5fda5d29660c",
+          "bytes": 38424,
+          "teamMaskPath": "runtime/team-mask-frame-view-04.png",
+          "teamMaskSha256": "a8fff3e37b5209403fe855d9ee7deacf421944e88952857f8168a0dd96958abe",
+          "teamMaskBytes": 2753
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/town-center-frame-view-05.webp",
+          "sha256": "139c81dc9a7007354fcda2f85e24f4af7c7af90ebb62c9dc38be904a0f78765c",
+          "bytes": 47044,
+          "teamMaskPath": "runtime/team-mask-frame-view-05.png",
+          "teamMaskSha256": "c0bded7b4a1b3caba64dc068b68567183256484b271120c1543985a46c99260a",
+          "teamMaskBytes": 2729
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/town-center-frame-view-06.webp",
+          "sha256": "6b87e5fe33f67312c521c8684942e6bbafb81c4b1764a9a0fc8aecd878d65625",
+          "bytes": 35282,
+          "teamMaskPath": "runtime/team-mask-frame-view-06.png",
+          "teamMaskSha256": "e9f4d8edb78a757278623c9ed6de353821177c644454c01f65a8bd0ba43dd597",
+          "teamMaskBytes": 2564
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/town-center-frame-view-07.webp",
+          "sha256": "008abf5c3cfdc41c03c0bc758cac742a8db12d3f3985fcc1ddc424612e75b945",
+          "bytes": 44322,
+          "teamMaskPath": "runtime/team-mask-frame-view-07.png",
+          "teamMaskSha256": "a443e9dd7b65c5b36052857f7112f4d9754640e50b67fbe6d09b0dc24deaef53",
+          "teamMaskBytes": 2797
+        }
+      ]
+    },
+    {
+      "state": "damaged",
+      "label": "Damaged",
+      "healthRatio": 0.6,
+      "status": "runtime-state-ready; awaits-building-lifecycle-input",
+      "sourceConcept": "../town-center-state-concepts-v1/source/town-center-damaged.png",
+      "sourceConceptSha256": "30c7fdd1f01f2d249a6f603866f9cb999de9542225046d48844d24c91fae3446",
+      "generationTaskId": "01a0dfba-cf2f-7469-a194-e8e9e19ba079",
+      "optimizationTaskId": "01a0dfbf-0ff3-7611-8211-fffcc953cbb5",
+      "credits": {
+        "imageTo3D": 30,
+        "optimization": 5,
+        "total": 35
+      },
+      "optimizedModel": {
+        "localProductionOutput": "meshy_output/town-center-lifecycle-v1/models/town-center-damaged-optimized.glb",
+        "sha256": "f673dfbbea8861a958efb1e5a644b64c50d211f82ddea71fa6af42101ca0722a",
+        "bytes": 58432664,
+        "triangles": 99409
+      },
+      "contactSheet": "previews/town-center-damaged-eight-view.webp",
+      "contactSheetSha256": "92a7e6cf1c4c224b0643d0d19baf367d3d1f5dc17dd18cc0e09a4d91a9d7f740",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/town-center-damaged-view-00.webp",
+          "sha256": "ec3872730a2d9bfebda25d947767a343d8bd8854c2f017b2f39e8a003f7463d5",
+          "bytes": 34972,
+          "teamMaskPath": "runtime/team-mask-damaged-view-00.png",
+          "teamMaskSha256": "61654d2c25a05b496d4700cfe4bd36f46edf500235920eece73dbf0d60214f1d",
+          "teamMaskBytes": 2891
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/town-center-damaged-view-01.webp",
+          "sha256": "d84e7de6ce3de4cbe248880d74c1c5ab96fce993639357ad6d72389e14dc0edd",
+          "bytes": 40572,
+          "teamMaskPath": "runtime/team-mask-damaged-view-01.png",
+          "teamMaskSha256": "8c6fb680216f8557208ec18e30dc9ce3788020f0be5a325b1295e1a40126fe01",
+          "teamMaskBytes": 2912
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/town-center-damaged-view-02.webp",
+          "sha256": "cef009480aa8ae3de583236f60eb6e42c393e90644e7666afe445131b818df18",
+          "bytes": 31150,
+          "teamMaskPath": "runtime/team-mask-damaged-view-02.png",
+          "teamMaskSha256": "45672211790f28dbc3217b092ec8e1bcf0b0d86c947d63d92b6a6dbba6d2cda4",
+          "teamMaskBytes": 2653
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/town-center-damaged-view-03.webp",
+          "sha256": "c63da6713595b912da5f037e6a168fa02b47f89fc7bbf7a8a2352f439747cfea",
+          "bytes": 37290,
+          "teamMaskPath": "runtime/team-mask-damaged-view-03.png",
+          "teamMaskSha256": "fc2e518316a85e101df103663cb8e0067d4cd417f9a9538a2ce4b2167b94930b",
+          "teamMaskBytes": 2836
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/town-center-damaged-view-04.webp",
+          "sha256": "d07ed2ef4532f4f995a292b3dcba6745546ee6a894de9742d3c06910bfde7783",
+          "bytes": 30512,
+          "teamMaskPath": "runtime/team-mask-damaged-view-04.png",
+          "teamMaskSha256": "3d0de14d5c3faa8ed370b09a1a49543b81f4ed7943db6d87fab6f4388217acfc",
+          "teamMaskBytes": 2855
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/town-center-damaged-view-05.webp",
+          "sha256": "9842992a39a6d5512b4d4eabb261cb8696dcad7826c42b12b775157f76cfca34",
+          "bytes": 38614,
+          "teamMaskPath": "runtime/team-mask-damaged-view-05.png",
+          "teamMaskSha256": "cccbad120275b8fc078002ca7ce5817ca563f8973ac4cace313fec3debc12cf3",
+          "teamMaskBytes": 2749
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/town-center-damaged-view-06.webp",
+          "sha256": "4d8676ba737fc14ce0a019f66e1b465f4952926f77199d46e830477a311fcdbd",
+          "bytes": 31250,
+          "teamMaskPath": "runtime/team-mask-damaged-view-06.png",
+          "teamMaskSha256": "67d27e5dbe0ac1571e371b07bce3bd1409107e39a8fcd230e1c2ad8f3272b783",
+          "teamMaskBytes": 2636
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/town-center-damaged-view-07.webp",
+          "sha256": "077b6da35851b7fd8c31eee2fe85f3609c17234c5512d3659075baf0e918e01f",
+          "bytes": 39336,
+          "teamMaskPath": "runtime/team-mask-damaged-view-07.png",
+          "teamMaskSha256": "4bfab2f98f111acdef6363b84ac5bd5abccb872dba23c9309ea642fb17d89c8a",
+          "teamMaskBytes": 2888
+        }
+      ]
+    },
+    {
+      "state": "critical",
+      "label": "Critical",
+      "healthRatio": 0.3,
+      "status": "runtime-state-ready; awaits-building-lifecycle-input",
+      "sourceConcept": "../town-center-state-concepts-v1/source/town-center-critical.png",
+      "sourceConceptSha256": "1e7c6e2ac9121ea19ab1007d10921bc69a888394c60670ae5719f27dee34a1d5",
+      "generationTaskId": "01a0dfba-fd70-77d4-a175-8a526f87584f",
+      "optimizationTaskId": "01a0dfc4-32f5-7133-a390-c40bfdb9b9c1",
+      "credits": {
+        "imageTo3D": 30,
+        "optimization": 5,
+        "total": 35
+      },
+      "optimizedModel": {
+        "localProductionOutput": "meshy_output/town-center-lifecycle-v1/models/town-center-critical-optimized.glb",
+        "sha256": "6dc71fd459cbb4f85920e82efc58dea7685281d30f9eb83e4a52dbc2dd91dece",
+        "bytes": 58028052,
+        "triangles": 101278
+      },
+      "contactSheet": "previews/town-center-critical-eight-view.webp",
+      "contactSheetSha256": "6ee45214e63c450bcec5bd778095d4fa94e8cae1d8df2e60af959f136827df99",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/town-center-critical-view-00.webp",
+          "sha256": "cd9be906431f10fed19d76719df0e0aa5ddf6b13c9310de4c3de4db5759af011",
+          "bytes": 38098,
+          "teamMaskPath": "runtime/team-mask-critical-view-00.png",
+          "teamMaskSha256": "2a38ca9257b77f997f9f7e704b88451f757004c14eaeea8cb605e717a17c2aa2",
+          "teamMaskBytes": 2934
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/town-center-critical-view-01.webp",
+          "sha256": "f082f95c067615b89cc8e13dd8103aab0941abe2418fdaf403cb463c1debc7f3",
+          "bytes": 42300,
+          "teamMaskPath": "runtime/team-mask-critical-view-01.png",
+          "teamMaskSha256": "476957e37a1c1b2da6718934aa35b7d5be119c970355efb68b5360c642d3f60d",
+          "teamMaskBytes": 2856
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/town-center-critical-view-02.webp",
+          "sha256": "33a64b86953821e272dfa7660b570190673f1c29c469d411ef99ec7872e8c535",
+          "bytes": 33412,
+          "teamMaskPath": "runtime/team-mask-critical-view-02.png",
+          "teamMaskSha256": "93474b6fc4abbbe6c84cd01f0b624d67252ba67bee44630bd2628310b8ed1f4f",
+          "teamMaskBytes": 2643
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/town-center-critical-view-03.webp",
+          "sha256": "82905f56e67c7ff026b37648d1b97af0d9d416a6fd84a4c2b6f37610d703f861",
+          "bytes": 39788,
+          "teamMaskPath": "runtime/team-mask-critical-view-03.png",
+          "teamMaskSha256": "f3f67ef628cd13eeaff28d711ed921aa752b9a16cab5c0e0b8bc09a44f2999b8",
+          "teamMaskBytes": 3061
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/town-center-critical-view-04.webp",
+          "sha256": "3bacb96e594ae8e62362d80ddcc35eff86697a6b08cd88db71db7dbc1c4e7574",
+          "bytes": 35434,
+          "teamMaskPath": "runtime/team-mask-critical-view-04.png",
+          "teamMaskSha256": "e7a037733e764844f15583f80e1cefd4455ef7b610838c16df5af8cd6f9c0699",
+          "teamMaskBytes": 3186
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/town-center-critical-view-05.webp",
+          "sha256": "802a858ae959b597f0063de3b6b37525b5d15e707167401af7aef39f3f4dc6a7",
+          "bytes": 40778,
+          "teamMaskPath": "runtime/team-mask-critical-view-05.png",
+          "teamMaskSha256": "1bfe554d9f9ab59f12796a77d0262530a85365b0699d046ecaa7510b2725ec9b",
+          "teamMaskBytes": 2929
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/town-center-critical-view-06.webp",
+          "sha256": "6b4d8e8188a9f644526d79987db9355e7b84e400ef79c536395d5c6abc3ff33c",
+          "bytes": 33638,
+          "teamMaskPath": "runtime/team-mask-critical-view-06.png",
+          "teamMaskSha256": "c4b31f5a097789d56ef854940936a75ceab8e2aab0a172b52a4f985e8c8df6a9",
+          "teamMaskBytes": 2593
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/town-center-critical-view-07.webp",
+          "sha256": "3d762da1800d14f979e2697370eea52ec3a4c00a2e78166b1398848f14432efd",
+          "bytes": 40534,
+          "teamMaskPath": "runtime/team-mask-critical-view-07.png",
+          "teamMaskSha256": "aade1f87bcf235265de9a4d62920aefb67c5af90423d0731c772a1fcdf9c9902",
+          "teamMaskBytes": 2896
+        }
+      ]
+    }
+  ],
+  "knownLimits": [
+    "The four new optimized GLBs are retained in local ignored meshy_output and are not checked into this review pack.",
+    "The models were generated from single three-quarter concept images; unseen details are inferred.",
+    "Captured images are art-review references and are not assigned to gameplay building states.",
+    "Town Centers remain static map landmarks in the current game; lifecycle behavior needs separate gameplay support and art review."
+  ],
+  "stateMapping": {
+    "construction": {
+      "foundationAtOrBelow": 0.275,
+      "frameBelow": 1.0
+    },
+    "health": {
+      "criticalAtOrBelow": 0.3,
+      "damagedAtOrBelow": 0.6
+    }
+  }
+}

@@ -50,6 +50,43 @@ function card(title, detail, badge, badgeClass, image) {
   return article;
 }
 
+function stateReviewCard(state) {
+  const article = element('article', 'variant-card lifecycle-review-card');
+  const stage = element('div', 'image-stage contact-sheet-stage');
+  const image = document.createElement('img');
+  image.src = state.contactSheet;
+  image.alt = `${state.label} Town Center Meshy model shown from eight captured camera directions`;
+  image.width = 2560;
+  image.height = 1348;
+  image.loading = 'lazy';
+  image.decoding = 'async';
+  stage.append(image);
+  const copy = element('div', 'card-copy');
+  copy.append(element('h3', '', state.label));
+  copy.append(element('p', '', state.detail));
+  copy.append(element('span', 'tag reference', 'MESHY MODEL · REVIEW ONLY'));
+
+  const details = element('details', 'angle-details');
+  details.append(element('summary', '', 'Show all eight individual views'));
+  const grid = element('div', 'variant-grid angle-grid');
+  for (let view = 0; view < 8; view += 1) {
+    const index = String(view).padStart(2, '0');
+    grid.append(card(
+      `View ${String(view + 1).padStart(2, '0')}`,
+      `${view * 45}° azimuth · 46° elevation`,
+      'MESHY REFERENCE',
+      'reference',
+      {
+        src: state.viewSource(index),
+        alt: `${state.label} Town Center model at ${view * 45} degrees`,
+      },
+    ));
+  }
+  details.append(grid);
+  article.append(stage, copy, details);
+  return article;
+}
+
 function pairedStateCard(building, state) {
   const article = element('article', 'variant-card');
   const pair = element('div', 'team-pair');
@@ -99,20 +136,37 @@ function render() {
     ));
   }
 
+  const lifecycleRoot = `${BUILDING_ASSET_ROOT}/town-center-lifecycle-meshy-v1`;
+  const pilotRoot = `${BUILDING_ASSET_ROOT}/town-center-meshy-review-v1`;
+  const lifecycleModels = [
+    {
+      key: 'foundation', label: 'Foundation', detail: '5% construction · 100,459 triangles',
+      contactSheet: `${lifecycleRoot}/previews/town-center-foundation-eight-view.webp`,
+      viewSource: (index) => `${lifecycleRoot}/runtime/town-center-foundation-view-${index}.webp`,
+    },
+    {
+      key: 'frame', label: 'Frame', detail: '50% construction · 100,207 triangles',
+      contactSheet: `${lifecycleRoot}/previews/town-center-frame-eight-view.webp`,
+      viewSource: (index) => `${lifecycleRoot}/runtime/town-center-frame-view-${index}.webp`,
+    },
+    {
+      key: 'complete', label: 'Complete', detail: 'Finished · intact · 98,940 triangles',
+      contactSheet: `${lifecycleRoot}/previews/town-center-complete-eight-view.webp`,
+      viewSource: (index) => `${pilotRoot}/runtime/town-center-view-${index}.webp`,
+    },
+    {
+      key: 'damaged', label: 'Damaged', detail: '60% health · 99,409 triangles',
+      contactSheet: `${lifecycleRoot}/previews/town-center-damaged-eight-view.webp`,
+      viewSource: (index) => `${lifecycleRoot}/runtime/town-center-damaged-view-${index}.webp`,
+    },
+    {
+      key: 'critical', label: 'Critical', detail: '30% health · 101,278 triangles',
+      contactSheet: `${lifecycleRoot}/previews/town-center-critical-eight-view.webp`,
+      viewSource: (index) => `${lifecycleRoot}/runtime/town-center-critical-view-${index}.webp`,
+    },
+  ];
   const meshy = document.querySelector('#town-center-meshy');
-  for (let view = 0; view < 8; view += 1) {
-    const index = String(view).padStart(2, '0');
-    meshy.append(card(
-      `View ${String(view + 1).padStart(2, '0')}`,
-      `${view * 45}° azimuth · 46° elevation`,
-      'MESHY REFERENCE',
-      'reference',
-      {
-        src: `${BUILDING_ASSET_ROOT}/town-center-meshy-review-v1/runtime/town-center-view-${index}.webp`,
-        alt: `Optimized Meshy Town Center reference at ${view * 45} degrees`,
-      },
-    ));
-  }
+  for (const state of lifecycleModels) meshy.append(stateReviewCard(state));
 
   const buildingPacks = [
     { target: 'barracks-states', folder: 'barracks-sprite-test-v1', stem: 'barracks', name: 'Barracks' },

@@ -10,7 +10,7 @@ This package contains a matched Town Center design for each visible construction
 | Damaged | 60% health | [town-center-damaged.png](source/town-center-damaged.png) |
 | Critical | 30% health | [town-center-critical.png](source/town-center-critical.png) |
 
-See [state-concepts.json](state-concepts.json) for hashes and processing status. Foundation, Frame, Damaged, and Critical are concept-ready only: they have not been uploaded to Meshy, converted to models, optimized, or rendered into sprite maps. The previous Meshy credit authorization applied to the finished-state pilot only. This package does not include the pilot's GLB files. Since the game currently uses Town Centers as static map landmarks, these concepts are exploratory and do not imply supported runtime lifecycle states.
+See [state-concepts.json](state-concepts.json) for hashes and processing status. Foundation, Frame, Damaged, and Critical were each processed as separate Meshy image-to-3D and optimization jobs; their eight-view captures are in the sibling [Town Center Meshy lifecycle runtime pack](../town-center-lifecycle-meshy-v1/README.md). This package keeps the matched 2D source designs, while optimized GLBs remain in local production output. The sibling lifecycle runtime pack contains all five captured states; Complete is now the in-game Town Center art. The other states are ready for a building that supplies construction progress or health, which current Town Center landmarks do not expose.
 
 The four lifecycle concepts were generated individually with Codex ImageGen on 2026-09-26. The generation prompts are not yet recorded in this package; source-file hashes are recorded in the manifest.
 
