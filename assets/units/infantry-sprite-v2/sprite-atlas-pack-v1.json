@@ -4,10 +4,10 @@
   "packVersion": "0.1.0",
   "maturity": "runtime-candidate",
   "provenance": {
-    "license": "Meshy API output; paid-plan ownership inferred from API access, since Meshy states free-plan users cannot use the API. Free-plan fallback: CC BY 4.0; attribution is recorded in README.md.",
+    "license": "Meshy API output; rights verified from successful API task receipts dated 2026-09-26 and Meshy's terms last updated 2026-09-19. Meshy states API access is unavailable on Free plans and paid-plan customers own Customer Output. Account-plan receipt not retained; evidence and links are recorded in README.md and docs/unit-character-meshy-pipeline.md.",
     "source": "One-image Meshy Infantry pilot, baked locally from the textured model and generated action GLBs",
     "authoringTool": "Three.js 0.180.0 browser capture tool",
-    "notes": "Exploratory body-only sprite. The pilot model omitted the source spear and shield. The capture tool fits a shared camera envelope across every sampled pose and facing, and strips Hips root translation so simulation movement stays authoritative. Rights inference and source links are recorded in README.md. Pivots and team mask still need visual review."
+    "notes": "Exploratory body-only sprite. The pilot model omitted the source spear and shield. The capture tool fits a shared camera envelope across every sampled pose and facing, and strips Hips root translation so simulation movement stays authoritative. Rights evidence and source links are recorded in README.md. Pivots and team mask still need visual review."
   },
   "files": [
     {

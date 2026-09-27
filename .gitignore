@@ -10,4 +10,5 @@ coverage/
 capture.json
 .game-dev/goals/
 assets/generated/
+meshy_output/
 .DS_Store
