@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "asset": "infantry-meshy-reference-v1",
+  "intendedUse": "single-image Meshy Image-to-3D input",
+  "imageCount": 1,
+  "images": [
+    {
+      "file": "source/infantry-reference.png",
+      "view": "front",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "26a103375b0082974a1e363c81d5cb8c38bbe9e729755a08e10d1cb5818f7235"
+    }
+  ],
+  "meshGeneration": {
+    "status": "not-submitted",
+    "provider": "Meshy",
+    "workflow": "Image-to-3D",
+    "taskId": null,
+    "creditsSpent": 0
+  }
+}

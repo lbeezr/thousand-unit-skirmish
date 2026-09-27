@@ -53,6 +53,13 @@ transparency; it does not replace `alphaMode`.
 - Clips specify `stateId`, optional `directionId`, and an explicit frame sequence
   with durations. A static state is one frame; no view count or animation rate
   is assumed.
+- A pack may include the optional top-level `capture` record described by
+  [`sprite-atlas-capture-v1.schema.json`](../schemas/sprite-atlas-capture-v1.schema.json).
+  It ties rendered frames to their source GLB, capture mode, fixed camera, and
+  per-frame pose. Use `camera-orbit` for building turntables and `model-pose` for
+  unit facing/animation sheets. Legacy orbit records may omit `captureMode` and
+  `frameRecords`; new model-pose captures require yaw, clip, and sample time for
+  every frame.
 
 ## Team masks and world bounds
 

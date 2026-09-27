@@ -1,0 +1,5 @@
+# Image-generation prompt
+
+The original prompt asked for an original polished 2D character sprite atlas for Thousand Unit Skirmish: a single transparent sheet with eight equal facing columns (away, away-right, right, toward-right, toward, toward-left, left, away-left) and seven pose rows (idle, three walk poses, attack wind-up, attack strike, defeated corpse). Every cell was to keep the same full-body Infantry design, silhouette, equipment, light, and scale. The style was a painterly cutout with broad material values, a weathered steel cap, ochre quilted tunic, brown leather, charcoal shield, wooden spear, and an Azure-blue sash as the only bright team cue. The camera was fixed oblique/isometric; the feet were to share a bottom-center pivot. No background, terrain, ring, shadow, labels, or text were requested.
+
+The generated result contains six visible rows rather than the requested seven. The actual frame layout is recorded in `manifest.json`; do not treat the prompt as evidence that the generated facings or pivots are correct.

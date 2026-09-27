@@ -1,0 +1,1946 @@
+{
+  "schemaVersion": 1,
+  "packId": "unit.archer-sprite-exploration",
+  "packVersion": "0.1.0",
+  "packKind": "source-only-unit-sprite-atlas",
+  "status": "exploration",
+  "runtimeReady": false,
+  "provenance": {
+    "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+    "source": "OpenAI ImageGen output exec-a097363d-89e1-4155-987a-c1381ebe3ccb.",
+    "authoringTool": "OpenAI ImageGen.",
+    "notes": "Transparent RGBA 8-by-6 concept atlas. All three view and pose sequences need facing, frame, pivot, and game-scale review before integration."
+  },
+  "unitRole": "archer",
+  "coordinateSystem": {
+    "imageOrigin": "top-left",
+    "worldUp": "+Y",
+    "worldForward": "+Z",
+    "worldRight": "+X",
+    "camera": "fixed oblique orthographic"
+  },
+  "atlas": {
+    "path": "archer-atlas-source.png",
+    "role": "source-image",
+    "sha256": "7a9416163b426ae0355aa74cc8e641f559ca0b27c3544335df20388644b83510",
+    "dimensionsPx": {
+      "width": 1448,
+      "height": 1086
+    },
+    "format": "PNG",
+    "channels": "rgba8",
+    "colorSpace": "srgb",
+    "alphaMode": "straight",
+    "frameGrid": {
+      "columns": 8,
+      "rows": 6,
+      "edgeRule": "floor(index * atlasDimension / cellCount)",
+      "columnEdgesPx": [
+        0,
+        181,
+        362,
+        543,
+        724,
+        905,
+        1086,
+        1267,
+        1448
+      ],
+      "rowEdgesPx": [
+        0,
+        181,
+        362,
+        543,
+        724,
+        905,
+        1086
+      ],
+      "gutterPx": 0
+    },
+    "runtimePath": "archer-atlas-runtime.png",
+    "runtimeSha256": "c45958f4bc972449b19936aab0ee0ede57e350f5d305a36cfd1742705c13d167"
+  },
+  "facingColumns": [
+    {
+      "column": 0,
+      "direction": "north",
+      "reviewStatus": "approximate"
+    },
+    {
+      "column": 1,
+      "direction": "north-east",
+      "reviewStatus": "approximate"
+    },
+    {
+      "column": 2,
+      "direction": "east",
+      "reviewStatus": "approximate"
+    },
+    {
+      "column": 3,
+      "direction": "south-east",
+      "reviewStatus": "approximate"
+    },
+    {
+      "column": 4,
+      "direction": "south",
+      "reviewStatus": "approximate"
+    },
+    {
+      "column": 5,
+      "direction": "south-west",
+      "reviewStatus": "approximate"
+    },
+    {
+      "column": 6,
+      "direction": "west",
+      "reviewStatus": "approximate"
+    },
+    {
+      "column": 7,
+      "direction": "north-west",
+      "reviewStatus": "approximate"
+    }
+  ],
+  "rows": [
+    {
+      "row": 0,
+      "id": "idle-ready",
+      "state": "idle",
+      "framesPerFacing": 1
+    },
+    {
+      "row": 1,
+      "id": "walk-step-a",
+      "state": "walk",
+      "framesPerFacing": 1
+    },
+    {
+      "row": 2,
+      "id": "walk-step-b",
+      "state": "walk",
+      "framesPerFacing": 1
+    },
+    {
+      "row": 3,
+      "id": "bow-draw",
+      "state": "attack",
+      "framesPerFacing": 1
+    },
+    {
+      "row": 4,
+      "id": "arrow-release",
+      "state": "attack",
+      "framesPerFacing": 1
+    },
+    {
+      "row": 5,
+      "id": "defeated-corpse",
+      "state": "defeated",
+      "framesPerFacing": 1
+    }
+  ],
+  "animationHints": {
+    "idle": {
+      "rows": [
+        0
+      ],
+      "loop": true,
+      "fps": 0
+    },
+    "walk": {
+      "rows": [
+        1,
+        2
+      ],
+      "loop": true,
+      "fps": 6
+    },
+    "attack": {
+      "rows": [
+        3,
+        4
+      ],
+      "loop": false,
+      "fps": 6
+    },
+    "defeated": {
+      "rows": [
+        5
+      ],
+      "loop": false,
+      "fps": 0
+    }
+  },
+  "teamTreatment": {
+    "bakedTeam": "azure",
+    "accent": "sky-blue cloth sash",
+    "emberVariant": "runtime accent-mask recolor",
+    "tintMask": "team-accent-mask.png",
+    "accentMask": {
+      "path": "team-accent-mask.png",
+      "role": "team-accent-mask",
+      "dimensionsPx": {
+        "width": 1448,
+        "height": 1086
+      },
+      "format": "PNG",
+      "channels": "gray8",
+      "maskChannel": "red",
+      "colorSpace": "linear-data",
+      "tintPolicy": "white applies full team hue while preserving source luminance and alpha; gray applies proportional tint; black preserves source RGB",
+      "values": {
+        "fullTeamTint": 255,
+        "preserveSource": 0
+      },
+      "source": "deterministic blue-hue/saturation classification of the Azure sash pixels",
+      "sha256": "257614ac19d38481e767efd6366ed99b45dd1afdb10271ee211fe46e61600c94",
+      "classifiedPixels": 27150
+    }
+  },
+  "anchors": {
+    "status": "heuristic-anchor-candidate; requires visual turn/step review in game",
+    "standingProposal": "per-facing standing-foot root shared across upright poses",
+    "defeatedNote": "each defeated pose uses a separate body-ground anchor; it does not calibrate standing poses"
+  },
+  "integration": {
+    "runtime": false,
+    "rendererChanges": false,
+    "notes": "Canonical sprite-atlas-pack-v1.json, an alpha-preserving edge-bled runtime page, frame metadata, pivots, clips, bounds, and a team-accent mask are prepared; renderer integration is pending."
+  },
+  "spriteRuntime": {
+    "contractVersion": 1,
+    "imageOrigin": "top-left",
+    "pivotAlphaThreshold": 96,
+    "alphaRectThreshold": 8,
+    "frameRectSemantics": "visible-alpha-rectangle-in-atlas-pixels",
+    "framePoseBoundsSemantics": "alpha-bounds-in-atlas-pixels-at-or-above-pivotAlphaThreshold",
+    "groundPivotSemantics": "per-facing standing-foot root shared across upright poses; defeated poses use a separate body-ground anchor",
+    "anchorCalibration": {
+      "standing": "per-facing root estimated from dark warm pixels in the lower 26% of the idle pose, then shared in cell-local coordinates across upright action and walk frames",
+      "footColorFilter": {
+        "hueDegrees": [
+          8,
+          62
+        ],
+        "saturationMin": 0.16,
+        "valueMax": 0.68
+      },
+      "footBandStartFraction": 0.74,
+      "defeated": "separate cell-center x and opaque-body lower-edge y; not used to calibrate standing frames",
+      "status": "heuristic-anchor-candidate; requires visual turn/step review in game"
+    },
+    "animations": [
+      {
+        "id": "idle@north",
+        "state": "idle",
+        "facing": "north",
+        "loop": true,
+        "fps": 0,
+        "frameDurationMs": 0,
+        "frameIds": [
+          "idle-ready@north"
+        ]
+      },
+      {
+        "id": "walk@north",
+        "state": "walk",
+        "facing": "north",
+        "loop": true,
+        "fps": 5.9880239520958085,
+        "frameDurationMs": 167,
+        "frameIds": [
+          "walk-step-a@north",
+          "walk-step-b@north"
+        ]
+      },
+      {
+        "id": "attack@north",
+        "state": "attack",
+        "facing": "north",
+        "loop": false,
+        "fps": 7.407407407407407,
+        "frameDurationMs": 135,
+        "frameIds": [
+          "bow-draw@north",
+          "arrow-release@north"
+        ]
+      },
+      {
+        "id": "defeat@north",
+        "state": "defeat",
+        "facing": "north",
+        "loop": false,
+        "fps": 0,
+        "frameDurationMs": 0,
+        "frameIds": [
+          "defeated-corpse@north"
+        ]
+      },
+      {
+        "id": "idle@north-east",
+        "state": "idle",
+        "facing": "north-east",
+        "loop": true,
+        "fps": 0,
+        "frameDurationMs": 0,
+        "frameIds": [
+          "idle-ready@north-east"
+        ]
+      },
+      {
+        "id": "walk@north-east",
+        "state": "walk",
+        "facing": "north-east",
+        "loop": true,
+        "fps": 5.9880239520958085,
+        "frameDurationMs": 167,
+        "frameIds": [
+          "walk-step-a@north-east",
+          "walk-step-b@north-east"
+        ]
+      },
+      {
+        "id": "attack@north-east",
+        "state": "attack",
+        "facing": "north-east",
+        "loop": false,
+        "fps": 7.407407407407407,
+        "frameDurationMs": 135,
+        "frameIds": [
+          "bow-draw@north-east",
+          "arrow-release@north-east"
+        ]
+      },
+      {
+        "id": "defeat@north-east",
+        "state": "defeat",
+        "facing": "north-east",
+        "loop": false,
+        "fps": 0,
+        "frameDurationMs": 0,
+        "frameIds": [
+          "defeated-corpse@north-east"
+        ]
+      },
+      {
+        "id": "idle@east",
+        "state": "idle",
+        "facing": "east",
+        "loop": true,
+        "fps": 0,
+        "frameDurationMs": 0,
+        "frameIds": [
+          "idle-ready@east"
+        ]
+      },
+      {
+        "id": "walk@east",
+        "state": "walk",
+        "facing": "east",
+        "loop": true,
+        "fps": 5.9880239520958085,
+        "frameDurationMs": 167,
+        "frameIds": [
+          "walk-step-a@east",
+          "walk-step-b@east"
+        ]
+      },
+      {
+        "id": "attack@east",
+        "state": "attack",
+        "facing": "east",
+        "loop": false,
+        "fps": 7.407407407407407,
+        "frameDurationMs": 135,
+        "frameIds": [
+          "bow-draw@east",
+          "arrow-release@east"
+        ]
+      },
+      {
+        "id": "defeat@east",
+        "state": "defeat",
+        "facing": "east",
+        "loop": false,
+        "fps": 0,
+        "frameDurationMs": 0,
+        "frameIds": [
+          "defeated-corpse@east"
+        ]
+      },
+      {
+        "id": "idle@south-east",
+        "state": "idle",
+        "facing": "south-east",
+        "loop": true,
+        "fps": 0,
+        "frameDurationMs": 0,
+        "frameIds": [
+          "idle-ready@south-east"
+        ]
+      },
+      {
+        "id": "walk@south-east",
+        "state": "walk",
+        "facing": "south-east",
+        "loop": true,
+        "fps": 5.9880239520958085,
+        "frameDurationMs": 167,
+        "frameIds": [
+          "walk-step-a@south-east",
+          "walk-step-b@south-east"
+        ]
+      },
+      {
+        "id": "attack@south-east",
+        "state": "attack",
+        "facing": "south-east",
+        "loop": false,
+        "fps": 7.407407407407407,
+        "frameDurationMs": 135,
+        "frameIds": [
+          "bow-draw@south-east",
+          "arrow-release@south-east"
+        ]
+      },
+      {
+        "id": "defeat@south-east",
+        "state": "defeat",
+        "facing": "south-east",
+        "loop": false,
+        "fps": 0,
+        "frameDurationMs": 0,
+        "frameIds": [
+          "defeated-corpse@south-east"
+        ]
+      },
+      {
+        "id": "idle@south",
+        "state": "idle",
+        "facing": "south",
+        "loop": true,
+        "fps": 0,
+        "frameDurationMs": 0,
+        "frameIds": [
+          "idle-ready@south"
+        ]
+      },
+      {
+        "id": "walk@south",
+        "state": "walk",
+        "facing": "south",
+        "loop": true,
+        "fps": 5.9880239520958085,
+        "frameDurationMs": 167,
+        "frameIds": [
+          "walk-step-a@south",
+          "walk-step-b@south"
+        ]
+      },
+      {
+        "id": "attack@south",
+        "state": "attack",
+        "facing": "south",
+        "loop": false,
+        "fps": 7.407407407407407,
+        "frameDurationMs": 135,
+        "frameIds": [
+          "bow-draw@south",
+          "arrow-release@south"
+        ]
+      },
+      {
+        "id": "defeat@south",
+        "state": "defeat",
+        "facing": "south",
+        "loop": false,
+        "fps": 0,
+        "frameDurationMs": 0,
+        "frameIds": [
+          "defeated-corpse@south"
+        ]
+      },
+      {
+        "id": "idle@south-west",
+        "state": "idle",
+        "facing": "south-west",
+        "loop": true,
+        "fps": 0,
+        "frameDurationMs": 0,
+        "frameIds": [
+          "idle-ready@south-west"
+        ]
+      },
+      {
+        "id": "walk@south-west",
+        "state": "walk",
+        "facing": "south-west",
+        "loop": true,
+        "fps": 5.9880239520958085,
+        "frameDurationMs": 167,
+        "frameIds": [
+          "walk-step-a@south-west",
+          "walk-step-b@south-west"
+        ]
+      },
+      {
+        "id": "attack@south-west",
+        "state": "attack",
+        "facing": "south-west",
+        "loop": false,
+        "fps": 7.407407407407407,
+        "frameDurationMs": 135,
+        "frameIds": [
+          "bow-draw@south-west",
+          "arrow-release@south-west"
+        ]
+      },
+      {
+        "id": "defeat@south-west",
+        "state": "defeat",
+        "facing": "south-west",
+        "loop": false,
+        "fps": 0,
+        "frameDurationMs": 0,
+        "frameIds": [
+          "defeated-corpse@south-west"
+        ]
+      },
+      {
+        "id": "idle@west",
+        "state": "idle",
+        "facing": "west",
+        "loop": true,
+        "fps": 0,
+        "frameDurationMs": 0,
+        "frameIds": [
+          "idle-ready@west"
+        ]
+      },
+      {
+        "id": "walk@west",
+        "state": "walk",
+        "facing": "west",
+        "loop": true,
+        "fps": 5.9880239520958085,
+        "frameDurationMs": 167,
+        "frameIds": [
+          "walk-step-a@west",
+          "walk-step-b@west"
+        ]
+      },
+      {
+        "id": "attack@west",
+        "state": "attack",
+        "facing": "west",
+        "loop": false,
+        "fps": 7.407407407407407,
+        "frameDurationMs": 135,
+        "frameIds": [
+          "bow-draw@west",
+          "arrow-release@west"
+        ]
+      },
+      {
+        "id": "defeat@west",
+        "state": "defeat",
+        "facing": "west",
+        "loop": false,
+        "fps": 0,
+        "frameDurationMs": 0,
+        "frameIds": [
+          "defeated-corpse@west"
+        ]
+      },
+      {
+        "id": "idle@north-west",
+        "state": "idle",
+        "facing": "north-west",
+        "loop": true,
+        "fps": 0,
+        "frameDurationMs": 0,
+        "frameIds": [
+          "idle-ready@north-west"
+        ]
+      },
+      {
+        "id": "walk@north-west",
+        "state": "walk",
+        "facing": "north-west",
+        "loop": true,
+        "fps": 5.9880239520958085,
+        "frameDurationMs": 167,
+        "frameIds": [
+          "walk-step-a@north-west",
+          "walk-step-b@north-west"
+        ]
+      },
+      {
+        "id": "attack@north-west",
+        "state": "attack",
+        "facing": "north-west",
+        "loop": false,
+        "fps": 7.407407407407407,
+        "frameDurationMs": 135,
+        "frameIds": [
+          "bow-draw@north-west",
+          "arrow-release@north-west"
+        ]
+      },
+      {
+        "id": "defeat@north-west",
+        "state": "defeat",
+        "facing": "north-west",
+        "loop": false,
+        "fps": 0,
+        "frameDurationMs": 0,
+        "frameIds": [
+          "defeated-corpse@north-west"
+        ]
+      }
+    ],
+    "frames": [
+      {
+        "id": "idle-ready@north",
+        "state": "idle",
+        "pose": "idle-ready",
+        "facing": "north",
+        "rectPx": {
+          "x": 64,
+          "y": 24,
+          "width": 107,
+          "height": 157
+        },
+        "alphaBoundsPx": {
+          "x": 64,
+          "y": 26,
+          "width": 107,
+          "height": 155
+        },
+        "sourceCell": {
+          "column": 0,
+          "row": 0
+        },
+        "groundPivotPx": {
+          "x": 104,
+          "y": 180
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "idle-ready@north-east",
+        "state": "idle",
+        "pose": "idle-ready",
+        "facing": "north-east",
+        "rectPx": {
+          "x": 244,
+          "y": 28,
+          "width": 111,
+          "height": 153
+        },
+        "alphaBoundsPx": {
+          "x": 245,
+          "y": 28,
+          "width": 109,
+          "height": 153
+        },
+        "sourceCell": {
+          "column": 1,
+          "row": 0
+        },
+        "groundPivotPx": {
+          "x": 286,
+          "y": 180
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "idle-ready@east",
+        "state": "idle",
+        "pose": "idle-ready",
+        "facing": "east",
+        "rectPx": {
+          "x": 432,
+          "y": 32,
+          "width": 94,
+          "height": 149
+        },
+        "alphaBoundsPx": {
+          "x": 432,
+          "y": 32,
+          "width": 93,
+          "height": 149
+        },
+        "sourceCell": {
+          "column": 2,
+          "row": 0
+        },
+        "groundPivotPx": {
+          "x": 468,
+          "y": 180
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "idle-ready@south-east",
+        "state": "idle",
+        "pose": "idle-ready",
+        "facing": "south-east",
+        "rectPx": {
+          "x": 601,
+          "y": 35,
+          "width": 100,
+          "height": 146
+        },
+        "alphaBoundsPx": {
+          "x": 603,
+          "y": 36,
+          "width": 97,
+          "height": 145
+        },
+        "sourceCell": {
+          "column": 3,
+          "row": 0
+        },
+        "groundPivotPx": {
+          "x": 635,
+          "y": 180
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "idle-ready@south",
+        "state": "idle",
+        "pose": "idle-ready",
+        "facing": "south",
+        "rectPx": {
+          "x": 773,
+          "y": 34,
+          "width": 105,
+          "height": 147
+        },
+        "alphaBoundsPx": {
+          "x": 774,
+          "y": 35,
+          "width": 103,
+          "height": 146
+        },
+        "sourceCell": {
+          "column": 4,
+          "row": 0
+        },
+        "groundPivotPx": {
+          "x": 816,
+          "y": 180
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "idle-ready@south-west",
+        "state": "idle",
+        "pose": "idle-ready",
+        "facing": "south-west",
+        "rectPx": {
+          "x": 927,
+          "y": 32,
+          "width": 133,
+          "height": 149
+        },
+        "alphaBoundsPx": {
+          "x": 928,
+          "y": 35,
+          "width": 130,
+          "height": 146
+        },
+        "sourceCell": {
+          "column": 5,
+          "row": 0
+        },
+        "groundPivotPx": {
+          "x": 990,
+          "y": 180
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "idle-ready@west",
+        "state": "idle",
+        "pose": "idle-ready",
+        "facing": "west",
+        "rectPx": {
+          "x": 1107,
+          "y": 30,
+          "width": 96,
+          "height": 151
+        },
+        "alphaBoundsPx": {
+          "x": 1107,
+          "y": 31,
+          "width": 94,
+          "height": 150
+        },
+        "sourceCell": {
+          "column": 6,
+          "row": 0
+        },
+        "groundPivotPx": {
+          "x": 1159,
+          "y": 180
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "idle-ready@north-west",
+        "state": "idle",
+        "pose": "idle-ready",
+        "facing": "north-west",
+        "rectPx": {
+          "x": 1296,
+          "y": 28,
+          "width": 90,
+          "height": 153
+        },
+        "alphaBoundsPx": {
+          "x": 1296,
+          "y": 28,
+          "width": 89,
+          "height": 153
+        },
+        "sourceCell": {
+          "column": 7,
+          "row": 0
+        },
+        "groundPivotPx": {
+          "x": 1344,
+          "y": 180
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "walk-step-a@north",
+        "state": "walk",
+        "pose": "walk-step-a",
+        "facing": "north",
+        "rectPx": {
+          "x": 65,
+          "y": 181,
+          "width": 109,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 67,
+          "y": 181,
+          "width": 106,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 0,
+          "row": 1
+        },
+        "groundPivotPx": {
+          "x": 104,
+          "y": 361
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "walk-step-a@north-east",
+        "state": "walk",
+        "pose": "walk-step-a",
+        "facing": "north-east",
+        "rectPx": {
+          "x": 245,
+          "y": 181,
+          "width": 100,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 247,
+          "y": 181,
+          "width": 97,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 1,
+          "row": 1
+        },
+        "groundPivotPx": {
+          "x": 286,
+          "y": 361
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "walk-step-a@east",
+        "state": "walk",
+        "pose": "walk-step-a",
+        "facing": "east",
+        "rectPx": {
+          "x": 427,
+          "y": 181,
+          "width": 91,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 428,
+          "y": 181,
+          "width": 89,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 2,
+          "row": 1
+        },
+        "groundPivotPx": {
+          "x": 468,
+          "y": 361
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "walk-step-a@south-east",
+        "state": "walk",
+        "pose": "walk-step-a",
+        "facing": "south-east",
+        "rectPx": {
+          "x": 598,
+          "y": 181,
+          "width": 105,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 600,
+          "y": 181,
+          "width": 102,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 3,
+          "row": 1
+        },
+        "groundPivotPx": {
+          "x": 635,
+          "y": 361
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "walk-step-a@south",
+        "state": "walk",
+        "pose": "walk-step-a",
+        "facing": "south",
+        "rectPx": {
+          "x": 770,
+          "y": 181,
+          "width": 108,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 772,
+          "y": 181,
+          "width": 105,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 4,
+          "row": 1
+        },
+        "groundPivotPx": {
+          "x": 816,
+          "y": 361
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "walk-step-a@south-west",
+        "state": "walk",
+        "pose": "walk-step-a",
+        "facing": "south-west",
+        "rectPx": {
+          "x": 923,
+          "y": 181,
+          "width": 136,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 924,
+          "y": 181,
+          "width": 134,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 5,
+          "row": 1
+        },
+        "groundPivotPx": {
+          "x": 990,
+          "y": 361
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "walk-step-a@west",
+        "state": "walk",
+        "pose": "walk-step-a",
+        "facing": "west",
+        "rectPx": {
+          "x": 1111,
+          "y": 181,
+          "width": 91,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 1112,
+          "y": 181,
+          "width": 87,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 6,
+          "row": 1
+        },
+        "groundPivotPx": {
+          "x": 1159,
+          "y": 361
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "walk-step-a@north-west",
+        "state": "walk",
+        "pose": "walk-step-a",
+        "facing": "north-west",
+        "rectPx": {
+          "x": 1290,
+          "y": 181,
+          "width": 91,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 1291,
+          "y": 181,
+          "width": 89,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 7,
+          "row": 1
+        },
+        "groundPivotPx": {
+          "x": 1344,
+          "y": 361
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "walk-step-b@north",
+        "state": "walk",
+        "pose": "walk-step-b",
+        "facing": "north",
+        "rectPx": {
+          "x": 67,
+          "y": 362,
+          "width": 99,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 68,
+          "y": 362,
+          "width": 97,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 0,
+          "row": 2
+        },
+        "groundPivotPx": {
+          "x": 104,
+          "y": 542
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "walk-step-b@north-east",
+        "state": "walk",
+        "pose": "walk-step-b",
+        "facing": "north-east",
+        "rectPx": {
+          "x": 245,
+          "y": 362,
+          "width": 93,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 247,
+          "y": 362,
+          "width": 90,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 1,
+          "row": 2
+        },
+        "groundPivotPx": {
+          "x": 286,
+          "y": 542
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "walk-step-b@east",
+        "state": "walk",
+        "pose": "walk-step-b",
+        "facing": "east",
+        "rectPx": {
+          "x": 422,
+          "y": 362,
+          "width": 90,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 425,
+          "y": 362,
+          "width": 87,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 2,
+          "row": 2
+        },
+        "groundPivotPx": {
+          "x": 468,
+          "y": 542
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "walk-step-b@south-east",
+        "state": "walk",
+        "pose": "walk-step-b",
+        "facing": "south-east",
+        "rectPx": {
+          "x": 599,
+          "y": 362,
+          "width": 101,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 602,
+          "y": 362,
+          "width": 97,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 3,
+          "row": 2
+        },
+        "groundPivotPx": {
+          "x": 635,
+          "y": 542
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "walk-step-b@south",
+        "state": "walk",
+        "pose": "walk-step-b",
+        "facing": "south",
+        "rectPx": {
+          "x": 769,
+          "y": 362,
+          "width": 110,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 771,
+          "y": 362,
+          "width": 107,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 4,
+          "row": 2
+        },
+        "groundPivotPx": {
+          "x": 816,
+          "y": 542
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "walk-step-b@south-west",
+        "state": "walk",
+        "pose": "walk-step-b",
+        "facing": "south-west",
+        "rectPx": {
+          "x": 929,
+          "y": 362,
+          "width": 124,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 930,
+          "y": 362,
+          "width": 121,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 5,
+          "row": 2
+        },
+        "groundPivotPx": {
+          "x": 990,
+          "y": 542
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "walk-step-b@west",
+        "state": "walk",
+        "pose": "walk-step-b",
+        "facing": "west",
+        "rectPx": {
+          "x": 1114,
+          "y": 362,
+          "width": 89,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 1115,
+          "y": 362,
+          "width": 86,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 6,
+          "row": 2
+        },
+        "groundPivotPx": {
+          "x": 1159,
+          "y": 542
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "walk-step-b@north-west",
+        "state": "walk",
+        "pose": "walk-step-b",
+        "facing": "north-west",
+        "rectPx": {
+          "x": 1290,
+          "y": 362,
+          "width": 91,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 1291,
+          "y": 362,
+          "width": 88,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 7,
+          "row": 2
+        },
+        "groundPivotPx": {
+          "x": 1344,
+          "y": 542
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "bow-draw@north",
+        "state": "attack",
+        "pose": "bow-draw",
+        "facing": "north",
+        "rectPx": {
+          "x": 47,
+          "y": 543,
+          "width": 124,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 47,
+          "y": 543,
+          "width": 122,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 0,
+          "row": 3
+        },
+        "groundPivotPx": {
+          "x": 104,
+          "y": 723
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "bow-draw@north-east",
+        "state": "attack",
+        "pose": "bow-draw",
+        "facing": "north-east",
+        "rectPx": {
+          "x": 225,
+          "y": 543,
+          "width": 136,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 227,
+          "y": 543,
+          "width": 133,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 1,
+          "row": 3
+        },
+        "groundPivotPx": {
+          "x": 286,
+          "y": 723
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "bow-draw@east",
+        "state": "attack",
+        "pose": "bow-draw",
+        "facing": "east",
+        "rectPx": {
+          "x": 407,
+          "y": 543,
+          "width": 136,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 409,
+          "y": 543,
+          "width": 132,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 2,
+          "row": 3
+        },
+        "groundPivotPx": {
+          "x": 468,
+          "y": 723
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "bow-draw@south-east",
+        "state": "attack",
+        "pose": "bow-draw",
+        "facing": "south-east",
+        "rectPx": {
+          "x": 580,
+          "y": 543,
+          "width": 131,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 582,
+          "y": 543,
+          "width": 128,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 3,
+          "row": 3
+        },
+        "groundPivotPx": {
+          "x": 635,
+          "y": 723
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "bow-draw@south",
+        "state": "attack",
+        "pose": "bow-draw",
+        "facing": "south",
+        "rectPx": {
+          "x": 760,
+          "y": 543,
+          "width": 123,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 762,
+          "y": 543,
+          "width": 120,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 4,
+          "row": 3
+        },
+        "groundPivotPx": {
+          "x": 816,
+          "y": 723
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "bow-draw@south-west",
+        "state": "attack",
+        "pose": "bow-draw",
+        "facing": "south-west",
+        "rectPx": {
+          "x": 914,
+          "y": 543,
+          "width": 172,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 916,
+          "y": 543,
+          "width": 170,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 5,
+          "row": 3
+        },
+        "groundPivotPx": {
+          "x": 990,
+          "y": 723
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "bow-draw@west",
+        "state": "attack",
+        "pose": "bow-draw",
+        "facing": "west",
+        "rectPx": {
+          "x": 1086,
+          "y": 543,
+          "width": 134,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 1086,
+          "y": 543,
+          "width": 132,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 6,
+          "row": 3
+        },
+        "groundPivotPx": {
+          "x": 1159,
+          "y": 723
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "bow-draw@north-west",
+        "state": "attack",
+        "pose": "bow-draw",
+        "facing": "north-west",
+        "rectPx": {
+          "x": 1273,
+          "y": 543,
+          "width": 129,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 1275,
+          "y": 543,
+          "width": 126,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 7,
+          "row": 3
+        },
+        "groundPivotPx": {
+          "x": 1344,
+          "y": 723
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "arrow-release@north",
+        "state": "attack",
+        "pose": "arrow-release",
+        "facing": "north",
+        "rectPx": {
+          "x": 46,
+          "y": 724,
+          "width": 124,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 47,
+          "y": 724,
+          "width": 116,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 0,
+          "row": 4
+        },
+        "groundPivotPx": {
+          "x": 104,
+          "y": 904
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "arrow-release@north-east",
+        "state": "attack",
+        "pose": "arrow-release",
+        "facing": "north-east",
+        "rectPx": {
+          "x": 226,
+          "y": 724,
+          "width": 124,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 226,
+          "y": 724,
+          "width": 123,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 1,
+          "row": 4
+        },
+        "groundPivotPx": {
+          "x": 286,
+          "y": 904
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "arrow-release@east",
+        "state": "attack",
+        "pose": "arrow-release",
+        "facing": "east",
+        "rectPx": {
+          "x": 410,
+          "y": 724,
+          "width": 121,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 412,
+          "y": 724,
+          "width": 118,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 2,
+          "row": 4
+        },
+        "groundPivotPx": {
+          "x": 468,
+          "y": 904
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "arrow-release@south-east",
+        "state": "attack",
+        "pose": "arrow-release",
+        "facing": "south-east",
+        "rectPx": {
+          "x": 577,
+          "y": 724,
+          "width": 121,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 577,
+          "y": 724,
+          "width": 118,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 3,
+          "row": 4
+        },
+        "groundPivotPx": {
+          "x": 635,
+          "y": 904
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "arrow-release@south",
+        "state": "attack",
+        "pose": "arrow-release",
+        "facing": "south",
+        "rectPx": {
+          "x": 759,
+          "y": 724,
+          "width": 121,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 761,
+          "y": 724,
+          "width": 116,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 4,
+          "row": 4
+        },
+        "groundPivotPx": {
+          "x": 816,
+          "y": 904
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "arrow-release@south-west",
+        "state": "attack",
+        "pose": "arrow-release",
+        "facing": "south-west",
+        "rectPx": {
+          "x": 920,
+          "y": 724,
+          "width": 125,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 922,
+          "y": 724,
+          "width": 121,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 5,
+          "row": 4
+        },
+        "groundPivotPx": {
+          "x": 990,
+          "y": 904
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "arrow-release@west",
+        "state": "attack",
+        "pose": "arrow-release",
+        "facing": "west",
+        "rectPx": {
+          "x": 1092,
+          "y": 724,
+          "width": 129,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 1094,
+          "y": 724,
+          "width": 126,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 6,
+          "row": 4
+        },
+        "groundPivotPx": {
+          "x": 1159,
+          "y": 904
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "arrow-release@north-west",
+        "state": "attack",
+        "pose": "arrow-release",
+        "facing": "north-west",
+        "rectPx": {
+          "x": 1270,
+          "y": 724,
+          "width": 131,
+          "height": 181
+        },
+        "alphaBoundsPx": {
+          "x": 1272,
+          "y": 724,
+          "width": 129,
+          "height": 181
+        },
+        "sourceCell": {
+          "column": 7,
+          "row": 4
+        },
+        "groundPivotPx": {
+          "x": 1344,
+          "y": 904
+        },
+        "groundAnchorMode": "standing-feet-root-shared-across-poses"
+      },
+      {
+        "id": "defeated-corpse@north",
+        "state": "defeated",
+        "pose": "defeated-corpse",
+        "facing": "north",
+        "rectPx": {
+          "x": 49,
+          "y": 905,
+          "width": 124,
+          "height": 161
+        },
+        "alphaBoundsPx": {
+          "x": 52,
+          "y": 905,
+          "width": 121,
+          "height": 160
+        },
+        "sourceCell": {
+          "column": 0,
+          "row": 5
+        },
+        "groundPivotPx": {
+          "x": 90,
+          "y": 1064
+        },
+        "groundAnchorMode": "defeated-body-ground"
+      },
+      {
+        "id": "defeated-corpse@north-east",
+        "state": "defeated",
+        "pose": "defeated-corpse",
+        "facing": "north-east",
+        "rectPx": {
+          "x": 211,
+          "y": 905,
+          "width": 145,
+          "height": 159
+        },
+        "alphaBoundsPx": {
+          "x": 213,
+          "y": 905,
+          "width": 142,
+          "height": 156
+        },
+        "sourceCell": {
+          "column": 1,
+          "row": 5
+        },
+        "groundPivotPx": {
+          "x": 271,
+          "y": 1060
+        },
+        "groundAnchorMode": "defeated-body-ground"
+      },
+      {
+        "id": "defeated-corpse@east",
+        "state": "defeated",
+        "pose": "defeated-corpse",
+        "facing": "east",
+        "rectPx": {
+          "x": 378,
+          "y": 905,
+          "width": 154,
+          "height": 146
+        },
+        "alphaBoundsPx": {
+          "x": 378,
+          "y": 905,
+          "width": 153,
+          "height": 145
+        },
+        "sourceCell": {
+          "column": 2,
+          "row": 5
+        },
+        "groundPivotPx": {
+          "x": 452,
+          "y": 1049
+        },
+        "groundAnchorMode": "defeated-body-ground"
+      },
+      {
+        "id": "defeated-corpse@south-east",
+        "state": "defeated",
+        "pose": "defeated-corpse",
+        "facing": "south-east",
+        "rectPx": {
+          "x": 565,
+          "y": 905,
+          "width": 154,
+          "height": 148
+        },
+        "alphaBoundsPx": {
+          "x": 567,
+          "y": 905,
+          "width": 151,
+          "height": 148
+        },
+        "sourceCell": {
+          "column": 3,
+          "row": 5
+        },
+        "groundPivotPx": {
+          "x": 633,
+          "y": 1052
+        },
+        "groundAnchorMode": "defeated-body-ground"
+      },
+      {
+        "id": "defeated-corpse@south",
+        "state": "defeated",
+        "pose": "defeated-corpse",
+        "facing": "south",
+        "rectPx": {
+          "x": 759,
+          "y": 905,
+          "width": 109,
+          "height": 155
+        },
+        "alphaBoundsPx": {
+          "x": 759,
+          "y": 905,
+          "width": 108,
+          "height": 155
+        },
+        "sourceCell": {
+          "column": 4,
+          "row": 5
+        },
+        "groundPivotPx": {
+          "x": 814,
+          "y": 1059
+        },
+        "groundAnchorMode": "defeated-body-ground"
+      },
+      {
+        "id": "defeated-corpse@south-west",
+        "state": "defeated",
+        "pose": "defeated-corpse",
+        "facing": "south-west",
+        "rectPx": {
+          "x": 929,
+          "y": 905,
+          "width": 157,
+          "height": 159
+        },
+        "alphaBoundsPx": {
+          "x": 930,
+          "y": 905,
+          "width": 156,
+          "height": 157
+        },
+        "sourceCell": {
+          "column": 5,
+          "row": 5
+        },
+        "groundPivotPx": {
+          "x": 995,
+          "y": 1061
+        },
+        "groundAnchorMode": "defeated-body-ground"
+      },
+      {
+        "id": "defeated-corpse@west",
+        "state": "defeated",
+        "pose": "defeated-corpse",
+        "facing": "west",
+        "rectPx": {
+          "x": 1086,
+          "y": 905,
+          "width": 181,
+          "height": 144
+        },
+        "alphaBoundsPx": {
+          "x": 1086,
+          "y": 905,
+          "width": 181,
+          "height": 143
+        },
+        "sourceCell": {
+          "column": 6,
+          "row": 5
+        },
+        "groundPivotPx": {
+          "x": 1176,
+          "y": 1047
+        },
+        "groundAnchorMode": "defeated-body-ground"
+      },
+      {
+        "id": "defeated-corpse@north-west",
+        "state": "defeated",
+        "pose": "defeated-corpse",
+        "facing": "north-west",
+        "rectPx": {
+          "x": 1267,
+          "y": 905,
+          "width": 148,
+          "height": 154
+        },
+        "alphaBoundsPx": {
+          "x": 1267,
+          "y": 905,
+          "width": 147,
+          "height": 154
+        },
+        "sourceCell": {
+          "column": 7,
+          "row": 5
+        },
+        "groundPivotPx": {
+          "x": 1357,
+          "y": 1058
+        },
+        "groundAnchorMode": "defeated-body-ground"
+      }
+    ],
+    "bindings": {
+      "default": "idle",
+      "walking": "walk",
+      "attacking": "attack",
+      "defeated": "defeat"
+    },
+    "presentation": {
+      "referenceStandingHeightWorld": 0.78,
+      "referenceStandingHeightPx": 150,
+      "referenceStandingHeightSource": "Worker follows the 0.8-world-unit character baseline in docs/renderer-state-contract.md; Infantry and Archer are pilot candidates for game-zoom review",
+      "artBoundsWorld": {
+        "maxWidth": 0.9932,
+        "maxHeight": 0.9412,
+        "includesToolsAndWeapons": true
+      },
+      "visibleGroundSpanWorld": {
+        "width": 0.78,
+        "depth": 0.78,
+        "unit": "world-unit",
+        "purpose": "visual size cue only; map movement and occupancy remain point-based"
+      },
+      "cullingBoundsWorld": {
+        "shape": "sphere",
+        "center": [
+          0,
+          0.4706,
+          0
+        ],
+        "radius": 0.6842,
+        "coversAllFrames": true
+      },
+      "selectionBoundsWorld": {
+        "shape": "circle",
+        "innerRadius": 0.31,
+        "outerRadius": 0.39
+      },
+      "renderLayers": [
+        {
+          "id": "character",
+          "type": "single-cutout",
+          "plane": "camera-facing"
+        }
+      ]
+    }
+  }
+}

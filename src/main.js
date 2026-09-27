@@ -30,6 +30,7 @@ import {
 import {
   unitActionPoseAllowed, unitCargoVisualState, unitWorkerActionPose,
 } from './unit-visual-state.mjs';
+import { createUnitSpriteRuntime } from './unit-sprite-runtime.mjs';
 import {
   MAX_ELEVATION_PATCHES, buildElevationGrid, capturePrerequisiteIds,
   findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
@@ -87,7 +88,7 @@ let MAP_HALF_X = MAP_WIDTH / 2;
 let MAP_HALF_Z = MAP_HEIGHT / 2;
 const MAX_UNITS = 2000;
 const MAX_PER_TEAM = MAX_UNITS / 2;
-const ATTACK_POSE_MS = 270;
+const ATTACK_POSE_MS = 900;
 const HIT_POSE_MS = 240;
 const SPAWN_POSE_MS = 330;
 const DEFEAT_POSE_MS = 430;
@@ -101,8 +102,10 @@ const MAX_SCENARIO_EVENT_REPEATS = 20;
 const MIN_SCENARIO_EVENT_REPEAT_SECONDS = 5;
 const CAMERA_EDGE_ZONE_PX = 40;
 const CAMERA_EDGE_SPEED_PX_PER_SECOND = 650;
-// Full meshes failed the 0.91 worker-role gate; keep the role LOD through both required views.
+// Full meshes failed the 0.91 worker-role gate; preserve role LOD in default play.
+// Sprite atlas previews remain opt-in through URL flags.
 const UNIT_LOD_ZOOM_THRESHOLD = 0.91;
+const UNIT_SPRITE_MARKER_ZOOM_THRESHOLD = 0.6;
 const MAX_OBJECTIVE_FOOD_REWARD = 10000;
 const MAX_TRIGGER_UNIT_REWARD = 25;
 const WORKERS_PER_TEAM = 4;
@@ -152,6 +155,19 @@ let guidanceDismissed = false;
 try { guidanceDismissed = localStorage.getItem('rts-guidance-dismissed') === 'true'; } catch {}
 const objectivePanel = document.querySelector('#objective-panel');
 const roomPageUrl = new URL(window.location.href);
+const workerSpritePreview = roomPageUrl.searchParams.get('workerSpritePreview') === '1';
+const unitSpritePreview = roomPageUrl.searchParams.get('unitSpritePreview') === '1';
+const meshyInfantrySpritePreview = roomPageUrl.searchParams.get('meshyInfantrySpritePreview') === '1';
+const unitSpritePreviewRoles = meshyInfantrySpritePreview
+  ? ['infantry']
+  : unitSpritePreview
+  ? ['worker', 'infantry', 'archer']
+  : ['worker'];
+const unitSpritePreviewVersions = meshyInfantrySpritePreview
+  ? { infantry: 'v2' }
+  : workerSpritePreview && !unitSpritePreview ? { worker: 'v2' }
+    : !unitSpritePreview ? { worker: 'v3' } : {};
+const unitSpritePreviewRoleSet = new Set(unitSpritePreviewRoles);
 const ROOM_ID = roomPageUrl.searchParams.get('room');
 const HAS_ROOM_PARAMETER = roomPageUrl.searchParams.has('room');
 const ROOM_ID_PATTERN = /^[A-Za-z0-9_-]{32}$/;
@@ -419,6 +435,19 @@ const unitLodMeshesByTeam = [[], []];
 const unitLodDirtyRoleMasks = [0, 0];
 const unitLodTeamDirty = [false, false];
 let unitLowDetailActive = false;
+let unitSpriteReady = false;
+let unitSpritePreviewActive = false;
+let unitSpriteMarkersActive = false;
+const unitSpriteRuntime = createUnitSpriteRuntime({
+  THREE, scene, capacity: MAX_PER_TEAM, teamHex: TEAM_HEX, cameraQuaternion: camera.quaternion,
+  roles: unitSpritePreviewRoles,
+  roleSpriteVersions: unitSpritePreviewVersions,
+});
+unitSpriteRuntime.ready.then((loaded) => {
+  if (!loaded) return;
+  unitSpriteReady = true;
+  syncUnitDetailLevel();
+});
 const mapObjects = [];
 const capturedBuildingVisuals = [];
 let forestTreeSlots = new Map();
@@ -2680,9 +2709,11 @@ for (let team = 0; team < 2; team++) {
 function setUnitInstanceCount(team, count) {
   unitArtMeshes.forEach((pair) => { pair[team].count = count; });
   for (const mesh of unitLodMeshesByTeam[team]) mesh.count = count;
+  unitSpriteRuntime.setCount(team, count);
 }
 
 function markUnitInstanceMatricesDirty(team) {
+  if (unitSpritePreviewActive) unitSpriteRuntime.markTeamDirty(team);
   if (unitLowDetailActive) {
     const dirtyRoles = unitLodDirtyRoleMasks[team];
     for (const role of UNIT_LOD_ROLES) {
@@ -2703,7 +2734,10 @@ function markUnitInstanceMatricesDirty(team) {
 
 function syncUnitDetailLevel() {
   const useLowDetail = zoom <= UNIT_LOD_ZOOM_THRESHOLD;
-  if (useLowDetail === unitLowDetailActive) return;
+  const useUnitSprites = unitSpritePreviewRoles.length > 0 && unitSpriteReady;
+  const useSpriteMarkers = useUnitSprites && zoom <= UNIT_SPRITE_MARKER_ZOOM_THRESHOLD;
+  if (useLowDetail === unitLowDetailActive && useUnitSprites === unitSpritePreviewActive
+    && useSpriteMarkers === unitSpriteMarkersActive) return;
   const restoreFullDetailTint = unitLowDetailActive && !useLowDetail;
   for (const pair of unitArtMeshes) {
     pair.forEach((mesh) => { mesh.visible = !useLowDetail; });
@@ -2712,6 +2746,9 @@ function syncUnitDetailLevel() {
     for (const mesh of team) mesh.visible = useLowDetail;
   }
   unitLowDetailActive = useLowDetail;
+  unitSpritePreviewActive = useUnitSprites;
+  unitSpriteMarkersActive = useSpriteMarkers;
+  unitSpriteRuntime.setVisible(useUnitSprites);
   const now = performance.now();
   for (const unit of units) {
     if (!unit) continue;
@@ -2947,6 +2984,18 @@ function updateUnitTransform(unit, now = performance.now()) {
     : unit.defeatStartedAt > 0 ? unit.scale * (1 - defeatProgress) : 0;
   const isWorker = unit.kind === 'worker';
   const isArcher = unit.kind === 'archer';
+  if (unitSpritePreviewActive && unitSpritePreviewRoleSet.has(unit.kind)) {
+    updateUnitLodTransform(unit, unitSpriteMarkersActive ? visibleScale : 0);
+    dummy.position.set(unit.renderX, 0, unit.renderZ);
+    dummy.quaternion.identity();
+    dummy.scale.set(0, 0, 0);
+    dummy.updateMatrix();
+    unitArtMeshes.forEach((pair) => pair[unit.team].setMatrixAt(unit.slot, dummy.matrix));
+    unitSpriteRuntime.update(unit, now, visibleScale);
+    updateUnitCargoCueColor(unit);
+    updateUnitFocusVisual(unit);
+    return;
+  }
   if (unitLowDetailActive) {
     updateUnitLodTransform(unit, visibleScale);
     updateUnitCargoCueColor(unit);

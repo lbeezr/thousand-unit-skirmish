@@ -2,7 +2,7 @@
   "schema": "game_dev.adapter.v1",
   "id": "thousand-unit-skirmish",
   "name": "Thousand Unit Skirmish",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "scenarios": [
     {
       "id": "pathfinding-256",
@@ -93,6 +93,22 @@
       },
       "timeoutSeconds": 180,
       "capabilities": ["cpu", "project-write", "gpu"],
+      "outputs": {
+        "format": "game-dev-capture-v1",
+        "path": "capture.json"
+      }
+    },
+    {
+      "id": "renderer-worker-sprite-v2",
+      "title": "Worker v2 appearance at play and strategic zoom",
+      "command": {
+        "executable": "scripts/renderer-appearance-lod-scenario.mjs",
+        "arguments": ["worker-v2"],
+        "workingDirectory": "."
+      },
+      "timeoutSeconds": 180,
+      "capabilities": ["cpu", "project-write", "gpu"],
+      "parameters": {},
       "outputs": {
         "format": "game-dev-capture-v1",
         "path": "capture.json"
