@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "assetId": "frontier-barracks-construction",
+  "origin": "ground-center",
+  "samples": [
+    {
+      "id": "barracks-00-foundation",
+      "state": "foundation",
+      "buildingProgress": 0.0,
+      "visibleNodes": [
+        "barracks.foundation"
+      ],
+      "notes": "A raised stone footprint anchors the construction site."
+    },
+    {
+      "id": "barracks-25-frame",
+      "state": "frame",
+      "buildingProgress": 0.25,
+      "visibleNodes": [
+        "barracks.foundation",
+        "barracks.construction.frame"
+      ],
+      "notes": "Tall posts and cross-braces give the early frame a distinct open silhouette."
+    },
+    {
+      "id": "barracks-50-walls",
+      "state": "walls",
+      "buildingProgress": 0.5,
+      "visibleNodes": [
+        "barracks.foundation",
+        "barracks.construction.walls"
+      ],
+      "notes": "Enclosed timber walls rise while the roof and finished gate remain absent."
+    },
+    {
+      "id": "barracks-75-roof",
+      "state": "roof",
+      "buildingProgress": 0.75,
+      "visibleNodes": [
+        "barracks.foundation",
+        "barracks.construction.walls",
+        "barracks.construction.roof-frame"
+      ],
+      "notes": "Exposed rafters and one covered slope distinguish the unfinished roof from completion."
+    },
+    {
+      "id": "barracks-100-complete",
+      "state": "complete",
+      "buildingProgress": 1.0,
+      "visibleNodes": [
+        "barracks.foundation",
+        "barracks.construction.walls",
+        "barracks.complete.roof",
+        "barracks.complete.gate",
+        "barracks.standard.azure",
+        "barracks.standard.ember"
+      ],
+      "notes": "Both slate slopes, the pale framed gate, and one owner-selected standard finish the Barracks."
+    }
+  ]
+}

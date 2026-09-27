@@ -1,0 +1,537 @@
+{
+  "schemaVersion": 1,
+  "packId": "environment.frontier-interactive",
+  "packVersion": "1.0.0",
+  "packKind": "environment",
+  "coordinateSystem": {
+    "units": "world-unit",
+    "up": "+Y",
+    "forward": "+Z",
+    "right": "+X"
+  },
+  "provenance": {
+    "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+    "source": "OpenAI ImageGen state variants plus the project\u2019s Frontier v1 oak and berries sources; runtime images are WebP encodes listed in this manifest.",
+    "authoringTool": "OpenAI ImageGen; Pillow 12.3.0 WebP encoder (quality 86).",
+    "notes": "Transparent RGBA sprites; all resource-state variants keep identical canvas dimensions, world size, and bottom-center pivot. Runtime texture estimate includes RGBA plus a full mip chain per unique WebP. The 96 MiB maximum is a first-pack planning cap, not a whole-app or measured GPU residency limit."
+  },
+  "budgets": {
+    "maxUnitPartBins": 8,
+    "maxUnitTeamBatches": 16,
+    "projectedUnitPartBins": 0,
+    "projectedUnitTeamBatches": 0,
+    "maxEnvironmentBatches": 10,
+    "projectedEnvironmentBatches": 10,
+    "maxTextureMemoryBytes": 100663296,
+    "projectedTextureMemoryBytes": 83884376,
+    "maxAdditionalDrawCalls": 10,
+    "projectedAdditionalDrawCalls": 10,
+    "projectedBuildingDrawCallsPerStructure": 0
+  },
+  "files": [
+    {
+      "path": "berries-depleted.png",
+      "role": "source-image",
+      "sha256": "7a601be8035a3af2ede958b170bf001a11add395c4c1431d5d84ac0751923011",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "OpenAI ImageGen output exec-37ba5e8d-71de-40c9-ae32-5af6204512b2, prompted from the original asset/state direction documented in PROMPTS.md.",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "path": "berries-depleted.webp",
+      "role": "runtime-image",
+      "sha256": "7c73dc51c13ceb0e4d9d30a799b69127e57dd4e8a1145e4f11ab9aab449e2865",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "Lossy WebP quality-86 encode of berries-depleted.png using Pillow 12.3.0; RGBA alpha retained.",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "path": "berries-full.png",
+      "role": "source-image",
+      "sha256": "3ca2f8162316e1babcda9357cb51856fa56ce1ff7706d03ef8d95bbcb0a04787",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "Byte-for-byte copy of assets/environment/frontier-v1/berries.png; original ImageGen output exec-dd127de7-f4a1-4d8c-b565-9c2c6c56357c; see ../frontier-v1/PROVENANCE.md.",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "path": "berries-full.webp",
+      "role": "runtime-image",
+      "sha256": "6eb5d428b2fcb4ef4455dc17179f47125dd71ced0d8327885fa2fb8be54b9aae",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "Lossy WebP quality-86 encode of berries-full.png using Pillow 12.3.0; RGBA alpha retained.",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "path": "berries-low.png",
+      "role": "source-image",
+      "sha256": "9a0ad21aa4b29f73a5a54df779dbe2a73cfecf8ff8a4ad31b610fad2d8b54e12",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "OpenAI ImageGen output exec-318eb9ca-c0e8-4a90-b0bb-8ce8cdb50633, prompted from the original asset/state direction documented in PROMPTS.md.",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "path": "berries-low.webp",
+      "role": "runtime-image",
+      "sha256": "3cdb94a69f034462dfa78b33beb7090f29d4e1369f37f9d5d8cb4c518bba7a5c",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "Lossy WebP quality-86 encode of berries-low.png using Pillow 12.3.0; RGBA alpha retained.",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "path": "berries-worked.png",
+      "role": "source-image",
+      "sha256": "aa883e92ba69f16a0e43cdf23669961a9608c56dd731a330290012242f4afb18",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "OpenAI ImageGen output exec-f05abe8c-80b6-4ad7-a539-2fc5c53af2cd, prompted from the original asset/state direction documented in PROMPTS.md.",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "path": "berries-worked.webp",
+      "role": "runtime-image",
+      "sha256": "c59dfd7bc613aaac578afdd92c324e0599d99fb6c6bbe76f80ee8f2029e6431a",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "Lossy WebP quality-86 encode of berries-worked.png using Pillow 12.3.0; RGBA alpha retained.",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "path": "construction-earthwork.png",
+      "role": "source-image",
+      "sha256": "12e48359ce4a37e51baee6a38dc2c9e3ff076107f8f86e8460d11d136510da44",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "OpenAI ImageGen output exec-ad38ae1a-85d9-494f-add4-e55c5110e052, prompted from the original asset/state direction documented in PROMPTS.md.",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "path": "construction-earthwork.webp",
+      "role": "runtime-image",
+      "sha256": "8ee88b1f2fac1d30b93234fced31fd13d12e1a319d72d5340e14db570c14d08e",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "Lossy WebP quality-86 encode of construction-earthwork.png using Pillow 12.3.0; RGBA alpha retained.",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "path": "construction-foundation.png",
+      "role": "source-image",
+      "sha256": "1178f6af8148d31c39403cdeab9cbbe8b149704e19abfbd1254d4540e0fa07bd",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "OpenAI ImageGen output exec-11a439d5-a429-4f43-a3a7-de0b2a589e05, prompted from the original asset/state direction documented in PROMPTS.md.",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "path": "construction-foundation.webp",
+      "role": "runtime-image",
+      "sha256": "08bbc9641af8289a50f21702c736150e82a4f23479bfea40006d7581c08f0f66",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "Lossy WebP quality-86 encode of construction-foundation.png using Pillow 12.3.0; RGBA alpha retained.",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "path": "oak-depleted.png",
+      "role": "source-image",
+      "sha256": "65c38d012c7184d01761bf53144be407fa03c215e66c150e9893e5a35c0c1371",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "OpenAI ImageGen output exec-757acd0e-eb0c-473f-bcc6-d2d91698ac8d, prompted from the original asset/state direction documented in PROMPTS.md.",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      }
+    },
+    {
+      "path": "oak-depleted.webp",
+      "role": "runtime-image",
+      "sha256": "9d2c421eab0084fee5934e98370a933461aff845f656d5523e20b68b929d314f",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "Lossy WebP quality-86 encode of oak-depleted.png using Pillow 12.3.0; RGBA alpha retained.",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      }
+    },
+    {
+      "path": "oak-full.png",
+      "role": "source-image",
+      "sha256": "e99f1c70c28cedd8406dea44b72186f25a40ef88c1a3f72d7690298f5e584753",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "Byte-for-byte copy of assets/environment/frontier-v1/oak.png; original ImageGen output exec-9188de90-03cc-40cf-a684-91d8b70287e1; see ../frontier-v1/PROVENANCE.md.",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      }
+    },
+    {
+      "path": "oak-full.webp",
+      "role": "runtime-image",
+      "sha256": "dca6d091bc585e501eb19f07dc969757f0bfddd629a0bf0a9adee0bcf621a35c",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "Lossy WebP quality-86 encode of oak-full.png using Pillow 12.3.0; RGBA alpha retained.",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      }
+    },
+    {
+      "path": "oak-low.png",
+      "role": "source-image",
+      "sha256": "ea255be33ebc77d62a5fb1176175565ef56745ef6568b74a75ed228022127528",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "OpenAI ImageGen output exec-1991f2aa-f9c8-4ee5-b629-f709b798fdcd, prompted from the original asset/state direction documented in PROMPTS.md.",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      }
+    },
+    {
+      "path": "oak-low.webp",
+      "role": "runtime-image",
+      "sha256": "8cc76309f465eb003d123c2bf9c2cac6493f22f37316381df4a6618923fd7e22",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "Lossy WebP quality-86 encode of oak-low.png using Pillow 12.3.0; RGBA alpha retained.",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      }
+    },
+    {
+      "path": "oak-worked.png",
+      "role": "source-image",
+      "sha256": "17f433b67aa6a4a0784ecac1293aba4796c3f2ab7491b6bf3bcf61f49de8018f",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "OpenAI ImageGen output exec-db9ae09b-c37b-4199-9044-46d245f71726, prompted from the original asset/state direction documented in PROMPTS.md.",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      }
+    },
+    {
+      "path": "oak-worked.webp",
+      "role": "runtime-image",
+      "sha256": "3e5a42d7085d1592e7ebe7aa1448e55e6f098fc59c0202cb133a6733465e29c1",
+      "license": "Original project art generated for Thousand Unit Skirmish; no third-party source imagery.",
+      "provenance": "Lossy WebP quality-86 encode of oak-worked.png using Pillow 12.3.0; RGBA alpha retained.",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      }
+    }
+  ],
+  "assets": [
+    {
+      "id": "oak-full",
+      "kind": "resource-sprite",
+      "resourceType": "wood",
+      "stage": "full",
+      "sourceFile": "oak-full.png",
+      "runtimeFile": "oak-full.webp",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      },
+      "worldSize": {
+        "width": 4.1,
+        "height": 3.75
+      },
+      "pivot": [
+        0.5,
+        1.0
+      ],
+      "cameraFacing": true,
+      "alphaMode": "cutout",
+      "stockPercent": {
+        "min": 67,
+        "max": 100
+      },
+      "batchKey": "environment.resource.wood.full"
+    },
+    {
+      "id": "oak-worked",
+      "kind": "resource-sprite",
+      "resourceType": "wood",
+      "stage": "worked",
+      "sourceFile": "oak-worked.png",
+      "runtimeFile": "oak-worked.webp",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      },
+      "worldSize": {
+        "width": 4.1,
+        "height": 3.75
+      },
+      "pivot": [
+        0.5,
+        1.0
+      ],
+      "cameraFacing": true,
+      "alphaMode": "cutout",
+      "stockPercent": {
+        "min": 34,
+        "max": 66
+      },
+      "batchKey": "environment.resource.wood.worked"
+    },
+    {
+      "id": "oak-low",
+      "kind": "resource-sprite",
+      "resourceType": "wood",
+      "stage": "low",
+      "sourceFile": "oak-low.png",
+      "runtimeFile": "oak-low.webp",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      },
+      "worldSize": {
+        "width": 4.1,
+        "height": 3.75
+      },
+      "pivot": [
+        0.5,
+        1.0
+      ],
+      "cameraFacing": true,
+      "alphaMode": "cutout",
+      "stockPercent": {
+        "min": 1,
+        "max": 33
+      },
+      "batchKey": "environment.resource.wood.low"
+    },
+    {
+      "id": "oak-depleted",
+      "kind": "resource-sprite",
+      "resourceType": "wood",
+      "stage": "depleted",
+      "sourceFile": "oak-depleted.png",
+      "runtimeFile": "oak-depleted.webp",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      },
+      "worldSize": {
+        "width": 4.1,
+        "height": 3.75
+      },
+      "pivot": [
+        0.5,
+        1.0
+      ],
+      "cameraFacing": true,
+      "alphaMode": "cutout",
+      "stockPercent": {
+        "min": 0,
+        "max": 0
+      },
+      "batchKey": "environment.resource.wood.depleted"
+    },
+    {
+      "id": "berries-full",
+      "kind": "resource-sprite",
+      "resourceType": "food",
+      "stage": "full",
+      "sourceFile": "berries-full.png",
+      "runtimeFile": "berries-full.webp",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      },
+      "worldSize": {
+        "width": 2.55,
+        "height": 1.56
+      },
+      "pivot": [
+        0.5,
+        1.0
+      ],
+      "cameraFacing": true,
+      "alphaMode": "cutout",
+      "stockPercent": {
+        "min": 67,
+        "max": 100
+      },
+      "batchKey": "environment.resource.food.full"
+    },
+    {
+      "id": "berries-worked",
+      "kind": "resource-sprite",
+      "resourceType": "food",
+      "stage": "worked",
+      "sourceFile": "berries-worked.png",
+      "runtimeFile": "berries-worked.webp",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      },
+      "worldSize": {
+        "width": 2.55,
+        "height": 1.56
+      },
+      "pivot": [
+        0.5,
+        1.0
+      ],
+      "cameraFacing": true,
+      "alphaMode": "cutout",
+      "stockPercent": {
+        "min": 34,
+        "max": 66
+      },
+      "batchKey": "environment.resource.food.worked"
+    },
+    {
+      "id": "berries-low",
+      "kind": "resource-sprite",
+      "resourceType": "food",
+      "stage": "low",
+      "sourceFile": "berries-low.png",
+      "runtimeFile": "berries-low.webp",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      },
+      "worldSize": {
+        "width": 2.55,
+        "height": 1.56
+      },
+      "pivot": [
+        0.5,
+        1.0
+      ],
+      "cameraFacing": true,
+      "alphaMode": "cutout",
+      "stockPercent": {
+        "min": 1,
+        "max": 33
+      },
+      "batchKey": "environment.resource.food.low"
+    },
+    {
+      "id": "berries-depleted",
+      "kind": "resource-sprite",
+      "resourceType": "food",
+      "stage": "depleted",
+      "sourceFile": "berries-depleted.png",
+      "runtimeFile": "berries-depleted.webp",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      },
+      "worldSize": {
+        "width": 2.55,
+        "height": 1.56
+      },
+      "pivot": [
+        0.5,
+        1.0
+      ],
+      "cameraFacing": true,
+      "alphaMode": "cutout",
+      "stockPercent": {
+        "min": 0,
+        "max": 0
+      },
+      "batchKey": "environment.resource.food.depleted"
+    },
+    {
+      "id": "construction-clear",
+      "kind": "construction-ground",
+      "stage": "clear",
+      "sourceFile": null,
+      "runtimeFile": null,
+      "dimensionsPx": null,
+      "worldSize": null,
+      "pivot": null,
+      "cameraFacing": true,
+      "alphaMode": "cutout",
+      "progressRange": null,
+      "batchKey": "environment.construction.clear"
+    },
+    {
+      "id": "construction-earthwork",
+      "kind": "construction-ground",
+      "stage": "earthwork",
+      "sourceFile": "construction-earthwork.png",
+      "runtimeFile": "construction-earthwork.webp",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      },
+      "worldSize": {
+        "width": 3.0,
+        "height": 3.0
+      },
+      "pivot": [
+        0.5,
+        1.0
+      ],
+      "cameraFacing": true,
+      "alphaMode": "cutout",
+      "progressRange": {
+        "min": 0,
+        "max": 0.4
+      },
+      "batchKey": "environment.construction-earthwork"
+    },
+    {
+      "id": "construction-foundation",
+      "kind": "construction-ground",
+      "stage": "foundation",
+      "sourceFile": "construction-foundation.png",
+      "runtimeFile": "construction-foundation.webp",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      },
+      "worldSize": {
+        "width": 3.0,
+        "height": 3.0
+      },
+      "pivot": [
+        0.5,
+        1.0
+      ],
+      "cameraFacing": true,
+      "alphaMode": "cutout",
+      "progressRange": {
+        "min": 0.4,
+        "max": 1
+      },
+      "batchKey": "environment.construction-foundation"
+    }
+  ]
+}

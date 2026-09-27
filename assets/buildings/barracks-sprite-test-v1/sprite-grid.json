@@ -1,0 +1,59 @@
+{
+  "schema": "thousand-unit-skirmish.sprite-grid.v1",
+  "asset": "barracks",
+  "status": "source-and-runtime-frames-ready; renderer-integration-pending",
+  "sourceView": {
+    "camera": "fixed elevated orthographic three-quarter",
+    "azimuthDegrees": 45,
+    "elevationDegrees": 46,
+    "viewCount": 1,
+    "cameraRotationSupported": false
+  },
+  "worldGrid": {
+    "cellUnits": 1,
+    "gameplayFootprintCells": [3, 3],
+    "anchor": "center of ground footprint"
+  },
+  "spriteFrame": {
+    "gridCells": [5, 5],
+    "pixels": [640, 640],
+    "worldUnits": [5, 5],
+    "pixelsPerWorldUnit": 128,
+    "anchorNormalizedFromBottomLeft": [0.5, 0.311],
+    "anchorPixelFromTopLeft": [320, 441],
+    "anchorIsProjectedGroundCenter": true,
+    "fitPixels": 560,
+    "bottomMarginPixels": 4,
+    "renderBoundsWorldUnits": [5, 5]
+  },
+  "stateMapping": {
+    "construction": [
+      { "maxProgressExclusive": 0.2, "frame": "foundation" },
+      { "maxProgressExclusive": 0.9, "frame": "frame" },
+      { "maxProgressInclusive": 1.0, "frame": "complete" }
+    ],
+    "health": [
+      { "minFractionInclusive": 0.66, "frame": "complete" },
+      { "minFractionInclusive": 0.33, "frame": "damaged" },
+      { "minFractionInclusive": 0.0, "frame": "critical" }
+    ]
+  },
+  "variants": {
+    "teams": ["azure", "ember"],
+    "season": ["neutral"],
+    "lighting": ["neutral-day"],
+    "futureDimensions": ["season", "lighting", "wear", "team-trim"]
+  },
+  "runtimeFrames": {
+    "pathPattern": "runtime/barracks-{state}-{team}.webp",
+    "states": ["foundation", "frame", "complete", "damaged", "critical"],
+    "teams": ["azure", "ember"],
+    "textureColorSpace": "srgb",
+    "alphaMode": "straight"
+  },
+  "knownLimits": [
+    "One 45-degree azimuth is authored; this sheet cannot rotate with the camera.",
+    "Alpha frames are camera-authored cutouts without per-pixel scene depth; depth/occlusion integration is pending.",
+    "Season and lighting variants are not authored in this pack."
+  ]
+}

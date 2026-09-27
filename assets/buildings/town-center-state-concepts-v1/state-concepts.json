@@ -1,0 +1,58 @@
+{
+  "schema": "thousand-unit-skirmish.building-state-concepts.v1",
+  "asset": "town-center",
+  "status": "concept-ready; individual-meshy-jobs-pending",
+  "designReference": "source/town-center-complete.png",
+  "sourceImage": {
+    "format": "PNG RGBA",
+    "pixels": [1254, 1254],
+    "camera": "elevated three-quarter; matched to the finished Town Center reference",
+    "background": "transparent"
+  },
+  "generation": {
+    "provider": "Codex ImageGen",
+    "date": "2026-09-26",
+    "conceptPromptRecord": "not included in this package"
+  },
+  "states": [
+    {
+      "state": "foundation",
+      "buildProgress": 0.05,
+      "status": "concept-ready",
+      "concept": "source/town-center-foundation.png",
+      "sha256": "2be54448fade7ea0cbbc2687cca47dce5561655985f93e2bc85ca25c1bcdbd87"
+    },
+    {
+      "state": "frame",
+      "buildProgress": 0.5,
+      "status": "concept-ready",
+      "concept": "source/town-center-frame.png",
+      "sha256": "713f0b200c732aa2c5da1d977255899bee5690382ee2c5c636bb247aca4344f8"
+    },
+    {
+      "state": "complete",
+      "buildProgress": 1.0,
+      "status": "existing-reference",
+      "concept": "source/town-center-complete.png",
+      "sha256": "4a1368b4b8b9dab08206c03b52ed645670fb24039373fafefeecc75135c589ff"
+    },
+    {
+      "state": "damaged",
+      "healthRatio": 0.6,
+      "status": "concept-ready",
+      "concept": "source/town-center-damaged.png",
+      "sha256": "30c7fdd1f01f2d249a6f603866f9cb999de9542225046d48844d24c91fae3446"
+    },
+    {
+      "state": "critical",
+      "healthRatio": 0.3,
+      "status": "concept-ready",
+      "concept": "source/town-center-critical.png",
+      "sha256": "1e7c6e2ac9121ea19ab1007d10921bc69a888394c60670ae5719f27dee34a1d5"
+    }
+  ],
+  "meshProcessing": {
+    "status": "not-started",
+    "note": "Earlier Meshy credit authorization covered the single finished-state pilot. These four concept images have not been uploaded or processed."
+  }
+}

@@ -27,7 +27,36 @@ if (dirty && !allowDirty) {
 // COPY sources are the runtime contract. Keep the package files for provenance,
 // even when the current Dockerfile does not install npm dependencies.
 const entries = new Set(['.dockerignore', 'Dockerfile', 'package.json', 'package-lock.json']);
+const dockerSources = new Map();
 const dockerfile = await readFile(path.join(root, 'Dockerfile'), 'utf8');
+async function expandDockerSource(source, line) {
+  const relative = source.replace(/^\.\//, '').replace(/\/$/, '');
+  if (!relative || path.isAbsolute(relative) || relative.split('/').includes('..')) {
+    throw new Error(`Unsafe Docker COPY source: ${source}`);
+  }
+  if (!relative.includes('*')) {
+    if (/["?\[\]]/.test(relative)) throw new Error(`Unsupported Docker COPY form: ${line.trim()}`);
+    return [{ path: relative, pattern: relative }];
+  }
+
+  const suffix = '/*.webp';
+  if (!relative.endsWith(suffix) || /[*?"\[\]]/.test(relative.slice(0, -suffix.length))) {
+    throw new Error(`Unsupported Docker COPY form: ${line.trim()}`);
+  }
+  const directory = relative.slice(0, -suffix.length);
+  if (!directory) throw new Error(`Unsafe Docker COPY source: ${source}`);
+  const directoryPath = path.join(root, directory);
+  const directoryInfo = await lstat(directoryPath);
+  if (directoryInfo.isSymbolicLink() || !directoryInfo.isDirectory()) {
+    throw new Error(`Docker COPY glob directory must be a real directory: ${directory}`);
+  }
+  const matches = (await readdir(directoryPath))
+    .filter((name) => name.endsWith('.webp'))
+    .sort();
+  if (matches.length === 0) throw new Error(`Docker COPY pattern matched no files: ${source}`);
+  return matches.map((name) => ({ path: `${directory}/${name}`, pattern: relative }));
+}
+
 for (const line of dockerfile.split(/\r?\n/)) {
   if (/^\s*ADD\s/i.test(line)) throw new Error('Use COPY instead of ADD so release sources can be audited');
   if (!/^\s*COPY\s/i.test(line)) continue;
@@ -36,15 +65,30 @@ for (const line of dockerfile.split(/\r?\n/)) {
     const option = tokens.shift();
     if (option.startsWith('--from=')) throw new Error('Multi-stage COPY needs an explicit release packer update');
   }
-  if (tokens.length < 2 || tokens.some((token) => /["'*?\[\]]/.test(token))) {
+  if (tokens.length < 2 || /["'*?\[\]]/.test(tokens.at(-1))) {
     throw new Error(`Unsupported Docker COPY form: ${line.trim()}`);
   }
   for (const source of tokens.slice(0, -1)) {
-    const relative = source.replace(/^\.\//, '').replace(/\/$/, '');
-    if (!relative || path.isAbsolute(relative) || relative.split('/').includes('..')) {
-      throw new Error(`Unsafe Docker COPY source: ${source}`);
+    for (const resolved of await expandDockerSource(source, line)) {
+      entries.add(resolved.path);
+      dockerSources.set(resolved.path, resolved.pattern);
     }
-    entries.add(relative);
+  }
+}
+const ignoreRules = (await readFile(path.join(root, '.dockerignore'), 'utf8'))
+  .split(/\r?\n/).map((line) => line.trim()).filter((line) => line && !line.startsWith('#'));
+if (ignoreRules[0] !== '*') {
+  throw new Error('Release packer expects the Docker context to use an explicit allowlist');
+}
+for (const [source, pattern] of dockerSources) {
+  if ((await lstat(path.join(root, source))).isFile()
+    && !ignoreRules.includes(`!${source}`) && !ignoreRules.includes(`!${pattern}`)) {
+    throw new Error(`Docker COPY source is excluded by .dockerignore: ${source}`);
+  }
+}
+for (const runtimeSource of ['room-supervisor.mjs', 'server.mjs', 'origin-policy.mjs', 'simulation-scheduler.mjs']) {
+  if (!entries.has(runtimeSource)) {
+    throw new Error(`Dockerfile COPY sources must include runtime source ${runtimeSource}`);
   }
 }
 try {
