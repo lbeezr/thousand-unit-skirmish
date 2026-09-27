@@ -1,20 +1,26 @@
-# Simulation timing under overload
+# Simulation timing
 
-The authoritative simulation targets 30 ticks per second. Each timer callback
-advances the game by exactly one fixed simulation step. The scheduler uses
-monotonic deadlines and, after an event-loop stall or an overlong tick, skips
-elapsed wall-clock slots before scheduling the next callback. It does not run
-multiple ticks back-to-back to catch up.
+[Documentation index](README.md) · [Architecture](architecture.md)
 
-This policy keeps unit movement, attack cadence, and scenario timers tied to
-simulation ticks. During overload, simulation time slows relative to wall time;
-it does not jump forward or spend a burst of CPU replaying missed steps. The
-trade-off is that real-time effects such as match duration also take longer
-while the server remains overloaded.
+## Fixed-step policy
+
+The server targets 30 simulation ticks per second. Each timer callback advances
+exactly one fixed step. Monotonic deadlines determine the next callback.
+
+After an event-loop stall or overlong tick, the scheduler skips elapsed
+wall-clock slots. It does not replay missed ticks in a burst. Movement, combat,
+and scenario clocks therefore slow relative to wall time during overload.
+
+## Diagnostics and check
 
 `/health.tickTiming.scheduler` reports the policy, cumulative skipped slots,
-and the skipped-slot count and simulation tick for the most recent overload.
-The ordinary start-lag samples continue to report observed callback delay.
+and the count/tick of the most recent overload. Start-lag samples report callback
+delay separately from simulation work.
 
-Run `node scripts/simulation-scheduler-test.mjs` to exercise regular cadence,
-an injected 150 ms stall, and the no-immediate-catch-up boundary.
+```sh
+node scripts/simulation-scheduler-test.mjs
+```
+
+The test covers normal cadence, an injected 150 ms stall, and the boundary that
+prevents immediate catch-up. See `simulation-scheduler.mjs` for the scheduling
+helper and `server.mjs` for the simulation loop.

@@ -1,19 +1,44 @@
-# Town Center Meshy Lifecycle Runtime Pack
+# Town Center captured lifecycle pack
 
-This runtime pack adds a separate optimized Meshy model for Foundation, Frame, Damaged, and Critical. Each source state image was submitted as its own image-to-3D job, previewed, optimized, and captured from eight matched camera directions. The complete model remains in the earlier [Meshy pilot pack](../town-center-meshy-review-v1/README.md).
+**Status:** integrated Town Center artwork with procedural loading/error fallback.
+[Pipeline](../../../docs/building-asset-production-pipeline.md) · [Provenance](PROVENANCE.md)
 
-The [Building Variant Atlas](../../../building-map.html) shows all five state contact sheets and exposes the individual views. All 40 640 × 640 color captures and their 40 alpha team-color masks are checked in under `runtime/`. The masks tint team banners from the manifest colors, and each source image is SHA-256 checked before use. The optimized GLBs and full-resolution color, normal, depth, silhouette, team-mask, and contact-shadow outputs remain in local ignored `meshy_output/` for production use.
+## Coverage
 
-| State | Threshold | Views | Meshy credits |
-|---|---:|---:|---:|
+Five separately modeled states share eight camera directions: forty 640 × 640
+color captures and forty alpha team masks under `runtime/`. The Complete model
+originated in the [reference pilot](../town-center-meshy-review-v1/README.md).
+
+| State | Reference condition | Views | Recorded credits |
+| --- | --- | ---: | ---: |
 | Foundation | 5% construction | 8 | 35 |
 | Frame | 50% construction | 8 | 35 |
-| Complete | intact | 8 | 35 (earlier pilot) |
+| Complete | Intact | 8 | 35, earlier pilot |
 | Damaged | 60% health | 8 | 35 |
 | Critical | 30% health | 8 | 35 |
 
-The four new jobs used **140 credits total** (30 for image-to-3D and 5 for optimization per state), within the approved cap. `lifecycle-grid.json` records thresholds, capture settings, task IDs, local optimized-model hashes, and view hashes. See [PROVENANCE.md](PROVENANCE.md) for task-level records.
+The four added generation/remesh pairs consumed 140 credits; 175 including the
+complete pilot. These are completed-job costs, not future pricing.
 
-The captured-view runtime now supplies the Town Center's default gameplay artwork. The game selects the nearest of eight camera directions, applies team colors through the verified masks, and keeps the old procedural model available while the images load or if an asset is unavailable. The generic lifecycle resolver also maps construction progress to Foundation/Frame and health to Damaged/Critical.
+## Manifest and runtime
 
-Town Centers are still static map landmarks and currently expose neither construction progress nor health, so gameplay shows the Complete state. Foundation, Frame, Damaged, and Critical are ready in the same runtime pack and become active when the game supplies those lifecycle values. Other building types keep their current renderers until a matching captured-view pack is available.
+[lifecycle-grid.json](lifecycle-grid.json) records state thresholds, camera,
+task IDs, optimized-model hashes, view hashes, and masks. The loader verifies
+image hashes, selects the nearest of eight azimuths, and tints banners through
+masks. The generic resolver supports construction and damage values.
+
+Current Town Centers are static landmarks without construction progress or
+health, so only **Complete** appears during a match. Other states are ready
+for a future gameplay source; their presence does not implement that mechanic.
+Barracks and Archery Ranges use a separate direct-sprite loader.
+
+## Review and source storage
+
+Use the [local Building Variant Atlas preview](../../../docs/assets.md#review-locally) to compare all state/view
+sets. Optimized GLBs and full-resolution color, normal, depth, silhouette,
+team-mask, and contact-shadow intermediates remain in local ignored
+`meshy_output/`. Compact runtime files are checked in here.
+
+The source server serves this pack, and Docker includes its manifest and runtime
+images. Town Centers have a server-owned collision footprint, but still expose
+no construction or health state. Verify actual hosted appearance on a named build.

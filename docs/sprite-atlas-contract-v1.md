@@ -1,165 +1,82 @@
-# Sprite atlas and manifest contract v1
+# Sprite atlas contract v1
 
-**Status:** shared authoring and packaging contract for new painterly 2D/2.5D
-unit, building, and prop art. It is not a renderer integration or production
-promotion. Existing GLB authoring packs and environment packs remain references
-while sprite pilots establish their canvas sizes, frame counts, and state
-coverage.
+[Documentation index](README.md) · [Asset guide](assets.md)
 
-This cutout-sprite contract is separate from the current GLB/material-atlas
-path. It does not replace the roadmap's shared painted-material atlas or its
-UV, export, and manifest checks.
+This format describes cutout sprite pages, clips, pivots, layers, masks, and art
+bounds. It is separate from GLB and painted-material atlas contracts. A valid
+manifest establishes packaging integrity, not renderer adoption or visual approval.
 
-The normative shape is
-[`schemas/sprite-atlas-pack-v1.schema.json`](../schemas/sprite-atlas-pack-v1.schema.json).
-Use `node scripts/validate-sprite-atlas.mjs <manifest.json>` for file integrity
-and bounds checks. Use `node scripts/preview-sprite-atlas.mjs <manifest.json>`
-to generate a local HTML preview with state/direction selection, layer
-composition, frame rectangles, pivots, alpha bounds, and team-mask inspection.
-Use `node scripts/report-sprite-atlas-handoff.mjs <manifest.json>` to emit a
-machine-readable handoff containing verified file hashes, exact page/frame
-rectangles and dimensions, pivot review state, alpha bounds, state/direction/
-team sequences, masks, depth crops, and the separation between art bounds and
-map-owned occupancy. Add `--require-reviewed-pivots` when a handoff requires
-every frame's ground pivot to be visually reviewed; the report still prints
-before that gate returns a nonzero exit status.
+Normative schema: [sprite-atlas-pack-v1.schema.json](../schemas/sprite-atlas-pack-v1.schema.json).
 
-## Authoring rules
+## Validate, preview, and report
 
-- Every image page declares its own pixel dimensions, color space, pixel
-  format, alpha mode, transparent-edge rule, gutter, wrap mode, and sampler
-  settings. A pack does not imply a shared canvas size or fixed grid.
-- File records include relative paths, SHA-256 hashes, file format, and
-  declared dimensions. A page may carry a source file, a runtime file, or
-  both. Source and runtime variants of one page must have the same dimensions.
-- Frames use explicit top-left-origin pixel rectangles. Every frame has a full
-  transparent `fallbackRectPx` cutout for review and simple runtime fallback.
-  A logical frame also declares its canvas size and `groundPivotPx` in
-  canvas-local pixels plus `groundPivotStatus` (`unreviewed-estimate` or
-  `reviewed`). Optional `alphaBoundsPx` is informational (the visible
-  alpha extent, conventionally measured at alpha 96/255); it never replaces
-  the authored ground pivot.
-- Cropped foreground/background layers refer to explicit pages and rectangles
-  and declare their offset on the logical frame canvas. The `actor` layer is
-  the default. Optional `background`, `midground`, and `foreground` layers can
-  carry their own `batchKey` and renderer-owned `depthBiasWorld`. When split
-  layers exist, the renderer draws those rectangles; the full cutout remains
-  available for review and fallback.
-- Clips name a `stateId`, optional `directionId`, and an explicit frame
-  sequence with per-frame durations. No direction count, frame count, or
-  animation rate is implied by the schema. Static art is a one-frame clip.
-- Optional `recommendedTileFootprint` records the artist's non-authoritative
-  footprint suggestion for preview and asset/map consistency checks. Unit
-  sprites may omit it. Map/gameplay data remains authoritative for placement;
-  the renderer never reads occupancy from the art pack. `artBoundsWorld`
-  records visible extent relative to the ground pivot. `heightWorld` and optional
-  `sortAnchorWorld` declare vertical extent and sorting location separately.
-  Optional `cullingBoundsWorld` and `selectionBoundsWorld` stay separate
-  because visible overhang is not gameplay occupancy or an interaction target.
-- A page may provide an aligned grayscale8 team-color mask. It has the same
-  pixel dimensions and frame UV rectangles as its color page. Its R value is
-  linear data: black (0) preserves the source and white (255) applies the full
-  renderer-supplied team tint; intermediate values blend between them. The
-  mask is optional and does not require baking team variants.
-- Maps and gameplay snapshots own occupancy and refer to logical IDs such as
-  `assetId` or `visualAssetId`; they never store page rectangles or UVs. The
-  renderer resolves the current logical state/direction to the selected frame.
-  Frame selection may update an instance `frameRect` when the frame changes.
-- Atlas pages use cutout alpha with declared edge behavior. `edgeRule` says
-  whether RGB under fully transparent pixels is bled from the silhouette or
-  zeroed; alpha remains governed by `alphaMode`. For `gutterPx: 0`, disable
-  mipmap generation, use linear min/mag filters, and inset each frame rect by
-  exactly half a texel. If mipmaps are generated, declare an edge-extended
-  gutter and `maxMipLevel`; the gutter must be at least `2^maxMipLevel` pixels
-  per side. Team masks use the same UV inset and mip/gutter policy as their
-  color page, with scalar edge values extended into matching padding. An
-  `edge-extended` cutout gutter copies edge RGB into padding while keeping the
-  padding alpha transparent; grayscale mask padding copies the edge value.
-  This
-  prevents samples from reaching neighboring frames. The manifest owns
-  draw-layer names and ordering metadata; maps do not set render order. The
-  renderer retains its depth test/write policy and owns depth behavior.
+```sh
+node scripts/validate-sprite-atlas.mjs path/to/manifest.json
+node scripts/preview-sprite-atlas.mjs path/to/manifest.json
+node scripts/report-sprite-atlas-handoff.mjs path/to/manifest.json
+```
 
-## Bounds and coordinate conventions
+The preview exposes state/direction, layers, bounds, pivot, and team masks.
+The report includes verified hashes, page/frame rectangles, pivot review status,
+sequences, masks, depth crops, and art/occupancy separation. Add
+`--require-reviewed-pivots` for a handoff requiring reviewed ground contact; the
+report prints before returning a failure for an unreviewed pivot.
 
-`rectPx` is `{x, y, width, height}` with integer pixels, origin at the page's
-top-left, x increasing right, and y increasing down. Rectangles are
-half-open: `[x, x + width) × [y, y + height)`. `offsetPx` and `groundPivotPx`
-use the logical frame canvas origin. A pivot may lie on the canvas edge but
-must be inside or on the edge of the canvas. Alpha bounds and every layer
-rectangle must fit within their declared canvas/page.
+## Pages and files
 
-World bounds are axis-aligned `{min:[x,y,z], max:[x,y,z]}` relative to the
-ground pivot, in world units; Y is up and the ground plane is X/Z. The map
-coordinate uses one world unit per tile today. `recommendedTileFootprint`,
-when present, is a positive integer rectangle in map tiles and a
-non-authoritative authoring hint, independent of art bounds. Map and gameplay
-data own the actual occupied cells; renderer placement and collision must not
-be derived from this field. Map/asset tooling may compare the hint against the
-gameplay footprint. Let art overhang without expanding gameplay placement
-unless the map rules actually reserve those extra tiles.
+Each page declares its own dimensions, color space, format, alpha/edge rules,
+gutter, wrap, and sampler. No shared canvas/grid is implied. Relative file records
+contain hash, format, and dimensions. Source/runtime versions of the same page
+have identical dimensions; a page can contain either or both.
 
-For a multi-layer frame, every layer's `offsetPx` places its crop on the same
-logical frame canvas. All layers therefore share the same `groundPivotPx` and
-world anchor even if their source rectangles have different sizes. Preserve
-the character's feet/root at the ground pivot through asymmetrical tools and
-weapons; a bottom-center alpha bound is only a measurement aid. Mark generated
-or otherwise unreviewed pivots `unreviewed-estimate` until an artist checks
-them. A deliberately grounded defeated pose may use a distinct authored pivot
-if the pose itself changes the root contact point. The renderer batches each
-`drawLayer` separately and applies optional `depthBiasWorld` only as a
-bounded renderer-level visual ordering adjustment. `sortAnchorWorld` is an
-optional authored point relative to the ground root for depth ordering and
-defaults to the ground root when absent; it does not alter
-occupancy, culling, selection, or the stable ground anchor.
+For no gutter, disable mip generation, use linear min/mag sampling, and inset
+rectangles by exactly half a texel. With generated mips, declare `maxMipLevel`
+and edge-extended padding of at least `2^maxMipLevel` pixels per side. Extend
+color RGB while keeping padding alpha transparent. Team-mask padding extends
+scalar edge values. `edgeRule` distinguishes bled RGB from zero RGB under full
+transparency; it does not replace `alphaMode`.
 
-## Pilot evidence and limits
+## Frames, layers, and clips
 
-The handoff report validates declarations and file integrity; it does not
-review pixels or mark an estimated pivot as approved. For example, the
-current-main Archery Range construction pack reports five `640 × 640` frames,
-a shared team-mask page, five static construction clips, no depth-split crops,
-and five `unreviewed-estimate` pivots. Its `3 × 3` footprint remains a hint;
-the map continues to own occupied cells. The CI handoff scenario checks these
-fields against the versioned manifest so changes remain visible in review.
+- `rectPx` uses integer top-left pixel coordinates and half-open bounds:
+  `[x,x+width) × [y,y+height)`.
+- Every logical frame declares canvas size, a full-cutout `fallbackRectPx`, and
+  canvas-local `groundPivotPx`. The pivot may lie on a canvas edge.
+- `groundPivotStatus` is `unreviewed-estimate` or `reviewed`. Alpha bounds are
+  informational, conventionally measured at alpha 96/255; they never replace
+  ground registration.
+- Cropped layers declare page rectangle and canvas-local `offsetPx`. Layers are
+  `background`, `midground`, `actor` (default), or `foreground`, with optional
+  batch key and renderer-owned `depthBiasWorld`.
+- Layer and alpha rectangles must fit their page/canvas. Split-layer drawing
+  retains the full cutout for fallback and review.
+- Clips specify `stateId`, optional `directionId`, and an explicit frame sequence
+  with durations. A static state is one frame; no view count or animation rate
+  is assumed.
 
-The complete-first Archery Range pack now also has a canonical sidecar with
-five lifecycle states and Azure/Ember runtime variants. It keeps the original
-1254 × 1254 source frames, adds aligned lossless 640 × 640 source pages for
-the runtime pages, and preserves the existing 5 × 5 art grid separately from
-the 3 × 3 occupancy hint. Its single full-canvas midground layer is not a
-depth split. The ground pivot remains an unreviewed estimate, and renderer
-integration is pending; a generated browser preview is stored with the pack.
+## Team masks and world bounds
 
-The standalone Town Center sprite pack now uses the same exporter to generate
-its canonical sidecar directly from `sprite-grid.json`. It records one static
-`complete` state for Azure and Ember, hashes the original, normalized, and
-runtime files, and keeps the projected pivot unreviewed. Its 4 × 4 visual base
-is only a review guide: the pack omits `recommendedTileFootprint` because the
-map-spawn landmark has no gameplay occupancy. Renderer integration and visual
-pivot review remain pending; the generated preview is stored with the pack.
+An optional aligned grayscale8 mask matches its color page's dimensions and UVs.
+R is linear scalar data: 0 preserves source color, 255 applies full team tint,
+and intermediate values blend. Use identical inset/mip/gutter rules.
 
-The available Worker, Infantry, and Archer sprite explorations now have
-`runtime-candidate` manifests with source/runtime atlas pages, aligned team
-masks, full-frame fallbacks, explicit actor crops, and named clips. The
-canonical validator accepts all three packs. This verifies their declared
-files and geometry; it does not mean that the live renderer loads them or that
-their appearance has been approved. The Infantry README records its six-row
-sheet, approximate facings and cell edges, heuristic unreviewed pivots, and
-short two-frame walk. Its aligned grayscale mask has not been visually
-reviewed in-game. The older `spriteRuntime` fields in the exploration
-manifests are not the canonical consumer shape defined here.
+World bounds are `{min:[x,y,z], max:[x,y,z]}` relative to the ground pivot, Y up,
+with one world unit per map cell. Keep `artBoundsWorld`, `heightWorld`, optional
+`sortAnchorWorld`, `cullingBoundsWorld`, and `selectionBoundsWorld` distinct.
+`recommendedTileFootprint` is an optional positive-integer art recommendation.
+It does not create collision, occupancy, or placement authority.
 
-Those values are evidence about these pilots only; they do not set this
-contract's canvas, grid, state, direction, or frame counts. The environment v1
-manifests use separate transparent images with family-specific dimensions and
-remain unchanged. The specifically held unit/building pack and berry candidate
-capture are outside this sprite-contract work.
+Maps/snapshots refer to logical asset/state IDs, not page rectangles or UVs. The
+renderer resolves state/direction and updates the instance frame rectangle when
+needed. It owns depth test/write and scene occlusion; layer metadata alone does
+not solve that behavior.
 
-For each new pilot, record the canvas sizes, directions, states, and layers it
-actually needs. Renderer integration, appearance claims, staging, and
-production promotion are separate decisions. This sprite contract does not
-authorize external provider spending.
+## Review and adoption
+
+Validate exact source/runtime files, inspect pivots at ground contact, and compare
+all authored states/directions at game zoom. Record unsupported views, missing
+runtime encodes, unreviewed pivots, and source-only compositions. Pack-specific
+previews and validators do not establish in-game appearance or performance.
 
 ## Minimal manifest example
 

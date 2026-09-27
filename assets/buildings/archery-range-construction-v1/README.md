@@ -1,33 +1,44 @@
-# Archery Range construction sprite pilot
+# Archery Range construction sprites
 
-This pack adds a five-step construction sequence as a separate sprite-atlas-v1 runtime candidate. It does not replace the neighboring Archery Range art pack or change the game renderer.
+**Status:** sprite-atlas candidate; gameplay does not load this pack.
+[Asset guide](../../../docs/assets.md) · [Provenance](PROVENANCE.md)
 
-| Order | State | Visible progress |
-| --- | --- | --- |
-| 1 | `foundation` | Stone footing and prepared floor |
-| 2 | `frame` | Open timber skeleton with a clear target, bow rack, and team pennant |
-| 3 | `rails` | Practice rails, target, bows, arrow rack, and the same pennant |
-| 4 | `canopy` | Partial slate canopy with the training equipment and pennant carried forward |
-| 5 | `complete` | Finished range with target, bows, arrows, and team pennant |
+## Coverage
 
-Each frame uses a 640 × 640 canvas at 128 pixels per world unit. The projected ground pivot is `(320, 441)`, marked as an unreviewed estimate. `recommendedTileFootprint` is 3 × 3 as an art hint; map/gameplay occupancy remains authoritative. The art bounds allow a 5 × 5 world-unit frame and 4.5 world units of height.
+| State | Visible construction |
+| --- | --- |
+| `foundation` | Footing and prepared floor. |
+| `frame` | Open skeleton, target, bow rack, and pennant. |
+| `rails` | Practice rails, bows, arrows, target, and pennant. |
+| `canopy` | Partial slate roof over the training equipment. |
+| `complete` | Finished range. |
 
-The page has one full `actor` layer and a grayscale team mask. The mask selects only blue pennants in the frame, rails, canopy, and complete states; target rings and arrow fletching retain their source colors. The foundation remains bare. No foreground occlusion split is included: the art needs renderer-owned depth sorting before a fixed foreground overlay can correctly handle units both in front of and behind the pavilion.
+One fixed view uses a 640 × 640 canvas at 128 pixels/world unit. Pivot `(320,441)`
+is an unreviewed estimate. Art occupies a 5 × 5 frame and up to 4.5 world units
+of height; the 3 × 3 footprint is a recommendation, while gameplay owns occupancy.
 
-`previews/archery-range-identity-playzoom-unlabeled.png` places the frame, rails, and complete sprites on one Meadow game capture at zoom 0.91, with no stage labels. The sprite placements are static visual compositions, not live renderer results. `previews/archery-range-meadow-zoom-091-azure.png` shows the Azure pennant over an Azure capture. `previews/archery-range-meadow-zoom-048-ember-pennant-azure-hud.png` tints only the pennant for Ember; its captured HUD remains Azure. It is not Ember runtime evidence. `previews/archery-range-construction-grid.png` shows all five stages and the 3 × 3 footprint guide.
+The actor layer has a grayscale team mask for pennants in all but Foundation.
+Target rings and arrow fletching keep their source colors. There is no foreground
+split; open-bay occlusion requires renderer depth handling.
 
-The first-pass generated images remain in `source/generated/`. Revised frame, rails, and canopy images are kept separately in `source/generated-v2/`; the packer uses those revised sources without overwriting the originals.
+## Files and commands
 
-Regenerate the atlas, mask, previews, manifest, and checksums with:
+`source/generated/` retains originals; `source/generated-v2/` holds the revised
+frame/rails/canopy sources used by the packer. The manifest, atlas/mask, checksums,
+and labeled previews are generated with:
 
 ```sh
 python3 scripts/pack-archery-range-construction-v1.py
+node scripts/validate-sprite-atlas.mjs assets/buildings/archery-range-construction-v1/sprite-atlas-pack-v1.json
 ```
 
-## Current limits
+Run from the repository root. Exact prompts remain in [source/prompts.md](source/prompts.md).
 
-- This pack is not wired into gameplay yet.
-- It contains one fixed elevated three-quarter view and static stages only.
-- Pivots and world bounds are estimates pending an in-game placement review.
-- Unit occlusion through the open bay remains renderer work.
-- The map's existing 3 × 3 footprint remains the only source of occupancy.
+## Review limits
+
+The unlabeled Meadow placement sheet is a static composition over a game capture.
+The Ember-pennant composition retains an Azure HUD; it is not Ember runtime evidence.
+The grid sheet compares all five states and the suggested footprint.
+
+Pivot/world bounds need an in-game placement review. Animation, other directions,
+live state selection, and unit occlusion are not demonstrated by these previews.

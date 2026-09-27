@@ -1,36 +1,47 @@
-# Forked Vale — first complete 1v1 scenario
+# Forked Vale
 
-Forked Vale is an original 80 × 64 skirmish map. Both teams start with four workers, eight infantry, 150 food, and 250 wood. The first useful choice is visible from the bases: send the army through the north or south signal ford, or spend wood on a Barracks or Archery Range and prepare a split attack. Workers count toward a capture threshold, so a quick 5+5 split is possible at the cost of exposing the economy.
+[Documentation index](README.md) · [Map catalog](maps.md) · [Balance](first-skirmish-balance.md)
 
-![Top-down tactical layout of Forked Vale](forked-vale-preview.svg)
+The default 1v1 map is an 80 × 64 economy and objective scenario. Each seat starts
+with four Workers, eight Infantry, 150 food, and 250 wood. The opening choice is
+to contest a signal, split the army, or invest in production.
 
-The host can choose **Forked Vale** in the battlefield picker, or launch it directly with `RTS_MAP=maps/forked-vale.json node server.mjs`.
+![Forked Vale tactical layout](forked-vale-preview.svg)
 
-## Tactical layout
+## Rules
 
-The Azure and Ember starts sit at mirrored positions, ±26.5 on the east-west axis. Each has a nearby 600-stock food node and 600-stock wood node. Each side also has mirrored 400-stock food and wood expansions closer to the fords. Water divides the center into a 13-cell north crossing, a 9-cell central crossing, and a 12-cell south crossing. Small corner groves add visual landmarks without hiding the routes.
+| Objective/event | Rule |
+| --- | --- |
+| North Signal | Five units, nine-second capture; 75 food and 50 wood per capture. |
+| South Signal | Same requirements and reward. |
+| Vale Watch | Eight units, twelve-second capture; requires ownership of both Signals. |
+| Victory | Own all three for twenty continuous seconds. |
+| Relief Caravan | At 2:00, both teams receive 100 food and 75 wood. |
+| Deadline | At 15:00, the Watch owner wins; unclaimed means draw. |
 
-Both teams have the same shortest walkable distance to each objective: 31 cells to North Signal, 30 to South Signal, and 20 to Vale Watch. The one-cell difference between north and south is shared by both teams. The 1,000-unit-per-team starting footprint fits inside the map for manual stress resets.
+Workers count toward capture thresholds. A five-Infantry north / three-Infantry
+plus two-Worker south split exposes the economy and can be contested; its
+scripted tradeoff is recorded in [balance](first-skirmish-balance.md).
 
-## Match rules and player text
+## Layout
 
-| Step | Rule | Why it matters |
-| --- | --- | --- |
-| North Signal | 5 units, 9 seconds; +75 food and +50 wood per capture | Gives the first army a northern route and a modest production reward. |
-| South Signal | 5 units, 9 seconds; same reward | Offers an equal southern route and a second front. |
-| Vale Watch | 8 units, 12 seconds; requires one team to own both signals | Forces a plan beyond a straight central rush. |
-| Victory | Own all three zones for 20 continuous seconds | Leaves time for a counterattack after the final capture. |
-| Relief Caravan | At 2:00, both teams receive 100 food and 75 wood | Keeps the losing side able to produce or rebuild. |
-| Deadline | At 15:00, the Vale Watch owner wins regardless of signal ownership; if unclaimed, draw | Resolves a stalled match with an explicitly stated fallback. |
+Spawns are mirrored at x = ±26.5. Each base has 600 food and 600 wood nearby and
+400-stock food/wood expansions nearer the fords. Central water leaves north,
+center, and south crossings of 13, 9, and 12 cells.
 
-The authored scenario brief appears in the map picker: “Both Signals unlock the Watch. Hold all three for 20s. Relief at 2:00; 15:00, Watch owner wins or unclaimed is a draw.” It names the all-zone hold and its duration, the Relief Caravan arrival, and the deadline result. Objective callouts use the same North Signal, South Signal, and Vale Watch names in the editor and game.
+Both seats have shortest walkable routes of 31 cells to North, 30 to South,
+and 20 to the Watch. Equality of routes is a geometry check; playtests determine
+whether both plans are viable. The map also fits the manual 2,000-unit stress reset.
 
-## Authoring and checks
+## Author and validate
 
-`node scripts/author-forked-vale.mjs` drives Map Studio in a local headless browser. It paints the terrain, places spawns and resources, sets every objective and event through editor controls, publishes the map, copies the editor-produced file to `maps/forked-vale.json`, and reopens it in Map Studio to check the round trip. It backs up an existing shipped file and restores it if authoring fails. No scenario JSON is hand edited.
+- `node scripts/author-forked-vale.mjs` drives Map Studio, writes the shipped JSON,
+  and reopens it to verify the editor round trip. It is a content-writing tool.
+- `node scripts/forked-vale-layout.mjs` checks symmetry, routes, crossings, and
+  formation space.
+- `node scripts/forked-vale-scenario.mjs 0` and `1` check both winner assignments,
+  economy, prerequisites, recapture, victory, and rematch.
+- Add `--stress` for movement and combat with 2,000 total units.
+- `node scripts/render-forked-vale-preview.mjs` refreshes the diagram from JSON.
 
-`node scripts/forked-vale-layout.mjs` checks mirrored terrain and resources, equal path distance from both spawns, open crossing cells, and the large-army starting footprint. `node scripts/forked-vale-scenario.mjs 0 --stress` and `node scripts/forked-vale-scenario.mjs 1 --stress` exercise both winner assignments, both teams' economy, opposed signal ownership, the locked watch, recapture, victory, synchronized rematch reset, and a 2,000-unit match. Stress checks at least 950 units from each side move toward separate crossings, then attack-moves both full armies into a contested engagement and requires at least 10 units damaged or killed on each side. These are local simulation checks; match feel and internet performance still need player testing.
-
-`node scripts/render-forked-vale-preview.mjs` refreshes the top-down diagram from the editor-authored map file.
-
-Three Crowns was also revised through Map Studio with two central stone shelves, a clear brief, a 20-second all-zone victory hold, and a 15-minute deadline. A later marker correction makes both 1,000-unit starting formations fit on open terrain and gives each seat equal objective routes; see [Three Crowns layout notes](three-crowns-layout.md).
+The authoritative definition is [maps/forked-vale.json](../maps/forked-vale.json).

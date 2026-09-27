@@ -1,0 +1,91 @@
+# Asset guide
+
+[Documentation index](README.md) · [Art direction](art-direction-contract-v1.md)
+
+## Choose the right path
+
+| Work | Guide / contract |
+| --- | --- |
+| Shared palette, scale, team identity, readability | [Art direction](art-direction-contract-v1.md) |
+| Who owns an asset outcome | [Art production lanes](art-production-lanes.md) |
+| Match state → rendering | [Renderer contract](renderer-state-contract.md) |
+| New building concepts → models → captured views | [Preferred building pipeline](building-asset-production-pipeline.md) |
+| Direct 2D building frames | [Sprite production workflow](building-sprite-production-workflow.md) |
+| Sprite pages, layers, pivots, masks, and clips | [Sprite-atlas contract](sprite-atlas-contract-v1.md) |
+| Unit roles and building silhouettes | [Unit/building kit](unit-building-art.md) |
+| Ground, rocks, vegetation, and terrain review | [Environment pack](environment-pack-v1.md) |
+| Resource depletion and construction ground | [Environment states](environment-state-pack-v1.md) |
+| Native cursors and HUD icons | [UI asset contract](ui-cursor-icon-contract.md) |
+
+## Know what is actually in game
+
+At the documentation baseline `eef9aa4`:
+
+- Environment art uses painted ground and instanced cutouts, including the
+  interactive oak/berry/construction state pack.
+- Units use procedural instanced geometry and strategic role/marker batches.
+  Authored GLB samples remain source candidates.
+- Town Centers use the eight-view captured lifecycle pack, with procedural
+  fallback. Gameplay supplies only their Complete landmark state.
+- Barracks and Archery Ranges load their direct WebP sprites by default through
+  `src/building-sprites.mjs`, with procedural loading/error fallback. Construction
+  uses 20%/90% transitions; completed health uses 66%/33% transitions. Their
+  separate construction-atlas packs remain candidates.
+- Town Center footprints block movement and building placement. Captured image
+  bounds do not define collision; `src/town-center-spawn.mjs` owns the footprint.
+- The 40 px Meshy cursor PNGs are integrated. Older 32 px SVGs remain source history.
+
+A file under `runtime/` means an export intended for loading; it does not prove
+that the game loads it. Check the loader and pack README before claiming adoption.
+
+## Review locally
+
+Start the game and use **Terrain Art Pilot** (`/environment-review.html`) for the
+directional cliff/depth experiment, or choose **Frontier Materials** for ground
+and obstacle heights.
+
+The source includes **Building Variant Atlas**, but the current game server's
+allowlist does not serve `building-map.html`, its CSS/JS, or all of its comparison
+assets. To inspect that static page, start a separate loopback preview from the
+repository root:
+
+```sh
+python3 -m http.server 4180 --bind 127.0.0.1
+```
+
+Open [the local building atlas](http://127.0.0.1:4180/building-map.html).
+This server is for static review; run the game through `npm start`.
+The pack READMEs describe current integration; older captions on the review page
+may describe its original review-only state.
+
+The Dockerfile includes the active Barracks, Range, and Town Center runtime
+packs. It still omits the atlas page. Release packaging checks file delivery;
+a capture of the identified deployed build establishes hosted appearance.
+
+Review pages and contact sheets explain an asset. In-game screenshots establish
+runtime appearance only when the actual files and state are identified.
+
+## Validate a package
+
+Run the validator that matches its manifest:
+
+```sh
+node scripts/validate-visual-pack.mjs assets/environment/frontier-interactive-v1/manifest.json
+node scripts/validate-sprite-atlas.mjs assets/buildings/archery-range-construction-v1/sprite-atlas-pack-v1.json
+npm run validate:painted-material-atlas
+```
+
+`source/authoring-manifest.json` in the GLB samples is not a renderer v1 manifest.
+Do not pass it to the runtime validator. Read the sample's own inspection commands.
+
+## Keep the package reviewable
+
+Each pack README should state purpose, maturity, contents, build/validation
+commands, integration status, and known limits. Manifests own dimensions, anchors,
+state thresholds, paths, and hashes. Provenance owns source lineage, exact prompts,
+provider IDs, and recorded spend. Preserve these factual records when editing prose.
+
+Keep source, runtime-candidate, integrated, and visually reviewed statuses distinct.
+Update hash records when their covered documentation changes. Use ordinary and
+strategic game views for readability; reserve measured performance claims for a
+comparable run on the integrated renderer.
