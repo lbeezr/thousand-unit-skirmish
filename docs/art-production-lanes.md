@@ -19,6 +19,19 @@ These name primary outcomes rather than exclusive files or an approval sequence.
 A small asset can include several crafts. Coordinate only the shared interface
 or conflicting edit that blocks the work.
 
+## Current integration priorities
+
+The [asset guide](assets.md#know-what-is-actually-in-game) owns loader status.
+Building sprites now have runtime and packaging paths. Building work should
+check registration, state transitions, team cues, and ground contact in that
+path. Unit GLBs still need a bounded integration that demonstrates role
+readability and batching at game scale. Environment work should preserve
+resource/depletion meaning, routes, and forest-clearing feedback.
+
+Choose one visible outcome, name its pack and consuming loader, and state the
+smallest useful proof. When a source sample has no loader yet, identify that
+boundary in its README so a later contributor can integrate it without guessing.
+
 ## Small useful deliveries
 
 A few compatible tree silhouettes, one shoreline treatment, one unit role,

@@ -8,8 +8,9 @@
 
 One complete source produces Azure/Ember frames by shifting saturated blue cloth.
 It uses a fixed view, 5 × 5 world-unit frame, 640 × 640 pixels, and 128 pixels/world
-unit. The visible stone base spans a 4 × 4 guide; the Town Center landmark has no
-gameplay occupancy or construction/health state.
+unit. The visible stone base spans a 4 × 4 guide. Current Town Centers have a
+server-owned collision footprint and expose no construction/health state. This
+legacy pack does not define their occupancy.
 
 The canonical sidecar deliberately omits `recommendedTileFootprint`. Its pivot,
 complete-only clip, and bounds come from [sprite-grid.json](sprite-grid.json).

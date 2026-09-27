@@ -1,6 +1,6 @@
 # Archery Range sprites v1
 
-**Status:** source and runtime candidate; the game still uses procedural Range art.
+**Status:** default gameplay artwork, with procedural loading/error fallback.
 [Workflow](../../../docs/building-sprite-production-workflow.md) · [Provenance](PROVENANCE.md)
 
 ## Coverage and registration
@@ -31,6 +31,9 @@ retaining neutral surfaces.
 
 ## Limits
 
-The manifest/preview validates the pack, not game loading or appearance. Camera
-rotation, other views, season/light variants, and per-pixel scene depth are absent.
-Occlusion and runtime state selection remain integration work.
+The game loads individual WebPs through `src/building-sprites.mjs`; it does not
+consume the generic atlas manifest. Construction uses 20%/90% transitions and
+completed health uses 66%/33%. Depth testing and ground depth correction preserve
+scene occlusion. Camera rotation, other views, season/light variants, and authored
+per-pixel depth are absent. Docker includes the frames; a pack preview alone
+does not establish game-zoom appearance.

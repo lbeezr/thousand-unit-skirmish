@@ -91,8 +91,11 @@ one matching variant. Production signal geometry remains renderer-owned.
 | Production blocked | Complete, queue nonempty, blocked: muted/static cue. |
 | Production idle | Hide production cue. |
 
-Keep footprint, selection, health, and rally readable. The captured Town Center
-loader is a separate path; current landmarks expose Complete only.
+Keep footprint, selection, health, and rally readable. Barracks/Range direct
+sprites use construction thresholds 20%/90% and completed-health thresholds
+66%/33% in `src/building-sprites.mjs`; procedural geometry is their fallback.
+The captured Town Center loader is a separate path; current Town Centers expose
+Complete only and retain their server-owned collision footprint.
 
 ## Environment stages and fog
 

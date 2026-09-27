@@ -3,6 +3,24 @@
 Start with the task you want to do. The root [README](../README.md) is the quick
 start; this index covers maintained guides, contracts, experiments, and evidence.
 
+## Which document answers which question?
+
+| Question | Owning document |
+| --- | --- |
+| What experience are we building, and what is outside scope? | [Game bible](game-bible.md) |
+| What outcome should we pursue next? | [Roadmap](roadmap.md) |
+| What evidence supports a product claim? | [QA plan](qa-vertical-slice.md) |
+| How should the game look and read? | [Art direction](art-direction-contract-v1.md) |
+| Who carries an art outcome through delivery? | [Art lanes](art-production-lanes.md) |
+| How do contributors coordinate and integrate? | [AGENTS.md](../AGENTS.md) |
+| What does the implementation currently do? | Task guides and contracts, checked against source |
+
+Change the owning document when a decision changes, then update affected links
+and summaries. Resolve a disagreement with source for present behavior, the game
+bible for product intent, and AGENTS.md for working rules. Record a planned change
+as a proposal until it is implemented. Dated evidence and archives describe only
+the build they name.
+
 ## Play and operate
 
 | Task | Guide |
@@ -74,6 +92,6 @@ from source/candidate packs. Then use the relevant contract:
 - Run `npm run docs:check` after edits; CI checks local paths and heading anchors.
 - Keep the README short. Put detailed schema in contracts and old chronology in the archive.
 
-This rewrite describes source baseline `e4a3731`. Future changes should update
+This rewrite describes source baseline `eef9aa4`. Future changes should update
 the owning guide rather than append repeated status to several files. Repository
 coordination rules remain in [AGENTS.md](../AGENTS.md).

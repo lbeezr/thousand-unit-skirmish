@@ -13,6 +13,21 @@ hosted capacity, or player comprehension.
 The matrix defines acceptance, while dated records below describe actual runs.
 Recheck a relevant gate after changes rather than carrying forward a blanket pass.
 
+## Match evidence to the claim
+
+| Claim | Minimum supporting record |
+| --- | --- |
+| A rule is implemented | Source revision and a focused reproduction or regression result. |
+| An asset is integrated | Loader and packaged paths, plus the relevant state selection check. |
+| A build works when hosted | Deployment identity and direct readiness, asset, WebSocket, and seat observations. |
+| A player understands the match | Uncoached session, interventions, result, and the player's explanation. |
+| A large match meets a budget | Named hardware/network, fixed conditions, measurement method, agreed limits, and both-seat results. |
+
+Use “not observed” when evidence is missing. Carry a historical result forward
+only as a regression reference. P0/P1 classify playtest and slice acceptance;
+ordinary PRs use checks proportionate to their changes under
+[repository working rules](../AGENTS.md).
+
 ## Acceptance matrix
 
 | Priority | Gate | Required observation |

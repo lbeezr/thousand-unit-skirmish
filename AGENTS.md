@@ -8,6 +8,12 @@ evidence](docs/qa-vertical-slice.md) when they bear on that slice. Keep a long-r
 each useful player-facing or production outcome through integration. Role lanes name the primary
 owner, not exclusive files: edit adjacent systems when needed to finish the outcome.
 
+The [documentation index](docs/README.md#which-document-answers-which-question)
+defines where each decision belongs. Keep product intent in the game bible,
+next outcomes in the roadmap, acceptance evidence in QA, and collaboration rules
+here. Update the owning guide when implementation changes; preserve dated
+measurements and source provenance as historical records.
+
 ## Product priority
 
 The current product priority is an excellent, reusable RTS core proven in real matches. Favor work

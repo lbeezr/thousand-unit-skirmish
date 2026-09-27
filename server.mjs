@@ -16,7 +16,7 @@ import {
 import { orderUnitsForFormation } from './src/formation-assignment.mjs';
 import { createDeterministicPolicy, toOpponentObservation } from './src/pve-opponent.mjs';
 import { readPveLaunchOptions } from './src/pve-match.mjs';
-import { townCenterSpawnPosition } from './src/town-center-spawn.mjs';
+import { townCenterSpawnPosition, townCenterFootprintCells } from './src/town-center-spawn.mjs';
 import { advanceTickDeadline } from './simulation-scheduler.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -618,6 +618,7 @@ let forestEpoch = 0;
 const pendingForestClears = new Set();
 const forestStockChangedCells = new Set();
 let buildingBlocked = new Uint8Array(0);
+let townCenterBlocked = new Uint8Array(0);
 let visionBlockers = new Uint8Array(0);
 let visionBlockHeights = new Float32Array(0);
 let visibleCellsByTeam = [new Uint8Array(0), new Uint8Array(0)];
@@ -720,6 +721,10 @@ function activateMap(definition) {
   forestStockChangedCells.clear();
   forestEpoch++;
   buildingBlocked = new Uint8Array(CELL_COUNT);
+  townCenterBlocked = new Uint8Array(CELL_COUNT);
+  for (const team of [0, 1]) {
+    for (const cell of townCenterFootprintCells(spawnByTeam, team, MAP_WIDTH, MAP_HEIGHT)) townCenterBlocked[cell] = 1;
+  }
   visionBlockers = new Uint8Array(CELL_COUNT);
   visionBlockHeights = new Float32Array(CELL_COUNT);
   visibleCellsByTeam = [new Uint8Array(CELL_COUNT), new Uint8Array(CELL_COUNT)];
@@ -980,7 +985,7 @@ function cellToWorld(cell) {
 }
 
 function isWalkable(cell) {
-  return cell >= 0 && cell < CELL_COUNT && blocked[cell] === 0 && buildingBlocked[cell] === 0;
+  return cell >= 0 && cell < CELL_COUNT && blocked[cell] === 0 && buildingBlocked[cell] === 0 && townCenterBlocked[cell] === 0;
 }
 
 function nearestOpenCell(cell) {
@@ -1582,7 +1587,7 @@ function resetArmy(count = currentArmySize) {
   resetPvePolicy();
   const firstTeamCount = currentArmySize / 2;
   const reservedSpawnCells = [new Set(), new Set()];
-  const baseCells = spawnByTeam.map((spawn) => worldToCell(spawn.x, spawn.z));
+  const baseCells = spawnByTeam.map((spawn) => nearestOpenCell(worldToCell(spawn.x, spawn.z)));
   const baseComponents = baseCells.map((cell) => walkableComponents[cell]);
   for (let id = 0; id < currentArmySize; id++) {
     const team = id < firstTeamCount ? 0 : 1;
@@ -2786,6 +2791,16 @@ function restoreMatchCheckpoint(snapshot) {
     buildingsById.set(building.id, building);
   }
   rebuildWalkableComponents();
+  // Older checkpoints allowed units inside decorative Town Centers.
+  for (const unit of units) {
+    if (!townCenterBlocked[worldToCell(unit.x, unit.z)]) continue;
+    const safe = cellToWorld(nearestOpenCell(worldToCell(unit.x, unit.z)));
+    unit.x = safe.x;
+    unit.z = safe.z;
+    unit.path = [];
+    unit.pathIndex = 0;
+    unit.attackMoveResumePath = null;
+  }
   nextBuildingId = state.nextBuildingId;
   resourceNodeStates = new Map(definition.resourceNodes.map((node) => [node.id, {
     id: node.id, type: node.type, x: node.x, z: node.z, stock: node.stock,
@@ -4277,7 +4292,7 @@ function buildBuilding(player, command) {
   }
   const centerCell = worldToCell(x, z);
   const footprint = buildingFootprint(centerCell);
-  if (!footprint || footprint.some((cell) => blocked[cell] || buildingBlocked[cell])) {
+  if (!footprint || footprint.some((cell) => blocked[cell] || buildingBlocked[cell] || townCenterBlocked[cell])) {
     rejectBuild(player, 'SPACE BLOCKED', command);
     return;
   }
@@ -6292,7 +6307,7 @@ const server = createServer(async (request, response) => {
     response.end('Forbidden');
     return;
   }
-  const publicClientAsset = ['environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs', 'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs', 'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs', 'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs', 'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs', 'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs'].includes(relative);
+  const publicClientAsset = ['environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs', 'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js', 'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs', 'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs', 'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs', 'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs', 'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs'].includes(relative);
   const publicUiAsset = [
     'assets/ui/cursors/select-add.png',
     'assets/ui/cursors/select-remove.png',
@@ -6328,13 +6343,19 @@ const server = createServer(async (request, response) => {
           .test(path.basename(relative, path.extname(relative)))));
   const publicEnvironmentPilotAsset = path.dirname(relative) === 'assets/environment/frontier-cliff-pilot-v1/runtime'
     && /^(cliff-color-0[0-7]\.webp|cliff-depth-0[0-7]\.png)$/.test(path.basename(relative));
+  const publicBuildingSpriteAsset = (
+    path.dirname(relative) === 'assets/buildings/town-center-meshy-review-v1/runtime'
+    && /^town-center-view-0[0-7]\.webp$/.test(path.basename(relative))
+  ) || ['barracks', 'archery-range'].some((kind) =>
+    path.dirname(relative) === `assets/buildings/${kind === 'barracks' ? 'barracks-sprite-test-v1' : 'archery-range-sprite-v1'}/runtime`
+    && new RegExp(`^${kind}-(foundation|frame|complete|damaged|critical)-(azure|ember)\\.webp$`).test(path.basename(relative)));
   const publicMapAsset = path.dirname(relative) === 'maps' && path.extname(relative) === '.json';
   const buildingPackRoot = 'assets/buildings/town-center-lifecycle-meshy-v1';
   const publicBuildingLifecycleManifest = relative === `${buildingPackRoot}/lifecycle-grid.json`;
   const publicBuildingLifecycleRuntimeAsset = path.dirname(relative) === `${buildingPackRoot}/runtime`
     && /^(?:town-center-(?:foundation|frame|complete|damaged|critical)-view-\d{2}\.webp|team-mask-(?:foundation|frame|complete|damaged|critical)-view-\d{2}\.png)$/.test(path.basename(relative));
   if (!publicClientAsset && !publicEnvironmentModule && !publicEnvironmentAsset && !publicUiAsset
-    && !publicInteractiveEnvironmentAsset && !publicEnvironmentPilotAsset && !publicMapAsset
+    && !publicInteractiveEnvironmentAsset && !publicEnvironmentPilotAsset && !publicBuildingSpriteAsset && !publicMapAsset
     && !publicBuildingLifecycleManifest && !publicBuildingLifecycleRuntimeAsset) {
     response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
     response.end('Not found');

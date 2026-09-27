@@ -165,6 +165,16 @@ try {
   const resourceStateModule = await fetch(`${base}/src/resource-visual-state.mjs`, { headers: { authorization } });
   assert.equal(resourceStateModule.status, 200);
   assert.match(await resourceStateModule.text(), /resourceVisualStage/);
+  for (const asset of [
+    'src/building-sprites.mjs',
+    'assets/buildings/town-center-meshy-review-v1/runtime/town-center-view-01.webp',
+    'assets/buildings/barracks-sprite-test-v1/runtime/barracks-complete-azure.webp',
+    'assets/buildings/archery-range-sprite-v1/runtime/archery-range-critical-ember.webp',
+  ]) {
+    const response = await fetch(`${base}/${asset}`, { headers: { authorization } });
+    assert.equal(response.status, 200, asset);
+    assert.ok((await response.arrayBuffer()).byteLength > 100, asset);
+  }
   assert.equal(await upgrade(port), 401);
   assert.equal(await upgrade(port, authorization), 101);
 

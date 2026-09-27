@@ -26,7 +26,7 @@ approximate marks, and texture density are not runtime scale or appearance evide
 | Review zoom | Ordinary 0.91 and strategic 0.48; 2.3 is optional close inspection. |
 | Review viewport | 1280 × 720 CSS pixels; record DPR and actual output dimensions. |
 | Unit scale | About 0.8 world units tall; improve role LOD rather than silently changing world scale. |
-| Production footprint | Barracks/Range occupy 3 × 3 cells. Visible art bounds are separate. |
+| Gameplay footprint | Barracks/Range occupy 3 × 3 cells; Town Centers use the server-owned four-cell-wide base footprint. Visible art bounds are separate. |
 | World hues | Azure `#5AA7D7`, Ember `#E67A5E`; brighter UI colors stay in overlays. |
 | Authored unit accent | Shared sash; equipment remains neutral. |
 | Authored building accent | Small owner-selected standard; architecture and trim remain neutral. |
@@ -59,9 +59,9 @@ Reserve vivid team, interaction, and warning colors for their gameplay meaning.
 ## Implementation boundaries
 
 The [asset guide](assets.md#know-what-is-actually-in-game) names current loaders
-and candidates. The older claim that every building is procedural is superseded
-by the captured Town Center path. Authored unit GLBs remain candidates; their
-source previews do not prove runtime batching or readability.
+and candidates. Town Centers use captured directional views; Barracks and Ranges
+use direct sprites. Their loaders retain procedural fallbacks. Authored unit GLBs
+remain candidates; source previews do not prove runtime batching or readability.
 
 Use manifests for exact dimensions and hashes. Follow the
 [renderer contract](renderer-state-contract.md) for v1 GLBs/environment states,

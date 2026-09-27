@@ -19,7 +19,7 @@
 
 ## Know what is actually in game
 
-At the documentation baseline `e4a3731`:
+At the documentation baseline `eef9aa4`:
 
 - Environment art uses painted ground and instanced cutouts, including the
   interactive oak/berry/construction state pack.
@@ -27,8 +27,12 @@ At the documentation baseline `e4a3731`:
   Authored GLB samples remain source candidates.
 - Town Centers use the eight-view captured lifecycle pack, with procedural
   fallback. Gameplay supplies only their Complete landmark state.
-- Barracks and Archery Ranges use procedural buildings. Their direct sprite and
-  construction-atlas packs are candidates awaiting runtime adoption.
+- Barracks and Archery Ranges load their direct WebP sprites by default through
+  `src/building-sprites.mjs`, with procedural loading/error fallback. Construction
+  uses 20%/90% transitions; completed health uses 66%/33% transitions. Their
+  separate construction-atlas packs remain candidates.
+- Town Center footprints block movement and building placement. Captured image
+  bounds do not define collision; `src/town-center-spawn.mjs` owns the footprint.
 - The 40 px Meshy cursor PNGs are integrated. Older 32 px SVGs remain source history.
 
 A file under `runtime/` means an export intended for loading; it does not prove
@@ -54,9 +58,9 @@ This server is for static review; run the game through `npm start`.
 The pack READMEs describe current integration; older captions on the review page
 may describe its original review-only state.
 
-The Dockerfile also currently omits the building packs and atlas page. A packaged
-hosted build therefore uses the Town Center fallback until those inputs are
-included. Local source integration does not prove hosted delivery.
+The Dockerfile includes the active Barracks, Range, and Town Center runtime
+packs. It still omits the atlas page. Release packaging checks file delivery;
+a capture of the identified deployed build establishes hosted appearance.
 
 Review pages and contact sheets explain an asset. In-game screenshots establish
 runtime appearance only when the actual files and state are identified.

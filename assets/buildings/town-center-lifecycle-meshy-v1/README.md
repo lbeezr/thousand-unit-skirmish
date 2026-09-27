@@ -30,7 +30,7 @@ masks. The generic resolver supports construction and damage values.
 Current Town Centers are static landmarks without construction progress or
 health, so only **Complete** appears during a match. Other states are ready
 for a future gameplay source; their presence does not implement that mechanic.
-Other building types keep their existing renderers.
+Barracks and Archery Ranges use a separate direct-sprite loader.
 
 ## Review and source storage
 
@@ -39,5 +39,6 @@ sets. Optimized GLBs and full-resolution color, normal, depth, silhouette,
 team-mask, and contact-shadow intermediates remain in local ignored
 `meshy_output/`. Compact runtime files are checked in here.
 
-The source checkout serves this pack. Current Docker inputs omit it, so packaged
-hosting uses the fallback until its delivery path is added.
+The source server serves this pack, and Docker includes its manifest and runtime
+images. Town Centers have a server-owned collision footprint, but still expose
+no construction or health state. Verify actual hosted appearance on a named build.

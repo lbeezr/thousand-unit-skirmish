@@ -14,6 +14,33 @@ reproduce the largest problem, ship a focused improvement, and play again.
 Scripted scenarios protect known rules; human matches establish whether those
 rules create understandable choices.
 
+## Next priorities
+
+Choose the first unresolved item that the current evidence supports. Independent
+art, map, and infrastructure slices can progress alongside these outcomes.
+
+1. **Complete and understand a match.** Run the Forked Vale loop in seeded solo
+   play and human 1v1. Record the first order, production, objective, result, or
+   recovery failure that prevents completion or requires coaching; fix and replay it.
+2. **Verify the integrated battlefield.** Main `eef9aa4` makes Barracks/Range
+   sprites the default and adds Town Center collision. Check both teams through
+   construction/damage, exits and nearby placement, fog, ordinary/strategic zoom,
+   and narrow HUD layouts. Packaged assets are present; current deployed
+   appearance still needs a named-build observation.
+3. **Test decisions on representative maps.** Use Forked Vale for opening and
+   objective play, then Frontier Reach/Highland Grove for routes, forest access,
+   and elevation. Record the decision a player made and the alternative they saw
+   before adding more map mechanics or changing balance.
+4. **Establish the supported scale.** Agree on the device, hosting, network, and
+   player-facing budgets, then measure both seats at increasing loads through
+   2,000 total units. Keep simulation, rendering, bandwidth, and order delay as
+   separate measurements.
+
+The current implementation provides these test surfaces. It does not by itself
+prove M1–M4 complete. Use the [asset guide](assets.md) for loader status and
+[QA records](qa-vertical-slice.md#known-findings-and-historical-evidence) for
+observations at earlier builds.
+
 ## Milestones
 
 These are product evidence targets. Scoped changes can ship before a whole
@@ -55,6 +82,7 @@ builds; they do not certify today's deployment.
 ## How to choose and finish a slice
 
 1. Start from current code and a concrete player observation or reproducible gap.
+   Write the expected player outcome and the smallest check that can demonstrate it.
 2. Own the useful outcome through integration and proportionate checks.
 3. Use code, a focused PR, and a short decision note as shared state. Contact an
    affected owner only for a specific blocking interface or conflicting edit.
@@ -63,7 +91,9 @@ builds; they do not certify today's deployment.
 5. Keep source samples moving with their limits stated. Ordinary appearance
    captures do not require quiet-host approval; comparable performance work does
    need controlled conditions.
-6. Follow [repository working rules](../AGENTS.md). Staging integration and
+6. Close with the source/build, relevant checks, observed outcome, and remaining
+   limitation. Update the owning guide when behavior or a decision changed.
+7. Follow [repository working rules](../AGENTS.md). Staging integration and
    production promotion remain separate decisions.
 
 The previous task-by-task ledger is preserved in the

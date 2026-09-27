@@ -6,7 +6,7 @@ import { createServer } from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { townCenterSpawnPosition } from '../src/town-center-spawn.mjs';
+import { townCenterSpawnPosition, townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const serverRoot = process.env.RTS_SERVER_ROOT || ROOT;
@@ -196,6 +196,29 @@ try {
     assertWorkerIsOnHomeSide(unit, team, spawnPoints);
     return { team, id: unit[0], x: unit[2], z: unit[3] };
   });
+
+  const footprint = new Set([0, 1].flatMap(team => townCenterFootprintCells(spawnPoints, team, map.width, map.height)));
+  const cellAt = (x, z) => Math.floor(z + map.height / 2) * map.width + Math.floor(x + map.width / 2);
+  const moveStarts = [azure, ember].map(client => client.messages.length);
+  const destinations = produced.map(({ team, id }) => {
+    const center = townCenterSpawnPosition(spawnPoints, team, map.width, map.height);
+    const unit = workerUnits(states[team], team).find(row => row[0] === id);
+    const dx = center.x - unit[2], dz = center.z - unit[3];
+    const length = Math.hypot(dx, dz);
+    const target = { x: center.x + dx / length * 5, z: center.z + dz / length * 5 };
+    [azure, ember][team].send({ type: 'move', ids: [id], unitGenerations: [unit[8]], ...target });
+    return { ...target, id };
+  });
+  await Promise.all([azure, ember].map((client, team) => client.waitForState(state => {
+    const unit = state.units.find(row => row[0] === destinations[team].id);
+    return unit && Math.hypot(unit[2] - destinations[team].x, unit[3] - destinations[team].z) < 1.2;
+  }, moveStarts[team], 30_000)));
+  for (const client of [azure, ember]) for (const message of client.messages) {
+    const state = message.type === 'mapChange' ? message.state : message;
+    if (state?.mapId !== map.id || !state.units) continue;
+    for (const unit of state.units) assert.ok(!footprint.has(cellAt(unit[2], unit[3])),
+      `unit ${unit[0]} entered the Town Center at tick ${state.tick}`);
+  }
 
   assert.deepEqual(townCenterSpawnPosition(
     [{ team: 0, x: -20, z: 0 }, { team: 1, x: 20, z: 0 }], 0, 64, 64,

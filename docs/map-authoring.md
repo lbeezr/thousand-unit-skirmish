@@ -49,6 +49,11 @@ Resources and objective zones must be reachable from both spawns. Rectangles
 must fit the map. Resizing clips terrain/zones and moves cropped markers to the
 edge for review; always validate the result before publishing.
 
+Town Centers now reserve collision cells around the position computed by
+`src/town-center-spawn.mjs`. Keep nearby resources and exits outside that base;
+check actual worker routes after moving a spawn. The terrain-only authoring
+checks do not replace a played opening with the Town Center present.
+
 ## Resources and forests
 
 `resourceNodes` contains up to 128 finite food or wood sites, each with an `id`,

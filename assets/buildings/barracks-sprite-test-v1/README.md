@@ -1,6 +1,6 @@
 # Barracks sprites v1
 
-**Status:** source/runtime image sample; procedural Barracks remain in gameplay.
+**Status:** default gameplay artwork, with procedural loading/error fallback.
 [Workflow](../../../docs/building-sprite-production-workflow.md) · [Provenance](PROVENANCE.md)
 
 ## Coverage
@@ -19,7 +19,8 @@ All states share scale and ground registration.
 | Completed health 33%–<66% | Damaged |
 | Completed health <33% | Critical |
 
-These are this pack's thresholds, not the procedural renderer's damage thresholds.
+The direct-sprite loader uses these thresholds. The procedural fallback keeps
+its own damage thresholds.
 See [sprite-grid.json](sprite-grid.json) for exact registration.
 
 ## Rebuild
@@ -32,6 +33,8 @@ Run from the repository root to regenerate team variants and contact sheets.
 
 ## Limits
 
-One camera-authored view; no directional rotation, per-pixel depth, or scene
-occlusion integration. Image exports are available, but production sprite-atlas
-loading and game-zoom appearance remain separate work.
+One camera-authored view; no directional rotation or authored per-pixel depth.
+`src/building-sprites.mjs` loads individual WebPs with depth testing and a ground
+depth correction. It does not consume the generic sprite-atlas format. Selection,
+health, rally, production, and fog remain renderer-owned. Docker includes these
+frames; judge appearance with a capture of the actual build.

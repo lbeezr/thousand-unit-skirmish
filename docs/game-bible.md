@@ -13,6 +13,18 @@ The current priority is a reusable, dependable RTS core demonstrated in complete
 matches. A broader faction roster, campaign, ranked service, and persistent
 progression come after that proof.
 
+## What the first slice must prove
+
+A new player can start a solo match or join a friend, turn resources into an army,
+make a consequential terrain or objective decision, understand the result, and
+play again. The same rules must hold for both human seats and the solo opponent.
+
+Use this test when choosing between features: does the change make that complete
+match more dependable, legible, or strategically useful? Fix failures in that
+loop first. Add content when it tests a specific weakness or creates a clear
+choice with the existing rules. Generalize a system when a second concrete use
+requires it.
+
 ## Design principles
 
 | Principle | What players should experience |
@@ -52,14 +64,17 @@ proof. The [QA plan](qa-vertical-slice.md) defines those observations.
 
 ## Quality floor
 
-- A first glance identifies the team, objective, route, and selection.
+- A first glance identifies the team, objective, route, and selection. The QA
+  protocol measures this with a newcomer and a two-minute observation window.
 - Every important action gives immediate, specific feedback; rejected actions
   explain what prevents them.
 - Armies remain readable through chokes, combat, construction, and zoom changes.
 - Essential text and controls are comfortable at ordinary desktop sizes.
 - Invalid map authoring names a fix before publication.
 - Both players understand connection state, the winner, and who can rematch.
-- Code, names, art, audio, maps, and writing are original project work.
+- Project-authored names, art, audio, maps, and writing establish an original
+  identity. Record provenance and licensing for third-party dependencies and
+  generated assets.
 
 ## World and presentation
 
@@ -84,9 +99,15 @@ ranked matchmaking, naval combat, and general-purpose scripting remain outside
 the first slice. Optional model-opponent research is isolated and default-off;
 normal solo play uses no model provider.
 
-Open decisions include ordinary match length, the supported device/network
-profile, whether large armies are routine or a stress ceiling, and how much
-fantasy asymmetry improves the command game. Test [living-land](living-land-experiment.md)
+| Open decision | Evidence needed before committing |
+| --- | --- |
+| Ordinary match length and economy pace | Completed Forked Vale matches with opening, contest, result, and player explanations recorded. |
+| Supported device/network profile | Named browser/device and hosted two-seat measurements under recorded network conditions. |
+| Routine army scale versus stress ceiling | Command/readability observations at increasing army sizes, alongside simulation and browser costs. |
+| Fantasy or faction asymmetry | A bounded rule experiment that produces an understandable choice in the existing match loop. |
+
+The [roadmap](roadmap.md) orders the work; the [QA plan](qa-vertical-slice.md)
+defines the observations needed to claim success. Test [living-land](living-land-experiment.md)
 and [larger-map](map-scale-density.md) ideas as bounded experiments before
 expanding their scope.
 

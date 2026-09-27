@@ -41,7 +41,8 @@ or reveal hidden state.
 | `src/formation-assignment.mjs`, `src/unit-selection.mjs` | Formation and selection logic used by focused scenarios. |
 | `src/pve-*.mjs` | Seeded solo launch, filtered opponent observation, deterministic policy, optional fake-provider research helper. |
 | `src/hud-layout.mjs`, `src/selection-context.mjs`, `src/objective-summary.mjs` | HUD geometry, selection actions, objectives, and notice history. |
-| `src/*visual-state.mjs`, `src/environment-art.mjs`, `src/captured-building-art.mjs` | Snapshot-to-art mapping, environment batches, and captured building views. |
+| `src/*visual-state.mjs`, `src/environment-art.mjs`, `src/captured-building-art.mjs`, `src/building-sprites.mjs` | Snapshot-to-art mapping, environment batches, directional Town Center views, and Barracks/Range sprites. |
+| `src/town-center-spawn.mjs` | Shared Town Center position and server collision footprint. |
 | `src/audio.mjs`, `src/audio-policy.mjs` | Synthesized audio, mix settings, cue policy, and caption decisions. |
 | `maps/`, `assets/`, `schemas/` | Authored content and versioned asset contracts. |
 | `scripts/` | Regression scenarios, captures, authoring helpers, validators, and release tooling. |
