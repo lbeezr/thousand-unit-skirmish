@@ -21,6 +21,11 @@ directory and reports the source revision and content digest. It rejects dirty
 checkouts. `--allow-dirty` is for disposable package tests and does not identify a
 reproducible committed release.
 
+The current Docker inputs omit the Town Center captured pack and Building
+Variant Atlas files. The Town Center loader falls back when those images are
+absent. See [asset delivery limits](assets.md#review-locally) before promising the
+same art/review pages from a container as from the source checkout.
+
 Keep the same packed directory for staging and any subsequent production
 promotion. Staging can follow merges to main through the service's configured
 deployment integration; production promotion is a separate release decision.

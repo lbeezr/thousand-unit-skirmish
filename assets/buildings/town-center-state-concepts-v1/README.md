@@ -27,6 +27,6 @@ The four lifecycle concepts were generated individually with Codex ImageGen on
 26 September 2026. Source hashes are recorded; exact generation prompts have not
 been recovered into this package.
 
-Open **Building Variant Atlas** to compare concepts and captured models. The game
+Use the [local Building Variant Atlas preview](../../../docs/assets.md#review-locally) to compare concepts and captured models. The game
 uses captured Complete art; Town Center landmarks do not yet expose the other
 lifecycle states in gameplay.

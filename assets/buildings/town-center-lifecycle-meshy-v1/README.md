@@ -34,7 +34,10 @@ Other building types keep their existing renderers.
 
 ## Review and source storage
 
-Open **Building Variant Atlas** from Match Controls to compare all state/view
+Use the [local Building Variant Atlas preview](../../../docs/assets.md#review-locally) to compare all state/view
 sets. Optimized GLBs and full-resolution color, normal, depth, silhouette,
 team-mask, and contact-shadow intermediates remain in local ignored
 `meshy_output/`. Compact runtime files are checked in here.
+
+The source checkout serves this pack. Current Docker inputs omit it, so packaged
+hosting uses the fallback until its delivery path is added.

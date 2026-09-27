@@ -52,7 +52,7 @@ edge for review; always validate the result before publishing.
 ## Resources and forests
 
 `resourceNodes` contains up to 128 finite food or wood sites, each with an `id`,
-`type`, world `x`/`z`, and `stock`. Map Studio can add, select, change stock, or remove
+`type`, world `x`/`z`, and positive finite `stock`. Map Studio can add, select, change stock, or remove
 nodes. Obstacle painting over a node removes it.
 
 Forest obstacles also have six wood per cell in the current simulation. They
@@ -67,7 +67,7 @@ path/sight block; reset restores it. See [harvestable woodland](harvestable-wood
 | Field | Meaning |
 | --- | --- |
 | `id`, `name`, `zone` | Stable identity, display name, and grid rectangle. |
-| `requiredUnits`, `captureSeconds` | Minimum occupying force and capture duration (0.5–60 seconds). A team must also outnumber its opponent. |
+| `requiredUnits`, `captureSeconds` | Integer force of 1–1,000 and capture duration (0.5–60 seconds). A team must also outnumber its opponent. |
 | `requires` | One prerequisite objective ID. |
 | `requiresAll` | Two to 31 prerequisite IDs; use this or `requires`, never both. |
 | `foodReward`, `woodReward` | Integer 0–10,000 reward per completed capture or recapture. |
@@ -118,6 +118,7 @@ Use one event source or an all-of list, never both. Chains may branch and join
 but cannot contain cycles, duplicates, or missing references. A joined
 `"capturing"` chain must have an unambiguous shared capture root.
 
+`foodReward` is required, including an explicit zero for other-effect events.
 Rewards can combine food/wood (0–10,000 each), reinforcements (0–25 per recipient),
 and `technologyReward` (`infantry-attack` or `archer-attack`). A technology reward
 completes a matching research job and has no extra effect if already owned.

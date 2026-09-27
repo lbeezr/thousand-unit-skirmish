@@ -36,11 +36,27 @@ that the game loads it. Check the loader and pack README before claiming adoptio
 
 ## Review locally
 
-Start the game, then open Match Controls:
+Start the game and use **Terrain Art Pilot** (`/environment-review.html`) for the
+directional cliff/depth experiment, or choose **Frontier Materials** for ground
+and obstacle heights.
 
-- **Building Variant Atlas** (`/building-map.html`): building states and methods.
-- **Terrain Art Pilot** (`/environment-review.html`): directional cliff/depth pilot.
-- **Frontier Materials** map: ground materials and obstacle heights.
+The source includes **Building Variant Atlas**, but the current game server's
+allowlist does not serve `building-map.html`, its CSS/JS, or all of its comparison
+assets. To inspect that static page, start a separate loopback preview from the
+repository root:
+
+```sh
+python3 -m http.server 4180 --bind 127.0.0.1
+```
+
+Open [the local building atlas](http://127.0.0.1:4180/building-map.html).
+This server is for static review; run the game through `npm start`.
+The pack READMEs describe current integration; older captions on the review page
+may describe its original review-only state.
+
+The Dockerfile also currently omits the building packs and atlas page. A packaged
+hosted build therefore uses the Town Center fallback until those inputs are
+included. Local source integration does not prove hosted delivery.
 
 Review pages and contact sheets explain an asset. In-game screenshots establish
 runtime appearance only when the actual files and state are identified.

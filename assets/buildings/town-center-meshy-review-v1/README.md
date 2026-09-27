@@ -15,7 +15,7 @@ The large optimized GLB and full-resolution render intermediates remain in local
 
 ## Review and limits
 
-Open **Match Controls → Building Variant Atlas** (`/building-map.html`) to compare
+Use the [local Building Variant Atlas preview](../../../docs/assets.md#review-locally) to compare
 views, direct sprites, and concepts. This pack covers Complete only. The sibling
 lifecycle pack adds Foundation, Frame, Damaged, Critical, and team masks.
 A review page does not demonstrate those states as live Town Center gameplay.
