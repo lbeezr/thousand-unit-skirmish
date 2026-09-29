@@ -189,6 +189,7 @@ try {
   // units plus two paid Barracks reservations per seat. Keep added units far
   // from opponents and production exits; this tests capacity, not spawn blocking.
   const capped = createFixture();
+  capped.state.currentArmySize = 2000; // Explicit stress fixture, separate from the gameplay population economy.
   for (const team of [0, 1]) {
     const template = capped.state.units.find((u) => u.team === team && u.kind === 'infantry');
     let count = capped.state.units.filter((u) => u.team === team && u.hp > 0).length;

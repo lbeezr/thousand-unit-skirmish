@@ -135,3 +135,16 @@ The [RTS coverage guide](references/feature-coverage-inventory.md),
 For a new reference, record the source and date, concrete observation, project
 decision it informs, and differences in scale or constraints. Reference research
 does not add features to the roadmap automatically.
+
+## Population and Houses
+
+Ordinary 24-unit openings start with 15 population capacity per seat. Living
+units and paid queues both consume capacity. A completed House adds eight
+capacity for 75 wood; unfinished Houses add none. Destroying a House lowers
+capacity without deleting units or canceling paid queues. Further training is
+blocked until deaths or replacement capacity free enough space. Existing paid
+queues still complete. The HUD explains used, queued and available capacity.
+
+Large-army fixtures start with at least their opening population capacity,
+clamped to the separate 1,000-unit-per-seat safety ceiling. Population is a
+gameplay constraint; the safety ceiling remains a simulation boundary.

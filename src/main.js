@@ -204,6 +204,8 @@ const ui = {
   trainArcher: document.querySelector('#train-archer'),
   rosterProductionOptions: document.querySelector('#roster-production-options'),
   buildBarracks: document.querySelector('#build-barracks'),
+  buildHouse: document.querySelector('#build-house'),
+  populationStatus: document.querySelector('#population-status'),
   buildRange: document.querySelector('#build-range'),
   selectWorkers: document.querySelector('#select-workers'),
   selectIdleWorkers: document.querySelector('#select-idle-workers'),
@@ -544,6 +546,7 @@ let latestWood = [0, 0];
 let latestBuildings = [];
 let selectedBuildingId = null;
 let latestWorkerProduction = [null, null];
+let latestPopulation = [null, null];
 let latestTeamResearch = [null, null];
 let latestResourceStocks = new Map();
 let minimapLastDrawAt = -Infinity;
@@ -1118,6 +1121,39 @@ function addBuildingStandard(group, team, x, z, height = 1.85) {
   return standard;
 }
 
+function createHouseVisual(building) {
+  const group = new THREE.Group();
+  const teamColor = TEAM_HEX[building.team];
+  const walls = new THREE.Mesh(new THREE.BoxGeometry(2.3, 1.2, 2.3),
+    new THREE.MeshBasicMaterial({ color: 0xa99775 }));
+  group.add(walls);
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(1.85, 1.2, 4),
+    new THREE.MeshBasicMaterial({ color: 0x705443 }));
+  roof.rotation.y = Math.PI / 4; roof.position.y = 1.9; group.add(roof);
+  addBuildingStandard(group, building.team, 1.15, 1.15, 1.6);
+  const outline = new THREE.Mesh(new THREE.RingGeometry(1.75, 1.85, 4),
+    new THREE.MeshBasicMaterial({ color: teamColor, transparent: true, opacity: 0.9, side: THREE.DoubleSide }));
+  outline.rotation.x = -Math.PI / 2; outline.rotation.z = Math.PI / 4; outline.position.y = 0.04;
+  group.add(outline);
+  const healthIndicator = createBuildingHealthIndicator(); group.add(healthIndicator.group);
+  const combatFeedback = createBuildingCombatFeedback(); group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
+  const visual = { group, walls, roof, outline, teamColor, healthIndicator, combatFeedback };
+  scene.add(group); updateHouseVisual(visual, building); return visual;
+}
+
+function updateHouseVisual(visual, building) {
+  const progress = THREE.MathUtils.clamp(Number(building.progress) || 0, 0, 1);
+  visual.group.position.set(building.x, 0, building.z); visual.group.visible = true;
+  visual.walls.scale.y = Math.max(0.08, progress); visual.walls.position.y = 0.15 + 0.6 * progress;
+  visual.roof.visible = building.complete === true;
+  updateBuildingHealthIndicator(visual, building);
+}
+
+function createGameplayBuildingVisual(building) {
+  if (building.type === 'house') return createHouseVisual(building);
+  return building.type === 'barracks' ? createBarracksVisual(building) : createArcheryRangeVisual(building);
+}
+
 function createArcheryRangeVisual(building) {
   const group = new THREE.Group();
   const teamColor = TEAM_HEX[building.team] || 0x9ba78b;
@@ -1352,7 +1388,7 @@ function updateBarracksVisual(visual, building) {
 
 function reconcileBuildings(buildings = [], initial = false) {
   const rows = Array.isArray(buildings)
-    ? buildings.filter((building) => building && ['archery-range', 'barracks'].includes(building.type)
+    ? buildings.filter((building) => building && Object.hasOwn(BUILDING_DEFINITIONS, building.type)
       && [0, 1].includes(building.team) && Number.isFinite(building.x) && Number.isFinite(building.z))
     : [];
   const priorSelectedBuildingId = selectedBuildingId;
@@ -1374,15 +1410,14 @@ function reconcileBuildings(buildings = [], initial = false) {
     seen.add(building.id);
     let visual = buildingVisuals.get(building.id);
     if (!visual) {
-      visual = building.type === 'barracks'
-        ? createBarracksVisual(building) : createArcheryRangeVisual(building);
+      visual = createGameplayBuildingVisual(building);
       buildingVisuals.set(building.id, visual);
     } else if (visual.type !== building.type) {
       disposeBuildingVisual(visual);
-      visual = building.type === 'barracks'
-        ? createBarracksVisual(building) : createArcheryRangeVisual(building);
+      visual = createGameplayBuildingVisual(building);
       buildingVisuals.set(building.id, visual);
-    } else if (building.type === 'barracks') updateBarracksVisual(visual, building);
+    } else if (building.type === 'house') updateHouseVisual(visual, building);
+    else if (building.type === 'barracks') updateBarracksVisual(visual, building);
     else updateArcheryRangeVisual(visual, building);
     visual.type = building.type;
     updateBuildingRallyMarker(visual, building);
@@ -1445,7 +1480,7 @@ function findTrainableBarracks(team) {
 }
 
 function buildingLabel(type) {
-  return type === 'barracks' ? 'BARRACKS' : 'ARCHERY RANGE';
+  return BUILDING_DEFINITIONS[type]?.label.toUpperCase() || 'BUILDING';
 }
 
 function updateBuildingResearchControls(selectedBuilding) {
@@ -1490,11 +1525,11 @@ function updateBuildingResearchControls(selectedBuilding) {
 }
 
 function buildingWoodCost(type) {
-  return type === 'barracks' ? BARRACKS_WOOD_COST : ARCHERY_RANGE_WOOD_COST;
+  return BUILDING_DEFINITIONS[type]?.cost.wood ?? Infinity;
 }
 
 function buildingFootprint(type) {
-  return type === 'barracks' ? BARRACKS_SIZE : ARCHERY_RANGE_SIZE;
+  return BUILDING_DEFINITIONS[type]?.footprint ?? 3;
 }
 
 function resourceCalloutTexture(type) {
@@ -1978,6 +2013,7 @@ function buildMap(definition) {
   berryStageCounts.clear();
   latestBuildings = [];
   latestWorkerProduction = [null, null];
+  latestPopulation = [null, null];
   if (buildPlacementActive) cancelBuildPlacement(false);
 
   const base = new THREE.Mesh(
@@ -3282,7 +3318,7 @@ function updateSelectionUI() {
       ? 'Finish construction to unlock production.'
       : selectedBuilding.productionBlocked ? 'Production blocked · clear the spawn area.'
         : queued > 0 ? `${queued.toLocaleString()} ${troop} queued · ${training}% training`
-          : `Ready to train ${troop}.`;
+          : troop ? `Ready to train ${troop}.` : `Population capacity +${BUILDING_DEFINITIONS[selectedBuilding.type].populationCapacity || 0}.`;
   }
   let blue = 0;
   let red = 0;
@@ -3332,7 +3368,7 @@ function updateContextualCommands() {
   for (const button of bar.querySelectorAll('[data-context-proxy]')) {
     const source = document.getElementById(button.dataset.contextProxy);
     const action = button.dataset.contextProxy;
-    button.hidden = action.startsWith('train-') ? true : action === 'order-target-toggle' ? context.kind === 'none'
+    button.hidden = action === 'order-target-toggle' && building && !BUILDING_DEFINITIONS[building.type]?.products.length ? true : action.startsWith('train-') ? true : action === 'order-target-toggle' ? context.kind === 'none'
       : action === 'attack-move-toggle' ? !['military', 'mixed'].includes(context.kind)
       : action === 'train-infantry' ? building?.type !== 'barracks'
       : action === 'train-archer' ? building?.type !== 'archery-range'
@@ -3350,10 +3386,10 @@ function updateContextualCommands() {
   }
   if (!building) bar.querySelector('[data-context-reason]').textContent = '';
   bar.querySelector('[data-context-build]').hidden = context.kind !== 'workers';
-  bar.querySelector('[data-context-details]').hidden = context.kind === 'none';
+  bar.querySelector('[data-context-details]').hidden = context.kind === 'none' || Boolean(building && !BUILDING_DEFINITIONS[building.type]?.products.length);
   bar.querySelector('[data-context-details]').textContent = building ? 'Rally / upgrade details' : 'Formation / route';
   const research = bar.querySelector('[data-context-research]');
-  research.hidden = !building;
+  research.hidden = !building || !BUILDING_DEFINITIONS[building.type]?.products.length;
   research.textContent = building ? `${ui.buildingRallyReadout.textContent} · ${ui.buildingResearchReadout.textContent}` : '';
   const groups = bar.querySelector('[data-context-groups]');
   for (let index = 0; index < 10; index++) {
@@ -3801,7 +3837,7 @@ function updateCommandUI() {
   const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
     && building.team === localTeam) || null;
   const rallyCell = Number.isInteger(selectedBuilding?.rallyCell) ? selectedBuilding.rallyCell : -1;
-  const mode = selectedBuilding ? 'RALLY' : attackMoveMode ? 'ATTACK MOVE' : 'MOVE';
+  const mode = selectedBuilding ? BUILDING_DEFINITIONS[selectedBuilding.type]?.products.length ? 'RALLY' : 'BUILDING' : attackMoveMode ? 'ATTACK MOVE' : 'MOVE';
   if (ui.commandMode) {
     ui.commandMode.textContent = mode;
     ui.commandMode.dataset.mode = selectedBuilding ? 'rally' : attackMoveMode ? 'attack-move' : 'move';
@@ -3828,14 +3864,15 @@ function updateCommandUI() {
     ? `${buildingLabel(selectedBuilding.type)} #${selectedBuilding.id}`
     : attackMoveMode ? 'Advance and engage' : 'Move or attack';
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
-  if (ui.commandHint) ui.commandHint.textContent = tapOrderArmed
+  const utilityBuilding = selectedBuilding && !BUILDING_DEFINITIONS[selectedBuilding.type]?.products.length;
+  if (ui.commandHint) ui.commandHint.textContent = utilityBuilding ? `Adds ${BUILDING_DEFINITIONS[selectedBuilding.type].populationCapacity || 0} population capacity when complete.` : tapOrderArmed
     ? selectedBuilding ? 'Tap or click ground to set the rally point'
       : attackMoveMode ? 'Tap or click ground to advance and engage' : 'Tap or click ground, an enemy, or a resource'
     : selectedBuilding ? coarsePointer ? 'Use Set rally point, then tap ground'
       : (rallyCell >= 0 ? 'Right-click ground to move the production rally' : 'Right-click ground to set a production rally')
       : coarsePointer ? 'Use Target battlefield, then tap a target'
         : attackMoveMode ? 'Right-click ground to advance and engage' : 'Right-click ground or an enemy';
-  if (ui.buildingCommandDetails) ui.buildingCommandDetails.hidden = !selectedBuilding;
+  if (ui.buildingCommandDetails) ui.buildingCommandDetails.hidden = !selectedBuilding || !BUILDING_DEFINITIONS[selectedBuilding.type]?.products.length;
   if (ui.buildingRallyReadout) {
     if (rallyCell >= 0) {
       const point = mapCellToWorld(rallyCell);
@@ -3862,7 +3899,8 @@ function syncTargetOrderUI() {
   if (!ui.orderTargetToggle) return;
   const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
     && building.team === localTeam) || null;
-  ui.orderTargetToggle.disabled = localTeam === null || matchWinner >= 0 || buildPlacementActive;
+  ui.orderTargetToggle.disabled = localTeam === null || matchWinner >= 0 || buildPlacementActive
+    || Boolean(selectedBuilding && !BUILDING_DEFINITIONS[selectedBuilding.type]?.products.length);
   ui.orderTargetToggle.classList.toggle('active', tapOrderArmed);
   ui.orderTargetToggle.setAttribute('aria-pressed', String(tapOrderArmed));
   ui.orderTargetToggle.querySelector('span').textContent = tapOrderArmed ? 'Cancel target'
@@ -4069,6 +4107,7 @@ function applyState(state, initial = false) {
     updateMatchResult(state.winner, state.winnerTriggerId, state.winnerReason);
   }
   if (Number.isInteger(state.connected)) updateRoomUI(state.connected);
+  if (Array.isArray(state.population)) latestPopulation = state.population;
   if (Number.isFinite(state.rosterSize)) ui.total.textContent = state.rosterSize.toLocaleString();
   updateEconomyUI(state, audioReset);
   updateEnvironmentStateCaptureSnapshot(state);
@@ -4161,14 +4200,17 @@ function updateRosterProductionOptions(container, selectedProducer = null) {
       : alive + reserved >= MAX_PER_TEAM || latestRosterSize + totalReserved >= MAX_UNITS ? 'Unit cap reached'
       : latestFood[localTeam] < definition.cost.food || latestWood[localTeam] < definition.cost.wood
         ? `Need ${formatResourceRequirement(Math.max(0, definition.cost.food - latestFood[localTeam]))} food / ${formatResourceRequirement(Math.max(0, definition.cost.wood - latestWood[localTeam]))} wood` : '';
+    const populationReason = localTeam !== null && latestPopulation[localTeam]
+      && latestPopulation[localTeam].available < definition.population ? 'Population full · build a House' : '';
     button.dataset.producer = producer?.id ?? '';
-    button.disabled = Boolean(reason);
-    button.textContent = `Train ${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason ? ` · ${reason}` : ''}`;
+    button.disabled = Boolean(reason || populationReason);
+    button.textContent = `Train ${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason || populationReason ? ` · ${reason || populationReason}` : ''}`;
   }
   container.hidden = products.length === 0;
 }
 
 function updateEconomyUI(state = {}, initial = false) {
+  if (Array.isArray(state.population)) latestPopulation = state.population;
   if (Number.isFinite(state.rosterSize)) latestRosterSize = Math.max(0, Math.floor(state.rosterSize));
   if (Array.isArray(state.food)) latestFood = [Number(state.food[0]) || 0, Number(state.food[1]) || 0];
   if (Array.isArray(state.wood)) latestWood = [Number(state.wood[0]) || 0, Number(state.wood[1]) || 0];
@@ -4197,7 +4239,8 @@ function updateEconomyUI(state = {}, initial = false) {
     + (latestWorkerProduction[localTeam]?.queue || 0);
   const queuedTotal = latestBuildings.reduce((sum, building) => sum + getBuildingQueueLength(building), 0)
     + latestWorkerProduction.reduce((sum, production) => sum + (production?.queue || 0), 0);
-  const unitCapReached = teamRosterCount + queuedByTeam >= MAX_PER_TEAM
+  const populationFull = localTeam !== null && latestPopulation[localTeam]?.available === 0;
+  const unitCapReached = populationFull || teamRosterCount + queuedByTeam >= MAX_PER_TEAM
     || latestRosterSize + queuedTotal >= MAX_UNITS;
   const food = localTeam === null ? 0 : latestFood[localTeam];
   const wood = localTeam === null ? 0 : latestWood[localTeam];
@@ -4358,12 +4401,21 @@ function updateEconomyUI(state = {}, initial = false) {
     if (!button) continue;
     const reason = localTeam === null ? 'Join a team' : matchWinner >= 0 ? 'Match finished'
       : !producer ? 'Complete a production building with spawn space'
-      : queue >= limit ? 'Queue full' : unitCapReached ? 'Unit cap reached'
+      : queue >= limit ? 'Queue full' : unitCapReached ? populationFull ? 'Population full · build a House' : 'Unit cap reached'
       : food < costFood || wood < costWood ? `Need ${formatResourceRequirement(Math.max(0, costFood - food))} food / ${formatResourceRequirement(Math.max(0, costWood - wood))} wood` : '';
     button.dataset.disabledReason = reason;
     let note = button.querySelector('.action-disabled-reason');
     if (!note) { note = document.createElement('small'); note.className = 'action-disabled-reason'; button.append(note); }
     note.textContent = reason;
+  }
+  if (ui.populationStatus) {
+    const population = latestPopulation[localTeam];
+    ui.populationStatus.textContent = population ? `POPULATION · ${population.used} USED + ${population.reserved} QUEUED / ${population.capacity}${population.available === 0 ? ' · BUILD A HOUSE' : ''}` : 'POPULATION · JOIN A TEAM';
+  }
+  if (ui.buildHouse) {
+    ui.buildHouse.disabled = localTeam === null || matchWinner >= 0 || wood < BUILDING_DEFINITIONS.house.cost.wood || ownedWorkers.length === 0 || buildPlacementPending;
+    ui.buildHouse.classList.toggle('active', buildPlacementActive && buildPlacementType === 'house');
+    ui.buildHouse.setAttribute('aria-pressed', String(buildPlacementActive && buildPlacementType === 'house'));
   }
   updateRosterProductionOptions(ui.rosterProductionOptions);
   updateCommandUI();
@@ -6572,7 +6624,7 @@ function selectBuilding(building) {
   for (const [id, visual] of buildingVisuals) updateBuildingSelectionVisual(visual, id === building.id);
   updateCommandUI();
   updateEconomyUI();
-  showToast(`${buildingLabel(building.type)} SELECTED · ${window.matchMedia('(pointer: coarse)').matches ? 'USE SET RALLY POINT, THEN TAP GROUND' : 'RIGHT-CLICK GROUND TO SET RALLY'}`);
+  showToast(`${buildingLabel(building.type)} SELECTED${BUILDING_DEFINITIONS[building.type]?.products.length ? ` · ${window.matchMedia('(pointer: coarse)').matches ? 'USE SET RALLY POINT, THEN TAP GROUND' : 'RIGHT-CLICK GROUND TO SET RALLY'}` : ''}`);
   audio.playEvent({ cue: 'select', buildingType: building.type });
 }
 
@@ -7105,7 +7157,7 @@ function startSelectedAttackResearch() {
 function resumeConstruction() {
   if (localTeam === null || matchWinner >= 0) return;
   const building = latestBuildings.find((row) => row.team === localTeam
-    && ['archery-range', 'barracks'].includes(row.type) && row.complete !== true);
+    && Object.hasOwn(BUILDING_DEFINITIONS, row.type) && row.complete !== true);
   if (!building) {
     showToast('NO UNFINISHED FRIENDLY BARRACKS OR ARCHERY RANGE');
     return;
@@ -8091,6 +8143,10 @@ ui.trainInfantry?.addEventListener('click', queueInfantry);
 ui.trainWorker?.addEventListener('click', queueWorker);
 ui.trainArcher?.addEventListener('click', queueArcher);
 ui.resumeRange?.addEventListener('click', resumeConstruction);
+ui.buildHouse?.addEventListener('click', () => {
+  if (buildPlacementActive && buildPlacementType === 'house') cancelBuildPlacement();
+  else beginBuildPlacement('house');
+});
 ui.buildBarracks?.addEventListener('click', () => {
   if (buildPlacementActive && buildPlacementType === 'barracks') cancelBuildPlacement();
   else beginBuildPlacement('barracks');

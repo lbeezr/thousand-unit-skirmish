@@ -1,3 +1,4 @@
+import { teamPopulation } from './src/population.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from './src/gameplay-definitions.mjs';
 import { validateMapAudioReference } from './src/audio-event-profile.mjs';
 import { createServer } from 'node:http';
@@ -36,7 +37,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
 const MATCH_CHECKPOINT_SCHEMA_VERSION = 11;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
-const MATCH_RULES_VERSION = 5;
+const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
 const HEARTBEAT_INTERVAL_MS = 15_000;
 const HEARTBEAT_TIMEOUT_MS = 45_000;
@@ -506,6 +507,7 @@ const BUILDING_RULES = Object.freeze({
     foodCost: ARCHER_FOOD_COST, unitWoodCost: ARCHER_WOOD_COST,
     trainSeconds: ARCHER_TRAIN_SECONDS, trainLabel: 'ARCHERS', readyLabel: 'ARCHER READY',
   }),
+  house: Object.freeze({ label: 'HOUSE', woodCost: BUILDING_DEFINITIONS.house.cost.wood, buildSeconds: BUILDING_DEFINITIONS.house.buildSeconds }),
   barracks: Object.freeze({
     label: 'BARRACKS', woodCost: BARRACKS_WOOD_COST,
     buildSeconds: BARRACKS_BUILD_SECONDS, unitKind: 'infantry',
@@ -2299,6 +2301,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
         }
         : { id: state.id, fired: state.fired, ...repeatState };
     }),
+    population: [0, 1].map((team) => viewTeam === null || team === viewTeam ? populationForTeam(team) : null),
     rosterSize: fogView ? actualAlive[viewTeam] : actualAlive[0] + actualAlive[1],
     mapId: mapDefinition.id, connected: connectedCount(), alive, winner: matchWinner,
     winnerTriggerId: matchWinnerTriggerId, winnerReason: matchWinnerReason,
@@ -2333,7 +2336,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
     }),
     buildings: viewBuildings.map((building) => ({
       id: building.id, team: building.team, type: building.type,
-      x: building.x, z: building.z, hp: building.hp, maxHp: BUILDING_MAX_HIT_POINTS,
+      x: building.x, z: building.z, hp: building.hp, maxHp: BUILDING_DEFINITIONS[building.type].maxHp,
       attackers: buildingAttackers.get(building.id) || 0,
       progress: building.progress,
       complete: building.complete, queue: building.queue,
@@ -2569,7 +2572,7 @@ function validateMatchCheckpoint(snapshot) {
       && finite(building.progress) && building.progress >= 0 && building.progress <= 1
       && typeof building.complete === 'boolean' && integerIn(building.queue, 0, MAX_BUILDING_QUEUE)
       && finite(building.trainingRemaining) && building.trainingRemaining >= 0
-      && finite(building.hp) && building.hp > 0 && building.hp <= BUILDING_MAX_HIT_POINTS
+      && finite(building.hp) && building.hp > 0 && building.hp <= BUILDING_DEFINITIONS[building.type].maxHp
       && Array.isArray(building.productionQueue) && building.productionQueue.length === building.queue
       && building.productionQueue.every((kind) => BUILDING_DEFINITIONS[building.type].products.includes(kind))
       && building.trainingRemaining <= (UNIT_DEFINITIONS[building.productionQueue[0]]?.trainSeconds ?? 0) && typeof building.productionBlocked === 'boolean'
@@ -2988,7 +2991,7 @@ function migrateMatchCheckpoint(snapshot) {
     }
     snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;
   }
-  if (snapshot?.rulesVersion === 4) snapshot.rulesVersion = MATCH_RULES_VERSION;
+  if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
   if ([1, 2, 3].includes(snapshot?.rulesVersion)
     && !snapshot?.mapDefinition?.elevationPatches?.some((patch) => patch.level > 0)) {
     snapshot.rulesVersion = MATCH_RULES_VERSION;
@@ -3828,6 +3831,14 @@ function queuedUnitsTotal() {
     + workerProduction.reduce((sum, production) => sum + production.queue, 0);
 }
 
+function populationForTeam(team) {
+  return teamPopulation({ units, buildings, workerProduction, openingArmySize: currentArmySize }, team);
+}
+
+function canReservePopulation(team, kind) {
+  return populationForTeam(team).available >= UNIT_DEFINITIONS[kind].population;
+}
+
 function enqueueBuildingUnit(building, kind) {
   building.productionQueue.push(kind);
   building.queue = building.productionQueue.length;
@@ -3849,6 +3860,7 @@ function trainUnit(player, command) {
   const rejection = building.queue >= MAX_BUILDING_QUEUE ? `QUEUE FULL ${MAX_BUILDING_QUEUE}/${MAX_BUILDING_QUEUE}`
     : alive[player.team] + queuedUnitsForTeam(player.team) >= MAX_TEAM_ROSTER
       || alive[0] + alive[1] + queuedUnitsTotal() >= MAX_UNITS ? 'UNIT CAP REACHED'
+    : !canReservePopulation(player.team, kind) ? 'POPULATION FULL · BUILD A HOUSE'
     : teamFood[player.team] + 1e-9 < definition.cost.food
       || teamWood[player.team] + 1e-9 < definition.cost.wood
       ? `NEED ${definition.cost.food} FOOD + ${definition.cost.wood} WOOD`
@@ -3886,6 +3898,10 @@ function trainInfantry(player, command) {
     player.sendJson({ type: 'notice', message: `INFANTRY TRAINING REJECTED · NEED ${INFANTRY_FOOD_COST} FOOD` });
     return;
   }
+  if (!canReservePopulation(player.team, 'infantry')) {
+    player.sendJson({ type: 'notice', message: 'INFANTRY TRAINING REJECTED · POPULATION FULL · BUILD A HOUSE' });
+    return;
+  }
   if (findProductionSpawnCell(building) < 0) {
     player.sendJson({ type: 'notice', message: 'INFANTRY TRAINING REJECTED · NO SPAWN ROOM' });
     return;
@@ -3913,6 +3929,10 @@ function trainWorker(player) {
   }
   if (teamFood[player.team] + 1e-9 < WORKER_FOOD_COST) {
     player.sendJson({ type: 'notice', message: `WORKER TRAINING REJECTED · NEED ${WORKER_FOOD_COST} FOOD` });
+    return;
+  }
+  if (!canReservePopulation(player.team, 'worker')) {
+    player.sendJson({ type: 'notice', message: 'WORKER TRAINING REJECTED · POPULATION FULL · BUILD A HOUSE' });
     return;
   }
   if (findTownCenterProductionSpawnCell(player.team) < 0) {
@@ -4443,7 +4463,7 @@ function buildBuilding(player, command) {
   const id = nextBuildingId++;
   const building = {
     id, team: player.team, type: command.buildingType, x: center.x, z: center.z,
-    footprint, hp: BUILDING_MAX_HIT_POINTS, progress: 0, complete: false, queue: 0, productionQueue: [], trainingRemaining: 0,
+    footprint, hp: BUILDING_DEFINITIONS[command.buildingType].maxHp, progress: 0, complete: false, queue: 0, productionQueue: [], trainingRemaining: 0,
     productionBlocked: false, rallyCell: -1,
   };
   const previousConnectivity = captureBuildingConnectivity();
@@ -4571,6 +4591,10 @@ function trainArcher(player, command) {
     player.sendJson({ type: 'notice', message: `ARCHER TRAINING REJECTED · NEED ${ARCHER_FOOD_COST} FOOD + ${ARCHER_WOOD_COST} WOOD` });
     return;
   }
+  if (!canReservePopulation(player.team, 'archer')) {
+    player.sendJson({ type: 'notice', message: 'ARCHER TRAINING REJECTED · POPULATION FULL · BUILD A HOUSE' });
+    return;
+  }
   if (findProductionSpawnCell(building) < 0) {
     player.sendJson({ type: 'notice', message: 'ARCHER TRAINING REJECTED · NO SPAWN ROOM' });
     return;
@@ -4664,7 +4688,7 @@ function updateBuildingAndProduction() {
         if (builder.buildingTargetId === building.id) builder.buildingTargetId = null;
       }
       broadcastGameplayNotice(building.team, building.x, building.z,
-        `${rules.label} COMPLETE · TRAIN ${rules.trainLabel}`);
+        `${rules.label} COMPLETE${rules.trainLabel ? ` · TRAIN ${rules.trainLabel}` : ''}`);
     }
   }
 
@@ -6513,7 +6537,7 @@ const server = createServer(async (request, response) => {
     'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',
     'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs',
     'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
-    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs',
+    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
     'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs',
@@ -6522,7 +6546,7 @@ const server = createServer(async (request, response) => {
     'src/audio-composition.mjs', 'src/audio-composer.mjs', 'src/audio-composer.css',
     'audio-studio.html', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs',
     'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs',
-    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs',
+    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs',
     'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs',
   ].includes(relative);
   const publicUiAsset = [

@@ -145,6 +145,12 @@ function normalizeBuilding(building) {
   };
 }
 
+function normalizePopulation(record) {
+  if (!record || !['used', 'reserved', 'capacity', 'available'].every((key) => Number.isInteger(record[key]) && record[key] >= 0)
+    || record.capacity > 1000 || record.available !== Math.max(0, record.capacity - record.used - record.reserved)) return null;
+  return { used: record.used, reserved: record.reserved, capacity: record.capacity, available: record.available };
+}
+
 function normalizeWorkerProduction(record, team) {
   if (!record || record.team !== team) return null;
   return {
@@ -293,6 +299,7 @@ export function toOpponentObservation(state, team, map = null) {
     fogOfWar: state.fogOfWar === true,
     visibility: visibility ? { columns: visibility.columns, rows: visibility.rows, data: visibility.data } : null,
     resources: { food, wood },
+    population: normalizePopulation(state.population?.[team]),
     units: {
       friendly: units.filter((unit) => unit.team === team),
       visibleEnemies: units.filter((unit) => unit.team !== team),

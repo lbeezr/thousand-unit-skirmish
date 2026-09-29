@@ -13,7 +13,7 @@ for (const team of [0, 1]) test(`roster production choices follow definitions an
   const context = vm.createContext({ UNIT_DEFINITIONS, BUILDING_DEFINITIONS, formatResourceRequirement,
     document: { createElement() { return { dataset: {}, addEventListener(_, callback) { this.click = callback; } }; } },
     localTeam: team, latestBuildings: [building], teamUnits: [[], []],
-    latestFood: [500, 500], latestWood: [500, 500], latestWorkerProduction: [null, null],
+    latestFood: [500, 500], latestWood: [500, 500], latestWorkerProduction: [null, null], latestPopulation: [null, null],
     BARRACKS_QUEUE_LIMIT: 5, MAX_PER_TEAM: 1000, MAX_UNITS: 2000, latestRosterSize: 0, matchWinner: -1,
     getBuildingQueueLength: (row) => row.queue, sendCommand: (command) => commands.push(command),
   });
@@ -33,4 +33,8 @@ for (const team of [0, 1]) test(`roster production choices follow definitions an
   building.queue = 0; building.productionBlocked = true;
   context.updateRosterProductionOptions(container, building);
   assert.match(spear.textContent, /Clear spawn area/);
+  building.productionBlocked = false;
+  context.latestPopulation[team] = { used: 12, reserved: 3, capacity: 15, available: 0 };
+  context.updateRosterProductionOptions(container, building);
+  assert.equal(spear.disabled, true); assert.match(spear.textContent, /Population full · build a House/);
 });
