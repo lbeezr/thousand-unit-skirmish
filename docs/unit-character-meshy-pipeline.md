@@ -47,8 +47,12 @@ sample; species appearance must not silently change gameplay role or stats.
 
 ### Source and view contract
 
-Prefer one editable, rigged character source with painted materials, equipment
-attachments, a grounded root, and named animation clips. Meshy can supply an
+Use a source-independent sprite export contract. For a 3D bake, retain an
+editable rigged character, painted materials, equipment attachments, grounded
+root and named animation clips. A painted 2D production route instead retains
+canonical views, action key drawings, layered source art and explicit timing.
+The generated-base option below is a viable candidate requiring a motion pilot,
+not a requirement to solve every action through automatic 3D rigging. Meshy can supply an
 approved initial source; the export contract should also accept locally authored
 Blender models. Review the full turntable before animation so inferred backs and
 missing equipment are caught early. Keep model, rig, materials, tool meshes,
@@ -206,3 +210,154 @@ proposal; external pipelines have not been installed or validated in our project
   is a CC0 model resource for a no-cost technical capture test. Its modern stylized
   characters are not the intended fantasy look. [Kenney's source license FAQ](https://kenney.nl/support)
   confirms asset-page CC0 status; retain each downloaded package's license.
+
+
+## Generated base and painted animation feasibility — 29 September 2026
+
+The user's alternative is to generate an illustrated character base/view pack,
+then derive and finish directional action drawings from it. This is compatible
+with the same runtime atlas contract: the game consumes pixels, pivots and clocks,
+not the production rig. We can pursue it without requiring successful AI-generated
+3D tool actions. Viability of a complete polished animation pipeline remains to
+be demonstrated; useful concept/key drawings are already supported by evidence.
+
+### Evidence from the existing studies
+
+The local `readability-study/sprite-paintover` eight-pose experiment repainted a
+3D-derived walk into the illustrated Worker style. Its report found silhouette
+IoU 0.778–0.824 and about 0–4 source pixels of registration/shape change. The
+larger `sprite-paintover-full` study covered 264 cells but reported mean walk IoU
+0.639 and edge residue. IoU measures silhouette correspondence, not animation
+quality. The `species-reskins` study generated orc/elf/troll drawings from one
+southeast human walk; its report notes changed size/anatomy despite placement
+constraints. These local study files are retained in the original repository's
+`meshy_output/readability-study` directory. Our recovered cast source sheets
+provide tracked generated illustration samples for all eight facings.
+
+These experiments support pose-guided illustration and appearance variation.
+They do not establish reliable novel-action choreography from text alone, exact
+registration, stable tool grips or smooth in-between frames. Generating a large
+finished sheet in one call magnifies the consistency and extraction work.
+
+### Bounded reference-to-action probe
+
+![Generated Worker chopping key poses](art-direction/painted-worker-chop-keyposes-2026-09-29.png)
+
+A single built-in imagegen call used the existing human eight-view idle reference
+(`cast-full/human/candidate-idle.png`) and requested four chopping key poses in
+one facing: ready, anticipation, strike and follow-through. No 3D motion guide,
+new rig or Meshy job supplied these poses. The untouched output is retained above;
+its dimensions are 2172×724 RGBA with alpha range 0–255. An alpha >=8 audit finds
+four nonempty quarter-strip regions with minimum margins 47, 50, 71 and 90 pixels.
+No crop or per-frame fitting was applied to the source. This demonstrates
+complete isolated action drawings, not a runtime clip or validated motion.
+
+Visual inspection finds a recognizable Worker identity and a clear raised-axe
+anticipation. Strike and recovery are quite similar. Tool contour/length, grips,
+foot registration and the return to ready need explicit animation cleanup and
+moving review. Image generation did not provide layers, pivots or timings. The
+axe's lowest pixel is not a foot anchor; record planted-foot/root landmarks
+rather than treating the alpha bottom as the root of each action pose.
+
+### Neutral model references: corrected source and direct test
+
+The user clarified that the intended base is the neutral model reference, not
+the dressed cast sprite. The supplied `human.png` is identical to the local
+`human-standard.png`. The human and `Orcs.png` references are retained unchanged
+as [human](art-direction/neutral-human-reference-2026-09-29.png) and
+[orc](art-direction/neutral-orc-reference-2026-09-29.png). They show anatomy in
+front, three-quarter, side and rear views with shared colored body regions.
+Those regions are illustration/part guides, not validated segmentation masks.
+They are not yet the elevated eight-heading game-camera pose library.
+
+A direct two-stage test follows that intended pipeline:
+
+![Neutral human chopping blueprint](art-direction/neutral-human-chop-keyposes-2026-09-29.png)
+
+![Illustrated Worker over the blueprint](art-direction/neutral-human-chop-paintover-2026-09-29.png)
+
+First, one built-in imagegen call used only `human.png` to create four neutral
+chopping key drawings, preserving its anatomy/color regions and adding a plain
+axe in one requested oblique facing. Then another call used that output as the
+pose/edit target and the earlier dressed human idle sheet only as appearance
+reference. No new 3D model or action rig was used. Both raw outputs are retained
+unaltered at 2172×724 with genuine alpha. The [measurement record](art-direction/neutral-human-chop-feasibility-2026-09-29.json)
+retains file hashes, dimensions and alpha >=8 bounds for both references and
+outputs. These assets remain internal exploration references, with no runtime
+atlas replacement or external redistribution-rights claim.
+
+Visual review supports the central idea: recognizable clothing/face/materials
+can be drawn over a neutral posed anatomy guide while largely retaining the
+four action compositions. It does not show exact correspondence. Foot placement
+changes between the neutral poses, strike/follow-through are similar, and the
+paint-over changes silhouette and margins. Neutral quarter-strip minimum margins
+are 35/16/35/32 pixels; illustrated margins are 32/1/27/3. Two illustrated regions
+therefore fail the four-pixel margin rule if treated as rigid cells. This is
+precisely why complete silhouettes must be extracted before fitting, and why
+isolated action-frame generation is preferable to assuming a generated strip
+is already a safe atlas. Colored edge residue remains despite the cleanup
+instruction. Do not use this strip as an accepted motion or texture pack.
+
+Recommendation: make the reusable neutral anatomy/view/action blueprint library
+first, then use illustrated identities as skins over that library. Human-derived
+role/costume variants may reuse accepted guides. An orc needs its own proportions,
+stance and contact review; transferring the action structure is reasonable,
+but stretching the human drawings is not the definition of a species template.
+The source-independent runtime contract is unchanged. The remaining bottleneck
+is approved action mechanics, contacts and temporal consistency, whether those
+are corrected by drawing, 2D cutout posing or a simple 3D mannequin.
+
+### Recommended workflow to test
+
+1. Lock the neutral anatomy/view blueprint first, then a character identity
+   sheet with front/side/back details, equipment,
+   palette and team-accent placement. Clean the existing human/orc concepts
+   rather than redesigning each action. Produce eight neutral game-camera views.
+2. Make a small action storyboard: foot/root markers, hand contacts, tool arc,
+   anticipation/contact/recovery and an explicit loop closure. This guide can be
+   drawn in 2D. A simple posed mannequin is an optional spatial guide and does
+   not require a high-quality generated character rig.
+3. Generate isolated poses or batches of two to four, always conditioning on the
+   same identity and view plus the action guide. Maintain tool handedness and
+   relative root locations; keep generous source margins. Do not ask a single
+   generation to invent an entire character's eight-view animation atlas.
+4. Edit selected key drawings into a coherent sequence. Use layered torso/head,
+   upper/lower arms, hands, tools and legs where useful. Repaint changing
+   occlusions and anatomy; a single cutout cannot rotate into unseen back views.
+   Keep source masks/layers for selective team color.
+5. Add and review in-betweens and timings. An initial stationary work loop may
+   test 6–8 unique drawings with authored holds; judge the result at normal game
+   size before choosing a higher sample budget. The earlier 16–20 poses/second
+   capture budget is a candidate for 3D sampling, not a universal rule for painted
+   drawings. Playback duration still follows the existing gameplay contract.
+6. Export standalone RGBA frames with one coordinate system and explicit root.
+   Pack only after all action/view bounds are known; run the same source/pixel,
+   timing, mask and terrain-render checks as the recovered cast packs.
+
+| Route | Useful strength | Work it still requires | Recommendation |
+| --- | --- | --- | --- |
+| Generated finished animation sheets | Fast broad look exploration | Identity/scale drift, ordering, grips, missing poses and cleanup | Concept exploration; not the unattended final pipeline |
+| Generated key drawings + painted in-betweens | Frees action art from 3D rig quality | Timing, anatomy, foot/tool contacts and all views | Preferred next bounded test |
+| Layered 2D cutout animation | Reuses parts and supports predictable motion | Layer preparation, redraws for foreshortening and changed occlusion | Useful for idle/build/work; bake to existing sprite runtime |
+| Simple pose guides + generated paint-over | Supplies explicit spatial/action structure | Guide authoring and temporal illustration cleanup | Fallback when text-only poses drift |
+| Full rigged 3D bake | Consistent views, sampling and equipment reuse | Rig, contacts, animation authoring and source materials | Retain as a parallel option for complex motion |
+
+[Krita's documented workflow](https://docs.krita.org/en/user_manual/animation.html)
+uses key drawings, in-betweens and onion skins, and can export frame sequences.
+It is the practical open-source starting point for painted cleanup.
+[Spine](https://en.esotericsoftware.com/spine-in-depth/?lang=en) documents 2D
+bones/mesh weights for cutout animation; it is an optional commercial editor,
+not needed for this test. Baking either source route into sprites preserves our
+existing batching and avoids requiring a new skeletal runtime in the game.
+
+### Next decision proof
+
+Complete one human chopping loop in southeast, then northwest from the same
+identity. Review ordinary/strategic zoom, clear two-hand grip, consistent axe,
+planted feet, weight shift, contact, smooth loop closure, fixed costume and no
+source/runtime clipping. Then adapt that tested action guide to the existing orc
+identity; review the orc's own body mechanics rather than demanding the human's
+silhouette. Record retries, cleanup effort and defects per accepted action/view.
+Compare this with the current rigged action so we choose based on accepted motion
+and production effort. No full roster generation is implied by this feasibility
+study. The current four-key drawing probe is insufficient to claim this proof.

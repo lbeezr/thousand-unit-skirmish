@@ -1,0 +1,134 @@
+{
+  "scope": "Four key drawings in one facing; static feasibility, not full motion acceptance",
+  "alphaThreshold": 8,
+  "files": {
+    "neutral-human-reference-2026-09-29.png": {
+      "sha256": "3b762b9bb3003c4ef8cb1de1d150fed76d73f64d086129e9a73fc63bed484fc9",
+      "size": [
+        1774,
+        887
+      ],
+      "alphaRange": [
+        0,
+        255
+      ]
+    },
+    "neutral-orc-reference-2026-09-29.png": {
+      "sha256": "3a7c441ac5bee6193740e596950aa0fac9387ac96c8c544da3c9e943d41ff4db",
+      "size": [
+        1774,
+        887
+      ],
+      "alphaRange": [
+        0,
+        255
+      ]
+    },
+    "neutral-human-chop-keyposes-2026-09-29.png": {
+      "sha256": "1d617b49e2b0b9d76892c4be6c484807772eb1ba1d54bc70c8284a969d484853",
+      "size": [
+        2172,
+        724
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "quarterRegions": [
+        {
+          "index": 0,
+          "localBounds": [
+            81,
+            201,
+            475,
+            689
+          ],
+          "minMargin": 35
+        },
+        {
+          "index": 1,
+          "localBounds": [
+            35,
+            16,
+            430,
+            690
+          ],
+          "minMargin": 16
+        },
+        {
+          "index": 2,
+          "localBounds": [
+            41,
+            262,
+            499,
+            689
+          ],
+          "minMargin": 35
+        },
+        {
+          "index": 3,
+          "localBounds": [
+            38,
+            261,
+            511,
+            690
+          ],
+          "minMargin": 32
+        }
+      ]
+    },
+    "neutral-human-chop-paintover-2026-09-29.png": {
+      "sha256": "9a417c63ad87a62a44583912f40bc25eb856136687d123e1e5c594d26ce466f2",
+      "size": [
+        2172,
+        724
+      ],
+      "alphaRange": [
+        0,
+        255
+      ],
+      "quarterRegions": [
+        {
+          "index": 0,
+          "localBounds": [
+            71,
+            213,
+            468,
+            692
+          ],
+          "minMargin": 32
+        },
+        {
+          "index": 1,
+          "localBounds": [
+            1,
+            15,
+            430,
+            692
+          ],
+          "minMargin": 1
+        },
+        {
+          "index": 2,
+          "localBounds": [
+            53,
+            266,
+            516,
+            692
+          ],
+          "minMargin": 27
+        },
+        {
+          "index": 3,
+          "localBounds": [
+            56,
+            261,
+            540,
+            692
+          ],
+          "minMargin": 3
+        }
+      ]
+    }
+  }
+}
