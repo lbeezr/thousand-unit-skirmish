@@ -1,0 +1,4538 @@
+{
+  "size": [
+    1024,
+    640
+  ],
+  "columns": 8,
+  "rows": 5,
+  "batches": [
+    {
+      "direction": "north",
+      "frames": [
+        {
+          "action": "walk",
+          "id": "walk-north-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-8",
+          "frameIndex": 8,
+          "batchRect": [
+            0,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1024,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-9",
+          "frameIndex": 9,
+          "batchRect": [
+            128,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1152,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-10",
+          "frameIndex": 10,
+          "batchRect": [
+            256,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1280,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-11",
+          "frameIndex": 11,
+          "batchRect": [
+            384,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1408,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-12",
+          "frameIndex": 12,
+          "batchRect": [
+            512,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1536,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-13",
+          "frameIndex": 13,
+          "batchRect": [
+            640,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1664,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-14",
+          "frameIndex": 14,
+          "batchRect": [
+            768,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1792,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-15",
+          "frameIndex": 15,
+          "batchRect": [
+            896,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1920,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "idle",
+          "id": "idle-north-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            512,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        }
+      ]
+    },
+    {
+      "direction": "north-east",
+      "frames": [
+        {
+          "action": "walk",
+          "id": "walk-north-east-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-east-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-east-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-east-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-east-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-east-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-east-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-east-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-east-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-east-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-east-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-east-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-east-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-east-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-east-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-east-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-east-8",
+          "frameIndex": 8,
+          "batchRect": [
+            0,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1024,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-east-9",
+          "frameIndex": 9,
+          "batchRect": [
+            128,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1152,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-east-10",
+          "frameIndex": 10,
+          "batchRect": [
+            256,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1280,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-east-11",
+          "frameIndex": 11,
+          "batchRect": [
+            384,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1408,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-east-12",
+          "frameIndex": 12,
+          "batchRect": [
+            512,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1536,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-east-13",
+          "frameIndex": 13,
+          "batchRect": [
+            640,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1664,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-east-14",
+          "frameIndex": 14,
+          "batchRect": [
+            768,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1792,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-east-15",
+          "frameIndex": 15,
+          "batchRect": [
+            896,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1920,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-east-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-east-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-east-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-east-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-east-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-east-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-east-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-east-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "idle",
+          "id": "idle-north-east-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            512,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        }
+      ]
+    },
+    {
+      "direction": "east",
+      "frames": [
+        {
+          "action": "walk",
+          "id": "walk-east-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-east-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-east-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-east-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-east-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-east-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-east-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-east-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-east-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-east-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-east-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-east-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-east-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-east-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-east-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-east-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-east-8",
+          "frameIndex": 8,
+          "batchRect": [
+            0,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1024,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-east-9",
+          "frameIndex": 9,
+          "batchRect": [
+            128,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1152,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-east-10",
+          "frameIndex": 10,
+          "batchRect": [
+            256,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1280,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-east-11",
+          "frameIndex": 11,
+          "batchRect": [
+            384,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1408,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-east-12",
+          "frameIndex": 12,
+          "batchRect": [
+            512,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1536,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-east-13",
+          "frameIndex": 13,
+          "batchRect": [
+            640,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1664,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-east-14",
+          "frameIndex": 14,
+          "batchRect": [
+            768,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1792,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-east-15",
+          "frameIndex": 15,
+          "batchRect": [
+            896,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1920,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-east-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-east-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-east-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-east-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-east-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-east-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-east-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-east-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 256,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "idle",
+          "id": "idle-east-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            512,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        }
+      ]
+    },
+    {
+      "direction": "south-east",
+      "frames": [
+        {
+          "action": "walk",
+          "id": "walk-south-east-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-east-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-east-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-east-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-east-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-east-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-east-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-east-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-east-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-east-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-east-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-east-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-east-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-east-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-east-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-east-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-east-8",
+          "frameIndex": 8,
+          "batchRect": [
+            0,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1024,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-east-9",
+          "frameIndex": 9,
+          "batchRect": [
+            128,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1152,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-east-10",
+          "frameIndex": 10,
+          "batchRect": [
+            256,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1280,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-east-11",
+          "frameIndex": 11,
+          "batchRect": [
+            384,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1408,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-east-12",
+          "frameIndex": 12,
+          "batchRect": [
+            512,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1536,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-east-13",
+          "frameIndex": 13,
+          "batchRect": [
+            640,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1664,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-east-14",
+          "frameIndex": 14,
+          "batchRect": [
+            768,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1792,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-east-15",
+          "frameIndex": 15,
+          "batchRect": [
+            896,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1920,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-east-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-east-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-east-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-east-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-east-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-east-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-east-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-east-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 384,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "idle",
+          "id": "idle-south-east-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            512,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        }
+      ]
+    },
+    {
+      "direction": "south",
+      "frames": [
+        {
+          "action": "walk",
+          "id": "walk-south-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-8",
+          "frameIndex": 8,
+          "batchRect": [
+            0,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1024,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-9",
+          "frameIndex": 9,
+          "batchRect": [
+            128,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1152,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-10",
+          "frameIndex": 10,
+          "batchRect": [
+            256,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1280,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-11",
+          "frameIndex": 11,
+          "batchRect": [
+            384,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1408,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-12",
+          "frameIndex": 12,
+          "batchRect": [
+            512,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1536,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-13",
+          "frameIndex": 13,
+          "batchRect": [
+            640,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1664,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-14",
+          "frameIndex": 14,
+          "batchRect": [
+            768,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1792,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-15",
+          "frameIndex": 15,
+          "batchRect": [
+            896,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1920,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 512,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "idle",
+          "id": "idle-south-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            512,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        }
+      ]
+    },
+    {
+      "direction": "south-west",
+      "frames": [
+        {
+          "action": "walk",
+          "id": "walk-south-west-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-west-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-west-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-west-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-west-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-west-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-west-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-south-west-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-west-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-west-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-west-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-west-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-west-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-west-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-west-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-west-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-west-8",
+          "frameIndex": 8,
+          "batchRect": [
+            0,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1024,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-west-9",
+          "frameIndex": 9,
+          "batchRect": [
+            128,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1152,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-west-10",
+          "frameIndex": 10,
+          "batchRect": [
+            256,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1280,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-west-11",
+          "frameIndex": 11,
+          "batchRect": [
+            384,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1408,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-west-12",
+          "frameIndex": 12,
+          "batchRect": [
+            512,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1536,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-west-13",
+          "frameIndex": 13,
+          "batchRect": [
+            640,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1664,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-west-14",
+          "frameIndex": 14,
+          "batchRect": [
+            768,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1792,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-south-west-15",
+          "frameIndex": 15,
+          "batchRect": [
+            896,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1920,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-west-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-west-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-west-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-west-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-west-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-west-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-west-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-south-west-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 640,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "idle",
+          "id": "idle-south-west-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            512,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        }
+      ]
+    },
+    {
+      "direction": "west",
+      "frames": [
+        {
+          "action": "walk",
+          "id": "walk-west-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-west-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-west-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-west-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-west-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-west-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-west-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-west-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-west-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-west-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-west-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-west-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-west-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-west-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-west-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-west-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-west-8",
+          "frameIndex": 8,
+          "batchRect": [
+            0,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1024,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-west-9",
+          "frameIndex": 9,
+          "batchRect": [
+            128,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1152,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-west-10",
+          "frameIndex": 10,
+          "batchRect": [
+            256,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1280,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-west-11",
+          "frameIndex": 11,
+          "batchRect": [
+            384,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1408,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-west-12",
+          "frameIndex": 12,
+          "batchRect": [
+            512,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1536,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-west-13",
+          "frameIndex": 13,
+          "batchRect": [
+            640,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1664,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-west-14",
+          "frameIndex": 14,
+          "batchRect": [
+            768,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1792,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-west-15",
+          "frameIndex": 15,
+          "batchRect": [
+            896,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1920,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-west-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-west-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-west-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-west-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-west-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-west-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-west-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-west-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 768,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "idle",
+          "id": "idle-west-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            512,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        }
+      ]
+    },
+    {
+      "direction": "north-west",
+      "frames": [
+        {
+          "action": "walk",
+          "id": "walk-north-west-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-west-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-west-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-west-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-west-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-west-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-west-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "walk",
+          "id": "walk-north-west-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            0,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-west-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-west-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-west-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-west-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-west-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-west-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-west-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-west-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            128,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-west-8",
+          "frameIndex": 8,
+          "batchRect": [
+            0,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1024,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-west-9",
+          "frameIndex": 9,
+          "batchRect": [
+            128,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1152,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-west-10",
+          "frameIndex": 10,
+          "batchRect": [
+            256,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1280,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-west-11",
+          "frameIndex": 11,
+          "batchRect": [
+            384,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1408,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-west-12",
+          "frameIndex": 12,
+          "batchRect": [
+            512,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1536,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-west-13",
+          "frameIndex": 13,
+          "batchRect": [
+            640,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1664,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-west-14",
+          "frameIndex": 14,
+          "batchRect": [
+            768,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1792,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "attack",
+          "id": "attack-north-west-15",
+          "frameIndex": 15,
+          "batchRect": [
+            896,
+            256,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 1920,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-west-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 0,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-west-1",
+          "frameIndex": 1,
+          "batchRect": [
+            128,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 128,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-west-2",
+          "frameIndex": 2,
+          "batchRect": [
+            256,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 256,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-west-3",
+          "frameIndex": 3,
+          "batchRect": [
+            384,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-west-4",
+          "frameIndex": 4,
+          "batchRect": [
+            512,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 512,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-west-5",
+          "frameIndex": 5,
+          "batchRect": [
+            640,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 640,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-west-6",
+          "frameIndex": 6,
+          "batchRect": [
+            768,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 768,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "defeat",
+          "id": "defeat-north-west-7",
+          "frameIndex": 7,
+          "batchRect": [
+            896,
+            384,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 896,
+            "y": 896,
+            "width": 128,
+            "height": 128
+          }
+        },
+        {
+          "action": "idle",
+          "id": "idle-north-west-0",
+          "frameIndex": 0,
+          "batchRect": [
+            0,
+            512,
+            128,
+            128
+          ],
+          "outputRect": {
+            "x": 384,
+            "y": 128,
+            "width": 128,
+            "height": 128
+          }
+        }
+      ]
+    }
+  ]
+}

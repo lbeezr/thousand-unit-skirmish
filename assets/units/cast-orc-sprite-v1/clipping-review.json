@@ -1,33 +1,4550 @@
 {
   "asset": "orc",
+  "technique": "connected-silhouette extraction before shared-root envelope fitting",
   "alphaThreshold": 8,
-  "paddingPx": 8,
-  "sourceEdgeFrames": [
-    "attack-east-11",
-    "attack-east-12",
-    "attack-east-13",
-    "attack-south-east-0",
-    "attack-south-east-2",
-    "defeat-east-3"
+  "cellPx": 160,
+  "marginPx": 8,
+  "fitScale": 1.099236641221374,
+  "sharedPivotPx": {
+    "x": 69.55725190839695,
+    "y": 123
+  },
+  "sourceEnvelopeRelativeToRootPx": {
+    "min": [
+      -56,
+      -104
+    ],
+    "max": [
+      59,
+      27
+    ]
+  },
+  "directionalInputs": {
+    "north": {
+      "file": "source-directional/north.png",
+      "sha256": "5d602b5099093bf3af537e30c2048e12684e29eb168abbec7a1adbe840b561c5"
+    },
+    "north-east": {
+      "file": "source-directional/north-east.png",
+      "sha256": "5e425933dfd80b5c45560993e06d7d4f891611ba35181df447a805e499ed702e"
+    },
+    "east": {
+      "file": "source-directional/east.png",
+      "sha256": "35ae2dc4d6c191753244b974d1dda2a36e10bf35940d02a6fcc69c990d3f50e9"
+    },
+    "south-east": {
+      "file": "source-directional/south-east.png",
+      "sha256": "10d47b5632b00dd8fdc5279b76be4c0eabd05ba832ebf5df703a660327dc596a"
+    },
+    "south": {
+      "file": "source-directional/south.png",
+      "sha256": "093d2ebfc9eea66e4b26be5a250411ecd055648c0e2d0a70fb60b88f281aa23a"
+    },
+    "south-west": {
+      "file": "source-directional/south-west.png",
+      "sha256": "a59f160820b468178236d050bccc0fc953d5da7bd71ece2f14a8d84a46483b0c"
+    },
+    "west": {
+      "file": "source-directional/west.png",
+      "sha256": "40d51e426fa43d5c8b73ed7739d1828832fe2b94e27c6b54f49027d321520c53"
+    },
+    "north-west": {
+      "file": "source-directional/north-west.png",
+      "sha256": "f6013cc6db870959680b1dd77be4909bc750054f2740b63eed07edfcc948704c"
+    }
+  },
+  "recoveredNominalCellCrossings": 1,
+  "frameMeasurements": [
+    {
+      "frameId": "walk-north-0",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        40,
+        29,
+        86,
+        108
+      ],
+      "nominalCellRectPx": [
+        0,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-1",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        157,
+        28,
+        217,
+        117
+      ],
+      "nominalCellRectPx": [
+        128,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-2",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        281,
+        29,
+        350,
+        118
+      ],
+      "nominalCellRectPx": [
+        256,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-3",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        416,
+        29,
+        476,
+        114
+      ],
+      "nominalCellRectPx": [
+        384,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-4",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        553,
+        28,
+        593,
+        107
+      ],
+      "nominalCellRectPx": [
+        512,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-5",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        672,
+        28,
+        725,
+        105
+      ],
+      "nominalCellRectPx": [
+        640,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-6",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        799,
+        29,
+        860,
+        109
+      ],
+      "nominalCellRectPx": [
+        768,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-7",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        934,
+        29,
+        995,
+        108
+      ],
+      "nominalCellRectPx": [
+        896,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-0",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        15,
+        157,
+        97,
+        234
+      ],
+      "nominalCellRectPx": [
+        0,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-1",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        138,
+        158,
+        223,
+        234
+      ],
+      "nominalCellRectPx": [
+        128,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-2",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        270,
+        157,
+        348,
+        232
+      ],
+      "nominalCellRectPx": [
+        256,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-3",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        405,
+        155,
+        478,
+        232
+      ],
+      "nominalCellRectPx": [
+        384,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-4",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        546,
+        153,
+        611,
+        230
+      ],
+      "nominalCellRectPx": [
+        512,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-5",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        670,
+        153,
+        746,
+        230
+      ],
+      "nominalCellRectPx": [
+        640,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-6",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        802,
+        183,
+        888,
+        240
+      ],
+      "nominalCellRectPx": [
+        768,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-7",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        927,
+        182,
+        1012,
+        238
+      ],
+      "nominalCellRectPx": [
+        896,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-8",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        32,
+        312,
+        118,
+        364
+      ],
+      "nominalCellRectPx": [
+        0,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-9",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        157,
+        311,
+        244,
+        364
+      ],
+      "nominalCellRectPx": [
+        128,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-10",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        277,
+        306,
+        364,
+        367
+      ],
+      "nominalCellRectPx": [
+        256,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-11",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        400,
+        291,
+        484,
+        368
+      ],
+      "nominalCellRectPx": [
+        384,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-12",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        530,
+        289,
+        612,
+        362
+      ],
+      "nominalCellRectPx": [
+        512,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-13",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        657,
+        289,
+        740,
+        362
+      ],
+      "nominalCellRectPx": [
+        640,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-14",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        787,
+        291,
+        868,
+        365
+      ],
+      "nominalCellRectPx": [
+        768,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-15",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        915,
+        291,
+        996,
+        365
+      ],
+      "nominalCellRectPx": [
+        896,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-0",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        41,
+        409,
+        81,
+        492
+      ],
+      "nominalCellRectPx": [
+        0,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-1",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        156,
+        413,
+        207,
+        488
+      ],
+      "nominalCellRectPx": [
+        128,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-2",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        293,
+        421,
+        339,
+        487
+      ],
+      "nominalCellRectPx": [
+        256,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-3",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        419,
+        422,
+        476,
+        484
+      ],
+      "nominalCellRectPx": [
+        384,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-4",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        537,
+        444,
+        618,
+        489
+      ],
+      "nominalCellRectPx": [
+        512,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-5",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        662,
+        445,
+        745,
+        491
+      ],
+      "nominalCellRectPx": [
+        640,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-6",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        788,
+        445,
+        878,
+        489
+      ],
+      "nominalCellRectPx": [
+        768,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-7",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        912,
+        444,
+        1005,
+        489
+      ],
+      "nominalCellRectPx": [
+        896,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "idle-north-0",
+      "direction": "north",
+      "sourceAlphaBoxPx": [
+        36,
+        535,
+        86,
+        614
+      ],
+      "nominalCellRectPx": [
+        0,
+        512,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-east-0",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        39,
+        30,
+        90,
+        115
+      ],
+      "nominalCellRectPx": [
+        0,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-east-1",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        165,
+        30,
+        214,
+        116
+      ],
+      "nominalCellRectPx": [
+        128,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-east-2",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        296,
+        29,
+        345,
+        116
+      ],
+      "nominalCellRectPx": [
+        256,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-east-3",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        422,
+        29,
+        475,
+        114
+      ],
+      "nominalCellRectPx": [
+        384,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-east-4",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        550,
+        28,
+        602,
+        107
+      ],
+      "nominalCellRectPx": [
+        512,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-east-5",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        678,
+        28,
+        727,
+        115
+      ],
+      "nominalCellRectPx": [
+        640,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-east-6",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        810,
+        29,
+        857,
+        116
+      ],
+      "nominalCellRectPx": [
+        768,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-east-7",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        935,
+        29,
+        985,
+        110
+      ],
+      "nominalCellRectPx": [
+        896,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-east-0",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        30,
+        159,
+        96,
+        247
+      ],
+      "nominalCellRectPx": [
+        0,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-east-1",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        156,
+        157,
+        218,
+        247
+      ],
+      "nominalCellRectPx": [
+        128,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-east-2",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        286,
+        150,
+        344,
+        248
+      ],
+      "nominalCellRectPx": [
+        256,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-east-3",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        418,
+        150,
+        471,
+        246
+      ],
+      "nominalCellRectPx": [
+        384,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-east-4",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        552,
+        148,
+        601,
+        239
+      ],
+      "nominalCellRectPx": [
+        512,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-east-5",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        679,
+        151,
+        732,
+        247
+      ],
+      "nominalCellRectPx": [
+        640,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-east-6",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        814,
+        172,
+        877,
+        249
+      ],
+      "nominalCellRectPx": [
+        768,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-east-7",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        939,
+        174,
+        999,
+        248
+      ],
+      "nominalCellRectPx": [
+        896,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-east-8",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        45,
+        306,
+        103,
+        374
+      ],
+      "nominalCellRectPx": [
+        0,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-east-9",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        172,
+        306,
+        228,
+        374
+      ],
+      "nominalCellRectPx": [
+        128,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-east-10",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        298,
+        301,
+        356,
+        380
+      ],
+      "nominalCellRectPx": [
+        256,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-east-11",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        424,
+        293,
+        481,
+        379
+      ],
+      "nominalCellRectPx": [
+        384,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-east-12",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        546,
+        289,
+        610,
+        377
+      ],
+      "nominalCellRectPx": [
+        512,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-east-13",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        671,
+        289,
+        738,
+        377
+      ],
+      "nominalCellRectPx": [
+        640,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-east-14",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        798,
+        292,
+        866,
+        377
+      ],
+      "nominalCellRectPx": [
+        768,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-east-15",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        926,
+        289,
+        992,
+        377
+      ],
+      "nominalCellRectPx": [
+        896,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-east-0",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        35,
+        407,
+        93,
+        495
+      ],
+      "nominalCellRectPx": [
+        0,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-east-1",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        159,
+        417,
+        213,
+        489
+      ],
+      "nominalCellRectPx": [
+        128,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-east-2",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        297,
+        428,
+        342,
+        491
+      ],
+      "nominalCellRectPx": [
+        256,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-east-3",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        427,
+        431,
+        475,
+        490
+      ],
+      "nominalCellRectPx": [
+        384,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-east-4",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        546,
+        429,
+        601,
+        497
+      ],
+      "nominalCellRectPx": [
+        512,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-east-5",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        674,
+        436,
+        731,
+        506
+      ],
+      "nominalCellRectPx": [
+        640,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-east-6",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        802,
+        440,
+        860,
+        504
+      ],
+      "nominalCellRectPx": [
+        768,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-east-7",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        933,
+        440,
+        994,
+        504
+      ],
+      "nominalCellRectPx": [
+        896,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "idle-north-east-0",
+      "direction": "north-east",
+      "sourceAlphaBoxPx": [
+        38,
+        529,
+        92,
+        617
+      ],
+      "nominalCellRectPx": [
+        0,
+        512,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-east-0",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        42,
+        28,
+        84,
+        115
+      ],
+      "nominalCellRectPx": [
+        0,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-east-1",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        166,
+        28,
+        222,
+        107
+      ],
+      "nominalCellRectPx": [
+        128,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-east-2",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        285,
+        29,
+        354,
+        109
+      ],
+      "nominalCellRectPx": [
+        256,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-east-3",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        410,
+        28,
+        475,
+        106
+      ],
+      "nominalCellRectPx": [
+        384,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-east-4",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        550,
+        28,
+        602,
+        109
+      ],
+      "nominalCellRectPx": [
+        512,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-east-5",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        671,
+        28,
+        734,
+        119
+      ],
+      "nominalCellRectPx": [
+        640,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-east-6",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        798,
+        30,
+        865,
+        120
+      ],
+      "nominalCellRectPx": [
+        768,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-east-7",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        927,
+        29,
+        991,
+        115
+      ],
+      "nominalCellRectPx": [
+        896,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-east-0",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        46,
+        159,
+        94,
+        255
+      ],
+      "nominalCellRectPx": [
+        0,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-east-1",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        172,
+        156,
+        222,
+        254
+      ],
+      "nominalCellRectPx": [
+        128,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-east-2",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        301,
+        151,
+        344,
+        254
+      ],
+      "nominalCellRectPx": [
+        256,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-east-3",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        427,
+        150,
+        477,
+        250
+      ],
+      "nominalCellRectPx": [
+        384,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-east-4",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        552,
+        141,
+        608,
+        248
+      ],
+      "nominalCellRectPx": [
+        512,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-east-5",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        675,
+        141,
+        735,
+        251
+      ],
+      "nominalCellRectPx": [
+        640,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-east-6",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        810,
+        174,
+        866,
+        247
+      ],
+      "nominalCellRectPx": [
+        768,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-east-7",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        938,
+        174,
+        993,
+        247
+      ],
+      "nominalCellRectPx": [
+        896,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-east-8",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        40,
+        303,
+        97,
+        376
+      ],
+      "nominalCellRectPx": [
+        0,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-east-9",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        168,
+        304,
+        225,
+        376
+      ],
+      "nominalCellRectPx": [
+        128,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-east-10",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        290,
+        297,
+        353,
+        380
+      ],
+      "nominalCellRectPx": [
+        256,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-east-11",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        430,
+        288,
+        479,
+        386
+      ],
+      "nominalCellRectPx": [
+        384,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": true
+    },
+    {
+      "frameId": "attack-east-12",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        558,
+        285,
+        604,
+        384
+      ],
+      "nominalCellRectPx": [
+        512,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-east-13",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        687,
+        287,
+        734,
+        384
+      ],
+      "nominalCellRectPx": [
+        640,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-east-14",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        816,
+        286,
+        863,
+        383
+      ],
+      "nominalCellRectPx": [
+        768,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-east-15",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        944,
+        287,
+        991,
+        383
+      ],
+      "nominalCellRectPx": [
+        896,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-east-0",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        28,
+        410,
+        101,
+        495
+      ],
+      "nominalCellRectPx": [
+        0,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-east-1",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        167,
+        421,
+        225,
+        488
+      ],
+      "nominalCellRectPx": [
+        128,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-east-2",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        292,
+        426,
+        350,
+        492
+      ],
+      "nominalCellRectPx": [
+        256,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-east-3",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        410,
+        435,
+        480,
+        492
+      ],
+      "nominalCellRectPx": [
+        384,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-east-4",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        538,
+        437,
+        605,
+        498
+      ],
+      "nominalCellRectPx": [
+        512,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-east-5",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        667,
+        433,
+        734,
+        508
+      ],
+      "nominalCellRectPx": [
+        640,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-east-6",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        797,
+        436,
+        864,
+        507
+      ],
+      "nominalCellRectPx": [
+        768,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-east-7",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        928,
+        438,
+        991,
+        505
+      ],
+      "nominalCellRectPx": [
+        896,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "idle-east-0",
+      "direction": "east",
+      "sourceAlphaBoxPx": [
+        42,
+        534,
+        84,
+        623
+      ],
+      "nominalCellRectPx": [
+        0,
+        512,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-east-0",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        47,
+        24,
+        82,
+        111
+      ],
+      "nominalCellRectPx": [
+        0,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-east-1",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        169,
+        25,
+        224,
+        113
+      ],
+      "nominalCellRectPx": [
+        128,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-east-2",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        290,
+        25,
+        364,
+        111
+      ],
+      "nominalCellRectPx": [
+        256,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-east-3",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        415,
+        25,
+        482,
+        111
+      ],
+      "nominalCellRectPx": [
+        384,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-east-4",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        564,
+        24,
+        600,
+        111
+      ],
+      "nominalCellRectPx": [
+        512,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-east-5",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        681,
+        24,
+        743,
+        111
+      ],
+      "nominalCellRectPx": [
+        640,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-east-6",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        798,
+        25,
+        873,
+        113
+      ],
+      "nominalCellRectPx": [
+        768,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-east-7",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        931,
+        25,
+        995,
+        113
+      ],
+      "nominalCellRectPx": [
+        896,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-east-0",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        38,
+        158,
+        102,
+        256
+      ],
+      "nominalCellRectPx": [
+        0,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-east-1",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        166,
+        158,
+        231,
+        255
+      ],
+      "nominalCellRectPx": [
+        128,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-east-2",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        294,
+        157,
+        360,
+        256
+      ],
+      "nominalCellRectPx": [
+        256,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-east-3",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        419,
+        145,
+        484,
+        255
+      ],
+      "nominalCellRectPx": [
+        384,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-east-4",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        545,
+        139,
+        604,
+        254
+      ],
+      "nominalCellRectPx": [
+        512,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-east-5",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        665,
+        138,
+        744,
+        251
+      ],
+      "nominalCellRectPx": [
+        640,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-east-6",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        787,
+        168,
+        879,
+        249
+      ],
+      "nominalCellRectPx": [
+        768,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-east-7",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        914,
+        168,
+        1004,
+        249
+      ],
+      "nominalCellRectPx": [
+        896,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-east-8",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        20,
+        296,
+        111,
+        374
+      ],
+      "nominalCellRectPx": [
+        0,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-east-9",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        144,
+        295,
+        234,
+        374
+      ],
+      "nominalCellRectPx": [
+        128,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-east-10",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        279,
+        289,
+        370,
+        373
+      ],
+      "nominalCellRectPx": [
+        256,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-east-11",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        421,
+        287,
+        505,
+        374
+      ],
+      "nominalCellRectPx": [
+        384,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-east-12",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        554,
+        286,
+        619,
+        379
+      ],
+      "nominalCellRectPx": [
+        512,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-east-13",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        683,
+        285,
+        746,
+        379
+      ],
+      "nominalCellRectPx": [
+        640,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-east-14",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        811,
+        285,
+        872,
+        381
+      ],
+      "nominalCellRectPx": [
+        768,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-east-15",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        936,
+        285,
+        997,
+        381
+      ],
+      "nominalCellRectPx": [
+        896,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-east-0",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        42,
+        408,
+        97,
+        499
+      ],
+      "nominalCellRectPx": [
+        0,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-east-1",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        168,
+        413,
+        224,
+        496
+      ],
+      "nominalCellRectPx": [
+        128,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-east-2",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        286,
+        424,
+        347,
+        497
+      ],
+      "nominalCellRectPx": [
+        256,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-east-3",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        406,
+        431,
+        485,
+        497
+      ],
+      "nominalCellRectPx": [
+        384,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-east-4",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        524,
+        449,
+        627,
+        493
+      ],
+      "nominalCellRectPx": [
+        512,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-east-5",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        658,
+        449,
+        754,
+        500
+      ],
+      "nominalCellRectPx": [
+        640,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-east-6",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        788,
+        450,
+        882,
+        501
+      ],
+      "nominalCellRectPx": [
+        768,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-east-7",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        916,
+        451,
+        1008,
+        502
+      ],
+      "nominalCellRectPx": [
+        896,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "idle-south-east-0",
+      "direction": "south-east",
+      "sourceAlphaBoxPx": [
+        47,
+        530,
+        85,
+        620
+      ],
+      "nominalCellRectPx": [
+        0,
+        512,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-0",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        39,
+        27,
+        91,
+        107
+      ],
+      "nominalCellRectPx": [
+        0,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-1",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        166,
+        26,
+        222,
+        108
+      ],
+      "nominalCellRectPx": [
+        128,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-2",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        290,
+        29,
+        353,
+        109
+      ],
+      "nominalCellRectPx": [
+        256,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-3",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        422,
+        28,
+        479,
+        115
+      ],
+      "nominalCellRectPx": [
+        384,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-4",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        557,
+        28,
+        598,
+        107
+      ],
+      "nominalCellRectPx": [
+        512,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-5",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        680,
+        27,
+        736,
+        105
+      ],
+      "nominalCellRectPx": [
+        640,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-6",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        802,
+        28,
+        868,
+        108
+      ],
+      "nominalCellRectPx": [
+        768,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-7",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        927,
+        28,
+        987,
+        104
+      ],
+      "nominalCellRectPx": [
+        896,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-0",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        37,
+        159,
+        110,
+        229
+      ],
+      "nominalCellRectPx": [
+        0,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-1",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        168,
+        162,
+        242,
+        229
+      ],
+      "nominalCellRectPx": [
+        128,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-2",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        297,
+        154,
+        367,
+        229
+      ],
+      "nominalCellRectPx": [
+        256,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-3",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        424,
+        141,
+        489,
+        231
+      ],
+      "nominalCellRectPx": [
+        384,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-4",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        548,
+        138,
+        605,
+        235
+      ],
+      "nominalCellRectPx": [
+        512,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-5",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        668,
+        135,
+        736,
+        237
+      ],
+      "nominalCellRectPx": [
+        640,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-6",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        785,
+        159,
+        860,
+        233
+      ],
+      "nominalCellRectPx": [
+        768,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-7",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        913,
+        158,
+        990,
+        232
+      ],
+      "nominalCellRectPx": [
+        896,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-8",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        17,
+        289,
+        92,
+        358
+      ],
+      "nominalCellRectPx": [
+        0,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-9",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        145,
+        289,
+        220,
+        358
+      ],
+      "nominalCellRectPx": [
+        128,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-10",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        283,
+        287,
+        359,
+        357
+      ],
+      "nominalCellRectPx": [
+        256,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-11",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        419,
+        289,
+        496,
+        354
+      ],
+      "nominalCellRectPx": [
+        384,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-12",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        550,
+        289,
+        623,
+        354
+      ],
+      "nominalCellRectPx": [
+        512,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-13",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        677,
+        289,
+        747,
+        355
+      ],
+      "nominalCellRectPx": [
+        640,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-14",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        805,
+        289,
+        875,
+        355
+      ],
+      "nominalCellRectPx": [
+        768,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-15",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        934,
+        289,
+        1003,
+        355
+      ],
+      "nominalCellRectPx": [
+        896,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-0",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        44,
+        406,
+        83,
+        491
+      ],
+      "nominalCellRectPx": [
+        0,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-1",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        171,
+        407,
+        219,
+        490
+      ],
+      "nominalCellRectPx": [
+        128,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-2",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        297,
+        421,
+        344,
+        491
+      ],
+      "nominalCellRectPx": [
+        256,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-3",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        420,
+        425,
+        476,
+        496
+      ],
+      "nominalCellRectPx": [
+        384,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-4",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        539,
+        439,
+        617,
+        498
+      ],
+      "nominalCellRectPx": [
+        512,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-5",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        659,
+        445,
+        749,
+        491
+      ],
+      "nominalCellRectPx": [
+        640,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-6",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        789,
+        444,
+        879,
+        490
+      ],
+      "nominalCellRectPx": [
+        768,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-7",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        915,
+        444,
+        1009,
+        493
+      ],
+      "nominalCellRectPx": [
+        896,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "idle-south-0",
+      "direction": "south",
+      "sourceAlphaBoxPx": [
+        38,
+        530,
+        89,
+        613
+      ],
+      "nominalCellRectPx": [
+        0,
+        512,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-west-0",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        34,
+        26,
+        91,
+        108
+      ],
+      "nominalCellRectPx": [
+        0,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-west-1",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        168,
+        27,
+        220,
+        112
+      ],
+      "nominalCellRectPx": [
+        128,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-west-2",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        295,
+        27,
+        348,
+        113
+      ],
+      "nominalCellRectPx": [
+        256,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-west-3",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        423,
+        27,
+        482,
+        114
+      ],
+      "nominalCellRectPx": [
+        384,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-west-4",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        552,
+        26,
+        611,
+        103
+      ],
+      "nominalCellRectPx": [
+        512,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-west-5",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        685,
+        27,
+        736,
+        110
+      ],
+      "nominalCellRectPx": [
+        640,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-west-6",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        813,
+        27,
+        862,
+        114
+      ],
+      "nominalCellRectPx": [
+        768,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-south-west-7",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        939,
+        27,
+        993,
+        110
+      ],
+      "nominalCellRectPx": [
+        896,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-west-0",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        38,
+        156,
+        101,
+        238
+      ],
+      "nominalCellRectPx": [
+        0,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-west-1",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        166,
+        164,
+        230,
+        234
+      ],
+      "nominalCellRectPx": [
+        128,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-west-2",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        295,
+        147,
+        357,
+        236
+      ],
+      "nominalCellRectPx": [
+        256,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-west-3",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        426,
+        137,
+        481,
+        237
+      ],
+      "nominalCellRectPx": [
+        384,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-west-4",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        550,
+        137,
+        601,
+        239
+      ],
+      "nominalCellRectPx": [
+        512,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-west-5",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        682,
+        132,
+        733,
+        243
+      ],
+      "nominalCellRectPx": [
+        640,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-west-6",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        805,
+        152,
+        858,
+        248
+      ],
+      "nominalCellRectPx": [
+        768,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-west-7",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        931,
+        155,
+        986,
+        247
+      ],
+      "nominalCellRectPx": [
+        896,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-west-8",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        31,
+        285,
+        86,
+        374
+      ],
+      "nominalCellRectPx": [
+        0,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-west-9",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        158,
+        286,
+        214,
+        374
+      ],
+      "nominalCellRectPx": [
+        128,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-west-10",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        292,
+        284,
+        347,
+        368
+      ],
+      "nominalCellRectPx": [
+        256,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-west-11",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        420,
+        289,
+        480,
+        363
+      ],
+      "nominalCellRectPx": [
+        384,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-west-12",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        549,
+        290,
+        613,
+        363
+      ],
+      "nominalCellRectPx": [
+        512,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-west-13",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        677,
+        287,
+        743,
+        362
+      ],
+      "nominalCellRectPx": [
+        640,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-west-14",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        806,
+        286,
+        871,
+        362
+      ],
+      "nominalCellRectPx": [
+        768,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-south-west-15",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        934,
+        285,
+        997,
+        362
+      ],
+      "nominalCellRectPx": [
+        896,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-west-0",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        36,
+        405,
+        88,
+        494
+      ],
+      "nominalCellRectPx": [
+        0,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-west-1",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        173,
+        401,
+        221,
+        489
+      ],
+      "nominalCellRectPx": [
+        128,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-west-2",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        295,
+        422,
+        344,
+        502
+      ],
+      "nominalCellRectPx": [
+        256,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-west-3",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        425,
+        419,
+        470,
+        505
+      ],
+      "nominalCellRectPx": [
+        384,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-west-4",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        556,
+        425,
+        608,
+        511
+      ],
+      "nominalCellRectPx": [
+        512,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-west-5",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        685,
+        443,
+        737,
+        502
+      ],
+      "nominalCellRectPx": [
+        640,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-west-6",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        811,
+        442,
+        867,
+        504
+      ],
+      "nominalCellRectPx": [
+        768,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-south-west-7",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        933,
+        441,
+        993,
+        503
+      ],
+      "nominalCellRectPx": [
+        896,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "idle-south-west-0",
+      "direction": "south-west",
+      "sourceAlphaBoxPx": [
+        34,
+        533,
+        93,
+        618
+      ],
+      "nominalCellRectPx": [
+        0,
+        512,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-west-0",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        47,
+        27,
+        84,
+        102
+      ],
+      "nominalCellRectPx": [
+        0,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-west-1",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        161,
+        27,
+        215,
+        103
+      ],
+      "nominalCellRectPx": [
+        128,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-west-2",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        288,
+        27,
+        352,
+        104
+      ],
+      "nominalCellRectPx": [
+        256,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-west-3",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        427,
+        27,
+        487,
+        104
+      ],
+      "nominalCellRectPx": [
+        384,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-west-4",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        559,
+        27,
+        608,
+        103
+      ],
+      "nominalCellRectPx": [
+        512,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-west-5",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        686,
+        27,
+        738,
+        106
+      ],
+      "nominalCellRectPx": [
+        640,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-west-6",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        811,
+        27,
+        865,
+        108
+      ],
+      "nominalCellRectPx": [
+        768,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-west-7",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        937,
+        28,
+        990,
+        108
+      ],
+      "nominalCellRectPx": [
+        896,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-west-0",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        37,
+        157,
+        80,
+        238
+      ],
+      "nominalCellRectPx": [
+        0,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-west-1",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        166,
+        162,
+        209,
+        238
+      ],
+      "nominalCellRectPx": [
+        128,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-west-2",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        298,
+        155,
+        339,
+        237
+      ],
+      "nominalCellRectPx": [
+        256,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-west-3",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        425,
+        143,
+        469,
+        238
+      ],
+      "nominalCellRectPx": [
+        384,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-west-4",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        550,
+        146,
+        602,
+        238
+      ],
+      "nominalCellRectPx": [
+        512,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-west-5",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        673,
+        145,
+        731,
+        246
+      ],
+      "nominalCellRectPx": [
+        640,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-west-6",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        809,
+        160,
+        860,
+        248
+      ],
+      "nominalCellRectPx": [
+        768,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-west-7",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        934,
+        158,
+        984,
+        246
+      ],
+      "nominalCellRectPx": [
+        896,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-west-8",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        36,
+        290,
+        85,
+        379
+      ],
+      "nominalCellRectPx": [
+        0,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-west-9",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        164,
+        291,
+        213,
+        380
+      ],
+      "nominalCellRectPx": [
+        128,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-west-10",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        290,
+        289,
+        336,
+        373
+      ],
+      "nominalCellRectPx": [
+        256,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-west-11",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        424,
+        290,
+        462,
+        368
+      ],
+      "nominalCellRectPx": [
+        384,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-west-12",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        556,
+        290,
+        594,
+        366
+      ],
+      "nominalCellRectPx": [
+        512,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-west-13",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        684,
+        287,
+        723,
+        366
+      ],
+      "nominalCellRectPx": [
+        640,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-west-14",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        812,
+        287,
+        852,
+        366
+      ],
+      "nominalCellRectPx": [
+        768,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-west-15",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        941,
+        286,
+        981,
+        366
+      ],
+      "nominalCellRectPx": [
+        896,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-west-0",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        37,
+        409,
+        92,
+        491
+      ],
+      "nominalCellRectPx": [
+        0,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-west-1",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        166,
+        396,
+        215,
+        481
+      ],
+      "nominalCellRectPx": [
+        128,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-west-2",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        295,
+        419,
+        348,
+        493
+      ],
+      "nominalCellRectPx": [
+        256,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-west-3",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        422,
+        418,
+        482,
+        497
+      ],
+      "nominalCellRectPx": [
+        384,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-west-4",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        553,
+        425,
+        612,
+        500
+      ],
+      "nominalCellRectPx": [
+        512,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-west-5",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        681,
+        440,
+        737,
+        499
+      ],
+      "nominalCellRectPx": [
+        640,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-west-6",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        808,
+        439,
+        866,
+        502
+      ],
+      "nominalCellRectPx": [
+        768,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-west-7",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        931,
+        438,
+        988,
+        501
+      ],
+      "nominalCellRectPx": [
+        896,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "idle-west-0",
+      "direction": "west",
+      "sourceAlphaBoxPx": [
+        43,
+        531,
+        83,
+        611
+      ],
+      "nominalCellRectPx": [
+        0,
+        512,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-west-0",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        48,
+        25,
+        77,
+        97
+      ],
+      "nominalCellRectPx": [
+        0,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-west-1",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        166,
+        25,
+        210,
+        98
+      ],
+      "nominalCellRectPx": [
+        128,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-west-2",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        290,
+        26,
+        347,
+        100
+      ],
+      "nominalCellRectPx": [
+        256,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-west-3",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        426,
+        26,
+        476,
+        99
+      ],
+      "nominalCellRectPx": [
+        384,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-west-4",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        559,
+        25,
+        590,
+        99
+      ],
+      "nominalCellRectPx": [
+        512,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-west-5",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        677,
+        25,
+        724,
+        100
+      ],
+      "nominalCellRectPx": [
+        640,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-west-6",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        801,
+        26,
+        861,
+        100
+      ],
+      "nominalCellRectPx": [
+        768,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "walk-north-west-7",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        934,
+        26,
+        985,
+        95
+      ],
+      "nominalCellRectPx": [
+        896,
+        0,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-west-0",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        32,
+        160,
+        82,
+        229
+      ],
+      "nominalCellRectPx": [
+        0,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-west-1",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        157,
+        160,
+        209,
+        229
+      ],
+      "nominalCellRectPx": [
+        128,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-west-2",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        287,
+        156,
+        342,
+        229
+      ],
+      "nominalCellRectPx": [
+        256,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-west-3",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        419,
+        150,
+        467,
+        229
+      ],
+      "nominalCellRectPx": [
+        384,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-west-4",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        553,
+        150,
+        602,
+        228
+      ],
+      "nominalCellRectPx": [
+        512,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-west-5",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        678,
+        153,
+        737,
+        228
+      ],
+      "nominalCellRectPx": [
+        640,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-west-6",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        797,
+        175,
+        872,
+        238
+      ],
+      "nominalCellRectPx": [
+        768,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-west-7",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        928,
+        173,
+        998,
+        238
+      ],
+      "nominalCellRectPx": [
+        896,
+        128,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-west-8",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        29,
+        302,
+        104,
+        364
+      ],
+      "nominalCellRectPx": [
+        0,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-west-9",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        157,
+        303,
+        228,
+        363
+      ],
+      "nominalCellRectPx": [
+        128,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-west-10",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        283,
+        297,
+        350,
+        362
+      ],
+      "nominalCellRectPx": [
+        256,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-west-11",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        403,
+        293,
+        467,
+        360
+      ],
+      "nominalCellRectPx": [
+        384,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-west-12",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        542,
+        291,
+        595,
+        360
+      ],
+      "nominalCellRectPx": [
+        512,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-west-13",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        672,
+        290,
+        721,
+        360
+      ],
+      "nominalCellRectPx": [
+        640,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-west-14",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        800,
+        289,
+        848,
+        360
+      ],
+      "nominalCellRectPx": [
+        768,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "attack-north-west-15",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        930,
+        290,
+        978,
+        360
+      ],
+      "nominalCellRectPx": [
+        896,
+        256,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-west-0",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        39,
+        409,
+        82,
+        479
+      ],
+      "nominalCellRectPx": [
+        0,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-west-1",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        163,
+        404,
+        210,
+        481
+      ],
+      "nominalCellRectPx": [
+        128,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-west-2",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        293,
+        423,
+        343,
+        485
+      ],
+      "nominalCellRectPx": [
+        256,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-west-3",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        419,
+        420,
+        485,
+        485
+      ],
+      "nominalCellRectPx": [
+        384,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-west-4",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        544,
+        434,
+        624,
+        478
+      ],
+      "nominalCellRectPx": [
+        512,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-west-5",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        667,
+        448,
+        743,
+        479
+      ],
+      "nominalCellRectPx": [
+        640,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-west-6",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        795,
+        449,
+        867,
+        486
+      ],
+      "nominalCellRectPx": [
+        768,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "defeat-north-west-7",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        921,
+        450,
+        997,
+        490
+      ],
+      "nominalCellRectPx": [
+        896,
+        384,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    },
+    {
+      "frameId": "idle-north-west-0",
+      "direction": "north-west",
+      "sourceAlphaBoxPx": [
+        47,
+        535,
+        77,
+        611
+      ],
+      "nominalCellRectPx": [
+        0,
+        512,
+        128,
+        128
+      ],
+      "crossedNominalCell": false
+    }
   ],
-  "reviewPoseSubstitutions": {
-    "attack-east-11": "attack-east-10",
-    "attack-east-12": "attack-east-10",
-    "attack-east-13": "attack-east-14",
-    "attack-south-east-0": "attack-south-east-1",
-    "attack-south-east-2": "attack-south-east-1",
-    "defeat-east-3": "defeat-east-2"
-  },
-  "sourceSha256": "5a25393b23f1de583189cddfbe3f68ea8d73cbbe45f04043f4957269fc24c06c",
-  "groundBaselineByDirectionPx": {
-    "north": 98,
-    "north-east": 100,
-    "east": 105,
-    "south-east": 102,
-    "south": 97,
-    "south-west": 101,
-    "west": 94,
-    "north-west": 95
-  },
-  "runtimeEdgeFrames": []
+  "reviewPoseSubstitutions": {},
+  "runtimeEdgeFrames": [],
+  "frameCount": 264
 }

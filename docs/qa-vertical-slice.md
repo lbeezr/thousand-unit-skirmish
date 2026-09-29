@@ -203,3 +203,7 @@ was used for the original captures, but a full GLB rebake was not repeated here.
 This is an art review checkpoint. Harvesting still switches to the existing depleted
 art. Unit readability, exact camera-elevation alignment, and resource lifecycle art
 remain subsequent work. See the pack's `preview/README.md` for the startup command.
+
+## Cast clipping recovery — 29 September 2026
+
+Candidate on `codex/recover-complete-cast-poses`: all four v0.3 packs retain 264 complete original poses with zero held frames. Pixel bounds/contracts/input hashes pass; four extraction regressions pass. Project-owned capture `run_1790723343810_2e2444cbebc242cd9f6973389ef5c5d3` completed successfully: 1,056 pose configurations per species (4,224 total), eight headings, idle/walk/gather/defeat, both teams, zoom 1 and 0.48. Every species has visible opaque pixels in each configuration; no pose touches the diagnostic viewport edge and pose clocks agree across species. Ground compositing found zero clipped opaque pixels (maximum channel error 1.016). Sixteen decoded captures include Meadow/Cinder match views and representative action poses. This proves bounded appearance behavior in the offscreen renderer, not hardware performance or final art quality. The historical v0.2 hold fallback is superseded by extraction from the original directional sheets.

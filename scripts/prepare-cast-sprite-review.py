@@ -17,6 +17,8 @@ def clipped(box, size):
 
 def prepare(pack, repair=False, write=False):
     manifest = json.loads(pack.read_text())
+    if manifest['packVersion'] == '0.3.0':
+        raise ValueError('Complete-pose packs must use recover-cast-sprite-sheets.py; legacy review packing is unsafe here')
     asset = manifest['assets'][0]
     source = Image.open(pack.parent / 'cast-atlas-source.png').convert('RGBA')
     tiles = {}

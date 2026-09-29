@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { decodeRgba8, assertFrameUnclipped } from './sprite-pixel-bounds.mjs';
 import { fileURLToPath } from 'node:url';
@@ -16,6 +17,17 @@ for (const role of roles) {
   assert.equal(validation.manifest.packId, `cast-${role}-sprite`);
   assert.equal(validation.manifest.maturity, 'runtime-candidate');
 
+  assert.equal(validation.manifest.packVersion, '0.3.0');
+  const report = JSON.parse(await readFile(path.join(packRoot, 'clipping-review.json')));
+  assert.deepEqual(report.reviewPoseSubstitutions, {});
+  assert.deepEqual(report.runtimeEdgeFrames, []);
+  assert.equal(report.frameCount, 264);
+  assert.equal(new Set(report.frameMeasurements.map(frame => frame.frameId)).size, 264);
+  assert.equal(Object.keys(report.directionalInputs).length, 8);
+  for (const input of Object.values(report.directionalInputs)) {
+    const bytes = await readFile(path.join(packRoot, input.file));
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), input.sha256);
+  }
   const asset = validation.manifest.assets.find((candidate) => candidate.id === role);
   assert.ok(asset, `${role} cast pack should declare its unit asset`);
   assert.equal(asset.frames.length, 264, `${role} should contain the full cast frame set`);
