@@ -1,3 +1,4 @@
+import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
@@ -109,7 +110,7 @@ try {
   for (const team of [0, 1]) {
     const sign = team ? -1 : 1;
     const z = team ? 8.5 : -8.5;
-    Object.assign(fixture.state.units[team * 10 + 4], { kind: 'archer', x: -.5 * sign, z });
+    Object.assign(fixture.state.units[team * 10 + 4], { kind: 'archer', hp: UNIT_DEFINITIONS.archer.combat.maxHp, x: -.5 * sign, z });
     Object.assign(fixture.state.units[(1 - team) * 10], { x: .5 * sign, z });
     Object.assign(fixture.state.units[team * 10 + 1], { x: 6.5 * sign, z });
     Object.assign(fixture.state.units[(1 - team) * 10 + 2], { x: -3.5 * sign, z });
