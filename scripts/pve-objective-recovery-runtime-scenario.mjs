@@ -162,11 +162,12 @@ try {
   }
   assert.equal(clients[team].latest.winner, team);
   assert.ok(replacementComplete && regainedSignal);
-  assert.ok(commands.filter(({ command }) => command.type === 'train').length >= 3);
+  assert.ok(commands.filter(({ command }) => ['train', 'trainUnit'].includes(command.type)).length >= 3);
+  assert.ok(commands.some(({ command }) => command.type === 'trainUnit' && command.kind === 'spearman'), 'replacement army includes the new Barracks product');
   assert.ok(clients[team].latest.objectives.every((o) => o.owner === team));
   console.log(JSON.stringify({ team, seed, winner: team, ticks: lastTick - fixture.state.tickNumber,
     builds: commands.filter(({ command }) => command.type === 'build').length,
-    trained: commands.filter(({ command }) => command.type === 'train').length, commands: commands.length }));
+    trained: commands.filter(({ command }) => ['train', 'trainUnit'].includes(command.type)).length, commands: commands.length }));
 } finally {
   await stop();
   await rm(temp, { recursive: true, force: true });

@@ -20,6 +20,7 @@ import { createDeterministicPolicy, toOpponentObservation } from './src/pve-oppo
 import { readPveLaunchOptions } from './src/pve-match.mjs';
 import { townCenterSpawnPosition, townCenterFootprintCells } from './src/town-center-spawn.mjs';
 import { advanceTickDeadline } from './simulation-scheduler.mjs';
+import { privateProductionView } from './src/snapshot-private-production.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const HOST = process.env.RTS_HOST || '127.0.0.1';
@@ -3129,13 +3130,17 @@ function broadcastState() {
     return;
   }
   if (!mapDefinition.fogOfWar) {
-    const payload = roomPayload(null, false);
-    const framesByCompression = new Map();
+    const publicPayload = roomPayload(null, false);
+    const payloadsByTeam = new Map([[null, publicPayload]]);
+    const framesByView = new Map();
     for (const peer of peers) {
-      let frame = framesByCompression.get(peer.compressionEnabled);
+      const team = [0, 1].includes(peer.team) ? peer.team : null;
+      const key = `${team}:${peer.compressionEnabled}`;
+      let frame = framesByView.get(key);
       if (!frame) {
-        frame = prepareJsonFrame(payload, peer.compressionEnabled);
-        framesByCompression.set(peer.compressionEnabled, frame);
+        if (!payloadsByTeam.has(team)) payloadsByTeam.set(team, privateProductionView(publicPayload, team));
+        frame = prepareJsonFrame(payloadsByTeam.get(team), peer.compressionEnabled);
+        framesByView.set(key, frame);
       }
       peer.sendPreparedState(frame);
     }
