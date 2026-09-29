@@ -111,8 +111,16 @@ export function createProductionPolicy(seed) {
         || friendly.filter((unit) => unit.kind !== 'worker').length + queued >= limits.military
         || friendly.length + queued + workerQueue >= limits.roster
         || observation.resources.food < limits.infantryFoodCost + limits.foodReserve) return [];
+      const infantry = friendly.filter((unit) => unit.kind === 'infantry').length;
+      const spearmen = friendly.filter((unit) => unit.kind === 'spearman').length;
+      const spear = UNIT_DEFINITIONS.spearman;
+      const wantsSpear = spearmen < Math.ceil(infantry / 3)
+        && BUILDING_DEFINITIONS[barracks.type].products.includes(spear.id)
+        && observation.resources.food >= spear.cost.food + limits.foodReserve
+        && observation.resources.wood >= spear.cost.wood + limits.woodReserve;
       postpone(observation.tick);
-      return [{ type: 'train', buildingId: barracks.id }];
+      return [wantsSpear ? { type: 'trainUnit', kind: spear.id, buildingId: barracks.id }
+        : { type: 'train', buildingId: barracks.id }];
     },
   };
 }

@@ -6,6 +6,7 @@ import { UNIT_DEFINITIONS } from './gameplay-definitions.mjs';
 export const UNIT_PRESENTATION_PROFILES = Object.freeze({
   'unit.worker': Object.freeze({ backend: 'procedural', role: 'worker', headTint: 0xd7be8f, bodyTint: 0xe1bc63, bodyTintWeight: 0.42 }),
   'unit.infantry': Object.freeze({ backend: 'procedural', role: 'infantry', headTint: 0xabb2ad, bodyTint: 0xabb2ad, bodyTintWeight: 0 }),
+  'unit.spearman': Object.freeze({ backend: 'procedural', role: 'infantry', headTint: 0xc4b795, bodyTint: 0xd6c29a, bodyTintWeight: 0.2 }),
   'unit.archer': Object.freeze({ backend: 'procedural', role: 'archer', headTint: 0x839477, bodyTint: 0xc3c995, bodyTintWeight: 0.27 }),
 });
 

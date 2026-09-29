@@ -52,7 +52,7 @@ for (const team of [0, 1]) for (const seed of [0, 20260925, 0xffff_ffff]) {
   assert.equal(resume[0].buildingId, 10, 'resume an unfinished Barracks without buying a second one');
   state.buildings.friendly[0].complete = true;
   assert.deepEqual(next(policy, state, 799), []);
-  assert.deepEqual(next(policy, state, 800), [{ type: 'train', buildingId: 10 }]);
+  assert.deepEqual(next(policy, state, 800), [{ type: 'trainUnit', kind: 'spearman', buildingId: 10 }]);
   state.buildings.friendly[0].queue = 1;
   assert.deepEqual(next(policy, state, 801), [], 'one observed queued Infantry is enough');
   state.buildings.friendly = [];
@@ -81,7 +81,7 @@ for (const team of [0, 1]) for (const seed of [0, 20260925, 0xffff_ffff]) {
     assert.deepEqual(next(guarded, constrained, 300), [], label);
     if (label === 'military cap') {
       constrained.units.friendly.at(-1).hp = 0;
-      assert.deepEqual(next(guarded, constrained, 301), [{ type: 'train', buildingId: 10 }],
+      assert.deepEqual(next(guarded, constrained, 301), [{ type: 'trainUnit', kind: 'spearman', buildingId: 10 }],
         'replace a casualty once alive plus queued military falls below the cap');
     }
   }

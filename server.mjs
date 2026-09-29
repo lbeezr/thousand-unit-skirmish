@@ -265,7 +265,7 @@ function validateMapDefinition(definition, filename) {
         || trigger.woodReward < 0 || trigger.woodReward > MAX_OBJECTIVE_FOOD_REWARD))
       || (trigger.unitCount !== undefined && (!Number.isInteger(trigger.unitCount)
         || trigger.unitCount < 0 || trigger.unitCount > 25))
-      || (trigger.unitKind !== undefined && !['worker', 'infantry', 'archer'].includes(trigger.unitKind))
+      || (trigger.unitKind !== undefined && !Object.hasOwn(UNIT_DEFINITIONS, trigger.unitKind))
       || (trigger.requires !== undefined && (typeof trigger.requires !== 'string'
         || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(trigger.requires)))
       || (trigger.requiresAll !== undefined && (trigger.requires !== undefined
@@ -366,7 +366,7 @@ function validateMapDefinition(definition, filename) {
         || event.woodReward < 0 || event.woodReward > MAX_OBJECTIVE_FOOD_REWARD))
       || (event.unitCount !== undefined && (!Number.isInteger(event.unitCount)
         || event.unitCount < 0 || event.unitCount > 25))
-      || (event.unitKind !== undefined && !['worker', 'infantry', 'archer'].includes(event.unitKind))
+      || (event.unitKind !== undefined && !Object.hasOwn(UNIT_DEFINITIONS, event.unitKind))
       || (event.technologyReward !== undefined && (typeof event.technologyReward !== 'string'
         || !researchRulesFor(event.technologyReward)))
       || (event.message !== undefined && (typeof event.message !== 'string' || event.message.length > 120))
@@ -2467,14 +2467,14 @@ function validateMatchCheckpoint(snapshot) {
   assertSnapshot(Array.isArray(state.unitGenerationCounters)
     && state.unitGenerationCounters.length === MAX_UNITS
     && state.unitGenerationCounters.every((value) => integerIn(value, 0, 0xffffffff)), 'invalid unit generation table');
-  const allowedKinds = new Set(['worker', 'infantry', 'archer']);
+  const allowedKinds = new Set(Object.keys(UNIT_DEFINITIONS));
   for (let index = 0; index < state.units.length; index++) {
     const unit = state.units[index];
     assertSnapshot(unit && typeof unit === 'object' && unit.id === index, `invalid unit ${index}`);
     assertSnapshot(integerIn(unit.team, 0, 1) && integerIn(unit.generation, 1, 0xffffffff)
       && finite(unit.x) && finite(unit.z) && Math.abs(unit.x) < definition.width / 2
-      && Math.abs(unit.z) < definition.height / 2 && finite(unit.hp) && unit.hp >= 0 && unit.hp <= 100
-      && allowedKinds.has(unit.kind), `invalid unit attributes ${index}`);
+      && Math.abs(unit.z) < definition.height / 2 && finite(unit.hp) && unit.hp >= 0
+      && allowedKinds.has(unit.kind) && unit.hp <= UNIT_DEFINITIONS[unit.kind].combat.maxHp, `invalid unit attributes ${index}`);
     assertSnapshot(validCellPath(unit.path, cellCount)
       && integerIn(unit.pathIndex, 0, unit.path.length)
       && (unit.attackMoveResumePath === null || validCellPath(unit.attackMoveResumePath, cellCount))

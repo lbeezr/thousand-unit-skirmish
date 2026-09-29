@@ -32,7 +32,7 @@ function fixture() {
   return { update: context.updateUnitHealthVisual, matrices, colors };
 }
 for (const team of [0, 1]) {
-  for (const kind of ['worker', 'infantry', 'archer']) {
+  for (const kind of Object.keys(UNIT_DEFINITIONS)) {
     test(`${team} ${kind}: health follows damage, fog, defeat and reused slots`, () => {
       const f = fixture();
       const maxHp = UNIT_DEFINITIONS[kind].combat.maxHp;
