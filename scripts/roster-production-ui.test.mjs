@@ -37,4 +37,8 @@ for (const team of [0, 1]) test(`roster production choices follow definitions an
   context.latestPopulation[team] = { used: 12, reserved: 3, capacity: 15, available: 0 };
   context.updateRosterProductionOptions(container, building);
   assert.equal(spear.disabled, true); assert.match(spear.textContent, /Population full · build a House/);
+  context.latestPopulation[team].available = 8;
+  building.productionOptions = [{ kind: 'spearman', available: false, reason: 'REQUIRES MILITARY TIER II' }];
+  context.updateRosterProductionOptions(container, building);
+  assert.equal(spear.disabled, true); assert.match(spear.textContent, /REQUIRES MILITARY TIER II/);
 });

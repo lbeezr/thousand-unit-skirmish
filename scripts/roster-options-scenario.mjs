@@ -119,7 +119,12 @@ try {
   }
   await clients[0].wait((m) => m.type === 'state' && m.buildings.length === 2 && m.buildings.every((b) => b.complete));
   for (const [team, client] of clients.entries()) {
+    await client.wait((m) => m.type === 'state' && m.buildings.some((b) => b.team === team && b.complete));
     const building = client.latest.buildings.find((b) => b.team === team);
+    assert.deepEqual(building.productionOptions.map((option) => option.kind), ['infantry', 'spearman']);
+    assert.ok(building.productionOptions.every((option) => option.available), JSON.stringify(building.productionOptions));
+    const enemy = client.latest.buildings.find((b) => b.team !== team);
+    assert.deepEqual(enemy.productionOptions, [], 'production actions never reveal enemy resources or prerequisites');
     for (const kind of ['spearman', 'infantry', 'spearman']) send(client, { type: 'trainUnit', kind, buildingId: building.id });
   }
   await checkpointWith(checkpointPath, (s) => s.state.buildings.every((b) => b.queue === 3));

@@ -122,7 +122,7 @@ function normalizeUnit(row, team) {
   };
 }
 
-function normalizeBuilding(building) {
+function normalizeBuilding(building, viewTeam) {
   if (!building || !Number.isInteger(building.id) || !validTeam(building.team)
     || typeof building.type !== 'string' || !Number.isFinite(building.x)
     || !Number.isFinite(building.z)) return null;
@@ -139,6 +139,10 @@ function normalizeBuilding(building) {
     progress: Number.isFinite(building.progress) ? building.progress : null,
     complete: building.complete === true,
     queue,
+    productionOptions: building.team === viewTeam && Array.isArray(building.productionOptions)
+      ? building.productionOptions.filter((option) => option && typeof option.kind === 'string' && typeof option.available === 'boolean')
+        .map((option) => ({ kind: option.kind, available: option.available, reason: typeof option.reason === 'string' ? option.reason : '',
+          missingPrerequisites: Array.isArray(option.missingPrerequisites) ? option.missingPrerequisites.filter((id) => typeof id === 'string') : [] })) : [],
     trainingRemaining: Number.isFinite(building.trainingRemaining) ? building.trainingRemaining : 0,
     productionBlocked: building.productionBlocked === true,
     trainingProgress: Number.isFinite(building.trainingProgress) ? building.trainingProgress : 0,
@@ -276,7 +280,7 @@ export function toOpponentObservation(state, team, map = null) {
       || !visibility || visibility.cellStateAtWorld(unit.x, unit.z) === 2))
     .sort((left, right) => left.id - right.id);
   const buildings = (Array.isArray(state.buildings) ? state.buildings : [])
-    .map(normalizeBuilding)
+    .map((building) => normalizeBuilding(building, team))
     .filter((building) => building && (building.team === team
       || !visibility || visibility.buildingVisibleAtWorld(building.x, building.z)))
     .sort((left, right) => left.id - right.id);

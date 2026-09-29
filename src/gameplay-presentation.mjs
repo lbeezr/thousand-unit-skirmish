@@ -1,4 +1,4 @@
-import { UNIT_DEFINITIONS } from './gameplay-definitions.mjs';
+import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
 
 // Renderer-owned profiles: changing one never changes authoritative stats or timing.
 // These profiles bind the existing procedural instanced geometry. Asset-backed and
@@ -29,4 +29,25 @@ export function unitPresentation(kind) {
   const definition = UNIT_DEFINITIONS[kind];
   if (!definition) throw new Error(`Unknown unit presentation: ${kind}`);
   return UNIT_PRESENTATION_PROFILES[definition.presentation];
+}
+
+export const BUILDING_PRESENTATION_PROFILES = Object.freeze({
+  'building.house': Object.freeze({ backend: 'procedural', role: 'house' }),
+  'building.barracks': Object.freeze({ backend: 'procedural', role: 'barracks' }),
+  'building.archery-range': Object.freeze({ backend: 'procedural', role: 'archery-range' }),
+});
+export function validateBuildingPresentationBindings(buildings = BUILDING_DEFINITIONS, profiles = BUILDING_PRESENTATION_PROFILES) {
+  for (const [id, definition] of Object.entries(buildings)) {
+    const profile = profiles[definition.presentation];
+    if (!profile || profile.backend !== 'procedural' || !['house', 'barracks', 'archery-range'].includes(profile.role)) {
+      throw new Error(`Unsupported building presentation binding ${definition.presentation}: ${id}`);
+    }
+  }
+  return profiles;
+}
+validateBuildingPresentationBindings();
+export function buildingPresentation(type) {
+  const definition = BUILDING_DEFINITIONS[type];
+  if (!definition) throw new Error(`Unknown building presentation: ${type}`);
+  return BUILDING_PRESENTATION_PROFILES[definition.presentation];
 }

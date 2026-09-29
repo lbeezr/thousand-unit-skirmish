@@ -1,5 +1,6 @@
+import { productionAction } from './src/production-actions.mjs';
 import { teamPopulation } from './src/population.mjs';
-import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from './src/gameplay-definitions.mjs';
+import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, GAMEPLAY_RULESET_REVISION, DEFAULT_FACTION_ID, UNIT_WIRE_IDS, missingGameplayPrerequisites } from './src/gameplay-definitions.mjs';
 import { validateMapAudioReference } from './src/audio-event-profile.mjs';
 import { createServer } from 'node:http';
 import { createHash, randomBytes } from 'node:crypto';
@@ -35,7 +36,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 11;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 12;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -500,21 +501,17 @@ const BARRACKS_BUILD_SECONDS = BUILDING_DEFINITIONS.barracks.buildSeconds;
 const MAX_BUILDING_QUEUE = 5;
 const TOWN_CENTER_SPAWN_SEARCH_RADIUS = 12;
 const ARCHERY_RANGE_FOOTPRINT = BUILDING_DEFINITIONS['archery-range'].footprint;
-const BUILDING_RULES = Object.freeze({
-  'archery-range': Object.freeze({
-    label: 'ARCHERY RANGE', woodCost: ARCHERY_RANGE_WOOD_COST,
-    buildSeconds: ARCHERY_RANGE_BUILD_SECONDS, unitKind: 'archer',
-    foodCost: ARCHER_FOOD_COST, unitWoodCost: ARCHER_WOOD_COST,
-    trainSeconds: ARCHER_TRAIN_SECONDS, trainLabel: 'ARCHERS', readyLabel: 'ARCHER READY',
-  }),
-  house: Object.freeze({ label: 'HOUSE', woodCost: BUILDING_DEFINITIONS.house.cost.wood, buildSeconds: BUILDING_DEFINITIONS.house.buildSeconds }),
-  barracks: Object.freeze({
-    label: 'BARRACKS', woodCost: BARRACKS_WOOD_COST,
-    buildSeconds: BARRACKS_BUILD_SECONDS, unitKind: 'infantry',
-    foodCost: INFANTRY_FOOD_COST, unitWoodCost: 0,
-    trainSeconds: INFANTRY_TRAIN_SECONDS, trainLabel: 'INFANTRY', readyLabel: 'INFANTRY READY',
-  }),
-});
+const BUILDING_RULES = Object.freeze(Object.fromEntries(Object.entries(BUILDING_DEFINITIONS).map(([id, definition]) => {
+  const product = UNIT_DEFINITIONS[definition.products[0]];
+  return [id, Object.freeze({
+    label: definition.label.toUpperCase(), woodCost: definition.cost.wood,
+    constructionFoodCost: definition.cost.food, buildSeconds: definition.buildSeconds,
+    unitKind: definition.products[0], foodCost: product?.cost.food ?? 0,
+    unitWoodCost: product?.cost.wood ?? 0, trainSeconds: product?.trainSeconds ?? 0,
+    trainLabel: definition.products.map((kind) => UNIT_DEFINITIONS[kind].label.toUpperCase()).join(' / '),
+    readyLabel: product ? `${product.label.toUpperCase()} READY` : '',
+  })];
+})));
 function buildingRulesFor(type) {
   return Object.hasOwn(BUILDING_RULES, type) ? BUILDING_RULES[type] : null;
 }
@@ -1456,7 +1453,7 @@ function buildingAttackApproachCells(building, kind) {
   const center = worldToCell(building.x, building.z);
   const column = center % MAP_WIDTH;
   const row = Math.floor(center / MAP_WIDTH);
-  const radius = Math.ceil(ARCHER_ATTACK_RANGE + 1.5);
+  const radius = Math.ceil(ARCHER_ATTACK_RANGE + BUILDING_DEFINITIONS[building.type].footprint / 2);
   const goals = [];
   for (let z = Math.max(0, row - radius); z <= Math.min(MAP_HEIGHT - 1, row + radius); z++) {
     for (let x = Math.max(0, column - radius); x <= Math.min(MAP_WIDTH - 1, column + radius); x++) {
@@ -2266,6 +2263,7 @@ function activatePveOpponent() {
 
 function roomPayload(viewTeam = null, includeWaypointCounts = true) {
   const actualAlive = aliveCounts();
+  const productionContexts = [0, 1].map((team) => productionContextForTeam(team, actualAlive));
   const fogView = mapDefinition.fogOfWar && [0, 1].includes(viewTeam);
   const alive = [...actualAlive];
   if (fogView) alive[1 - viewTeam] = null;
@@ -2280,7 +2278,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
   const resourceNodes = mapDefinition.resourceNodes.filter((node) => !fogView
     || cellVisibleToTeam(viewTeam, worldToCell(node.x, node.z)));
   return {
-    type: 'state', tick: tickNumber, armySize: currentArmySize,
+    type: 'state', rulesetRevision: GAMEPLAY_RULESET_REVISION, factionId: DEFAULT_FACTION_ID, unitWireIds: UNIT_WIRE_IDS, tick: tickNumber, armySize: currentArmySize,
     matchElapsedSeconds: Number(matchElapsedSeconds.toFixed(1)), scenarioClockStarted,
     victoryHold: (mapDefinition.victoryHoldSeconds ?? 0) > 0 ? {
       durationSeconds: mapDefinition.victoryHoldSeconds,
@@ -2301,7 +2299,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
         }
         : { id: state.id, fired: state.fired, ...repeatState };
     }),
-    population: [0, 1].map((team) => viewTeam === null || team === viewTeam ? populationForTeam(team) : null),
+    population: [0, 1].map((team) => viewTeam === null || team === viewTeam ? productionContexts[team].population : null),
     rosterSize: fogView ? actualAlive[viewTeam] : actualAlive[0] + actualAlive[1],
     mapId: mapDefinition.id, connected: connectedCount(), alive, winner: matchWinner,
     winnerTriggerId: matchWinnerTriggerId, winnerReason: matchWinnerReason,
@@ -2340,6 +2338,8 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
       attackers: buildingAttackers.get(building.id) || 0,
       progress: building.progress,
       complete: building.complete, queue: building.queue,
+      productionOptions: viewTeam === null || building.team === viewTeam
+        ? BUILDING_DEFINITIONS[building.type].products.map((kind) => productionAction(building, kind, productionContexts[building.team])) : [],
       productionQueue: viewTeam === null || building.team === viewTeam ? [...building.productionQueue] : [],
       rallyCell: !fogView || building.team === viewTeam ? building.rallyCell : -1,
       trainingRemaining: building.trainingRemaining,
@@ -2376,6 +2376,8 @@ function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
   return {
     schemaVersion: MATCH_CHECKPOINT_SCHEMA_VERSION,
     rulesVersion: MATCH_RULES_VERSION,
+    rulesetRevision: GAMEPLAY_RULESET_REVISION,
+    factionId: DEFAULT_FACTION_ID,
     sequence,
     savedAt,
     matchId,
@@ -2435,6 +2437,8 @@ function validCellPath(value, cellCount) {
 function validateMatchCheckpoint(snapshot) {
   assertSnapshot(snapshot && typeof snapshot === 'object' && !Array.isArray(snapshot), 'expected an object');
   assertSnapshot(snapshot.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION, 'unsupported schema version');
+  assertSnapshot(snapshot.rulesetRevision === GAMEPLAY_RULESET_REVISION, 'gameplay ruleset revision mismatch');
+  assertSnapshot(snapshot.factionId === DEFAULT_FACTION_ID, 'unsupported faction');
   assertSnapshot([1, 2, 3, 4, MATCH_RULES_VERSION].includes(snapshot.rulesVersion),
     'unsupported game rules version');
   assertSnapshot(Number.isSafeInteger(snapshot.sequence) && snapshot.sequence >= 1, 'invalid sequence');
@@ -2583,8 +2587,9 @@ function validateMatchCheckpoint(snapshot) {
     const centerColumn = Math.floor(building.x + definition.width / 2);
     const centerRow = Math.floor(building.z + definition.height / 2);
     const expectedFootprint = new Set();
-    for (let row = centerRow - 1; row <= centerRow + 1; row++) {
-      for (let column = centerColumn - 1; column <= centerColumn + 1; column++) {
+    const half = Math.floor(BUILDING_DEFINITIONS[building.type].footprint / 2);
+    for (let row = centerRow - half; row <= centerRow + half; row++) {
+      for (let column = centerColumn - half; column <= centerColumn + half; column++) {
         assertSnapshot(column >= 0 && column < definition.width && row >= 0 && row < definition.height,
           'building footprint is outside map');
         expectedFootprint.add(row * definition.width + column);
@@ -2989,6 +2994,11 @@ function migrateMatchCheckpoint(snapshot) {
         building.productionQueue = Array(building.queue).fill(buildingRulesFor(building.type)?.unitKind);
       }
     }
+    snapshot.schemaVersion = 11;
+  }
+  if (snapshot?.schemaVersion === 11 && typeof snapshot.state === 'object' && snapshot.state !== null) {
+    snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+    snapshot.factionId = DEFAULT_FACTION_ID;
     snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;
   }
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
@@ -3101,7 +3111,9 @@ async function initializeMatchFromCheckpoint() {
     console.log(`Restored match ${matchId} from checkpoint ${checkpointSequence} at tick ${tickNumber}.`);
   } catch (error) {
     console.warn('Match checkpoint was rejected; starting a fresh match:', String(error?.message || error));
-    await unlink(MATCH_STATE_PATH).catch(() => {});
+    const rejectedPath = `${MATCH_STATE_PATH}.rejected-${Date.now()}-${randomBytes(3).toString('hex')}`;
+    await rename(MATCH_STATE_PATH, rejectedPath);
+    console.warn(`Preserved rejected checkpoint at ${rejectedPath}.`);
     initializeCleanMatch();
   }
 }
@@ -3839,6 +3851,16 @@ function canReservePopulation(team, kind) {
   return populationForTeam(team).available >= UNIT_DEFINITIONS[kind].population;
 }
 
+function productionContextForTeam(team, alive = aliveCounts()) {
+  const population = populationForTeam(team);
+  return { team, population, populationAvailable: population.available,
+    food: teamFood[team], wood: teamWood[team], upgrades: teamUpgrades[team],
+    seatUnits: alive[team], seatReservedUnits: queuedUnitsForTeam(team),
+    totalUnits: alive[0] + alive[1], totalReservedUnits: queuedUnitsTotal(),
+    seatLimit: MAX_TEAM_ROSTER, totalLimit: MAX_UNITS, queueLimit: MAX_BUILDING_QUEUE,
+    matchOver: matchWinner >= 0 };
+}
+
 function enqueueBuildingUnit(building, kind) {
   building.productionQueue.push(kind);
   building.queue = building.productionQueue.length;
@@ -3856,15 +3878,8 @@ function trainUnit(player, command) {
     return;
   }
   const label = definition.label.toUpperCase();
-  const alive = aliveCounts();
-  const rejection = building.queue >= MAX_BUILDING_QUEUE ? `QUEUE FULL ${MAX_BUILDING_QUEUE}/${MAX_BUILDING_QUEUE}`
-    : alive[player.team] + queuedUnitsForTeam(player.team) >= MAX_TEAM_ROSTER
-      || alive[0] + alive[1] + queuedUnitsTotal() >= MAX_UNITS ? 'UNIT CAP REACHED'
-    : !canReservePopulation(player.team, kind) ? 'POPULATION FULL · BUILD A HOUSE'
-    : teamFood[player.team] + 1e-9 < definition.cost.food
-      || teamWood[player.team] + 1e-9 < definition.cost.wood
-      ? `NEED ${definition.cost.food} FOOD + ${definition.cost.wood} WOOD`
-    : findProductionSpawnCell(building) < 0 ? 'NO SPAWN ROOM' : null;
+  const action = productionAction(building, kind, productionContextForTeam(player.team));
+  const rejection = action.available ? findProductionSpawnCell(building) < 0 ? 'NO SPAWN ROOM' : null : action.reason;
   if (rejection) {
     sendOrderNotice(player, command, `${label} TRAINING REJECTED · ${rejection}`);
     return;
@@ -3896,6 +3911,11 @@ function trainInfantry(player, command) {
   }
   if (teamFood[player.team] + 1e-9 < INFANTRY_FOOD_COST) {
     player.sendJson({ type: 'notice', message: `INFANTRY TRAINING REJECTED · NEED ${INFANTRY_FOOD_COST} FOOD` });
+    return;
+  }
+  const missing = missingGameplayPrerequisites(UNIT_DEFINITIONS.infantry, teamUpgrades[player.team]);
+  if (missing.length) {
+    player.sendJson({ type: 'notice', message: `INFANTRY TRAINING REJECTED · REQUIRES ${missing.map((id) => TECHNOLOGY_DEFINITIONS[id].label).join(' + ')}` });
     return;
   }
   if (!canReservePopulation(player.team, 'infantry')) {
@@ -3931,6 +3951,11 @@ function trainWorker(player) {
     player.sendJson({ type: 'notice', message: `WORKER TRAINING REJECTED · NEED ${WORKER_FOOD_COST} FOOD` });
     return;
   }
+  const missing = missingGameplayPrerequisites(UNIT_DEFINITIONS.worker, teamUpgrades[player.team]);
+  if (missing.length) {
+    player.sendJson({ type: 'notice', message: `WORKER TRAINING REJECTED · REQUIRES ${missing.map((id) => TECHNOLOGY_DEFINITIONS[id].label).join(' + ')}` });
+    return;
+  }
   if (!canReservePopulation(player.team, 'worker')) {
     player.sendJson({ type: 'notice', message: 'WORKER TRAINING REJECTED · POPULATION FULL · BUILD A HOUSE' });
     return;
@@ -3964,6 +3989,11 @@ function researchUpgrade(player, command) {
     player.sendJson({ type: 'notice', message: `RESEARCH REJECTED · ${rules.label} REQUIRES A COMPLETED BUILDING` });
     return;
   }
+  const missing = missingGameplayPrerequisites(TECHNOLOGY_DEFINITIONS[command.upgrade], teamUpgrades[player.team]);
+  if (missing.length) {
+    player.sendJson({ type: 'notice', message: `RESEARCH REJECTED · REQUIRES ${missing.map((id) => TECHNOLOGY_DEFINITIONS[id].label).join(' + ')}` });
+    return;
+  }
   if (teamUpgrades[player.team][rules.upgradeKey]) {
     player.sendJson({ type: 'notice', message: `RESEARCH REJECTED · ${rules.label} ALREADY COMPLETED` });
     return;
@@ -3986,12 +4016,13 @@ function researchUpgrade(player, command) {
   player.sendJson({ type: 'notice', message: `${rules.label} STARTED · ${rules.durationSeconds}S` });
 }
 
-function buildingFootprint(centerCell) {
+function buildingFootprint(centerCell, type) {
+  const half = Math.floor(BUILDING_DEFINITIONS[type].footprint / 2);
   const centerColumn = centerCell % MAP_WIDTH;
   const centerRow = Math.floor(centerCell / MAP_WIDTH);
   const cells = [];
-  for (let row = centerRow - 1; row <= centerRow + 1; row++) {
-    for (let column = centerColumn - 1; column <= centerColumn + 1; column++) {
+  for (let row = centerRow - half; row <= centerRow + half; row++) {
+    for (let column = centerColumn - half; column <= centerColumn + half; column++) {
       if (column < 0 || column >= MAP_WIDTH || row < 0 || row >= MAP_HEIGHT) return null;
       cells.push(cellIndex(column, row));
     }
@@ -4040,8 +4071,8 @@ function findBuildingAttackApproachCell(unit, accessCells) {
 }
 
 function distanceToBuildingEdge(unit, building) {
-  const dx = Math.max(0, Math.abs(building.x - unit.x) - 1.5);
-  const dz = Math.max(0, Math.abs(building.z - unit.z) - 1.5);
+  const dx = Math.max(0, Math.abs(building.x - unit.x) - BUILDING_DEFINITIONS[building.type].footprint / 2);
+  const dz = Math.max(0, Math.abs(building.z - unit.z) - BUILDING_DEFINITIONS[building.type].footprint / 2);
   return Math.hypot(dx, dz);
 }
 
@@ -4417,6 +4448,11 @@ function buildBuilding(player, command) {
     rejectBuild(player, 'UNKNOWN BUILDING TYPE', command);
     return;
   }
+  const missing = missingGameplayPrerequisites(BUILDING_DEFINITIONS[command.buildingType], teamUpgrades[player.team]);
+  if (missing.length) {
+    rejectBuild(player, `REQUIRES ${missing.map((id) => TECHNOLOGY_DEFINITIONS[id].label).join(' + ')}`, command);
+    return;
+  }
   if (buildings.length >= MAX_BUILDINGS) {
     rejectBuild(player, 'BUILDING LIMIT REACHED', command);
     return;
@@ -4435,7 +4471,7 @@ function buildBuilding(player, command) {
     return;
   }
   const centerCell = worldToCell(x, z);
-  const footprint = buildingFootprint(centerCell);
+  const footprint = buildingFootprint(centerCell, command.buildingType);
   if (!footprint || footprint.some((cell) => blocked[cell] || buildingBlocked[cell] || townCenterBlocked[cell])) {
     rejectBuild(player, 'SPACE BLOCKED', command);
     return;
@@ -4528,10 +4564,11 @@ function buildBuilding(player, command) {
     rejectBuild(player, 'NO REACHABLE WORKERS', command);
     return;
   }
-  if (teamWood[player.team] + 1e-9 < rules.woodCost) {
+  if (teamWood[player.team] + 1e-9 < rules.woodCost
+    || teamFood[player.team] + 1e-9 < rules.constructionFoodCost) {
     for (const cell of footprint) buildingBlocked[cell] = 0;
     rebuildWalkableComponents();
-    rejectBuild(player, `NEED ${rules.woodCost} WOOD`, command);
+    rejectBuild(player, `NEED ${rules.woodCost} WOOD${rules.constructionFoodCost ? ` + ${rules.constructionFoodCost} FOOD` : ''}`, command);
     return;
   }
 
@@ -4540,6 +4577,7 @@ function buildBuilding(player, command) {
   navigationRevision++;
   visionCoverageBySourceCell = new Array(CELL_COUNT);
   teamWood[player.team] = Math.max(0, teamWood[player.team] - rules.woodCost);
+  teamFood[player.team] = Math.max(0, teamFood[player.team] - rules.constructionFoodCost);
   attackFlowFields.clear();
   replanPathsBlockedBy(building.footprint);
   const access = cellToWorld(accessCell);
@@ -4589,6 +4627,11 @@ function trainArcher(player, command) {
   if (teamFood[player.team] + 1e-9 < ARCHER_FOOD_COST
     || teamWood[player.team] + 1e-9 < ARCHER_WOOD_COST) {
     player.sendJson({ type: 'notice', message: `ARCHER TRAINING REJECTED · NEED ${ARCHER_FOOD_COST} FOOD + ${ARCHER_WOOD_COST} WOOD` });
+    return;
+  }
+  const missing = missingGameplayPrerequisites(UNIT_DEFINITIONS.archer, teamUpgrades[player.team]);
+  if (missing.length) {
+    player.sendJson({ type: 'notice', message: `ARCHER TRAINING REJECTED · REQUIRES ${missing.map((id) => TECHNOLOGY_DEFINITIONS[id].label).join(' + ')}` });
     return;
   }
   if (!canReservePopulation(player.team, 'archer')) {
@@ -4676,8 +4719,8 @@ function updateBuildingAndProduction() {
       unit.buildingTargetId = null;
       continue;
     }
-    const dx = Math.max(0, Math.abs(unit.x - building.x) - 1.5);
-    const dz = Math.max(0, Math.abs(unit.z - building.z) - 1.5);
+    const dx = Math.max(0, Math.abs(unit.x - building.x) - BUILDING_DEFINITIONS[building.type].footprint / 2);
+    const dz = Math.max(0, Math.abs(unit.z - building.z) - BUILDING_DEFINITIONS[building.type].footprint / 2);
     if (dx * dx + dz * dz > BUILDER_INTERACTION_RANGE * BUILDER_INTERACTION_RANGE) continue;
     const rules = buildingRulesFor(building.type);
     building.progress = Math.min(1, building.progress + STEP_SECONDS / rules.buildSeconds);
@@ -6537,7 +6580,7 @@ const server = createServer(async (request, response) => {
     'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',
     'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs',
     'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
-    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs',
+    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
     'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs',
@@ -6546,7 +6589,7 @@ const server = createServer(async (request, response) => {
     'src/audio-composition.mjs', 'src/audio-composer.mjs', 'src/audio-composer.css',
     'audio-studio.html', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs',
     'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs',
-    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs',
+    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs',
     'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs',
   ].includes(relative);
   const publicUiAsset = [

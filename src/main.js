@@ -1,5 +1,5 @@
-import { unitPresentation } from './gameplay-presentation.mjs';
-import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from './gameplay-definitions.mjs';
+import { unitPresentation, buildingPresentation } from './gameplay-presentation.mjs';
+import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, GAMEPLAY_RULESET_REVISION } from './gameplay-definitions.mjs';
 import { formatResourceStock, formatResourceRequirement } from './resource-format.mjs';
 import { validateMapAudioReference } from './audio-event-profile.mjs';
 import { battlefieldCursor } from './battlefield-cursor.mjs';
@@ -1150,8 +1150,9 @@ function updateHouseVisual(visual, building) {
 }
 
 function createGameplayBuildingVisual(building) {
-  if (building.type === 'house') return createHouseVisual(building);
-  return building.type === 'barracks' ? createBarracksVisual(building) : createArcheryRangeVisual(building);
+  const role = buildingPresentation(building.type).role;
+  if (role === 'house') return createHouseVisual(building);
+  return role === 'barracks' ? createBarracksVisual(building) : createArcheryRangeVisual(building);
 }
 
 function createArcheryRangeVisual(building) {
@@ -1416,8 +1417,8 @@ function reconcileBuildings(buildings = [], initial = false) {
       disposeBuildingVisual(visual);
       visual = createGameplayBuildingVisual(building);
       buildingVisuals.set(building.id, visual);
-    } else if (building.type === 'house') updateHouseVisual(visual, building);
-    else if (building.type === 'barracks') updateBarracksVisual(visual, building);
+    } else if (buildingPresentation(building.type).role === 'house') updateHouseVisual(visual, building);
+    else if (buildingPresentation(building.type).role === 'barracks') updateBarracksVisual(visual, building);
     else updateArcheryRangeVisual(visual, building);
     visual.type = building.type;
     updateBuildingRallyMarker(visual, building);
@@ -3950,6 +3951,10 @@ function appendUnitFromState(row, animateSpawn = false) {
 }
 
 function applyState(state, initial = false) {
+  if (state?.rulesetRevision && state.rulesetRevision !== GAMEPLAY_RULESET_REVISION) {
+    showToast('GAME RULES CHANGED · RELOAD TO RECONNECT', 10000);
+    return;
+  }
   if (!state || (mapDefinition && state.mapId && state.mapId !== mapDefinition.id)) return;
   const matchRestarted = (matchWinner >= 0 && state.winner === -1)
     || (Number.isFinite(state.matchElapsedSeconds) && state.matchElapsedSeconds + 1 < latestMatchElapsedSeconds);
@@ -4203,8 +4208,10 @@ function updateRosterProductionOptions(container, selectedProducer = null) {
     const populationReason = localTeam !== null && latestPopulation[localTeam]
       && latestPopulation[localTeam].available < definition.population ? 'Population full · build a House' : '';
     button.dataset.producer = producer?.id ?? '';
-    button.disabled = Boolean(reason || populationReason);
-    button.textContent = `Train ${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason || populationReason ? ` · ${reason || populationReason}` : ''}`;
+    const authoritative = producer?.productionOptions?.find((option) => option.kind === definition.id);
+    const authoritativeReason = authoritative && !authoritative.available ? authoritative.reason : '';
+    button.disabled = Boolean(reason || populationReason || authoritativeReason);
+    button.textContent = `Train ${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason || populationReason || authoritativeReason ? ` · ${authoritativeReason || reason || populationReason}` : ''}`;
   }
   container.hidden = products.length === 0;
 }

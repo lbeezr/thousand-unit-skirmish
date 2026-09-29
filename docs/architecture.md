@@ -132,3 +132,28 @@ snapshots expose capacity; the opponent DTO projects only its own record.
 Rules revision 6 deliberately adopts the population economy and migrates
 compatible revision-5 saves while preserving existing queues and overcapacity
 armies. Explicit stress fixtures retain their opening capacity.
+
+### Resolved gameplay identity and action availability
+
+The shared registry validates stable content and compact unit wire IDs, faction
+roster references, production products, technology upgrade keys and prerequisite
+cycles (including a research building requiring its own technology). Its canonical
+SHA-256 revision excludes labels and presentation bindings; gameplay values and
+ordered product lists participate. Snapshots carry the revision, default faction
+and unit wire mapping. A browser with a different revision asks for a reload
+before applying the state.
+
+Checkpoint schema 12 pins this identity. Schema 11 saves migrate to the current
+compatible opening roster; an unknown pinned revision is rejected and the exact
+save is renamed to a `.rejected-*` file before a fresh match starts. Future roster
+changes must supply and test an explicit compatible migration rather than silently
+reinterpreting paid queues or saved entities.
+
+`src/production-actions.mjs` derives product availability, prerequisites and
+rejection reasons from authoritative resources, reservations and safety limits.
+Commands repeat these checks before spending. Own-seat options are projected to
+the HUD and AI; no-fog broadcast caching shares the public roster but masks enemy
+product names and population. Building construction and persisted geometry use
+registered odd footprints (one to nine cells wide). Unit and building presentation
+profiles bind supported procedural roles independently of gameplay identity;
+they do not claim a skeletal animation backend.
