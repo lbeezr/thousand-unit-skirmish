@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import assert from 'node:assert/strict';
+import { probeCastRuntimeClipping } from './cast-runtime-clipping-probe.mjs';
 import { spawn } from 'node:child_process';
 import { createServer as createNetServer } from 'node:net';
 import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
@@ -33,6 +34,7 @@ const PREVIEW_MODE = process.argv[2] || 'all-v1';
 const PREVIEW_QUERY = Object.freeze({
   'all-v1': 'unitSpritePreview=1',
   'worker-v2': 'workerSpritePreview=1',
+  'cast-v3': 'castPreview=1',
 });
 
 const children = new Set();
@@ -61,7 +63,7 @@ function assertGameDevContext() {
   assert.ok(GAME_DEV_RUN_DIR && GAME_DEV_RUN_ID && GAME_DEV_ADAPTER_ID && GAME_DEV_SCENARIO_ID,
     'run this opt-in capture through game-dev scenario run');
   assert.equal(GAME_DEV_ADAPTER_ID, 'thousand-unit-skirmish', 'unexpected adapter context');
-  const expectedScenario = PREVIEW_MODE === 'worker-v2'
+  const expectedScenario = PREVIEW_MODE === 'cast-v3' ? 'renderer-cast-clipping' : PREVIEW_MODE === 'worker-v2'
     ? 'renderer-worker-sprite-v2'
     : 'renderer-appearance-lod';
   assert.equal(GAME_DEV_SCENARIO_ID, expectedScenario, 'scenario ID should match its sprite preview mode');
@@ -544,7 +546,9 @@ async function writeFrame(browser, runDirectory, frameIndex, mapLabel, zoom) {
 }
 
 async function writeCaptureManifest(frames, renderer, runDirectory, previewMode) {
-  const previewDescription = previewMode === 'worker-v2'
+  const previewDescription = previewMode === 'cast-v3'
+    ? 'Complete human, orc, elf, troll workers via ?castPreview=1, with all-pose terrain probes.'
+    : previewMode === 'worker-v2'
     ? 'Worker v2 sprites only via ?workerSpritePreview=1; other unit roles use the normal renderer.'
     : 'Worker, Infantry, and Archer v1 sprites via ?unitSpritePreview=1.';
   const manifest = {
@@ -681,7 +685,20 @@ async function run() {
 
     await captureMapMatrix({ map: maps[0], browsers, frames, runDirectory, preflight, previewMode: PREVIEW_MODE });
     await captureMapMatrix({ map: maps[1], browsers, frames, runDirectory, preflight, previewMode: PREVIEW_MODE });
-    const expectedFrameCount = PREVIEW_MODE === 'worker-v2' ? 16 : 8;
+    if (PREVIEW_MODE === 'cast-v3') {
+      const probe = await browsers[0].cdp.evaluate(`(${probeCastRuntimeClipping.toString()})()`, 120_000);
+      for (const preview of probe.previews) {
+        const relativePath = `frames/cast-probe-${preview.label}.png`;
+        await writeFile(path.join(runDirectory, relativePath), Buffer.from(preview.png, 'base64'));
+        frames.push({ index: frames.length, label: `cast-probe-${preview.label}`, attachments: [{kind:'color',path:relativePath,encoding:'png',description:'Actual instanced sprite runtime, all four full-pose packs, flat terrain, fixed camera. Diagnostic close-up; not ordinary-zoom readability proof.'}] });
+      }
+      delete probe.previews;
+      await writeFile(path.join(runDirectory,'cast-clipping-report.json'),JSON.stringify(probe,null,2));
+      assert.equal(probe.frames,1056);
+      assert.equal(probe.clippedOpaquePixels,0);
+      preflight.push(probe);
+    }
+    const expectedFrameCount = PREVIEW_MODE === 'worker-v2' || PREVIEW_MODE === 'cast-v3' ? 16 : 8;
     assert.equal(frames.length, expectedFrameCount,
       `appearance capture should contain ${expectedFrameCount} review frames for ${PREVIEW_MODE}`);
     const manifest = await writeCaptureManifest(frames, renderer, runDirectory, PREVIEW_MODE);
