@@ -52,6 +52,22 @@ The earlier Blender-authored GLB sample remains historical. The current study tr
 - **Repeatable pack check:** `node scripts/validate-unit-sprite-atlas.mjs assets/units/<role>-sprite-v1/manifest.json`; run the same validator against `assets/units/worker-sprite-v2/manifest.json` for the Worker v2 experiment.
 - **Merge checkpoint (26 September 2026):** [PR #172](https://github.com/lbliii/thousand-unit-skirmish/pull/172) merged the directional sprite exploration, Meshy Worker default, local capture tool, and manifests/provenance. Worker-scale readability and 2,000-unit performance remain separate evidence gaps. Follow-up local-staging and rights-evidence safeguards are recorded in the pipeline note.
 
+## Cast readability candidate — 27 September 2026
+
+The opt-in `?castPreview=1` path compares four derived cast packs: human, orc,
+elf, and troll. Each pack contains 264 frames across eight directions with
+idle, walk, attack/work, and defeat clips, a source atlas, a runtime atlas, and
+a team-accent mask. The preview assigns the four roles by visible unit slot so
+the silhouettes can be compared in one ordinary match without changing the
+authoritative Worker/Infantry/Archer roster.
+
+This is a source/runtime candidate, not a default art or faction integration.
+The cast study records pose drift and edge-residue limits, including known troll
+edge residue; review foot registration, identity stability, ordinary/strategic
+zoom readability, and rights before promoting any pack. The canonical pack
+contract validates metadata, image dimensions, hashes, frame bounds, clips, and
+team masks; visual approval remains separate.
+
 
 ## Native motion capture and playback
 
@@ -62,3 +78,7 @@ The runtime uses elapsed milliseconds rather than procedural mesh phase for spri
 Validation: two local 15K Smart Topology A-pose workers were rebaked into 992-frame, eight-direction candidates. All 1,984 frames passed nonempty/unclipped bounds and hash checks; native clip totals were preserved with moving-frame durations at most 63 ms. Focused clock tests cover elapsed timing and state transitions. Local in-game worker movement completed without rendering errors. These checks do not establish rig quality, distant readability, combat correctness, or large-match performance; the local candidate assets and distance/filter experiments are excluded from this change.
 
 A controlled live worker-versus-infantry duel additionally verified all eight tracked worker defeat frames in the browser renderer, approximately 583 ms observed lifetime for the 430 ms clip plus 150 ms fade, and zero final scale. The simulation reported the worker defeated and the opposing infantry at 60 HP. No browser warnings/errors were observed. A separate live fixture also reached all 58 defeat frames of the 3.533-second local candidate and ended at zero scale after approximately 3,677 ms, including the fade.
+
+## Mixed cast Workers — 29 September 2026
+
+By user direction, the human, orc, elf, and troll review packs now supply the default Worker appearance. The slot-based assignment stays stable during movement and work and distributes the four appearances across the opening Workers. Infantry and Archer retain their existing visuals. `?castPreview=0` restores the Meshy Worker; earlier sprite comparison flags also keep their previous behavior. These remain exploratory illustrations with shared motion and pending human readability review.
