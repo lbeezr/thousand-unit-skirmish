@@ -37,3 +37,172 @@ Review the default Worker in a live match at ordinary and strategic zoom. The so
 The canonical sprite pack reserves an optional [`capture` record](../schemas/sprite-atlas-capture-v1.schema.json) for source GLB hashes, fixed-camera framing, and per-frame model yaw and clip sample time. This pilot baker writes `captureMode: model-pose` and records the source hashes and sample times; legacy building camera-orbit records may omit `captureMode`.
 
 The prior sprite-source readability and live transition gaps remain in [`unit-sprite-exploration.md`](unit-sprite-exploration.md). The normal local game path now uses Worker v3, but this is not a standard-scale readability or 2,000-unit performance claim.
+
+## Proposed reusable character template — 29 September 2026
+
+This is a production plan, not a claim that these clips or rendering features
+already exist. It applies to the final Worker/Infantry/Archer character sources
+and appearance variants. The current human/orc/elf/troll cast remains a review
+sample; species appearance must not silently change gameplay role or stats.
+
+### Source and view contract
+
+Prefer one editable, rigged character source with painted materials, equipment
+attachments, a grounded root, and named animation clips. Meshy can supply an
+approved initial source; the export contract should also accept locally authored
+Blender models. Review the full turntable before animation so inferred backs and
+missing equipment are caught early. Keep model, rig, materials, tool meshes,
+animation sources, licenses and capture settings together.
+
+Match the actual orthographic game camera: `src/main.js` currently uses the
+normalized offset `(0.78, 1.12, 0.78)`, approximately 45.4 degrees elevation and
+45 degrees horizontal azimuth. This is an oblique game view, not a requirement
+to use the textbook 35.264-degree isometric elevation. Record camera quaternion,
+projection, source model yaw, root position, lighting and scale in the capture
+manifest. Use the runtime's current direction mapping rather than interpreting
+sheet compass labels as screen directions.
+
+The first complete template has eight facings, 45 degrees apart: north,
+north-east, east, south-east, south, south-west, west, north-west. Author all
+views; mirroring can swap weapon hands and lighting. A 16-facing candidate at
+22.5-degree steps is the next comparison, requiring an explicit runtime/contract
+extension. Adopt it only if actual turning looks materially better at ordinary
+zoom for its doubled frame cost. Thirty-two facings are a reference option,
+not the default production requirement.
+
+### Complete pose roster
+
+Frame counts below are starting budgets for a new source, not fixed playback
+speeds or requirements to duplicate poses. Preserve source duration and sample
+roughly 16–20 poses/second; retain readable anticipation, contact/release and
+recovery poses even when that needs an extra sample. A short hold is authored
+animation timing, never a substitute for a cut or missing pose.
+
+| Clip | Starting unique poses per facing | Who needs it | Motion and playback |
+| --- | ---: | --- | --- |
+| Idle | 8 | All roles | Quiet breathing; loop without root drift |
+| Walk | 12 | All roles | Clear planted feet; seamless loop; travel supplied by simulation |
+| Ready idle | 6 | Infantry/Archer | Equipment readable before an attack; reuse idle if visually equivalent |
+| Melee attack | 12–16 | Infantry; Worker only if its gameplay requires combat | Anticipation, thrust/swing, contact, recovery; action-event mapping |
+| Ranged attack | 16–20 | Archer | Nock, draw, aim, release, recovery; projectile remains renderer/simulation-owned |
+| Chop | 12–16 | Worker wood gathering | Tool strikes resource; distinct from combat |
+| Food gather | 12 | Worker food gathering | Reach/harvest/recover, appropriate to current resource interaction |
+| Build/repair | 12–16 | Worker | Tool/work stroke directed toward building; shared clip allowed when meaning agrees |
+| Carry idle / walk | 6 / 12 | Worker, once load state exists | Visible load; stable held object and grounded gait |
+| Defeat | 16–20 | All roles | Fall to ground; non-looping; retain endpoint through current fade policy |
+| Corpse pose | 1 terminal pose | All roles | Reuse defeat endpoint; longer persistence requires a gameplay/runtime decision |
+
+Hit flinch, run, celebrate, casting, mounted actions and special abilities are
+optional future modules. Do not make ordinary damage cancel orders or reset an
+attack because an animation exists. Carry, ready-idle and differentiated work
+clips require state mapping beyond today's idle/walk/gather/attack/defeat paths;
+implement only the applicable signals. Existing clip duration must not change
+combat cadence, gathering income or projectile impact rules.
+
+A broad worker source with idle 8, walk 12, melee 16, chop 16, food 12, build 16,
+carry-idle 6, carry-walk 12 and defeat 20 has 118 samples/facing: 944 at eight
+facings, 1,888 at sixteen. This is a planning upper bound for that roster, not a
+universal per-character atlas. Share a clip where the action is truly identical
+and emit only clips used by each role. Reuse rigs across compatible variants;
+a troll may need different proportions, contacts and animation rather than a
+stretched human rig.
+
+### Frame, scale and layer contract
+
+Capture standalone transparent frames before packing. Preflight every sampled
+pose, heading, weapon tip and carried object against the camera frame; enlarge
+the common capture envelope if any touches an edge. Keep horizontal root travel
+out of the sprites while preserving vertical hips and foot motion. Use one
+source root and one fixed framing/scale across the animation set. Do not center
+or align feet separately for each frame. The connected-silhouette importer is a
+recovery path for legacy sheets, not the ideal normal source format.
+
+Use 512-pixel transparent source frames as an initial test resolution and compare
+128/160/192/256 runtime cells at actual game display size. Choose the smallest
+that preserves the approved silhouette and equipment; the current 160-pixel
+cast repair is not a universal final size. Preserve the art-direction guide's
+roughly 0.8-world-unit role target; any normalization from today's exploratory
+pack sizes is an explicit reviewed change. A taller species gets a declared
+scale, not a packing side effect.
+
+Pack measured complete bounds with at least eight transparent pixels of nominal
+margin, and validate the final decoded pixels after resampling. Preserve root
+and offsets even if storage rectangles are trimmed. Extrusion, filtering and
+mipmap policy need an atlas-neighbor bleed test. Split pages before exceeding
+the target GPU texture-size limit; never lower scale silently to fit a page.
+At 160 pixels, 944 fixed cells occupy about 92 MiB of raw RGBA color data before
+mask textures/mipmaps, regardless of a small compressed download. Budget loaded
+pages and masks before multiplying species, directions or equipment variants.
+
+Required runtime outputs: color RGBA, a selective grayscale team-accent mask,
+frame bounds/pivot/rect metadata, directions, per-pose durations, clip loop rules,
+world scale and hashes. Team color belongs on the sash/pennant and approved
+accents; neutral skin, tool and armor retain their colors. A whole-body alpha
+mask is an exploratory fallback. Ground shadows stay separately grounded rather
+than painted into a standing billboard. Keep selection rings, health bars,
+projectiles and order effects renderer-owned. Normal/depth/shadow passes are
+useful optional source exports, but require an actual consumer before shipping.
+
+### Quality bar and first proof
+
+At native display size, identify role, heading, action and team without a label.
+Worker tools/load, Infantry spear/shield and Archer bow/quiver must separate the
+roles. Broad painted value shapes and restrained texture should agree with the
+frontier environment. Check both teams on Meadow and Cinder at zoom 0.91 and
+0.48, plus close inspection for errors; a beautiful enlarged sheet is insufficient.
+
+Automated checks cover the entire roster: source and final alpha edges, empty
+poses, measured bounds, common root/scale, frame roster, timing, loop endpoints,
+mask coverage, page limits, hashes and reproducible output. Run every pose through
+the actual renderer on terrain for both teams/zooms, with per-species coverage
+and viewport-edge assertions. Review motion loops for foot sliding, pose pops,
+prop intersections, weapon handedness and defeat ground contact. Check forest,
+building and slope depth separately; a flat-ground test alone cannot prove all
+occlusion behavior. Record build, assets and concrete player observations.
+
+Next production slice: one complete Worker with real tools, eight facings and
+idle/walk/chop/food/build/defeat. Prove the template in a match before expanding
+all species. Render one 8-versus-16-facing turn comparison from the same source.
+Then create Infantry/Archer equipment and attacks, and add carry states when
+runtime signals are available. Each useful slice may integrate independently;
+the final quality bar is not a hold on source samples or ordinary staging merges.
+
+### Researched references and tools
+
+Sources inspected on 29 September 2026. Their documented features inform the
+proposal; external pipelines have not been installed or validated in our project.
+
+- [World's Edge: Age of Empires DE's sprite workflow](https://www.ageofempires.com/news/age-empires-definitive-edition-3d-2d-game/)
+  describes 3D sources rendered into 2D, eight original versus 32 newer facings,
+  and three asset zoom levels. This supports the technique and illustrates its
+  content cost; its artwork is a visual reference, not a reusable asset pack.
+- [Blender camera documentation](https://docs.blender.org/manual/en/latest/render/cameras.html)
+  explains orthographic capture. Use Blender for editable source/rig/capture;
+  match our camera rather than adopting an add-on's default angle.
+- [HardRockTech's 3D-to-2D pipeline](https://github.com/HardRockTech/3d-to-2d-sprite-pipeline)
+  is MIT licensed and documents eight-direction captures, metadata, normal,
+  height and shadow outputs. It is a small reference repository, not a proven
+  maintained dependency for our game. Inspect and adapt narrowly useful pieces.
+- [iso-render-pipeline](https://github.com/craigrmccown/iso-render-pipeline)
+  documents a Blender add-on with sample-rate and manifest output plus
+  downsampling. Its default angle differs from ours; license and compatibility
+  need verification before code adoption.
+- [Flare editable art sources](https://github.com/flareteam/flare-game/tree/master/art_src)
+  and [animation metadata](https://github.com/flareteam/flare-engine/wiki/Attribute-Reference)
+  provide an inspectable isometric fantasy example with directional frames,
+  offsets and timing. [Credits](https://github.com/flareteam/flare-game/wiki/Credits)
+  list asset-specific licenses, including CC-BY and CC-BY-SA; inspect each source
+  before reuse. Its art is a useful modest baseline, not our final polish target.
+- [OpenRA sprite sequences](https://docs.openra.net/en/release/sprite-sequences/)
+  document explicit facings, sequence lengths, milliseconds, shadows and depth
+  offsets. Borrow the separation of metadata concerns, not assumptions about
+  its engine formats or the rights to original commercial game assets.
+- [Krita animation export](https://docs.krita.org/en/reference_manual/render_animation.html)
+  and [onion skins](https://docs.krita.org/en/reference_manual/dockers/onion_skin.html)
+  suit painted cleanup and temporal review. [LibreSprite](https://github.com/LibreSprite/LibreSprite)
+  is a GPLv2 sprite editor with animation preview, layers and onion skins; use it
+  for a pixel-oriented experiment rather than imposing pixel art on this game.
+- [Kenney Animated Characters](https://kenney.nl/assets/animated-characters-protagonists)
+  is a CC0 model resource for a no-cost technical capture test. Its modern stylized
+  characters are not the intended fantasy look. [Kenney's source license FAQ](https://kenney.nl/support)
+  confirms asset-page CC0 status; retain each downloaded package's license.
