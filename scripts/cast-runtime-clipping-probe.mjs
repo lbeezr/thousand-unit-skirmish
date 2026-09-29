@@ -33,7 +33,7 @@ export async function probeCastRuntimeClipping() {
           const now=1000+elapsed+1;
           for(let slot=0;slot<4;slot++) {
             const ownClip=packs[slot].assets[0].clips.find(clip=>clip.stateId===state&&clip.directionId===directions[heading]);
-            if(ownClip.sequence.length!==clip.sequence.length)throw new Error('Cast pose clocks differ');
+            if(ownClip.sequence.length!==clip.sequence.length || ownClip.sequence.some((pose,index)=>pose.durationMs!==clip.sequence[index].durationMs))throw new Error('Cast pose clocks differ');
             const position=right.clone().multiplyScalar((slot-1.5)*1.9);
             runtime.update({kind:'worker',team,slot,renderX:position.x,renderZ:position.z,angle:heading*Math.PI/4,
               hp:state==='defeat'?0:100,defeatStartedAt:state==='defeat'?1000:0,
@@ -42,6 +42,8 @@ export async function probeCastRuntimeClipping() {
           }
           runtime.markTeamDirty(team);
           ground.visible=false;read(source);ground.visible=true;read(actual);
+          for(let x=0;x<256;x++) if(source[x*4+3] || source[((127*256)+x)*4+3])throw new Error('Pose touches diagnostic viewport edge');
+          for(let y=0;y<128;y++) if(source[y*256*4+3] || source[(y*256+255)*4+3])throw new Error('Pose touches diagnostic viewport edge');
           let opaque=0,clipped=0,maxError=0;
           const coverage=[0,0,0,0];
           for(let index=0;index<source.length;index+=4) {
