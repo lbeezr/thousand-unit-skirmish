@@ -26,3 +26,21 @@ for (const team of [0, 1]) test(`AI builds and resumes capacity using its own ob
   state.population = { used: 1000, reserved: 0, capacity: 1000, available: 0 };
   assert.deepEqual(next(1501), [], 'Houses cannot bypass the safety ceiling');
 });
+
+for (const team of [0, 1]) test(`AI shortens remote resource trips and resumes its Storehouse for seat ${team}`, () => {
+  const state = { team, tick: 0, fogOfWar: false, map: { width: 80, height: 64 },
+    resources: { food: 500, wood: 500 }, units: { friendly: [
+      { id: 0, generation: 1, team, hp: 100, x: team ? 20 : -20, z: 0, kind: 'worker', task: 'gathering', cargo: 0 },
+      { id: 1, team, hp: 100, x: 0, z: 0, kind: 'infantry' },
+      { id: 2, team, hp: 100, x: 0, z: 0, kind: 'infantry' }], visibleEnemies: [] },
+    buildings: { friendly: [{ id: 9, team, type: 'barracks', complete: true, hp: 1800, queue: 0, x: 0, z: 10 }], visibleEnemies: [] },
+    objectives: [], resourceNodes: [{ id: 'remote', type: 'food', stock: 1000, x: team ? 3 : -3, z: 0 }] };
+  const policy = createProductionPolicy(42); policy.next(state);
+  const build = policy.next({ ...state, tick: 300 });
+  assert.equal(build[0].buildingType, 'storehouse');
+  assert.deepEqual(policy.next({ ...state, tick: 301 }), []);
+  state.buildings.friendly.push({ id: 10, team, type: 'storehouse', complete: false, hp: 1200, queue: 0, x: build[0].x, z: build[0].z });
+  assert.equal(policy.next({ ...state, tick: 450 })[0].buildingId, 10);
+  state.buildings.friendly.pop();
+  assert.equal(policy.next({ ...state, tick: 750 })[0].buildingType, 'storehouse', 'a lost remote drop-off can be rebuilt');
+});

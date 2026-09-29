@@ -26,6 +26,7 @@ export function validateGameplayDefinitions(definitions) {
       }
       if (category === 'buildings') {
         if (entry.populationCapacity !== undefined && (!Number.isInteger(entry.populationCapacity) || entry.populationCapacity < 0)) throw new Error(`Invalid population capacity: ${id}`);
+        if (entry.dropoff !== undefined && (!Array.isArray(entry.dropoff) || !entry.dropoff.length || new Set(entry.dropoff).size !== entry.dropoff.length || entry.dropoff.some((resource) => !['food', 'wood'].includes(resource)))) throw new Error(`Invalid dropoff resources: ${id}`);
         if (!Number.isInteger(entry.footprint) || entry.footprint % 2 !== 1 || entry.footprint > 9) throw new Error(`Invalid footprint: ${id}`);
         if (!Array.isArray(entry.products) || new Set(entry.products).size !== entry.products.length) throw new Error(`Invalid or duplicate products: ${id}`);
         for (const product of entry.products) {
@@ -94,11 +95,12 @@ export const GAMEPLAY_DEFINITIONS = freezeTree(validateGameplayDefinitions({
     archer: { id: 'archer', wireId: 2, label: 'Archer', cost: { food: 25, wood: 45 }, trainSeconds: 7, population: 1, combat: { maxHp: 70, moveSpeed: 2.6, range: 4.5, damage: 7, period: 1, structureDamage: 0.8 }, presentation: 'unit.archer' },
   },
   buildings: {
+    storehouse: { id: 'storehouse', label: 'Storehouse', cost: { food: 0, wood: 100 }, buildSeconds: 20, footprint: 3, maxHp: 1200, products: [], dropoff: ['food', 'wood'], presentation: 'building.storehouse' },
     house: { id: 'house', label: 'House', cost: { food: 0, wood: 75 }, buildSeconds: 15, footprint: 3, maxHp: 800, products: [], populationCapacity: 8, presentation: 'building.house' },
     barracks: { id: 'barracks', label: 'Barracks', cost: { food: 0, wood: 175 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['infantry', 'spearman'], presentation: 'building.barracks' },
     'archery-range': { id: 'archery-range', label: 'Archery Range', cost: { food: 0, wood: 150 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['archer'], presentation: 'building.archery-range' },
   },
-  factions: { frontier: { id: 'frontier', label: 'Frontier', units: ['worker', 'infantry', 'archer', 'spearman'], buildings: ['house', 'barracks', 'archery-range'], technologies: ['infantry-attack', 'archer-attack'] } },
+  factions: { frontier: { id: 'frontier', label: 'Frontier', units: ['worker', 'infantry', 'archer', 'spearman'], buildings: ['house', 'barracks', 'archery-range', 'storehouse'], technologies: ['infantry-attack', 'archer-attack'] } },
   technologies: {
     'infantry-attack': { id: 'infantry-attack', label: 'INFANTRY FORGING', building: 'barracks', upgradeKey: 'infantryAttack', cost: { food: 100, wood: 75 }, durationSeconds: 25 },
     'archer-attack': { id: 'archer-attack', label: 'ARCHER FLETCHING', building: 'archery-range', upgradeKey: 'archerAttack', cost: { food: 125, wood: 125 }, durationSeconds: 25 },

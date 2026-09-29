@@ -23,6 +23,7 @@ test('invalid content cannot silently create free production or unknown products
     [d => { d.buildings.barracks.products.push('unknown-unit'); }, /Unknown product/],
     [d => { d.technologies['infantry-attack'].building = 'unknown-building'; }, /Unknown research building/],
     [d => { d.buildings.barracks.footprint = 2.5; }, /Invalid footprint/],
+    [d => { d.buildings.storehouse.dropoff = ['gold']; }, /Invalid dropoff resources/],
     [d => { d.units.worker.id = 'different-id'; }, /Invalid units ID/],
   ]) {
     const definitions = structuredClone(GAMEPLAY_DEFINITIONS);

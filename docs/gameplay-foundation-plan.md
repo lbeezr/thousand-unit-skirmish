@@ -185,3 +185,17 @@ from definitions, and building presentation profiles join the earlier unit
 profiles. Focused checks cover both-seat prerequisite rejection before spending,
 HUD reasons, canonical identity, legacy save migration and mismatched-save
 preservation. The full F2/F3 outcomes remain in progress.
+
+### Storehouse economy slice
+
+Storehouses add completed friendly food/wood drop-offs, route-length selection
+among reachable candidates, and cargo-preserving replanning on destruction or
+navigation changes. The generic building menu consumes definitions; producers'
+rally controls use registered product lists. The AI may build/resume/rebuild one
+remote Storehouse using its own visible resource observation and bounded retries.
+Both-seat runtime evidence covers costs, restart selection, deposits, destruction
+and return to the surviving home drop-off. Focused checks cover wrong-team,
+unfinished and disconnected choices, menu affordability, and AI recovery.
+The prior schema-12 roster revision has an explicit compatible migration for this
+addition; unknown revisions remain rejected and preserved. Town Center expansion,
+defenses and cancellation/repair are still outstanding F2 work.

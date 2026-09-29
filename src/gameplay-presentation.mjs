@@ -32,6 +32,7 @@ export function unitPresentation(kind) {
 }
 
 export const BUILDING_PRESENTATION_PROFILES = Object.freeze({
+  'building.storehouse': Object.freeze({ backend: 'procedural', role: 'house' }),
   'building.house': Object.freeze({ backend: 'procedural', role: 'house' }),
   'building.barracks': Object.freeze({ backend: 'procedural', role: 'barracks' }),
   'building.archery-range': Object.freeze({ backend: 'procedural', role: 'archery-range' }),

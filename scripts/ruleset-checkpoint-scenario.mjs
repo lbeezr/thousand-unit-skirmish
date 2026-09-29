@@ -121,6 +121,13 @@ try {
   const restored = JSON.parse(await readFile(checkpointPath, 'utf8'));
   assert.equal(restored.matchId, original.matchId, 'supported legacy saves migrate without replacing the match');
   assert.equal(restored.rulesetRevision, GAMEPLAY_RULESET_REVISION);
+  const priorContent = structuredClone(restored);
+  priorContent.rulesetRevision = 'v1:4a8f7db2ce7f694407489bee0923c19c20c52126176f57f972906aa1dd1dc254';
+  priorContent.state.seatSessions = [];
+  await writeFile(checkpointPath, JSON.stringify(priorContent)); await start(); await stop();
+  const contentMigrated = JSON.parse(await readFile(checkpointPath, 'utf8'));
+  assert.equal(contentMigrated.matchId, original.matchId, 'the explicitly compatible Storehouse addition retains the existing match');
+  assert.equal(contentMigrated.rulesetRevision, GAMEPLAY_RULESET_REVISION);
   const incompatible = structuredClone(restored); incompatible.rulesetRevision = 'v1:' + '0'.repeat(64); incompatible.state.seatSessions = [];
   const incompatibleSource = JSON.stringify(incompatible);
   await writeFile(checkpointPath, incompatibleSource); await start(); await stop();
