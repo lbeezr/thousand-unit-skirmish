@@ -138,3 +138,18 @@ Do not publish a broken import or claim an editor preview proves match integrati
   visible and retain working synthesized feedback. Bound asset memory and voices.
 - No generation credits are spent by this infrastructure work. Human sound quality
   and recognition reviews follow when real material is produced.
+
+## Integrated checkpoint — 29 September 2026
+
+The library, clip composer, contextual runtime and map profile persistence are
+implemented. This completion pass unifies composition validation, propagates
+failed composer saves, preflights all playback offsets before scheduling, aligns
+short-recording fades with WAV rendering, and registers the five focused audio
+checks in CI. The isolated owner-run browser check is
+`node scripts/audio-studio-browser.mjs` (Chrome and local loopback access required).
+See [acceptance evidence](qa-audio-studio-2026-09-29.md).
+
+Ready for importing and designing original sound material. Packs remain local
+and require separate distribution to each player. This is a clip arranger;
+piano roll, time stretching, automatic multiplayer delivery and adaptive music
+state transitions remain outside v1. No paid audio was generated in this pass.

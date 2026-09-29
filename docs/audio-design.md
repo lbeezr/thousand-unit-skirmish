@@ -5,12 +5,16 @@
 ## Direction
 
 Audio should confirm commands and distinguish urgent events without becoming
-constant noise during a large battle. All current sounds are synthesized with
-Web Audio in `src/audio.mjs`; no sampled audio pack is required.
+constant noise during a large battle. The default sounds are synthesized with
+Web Audio in `src/audio.mjs`. Optional local Audio Studio packs supply contextual
+recorded cues and composed map music; no sampled pack is required.
 
 The [reusable audio kit plan](audio-kit-plan.md) proposes the next palette,
 ElevenLabs source workflow, cue recipes and modular music. Its prompts are saved
-as drafts; sampled audio and adaptive music are not yet integrated.
+as drafts. Sampled playback and map composition loops are implemented; adaptive
+music transitions and the produced sound palette remain future work. See the
+[Audio Studio library](audio-library.md), [composer](audio-composer.md), and
+[runtime packs](audio-runtime-packs.md).
 
 ## Runtime responsibilities
 

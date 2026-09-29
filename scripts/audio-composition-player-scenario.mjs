@@ -61,3 +61,11 @@ try {
 }
 
 console.log('composition player shared clock and cancellation passed');
+
+const invalidOffset = structuredClone(composition);
+invalidOffset.tracks[1].clips[0].offsetSeconds = 3;
+const atomicPlayer = createCompositionPlayer({context, destination: audioNode(), resolveBuffer: async () => buffer});
+const beforeInvalid = starts.length;
+await assert.rejects(atomicPlayer.play(invalidOffset), /cannot play/);
+assert.equal(starts.length, beforeInvalid, 'invalid later clip leaves no earlier clip playing');
+atomicPlayer.dispose();

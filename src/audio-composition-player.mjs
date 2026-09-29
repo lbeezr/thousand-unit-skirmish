@@ -33,6 +33,11 @@ export function createCompositionPlayer({ context, destination, resolveBuffer })
       buffers.set(id, buffer);
     }
     if (ticket !== generation || disposed) return false;
+    // Reject the whole arrangement before scheduling any nodes.
+    for (const event of compiled.events) {
+      const buffer = buffers.get(event.sourceId);
+      if (!buffer || event.offsetSeconds >= buffer.duration) throw new Error(`Audio source ${event.sourceId} cannot play from this offset.`);
+    }
     const start = context.currentTime + 0.08;
     const scheduleCycle = (cycleStart) => {
     if (ticket !== generation || disposed) return;
@@ -50,9 +55,10 @@ export function createCompositionPlayer({ context, destination, resolveBuffer })
       envelope.connect(pan || destination);
       if (pan) pan.connect(destination);
       const at = cycleStart + event.startSeconds;
-      const duration = Math.min(event.durationSeconds, compiled.durationSeconds - event.startSeconds);
-      const fadeIn = Math.min(event.fadeInSeconds || 0, duration);
-      const fadeOut = Math.min(event.fadeOutSeconds || 0, duration);
+      const duration = Math.min(event.durationSeconds, compiled.durationSeconds - event.startSeconds,
+        event.loop ? Infinity : buffer.duration - event.offsetSeconds);
+      const fadeIn = Math.min(event.fadeInSeconds || 0, duration / 2);
+      const fadeOut = Math.min(event.fadeOutSeconds || 0, duration / 2);
       const peak = event.gain;
       envelope.gain.setValueAtTime(fadeIn ? 0 : peak, at);
       if (fadeIn) envelope.gain.linearRampToValueAtTime(peak, at + fadeIn);
