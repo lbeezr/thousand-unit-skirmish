@@ -1,3 +1,4 @@
+import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from './gameplay-definitions.mjs';
 import { formatResourceStock, formatResourceRequirement } from './resource-format.mjs';
 import { validateMapAudioReference } from './audio-event-profile.mjs';
 import { battlefieldCursor } from './battlefield-cursor.mjs';
@@ -112,29 +113,25 @@ const MAX_OBJECTIVE_FOOD_REWARD = 10000;
 const MAX_TRIGGER_UNIT_REWARD = 25;
 const WORKERS_PER_TEAM = 4;
 const WORKER_TASK_STATES = new Set(['idle', 'moving', 'gathering', 'returning', 'building', 'attacking']);
-const INFANTRY_FOOD_COST = 50;
-const INFANTRY_TRAIN_SECONDS = 12;
-const WORKER_FOOD_COST = 50;
-const WORKER_TRAIN_SECONDS = 25;
+const INFANTRY_FOOD_COST = UNIT_DEFINITIONS.infantry.cost.food;
+const INFANTRY_TRAIN_SECONDS = UNIT_DEFINITIONS.infantry.trainSeconds;
+const WORKER_FOOD_COST = UNIT_DEFINITIONS.worker.cost.food;
+const WORKER_TRAIN_SECONDS = UNIT_DEFINITIONS.worker.trainSeconds;
 const WORKER_QUEUE_LIMIT = 5;
-const ARCHER_FOOD_COST = 25;
-const ARCHER_WOOD_COST = 45;
-const ARCHERY_RANGE_WOOD_COST = 150;
+const ARCHER_FOOD_COST = UNIT_DEFINITIONS.archer.cost.food;
+const ARCHER_WOOD_COST = UNIT_DEFINITIONS.archer.cost.wood;
+const ARCHERY_RANGE_WOOD_COST = BUILDING_DEFINITIONS['archery-range'].cost.wood;
 const ARCHERY_RANGE_QUEUE_LIMIT = 5;
-const ARCHERY_RANGE_SIZE = 3;
-const BARRACKS_WOOD_COST = 175;
+const ARCHERY_RANGE_SIZE = BUILDING_DEFINITIONS['archery-range'].footprint;
+const BARRACKS_WOOD_COST = BUILDING_DEFINITIONS.barracks.cost.wood;
 const BARRACKS_QUEUE_LIMIT = 5;
-const BARRACKS_SIZE = 3;
-const ATTACK_UPGRADE_RULES = Object.freeze({
-  barracks: Object.freeze({
-    type: 'infantry-attack', key: 'infantryAttack', label: 'INFANTRY FORGING',
-    foodCost: 100, woodCost: 75, durationSeconds: 25,
-  }),
-  'archery-range': Object.freeze({
-    type: 'archer-attack', key: 'archerAttack', label: 'ARCHER FLETCHING',
-    foodCost: 125, woodCost: 125, durationSeconds: 25,
-  }),
-});
+const BARRACKS_SIZE = BUILDING_DEFINITIONS.barracks.footprint;
+const ATTACK_UPGRADE_RULES = Object.freeze(Object.fromEntries(
+  Object.entries(TECHNOLOGY_DEFINITIONS).map(([type, rule]) => [rule.building, Object.freeze({
+    type, key: rule.upgradeKey, label: rule.label,
+    foodCost: rule.cost.food, woodCost: rule.cost.wood, durationSeconds: rule.durationSeconds,
+  })]),
+));
 const TEAM_NAMES = ['Azure', 'Ember'];
 const TEAM_HEX = [0x5aa7d7, 0xe67a5e];
 const pausedProductionCueColor = new THREE.Color(0xa8a797);
@@ -2948,7 +2945,7 @@ function flushUnitCargoPackColor(team) {
 
 function setUnitTint(unit, markBuffersDirty = true) {
   if (!shouldUpdateUnitFullDetailTint(unitLowDetailActive)) return false;
-  const health = Math.max(0, unit.hp) / 100;
+  const health = Math.max(0, unit.hp) / UNIT_DEFINITIONS[unit.kind].combat.maxHp;
   const strength = unit.hp > 0 ? 0.7 + health * 0.3 : unit.defeatStartedAt > 0 ? 0.58 : 0;
   const flashing = unit.damageFlashUntil > performance.now();
   color.setHex(TEAM_HEX[unit.team]);
@@ -3011,7 +3008,7 @@ function updateUnitFocusVisual(unit) {
 }
 
 function updateUnitHealthVisual(unit) {
-  const ratio = Math.max(0, Math.min(1, unit.hp / 100));
+  const ratio = Math.max(0, Math.min(1, unit.hp / UNIT_DEFINITIONS[unit.kind].combat.maxHp));
   const visible = unit.visible !== false && ratio > 0 && ratio < 1;
   const scale = visible ? unit.scale : 0;
   if (unit.healthVisualScale === scale && (!visible
