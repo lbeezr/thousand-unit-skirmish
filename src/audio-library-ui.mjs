@@ -226,11 +226,11 @@ export function mountAudioLibrary(container, { store }) {
         composerStyle = element('link', { rel: 'stylesheet', href: './src/audio-composer.css' });
         document.head.append(composerStyle);
       }
-      composer = mountAudioComposer(host, { pack, sourceBlobs, onChange: (nextPack) => run(async () => {
+      composer = mountAudioComposer(host, { pack, sourceBlobs, onChange: async (nextPack) => {
         pack = await store.savePack(nextPack);
         await refreshPacks();
         message('Composition saved');
-      }) });
+      } });
     } catch (error) {
       host.replaceChildren(element('p', { class: 'empty-state', text: `Composer is unavailable: ${error.message}` }));
     }

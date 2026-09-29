@@ -39,7 +39,7 @@ assert.equal(withComposition.compositions[0].tracks[0].clips[0].durationBeats, 4
 assert.equal(withComposition.compositions[0].tracks[0].gain, 1);
 assert.throws(() => validateAudioPack({ ...pack, compositions: [{ ...withComposition.compositions[0],
   tracks: [{ ...withComposition.compositions[0].tracks[0], clips: [{ id: 'track', sourceId: 'wood' }] }],
-}] }), /duplicate ID/);
+}] }), /[Dd]uplicate.*ID/);
 await assert.rejects(exportAudioPack(pack, {}), /no original bytes/);
 await assert.rejects(exportAudioPack(pack, { wood: new Blob([new Uint8Array(16 * 1024 * 1024 + 1)]) }), /16 MiB source limit/);
 await assert.rejects(parseAudioPackArchive(new Blob(['invalid'])), /not valid JSON/);
@@ -48,3 +48,9 @@ broken.sources.wood.byteLength++;
 await assert.rejects(parseAudioPackArchive(new Blob([JSON.stringify(broken)])), /declared byte length/);
 await assert.rejects(parseAudioPackArchive(new Blob([new Uint8Array(90 * 1024 * 1024 + 1)])), /90 MiB import limit/);
 console.log('Audio library validation and byte-preserving archive checks passed');
+
+const invalidComposition = structuredClone(withComposition);
+invalidComposition.compositions[0].tracks[0].clips[0].startBeat = 28;
+invalidComposition.compositions[0].tracks[0].clips[0].durationBeats = 4 + 1e-7;
+assert.throws(() => validateAudioPack(invalidComposition), /extends past/,
+  'storage uses the same timeline boundary as playback');

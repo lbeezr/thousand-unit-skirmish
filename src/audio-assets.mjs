@@ -1,3 +1,5 @@
+import { validateComposition as validateSharedComposition } from './audio-composition.mjs';
+
 // Portable metadata contract. Original recordings live beside this record as Blobs.
 export const AUDIO_PACK_SCHEMA_VERSION = 1;
 export const MAX_AUDIO_SOURCES = 128;
@@ -96,61 +98,8 @@ function validateProfile(value, path, sourceIds, compositionIds) {
   return { id: id(value.id, `${path}.id`), name: text(value.name, `${path}.name`), bindings, music };
 }
 
-function validateCompositionShape(composition, path) {
-  composition.bpm ??= 96;
-  composition.beatsPerBar ??= 4;
-  composition.lengthBars ??= 8;
-  number(composition.bpm, `${path}.bpm`, 20, 300);
-  number(composition.beatsPerBar, `${path}.beatsPerBar`, 1, 16);
-  number(composition.lengthBars, `${path}.lengthBars`, 1, 256);
-  if (!Number.isInteger(composition.beatsPerBar) || !Number.isInteger(composition.lengthBars)) fail(path, 'beatsPerBar and lengthBars must be integers');
-  const ids = new Set([composition.id]);
-  let clipCount = 0;
-  for (const [j, track] of composition.tracks.entries()) {
-    const tp = `${path}.tracks[${j}]`;
-    if (!isObject(track)) fail(tp, 'must be an object');
-    const trackId = id(track.id, `${tp}.id`);
-    if (ids.has(trackId)) fail(tp, `duplicate ID ${trackId}`);
-    ids.add(trackId);
-    text(track.name, `${tp}.name`);
-    track.gain ??= 1;
-    track.pan ??= 0;
-    track.mute ??= false;
-    track.solo ??= false;
-    number(track.gain, `${tp}.gain`, 0, 4);
-    number(track.pan, `${tp}.pan`, -1, 1);
-    for (const field of ['mute', 'solo']) if (typeof track[field] !== 'boolean') fail(`${tp}.${field}`, 'must be a boolean');
-    if (!Array.isArray(track.clips) || track.clips.length > 256) fail(`${tp}.clips`, 'must have at most 256 clips');
-    clipCount += track.clips.length;
-    if (clipCount > 1024) fail(path, 'composition exceeds 1024 clips');
-    for (const [k, clip] of track.clips.entries()) {
-      const cp = `${tp}.clips[${k}]`;
-      if (!isObject(clip)) fail(cp, 'must be an object');
-      const clipId = id(clip.id, `${cp}.id`);
-      if (ids.has(clipId)) fail(cp, `duplicate ID ${clipId}`);
-      ids.add(clipId);
-      clip.startBeat ??= 0;
-      clip.durationBeats ??= 4;
-      clip.offsetSeconds ??= 0;
-      clip.gain ??= 1;
-      clip.loop ??= false;
-      clip.fadeInSeconds ??= 0;
-      clip.fadeOutSeconds ??= 0;
-      number(clip.startBeat, `${cp}.startBeat`, 0, 65536);
-      number(clip.durationBeats, `${cp}.durationBeats`, 0.001, 65536);
-      number(clip.offsetSeconds, `${cp}.offsetSeconds`, 0, 86400);
-      number(clip.gain, `${cp}.gain`, 0, 4);
-      if (typeof clip.loop !== 'boolean') fail(`${cp}.loop`, 'must be a boolean');
-      number(clip.fadeInSeconds, `${cp}.fadeInSeconds`, 0, 86400);
-      number(clip.fadeOutSeconds, `${cp}.fadeOutSeconds`, 0, 86400);
-      if (clip.startBeat + clip.durationBeats > composition.lengthBars * composition.beatsPerBar + 0.000001) fail(cp, 'clip extends past composition length');
-    }
-  }
-}
-
-// A composer module may be supplied by the caller after it loads. The local checks
-// keep imported projects safe before that optional editor has been fetched.
-export function validateAudioPack(value, { validateComposition } = {}) {
+// Use the same composition contract for storage, import, editing and playback.
+export function validateAudioPack(value, { validateComposition = validateSharedComposition } = {}) {
   if (!isObject(value)) fail('pack', 'must be an object');
   if (value.schemaVersion !== AUDIO_PACK_SCHEMA_VERSION) fail('pack.schemaVersion', `unsupported version ${value.schemaVersion}; expected 1`);
   let metadataSize;
@@ -161,11 +110,10 @@ export function validateAudioPack(value, { validateComposition } = {}) {
   const compositions = array(value.compositions, 'pack.compositions', MAX_AUDIO_COMPOSITIONS).map((composition, i) => {
     const path = `pack.compositions[${i}]`;
     if (!isObject(composition) || composition.schemaVersion !== 1) fail(path, 'must be a version 1 composition');
-    const checked = validateComposition ? validateComposition(composition) : structuredClone(composition);
+    const checked = validateComposition(composition);
     id(checked.id, `${path}.id`);
     text(checked.name, `${path}.name`);
     if (!Array.isArray(checked.tracks) || checked.tracks.length > 64) fail(`${path}.tracks`, 'must have at most 64 tracks');
-    validateCompositionShape(checked, path);
     for (const [j, track] of checked.tracks.entries()) {
       if (!isObject(track) || !Array.isArray(track.clips) || track.clips.length > 256) fail(`${path}.tracks[${j}]`, 'invalid track or too many clips');
       for (const [k, clip] of track.clips.entries()) {
