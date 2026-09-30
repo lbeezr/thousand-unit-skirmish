@@ -307,3 +307,9 @@ passed, including weighted Stable population controls, mounted health indicators
 and bounded observed-threat AI responses. Strategic LOD state checks passed.
 Broader CI, real AI recovery, staging appearance, reconnaissance routes and mounted
 raids across representative terrain remain separate integration evidence.
+
+Mounted AI recovery follow-up: seeded Forked Vale loss recovery passed for Azure
+(winner 0, tick 5,070, three builds, eight trained units) and Ember (winner 1,
+tick 6,090, four builds, ten trained units), with one-Stable and existing per-role
+construction bounds. Mounted CI also exposed a stale schema-16 assertion in the
+legacy producer-destruction fixture; its expected migrated schema is now 17.
