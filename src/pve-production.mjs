@@ -169,6 +169,23 @@ export function createProductionPolicy(seed) {
           }
         }
       }
+      const tower = observation.buildings.friendly.find((building) => building.type === 'watchtower' && building.hp > 0);
+      if (economyBuilder && home && (tower && !tower.complete || observation.units.visibleEnemies.some((unit) => unit.hp > 0 && Math.hypot(unit.x - home.x, unit.z - home.z) < 18))
+        && friendly.filter((unit) => unit.kind !== 'worker').length >= 6) {
+        if (tower && !tower.complete) {
+          postpone(observation.tick);
+          return [{ type: 'build', ids: [economyBuilder.id], unitGenerations: [economyBuilder.generation], buildingId: tower.id }];
+        }
+        const defense = BUILDING_DEFINITIONS.watchtower;
+        if (!tower && observation.resources.wood >= defense.cost.wood + limits.woodReserve
+          && observation.resources.food >= defense.cost.food + limits.foodReserve) {
+          const sites = candidateSites(observation, home, seed, defense.id);
+          if (sites.length) {
+            const point = sites[siteAttempt++ % sites.length]; postpone(observation.tick);
+            return [{ type: 'build', ids: [economyBuilder.id], unitGenerations: [economyBuilder.generation], buildingType: defense.id, ...point }];
+          }
+        }
+      }
       const queued = observation.buildings.friendly.filter((building) => !building.home).reduce((sum, building) => sum + building.queue, 0);
       const workerQueue = observation.workerProduction?.queue ?? 0;
       if (barracks.productionBlocked || barracks.queue >= limits.queue

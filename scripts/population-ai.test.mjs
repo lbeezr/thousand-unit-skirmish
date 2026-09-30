@@ -79,3 +79,19 @@ for (const team of [0, 1]) test(`AI expands and recovers Worker production using
   state.buildings.friendly = state.buildings.friendly.filter((building) => !building.home);
   assert.deepEqual(policy.next({ ...state, tick: 750 }), [{ type: 'trainUnit', kind: 'worker', buildingId: 11 }], 'a surviving expansion replaces lost Workers');
 });
+
+for (const team of [0, 1]) test(`AI defends a visible home threat and resumes one tower for seat ${team}`, () => {
+  const x = team ? 20 : -20;
+  const state = { team, tick: 0, fogOfWar: false, map: { width: 80, height: 64 }, resources: { food: 300, wood: 200 },
+    units: { friendly: Array.from({ length: 12 }, (_, id) => ({ id, generation: 1, team, hp: 100, x, z: 0,
+      kind: id < 4 ? 'worker' : 'infantry', task: 'idle', cargo: 0 })), visibleEnemies: [{ id: 20, team: 1 - team, hp: 100, x: x + 10, z: 0 }] },
+    buildings: { friendly: [{ id: 9, team, type: 'barracks', complete: true, hp: 1800, queue: 0, x: 0, z: 10 }], visibleEnemies: [] },
+    objectives: [], resourceNodes: [] };
+  const policy = createProductionPolicy(42); policy.next(state);
+  const build = policy.next({ ...state, tick: 300 }); assert.equal(build[0].buildingType, 'watchtower');
+  state.units.visibleEnemies = [];
+  state.buildings.friendly.push({ id: 10, team, type: 'watchtower', complete: false, hp: 1200, queue: 0, x: build[0].x, z: build[0].z });
+  assert.equal(policy.next({ ...state, tick: 450 })[0].buildingId, 10, 'finish a paid defense after the threat leaves view');
+  state.buildings.friendly[1].complete = true;
+  assert.equal(policy.next({ ...state, tick: 750 })[0].type, 'trainUnit', 'one tower is enough and army production continues');
+});

@@ -1169,8 +1169,27 @@ function updateHouseVisual(visual, building) {
   updateBuildingHealthIndicator(visual, building);
 }
 
+function createWatchtowerVisual(building) {
+  const visual = createHouseVisual(building);
+  visual.walls.material.color.setHex(0x8d8879);
+  visual.roof.material.color.setHex(0x4f554e);
+  updateWatchtowerVisual(visual, building);
+  return visual;
+}
+function updateWatchtowerVisual(visual, building) {
+  updateHouseVisual(visual, building);
+  const progress = THREE.MathUtils.clamp(Number(building.progress) || 0, 0, 1);
+  visual.walls.scale.y = Math.max(0.08, progress * 2.3);
+  visual.walls.position.y = 0.15 + 1.38 * progress;
+  visual.roof.position.y = 3.5;
+  if (Number.isFinite(building.lastAttackX) && Number.isFinite(building.lastAttackZ)) {
+    visual.roof.rotation.y = Math.atan2(building.lastAttackX - building.x, building.lastAttackZ - building.z);
+  }
+}
+
 function createGameplayBuildingVisual(building) {
   const role = buildingPresentation(building.type).role;
+  if (role === 'watchtower') return createWatchtowerVisual(building);
   if (role === 'town-center') return createTownCenterVisual(building);
   if (role === 'house') return createHouseVisual(building);
   return role === 'barracks' ? createBarracksVisual(building) : createArcheryRangeVisual(building);
@@ -1438,7 +1457,8 @@ function reconcileBuildings(buildings = [], initial = false) {
       disposeBuildingVisual(visual);
       visual = createGameplayBuildingVisual(building);
       buildingVisuals.set(building.id, visual);
-    } else if (buildingPresentation(building.type).role === 'town-center') updateTownCenterVisual(visual, building);
+    } else if (buildingPresentation(building.type).role === 'watchtower') updateWatchtowerVisual(visual, building);
+    else if (buildingPresentation(building.type).role === 'town-center') updateTownCenterVisual(visual, building);
     else if (buildingPresentation(building.type).role === 'house') updateHouseVisual(visual, building);
     else if (buildingPresentation(building.type).role === 'barracks') updateBarracksVisual(visual, building);
     else updateArcheryRangeVisual(visual, building);
@@ -3889,7 +3909,11 @@ function updateCommandUI() {
     : attackMoveMode ? 'Advance and engage' : 'Move or attack';
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
   const utilityBuilding = selectedBuilding && !BUILDING_DEFINITIONS[selectedBuilding.type]?.products.length;
-  if (ui.commandHint) ui.commandHint.textContent = utilityBuilding ? `Adds ${BUILDING_DEFINITIONS[selectedBuilding.type].populationCapacity || 0} population capacity when complete.` : tapOrderArmed
+  if (ui.commandHint) ui.commandHint.textContent = utilityBuilding ? BUILDING_DEFINITIONS[selectedBuilding.type].combat
+      ? `Defends visible enemies within ${BUILDING_DEFINITIONS[selectedBuilding.type].combat.range} cells · ${BUILDING_DEFINITIONS[selectedBuilding.type].sight} sight.`
+      : BUILDING_DEFINITIONS[selectedBuilding.type].dropoff
+        ? 'Workers deposit food and wood here when complete.'
+        : `Adds ${BUILDING_DEFINITIONS[selectedBuilding.type].populationCapacity || 0} population capacity when complete.` : tapOrderArmed
     ? selectedBuilding ? 'Tap or click ground to set the rally point'
       : attackMoveMode ? 'Tap or click ground to advance and engage' : 'Tap or click ground, an enemy, or a resource'
     : selectedBuilding ? coarsePointer ? 'Use Set rally point, then tap ground'

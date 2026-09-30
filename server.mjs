@@ -38,7 +38,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 14;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 15;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -1742,19 +1742,23 @@ function aliveCounts() {
   return alive;
 }
 
-function markVisionFrom(team, x, z) {
+const visionRaysByRadius = new Map([[VISION_RADIUS_CELLS, VISION_RAYS], [VISION_RADIUS_CELLS + HIGH_GROUND_VISION_BONUS_CELLS, HIGH_GROUND_VISION_RAYS]]);
+function markVisionFrom(team, x, z, sight = VISION_RADIUS_CELLS) {
   const centerColumn = Math.floor(x + MAP_HALF_X);
   const centerRow = Math.floor(z + MAP_HALF_Z);
   const sourceCell = centerRow * MAP_WIDTH + centerColumn;
   const processedSources = processedVisionSourcesByTeam[team];
-  if (processedSources[sourceCell]) return;
-  processedSources[sourceCell] = 1;
+  if (processedSources[sourceCell] >= sight) return;
+  processedSources[sourceCell] = sight;
   const visible = visibleCellsByTeam[team];
   const explored = exploredCellsByTeam[team];
-  let coverage = visionCoverageBySourceCell[sourceCell];
+  const sourceCoverages = visionCoverageBySourceCell[sourceCell] ||= new Map();
+  let coverage = sourceCoverages.get(sight);
   if (!coverage) {
     const cells = [];
-    const rays = elevationLevelByCell[sourceCell] > 0 ? HIGH_GROUND_VISION_RAYS : VISION_RAYS;
+    const radius = sight + (elevationLevelByCell[sourceCell] > 0 ? HIGH_GROUND_VISION_BONUS_CELLS : 0);
+    if (!visionRaysByRadius.has(radius)) visionRaysByRadius.set(radius, buildVisionRays(radius));
+    const rays = visionRaysByRadius.get(radius);
     for (const [dx, dz, ray] of rays) {
       const column = centerColumn + dx;
       const row = centerRow + dz;
@@ -1773,7 +1777,7 @@ function markVisionFrom(team, x, z) {
       if (!sightBlocked) cells.push(row * MAP_WIDTH + column);
     }
     coverage = Uint16Array.from(cells);
-    visionCoverageBySourceCell[sourceCell] = coverage;
+    sourceCoverages.set(sight, coverage);
   }
   for (let index = 0; index < coverage.length; index++) {
     const cell = coverage[index];
@@ -1794,7 +1798,7 @@ function updateVisionMasks() {
   for (const building of allMatchBuildings()) {
     for (const cell of buildingAccessCells(building.footprint)) {
       const source = cellToWorld(cell);
-      markVisionFrom(building.team, source.x, source.z);
+      markVisionFrom(building.team, source.x, source.z, building.complete ? BUILDING_DEFINITIONS[building.type].sight || VISION_RADIUS_CELLS : VISION_RADIUS_CELLS);
     }
   }
 }
@@ -2378,6 +2382,9 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
       id: building.id, team: building.team, type: building.type,
       x: building.x, z: building.z, hp: building.hp, maxHp: BUILDING_DEFINITIONS[building.type].maxHp,
       attackers: buildingAttackers.get(building.id) || 0,
+      lastAttackTick: building.lastAttackTick ?? -1,
+      lastAttackX: !fogView || building.team === viewTeam ? building.lastAttackX ?? building.x : null,
+      lastAttackZ: !fogView || building.team === viewTeam ? building.lastAttackZ ?? building.z : null,
       progress: building.progress,
       complete: building.complete, queue: building.queue,
       productionOptions: viewTeam === null || building.team === viewTeam
@@ -2623,6 +2630,8 @@ function validateMatchCheckpoint(snapshot) {
       && integerIn(building.rallyCell, -1, cellCount - 1)
       && Array.isArray(building.footprint) && building.footprint.length > 0
       && building.footprint.every((cell) => integerIn(cell, 0, cellCount - 1))
+      && (building.attackCooldown === undefined || (finite(building.attackCooldown) && building.attackCooldown >= 0 && building.attackCooldown <= (BUILDING_DEFINITIONS[building.type].combat?.period || 0)))
+      && (building.attackScanOffset === undefined || integerIn(building.attackScanOffset, 0, Number.MAX_SAFE_INTEGER))
       && finite(building.progress) && building.progress >= 0 && building.progress <= 1
       && typeof building.complete === 'boolean' && integerIn(building.queue, 0, MAX_BUILDING_QUEUE)
       && finite(building.trainingRemaining) && building.trainingRemaining >= 0
@@ -3066,6 +3075,10 @@ function migrateMatchCheckpoint(snapshot) {
   if (snapshot?.schemaVersion === 13 && [GAMEPLAY_RULESET_REVISION, 'v1:f1e3b9aee2399187a2ab2f0d06bbb37cbd65d71004462536902b3da0c31c2e4d'].includes(snapshot.rulesetRevision)) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
     snapshot.state.homeTownCenters = [0, 1].map(() => ({ hp: BUILDING_DEFINITIONS['town-center'].maxHp, rallyCell: -1 }));
+    snapshot.schemaVersion = 14;
+  }
+  if (snapshot?.schemaVersion === 14 && [GAMEPLAY_RULESET_REVISION, 'v1:7e0fe0db4cc8bdea4fac37424a3d92739c74eefa8f31f0080cc660128d8a31a1'].includes(snapshot.rulesetRevision)) {
+    snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
     snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;
   }
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
@@ -5963,6 +5976,51 @@ function spreadInteractingUnits() {
   }
 }
 
+// Bounded, rotating enemy-bucket scans share unit visibility and simultaneous damage.
+function findStationaryCombatTarget(building, range) {
+  const team = 1 - building.team;
+  const buckets = [];
+  for (let row = spatialBucketRow(building.z - range); row <= spatialBucketRow(building.z + range); row++) {
+    for (let column = spatialBucketColumn(building.x - range); column <= spatialBucketColumn(building.x + range); column++) {
+      const bucket = row * spatialBucketColumns + column;
+      if (spatialBucketTeamCounts[team][bucket]) buckets.push(bucket);
+    }
+  }
+  if (!buckets.length) return null;
+  const first = (building.attackScanOffset || 0) % buckets.length;
+  building.attackScanOffset = (first + 1) % buckets.length;
+  const remaining = buckets.map((bucket) => spatialBucketTeamCounts[team][bucket]);
+  let visited = 0; let target = null; let best = range * range;
+  while (visited < 64 && remaining.some((count) => count > 0)) {
+    for (let index = 0; index < buckets.length && visited < 64; index++) {
+      const slot = (first + index) % buckets.length;
+      if (!remaining[slot]) continue;
+      const bucket = buckets[slot]; remaining[slot]--; visited++;
+      let id = spatialBucketTeamCursors[team][bucket];
+      if (id < 0 || spatialBucketOfUnit[id] !== bucket || units[id]?.team !== team || units[id]?.hp <= 0) id = spatialBucketTeamHeads[team][bucket];
+      const unit = units[id]; spatialBucketTeamCursors[team][bucket] = spatialBucketTeamNext[team][id];
+      if (!unit || unit.hp <= 0 || (mapDefinition.fogOfWar && !cellVisibleToTeam(building.team, worldToCell(unit.x, unit.z)))) continue;
+      const distance = (unit.x - building.x) ** 2 + (unit.z - building.z) ** 2;
+      if (distance < best || (distance === best && (!target || unit.id < target.id))) { target = unit; best = distance; }
+    }
+  }
+  return target;
+}
+function accumulateBuildingAttacks() {
+  for (const building of buildings) {
+    const combat = BUILDING_DEFINITIONS[building.type].combat;
+    if (!combat || !building.complete || building.hp <= 0) continue;
+    building.attackCooldown = Math.max(0, (building.attackCooldown || 0) - STEP_SECONDS);
+    if (building.attackCooldown > 0) continue;
+    const target = findStationaryCombatTarget(building, combat.range);
+    if (!target) { building.attackCooldown = Math.min(combat.period, 0.25); continue; }
+    pendingUnitDamage[target.id] += combat.damage;
+    building.attackCooldown = combat.period;
+    building.lastAttackTick = tickNumber; building.lastAttackX = target.x; building.lastAttackZ = target.z;
+    dirty = true;
+  }
+}
+
 function simulateTick() {
   if (SEPARATION_DIAGNOSTICS_ENABLED) {
     separationTickCandidateVisits = 0;
@@ -6113,6 +6171,7 @@ function simulateTick() {
     }
   }
 
+  accumulateBuildingAttacks();
   for (const target of units) {
     const damage = pendingUnitDamage[target.id];
     if (damage <= 0 || target.hp <= 0) continue;

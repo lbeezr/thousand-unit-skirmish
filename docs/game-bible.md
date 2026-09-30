@@ -179,3 +179,10 @@ and accept food/wood cargo. Starting centers keep the initial population baselin
 and their authored placement. Both kinds can rally, be repaired or destroyed;
 losing a center does not eliminate surviving units or another usable producer.
 Destroyed production loses its paid queues without refund.
+
+Watchtower costs 50 food and 150 wood, takes 35 seconds, and has 1,200 HP.
+Completed towers attack visible enemy units within seven cells for eight damage
+once every 1.25 seconds; they provide ten-cell sight around their access perimeter
+with the existing terrain occlusion/high-ground rules. They cannot produce units
+or attack structures. F3 siege is the planned dedicated counter; these initial
+numbers still need defended-assault balance evidence.

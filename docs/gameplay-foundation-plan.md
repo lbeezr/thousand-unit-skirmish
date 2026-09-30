@@ -224,3 +224,15 @@ or an affordable reachable producer prevent elimination after a center is lost.
 The deterministic policy can construct/resume one visible-resource expansion
 and replace Workers at a surviving center. Procedural geometry and existing
 captured Town Center art remain placeholders independent of authoritative rules.
+
+### Watchtower defense slice
+
+Watchtower is a non-production defense: 50 food / 150 wood, 35-second build,
+three-cell footprint, 1,200 HP, seven-cell attack range and ten-cell sight from
+its access perimeter. A completed tower deals eight unit damage every 1.25
+seconds. It uses team visibility and the same pending-damage resolution as unit
+attacks; unfinished towers cannot fire. Nearest inspected targets are chosen
+with deterministic ties and rotating spatial scans capped at 64 enemy visits.
+Idle scans back off for a quarter-second. Siege supplies the intended dedicated
+defense counter in F3; the present numbers are provisional rather than final
+balance. AI builds at most one tower for a visible threat near its own base.
