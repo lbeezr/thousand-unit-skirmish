@@ -251,3 +251,21 @@ Spearman declares its mounted multiplier for the following Stable/Rider slice.
 Generic ranged-building access uses the content's mode/range. Gathering,
 construction, repair and structure attacks use supported capabilities, and the
 military selection control includes the full registered military roster.
+
+### Stable and mounted roster slice
+
+Stable supplies Scout and Rider through the shared producer registry. Its three-cell
+foundation costs 200 wood, builds in 25 seconds and has 1,600 HP. Scout costs
+40 food / 30 wood, trains in 16 seconds, uses one population, moves at 4.5 cells
+per second and sees eleven cells; 60 HP and weak attacks make it reconnaissance
+rather than a frontline fighter. Rider costs 85 food / 25 wood, trains in 20
+seconds and uses two population. Its 130 HP, 3.8-cell speed and melee/pierce armor
+support raids, while Spearman's mounted bonus remains a direct answer. These are
+provisional numbers grounded in the first both-seat combat trades.
+
+Mounted procedural placeholders share one instanced horse mesh per team and a
+mounted silhouette at strategic zoom. Stable currently uses the procedural
+Barracks presentation profile as its declared fallback. The bounded policy can
+acquire/resume one Stable and train at most one Scout and two Riders, prioritizing
+Spearmen for currently visible mounted threats. Workshop, siege, second-tier
+progression and representative defended-position/scouting matches remain F3 work.

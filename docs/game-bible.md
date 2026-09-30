@@ -201,3 +201,14 @@ zero. Matching multipliers multiply and armor bonuses add. Hits resolve together
 so a lethal counterattack still lands in the same tick. Existing role timings,
 ranges and damage are preserved; Spearman's threefold mounted modifier becomes
 player-visible when the mounted roster ships.
+
+### Mounted foundation roster (2026-09-29)
+
+The Frontier Stable offers a fragile, fast Scout with eleven-cell sight and a
+heavier Rider that reserves two population. Rider armor reduces ordinary melee
+and pierce hits; Spearman's threefold mounted modifier resolves before armor and
+provides a direct counter. Initial full-health adjacent duels in both seats leave
+Spearman at 55 HP after defeating Rider, Rider at 100 after defeating Worker,
+and Worker at 52 after defeating Scout. Scout should use mobility and sight
+rather than fight a stationary economy head-on. Match-level scouting and raid
+balance still need evidence; these initial numbers are not a final balance claim.

@@ -447,7 +447,8 @@ const spearMeshes = [null, null];
 const toolMeshes = [null, null];
 const packMeshes = [null, null];
 const quiverMeshes = [null, null];
-const unitArtMeshes = [bodyMeshes, headMeshes, bowMeshes, shieldMeshes, spearMeshes, toolMeshes, packMeshes, quiverMeshes];
+const mountMeshes = [null, null];
+const unitArtMeshes = [mountMeshes, bodyMeshes, headMeshes, bowMeshes, shieldMeshes, spearMeshes, toolMeshes, packMeshes, quiverMeshes];
 const unitLodRoleMeshes = [
   { worker: null, infantry: null, archer: null },
   { worker: null, infantry: null, archer: null },
@@ -2687,7 +2688,30 @@ function createGroundSilhouette(polygons, baseColor = 0xf3e8cd, polygonColors = 
   return geometry;
 }
 
+function createMountGeometry() {
+  const positions = [], normals = [];
+  // One shared instanced placeholder mesh, including body, head and four legs.
+  for (const [w, h, d, x, y, z] of [
+    [0.46, 0.42, 0.85, 0, 0.66, 0], [0.28, 0.46, 0.24, 0, 0.92, 0.4],
+    [0.25, 0.23, 0.42, 0, 1.12, 0.52],
+    ...[-0.16, 0.16].flatMap(x => [-0.3, 0.3].map(z => [0.11, 0.47, 0.11, x, 0.24, z])),
+  ]) {
+    const part = new THREE.BoxGeometry(w, h, d).toNonIndexed();
+    part.translate(x, y, z);
+    positions.push(...part.attributes.position.array); normals.push(...part.attributes.normal.array);
+    part.dispose();
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+  return geometry;
+}
+
 const unitLodRoleGeometries = {
+  mounted: createGroundSilhouette([
+    [[-0.28, -0.5], [0.28, -0.5], [0.28, 0.35], [0.16, 0.35], [0.16, 0.8], [-0.16, 0.8], [-0.16, 0.35], [-0.28, 0.35]],
+    [[-0.14, -0.16], [0.14, -0.16], [0.14, 0.22], [-0.14, 0.22]],
+  ], 0x8b6947, { 1: 0xf3e8cd }),
   worker: createGroundSilhouette([
     [[-0.14, -0.16], [-0.19, -0.05], [-0.16, 0.12], [-0.08, 0.21], [0.08, 0.21], [0.16, 0.12], [0.19, -0.05], [0.14, -0.16]],
     [[-0.12, 0.22], [-0.1, 0.31], [0.1, 0.31], [0.12, 0.22]],
@@ -2725,6 +2749,7 @@ const unitLodMarkerGeometries = [
 ];
 
 for (let team = 0; team < 2; team++) {
+  mountMeshes[team] = makeInstances(createMountGeometry(), new THREE.MeshBasicMaterial({ color: 0x8b6947 }), MAX_PER_TEAM);
   bodyMeshes[team] = makeInstances(
     addPaintedFacets(new THREE.CylinderGeometry(0.16, 0.235, 0.48, 6, 1)),
     new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: true }),
@@ -3100,7 +3125,7 @@ function updateUnitHealthVisual(unit) {
   unit.healthVisualRatio = ratio;
   unit.healthVisualX = unit.renderX;
   unit.healthVisualZ = unit.renderZ;
-  dummy.position.set(unit.renderX, 1.55, unit.renderZ);
+  dummy.position.set(unit.renderX, unitPresentation(unit.kind).role === 'mounted' ? 2.1 : 1.55, unit.renderZ);
   dummy.quaternion.copy(camera.quaternion);
   dummy.scale.set(scale, scale, scale);
   dummy.updateMatrix();
@@ -3135,6 +3160,8 @@ function updateUnitTransform(unit, now = performance.now()) {
   const presentationRole = unitPresentation(unit.kind).role;
   const isWorker = presentationRole === 'worker';
   const isArcher = presentationRole === 'archer';
+  const isMounted = presentationRole === 'mounted';
+  const riderLift = isMounted ? 0.72 : 0;
   if (unitSpritePreviewActive && unitSpritePreviewRoleSet.has(unit.kind)) {
     updateUnitLodTransform(unit, unitSpriteMarkersActive ? visibleScale : 0);
     dummy.position.set(unit.renderX, 0, unit.renderZ);
@@ -3180,7 +3207,7 @@ function updateUnitTransform(unit, now = performance.now()) {
   const sideZ = -Math.sin(unit.angle);
   facing.setFromAxisAngle(worldUp, unit.angle);
   dummy.position.set(unit.renderX + forwardX * (attackPose * 0.05 - hitPose * 0.075),
-    (isWorker ? 0.23 : isArcher ? 0.25 : 0.27) + Math.max(0, stride) + idleBreath
+    (isWorker ? 0.23 : isArcher ? 0.25 : 0.27) + riderLift + Math.max(0, stride) + idleBreath
       - defeatProgress * 0.16,
     unit.renderZ + forwardZ * (attackPose * 0.05 - hitPose * 0.075));
   dummy.quaternion.copy(facing);
@@ -3193,7 +3220,7 @@ function updateUnitTransform(unit, now = performance.now()) {
   bodyMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
 
   dummy.position.set(unit.renderX + sideX * defeatProgress * 0.16,
-    (isWorker ? 0.48 : isArcher ? 0.54 : 0.61) + Math.max(0, stride) + idleBreath * 0.7
+    (isWorker ? 0.48 : isArcher ? 0.54 : 0.61) + riderLift + Math.max(0, stride) + idleBreath * 0.7
       - hitPose * 0.035 - defeatProgress * 0.34,
     unit.renderZ + sideZ * defeatProgress * 0.16);
   dummy.quaternion.identity();
@@ -3213,7 +3240,7 @@ function updateUnitTransform(unit, now = performance.now()) {
   dummy.updateMatrix();
   bowMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
 
-  dummy.position.set(unit.renderX - sideX * 0.235 + forwardX * 0.1, 0.42 + Math.max(0, stride),
+  dummy.position.set(unit.renderX - sideX * 0.235 + forwardX * 0.1, 0.42 + riderLift + Math.max(0, stride),
     unit.renderZ - sideZ * 0.235 + forwardZ * 0.1);
   dummy.quaternion.copy(facing);
   dummy.rotateX(-attackPose * 0.16 + hitPose * 0.22);
@@ -3221,7 +3248,7 @@ function updateUnitTransform(unit, now = performance.now()) {
   dummy.updateMatrix();
   shieldMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
 
-  dummy.position.set(unit.renderX + sideX * 0.24, 0.57 + Math.max(0, stride),
+  dummy.position.set(unit.renderX + sideX * 0.24, 0.57 + riderLift + Math.max(0, stride),
     unit.renderZ + sideZ * 0.24);
   dummy.quaternion.copy(facing);
   dummy.rotateX(attackPose * 0.66);
@@ -3251,6 +3278,13 @@ function updateUnitTransform(unit, now = performance.now()) {
   dummy.scale.setScalar(isArcher ? visibleScale : 0);
   dummy.updateMatrix();
   quiverMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
+
+  dummy.position.set(unit.renderX, Math.max(0, stride), unit.renderZ);
+  dummy.quaternion.copy(facing);
+  dummy.rotateZ(defeatProgress * 0.9);
+  dummy.scale.setScalar(isMounted ? visibleScale : 0);
+  dummy.updateMatrix();
+  mountMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
 
   updateUnitCargoCueColor(unit);
   updateUnitFocusVisual(unit);

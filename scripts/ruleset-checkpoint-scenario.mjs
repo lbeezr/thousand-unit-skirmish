@@ -113,7 +113,7 @@ try {
   }
   await stop();
   const original = JSON.parse(await readFile(checkpointPath, 'utf8'));
-  assert.equal(original.schemaVersion, 16); assert.equal(original.rulesetRevision, GAMEPLAY_RULESET_REVISION);
+  assert.equal(original.schemaVersion, 17); assert.equal(original.rulesetRevision, GAMEPLAY_RULESET_REVISION);
   assert.equal(original.factionId, DEFAULT_FACTION_ID);
   const legacy = structuredClone(original); legacy.schemaVersion = 11; delete legacy.rulesetRevision; delete legacy.factionId;
   legacy.state.seatSessions = [];

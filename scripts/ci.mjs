@@ -130,6 +130,7 @@ const scenarios = [
   ['scripts/storehouse-scenario.mjs', 'Storehouse drop-off and cargo recovery'],
   ['scripts/population-scenario.mjs', 'House population lifecycle'],
   ['scripts/roster-options-scenario.mjs', 'Roster production and persistence'],
+  ['scripts/roster-options-scenario.mjs', 'Mounted mixed production and persistence', '--mounted'],
   ['scripts/production-lifecycle-scenario.mjs', 'Producer destruction and population reservations'],
   ['scripts/infantry-seat-combat-scenario.mjs', 'Mirrored infantry combat parity', '--expect-parity'],
   ['scripts/opening-production-scenario.mjs', 'Mirrored construction and production', '--expect-builder-parity'],

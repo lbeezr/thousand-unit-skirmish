@@ -39,7 +39,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 16;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 17;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -3083,6 +3083,10 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.schemaVersion = 15;
   }
   if (snapshot?.schemaVersion === 15 && [GAMEPLAY_RULESET_REVISION, 'v1:a5fe7992c78af9f94dc6210898d1e46a1582d7ac1d5bbd4141be3cb2407f0762'].includes(snapshot.rulesetRevision)) {
+    snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+    snapshot.schemaVersion = 16;
+  }
+  if (snapshot?.schemaVersion === 16 && [GAMEPLAY_RULESET_REVISION, 'v1:36b333bbb92bb809369e64f5bcb8f04d46c7c4f42b85d65330b3480520e70fa5'].includes(snapshot.rulesetRevision)) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
     snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;
   }
