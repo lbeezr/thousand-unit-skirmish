@@ -21,14 +21,15 @@ is in `src/main.js`. Existing queues, rally points, construction connectivity,
 food/wood gathering, combat, fog, objectives, persistence and seeded PvE should
 be extended rather than replaced.
 
-`BUILDING_RULES` already describes Barracks and Range, but each names one unit
-kind. Unit stats/costs and research effects still contain role-specific branches.
-`src/pve-production.mjs` duplicates opening costs and assumes Barracks/Infantry;
-`src/selection-context.mjs` enumerates the three current kinds. Population
-reservations enforce safety caps; they do not yet provide a house-based economy.
-Visual-state helpers and sprite/GLB formats exist, but a common presentation
-binding and animation-capability boundary must be established. Renderer v1 is
-static rigid geometry, not an implemented skeletal-animation contract.
+`src/gameplay-definitions.mjs` now owns validated unit, building, technology and
+faction content, stable wire identities and the canonical gameplay revision.
+Authoritative queues/actions, HUD availability, editor validation and filtered AI
+observations consume these definitions. Houses and completed Town Centers provide
+gameplay capacity separately from safety ceilings; friendly drop-offs, repair,
+cancellation and shared combat/progression rules extend the existing simulation.
+`src/gameplay-presentation.mjs` binds content to declared procedural profiles.
+Sprite/GLB loaders remain renderer capabilities; skeletal animation and full F4
+variant/scale proofs are still separate work.
 
 ## Milestones and shipping slices
 
@@ -354,3 +355,19 @@ Read the dated QA records for build identities, measured observations and limits
 A listed test is a proof surface, not an assertion that every original acceptance
 criterion has passed merely because its filename exists. Final completion still
 requires review of the results and integration of outstanding focused PRs.
+
+### 2026-09-30 — F1–F3 integrated completion
+
+F1–F3 and the early presentation binding are implemented and integrated in main.
+PR #252 merged as `496d387` after all three CI shards passed at `c8539cf`; the
+new live expansion check passed in CI at tick 4560. The requirement audit above
+is resolved by those results together with the named registry, lifecycle,
+combined-arms, progression, filtered AI, authoring and recovery runtime evidence.
+
+Staging deployment `d0707391-06ce-4e74-9972-d74e4301ea93` succeeded at exact
+merge `496d387bcd7d8b3d2a720ca53aa167b36a04d292`. Packaging/transport smoke and
+a fresh 250-unit authored room passed readiness, both seats/reconnect, map
+save/reload, elimination victory and synchronized rematch (`qa-staging-muo1git3`).
+The deployed HUD observation and earlier narrow-layout evidence remain in QA.
+These proofs establish the requested foundation; they do not certify final
+balance, finished art, unassisted novice usability or full F4 variants/scale.

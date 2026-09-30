@@ -477,3 +477,15 @@ validation, canonical revision/wire identity, presentation capabilities, combat
 classes/modifiers, technology availability, private snapshots, selection, reachable
 drop-offs and bounded AI base/progression decisions. All 40 passed. These complement
 the runtime and staging proofs above; PR #252's full CI remains the integration gate.
+
+### 2026-09-30 — Merged foundation integration
+
+PR #252 merged as `496d387` after all three CI shards passed at `c8539cf`.
+CI run 36707855800 includes the live both-seat expansion proof (tick 4560) and
+release packaging. Exact staging deployment `d0707391-06ce-4e74-9972-d74e4301ea93`
+succeeded at `496d387bcd7d8b3d2a720ca53aa167b36a04d292`. Packaging/transport smoke
+and fresh authored room `qa-staging-muo1git3` (250-unit fixture) passed readiness,
+authenticated assets, invite creation, both seats/reconnect, authored-map
+save/reload, elimination victory and synchronized rematch. This resolves the
+previous pending integration items for F1–F3 and early presentation binding.
+Full F4 animation, variant and scale proofs remain separate.

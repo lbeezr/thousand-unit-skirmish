@@ -27,10 +27,13 @@ The registry, base lifecycle, mounted roster, bounded research, siege, Scout
 reconnaissance, AI counter-slot reservation and contextual HUD slices are
 integrated into main. QA records include a full seeded Forked Vale AI match,
 both-seat field-role and paid siege interactions, current staging gameplay and
-deployed HUD/recovery observations. Live AI base expansion passed locally and is
-being integrated in PR #252. Finish that focused PR and the requirement-by-requirement
-completion audit before claiming F1–F3 complete; the evidence and its limits are
-recorded in [QA](qa-vertical-slice.md).
+deployed HUD/recovery observations. Live AI base expansion is integrated through PR #252, with all three CI shards
+passing. Exact merge `496d387` deployed successfully to staging and passed fresh
+packaging and 250-unit gameplay/recovery smoke. F1–F3 and early presentation
+binding are complete; continue usability/balance iteration and F4 presentation,
+variant and scale proofs. The evidence and its limits are recorded in
+[QA](qa-vertical-slice.md).
+
 
 ## Match evidence and continuing checks
 
