@@ -403,3 +403,24 @@ definitions/research and terrain blending, and authenticated WebSocket upgrade.
 This proves packaging and transport; staged gameplay and rendered appearance
 remain separate checks. Research PR #245, siege #246 and reconnaissance #247
 are merged after all three CI shards passed for their respective heads.
+
+### 2026-09-29 — Integrated AI match and contextual roster usability
+
+On AI counter build `8c00a6a`, the full policies contested the unmodified fogged
+Forked Vale map (24 units, 150 food / 250 wood per seat), seeds 20260925 and
+4294967295. Azure won by objective hold after 161 seconds. Both seats built a
+Barracks, trained reinforcements, fought and lost units; Ember added a Storehouse
+and Azure began a Stable. Identical shadow policies reproduced every command
+from the same observation trace. This is an integrated opening-to-victory proof;
+the match ended before mounted/siege progression and does not prove those roles
+in that particular match.
+
+A native Firefox view of a fresh staging room exposed roster-wide disabled
+training buttons in the empty-selection command bar. The contextual roster fix
+keeps that bar specific to the selected producer and retains the full catalog in
+Build & train. Local in-app browser checks at 1280×720 and 740×800 confirmed an
+uncluttered empty selection, Town Center Worker/research controls and the complete
+catalog with population readout. Flattening the nested building grid and giving
+unit catalog buttons a minimum column width removed narrow-layout text overlap.
+DOM inspection confirmed scrollable production content; eleven focused roster,
+selection and HUD tests passed. CI and deployed verification of this fix remain.
