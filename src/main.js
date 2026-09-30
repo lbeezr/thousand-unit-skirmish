@@ -205,6 +205,7 @@ const ui = {
   rosterProductionOptions: document.querySelector('#roster-production-options'),
   buildBarracks: document.querySelector('#build-barracks'),
   buildHouse: document.querySelector('#build-house'),
+  rosterBuildingOptions: document.querySelector('#roster-building-options'),
   populationStatus: document.querySelector('#population-status'),
   buildRange: document.querySelector('#build-range'),
   selectWorkers: document.querySelector('#select-workers'),
@@ -4216,6 +4217,33 @@ function updateRosterProductionOptions(container, selectedProducer = null) {
   container.hidden = products.length === 0;
 }
 
+function updateRosterBuildingOptions(container) {
+  if (!container) return;
+  const definitions = Object.values(BUILDING_DEFINITIONS).filter((definition) => !['house', 'barracks', 'archery-range'].includes(definition.id));
+  if (container.children.length !== definitions.length) {
+    container.replaceChildren();
+    for (const definition of definitions) {
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'economy-action build-action'; button.dataset.building = definition.id;
+      button.addEventListener('click', () => {
+        if (buildPlacementActive && buildPlacementType === definition.id) cancelBuildPlacement();
+        else beginBuildPlacement(definition.id);
+      });
+      container.append(button);
+    }
+  }
+  for (const button of container.children) {
+    const definition = BUILDING_DEFINITIONS[button.dataset.building];
+    const workers = localTeam === null ? [] : teamUnits[localTeam].filter((unit) => unit.kind === 'worker' && unit.hp > 0);
+    const missing = (definition.requires || []).filter((id) => !latestTeamResearch[localTeam]?.[TECHNOLOGY_DEFINITIONS[id].upgradeKey]);
+    button.disabled = localTeam === null || matchWinner >= 0 || buildPlacementPending || !workers.length || missing.length > 0
+      || latestFood[localTeam] < definition.cost.food || latestWood[localTeam] < definition.cost.wood;
+    button.textContent = `Build ${definition.label} · ${definition.cost.wood} WOOD${definition.cost.food ? ` + ${definition.cost.food} FOOD` : ''}${missing.length ? ' · RESEARCH REQUIRED' : ''}`;
+    const active = buildPlacementActive && buildPlacementType === definition.id;
+    button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active));
+  }
+}
+
 function updateEconomyUI(state = {}, initial = false) {
   if (Array.isArray(state.population)) latestPopulation = state.population;
   if (Number.isFinite(state.rosterSize)) latestRosterSize = Math.max(0, Math.floor(state.rosterSize));
@@ -4424,6 +4452,7 @@ function updateEconomyUI(state = {}, initial = false) {
     ui.buildHouse.classList.toggle('active', buildPlacementActive && buildPlacementType === 'house');
     ui.buildHouse.setAttribute('aria-pressed', String(buildPlacementActive && buildPlacementType === 'house'));
   }
+  updateRosterBuildingOptions(ui.rosterBuildingOptions);
   updateRosterProductionOptions(ui.rosterProductionOptions);
   updateCommandUI();
 }
@@ -6767,7 +6796,7 @@ function issueMove(point, queueWaypoint = false) {
 
 function issueBuildingRallyPoint(clientX, clientY) {
   const building = latestBuildings.find((row) => row.id === selectedBuildingId
-    && row.team === localTeam && ['barracks', 'archery-range'].includes(row.type));
+    && row.team === localTeam && BUILDING_DEFINITIONS[row.type]?.products.length > 0);
   const point = worldAt(clientX, clientY);
   if (!building || !point) return;
   if (sendCommand({ type: 'setRallyPoint', buildingId: building.id, x: point.x, z: point.z })) {
@@ -6777,7 +6806,7 @@ function issueBuildingRallyPoint(clientX, clientY) {
 
 function clearSelectedBuildingRally() {
   const building = latestBuildings.find((row) => row.id === selectedBuildingId
-    && row.team === localTeam && ['barracks', 'archery-range'].includes(row.type));
+    && row.team === localTeam && BUILDING_DEFINITIONS[row.type]?.products.length > 0);
   if (!building) return;
   if (sendCommand({ type: 'setRallyPoint', buildingId: building.id, clear: true })) {
     showToast('CLEARING PRODUCTION RALLY');
@@ -6998,7 +7027,7 @@ function syncBattlefieldCursor() {
     canOrder: localTeam !== null && matchWinner < 0,
     building: buildPlacementActive, buildValid: ui.placementStatus?.dataset.state === 'clear',
     selectedBuilding: selectedBuildingId !== null,
-    rallySupported: Boolean(ownedBuilding && ['barracks', 'archery-range'].includes(ownedBuilding.type)),
+    rallySupported: Boolean(ownedBuilding && BUILDING_DEFINITIONS[ownedBuilding.type]?.products.length > 0),
     count: ids.length, workers: ids.some((id) => units[id].kind === 'worker'),
     military: ids.some((id) => units[id].kind !== 'worker'),
     attackMove: attackMoveMode, armed: tapOrderArmed, shift: cursorShift,
@@ -7043,8 +7072,10 @@ function beginBuildPlacement(type) {
   if (tapOrderArmed) setTapOrderArmed(false, false);
   const label = buildingLabel(type);
   const woodCost = buildingWoodCost(type);
+  const foodCost = BUILDING_DEFINITIONS[type]?.cost.food || 0;
   const workers = teamUnits[localTeam].filter((unit) => unit.kind === 'worker' && unit.hp > 0);
   if (workers.length === 0) { showToast(`NO LIVING WORKERS TO CONSTRUCT ${label}`); return; }
+  if (latestFood[localTeam] < foodCost) { showToast(`${label} NEEDS ${foodCost} FOOD`); return; }
   if (latestWood[localTeam] < woodCost) {
     showToast(`${label} NEEDS ${formatResourceRequirement(woodCost)} WOOD`);
     return;

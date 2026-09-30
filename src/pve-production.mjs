@@ -122,6 +122,23 @@ export function createProductionPolicy(seed) {
         postpone(observation.tick);
         return [{ type: 'build', ids: [builder.id], unitGenerations: [builder.generation], buildingId: barracks.id }];
       }
+      const storehouse = observation.buildings.friendly.find((building) => building.type === 'storehouse' && building.hp > 0);
+      const remoteResource = home && observation.resourceNodes.find((node) => node.stock > 0
+        && Math.hypot(node.x - home.x, node.z - home.z) > 12);
+      const economyBuilder = workers.find((worker) => ['idle', 'gathering'].includes(worker.task) && worker.cargo === 0);
+      if (remoteResource && economyBuilder && friendly.filter((unit) => unit.kind !== 'worker').length >= 2) {
+        if (storehouse && !storehouse.complete) {
+          postpone(observation.tick);
+          return [{ type: 'build', ids: [economyBuilder.id], unitGenerations: [economyBuilder.generation], buildingId: storehouse.id }];
+        }
+        if (!storehouse && observation.resources.wood >= BUILDING_DEFINITIONS.storehouse.cost.wood + limits.woodReserve) {
+          const sites = candidateSites(observation, remoteResource, seed);
+          if (sites.length) {
+            const point = sites[siteAttempt++ % sites.length]; postpone(observation.tick);
+            return [{ type: 'build', ids: [economyBuilder.id], unitGenerations: [economyBuilder.generation], buildingType: 'storehouse', ...point }];
+          }
+        }
+      }
       const queued = observation.buildings.friendly.reduce((sum, building) => sum + building.queue, 0);
       const workerQueue = observation.workerProduction?.queue ?? 0;
       if (barracks.productionBlocked || barracks.queue >= limits.queue

@@ -1513,7 +1513,7 @@ function makeUnit(id, team, x, z, kind, teamSlot) {
     attackMoveAnchorX: 0, attackMoveAnchorZ: 0,
     attackMoveScanTick: tickNumber + (id % ATTACK_MOVE_SCAN_INTERVAL_TICKS),
     attackMoveBucketScanOffset: id % attackMoveBucketOffsets.length,
-    kind, cargo: 0, cargoType: null, gatherNodeId: null, gatherForestCell: -1, gatherPhase: '',
+    kind, cargo: 0, cargoType: null, gatherNodeId: null, gatherForestCell: -1, gatherPhase: '', dropoffBuildingId: null, dropoffNavigationRevision: -1,
     buildingTargetId: null, moveGoalCell: -1, queuedWaypoints: [],
   };
 }
@@ -2507,6 +2507,8 @@ function validateMatchCheckpoint(snapshot) {
       && (unit.cargoType === null || ['food', 'wood'].includes(unit.cargoType))
       && (unit.gatherNodeId === null || typeof unit.gatherNodeId === 'string')
       && (unit.gatherForestCell === undefined || integerIn(unit.gatherForestCell, -1, cellCount - 1))
+      && (unit.dropoffBuildingId === undefined || unit.dropoffBuildingId === null || integerIn(unit.dropoffBuildingId, 1, Number.MAX_SAFE_INTEGER))
+      && (unit.dropoffNavigationRevision === undefined || integerIn(unit.dropoffNavigationRevision, -1, Number.MAX_SAFE_INTEGER))
       && ['', 'to-node', 'gathering', 'to-base'].includes(unit.gatherPhase)
       && (unit.buildingTargetId === null || integerIn(unit.buildingTargetId, 1, Number.MAX_SAFE_INTEGER))
       && integerIn(unit.moveGoalCell, -1, cellCount - 1), `invalid unit work state ${index}`);
@@ -3001,6 +3003,8 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.factionId = DEFAULT_FACTION_ID;
     snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;
   }
+  // Storehouse extends the same roster without changing existing saved stats or queues.
+  if (snapshot?.schemaVersion === 12 && snapshot.rulesetRevision === 'v1:4a8f7db2ce7f694407489bee0923c19c20c52126176f57f972906aa1dd1dc254') snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
   if ([1, 2, 3].includes(snapshot?.rulesVersion)
     && !snapshot?.mapDefinition?.elevationPatches?.some((patch) => patch.level > 0)) {
@@ -3499,11 +3503,55 @@ function cancelGatherOrder(unit) {
   if (changed) dirty = true;
 }
 
+function workerDropoffCandidates(unit) {
+  const legacy = spawnByTeam[unit.team];
+  return [{ id: null, x: legacy.x, z: legacy.z, goals: [nearestOpenCell(worldToCell(legacy.x, legacy.z))] },
+    ...buildings.filter((building) => building.team === unit.team && building.complete
+      && BUILDING_DEFINITIONS[building.type].dropoff?.includes(unit.cargoType || 'food'))
+      .map((building) => ({ ...building, goals: buildingAccessCells(building.footprint) }))];
+}
+
+function routeWorkerToDropoff(unit) {
+  const start = nearestOpenCell(worldToCell(unit.x, unit.z));
+  const component = walkableComponents[start];
+  let best = null;
+  for (const candidate of workerDropoffCandidates(unit)) {
+    const goals = candidate.goals.filter((cell) => walkableComponents[cell] === component);
+    if (!goals.length) continue;
+    const field = getAttackFlowFieldForGoals(goals, `dropoff:${unit.team}:${candidate.id ?? 'home'}:${component}`);
+    const path = field ? pathFromAttackFlow(start, field) : [];
+    if (!field || (!path.length && !field.goals.has(start))) continue;
+    if (!best || path.length < best.path.length) best = { candidate, field, path };
+  }
+  unit.dropoffBuildingId = best?.candidate.id ?? null;
+  unit.dropoffNavigationRevision = navigationRevision;
+  unit.moveGoalCell = best?.field.goal ?? -1;
+  unit.path = best?.path ?? [];
+  unit.pathIndex = 0;
+}
+
+function workerAtDropoff(unit) {
+  const building = unit.dropoffBuildingId === null || unit.dropoffBuildingId === undefined
+    ? null : buildingsById.get(unit.dropoffBuildingId);
+  const valid = unit.dropoffBuildingId == null || (building?.complete && building.team === unit.team
+    && BUILDING_DEFINITIONS[building.type].dropoff?.includes(unit.cargoType || 'food'));
+  if (!valid || unit.dropoffNavigationRevision !== navigationRevision) {
+    unit.orderRevision++; unit.movePlanningPending = false;
+    routeWorkerToDropoff(unit);
+    return false;
+  }
+  if (unit.moveGoalCell < 0) return false;
+  const distance = building ? distanceToBuildingEdge(unit, building)
+    : Math.hypot(spawnByTeam[unit.team].x - unit.x, spawnByTeam[unit.team].z - unit.z);
+  return distance <= WORKER_INTERACTION_RANGE;
+}
+
 function routeWorker(unit, phase, node) {
   unit.orderRevision++;
   unit.movePlanningPending = false;
   unit.gatherPhase = phase;
-  const target = phase === 'to-node' ? node : spawnByTeam[unit.team];
+  if (phase === 'to-base') { routeWorkerToDropoff(unit); return; }
+  const target = node;
   unit.moveGoalCell = worldToCell(target.x, target.z);
   const field = getAttackFlowField(worldToCell(target.x, target.z));
   unit.path = field ? pathFromAttackFlow(worldToCell(unit.x, unit.z), field) : [];
@@ -3540,7 +3588,7 @@ function routeForestWorker(unit, phase, cell) {
       .filter((goal) => walkableComponents[goal] === componentId);
     if (goals.length > 0) field = getAttackFlowFieldForGoals(goals, `forest:${cell}:${componentId}`);
   } else {
-    field = getAttackFlowField(worldToCell(spawnByTeam[unit.team].x, spawnByTeam[unit.team].z));
+    routeWorkerToDropoff(unit); return;
   }
   unit.moveGoalCell = field?.goal ?? -1;
   unit.path = field ? pathFromAttackFlow(worldToCell(unit.x, unit.z), field) : [];
@@ -3666,8 +3714,7 @@ function updateForestWorkerEconomy(unit) {
   const cell = unit.gatherForestCell;
   const point = cellToWorld(cell);
   const targetDistance = Math.hypot(point.x - unit.x, point.z - unit.z);
-  const base = spawnByTeam[unit.team];
-  const baseDistance = Math.hypot(base.x - unit.x, base.z - unit.z);
+
   const stock = forestWoodRemaining[cell];
   if (unit.gatherPhase === 'to-node') {
     if ((unit.cargo > 0 && unit.cargoType !== 'wood')
@@ -3707,7 +3754,7 @@ function updateForestWorkerEconomy(unit) {
     }
   }
 
-  if (unit.gatherPhase === 'to-base' && baseDistance <= WORKER_INTERACTION_RANGE) {
+  if (unit.gatherPhase === 'to-base' && workerAtDropoff(unit)) {
     if (unit.cargo > 0) {
       const bank = unit.cargoType === 'wood' ? teamWood : teamFood;
       bank[unit.team] = Math.round((bank[unit.team] + unit.cargo) * 1_000_000) / 1_000_000;
@@ -3759,8 +3806,7 @@ function updateWorkerEconomy() {
     }
 
     const nodeDistance = Math.hypot(node.x - unit.x, node.z - unit.z);
-    const base = spawnByTeam[unit.team];
-    const baseDistance = Math.hypot(base.x - unit.x, base.z - unit.z);
+
     if (unit.gatherPhase === 'to-node') {
       if ((unit.cargo > 0 && unit.cargoType !== node.type)
         || unit.cargo >= WORKER_CARRY_CAPACITY || node.stock <= 0) {
@@ -3797,7 +3843,7 @@ function updateWorkerEconomy() {
     }
 
     if (unit.gatherPhase === 'to-base') {
-      if (baseDistance <= WORKER_INTERACTION_RANGE) {
+      if (workerAtDropoff(unit)) {
         if (unit.cargo > 0) {
           const bank = unit.cargoType === 'wood' ? teamWood : teamFood;
           bank[unit.team] = Math.round((bank[unit.team] + unit.cargo) * 1_000_000) / 1_000_000;

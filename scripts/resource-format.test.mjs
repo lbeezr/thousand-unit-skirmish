@@ -22,7 +22,7 @@ function fixture(team) {
     MAX_PER_TEAM: 1000, MAX_UNITS: 2000, buildPlacementPending: false, buildPlacementActive: false,
     buildPlacementType: 'barracks', livingIdleWorkerIds: () => [],
     document: { querySelector: element }, mapDefinition: { resourceNodes: [{}] },
-    updateRosterProductionOptions() {},
+    updateRosterProductionOptions() {}, updateRosterBuildingOptions() {},
     window: { matchMedia: () => ({ matches: false }) }, updateCommandUI() {},
   });
   vm.runInContext(source.slice(source.indexOf('const INFANTRY_FOOD_COST'), source.indexOf('const TEAM_NAMES'))

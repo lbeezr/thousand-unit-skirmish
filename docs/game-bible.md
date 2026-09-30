@@ -148,3 +148,14 @@ queues still complete. The HUD explains used, queued and available capacity.
 Large-army fixtures start with at least their opening population capacity,
 clamped to the separate 1,000-unit-per-seat safety ceiling. Population is a
 gameplay constraint; the safety ceiling remains a simulation boundary.
+
+## Economy drop-offs
+
+A Storehouse costs 100 wood, takes 20 seconds of Worker construction and has
+1,200 HP. It accepts food and wood when complete. A Worker carrying resources
+chooses the completed friendly drop-off with the shortest reachable route;
+the existing Town Center remains a valid drop-off. Unfinished or enemy buildings
+accept nothing. If the chosen drop-off is destroyed or navigation changes,
+the Worker replans and retains its cargo. With no reachable drop-off it waits
+with the cargo rather than banking it remotely. Storehouses provide no units or
+population. Their current House-shaped procedural presentation is a placeholder.
