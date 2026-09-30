@@ -200,3 +200,15 @@ restart from granting a free shot; schema 15 migrates the known Town Center
 revision without changing existing HP or queues. Vision coverage caches separate
 radii per source cell, so a tower can expand previously processed unit sight.
 Enemy shot destinations are masked under fog like unit attack coordinates.
+
+### Shared damage and supported effects
+
+`src/combat-rules.mjs` resolves unit and stationary-defense damage from validated
+content. Attack classes/tags, numeric armor, target eligibility and multipliers
+are data; gathering, building, repair and structure-attack permissions use explicit
+supported capabilities. Technology effects support damage multipliers and additive
+armor by declared class; unsupported effect operations fail validation. Completion
+state determines effects for both existing and newly produced entities. Cached
+resolved effects invalidate when that state changes, including rematch, and use a
+stable content-ID order. Numeric ranges are bounded at 16 cells. Schema 16
+explicitly migrates the known defense revision without rewriting entity HP/queues.

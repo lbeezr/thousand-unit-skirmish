@@ -1,3 +1,4 @@
+import { combatDamage, canCombatTarget, hasGameplayCapability } from './src/combat-rules.mjs';
 import { creditResourceBalance } from './src/economy-ledger.mjs';
 import { unfinishedRefund, buildingRepairStep } from './src/base-lifecycle.mjs';
 import { productionAction } from './src/production-actions.mjs';
@@ -38,7 +39,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 15;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 16;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -520,11 +521,10 @@ function buildingRulesFor(type) {
 function researchRulesFor(type) {
   return Object.hasOwn(RESEARCH_RULES, type) ? RESEARCH_RULES[type] : null;
 }
-function attackDamageMultiplierFor(unit) {
-  const upgradeKey = unit.kind === 'archer' ? 'archerAttack'
-    : unit.kind === 'infantry' ? 'infantryAttack' : null;
-  return upgradeKey && teamUpgrades[unit.team]?.[upgradeKey] ? 1.2 : 1;
-}
+function definitionForEntity(entity) { return entity.type ? BUILDING_DEFINITIONS[entity.type] : UNIT_DEFINITIONS[entity.kind]; }
+function unitHasCapability(unit, capability) { return hasGameplayCapability(UNIT_DEFINITIONS[unit.kind], capability); }
+function damageForEntities(attacker, target) { return combatDamage(definitionForEntity(attacker), definitionForEntity(target), teamUpgrades[attacker.team], teamUpgrades[target.team]); }
+
 const MAX_TEAM_ROSTER = 1000;
 const VISION_RADIUS_CELLS = 8;
 const HIGH_GROUND_VISION_BONUS_CELLS = 1;
@@ -1479,18 +1479,19 @@ function getAttackFlowFieldForGoals(goalCells, cacheKey) {
 }
 
 function buildingAttackApproachCells(building, kind) {
-  if (kind !== 'archer') return buildingAccessCells(building.footprint);
+  const combat = UNIT_DEFINITIONS[kind].combat;
+  if (combat.mode !== 'ranged') return buildingAccessCells(building.footprint);
   // Check only the fixed weapon-range box around the footprint (13 x 13 cells).
   // A firing position can belong to another island than the building perimeter.
   const center = worldToCell(building.x, building.z);
   const column = center % MAP_WIDTH;
   const row = Math.floor(center / MAP_WIDTH);
-  const radius = Math.ceil(ARCHER_ATTACK_RANGE + BUILDING_DEFINITIONS[building.type].footprint / 2);
+  const radius = Math.ceil(combat.range + BUILDING_DEFINITIONS[building.type].footprint / 2);
   const goals = [];
   for (let z = Math.max(0, row - radius); z <= Math.min(MAP_HEIGHT - 1, row + radius); z++) {
     for (let x = Math.max(0, column - radius); x <= Math.min(MAP_WIDTH - 1, column + radius); x++) {
       const cell = cellIndex(x, z);
-      if (isWalkable(cell) && distanceToBuildingEdge(cellToWorld(cell), building) <= ARCHER_ATTACK_RANGE) {
+      if (isWalkable(cell) && distanceToBuildingEdge(cellToWorld(cell), building) <= combat.range) {
         goals.push(cell);
       }
     }
@@ -1793,7 +1794,7 @@ function updateVisionMasks() {
   processedVisionSourcesByTeam[1].fill(0);
   if (!mapDefinition.fogOfWar) return;
   for (const unit of units) {
-    if (unit.hp > 0) markVisionFrom(unit.team, unit.x, unit.z);
+    if (unit.hp > 0) markVisionFrom(unit.team, unit.x, unit.z, UNIT_DEFINITIONS[unit.kind].sight || VISION_RADIUS_CELLS);
   }
   for (const building of allMatchBuildings()) {
     for (const cell of buildingAccessCells(building.footprint)) {
@@ -2808,7 +2809,7 @@ function validateMatchCheckpoint(snapshot) {
         'unit references unknown or conflicting gather targets');
     }
     if (forestCell >= 0) {
-      assertSnapshot(unit.kind === 'worker' && unit.gatherNodeId === null
+      assertSnapshot(unitHasCapability(unit, 'gather') && unit.gatherNodeId === null
         && checkpointForestMask[forestCell] === 1,
       'unit references an invalid forest target');
     }
@@ -3078,6 +3079,10 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.schemaVersion = 14;
   }
   if (snapshot?.schemaVersion === 14 && [GAMEPLAY_RULESET_REVISION, 'v1:7e0fe0db4cc8bdea4fac37424a3d92739c74eefa8f31f0080cc660128d8a31a1'].includes(snapshot.rulesetRevision)) {
+    snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+    snapshot.schemaVersion = 15;
+  }
+  if (snapshot?.schemaVersion === 15 && [GAMEPLAY_RULESET_REVISION, 'v1:a5fe7992c78af9f94dc6210898d1e46a1582d7ac1d5bbd4141be3cb2407f0762'].includes(snapshot.rulesetRevision)) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
     snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;
   }
@@ -3692,7 +3697,7 @@ function assignForestGather(player, command) {
     return;
   }
   const selectedUnits = commandUnits(command)
-    .filter((unit) => unit.hp > 0 && unit.team === player.team && unit.kind === 'worker'
+    .filter((unit) => unit.hp > 0 && unit.team === player.team && unitHasCapability(unit, 'gather')
       && walkableComponents[nearestOpenCell(worldToCell(unit.x, unit.z))] === componentId);
   if (selectedUnits.length === 0) {
     sendOrderNotice(player, command, 'NO REACHABLE WORKERS SELECTED');
@@ -3747,7 +3752,7 @@ function assignGather(player, command) {
   }
 
   const selectedUnits = commandUnits(command)
-    .filter((unit) => unit.hp > 0 && unit.team === player.team && unit.kind === 'worker'
+    .filter((unit) => unit.hp > 0 && unit.team === player.team && unitHasCapability(unit, 'gather')
       && walkableComponents[nearestOpenCell(worldToCell(unit.x, unit.z))] === componentId);
   if (selectedUnits.length === 0) {
     sendOrderNotice(player, command, 'NO REACHABLE WORKERS SELECTED');
@@ -3863,7 +3868,7 @@ function flushPendingForestClears() {
 
 function updateWorkerEconomy() {
   for (const unit of units) {
-    if (unit.hp <= 0 || unit.kind !== 'worker') continue;
+    if (unit.hp <= 0 || !unitHasCapability(unit, 'gather')) continue;
     if (unit.gatherForestCell >= 0) {
       if (!forestCellMask[unit.gatherForestCell]) {
         stopGathering(unit);
@@ -4195,7 +4200,7 @@ function repairBuilding(player, command) {
     || building.hp >= BUILDING_DEFINITIONS[building.type].maxHp) {
     sendOrderNotice(player, command, 'REPAIR REJECTED · SELECT YOUR DAMAGED COMPLETED BUILDING'); return;
   }
-  const workers = commandUnits(command).filter((unit) => unit.team === player.team && unit.hp > 0 && unit.kind === 'worker');
+  const workers = commandUnits(command).filter((unit) => unit.team === player.team && unit.hp > 0 && unitHasCapability(unit, 'repair'));
   const access = buildingAccessCells(building.footprint);
   const worker = workers.find((unit) => findBuildingAttackApproachCell(unit, access));
   const approach = worker && findBuildingAttackApproachCell(worker, access);
@@ -4572,7 +4577,7 @@ function resumeBuildingConstruction(player, command) {
     return;
   }
   const workers = commandUnits(command)
-    .filter((unit) => unit.hp > 0 && unit.team === player.team && unit.kind === 'worker');
+    .filter((unit) => unit.hp > 0 && unit.team === player.team && unitHasCapability(unit, 'build'));
   if (workers.length === 0) {
     rejectBuild(player, 'SELECT A WORKER', command);
     return;
@@ -4651,7 +4656,7 @@ function buildBuilding(player, command) {
     return;
   }
   const selectedWorkers = commandUnits(command)
-    .filter((unit) => unit.hp > 0 && unit.team === player.team && unit.kind === 'worker');
+    .filter((unit) => unit.hp > 0 && unit.team === player.team && unitHasCapability(unit, 'build'));
   if (selectedWorkers.length === 0) {
     rejectBuild(player, 'SELECT A WORKER', command);
     return;
@@ -4902,7 +4907,7 @@ function routeProducedUnitToBuildingRally(unit, building) {
 
 function updateBuildingAndProduction() {
   for (const unit of units) {
-    if (unit.hp <= 0 || unit.kind !== 'worker' || unit.buildingTargetId === null) continue;
+    if (unit.hp <= 0 || !unitHasCapability(unit, unit.repairing ? 'repair' : 'build') || unit.buildingTargetId === null) continue;
     const building = buildingsById.get(unit.buildingTargetId);
     if (!building || (building.complete && !unit.repairing) || (unit.repairing && !building.complete)) {
       unit.buildingTargetId = null; unit.repairing = false;
@@ -5145,7 +5150,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
   const planningStartedAt = performance.now();
   const selectedUnits = commandUnits(command)
     .filter((unit) => unit.hp > 0 && unit.team === player.team
-      && (buildingTargetId === null || unit.kind === 'worker'));
+      && (buildingTargetId === null || unitHasCapability(unit, command.type === 'repairBuilding' ? 'repair' : 'build')));
   if (selectedUnits.length === 0) {
     sendOrderNotice(player, command, 'MOVE REJECTED · NO VALID UNITS');
     return;
@@ -5294,7 +5299,8 @@ function assignAttack(player, command) {
     return;
   }
   const selectedUnits = commandUnits(command)
-    .filter((unit) => unit.hp > 0 && unit.team === player.team);
+    .filter((unit) => unit.hp > 0 && unit.team === player.team && unitHasCapability(unit, 'attack')
+      && canCombatTarget(UNIT_DEFINITIONS[unit.kind], UNIT_DEFINITIONS[target.kind]));
   if (selectedUnits.length === 0) {
     sendOrderNotice(player, command, 'ATTACK REJECTED · NO VALID UNITS');
     return;
@@ -5346,7 +5352,7 @@ function assignAttackBuilding(player, command) {
     return;
   }
   const selectedUnits = commandUnits(command)
-    .filter((unit) => unit.hp > 0 && unit.team === player.team && unit.kind !== 'worker');
+    .filter((unit) => unit.hp > 0 && unit.team === player.team && unitHasCapability(unit, 'attack-structures') && canCombatTarget(UNIT_DEFINITIONS[unit.kind], BUILDING_DEFINITIONS[target.type]));
   if (selectedUnits.length === 0) {
     sendOrderNotice(player, command, 'ATTACK BUILDING REJECTED · SELECT MILITARY UNITS');
     return;
@@ -5648,6 +5654,7 @@ function rebuildSpatialBuckets() {
 }
 
 function findAttackMoveTarget(unit) {
+  if (!unitHasCapability(unit, 'attack')) return null;
   const targetTeam = 1 - unit.team;
   const unitCell = nearestOpenCell(worldToCell(unit.x, unit.z));
   const componentId = walkableComponents[unitCell];
@@ -5701,7 +5708,7 @@ function findAttackMoveTarget(unit) {
       attackMoveCandidateRemaining[bucketIndex] = remaining - 1;
       if (remaining === 1) activeBuckets--;
       visited++;
-      if (!target || target.hp <= 0) continue;
+      if (!target || target.hp <= 0 || !canCombatTarget(UNIT_DEFINITIONS[unit.kind], UNIT_DEFINITIONS[target.kind])) continue;
       if (mapDefinition.fogOfWar
         && !cellVisibleToTeam(unit.team, worldToCell(target.x, target.z))) continue;
 
@@ -5780,6 +5787,7 @@ function prepareAttackMovePaths() {
       if (unit.repathTimer > STEP_SECONDS) continue;
       target = units[unit.attackTargetId];
       if (!target || target.hp <= 0 || target.team === unit.team
+        || !unitHasCapability(unit, 'attack-structures') || !canCombatTarget(UNIT_DEFINITIONS[unit.kind], BUILDING_DEFINITIONS[target.type])
         || (mapDefinition.fogOfWar && !cellVisibleToTeam(unit.team, worldToCell(target.x, target.z)))
         || Math.hypot(target.x - unit.attackMoveAnchorX, target.z - unit.attackMoveAnchorZ) > ATTACK_MOVE_LEASH_RADIUS
         || Math.hypot(target.x - unit.x, target.z - unit.z) <= (UNIT_DEFINITIONS[unit.kind].combat.range)
@@ -5999,7 +6007,7 @@ function findStationaryCombatTarget(building, range) {
       let id = spatialBucketTeamCursors[team][bucket];
       if (id < 0 || spatialBucketOfUnit[id] !== bucket || units[id]?.team !== team || units[id]?.hp <= 0) id = spatialBucketTeamHeads[team][bucket];
       const unit = units[id]; spatialBucketTeamCursors[team][bucket] = spatialBucketTeamNext[team][id];
-      if (!unit || unit.hp <= 0 || (mapDefinition.fogOfWar && !cellVisibleToTeam(building.team, worldToCell(unit.x, unit.z)))) continue;
+      if (!unit || unit.hp <= 0 || !canCombatTarget(BUILDING_DEFINITIONS[building.type], UNIT_DEFINITIONS[unit.kind]) || (mapDefinition.fogOfWar && !cellVisibleToTeam(building.team, worldToCell(unit.x, unit.z)))) continue;
       const distance = (unit.x - building.x) ** 2 + (unit.z - building.z) ** 2;
       if (distance < best || (distance === best && (!target || unit.id < target.id))) { target = unit; best = distance; }
     }
@@ -6014,7 +6022,7 @@ function accumulateBuildingAttacks() {
     if (building.attackCooldown > 0) continue;
     const target = findStationaryCombatTarget(building, combat.range);
     if (!target) { building.attackCooldown = Math.min(combat.period, 0.25); continue; }
-    pendingUnitDamage[target.id] += combat.damage;
+    pendingUnitDamage[target.id] += damageForEntities(building, target);
     building.attackCooldown = combat.period;
     building.lastAttackTick = tickNumber; building.lastAttackX = target.x; building.lastAttackZ = target.z;
     dirty = true;
@@ -6043,7 +6051,7 @@ function simulateTick() {
     if (unit.hp <= 0) continue;
     if (unit.attackTargetId >= 0) {
       const target = units[unit.attackTargetId];
-      if (!target || target.hp <= 0) {
+      if (!target || target.hp <= 0 || !unitHasCapability(unit, 'attack') || !canCombatTarget(UNIT_DEFINITIONS[unit.kind], UNIT_DEFINITIONS[target.kind])) {
         clearAttackTarget(unit);
       } else if (mapDefinition.fogOfWar
         && !cellVisibleToTeam(unit.team, worldToCell(target.x, target.z))) {
@@ -6060,8 +6068,7 @@ function simulateTick() {
         const dz = target.z - unit.z;
         const distance = Math.hypot(dx, dz);
         const attackRange = UNIT_DEFINITIONS[unit.kind].combat.range;
-        const attackDamage = UNIT_DEFINITIONS[unit.kind].combat.damage
-          * attackDamageMultiplierFor(unit);
+        const attackDamage = damageForEntities(unit, target);
         const attackPeriod = UNIT_DEFINITIONS[unit.kind].combat.period;
         unit.attackCooldown -= STEP_SECONDS;
         unit.repathTimer -= STEP_SECONDS;
@@ -6102,6 +6109,7 @@ function simulateTick() {
     if (unit.attackBuildingTargetId >= 0) {
       const target = buildingsById.get(unit.attackBuildingTargetId);
       if (!target || target.hp <= 0 || target.team === unit.team
+        || !unitHasCapability(unit, 'attack-structures') || !canCombatTarget(UNIT_DEFINITIONS[unit.kind], BUILDING_DEFINITIONS[target.type])
         || (mapDefinition.fogOfWar && !buildingVisibleToTeam(unit.team, target))) {
         clearAttackTarget(unit);
         continue;
@@ -6117,7 +6125,7 @@ function simulateTick() {
         if (unit.attackCooldown <= 0) {
           pendingBuildingDamage.set(target,
             (pendingBuildingDamage.get(target) || 0)
-              + UNIT_DEFINITIONS[unit.kind].combat.structureDamage * attackDamageMultiplierFor(unit));
+              + damageForEntities(unit, target));
           unit.attackCooldown = UNIT_DEFINITIONS[unit.kind].combat.period;
           unit.lastAttackTick = tickNumber;
           unit.lastAttackX = target.x;

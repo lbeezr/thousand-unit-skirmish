@@ -236,3 +236,18 @@ with deterministic ties and rotating spatial scans capped at 64 enemy visits.
 Idle scans back off for a quarter-second. Siege supplies the intended dedicated
 defense counter in F3; the present numbers are provisional rather than final
 balance. AI builds at most one tower for a visible threat near its own base.
+
+### Shared combat classes and effects slice
+
+Units and defenses now resolve hits through the same pure combat module. Content
+specifies attack class, target tags, attack mode, armor, capability permissions
+and matching tag multipliers. Damage is `max(0.5, base × completed technology
+multipliers × matching tag multipliers − target class armor − technology armor)`;
+ineligible targets take zero. Structure hits retain their own base damage.
+Multipliers stack multiplicatively and armor effects add, with a stable technology
+order. Existing Infantry/Archer upgrades retain their role scope; current and new
+units derive effects from team completion state rather than rewriting entity stats.
+Spearman declares its mounted multiplier for the following Stable/Rider slice.
+Generic ranged-building access uses the content's mode/range. Gathering,
+construction, repair and structure attacks use supported capabilities, and the
+military selection control includes the full registered military roster.

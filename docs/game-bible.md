@@ -192,3 +192,12 @@ once every 1.25 seconds; they provide ten-cell sight around their access perimet
 with the existing terrain occlusion/high-ground rules. They cannot produce units
 or attack structures. F3 siege is the planned dedicated counter; these initial
 numbers still need defended-assault balance evidence.
+
+Combat uses melee, pierce and siege attack classes with class-specific armor.
+An eligible hit applies its unit or structure base damage, completed technology
+multipliers and every matching target-tag multiplier, then subtracts target armor
+and completed armor bonuses. Minimum damage is 0.5; an ineligible target takes
+zero. Matching multipliers multiply and armor bonuses add. Hits resolve together
+so a lethal counterattack still lands in the same tick. Existing role timings,
+ranges and damage are preserved; Spearman's threefold mounted modifier becomes
+player-visible when the mounted roster ships.

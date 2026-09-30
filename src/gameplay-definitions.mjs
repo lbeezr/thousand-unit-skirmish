@@ -4,6 +4,9 @@ export function validateGameplayDefinitions(definitions) {
   for (const key of ['repairHpPerSecond', 'fullRepairWoodFraction', 'minimumRepairWood']) {
     if (!Number.isFinite(definitions.baseLifecycle?.[key]) || definitions.baseLifecycle[key] <= 0) throw new Error(`Invalid base lifecycle ${key}`);
   }
+  const { attackClasses, tags, capabilities, minimumDamage } = definitions.combatRules || {};
+  for (const [name, values] of Object.entries({ attackClasses, tags, capabilities })) if (!Array.isArray(values) || !values.length || new Set(values).size !== values.length || values.some((value) => typeof value !== 'string' || !/^[a-z][a-z0-9-]*$/.test(value))) throw new Error(`Invalid combat rules ${name}`);
+  if (!Number.isFinite(minimumDamage) || minimumDamage <= 0) throw new Error('Invalid minimum damage');
   const wireIds = new Set();
   const upgradeKeys = new Set();
   for (const category of ['units', 'buildings', 'technologies']) {
@@ -19,10 +22,22 @@ export function validateGameplayDefinitions(definitions) {
         : category === 'buildings' ? ['buildSeconds', 'footprint', 'maxHp'] : ['durationSeconds']) {
         if (!Number.isFinite(entry[key]) || entry[key] <= 0) throw new Error(`Invalid ${key}: ${id}`);
       }
+      if (category !== 'technologies') {
+        if (!Array.isArray(entry.tags) || !entry.tags.length || new Set(entry.tags).size !== entry.tags.length || entry.tags.some((tag) => !tags.includes(tag))) throw new Error(`Invalid combat tags: ${id}`);
+        if (!entry.armor || typeof entry.armor !== 'object' || Array.isArray(entry.armor) || Object.entries(entry.armor).some(([key, value]) => !attackClasses.includes(key) || !Number.isFinite(value) || value < 0)) throw new Error(`Invalid armor: ${id}`);
+        if (category === 'units' && (!Array.isArray(entry.capabilities) || new Set(entry.capabilities).size !== entry.capabilities.length || entry.capabilities.some((value) => !capabilities.includes(value)))) throw new Error(`Invalid capabilities: ${id}`);
+        if (entry.combat) {
+          if (!attackClasses.includes(entry.combat.attackClass) || !['melee', 'ranged'].includes(entry.combat.mode)) throw new Error(`Invalid attack class or mode: ${id}`);
+          if (!Array.isArray(entry.combat.targetTags) || !entry.combat.targetTags.length || new Set(entry.combat.targetTags).size !== entry.combat.targetTags.length || entry.combat.targetTags.some((tag) => !tags.includes(tag))) throw new Error(`Invalid target tags: ${id}`);
+          if (!entry.combat.tagMultipliers || typeof entry.combat.tagMultipliers !== 'object' || Array.isArray(entry.combat.tagMultipliers) || Object.entries(entry.combat.tagMultipliers).some(([tag, value]) => !tags.includes(tag) || !Number.isFinite(value) || value <= 0)) throw new Error(`Invalid tag multiplier: ${id}`);
+        }
+      }
       if (category === 'units') {
         if (!Number.isInteger(entry.wireId) || entry.wireId < 0 || entry.wireId > 255 || wireIds.has(entry.wireId)) throw new Error(`Invalid or duplicate unit wire ID: ${id}`);
         wireIds.add(entry.wireId);
+        if (entry.sight !== undefined && (!Number.isInteger(entry.sight) || entry.sight < 1 || entry.sight > 16)) throw new Error(`Invalid unit sight: ${id}`);
         if (!Number.isInteger(entry.population)) throw new Error(`Invalid population: ${id}`);
+        if (entry.combat?.range > 16) throw new Error(`Invalid combat range: ${id}`);
         for (const key of ['maxHp', 'moveSpeed', 'range', 'damage', 'period', 'structureDamage']) {
           if (!Number.isFinite(entry.combat?.[key]) || entry.combat[key] <= 0) throw new Error(`Invalid combat ${key}: ${id}`);
         }
@@ -30,6 +45,7 @@ export function validateGameplayDefinitions(definitions) {
       if (category === 'buildings') {
         if (entry.combat !== undefined) {
           if (!entry.combat || typeof entry.combat !== 'object' || Array.isArray(entry.combat)) throw new Error(`Invalid building combat: ${id}`);
+          if (entry.combat.range > 16) throw new Error(`Invalid building combat range: ${id}`);
           for (const key of ['range', 'damage', 'period']) if (!Number.isFinite(entry.combat[key]) || entry.combat[key] <= 0) throw new Error(`Invalid building combat ${key}: ${id}`);
         }
         if (entry.sight !== undefined && (!Number.isInteger(entry.sight) || entry.sight < 1 || entry.sight > 16)) throw new Error(`Invalid building sight: ${id}`);
@@ -42,6 +58,10 @@ export function validateGameplayDefinitions(definitions) {
         }
       }
       if (category === 'technologies') {
+        if (!Array.isArray(entry.effects)) throw new Error(`Invalid technology effects: ${id}`);
+        for (const effect of entry.effects) {
+          if (!effect || !['damage-multiplier', 'armor'].includes(effect.stat) || !Number.isFinite(effect.value) || effect.value < 0 || (effect.stat === 'armor' && !attackClasses.includes(effect.attackClass)) || (effect.stat === 'damage-multiplier' && effect.value === 0) || !Array.isArray(effect.targetTags) || !effect.targetTags.length || new Set(effect.targetTags).size !== effect.targetTags.length || effect.targetTags.some((tag) => !tags.includes(tag))) throw new Error(`Invalid technology effect: ${id}`);
+        }
         if (!Object.hasOwn(definitions.buildings, entry.building)) throw new Error(`Unknown research building: ${id}`);
         if (typeof entry.upgradeKey !== 'string' || !/^[a-z][a-zA-Z0-9]*$/.test(entry.upgradeKey) || upgradeKeys.has(entry.upgradeKey)) throw new Error(`Invalid or duplicate upgrade key: ${id}`);
         upgradeKeys.add(entry.upgradeKey);
@@ -96,25 +116,26 @@ function freezeTree(value) {
 export const GAMEPLAY_DEFINITIONS = freezeTree(validateGameplayDefinitions({
   version: 1,
   defaultFaction: 'frontier',
+  combatRules: { attackClasses: ['melee', 'pierce', 'siege'], tags: ['ground', 'worker', 'infantry', 'spearman', 'archer', 'mounted', 'scout', 'siege', 'structure', 'defense'], capabilities: ['move', 'attack', 'attack-structures', 'gather', 'build', 'repair'], minimumDamage: 0.5 },
   baseLifecycle: { repairHpPerSecond: 40, fullRepairWoodFraction: 0.3, minimumRepairWood: 10 },
   units: {
-    worker: { id: 'worker', wireId: 0, label: 'Worker', cost: { food: 50, wood: 0 }, trainSeconds: 25, population: 1, combat: { maxHp: 100, moveSpeed: 2.6, range: 1.28, damage: 4, period: 0.85, structureDamage: 1 }, presentation: 'unit.worker' },
-    infantry: { id: 'infantry', wireId: 1, label: 'Infantry', cost: { food: 50, wood: 0 }, trainSeconds: 12, population: 1, combat: { maxHp: 100, moveSpeed: 2.6, range: 1.28, damage: 10, period: 0.85, structureDamage: 1.5 }, presentation: 'unit.infantry' },
-    spearman: { id: 'spearman', wireId: 3, label: 'Spearman', cost: { food: 60, wood: 20 }, trainSeconds: 12, population: 1, combat: { maxHp: 110, moveSpeed: 2.6, range: 1.4, damage: 8, period: 0.85, structureDamage: 1.2 }, presentation: 'unit.spearman' },
-    archer: { id: 'archer', wireId: 2, label: 'Archer', cost: { food: 25, wood: 45 }, trainSeconds: 7, population: 1, combat: { maxHp: 70, moveSpeed: 2.6, range: 4.5, damage: 7, period: 1, structureDamage: 0.8 }, presentation: 'unit.archer' },
+    worker: { id: 'worker', wireId: 0, label: 'Worker', tags: ['ground', 'worker'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move', 'attack', 'gather', 'build', 'repair'], cost: { food: 50, wood: 0 }, trainSeconds: 25, population: 1, combat: { mode: 'melee', attackClass: 'melee', targetTags: ['ground'], tagMultipliers: {}, maxHp: 100, moveSpeed: 2.6, range: 1.28, damage: 4, period: 0.85, structureDamage: 1 }, presentation: 'unit.worker' },
+    infantry: { id: 'infantry', wireId: 1, label: 'Infantry', tags: ['ground', 'infantry'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move', 'attack', 'attack-structures'], cost: { food: 50, wood: 0 }, trainSeconds: 12, population: 1, combat: { mode: 'melee', attackClass: 'melee', targetTags: ['ground', 'structure'], tagMultipliers: {}, maxHp: 100, moveSpeed: 2.6, range: 1.28, damage: 10, period: 0.85, structureDamage: 1.5 }, presentation: 'unit.infantry' },
+    spearman: { id: 'spearman', wireId: 3, label: 'Spearman', tags: ['ground', 'spearman'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move', 'attack', 'attack-structures'], cost: { food: 60, wood: 20 }, trainSeconds: 12, population: 1, combat: { mode: 'melee', attackClass: 'melee', targetTags: ['ground', 'structure'], tagMultipliers: { mounted: 3 }, maxHp: 110, moveSpeed: 2.6, range: 1.4, damage: 8, period: 0.85, structureDamage: 1.2 }, presentation: 'unit.spearman' },
+    archer: { id: 'archer', wireId: 2, label: 'Archer', tags: ['ground', 'archer'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move', 'attack', 'attack-structures'], cost: { food: 25, wood: 45 }, trainSeconds: 7, population: 1, combat: { mode: 'ranged', attackClass: 'pierce', targetTags: ['ground', 'structure'], tagMultipliers: {}, maxHp: 70, moveSpeed: 2.6, range: 4.5, damage: 7, period: 1, structureDamage: 0.8 }, presentation: 'unit.archer' },
   },
   buildings: {
-    watchtower: { id: 'watchtower', label: 'Watchtower', cost: { food: 50, wood: 150 }, buildSeconds: 35, footprint: 3, maxHp: 1200, products: [], sight: 10, combat: { range: 7, damage: 8, period: 1.25 }, presentation: 'building.watchtower' },
-    'town-center': { id: 'town-center', label: 'Town Center', cost: { food: 100, wood: 400 }, buildSeconds: 60, footprint: 5, maxHp: 2400, products: ['worker'], populationCapacity: 5, dropoff: ['food', 'wood'], presentation: 'building.town-center' },
-    storehouse: { id: 'storehouse', label: 'Storehouse', cost: { food: 0, wood: 100 }, buildSeconds: 20, footprint: 3, maxHp: 1200, products: [], dropoff: ['food', 'wood'], presentation: 'building.storehouse' },
-    house: { id: 'house', label: 'House', cost: { food: 0, wood: 75 }, buildSeconds: 15, footprint: 3, maxHp: 800, products: [], populationCapacity: 8, presentation: 'building.house' },
-    barracks: { id: 'barracks', label: 'Barracks', cost: { food: 0, wood: 175 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['infantry', 'spearman'], presentation: 'building.barracks' },
-    'archery-range': { id: 'archery-range', label: 'Archery Range', cost: { food: 0, wood: 150 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['archer'], presentation: 'building.archery-range' },
+    watchtower: { id: 'watchtower', label: 'Watchtower', tags: ['structure', 'defense'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 50, wood: 150 }, buildSeconds: 35, footprint: 3, maxHp: 1200, products: [], sight: 10, combat: { mode: 'ranged', attackClass: 'pierce', targetTags: ['ground'], tagMultipliers: {}, range: 7, damage: 8, period: 1.25 }, presentation: 'building.watchtower' },
+    'town-center': { id: 'town-center', label: 'Town Center', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 100, wood: 400 }, buildSeconds: 60, footprint: 5, maxHp: 2400, products: ['worker'], populationCapacity: 5, dropoff: ['food', 'wood'], presentation: 'building.town-center' },
+    storehouse: { id: 'storehouse', label: 'Storehouse', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 100 }, buildSeconds: 20, footprint: 3, maxHp: 1200, products: [], dropoff: ['food', 'wood'], presentation: 'building.storehouse' },
+    house: { id: 'house', label: 'House', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 75 }, buildSeconds: 15, footprint: 3, maxHp: 800, products: [], populationCapacity: 8, presentation: 'building.house' },
+    barracks: { id: 'barracks', label: 'Barracks', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 175 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['infantry', 'spearman'], presentation: 'building.barracks' },
+    'archery-range': { id: 'archery-range', label: 'Archery Range', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 150 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['archer'], presentation: 'building.archery-range' },
   },
   factions: { frontier: { id: 'frontier', label: 'Frontier', units: ['worker', 'infantry', 'archer', 'spearman'], buildings: ['house', 'barracks', 'archery-range', 'storehouse', 'town-center', 'watchtower'], technologies: ['infantry-attack', 'archer-attack'] } },
   technologies: {
-    'infantry-attack': { id: 'infantry-attack', label: 'INFANTRY FORGING', building: 'barracks', upgradeKey: 'infantryAttack', cost: { food: 100, wood: 75 }, durationSeconds: 25 },
-    'archer-attack': { id: 'archer-attack', label: 'ARCHER FLETCHING', building: 'archery-range', upgradeKey: 'archerAttack', cost: { food: 125, wood: 125 }, durationSeconds: 25 },
+    'infantry-attack': { id: 'infantry-attack', label: 'INFANTRY FORGING', building: 'barracks', upgradeKey: 'infantryAttack', effects: [{ stat: 'damage-multiplier', value: 1.2, targetTags: ['infantry'] }], cost: { food: 100, wood: 75 }, durationSeconds: 25 },
+    'archer-attack': { id: 'archer-attack', label: 'ARCHER FLETCHING', building: 'archery-range', upgradeKey: 'archerAttack', effects: [{ stat: 'damage-multiplier', value: 1.2, targetTags: ['archer'] }], cost: { food: 125, wood: 125 }, durationSeconds: 25 },
   },
 }));
 export const UNIT_DEFINITIONS = GAMEPLAY_DEFINITIONS.units;
