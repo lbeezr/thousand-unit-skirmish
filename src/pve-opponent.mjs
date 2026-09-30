@@ -1,3 +1,4 @@
+import { createReconnaissancePolicy } from './pve-reconnaissance.mjs';
 import { TECHNOLOGY_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
 /**
  * Team-visible adapter and deterministic opening policy for an ordinary RTS
@@ -450,6 +451,7 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
   if (!Number.isSafeInteger(seed)) throw new TypeError('Opponent seed must be a safe integer.');
   const normalizedSeed = seed >>> 0;
   const productionPolicy = createProductionPolicy(normalizedSeed);
+  const reconnaissancePolicy = createReconnaissancePolicy(normalizedSeed);
   const gatherAssignments = new Map();
   const objectiveOwners = new Map();
   const lostObjectiveIds = new Set();
@@ -636,7 +638,7 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
 
   const siegeBuildingOrders = new Map();
 
-  function nextOrders(observation) {
+  function nextOrders(observation, reconnaissanceIds = new Set()) {
     if (observation?.schemaVersion !== OPPONENT_OBSERVATION_SCHEMA_VERSION
       || !validTeam(observation.team)) throw new TypeError('Policy requires opponent observation schema v1.');
 
@@ -673,7 +675,7 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
     for (const unit of unassigned) siegeBuildingOrders.set(soldierKey(unit), { buildingId: defense.id, x: unit.x, z: unit.z,
       attackTick: unit.lastAttack?.tick ?? -1, progressTick: observation.tick });
     const soldiers = observation.units.friendly
-      .filter((unit) => unit.kind !== 'worker' && unit.hp > 0 && !activeKeys.has(soldierKey(unit)))
+      .filter((unit) => unit.kind !== 'worker' && unit.hp > 0 && !activeKeys.has(soldierKey(unit)) && !reconnaissanceIds.has(unit.id))
       .sort((left, right) => left.id - right.id);
     const liveSoldiers = new Set(soldiers.map(soldierKey));
     for (const key of orderedSoldiers) if (!liveSoldiers.has(key)) orderedSoldiers.delete(key);
@@ -739,13 +741,14 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
 
   return {
     next(observation) {
-      const orders = nextOrders(observation);
+      const reconnaissance = reconnaissancePolicy.next(observation);
+      const orders = nextOrders(observation, new Set(reconnaissance.ids));
       const production = productionPolicy.next(observation);
       const builders = new Set(production.filter((command) => ['build', 'repairBuilding'].includes(command.type)).flatMap((command) => command.ids));
       const compatibleOrders = orders.map((command) => command.type === 'gather'
         ? { ...command, ids: command.ids.filter((id) => !builders.has(id)) } : command)
         .filter((command) => !Array.isArray(command.ids) || command.ids.length > 0);
-      return [...compatibleOrders, ...production];
+      return [...reconnaissance.commands, ...compatibleOrders, ...production];
     },
   };
 }

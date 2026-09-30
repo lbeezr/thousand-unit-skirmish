@@ -354,3 +354,23 @@ AI cases cover one Workshop, unlock acquisition, two-engine bounds, visible-defe
 assault, separation from ordinary army orders, stalled retry and release of lost
 targets. Full CI, live AI defended-position/terrain interactions and staging visual
 checks remain integration work rather than inferred from these focused cases.
+
+### 2026-09-29 — Reconnaissance and mounted terrain interactions
+
+Local `forked-vale-field-roles` on siege build `81bdd7c` plus the reconnaissance
+slice retained Forked Vale's 80×64 terrain, resources, fog and objectives, with
+24 starting units. Checkpoint fixtures isolated the roles; this is an automated
+two-seat interaction check, not an unassisted human match. From both seats the
+eleven-cell Scout revealed an enemy ten cells away that an ordinary eight-cell
+Worker could not see. The Scout explored 490/488 additional cells, then retreated
+when the other seat moved the visible enemy toward it. Three reconnaissance
+orders were issued per seat and the Scout retained all 60 HP.
+
+A Rider crossed the middle lane and damaged an enemy Worker. A timely Spearman
+response killed the Rider while preserving the Worker at 45 HP and the Spearman
+at 110 HP in both seats. `field-roles-scenario.mjs` passed. Focused policy checks
+cover deterministic both-seat frontier selection, generation binding, exclusion
+from ordinary army orders, retreat, bounded stalled retries and fully explored
+fog. Room-supervisor recovery passed with owner-only research choices asserted
+separately from public building state. CI, staging and live AI defended-position
+evidence remain integration work.
