@@ -17,6 +17,7 @@ for (const team of [0, 1]) test(`drop-off choice measures reachable routes and p
     getAttackFlowFieldForGoals: (goals) => ({ goal: goals[0], goals: new Set(goals) }),
     pathFromAttackFlow: (_, field) => Array(field.goal === 1 ? 20 : field.goal === 2 ? 10 : 4).fill(field.goal),
   });
+  context.allMatchBuildings = () => context.buildings;
   vm.runInContext(functions, context);
   context.routeWorkerToDropoff(unit);
   assert.equal(unit.dropoffBuildingId, 3, 'a shorter reachable route wins over a closer building across a long detour');

@@ -58,3 +58,24 @@ for (const team of [0, 1]) test(`AI repairs observed friendly damage without rep
   state.units.friendly[0].task = 'idle'; state.resources.wood = 0;
   assert.equal(policy.next({ ...state, tick: 900 })[0]?.type, 'train', 'repair cannot drain a missing wood reserve');
 });
+
+for (const team of [0, 1]) test(`AI expands and recovers Worker production using visible centers for seat ${team}`, () => {
+  const state = { team, tick: 0, fogOfWar: false, map: { width: 80, height: 64 },
+    resources: { food: 500, wood: 600 }, units: { friendly: Array.from({ length: 8 }, (_, id) => ({
+      id, generation: 1, team, hp: 100, x: team ? 20 : -20, z: 0, kind: id < 4 ? 'worker' : 'infantry', task: 'idle', cargo: 0 })), visibleEnemies: [] },
+    buildings: { friendly: [
+      { id: 9, team, type: 'barracks', complete: true, hp: 1800, queue: 0, x: 0, z: 10 },
+      { id: 10, team, type: 'storehouse', complete: true, hp: 1200, queue: 0, x: 0, z: -10 },
+      { id: 1_000_000_000 + team, team, type: 'town-center', home: true, complete: true, hp: 2400, queue: 0, x: team ? 23 : -23, z: 0 }], visibleEnemies: [] },
+    objectives: [], resourceNodes: [{ id: 'remote', type: 'food', stock: 1000, x: team ? 3 : -3, z: 0 }] };
+  const policy = createProductionPolicy(42); policy.next(state);
+  const build = policy.next({ ...state, tick: 300 });
+  assert.equal(build[0].buildingType, 'town-center');
+  state.buildings.friendly.push({ id: 11, team, type: 'town-center', home: false, complete: false, hp: 2400, queue: 0, x: build[0].x, z: build[0].z });
+  assert.equal(policy.next({ ...state, tick: 450 })[0].buildingId, 11, 'resume the same expansion');
+  state.buildings.friendly[3].complete = true;
+  state.buildings.friendly[3].productionOptions = [{ kind: 'worker', available: true }];
+  state.units.friendly = state.units.friendly.filter((unit) => unit.kind !== 'worker');
+  state.buildings.friendly = state.buildings.friendly.filter((building) => !building.home);
+  assert.deepEqual(policy.next({ ...state, tick: 750 }), [{ type: 'trainUnit', kind: 'worker', buildingId: 11 }], 'a surviving expansion replaces lost Workers');
+});

@@ -228,3 +228,20 @@ active/pending military and Worker cancellation, canceled research, and persiste
 remaining reservations. Unit/VM checks cover ownership, replay rejection, refund
 fractions, focused contextual controls and AI repair deduplication. Full PR CI and
 native staging checks remain the integration evidence to collect.
+
+### 2026-09-29 — Town Center expansion owner checks
+
+Local authoritative `town-center-audit` (64×64, no fog, 24 starting units,
+1,000 food/wood per seat), `scripts/town-center-scenario.mjs`: both seats placed
+five-cell expansions for exactly 100 food / 400 wood; completed expansions raised
+capacity from 15 to 20. Home and expansion Worker queues reserved independently,
+restarted and produced four total Workers without another debit. Enemy attacks
+destroyed both homes; surviving armies/expansions retained the match and could
+reserve replacement Workers. Own production options were withheld from the other
+seat's no-fog snapshot. Both-seat AI cases cover bounded expansion, resuming its
+foundation and replacing lost Workers at the surviving center.
+
+Storehouse routing/runtime, production lifecycle, ruleset migration/preservation,
+registry/profile validation, registry building menu, lifecycle UI and static
+client module resolution also passed. These are focused local checks; staging
+appearance, broader CI and defended-expansion balance remain separate evidence.

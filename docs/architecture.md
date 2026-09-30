@@ -175,3 +175,16 @@ clear the repair mode. Renderer action mapping reuses the construction capabilit
 The deterministic policy can repair observed damaged friendly buildings with a
 wood reserve and bounded retries; it suppresses competing gather orders for the
 chosen repairer.
+
+### Starting and expansion Town Centers
+
+Registered `town-center` expansions use generic construction, FIFO production,
+population, repair and drop-off routing. Starting centers are separate
+`homeTownCenters` snapshot records with reserved entity IDs from 1,000,000,000;
+their production accessors preserve the compatibility `workerProduction` queue
+without counting reservations twice. Clients and filtered AI observations combine
+these records with constructed buildings. Destruction removes collision, vision
+and production while retaining a dead home record in checkpoints. Cargo only
+banks at a reachable living completed friendly drop-off; a destroyed home is
+never a permanent deposit marker. Schema 14 explicitly migrates the known schema
+13 ruleset, and preserves unknown pinned revisions for diagnosis.

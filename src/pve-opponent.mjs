@@ -132,6 +132,7 @@ function normalizeBuilding(building, viewTeam) {
     id: building.id,
     team: building.team,
     type: building.type,
+    home: building.home === true,
     x: building.x,
     z: building.z,
     hp: Number.isFinite(building.hp) ? building.hp : null,
@@ -279,7 +280,8 @@ export function toOpponentObservation(state, team, map = null) {
     .filter((unit) => unit && (unit.team === team
       || !visibility || visibility.cellStateAtWorld(unit.x, unit.z) === 2))
     .sort((left, right) => left.id - right.id);
-  const buildings = (Array.isArray(state.buildings) ? state.buildings : [])
+  const buildings = [...(Array.isArray(state.buildings) ? state.buildings : []),
+    ...(Array.isArray(state.homeTownCenters) ? state.homeTownCenters : [])]
     .map((building) => normalizeBuilding(building, team))
     .filter((building) => building && (building.team === team
       || !visibility || visibility.buildingVisibleAtWorld(building.x, building.z)))

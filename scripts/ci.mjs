@@ -121,6 +121,7 @@ const scenarios = [
   ['scripts/worker-combat-scenario.mjs', 'Worker combat across both seats'],
   ['scripts/worker-production-spawn-scenario.mjs', 'Town Center worker exits across map orientations'],
   ['scripts/ruleset-checkpoint-scenario.mjs', 'Pinned ruleset checkpoint recovery'],
+  ['scripts/town-center-scenario.mjs', 'Town Center expansion and recovery'],
   ['scripts/base-lifecycle-scenario.mjs', 'Base cancel/refund and interrupted repair'],
   ['scripts/storehouse-scenario.mjs', 'Storehouse drop-off and cargo recovery'],
   ['scripts/population-scenario.mjs', 'House population lifecycle'],

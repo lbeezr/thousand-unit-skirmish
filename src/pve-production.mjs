@@ -13,13 +13,13 @@ export const PVE_PRODUCTION_LIMITS = Object.freeze({
   maxRetryTicks: 900,
 });
 
-function visibleFootprint(observation, column, row) {
+function visibleFootprint(observation, column, row, half = 1) {
   if (!observation.fogOfWar) return true;
   const mask = observation.visibility;
   if (!mask || mask.columns !== observation.map.width || mask.rows !== observation.map.height) return false;
   const bytes = atob(mask.data);
-  for (let z = row - 1; z <= row + 1; z++) {
-    for (let x = column - 1; x <= column + 1; x++) {
+  for (let z = row - half; z <= row + half; z++) {
+    for (let x = column - half; x <= column + half; x++) {
       const cell = z * mask.columns + x;
       if (((bytes.charCodeAt(cell >> 2) >> ((cell & 3) * 2)) & 3) !== 2) return false;
     }
@@ -27,7 +27,8 @@ function visibleFootprint(observation, column, row) {
   return true;
 }
 
-function candidateSites(observation, home, seed) {
+function candidateSites(observation, home, seed, type = 'barracks') {
+  const half = Math.floor(BUILDING_DEFINITIONS[type].footprint / 2);
   const { width, height } = observation.map;
   if (!Number.isInteger(width) || !Number.isInteger(height)) return [];
   const direction = observation.team === 0 ? 1 : -1;
@@ -39,18 +40,18 @@ function candidateSites(observation, home, seed) {
   return offsets.map((_, index) => offsets[(index + rotation) % offsets.length]).flatMap(([dx, dz]) => {
     const column = Math.floor(home.x + direction * dx + width / 2);
     const row = Math.floor(home.z + dz + height / 2);
-    if (column < 1 || row < 1 || column >= width - 1 || row >= height - 1
-      || !visibleFootprint(observation, column, row)) return [];
+    if (column < half || row < half || column >= width - half || row >= height - half
+      || !visibleFootprint(observation, column, row, half)) return [];
     const point = { x: column + 0.5 - width / 2, z: row + 0.5 - height / 2 };
     const inFootprint = (entity) => {
       const x = Math.floor(entity.x + width / 2);
       const z = Math.floor(entity.z + height / 2);
-      return Math.abs(x - column) <= 1 && Math.abs(z - row) <= 1;
+      return Math.abs(x - column) <= half && Math.abs(z - row) <= half;
     };
     if (objects.some(inFootprint) || observation.resourceNodes.some(inFootprint)
-      || buildings.some((building) => Math.abs(building.x - point.x) < 3 && Math.abs(building.z - point.z) < 3)
-      || observation.objectives.some(({ zone }) => zone && column + 1 >= zone.column
-        && column - 1 < zone.column + zone.width && row + 1 >= zone.row && row - 1 < zone.row + zone.height)) return [];
+      || buildings.some((building) => { const clearance = (BUILDING_DEFINITIONS[type].footprint + (BUILDING_DEFINITIONS[building.type]?.footprint || 3)) / 2; return Math.abs(building.x - point.x) < clearance && Math.abs(building.z - point.z) < clearance; })
+      || observation.objectives.some(({ zone }) => zone && column + half >= zone.column
+        && column - half < zone.column + zone.width && row + half >= zone.row && row - half < zone.row + zone.height)) return [];
     return [point];
   });
 }
@@ -103,6 +104,13 @@ export function createProductionPolicy(seed) {
         postpone(observation.tick);
         return [{ type: 'build', ids: [builder.id], unitGenerations: [builder.generation], buildingType: 'house', ...point }];
       }
+      const workerProducer = observation.buildings.friendly.find((building) => building.complete
+        && building.queue === 0 && building.productionOptions?.some((option) => option.kind === 'worker' && option.available));
+      if (workers.length < 4 && workerProducer && friendly.length < limits.roster
+        && observation.resources.food >= UNIT_DEFINITIONS.worker.cost.food + limits.foodReserve) {
+        postpone(observation.tick);
+        return [{ type: 'trainUnit', kind: 'worker', buildingId: workerProducer.id }];
+      }
       const damaged = observation.buildings.friendly.find((building) => building.complete && building.maxHp > 0 && building.hp < building.maxHp * 0.65);
       const repairer = workers.find((worker) => ['idle', 'gathering'].includes(worker.task) && worker.cargo === 0);
       if (damaged && repairer && observation.resources.wood >= 50) {
@@ -145,7 +153,23 @@ export function createProductionPolicy(seed) {
           }
         }
       }
-      const queued = observation.buildings.friendly.reduce((sum, building) => sum + building.queue, 0);
+      const expansion = observation.buildings.friendly.find((building) => building.type === 'town-center' && !building.home && building.hp > 0);
+      if (remoteResource && economyBuilder && storehouse?.complete && friendly.length >= 8) {
+        if (expansion && !expansion.complete) {
+          postpone(observation.tick);
+          return [{ type: 'build', ids: [economyBuilder.id], unitGenerations: [economyBuilder.generation], buildingId: expansion.id }];
+        }
+        const center = BUILDING_DEFINITIONS['town-center'];
+        if (!expansion && observation.resources.wood >= center.cost.wood + limits.woodReserve
+          && observation.resources.food >= center.cost.food + limits.foodReserve) {
+          const sites = candidateSites(observation, remoteResource, seed, center.id);
+          if (sites.length) {
+            const point = sites[siteAttempt++ % sites.length]; postpone(observation.tick);
+            return [{ type: 'build', ids: [economyBuilder.id], unitGenerations: [economyBuilder.generation], buildingType: center.id, ...point }];
+          }
+        }
+      }
+      const queued = observation.buildings.friendly.filter((building) => !building.home).reduce((sum, building) => sum + building.queue, 0);
       const workerQueue = observation.workerProduction?.queue ?? 0;
       if (barracks.productionBlocked || barracks.queue >= limits.queue
         || friendly.filter((unit) => unit.kind !== 'worker').length + queued >= limits.military
