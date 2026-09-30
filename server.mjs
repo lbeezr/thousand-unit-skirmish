@@ -1,3 +1,4 @@
+import { researchAction, researchOptions, emptyTechnologyCompletions } from './src/research-actions.mjs';
 import { combatDamage, canCombatTarget, hasGameplayCapability } from './src/combat-rules.mjs';
 import { creditResourceBalance } from './src/economy-ledger.mjs';
 import { unfinishedRefund, buildingRepairStep } from './src/base-lifecycle.mjs';
@@ -39,7 +40,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 17;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 18;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -653,8 +654,8 @@ let victoryHoldState = { activeTeams: [false, false], progressSeconds: [0, 0], t
 let teamFood = [0, 0];
 let teamWood = [0, 0];
 let teamUpgrades = [
-  { infantryAttack: false, archerAttack: false },
-  { infantryAttack: false, archerAttack: false },
+  emptyTechnologyCompletions(),
+  emptyTechnologyCompletions(),
 ];
 let teamResearch = [null, null];
 let workerProduction = [
@@ -1618,8 +1619,8 @@ function resetArmy(count = currentArmySize) {
   teamFood = [startingResources.food ?? 0, startingResources.food ?? 0];
   teamWood = [startingResources.wood ?? 0, startingResources.wood ?? 0];
   teamUpgrades = [
-    { infantryAttack: false, archerAttack: false },
-    { infantryAttack: false, archerAttack: false },
+    emptyTechnologyCompletions(),
+    emptyTechnologyCompletions(),
   ];
   teamResearch = [null, null];
   workerProduction = [
@@ -2375,6 +2376,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
       footprint: [...center.footprint], complete: true, progress: 1, queue: center.queue, trainingRemaining: center.trainingRemaining,
       productionBlocked: center.productionBlocked, rallyCell: !fogView || center.team === viewTeam ? center.rallyCell : -1,
       productionQueue: viewTeam === null || center.team === viewTeam ? center.productionQueue : [],
+      researchOptions: viewTeam === null || center.team === viewTeam ? researchOptions(center, researchContextForTeam(center.team)) : [],
       productionOptions: viewTeam === null || center.team === viewTeam ? [productionAction(center, 'worker', productionContexts[center.team])] : [],
       trainingProgress: center.queue ? Math.max(0, Math.min(1, 1 - center.trainingRemaining / WORKER_TRAIN_SECONDS)) : 0,
       attackers: buildingAttackers.get(center.id) || 0,
@@ -2388,6 +2390,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
       lastAttackZ: !fogView || building.team === viewTeam ? building.lastAttackZ ?? building.z : null,
       progress: building.progress,
       complete: building.complete, queue: building.queue,
+      researchOptions: viewTeam === null || building.team === viewTeam ? researchOptions(building, researchContextForTeam(building.team)) : [],
       productionOptions: viewTeam === null || building.team === viewTeam
         ? BUILDING_DEFINITIONS[building.type].products.map((kind) => productionAction(building, kind, productionContexts[building.team])) : [],
       productionQueue: viewTeam === null || building.team === viewTeam ? [...building.productionQueue] : [],
@@ -2579,8 +2582,8 @@ function validateMatchCheckpoint(snapshot) {
     const upgrades = state.teamUpgrades[team];
     const research = state.teamResearch[team];
     assertSnapshot(upgrades && typeof upgrades === 'object' && !Array.isArray(upgrades)
-      && Object.keys(upgrades).every((key) => ['infantryAttack', 'archerAttack'].includes(key))
-      && typeof upgrades.infantryAttack === 'boolean' && typeof upgrades.archerAttack === 'boolean',
+      && Object.keys(upgrades).every((key) => Object.values(TECHNOLOGY_DEFINITIONS).some(technology => technology.upgradeKey === key))
+      && Object.values(TECHNOLOGY_DEFINITIONS).every(technology => typeof upgrades[technology.upgradeKey] === 'boolean'),
     `invalid team ${team} upgrades`);
     if (research === null) continue;
     const rules = researchRulesFor(research?.type);
@@ -2668,8 +2671,10 @@ function validateMatchCheckpoint(snapshot) {
     if (!research) continue;
     const rules = researchRulesFor(research.type);
     const building = state.buildings.find((item) => item.id === research.buildingId);
-    assertSnapshot(building && building.team === team && building.type === rules.buildingType
-      && building.complete, `team ${team} research references an unavailable building`);
+    const liveHome = research.buildingId === HOME_TOWN_CENTER_ID_BASE + team
+      && state.homeTownCenters[team].hp > 0 && rules.buildingType === 'town-center';
+    assertSnapshot(liveHome || (building && building.team === team && building.type === rules.buildingType
+      && building.complete), `team ${team} research references an unavailable building`);
   }
   for (const unit of state.units) {
     assertSnapshot(unit.attackBuildingTargetId < 0 || buildingIds.has(unit.attackBuildingTargetId)
@@ -3031,8 +3036,8 @@ function migrateMatchCheckpoint(snapshot) {
   }
   if (snapshot?.schemaVersion === 6 && typeof snapshot.state === 'object' && snapshot.state !== null) {
     snapshot.state.teamUpgrades ??= [
-      { infantryAttack: false, archerAttack: false },
-      { infantryAttack: false, archerAttack: false },
+      emptyTechnologyCompletions(),
+      emptyTechnologyCompletions(),
     ];
     snapshot.state.teamResearch ??= [null, null];
     snapshot.schemaVersion = 7;
@@ -3087,6 +3092,11 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.schemaVersion = 16;
   }
   if (snapshot?.schemaVersion === 16 && [GAMEPLAY_RULESET_REVISION, 'v1:36b333bbb92bb809369e64f5bcb8f04d46c7c4f42b85d65330b3480520e70fa5'].includes(snapshot.rulesetRevision)) {
+    snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+    snapshot.schemaVersion = 17;
+  }
+  if (snapshot?.schemaVersion === 17 && [GAMEPLAY_RULESET_REVISION, 'v1:7b58530451f22c91bb46f4b3afa61f9c9978a7702e15a0b2e03f4d35533bb754'].includes(snapshot.rulesetRevision)) {
+    snapshot.state.teamUpgrades = snapshot.state.teamUpgrades.map(upgrades => ({ ...emptyTechnologyCompletions(), ...upgrades }));
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
     snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;
   }
@@ -3942,6 +3952,10 @@ function updateWorkerEconomy() {
   flushPendingForestClears();
 }
 
+function researchContextForTeam(team) {
+  return { team, food: teamFood[team], wood: teamWood[team], upgrades: teamUpgrades[team], active: teamResearch[team], matchOver: matchWinner >= 0 };
+}
+
 function queuedUnitsForTeam(team) {
   let queued = 0;
   for (const building of buildings) if (building.team === team) queued += building.queue;
@@ -4108,31 +4122,12 @@ function researchUpgrade(player, command) {
     return;
   }
   const building = buildingsById.get(Number(command.buildingId));
-  if (!building || building.team !== player.team || building.type !== rules.buildingType) {
-    const requiredBuilding = rules.buildingType === 'barracks' ? 'BARRACKS' : 'ARCHERY RANGE';
-    player.sendJson({ type: 'notice', message: `RESEARCH REJECTED · SELECT A FRIENDLY ${requiredBuilding}` });
-    return;
-  }
-  if (!building.complete) {
-    player.sendJson({ type: 'notice', message: `RESEARCH REJECTED · ${rules.label} REQUIRES A COMPLETED BUILDING` });
-    return;
-  }
-  const missing = missingGameplayPrerequisites(TECHNOLOGY_DEFINITIONS[command.upgrade], teamUpgrades[player.team]);
-  if (missing.length) {
-    player.sendJson({ type: 'notice', message: `RESEARCH REJECTED · REQUIRES ${missing.map((id) => TECHNOLOGY_DEFINITIONS[id].label).join(' + ')}` });
-    return;
-  }
-  if (teamUpgrades[player.team][rules.upgradeKey]) {
-    player.sendJson({ type: 'notice', message: `RESEARCH REJECTED · ${rules.label} ALREADY COMPLETED` });
-    return;
-  }
-  if (teamResearch[player.team]) {
-    player.sendJson({ type: 'notice', message: 'RESEARCH REJECTED · AN UPGRADE IS ALREADY IN PROGRESS' });
-    return;
-  }
-  if (teamFood[player.team] + 1e-9 < rules.foodCost
-    || teamWood[player.team] + 1e-9 < rules.woodCost) {
-    player.sendJson({ type: 'notice', message: `RESEARCH REJECTED · NEED ${rules.foodCost} FOOD + ${rules.woodCost} WOOD` });
+  const option = researchAction(building, command.upgrade, {
+    team: player.team, food: teamFood[player.team], wood: teamWood[player.team],
+    upgrades: teamUpgrades[player.team], active: teamResearch[player.team], matchOver: matchWinner >= 0,
+  });
+  if (!option.available) {
+    player.sendJson({ type: 'notice', message: `RESEARCH REJECTED · ${option.reason}` });
     return;
   }
   teamFood[player.team] = Math.max(0, teamFood[player.team] - rules.foodCost);
@@ -6842,7 +6837,7 @@ const server = createServer(async (request, response) => {
     'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',
     'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs',
     'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
-    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs',
+    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
     'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs',
@@ -6851,7 +6846,7 @@ const server = createServer(async (request, response) => {
     'src/audio-composition.mjs', 'src/audio-composer.mjs', 'src/audio-composer.css',
     'audio-studio.html', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs',
     'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs',
-    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs',
+    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs', 'src/terrain-blend.mjs',
   ].includes(relative);
   const publicUiAsset = [

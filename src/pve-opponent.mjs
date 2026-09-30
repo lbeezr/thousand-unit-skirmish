@@ -1,3 +1,4 @@
+import { TECHNOLOGY_DEFINITIONS } from './gameplay-definitions.mjs';
 /**
  * Team-visible adapter and deterministic opening policy for an ordinary RTS
  * WebSocket player. The server assigns the seat and remains authoritative for
@@ -140,6 +141,9 @@ function normalizeBuilding(building, viewTeam) {
     progress: Number.isFinite(building.progress) ? building.progress : null,
     complete: building.complete === true,
     queue,
+    researchOptions: building.team === viewTeam && Array.isArray(building.researchOptions)
+      ? building.researchOptions.filter(option => option && Object.hasOwn(TECHNOLOGY_DEFINITIONS, option.upgrade) && typeof option.available === 'boolean')
+        .map(option => ({ upgrade: option.upgrade, available: option.available, reason: typeof option.reason === 'string' ? option.reason : '' })) : [],
     productionOptions: building.team === viewTeam && Array.isArray(building.productionOptions)
       ? building.productionOptions.filter((option) => option && typeof option.kind === 'string' && typeof option.available === 'boolean')
         .map((option) => ({ kind: option.kind, available: option.available, reason: typeof option.reason === 'string' ? option.reason : '',
@@ -169,8 +173,7 @@ function normalizeWorkerProduction(record, team) {
 function normalizeResearch(record) {
   if (!record || typeof record !== 'object') return null;
   return {
-    infantryAttack: record.infantryAttack === true,
-    archerAttack: record.archerAttack === true,
+    ...Object.fromEntries(Object.values(TECHNOLOGY_DEFINITIONS).map(technology => [technology.upgradeKey, record[technology.upgradeKey] === true])),
     active: record.active && typeof record.active === 'object'
       ? {
         type: typeof record.active.type === 'string' ? record.active.type : null,
@@ -363,7 +366,7 @@ function isPristineMatchState(state, team, map) {
     || production.productionBlocked) return false;
 
   const research = observation.research;
-  if (!research || research.infantryAttack || research.archerAttack || research.active !== null) return false;
+  if (!research || Object.values(TECHNOLOGY_DEFINITIONS).some(technology => research[technology.upgradeKey]) || research.active !== null) return false;
 
   const mapResources = new Map((Array.isArray(map?.resourceNodes) ? map.resourceNodes : [])
     .filter((node) => typeof node?.id === 'string')

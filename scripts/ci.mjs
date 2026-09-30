@@ -77,6 +77,8 @@ run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue aut
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');
 run(['--test', 'scripts/base-lifecycle-ui.test.mjs'], 'Contextual cancellation and repair controls');
+run(['--test', 'scripts/research-ui.test.mjs'], 'Registered research choices');
+run(['--test', 'scripts/research-actions.test.mjs'], 'Shared technology availability');
 run(['--test', 'scripts/combat-rules.test.mjs'], 'Shared combat classes, counters and effect scope');
 run(['--test', 'scripts/watchtower-targeting.test.mjs'], 'Bounded defense targeting and sight');
 run(['--test', 'scripts/economy-ledger.test.mjs'], 'Fractional cargo conservation');
@@ -129,6 +131,7 @@ const scenarios = [
   ['scripts/base-lifecycle-scenario.mjs', 'Base cancel/refund and interrupted repair'],
   ['scripts/storehouse-scenario.mjs', 'Storehouse drop-off and cargo recovery'],
   ['scripts/population-scenario.mjs', 'House population lifecycle'],
+  ['scripts/progression-scenario.mjs', 'Military tier and technology recovery'],
   ['scripts/roster-options-scenario.mjs', 'Roster production and persistence'],
   ['scripts/roster-options-scenario.mjs', 'Mounted mixed production and persistence', '--mounted'],
   ['scripts/production-lifecycle-scenario.mjs', 'Producer destruction and population reservations'],
