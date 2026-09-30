@@ -4,6 +4,8 @@ import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.m
 // These profiles bind the existing procedural instanced geometry. Asset-backed and
 // skeletal animation backends must declare and implement their own capabilities.
 export const UNIT_PRESENTATION_PROFILES = Object.freeze({
+  'unit.scout': Object.freeze({ backend: 'procedural', role: 'mounted', headTint: 0x987953, bodyTint: 0xc8af78, bodyTintWeight: 0.35 }),
+  'unit.rider': Object.freeze({ backend: 'procedural', role: 'mounted', headTint: 0xabb2ad, bodyTint: 0xabb2ad, bodyTintWeight: 0 }),
   'unit.worker': Object.freeze({ backend: 'procedural', role: 'worker', headTint: 0xd7be8f, bodyTint: 0xe1bc63, bodyTintWeight: 0.42 }),
   'unit.infantry': Object.freeze({ backend: 'procedural', role: 'infantry', headTint: 0xabb2ad, bodyTint: 0xabb2ad, bodyTintWeight: 0 }),
   'unit.spearman': Object.freeze({ backend: 'procedural', role: 'infantry', headTint: 0xc4b795, bodyTint: 0xd6c29a, bodyTintWeight: 0.2 }),
@@ -13,7 +15,7 @@ export const UNIT_PRESENTATION_PROFILES = Object.freeze({
 export function validateUnitPresentationBindings(units = UNIT_DEFINITIONS, profiles = UNIT_PRESENTATION_PROFILES) {
   for (const [kind, definition] of Object.entries(units)) {
     const profile = profiles[definition.presentation];
-    if (!profile || profile.backend !== 'procedural' || !['worker', 'infantry', 'archer'].includes(profile.role)) {
+    if (!profile || profile.backend !== 'procedural' || !['worker', 'infantry', 'archer', 'mounted'].includes(profile.role)) {
       throw new Error(`Unsupported presentation binding ${definition.presentation}: ${kind}`);
     }
     if (![profile.headTint, profile.bodyTint].every((value) => Number.isInteger(value) && value >= 0 && value <= 0xffffff)
@@ -32,6 +34,7 @@ export function unitPresentation(kind) {
 }
 
 export const BUILDING_PRESENTATION_PROFILES = Object.freeze({
+  'building.stable': Object.freeze({ backend: 'procedural', role: 'barracks' }),
   'building.watchtower': Object.freeze({ backend: 'procedural', role: 'watchtower' }),
   'building.town-center': Object.freeze({ backend: 'procedural', role: 'town-center' }),
   'building.storehouse': Object.freeze({ backend: 'procedural', role: 'house' }),

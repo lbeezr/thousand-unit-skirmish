@@ -46,13 +46,18 @@ assert.deepEqual(livingIdleWorkerIds(roster, null), []);
 const rosterById = [];
 for (const unit of roster) if (unit && Number.isInteger(unit.id)) rosterById[unit.id] = unit;
 assert.deepEqual(summarizeUnitComposition(rosterById, new Set([4, 5, 8, 11, 12, 999]), 0), {
-  worker: 1, infantry: 1, archer: 1, spearman: 0,
+  worker: 1, infantry: 1, archer: 1, spearman: 0, scout: 0, rider: 0,
 }, 'group composition should count only living selected friendlies of known combat and worker types');
 assert.deepEqual(summarizeUnitComposition(rosterById, new Set([4, 5, 8]), null), {
-  worker: 0, infantry: 0, archer: 0, spearman: 0,
+  worker: 0, infantry: 0, archer: 0, spearman: 0, scout: 0, rider: 0,
 }, 'spectators should not receive a local friendly-group composition');
 rosterById[20] = { id: 20, team: 0, kind: 'spearman', hp: 110 };
 assert.equal(summarizeUnitComposition(rosterById, [20], 0).spearman, 1, 'new roster kinds appear in group composition');
+rosterById[21] = { id: 21, team: 0, kind: 'scout', hp: 60 };
+rosterById[22] = { id: 22, team: 0, kind: 'rider', hp: 130 };
+assert.deepEqual(summarizeUnitComposition(rosterById, [21, 22], 0), {
+  worker: 0, infantry: 0, archer: 0, spearman: 0, scout: 1, rider: 1,
+}, 'mounted units appear in selected group composition');
 const visibleRoster = [
   { id: 5, team: 0, kind: 'infantry', hp: 100, visible: true, screenX: 40, screenY: 60 },
   { id: 14, team: 0, kind: 'infantry', hp: 100, visible: false, screenX: 45, screenY: 60 },

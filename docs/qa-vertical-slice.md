@@ -289,3 +289,27 @@ the attack-move replanner looked up a building definition for a unit. The check
 now uses the unit's attack capability and target unit definition. Both-seat
 `cliff-pursuit-scenario.mjs` passed in direct and attack-move modes, including
 lateral pursuit, unreachable retreat and acquisition of a reachable alternative.
+
+### 2026-09-29 — Stable and mounted owner checks
+
+Local `roster-options-audit` (64×64, no fog, 20 starting units, 1,000 food/wood
+per seat), `roster-options-scenario.mjs --mounted`: both seats built Stable and
+queued Scout/Rider/Scout. Exact spending left 835 food and 715 wood per seat.
+Paid mixed FIFO queues and enemy privacy survived restart, all three products
+completed without another debit, trained Scouts survived a second restart, and
+rematch reset the roster. Authored timed Scout reinforcements resolved for both
+seats. Schema-17 ruleset pinning/migration and rejected-save preservation passed.
+
+The lethal/cadence permutation scenario passed 36 same-role cases including Scout
+and armored Rider; six full-health mixed-role duels confirmed Spearman over Rider,
+Rider over Worker, and Worker over Scout in both seats. All 150 pure/UI checks
+passed, including weighted Stable population controls, mounted health indicators
+and bounded observed-threat AI responses. Strategic LOD state checks passed.
+Broader CI, real AI recovery, staging appearance, reconnaissance routes and mounted
+raids across representative terrain remain separate integration evidence.
+
+Mounted AI recovery follow-up: seeded Forked Vale loss recovery passed for Azure
+(winner 0, tick 5,070, three builds, eight trained units) and Ember (winner 1,
+tick 6,090, four builds, ten trained units), with one-Stable and existing per-role
+construction bounds. Mounted CI also exposed a stale schema-16 assertion in the
+legacy producer-destruction fixture; its expected migrated schema is now 17.

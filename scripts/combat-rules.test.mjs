@@ -3,12 +3,13 @@ import test from 'node:test';
 import { UNIT_DEFINITIONS as units, BUILDING_DEFINITIONS as buildings, GAMEPLAY_DEFINITIONS, validateGameplayDefinitions } from '../src/gameplay-definitions.mjs';
 import { combatDamage, canCombatTarget, technologyCombatEffects, hasGameplayCapability } from '../src/combat-rules.mjs';
 
-test('shared damage preserves every shipped ground matchup and structure hit', () => {
-  for (const attacker of Object.values(units)) {
-    for (const target of Object.values(units)) assert.equal(combatDamage(attacker, target), attacker.combat.damage);
+test('shared damage preserves the original ground roster and structure hits', () => {
+  const original = [units.worker, units.infantry, units.spearman, units.archer];
+  for (const attacker of original) {
+    for (const target of original) assert.equal(combatDamage(attacker, target), attacker.combat.damage);
     for (const target of Object.values(buildings)) assert.equal(combatDamage(attacker, target), attacker.id === 'worker' ? 0 : attacker.combat.structureDamage);
   }
-  for (const target of Object.values(units)) assert.equal(combatDamage(buildings.watchtower, target), 8);
+  for (const target of original) assert.equal(combatDamage(buildings.watchtower, target), 8);
   assert.equal(canCombatTarget(buildings.watchtower, buildings.house), false);
 });
 test('matching tags, attack-class armor and minimum damage define actual counters', () => {
@@ -46,4 +47,17 @@ test('capabilities and validated combat references reject unsupported content', 
     const definitions = structuredClone(GAMEPLAY_DEFINITIONS); mutate(definitions);
     assert.throws(() => validateGameplayDefinitions(definitions), reason);
   }
+});
+
+test('mounted roster has real reconnaissance, raiding and Spearman counter tradeoffs', () => {
+  assert.equal(combatDamage(units.spearman, units.rider), 23);
+  assert.equal(combatDamage(units.archer, units.rider), 5);
+  assert.equal(combatDamage(buildings.watchtower, units.rider), 6);
+  assert.equal(combatDamage(units.rider, units.worker), 11);
+  assert.equal(combatDamage(units.rider, buildings.watchtower), 2.4);
+  assert.equal(units.rider.population, 2);
+  assert.equal(units.scout.sight, 11);
+  assert.ok(units.scout.combat.moveSpeed > units.rider.combat.moveSpeed);
+  assert.ok(units.scout.combat.maxHp < units.archer.combat.maxHp);
+  assert.deepEqual(buildings.stable.products, ['scout', 'rider']);
 });
