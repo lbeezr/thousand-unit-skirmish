@@ -1,3 +1,5 @@
+import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { canCombatTarget } from '../src/combat-rules.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
@@ -6,9 +8,9 @@ const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const functions = source.slice(source.indexOf('function findStationaryCombatTarget('), source.indexOf('function simulateTick('));
 for (const team of [0, 1]) test(`stationary targeting bounds visits and respects range/visibility for seat ${team}`, () => {
   const enemy = 1 - team;
-  const units = Array.from({ length: 100 }, (_, id) => ({ id, team: enemy, hp: 100, x: 6, z: 0 }));
+  const units = Array.from({ length: 100 }, (_, id) => ({ id, team: enemy, kind: 'infantry', hp: 100, x: 6, z: 0 }));
   let visits = 0; let visible = true;
-  const context = vm.createContext({ units, spatialBucketColumns: 1,
+  const context = vm.createContext({ units, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, canCombatTarget, spatialBucketColumns: 1,
     spatialBucketRow: () => 0, spatialBucketColumn: () => 0,
     spatialBucketTeamCounts: [[0], [0]], spatialBucketTeamHeads: [[-1], [-1]],
     spatialBucketTeamCursors: [[-1], [-1]], spatialBucketTeamNext: [[], []],
@@ -19,7 +21,7 @@ for (const team of [0, 1]) test(`stationary targeting bounds visits and respects
   context.spatialBucketTeamHeads[enemy][0] = 0;
   context.spatialBucketTeamNext[enemy] = units.map((unit) => (unit.id + 1) % 100);
   vm.runInContext(functions, context);
-  const building = { id: 1, team, x: 0, z: 0 };
+  const building = { id: 1, team, type: 'watchtower', x: 0, z: 0 };
   assert.equal(context.findStationaryCombatTarget(building, 7).id, 0);
   assert.equal(visits, 64, 'one scan has a fixed visit budget');
   visits = 0; visible = false;

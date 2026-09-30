@@ -270,3 +270,22 @@ AI cases build/resume one threatened-base tower and resume army production. All
 137 pure/UI cases passed on the defense working tree before idle-scan backoff;
 that small follow-up retains focused rerun and broader CI obligations. Siege
 counter/balance and staging appearance proof remain part of subsequent evidence.
+
+### 2026-09-29 — Shared combat owner checks
+
+The shared formula preserved all existing unit-versus-unit damage and military
+structure hits in registry cases. Focused cases exercised mounted-tag bonuses,
+class-specific armor, the 0.5 minimum, ineligible targets, existing research scope,
+stacking and cache invalidation. All 141 pure/UI checks passed on this working
+slice. The authoritative 24-case lethal/cadence permutation test passed across
+Worker/Infantry/Spearman/Archer and both seat/ID orders; Watchtower's exact damage,
+saved cooldown and simultaneous unit/building trade also passed. Both-seat
+ranged-building edge/placement repair retained continuous firing. Known-checkpoint
+migration and incompatible-save preservation passed. Mounted production and
+siege counter/progression proofs belong to the following F3 slices.
+
+CI caught a unit-target pursuit eligibility regression in the shared-combat slice:
+the attack-move replanner looked up a building definition for a unit. The check
+now uses the unit's attack capability and target unit definition. Both-seat
+`cliff-pursuit-scenario.mjs` passed in direct and attack-move modes, including
+lateral pursuit, unreachable retreat and acquisition of a reachable alternative.

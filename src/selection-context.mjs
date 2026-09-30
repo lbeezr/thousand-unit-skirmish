@@ -5,12 +5,15 @@ export function selectionContext(units, ids, team, building = null) {
   const living = [...ids].map((id) => units[id]).filter((unit) => unit && unit.hp > 0 && unit.team === team);
   const counts = Object.fromEntries(Object.keys(UNIT_DEFINITIONS).map((kind) => [kind, 0]));
   const cargo = { food: 0, wood: 0 };
+  let workerCount = 0;
   for (const unit of living) {
     if (Object.hasOwn(counts, unit.kind)) counts[unit.kind]++;
-    if (unit.kind === 'worker' && unit.cargoType in cargo) cargo[unit.cargoType] += Math.max(0, unit.cargo || 0);
+    const gathers = UNIT_DEFINITIONS[unit.kind]?.capabilities.includes('gather');
+    if (gathers) workerCount++;
+    if (gathers && unit.cargoType in cargo) cargo[unit.cargoType] += Math.max(0, unit.cargo || 0);
   }
   const friendlyBuilding = building?.team === team ? building : null;
   const kind = friendlyBuilding ? 'building' : !living.length ? 'none'
-    : counts.worker === living.length ? 'workers' : counts.worker ? 'mixed' : 'military';
+    : workerCount === living.length ? 'workers' : workerCount ? 'mixed' : 'military';
   return { kind, counts, cargo, total: living.length, building: friendlyBuilding };
 }

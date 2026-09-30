@@ -7555,7 +7555,7 @@ function selectIdleWorkers() {
 }
 function selectInfantry() { selectFriendlyUnitKind('infantry', 'INFANTRY'); }
 function selectArchers() { selectFriendlyUnitKind('archer', 'ARCHERS'); }
-function selectMilitary() { selectFriendlyUnitKinds(['infantry', 'archer'], 'MILITARY'); }
+function selectMilitary() { selectFriendlyUnitKinds(Object.values(UNIT_DEFINITIONS).filter((definition) => definition.capabilities.includes('attack') && !definition.capabilities.includes('gather')).map((definition) => definition.id), 'MILITARY'); }
 
 const matchMenu = document.querySelector('#match-menu');
 const helpPanel = document.querySelector('#help-panel');
