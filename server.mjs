@@ -1,3 +1,4 @@
+import { validateScenarioRegions, validRegionEntryTrigger, regionEntryTeam } from './src/scenario-regions.mjs';
 import { TERRAIN_MATERIALS } from './src/terrain-materials.mjs';
 import { researchAction, researchOptions, emptyTechnologyCompletions } from './src/research-actions.mjs';
 import { combatDamage, canCombatTarget, hasGameplayCapability } from './src/combat-rules.mjs';
@@ -324,6 +325,7 @@ function validateMapDefinition(definition, filename) {
       throw new Error(`Map ${filename} has an invalid timed victory rule.`);
     }
   }
+  const regions = validateScenarioRegions(definition);
   const scenarioEvents = definition.scenarioEvents ?? [];
   if (!Array.isArray(scenarioEvents) || scenarioEvents.length > MAX_MAP_SCENARIO_EVENTS) {
     throw new Error(`Map ${filename} scenarioEvents must be an array with at most ${MAX_MAP_SCENARIO_EVENTS} entries.`);
@@ -354,7 +356,7 @@ function validateMapDefinition(definition, filename) {
           && eventTrigger.eventIds.length <= MAX_MAP_SCENARIO_EVENTS - 1
           && eventTrigger.eventIds.every((id) => typeof id === 'string'
             && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)));
-    const validEventTrigger = eventTrigger === undefined || validCaptureTrigger || validEventChain;
+    const validEventTrigger = eventTrigger === undefined || validCaptureTrigger || validEventChain || validRegionEntryTrigger(eventTrigger, regions);
     if (typeof event?.id !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(event.id)
       || scenarioEventIds.has(event.id) || event.type !== 'timed-supply'
       || typeof event.name !== 'string' || !event.name.trim() || event.name.length > 48
@@ -424,6 +426,7 @@ function validateMapDefinition(definition, filename) {
     terrainSeed: Number.isInteger(definition.terrainSeed) ? definition.terrainSeed : 1,
     triggers,
     scenarioEvents,
+    ...(definition.regions === undefined ? {} : { regions }),
     resourceNodes,
   };
 }
@@ -704,7 +707,7 @@ function resetScenarioEventClock() {
   matchElapsedSeconds = 0;
   scenarioClockStarted = false;
   scenarioEventStates = new Map((mapDefinition?.scenarioEvents || []).map((event) => [
-    event.id, event.trigger?.type === 'capture'
+    event.id, ['capture', 'region-entry'].includes(event.trigger?.type)
       ? {
         id: event.id, fired: false, activatedAtSeconds: null, triggeredByTeam: -1,
         ...(event.repeatCount === undefined ? {} : { fireCount: 0, nextFireAtSeconds: null }),
@@ -2159,7 +2162,16 @@ function evaluateScenarioTriggers(deltaSeconds) {
   if (matchWinner < 0 && scenarioClockStarted) {
     for (const event of mapDefinition.scenarioEvents) {
       const state = scenarioEventStates.get(event.id);
-      const activationTriggered = event.trigger?.type === 'capture' || event.trigger?.type === 'event';
+      const activationTriggered = ['capture', 'event', 'region-entry'].includes(event.trigger?.type);
+      if (state && event.trigger?.type === 'region-entry' && state.activatedAtSeconds === null) {
+        const enteringTeam = regionEntryTeam(event.trigger, mapDefinition.regions, units, MAP_WIDTH, MAP_HEIGHT);
+        if (enteringTeam >= 0) {
+          state.activatedAtSeconds = matchElapsedSeconds;
+          state.triggeredByTeam = enteringTeam;
+          if (event.repeatCount !== undefined) state.nextFireAtSeconds = matchElapsedSeconds + event.afterSeconds;
+          dirty = true;
+        }
+      }
       const repeating = event.repeatCount !== undefined;
       if (!state || state.fired
         || (activationTriggered && state.activatedAtSeconds === null)) continue;
@@ -2330,7 +2342,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
       const repeatState = event?.repeatCount === undefined ? {} : {
         fireCount: state.fireCount, nextFireAtSeconds: state.nextFireAtSeconds,
       };
-      return event?.trigger?.type === 'capture' || event?.trigger?.type === 'event'
+      return ['capture', 'event', 'region-entry'].includes(event?.trigger?.type)
         ? {
           id: state.id, fired: state.fired,
           ...repeatState,
@@ -2713,7 +2725,7 @@ function validateMatchCheckpoint(snapshot) {
     assertSnapshot(eventDefinition && !eventIds.has(event.id)
       && typeof event.fired === 'boolean', 'invalid scenario event state');
     if (eventDefinition.repeatCount !== undefined) {
-      const awaitingActivation = ['capture', 'event'].includes(eventDefinition.trigger?.type)
+      const awaitingActivation = ['capture', 'event', 'region-entry'].includes(eventDefinition.trigger?.type)
         && event.activatedAtSeconds === null;
       assertSnapshot(Number.isInteger(event.fireCount)
         && event.fireCount >= 0 && event.fireCount <= eventDefinition.repeatCount + 1
@@ -2727,16 +2739,21 @@ function validateMatchCheckpoint(snapshot) {
       assertSnapshot(event.fireCount === undefined && event.nextFireAtSeconds === undefined,
         'unexpected repeating scenario event state');
     }
-    if (eventDefinition.trigger?.type === 'capture' || eventDefinition.trigger?.type === 'event') {
+    if (['capture', 'event', 'region-entry'].includes(eventDefinition.trigger?.type)) {
       assertSnapshot((event.activatedAtSeconds === null
         || (finite(event.activatedAtSeconds) && event.activatedAtSeconds >= 0
           && event.activatedAtSeconds <= state.matchElapsedSeconds))
         && integerIn(event.triggeredByTeam, -1, 1)
         && (event.activatedAtSeconds === null
           ? event.triggeredByTeam === -1
-          : eventDefinition.trigger.type === 'capture'
+          : ['capture', 'region-entry'].includes(eventDefinition.trigger.type)
             ? event.triggeredByTeam >= 0 : integerIn(event.triggeredByTeam, -1, 1))
         && (!event.fired || event.activatedAtSeconds !== null), 'invalid triggered scenario event state');
+      if (eventDefinition.trigger.type === 'region-entry' && event.activatedAtSeconds !== null) {
+        assertSnapshot(eventDefinition.trigger.team === 'either'
+          || event.triggeredByTeam === Number(eventDefinition.trigger.team),
+        'invalid region event entering team');
+      }
       if (eventDefinition.trigger.type === 'event') {
         const sourceIds = scenarioEventSourceIds(eventDefinition.trigger);
         const sourceStates = sourceIds.map((sourceId) => (
@@ -6842,7 +6859,7 @@ const server = createServer(async (request, response) => {
     'environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs',
     'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',
     'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs',
-    'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
+    'src/scenario-regions.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
     'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',

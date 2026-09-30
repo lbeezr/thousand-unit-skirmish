@@ -1,3 +1,4 @@
+import { validateScenarioRegions, validRegionEntryTrigger } from './scenario-regions.mjs';
 import { TERRAIN_COLORS } from './terrain-materials.mjs';
 import { researchOptions, researchAction } from './research-actions.mjs';
 import { unitPresentation, buildingPresentation } from './gameplay-presentation.mjs';
@@ -305,6 +306,12 @@ const ui = {
   studioResourceCount: document.querySelector('#studio-resource-count'),
   studioResourceStock: document.querySelector('#studio-resource-stock'),
   studioRemoveResource: document.querySelector('#studio-remove-resource'),
+  studioRegions: document.querySelector('#studio-regions'),
+  studioEventRegionControl: document.querySelector('#studio-event-region-control'),
+  studioEventRegion: document.querySelector('#studio-event-region'),
+  studioEventRegionTeam: document.querySelector('#studio-event-region-team'),
+  studioEventRegionKind: document.querySelector('#studio-event-region-kind'),
+  studioEventRegionMinimum: document.querySelector('#studio-event-region-minimum'),
   studioEventList: document.querySelector('#studio-event-list'),
   studioEventCount: document.querySelector('#studio-event-count'),
   studioAddEvent: document.querySelector('#studio-add-event'),
@@ -2273,7 +2280,8 @@ function buildMap(definition) {
     const label = document.createElement('span');
     label.className = 'objective-kicker';
     const eventSourceIds = scenarioEventSourceIds(event.trigger);
-    label.textContent = event.trigger?.type === 'capture' ? 'CAPTURE EVENT'
+    label.textContent = event.trigger?.type === 'region-entry' ? 'REGION EVENT'
+      : event.trigger?.type === 'capture' ? 'CAPTURE EVENT'
       : eventSourceIds.length > 1 ? 'JOINED EVENT'
         : event.trigger?.type === 'event' ? 'CHAINED EVENT' : 'TIMED EVENT';
     const status = document.createElement('span');
@@ -2300,7 +2308,9 @@ function buildMap(definition) {
     const sourceEvents = eventSourceIds.map((sourceId) => (
       scenarioEvents.find((source) => source.id === sourceId)
     )).filter(Boolean);
-    const triggerLabel = objective
+    const triggerLabel = event.trigger?.type === 'region-entry'
+      ? `ON REACHING ${definition.regions?.find((region) => region.id === event.trigger.regionId)?.name?.toUpperCase() || event.trigger.regionId} · ${event.afterSeconds}s DELAY · `
+      : objective
       ? `${event.trigger.occurrence === 'recapture' ? 'ON RECAPTURE OF' : 'ON FIRST CAPTURE OF'} ${objective.name.toUpperCase()} · ${event.afterSeconds}s DELAY · `
       : sourceEvents.length > 1
         ? `AFTER ALL ${sourceEvents.map((source) => source.name.toUpperCase()).join(' + ')} · ${event.afterSeconds}s DELAY · `
@@ -3811,7 +3821,7 @@ function renderScenarioEventCountdown(now = performance.now()) {
     } else if (!latestScenarioClockStarted) {
       visual.card.dataset.state = 'waiting';
       visual.status.textContent = 'WAITING FOR BOTH TEAMS';
-    } else if (['capture', 'event'].includes(visual.event.trigger?.type)
+    } else if (['capture', 'event', 'region-entry'].includes(visual.event.trigger?.type)
       && !Number.isFinite(state?.activatedAtSeconds)) {
       visual.card.dataset.state = 'waiting';
       if (visual.event.trigger.type === 'event') {
@@ -3830,6 +3840,9 @@ function renderScenarioEventCountdown(now = performance.now()) {
           const source = mapDefinition?.scenarioEvents.find((event) => event.id === sourceIds[0]);
           visual.status.textContent = `WAITING FOR ${source?.name?.toUpperCase() || 'SOURCE EVENT'}`;
         }
+      } else if (visual.event.trigger.type === 'region-entry') {
+        const region = mapDefinition?.regions?.find((item) => item.id === visual.event.trigger.regionId);
+        visual.status.textContent = `WAITING FOR ${region?.name?.toUpperCase() || 'REGION'}`;
       } else {
         const objective = mapDefinition?.triggers.find((trigger) => (
           trigger.id === visual.event.trigger.objectiveId
@@ -3841,7 +3854,7 @@ function renderScenarioEventCountdown(now = performance.now()) {
       visual.card.dataset.state = 'pending';
       const repeating = visual.event.repeatCount > 0;
       const dueAt = repeating ? state?.nextFireAtSeconds
-        : ['capture', 'event'].includes(visual.event.trigger?.type)
+        : ['capture', 'event', 'region-entry'].includes(visual.event.trigger?.type)
           ? state.activatedAtSeconds + visual.event.afterSeconds : visual.event.afterSeconds;
       const remaining = Math.max(0, dueAt - elapsed);
       const wholeSeconds = Math.ceil(remaining);
@@ -4763,6 +4776,7 @@ function captureMapStudioDraft() {
     resourceNodes: JSON.parse(JSON.stringify(editorResourceNodes)),
     triggers: JSON.parse(JSON.stringify(editorTriggers)),
     scenarioEvents: JSON.parse(JSON.stringify(editorScenarioEvents)),
+    regions: editorDefinition.regions || [],
     audio: selectedStudioAudio({ allowIncomplete: true }),
   });
   return {
@@ -4818,6 +4832,7 @@ function restoreMapStudioDraft(draft) {
   populateMapEditor(definition, 'Recovered your unpublished map draft. Changes save locally as you edit.');
   editorTriggers = JSON.parse(JSON.stringify(definition.triggers || []));
   editorScenarioEvents = JSON.parse(JSON.stringify(definition.scenarioEvents || []));
+  ui.studioRegions.value = JSON.stringify(definition.regions || [], null, 2);
   editorResourceNodes = JSON.parse(JSON.stringify(definition.resourceNodes || []));
   selectedEditorTriggerId = editorTriggers.some((trigger) => trigger.id === state.selectedTriggerId)
     ? state.selectedTriggerId : editorTriggers[0]?.id || null;
@@ -5170,6 +5185,14 @@ function removeSelectedEditorTrigger() {
   drawEditorGrid();
 }
 
+function readEditorRegions() {
+  let regions;
+  try { regions = JSON.parse(ui.studioRegions.value || '[]'); }
+  catch { throw new Error('Named regions must be valid JSON.'); }
+  validateScenarioRegions({ ...editorDefinition, regions });
+  return regions;
+}
+
 function getSelectedEditorScenarioEvent() {
   return editorScenarioEvents.find((event) => event.id === selectedEditorScenarioEventId) || null;
 }
@@ -5180,7 +5203,9 @@ function describeEditorScenarioEvent(event) {
   const sourceEvents = scenarioEventSourceIds(event.trigger).map((sourceId) => (
     editorScenarioEvents.find((source) => source.id === sourceId)
   )).filter(Boolean);
-  const source = objective
+  const source = event.trigger?.type === 'region-entry'
+    ? `REGION ${event.trigger.regionId} · ${event.trigger.minimumUnits ?? 1} ${event.trigger.unitKind || 'UNITS'}`
+    : objective
     ? `${event.trigger.occurrence === 'recapture' ? 'RECAPTURE' : 'FIRST CAPTURE'} · ${objective.name}`
     : sourceEvents.length > 1 ? `AFTER ALL ${sourceEvents.map((item) => item.name).join(' + ')}`
       : sourceEvents.length === 1 ? `AFTER ${sourceEvents[0].name}` : 'MATCH CLOCK';
@@ -5239,6 +5264,10 @@ function saveSelectedEditorScenarioEventFields() {
   if (ui.studioEventTrigger.value === 'capture') {
     event.trigger = { type: 'capture', objectiveId: ui.studioEventObjective.value };
     if (ui.studioEventOccurrence.value === 'recapture') event.trigger.occurrence = 'recapture';
+  } else if (ui.studioEventTrigger.value === 'region-entry') {
+    event.trigger = { type: 'region-entry', regionId: ui.studioEventRegion.value,
+      team: ui.studioEventRegionTeam.value, minimumUnits: Number(ui.studioEventRegionMinimum.value) };
+    if (ui.studioEventRegionKind.value) event.trigger.unitKind = ui.studioEventRegionKind.value;
   } else if (ui.studioEventTrigger.value === 'event') {
     const eventIds = [...ui.studioEventSources.querySelectorAll('input[type="checkbox"]:checked')]
       .map((input) => input.value);
@@ -5342,6 +5371,13 @@ function reconcileEditorScenarioEventTriggers() {
 function syncEditorScenarioEventControls() {
   reconcileEditorScenarioEventCapturingTeams();
   const event = getSelectedEditorScenarioEvent();
+  ui.studioEventRegionKind.replaceChildren(new Option('Any living unit', ''),
+    ...Object.entries(UNIT_DEFINITIONS).map(([kind, rules]) => new Option(rules.label || kind, kind)));
+  ui.studioEventRegion.value = event?.trigger?.regionId || '';
+  ui.studioEventRegionTeam.value = event?.trigger?.team || 'either';
+  ui.studioEventRegionKind.value = event?.trigger?.unitKind || '';
+  ui.studioEventRegionMinimum.value = event?.trigger?.minimumUnits ?? 1;
+  ui.studioEventRegionControl.hidden = event?.trigger?.type !== 'region-entry';
   const eligibleCaptureTriggers = eligibleEditorCaptureTriggers();
   const eligibleSources = eligibleEditorScenarioEventSources(event);
   const captureTriggerOption = [...ui.studioEventTrigger.options].find((option) => option.value === 'capture');
@@ -5381,7 +5417,7 @@ function syncEditorScenarioEventControls() {
   if (event) {
     ui.studioEventName.value = event.name;
     ui.studioEventTrigger.value = event.trigger?.type === 'capture' ? 'capture'
-      : event.trigger?.type === 'event' ? 'event' : 'clock';
+      : event.trigger?.type === 'event' ? 'event' : event.trigger?.type === 'region-entry' ? 'region-entry' : 'clock';
     ui.studioEventObjective.value = event.trigger?.objectiveId || '';
     ui.studioEventOccurrence.value = event.trigger?.occurrence || 'first';
     ui.studioEventAfter.value = event.afterSeconds;
@@ -5421,7 +5457,8 @@ function syncEditorScenarioEventControls() {
   ui.studioEventOccurrenceControl.hidden = !captureTriggered;
   ui.studioEventAfterLabel.firstChild.textContent = captureTriggered
     ? 'DELAY AFTER CAPTURE (SECONDS)' : eventTriggered
-      ? 'DELAY AFTER EVENT (SECONDS)' : 'AFTER MATCH START (SECONDS)';
+      ? 'DELAY AFTER EVENT (SECONDS)' : event?.trigger?.type === 'region-entry'
+        ? 'DELAY AFTER REGION REACHED (SECONDS)' : 'AFTER MATCH START (SECONDS)';
   for (const field of [ui.studioEventName, ui.studioEventTrigger, ui.studioEventObjective,
     ui.studioEventAfter, ui.studioEventTeam,
     ui.studioEventFood, ui.studioEventWood, ui.studioEventUnitCount, ui.studioEventUnitKind,
@@ -5655,6 +5692,7 @@ function populateMapEditor(definition, message) {
   }
   editorTriggers = JSON.parse(JSON.stringify(editorDefinition.triggers || []));
   editorScenarioEvents = JSON.parse(JSON.stringify(editorDefinition.scenarioEvents || []));
+  ui.studioRegions.value = JSON.stringify(editorDefinition.regions || [], null, 2);
   selectedEditorTriggerId = editorTriggers[0]?.id || null;
   selectedEditorScenarioEventId = editorScenarioEvents[0]?.id || null;
   editorTriggerCreationPending = false;
@@ -5904,6 +5942,7 @@ function validateImportedMap(value) {
   if (unreachableTrigger) {
     throw new Error(`Capture zone ${unreachableTrigger.triggerId} is unreachable from team ${unreachableTrigger.team}.`);
   }
+  const regions = validateScenarioRegions(definition);
   definition.scenarioEvents ??= [];
   if (!Array.isArray(definition.scenarioEvents) || definition.scenarioEvents.length > MAX_MAP_SCENARIO_EVENTS) {
     throw new Error(`Map may contain at most ${MAX_MAP_SCENARIO_EVENTS} scenario events.`);
@@ -5934,7 +5973,7 @@ function validateImportedMap(value) {
           && eventTrigger.eventIds.length <= MAX_MAP_SCENARIO_EVENTS - 1
           && eventTrigger.eventIds.every((id) => typeof id === 'string'
             && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)));
-    const validEventTrigger = eventTrigger === undefined || validCaptureTrigger || validEventChain;
+    const validEventTrigger = eventTrigger === undefined || validCaptureTrigger || validEventChain || validRegionEntryTrigger(eventTrigger, regions);
     if (typeof event?.id !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(event.id)
       || scenarioEventIds.has(event.id) || event.type !== 'timed-supply'
       || typeof event.name !== 'string' || !event.name.trim() || event.name.length > 48
@@ -6297,6 +6336,24 @@ function drawEditorGrid() {
     context.lineTo(editorDefinition.width, row);
     context.stroke();
   }
+  // Invalid in-progress JSON remains editable and autosaved; only valid rectangles are previewed.
+  try {
+    for (const region of readEditorRegions()) {
+      const { column, row, width, height } = region.zone;
+      context.save();
+      context.fillStyle = 'rgba(203, 143, 247, .15)';
+      context.fillRect(column, row, width, height);
+      context.strokeStyle = '#ce9af3';
+      context.lineWidth = 0.12;
+      context.setLineDash([0.4, 0.3]);
+      context.strokeRect(column, row, width, height);
+      context.setLineDash([]);
+      context.font = '0.8px sans-serif';
+      context.fillStyle = '#f0d5ff';
+      context.fillText(region.name, column + 0.2, row + 0.9);
+      context.restore();
+    }
+  } catch { /* Validation reports malformed regions when publishing or exporting. */ }
   for (const [index, trigger] of editorTriggers.entries()) {
     const zone = trigger.zone;
     const isSelected = trigger.id === selectedEditorTriggerId;
@@ -6539,6 +6596,7 @@ function collectEditorMap() {
     resourceNodes: JSON.parse(JSON.stringify(editorResourceNodes)),
     triggers,
     scenarioEvents,
+    regions: readEditorRegions(),
   });
   return validateImportedMap(definition);
 }
@@ -8449,6 +8507,9 @@ ui.studioEventTrigger.addEventListener('change', () => {
   saveSelectedEditorScenarioEventFields();
   syncEditorScenarioEventControls();
 });
+ui.studioRegions.addEventListener('input', drawEditorGrid);
+for (const field of [ui.studioEventRegion, ui.studioEventRegionTeam, ui.studioEventRegionKind,
+  ui.studioEventRegionMinimum]) field.addEventListener('change', saveSelectedEditorScenarioEventFields);
 ui.studioEventObjective.addEventListener('change', saveSelectedEditorScenarioEventFields);
 ui.studioEventSources.addEventListener('change', () => {
   saveSelectedEditorScenarioEventFields();
