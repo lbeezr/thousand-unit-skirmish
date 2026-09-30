@@ -6657,7 +6657,7 @@ function applyOrderNotice(token, message) {
 function sendTrackedOrder(command, label, count, unitName = 'UNITS') {
   const token = beginOrderStatus(label, count, unitName);
   if (sendCommand({ ...command, clientOrderToken: token })) {
-    audio.playEvent({ cue: command.type === 'stop' ? 'stop' : command.type === 'holdPosition' ? 'hold' : command.type === 'repairBuilding' ? 'repair' : command.type === 'build' ? 'build'
+    audio.playEvent({ cue: command.type === 'stop' ? 'stop' : command.type === 'holdPosition' ? 'hold' : command.type === 'build' ? 'build'
       : command.type === 'gather' ? 'gather'
         : command.type === 'attack' || command.type === 'attackBuilding' || command.type === 'attackMove'
           ? 'attack' : 'move', kind: units[command.ids?.[0]]?.kind,
@@ -6691,6 +6691,7 @@ function sendCommand(command) {
     return false;
   }
   socket.send(serialized);
+  if (command.type === 'repairBuilding') audio.playEvent({ cue: 'repair', kind: units[command.ids?.[0]]?.kind });
   return true;
 }
 
@@ -9016,7 +9017,7 @@ function connectSocket() {
       if (feedback.applyOrderStatus) applyOrderNotice(noticeToken, notice);
       if (feedback.showToast) {
         const cue = cueForNotice(notice, { localTeam, tokenized: noticeToken !== null });
-        if (cue) audio.playEvent({ cue });
+        if (cue && !notice.endsWith(' READY')) audio.playEvent({ cue });
       }
       if (notice.startsWith('BUILD REJECTED ·')) {
         if (feedback.clearPendingBuild) {
