@@ -442,3 +442,14 @@ The staged gameplay smoke also passed on that deployment using authored map
 both-seat reconnect, authored-map save/reload, elimination victory and synchronized
 rematch reset. This fixture validates integration and recovery rather than AI
 expansion or a balanced combined-arms match.
+
+### 2026-09-30 — Live deterministic AI expansion
+
+The corrected expansion runtime scenario passed at `83b82ed`, completing both
+seats' Town Centers by tick 4560. Each policy purchased its Barracks, remote
+Storehouse and exactly one expansion through ordinary authoritative commands;
+construction completed at full registered HP. Shadow policies reproduced every
+command from identical team observations. The authored 80×64 map starts with
+24 units and 2,000 food/wood per seat, disables fog and holds military stationary
+to isolate production. This is not a competitive full-match or fog scouting
+claim. PR #252 adds this scenario to CI; its broad checks remain in progress.
