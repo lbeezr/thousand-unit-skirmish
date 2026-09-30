@@ -123,6 +123,8 @@
             <button type="button" data-context-panel="selection">Groups</button>
             <span data-context-groups class="contextual-groups"></span>
             <button type="button" data-context-proxy="order-target-toggle">Target battlefield</button>
+            <button type="button" data-stationary-order="stop">Stop · S</button>
+            <button type="button" data-stationary-order="holdPosition">Hold position · H</button>
             <button type="button" data-context-proxy="attack-move-toggle">Attack move · M</button>
             <button type="button" data-context-proxy="select-workers">Select workers</button>
             <button type="button" data-context-build data-context-panel="economy">Build</button>
@@ -273,6 +275,8 @@
                 <option value="column">Column</option>
               </select>
             </div>
+            <button type="button" class="attack-move-toggle" data-stationary-order="stop" title="Cancel all current tasks and queued routes">Stop · S</button>
+            <button type="button" class="attack-move-toggle" data-stationary-order="holdPosition" title="Stay in place and attack enemies within weapon range">Hold position · H</button>
             <button id="attack-move-toggle" class="attack-move-toggle" type="button" aria-pressed="false">
               <span>Attack move</span><span class="attack-move-key">M</span>
             </button>

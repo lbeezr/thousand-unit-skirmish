@@ -116,7 +116,7 @@ const UNIT_SPRITE_MARKER_ZOOM_THRESHOLD = 0.6;
 const MAX_OBJECTIVE_FOOD_REWARD = 10000;
 const MAX_TRIGGER_UNIT_REWARD = 25;
 const WORKERS_PER_TEAM = 4;
-const WORKER_TASK_STATES = new Set(['idle', 'moving', 'gathering', 'returning', 'building', 'repairing', 'attacking']);
+const WORKER_TASK_STATES = new Set(['idle', 'moving', 'gathering', 'returning', 'building', 'repairing', 'attacking', 'holding']);
 const INFANTRY_FOOD_COST = UNIT_DEFINITIONS.infantry.cost.food;
 const INFANTRY_TRAIN_SECONDS = UNIT_DEFINITIONS.infantry.trainSeconds;
 const WORKER_FOOD_COST = UNIT_DEFINITIONS.worker.cost.food;
@@ -411,7 +411,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setClearColor(0x859175, 1);
 viewport.prepend(renderer.domElement);
-renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Use the arrow keys to move the camera, middle drag or Space + drag to pan, scroll to zoom toward the pointer, or push the mouse against any screen edge to scroll when edge scroll is enabled. Use Center selection, Home base, or Fit map to navigate. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
+renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Use the arrow keys to move the camera, middle drag or Space + drag to pan, scroll to zoom toward the pointer, or push the mouse against any screen edge to scroll when edge scroll is enabled. Use Center selection, Home base, or Fit map to navigate. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Press S to stop selected units or H to hold position and attack within range without pursuing. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
 renderer.domElement.dataset.cursorMode = 'select';
 renderer.domElement.tabIndex = 0;
 
@@ -3410,9 +3410,15 @@ function setArmySize(count, showMessage = false) {
   if (showMessage) showToast(`BATTLEFIELD RESET · ${currentArmySize.toLocaleString()} UNITS`, 1500);
 }
 
+function updateStationaryOrderControls(selectedBuilding) {
+  const disabled = localTeam === null || matchWinner >= 0 || selectedIds().length === 0 || Boolean(selectedBuilding);
+  for (const button of document.querySelectorAll('[data-stationary-order]')) button.disabled = disabled;
+}
+
 function updateSelectionUI() {
   const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
     && building.team === localTeam) || null;
+  updateStationaryOrderControls(selectedBuilding);
   ui.selectedBuildingCard.hidden = !selectedBuilding;
   document.querySelector('#dock-selection').dataset.focus = selectedBuilding ? 'building' : 'units';
   if (selectedBuilding) {
@@ -3486,6 +3492,9 @@ function updateContextualCommands() {
   bar.querySelector('[data-context-summary]').textContent = building
     ? `${buildingLabel(building.type)} · ${ui.selectedBuildingHealth.textContent} · ${ui.selectedBuildingProduction.textContent}`
     : context.total ? `${context.total} selected${context.kind === 'military' || context.kind === 'mixed' ? ` · ${ui.formationSelect.value} formation` : ''} · ${Object.entries(context.counts).filter(([, n]) => n).map(([role, n]) => `${n} ${role}`).join(' · ')}${context.counts.worker ? ` · Cargo ${formatResourceStock(context.cargo.food)} food / ${formatResourceStock(context.cargo.wood)} wood` : ''}` : '';
+  for (const button of bar.querySelectorAll('[data-stationary-order]')) {
+    button.hidden = !['workers', 'military', 'mixed'].includes(context.kind);
+  }
   updateRosterProductionOptions(bar.querySelector('[data-context-products]'), building);
   updateResearchOptions(bar.querySelector('[data-context-research-options]'), building);
   for (const button of bar.querySelectorAll('[data-context-proxy]')) {
@@ -3962,6 +3971,7 @@ function updateMatchResult(winner, triggerId = null, reason = null) {
 function updateCommandUI() {
   const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
     && building.team === localTeam) || null;
+  updateStationaryOrderControls(selectedBuilding);
   const rallyCell = Number.isInteger(selectedBuilding?.rallyCell) ? selectedBuilding.rallyCell : -1;
   const mode = selectedBuilding ? BUILDING_DEFINITIONS[selectedBuilding.type]?.products.length ? 'RALLY' : 'BUILDING' : attackMoveMode ? 'ATTACK MOVE' : 'MOVE';
   if (ui.commandMode) {
@@ -6702,7 +6712,7 @@ function applyOrderNotice(token, message) {
     finishOrderStatus(token, message, 'failed');
     return true;
   }
-  if (/^(MOVE ORDER|ATTACK MOVE ORDER|WAYPOINT ORDER|ATTACK ORDER|ATTACK BUILDING ORDER|GATHER ORDER|BUILD ORDER|BUILD RESUME ORDER) · /.test(message)
+  if (/^(STOP ORDER|HOLD POSITION ORDER|MOVE ORDER|ATTACK MOVE ORDER|WAYPOINT ORDER|ATTACK ORDER|ATTACK BUILDING ORDER|GATHER ORDER|BUILD ORDER|BUILD RESUME ORDER) · /.test(message)
     || message.startsWith('WAYPOINT QUEUED · ')) {
     finishOrderStatus(token, message, 'applied');
     return true;
@@ -6947,6 +6957,19 @@ function mapCellToWorld(cell) {
 
 function selectedIds() {
   return [...selected].filter((id) => units[id]?.hp > 0 && units[id]?.team === localTeam);
+}
+
+function issueStationaryOrder(type) {
+  if (localTeam === null || matchWinner >= 0) return;
+  const ids = selectedIds();
+  if (!ids.length) { showToast('SELECT YOUR UNITS BEFORE ISSUING AN ORDER'); return; }
+  if (sendTrackedOrder({ type, ids }, type === 'stop' ? 'STOP' : 'HOLD POSITION', ids.length)) {
+    setTapOrderArmed(false, false);
+    setAttackMoveMode(false, false);
+  }
+}
+for (const button of document.querySelectorAll('[data-stationary-order]')) {
+  button.addEventListener('click', () => issueStationaryOrder(button.dataset.stationaryOrder));
 }
 
 function setAttackMoveMode(enabled, announce = true) {
@@ -8274,6 +8297,12 @@ window.addEventListener('keydown', (event) => {
       recallControlGroup(groupIndex);
       return;
     }
+  }
+  if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
+    && ['s', 'h'].includes(event.key.toLowerCase())) {
+    event.preventDefault();
+    issueStationaryOrder(event.key.toLowerCase() === 's' ? 'stop' : 'holdPosition');
+    return;
   }
   if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
     && event.key.toLowerCase() === 'm') {
