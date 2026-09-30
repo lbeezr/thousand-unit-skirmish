@@ -298,6 +298,7 @@ try {
   const initialResourceCount = await cdp.evaluate("Number.parseInt(document.querySelector('#studio-resource-count').textContent, 10)");
   await setField('#studio-name', 'Draft Recovery Test Map');
   await setField('#studio-starting-food', '750');
+  await setField('#studio-regions', JSON.stringify([{ id: 'draft-pass', name: 'Draft Pass', zone: { column: 20, row: 20, width: 4, height: 4 } }]));
   await cdp.evaluate("(() => { const field = document.querySelector('#studio-fog-of-war'); field.checked = true; field.dispatchEvent(new Event('change', { bubbles: true })); })()");
 
   await clickGridCell(5, 5);
@@ -322,6 +323,7 @@ try {
       resourceCount: draft?.editor?.definition?.resourceNodes?.length,
       pendingPlacement: draft?.editor?.triggerCreationPending,
       pendingObjectiveName: draft?.editor?.formValues?.['studio-objective-name']?.value,
+      regions: draft?.editor?.formValues?.['studio-regions']?.value,
     };
   })()`);
   assert.ok(saved.key, 'editing should create a local autosave');
@@ -333,6 +335,7 @@ try {
   assert.equal(saved.resourceCount, initialResourceCount + 1, 'placed resources should be included in the draft');
   assert.equal(saved.pendingPlacement, true, 'unfinished objective placement should survive');
   assert.equal(saved.pendingObjectiveName, 'Draft Crown');
+  assert.equal(JSON.parse(saved.regions)[0].id, 'draft-pass');
 
   await click('#map-studio-close');
   await reloadAndWait(gameUrl);
@@ -356,12 +359,18 @@ try {
   assert.match(restored.resources, new RegExp(`^${initialResourceCount + 1} \\/ 128$`));
   assert.equal(restored.pending, 'CANCEL PLACEMENT');
   assert.equal(restored.objectiveName, 'Draft Crown');
+  assert.equal(await cdp.evaluate("JSON.parse(document.querySelector('#studio-regions').value)[0].id"), 'draft-pass');
 
   await clickGridCell(30, 30);
   await waitForPage("document.querySelector('#studio-trigger-count')?.textContent === '1 / 32'", 'the recovered objective placement to finish');
   await click('#studio-add-event');
   await setField('#studio-event-name', 'Recovered Supply');
   await setField('#studio-event-after', '95');
+  await setField('#studio-event-trigger', 'region-entry');
+  await setField('#studio-event-region', 'draft-pass');
+  await setField('#studio-event-region-team', '1');
+  await setField('#studio-event-region-kind', 'worker');
+  await setField('#studio-event-region-minimum', '3');
   await sleep(500);
   saved = await cdp.evaluate(`(() => {
     const key = Object.keys(localStorage).find((item) => item.includes(':map-studio-draft:'));
@@ -371,6 +380,7 @@ try {
       triggerName: draft?.editor?.definition?.triggers?.[0]?.name,
       eventName: draft?.editor?.definition?.scenarioEvents?.[0]?.name,
       eventDelay: draft?.editor?.definition?.scenarioEvents?.[0]?.afterSeconds,
+      eventTrigger: draft?.editor?.definition?.scenarioEvents?.[0]?.trigger,
       terrainBlocks: draft?.editor?.definition?.obstacles?.length,
       resourceCount: draft?.editor?.definition?.resourceNodes?.length,
     };
@@ -379,6 +389,7 @@ try {
   assert.equal(saved.triggerName, 'Draft Crown');
   assert.equal(saved.eventName, 'Recovered Supply');
   assert.equal(saved.eventDelay, 95);
+  assert.deepEqual(saved.eventTrigger, { type: 'region-entry', regionId: 'draft-pass', team: '1', minimumUnits: 3, unitKind: 'worker' });
   assert.ok(saved.terrainBlocks > 0);
   assert.equal(saved.resourceCount, initialResourceCount + 1);
 

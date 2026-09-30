@@ -489,3 +489,33 @@ authenticated assets, invite creation, both seats/reconnect, authored-map
 save/reload, elimination victory and synchronized rematch. This resolves the
 previous pending integration items for F1–F3 and early presentation binding.
 Full F4 animation, variant and scale proofs remain separate.
+
+## Named region scenario foundation — 2026-09-30
+
+The `codex/scenario-region-triggers` slice adds named rectangular regions and
+first qualifying-presence conditions to the existing declarative supply-event
+system. `scripts/region-event-scenario.mjs` publishes a 64×64 Open Field derivative
+with eight total units, orders an Azure and Ember worker into the central region,
+checks independently attributed activation, stops/restarts with delayed rewards
+pending, reconnects both sessions, checks exactly-once rewards, resets and repeats,
+and rejects a missing region reference. The named region definition round trips
+through the server map-change payload. `scripts/scenario-regions.test.mjs` covers
+malformed bounds, duplicate IDs, bounded typed conditions, dead-unit and kind
+filtering, half-open rectangle boundaries, and deterministic either-team ties.
+
+These checks establish local server behavior, not a completed user-authored
+scenario playtest or a performance budget. Region creation currently uses a
+JSON field with a map outline preview; graphical region painting remains future
+work. Events trigger on the first qualifying sampled presence, including initial
+occupants; they do not detect a swept path through a rectangle between ticks.
+
+The extended `scripts/map-studio-draft-scenario.mjs` browser check passed on
+local macOS Chrome with software rendering after installing the locked Three.js
+dependency in the isolated checkout. It preserves the named-region text through
+close/reload/restore and saves a Worker-only Ember region event requiring three
+units with its delay and conditions intact. This is browser form/draft evidence;
+it does not claim human authoring usability. The existing timed-event regression
+passed after correcting its stale checkpoint schema assertion from 9 to the
+current 19; this slice does not change the checkpoint schema version. Syntax,
+client asset serving, shared-region tests, CI shard coverage, and documentation
+link checks passed.

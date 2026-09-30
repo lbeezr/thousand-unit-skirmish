@@ -51,6 +51,8 @@ const syntaxFiles = [
 
 for (const file of syntaxFiles) run(['--check', file], `Syntax: ${file}`);
 
+run(['--test', 'scripts/scenario-regions.test.mjs'], 'Named scenario regions');
+run(['scripts/region-event-scenario.mjs'], 'Region event recovery and rematch');
 run(['scripts/check-docs.mjs'], 'Documentation links');
 run(['--test', 'scripts/hosted-scale-profile.test.mjs'], 'Hosted scale measurement integrity');
 run(['--test', 'scripts/unit-sprite-clock.test.mjs'], 'Sprite animation clock');
