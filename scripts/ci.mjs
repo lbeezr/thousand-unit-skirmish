@@ -57,6 +57,7 @@ run(['--test', 'scripts/unit-sprite-clock.test.mjs'], 'Sprite animation clock');
 run(['--test', 'scripts/sprite-pixel-bounds.test.mjs'], 'Sprite pixel clipping regressions');
 run(['--test', 'scripts/building-sprites.test.mjs'], 'Default building sprites');
 run(['--test', 'scripts/ci-sharding.test.mjs'], 'CI shard coverage');
+run(['--test', 'scripts/pve-reconnaissance.test.mjs'], 'Bounded Scout reconnaissance');
 run(['--test', 'scripts/browser-performance-instrumentation.test.mjs'], 'Browser timing attribution');
 run(['--test', 'scripts/performance-order-window.test.mjs'], 'Performance planning wave boundaries');
 run(['--test', 'scripts/waypoint-backpressure.test.mjs'], 'Waypoint metadata under backpressure');
@@ -149,6 +150,7 @@ const scenarios = [
   ['scripts/formation-assignment-scenario.mjs', 'Formation assignment'],
   ['scripts/unit-selection-scenario.mjs', 'Unit selection'],
   ['scripts/pve-opponent-scenario.mjs', 'PvE opponent seats'],
+  ['scripts/field-roles-scenario.mjs', 'Forked Vale scouting and mounted counter response'],
   ['scripts/pve-decision-fairness-scenario.mjs', 'PvE tactical decisions during gather retries'],
   ['scripts/pve-tactical-retry-scenario.mjs', 'Bounded PvE tactical retries'],
   ['scripts/pve-reinforcement-recovery-scenario.mjs', 'Stranded PvE reinforcements retry independently'],
