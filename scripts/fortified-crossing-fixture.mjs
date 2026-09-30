@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-export async function createFortifiedFixture({ mapPath = 'maps/fortified-crossing.json', timeoutMs = 90_000, diagnostics = false } = {}) {
+export async function createFortifiedFixture({ mapPath = 'maps/fortified-crossing.json', timeoutMs = 90_000, diagnostics = false, supervisor = false } = {}) {
   const reservation = createServer(); reservation.listen(0, '127.0.0.1'); await once(reservation, 'listening');
   const port = reservation.address().port; await new Promise(resolve => reservation.close(resolve));
   const directory = await mkdtemp(path.join(os.tmpdir(), 'rts-fortified-'));
@@ -21,16 +21,17 @@ export async function createFortifiedFixture({ mapPath = 'maps/fortified-crossin
     clients.clear();
     if (child && child.exitCode === null) {
       const exited = once(child, 'exit'); child.kill('SIGINT');
-      await Promise.race([exited, sleep(3000)]);
+      await Promise.race([exited, sleep(supervisor ? 9000 : 3000)]);
       if (child.exitCode === null) { child.kill('SIGKILL'); await exited; }
     }
     child = null;
   }
   async function start() {
-    child = spawn(process.execPath, [path.join(ROOT, 'server.mjs')], { cwd: ROOT,
+    child = spawn(process.execPath, [path.join(ROOT, supervisor ? 'room-supervisor.mjs' : 'server.mjs')], { cwd: ROOT,
       env: { ...process.env, PORT: String(port), RTS_HOST: '127.0.0.1', RTS_GAME_MODE: 'pvp',
         RTS_MAP: mapPath, RTS_MATCH_STATE_PATH: checkpointPath,
         RTS_CUSTOM_MAP_DIRECTORY: path.join(directory, 'custom'),
+        ...(supervisor ? { RTS_ROOM_DATA_DIRECTORY: path.join(directory, 'rooms') } : {}),
         ...(diagnostics ? { RTS_TICK_DIAGNOSTICS: '1', RTS_SEPARATION_DIAGNOSTICS: '1' } : {}) },
       stdio: ['ignore', 'pipe', 'pipe'] });
     for (const pipe of [child.stdout, child.stderr]) pipe.on('data', chunk => { logs = (logs + chunk).slice(-12000); });
@@ -52,9 +53,9 @@ export async function createFortifiedFixture({ mapPath = 'maps/fortified-crossin
       else if (message.type === 'welcome' || message.type === 'mapChange') latest = message.state;
       for (const waiter of pending) if (waiter.predicate(message)) finish(waiter, null, message);
     });
-    socket.addEventListener('close', () => {
+    socket.addEventListener('close', event => {
       closed = true;
-      for (const waiter of pending) finish(waiter, new Error(`Connection closed while waiting: ${waiter.description}; worker log: ${logs}`));
+      for (const waiter of pending) finish(waiter, new Error(`Connection closed (${event.code} ${event.reason}) while waiting: ${waiter.description}; worker log: ${logs}`));
     });
     function wait(predicate, description = 'message', after = 0) {
       const message = messages.slice(after).find(predicate); if (message) return Promise.resolve(message);
