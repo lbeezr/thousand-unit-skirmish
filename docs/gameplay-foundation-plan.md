@@ -288,3 +288,25 @@ schema-17 state and validates active research at the correct surviving home as
 well as constructed producers. AI acquires available progression after a viable
 army while retaining food/wood reserves. Workshop/siege supplies the next concrete
 tier unlock; representative raid, scouting and defended-position proofs remain.
+
+### Workshop and siege slice
+
+Tier II enables a three-cell Workshop (250 wood, 30 seconds, 1,600 HP). Siege
+engineering researches there for 150 food / 150 wood in 30 seconds and unlocks
+the Siege Engine: 80 food / 160 wood, 30-second training, three population,
+90 HP, 1.8-cell movement, eight-cell range and a 2.5-second attack period.
+Its siege-class hits deal six unit damage or 24 structure damage, multiplied
+by two for defense tags. No area effect or projectile simulation is necessary
+for this single-target role. Full-health both-seat checks show an engine at the
+outer firing edge destroying a tower in 25 shots without return fire, while an
+engine exposed inside tower range dies first. Rider defeats an engine with
+112 HP remaining. These initial interactions inform provisional balance.
+
+Procedural siege carts remain instanced and have a separate strategic silhouette;
+Workshop declares the existing Range geometry as its placeholder. AI can build
+one Workshop for a visible defense, acquire the unlock and train at most two
+engines. Up to two engines assault the nearest inspected visible defense among
+at most 64 candidates; army orders exclude those engines. Observed movement or
+attacks preserve the order, a ten-second stall permits a retry, and loss of the
+visible target returns them to army orders. Mixed-terrain/scouting/raid matches,
+full CI and staging evidence are still required for claiming F3 completion.

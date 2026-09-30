@@ -154,7 +154,7 @@ try {
       }
     }
   }
-  for (const [strong, weak] of [['spearman', 'rider'], ['rider', 'worker'], ['worker', 'scout']]) {
+  for (const [strong, weak] of [['spearman', 'rider'], ['rider', 'worker'], ['worker', 'scout'], ['rider', 'siege-engine']]) {
     for (const strongTeam of [0, 1]) {
       const fixture = structuredClone(initial);
       fixture.state.seatSessions = []; fixture.state.scenarioClockStarted = true;

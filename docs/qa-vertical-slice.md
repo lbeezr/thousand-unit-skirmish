@@ -332,3 +332,25 @@ effects, cached completion reset, focused registered HUD choices and reserve-awa
 AI acquisition. A fresh local server served all 33 browser import dependencies,
 including the shared research module. Full CI, staging and representative matches
 remain integration evidence rather than inferred from these focused checks.
+
+### 2026-09-29 — Workshop and siege owner checks
+
+Local `roster-options-audit` (64×64, no fog, 12 starting units, 1,500 food/wood
+per seat), `roster-options-scenario.mjs --siege`: both seats rejected Workshop
+before Tier II, rejected engine production before siege engineering, completed
+both projects and reserved three engines at three population each. Exact paid
+balances were 910 food / 470 wood per seat. Queues survived restart, all engines
+completed without another debit, completed units reloaded, rematch reset the
+roster and authored siege reinforcements resolved for both seats.
+
+Local `siege-defense-audit` (64×64, no fog, 24 units): engines placed at the
+outer eight-cell structure firing edge dealt 48 per hit and demolished full-health
+1,200-HP towers after 25 shots; engines retained 90 HP. Engines exposed six cells
+from tower centers died before demolishing the towers. Forty-two same-role lethal/
+cadence cases and eight full-health mixed-role trades passed; Rider defeated engine
+in both seats with 112 HP left. All 165 pure/UI tests passed, together with strategic
+LOD, generic selection composition and ruleset migration/rejected-save preservation.
+AI cases cover one Workshop, unlock acquisition, two-engine bounds, visible-defense
+assault, separation from ordinary army orders, stalled retry and release of lost
+targets. Full CI, live AI defended-position/terrain interactions and staging visual
+checks remain integration work rather than inferred from these focused cases.
