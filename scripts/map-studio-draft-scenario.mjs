@@ -309,7 +309,7 @@ try {
   await click('#studio-add-objective');
   await setField('#studio-objective-name', 'Draft Crown');
   await setField('#studio-required-units', '12');
-  await sleep(500);
+  await waitForPage("Object.keys(localStorage).some((item) => item.includes(':map-studio-draft:'))", 'the first editor autosave');
   let saved = await cdp.evaluate(`(() => {
     const key = Object.keys(localStorage).find((item) => item.includes(':map-studio-draft:'));
     const draft = key ? JSON.parse(localStorage.getItem(key)) : null;
@@ -371,7 +371,7 @@ try {
   await setField('#studio-event-region-team', '1');
   await setField('#studio-event-region-kind', 'worker');
   await setField('#studio-event-region-minimum', '3');
-  await sleep(500);
+  await waitForPage("(() => { const key = Object.keys(localStorage).find((item) => item.includes(':map-studio-draft:')); return key && JSON.parse(localStorage.getItem(key)).editor.definition.scenarioEvents[0]?.trigger?.minimumUnits === 3; })()", 'the region conditions to autosave');
   saved = await cdp.evaluate(`(() => {
     const key = Object.keys(localStorage).find((item) => item.includes(':map-studio-draft:'));
     const draft = key ? JSON.parse(localStorage.getItem(key)) : null;
@@ -392,6 +392,28 @@ try {
   assert.deepEqual(saved.eventTrigger, { type: 'region-entry', regionId: 'draft-pass', team: '1', minimumUnits: 3, unitKind: 'worker' });
   assert.ok(saved.terrainBlocks > 0);
   assert.equal(saved.resourceCount, initialResourceCount + 1);
+
+  await cdp.call('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: tempRoot });
+  const exportedId = await cdp.evaluate("document.querySelector('#studio-id').value");
+  await click('#studio-download');
+  const exportedPath = path.join(tempRoot, `${exportedId}.json`);
+  let exported;
+  const exportDeadline = Date.now() + 10_000;
+  while (Date.now() < exportDeadline) {
+    try { exported = JSON.parse(await readFile(exportedPath, 'utf8')); break; } catch {}
+    await sleep(100);
+  }
+  assert.ok(exported, 'Download JSON should produce a validated portable map');
+  assert.equal(exported.regions[0].id, 'draft-pass');
+  assert.deepEqual(exported.scenarioEvents[0].trigger, saved.eventTrigger);
+  await setField('#studio-regions', '[]');
+  const documentRoot = await cdp.call('DOM.getDocument');
+  const fileInput = await cdp.call('DOM.querySelector', { nodeId: documentRoot.root.nodeId, selector: '#studio-import-file' });
+  await cdp.call('DOM.setFileInputFiles', { nodeId: fileInput.nodeId, files: [exportedPath] });
+  await waitForPage("document.querySelector('#studio-message').textContent.startsWith('Loaded')", 'the region map to import');
+  assert.equal(await cdp.evaluate("JSON.parse(document.querySelector('#studio-regions').value)[0].id"), 'draft-pass');
+  assert.equal(await cdp.evaluate("document.querySelector('#studio-event-trigger').value"), 'region-entry');
+  assert.equal(await cdp.evaluate("document.querySelector('#studio-event-region-kind').value"), 'worker');
 
   await setField('#studio-name', 'Changed After Recovery');
   await click('#map-studio-close');
@@ -417,7 +439,8 @@ try {
   process.stdout.write(JSON.stringify({
     status: 'passed',
     sourceMapId: 'open-field',
-    persistedComponents: ['terrain', 'resources', 'pending capture placement', 'starting resources', 'fog', 'scenario event'],
+    persistedComponents: ['terrain', 'resources', 'pending capture placement', 'starting resources', 'fog', 'scenario event', 'named regions', 'region conditions'],
+    regionJsonExportImport: 'passed',
     closeReloadRestore: 'passed',
     discard: 'passed',
   }, null, 2) + '\n');

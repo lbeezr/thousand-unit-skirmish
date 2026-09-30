@@ -513,7 +513,9 @@ The extended `scripts/map-studio-draft-scenario.mjs` browser check passed on
 local macOS Chrome with software rendering after installing the locked Three.js
 dependency in the isolated checkout. It preserves the named-region text through
 close/reload/restore and saves a Worker-only Ember region event requiring three
-units with its delay and conditions intact. This is browser form/draft evidence;
+units with its delay and conditions intact. Download JSON and Import JSON preserve
+the region and all entry conditions. Autosave assertions wait for persisted state
+rather than a fixed delay. This is browser form/draft/round-trip evidence;
 it does not claim human authoring usability. The existing timed-event regression
 passed after correcting its stale checkpoint schema assertion from 9 to the
 current 19; this slice does not change the checkpoint schema version. Syntax,
