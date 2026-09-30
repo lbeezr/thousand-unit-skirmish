@@ -23,11 +23,14 @@ Start with registry parity and a second Barracks production option. Define the
 presentation binding in that slice; ship each addition through HUD, server,
 persistence, AI and staging without waiting for final graphics.
 
-The registry, base lifecycle, mounted roster, bounded research, siege and Scout
-reconnaissance slices are integrated into main. AI counter-slot reservation is
-a focused follow-up PR. Next evidence is integrated staged gameplay and full
-AI matches on representative terrain; the current automated field-role and paid
-siege-acquisition checks are recorded in [QA](qa-vertical-slice.md).
+The registry, base lifecycle, mounted roster, bounded research, siege, Scout
+reconnaissance, AI counter-slot reservation and contextual HUD slices are
+integrated into main. QA records include a full seeded Forked Vale AI match,
+both-seat field-role and paid siege interactions, current staging gameplay and
+deployed HUD/recovery observations. Live AI base expansion passed locally and is
+being integrated in PR #252. Finish that focused PR and the requirement-by-requirement
+completion audit before claiming F1–F3 complete; the evidence and its limits are
+recorded in [QA](qa-vertical-slice.md).
 
 ## Match evidence and continuing checks
 
