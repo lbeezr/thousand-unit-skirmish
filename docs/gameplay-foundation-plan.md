@@ -173,3 +173,15 @@ Extract and validate the current rules registry without changing gameplay, then
 prove a second Barracks product can train, appear in the HUD, persist, reconnect
 and be used by the AI. Establish the presentation-profile interface in that
 slice. This tests the architecture with a real addition before widening it.
+
+### Ruleset contract slice
+
+The F1 contract now validates compact wire identities, faction rosters and
+prerequisite cycles; canonical gameplay revisions are published in snapshots and
+pinned in schema-12 checkpoints. Incompatible pinned saves are preserved as
+rejected files. Generic product availability is authoritative and shared with
+HUD and filtered AI observations. Building rules and footprint geometry derive
+from definitions, and building presentation profiles join the earlier unit
+profiles. Focused checks cover both-seat prerequisite rejection before spending,
+HUD reasons, canonical identity, legacy save migration and mismatched-save
+preservation. The full F2/F3 outcomes remain in progress.

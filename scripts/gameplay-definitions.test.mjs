@@ -30,3 +30,22 @@ test('invalid content cannot silently create free production or unknown products
     assert.throws(() => validateGameplayDefinitions(definitions), reason);
   }
 });
+
+test('registry rejects duplicate identities, broken faction rosters and prerequisite cycles', () => {
+  for (const [mutate, reason] of [
+    [d => { d.units.spearman.wireId = d.units.infantry.wireId; }, /duplicate unit wire ID/],
+    [d => { d.buildings.barracks.products.push('infantry'); }, /duplicate products/],
+    [d => { d.buildings.barracks.products.push('__proto__'); }, /Unknown product/],
+    [d => { d.units.spearman.requires = ['missing']; }, /Unknown prerequisite missing: spearman/],
+    [d => { d.technologies['infantry-attack'].requires = ['archer-attack']; d.technologies['archer-attack'].requires = ['infantry-attack']; }, /Cyclic prerequisites/],
+    [d => { d.buildings.barracks.requires = ['infantry-attack']; }, /Cyclic prerequisites.*building:barracks/],
+    [d => { d.technologies['archer-attack'].upgradeKey = 'infantryAttack'; }, /duplicate upgrade key/],
+    [d => { d.factions.frontier.units.push('missing'); }, /Unknown faction units missing/],
+    [d => { d.factions.frontier.units.push('worker'); }, /duplicate faction units/],
+    [d => { d.factions.frontier.units = d.factions.frontier.units.filter(id => id !== 'spearman'); }, /producer barracks requires unit spearman/],
+    [d => { d.defaultFaction = 'missing'; }, /Unknown default faction/],
+  ]) {
+    const definitions = structuredClone(GAMEPLAY_DEFINITIONS); mutate(definitions);
+    assert.throws(() => validateGameplayDefinitions(definitions), reason);
+  }
+});

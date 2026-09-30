@@ -131,10 +131,13 @@ export function createProductionPolicy(seed) {
       const infantry = friendly.filter((unit) => unit.kind === 'infantry').length;
       const spearmen = friendly.filter((unit) => unit.kind === 'spearman').length;
       const spear = UNIT_DEFINITIONS.spearman;
-      const wantsSpear = spearmen < Math.ceil(infantry / 3)
+      const spearOption = barracks.productionOptions?.find((option) => option.kind === spear.id);
+      const infantryOption = barracks.productionOptions?.find((option) => option.kind === 'infantry');
+      const wantsSpear = spearOption?.available !== false && spearmen < Math.ceil(infantry / 3)
         && BUILDING_DEFINITIONS[barracks.type].products.includes(spear.id)
         && observation.resources.food >= spear.cost.food + limits.foodReserve
         && observation.resources.wood >= spear.cost.wood + limits.woodReserve;
+      if (!wantsSpear && infantryOption?.available === false) return [];
       postpone(observation.tick);
       return [wantsSpear ? { type: 'trainUnit', kind: spear.id, buildingId: barracks.id }
         : { type: 'train', buildingId: barracks.id }];
