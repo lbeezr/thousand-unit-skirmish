@@ -18,7 +18,7 @@ const finiteProbeStock = 5;
 const scenarioMap = JSON.parse(await readFile(path.join(root, 'maps/forked-vale.json'), 'utf8'));
 scenarioMap.id = scenarioMapId;
 scenarioMap.name = 'Forked Vale Finite Probe';
-scenarioMap.resourceNodes.push({ id: finiteProbeNodeId, type: 'food', x: -32.5, z: 0.5, stock: finiteProbeStock });
+scenarioMap.resourceNodes.push({ id: finiteProbeNodeId, type: 'food', x: -32.5, z: 6.5, stock: finiteProbeStock });
 const portListener = createServer();
 portListener.listen(Number.isFinite(Number(process.argv[3])) ? Number(process.argv[3]) : 0, '127.0.0.1');
 await once(portListener, 'listening');

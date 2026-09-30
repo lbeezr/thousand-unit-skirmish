@@ -1,3 +1,4 @@
+import { creditResourceBalance } from './src/economy-ledger.mjs';
 import { unfinishedRefund, buildingRepairStep } from './src/base-lifecycle.mjs';
 import { productionAction } from './src/production-actions.mjs';
 import { teamPopulation } from './src/population.mjs';
@@ -3817,7 +3818,7 @@ function updateForestWorkerEconomy(unit) {
   if (unit.gatherPhase === 'to-base' && workerAtDropoff(unit)) {
     if (unit.cargo > 0) {
       const bank = unit.cargoType === 'wood' ? teamWood : teamFood;
-      bank[unit.team] = Math.round((bank[unit.team] + unit.cargo) * 1_000_000) / 1_000_000;
+      bank[unit.team] = creditResourceBalance(bank[unit.team], unit.cargo);
       unit.cargo = 0;
       unit.cargoType = null;
       dirty = true;
@@ -3906,7 +3907,7 @@ function updateWorkerEconomy() {
       if (workerAtDropoff(unit)) {
         if (unit.cargo > 0) {
           const bank = unit.cargoType === 'wood' ? teamWood : teamFood;
-          bank[unit.team] = Math.round((bank[unit.team] + unit.cargo) * 1_000_000) / 1_000_000;
+          bank[unit.team] = creditResourceBalance(bank[unit.team], unit.cargo);
           unit.cargo = 0;
           unit.cargoType = null;
           dirty = true;

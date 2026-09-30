@@ -245,3 +245,12 @@ Storehouse routing/runtime, production lifecycle, ruleset migration/preservation
 registry/profile validation, registry building menu, lifecycle UI and static
 client module resolution also passed. These are focused local checks; staging
 appearance, broader CI and defended-expansion balance remain separate evidence.
+
+Expansion regression follow-up: terminal elimination exposed per-deposit rounding
+that could change a depleted 50-food node's total by one millionth. Fractional
+credits now retain their precision and collapse only floating-point noise near a
+whole balance. The exact-stock elimination/reconnect scenario passed with 50
+food, and all 132 pure/UI checks passed. The finite-node playthrough probe moved
+outside immediate home deposit range so its existing intermediate-cargo check
+can observe the return trip before banking; exact depletion/credit assertions
+remain in place. Both-seat seeded PvE observation/economy/rematch smoke passed.
