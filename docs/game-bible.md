@@ -159,3 +159,22 @@ accept nothing. If the chosen drop-off is destroyed or navigation changes,
 the Worker replans and retains its cargo. With no reachable drop-off it waits
 with the cargo rather than banking it remotely. Storehouses provide no units or
 population. Their current House-shaped procedural presentation is a placeholder.
+
+## Cancellation and repair
+
+Canceling unfinished construction refunds the unbuilt fraction of its food/wood
+cost and removes the footprint. Canceling a pending training entry refunds its
+full cost; canceling the active entry refunds its remaining training fraction.
+A completed training timer blocked by the exit has no unfinished work to refund.
+The next head begins with its full training duration. Canceling research refunds
+its remaining time fraction and applies no upgrade. Refunds are credited once,
+rounded to six decimal places; UI notices show whole resource amounts. Destroying
+a building loses its queue and research without refund.
+
+Workers may repair damaged completed friendly buildings. Each Worker restores
+40 HP per second while in construction reach. Repairing an entire HP bar costs
+30% of the building's wood price, with a minimum of ten wood, paid in proportion
+to HP actually restored. Insufficient wood pauses the order; another move/gather/
+attack order interrupts it, and another repair order can resume. Checkpoints
+retain active repair targets. Finishing construction and repairing damaged HP
+are separate jobs. No repair restores defeated buildings.

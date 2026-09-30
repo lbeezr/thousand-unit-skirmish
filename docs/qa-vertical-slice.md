@@ -207,3 +207,24 @@ remain subsequent work. See the pack's `preview/README.md` for the startup comma
 ## Cast clipping recovery — 29 September 2026
 
 Candidate on `codex/recover-complete-cast-poses`: all four v0.3 packs retain 264 complete original poses with zero held frames. Pixel bounds/contracts/input hashes pass; four extraction regressions pass. Project-owned capture `run_1790723343810_2e2444cbebc242cd9f6973389ef5c5d3` completed successfully: 1,056 pose configurations per species (4,224 total), eight headings, idle/walk/gather/defeat, both teams, zoom 1 and 0.48. Every species has visible opaque pixels in each configuration; no pose touches the diagnostic viewport edge and pose clocks agree across species. Ground compositing found zero clipped opaque pixels (maximum channel error 1.016). Sixteen decoded captures include Meadow/Cinder match views and representative action poses. This proves bounded appearance behavior in the offscreen renderer, not hardware performance or final art quality. The historical v0.2 hold fallback is superseded by extraction from the original directional sheets.
+
+## Gameplay foundation local evidence — 2026-09-29
+
+On `codex/foundation-storehouse` (base `08a77a6`, Storehouse slice `2ef0805`),
+`storehouse-scenario.mjs` proved both-seat construction costs, nearest reachable
+friendly drop-off selection after restart, food/wood deposits, destruction
+rerouting and retained cargo. `worker-cargo-return-scenario.mjs` retained exact
+six-wood deposits for both seats on Highland Grove. The full PvE WebSocket smoke
+passed both bot seats. A 300-second bounded Forked Vale contested run on the subsequent lifecycle
+working tree, before the AI repair policy addition, finished at 238 seconds
+with Azure winning; both policies built a remote Storehouse and used
+Infantry/Spearman production. This is local authoritative protocol evidence,
+not a claim of human staging usability or final balance.
+
+On the subsequent `codex/foundation-base-lifecycle` working tree,
+`base-lifecycle-scenario.mjs` proved both-seat half-foundation refunds, missing-HP
+repair spending, interrupted repair recovery, zero-wood pause/funded recovery,
+active/pending military and Worker cancellation, canceled research, and persisted
+remaining reservations. Unit/VM checks cover ownership, replay rejection, refund
+fractions, focused contextual controls and AI repair deduplication. Full PR CI and
+native staging checks remain the integration evidence to collect.

@@ -17,6 +17,7 @@ test('production registry retains the shipped opening economy', () => {
 
 test('invalid content cannot silently create free production or unknown products', () => {
   for (const [mutate, reason] of [
+    [d => { d.baseLifecycle.repairHpPerSecond = 0; }, /Invalid base lifecycle/],
     [d => { d.units.worker.cost.food = -1; }, /Invalid food cost/],
     [d => { d.units.worker.trainSeconds = 0; }, /Invalid trainSeconds/],
     [d => { d.units.archer.combat.range = NaN; }, /Invalid combat range/],

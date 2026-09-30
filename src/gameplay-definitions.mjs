@@ -1,6 +1,9 @@
 // Shared gameplay data. Presentation IDs identify profiles, never collision or combat rules.
 export function validateGameplayDefinitions(definitions) {
   if (!definitions || definitions.version !== 1) throw new Error('Unsupported gameplay definition version');
+  for (const key of ['repairHpPerSecond', 'fullRepairWoodFraction', 'minimumRepairWood']) {
+    if (!Number.isFinite(definitions.baseLifecycle?.[key]) || definitions.baseLifecycle[key] <= 0) throw new Error(`Invalid base lifecycle ${key}`);
+  }
   const wireIds = new Set();
   const upgradeKeys = new Set();
   for (const category of ['units', 'buildings', 'technologies']) {
@@ -88,6 +91,7 @@ function freezeTree(value) {
 export const GAMEPLAY_DEFINITIONS = freezeTree(validateGameplayDefinitions({
   version: 1,
   defaultFaction: 'frontier',
+  baseLifecycle: { repairHpPerSecond: 40, fullRepairWoodFraction: 0.3, minimumRepairWood: 10 },
   units: {
     worker: { id: 'worker', wireId: 0, label: 'Worker', cost: { food: 50, wood: 0 }, trainSeconds: 25, population: 1, combat: { maxHp: 100, moveSpeed: 2.6, range: 1.28, damage: 4, period: 0.85, structureDamage: 1 }, presentation: 'unit.worker' },
     infantry: { id: 'infantry', wireId: 1, label: 'Infantry', cost: { food: 50, wood: 0 }, trainSeconds: 12, population: 1, combat: { maxHp: 100, moveSpeed: 2.6, range: 1.28, damage: 10, period: 0.85, structureDamage: 1.5 }, presentation: 'unit.infantry' },

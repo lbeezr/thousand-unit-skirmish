@@ -113,7 +113,7 @@ const UNIT_SPRITE_MARKER_ZOOM_THRESHOLD = 0.6;
 const MAX_OBJECTIVE_FOOD_REWARD = 10000;
 const MAX_TRIGGER_UNIT_REWARD = 25;
 const WORKERS_PER_TEAM = 4;
-const WORKER_TASK_STATES = new Set(['idle', 'moving', 'gathering', 'returning', 'building', 'attacking']);
+const WORKER_TASK_STATES = new Set(['idle', 'moving', 'gathering', 'returning', 'building', 'repairing', 'attacking']);
 const INFANTRY_FOOD_COST = UNIT_DEFINITIONS.infantry.cost.food;
 const INFANTRY_TRAIN_SECONDS = UNIT_DEFINITIONS.infantry.trainSeconds;
 const WORKER_FOOD_COST = UNIT_DEFINITIONS.worker.cost.food;
@@ -220,6 +220,8 @@ const ui = {
   clearBuildingRally: document.querySelector('#clear-building-rally'),
   buildingResearchReadout: document.querySelector('#building-research-readout'),
   researchAttackUpgrade: document.querySelector('#research-attack-upgrade'),
+  buildingLifecycleActions: document.querySelector('#building-lifecycle-actions'),
+  cancelWorkerTraining: document.querySelector('#cancel-worker-training'),
   workerProductionStatus: document.querySelector('#worker-production-status'),
   resumeRange: document.querySelector('#resume-range'),
   resumeConstructionLabel: document.querySelector('#resume-construction-label'),
@@ -3119,7 +3121,7 @@ function updateUnitTransform(unit, now = performance.now()) {
     : 'none';
   const stride = actionPoseAllowed && unit.walking ? Math.sin(unit.motionPhase || 0) * 0.038 : 0;
   const idleBreath = actionPoseAllowed && !unit.walking
-    && unit.task !== 'gathering' && unit.task !== 'building' && unit.attackStartedAt === 0
+    && unit.task !== 'gathering' && unit.task !== 'building' && unit.task !== 'repairing' && unit.attackStartedAt === 0
     ? Math.sin(now * 0.0024 + unit.id * 1.7) * 0.018 : 0;
   const attackAge = actionPoseAllowed && unit.attackStartedAt > 0
     ? (now - unit.attackStartedAt) / ATTACK_POSE_MS : 1;
@@ -3320,7 +3322,7 @@ function updateSelectionUI() {
       ? 'Finish construction to unlock production.'
       : selectedBuilding.productionBlocked ? 'Production blocked · clear the spawn area.'
         : queued > 0 ? `${queued.toLocaleString()} ${troop} queued · ${training}% training`
-          : troop ? `Ready to train ${troop}.` : `Population capacity +${BUILDING_DEFINITIONS[selectedBuilding.type].populationCapacity || 0}.`;
+          : troop ? `Ready to train ${troop}.` : BUILDING_DEFINITIONS[selectedBuilding.type].dropoff?.length ? `Drop-off: ${BUILDING_DEFINITIONS[selectedBuilding.type].dropoff.join(' and ')}.` : `Population capacity +${BUILDING_DEFINITIONS[selectedBuilding.type].populationCapacity || 0}.`;
   }
   let blue = 0;
   let red = 0;
@@ -3357,6 +3359,7 @@ function updateSelectionUI() {
 }
 
 function updateContextualCommands() {
+  updateBuildingLifecycleActions();
   const bar = document.querySelector('.contextual-command-bar');
   if (!bar) return;
   const building = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
@@ -4217,6 +4220,37 @@ function updateRosterProductionOptions(container, selectedProducer = null) {
   container.hidden = products.length === 0;
 }
 
+function updateBuildingLifecycleActions() {
+  const container = ui.buildingLifecycleActions;
+  if (!container) return;
+  const building = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
+  const active = building && latestTeamResearch[localTeam]?.active?.buildingId === building.id;
+  const choices = !building ? [] : [
+    ...(!building.complete ? [{ type: 'cancelConstruction', label: 'Cancel construction · refund unfinished work' }] : []),
+    ...(building.complete && getBuildingQueueLength(building) > 0 ? [{ type: 'cancelTraining', label: 'Cancel last queued unit' }] : []),
+    ...(active ? [{ type: 'cancelResearch', label: 'Cancel research · refund unfinished work' }] : []),
+    ...(building.complete && building.hp < building.maxHp ? [{ type: 'repairBuilding', label: 'Repair with Workers · costs wood' }] : []),
+  ];
+  const signature = JSON.stringify([building?.id, choices.map((choice) => choice.type)]);
+  if (container.dataset.signature !== signature) {
+    container.dataset.signature = signature; container.replaceChildren();
+    for (const choice of choices) {
+      const button = document.createElement('button'); button.type = 'button'; button.dataset.action = choice.type; button.textContent = choice.label;
+      button.addEventListener('click', () => {
+        const command = { type: choice.type, buildingId: building.id };
+        if (choice.type === 'repairBuilding') {
+          command.ids = teamUnits[localTeam].filter((unit) => unit.hp > 0 && unit.kind === 'worker').map((unit) => unit.id);
+        }
+        sendCommand(command);
+      });
+      container.append(button);
+    }
+  }
+  for (const button of container.children) button.disabled = matchWinner >= 0
+    || (button.dataset.action === 'repairBuilding' && !teamUnits[localTeam].some((unit) => unit.hp > 0 && unit.kind === 'worker'));
+  if (ui.cancelWorkerTraining) ui.cancelWorkerTraining.disabled = localTeam === null || matchWinner >= 0 || !(latestWorkerProduction[localTeam]?.queue > 0);
+}
+
 function updateRosterBuildingOptions(container) {
   if (!container) return;
   const definitions = Object.values(BUILDING_DEFINITIONS).filter((definition) => !['house', 'barracks', 'archery-range'].includes(definition.id));
@@ -4452,6 +4486,7 @@ function updateEconomyUI(state = {}, initial = false) {
     ui.buildHouse.classList.toggle('active', buildPlacementActive && buildPlacementType === 'house');
     ui.buildHouse.setAttribute('aria-pressed', String(buildPlacementActive && buildPlacementType === 'house'));
   }
+  updateBuildingLifecycleActions();
   updateRosterBuildingOptions(ui.rosterBuildingOptions);
   updateRosterProductionOptions(ui.rosterProductionOptions);
   updateCommandUI();
@@ -8179,6 +8214,7 @@ ui.selectArchers?.addEventListener('click', selectArchers);
 ui.selectMilitary?.addEventListener('click', selectMilitary);
 ui.trainInfantry?.addEventListener('click', queueInfantry);
 ui.trainWorker?.addEventListener('click', queueWorker);
+ui.cancelWorkerTraining?.addEventListener('click', () => sendCommand({ type: 'cancelTraining', kind: 'worker' }));
 ui.trainArcher?.addEventListener('click', queueArcher);
 ui.resumeRange?.addEventListener('click', resumeConstruction);
 ui.buildHouse?.addEventListener('click', () => {
@@ -9046,9 +9082,9 @@ function animate(now) {
       else unit.angle = unit.targetAngle;
     }
     const working = !walking && unit.kind === 'worker'
-      && (unit.task === 'gathering' || unit.task === 'building');
+      && (unit.task === 'gathering' || unit.task === 'building' || unit.task === 'repairing');
     // Keep pose phase current in LOD so a zoom-in resumes without a swing reset.
-    if (working) unit.motionPhase += frameDelta * (unit.task === 'building' ? 6 : 5);
+    if (working) unit.motionPhase += frameDelta * (['building', 'repairing'].includes(unit.task) ? 6 : 5);
     const activeAttack = unit.attackStartedAt > 0;
     const activeHit = unit.hitStartedAt > 0;
     const activeSpawn = unit.spawnStartedAt > 0;

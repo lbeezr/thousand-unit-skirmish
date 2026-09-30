@@ -44,3 +44,17 @@ for (const team of [0, 1]) test(`AI shortens remote resource trips and resumes i
   state.buildings.friendly.pop();
   assert.equal(policy.next({ ...state, tick: 750 })[0].buildingType, 'storehouse', 'a lost remote drop-off can be rebuilt');
 });
+
+for (const team of [0, 1]) test(`AI repairs observed friendly damage without repeating active work for seat ${team}`, () => {
+  const state = { team, tick: 0, fogOfWar: false, map: { width: 80, height: 64 },
+    resources: { food: 500, wood: 500 }, units: { friendly: [
+      { id: 0, generation: 1, team, hp: 100, x: team ? 20 : -20, z: 0, kind: 'worker', task: 'idle', cargo: 0 }], visibleEnemies: [] },
+    buildings: { friendly: [{ id: 9, team, type: 'barracks', complete: true, hp: 900, maxHp: 1800, queue: 0, x: 0, z: 10 }], visibleEnemies: [] },
+    objectives: [], resourceNodes: [] };
+  const policy = createProductionPolicy(42); policy.next(state);
+  assert.deepEqual(policy.next({ ...state, tick: 300 }), [{ type: 'repairBuilding', buildingId: 9, ids: [0], unitGenerations: [1] }]);
+  state.units.friendly[0].task = 'repairing';
+  assert.deepEqual(policy.next({ ...state, tick: 600 }), []);
+  state.units.friendly[0].task = 'idle'; state.resources.wood = 0;
+  assert.equal(policy.next({ ...state, tick: 900 })[0]?.type, 'train', 'repair cannot drain a missing wood reserve');
+});

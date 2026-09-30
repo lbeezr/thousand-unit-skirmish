@@ -199,3 +199,15 @@ unfinished and disconnected choices, menu affordability, and AI recovery.
 The prior schema-12 roster revision has an explicit compatible migration for this
 addition; unknown revisions remain rejected and preserved. Town Center expansion,
 defenses and cancellation/repair are still outstanding F2 work.
+
+### Cancellation and repair slice
+
+Construction, active/pending military and Worker queues, and research now have
+explicit proportional refund semantics. Completed friendly structures support
+paid Worker repairs, including interrupted save recovery and a zero-wood pause.
+Contextual controls expose building cancellation and repair; the legacy Worker
+queue has its own cancellation control. Both-seat runtime checks demonstrate
+exact foundation refunds, proportional repair spending, preserved repair orders,
+queue/research cancellation and remaining population reservations. The AI can
+repair observed damage without repeating active work. Expansion Town Centers,
+Watchtower defenses, and the F3 composition/progression roster remain outstanding.

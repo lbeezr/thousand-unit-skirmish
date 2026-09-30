@@ -131,6 +131,7 @@
             <button type="button" data-context-proxy="clear-building-rally">Clear rally</button>
             <button type="button" data-context-proxy="research-attack-upgrade">Research attack</button>
             <div data-context-products></div>
+            <div id="building-lifecycle-actions" class="contextual-actions"></div>
             <button type="button" data-context-details data-context-panel="command">Details / formation</button>
           </div>
           <small id="context-action-reason" data-context-reason></small>
@@ -232,6 +233,7 @@
                 </button>
               </div>
               <div class="economy-statuses">
+                <button id="cancel-worker-training" type="button" class="economy-action worker-action">Cancel last Worker in queue</button>
                 <div id="roster-production-options" class="economy-actions"></div>
                 <small id="building-status" class="building-status" role="status" aria-live="off">No archery range built.</small>
                 <small id="barracks-status" class="barracks-status" role="status" aria-live="off">No Barracks built · 175 wood · 50 food per infantry.</small>
