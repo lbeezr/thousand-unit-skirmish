@@ -28,6 +28,11 @@ export function validateGameplayDefinitions(definitions) {
         }
       }
       if (category === 'buildings') {
+        if (entry.combat !== undefined) {
+          if (!entry.combat || typeof entry.combat !== 'object' || Array.isArray(entry.combat)) throw new Error(`Invalid building combat: ${id}`);
+          for (const key of ['range', 'damage', 'period']) if (!Number.isFinite(entry.combat[key]) || entry.combat[key] <= 0) throw new Error(`Invalid building combat ${key}: ${id}`);
+        }
+        if (entry.sight !== undefined && (!Number.isInteger(entry.sight) || entry.sight < 1 || entry.sight > 16)) throw new Error(`Invalid building sight: ${id}`);
         if (entry.populationCapacity !== undefined && (!Number.isInteger(entry.populationCapacity) || entry.populationCapacity < 0)) throw new Error(`Invalid population capacity: ${id}`);
         if (entry.dropoff !== undefined && (!Array.isArray(entry.dropoff) || !entry.dropoff.length || new Set(entry.dropoff).size !== entry.dropoff.length || entry.dropoff.some((resource) => !['food', 'wood'].includes(resource)))) throw new Error(`Invalid dropoff resources: ${id}`);
         if (!Number.isInteger(entry.footprint) || entry.footprint % 2 !== 1 || entry.footprint > 9) throw new Error(`Invalid footprint: ${id}`);
@@ -99,13 +104,14 @@ export const GAMEPLAY_DEFINITIONS = freezeTree(validateGameplayDefinitions({
     archer: { id: 'archer', wireId: 2, label: 'Archer', cost: { food: 25, wood: 45 }, trainSeconds: 7, population: 1, combat: { maxHp: 70, moveSpeed: 2.6, range: 4.5, damage: 7, period: 1, structureDamage: 0.8 }, presentation: 'unit.archer' },
   },
   buildings: {
+    watchtower: { id: 'watchtower', label: 'Watchtower', cost: { food: 50, wood: 150 }, buildSeconds: 35, footprint: 3, maxHp: 1200, products: [], sight: 10, combat: { range: 7, damage: 8, period: 1.25 }, presentation: 'building.watchtower' },
     'town-center': { id: 'town-center', label: 'Town Center', cost: { food: 100, wood: 400 }, buildSeconds: 60, footprint: 5, maxHp: 2400, products: ['worker'], populationCapacity: 5, dropoff: ['food', 'wood'], presentation: 'building.town-center' },
     storehouse: { id: 'storehouse', label: 'Storehouse', cost: { food: 0, wood: 100 }, buildSeconds: 20, footprint: 3, maxHp: 1200, products: [], dropoff: ['food', 'wood'], presentation: 'building.storehouse' },
     house: { id: 'house', label: 'House', cost: { food: 0, wood: 75 }, buildSeconds: 15, footprint: 3, maxHp: 800, products: [], populationCapacity: 8, presentation: 'building.house' },
     barracks: { id: 'barracks', label: 'Barracks', cost: { food: 0, wood: 175 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['infantry', 'spearman'], presentation: 'building.barracks' },
     'archery-range': { id: 'archery-range', label: 'Archery Range', cost: { food: 0, wood: 150 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['archer'], presentation: 'building.archery-range' },
   },
-  factions: { frontier: { id: 'frontier', label: 'Frontier', units: ['worker', 'infantry', 'archer', 'spearman'], buildings: ['house', 'barracks', 'archery-range', 'storehouse', 'town-center'], technologies: ['infantry-attack', 'archer-attack'] } },
+  factions: { frontier: { id: 'frontier', label: 'Frontier', units: ['worker', 'infantry', 'archer', 'spearman'], buildings: ['house', 'barracks', 'archery-range', 'storehouse', 'town-center', 'watchtower'], technologies: ['infantry-attack', 'archer-attack'] } },
   technologies: {
     'infantry-attack': { id: 'infantry-attack', label: 'INFANTRY FORGING', building: 'barracks', upgradeKey: 'infantryAttack', cost: { food: 100, wood: 75 }, durationSeconds: 25 },
     'archer-attack': { id: 'archer-attack', label: 'ARCHER FLETCHING', building: 'archery-range', upgradeKey: 'archerAttack', cost: { food: 125, wood: 125 }, durationSeconds: 25 },

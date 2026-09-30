@@ -188,3 +188,15 @@ and production while retaining a dead home record in checkpoints. Cargo only
 banks at a reachable living completed friendly drop-off; a destroyed home is
 never a permanent deposit marker. Schema 14 explicitly migrates the known schema
 13 ruleset, and preserves unknown pinned revisions for diagnosis.
+
+### Stationary defenses
+
+Optional validated building `combat` and `sight` definitions drive Watchtower.
+Its scans use rotating enemy spatial buckets with a 64-visit budget and stable
+ID ties. Unit visibility gates targets, and tower hits accumulate before shared
+unit/building damage resolution, preserving lethal same-tick trades. Quarter-second
+idle backoff avoids scanning empty areas every tick. Saved cooldowns prevent
+restart from granting a free shot; schema 15 migrates the known Town Center
+revision without changing existing HP or queues. Vision coverage caches separate
+radii per source cell, so a tower can expand previously processed unit sight.
+Enemy shot destinations are masked under fog like unit attack coordinates.

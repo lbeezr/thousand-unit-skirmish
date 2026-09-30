@@ -254,3 +254,19 @@ food, and all 132 pure/UI checks passed. The finite-node playthrough probe moved
 outside immediate home deposit range so its existing intermediate-cargo check
 can observe the return trip before banking; exact depletion/credit assertions
 remain in place. Both-seat seeded PvE observation/economy/rematch smoke passed.
+
+### 2026-09-29 — Watchtower defense owner checks
+
+Local authoritative `watchtower-audit` (64×64, no fog, 24 units, 1,000 food/wood
+per seat): both seats paid exactly 50 food / 150 wood; paused foundations did not
+fire. Completed towers damaged only enemy units by eight per shot. Saved 0.8-second
+cooldowns delayed the next attack by 24–25 ticks after restart. A one-HP tower and
+an eight-HP Infantry attacking it both died from the same tick's lethal hits.
+
+Focused targeting cases cover both-seat enemy selection, a 64-visit scan budget,
+visibility filtering and inclusive seven-cell range. Sight cases cover expansion
+from eight to ten cells, cache separation and opaque terrain blocking. Both-seat
+AI cases build/resume one threatened-base tower and resume army production. All
+137 pure/UI cases passed on the defense working tree before idle-scan backoff;
+that small follow-up retains focused rerun and broader CI obligations. Siege
+counter/balance and staging appearance proof remain part of subsequent evidence.
