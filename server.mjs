@@ -1,3 +1,4 @@
+import { unfinishedRefund, buildingRepairStep } from './src/base-lifecycle.mjs';
 import { productionAction } from './src/production-actions.mjs';
 import { teamPopulation } from './src/population.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, GAMEPLAY_RULESET_REVISION, DEFAULT_FACTION_ID, UNIT_WIRE_IDS, missingGameplayPrerequisites } from './src/gameplay-definitions.mjs';
@@ -36,7 +37,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 12;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 13;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -1514,7 +1515,7 @@ function makeUnit(id, team, x, z, kind, teamSlot) {
     attackMoveScanTick: tickNumber + (id % ATTACK_MOVE_SCAN_INTERVAL_TICKS),
     attackMoveBucketScanOffset: id % attackMoveBucketOffsets.length,
     kind, cargo: 0, cargoType: null, gatherNodeId: null, gatherForestCell: -1, gatherPhase: '', dropoffBuildingId: null, dropoffNavigationRevision: -1,
-    buildingTargetId: null, moveGoalCell: -1, queuedWaypoints: [],
+    buildingTargetId: null, repairing: false, moveGoalCell: -1, queuedWaypoints: [],
   };
 }
 
@@ -1697,7 +1698,7 @@ function workerTaskStatus(unit) {
   if (unit.gatherNodeId !== null || unit.gatherForestCell >= 0) {
     return unit.gatherPhase === 'to-base' ? 'returning' : 'gathering';
   }
-  if (unit.buildingTargetId !== null) return 'building';
+  if (unit.buildingTargetId !== null) return unit.repairing ? 'repairing' : 'building';
   if (unit.attackTargetId >= 0 || unit.attackBuildingTargetId >= 0) return 'attacking';
   if (unit.movePlanningPending || unit.pathIndex < unit.path.length || unit.attackMove) return 'moving';
   return 'idle';
@@ -2510,6 +2511,7 @@ function validateMatchCheckpoint(snapshot) {
       && (unit.dropoffBuildingId === undefined || unit.dropoffBuildingId === null || integerIn(unit.dropoffBuildingId, 1, Number.MAX_SAFE_INTEGER))
       && (unit.dropoffNavigationRevision === undefined || integerIn(unit.dropoffNavigationRevision, -1, Number.MAX_SAFE_INTEGER))
       && ['', 'to-node', 'gathering', 'to-base'].includes(unit.gatherPhase)
+      && (unit.repairing === undefined || typeof unit.repairing === 'boolean')
       && (unit.buildingTargetId === null || integerIn(unit.buildingTargetId, 1, Number.MAX_SAFE_INTEGER))
       && integerIn(unit.moveGoalCell, -1, cellCount - 1), `invalid unit work state ${index}`);
     if (unit.lastMoveTick !== undefined) {
@@ -3001,10 +3003,15 @@ function migrateMatchCheckpoint(snapshot) {
   if (snapshot?.schemaVersion === 11 && typeof snapshot.state === 'object' && snapshot.state !== null) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
     snapshot.factionId = DEFAULT_FACTION_ID;
-    snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;
+    snapshot.schemaVersion = 12;
   }
   // Storehouse extends the same roster without changing existing saved stats or queues.
   if (snapshot?.schemaVersion === 12 && snapshot.rulesetRevision === 'v1:4a8f7db2ce7f694407489bee0923c19c20c52126176f57f972906aa1dd1dc254') snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+  // Cancel/refund and repair add optional worker state without changing paid queues.
+  if (snapshot?.schemaVersion === 12 && [GAMEPLAY_RULESET_REVISION, 'v1:731ebf6916e9fa9f9ccc7d1f94fb444af745d22f78b64237caa9c30cdd2e5182'].includes(snapshot.rulesetRevision)) {
+    snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+    snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;
+  }
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
   if ([1, 2, 3].includes(snapshot?.rulesVersion)
     && !snapshot?.mapDefinition?.elevationPatches?.some((patch) => patch.level > 0)) {
@@ -3630,7 +3637,7 @@ function assignForestGather(player, command) {
     unit.queuedWaypoints.length = 0;
     clearAttackMoveOrder(unit);
     unit.movePlanningPending = false;
-    unit.buildingTargetId = null;
+    unit.buildingTargetId = null; unit.repairing = false;
     unit.attackTargetId = -1;
     unit.attackBuildingTargetId = -1;
     unit.repathTimer = 0;
@@ -3685,7 +3692,7 @@ function assignGather(player, command) {
     unit.queuedWaypoints.length = 0;
     clearAttackMoveOrder(unit);
     unit.movePlanningPending = false;
-    unit.buildingTargetId = null;
+    unit.buildingTargetId = null; unit.repairing = false;
     unit.attackTargetId = -1;
     unit.attackBuildingTargetId = -1;
     unit.repathTimer = 0;
@@ -4062,6 +4069,75 @@ function researchUpgrade(player, command) {
   player.sendJson({ type: 'notice', message: `${rules.label} STARTED · ${rules.durationSeconds}S` });
 }
 
+function creditRefund(team, refund) {
+  teamFood[team] = Math.round((teamFood[team] + refund.food) * 1e6) / 1e6;
+  teamWood[team] = Math.round((teamWood[team] + refund.wood) * 1e6) / 1e6;
+  dirty = true;
+}
+
+function cancelConstruction(player, command) {
+  const building = buildingsById.get(command.buildingId);
+  if (player.team === null || !building || building.team !== player.team || building.complete) {
+    sendOrderNotice(player, command, 'CANCEL REJECTED · SELECT YOUR UNFINISHED BUILDING'); return;
+  }
+  const refund = unfinishedRefund(BUILDING_DEFINITIONS[building.type].cost, 1 - building.progress, 1);
+  destroyBuilding(building); creditRefund(player.team, refund);
+  sendOrderNotice(player, command, `CONSTRUCTION CANCELLED · REFUND ${Math.round(refund.food)} FOOD + ${Math.round(refund.wood)} WOOD`);
+}
+
+function cancelTraining(player, command) {
+  if (player.team === null) return;
+  const building = command.buildingId == null ? null : buildingsById.get(command.buildingId);
+  const legacyWorker = command.buildingId == null && command.kind === 'worker';
+  const production = legacyWorker ? workerProduction[player.team] : building;
+  if (!production || (!legacyWorker && (building.team !== player.team || !building.complete)) || production.queue <= 0) {
+    sendOrderNotice(player, command, 'CANCEL REJECTED · SELECT YOUR PAID TRAINING QUEUE'); return;
+  }
+  const index = command.queueIndex ?? production.queue - 1;
+  if (!Number.isInteger(index) || index < 0 || index >= production.queue) {
+    sendOrderNotice(player, command, 'CANCEL REJECTED · QUEUE ENTRY NOT FOUND'); return;
+  }
+  const kind = legacyWorker ? 'worker' : production.productionQueue[index];
+  const rule = UNIT_DEFINITIONS[kind];
+  const refund = unfinishedRefund(rule.cost, index === 0 ? production.trainingRemaining : rule.trainSeconds, rule.trainSeconds);
+  if (!legacyWorker) production.productionQueue.splice(index, 1);
+  production.queue--;
+  if (index === 0) {
+    const next = legacyWorker ? 'worker' : production.productionQueue[0];
+    production.trainingRemaining = production.queue ? UNIT_DEFINITIONS[next].trainSeconds : 0;
+    production.productionBlocked = false;
+  }
+  creditRefund(player.team, refund);
+  sendOrderNotice(player, command, `TRAINING CANCELLED · ${rule.label.toUpperCase()} · REFUND ${Math.round(refund.food)} FOOD + ${Math.round(refund.wood)} WOOD`);
+}
+
+function cancelResearch(player, command) {
+  const research = player.team === null ? null : teamResearch[player.team];
+  if (!research || research.buildingId !== command.buildingId) {
+    sendOrderNotice(player, command, 'CANCEL REJECTED · SELECT YOUR ACTIVE RESEARCH BUILDING'); return;
+  }
+  const rule = TECHNOLOGY_DEFINITIONS[research.type];
+  const refund = unfinishedRefund(rule.cost, research.remaining, rule.durationSeconds);
+  teamResearch[player.team] = null; creditRefund(player.team, refund);
+  sendOrderNotice(player, command, `RESEARCH CANCELLED · REFUND ${Math.round(refund.food)} FOOD + ${Math.round(refund.wood)} WOOD`);
+}
+
+function repairBuilding(player, command) {
+  if (!Array.isArray(command.ids)) { sendOrderNotice(player, command, 'REPAIR REJECTED · SELECT WORKERS'); return; }
+  const building = buildingsById.get(command.buildingId);
+  if (player.team === null || !building || building.team !== player.team || !building.complete
+    || building.hp >= BUILDING_DEFINITIONS[building.type].maxHp) {
+    sendOrderNotice(player, command, 'REPAIR REJECTED · SELECT YOUR DAMAGED COMPLETED BUILDING'); return;
+  }
+  const workers = commandUnits(command).filter((unit) => unit.team === player.team && unit.hp > 0 && unit.kind === 'worker');
+  const access = buildingAccessCells(building.footprint);
+  const worker = workers.find((unit) => findBuildingAttackApproachCell(unit, access));
+  const approach = worker && findBuildingAttackApproachCell(worker, access);
+  if (!approach) { sendOrderNotice(player, command, 'REPAIR REJECTED · NO REACHABLE WORKERS'); return; }
+  const point = cellToWorld(approach.goal);
+  assignFormationMove(player, { ...command, ids: workers.map((unit) => unit.id), unitGenerations: workers.map((unit) => unit.generation), x: point.x, z: point.z }, building.id, 'REPAIR ORDER');
+}
+
 function buildingFootprint(centerCell, type) {
   const half = Math.floor(BUILDING_DEFINITIONS[type].footprint / 2);
   const centerColumn = centerCell % MAP_WIDTH;
@@ -4135,7 +4211,7 @@ function destroyBuilding(building) {
     if (unit.attackBuildingTargetId === building.id) clearAttackTarget(unit);
     if (unit.buildingTargetId !== building.id) continue;
     unit.orderRevision++;
-    unit.buildingTargetId = null;
+    unit.buildingTargetId = null; unit.repairing = false;
     unit.movePlanningPending = false;
     unit.attackTargetId = -1;
     unit.attackBuildingTargetId = -1;
@@ -4761,13 +4837,21 @@ function updateBuildingAndProduction() {
   for (const unit of units) {
     if (unit.hp <= 0 || unit.kind !== 'worker' || unit.buildingTargetId === null) continue;
     const building = buildingsById.get(unit.buildingTargetId);
-    if (!building || building.complete) {
-      unit.buildingTargetId = null;
+    if (!building || (building.complete && !unit.repairing) || (unit.repairing && !building.complete)) {
+      unit.buildingTargetId = null; unit.repairing = false;
       continue;
     }
     const dx = Math.max(0, Math.abs(unit.x - building.x) - BUILDING_DEFINITIONS[building.type].footprint / 2);
     const dz = Math.max(0, Math.abs(unit.z - building.z) - BUILDING_DEFINITIONS[building.type].footprint / 2);
     if (dx * dx + dz * dz > BUILDER_INTERACTION_RANGE * BUILDER_INTERACTION_RANGE) continue;
+    if (unit.repairing) {
+      const repair = buildingRepairStep(building, teamWood[unit.team], STEP_SECONDS);
+      if (repair.hp > 0) { building.hp += repair.hp; teamWood[unit.team] = Math.max(0, teamWood[unit.team] - repair.wood); dirty = true; }
+      if (building.hp >= BUILDING_DEFINITIONS[building.type].maxHp - 1e-9) {
+        building.hp = BUILDING_DEFINITIONS[building.type].maxHp; unit.buildingTargetId = null; unit.repairing = false;
+      }
+      continue;
+    }
     const rules = buildingRulesFor(building.type);
     building.progress = Math.min(1, building.progress + STEP_SECONDS / rules.buildSeconds);
     dirty = true;
@@ -5060,6 +5144,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
     unit.moveGoalCell = destination;
     cancelGatherOrder(unit);
     unit.buildingTargetId = buildingTargetId;
+    unit.repairing = command.type === 'repairBuilding' && buildingTargetId !== null;
     unit.attackTargetId = -1;
     unit.attackBuildingTargetId = -1;
     unit.movePlanningPending = true;
@@ -5159,7 +5244,7 @@ function assignAttack(player, command) {
   for (const { unit, path } of assignments) {
     cancelGatherOrder(unit);
     unit.queuedWaypoints.length = 0;
-    unit.buildingTargetId = null;
+    unit.buildingTargetId = null; unit.repairing = false;
     clearAttackMoveOrder(unit);
     unit.movePlanningPending = false;
     unit.moveGoalCell = targetCell;
@@ -5231,7 +5316,7 @@ function assignAttackBuilding(player, command) {
   for (const { unit, goal, path } of assignments) {
     cancelGatherOrder(unit);
     unit.queuedWaypoints.length = 0;
-    unit.buildingTargetId = null;
+    unit.buildingTargetId = null; unit.repairing = false;
     clearAttackMoveOrder(unit);
     unit.movePlanningPending = false;
     unit.moveGoalCell = goal;
@@ -5384,7 +5469,7 @@ async function publishMap(player, rawDefinition, persist = false) {
 
 async function handleCommand(player, command) {
   if (shuttingDown || !command || typeof command.type !== 'string') return;
-  if (matchWinner >= 0 && ['move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'train', 'build', 'trainArcher', 'trainUnit', 'trainWorker', 'setRallyPoint', 'researchUpgrade'].includes(command.type)) {
+  if (matchWinner >= 0 && ['move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'train', 'build', 'trainArcher', 'trainUnit', 'trainWorker', 'setRallyPoint', 'researchUpgrade', 'cancelConstruction', 'cancelTraining', 'cancelResearch', 'repairBuilding'].includes(command.type)) {
     sendOrderNotice(player, command, player.team === 0
       ? 'MATCH OVER · RESET BATTLEFIELD TO PLAY AGAIN'
       : 'MATCH OVER · WAIT FOR HOST TO RESET');
@@ -5402,6 +5487,10 @@ async function handleCommand(player, command) {
   if (command.type === 'trainArcher') trainArcher(player, command);
   if (command.type === 'setRallyPoint') setBuildingRallyPoint(player, command);
   if (command.type === 'researchUpgrade') researchUpgrade(player, command);
+  if (command.type === 'cancelConstruction') cancelConstruction(player, command);
+  if (command.type === 'cancelTraining') cancelTraining(player, command);
+  if (command.type === 'cancelResearch') cancelResearch(player, command);
+  if (command.type === 'repairBuilding') repairBuilding(player, command);
   if (command.type === 'selectMap' && player.team === 0) selectMap(player, command.mapId);
   if (command.type === 'publishMap') await publishMap(player, command.map, command.persist === true);
   if (command.type === 'selectArmySize' && player.team === 0) {

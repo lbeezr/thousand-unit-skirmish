@@ -80,7 +80,7 @@ export function createProductionPolicy(seed) {
         .filter((building) => building.type === 'barracks' && building.hp > 0)
         .sort((a, b) => a.id - b.id)[0];
       if (observation.tick - firstTick < limits.openingDelayTicks) return [];
-      if (barracks?.queue > 0 || workers.some((worker) => worker.task === 'building')) {
+      if (barracks?.queue > 0 || workers.some((worker) => ['building', 'repairing'].includes(worker.task))) {
         retryTicks = limits.retryTicks;
         nextAttemptTick = observation.tick + limits.retryTicks;
         return [];
@@ -102,6 +102,12 @@ export function createProductionPolicy(seed) {
         const point = sites[siteAttempt++ % sites.length];
         postpone(observation.tick);
         return [{ type: 'build', ids: [builder.id], unitGenerations: [builder.generation], buildingType: 'house', ...point }];
+      }
+      const damaged = observation.buildings.friendly.find((building) => building.complete && building.maxHp > 0 && building.hp < building.maxHp * 0.65);
+      const repairer = workers.find((worker) => ['idle', 'gathering'].includes(worker.task) && worker.cargo === 0);
+      if (damaged && repairer && observation.resources.wood >= 50) {
+        postpone(observation.tick);
+        return [{ type: 'repairBuilding', buildingId: damaged.id, ids: [repairer.id], unitGenerations: [repairer.generation] }];
       }
       if (!barracks) {
         // Keep one living Barracks; even the last Worker may rebuild after losses.

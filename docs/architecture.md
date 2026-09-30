@@ -143,7 +143,7 @@ ordered product lists participate. Snapshots carry the revision, default faction
 and unit wire mapping. A browser with a different revision asks for a reload
 before applying the state.
 
-Checkpoint schema 12 pins this identity. Schema 11 saves migrate to the current
+Checkpoint schema 13 pins this identity. Schema 11 saves migrate to the current
 compatible opening roster; an unknown pinned revision is rejected and the exact
 save is renamed to a `.rejected-*` file before a fresh match starts. Future roster
 changes must supply and test an explicit compatible migration rather than silently
@@ -157,3 +157,21 @@ product names and population. Building construction and persisted geometry use
 registered odd footprints (one to nine cells wide). Unit and building presentation
 profiles bind supported procedural roles independently of gameplay identity;
 they do not claim a skeletal animation backend.
+
+### Base lifecycle commands
+
+`src/base-lifecycle.mjs` defines bounded proportional refunds and paid repair
+steps from validated lifecycle policy. Cancellation commands verify seat ownership
+and unfinished state before removing a foundation, queue entry or active research.
+Queue cancellation resets a replacement head's timer and releases precisely the
+removed reservation. Legacy Town Center Worker queues retain their compatibility
+command while using the same refund calculation.
+
+Worker `repairing` state shares construction access/routing and is optional in
+older saves. Schema 12's known Storehouse revision migrates to schema 13; unknown
+content remains rejected. Repair pays for each HP increment, waits with an active
+order when wood is exhausted, and stops at registered max HP. Normal Worker orders
+clear the repair mode. Renderer action mapping reuses the construction capability.
+The deterministic policy can repair observed damaged friendly buildings with a
+wood reserve and bounded retries; it suppresses competing gather orders for the
+chosen repairer.

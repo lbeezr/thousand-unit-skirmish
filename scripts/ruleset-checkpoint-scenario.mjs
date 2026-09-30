@@ -113,7 +113,7 @@ try {
   }
   await stop();
   const original = JSON.parse(await readFile(checkpointPath, 'utf8'));
-  assert.equal(original.schemaVersion, 12); assert.equal(original.rulesetRevision, GAMEPLAY_RULESET_REVISION);
+  assert.equal(original.schemaVersion, 13); assert.equal(original.rulesetRevision, GAMEPLAY_RULESET_REVISION);
   assert.equal(original.factionId, DEFAULT_FACTION_ID);
   const legacy = structuredClone(original); legacy.schemaVersion = 11; delete legacy.rulesetRevision; delete legacy.factionId;
   legacy.state.seatSessions = [];
@@ -122,6 +122,7 @@ try {
   assert.equal(restored.matchId, original.matchId, 'supported legacy saves migrate without replacing the match');
   assert.equal(restored.rulesetRevision, GAMEPLAY_RULESET_REVISION);
   const priorContent = structuredClone(restored);
+  priorContent.schemaVersion = 12;
   priorContent.rulesetRevision = 'v1:4a8f7db2ce7f694407489bee0923c19c20c52126176f57f972906aa1dd1dc254';
   priorContent.state.seatSessions = [];
   await writeFile(checkpointPath, JSON.stringify(priorContent)); await start(); await stop();

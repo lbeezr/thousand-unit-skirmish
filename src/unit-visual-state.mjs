@@ -3,7 +3,7 @@ export function unitActionPoseAllowed(hp, defeatStartedAt) {
 }
 export function unitWorkerActionPose(kind, visible, task, cargoType, walking) {
   if (kind !== 'worker' || visible === false || walking) return 'none';
-  if (task === 'building') return 'construction';
+  if (task === 'building' || task === 'repairing') return 'construction';
   if (task !== 'gathering') return 'none';
   if (cargoType === 'wood') return 'chopping';
   if (cargoType === 'food') return 'berry-gathering';

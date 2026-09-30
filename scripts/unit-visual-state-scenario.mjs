@@ -45,6 +45,7 @@ assert.equal(unitWorkerActionPose('worker', true, 'gathering', null, false), 'ga
   'gathering without a known resource uses a neutral cue');
 assert.equal(unitWorkerActionPose('worker', true, 'building', 'wood', false), 'construction',
   'building keeps the construction cue regardless of carried cargo');
+assert.equal(unitWorkerActionPose('worker', true, 'repairing', null, false), 'construction', 'repair reuses the declared construction action cue');
 assert.equal(unitWorkerActionPose('worker', true, 'returning', 'food', false), 'none',
   'workers returning to base do not swing');
 assert.equal(unitWorkerActionPose('worker', true, 'gathering', 'wood', true), 'none',

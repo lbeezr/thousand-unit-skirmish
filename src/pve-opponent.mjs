@@ -712,7 +712,7 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
     next(observation) {
       const orders = nextOrders(observation);
       const production = productionPolicy.next(observation);
-      const builders = new Set(production.filter((command) => command.type === 'build').flatMap((command) => command.ids));
+      const builders = new Set(production.filter((command) => ['build', 'repairBuilding'].includes(command.type)).flatMap((command) => command.ids));
       const compatibleOrders = orders.map((command) => command.type === 'gather'
         ? { ...command, ids: command.ids.filter((id) => !builders.has(id)) } : command)
         .filter((command) => !Array.isArray(command.ids) || command.ids.length > 0);
