@@ -521,3 +521,9 @@ passed after correcting its stale checkpoint schema assertion from 9 to the
 current 19; this slice does not change the checkpoint schema version. Syntax,
 client asset serving, shared-region tests, CI shard coverage, and documentation
 link checks passed.
+
+During PR CI, the Ember paid-AI siege fixture reported an 85-food discrepancy.
+Its ledger counted spawned units and completed research but omitted purchases
+still queued when the tower fell. The fixture now includes building/worker
+production reservations and active research in the paid total while retaining
+exact food/wood assertions. No gameplay costs or purchasing behavior change.
