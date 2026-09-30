@@ -424,3 +424,21 @@ catalog with population readout. Flattening the nested building grid and giving
 unit catalog buttons a minimum column width removed narrow-layout text overlap.
 DOM inspection confirmed scrollable production content; eleven focused roster,
 selection and HUD tests passed. CI and deployed verification of this fix remain.
+
+### 2026-09-30 — Latest foundation staging deployment recovery
+
+PRs #248 and #250 merged after all three CI shards passed for their respective
+heads. Railway initially kept the older AI merge while removing the newer HUD
+deployment. An explicit staging-only redeploy from source succeeded as
+`fcc377e8-d3a5-40af-a878-437db4f5408c` at
+`abce6567631a8658aa72798ccde7fe5949dd75b6`, which includes both foundation merges
+and the subsequent forest-art merge #251. The Railway smoke passed readiness,
+authentication, all discovered browser imports and authenticated WebSocket upgrade.
+This establishes current packaging and transport; rendered appearance and staged
+gameplay verification remain separate evidence.
+
+The staged gameplay smoke also passed on that deployment using authored map
+`qa-staging-muo04ti8` and a 250-unit fixture: invite creation, both human seats,
+both-seat reconnect, authored-map save/reload, elimination victory and synchronized
+rematch reset. This fixture validates integration and recovery rather than AI
+expansion or a balanced combined-arms match.
