@@ -283,3 +283,9 @@ saved cooldown and simultaneous unit/building trade also passed. Both-seat
 ranged-building edge/placement repair retained continuous firing. Known-checkpoint
 migration and incompatible-save preservation passed. Mounted production and
 siege counter/progression proofs belong to the following F3 slices.
+
+CI caught a unit-target pursuit eligibility regression in the shared-combat slice:
+the attack-move replanner looked up a building definition for a unit. The check
+now uses the unit's attack capability and target unit definition. Both-seat
+`cliff-pursuit-scenario.mjs` passed in direct and attack-move modes, including
+lateral pursuit, unreachable retreat and acquisition of a reachable alternative.

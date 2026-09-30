@@ -5787,7 +5787,7 @@ function prepareAttackMovePaths() {
       if (unit.repathTimer > STEP_SECONDS) continue;
       target = units[unit.attackTargetId];
       if (!target || target.hp <= 0 || target.team === unit.team
-        || !unitHasCapability(unit, 'attack-structures') || !canCombatTarget(UNIT_DEFINITIONS[unit.kind], BUILDING_DEFINITIONS[target.type])
+        || !unitHasCapability(unit, 'attack') || !canCombatTarget(UNIT_DEFINITIONS[unit.kind], UNIT_DEFINITIONS[target.kind])
         || (mapDefinition.fogOfWar && !cellVisibleToTeam(unit.team, worldToCell(target.x, target.z)))
         || Math.hypot(target.x - unit.attackMoveAnchorX, target.z - unit.attackMoveAnchorZ) > ATTACK_MOVE_LEASH_RADIUS
         || Math.hypot(target.x - unit.x, target.z - unit.z) <= (UNIT_DEFINITIONS[unit.kind].combat.range)
