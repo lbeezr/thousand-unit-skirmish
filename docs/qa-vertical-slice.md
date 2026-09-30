@@ -527,3 +527,9 @@ Its ledger counted spawned units and completed research but omitted purchases
 still queued when the tower fell. The fixture now includes building/worker
 production reservations and active research in the paid total while retaining
 exact food/wood assertions. No gameplay costs or purchasing behavior change.
+
+## Command foundations
+
+[September 30 Stop/Hold evidence](qa-command-foundations-2026-09-30.md) records
+both-seat interruption, worker cancellation, ranged/melee no-pursuit, checkpoint
+recovery and rematch checks.
