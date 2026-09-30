@@ -212,3 +212,15 @@ Spearman at 55 HP after defeating Rider, Rider at 100 after defeating Worker,
 and Worker at 52 after defeating Scout. Scout should use mobility and sight
 rather than fight a stationary economy head-on. Match-level scouting and raid
 balance still need evidence; these initial numbers are not a final balance claim.
+
+### Military progression (2026-09-29)
+
+Town Centers offer Military Tier II, opening armor research at Barracks and
+mounted forging at Stable. Teams research one project at a time, paying when it
+starts. Completed technologies affect current and future eligible units through
+the shared damage formula; damage multipliers multiply and class armor adds.
+Military armor excludes Workers. Destroying the research building cancels its
+active project without refund; deliberate cancellation refunds the unfinished
+fraction. Authored technology rewards remain explicit scenario grants and may
+skip normal purchase prerequisites. Workshop and siege will use this same tier
+and unlock boundary in their following slice.

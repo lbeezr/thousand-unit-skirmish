@@ -269,3 +269,22 @@ Barracks presentation profile as its declared fallback. The bounded policy can
 acquire/resume one Stable and train at most one Scout and two Riders, prioritizing
 Spearmen for currently visible mounted threats. Workshop, siege, second-tier
 progression and representative defended-position/scouting matches remain F3 work.
+
+### Bounded technology progression slice
+
+Military Tier II researches at any completed Town Center for 200 food / 150 wood
+in 35 seconds. It enables military armor (Barracks, 100 / 100, 25 seconds) and
+mounted forging (Stable, 120 / 100, 25 seconds). Armor adds one melee and one
+pierce armor to Infantry, Spearman, Archer and mounted/siege tags; Workers stay
+outside that scope. Mounted forging multiplies mounted damage by 1.2. Existing
+Infantry forging and Archer fletching remain the initial weapon choices. Effects
+resolve from completion state for current and newly produced units.
+
+Shared research actions now derive prerequisites, ownership, completed-building,
+economy, completion and single-active-project checks. HUD/contextual choices,
+filtered AI options and Map Studio technology rewards enumerate the registry.
+Checkpoint completion flags are generic; schema 18 explicitly migrates known
+schema-17 state and validates active research at the correct surviving home as
+well as constructed producers. AI acquires available progression after a viable
+army while retaining food/wood reserves. Workshop/siege supplies the next concrete
+tier unlock; representative raid, scouting and defended-position proofs remain.

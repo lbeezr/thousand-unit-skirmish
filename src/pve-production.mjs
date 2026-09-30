@@ -1,4 +1,4 @@
-import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
+import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from './gameplay-definitions.mjs';
 /** Bounded production using only the existing team-visible opponent DTO. */
 export const PVE_PRODUCTION_LIMITS = Object.freeze({
   openingDelayTicks: 300,
@@ -116,6 +116,19 @@ export function createProductionPolicy(seed) {
       if (damaged && repairer && observation.resources.wood >= 50) {
         postpone(observation.tick);
         return [{ type: 'repairBuilding', buildingId: damaged.id, ids: [repairer.id], unitGenerations: [repairer.generation] }];
+      }
+      if (barracks?.complete && friendly.filter(unit => unit.kind !== 'worker').length >= 6 && !observation.research?.active) {
+        const priorities = ['military-tier-2', 'military-armor', 'infantry-attack', 'archer-attack', 'mounted-attack'];
+        for (const upgrade of priorities) {
+          const definition = TECHNOLOGY_DEFINITIONS[upgrade];
+          const producer = observation.buildings.friendly.find(building => building.complete
+            && building.researchOptions?.some(option => option.upgrade === upgrade && option.available));
+          if (producer && observation.resources.food >= definition.cost.food + limits.foodReserve
+            && observation.resources.wood >= definition.cost.wood + limits.woodReserve) {
+            postpone(observation.tick);
+            return [{ type: 'researchUpgrade', buildingId: producer.id, upgrade }];
+          }
+        }
       }
       if (!barracks) {
         // Keep one living Barracks; even the last Worker may rebuild after losses.

@@ -61,3 +61,14 @@ test('mounted roster has real reconnaissance, raiding and Spearman counter trade
   assert.ok(units.scout.combat.maxHp < units.archer.combat.maxHp);
   assert.deepEqual(buildings.stable.products, ['scout', 'rider']);
 });
+
+test('completed progression applies to current definitions and leaves Workers outside military armor', () => {
+  assert.equal(combatDamage(units.rider, units.worker, { mountedAttack: true }), 11 * 1.2);
+  assert.equal(combatDamage(units.infantry, units.rider, {}, { militaryArmor: true }), 8);
+  assert.equal(combatDamage(units.archer, units.rider, {}, { militaryArmor: true }), 4);
+  assert.equal(combatDamage(units.archer, units.worker, {}, { militaryArmor: true }), 7);
+  const completions = { militaryArmor: true };
+  assert.equal(combatDamage(units.infantry, units.spearman, {}, completions), 9);
+  completions.militaryArmor = false;
+  assert.equal(combatDamage(units.infantry, units.spearman, {}, completions), 10);
+});

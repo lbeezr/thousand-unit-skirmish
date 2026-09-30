@@ -313,3 +313,22 @@ Mounted AI recovery follow-up: seeded Forked Vale loss recovery passed for Azure
 tick 6,090, four builds, ten trained units), with one-Stable and existing per-role
 construction bounds. Mounted CI also exposed a stale schema-16 assertion in the
 legacy producer-destruction fixture; its expected migrated schema is now 17.
+
+### 2026-09-29 — Bounded progression owner checks
+
+Local `progression-audit` (64×64, no fog, 20 starting units, 1,000 food/wood each):
+both seats built Barracks/Stable, rejected armor before Tier II without spending,
+and researched Tier II at their home. Active Tier II survived a restart with its
+remaining duration; completion enabled armor. A second simultaneous project was
+rejected. Armor and mounted forging completed with exact final balances of 580
+food / 275 wood per seat; all three completions survived another restart and reset
+on rematch. Enemy legal research options stayed private on the no-fog map.
+
+The first restart run exposed a validator that searched only constructed buildings
+for active research. Validation now also accepts the matching surviving home and
+the complete both-seat scenario passed. Ruleset migration/rejected-save preservation
+passed. All 158 pure/UI cases passed, covering availability, scoped armor/weapon
+effects, cached completion reset, focused registered HUD choices and reserve-aware
+AI acquisition. A fresh local server served all 33 browser import dependencies,
+including the shared research module. Full CI, staging and representative matches
+remain integration evidence rather than inferred from these focused checks.

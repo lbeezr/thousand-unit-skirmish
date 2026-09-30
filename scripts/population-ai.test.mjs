@@ -124,3 +124,24 @@ for (const team of [0, 1]) test(`AI acquires one Stable, trains a bounded mounte
   state.units.visibleEnemies = [];
   assert.equal(policy.next({ ...state, tick: 4200 })[0].kind, 'rider', 'out-of-sight threats are not read from hidden state');
 });
+
+for (const team of [0, 1]) test(`AI buys available progression with reserves and respects one active project for seat ${team}`, () => {
+  const state = { team, tick: 0, fogOfWar: false, map: { width: 80, height: 64 },
+    resources: { food: 600, wood: 600 }, population: { available: 12, capacity: 23 }, research: { active: null },
+    units: { friendly: Array.from({ length: 10 }, (_, id) => ({ id, team, hp: 100, generation: 1, x: team ? 20 : -20,
+      z: 0, kind: id < 4 ? 'worker' : 'infantry', cargo: 0, task: 'idle' })), visibleEnemies: [] },
+    buildings: { friendly: [{ id: 7, team, type: 'barracks', complete: true, hp: 1800, queue: 0,
+      researchOptions: [{ upgrade: 'military-armor', available: false }] },
+      { id: 1_000_000_000 + team, team, type: 'town-center', home: true, complete: true, hp: 2400, queue: 0,
+        researchOptions: [{ upgrade: 'military-tier-2', available: true }] }], visibleEnemies: [] }, objectives: [], resourceNodes: [] };
+  const policy = createProductionPolicy(42); policy.next(state);
+  assert.deepEqual(policy.next({ ...state, tick: 300 }), [{ type: 'researchUpgrade', buildingId: 1_000_000_000 + team, upgrade: 'military-tier-2' }]);
+  state.research.active = { type: 'military-tier-2' };
+  assert.ok(policy.next({ ...state, tick: 450 }).every(command => command.type !== 'researchUpgrade'));
+  state.research.active = null; state.research.militaryTier2 = true;
+  state.buildings.friendly[1].researchOptions[0].available = false;
+  state.buildings.friendly[0].researchOptions[0].available = true;
+  assert.deepEqual(policy.next({ ...state, tick: 750 }), [{ type: 'researchUpgrade', buildingId: 7, upgrade: 'military-armor' }]);
+  state.resources.food = 100;
+  assert.ok(policy.next({ ...state, tick: 1350 }).every(command => command.type !== 'researchUpgrade'), 'research preserves food for ongoing production');
+});
