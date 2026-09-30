@@ -112,3 +112,12 @@ the large client/server files when a concrete change benefits from it.
 Deployment instructions belong in [deployment](deployment.md); numeric settings
 belong in [configuration](configuration.md); asset format rules belong in their
 [specific contracts](assets.md). Avoid copying those details into status reports.
+
+## Roster production options
+
+Barracks produces Infantry and Spearman through the same persisted FIFO.
+Contextual production choices and Map Studio unit selectors are generated from
+registry entries; selection and group summaries count every registered kind.
+Spearman currently reuses the procedural melee placeholder with a distinct tint.
+The bounded AI adds Spearmen toward one per three Infantry when reserves permit.
+Its mounted counter and the Stable arrive with F3 combat classes.

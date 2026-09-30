@@ -1,3 +1,4 @@
+import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
@@ -95,7 +96,7 @@ try {
   for (let slot = 0; slot < 4; slot++) assert.equal(initial.state.units[slot].attackCooldown,
     initial.state.units[slot+4].attackCooldown, 'opening cadence must match by team slot');
   const results = [];
-  for (const [kind, damage] of [['worker', 4], ['infantry', 10], ['archer', 7]]) {
+  for (const [kind, damage] of Object.entries(UNIT_DEFINITIONS).map(([kind, definition]) => [kind, definition.combat.damage])) {
     for (const lowerIdTeam of [0, 1]) {
       for (const strikes of [1, 3, 'staggered']) {
         const fixture = structuredClone(initial);

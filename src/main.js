@@ -202,6 +202,7 @@ const ui = {
   trainInfantry: document.querySelector('#train-infantry'),
   trainWorker: document.querySelector('#train-worker'),
   trainArcher: document.querySelector('#train-archer'),
+  rosterProductionOptions: document.querySelector('#roster-production-options'),
   buildBarracks: document.querySelector('#build-barracks'),
   buildRange: document.querySelector('#build-range'),
   selectWorkers: document.querySelector('#select-workers'),
@@ -3263,7 +3264,10 @@ function updateSelectionUI() {
     const healthRatio = hp / maxHp;
     const construction = Math.round(Math.max(0, Math.min(1, Number(selectedBuilding.progress) || 0)) * 100);
     const queued = getBuildingQueueLength(selectedBuilding);
-    const troop = selectedBuilding.type === 'barracks' ? 'infantry' : 'archers';
+    const products = BUILDING_DEFINITIONS[selectedBuilding.type]?.products || [];
+    const troop = selectedBuilding.productionQueue?.length
+      ? UNIT_DEFINITIONS[selectedBuilding.productionQueue[0]].label
+      : products.map((kind) => UNIT_DEFINITIONS[kind].label).join(' / ');
     const training = Math.round(Math.max(0, Math.min(1, Number(selectedBuilding.trainingProgress) || 0)) * 100);
     ui.selectedBuildingName.textContent = `${buildingLabel(selectedBuilding.type)} #${selectedBuilding.id}`;
     ui.selectedBuildingState.textContent = selectedBuilding.attackers > 0 ? 'UNDER ATTACK'
@@ -3324,10 +3328,11 @@ function updateContextualCommands() {
   bar.querySelector('[data-context-summary]').textContent = building
     ? `${buildingLabel(building.type)} · ${ui.selectedBuildingHealth.textContent} · ${ui.selectedBuildingProduction.textContent}`
     : context.total ? `${context.total} selected${context.kind === 'military' || context.kind === 'mixed' ? ` · ${ui.formationSelect.value} formation` : ''} · ${Object.entries(context.counts).filter(([, n]) => n).map(([role, n]) => `${n} ${role}`).join(' · ')}${context.counts.worker ? ` · Cargo ${formatResourceStock(context.cargo.food)} food / ${formatResourceStock(context.cargo.wood)} wood` : ''}` : '';
+  updateRosterProductionOptions(bar.querySelector('[data-context-products]'), building);
   for (const button of bar.querySelectorAll('[data-context-proxy]')) {
     const source = document.getElementById(button.dataset.contextProxy);
     const action = button.dataset.contextProxy;
-    button.hidden = action === 'order-target-toggle' ? context.kind === 'none'
+    button.hidden = action.startsWith('train-') ? true : action === 'order-target-toggle' ? context.kind === 'none'
       : action === 'attack-move-toggle' ? !['military', 'mixed'].includes(context.kind)
       : action === 'train-infantry' ? building?.type !== 'barracks'
       : action === 'train-archer' ? building?.type !== 'archery-range'
@@ -3368,17 +3373,18 @@ function updateControlGroupUI() {
     const number = controlGroupKeyLabel(index);
     const count = group.size;
     const composition = summarizeUnitComposition(units, group, localTeam);
-    const compositionCount = composition.workers + composition.infantry + composition.archers;
+    const compositionCount = Object.values(composition).reduce((sum, count) => sum + count, 0);
     const countElement = button.querySelector('.control-group-count');
     if (countElement) countElement.textContent = count.toLocaleString();
     button.classList.toggle('filled', count > 0);
     button.classList.toggle('has-composition', compositionCount > 0);
-    button.style.setProperty('--group-worker-color', composition.workers > 0 ? '#76c596' : 'rgba(118,197,150,.14)');
+    button.style.setProperty('--group-worker-color', composition.worker > 0 ? '#76c596' : 'rgba(118,197,150,.14)');
     button.style.setProperty('--group-infantry-color', composition.infantry > 0 ? '#d5ef78' : 'rgba(213,239,120,.14)');
-    button.style.setProperty('--group-archer-color', composition.archers > 0 ? '#efa071' : 'rgba(239,160,113,.14)');
+    button.style.setProperty('--group-archer-color', composition.archer > 0 ? '#efa071' : 'rgba(239,160,113,.14)');
     button.classList.toggle('active', activeControlGroup === index);
     button.setAttribute('aria-pressed', String(activeControlGroup === index));
-    const compositionLabel = `${composition.workers.toLocaleString()} workers, ${composition.infantry.toLocaleString()} infantry, ${composition.archers.toLocaleString()} archers`;
+    const compositionLabel = Object.entries(composition).filter(([, count]) => count > 0)
+      .map(([kind, count]) => `${count.toLocaleString()} ${UNIT_DEFINITIONS[kind].label}`).join(', ') || 'empty';
     button.setAttribute('aria-label', `Control group ${number}: ${count.toLocaleString()} living friendly units; ${compositionLabel}`);
     button.title = `${count.toLocaleString()} living units · ${compositionLabel} · Ctrl/⌘ + ${number} replaces · Shift + ${number} adds · ${number} recalls`;
     button.disabled = localTeam === null;
@@ -4118,6 +4124,50 @@ function applyWaypointQueueCounts(rows = []) {
   updateSelectionUI();
 }
 
+function updateRosterProductionOptions(container, selectedProducer = null) {
+  if (!container) return;
+  const products = selectedProducer ? BUILDING_DEFINITIONS[selectedProducer.type]?.products || []
+    : [...new Set(Object.values(BUILDING_DEFINITIONS).flatMap((definition) => definition.products || []))]
+      .filter((kind) => !['infantry', 'archer'].includes(kind));
+  const key = products.join(',');
+  if (container.dataset.products !== key) {
+    container.replaceChildren();
+    container.dataset.products = key;
+    for (const kind of products) {
+      const definition = UNIT_DEFINITIONS[kind];
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'economy-action'; button.dataset.product = kind;
+      button.addEventListener('click', () => {
+        const building = latestBuildings.find((row) => row.id === Number(button.dataset.producer));
+        if (building) sendCommand({ type: 'trainUnit', kind, buildingId: building.id });
+      });
+      container.append(button);
+    }
+  }
+  const alive = localTeam === null ? 0 : teamUnits[localTeam].filter((unit) => unit.hp > 0).length;
+  const reserved = localTeam === null ? 0 : latestBuildings.filter((row) => row.team === localTeam)
+    .reduce((sum, row) => sum + getBuildingQueueLength(row), latestWorkerProduction[localTeam]?.queue || 0);
+  const totalReserved = latestBuildings.reduce((sum, row) => sum + getBuildingQueueLength(row), 0)
+    + latestWorkerProduction.reduce((sum, row) => sum + (row?.queue || 0), 0);
+  for (const button of container.children) {
+    const definition = UNIT_DEFINITIONS[button.dataset.product];
+    const producer = selectedProducer || latestBuildings.find((row) => row.team === localTeam && row.complete
+      && !row.productionBlocked && getBuildingQueueLength(row) < BARRACKS_QUEUE_LIMIT
+      && BUILDING_DEFINITIONS[row.type]?.products.includes(definition.id));
+    const reason = localTeam === null ? 'Join a team' : matchWinner >= 0 ? 'Match finished'
+      : !producer || !producer.complete ? 'Complete a production building'
+      : producer.productionBlocked ? 'Clear spawn area'
+      : getBuildingQueueLength(producer) >= BARRACKS_QUEUE_LIMIT ? 'Queue full'
+      : alive + reserved >= MAX_PER_TEAM || latestRosterSize + totalReserved >= MAX_UNITS ? 'Unit cap reached'
+      : latestFood[localTeam] < definition.cost.food || latestWood[localTeam] < definition.cost.wood
+        ? `Need ${formatResourceRequirement(Math.max(0, definition.cost.food - latestFood[localTeam]))} food / ${formatResourceRequirement(Math.max(0, definition.cost.wood - latestWood[localTeam]))} wood` : '';
+    button.dataset.producer = producer?.id ?? '';
+    button.disabled = Boolean(reason);
+    button.textContent = `Train ${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason ? ` · ${reason}` : ''}`;
+  }
+  container.hidden = products.length === 0;
+}
+
 function updateEconomyUI(state = {}, initial = false) {
   if (Number.isFinite(state.rosterSize)) latestRosterSize = Math.max(0, Math.floor(state.rosterSize));
   if (Array.isArray(state.food)) latestFood = [Number(state.food[0]) || 0, Number(state.food[1]) || 0];
@@ -4315,6 +4365,7 @@ function updateEconomyUI(state = {}, initial = false) {
     if (!note) { note = document.createElement('small'); note.className = 'action-disabled-reason'; button.append(note); }
     note.textContent = reason;
   }
+  updateRosterProductionOptions(ui.rosterProductionOptions);
   updateCommandUI();
 }
 
@@ -5572,7 +5623,7 @@ function validateImportedMap(value) {
         || trigger.woodReward < 0 || trigger.woodReward > MAX_OBJECTIVE_FOOD_REWARD))
       || (trigger.unitCount !== undefined && (!Number.isInteger(trigger.unitCount)
         || trigger.unitCount < 0 || trigger.unitCount > MAX_TRIGGER_UNIT_REWARD))
-      || (trigger.unitKind !== undefined && !['worker', 'infantry', 'archer'].includes(trigger.unitKind))
+      || (trigger.unitKind !== undefined && !Object.hasOwn(UNIT_DEFINITIONS, trigger.unitKind))
       || (trigger.requires !== undefined && (typeof trigger.requires !== 'string'
         || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(trigger.requires)))
       || (trigger.requiresAll !== undefined && (trigger.requires !== undefined
@@ -5670,7 +5721,7 @@ function validateImportedMap(value) {
         || event.woodReward < 0 || event.woodReward > MAX_OBJECTIVE_FOOD_REWARD))
       || (event.unitCount !== undefined && (!Number.isInteger(event.unitCount)
         || event.unitCount < 0 || event.unitCount > 25))
-      || (event.unitKind !== undefined && !['worker', 'infantry', 'archer'].includes(event.unitKind))
+      || (event.unitKind !== undefined && !Object.hasOwn(UNIT_DEFINITIONS, event.unitKind))
       || (event.technologyReward !== undefined
         && !['infantry-attack', 'archer-attack'].includes(event.technologyReward))
       || (event.message !== undefined && (typeof event.message !== 'string' || event.message.length > 120))
@@ -8024,6 +8075,13 @@ ui.attackMoveToggle?.addEventListener('click', () => setAttackMoveMode(!attackMo
 ui.orderTargetToggle?.addEventListener('click', () => setTapOrderArmed(!tapOrderArmed));
 ui.clearBuildingRally?.addEventListener('click', clearSelectedBuildingRally);
 ui.researchAttackUpgrade?.addEventListener('click', startSelectedAttackResearch);
+for (const selector of [ui.studioObjectiveUnitKind, ui.studioEventUnitKind]) {
+  const initial = selector.value || 'infantry';
+  selector.replaceChildren(...Object.values(UNIT_DEFINITIONS).map((definition) => {
+    const option = document.createElement('option'); option.value = definition.id; option.textContent = definition.label; return option;
+  }));
+  selector.value = initial;
+}
 ui.selectWorkers?.addEventListener('click', selectWorkers);
 ui.selectIdleWorkers?.addEventListener('click', selectIdleWorkers);
 ui.selectInfantry?.addEventListener('click', selectInfantry);

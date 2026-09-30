@@ -57,7 +57,7 @@ a display never rounds insufficient stock up to the purchase price.
 ## Implemented scope
 
 - Azure and Ember seats, invite rooms, spectators, reconnects, and checkpoints.
-- Workers, Infantry, and Archers; food/wood gathering, construction, queues,
+- Workers, Infantry, Archers, and Spearmen; food/wood gathering, construction, queues,
   rally points, population reservations, and two attack upgrades.
 - Box/Line/Column destinations, direct attacks, attack move, queued waypoints,
   control groups, class selection, and idle-worker selection.

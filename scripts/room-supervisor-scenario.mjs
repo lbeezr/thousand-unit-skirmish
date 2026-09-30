@@ -1,3 +1,4 @@
+import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
 import { spawn } from 'node:child_process';
@@ -16,6 +17,8 @@ const WORKER_FOOD_COST = 50;
 const WORKER_TRAIN_SECONDS = 25;
 const INFANTRY_FOOD_COST = 50;
 const INFANTRY_TRAIN_SECONDS = 12;
+const HOUSE_COST = BUILDING_DEFINITIONS.house?.cost.wood ?? 0;
+const publicBuildings = (rows) => rows.map(({ productionQueue, productionOptions, ...publicState }) => publicState);
 
 async function reservePort() {
   const server = createServer();
@@ -488,7 +491,7 @@ try {
     }],
     scenarioEvents: [{
       id: 'recovery-supply-drop', type: 'timed-supply', name: 'Recovery Supply Drop',
-      afterSeconds: 0.5, team: 'both', foodReward: 123, woodReward: 200, message: 'SUPPLY DROP RECOVERED',
+      afterSeconds: 0.5, team: 'both', foodReward: 123, woodReward: 200 + HOUSE_COST, message: 'SUPPLY DROP RECOVERED',
     }],
     fogOfWar: false, victoryMode: 'any', terrainSeed: 13,
   };
@@ -517,7 +520,7 @@ try {
   const eventAndCaptureState = await restartedRoom.waitForMessage((message) => message.type === 'state'
     && message.mapId === recoveryMap.id && message.scenarioClockStarted
     && message.food?.[0] === 123 && message.food?.[1] === 123
-    && message.wood?.[0] === 230 && message.wood?.[1] === 200
+    && message.wood?.[0] === 230 + HOUSE_COST && message.wood?.[1] === 200 + HOUSE_COST
     && message.units?.filter((unit) => unit[0] >= 250 && unit[1] === 0 && unit[5] === 'worker').length === 2
     && message.objectives?.some((objective) => objective.id === 'recovery-control-zone' && objective.owner === 0));
   assert.ok(eventAndCaptureState.tick >= movedState.tick);
@@ -530,7 +533,7 @@ try {
   const unitsBeforeProduction = new Set(eventAndCaptureState.units.map((unit) => unit[0]));
   const barracksSite = { x: 0.5, z: -13.5 };
   const barracksBuildAccepted = (state) => state.type === 'state' && state.mapId === recoveryMap.id
-    && state.wood?.[0] === 230 - 175
+    && state.wood?.[0] === 230 + HOUSE_COST - 175
     && state.buildings?.length === 1 && state.buildings[0].type === 'barracks'
     && state.buildings[0].team === 0 && state.buildings[0].progress > 0;
   const barracksBuildAck = restartedRoom.waitForMessage((message) => message.type === 'notice'
@@ -556,9 +559,15 @@ try {
     restartedRoomEmber.waitForMessage(completedBarracks, 45_000),
   ]);
   assert.equal(completedBarracksAzure.buildings.find((building) => building.id === barracksId).type, 'barracks');
-  assert.deepEqual(completedBarracksAzure.buildings, completedBarracksEmber.buildings,
+  assert.deepEqual(publicBuildings(completedBarracksAzure.buildings), publicBuildings(completedBarracksEmber.buildings),
     'both players should see the completed Barracks before production begins');
 
+  if (HOUSE_COST) {
+    const completeHouse = restartedRoom.waitForMessage((message) => message.type === 'state'
+      && message.buildings?.some((building) => building.type === 'house' && building.team === 0 && building.complete), 45_000);
+    restartedRoom.socket.send(JSON.stringify({ type: 'build', buildingType: 'house', ids: workersBeforeProduction, x: 3.5, z: -6.5 }));
+    await completeHouse;
+  }
   const acceptedWorkerQueue = (state) => state.type === 'state' && state.mapId === recoveryMap.id
     && state.food?.[0] === 123 - WORKER_FOOD_COST - INFANTRY_FOOD_COST
     && state.buildings?.find((building) => building.id === barracksId)?.queue === 1
@@ -582,8 +591,10 @@ try {
     'Azure should reserve one Infantry in its completed Barracks');
   assert.equal(queuedWorkerEmber.buildings.find((building) => building.id === barracksId).queue, 1,
     'Ember should receive the authoritative Azure Infantry queue');
-  assert.deepEqual(queuedWorkerAzure.buildings, queuedWorkerEmber.buildings,
+  assert.deepEqual(publicBuildings(queuedWorkerAzure.buildings), publicBuildings(queuedWorkerEmber.buildings),
     'both online seats should agree on the queued Barracks production before the crash');
+  assert.deepEqual(queuedWorkerAzure.buildings.find((building) => building.id === barracksId).productionQueue, ['infantry']);
+  assert.deepEqual(queuedWorkerEmber.buildings.find((building) => building.id === barracksId).productionQueue, [], 'enemy product identities stay private during recovery');
   assert.deepEqual(queuedWorkerAzure.workerProduction, queuedWorkerEmber.workerProduction,
     'both online seats should agree on the queued worker production before the crash');
 
@@ -603,7 +614,7 @@ try {
       && snapshot.state?.currentArmySize === 250
       && snapshot.state?.teamFood?.[0] === 123 - WORKER_FOOD_COST - INFANTRY_FOOD_COST
       && snapshot.state?.teamFood?.[1] === 123
-      && snapshot.state?.teamWood?.[0] === 55 && snapshot.state?.teamWood?.[1] === 200
+      && snapshot.state?.teamWood?.[0] === 55 && snapshot.state?.teamWood?.[1] === 200 + HOUSE_COST
       && snapshot.state?.triggerStates?.some((trigger) => trigger.id === 'recovery-control-zone' && trigger.owner === 0)
       && snapshot.state?.units?.filter((unit) => unit.id >= 250 && unit.team === 0 && unit.kind === 'worker').length === 2
       && snapshot.state?.scenarioEventStates?.some((event) => event.id === 'recovery-supply-drop' && event.fired)
@@ -679,7 +690,7 @@ try {
     assert.equal(recovered.state.armySize, 250);
     assert.deepEqual(recovered.state.food, [23, 123],
       'checkpoint recovery should preserve both production food debits exactly once');
-    assert.deepEqual(recovered.state.wood, [55, 200]);
+    assert.deepEqual(recovered.state.wood, [55, 200 + HOUSE_COST]);
     assert.equal(recovered.state.objectives.find((objective) => objective.id === 'recovery-control-zone')?.owner, 0);
     assert.equal([...captureGrantedWorkerIds].filter((id) => {
       const unit = unitRow(recovered.state, id);
@@ -728,7 +739,7 @@ try {
     && unit[1] === 0 && unit[4] > 0 && unit[5] === 'infantry');
   assert.equal(producedInfantry.length, 1,
     'recovered Barracks production should spawn exactly one Azure Infantry');
-  assert.deepEqual(completedInfantryAzure.buildings, completedInfantryEmber.buildings,
+  assert.deepEqual(publicBuildings(completedInfantryAzure.buildings), publicBuildings(completedInfantryEmber.buildings),
     'both reconnected seats should observe the same completed Barracks queue');
   assert.deepEqual(completedInfantryAzure.units, completedInfantryEmber.units,
     'both reconnected seats should observe exactly the same spawned Infantry');

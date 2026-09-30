@@ -42,10 +42,11 @@ export const GAMEPLAY_DEFINITIONS = freezeTree(validateGameplayDefinitions({
   units: {
     worker: { id: 'worker', label: 'Worker', cost: { food: 50, wood: 0 }, trainSeconds: 25, population: 1, combat: { maxHp: 100, moveSpeed: 2.6, range: 1.28, damage: 4, period: 0.85, structureDamage: 1 }, presentation: 'unit.worker' },
     infantry: { id: 'infantry', label: 'Infantry', cost: { food: 50, wood: 0 }, trainSeconds: 12, population: 1, combat: { maxHp: 100, moveSpeed: 2.6, range: 1.28, damage: 10, period: 0.85, structureDamage: 1.5 }, presentation: 'unit.infantry' },
+    spearman: { id: 'spearman', label: 'Spearman', cost: { food: 60, wood: 20 }, trainSeconds: 12, population: 1, combat: { maxHp: 110, moveSpeed: 2.6, range: 1.4, damage: 8, period: 0.85, structureDamage: 1.2 }, presentation: 'unit.spearman' },
     archer: { id: 'archer', label: 'Archer', cost: { food: 25, wood: 45 }, trainSeconds: 7, population: 1, combat: { maxHp: 70, moveSpeed: 2.6, range: 4.5, damage: 7, period: 1, structureDamage: 0.8 }, presentation: 'unit.archer' },
   },
   buildings: {
-    barracks: { id: 'barracks', label: 'Barracks', cost: { food: 0, wood: 175 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['infantry'], presentation: 'building.barracks' },
+    barracks: { id: 'barracks', label: 'Barracks', cost: { food: 0, wood: 175 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['infantry', 'spearman'], presentation: 'building.barracks' },
     'archery-range': { id: 'archery-range', label: 'Archery Range', cost: { food: 0, wood: 150 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['archer'], presentation: 'building.archery-range' },
   },
   technologies: {

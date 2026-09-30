@@ -62,6 +62,7 @@ run(['--test', 'scripts/performance-order-window.test.mjs'], 'Performance planni
 run(['--test', 'scripts/waypoint-backpressure.test.mjs'], 'Waypoint metadata under backpressure');
 run(['--test', 'scripts/worker-shutdown.test.mjs'], 'Signal-aware room worker shutdown');
 run(['--test', 'scripts/check-client-imports.test.mjs'], 'Served client import graph');
+run(['--test', 'scripts/snapshot-private-production.test.mjs'], 'Seat-private production snapshots');
 
 run(['--test', 'scripts/battlefield-cursor.test.mjs'], 'Battlefield cursor states');
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
@@ -69,6 +70,7 @@ run(['--test', 'scripts/pve-entry.test.mjs'], 'PvE entry observer settling');
 run(['--test', 'scripts/hud-layout.test.mjs'], 'Visible HUD layout');
 run(['--test', 'scripts/objective-summary.test.mjs'], 'Compact objectives and notice history');
 run(['--test', 'scripts/selection-context.test.mjs'], 'Contextual selection');
+run(['--test', 'scripts/roster-production-ui.test.mjs'], 'Roster production choices');
 run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue authority');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');
@@ -111,6 +113,7 @@ const scenarios = [
   ['scripts/live-attack-move-repair-scenario.mjs', 'Live attack-move route repair'],
   ['scripts/worker-combat-scenario.mjs', 'Worker combat across both seats'],
   ['scripts/worker-production-spawn-scenario.mjs', 'Town Center worker exits across map orientations'],
+  ['scripts/roster-options-scenario.mjs', 'Roster production and persistence'],
   ['scripts/production-lifecycle-scenario.mjs', 'Producer destruction and population reservations'],
   ['scripts/infantry-seat-combat-scenario.mjs', 'Mirrored infantry combat parity', '--expect-parity'],
   ['scripts/opening-production-scenario.mjs', 'Mirrored construction and production', '--expect-builder-parity'],

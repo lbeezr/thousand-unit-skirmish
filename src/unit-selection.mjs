@@ -1,3 +1,5 @@
+import { UNIT_DEFINITIONS } from './gameplay-definitions.mjs';
+
 const SAME_UNIT_DOUBLE_CLICK_MS = 360;
 const UNIT_PICK_REPEAT_WINDOW_MS = 1200;
 const UNIT_PICK_POSITION_TOLERANCE_PX = 18;
@@ -20,16 +22,14 @@ export function livingUnitIdsOfKinds(units, team, kinds) {
 }
 
 export function summarizeUnitComposition(units, unitIds, team) {
-  const composition = { workers: 0, infantry: 0, archers: 0 };
+  const composition = Object.fromEntries(Object.keys(UNIT_DEFINITIONS).map((kind) => [kind, 0]));
   if (!Array.isArray(units) || !unitIds || typeof unitIds[Symbol.iterator] !== 'function'
     || ![0, 1].includes(team)) return composition;
   for (const id of unitIds) {
     if (!Number.isInteger(id) || id < 0) continue;
     const unit = units[id];
     if (!unit || unit.hp <= 0 || unit.team !== team) continue;
-    if (unit.kind === 'worker') composition.workers++;
-    else if (unit.kind === 'infantry') composition.infantry++;
-    else if (unit.kind === 'archer') composition.archers++;
+    if (Object.hasOwn(composition, unit.kind)) composition[unit.kind]++;
   }
   return composition;
 }
