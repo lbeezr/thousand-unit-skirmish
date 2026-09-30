@@ -40,7 +40,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 18;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 19;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -3096,6 +3096,11 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.schemaVersion = 17;
   }
   if (snapshot?.schemaVersion === 17 && [GAMEPLAY_RULESET_REVISION, 'v1:7b58530451f22c91bb46f4b3afa61f9c9978a7702e15a0b2e03f4d35533bb754'].includes(snapshot.rulesetRevision)) {
+    snapshot.state.teamUpgrades = snapshot.state.teamUpgrades.map(upgrades => ({ ...emptyTechnologyCompletions(), ...upgrades }));
+    snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+    snapshot.schemaVersion = 18;
+  }
+  if (snapshot?.schemaVersion === 18 && [GAMEPLAY_RULESET_REVISION, 'v1:a69d094a27f0df94c6b8404b7e9ee4f4632f42c5a68e0294883275f24ace89ca'].includes(snapshot.rulesetRevision)) {
     snapshot.state.teamUpgrades = snapshot.state.teamUpgrades.map(upgrades => ({ ...emptyTechnologyCompletions(), ...upgrades }));
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
     snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;

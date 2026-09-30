@@ -72,3 +72,14 @@ test('completed progression applies to current definitions and leaves Workers ou
   completions.militaryArmor = false;
   assert.equal(combatDamage(units.infantry, units.spearman, {}, completions), 10);
 });
+
+test('siege has a dedicated defense advantage and a mobile counter', () => {
+  const siege = units['siege-engine'];
+  assert.equal(combatDamage(siege, buildings.watchtower), 48);
+  assert.equal(combatDamage(siege, buildings.barracks), 24);
+  assert.equal(combatDamage(siege, units.rider), 6);
+  assert.equal(combatDamage(units.rider, siege), 11);
+  assert.ok(siege.combat.range > buildings.watchtower.combat.range);
+  assert.ok(siege.combat.moveSpeed < units.rider.combat.moveSpeed);
+  assert.equal(siege.population, 3);
+});

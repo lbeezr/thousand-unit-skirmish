@@ -222,3 +222,13 @@ Center research validates against its reserved ID, matching team, surviving HP a
 Town Center research type. Enemy legal research options are masked alongside paid
 product queues, including no-fog shared snapshots. Presentation reads completion
 state and legal choices without mutating combat stats.
+
+Siege Engine exercises registered ranged structure approach cells, siege damage
+class and tag modifiers without adding a combat branch or projectile subsystem.
+Workshop and the engine use registered prerequisites and generic legal production.
+Schema 19 explicitly migrates the known progression revision, filling the new
+technology key while retaining completions and active projects. The opponent's
+siege assault lane reads only filtered building observations: two engines and at
+most 64 visible defense candidates, with generation-aware assignment, observed
+progress and a ten-second stalled-order retry. It excludes assigned engines from
+ordinary army orders and releases them when the target leaves the observation.

@@ -444,7 +444,8 @@ const toolMeshes = [null, null];
 const packMeshes = [null, null];
 const quiverMeshes = [null, null];
 const mountMeshes = [null, null];
-const unitArtMeshes = [mountMeshes, bodyMeshes, headMeshes, bowMeshes, shieldMeshes, spearMeshes, toolMeshes, packMeshes, quiverMeshes];
+const siegeMeshes = [null, null];
+const unitArtMeshes = [siegeMeshes, mountMeshes, bodyMeshes, headMeshes, bowMeshes, shieldMeshes, spearMeshes, toolMeshes, packMeshes, quiverMeshes];
 const unitLodRoleMeshes = [
   { worker: null, infantry: null, archer: null },
   { worker: null, infantry: null, archer: null },
@@ -2703,26 +2704,39 @@ function createGroundSilhouette(polygons, baseColor = 0xf3e8cd, polygonColors = 
   return geometry;
 }
 
-function createMountGeometry() {
+function createUnitBoxAssembly(parts) {
   const positions = [], normals = [];
-  // One shared instanced placeholder mesh, including body, head and four legs.
-  for (const [w, h, d, x, y, z] of [
-    [0.46, 0.42, 0.85, 0, 0.66, 0], [0.28, 0.46, 0.24, 0, 0.92, 0.4],
-    [0.25, 0.23, 0.42, 0, 1.12, 0.52],
-    ...[-0.16, 0.16].flatMap(x => [-0.3, 0.3].map(z => [0.11, 0.47, 0.11, x, 0.24, z])),
-  ]) {
-    const part = new THREE.BoxGeometry(w, h, d).toNonIndexed();
-    part.translate(x, y, z);
-    positions.push(...part.attributes.position.array); normals.push(...part.attributes.normal.array);
-    part.dispose();
+  for (const [w, h, d, x, y, z] of parts) {
+    const part = new THREE.BoxGeometry(w, h, d).toNonIndexed(); part.translate(x, y, z);
+    positions.push(...part.attributes.position.array); normals.push(...part.attributes.normal.array); part.dispose();
   }
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
   geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
   return geometry;
 }
+function createMountGeometry() {
+  return createUnitBoxAssembly([
+    [0.46, 0.42, 0.85, 0, 0.66, 0], [0.28, 0.46, 0.24, 0, 0.92, 0.4],
+    [0.25, 0.23, 0.42, 0, 1.12, 0.52],
+    ...[-0.16, 0.16].flatMap(x => [-0.3, 0.3].map(z => [0.11, 0.47, 0.11, x, 0.24, z])),
+  ]);
+}
+function createSiegeGeometry() {
+  return createUnitBoxAssembly([
+    [0.7, 0.18, 0.95, 0, 0.38, 0], [0.15, 0.75, 0.15, 0, 0.82, 0],
+    [0.18, 0.13, 1.1, 0, 1.13, 0.18], [0.3, 0.15, 0.3, 0, 1.16, 0.66],
+    ...[-0.4, 0.4].flatMap(x => [-0.35, 0.35].map(z => [0.13, 0.4, 0.4, x, 0.22, z])),
+  ]);
+}
 
 const unitLodRoleGeometries = {
+  siege: createGroundSilhouette([
+    [[-0.36, -0.5], [0.36, -0.5], [0.36, 0.5], [-0.36, 0.5]],
+    [[-0.1, -0.25], [0.1, -0.25], [0.1, 0.85], [-0.1, 0.85]],
+    [[-0.5, -0.4], [-0.36, -0.4], [-0.36, 0.4], [-0.5, 0.4]],
+    [[0.36, -0.4], [0.5, -0.4], [0.5, 0.4], [0.36, 0.4]],
+  ], 0x8b6947, { 1: 0xf3e8cd }),
   mounted: createGroundSilhouette([
     [[-0.28, -0.5], [0.28, -0.5], [0.28, 0.35], [0.16, 0.35], [0.16, 0.8], [-0.16, 0.8], [-0.16, 0.35], [-0.28, 0.35]],
     [[-0.14, -0.16], [0.14, -0.16], [0.14, 0.22], [-0.14, 0.22]],
@@ -2764,6 +2778,7 @@ const unitLodMarkerGeometries = [
 ];
 
 for (let team = 0; team < 2; team++) {
+  siegeMeshes[team] = makeInstances(createSiegeGeometry(), new THREE.MeshBasicMaterial({ color: TEAM_HEX[team] }), MAX_PER_TEAM);
   mountMeshes[team] = makeInstances(createMountGeometry(), new THREE.MeshBasicMaterial({ color: 0x8b6947 }), MAX_PER_TEAM);
   bodyMeshes[team] = makeInstances(
     addPaintedFacets(new THREE.CylinderGeometry(0.16, 0.235, 0.48, 6, 1)),
@@ -3176,6 +3191,7 @@ function updateUnitTransform(unit, now = performance.now()) {
   const isWorker = presentationRole === 'worker';
   const isArcher = presentationRole === 'archer';
   const isMounted = presentationRole === 'mounted';
+  const isSiege = presentationRole === 'siege';
   const riderLift = isMounted ? 0.72 : 0;
   if (unitSpritePreviewActive && unitSpritePreviewRoleSet.has(unit.kind)) {
     updateUnitLodTransform(unit, unitSpriteMarkersActive ? visibleScale : 0);
@@ -3195,7 +3211,7 @@ function updateUnitTransform(unit, now = performance.now()) {
     updateUnitFocusVisual(unit);
     return;
   }
-  const bodyScale = isWorker ? visibleScale * 0.82 : isArcher ? visibleScale * 0.9 : visibleScale;
+  const bodyScale = isSiege ? 0 : isWorker ? visibleScale * 0.82 : isArcher ? visibleScale * 0.9 : visibleScale;
   const actionPoseAllowed = unitActionPoseAllowed(unit.hp, unit.defeatStartedAt);
   const workerActionPose = actionPoseAllowed && isWorker
     ? unitWorkerActionPose(unit.kind, unit.visible, unit.task, unit.cargoType, unit.walking)
@@ -3259,7 +3275,7 @@ function updateUnitTransform(unit, now = performance.now()) {
     unit.renderZ - sideZ * 0.235 + forwardZ * 0.1);
   dummy.quaternion.copy(facing);
   dummy.rotateX(-attackPose * 0.16 + hitPose * 0.22);
-  dummy.scale.setScalar(isWorker || isArcher ? 0 : visibleScale);
+  dummy.scale.setScalar(isWorker || isArcher || isSiege ? 0 : visibleScale);
   dummy.updateMatrix();
   shieldMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
 
@@ -3267,7 +3283,7 @@ function updateUnitTransform(unit, now = performance.now()) {
     unit.renderZ + sideZ * 0.24);
   dummy.quaternion.copy(facing);
   dummy.rotateX(attackPose * 0.66);
-  dummy.scale.setScalar(isWorker || isArcher ? 0 : visibleScale);
+  dummy.scale.setScalar(isWorker || isArcher || isSiege ? 0 : visibleScale);
   dummy.updateMatrix();
   spearMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
 
@@ -3300,6 +3316,10 @@ function updateUnitTransform(unit, now = performance.now()) {
   dummy.scale.setScalar(isMounted ? visibleScale : 0);
   dummy.updateMatrix();
   mountMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
+  dummy.rotateX(-attackPose * 0.07);
+  dummy.scale.setScalar(isSiege ? visibleScale : 0);
+  dummy.updateMatrix();
+  siegeMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
 
   updateUnitCargoCueColor(unit);
   updateUnitFocusVisual(unit);

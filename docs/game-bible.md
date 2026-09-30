@@ -224,3 +224,14 @@ active project without refund; deliberate cancellation refunds the unfinished
 fraction. Authored technology rewards remain explicit scenario grants and may
 skip normal purchase prerequisites. Workshop and siege will use this same tier
 and unlock boundary in their following slice.
+
+### Siege foundation role (2026-09-29)
+
+Workshop and siege engineering follow Military Tier II. The Siege Engine is a
+slow, three-population ranged specialist with strong structure hits and a doubled
+defense-tag bonus. It can outrange a Watchtower at a correct firing position;
+inside the tower's range it loses the damage race. Mobile armies, including Rider,
+can destroy it quickly, so an assault needs protection and positioning. Attacks
+remain single-target and resolve through the shared damage accumulator; there is
+no splash or friendly-fire exception. Workshop/engine geometry is placeholder
+presentation, and match-level costs/terrain/composition balance remain provisional.

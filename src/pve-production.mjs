@@ -118,7 +118,7 @@ export function createProductionPolicy(seed) {
         return [{ type: 'repairBuilding', buildingId: damaged.id, ids: [repairer.id], unitGenerations: [repairer.generation] }];
       }
       if (barracks?.complete && friendly.filter(unit => unit.kind !== 'worker').length >= 6 && !observation.research?.active) {
-        const priorities = ['military-tier-2', 'military-armor', 'infantry-attack', 'archer-attack', 'mounted-attack'];
+        const priorities = ['military-tier-2', 'siege-engineering', 'military-armor', 'infantry-attack', 'archer-attack', 'mounted-attack'];
         for (const upgrade of priorities) {
           const definition = TECHNOLOGY_DEFINITIONS[upgrade];
           const producer = observation.buildings.friendly.find(building => building.complete
@@ -199,6 +199,23 @@ export function createProductionPolicy(seed) {
           }
         }
       }
+      const visibleDefense = observation.buildings.visibleEnemies.some(building => building.hp > 0
+        && BUILDING_DEFINITIONS[building.type]?.tags.includes('defense'));
+      const workshop = observation.buildings.friendly.find(building => building.type === 'workshop' && building.hp > 0);
+      if (economyBuilder && home && friendly.filter(unit => unit.kind !== 'worker').length >= 6) {
+        if (workshop && !workshop.complete) {
+          postpone(observation.tick);
+          return [{ type: 'build', ids: [economyBuilder.id], unitGenerations: [economyBuilder.generation], buildingId: workshop.id }];
+        }
+        if (!workshop && visibleDefense && observation.research?.militaryTier2
+          && observation.resources.wood >= BUILDING_DEFINITIONS.workshop.cost.wood + limits.woodReserve) {
+          const sites = candidateSites(observation, home, seed, 'workshop');
+          if (sites.length) {
+            const point = sites[siteAttempt++ % sites.length]; postpone(observation.tick);
+            return [{ type: 'build', ids: [economyBuilder.id], unitGenerations: [economyBuilder.generation], buildingType: 'workshop', ...point }];
+          }
+        }
+      }
       const militaryCount = friendly.filter(unit => unit.kind !== 'worker').length;
       const stable = observation.buildings.friendly.find(building => building.type === 'stable' && building.hp > 0);
       // One mounted producer, after a viable opening army; resume paid foundations.
@@ -222,6 +239,15 @@ export function createProductionPolicy(seed) {
         || friendly.filter((unit) => unit.kind !== 'worker').length + queued >= limits.military
         || friendly.length + queued + workerQueue >= limits.roster
         || observation.resources.food < limits.infantryFoodCost + limits.foodReserve) return [];
+      const siege = UNIT_DEFINITIONS['siege-engine'];
+      if (visibleDefense && workshop?.complete && workshop.queue === 0 && queued === 0
+        && friendly.filter(unit => unit.kind === siege.id).length < 2
+        && workshop.productionOptions?.some(option => option.kind === siege.id && option.available)
+        && observation.resources.food >= siege.cost.food + limits.foodReserve
+        && observation.resources.wood >= siege.cost.wood + limits.woodReserve) {
+        postpone(observation.tick);
+        return [{ type: 'trainUnit', kind: siege.id, buildingId: workshop.id }];
+      }
       const visibleMounted = observation.units.visibleEnemies.filter(unit => unit.hp > 0 && UNIT_DEFINITIONS[unit.kind]?.tags.includes('mounted')).length;
       const scoutCount = friendly.filter(unit => unit.kind === 'scout').length;
       const riderCount = friendly.filter(unit => unit.kind === 'rider').length;

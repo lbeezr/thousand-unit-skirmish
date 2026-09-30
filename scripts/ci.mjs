@@ -79,6 +79,7 @@ run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation
 run(['--test', 'scripts/base-lifecycle-ui.test.mjs'], 'Contextual cancellation and repair controls');
 run(['--test', 'scripts/research-ui.test.mjs'], 'Registered research choices');
 run(['--test', 'scripts/research-actions.test.mjs'], 'Shared technology availability');
+run(['--test', 'scripts/siege-ai.test.mjs'], 'Bounded siege acquisition and assault');
 run(['--test', 'scripts/combat-rules.test.mjs'], 'Shared combat classes, counters and effect scope');
 run(['--test', 'scripts/watchtower-targeting.test.mjs'], 'Bounded defense targeting and sight');
 run(['--test', 'scripts/economy-ledger.test.mjs'], 'Fractional cargo conservation');
@@ -126,6 +127,7 @@ const scenarios = [
   ['scripts/worker-combat-scenario.mjs', 'Worker combat across both seats'],
   ['scripts/worker-production-spawn-scenario.mjs', 'Town Center worker exits across map orientations'],
   ['scripts/ruleset-checkpoint-scenario.mjs', 'Pinned ruleset checkpoint recovery'],
+  ['scripts/siege-defense-scenario.mjs', 'Siege range and defended-position counter'],
   ['scripts/watchtower-scenario.mjs', 'Watchtower fire and simultaneous trade'],
   ['scripts/town-center-scenario.mjs', 'Town Center expansion and recovery'],
   ['scripts/base-lifecycle-scenario.mjs', 'Base cancel/refund and interrupted repair'],
@@ -134,6 +136,7 @@ const scenarios = [
   ['scripts/progression-scenario.mjs', 'Military tier and technology recovery'],
   ['scripts/roster-options-scenario.mjs', 'Roster production and persistence'],
   ['scripts/roster-options-scenario.mjs', 'Mounted mixed production and persistence', '--mounted'],
+  ['scripts/roster-options-scenario.mjs', 'Siege unlock, production and recovery', '--siege'],
   ['scripts/production-lifecycle-scenario.mjs', 'Producer destruction and population reservations'],
   ['scripts/infantry-seat-combat-scenario.mjs', 'Mirrored infantry combat parity', '--expect-parity'],
   ['scripts/opening-production-scenario.mjs', 'Mirrored construction and production', '--expect-builder-parity'],
