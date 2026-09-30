@@ -395,3 +395,11 @@ focused population/reconnaissance/siege tests, production budgets, tactical retr
 decision fairness, reinforcement and Barracks recovery passed. These are component
 interaction proofs; representative full AI matches and staged gameplay checks
 remain required for the complete foundation claim.
+
+Staging deployment `9317fd73-3dae-425b-a6df-65a7a0bb9d15` succeeded at commit
+`a2b57741e8c3866afad9709674b3d69dee7008d2`. The Railway smoke passed readiness,
+authentication rejection/acceptance, client import delivery including shared
+definitions/research and terrain blending, and authenticated WebSocket upgrade.
+This proves packaging and transport; staged gameplay and rendered appearance
+remain separate checks. Research PR #245, siege #246 and reconnaissance #247
+are merged after all three CI shards passed for their respective heads.
