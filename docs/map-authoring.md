@@ -47,6 +47,15 @@ changes; they do not make water walkable. The battlefield's eight-cell grid is
 hidden by default; `?terrainGrid=1` restores it for debugging. Map Studio retains
 its authoring grid. Saved maps need no new fields or partial-cell collision rules.
 
+Underbough and Vesperra also graduate canopy size by distance from open ground:
+the first forest-cell ring uses 68% of its family scale, the second 86%, and the
+core retains full scale. Their understory is more frequent at the margin than
+in the deep canopy. This uses the complete forest footprint, including internal
+glades, rather than rectangle boundaries. Harvest roles, roots, stock and
+depletion/reset ownership stay the same. `?forestHabitat=flat` restores uniform
+family scales for paired developer review. Other regions retain their current
+scale profiles pending habitat-specific visual review.
+
 This is a first composition pass. Individual shore steps, reflected layouts,
 repeated regional layout templates and sparse scenery are still visible. A
 connected woodland is better than rounded isolated rectangles, but it does not

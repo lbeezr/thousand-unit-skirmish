@@ -56,6 +56,22 @@ ordinary PRs use checks proportionate to their changes under
 
 ## Known findings and historical evidence
 
+### Woodland habitat margins — 30 September 2026
+
+Follow-up to organic landscape source `9c083d75`: Underbough and Vesperra use
+graduated canopy sizes and margin-weighted understory, preserving all harvested
+cell identities and roots. [Paired renderer captures](qa-evidence/forest-habitat-2026-09-30/capture-report.json)
+compare identical maps/cameras with `forestHabitat=flat` and the graduated default,
+at 1280 × 900 in an isolated local Chrome room. Ordinary-zoom captures are also
+included. The consuming renderer verifies
+[1,026 Underbough cells](qa-evidence/forest-habitat-2026-09-30/underbough-rootways-renderer-proof.json)
+and [808 Vesperra cells](qa-evidence/forest-habitat-2026-09-30/vesperra-pale-clearings-renderer-proof.json):
+unchanged family/root positions and cell counts, expected margin/core scale
+factors, and depletion/full-reset state selection. Focused habitat checks cover
+internal glades, map-edge continuation, compression independence and immutable
+authoritative input; the client import allowlist serves the new helper.
+This is presentation evidence, not a fresh human match or GPU performance claim.
+
 ### Organic landscapes — 30 September 2026
 
 Motivation: the user's observation that water, roads and forests look like a

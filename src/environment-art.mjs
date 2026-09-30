@@ -8,6 +8,7 @@ import { createGroundMistStudy, groundMistEnabled } from './terrain-atmosphere.m
 import { applyTerrainTextureSampling } from './terrain-texture-sampling.mjs';
 import { buildTerrainBlendMasks, buildForestGroundMask } from './terrain-blend.mjs';
 import { buildWaterSurfaceGeometry, WATER_LEVEL } from './water-surface-geometry.mjs';
+import { forestHabitatDepth, forestCanopyFactor } from './forest-habitat.mjs';
 import { shorePlantPositions } from './shore-vegetation.mjs';
 import { meadowPlantPositions } from './meadow-vegetation.mjs';
 import { gardenPlantPositions } from './garden-vegetation.mjs';
@@ -615,6 +616,9 @@ function variation(index) {
 
 export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObject) {
   const forestTreeSlots = new Map();
+  const habitatDepth = ['underbough', 'vesperra'].includes(definition.region)
+    && new URLSearchParams(globalThis.location?.search ?? '').get('forestHabitat') !== 'flat'
+    ? forestHabitatDepth(definition) : null;
   // A small warm-field palette extension; other regions retain their existing trees.
   const bellweather = ['meadow', 'short-grass', 'long-grass', 'dry-grass']
     .includes(environmentTheme(definition));
@@ -798,6 +802,11 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
     ['cliff', 4.2, 4.6, cliffs],
     ['cliff-end-cap', 4.2, 4.6, cliffCaps],
   ]) {
+    if (habitatDepth) for (const point of points) {
+      if (!Number.isInteger(point.cell)) continue;
+      point.habitatDepth = habitatDepth[point.cell];
+      point.scale *= forestCanopyFactor(point.habitatDepth);
+    }
     const mesh = createForestAtlasInstances(name, width, height, points)
       || createEnvironmentSpriteInstances(name, width, height, points);
     if (!mesh) continue;
@@ -835,7 +844,8 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
     const insideCell = (value, center) => Math.max(center - 0.45, Math.min(center + 0.45, value));
     // Decorative understory occupies existing forest cells only. Clearing follows
     // received cell stock, so it cannot cover a newly traversable cleared cell.
-    const plants = [...forestTreeSlots.values()].filter(slot => variation(slot.cell + seed + 107) < 0.28)
+    const plants = [...forestTreeSlots.values()].filter(slot => variation(slot.cell + seed + 107)
+      < (slot.habitatDepth === 1 ? 0.5 : slot.habitatDepth >= 3 ? 0.18 : 0.28))
       .map(slot => ({ cell: slot.cell,
         x: insideCell(slot.x + (variation(slot.cell + seed + 109) - 0.5) * 0.32 + (sombralMere ? 0.18 : 0),
           slot.cell % definition.width - halfX + 0.5),
