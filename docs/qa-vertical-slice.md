@@ -453,3 +453,27 @@ command from identical team observations. The authored 80×64 map starts with
 24 units and 2,000 food/wood per seat, disables fog and holds military stationary
 to isolate production. This is not a competitive full-match or fog scouting
 claim. PR #252 adds this scenario to CI; its broad checks remain in progress.
+
+### 2026-09-30 — Deployed contextual roster observation
+
+Native Firefox opened isolated staging room
+`RmVxHIa4g67QYk1IjB7gm8rZu8jXgy4S` as Ember. The empty-selection bar showed
+only Idle workers, Army, Production and Groups. Build & train showed registered
+House, Barracks, Range, Workshop, Stable, Watchtower, Town Center and Storehouse
+choices, their costs and unavailable reasons, plus 12 used / 0 queued / 15
+population. The building grid had no nested-column text overlap in this desktop
+view; earlier local 740×800 evidence remains the narrow-layout proof.
+
+During the observation, staging deployed the art-only main `eed4dc8` as
+`2854c50b-88c4-4682-9c2e-e60faf35828d` (SUCCESS). The page briefly reported
+RECONNECTING, then returned to ROOM LIVE with MATCH RESTORED · RECENT CHECKPOINT
+and retained its Ember resources, population and open production panel. This is
+a concrete deployed checkpoint-recovery observation, not an assertion about all
+network failure modes. Native screenshots were inspected in the task; no exported
+screenshot file is claimed.
+
+The completion audit reran 40 focused tests on the expansion branch: registry
+validation, canonical revision/wire identity, presentation capabilities, combat
+classes/modifiers, technology availability, private snapshots, selection, reachable
+drop-offs and bounded AI base/progression decisions. All 40 passed. These complement
+the runtime and staging proofs above; PR #252's full CI remains the integration gate.
