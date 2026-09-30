@@ -71,6 +71,8 @@ run(['--test', 'scripts/hud-layout.test.mjs'], 'Visible HUD layout');
 run(['--test', 'scripts/objective-summary.test.mjs'], 'Compact objectives and notice history');
 run(['--test', 'scripts/selection-context.test.mjs'], 'Contextual selection');
 run(['--test', 'scripts/roster-production-ui.test.mjs'], 'Roster production choices');
+run(['--test', 'scripts/population.test.mjs'], 'Population reservations and capacity');
+run(['--test', 'scripts/population-ai.test.mjs'], 'AI capacity construction and recovery');
 run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue authority');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');
@@ -113,6 +115,7 @@ const scenarios = [
   ['scripts/live-attack-move-repair-scenario.mjs', 'Live attack-move route repair'],
   ['scripts/worker-combat-scenario.mjs', 'Worker combat across both seats'],
   ['scripts/worker-production-spawn-scenario.mjs', 'Town Center worker exits across map orientations'],
+  ['scripts/population-scenario.mjs', 'House population lifecycle'],
   ['scripts/roster-options-scenario.mjs', 'Roster production and persistence'],
   ['scripts/production-lifecycle-scenario.mjs', 'Producer destruction and population reservations'],
   ['scripts/infantry-seat-combat-scenario.mjs', 'Mirrored infantry combat parity', '--expect-parity'],

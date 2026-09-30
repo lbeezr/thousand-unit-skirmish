@@ -1,0 +1,28 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { createProductionPolicy } from '../src/pve-production.mjs';
+for (const team of [0, 1]) test(`AI builds and resumes capacity using its own observation for seat ${team}`, () => {
+  const state = { team, tick: 0, fogOfWar: false, map: { width: 80, height: 64 },
+    population: { used: 12, reserved: 3, capacity: 15, available: 0 }, resources: { food: 500, wood: 500 },
+    units: { friendly: Array.from({ length: 12 }, (_, id) => ({ id, generation: 1, team, hp: 100,
+      x: team === 0 ? -20 : 20, z: 0, kind: id < 4 ? 'worker' : 'infantry', task: 'idle', cargo: 0 })), visibleEnemies: [] },
+    buildings: { friendly: [{ id: 9, team, type: 'barracks', complete: true, hp: 1800, queue: 0, x: 0, z: 0 }], visibleEnemies: [] },
+    objectives: [], resourceNodes: [], workerProduction: { queue: 3 } };
+  const policy = createProductionPolicy(42);
+  const next = (tick) => policy.next({ ...state, tick });
+  assert.deepEqual(next(0), []);
+  const build = next(300);
+  assert.equal(build[0].buildingType, 'house');
+  assert.deepEqual(next(301), [], 'unconfirmed capacity purchase backs off');
+  state.buildings.friendly.push({ id: 10, team, type: 'house', complete: false, hp: 800, queue: 0, x: build[0].x, z: build[0].z });
+  assert.deepEqual(next(450), [{ type: 'build', ids: [0], unitGenerations: [1], buildingId: 10 }], 'resume a foundation instead of buying again');
+  state.units.friendly[0].task = 'building';
+  assert.deepEqual(next(451), []);
+  state.units.friendly[0].task = 'idle'; state.buildings.friendly[1].complete = true;
+  state.population = { used: 12, reserved: 3, capacity: 23, available: 8 };
+  assert.equal(next(601)[0].type, 'trainUnit', 'production resumes after observed capacity arrives');
+  state.buildings.friendly.pop(); state.population = { used: 15, reserved: 4, capacity: 15, available: 0 };
+  assert.equal(next(901)[0].buildingType, 'house', 'capacity loss is rebuilt');
+  state.population = { used: 1000, reserved: 0, capacity: 1000, available: 0 };
+  assert.deepEqual(next(1501), [], 'Houses cannot bypass the safety ceiling');
+});

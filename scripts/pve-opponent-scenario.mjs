@@ -599,7 +599,7 @@ async function verifyProposalController() {
   assert.equal(opponent.team, 0);
   assert.equal(requests.length, 1);
   assert.deepEqual(Object.keys(requests[0].observation).sort(), [
-    'buildings', 'fogOfWar', 'map', 'objectives', 'research', 'resourceNodes', 'resources',
+    'buildings', 'fogOfWar', 'map', 'objectives', 'population', 'research', 'resourceNodes', 'resources',
     'schemaVersion', 'team', 'tick', 'units', 'visibility', 'workerProduction',
   ]);
   assert.equal(Object.hasOwn(requests[0].observation.map, 'spawnPoints'), false);

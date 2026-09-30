@@ -121,3 +121,14 @@ registry entries; selection and group summaries count every registered kind.
 Spearman currently reuses the procedural melee placeholder with a distinct tint.
 The bounded AI adds Spearmen toward one per three Infantry when reserves permit.
 Its mounted counter and the Stable arrive with F3 combat classes.
+
+## Population capacity
+
+`src/population.mjs` derives used and reserved population from live units, FIFO
+product IDs and Town Center worker queues. Only completed friendly capacity
+buildings contribute; House destruction never mutates units or paid queues.
+Commands validate a new reservation before deducting resources. Owner/spectator
+snapshots expose capacity; the opponent DTO projects only its own record.
+Rules revision 6 deliberately adopts the population economy and migrates
+compatible revision-5 saves while preserving existing queues and overcapacity
+armies. Explicit stress fixtures retain their opening capacity.

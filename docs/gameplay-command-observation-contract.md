@@ -47,13 +47,14 @@ per second. Snapshots can be coalesced; consumers must tolerate skipped ticks.
 Exact top-level fields:
 
 ```text
-schemaVersion, team, tick, map, fogOfWar, visibility, resources,
+schemaVersion, team, tick, map, fogOfWar, visibility, resources, population,
 units, buildings, workerProduction, research, resourceNodes, objectives
 ```
 
 | Field | Boundary |
 | --- | --- |
 | `schemaVersion` | `1`. |
+| `population` | Own team’s used, reserved, capacity and available population; `null` for older observations. No enemy capacity is projected. |
 | `team` | Server-assigned seat. |
 | `map` | Only `id`, `width`, `height`. |
 | `units`, `buildings` | `friendly` and `visibleEnemies`; never hidden opponents. |

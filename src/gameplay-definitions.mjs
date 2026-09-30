@@ -20,6 +20,7 @@ export function validateGameplayDefinitions(definitions) {
         }
       }
       if (category === 'buildings') {
+        if (entry.populationCapacity !== undefined && (!Number.isInteger(entry.populationCapacity) || entry.populationCapacity < 0)) throw new Error(`Invalid population capacity: ${id}`);
         if (!Number.isInteger(entry.footprint)) throw new Error(`Invalid footprint: ${id}`);
         for (const product of entry.products || []) {
           if (!definitions.units[product]) throw new Error(`Unknown product ${product}: ${id}`);
@@ -46,6 +47,7 @@ export const GAMEPLAY_DEFINITIONS = freezeTree(validateGameplayDefinitions({
     archer: { id: 'archer', label: 'Archer', cost: { food: 25, wood: 45 }, trainSeconds: 7, population: 1, combat: { maxHp: 70, moveSpeed: 2.6, range: 4.5, damage: 7, period: 1, structureDamage: 0.8 }, presentation: 'unit.archer' },
   },
   buildings: {
+    house: { id: 'house', label: 'House', cost: { food: 0, wood: 75 }, buildSeconds: 15, footprint: 3, maxHp: 800, products: [], populationCapacity: 8, presentation: 'building.house' },
     barracks: { id: 'barracks', label: 'Barracks', cost: { food: 0, wood: 175 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['infantry', 'spearman'], presentation: 'building.barracks' },
     'archery-range': { id: 'archery-range', label: 'Archery Range', cost: { food: 0, wood: 150 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['archer'], presentation: 'building.archery-range' },
   },

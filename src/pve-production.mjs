@@ -86,6 +86,23 @@ export function createProductionPolicy(seed) {
         return [];
       }
       if (observation.tick < nextAttemptTick) return [];
+      if (observation.population?.available === 0 && observation.population.capacity >= 1000) return [];
+      if (observation.population && observation.population.available <= 1 && observation.population.capacity < 1000
+        && friendly.filter((unit) => unit.kind !== 'worker').length < limits.military) {
+        const house = observation.buildings.friendly.find((building) => building.type === 'house' && !building.complete);
+        const builder = workers.find((worker) => ['idle', 'gathering'].includes(worker.task) && worker.cargo === 0);
+        if (!builder || !home) return [];
+        if (house) {
+          postpone(observation.tick);
+          return [{ type: 'build', ids: [builder.id], unitGenerations: [builder.generation], buildingId: house.id }];
+        }
+        if (observation.resources.wood < BUILDING_DEFINITIONS.house.cost.wood + limits.woodReserve) return [];
+        const sites = candidateSites(observation, home, seed);
+        if (!sites.length) { postpone(observation.tick); return []; }
+        const point = sites[siteAttempt++ % sites.length];
+        postpone(observation.tick);
+        return [{ type: 'build', ids: [builder.id], unitGenerations: [builder.generation], buildingType: 'house', ...point }];
+      }
       if (!barracks) {
         // Keep one living Barracks; even the last Worker may rebuild after losses.
         // Reserves and backoff still bound spending while gathering pauses.

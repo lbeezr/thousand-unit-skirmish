@@ -14,7 +14,7 @@ function fixture(team) {
     buildingsById: new Map([[1, building]]), MAX_BUILDING_QUEUE: 5, MAX_TEAM_ROSTER: 1000, MAX_UNITS: 2000,
     teamFood: [500, 500], teamWood: [500, 500], aliveCounts: () => [10, 10],
     queuedUnitsForTeam: () => building.queue, queuedUnitsTotal: () => building.queue,
-    findProductionSpawnCell: () => 1, dirty: false,
+    canReservePopulation: () => true, findProductionSpawnCell: () => 1, dirty: false,
     sendOrderNotice: (_, __, message) => notices.push(message),
   });
   vm.runInContext(source.slice(start, end), context);

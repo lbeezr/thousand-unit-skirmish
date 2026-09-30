@@ -105,15 +105,17 @@ try {
       for (const building of observation.buildings.friendly) {
         run.buildings.add(building.id);
         assert.ok(building.queue <= 1, 'one queued Infantry per producer');
-        if (building.complete) run.firstBuildingTick ??= state.tick;
+        if (building.type === 'barracks' && building.complete) run.firstBuildingTick ??= state.tick;
       }
-      assert.ok(observation.buildings.friendly.length <= 1, 'one living Barracks');
+      assert.ok(observation.buildings.friendly.filter((building) => building.type === 'barracks').length <= 1, 'one living Barracks');
+      assert.ok(observation.buildings.friendly.filter((building) => building.type === 'house').length <= 2, 'bounded capacity expansion');
+      assert.ok(observation.buildings.friendly.filter((building) => building.type === 'storehouse').length <= 1, 'one remote drop-off');
       assert.ok(soldiers.length <= 12, 'military budget');
       assert.ok(observation.units.friendly.filter((u) => u.hp > 0).length <= 24, 'roster budget');
       const commands = run.policy.next(observation);
       assert.deepEqual(commands, run.shadow.next(structuredClone(observation)), 'same seed and observation trace yields identical commands');
       for (const command of commands) {
-        if (command.type === 'train') run.firstTrainingTick ??= state.tick;
+        if (command.type === 'train' || command.type === 'trainUnit') run.firstTrainingTick ??= state.tick;
         run.commands.push({ tick: state.tick, command });
         run.client.socket.send(JSON.stringify({ ...command, clientOrderToken: run.commands.length }));
       }

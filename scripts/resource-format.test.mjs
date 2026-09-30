@@ -14,7 +14,7 @@ function fixture(team) {
   const context = vm.createContext({ ui, localTeam: team, matchWinner: -1,
     formatResourceStock, formatResourceRequirement,
     UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
-    latestFood: [0, 0], latestWood: [0, 0], latestWorkerProduction: [null, null],
+    latestFood: [0, 0], latestWood: [0, 0], latestWorkerProduction: [null, null], latestPopulation: [null, null],
     latestTeamResearch: [{}, {}], latestRosterSize: 4,
     latestBuildings: [{ id: 1, team, type: 'barracks', complete: true, queue: [] },
       { id: 2, team, type: 'archery-range', complete: true, queue: [] }],
