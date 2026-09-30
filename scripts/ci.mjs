@@ -52,6 +52,8 @@ const syntaxFiles = [
 for (const file of syntaxFiles) run(['--check', file], `Syntax: ${file}`);
 
 run(['--test', 'scripts/scenario-regions.test.mjs'], 'Named scenario regions');
+run(['--test', 'scripts/scenario-authoring.test.mjs'], 'Visual scenario authoring contracts');
+run(['scripts/completion-event-scenario.mjs'], 'Completion event recovery and host diagnostics');
 run(['scripts/region-event-scenario.mjs'], 'Region event recovery and rematch');
 run(['scripts/check-docs.mjs'], 'Documentation links');
 run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs'], 'Verified shipped audio and execution gates');
