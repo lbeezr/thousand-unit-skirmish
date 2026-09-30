@@ -23,6 +23,86 @@ with the editor. Existing shipped JSON is the best complete example.
 
 ## Coordinates and terrain
 
+### Organic landscape composition
+
+The 30 September player observation was that maps read as separate squares of
+water, road and trees rather than natural places. More cells alone cannot solve
+this: the regional generator explicitly authored rectangles. Keep the one-cell
+simulation grid, but treat rectangles as a compact storage format for shaped
+landscape regions, not as the design vocabulary.
+
+`src/landscape-authoring.mjs` now compiles irregular outlines and wandering paths
+to nonoverlapping row runs, merging identical runs vertically. The regional map
+generator uses these shapes across twelve maps. Underbough and Vesperra connect
+their corner and interior grove cores with sweeping woodland fringes, leaving
+resource working clearings. Other regional groves remain discrete; cultivated
+orchards and irrigation may appropriately retain some human geometry. Shapes
+are deterministic and reflected between seats. Woodland additions change routes
+and stock; they require the same reachability and match checks as other blockers.
+
+Runtime trees now vary their root positions by up to 0.39 cell in each axis,
+within their harvest cell. Water surfaces clip exposed convex corners by 0.45
+cell and follow those diagonals with shallow shore bands. These are visual
+changes; they do not make water walkable. The battlefield's eight-cell grid is
+hidden by default; `?terrainGrid=1` restores it for debugging. Map Studio retains
+its authoring grid. Saved maps need no new fields or partial-cell collision rules.
+
+This is a first composition pass. Individual shore steps, reflected layouts,
+repeated regional layout templates and sparse scenery are still visible. A
+connected woodland is better than rounded isolated rectangles, but it does not
+yet supply the full ecological detail or settlement composition we want.
+
+#### Research and next implementation order
+
+The primary references are [0 A.D.'s map-generation API](https://docs.wildfiregames.com/javascript/rmgen/)
+(clumps, chains, paths, layered painters and placement constraints),
+[Tiled's terrain authoring](https://doc.mapeditor.org/en/stable/manual/terrain/)
+(terrain regions with transitions), and
+[Red Blob's terrain and tree-placement guide](https://www.redblobgames.com/maps/terrain-from-noise/)
+(broad habitat fields and irregularly spaced vegetation). These establish useful
+techniques; they do not certify this implementation or imply copying their code.
+
+1. **Compose one landscape before expanding the roster.** Develop Underbough
+   Rootways with a readable clearing network, connected woodland masses, small
+   bays and tongues in the tree line, and distinct foreground/background groups.
+   Use protected base pads, resource access and objective approaches as design
+   constraints. Start from a landscape sketch and route graph, then rasterize.
+2. **Finish continuous shore contours.** The current diagonal clipping is a
+   bounded improvement. A continuous contour mesh with bank material, shallows
+   and habitat-specific reeds should remove the remaining staircase. Keep its
+   maximum deviation from blocking cells explicit; test narrow channels, islands,
+   map edges and ford widths. Do not conceal a blocked bank beneath apparent land.
+3. **Graduate vegetation by habitat.** Keep dense harvestable cores, thinner
+   margins, small satellite clusters, understory and deliberate clearings.
+   Decorative fringes may use fractional world positions and irregular spacing;
+   they need distinct ownership from harvestable cells and must not imply hidden
+   collision or disappear inconsistently when a wood cell is cleared. Do not
+   blanket the whole map with uniformly random props.
+4. **Ground settlements in the landscape.** Preserve legal level footprints and
+   production exits. Add visually shaped worn pads, approach paths, fences and
+   small functional groupings oriented towards routes or water. Keep cultural
+   differences: an orchard is cultivated, a forest is not a plantation. Building
+   art and dressing can have free visual positions without fractional simulation
+   footprints or silently rotating gameplay entrances.
+5. **Expose landscape tools in Map Studio.** Add round falloff, connected grove,
+   path and contour brushes with previews, undo and JSON round-trip checks. Use
+   the same compiler for authored shapes and shipped maps. Current Studio brushes
+   have not changed in this pass.
+6. **Polish materials after silhouette approval.** Use quiet texture families,
+   habitat transitions and sparse decals. Existing stochastic ground sampling
+   helps repetition; extra texture resolution cannot correct a square coastline.
+   Increase visual mesh/mask resolution where captures expose a limit, and only
+   increase simulation-grid resolution if gameplay needs it and measured costs
+   justify it.
+
+Review each slice in the actual renderer at ordinary and strategic zoom, with
+units, buildings, selection and fog. Require recognizable landscape masses,
+legible paths and truthful shore/forest boundaries, then replay both-seat
+gather/build/capture/rematch behavior. Compare exact cameras against the previous
+map, record forest stock and travel changes, and measure added rendering cost
+separately from appearance. Human 1v1 and a visual review remain necessary before
+claiming a beautiful, balanced finished landscape.
+
 One world unit equals one cell. World `(0, 0)` is the map center; grid `column`
 and `row` begin at the northwest corner. World positions use `x` and `z`.
 

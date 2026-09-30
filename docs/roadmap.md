@@ -190,6 +190,16 @@ Continue with Patrol/Follow only as bounded additions to these semantics; use
 
 ## Regional map roster — 30 September 2026
 
+The user identified rectangular terrain composition as a visual priority.
+The [organic landscape plan](map-authoring.md#organic-landscape-composition)
+separates the gameplay grid from natural authored shapes. A first local pass
+shapes all twelve regional layouts, connects Underbough/Vesperra woodland,
+removes the default battlefield grid and bevels shore corners. Next: deepen
+Underbough's composition and continuous shore contours, then habitat margins,
+settlement dressing and reusable Studio brushes. Do not expand the roster as a
+substitute for making an existing landscape beautiful. Both-seat route and stock
+observations must accompany blocker changes.
+
 Twelve Vaelora maps now provide playable destinations for the ten regional asset
 families and eleven audio palettes. Next proof: both-seat economy-to-watch matches
 on Bellweather Millrace and Underbough Rootways, then congestion/expansion comparison

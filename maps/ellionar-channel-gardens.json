@@ -10,10 +10,115 @@
   "terrainBase": "garden-loam",
   "terrainPatches": [
     {
+      "column": 22,
+      "row": 33,
+      "width": 14,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 44,
+      "row": 33,
+      "width": 14,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
       "column": 0,
-      "row": 32,
-      "width": 80,
-      "height": 8,
+      "row": 34,
+      "width": 2,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 18,
+      "row": 34,
+      "width": 44,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 78,
+      "row": 34,
+      "width": 2,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 0,
+      "row": 35,
+      "width": 5,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 14,
+      "row": 35,
+      "width": 52,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 75,
+      "row": 35,
+      "width": 5,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 0,
+      "row": 36,
+      "width": 25,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 34,
+      "row": 36,
+      "width": 12,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 55,
+      "row": 36,
+      "width": 25,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 0,
+      "row": 37,
+      "width": 22,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 38,
+      "row": 37,
+      "width": 4,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 58,
+      "row": 37,
+      "width": 22,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 2,
+      "row": 38,
+      "width": 15,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 63,
+      "row": 38,
+      "width": 15,
+      "height": 1,
       "material": "dirt"
     }
   ],
@@ -36,59 +141,220 @@
   },
   "obstacles": [
     {
-      "column": 8,
-      "row": 4,
-      "width": 8,
-      "height": 8,
-      "material": "forest"
-    },
-    {
-      "column": 64,
-      "row": 4,
-      "width": 8,
-      "height": 8,
-      "material": "forest"
-    },
-    {
-      "column": 8,
-      "row": 60,
-      "width": 8,
-      "height": 8,
-      "material": "forest"
-    },
-    {
-      "column": 64,
-      "row": 60,
-      "width": 8,
-      "height": 8,
-      "material": "forest"
-    },
-    {
       "column": 38,
       "row": 0,
       "width": 4,
-      "height": 12,
+      "height": 1,
       "material": "water"
     },
     {
-      "column": 38,
+      "column": 39,
+      "row": 1,
+      "width": 2,
+      "height": 11,
+      "material": "water"
+    },
+    {
+      "column": 10,
+      "row": 4,
+      "width": 1,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 69,
+      "row": 4,
+      "width": 1,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 9,
+      "row": 5,
+      "width": 6,
+      "height": 2,
+      "material": "forest"
+    },
+    {
+      "column": 65,
+      "row": 5,
+      "width": 6,
+      "height": 2,
+      "material": "forest"
+    },
+    {
+      "column": 9,
+      "row": 7,
+      "width": 7,
+      "height": 2,
+      "material": "forest"
+    },
+    {
+      "column": 64,
+      "row": 7,
+      "width": 7,
+      "height": 2,
+      "material": "forest"
+    },
+    {
+      "column": 9,
+      "row": 9,
+      "width": 6,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 65,
+      "row": 9,
+      "width": 6,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 10,
+      "row": 10,
+      "width": 4,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 66,
+      "row": 10,
+      "width": 4,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 10,
+      "row": 11,
+      "width": 3,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 67,
+      "row": 11,
+      "width": 3,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 39,
       "row": 24,
-      "width": 4,
+      "width": 2,
       "height": 8,
       "material": "water"
     },
     {
-      "column": 38,
+      "column": 39,
       "row": 40,
-      "width": 4,
-      "height": 8,
+      "width": 2,
+      "height": 6,
       "material": "water"
     },
     {
       "column": 38,
-      "row": 60,
+      "row": 46,
       "width": 4,
-      "height": 12,
+      "height": 2,
+      "material": "water"
+    },
+    {
+      "column": 10,
+      "row": 60,
+      "width": 1,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 39,
+      "row": 60,
+      "width": 2,
+      "height": 10,
+      "material": "water"
+    },
+    {
+      "column": 69,
+      "row": 60,
+      "width": 1,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 9,
+      "row": 61,
+      "width": 6,
+      "height": 2,
+      "material": "forest"
+    },
+    {
+      "column": 65,
+      "row": 61,
+      "width": 6,
+      "height": 2,
+      "material": "forest"
+    },
+    {
+      "column": 9,
+      "row": 63,
+      "width": 7,
+      "height": 2,
+      "material": "forest"
+    },
+    {
+      "column": 64,
+      "row": 63,
+      "width": 7,
+      "height": 2,
+      "material": "forest"
+    },
+    {
+      "column": 9,
+      "row": 65,
+      "width": 6,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 65,
+      "row": 65,
+      "width": 6,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 10,
+      "row": 66,
+      "width": 4,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 66,
+      "row": 66,
+      "width": 4,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 10,
+      "row": 67,
+      "width": 3,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 67,
+      "row": 67,
+      "width": 3,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 38,
+      "row": 70,
+      "width": 4,
+      "height": 2,
       "material": "water"
     }
   ],

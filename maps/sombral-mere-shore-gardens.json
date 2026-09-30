@@ -10,10 +10,115 @@
   "terrainBase": "lunar-soil",
   "terrainPatches": [
     {
+      "column": 22,
+      "row": 33,
+      "width": 14,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 44,
+      "row": 33,
+      "width": 14,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
       "column": 0,
-      "row": 32,
-      "width": 80,
-      "height": 8,
+      "row": 34,
+      "width": 2,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 18,
+      "row": 34,
+      "width": 44,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 78,
+      "row": 34,
+      "width": 2,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 0,
+      "row": 35,
+      "width": 5,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 14,
+      "row": 35,
+      "width": 52,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 75,
+      "row": 35,
+      "width": 5,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 0,
+      "row": 36,
+      "width": 25,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 34,
+      "row": 36,
+      "width": 12,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 55,
+      "row": 36,
+      "width": 25,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 0,
+      "row": 37,
+      "width": 22,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 38,
+      "row": 37,
+      "width": 4,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 58,
+      "row": 37,
+      "width": 22,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 2,
+      "row": 38,
+      "width": 15,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 63,
+      "row": 38,
+      "width": 15,
+      "height": 1,
       "material": "dirt"
     }
   ],
@@ -36,60 +141,480 @@
   },
   "obstacles": [
     {
-      "column": 8,
-      "row": 4,
-      "width": 8,
-      "height": 8,
+      "column": 9,
+      "row": 5,
+      "width": 6,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 65,
+      "row": 5,
+      "width": 6,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 9,
+      "row": 6,
+      "width": 7,
+      "height": 1,
       "material": "forest"
     },
     {
       "column": 64,
-      "row": 4,
-      "width": 8,
-      "height": 8,
+      "row": 6,
+      "width": 7,
+      "height": 1,
       "material": "forest"
     },
     {
       "column": 8,
-      "row": 60,
+      "row": 7,
       "width": 8,
-      "height": 8,
+      "height": 1,
       "material": "forest"
     },
     {
       "column": 64,
-      "row": 60,
+      "row": 7,
       "width": 8,
-      "height": 8,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 9,
+      "row": 8,
+      "width": 6,
+      "height": 2,
+      "material": "forest"
+    },
+    {
+      "column": 26,
+      "row": 8,
+      "width": 2,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 52,
+      "row": 8,
+      "width": 2,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 65,
+      "row": 8,
+      "width": 6,
+      "height": 2,
+      "material": "forest"
+    },
+    {
+      "column": 25,
+      "row": 9,
+      "width": 7,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 48,
+      "row": 9,
+      "width": 7,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 10,
+      "row": 10,
+      "width": 4,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 24,
+      "row": 10,
+      "width": 8,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 48,
+      "row": 10,
+      "width": 8,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 66,
+      "row": 10,
+      "width": 4,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 10,
+      "row": 11,
+      "width": 3,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 24,
+      "row": 11,
+      "width": 9,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 47,
+      "row": 11,
+      "width": 9,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 67,
+      "row": 11,
+      "width": 3,
+      "height": 1,
       "material": "forest"
     },
     {
       "column": 23,
-      "row": 7,
+      "row": 12,
       "width": 10,
-      "height": 16,
+      "height": 1,
       "material": "water"
     },
     {
       "column": 47,
-      "row": 7,
+      "row": 12,
       "width": 10,
-      "height": 16,
+      "height": 1,
       "material": "water"
     },
     {
       "column": 23,
-      "row": 49,
-      "width": 10,
-      "height": 16,
+      "row": 13,
+      "width": 9,
+      "height": 3,
+      "material": "water"
+    },
+    {
+      "column": 48,
+      "row": 13,
+      "width": 9,
+      "height": 3,
+      "material": "water"
+    },
+    {
+      "column": 24,
+      "row": 16,
+      "width": 8,
+      "height": 2,
+      "material": "water"
+    },
+    {
+      "column": 48,
+      "row": 16,
+      "width": 8,
+      "height": 2,
+      "material": "water"
+    },
+    {
+      "column": 25,
+      "row": 18,
+      "width": 7,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 48,
+      "row": 18,
+      "width": 7,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 25,
+      "row": 19,
+      "width": 6,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 49,
+      "row": 19,
+      "width": 6,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 26,
+      "row": 20,
+      "width": 5,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 49,
+      "row": 20,
+      "width": 5,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 26,
+      "row": 21,
+      "width": 4,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 50,
+      "row": 21,
+      "width": 4,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 27,
+      "row": 22,
+      "width": 1,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 52,
+      "row": 22,
+      "width": 1,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 25,
+      "row": 50,
+      "width": 3,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 52,
+      "row": 50,
+      "width": 3,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 25,
+      "row": 51,
+      "width": 5,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 50,
+      "row": 51,
+      "width": 5,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 24,
+      "row": 52,
+      "width": 7,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 49,
+      "row": 52,
+      "width": 7,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 24,
+      "row": 53,
+      "width": 8,
+      "height": 3,
+      "material": "water"
+    },
+    {
+      "column": 48,
+      "row": 53,
+      "width": 8,
+      "height": 3,
+      "material": "water"
+    },
+    {
+      "column": 24,
+      "row": 56,
+      "width": 9,
+      "height": 4,
       "material": "water"
     },
     {
       "column": 47,
-      "row": 49,
-      "width": 10,
-      "height": 16,
+      "row": 56,
+      "width": 9,
+      "height": 4,
       "material": "water"
+    },
+    {
+      "column": 24,
+      "row": 60,
+      "width": 8,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 48,
+      "row": 60,
+      "width": 8,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 9,
+      "row": 61,
+      "width": 6,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 25,
+      "row": 61,
+      "width": 6,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 49,
+      "row": 61,
+      "width": 6,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 65,
+      "row": 61,
+      "width": 6,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 9,
+      "row": 62,
+      "width": 7,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 25,
+      "row": 62,
+      "width": 5,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 50,
+      "row": 62,
+      "width": 5,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 64,
+      "row": 62,
+      "width": 7,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 8,
+      "row": 63,
+      "width": 8,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 26,
+      "row": 63,
+      "width": 3,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 51,
+      "row": 63,
+      "width": 3,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 64,
+      "row": 63,
+      "width": 8,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 9,
+      "row": 64,
+      "width": 6,
+      "height": 2,
+      "material": "forest"
+    },
+    {
+      "column": 27,
+      "row": 64,
+      "width": 1,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 52,
+      "row": 64,
+      "width": 1,
+      "height": 1,
+      "material": "water"
+    },
+    {
+      "column": 65,
+      "row": 64,
+      "width": 6,
+      "height": 2,
+      "material": "forest"
+    },
+    {
+      "column": 10,
+      "row": 66,
+      "width": 4,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 66,
+      "row": 66,
+      "width": 4,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 10,
+      "row": 67,
+      "width": 3,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 67,
+      "row": 67,
+      "width": 3,
+      "height": 1,
+      "material": "forest"
     }
   ],
   "resourceNodes": [

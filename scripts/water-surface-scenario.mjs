@@ -15,7 +15,14 @@ assert.ok(water, 'a map with blocked water cells should produce a water surface'
 assert.equal(water.userData.waterCellCount, 2, 'a 2-cell stream should create one batched surface');
 assert.equal(water.userData.shorelineEdgeCount, 6, 'the connected 2-cell stream should expose only its six outer land edges');
 assert.equal(water.userData.sandyShorelineEdgeCount, 1, 'sand-adjacent shoreline should receive the warm shallows treatment');
-assert.equal(water.getIndex().count, (2 + 6) * 6, 'the surface and shore bands should share one geometry');
+assert.ok(water.getIndex().count > (2 + 6) * 6, 'beveled water polygons and contour shore bands share one geometry');
+const positions = water.getAttribute('position');
+assert.ok(Array.from({ length: positions.count }, (_, i) => positions.getX(i)).some(x => Math.abs(x + 0.55) < 1e-5),
+  'exposed water corners are clipped to a sub-cell diagonal rather than a square');
+for (let i = 0; i < positions.count; i++) {
+  assert.ok(positions.getX(i) >= -1 && positions.getX(i) <= 1);
+  assert.ok(positions.getZ(i) >= -1 && positions.getZ(i) <= 0, 'shore geometry stays inside the blocked-water envelope');
+}
 assert.equal(JSON.stringify(map), original, 'surface creation must not change map obstacle or passability data');
 
 assert.equal(buildWaterSurfaceGeometry({

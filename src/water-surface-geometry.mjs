@@ -35,30 +35,38 @@ function waterColorAt(x, z) {
   return DEEP_WATER.clone().lerp(OPEN_WATER, 0.07 + ripple * 0.1);
 }
 
-function appendShoreBand(buffer, edge, x0, z0, x1, z1, shorelineColor, edgeIndex) {
-  const y = WATER_LEVEL + SHORE_LIFT + edgeIndex * 0.00025;
-  const waterColor = (x, z) => waterColorAt(x, z);
-  if (edge === 'left') {
-    const inner = x0 + SHORE_WIDTH;
-    appendQuad(buffer,
-      [[x0, y, z0], [inner, y, z0], [x0, y, z1], [inner, y, z1]],
-      [shorelineColor, waterColor(inner, z0), shorelineColor, waterColor(inner, z1)]);
-  } else if (edge === 'right') {
-    const inner = x1 - SHORE_WIDTH;
-    appendQuad(buffer,
-      [[inner, y, z0], [x1, y, z0], [inner, y, z1], [x1, y, z1]],
-      [waterColor(inner, z0), shorelineColor, waterColor(inner, z1), shorelineColor]);
-  } else if (edge === 'top') {
-    const inner = z0 + SHORE_WIDTH;
-    appendQuad(buffer,
-      [[x0, y, z0], [x1, y, z0], [x0, y, inner], [x1, y, inner]],
-      [shorelineColor, shorelineColor, waterColor(x0, inner), waterColor(x1, inner)]);
-  } else {
-    const inner = z1 - SHORE_WIDTH;
-    appendQuad(buffer,
-      [[x0, y, inner], [x1, y, inner], [x0, y, z1], [x1, y, z1]],
-      [waterColor(x0, inner), waterColor(x1, inner), shorelineColor, shorelineColor]);
+// Clip only exposed convex corners, entirely inside blocked water cells.
+// Neighboring water quads still share full edges, so no cracks are introduced.
+function cellOutline(x0, z0, exposed) {
+  const x1 = x0 + 1, z1 = z0 + 1, cut = 0.45;
+  const tl = exposed.top && exposed.left, tr = exposed.top && exposed.right;
+  const bl = exposed.bottom && exposed.left, br = exposed.bottom && exposed.right;
+  return [
+    [x0 + (tl ? cut : 0), z0], [x1 - (tr ? cut : 0), z0],
+    ...(tr ? [[x1, z0 + cut]] : []), [x1, z1 - (br ? cut : 0)],
+    ...(br ? [[x1 - cut, z1]] : []), [x0 + (bl ? cut : 0), z1],
+    ...(bl ? [[x0, z1 - cut]] : []), [x0, z0 + (tl ? cut : 0)],
+  ].filter((point, index, points) => index === 0 || point[0] !== points[index - 1][0] || point[1] !== points[index - 1][1]);
+}
+
+function appendWaterPolygon(buffer, outline) {
+  const first = buffer.positions.length / 3;
+  for (const [x, z] of outline) {
+    const color = waterColorAt(x, z);
+    buffer.positions.push(x, WATER_LEVEL, z);
+    buffer.colors.push(color.r, color.g, color.b);
   }
+  for (let i = 1; i < outline.length - 1; i++) buffer.indices.push(first, first + i, first + i + 1);
+}
+
+function appendContourShore(buffer, a, b, color) {
+  const dx = b[0] - a[0], dz = b[1] - a[1], length = Math.hypot(dx, dz);
+  if (!length) return;
+  const nx = -dz / length * SHORE_WIDTH, nz = dx / length * SHORE_WIDTH;
+  const y = WATER_LEVEL + SHORE_LIFT;
+  appendQuad(buffer, [[a[0], y, a[1]], [b[0], y, b[1]],
+    [a[0] + nx, y, a[1] + nz], [b[0] + nx, y, b[1] + nz]],
+    [color, color, waterColorAt(a[0] + nx, a[1] + nz), waterColorAt(b[0] + nx, b[1] + nz)]);
 }
 
 export function buildWaterSurfaceGeometry(definition) {
@@ -104,11 +112,8 @@ export function buildWaterSurfaceGeometry(definition) {
       const x1 = x0 + 1;
       const z0 = row - halfZ;
       const z1 = z0 + 1;
-      appendQuad(buffer,
-        [[x0, WATER_LEVEL, z0], [x1, WATER_LEVEL, z0],
-          [x0, WATER_LEVEL, z1], [x1, WATER_LEVEL, z1]],
-        [waterColorAt(x0, z0), waterColorAt(x1, z0), waterColorAt(x0, z1), waterColorAt(x1, z1)]);
-
+      const exposed = {};
+      const shoreColors = {};
       for (let edgeIndex = 0; edgeIndex < edges.length; edgeIndex++) {
         const edge = edges[edgeIndex];
         const neighborColumn = column + edge.column;
@@ -116,11 +121,24 @@ export function buildWaterSurfaceGeometry(definition) {
         if (neighborColumn < 0 || neighborColumn >= width || neighborRow < 0 || neighborRow >= height) continue;
         const neighborIndex = neighborRow * width + neighborColumn;
         if (waterCells[neighborIndex]) continue;
+        exposed[edge.name] = true;
         shorelineEdgeCount++;
         const isSand = landMaterials[neighborIndex] === 'sand';
         if (isSand) sandyShorelineEdgeCount++;
-        appendShoreBand(buffer, edge.name, x0, z0, x1, z1,
-          (isSand ? SAND_SHORE : COOL_SHORE), edgeIndex + 1);
+        shoreColors[edge.name] = isSand ? SAND_SHORE : COOL_SHORE;
+      }
+      const outline = cellOutline(x0, z0, exposed);
+      // The last point can duplicate the first on an unclipped upper-left.
+      if (outline.at(-1)[0] === outline[0][0] && outline.at(-1)[1] === outline[0][1]) outline.pop();
+      appendWaterPolygon(buffer, outline);
+      for (let i = 0; i < outline.length; i++) {
+        const a = outline[i], b = outline[(i + 1) % outline.length];
+        const edge = a[0] === x0 && b[0] === x0 ? 'left'
+          : a[0] === x1 && b[0] === x1 ? 'right'
+          : a[1] === z0 && b[1] === z0 ? 'top'
+          : a[1] === z1 && b[1] === z1 ? 'bottom' : null;
+        if (edge && !exposed[edge]) continue;
+        appendContourShore(buffer, a, b, shoreColors[edge] || COOL_SHORE);
       }
     }
   }
