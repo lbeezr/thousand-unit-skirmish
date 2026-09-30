@@ -374,3 +374,32 @@ from ordinary army orders, retreat, bounded stalled retries and fully explored
 fog. Room-supervisor recovery passed with owner-only research choices asserted
 separately from public building state. CI, staging and live AI defended-position
 evidence remain integration work.
+
+### 2026-09-29 — Paid AI siege acquisition and slot reservation
+
+`siege-ai-runtime-scenario.mjs` uses a 64×64 no-fog, 24-unit map with 3,000
+food/wood per seat. Ordinary build commands pay for initial Barracks/towers;
+checkpoint fixtures finish those foundations and hold ordinary armies stationary
+to isolate AI acquisition and siege targeting. The filtered production policy
+buys Tier II, constructs one Stable and Workshop, completes armor and engineering,
+builds a House, and trains a Scout, two engines and a Rider. Weapon research also
+completes. The tactical policy issues the engines' defense assault orders.
+
+Final checks passed at ticks 6,870 (Azure) and 6,780 (Ember). Both engines retained
+90 HP while the full-health opposing tower was demolished. The checkpoint food
+and wood balances exactly matched registered costs for completed technology,
+new buildings and new units. Both-seat regressions first reproduced ordinary
+recruits consuming the last counter slots during pending engineering; reserving
+two slots and planning for three-population engines fixes that failure. Fourteen
+focused population/reconnaissance/siege tests, production budgets, tactical retry,
+decision fairness, reinforcement and Barracks recovery passed. These are component
+interaction proofs; representative full AI matches and staged gameplay checks
+remain required for the complete foundation claim.
+
+Staging deployment `9317fd73-3dae-425b-a6df-65a7a0bb9d15` succeeded at commit
+`a2b57741e8c3866afad9709674b3d69dee7008d2`. The Railway smoke passed readiness,
+authentication rejection/acceptance, client import delivery including shared
+definitions/research and terrain blending, and authenticated WebSocket upgrade.
+This proves packaging and transport; staged gameplay and rendered appearance
+remain separate checks. Research PR #245, siege #246 and reconnaissance #247
+are merged after all three CI shards passed for their respective heads.
