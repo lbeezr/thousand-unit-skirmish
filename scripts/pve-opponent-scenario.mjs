@@ -30,7 +30,8 @@ const WOODLAND_EXPANSE_MAP = JSON.parse(readFileSync(path.join(ROOT, 'maps/woodl
 const ENDPOINT = (port) => `ws://127.0.0.1:${port}/ws`;
 const CONNECT_TIMEOUT_MS = 15_000;
 const COMMAND_TIMEOUT_MS = 8_000;
-const ECONOMY_TIMEOUT_MS = 20_000;
+// Workers return to the real Town Center behind the authored spawn marker.
+const ECONOMY_TIMEOUT_MS = 30_000;
 const TACTICS_TIMEOUT_MS = 15_000;
 const OBJECTIVE_CONTEST_TIMEOUT_MS = 45_000;
 const DECISION_INTERVAL_MS = 1_000;

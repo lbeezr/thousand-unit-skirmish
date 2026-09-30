@@ -142,7 +142,7 @@ try {
   await start();
   const destroyed = await checkpointWith(checkpointPath, (s) => s.mapDefinition.id === map.id
     && s.state.tickNumber >= doomed.state.tickNumber + 30 && s.state.buildings.length === 0);
-  assert.equal(destroyed.schemaVersion, 13, 'legacy production checkpoint migrates');
+  assert.equal(destroyed.schemaVersion, 14, 'legacy production checkpoint migrates');
   assert.equal(destroyed.state.units.length, doomed.state.units.length, 'destruction before completion produces no ghost units');
   assert.deepEqual(destroyed.state.teamFood, doomed.state.teamFood, 'lost queues are not charged or refunded again');
   assert.deepEqual(destroyed.state.teamWood, doomed.state.teamWood);

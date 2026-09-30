@@ -172,3 +172,10 @@ to HP actually restored. Insufficient wood pauses the order; another move/gather
 attack order interrupts it, and another repair order can resume. Checkpoints
 retain active repair targets. Finishing construction and repairing damaged HP
 are separate jobs. No repair restores defeated buildings.
+
+Town Center expansions cost 100 food and 400 wood, take 60 seconds to build,
+have 2,400 HP, and add five population slots when complete. They train Workers
+and accept food/wood cargo. Starting centers keep the initial population baseline
+and their authored placement. Both kinds can rally, be repaired or destroyed;
+losing a center does not eliminate surviving units or another usable producer.
+Destroyed production loses its paid queues without refund.

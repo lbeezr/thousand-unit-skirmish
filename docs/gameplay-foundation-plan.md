@@ -211,3 +211,16 @@ exact foundation refunds, proportional repair spending, preserved repair orders,
 queue/research cancellation and remaining population reservations. The AI can
 repair observed damage without repeating active work. Expansion Town Centers,
 Watchtower defenses, and the F3 composition/progression roster remain outstanding.
+
+### Town Center expansion slice
+
+Town Centers now have a registered five-cell expansion footprint, 100 food /
+400 wood cost, 60-second construction, 2,400 HP, five capacity slots, Worker
+production and food/wood drop-off. Starting centers retain their existing map
+placement/collision shape and compatibility Worker queue; they are selectable,
+repairable and destructible entities. Expansion queues, rally points and cargo
+routing use the shared production/building rules. Surviving units, paid queues
+or an affordable reachable producer prevent elimination after a center is lost.
+The deterministic policy can construct/resume one visible-resource expansion
+and replace Workers at a surviving center. Procedural geometry and existing
+captured Town Center art remain placeholders independent of authoritative rules.

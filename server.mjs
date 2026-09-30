@@ -1,3 +1,4 @@
+import { creditResourceBalance } from './src/economy-ledger.mjs';
 import { unfinishedRefund, buildingRepairStep } from './src/base-lifecycle.mjs';
 import { productionAction } from './src/production-actions.mjs';
 import { teamPopulation } from './src/population.mjs';
@@ -37,7 +38,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 13;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 14;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -662,11 +663,40 @@ let workerProduction = [
 ];
 const buildings = [];
 const buildingsById = new Map();
+const HOME_TOWN_CENTER_ID_BASE = 1_000_000_000;
+let homeTownCenters = [];
 let nextBuildingId = 1;
 let resourceNodeStates = new Map();
 let matchWinner = -1;
 let matchWinnerTriggerId = null;
 let matchWinnerReason = null;
+
+function resetHomeTownCenters(records = null) {
+  homeTownCenters = [0, 1].map((team) => {
+    const point = townCenterSpawnPosition(spawnByTeam, team, MAP_WIDTH, MAP_HEIGHT);
+    const center = { id: HOME_TOWN_CENTER_ID_BASE + team, team, type: 'town-center', home: true,
+      ...point, hp: records?.[team]?.hp ?? BUILDING_DEFINITIONS['town-center'].maxHp,
+      rallyCell: records?.[team]?.rallyCell ?? -1, progress: 1, complete: true,
+      footprint: townCenterFootprintCells(spawnByTeam, team, MAP_WIDTH, MAP_HEIGHT) };
+    const points = center.footprint.map(cellToWorld);
+    center.bounds = { minX: Math.min(...points.map((p) => p.x)) - 0.5, maxX: Math.max(...points.map((p) => p.x)) + 0.5,
+      minZ: Math.min(...points.map((p) => p.z)) - 0.5, maxZ: Math.max(...points.map((p) => p.z)) + 0.5 };
+    for (const key of ['queue', 'trainingRemaining', 'productionBlocked']) Object.defineProperty(center, key, {
+      enumerable: true, get: () => workerProduction[team][key], set: (value) => { workerProduction[team][key] = value; },
+    });
+    Object.defineProperty(center, 'productionQueue', { enumerable: true, get: () => Array(workerProduction[team].queue).fill('worker') });
+    if (center.hp > 0) buildingsById.set(center.id, center);
+    return center;
+  });
+  rebuildHomeTownCenterBlocking();
+}
+function rebuildHomeTownCenterBlocking() {
+  townCenterBlocked.fill(0);
+  for (const center of homeTownCenters) if (center.hp > 0) {
+    for (const cell of center.footprint) townCenterBlocked[cell] = 1;
+  }
+}
+function allMatchBuildings() { return [...buildings, ...homeTownCenters.filter((center) => center.hp > 0)]; }
 
 function resetScenarioEventClock() {
   matchElapsedSeconds = 0;
@@ -743,6 +773,7 @@ function activateMap(definition) {
     { queue: 0, trainingRemaining: 0, productionBlocked: false },
     { queue: 0, trainingRemaining: 0, productionBlocked: false },
   ];
+  resetHomeTownCenters();
   spatialBucketColumns = Math.floor((MAP_WIDTH - 0.5) / SPATIAL_BUCKET_SIZE) + 1;
   spatialBucketRows = Math.floor((MAP_HEIGHT - 0.5) / SPATIAL_BUCKET_SIZE) + 1;
   const bucketCount = spatialBucketColumns * spatialBucketRows;
@@ -1092,7 +1123,7 @@ function findAvailableCellNear(startCell, componentId, reservedCells, maxRadius 
 
 function findTownCenterProductionSpawnCell(team) {
   const spawn = spawnByTeam[team];
-  if (!spawn) return -1;
+  if (!spawn || homeTownCenters[team]?.hp <= 0) return -1;
   const townCenterPosition = townCenterSpawnPosition(spawnByTeam, team, MAP_WIDTH, MAP_HEIGHT);
   const townCenterCell = worldToCell(townCenterPosition.x, townCenterPosition.z);
   const teamSpawnCell = nearestOpenCell(worldToCell(spawn.x, spawn.z));
@@ -1597,6 +1628,7 @@ function resetArmy(count = currentArmySize) {
   buildings.length = 0;
   buildingsById.clear();
   buildingBlocked.fill(0);
+  resetHomeTownCenters();
   resetForestStocks();
   attackFlowFields.clear();
   rebuildWalkableComponents();
@@ -1759,7 +1791,7 @@ function updateVisionMasks() {
   for (const unit of units) {
     if (unit.hp > 0) markVisionFrom(unit.team, unit.x, unit.z);
   }
-  for (const building of buildings) {
+  for (const building of allMatchBuildings()) {
     for (const cell of buildingAccessCells(building.footprint)) {
       const source = cellToWorld(cell);
       markVisionFrom(building.team, source.x, source.z);
@@ -2333,6 +2365,15 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
           ? Math.max(0, Math.min(1, 1 - production.trainingRemaining / WORKER_TRAIN_SECONDS)) : 0,
       };
     }),
+    homeTownCenters: homeTownCenters.filter((center) => center.hp > 0 && (!fogView || buildingVisibleToTeam(viewTeam, center))).map((center) => ({
+      id: center.id, team: center.team, type: center.type, home: true, x: center.x, z: center.z, hp: center.hp, maxHp: BUILDING_DEFINITIONS[center.type].maxHp,
+      footprint: [...center.footprint], complete: true, progress: 1, queue: center.queue, trainingRemaining: center.trainingRemaining,
+      productionBlocked: center.productionBlocked, rallyCell: !fogView || center.team === viewTeam ? center.rallyCell : -1,
+      productionQueue: viewTeam === null || center.team === viewTeam ? center.productionQueue : [],
+      productionOptions: viewTeam === null || center.team === viewTeam ? [productionAction(center, 'worker', productionContexts[center.team])] : [],
+      trainingProgress: center.queue ? Math.max(0, Math.min(1, 1 - center.trainingRemaining / WORKER_TRAIN_SECONDS)) : 0,
+      attackers: buildingAttackers.get(center.id) || 0,
+    })),
     buildings: viewBuildings.map((building) => ({
       id: building.id, team: building.team, type: building.type,
       x: building.x, z: building.z, hp: building.hp, maxHp: BUILDING_DEFINITIONS[building.type].maxHp,
@@ -2402,6 +2443,7 @@ function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
       workerProduction: workerProduction.map((production) => ({ ...production })),
       buildings: buildings.map((building) => ({ ...building, productionQueue: [...building.productionQueue], footprint: [...building.footprint] })),
       nextBuildingId,
+      homeTownCenters: homeTownCenters.map((center) => ({ hp: center.hp, rallyCell: center.rallyCell })),
       resourceNodes: [...resourceNodeStates.values()].map((node) => ({ ...node })),
       forestStocks: forestStockEntries(),
       forestEpoch,
@@ -2552,6 +2594,10 @@ function validateMatchCheckpoint(snapshot) {
       && (production.queue === 0 || production.trainingRemaining > 0 || production.productionBlocked),
     'invalid Town Center production state');
   }
+  assertSnapshot(Array.isArray(state.homeTownCenters) && state.homeTownCenters.length === 2
+    && state.homeTownCenters.every((center) => finite(center.hp) && center.hp >= 0 && center.hp <= BUILDING_DEFINITIONS['town-center'].maxHp
+      && integerIn(center.rallyCell, -1, cellCount - 1)), 'invalid home Town Centers');
+  for (const team of [0, 1]) assertSnapshot(state.homeTownCenters[team].hp > 0 || state.workerProduction[team].queue === 0, 'destroyed home Town Center retains a queue');
   assertSnapshot(Array.isArray(state.buildings) && state.buildings.length <= MAX_BUILDINGS, 'invalid buildings');
   const buildingIds = new Set();
   const occupiedFootprintCells = new Set();
@@ -2616,11 +2662,12 @@ function validateMatchCheckpoint(snapshot) {
       && building.complete, `team ${team} research references an unavailable building`);
   }
   for (const unit of state.units) {
-    assertSnapshot(unit.attackBuildingTargetId < 0 || buildingIds.has(unit.attackBuildingTargetId),
+    assertSnapshot(unit.attackBuildingTargetId < 0 || buildingIds.has(unit.attackBuildingTargetId)
+      || state.homeTownCenters[unit.attackBuildingTargetId - HOME_TOWN_CENTER_ID_BASE]?.hp > 0,
       'unit targets a missing building');
   }
   assertSnapshot(integerIn(state.nextBuildingId, 1, Number.MAX_SAFE_INTEGER)
-    && state.nextBuildingId > Math.max(0, ...buildingIds), 'invalid next building ID');
+    && state.nextBuildingId < HOME_TOWN_CENTER_ID_BASE && state.nextBuildingId > Math.max(0, ...buildingIds), 'invalid next building ID');
   assertSnapshot(Array.isArray(state.resourceNodes) && state.resourceNodes.length === definition.resourceNodes.length,
     'invalid resource nodes');
   const resourceIds = new Set();
@@ -2756,9 +2803,12 @@ function validateMatchCheckpoint(snapshot) {
         && checkpointForestMask[forestCell] === 1,
       'unit references an invalid forest target');
     }
-    if (unit.buildingTargetId !== null) assertSnapshot(buildingIds.has(unit.buildingTargetId), 'unit references unknown building');
+    if (unit.buildingTargetId !== null) assertSnapshot(buildingIds.has(unit.buildingTargetId) || state.homeTownCenters[unit.buildingTargetId - HOME_TOWN_CENTER_ID_BASE]?.hp > 0, 'unit references unknown building');
     if (unit.attackBuildingTargetId >= 0) {
-      const target = state.buildings.find((building) => building.id === unit.attackBuildingTargetId);
+      const homeTeam = unit.attackBuildingTargetId - HOME_TOWN_CENTER_ID_BASE;
+      const home = state.homeTownCenters[homeTeam];
+      const target = state.buildings.find((building) => building.id === unit.attackBuildingTargetId)
+        || (home?.hp > 0 ? { ...home, team: homeTeam } : null);
       assertSnapshot(target && target.team !== unit.team, 'unit targets an unavailable building');
     }
   }
@@ -2829,6 +2879,7 @@ function restoreMatchCheckpoint(snapshot) {
     buildings.push(building);
     buildingsById.set(building.id, building);
   }
+  resetHomeTownCenters(state.homeTownCenters);
   rebuildWalkableComponents();
   // Older checkpoints allowed units inside decorative Town Centers.
   for (const unit of units) {
@@ -3010,6 +3061,11 @@ function migrateMatchCheckpoint(snapshot) {
   // Cancel/refund and repair add optional worker state without changing paid queues.
   if (snapshot?.schemaVersion === 12 && [GAMEPLAY_RULESET_REVISION, 'v1:731ebf6916e9fa9f9ccc7d1f94fb444af745d22f78b64237caa9c30cdd2e5182'].includes(snapshot.rulesetRevision)) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+    snapshot.schemaVersion = 13;
+  }
+  if (snapshot?.schemaVersion === 13 && [GAMEPLAY_RULESET_REVISION, 'v1:f1e3b9aee2399187a2ab2f0d06bbb37cbd65d71004462536902b3da0c31c2e4d'].includes(snapshot.rulesetRevision)) {
+    snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+    snapshot.state.homeTownCenters = [0, 1].map(() => ({ hp: BUILDING_DEFINITIONS['town-center'].maxHp, rallyCell: -1 }));
     snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;
   }
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
@@ -3511,11 +3567,9 @@ function cancelGatherOrder(unit) {
 }
 
 function workerDropoffCandidates(unit) {
-  const legacy = spawnByTeam[unit.team];
-  return [{ id: null, x: legacy.x, z: legacy.z, goals: [nearestOpenCell(worldToCell(legacy.x, legacy.z))] },
-    ...buildings.filter((building) => building.team === unit.team && building.complete
+  return allMatchBuildings().filter((building) => building.team === unit.team && building.complete
       && BUILDING_DEFINITIONS[building.type].dropoff?.includes(unit.cargoType || 'food'))
-      .map((building) => ({ ...building, goals: buildingAccessCells(building.footprint) }))];
+      .map((building) => ({ ...building, goals: buildingAccessCells(building.footprint) }));
 }
 
 function routeWorkerToDropoff(unit) {
@@ -3540,7 +3594,7 @@ function routeWorkerToDropoff(unit) {
 function workerAtDropoff(unit) {
   const building = unit.dropoffBuildingId === null || unit.dropoffBuildingId === undefined
     ? null : buildingsById.get(unit.dropoffBuildingId);
-  const valid = unit.dropoffBuildingId == null || (building?.complete && building.team === unit.team
+  const valid = unit.dropoffBuildingId != null && (building?.complete && building.team === unit.team
     && BUILDING_DEFINITIONS[building.type].dropoff?.includes(unit.cargoType || 'food'));
   if (!valid || unit.dropoffNavigationRevision !== navigationRevision) {
     unit.orderRevision++; unit.movePlanningPending = false;
@@ -3764,7 +3818,7 @@ function updateForestWorkerEconomy(unit) {
   if (unit.gatherPhase === 'to-base' && workerAtDropoff(unit)) {
     if (unit.cargo > 0) {
       const bank = unit.cargoType === 'wood' ? teamWood : teamFood;
-      bank[unit.team] = Math.round((bank[unit.team] + unit.cargo) * 1_000_000) / 1_000_000;
+      bank[unit.team] = creditResourceBalance(bank[unit.team], unit.cargo);
       unit.cargo = 0;
       unit.cargoType = null;
       dirty = true;
@@ -3853,7 +3907,7 @@ function updateWorkerEconomy() {
       if (workerAtDropoff(unit)) {
         if (unit.cargo > 0) {
           const bank = unit.cargoType === 'wood' ? teamWood : teamFood;
-          bank[unit.team] = Math.round((bank[unit.team] + unit.cargo) * 1_000_000) / 1_000_000;
+          bank[unit.team] = creditResourceBalance(bank[unit.team], unit.cargo);
           unit.cargo = 0;
           unit.cargoType = null;
           dirty = true;
@@ -3879,16 +3933,13 @@ function canTeamStillFieldUnits(team, alive) {
   if (queued >= MAX_TEAM_ROSTER || totalRoster >= MAX_UNITS) return false;
   if (teamFood[team] + 1e-9 >= WORKER_FOOD_COST
     && findTownCenterProductionSpawnCell(team) >= 0) return true;
-  if (teamFood[team] + 1e-9 >= INFANTRY_FOOD_COST
-    && buildings.some((building) => building.team === team
-      && building.type === 'barracks' && building.complete
-      && findProductionSpawnCell(building) >= 0)) return true;
-
-  if (teamFood[team] + 1e-9 < ARCHER_FOOD_COST
-    || teamWood[team] + 1e-9 < ARCHER_WOOD_COST) return false;
-  return buildings.some((building) => building.team === team
-    && building.type === 'archery-range' && building.complete
-    && findProductionSpawnCell(building) >= 0);
+  const upgrades = teamUpgrades[team];
+  return buildings.some((building) => building.team === team && building.complete
+    && BUILDING_DEFINITIONS[building.type].products.some((kind) => {
+      const rule = UNIT_DEFINITIONS[kind];
+      return teamFood[team] + 1e-9 >= rule.cost.food && teamWood[team] + 1e-9 >= rule.cost.wood
+        && !missingGameplayPrerequisites(rule, upgrades).length && findProductionSpawnCell(building) >= 0;
+    }));
 }
 
 function queuedUnitsTotal() {
@@ -3922,6 +3973,8 @@ function enqueueBuildingUnit(building, kind) {
 
 function trainUnit(player, command) {
   if (player.team === null) return;
+  const home = buildingsById.get(command.buildingId);
+  if (home?.home && home.team === player.team && command.kind === 'worker') { trainWorker(player); return; }
   const building = buildingsById.get(Number(command.buildingId));
   const kind = command.kind;
   const definition = UNIT_DEFINITIONS[kind];
@@ -4088,7 +4141,7 @@ function cancelConstruction(player, command) {
 function cancelTraining(player, command) {
   if (player.team === null) return;
   const building = command.buildingId == null ? null : buildingsById.get(command.buildingId);
-  const legacyWorker = command.buildingId == null && command.kind === 'worker';
+  const legacyWorker = (command.buildingId == null && command.kind === 'worker') || (building?.home && building.team === player.team);
   const production = legacyWorker ? workerProduction[player.team] : building;
   if (!production || (!legacyWorker && (building.team !== player.team || !building.complete)) || production.queue <= 0) {
     sendOrderNotice(player, command, 'CANCEL REJECTED · SELECT YOUR PAID TRAINING QUEUE'); return;
@@ -4193,6 +4246,10 @@ function findBuildingAttackApproachCell(unit, accessCells) {
 }
 
 function distanceToBuildingEdge(unit, building) {
+  if (building.home && building.bounds) {
+    const b = building.bounds;
+    return Math.hypot(Math.max(0, b.minX - unit.x, unit.x - b.maxX), Math.max(0, b.minZ - unit.z, unit.z - b.maxZ));
+  }
   const dx = Math.max(0, Math.abs(building.x - unit.x) - BUILDING_DEFINITIONS[building.type].footprint / 2);
   const dz = Math.max(0, Math.abs(building.z - unit.z) - BUILDING_DEFINITIONS[building.type].footprint / 2);
   return Math.hypot(dx, dz);
@@ -4205,7 +4262,11 @@ function destroyBuilding(building) {
   const index = buildings.indexOf(building);
   if (index >= 0) buildings.splice(index, 1);
   buildingsById.delete(building.id);
-  for (const cell of building.footprint) buildingBlocked[cell] = 0;
+  if (building.home) {
+    building.hp = 0; building.rallyCell = -1;
+    workerProduction[building.team] = { queue: 0, trainingRemaining: 0, productionBlocked: false };
+    rebuildHomeTownCenterBlocking();
+  } else for (const cell of building.footprint) buildingBlocked[cell] = 0;
   for (const unit of units) {
     if (unit.hp <= 0) continue;
     if (unit.attackBuildingTargetId === building.id) clearAttackTarget(unit);
@@ -4308,11 +4369,10 @@ function pathIntersectsCells(path, startIndex, cells) {
 
 function revalidateBuildingRallyPoints() {
   const resourceCells = new Set(mapDefinition.resourceNodes.map((node) => worldToCell(node.x, node.z)));
-  for (const building of buildings) {
+  for (const building of allMatchBuildings()) {
     if (!Number.isInteger(building.rallyCell) || building.rallyCell < 0) continue;
-    const spawn = spawnByTeam[building.team];
-    const teamComponent = spawn
-      ? walkableComponents[nearestOpenCell(worldToCell(spawn.x, spawn.z))] : -1;
+    const access = buildingAccessCells(building.footprint);
+    const teamComponent = access.length ? walkableComponents[access[0]] : -1;
     if (teamComponent >= 0 && walkableComponents[building.rallyCell] === teamComponent
       && !resourceCells.has(building.rallyCell)) continue;
     building.rallyCell = findAvailableCellNear(building.rallyCell, teamComponent, resourceCells, 12);
@@ -4464,9 +4524,7 @@ function captureBuildingConnectivity() {
     if (unit.hp > 0) addAccess([nearestOpenCell(worldToCell(unit.x, unit.z))]);
   }
   for (const building of buildings) addAccess(buildingAccessCells(building.footprint));
-  for (const team of [0, 1]) {
-    addAccess(buildingAccessCells(townCenterFootprintCells(spawnByTeam, team, MAP_WIDTH, MAP_HEIGHT)));
-  }
+  for (const center of homeTownCenters) if (center.hp > 0) addAccess(buildingAccessCells(center.footprint));
   return groups;
 }
 
@@ -4775,7 +4833,7 @@ function trainArcher(player, command) {
 function setBuildingRallyPoint(player, command) {
   if (player.team === null) return;
   const building = buildingsById.get(Number(command.buildingId));
-  if (!building || building.team !== player.team || !['barracks', 'archery-range'].includes(building.type)) {
+  if (!building || building.team !== player.team || !BUILDING_DEFINITIONS[building.type].products.length) {
     sendOrderNotice(player, command, 'RALLY POINT REJECTED · SELECT YOUR PRODUCTION BUILDING');
     return;
   }
@@ -4792,9 +4850,7 @@ function setBuildingRallyPoint(player, command) {
     sendOrderNotice(player, command, 'RALLY POINT REJECTED · CHOOSE GROUND ON THE MAP');
     return;
   }
-  const spawn = spawnByTeam[player.team];
-  const teamComponent = spawn
-    ? walkableComponents[nearestOpenCell(worldToCell(spawn.x, spawn.z))] : -1;
+  const teamComponent = walkableComponents[buildingAccessCells(building.footprint)[0]] ?? -1;
   const resourceCells = new Set(mapDefinition.resourceNodes.map((node) => worldToCell(node.x, node.z)));
   const destination = findAvailableCellNear(worldToCell(x, z), teamComponent, resourceCells, 8);
   if (destination < 0) {
@@ -4808,9 +4864,7 @@ function setBuildingRallyPoint(player, command) {
 
 function routeProducedUnitToBuildingRally(unit, building) {
   if (!unit || !Number.isInteger(building.rallyCell) || building.rallyCell < 0) return;
-  const spawn = spawnByTeam[building.team];
-  const teamComponent = spawn
-    ? walkableComponents[nearestOpenCell(worldToCell(spawn.x, spawn.z))] : -1;
+  const teamComponent = walkableComponents[nearestOpenCell(worldToCell(unit.x, unit.z))];
   const resourceCells = new Set(mapDefinition.resourceNodes.map((node) => worldToCell(node.x, node.z)));
   const requested = building.rallyCell;
   const destination = teamComponent >= 0 && walkableComponents[requested] === teamComponent
@@ -4916,13 +4970,15 @@ function updateBuildingAndProduction() {
       continue;
     }
     const spawn = cellToWorld(spawnCell);
-    if (!spawnProducedUnit(team, 'worker', spawn.x, spawn.z)) {
+    const producedWorker = spawnProducedUnit(team, 'worker', spawn.x, spawn.z);
+    if (!producedWorker) {
       if (!production.productionBlocked) {
         production.productionBlocked = true;
         dirty = true;
       }
       continue;
     }
+    routeProducedUnitToBuildingRally(producedWorker, homeTownCenters[team]);
     production.queue--;
     production.productionBlocked = false;
     production.trainingRemaining = production.queue > 0 ? WORKER_TRAIN_SECONDS : 0;

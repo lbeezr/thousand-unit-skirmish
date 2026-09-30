@@ -141,9 +141,13 @@ try {
     if (state.tick - lastTick >= 30) {
       lastTick = state.tick;
       const observation = toOpponentObservation(state, team, map);
-      replacementComplete ||= observation.buildings.friendly.some((b) => b.complete);
+      replacementComplete ||= observation.buildings.friendly.some((b) => b.type === 'barracks' && b.complete);
       regainedSignal ||= observation.objectives.find((o) => o.id === 'capture-zone-1').owner === team;
-      assert.ok(observation.buildings.friendly.length <= 1);
+      for (const [type, maximum] of [['barracks', 1], ['house', 2], ['storehouse', 1], ['watchtower', 1]]) {
+        assert.ok(observation.buildings.friendly.filter((b) => b.type === type).length <= maximum, `bounded ${type} recovery`);
+      }
+      assert.ok(observation.buildings.friendly.filter((b) => b.type === 'town-center' && !b.home).length <= 1, 'one expansion');
+      assert.ok(observation.buildings.friendly.filter((b) => b.home).length <= 1, 'one living home center');
       assert.ok(observation.buildings.friendly.every((b) => b.queue <= 1));
       assert.ok(observation.units.friendly.filter((u) => u.kind !== 'worker' && u.hp > 0).length <= 12);
       for (const command of policy.next(observation)) {

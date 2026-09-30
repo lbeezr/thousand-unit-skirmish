@@ -760,11 +760,9 @@ function updateBuildingProductionCue(visual, building) {
   applyProductionCueState(visual.productionLamp, state, visual.teamColor);
 }
 
-function addTownCenterVisual(spawn, definition) {
-  const townCenter = townCenterSpawnPosition(
-    definition.spawnPoints, spawn.team, definition.width, definition.height,
-  );
-  const { x, z } = townCenter;
+function createTownCenterVisual(building) {
+  const spawn = { team: building.team };
+  const { x, z } = building;
   const group = new THREE.Group();
   group.position.set(x, 0, z);
   const fallbackRoot = new THREE.Group();
@@ -806,18 +804,33 @@ function addTownCenterVisual(spawn, definition) {
   productionLamp.position.set(0, 1.09, 0.93);
   productionLamp.visible = false;
   group.add(productionLamp);
-  addMapObject(group);
-  capturedBuildingVisuals.push({
-    sprite: capturedSprite,
-    fallbackRoot,
-    lifecycleInput: { complete: true, progress: 1 },
-  });
-  townCenterProductionLamps[spawn.team] = productionLamp;
+  const captureEntry = { sprite: capturedSprite, fallbackRoot, lifecycleInput: building };
+  capturedBuildingVisuals.push(captureEntry);
+  const outline = new THREE.Mesh(new THREE.RingGeometry(2.6, 2.7, 4),
+    new THREE.MeshBasicMaterial({ color: TEAM_HEX[building.team], side: THREE.DoubleSide }));
+  outline.rotation.x = -Math.PI / 2; outline.rotation.z = Math.PI / 4; outline.position.y = 0.04;
+  group.add(outline);
+  const healthIndicator = createBuildingHealthIndicator(); group.add(healthIndicator.group);
+  const combatFeedback = createBuildingCombatFeedback(); group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
+  const rallyMarker = createBuildingRallyMarker(); group.add(rallyMarker);
+  const visual = { group, fallbackRoot, captureEntry, productionLamp, outline,
+    healthIndicator, combatFeedback, rallyMarker, teamColor: TEAM_HEX[building.team] };
+  scene.add(group); updateTownCenterVisual(visual, building); return visual;
+}
+
+function updateTownCenterVisual(visual, building) {
+  visual.group.position.set(building.x, 0, building.z);
+  visual.captureEntry.lifecycleInput = building;
+  const progress = THREE.MathUtils.clamp(Number(building.progress) || 0, 0, 1);
+  visual.fallbackRoot.scale.set(building.home ? 1 : 1.45, Math.max(0.08, progress), building.home ? 1 : 1.45);
+  updateBuildingHealthIndicator(visual, building);
+  updateBuildingProductionCue(visual, building);
 }
 
 function clearBuildingVisuals() {
   selectedBuildingId = null;
   for (const visual of buildingVisuals.values()) {
+    if (visual.captureEntry) { const index = capturedBuildingVisuals.indexOf(visual.captureEntry); if (index >= 0) capturedBuildingVisuals.splice(index, 1); }
     visual.authoredSprite?.dispose();
     scene.remove(visual.group);
     visual.group.traverse((object) => {
@@ -1032,6 +1045,10 @@ function createBuildingProductionLamp(group, team, x, y, z) {
 }
 
 function disposeBuildingVisual(visual) {
+  if (visual.captureEntry) {
+    const captureIndex = capturedBuildingVisuals.indexOf(visual.captureEntry);
+    if (captureIndex >= 0) capturedBuildingVisuals.splice(captureIndex, 1);
+  }
   visual.authoredSprite?.dispose();
   scene.remove(visual.group);
   visual.group.traverse((object) => {
@@ -1154,6 +1171,7 @@ function updateHouseVisual(visual, building) {
 
 function createGameplayBuildingVisual(building) {
   const role = buildingPresentation(building.type).role;
+  if (role === 'town-center') return createTownCenterVisual(building);
   if (role === 'house') return createHouseVisual(building);
   return role === 'barracks' ? createBarracksVisual(building) : createArcheryRangeVisual(building);
 }
@@ -1420,7 +1438,8 @@ function reconcileBuildings(buildings = [], initial = false) {
       disposeBuildingVisual(visual);
       visual = createGameplayBuildingVisual(building);
       buildingVisuals.set(building.id, visual);
-    } else if (buildingPresentation(building.type).role === 'house') updateHouseVisual(visual, building);
+    } else if (buildingPresentation(building.type).role === 'town-center') updateTownCenterVisual(visual, building);
+    else if (buildingPresentation(building.type).role === 'house') updateHouseVisual(visual, building);
     else if (buildingPresentation(building.type).role === 'barracks') updateBarracksVisual(visual, building);
     else updateArcheryRangeVisual(visual, building);
     visual.type = building.type;
@@ -2044,7 +2063,7 @@ function buildMap(definition) {
     addMapObject(forestStumpMesh);
   }
 
-  for (const spawn of definition.spawnPoints || []) addTownCenterVisual(spawn, definition);
+  // Town Centers are authoritative entities reconciled from match snapshots.
   buildWoodNodeInstances(definition.resourceNodes || []);
   buildBerryNodeInstances(definition.resourceNodes || []);
   for (const node of definition.resourceNodes || []) {
@@ -3309,7 +3328,7 @@ function updateSelectionUI() {
       ? UNIT_DEFINITIONS[selectedBuilding.productionQueue[0]].label
       : products.map((kind) => UNIT_DEFINITIONS[kind].label).join(' / ');
     const training = Math.round(Math.max(0, Math.min(1, Number(selectedBuilding.trainingProgress) || 0)) * 100);
-    ui.selectedBuildingName.textContent = `${buildingLabel(selectedBuilding.type)} #${selectedBuilding.id}`;
+    ui.selectedBuildingName.textContent = selectedBuilding.home ? 'TOWN CENTER · HOME' : `${buildingLabel(selectedBuilding.type)} #${selectedBuilding.id}`;
     ui.selectedBuildingState.textContent = selectedBuilding.attackers > 0 ? 'UNDER ATTACK'
       : selectedBuilding.complete ? 'READY' : `BUILDING · ${construction}%`;
     ui.selectedBuildingCard.dataset.danger = healthRatio <= 0.25 || selectedBuilding.attackers > 0 ? 'high'
@@ -3866,7 +3885,7 @@ function updateCommandUI() {
     ui.commandIcon.classList.toggle('attack-move', !selectedBuilding && attackMoveMode);
   }
   if (ui.commandTitle) ui.commandTitle.textContent = selectedBuilding
-    ? `${buildingLabel(selectedBuilding.type)} #${selectedBuilding.id}`
+    ? selectedBuilding.home ? 'TOWN CENTER · HOME' : `${buildingLabel(selectedBuilding.type)} #${selectedBuilding.id}`
     : attackMoveMode ? 'Advance and engage' : 'Move or attack';
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
   const utilityBuilding = selectedBuilding && !BUILDING_DEFINITIONS[selectedBuilding.type]?.products.length;
@@ -4106,7 +4125,7 @@ function applyState(state, initial = false) {
   if (Array.isArray(state.objectives)) updateObjectives(state.objectives);
   updateVictoryHoldCard(state.victoryHold, state.winner, state.winnerReason, state.scenarioClockStarted);
   updateScenarioEventCards(state.scenarioEvents || [], state.matchElapsedSeconds, state.scenarioClockStarted);
-  const buildingDamage = Array.isArray(state.buildings) ? reconcileBuildings(state.buildings, audioReset) : 0;
+  const buildingDamage = Array.isArray(state.buildings) ? reconcileBuildings([...state.buildings, ...(state.homeTownCenters || [])], audioReset) : 0;
   if (audioReset) combatAudioGate.reset();
   else {
     const cue = combatAudioGate.observe({ friendlyDamage, selectedDamage, buildingDamage }, performance.now());
@@ -4176,7 +4195,7 @@ function updateRosterProductionOptions(container, selectedProducer = null) {
   if (!container) return;
   const products = selectedProducer ? BUILDING_DEFINITIONS[selectedProducer.type]?.products || []
     : [...new Set(Object.values(BUILDING_DEFINITIONS).flatMap((definition) => definition.products || []))]
-      .filter((kind) => !['infantry', 'archer'].includes(kind));
+      .filter((kind) => !['worker', 'infantry', 'archer'].includes(kind));
   const key = products.join(',');
   if (container.dataset.products !== key) {
     container.replaceChildren();
@@ -4193,9 +4212,9 @@ function updateRosterProductionOptions(container, selectedProducer = null) {
     }
   }
   const alive = localTeam === null ? 0 : teamUnits[localTeam].filter((unit) => unit.hp > 0).length;
-  const reserved = localTeam === null ? 0 : latestBuildings.filter((row) => row.team === localTeam)
+  const reserved = localTeam === null ? 0 : latestBuildings.filter((row) => row.team === localTeam && !row.home)
     .reduce((sum, row) => sum + getBuildingQueueLength(row), latestWorkerProduction[localTeam]?.queue || 0);
-  const totalReserved = latestBuildings.reduce((sum, row) => sum + getBuildingQueueLength(row), 0)
+  const totalReserved = latestBuildings.filter((row) => !row.home).reduce((sum, row) => sum + getBuildingQueueLength(row), 0)
     + latestWorkerProduction.reduce((sum, row) => sum + (row?.queue || 0), 0);
   for (const button of container.children) {
     const definition = UNIT_DEFINITIONS[button.dataset.product];
@@ -4303,10 +4322,10 @@ function updateEconomyUI(state = {}, initial = false) {
   const ownedUnits = localTeam === null ? [] : teamUnits[localTeam].filter((unit) => unit.hp > 0);
   const teamRosterCount = ownedUnits.length;
   const queuedByTeam = localTeam === null ? 0 : latestBuildings
-    .filter((building) => building.team === localTeam)
+    .filter((building) => building.team === localTeam && !building.home)
     .reduce((sum, building) => sum + getBuildingQueueLength(building), 0)
     + (latestWorkerProduction[localTeam]?.queue || 0);
-  const queuedTotal = latestBuildings.reduce((sum, building) => sum + getBuildingQueueLength(building), 0)
+  const queuedTotal = latestBuildings.filter((building) => !building.home).reduce((sum, building) => sum + getBuildingQueueLength(building), 0)
     + latestWorkerProduction.reduce((sum, production) => sum + (production?.queue || 0), 0);
   const populationFull = localTeam !== null && latestPopulation[localTeam]?.available === 0;
   const unitCapReached = populationFull || teamRosterCount + queuedByTeam >= MAX_PER_TEAM
@@ -4369,9 +4388,10 @@ function updateEconomyUI(state = {}, initial = false) {
   }
   const workerProduction = localTeam === null ? null : latestWorkerProduction[localTeam];
   const workerQueue = Math.max(0, Math.floor(workerProduction?.queue || 0));
+  const homeCenter = latestBuildings.find((building) => building.home && building.team === localTeam);
   if (ui.trainWorker) {
     ui.trainWorker.disabled = localTeam === null || matchWinner >= 0
-      || food < WORKER_FOOD_COST || workerQueue >= WORKER_QUEUE_LIMIT || unitCapReached;
+      || !homeCenter || food < WORKER_FOOD_COST || workerQueue >= WORKER_QUEUE_LIMIT || unitCapReached;
     ui.trainWorker.setAttribute('aria-label', 'Queue worker for ' + formatResourceRequirement(WORKER_FOOD_COST) + ' food'
       + (workerQueue > 0 ? ', queue ' + workerQueue + ' of ' + WORKER_QUEUE_LIMIT : '')
       + (unitCapReached ? ', unit cap reached' : ''));
@@ -4463,7 +4483,7 @@ function updateEconomyUI(state = {}, initial = false) {
       : 'Select Workers, then right-click food or wood.';
   }
   for (const [button, costFood, costWood, producer, queue, limit] of [
-    [ui.trainWorker, WORKER_FOOD_COST, 0, true, workerQueue, WORKER_QUEUE_LIMIT],
+    [ui.trainWorker, WORKER_FOOD_COST, 0, homeCenter, workerQueue, WORKER_QUEUE_LIMIT],
     [ui.trainInfantry, INFANTRY_FOOD_COST, 0, trainableBarracks, infantryQueueLength, BARRACKS_QUEUE_LIMIT],
     [ui.trainArcher, ARCHER_FOOD_COST, ARCHER_WOOD_COST, trainableRange, queueLength, ARCHERY_RANGE_QUEUE_LIMIT],
   ]) {
@@ -6942,8 +6962,9 @@ function buildPlacementAt(clientX, clientY) {
   const startColumn = centerColumn - Math.floor(footprint / 2);
   const startRow = centerRow - Math.floor(footprint / 2);
   let blockedReason = '';
-  if (column < 1 || column >= MAP_WIDTH - 1 || row < 1 || row >= MAP_HEIGHT - 1) blockedReason = 'TOO CLOSE TO MAP EDGE';
+  if (startColumn < 0 || startColumn + footprint > MAP_WIDTH || startRow < 0 || startRow + footprint > MAP_HEIGHT) blockedReason = 'TOO CLOSE TO MAP EDGE';
   else if (localTeam === null || latestWood[localTeam] < woodCost) blockedReason = `NEED ${formatResourceRequirement(woodCost)} WOOD`;
+  else if (latestFood[localTeam] < (BUILDING_DEFINITIONS[buildPlacementType].cost.food || 0)) blockedReason = `NEED ${BUILDING_DEFINITIONS[buildPlacementType].cost.food} FOOD`;
   else if (!selectedIds().some((id) => units[id]?.kind === 'worker')) blockedReason = 'SELECT WORKERS';
   if (mapDefinition) {
     for (const obstacle of mapDefinition.obstacles || []) {
@@ -6964,14 +6985,7 @@ function buildPlacementAt(clientX, clientY) {
       if (zone && startColumn < zone.column + zone.width && zone.column < startColumn + footprint
         && startRow < zone.row + zone.height && zone.row < startRow + footprint) blockedReason ||= 'CAPTURE ZONE IN THIS SITE';
     }
-    for (const spawn of mapDefinition.spawnPoints || []) {
-      const townCenter = townCenterSpawnPosition(
-        mapDefinition.spawnPoints, spawn.team, mapDefinition.width, mapDefinition.height,
-      );
-      if (Math.abs(x - townCenter.x) < 2.8 && Math.abs(z - townCenter.z) < 2.8) {
-        blockedReason ||= 'TOWN CENTER TOO CLOSE';
-      }
-    }
+
   }
   for (const team of teamUnits) {
     for (const unit of team) {
@@ -6985,8 +6999,9 @@ function buildPlacementAt(clientX, clientY) {
   for (const building of latestBuildings) {
     const buildingColumn = Math.floor(building.x + MAP_HALF_X);
     const buildingRow = Math.floor(building.z + MAP_HALF_Z);
-    if (Math.abs(centerColumn - buildingColumn) < footprint
-      && Math.abs(centerRow - buildingRow) < footprint) blockedReason ||= 'ANOTHER BUILDING TOO CLOSE';
+    const clearance = (footprint + buildingFootprint(building.type)) / 2;
+    if (Math.abs(centerColumn - buildingColumn) < clearance
+      && Math.abs(centerRow - buildingRow) < clearance) blockedReason ||= 'ANOTHER BUILDING TOO CLOSE';
   }
   return { x, z, column: centerColumn, row: centerRow, valid: !blockedReason, blockedReason };
 }
@@ -6997,7 +7012,7 @@ function updateBuildPlacementGhost(clientX, clientY) {
   placementGhost.visible = Boolean(placement);
   if (ui.placementStatus) {
     const message = placement
-      ? placement.valid ? 'CLEAR 3 × 3 SITE' : `BLOCKED · ${placement.blockedReason}`
+      ? placement.valid ? `CLEAR ${buildingFootprint(buildPlacementType)} × ${buildingFootprint(buildPlacementType)} SITE` : `BLOCKED · ${placement.blockedReason}`
       : 'CHOOSE A SITE ON THE BATTLEFIELD';
     const state = placement?.valid ? 'clear' : 'blocked';
     if (ui.placementStatus.textContent !== message) ui.placementStatus.textContent = message;
@@ -7006,6 +7021,7 @@ function updateBuildPlacementGhost(clientX, clientY) {
   syncBattlefieldCursor();
   if (!placement) return;
   placementGhost.position.set(placement.x, 0, placement.z);
+  placementGhost.scale.set(buildingFootprint(buildPlacementType) / 3, 1, buildingFootprint(buildPlacementType) / 3);
   const tint = placement.valid ? 0x9cdb8a : 0xe7836d;
   for (const material of placementGhostMaterials) material.color.setHex(tint);
   const isBarracks = buildPlacementType === 'barracks';
@@ -7034,7 +7050,7 @@ function updateBuildPlacementHint() {
     : tapOrderArmed ? 'CANCEL TARGET' : coarsePointer ? 'TAP TARGET' : 'MOVE / ATTACK';
   if (ui.placementStatus) {
     ui.placementStatus.hidden = !buildPlacementActive;
-    ui.placementStatus.textContent = buildPlacementActive ? 'CHOOSE A CLEAR 3 × 3 SITE' : '';
+    ui.placementStatus.textContent = buildPlacementActive ? `CHOOSE A CLEAR ${buildingFootprint(buildPlacementType)} × ${buildingFootprint(buildPlacementType)} SITE` : '';
     ui.placementStatus.dataset.state = 'ready';
   }
   syncTargetOrderUI();
