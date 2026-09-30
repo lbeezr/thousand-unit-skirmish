@@ -185,7 +185,7 @@ function validateMapDefinition(definition, filename) {
   const elevationLevels = buildElevationGrid(
     definition.width, definition.height, definition.elevationPatches,
   );
-  const terrainMaterials = ['meadow', 'short-grass', 'long-grass', 'forest-floor', 'dirt', 'sand', 'scree', 'cinder'];
+  const terrainMaterials = ['meadow', 'short-grass', 'long-grass', 'forest-floor', 'dirt', 'sand', 'scree', 'cinder', 'snow', 'ice', 'tidal-mud', 'jungle-loam', 'lunar-soil'];
   if (definition.terrainBase !== undefined && !terrainMaterials.includes(definition.terrainBase)) {
     throw new Error(`Map ${filename} has an invalid base terrain material.`);
   }
@@ -6847,7 +6847,7 @@ const server = createServer(async (request, response) => {
     'audio-studio.html', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs',
     'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs',
     'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
-    'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs',
+    'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs', 'src/terrain-blend.mjs',
   ].includes(relative);
   const publicUiAsset = [
     'assets/ui/cursors/select-add.png',
@@ -6876,7 +6876,7 @@ const server = createServer(async (request, response) => {
     && ['oak', 'pine', 'silver-birch', 'field-maple', 'hazel-thicket',
       'rock-boulder-cluster', 'basalt-ridge-cap', 'cliff-end-cap',
       'berries', 'rock-outcrop', 'basalt-ridge', 'cliff', 'seamstone',
-      'meadow', 'short-grass', 'long-grass', 'forest-floor', 'dirt', 'sand', 'scree', 'cinder'].includes(path.basename(relative, path.extname(relative)));
+      'meadow', 'short-grass', 'long-grass', 'forest-floor', 'dirt', 'sand', 'scree', 'cinder', 'snow', 'ice', 'tidal-mud', 'jungle-loam', 'lunar-soil'].includes(path.basename(relative, path.extname(relative)));
   const publicInteractiveEnvironmentAsset = path.dirname(relative) === 'assets/environment/frontier-interactive-v1'
     && (relative === 'assets/environment/frontier-interactive-v1/manifest.json'
       || (path.extname(relative) === '.webp'
