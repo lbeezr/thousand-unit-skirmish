@@ -316,3 +316,59 @@ batches and lazily loaded textures appear only on maps using this palm;
 residency/performance remain unmeasured.
 [Local evidence](qa-evidence/vaelora-sereward-lifecycle-2026-09-30/README.md)
 records the lineup and live worker harvesting/reset checks separately.
+
+## Integrated lifecycle atlases · 30 September 2026
+
+Bellweather maple and Sereward palm now use one instanced atlas batch per family
+instead of four state meshes. Stock changes update a per-instance UV rectangle;
+world transform, tree cell, scale, flip and ground pivot remain fixed through
+depletion and reset. Other vegetation families retain their existing path.
+
+[Maple atlas](../assets/environment/frontier-v1/bellweather-lifecycle-atlas.json)
+and [palm atlas](../assets/environment/frontier-v1/sereward-lifecycle-atlas.json)
+follow the sprite-atlas v1 schema with full/worked/low/depleted clips and an
+explicit `fixed-oblique` direction. No extra camera perspectives are claimed.
+`python3 scripts/build-environment-lifecycle-atlases.py` reproduces the pages
+from decoded approved runtime files. PNG page frame pixels are exact copies;
+WebP quality86 recompresses RGB while preserving alpha. Original generated
+masters and individual runtime files remain unchanged.
+
+Each frame has 64 pixels of transparent RGB edge-extension padding, half-texel
+UV inset and linear mip sampling. The shader clamps derived texture LOD to six,
+matching the declared padding limit. A linear-only prototype showed speckled
+foliage and was replaced before adoption. Pages load lazily when their family
+is used; the two small manifests load during module initialization. Missing or
+unsupported metadata falls back to the individual state textures. The server
+serves exact metadata names; Docker packaging admits both JSON manifests.
+
+This reduces state batches from four to one, not a measured FPS improvement.
+Padding increases estimated mipmapped RGBA page residency: maple about 26.7 MiB
+and palm about 23.0 MiB, versus about 21.1/17.8 MiB for four individual images.
+Encoded page sizes are 679,166 and 920,604 bytes, close to the earlier four-file
+totals. Texture caching still lacks eviction; no large-match GPU budget is
+claimed. [Maple evidence](qa-evidence/vaelora-bellweather-atlas-2026-09-30/README.md)
+and [palm evidence](qa-evidence/vaelora-sereward-atlas-2026-09-30/README.md)
+record appearance, UV state/reset selection and real palm harvesting.
+
+## Camera calibration and upright sprites · 30 September 2026
+
+The fixed camera direction is shared through `CAMERA_VIEW_DIRECTION` in
+`src/camera-controls.mjs`: [0.78,1.12,0.78], giving 45° azimuth and
+45.4359° elevation above ground. This is a steeper oblique view than true
+isometric's 35.2644° elevation. The camera remains unchanged.
+
+The old shortest-arc +Z-to-camera quaternion matched the viewing normal but
+introduced about -19.677° of screen roll. Environment sprites now use the
+camera's world-Y-up basis, removing that unintended sideways tilt. This covers
+individual sprites, instanced forest/rocks, state atlases and the legacy cliff
+comparison. Natural painted curves remain in the source art.
+
+QA previews use the same shared direction and target rather than an approximate
+[30,43,30] camera. Actual instance matrices are checked at all four stock stages
+for zero screen roll; ordinary/strategic captures and live harvesting/reset were
+repeated after integrating main `242d330` at `eb5cfac`. Camera-controls and
+reconnect tests pass. Future painted-art briefs should state orthographic view,
+45° azimuth, 45.4359° elevation, Y-up and zero screen roll; those prompt numbers
+are guidance, not proof of an AI-painted image's intrinsic perspective. Exact
+source-view calibration requires a reproducible 3D capture or a measured art
+construction.

@@ -68,6 +68,7 @@ import {
   edgeScrollCameraDelta,
   edgeScrollDirection,
   shouldBlockEdgeScrollForFocus,
+  CAMERA_VIEW_DIRECTION,
 } from './camera-controls.mjs';
 import {
   cameraArrowInputAllowed, cameraTargetDeltaForScreenFocus, createCameraArrowKeys,
@@ -401,7 +402,7 @@ scene.fog = new THREE.Fog(0x859175, 145, 235);
 
 const camera = new THREE.OrthographicCamera(-32, 32, 32, -32, 0.1, 300);
 const cameraTarget = new THREE.Vector3(0, 0, 0);
-const cameraOffset = new THREE.Vector3(0.78, 1.12, 0.78).normalize();
+const cameraOffset = new THREE.Vector3(...CAMERA_VIEW_DIRECTION).normalize();
 const baseFrustum = 43;
 const defaultCameraZoom = 0.91;
 let zoom = defaultCameraZoom;
@@ -2093,7 +2094,7 @@ function buildMap(definition) {
   buildConstructionGroundBatches();
 
   forestTreeSlots = addObstacleEnvironmentSprites(definition, MAP_HALF_X, MAP_HALF_Z, addMapObject);
-  const stumpPositions = [...forestTreeSlots].filter(([, slot]) => !slot.stateMeshes).map(([cell, slot], index) => {
+  const stumpPositions = [...forestTreeSlots].filter(([, slot]) => !slot.stateMeshes && !slot.atlas).map(([cell, slot], index) => {
     forestStumpSlots.set(cell, {
       index, x: slot.x, z: slot.z, scale: slot.scale * 0.48,
       flip: slot.flip, visible: false,

@@ -71,7 +71,8 @@ const region=process.env.RTS_VEGETATION_REGION || 'bellweather';
 if(!['bellweather','veyrholds','underbough','sereward','ellionar'].includes(region))throw new Error('Unknown vegetation capture region');
 const lifecycle=process.env.RTS_VEGETATION_LIFECYCLE==='1';
 if(lifecycle&&!['bellweather','sereward'].includes(region))throw new Error('No lifecycle pack for region');
-const out=lifecycle ? 'docs/qa-evidence/vaelora-'+region+'-lifecycle-2026-09-30' : region==='bellweather' ? 'docs/qa-evidence/vaelora-vegetation-2026-09-30' : 'docs/qa-evidence/vaelora-'+region+'-2026-09-30';
+const atlasCapture=process.env.RTS_VEGETATION_ATLAS==='1';
+const out=atlasCapture ? 'docs/qa-evidence/vaelora-'+region+'-atlas-2026-09-30' : lifecycle ? 'docs/qa-evidence/vaelora-'+region+'-lifecycle-2026-09-30' : region==='bellweather' ? 'docs/qa-evidence/vaelora-vegetation-2026-09-30' : 'docs/qa-evidence/vaelora-'+region+'-2026-09-30';
 let cdp;
 try {
  let port;for(let i=0;i<100;i++){try{port=Number((await readFile(profile+'/DevToolsActivePort','utf8')).split('\n')[0]);if(port)break}catch{}await sleep(100)}
@@ -91,8 +92,9 @@ try {
  const room=await(await fetch(new URL('/api/rooms',BASE),{method:'POST',headers:{origin:BASE.origin,'content-type':'application/json'},body:'{}'})).json();
  if(!room.roomId)throw new Error(room.error || 'isolated review room failed');
  await cdp.call('Page.navigate',{url:BASE.origin+'/?room='+room.roomId});await sleep(5500);
+ if(await cdp.evaluate('document.documentElement.dataset.boot')!=='ready')throw new Error('Game did not boot before appearance capture');
  const openingRequests=await cdp.evaluate('performance.getEntriesByType("resource").filter(e=>e.name.includes("assets/environment")).map(e=>new URL(e.name).pathname)');
- if(openingRequests.some(p=>p.includes('underbough-')||p.includes('veyrholds-')||p.includes('sereward-')||p.includes('ellionar-')))throw new Error('Unused regional sprites loaded eagerly');
+ if(openingRequests.filter(p=>p.endsWith('.webp')).some(p=>p.includes('underbough-')||p.includes('veyrholds-')||p.includes('sereward-')||p.includes('ellionar-')))throw new Error('Unused regional sprites loaded eagerly');
  await writeFile(out+'/opening-requests.json',JSON.stringify(openingRequests,null,2)+'\n');
  for(const mode of ['ordinary','strategic']) {
   if(mode==='strategic')await cdp.evaluate('document.querySelector("#camera-fit-map").click()');
@@ -107,6 +109,7 @@ try {
  for(const span of [18,36]) {
   const data=await cdp.evaluate(`(async()=>{
    const THREE=await import('/vendor/three.module.js');
+   const {CAMERA_VIEW_DIRECTION}=await import('/src/camera-controls.mjs');
    const {addObstacleEnvironmentSprites,createGroundSurfaces}=await import('/src/environment-art.mjs');
    const d={id:'bellweather-study',width:24,height:24,terrainSeed:941,terrainBase:'meadow',terrainPatches:[{column:0,row:12,width:24,height:12,material:'dry-grass'}],obstacles:[{row:5,column:6,width:5,height:5,material:'forest'},{row:14,column:14,width:4,height:3,material:'forest'}]};
    if(${JSON.stringify(region)}==='veyrholds'){d.id='veyrholds-study';d.terrainBase='scree';d.terrainPatches=[];d.obstacles.push({row:16,column:6,width:5,height:2,material:'stone',elevation:0.72})}
@@ -114,7 +117,7 @@ try {
    if(${JSON.stringify(region)}==='sereward'){d.id='sereward-study';d.terrainBase='sand';d.terrainPatches=[]}
    if(${JSON.stringify(region)}==='ellionar'){d.id='ellionar-study';d.terrainBase='garden-loam';d.terrainPatches=[{column:0,row:12,width:24,height:12,material:'dirt'}]}
    const renderer=new THREE.WebGLRenderer({preserveDrawingBuffer:true,antialias:true});renderer.setSize(1000,750);renderer.setPixelRatio(1);
-   const scene=new THREE.Scene();scene.background=new THREE.Color(0x859175);const camera=new THREE.OrthographicCamera(-${span}*4/3,${span}*4/3,${span},-${span},0.1,200);camera.position.set(30,43,30);camera.lookAt(0,0,0);
+   const scene=new THREE.Scene();scene.background=new THREE.Color(0x859175);const camera=new THREE.OrthographicCamera(-${span}*4/3,${span}*4/3,${span},-${span},0.1,200);camera.position.set(...CAMERA_VIEW_DIRECTION).multiplyScalar(50);camera.lookAt(0,0,0);
    for(const o of createGroundSurfaces(d))scene.add(o);addObstacleEnvironmentSprites(d,12,12,o=>scene.add(o));
    await new Promise(r=>setTimeout(r,1400));renderer.render(scene,camera);const image=renderer.domElement.toDataURL('image/png');
    scene.traverse(o=>{o.geometry?.dispose();if(o.material){o.userData.ownedGroundTextures?.forEach(t=>t.dispose());o.material.dispose()}});renderer.dispose();renderer.forceContextLoss();return image;
@@ -124,6 +127,7 @@ try {
  if(lifecycle) {
   const result=await cdp.evaluate(`(async()=>{
    const THREE=await import('/vendor/three.module.js');
+   const {CAMERA_VIEW_DIRECTION}=await import('/src/camera-controls.mjs');
    const {addObstacleEnvironmentSprites,createGroundSurfaces,setForestSpriteStock}=await import('/src/environment-art.mjs');
    const d={width:24,height:24,terrainBase:${JSON.stringify(region==='sereward'?'sand':'meadow')},obstacles:[{row:3,column:3,width:16,height:16,material:'forest'}]};
    const scene=new THREE.Scene();scene.background=new THREE.Color(0x727a57);
@@ -131,36 +135,40 @@ try {
    for(const slot of slots.values())setForestSpriteStock(slot,0);
    // Hide every non-preview slot, including registered depleted frames.
    for(const m of scene.children){const zero=new THREE.Matrix4().makeScale(0,0,0);for(let i=0;i<m.count;i++)m.setMatrixAt(i,zero);m.instanceMatrix.needsUpdate=true}
-   const selected=[...slots.values()].filter(s=>s.family===${JSON.stringify(region==='sereward'?'sereward-palm':'bellweather-field-maple')}&&s.stateMeshes).slice(0,4);
+   const selected=[...slots.values()].filter(s=>s.family===${JSON.stringify(region==='sereward'?'sereward-palm':'bellweather-field-maple')}&&s.atlas).slice(0,4);
    if(selected.length!==4)throw new Error('Lifecycle pilot slots missing');
    const expected=['full','worked','low','depleted'],stocks=[6,3,1,0],checks=[];
    for(let i=0;i<4;i++){
     const s=selected[i];s.x=(i-1.5)*3;s.z=-s.x;
     const actual=setForestSpriteStock(s,stocks[i]);if(actual!==expected[i])throw new Error('Wrong stock stage');
-    const matrices={};for(const [stage,m] of Object.entries(s.stateMeshes)){
-     const matrix=new THREE.Matrix4();m.getMatrixAt(s.index,matrix);const scale=new THREE.Vector3().setFromMatrixScale(matrix);
-     if((scale.length()>0)!==(stage===expected[i]))throw new Error('Multiple/missing active frames');
-     matrices[stage]=matrix.elements;
-    }
-    checks.push({stock:stocks[i],stage:actual,matrices});
+    const uv=Array.from(s.atlas.rects.array.slice(s.index*4,s.index*4+4));
+    if(uv.some((v,j)=>Math.abs(v-s.atlas.frameRects[expected[i]][j])>1e-7))throw new Error('Wrong atlas UV');
+    const matrix=new THREE.Matrix4();s.mesh.getMatrixAt(s.index,matrix);
+    if(new THREE.Vector3().setFromMatrixScale(matrix).length()===0)throw new Error('Atlas state hidden');
+    const view=new THREE.Matrix4().lookAt(new THREE.Vector3(...CAMERA_VIEW_DIRECTION),new THREE.Vector3(),new THREE.Vector3(0,1,0));
+    const up=new THREE.Vector3(0,1,0).transformDirection(matrix).applyQuaternion(new THREE.Quaternion().setFromRotationMatrix(view).invert());
+    const roll=Math.atan2(-up.x,up.y)*180/Math.PI;if(Math.abs(roll)>0.0001)throw new Error('Sprite screen roll '+roll);
+    checks.push({stock:stocks[i],stage:actual,uv,matrix:matrix.elements,screenRollDegrees:roll});
    }
-   // A reset restores full art and hides each prior stock frame at the same address.
-   const s=selected[3];setForestSpriteStock(s,6);const matrix=new THREE.Matrix4();s.stateMeshes.full.getMatrixAt(s.index,matrix);
-   if(new THREE.Vector3().setFromMatrixScale(matrix).length()===0)throw new Error('Reset failed');setForestSpriteStock(s,0);
+   if(new Set(selected.map(s=>s.mesh)).size!==1)throw new Error('Lifecycle not batched into one mesh');
+   const s=selected[3];setForestSpriteStock(s,6);
+   const resetUv=Array.from(s.atlas.rects.array.slice(s.index*4,s.index*4+4));
+   if(resetUv.some((v,j)=>Math.abs(v-s.atlas.frameRects.full[j])>1e-7))throw new Error('Atlas reset failed');setForestSpriteStock(s,0);
    for(const o of createGroundSurfaces({...d,obstacles:[]}))scene.add(o);
    for(let i=0;i<50&&scene.children.some(o=>o.material.map&&!o.material.map.image?.complete);i++)await new Promise(r=>setTimeout(r,100));
    if(scene.children.some(o=>o.material.map&&!o.material.map.image?.naturalWidth))throw new Error('Lifecycle texture load failed');
    const renderer=new THREE.WebGLRenderer({preserveDrawingBuffer:true,antialias:true});renderer.setSize(1200,500);
-   const camera=new THREE.OrthographicCamera(-12,12,5,-5,0.1,200);camera.position.set(30,43,30);camera.lookAt(0,1,0);
+   const camera=new THREE.OrthographicCamera(-12,12,5,-5,0.1,200);camera.position.set(...CAMERA_VIEW_DIRECTION).multiplyScalar(50).add(new THREE.Vector3(0,1,0));camera.lookAt(0,1,0);
    renderer.render(scene,camera);const image=renderer.domElement.toDataURL('image/png');
    scene.traverse(o=>{o.geometry?.dispose();o.userData.ownedGroundTextures?.forEach(t=>t.dispose());o.material?.dispose()});renderer.dispose();renderer.forceContextLoss();
-   return {checks,reset:true,image};
+   return {checks,reset:true,forestBatches:1,image};
   })()`);
   await writeFile(out+'/lifecycle-renderer.png',Buffer.from(result.image.split(',')[1],'base64'));delete result.image;
   await writeFile(out+'/lifecycle-proof.json',JSON.stringify(result,null,2)+'\n');
  }
  const proof=await cdp.evaluate(`(async()=>{
   const THREE=await import('/vendor/three.module.js');
+   const {CAMERA_VIEW_DIRECTION}=await import('/src/camera-controls.mjs');
   const {addObstacleEnvironmentSprites,createGroundSurfaces}=await import('/src/environment-art.mjs');
   const results=[];
   for(const terrainBase of ['meadow','snow','scree','forest-floor','sand','garden-loam']) {
@@ -176,10 +184,10 @@ try {
  })()`);
  await writeFile(out+'/forest-slot-proof.json',JSON.stringify(proof,null,2)+'\n');
  if(proof.some(r=>r.cells.length!==36)||JSON.stringify(proof[0].cells.slice().sort((a,b)=>a-b))!==JSON.stringify(proof[1].cells.slice().sort((a,b)=>a-b)))throw new Error('Forest slot identity changed');
- if(!proof[0].files.includes('bellweather-field-maple.webp')||!proof[0].files.includes('bellweather-hedgerow.webp')||proof[1].files.some(f=>f.startsWith('bellweather')))throw new Error('Vegetation palette binding mismatch');
+ if(!proof[0].files.includes('bellweather-lifecycle-atlas.webp')||!proof[0].files.includes('bellweather-hedgerow.webp')||proof[1].files.some(f=>f.startsWith('bellweather')))throw new Error('Vegetation palette binding mismatch');
  if(!proof[2].files.includes('veyrholds-highpine.webp')||!proof[2].files.includes('veyrholds-ironlichen-outcrop.webp')||proof.slice(0,2).some(r=>r.files.some(f=>f.startsWith('veyrholds'))))throw new Error('Veyrholds palette binding mismatch');
  if(!proof[3].files.includes('underbough-copperleaf.webp')||!proof[3].files.includes('underbough-bramble.webp')||proof[3].files.some(f=>/^(?:field-maple|hazel-thicket|silver-birch|pine|oak(?:-01)?)\.webp$/.test(f))||proof.slice(0,3).some(r=>r.files.some(f=>f.startsWith('underbough'))))throw new Error('Underbough forest mix mismatch');
- if(!['sereward-palm.webp','sereward-acacia.webp','sereward-scrub.webp'].every(f=>proof[4].files.includes(f))||proof[4].files.some(f=>/^(?:field-maple|hazel-thicket|silver-birch|pine|oak(?:-01)?)\.webp$/.test(f))||proof.slice(0,4).some(r=>r.files.some(f=>f.startsWith('sereward'))))throw new Error('Sereward forest mix mismatch');
+ if(!['sereward-lifecycle-atlas.webp','sereward-acacia.webp','sereward-scrub.webp'].every(f=>proof[4].files.includes(f))||proof[4].files.some(f=>/^(?:field-maple|hazel-thicket|silver-birch|pine|oak(?:-01)?)\.webp$/.test(f))||proof.slice(0,4).some(r=>r.files.some(f=>f.startsWith('sereward'))))throw new Error('Sereward forest mix mismatch');
  if(!['ellionar-cultivated-palm.webp','ellionar-garden-hedge.webp'].every(f=>proof[5].files.includes(f))||proof[5].files.some(f=>/^(?:field-maple|hazel-thicket|silver-birch|pine|oak(?:-01)?)\.webp$/.test(f))||proof.slice(0,5).some(r=>r.files.some(f=>f.startsWith('ellionar'))))throw new Error('Ellionar garden mix mismatch');
  const reference=JSON.stringify(proof[0].cells.slice().sort((a,b)=>a-b));
  if(proof.some(r=>JSON.stringify(r.cells.slice().sort((a,b)=>a-b))!==reference))throw new Error('Regional forest cells differ');
@@ -232,6 +240,26 @@ try {
   if(!restored)throw new Error('Live forest reset failed');
   await sleep(100);shot=await cdp.call('Page.captureScreenshot',{format:'png'});await writeFile(out+'/harvest-reset.png',Buffer.from(shot.data,'base64'));
   await writeFile(out+'/live-harvest-proof.json',JSON.stringify({mapId:map.id,targetCell:768,family:'sereward-palm',observed,reset:true},null,2)+'\n');
+ }
+ if(atlasCapture){
+  cdp.on('Fetch.requestPaused',e=>{void cdp.call('Fetch.fulfillRequest',{requestId:e.requestId,responseCode:404,responseHeaders:[{name:'content-type',value:'application/json'}],body:Buffer.from('{}').toString('base64')})});
+  await cdp.call('Fetch.enable',{patterns:[{urlPattern:'*-lifecycle-atlas.json',requestStage:'Request'}]});
+  await cdp.call('Page.reload',{ignoreCache:true});await sleep(3500);
+  const fallback=await cdp.evaluate(`(async()=>{
+   const {addObstacleEnvironmentSprites,setForestSpriteStock}=await import('/src/environment-art.mjs');
+   const result=[];
+   for(const [base,family] of [['meadow','bellweather-field-maple'],['sand','sereward-palm']]){
+    const objects=[];const slots=addObstacleEnvironmentSprites({width:24,height:24,terrainBase:base,obstacles:[{row:3,column:3,width:16,height:16,material:'forest'}]},12,12,o=>objects.push(o));
+    const s=[...slots.values()].find(s=>s.family===family);if(!s?.stateMeshes||s.atlas)throw new Error('Atlas fallback did not restore individual state batches');
+    for(let i=0;i<50&&objects.some(o=>!o.material.map.image?.complete);i++)await new Promise(r=>setTimeout(r,100));
+    if(objects.some(o=>!o.material.map.image?.naturalWidth))throw new Error('Fallback textures did not decode');
+    const stage=setForestSpriteStock(s,0);if(stage!=='depleted')throw new Error('Fallback state mapping failed');
+    result.push({family,states:Object.keys(s.stateMeshes),depleted:true});
+    for(const o of objects){o.geometry.dispose();o.material.dispose()}
+   }
+   return result;
+  })()`);
+  await writeFile(out+'/fallback-proof.json',JSON.stringify(fallback,null,2)+'\n');
  }
  console.log(await cdp.evaluate('JSON.stringify({boot:document.documentElement.dataset.boot,map:document.querySelector("#map-label-title")?.textContent,error:document.querySelector("#runtime-error")?.textContent})'));
  console.log(JSON.stringify({forestCells:36,errors}));if(errors.length)process.exitCode=1;
