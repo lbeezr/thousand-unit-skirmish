@@ -3410,9 +3410,15 @@ function setArmySize(count, showMessage = false) {
   if (showMessage) showToast(`BATTLEFIELD RESET · ${currentArmySize.toLocaleString()} UNITS`, 1500);
 }
 
+function updateStationaryOrderControls(selectedBuilding) {
+  const disabled = localTeam === null || matchWinner >= 0 || selectedIds().length === 0 || Boolean(selectedBuilding);
+  for (const button of document.querySelectorAll('[data-stationary-order]')) button.disabled = disabled;
+}
+
 function updateSelectionUI() {
   const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
     && building.team === localTeam) || null;
+  updateStationaryOrderControls(selectedBuilding);
   ui.selectedBuildingCard.hidden = !selectedBuilding;
   document.querySelector('#dock-selection').dataset.focus = selectedBuilding ? 'building' : 'units';
   if (selectedBuilding) {
@@ -3965,9 +3971,7 @@ function updateMatchResult(winner, triggerId = null, reason = null) {
 function updateCommandUI() {
   const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
     && building.team === localTeam) || null;
-  for (const button of document.querySelectorAll('[data-stationary-order]')) {
-    button.disabled = localTeam === null || matchWinner >= 0 || selectedIds().length === 0 || Boolean(selectedBuilding);
-  }
+  updateStationaryOrderControls(selectedBuilding);
   const rallyCell = Number.isInteger(selectedBuilding?.rallyCell) ? selectedBuilding.rallyCell : -1;
   const mode = selectedBuilding ? BUILDING_DEFINITIONS[selectedBuilding.type]?.products.length ? 'RALLY' : 'BUILDING' : attackMoveMode ? 'ATTACK MOVE' : 'MOVE';
   if (ui.commandMode) {

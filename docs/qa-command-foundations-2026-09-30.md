@@ -21,12 +21,19 @@ server/command-function evidence, not a fresh hosted appearance or scale claim.
   away, beyond attack-move's 4.8-cell acquisition radius. Both held units deal
   damage without moving. Targets then receive retreat orders; the holders stay
   fixed, and damage ceases once targets leave weapon range.
-- `node --test scripts/stationary-command.test.mjs`: five checks cover cargo/work
+- `node --test scripts/stationary-command.test.mjs`: six checks cover cargo/work
   interruption, tracked orders from both seats, observer/result gating, and
-  keyboard/context wiring. Existing HUD, selection, rematch, waypoint
+  keyboard/context wiring and immediate selection availability. Existing HUD, selection, rematch, waypoint
   backpressure and CI-shard tests pass (25 checks). Existing queued-waypoint
   checkpoint/migration/1,000-unit queue and live attack-move route-repair scenarios
   also pass.
+
+A local in-app browser observation caught disabled contextual Stop/Hold controls
+following an Army selection. Availability now updates with selection changes;
+the regression covers empty → army → building → army → empty transitions.
+A fresh browser reload/Army selection then showed both controls enabled; clicking
+Hold and Stop each produced an authoritative notice for the 496-unit selection.
+The 1280 × 720 screenshot showed the contextual controls fully inside the viewport.
 
 ## Limits
 

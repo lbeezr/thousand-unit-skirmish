@@ -48,3 +48,17 @@ test('stationary commands have keyboard and touch/context controls', () => {
   for (const type of ['stop', 'holdPosition']) assert.equal((html.match(new RegExp(`data-stationary-order="${type}"`, 'g')) || []).length, 2);
   assert.ok(client.includes("issueStationaryOrder(event.key.toLowerCase() === 's' ? 'stop' : 'holdPosition')"));
 });
+
+test('selection refresh enables stationary controls immediately and clears stale availability', () => {
+  const buttons = [{ disabled: true }, { disabled: true }];
+  let ids = [];
+  const context = vm.createContext({ localTeam: 0, matchWinner: -1, selectedIds: () => ids,
+    document: { querySelectorAll: () => buttons } });
+  vm.runInContext(client.slice(client.indexOf('function updateStationaryOrderControls('), client.indexOf('function updateSelectionUI(')), context);
+  context.updateStationaryOrderControls(null); assert.ok(buttons.every(button => button.disabled));
+  ids = [4, 5]; context.updateStationaryOrderControls(null); assert.ok(buttons.every(button => !button.disabled));
+  context.updateStationaryOrderControls({ id: 7 }); assert.ok(buttons.every(button => button.disabled));
+  context.updateStationaryOrderControls(null); assert.ok(buttons.every(button => !button.disabled));
+  ids = []; context.updateStationaryOrderControls(null); assert.ok(buttons.every(button => button.disabled));
+  assert.ok(client.slice(client.indexOf('function updateSelectionUI('), client.indexOf('function updateContextualCommands(')).includes('updateStationaryOrderControls(selectedBuilding)'));
+});
