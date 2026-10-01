@@ -22,7 +22,7 @@ import {
 } from './captured-building-art.mjs';
 import {
   addObstacleEnvironmentSprites, groundBaseMaterial, createConstructionGroundInstances,
-  createEnvironmentSprite, createEnvironmentSpriteInstances, createWoodResourceInstances, regionalWoodResourceProfile,
+  createEnvironmentSprite, createEnvironmentSpriteInstances, createWoodResourceInstances, regionalWoodResourceProfile, createFoodResourceInstances, regionalFoodResourceProfile,
   createGroundSurfaces, setEnvironmentSpriteInstance, setForestSpriteStock,
   TERRAIN_MATERIALS, updateConstructionGroundInstances, updateLandVegetationOccupation,
   RESOURCE_STATE_ASSETS_AVAILABLE, RESOURCE_STATE_ASSET_STATUS, resourceStateAssetsReady,
@@ -1939,7 +1939,7 @@ function setBerryNodeStage(id, stage) {
     if (!mesh) continue;
     setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z,
       meshStage === stage
-        ? slot.scale * (RESOURCE_STATE_ASSETS_AVAILABLE ? 1 : resourceVisualScale(stage)) : 0);
+        ? slot.scale * (RESOURCE_STATE_ASSETS_AVAILABLE || regionalFoodResourceProfile(mapDefinition) ? 1 : resourceVisualScale(stage)) : 0);
     mesh.instanceMatrix.needsUpdate = true;
     mesh.visible = (berryStageCounts.get(meshStage) || 0) > 0;
   }
@@ -1965,9 +1965,9 @@ function buildBerryNodeInstances(nodes = []) {
     const stagePositions = positions.map((position, index) => ({
       ...position,
       scale: berryNodeStages.get(berryNodes[index].id) === stage
-        ? position.scale * (RESOURCE_STATE_ASSETS_AVAILABLE ? 1 : resourceVisualScale(stage)) : 0,
+        ? position.scale * (RESOURCE_STATE_ASSETS_AVAILABLE || regionalFoodResourceProfile(mapDefinition) ? 1 : resourceVisualScale(stage)) : 0,
     }));
-    const sprites = createEnvironmentSpriteInstances(`berries-${stage}`, 2.55, 1.56, stagePositions);
+    const sprites = createFoodResourceInstances(mapDefinition, stage, stagePositions);
     if (!sprites) continue;
     sprites.visible = berryStageCounts.get(stage) > 0;
     addMapObject(sprites);

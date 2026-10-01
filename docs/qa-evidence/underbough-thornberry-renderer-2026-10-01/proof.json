@@ -1,0 +1,30 @@
+[
+  {
+    "stage": "full",
+    "family": "underbough-thornberry",
+    "width": 1.8,
+    "height": 1.3270408163265308,
+    "rootReset": true
+  },
+  {
+    "stage": "worked",
+    "family": "underbough-thornberry",
+    "width": 1.8,
+    "height": 1.3270408163265308,
+    "rootReset": true
+  },
+  {
+    "stage": "low",
+    "family": "underbough-thornberry",
+    "width": 1.8,
+    "height": 1.3270408163265308,
+    "rootReset": true
+  },
+  {
+    "stage": "depleted",
+    "family": "underbough-thornberry",
+    "width": 1.8,
+    "height": 1.3270408163265308,
+    "rootReset": true
+  }
+]

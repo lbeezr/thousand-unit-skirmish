@@ -256,6 +256,13 @@ try {
     assert.equal(createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'),
       createHash('sha256').update(await readFile(path.join(sourceRoot, asset))).digest('hex'), asset);
   }
+  for (const stage of ['', '-worked', '-low', '-depleted']) {
+    const asset = `assets/environment/frontier-v1/underbough-thornberry${stage}.webp`;
+    const response = await fetch(`${base}/${asset}`, {headers: {authorization}});
+    assert.equal(response.status, 200, asset);
+    assert.equal(createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'),
+      createHash('sha256').update(await readFile(path.join(sourceRoot, asset))).digest('hex'), asset);
+  }
   for (const [role, version, atlasName = role] of [
     ['worker', 'v1'], ['worker', 'v2'], ['worker', 'v3'],
     ['infantry', 'v1'], ['infantry', 'v2'], ['archer', 'v1'],

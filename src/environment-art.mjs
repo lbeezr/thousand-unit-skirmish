@@ -22,6 +22,7 @@ const INTERACTIVE_ASSET_ROOT = './assets/environment/frontier-interactive-v1/';
 const GROUND_RENDER_ORDER = -20;
 export { TERRAIN_MATERIALS } from './terrain-materials.mjs';
 const spriteNames = [
+  'underbough-thornberry', 'underbough-thornberry-worked', 'underbough-thornberry-low', 'underbough-thornberry-depleted',
   'ru-lora-fringe-broadleaf', 'sombral-mere-mirelily', 'bellweather-meadow-herbs', 'bellweather-meadow-clover', 'bellweather-wild-barley', 'vesperra-shade-fern', 'vesperra-shade-fern-02', 'siltmouths-silver-reed', 'siltmouths-marsh-tuber', 'pale-meridian-violet-lichen', 'pale-meridian-silver-moss', 'pale-meridian-frostberry', 'sombral-mere-lunewort', 'sombral-mere-noctilune', 'underbough-rootward-fungus', 'underbough-rootward-fungus-02', 'veyrholds-ridgegrass', 'veyrholds-suncrest', 'ellionar-sunbloom', 'ellionar-garden-vine', 'sereward-succulent', 'sereward-succulent-02',
   'pine', 'silver-birch', 'field-maple', 'hazel-thicket',
   'bellweather-field-maple', 'bellweather-hedgerow',
@@ -607,6 +608,21 @@ const REGIONAL_WOOD_RESOURCES = Object.freeze({
 
 export function regionalWoodResourceProfile(definition) {
   return definition?.id === 'meshy-resource-review' ? null : REGIONAL_WOOD_RESOURCES[definition?.region] || null;
+}
+
+export function regionalFoodResourceProfile(definition) {
+  return definition?.region === 'underbough' && definition.id !== 'meshy-resource-review'
+    ? {family: 'underbough-thornberry', width: 1.8, height: 1.8 * 867 / 1176} : null;
+}
+
+export function createFoodResourceInstances(definition, stage, positions) {
+  if (!RESOURCE_VISUAL_STAGES.includes(stage)) throw new Error(`Unknown food resource stage: ${stage}`);
+  const profile = regionalFoodResourceProfile(definition);
+  if (!profile) return createEnvironmentSpriteInstances(`berries-${stage}`, 2.55, 1.56, positions);
+  const {family, width, height} = profile;
+  const mesh = createEnvironmentSpriteInstances(stage === 'full' ? family : `${family}-${stage}`, width, height, positions);
+  if (mesh) mesh.userData.resourceFoodFamily = family;
+  return mesh;
 }
 
 export function createWoodResourceInstances(definition, stage, positions) {

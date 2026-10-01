@@ -1,0 +1,79 @@
+{
+  "region": "underbough",
+  "family": "underbough-thornberry",
+  "kind": "food-resource",
+  "directions": [
+    "fixed-painted-oblique"
+  ],
+  "sourceCanvasPx": [
+    1254,
+    1254
+  ],
+  "sharedCropPx": [
+    44,
+    188,
+    1220,
+    1055
+  ],
+  "runtimePixels": [
+    1176,
+    867
+  ],
+  "worldWidth": 1.8,
+  "worldHeight": 1.3270408163265308,
+  "encoding": "shared crop only; no repaint, rescale or alpha change; WebP quality 90 exact alpha",
+  "states": [
+    {
+      "stage": "full",
+      "source": "thornberry-full-000.png",
+      "sourceSha256": "4e21cf29f70dadd5578133026d249833138ac4be53d0a5fbff714e73722713bb",
+      "runtime": "../../frontier-v1/underbough-thornberry.webp",
+      "runtimeSha256": "b4ed2ee36b859894e8ec6236f4036e4352a4209d65247b7d004216735ebe5562",
+      "substantialAlphaBounds": [
+        68,
+        212,
+        1194,
+        1031
+      ]
+    },
+    {
+      "stage": "worked",
+      "source": "thornberry-worked-000.png",
+      "sourceSha256": "809573f705ca5a83b3bef5f8fe6d13ff40287bef4c003364377fce3f13c32e74",
+      "runtime": "../../frontier-v1/underbough-thornberry-worked.webp",
+      "runtimeSha256": "a92f5da3531a6ce830b150c054243b142130a27f4b04f90d199860e79a13ea2f",
+      "substantialAlphaBounds": [
+        68,
+        210,
+        1196,
+        1032
+      ]
+    },
+    {
+      "stage": "low",
+      "source": "thornberry-low-000.png",
+      "sourceSha256": "8779575d4b3d5822a29c91629f525ad130e56bec9f8ac3d39d4e496512e6bd1f",
+      "runtime": "../../frontier-v1/underbough-thornberry-low.webp",
+      "runtimeSha256": "2a2dae5a249cb2e1ad9defaa5597a53ba4de63fc24820af3c29a9c53fb25e8a9",
+      "substantialAlphaBounds": [
+        68,
+        210,
+        1196,
+        1032
+      ]
+    },
+    {
+      "stage": "depleted",
+      "source": "thornberry-depleted-000.png",
+      "sourceSha256": "87243ed1d6c734da3e70cdfbaa4f53b1d2cc933cc372ada2722288da4b16e88d",
+      "runtime": "../../frontier-v1/underbough-thornberry-depleted.webp",
+      "runtimeSha256": "35b509de1d3aab5e44f317dcee1c64c24122a7d678fd06d60c9eda451b736892",
+      "substantialAlphaBounds": [
+        68,
+        211,
+        1196,
+        1032
+      ]
+    }
+  ]
+}
