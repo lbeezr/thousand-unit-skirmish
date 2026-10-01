@@ -914,3 +914,13 @@ ordinary/strategic views. Leaf mass hides more brown branching, but continuous
 forest strips and repeated highlights remain. `forestCanopy=leafy` stays opt-in
 pending silhouette and edge composition work. No broader beauty, worker
 harvest, hosted or directional completion is claimed.
+
+## Fuller hornbeam default adoption — 1 October 2026
+
+The [default binding proof](qa-evidence/underbough-fuller-canopy-default-2026-10-01/README.md)
+selects the fuller hornbeam with no query option. Prior full-game pairs show
+less exposed branching, and the468 default Rootways slots pass atlas harvest
+states and exact reset pixels. Adopt this useful incremental foliage improvement
+while keeping grove composition, repeated silhouettes and rotations unfinished.
+forestCanopy=original restores the prior atlas for comparison. Margin and age
+profiles remain opt-in; this is not a claim of completed landscape beauty.
