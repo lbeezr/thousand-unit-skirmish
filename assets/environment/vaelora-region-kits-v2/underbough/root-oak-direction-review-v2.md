@@ -1,6 +1,6 @@
 # Root Oak authored side-view review
 
-1 October 2026 · Source candidate only · Built-in ImageGen
+1 October 2026 · Rejected directional pair · Built-in ImageGen
 
 The [original intact tree](root-oak-full-000.png) remains the accepted runtime
 view. The [new candidate](root-oak-view-090-review-v2.png) requests a clockwise
@@ -21,6 +21,30 @@ which rear scaffold branches are newly exposed or whether their attachment
 heights correspond to the original. The visible high crown, lower fork and
 root flare need a common anatomical interpretation across opposite views.
 Lighting and apparent ground contact also require registration comparison.
+
+## Opposite-view comparison
+
+The [requested 270-degree drawing](root-oak-view-270-review-v2.png) exposes a
+left spreading crown and reverses the main trunk lean. However, its crown is
+23.8% wider than the requested 90-degree drawing after normalizing their visible
+heights. The [comparison sheet](root-oak-direction-pair-review-v2.png) uses
+uniform thumbnail scaling only; the [measurements](root-oak-direction-pair-review-v2.json)
+record original source hashes and alpha-threshold bounds.
+
+For a fixed orthographic camera, turning one geometry through 180 degrees around
+its vertical axis negates its horizontal projection and preserves horizontal
+extent. Projected vertical bounds can differ because depth contributes to screen
+height. These generated drawings have no world-scale calibration, so normalized
+height is a visual diagnostic rather than proof of an exact geometric error.
+Nevertheless, their substantially different crown breadth and unverified branch
+attachments do not establish one shared tree. Both are rejected as a directional
+pair, while preserved as historical source attempts.
+
+Further independent redraws should stop here. Establish one shared trunk/branch/
+root construction and common crown volumes before deriving additional headings.
+An approximate model used for construction must be identified as a proxy; it
+cannot certify the geometry of the original painted asset. No new paid model
+generation has been authorized or performed in this review.
 
 ## Acceptance still needed
 

@@ -292,14 +292,14 @@
         1244,
         1254
       ],
-      "status": "direction-candidate-review-pending",
+      "status": "rejected-directional-pair",
       "directionDegrees": null,
       "requestedDirectionDegrees": 90,
       "sourceTool": "built-in ImageGen",
       "generatedOutput": "exec-2aa68493-0b86-49bd-b706-7009d4b4066f.png",
       "promptPath": "root-oak-view-090-review-v2-prompt.txt",
       "reviewPath": "root-oak-direction-review-v2.md",
-      "reason": "Authored side-view candidate, not a measured capture. Opposite-view anatomy and shared registration are not yet established; no runtime directional coverage claimed.",
+      "reason": "Opposite requested side views differ substantially in horizontal extent despite similar height. Independent redraws do not establish shared geometry. No runtime coverage accepted.",
       "substantialAlphaBoundsPx": [
         215,
         24,
@@ -307,6 +307,37 @@
         1227
       ],
       "substantialAlphaThreshold": 32
+    },
+    {
+      "path": "root-oak-view-270-review-v2.png",
+      "sha256": "78010eb7308bfd316eaab8089e695eaddd92ba536d7fc4b0343afd09f26912b5",
+      "sizeBytes": 2247370,
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "visibleAlphaBoundsPx": [
+        0,
+        19,
+        1238,
+        1254
+      ],
+      "substantialAlphaBoundsPx": [
+        42,
+        30,
+        1191,
+        1219
+      ],
+      "substantialAlphaThreshold": 32,
+      "status": "rejected-directional-pair",
+      "directionDegrees": null,
+      "requestedDirectionDegrees": 270,
+      "sourceTool": "built-in ImageGen",
+      "generatedOutput": "exec-04268656-3ab0-40be-8609-a1094034c4b6.png",
+      "promptPath": "root-oak-view-270-review-v2-prompt.txt",
+      "reviewPath": "root-oak-direction-review-v2.md",
+      "reason": "Opposite requested side views differ substantially in horizontal extent despite similar height. Independent redraws do not establish shared geometry. No runtime coverage accepted."
     }
   ]
 }
