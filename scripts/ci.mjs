@@ -101,6 +101,7 @@ run(['--test', 'scripts/siege-ai.test.mjs'], 'Bounded siege acquisition and assa
 run(['--test', 'scripts/combat-rules.test.mjs'], 'Shared combat classes, counters and effect scope');
 run(['--test', 'scripts/watchtower-targeting.test.mjs'], 'Bounded defense targeting and sight');
 run(['--test', 'scripts/economy-ledger.test.mjs'], 'Fractional cargo conservation');
+run(['--test', 'scripts/underbough-gathering-evidence.test.mjs'], 'Rootways gathering provenance before rewards');
 run(['--test', 'scripts/base-lifecycle.test.mjs'], 'Cancel refunds and proportional repair');
 run(['--test', 'scripts/storehouse-routing.test.mjs'], 'Reachable drop-off route selection');
 run(['--test', 'scripts/roster-building-ui.test.mjs'], 'Registry building options');
@@ -115,6 +116,8 @@ run(['--test', 'scripts/navigation-settings.test.mjs'], 'Camera navigation setti
 const scenarios = [
   ['scripts/regional-objective-scenario.mjs', 'Millrace both-seat hold and rematch', 'bellweather-millrace'],
   ['scripts/regional-objective-scenario.mjs', 'Rootways both-seat hold and rematch', 'underbough-rootways'],
+  ['scripts/underbough-gameplay-proof.mjs', 'Rootways 250-unit economy and recovery (winner 0)', '0'],
+  ['scripts/underbough-gameplay-proof.mjs', 'Rootways 250-unit economy and recovery (winner 1)', '1'],
   ['scripts/building-production-cue-scenario.mjs', 'Building production cue'],
   ['scripts/client-asset-allowlist-scenario.mjs', 'Client static asset allowlist'],
   ['scripts/docker-ui-assets-context-scenario.mjs', 'Docker UI asset context'],
