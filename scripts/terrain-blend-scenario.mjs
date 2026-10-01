@@ -86,3 +86,16 @@ for (const [base, expected] of Object.entries({ meadow: 'forest-floor', sand: 'd
 assert.ok(TERRAIN_MATERIALS.every(base => TERRAIN_MATERIALS.includes(forestGroundForBase(base))),
   'every regional root cover uses an admitted ground texture');
 console.log('Regional forest root cover: interior, feathering, no mutation, decomposition and palette checks passed.');
+
+const organic = buildTerrainBlendMasks(map, materials, 'meadow', true);
+assert.deepEqual(organic, buildTerrainBlendMasks(map, materials, 'meadow', true));
+assert.notDeepEqual(organic, masks, 'broader organic edges must affect the visual mask');
+assert.equal(JSON.stringify(map), original);
+const organicReordered = buildTerrainBlendMasks(map, ['ice', 'sand', 'meadow'], 'meadow', true);
+for (let y=0;y<32;y++) for(let x=0;x<32;x++) {
+  const first=mixture(organic,x,y), second=mixture(organicReordered,x,y);
+  assert.ok(Math.abs(Object.values(first).reduce((a,b)=>a+b,0)-1)<1e-6);
+  for(const material of materials) assert.ok(Math.abs(first[material]-second[material])<0.008);
+}
+assert.deepEqual(mixture(organic,2,2),{meadow:0,sand:1,ice:0});
+console.log('Organic paint edges: changed masks, deterministic normalized joins, retained interior and unchanged map.');

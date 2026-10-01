@@ -34,7 +34,7 @@ function sample(field, width, height, x, y) {
     + (field[y1 * width + x0] * (1 - tx) + field[y1 * width + x1] * tx) * ty;
 }
 
-export function buildTerrainBlendMasks(definition, materials, base) {
+export function buildTerrainBlendMasks(definition, materials, base, organic = false) {
   const scale = 2;
   const width = definition.width * scale, height = definition.height * scale;
   const labels = new Uint8Array(definition.width * definition.height);
@@ -63,8 +63,8 @@ export function buildTerrainBlendMasks(definition, materials, base) {
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const pixel = y * width + x;
-      displacedX[pixel] = x + Math.sin(x * 0.31 + seed) * Math.sin(y * 0.23) * 0.6;
-      displacedY[pixel] = y + Math.sin(y * 0.29 + seed) * Math.sin(x * 0.19) * 0.6;
+      displacedX[pixel] = x + Math.sin(x * 0.31 + seed) * Math.sin(y * 0.23) * (organic ? 1.2 : 0.6);
+      displacedY[pixel] = y + Math.sin(y * 0.29 + seed) * Math.sin(x * 0.19) * (organic ? 1.2 : 0.6);
     }
   }
   for (const index of order) {
@@ -74,7 +74,8 @@ export function buildTerrainBlendMasks(definition, materials, base) {
         field[y * width + x] = labels[Math.floor(y / scale) * definition.width + Math.floor(x / scale)] === index ? 1 : 0;
       }
     }
-    const softened = blur(blur(field, width, height), width, height);
+    let softened = blur(blur(field, width, height), width, height);
+    if (organic) softened = blur(softened, width, height);
     const pixels = index === baseIndex ? null : new Uint8Array(width * height * 4);
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {

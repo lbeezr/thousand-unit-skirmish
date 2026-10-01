@@ -571,3 +571,19 @@ maps. All non-paint fields and existing blockers are preserved. The live mixed
 pair is slightly darker with quieter litter, but the grass/soil boundary remains
 abrupt in places. Terrain transition treatment is a concrete next visual issue;
 source variants alone do not finish that boundary.
+
+## Underbough authored-paint transitions — 1 October 2026
+
+Underbough's authored ground paints now use a broader feather with shared
+low-frequency edge displacement: three five-tap blur passes at two mask pixels
+per cell, and up to 0.6-cell displacement in each axis. The prior profile used
+two passes and 0.3-cell displacement. This remains a normalized visual mixture;
+semantic terrain cells, elevation and blockers do not change. Forest root cover,
+mist and other regions retain their profiles. `?paintEdges=legacy` restores the
+prior authored-paint edge for comparison.
+
+The [paired exposed-soil review](qa-evidence/underbough-paint-transitions-2026-10-01/README.md)
+completed eight full-game captures without reported errors. The inspected ordinary
+Underbough pair fades more gradually and is less rigid at the boundary, though
+the improvement is modest. Broad landscape shapes, bank composition, remaining
+regional sources and genuine prop viewpoints still need work.

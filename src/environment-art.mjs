@@ -441,7 +441,9 @@ export function createGroundSurfaces(definition) {
     mesh.renderOrder = renderOrder;
     return mesh;
   }
-  for (const [layer, mask] of buildTerrainBlendMasks(definition, TERRAIN_MATERIALS, base).entries()) {
+  const organicPaint = definition.region === 'underbough'
+    && new URLSearchParams(globalThis.location?.search ?? '').get('paintEdges') !== 'legacy';
+  for (const [layer, mask] of buildTerrainBlendMasks(definition, TERRAIN_MATERIALS, base, organicPaint).entries()) {
     meshes.push(blendSurface(mask, -0.019, GROUND_RENDER_ORDER + layer));
   }
   const forestMask = buildForestGroundMask(definition, forestGroundForBase(base));
