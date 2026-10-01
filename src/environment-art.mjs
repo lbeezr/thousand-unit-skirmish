@@ -831,6 +831,7 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
     && definition.id !== 'meshy-resource-review';
   const underbough = environmentTheme(definition) === 'forest-floor'
     && definition.id !== 'meshy-resource-review';
+  const mosaicUnderbough = new URLSearchParams(globalThis.location?.search ?? '').get('forestSpecies') === 'mosaic';
   const groupedUnderbough = new URLSearchParams(globalThis.location?.search ?? '').get('forestSpecies') !== 'scattered';
   const sereward = environmentTheme(definition) === 'sand'
     && definition.id !== 'meshy-resource-review';
@@ -933,7 +934,7 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
           }
           if (underbough) {
             if (groupedUnderbough) {
-              const species = underboughForestSpecies(column, row, definition.terrainSeed || 0, habitatDepth?.[index] ?? 1);
+              const species = underboughForestSpecies(column, row, definition.terrainSeed || 0, habitatDepth?.[index] ?? 1, mosaicUnderbough ? 6 : 10);
               point.scale = species === 'underbough-bramble' ? .62 + scaleVariation * .24 : .68 + scaleVariation * .3;
               ({'underbough-bramble':hazelThickets,'underbough-root-oak':rootOaks,
                 'underbough-moss-hornbeam':hornbeams,'underbough-old-plum':oldPlums,

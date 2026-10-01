@@ -362,3 +362,11 @@ holds fuller hornbeam foliage constant while varying forestEdges. Eight paired
 captures have no reported errors. Inspected ordinary views show only a modest
 margin difference; continuous strips remain. Keep both options experimental
 and address grove composition and repeated silhouettes next.
+
+### Smaller species groves — 1 October 2026
+
+The [mosaic study](qa-evidence/underbough-grove-mosaic-2026-10-01/README.md)
+adds `forestSpecies=mosaic` as an optional Underbough preview with six-cell
+species groves. Default groves remain ten cells. Source boundaries and wood
+ownership stay fixed. The isolated comparison increases species mixing but
+makes plum color patches more prominent; full-game appearance review remains.
