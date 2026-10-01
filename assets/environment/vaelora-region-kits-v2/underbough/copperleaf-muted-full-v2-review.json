@@ -1,0 +1,35 @@
+{
+  "sources": [
+    {
+      "path": "assets/environment/frontier-v1/underbough-copperleaf.png",
+      "size": [
+        1312,
+        1199
+      ],
+      "mode": "RGBA",
+      "alpha8Bounds": [
+        10,
+        12,
+        1299,
+        1183
+      ],
+      "sha256": "e6203be5337f19f800d6792271e2bd8521d8c9c01093b129012fe76e7c08aa43"
+    },
+    {
+      "path": "assets/environment/vaelora-region-kits-v2/underbough/copperleaf-muted-full-v2-000.png",
+      "size": [
+        1312,
+        1199
+      ],
+      "mode": "RGBA",
+      "alpha8Bounds": [
+        11,
+        9,
+        1298,
+        1184
+      ],
+      "sha256": "3fe01e458dea674c6dd2676c774addf99b0c352a6de43e0ddda03107c1c1418c"
+    }
+  ],
+  "review": "Muted copper/ochre foliage is visibly quieter. Crown and root arrangement remain visually similar; exact registration and lifecycle consistency remain unproven. Source candidate only; no runtime binding or new perspective."
+}
