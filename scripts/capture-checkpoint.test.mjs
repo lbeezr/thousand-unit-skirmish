@@ -4,6 +4,7 @@ import {mkdtemp, mkdir, readFile, readdir, rm, writeFile} from 'node:fs/promises
 import os from 'node:os';
 import path from 'node:path';
 import {test} from 'node:test';
+import vm from 'node:vm';
 import {captureCheckpoint} from './capture-checkpoint.mjs';
 
 // Tiny test image and injected CDP replies; this suite performs no browser rendering.
@@ -12,7 +13,7 @@ const revision = '8cdf5285ddb79bc6b9ca9c5e92d40b07b6d43091';
 const context = {revision, browserVersion: {product: 'Chrome/test', protocolVersion: '1.3'},
   mapId: 'underbough-rootways', checkpoint: 'ordinary-zoom'};
 const view = {width: 1, height: 1, deviceScaleFactor: 1, hostname: '127.0.0.1',
-  boot: 'ready', mapId: context.mapId};
+  boot: 'ready', appliedMapId: context.mapId, requestedMapId: context.mapId, connection: 'ROOM LIVE'};
 const page = (observation = view, data = png) => ({cdp: {
   evaluate: async () => observation,
   call: async (method, params) => {
@@ -34,7 +35,8 @@ test('capture bundle records observed context, PNG digest, and explicit evidence
   assert.deepEqual(JSON.parse(await readFile(path.join(directory, 'manifest.json'), 'utf8')), manifest);
   assert.deepEqual(manifest, {schemaVersion: 1, source: {revision, suppliedBy: 'caller'},
     browser: {product: 'Chrome/test', protocolVersion: '1.3'},
-    scene: {mapId: context.mapId, checkpoint: context.checkpoint, checkpointSuppliedBy: 'caller'},
+    scene: {mapId: context.mapId, mapStateSource: 'client-applied-snapshot',
+      checkpoint: context.checkpoint, checkpointSuppliedBy: 'caller'},
     viewport: {width: 1, height: 1, deviceScaleFactor: 1}, image: {file: 'color.png',
       width: 1, height: 1, bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex')},
     evidence: {kind: 'cdp-screenshot', visualReview: 'not-performed', humanPlaytest: 'not-performed'}});
@@ -68,12 +70,60 @@ test('missing runtime and invalid metadata fail before creating an artifact dire
 }));
 
 test('unready, wrong-map, remote and invalid viewport observations cannot publish a bundle', () => withOutput(async output => {
-  for (const change of [{boot: 'loading'}, {mapId: 'another-map'}, {hostname: 'example.com'},
+  for (const change of [{boot: 'loading'}, {appliedMapId: 'another-map'}, {hostname: 'example.com'},
+    {appliedMapId: undefined}, {requestedMapId: 'pending-map'}, {connection: 'RECONNECTING'},
+    {connection: 'OFFLINE'}, {connection: 'CONNECTED · SYNCING'},
     {width: 0}, {width: 8193}, {height: 0.5}, {deviceScaleFactor: Infinity}, {deviceScaleFactor: 5}]) {
     const probe = page({...view, ...change});
     probe.cdp.call = () => assert.fail('unready page requested screenshot');
     await assert.rejects(captureCheckpoint({...context, page: probe, outputDirectory: output}),
       hasCode('capture-not-ready'));
+    assert.deepEqual(await readdir(output), []);
+  }
+}));
+
+function appliedStatePage({applied = context.mapId, requested = context.mapId, connection = 'ROOM LIVE'} = {}) {
+  const state = {applied, requested, connection};
+  const probe = page();
+  probe.cdp.evaluate = async expression => vm.runInNewContext(expression, {
+    innerWidth: 1, innerHeight: 1, devicePixelRatio: 1, location: {hostname: '127.0.0.1'},
+    window: {__rtsEnvironmentStateSnapshot: state.applied ? {mapId: state.applied} : undefined},
+    document: {documentElement: {dataset: {boot: 'ready'}}, querySelector: selector =>
+      selector === '#map-select' ? {value: state.requested} : {textContent: state.connection}},
+  });
+  return {state, probe};
+}
+
+test('actual observation expression rejects a requested but unapplied map and uncertain connection', () => withOutput(async output => {
+  for (const setup of [{applied: 'old-map'}, {applied: null}, {connection: 'RECONNECTING'}]) {
+    const {probe} = appliedStatePage(setup);
+    probe.cdp.call = () => assert.fail('pending or uncertain map requested screenshot');
+    await assert.rejects(captureCheckpoint({...context, page: probe, outputDirectory: output}), hasCode('capture-not-ready'));
+    assert.deepEqual(await readdir(output), []);
+  }
+}));
+
+test('applied-map or connection changes during the screenshot cannot publish a mislabeled bundle', () => withOutput(async output => {
+  for (const change of [{applied: 'new-map', requested: 'new-map'}, {applied: null},
+    {requested: 'pending-map'}, {connection: 'RECONNECTING'}]) {
+    const {state, probe} = appliedStatePage();
+    let shots = 0;
+    probe.cdp.call = async () => { shots++; Object.assign(state, change); return {data: png}; };
+    await assert.rejects(captureCheckpoint({...context, page: probe, outputDirectory: output}), hasCode('capture-not-ready'));
+    assert.equal(shots, 1); assert.deepEqual(await readdir(output), []);
+  }
+}));
+
+test('post-capture observation failure and viewport changes leave no bundle', () => withOutput(async output => {
+  for (const mode of ['failed', 'resized']) {
+    const probe = page(); let observations = 0;
+    probe.cdp.evaluate = async () => {
+      if (++observations === 1) return view;
+      if (mode === 'failed') throw new Error('private state detail');
+      return {...view, width: 2};
+    };
+    await assert.rejects(captureCheckpoint({...context, page: probe, outputDirectory: output}),
+      hasCode(mode === 'failed' ? 'capture-runtime-unavailable' : 'capture-not-ready'));
     assert.deepEqual(await readdir(output), []);
   }
 }));

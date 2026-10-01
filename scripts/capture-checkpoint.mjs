@@ -9,6 +9,29 @@ const fail = (code, message) => { throw new CaptureCheckpointError(code, message
 const pngSignature = Buffer.from('89504e470d0a1a0a', 'hex');
 const maxImageBytes = 32 * 1024 * 1024;
 
+const captureView = `({width:innerWidth,height:innerHeight,
+  deviceScaleFactor:devicePixelRatio,hostname:location.hostname,
+  boot:document.documentElement.dataset.boot,
+  appliedMapId:window.__rtsEnvironmentStateSnapshot?.mapId,
+  requestedMapId:document.querySelector('#map-select')?.value,
+  connection:document.querySelector('#network-status')?.textContent})`;
+
+function readyView(view, mapId) {
+  if (view?.boot !== 'ready' || view?.appliedMapId !== mapId
+      || view?.requestedMapId !== view?.appliedMapId
+      || !['ROOM LIVE', 'WAITING FOR PLAYER 2'].includes(view?.connection)
+      || !['127.0.0.1', 'localhost', '[::1]'].includes(view?.hostname)) {
+    fail('capture-not-ready', 'Capture requires a synced local applied-map snapshot with no pending map selection.');
+  }
+  const viewport = {width: view.width, height: view.height, deviceScaleFactor: view.deviceScaleFactor};
+  if (![viewport.width, viewport.height].every(n => Number.isInteger(n) && n > 0 && n <= 8192)
+      || !Number.isFinite(viewport.deviceScaleFactor) || viewport.deviceScaleFactor <= 0
+      || viewport.deviceScaleFactor > 4) {
+    fail('capture-not-ready', 'The observed viewport is outside the capture bounds.');
+  }
+  return viewport;
+}
+
 function imageBytes(data, viewport) {
   if (typeof data !== 'string' || data.length > Math.ceil(maxImageBytes / 3) * 4) {
     fail('capture-invalid-image', 'CDP must return a bounded base64 PNG.');
@@ -57,28 +80,24 @@ export async function captureCheckpoint({page, revision, browserVersion, mapId, 
       fail(error.code === 'EEXIST' ? 'capture-output-exists' : 'capture-storage-unavailable',
         'Capture needs a new checkpoint directory beneath a writable existing output directory.');
     }
-    let view, screenshot;
+    let view, screenshot, after;
     try {
-      view = await page.cdp.evaluate(`({width:innerWidth,height:innerHeight,
-        deviceScaleFactor:devicePixelRatio,hostname:location.hostname,
-        boot:document.documentElement.dataset.boot,mapId:document.querySelector('#map-select')?.value})`);
+      view = await page.cdp.evaluate(captureView);
     } catch { fail('capture-runtime-unavailable', 'The isolated CDP page could not report capture readiness.'); }
-    if (view?.boot !== 'ready' || view?.mapId !== mapId
-        || !['127.0.0.1', 'localhost', '[::1]'].includes(view?.hostname)) {
-      fail('capture-not-ready', 'Capture requires a ready local game page showing the requested map.');
-    }
-    const viewport = {width: view.width, height: view.height, deviceScaleFactor: view.deviceScaleFactor};
-    if (![viewport.width, viewport.height].every(n => Number.isInteger(n) && n > 0 && n <= 8192)
-        || !Number.isFinite(viewport.deviceScaleFactor) || viewport.deviceScaleFactor <= 0
-        || viewport.deviceScaleFactor > 4) {
-      fail('capture-not-ready', 'The observed viewport is outside the capture bounds.');
-    }
+    const viewport = readyView(view, mapId);
     try { screenshot = await page.cdp.call('Page.captureScreenshot', {format: 'png', captureBeyondViewport: false}); }
     catch { fail('capture-runtime-unavailable', 'CDP screenshot capture failed; no capture bundle was published.'); }
+    try { after = await page.cdp.evaluate(captureView); }
+    catch { fail('capture-runtime-unavailable', 'The applied map could not be rechecked after capture.'); }
+    const afterViewport = readyView(after, mapId);
+    if (Object.keys(viewport).some(key => viewport[key] !== afterViewport[key])) {
+      fail('capture-not-ready', 'The viewport changed during capture; no capture bundle was published.');
+    }
     const image = imageBytes(screenshot?.data, viewport);
     const manifest = {schemaVersion: 1, source: {revision, suppliedBy: 'caller'},
       browser: {product: browserVersion.product, protocolVersion: browserVersion.protocolVersion ?? null},
-      scene: {mapId: view.mapId, checkpoint, checkpointSuppliedBy: 'caller'}, viewport,
+      scene: {mapId: view.appliedMapId, mapStateSource: 'client-applied-snapshot',
+        checkpoint, checkpointSuppliedBy: 'caller'}, viewport,
       image: {file: 'color.png', width: image.width, height: image.height, bytes: image.bytes.length,
         sha256: createHash('sha256').update(image.bytes).digest('hex')},
       evidence: {kind: 'cdp-screenshot', visualReview: 'not-performed', humanPlaytest: 'not-performed'}};

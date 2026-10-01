@@ -148,6 +148,9 @@ performance, and player usability still require their own evidence.
 page from `createFortifiedBrowser()`. It launches nothing. Supply the clean
 checkout revision, `browser.version`, intended map ID, a short checkpoint ID
 (such as `ordinary-zoom`), and an absolute existing writable output directory.
+Open the local game with `?rendererCapture=environment-state` to enable its
+existing applied-state snapshot. A missing snapshot fails honestly; the selector
+value alone cannot identify the applied map.
 The caller owns browser readiness, checkpoint interaction, and final disposal:
 
 ```js
@@ -156,8 +159,10 @@ const capture = await captureCheckpoint({page, revision, browserVersion: browser
   mapId: 'underbough-rootways', checkpoint: 'ordinary-zoom', outputDirectory: '/tmp/captures'});
 ```
 
-The helper checks a ready local game page, the selected map, and the observed
-viewport, then writes `color.png` and `manifest.json` in a new checkpoint folder.
+The helper checks a synced local game page and its applied-map snapshot before
+and after the screenshot. Pending selection, uncertain/offline connection, missing
+or changed applied map, and changed viewport reject the capture. It then writes
+`color.png` and `manifest.json` in a new checkpoint folder.
 The manifest records revision/browser/checkpoint context, viewport, PNG dimensions,
 byte count and SHA-256. Revision and checkpoint labels are caller-supplied;
 the helper does not establish which source build the server is serving or prove
