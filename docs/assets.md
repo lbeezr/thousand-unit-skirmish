@@ -243,3 +243,10 @@ garden beds. [Runtime proof](qa-evidence/vaelora-sunbloom-authored-views-2026-10
 checks headings, clearing/reset and release admission. `plantViews=legacy`
 retains the original single view. Positive stock still uses one full appearance
 per direction; flower gathering and separate worked/low artwork remain absent.
+## Sunbloom planted-crown default · 1 October 2026
+
+[Sunbloom v2](../assets/environment/ellionar-sunbloom-crowns-v2/README.md) now supplies
+the default four-view atlas, replacing the exposed root fans with compact crowns
+and basal leaves. [Runtime evidence](qa-evidence/vaelora-sunbloom-planted-crowns-2026-10-01/README.md)
+covers the visual comparison and unchanged placement/stock contracts. The v1
+sheet remains preserved; legacy mode still selects the original single view.

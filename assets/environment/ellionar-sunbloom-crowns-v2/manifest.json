@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "maturity": "authored-runtime-candidate",
+  "sourceFile": "source.png",
+  "sourceSha256": "c881b5d0c416325643f1c7d10feac8673c37124ac24bca080c02447321a365b9",
+  "sourceDimensionsPx": [
+    2170,
+    725
+  ],
+  "sourceOutput": "exec-689ffdff-b792-4cb6-88fc-53b042d93900.png",
+  "reference": "../ellionar-sunbloom-views-v1/source.png",
+  "referenceSha256": "53aa509a2dea847aade989b9df87a637cb6c05864a3c93a8bbf483100c1fbdf6",
+  "prompts": "PROMPTS.json",
+  "atlasFile": "sunbloom-crowns-atlas.webp",
+  "atlasSha256": "748279a765accbd70f02c9fe9f40a84af750d310af324e8edcc2df0fd9c3f6bd",
+  "atlasSizePx": [
+    2560,
+    619
+  ],
+  "frameSizePx": [
+    512,
+    491
+  ],
+  "gutterPx": 64,
+  "worldSize": [
+    0.88654,
+    0.85
+  ],
+  "pivot": [
+    0.5,
+    1
+  ],
+  "frames": [
+    {
+      "id": "front",
+      "requestedTurnDegrees": 0,
+      "sourceRectPx": [
+        0,
+        -35,
+        675,
+        636
+      ],
+      "translationPx": [
+        12,
+        0
+      ],
+      "contactProxyPx": [
+        338,
+        636
+      ],
+      "contactMethod": "alpha>=8 lower bound and horizontal silhouette center; anatomical root not certified",
+      "rectPx": [
+        64,
+        64,
+        512,
+        491
+      ]
+    },
+    {
+      "id": "right",
+      "requestedTurnDegrees": 90,
+      "sourceRectPx": [
+        675,
+        -35,
+        1090,
+        636
+      ],
+      "translationPx": [
+        132,
+        0
+      ],
+      "contactProxyPx": [
+        893,
+        636
+      ],
+      "contactMethod": "alpha>=8 lower bound and horizontal silhouette center; anatomical root not certified",
+      "rectPx": [
+        704,
+        64,
+        512,
+        491
+      ]
+    },
+    {
+      "id": "rear",
+      "requestedTurnDegrees": 180,
+      "sourceRectPx": [
+        1090,
+        -35,
+        1750,
+        636
+      ],
+      "translationPx": [
+        40,
+        0
+      ],
+      "contactProxyPx": [
+        1400,
+        636
+      ],
+      "contactMethod": "alpha>=8 lower bound and horizontal silhouette center; anatomical root not certified",
+      "rectPx": [
+        1344,
+        64,
+        512,
+        491
+      ]
+    },
+    {
+      "id": "left",
+      "requestedTurnDegrees": 270,
+      "sourceRectPx": [
+        1750,
+        -35,
+        2170,
+        636
+      ],
+      "translationPx": [
+        163,
+        0
+      ],
+      "contactProxyPx": [
+        1937,
+        636
+      ],
+      "contactMethod": "alpha>=8 lower bound and horizontal silhouette center; anatomical root not certified",
+      "rectPx": [
+        1984,
+        64,
+        512,
+        491
+      ]
+    }
+  ],
+  "sourceCanvasPerFramePx": [
+    700,
+    671
+  ],
+  "perViewScale": false,
+  "mirroredViews": false,
+  "measured3DCapture": false,
+  "anatomicalRootAlignmentCertified": false
+}

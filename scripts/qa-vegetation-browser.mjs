@@ -481,7 +481,7 @@ try {
   const result=await cdp.evaluate(`(async()=>{
    const THREE=await import('/vendor/three.module.js');
    const {createEnvironmentSpriteInstances,setEnvironmentSpriteInstance,createGroundSurfaces,setForestSpriteStock}=await import('/src/environment-art.mjs');
-   const {${isSunbloom?'SUNBLOOM_VIEW_PACK':isVeilcap?'VEILCAP_VIEW_PACK':'PODVINE_LOW_PACK'}:pack}=await import('/src/${isSunbloom?'sunbloom-view':isVeilcap?'veilcap-view':'podvine-low'}-pack.mjs');
+   const {${isSunbloom?'SUNBLOOM_CROWN_PACK':isVeilcap?'VEILCAP_VIEW_PACK':'PODVINE_LOW_PACK'}:pack}=await import('/src/${isSunbloom?'sunbloom-crown':isVeilcap?'veilcap-view':'podvine-low'}-pack.mjs');
    const {CAMERA_VIEW_DIRECTION}=await import('/src/camera-controls.mjs');
    const {setActiveTerrain}=await import('/src/terrain-height.mjs');setActiveTerrain({width:24,height:24});
    const points=Array.from({length:80},(_,cell)=>({cell,x:cell%10-5,z:Math.floor(cell/10)-4,scale:1,flip:true,yaw:.8}));
@@ -643,7 +643,7 @@ try {
  for(const file of ['vesperra-shade-fern.webp','vesperra-shade-fern-02.webp','views-atlas.webp','lifecycle-atlas.webp'])if(!proof[8].files.includes(file)||proof.some((r,i)=>i!==8&&r.files.includes(file)))throw new Error('Understory region binding mismatch: '+file);
  if(!proof[0].files.includes('bellweather-meadow-herbs.webp')||proof.some((r,i)=>i!==0&&r.files.includes('bellweather-meadow-herbs.webp')))throw new Error('Meadow herbs region binding mismatch');
  if(!proof[4].files.includes('sereward-succulent.webp')||proof.some((r,i)=>i!==4&&r.files.includes('sereward-succulent.webp')))throw new Error('Succulent region binding mismatch');
- if(!proof[5].files.includes('sunbloom-views-atlas.webp')||proof.some((r,i)=>i!==5&&r.files.includes('sunbloom-views-atlas.webp')))throw new Error('Sunbloom region binding mismatch');
+ if(!proof[5].files.includes('sunbloom-crowns-atlas.webp')||proof.some((r,i)=>i!==5&&r.files.includes('sunbloom-crowns-atlas.webp')))throw new Error('Sunbloom region binding mismatch');
  if(!proof[2].files.includes('veyrholds-ridgegrass.webp')||proof.some((r,i)=>i!==2&&r.files.includes('veyrholds-ridgegrass.webp')))throw new Error('Ridgegrass region binding mismatch');
  if(!proof[3].files.includes('underbough-rootward-fungus.webp')||proof.some((r,i)=>i!==3&&r.files.includes('underbough-rootward-fungus.webp')))throw new Error('Rootward fungus region binding mismatch');
  if(!proof[9].files.includes('sombral-mere-noctilune.webp')||proof.some((r,i)=>i!==9&&r.files.includes('sombral-mere-noctilune.webp')))throw new Error('Noctilune region binding mismatch');

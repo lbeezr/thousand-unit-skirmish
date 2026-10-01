@@ -14,6 +14,7 @@ COPY --chown=node:node assets/audio/vaelora-pilot-v1/sources/ ./assets/audio/vae
 COPY --chown=node:node src/ ./src/
 COPY --chown=node:node maps/ ./maps/
 COPY --chown=node:node assets/environment/frontier-v1/ ./assets/environment/frontier-v1/
+COPY --chown=node:node assets/environment/ellionar-sunbloom-crowns-v2/sunbloom-crowns-atlas.webp ./assets/environment/ellionar-sunbloom-crowns-v2/
 COPY --chown=node:node assets/environment/ellionar-sunbloom-views-v1/sunbloom-views-atlas.webp ./assets/environment/ellionar-sunbloom-views-v1/
 COPY --chown=node:node assets/environment/vesperra-veilcap-views-v1/views-atlas.webp ./assets/environment/vesperra-veilcap-views-v1/
 COPY --chown=node:node assets/environment/vesperra-podvine-low-v1/lifecycle-atlas.webp ./assets/environment/vesperra-podvine-low-v1/
