@@ -1016,6 +1016,17 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
   const layeredForestMargin = underbough && new URLSearchParams(globalThis.location?.search ?? '').get('forestEdges') === 'layered';
   const youngHornbeams = [];
   const ageMode = new URLSearchParams(globalThis.location?.search ?? '').get('forestAges');
+  if (underbough && ageMode === 'pockets') {
+    // Small regeneration patches retain mature crowns and other species sizes.
+    const seeded = key => { const value = Math.sin(key * 127.1 + 17.7) * 43758.5453; return value - Math.floor(value); };
+    for (let i = hornbeams.length - 1; i >= 0; i--) {
+      const point = hornbeams[i], column = point.cell % definition.width, row = Math.floor(point.cell / definition.width);
+      const patch = Math.floor(column / 4) * 313 + Math.floor(row / 4) * 571 + (definition.terrainSeed || 0) * .13;
+      if (seeded(patch + 211) < .3 && seeded(point.cell + 59) < .65) {
+        hornbeams.splice(i, 1); youngHornbeams.push({...point});
+      }
+    }
+  }
   if (underbough && ['irregular', 'young'].includes(ageMode)) {
     const canopyPoints = [...rootOaks, ...hornbeams, ...oldPlums, ...maples];
     const factors = forestAgeFactors(canopyPoints, definition.terrainSeed || 0);
