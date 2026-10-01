@@ -39,3 +39,8 @@ config. `--write` exports a 2560×619 atlas with 64-pixel gutters, neutral previ
 and [configuration](../../../src/sunbloom-view-pack.mjs). The
 [runtime evidence](../../../docs/qa-evidence/vaelora-sunbloom-authored-views-2026-10-01/README.md)
 covers four headings, stock/reset, garden composition and release admission.
+## Subsequent planted-crown refinement · 1 October 2026
+
+The default loader now uses [v2 planted crowns](../ellionar-sunbloom-crowns-v2/README.md)
+to remove this sheet's exposed root fans. This directional checkpoint remains
+unchanged as source provenance and comparison evidence.

@@ -798,3 +798,13 @@ uses the existing 64-pixel gutter and mip-cap contract. This production package
 is not yet selected by the game. Proposed full visible height remains 2.1 world
 units; forest composition, stock transitions, reset and game-scale appearance
 still require runtime review.
+
+## Ellionar planted Sunbloom crowns · 1 October 2026
+
+The [v2 Sunbloom pack](../assets/environment/ellionar-sunbloom-crowns-v2/README.md)
+replaces exposed roots with basal leaves and compact copper stem crowns. The
+flowers now read as cultivated garden growth while retaining lapis/green/honey
+colour and four authored directions. [Paired renderer evidence](qa-evidence/vaelora-sunbloom-planted-crowns-2026-10-01/README.md)
+compares contact at the same camera/pivots and checks placement/stock/reset.
+The shorter painted base is not independently enlarged, and anatomical crown
+registration remains approximate.

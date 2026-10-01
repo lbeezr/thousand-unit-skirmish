@@ -1,0 +1,27 @@
+{
+  "sourceRevision": "e85646d8ead608025a134bd1d78ede703099d10f",
+  "sourceDirty": true,
+  "releaseDigest": "sha256:6e88dc8002416b82851db5db1f8ead0b02b2ac6bf2a073fed242b3555d050ec5",
+  "files": [
+    {
+      "file": "server.mjs",
+      "sha256": "1f441a2bf1d57210f2df48bfe3d5a30ffee53e98c485122ee6c0b978b281adf3",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/environment-art.mjs",
+      "sha256": "734e664307eb743b97c7c5a467905c3ed8b80688cf942ebe38e31fb25269a989",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/sunbloom-crown-pack.mjs",
+      "sha256": "9823823f5ef4a44f2d4997086fbe87d67fa8671d60b04d3ccaf14bd71a8d2506",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "assets/environment/ellionar-sunbloom-crowns-v2/sunbloom-crowns-atlas.webp",
+      "sha256": "748279a765accbd70f02c9fe9f40a84af750d310af324e8edcc2df0fd9c3f6bd",
+      "releaseBytesExact": true
+    }
+  ]
+}
