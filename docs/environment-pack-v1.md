@@ -745,3 +745,17 @@ Two seeded batches partition the same 28% companion locations. Forest identities
 [Runtime registration](../src/environment-plant-assets.mjs) records all twenty selected specimens' surface kind, world dimensions and pivot, plus Mirelily's water lift. The selected-manifest validator checks equality with this registration, including uniform size drift that an aspect-ratio check alone would miss. Full validation requires one selected manifest per registered specimen. Runtime constructors reject mismatched size/surface requests before mesh allocation and identify registered plant meshes for production inspection.
 
 [Local geometry evidence](qa-evidence/vaelora-plant-runtime-contract-2026-09-30/README.md) verifies every actual mesh bounding box and pivot through the regional loader, plus deliberately invalid scale requests. Current dimensions, images, placement and gameplay remain unchanged. This guards production scale and ground anchors; approximate painted source perspective and additional registered views remain separate unfinished work.
+
+### Root Oak mixed woodland runtime — 1 October 2026 UTC
+
+[Root Oak lifecycle](../assets/environment/frontier-v1/underbough-root-oak-lifecycle-manifest.json)
+and [atlas](../assets/environment/frontier-v1/underbough-root-oak-lifecycle-atlas.json)
+add a dark olive broad-crown species to Underbough. Original generated source
+canvases, prompts and registration review remain in the regional kit source
+folder. `src/environment-art.mjs` groups Root Oak in loose seeded groves among
+Copperleaf and occasional woody bramble, retaining every original wood cell.
+The [browser proof](qa-evidence/underbough-root-oak-2026-10-01/underbough-rootways-renderer-proof.json)
+checks four atlas harvest states, reset matrices and matching roots; captures
+cover normal and strategic views without console or asset errors. Hornbeam and
+Plum remain sources; extra perspectives and a live worker observation for this
+new family remain unfinished.

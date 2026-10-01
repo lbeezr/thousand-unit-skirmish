@@ -19,8 +19,8 @@ is pending. Hashes, sizes and encodings are in `underbough/source-manifest.json`
 This dark moss/olive species complements the copperleaf; it is not a recolour of
 the existing runtime tree. Its designated orientation is 0° relative to the fixed
 oblique camera. This is authored painted artwork, not a measured model capture.
-Further directions and harvest states remain in production. It has no consuming
-runtime loader yet; the game still uses its previous forest families.
+Further directions remain outstanding. Its registered harvest states now have
+a consuming runtime atlas loader; see the first runtime family record below.
 
 `underbough/moss-hornbeam-full-000.png` adds a narrower airy crown, ascending
 branches and lighter warm bark. It is also a fixed-view source, awaiting root
@@ -51,5 +51,20 @@ records visible bounds and lower-root silhouette overlap (0.925–0.938). This
 supports a shared registration candidate; it does not prove runtime scale,
 harvesting, reset or directional coverage. Reduced frames retain faint
 low-alpha generated remnants in their original masters. Do not silently
-repaint or discard source pixels. Runtime packaging and renderer review remain
-outstanding.
+repaint or discard source pixels. That source review preceded the runtime packaging and renderer proof below.
+
+## Root Oak first runtime family
+
+Root Oak now joins Copperleaf and woody bramble through the existing forest
+lifecycle atlas loader in `src/environment-art.mjs`. Its four states use one
+reviewed shared crop `[40,37,1230,1218]` and a fixed root-bottom anchor; runtime
+frames preserve the cropped alpha after LANCZOS max1024 conversion and quality86
+WebP encoding. Masters remain untouched. The atlas is 2304 × 2288 with 64px
+transparent gutters and the existing bounded mip contract.
+
+[Browser evidence](../../../docs/qa-evidence/underbough-root-oak-2026-10-01/underbough-rootways-renderer-proof.json)
+records all 1026 original wood slots, 460 Root Oaks, 483 Copperleaf trees and 83
+brambles, matching root positions and all four atlas selections plus reset.
+This checks the renderer state interface, not a newly observed live worker
+harvest. Hornbeam/Plum runtime integration, four-species coverage and measured
+directional captures remain outstanding.

@@ -3,7 +3,7 @@
   "packId": "environment.underbough-cohesive-kit-v2",
   "maturity": "source-study",
   "region": "underbough",
-  "status": "three regional ground textures locally rendered and cache-isolation checked; three new tree sources; no new tree runtime bindings or verified rotated views",
+  "status": "three regional grounds and four-state Root Oak locally rendered; Hornbeam and Plum remain intact sources; verified rotated views outstanding",
   "source": "project-owned built-in ImageGen, using selected Underbough ecology key and existing copperleaf sprite references",
   "directionalMethod": "authored painted views; not measured 3D render captures",
   "targetTreeForms": [
@@ -54,7 +54,7 @@
         1220,
         1208
       ],
-      "status": "intact-source-awaiting-registration",
+      "status": "fixed-view-runtime-local-review-passed",
       "directionDegrees": 0,
       "harvestState": "full"
     },
@@ -169,7 +169,7 @@
         1254
       ],
       "mode": "RGBA",
-      "status": "lifecycle-source-registration-review",
+      "status": "fixed-view-runtime-local-review-passed",
       "directionDegrees": 0,
       "harvestState": "worked"
     },
@@ -182,7 +182,7 @@
         1254
       ],
       "mode": "RGBA",
-      "status": "lifecycle-source-registration-review",
+      "status": "fixed-view-runtime-local-review-passed",
       "directionDegrees": 0,
       "harvestState": "low"
     },
@@ -195,7 +195,7 @@
         1254
       ],
       "mode": "RGBA",
-      "status": "lifecycle-source-registration-review",
+      "status": "fixed-view-runtime-local-review-passed",
       "directionDegrees": 0,
       "harvestState": "depleted"
     }
