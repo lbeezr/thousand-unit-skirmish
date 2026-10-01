@@ -15,7 +15,7 @@ import { shorePlantPositions } from './shore-vegetation.mjs';
 import { meadowPlantGroups, drylandPlantGroups, snowPlantGroups, ridgePlantGroups, lunarPlantGroups, marshPlantGroups, junglePlantGroups } from './meadow-vegetation.mjs';
 import { gardenPlantGroups } from './garden-vegetation.mjs';
 import { assertPlantDimensions, PLANT_ASSETS } from './environment-plant-assets.mjs';
-import { PODVINE_WORKED_PACK as PODVINE_VIEW_PACK } from './podvine-worked-pack.mjs';
+import { PODVINE_LOW_PACK as PODVINE_VIEW_PACK } from './podvine-low-pack.mjs';
 
 const meshyResourcesEnabled = new URLSearchParams(globalThis.location?.search ?? '').get('meshyResources') !== '0';
 
@@ -776,10 +776,11 @@ export function setForestSpriteStock(slot, stock = 6) {
     const views = plant.mesh.userData.authoredPlantViews;
     if (views) {
       const worked = stock > 0 && stock < 6;
-      const [x,y,w,h] = (worked ? views.pack.workedRectsPx : views.pack.rectsPx)[views.viewIndices[plant.index]];
+      const frames = stage === 'low' ? views.pack.lowRectsPx : worked ? views.pack.workedRectsPx : views.pack.rectsPx;
+      const [x,y,w,h] = frames[views.viewIndices[plant.index]];
       const [pw,ph] = views.pack.atlasSizePx;
       views.rects.setXYZW(plant.index,(x+.5)/pw,1-(y+h-.5)/ph,(w-1)/pw,(h-1)/ph);
-      views.worked[plant.index] = worked ? 1 : 0;
+      views.worked[plant.index] = stage === 'low' ? 2 : worked ? 1 : 0;
       views.rects.needsUpdate = true;
     }
     setEnvironmentSpriteInstance(plant.mesh, plant.index, plant.x, plant.z,

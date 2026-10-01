@@ -219,3 +219,11 @@ root matrices retained. Margins remain decorative full plants. The
 [runtime proof](qa-evidence/vaelora-podvine-worked-runtime-2026-10-01/README.md)
 covers transitions and release admission. Separate low/depleted drawings and
 independent pod gathering remain absent.
+## Pod-vine low-stock row · 1 October 2026
+
+The [twelve-frame pack](../assets/environment/vesperra-podvine-low-v1/README.md)
+replaces the default eight-frame pod-vine binding with full/worked/low artwork
+across four directions. Stock one/two now shows sparse foliage. The
+[runtime proof](qa-evidence/vaelora-podvine-low-runtime-2026-10-01/README.md)
+checks frame transitions, root matrices and release admission. Zero continues
+to hide the companion; no independent pod resource is added.

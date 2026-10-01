@@ -16,10 +16,7 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--write', action='store_true')
-    args = parser.parse_args()
+def generate_frames():
     source = Image.open(PACK / 'source.png').convert('RGBA')
     registration = json.loads((PACK / 'registration.json').read_text())
     reference_path = ROOT / 'assets/environment/vesperra-podvine-views-v1/source.png'
@@ -53,6 +50,15 @@ def main():
         generated.append((frame, {'view': full[i][1]['id'], 'state': 'worked',
             'rectPx': [64 + i * 640, 451, 512, 259], 'sourceRectPx': rect,
             'translationPx': offset, 'contactProxyPx': [x0 + anchor, bottom]}))
+    return generated
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--write', action='store_true')
+    args = parser.parse_args()
+    generated = generate_frames()
+    reference_path = ROOT / 'assets/environment/vesperra-podvine-views-v1/source.png'
     rows = [row for _, row in generated]
     if args.write:
         atlas = Image.new('RGBA', (2560, 774))
