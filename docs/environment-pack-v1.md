@@ -1,5 +1,10 @@
 # Frontier environment art
 
+Vesperra Veilcap woodland companions use the
+[full/worked directional pack](../assets/environment/vesperra-veilcap-worked-v2/README.md).
+Independent margin colonies retain full art; empty parent woodland hides companions.
+
+
 Ellionar woodland Sunblooms use the
 [full/worked/low v4 atlas](../assets/environment/ellionar-sunbloom-low-v4/README.md)
 with four headings per state. Independent channel gardens retain full plants.

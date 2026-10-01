@@ -924,3 +924,12 @@ states and exact reset pixels. Adopt this useful incremental foliage improvement
 while keeping grove composition, repeated silhouettes and rotations unfinished.
 forestCanopy=original restores the prior atlas for comparison. Margin and age
 profiles remain opt-in; this is not a claim of completed landscape beauty.
+
+## Vesperra worked Veilcap colonies · 1 October 2026
+
+The [worked pack](../assets/environment/vesperra-veilcap-worked-v2/README.md)
+adds small cap-rim nicks and opened base dressing to four stable headings.
+Paired source registration keeps full/worked at one scale; a corrected separator
+avoids neighboring pixels. Registered world dimensions remain unchanged.
+Stock 5–1 uses worked, zero hides and reset restores full. Margin colonies stay
+full. Distinct low fungus art and independent fungus gathering remain absent.
