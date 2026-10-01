@@ -370,3 +370,11 @@ adds `forestSpecies=mosaic` as an optional Underbough preview with six-cell
 species groves. Default groves remain ten cells. Source boundaries and wood
 ownership stay fixed. The isolated comparison increases species mixing but
 makes plum color patches more prominent; full-game appearance review remains.
+
+### Full-game smaller-grove review — 1 October 2026
+
+The [paired game captures](qa-evidence/underbough-grove-mosaic-full-game-2026-10-01/README.md)
+show more species mixing with `forestSpecies=mosaic`, but dense strips remain
+and copperleaf clusters draw excessive attention. Keep the existing default.
+Quiet accent foliage and distinct crown anatomy are the next appearance work;
+this review adds no rotated views or final beauty acceptance.
