@@ -1,0 +1,32 @@
+{
+  "sourceRevision": "4a0d791d4939640aefb754fe843fd263753a0675",
+  "sourceDirty": false,
+  "releaseDigest": "sha256:9aa9b12f978e8d9b7c72594e3d22cd7211fd8326f93d82d0dd75c19e6464549b",
+  "files": [
+    {
+      "file": "server.mjs",
+      "sha256": "11e8148fa0bba705f532d981466ea584253d8375169519d18f42a38a599eb2d0",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/environment-art.mjs",
+      "sha256": "27a2ca5f27d9720caa5d830e5884690be09a39b4cc9b007506ccc6bff2c47158",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/sunbloom-view-pack.mjs",
+      "sha256": "38f5b11d76fbef36383d5efe3f179dcdf4cc554e907ecbe2ca21e8d347ad5c1b",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/forest-age-composition.mjs",
+      "sha256": "b8c2e7525f855097d5e1a613518e05ed79d7a0d9210b627ba713c3bc40a9b374",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "assets/environment/ellionar-sunbloom-views-v1/sunbloom-views-atlas.webp",
+      "sha256": "9c97d8a8120efc4510b7509e10591822de00956b013198134ef9e5a34df46fdd",
+      "releaseBytesExact": true
+    }
+  ]
+}

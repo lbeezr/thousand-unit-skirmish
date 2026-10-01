@@ -995,3 +995,12 @@ wood stock retains full; zero hides and reset restores. The
 checks Veilcap and pod-vine stock behavior, existing vegetation contracts and
 release bytes. These are approximate drawings; worked/low fungus artwork and
 independent fungus harvesting remain absent.
+## Ellionar Sunbloom directions · 1 October 2026
+
+The [Sunbloom pack](../assets/environment/ellionar-sunbloom-views-v1/README.md)
+adds four authored lapis-flowered garden bush views with changed leaf/flower
+occlusion and rear flower backs, without the old diffuse halo. Registered card
+dimensions, fixed camera, channel beds and woodland clearing remain unchanged.
+[Runtime evidence](qa-evidence/vaelora-sunbloom-authored-views-2026-10-01/README.md)
+checks all four views, stock/reset, the 15 existing garden beds and release bytes.
+No independent flower resource or worked/low flower art is introduced.

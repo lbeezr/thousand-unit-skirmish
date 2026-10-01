@@ -738,6 +738,17 @@ work should use irregular age/spacing groups and quieter mature silhouettes,
 while keeping wood ownership and blocked ground legible. Existing runtime tree
 scales and source map definitions remain unchanged.
 
+## Ellionar Sunbloom orientations · 1 October 2026
+
+The [Sunbloom view pack](../assets/environment/ellionar-sunbloom-views-v1/README.md)
+extends authored understory directions into Ellionar's cultivated gardens.
+Lapis blooms, cream/gold centers, copper stems and green leaves retain the
+regional palette. Rear flower backs and narrower side profiles replace mirrored
+card copies, with the reference halo removed. [Runtime evidence](qa-evidence/vaelora-sunbloom-authored-views-2026-10-01/README.md)
+covers the existing woodland/channel placement and stock/reset. This is four
+approximate plant views, not a complete regional directional/state roster.
+
+
 ## Irregular canopy age experiment — 1 October 2026
 
 The opt-in `?forestAges=irregular` [canopy-size study](qa-evidence/underbough-forest-age-study-2026-10-01/README.md)
