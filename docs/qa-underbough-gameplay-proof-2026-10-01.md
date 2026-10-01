@@ -95,7 +95,12 @@ result records rematch seconds and both food-bank deltas.
 deposits, the actual map's reward-alone case (which passes the old condition),
 bank growth without consumption, and supply/objective contamination. Its
 synthetic checkpoints are isolated assertion tests, not injected live-game state.
-Live winner-route reruns and independent review are tracked in the follow-up PR.
+Both live 250-unit winner routes passed on follow-up code `41436b5`, exit 0.
+The new rematch checkpoints recorded 18.8 seconds (winner 0) and 18.1 seconds
+(winner 1), each with food-bank deltas `[10, 10]`, consumed home-node stocks,
+unfired rewards and neutral objectives. All four regression tests passed, as did
+syntax, documentation, whitespace and CI shard-coverage checks. Independent
+review and integration are tracked in the follow-up PR.
 
 This is automated server evidence. Browser controls/rendering, human
 comprehension, unassisted playtests, network impairment and hosted performance
