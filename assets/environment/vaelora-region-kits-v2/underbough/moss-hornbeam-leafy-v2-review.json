@@ -16,11 +16,100 @@
     1159
   ],
   "views": "one painted fixed-oblique view; zero new rotated perspectives",
-  "review": "Fuller foliage masses conceal much of upper/lateral branch lattice while retaining trunk identity and regional olive palette. Framing edit has healthy gutters. Lower root mat and bright individual leaf highlights remain; source sample is not proof of woodland beauty.",
+  "review": "Fuller foliage masses conceal much of upper/lateral branch lattice while retaining trunk identity and regional olive palette. Framing edit has healthy gutters. Lower root mat and bright individual leaf highlights remain; source sample is not proof of woodland beauty. Worked, low and depleted source states compared on unchanged canvases. Root-region alpha8 bounds differ by several pixels; no exact registration claim. Shared runtime crop/pivot and game-scale lifecycle review remain.",
   "unfinished": [
-    "worked/low/depleted source states from this full frame",
     "new common crop and pivot; incompatible with old lifecycle registration",
     "runtime binding and woodland/full-game appearance review",
     "directional construction"
+  ],
+  "sourceFrames": [
+    {
+      "stage": "full",
+      "source": "moss-hornbeam-leafy-v2-full-000.png",
+      "generatedOutput": "exec-1731899b-a555-4b17-bc64-31bdfeefdb92.png",
+      "sha256": "283a1d1b24c3a2aeaa4359b0d35b6f92c30ebedc78c2309941c86fcb7c0ee5ca",
+      "canvasPx": [
+        1254,
+        1254
+      ],
+      "alpha8Bounds": [
+        188,
+        108,
+        1104,
+        1159
+      ],
+      "rootRegionAlpha8Bounds": [
+        454,
+        0,
+        968,
+        159
+      ]
+    },
+    {
+      "stage": "worked",
+      "source": "moss-hornbeam-leafy-v2-worked-000.png",
+      "generatedOutput": "exec-d2638a8c-62e8-4acb-860f-03abcd1c2ec1.png",
+      "sha256": "700c3b656255936e8a59f497ce7acba55ceb32db0b16a37037cecbb934606512",
+      "canvasPx": [
+        1254,
+        1254
+      ],
+      "alpha8Bounds": [
+        190,
+        107,
+        1109,
+        1161
+      ],
+      "rootRegionAlpha8Bounds": [
+        455,
+        0,
+        971,
+        161
+      ]
+    },
+    {
+      "stage": "low",
+      "source": "moss-hornbeam-leafy-v2-low-000.png",
+      "generatedOutput": "exec-b92b28c3-e1e6-4ed4-be7f-8e6a0d181d28.png",
+      "sha256": "1bd42a11095be3985f8f353c1cc2ad9835f01bd23ce6b044b8f958097558b441",
+      "canvasPx": [
+        1254,
+        1254
+      ],
+      "alpha8Bounds": [
+        332,
+        115,
+        999,
+        1161
+      ],
+      "rootRegionAlpha8Bounds": [
+        455,
+        0,
+        971,
+        161
+      ]
+    },
+    {
+      "stage": "depleted",
+      "source": "moss-hornbeam-leafy-v2-depleted-000.png",
+      "generatedOutput": "exec-65e778d7-d7e9-46c6-b8d4-2bf89de20753.png",
+      "sha256": "a6f8cb33038488350fdef9b16f605ddc4b220529cc1c311ae105b7346071ff0a",
+      "canvasPx": [
+        1254,
+        1254
+      ],
+      "alpha8Bounds": [
+        455,
+        832,
+        970,
+        1161
+      ],
+      "rootRegionAlpha8Bounds": [
+        455,
+        0,
+        970,
+        161
+      ]
+    }
   ]
 }

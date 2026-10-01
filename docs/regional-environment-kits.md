@@ -846,3 +846,18 @@ retain the generated master and unfinished scope. This is a source candidate,
 not a runtime replacement. Root clutter and leaf highlights remain. Derive its
 harvest states and a new common registration, then review woodland overlap
 and full-game appearance. It adds no rotated views.
+
+## Fuller hornbeam harvest source sequence — 1 October 2026
+
+The [four-state comparison](../assets/environment/vaelora-region-kits-v2/underbough/moss-hornbeam-leafy-v2-four-state-review.png)
+completes worked, low and depleted source drawings from the leafier mature
+full frame. Worked retains its upper leaf mass; low exposes shortened limbs
+and sparse clusters; depleted keeps a short stump and original root mat.
+All canvases are 1254 square, with lower-root alpha8 bounds differing by up
+to three pixels across the sequence. The comparison was visually inspected,
+but is not exact runtime registration or game-scale appearance evidence.
+
+The source review now records all four output IDs, hashes and bounds; prompts
+retain each built-in ImageGen edit. A new shared crop/pivot, lifecycle atlas
+and woodland/full-game review remain. Do not mix these frames with the old
+hornbeam registration. This sequence adds no rotated perspectives.
