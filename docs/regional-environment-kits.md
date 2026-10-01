@@ -819,3 +819,13 @@ identical capture pixels. The inspected local comparison reduces small-tree
 root clutter, but mature branching still dominates. It stays opt-in pending
 full-game review and real young forms for the other species. This binding
 does not add rotations or claim a complete regional forest kit.
+
+## Young forest full-game appearance — 1 October 2026
+
+The [eight paired game captures](qa-evidence/underbough-young-full-game-2026-10-01/README.md)
+show the opt-in age composition on Rootways, with Bellweather control, at
+ordinary and strategic cameras. Capture errors are empty. Inspected ordinary
+views show more leaf color and less repeated brown branching, but dense forest
+strips and the repeated young silhouette remain conspicuous. The profile stays
+opt-in. Fuller quiet mature crowns and more true age silhouettes within each
+species remain necessary; no broad beauty or directional completion is claimed.
