@@ -648,3 +648,20 @@ and [built-in ImageGen prompt](../assets/environment/vaelora-region-kits-v2/unde
 preserve the attempt. The next directional method must retain shared model
 geometry through surface finishing and fixed-camera capture rather than relying
 on painting to preserve each projection. Existing runtime art stays in use.
+
+## Underbough low hazel understory — 1 October 2026
+
+A [low multi-stem hazel source](../assets/environment/frontier-v1/underbough-low-hazel.png)
+adds an airy muted olive/umber shrub beside the two rootward fungus forms. It has
+no fruit or resource role. The [manifest](../assets/environment/frontier-v1/underbough-low-hazel-understory-manifest.json)
+and [built-in ImageGen prompt](../assets/environment/frontier-v1/UNDERBOUGH-LOW-HAZEL-PROMPTS.json)
+record crop, scale, source/runtime hashes and provenance. Its world size is
+1.13959×0.7 with the existing bottom-center pivot.
+
+The [renderer proof](qa-evidence/underbough-hazel-renderer-2026-10-01/README.md)
+checks all 115 Rootways hazels for placement inside their parent forest cell and
+exact clearing/reset behavior. Map data and forest-cell ownership stay unchanged.
+The existing selected understory positions now choose among three forms; density
+is not increased. Eight full-game captures also completed without reported errors.
+Only one painted oblique view is supplied, and other habitats/regions remain
+unfinished. This source expands ecological detail, not rotated coverage.

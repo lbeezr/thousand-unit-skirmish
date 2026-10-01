@@ -1,0 +1,8 @@
+{
+  "forestCells": 1026,
+  "hazelCells": 115,
+  "allWithinParentCell": true,
+  "clearAndResetEveryHazelPassed": true,
+  "mapUnchanged": true,
+  "directionalCoverage": "one painted oblique view"
+}

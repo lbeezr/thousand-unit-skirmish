@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "packId": "environment.vaelora-underbough-low-hazel",
+  "packVersion": "0.1.0",
+  "maturity": "source-sample",
+  "reference": "../../../docs/art-direction/vaelora-v1/underbough-ecology.png",
+  "referenceSha256": "8a20fa0f121641e6066e144e80fa8f699c74a1884efab21c79c81bb5776cc264",
+  "prompts": "UNDERBOUGH-LOW-HAZEL-PROMPTS.json",
+  "files": [
+    {
+      "path": "underbough-low-hazel.png",
+      "role": "source-image",
+      "sha256": "725bbe9329f76d2a8c79251265ee06ee2902c8491f6fa58d054ea9b35d16e775",
+      "bytes": 1258724,
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "path": "underbough-low-hazel.webp",
+      "role": "runtime-image",
+      "sha256": "4fc0eba2f35b6cf96a994c98551758a68bc7a6a83a900680e1387eee264c6cf8",
+      "bytes": 273284,
+      "dimensionsPx": {
+        "width": 1024,
+        "height": 629
+      }
+    }
+  ],
+  "cropPx": [
+    36,
+    246,
+    1235,
+    983
+  ],
+  "asset": {
+    "id": "underbough-low-hazel",
+    "kind": "decorative-forest-understory",
+    "worldWidth": 1.13959,
+    "worldHeight": 0.7,
+    "pivot": [
+      0.5,
+      1
+    ],
+    "parentStockClears": true
+  },
+  "provenance": "Built-in ImageGen against Underbough ecology key; selected RGBA master unchanged. Alpha bounds crop, LANCZOS max1024, WebP quality86 method6 exact alpha. One approximate fixed-oblique view; no resource role or directional claim. Crop uses alpha8 silhouette bounds plus two-pixel gutter to exclude isolated alpha1 specks outside the plant; no creative painting."
+}
