@@ -1,0 +1,51 @@
+{
+  "map": "underbough-rootways",
+  "seed": 93002,
+  "frames": [
+    {
+      "mode": "single",
+      "variantCount": 0,
+      "textureFiles": [
+        "underbough-clearing-grass-v2.webp",
+        "underbough-dense-growth-v2.webp",
+        "underbough-worn-dirt-v2.webp",
+        "underbough-root-soil-v2.webp"
+      ]
+    },
+    {
+      "mode": "mixed",
+      "variantCount": 1,
+      "textureFiles": [
+        "underbough-clearing-grass-v2.webp",
+        "underbough-clearing-grass-02-v2.webp",
+        "underbough-dense-growth-v2.webp",
+        "underbough-worn-dirt-v2.webp",
+        "underbough-root-soil-v2.webp"
+      ]
+    },
+    {
+      "mode": "mixed-repeat",
+      "variantCount": 1,
+      "textureFiles": [
+        "underbough-clearing-grass-v2.webp",
+        "underbough-clearing-grass-02-v2.webp",
+        "underbough-dense-growth-v2.webp",
+        "underbough-worn-dirt-v2.webp",
+        "underbough-root-soil-v2.webp"
+      ]
+    },
+    {
+      "mode": "bell-control",
+      "variantCount": 0,
+      "textureFiles": [
+        "meadow.webp",
+        "long-grass.webp",
+        "dirt.webp",
+        "forest-floor.webp"
+      ]
+    }
+  ],
+  "deterministicReconstruction": true,
+  "changedPixels": true,
+  "mapUnchanged": true
+}

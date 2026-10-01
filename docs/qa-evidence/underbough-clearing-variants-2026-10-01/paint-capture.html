@@ -1,0 +1,32 @@
+<!doctype html><html><base href="/"><script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js"}}</script><body style="margin:0"><script type="module">
+import * as THREE from 'three';
+import {createGroundSurfaces} from '/src/environment-art.mjs';
+const map=await(await fetch('/maps/underbough-rootways.json')).json();
+const original=JSON.stringify(map),proof={map:map.id,seed:map.terrainSeed,frames:[]};
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(1000,700);document.body.append(renderer.domElement);
+const camera=new THREE.OrthographicCamera(-30,30,21,-21,.1,300);camera.position.set(78,112,78);camera.lookAt(0,0,0);
+async function save(name,data){const r=await fetch('/__save/'+name,{method:'POST',body:data});if(!r.ok)throw Error('Save '+r.status);}
+for(const mode of ['painted-control']){
+ history.replaceState(null,'',mode==='single'?'?groundVariants=single':'?groundVariants=mixed');
+ const definition={...map,terrainBase:'forest-floor',terrainPatches:[{column:12,row:12,width:30,height:24,material:'short-grass'},{column:54,row:12,width:30,height:24,material:'meadow'}]};
+ const meshes=createGroundSurfaces(definition),scene=new THREE.Scene();scene.background=new THREE.Color('#33382b');meshes.forEach(m=>scene.add(m));
+ const textures=[...new Set(meshes.flatMap(m=>[m.material.map,m.material.userData.groundVariantTexture]).filter(Boolean))];
+ const deadline=Date.now()+20000;
+ while(textures.some(t=>!t.image?.complete||!t.image.naturalWidth)){if(Date.now()>deadline)throw Error('Missing ground image');await new Promise(r=>setTimeout(r,50));}
+ const variantCount=meshes.filter(m=>m.material.userData.groundVariantTexture).length; if(variantCount!==2||meshes[0].material.userData.groundVariantTexture)throw Error('Paint variant ownership failed');
+ if((mode.startsWith('mixed')&&variantCount<1)||((mode==='single'||mode==='bell-control')&&variantCount!==0))throw Error('Region or mode variant leak');
+ renderer.render(scene,camera);
+ if(renderer.info.programs.some(p=>p.diagnostics?.runnable===false))throw Error('Shader failed');
+ const pixels=renderer.domElement.toDataURL();
+ if(mode==='single')proof.singlePixels=pixels;
+ if(mode==='mixed'){proof.mixedPixels=pixels;if(pixels===proof.singlePixels)throw Error('Variant did not affect rendering');}
+ if(mode==='mixed-repeat'&&pixels!==proof.mixedPixels)throw Error('Seeded ground changed on reconstruction');
+ proof.frames.push({mode,variantCount,textureFiles:textures.map(t=>t.image.src.split('/').at(-1).split('?')[0])});
+ if(mode!=='mixed-repeat')await save(mode+'.png',await new Promise(r=>renderer.domElement.toBlob(r)));
+ for(const m of meshes){m.geometry.dispose();m.material.dispose();for(const t of m.userData.ownedGroundTextures||[])t.dispose();}
+}
+if(JSON.stringify(map)!==original)throw Error('Ground changed map');
+delete proof.singlePixels;delete proof.mixedPixels;
+proof.maskedVariantOwnership=true;proof.mapUnchanged=true;
+await save('paint-proof.json',JSON.stringify(proof,null,2));window.__renderDone=true;
+</script></body></html>
