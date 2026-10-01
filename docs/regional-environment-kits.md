@@ -263,3 +263,20 @@ records 32 instances spanning all eight headings, exact depletion/reset matrix
 restoration and atlas survival after real lifecycle loading. A Chrome capture
 checks the compiled instanced shader. Full-match worker and staging observations
 remain separate unfinished evidence.
+
+### Full-game resource harvest observation — 1 October 2026 UTC
+
+[Live game evidence](qa-evidence/directional-live-harvest-2026-10-01/proof.json)
+records real workers gathering six food and six wood from berry/oak nodes,
+worked/low/depleted appearances, reset, reload, successful directional atlas
+requests and no browser errors. Captures use the full game camera and renderer.
+
+The appearance review exposes a remaining scale problem: the fixed-camera oak
+reads like a small shrub next to workers. Its recorded fitScale is 0.687358
+and normalized height 1.87248 world units, versus the older orbit capture's
+0.962782 fit and 2.62279 height. Berry fit similarly drops from 0.932050 to
+0.665418. The new fit projects every corner of each rotated axis-aligned box;
+those hypothetical corners can exceed the actual mesh silhouette. Correct the
+fit using actual projected geometry and review shared scale across headings,
+retaining the source model, camera and ground pivot. Successful harvest checks
+do not resolve this observed art limitation.
