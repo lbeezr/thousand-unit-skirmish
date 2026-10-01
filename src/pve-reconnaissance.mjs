@@ -19,7 +19,9 @@ export function createReconnaissancePolicy(seed) {
         ...(observation.buildings?.visibleEnemies || []).filter(building => building.hp > 0 && BUILDING_DEFINITIONS[building.type]?.combat)]
         .slice(0, 64);
       const threat = enemies.find(unit => Math.hypot(unit.x - scout.x, unit.z - scout.z) < 9);
-      const mode = threat ? 'retreat' : 'explore';
+      const retreatInProgress = order?.key === key && order.mode === 'retreat'
+        && Math.hypot(scout.x - order.point.x, scout.z - order.point.z) >= 1;
+      const mode = threat || retreatInProgress ? 'retreat' : 'explore';
       if (order?.key !== key) failedPoints.length = 0;
       if (order?.key === key && order.mode === mode) {
         if (Math.hypot(scout.x - order.x, scout.z - order.z) > .25) {
@@ -30,10 +32,18 @@ export function createReconnaissancePolicy(seed) {
         if (!arrived && mode === 'explore') { failedPoints.push(order.point); if (failedPoints.length > 4) failedPoints.shift(); }
       }
       let point;
-      if (threat) {
+      if (mode === 'retreat') {
         const homes = (observation.buildings?.friendly || []).filter(building => building.hp > 0 && building.complete && building.type === 'town-center');
         homes.sort((a, b) => (a.x - scout.x) ** 2 + (a.z - scout.z) ** 2 - (b.x - scout.x) ** 2 - (b.z - scout.z) ** 2 || a.id - b.id);
-        point = homes[0] || { x: scout.x + (scout.x - threat.x) * 2, z: scout.z + (scout.z - threat.z) * 2 };
+        if (homes[0]) {
+          // The center is blocked; approach the nearest edge of the visible home footprint.
+          const home = clamp(homes[0]), edge = Math.ceil(BUILDING_DEFINITIONS['town-center'].footprint / 2);
+          const dx = scout.x - home.x, dz = scout.z - home.z;
+          const alongEdge = value => Math.max(-edge, Math.min(edge, value));
+          point = Math.abs(dx) >= Math.abs(dz)
+            ? { x: home.x + (Math.sign(dx) || 1) * edge, z: home.z + alongEdge(dz) }
+            : { x: home.x + alongEdge(dx), z: home.z + Math.sign(dz) * edge };
+        } else point = threat ? { x: scout.x + (scout.x - threat.x) * 2, z: scout.z + (scout.z - threat.z) * 2 } : order.point;
       } else {
         const mask = observation.visibility;
         const bytes = mask?.data ? atob(mask.data) : '';
