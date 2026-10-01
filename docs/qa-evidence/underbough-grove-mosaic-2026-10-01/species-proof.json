@@ -1,0 +1,26 @@
+[
+  {
+    "spacing": 10,
+    "cells": 1026,
+    "counts": {
+      "underbough-bramble": 53,
+      "underbough-root-oak": 395,
+      "underbough-old-plum": 59,
+      "underbough-moss-hornbeam": 468,
+      "underbough-copperleaf": 51
+    },
+    "neighborAgreement": 0.7030905077262694
+  },
+  {
+    "spacing": 6,
+    "cells": 1026,
+    "counts": {
+      "underbough-bramble": 53,
+      "underbough-moss-hornbeam": 366,
+      "underbough-root-oak": 384,
+      "underbough-old-plum": 142,
+      "underbough-copperleaf": 81
+    },
+    "neighborAgreement": 0.6650110375275938
+  }
+]
