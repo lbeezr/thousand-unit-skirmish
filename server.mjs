@@ -7128,7 +7128,7 @@ const server = createServer(async (request, response) => {
     'assets/ui/icons/attack.svg', 'assets/ui/icons/gather.svg', 'assets/ui/icons/build.svg',
   ].includes(relative);
   const publicEnvironmentModule = relative === 'src/environment-art.mjs';
-  const publicEnvironmentAtlasMetadata = ['bellweather', 'sereward', 'pale-meridian', 'siltmouths', 'vesperra', 'sombral-mere', 'underbough', 'underbough-bramble', 'underbough-root-oak', 'underbough-moss-hornbeam', 'underbough-young-hornbeam', 'underbough-leafy-hornbeam-v2', 'underbough-old-plum', 'veyrholds', 'ellionar', 'ellionar-hedge', 'sereward-acacia', 'sereward-scrub', 'bellweather-hedgerow', 'ru-lora-fringe'].some((region) =>
+  const publicEnvironmentAtlasMetadata = ['bellweather', 'sereward', 'pale-meridian', 'siltmouths', 'vesperra', 'sombral-mere', 'underbough', 'underbough-bramble', 'underbough-root-oak', 'underbough-moss-hornbeam', 'underbough-young-hornbeam', 'underbough-leafy-hornbeam-v2', 'underbough-muted-copperleaf-v2', 'underbough-old-plum', 'veyrholds', 'ellionar', 'ellionar-hedge', 'sereward-acacia', 'sereward-scrub', 'bellweather-hedgerow', 'ru-lora-fringe'].some((region) =>
     relative === `assets/environment/frontier-v1/${region}-lifecycle-atlas.json`);
   const publicEnvironmentAsset = path.dirname(relative) === 'assets/environment/frontier-v1'
     && ['.png', '.webp'].includes(path.extname(relative))
@@ -7159,6 +7159,7 @@ const server = createServer(async (request, response) => {
       'underbough-dense-growth-v2', 'underbough-clearing-grass-v2', 'underbough-clearing-grass-02-v2', 'underbough-root-soil-v2', 'underbough-root-soil-02-v2', 'underbough-worn-dirt-v2', 'underbough-worn-dirt-02-v2', 'underbough-shaded-stone-v2', 'underbough-wet-bank-v2',
       'underbough-old-plum-lifecycle-atlas', 'underbough-old-plum', 'underbough-old-plum-worked', 'underbough-old-plum-low', 'underbough-old-plum-depleted',
       'underbough-moss-hornbeam-lifecycle-atlas', 'underbough-moss-hornbeam', 'underbough-moss-hornbeam-worked', 'underbough-moss-hornbeam-low', 'underbough-moss-hornbeam-depleted',
+      'underbough-muted-copperleaf-v2-lifecycle-atlas', 'underbough-muted-copperleaf-v2', 'underbough-muted-copperleaf-v2-worked', 'underbough-muted-copperleaf-v2-low', 'underbough-muted-copperleaf-v2-depleted',
       'underbough-leafy-hornbeam-v2-lifecycle-atlas', 'underbough-leafy-hornbeam-v2', 'underbough-leafy-hornbeam-v2-worked', 'underbough-leafy-hornbeam-v2-low', 'underbough-leafy-hornbeam-v2-depleted',
       'underbough-young-hornbeam-lifecycle-atlas', 'underbough-young-hornbeam', 'underbough-young-hornbeam-worked', 'underbough-young-hornbeam-low', 'underbough-young-hornbeam-depleted',
       'underbough-root-oak-lifecycle-atlas', 'underbough-root-oak', 'underbough-root-oak-worked', 'underbough-root-oak-low', 'underbough-root-oak-depleted',
