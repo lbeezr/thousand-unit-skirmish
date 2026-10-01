@@ -481,7 +481,7 @@ try {
   const result=await cdp.evaluate(`(async()=>{
    const THREE=await import('/vendor/three.module.js');
    const {createEnvironmentSpriteInstances,setEnvironmentSpriteInstance,createGroundSurfaces,setForestSpriteStock}=await import('/src/environment-art.mjs');
-   const {${isSunbloom?'SUNBLOOM_LOW_PACK':isVeilcap?'VEILCAP_VIEW_PACK':'PODVINE_LOW_PACK'}:pack}=await import('/src/${isSunbloom?'sunbloom-low':isVeilcap?'veilcap-view':'podvine-low'}-pack.mjs');
+   const {${isSunbloom?'SUNBLOOM_LOW_PACK':isVeilcap?'VEILCAP_WORKED_PACK':'PODVINE_LOW_PACK'}:pack}=await import('/src/${isSunbloom?'sunbloom-low':isVeilcap?'veilcap-worked':'podvine-low'}-pack.mjs');
    const {CAMERA_VIEW_DIRECTION}=await import('/src/camera-controls.mjs');
    const {setActiveTerrain}=await import('/src/terrain-height.mjs');setActiveTerrain({width:24,height:24});
    const points=Array.from({length:80},(_,cell)=>({cell,x:cell%10-5,z:Math.floor(cell/10)-4,scale:1,flip:true,yaw:.8}));
@@ -500,7 +500,7 @@ try {
       understory:{mesh,index:i,x:points[i].x,z:points[i].z,scale:1,flip:true,yaw:.8}};
     for(const stock of [5,3,2,1,0,6]){
       setForestSpriteStock(slot,stock);
-      const worked=${viewKind!=='veilcap'}&&stock>0&&stock<6;
+      const worked=stock>0&&stock<6;
       if(views.worked[i]!== (${viewKind!=='veilcap'}&&stock>0&&stock<=2?2:Number(worked))||views.viewIndices[i]!==view)throw new Error('Pod-vine state/view mismatch');
       const [sx,sy,sw,sh]=(${viewKind!=='veilcap'}&&stock>0&&stock<=2?pack.lowRectsPx:worked?pack.workedRectsPx:pack.rectsPx)[view];
       const expectedState=[(sx+.5)/pw,1-(sy+sh-.5)/ph,(sw-1)/pw,(sh-1)/ph];
@@ -536,7 +536,7 @@ try {
    scene.traverse(o=>{o.geometry?.dispose();o.userData.ownedGroundTextures?.forEach(t=>t.dispose());o.material?.dispose()});renderer.dispose();renderer.forceContextLoss();
    return {views:4,counts,repeatable:true,mirrored:false,workedLifecycleChecks:80*6,checks,images,measured3DCapture:false,anatomicalRootAlignmentCertified:false};
   })()`);
-  for(const [name,image] of Object.entries(result.images).filter(([name])=>(!name.includes('worked')||viewKind!=='veilcap')&&(!name.includes('low')||viewKind!=='veilcap')))await writeFile(out+'/'+viewKind+'-views-'+name+'.png',Buffer.from(image.split(',')[1],'base64'));delete result.images;
+  for(const [name,image] of Object.entries(result.images).filter(([name])=>(!name.includes('low')||viewKind!=='veilcap')))await writeFile(out+'/'+viewKind+'-views-'+name+'.png',Buffer.from(image.split(',')[1],'base64'));delete result.images;
   await cdp.call('Page.navigate',{url:BASE.origin+'/?plantViews=legacy'});await sleep(3500);
   result.legacy=await cdp.evaluate(`(async()=>{const {createEnvironmentSpriteInstances}=await import('/src/environment-art.mjs');const mesh=createEnvironmentSpriteInstances(${JSON.stringify(assetName)},...${JSON.stringify(dimensions)},[{cell:0,x:0,z:0,scale:1}]);for(let i=0;i<50&&!mesh.material.map.image?.complete;i++)await new Promise(r=>setTimeout(r,100));const file=mesh.material.map.image?.src?.split('/').pop();if(mesh.userData.authoredPlantViews||file!==${JSON.stringify(assetName+'.webp')})throw new Error('Legacy plant view failed');mesh.geometry.dispose();mesh.material.dispose();return {file,authoredViews:false}})()`);
   await writeFile(out+'/'+viewKind+'-views-proof.json',JSON.stringify(result,null,2)+'\n');
@@ -640,7 +640,7 @@ try {
  if(!proof[7].files.includes('siltmouths-silver-reed.webp')||proof.some((r,i)=>i!==7&&r.files.includes('siltmouths-silver-reed.webp')))throw new Error('Silver reed region binding mismatch');
  for(const file of ['sereward-succulent.webp','sereward-succulent-02.webp'])if(!proof[4].files.includes(file)||proof.some((r,i)=>i!==4&&r.files.includes(file)))throw new Error('Desert understory region binding mismatch: '+file);
  for(const file of ['underbough-rootward-fungus.webp','underbough-rootward-fungus-02.webp'])if(!proof[3].files.includes(file)||proof.some((r,i)=>i!==3&&r.files.includes(file)))throw new Error('Fungus region binding mismatch: '+file);
- for(const file of ['vesperra-shade-fern.webp','vesperra-shade-fern-02.webp','views-atlas.webp','lifecycle-atlas.webp'])if(!proof[8].files.includes(file)||proof.some((r,i)=>i!==8&&r.files.includes(file)))throw new Error('Understory region binding mismatch: '+file);
+ for(const file of ['vesperra-shade-fern.webp','vesperra-shade-fern-02.webp','veilcap-worked-atlas.webp','lifecycle-atlas.webp'])if(!proof[8].files.includes(file)||proof.some((r,i)=>i!==8&&r.files.includes(file)))throw new Error('Understory region binding mismatch: '+file);
  if(!proof[0].files.includes('bellweather-meadow-herbs.webp')||proof.some((r,i)=>i!==0&&r.files.includes('bellweather-meadow-herbs.webp')))throw new Error('Meadow herbs region binding mismatch');
  if(!proof[4].files.includes('sereward-succulent.webp')||proof.some((r,i)=>i!==4&&r.files.includes('sereward-succulent.webp')))throw new Error('Succulent region binding mismatch');
  if(!proof[5].files.includes('sunbloom-low-atlas.webp')||proof.some((r,i)=>i!==5&&r.files.includes('sunbloom-low-atlas.webp')))throw new Error('Sunbloom region binding mismatch');

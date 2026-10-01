@@ -1,0 +1,12 @@
+{
+  "sizePx": [
+    2172,
+    724
+  ],
+  "mode": "RGBA",
+  "sourceSha256": "6b4c61c30f295f95d63fdc2df8e2cb61be76e8bf96f913c8abd58664939a66ec",
+  "reference": "../vesperra-veilcap-views-v1/source.png",
+  "referenceSha256": "e573588a320639a78589a74c88171514b245570f0f02df317f983ccb72ed6833",
+  "runtimeIntegrated": false,
+  "anatomicalRootAlignmentCertified": false
+}

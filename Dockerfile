@@ -18,6 +18,7 @@ COPY --chown=node:node assets/environment/ellionar-sunbloom-low-v4/sunbloom-low-
 COPY --chown=node:node assets/environment/ellionar-sunbloom-worked-v3/sunbloom-worked-atlas.webp ./assets/environment/ellionar-sunbloom-worked-v3/
 COPY --chown=node:node assets/environment/ellionar-sunbloom-crowns-v2/sunbloom-crowns-atlas.webp ./assets/environment/ellionar-sunbloom-crowns-v2/
 COPY --chown=node:node assets/environment/ellionar-sunbloom-views-v1/sunbloom-views-atlas.webp ./assets/environment/ellionar-sunbloom-views-v1/
+COPY --chown=node:node assets/environment/vesperra-veilcap-worked-v2/veilcap-worked-atlas.webp ./assets/environment/vesperra-veilcap-worked-v2/
 COPY --chown=node:node assets/environment/vesperra-veilcap-views-v1/views-atlas.webp ./assets/environment/vesperra-veilcap-views-v1/
 COPY --chown=node:node assets/environment/vesperra-podvine-low-v1/lifecycle-atlas.webp ./assets/environment/vesperra-podvine-low-v1/
 COPY --chown=node:node assets/environment/vesperra-podvine-worked-v1/review-atlas.webp ./assets/environment/vesperra-podvine-worked-v1/
