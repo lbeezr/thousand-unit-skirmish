@@ -616,6 +616,7 @@ four authored podvine views, which are painted views rather than measured model
 rotations. This inventory excludes buildings, units and other static scenery.
 Underbough canopy perspectives remain the next major art deficit; the rejected
 Root Oak redraw pair and construction proxy do not close it.
+
 ## Vesperra pod-vine woodland disturbance · 1 October 2026
 
 The [worked-view pack](../assets/environment/vesperra-podvine-worked-v1/README.md)
@@ -626,3 +627,36 @@ full. The [runtime evidence](qa-evidence/vaelora-podvine-worked-runtime-2026-10-
 checks stock mapping, existing vegetation contracts and release bytes. This
 completes a full/worked companion increment, not the canopy directional roster
 or an independent pod-harvesting mechanic.
+
+
+### Root Oak shared view study — 1 October 2026
+
+A [four-view painted study](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-shared-view-study-rejected.png)
+using the shared line guide was rejected after inspection: front-facing scars
+recurred across requested turns, while attachments and crowns did not follow the
+controlling projections reliably. Its [review](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-shared-view-study-review.json)
+and [prompts](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-shared-view-study-prompt.txt)
+retain the result without adding accepted directional coverage.
+
+A [solid construction capture](qa-evidence/root-oak-solid-construction-2026-10-01/README.md)
+now renders the same proposed branch/root/crown geometry under four group rotations
+with fixed camera direction and lighting. It makes occlusion explicit for the next
+finishing attempt. It remains an approximate primitive construction aid, not
+production artwork or recovered geometry of the existing painted oak.
+
+### Root Oak solid-constrained finishing — 1 October 2026
+
+The [solid-constrained painted sheet](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-solid-finish-study.png)
+follows branch/crown placement more closely than the line-guide attempt, but is
+still rejected for directional registration. At alpha threshold 128, opposite
+width-per-visible-height ratios are 0.942 and 0.867: approximately 6% and 13%
+drift. This scalar check does not itself prove anatomy; the shared geometry and
+root silhouettes also remain approximate. No runtime view coverage is added.
+
+The [light/dark alpha review](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-solid-finish-alpha-review.png)
+was inspected and shows clean transparent surroundings; the apparent glow in the
+original display is transparent RGB. The [review record](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-solid-finish-review.json)
+and [built-in ImageGen prompt](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-solid-finish-prompt.txt)
+preserve the attempt. The next directional method must retain shared model
+geometry through surface finishing and fixed-camera capture rather than relying
+on painting to preserve each projection. Existing runtime art stays in use.
