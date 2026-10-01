@@ -987,3 +987,11 @@ complete without reported errors. Inspected ordinary Rootways views show quieter
 warm accents blending better with the surrounding woodland. This supports default
 adoption after checking the no-option binding. Source forest strips and repeated
 silhouettes still need work; no final beauty or rotated-view acceptance is claimed.
+
+### Quieter copperleaf adopted — 1 October 2026
+
+Underbough copperleaf now defaults to muted-v2 after the paired full-game review.
+The [no-option binding evidence](qa-evidence/underbough-muted-copperleaf-default-2026-10-01/README.md)
+checks all 51 Rootways slots, 1,026 wood owners, stock 6/3/1/0/6 and exact reset.
+Use `forestCopperleaf=original` for the prior palette. This is a visible localized
+palette improvement; natural forest layout and genuine rotated views remain open.

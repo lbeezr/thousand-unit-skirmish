@@ -274,3 +274,11 @@ The [default binding evidence](qa-evidence/underbough-fuller-canopy-default-2026
 checks actual renderer family selection and stock/reset. Original canopy remains
 available with forestCanopy=original; broader forest composition and rotations
 are unfinished.
+
+### Underbough quieter copperleaf default — 1 October 2026
+
+Copperleaf forest slots now use the muted-v2 four-state atlas by default.
+The [default binding check](qa-evidence/underbough-muted-copperleaf-default-2026-10-01/README.md)
+passes stock/reset rendering, following paired full-game palette review.
+`forestCopperleaf=original` restores the previous orange foliage for comparison.
+One painted perspective remains; no rotated-view coverage is added.

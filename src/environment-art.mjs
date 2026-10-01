@@ -1011,7 +1011,7 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
       }
     }
   }
-  const mutedCopperleaf = underbough && new URLSearchParams(globalThis.location?.search ?? '').get('forestCopperleaf') === 'muted';
+  const mutedCopperleaf = underbough && new URLSearchParams(globalThis.location?.search ?? '').get('forestCopperleaf') !== 'original';
   const leafyHornbeam = underbough && new URLSearchParams(globalThis.location?.search ?? '').get('forestCanopy') !== 'original';
   const layeredForestMargin = underbough && new URLSearchParams(globalThis.location?.search ?? '').get('forestEdges') === 'layered';
   const youngHornbeams = [];
