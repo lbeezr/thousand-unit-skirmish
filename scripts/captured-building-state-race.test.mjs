@@ -39,3 +39,78 @@ test('a late Complete image cannot cover construction fallback, and repair can r
   globalThis.fetch=previous.fetch;globalThis.Image=previous.Image;globalThis.document=previous.document;console.warn=previous.warn;
  }
 });
+
+async function withFailedLifecycleFrame(name, run) {
+ const previous={fetch:globalThis.fetch,Image:globalThis.Image,document:globalThis.document,warn:console.warn};
+ const bytes=Buffer.from('verified-lifecycle-image');
+ const hash=createHash('sha256').update(bytes).digest('hex');
+ const view=state=>({index:0,path:`${state}.webp`,sha256:hash});
+ const manifest={schema:'thousand-unit-skirmish.building-lifecycle-reference.v1',asset:'town-center',
+  camera:{azimuthDegrees:[0],framePixels:[640,640],pixelsPerWorldUnit:128,anchorPixelFromTopLeft:[320,376]},
+  stateOrder:['complete','damaged','critical'],completeState:{views:[view('complete')]},
+  states:['damaged','critical'].map(state=>({state,views:[view(state)]}))};
+ const damaged=Promise.withResolvers(),failed=Promise.withResolvers(),requested=Promise.withResolvers();
+ let decoded=Promise.withResolvers();
+ globalThis.fetch=async url=>{
+  if(String(url).endsWith('.json'))return new Response(JSON.stringify(manifest));
+  if(String(url).endsWith('damaged.webp')){requested.resolve();return damaged.promise;}
+  return new Response(bytes);
+ };
+ globalThis.Image=class {width=640;height=640;decode(){decoded.resolve();return Promise.resolve();}};
+ globalThis.document={createElement(){return {getContext(){return {drawImage(){}};}};}};
+ const warnings=[];
+ console.warn=(...args)=>{warnings.push(args);failed.resolve();};
+ const sprite=createCapturedBuildingSprite({manifestUrl:`https://capture-test.invalid/${name}/lifecycle.json`});
+ const camera=new THREE.PerspectiveCamera();camera.position.set(0,10,10);
+ const update=hp=>updateCapturedBuildingSprite(sprite,camera,{complete:true,hp,maxHp:100});
+ const show=async hp=>{decoded=Promise.withResolvers();update(hp);await decoded.promise;await new Promise(setImmediate);assert.equal(sprite.visible,true);};
+ try {
+  await show(100);
+  await run({sprite,update,show,damaged,failed,requested,warnings});
+ } finally {
+  disposeCapturedBuildingSprite(sprite);sprite.material.map?.dispose();sprite.material.dispose();
+  globalThis.fetch=previous.fetch;globalThis.Image=previous.Image;globalThis.document=previous.document;console.warn=previous.warn;
+ }
+}
+
+test('failed lifecycle frames expose fallback instead of the previous Complete artwork', {timeout:3000}, async t=>{
+ for(const failure of ['http','hash']) await t.test(failure,async()=>{
+  await withFailedLifecycleFrame(`failed-${failure}`,async({sprite,update,damaged,failed,warnings})=>{
+   const completeTexture=sprite.material.map;
+   update(50);
+   damaged.resolve(failure==='http'?new Response('unavailable',{status:503}):new Response('wrong-pixels'));
+   await failed.promise;
+   assert.equal(sprite.visible,false,'failed Damaged artwork must expose lifecycle fallback');
+   assert.equal(sprite.material.map,completeTexture,'hidden texture is retained until a verified replacement');
+   assert.match(warnings[0][1].message,failure==='http'?/HTTP 503|returned HTTP 503/:/SHA-256 differs/);
+   update(100);await new Promise(setImmediate);
+   assert.equal(sprite.visible,true,'repair can restore cached verified Complete artwork');
+   assert.notEqual(sprite.material.map,completeTexture);
+  });
+ });
+});
+
+test('a late failed Damaged request cannot hide a newer verified Critical frame',{timeout:3000},async()=>{
+ await withFailedLifecycleFrame('superseded-failure',async({sprite,update,show,damaged,requested,warnings})=>{
+  update(50);
+  await requested.promise;
+  await show(20);
+  const criticalTexture=sprite.material.map;
+  damaged.resolve(new Response('unavailable',{status:503}));await new Promise(setImmediate);
+  assert.equal(sprite.visible,true,'late failure must leave the newest successful frame visible');
+  assert.equal(sprite.material.map,criticalTexture);
+  assert.deepEqual(warnings,[],'a superseded failure must not report the newer frame as unavailable');
+ });
+});
+
+test('disposed captured buildings ignore a late failed frame',{timeout:3000},async()=>{
+ await withFailedLifecycleFrame('disposed-failure',async({sprite,update,damaged,requested,warnings})=>{
+  update(50);await requested.promise;
+  const texture=sprite.material.map,visible=sprite.visible;
+  disposeCapturedBuildingSprite(sprite);
+  damaged.resolve(new Response('unavailable',{status:503}));await new Promise(setImmediate);
+  assert.equal(sprite.visible,visible);
+  assert.equal(sprite.material.map,texture);
+  assert.deepEqual(warnings,[]);
+ });
+});

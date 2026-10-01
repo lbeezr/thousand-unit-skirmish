@@ -256,6 +256,8 @@ function requestCurrentFrame(sprite, data) {
     sprite.visible = true;
     previous?.dispose();
   }).catch((error) => {
+    if (data.disposed || version !== data.requestVersion) return;
+    sprite.visible = false;
     if (!data.warned) {
       data.warned = true;
       console.warn(`Captured building view ${requestKey} unavailable; using the procedural Town Center fallback.`, error);
