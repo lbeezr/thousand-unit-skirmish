@@ -22,7 +22,7 @@ import {
 } from './captured-building-art.mjs';
 import {
   addObstacleEnvironmentSprites, groundBaseMaterial, createConstructionGroundInstances,
-  createEnvironmentSprite, createEnvironmentSpriteInstances,
+  createEnvironmentSprite, createEnvironmentSpriteInstances, createWoodResourceInstances,
   createGroundSurfaces, setEnvironmentSpriteInstance, setForestSpriteStock,
   TERRAIN_MATERIALS, updateConstructionGroundInstances, updateLandVegetationOccupation,
   RESOURCE_STATE_ASSETS_AVAILABLE, RESOURCE_STATE_ASSET_STATUS, resourceStateAssetsReady,
@@ -1883,7 +1883,7 @@ function setWoodNodeTreeStage(id, stage) {
     if (!mesh) continue;
     setEnvironmentSpriteInstance(mesh, slot.index, slot.x, slot.z,
       meshStage === stage
-        ? slot.scale * (RESOURCE_STATE_ASSETS_AVAILABLE ? 1 : resourceVisualScale(stage)) : 0);
+        ? slot.scale * (RESOURCE_STATE_ASSETS_AVAILABLE || (mapDefinition?.region === 'underbough' && mapDefinition.id !== 'meshy-resource-review') ? 1 : resourceVisualScale(stage)) : 0);
     }
   }
   for (const meshStage of changedStages) {
@@ -1916,9 +1916,9 @@ function buildWoodNodeInstances(nodes = []) {
     const stagePositions = positions.map((position, index) => ({
       ...position,
       scale: woodTreeNodeStages.get(woodNodes[index].id) === stage
-        ? position.scale * (RESOURCE_STATE_ASSETS_AVAILABLE ? 1 : resourceVisualScale(stage)) : 0,
+        ? position.scale * (RESOURCE_STATE_ASSETS_AVAILABLE || (mapDefinition?.region === 'underbough' && mapDefinition.id !== 'meshy-resource-review') ? 1 : resourceVisualScale(stage)) : 0,
     }));
-    const trees = createEnvironmentSpriteInstances(`oak-${stage}`, 4.1, 3.75, stagePositions);
+    const trees = createWoodResourceInstances(mapDefinition, stage, stagePositions);
     if (!trees) continue;
     trees.visible = woodTreeStageCounts.get(stage) > 0;
     addMapObject(trees);
