@@ -1,0 +1,26 @@
+<!doctype html><html><head><base href="/"><script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js"}}</script></head><body><script type="module">
+import * as THREE from 'three';
+import {addObstacleEnvironmentSprites,setForestSpriteStock} from '/src/environment-art.mjs';
+import {CAMERA_VIEW_DIRECTION} from '/src/camera-controls.mjs';
+const map=await(await fetch('/maps/underbough-rootways.json')).json(),original=JSON.stringify(map);
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(1000,850);document.body.append(renderer.domElement);
+const camera=new THREE.OrthographicCamera(-8,8,6.8,-6.8,.1,200);
+const proof={mapUnchanged:false,modes:[],errors:[]};
+async function save(name,data){const r=await fetch('/__save/'+name,{method:'POST',body:data});if(!r.ok)throw Error('Save '+r.status);}
+let target;
+for(const mode of ['uniform','pockets']){
+ history.replaceState(null,'','?forestAges='+mode);
+ const objects=[],slots=addObstacleEnvironmentSprites(map,map.width/2,map.height/2,m=>objects.push(m));
+ if(!target){const s=[...slots.values()].find(s=>s.family==='underbough-young-hornbeam' || s.family==='underbough-leafy-hornbeam-v2');target=new THREE.Vector3(s.x,1.1,s.z);camera.position.copy(target).add(new THREE.Vector3(...CAMERA_VIEW_DIRECTION).normalize().multiplyScalar(80));camera.lookAt(target);}
+ const scene=new THREE.Scene();scene.background=new THREE.Color('#33382b');objects.forEach(m=>scene.add(m));
+ const textures=[...new Set(objects.flatMap(m=>m.material?.map?[m.material.map]:[]))],deadline=Date.now()+20000;
+ while(textures.some(t=>!t.image?.complete||!t.image.naturalWidth)){if(Date.now()>deadline)throw Error('Missing texture');await new Promise(r=>setTimeout(r,50));}
+ const young=[...slots.values()].filter(s=>s.family==='underbough-young-hornbeam' || s.family==='underbough-leafy-hornbeam-v2'),counts={};for(const s of slots.values())counts[s.family]=(counts[s.family]||0)+1;
+ const states=[];for(const stock of mode==='pockets'?[6,3,1,0,6]:[6]){
+  for(const s of young){const stage=setForestSpriteStock(s,stock),actual=Array.from(s.atlas.rects.array.slice(s.index*4,s.index*4+4)),expected=s.atlas.frameRects[stage];if(actual.some((v,i)=>Math.abs(v-expected[i])>1e-6))throw Error('Wrong state rect');const matrix=new THREE.Matrix4();s.mesh.getMatrixAt(s.index,matrix);if(!matrix.elements.every(Number.isFinite))throw Error('Bad transform');}
+  renderer.render(scene,camera);await save(mode+'-'+stock+(states.includes(stock)?'-reset':'')+'.png',await new Promise(r=>renderer.domElement.toBlob(r)));states.push(stock);
+ }
+ proof.modes.push({mode,woodCells:slots.size,families:counts,canopyStates:states,sourceTextures:textures.map(t=>t.image.src.split('/').at(-1))});
+}
+proof.mapUnchanged=JSON.stringify(map)===original;if(!proof.mapUnchanged)throw Error('Map mutated');if(!proof.modes[1].families['underbough-young-hornbeam'])throw Error('No muted copperleaf trees');if(proof.modes[0].woodCells!==proof.modes[1].woodCells)throw Error('Lost wood roots');await save('proof.json',JSON.stringify(proof,null,2));window.__renderDone=true;
+</script></body></html>

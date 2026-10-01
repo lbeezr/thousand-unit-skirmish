@@ -1004,3 +1004,10 @@ sparser and exposing more branch/root detail. Keep `forestAges=young`
 experimental pending density/species balance work. Eight captures complete on
 retry without reported errors; the capture helper now cleans up its own browser
 profile. Genuine rotated regional views remain unfinished.
+
+### Restrained hornbeam regeneration pockets — 1 October 2026
+
+`forestAges=pockets` previews smaller young-tree patches while retaining most
+mature canopy and normal sizes for other species. The [renderer study](qa-evidence/underbough-young-pockets-2026-10-01/README.md)
+checks 67 young/295 mature hornbeams in current Rootways, 1,026 wood owners and
+stock/reset rendering. It remains optional pending full-game density review.
