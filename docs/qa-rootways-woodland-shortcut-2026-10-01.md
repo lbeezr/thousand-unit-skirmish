@@ -41,6 +41,8 @@ harvesting and deposits; the scenario must reject that mutation at the live
 four-cell traversal assertion. Keeping every cell blocked also prevented the next
 tree from being gathered, so the final-cell mutation isolates the movement check.
 The mutations are kept outside the repository.
+The final-cell mutation completed harvesting and deposits, then failed at the
+four-cell traversal assertion as intended; the unmodified scenario passed again.
 
 This is automated server evidence on the small authored map. It does not establish
 human playtest, browser appearance, faster travel, balance or 2,000-unit support.
