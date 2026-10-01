@@ -63,7 +63,18 @@ archive of unmodified fork main `71a1610` reproduced the same assertion and exit
 1. The map, source modules, historical fixture and settlement test are identical
 between that baseline and this PR. This pre-existing map/fixture mismatch is
 outside the proof's ownership; no map edits or weakened assertions were made.
-Merge remains pending resolution of that repository validation blocker.
+At that checkpoint, merge was pending resolution of the baseline blocker.
+
+The reviewed settlement and packaging repairs subsequently merged in fork
+[PR #3](https://github.com/lbeezr/thousand-unit-skirmish/pull/3), merge
+`56de935f4e75080654b967542ac17e890010edba`. All 502 baseline CI checks passed
+(168/167/167 across three shards), including release integration. Clean release
+packaging passed at combined repair `d91c1ea`, without deploying anything.
+After merging repaired fork main into this proof branch, both winner commands
+passed again with the same bank/cost evidence and all six emitted checks.
+The revised settlement scenario, new runner syntax, documentation links,
+whitespace and CI shard-coverage tests also passed. The proof adds no runtime
+changes to the fully checked baseline; its own two live routes run separately.
 
 This is automated server evidence. Browser controls/rendering, human
 comprehension, unassisted playtests, network impairment and hosted performance
