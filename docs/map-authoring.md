@@ -56,6 +56,14 @@ depletion/reset ownership stay the same. `?forestHabitat=flat` restores uniform
 family scales for paired developer review. Other regions retain their current
 scale profiles pending habitat-specific visual review.
 
+Bellweather Millrace and Underbough Rootways ground their starting settlements
+with irregular worn-soil pads centered on the actual Town Center spawn position,
+plus gently bowed working tracks towards nearby food/wood nodes. The pads follow
+the hall's real footprint, not the army marker. This is ordinary ground paint;
+all other map fields remain unchanged and new wear excludes blocked cells.
+This starting-site pass does not add settlement structures, change placement
+rules, or generate paths for buildings constructed during a match.
+
 This is a first composition pass. Individual shore steps, reflected layouts,
 repeated regional layout templates and sparse scenery are still visible. A
 connected woodland is better than rounded isolated rectangles, but it does not
