@@ -68,7 +68,8 @@ class Cdp {
 const profile=await mkdtemp('/tmp/vaelora-vegetation-chrome-');
 const chrome=spawn('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',['--headless=new','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--window-size=1280,720','--user-data-dir='+profile,'about:blank'],{stdio:'ignore'});
 
-const out='docs/qa-evidence/directional-live-harvest-2026-10-01';
+const out=process.env.RTS_DIRECTIONAL_OUTPUT || 'docs/qa-evidence/directional-live-harvest-2026-10-01';
+if(!/^docs\/qa-evidence\/[a-z0-9-]+$/.test(out))throw new Error('Invalid evidence directory');
 let cdp;
 try {
  let port;for(let i=0;i<100;i++){try{port=Number((await readFile(profile+'/DevToolsActivePort','utf8')).split('\n')[0]);if(port)break}catch{}await sleep(100)}
@@ -87,7 +88,7 @@ try {
  await cdp.evaluate(`(()=>{const r=document.querySelector('#viewport canvas').getBoundingClientRect();document.querySelector('#viewport canvas').dispatchEvent(new WheelEvent('wheel',{deltaY:-1200,clientX:r.x+r.width/2,clientY:r.y+r.height/2,cancelable:true}));document.querySelector('#camera-home-base').click()})()`);await sleep(600);
  const shot=async name=>{const image=await cdp.call('Page.captureScreenshot',{format:'png'});await writeFile(out+'/'+name+'.png',Buffer.from(image.data,'base64'));};
  await shot('full');
- const requests=await cdp.evaluate(`performance.getEntriesByType('resource').filter(e=>e.name.includes('fixed-camera-v2')).map(e=>new URL(e.name).pathname)`);
+ const requests=await cdp.evaluate(`performance.getEntriesByType('resource').filter(e=>e.name.includes('fixed-camera-v3')).map(e=>new URL(e.name).pathname)`);
  if(!['berries','oak'].every(f=>requests.some(p=>p.endsWith('/'+f+'-atlas.webp'))))throw Error('Directional atlases not used by full game');
  const observed=[];
  for(const [nodeId,worker] of [['berry-check',0],['oak-check',1]]){

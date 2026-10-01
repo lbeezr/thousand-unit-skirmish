@@ -3,10 +3,11 @@ from pathlib import Path
 import hashlib
 import json
 import math
+import sys
 from PIL import Image
 
 root = Path(__file__).resolve().parents[1]
-pack = root / 'assets/environment/frontier-meshy-fixed-camera-v2'
+pack = root / (sys.argv[1] if len(sys.argv) > 1 else 'assets/environment/frontier-meshy-fixed-camera-v3')
 report = {}
 for name in ['oak', 'pine', 'berries']:
     directory = pack / name

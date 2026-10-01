@@ -1,0 +1,230 @@
+{
+  "name": "berries",
+  "status": "review-candidate",
+  "sourceModel": "meshy_output/organic-perspective-pilot/berries-optimized.glb",
+  "sourceModelSha256": "a7345a4726631b6521b75a50a011589a946566efaade12dc09cd79d44a5be9c8",
+  "meshTask": "01a0e075-2aea-7523-adcb-859b642f6991",
+  "remeshTask": "01a0e07a-d117-7650-a903-4d7601a3a286",
+  "atlas": "berries-atlas.png",
+  "atlasPixels": [
+    2560,
+    1280
+  ],
+  "framePixels": [
+    640,
+    640
+  ],
+  "captureMode": "model-rotation",
+  "projection": "orthographic",
+  "elevationDegrees": 45.43590248481586,
+  "normalizationWidthWorld": 2.55,
+  "fitMethod": "projected-mesh-vertices",
+  "frameWorldUnits": [
+    5,
+    5
+  ],
+  "pixelsPerWorldUnit": 128,
+  "anchorPixelFromTopLeft": [
+    320,
+    480
+  ],
+  "lighting": "Building pilot: hemisphere 1.6; warm key 2.5; cool fill 1.0; rim 0.7; ACES exposure 1.",
+  "viewConvention": "Model rotates positively about world Y at the centred ground pivot. Camera stays at azimuth 45 degrees and exact game elevation; lights stay fixed in world space.",
+  "stats": {
+    "rawBounds": {
+      "min": [
+        -0.9510790705680847,
+        -0.4353339672088623,
+        -0.9108500480651855
+      ],
+      "max": [
+        0.9469950795173645,
+        0.4262550175189972,
+        0.8218259811401367
+      ],
+      "size": [
+        1.8980741500854492,
+        0.8615889847278595,
+        1.7326760292053223
+      ]
+    },
+    "normalizedSize": [
+      2.55,
+      1.1575163757206917,
+      2.3277930813581036
+    ],
+    "baseScale": 1.3434670083279947,
+    "fitScale": 1,
+    "effectiveScale": 1.3434670083279947,
+    "triangleCount": 104491,
+    "framePixels": 640,
+    "pixelsPerWorldUnit": 128,
+    "anchorPixelFromTopLeft": [
+      320,
+      480
+    ],
+    "modelHeadingsDegrees": [
+      0,
+      45,
+      90,
+      135,
+      180,
+      225,
+      270,
+      315
+    ],
+    "fixedCameraAzimuthDegrees": 45,
+    "projectedBoundsBeforeFit": {
+      "minX": 156.79999999999993,
+      "minY": 319.1180386577117,
+      "maxX": 483.19999999999993,
+      "maxY": 580.5377301260177
+    }
+  },
+  "frames": [
+    {
+      "index": 0,
+      "modelYawDegrees": 0,
+      "cameraAzimuthDegrees": 45,
+      "rect": [
+        0,
+        0,
+        640,
+        640
+      ],
+      "alphaBounds": [
+        163,
+        351,
+        451,
+        574
+      ],
+      "sha256": "2d3b3c08d32210d29194c6edc380161030bba6cced497ee767f03da1147fa071"
+    },
+    {
+      "index": 1,
+      "modelYawDegrees": 45,
+      "cameraAzimuthDegrees": 45,
+      "rect": [
+        640,
+        0,
+        640,
+        640
+      ],
+      "alphaBounds": [
+        156,
+        346,
+        483,
+        579
+      ],
+      "sha256": "a928e0eb7db4a379798bcdaedecef52062f823aec3291e7cb743abf8ac855ee3"
+    },
+    {
+      "index": 2,
+      "modelYawDegrees": 90,
+      "cameraAzimuthDegrees": 45,
+      "rect": [
+        1280,
+        0,
+        640,
+        640
+      ],
+      "alphaBounds": [
+        203,
+        342,
+        459,
+        572
+      ],
+      "sha256": "5fdbb32112ec7184cdac4c633ce3e7c058c5b623c9b30ce031607e9129fc3914"
+    },
+    {
+      "index": 3,
+      "modelYawDegrees": 135,
+      "cameraAzimuthDegrees": 45,
+      "rect": [
+        1920,
+        0,
+        640,
+        640
+      ],
+      "alphaBounds": [
+        171,
+        323,
+        469,
+        578
+      ],
+      "sha256": "a2af8429239901fbe37bf92e82349196a10265bccf7ba9816f5a17aaf6dbb1b3"
+    },
+    {
+      "index": 4,
+      "modelYawDegrees": 180,
+      "cameraAzimuthDegrees": 45,
+      "rect": [
+        0,
+        640,
+        640,
+        640
+      ],
+      "alphaBounds": [
+        188,
+        320,
+        477,
+        554
+      ],
+      "sha256": "524542247a273c591bae9a7245ef5eff53784b5ad221a1134539a834b84ec788"
+    },
+    {
+      "index": 5,
+      "modelYawDegrees": 225,
+      "cameraAzimuthDegrees": 45,
+      "rect": [
+        640,
+        640,
+        640,
+        640
+      ],
+      "alphaBounds": [
+        157,
+        319,
+        484,
+        579
+      ],
+      "sha256": "15f0feb242de3b6b04ad09bc8f3c8a84cd0a2a7c9fe9ead373ee8e5de0589379"
+    },
+    {
+      "index": 6,
+      "modelYawDegrees": 270,
+      "cameraAzimuthDegrees": 45,
+      "rect": [
+        1280,
+        640,
+        640,
+        640
+      ],
+      "alphaBounds": [
+        181,
+        327,
+        437,
+        560
+      ],
+      "sha256": "aa06c54ca69677dd24eac18faa0a5c090a4a1b122b352f94f81e17e166450fe5"
+    },
+    {
+      "index": 7,
+      "modelYawDegrees": 315,
+      "cameraAzimuthDegrees": 45,
+      "rect": [
+        1920,
+        640,
+        640,
+        640
+      ],
+      "alphaBounds": [
+        171,
+        320,
+        469,
+        581
+      ],
+      "sha256": "0215eb7ececb5eb3c6b2f2424b6a0462a1e6cc5e21baad9608415839dfdd254a"
+    }
+  ]
+}
