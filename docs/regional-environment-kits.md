@@ -34,6 +34,15 @@ The packing script explicitly writes `directionId: fixed-oblique`. The previous
 source documentation acknowledges that additional measured camera views are
 not supplied. Keep this distinction visible in manifests and acceptance records.
 
+There is an important older exception: the [Meshy oak, pine and berry pilot](../assets/environment/frontier-meshy-sprites-v1/README.md)
+already supplies eight actual camera-orbit captures per model. The current
+environment loader nevertheless loads only `runtime/{family}-01.webp` for
+these families. Those intact-state captures do not cover the newer regional
+species, and their older depletion art is separate. Preserve this usable
+capture pipeline and its source hashes; neither its camera convention nor its
+lighting is interchangeable with a model-rotation bake under the fixed game
+camera. The directional deficit is both asset coverage and loader selection.
+
 ## Kit roster
 
 | Zone | Cohesive palette | Four woodland tree forms | Shrubs and ground vegetation |
@@ -129,3 +138,26 @@ The first dark olive Root Oak intact source now exists at the designated 0°
 orientation. Further authored views are in production. Its pixels and alpha are
 retained in the [source pack](../assets/environment/vaelora-region-kits-v2/README.md);
 it is not loaded by the game yet.
+
+### First ground runtime — 1 October 2026 UTC
+
+Three new Underbough sources now supply clearing grass, worn earth and mossy root
+soil. `src/regional-ground-kits.mjs` resolves meadow/short/long grass, dirt and
+forest-floor by explicit map region. The semantic paint fields stay unchanged.
+The same profile supplies representative colours for the border, minimap and
+Studio diagram. Other regions retain their existing bindings. `?regionalGrounds=legacy`
+provides a paired review of the old materials.
+
+The [local browser evidence](qa-evidence/underbough-ground-kit-2026-10-01/renderer-proof.json)
+checks all three consuming renderer paths, switching to Bellweather without a
+texture-cache leak, legacy comparison and an unchanged map definition. Captures
+cover both maps at normal and strategic zoom with no console/asset errors.
+The three RGB WebP encodings total 1,758,626 bytes, preserve the source dimensions,
+and use no repaint, crop or resize. This is local runtime evidence, not a staging
+deployment or GPU capacity measurement. Texture repetition is reviewed through
+the existing mirrored/stochastic sampler, not claimed mathematically periodic.
+
+The Root Oak and Moss Hornbeam provide two additional distinct intact painted
+tree sources. They still need registered production/model views and harvest
+states before joining the existing copperleaf in game. This first ground pass
+does not complete the four-species forest or the ten-zone kit matrix.

@@ -3,7 +3,7 @@ import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS, validateMapRegion } from './regions.mjs';
 import { regionGestureZone, ScenarioEditHistory } from './scenario-authoring.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, validCompletionTrigger } from './scenario-regions.mjs';
-import { TERRAIN_COLORS } from './terrain-materials.mjs';
+import { regionalGroundColor } from './regional-ground-kits.mjs';
 import { researchOptions, researchAction } from './research-actions.mjs';
 import { unitPresentation, buildingPresentation } from './gameplay-presentation.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, GAMEPLAY_RULESET_REVISION } from './gameplay-definitions.mjs';
@@ -2187,7 +2187,7 @@ function buildMap(definition) {
 
   const base = new THREE.Mesh(
     new THREE.PlaneGeometry(MAP_WIDTH + 4, MAP_HEIGHT + 4),
-    new THREE.MeshStandardMaterial({ color: TERRAIN_COLORS[environmentTheme(definition)] || TERRAIN_COLORS.meadow, roughness: 1 }),
+    new THREE.MeshStandardMaterial({ color: regionalGroundColor(definition, environmentTheme(definition)), roughness: 1 }),
   );
   base.rotation.x = -Math.PI / 2;
   base.position.y = -0.075;
@@ -2504,10 +2504,10 @@ function buildMinimapBackground(definition) {
   const baseTerrain = environmentTheme(definition);
   context.fillStyle = '#20231f';
   context.fillRect(0, 0, width, height);
-  context.fillStyle = TERRAIN_COLORS[baseTerrain] || TERRAIN_COLORS.meadow;
+  context.fillStyle = regionalGroundColor(definition, baseTerrain);
   context.fillRect(rect.left, rect.top, rect.width, rect.height);
   for (const patch of definition.terrainPatches || []) {
-    context.fillStyle = TERRAIN_COLORS[patch.material] || TERRAIN_COLORS.meadow;
+    context.fillStyle = regionalGroundColor(definition, patch.material);
     context.fillRect(rect.left + patch.column * rect.scale, rect.top + patch.row * rect.scale,
       patch.width * rect.scale, patch.height * rect.scale);
   }
@@ -6513,7 +6513,7 @@ function drawEditorGrid() {
   const scaleX = canvas.width / editorDefinition.width;
   const scaleY = canvas.height / editorDefinition.height;
   context.setTransform(scaleX, 0, 0, scaleY, 0, 0);
-  context.fillStyle = TERRAIN_COLORS[ui.studioTerrainBase.value] || TERRAIN_COLORS.meadow;
+  context.fillStyle = regionalGroundColor(editorDefinition, ui.studioTerrainBase.value);
   context.fillRect(0, 0, editorDefinition.width, editorDefinition.height);
   const cellPixels = Math.min(size.width / editorDefinition.width, size.height / editorDefinition.height);
   for (let row = 0; row < editorDefinition.height; row++) {
@@ -6521,7 +6521,7 @@ function drawEditorGrid() {
       const index = row * editorDefinition.width + column;
       const ground = editorGroundMaterials[index];
       if (ground >= 0) {
-        context.fillStyle = TERRAIN_COLORS[TERRAIN_MATERIALS[ground]];
+        context.fillStyle = regionalGroundColor(editorDefinition, TERRAIN_MATERIALS[ground]);
         context.fillRect(column, row, 1, 1);
       }
       const level = editorGroundLevels[index];
@@ -6651,7 +6651,7 @@ function drawEditorGrid() {
     }
   } else if (editorDrag && isGroundEditorTool(editorDrag.tool)) {
     const material = editorDrag.tool === 'ground-reset' ? ui.studioTerrainBase.value : editorDrag.tool.slice(7);
-    context.fillStyle = TERRAIN_COLORS[material] || TERRAIN_COLORS.meadow;
+    context.fillStyle = regionalGroundColor(editorDefinition, material);
     context.globalAlpha = 0.78;
     for (const index of editorDrag.paintCells) {
       context.fillRect(index % editorDefinition.width, Math.floor(index / editorDefinition.width), 1, 1);

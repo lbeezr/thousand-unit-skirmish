@@ -9,6 +9,7 @@ import { applyTerrainTextureSampling } from './terrain-texture-sampling.mjs';
 import { buildTerrainBlendMasks, buildForestGroundMask } from './terrain-blend.mjs';
 import { buildWaterSurfaceGeometry, WATER_LEVEL } from './water-surface-geometry.mjs';
 import { forestHabitatDepth, forestCanopyFactor } from './forest-habitat.mjs';
+import { regionalGroundTextureName, regionalGroundColor } from './regional-ground-kits.mjs';
 import { shorePlantPositions } from './shore-vegetation.mjs';
 import { meadowPlantPositions } from './meadow-vegetation.mjs';
 import { gardenPlantPositions } from './garden-vegetation.mjs';
@@ -289,9 +290,11 @@ async function loadResourceStateAssets() {
 export const resourceStateAssetsReady = loadResourceStateAssets();
 
 const grounds = new Map();
-function groundTexture(name) {
+function groundTexture(material, definition) {
+  const name = regionalGroundTextureName(definition, material,
+    new URLSearchParams(globalThis.location?.search ?? '').get('regionalGrounds') !== 'legacy');
   if (grounds.has(name)) return grounds.get(name);
-  const texture = textureLoader.load(`${ASSET_ROOT}${name}.webp?v=vaelora-ground-v1`);
+  const texture = textureLoader.load(`${ASSET_ROOT}${name}.webp?v=vaelora-ground-v2`);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.wrapS = THREE.MirroredRepeatWrapping;
   texture.wrapT = THREE.MirroredRepeatWrapping;
@@ -371,7 +374,7 @@ export function createGroundSurfaces(definition) {
     definition.width / 2, definition.height / 2, -0.025);
   const meshes = [new THREE.Mesh(
     finishGroundGeometry(baseBuffer),
-    groundMaterial({ map: groundTexture(base), color: 0xd2d4bd }),
+    groundMaterial({ map: groundTexture(base, definition), color: 0xd2d4bd }),
   )];
   const waterGeometry = buildWaterSurfaceGeometry(definition);
   if (waterGeometry) {
@@ -394,7 +397,7 @@ export function createGroundSurfaces(definition) {
       uv.setXY(vertex, uv.getX(vertex) * 12 / definition.width,
         uv.getY(vertex) * 12 / definition.height);
     }
-    const texture = groundTexture(mask.material).clone();
+    const texture = groundTexture(mask.material, definition).clone();
     texture.repeat.set(definition.width / 12, definition.height / 12);
     const alphaMap = new THREE.DataTexture(mask.pixels, mask.width, mask.height, THREE.RGBAFormat);
     alphaMap.magFilter = THREE.LinearFilter;
@@ -442,7 +445,7 @@ export function createGroundSurfaces(definition) {
     }
     if(vertices.length) {
       const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));geometry.computeVertexNormals();
-      meshes.push(new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color:new THREE.Color(TERRAIN_COLORS[base]).multiplyScalar(.65),roughness:1,side:THREE.DoubleSide})));
+      meshes.push(new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({color:new THREE.Color(regionalGroundColor(definition,base)).multiplyScalar(.65),roughness:1,side:THREE.DoubleSide})));
     }
   }
   meshes[0].userData.terrainSurface=true;

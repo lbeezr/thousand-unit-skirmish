@@ -3,7 +3,7 @@
   "packId": "environment.underbough-cohesive-kit-v2",
   "maturity": "source-study",
   "region": "underbough",
-  "status": "palette study, one fixed-view intact tree source, and a rejected rotation candidate; no runtime binding",
+  "status": "three regional ground textures locally rendered and cache-isolation checked; two new tree sources; no new tree runtime bindings or verified rotated views",
   "source": "project-owned built-in ImageGen, using selected Underbough ecology key and existing copperleaf sprite references",
   "directionalMethod": "authored painted views; not measured 3D render captures",
   "targetTreeForms": [
@@ -76,6 +76,70 @@
       "status": "rejected-direction-candidate",
       "directionDegrees": null,
       "reason": "Silhouette/branch edits do not verify a quarter-turn of the same underlying tree; not accepted directional coverage"
+    },
+    {
+      "path": "clearing-grass-01.png",
+      "sha256": "8d2b1e3971b24d37977f85736a4fe2cb8cfd5a4e2bf32e456e0170733965cef4",
+      "sizeBytes": 3326368,
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "status": "ground-runtime-local-review-passed",
+      "runtimeFile": "assets/environment/frontier-v1/underbough-clearing-grass-v2.webp",
+      "runtimeSha256": "b668f0029e640f1bf2d717b7cdcc95e6443f6a3c5fca6dcfb019102b89f8400b",
+      "runtimeSizeBytes": 622518,
+      "encoding": "RGB WebP quality90 method6; source retained; no repaint, resize or crop"
+    },
+    {
+      "path": "worn-dirt-01.png",
+      "sha256": "3ff2afbb739b07a3f3d36ef5a41e846d323700fe9c9237b5b61c66be30499661",
+      "sizeBytes": 2958331,
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "status": "ground-runtime-local-review-passed",
+      "runtimeFile": "assets/environment/frontier-v1/underbough-worn-dirt-v2.webp",
+      "runtimeSha256": "93422d5b653b1fb5705a73d15f3301cda24448c218c87b167c89461bed3ac6ac",
+      "runtimeSizeBytes": 473300,
+      "encoding": "RGB WebP quality90 method6; source retained; no repaint, resize or crop"
+    },
+    {
+      "path": "root-soil-01.png",
+      "sha256": "88af2fa852756092c13299dc8f5c5ef81bea7b2b9128687f9d0547688e46f93f",
+      "sizeBytes": 3344387,
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "status": "ground-runtime-local-review-passed",
+      "runtimeFile": "assets/environment/frontier-v1/underbough-root-soil-v2.webp",
+      "runtimeSha256": "46beea86ebb4ff07434b0573742d98109965d051bebb60c5b5c5d03c3754fec1",
+      "runtimeSizeBytes": 662808,
+      "encoding": "RGB WebP quality90 method6; source retained; no repaint, resize or crop"
+    },
+    {
+      "path": "moss-hornbeam-full-000.png",
+      "sha256": "325029d9c1b24aa8ea274d9049b92c70311b6fa721aa51cc8a099caf26488b12",
+      "sizeBytes": 1731675,
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "visibleAlphaBoundsPx": [
+        133,
+        10,
+        1121,
+        1231
+      ],
+      "status": "intact-source-awaiting-registration",
+      "directionDegrees": 0,
+      "harvestState": "full"
     }
   ]
 }

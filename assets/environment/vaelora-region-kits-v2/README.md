@@ -9,12 +9,22 @@ derived from the selected Underbough ecology key and the existing copperleaf
 sprite. It proposes four distinct canopy forms, complementary shrubs and fungi,
 and six compatible ground roles. Board swatches are not seamless runtime tiles.
 
+Three ground masters (`clearing-grass-01`, `worn-dirt-01`, `root-soil-01`) have
+RGB WebP exports under `frontier-v1/underbough-*-v2.webp`. The local regional
+loader and map/minimap/Studio colours use them for Underbough's matching paint
+roles. Paired browser review and cache-isolation proof pass; staging integration
+is pending. Hashes, sizes and encodings are in `underbough/source-manifest.json`.
+
 `underbough/root-oak-full-000.png` is a new transparent intact Root Oak source.
 This dark moss/olive species complements the copperleaf; it is not a recolour of
 the existing runtime tree. Its designated orientation is 0° relative to the fixed
 oblique camera. This is authored painted artwork, not a measured model capture.
 Further directions and harvest states remain in production. It has no consuming
 runtime loader yet; the game still uses its previous forest families.
+
+`underbough/moss-hornbeam-full-000.png` adds a narrower airy crown, ascending
+branches and lighter warm bark. It is also a fixed-view source, awaiting root
+registration, complete harvest states and consistent model/directional views.
 
 `underbough/root-oak-view-090-rejected.png` retains an unsuccessful directional
 attempt for provenance. It changes branches and silhouette but does not verify
