@@ -315,3 +315,26 @@ material; Underbough Rootways currently contains no long-grass paint, so this
 slice does not claim new shipped-map placement. Seamless-style source generation
 and stochastic sampling are visually reviewed, not a mathematical periodicity
 claim. More ground roles/variants and regional perspectives remain unfinished.
+
+### Authored dense woodland margins — 1 October 2026 UTC
+
+Underbough Rootways now paints its dense-growth role along existing forest
+margins: 568 cells, recorded as 234 row-run rectangles. A soft rendered blend
+and irregular outer sampling follow the already authored tree line. Clearings
+and paths retain a one-cell paint buffer; resource nodes and spawn points have
+three world units of exclusion. The original 59 paint rectangles remain intact
+and override any lower-priority growth paint. All non-paint map fields remain
+unchanged, including all 1026 wood cells and their resources.
+
+[Paired full-game captures](qa-evidence/underbough-woodland-ground-2026-10-01/capture-report.json)
+compare previous clearing paint and the new margins using the same regional
+kit, map and cameras, with Bellweather as a control. Native Chrome checks actual
+texture selection and cross-region cache isolation without browser errors.
+The `legacy` filenames in this dated evidence mean previous paint placement,
+not global legacy textures. [Authored paint evidence](qa-evidence/underbough-woodland-ground-2026-10-01/authored-paint-proof.json)
+records the original map hash and invariants. Reachability, terrain blending,
+and settlement checks pass; the historical settlement baseline is retained,
+with separate assertions that dense growth follows woods and preserves paths,
+blockers, mirrored composition and all match rules. The transition is subtle
+at strategic distance. Further regional source roles, variants and perspectives
+remain unfinished.
