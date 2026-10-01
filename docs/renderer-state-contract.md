@@ -94,8 +94,11 @@ one matching variant. Production signal geometry remains renderer-owned.
 Keep footprint, selection, health, and rally readable. Barracks/Range direct
 sprites use construction thresholds 20%/90% and completed-health thresholds
 66%/33% in `src/building-sprites.mjs`; procedural geometry is their fallback.
-The captured Town Center loader is a separate path; current Town Centers expose
-Complete only and retain their server-owned collision footprint.
+The captured Town Center loader is a separate path: starting landmarks use
+Complete, while constructed Town Centers pass live progress and health. The
+loader exposes existing fallback art if the current state/view load fails.
+Complete-only Frontier preview families also yield to fallback for
+unavailable construction/damage states. Collision remains server-owned.
 
 ## Environment stages and fog
 

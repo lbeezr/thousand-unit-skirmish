@@ -44,15 +44,21 @@ Current runtime defaults:
   default. `?meshyResources=0` restores the older art for comparison. Worked,
   low, and depleted resource states still use the interactive state pack; their
   Meshy replacements remain unfinished. Other tree species retain their art.
-- Workers use the eight-direction Meshy Worker v3 sprite atlas by default.
-  Infantry and Archers retain procedural geometry unless a sprite preview is
-  selected. All supported unit sprite manifests, runtime atlases, and team masks
-  are included in the Docker image; source atlases are excluded.
-- The human/orc/elf/troll cast packs are review candidates only. They load only
-  with `?castPreview=1`, are assigned by visible unit slot for comparison, and
-  do not change the default roster or establish faction gameplay.
+- Normal matches bind team zero to the seven-role Human roster and team one to
+  the seven-role Boughward roster through `src/unit-sprite-runtime.mjs`.
+  Human Worker uses `cast-human-sprite-v3`, Infantry `infantry-sprite-v3`,
+  Spearman `spearman-sprite-v1`, Archer `archer-sprite-v2`, and Scout/Rider/Siege
+  Engine their v1 packs. Boughward uses `boughward-<role>-sprite-v1` throughout.
+  Required actions resolve at all eight headings with approximate authored-action
+  reuse. This is first-pass coverage; directional motion, ground/scale review and
+  authored team masks remain unfinished. Runtime files are in the Docker image.
+- `?humanRosterPreview=0` restores the older mixed-cast Worker lane; explicit
+  legacy preview flags retain their comparison paths. See the
+  [Human](art-direction/human-roster-v1/README.md) and
+  [Boughward](art-direction/boughward-roster-v1/README.md) source records.
 - Town Centers use the eight-view captured lifecycle pack, with procedural
-  fallback. Gameplay supplies only their Complete landmark state.
+  fallback. Starting landmarks use Complete; constructed Town Centers pass live
+  progress/health into the same loader for construction, damage and repair.
 - Barracks and Archery Ranges load their direct WebP sprites by default through
   `src/building-sprites.mjs`, with procedural loading/error fallback. Construction
   uses 20%/90% transitions; completed health uses 66%/33% transitions. Their
@@ -61,6 +67,15 @@ Current runtime defaults:
   see the [Barracks lifecycle regression](qa-barracks-lifecycle-2026-09-27.md).
 - Town Center footprints block movement and building placement. Captured image
   bounds do not define collision; `src/town-center-spawn.mjs` owns the footprint.
+- `?frontierBuildingsPreview=1` binds the newer Town Center, House, Storehouse,
+  Stable, Workshop and Watchtower families. Each has eight Complete views;
+  other lifecycle states use existing fallback art. These previews lack team
+  masks and are not default replacements. The six-family preview is served from
+  a full checkout but its manifests/PNGs are absent from the Docker release.
+  New Barracks/Range concepts remain
+  source-only; their older direct sprites are active. No separate Boughward
+  building family is present. See the
+  [binding audit](qa-art-runtime-contract-audit-2026-10-01.md).
 - The 40 px Meshy cursor PNGs are integrated. Older 32 px SVGs remain source history.
 
 A file under `runtime/` means an export intended for loading; it does not prove
