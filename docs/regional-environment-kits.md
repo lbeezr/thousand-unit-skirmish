@@ -564,3 +564,10 @@ paired captures completed without reported browser errors. At normal zoom the
 soil change is subtle beneath canopy. These comparisons enable clearing and soil
 variants together, rather than isolating the soil effect, and do not constitute
 hosted or performance evidence.
+
+The [exposed-soil study](qa-evidence/underbough-soil-exposed-2026-10-01/README.md)
+adds a disposable 64-cell forest-floor swatch to open ground on both regional
+maps. All non-paint fields and existing blockers are preserved. The live mixed
+pair is slightly darker with quieter litter, but the grass/soil boundary remains
+abrupt in places. Terrain transition treatment is a concrete next visual issue;
+source variants alone do not finish that boundary.

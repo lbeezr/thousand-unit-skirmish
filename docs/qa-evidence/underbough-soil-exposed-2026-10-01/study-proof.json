@@ -1,0 +1,14 @@
+[
+  {
+    "id": "underbough-rootways",
+    "exposedSoilCells": 64,
+    "allStudyCellsUnblocked": true,
+    "allOtherMapFieldsUnchanged": true
+  },
+  {
+    "id": "bellweather-millrace",
+    "exposedSoilCells": 64,
+    "allStudyCellsUnblocked": true,
+    "allOtherMapFieldsUnchanged": true
+  }
+]
