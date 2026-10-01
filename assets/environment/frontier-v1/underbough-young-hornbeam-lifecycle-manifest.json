@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "packId": "environment.vaelora-underbough-young-hornbeam-lifecycle",
+  "packVersion": "0.1.0",
+  "maturity": "runtime-candidate",
+  "provenance": "Project-owned built-in ImageGen masters retained. One common crop contains all alpha8 bounds; common root-centered pivot, no independent stage fit. LANCZOS max1024, WebP quality86 method6 exact alpha. One painted view; not measured rotations. Proposed full visible height2.1 world; pending forest integration review.",
+  "assets": [
+    {
+      "id": "underbough-young-hornbeam",
+      "stage": "full",
+      "logicalCanvasPx": [
+        1254,
+        1254
+      ],
+      "cropBoxPx": [
+        260,
+        80,
+        1128,
+        1162
+      ],
+      "sourceFile": "../vaelora-region-kits-v2/underbough/young-hornbeam-full-000.png",
+      "runtimeFile": "underbough-young-hornbeam.webp",
+      "worldSize": {
+        "width": 1.719622641509434,
+        "height": 2.1435849056603775
+      },
+      "groundPivotPx": [
+        410.5,
+        1024
+      ],
+      "directionId": "fixed-oblique"
+    },
+    {
+      "id": "underbough-young-hornbeam",
+      "stage": "worked",
+      "logicalCanvasPx": [
+        1254,
+        1254
+      ],
+      "cropBoxPx": [
+        260,
+        80,
+        1128,
+        1162
+      ],
+      "sourceFile": "../vaelora-region-kits-v2/underbough/young-hornbeam-worked-000.png",
+      "runtimeFile": "underbough-young-hornbeam-worked.webp",
+      "worldSize": {
+        "width": 1.719622641509434,
+        "height": 2.1435849056603775
+      },
+      "groundPivotPx": [
+        410.5,
+        1024
+      ],
+      "directionId": "fixed-oblique"
+    },
+    {
+      "id": "underbough-young-hornbeam",
+      "stage": "low",
+      "logicalCanvasPx": [
+        1254,
+        1254
+      ],
+      "cropBoxPx": [
+        260,
+        80,
+        1128,
+        1162
+      ],
+      "sourceFile": "../vaelora-region-kits-v2/underbough/young-hornbeam-low-000.png",
+      "runtimeFile": "underbough-young-hornbeam-low.webp",
+      "worldSize": {
+        "width": 1.719622641509434,
+        "height": 2.1435849056603775
+      },
+      "groundPivotPx": [
+        410.5,
+        1024
+      ],
+      "directionId": "fixed-oblique"
+    },
+    {
+      "id": "underbough-young-hornbeam",
+      "stage": "depleted",
+      "logicalCanvasPx": [
+        1254,
+        1254
+      ],
+      "cropBoxPx": [
+        260,
+        80,
+        1128,
+        1162
+      ],
+      "sourceFile": "../vaelora-region-kits-v2/underbough/young-hornbeam-depleted-000.png",
+      "runtimeFile": "underbough-young-hornbeam-depleted.webp",
+      "worldSize": {
+        "width": 1.719622641509434,
+        "height": 2.1435849056603775
+      },
+      "groundPivotPx": [
+        410.5,
+        1024
+      ],
+      "directionId": "fixed-oblique"
+    }
+  ],
+  "files": [
+    {
+      "path": "underbough-young-hornbeam.webp",
+      "role": "runtime-image",
+      "sha256": "61a836e044fc824f65812a6fc68dca18176326bc6fe51391f8ae252755d3990f",
+      "dimensionsPx": {
+        "width": 821,
+        "height": 1024
+      },
+      "bytes": 190154
+    },
+    {
+      "path": "underbough-young-hornbeam-worked.webp",
+      "role": "runtime-image",
+      "sha256": "79d0e6d817bac78c02c87c7f543e7823bd9a24638877186c901108336e7bcf42",
+      "dimensionsPx": {
+        "width": 821,
+        "height": 1024
+      },
+      "bytes": 178764
+    },
+    {
+      "path": "underbough-young-hornbeam-low.webp",
+      "role": "runtime-image",
+      "sha256": "de605c5f88f161db0932d0e305443c2faa26ff06883becf93e3aa6ad3bc4f03b",
+      "dimensionsPx": {
+        "width": 821,
+        "height": 1024
+      },
+      "bytes": 170650
+    },
+    {
+      "path": "underbough-young-hornbeam-depleted.webp",
+      "role": "runtime-image",
+      "sha256": "4b8bdcc9218ce253eb3061425f52c53ac9263eacaab0a28fe71f42edb2fea2df",
+      "dimensionsPx": {
+        "width": 821,
+        "height": 1024
+      },
+      "bytes": 10618
+    }
+  ]
+}
