@@ -3997,8 +3997,16 @@ function renderScenarioEventCountdown(now = performance.now()) {
           const source = mapDefinition?.scenarioEvents.find((event) => event.id === sourceIds[0]);
           visual.status.textContent = `WAITING FOR ${source?.name?.toUpperCase() || 'SOURCE EVENT'}`;
         }
-      } else if (validCompletionTrigger(visual.event.trigger)) {
-        visual.status.textContent = `WAITING FOR ${visual.event.trigger.buildingType || visual.event.trigger.technologyId} · TEAM ${visual.event.trigger.team}`;
+      } else if (['construction-complete', 'research-complete'].includes(visual.event.trigger.type)) {
+        const trigger = visual.event.trigger;
+        if (validCompletionTrigger(trigger)) {
+          const definition = trigger.type === 'construction-complete'
+            ? BUILDING_DEFINITIONS[trigger.buildingType] : TECHNOLOGY_DEFINITIONS[trigger.technologyId];
+          const teamLabel = trigger.team === 'either' ? 'EITHER TEAM' : TEAM_NAMES[Number(trigger.team)].toUpperCase();
+          visual.status.textContent = `WAITING FOR ${definition.label.toUpperCase()} · ${teamLabel}`;
+        } else {
+          visual.status.textContent = 'WAITING FOR COMPLETION';
+        }
       } else if (visual.event.trigger.type === 'region-entry') {
         const region = mapDefinition?.regions?.find((item) => item.id === visual.event.trigger.regionId);
         visual.status.textContent = `WAITING FOR ${region?.name?.toUpperCase() || 'REGION'}`;
