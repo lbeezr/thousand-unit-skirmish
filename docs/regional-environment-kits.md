@@ -713,3 +713,15 @@ loading, cache isolation and unchanged definitions. Its mixed mode enables all
 three role companions together. Settlement wear remains compatible in the
 inspected ordinary view; the contribution is subtle and does not finish the
 forest's overall appearance.
+
+## Canopy crowding diagnosis — 1 October 2026
+
+The [atlas-versus-individual Root Oak comparison](qa-evidence/underbough-canopy-render-review-2026-10-01/README.md)
+shows the same intact crown/root image through both paths at identical transform.
+For this representative case, the busy forest appearance is not a wrong lifecycle
+frame. A local forest-edge study with one mature tree per two-by-two group and
+smaller companions separated silhouettes but created a regular arrangement and
+exposed more roots. That study is not promoted to runtime. The next composition
+work should use irregular age/spacing groups and quieter mature silhouettes,
+while keeping wood ownership and blocked ground legible. Existing runtime tree
+scales and source map definitions remain unchanged.
