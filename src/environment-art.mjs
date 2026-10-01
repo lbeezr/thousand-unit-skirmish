@@ -832,7 +832,7 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
     && definition.id !== 'meshy-resource-review';
   const underbough = environmentTheme(definition) === 'forest-floor'
     && definition.id !== 'meshy-resource-review';
-  const mosaicUnderbough = new URLSearchParams(globalThis.location?.search ?? '').get('forestSpecies') === 'mosaic';
+  const mosaicUnderbough = new URLSearchParams(globalThis.location?.search ?? '').get('forestSpecies') !== 'groves';
   const groupedUnderbough = new URLSearchParams(globalThis.location?.search ?? '').get('forestSpecies') !== 'scattered';
   const sereward = environmentTheme(definition) === 'sand'
     && definition.id !== 'meshy-resource-review';

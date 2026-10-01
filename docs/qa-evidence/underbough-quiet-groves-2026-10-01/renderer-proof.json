@@ -1,0 +1,35 @@
+{
+  "baseFile": "underbough-clearing-grass-v2.webp",
+  "vegetationTheme": "forest-floor",
+  "families": [
+    "underbough-root-oak",
+    "underbough-leafy-hornbeam-v2",
+    "underbough-old-plum",
+    "underbough-muted-copperleaf-v2",
+    "underbough-bramble"
+  ],
+  "regional": [
+    "underbough-clearing-grass-02-v2.webp",
+    "underbough-clearing-grass-v2.webp",
+    "underbough-dense-growth-v2.webp",
+    "underbough-root-soil-02-v2.webp",
+    "underbough-root-soil-v2.webp",
+    "underbough-worn-dirt-02-v2.webp",
+    "underbough-worn-dirt-v2.webp"
+  ],
+  "control": [
+    "dirt.webp",
+    "forest-floor.webp",
+    "long-grass.webp",
+    "meadow.webp"
+  ],
+  "siltmouthsControl": null,
+  "legacy": [
+    "dirt.webp",
+    "forest-floor.webp",
+    "long-grass.webp",
+    "meadow.webp"
+  ],
+  "regionCacheIsolation": true,
+  "unchangedMapDefinition": true
+}
