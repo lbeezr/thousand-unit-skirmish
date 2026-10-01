@@ -36,9 +36,11 @@ node --test scripts/ci-sharding.test.mjs
 ```
 
 The scenario is registered once in the normal CI inventory. A disposable server
-mutation keeps depleted forest navigation cells blocked while allowing normal
+mutation keeps the final depleted cell of each belt blocked while allowing normal
 harvesting and deposits; the scenario must reject that mutation at the live
-four-cell traversal assertion. The mutation is kept outside the repository.
+four-cell traversal assertion. Keeping every cell blocked also prevented the next
+tree from being gathered, so the final-cell mutation isolates the movement check.
+The mutations are kept outside the repository.
 
 This is automated server evidence on the small authored map. It does not establish
 human playtest, browser appearance, faster travel, balance or 2,000-unit support.

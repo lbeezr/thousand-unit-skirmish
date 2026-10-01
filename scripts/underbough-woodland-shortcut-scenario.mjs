@@ -31,7 +31,7 @@ function assertNoRewards(state) {
 async function order(client, type, ids, extra = {}, notice = /ORDER/) {
   const result = await client.command({ type, ids,
     unitGenerations: ids.map(id => client.latest.units.find(u => u[0] === id)?.[8]),
-    ...extra, clientOrderToken: token++ }, new RegExp(`${notice.source}|REJECTED`));
+    ...extra, clientOrderToken: token++ }, new RegExp(`${notice.source}|REJECTED|FOREST CELL (CLEARED|UNREACHABLE)|NO REACHABLE WORKERS`));
   assert.match(result.message, notice, `${type}: ${result.message}`);
   return result;
 }
