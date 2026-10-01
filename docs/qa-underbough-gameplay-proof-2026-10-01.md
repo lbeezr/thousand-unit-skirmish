@@ -76,6 +76,27 @@ The revised settlement scenario, new runner syntax, documentation links,
 whitespace and CI shard-coverage tests also passed. The proof adds no runtime
 changes to the fully checked baseline; its own two live routes run separately.
 
+## Rematch provenance correction
+
+Post-merge review identified a false-positive risk in the original rematch
+assertion: a food bank increase alone could be caused by Rootways' timed supply
+at 120 seconds, within the fixture's wait budget. That earlier assertion was
+insufficient to establish rematch gathering provenance, even though the runs
+reported a pass.
+
+The follow-up uses a shared read-only checkpoint check for opening and rematch
+gathering. It requires the appropriate bank increase and home-node stock
+consumption, elapsed match time before the first authored timed supply, unfired
+scenario rewards and neutral objectives. Both rematch workers gather in
+parallel, then stop before the fresh persisted evidence is checked. The JSON
+result records rematch seconds and both food-bank deltas.
+
+`node --test scripts/underbough-gathering-evidence.test.mjs` covers ordinary
+deposits, the actual map's reward-alone case (which passes the old condition),
+bank growth without consumption, and supply/objective contamination. Its
+synthetic checkpoints are isolated assertion tests, not injected live-game state.
+Live winner-route reruns and independent review are tracked in the follow-up PR.
+
 This is automated server evidence. Browser controls/rendering, human
 comprehension, unassisted playtests, network impairment and hosted performance
 are not established. A 250-unit opening is the scenario workload, not a new
