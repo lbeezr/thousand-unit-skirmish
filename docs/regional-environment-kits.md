@@ -17,8 +17,9 @@ samples, not evidence that the full kit is implemented.
 
 ## Audit of the current renderer
 
-`groundTexture(name)` caches and loads one global texture per material name.
-Thus a `dirt` patch uses the same painted pixels in every zone. Ground paints
+The pre-kit `groundTexture(name)` cached one global texture per material name.
+Thus a `dirt` patch used the same painted pixels in every zone. The first
+Underbough runtime pass below replaces that binding for its implemented roles. Ground paints
 also select vegetation indirectly through the base material rather than an
 explicit regional kit. Shared source textures cannot cover every regional
 combination coherently.
@@ -135,7 +136,7 @@ harvest feedback. Decorative shrubs retain their own nonblocking ownership.
 The first Underbough board is an art-direction study; new production textures,
 species, directional frames and regional loader bindings remain to be completed.
 The first dark olive Root Oak intact source now exists at the designated 0°
-orientation. Further authored views are in production. Its pixels and alpha are
+orientation. Further verified views remain outstanding. Its pixels and alpha are
 retained in the [source pack](../assets/environment/vaelora-region-kits-v2/README.md);
 it is not loaded by the game yet.
 
@@ -157,7 +158,7 @@ and use no repaint, crop or resize. This is local runtime evidence, not a stagin
 deployment or GPU capacity measurement. Texture repetition is reviewed through
 the existing mirrored/stochastic sampler, not claimed mathematically periodic.
 
-The Root Oak and Moss Hornbeam provide two additional distinct intact painted
+The Root Oak, Moss Hornbeam, and Old Plum provide three additional distinct intact painted
 tree sources. They still need registered production/model views and harvest
 states before joining the existing copperleaf in game. This first ground pass
 does not complete the four-species forest or the ten-zone kit matrix.

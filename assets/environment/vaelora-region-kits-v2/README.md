@@ -26,6 +26,10 @@ runtime loader yet; the game still uses its previous forest families.
 branches and lighter warm bark. It is also a fixed-view source, awaiting root
 registration, complete harvest states and consistent model/directional views.
 
+`underbough/old-plum-full-000.png` adds a compact burgundy crown with low
+spreading branches and a short crooked trunk. This third new species source has
+the same outstanding registration, harvest-state and model-view work.
+
 `underbough/root-oak-view-090-rejected.png` retains an unsuccessful directional
 attempt for provenance. It changes branches and silhouette but does not verify
 a quarter-turn of the same tree. It must not enter an atlas or count as an

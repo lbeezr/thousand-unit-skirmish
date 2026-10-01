@@ -3,7 +3,7 @@
   "packId": "environment.underbough-cohesive-kit-v2",
   "maturity": "source-study",
   "region": "underbough",
-  "status": "three regional ground textures locally rendered and cache-isolation checked; two new tree sources; no new tree runtime bindings or verified rotated views",
+  "status": "three regional ground textures locally rendered and cache-isolation checked; three new tree sources; no new tree runtime bindings or verified rotated views",
   "source": "project-owned built-in ImageGen, using selected Underbough ecology key and existing copperleaf sprite references",
   "directionalMethod": "authored painted views; not measured 3D render captures",
   "targetTreeForms": [
@@ -136,6 +136,25 @@
         10,
         1121,
         1231
+      ],
+      "status": "intact-source-awaiting-registration",
+      "directionDegrees": 0,
+      "harvestState": "full"
+    },
+    {
+      "path": "old-plum-full-000.png",
+      "sha256": "4e36641c0e39d8a18bf358637f01af81e239277b1e3ed3ce71635dbb0c4ed8b8",
+      "sizeBytes": 2068553,
+      "dimensionsPx": [
+        1290,
+        1219
+      ],
+      "mode": "RGBA",
+      "visibleAlphaBoundsPx": [
+        0,
+        18,
+        1274,
+        1219
       ],
       "status": "intact-source-awaiting-registration",
       "directionDegrees": 0,
