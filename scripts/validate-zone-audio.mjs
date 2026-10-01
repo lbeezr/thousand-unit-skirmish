@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { validateZoneAudioImportMetadata } from './zone-audio-import-contract.mjs';
 const root = new URL('../assets/audio/vaelora-zones-v1/', import.meta.url);
 const catalog = JSON.parse(await readFile(new URL('catalog.json', root), 'utf8'));
 const expected = ['bellweather','underbough','sereward','ellionar','veyrholds','pale-meridian','siltmouths','vesperra','sombral-mere','ru-lora-fringe','ru-lora-interior'];
@@ -33,4 +34,5 @@ for (const source of catalog.sources) {
   hashes.add(hash); bytes += data.length;
 }
 assert.ok(bytes < 64 * 1024 * 1024, 'Complete source pack exceeds Audio Studio limit');
-console.log(`Zone audio validated: 10 zones, 11 palettes, 44 unique originals, ${bytes} bytes; hashes and coverage passed.`);
+validateZoneAudioImportMetadata(catalog);
+console.log(`Zone audio validated: 10 zones, 11 palettes, 44 unique originals, ${bytes} bytes; hashes, coverage and Audio Studio import metadata passed.`);
