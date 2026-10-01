@@ -759,3 +759,52 @@ checks four atlas harvest states, reset matrices and matching roots; captures
 cover normal and strategic views without console or asset errors. Hornbeam and
 Plum remain sources; extra perspectives and a live worker observation for this
 new family remain unfinished.
+## Measured environment camera guide · 30 September 2026
+
+The [construction reference](art-direction/environment-camera-v1/README.md) now derives editable diagrams and numeric measurements directly from the runtime camera vector. It documents 45° azimuth, 45.4359024848° elevation, upright projection and ground-circle foreshortening, plus eight rotations of one asymmetric calibration object for future directional work. Source-object projection and camera-facing card dimensions are described separately. These references support later source construction and consistency checks; existing painted sprites remain approximate and have no newly certified directions.
+
+## Ellionar garden vine companions · 30 September 2026
+
+The approved ecology key's cascading garden vine now has a low rooted interpretation with cream flowers, oval green leaves and warm curled wood. The [selected manifest](../assets/environment/frontier-v1/ellionar-garden-vine-variation-manifest.json) and [exact generation/edit prompts](../assets/environment/frontier-v1/ELLIONAR-GARDEN-VINE-PROMPTS.json) record the unchanged source PNG and 1024×691 alpha-preserving export, registered at 0.96324×0.65 world units. The camera construction image was a geometry reference; this remains one approximate painted view.
+
+Garden-loam forest companion slots now partition between Sunbloom and vine in two seeded batches, preserving existing habitat selection, root bounds and forest stock semantics. Partial harvest retains companions, clearing hides them and reset restores them. Channel flower beds continue using Sunbloom. This is decorative vegetation with no independent crop yield, harvest animation or additional directions. [Local evidence](qa-evidence/vaelora-ellionar-garden-vine-variation-2026-09-30/README.md) records camera roll, raised contact, bindings, seeded placement and lifecycle checks; the plant catalog now contains twenty-one specimens.
+
+The [expanded runtime evidence](qa-evidence/vaelora-plant-lifecycle-contract-2026-09-30/README.md) checks all twenty-one actual plant geometries and all eighteen companion specimens through partial stock, clearing and exact reset. This guards existing lifecycle behavior across the full catalog; additional authored viewpoints and harvest poses remain separate art work. Capture runs can select a fresh evidence directory with `RTS_VEGETATION_OUTPUT` to preserve dated records.
+
+## Bellweather meadow clover · 30 September 2026
+
+A compact pink-clover and cream-daisy specimen complements the broader butter-yellow meadow herbs, following the approved ecology key's Meadow Herbs. The [selected manifest](../assets/environment/frontier-v1/bellweather-meadow-clover-variation-manifest.json) and [exact prompt](../assets/environment/frontier-v1/BELLWEATHER-CLOVER-PROMPTS.json) record the unchanged source PNG and 992×809 alpha-preserving WebP, registered at 0.79703×0.65 world units. One approximate upright painted view; no new species lore or crop yield.
+
+Existing grass-base forest companion slots partition between the two plants in seeded batches. Current habitat selection, forest identity, collision, wood yield and root bounds remain. Partial stock retains companions, zero hides them and reset restores them. Open meadow flowers continue using the existing herbs. [Local evidence](qa-evidence/vaelora-bellweather-clover-variation-2026-09-30/README.md) covers both silhouettes, bindings, raised contact, camera roll and all twenty-two registered geometries/nineteen companion lifecycle contracts. Additional source directions and harvest poses remain unfinished.
+
+## Bellweather open meadow variety · 30 September 2026
+
+Open meadow beds now also mix the selected clover and herb specimens. Seeded selection chooses one specimen per existing four-cell coarse bed, preserving every accepted root, scale and protected gap. Bellweather Millrace retains its 148 flowers, split 57 herbs/91 clover in two instanced batches. Runtime dimensions come from the plant registration. The [local evidence](qa-evidence/vaelora-bellweather-open-clover-2026-09-30/README.md) verifies both batches, ground contact, camera roll and unchanged matrices through forest clearing; placement checks preserve obstacle, objective, dirt, resource and spawn exclusions. This remains static decorative scenery; later building/traffic reactions, independent gathering and additional authored views are unfinished.
+
+## Sereward open dryland pockets · 30 September 2026
+
+The two selected succulent silhouettes now also appear in sparse open sand pockets, supporting the approved ecology's water-storing plants between woodland and settlement. Six-cell pockets select at 18%, with 8% accepted-cell density inside selected pockets; one specimen is chosen per pocket. The shared land-placement helper retains last-painted material checks, one-cell obstacle/objective margins, eight-unit spawn gaps and 2.5-unit resource gaps. Meadow parameters and accepted positions remain unchanged.
+
+Cistern Road receives 68 small succulents, split 14 primary/54 alternate across two registered-size batches. Forest clearing leaves this independent land layer unchanged. [Local evidence](qa-evidence/vaelora-sereward-open-succulents-2026-09-30/README.md) covers placement protections, seeds, both batch bindings, ground contact, camera roll and nine incompatible-base exclusions. Existing source images and approximate viewpoints are reused; no new resource yield or species lore. Decoration remains static at map load, with later construction/traffic reactions and extra source directions unfinished.
+
+## Terrain stroke rotation study · 30 September 2026
+
+`?terrainRotation=free` enables continuously varied patch angles in the existing triangle-lattice sampler. Default sampling retains the four cardinal angles; `terrainTiling=mirror` still bypasses stochastic sampling. Texture inputs, patch weights, derivatives and broad value field remain. [Paired GPU evidence](qa-evidence/vaelora-terrain-rotation-2026-09-30/README.md) compares four materials at two spans with identical seeds and texture scale. Free rotation changes alignment but does not adequately quiet wide-scale meadow/sand strokes, so it is a comparison tool rather than the new default. The next source outcome should test quieter, less directional texture companions against the approved palettes. No repetition-elimination or performance claim.
+
+## Quiet meadow source companion · 30 September 2026
+
+`?meadowSurface=quiet` selects a new optional Bellweather meadow underpainting, retaining the current default and regional Underbough mappings. The [source manifest](../assets/environment/frontier-v1/bellweather-quiet-meadow-manifest.json) and [exact initial/edit prompts](../assets/environment/frontier-v1/BELLWEATHER-QUIET-MEADOW-PROMPTS.json) record the unchanged selected PNG and 1024-square RGB WebP. An edit removes most fine stippling, replacing recognizable grass clusters with softer sage/olive and butter-yellow color masses. No map material, vegetation placement or gameplay rule changes.
+
+[Paired GPU evidence](qa-evidence/vaelora-quiet-meadow-2026-09-30/README.md) compares original/companion sources at two spans and both rotation modes. The source reads softer close up, but wide-scale mottling remains; adjacent-pixel luminance variation at 128 units is higher than the original. This is a useful optional source sample, not a demonstrated solution to the reported pattern. Tileability was requested during generation; current mirror/stochastic sampling handles boundaries, without certification of raw-edge continuity. Broader-scale contrast and sampling remain next work.
+
+## Pale Meridian open snow vegetation · 30 September 2026
+
+Silver moss and frostberry now appear in sparse open snow pockets, carrying the approved key's hardy low plants into Observation Road. Six-cell pockets select at 14%, with 9% accepted-cell density and one specimen per pocket. Existing land-placement protections exclude non-snow paint, obstacle/objective margins and spawn/resource areas. Open ice stays bare. Map collision, resource stocks and forest companion behavior remain.
+
+Observation Road receives 42 independent land plants, split 10 moss/32 frostberry in two registered-size batches. [Local evidence](qa-evidence/vaelora-meridian-open-snow-plants-2026-09-30/README.md) verifies seeded placement, exclusions, ground contact, camera roll and matrices unchanged by forest clearing. This reuses approved decorative sources without species lore or berry gathering. Placement remains static at map load; later construction/traffic reactions and additional authored views are unfinished. The capture still shows directional strokes in the snow source; this vegetation increment does not resolve terrain repetition.
+
+## Bellweather wild barley · 30 September 2026
+
+The approved key's Wild Barley now adds an upright honey-gold grain silhouette to open meadow beds. The [selected manifest](../assets/environment/frontier-v1/bellweather-wild-barley-variation-manifest.json) and [exact prompt](../assets/environment/frontier-v1/BELLWEATHER-BARLEY-PROMPTS.json) record the unchanged source and 914×1024 alpha-preserving runtime export at 0.84795×0.95 world units. It uses the registered `decorative-land-scenery` kind, with a bottom-center ground pivot and no parent-stock clearing. One approximate upright painted view; no grain yield or harvesting state is implied.
+
+The existing 148 Millrace positions now partition into 22 herbs/73 clover/53 barley across three seeded coarse-bed batches. Root positions, scale and gaps remain. Generalized specimen indexing preserves binary selection for dryland/snow groups. [Local evidence](qa-evidence/vaelora-bellweather-wild-barley-2026-09-30/README.md) checks the three meadow batches, clearing independence, contact, camera roll and all twenty-three plant registrations/nineteen forest companion lifecycles. Static scenery, additional views and authored harvesting remain separate production outcomes.

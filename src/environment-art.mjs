@@ -11,9 +11,9 @@ import { buildWaterSurfaceGeometry, WATER_LEVEL } from './water-surface-geometry
 import { forestHabitatDepth, forestCanopyFactor } from './forest-habitat.mjs';
 import { regionalGroundTextureName, regionalGroundColor } from './regional-ground-kits.mjs';
 import { shorePlantPositions } from './shore-vegetation.mjs';
-import { meadowPlantPositions } from './meadow-vegetation.mjs';
+import { meadowPlantGroups, drylandPlantGroups, snowPlantGroups } from './meadow-vegetation.mjs';
 import { gardenPlantPositions } from './garden-vegetation.mjs';
-import { assertPlantDimensions } from './environment-plant-assets.mjs';
+import { assertPlantDimensions, PLANT_ASSETS } from './environment-plant-assets.mjs';
 
 const meshyResourcesEnabled = new URLSearchParams(globalThis.location?.search ?? '').get('meshyResources') !== '0';
 
@@ -22,7 +22,7 @@ const INTERACTIVE_ASSET_ROOT = './assets/environment/frontier-interactive-v1/';
 const GROUND_RENDER_ORDER = -20;
 export { TERRAIN_MATERIALS } from './terrain-materials.mjs';
 const spriteNames = [
-  'ru-lora-fringe-broadleaf', 'sombral-mere-mirelily', 'bellweather-meadow-herbs', 'vesperra-shade-fern', 'vesperra-shade-fern-02', 'siltmouths-silver-reed', 'siltmouths-marsh-tuber', 'pale-meridian-violet-lichen', 'pale-meridian-silver-moss', 'pale-meridian-frostberry', 'sombral-mere-lunewort', 'sombral-mere-noctilune', 'underbough-rootward-fungus', 'underbough-rootward-fungus-02', 'veyrholds-ridgegrass', 'veyrholds-suncrest', 'ellionar-sunbloom', 'sereward-succulent', 'sereward-succulent-02',
+  'ru-lora-fringe-broadleaf', 'sombral-mere-mirelily', 'bellweather-meadow-herbs', 'bellweather-meadow-clover', 'bellweather-wild-barley', 'vesperra-shade-fern', 'vesperra-shade-fern-02', 'siltmouths-silver-reed', 'siltmouths-marsh-tuber', 'pale-meridian-violet-lichen', 'pale-meridian-silver-moss', 'pale-meridian-frostberry', 'sombral-mere-lunewort', 'sombral-mere-noctilune', 'underbough-rootward-fungus', 'underbough-rootward-fungus-02', 'veyrholds-ridgegrass', 'veyrholds-suncrest', 'ellionar-sunbloom', 'ellionar-garden-vine', 'sereward-succulent', 'sereward-succulent-02',
   'pine', 'silver-birch', 'field-maple', 'hazel-thicket',
   'bellweather-field-maple', 'bellweather-hedgerow',
   'bellweather-hedgerow-worked', 'bellweather-hedgerow-low', 'bellweather-hedgerow-depleted',
@@ -293,8 +293,11 @@ export const resourceStateAssetsReady = loadResourceStateAssets();
 
 const grounds = new Map();
 function groundTexture(material, definition) {
-  const name = regionalGroundTextureName(definition, material,
+  let name = regionalGroundTextureName(definition, material,
     new URLSearchParams(globalThis.location?.search ?? '').get('regionalGrounds') !== 'legacy');
+  if (name === 'meadow' && new URLSearchParams(globalThis.location?.search ?? '').get('meadowSurface') === 'quiet') {
+    name = 'bellweather-quiet-meadow';
+  }
   if (grounds.has(name)) return grounds.get(name);
   const texture = textureLoader.load(`${ASSET_ROOT}${name}.webp?v=vaelora-ground-v2`);
   texture.colorSpace = THREE.SRGBColorSpace;
@@ -373,8 +376,9 @@ function groundBuffer() {
 export function createGroundSurfaces(definition) {
   const base = groundBaseMaterial(definition);
   const stochastic = new URLSearchParams(globalThis.location?.search ?? '').get('terrainTiling') !== 'mirror';
+  const freeRotation = new URLSearchParams(globalThis.location?.search ?? '').get('terrainRotation') === 'free';
   const groundMaterial = options => applyTerrainTextureSampling(
-    new THREE.MeshBasicMaterial({ ...options, vertexColors: true }), definition.terrainSeed || 0, stochastic);
+    new THREE.MeshBasicMaterial({ ...options, vertexColors: true }), definition.terrainSeed || 0, stochastic, freeRotation);
   const baseBuffer = groundBuffer();
   addGroundQuad(baseBuffer, definition,
     -definition.width / 2, -definition.height / 2,
@@ -873,6 +877,7 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
         scale: 0.8 + variation(slot.cell + seed + 127) * 0.25,
         flip: slot.flip, yaw: slot.yaw }));
     const alternate = {
+      'bellweather-meadow-herbs': ['bellweather-meadow-clover', 0.79703, 0.65],
       'vesperra-shade-fern': ['vesperra-shade-fern-02', 1.05628, 0.72],
       'sereward-succulent': ['sereward-succulent-02', 1.05931, 0.75],
       'underbough-rootward-fungus': ['underbough-rootward-fungus-02', 0.65989, 0.65],
@@ -880,6 +885,7 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
       'sombral-mere-lunewort': ['sombral-mere-noctilune', 1.0104, 0.95],
       'siltmouths-silver-reed': ['siltmouths-marsh-tuber', 1.01564, 0.85],
       'veyrholds-ridgegrass': ['veyrholds-suncrest', 0.80124, 0.7],
+      'ellionar-sunbloom': ['ellionar-garden-vine', 0.96324, 0.65],
     }[understoryAsset[0]];
     const variants = alternate ? [understoryAsset, alternate] : [understoryAsset];
     for (let variant = 0; variant < variants.length; variant++) {
@@ -899,11 +905,33 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
     }
   }
   if (bellweather) {
-    const flowers = createEnvironmentSpriteInstances('bellweather-meadow-herbs', 1.15561, 0.72,
-      meadowPlantPositions(definition, environmentTheme(definition)));
-    if (flowers) {
-      flowers.userData.meadowVegetation = true;
-      addObject(flowers);
+    for (const { name, positions } of meadowPlantGroups(definition, environmentTheme(definition))) {
+      const spec = PLANT_ASSETS[name];
+      const flowers = createEnvironmentSpriteInstances(name, spec.worldWidth, spec.worldHeight, positions);
+      if (flowers) {
+        flowers.userData.meadowVegetation = true;
+        addObject(flowers);
+      }
+    }
+  }
+  if (sereward) {
+    for (const { name, positions } of drylandPlantGroups(definition, environmentTheme(definition))) {
+      const spec = PLANT_ASSETS[name];
+      const plants = createEnvironmentSpriteInstances(name, spec.worldWidth, spec.worldHeight, positions);
+      if (plants) {
+        plants.userData.drylandVegetation = true;
+        addObject(plants);
+      }
+    }
+  }
+  if (paleMeridian) {
+    for (const { name, positions } of snowPlantGroups(definition, environmentTheme(definition))) {
+      const spec = PLANT_ASSETS[name];
+      const plants = createEnvironmentSpriteInstances(name, spec.worldWidth, spec.worldHeight, positions);
+      if (plants) {
+        plants.userData.snowVegetation = true;
+        addObject(plants);
+      }
     }
   }
   if (ellionar) {
