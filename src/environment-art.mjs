@@ -315,9 +315,14 @@ const spriteUpAxis = new THREE.Vector3(0, 1, 0);
 const spriteYawRotation = new THREE.Quaternion();
 const constructionGroundRotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
 
-export function environmentTheme(definition) {
+export function groundBaseMaterial(definition) {
   return TERRAIN_MATERIALS.includes(definition.terrainBase)
     ? definition.terrainBase : REGIONS[definition.region]?.ground || (definition.id === 'cinder-ridge' ? 'cinder' : 'meadow');
+}
+
+// Regional vegetation stays Underbough when an author paints grassy clearings.
+export function environmentTheme(definition) {
+  return definition.region === 'underbough' ? 'forest-floor' : groundBaseMaterial(definition);
 }
 
 function addGroundQuad(buffer, definition, x0, z0, x1, z1, y, alpha = [1, 1, 1, 1], heights = null) {
@@ -366,7 +371,7 @@ function groundBuffer() {
 }
 
 export function createGroundSurfaces(definition) {
-  const base = environmentTheme(definition);
+  const base = groundBaseMaterial(definition);
   const stochastic = new URLSearchParams(globalThis.location?.search ?? '').get('terrainTiling') !== 'mirror';
   const groundMaterial = options => applyTerrainTextureSampling(
     new THREE.MeshBasicMaterial({ ...options, vertexColors: true }), definition.terrainSeed || 0, stochastic);

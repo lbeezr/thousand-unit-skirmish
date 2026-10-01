@@ -195,3 +195,20 @@ The normal-scale capture also reveals that the map uses forest-floor soil in its
 open clearings: the next composition correction is grass in clearings with
 shaded root soil under woods. A cohesive texture collection alone does not
 correct an unsuitable material-role assignment.
+
+### Grassy clearings and shaded woodland — 1 October 2026 UTC
+
+Underbough Rootways now authors meadow as its base instead of forest-floor.
+The existing regional kit supplies muted clearing grass; the forest mask still
+adds mossy root soil beneath woodland. `groundBaseMaterial` drives the ground,
+border, minimap and Studio default, while `environmentTheme` keeps Underbough
+vegetation tied to the region when its base is grassy. Other map fields,
+settlement wear, routes and resource rules are unchanged.
+
+[Paired current evidence](qa-evidence/underbough-clearing-ground-2026-10-01/renderer-proof.json)
+compares the previous soil base and grass base with the same current kit,
+map and cameras. It verifies the actual base texture, shaded root-soil texture,
+all existing regional families, cache isolation and unmutated render input.
+Normal and strategic captures include Bellweather as an unchanged control.
+The saved `legacy` layout images mean previous soil assignment using the same
+kit; they do not mean global legacy textures in this capture mode.
