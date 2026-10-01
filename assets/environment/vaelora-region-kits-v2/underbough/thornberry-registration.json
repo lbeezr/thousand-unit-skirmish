@@ -75,5 +75,13 @@
         1032
       ]
     }
-  ]
+  ],
+  "sourceTool": "built-in ImageGen",
+  "paletteReference": "root-oak-full-000.png",
+  "generationOutputs": {
+    "full": "exec-498ee8bd-3801-46d9-95c9-c1264f7aae26",
+    "worked": "exec-4abf0d70-9dce-4ecf-a284-7bad14d96809",
+    "low": "exec-c5ecb555-58d3-4042-bd26-0cd21ff38ee3",
+    "depleted": "exec-7dd567e2-774f-4621-9a08-599ae6f6a336"
+  }
 }
