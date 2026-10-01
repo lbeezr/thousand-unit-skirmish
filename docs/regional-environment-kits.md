@@ -411,3 +411,13 @@ hashes; habitat and settlement checks pass. Existing food locations, stock,
 selection and economy rules are unchanged. Other regions retain generic food
 artwork. Additional regional food plants, canopy species, ground variants and
 true directional coverage remain unfinished.
+
+### Root Oak side-view candidate — 1 October 2026 UTC
+
+A second authored quarter-turn candidate uses explicit pruning-scar, scaffold
+branch and root-buttress constraints. Its scars become occluded and its crown
+narrows, providing stronger side-view cues than the earlier rejected drawing.
+It remains source review only: opposite-view branch identity and common root
+registration are not established. The [review record](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-direction-review-v2.md)
+states the remaining comparison. Requested angle is separate from accepted
+direction in the manifest; accepted regional directional coverage remains zero.
