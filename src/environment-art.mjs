@@ -1009,7 +1009,7 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
       }
     }
   }
-  const leafyHornbeam = underbough && new URLSearchParams(globalThis.location?.search ?? '').get('forestCanopy') === 'leafy';
+  const leafyHornbeam = underbough && new URLSearchParams(globalThis.location?.search ?? '').get('forestCanopy') !== 'original';
   const layeredForestMargin = underbough && new URLSearchParams(globalThis.location?.search ?? '').get('forestEdges') === 'layered';
   const youngHornbeams = [];
   const ageMode = new URLSearchParams(globalThis.location?.search ?? '').get('forestAges');

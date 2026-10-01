@@ -267,3 +267,10 @@ eight directional/state frames to the instance loader. Partial woodland stock
 shows trimmed foliage; decorative garden beds remain full. [Runtime evidence](qa-evidence/vaelora-sunbloom-worked-2026-10-01/README.md)
 covers state/frame and release checks. Distinct low/depleted flower drawings
 and independent flower gathering remain absent.
+
+Underbough hornbeam forest slots default to the versioned fuller
+[hornbeam lifecycle atlas](../assets/environment/frontier-v1/underbough-leafy-hornbeam-v2-lifecycle-atlas.json).
+The [default binding evidence](qa-evidence/underbough-fuller-canopy-default-2026-10-01/README.md)
+checks actual renderer family selection and stock/reset. Original canopy remains
+available with forestCanopy=original; broader forest composition and rotations
+are unfinished.
