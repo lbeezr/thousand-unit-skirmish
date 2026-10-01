@@ -677,3 +677,28 @@ The existing selected understory positions now choose among three forms; density
 is not increased. Eight full-game captures also completed without reported errors.
 Only one painted oblique view is supplied, and other habitats/regions remain
 unfinished. This source expands ecological detail, not rotated coverage.
+
+## Underbough worn-soil companion — 1 October 2026
+
+A [second worn-soil source](../assets/environment/vaelora-region-kits-v2/underbough/worn-dirt-02.png)
+adds quieter compacted-earth detail to settlement pads and working tracks. Its
+mean RGB is 113/82/57 versus the first source's 113/83/59. The
+[repeat review](../assets/environment/vaelora-region-kits-v2/underbough/worn-dirt-variant-repeat-review.png)
+was inspected for compatible palette and subdued features. The
+[built-in ImageGen prompt](../assets/environment/vaelora-region-kits-v2/underbough/worn-dirt-02-prompt.txt)
+and [registration](../assets/environment/vaelora-region-kits-v2/underbough/worn-dirt-02-registration.json)
+retain provenance, hashes and unchanged source dimensions.
+
+Underbough dirt now selects two source textures through the existing world-space
+stochastic sampler. `?groundVariants=single` disables clearing, woodland and
+worn-soil companions together; other regions retain their ground bindings.
+Ground paint, building placement, resource rules and map JSON do not change.
+Three ground roles now have paired sources; dense growth, stone and wet-bank
+companions still remain, along with regional art and true prop perspectives.
+
+The [full-game worn-soil review](qa-evidence/underbough-worn-soil-variants-2026-10-01/README.md)
+completed eight captures without reported browser errors, with required texture
+loading, cache isolation and unchanged definitions. Its mixed mode enables all
+three role companions together. Settlement wear remains compatible in the
+inspected ordinary view; the contribution is subtle and does not finish the
+forest's overall appearance.

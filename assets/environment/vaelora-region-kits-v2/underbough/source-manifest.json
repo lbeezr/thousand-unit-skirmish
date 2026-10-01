@@ -3,7 +3,7 @@
   "packId": "environment.underbough-cohesive-kit-v2",
   "maturity": "source-study",
   "region": "underbough",
-  "status": "Six regional ground roles with eight accepted source textures; clearing and woodland soil each have two runtime variants. Four fixed-view tree forms and thornberry food shrub are integrated. Remaining role variants and regional directional artwork are unfinished.",
+  "status": "Six regional ground roles with nine accepted source textures: clearing, woodland soil and worn-soil paired sources. Four fixed-view tree forms, thornberry food shrub and low hazel understory integrated. Dense-growth, stone and bank companions and regional directional artwork remain unfinished.",
   "source": "project-owned built-in ImageGen, using selected Underbough ecology key and existing copperleaf sprite references",
   "directionalMethod": "authored painted views; not measured 3D render captures",
   "targetTreeForms": [
@@ -412,7 +412,8 @@
         "root-soil-02.png"
       ],
       "worn-soil": [
-        "worn-dirt-01.png"
+        "worn-dirt-01.png",
+        "worn-dirt-02.png"
       ],
       "exposed-stone": [
         "shaded-stone-01.png"
