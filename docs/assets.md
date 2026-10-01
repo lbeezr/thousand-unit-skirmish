@@ -282,3 +282,8 @@ The [default binding check](qa-evidence/underbough-muted-copperleaf-default-2026
 passes stock/reset rendering, following paired full-game palette review.
 `forestCopperleaf=original` restores the previous orange foliage for comparison.
 One painted perspective remains; no rotated-view coverage is added.
+
+Underbough now includes restrained young-hornbeam pockets by default, after the
+[game and binding review](qa-evidence/underbough-young-pockets-default-2026-10-01/README.md).
+`forestAges=uniform` restores mature-only placement. Other species sizes are
+unchanged by this mix; it adds no rotated perspectives.
