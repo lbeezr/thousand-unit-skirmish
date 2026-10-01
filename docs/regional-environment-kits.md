@@ -749,3 +749,23 @@ pair breaks some size repetition, but root/branch clutter remains, so it is not
 adopted as the default. Smaller copies are a scale experiment, not anatomically
 authored young trees. Quieter source silhouettes and real age forms remain the
 next art requirement alongside directional construction.
+
+## Young hornbeam source forms — 1 October 2026
+
+The scale-only canopy experiment motivates genuine age anatomy. A
+[young hornbeam full source](../assets/environment/vaelora-region-kits-v2/underbough/young-hornbeam-full-000.png)
+has a slender stem, compact greener foliage and a small root collar instead of
+mature sprawling roots. Its first [worked source](../assets/environment/vaelora-region-kits-v2/underbough/young-hornbeam-worked-000.png)
+thins lower outer foliage at the same approximate registration. The
+[full/worked contact sheet](../assets/environment/vaelora-region-kits-v2/underbough/young-hornbeam-full-worked-review.png)
+was inspected. Alpha8 lower-collar bounds differ by one to two pixels; this is
+source evidence, not a completed runtime registration proof.
+
+The [source review](../assets/environment/vaelora-region-kits-v2/underbough/young-hornbeam-source-review.json)
+and [built-in ImageGen prompts](../assets/environment/vaelora-region-kits-v2/underbough/young-hornbeam-prompts.json)
+record masters, hashes, framing refinement and unfinished work. The first
+full output touched the canvas edge; the selected refinement has crown/base
+gutters. Low/depleted states, common crop/pivot, runtime binding and forest
+clearing/reset/composition review remain. Proposed visible height is 2.1 world
+units, pending game review. This is an age form, not a new species/resource rule.
+Both drawings use one approximate painted viewpoint; neither adds rotations.
