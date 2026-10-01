@@ -1,0 +1,59 @@
+{
+  "mapUnchanged": true,
+  "modes": [
+    {
+      "mode": "original",
+      "woodCells": 1026,
+      "families": {
+        "underbough-root-oak": 395,
+        "underbough-moss-hornbeam": 468,
+        "underbough-old-plum": 59,
+        "underbough-copperleaf": 51,
+        "underbough-bramble": 53
+      },
+      "canopyStates": [
+        6
+      ],
+      "sourceTextures": [
+        "underbough-root-oak-lifecycle-atlas.webp",
+        "underbough-moss-hornbeam-lifecycle-atlas.webp",
+        "underbough-old-plum-lifecycle-atlas.webp",
+        "underbough-lifecycle-atlas.webp",
+        "underbough-bramble-lifecycle-atlas.webp",
+        "underbough-rootward-fungus.webp",
+        "underbough-rootward-fungus-02.webp",
+        "underbough-low-hazel.webp"
+      ]
+    },
+    {
+      "mode": "leafy",
+      "woodCells": 1026,
+      "families": {
+        "underbough-root-oak": 395,
+        "underbough-leafy-hornbeam-v2": 468,
+        "underbough-old-plum": 59,
+        "underbough-copperleaf": 51,
+        "underbough-bramble": 53
+      },
+      "canopyStates": [
+        6,
+        3,
+        1,
+        0,
+        6
+      ],
+      "sourceTextures": [
+        "underbough-root-oak-lifecycle-atlas.webp",
+        "underbough-leafy-hornbeam-v2-lifecycle-atlas.webp",
+        "underbough-old-plum-lifecycle-atlas.webp",
+        "underbough-lifecycle-atlas.webp",
+        "underbough-bramble-lifecycle-atlas.webp",
+        "underbough-rootward-fungus.webp",
+        "underbough-rootward-fungus-02.webp",
+        "underbough-low-hazel.webp"
+      ]
+    }
+  ],
+  "errors": [],
+  "resetPixelsExact": true
+}

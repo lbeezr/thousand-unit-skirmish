@@ -876,3 +876,12 @@ and mip cap6. Runtime PNG/WebP encoding does not repaint or repair masters.
 The new version is a candidate production package; source appearance and
 registration still require renderer and full-game review before adoption.
 The old hornbeam remains the current default, and no rotations are added.
+
+## Fuller hornbeam opt-in renderer binding — 1 October 2026
+
+The [actual renderer comparison](qa-evidence/underbough-leafy-canopy-render-study-2026-10-01/README.md)
+binds the versioned fuller hornbeam with `?forestCanopy=leafy`. Every wood
+owner stays represented; the468 hornbeam slots pass harvest atlas checks and
+reset reproduces identical pixels. Leaf masses hide more branch lattice,
+but repeated highlights and root mats remain. Default adoption waits for
+full-game appearance evidence. No directional completion is claimed.
