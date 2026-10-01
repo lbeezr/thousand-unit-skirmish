@@ -896,6 +896,15 @@ reset reproduces identical pixels. Leaf masses hide more branch lattice,
 but repeated highlights and root mats remain. Default adoption waits for
 full-game appearance evidence. No directional completion is claimed.
 
+## Ellionar low Sunbloom foliage · 1 October 2026
+
+The [v4 pack](../assets/environment/ellionar-sunbloom-low-v4/README.md) adds
+open copper branching for stock 2–1, retaining lapis flowers and planted crowns.
+Its twelve full/worked/low frames share source coordinates, canvas, world size
+and pivot. Stock 5–3 remains worked; empty hides and reset returns full.
+Independent garden beds stay full. These approximate painted directions do
+not claim measured rotations or certified anatomical registration.
+
 ## Fuller canopy full-game comparison — 1 October 2026
 
 The [eight paired game captures](qa-evidence/underbough-leafy-full-game-2026-10-01/README.md)

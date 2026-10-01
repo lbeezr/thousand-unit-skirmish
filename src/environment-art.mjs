@@ -18,7 +18,7 @@ import { gardenPlantGroups } from './garden-vegetation.mjs';
 import { assertPlantDimensions, PLANT_ASSETS } from './environment-plant-assets.mjs';
 import { PODVINE_LOW_PACK as PODVINE_VIEW_PACK } from './podvine-low-pack.mjs';
 import { VEILCAP_VIEW_PACK } from './veilcap-view-pack.mjs';
-import { SUNBLOOM_WORKED_PACK as SUNBLOOM_VIEW_PACK } from './sunbloom-worked-pack.mjs';
+import { SUNBLOOM_LOW_PACK as SUNBLOOM_VIEW_PACK } from './sunbloom-low-pack.mjs';
 
 const meshyResourcesEnabled = new URLSearchParams(globalThis.location?.search ?? '').get('meshyResources') !== '0';
 

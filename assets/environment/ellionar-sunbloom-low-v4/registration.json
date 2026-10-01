@@ -1,0 +1,39 @@
+{
+  "sourceSha256": "a4b271e4d17bfb50f1759f2f067ec5084ec396b95dac5ae4ad40ebe93c5ad149",
+  "reference": "../ellionar-sunbloom-worked-v3/source.png",
+  "referenceSha256": "3f5d8962decfed776089c2876322cfcbe3fb32d7472f12e2d7c57a87c8671940",
+  "sizePx": [
+    2169,
+    725
+  ],
+  "mode": "RGBA",
+  "alphaBoundsPerHeading": [
+    [
+      40,
+      35,
+      656,
+      640
+    ],
+    [
+      27,
+      61,
+      415,
+      640
+    ],
+    [
+      0,
+      39,
+      592,
+      641
+    ],
+    [
+      25,
+      62,
+      331,
+      640
+    ]
+  ],
+  "opaqueRedPixels": 0,
+  "runtimeIntegrated": false,
+  "anatomicalRootAlignmentCertified": false
+}

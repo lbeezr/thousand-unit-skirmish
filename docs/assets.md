@@ -1,5 +1,10 @@
 # Asset guide
 
+Ellionar woodland Sunblooms use the
+[full/worked/low v4 atlas](../assets/environment/ellionar-sunbloom-low-v4/README.md)
+with four headings per state. Independent channel gardens retain full plants.
+
+
 [Documentation index](README.md) · [Art direction](art-direction-contract-v1.md)
 
 ## Choose the right path
