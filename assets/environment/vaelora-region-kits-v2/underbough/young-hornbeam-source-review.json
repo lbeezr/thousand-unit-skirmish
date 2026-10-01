@@ -1,0 +1,76 @@
+{
+  "status": "source-sample-not-runtime",
+  "role": "young woodland canopy form; existing hornbeam palette, not a new resource/species rule",
+  "sourceTool": "built-in ImageGen",
+  "generatedOutput": "exec-cc7a8494-8544-4418-b8df-378acd12c1a9.png",
+  "initialOutput": "exec-5c0cf811-5437-4cce-81c2-e397053c6cfb.png (crown touched canvas edge; superseded framing)",
+  "sourceSha256": "f47e9225513125649fb255ec5f514d640b8163dd9285d8b41dbbacee6311c984",
+  "dimensionsPx": [
+    1254,
+    1254
+  ],
+  "alpha8Bounds": [
+    288,
+    98,
+    1014,
+    1158
+  ],
+  "reference": "moss-hornbeam-full-000.png",
+  "views": "one approximate painted fixed-oblique view",
+  "runtimeDirectionalCoverage": 0,
+  "proposedVisibleHeightWorld": 2.1,
+  "unfinished": [
+    "low/depleted source states",
+    "registered shared crop and ground pivot",
+    "runtime family binding",
+    "forest composition/clearing/reset review"
+  ],
+  "review": "Slender trunk, compact greener crown, small root collar; framing gutter verified. Preview normalizes each tree independently and does not claim game scale. Worked state thins outer lower foliage at the same canvas/base position; contact sheet inspected, registration still needs runtime validation.",
+  "sourceFrames": [
+    {
+      "stage": "full",
+      "source": "young-hornbeam-full-000.png",
+      "sourceSha256": "f47e9225513125649fb255ec5f514d640b8163dd9285d8b41dbbacee6311c984",
+      "canvasPx": [
+        1254,
+        1254
+      ],
+      "alpha8Bounds": [
+        288,
+        98,
+        1014,
+        1158
+      ],
+      "visibleAlpha8Pixels": 314085,
+      "lowerCollarAlpha8Bounds": [
+        621,
+        0,
+        767,
+        58
+      ]
+    },
+    {
+      "stage": "worked",
+      "source": "young-hornbeam-worked-000.png",
+      "sourceSha256": "48bae07746c022de34465204161b3d4df73ba19a95c4f457c02a7814191859b0",
+      "canvasPx": [
+        1254,
+        1254
+      ],
+      "alpha8Bounds": [
+        315,
+        97,
+        981,
+        1160
+      ],
+      "visibleAlpha8Pixels": 267734,
+      "lowerCollarAlpha8Bounds": [
+        622,
+        0,
+        769,
+        60
+      ]
+    }
+  ],
+  "workedGeneratedOutput": "exec-4cbc488f-daa0-458f-b91a-5d413f6567be.png"
+}
