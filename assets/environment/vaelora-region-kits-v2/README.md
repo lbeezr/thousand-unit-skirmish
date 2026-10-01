@@ -28,7 +28,7 @@ now have a local runtime proof; model/directional views remain outstanding.
 
 `underbough/old-plum-full-000.png` adds a compact burgundy crown with low
 spreading branches and a short crooked trunk. This third new species source has
-the same outstanding registration, harvest-state and model-view work.
+a registered four-state runtime; measured model views remain outstanding.
 
 `underbough/root-oak-view-090-rejected.png` retains an unsuccessful directional
 attempt for provenance. It changes branches and silhouette but does not verify
@@ -87,3 +87,29 @@ the original 1026 wood cells. Roots, four-state atlas selections and reset
 transforms pass. A separate [live worker proof](../../../docs/qa-evidence/underbough-root-oak-live-2026-10-01/live-harvest-proof.json)
 observes Root Oak harvesting at its prior runtime commit. Hornbeam live harvesting
 and directional views remain outstanding.
+
+## Four tree forms in the first Underbough runtime
+
+Old Plum now adds the compact burgundy form beside broad Root Oak, airy Moss
+Hornbeam and Copperleaf. Four original 1290 × 1219 canvases share
+`[55,55,1275,1190]` registration; visible root bottoms differ by three logical
+pixels. Encode with `scripts/package-regional-tree-family.py --source assets/environment/vaelora-region-kits-v2/underbough --prefix old-plum --family underbough-old-plum --crop 55 55 1275 1190 --height 2.85`,
+then pack `scripts/build-environment-lifecycle-atlases.py --region underbough-old-plum`.
+
+[Current woodland proof](../../../docs/qa-evidence/underbough-four-trees-2026-10-01/underbough-rootways-renderer-proof.json)
+records 314 Root Oaks, 230 Hornbeams, 207 Plums, 192 Copperleaf and 83 brambles
+in the original 1026 wood cells. All four harvest states and reset retain roots.
+Normal, strategic and closer views show the actual ground and canopy mixture;
+Vesperra is the unchanged control. This first species mix does not complete the
+remaining texture roles, shrub variety, other zones or directional views.
+
+Docker now explicitly includes all 18 forest atlas metadata files. The release
+scenario requests every renderer-declared metadata file and atlas from the
+packed HTTP runtime, checks Docker context entries and verifies atlas hashes.
+This fixes the new Root Oak/Hornbeam omissions and an existing Ru’Lora fringe
+omission before claiming staged atlas integration.
+
+[Current live worker checks](../../../docs/qa-evidence/underbough-family-harvest-2026-10-01/summary.json)
+verify renderer-selected Root Oak, Hornbeam and Plum targets through actual
+gathering, depletion and reset. Each run retains full/worked/low/depleted/reset
+images and the atlas state lineup. No browser or asset errors occurred.
