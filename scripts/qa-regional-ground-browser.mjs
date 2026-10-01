@@ -71,7 +71,8 @@ const densePlacementCapture=process.env.RTS_QA_DENSE_PLACEMENT==='1';
 const layoutCapture=process.env.RTS_QA_GROUND_LAYOUT==='1';
 const variantStudy=process.env.RTS_QA_GROUND_VARIANTS==='1';
 const forestStudy=process.env.RTS_QA_FOREST_SPECIES==='1';
-const ageStudy=process.env.RTS_QA_FOREST_AGES==='1';
+const youngStudy=process.env.RTS_QA_YOUNG_FOREST==='1';
+const ageStudy=youngStudy||process.env.RTS_QA_FOREST_AGES==='1';
 const edgeStudy=process.env.RTS_QA_PAINT_EDGES==='1';
 const soilStudy=process.env.RTS_QA_SOIL_STUDY==='1';
 const stoneStudy=process.env.RTS_QA_STONE_STUDY==='1';
@@ -88,7 +89,7 @@ try {
  cdp.on('Network.responseReceived',e=>{if(e.response.status>=400&&e.response.url.includes('/assets/'))errors.push('Asset '+e.response.status+' '+e.response.url)});
  const room=await(await fetch(new URL('/api/rooms',BASE),{method:'POST',headers:{origin:BASE.origin,'content-type':'application/json'},body:'{}'})).json();
  if(!room.roomId)throw new Error('Room creation failed');
- for(const id of ['underbough-rootways','bellweather-millrace']) for(const mode of (ageStudy?['uniform','irregular']:edgeStudy?['legacy','organic']:waterStudy?['chamfered','curved']:forestStudy?['scattered','groves']:variantStudy?['single','mixed']:['legacy','kit'])) {
+ for(const id of ['underbough-rootways','bellweather-millrace']) for(const mode of (ageStudy?['uniform',youngStudy?'young':'irregular']:edgeStudy?['legacy','organic']:waterStudy?['chamfered','curved']:forestStudy?['scattered','groves']:variantStudy?['single','mixed']:['legacy','kit'])) {
   await cdp.call('Page.navigate',{url:BASE.origin+'/?room='+room.roomId+'&regionalGrounds='+(ageStudy||edgeStudy||waterStudy||forestStudy||variantStudy||layoutCapture||densePlacementCapture?'kit':mode)+(ageStudy?'&forestAges='+mode:'')+(edgeStudy?'&paintEdges='+mode:'')+(variantStudy?'&groundVariants='+mode:'')+(forestStudy?'&forestSpecies='+mode:'')+(waterStudy?'&waterOutline='+mode:'')});await sleep(4000);
   for(let i=0;i<100;i++){if(await cdp.evaluate('document.documentElement.dataset.boot')==='ready')break;await sleep(200)}
   if(await cdp.evaluate('document.documentElement.dataset.boot')!=='ready')throw new Error('Browser boot failed');
@@ -135,7 +136,7 @@ try {
   const shot=await cdp.call('Page.captureScreenshot',{format:'png'});await writeFile(out+'/'+id+'-'+mode+'-strategic.png',Buffer.from(shot.data,'base64'));
   await cdp.evaluate(`(()=>{const c=document.querySelector('#viewport canvas');const r=c.getBoundingClientRect();c.dispatchEvent(new WheelEvent('wheel',{deltaY:-700,clientX:r.x+r.width/2,clientY:r.y+r.height/2,cancelable:true}));document.querySelector('#camera-home-base').click()})()`);
   await sleep(400);const ordinary=await cdp.call('Page.captureScreenshot',{format:'png'});await writeFile(out+'/'+id+'-'+mode+'-ordinary.png',Buffer.from(ordinary.data,'base64'));
-  if(id==='underbough-rootways'&&(mode==='kit'||mode==='mixed'||mode==='groves'||mode==='curved'||mode==='organic'||mode==='irregular')) {
+  if(id==='underbough-rootways'&&(mode==='kit'||mode==='mixed'||mode==='groves'||mode==='curved'||mode==='organic'||mode==='irregular'||mode==='young')) {
    const proof=await cdp.evaluate(`(async()=>{
     const {createGroundSurfaces,environmentTheme,addObstacleEnvironmentSprites}=await import('/src/environment-art.mjs');
     const map=${JSON.stringify(map)},original=JSON.stringify(map),current=location.href;
@@ -176,6 +177,6 @@ try {
   }
   console.log('Captured '+id+' '+mode);
  }
- await writeFile(out+'/capture-report.json',JSON.stringify({source:ageStudy?'same authored maps, source art and ground kit; existing sizes versus irregular age factors; Bellweather control':edgeStudy?'same disposable exposed soil studies and ground sources; prior versus broader Underbough paint transitions; Bellweather control':soilStudy?'disposable exposed forest-floor paint on copied maps; paired clearing/soil sources versus single; Bellweather control':waterStudy?'same disposable shoreline maps and regional kits; per-cell chamfers versus connected conservative curves':wetStudy?'disposable irregular wet-soil paint on copied maps; global versus regional ground kit; Bellweather and Siltmouths controls':stoneStudy?'disposable irregular exposed-stone paint on copied maps; global versus regional ground kit; Bellweather control':forestStudy?'same authored map, ground kit and four tree forms; scattered selection versus dominant groves; Bellweather control':variantStudy?'same authored maps and regional kit; single versus paired clearing, woodland and worn-soil sources; Bellweather control':densePlacementCapture?'same map and regional kit; original clearings versus authored dense woodland margins; Bellweather control':layoutCapture?'same authored map and kit; previous forest-floor base versus clearing grass; Bellweather control':'regional ecology kit working branch; same map, renderer and cameras, regionalGrounds=legacy comparison',fog:'disabled only in disposable capture copies',errors},null,2)+'\n');
+ await writeFile(out+'/capture-report.json',JSON.stringify({source:youngStudy?'same authored maps and ground kit; original canopy versus authored young hornbeams within species groves; other canopy species use irregular scale factors; Bellweather control':ageStudy?'same authored maps, source art and ground kit; existing sizes versus irregular age factors; Bellweather control':edgeStudy?'same disposable exposed soil studies and ground sources; prior versus broader Underbough paint transitions; Bellweather control':soilStudy?'disposable exposed forest-floor paint on copied maps; paired clearing/soil sources versus single; Bellweather control':waterStudy?'same disposable shoreline maps and regional kits; per-cell chamfers versus connected conservative curves':wetStudy?'disposable irregular wet-soil paint on copied maps; global versus regional ground kit; Bellweather and Siltmouths controls':stoneStudy?'disposable irregular exposed-stone paint on copied maps; global versus regional ground kit; Bellweather control':forestStudy?'same authored map, ground kit and four tree forms; scattered selection versus dominant groves; Bellweather control':variantStudy?'same authored maps and regional kit; single versus paired clearing, woodland and worn-soil sources; Bellweather control':densePlacementCapture?'same map and regional kit; original clearings versus authored dense woodland margins; Bellweather control':layoutCapture?'same authored map and kit; previous forest-floor base versus clearing grass; Bellweather control':'regional ecology kit working branch; same map, renderer and cameras, regionalGrounds=legacy comparison',fog:'disabled only in disposable capture copies',errors},null,2)+'\n');
  if(errors.length)throw new Error(errors.join('\n'));
 }finally{cdp?.close();chrome.kill('SIGTERM');}
