@@ -808,3 +808,14 @@ colour and four authored directions. [Paired renderer evidence](qa-evidence/vael
 compares contact at the same camera/pivots and checks placement/stock/reset.
 The shorter painted base is not independently enlarged, and anatomical crown
 registration remains approximate.
+
+## Young hornbeam opt-in forest binding — 1 October 2026
+
+The [game-renderer study](qa-evidence/underbough-young-forest-study-2026-10-01/README.md)
+selects the authored young lifecycle in hornbeam groves via `?forestAges=young`.
+Other canopy species keep their scale study; all wood-cell owners remain.
+The 402 young Rootways slots pass stock rectangle checks and reset returns
+identical capture pixels. The inspected local comparison reduces small-tree
+root clutter, but mature branching still dominates. It stays opt-in pending
+full-game review and real young forms for the other species. This binding
+does not add rotations or claim a complete regional forest kit.

@@ -1,5 +1,5 @@
 {
-  "status": "source-sample-not-runtime",
+  "status": "opt-in-runtime-study",
   "role": "young woodland canopy form; existing hornbeam palette, not a new resource/species rule",
   "sourceTool": "built-in ImageGen",
   "generatedOutput": "exec-cc7a8494-8544-4418-b8df-378acd12c1a9.png",
@@ -20,8 +20,9 @@
   "runtimeDirectionalCoverage": 0,
   "proposedVisibleHeightWorld": 2.1,
   "unfinished": [
-    "runtime family binding",
-    "forest composition/clearing/reset review"
+    "full-game forest composition and worker harvesting review",
+    "other species young anatomy",
+    "authored directional views"
   ],
   "review": "Slender trunk, compact greener crown, small root collar; framing gutter verified. Preview normalizes each tree independently and does not claim game scale. Worked state thins outer lower foliage at the same canvas/base position; contact sheet inspected, registration still needs runtime validation. Low state removes most leaf area and shortens outer scaffold ends; depleted state retains a small cut stump at the original base. All four unshifted canvases compared together; source registration is approximate, pending runtime proof.",
   "sourceFrames": [
@@ -135,6 +136,6 @@
     "sourceToRuntimeAlpha": "exact match to shared crop and LANCZOS resize for all four stages",
     "atlasWebPAlpha": "exact match to PNG page",
     "contactSheet": "four shared canvases visually inspected",
-    "runtimeValidation": "not yet integrated; no game appearance or stock/reset proof claimed"
+    "runtimeValidation": "Actual renderer slots checked at stock6/3/1/0/6; reset screenshot exact, map unchanged; opt-in only. See docs/qa-evidence/underbough-young-forest-study-2026-10-01."
   }
 }
