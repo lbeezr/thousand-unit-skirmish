@@ -32,6 +32,14 @@ test('missing browser, unknown failure, and unqualified timeout remain distinct 
   }
 });
 
+test('permission denial is storage evidence only when the failing context identifies storage', () => {
+  assert.deepEqual(codes(diagnoseBrowserLog('SUID sandbox helper: Permission denied')),
+    ['sandbox-unavailable']);
+  assert.deepEqual(codes(diagnoseBrowserLog('Permission denied')), ['startup-failed']);
+  assert.deepEqual(codes(diagnoseBrowserLog('Cannot create profile directory: Permission denied')),
+    ['storage-unavailable']);
+});
+
 test('ready requires a CDP browser version and successful cleanup; claims only startup', async () => {
   let disposed = 0;
   const result = await preflightBrowser({openBrowser: async () => ({

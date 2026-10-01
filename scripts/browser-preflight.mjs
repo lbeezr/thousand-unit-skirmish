@@ -16,8 +16,12 @@ export function diagnoseBrowserFailure(error) {
     issues.push(issue('sandbox-unavailable', 'The Linux browser sandbox could not start.',
       'Use a provider-provisioned runtime with a working browser sandbox.'));
   }
-  if (/chrome_crashpad_handler: --database is required|cannot create.*(?:directory|profile)|Permission denied/i.test(message)
-      || ['EACCES', 'EPERM', 'ENOENT'].includes(error?.code) && !error?.syscall?.startsWith('spawn')) {
+  const storageContext = /(?:profile|user.data|crashpad|xdg|cache|config(?:uration)? directory)/i;
+  const deniedStorage = message.split('\n').some(line => storageContext.test(line)
+    && /permission denied|cannot create/i.test(line));
+  if (/chrome_crashpad_handler: --database is required/i.test(message) || deniedStorage
+      || ['EACCES', 'EPERM', 'ENOENT'].includes(error?.code)
+        && /^(?:mkdtemp|mkdir|open|write|rename|unlink)\b/.test(error?.syscall ?? '')) {
     issues.push(issue('storage-unavailable', 'Browser profile/configuration storage could not be used.',
       'Provide writable per-job temporary, XDG configuration, and cache directories.'));
   }
