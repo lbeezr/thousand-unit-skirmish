@@ -1,7 +1,7 @@
 # Sunbloom low runtime · 1 October 2026
 
 [Full](sunbloom-views-close.png), [worked](sunbloom-views-worked-close.png),
-[low](sunbloom-views-low-close.png) and [strategic](sunbloom-views-strategic.png)
+[low](sunbloom-views-low-close.png) and [strategic](ellionar-renderer-strategic.png)
 show the twelve-frame atlas in the actual fixed camera (45.436° elevation,
 45° azimuth, zero screen roll). Low foliage reveals copper branching and
 retains lapis flowers. No obvious crown jump is visible at this capture scale;
