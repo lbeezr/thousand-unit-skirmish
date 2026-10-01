@@ -631,3 +631,20 @@ now renders the same proposed branch/root/crown geometry under four group rotati
 with fixed camera direction and lighting. It makes occlusion explicit for the next
 finishing attempt. It remains an approximate primitive construction aid, not
 production artwork or recovered geometry of the existing painted oak.
+
+### Root Oak solid-constrained finishing — 1 October 2026
+
+The [solid-constrained painted sheet](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-solid-finish-study.png)
+follows branch/crown placement more closely than the line-guide attempt, but is
+still rejected for directional registration. At alpha threshold 128, opposite
+width-per-visible-height ratios are 0.942 and 0.867: approximately 6% and 13%
+drift. This scalar check does not itself prove anatomy; the shared geometry and
+root silhouettes also remain approximate. No runtime view coverage is added.
+
+The [light/dark alpha review](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-solid-finish-alpha-review.png)
+was inspected and shows clean transparent surroundings; the apparent glow in the
+original display is transparent RGB. The [review record](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-solid-finish-review.json)
+and [built-in ImageGen prompt](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-solid-finish-prompt.txt)
+preserve the attempt. The next directional method must retain shared model
+geometry through surface finishing and fixed-camera capture rather than relying
+on painting to preserve each projection. Existing runtime art stays in use.
