@@ -80,6 +80,69 @@
       "material": "meadow"
     },
     {
+      "column": 17,
+      "row": 29,
+      "width": 2,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 77,
+      "row": 29,
+      "width": 2,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 16,
+      "row": 30,
+      "width": 3,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 77,
+      "row": 30,
+      "width": 3,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 16,
+      "row": 31,
+      "width": 2,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 78,
+      "row": 31,
+      "width": 2,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 15,
+      "row": 32,
+      "width": 2,
+      "height": 2,
+      "material": "dirt"
+    },
+    {
+      "column": 79,
+      "row": 32,
+      "width": 2,
+      "height": 2,
+      "material": "dirt"
+    },
+    {
+      "column": 9,
+      "row": 33,
+      "width": 4,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
       "column": 22,
       "row": 33,
       "width": 14,
@@ -94,9 +157,23 @@
       "material": "dirt"
     },
     {
+      "column": 83,
+      "row": 33,
+      "width": 4,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
       "column": 0,
       "row": 34,
       "width": 2,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 8,
+      "row": 34,
+      "width": 8,
       "height": 1,
       "material": "dirt"
     },
@@ -115,6 +192,13 @@
       "material": "dirt"
     },
     {
+      "column": 80,
+      "row": 34,
+      "width": 8,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
       "column": 94,
       "row": 34,
       "width": 2,
@@ -129,16 +213,16 @@
       "material": "dirt"
     },
     {
-      "column": 14,
+      "column": 8,
       "row": 35,
-      "width": 31,
+      "width": 37,
       "height": 1,
       "material": "dirt"
     },
     {
       "column": 51,
       "row": 35,
-      "width": 31,
+      "width": 37,
       "height": 1,
       "material": "dirt"
     },
@@ -209,6 +293,76 @@
       "column": 79,
       "row": 38,
       "width": 15,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 9,
+      "row": 39,
+      "width": 4,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 15,
+      "row": 39,
+      "width": 2,
+      "height": 2,
+      "material": "dirt"
+    },
+    {
+      "column": 79,
+      "row": 39,
+      "width": 2,
+      "height": 2,
+      "material": "dirt"
+    },
+    {
+      "column": 83,
+      "row": 39,
+      "width": 4,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 16,
+      "row": 41,
+      "width": 2,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 78,
+      "row": 41,
+      "width": 2,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 16,
+      "row": 42,
+      "width": 3,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 77,
+      "row": 42,
+      "width": 3,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 17,
+      "row": 43,
+      "width": 2,
+      "height": 1,
+      "material": "dirt"
+    },
+    {
+      "column": 77,
+      "row": 43,
+      "width": 2,
       "height": 1,
       "material": "dirt"
     },

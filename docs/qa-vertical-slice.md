@@ -56,6 +56,29 @@ ordinary PRs use checks proportionate to their changes under
 
 ## Known findings and historical evidence
 
+### Grounded settlement sites — 30 September 2026
+
+Source `83645bed` plus settlement-ground changes: Bellweather Millrace and
+Underbough Rootways gain irregular worn pads at the real starting Town Centers
+and working tracks towards home resource nodes. The
+[paired capture report](qa-evidence/settlement-ground-2026-09-30/capture-report.json)
+records local isolated Chrome import/Save & Play at 1280 × 900 with matching
+strategic and ordinary cameras and no console errors. Before/after use the same
+renderer and match rules; fog is disabled only in disposable capture copies.
+[Bellweather ordinary after](qa-evidence/settlement-ground-2026-09-30/bellweather-millrace-after-ordinary.png)
+and [Underbough ordinary after](qa-evidence/settlement-ground-2026-09-30/underbough-rootways-after-ordinary.png)
+show the shaped pads and gathering tracks.
+
+The settlement scenario compares against an explicit `83645bed` fixture,
+verifying immutable source definitions, deterministic mirrored paint, worn ground
+under every real Town Center footprint cell, no added wear on blocked cells, and
+exact preservation of every other map field. All twelve map access checks and
+the rolling-ground flat-pad checks pass. A local full-suite Forked Vale Team 0
+economy fixture timed out waiting for carried food after its opening; an isolated
+rerun passes cargo switching, construction, objectives, hold victory and rematch.
+That rerun does not establish the cause of the earlier timeout or replace the
+pending full CI result. Human visual acceptance and GPU cost remain unproven.
+
 ### Map Studio landscape strokes — 30 September 2026
 
 Source `001301b9` plus landscape-stroke changes: Forest/Water/Rock/Ridge/Cliff/Erase
