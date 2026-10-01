@@ -6,6 +6,7 @@ import { createServer } from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const SERVER_PATH = path.join(ROOT, 'server.mjs');
@@ -141,6 +142,7 @@ const height = 40;
 const targetColumn = 8;
 const targetRow = 20;
 const targetCell = targetRow * width + targetColumn;
+const houseCost = BUILDING_DEFINITIONS.house.cost.wood;
 const map = {
   id: 'woodland-cell-check',
   name: 'Woodland Cell Check',
@@ -148,7 +150,7 @@ const map = {
   width,
   height,
   startingArmySize: 8,
-  startingResources: { wood: 0 },
+  startingResources: { wood: houseCost },
   fogOfWar: true,
   spawnPoints: [{ team: 0, x: -14, z: 0 }, { team: 1, x: 14, z: 0 }],
   obstacles: [{ column: targetColumn, row: 18, width: 1, height: 5, material: 'forest' }],
@@ -189,7 +191,8 @@ try {
   send(azure, { type: 'gather', ids: [0], forestCell: targetCell });
   await gatherNotice;
   const harvested = await azure.waitForState((state) => forestStock(state, targetCell) === 0
-    && Number(state.wood?.[0]) >= 5.9, 'worker to cut the tree and deposit its wood');
+    && Number(state.wood?.[0]) >= houseCost + 5.9, 'worker to cut the tree and deposit its wood');
+  assert.equal(harvested.wood[0], houseCost + 6, 'first tree deposits exactly its six wood');
   const worker = workerRow(harvested, 0);
   assert.ok(worker, 'forest worker should remain synchronized');
   assert.equal(worker[5], 'worker');
@@ -216,6 +219,33 @@ try {
   assert.equal(forestStock(crossed, targetCell), 0,
     'the traversable forest cell should stay recorded as cleared');
 
+  // Clear the existing rectangle's end cell; a 3x3 House site overlaps only that tree.
+  const endRow = map.obstacles[0].row + map.obstacles[0].height - 1;
+  const endCell = endRow * width + targetColumn;
+  const gatherToken = 801;
+  const endGather = azure.waitForMessage((message) => message.type === 'notice'
+    && message.clientOrderToken === gatherToken && message.message?.startsWith('GATHER ORDER'),
+    'end-cell gather applied');
+  send(azure, { type: 'gather', ids: [0], unitGenerations: [workerRow(crossed, 0)[8]],
+    forestCell: endCell, clientOrderToken: gatherToken });
+  await endGather;
+  const beforeBuild = await azure.waitForState((state) => forestStock(state, endCell) === 0
+    && state.wood[0] === houseCost + 12, 'second tree depleted and deposited');
+  assert.equal(visibilityAt(beforeBuild, endCell), 2, 'cleared building-site cell is disclosed');
+  const buildToken = 802;
+  const buildReply = azure.waitForMessage((message) => message.type === 'notice'
+    && message.clientOrderToken === buildToken
+    && /^(BUILD ORDER|BUILD REJECTED) · /.test(message.message), 'paid House placement');
+  send(azure, { type: 'build', buildingType: 'house', ids: [0],
+    unitGenerations: [workerRow(beforeBuild, 0)[8]], clientOrderToken: buildToken,
+    x: targetColumn + 1 - width / 2 + 0.5, z: endRow + 1 - height / 2 + 0.5 });
+  assert.match((await buildReply).message, /^BUILD ORDER · /);
+  const built = await azure.waitForState((state) => state.buildings?.some((building) =>
+    building.team === 0 && building.type === 'house' && building.complete), 'paid House completion');
+  assert.equal(built.wood[0], beforeBuild.wood[0] - houseCost, 'registered House cost is paid exactly');
+  assert.equal(built.food[0], beforeBuild.food[0], 'House construction spends no food');
+  assert.equal(forestStock(built, endCell), 0, 'construction retains actual depletion');
+
   await closeClient(ember);
   ember = null;
   await closeClient(azure);
@@ -232,13 +262,19 @@ try {
   assert.equal(resumedWelcome.map.id, map.id, 'the saved woodland map should recover');
   assert.equal(forestStock(resumedWelcome.state, targetCell), 0,
     'the cleared tree and its open route should survive checkpoint recovery');
-  assert.ok(resumedWelcome.state.wood[0] >= 5.9,
-    'the deposited wood should survive checkpoint recovery');
+  assert.equal(resumedWelcome.state.wood[0], built.wood[0],
+    'deposits and the paid building deduction survive checkpoint recovery exactly');
+  assert.equal(forestStock(resumedWelcome.state, endCell), 0,
+    'the cleared building-site cell survives recovery');
+  assert.ok(resumedWelcome.state.buildings.some((building) => building.type === 'house' && building.complete),
+    'the paid completed House survives checkpoint recovery');
 
   send(azure, { type: 'reset' });
   const reset = await azure.waitForState((state) => state.forestEpoch > resumedWelcome.state.forestEpoch
     && (!state.forestStocks || state.forestStocks.length === 0), 'forest reset');
-  assert.equal(reset.wood[0], 0, 'match reset should restore the opening wood bank');
+  assert.equal(reset.wood[0], houseCost, 'match reset should restore the opening wood bank');
+  assert.equal(reset.buildings.filter((building) => !building.home).length, 0,
+    'reset removes constructed buildings');
   const resetNotice = azure.messages.find((message) => message.type === 'notice'
     && message.message?.startsWith('BATTLEFIELD RESET'));
   assert.ok(resetNotice, 'host reset should complete after recovery');
@@ -248,6 +284,7 @@ try {
       'cell-target gather depletes one tree and deposits finite wood',
       'forest changes stay sparse and fog-filtered by current visibility',
       'cleared cell becomes a valid movement destination',
+      'a paid House completes on a footprint containing an actually depleted tree',
       'woodland state, route, and host session recover from checkpoint',
       'match reset restores forest stock',
     ],
@@ -255,6 +292,8 @@ try {
     targetCell,
     depositedWood: resumedWelcome.state.wood[0],
     recoveredForestStock: forestStock(resumedWelcome.state, targetCell),
+    buildingSiteClearedCell: endCell,
+    paidHouseWood: houseCost,
   }, null, 2));
 } catch (error) {
   console.error(error);

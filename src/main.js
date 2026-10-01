@@ -7410,7 +7410,17 @@ function buildPlacementAt(clientX, clientY) {
         && obstacle.column < startColumn + footprint
         && startRow < obstacle.row + obstacle.height
         && obstacle.row < startRow + footprint;
-      if (overlaps) { blockedReason ||= 'TERRAIN BLOCKS THIS SITE'; break; }
+      if (!overlaps) continue;
+      // Only disclosed depletion opens forest; unknown cells retain authored blocking.
+      let blocksSite = obstacle.material !== 'forest';
+      for (let row = Math.max(startRow, obstacle.row); !blocksSite
+        && row < Math.min(startRow + footprint, obstacle.row + obstacle.height); row++) {
+        for (let column = Math.max(startColumn, obstacle.column); !blocksSite
+          && column < Math.min(startColumn + footprint, obstacle.column + obstacle.width); column++) {
+          blocksSite = latestForestStocks.get(row * MAP_WIDTH + column) !== 0;
+        }
+      }
+      if (blocksSite) { blockedReason ||= 'TERRAIN BLOCKS THIS SITE'; break; }
     }
     for (const node of mapDefinition.resourceNodes || []) {
       const nodeColumn = Math.floor(node.x + MAP_HALF_X);

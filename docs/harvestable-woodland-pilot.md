@@ -20,6 +20,9 @@ Forest shapes should create choices about shortcuts, route width, and settlement
   range; placement that closes every reachable side is rejected.
 - Exhaustion removes the tree's hard movement/sight block and updates path state.
   Checkpoints preserve clearing; reset restores the original forest.
+- Client building placement also opens overlapping forest cells only after their
+  zero stock is disclosed. Unknown or remaining stock retains the authored block;
+  non-forest terrain and other placement rules still apply.
 - Ordinary resource nodes keep their existing 128-node limit. Thousands of trees
   do not need thousands of ordinary nodes.
 
@@ -33,6 +36,8 @@ node scripts/worker-cargo-return-scenario.mjs frontier-160
 
 [Construction interruption evidence](qa-forest-route-repair-2026-09-27.md) records
 the authored-map reproduction and pinned source comparison.
+[Cleared-forest placement evidence](qa-cleared-forest-placement-2026-10-01.md)
+separates client source-function checks from paid authoritative construction.
 
 ## Follow-up experiments
 
