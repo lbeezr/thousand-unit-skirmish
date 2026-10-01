@@ -1,0 +1,24 @@
+{
+  "sourceTool": "built-in ImageGen",
+  "generatedOutput": "exec-143c5f5c-692f-4cf5-8c0d-44c22506c064.png",
+  "reference": "wet-bank-rejected-litter.png",
+  "source": "wet-bank-01.png",
+  "sourceSha256": "5763a67a36c7d02f44985c178ad5fd0c2fcc359061b5ded742e2117128f8583a",
+  "runtime": "../../frontier-v1/underbough-wet-bank-v2.webp",
+  "runtimeSha256": "1d807f08829c49e47ab65287f665e229f99a92c1087d21be85ed889ecb4cfdd0",
+  "dimensionsPx": [
+    1254,
+    1254
+  ],
+  "encoding": "RGB WebP quality90; no resize or creative pixel edits",
+  "meanRgb": [
+    69.59418727694981,
+    52.276123104629775,
+    24.97268326681573
+  ],
+  "diagramColor": "#463419",
+  "semanticMaterial": "tidal-mud",
+  "scope": "Damp woodland bank soil appearance; no tide, water or collision behavior implied",
+  "promptPath": "wet-bank-01-prompt.txt",
+  "rejectedCandidatePromptPath": "wet-bank-rejected-litter-prompt.txt"
+}
