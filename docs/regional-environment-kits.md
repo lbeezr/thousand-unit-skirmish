@@ -1011,3 +1011,12 @@ profile. Genuine rotated regional views remain unfinished.
 mature canopy and normal sizes for other species. The [renderer study](qa-evidence/underbough-young-pockets-2026-10-01/README.md)
 checks 67 young/295 mature hornbeams in current Rootways, 1,026 wood owners and
 stock/reset rendering. It remains optional pending full-game density review.
+
+### Restrained hornbeam age pockets adopted — 1 October 2026
+
+The [paired game review](qa-evidence/underbough-young-pockets-game-2026-10-01/README.md)
+retains dense mature crowns while adding smaller forms, avoiding the prior sparse
+mix. Underbough defaults to pockets; `forestAges=uniform` retains mature-only
+comparison. The [no-option check](qa-evidence/underbough-young-pockets-default-2026-10-01/README.md)
+verifies 67 young/295 mature hornbeams, 1,026 owners and exact harvest/reset pixels.
+Other species ages and genuine rotated-view coverage remain unfinished.
