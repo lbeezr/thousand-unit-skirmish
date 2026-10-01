@@ -536,3 +536,31 @@ control, without browser errors. The new served WebP matches its recorded hash;
 existing Docker wildcard packaging includes it. This completes two source
 variants for the clearing role only; other role variants and regional kits remain
 unfinished.
+
+## Underbough woodland soil companion — 1 October 2026
+
+A second [woodland soil source](../assets/environment/vaelora-region-kits-v2/underbough/root-soil-02.png)
+reduces recognizable intact leaves and exposed roots while retaining the kit's
+olive/umber colours. The [prompts](../assets/environment/vaelora-region-kits-v2/underbough/root-soil-02-prompt.txt)
+record the built-in ImageGen generation and targeted edit; the
+[registration](../assets/environment/vaelora-region-kits-v2/underbough/root-soil-02-registration.json)
+records hashes, encoding and source means. The companion is darker (mean RGB
+64/42/14 versus 75/53/25); it is not a brightness-identical recolour.
+The [repeat sheet](../assets/environment/vaelora-region-kits-v2/underbough/root-soil-variant-repeat-review.png)
+shows the two sources without creative pixel modifications.
+
+The existing world-space stochastic ground sampler now chooses between these
+sources for Underbough forest-floor, including masked terrain paint. The existing
+`?groundVariants=single` comparison disables both clearing and woodland variants.
+Other regions retain their bindings. No map layout, resource or collision changes.
+Initial capture exposed a missing asset allowlist entry; its incomplete evidence
+is retained separately from the corrected retry. Flat ground variants do not
+supply missing rotated prop perspectives. Four other ground roles still need
+second sources, and whole-landscape appearance remains under review.
+
+The [corrected full-game proof](qa-evidence/underbough-root-soil-variants-retry-2026-10-01/renderer-proof.json)
+loads both soil sources with cache isolation and unchanged definitions; eight
+paired captures completed without reported browser errors. At normal zoom the
+soil change is subtle beneath canopy. These comparisons enable clearing and soil
+variants together, rather than isolating the soil effect, and do not constitute
+hosted or performance evidence.

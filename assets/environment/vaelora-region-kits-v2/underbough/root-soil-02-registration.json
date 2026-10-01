@@ -1,0 +1,28 @@
+{
+  "sourceTool": "built-in ImageGen",
+  "generatedOutput": "exec-1d20c6f6-bab7-4c5c-a3e2-99806dfaf3cc.png",
+  "reference": "root-soil-01.png",
+  "initialOutput": "exec-ff3408c9-9c73-42cc-91cf-fd8561e37432.png (not selected: excessive recognizable litter)",
+  "source": "root-soil-02.png",
+  "sourceSha256": "f21e62636d3df335ccc8e380de622fc778c6f4fc082aa727d3346431ee676aee",
+  "runtime": "../../frontier-v1/underbough-root-soil-02-v2.webp",
+  "runtimeSha256": "0eb2741e374f3f39c1f90dd2941bcfa44e6f72208aea1bedfcaafe9f42f334b6",
+  "dimensionsPx": [
+    1254,
+    1254
+  ],
+  "encoding": "RGB WebP quality90; no resize or creative pixel edits",
+  "meanRgb": {
+    "root-soil-01.png": [
+      74.86360393153393,
+      53.136473015218925,
+      25.2330424618891
+    ],
+    "root-soil-02.png": [
+      63.83031078857067,
+      42.42068761144561,
+      13.799460863991209
+    ]
+  },
+  "directionalCoverage": "flat ground; not a directional sprite"
+}
