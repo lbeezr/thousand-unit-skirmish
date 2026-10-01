@@ -1,0 +1,38 @@
+<!doctype html><html><head><base href="/"><script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js"}}</script></head><body><script type="module">
+import * as THREE from 'three';
+import {CAMERA_VIEW_DIRECTION} from '/src/camera-controls.mjs';
+const anatomy=await(await fetch('/docs/art-direction/environment-camera-v1/root-oak-construction.json')).json();
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(2048,768);document.body.append(renderer.domElement);
+const scene=new THREE.Scene();scene.background=new THREE.Color('#252a25');
+scene.add(new THREE.HemisphereLight(0xf3e7c6,0x36392e,2));
+const light=new THREE.DirectionalLight(0xffe0ad,2.4);light.position.set(-4,8,6);scene.add(light);
+const camera=new THREE.OrthographicCamera(-2.8,2.8,4.1,-4.1,.1,100);
+const target=new THREE.Vector3(0,1.7,0);camera.position.copy(target).add(new THREE.Vector3(...CAMERA_VIEW_DIRECTION).normalize().multiplyScalar(12));camera.lookAt(target);
+const tree=new THREE.Group();scene.add(tree);
+const wood=new THREE.MeshStandardMaterial({color:'#936c43',roughness:1});
+const crownColors=['#66683a','#5b6030','#727040','#62652f','#505b30'];
+function limb(points,radius){for(let i=1;i<points.length;i++){
+ const a=new THREE.Vector3(...points[i-1]),b=new THREE.Vector3(...points[i]),d=b.clone().sub(a);
+ const mesh=new THREE.Mesh(new THREE.CylinderGeometry(radius*.72,radius,d.length(),12),wood);
+ mesh.position.copy(a).add(b).multiplyScalar(.5);mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());tree.add(mesh);
+}}
+for(const b of anatomy.branches)limb(b.points,b.radius);
+for(const r of anatomy.roots)limb(r.points,.095);
+for(const [i,c] of anatomy.crowns.entries()){
+ const mesh=new THREE.Mesh(new THREE.SphereGeometry(1,32,20),new THREE.MeshStandardMaterial({color:crownColors[i],roughness:1}));
+ mesh.position.set(...c.center);mesh.scale.set(...c.radii);tree.add(mesh);
+}
+renderer.setScissorTest(true);
+const proof={status:'solid-anatomical-proxy-not-production-art',sameConstruction:true,lightsFixed:true,cameraFixed:true,headings:[]};
+for(const [i,angle] of [0,90,180,270].entries()){
+ tree.rotation.y=angle*Math.PI/180;tree.updateMatrixWorld(true);
+ renderer.setViewport(i*512,0,512,768);renderer.setScissor(i*512,0,512,768);renderer.render(scene,camera);
+ proof.headings.push({modelYawDegrees:angle,branchAttachments:Object.fromEntries(anatomy.branches.map(b=>{
+ const p=new THREE.Vector3(...b.points[0]).applyMatrix4(tree.matrixWorld).project(camera);return[b.id,[p.x,p.y,p.z]];
+ }))});
+}
+if(renderer.info.programs.some(p=>p.diagnostics?.runnable===false))throw Error('Shader failed');
+async function save(name,data){const r=await fetch('/__save/'+name,{method:'POST',body:data});if(!r.ok)throw Error('Save '+r.status);}
+await save('solid-four-headings.png',await new Promise(r=>renderer.domElement.toBlob(r)));
+await save('projection-proof.json',JSON.stringify(proof,null,2));window.__renderDone=true;
+</script></body></html>

@@ -1,0 +1,39 @@
+{
+  "status": "rejected-shared-view-study-not-runtime",
+  "sourceTool": "built-in ImageGen",
+  "generatedOutput": "exec-1af281bf-2ebe-4d59-8ee4-45a3fd484095.png",
+  "source": "root-oak-shared-view-study-rejected.png",
+  "sourceSha256": "9532d36fc7069910371632ec63e1c21a81a6a83058200e264d45fc673dc90526",
+  "dimensionsPx": [
+    2182,
+    721
+  ],
+  "alphaBounds": [
+    0,
+    17,
+    2176,
+    721
+  ],
+  "alphaExtrema": [
+    0,
+    255
+  ],
+  "requestedHeadingsDegrees": [
+    0,
+    90,
+    180,
+    270
+  ],
+  "acceptedDirectionalCoverage": 0,
+  "measuredModelRotation": false,
+  "references": [
+    "../../../../docs/art-direction/environment-camera-v1/root-oak-construction.png",
+    "root-oak-full-000.png"
+  ],
+  "findings": [
+    "Multiple drawings retain front-facing trunk knot/scar motifs despite requested opposite headings.",
+    "Branch attachments and crown positions do not reliably follow the four controlling guide projections.",
+    "Different silhouettes are insufficient evidence of a consistent rotated tree."
+  ],
+  "nextMethod": "Render a solid shared three-dimensional construction with visible branch occlusion before attempting painted finishing; preserve model correspondence through the finish."
+}

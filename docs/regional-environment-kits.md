@@ -616,3 +616,18 @@ four authored podvine views, which are painted views rather than measured model
 rotations. This inventory excludes buildings, units and other static scenery.
 Underbough canopy perspectives remain the next major art deficit; the rejected
 Root Oak redraw pair and construction proxy do not close it.
+
+### Root Oak shared view study — 1 October 2026
+
+A [four-view painted study](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-shared-view-study-rejected.png)
+using the shared line guide was rejected after inspection: front-facing scars
+recurred across requested turns, while attachments and crowns did not follow the
+controlling projections reliably. Its [review](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-shared-view-study-review.json)
+and [prompts](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-shared-view-study-prompt.txt)
+retain the result without adding accepted directional coverage.
+
+A [solid construction capture](qa-evidence/root-oak-solid-construction-2026-10-01/README.md)
+now renders the same proposed branch/root/crown geometry under four group rotations
+with fixed camera direction and lighting. It makes occlusion explicit for the next
+finishing attempt. It remains an approximate primitive construction aid, not
+production artwork or recovered geometry of the existing painted oak.
