@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {waterRaster,waterContains,waterContours,roundedWaterContour,contourArea,contourContains} from './water-contours.mjs';
 
 export const WATER_LEVEL = 0.032;
 const SHORE_LIFT = 0.004;
@@ -69,7 +70,7 @@ function appendContourShore(buffer, a, b, color) {
     [color, color, waterColorAt(a[0] + nx, a[1] + nz), waterColorAt(b[0] + nx, b[1] + nz)]);
 }
 
-export function buildWaterSurfaceGeometry(definition) {
+function buildChamferedWaterSurfaceGeometry(definition) {
   if (!definition || !Number.isInteger(definition.width) || !Number.isInteger(definition.height)
     || definition.width <= 0 || definition.height <= 0) return null;
 
@@ -151,5 +152,48 @@ export function buildWaterSurfaceGeometry(definition) {
   geometry.userData.waterCellCount = waterCellCount;
   geometry.userData.shorelineEdgeCount = shorelineEdgeCount;
   geometry.userData.sandyShorelineEdgeCount = sandyShorelineEdgeCount;
+  return geometry;
+}
+
+export function buildWaterSurfaceGeometry(definition) {
+  if(new URLSearchParams(globalThis.location?.search??'').get('waterOutline')==='chamfered')return buildChamferedWaterSurfaceGeometry(definition);
+  if(!definition||!Number.isInteger(definition.width)||!Number.isInteger(definition.height)||definition.width<=0||definition.height<=0)return null;
+  const {width,height}=definition,cells=waterRaster(definition),count=cells.reduce((a,b)=>a+b,0);
+  if(!count)return null;
+  const materials=terrainMaterials(definition,width*height),raw=waterContours(definition,cells);
+  const rings=raw.map(edges=>roundedWaterContour(edges)).map(vertices=>({vertices,points:vertices.map(v=>v.point)}));
+  const outer=rings.filter(r=>contourArea(r.points)>0),holes=rings.filter(r=>contourArea(r.points)<0);
+  for(const ring of outer)ring.holes=[];
+  for(const hole of holes) {
+    const parents=outer.filter(r=>contourContains(r.points,hole.points[0])).sort((a,b)=>contourArea(a.points)-contourArea(b.points));
+    if(!parents.length)throw Error('Water island has no containing contour');parents[0].holes.push(hole);
+  }
+  const buffer={positions:[],colors:[],indices:[]};
+  const world=p=>[p[0]-width/2,p[1]-height/2];
+  for(const ring of outer) {
+    const polygon=[ring,...ring.holes],points=polygon.flatMap(r=>r.points),first=buffer.positions.length/3;
+    for(const point of points){const [x,z]=world(point),color=waterColorAt(x,z);buffer.positions.push(x,WATER_LEVEL,z);buffer.colors.push(color.r,color.g,color.b);}
+    const triangles=THREE.ShapeUtils.triangulateShape(ring.points.map(p=>new THREE.Vector2(...p)),ring.holes.map(h=>h.points.map(p=>new THREE.Vector2(...p))));
+    for(const triangle of triangles)buffer.indices.push(...triangle.map(i=>first+i));
+  }
+  for(const ring of rings)for(let i=0;i<ring.vertices.length;i++) {
+    const a=ring.vertices[i],b=ring.vertices[(i+1)%ring.vertices.length];if(!a.edge.shore)continue;
+    const dx=b.point[0]-a.point[0],dz=b.point[1]-a.point[1],length=Math.hypot(dx,dz);if(!length)continue;
+    let band=SHORE_WIDTH,innerA,innerB;
+    do {
+      innerA=[a.point[0]-dz/length*band,a.point[1]+dx/length*band];
+      innerB=[b.point[0]-dz/length*band,b.point[1]+dx/length*band];
+      if(waterContains(cells,width,height,...innerA)&&waterContains(cells,width,height,...innerB))break;
+      band/=2;
+    }while(band>.0001);
+    const [ax,az]=world(a.point),[bx,bz]=world(b.point),[iax,iaz]=world(innerA),[ibx,ibz]=world(innerB),y=WATER_LEVEL+SHORE_LIFT;
+    const color=materials[a.edge.landIndex]==='sand'?SAND_SHORE:COOL_SHORE;
+    appendQuad(buffer,[[ax,y,az],[bx,y,bz],[iax,y,iaz],[ibx,y,ibz]],[color,color,waterColorAt(iax,iaz),waterColorAt(ibx,ibz)]);
+  }
+  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(buffer.positions,3));
+  geometry.setAttribute('color',new THREE.Float32BufferAttribute(buffer.colors,3));geometry.setIndex(buffer.indices);geometry.computeVertexNormals();
+  const edges=raw.flat();geometry.userData={waterCellCount:count,shorelineEdgeCount:edges.filter(e=>e.shore).length,
+    sandyShorelineEdgeCount:edges.filter(e=>e.shore&&materials[e.landIndex]==='sand').length,
+    waterContourCount:outer.length,waterIslandCount:holes.length,waterOutline:'curved-conservative-v1'};
   return geometry;
 }

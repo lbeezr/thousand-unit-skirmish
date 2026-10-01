@@ -1,0 +1,108 @@
+{
+  "records": [
+    {
+      "map": "bellweather-millrace",
+      "waterCellCount": 92,
+      "shorelineEdgeCount": 102,
+      "sandyShorelineEdgeCount": 0,
+      "waterContourCount": 4,
+      "waterIslandCount": 0,
+      "waterOutline": "curved-conservative-v1",
+      "vertices": 1476,
+      "triangles": 880,
+      "sampledTriangleContainment": true,
+      "mapUnchanged": true
+    },
+    {
+      "map": "ellionar-channel-gardens",
+      "waterCellCount": 90,
+      "shorelineEdgeCount": 100,
+      "sandyShorelineEdgeCount": 0,
+      "waterContourCount": 4,
+      "waterIslandCount": 0,
+      "waterOutline": "curved-conservative-v1",
+      "vertices": 1468,
+      "triangles": 876,
+      "sampledTriangleContainment": true,
+      "mapUnchanged": true
+    },
+    {
+      "map": "forked-vale",
+      "waterCellCount": 120,
+      "shorelineEdgeCount": 84,
+      "sandyShorelineEdgeCount": 0,
+      "waterContourCount": 4,
+      "waterIslandCount": 0,
+      "waterOutline": "curved-conservative-v1",
+      "vertices": 908,
+      "triangles": 540,
+      "sampledTriangleContainment": true,
+      "mapUnchanged": true
+    },
+    {
+      "map": "fortified-crossing",
+      "waterCellCount": 120,
+      "shorelineEdgeCount": 84,
+      "sandyShorelineEdgeCount": 0,
+      "waterContourCount": 4,
+      "waterIslandCount": 0,
+      "waterOutline": "curved-conservative-v1",
+      "vertices": 908,
+      "triangles": 540,
+      "sampledTriangleContainment": true,
+      "mapUnchanged": true
+    },
+    {
+      "map": "frontier-160",
+      "waterCellCount": 724,
+      "shorelineEdgeCount": 302,
+      "sandyShorelineEdgeCount": 36,
+      "waterContourCount": 4,
+      "waterIslandCount": 0,
+      "waterOutline": "curved-conservative-v1",
+      "vertices": 4880,
+      "triangles": 2924,
+      "sampledTriangleContainment": true,
+      "mapUnchanged": true
+    },
+    {
+      "map": "sereward-cistern-road",
+      "waterCellCount": 390,
+      "shorelineEdgeCount": 188,
+      "sandyShorelineEdgeCount": 188,
+      "waterContourCount": 4,
+      "waterIslandCount": 0,
+      "waterOutline": "curved-conservative-v1",
+      "vertices": 5100,
+      "triangles": 3052,
+      "sampledTriangleContainment": true,
+      "mapUnchanged": true
+    },
+    {
+      "map": "siltmouths-reed-crossings",
+      "waterCellCount": 166,
+      "shorelineEdgeCount": 194,
+      "sandyShorelineEdgeCount": 0,
+      "waterContourCount": 8,
+      "waterIslandCount": 0,
+      "waterOutline": "curved-conservative-v1",
+      "vertices": 2580,
+      "triangles": 1536,
+      "sampledTriangleContainment": true,
+      "mapUnchanged": true
+    },
+    {
+      "map": "sombral-mere-shore-gardens",
+      "waterCellCount": 400,
+      "shorelineEdgeCount": 196,
+      "sandyShorelineEdgeCount": 0,
+      "waterContourCount": 4,
+      "waterIslandCount": 0,
+      "waterOutline": "curved-conservative-v1",
+      "vertices": 5780,
+      "triangles": 3460,
+      "sampledTriangleContainment": true,
+      "mapUnchanged": true
+    }
+  ]
+}

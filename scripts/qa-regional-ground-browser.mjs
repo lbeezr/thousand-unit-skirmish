@@ -71,8 +71,10 @@ const densePlacementCapture=process.env.RTS_QA_DENSE_PLACEMENT==='1';
 const layoutCapture=process.env.RTS_QA_GROUND_LAYOUT==='1';
 const variantStudy=process.env.RTS_QA_GROUND_VARIANTS==='1';
 const forestStudy=process.env.RTS_QA_FOREST_SPECIES==='1';
+const soilStudy=process.env.RTS_QA_SOIL_STUDY==='1';
 const stoneStudy=process.env.RTS_QA_STONE_STUDY==='1';
 const wetStudy=process.env.RTS_QA_WET_STUDY==='1';
+const waterStudy=process.env.RTS_QA_WATER_CONTOUR==='1';
 const out=process.env.RTS_QA_EVIDENCE || 'docs/qa-evidence/underbough-ground-kit-2026-10-01';
 let cdp;
 try {
@@ -84,19 +86,19 @@ try {
  cdp.on('Network.responseReceived',e=>{if(e.response.status>=400&&e.response.url.includes('/assets/'))errors.push('Asset '+e.response.status+' '+e.response.url)});
  const room=await(await fetch(new URL('/api/rooms',BASE),{method:'POST',headers:{origin:BASE.origin,'content-type':'application/json'},body:'{}'})).json();
  if(!room.roomId)throw new Error('Room creation failed');
- for(const id of ['underbough-rootways','bellweather-millrace']) for(const mode of (forestStudy?['scattered','groves']:variantStudy?['single','mixed']:['legacy','kit'])) {
-  await cdp.call('Page.navigate',{url:BASE.origin+'/?room='+room.roomId+'&regionalGrounds='+(forestStudy||variantStudy||layoutCapture||densePlacementCapture?'kit':mode)+(variantStudy?'&groundVariants='+mode:'')+(forestStudy?'&forestSpecies='+mode:'')});await sleep(4000);
+ for(const id of ['underbough-rootways','bellweather-millrace']) for(const mode of (waterStudy?['chamfered','curved']:forestStudy?['scattered','groves']:variantStudy?['single','mixed']:['legacy','kit'])) {
+  await cdp.call('Page.navigate',{url:BASE.origin+'/?room='+room.roomId+'&regionalGrounds='+(waterStudy||forestStudy||variantStudy||layoutCapture||densePlacementCapture?'kit':mode)+(variantStudy?'&groundVariants='+mode:'')+(forestStudy?'&forestSpecies='+mode:'')+(waterStudy?'&waterOutline='+mode:'')});await sleep(4000);
   for(let i=0;i<100;i++){if(await cdp.evaluate('document.documentElement.dataset.boot')==='ready')break;await sleep(200)}
   if(await cdp.evaluate('document.documentElement.dataset.boot')!=='ready')throw new Error('Browser boot failed');
   const map=JSON.parse(await readFile('maps/'+id+'.json','utf8'));
   if(densePlacementCapture&&id==='underbough-rootways'&&mode==='legacy')map.terrainPatches=map.terrainPatches.filter(p=>p.material!=='long-grass');
   if(layoutCapture&&id==='underbough-rootways'&&mode==='legacy')map.terrainBase='forest-floor';
-  if(stoneStudy||wetStudy) {
+  if(stoneStudy||wetStudy||soilStudy) {
    const paints=Array(map.width*map.height).fill(null);
    for(const p of map.terrainPatches)for(let r=p.row;r<p.row+p.height;r++)for(let c=p.column;c<p.column+p.width;c++)paints[r*map.width+c]=p.material;
    for(let r=26;r<34;r++)for(let c=14+Math.abs(30-r);c<26-Math.abs(30-r);c++){
     if(map.obstacles.some(o=>c>=o.column&&c<o.column+o.width&&r>=o.row&&r<o.row+o.height))throw Error('Material study must remain on exposed open ground');
-    paints[r*map.width+c]=wetStudy?'tidal-mud':'scree';
+    paints[r*map.width+c]=soilStudy?'forest-floor':wetStudy?'tidal-mud':'scree';
    }
    map.terrainPatches=[];
    for(let r=0;r<map.height;r++)for(let c=0;c<map.width;){
@@ -110,7 +112,7 @@ try {
     if(map.obstacles.some(o=>r>=o.row&&r<o.row+o.height&&column<o.column+o.width&&column+width>o.column))throw Error('Water-margin study overlaps existing obstacles');
     map.obstacles.push({column,row:r,width,height:1,material:'water'});
    }
-   if(mode==='kit')await writeFile(out+'/'+id+(wetStudy?'-wet-study.json':'-stone-study.json'),JSON.stringify(map,null,2)+'\n');
+   if(mode==='kit'||mode==='curved'||mode==='mixed')await writeFile(out+'/'+id+(soilStudy?'-soil-study.json':wetStudy?'-wet-study.json':'-stone-study.json'),JSON.stringify(map,null,2)+'\n');
   }
   map.id='landscape-review';map.name=id;map.fogOfWar=false;
   const file=path.join(profile,'study.json');await writeFile(file,JSON.stringify(map));
@@ -131,7 +133,7 @@ try {
   const shot=await cdp.call('Page.captureScreenshot',{format:'png'});await writeFile(out+'/'+id+'-'+mode+'-strategic.png',Buffer.from(shot.data,'base64'));
   await cdp.evaluate(`(()=>{const c=document.querySelector('#viewport canvas');const r=c.getBoundingClientRect();c.dispatchEvent(new WheelEvent('wheel',{deltaY:-700,clientX:r.x+r.width/2,clientY:r.y+r.height/2,cancelable:true}));document.querySelector('#camera-home-base').click()})()`);
   await sleep(400);const ordinary=await cdp.call('Page.captureScreenshot',{format:'png'});await writeFile(out+'/'+id+'-'+mode+'-ordinary.png',Buffer.from(ordinary.data,'base64'));
-  if(id==='underbough-rootways'&&(mode==='kit'||mode==='mixed'||mode==='groves')) {
+  if(id==='underbough-rootways'&&(mode==='kit'||mode==='mixed'||mode==='groves'||mode==='curved')) {
    const proof=await cdp.evaluate(`(async()=>{
     const {createGroundSurfaces,environmentTheme,addObstacleEnvironmentSprites}=await import('/src/environment-art.mjs');
     const map=${JSON.stringify(map)},original=JSON.stringify(map),current=location.href;
@@ -161,6 +163,7 @@ try {
     if(map.terrainPatches.some(p=>p.material==='long-grass'))required.push('underbough-dense-growth-v2.webp');
     if(${stoneStudy})required.push('underbough-shaded-stone-v2.webp');
     if(${wetStudy})required.push('underbough-wet-bank-v2.webp');
+    if(${variantStudy})required.push('underbough-clearing-grass-02-v2.webp','underbough-root-soil-02-v2.webp');
     if(!required.every(file=>regional.includes(file)))throw new Error('Regional ground roles did not load their kit');
     if(control.some(file=>file.startsWith('underbough-'))||!control.includes('meadow.webp')||!control.includes('dirt.webp'))throw new Error('Ground cache check failed: '+JSON.stringify({regional,control}));
     if(legacy.some(file=>file.startsWith('underbough-'))||!legacy.includes('forest-floor.webp'))throw new Error('Legacy comparison failed');
@@ -171,6 +174,6 @@ try {
   }
   console.log('Captured '+id+' '+mode);
  }
- await writeFile(out+'/capture-report.json',JSON.stringify({source:wetStudy?'disposable irregular wet-soil paint on copied maps; global versus regional ground kit; Bellweather and Siltmouths controls':stoneStudy?'disposable irregular exposed-stone paint on copied maps; global versus regional ground kit; Bellweather control':forestStudy?'same authored map, ground kit and four tree forms; scattered selection versus dominant groves; Bellweather control':variantStudy?'same authored maps and regional kit; single versus two clearing sources; Bellweather control':densePlacementCapture?'same map and regional kit; original clearings versus authored dense woodland margins; Bellweather control':layoutCapture?'same authored map and kit; previous forest-floor base versus clearing grass; Bellweather control':'regional ecology kit working branch; same map, renderer and cameras, regionalGrounds=legacy comparison',fog:'disabled only in disposable capture copies',errors},null,2)+'\n');
+ await writeFile(out+'/capture-report.json',JSON.stringify({source:soilStudy?'disposable exposed forest-floor paint on copied maps; paired clearing/soil sources versus single; Bellweather control':waterStudy?'same disposable shoreline maps and regional kits; per-cell chamfers versus connected conservative curves':wetStudy?'disposable irregular wet-soil paint on copied maps; global versus regional ground kit; Bellweather and Siltmouths controls':stoneStudy?'disposable irregular exposed-stone paint on copied maps; global versus regional ground kit; Bellweather control':forestStudy?'same authored map, ground kit and four tree forms; scattered selection versus dominant groves; Bellweather control':variantStudy?'same authored maps and regional kit; single versus paired clearing and woodland soil sources; Bellweather control':densePlacementCapture?'same map and regional kit; original clearings versus authored dense woodland margins; Bellweather control':layoutCapture?'same authored map and kit; previous forest-floor base versus clearing grass; Bellweather control':'regional ecology kit working branch; same map, renderer and cameras, regionalGrounds=legacy comparison',fog:'disabled only in disposable capture copies',errors},null,2)+'\n');
  if(errors.length)throw new Error(errors.join('\n'));
 }finally{cdp?.close();chrome.kill('SIGTERM');}

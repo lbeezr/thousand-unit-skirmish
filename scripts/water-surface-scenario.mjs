@@ -17,8 +17,9 @@ assert.equal(water.userData.shorelineEdgeCount, 6, 'the connected 2-cell stream 
 assert.equal(water.userData.sandyShorelineEdgeCount, 1, 'sand-adjacent shoreline should receive the warm shallows treatment');
 assert.ok(water.getIndex().count > (2 + 6) * 6, 'beveled water polygons and contour shore bands share one geometry');
 const positions = water.getAttribute('position');
-assert.ok(Array.from({ length: positions.count }, (_, i) => positions.getX(i)).some(x => Math.abs(x + 0.55) < 1e-5),
-  'exposed water corners are clipped to a sub-cell diagonal rather than a square');
+assert.equal(water.userData.waterOutline,'curved-conservative-v1');
+assert.ok(Array.from({ length: positions.count }, (_, i) => positions.getX(i)).some(x => Math.abs(x*10-Math.round(x*10))>1e-3),
+  'connected outlines include sampled curves between cell-grid coordinates');
 for (let i = 0; i < positions.count; i++) {
   assert.ok(positions.getX(i) >= -1 && positions.getX(i) <= 1);
   assert.ok(positions.getZ(i) >= -1 && positions.getZ(i) <= 0, 'shore geometry stays inside the blocked-water envelope');
