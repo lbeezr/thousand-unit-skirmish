@@ -3,7 +3,7 @@
   "packId": "environment.underbough-cohesive-kit-v2",
   "maturity": "source-study",
   "region": "underbough",
-  "status": "three regional grounds, Root Oak and Moss Hornbeam four-state runtime locally reviewed; Plum remains intact source; directional views outstanding",
+  "status": "Underbough three regional grounds and four tree forms have fixed-view four-state local runtime; rotated views and other-zone kits outstanding",
   "source": "project-owned built-in ImageGen, using selected Underbough ecology key and existing copperleaf sprite references",
   "directionalMethod": "authored painted views; not measured 3D render captures",
   "targetTreeForms": [
@@ -156,7 +156,7 @@
         1274,
         1219
       ],
-      "status": "intact-source-awaiting-registration",
+      "status": "fixed-view-runtime-local-review-passed",
       "directionDegrees": 0,
       "harvestState": "full"
     },
@@ -232,6 +232,45 @@
       "dimensionsPx": [
         1254,
         1254
+      ],
+      "mode": "RGBA",
+      "status": "fixed-view-runtime-local-review-passed",
+      "directionDegrees": 0,
+      "harvestState": "depleted"
+    },
+    {
+      "path": "old-plum-worked-000.png",
+      "sha256": "8c49ec1b91a3f8bbfb44236433d21b2aef4f1dd1310031c66ad4e7d44ed5ff92",
+      "sizeBytes": 1837753,
+      "dimensionsPx": [
+        1290,
+        1219
+      ],
+      "mode": "RGBA",
+      "status": "fixed-view-runtime-local-review-passed",
+      "directionDegrees": 0,
+      "harvestState": "worked"
+    },
+    {
+      "path": "old-plum-low-000.png",
+      "sha256": "ff0d314bcc4cc54d55302730f01a38824a709e77fc6b2ab51dbefae3a57ff9ea",
+      "sizeBytes": 1276155,
+      "dimensionsPx": [
+        1290,
+        1219
+      ],
+      "mode": "RGBA",
+      "status": "fixed-view-runtime-local-review-passed",
+      "directionDegrees": 0,
+      "harvestState": "low"
+    },
+    {
+      "path": "old-plum-depleted-000.png",
+      "sha256": "a2ce747bbf66e14262b7903a5c6726c7a094bdeabcafa4091576e0404f2593a2",
+      "sizeBytes": 537899,
+      "dimensionsPx": [
+        1290,
+        1219
       ],
       "mode": "RGBA",
       "status": "fixed-view-runtime-local-review-passed",

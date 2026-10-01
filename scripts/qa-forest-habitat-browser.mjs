@@ -94,6 +94,10 @@ try {
   if(mode==='graduated') {
    await cdp.evaluate(`(()=>{const c=document.querySelector('#viewport canvas');const r=c.getBoundingClientRect();c.dispatchEvent(new WheelEvent('wheel',{deltaY:-700,clientX:r.x+r.width/2,clientY:r.y+r.height/2,cancelable:true}));document.querySelector('#camera-home-base').click()})()`);
    await sleep(400);const ordinary=await cdp.call('Page.captureScreenshot',{format:'png'});await writeFile(out+'/'+id+'-ordinary.png',Buffer.from(ordinary.data,'base64'));
+   if(process.env.RTS_QA_FOREST_CLOSEUP==='1'){
+    await cdp.evaluate(`(()=>{const c=document.querySelector('#viewport canvas');const r=c.getBoundingClientRect();c.dispatchEvent(new WheelEvent('wheel',{deltaY:-1400,clientX:r.x+r.width*.62,clientY:r.y+r.height*.4,cancelable:true}))})()`);
+    await sleep(500);const close=await cdp.call('Page.captureScreenshot',{format:'png'});await writeFile(out+'/'+id+'-closeup.png',Buffer.from(close.data,'base64'));
+   }
    const proof=await cdp.evaluate(`(async()=>{
     const {addObstacleEnvironmentSprites,setForestSpriteStock}=await import('/src/environment-art.mjs');
     const map=${JSON.stringify(map)},objects=[];

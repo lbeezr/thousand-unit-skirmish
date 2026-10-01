@@ -212,3 +212,20 @@ all existing regional families, cache isolation and unmutated render input.
 Normal and strategic captures include Bellweather as an unchanged control.
 The saved `legacy` layout images mean previous soil assignment using the same
 kit; they do not mean global legacy textures in this capture mode.
+
+### Four distinct Underbough tree forms — 1 October 2026 UTC
+
+[Current four-tree evidence](qa-evidence/underbough-four-trees-2026-10-01/underbough-rootways-renderer-proof.json)
+records Root Oak 314, Hornbeam 230, Old Plum 207, Copperleaf 192 and bramble 83,
+with all 1026 original wood cells and root positions preserved through harvest
+state selection and reset. Wider and closer captures use the clearing grass
+and shaded root-soil treatment. Each form has full/worked/low/depleted art.
+These four states still supply one fixed painted view, not directional coverage.
+Additional shrubs, texture roles/variants, other zones and true perspectives
+remain unfinished.
+
+[Live worker proof for all three new families](qa-evidence/underbough-family-harvest-2026-10-01/summary.json)
+uses renderer-selected visible targets and verifies each family before the gather
+order. Root Oak, Hornbeam and Plum reach worked, low, depleted and reset, with
+no console or asset errors. This extends the initial Root Oak observation to
+the current four-tree distribution.
