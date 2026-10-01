@@ -1,0 +1,21 @@
+{
+  "server.mjs": {
+    "byteIdentical": true,
+    "sha256": "9195f49cb7d4437680ac27f190a36690eb9d4e1931a55b3a1bd4866b8a48e72a"
+  },
+  "src/environment-art.mjs": {
+    "byteIdentical": true,
+    "sha256": "72b597640dee7e18f3ceb4cda1a3a5b9d2dcd1aecf71026e97c9e1807102e2ba"
+  },
+  "src/podvine-view-pack.mjs": {
+    "byteIdentical": true,
+    "sha256": "a8c5e8ece615eb486e6d49ab13cf64e3504abb7ae7d010b9d322bb3792c890e1"
+  },
+  "assets/environment/vesperra-podvine-views-v1/views-atlas.webp": {
+    "byteIdentical": true,
+    "sha256": "425c695cd5179a76e523a9d1ea8e26ce7319af5b0684b81d0f14a832b4df4db6"
+  },
+  "sourceRevision": "e0de5bf05842da7f744c94cd64101644d32381e3",
+  "sourceDirty": true,
+  "releaseDigest": "sha256:2f6184177322b435aed5da7603ce8870ac04fff1ca269307ae76be029304b11d"
+}

@@ -15,6 +15,7 @@ import { shorePlantPositions } from './shore-vegetation.mjs';
 import { meadowPlantGroups, drylandPlantGroups, snowPlantGroups, ridgePlantGroups, lunarPlantGroups, marshPlantGroups, junglePlantGroups } from './meadow-vegetation.mjs';
 import { gardenPlantGroups } from './garden-vegetation.mjs';
 import { assertPlantDimensions, PLANT_ASSETS } from './environment-plant-assets.mjs';
+import { PODVINE_VIEW_PACK } from './podvine-view-pack.mjs';
 
 const meshyResourcesEnabled = new URLSearchParams(globalThis.location?.search ?? '').get('meshyResources') !== '0';
 
@@ -662,7 +663,39 @@ export function createEnvironmentSpriteInstances(name, width, height, positions)
   if (positions.length === 0) return null;
   const plantSpec = assertPlantDimensions(name, width, height);
   const geometry = spriteGeometry(width, height, name);
-  const material = spriteMaterial(name);
+  const podvineViews = name === 'vesperra-spiral-podvine'
+    && new URLSearchParams(globalThis.location?.search ?? '').get('plantViews') !== 'legacy';
+  const material = podvineViews ? new THREE.MeshBasicMaterial({side: THREE.DoubleSide,
+    transparent: true, alphaTest: 0.08, depthWrite: true, toneMapped: false}) : spriteMaterial(name);
+  let authoredPlantViews = null;
+  if (podvineViews) {
+    const pack = PODVINE_VIEW_PACK;
+    sprites['podvine-views'] ||= loadSprite(pack.url);
+    material.map = sprites['podvine-views'];
+    const rects = new THREE.InstancedBufferAttribute(new Float32Array(positions.length * 4), 4);
+    const viewIndices = new Uint8Array(positions.length);
+    for (let i = 0; i < positions.length; i++) {
+      const p = positions[i], view = Math.floor(variation((p.cell ?? p.x * 71 + p.z * 137) + 1073) * 4);
+      viewIndices[i] = view;
+      const [x,y,w,h] = pack.rectsPx[view], [pageW,pageH] = pack.atlasSizePx;
+      rects.setXYZW(i,(x+.5)/pageW,1-(y+h-.5)/pageH,(w-1)/pageW,(h-1)/pageH);
+    }
+    geometry.setAttribute('plantViewRect',rects);
+    material.onBeforeCompile = shader => {
+      shader.vertexShader = 'attribute vec4 plantViewRect;\n' + shader.vertexShader;
+      shader.vertexShader = shader.vertexShader.replace('#include <uv_vertex>',
+        '#include <uv_vertex>\nvMapUv = plantViewRect.xy + vMapUv * plantViewRect.zw;');
+      shader.uniforms.plantViewAtlasSize = {value:new THREE.Vector2(...pack.atlasSizePx)};
+      shader.fragmentShader = 'uniform vec2 plantViewAtlasSize;\n' + shader.fragmentShader;
+      const mapChunk = THREE.ShaderChunk.map_fragment.replace('texture2D( map, vMapUv )',
+        `textureLod(map,vMapUv,min(6.0,max(0.0,0.5*log2(max(
+          dot(dFdx(vMapUv)*plantViewAtlasSize,dFdx(vMapUv)*plantViewAtlasSize),
+          dot(dFdy(vMapUv)*plantViewAtlasSize,dFdy(vMapUv)*plantViewAtlasSize))))))`);
+      shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>',mapChunk);
+    };
+    material.customProgramCacheKey = () => 'vaelora-podvine-authored-views-v1';
+    authoredPlantViews = {viewIndices,rects,frameIds:['front','right','rear','left'],measured3DCapture:false};
+  }
   const family = meshyResourcesEnabled && /^(oak|berries)-full$/.exec(name)?.[1];
   if (family) {
     const atlasName = `${family}-direction-atlas`;
@@ -685,6 +718,7 @@ export function createEnvironmentSpriteInstances(name, width, height, positions)
   }
   const mesh = new THREE.InstancedMesh(geometry, material, positions.length);
   if (family) mesh.userData.resourceDirections = {family, rects: geometry.attributes.resourceViewRect};
+  if (authoredPlantViews) mesh.userData.authoredPlantViews = authoredPlantViews;
   for (let index = 0; index < positions.length; index++) {
     const point = positions[index];
     setEnvironmentSpriteInstance(mesh, index, point.x, point.z,
@@ -716,6 +750,8 @@ function createWaterPlantInstances(name, width, depth, positions) {
 }
 
 export function setEnvironmentSpriteInstance(mesh, index, x, z, scale, flip = false, yaw = 0) {
+  // Authored views supply the turn; retain lighting and root registration on reset.
+  if (mesh.userData.authoredPlantViews) { flip = false; yaw = 0; }
   instanceDummy.position.set(x, groundHeight(x,z), z);
   instanceDummy.quaternion.copy(cameraFacing);
   if (yaw) {

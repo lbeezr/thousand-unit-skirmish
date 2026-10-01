@@ -536,3 +536,20 @@ control, without browser errors. The new served WebP matches its recorded hash;
 existing Docker wildcard packaging includes it. This completes two source
 variants for the clearing role only; other role variants and regional kits remain
 unfinished.
+
+### First authored understory view pack · 1 October 2026
+
+Vesperra's [pod-vine view pack](../assets/environment/vesperra-podvine-views-v1/README.md)
+provides front/right/rear/left drawings from one common source sheet. Side
+foreshortening and changed rear pod/stem surfaces distinguish the views.
+These are approximate authored interpretations, not certified 3D turntable
+captures. All four use the same export scale and registered world card; root
+contact is provisionally aligned with silhouette proxies.
+
+The instance loader selects a stable cell-based frame and suppresses mirroring
+and billboard yaw for this plant. Woodland stock clearing/reset and independent
+margin/foundation restoration retain that frame. `plantViews=legacy` restores
+the previous single source. [Local proof](qa-evidence/vaelora-podvine-authored-views-2026-10-01/README.md)
+checks the four frames and release bytes. This first decorative pack does not
+close the canopy directional deficit, add free-camera remapping, or provide
+pod-vine harvesting states.
