@@ -250,3 +250,16 @@ instance-matrix restoration after depletion/reset. The fixture loads the real
 renderer and assets in Chrome and saves its rendered grove. This is renderer
 integration evidence; it does not prove a full-match worker observation or
 regional painted-tree directional coverage. Berry headings remain source-only.
+
+### Resource-node heading selection — 1 October 2026 UTC
+
+Full berry and oak resource-node instances now select actual model headings
+from their world positions. A per-instance atlas rectangle preserves existing
+slot indices and stage updates. Harvest states still use their existing fixed
+painted views; intact directional coverage does not claim rotated harvest art.
+The renderer preserves its directional atlas when asynchronous lifecycle art
+finishes loading. [Berry renderer evidence](qa-evidence/resource-node-directions-2026-10-01/renderer-proof.json)
+records 32 instances spanning all eight headings, exact depletion/reset matrix
+restoration and atlas survival after real lifecycle loading. A Chrome capture
+checks the compiled instanced shader. Full-match worker and staging observations
+remain separate unfinished evidence.

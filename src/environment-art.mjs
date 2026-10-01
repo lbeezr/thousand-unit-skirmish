@@ -172,7 +172,7 @@ function registerTextureMaterial(registry, key, material) {
 function updateSpriteTexture(name, texture) {
   sprites[name] = texture;
   for (const material of spriteMaterials.get(name) || []) {
-    material.map = texture;
+    material.map = material.userData.resourceDirectionTexture || texture;
     material.needsUpdate = true;
   }
 }
@@ -555,9 +555,30 @@ export function updateConstructionGroundInstances(mesh, positions) {
 export function createEnvironmentSpriteInstances(name, width, height, positions) {
   if (positions.length === 0) return null;
   const plantSpec = assertPlantDimensions(name, width, height);
-  const mesh = new THREE.InstancedMesh(
-    spriteGeometry(width, height, name), spriteMaterial(name), positions.length,
-  );
+  const geometry = spriteGeometry(width, height, name);
+  const material = spriteMaterial(name);
+  const family = meshyResourcesEnabled && /^(oak|berries)-full$/.exec(name)?.[1];
+  if (family) {
+    const atlasName = `${family}-direction-atlas`;
+    sprites[atlasName] ||= loadSprite(`./assets/environment/frontier-meshy-fixed-camera-v2/${family}/${family}-atlas.webp`);
+    material.map = sprites[atlasName];
+    material.userData.resourceDirectionTexture = material.map;
+    const rectangles = new THREE.InstancedBufferAttribute(new Float32Array(positions.length * 4), 4);
+    for (let i = 0; i < positions.length; i++) {
+      const point = positions[i];
+      const heading = Math.floor(variation(point.x * 71 + point.z * 137 + 83) * 8);
+      rectangles.setXYZW(i, (heading % 4) / 4, 1 - (Math.floor(heading / 4) + 1) / 2, 1 / 4, 1 / 2);
+    }
+    geometry.setAttribute('resourceViewRect', rectangles);
+    material.onBeforeCompile = shader => {
+      shader.vertexShader = 'attribute vec4 resourceViewRect;\n' + shader.vertexShader;
+      shader.vertexShader = shader.vertexShader.replace('#include <uv_vertex>',
+        '#include <uv_vertex>\n#ifdef USE_MAP\nvMapUv = vMapUv * resourceViewRect.zw + resourceViewRect.xy;\n#endif');
+    };
+    material.customProgramCacheKey = () => 'resource-model-directions-v1';
+  }
+  const mesh = new THREE.InstancedMesh(geometry, material, positions.length);
+  if (family) mesh.userData.resourceDirections = {family, rects: geometry.attributes.resourceViewRect};
   for (let index = 0; index < positions.length; index++) {
     const point = positions[index];
     setEnvironmentSpriteInstance(mesh, index, point.x, point.z,

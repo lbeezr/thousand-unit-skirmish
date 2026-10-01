@@ -240,6 +240,14 @@ try {
         createHash('sha256').update(await readFile(path.join(sourceRoot, asset))).digest('hex'), asset);
     }
   }
+  for (const family of ['oak', 'berries']) {
+    const asset = `assets/environment/frontier-meshy-fixed-camera-v2/${family}/${family}-atlas.webp`;
+    const response = await fetch(`${base}/${asset}`, { headers: { authorization } });
+    assert.equal(response.status, 200, asset);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    assert.equal(createHash('sha256').update(bytes).digest('hex'),
+      createHash('sha256').update(await readFile(path.join(sourceRoot, asset))).digest('hex'), asset);
+  }
   for (const [role, version, atlasName = role] of [
     ['worker', 'v1'], ['worker', 'v2'], ['worker', 'v3'],
     ['infantry', 'v1'], ['infantry', 'v2'], ['archer', 'v1'],
