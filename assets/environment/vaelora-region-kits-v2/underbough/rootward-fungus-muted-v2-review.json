@@ -1,0 +1,18 @@
+{
+  "sourceOutput": "exec-410c6dee-3268-45e4-bd8b-5847fe73ee29.png",
+  "sha256": "47df4ea799f336f15a73e9f2e212d5507a1780dada9d7c05e08bec29f8bce9e9",
+  "canvas": [
+    1619,
+    971
+  ],
+  "alpha8Bounds": [
+    137,
+    70,
+    1482,
+    891
+  ],
+  "rejectedFirstOutput": "exec-e304177d-21e5-4c83-8b90-58e45ffc5d86.png",
+  "rejection": "alpha8 touches every canvas edge",
+  "reference": "frontier-v1/underbough-rootward-fungus.webp",
+  "review": "Quieter brown/ochre caps inspected. Second framing edit retains empty transparent gutters. Exact geometry registration is not proven. Source candidate only, no runtime binding or new rotation."
+}
