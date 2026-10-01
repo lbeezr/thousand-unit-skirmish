@@ -71,6 +71,7 @@ const densePlacementCapture=process.env.RTS_QA_DENSE_PLACEMENT==='1';
 const layoutCapture=process.env.RTS_QA_GROUND_LAYOUT==='1';
 const variantStudy=process.env.RTS_QA_GROUND_VARIANTS==='1';
 const forestStudy=process.env.RTS_QA_FOREST_SPECIES==='1';
+const stoneStudy=process.env.RTS_QA_STONE_STUDY==='1';
 const out=process.env.RTS_QA_EVIDENCE || 'docs/qa-evidence/underbough-ground-kit-2026-10-01';
 let cdp;
 try {
@@ -89,13 +90,37 @@ try {
   const map=JSON.parse(await readFile('maps/'+id+'.json','utf8'));
   if(densePlacementCapture&&id==='underbough-rootways'&&mode==='legacy')map.terrainPatches=map.terrainPatches.filter(p=>p.material!=='long-grass');
   if(layoutCapture&&id==='underbough-rootways'&&mode==='legacy')map.terrainBase='forest-floor';
+  if(stoneStudy) {
+   const paints=Array(map.width*map.height).fill(null);
+   for(const p of map.terrainPatches)for(let r=p.row;r<p.row+p.height;r++)for(let c=p.column;c<p.column+p.width;c++)paints[r*map.width+c]=p.material;
+   for(let r=26;r<34;r++)for(let c=14+Math.abs(30-r);c<26-Math.abs(30-r);c++){
+    if(map.obstacles.some(o=>c>=o.column&&c<o.column+o.width&&r>=o.row&&r<o.row+o.height))throw Error('Stone study must remain on exposed open ground');
+    paints[r*map.width+c]='scree';
+   }
+   map.terrainPatches=[];
+   for(let r=0;r<map.height;r++)for(let c=0;c<map.width;){
+    const material=paints[r*map.width+c];let end=c+1;
+    while(end<map.width&&paints[r*map.width+end]===material)end++;
+    if(material)map.terrainPatches.push({column:c,row:r,width:end-c,height:1,material});
+    c=end;
+   }
+   if(mode==='kit')await writeFile(out+'/'+id+'-stone-study.json',JSON.stringify(map,null,2)+'\n');
+  }
   map.id='landscape-review';map.name=id;map.fogOfWar=false;
   const file=path.join(profile,'study.json');await writeFile(file,JSON.stringify(map));
   await cdp.evaluate('document.querySelector("#map-studio-open").click()');
   const doc=await cdp.call('DOM.getDocument');const input=await cdp.call('DOM.querySelector',{nodeId:doc.root.nodeId,selector:'#studio-import-file'});
   await cdp.call('DOM.setFileInputFiles',{nodeId:input.nodeId,files:[file]});await sleep(400);
-  await cdp.evaluate('document.querySelector("#studio-publish").click()');await sleep(1800);
-  if(await cdp.evaluate('document.querySelector("#map-label-title")?.textContent')!==id)throw new Error('Map import failed');
+  await cdp.evaluate('document.querySelector("#studio-publish").click()');
+  for(let attempt=0;attempt<100;attempt++){
+   if(await cdp.evaluate('document.querySelector("#map-label-title")?.textContent')===id)break;
+   await sleep(100);
+  }
+  if(await cdp.evaluate('document.querySelector("#map-label-title")?.textContent')!==id){
+   const failure=await cdp.evaluate('({title:document.querySelector("#map-label-title")?.textContent,studioMessage:document.querySelector("#studio-message")?.textContent})');
+   await writeFile(out+'/import-failure.json',JSON.stringify({id,mode,...failure},null,2)+'\n');
+   throw new Error('Map import failed: '+JSON.stringify(failure));
+  }
   await cdp.evaluate('document.querySelector("#camera-fit-map").click()');await sleep(600);
   const shot=await cdp.call('Page.captureScreenshot',{format:'png'});await writeFile(out+'/'+id+'-'+mode+'-strategic.png',Buffer.from(shot.data,'base64'));
   await cdp.evaluate(`(()=>{const c=document.querySelector('#viewport canvas');const r=c.getBoundingClientRect();c.dispatchEvent(new WheelEvent('wheel',{deltaY:-700,clientX:r.x+r.width/2,clientY:r.y+r.height/2,cancelable:true}));document.querySelector('#camera-home-base').click()})()`);
@@ -126,6 +151,7 @@ try {
     const legacy=await collect(map);history.replaceState(null,'',current);
     const required=['underbough-clearing-grass-v2.webp','underbough-root-soil-v2.webp','underbough-worn-dirt-v2.webp'];
     if(map.terrainPatches.some(p=>p.material==='long-grass'))required.push('underbough-dense-growth-v2.webp');
+    if(${stoneStudy})required.push('underbough-shaded-stone-v2.webp');
     if(!required.every(file=>regional.includes(file)))throw new Error('Regional ground roles did not load their kit');
     if(control.some(file=>file.startsWith('underbough-'))||!control.includes('meadow.webp')||!control.includes('dirt.webp'))throw new Error('Ground cache check failed: '+JSON.stringify({regional,control}));
     if(legacy.some(file=>file.startsWith('underbough-'))||!legacy.includes('forest-floor.webp'))throw new Error('Legacy comparison failed');
@@ -136,6 +162,6 @@ try {
   }
   console.log('Captured '+id+' '+mode);
  }
- await writeFile(out+'/capture-report.json',JSON.stringify({source:forestStudy?'same authored map, ground kit and four tree forms; scattered selection versus dominant groves; Bellweather control':variantStudy?'same authored maps and regional kit; single versus two clearing sources; Bellweather control':densePlacementCapture?'same map and regional kit; original clearings versus authored dense woodland margins; Bellweather control':layoutCapture?'same authored map and kit; previous forest-floor base versus clearing grass; Bellweather control':'regional ecology kit working branch; same map, renderer and cameras, regionalGrounds=legacy comparison',fog:'disabled only in disposable capture copies',errors},null,2)+'\n');
+ await writeFile(out+'/capture-report.json',JSON.stringify({source:stoneStudy?'disposable irregular exposed-stone paint on copied maps; global versus regional ground kit; Bellweather control':forestStudy?'same authored map, ground kit and four tree forms; scattered selection versus dominant groves; Bellweather control':variantStudy?'same authored maps and regional kit; single versus two clearing sources; Bellweather control':densePlacementCapture?'same map and regional kit; original clearings versus authored dense woodland margins; Bellweather control':layoutCapture?'same authored map and kit; previous forest-floor base versus clearing grass; Bellweather control':'regional ecology kit working branch; same map, renderer and cameras, regionalGrounds=legacy comparison',fog:'disabled only in disposable capture copies',errors},null,2)+'\n');
  if(errors.length)throw new Error(errors.join('\n'));
 }finally{cdp?.close();chrome.kill('SIGTERM');}
