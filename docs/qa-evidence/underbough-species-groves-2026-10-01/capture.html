@@ -1,0 +1,33 @@
+<!doctype html><html><base href="/"><script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js"}}</script><body style="margin:0"><script type="module">
+import * as THREE from 'three';
+import {createGroundSurfaces,addObstacleEnvironmentSprites,setForestSpriteStock} from '/src/environment-art.mjs';
+const map=await(await fetch('/maps/underbough-rootways.json')).json(),original=JSON.stringify(map),proof={map:map.id,seed:map.terrainSeed,frames:[]};
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(1000,700);document.body.append(renderer.domElement);
+const camera=new THREE.OrthographicCamera(-60,60,42,-42,.1,300);camera.position.set(78,112,78);camera.lookAt(0,0,0);
+let priorRoots;
+async function save(name,data){const r=await fetch('/__save/'+name,{method:'POST',body:data});if(!r.ok)throw Error('Save '+r.status);}
+for(const mode of ['scattered','groves']){
+ history.replaceState(null,'','?forestSpecies='+mode);
+ const scene=new THREE.Scene();scene.background=new THREE.Color('#33382b');const meshes=createGroundSurfaces(map);meshes.forEach(m=>scene.add(m));
+ const slots=addObstacleEnvironmentSprites(map,map.width/2,map.height/2,m=>{scene.add(m);meshes.push(m)});
+ const counts={},roots={},families=new Map();let same=0,pairs=0;
+ for(const [cell,slot] of slots){counts[slot.family]=(counts[slot.family]||0)+1;roots[cell]=[slot.x,slot.z];families.set(slot.family,slot);for(const j of [cell+1,cell+map.width])if(slots.has(j)){pairs++;same+=slots.get(j).family===slot.family;}}
+ if(mode==='scattered')priorRoots=JSON.stringify(roots);else if(priorRoots!==JSON.stringify(roots))throw Error('Composition moved harvest roots');
+ if(slots.size!==1026||families.size!==5)throw Error('Missing forest cells or species');
+ for(const slot of families.values()){
+  const before=Array.from(slot.mesh.instanceMatrix.array.slice(slot.index*16,slot.index*16+16));
+  for(const stock of [3.9,1.9,0,6])setForestSpriteStock(slot,stock);
+  const after=Array.from(slot.mesh.instanceMatrix.array.slice(slot.index*16,slot.index*16+16));
+  if(before.some((v,i)=>v!==after[i]))throw Error('Reset moved representative root');
+ }
+ const textures=[...new Set(meshes.flatMap(m=>[m.material.map,m.material.userData.groundVariantTexture]).filter(Boolean))],deadline=Date.now()+30000;
+ while(textures.some(t=>!t.image?.complete||!t.image.naturalWidth)){if(Date.now()>deadline)throw Error('Missing scene image');await new Promise(r=>setTimeout(r,50));}
+ renderer.render(scene,camera);if(renderer.info.programs.some(p=>p.diagnostics?.runnable===false))throw Error('Shader failed');
+ proof.frames.push({mode,counts,slots:slots.size,neighborAgreement:same/pairs,textureFiles:textures.map(t=>t.image.src.split('/').at(-1).split('?')[0])});
+ await save(mode+'.png',await new Promise(r=>renderer.domElement.toBlob(r)));
+ for(const m of meshes){m.geometry.dispose();m.material.dispose();for(const t of m.userData.ownedGroundTextures||[])t.dispose();}
+}
+if(JSON.stringify(map)!==original)throw Error('Scene mutated map');
+proof.harvestRootsUnchanged=true;proof.representativeStateReset=true;proof.mapUnchanged=true;
+await save('proof.json',JSON.stringify(proof,null,2));window.__renderDone=true;
+</script></body></html>

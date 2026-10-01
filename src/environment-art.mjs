@@ -9,6 +9,7 @@ import { applyTerrainTextureSampling } from './terrain-texture-sampling.mjs';
 import { buildTerrainBlendMasks, buildForestGroundMask } from './terrain-blend.mjs';
 import { buildWaterSurfaceGeometry, WATER_LEVEL } from './water-surface-geometry.mjs';
 import { forestHabitatDepth, forestCanopyFactor } from './forest-habitat.mjs';
+import { underboughForestSpecies } from './forest-composition.mjs';
 import { regionalGroundTextureName, regionalGroundVariantTextureName, regionalGroundColor } from './regional-ground-kits.mjs';
 import { shorePlantPositions } from './shore-vegetation.mjs';
 import { meadowPlantGroups, drylandPlantGroups, snowPlantGroups, ridgePlantGroups, lunarPlantGroups, marshPlantGroups } from './meadow-vegetation.mjs';
@@ -768,6 +769,7 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
     && definition.id !== 'meshy-resource-review';
   const underbough = environmentTheme(definition) === 'forest-floor'
     && definition.id !== 'meshy-resource-review';
+  const groupedUnderbough = new URLSearchParams(globalThis.location?.search ?? '').get('forestSpecies') !== 'scattered';
   const sereward = environmentTheme(definition) === 'sand'
     && definition.id !== 'meshy-resource-review';
   const ellionar = environmentTheme(definition) === 'garden-loam'
@@ -868,6 +870,14 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
             continue;
           }
           if (underbough) {
+            if (groupedUnderbough) {
+              const species = underboughForestSpecies(column, row, definition.terrainSeed || 0, habitatDepth?.[index] ?? 1);
+              point.scale = species === 'underbough-bramble' ? .62 + scaleVariation * .24 : .68 + scaleVariation * .3;
+              ({'underbough-bramble':hazelThickets,'underbough-root-oak':rootOaks,
+                'underbough-moss-hornbeam':hornbeams,'underbough-old-plum':oldPlums,
+                'underbough-copperleaf':maples}[species]).push(point);
+              continue;
+            }
             // Broad olive oaks gather in loose groves, with copperleaf and
             // occasional bramble between them. Every root remains its wood cell.
             const grove = (Math.sin(column * .31 + row * .13)
