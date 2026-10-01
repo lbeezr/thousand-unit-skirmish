@@ -126,6 +126,10 @@ Ellionar garden-loam maps include sparse Sunbloom companions beneath palms and h
 
 Sereward sand-map forests include sparse turquoise/coral succulent companions that clear with their parent forest cells. See the [manifest](../assets/environment/frontier-v1/sereward-understory-manifest.json) and [environment guide](environment-pack-v1.md) for source/runtime details and scope.
 
+Sand maps also receive sparse open-ground pockets of both succulent silhouettes, independent of forest stock. Roads, painted non-sand ground, obstacles/objectives and spawn/resource areas remain clear; [Cistern Road evidence](qa-evidence/vaelora-sereward-open-succulents-2026-09-30/README.md) records the 68-plant layer.
+
+Snow maps receive sparse independent silver-moss and frostberry pockets; open ice and non-snow paint remain bare. [Observation Road evidence](qa-evidence/vaelora-meridian-open-snow-plants-2026-09-30/README.md) records the 42-plant layer, protected gaps and independence from forest stock. Frostberry remains decorative rather than a food node.
+
 Vesperra shade ferns now mix two terrain-seeded silhouettes within the existing companion selection. The [variation manifest](../assets/environment/frontier-v1/vesperra-fern-variation-manifest.json) records the second source/runtime sprite. Both clear and reset with their parent forest cells.
 
 Bellweather meadow/grass-base forests include sparse meadow-herb clumps with cream/yellow flowers and pink clover, clearing with parent forest cells. See the [manifest](../assets/environment/frontier-v1/bellweather-understory-manifest.json) and [environment guide](environment-pack-v1.md) for sources, placement and remaining scope.
@@ -147,3 +151,11 @@ Sombral Mere lunar-soil forests mix Lunewort and the approved-key Noctilune vine
 Siltmouths tidal-mud forests mix silver reeds and broadleaf marsh-tuber companions, clearing/resetting with their parents. The [tuber manifest](../assets/environment/frontier-v1/siltmouths-marsh-tuber-variation-manifest.json) records this decorative approved-key specimen. Shore reeds keep their existing placement; crop gathering remains unfinished. See the [environment guide](environment-pack-v1.md).
 
 Veyrholds scree forests mix ridgegrass and yellow Suncrest flowers in existing companion locations. The [Suncrest manifest](../assets/environment/frontier-v1/veyrholds-suncrest-variation-manifest.json) records the decorative approved-key specimen, clearing/resetting with its parent cell. See the [environment guide](environment-pack-v1.md).
+
+Ellionar garden-loam forests mix blue Sunbloom and cream garden vines, clearing and resetting with parent forest stock. The [garden vine manifest](../assets/environment/frontier-v1/ellionar-garden-vine-variation-manifest.json) records the low rooted source interpretation; channel flower beds retain Sunbloom. See the [environment guide](environment-pack-v1.md).
+
+Grass-base woodland companions mix Bellweather meadow herbs and a smaller pink-clover/cream-daisy clump. The [clover manifest](../assets/environment/frontier-v1/bellweather-meadow-clover-variation-manifest.json) records the decorative variant.
+
+Open grass-base meadow beds mix herbs, clover and wild barley, choosing one specimen per coarse bed while retaining all accepted positions and protected gaps. Forest clearing leaves this independent land vegetation unchanged.
+
+Wild barley joins the current meadow mix as a third upright silhouette, retaining the same accepted positions and gaps. The [barley manifest](../assets/environment/frontier-v1/bellweather-wild-barley-variation-manifest.json) records decorative land scenery; it is not a grain resource or farm. [Current meadow evidence](qa-evidence/vaelora-bellweather-wild-barley-2026-09-30/README.md) covers all three batches.
