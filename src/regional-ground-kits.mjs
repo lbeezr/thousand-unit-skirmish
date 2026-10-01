@@ -4,14 +4,14 @@ import { TERRAIN_COLORS } from './terrain-materials.mjs';
 const UNDERBOUGH_GROUNDS = Object.freeze({
   meadow: 'underbough-clearing-grass-v2',
   'short-grass': 'underbough-clearing-grass-v2',
-  'long-grass': 'underbough-clearing-grass-v2',
+  'long-grass': 'underbough-dense-growth-v2',
   'forest-floor': 'underbough-root-soil-v2',
   dirt: 'underbough-worn-dirt-v2',
 });
 
 // Average source RGB values keep diagram paint and exposed borders in the kit.
 const UNDERBOUGH_COLORS = Object.freeze({
-  meadow: '#63532c', 'short-grass': '#63532c', 'long-grass': '#63532c',
+  meadow: '#63532c', 'short-grass': '#63532c', 'long-grass': '#574a1e',
   'forest-floor': '#4b3519', dirt: '#71533b',
 });
 
