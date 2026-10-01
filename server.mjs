@@ -7104,7 +7104,7 @@ const server = createServer(async (request, response) => {
     'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs',
     'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs', 'src/shore-vegetation.mjs', 'src/meadow-vegetation.mjs', 'src/garden-vegetation.mjs', 'src/environment-plant-assets.mjs', 'src/terrain-blend.mjs', 'src/terrain-texture-sampling.mjs', 'src/terrain-atmosphere.mjs', 'src/terrain-materials.mjs',
-    'src/forest-habitat.mjs',
+    'src/forest-habitat.mjs', 'src/regional-ground-kits.mjs',
   ].includes(relative);
   const publicUiAsset = [
     'assets/ui/cursors/select-add.png',
@@ -7155,6 +7155,7 @@ const server = createServer(async (request, response) => {
       'ellionar-garden-hedge-worked', 'ellionar-garden-hedge-low', 'ellionar-garden-hedge-depleted',
       'rock-boulder-cluster', 'basalt-ridge-cap', 'cliff-end-cap',
       'berries', 'rock-outcrop', 'basalt-ridge', 'cliff', 'seamstone',
+      'underbough-clearing-grass-v2', 'underbough-root-soil-v2', 'underbough-worn-dirt-v2',
       ...TERRAIN_MATERIALS].includes(path.basename(relative, path.extname(relative)));
   const publicInteractiveEnvironmentAsset = path.dirname(relative) === 'assets/environment/frontier-interactive-v1'
     && (relative === 'assets/environment/frontier-interactive-v1/manifest.json'

@@ -1,0 +1,19 @@
+{
+  "regional": [
+    "underbough-clearing-grass-v2.webp",
+    "underbough-root-soil-v2.webp",
+    "underbough-worn-dirt-v2.webp"
+  ],
+  "control": [
+    "dirt.webp",
+    "forest-floor.webp",
+    "meadow.webp"
+  ],
+  "legacy": [
+    "dirt.webp",
+    "forest-floor.webp",
+    "meadow.webp"
+  ],
+  "regionCacheIsolation": true,
+  "unchangedMapDefinition": true
+}
