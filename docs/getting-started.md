@@ -56,6 +56,17 @@ for checkpoint behavior.
 
 ## Common problems
 
+In a restricted cloud workspace, npm's default cache under the home directory
+may be unwritable. If `npm ci` reports a cache-path `ENOENT` or `EACCES`, choose
+a writable cache directory while keeping the locked install:
+
+```sh
+npm ci --cache /tmp/thousand-unit-skirmish-npm-cache
+```
+
+This changes only where npm caches downloads. Continue with `npm start` or the
+[repository checks](testing.md#repository-checks) after the install succeeds.
+
 | Symptom | Check |
 | --- | --- |
 | Port already in use | Stop your previous server or choose a different `PORT`. |
