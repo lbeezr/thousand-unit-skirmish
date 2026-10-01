@@ -616,3 +616,13 @@ four authored podvine views, which are painted views rather than measured model
 rotations. This inventory excludes buildings, units and other static scenery.
 Underbough canopy perspectives remain the next major art deficit; the rejected
 Root Oak redraw pair and construction proxy do not close it.
+## Vesperra pod-vine woodland disturbance · 1 October 2026
+
+The [worked-view pack](../assets/environment/vesperra-podvine-worked-v1/README.md)
+extends the first authored understory directions with one disturbed appearance
+per view. Partial wood stock reveals trimmed foliage and pale stems without
+changing heading or root matrices; zero hides the companion and reset restores
+full. The [runtime evidence](qa-evidence/vaelora-podvine-worked-runtime-2026-10-01/README.md)
+checks stock mapping, existing vegetation contracts and release bytes. This
+completes a full/worked companion increment, not the canopy directional roster
+or an independent pod-harvesting mechanic.

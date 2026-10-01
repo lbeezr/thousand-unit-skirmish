@@ -1,0 +1,27 @@
+{
+  "sourceRevision": "658880e08c1a0910714b87eb4cb0355ff05cdaa7",
+  "sourceDirty": true,
+  "releaseDigest": "sha256:8576d2ac72210dd508c79aadaf5ac3ff3ba9be6c38d50d1fc95e9a1e48345085",
+  "files": [
+    {
+      "file": "src/environment-art.mjs",
+      "sha256": "3f5c4da7c77fadf29cbfd5e54dad7d09ea175fb6d88265fa8b58ffff12ac7372",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/podvine-worked-pack.mjs",
+      "sha256": "dc6fe92c1f0b4216be4ed710f58b57ddbd826db54eff15decb5acbb4bbb97405",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "server.mjs",
+      "sha256": "a58b07019f2570d810af47b3fe5676ddf8eee5f6c52d413759ee3d2a25ddce9e",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "assets/environment/vesperra-podvine-worked-v1/review-atlas.webp",
+      "sha256": "01ea24fd5c992cd437254d9fa2f030131b223799580bef39ceb83dcd3f5ccc9f",
+      "releaseBytesExact": true
+    }
+  ]
+}

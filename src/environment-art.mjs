@@ -15,7 +15,7 @@ import { shorePlantPositions } from './shore-vegetation.mjs';
 import { meadowPlantGroups, drylandPlantGroups, snowPlantGroups, ridgePlantGroups, lunarPlantGroups, marshPlantGroups, junglePlantGroups } from './meadow-vegetation.mjs';
 import { gardenPlantGroups } from './garden-vegetation.mjs';
 import { assertPlantDimensions, PLANT_ASSETS } from './environment-plant-assets.mjs';
-import { PODVINE_VIEW_PACK } from './podvine-view-pack.mjs';
+import { PODVINE_WORKED_PACK as PODVINE_VIEW_PACK } from './podvine-worked-pack.mjs';
 
 const meshyResourcesEnabled = new URLSearchParams(globalThis.location?.search ?? '').get('meshyResources') !== '0';
 
@@ -696,7 +696,8 @@ export function createEnvironmentSpriteInstances(name, width, height, positions)
       shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>',mapChunk);
     };
     material.customProgramCacheKey = () => 'vaelora-podvine-authored-views-v1';
-    authoredPlantViews = {viewIndices,rects,frameIds:['front','right','rear','left'],measured3DCapture:false};
+    authoredPlantViews = {viewIndices,rects,frameIds:['front','right','rear','left'],measured3DCapture:false,
+      pack, worked: new Uint8Array(positions.length)};
   }
   const family = meshyResourcesEnabled && /^(oak|berries)-full$/.exec(name)?.[1];
   if (family) {
@@ -771,6 +772,15 @@ export function setForestSpriteStock(slot, stock = 6) {
   const stage = resourceVisualStage(stock, 6);
   if (slot.understory) {
     const plant = slot.understory;
+    const views = plant.mesh.userData.authoredPlantViews;
+    if (views) {
+      const worked = stock > 0 && stock < 6;
+      const [x,y,w,h] = (worked ? views.pack.workedRectsPx : views.pack.rectsPx)[views.viewIndices[plant.index]];
+      const [pw,ph] = views.pack.atlasSizePx;
+      views.rects.setXYZW(plant.index,(x+.5)/pw,1-(y+h-.5)/ph,(w-1)/pw,(h-1)/ph);
+      views.worked[plant.index] = worked ? 1 : 0;
+      views.rects.needsUpdate = true;
+    }
     setEnvironmentSpriteInstance(plant.mesh, plant.index, plant.x, plant.z,
       stock <= 0 ? 0 : plant.scale, plant.flip, plant.yaw);
     plant.mesh.instanceMatrix.needsUpdate = true;

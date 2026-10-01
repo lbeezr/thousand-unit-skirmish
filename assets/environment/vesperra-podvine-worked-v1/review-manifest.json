@@ -219,7 +219,11 @@
       ]
     }
   ],
-  "runtimeIntegrated": false,
+  "runtimeIntegrated": true,
+  "runtimeWorldSize": [
+    1.10431,
+    0.55
+  ],
   "contactMethod": "silhouette center/lower bound; provisional comparison only",
   "anatomicalRootAlignmentCertified": false
 }
