@@ -350,3 +350,7 @@ regional grass texture. Forest root masks add shaded soil under woods. The
 renderer keeps Underbough vegetation tied to its region independently of that
 base paint; minimap, Studio and exposed borders follow the actual base. Changing
 the paint does not change terrain blockers, wood cells or routes.
+
+### Gradual forest margins — 1 October 2026
+
+The [margin study](qa-evidence/underbough-layered-margin-2026-10-01/README.md) adds opt-in forestEdges=layered canopy variation along habitat margins while preserving wood ownership. Local renderer checks pass; full-game appearance review remains.

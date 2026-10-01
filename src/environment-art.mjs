@@ -8,7 +8,7 @@ import { createGroundMistStudy, groundMistEnabled } from './terrain-atmosphere.m
 import { applyTerrainTextureSampling } from './terrain-texture-sampling.mjs';
 import { buildTerrainBlendMasks, buildForestGroundMask } from './terrain-blend.mjs';
 import { buildWaterSurfaceGeometry, WATER_LEVEL } from './water-surface-geometry.mjs';
-import { forestHabitatDepth, forestCanopyFactor } from './forest-habitat.mjs';
+import { forestHabitatDepth, forestCanopyFactor, forestMarginCanopyFactor } from './forest-habitat.mjs';
 import { forestAgeFactors } from './forest-age-composition.mjs';
 import { underboughForestSpecies } from './forest-composition.mjs';
 import { regionalGroundTextureName, regionalGroundVariantTextureName, regionalGroundColor } from './regional-ground-kits.mjs';
@@ -1010,6 +1010,7 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
     }
   }
   const leafyHornbeam = underbough && new URLSearchParams(globalThis.location?.search ?? '').get('forestCanopy') === 'leafy';
+  const layeredForestMargin = underbough && new URLSearchParams(globalThis.location?.search ?? '').get('forestEdges') === 'layered';
   const youngHornbeams = [];
   const ageMode = new URLSearchParams(globalThis.location?.search ?? '').get('forestAges');
   if (underbough && ['irregular', 'young'].includes(ageMode)) {
@@ -1057,7 +1058,9 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
     if (habitatDepth) for (const point of points) {
       if (!Number.isInteger(point.cell)) continue;
       point.habitatDepth = habitatDepth[point.cell];
-      point.scale *= forestCanopyFactor(point.habitatDepth);
+      point.scale *= layeredForestMargin
+        ? forestMarginCanopyFactor(point.habitatDepth, point.cell % definition.width, Math.floor(point.cell / definition.width), definition.terrainSeed || 0)
+        : forestCanopyFactor(point.habitatDepth);
     }
     const mesh = createForestAtlasInstances(name, width, height, points)
       || createEnvironmentSpriteInstances(name, width, height, points);
