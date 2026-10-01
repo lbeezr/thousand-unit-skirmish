@@ -1,0 +1,565 @@
+{
+  "states": [
+    {
+      "region": "bellweather",
+      "stage": "full",
+      "family": "bellweather-field-maple",
+      "width": 3.05,
+      "height": 3.25,
+      "uv": [
+        0.028289474546909332,
+        0.5279948115348816,
+        0.44342106580734253,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "bellweather",
+      "stage": "worked",
+      "family": "bellweather-field-maple",
+      "width": 3.05,
+      "height": 3.25,
+      "uv": [
+        0.5282894968986511,
+        0.5279948115348816,
+        0.44342106580734253,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "bellweather",
+      "stage": "low",
+      "family": "bellweather-field-maple",
+      "width": 3.05,
+      "height": 3.25,
+      "uv": [
+        0.028289474546909332,
+        0.02799479104578495,
+        0.44342106580734253,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "bellweather",
+      "stage": "depleted",
+      "family": "bellweather-field-maple",
+      "width": 3.05,
+      "height": 3.25,
+      "uv": [
+        0.5282894968986511,
+        0.02799479104578495,
+        0.44342106580734253,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "underbough",
+      "stage": "full",
+      "family": "underbough-root-oak",
+      "width": 3.1,
+      "height": 3.07655,
+      "uv": [
+        0.02799479104578495,
+        0.528190553188324,
+        0.4440104067325592,
+        0.44361889362335205
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "underbough",
+      "stage": "worked",
+      "family": "underbough-root-oak",
+      "width": 3.1,
+      "height": 3.07655,
+      "uv": [
+        0.5279948115348816,
+        0.528190553188324,
+        0.4440104067325592,
+        0.44361889362335205
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "underbough",
+      "stage": "low",
+      "family": "underbough-root-oak",
+      "width": 3.1,
+      "height": 3.07655,
+      "uv": [
+        0.02799479104578495,
+        0.028190558776259422,
+        0.4440104067325592,
+        0.44361889362335205
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "underbough",
+      "stage": "depleted",
+      "family": "underbough-root-oak",
+      "width": 3.1,
+      "height": 3.07655,
+      "uv": [
+        0.5279948115348816,
+        0.028190558776259422,
+        0.4440104067325592,
+        0.44361889362335205
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "sereward",
+      "stage": "full",
+      "family": "sereward-palm",
+      "width": 2.7,
+      "height": 3.8,
+      "uv": [
+        0.03287461772561073,
+        0.5279948115348816,
+        0.43425077199935913,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "sereward",
+      "stage": "worked",
+      "family": "sereward-palm",
+      "width": 2.7,
+      "height": 3.8,
+      "uv": [
+        0.5328746438026428,
+        0.5279948115348816,
+        0.43425077199935913,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "sereward",
+      "stage": "low",
+      "family": "sereward-palm",
+      "width": 2.7,
+      "height": 3.8,
+      "uv": [
+        0.03287461772561073,
+        0.02799479104578495,
+        0.43425077199935913,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "sereward",
+      "stage": "depleted",
+      "family": "sereward-palm",
+      "width": 2.7,
+      "height": 3.8,
+      "uv": [
+        0.5328746438026428,
+        0.02799479104578495,
+        0.43425077199935913,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "pale-meridian",
+      "stage": "full",
+      "family": "pale-meridian-conifer",
+      "width": 2.7,
+      "height": 3.8,
+      "uv": [
+        0.038996372371912,
+        0.5279948115348816,
+        0.4220072627067566,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "pale-meridian",
+      "stage": "worked",
+      "family": "pale-meridian-conifer",
+      "width": 2.7,
+      "height": 3.8,
+      "uv": [
+        0.5389963984489441,
+        0.5279948115348816,
+        0.4220072627067566,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "pale-meridian",
+      "stage": "low",
+      "family": "pale-meridian-conifer",
+      "width": 2.7,
+      "height": 3.8,
+      "uv": [
+        0.038996372371912,
+        0.02799479104578495,
+        0.4220072627067566,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "pale-meridian",
+      "stage": "depleted",
+      "family": "pale-meridian-conifer",
+      "width": 2.7,
+      "height": 3.8,
+      "uv": [
+        0.5389963984489441,
+        0.02799479104578495,
+        0.4220072627067566,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "siltmouths",
+      "stage": "full",
+      "family": "siltmouths-tidal-tree",
+      "width": 3.1,
+      "height": 3,
+      "uv": [
+        0.02799479104578495,
+        0.528239905834198,
+        0.4440104067325592,
+        0.44352012872695923
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "siltmouths",
+      "stage": "worked",
+      "family": "siltmouths-tidal-tree",
+      "width": 3.1,
+      "height": 3,
+      "uv": [
+        0.5279948115348816,
+        0.528239905834198,
+        0.4440104067325592,
+        0.44352012872695923
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "siltmouths",
+      "stage": "low",
+      "family": "siltmouths-tidal-tree",
+      "width": 3.1,
+      "height": 3,
+      "uv": [
+        0.02799479104578495,
+        0.028239930048584938,
+        0.4440104067325592,
+        0.44352012872695923
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "siltmouths",
+      "stage": "depleted",
+      "family": "siltmouths-tidal-tree",
+      "width": 3.1,
+      "height": 3,
+      "uv": [
+        0.5279948115348816,
+        0.028239930048584938,
+        0.4440104067325592,
+        0.44352012872695923
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "vesperra",
+      "stage": "full",
+      "family": "vesperra-mistbark",
+      "width": 3.1,
+      "height": 3.4,
+      "uv": [
+        0.02799479104578495,
+        0.528923749923706,
+        0.4440104067325592,
+        0.4421524703502655
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "vesperra",
+      "stage": "worked",
+      "family": "vesperra-mistbark",
+      "width": 3.1,
+      "height": 3.4,
+      "uv": [
+        0.5279948115348816,
+        0.528923749923706,
+        0.4440104067325592,
+        0.4421524703502655
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "vesperra",
+      "stage": "low",
+      "family": "vesperra-mistbark",
+      "width": 3.1,
+      "height": 3.4,
+      "uv": [
+        0.02799479104578495,
+        0.028923766687512398,
+        0.4440104067325592,
+        0.4421524703502655
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "vesperra",
+      "stage": "depleted",
+      "family": "vesperra-mistbark",
+      "width": 3.1,
+      "height": 3.4,
+      "uv": [
+        0.5279948115348816,
+        0.028923766687512398,
+        0.4440104067325592,
+        0.4421524703502655
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "sombral-mere",
+      "stage": "full",
+      "family": "sombral-mere-merebloom",
+      "width": 2.6,
+      "height": 3.7,
+      "uv": [
+        0.03876201808452606,
+        0.5279948115348816,
+        0.4224759638309479,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "sombral-mere",
+      "stage": "worked",
+      "family": "sombral-mere-merebloom",
+      "width": 2.6,
+      "height": 3.7,
+      "uv": [
+        0.5387620329856873,
+        0.5279948115348816,
+        0.4224759638309479,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "sombral-mere",
+      "stage": "low",
+      "family": "sombral-mere-merebloom",
+      "width": 2.6,
+      "height": 3.7,
+      "uv": [
+        0.03876201808452606,
+        0.02799479104578495,
+        0.4224759638309479,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "sombral-mere",
+      "stage": "depleted",
+      "family": "sombral-mere-merebloom",
+      "width": 2.6,
+      "height": 3.7,
+      "uv": [
+        0.5387620329856873,
+        0.02799479104578495,
+        0.4224759638309479,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "veyrholds",
+      "stage": "full",
+      "family": "veyrholds-highpine",
+      "width": 2.7,
+      "height": 3.4,
+      "uv": [
+        0.032608695328235626,
+        0.5279948115348816,
+        0.43478259444236755,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "veyrholds",
+      "stage": "worked",
+      "family": "veyrholds-highpine",
+      "width": 2.7,
+      "height": 3.4,
+      "uv": [
+        0.532608687877655,
+        0.5279948115348816,
+        0.43478259444236755,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "veyrholds",
+      "stage": "low",
+      "family": "veyrholds-highpine",
+      "width": 2.7,
+      "height": 3.4,
+      "uv": [
+        0.032608695328235626,
+        0.02799479104578495,
+        0.43478259444236755,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "veyrholds",
+      "stage": "depleted",
+      "family": "veyrholds-highpine",
+      "width": 2.7,
+      "height": 3.4,
+      "uv": [
+        0.532608687877655,
+        0.02799479104578495,
+        0.43478259444236755,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "ellionar",
+      "stage": "full",
+      "family": "ellionar-cultivated-palm",
+      "width": 2.7,
+      "height": 3.8,
+      "uv": [
+        0.03866906464099884,
+        0.5279948115348816,
+        0.4226618707180023,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "ellionar",
+      "stage": "worked",
+      "family": "ellionar-cultivated-palm",
+      "width": 2.7,
+      "height": 3.8,
+      "uv": [
+        0.5386690497398376,
+        0.5279948115348816,
+        0.4226618707180023,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "ellionar",
+      "stage": "low",
+      "family": "ellionar-cultivated-palm",
+      "width": 2.7,
+      "height": 3.8,
+      "uv": [
+        0.03866906464099884,
+        0.02799479104578495,
+        0.4226618707180023,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "ellionar",
+      "stage": "depleted",
+      "family": "ellionar-cultivated-palm",
+      "width": 2.7,
+      "height": 3.8,
+      "uv": [
+        0.5386690497398376,
+        0.02799479104578495,
+        0.4226618707180023,
+        0.4440104067325592
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "ru-lora-fringe",
+      "stage": "full",
+      "family": "ru-lora-fringe-canopy",
+      "width": 3.43015,
+      "height": 3.4,
+      "uv": [
+        0.02799479104578495,
+        0.528215229511261,
+        0.4440104067325592,
+        0.443569540977478
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "ru-lora-fringe",
+      "stage": "worked",
+      "family": "ru-lora-fringe-canopy",
+      "width": 3.43015,
+      "height": 3.4,
+      "uv": [
+        0.5279948115348816,
+        0.528215229511261,
+        0.4440104067325592,
+        0.443569540977478
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "ru-lora-fringe",
+      "stage": "low",
+      "family": "ru-lora-fringe-canopy",
+      "width": 3.43015,
+      "height": 3.4,
+      "uv": [
+        0.02799479104578495,
+        0.02821522392332554,
+        0.4440104067325592,
+        0.443569540977478
+      ],
+      "rootReset": true
+    },
+    {
+      "region": "ru-lora-fringe",
+      "stage": "depleted",
+      "family": "ru-lora-fringe-canopy",
+      "width": 3.43015,
+      "height": 3.4,
+      "uv": [
+        0.5279948115348816,
+        0.02821522392332554,
+        0.4440104067325592,
+        0.443569540977478
+      ],
+      "rootReset": true
+    }
+  ],
+  "controls": "unknown, petrified interior and every model-review region remain generic"
+}

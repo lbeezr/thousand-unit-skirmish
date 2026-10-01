@@ -592,14 +592,30 @@ export function updateLandVegetationOccupation(objects, footprints = []) {
   return changed;
 }
 
+const REGIONAL_WOOD_RESOURCES = Object.freeze({
+  bellweather: {family: 'bellweather-field-maple', width: 3.05, height: 3.25},
+  underbough: {family: 'underbough-root-oak', width: 3.1, height: 3.07655},
+  sereward: {family: 'sereward-palm', width: 2.7, height: 3.8},
+  'pale-meridian': {family: 'pale-meridian-conifer', width: 2.7, height: 3.8},
+  siltmouths: {family: 'siltmouths-tidal-tree', width: 3.1, height: 3.0},
+  vesperra: {family: 'vesperra-mistbark', width: 3.1, height: 3.4},
+  'sombral-mere': {family: 'sombral-mere-merebloom', width: 2.6, height: 3.7},
+  veyrholds: {family: 'veyrholds-highpine', width: 2.7, height: 3.4},
+  ellionar: {family: 'ellionar-cultivated-palm', width: 2.7, height: 3.8},
+  'ru-lora-fringe': {family: 'ru-lora-fringe-canopy', width: 3.43015, height: 3.4},
+});
+
+export function regionalWoodResourceProfile(definition) {
+  return definition?.id === 'meshy-resource-review' ? null : REGIONAL_WOOD_RESOURCES[definition?.region] || null;
+}
+
 export function createWoodResourceInstances(definition, stage, positions) {
   if (!RESOURCE_VISUAL_STAGES.includes(stage)) throw new Error(`Unknown wood resource stage: ${stage}`);
-  if (definition?.region !== 'underbough' || definition.id === 'meshy-resource-review') {
-    return createEnvironmentSpriteInstances(`oak-${stage}`, 4.1, 3.75, positions);
-  }
-  const family = 'underbough-root-oak';
-  const mesh = createForestAtlasInstances(family, 3.1, 3.07655, positions)
-    || createEnvironmentSpriteInstances(stage === 'full' ? family : `${family}-${stage}`, 3.1, 3.07655, positions);
+  const profile = regionalWoodResourceProfile(definition);
+  if (!profile) return createEnvironmentSpriteInstances(`oak-${stage}`, 4.1, 3.75, positions);
+  const {family, width, height} = profile;
+  const mesh = createForestAtlasInstances(family, width, height, positions)
+    || createEnvironmentSpriteInstances(stage === 'full' ? family : `${family}-${stage}`, width, height, positions);
   if (mesh) {
     mesh.userData.resourceWoodFamily = family;
     const atlas = mesh.userData.forestAtlas;
