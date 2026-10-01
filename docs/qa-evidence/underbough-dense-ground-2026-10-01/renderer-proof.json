@@ -1,0 +1,20 @@
+[
+  {
+    "region": "underbough",
+    "terrainBase": "meadow",
+    "filename": "underbough-clearing-grass-v2.webp",
+    "unchangedMap": true
+  },
+  {
+    "region": "underbough",
+    "terrainBase": "long-grass",
+    "filename": "underbough-dense-growth-v2.webp",
+    "unchangedMap": true
+  },
+  {
+    "region": "bellweather",
+    "terrainBase": "long-grass",
+    "filename": "long-grass.webp",
+    "unchangedMap": true
+  }
+]

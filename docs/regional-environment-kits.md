@@ -296,3 +296,22 @@ now consume v3. The release scenario verifies exact HTTP hashes from Docker
 COPY output. [Repeated full-game evidence](qa-evidence/directional-fit-live-2026-10-01/proof.json)
 passes real worker harvesting, reset and reload without browser errors; the
 same-camera full capture shows the scale correction beside workers.
+
+### Underbough dense ground growth — 1 October 2026 UTC
+
+A fourth regional ground source supplies denser low moss/grass in the same
+restrained olive/umber palette as the clearing texture. The original generated
+PNG, exact prompt, reference and hashes are retained beside a dimension-preserving
+RGB WebP export. The generated master is 1254×1254; no crop, resize or repaint
+was applied. `long-grass` now resolves to this material in Underbough, while
+meadow and short grass retain clearing grass. Representative diagram colour is
+the measured source mean, #574a1e.
+
+[Repeated renderer swatches](qa-evidence/underbough-dense-ground-2026-10-01/renderer-proof.json)
+verify separate clearing/dense roles, unchanged map definitions and the original
+Bellweather long-grass material after switching regions. Native Chrome compiled
+and rendered the actual ground sampler without errors. This is an authoring
+material; Underbough Rootways currently contains no long-grass paint, so this
+slice does not claim new shipped-map placement. Seamless-style source generation
+and stochastic sampling are visually reviewed, not a mathematical periodicity
+claim. More ground roles/variants and regional perspectives remain unfinished.

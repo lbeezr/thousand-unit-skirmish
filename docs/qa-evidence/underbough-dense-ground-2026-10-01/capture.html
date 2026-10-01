@@ -1,0 +1,11 @@
+<!doctype html><html><base href="/"><script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js"}}</script><body style="margin:0"><script type="module">
+import * as THREE from 'three';import {createGroundSurfaces} from '/src/environment-art.mjs';
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(640,640);document.body.append(renderer.domElement);
+const camera=new THREE.OrthographicCamera(-18,18,18,-18,.1,200);camera.position.set(39,56,39);camera.lookAt(0,0,0);const proof=[];
+for(const [region,terrainBase,expected] of [['underbough','meadow','underbough-clearing-grass-v2.webp'],['underbough','long-grass','underbough-dense-growth-v2.webp'],['bellweather','long-grass','long-grass.webp']]){
+ const definition={region,terrainBase,width:32,height:32,terrainSeed:93010,obstacles:[],terrainPatches:[]};const original=JSON.stringify(definition),scene=new THREE.Scene();scene.background=new THREE.Color('#4b4c3a');const meshes=createGroundSurfaces(definition);for(const mesh of meshes)scene.add(mesh);
+ const texture=meshes[0].material.map;for(let i=0;i<200;i++){if(texture.image?.complete&&texture.image.naturalWidth)break;await new Promise(r=>setTimeout(r,50));}if(!texture.image?.naturalWidth)throw Error('Texture did not load');
+ const filename=texture.image.src.split('/').at(-1).split('?')[0];if(filename!==expected)throw Error('Wrong ground role '+filename);if(JSON.stringify(definition)!==original)throw Error('Map mutated');renderer.render(scene,camera);
+ async function save(name,data){const r=await fetch('/__save/'+name,{method:'POST',body:data});if(!r.ok)throw Error('Save '+r.status);}await save(region+'-'+terrainBase+'.png',await new Promise(r=>renderer.domElement.toBlob(r)));proof.push({region,terrainBase,filename,unchangedMap:true});for(const mesh of meshes){mesh.geometry.dispose();mesh.material.dispose();}
+}const r=await fetch('/__save/renderer-proof.json',{method:'POST',body:JSON.stringify(proof,null,2)});if(!r.ok)throw Error('Save proof');window.__renderDone=true;
+</script></body></html>

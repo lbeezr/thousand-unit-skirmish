@@ -1,0 +1,18 @@
+{
+  "role": "dense-ground-growth",
+  "region": "underbough",
+  "source": "dense-growth-01.png",
+  "reference": "../../frontier-v1/underbough-clearing-grass-v2.webp",
+  "provider": "built-in ImageGen",
+  "generationId": "01a0f4a1-3cdf-7c32-bc6d-8708754c8b17",
+  "sourceSha256": "b134015a54e8ec5210a06b1eb1d4432f1204aa06e666f5ea39b6adebe33665ac",
+  "runtime": "../../frontier-v1/underbough-dense-growth-v2.webp",
+  "runtimeSha256": "eb898e35b58d212b20ff61a59cb91ecea5605f22983036e4cad40c769a49b01c",
+  "dimensionsPx": [
+    1254,
+    1254
+  ],
+  "encoding": "RGB WebP quality 90; no crop, resize or repaint",
+  "meanSourceColor": "#574a1e",
+  "status": "runtime long-grass role; repeated Chrome swatch reviewed; no shipped-map placement yet"
+}
