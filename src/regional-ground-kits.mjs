@@ -7,12 +7,13 @@ const UNDERBOUGH_GROUNDS = Object.freeze({
   'long-grass': 'underbough-dense-growth-v2',
   'forest-floor': 'underbough-root-soil-v2',
   dirt: 'underbough-worn-dirt-v2',
+  scree: 'underbough-shaded-stone-v2',
 });
 
 // Average source RGB values keep diagram paint and exposed borders in the kit.
 const UNDERBOUGH_COLORS = Object.freeze({
   meadow: '#63532c', 'short-grass': '#63532c', 'long-grass': '#574a1e',
-  'forest-floor': '#4b3519', dirt: '#71533b',
+  'forest-floor': '#4b3519', dirt: '#71533b', scree: '#665336',
 });
 
 export function regionalGroundTextureName(definition, material, enabled = true) {

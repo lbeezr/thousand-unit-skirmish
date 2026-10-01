@@ -383,6 +383,26 @@ browser errors. Grouped copper accents and larger quiet canopy groups were
 visually inspected. This improves composition, not missing directional artwork
 or additional species for other zones.
 
+### Underbough exposed-stone role — 1 October 2026 UTC
+
+Underbough `scree` now resolves to a dedicated shaded bedrock source: warm grey/
+umber mineral detail and restrained olive moss, compatible with the clearing and
+root-soil kit. Other regions retain their existing scree. Diagram, border,
+minimap and Studio swatch colour use the source's mean RGB `#665336`. The
+[registration record](../assets/environment/vaelora-region-kits-v2/underbough/shaded-stone-01-registration.json)
+preserves original master, exact prompt, source/runtime hashes and RGB WebP
+encoding; [six-source repeat review](../assets/environment/vaelora-region-kits-v2/underbough/ground-role-repeat-review-v2.png)
+compares five implemented roles with two clearing variants.
+
+Rootways has no authored exposed-stone paint; its shipped layout is unchanged.
+The role is available when an Underbough author paints existing `scree` material.
+The [Studio study](qa-evidence/underbough-stone-ground-open-2026-10-01/capture-report.json)
+uses disposable copied maps with 64 irregular stone cells, comparing the global
+ground kit with the regional kit at ordinary and strategic zoom and a Bellweather
+control. This is material integration, not a new shipped stone area, raised rock
+asset, collision rule or water mechanic. Wet bank/shore remains missing, and
+non-clearing roles still need second source variants.
+
 ### Regional wood-resource palette selection — 1 October 2026 UTC
 
 The resource-tree profile now covers ten existing forest palettes: Bellweather,

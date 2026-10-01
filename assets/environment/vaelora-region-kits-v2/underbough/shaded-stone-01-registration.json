@@ -1,0 +1,22 @@
+{
+  "sourceTool": "built-in ImageGen",
+  "generatedOutput": "exec-345cb6e9-44ce-4549-8e22-2314438c9e5a.png",
+  "reference": "clearing-grass-01.png",
+  "source": "shaded-stone-01.png",
+  "sourceSha256": "833f0d5e2a61adfef2c95e67cd430dd6de4dc96151caf483f2240bdef60062fb",
+  "runtime": "../../frontier-v1/underbough-shaded-stone-v2.webp",
+  "runtimeSha256": "d67d75e3bc89aa4724e6455788ffdadb52007b17279670828bb35c2c9494386e",
+  "dimensionsPx": [
+    1254,
+    1254
+  ],
+  "encoding": "RGB WebP quality90; no resize or creative pixel edits",
+  "meanRgb": [
+    102.07139005262904,
+    83.2349095335119,
+    54.474018706327946
+  ],
+  "diagramColor": "#665336",
+  "semanticMaterial": "scree",
+  "scope": "Exposed-stone ground role; not a 3D rock or new collision type"
+}

@@ -3,7 +3,7 @@
   "packId": "environment.underbough-cohesive-kit-v2",
   "maturity": "source-study",
   "region": "underbough",
-  "status": "Underbough four regional grounds, four fixed-view tree forms and fixed-view thornberry food shrub are integrated; regional directional drawings remain under review",
+  "status": "Underbough five regional ground roles with six source textures, four fixed-view tree forms and thornberry food shrub are integrated; regional directional artwork remains unfinished",
   "source": "project-owned built-in ImageGen, using selected Underbough ecology key and existing copperleaf sprite references",
   "directionalMethod": "authored painted views; not measured 3D render captures",
   "targetTreeForms": [
@@ -353,6 +353,20 @@
       "runtime": "../../frontier-v1/underbough-clearing-grass-02-v2.webp",
       "sourceTool": "built-in ImageGen",
       "registrationPath": "clearing-grass-02-registration.json",
+      "directionDegrees": null
+    },
+    {
+      "path": "shaded-stone-01.png",
+      "sha256": "833f0d5e2a61adfef2c95e67cd430dd6de4dc96151caf483f2240bdef60062fb",
+      "sizeBytes": 3449349,
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "status": "regional-ground-runtime",
+      "runtime": "../../frontier-v1/underbough-shaded-stone-v2.webp",
+      "registrationPath": "shaded-stone-01-registration.json",
       "directionDegrees": null
     }
   ]
