@@ -1,0 +1,23 @@
+{
+  "cell": 469,
+  "family": "underbough-root-oak",
+  "requestedStock": 6,
+  "atlasRect": [
+    0.02799479104578495,
+    0.528190553188324,
+    0.4440104067325592,
+    0.44361889362335205
+  ],
+  "expectedFullRect": [
+    0.027994791666666668,
+    0.5281905594405594,
+    0.4440104166666667,
+    0.4436188811188811
+  ],
+  "sourceTextures": [
+    "underbough-root-oak-lifecycle-atlas.webp",
+    "underbough-root-oak.webp"
+  ],
+  "sameRootScaleFlipYaw": true,
+  "mapUnchanged": true
+}
