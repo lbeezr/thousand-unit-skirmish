@@ -52,6 +52,9 @@ export async function loadShippedAudio(reference, { fetch = globalThis.fetch, cr
     blobs[source.id] = new Blob([data], { type: item.mimeType }); total += data.length;
   }
   const loaded = { pack, sourceBlobs: blobs };
+  // A concurrent verified load may have populated this key while we fetched.
+  const previous = cache.get(key);
+  if (previous) { cache.delete(key); cacheBytes -= previous.bytes; }
   while ((cacheBytes + total > MAX_PACK_BYTES || cache.size >= 2) && cache.size) {
     const [oldKey, entry] = cache.entries().next().value; cache.delete(oldKey); cacheBytes -= entry.bytes;
   }
