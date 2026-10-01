@@ -1,0 +1,47 @@
+{
+  "status": "rejected-directional-pair",
+  "method": "Alpha >=32 bounding boxes, review-sheet uniform height normalization only; not world-scale certification",
+  "sources": [
+    {
+      "path": "root-oak-full-000.png",
+      "sha256": "d9257638f0fa4132a6ec263bdf3d7fdb2b6fa1a131bb9d750801091a920a00df",
+      "boundsAtAlpha32": [
+        47,
+        47,
+        1221,
+        1209
+      ],
+      "widthPx": 1174,
+      "heightPx": 1162,
+      "widthPerHeight": 1.0103270223752152
+    },
+    {
+      "path": "root-oak-view-090-review-v2.png",
+      "sha256": "72a5a134a47149e3b629193b07e27123a5a6f3fc998f8c6b28fc161c9e9876d6",
+      "boundsAtAlpha32": [
+        215,
+        24,
+        1154,
+        1227
+      ],
+      "widthPx": 939,
+      "heightPx": 1203,
+      "widthPerHeight": 0.7805486284289277
+    },
+    {
+      "path": "root-oak-view-270-review-v2.png",
+      "sha256": "78010eb7308bfd316eaab8089e695eaddd92ba536d7fc4b0343afd09f26912b5",
+      "boundsAtAlpha32": [
+        42,
+        30,
+        1191,
+        1219
+      ],
+      "widthPx": 1149,
+      "heightPx": 1189,
+      "widthPerHeight": 0.9663582842724979
+    }
+  ],
+  "oppositeWidthRatioAfterHeightNormalization": 1.2380500702660437,
+  "finding": "Opposite requested side views differ substantially in horizontal extent despite similar height. Independent redraws do not establish shared geometry. No runtime coverage accepted."
+}

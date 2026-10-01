@@ -421,3 +421,11 @@ It remains source review only: opposite-view branch identity and common root
 registration are not established. The [review record](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-direction-review-v2.md)
 states the remaining comparison. Requested angle is separate from accepted
 direction in the manifest; accepted regional directional coverage remains zero.
+
+The opposite-side follow-up rejects this pair: at equal visible height, the
+requested 270-degree crown is 23.8% wider than the requested 90-degree crown.
+This is a visual diagnostic, not a world-scale measurement, but branch continuity
+and common geometry remain unproven. Preserve both originals and their
+[comparison evidence](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-direction-pair-review-v2.json).
+Next establish a shared anatomical construction; do not derive harvest frames
+from independent redraws that have not passed the intact-view comparison.
