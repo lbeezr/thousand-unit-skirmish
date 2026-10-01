@@ -289,6 +289,8 @@ const ui = {
   studioRegionPalette: document.querySelector('#studio-region-palette'),
   studioGroundBrushSize: document.querySelector('#studio-ground-brush-size'),
   studioElevationBrushSize: document.querySelector('#studio-elevation-brush-size'),
+  studioObstacleShape: document.querySelector('#studio-obstacle-shape'),
+  studioObstacleBrushSize: document.querySelector('#studio-obstacle-brush-size'),
   studioStartingArmySize: document.querySelector('#studio-starting-army-size'),
   studioStartingFood: document.querySelector('#studio-starting-food'),
   studioStartingWood: document.querySelector('#studio-starting-wood'),
@@ -6442,10 +6444,10 @@ function editorDragRect(drag) {
   };
 }
 
-function paintEditorGroundStroke(drag, next) {
+function paintEditorGroundStroke(drag, next, brushSize = Number(ui.studioGroundBrushSize.value)) {
   const from = drag.current;
   const steps = Math.max(Math.abs(next.column - from.column), Math.abs(next.row - from.row));
-  const radius = (Number(ui.studioGroundBrushSize.value) - 1) / 2;
+  const radius = (brushSize - 1) / 2;
   const limit = (radius + 0.2) ** 2;
   for (let step = 0; step <= steps; step++) {
     const column = Math.round(from.column + (next.column - from.column) * step / Math.max(1, steps));
@@ -6655,6 +6657,9 @@ function drawEditorGrid() {
       context.fillRect(index % editorDefinition.width, Math.floor(index / editorDefinition.width), 1, 1);
     }
     context.globalAlpha = 1;
+  } else if (editorDrag?.obstacleStroke) {
+    context.fillStyle = 'rgba(255,255,255,.35)';
+    for (const index of editorDrag.paintCells) context.fillRect(index % editorDefinition.width, Math.floor(index / editorDefinition.width), 1, 1);
   } else if (editorDrag && ['rock', 'stone', 'cliff', 'forest', 'water', 'erase', 'objective'].includes(editorDrag.tool)) {
     const zone = editorDragRect(editorDrag);
     context.fillStyle = editorDrag.tool === 'objective' ? 'rgba(213,239,120,.28)' : 'rgba(255,255,255,.19)';
@@ -8981,7 +8986,12 @@ ui.studioGrid.addEventListener('pointerdown', (event) => {
   }
   if (editorTool === 'objective' && !getSelectedEditorTrigger() && !editorTriggerCreationPending) return;
   editorDrag = { tool: editorTool, start: cell, current: cell };
-  if (isGroundEditorTool(editorTool)) {
+  if (['rock', 'stone', 'cliff', 'forest', 'water', 'erase'].includes(editorTool) && ui.studioObstacleShape.value === 'stroke') {
+    editorDrag.obstacleStroke = true;
+    editorDrag.brushSize = Number(ui.studioObstacleBrushSize.value);
+    editorDrag.paintCells = new Set();
+    paintEditorGroundStroke(editorDrag, cell, editorDrag.brushSize);
+  } else if (isGroundEditorTool(editorTool)) {
     editorDrag.paintCells = new Set();
     paintEditorGroundStroke(editorDrag, cell);
   } else if (isElevationEditorTool(editorTool)) {
@@ -9015,6 +9025,7 @@ ui.studioGrid.addEventListener('pointermove', (event) => {
   if (cell) {
     if (isGroundEditorTool(editorDrag.tool)) paintEditorGroundStroke(editorDrag, cell);
     else if (isElevationEditorTool(editorDrag.tool)) paintEditorElevationStroke(editorDrag, cell);
+    else if (editorDrag.obstacleStroke) paintEditorGroundStroke(editorDrag, cell, editorDrag.brushSize);
     editorDrag.current = cell;
   }
   drawEditorGrid();
@@ -9050,6 +9061,7 @@ function finishEditorPointer(event, commit) {
     const next = editorCellFromPointer(event) || drag.current;
     if (isGroundEditorTool(drag.tool)) paintEditorGroundStroke(drag, next);
     else if (isElevationEditorTool(drag.tool)) paintEditorElevationStroke(drag, next);
+    else if (drag.obstacleStroke) paintEditorGroundStroke(drag, next, drag.brushSize);
     drag.current = next;
     const bounds = editorDragRect(drag);
     if (drag.tool === 'objective') {
@@ -9112,12 +9124,15 @@ function finishEditorPointer(event, commit) {
       const material = drag.tool === 'erase' ? -1
         : EDITOR_MATERIALS.indexOf(['rock', 'cliff'].includes(drag.tool) ? 'stone' : drag.tool);
       const elevation = drag.tool === 'rock' ? 0.72 : drag.tool === 'cliff' ? 2.1 : 1.12;
-      for (let row = bounds.row; row < bounds.row + bounds.height; row++) {
+      const painted = drag.obstacleStroke ? drag.paintCells : new Set();
+      if (!drag.obstacleStroke) for (let row = bounds.row; row < bounds.row + bounds.height; row++) {
         for (let column = bounds.column; column < bounds.column + bounds.width; column++) {
-          const index = row * editorDefinition.width + column;
-          editorCellMaterials[index] = material;
-          editorCellElevations[index] = elevation;
+          painted.add(row * editorDefinition.width + column);
         }
+      }
+      for (const index of painted) {
+        editorCellMaterials[index] = material;
+        editorCellElevations[index] = elevation;
       }
       let removedNodes = 0;
       if (material >= 0) {
@@ -9125,8 +9140,7 @@ function finishEditorPointer(event, commit) {
         editorResourceNodes = editorResourceNodes.filter((node) => {
           const column = Math.floor(node.x + editorDefinition.width / 2);
           const row = Math.floor(node.z + editorDefinition.height / 2);
-          return column < bounds.column || column >= bounds.column + bounds.width
-            || row < bounds.row || row >= bounds.row + bounds.height;
+          return !painted.has(row * editorDefinition.width + column);
         });
         removedNodes = previousCount - editorResourceNodes.length;
         if (!getSelectedEditorResourceNode()) selectedEditorResourceId = null;
