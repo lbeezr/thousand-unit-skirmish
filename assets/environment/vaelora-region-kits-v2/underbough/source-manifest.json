@@ -3,7 +3,7 @@
   "packId": "environment.underbough-cohesive-kit-v2",
   "maturity": "source-study",
   "region": "underbough",
-  "status": "Underbough three regional grounds and four tree forms have fixed-view four-state local runtime; rotated views and other-zone kits outstanding",
+  "status": "Underbough four regional grounds, four fixed-view tree forms and fixed-view thornberry food shrub are integrated; regional directional drawings remain under review",
   "source": "project-owned built-in ImageGen, using selected Underbough ecology key and existing copperleaf sprite references",
   "directionalMethod": "authored painted views; not measured 3D render captures",
   "targetTreeForms": [
@@ -276,6 +276,37 @@
       "status": "fixed-view-runtime-local-review-passed",
       "directionDegrees": 0,
       "harvestState": "depleted"
+    },
+    {
+      "path": "root-oak-view-090-review-v2.png",
+      "sha256": "72a5a134a47149e3b629193b07e27123a5a6f3fc998f8c6b28fc161c9e9876d6",
+      "sizeBytes": 1907199,
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "visibleAlphaBoundsPx": [
+        0,
+        18,
+        1244,
+        1254
+      ],
+      "status": "direction-candidate-review-pending",
+      "directionDegrees": null,
+      "requestedDirectionDegrees": 90,
+      "sourceTool": "built-in ImageGen",
+      "generatedOutput": "exec-2aa68493-0b86-49bd-b706-7009d4b4066f.png",
+      "promptPath": "root-oak-view-090-review-v2-prompt.txt",
+      "reviewPath": "root-oak-direction-review-v2.md",
+      "reason": "Authored side-view candidate, not a measured capture. Opposite-view anatomy and shared registration are not yet established; no runtime directional coverage claimed.",
+      "substantialAlphaBoundsPx": [
+        215,
+        24,
+        1154,
+        1227
+      ],
+      "substantialAlphaThreshold": 32
     }
   ]
 }
