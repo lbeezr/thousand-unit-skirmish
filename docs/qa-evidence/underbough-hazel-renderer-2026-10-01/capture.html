@@ -1,0 +1,24 @@
+<!doctype html><html><head><base href="/"><script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js"}}</script></head><body><script type="module">
+import * as THREE from 'three';
+import {addObstacleEnvironmentSprites,setForestSpriteStock,createEnvironmentSpriteInstances} from '/src/environment-art.mjs';
+const map=await(await fetch('/maps/underbough-rootways.json')).json(),original=JSON.stringify(map),objects=[];
+const slots=addObstacleEnvironmentSprites(map,map.width/2,map.height/2,m=>objects.push(m));
+const hazels=[...slots.values()].filter(s=>s.understory?.mesh.userData.understoryAsset==='underbough-low-hazel');
+if(hazels.length<10)throw Error('Missing hazel habitat placements');
+for(const s of hazels){const p=s.understory,c=s.cell%map.width-map.width/2+.5,r=Math.floor(s.cell/map.width)-map.height/2+.5;
+ if(Math.abs(p.x-c)>.450001||Math.abs(p.z-r)>.450001)throw Error('Plant outside parent cell');
+ const before=new THREE.Matrix4();p.mesh.getMatrixAt(p.index,before);setForestSpriteStock(s,0);const cleared=new THREE.Matrix4();p.mesh.getMatrixAt(p.index,cleared);
+ if(new THREE.Vector3().setFromMatrixScale(cleared).length()>1e-6)throw Error('Cleared shrub remains');
+ setForestSpriteStock(s,6);const restored=new THREE.Matrix4();p.mesh.getMatrixAt(p.index,restored);
+ if(before.elements.some((v,i)=>Math.abs(v-restored.elements[i])>1e-6))throw Error('Shrub reset changed registration');
+}
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(900,650);document.body.append(renderer.domElement);
+const scene=new THREE.Scene();scene.background=new THREE.Color('#33382b');
+const plant=createEnvironmentSpriteInstances('underbough-low-hazel',1.13959,.7,[{x:0,z:0,scale:1,flip:false,yaw:0}]);scene.add(plant);
+const textures=[plant.material.map];const deadline=Date.now()+10000;while(textures.some(t=>!t.image?.complete||!t.image.naturalWidth)){if(Date.now()>deadline)throw Error('Missing shrub image');await new Promise(r=>setTimeout(r,50));}
+const camera=new THREE.OrthographicCamera(-.9,.9,.65,-.65,.1,100);camera.position.set(6,8.6,6);camera.lookAt(0,.3,0);renderer.render(scene,camera);
+async function save(name,data){const r=await fetch('/__save/'+name,{method:'POST',body:data});if(!r.ok)throw Error('Save '+r.status);}
+await save('hazel-close.png',await new Promise(r=>renderer.domElement.toBlob(r)));
+if(JSON.stringify(map)!==original)throw Error('Map changed');
+await save('proof.json',JSON.stringify({forestCells:slots.size,hazelCells:hazels.length,allWithinParentCell:true,clearAndResetEveryHazelPassed:true,mapUnchanged:true,directionalCoverage:'one painted oblique view'},null,2));window.__renderDone=true;
+</script></body></html>
