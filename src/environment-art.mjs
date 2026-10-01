@@ -9,6 +9,7 @@ import { applyTerrainTextureSampling } from './terrain-texture-sampling.mjs';
 import { buildTerrainBlendMasks, buildForestGroundMask } from './terrain-blend.mjs';
 import { buildWaterSurfaceGeometry, WATER_LEVEL } from './water-surface-geometry.mjs';
 import { forestHabitatDepth, forestCanopyFactor } from './forest-habitat.mjs';
+import { forestAgeFactors } from './forest-age-composition.mjs';
 import { underboughForestSpecies } from './forest-composition.mjs';
 import { regionalGroundTextureName, regionalGroundVariantTextureName, regionalGroundColor } from './regional-ground-kits.mjs';
 import { shorePlantPositions } from './shore-vegetation.mjs';
@@ -1003,6 +1004,11 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
         }
       }
     }
+  }
+  if (underbough && new URLSearchParams(globalThis.location?.search ?? '').get('forestAges') === 'irregular') {
+    const canopyPoints = [...rootOaks, ...hornbeams, ...oldPlums, ...maples];
+    const factors = forestAgeFactors(canopyPoints, definition.terrainSeed || 0);
+    for (const point of canopyPoints) point.scale *= factors.get(point.cell);
   }
   for (const [name, width, height, points] of [
     [pineName, livingFringe ? 3.43015 : sombralMere ? 2.6 : vesperra || siltmouths ? 3.1 : paleMeridian || ellionar || sereward || veyrholds ? 2.7 : 2.25, sombralMere ? 3.7 : siltmouths ? 3.0 : paleMeridian || ellionar || sereward ? 3.8 : 3.4, pines],
