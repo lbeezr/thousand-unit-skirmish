@@ -829,3 +829,20 @@ views show more leaf color and less repeated brown branching, but dense forest
 strips and the repeated young silhouette remain conspicuous. The profile stays
 opt-in. Fuller quiet mature crowns and more true age silhouettes within each
 species remain necessary; no broad beauty or directional completion is claimed.
+
+## Fuller hornbeam canopy source — 1 October 2026
+
+The full-game age review still shows dominant branch lattice. A
+[leafier mature hornbeam candidate](../assets/environment/vaelora-region-kits-v2/underbough/moss-hornbeam-leafy-v2-source-comparison.png)
+conceals upper/lateral branching with fuller muted olive masses, while keeping
+the recognizable trunk. The source comparison uses shared canvas sizing, not
+game scale. A framing refinement leaves alpha8 bounds `[188,108,1104,1159]`
+on the 1254-pixel canvas. The initial output had only seven pixels above the
+crown; measured alpha did not prove clipping.
+
+[Review/provenance](../assets/environment/vaelora-region-kits-v2/underbough/moss-hornbeam-leafy-v2-review.json)
+and [prompts](../assets/environment/vaelora-region-kits-v2/underbough/moss-hornbeam-leafy-v2-prompts.json)
+retain the generated master and unfinished scope. This is a source candidate,
+not a runtime replacement. Root clutter and leaf highlights remain. Derive its
+harvest states and a new common registration, then review woodland overlap
+and full-game appearance. It adds no rotated views.
