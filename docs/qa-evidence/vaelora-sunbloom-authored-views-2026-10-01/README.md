@@ -40,3 +40,7 @@ with `RTS_VEGETATION_REGION=ellionar`, `RTS_VEGETATION_SUNBLOOM_VIEWS=1`,
 `RTS_VEGETATION_PLANT_CONTRACT=1` and `RTS_VEGETATION_OCCUPATION=1`.
 Independent flower harvesting, worked/low flower art and free-camera remapping
 remain absent.
+
+[Final imported-renderer check](../vaelora-sunbloom-integrated-2026-10-01/README.md)
+repeats the heading/stock test after preserving current main's opt-in forest-age
+module. The release proof above was refreshed against that combined head.
