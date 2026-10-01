@@ -1,0 +1,225 @@
+{
+  "sourceSha256": "02f9defd69d72206b2b2d5593bebf45ceccb32203f013e031ed02c0fa6a775f6",
+  "referenceSha256": "dd405c09cdd653f5e12c012260a3a694675fbd0847a64517adf98f9eb8054681",
+  "atlasFile": "review-atlas.webp",
+  "atlasSha256": "01ea24fd5c992cd437254d9fa2f030131b223799580bef39ceb83dcd3f5ccc9f",
+  "atlasSizePx": [
+    2560,
+    774
+  ],
+  "frameSizePx": [
+    512,
+    259
+  ],
+  "gutterPx": 64,
+  "sourceCanvasPerFramePx": [
+    884,
+    448
+  ],
+  "worldSize": [
+    1.10431,
+    0.5586255664062499
+  ],
+  "pivot": [
+    0.5,
+    1
+  ],
+  "perViewScale": false,
+  "frames": [
+    {
+      "view": "front",
+      "state": "full",
+      "rectPx": [
+        64,
+        64,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        0,
+        130,
+        750,
+        578
+      ],
+      "translationPx": [
+        62,
+        0
+      ],
+      "contactProxyPx": [
+        380,
+        578
+      ]
+    },
+    {
+      "view": "right",
+      "state": "full",
+      "rectPx": [
+        704,
+        64,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        750,
+        132,
+        1075,
+        580
+      ],
+      "translationPx": [
+        278,
+        0
+      ],
+      "contactProxyPx": [
+        914,
+        580
+      ]
+    },
+    {
+      "view": "rear",
+      "state": "full",
+      "rectPx": [
+        1344,
+        64,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        1075,
+        130,
+        1820,
+        578
+      ],
+      "translationPx": [
+        76,
+        0
+      ],
+      "contactProxyPx": [
+        1441,
+        578
+      ]
+    },
+    {
+      "view": "left",
+      "state": "full",
+      "rectPx": [
+        1984,
+        64,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        1820,
+        137,
+        2206,
+        585
+      ],
+      "translationPx": [
+        276,
+        0
+      ],
+      "contactProxyPx": [
+        1986,
+        585
+      ]
+    },
+    {
+      "view": "front",
+      "state": "worked",
+      "rectPx": [
+        64,
+        451,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        0,
+        129,
+        725,
+        577
+      ],
+      "translationPx": [
+        72,
+        0
+      ],
+      "contactProxyPx": [
+        370,
+        577
+      ]
+    },
+    {
+      "view": "right",
+      "state": "worked",
+      "rectPx": [
+        704,
+        451,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        725,
+        127,
+        1040,
+        575
+      ],
+      "translationPx": [
+        288,
+        0
+      ],
+      "contactProxyPx": [
+        879,
+        575
+      ]
+    },
+    {
+      "view": "rear",
+      "state": "worked",
+      "rectPx": [
+        1344,
+        451,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        1040,
+        128,
+        1780,
+        576
+      ],
+      "translationPx": [
+        85,
+        0
+      ],
+      "contactProxyPx": [
+        1397,
+        576
+      ]
+    },
+    {
+      "view": "left",
+      "state": "worked",
+      "rectPx": [
+        1984,
+        451,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        1780,
+        138,
+        2170,
+        586
+      ],
+      "translationPx": [
+        266,
+        0
+      ],
+      "contactProxyPx": [
+        1956,
+        586
+      ]
+    }
+  ],
+  "runtimeIntegrated": false,
+  "contactMethod": "silhouette center/lower bound; provisional comparison only",
+  "anatomicalRootAlignmentCertified": false
+}

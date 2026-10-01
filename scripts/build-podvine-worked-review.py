@@ -1,0 +1,88 @@
+"""Build/check a shared-scale full/worked pod-vine review atlas; no runtime binding."""
+import argparse
+import hashlib
+import importlib.util
+import json
+import sys
+from pathlib import Path
+from PIL import Image
+
+sys.dont_write_bytecode = True
+ROOT = Path(__file__).resolve().parents[1]
+PACK = ROOT / 'assets/environment/vesperra-podvine-worked-v1'
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--write', action='store_true')
+    args = parser.parse_args()
+    source = Image.open(PACK / 'source.png').convert('RGBA')
+    registration = json.loads((PACK / 'registration.json').read_text())
+    reference_path = ROOT / 'assets/environment/vesperra-podvine-views-v1/source.png'
+    assert sha(PACK / 'source.png') == registration['source']['sha256']
+    assert sha(reference_path) == registration['reference']['sha256']
+    assert source.size == (2170, 725)
+    spec = importlib.util.spec_from_file_location('full_views', ROOT / 'scripts/build-podvine-views.py')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    full = module.frames(Image.open(reference_path).convert('RGBA'))
+    generated = []
+    for i, (_, row) in enumerate(full):
+        x0, _, x1, bottom = row['sourceRectPx']
+        rect = [x0, bottom - 448, x1, bottom]
+        canvas = Image.new('RGBA', (884, 448))
+        canvas.alpha_composite(Image.open(reference_path).convert('RGBA').crop(rect), tuple(row['translationPx']))
+        image = canvas.resize((512, 259), Image.Resampling.LANCZOS)
+        generated.append((image, {'view': row['id'], 'state': 'full', 'rectPx': [64 + i * 640, 64, 512, 259],
+            'sourceRectPx': rect, 'translationPx': row['translationPx'],
+            'contactProxyPx': row['contactProxyPx']}))
+    for i, (x0, x1) in enumerate([(0, 725), (725, 1040), (1040, 1780), (1780, 2170)]):
+        bounds = source.crop((x0, 0, x1, source.height)).getchannel('A').point(lambda v: 255 if v >= 8 else 0).getbbox()
+        anchor = round((bounds[0] + bounds[2]) / 2)
+        bottom = bounds[3]
+        assert bottom - bounds[1] <= 448, 'Review crop would cut visible foliage'
+        rect = [x0, bottom - 448, x1, bottom]
+        offset = [442 - anchor, 0]
+        canvas = Image.new('RGBA', (884, 448))
+        canvas.alpha_composite(source.crop(rect), tuple(offset))
+        frame = canvas.resize((512, 259), Image.Resampling.LANCZOS)
+        generated.append((frame, {'view': full[i][1]['id'], 'state': 'worked',
+            'rectPx': [64 + i * 640, 451, 512, 259], 'sourceRectPx': rect,
+            'translationPx': offset, 'contactProxyPx': [x0 + anchor, bottom]}))
+    rows = [row for _, row in generated]
+    if args.write:
+        atlas = Image.new('RGBA', (2560, 774))
+        for frame, row in generated:
+            atlas.alpha_composite(frame, tuple(row['rectPx'][:2]))
+        atlas.save(PACK / 'review-atlas.webp', quality=86, method=6, exact=True)
+        manifest = {'sourceSha256': sha(PACK / 'source.png'), 'referenceSha256': sha(reference_path),
+            'atlasFile': 'review-atlas.webp', 'atlasSha256': sha(PACK / 'review-atlas.webp'),
+            'atlasSizePx': [2560, 774], 'frameSizePx': [512, 259], 'gutterPx': 64,
+            'sourceCanvasPerFramePx': [884, 448], 'worldSize': [1.10431, 1.10431 * 259 / 512], 'pivot': [.5, 1],
+            'perViewScale': False, 'frames': rows, 'runtimeIntegrated': False,
+            'contactMethod': 'silhouette center/lower bound; provisional comparison only',
+            'anatomicalRootAlignmentCertified': False}
+        (PACK / 'review-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    manifest = json.loads((PACK / 'review-manifest.json').read_text())
+    assert manifest['sourceSha256'] == sha(PACK / 'source.png')
+    assert manifest['referenceSha256'] == sha(reference_path)
+    assert manifest['atlasSha256'] == sha(PACK / 'review-atlas.webp')
+    assert manifest['frames'] == rows
+    assert manifest['worldSize'] == [1.10431, 1.10431 * 259 / 512] and manifest['pivot'] == [.5, 1]
+    assert manifest['perViewScale'] is False and manifest['runtimeIntegrated'] is False
+    atlas = Image.open(PACK / 'review-atlas.webp').convert('RGBA')
+    assert list(atlas.size) == manifest['atlasSizePx'] == [2560, 774]
+    for expected, row in generated:
+        x, y, w, h = row['rectPx']
+        actual = atlas.crop((x, y, x + w, y + h))
+        assert actual.getchannel('A').tobytes() == expected.getchannel('A').tobytes(), str(row)
+    print(json.dumps({'frames': len(rows), 'decodedAlphaExact': True, 'perViewScale': False,
+        'runtimeIntegrated': False, 'anatomicalRootAlignmentCertified': False}))
+
+
+if __name__ == '__main__':
+    main()

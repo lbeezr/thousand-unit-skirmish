@@ -23,3 +23,17 @@ landmarks at a common scale, export padded frames, and compare full/worked poses
 at identical fixed-camera pivots before binding woodland stock states. Existing
 runtime pod-vines retain their full four-view atlas. Low/depleted poses and
 independent pod gathering remain unfinished.
+
+## Shared-scale comparison export
+
+[Review manifest](review-manifest.json) and [paired renderer evidence](../../../docs/qa-evidence/vaelora-podvine-worked-registration-2026-10-01/README.md)
+now compare eight full/worked frames at common scale and unchanged world pivots.
+The review adds crop padding to retain the worked left leaf tip and uses an
+aspect-matched, slightly taller card. This is a provisional review export;
+runtime dimension registration and live woodland stock binding remain next.
+
+```sh
+python3 scripts/build-podvine-worked-review.py
+python3 scripts/build-podvine-worked-review.py --write
+node scripts/preview-podvine-worked.mjs
+```
