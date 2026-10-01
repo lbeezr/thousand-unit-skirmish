@@ -1,0 +1,23 @@
+{
+  "sourceTool": "built-in ImageGen",
+  "generatedOutput": "exec-b711edb4-0745-43f7-837b-a2773c928b23.png",
+  "sourceSha256": "864047dbcc206cb0a39c122b572bee1ff600c0a4760c993de50974298745cd18",
+  "runtimeSha256": "2c5d88c376e0c67c4cea44a3fee3080d3d20614eebd377ee37a36b9079d60d64",
+  "dimensionsPx": [
+    1254,
+    1254
+  ],
+  "encoding": "RGB WebP quality90; no resize or creative pixel edits",
+  "meanRgb": {
+    "worn-dirt-01.png": [
+      112.71639398263675,
+      82.90676470064534,
+      58.80539403096694
+    ],
+    "worn-dirt-02.png": [
+      113.27918126111277,
+      81.97032653403845,
+      56.761676828725435
+    ]
+  }
+}

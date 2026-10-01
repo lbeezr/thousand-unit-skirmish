@@ -28,6 +28,7 @@ export function regionalGroundTextureName(definition, material, enabled = true) 
 export function regionalGroundVariantTextureName(definition, material, enabled = true) {
   if (!enabled || definition?.region !== 'underbough') return null;
   if (['meadow', 'short-grass'].includes(material)) return 'underbough-clearing-grass-02-v2';
+  if (material === 'dirt') return 'underbough-worn-dirt-02-v2';
   return material === 'forest-floor' ? 'underbough-root-soil-02-v2' : null;
 }
 
