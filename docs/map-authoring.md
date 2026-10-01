@@ -309,6 +309,11 @@ later does not cancel an armed event. Recipients remain Azure, Ember or both,
 independently of the completing team. Repeats, rewards and ordinary event chains
 remain supported. Activation and deliveries survive checkpoints; rematch rearms.
 
+Live waiting cards use the registered building/technology label and the required
+Azure/Ember/Either team, independently of who receives the reward or views the
+card. Serialized IDs and completion rules retain their existing values. See
+[completion-label evidence](qa-completion-event-labels-2026-10-01.md).
+
 **Live host event diagnostics** in Map Studio shows at most 32 current event rows:
 waiting, armed, delivered (repeating), or completed; activation reason/team/time,
 delivery count and recipients. Only Azure, the room host, receives this diagnostic
