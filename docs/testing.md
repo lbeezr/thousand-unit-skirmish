@@ -123,6 +123,27 @@ start a separate worker with `RTS_MAX_PEERS=2` and run
 
 Chrome/Chromium is required; use `CHROME_PATH` if discovery fails.
 
+Before a browser proof, `node scripts/browser-preflight.mjs --launch` reuses the
+isolated CDP launcher, reads the browser version, and disposes its temporary
+profile. It emits versioned JSON and exits 0 for successful startup/cleanup or
+1 for an unsupported runtime. No arguments or unknown options exit 2 without
+launching a browser. CI tests its contract without requiring Chrome.
+
+On a runtime already known to be blocked, use
+`node scripts/browser-preflight.mjs --diagnose=/path/to/startup.log` instead.
+This reads an existing local log and launches nothing. A log diagnosis always
+exits 1: it cannot establish current readiness. Multiple observed blockers, such
+as sandbox and Crashpad storage errors, are reported separately; raw stderr and
+environment values are omitted from the JSON. Keep the original log locally
+for investigation.
+
+Sandbox failures require a provider-provisioned working sandbox. Profile/config
+failures require writable per-job temporary, XDG configuration, and cache paths.
+Installing a JavaScript automation library alone does not supply these runtime
+prerequisites. This command changes no sandbox flags or permissions. `ready`
+proves browser/CDP startup and cleanup only: WebGL2, game rendering, screenshots,
+performance, and player usability still require their own evidence.
+
 - `node scripts/map-studio-draft-scenario.mjs`: editor draft behavior.
 - `node scripts/frontier-160-map-studio-roundtrip.mjs`: legacy, elevation, large-map,
   and Highland Grove authoring round trips.
