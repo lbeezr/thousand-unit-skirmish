@@ -429,3 +429,9 @@ and common geometry remain unproven. Preserve both originals and their
 [comparison evidence](../assets/environment/vaelora-region-kits-v2/underbough/root-oak-direction-pair-review-v2.json).
 Next establish a shared anatomical construction; do not derive harvest frames
 from independent redraws that have not passed the intact-view comparison.
+
+A [shared Root Oak construction proposal](art-direction/environment-camera-v1/README.md#root-oak-shared-construction-proposal--1-october-2026)
+now supplies four projections of one connected 3D scaffold, named crown volumes
+and root buttresses. It is an approximate drawing reference, not recovered
+geometry or runtime art. Reconcile its zero-heading silhouette with the accepted
+painted source before deriving a new directional set.
