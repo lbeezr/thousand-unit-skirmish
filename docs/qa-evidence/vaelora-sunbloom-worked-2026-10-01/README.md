@@ -34,3 +34,8 @@ the subsequent local room shutdown logged checkpoint-write ENOSPC errors. Its
 workers were stopped. This is local appearance/lifecycle evidence, not a hosted
 or performance measurement. Distinct low/depleted flower art and independent
 flower gathering remain absent.
+
+[Final imported-renderer check](../vaelora-sunbloom-worked-integrated-2026-10-01/README.md)
+repeats the heading/state tests after integrating main's opt-in hornbeam work;
+release bytes above were refreshed against the combined head. That final server
+shutdown completed without the earlier local disk-write errors.
