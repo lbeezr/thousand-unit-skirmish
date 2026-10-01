@@ -196,6 +196,7 @@ const scenarios = [
   ['scripts/pve-production-runtime-scenario.mjs', 'PvE production on Millrace', 'bellweather-millrace'],
   ['scripts/pve-production-runtime-scenario.mjs', 'PvE production on Rootways', 'underbough-rootways'],
   ['scripts/underbough-scout-scenario.mjs', 'Rootways paid Scout exploration, retreat and resumption'],
+  ['scripts/underbough-woodland-shortcut-scenario.mjs', 'Rootways paid woodland shortcut and both-seat traversal'],
   ['scripts/pve-production-runtime-scenario.mjs', 'PvE production on Forked Vale', 'forked-vale'],
   ['scripts/pve-production-runtime-scenario.mjs', 'PvE production on Woodland Expanse', 'woodland-expanse'],
   ['scripts/visual-pack-path-safety-scenario.mjs', 'Visual pack path safety'],
