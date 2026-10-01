@@ -238,3 +238,15 @@ Camera, lighting, scale and pivot remain fixed. This is a source pack; runtime
 selection and the painted regional families' directional coverage remain
 unfinished. Source hashes, provider provenance and exact RGBA atlas/frame
 validation are retained. No new paid provider generation was used.
+
+### Existing-model heading selection — 1 October 2026 UTC
+
+The renderer now buckets generic oak and pine instances into eight model-derived
+headings using each original cell as the stable seed. Their sprite cards remain
+camera-facing and unflipped. Regional painted families retain their own kits.
+[Actual renderer evidence](qa-evidence/resource-directions-2026-10-01/renderer-proof.json)
+records all 394 original review-map trees, eight headings per family and exact
+instance-matrix restoration after depletion/reset. The fixture loads the real
+renderer and assets in Chrome and saves its rendered grove. This is renderer
+integration evidence; it does not prove a full-match worker observation or
+regional painted-tree directional coverage. Berry headings remain source-only.
