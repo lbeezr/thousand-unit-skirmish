@@ -41,8 +41,11 @@ are deterministic and reflected between seats. Woodland additions change routes
 and stock; they require the same reachability and match checks as other blockers.
 
 Runtime trees now vary their root positions by up to 0.39 cell in each axis,
-within their harvest cell. Water surfaces clip exposed convex corners by 0.45
-cell and follow those diagonals with shallow shore bands. These are visual
+within their harvest cell. Water surfaces trace connected boundaries, including
+islands, and round bends by up to 0.45 cell (less on short edges). Land-facing
+banks inset by 0.14 cell to keep the curves within blocked water; shallow shore
+bands follow those curves. `?waterOutline=chamfered` restores the prior outline
+for comparison. These are visual
 changes; they do not make water walkable. The battlefield's eight-cell grid is
 hidden by default; `?terrainGrid=1` restores it for debugging. Map Studio retains
 its authoring grid. Saved maps need no new fields or partial-cell collision rules.
@@ -84,11 +87,12 @@ techniques; they do not certify this implementation or imply copying their code.
    bays and tongues in the tree line, and distinct foreground/background groups.
    Use protected base pads, resource access and objective approaches as design
    constraints. Start from a landscape sketch and route graph, then rasterize.
-2. **Finish continuous shore contours.** The current diagonal clipping is a
-   bounded improvement. A continuous contour mesh with bank material, shallows
-   and habitat-specific reeds should remove the remaining staircase. Keep its
-   maximum deviation from blocking cells explicit; test narrow channels, islands,
-   map edges and ford widths. Do not conceal a blocked bank beneath apparent land.
+2. **Review shoreline composition.** Connected conservative curves now replace
+   per-cell chamfers. Small ponds can still look scalloped because their broad
+   footprint comes from the authoring grid. Review larger bends, bank material,
+   shallows and habitat-specific reeds in actual landscapes. Any outline extending
+   beyond blocked cells needs explicit collision and route treatment. Keep narrow
+   channels, islands, map edges and ford widths readable.
 3. **Graduate vegetation by habitat.** Keep dense harvestable cores, thinner
    margins, small satellite clusters, understory and deliberate clearings.
    Decorative fringes may use fractional world positions and irregular spacing;
