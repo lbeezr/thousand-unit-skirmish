@@ -974,3 +974,13 @@ dimensions and gameplay rules stay unchanged. The
 checks 400 frame transitions, existing vegetation contracts and release bytes.
 The worked row serves all positive partial stock; distinct low/depleted poses
 and independent pod gathering remain unfinished.
+## Pod-vine distinct low-stock views · 1 October 2026
+
+The [twelve-frame pod-vine pack](../assets/environment/vesperra-podvine-low-v1/README.md)
+adds sparse foliage and exposed woody loops for stock one or two. Full/worked
+appearances, fixed camera, registered card dimensions, heading selection and
+root matrices are retained. Zero still hides the companion. The
+[runtime evidence](qa-evidence/vaelora-podvine-low-runtime-2026-10-01/README.md)
+covers 480 frame transitions, three rendered rows, existing plant/occupation
+contracts and exact release bytes. Anatomical registration and independent
+pod gathering remain unfinished.

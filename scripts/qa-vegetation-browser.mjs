@@ -475,7 +475,7 @@ try {
   const result=await cdp.evaluate(`(async()=>{
    const THREE=await import('/vendor/three.module.js');
    const {createEnvironmentSpriteInstances,setEnvironmentSpriteInstance,createGroundSurfaces,setForestSpriteStock}=await import('/src/environment-art.mjs');
-   const {PODVINE_WORKED_PACK:pack}=await import('/src/podvine-worked-pack.mjs');
+   const {PODVINE_LOW_PACK:pack}=await import('/src/podvine-low-pack.mjs');
    const {CAMERA_VIEW_DIRECTION}=await import('/src/camera-controls.mjs');
    const {setActiveTerrain}=await import('/src/terrain-height.mjs');setActiveTerrain({width:24,height:24});
    const points=Array.from({length:80},(_,cell)=>({cell,x:cell%10-5,z:Math.floor(cell/10)-4,scale:1,flip:true,yaw:.8}));
@@ -492,11 +492,11 @@ try {
     const initial=matrix.elements.slice();
     const slot={mesh:repeat,index:i,x:points[i].x,z:points[i].z,scale:1,
       understory:{mesh,index:i,x:points[i].x,z:points[i].z,scale:1,flip:true,yaw:.8}};
-    for(const stock of [5,3,1,0,6]){
+    for(const stock of [5,3,2,1,0,6]){
       setForestSpriteStock(slot,stock);
       const worked=stock>0&&stock<6;
-      if(views.worked[i]!==Number(worked)||views.viewIndices[i]!==view)throw new Error('Pod-vine state/view mismatch');
-      const [sx,sy,sw,sh]=(worked?pack.workedRectsPx:pack.rectsPx)[view];
+      if(views.worked[i]!== (stock>0&&stock<=2?2:Number(worked))||views.viewIndices[i]!==view)throw new Error('Pod-vine state/view mismatch');
+      const [sx,sy,sw,sh]=(stock>0&&stock<=2?pack.lowRectsPx:worked?pack.workedRectsPx:pack.rectsPx)[view];
       const expectedState=[(sx+.5)/pw,1-(sy+sh-.5)/ph,(sw-1)/pw,(sh-1)/ph];
       if(Array.from(views.rects.array.slice(i*4,i*4+4)).some((v,j)=>Math.abs(v-expectedState[j])>1e-7))throw new Error('Wrong pod-vine state rectangle');
       mesh.getMatrixAt(i,matrix);
@@ -524,9 +524,11 @@ try {
    for(const [name,span] of [['close',5.5],['strategic',14]]){const camera=new THREE.OrthographicCamera(-span,span,span/2,-span/2,.1,200);camera.position.set(...CAMERA_VIEW_DIRECTION).multiplyScalar(50).add(new THREE.Vector3(0,.3,0));camera.lookAt(0,.3,0);renderer.render(scene,camera);images[name]=renderer.domElement.toDataURL('image/png');}
    for(const {index,view} of selected){const x=(view-1.5)*1.8,z=-x;setForestSpriteStock({mesh:repeat,index,x,z,scale:1,understory:{mesh,index,x,z,scale:1,flip:true,yaw:.8}},3);}
    const workedCamera=new THREE.OrthographicCamera(-5.5,5.5,2.75,-2.75,.1,200);workedCamera.position.set(...CAMERA_VIEW_DIRECTION).multiplyScalar(50).add(new THREE.Vector3(0,.3,0));workedCamera.lookAt(0,.3,0);renderer.render(scene,workedCamera);images['worked-close']=renderer.domElement.toDataURL('image/png');
+   for(const {index,view} of selected){const x=(view-1.5)*1.8,z=-x;setForestSpriteStock({mesh:repeat,index,x,z,scale:1,understory:{mesh,index,x,z,scale:1,flip:true,yaw:.8}},1);}
+   renderer.render(scene,workedCamera);images['low-close']=renderer.domElement.toDataURL('image/png');
    if(renderer.getContext().getError()!==0)throw new Error('Authored view GL error');
    scene.traverse(o=>{o.geometry?.dispose();o.userData.ownedGroundTextures?.forEach(t=>t.dispose());o.material?.dispose()});renderer.dispose();renderer.forceContextLoss();
-   return {views:4,counts,repeatable:true,mirrored:false,workedLifecycleChecks:80*5,checks,images,measured3DCapture:false,anatomicalRootAlignmentCertified:false};
+   return {views:4,counts,repeatable:true,mirrored:false,workedLifecycleChecks:80*6,checks,images,measured3DCapture:false,anatomicalRootAlignmentCertified:false};
   })()`);
   for(const [name,image] of Object.entries(result.images))await writeFile(out+'/podvine-views-'+name+'.png',Buffer.from(image.split(',')[1],'base64'));delete result.images;
   await cdp.call('Page.navigate',{url:BASE.origin+'/?plantViews=legacy'});await sleep(3500);
@@ -632,7 +634,7 @@ try {
  if(!proof[7].files.includes('siltmouths-silver-reed.webp')||proof.some((r,i)=>i!==7&&r.files.includes('siltmouths-silver-reed.webp')))throw new Error('Silver reed region binding mismatch');
  for(const file of ['sereward-succulent.webp','sereward-succulent-02.webp'])if(!proof[4].files.includes(file)||proof.some((r,i)=>i!==4&&r.files.includes(file)))throw new Error('Desert understory region binding mismatch: '+file);
  for(const file of ['underbough-rootward-fungus.webp','underbough-rootward-fungus-02.webp'])if(!proof[3].files.includes(file)||proof.some((r,i)=>i!==3&&r.files.includes(file)))throw new Error('Fungus region binding mismatch: '+file);
- for(const file of ['vesperra-shade-fern.webp','vesperra-shade-fern-02.webp','vesperra-veilcap.webp','review-atlas.webp'])if(!proof[8].files.includes(file)||proof.some((r,i)=>i!==8&&r.files.includes(file)))throw new Error('Understory region binding mismatch: '+file);
+ for(const file of ['vesperra-shade-fern.webp','vesperra-shade-fern-02.webp','vesperra-veilcap.webp','lifecycle-atlas.webp'])if(!proof[8].files.includes(file)||proof.some((r,i)=>i!==8&&r.files.includes(file)))throw new Error('Understory region binding mismatch: '+file);
  if(!proof[0].files.includes('bellweather-meadow-herbs.webp')||proof.some((r,i)=>i!==0&&r.files.includes('bellweather-meadow-herbs.webp')))throw new Error('Meadow herbs region binding mismatch');
  if(!proof[4].files.includes('sereward-succulent.webp')||proof.some((r,i)=>i!==4&&r.files.includes('sereward-succulent.webp')))throw new Error('Succulent region binding mismatch');
  if(!proof[5].files.includes('ellionar-sunbloom.webp')||proof.some((r,i)=>i!==5&&r.files.includes('ellionar-sunbloom.webp')))throw new Error('Sunbloom region binding mismatch');

@@ -1,0 +1,27 @@
+{
+  "sourceRevision": "b459993624606153e7826fc8a17ce3239d9a923e",
+  "sourceDirty": true,
+  "releaseDigest": "sha256:f1967310da6a7b2a88c090672ca7635cca531f408548e081ddddd37e14d43bdb",
+  "files": [
+    {
+      "file": "server.mjs",
+      "sha256": "41a37e9e85c659039900b8403f7514f0ca55cf82b1301c6e221d5a5709a0f168",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/environment-art.mjs",
+      "sha256": "b6f02c028ff93a6a236d67a7d8e35d4cd0b2ab28c8b8ec29161cf094307480a3",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/podvine-low-pack.mjs",
+      "sha256": "d0c3330045125cf2a78a72a0a10653240f8d3ee0aafe24fc8130fb1b67306c62",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "assets/environment/vesperra-podvine-low-v1/lifecycle-atlas.webp",
+      "sha256": "0cf874a583591eaacc59bbaa575334fdf11937b4feee845a592385d83f48419b",
+      "releaseBytesExact": true
+    }
+  ]
+}

@@ -1,0 +1,322 @@
+{
+  "sourceSha256": "07ffb33ff398775c29090f3125aad31c1fca290557ad20294ded31a499225e5f",
+  "referenceSha256": "02f9defd69d72206b2b2d5593bebf45ceccb32203f013e031ed02c0fa6a775f6",
+  "atlasFile": "lifecycle-atlas.webp",
+  "atlasSha256": "0cf874a583591eaacc59bbaa575334fdf11937b4feee845a592385d83f48419b",
+  "atlasSizePx": [
+    2560,
+    1161
+  ],
+  "frameSizePx": [
+    512,
+    259
+  ],
+  "gutterPx": 64,
+  "sourceCanvasPerFramePx": [
+    884,
+    448
+  ],
+  "worldSize": [
+    1.10431,
+    0.55
+  ],
+  "pivot": [
+    0.5,
+    1
+  ],
+  "frames": [
+    {
+      "view": "front",
+      "state": "full",
+      "rectPx": [
+        64,
+        64,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        0,
+        130,
+        750,
+        578
+      ],
+      "translationPx": [
+        62,
+        0
+      ],
+      "contactProxyPx": [
+        380,
+        578
+      ]
+    },
+    {
+      "view": "right",
+      "state": "full",
+      "rectPx": [
+        704,
+        64,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        750,
+        132,
+        1075,
+        580
+      ],
+      "translationPx": [
+        278,
+        0
+      ],
+      "contactProxyPx": [
+        914,
+        580
+      ]
+    },
+    {
+      "view": "rear",
+      "state": "full",
+      "rectPx": [
+        1344,
+        64,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        1075,
+        130,
+        1820,
+        578
+      ],
+      "translationPx": [
+        76,
+        0
+      ],
+      "contactProxyPx": [
+        1441,
+        578
+      ]
+    },
+    {
+      "view": "left",
+      "state": "full",
+      "rectPx": [
+        1984,
+        64,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        1820,
+        137,
+        2206,
+        585
+      ],
+      "translationPx": [
+        276,
+        0
+      ],
+      "contactProxyPx": [
+        1986,
+        585
+      ]
+    },
+    {
+      "view": "front",
+      "state": "worked",
+      "rectPx": [
+        64,
+        451,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        0,
+        129,
+        725,
+        577
+      ],
+      "translationPx": [
+        72,
+        0
+      ],
+      "contactProxyPx": [
+        370,
+        577
+      ]
+    },
+    {
+      "view": "right",
+      "state": "worked",
+      "rectPx": [
+        704,
+        451,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        725,
+        127,
+        1040,
+        575
+      ],
+      "translationPx": [
+        288,
+        0
+      ],
+      "contactProxyPx": [
+        879,
+        575
+      ]
+    },
+    {
+      "view": "rear",
+      "state": "worked",
+      "rectPx": [
+        1344,
+        451,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        1040,
+        128,
+        1780,
+        576
+      ],
+      "translationPx": [
+        85,
+        0
+      ],
+      "contactProxyPx": [
+        1397,
+        576
+      ]
+    },
+    {
+      "view": "left",
+      "state": "worked",
+      "rectPx": [
+        1984,
+        451,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        1780,
+        138,
+        2170,
+        586
+      ],
+      "translationPx": [
+        266,
+        0
+      ],
+      "contactProxyPx": [
+        1956,
+        586
+      ]
+    },
+    {
+      "view": "front",
+      "state": "low",
+      "rectPx": [
+        64,
+        838,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        0,
+        131,
+        725,
+        579
+      ],
+      "translationPx": [
+        66,
+        0
+      ],
+      "contactProxyPx": [
+        376,
+        579
+      ]
+    },
+    {
+      "view": "right",
+      "state": "low",
+      "rectPx": [
+        704,
+        838,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        725,
+        132,
+        1040,
+        580
+      ],
+      "translationPx": [
+        278,
+        0
+      ],
+      "contactProxyPx": [
+        889,
+        580
+      ]
+    },
+    {
+      "view": "rear",
+      "state": "low",
+      "rectPx": [
+        1344,
+        838,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        1040,
+        131,
+        1780,
+        579
+      ],
+      "translationPx": [
+        80,
+        0
+      ],
+      "contactProxyPx": [
+        1402,
+        579
+      ]
+    },
+    {
+      "view": "left",
+      "state": "low",
+      "rectPx": [
+        1984,
+        838,
+        512,
+        259
+      ],
+      "sourceRectPx": [
+        1780,
+        133,
+        2169,
+        581
+      ],
+      "translationPx": [
+        302,
+        0
+      ],
+      "contactProxyPx": [
+        1920,
+        581
+      ]
+    }
+  ],
+  "perViewScale": false,
+  "runtimeIntegrated": true,
+  "anatomicalRootAlignmentCertified": false,
+  "contactMethod": "silhouette center/lower bound; provisional",
+  "fullWorkedSources": "../vesperra-podvine-worked-v1/review-manifest.json"
+}

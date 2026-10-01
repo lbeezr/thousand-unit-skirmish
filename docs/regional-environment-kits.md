@@ -660,3 +660,12 @@ and [built-in ImageGen prompt](../assets/environment/vaelora-region-kits-v2/unde
 preserve the attempt. The next directional method must retain shared model
 geometry through surface finishing and fixed-camera capture rather than relying
 on painting to preserve each projection. Existing runtime art stays in use.
+## Vesperra sparse pod-vine stock views · 1 October 2026
+
+The [full/worked/low pack](../assets/environment/vesperra-podvine-low-v1/README.md)
+adds four sparse-foliage low views to woodland companions. Low stock exposes
+grey woody loops while retaining violet pods; stock/reset changes preserve
+heading and root matrices. [Local runtime evidence](qa-evidence/vaelora-podvine-low-runtime-2026-10-01/README.md)
+covers 480 transitions and all three rows. This extends woodland disturbance
+feedback without introducing pod gathering or closing the canopy directional
+roster.

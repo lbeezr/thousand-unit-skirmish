@@ -55,3 +55,9 @@ dimensions, while the review manifest records both review and runtime dimensions
 checks frame transitions, matrices, clear/reset, margin independence and release
 bytes. The worked row also serves low positive stock; no distinct low pose is
 claimed.
+## Subsequent low-stock integration · 1 October 2026
+
+The default loader now uses the [twelve-frame pack](../vesperra-podvine-low-v1/README.md)
+with a distinct sparse-foliage low row. This eight-frame checkpoint and its
+exporter remain preserved and reproducible. The newer pack rebuilds full/worked
+directly from their PNG sources rather than recompressing this atlas.

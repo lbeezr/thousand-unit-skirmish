@@ -1,0 +1,36 @@
+{
+  "sourceSha256": "07ffb33ff398775c29090f3125aad31c1fca290557ad20294ded31a499225e5f",
+  "sourceDimensionsPx": [
+    2169,
+    725
+  ],
+  "alphaBoundsByView": [
+    [
+      74,
+      176,
+      677,
+      579
+    ],
+    [
+      769,
+      152,
+      1008,
+      580
+    ],
+    [
+      1118,
+      160,
+      1687,
+      579
+    ],
+    [
+      1797,
+      156,
+      2042,
+      581
+    ]
+  ],
+  "reference": "../vesperra-podvine-worked-v1/source.png",
+  "referenceSha256": "02f9defd69d72206b2b2d5593bebf45ceccb32203f013e031ed02c0fa6a775f6",
+  "anatomicalRootAlignmentCertified": false
+}
