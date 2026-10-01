@@ -948,3 +948,14 @@ This is one full-stock painted view, not a rotated perspective or runtime
 replacement. Exact root registration, matching worked/low/depleted states and
 paired full-game palette review remain before adoption. The original remains
 available; this candidate does not complete regional palette acceptance.
+
+### Muted copperleaf lifecycle sources — 1 October 2026
+
+Worked, low and depleted source candidates now accompany muted full-v2. Edits
+retain the worked notch, deeper low-stock wound and depleted cut stump while
+bringing their foliage into the quieter copper/ochre palette. All four RGBA
+canvases are 1312×1199. The lifecycle review JSON records hashes, alpha bounds
+and root-band bounds; the contact sheet compares the four source states.
+These coarse registration checks do not establish pixel-perfect alignment.
+Runtime packing, actual transition/reset captures and full-game palette review
+remain. This is still one painted perspective, with no added rotations.

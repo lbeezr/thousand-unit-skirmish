@@ -1,0 +1,69 @@
+{
+  "frames": [
+    {
+      "state": "full",
+      "sha256": "3fe01e458dea674c6dd2676c774addf99b0c352a6de43e0ddda03107c1c1418c",
+      "alpha8Bounds": [
+        11,
+        9,
+        1298,
+        1184
+      ],
+      "rootBand950Bounds": [
+        256,
+        0,
+        1077,
+        234
+      ]
+    },
+    {
+      "state": "worked",
+      "sha256": "5150e38a32c2dc95e0b77cb98a24664eeb7c696ab34223514d2908e91431efb5",
+      "alpha8Bounds": [
+        12,
+        9,
+        1297,
+        1185
+      ],
+      "rootBand950Bounds": [
+        256,
+        0,
+        1077,
+        235
+      ]
+    },
+    {
+      "state": "low",
+      "sha256": "f593cac7e8f798e93a6b4f20aab814888574b16b4d5babcf87dd7675ccd7b2d8",
+      "alpha8Bounds": [
+        12,
+        9,
+        1297,
+        1185
+      ],
+      "rootBand950Bounds": [
+        256,
+        0,
+        1077,
+        235
+      ]
+    },
+    {
+      "state": "depleted",
+      "sha256": "3cea6a794f92a9ceec92745e64cafce84280b60f607784b9e6dfe1a19a2c50f6",
+      "alpha8Bounds": [
+        256,
+        634,
+        1077,
+        1184
+      ],
+      "rootBand950Bounds": [
+        256,
+        0,
+        1077,
+        234
+      ]
+    }
+  ],
+  "review": "All four source frames inspected. Worked notch, deeper low wound and depleted cut stump remain visible. Muted foliage is consistent. Root-band bounds check is coarse, not pixel registration proof. Runtime atlas and full-game comparison remain. One painted camera, no new rotations."
+}
