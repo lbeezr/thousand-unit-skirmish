@@ -1,5 +1,10 @@
 # Frontier environment art
 
+Ellionar woodland Sunblooms use the
+[full/worked/low v4 atlas](../assets/environment/ellionar-sunbloom-low-v4/README.md)
+with four headings per state. Independent channel gardens retain full plants.
+
+
 ## Complete regional kits · 30 September 2026
 
 The player identified clashing cross-region materials, homogeneous forests and

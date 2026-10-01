@@ -1,0 +1,27 @@
+{
+  "sourceRevision": "b1140366116207408e0e80467c9bea5ff27f5d6d",
+  "sourceDirty": true,
+  "releaseDigest": "sha256:6cbd7f5a09574da676bef3805eb8b4dfff9c12eec24e044705a33e3fd900b6c2",
+  "files": [
+    {
+      "file": "server.mjs",
+      "sha256": "d8e96e42b57e3eb6eca1211435f4222900f85b73db01fb2c28a6bc951cbaf208",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/environment-art.mjs",
+      "sha256": "57c663752e7ea938c8d2dd54d069c7adfdf529e95eaf9b975656709636ae0dbf",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/sunbloom-low-pack.mjs",
+      "sha256": "773b584b94aff4a59356867438523dc8d60e589b0911f8e3044799d675335ed5",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "assets/environment/ellionar-sunbloom-low-v4/sunbloom-low-atlas.webp",
+      "sha256": "ead68ea9bc9c142e290386f634382faf11b89af2ba1cd13be897c18923b6132b",
+      "releaseBytesExact": true
+    }
+  ]
+}

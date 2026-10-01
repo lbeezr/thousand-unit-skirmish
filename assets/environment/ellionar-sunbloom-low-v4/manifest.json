@@ -1,0 +1,335 @@
+{
+  "sourceSha256": "a4b271e4d17bfb50f1759f2f067ec5084ec396b95dac5ae4ad40ebe93c5ad149",
+  "referenceSha256": "c881b5d0c416325643f1c7d10feac8673c37124ac24bca080c02447321a365b9",
+  "fullReference": "../ellionar-sunbloom-crowns-v2/source.png",
+  "workedReference": "../ellionar-sunbloom-worked-v3/source.png",
+  "workedReferenceSha256": "3f5d8962decfed776089c2876322cfcbe3fb32d7472f12e2d7c57a87c8671940",
+  "atlasFile": "sunbloom-low-atlas.webp",
+  "atlasSha256": "ead68ea9bc9c142e290386f634382faf11b89af2ba1cd13be897c18923b6132b",
+  "atlasSizePx": [
+    2560,
+    1857
+  ],
+  "frameSizePx": [
+    512,
+    491
+  ],
+  "sourceCanvasPerFramePx": [
+    700,
+    671
+  ],
+  "gutterPx": 64,
+  "worldSize": [
+    0.88654,
+    0.85
+  ],
+  "pivot": [
+    0.5,
+    1
+  ],
+  "frames": [
+    {
+      "id": "front",
+      "state": "full",
+      "rectPx": [
+        64,
+        64,
+        512,
+        491
+      ],
+      "sourceRectPx": [
+        0,
+        -31,
+        675,
+        640
+      ],
+      "translationPx": [
+        12,
+        0
+      ],
+      "pairedContactProxyPx": [
+        338,
+        640
+      ],
+      "contactMethod": "reference silhouette center and common lower bound; source-coordinate pairing, anatomical crown not certified"
+    },
+    {
+      "id": "right",
+      "state": "full",
+      "rectPx": [
+        704,
+        64,
+        512,
+        491
+      ],
+      "sourceRectPx": [
+        675,
+        -31,
+        1090,
+        640
+      ],
+      "translationPx": [
+        132,
+        0
+      ],
+      "pairedContactProxyPx": [
+        893,
+        640
+      ],
+      "contactMethod": "reference silhouette center and common lower bound; source-coordinate pairing, anatomical crown not certified"
+    },
+    {
+      "id": "rear",
+      "state": "full",
+      "rectPx": [
+        1344,
+        64,
+        512,
+        491
+      ],
+      "sourceRectPx": [
+        1090,
+        -30,
+        1750,
+        641
+      ],
+      "translationPx": [
+        40,
+        0
+      ],
+      "pairedContactProxyPx": [
+        1400,
+        641
+      ],
+      "contactMethod": "reference silhouette center and common lower bound; source-coordinate pairing, anatomical crown not certified"
+    },
+    {
+      "id": "left",
+      "state": "full",
+      "rectPx": [
+        1984,
+        64,
+        512,
+        491
+      ],
+      "sourceRectPx": [
+        1750,
+        -31,
+        2170,
+        640
+      ],
+      "translationPx": [
+        163,
+        0
+      ],
+      "pairedContactProxyPx": [
+        1937,
+        640
+      ],
+      "contactMethod": "reference silhouette center and common lower bound; source-coordinate pairing, anatomical crown not certified"
+    },
+    {
+      "id": "front",
+      "state": "worked",
+      "rectPx": [
+        64,
+        683,
+        512,
+        491
+      ],
+      "sourceRectPx": [
+        0,
+        -31,
+        675,
+        640
+      ],
+      "translationPx": [
+        12,
+        0
+      ],
+      "pairedContactProxyPx": [
+        338,
+        640
+      ],
+      "contactMethod": "reference silhouette center and common lower bound; source-coordinate pairing, anatomical crown not certified"
+    },
+    {
+      "id": "right",
+      "state": "worked",
+      "rectPx": [
+        704,
+        683,
+        512,
+        491
+      ],
+      "sourceRectPx": [
+        675,
+        -31,
+        1090,
+        640
+      ],
+      "translationPx": [
+        132,
+        0
+      ],
+      "pairedContactProxyPx": [
+        893,
+        640
+      ],
+      "contactMethod": "reference silhouette center and common lower bound; source-coordinate pairing, anatomical crown not certified"
+    },
+    {
+      "id": "rear",
+      "state": "worked",
+      "rectPx": [
+        1344,
+        683,
+        512,
+        491
+      ],
+      "sourceRectPx": [
+        1090,
+        -30,
+        1750,
+        641
+      ],
+      "translationPx": [
+        40,
+        0
+      ],
+      "pairedContactProxyPx": [
+        1400,
+        641
+      ],
+      "contactMethod": "reference silhouette center and common lower bound; source-coordinate pairing, anatomical crown not certified"
+    },
+    {
+      "id": "left",
+      "state": "worked",
+      "rectPx": [
+        1984,
+        683,
+        512,
+        491
+      ],
+      "sourceRectPx": [
+        1750,
+        -31,
+        2169,
+        640
+      ],
+      "translationPx": [
+        163,
+        0
+      ],
+      "pairedContactProxyPx": [
+        1937,
+        640
+      ],
+      "contactMethod": "reference silhouette center and common lower bound; source-coordinate pairing, anatomical crown not certified"
+    },
+    {
+      "id": "front",
+      "state": "low",
+      "rectPx": [
+        64,
+        1302,
+        512,
+        491
+      ],
+      "sourceRectPx": [
+        0,
+        -31,
+        675,
+        640
+      ],
+      "translationPx": [
+        12,
+        0
+      ],
+      "pairedContactProxyPx": [
+        338,
+        640
+      ],
+      "contactMethod": "reference silhouette center and common lower bound; source-coordinate pairing, anatomical crown not certified"
+    },
+    {
+      "id": "right",
+      "state": "low",
+      "rectPx": [
+        704,
+        1302,
+        512,
+        491
+      ],
+      "sourceRectPx": [
+        675,
+        -31,
+        1090,
+        640
+      ],
+      "translationPx": [
+        132,
+        0
+      ],
+      "pairedContactProxyPx": [
+        893,
+        640
+      ],
+      "contactMethod": "reference silhouette center and common lower bound; source-coordinate pairing, anatomical crown not certified"
+    },
+    {
+      "id": "rear",
+      "state": "low",
+      "rectPx": [
+        1344,
+        1302,
+        512,
+        491
+      ],
+      "sourceRectPx": [
+        1090,
+        -30,
+        1750,
+        641
+      ],
+      "translationPx": [
+        40,
+        0
+      ],
+      "pairedContactProxyPx": [
+        1400,
+        641
+      ],
+      "contactMethod": "reference silhouette center and common lower bound; source-coordinate pairing, anatomical crown not certified"
+    },
+    {
+      "id": "left",
+      "state": "low",
+      "rectPx": [
+        1984,
+        1302,
+        512,
+        491
+      ],
+      "sourceRectPx": [
+        1750,
+        -31,
+        2169,
+        640
+      ],
+      "translationPx": [
+        163,
+        0
+      ],
+      "pairedContactProxyPx": [
+        1937,
+        640
+      ],
+      "contactMethod": "reference silhouette center and common lower bound; source-coordinate pairing, anatomical crown not certified"
+    }
+  ],
+  "perViewScale": false,
+  "anatomicalRootAlignmentCertified": false,
+  "runtimeIntegrated": true
+}
