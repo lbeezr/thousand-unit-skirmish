@@ -41,3 +41,15 @@ provenance: project-owned generated artwork; built-in ImageGen; only existing
 project-owned selected keys and sprite references. Exact prompts are recorded
 beside the source assets. Generation does not prove view consistency, gameplay
 readability or a complete kit.
+
+## Root Oak lifecycle sources — 1 October 2026 UTC
+
+Four fixed-view source states now exist: full, worked, low and depleted.
+Unmodified 1254 × 1254 RGBA canvases and exact prompts remain alongside the
+source manifest. The [registration review](underbough/root-oak-registration-review.json)
+records visible bounds and lower-root silhouette overlap (0.925–0.938). This
+supports a shared registration candidate; it does not prove runtime scale,
+harvesting, reset or directional coverage. Reduced frames retain faint
+low-alpha generated remnants in their original masters. Do not silently
+repaint or discard source pixels. Runtime packaging and renderer review remain
+outstanding.
