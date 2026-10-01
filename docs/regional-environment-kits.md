@@ -1020,3 +1020,13 @@ mix. Underbough defaults to pockets; `forestAges=uniform` retains mature-only
 comparison. The [no-option check](qa-evidence/underbough-young-pockets-default-2026-10-01/README.md)
 verifies 67 young/295 mature hornbeams, 1,026 owners and exact harvest/reset pixels.
 Other species ages and genuine rotated-view coverage remain unfinished.
+
+### Quieter rootward fungus source — 1 October 2026
+
+`underbough/rootward-fungus-muted-v2-000.png` is a muted brown/ochre cap-palette
+candidate addressing conspicuous orange understory accents. The first output
+had alpha >8 touching all canvas edges and was rejected; the framing follow-up
+has empty transparent gutters. Prompt, output provenance, hash and bounds are
+recorded beside the inspected source. Exact geometry registration, runtime sizing,
+parent stock clearing/reset and full-game palette review remain. This is source
+art only, with one painted perspective and no new runtime selection.
