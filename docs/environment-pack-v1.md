@@ -954,3 +954,12 @@ records all four visible frames, UV binding, no mirroring/roll, repeatable
 selection, legacy fallback, stable vegetation lifecycle and staged runtime bytes.
 The new mound occupies less width within its card than the original painting.
 This is four full-appearance views; authored harvesting states remain absent.
+## Pod-vine worked-view source study · 1 October 2026
+
+The [worked-view source](../assets/environment/vesperra-podvine-worked-v1/README.md)
+adds four disturbed appearances with ragged foliage and clipped pale stems.
+It retains attached pods and the Vesperra palette. The generated canvas differs
+from the full sheet; source hashes and occupied-column bounds are recorded so
+future export work does not silently reuse incompatible crops. This is a source
+checkpoint, not a runtime state binding. Shared scale/root registration and a
+same-pivot renderer comparison remain necessary before woodland stock mapping.

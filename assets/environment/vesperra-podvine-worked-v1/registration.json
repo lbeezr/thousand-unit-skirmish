@@ -1,0 +1,85 @@
+{
+  "source": {
+    "sha256": "02f9defd69d72206b2b2d5593bebf45ceccb32203f013e031ed02c0fa6a775f6",
+    "size": [
+      2170,
+      725
+    ],
+    "mode": "RGBA",
+    "alphaBounds": [
+      30,
+      143,
+      2098,
+      586
+    ],
+    "occupiedColumnGroups": [
+      [
+        30,
+        153,
+        711,
+        577
+      ],
+      [
+        739,
+        147,
+        1020,
+        575
+      ],
+      [
+        1059,
+        149,
+        1735,
+        576
+      ],
+      [
+        1813,
+        143,
+        2098,
+        586
+      ]
+    ]
+  },
+  "reference": {
+    "sha256": "dd405c09cdd653f5e12c012260a3a694675fbd0847a64517adf98f9eb8054681",
+    "size": [
+      2206,
+      713
+    ],
+    "mode": "RGBA",
+    "alphaBounds": [
+      16,
+      145,
+      2151,
+      585
+    ],
+    "occupiedColumnGroups": [
+      [
+        16,
+        150,
+        745,
+        578
+      ],
+      [
+        757,
+        146,
+        1071,
+        580
+      ],
+      [
+        1082,
+        149,
+        1801,
+        578
+      ],
+      [
+        1822,
+        145,
+        2151,
+        585
+      ]
+    ]
+  },
+  "runtimeIntegrated": false,
+  "anatomicalRootAlignmentCertified": false,
+  "review": "recognizable disturbance with clipped stems; changed canvas and silhouette positions require registration before runtime binding"
+}
