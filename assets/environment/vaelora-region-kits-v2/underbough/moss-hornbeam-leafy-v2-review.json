@@ -18,7 +18,6 @@
   "views": "one painted fixed-oblique view; zero new rotated perspectives",
   "review": "Fuller foliage masses conceal much of upper/lateral branch lattice while retaining trunk identity and regional olive palette. Framing edit has healthy gutters. Lower root mat and bright individual leaf highlights remain; source sample is not proof of woodland beauty. Worked, low and depleted source states compared on unchanged canvases. Root-region alpha8 bounds differ by several pixels; no exact registration claim. Shared runtime crop/pivot and game-scale lifecycle review remain.",
   "unfinished": [
-    "new common crop and pivot; incompatible with old lifecycle registration",
     "runtime binding and woodland/full-game appearance review",
     "directional construction"
   ],
@@ -111,5 +110,44 @@
         161
       ]
     }
-  ]
+  ],
+  "registration": {
+    "cropBoxPx": [
+      180,
+      96,
+      1242,
+      1162
+    ],
+    "rootCenterSourceX": 711,
+    "canvasHeightWorld": 3.651379638439581,
+    "proposedVisibleHeightWorld": 3.6,
+    "status": "packaged approximate candidate; runtime review pending"
+  },
+  "packagingValidation": {
+    "atlasContract": "passed",
+    "atlasWebPAlphaExact": true,
+    "frames": [
+      {
+        "stage": "full",
+        "sourceResizeAlphaExact": true,
+        "atlasFramePixelsExact": true
+      },
+      {
+        "stage": "worked",
+        "sourceResizeAlphaExact": true,
+        "atlasFramePixelsExact": true
+      },
+      {
+        "stage": "low",
+        "sourceResizeAlphaExact": true,
+        "atlasFramePixelsExact": true
+      },
+      {
+        "stage": "depleted",
+        "sourceResizeAlphaExact": true,
+        "atlasFramePixelsExact": true
+      }
+    ],
+    "directionalCoverage": "one painted view; no new rotations"
+  }
 }

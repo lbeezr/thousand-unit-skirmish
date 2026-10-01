@@ -861,3 +861,18 @@ The source review now records all four output IDs, hashes and bounds; prompts
 retain each built-in ImageGen edit. A new shared crop/pivot, lifecycle atlas
 and woodland/full-game review remain. Do not mix these frames with the old
 hornbeam registration. This sequence adds no rotated perspectives.
+
+## Fuller hornbeam atlas candidate — 1 October 2026
+
+The [leafier lifecycle manifest](../assets/environment/frontier-v1/underbough-leafy-hornbeam-v2-lifecycle-manifest.json)
+packages all four masters through one crop `[180,96,1242,1162]` centered at
+source X711, the full root footprint midpoint. All alpha8 bounds fit; the
+lowest source root extent varies by two pixels. Full visible height is
+provisionally 3.6 world units, with canvas height adjusted for its crop margin.
+This is approximate painted registration, not identical root pixels.
+
+The atlas uses the existing 64-pixel transparent RGB gutter, half-texel inset
+and mip cap6. Runtime PNG/WebP encoding does not repaint or repair masters.
+The new version is a candidate production package; source appearance and
+registration still require renderer and full-game review before adoption.
+The old hornbeam remains the current default, and no rotations are added.
