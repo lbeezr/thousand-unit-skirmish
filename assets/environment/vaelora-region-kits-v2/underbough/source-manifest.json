@@ -3,7 +3,7 @@
   "packId": "environment.underbough-cohesive-kit-v2",
   "maturity": "source-study",
   "region": "underbough",
-  "status": "Underbough six regional ground roles with seven accepted source textures, four fixed-view tree forms and thornberry food shrub are integrated; second variants outside clearings and regional directional artwork remain unfinished",
+  "status": "Six regional ground roles with eight accepted source textures; clearing and woodland soil each have two runtime variants. Four fixed-view tree forms and thornberry food shrub are integrated. Remaining role variants and regional directional artwork are unfinished.",
   "source": "project-owned built-in ImageGen, using selected Underbough ecology key and existing copperleaf sprite references",
   "directionalMethod": "authored painted views; not measured 3D render captures",
   "targetTreeForms": [
@@ -395,5 +395,32 @@
       "reason": "Revised smoother subdued damp soil; original generated pixels preserved",
       "directionDegrees": null
     }
-  ]
+  ],
+  "currentGroundCoverage": {
+    "asOf": "2026-10-01",
+    "runtimeBinding": "../../../../src/regional-ground-kits.mjs",
+    "roles": {
+      "clearing": [
+        "clearing-grass-01.png",
+        "clearing-grass-02.png"
+      ],
+      "dense-growth": [
+        "dense-growth-01.png"
+      ],
+      "woodland-soil": [
+        "root-soil-01.png",
+        "root-soil-02.png"
+      ],
+      "worn-soil": [
+        "worn-dirt-01.png"
+      ],
+      "exposed-stone": [
+        "shaded-stone-01.png"
+      ],
+      "wet-bank": [
+        "wet-bank-01.png"
+      ]
+    },
+    "note": "Original target names and dated source records retained; this table describes current accepted ground roles."
+  }
 }

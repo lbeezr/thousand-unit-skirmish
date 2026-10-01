@@ -1,0 +1,474 @@
+{
+  "scope": "runtime-loaded regional harvest atlases, generic fixed-camera resource packs and podvine authored views; not every environment prop",
+  "rendererSha256": "0640f2f51cc2fce341318b499a9ab31cb2ff61eedc722033ad2a3c566245c850",
+  "regionalHarvestAtlases": [
+    {
+      "pack": "bellweather",
+      "family": "bellweather-field-maple",
+      "manifest": "assets/environment/frontier-v1/bellweather-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "sereward",
+      "family": "sereward-palm",
+      "manifest": "assets/environment/frontier-v1/sereward-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "pale-meridian",
+      "family": "pale-meridian-conifer",
+      "manifest": "assets/environment/frontier-v1/pale-meridian-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "siltmouths",
+      "family": "siltmouths-tidal-tree",
+      "manifest": "assets/environment/frontier-v1/siltmouths-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "vesperra",
+      "family": "vesperra-mistbark",
+      "manifest": "assets/environment/frontier-v1/vesperra-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "sombral-mere",
+      "family": "sombral-mere-merebloom",
+      "manifest": "assets/environment/frontier-v1/sombral-mere-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "underbough",
+      "family": "underbough-copperleaf",
+      "manifest": "assets/environment/frontier-v1/underbough-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "underbough-bramble",
+      "family": "underbough-bramble",
+      "manifest": "assets/environment/frontier-v1/underbough-bramble-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "underbough-root-oak",
+      "family": "underbough-root-oak",
+      "manifest": "assets/environment/frontier-v1/underbough-root-oak-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "underbough-moss-hornbeam",
+      "family": "underbough-moss-hornbeam",
+      "manifest": "assets/environment/frontier-v1/underbough-moss-hornbeam-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "underbough-old-plum",
+      "family": "underbough-old-plum",
+      "manifest": "assets/environment/frontier-v1/underbough-old-plum-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "veyrholds",
+      "family": "veyrholds-highpine",
+      "manifest": "assets/environment/frontier-v1/veyrholds-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "ellionar",
+      "family": "ellionar-cultivated-palm",
+      "manifest": "assets/environment/frontier-v1/ellionar-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "ellionar-hedge",
+      "family": "ellionar-garden-hedge",
+      "manifest": "assets/environment/frontier-v1/ellionar-hedge-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "sereward-acacia",
+      "family": "sereward-acacia",
+      "manifest": "assets/environment/frontier-v1/sereward-acacia-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "sereward-scrub",
+      "family": "sereward-scrub",
+      "manifest": "assets/environment/frontier-v1/sereward-scrub-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "bellweather-hedgerow",
+      "family": "bellweather-hedgerow",
+      "manifest": "assets/environment/frontier-v1/bellweather-hedgerow-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    },
+    {
+      "pack": "ru-lora-fringe",
+      "family": "ru-lora-fringe-canopy",
+      "manifest": "assets/environment/frontier-v1/ru-lora-fringe-lifecycle-atlas.json",
+      "runtimeHashVerified": true,
+      "viewsByState": {
+        "full": [
+          "fixed-oblique"
+        ],
+        "worked": [
+          "fixed-oblique"
+        ],
+        "low": [
+          "fixed-oblique"
+        ],
+        "depleted": [
+          "fixed-oblique"
+        ]
+      },
+      "intactViewCount": 1,
+      "measuredModelRotation": false
+    }
+  ],
+  "modelRotations": [
+    {
+      "family": "oak",
+      "manifest": "assets/environment/frontier-meshy-fixed-camera-v3/oak/manifest.json",
+      "captureMode": "model-rotation",
+      "sourceModelSha256": "31236eb10a8cc3ac5a8d06b85899e607ab67fb00b87de63cad6d74116ee83b03",
+      "headingsDegrees": [
+        0,
+        45,
+        90,
+        135,
+        180,
+        225,
+        270,
+        315
+      ],
+      "cameraAzimuthDegrees": 45,
+      "scope": "intact generic resource family; regional replacement and worked-state directions not supplied"
+    },
+    {
+      "family": "pine",
+      "manifest": "assets/environment/frontier-meshy-fixed-camera-v3/pine/manifest.json",
+      "captureMode": "model-rotation",
+      "sourceModelSha256": "75be41cb521f51f25c33c4634a3d1b871e6d0d8f498919c56b0a2060d9025c27",
+      "headingsDegrees": [
+        0,
+        45,
+        90,
+        135,
+        180,
+        225,
+        270,
+        315
+      ],
+      "cameraAzimuthDegrees": 45,
+      "scope": "intact generic resource family; regional replacement and worked-state directions not supplied"
+    },
+    {
+      "family": "berries",
+      "manifest": "assets/environment/frontier-meshy-fixed-camera-v3/berries/manifest.json",
+      "captureMode": "model-rotation",
+      "sourceModelSha256": "a7345a4726631b6521b75a50a011589a946566efaade12dc09cd79d44a5be9c8",
+      "headingsDegrees": [
+        0,
+        45,
+        90,
+        135,
+        180,
+        225,
+        270,
+        315
+      ],
+      "cameraAzimuthDegrees": 45,
+      "scope": "intact generic resource family; regional replacement and worked-state directions not supplied"
+    }
+  ],
+  "authoredUnderstoryViews": [
+    {
+      "family": "vesperra-spiral-podvine",
+      "manifest": "assets/environment/vesperra-podvine-views-v1/manifest.json",
+      "atlasHashVerified": true,
+      "viewCount": 4,
+      "requestedHeadingsDegrees": [
+        0,
+        90,
+        180,
+        270
+      ],
+      "measuredModelRotation": false
+    }
+  ],
+  "nextProductionRequirement": "Underbough four canopy forms need consistent authored multi-view construction or reusable model sources, followed by state coverage and runtime selection. Mirroring, sprite yaw and harvest states do not count as viewpoints."
+}
