@@ -963,3 +963,14 @@ from the full sheet; source hashes and occupied-column bounds are recorded so
 future export work does not silently reuse incompatible crops. This is a source
 checkpoint, not a runtime state binding. Shared scale/root registration and a
 same-pivot renderer comparison remain necessary before woodland stock mapping.
+## Pod-vine worked-view runtime binding · 1 October 2026
+
+The [eight-frame pack](../assets/environment/vesperra-podvine-worked-v1/README.md)
+now supplies full/worked woodland companion appearances across four stable
+directions. Partial positive wood stock selects disturbed foliage; zero hides
+the plant; reset restores full. Decorative margins remain full. Registered
+dimensions and gameplay rules stay unchanged. The
+[runtime evidence](qa-evidence/vaelora-podvine-worked-runtime-2026-10-01/README.md)
+checks 400 frame transitions, existing vegetation contracts and release bytes.
+The worked row serves all positive partial stock; distinct low/depleted poses
+and independent pod gathering remain unfinished.

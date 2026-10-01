@@ -7103,7 +7103,7 @@ const server = createServer(async (request, response) => {
     'audio-studio.html', 'audio-zones.html', 'src/audio-zones.mjs', 'src/audio-zones.css', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs',
     'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs',
     'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
-    'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs', 'src/shore-vegetation.mjs', 'src/meadow-vegetation.mjs', 'src/garden-vegetation.mjs', 'src/environment-plant-assets.mjs', 'src/podvine-view-pack.mjs', 'src/terrain-blend.mjs', 'src/terrain-texture-sampling.mjs', 'src/terrain-atmosphere.mjs', 'src/terrain-materials.mjs',
+    'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs', 'src/shore-vegetation.mjs', 'src/meadow-vegetation.mjs', 'src/garden-vegetation.mjs', 'src/environment-plant-assets.mjs', 'src/podvine-view-pack.mjs', 'src/podvine-worked-pack.mjs', 'src/terrain-blend.mjs', 'src/terrain-texture-sampling.mjs', 'src/terrain-atmosphere.mjs', 'src/terrain-materials.mjs',
     'src/forest-habitat.mjs', 'src/forest-composition.mjs', 'src/regional-ground-kits.mjs', 'src/water-contours.mjs',
   ].includes(relative);
   const publicUiAsset = [
@@ -7162,7 +7162,7 @@ const server = createServer(async (request, response) => {
       'underbough-root-oak-lifecycle-atlas', 'underbough-root-oak', 'underbough-root-oak-worked', 'underbough-root-oak-low', 'underbough-root-oak-depleted',
       'bellweather-quiet-meadow', 'siltmouths-quiet-mud', 'pale-meridian-quiet-snow', 'vesperra-quiet-loam',
       ...TERRAIN_MATERIALS].includes(path.basename(relative, path.extname(relative)));
-  const publicPodvineViewAsset = relative === 'assets/environment/vesperra-podvine-views-v1/views-atlas.webp';
+  const publicPodvineViewAsset = relative === 'assets/environment/vesperra-podvine-views-v1/views-atlas.webp' || relative === 'assets/environment/vesperra-podvine-worked-v1/review-atlas.webp';
   const publicInteractiveEnvironmentAsset = path.dirname(relative) === 'assets/environment/frontier-interactive-v1'
     && (relative === 'assets/environment/frontier-interactive-v1/manifest.json'
       || (path.extname(relative) === '.webp'

@@ -43,3 +43,9 @@ legacy selection and existing vegetation lifecycle contracts.
 This pack has one full appearance across four authored views. Independent pod
 harvesting and its worked/low/depleted poses remain absent. No new yield,
 collision, route rule or map-authoring resource is introduced.
+
+## Subsequent state integration · 1 October 2026
+
+The default loader now uses the [full/worked pack](../vesperra-podvine-worked-v1/README.md)
+for woodland disturbance states. This original full-only atlas and exporter
+remain preserved as provenance and the earlier runtime checkpoint.

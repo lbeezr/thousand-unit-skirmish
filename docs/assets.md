@@ -210,3 +210,12 @@ views replace mirroring; `plantViews=legacy` retains the original single source.
 and [runtime evidence](qa-evidence/vaelora-podvine-authored-views-2026-10-01/README.md).
 These are approximate drawings with full appearance only, not measured
 multi-view capture or independent harvesting poses.
+## Pod-vine woodland disturbance · 1 October 2026
+
+[Full/worked pod-vine pack](../assets/environment/vesperra-podvine-worked-v1/README.md)
+now binds eight authored frames in the instance loader. Positive partial forest
+stock selects worked, zero hides and reset restores full, with direction and
+root matrices retained. Margins remain decorative full plants. The
+[runtime proof](qa-evidence/vaelora-podvine-worked-runtime-2026-10-01/README.md)
+covers transitions and release admission. Separate low/depleted drawings and
+independent pod gathering remain absent.
