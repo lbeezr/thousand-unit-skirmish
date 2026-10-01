@@ -16,8 +16,8 @@ zero hides and six restores full. Every positive transition retains the exact
 root matrix and heading. Repeated construction retains direction choice and
 legacy single-view fallback loads. All three rows render without GL error.
 
-[Plant contracts](plant-contract-proof.json) cover 26 registered plants and
-21 companion identities, partial stock, clearing and reset.
+[Plant contracts](plant-contract-proof.json) cover 27 registered plants and
+22 companion identities, partial stock, clearing and reset.
 [Occupation proof](forest-cover-proof.json) covers all nine land categories and
 foundation restoration. [Margin proof](jungle-proof.json) retains the existing
 79 specimens across four species and confirms parent clearing leaves their

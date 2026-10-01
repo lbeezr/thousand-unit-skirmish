@@ -14,8 +14,8 @@
       "shoreVegetation"
     ]
   },
-  "checked": 26,
-  "rejected": 26,
+  "checked": 27,
+  "rejected": 27,
   "companionLifecycle": {
     "bellweather-meadow-herbs": 40,
     "bellweather-meadow-clover": 38,
@@ -25,8 +25,9 @@
     "pale-meridian-frostberry": 76,
     "sombral-mere-lunewort": 40,
     "sombral-mere-noctilune": 38,
-    "underbough-rootward-fungus-02": 38,
-    "underbough-rootward-fungus": 40,
+    "underbough-low-hazel": 26,
+    "underbough-rootward-fungus": 28,
+    "underbough-rootward-fungus-02": 24,
     "veyrholds-ridgegrass": 40,
     "veyrholds-suncrest": 38,
     "ellionar-sunbloom": 40,
@@ -170,7 +171,7 @@
         0.5,
         1
       ],
-      "instances": 40
+      "instances": 28
     },
     {
       "id": "underbough-rootward-fungus-02",
@@ -181,7 +182,18 @@
         0.5,
         1
       ],
-      "instances": 38
+      "instances": 24
+    },
+    {
+      "id": "underbough-low-hazel",
+      "kind": "decorative-forest-understory",
+      "width": 1.1395900249481201,
+      "vertical": 0.6999999821186065,
+      "pivot": [
+        0.5,
+        1
+      ],
+      "instances": 26
     },
     {
       "id": "veyrholds-ridgegrass",

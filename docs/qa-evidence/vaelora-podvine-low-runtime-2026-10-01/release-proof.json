@@ -1,16 +1,16 @@
 {
-  "sourceRevision": "b459993624606153e7826fc8a17ce3239d9a923e",
-  "sourceDirty": true,
-  "releaseDigest": "sha256:f1967310da6a7b2a88c090672ca7635cca531f408548e081ddddd37e14d43bdb",
+  "sourceRevision": "8b36e02141bfd15eccf0f2a8a6582d4ae8515ef3",
+  "sourceDirty": false,
+  "releaseDigest": "sha256:9febabba6070dc6d5820fbcc25ad2274fb7b5f404a5a61c87a14d03c1a282b8a",
   "files": [
     {
       "file": "server.mjs",
-      "sha256": "41a37e9e85c659039900b8403f7514f0ca55cf82b1301c6e221d5a5709a0f168",
+      "sha256": "cda3ea0557ccefad86d0a624d039a55294537776aea0fa5599851a42d1706d81",
       "releaseBytesExact": true
     },
     {
       "file": "src/environment-art.mjs",
-      "sha256": "b6f02c028ff93a6a236d67a7d8e35d4cd0b2ab28c8b8ec29161cf094307480a3",
+      "sha256": "c20de532e06b1e315f8dcbe847e2c00c06dc75abf87ba5bb29a38ced4e7771a5",
       "releaseBytesExact": true
     },
     {
