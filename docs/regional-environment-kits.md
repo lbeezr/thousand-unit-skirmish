@@ -780,3 +780,21 @@ gutters. Low/depleted states, common crop/pivot, runtime binding and forest
 clearing/reset/composition review remain. Proposed visible height is 2.1 world
 units, pending game review. This is an age form, not a new species/resource rule.
 Both drawings use one approximate painted viewpoint; neither adds rotations.
+
+## Young hornbeam complete lifecycle candidate — 1 October 2026
+
+The [four-state source review](../assets/environment/vaelora-region-kits-v2/underbough/young-hornbeam-four-state-review.png)
+adds heavily worked and depleted masters to the full/worked sample. All four
+1254-pixel canvases retain the small collar at approximately the same position;
+alpha8 collar bounds vary by up to four pixels. The depleted image leaves a
+small cut stump rather than a mature root mat. Original generated masters and
+exact edit prompts are retained. These are harvest states of one painted view,
+not additional perspectives.
+
+The [candidate manifest](../assets/environment/frontier-v1/underbough-young-hornbeam-lifecycle-manifest.json)
+uses one root-centered crop containing every alpha8 bound and a common pivot.
+The four WebPs preserve their resized alpha exactly, and the lifecycle atlas
+uses the existing 64-pixel gutter and mip-cap contract. This production package
+is not yet selected by the game. Proposed full visible height remains 2.1 world
+units; forest composition, stock transitions, reset and game-scale appearance
+still require runtime review.

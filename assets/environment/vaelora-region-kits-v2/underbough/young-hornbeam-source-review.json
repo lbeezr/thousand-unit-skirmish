@@ -20,12 +20,10 @@
   "runtimeDirectionalCoverage": 0,
   "proposedVisibleHeightWorld": 2.1,
   "unfinished": [
-    "low/depleted source states",
-    "registered shared crop and ground pivot",
     "runtime family binding",
     "forest composition/clearing/reset review"
   ],
-  "review": "Slender trunk, compact greener crown, small root collar; framing gutter verified. Preview normalizes each tree independently and does not claim game scale. Worked state thins outer lower foliage at the same canvas/base position; contact sheet inspected, registration still needs runtime validation.",
+  "review": "Slender trunk, compact greener crown, small root collar; framing gutter verified. Preview normalizes each tree independently and does not claim game scale. Worked state thins outer lower foliage at the same canvas/base position; contact sheet inspected, registration still needs runtime validation. Low state removes most leaf area and shortens outer scaffold ends; depleted state retains a small cut stump at the original base. All four unshifted canvases compared together; source registration is approximate, pending runtime proof.",
   "sourceFrames": [
     {
       "stage": "full",
@@ -70,7 +68,73 @@
         769,
         60
       ]
+    },
+    {
+      "stage": "low",
+      "source": "young-hornbeam-low-000.png",
+      "sourceSha256": "df4b87e7ec26778d820888d0046253c6a4c0784d803f2a6b072641dc5625992e",
+      "canvasPx": [
+        1254,
+        1254
+      ],
+      "alpha8Bounds": [
+        365,
+        92,
+        989,
+        1161
+      ],
+      "visibleAlpha8Pixels": 139094,
+      "lowerCollarAlpha8Bounds": [
+        622,
+        0,
+        771,
+        61
+      ]
+    },
+    {
+      "stage": "depleted",
+      "source": "young-hornbeam-depleted-000.png",
+      "sourceSha256": "14f8901699d1cdac227dfebce3fc82de0c8e662c5f151b21caab4cb9154c38e5",
+      "canvasPx": [
+        1254,
+        1254
+      ],
+      "alpha8Bounds": [
+        622,
+        1030,
+        769,
+        1160
+      ],
+      "visibleAlpha8Pixels": 10744,
+      "lowerCollarAlpha8Bounds": [
+        622,
+        0,
+        769,
+        60
+      ]
     }
   ],
-  "workedGeneratedOutput": "exec-4cbc488f-daa0-458f-b91a-5d413f6567be.png"
+  "workedGeneratedOutput": "exec-4cbc488f-daa0-458f-b91a-5d413f6567be.png",
+  "lowGeneratedOutput": "exec-3e5a0460-5452-4859-a689-1d22fe869163.png",
+  "depletedGeneratedOutput": "exec-980fe8e7-3fed-452e-a49d-79eb5733d694.png",
+  "registration": {
+    "cropBoxPx": [
+      260,
+      80,
+      1128,
+      1162
+    ],
+    "rootCenterSourcePx": 694,
+    "rule": "One shared crop for four stages; contains every alpha8 bound; root collar remains within 1\u20134 pixels across generated masters. No independent stage fitting.",
+    "manifest": "../../frontier-v1/underbough-young-hornbeam-lifecycle-manifest.json",
+    "status": "packaged candidate; in-game registration pending"
+  },
+  "packagingValidation": {
+    "atlasContract": "passed scripts/validate-sprite-atlas.mjs",
+    "fourAtlasFramePixels": "exact match to decoded individual WebPs",
+    "sourceToRuntimeAlpha": "exact match to shared crop and LANCZOS resize for all four stages",
+    "atlasWebPAlpha": "exact match to PNG page",
+    "contactSheet": "four shared canvases visually inspected",
+    "runtimeValidation": "not yet integrated; no game appearance or stock/reset proof claimed"
+  }
 }
