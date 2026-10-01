@@ -231,7 +231,7 @@ try {
   }
   for (const family of ['oak', 'pine']) {
     for (let view = 0; view < 8; view++) {
-      const asset = `assets/environment/frontier-meshy-fixed-camera-v2/${family}/runtime/${family}-0${view}.webp`;
+      const asset = `assets/environment/frontier-meshy-fixed-camera-v3/${family}/runtime/${family}-0${view}.webp`;
       const response = await fetch(`${base}/${asset}`, { headers: { authorization } });
       assert.equal(response.status, 200, asset);
       assert.match(response.headers.get('content-type'), /image\/webp/);
@@ -241,7 +241,7 @@ try {
     }
   }
   for (const family of ['oak', 'berries']) {
-    const asset = `assets/environment/frontier-meshy-fixed-camera-v2/${family}/${family}-atlas.webp`;
+    const asset = `assets/environment/frontier-meshy-fixed-camera-v3/${family}/${family}-atlas.webp`;
     const response = await fetch(`${base}/${asset}`, { headers: { authorization } });
     assert.equal(response.status, 200, asset);
     const bytes = Buffer.from(await response.arrayBuffer());

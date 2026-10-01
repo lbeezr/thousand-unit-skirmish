@@ -97,14 +97,17 @@ def main():
       let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
       for (const heading of AZIMUTHS) {
         setView(heading);
-        const bounds = new THREE.Box3().setFromObject(headingGroup);
-        for (let x = 0; x < 2; x++) for (let y = 0; y < 2; y++) for (let z = 0; z < 2; z++) {
-          const p = new THREE.Vector3(x ? bounds.max.x : bounds.min.x,
-            y ? bounds.max.y : bounds.min.y, z ? bounds.max.z : bounds.min.z).project(camera);
-          const px = (p.x + 1) * SIZE / 2, py = (1 - p.y) * SIZE / 2;
-          minX = Math.min(minX, px); maxX = Math.max(maxX, px);
-          minY = Math.min(minY, py); maxY = Math.max(maxY, py);
-        }
+        headingGroup.traverse(object => {
+          const vertices = object.geometry?.attributes.position;
+          if (!object.isMesh || !vertices) return;
+          const p = new THREE.Vector3();
+          for (let index = 0; index < vertices.count; index++) {
+            p.fromBufferAttribute(vertices, index).applyMatrix4(object.matrixWorld).project(camera);
+            const px = (p.x + 1) * SIZE / 2, py = (1 - p.y) * SIZE / 2;
+            minX = Math.min(minX, px); maxX = Math.max(maxX, px);
+            minY = Math.min(minY, py); maxY = Math.max(maxY, py);
+          }
+        });
       }
       return {minX, minY, maxX, maxY};
     }
@@ -180,6 +183,7 @@ def main():
         atlas=f'{args.name}-atlas.png', atlasPixels=[2560,1280], framePixels=[640,640],
         captureMode=args.capture_mode, projection='orthographic', elevationDegrees=elevation,
         normalizationWidthWorld=args.width,
+        fitMethod='projected-mesh-vertices' if fixed_camera else 'historic-bounds',
         frameWorldUnits=[5,5], pixelsPerWorldUnit=128, anchorPixelFromTopLeft=[320,480],
         lighting='Building pilot: hemisphere 1.6; warm key 2.5; cool fill 1.0; rim 0.7; ACES exposure 1.',
         viewConvention=('Model rotates positively about world Y at the centred ground pivot. Camera stays at azimuth 45 degrees and exact game elevation; lights stay fixed in world space.' if fixed_camera else 'Camera azimuth 0 looks from +Z; 90 from +X. Model is not rotated.'),

@@ -486,7 +486,7 @@ function spriteGeometry(width, height, name) {
 function spriteMaterial(name) {
   if (!sprites[name]) {
     const direction = directionalResource(name);
-    if (direction) sprites[name] = loadSprite(`./assets/environment/frontier-meshy-fixed-camera-v2/${direction[1]}/runtime/${direction[1]}-${direction[2]}.webp`);
+    if (direction) sprites[name] = loadSprite(`./assets/environment/frontier-meshy-fixed-camera-v3/${direction[1]}/runtime/${direction[1]}-${direction[2]}.webp`);
     else {
     if (!spriteNames.includes(name)) throw new Error(`Unknown environment sprite: ${name}`);
     sprites[name] = loadSprite(`${ASSET_ROOT}${name}.webp`);
@@ -600,7 +600,7 @@ export function createEnvironmentSpriteInstances(name, width, height, positions)
   const family = meshyResourcesEnabled && /^(oak|berries)-full$/.exec(name)?.[1];
   if (family) {
     const atlasName = `${family}-direction-atlas`;
-    sprites[atlasName] ||= loadSprite(`./assets/environment/frontier-meshy-fixed-camera-v2/${family}/${family}-atlas.webp`);
+    sprites[atlasName] ||= loadSprite(`./assets/environment/frontier-meshy-fixed-camera-v3/${family}/${family}-atlas.webp`);
     material.map = sprites[atlasName];
     material.userData.resourceDirectionTexture = material.map;
     const rectangles = new THREE.InstancedBufferAttribute(new Float32Array(positions.length * 4), 4);

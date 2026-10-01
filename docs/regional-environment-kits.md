@@ -280,3 +280,19 @@ those hypothetical corners can exceed the actual mesh silhouette. Correct the
 fit using actual projected geometry and review shared scale across headings,
 retaining the source model, camera and ground pivot. Successful harvest checks
 do not resolve this observed art limitation.
+
+### Measured model fit correction — 1 October 2026 UTC
+
+The [v3 capture pack](../assets/environment/frontier-meshy-fixed-camera-v3/README.md)
+replaces projected axis-aligned box corners with every actual mesh vertex,
+transformed at each of eight headings. One union bounds calculation supplies
+one shared scale per family. All 24 views pass unclipped-frame, distinct-view,
+exact RGBA atlas/WebP and original-source hash checks. V2 remains intact.
+
+Oak height rises from 1.87248 to 2.72417 world units; berry height from 0.77023
+to 1.15752. Pine fits at 5.08549 world units. Fixed camera, world lighting,
+source geometry and ground pivot are unchanged. Runtime instances and atlases
+now consume v3. The release scenario verifies exact HTTP hashes from Docker
+COPY output. [Repeated full-game evidence](qa-evidence/directional-fit-live-2026-10-01/proof.json)
+passes real worker harvesting, reset and reload without browser errors; the
+same-camera full capture shows the scale correction beside workers.
