@@ -3,7 +3,7 @@
   "packId": "environment.underbough-cohesive-kit-v2",
   "maturity": "source-study",
   "region": "underbough",
-  "status": "three regional ground textures locally rendered and cache-isolation checked; three new tree sources; no new tree runtime bindings or verified rotated views",
+  "status": "three regional grounds and four-state Root Oak locally rendered; Hornbeam and Plum remain intact sources; verified rotated views outstanding",
   "source": "project-owned built-in ImageGen, using selected Underbough ecology key and existing copperleaf sprite references",
   "directionalMethod": "authored painted views; not measured 3D render captures",
   "targetTreeForms": [
@@ -54,7 +54,7 @@
         1220,
         1208
       ],
-      "status": "intact-source-awaiting-registration",
+      "status": "fixed-view-runtime-local-review-passed",
       "directionDegrees": 0,
       "harvestState": "full"
     },
@@ -159,6 +159,45 @@
       "status": "intact-source-awaiting-registration",
       "directionDegrees": 0,
       "harvestState": "full"
+    },
+    {
+      "path": "root-oak-worked-000.png",
+      "sha256": "49bb996da74e96d2db41621a120676e03c233ced4ea68e0ed543c2d1a4162cf8",
+      "sizeBytes": 2042702,
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "fixed-view-runtime-local-review-passed",
+      "directionDegrees": 0,
+      "harvestState": "worked"
+    },
+    {
+      "path": "root-oak-low-000.png",
+      "sha256": "9f08f04ce8cbab6272fc5abd4198c52b4a371ee7ee989fb38e8213a06734ab6b",
+      "sizeBytes": 1301223,
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "fixed-view-runtime-local-review-passed",
+      "directionDegrees": 0,
+      "harvestState": "low"
+    },
+    {
+      "path": "root-oak-depleted-000.png",
+      "sha256": "02a52939d2409dc777798b22a439f106619cc38781d24b7095572ec9ee7a0090",
+      "sizeBytes": 552358,
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "status": "fixed-view-runtime-local-review-passed",
+      "directionDegrees": 0,
+      "harvestState": "depleted"
     }
   ]
 }

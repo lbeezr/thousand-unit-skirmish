@@ -138,7 +138,7 @@ species, directional frames and regional loader bindings remain to be completed.
 The first dark olive Root Oak intact source now exists at the designated 0°
 orientation. Further verified views remain outstanding. Its pixels and alpha are
 retained in the [source pack](../assets/environment/vaelora-region-kits-v2/README.md);
-it is not loaded by the game yet.
+the first runtime family record below now documents its loader.
 
 ### First ground runtime — 1 October 2026 UTC
 
@@ -159,6 +159,18 @@ deployment or GPU capacity measurement. Texture repetition is reviewed through
 the existing mirrored/stochastic sampler, not claimed mathematically periodic.
 
 The Root Oak, Moss Hornbeam, and Old Plum provide three additional distinct intact painted
-tree sources. They still need registered production/model views and harvest
-states before joining the existing copperleaf in game. This first ground pass
+tree sources. Root Oak now has a fixed-view harvest-state runtime; Hornbeam and Plum still
+need harvest states and registration. All three need verified model/directional
+views before the requested coverage is complete. This first ground pass
 does not complete the four-species forest or the ten-zone kit matrix.
+
+### First mixed Underbough canopy — 1 October 2026 UTC
+
+Root Oak now supplies a broad dark olive form beside Copperleaf and woody
+bramble. Seeded spatial groves vary its proportion across the forest while
+every existing wood cell retains one harvest slot. All four fixed-view states
+use registered atlas frames. [Current browser evidence](qa-evidence/underbough-root-oak-2026-10-01/underbough-rootways-renderer-proof.json)
+records 1026 original cells, species counts, unchanged roots and atlas selection
+through full/worked/low/depleted/reset. Vesperra is the unchanged control.
+This is renderer interface evidence; a new actual worker-harvest observation
+and the complete four-species directional kit remain outstanding.
