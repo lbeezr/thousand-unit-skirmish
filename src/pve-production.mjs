@@ -240,8 +240,7 @@ export function createProductionPolicy(seed) {
       const workerQueue = observation.workerProduction?.queue ?? 0;
       if (barracks.productionBlocked || barracks.queue >= limits.queue
         || friendly.filter((unit) => unit.kind !== 'worker').length + queued >= limits.military
-        || friendly.length + queued + workerQueue >= limits.roster
-        || observation.resources.food < limits.infantryFoodCost + limits.foodReserve) return [];
+        || friendly.length + queued + workerQueue >= limits.roster) return [];
       const siege = UNIT_DEFINITIONS['siege-engine'];
       if (visibleDefense && workshop?.complete && workshop.queue === 0 && queued === 0
         && friendly.filter(unit => unit.kind === siege.id).length < 2
@@ -268,6 +267,7 @@ export function createProductionPolicy(seed) {
           return [{ type: 'trainUnit', kind, buildingId: stable.id }];
         }
       }
+      if (observation.resources.food < limits.infantryFoodCost + limits.foodReserve) return [];
       const infantry = friendly.filter((unit) => unit.kind === 'infantry').length;
       const spearmen = friendly.filter((unit) => unit.kind === 'spearman').length;
       const spear = UNIT_DEFINITIONS.spearman;

@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createProductionPolicy } from '../src/pve-production.mjs';
+import { createProductionPolicy, PVE_PRODUCTION_LIMITS as limits } from '../src/pve-production.mjs';
+import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { productionAction } from '../src/production-actions.mjs';
 for (const team of [0, 1]) test(`AI builds and resumes capacity using its own observation for seat ${team}`, () => {
   const state = { team, tick: 0, fogOfWar: false, map: { width: 80, height: 64 },
     population: { used: 12, reserved: 3, capacity: 15, available: 0 }, resources: { food: 500, wood: 500 },
@@ -145,3 +147,53 @@ for (const team of [0, 1]) test(`AI buys available progression with reserves and
   state.resources.food = 100;
   assert.ok(policy.next({ ...state, tick: 1350 }).every(command => command.type !== 'researchUpgrade'), 'research preserves food for ongoing production');
 });
+
+for (const team of [0, 1]) for (const seed of [0, 20260925, 0xffff_ffff]) {
+  test(`AI affords a Scout independently of Infantry while preserving reserves, seat ${team}, seed ${seed}`, () => {
+    const scoutFood = UNIT_DEFINITIONS.scout.cost.food + limits.foodReserve;
+    const scoutWood = UNIT_DEFINITIONS.scout.cost.wood + limits.woodReserve;
+    const infantryFood = limits.infantryFoodCost + limits.foodReserve;
+    assert.ok(scoutFood < infantryFood, 'the cheaper Scout exposes the Infantry-specific gate');
+    const scoutOrder = [{ type: 'trainUnit', kind: 'scout', buildingId: 10 }];
+    for (const [label, food, wood, change, expected] of [
+      ['exact Scout reserves', scoutFood, scoutWood, () => {}, scoutOrder],
+      ['below Infantry reserves', infantryFood - 1, scoutWood, () => {}, scoutOrder],
+      ['Infantry affordable', infantryFood, scoutWood, () => {}, scoutOrder],
+      ['food reserve', scoutFood - 1, scoutWood, () => {}, []],
+      ['wood reserve', scoutFood, scoutWood - 1, () => {}, []],
+      ['blocked Stable', scoutFood, scoutWood, s => { s.buildings.friendly[1].productionBlocked = true; }, []],
+      ['queued Stable', scoutFood, scoutWood, s => { s.buildings.friendly[1].queue = 1; }, []],
+      ['population full', scoutFood, scoutWood, s => { s.population = { available: 0, capacity: 1000 }; }, []],
+      ['observed mounted threat', scoutFood, scoutWood, s => {
+        s.units.visibleEnemies = [{ id: 99, team: 1 - team, kind: 'rider', hp: 130 }];
+      }, []],
+      ['Infantry reserve after Scout', infantryFood - 1, scoutWood, s => {
+        s.units.friendly.push({ id: 20, team, hp: 60, kind: 'scout' });
+      }, []],
+      ['Infantry fallback at its reserve', infantryFood, scoutWood, s => {
+        s.units.friendly.push({ id: 20, team, hp: 60, kind: 'scout' });
+      }, [{ type: 'train', buildingId: 9 }]],
+    ]) {
+      const state = { team, tick: 0, fogOfWar: false, map: { width: 80, height: 64 },
+        resources: { food, wood }, population: { available: 15, capacity: 23 },
+        units: { friendly: Array.from({ length: 8 }, (_, id) => ({ id, team, generation: 1, hp: 100,
+          x: team ? 20 : -20, z: 0, kind: id < 4 ? 'worker' : 'infantry', task: 'idle', cargo: 0 })), visibleEnemies: [] },
+        buildings: { friendly: [
+          { id: 9, team, type: 'barracks', complete: true, hp: 1800, queue: 0 },
+          { id: 10, team, type: 'stable', complete: true, hp: 1600, queue: 0 }], visibleEnemies: [] },
+        objectives: [], resourceNodes: [], workerProduction: { queue: 0 } };
+      change(state);
+      const authority = { team, food, wood, queueLimit: limits.queue, seatUnits: state.units.friendly.length,
+        seatReservedUnits: 0, seatLimit: 1000, totalUnits: state.units.friendly.length, totalReservedUnits: 0,
+        totalLimit: 2000, populationAvailable: state.population.available, upgrades: {} };
+      for (const building of state.buildings.friendly) {
+        const kinds = building.type === 'stable' ? ['scout', 'rider'] : ['infantry', 'spearman'];
+        building.productionOptions = kinds.map(kind => productionAction(building, kind, authority));
+      }
+      const policy = createProductionPolicy(seed);
+      policy.next(state);
+      assert.deepEqual(policy.next({ ...state, tick: 300 }), expected, label);
+      if (expected.length) assert.deepEqual(policy.next({ ...state, tick: 301 }), [], 'unconfirmed purchase still backs off');
+    }
+  });
+}
