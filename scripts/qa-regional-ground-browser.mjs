@@ -67,6 +67,7 @@ class Cdp {
 
 const profile=await mkdtemp('/tmp/regional-ground-chrome-');
 const chrome=spawn('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',['--headless=new','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--window-size=1280,900','--user-data-dir='+profile,'about:blank'],{stdio:'ignore'});
+const densePlacementCapture=process.env.RTS_QA_DENSE_PLACEMENT==='1';
 const layoutCapture=process.env.RTS_QA_GROUND_LAYOUT==='1';
 const out=process.env.RTS_QA_EVIDENCE || 'docs/qa-evidence/underbough-ground-kit-2026-10-01';
 let cdp;
@@ -80,10 +81,11 @@ try {
  const room=await(await fetch(new URL('/api/rooms',BASE),{method:'POST',headers:{origin:BASE.origin,'content-type':'application/json'},body:'{}'})).json();
  if(!room.roomId)throw new Error('Room creation failed');
  for(const id of ['underbough-rootways','bellweather-millrace']) for(const mode of ['legacy','kit']) {
-  await cdp.call('Page.navigate',{url:BASE.origin+'/?room='+room.roomId+'&regionalGrounds='+(layoutCapture?'kit':mode)});await sleep(4000);
+  await cdp.call('Page.navigate',{url:BASE.origin+'/?room='+room.roomId+'&regionalGrounds='+(layoutCapture||densePlacementCapture?'kit':mode)});await sleep(4000);
   for(let i=0;i<100;i++){if(await cdp.evaluate('document.documentElement.dataset.boot')==='ready')break;await sleep(200)}
   if(await cdp.evaluate('document.documentElement.dataset.boot')!=='ready')throw new Error('Browser boot failed');
   const map=JSON.parse(await readFile('maps/'+id+'.json','utf8'));
+  if(densePlacementCapture&&id==='underbough-rootways'&&mode==='legacy')map.terrainPatches=map.terrainPatches.filter(p=>p.material!=='long-grass');
   if(layoutCapture&&id==='underbough-rootways'&&mode==='legacy')map.terrainBase='forest-floor';
   map.id='landscape-review';map.name=id;map.fogOfWar=false;
   const file=path.join(profile,'study.json');await writeFile(file,JSON.stringify(map));
@@ -121,6 +123,7 @@ try {
     const legacyUrl=new URL(current);legacyUrl.searchParams.set('regionalGrounds','legacy');history.replaceState(null,'',legacyUrl);
     const legacy=await collect(map);history.replaceState(null,'',current);
     const required=['underbough-clearing-grass-v2.webp','underbough-root-soil-v2.webp','underbough-worn-dirt-v2.webp'];
+    if(map.terrainPatches.some(p=>p.material==='long-grass'))required.push('underbough-dense-growth-v2.webp');
     if(!required.every(file=>regional.includes(file)))throw new Error('Regional ground roles did not load their kit');
     if(control.some(file=>file.startsWith('underbough-'))||!control.includes('meadow.webp')||!control.includes('dirt.webp'))throw new Error('Ground cache check failed: '+JSON.stringify({regional,control}));
     if(legacy.some(file=>file.startsWith('underbough-'))||!legacy.includes('forest-floor.webp'))throw new Error('Legacy comparison failed');
@@ -131,6 +134,6 @@ try {
   }
   console.log('Captured '+id+' '+mode);
  }
- await writeFile(out+'/capture-report.json',JSON.stringify({source:layoutCapture?'same authored map and kit; previous forest-floor base versus clearing grass; Bellweather control':'regional ecology kit working branch; same map, renderer and cameras, regionalGrounds=legacy comparison',fog:'disabled only in disposable capture copies',errors},null,2)+'\n');
+ await writeFile(out+'/capture-report.json',JSON.stringify({source:densePlacementCapture?'same map and regional kit; original clearings versus authored dense woodland margins; Bellweather control':layoutCapture?'same authored map and kit; previous forest-floor base versus clearing grass; Bellweather control':'regional ecology kit working branch; same map, renderer and cameras, regionalGrounds=legacy comparison',fog:'disabled only in disposable capture copies',errors},null,2)+'\n');
  if(errors.length)throw new Error(errors.join('\n'));
 }finally{cdp?.close();chrome.kill('SIGTERM');}

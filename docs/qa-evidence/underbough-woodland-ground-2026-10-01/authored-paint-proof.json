@@ -1,0 +1,10 @@
+{
+  "originalMapSha256": "75a1037f50949033aff2abb90b4157358b42b729353ca914288be66402b2b7b1",
+  "denseGroundCells": 568,
+  "denseGroundPatches": 234,
+  "originalPaintPreserved": true,
+  "allNonPaintFieldsUnchanged": true,
+  "forestResourceCells": 1026,
+  "clearingAndRoadBufferCells": 1,
+  "resourceAndSpawnExclusionWorldUnits": 3
+}
