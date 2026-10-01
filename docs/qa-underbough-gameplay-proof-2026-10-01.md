@@ -55,6 +55,16 @@ proof files were cherry-picked onto fork main
 excluded. Fixtures, Rootways map and gameplay definitions match both baselines.
 Fork validation, repository CI and integration are tracked in the pull request.
 
+Both winner commands passed again on the fork-targeted branch, with the same
+per-seat bank/cost evidence. Full local `node scripts/ci.mjs` stopped at
+`Grounded starting settlements`: `obstacles: visual paint must not change match
+rules`. Running `scripts/settlement-authoring-scenario.mjs` from a disposable
+archive of unmodified fork main `71a1610` reproduced the same assertion and exit
+1. The map, source modules, historical fixture and settlement test are identical
+between that baseline and this PR. This pre-existing map/fixture mismatch is
+outside the proof's ownership; no map edits or weakened assertions were made.
+Merge remains pending resolution of that repository validation blocker.
+
 This is automated server evidence. Browser controls/rendering, human
 comprehension, unassisted playtests, network impairment and hosted performance
 are not established. A 250-unit opening is the scenario workload, not a new
