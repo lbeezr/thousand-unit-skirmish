@@ -68,7 +68,10 @@ class Cdp {
 const profile=await mkdtemp('/tmp/vaelora-vegetation-chrome-');
 const chrome=spawn('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',['--headless=new','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--window-size=1280,720','--user-data-dir='+profile,'about:blank'],{stdio:'ignore'});
 
-const regionalWood=process.env.RTS_RESOURCE_REGION==='underbough';
+const resourceRegion=process.env.RTS_RESOURCE_REGION;
+const regionalWood=Boolean(resourceRegion);
+const regionAtlas={'underbough':'underbough-root-oak','sereward':'sereward','vesperra':'vesperra','pale-meridian':'pale-meridian','bellweather':'bellweather','siltmouths':'siltmouths','sombral-mere':'sombral-mere','veyrholds':'veyrholds','ellionar':'ellionar','ru-lora-fringe':'ru-lora-fringe'}[resourceRegion];
+if(regionalWood&&!regionAtlas)throw new Error('Unsupported resource region');
 const out=process.env.RTS_DIRECTIONAL_OUTPUT || 'docs/qa-evidence/directional-live-harvest-2026-10-01';
 if(!/^docs\/qa-evidence\/[a-z0-9-]+$/.test(out))throw new Error('Invalid evidence directory');
 let cdp;
@@ -81,7 +84,7 @@ try {
  const room=await(await fetch(new URL('/api/rooms',BASE),{method:'POST',headers:{origin:BASE.origin,'content-type':'application/json'},body:'{}'})).json();if(!room.roomId)throw Error(room.error||'Room failed');
  await cdp.call('Page.navigate',{url:BASE.origin+'/?room='+room.roomId});await sleep(5500);
  if(await cdp.evaluate('document.documentElement.dataset.boot')!=='ready')throw Error('Game did not boot');
- const map={...(regionalWood?{region:'underbough'}:{}),id:'directional-harvest-check',name:'DIRECTIONAL HARVEST CHECK',width:40,height:40,terrainBase:'meadow',fogOfWar:false,startingArmySize:8,startingResources:{food:0,wood:0},spawnPoints:[{team:0,x:-14,z:0},{team:1,x:14,z:0}],obstacles:[],resourceNodes:[{id:'berry-check',type:'food',x:-10,z:2,stock:6},{id:'oak-check',type:'wood',x:-10,z:-2,stock:6}],triggers:[],scenarioEvents:[]};
+ const map={...(regionalWood?{region:resourceRegion}:{}),id:'directional-harvest-check',name:'DIRECTIONAL HARVEST CHECK',width:40,height:40,terrainBase:({'sereward':'sand','pale-meridian':'snow','vesperra':'jungle-loam','siltmouths':'tidal-mud','sombral-mere':'lunar-soil','veyrholds':'scree','ellionar':'garden-loam','ru-lora-fringe':'jungle-loam'}[resourceRegion]||'meadow'),fogOfWar:false,startingArmySize:8,startingResources:{food:0,wood:0},spawnPoints:[{team:0,x:-14,z:0},{team:1,x:14,z:0}],obstacles:[],resourceNodes:[{id:'berry-check',type:'food',x:-10,z:2,stock:6},{id:'oak-check',type:'wood',x:-10,z:-2,stock:6}],triggers:[],scenarioEvents:[]};
  await cdp.evaluate(`window.__qaSocket.send(JSON.stringify({type:'publishMap',persist:false,map:${JSON.stringify(map)}}))`);
  for(let i=0;i<100;i++){if(await cdp.evaluate('document.querySelector("#map-label-title")?.textContent')===map.name)break;await sleep(100)}
  if(await cdp.evaluate('document.querySelector("#map-label-title")?.textContent')!==map.name)throw Error('Map publication failed');
@@ -91,8 +94,8 @@ try {
  await shot('full');
  const requests=await cdp.evaluate(`performance.getEntriesByType('resource').filter(e=>e.name.includes('fixed-camera-v3')).map(e=>new URL(e.name).pathname)`);
  if(regionalWood) {
-  const regionalRequests=await cdp.evaluate(`performance.getEntriesByType('resource').filter(e=>e.name.includes('underbough-root-oak')).map(e=>new URL(e.name).pathname)`);
-  if(!regionalRequests.some(p=>p.endsWith('/underbough-root-oak-lifecycle-atlas.webp')))throw Error('Regional wood atlas not used by full game');
+  const regionalRequests=await cdp.evaluate(`performance.getEntriesByType('resource').filter(e=>e.name.includes('${regionAtlas}-lifecycle-atlas')).map(e=>new URL(e.name).pathname)`);
+  if(!regionalRequests.some(p=>p.endsWith('/'+regionAtlas+'-lifecycle-atlas.webp')))throw Error('Regional wood atlas not used by full game');
   requests.push(...regionalRequests);
  } else if(!['berries','oak'].every(f=>requests.some(p=>p.endsWith('/'+f+'-atlas.webp'))))throw Error('Directional atlases not used by full game');
  const observed=[];

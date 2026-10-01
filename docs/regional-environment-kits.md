@@ -359,3 +359,28 @@ species, provider generation, resource rules or directional frames. Root Oak
 still has one painted perspective. True regional directions, palette-matched
 ordinary resource plants in other zones, and additional ground roles remain
 unfinished.
+
+### Regional wood-resource palette selection — 1 October 2026 UTC
+
+The resource-tree profile now covers ten existing forest palettes: Bellweather,
+Underbough, Sereward, Pale Meridian, Siltmouths, Vesperra, Sombral Mere,
+Veyrholds, Ellionar and Ru’Lora living fringe. Each explicit region selects its
+existing canopy family, registered world dimensions and four harvest frames.
+Generic model artwork remains the fallback for unknown/unset regions and the
+model-review map. Ru’Lora's petrified interior has no compatible regional wood
+lifecycle yet and is deliberately not assigned a living fringe tree.
+
+[Forty renderer-frame observations](qa-evidence/regional-resource-trees-2026-10-01/proof.json)
+verify family selection, stage rectangles, world dimensions, loaded textures,
+reset matrices and boundary controls. [Sereward live harvesting](qa-evidence/regional-resource-sereward-2026-10-01/proof.json)
+and [Pale Meridian live harvesting](qa-evidence/regional-resource-meridian-2026-10-01/proof.json)
+cover real worker stock transitions, reset and reload on representative ground
+palettes without browser errors. Existing Underbough live evidence covers its
+profile. These are three observed live palettes, not ten full-match observations.
+Release packaging, habitat and settlement checks pass.
+
+This removes unrelated generic wood-node tree colours from the supported
+regions. The reused regional artwork remains one fixed painted perspective;
+no additional species or directional frames are claimed. Complete regional
+ground variants, four-species canopies beyond Underbough, ordinary food-node
+palettes and regional directions remain unfinished.
