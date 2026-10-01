@@ -1,0 +1,61 @@
+{
+  "map": "underbough-rootways",
+  "seed": 93002,
+  "frames": [
+    {
+      "mode": "scattered",
+      "counts": {
+        "underbough-root-oak": 314,
+        "underbough-moss-hornbeam": 230,
+        "underbough-old-plum": 207,
+        "underbough-copperleaf": 192,
+        "underbough-bramble": 83
+      },
+      "slots": 1026,
+      "neighborAgreement": 0.22902869757174393,
+      "textureFiles": [
+        "underbough-clearing-grass-v2.webp",
+        "underbough-clearing-grass-02-v2.webp",
+        "underbough-dense-growth-v2.webp",
+        "underbough-worn-dirt-v2.webp",
+        "underbough-root-soil-v2.webp",
+        "underbough-root-oak-lifecycle-atlas.webp",
+        "underbough-moss-hornbeam-lifecycle-atlas.webp",
+        "underbough-old-plum-lifecycle-atlas.webp",
+        "underbough-lifecycle-atlas.webp",
+        "underbough-bramble-lifecycle-atlas.webp",
+        "underbough-rootward-fungus.webp",
+        "underbough-rootward-fungus-02.webp"
+      ]
+    },
+    {
+      "mode": "groves",
+      "counts": {
+        "underbough-root-oak": 395,
+        "underbough-moss-hornbeam": 468,
+        "underbough-old-plum": 59,
+        "underbough-copperleaf": 51,
+        "underbough-bramble": 53
+      },
+      "slots": 1026,
+      "neighborAgreement": 0.7030905077262694,
+      "textureFiles": [
+        "underbough-clearing-grass-v2.webp",
+        "underbough-clearing-grass-02-v2.webp",
+        "underbough-dense-growth-v2.webp",
+        "underbough-worn-dirt-v2.webp",
+        "underbough-root-soil-v2.webp",
+        "underbough-root-oak-lifecycle-atlas.webp",
+        "underbough-moss-hornbeam-lifecycle-atlas.webp",
+        "underbough-old-plum-lifecycle-atlas.webp",
+        "underbough-lifecycle-atlas.webp",
+        "underbough-bramble-lifecycle-atlas.webp",
+        "underbough-rootward-fungus.webp",
+        "underbough-rootward-fungus-02.webp"
+      ]
+    }
+  ],
+  "harvestRootsUnchanged": true,
+  "representativeStateReset": true,
+  "mapUnchanged": true
+}

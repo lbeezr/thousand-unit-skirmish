@@ -70,6 +70,7 @@ const chrome=spawn('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome
 const densePlacementCapture=process.env.RTS_QA_DENSE_PLACEMENT==='1';
 const layoutCapture=process.env.RTS_QA_GROUND_LAYOUT==='1';
 const variantStudy=process.env.RTS_QA_GROUND_VARIANTS==='1';
+const forestStudy=process.env.RTS_QA_FOREST_SPECIES==='1';
 const out=process.env.RTS_QA_EVIDENCE || 'docs/qa-evidence/underbough-ground-kit-2026-10-01';
 let cdp;
 try {
@@ -81,8 +82,8 @@ try {
  cdp.on('Network.responseReceived',e=>{if(e.response.status>=400&&e.response.url.includes('/assets/'))errors.push('Asset '+e.response.status+' '+e.response.url)});
  const room=await(await fetch(new URL('/api/rooms',BASE),{method:'POST',headers:{origin:BASE.origin,'content-type':'application/json'},body:'{}'})).json();
  if(!room.roomId)throw new Error('Room creation failed');
- for(const id of ['underbough-rootways','bellweather-millrace']) for(const mode of (variantStudy?['single','mixed']:['legacy','kit'])) {
-  await cdp.call('Page.navigate',{url:BASE.origin+'/?room='+room.roomId+'&regionalGrounds='+(variantStudy||layoutCapture||densePlacementCapture?'kit':mode)+(variantStudy?'&groundVariants='+mode:'')});await sleep(4000);
+ for(const id of ['underbough-rootways','bellweather-millrace']) for(const mode of (forestStudy?['scattered','groves']:variantStudy?['single','mixed']:['legacy','kit'])) {
+  await cdp.call('Page.navigate',{url:BASE.origin+'/?room='+room.roomId+'&regionalGrounds='+(forestStudy||variantStudy||layoutCapture||densePlacementCapture?'kit':mode)+(variantStudy?'&groundVariants='+mode:'')+(forestStudy?'&forestSpecies='+mode:'')});await sleep(4000);
   for(let i=0;i<100;i++){if(await cdp.evaluate('document.documentElement.dataset.boot')==='ready')break;await sleep(200)}
   if(await cdp.evaluate('document.documentElement.dataset.boot')!=='ready')throw new Error('Browser boot failed');
   const map=JSON.parse(await readFile('maps/'+id+'.json','utf8'));
@@ -99,7 +100,7 @@ try {
   const shot=await cdp.call('Page.captureScreenshot',{format:'png'});await writeFile(out+'/'+id+'-'+mode+'-strategic.png',Buffer.from(shot.data,'base64'));
   await cdp.evaluate(`(()=>{const c=document.querySelector('#viewport canvas');const r=c.getBoundingClientRect();c.dispatchEvent(new WheelEvent('wheel',{deltaY:-700,clientX:r.x+r.width/2,clientY:r.y+r.height/2,cancelable:true}));document.querySelector('#camera-home-base').click()})()`);
   await sleep(400);const ordinary=await cdp.call('Page.captureScreenshot',{format:'png'});await writeFile(out+'/'+id+'-'+mode+'-ordinary.png',Buffer.from(ordinary.data,'base64'));
-  if(id==='underbough-rootways'&&(mode==='kit'||mode==='mixed')) {
+  if(id==='underbough-rootways'&&(mode==='kit'||mode==='mixed'||mode==='groves')) {
    const proof=await cdp.evaluate(`(async()=>{
     const {createGroundSurfaces,environmentTheme,addObstacleEnvironmentSprites}=await import('/src/environment-art.mjs');
     const map=${JSON.stringify(map)},original=JSON.stringify(map),current=location.href;
@@ -135,6 +136,6 @@ try {
   }
   console.log('Captured '+id+' '+mode);
  }
- await writeFile(out+'/capture-report.json',JSON.stringify({source:variantStudy?'same authored maps and regional kit; single versus two clearing sources; Bellweather control':densePlacementCapture?'same map and regional kit; original clearings versus authored dense woodland margins; Bellweather control':layoutCapture?'same authored map and kit; previous forest-floor base versus clearing grass; Bellweather control':'regional ecology kit working branch; same map, renderer and cameras, regionalGrounds=legacy comparison',fog:'disabled only in disposable capture copies',errors},null,2)+'\n');
+ await writeFile(out+'/capture-report.json',JSON.stringify({source:forestStudy?'same authored map, ground kit and four tree forms; scattered selection versus dominant groves; Bellweather control':variantStudy?'same authored maps and regional kit; single versus two clearing sources; Bellweather control':densePlacementCapture?'same map and regional kit; original clearings versus authored dense woodland margins; Bellweather control':layoutCapture?'same authored map and kit; previous forest-floor base versus clearing grass; Bellweather control':'regional ecology kit working branch; same map, renderer and cameras, regionalGrounds=legacy comparison',fog:'disabled only in disposable capture copies',errors},null,2)+'\n');
  if(errors.length)throw new Error(errors.join('\n'));
 }finally{cdp?.close();chrome.kill('SIGTERM');}

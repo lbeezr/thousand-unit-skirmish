@@ -360,6 +360,29 @@ still has one painted perspective. True regional directions, palette-matched
 ordinary resource plants in other zones, and additional ground roles remain
 unfinished.
 
+### Dominant Underbough species groves — 1 October 2026 UTC
+
+The four forms previously mixed mostly independently per wood cell, so copper
+crowns remained scattered throughout the forest despite modest oak-grove bias.
+The shared composition selector now gives each jittered ten-cell grove a dominant
+tree form, with 16% secondary selection and more woody scrub at true margins.
+The terrain seed drives grove locations and species. It uses existing regional
+art and keeps every authoritative cell and visible harvest root unchanged.
+`?forestSpecies=scattered` preserves the previous composition for comparison.
+
+On Rootways seed 93002 the new selection gives 395 Root Oaks, 468 hornbeams,
+59 old plums, 51 copperleaf and 53 bramble slots, still 1,026 total. Same-species
+neighbor agreement rises from 22.9% to 70.3%. These are descriptive values for
+this authored map, not fixed species quotas for other seeds. The
+[renderer comparison](qa-evidence/underbough-species-groves-2026-10-01/proof.json)
+checks identical roots across compositions, all five families, representative
+four-stage harvest/reset transforms, loaded art and unchanged map data.
+The [full-game comparison](qa-evidence/underbough-species-groves-live-2026-10-01/capture-report.json)
+records ordinary/strategic imported-match views and Bellweather controls without
+browser errors. Grouped copper accents and larger quiet canopy groups were
+visually inspected. This improves composition, not missing directional artwork
+or additional species for other zones.
+
 ### Regional wood-resource palette selection — 1 October 2026 UTC
 
 The resource-tree profile now covers ten existing forest palettes: Bellweather,
