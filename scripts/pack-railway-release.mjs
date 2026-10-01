@@ -111,7 +111,13 @@ async function copyEntry(relative) {
   }
   if (!info.isFile()) throw new Error(`Release source is not a regular file: ${relative}`);
   await mkdir(path.dirname(path.join(destination, relative)), { recursive: true });
-  await copyFile(source, path.join(destination, relative));
+  const target = path.join(destination, relative);
+  // macOS's native clone keeps an isolated copy-on-write snapshot without
+  // duplicating large art/audio payloads. Fall back to ordinary copying when
+  // cloning is unsupported; never substitute hard links to mutable sources.
+  const clone = process.platform === 'darwin'
+    ? spawnSync('/bin/cp', ['-c', source, target], { encoding: 'utf8' }) : null;
+  if (clone?.status !== 0) await copyFile(source, target);
   copied.push(relative);
 }
 
