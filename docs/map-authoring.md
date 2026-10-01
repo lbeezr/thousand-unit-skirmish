@@ -378,3 +378,13 @@ show more species mixing with `forestSpecies=mosaic`, but dense strips remain
 and copperleaf clusters draw excessive attention. Keep the existing default.
 Quiet accent foliage and distinct crown anatomy are the next appearance work;
 this review adds no rotated views or final beauty acceptance.
+
+### Smaller groves adopted with quieter foliage — 1 October 2026
+
+The [combined full-game review](qa-evidence/underbough-quiet-groves-2026-10-01/README.md)
+shows mixed six-cell stands breaking large hornbeam stretches without orange
+glare. Underbough now defaults to six-cell species groves; `forestSpecies=groves`
+retains ten-cell comparison and `scattered` retains the earlier selection study.
+The [no-option proof](qa-evidence/underbough-quiet-groves-default-2026-10-01/README.md)
+checks 1,026 wood owners and exact root-oak harvest/reset rendering. Actual source
+forest boundaries remain unchanged; natural treelines and rotated views remain open.
