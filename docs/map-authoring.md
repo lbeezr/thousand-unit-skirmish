@@ -396,3 +396,11 @@ adds four mirrored small glades and relocates 56 wood cells into outer shoulders
 preserving 1,026 cells. Geometric route/resource checks pass with Town Centers
 present. It is a saved candidate, not the shipped map: full-game canopy overlap
 and ground-mask review remain before adoption.
+
+### Rootways glade appearance result — 1 October 2026
+
+The [paired renderer review](qa-evidence/underbough-glade-render-2026-10-01/README.md)
+shows canopy overlap largely concealing the four small internal glades. Keep
+this layout as a candidate. Next iteration should enlarge visible clearings or
+create scalloped edge recesses around projected crown coverage, then rerun
+wood/resource/route checks. The shipped forest outline remains unchanged.
