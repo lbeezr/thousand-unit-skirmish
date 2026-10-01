@@ -933,3 +933,18 @@ Paired source registration keeps full/worked at one scale; a corrected separator
 avoids neighboring pixels. Registered world dimensions remain unchanged.
 Stock 5–1 uses worked, zero hides and reset restores full. Margin colonies stay
 full. Distinct low fungus art and independent fungus gathering remain absent.
+
+### Muted copperleaf source candidate — 1 October 2026
+
+The smaller-grove full-game review exposed distracting orange canopy clusters.
+`underbough/copperleaf-muted-full-v2-000.png` is a non-destructive foliage-palette
+edit of the original frontier copperleaf: subdued copper, ochre, brown olive
+and russet replace flame orange/scarlet. The inspected source is visibly quieter
+while retaining a similar crown and root arrangement. Both sources are RGBA
+1312×1199; alpha >8 bounds change from (10,12,1299,1183) to
+(11,9,1298,1184). Prompt and hash/bounds review accompany the source.
+
+This is one full-stock painted view, not a rotated perspective or runtime
+replacement. Exact root registration, matching worked/low/depleted states and
+paired full-game palette review remain before adoption. The original remains
+available; this candidate does not complete regional palette acceptance.
