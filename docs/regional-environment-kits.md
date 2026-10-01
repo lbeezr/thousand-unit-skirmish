@@ -435,3 +435,30 @@ now supplies four projections of one connected 3D scaffold, named crown volumes
 and root buttresses. It is an approximate drawing reference, not recovered
 geometry or runtime art. Reconcile its zero-heading silhouette with the accepted
 painted source before deriving a new directional set.
+
+### Two-source Underbough clearings — 1 October 2026 UTC
+
+A second independently generated clearing texture keeps the olive/umber palette
+while removing prominent straw clumps and leaf motifs. Original source, prompt,
+encoding, hashes and mean RGB are retained in its
+[registration record](../assets/environment/vaelora-region-kits-v2/underbough/clearing-grass-02-registration.json).
+The [3×3 source repeat sheet](../assets/environment/vaelora-region-kits-v2/underbough/clearing-grass-variant-repeat-review.png)
+compares both originals; sources are not digitally recoloured or painted over.
+
+Underbough `meadow` and `short-grass` now choose between the two sources at seeded
+triangle-lattice anchors, using the existing continuous blend weights. Each
+anchor selects one texture rather than explicitly sampling both sources.
+GPU cost of dynamic sampler branching has not been measured.
+The additional texture shares world-space UVs, scale and mip derivatives with
+the first. Other regions and ground roles retain their own materials. Diagnostic
+`?groundVariants=single` selects the prior source; mirror tiling also stays single.
+
+[Renderer evidence](qa-evidence/underbough-clearing-variants-2026-10-01/proof.json)
+checks successful compilation, loaded files, changed pixels, deterministic
+reconstruction and unchanged map data. The
+[full-game paired captures](qa-evidence/underbough-clearing-variants-live-2026-10-01/capture-report.json)
+compare the same authored maps at ordinary and strategic zoom with a Bellweather
+control, without browser errors. The new served WebP matches its recorded hash;
+existing Docker wildcard packaging includes it. This completes two source
+variants for the clearing role only; other role variants and regional kits remain
+unfinished.

@@ -1,0 +1,27 @@
+{
+  "sourceTool": "built-in ImageGen",
+  "generatedOutput": "exec-686b56e8-2e90-486b-ad6b-f9e0df8f0599.png",
+  "reference": "clearing-grass-01.png",
+  "source": "clearing-grass-02.png",
+  "sourceSha256": "f574c5a616c2e7510b3ae10f04b105c95c9bdb0e89ea151a2547b6eea69c4af2",
+  "runtime": "../../frontier-v1/underbough-clearing-grass-02-v2.webp",
+  "runtimeSha256": "d0f9da48c4de43cf5eada56fbc6ad9fc5cb1b4085144ed67c5db6bcef049a89f",
+  "dimensionsPx": [
+    1254,
+    1254
+  ],
+  "encoding": "RGB WebP quality90; no resize or creative pixel edits",
+  "meanRgb": {
+    "clearing-grass-01.png": [
+      99.29164854284471,
+      83.40641494267786,
+      44.36210760335666
+    ],
+    "clearing-grass-02.png": [
+      95.41681547278374,
+      78.51108669164574,
+      33.57538874008277
+    ]
+  },
+  "directionalCoverage": "flat ground; not a directional sprite"
+}

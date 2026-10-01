@@ -4,6 +4,9 @@ const FUNCTIONS = /* glsl */`
 #ifdef USE_MAP
 uniform float vaeloraTerrainSeed;
 uniform float vaeloraFreeRotation;
+#ifdef VAELORA_GROUND_VARIANT
+uniform sampler2D vaeloraVariantMap;
+#endif
 vec2 vaeloraHash(vec2 p) {
   p += vaeloraTerrainSeed;
   return fract(sin(vec2(dot(p, vec2(127.1, 311.7)),
@@ -14,6 +17,14 @@ vec4 vaeloraPatch(sampler2D terrainMap, vec2 uv, vec2 anchor, vec2 dx, vec2 dy) 
   float angle = mix(floor(random.x * 4.0) * 1.57079632679,
     random.x * 6.28318530718, vaeloraFreeRotation);
   mat2 rotation = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+#ifdef VAELORA_GROUND_VARIANT
+  // One source per lattice anchor; adjacent anchors blend continuously using
+  // the existing three weights. Each branch samples one source per patch.
+  if (vaeloraHash(anchor + vec2(43.0, 19.0)).y > 0.5) {
+    return textureGrad(vaeloraVariantMap, rotation * uv + random * 7.0,
+      rotation * dx, rotation * dy);
+  }
+#endif
   return textureGrad(terrainMap, rotation * uv + random * 7.0,
     rotation * dx, rotation * dy);
 }
@@ -49,11 +60,16 @@ vec4 vaeloraGround(sampler2D terrainMap, vec2 uv, vec2 dx, vec2 dy) {
 #endif
 `;
 
-export function applyTerrainTextureSampling(material, seed = 0, enabled = true, freeRotation = false) {
+export function applyTerrainTextureSampling(material, seed = 0, enabled = true, freeRotation = false, variantTexture = null) {
   if (!enabled) return material;
+  if (variantTexture) {
+    material.defines = { ...material.defines, VAELORA_GROUND_VARIANT: 1 };
+    material.userData.groundVariantTexture = variantTexture;
+  }
   material.onBeforeCompile = (shader) => {
     shader.uniforms.vaeloraTerrainSeed = { value: (seed % 997) / 17 };
     shader.uniforms.vaeloraFreeRotation = { value: freeRotation ? 1 : 0 };
+    if (variantTexture) shader.uniforms.vaeloraVariantMap = { value: variantTexture };
     shader.fragmentShader = FUNCTIONS + shader.fragmentShader;
     shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>', /* glsl */`
       #ifdef USE_MAP
@@ -75,6 +91,6 @@ export function applyTerrainTextureSampling(material, seed = 0, enabled = true, 
       #endif
     `);
   };
-  material.customProgramCacheKey = () => 'vaelora-stochastic-ground-v3';
+  material.customProgramCacheKey = () => variantTexture ? 'vaelora-stochastic-ground-v4-variant' : 'vaelora-stochastic-ground-v3';
   return material;
 }

@@ -338,6 +338,22 @@
       "promptPath": "root-oak-view-270-review-v2-prompt.txt",
       "reviewPath": "root-oak-direction-review-v2.md",
       "reason": "Opposite requested side views differ substantially in horizontal extent despite similar height. Independent redraws do not establish shared geometry. No runtime coverage accepted."
+    },
+    {
+      "path": "clearing-grass-02.png",
+      "sha256": "f574c5a616c2e7510b3ae10f04b105c95c9bdb0e89ea151a2547b6eea69c4af2",
+      "sizeBytes": 3192451,
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "visibleAlphaBoundsPx": null,
+      "status": "regional-ground-runtime-variant",
+      "runtime": "../../frontier-v1/underbough-clearing-grass-02-v2.webp",
+      "sourceTool": "built-in ImageGen",
+      "registrationPath": "clearing-grass-02-registration.json",
+      "directionDegrees": null
     }
   ]
 }

@@ -7156,7 +7156,7 @@ const server = createServer(async (request, response) => {
       'rock-boulder-cluster', 'basalt-ridge-cap', 'cliff-end-cap',
       'berries', 'rock-outcrop', 'basalt-ridge', 'cliff', 'seamstone',
       'underbough-thornberry', 'underbough-thornberry-worked', 'underbough-thornberry-low', 'underbough-thornberry-depleted',
-      'underbough-dense-growth-v2', 'underbough-clearing-grass-v2', 'underbough-root-soil-v2', 'underbough-worn-dirt-v2',
+      'underbough-dense-growth-v2', 'underbough-clearing-grass-v2', 'underbough-clearing-grass-02-v2', 'underbough-root-soil-v2', 'underbough-worn-dirt-v2',
       'underbough-old-plum-lifecycle-atlas', 'underbough-old-plum', 'underbough-old-plum-worked', 'underbough-old-plum-low', 'underbough-old-plum-depleted',
       'underbough-moss-hornbeam-lifecycle-atlas', 'underbough-moss-hornbeam', 'underbough-moss-hornbeam-worked', 'underbough-moss-hornbeam-low', 'underbough-moss-hornbeam-depleted',
       'underbough-root-oak-lifecycle-atlas', 'underbough-root-oak', 'underbough-root-oak-worked', 'underbough-root-oak-low', 'underbough-root-oak-depleted',

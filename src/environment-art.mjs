@@ -9,7 +9,7 @@ import { applyTerrainTextureSampling } from './terrain-texture-sampling.mjs';
 import { buildTerrainBlendMasks, buildForestGroundMask } from './terrain-blend.mjs';
 import { buildWaterSurfaceGeometry, WATER_LEVEL } from './water-surface-geometry.mjs';
 import { forestHabitatDepth, forestCanopyFactor } from './forest-habitat.mjs';
-import { regionalGroundTextureName, regionalGroundColor } from './regional-ground-kits.mjs';
+import { regionalGroundTextureName, regionalGroundVariantTextureName, regionalGroundColor } from './regional-ground-kits.mjs';
 import { shorePlantPositions } from './shore-vegetation.mjs';
 import { meadowPlantGroups, drylandPlantGroups, snowPlantGroups, ridgePlantGroups, lunarPlantGroups, marshPlantGroups } from './meadow-vegetation.mjs';
 import { gardenPlantGroups } from './garden-vegetation.mjs';
@@ -295,9 +295,12 @@ async function loadResourceStateAssets() {
 export const resourceStateAssetsReady = loadResourceStateAssets();
 
 const grounds = new Map();
-function groundTexture(material, definition) {
-  let name = regionalGroundTextureName(definition, material,
-    new URLSearchParams(globalThis.location?.search ?? '').get('regionalGrounds') !== 'legacy');
+function groundTexture(material, definition, variant = false) {
+  const query = new URLSearchParams(globalThis.location?.search ?? '');
+  const enabled = query.get('regionalGrounds') !== 'legacy';
+  let name = variant ? regionalGroundVariantTextureName(definition, material,
+    enabled && query.get('groundVariants') !== 'single') : regionalGroundTextureName(definition, material, enabled);
+  if (!name) return null;
   if (name === 'meadow' && new URLSearchParams(globalThis.location?.search ?? '').get('meadowSurface') === 'quiet') {
     name = 'bellweather-quiet-meadow';
   }
@@ -386,15 +389,16 @@ export function createGroundSurfaces(definition) {
   const base = groundBaseMaterial(definition);
   const stochastic = new URLSearchParams(globalThis.location?.search ?? '').get('terrainTiling') !== 'mirror';
   const freeRotation = new URLSearchParams(globalThis.location?.search ?? '').get('terrainRotation') === 'free';
-  const groundMaterial = options => applyTerrainTextureSampling(
-    new THREE.MeshBasicMaterial({ ...options, vertexColors: true }), definition.terrainSeed || 0, stochastic, freeRotation);
+  const groundMaterial = (options, role) => applyTerrainTextureSampling(
+    new THREE.MeshBasicMaterial({ ...options, vertexColors: true }), definition.terrainSeed || 0, stochastic, freeRotation,
+    stochastic ? groundTexture(role, definition, true) : null);
   const baseBuffer = groundBuffer();
   addGroundQuad(baseBuffer, definition,
     -definition.width / 2, -definition.height / 2,
     definition.width / 2, definition.height / 2, -0.025);
   const meshes = [new THREE.Mesh(
     finishGroundGeometry(baseBuffer),
-    groundMaterial({ map: groundTexture(base, definition), color: 0xd2d4bd }),
+    groundMaterial({ map: groundTexture(base, definition), color: 0xd2d4bd }, base),
   )];
   const waterGeometry = buildWaterSurfaceGeometry(definition);
   if (waterGeometry) {
@@ -427,7 +431,7 @@ export function createGroundSurfaces(definition) {
     const mesh = new THREE.Mesh(geometry, groundMaterial({
       map: texture, alphaMap, color: 0xd2d4bd,
       transparent: true, depthWrite: false,
-    }));
+    }, mask.material));
     mesh.userData.ownedGroundTextures = [texture, alphaMap];
     mesh.renderOrder = renderOrder;
     return mesh;

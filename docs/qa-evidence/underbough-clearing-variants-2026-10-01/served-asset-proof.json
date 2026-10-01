@@ -1,0 +1,7 @@
+{
+  "url": "http://127.0.0.1:4207/assets/environment/frontier-v1/underbough-clearing-grass-02-v2.webp",
+  "sha256": "d0f9da48c4de43cf5eada56fbc6ad9fc5cb1b4085144ed67c5db6bcef049a89f",
+  "servedMatchesRuntime": true,
+  "packaging": "Dockerfile copies frontier-v1; .dockerignore admits frontier-v1/*.webp",
+  "scope": "local current-code server; no hosted deployment claim"
+}

@@ -22,6 +22,11 @@ export function regionalGroundTextureName(definition, material, enabled = true) 
   return material;
 }
 
+export function regionalGroundVariantTextureName(definition, material, enabled = true) {
+  return enabled && definition?.region === 'underbough' && ['meadow', 'short-grass'].includes(material)
+    ? 'underbough-clearing-grass-02-v2' : null;
+}
+
 export function regionalGroundColor(definition, material) {
   const enabled = new URLSearchParams(globalThis.location?.search ?? '').get('regionalGrounds') !== 'legacy';
   return (enabled && definition?.region === 'underbough' && UNDERBOUGH_COLORS[material])
