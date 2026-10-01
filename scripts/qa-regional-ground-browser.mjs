@@ -71,6 +71,7 @@ const densePlacementCapture=process.env.RTS_QA_DENSE_PLACEMENT==='1';
 const layoutCapture=process.env.RTS_QA_GROUND_LAYOUT==='1';
 const variantStudy=process.env.RTS_QA_GROUND_VARIANTS==='1';
 const forestStudy=process.env.RTS_QA_FOREST_SPECIES==='1';
+const soilStudy=process.env.RTS_QA_SOIL_STUDY==='1';
 const stoneStudy=process.env.RTS_QA_STONE_STUDY==='1';
 const wetStudy=process.env.RTS_QA_WET_STUDY==='1';
 const waterStudy=process.env.RTS_QA_WATER_CONTOUR==='1';
@@ -92,12 +93,12 @@ try {
   const map=JSON.parse(await readFile('maps/'+id+'.json','utf8'));
   if(densePlacementCapture&&id==='underbough-rootways'&&mode==='legacy')map.terrainPatches=map.terrainPatches.filter(p=>p.material!=='long-grass');
   if(layoutCapture&&id==='underbough-rootways'&&mode==='legacy')map.terrainBase='forest-floor';
-  if(stoneStudy||wetStudy) {
+  if(stoneStudy||wetStudy||soilStudy) {
    const paints=Array(map.width*map.height).fill(null);
    for(const p of map.terrainPatches)for(let r=p.row;r<p.row+p.height;r++)for(let c=p.column;c<p.column+p.width;c++)paints[r*map.width+c]=p.material;
    for(let r=26;r<34;r++)for(let c=14+Math.abs(30-r);c<26-Math.abs(30-r);c++){
     if(map.obstacles.some(o=>c>=o.column&&c<o.column+o.width&&r>=o.row&&r<o.row+o.height))throw Error('Material study must remain on exposed open ground');
-    paints[r*map.width+c]=wetStudy?'tidal-mud':'scree';
+    paints[r*map.width+c]=soilStudy?'forest-floor':wetStudy?'tidal-mud':'scree';
    }
    map.terrainPatches=[];
    for(let r=0;r<map.height;r++)for(let c=0;c<map.width;){
@@ -111,7 +112,7 @@ try {
     if(map.obstacles.some(o=>r>=o.row&&r<o.row+o.height&&column<o.column+o.width&&column+width>o.column))throw Error('Water-margin study overlaps existing obstacles');
     map.obstacles.push({column,row:r,width,height:1,material:'water'});
    }
-   if(mode==='kit'||mode==='curved')await writeFile(out+'/'+id+(wetStudy?'-wet-study.json':'-stone-study.json'),JSON.stringify(map,null,2)+'\n');
+   if(mode==='kit'||mode==='curved'||mode==='mixed')await writeFile(out+'/'+id+(soilStudy?'-soil-study.json':wetStudy?'-wet-study.json':'-stone-study.json'),JSON.stringify(map,null,2)+'\n');
   }
   map.id='landscape-review';map.name=id;map.fogOfWar=false;
   const file=path.join(profile,'study.json');await writeFile(file,JSON.stringify(map));
@@ -173,6 +174,6 @@ try {
   }
   console.log('Captured '+id+' '+mode);
  }
- await writeFile(out+'/capture-report.json',JSON.stringify({source:waterStudy?'same disposable shoreline maps and regional kits; per-cell chamfers versus connected conservative curves':wetStudy?'disposable irregular wet-soil paint on copied maps; global versus regional ground kit; Bellweather and Siltmouths controls':stoneStudy?'disposable irregular exposed-stone paint on copied maps; global versus regional ground kit; Bellweather control':forestStudy?'same authored map, ground kit and four tree forms; scattered selection versus dominant groves; Bellweather control':variantStudy?'same authored maps and regional kit; single versus paired clearing and woodland soil sources; Bellweather control':densePlacementCapture?'same map and regional kit; original clearings versus authored dense woodland margins; Bellweather control':layoutCapture?'same authored map and kit; previous forest-floor base versus clearing grass; Bellweather control':'regional ecology kit working branch; same map, renderer and cameras, regionalGrounds=legacy comparison',fog:'disabled only in disposable capture copies',errors},null,2)+'\n');
+ await writeFile(out+'/capture-report.json',JSON.stringify({source:soilStudy?'disposable exposed forest-floor paint on copied maps; paired clearing/soil sources versus single; Bellweather control':waterStudy?'same disposable shoreline maps and regional kits; per-cell chamfers versus connected conservative curves':wetStudy?'disposable irregular wet-soil paint on copied maps; global versus regional ground kit; Bellweather and Siltmouths controls':stoneStudy?'disposable irregular exposed-stone paint on copied maps; global versus regional ground kit; Bellweather control':forestStudy?'same authored map, ground kit and four tree forms; scattered selection versus dominant groves; Bellweather control':variantStudy?'same authored maps and regional kit; single versus paired clearing and woodland soil sources; Bellweather control':densePlacementCapture?'same map and regional kit; original clearings versus authored dense woodland margins; Bellweather control':layoutCapture?'same authored map and kit; previous forest-floor base versus clearing grass; Bellweather control':'regional ecology kit working branch; same map, renderer and cameras, regionalGrounds=legacy comparison',fog:'disabled only in disposable capture copies',errors},null,2)+'\n');
  if(errors.length)throw new Error(errors.join('\n'));
 }finally{cdp?.close();chrome.kill('SIGTERM');}
