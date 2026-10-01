@@ -403,6 +403,37 @@ control. This is material integration, not a new shipped stone area, raised rock
 asset, collision rule or water mechanic. Wet bank/shore remains missing, and
 non-clearing roles still need second source variants.
 
+### Underbough wet-bank role — 1 October 2026 UTC
+
+Underbough's existing `tidal-mud` paint now resolves to quiet damp woodland soil
+rather than the shared Siltmouths tidal texture. It is an appearance mapping for
+the wet-bank role, not a statement that the inland woodland has tides. The source
+mean `#463419` also supplies its diagram, border, minimap and Studio colour.
+The first candidate was rejected for recognizable leaves/roots; its original
+and prompt remain alongside the revised smooth-soil master. The
+[registration](../assets/environment/vaelora-region-kits-v2/underbough/wet-bank-01-registration.json)
+records exact prompts, source/runtime hashes and RGB WebP encoding with no local
+creative pixel editing or rescaling.
+
+This provides first-source coverage for all six planned Underbough ground roles:
+clearing, dense growth, root/litter soil, worn earth, exposed stone and wet bank.
+There are seven accepted sources because clearings have two variants. The
+[repeat review](../assets/environment/vaelora-region-kits-v2/underbough/ground-six-role-repeat-review.png)
+compares them together. Only the clearing role currently has two independent
+variants; the kit is not complete against the full variant/directional targets.
+
+The [Studio comparison](qa-evidence/underbough-wet-bank-2026-10-01/capture-report.json)
+uses copied Underbough/Bellweather maps with 64 exposed wet-soil cells beside a
+small 32-cell water margin. No shipped layout is changed. The
+[binding proof](qa-evidence/underbough-wet-bank-2026-10-01/renderer-proof.json)
+asserts regional soil, retained Underbough canopy families, unchanged rendered
+input, cache isolation, and a Siltmouths control retaining its own quiet mud.
+The role adds no tide simulation, resource, elevation or collision behavior.
+
+The same ordinary study reveals strongly angular small-water contours despite
+the existing corner chamfers. Improve that renderer boundary using the exact
+study map as a reproduction; soil palette coverage alone does not resolve it.
+
 ### Regional wood-resource palette selection — 1 October 2026 UTC
 
 The resource-tree profile now covers ten existing forest palettes: Bellweather,

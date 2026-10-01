@@ -3,7 +3,7 @@
   "packId": "environment.underbough-cohesive-kit-v2",
   "maturity": "source-study",
   "region": "underbough",
-  "status": "Underbough five regional ground roles with six source textures, four fixed-view tree forms and thornberry food shrub are integrated; regional directional artwork remains unfinished",
+  "status": "Underbough six regional ground roles with seven accepted source textures, four fixed-view tree forms and thornberry food shrub are integrated; second variants outside clearings and regional directional artwork remain unfinished",
   "source": "project-owned built-in ImageGen, using selected Underbough ecology key and existing copperleaf sprite references",
   "directionalMethod": "authored painted views; not measured 3D render captures",
   "targetTreeForms": [
@@ -367,6 +367,32 @@
       "status": "regional-ground-runtime",
       "runtime": "../../frontier-v1/underbough-shaded-stone-v2.webp",
       "registrationPath": "shaded-stone-01-registration.json",
+      "directionDegrees": null
+    },
+    {
+      "path": "wet-bank-rejected-litter.png",
+      "sha256": "9378d986ca0a98fdc759dcd07ab3e324ae63289520d11faa7dbcfa3e02d94014",
+      "sizeBytes": 3206611,
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "status": "rejected-ground-candidate",
+      "reason": "Too many recognizable leaves and roots; reads as forest litter rather than damp bank soil",
+      "directionDegrees": null
+    },
+    {
+      "path": "wet-bank-01.png",
+      "sha256": "5763a67a36c7d02f44985c178ad5fd0c2fcc359061b5ded742e2117128f8583a",
+      "sizeBytes": 2732353,
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "status": "regional-ground-runtime",
+      "reason": "Revised smoother subdued damp soil; original generated pixels preserved",
       "directionDegrees": null
     }
   ]
