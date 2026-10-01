@@ -70,7 +70,7 @@ run(['--test', 'scripts/hosted-scale-profile.test.mjs'], 'Hosted scale measureme
 run(['--test', 'scripts/unit-sprite-clock.test.mjs'], 'Sprite animation clock');
 run(['--test', 'scripts/sprite-pixel-bounds.test.mjs'], 'Sprite pixel clipping regressions');
 run(['--test', 'scripts/building-sprites.test.mjs'], 'Default building sprites');
-run(['--test', 'scripts/captured-building-state-race.test.mjs', 'scripts/frontier-building-renderer.test.mjs'], 'Captured building lifecycle and source contracts');
+run(['--test', 'scripts/captured-building-state-race.test.mjs', 'scripts/captured-building-manifest-retry.test.mjs', 'scripts/frontier-building-renderer.test.mjs'], 'Captured building lifecycle and source contracts');
 run(['--test', 'scripts/ci-sharding.test.mjs'], 'CI shard coverage');
 run(['--test', 'scripts/pve-reconnaissance.test.mjs'], 'Bounded Scout reconnaissance');
 run(['--test', 'scripts/browser-performance-instrumentation.test.mjs'], 'Browser timing attribution');
