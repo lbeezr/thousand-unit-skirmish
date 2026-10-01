@@ -970,3 +970,12 @@ its existing 64-pixel gutters, half-texel UV inset and mip cap. World dimensions
 compensate for the original copperleaf crop's smaller canvas; a renderer review
 must still check apparent root placement and size. This package is not bound
 into gameplay yet. Actual stock/reset and paired full-game evidence remain.
+
+### Muted copperleaf renderer preview — 1 October 2026
+
+`forestCopperleaf=muted` now selects the four-state candidate in Underbough.
+The [renderer evidence](qa-evidence/underbough-muted-copperleaf-renderer-2026-10-01/README.md)
+checks all 51 candidate slots at stock 6/3/1/0/6, loaded atlas textures, finite
+transforms, unchanged map data and pixel-identical reset. The inspected accents
+are quieter. Default remains original pending paired full-game review. Repeated
+anatomy and rotated-view production remain unfinished.

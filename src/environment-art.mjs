@@ -27,6 +27,7 @@ const INTERACTIVE_ASSET_ROOT = './assets/environment/frontier-interactive-v1/';
 const GROUND_RENDER_ORDER = -20;
 export { TERRAIN_MATERIALS } from './terrain-materials.mjs';
 const spriteNames = [
+  'underbough-muted-copperleaf-v2', 'underbough-muted-copperleaf-v2-worked', 'underbough-muted-copperleaf-v2-low', 'underbough-muted-copperleaf-v2-depleted',
   'underbough-leafy-hornbeam-v2', 'underbough-leafy-hornbeam-v2-worked', 'underbough-leafy-hornbeam-v2-low', 'underbough-leafy-hornbeam-v2-depleted',
   'underbough-young-hornbeam', 'underbough-young-hornbeam-worked', 'underbough-young-hornbeam-low', 'underbough-young-hornbeam-depleted',
   'underbough-low-hazel',
@@ -64,7 +65,7 @@ const spriteMaterials = new Map();
 const constructionTextures = new Map();
 const constructionMaterials = new Map();
 const constructionInstances = new Map();
-const forestAtlasPacks = new Map(await Promise.all(['bellweather', 'sereward', 'pale-meridian', 'siltmouths', 'vesperra', 'sombral-mere', 'underbough', 'underbough-bramble', 'underbough-root-oak', 'underbough-moss-hornbeam', 'underbough-young-hornbeam', 'underbough-leafy-hornbeam-v2', 'underbough-old-plum', 'veyrholds', 'ellionar', 'ellionar-hedge', 'sereward-acacia', 'sereward-scrub', 'bellweather-hedgerow', 'ru-lora-fringe'].map(async (region) => {
+const forestAtlasPacks = new Map(await Promise.all(['bellweather', 'sereward', 'pale-meridian', 'siltmouths', 'vesperra', 'sombral-mere', 'underbough', 'underbough-bramble', 'underbough-root-oak', 'underbough-moss-hornbeam', 'underbough-young-hornbeam', 'underbough-leafy-hornbeam-v2', 'underbough-muted-copperleaf-v2', 'underbough-old-plum', 'veyrholds', 'ellionar', 'ellionar-hedge', 'sereward-acacia', 'sereward-scrub', 'bellweather-hedgerow', 'ru-lora-fringe'].map(async (region) => {
   try {
     const response = await fetch(`${ASSET_ROOT}${region}-lifecycle-atlas.json`);
     if (!response.ok) throw new Error(`atlas metadata HTTP ${response.status}`);
@@ -1010,6 +1011,7 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
       }
     }
   }
+  const mutedCopperleaf = underbough && new URLSearchParams(globalThis.location?.search ?? '').get('forestCopperleaf') === 'muted';
   const leafyHornbeam = underbough && new URLSearchParams(globalThis.location?.search ?? '').get('forestCanopy') !== 'original';
   const layeredForestMargin = underbough && new URLSearchParams(globalThis.location?.search ?? '').get('forestEdges') === 'layered';
   const youngHornbeams = [];
@@ -1040,7 +1042,7 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
     [leafyHornbeam ? 'underbough-leafy-hornbeam-v2' : 'underbough-moss-hornbeam', leafyHornbeam ? 3.651379638439581 * 1062 / 1066 : 3.6 * 1013 / 1245, leafyHornbeam ? 3.651379638439581 : 3.6, hornbeams],
     ['underbough-old-plum', 2.85 * 1220 / 1135, 2.85, oldPlums],
     ['silver-birch', 2.3, 3.45, birches],
-    [mapleName, sereward ? 3.5 : 3.05, sereward ? 2.85 : 3.25, maples],
+    [mutedCopperleaf ? 'underbough-muted-copperleaf-v2' : mapleName, mutedCopperleaf ? 3.05 * 1312 / 1289 : sereward ? 3.5 : 3.05, mutedCopperleaf ? 3.25 * 1199 / 1171 : sereward ? 2.85 : 3.25, maples],
     [thicketName, ellionar ? 2.8 : sereward ? 2.6 : 3.1, ellionar ? 1.8 : sereward ? 1.7 : 2.07, hazelThickets],
     [ruLora ? 'ru-lora-fiendwood' : paleMeridian ? 'pale-meridian-violet-lichen' : veyrholds ? 'veyrholds-ironlichen-outcrop' : 'rock-outcrop', ruLora ? 3.3 : paleMeridian ? 2.8818 : 3.5, ruLora ? 3.2 : paleMeridian ? 1.5 : 2.2, outcrops],
     ['ru-lora-broken-trunk', 1.655, 2.3, brokenTrunks],
@@ -1067,7 +1069,7 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
       || createEnvironmentSpriteInstances(name, width, height, points);
     if (!mesh) continue;
     let stateMeshes;
-    if (!mesh.userData.forestAtlas && ['bellweather-field-maple', 'sereward-palm', 'pale-meridian-conifer', 'siltmouths-tidal-tree', 'ru-lora-fringe-canopy', 'vesperra-mistbark', 'sombral-mere-merebloom', 'underbough-copperleaf', 'underbough-bramble', 'underbough-root-oak', 'underbough-moss-hornbeam', 'underbough-young-hornbeam', 'underbough-leafy-hornbeam-v2', 'underbough-old-plum', 'veyrholds-highpine', 'ellionar-cultivated-palm', 'ellionar-garden-hedge', 'sereward-acacia', 'sereward-scrub', 'bellweather-hedgerow'].includes(name)) {
+    if (!mesh.userData.forestAtlas && ['bellweather-field-maple', 'sereward-palm', 'pale-meridian-conifer', 'siltmouths-tidal-tree', 'ru-lora-fringe-canopy', 'vesperra-mistbark', 'sombral-mere-merebloom', 'underbough-copperleaf', 'underbough-bramble', 'underbough-root-oak', 'underbough-moss-hornbeam', 'underbough-young-hornbeam', 'underbough-leafy-hornbeam-v2', 'underbough-muted-copperleaf-v2', 'underbough-old-plum', 'veyrholds-highpine', 'ellionar-cultivated-palm', 'ellionar-garden-hedge', 'sereward-acacia', 'sereward-scrub', 'bellweather-hedgerow'].includes(name)) {
       stateMeshes = { full: mesh };
       for (const stage of ['worked', 'low', 'depleted']) {
         const stateMesh = createEnvironmentSpriteInstances(`${name}-${stage}`, width, height,
