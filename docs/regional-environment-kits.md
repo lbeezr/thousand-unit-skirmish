@@ -737,6 +737,7 @@ exposed more roots. That study is not promoted to runtime. The next composition
 work should use irregular age/spacing groups and quieter mature silhouettes,
 while keeping wood ownership and blocked ground legible. Existing runtime tree
 scales and source map definitions remain unchanged.
+
 ## Ellionar Sunbloom orientations · 1 October 2026
 
 The [Sunbloom view pack](../assets/environment/ellionar-sunbloom-views-v1/README.md)
@@ -746,3 +747,16 @@ regional palette. Rear flower backs and narrower side profiles replace mirrored
 card copies, with the reference halo removed. [Runtime evidence](qa-evidence/vaelora-sunbloom-authored-views-2026-10-01/README.md)
 covers the existing woodland/channel placement and stock/reset. This is four
 approximate plant views, not a complete regional directional/state roster.
+
+
+## Irregular canopy age experiment — 1 October 2026
+
+The opt-in `?forestAges=irregular` [canopy-size study](qa-evidence/underbough-forest-age-study-2026-10-01/README.md)
+selects mutually separated mature roots using seeded local minima, rather than
+square cohorts. It retains every existing wood root and species with positive
+visual scale. Other regions and the default Underbough profile stay unchanged.
+Eight full-game captures passed without reported errors. The inspected ordinary
+pair breaks some size repetition, but root/branch clutter remains, so it is not
+adopted as the default. Smaller copies are a scale experiment, not anatomically
+authored young trees. Quieter source silhouettes and real age forms remain the
+next art requirement alongside directional construction.
