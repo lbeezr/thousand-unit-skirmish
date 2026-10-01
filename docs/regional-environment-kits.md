@@ -959,3 +959,14 @@ and root-band bounds; the contact sheet compares the four source states.
 These coarse registration checks do not establish pixel-perfect alignment.
 Runtime packing, actual transition/reset captures and full-game palette review
 remain. This is still one painted perspective, with no added rotations.
+
+### Muted copperleaf runtime candidate package — 1 October 2026
+
+`underbough-muted-copperleaf-v2-lifecycle-manifest.json` packages all four source
+states on their full shared 1312×1199 canvas, avoiding tight-edge clipping.
+LANCZOS scaling caps the runtime edge at 1024 pixels; WebP alpha matches the
+resized sources exactly. The lifecycle builder now supports this family using
+its existing 64-pixel gutters, half-texel UV inset and mip cap. World dimensions
+compensate for the original copperleaf crop's smaller canvas; a renderer review
+must still check apparent root placement and size. This package is not bound
+into gameplay yet. Actual stock/reset and paired full-game evidence remain.
