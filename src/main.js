@@ -4303,6 +4303,8 @@ function applyState(state, initial = false) {
       unit.attackStartedAt = 0;
       unit.hitStartedAt = 0;
       unit.defeatStartedAt = 0;
+      unit.spriteClockState = null;
+      unit.spriteClockStartedAt = null;
       unit.spawnStartedAt = initial ? 0 : performance.now();
       unit.lastPlayedAttackTick = -1;
       unit.angle = team === 0 ? Math.PI / 2 : -Math.PI / 2;

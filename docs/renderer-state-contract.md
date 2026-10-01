@@ -61,13 +61,17 @@ reads well; use the appearance matrix below.
 | Attack | Fresh `lastAttackTick`; deduplicate and use target coordinates only if present. This is not proof of damage. |
 | Hit | Positive HP decreases. |
 | Defeat | HP reaches zero; terminal for that generation. |
-| Spawn | New unit or reused ID with a new generation; reset transient state. |
+| Spawn | New unit or reused ID with a new generation; reset transient state and the animation clock. |
 
 Attack/hit are overlays; defeat takes precedence. Full-detail cargo can tint the
 existing backpack leaf green for wood or amber for food. Flush changed color
 buffers once per team after reconciliation. Authored material stays neutral.
 The actual server task strings are documented in the
 [command contract](gameplay-command-observation-contract.md#state-consumed-by-rendering).
+
+A reused generation starts its first sprite frame at elapsed zero, including
+when death and replacement are coalesced between snapshots or atlas loading is
+still pending. The prior generation's clock cannot advance the new role's clip.
 
 ## Building parts and state
 

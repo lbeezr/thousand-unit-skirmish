@@ -1,6 +1,41 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { spriteAnimationTime, spriteClipDuration } from '../src/unit-sprite-runtime.mjs';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+import { activeState, spriteAnimationTime, spriteClipDuration } from '../src/unit-sprite-runtime.mjs';
+
+const main = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
+const generationReset = main.slice(main.indexOf('    if (existingUnit && unit.generation !== generation)'),
+  main.indexOf('    unit.serverX = x;', main.indexOf('function applyState(')));
+
+for (const previousState of ['walk', 'defeat']) for (const loaded of [true, false]) {
+  test(`recycled role starts a new clock after ${previousState} with ${loaded ? 'ready' : 'delayed'} atlas`, () => {
+    for (const team of [0, 1]) {
+      let now = 1400;
+      const unit = {id: 7, team, slot: 2, generation: 1, kind: 'worker', hp: previousState === 'defeat' ? 0 : 100,
+        walking: true, task: 'gathering', attackStartedAt: 1200, hitStartedAt: 1300,
+        defeatStartedAt: previousState === 'defeat' ? 1250 : 0, damageFlashUntil: 1500,
+        lastPlayedAttackTick: 8, spriteClockState: previousState, spriteClockStartedAt: 1100};
+      const selected = new Set([unit.id]), group = new Set([unit.id]), ages = [];
+      const draw = () => ages.push(spriteAnimationTime(unit, activeState(unit, now), now));
+      const context = vm.createContext({unit, existingUnit: unit, id: unit.id, generation: 2, team,
+        x: 4, z: 3, kind: 'infantry', hp: 100, targetedBy: 0, initial: false,
+        selected, controlGroups: [group], controlGroupsChanged: false, changed: false,
+        cargoVisualMayChange: false, performance: {now: () => now}, setUnitTint() {},
+        updateUnitTransform: () => { if (loaded) draw(); }});
+      vm.runInContext(generationReset, context);
+      if (!loaded) { now = 1900; draw(); }
+      assert.equal(ages[0], 0, 'the first new-generation frame must not inherit old elapsed time');
+      now += 100; draw();
+      assert.equal(ages[1], 100, 'new-generation motion advances from its own first frame');
+      assert.equal(unit.generation, 2); assert.equal(unit.kind, 'infantry');
+      assert.equal(unit.team, team); assert.equal(unit.slot, 2);
+      for (const key of ['attackStartedAt', 'hitStartedAt', 'defeatStartedAt', 'damageFlashUntil']) assert.equal(unit[key], 0);
+      assert.equal(unit.lastPlayedAttackTick, -1); assert.equal(unit.spawnStartedAt, 1400);
+      assert.equal(selected.has(unit.id), false); assert.equal(group.has(unit.id), false);
+    }
+  });
+}
 
 test('walking and work use elapsed milliseconds, not procedural phase', () => {
   const unit = { motionPhase: 300 };
