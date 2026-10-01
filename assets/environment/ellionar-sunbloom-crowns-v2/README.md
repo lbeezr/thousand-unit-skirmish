@@ -35,3 +35,8 @@ The default verifies hashes, extraction, decoded alpha and generated config.
 [paired runtime evidence](../../../docs/qa-evidence/vaelora-sunbloom-planted-crowns-2026-10-01/README.md)
 for the preceding root-fan capture, new crown view, stock/reset and release
 admission checks.
+## Subsequent woodland-state pack · 1 October 2026
+
+The [v3 full/worked pack](../ellionar-sunbloom-worked-v3/README.md) now supplies
+the default instance atlas, rebuilding this full source alongside trimmed
+foliage. This planted-crown checkpoint remains unchanged and reproducible.

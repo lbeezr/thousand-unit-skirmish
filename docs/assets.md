@@ -250,3 +250,10 @@ the default four-view atlas, replacing the exposed root fans with compact crowns
 and basal leaves. [Runtime evidence](qa-evidence/vaelora-sunbloom-planted-crowns-2026-10-01/README.md)
 covers the visual comparison and unchanged placement/stock contracts. The v1
 sheet remains preserved; legacy mode still selects the original single view.
+## Sunbloom full/worked default · 1 October 2026
+
+[Sunbloom v3](../assets/environment/ellionar-sunbloom-worked-v3/README.md) now supplies
+eight directional/state frames to the instance loader. Partial woodland stock
+shows trimmed foliage; decorative garden beds remain full. [Runtime evidence](qa-evidence/vaelora-sunbloom-worked-2026-10-01/README.md)
+covers state/frame and release checks. Distinct low/depleted flower drawings
+and independent flower gathering remain absent.

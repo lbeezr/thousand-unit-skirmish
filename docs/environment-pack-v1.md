@@ -1013,3 +1013,11 @@ registered cards, heading selection and all gameplay rules are retained. The
 [paired evidence](qa-evidence/vaelora-sunbloom-planted-crowns-2026-10-01/README.md)
 compares the old/new bases and checks stock/reset, the 15 garden beds and release
 bytes. Anatomical registration and worked/low flower drawings remain unfinished.
+## Sunbloom worked woodland views · 1 October 2026
+
+The [v3 Sunbloom pack](../assets/environment/ellionar-sunbloom-worked-v3/README.md)
+adds trimmed outer foliage across the four planted-crown directions. Positive
+partial forest stock selects worked, zero hides and reset restores full;
+independent channel garden beds stay full. [Paired runtime evidence](qa-evidence/vaelora-sunbloom-worked-2026-10-01/README.md)
+covers 480 transitions, common source-coordinate registration, vegetation
+contracts and release bytes. Distinct low/depleted flower art remains absent.

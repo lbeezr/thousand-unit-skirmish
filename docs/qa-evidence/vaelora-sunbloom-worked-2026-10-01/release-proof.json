@@ -1,0 +1,29 @@
+{
+  "sourceRevision": "1e8d1bca852c3787c71bf0a0fb549b0ef70eb789",
+  "sourceDirty": true,
+  "releaseDigest": "sha256:bbbad5bb4e79e2af5d7078cf0840cc13b501a037df2ee20db9bfb3c41d16f7ff",
+  "files": [
+    {
+      "file": "server.mjs",
+      "sha256": "dcffd72211063d404b548824e55bd53b515c280ac3459f941647f9fd49e8daad",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/environment-art.mjs",
+      "sha256": "227daccb24d1233d8c8dae56df648eab6213ec058cae82bd492958668077502e",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/sunbloom-worked-pack.mjs",
+      "sha256": "11dfcd08c9e10258d9f1dd9759f7c938b664837f259a8c0587903546b4bda740",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "assets/environment/ellionar-sunbloom-worked-v3/sunbloom-worked-atlas.webp",
+      "sha256": "4c085364139e2e5a911751a96b8c4b3e44c9dd5577f2a354d1d38ec3af32d9ff",
+      "releaseBytesExact": true
+    }
+  ],
+  "ordinaryCopyAttempt": "ENOSPC; incomplete own context removed",
+  "nativeCloneSnapshot": "full pack succeeded; standalone native cp-c snapshot bytes and mutation isolation verified"
+}

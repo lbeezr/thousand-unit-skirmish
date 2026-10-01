@@ -21,6 +21,14 @@ directory and reports the source revision and content digest. It rejects dirty
 checkouts. `--allow-dirty` is for disposable package tests and does not identify a
 reproducible committed release.
 
+On macOS the packer requests native copy-on-write cloning (`cp -c`) for regular
+files and falls back to ordinary copying when that command fails. Other platforms
+retain ordinary copying. The resulting files remain isolated snapshots; source
+updates do not mutate the release. This avoids duplicating large art/audio bytes
+when the filesystem supports cloning, while retaining the same content digest
+and Docker input checks. See the [bounded snapshot check](qa-evidence/vaelora-sunbloom-worked-2026-10-01/README.md)
+for byte/mutation-isolation and full-pack evidence under limited local disk space.
+
 Docker includes the active building sprite and Town Center lifecycle packs.
 The Building Variant Atlas remains a separate local preview; its HTML/CSS/JS
 are outside the game server allowlist and Docker inputs. See

@@ -789,3 +789,11 @@ colour and four authored directions. [Paired renderer evidence](qa-evidence/vael
 compares contact at the same camera/pivots and checks placement/stock/reset.
 The shorter painted base is not independently enlarged, and anatomical crown
 registration remains approximate.
+## Ellionar worked Sunbloom foliage · 1 October 2026
+
+The [v3 Sunbloom pack](../assets/environment/ellionar-sunbloom-worked-v3/README.md)
+adds trimmed foliage and exposed copper stems around retained lapis blooms.
+Paired source-coordinate registration keeps the planted crown near the same
+pivot without independently fitting each silhouette. [Runtime evidence](qa-evidence/vaelora-sunbloom-worked-2026-10-01/README.md)
+checks woodland state mapping and unchanged independent garden beds. Worked
+serves all positive partial stock; a distinct low flower view remains unfinished.
