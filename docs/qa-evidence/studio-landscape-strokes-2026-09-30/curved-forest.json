@@ -1,0 +1,102 @@
+{
+  "id": "studio-landscape-proof",
+  "name": "Landscape stroke proof",
+  "width": 40,
+  "height": 40,
+  "terrainBase": "meadow",
+  "fogOfWar": false,
+  "startingArmySize": 8,
+  "spawnPoints": [
+    {
+      "team": 0,
+      "x": -14,
+      "z": 0
+    },
+    {
+      "team": 1,
+      "x": 14,
+      "z": 0
+    }
+  ],
+  "obstacles": [
+    {
+      "column": 8,
+      "row": 7,
+      "width": 1,
+      "height": 9,
+      "material": "forest"
+    },
+    {
+      "column": 7,
+      "row": 8,
+      "width": 1,
+      "height": 7,
+      "material": "forest"
+    },
+    {
+      "column": 9,
+      "row": 8,
+      "width": 1,
+      "height": 8,
+      "material": "forest"
+    },
+    {
+      "column": 10,
+      "row": 13,
+      "width": 5,
+      "height": 3,
+      "material": "forest"
+    },
+    {
+      "column": 15,
+      "row": 14,
+      "width": 1,
+      "height": 10,
+      "material": "forest"
+    },
+    {
+      "column": 13,
+      "row": 16,
+      "width": 2,
+      "height": 7,
+      "material": "forest"
+    },
+    {
+      "column": 16,
+      "row": 21,
+      "width": 7,
+      "height": 3,
+      "material": "forest"
+    },
+    {
+      "column": 23,
+      "row": 22,
+      "width": 1,
+      "height": 1,
+      "material": "forest"
+    },
+    {
+      "column": 14,
+      "row": 23,
+      "width": 1,
+      "height": 1,
+      "material": "forest"
+    }
+  ],
+  "resourceNodes": [
+    {
+      "id": "outside-stroke",
+      "type": "food",
+      "x": 0.5,
+      "z": -6.5,
+      "stock": 50
+    }
+  ],
+  "triggers": [],
+  "victoryMode": "any",
+  "scenarioEvents": [],
+  "terrainSeed": 1,
+  "summary": "40 × 40 · CUSTOM MAP",
+  "terrainPatches": [],
+  "regions": []
+}

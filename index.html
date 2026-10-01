@@ -596,6 +596,13 @@
                 <small>Two-step edges form cliffs; paint a level-1 ramp between them.</small>
               </div>
               <div class="studio-tool-heading">OBSTACLES &amp; MARKERS</div>
+              <label>LANDSCAPE SHAPE
+                <select id="studio-obstacle-shape"><option value="stroke" selected>Round stroke</option><option value="rectangle">Rectangle</option></select>
+              </label>
+              <label>LANDSCAPE BRUSH SIZE
+                <select id="studio-obstacle-brush-size"><option value="1">Fine · 1 cell</option><option value="3">Medium · 3 cells</option><option value="7" selected>Broad · 7 cells</option><option value="11">Landscape · 11 cells</option></select>
+                <small>Drag connected forests, shores and ridges. Rectangle keeps deliberate geometric layouts. Markers keep their own placement tools.</small>
+              </label>
               <div class="studio-tools" role="group" aria-label="Map paint tool">
                 <button type="button" data-map-tool="rock">Rocks</button>
                 <button type="button" data-map-tool="stone" class="active">Ridge</button>

@@ -56,6 +56,21 @@ ordinary PRs use checks proportionate to their changes under
 
 ## Known findings and historical evidence
 
+### Map Studio landscape strokes — 30 September 2026
+
+Source `001301b9` plus landscape-stroke changes: Forest/Water/Rock/Ridge/Cliff/Erase
+tools support round continuous strokes with exact previews and an explicit
+rectangle alternative. The [actual UI report](qa-evidence/studio-landscape-strokes-2026-09-30/report.json)
+records native headless Chrome pointer input in a local isolated room at
+1440 × 1000. A multi-segment forest stroke keeps unpainted bounding-box corners
+open, removes only a resource on painted cells, preserves a resource in an
+unpainted corner, permits one-cell erase, and retains rectangle water painting.
+Download JSON and Save & Play pass with no console errors. The
+[editor capture](qa-evidence/studio-landscape-strokes-2026-09-30/studio-curved-forest.png)
+and [runtime result](qa-evidence/studio-landscape-strokes-2026-09-30/save-play.png)
+show the authored connected shape. Terrain undo remains unsupported; this
+record does not establish human discoverability or a complete landscape toolset.
+
 ### Woodland habitat margins — 30 September 2026
 
 Follow-up to organic landscape source `9c083d75`: Underbough and Vesperra use

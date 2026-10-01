@@ -95,14 +95,24 @@ techniques; they do not certify this implementation or imply copying their code.
    footprints or silently rotating gameplay entrances.
 5. **Expose landscape tools in Map Studio.** Add round falloff, connected grove,
    path and contour brushes with previews, undo and JSON round-trip checks. Use
-   the same compiler for authored shapes and shipped maps. Current Studio brushes
-   have not changed in this pass.
+   the same compiler for authored shapes and shipped maps. Round blocker strokes
+   are implemented; higher-level grove/contour brushes and terrain undo remain.
 6. **Polish materials after silhouette approval.** Use quiet texture families,
    habitat transitions and sparse decals. Existing stochastic ground sampling
    helps repetition; extra texture resolution cannot correct a square coastline.
    Increase visual mesh/mask resolution where captures expose a limit, and only
    increase simulation-grid resolution if gameplay needs it and measured costs
    justify it.
+
+Map Studio's **Landscape shape** now defaults to **Round stroke** for Forest,
+Water, Rocks, Ridge, Cliff and Erase. Choose 1/3/7/11-cell widths and drag a
+connected shape; the grid previews exactly the cells to be changed. **Rectangle**
+retains the previous drag-box behavior. Marker and ground/elevation tools keep
+their separate placement rules. A blocker stroke removes resource nodes only
+from painted cells, including when the curve encloses an unpainted corner.
+Download and Save & Play use the existing compressed rectangle schema. The
+current Undo Scenario Edit still covers regions/events, not terrain strokes;
+terrain undo and more expressive grove/contour brushes remain follow-ups.
 
 Review each slice in the actual renderer at ordinary and strategic zoom, with
 units, buildings, selection and fog. Require recognizable landscape masses,
