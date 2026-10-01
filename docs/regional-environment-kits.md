@@ -780,3 +780,12 @@ gutters. Low/depleted states, common crop/pivot, runtime binding and forest
 clearing/reset/composition review remain. Proposed visible height is 2.1 world
 units, pending game review. This is an age form, not a new species/resource rule.
 Both drawings use one approximate painted viewpoint; neither adds rotations.
+## Ellionar planted Sunbloom crowns · 1 October 2026
+
+The [v2 Sunbloom pack](../assets/environment/ellionar-sunbloom-crowns-v2/README.md)
+replaces exposed roots with basal leaves and compact copper stem crowns. The
+flowers now read as cultivated garden growth while retaining lapis/green/honey
+colour and four authored directions. [Paired renderer evidence](qa-evidence/vaelora-sunbloom-planted-crowns-2026-10-01/README.md)
+compares contact at the same camera/pivots and checks placement/stock/reset.
+The shorter painted base is not independently enlarged, and anatomical crown
+registration remains approximate.

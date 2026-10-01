@@ -1004,3 +1004,12 @@ dimensions, fixed camera, channel beds and woodland clearing remain unchanged.
 [Runtime evidence](qa-evidence/vaelora-sunbloom-authored-views-2026-10-01/README.md)
 checks all four views, stock/reset, the 15 existing garden beds and release bytes.
 No independent flower resource or worked/low flower art is introduced.
+## Sunbloom planted crowns · 1 October 2026
+
+The [v2 crown pack](../assets/environment/ellionar-sunbloom-crowns-v2/README.md)
+removes the exposed root fans from the four Sunbloom directions, adding compact
+stem crowns and basal leaves so they read as growing plants. Common export scale,
+registered cards, heading selection and all gameplay rules are retained. The
+[paired evidence](qa-evidence/vaelora-sunbloom-planted-crowns-2026-10-01/README.md)
+compares the old/new bases and checks stock/reset, the 15 garden beds and release
+bytes. Anatomical registration and worked/low flower drawings remain unfinished.
