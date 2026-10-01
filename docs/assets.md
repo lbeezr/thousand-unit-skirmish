@@ -202,3 +202,11 @@ Vesperra jungle-loam now defaults to a quieter moss/soil source, with
 regions keep their current ground. [Manifest](../assets/environment/frontier-v1/vesperra-quiet-loam-manifest.json),
 [exact prompts](../assets/environment/frontier-v1/VESPERRA-QUIET-LOAM-PROMPTS.json)
 and [paired scale evidence](qa-evidence/vaelora-quiet-jungle-loam-2026-10-01/README.md).
+
+Vesperra pod-vines now use a [four-view authored atlas](../assets/environment/vesperra-podvine-views-v1/README.md)
+in both woodland companions and independent margin beds. Stable cell-based
+views replace mirroring; `plantViews=legacy` retains the original single source.
+[Exact prompts](../assets/environment/vesperra-podvine-views-v1/PROMPTS.json)
+and [runtime evidence](qa-evidence/vaelora-podvine-authored-views-2026-10-01/README.md).
+These are approximate drawings with full appearance only, not measured
+multi-view capture or independent harvesting poses.

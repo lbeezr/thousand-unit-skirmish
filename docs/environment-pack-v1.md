@@ -930,3 +930,27 @@ sampling. Large mottled patterning is weaker; fine texture and some repeat
 structure remain. No exact opposite-edge seam or complete repetition-removal
 claim is made. [Vegetation regression](qa-evidence/vaelora-quiet-jungle-vegetation-2026-10-01/README.md)
 checks the current 79-plant woodland margins against this ground default.
+
+## Vesperra pod-vine authored views · 1 October 2026
+
+[The view pack](../assets/environment/vesperra-podvine-views-v1/README.md) adds
+front/right/rear/left drawings of a common oblong pod-vine interpretation.
+The broad front/rear and narrower sides supply visible orientation variety;
+pod faces and stem occlusion change across the source sheet. Single-view drafts
+with insufficient turning were rejected. This remains approximate authored
+art, not measured 3D capture or certified physical continuity.
+
+The existing pod-vine instance loader uses a four-frame atlas in one batch,
+with stable cell-based frame selection, 64-pixel gutters and maximum mip level6.
+Its registered world card/pivot remain unchanged. Mirroring and billboard yaw
+are disabled for this plant so clearing/reset retains the selected drawing and
+lighting. `plantViews=legacy` restores the previous single source. Fixed camera
+construction is unchanged; there is no free-camera direction remapping.
+
+The selected source stays intact; all views share the same pixel scale rather
+than enlarging narrow profiles. Contact proxies are silhouette based and
+anatomical root certification remains unfinished. [Browser/release evidence](qa-evidence/vaelora-podvine-authored-views-2026-10-01/README.md)
+records all four visible frames, UV binding, no mirroring/roll, repeatable
+selection, legacy fallback, stable vegetation lifecycle and staged runtime bytes.
+The new mound occupies less width within its card than the original painting.
+This is four full-appearance views; authored harvesting states remain absent.
