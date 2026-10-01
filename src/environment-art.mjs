@@ -592,6 +592,25 @@ export function updateLandVegetationOccupation(objects, footprints = []) {
   return changed;
 }
 
+export function createWoodResourceInstances(definition, stage, positions) {
+  if (!RESOURCE_VISUAL_STAGES.includes(stage)) throw new Error(`Unknown wood resource stage: ${stage}`);
+  if (definition?.region !== 'underbough' || definition.id === 'meshy-resource-review') {
+    return createEnvironmentSpriteInstances(`oak-${stage}`, 4.1, 3.75, positions);
+  }
+  const family = 'underbough-root-oak';
+  const mesh = createForestAtlasInstances(family, 3.1, 3.07655, positions)
+    || createEnvironmentSpriteInstances(stage === 'full' ? family : `${family}-${stage}`, 3.1, 3.07655, positions);
+  if (mesh) {
+    mesh.userData.resourceWoodFamily = family;
+    const atlas = mesh.userData.forestAtlas;
+    if (atlas) {
+      for (let index = 0; index < positions.length; index++) atlas.rects.setXYZW(index, ...atlas.frameRects[stage]);
+      atlas.rects.needsUpdate = true;
+    }
+  }
+  return mesh;
+}
+
 export function createEnvironmentSpriteInstances(name, width, height, positions) {
   if (positions.length === 0) return null;
   const plantSpec = assertPlantDimensions(name, width, height);

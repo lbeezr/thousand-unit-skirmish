@@ -338,3 +338,24 @@ with separate assertions that dense growth follows woods and preserves paths,
 blockers, mirrored composition and all match rules. The transition is subtle
 at strategic distance. Further regional source roles, variants and perspectives
 remain unfinished.
+
+### Cohesive Underbough wood resource nodes — 1 October 2026 UTC
+
+Standalone wood nodes on explicitly Underbough maps now use Root Oak instead
+of the generic golden model oak. The renderer reuses the same registered
+four-state forest atlas, world dimensions and fixed painted view. Each stage
+mesh retains the resource-node instance indices; ordinary stock transitions
+change visibility/scale without moving roots. If atlas metadata is unavailable,
+the existing individual Root Oak state textures are the fallback. Regional
+state art does not depend on the generic interactive-resource manifest's
+availability. Other regions and the model-review map retain generic artwork.
+
+[Actual renderer frame evidence](qa-evidence/underbough-resource-oak-renderer-2026-10-01/proof.json)
+checks all four stage rectangles, reset matrices and control definitions. The
+[full-game worker observation](qa-evidence/underbough-resource-oak-2026-10-01/proof.json)
+loads the regional atlas, captures harvest states, reset and reload, and records
+no browser errors. This uses existing palette-matched artwork; it adds no new
+species, provider generation, resource rules or directional frames. Root Oak
+still has one painted perspective. True regional directions, palette-matched
+ordinary resource plants in other zones, and additional ground roles remain
+unfinished.
