@@ -1,0 +1,27 @@
+{
+  "sourceRevision": "63ab63f54a35bf73ff1b6f716bb0121b685574c1",
+  "sourceDirty": true,
+  "releaseDigest": "sha256:09a5cb812f4872c7a8bc806799893785abf5f1bd773ebaaa29b56ad656cf1070",
+  "files": [
+    {
+      "file": "server.mjs",
+      "sha256": "f3541a5bdc8fcc7804af4bbd2f60e4176f4b6880f4f0fa29fd6e5bbb64df39cd",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/environment-art.mjs",
+      "sha256": "19ef6742edc7c6636bb651822282884585788dfc6de89a9889d15da180f248e8",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/veilcap-worked-pack.mjs",
+      "sha256": "ff7cc9aaefb63f4583ac42d99c2df9126e74ece33e72819e8c5ccfba2eb1e4ba",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "assets/environment/vesperra-veilcap-worked-v2/veilcap-worked-atlas.webp",
+      "sha256": "4ef8e1338b1398c48fb10aeb9b206947ec0fd104ce401d39acf0be815335c1d7",
+      "releaseBytesExact": true
+    }
+  ]
+}

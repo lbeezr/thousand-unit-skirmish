@@ -914,3 +914,12 @@ ordinary/strategic views. Leaf mass hides more brown branching, but continuous
 forest strips and repeated highlights remain. `forestCanopy=leafy` stays opt-in
 pending silhouette and edge composition work. No broader beauty, worker
 harvest, hosted or directional completion is claimed.
+
+## Vesperra worked Veilcap colonies · 1 October 2026
+
+The [worked pack](../assets/environment/vesperra-veilcap-worked-v2/README.md)
+adds small cap-rim nicks and opened base dressing to four stable headings.
+Paired source registration keeps full/worked at one scale; a corrected separator
+avoids neighboring pixels. Registered world dimensions remain unchanged.
+Stock 5–1 uses worked, zero hides and reset restores full. Margin colonies stay
+full. Distinct low fungus art and independent fungus gathering remain absent.
