@@ -1,0 +1,112 @@
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {mkdtemp, mkdir, readFile, readdir, rm, writeFile} from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import {test} from 'node:test';
+import {captureCheckpoint} from './capture-checkpoint.mjs';
+
+// Tiny test image and injected CDP replies; this suite performs no browser rendering.
+const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jA2kAAAAASUVORK5CYII=';
+const revision = '8cdf5285ddb79bc6b9ca9c5e92d40b07b6d43091';
+const context = {revision, browserVersion: {product: 'Chrome/test', protocolVersion: '1.3'},
+  mapId: 'underbough-rootways', checkpoint: 'ordinary-zoom'};
+const view = {width: 1, height: 1, deviceScaleFactor: 1, hostname: '127.0.0.1',
+  boot: 'ready', mapId: context.mapId};
+const page = (observation = view, data = png) => ({cdp: {
+  evaluate: async () => observation,
+  call: async (method, params) => {
+    assert.equal(method, 'Page.captureScreenshot');
+    assert.deepEqual(params, {format: 'png', captureBeyondViewport: false});
+    return {data};
+  },
+}});
+const withOutput = async callback => {
+  const output = await mkdtemp(path.join(os.tmpdir(), 'rts-checkpoint-test-'));
+  try { await callback(output); } finally { await rm(output, {recursive: true, force: true}); }
+};
+const hasCode = code => error => error.code === code;
+
+test('capture bundle records observed context, PNG digest, and explicit evidence limits', () => withOutput(async output => {
+  const {directory, manifest} = await captureCheckpoint({...context, page: page(), outputDirectory: output});
+  const bytes = await readFile(path.join(directory, 'color.png'));
+  assert.deepEqual(bytes, Buffer.from(png, 'base64'));
+  assert.deepEqual(JSON.parse(await readFile(path.join(directory, 'manifest.json'), 'utf8')), manifest);
+  assert.deepEqual(manifest, {schemaVersion: 1, source: {revision, suppliedBy: 'caller'},
+    browser: {product: 'Chrome/test', protocolVersion: '1.3'},
+    scene: {mapId: context.mapId, checkpoint: context.checkpoint, checkpointSuppliedBy: 'caller'},
+    viewport: {width: 1, height: 1, deviceScaleFactor: 1}, image: {file: 'color.png',
+      width: 1, height: 1, bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex')},
+    evidence: {kind: 'cdp-screenshot', visualReview: 'not-performed', humanPlaytest: 'not-performed'}});
+  assert.deepEqual((await readdir(directory)).sort(), ['color.png', 'manifest.json']);
+}));
+
+test('identical replies and context yield identical manifests across output roots', () => withOutput(async output => {
+  for (const name of ['first', 'second']) await mkdir(path.join(output, name));
+  const results = await Promise.all(['first', 'second'].map(name => captureCheckpoint({...context,
+    page: page(), outputDirectory: path.join(output, name)})));
+  const manifests = await Promise.all(results.map(r => readFile(path.join(r.directory, 'manifest.json'), 'utf8')));
+  assert.equal(manifests[0], manifests[1]);
+  assert.doesNotMatch(manifests[0], new RegExp(output));
+}));
+
+test('CSS viewport and device scale are retained separately from PNG dimensions', () => withOutput(async output => {
+  const {manifest} = await captureCheckpoint({...context, outputDirectory: output,
+    page: page({...view, width: 2, height: 2, deviceScaleFactor: 0.5})});
+  assert.deepEqual(manifest.viewport, {width: 2, height: 2, deviceScaleFactor: 0.5});
+  assert.equal(manifest.image.width, 1); assert.equal(manifest.image.height, 1);
+}));
+
+test('missing runtime and invalid metadata fail before creating an artifact directory', () => withOutput(async output => {
+  await assert.rejects(captureCheckpoint({...context, outputDirectory: output}), hasCode('capture-runtime-unavailable'));
+  for (const change of [{revision: 'unknown'}, {revision: {}}, {browserVersion: {}}, {mapId: ''},
+    {checkpoint: 123}, {checkpoint: '../other-owner'}, {checkpoint: 'x'.repeat(65)}, {outputDirectory: 'relative'}]) {
+    await assert.rejects(captureCheckpoint({...context, page: page(), outputDirectory: output, ...change}),
+      hasCode('capture-invalid-context'));
+  }
+  assert.deepEqual(await readdir(output), []);
+}));
+
+test('unready, wrong-map, remote and invalid viewport observations cannot publish a bundle', () => withOutput(async output => {
+  for (const change of [{boot: 'loading'}, {mapId: 'another-map'}, {hostname: 'example.com'},
+    {width: 0}, {width: 8193}, {height: 0.5}, {deviceScaleFactor: Infinity}, {deviceScaleFactor: 5}]) {
+    const probe = page({...view, ...change});
+    probe.cdp.call = () => assert.fail('unready page requested screenshot');
+    await assert.rejects(captureCheckpoint({...context, page: probe, outputDirectory: output}),
+      hasCode('capture-not-ready'));
+    assert.deepEqual(await readdir(output), []);
+  }
+}));
+
+test('bad PNG, truncated framing, noncanonical base64 and viewport mismatch leave no partial bundles', () => withOutput(async output => {
+  const badImages = ['not base64!', Buffer.from('not a PNG').toString('base64'),
+    Buffer.from(png, 'base64').subarray(0, 33).toString('base64'), png + '\n'];
+  for (const data of badImages) {
+    await assert.rejects(captureCheckpoint({...context, page: page(view, data), outputDirectory: output}),
+      hasCode('capture-invalid-image'));
+    assert.deepEqual(await readdir(output), []);
+  }
+  await assert.rejects(captureCheckpoint({...context, page: page({...view, width: 2}), outputDirectory: output}),
+    hasCode('capture-invalid-image'));
+  assert.deepEqual(await readdir(output), []);
+}));
+
+test('CDP failure has a stable runtime error and removes its new directory', () => withOutput(async output => {
+  for (const method of ['evaluate', 'call']) {
+    const probe = page(); probe.cdp[method] = async () => { throw new Error('private runtime detail'); };
+    await assert.rejects(captureCheckpoint({...context, page: probe, outputDirectory: output}), error => {
+      assert.equal(error.code, 'capture-runtime-unavailable');
+      assert.doesNotMatch(error.message, /private runtime detail/); return true;
+    });
+    assert.deepEqual(await readdir(output), []);
+  }
+}));
+
+test('existing checkpoint belongs to its caller and is never overwritten or removed', () => withOutput(async output => {
+  const directory = path.join(output, context.checkpoint);
+  await mkdir(directory); await writeFile(path.join(directory, 'sentinel'), 'other capture');
+  const probe = page(); probe.cdp.evaluate = () => assert.fail('existing output queried CDP');
+  await assert.rejects(captureCheckpoint({...context, page: probe, outputDirectory: output}), hasCode('capture-output-exists'));
+  assert.equal(await readFile(path.join(directory, 'sentinel'), 'utf8'), 'other capture');
+  assert.deepEqual(await readdir(directory), ['sentinel']);
+}));

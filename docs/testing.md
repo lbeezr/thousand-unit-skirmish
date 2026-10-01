@@ -144,6 +144,30 @@ prerequisites. This command changes no sandbox flags or permissions. `ready`
 proves browser/CDP startup and cleanup only: WebGL2, game rendering, screenshots,
 performance, and player usability still require their own evidence.
 
+`scripts/capture-checkpoint.mjs` exports `captureCheckpoint()` for an existing
+page from `createFortifiedBrowser()`. It launches nothing. Supply the clean
+checkout revision, `browser.version`, intended map ID, a short checkpoint ID
+(such as `ordinary-zoom`), and an absolute existing writable output directory.
+The caller owns browser readiness, checkpoint interaction, and final disposal:
+
+```js
+import {captureCheckpoint} from './scripts/capture-checkpoint.mjs';
+const capture = await captureCheckpoint({page, revision, browserVersion: browser.version,
+  mapId: 'underbough-rootways', checkpoint: 'ordinary-zoom', outputDirectory: '/tmp/captures'});
+```
+
+The helper checks a ready local game page, the selected map, and the observed
+viewport, then writes `color.png` and `manifest.json` in a new checkpoint folder.
+The manifest records revision/browser/checkpoint context, viewport, PNG dimensions,
+byte count and SHA-256. Revision and checkpoint labels are caller-supplied;
+the helper does not establish which source build the server is serving or prove
+the labeled gameplay event occurred. Identical context and image bytes produce
+identical manifests. PNG framing/dimensions are checked; pixels and CRCs are
+not decoded or reviewed. Existing output folders are preserved, and failed
+captures remove only their newly created folder. A missing/failed CDP page
+throws `CaptureCheckpointError` with code `capture-runtime-unavailable`.
+Unit tests inject CDP replies and do not provide fresh rendered-game evidence.
+
 - `node scripts/map-studio-draft-scenario.mjs`: editor draft behavior.
 - `node scripts/frontier-160-map-studio-roundtrip.mjs`: legacy, elevation, large-map,
   and Highland Grove authoring round trips.
