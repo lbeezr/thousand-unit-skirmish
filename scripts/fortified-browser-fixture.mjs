@@ -27,17 +27,18 @@ export async function createFortifiedBrowser() {
   if(!executable)throw new Error('Chrome unavailable; set CHROME_PATH');
   const profile=await mkdtemp(path.join(os.tmpdir(),'rts-fortified-browser-'));
   const child=spawn(executable,['--headless=new','--no-first-run','--no-default-browser-check','--disable-background-timer-throttling','--disable-backgrounding-occluded-windows','--disable-renderer-backgrounding','--autoplay-policy=no-user-gesture-required','--remote-debugging-address=127.0.0.1','--remote-debugging-port=0',`--user-data-dir=${profile}`,'about:blank'],{stdio:['ignore','ignore','pipe']});
-  let logs='',manager=null;const pages=new Set();
+  let logs='',manager=null,launchError=null;const pages=new Set();
+  child.on('error',error=>{launchError=error;});
   child.stderr.on('data',chunk=>{logs=(logs+chunk).slice(-8000);});
   async function dispose(){
     for(const page of pages)page.cdp.close();pages.clear();
     if(manager){try{await manager.call('Browser.close',{},3000);}catch{}manager.close();manager=null;}
-    if(child.exitCode===null&&child.signalCode===null){const exited=once(child,'exit');child.kill('SIGTERM');await Promise.race([exited,sleep(2500)]);if(child.exitCode===null&&child.signalCode===null){child.kill('SIGKILL');await exited;}}
+    if(child.pid&&child.exitCode===null&&child.signalCode===null){const exited=once(child,'exit');child.kill('SIGTERM');await Promise.race([exited,sleep(2500)]);if(child.exitCode===null&&child.signalCode===null){child.kill('SIGKILL');await exited;}}
     await rm(profile,{recursive:true,force:true});
   }
   let port;try {
     const deadline=Date.now()+15000;
-    while(Date.now()<deadline){if(child.exitCode!==null)throw new Error(`Chrome exited: ${logs}`);try{port=Number((await readFile(path.join(profile,'DevToolsActivePort'),'utf8')).split('\n')[0]);break;}catch{}await sleep(100);}
+    while(Date.now()<deadline){if(launchError)throw launchError;if(child.exitCode!==null||child.signalCode!==null)throw new Error(`Chrome exited: ${logs}`);try{port=Number((await readFile(path.join(profile,'DevToolsActivePort'),'utf8')).split('\n')[0]);break;}catch{}await sleep(100);}
     if(!port)throw new Error(`Chrome startup timeout: ${logs}`);
     const version=await(await fetch(`http://127.0.0.1:${port}/json/version`)).json();manager=new Cdp(version.webSocketDebuggerUrl);await manager.open;
     return {version:await manager.call('Browser.getVersion'),dispose,
