@@ -1,5 +1,16 @@
 # Frontier environment art
 
+## Complete regional kits · 30 September 2026
+
+The player identified clashing cross-region materials, homogeneous forests and
+missing rotated asset perspectives. The [regional kit plan](regional-environment-kits.md)
+now specifies compatible ground roles, four distinct woodland tree forms,
+shrubs/understory and actual directional artwork for each zone. The initial
+[Underbough palette study](../assets/environment/vaelora-region-kits-v2/underbough/palette-study.png)
+is a source direction board. It is not a runtime atlas, a seamless texture set,
+or evidence that four new species/views are already integrated. Existing
+`fixed-oblique` lifecycle atlases encode harvest states, not rotated viewpoints.
+
 ## Sombral Mere merebloom · 30 September 2026
 
 The [merebloom source sample](../assets/environment/frontier-v1/sombral-mere-lifecycle-manifest.json)

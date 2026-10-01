@@ -80,7 +80,7 @@ from source/candidate packs. Then use the relevant contract:
 - [Building model/capture pipeline](building-asset-production-pipeline.md) and
   [direct 2D workflow](building-sprite-production-workflow.md).
 - [Unit/building kit](unit-building-art.md) and [GLB finish proposal](unit-building-art-output-proposal.md).
-- [Environment library](environment-pack-v1.md) and [interactive states](environment-state-pack-v1.md).
+- [Environment library](environment-pack-v1.md), [regional kit production](regional-environment-kits.md), and [interactive states](environment-state-pack-v1.md).
 - [Cursor/icon contract](ui-cursor-icon-contract.md).
 - [Asset directory index](../assets/README.md) for individual pack READMEs and provenance.
 

@@ -191,6 +191,14 @@ Continue with Patrol/Follow only as bounded additions to these semantics; use
 ## Regional map roster — 30 September 2026
 
 The user identified rectangular terrain composition as a visual priority.
+The [regional environment kit plan](regional-environment-kits.md) responds to the
+player's follow-up about clashing materials, single-species forests and missing
+rotated views. Complete an Underbough pilot with compatible ground roles, four
+distinct tree forms, shrubs and actual authored directional views; prove the
+whole kit in the woodland rather than validating isolated assets. Extend the
+same complete-kit workflow across the ten zone rosters. The new palette study
+does not claim that those production assets or loader bindings exist yet.
+
 The [organic landscape plan](map-authoring.md#organic-landscape-composition)
 separates the gameplay grid from natural authored shapes. A first local pass
 shapes all twelve regional layouts, connects Underbough/Vesperra woodland,

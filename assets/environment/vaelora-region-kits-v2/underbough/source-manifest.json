@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "packId": "environment.underbough-cohesive-kit-v2",
+  "maturity": "source-study",
+  "region": "underbough",
+  "status": "palette study, one fixed-view intact tree source, and a rejected rotation candidate; no runtime binding",
+  "source": "project-owned built-in ImageGen, using selected Underbough ecology key and existing copperleaf sprite references",
+  "directionalMethod": "authored painted views; not measured 3D render captures",
+  "targetTreeForms": [
+    "copperleaf",
+    "root-oak",
+    "moss-hornbeam",
+    "old-plum"
+  ],
+  "targetGroundRoles": [
+    "clearing-grass",
+    "deep-moss",
+    "leaf-litter",
+    "worn-dirt",
+    "root-soil",
+    "shaded-stone"
+  ],
+  "targetDirectionsDegrees": [
+    0,
+    90,
+    180,
+    270
+  ],
+  "files": [
+    {
+      "path": "palette-study.png",
+      "sha256": "22d22e87bb877843992841cf12ab9f832f20016a63d7d923908488538343647b",
+      "sizeBytes": 3369058,
+      "dimensionsPx": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "visibleAlphaBoundsPx": null,
+      "status": "palette-study-not-runtime"
+    },
+    {
+      "path": "root-oak-full-000.png",
+      "sha256": "d9257638f0fa4132a6ec263bdf3d7fdb2b6fa1a131bb9d750801091a920a00df",
+      "sizeBytes": 2215019,
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "visibleAlphaBoundsPx": [
+        48,
+        47,
+        1220,
+        1208
+      ],
+      "status": "intact-source-awaiting-registration",
+      "directionDegrees": 0,
+      "harvestState": "full"
+    },
+    {
+      "path": "root-oak-view-090-rejected.png",
+      "sha256": "ae7f5db4fb31650870e406abb0c88d94d7781fc73d2daead28856d1fa3b9c189",
+      "sizeBytes": 2021837,
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "visibleAlphaBoundsPx": [
+        85,
+        44,
+        1170,
+        1213
+      ],
+      "status": "rejected-direction-candidate",
+      "directionDegrees": null,
+      "reason": "Silhouette/branch edits do not verify a quarter-turn of the same underlying tree; not accepted directional coverage"
+    }
+  ]
+}

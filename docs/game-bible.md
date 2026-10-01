@@ -38,6 +38,13 @@ requires it.
 | Readability survives scale | Team, role, selection, health, commands, and ownership remain distinct in a crowded battle. |
 | Online play earns trust | Orders receive specific feedback; disconnects, recovery, results, and rematches are understandable. |
 
+Each region needs a cohesive ground, vegetation and stone palette. Woodland
+combines distinct tree architectures, shrub and understory layers, species
+groups and genuine directional artwork; more copies of one canopy, arbitrary
+cross-region asset mixtures and billboard mirroring cannot supply that variety.
+The [regional environment kits](regional-environment-kits.md) own the production
+roster and the distinction between source studies and integrated runtime art.
+
 Maps should read as beautiful landscapes with connected woodland, natural tree
 lines, shaped shores and routes, and settlements that respond to their setting.
 The simulation grid is an implementation tool; its rectangles should not dictate
