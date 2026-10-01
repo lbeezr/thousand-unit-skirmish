@@ -17,6 +17,7 @@ import { meadowPlantGroups, drylandPlantGroups, snowPlantGroups, ridgePlantGroup
 import { gardenPlantGroups } from './garden-vegetation.mjs';
 import { assertPlantDimensions, PLANT_ASSETS } from './environment-plant-assets.mjs';
 import { PODVINE_LOW_PACK as PODVINE_VIEW_PACK } from './podvine-low-pack.mjs';
+import { VEILCAP_VIEW_PACK } from './veilcap-view-pack.mjs';
 
 const meshyResourcesEnabled = new URLSearchParams(globalThis.location?.search ?? '').get('meshyResources') !== '0';
 
@@ -667,15 +668,16 @@ export function createEnvironmentSpriteInstances(name, width, height, positions)
   if (positions.length === 0) return null;
   const plantSpec = assertPlantDimensions(name, width, height);
   const geometry = spriteGeometry(width, height, name);
-  const podvineViews = name === 'vesperra-spiral-podvine'
-    && new URLSearchParams(globalThis.location?.search ?? '').get('plantViews') !== 'legacy';
-  const material = podvineViews ? new THREE.MeshBasicMaterial({side: THREE.DoubleSide,
+  const viewPack = new URLSearchParams(globalThis.location?.search ?? '').get('plantViews') === 'legacy'
+    ? null : name === 'vesperra-spiral-podvine' ? PODVINE_VIEW_PACK
+    : name === 'vesperra-veilcap' ? VEILCAP_VIEW_PACK : null;
+  const material = viewPack ? new THREE.MeshBasicMaterial({side: THREE.DoubleSide,
     transparent: true, alphaTest: 0.08, depthWrite: true, toneMapped: false}) : spriteMaterial(name);
   let authoredPlantViews = null;
-  if (podvineViews) {
-    const pack = PODVINE_VIEW_PACK;
-    sprites['podvine-views'] ||= loadSprite(pack.url);
-    material.map = sprites['podvine-views'];
+  if (viewPack) {
+    const pack = viewPack;
+    sprites[pack.url] ||= loadSprite(pack.url);
+    material.map = sprites[pack.url];
     const rects = new THREE.InstancedBufferAttribute(new Float32Array(positions.length * 4), 4);
     const viewIndices = new Uint8Array(positions.length);
     for (let i = 0; i < positions.length; i++) {
@@ -697,7 +699,7 @@ export function createEnvironmentSpriteInstances(name, width, height, positions)
           dot(dFdy(vMapUv)*plantViewAtlasSize,dFdy(vMapUv)*plantViewAtlasSize))))))`);
       shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>',mapChunk);
     };
-    material.customProgramCacheKey = () => 'vaelora-podvine-authored-views-v1';
+    material.customProgramCacheKey = () => 'vaelora-authored-views-v1-' + name;
     authoredPlantViews = {viewIndices,rects,frameIds:['front','right','rear','left'],measured3DCapture:false,
       pack, worked: new Uint8Array(positions.length)};
   }
@@ -776,12 +778,13 @@ export function setForestSpriteStock(slot, stock = 6) {
     const plant = slot.understory;
     const views = plant.mesh.userData.authoredPlantViews;
     if (views) {
-      const worked = stock > 0 && stock < 6;
-      const frames = stage === 'low' ? views.pack.lowRectsPx : worked ? views.pack.workedRectsPx : views.pack.rectsPx;
+      const worked = !!views.pack.workedRectsPx && stock > 0 && stock < 6;
+      const low = stage === 'low' && !!views.pack.lowRectsPx;
+      const frames = low ? views.pack.lowRectsPx : worked ? views.pack.workedRectsPx : views.pack.rectsPx;
       const [x,y,w,h] = frames[views.viewIndices[plant.index]];
       const [pw,ph] = views.pack.atlasSizePx;
       views.rects.setXYZW(plant.index,(x+.5)/pw,1-(y+h-.5)/ph,(w-1)/pw,(h-1)/ph);
-      views.worked[plant.index] = stage === 'low' ? 2 : worked ? 1 : 0;
+      views.worked[plant.index] = low ? 2 : worked ? 1 : 0;
       views.rects.needsUpdate = true;
     }
     setEnvironmentSpriteInstance(plant.mesh, plant.index, plant.x, plant.z,

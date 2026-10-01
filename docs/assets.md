@@ -227,3 +227,11 @@ across four directions. Stock one/two now shows sparse foliage. The
 [runtime proof](qa-evidence/vaelora-podvine-low-runtime-2026-10-01/README.md)
 checks frame transitions, root matrices and release admission. Zero continues
 to hide the companion; no independent pod resource is added.
+## Veilcap authored-view loader · 1 October 2026
+
+[Four Veilcap drawings](../assets/environment/vesperra-veilcap-views-v1/README.md)
+now share the directional instance path with pod-vines, using separate atlas
+textures/configurations and the existing registered card. The
+[runtime proof](qa-evidence/vaelora-veilcap-authored-views-2026-10-01/README.md)
+checks both species, clearing/reset and release admission. Veilcap still has
+one full appearance per heading, not separate worked/low fungus art.

@@ -1,0 +1,27 @@
+{
+  "sourceRevision": "dd0c29e43fc82106d8c8087e8e0c4acf27f78a7e",
+  "sourceDirty": true,
+  "releaseDigest": "sha256:ae342a1079c398ae8bb3b016f3e219f4e7b7fe81650116283f98535bd4daf862",
+  "files": [
+    {
+      "file": "server.mjs",
+      "sha256": "605fc2fda3a109ff2bf4c902e8ba87e6d8a68eee5f53719d15334d804f504924",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/environment-art.mjs",
+      "sha256": "6a2ae0314c02095de715904f765adf3a914e018af8e77f2ae0698e0bec723b5a",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/veilcap-view-pack.mjs",
+      "sha256": "00ec434bee853d3436706aaab2f2441a728acb6d64504d49a1fc877d3cf849fe",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "assets/environment/vesperra-veilcap-views-v1/views-atlas.webp",
+      "sha256": "0bc37be80d1f71326ef5cdd7e157afd26c2c7e91540a4725188aa6901ec2208d",
+      "releaseBytesExact": true
+    }
+  ]
+}
