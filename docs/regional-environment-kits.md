@@ -604,3 +604,15 @@ completed eight full-game captures without reported errors. The inspected ordina
 Underbough pair fades more gradually and is less rigid at the boundary, though
 the improvement is modest. Broad landscape shapes, bank composition, remaining
 regional sources and genuine prop viewpoints still need work.
+
+## Runtime perspective inventory — 1 October 2026
+
+The [current contract audit](qa-evidence/environment-direction-coverage-2026-10-01/README.md)
+reads the renderer's loaded harvest packs rather than counting files in the asset
+collection. All 18 regional harvest atlases supply one intact viewpoint each;
+their depletion clips are separate states at that same viewpoint. Generic oak,
+pine and berries supply eight model headings each. Current main also integrates
+four authored podvine views, which are painted views rather than measured model
+rotations. This inventory excludes buildings, units and other static scenery.
+Underbough canopy perspectives remain the next major art deficit; the rejected
+Root Oak redraw pair and construction proxy do not close it.
