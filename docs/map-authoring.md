@@ -404,3 +404,13 @@ shows canopy overlap largely concealing the four small internal glades. Keep
 this layout as a candidate. Next iteration should enlarge visible clearings or
 create scalloped edge recesses around projected crown coverage, then rerun
 wood/resource/route checks. The shipped forest outline remains unchanged.
+
+### Wider Rootways glades adopted — 1 October 2026
+
+The [wider-glade review](qa-evidence/underbough-wide-glades-2026-10-01/README.md)
+adopts four visible internal clearings, radii 4.2×3.3 cells. Relocating 132 wood
+cells into outer shoulders retains 1,026 forest cells and mirrored seats.
+Resource/objective access with Town Centers, alternate routes and regional map
+checks pass. Eight paired captures have no reported errors; inspected ordinary
+views show ground visible beneath crowns. Repeated anatomy and rotated-view
+coverage remain open, along with broader zone and landscape work.

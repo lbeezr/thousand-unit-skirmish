@@ -1,0 +1,28 @@
+Underbough · Rootways (96 × 72)
+Nominal single-unit walk speed: 4.5 cells/s; excludes uphill cost, formation, congestion, and command delay.
+Spawn-to-spawn geometry: 81 cells / 18.0s nominal walk (not an observed first-contact time).
+Starting resources per team: food 150, wood 250.
+Initial map stock by nearest spawn: team 0 food 1100, wood 1100; team 1 food 1100, wood 1100; tied food 0, wood 0.
+
+Objective travel and passable route alternatives:
+- Copper Clearing (post-0)
+  team 0: primary 44 cells / 9.8s nominal walk; edge-disjoint alternate after excluding it 44 cells / 9.8s nominal walk.
+  team 1: primary 44 cells / 9.8s nominal walk; edge-disjoint alternate after excluding it 44 cells / 9.8s nominal walk.
+- Bramble Clearing (post-1)
+  team 0: primary 43 cells / 9.6s nominal walk; edge-disjoint alternate after excluding it 43 cells / 9.6s nominal walk.
+  team 1: primary 43 cells / 9.6s nominal walk; edge-disjoint alternate after excluding it 43 cells / 9.6s nominal walk.
+- Supply Grove (post-2)
+  team 0: primary 41 cells / 9.1s nominal walk; edge-disjoint alternate after excluding it 42 cells / 9.3s nominal walk.
+  team 1: primary 41 cells / 9.1s nominal walk; edge-disjoint alternate after excluding it 42 cells / 9.3s nominal walk.
+
+Resource travel by spawn (map stock only; harvesting/use requires a match):
+- s0-0 food stock 650 at (18, 43), nearest team 0; team 0 11 cells / 2.4s nominal walk, team 1 70 cells / 15.6s nominal walk.
+- s0-1 wood stock 650 at (18, 29), nearest team 0; team 0 11 cells / 2.4s nominal walk, team 1 72 cells / 16.0s nominal walk.
+- s0-2 food stock 450 at (38, 17), nearest team 0; team 0 43 cells / 9.6s nominal walk, team 1 62 cells / 13.8s nominal walk.
+- s0-3 wood stock 450 at (38, 54), nearest team 0; team 0 42 cells / 9.3s nominal walk, team 1 61 cells / 13.6s nominal walk.
+- s1-0 food stock 650 at (77, 43), nearest team 1; team 0 70 cells / 15.6s nominal walk, team 1 11 cells / 2.4s nominal walk.
+- s1-1 wood stock 650 at (77, 29), nearest team 1; team 0 72 cells / 16.0s nominal walk, team 1 11 cells / 2.4s nominal walk.
+- s1-2 food stock 450 at (57, 17), nearest team 1; team 0 62 cells / 13.8s nominal walk, team 1 43 cells / 9.6s nominal walk.
+- s1-3 wood stock 450 at (57, 54), nearest team 1; team 0 61 cells / 13.6s nominal walk, team 1 42 cells / 9.3s nominal walk.
+
+Static map-layout estimates only. Confirm opening, expansion, route viability, and resource use in two-seat matches.

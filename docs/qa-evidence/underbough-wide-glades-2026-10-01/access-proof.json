@@ -1,0 +1,5 @@
+{
+  "bothSeatsResourcesAndObjectivesReachableWithTownCenters": true,
+  "noObstacleOverlap": true,
+  "unblockedBases": true
+}
