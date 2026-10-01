@@ -895,3 +895,13 @@ owner stays represented; the468 hornbeam slots pass harvest atlas checks and
 reset reproduces identical pixels. Leaf masses hide more branch lattice,
 but repeated highlights and root mats remain. Default adoption waits for
 full-game appearance evidence. No directional completion is claimed.
+
+## Fuller canopy full-game comparison — 1 October 2026
+
+The [eight paired game captures](qa-evidence/underbough-leafy-full-game-2026-10-01/README.md)
+compare the fuller hornbeam alone, with unchanged placement and no age study.
+Empty capture errors and renderer selection/cache checks accompany inspected
+ordinary/strategic views. Leaf mass hides more brown branching, but continuous
+forest strips and repeated highlights remain. `forestCanopy=leafy` stays opt-in
+pending silhouette and edge composition work. No broader beauty, worker
+harvest, hosted or directional completion is claimed.
