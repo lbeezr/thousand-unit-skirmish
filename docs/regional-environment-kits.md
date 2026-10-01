@@ -384,3 +384,30 @@ regions. The reused regional artwork remains one fixed painted perspective;
 no additional species or directional frames are claimed. Complete regional
 ground variants, four-species canopies beyond Underbough, ordinary food-node
 palettes and regional directions remain unfinished.
+
+### Underbough thornberry food bush — 1 October 2026 UTC
+
+Underbough food nodes now have a dedicated palette-matched shrub. Root Oak was
+the brushwork/colour reference; the low olive/umber bush carries restrained
+burgundy fruit. Full/worked/low/depleted states reduce fruit clusters while
+retaining foliage and branches. The woody bramble asset is not reused: its
+source explicitly excludes berries and its harvest art cuts stems.
+
+The four original 1254×1254 generated PNGs and exact prompts are preserved.
+[Registration and hashes](../assets/environment/vaelora-region-kits-v2/underbough/thornberry-registration.json)
+record one shared crop, 1176×867 runtime frames, 1.8×1.32704 world units and
+substantial-alpha ground contacts at source y1031–1032. WebP quality 90 exports
+preserve cropped alpha exactly; no repaint or rescale is applied. Low-opacity
+source pixels outside the registered crop remain in the original masters.
+These are four food-stock states at one fixed painted perspective, not rotated
+views or certified geometric camera captures.
+
+[Renderer observations](qa-evidence/underbough-thornberry-renderer-2026-10-01/proof.json)
+verify all four meshes, common dimensions, reset matrices and non-Underbough
+controls. [Full-game worker proof](qa-evidence/underbough-thornberry-2026-10-01/proof.json)
+loads every state, captures real food/wood gathering, reset and reload without
+browser errors. Release packaging serves all four textures with exact source
+hashes; habitat and settlement checks pass. Existing food locations, stock,
+selection and economy rules are unchanged. Other regions retain generic food
+artwork. Additional regional food plants, canopy species, ground variants and
+true directional coverage remain unfinished.

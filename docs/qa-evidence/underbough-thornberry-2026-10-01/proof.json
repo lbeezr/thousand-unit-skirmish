@@ -1,0 +1,108 @@
+{
+  "map": {
+    "region": "underbough",
+    "id": "directional-harvest-check",
+    "name": "DIRECTIONAL HARVEST CHECK",
+    "width": 40,
+    "height": 40,
+    "terrainBase": "meadow",
+    "fogOfWar": false,
+    "startingArmySize": 8,
+    "startingResources": {
+      "food": 0,
+      "wood": 0
+    },
+    "spawnPoints": [
+      {
+        "team": 0,
+        "x": -14,
+        "z": 0
+      },
+      {
+        "team": 1,
+        "x": 14,
+        "z": 0
+      }
+    ],
+    "obstacles": [],
+    "resourceNodes": [
+      {
+        "id": "berry-check",
+        "type": "food",
+        "x": -10,
+        "z": 2,
+        "stock": 6
+      },
+      {
+        "id": "oak-check",
+        "type": "wood",
+        "x": -10,
+        "z": -2,
+        "stock": 6
+      }
+    ],
+    "triggers": [],
+    "scenarioEvents": []
+  },
+  "observed": [
+    {
+      "nodeId": "berry-check",
+      "stage": "worked",
+      "stock": 3.9000000000000075
+    },
+    {
+      "nodeId": "berry-check",
+      "stage": "low",
+      "stock": 1.900000000000014
+    },
+    {
+      "nodeId": "berry-check",
+      "stage": "depleted",
+      "stock": 0
+    },
+    {
+      "nodeId": "oak-check",
+      "stage": "worked",
+      "stock": 3.9333333333333407
+    },
+    {
+      "nodeId": "oak-check",
+      "stage": "low",
+      "stock": 1.9333333333333473
+    },
+    {
+      "nodeId": "oak-check",
+      "stage": "depleted",
+      "stock": 0
+    }
+  ],
+  "reset": true,
+  "reload": true,
+  "requests": [
+    "/assets/environment/frontier-meshy-fixed-camera-v3/pine/runtime/pine-00.webp",
+    "/assets/environment/frontier-meshy-fixed-camera-v3/pine/runtime/pine-01.webp",
+    "/assets/environment/frontier-meshy-fixed-camera-v3/pine/runtime/pine-02.webp",
+    "/assets/environment/frontier-meshy-fixed-camera-v3/pine/runtime/pine-03.webp",
+    "/assets/environment/frontier-meshy-fixed-camera-v3/pine/runtime/pine-04.webp",
+    "/assets/environment/frontier-meshy-fixed-camera-v3/pine/runtime/pine-05.webp",
+    "/assets/environment/frontier-meshy-fixed-camera-v3/pine/runtime/pine-06.webp",
+    "/assets/environment/frontier-meshy-fixed-camera-v3/pine/runtime/pine-07.webp",
+    "/assets/environment/frontier-meshy-fixed-camera-v3/oak/runtime/oak-00.webp",
+    "/assets/environment/frontier-meshy-fixed-camera-v3/oak/runtime/oak-01.webp",
+    "/assets/environment/frontier-meshy-fixed-camera-v3/oak/runtime/oak-02.webp",
+    "/assets/environment/frontier-meshy-fixed-camera-v3/oak/runtime/oak-03.webp",
+    "/assets/environment/frontier-meshy-fixed-camera-v3/oak/runtime/oak-05.webp",
+    "/assets/environment/frontier-meshy-fixed-camera-v3/oak/runtime/oak-06.webp",
+    "/assets/environment/frontier-meshy-fixed-camera-v3/oak/runtime/oak-07.webp",
+    "/assets/environment/frontier-meshy-fixed-camera-v3/oak/runtime/oak-04.webp",
+    "/assets/environment/frontier-meshy-fixed-camera-v3/berries/berries-atlas.webp",
+    "/assets/environment/frontier-v1/underbough-root-oak-lifecycle-atlas.json",
+    "/assets/environment/frontier-v1/underbough-root-oak-lifecycle-atlas.webp",
+    "/assets/environment/frontier-v1/underbough-thornberry.webp",
+    "/assets/environment/frontier-v1/underbough-thornberry-worked.webp",
+    "/assets/environment/frontier-v1/underbough-thornberry-depleted.webp",
+    "/assets/environment/frontier-v1/underbough-thornberry-low.webp"
+  ],
+  "errors": [],
+  "beforeReload": "[{\"id\":\"berry-check\",\"type\":\"food\",\"stock\":6},{\"id\":\"oak-check\",\"type\":\"wood\",\"stock\":6}]"
+}

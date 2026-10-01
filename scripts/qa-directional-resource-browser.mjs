@@ -98,6 +98,11 @@ try {
   if(!regionalRequests.some(p=>p.endsWith('/'+regionAtlas+'-lifecycle-atlas.webp')))throw Error('Regional wood atlas not used by full game');
   requests.push(...regionalRequests);
  } else if(!['berries','oak'].every(f=>requests.some(p=>p.endsWith('/'+f+'-atlas.webp'))))throw Error('Directional atlases not used by full game');
+ if(resourceRegion==='underbough') {
+  const foodRequests=await cdp.evaluate(`performance.getEntriesByType('resource').filter(e=>e.name.includes('underbough-thornberry')).map(e=>new URL(e.name).pathname)`);
+  if(!['','-worked','-low','-depleted'].every(stage=>foodRequests.some(p=>p.endsWith('/underbough-thornberry'+stage+'.webp'))))throw Error('Regional food states not loaded');
+  requests.push(...foodRequests);
+ }
  const observed=[];
  for(const [nodeId,worker] of [['berry-check',0],['oak-check',1]]){
   await cdp.evaluate(`window.__qaSocket.send(JSON.stringify({type:'gather',ids:[${worker}],nodeId:${JSON.stringify(nodeId)}}))`);
