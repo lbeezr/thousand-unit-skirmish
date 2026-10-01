@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "packId": "environment.underbough-muted-copperleaf-v2",
+  "packVersion": "0.1.0",
+  "maturity": "runtime-candidate",
+  "provenance": "Unchanged project-owned generated masters; full shared canvas, LANCZOS max1024, WebP quality86 exact alpha. One painted perspective.",
+  "assets": [
+    {
+      "id": "underbough-muted-copperleaf-v2",
+      "stage": "full",
+      "sourceFile": "../vaelora-region-kits-v2/underbough/copperleaf-muted-full-v2-000.png",
+      "runtimeFile": "underbough-muted-copperleaf-v2.webp",
+      "logicalCanvasPx": [
+        1312,
+        1199
+      ],
+      "cropBoxPx": [
+        0,
+        0,
+        1312,
+        1199
+      ],
+      "worldSize": {
+        "width": 3.1044220325833978,
+        "height": 3.3277113578138344
+      },
+      "directionId": "fixed-oblique"
+    },
+    {
+      "id": "underbough-muted-copperleaf-v2",
+      "stage": "worked",
+      "sourceFile": "../vaelora-region-kits-v2/underbough/copperleaf-muted-worked-v2-000.png",
+      "runtimeFile": "underbough-muted-copperleaf-v2-worked.webp",
+      "logicalCanvasPx": [
+        1312,
+        1199
+      ],
+      "cropBoxPx": [
+        0,
+        0,
+        1312,
+        1199
+      ],
+      "worldSize": {
+        "width": 3.1044220325833978,
+        "height": 3.3277113578138344
+      },
+      "directionId": "fixed-oblique"
+    },
+    {
+      "id": "underbough-muted-copperleaf-v2",
+      "stage": "low",
+      "sourceFile": "../vaelora-region-kits-v2/underbough/copperleaf-muted-low-v2-000.png",
+      "runtimeFile": "underbough-muted-copperleaf-v2-low.webp",
+      "logicalCanvasPx": [
+        1312,
+        1199
+      ],
+      "cropBoxPx": [
+        0,
+        0,
+        1312,
+        1199
+      ],
+      "worldSize": {
+        "width": 3.1044220325833978,
+        "height": 3.3277113578138344
+      },
+      "directionId": "fixed-oblique"
+    },
+    {
+      "id": "underbough-muted-copperleaf-v2",
+      "stage": "depleted",
+      "sourceFile": "../vaelora-region-kits-v2/underbough/copperleaf-muted-depleted-v2-000.png",
+      "runtimeFile": "underbough-muted-copperleaf-v2-depleted.webp",
+      "logicalCanvasPx": [
+        1312,
+        1199
+      ],
+      "cropBoxPx": [
+        0,
+        0,
+        1312,
+        1199
+      ],
+      "worldSize": {
+        "width": 3.1044220325833978,
+        "height": 3.3277113578138344
+      },
+      "directionId": "fixed-oblique"
+    }
+  ],
+  "files": [
+    {
+      "path": "underbough-muted-copperleaf-v2.webp",
+      "sha256": "de2bc045bec08a6ff08c40bedec86d99d7635e94860baa5999880f92fad12ec6"
+    },
+    {
+      "path": "underbough-muted-copperleaf-v2-worked.webp",
+      "sha256": "d9ff2cc0eace6344fcdb1b9037ddf941bcf484547c1f62f62129ec55847fd99f"
+    },
+    {
+      "path": "underbough-muted-copperleaf-v2-low.webp",
+      "sha256": "08acfc2ca14e1834904ecf6131edd2683c307aa26f47a0a34cda91d099032670"
+    },
+    {
+      "path": "underbough-muted-copperleaf-v2-depleted.webp",
+      "sha256": "6b9d259433ea343990db8a454f87b01a637a701af531ae4014304caacb4d7800"
+    }
+  ]
+}
