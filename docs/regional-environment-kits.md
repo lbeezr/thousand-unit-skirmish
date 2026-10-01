@@ -660,6 +660,7 @@ and [built-in ImageGen prompt](../assets/environment/vaelora-region-kits-v2/unde
 preserve the attempt. The next directional method must retain shared model
 geometry through surface finishing and fixed-camera capture rather than relying
 on painting to preserve each projection. Existing runtime art stays in use.
+
 ## Vesperra sparse pod-vine stock views · 1 October 2026
 
 The [full/worked/low pack](../assets/environment/vesperra-podvine-low-v1/README.md)
@@ -669,3 +670,46 @@ heading and root matrices. [Local runtime evidence](qa-evidence/vaelora-podvine-
 covers 480 transitions and all three rows. This extends woodland disturbance
 feedback without introducing pod gathering or closing the canopy directional
 roster.
+
+
+## Underbough low hazel understory — 1 October 2026
+
+A [low multi-stem hazel source](../assets/environment/frontier-v1/underbough-low-hazel.png)
+adds an airy muted olive/umber shrub beside the two rootward fungus forms. It has
+no fruit or resource role. The [manifest](../assets/environment/frontier-v1/underbough-low-hazel-understory-manifest.json)
+and [built-in ImageGen prompt](../assets/environment/frontier-v1/UNDERBOUGH-LOW-HAZEL-PROMPTS.json)
+record crop, scale, source/runtime hashes and provenance. Its world size is
+1.13959×0.7 with the existing bottom-center pivot.
+
+The [renderer proof](qa-evidence/underbough-hazel-renderer-2026-10-01/README.md)
+checks all 115 Rootways hazels for placement inside their parent forest cell and
+exact clearing/reset behavior. Map data and forest-cell ownership stay unchanged.
+The existing selected understory positions now choose among three forms; density
+is not increased. Eight full-game captures also completed without reported errors.
+Only one painted oblique view is supplied, and other habitats/regions remain
+unfinished. This source expands ecological detail, not rotated coverage.
+
+## Underbough worn-soil companion — 1 October 2026
+
+A [second worn-soil source](../assets/environment/vaelora-region-kits-v2/underbough/worn-dirt-02.png)
+adds quieter compacted-earth detail to settlement pads and working tracks. Its
+mean RGB is 113/82/57 versus the first source's 113/83/59. The
+[repeat review](../assets/environment/vaelora-region-kits-v2/underbough/worn-dirt-variant-repeat-review.png)
+was inspected for compatible palette and subdued features. The
+[built-in ImageGen prompt](../assets/environment/vaelora-region-kits-v2/underbough/worn-dirt-02-prompt.txt)
+and [registration](../assets/environment/vaelora-region-kits-v2/underbough/worn-dirt-02-registration.json)
+retain provenance, hashes and unchanged source dimensions.
+
+Underbough dirt now selects two source textures through the existing world-space
+stochastic sampler. `?groundVariants=single` disables clearing, woodland and
+worn-soil companions together; other regions retain their ground bindings.
+Ground paint, building placement, resource rules and map JSON do not change.
+Three ground roles now have paired sources; dense growth, stone and wet-bank
+companions still remain, along with regional art and true prop perspectives.
+
+The [full-game worn-soil review](qa-evidence/underbough-worn-soil-variants-2026-10-01/README.md)
+completed eight captures without reported browser errors, with required texture
+loading, cache isolation and unchanged definitions. Its mixed mode enables all
+three role companions together. Settlement wear remains compatible in the
+inspected ordinary view; the contribution is subtle and does not finish the
+forest's overall appearance.
