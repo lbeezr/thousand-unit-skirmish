@@ -1,9 +1,8 @@
 # Art runtime contract audit — 1 October 2026
 
 Baseline: verified `lbeezr/thousand-unit-skirmish` main `25488c8ebf89fbf6a5f56691a2d7ba446bb607eb`,
-including merged audio PR #13. Git read and dry-run branch push succeeded; the
-existing GitHub connection identifies `lbeezr` and grants repository push access.
-This is source/contract evidence, not a browser appearance acceptance.
+including merged audio PR #13. This is source/contract evidence, not a browser
+appearance acceptance.
 
 ## Units already bound
 
