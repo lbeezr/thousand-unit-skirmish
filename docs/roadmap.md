@@ -37,26 +37,17 @@ observations are still needed for discoverability and listening. Art remains
 independent. Authored entity placement/identity and death triggers remain later
 candidates from the loose capability inventory.
 
-### Parallel core workstreams — 30 September 2026
+### Integrated core workstreams — 1 October 2026
 
-The user authorized a parallel implementation wave targeting `main`. Each owner
-uses an isolated worktree, ships focused PRs and owns proportionate checks,
-staging integration and fix-forward work. Art and audio production proceed in
-their existing lanes. The workstreams below are starting outcomes, not claims
-of implemented functionality or comprehensive reference parity.
+These foundations are implemented. Their dated checks establish specific
+behaviors; unassisted use, creative acceptance and broader reference parity
+remain separate outcomes.
 
-| Workstream | First useful outcome | Primary edit boundary |
+| Workstream | Integrated surface | Evidence and limits |
 | --- | --- | --- |
-| Army commands | Stop/Hold with predictable interruption, no Hold pursuit, HUD/hotkeys and persisted both-seat behavior. | Authoritative orders/movement/combat idle semantics; command input/HUD and command tests. |
-| Scenario authoring | Graphical named regions with bounded undo/redo, region-entry and registered construction/research completion conditions, host diagnostics, validated import/export and checkpoint-safe execution. | Map/schema validation, scenario event simulation, editor and authoring tests. |
-| Unit audio engineering | Supported lifecycle event catalog, ready/death/repair routing, food/wood context, bounded playback and recovery-safe deduplication. | Audio policies/runtime/library UI and narrow client audio emission sites. |
-
-Keep edits to shared server/client files localized to these responsibilities;
-prefer focused modules over broad rewrites. Read current `main` before dependent
-work and contact only an affected owner for a concrete conflicting edit or shared
-contract. A completed scoped slice may integrate independently; do not create a
-central approval queue or wait for the whole wave. Later Patrol/Follow, broader
-triggers and shared content delivery follow useful integrated outcomes.
+| Army commands | Stop/Hold interruption and stationary defense; two-endpoint Patrol and bounded catch-up Follow, HUD controls and persisted both-seat intent. | [Stationary orders](qa-command-foundations-2026-09-30.md), [persistent orders](qa-persistent-orders-2026-09-30.md) and [combined proof](qa-custom-skirmish.md). Follow does not establish convoy formations; human discoverability remains open. |
+| Scenario authoring | Graphical named regions, typed completion conditions, undo/redo, host diagnostics, validated import/export and checkpoint-safe execution. | [Combined authoring audit](qa-custom-skirmish.md#current-acceptance-audit). Arbitrary scripts, entity/death triggers and unassisted authoring remain later work. |
+| Unit audio engineering | Lifecycle/food/wood/repair routing, bounded work playback, recovery-safe deduplication and verified versioned shipped delivery. | [Runtime contracts](audio-runtime-packs.md), [import provenance](qa-zone-audio-import-provenance-2026-10-01.md) and [cache accounting](qa-shipped-audio-cache-accounting-2026-10-01.md). Technical checks do not establish listening or cue recognition. |
 
 | Milestone | Observable outcome |
 | --- | --- |
@@ -65,9 +56,9 @@ triggers and shared content delivery follow useful integrated outcomes.
 | F3 — Composition and progression | Mounted/scouting and siege roles, counters and a small technology tree work for players and AI. |
 | F4 — Presentation and variants | Two visual variants preserve identical simulation; a bounded gameplay variant and mixed-roster scale measurements prove the extension boundaries. |
 
-Start with registry parity and a second Barracks production option. Define the
-presentation binding in that slice; ship each addition through HUD, server,
-persistence, AI and staging without waiting for final graphics.
+Registry parity, the second Barracks production option and the initial
+presentation binding are implemented; see the
+[foundation completion record](gameplay-foundation-plan.md#2026-09-30--f1f3-integrated-completion).
 
 The registry, base lifecycle, mounted roster, bounded research, siege, Scout
 reconnaissance, AI counter-slot reservation and contextual HUD slices are
@@ -136,6 +127,27 @@ builds; they do not certify today's deployment.
 
 The [first lore wiki](lore/README.md) is delivered as a connected reference covering the ten regions, peoples, institutions, history and supernatural anchors. The user's current lore direction is to deepen and reconcile this reference; additional scenes and a scenario are optional later uses. The earlier [L1 foundation](lore-foundation-m1.md) remains a drafting record, separate from gameplay M1. Lore proposals do not alter the current gameplay priority.
 
+### Next-action queue — 1 October 2026
+
+Based on integration baseline `25488c8`, choose one bounded outcome in a stream.
+Keep existing automated proofs as regression checks and record the build and
+conditions of any new observation.
+
+| Stream | Next testable outcome | Evidence gap or dependency |
+| --- | --- | --- |
+| Gameplay | Reproduce the diagnostic 2,000-unit construction-site blockage on a named current build; fix the first observed movement/placement failure and replay that workload. | [Combined scale audit](qa-custom-skirmish.md#current-acceptance-audit) stops before the full workload. Intended device/network budgets are still needed before claiming supported capacity. |
+| Maps | Observe contested economy-to-watch matches on Millrace and Rootways, then compare one channel, basin or ridge layout for congestion and expansion choices. | [Regional rules](maps.md), [paid 250-unit recovery/rematch proof](qa-underbough-gameplay-proof-2026-10-01.md) and [harvested-shortcut traversal](qa-rootways-woodland-shortcut-2026-10-01.md) supply automated regressions; human route decisions and balance remain unobserved. |
+| Art | Package the six existing Frontier Complete preview families for Docker, verify their declared runtime files/hashes and inspect one representative game capture. | The [bounded asset audit](https://github.com/lbeezr/thousand-unit-skirmish/pull/14) identifies missing preview packaging, lifecycle art and team masks, with no separate Boughward building family. Default unit bindings still need directional motion and fresh-player readability acceptance; see [art lanes](art-production-lanes.md). |
+| Audio | Audition the eleven regional music/ambience palettes at comparable perceived loudness; run ten-trial cue recognition with captions off and on, recording mix settings and confusions. | [Source evidence](qa-zone-audio-2026-09-30.md) and [recognition protocol](audio-design.md#recognition-check) do not yet supply creative listening or fresh-player results. |
+| Player experience | Observe an unassisted author and a human pair completing author/join/play/result/rematch; replay a fix for the first repeated confusion. | [External playtest protocol](qa-vertical-slice.md#lightweight-external-playtest-protocol) requires actual participants and an identified build/device/browser; scripted matches do not supply this observation. |
+| Tooling | Produce one real-game PNG with source revision, browser, viewport, applied map, connection state and image hash, then inspect the pixels. | [Browser/capture contract](testing.md#browser-and-art-checks) is implemented. A working Chrome sandbox and WebGL2 runtime are prerequisites; startup and injected-CDP tests do not prove rendering. |
+
+Recent gameplay regressions also cover [Scout affordability](qa-ai-scout-affordability-2026-10-01.md)
+and [Rootways retreat/resumption](qa-rootways-scout-retreat-2026-10-01.md).
+They establish bounded automated behavior, with contested play still to observe.
+
+### Continuing work areas
+
 | Area | Useful next outcome | Record |
 | --- | --- | --- |
 | Gameplay | Fix a reproduced command, combat, economy, pathing, or recovery failure. | Build, reproduction, both-seat regression. |
@@ -145,7 +157,7 @@ The [first lore wiki](lore/README.md) is delivered as a connected reference cove
 | Audio | All-zone source milestone is implemented: 44 originals across ten zones and eleven palettes, a comparison player, and Audio Studio import. Next: creative audition, loop edits, discovery/conflict arrangements and in-match cue recognition. | [All-zone evidence](qa-zone-audio-2026-09-30.md), [source pack](../assets/audio/vaelora-zones-v1/README.md), and later ten-trial results with mix/caption settings. |
 | Renderer | Integrate useful asset states while preserving fog, batching, and camera readability. | Exact pack/revision, representative runtime frame, focused checks. |
 | Art | Finish small independent unit, building, environment, vegetation, or material samples. | Source/runtime status, manifests, provenance, known limits. See [art lanes](art-production-lanes.md). |
-| Unit characters | Integrate the Human and Boughward first passes for Worker, Infantry, Spearman, Archer, Scout, Rider, and Siege Engine as the default opposing rosters, with approximate action coverage in every heading. Verify the default roster in a live match; refine directional animation and team accents afterward. | See [Human roster evidence](art-direction/human-roster-v1/README.md) and [unit sprite exploration](unit-sprite-exploration.md); record runtime visibility, rights/provenance, and player readability separately. Meshy is deferred for this pass. |
+| Unit characters | The [default runtime binding](../src/main.js) selects Human/Boughward packs for Worker, Infantry, Spearman, Archer, Scout, Rider and Siege Engine, with nearest-authored action reuse. Verify the opposing rosters in a live match; refine directional animation and team accents. | [Sprite role mapping](../src/unit-sprite-runtime.mjs), [Human production history](art-direction/human-roster-v1/README.md) and [unit sprite exploration](unit-sprite-exploration.md) distinguish implementation from acceptance. Record runtime visibility, rights/provenance and player readability separately. Meshy remains deferred for this pass. |
 | Infrastructure | Keep staging healthy and measure hosted match/recovery behavior. | Deployment identity, ready/assets/WSS smoke, recovery and capacity evidence. |
 | QA | Convert player failures into repeatable defects and current-build observations. | [QA protocol](qa-vertical-slice.md) and dated evidence. |
 | PvE | Observe and improve the seeded opponent's opening, objective contest, and retake behavior. | Seeds, assigned seats, trace, solo-match observation. |
@@ -185,8 +197,11 @@ choices, rather than copying its dated statuses into new work.
 
 Stop and Hold Position establish explicit task/route interruption and stationary
 in-range defense, with both-seat authority and checkpoint/rematch regressions.
-Continue with Patrol/Follow only as bounded additions to these semantics; use
-[the command evidence](qa-command-foundations-2026-09-30.md) as the regression floor.
+Patrol and Follow are integrated bounded additions to these semantics. Use the
+[stationary-command evidence](qa-command-foundations-2026-09-30.md) and
+[persistent-order evidence](qa-persistent-orders-2026-09-30.md) as the regression
+floor; two-endpoint Patrol and catch-up Follow do not imply arbitrary waypoint
+routes or rigid convoy formations.
 
 ## Regional map roster — 30 September 2026
 
@@ -209,10 +224,13 @@ substitute for making an existing landscape beautiful. Both-seat route and stock
 observations must accompany blocker changes.
 
 Twelve Vaelora maps now provide playable destinations for the ten regional asset
-families and eleven audio palettes. Next proof: both-seat economy-to-watch matches
-on Bellweather Millrace and Underbough Rootways, then congestion/expansion comparison
-on channel, basin and ridge layouts. The next regional slice supplies separate terrain ambience, registered regional
-defaults, distinct flagship objectives/expansions and pre-match rolling-ground
-authoring/rendering. Follow with human 1v1 observations, dedicated living-fringe
-vegetation and slope/build-pad polish before adding independent corner sculpting.
-See [roster and limitations](maps.md).
+families and eleven audio palettes. Registered regional defaults, separate terrain
+ambience, distinct flagship objectives/expansions and pre-match rolling-ground
+authoring/rendering are integrated; see the [roster and rules](maps.md) and
+[regional slice evidence](qa-vertical-slice.md#regional-ground-and-soundscape-slice--30-september-2026).
+Ground authoring currently uses three logical levels with derived visual corners;
+independent corner sculpting and in-match terraforming remain future work.
+Next proof: contested both-seat economy-to-watch matches on Bellweather Millrace
+and Underbough Rootways, then congestion/expansion comparison on channel, basin
+and ridge layouts. Human 1v1 observations, creative loop listening, dedicated
+living-fringe vegetation and slope/build-pad appearance still need work.
