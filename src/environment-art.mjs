@@ -128,6 +128,7 @@ function loadSprite(url) {
 
 // Decorative families load when a map uses them; resource-state fallbacks stay eager.
 const sprites = {};
+const directionalResource = name => /^(oak|pine|berries)-view-(0[0-7])$/.exec(name);
 sprites.oak = loadSprite(`${ASSET_ROOT}oak.webp`);
 sprites.berries = loadSprite(`${ASSET_ROOT}berries.webp`);
 if (meshyResourcesEnabled) {
@@ -465,7 +466,7 @@ export function createGroundSurfaces(definition) {
 }
 
 function spriteGeometry(width, height, name) {
-  if (meshyResourcesEnabled && ['oak', 'pine', 'berries', 'oak-full', 'berries-full'].includes(name)) {
+  if (meshyResourcesEnabled && (['oak', 'pine', 'berries', 'oak-full', 'berries-full'].includes(name) || directionalResource(name))) {
     // Preserve 128 px/world-unit and the baked (320,480) ground pivot.
     const geometry = new THREE.PlaneGeometry(5, 5, 1, 4);
     geometry.translate(0, 1.25, 0);
@@ -484,8 +485,12 @@ function spriteGeometry(width, height, name) {
 
 function spriteMaterial(name) {
   if (!sprites[name]) {
+    const direction = directionalResource(name);
+    if (direction) sprites[name] = loadSprite(`./assets/environment/frontier-meshy-fixed-camera-v2/${direction[1]}/runtime/${direction[1]}-${direction[2]}.webp`);
+    else {
     if (!spriteNames.includes(name)) throw new Error(`Unknown environment sprite: ${name}`);
     sprites[name] = loadSprite(`${ASSET_ROOT}${name}.webp`);
+    }
   }
   const material = new THREE.MeshBasicMaterial({
     map: sprites[name],
@@ -827,7 +832,12 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
     ['basalt-ridge-cap', 3.4, 2.25, ridgeCaps],
     ['cliff', 4.2, 4.6, cliffs],
     ['cliff-end-cap', 4.2, 4.6, cliffCaps],
-  ]) {
+  ].flatMap(([name, width, height, points]) => {
+    if (!meshyResourcesEnabled || !['oak', 'pine'].includes(name)) return [[name, width, height, points]];
+    return Array.from({length: 8}, (_, heading) => [`${name}-view-${String(heading).padStart(2, '0')}`, width, height,
+      points.filter(point => Math.floor(variation(point.cell + 83) * 8) === heading)
+        .map(point => ({...point, flip: false, yaw: 0, modelYawDegrees: heading * 45}))]);
+  })) {
     if (habitatDepth) for (const point of points) {
       if (!Number.isInteger(point.cell)) continue;
       point.habitatDepth = habitatDepth[point.cell];
@@ -849,7 +859,7 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
     for (let index = 0; index < points.length; index++) {
       const point = points[index];
       if (!Number.isInteger(point.cell)) continue;
-      forestTreeSlots.set(point.cell, { mesh, index, ...point, family: name, stateMeshes, atlas: mesh.userData.forestAtlas });
+      forestTreeSlots.set(point.cell, { mesh, index, ...point, family: directionalResource(name)?.[1] || name, stateMeshes, atlas: mesh.userData.forestAtlas });
     }
     addObject(mesh);
   }

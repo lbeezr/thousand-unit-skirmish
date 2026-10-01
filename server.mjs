@@ -7166,7 +7166,7 @@ const server = createServer(async (request, response) => {
       || (path.extname(relative) === '.webp'
         && /^(?:(?:oak|berries)-(?:full|worked|low|depleted)|construction-(?:earthwork|foundation))$/
           .test(path.basename(relative, path.extname(relative)))));
-  const publicMeshyResourceAsset = /^assets\/environment\/frontier-meshy-sprites-v1\/(oak|pine|berries)\/runtime\/\1-0[0-7]\.webp$/.test(relative);
+  const publicMeshyResourceAsset = /^assets\/environment\/frontier-meshy-(?:sprites-v1|fixed-camera-v2)\/(oak|pine|berries)\/runtime\/\1-0[0-7]\.webp$/.test(relative);
   const publicEnvironmentPilotAsset = path.dirname(relative) === 'assets/environment/frontier-cliff-pilot-v1/runtime'
     && /^(cliff-color-0[0-7]\.webp|cliff-depth-0[0-7]\.png)$/.test(path.basename(relative));
   const publicBuildingSpriteAsset = (
