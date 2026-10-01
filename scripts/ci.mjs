@@ -190,6 +190,7 @@ const scenarios = [
   ['scripts/pve-contested-match-scenario.mjs', 'Contested seeded PvE match', '300', '20260925', '4294967295'],
   ['scripts/pve-production-runtime-scenario.mjs', 'PvE production on Millrace', 'bellweather-millrace'],
   ['scripts/pve-production-runtime-scenario.mjs', 'PvE production on Rootways', 'underbough-rootways'],
+  ['scripts/underbough-scout-scenario.mjs', 'Rootways paid Scout exploration, retreat and resumption'],
   ['scripts/pve-production-runtime-scenario.mjs', 'PvE production on Forked Vale', 'forked-vale'],
   ['scripts/pve-production-runtime-scenario.mjs', 'PvE production on Woodland Expanse', 'woodland-expanse'],
   ['scripts/visual-pack-path-safety-scenario.mjs', 'Visual pack path safety'],

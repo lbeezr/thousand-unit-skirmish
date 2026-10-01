@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFile } from 'node:fs/promises';
 import { createReconnaissancePolicy } from '../src/pve-reconnaissance.mjs';
 import { createDeterministicPolicy } from '../src/pve-opponent.mjs';
+import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 
 function fixture(team = 0) {
   const x = team ? 20 : -20;
@@ -35,7 +38,7 @@ test('observed threats trigger retreat; repeated snapshots retain the same order
   state.units.visibleEnemies.push({ id: 20, kind: 'infantry', hp: 100, x: -5, z: .5 });
   state.tick = 30;
   const retreat = policy.next(state).commands[0];
-  assert.equal(retreat.x, -19.5);
+  assert.equal(retreat.x, -16.5, 'retreat to the home perimeter rather than its blocked center');
   assert.deepEqual(policy.next(state).commands, []);
   state.units.friendly[0].generation++;
   assert.deepEqual(policy.next(state).commands[0].unitGenerations, [8], 'a new entity generation gets a fresh order');
@@ -56,4 +59,46 @@ test('fully explored fog avoids pointless new reconnaissance orders', () => {
   const state = fixture();
   state.visibility.data = Buffer.alloc(1280, 255).toString('base64');
   assert.deepEqual(createReconnaissancePolicy(42).next(state), { ids: [4], commands: [] });
+});
+
+const rootways = JSON.parse(await readFile(new URL('../maps/underbough-rootways.json', import.meta.url)));
+for (const team of [0, 1]) for (const seed of [0, 20260925, 0xffff_ffff]) {
+  test(`Rootways Scout finishes its retreat across a stationary threat boundary, seat ${team}, seed ${seed}`, () => {
+    const state = fixture(team), direction = team ? 1 : -1;
+    state.map = { width: rootways.width, height: rootways.height };
+    state.visibility = { columns: rootways.width, rows: rootways.height,
+      data: Buffer.alloc(rootways.width * rootways.height / 4).toString('base64') };
+    state.objectives = rootways.triggers.map(trigger => ({ ...trigger, owner: -1 }));
+    const scout = state.units.friendly[0], home = state.buildings.friendly[0];
+    scout.x = direction * 10; home.x = direction * 36.5;
+    state.units.visibleEnemies = [{ id: 24, team: 1 - team, kind: 'scout', hp: 60, x: direction * 1.1, z: .5 }];
+    const policy = createReconnaissancePolicy(seed);
+    const retreat = policy.next(state).commands[0];
+    const edge = Math.ceil(BUILDING_DEFINITIONS['town-center'].footprint / 2);
+    assert.deepEqual([retreat.x, retreat.z], [home.x - direction * edge, home.z]);
+    const cell = Math.floor(retreat.z + rootways.height / 2) * rootways.width + Math.floor(retreat.x + rootways.width / 2);
+    assert.ok(!townCenterFootprintCells(rootways.spawnPoints, team, rootways.width, rootways.height).includes(cell),
+      'retreat target cannot be inside the authoritative home footprint');
+    scout.x = direction * 10.2; state.tick = 30;
+    assert.deepEqual(policy.next(state).commands, [], 'crossing nine cells must not reverse an active retreat');
+    state.tick = 300;
+    assert.deepEqual(policy.next(state).commands[0], retreat, 'a stalled retreat retries its destination');
+    scout.x = retreat.x; scout.z = retreat.z; state.tick = 330;
+    const resumed = policy.next(state).commands[0];
+    assert.ok(resumed, 'reaching safety releases the Scout to explore');
+    assert.notDeepEqual([resumed.x, resumed.z], [retreat.x, retreat.z]);
+  });
+}
+
+test('a lost home preserves the active retreat destination; replacement Scouts have fresh intent', () => {
+  const state = fixture(), scout = state.units.friendly[0];
+  scout.x = -10;
+  state.units.visibleEnemies = [{ id: 24, hp: 60, kind: 'scout', x: -1.1, z: .5 }];
+  const policy = createReconnaissancePolicy(42), retreat = policy.next(state).commands[0];
+  scout.x = -10.2; state.buildings.friendly = []; state.tick = 300;
+  assert.deepEqual(policy.next(state).commands[0], retreat, 'without a home or nearby threat, retry the saved safe point');
+  scout.generation++; state.tick = 330;
+  const replacement = policy.next(state).commands[0];
+  assert.deepEqual(replacement.unitGenerations, [scout.generation]);
+  assert.notDeepEqual([replacement.x, replacement.z], [retreat.x, retreat.z], 'replacement cannot inherit the old retreat');
 });
