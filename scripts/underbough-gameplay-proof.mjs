@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
+import { assertGatheringBeforeRewards } from './underbough-gathering-evidence.mjs';
 import { BUILDING_DEFINITIONS, UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
 const winner = Number(process.argv[2] ?? 0);
@@ -50,16 +51,7 @@ try {
     await order(c, 'stop', workers[team], {}, /STOP ORDER/);
   }));
   const gathered = await settled();
-  assert.ok(gathered.state.matchElapsedSeconds < 120, 'bank growth precedes timed supply');
-  assert.ok(gathered.state.scenarioEventStates.every(e => !e.fired));
-  assert.ok(gathered.state.triggerStates.every(o => o.owner === -1), 'no objective reward funded opening');
-  for (const team of [0, 1]) {
-    for (const index of [0, 1]) {
-      const id = `s${team}-${index}`;
-      const node = gathered.state.resourceNodes.find(n => n.id === id);
-      assert.ok(node.stock < map.resourceNodes.find(n => n.id === id).stock, 'real resource stock consumed');
-    }
-  }
+  assertGatheringBeforeRewards(gathered.state, map);
   stage = 'paid house and Barracks construction';
   const barracks = [];
   await Promise.all(clients.map(async (c, team) => {
@@ -123,10 +115,15 @@ try {
   assert.equal(reset.state.units.length, 250);
   assert.equal(reset.state.buildings.length, 0, 'constructed buildings removed');
   assert.ok(reset.state.scenarioEventStates.every(e => !e.fired));
-  for (const [team, c] of clients.entries()) {
+  await Promise.all(clients.map(async (c, team) => {
     await order(c, 'gather', [workers[team][0]], { nodeId: `s${team}-0` }, /GATHER ORDER/);
     await c.state(s => s.food[team] > map.startingResources.food, 'rematch gathering banks food');
-  }
+    await order(c, 'stop', workers[team], {}, /STOP ORDER/);
+  }));
+  const rematch = await settled();
+  assertGatheringBeforeRewards(rematch.state, map, [0, 1], ['food']);
+  evidence.rematch = { seconds: rematch.state.matchElapsedSeconds,
+    bankedFood: rematch.state.teamFood.map(n => n - map.startingResources.food) };
   console.log(JSON.stringify({ ...evidence, checks: ['paid gathering/building/production', 'both-seat reconnect',
     'checkpoint restart', 'reachable objectives', 'capture-hold result', 'clean rematch'],
     limitations: ['automated server evidence only', 'no human playtest or browser claim', 'no 2000-unit support claim'] }));
