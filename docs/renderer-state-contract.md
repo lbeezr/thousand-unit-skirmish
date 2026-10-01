@@ -100,6 +100,14 @@ loader exposes existing fallback art if the current state/view load fails.
 Complete-only Frontier preview families also yield to fallback for
 unavailable construction/damage states. Collision remains server-owned.
 
+Captured-building manifest attempts are shared by URL. A manifest HTTP 404 keeps
+fallback until `invalidateCapturedBuildingManifest(url)` is explicitly called;
+other failures allow at most one shared retry every five seconds after failure.
+The next renderer update admits retries. Invalidation bypasses the cooldown,
+reloads that URL for all its consumers and ignores retired manifest/frame results.
+Successful requests stay cached; other URLs remain independent. See the
+[retry evidence](qa-building-manifest-retries-2026-10-01.md).
+
 ## Environment stages and fog
 
 For ordinary resource nodes, compute

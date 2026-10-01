@@ -5,18 +5,22 @@ const DEFAULT_MANIFEST_URL = new URL(
   '../assets/buildings/town-center-lifecycle-meshy-v1/lifecycle-grid.json',
   import.meta.url,
 ).href;
-const manifestPromises = new Map();
+const manifestRequests = new Map();
+const MANIFEST_RETRY_MS = 5000;
 const imagePromises = new Map();
 
 function asAbsoluteUrl(path, baseUrl) {
   return new URL(path, baseUrl).href;
 }
 
-async function loadManifest(manifestUrl) {
-  if (!manifestPromises.has(manifestUrl)) {
+function loadManifest(manifestUrl) {
+  const cached = manifestRequests.get(manifestUrl);
+  if (!cached?.promise || Date.now() >= cached.retryAt) {
     const pending = (async () => {
-      const response = await fetch(manifestUrl, { cache: 'force-cache' });
-      if (!response.ok) throw new Error(`Building view manifest returned HTTP ${response.status}`);
+      const response = await fetch(manifestUrl, { cache: cached ? 'reload' : 'force-cache' });
+      if (!response.ok) throw Object.assign(
+        new Error(`Building view manifest returned HTTP ${response.status}`), { status: response.status },
+      );
       const manifest = await response.json();
       if (manifest.schema !== 'thousand-unit-skirmish.building-lifecycle-reference.v1'
         || !Array.isArray(manifest.camera?.azimuthDegrees)
@@ -27,10 +31,23 @@ async function loadManifest(manifestUrl) {
       }
       return manifest;
     })();
-    manifestPromises.set(manifestUrl, pending);
-    pending.catch(() => manifestPromises.delete(manifestUrl));
+    const entry = { promise: pending, retryAt: Infinity };
+    manifestRequests.set(manifestUrl, entry);
+    pending.catch((error) => {
+      entry.retryAt = error?.status === 404 ? Infinity : Date.now() + MANIFEST_RETRY_MS;
+    });
   }
-  return manifestPromises.get(manifestUrl);
+  return manifestRequests.get(manifestUrl).promise;
+}
+
+// All consumers of this URL retry on their next update, sharing one fresh fetch.
+export function invalidateCapturedBuildingManifest(manifestUrl = DEFAULT_MANIFEST_URL) {
+  manifestRequests.set(new URL(manifestUrl, import.meta.url).href, { retryAt: 0 });
+}
+
+function currentManifestRequest(data, pending = data.manifestPromise) {
+  return !data.disposed && data.manifestPromise === pending
+    && manifestRequests.get(data.manifestUrl)?.promise === pending;
 }
 
 function loadVerifiedImage(path, expectedSha256, manifestUrl) {
@@ -191,23 +208,26 @@ export function updateCapturedBuildingSprite(sprite, camera, lifecycleInput = 'c
   if (!data || data.disposed) return;
   data.camera = camera;
   data.lifecycleInput = lifecycleInput;
-  if (!data.manifest) {
-    if (!data.manifestPromise) {
-      data.manifestPromise = loadManifest(data.manifestUrl).then((manifest) => {
-        data.manifest = manifest;
-        data.manifestPromise = null;
-        requestCurrentFrame(sprite, data);
-      }).catch((error) => {
-        data.manifestPromise = null;
-        if (!data.warned) {
-          data.warned = true;
-          console.warn('Captured building views unavailable; using the procedural Town Center fallback.', error);
-        }
-      });
-    }
-    return;
+  const pending = loadManifest(data.manifestUrl);
+  if (data.manifestPromise !== pending) {
+    data.manifestPromise = pending;
+    data.manifest = null;
+    data.requestKey = null;
+    data.requestVersion++;
+    sprite.visible = false;
+    pending.then((manifest) => {
+      if (!currentManifestRequest(data, pending)) return;
+      data.manifest = manifest;
+      requestCurrentFrame(sprite, data);
+    }).catch((error) => {
+      if (!currentManifestRequest(data, pending)) return;
+      if (!data.warned) {
+        data.warned = true;
+        console.warn('Captured building views unavailable; using the procedural Town Center fallback.', error);
+      }
+    });
   }
-  requestCurrentFrame(sprite, data);
+  if (data.manifest) requestCurrentFrame(sprite, data);
 }
 
 function requestCurrentFrame(sprite, data) {
@@ -244,7 +264,7 @@ function requestCurrentFrame(sprite, data) {
   }
 
   composeFrame(view, data.teamColor, data.manifestUrl).then((canvas) => {
-    if (data.disposed || version !== data.requestVersion) return;
+    if (!currentManifestRequest(data) || version !== data.requestVersion) return;
     const texture = new THREE.CanvasTexture(canvas);
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.minFilter = THREE.LinearMipmapLinearFilter;
@@ -256,7 +276,7 @@ function requestCurrentFrame(sprite, data) {
     sprite.visible = true;
     previous?.dispose();
   }).catch((error) => {
-    if (data.disposed || version !== data.requestVersion) return;
+    if (!currentManifestRequest(data) || version !== data.requestVersion) return;
     sprite.visible = false;
     if (!data.warned) {
       data.warned = true;
