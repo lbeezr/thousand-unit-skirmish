@@ -1,0 +1,94 @@
+{
+  "status": "rejected-directional-registration-finishing-study",
+  "sourceTool": "built-in ImageGen",
+  "generatedOutput": "exec-e8bd3cb0-4bb1-4c82-9a28-608daa7c8a58.png",
+  "sourceSha256": "5854f6cb1546d3ff4666734943a49886c1ce006e2b38ef45d56505ced1a82873",
+  "dimensionsPx": [
+    2048,
+    768
+  ],
+  "alphaExtrema": [
+    0,
+    254
+  ],
+  "measuredModelRotation": false,
+  "acceptedRuntimeDirectionalCoverage": 0,
+  "frames": [
+    {
+      "requestedHeadingDegrees": 0,
+      "panelRectPx": [
+        0,
+        0,
+        512,
+        768
+      ],
+      "alpha128BoundsLocal": [
+        24,
+        123,
+        482,
+        632
+      ],
+      "widthPerVisibleHeight": 0.899803536345776
+    },
+    {
+      "requestedHeadingDegrees": 90,
+      "panelRectPx": [
+        512,
+        0,
+        512,
+        768
+      ],
+      "alpha128BoundsLocal": [
+        52,
+        107,
+        493,
+        649
+      ],
+      "widthPerVisibleHeight": 0.8136531365313653
+    },
+    {
+      "requestedHeadingDegrees": 180,
+      "panelRectPx": [
+        1024,
+        0,
+        512,
+        768
+      ],
+      "alpha128BoundsLocal": [
+        42,
+        138,
+        512,
+        630
+      ],
+      "widthPerVisibleHeight": 0.9552845528455285
+    },
+    {
+      "requestedHeadingDegrees": 270,
+      "panelRectPx": [
+        1536,
+        0,
+        512,
+        768
+      ],
+      "alpha128BoundsLocal": [
+        0,
+        130,
+        471,
+        632
+      ],
+      "widthPerVisibleHeight": 0.9382470119521913
+    }
+  ],
+  "oppositeAspectRatios": [
+    0.9419219997491953,
+    0.8672056784262109
+  ],
+  "reference": "../../../../docs/qa-evidence/root-oak-solid-construction-2026-10-01/solid-four-headings.png",
+  "review": "Solid reference constrains relative crown/branch arrangement more closely than line guide. Painted scale and fine anatomy are not exact recovered model projections. No registered ground pivots, lifecycle directions or runtime replacement yet.",
+  "findings": [
+    "RGBA composites on light and dark backgrounds show no visible background halo; apparent source RGB glow is transparent.",
+    "Opposite width-per-visible-height ratios are approximately 0.942 and 0.867; equal-scale shared geometry is not preserved closely enough.",
+    "Solid guide improved branch/crown arrangement, but finishing still changes silhouettes and roots."
+  ],
+  "nextMethod": "Preserve an actual shared model through surface finishing and fixed-camera capture instead of accepting independently repainted projections."
+}
