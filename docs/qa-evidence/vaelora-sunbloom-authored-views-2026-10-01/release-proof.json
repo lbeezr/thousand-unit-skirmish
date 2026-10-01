@@ -1,0 +1,27 @@
+{
+  "sourceRevision": "ed0bf54f4f1d60a5bc6dbf848b23e236568bda84",
+  "sourceDirty": true,
+  "releaseDigest": "sha256:c47e9bc49298d436988c3442104d1e12c5635965733653d8281ae8b5aaf44e06",
+  "files": [
+    {
+      "file": "server.mjs",
+      "sha256": "f134350a1c08cdeb9efca3ebb04bf612e8602175825391f05a93796bb62bf109",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/environment-art.mjs",
+      "sha256": "af5d3a6cdc958402144ab10c69b9f585a4601e70e5f79f351ae1e234d54b2f07",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "src/sunbloom-view-pack.mjs",
+      "sha256": "38f5b11d76fbef36383d5efe3f179dcdf4cc554e907ecbe2ca21e8d347ad5c1b",
+      "releaseBytesExact": true
+    },
+    {
+      "file": "assets/environment/ellionar-sunbloom-views-v1/sunbloom-views-atlas.webp",
+      "sha256": "9c97d8a8120efc4510b7509e10591822de00956b013198134ef9e5a34df46fdd",
+      "releaseBytesExact": true
+    }
+  ]
+}

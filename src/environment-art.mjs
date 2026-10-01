@@ -17,6 +17,7 @@ import { gardenPlantGroups } from './garden-vegetation.mjs';
 import { assertPlantDimensions, PLANT_ASSETS } from './environment-plant-assets.mjs';
 import { PODVINE_LOW_PACK as PODVINE_VIEW_PACK } from './podvine-low-pack.mjs';
 import { VEILCAP_VIEW_PACK } from './veilcap-view-pack.mjs';
+import { SUNBLOOM_VIEW_PACK } from './sunbloom-view-pack.mjs';
 
 const meshyResourcesEnabled = new URLSearchParams(globalThis.location?.search ?? '').get('meshyResources') !== '0';
 
@@ -669,7 +670,8 @@ export function createEnvironmentSpriteInstances(name, width, height, positions)
   const geometry = spriteGeometry(width, height, name);
   const viewPack = new URLSearchParams(globalThis.location?.search ?? '').get('plantViews') === 'legacy'
     ? null : name === 'vesperra-spiral-podvine' ? PODVINE_VIEW_PACK
-    : name === 'vesperra-veilcap' ? VEILCAP_VIEW_PACK : null;
+    : name === 'vesperra-veilcap' ? VEILCAP_VIEW_PACK
+    : name === 'ellionar-sunbloom' ? SUNBLOOM_VIEW_PACK : null;
   const material = viewPack ? new THREE.MeshBasicMaterial({side: THREE.DoubleSide,
     transparent: true, alphaTest: 0.08, depthWrite: true, toneMapped: false}) : spriteMaterial(name);
   let authoredPlantViews = null;

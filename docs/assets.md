@@ -235,3 +235,11 @@ textures/configurations and the existing registered card. The
 [runtime proof](qa-evidence/vaelora-veilcap-authored-views-2026-10-01/README.md)
 checks both species, clearing/reset and release admission. Veilcap still has
 one full appearance per heading, not separate worked/low fungus art.
+## Sunbloom directional runtime · 1 October 2026
+
+[Four Sunbloom views](../assets/environment/ellionar-sunbloom-views-v1/README.md)
+now use the authored instance path in Ellionar woodland companions and channel
+garden beds. [Runtime proof](qa-evidence/vaelora-sunbloom-authored-views-2026-10-01/README.md)
+checks headings, clearing/reset and release admission. `plantViews=legacy`
+retains the original single view. Positive stock still uses one full appearance
+per direction; flower gathering and separate worked/low artwork remain absent.
