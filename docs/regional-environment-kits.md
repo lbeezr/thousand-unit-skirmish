@@ -995,3 +995,12 @@ The [no-option binding evidence](qa-evidence/underbough-muted-copperleaf-default
 checks all 51 Rootways slots, 1,026 wood owners, stock 6/3/1/0/6 and exact reset.
 Use `forestCopperleaf=original` for the prior palette. This is a visible localized
 palette improvement; natural forest layout and genuine rotated views remain open.
+
+### Young-tree mix with current layout — 1 October 2026
+
+The [current woodland comparison](qa-evidence/underbough-young-current-2026-10-01/README.md)
+shows young hornbeams interrupting repeated mature crowns, but making the woods
+sparser and exposing more branch/root detail. Keep `forestAges=young`
+experimental pending density/species balance work. Eight captures complete on
+retry without reported errors; the capture helper now cleans up its own browser
+profile. Genuine rotated regional views remain unfinished.
