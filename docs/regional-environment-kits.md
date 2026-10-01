@@ -780,6 +780,25 @@ gutters. Low/depleted states, common crop/pivot, runtime binding and forest
 clearing/reset/composition review remain. Proposed visible height is 2.1 world
 units, pending game review. This is an age form, not a new species/resource rule.
 Both drawings use one approximate painted viewpoint; neither adds rotations.
+
+## Young hornbeam complete lifecycle candidate — 1 October 2026
+
+The [four-state source review](../assets/environment/vaelora-region-kits-v2/underbough/young-hornbeam-four-state-review.png)
+adds heavily worked and depleted masters to the full/worked sample. All four
+1254-pixel canvases retain the small collar at approximately the same position;
+alpha8 collar bounds vary by up to four pixels. The depleted image leaves a
+small cut stump rather than a mature root mat. Original generated masters and
+exact edit prompts are retained. These are harvest states of one painted view,
+not additional perspectives.
+
+The [candidate manifest](../assets/environment/frontier-v1/underbough-young-hornbeam-lifecycle-manifest.json)
+uses one root-centered crop containing every alpha8 bound and a common pivot.
+The four WebPs preserve their resized alpha exactly, and the lifecycle atlas
+uses the existing 64-pixel gutter and mip-cap contract. This production package
+is not yet selected by the game. Proposed full visible height remains 2.1 world
+units; forest composition, stock transitions, reset and game-scale appearance
+still require runtime review.
+
 ## Ellionar planted Sunbloom crowns · 1 October 2026
 
 The [v2 Sunbloom pack](../assets/environment/ellionar-sunbloom-crowns-v2/README.md)
@@ -789,6 +808,7 @@ colour and four authored directions. [Paired renderer evidence](qa-evidence/vael
 compares contact at the same camera/pivots and checks placement/stock/reset.
 The shorter painted base is not independently enlarged, and anatomical crown
 registration remains approximate.
+
 ## Ellionar worked Sunbloom foliage · 1 October 2026
 
 The [v3 Sunbloom pack](../assets/environment/ellionar-sunbloom-worked-v3/README.md)
@@ -797,3 +817,42 @@ Paired source-coordinate registration keeps the planted crown near the same
 pivot without independently fitting each silhouette. [Runtime evidence](qa-evidence/vaelora-sunbloom-worked-2026-10-01/README.md)
 checks woodland state mapping and unchanged independent garden beds. Worked
 serves all positive partial stock; a distinct low flower view remains unfinished.
+
+
+## Young hornbeam opt-in forest binding — 1 October 2026
+
+The [game-renderer study](qa-evidence/underbough-young-forest-study-2026-10-01/README.md)
+selects the authored young lifecycle in hornbeam groves via `?forestAges=young`.
+Other canopy species keep their scale study; all wood-cell owners remain.
+The 402 young Rootways slots pass stock rectangle checks and reset returns
+identical capture pixels. The inspected local comparison reduces small-tree
+root clutter, but mature branching still dominates. It stays opt-in pending
+full-game review and real young forms for the other species. This binding
+does not add rotations or claim a complete regional forest kit.
+
+## Young forest full-game appearance — 1 October 2026
+
+The [eight paired game captures](qa-evidence/underbough-young-full-game-2026-10-01/README.md)
+show the opt-in age composition on Rootways, with Bellweather control, at
+ordinary and strategic cameras. Capture errors are empty. Inspected ordinary
+views show more leaf color and less repeated brown branching, but dense forest
+strips and the repeated young silhouette remain conspicuous. The profile stays
+opt-in. Fuller quiet mature crowns and more true age silhouettes within each
+species remain necessary; no broad beauty or directional completion is claimed.
+
+## Fuller hornbeam canopy source — 1 October 2026
+
+The full-game age review still shows dominant branch lattice. A
+[leafier mature hornbeam candidate](../assets/environment/vaelora-region-kits-v2/underbough/moss-hornbeam-leafy-v2-source-comparison.png)
+conceals upper/lateral branching with fuller muted olive masses, while keeping
+the recognizable trunk. The source comparison uses shared canvas sizing, not
+game scale. A framing refinement leaves alpha8 bounds `[188,108,1104,1159]`
+on the 1254-pixel canvas. The initial output had only seven pixels above the
+crown; measured alpha did not prove clipping.
+
+[Review/provenance](../assets/environment/vaelora-region-kits-v2/underbough/moss-hornbeam-leafy-v2-review.json)
+and [prompts](../assets/environment/vaelora-region-kits-v2/underbough/moss-hornbeam-leafy-v2-prompts.json)
+retain the generated master and unfinished scope. This is a source candidate,
+not a runtime replacement. Root clutter and leaf highlights remain. Derive its
+harvest states and a new common registration, then review woodland overlap
+and full-game appearance. It adds no rotated views.

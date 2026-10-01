@@ -1,0 +1,26 @@
+{
+  "status": "source-candidate-not-runtime",
+  "sourceTool": "built-in ImageGen",
+  "generatedOutput": "exec-1731899b-a555-4b17-bc64-31bdfeefdb92.png",
+  "initialOutput": "exec-be19fe07-03c1-486b-82f6-2076b7cd9ead.png",
+  "initialReview": "Fuller crown accepted for further framing; alpha8 top7px and base18px gutters insufficient. No alpha8 edge clipping proved.",
+  "sourceSha256": "283a1d1b24c3a2aeaa4359b0d35b6f92c30ebedc78c2309941c86fcb7c0ee5ca",
+  "canvasPx": [
+    1254,
+    1254
+  ],
+  "alpha8Bounds": [
+    188,
+    108,
+    1104,
+    1159
+  ],
+  "views": "one painted fixed-oblique view; zero new rotated perspectives",
+  "review": "Fuller foliage masses conceal much of upper/lateral branch lattice while retaining trunk identity and regional olive palette. Framing edit has healthy gutters. Lower root mat and bright individual leaf highlights remain; source sample is not proof of woodland beauty.",
+  "unfinished": [
+    "worked/low/depleted source states from this full frame",
+    "new common crop and pivot; incompatible with old lifecycle registration",
+    "runtime binding and woodland/full-game appearance review",
+    "directional construction"
+  ]
+}
