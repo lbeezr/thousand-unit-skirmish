@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "maturity": "authored-runtime-candidate",
+  "sourceFile": "source.png",
+  "sourceSha256": "e573588a320639a78589a74c88171514b245570f0f02df317f983ccb72ed6833",
+  "sourceDimensionsPx": [
+    2172,
+    724
+  ],
+  "sourceOutput": "exec-486222f3-2fb8-4a1a-927d-9730f7ad0be0.png",
+  "reference": "../frontier-v1/vesperra-veilcap.png",
+  "referenceSha256": "441c203f5f703f3a9c21ea43007015c0ecb79809a23db75551bf0f59f0ef1a48",
+  "prompts": "PROMPTS.json",
+  "atlasFile": "views-atlas.webp",
+  "atlasSha256": "0bc37be80d1f71326ef5cdd7e157afd26c2c7e91540a4725188aa6901ec2208d",
+  "atlasSizePx": [
+    2560,
+    668
+  ],
+  "frameSizePx": [
+    512,
+    540
+  ],
+  "gutterPx": 64,
+  "worldSize": [
+    0.61614,
+    0.65
+  ],
+  "pivot": [
+    0.5,
+    1
+  ],
+  "frames": [
+    {
+      "id": "front",
+      "requestedTurnDegrees": 0,
+      "sourceRectPx": [
+        0,
+        66,
+        590,
+        657
+      ],
+      "translationPx": [
+        -24,
+        0
+      ],
+      "contactProxyPx": [
+        304,
+        657
+      ],
+      "contactMethod": "alpha>=8 lower bound and horizontal silhouette center; anatomical root not certified",
+      "rectPx": [
+        64,
+        64,
+        512,
+        540
+      ]
+    },
+    {
+      "id": "right",
+      "requestedTurnDegrees": 90,
+      "sourceRectPx": [
+        590,
+        65,
+        1090,
+        656
+      ],
+      "translationPx": [
+        42,
+        0
+      ],
+      "contactProxyPx": [
+        828,
+        656
+      ],
+      "contactMethod": "alpha>=8 lower bound and horizontal silhouette center; anatomical root not certified",
+      "rectPx": [
+        704,
+        64,
+        512,
+        540
+      ]
+    },
+    {
+      "id": "rear",
+      "requestedTurnDegrees": 180,
+      "sourceRectPx": [
+        1090,
+        72,
+        1680,
+        663
+      ],
+      "translationPx": [
+        -4,
+        0
+      ],
+      "contactProxyPx": [
+        1374,
+        663
+      ],
+      "contactMethod": "alpha>=8 lower bound and horizontal silhouette center; anatomical root not certified",
+      "rectPx": [
+        1344,
+        64,
+        512,
+        540
+      ]
+    },
+    {
+      "id": "left",
+      "requestedTurnDegrees": 270,
+      "sourceRectPx": [
+        1680,
+        63,
+        2172,
+        654
+      ],
+      "translationPx": [
+        60,
+        0
+      ],
+      "contactProxyPx": [
+        1900,
+        654
+      ],
+      "contactMethod": "alpha>=8 lower bound and horizontal silhouette center; anatomical root not certified",
+      "rectPx": [
+        1984,
+        64,
+        512,
+        540
+      ]
+    }
+  ],
+  "sourceCanvasPerFramePx": [
+    560,
+    591
+  ],
+  "perViewScale": false,
+  "mirroredViews": false,
+  "measured3DCapture": false,
+  "anatomicalRootAlignmentCertified": false
+}

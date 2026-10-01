@@ -984,3 +984,14 @@ root matrices are retained. Zero still hides the companion. The
 covers 480 frame transitions, three rendered rows, existing plant/occupation
 contracts and exact release bytes. Anatomical registration and independent
 pod gathering remain unfinished.
+## Veilcap authored directions · 1 October 2026
+
+The [Veilcap view pack](../assets/environment/vesperra-veilcap-views-v1/README.md)
+adds four fixed-camera colony interpretations with changed cap overlap and stem
+occlusion. Common export scale, registered card dimensions and stable headings
+replace mirrored/card-yawed copies in Vesperra woodland and margins. Positive
+wood stock retains full; zero hides and reset restores. The
+[runtime evidence](qa-evidence/vaelora-veilcap-authored-views-2026-10-01/README.md)
+checks Veilcap and pod-vine stock behavior, existing vegetation contracts and
+release bytes. These are approximate drawings; worked/low fungus artwork and
+independent fungus harvesting remain absent.

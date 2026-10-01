@@ -713,3 +713,13 @@ loading, cache isolation and unchanged definitions. Its mixed mode enables all
 three role companions together. Settlement wear remains compatible in the
 inspected ordinary view; the contribution is subtle and does not finish the
 forest's overall appearance.
+## Vesperra Veilcap orientations · 1 October 2026
+
+The [Veilcap pack](../assets/environment/vesperra-veilcap-views-v1/README.md)
+extends the authored understory directions beyond pod-vines. Its tall/medium/
+young cap hierarchy, ivory stems and olive moss stay within the existing ecology;
+different overlaps and narrower side profiles create orientation variety.
+[Runtime evidence](qa-evidence/vaelora-veilcap-authored-views-2026-10-01/README.md)
+covers fixed-camera cards, stock/reset and margin/woodland composition. The
+colony is an approximate authored interpretation, not a measured turntable.
+Canopy directions and complete species/state matrices remain unfinished.

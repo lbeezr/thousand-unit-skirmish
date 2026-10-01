@@ -119,7 +119,8 @@ const fringeCanopyCapture=process.env.RTS_VEGETATION_FRINGE_CANOPY==='1';
 const fringeCapture=process.env.RTS_VEGETATION_FRINGE==='1'||fringeCanopyCapture;
 if(fringeCapture&&(!understoryCapture||region!=='vesperra'))throw new Error('Fringe capture requires living forest understory');
 const podvineViewsCapture=process.env.RTS_VEGETATION_PODVINE_VIEWS==='1';
-if(podvineViewsCapture&&region!=='vesperra')throw new Error('Pod-vine view capture requires Vesperra');
+const veilcapViewsCapture=process.env.RTS_VEGETATION_VEILCAP_VIEWS==='1';
+if((podvineViewsCapture||veilcapViewsCapture)&&region!=='vesperra')throw new Error('Pod-vine view capture requires Vesperra');
 const plantContractCapture=process.env.RTS_VEGETATION_PLANT_CONTRACT==='1';
 const occupationCapture=process.env.RTS_VEGETATION_OCCUPATION==='1';
 if(occupationCapture&&!plantContractCapture)throw new Error('Occupation capture requires plant contracts');
@@ -471,16 +472,19 @@ try {
   for(const [name,image] of Object.entries(result.images))await writeFile(out+'/garden-'+name+'.png',Buffer.from(image.split(',')[1],'base64'));delete result.images;
   await writeFile(out+'/garden-proof.json',JSON.stringify(result,null,2)+'\n');
  }
- if(podvineViewsCapture){
+ for(const viewKind of [...(podvineViewsCapture?['podvine']:[]),...(veilcapViewsCapture?['veilcap']:[])]){
+  const isVeilcap=viewKind==='veilcap';
+  const assetName=isVeilcap?'vesperra-veilcap':'vesperra-spiral-podvine';
+  const dimensions=isVeilcap?[.61614,.65]:[1.10431,.55];
   const result=await cdp.evaluate(`(async()=>{
    const THREE=await import('/vendor/three.module.js');
    const {createEnvironmentSpriteInstances,setEnvironmentSpriteInstance,createGroundSurfaces,setForestSpriteStock}=await import('/src/environment-art.mjs');
-   const {PODVINE_LOW_PACK:pack}=await import('/src/podvine-low-pack.mjs');
+   const {${isVeilcap?'VEILCAP_VIEW_PACK':'PODVINE_LOW_PACK'}:pack}=await import('/src/${isVeilcap?'veilcap-view':'podvine-low'}-pack.mjs');
    const {CAMERA_VIEW_DIRECTION}=await import('/src/camera-controls.mjs');
    const {setActiveTerrain}=await import('/src/terrain-height.mjs');setActiveTerrain({width:24,height:24});
    const points=Array.from({length:80},(_,cell)=>({cell,x:cell%10-5,z:Math.floor(cell/10)-4,scale:1,flip:true,yaw:.8}));
-   const mesh=createEnvironmentSpriteInstances('vesperra-spiral-podvine',...pack.worldSize,points);
-   const repeat=createEnvironmentSpriteInstances('vesperra-spiral-podvine',...pack.worldSize,points);
+   const mesh=createEnvironmentSpriteInstances(${JSON.stringify(assetName)},...pack.worldSize,points);
+   const repeat=createEnvironmentSpriteInstances(${JSON.stringify(assetName)},...pack.worldSize,points);
    const views=mesh.userData.authoredPlantViews;if(!views)throw new Error('Authored plant views missing');
    if(JSON.stringify(Array.from(views.viewIndices))!==JSON.stringify(Array.from(repeat.userData.authoredPlantViews.viewIndices)))throw new Error('View selection not repeatable');
    const counts=[0,0,0,0],zero=new THREE.Matrix4().makeScale(0,0,0),selected=[];
@@ -494,9 +498,9 @@ try {
       understory:{mesh,index:i,x:points[i].x,z:points[i].z,scale:1,flip:true,yaw:.8}};
     for(const stock of [5,3,2,1,0,6]){
       setForestSpriteStock(slot,stock);
-      const worked=stock>0&&stock<6;
-      if(views.worked[i]!== (stock>0&&stock<=2?2:Number(worked))||views.viewIndices[i]!==view)throw new Error('Pod-vine state/view mismatch');
-      const [sx,sy,sw,sh]=(stock>0&&stock<=2?pack.lowRectsPx:worked?pack.workedRectsPx:pack.rectsPx)[view];
+      const worked=!${isVeilcap}&&stock>0&&stock<6;
+      if(views.worked[i]!== (!${isVeilcap}&&stock>0&&stock<=2?2:Number(worked))||views.viewIndices[i]!==view)throw new Error('Pod-vine state/view mismatch');
+      const [sx,sy,sw,sh]=(!${isVeilcap}&&stock>0&&stock<=2?pack.lowRectsPx:worked?pack.workedRectsPx:pack.rectsPx)[view];
       const expectedState=[(sx+.5)/pw,1-(sy+sh-.5)/ph,(sw-1)/pw,(sh-1)/ph];
       if(Array.from(views.rects.array.slice(i*4,i*4+4)).some((v,j)=>Math.abs(v-expectedState[j])>1e-7))throw new Error('Wrong pod-vine state rectangle');
       mesh.getMatrixAt(i,matrix);
@@ -530,10 +534,10 @@ try {
    scene.traverse(o=>{o.geometry?.dispose();o.userData.ownedGroundTextures?.forEach(t=>t.dispose());o.material?.dispose()});renderer.dispose();renderer.forceContextLoss();
    return {views:4,counts,repeatable:true,mirrored:false,workedLifecycleChecks:80*6,checks,images,measured3DCapture:false,anatomicalRootAlignmentCertified:false};
   })()`);
-  for(const [name,image] of Object.entries(result.images))await writeFile(out+'/podvine-views-'+name+'.png',Buffer.from(image.split(',')[1],'base64'));delete result.images;
+  for(const [name,image] of Object.entries(result.images).filter(([name])=>!isVeilcap||!name.includes('worked')&&!name.includes('low')))await writeFile(out+'/'+viewKind+'-views-'+name+'.png',Buffer.from(image.split(',')[1],'base64'));delete result.images;
   await cdp.call('Page.navigate',{url:BASE.origin+'/?plantViews=legacy'});await sleep(3500);
-  result.legacy=await cdp.evaluate(`(async()=>{const {createEnvironmentSpriteInstances}=await import('/src/environment-art.mjs');const mesh=createEnvironmentSpriteInstances('vesperra-spiral-podvine',1.10431,.55,[{cell:0,x:0,z:0,scale:1}]);for(let i=0;i<50&&!mesh.material.map.image?.complete;i++)await new Promise(r=>setTimeout(r,100));const file=mesh.material.map.image?.src?.split('/').pop();if(mesh.userData.authoredPlantViews||file!=='vesperra-spiral-podvine.webp')throw new Error('Legacy plant view failed');mesh.geometry.dispose();mesh.material.dispose();return {file,authoredViews:false}})()`);
-  await writeFile(out+'/podvine-views-proof.json',JSON.stringify(result,null,2)+'\n');
+  result.legacy=await cdp.evaluate(`(async()=>{const {createEnvironmentSpriteInstances}=await import('/src/environment-art.mjs');const mesh=createEnvironmentSpriteInstances(${JSON.stringify(assetName)},...${JSON.stringify(dimensions)},[{cell:0,x:0,z:0,scale:1}]);for(let i=0;i<50&&!mesh.material.map.image?.complete;i++)await new Promise(r=>setTimeout(r,100));const file=mesh.material.map.image?.src?.split('/').pop();if(mesh.userData.authoredPlantViews||file!==${JSON.stringify(assetName+'.webp')})throw new Error('Legacy plant view failed');mesh.geometry.dispose();mesh.material.dispose();return {file,authoredViews:false}})()`);
+  await writeFile(out+'/'+viewKind+'-views-proof.json',JSON.stringify(result,null,2)+'\n');
   await cdp.call('Page.navigate',{url:BASE.origin});await sleep(3500);
  }
  if(plantContractCapture){
@@ -634,7 +638,7 @@ try {
  if(!proof[7].files.includes('siltmouths-silver-reed.webp')||proof.some((r,i)=>i!==7&&r.files.includes('siltmouths-silver-reed.webp')))throw new Error('Silver reed region binding mismatch');
  for(const file of ['sereward-succulent.webp','sereward-succulent-02.webp'])if(!proof[4].files.includes(file)||proof.some((r,i)=>i!==4&&r.files.includes(file)))throw new Error('Desert understory region binding mismatch: '+file);
  for(const file of ['underbough-rootward-fungus.webp','underbough-rootward-fungus-02.webp'])if(!proof[3].files.includes(file)||proof.some((r,i)=>i!==3&&r.files.includes(file)))throw new Error('Fungus region binding mismatch: '+file);
- for(const file of ['vesperra-shade-fern.webp','vesperra-shade-fern-02.webp','vesperra-veilcap.webp','lifecycle-atlas.webp'])if(!proof[8].files.includes(file)||proof.some((r,i)=>i!==8&&r.files.includes(file)))throw new Error('Understory region binding mismatch: '+file);
+ for(const file of ['vesperra-shade-fern.webp','vesperra-shade-fern-02.webp','views-atlas.webp','lifecycle-atlas.webp'])if(!proof[8].files.includes(file)||proof.some((r,i)=>i!==8&&r.files.includes(file)))throw new Error('Understory region binding mismatch: '+file);
  if(!proof[0].files.includes('bellweather-meadow-herbs.webp')||proof.some((r,i)=>i!==0&&r.files.includes('bellweather-meadow-herbs.webp')))throw new Error('Meadow herbs region binding mismatch');
  if(!proof[4].files.includes('sereward-succulent.webp')||proof.some((r,i)=>i!==4&&r.files.includes('sereward-succulent.webp')))throw new Error('Succulent region binding mismatch');
  if(!proof[5].files.includes('ellionar-sunbloom.webp')||proof.some((r,i)=>i!==5&&r.files.includes('ellionar-sunbloom.webp')))throw new Error('Sunbloom region binding mismatch');
