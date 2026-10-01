@@ -229,3 +229,12 @@ uses renderer-selected visible targets and verifies each family before the gathe
 order. Root Oak, Hornbeam and Plum reach worked, low, depleted and reset, with
 no console or asset errors. This extends the initial Root Oak observation to
 the current four-tree distribution.
+
+### Model-derived directional pilot — 1 October 2026 UTC
+
+[The existing-model perspective pack](../assets/environment/frontier-meshy-fixed-camera-v2/README.md)
+contains 24 verified views: oak, pine and berry bush, eight model headings each.
+Camera, lighting, scale and pivot remain fixed. This is a source pack; runtime
+selection and the painted regional families' directional coverage remain
+unfinished. Source hashes, provider provenance and exact RGBA atlas/frame
+validation are retained. No new paid provider generation was used.
