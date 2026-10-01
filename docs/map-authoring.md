@@ -354,3 +354,11 @@ the paint does not change terrain blockers, wood cells or routes.
 ### Gradual forest margins — 1 October 2026
 
 The [margin study](qa-evidence/underbough-layered-margin-2026-10-01/README.md) adds opt-in forestEdges=layered canopy variation along habitat margins while preserving wood ownership. Local renderer checks pass; full-game appearance review remains.
+
+### Combined foliage and margin review — 1 October 2026
+
+The [full-game comparison](qa-evidence/underbough-layered-full-game-2026-10-01/README.md)
+holds fuller hornbeam foliage constant while varying forestEdges. Eight paired
+captures have no reported errors. Inspected ordinary views show only a modest
+margin difference; continuous strips remain. Keep both options experimental
+and address grove composition and repeated silhouettes next.
