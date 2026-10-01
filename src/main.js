@@ -2259,7 +2259,7 @@ function buildMap(definition) {
   for (let z = -edgeZ + 8; z < edgeZ; z += 8) {
     gridPoints.push(new THREE.Vector3(-edgeX, 0.003, z), new THREE.Vector3(edgeX, 0.003, z));
   }
-  addMapObject(new THREE.LineSegments(
+  if (new URLSearchParams(location.search).get('terrainGrid') === '1') addMapObject(new THREE.LineSegments(
     new THREE.BufferGeometry().setFromPoints(drapeLineSegments(gridPoints)),
     new THREE.LineBasicMaterial({ color: 0xb4c98a, transparent: true, opacity: 0.14 }),
   ));

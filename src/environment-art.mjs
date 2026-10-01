@@ -660,8 +660,10 @@ export function addObstacleEnvironmentSprites(definition, halfX, halfZ, addObjec
           const scaleVariation = variation(index + 31);
           const point = {
             cell: index,
-            x: x + (variation(index) - 0.5) * 0.28,
-            z: z + (variation(index + 19) - 0.5) * 0.28,
+            // Keep each harvest root inside its authoritative cell, but break
+            // the visible plantation rows. Picking still uses this exact root.
+            x: x + (variation(index) - 0.5) * 0.78,
+            z: z + (variation(index + 19) - 0.5) * 0.78,
             flip: variation(index + 43) < 0.5,
             yaw: (variation(index + 53) - 0.5) * 0.3,
           };

@@ -56,6 +56,37 @@ ordinary PRs use checks proportionate to their changes under
 
 ## Known findings and historical evidence
 
+### Organic landscapes — 30 September 2026
+
+Motivation: the user's observation that water, roads and forests look like a
+collection of squares. Source baseline `d9bea57b`; local organic-landscapes changes
+on top of that baseline compile shaped terrain for twelve regional maps, connect
+Underbough/Vesperra woodland, widen in-cell tree-root variation, hide the default
+battlefield grid and bevel exposed water corners.
+
+The [paired captures](qa-evidence/organic-landscapes-2026-09-30/capture-report.json)
+cover Bellweather Millrace, Underbough Rootways and Sombral Mere Shore Gardens at
+1280 × 900 in headless Chrome on a local isolated room, plus ordinary-zoom
+after captures. Before/after means map
+layout: both copies use the changed renderer, and fog is disabled only in the
+disposable capture copies. The copies import and Save & Play through Map Studio.
+The capture reports no browser console errors. [Underbough after](qa-evidence/organic-landscapes-2026-09-30/underbough-rootways-after.png)
+shows connected tree lines and a shaped clearing/path; [Sombral Mere after](qa-evidence/organic-landscapes-2026-09-30/sombral-mere-shore-gardens-after.png)
+shows nonrectangular ponds with clipped shoreline corners. Remaining visible
+limits include reflected composition, sparse environmental dressing and shore
+steps. This is an improvement, not final visual acceptance.
+
+Focused checks verify deterministic shape compilation, nonoverlap, bounds,
+portable import budgets, reflected obstacle/paint footprints, clear Town Center
+pads and both-seat access to every resource and objective across twelve maps.
+The water scenario checks clipped corners remain inside the blocked footprint.
+Static Bellweather/Underbough audits retain equal objective-route distances.
+The full-suite Bellweather and Underbough authored-match scenarios pass captures,
+hold wins and rematches from both seats with the new blocker layouts.
+Forest-cell stock changes are recorded in [the stock report](qa-evidence/organic-landscapes-2026-09-30/forest-stock.json);
+standalone resource stocks are unchanged. Human match balance, player visual
+approval and GPU performance are not established by these checks.
+
 [Native browser match observation](qa-live-browser-2026-09-29.md) records the
 owner-operated solo control loop and two-seat Forked Vale checks on staging
 `28415d9`. It does not establish novice-player comprehension.

@@ -38,6 +38,15 @@ requires it.
 | Readability survives scale | Team, role, selection, health, commands, and ownership remain distinct in a crowded battle. |
 | Online play earns trust | Orders receive specific feedback; disconnects, recovery, results, and rematches are understandable. |
 
+Maps should read as beautiful landscapes with connected woodland, natural tree
+lines, shaped shores and routes, and settlements that respond to their setting.
+The simulation grid is an implementation tool; its rectangles should not dictate
+the visible composition. Preserve clear movement, gathering and building rules
+while authoring landscape forms and habitat detail. Cultivated geometry belongs
+where people have shaped the land, rather than becoming the default for forests
+and water. The [landscape authoring plan](map-authoring.md#organic-landscape-composition)
+records the implementation sequence and current limits.
+
 ## Stationary army orders
 
 Stop (`S`) abandons a unit's current task, attack, path planning and queued route.

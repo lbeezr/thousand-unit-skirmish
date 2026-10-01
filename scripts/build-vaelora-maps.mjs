@@ -1,4 +1,5 @@
 import { generateRollingGround, compressGroundLevels } from '../src/terrain-authoring.mjs';
+import { shapeRegionalLandscape } from '../src/landscape-authoring.mjs';
 // Deterministic authored layouts; rerun when changing the roster or source audio.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -78,7 +79,7 @@ for (const [index,[id,name,palette,terrainBase,layout,summary]] of roster.entrie
     }
     patches.push(rect(36,12,24,12,'meadow'),rect(36,48,24,12,'meadow'));
   }
-  const map = {id,name,summary,region:palette,width,height,terrainSeed:93000+index,fogOfWar:true,terrainBase,terrainPatches:patches,spawnPoints:[{team:0,x:-width/2+14.5,z:.5},{team:1,x:width/2-14.5,z:.5}],startingArmySize:24,startingResources:{food:150,wood:250},obstacles,resourceNodes,triggers,victoryMode:'all',victoryHoldSeconds:20,timedVictory:{afterSeconds:900,objectiveId:'post-2'},scenarioEvents:[{id:'relief',name:'Traveling supplies',type:'timed-supply',afterSeconds:120,team:'both',foodReward:100,woodReward:75}],audio:refs.find(r=>r.packId===`vaelora-${palette}`)};
+  const map = shapeRegionalLandscape({id,name,summary,region:palette,width,height,terrainSeed:93000+index,fogOfWar:true,terrainBase,terrainPatches:patches,spawnPoints:[{team:0,x:-width/2+14.5,z:.5},{team:1,x:width/2-14.5,z:.5}],startingArmySize:24,startingResources:{food:150,wood:250},obstacles,resourceNodes,triggers,victoryMode:'all',victoryHoldSeconds:20,timedVictory:{afterSeconds:900,objectiveId:'post-2'},scenarioEvents:[{id:'relief',name:'Traveling supplies',type:'timed-supply',afterSeconds:120,team:'both',foodReward:100,woodReward:75}],audio:refs.find(r=>r.packId===`vaelora-${palette}`)});
   if (id==='underbough-rootways') map.victoryHoldSeconds=30;
   if (['bellweather-millrace','underbough-rootways'].includes(id)) map.elevationPatches=compressGroundLevels(generateRollingGround(map,map.terrainSeed),width,height);
   if (['bellweather-millrace','underbough-rootways'].includes(id)) map.regions=[{id:'north-route',name:posts[0],zone:rect(center-18,12,36,12)},{id:'south-route',name:posts[1],zone:rect(center-18,48,36,12)}];
