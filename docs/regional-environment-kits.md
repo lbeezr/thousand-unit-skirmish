@@ -979,3 +979,11 @@ checks all 51 candidate slots at stock 6/3/1/0/6, loaded atlas textures, finite
 transforms, unchanged map data and pixel-identical reset. The inspected accents
 are quieter. Default remains original pending paired full-game review. Repeated
 anatomy and rotated-view production remain unfinished.
+
+### Full-game muted copperleaf review — 1 October 2026
+
+The [eight paired captures](qa-evidence/underbough-muted-copperleaf-full-game-2026-10-01/README.md)
+complete without reported errors. Inspected ordinary Rootways views show quieter
+warm accents blending better with the surrounding woodland. This supports default
+adoption after checking the no-option binding. Source forest strips and repeated
+silhouettes still need work; no final beauty or rotated-view acceptance is claimed.
