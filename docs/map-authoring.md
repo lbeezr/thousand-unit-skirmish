@@ -388,3 +388,11 @@ retains ten-cell comparison and `scattered` retains the earlier selection study.
 The [no-option proof](qa-evidence/underbough-quiet-groves-default-2026-10-01/README.md)
 checks 1,026 wood owners and exact root-oak harvest/reset rendering. Actual source
 forest boundaries remain unchanged; natural treelines and rotated views remain open.
+
+### Rootways internal glade candidate — 1 October 2026
+
+The [layout candidate](qa-evidence/underbough-glade-layout-2026-10-01/README.md)
+adds four mirrored small glades and relocates 56 wood cells into outer shoulders,
+preserving 1,026 cells. Geometric route/resource checks pass with Town Centers
+present. It is a saved candidate, not the shipped map: full-game canopy overlap
+and ground-mask review remain before adoption.
