@@ -62,3 +62,6 @@ COPY --chown=node:node assets/units/boughward-siege-engine-sprite-v1/sprite-atla
 # Fixed-camera model headings; source GLBs and review PNGs remain outside the runtime image.
 COPY --chown=node:node assets/environment/frontier-meshy-fixed-camera-v2/oak/runtime/ ./assets/environment/frontier-meshy-fixed-camera-v2/oak/runtime/
 COPY --chown=node:node assets/environment/frontier-meshy-fixed-camera-v2/pine/runtime/ ./assets/environment/frontier-meshy-fixed-camera-v2/pine/runtime/
+
+COPY --chown=node:node assets/environment/frontier-meshy-fixed-camera-v2/oak/oak-atlas.webp ./assets/environment/frontier-meshy-fixed-camera-v2/oak/
+COPY --chown=node:node assets/environment/frontier-meshy-fixed-camera-v2/berries/berries-atlas.webp ./assets/environment/frontier-meshy-fixed-camera-v2/berries/
