@@ -33,6 +33,14 @@ try {
   }
   await fixture.stop(); await fixture.start();
   const recovered = [await fixture.connect(0, tokens[0]), await fixture.connect(1, tokens[1])];
+  for (const [team, client] of recovered.entries()) {
+    assert.equal(client.welcome.matchId, delivered.matchId, 'welcome belongs to the restored match');
+    assert.equal(client.welcome.recoveredFromCheckpoint, true);
+    assert.notEqual(client.welcome.serverInstanceId, clients[team].welcome.serverInstanceId);
+    assert.ok(client.latest.tick >= delivered.state.tickNumber, 'welcome resumes the saved clock');
+    assert.ok(client.latest.food[team] >= delivered.state.teamFood[team]);
+    assert.ok(client.latest.wood[team] >= delivered.state.teamWood[team]);
+  }
   const restored = await fixture.checkpoint(s => s.state.tickNumber >= delivered.state.tickNumber);
   for (const node of targets) assert.ok(restored.state.resourceNodes.find(n => n.id === node.id).stock
     <= delivered.state.resourceNodes.find(n => n.id === node.id).stock, 'restart never replenishes gathered stock');
