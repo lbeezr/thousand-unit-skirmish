@@ -4,7 +4,42 @@ import { existsSync, readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import * as THREE from 'three';
 import { attachBuildingSprite, buildingSpriteUrl } from '../src/building-sprites.mjs';
-import { barracksModelVisualState } from '../src/building-visual-state.mjs';
+import { barracksModelVisualState, buildingFinishedDetailsVisible } from '../src/building-visual-state.mjs';
+
+test('production building constructors keep outlines local to their grounded group', () => {
+  const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
+  const constructors = source.slice(source.indexOf('function createArcheryRangeVisual('),
+    source.indexOf('\nfunction reconcileBuildings('));
+  const scene = new THREE.Scene();
+  const context = vm.createContext({ THREE, scene, dummy: new THREE.Object3D(),
+    TEAM_HEX: [0x5aa7d7, 0xe67a5e], groundHeight: () => 2.4,
+    barracksModelVisualState, buildingFinishedDetailsVisible,
+    attachBuildingSprite: () => ({ update() {} }),
+    addBuildingStandard: () => new THREE.Group(),
+    createBuildingProductionLamp: () => new THREE.Group(),
+    createBuildingRallyMarker: () => new THREE.Group(),
+    createBuildingHealthIndicator: () => ({ group: new THREE.Group() }),
+    createBuildingCombatFeedback: () => ({ targetRing: new THREE.Group(), impactFlash: new THREE.Group() }),
+    updateBuildingProductionCue() {}, updateBuildingHealthIndicator() {},
+  });
+  vm.runInContext(constructors, context);
+  for (const team of [0, 1]) for (const [type, create] of [
+    ['archery-range', context.createArcheryRangeVisual], ['barracks', context.createBarracksVisual],
+  ]) {
+    const visual = create({ type, team, x: -14.5, z: 8.5, progress: 1, complete: true });
+    assert.equal(visual.group.position.y, 2.4);
+    assert.equal(visual.outline.parent, visual.group);
+    const positions = visual.outline.geometry.getAttribute('position');
+    assert.equal(positions.count, 8);
+    for (let index = 0; index < positions.count; index++) {
+      assert.ok(Math.abs(positions.getY(index) - .025) < 1e-6, 'local outline inherits terrain height once');
+    }
+    visual.group.traverse(object => {
+      object.geometry?.dispose();
+      object.material?.dispose();
+    });
+  }
+});
 
 test('available team and lifecycle frames resolve to real files', () => {
   for (const type of ['barracks', 'archery-range']) for (const team of [0, 1]) {

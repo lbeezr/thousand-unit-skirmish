@@ -5,15 +5,17 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import { formatResourceStock, formatResourceRequirement } from '../src/resource-format.mjs';
+import { ownedPopulationReadout } from '../src/population-readout.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const declaration = (name, next) => source.slice(source.indexOf(`function ${name}(`), source.indexOf(`\nfunction ${next}(`));
 function fixture(team) {
-  const element = () => ({ textContent: '', disabled: false, dataset: {},
-    classList: { toggle() {} }, setAttribute() {}, querySelector: () => ({ textContent: '' }) });
+  const element = () => ({ textContent: '', disabled: false, dataset: {}, attributes: {},
+    classList: { toggle() {} }, setAttribute(name, value) { this.attributes[name] = value; },
+    getAttribute(name) { return this.attributes[name] ?? null; }, querySelector: () => ({ textContent: '' }) });
   const ui = new Proxy({}, { get(target, key) { return target[key] ||= element(); } });
   const context = vm.createContext({ ui, localTeam: team, matchWinner: -1,
-    formatResourceStock, formatResourceRequirement,
+    formatResourceStock, formatResourceRequirement, ownedPopulationReadout,
     UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, researchAction, researchOptions,
     latestFood: [0, 0], latestWood: [0, 0], latestWorkerProduction: [null, null], latestPopulation: [null, null],
     latestTeamResearch: [{}, {}], latestRosterSize: 4,
@@ -87,4 +89,32 @@ for (const team of [0, 1]) test(`actual economy and research controls keep exact
   assert.equal(f.ui.woodStock.textContent, '174');
   f.stocks(150, 175);
   assert.equal(f.ui.buildBarracks.disabled, false);
+});
+
+for (const team of [0, 1]) test(`actual economy UI keeps both population readouts synchronized for seat ${team}`, () => {
+  const { context, ui } = fixture(team);
+  for (const record of [
+    { used: 12, reserved: 0, capacity: 15, available: 3 },
+    { used: 12, reserved: 3, capacity: 15, available: 0 },
+    { used: 12, reserved: 3, capacity: 23, available: 8 },
+    { used: 14, reserved: 1, capacity: 23, available: 8 },
+    { used: 14, reserved: 0, capacity: 15, available: 1 },
+    null,
+  ]) {
+    const population = [{ used: 99, reserved: 9, capacity: 100, available: 0 },
+      { used: 99, reserved: 9, capacity: 100, available: 0 }];
+    population[team] = record;
+    context.updateEconomyUI({ population });
+    const expected = ownedPopulationReadout(population, team);
+    assert.equal(ui.populationStock.textContent, expected.compact);
+    assert.equal(ui.populationStatus.textContent, expected.detail);
+    assert.equal(ui.populationReadout.getAttribute('aria-label'), expected.description);
+    assert.equal(ui.populationReadout.title, expected.description);
+  }
+  context.localTeam = null;
+  context.updateEconomyUI({ population: [{ used: 12, reserved: 0, capacity: 15, available: 3 },
+    { used: 22, reserved: 0, capacity: 23, available: 1 }] });
+  assert.equal(ui.populationStock.textContent, '—');
+  assert.equal(ui.populationStatus.textContent, 'POPULATION · JOIN A TEAM');
+  assert.equal(ui.populationReadout.getAttribute('aria-label'), 'Population: join a team.');
 });
