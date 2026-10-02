@@ -1044,7 +1044,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; }
 .topbar #players-online, .topbar .topbar-divider { display: none; }
 .map-label { top: 62px; }
 .compass { display: none; }
-.hud-quick-access { position: absolute; z-index: 6; left: 16px; bottom: 14px; display: flex; gap: 4px; padding: 3px; border-radius: 5px; background: rgba(11,21,14,.94); }
+.hud-quick-access { position: absolute; z-index: 6; left: 16px; bottom: 14px; display: flex; flex-wrap: wrap; gap: 4px; padding: 3px; border-radius: 5px; background: rgba(11,21,14,.94); }
 .hud-quick-access button, .minimap-reopen, .minimap-heading button { min-height: 44px; padding: 0 12px; border: 1px solid rgba(225,237,209,.25); border-radius: 4px; background: #17271c; color: #e0e9d8; font: 600 14px 'Manrope', sans-serif; cursor: pointer; }
 .hud-quick-access button:disabled { color: #9ba993; cursor: default; }
 .hud-quick-access button:focus-visible, .minimap-heading button:focus-visible, .minimap-reopen:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
@@ -1100,7 +1100,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; }
   .control-dock { bottom: 68px; height: calc(100dvh - 130px); z-index: 8; }
   .camera-toolbar { top: 106px; }
 }
-.workspace:has(.contextual-command-bar) .hud-quick-access { display: none; }
+.workspace .contextual-command-bar[hidden], .workspace .hud-quick-access[hidden] { display: none; }
 .workspace:has(.contextual-command-bar) .control-dock { bottom: calc(var(--context-bar-height) + 22px); }
 .workspace:has(.contextual-command-bar) .field-hint,
 .workspace:has(.contextual-command-bar) .field-order-feedback { bottom: calc(var(--context-bar-height) + 26px); }

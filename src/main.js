@@ -3556,6 +3556,7 @@ function updateStationaryOrderControls(selectedBuilding) {
 }
 
 function updateSelectionUI() {
+  const priorCommandFocus = document.activeElement;
   const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
     && building.team === localTeam) || null;
   updateStationaryOrderControls(selectedBuilding);
@@ -3627,16 +3628,20 @@ function updateSelectionUI() {
   const persistentSummary = document.querySelector('#selected-persistent-orders');
   if (persistentSummary) { persistentSummary.hidden = !persistentCounts.size;
     persistentSummary.textContent = [...persistentCounts].map(([label, count]) => `${count} ${label}`).join(' · '); }
-  updateContextualCommands();
+  updateContextualCommands(priorCommandFocus);
 }
 
-function updateContextualCommands() {
-  updateBuildingLifecycleActions();
+function updateContextualCommands(priorFocus = document.activeElement) {
   const bar = document.querySelector('.contextual-command-bar');
+  const quickAccess = document.querySelector('.hud-quick-access');
+  const commandHadFocus = bar?.contains(priorFocus) || quickAccess?.contains(priorFocus);
+  updateBuildingLifecycleActions();
   if (!bar) return;
   const building = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
   const context = selectionContext(units, selected, localTeam, building);
   bar.dataset.context = context.kind;
+  if (bar.hidden !== (context.kind === 'none')) bar.hidden = context.kind === 'none';
+  if (quickAccess.hidden !== !bar.hidden) quickAccess.hidden = !bar.hidden;
   document.querySelector('#assign-selected-group').disabled = !context.total;
   bar.querySelector('[data-context-summary]').textContent = building
     ? `${buildingLabel(building.type)} · ${ui.selectedBuildingHealth.textContent} · ${ui.selectedBuildingProduction.textContent}`
@@ -3680,6 +3685,8 @@ function updateContextualCommands() {
     button.textContent = `${controlGroupKeyLabel(index)} · ${controlGroups[index].size}`;
     button.setAttribute('aria-label', `Recall group ${controlGroupKeyLabel(index)}, ${controlGroups[index].size} units`);
   }
+  if (commandHadFocus && (!priorFocus.isConnected || priorFocus.disabled || priorFocus.closest('[hidden]')))
+    commandFocusTarget()?.focus();
 }
 
 function updateControlGroupUI() {
@@ -8023,16 +8030,23 @@ for (const element of [hudHeader, hudObjective, hudCamera, appShell]) hudRowObse
 syncHudRows();
 const contextualBar = document.querySelector('.contextual-command-bar');
 if (contextualBar) {
-  const syncContextHeight = () => document.querySelector('.workspace').style.setProperty('--context-bar-height', `${contextualBar.getBoundingClientRect().height}px`);
-  new ResizeObserver(syncContextHeight).observe(contextualBar);
+  const quickAccess = document.querySelector('.hud-quick-access');
+  const syncContextHeight = () => document.querySelector('.workspace').style.setProperty('--context-bar-height', `${Math.max(contextualBar.getBoundingClientRect().height, quickAccess.getBoundingClientRect().height)}px`);
+  const commandRowObserver = new ResizeObserver(syncContextHeight);
+  for (const row of [contextualBar, quickAccess]) commandRowObserver.observe(row);
   syncContextHeight();
 }
 let dockOpener = dockToggle;
+function commandFocusTarget(preferred = null) {
+  return [preferred, ...document.querySelectorAll('.hud-quick-access button, .contextual-command-bar button')]
+    .find(element => element?.isConnected && !element.disabled && !element.closest('[hidden]')
+      && element.getClientRects().length) || null;
+}
 function closeDockDetails({ restoreFocus = false } = {}) {
   commandDock.hidden = true;
   dockToggle.setAttribute('aria-expanded', 'false');
   clearHeldCameraKeys();
-  if (restoreFocus) (dockOpener?.isConnected && dockOpener.getClientRects().length ? dockOpener : document.querySelector('.contextual-command-bar button') || dockToggle).focus();
+  if (restoreFocus) commandFocusTarget(dockOpener)?.focus();
 }
 dockToggle.addEventListener('click', () => {
   if (commandDock.hidden) selectDockTab(commandDock.dataset.activePanel || 'selection', true);
@@ -8174,7 +8188,7 @@ function toggleHudPanel(panel, trigger) {
 
 function selectDockTab(name, focus = false) {
   if (name !== 'command' && tapOrderArmed) setTapOrderArmed(false, false);
-  if (commandDock.hidden) dockOpener = document.activeElement instanceof HTMLElement && document.activeElement.matches('button, [tabindex]') && !commandDock.contains(document.activeElement) ? document.activeElement : document.querySelector('.contextual-command-bar button') || dockToggle;
+  if (commandDock.hidden) dockOpener = commandFocusTarget(document.activeElement instanceof HTMLElement && document.activeElement.matches('button, [tabindex]') && !commandDock.contains(document.activeElement) ? document.activeElement : null);
   closeScenarioBrief();
   commandDock.hidden = false;
   dockToggle.setAttribute('aria-expanded', 'true');
