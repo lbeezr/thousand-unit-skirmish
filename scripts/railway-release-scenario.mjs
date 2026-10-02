@@ -1,3 +1,4 @@
+import { stopChild } from './temporary-resources.mjs';
 import { checkClientImports } from './check-client-imports.mjs';
 import assert from 'node:assert/strict';
 import { createHash, randomBytes } from 'node:crypto';
@@ -10,31 +11,35 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const sourceRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-// Exercise Docker COPY output so a source-only asset cannot hide a broken release.
-const packed = spawnSync(process.execPath, ['scripts/pack-railway-release.mjs', '--allow-dirty'], {
-  cwd: sourceRoot, encoding: 'utf8',
-});
-assert.equal(packed.status, 0, packed.stderr);
-const root = JSON.parse(packed.stdout).directory;
-await symlink(path.join(sourceRoot, 'node_modules'), path.join(root, 'node_modules'), 'dir');
-const entry = path.join(root, 'room-supervisor.mjs');
-const dockerfile = await readFile(path.join(root, 'Dockerfile'), 'utf8');
-assert.match(dockerfile, /^\s*COPY\b[^\n]*\borigin-policy\.mjs\b/m,
-  'the shared origin policy must be included in the Railway image');
+let root, volume, child, entry, environment;
 const secret = 'test-release-password-please-change';
-const volume = await mkdtemp(path.join(os.tmpdir(), 'rts-railway-release-'));
-const environment = {
-  ...process.env,
-  RAILWAY_ENVIRONMENT: 'production',
-  RAILWAY_PUBLIC_DOMAIN: 'game-production.up.railway.app',
-  RAILWAY_VOLUME_MOUNT_PATH: volume,
-  RTS_ACCESS_USER: 'players',
-  RTS_ACCESS_PASSWORD: secret,
-  RTS_PUBLIC_ORIGINS: '',
-  RTS_HOST: '127.0.0.1',
-};
-delete environment.RTS_ROOM_DATA_DIRECTORY;
-delete environment.RTS_CUSTOM_MAP_DIRECTORY;
+
+async function setupRelease() {
+  // Exercise Docker COPY output so a source-only asset cannot hide a broken release.
+  const packed = spawnSync(process.execPath, ['scripts/pack-railway-release.mjs', '--allow-dirty'], {
+    cwd: sourceRoot, encoding: 'utf8',
+  });
+  assert.equal(packed.status, 0, packed.stderr);
+  root = JSON.parse(packed.stdout).directory;
+  await symlink(path.join(sourceRoot, 'node_modules'), path.join(root, 'node_modules'), 'dir');
+  entry = path.join(root, 'room-supervisor.mjs');
+  const dockerfile = await readFile(path.join(root, 'Dockerfile'), 'utf8');
+  assert.match(dockerfile, /^\s*COPY\b[^\n]*\borigin-policy\.mjs\b/m,
+    'the shared origin policy must be included in the Railway image');
+  volume = await mkdtemp(path.join(os.tmpdir(), 'rts-railway-release-'));
+  environment = {
+    ...process.env,
+    RAILWAY_ENVIRONMENT: 'production',
+    RAILWAY_PUBLIC_DOMAIN: 'game-production.up.railway.app',
+    RAILWAY_VOLUME_MOUNT_PATH: volume,
+    RTS_ACCESS_USER: 'players',
+    RTS_ACCESS_PASSWORD: secret,
+    RTS_PUBLIC_ORIGINS: '',
+    RTS_HOST: '127.0.0.1',
+  };
+  delete environment.RTS_ROOM_DATA_DIRECTORY;
+  delete environment.RTS_CUSTOM_MAP_DIRECTORY;
+}
 
 function rejectsMissingConfiguration(override, expected) {
   const result = spawnSync(process.execPath, [entry], {
@@ -73,8 +78,8 @@ function upgrade(port, authorization) {
   });
 }
 
-let child;
 try {
+  await setupRelease();
   rejectsMissingConfiguration({ RAILWAY_VOLUME_MOUNT_PATH: '' }, /Attach a Railway volume/);
   rejectsMissingConfiguration({ RTS_ACCESS_PASSWORD: '' }, /RTS_ACCESS_PASSWORD/);
   rejectsMissingConfiguration({ RAILWAY_PUBLIC_DOMAIN: '' }, /RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS/);
@@ -295,14 +300,9 @@ try {
   assert.ok((await stat(path.join(volume, 'custom-maps'))).isDirectory());
   console.log('Railway release scenario passed: guarded startup, Basic Auth HTTP/WebSocket, local Three.js, packaged environment and unit sprites, verified atlas hashes, environment states, and volume paths.');
 } finally {
-  if (child && child.exitCode === null) {
-    child.kill('SIGTERM');
-    await Promise.race([
-      new Promise((resolve) => child.once('exit', resolve)),
-      new Promise((resolve) => setTimeout(resolve, 8000)),
-    ]);
-    if (child.exitCode === null) child.kill('SIGKILL');
-  }
-  await rm(volume, { recursive: true, force: true });
-  await rm(root, { recursive: true, force: true });
+  await stopChild(child);
+  const cleanup = await Promise.allSettled([volume, root].filter(Boolean)
+    .map(directory => rm(directory, { recursive: true, force: true })));
+  const errors = cleanup.filter(result => result.status === 'rejected').map(result => result.reason);
+  if (errors.length) throw new AggregateError(errors, 'Release scenario temporary cleanup failed');
 }

@@ -76,6 +76,7 @@ run(['--test', 'scripts/ci-sharding.test.mjs'], 'CI shard coverage');
 run(['--test', 'scripts/pve-reconnaissance.test.mjs'], 'Bounded Scout reconnaissance');
 run(['--test', 'scripts/browser-performance-instrumentation.test.mjs'], 'Browser timing attribution');
 run(['--test', 'scripts/browser-preflight.test.mjs'], 'Browser preflight diagnostics');
+run(['--test', 'scripts/temporary-resources.test.mjs'], 'Owned temporary resource cleanup');
 run(['--test', 'scripts/capture-checkpoint.test.mjs'], 'Capture checkpoint artifact contract');
 run(['--test', 'scripts/performance-order-window.test.mjs'], 'Performance planning wave boundaries');
 run(['--test', 'scripts/persistent-command.test.mjs'], 'Persistent tactical intent and bounded planning');
