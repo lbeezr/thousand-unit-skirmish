@@ -177,7 +177,7 @@ const scenarios = [
   ['scripts/opening-production-scenario.mjs', 'Mirrored construction and production', '--expect-builder-parity'],
   ['scripts/forked-vale-scenario.mjs', 'Forked Vale economy-to-victory (Team 0)', '0'],
   ['scripts/forked-vale-scenario.mjs', 'Forked Vale economy-to-victory (Team 1)', '1'],
-  ['scripts/vaelora-map-layout-scenario.mjs', 'Vaelora roster with Town Center collisions'],
+  ['scripts/vaelora-map-layout-scenario.mjs', 'Vaelora roster with Town Center collisions', '--check-only'],
   ['scripts/forked-vale-layout.mjs', 'Forked Vale layout'],
   ['scripts/fortified-crossing-layout.mjs', 'Fortified Crossing layout'],
   ['scripts/fortified-crossing-combined.mjs', 'Fortified Crossing combined economy, orders, events, result and recovery', '0'],

@@ -212,6 +212,11 @@ select/edit/remove the materialized nodes in Map Studio; regeneration replaces
 those edits. The editor still places individual food/wood sites; a cluster brush
 and new currencies are separate future work.
 
+CI runs `node scripts/vaelora-map-layout-scenario.mjs --check-only` to validate
+all regional layouts without rewriting the SVG or dirtying the clean release
+checkout. Run it without the flag to explicitly regenerate the dated diagram;
+review that generated artifact separately from source changes.
+
 Forest obstacles also have six wood per cell in the current simulation. They
 use a separate cell address (`row * width + column`) and mutable stock table,
 rather than consuming ordinary resource-node slots. Cutting a cell clears its
