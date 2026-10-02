@@ -8,6 +8,7 @@ import { researchOptions, researchAction } from './research-actions.mjs';
 import { unitPresentation, buildingPresentation } from './gameplay-presentation.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, GAMEPLAY_RULESET_REVISION } from './gameplay-definitions.mjs';
 import { formatResourceStock, formatResourceRequirement } from './resource-format.mjs';
+import { ownedPopulationReadout } from './population-readout.mjs';
 import { SHIPPED_AUDIO_REFERENCES } from './audio-shipped-catalog.mjs';
 import { validateMapAudioReference } from './audio-event-profile.mjs';
 import { battlefieldCursor } from './battlefield-cursor.mjs';
@@ -201,8 +202,8 @@ const ui = {
   selectedBuildingHealth: document.querySelector('#selected-building-health'),
   selectedBuildingHealthBar: document.querySelector('#selected-building-health-bar'),
   selectedBuildingProduction: document.querySelector('#selected-building-production'),
-  aliveBlue: document.querySelector('#alive-blue'),
-  aliveRed: document.querySelector('#alive-red'),
+  populationReadout: document.querySelector('#population-readout'),
+  populationStock: document.querySelector('#population-stock'),
   foodStock: document.querySelector('#food-stock'),
   woodStock: document.querySelector('#wood-stock'),
   foodStatus: document.querySelector('#economy-status'),
@@ -1357,7 +1358,7 @@ function createArcheryRangeVisual(building) {
     new THREE.Vector3(-1.5, 0.025, 1.5), new THREE.Vector3(-1.5, 0.025, -1.5),
   ];
   const outline = new THREE.LineSegments(
-    new THREE.BufferGeometry().setFromPoints(drapeLineSegments(outlinePoints)),
+    new THREE.BufferGeometry().setFromPoints(outlinePoints),
     new THREE.LineBasicMaterial({ color: teamColor, transparent: true, opacity: 0.9 }),
   );
   group.add(outline);
@@ -1491,7 +1492,7 @@ function createBarracksVisual(building) {
     new THREE.Vector3(-1.5, 0.025, 1.5), new THREE.Vector3(-1.5, 0.025, -1.5),
   ];
   const outline = new THREE.LineSegments(
-    new THREE.BufferGeometry().setFromPoints(drapeLineSegments(outlinePoints)),
+    new THREE.BufferGeometry().setFromPoints(outlinePoints),
     new THREE.LineBasicMaterial({ color: teamColor, transparent: true, opacity: 0.9 }),
   );
   group.add(outline);
@@ -4411,10 +4412,6 @@ function applyState(state, initial = false) {
     attackFocusMesh.instanceMatrix.needsUpdate = true;
     attackFocusDirty = false;
   }
-  if (Array.isArray(state.alive)) {
-    ui.aliveBlue.textContent = Number.isFinite(state.alive[0]) ? state.alive[0].toLocaleString() : '—';
-    ui.aliveRed.textContent = Number.isFinite(state.alive[1]) ? state.alive[1].toLocaleString() : '—';
-  }
   updateFogFromState(state);
   applyForestState(state);
   if (Array.isArray(state.objectives)) updateObjectives(state.objectives);
@@ -4797,9 +4794,16 @@ function updateEconomyUI(state = {}, initial = false) {
     if (!note) { note = document.createElement('small'); note.className = 'action-disabled-reason'; button.append(note); }
     note.textContent = reason;
   }
-  if (ui.populationStatus) {
-    const population = latestPopulation[localTeam];
-    ui.populationStatus.textContent = population ? `POPULATION · ${population.used} USED + ${population.reserved} QUEUED / ${population.capacity}${population.available === 0 ? ' · BUILD A HOUSE' : ''}` : 'POPULATION · JOIN A TEAM';
+  const populationReadout = ownedPopulationReadout(latestPopulation, localTeam);
+  if (ui.populationStock && ui.populationStock.textContent !== populationReadout.compact) {
+    ui.populationStock.textContent = populationReadout.compact;
+  }
+  if (ui.populationReadout && ui.populationReadout.getAttribute('aria-label') !== populationReadout.description) {
+    ui.populationReadout.setAttribute('aria-label', populationReadout.description);
+    ui.populationReadout.title = populationReadout.description;
+  }
+  if (ui.populationStatus && ui.populationStatus.textContent !== populationReadout.detail) {
+    ui.populationStatus.textContent = populationReadout.detail;
   }
   if (ui.buildHouse) {
     ui.buildHouse.disabled = localTeam === null || matchWinner >= 0 || wood < BUILDING_DEFINITIONS.house.cost.wood || ownedWorkers.length === 0 || buildPlacementPending;

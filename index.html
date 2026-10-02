@@ -48,13 +48,13 @@
           </div>
         </div>
         <div class="topbar-center"><span id="connection-dot" class="live-dot waiting"></span><span id="network-status">CONNECTING</span><span class="topbar-divider">/</span></div>
-        <div class="hud-readouts" aria-label="Team resources and field strength">
+        <div class="hud-readouts" aria-label="Team resources and population">
           <div class="hud-team">TEAM <b id="player-team">CONNECTING</b></div>
           <div class="resource-stocks">
             <div class="resource-stock food-stock"><img class="resource-icon" src="/assets/ui/icons/food.svg" alt="" aria-hidden="true"><strong id="food-stock" aria-live="polite">—</strong><span>FOOD</span></div>
             <div class="resource-stock wood-stock"><img class="resource-icon" src="/assets/ui/icons/wood.svg" alt="" aria-hidden="true"><strong id="wood-stock" aria-live="polite">—</strong><span>WOOD</span></div>
           </div>
-          <div class="field-strength"><span>FIELD</span><div><i class="team-dot blue-dot"></i><b id="alive-blue">500</b><span>:</span><b id="alive-red">500</b><i class="team-dot red-dot"></i></div></div>
+          <div id="population-readout" class="population-readout" role="status" aria-atomic="true" aria-label="Population: connecting." title="Population: connecting."><span aria-hidden="true">POP</span><strong id="population-stock" aria-hidden="true">—</strong></div>
         </div>
         <div class="room-actions" aria-label="Game actions">
           <button id="room-create" class="room-action room-action-primary" type="button" hidden>NEW ROOM</button>

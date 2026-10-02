@@ -1162,3 +1162,9 @@ html, body { width: 100%; height: 100%; overflow: hidden; }
   .topbar .hud-readouts { flex-basis: 100%; justify-content: flex-start; }
   .topbar .room-actions { margin-left: 0; max-width: 100%; flex-wrap: wrap; }
 }
+
+/* Owned capacity uses the former FIELD slot without inheriting its narrow-screen hide rule. */
+.topbar .population-readout { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 83px; padding-left: 13px; border-left: 1px solid rgba(228,238,211,.13); color: #718070; font: 12px 'DM Mono', monospace; letter-spacing: .08em; }
+.topbar .population-readout strong { color: #d1d9c7; font: inherit; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media (max-width: 920px) { .topbar .population-readout { min-width: 73px; padding-left: 9px; } }
+@media (max-width: 620px) { .topbar .population-readout { min-width: 0; padding-left: 6px; } }

@@ -47,6 +47,7 @@ the build they name.
 | Author and validate scenario JSON | [Map authoring](map-authoring.md) |
 | Choose a map | [Catalog](maps.md), [Forked Vale](forked-vale-scenario.md), [Three Crowns](three-crowns-layout.md) |
 | Change the compact objective HUD | [Objective behavior and validation](battlefield-objectives-validation.md) |
+| Change owned population feedback | [Population header behavior and validation](population-header-validation.md) |
 | Change cues or captions | [Audio design](audio-design.md) |
 | Design each command, notice, alert and result sound | [UI sound direction](ui-audio-direction.md) |
 | Produce reusable effects and music | [Audio kit plan](audio-kit-plan.md) |
