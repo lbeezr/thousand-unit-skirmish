@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-02",
+  "reviewer": "author full-resolution source-pixel review",
+  "result": "Preserve descriptive correction as historical iteration; supersede with approximate angle labels in v3.",
+  "observations": [
+    "All eight descriptive view labels match the apparent front, side and rear studies.",
+    "Misleading yaw/axis labels, pivot crosses and upper measurement bars removed.",
+    "Sheep appearance and planted poses visually retained; not a claim of byte-identical animal pixels."
+  ],
+  "limitations": [
+    "No measured per-view geometry, fixed camera/elevation, scale, footprint, groundline or pivot registration.",
+    "Opaque background with baked labels/contact shadows; not a transparent sprite atlas.",
+    "No extracted sprites, animation, carcass/resource state, engine loader or runtime acceptance."
+  ],
+  "nextProof": "Produce or render a calibrated eight-yaw standing reference at the verified runtime camera; extract per-angle source images with stable scale/root and validate against the asset acceptance standard."
+}

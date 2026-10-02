@@ -28,6 +28,59 @@ evidence, outside the 21-image generated concept manifest.
 
 ## Anatomy and appearance experiments
 
+### Bellweather Sheep — 2 October source candidate
+
+![New Sheep reference study v1](../art-direction/bellweather-sheep-reference-v1/bellweather-sheep-reference-v1.png)
+
+The [first Sheep reference sheet](../art-direction/bellweather-sheep-reference-v1/README.md)
+is a new built-in ImageGen attempt based on the selected Bellweather key.
+Its [exact prompt](../art-direction/bellweather-sheep-reference-v1/PROMPT.json),
+[manifest](../art-direction/bellweather-sheep-reference-v1/manifest.json) and
+[review](../art-direction/bellweather-sheep-reference-v1/review.json) preserve
+the output and its defects. Anatomy is a discussion candidate; world-yaw
+registration is rejected pending correction. Baked guide marks and dimensions
+are not runtime camera/pivot proof. Retain this attempt when another revision
+is produced.
+
+![Sheep descriptive annotation correction v2](../art-direction/bellweather-sheep-reference-v2/bellweather-sheep-reference-v2.png)
+
+The [v2 intermediate edit](../art-direction/bellweather-sheep-reference-v2/README.md)
+removes misleading axes, pivot crosses and measurement bars, replacing yaw labels
+with descriptive front/side/back labels. It is retained with its prompt, hash and
+review even though the next request required degree-oriented references.
+
+![Sheep approximate-angle reference v3](../art-direction/bellweather-sheep-reference-v3/bellweather-sheep-reference-v3.png)
+
+The [v3 angle-reference edit](../art-direction/bellweather-sheep-reference-v3/README.md)
+keeps the visually approved Sheep appearance and adds approximate intended yaw
+labels under the verified +Y/+Z convention. Top anatomy views and lower oblique
+studies have different apparent viewing elevations. Printed angles do not prove
+measured multiview geometry, camera, scale or pivot registration. The
+[manifest](../art-direction/bellweather-sheep-reference-v3/manifest.json) maps the
+eight panels for future angle-specific source use; no sprites have been extracted.
+
+The [asset angle-reference standard](../asset-angle-reference-standard.md) now
+requires labeled rotations appropriate to every asset type and separates concept
+intentions from calibrated sprite acceptance. All three Sheep iterations remain
+saved with their exact prompts and review status on this review source branch;
+these additions are not yet integrated into fork main.
+
+The [Sheep model-reference pilot contract](../bellweather-sheep-model-reference-pilot.md)
+selects one front-three-quarter source panel for possible cleaned input and fixes
+the local camera/rotation/scale/root evidence required after a separately
+authorized model task. No Meshy output exists from this slice.
+
+![Clean single Sheep modeling input](../art-direction/bellweather-sheep-model-input-v1/bellweather-sheep-model-input-yaw-000-v1.png)
+
+The [single-subject model input](../art-direction/bellweather-sheep-model-input-v1/README.md)
+is a further built-in ImageGen edit of v3's lower-left front-three-quarter Sheep.
+It removes other specimens, labels and grids, retaining one complete animal for
+the separately owned reference-model pilot. Approximate yaw 0 is recorded in its
+sidecar/filename; this clean image is not a calibrated render or byte crop.
+Its exact prompt/hash and review are saved; the parent sheets remain intact.
+
+### Earlier Human and Orc studies
+
 The existing [Human reference](../art-direction/neutral-human-reference-2026-09-29.png)
 and [Orc reference](../art-direction/neutral-orc-reference-2026-09-29.png) precede
 the [neutral chopping poses](../art-direction/neutral-human-chop-keyposes-2026-09-29.png)
@@ -75,6 +128,17 @@ distinction between source availability and acceptance.
 | Frontier buildings | [Eight illustrated concepts in this wiki](frontier-architecture.md), [source pack](../../assets/buildings/frontier-civilization-concepts-v1/README.md), [exact prompts/output references](../../assets/buildings/frontier-civilization-concepts-v1/prompts.json) |
 | Perspective construction | [Measured camera, eight-heading guide and Root Oak proxy](../art-direction/environment-camera-v1/README.md); construction evidence separate from painted production art |
 
+## Sheep static-reference cloud follow-up
+
+The [dated Sheep cloud-capture record](../qa-evidence/bellweather-sheep-static-reference-2026-10-02/README.md)
+indexes the producer's saved eight-view model reference and preserves a small
+derived capture contract. Cycles CPU completed the color views with denoising
+off; the rejected contact-shadow experiment remains diagnostic evidence. The
+model's 42.035° face/body turn keeps nose yaw separate from locomotion facing.
+Full private originals and the large bundle remain in Library, with identities
+in the private handoff. No large binary is duplicated here; the complete
+manifest was read, while the documentation worker's image materialization failed.
+
 ## Recovery gaps
 
 | Gap | Verified boundary and next action |
@@ -105,7 +169,11 @@ recovery has been verified. A text receipt alone is not a saved image.
 
 **Evidence:** [preservation audit](../art-direction/preservation-audit-2026-10-02.json)
 records checked source hashes, counts, inspected pixels and gaps. Images embedded
-above are existing tracked files; no image generation, Meshy job, repaint or
-runtime capture was performed for this index.
+above predate this index except the separately dated Sheep follow-ups. Those
+made one built-in ImageGen sheet, two annotation edits and one isolated-input edit;
+no Meshy, paid external
+generation or runtime capture was performed. The dated preservation audit remains
+the record of the earlier source-only inspection; each new Sheep pack has its own
+manifest and pixel review.
 
 [Wildlife](wildlife.md) · [Wiki index](README.md) · [Documentation index](../README.md)

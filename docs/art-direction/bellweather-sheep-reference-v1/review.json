@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-02",
+  "reviewer": "author source-pixel review",
+  "result": "preserve concept candidate; reject lower-row yaw registration for production",
+  "observations": [
+    "Eight complete studies are visible: four anatomy views and four oblique studies.",
+    "Cream overlapping fleece, pale sheep face, lateral brown-pink ears, bare lower legs and dark hooves carry through the studies; no horns or harness are visible.",
+    "Front/rear are distinct; static anatomy is useful for discussion, not a measured model or gait proof."
+  ],
+  "defects": [
+    {
+      "id": "yaw-axis-mismatch",
+      "severity": "production blocker",
+      "detail": "In the bottom-left study, the +Z arrow points toward the upper-right of the panel while the sheep faces toward the lower-left. Do not trust the yaw 0/facing +Z label as world registration."
+    },
+    {
+      "id": "unmeasured-camera-scale",
+      "severity": "production blocker",
+      "detail": "Hand-drawn axes, scale bars and root crosses do not establish the exact 45/45.4359024848 camera, 0.60 shoulder height, 0.90 nose-to-rump or identical pivots. The front-view shoulder annotation appears to measure much of the head/full height rather than a surveyed shoulder point."
+    },
+    {
+      "id": "missing-runtime-coverage",
+      "severity": "out of this concept slice",
+      "detail": "Four oblique headings only, opaque ivory background, baked annotations and shadows, no transparent frames, eight-heading registration, clips, resource states or loader integration."
+    }
+  ],
+  "nextProof": "Use a deterministic measured-camera construction guide to correct world-yaw interpretation before producing or registering sprites; retain this output and exact prompt as v1."
+}
