@@ -1,5 +1,5 @@
-import {spawn} from 'node:child_process';
-import {readFile,writeFile,mkdtemp,mkdir} from 'node:fs/promises';
+import {startQaBrowser} from './temporary-resources.mjs';
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const ROOT=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -65,8 +65,7 @@ class Cdp {
 }
 
 
-const profile=await mkdtemp('/tmp/vaelora-vegetation-chrome-');
-const chrome=spawn('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',['--headless=new','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--window-size=1280,720','--user-data-dir='+profile,'about:blank'],{stdio:'ignore'});
+let browser;
 const region=process.env.RTS_VEGETATION_REGION || 'bellweather';
 if(!['bellweather','veyrholds','underbough','sereward','ellionar','pale-meridian','siltmouths','vesperra','sombral-mere','ru-lora'].includes(region))throw new Error('Unknown vegetation capture region');
 const bellHedgeCapture=process.env.RTS_VEGETATION_FAMILY==='bellweather-hedgerow';
@@ -131,6 +130,8 @@ if(evidenceOverride&&!/^docs\/qa-evidence\/[a-z0-9-]+$/.test(evidenceOverride))t
 const out=evidenceOverride || (regionalTreeCapture ? 'docs/qa-evidence/underbough-family-harvest-2026-10-01/'+regionalTreeFamily : occupationCapture ? 'docs/qa-evidence/vaelora-land-vegetation-foundations-2026-09-30' : jungleCapture ? 'docs/qa-evidence/vaelora-vesperra-woodland-margins-2026-10-01' : marshCapture ? 'docs/qa-evidence/vaelora-siltmouths-marsh-beds-2026-09-30' : lunarCapture ? 'docs/qa-evidence/vaelora-sombral-open-moon-plants-2026-09-30' : ridgeCapture ? 'docs/qa-evidence/vaelora-veyrholds-open-ridge-plants-2026-09-30' : snowCapture ? 'docs/qa-evidence/vaelora-meridian-open-snow-plants-2026-09-30' : drylandCapture ? 'docs/qa-evidence/vaelora-sereward-open-succulents-2026-09-30' : plantContractCapture ? 'docs/qa-evidence/vaelora-plant-runtime-contract-2026-09-30' : gardenCapture ? 'docs/qa-evidence/vaelora-ellionar-channel-flowers-2026-09-30' : fringeCanopyCapture ? 'docs/qa-evidence/vaelora-ru-lora-fringe-canopy-2026-09-30' : fringeCapture ? 'docs/qa-evidence/vaelora-ru-lora-fringe-understory-2026-09-30' : meadowCapture ? 'docs/qa-evidence/vaelora-bellweather-open-meadow-2026-09-30' : lichenCapture ? 'docs/qa-evidence/vaelora-meridian-violet-lichen-2026-09-30' : shoreCapture ? (region==='sombral-mere'?'docs/qa-evidence/vaelora-mere-mirelily-2026-09-30':'docs/qa-evidence/vaelora-siltmouths-shore-reeds-2026-09-30') : variationCapture ? 'docs/qa-evidence/vaelora-'+region+'-'+(region==='sereward'?'succulent':region==='underbough'?'fungus':region==='pale-meridian'?'frostberry':region==='sombral-mere'?'noctilune':region==='siltmouths'?'marsh-tuber':region==='veyrholds'?'suncrest':region==='ellionar'?'garden-vine':region==='bellweather'?'clover':'fern')+'-variation-2026-09-30' : readabilityCapture ? 'docs/qa-evidence/vaelora-highpine-low-readability-2026-09-30' : seedCapture ? 'docs/qa-evidence/vaelora-understory-seeds-2026-09-30' : understoryCapture ? 'docs/qa-evidence/vaelora-'+region+'-understory-2026-09-30' : bellHedgeCapture ? 'docs/qa-evidence/vaelora-bellweather-hedgerow-atlas-2026-09-30' : scrubCapture ? 'docs/qa-evidence/vaelora-sereward-scrub-atlas-2026-09-30' : acaciaCapture ? 'docs/qa-evidence/vaelora-sereward-acacia-atlas-2026-09-30' : hedgeCapture ? 'docs/qa-evidence/vaelora-ellionar-hedge-atlas-2026-09-30' : brambleCapture ? 'docs/qa-evidence/vaelora-underbough-bramble-atlas-2026-09-30' : atlasCapture ? 'docs/qa-evidence/vaelora-'+region+'-atlas-2026-09-30' : lifecycle ? 'docs/qa-evidence/vaelora-'+region+'-lifecycle-2026-09-30' : region==='ru-lora' ? 'docs/qa-evidence/vaelora-ru-lora-god-bone-2026-09-30' : region==='bellweather' ? 'docs/qa-evidence/vaelora-vegetation-2026-09-30' : 'docs/qa-evidence/vaelora-'+region+'-2026-09-30');
 let cdp;
 try {
+ browser=await startQaBrowser('vaelora-vegetation-chrome-','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',['--headless=new','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--window-size=1280,720']);
+ const {profile}=browser;
  let port;for(let i=0;i<100;i++){try{port=Number((await readFile(profile+'/DevToolsActivePort','utf8')).split('\n')[0]);if(port)break}catch{}await sleep(100)}
  const targets=await(await fetch('http://127.0.0.1:'+port+'/json/list')).json();cdp=new Cdp(targets.find(t=>t.type==='page').webSocketDebuggerUrl);
  const errors=[];cdp.on('Runtime.consoleAPICalled',e=>{if(e.type==='error')errors.push(e.args.map(a=>a.value||a.description).join(' '))});
@@ -768,4 +769,4 @@ try {
  }
  console.log(await cdp.evaluate('JSON.stringify({boot:document.documentElement.dataset.boot,map:document.querySelector("#map-label-title")?.textContent,error:document.querySelector("#runtime-error")?.textContent})'));
  console.log(JSON.stringify({forestCells:36,errors}));if(errors.length)process.exitCode=1;
-} finally {cdp?.socket.close();chrome.kill('SIGTERM')}
+} finally {try {cdp?.socket.close();} finally {await browser?.dispose();}}

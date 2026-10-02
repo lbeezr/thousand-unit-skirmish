@@ -62,6 +62,7 @@ run(['scripts/forest-habitat-scenario.mjs'], 'Graduated woodland habitat margins
 run(['scripts/forest-composition-scenario.mjs'], 'Regional dominant species groves');
 run(['scripts/forest-age-scenario.mjs'], 'Seeded irregular canopy ages preserve every root');
 run(['scripts/settlement-authoring-scenario.mjs'], 'Grounded starting settlements');
+run(['--test', 'scripts/resource-cluster-authoring.test.mjs'], 'Seeded Millrace resource clusters');
 run(['scripts/check-docs.mjs'], 'Documentation links');
 run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs'], 'Verified shipped audio and execution gates');
 run(['--test', 'scripts/zone-audio-import-contract.test.mjs'], 'Zone audio import provenance');
@@ -75,6 +76,7 @@ run(['--test', 'scripts/ci-sharding.test.mjs'], 'CI shard coverage');
 run(['--test', 'scripts/pve-reconnaissance.test.mjs'], 'Bounded Scout reconnaissance');
 run(['--test', 'scripts/browser-performance-instrumentation.test.mjs'], 'Browser timing attribution');
 run(['--test', 'scripts/browser-preflight.test.mjs'], 'Browser preflight diagnostics');
+run(['--test', 'scripts/temporary-resources.test.mjs'], 'Owned temporary resource cleanup');
 run(['--test', 'scripts/capture-checkpoint.test.mjs'], 'Capture checkpoint artifact contract');
 run(['--test', 'scripts/performance-order-window.test.mjs'], 'Performance planning wave boundaries');
 run(['--test', 'scripts/persistent-command.test.mjs'], 'Persistent tactical intent and bounded planning');
@@ -117,6 +119,7 @@ run(['--test', 'scripts/unit-health-visual.test.mjs'], 'Visible damaged-unit hea
 run(['--test', 'scripts/navigation-settings.test.mjs'], 'Camera navigation settings and controls');
 
 const scenarios = [
+  ['scripts/millrace-resource-scenario.mjs', 'Millrace cluster gathering and recovery'],
   ['scripts/regional-objective-scenario.mjs', 'Millrace both-seat hold and rematch', 'bellweather-millrace'],
   ['scripts/regional-objective-scenario.mjs', 'Rootways both-seat hold and rematch', 'underbough-rootways'],
   ['scripts/underbough-gameplay-proof.mjs', 'Rootways 250-unit economy and recovery (winner 0)', '0'],
@@ -175,7 +178,7 @@ const scenarios = [
   ['scripts/opening-production-scenario.mjs', 'Mirrored construction and production', '--expect-builder-parity'],
   ['scripts/forked-vale-scenario.mjs', 'Forked Vale economy-to-victory (Team 0)', '0'],
   ['scripts/forked-vale-scenario.mjs', 'Forked Vale economy-to-victory (Team 1)', '1'],
-  ['scripts/vaelora-map-layout-scenario.mjs', 'Vaelora roster with Town Center collisions'],
+  ['scripts/vaelora-map-layout-scenario.mjs', 'Vaelora roster with Town Center collisions', '--check-only'],
   ['scripts/forked-vale-layout.mjs', 'Forked Vale layout'],
   ['scripts/fortified-crossing-layout.mjs', 'Fortified Crossing layout'],
   ['scripts/fortified-crossing-combined.mjs', 'Fortified Crossing combined economy, orders, events, result and recovery', '0'],

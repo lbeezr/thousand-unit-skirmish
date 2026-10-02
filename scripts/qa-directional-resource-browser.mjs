@@ -1,5 +1,5 @@
-import {spawn} from 'node:child_process';
-import {readFile,writeFile,mkdtemp,mkdir} from 'node:fs/promises';
+import {startQaBrowser} from './temporary-resources.mjs';
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const ROOT=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -65,8 +65,7 @@ class Cdp {
 }
 
 
-const profile=await mkdtemp('/tmp/vaelora-vegetation-chrome-');
-const chrome=spawn('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',['--headless=new','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--window-size=1280,720','--user-data-dir='+profile,'about:blank'],{stdio:'ignore'});
+let browser;
 
 const resourceRegion=process.env.RTS_RESOURCE_REGION;
 const regionalWood=Boolean(resourceRegion);
@@ -76,6 +75,8 @@ const out=process.env.RTS_DIRECTIONAL_OUTPUT || 'docs/qa-evidence/directional-li
 if(!/^docs\/qa-evidence\/[a-z0-9-]+$/.test(out))throw new Error('Invalid evidence directory');
 let cdp;
 try {
+ browser=await startQaBrowser('vaelora-vegetation-chrome-','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',['--headless=new','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--window-size=1280,720']);
+ const {profile}=browser;
  let port;for(let i=0;i<100;i++){try{port=Number((await readFile(profile+'/DevToolsActivePort','utf8')).split('\n')[0]);if(port)break}catch{}await sleep(100)}
  const targets=await(await fetch('http://127.0.0.1:'+port+'/json/list')).json();cdp=new Cdp(targets.find(t=>t.type==='page').webSocketDebuggerUrl);
  const errors=[];cdp.on('Runtime.consoleAPICalled',e=>{if(e.type==='error')errors.push(e.args.map(a=>a.value||a.description).join(' '))});
@@ -118,4 +119,4 @@ try {
  await cdp.call('Page.reload',{ignoreCache:true});await sleep(5500);if(await cdp.evaluate('document.documentElement.dataset.boot')!=='ready')throw Error('Reload failed');await shot('reload');
  if(errors.length)throw Error(errors.join('\n'));
  await writeFile(out+'/proof.json',JSON.stringify({map,observed,reset:true,reload:true,requests,errors,beforeReload},null,2)+'\n');console.log('Directional live harvest and reload passed.');
-} finally {cdp?.close();chrome.kill('SIGTERM')}
+} finally {try {cdp?.close();} finally {await browser?.dispose();}}

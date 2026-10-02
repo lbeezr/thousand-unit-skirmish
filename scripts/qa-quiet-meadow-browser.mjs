@@ -1,5 +1,5 @@
-import {spawn} from 'node:child_process';
-import {readFile,writeFile,mkdtemp,mkdir} from 'node:fs/promises';
+import {startQaBrowser} from './temporary-resources.mjs';
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const ROOT=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -70,10 +70,11 @@ const jungle=process.env.RTS_QUIET_TERRAIN==='jungle-loam';
 const snow=process.env.RTS_QUIET_TERRAIN==='snow';
 const mud=process.env.RTS_QUIET_TERRAIN==='tidal-mud';
 const original=jungle?'jungle-loam':snow?'snow':mud?'tidal-mud':'meadow',candidate=jungle?'vesperra-quiet-loam':snow?'pale-meridian-quiet-snow':mud?'siltmouths-quiet-mud':'bellweather-quiet-meadow';
-const profile=await mkdtemp('/tmp/vaelora-quiet-meadow-chrome-');
-const chrome=spawn('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',['--headless=new','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--window-size=1024,768','--user-data-dir='+profile,'about:blank'],{stdio:'ignore'});
+let browser;
 const out=jungle?'docs/qa-evidence/vaelora-quiet-jungle-loam-2026-10-01':snow?'docs/qa-evidence/vaelora-quiet-snow-2026-09-30':mud?'docs/qa-evidence/vaelora-quiet-tidal-mud-2026-09-30':'docs/qa-evidence/vaelora-quiet-meadow-2026-09-30';let cdp;
 try {
+ browser=await startQaBrowser('vaelora-quiet-meadow-chrome-','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',['--headless=new','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--window-size=1024,768']);
+ const {profile}=browser;
  let port;for(let i=0;i<100;i++){try{port=Number((await readFile(profile+'/DevToolsActivePort','utf8')).split('\n')[0]);if(port)break}catch{}await sleep(100)}
  const targets=await(await fetch('http://127.0.0.1:'+port+'/json/list')).json();cdp=new Cdp(targets.find(t=>t.type==='page').webSocketDebuggerUrl);
  const errors=[];cdp.on('Runtime.consoleAPICalled',e=>{if(e.type==='error')errors.push(e.args.map(a=>a.value||a.description).join(' '))});
@@ -118,4 +119,4 @@ try {
   const legacyShot=await cdp.call('Page.captureScreenshot',{format:'png'});await writeFile(out+'/runtime-legacy.png',Buffer.from(legacyShot.data,'base64'));
  }
  if(errors.length)throw new Error(errors.join('\n'));await writeFile(out+'/rotation-proof.json',JSON.stringify({seed:42,boot,legacyBoot,regionalBinding,errors,proof},null,2)+'\n');console.log(JSON.stringify({views:proof.length,errors}));
-}finally{cdp?.close();chrome.kill()}
+} finally {try {cdp?.close();} finally {await browser?.dispose();}}

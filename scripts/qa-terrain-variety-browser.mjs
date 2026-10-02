@@ -1,5 +1,5 @@
-import {spawn} from 'node:child_process';
-import {readFile,writeFile,mkdtemp,mkdir} from 'node:fs/promises';
+import {startQaBrowser} from './temporary-resources.mjs';
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const ROOT=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -65,11 +65,12 @@ class Cdp {
 }
 
 
-const profile=await mkdtemp('/tmp/vaelora-variety-chrome-');
-const chrome=spawn('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',['--headless=new','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--window-size=1280,720','--user-data-dir='+profile,'about:blank'],{stdio:'ignore'});
+let browser;
 let cdp;
 const out='docs/qa-evidence/vaelora-terrain-variety-2026-09-29';
 try{
+ browser=await startQaBrowser('vaelora-variety-chrome-','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',['--headless=new','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--window-size=1280,720']);
+ const {profile}=browser;
  let port;for(let i=0;i<100;i++){try{port=Number((await readFile(profile+'/DevToolsActivePort','utf8')).split('\n')[0]);if(port)break}catch{}await sleep(100)}
  const targets=await(await fetch('http://127.0.0.1:'+port+'/json/list')).json();cdp=new Cdp(targets.find(t=>t.type==='page').webSocketDebuggerUrl);
  // Compare identical cameras, then render flat fields using the consuming shader.
@@ -119,4 +120,4 @@ try{
  console.log(await cdp.evaluate('JSON.stringify({map:document.querySelector("#map-label-title")?.textContent,error:document.querySelector("#runtime-error")?.textContent,materials:[...document.querySelectorAll("#studio-terrain-base option")].map(o=>o.value)})'));
  if(await cdp.evaluate('document.querySelector("#map-label-title")?.textContent')!=='VAELORA WET GROUND STUDY')throw new Error('Atmosphere study was not published successfully');
  console.log(JSON.stringify({consoleErrors:errors}));if(errors.length)process.exitCode=1;
-}finally{cdp?.close();chrome.kill()}
+} finally {try {cdp?.close();} finally {await browser?.dispose();}}
