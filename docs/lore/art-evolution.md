@@ -70,6 +70,15 @@ selects one front-three-quarter source panel for possible cleaned input and fixe
 the local camera/rotation/scale/root evidence required after a separately
 authorized model task. No Meshy output exists from this slice.
 
+![Clean single Sheep modeling input](../art-direction/bellweather-sheep-model-input-v1/bellweather-sheep-model-input-yaw-000-v1.png)
+
+The [single-subject model input](../art-direction/bellweather-sheep-model-input-v1/README.md)
+is a further built-in ImageGen edit of v3's lower-left front-three-quarter Sheep.
+It removes other specimens, labels and grids, retaining one complete animal for
+the separately owned reference-model pilot. Approximate yaw 0 is recorded in its
+sidecar/filename; this clean image is not a calibrated render or byte crop.
+Its exact prompt/hash and review are saved; the parent sheets remain intact.
+
 ### Earlier Human and Orc studies
 
 The existing [Human reference](../art-direction/neutral-human-reference-2026-09-29.png)
@@ -150,7 +159,8 @@ recovery has been verified. A text receipt alone is not a saved image.
 **Evidence:** [preservation audit](../art-direction/preservation-audit-2026-10-02.json)
 records checked source hashes, counts, inspected pixels and gaps. Images embedded
 above predate this index except the separately dated Sheep follow-ups. Those
-made one built-in ImageGen sheet and two annotation edits; no Meshy, paid external
+made one built-in ImageGen sheet, two annotation edits and one isolated-input edit;
+no Meshy, paid external
 generation or runtime capture was performed. The dated preservation audit remains
 the record of the earlier source-only inspection; each new Sheep pack has its own
 manifest and pixel review.

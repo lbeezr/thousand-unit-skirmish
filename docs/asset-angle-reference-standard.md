@@ -11,6 +11,10 @@ label intended angles **approximate**. Production acceptance requires measured
 camera, rotation and registration evidence; numbers printed on drawings are
 insufficient. Preserve the chosen visual design throughout that calibration.
 
+Clean machine-input images omit baked text/guides; retain their degree/view label
+in the filename and source sidecar, and link the labeled parent reference. This
+keeps orientation provenance without submitting sheet annotations as geometry.
+
 ## Verified runtime convention
 
 [Camera controls](../src/camera-controls.mjs) define view direction

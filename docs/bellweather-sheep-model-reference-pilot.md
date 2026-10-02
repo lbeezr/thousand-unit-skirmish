@@ -2,9 +2,11 @@
 
 **2 October 2026:** preparation only: one proposed textured, unrigged Sheep
 model, then local measured rotation renders. No Meshy job, input upload, balance
-check or credit spend was performed by this slice. The reported account upgrade
-is not verified here; the local account worker owns cost/balance evidence and the
-explicit spending cap. Walking remains a later decision.
+check or credit spend was performed by this slice. The user now authorizes up to
+**60 Meshy credits total per unit/object** for a reusable saved base reference
+model. The parent-designated paid-call worker owns balance/estimate evidence and
+all provider submissions. This worker prepares inputs only. Walking remains a
+later decision.
 
 ## Single-subject input recommendation
 
@@ -14,7 +16,12 @@ Use the lower-left front-three-quarter Sheep in the preserved
 volume and planted legs are visible. Proposed crop `[40,510,310,300]` is upper-left
 `(x,y,width,height)` in the 1536 × 1024 source, SHA-256
 `ea31df740058b263da30039535d9a7a3a2a5252f06a6d8e5ac2884f2631e557f`.
-This crop is proposed, not extracted or uploaded.
+This rectangle identifies the parent panel; it has not been byte-cropped.
+The [clean single-Sheep input](art-direction/bellweather-sheep-model-input-v1/README.md)
+now exists as a separately preserved built-in ImageGen edit, 1254 × 1254,
+SHA-256 `0ff688101304a7c10e181b3363ce767e8fb0082d0f754817edee81e04a9bf904`.
+Pixel review confirms one complete subject without sheet labels/axes/grids.
+It has been saved to Library, not uploaded to Meshy.
 
 Prepare one complete animal with breathing room, no neighboring sheep, sheet
 labels, guides or other objects. If unwanted ground guides remain, record a
@@ -32,7 +39,8 @@ bare lower legs, dark cloven hooves and small tail; no horns or harness.
 
 ## Bounded generation decision
 
-After a supported estimate and explicit cap, choose one image-to-3D textured
+Within the authorized 60-credit total cap, the paid-call owner verifies a supported
+estimate and balance, then chooses one image-to-3D textured
 GLB route, verifying CLI options and recording geometry/texture choices before
 submission. Submit once; retain the accepted resource/task ID. Extra variants,
 remesh, retexture, conversion or retries require their own cost decision. A

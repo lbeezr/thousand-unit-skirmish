@@ -35,6 +35,8 @@ New working additions in this wiki include modest livelihoods for less-developed
 
 ## Change record
 
+- 2 October 2026, model input: [clean single Sheep](../art-direction/bellweather-sheep-model-input-v1/README.md) isolates v3's lower-left animal through built-in ImageGen, preserving its parent sheet and exact edit provenance. No Meshy model or sprite acceptance is implied.
+
 - 2 October 2026, source follow-up: [Sheep reference v1](../art-direction/bellweather-sheep-reference-v1/README.md) adds one generated concept sheet with exact prompt/hash and a rejected game-yaw registration review. No animal gameplay or production sprites are implied.
 - 2 October 2026, annotation follow-ups: [Sheep v2](../art-direction/bellweather-sheep-reference-v2/README.md) removes misleading guides; [v3](../art-direction/bellweather-sheep-reference-v3/README.md) adds approximate degree labels under the verified runtime yaw convention. Both edits preserve the prior outputs and exact prompts; no measured multiview geometry or sprite acceptance is claimed. The [angle-reference standard](../asset-angle-reference-standard.md) records future coverage and extraction requirements.
 - 2 October 2026: added [wildlife](wildlife.md) from inspected selected ecology art and [art evolution](art-evolution.md) linking saved studies/rejected iterations. Sheep behavior and sprite coverage remain proposals; omitted original outputs and exact Vaelora prompts remain recovery gaps.

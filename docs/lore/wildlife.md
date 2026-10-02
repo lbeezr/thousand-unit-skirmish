@@ -25,6 +25,10 @@ and [descriptive correction](../art-direction/bellweather-sheep-reference-v2/REA
 remain in the evolution archive. Camera, scale and pivot registration are still
 unverified; no production animal sprite or runtime mechanic is delivered.
 
+A [clean single-Sheep image input](../art-direction/bellweather-sheep-model-input-v1/README.md)
+is prepared for the separately owned model-reference pilot; it is an approximate
+front-three-quarter design source, not a generated model.
+
 **Sources:** [selected regional art](../art-direction/vaelora-v1/README.md),
 [Bellweather](regions/bellweather.md), and direct source-pixel review recorded in
 the [design](../wildlife-bellweather-sheep.md). Creature labels remain provisional.
