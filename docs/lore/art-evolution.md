@@ -128,7 +128,7 @@ distinction between source availability and acceptance.
 | Frontier buildings | [Eight illustrated concepts in this wiki](frontier-architecture.md), [source pack](../../assets/buildings/frontier-civilization-concepts-v1/README.md), [exact prompts/output references](../../assets/buildings/frontier-civilization-concepts-v1/prompts.json) |
 | Perspective construction | [Measured camera, eight-heading guide and Root Oak proxy](../art-direction/environment-camera-v1/README.md); construction evidence separate from painted production art |
 
-## Recovery gaps
+## Sheep static-reference cloud follow-up
 
 The [dated Sheep cloud-capture record](../qa-evidence/bellweather-sheep-static-reference-2026-10-02/README.md)
 indexes the producer's saved eight-view model reference and preserves a small
@@ -139,7 +139,7 @@ Full private originals and the large bundle remain in Library, with identities
 in the private handoff. No large binary is duplicated here; the complete
 manifest was read, while the documentation worker's image materialization failed.
 
-### Historical source audit gaps
+## Recovery gaps
 
 | Gap | Verified boundary and next action |
 | --- | --- |
