@@ -212,6 +212,17 @@ select/edit/remove the materialized nodes in Map Studio; regeneration replaces
 those edits. The editor still places individual food/wood sites; a cluster brush
 and new currencies are separate future work.
 
+The pure `appendSeededResourceCluster(map, settings)` helper prepares one additive
+food/wood patch on a validated map. Supply `seed`, anchor `x`/`z`, `type` and an
+explicit safe-integer `totalStock`; that budget is divided across `nodesPerPatch`
+(default five), never multiplied per marker. Radius defaults to four cells and
+spawn clearance to six. Existing nodes count toward the 128-node limit and retain
+their stock/IDs. Placement checks occupied cells, two-cell spacing, terrain,
+elevation, home footprints and both-seat reachability, then returns a complete
+node array with collision-free IDs. Failure changes neither input. This helper
+does not mirror the new patch or add editor controls; Millrace's mirrored
+replacement generator and materialized map remain unchanged.
+
 CI runs `node scripts/vaelora-map-layout-scenario.mjs --check-only` to validate
 all regional layouts without rewriting the SVG or dirtying the clean release
 checkout. Run it without the flag to explicitly regenerate the dated diagram;
