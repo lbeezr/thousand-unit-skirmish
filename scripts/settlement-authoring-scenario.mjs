@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { settlementGround } from '../src/settlement-authoring.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
+import { seededMirroredResourceClusters } from '../src/resource-cluster-authoring.mjs';
 const paintGrid = map => {
   const cells = Array(map.width * map.height).fill(map.terrainBase);
   for (const rect of map.terrainPatches) for (let row = rect.row; row < rect.row + rect.height; row++) {
@@ -22,7 +23,8 @@ for (const id of ['bellweather-millrace', 'underbough-rootways']) {
   const settlementPaint = id === 'underbough-rootways' ? map.terrainPatches.filter(p => p.material !== 'long-grass') : map.terrainPatches;
   assert.deepEqual(patches, settlementPaint, 'woodland ground preserves the historical settlement paint');
   for (const key of Object.keys(before).filter(key => key !== 'terrainPatches' && key !== 'terrainBase')) {
-    const expected = id === 'underbough-rootways' && key === 'obstacles' ? glades.obstacles : before[key];
+    const expected = id === 'underbough-rootways' && key === 'obstacles' ? glades.obstacles
+      : id === 'bellweather-millrace' && key === 'resourceNodes' ? seededMirroredResourceClusters({ ...before, terrainPatches: patches }) : before[key];
     assert.deepEqual(map[key], expected, `${key}: preserve historical settlement rules and approved layout`);
   }
   assert.equal(map.terrainBase, id === 'underbough-rootways' ? 'meadow' : before.terrainBase, 'authored clearing material is explicit');
@@ -49,4 +51,4 @@ for (const id of ['bellweather-millrace', 'underbough-rootways']) {
   for (let team = 0; team < 2; team++) for (const cell of townCenterFootprintCells(map.spawnPoints, team, map.width, map.height)) assert.equal(newPaint[cell], 'dirt', 'wear grounds the real Town Center footprint');
   for (let row = 0; row < map.height; row++) for (let col = 0; col < map.width / 2; col++) assert.equal(newPaint[row * map.width + col], newPaint[row * map.width + map.width - 1 - col]);
 }
-console.log('Settlement ground: real Town Center pads, working tracks, deterministic mirrored paint, no blocked-path paint and unchanged match rules passed.');
+console.log('Settlement ground: Town Center pads, mirrored working tracks, no blocked-path paint, approved Millrace clusters and preserved other rules passed.');

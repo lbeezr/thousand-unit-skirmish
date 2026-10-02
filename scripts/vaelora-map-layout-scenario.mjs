@@ -4,6 +4,9 @@ import { TERRAIN_COLORS } from '../src/terrain-materials.mjs';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 import { findUnreachableResourceNode, findUnreachableCaptureZone } from '../src/map-utils.mjs';
+const args = process.argv.slice(2);
+assert.ok(args.length <= 1 && args.every(arg => arg === '--check-only'),
+  'Usage: node scripts/vaelora-map-layout-scenario.mjs [--check-only]');
 const files = (await readdir('maps')).filter(f=>/^(bellweather-|underbough-|sereward-|ellionar-|veyrholds-|pale-meridian-|siltmouths-|vesperra-|sombral-mere-|ru-lora-)/.test(f));
 let panels = '';
 for (const [i,file] of files.entries()) {
@@ -28,5 +31,5 @@ for (const [i,file] of files.entries()) {
   for(const p of spawnPoints) panels+=`<circle cx="${8+(p.x+width/2)*scale}" cy="${30+(p.z+height/2)*scale}" r="5" fill="${p.team?'#dc603c':'#319cdf'}"/>`;
   panels+='</g>';
 }
-await writeFile('docs/vaelora-map-layouts.svg',`<svg xmlns="http://www.w3.org/2000/svg" width="990" height="1120" viewBox="0 0 990 1120"><rect width="990" height="1120" fill="#ecebdc"/>${panels}</svg>`);
+if (!args.includes('--check-only')) await writeFile('docs/vaelora-map-layouts.svg',`<svg xmlns="http://www.w3.org/2000/svg" width="990" height="1120" viewBox="0 0 990 1120"><rect width="990" height="1120" fill="#ecebdc"/>${panels}</svg>`);
 console.log(`${files.length} Vaelora maps: all resources/objectives reachable for both seats with Town Centers; no obstructed bases.`);
