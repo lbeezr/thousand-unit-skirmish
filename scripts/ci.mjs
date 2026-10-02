@@ -77,6 +77,9 @@ run(['--test', 'scripts/pve-reconnaissance.test.mjs'], 'Bounded Scout reconnaiss
 run(['--test', 'scripts/browser-performance-instrumentation.test.mjs'], 'Browser timing attribution');
 run(['--test', 'scripts/browser-preflight.test.mjs'], 'Browser preflight diagnostics');
 run(['--test', 'scripts/temporary-resources.test.mjs'], 'Owned temporary resource cleanup');
+run(['--test', 'scripts/mature-settlement-scenario.test.mjs'], 'Paid settlement fixture ledger and layout');
+run(['scripts/mature-settlement-scenario.mjs'], 'Paid settlement construction, composition and recovery');
+run(['scripts/mature-settlement-scenario.mjs', '--reverse-seats'], 'Paid settlement reversed seat dispatch');
 run(['--test', 'scripts/capture-checkpoint.test.mjs'], 'Capture checkpoint artifact contract');
 run(['--test', 'scripts/performance-order-window.test.mjs'], 'Performance planning wave boundaries');
 run(['--test', 'scripts/persistent-command.test.mjs'], 'Persistent tactical intent and bounded planning');
