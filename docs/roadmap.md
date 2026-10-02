@@ -129,6 +129,13 @@ The [first lore wiki](lore/README.md) is delivered as a connected reference cove
 
 ### Next-action queue — 1 October 2026
 
+The [maps and resourcing saga](maps-resourcing-saga-plan.md) expands the map
+stream into nine incremental epics and evidence milestones: coherent Millrace,
+shared editor/wildlife rules, one polished biome with a mature current-roster
+scenario, then regional kits. It preserves the verified food/wood baseline and
+records recommended economy choices for explicit later decisions. This roadmap
+remains the next-outcome queue; the saga is its detailed plan, not a second queue.
+
 Based on integration baseline `25488c8`, choose one bounded outcome in a stream.
 Keep existing automated proofs as regression checks and record the build and
 conditions of any new observation.

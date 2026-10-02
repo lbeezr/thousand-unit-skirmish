@@ -57,6 +57,7 @@ the build they name.
 
 - [Game bible](game-bible.md): product promise, design principles, quality floor, scope.
 - [Roadmap](roadmap.md): next outcomes and milestone evidence.
+- [Maps and resourcing saga](maps-resourcing-saga-plan.md): verified economy baseline, nine scoped epics, ecosystem milestones, decisions and two-worker boundaries.
 - [Custom-skirmish milestone](custom-skirmish-milestone-plan.md): three parallel lanes for tactical orders, visual scenario authoring and shared audio feedback, with a combined match proof.
 - [Custom-skirmish evidence](qa-custom-skirmish.md): current acceptance audit, combined scenario checks and scale evidence limits.
 - [Gameplay foundation plan](gameplay-foundation-plan.md): extensible roster, base development, combat/progression, and presentation/variant milestones.
