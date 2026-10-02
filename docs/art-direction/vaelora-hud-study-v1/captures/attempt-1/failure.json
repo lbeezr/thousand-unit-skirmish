@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-02",
+  "sourceRevision": "68f859f903ad09119594dcafca83f6de8362a9ed",
+  "status": "failed-partial-capture-retained",
+  "failure": "CDP timeout: Page.captureScreenshot during build-preview capture",
+  "timeoutMs": 20000,
+  "initialCaptureOptions": {
+    "format": "png",
+    "fromSurface": true,
+    "optimizeForSpeed": true
+  },
+  "retryCaptureOptions": {
+    "format": "png",
+    "fromSurface": false,
+    "optimizeForSpeed": true
+  },
+  "retainedImages": [
+    "meadow-attack-move-text-background.png",
+    "meadow-attack-move.png",
+    "meadow-idle-text-background.png",
+    "meadow-idle.png",
+    "meadow-move-queued-text-background.png",
+    "meadow-move-queued.png"
+  ],
+  "retryReceipt": "../attempt-2/live-capture.json",
+  "nativeCursorPixelsCaptured": false
+}

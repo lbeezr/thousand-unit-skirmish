@@ -1,0 +1,277 @@
+{
+  "date": "2026-10-02",
+  "method": "code-authored DOM asset board over actual captured terrain crops; not native OS cursor capture",
+  "viewport": [
+    940,
+    1240
+  ],
+  "images": [
+    {
+      "src": "../../../../assets/ui/cursors/select.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/select.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/select.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/select-add.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/select-add.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/select-add.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/select-remove.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/select-remove.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/select-remove.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/box-select.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/box-select.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/box-select.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/box-crossing.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/box-crossing.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/box-crossing.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/move.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/move.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/move.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/move-queued.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/move-queued.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/move-queued.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/attack.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/attack.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/attack.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/attack-move.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/attack-move.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/attack-move.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/attack-move-queued.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/attack-move-queued.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/attack-move-queued.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/gather.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/gather.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/gather.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/gather-wood.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/gather-wood.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/gather-wood.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/rally.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/rally.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/rally.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/build-valid.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/build-valid.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/build-valid.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/build-blocked.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/build-blocked.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/build-blocked.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/unavailable.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/unavailable.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/cursors/unavailable.png",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/food.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/food.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/food.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/wood.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/wood.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/wood.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/move.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/move.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/move.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/attack.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/attack.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/attack.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/gather.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/gather.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/gather.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/build.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/build.svg",
+      "ok": true
+    },
+    {
+      "src": "../../../../assets/ui/icons/build.svg",
+      "ok": true
+    }
+  ],
+  "bodyHeight": 1276,
+  "samples": 48,
+  "errors": []
+}

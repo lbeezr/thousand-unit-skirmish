@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Current Vaelora UI assets at native size</title>
+<style>
+*{box-sizing:border-box}body{margin:0;width:940px;padding:20px;background:#102019;color:#eff0dc;font:14px system-ui,sans-serif}h1{font-size:22px;margin:0 0 6px}p{margin:0 0 14px;color:#c2d2bc;line-height:1.4}.grid{display:grid;grid-template-columns:220px repeat(3,200px);gap:4px 12px;align-items:center}.heading{font-weight:700;margin-bottom:6px}.label{font:13px ui-monospace,monospace}.sample{height:56px;position:relative;border:1px solid #798f76;background-repeat:no-repeat}.sample img{position:absolute;left:76px;top:8px;width:40px;height:40px}.snow{background-image:url(captures/backgrounds/snow-game-background.png);background-position:-350px -200px}.ground{background-image:url(captures/backgrounds/woodland-game-background.png);background-position:-320px -250px}.fog{background-image:url(captures/backgrounds/woodland-game-background.png);background-position:-620px -250px}.icons{display:flex;flex-wrap:wrap;gap:16px;background:#15231b;border:1px solid #798f76;padding:16px;margin-top:16px}.icons figure{margin:0}.icons .sizes{display:flex;align-items:center;gap:12px;min-height:32px}.icons img:nth-child(1){width:13px;height:13px}.icons img:nth-child(2){width:19px;height:19px}.icons img:nth-child(3){width:24px;height:24px}.icons figcaption{font:12px ui-monospace,monospace;margin-top:6px}.notes{font-size:12px;margin-top:12px}
+</style>
+<h1>Existing cursor and icon pixels · native authored size</h1>
+<p>40 × 40 cursor PNGs on crops of captured gameplay. DOM samples; native OS cursor pixels and click alignment are not captured. Ordinary hotspot (4,4); build hotspot (6,6).</p>
+<div class="grid" id="grid"><div class="heading">Current bound mode</div><div class="heading">Light snow</div><div class="heading">Textured woodland</div><div class="heading">Dark fog</div></div>
+<div class="icons" id="icons"></div>
+<p class="notes">Icon columns: current resource size 13 px · current command size 19 px · source size 24 px. Food/wood and move/attack/build are bound today; gather SVG is available for reuse. Native grab/grabbing pan cursors are outside this PNG board. This checks static shape visibility, not accessibility certification.</p>
+<script>
+const modes=['select','select-add','select-remove','box-select','box-crossing','move','move-queued','attack','attack-move','attack-move-queued','gather','gather-wood','rally','build-valid','build-blocked','unavailable'];
+document.querySelector('#grid').insertAdjacentHTML('beforeend',modes.map(m=>'<div class="label">'+m+'</div>'+['snow','ground','fog'].map(bg=>'<div class="sample '+bg+'"><img src="../../../../assets/ui/cursors/'+m+'.png" alt="'+m+'"></div>').join('')).join(''));
+document.querySelector('#icons').innerHTML=['food','wood','move','attack','gather','build'].map(m=>'<figure><div class="sizes">'+[13,19,24].map(()=>'<img src="../../../../assets/ui/icons/'+m+'.svg" alt="'+m+'">').join('')+'</div><figcaption>'+m+'</figcaption></figure>').join('');
+</script></html>

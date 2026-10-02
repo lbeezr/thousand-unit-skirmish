@@ -1,0 +1,861 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-02",
+  "sourceRevision": "68f859f903ad09119594dcafca83f6de8362a9ed",
+  "authoring": "Live HTML/CSS/JS with existing tracked UI assets; direct owned browser screenshots. No external image generation.",
+  "orientation": {
+    "assetClass": "flat screen-space UI",
+    "yaw": "not applicable",
+    "pixelAxes": "right, down"
+  },
+  "iterations": [
+    "initial glyph-defective sketches and clipped first asset board preserved",
+    "revised portable text and complete asset board"
+  ],
+  "imageCount": 72,
+  "imageBytes": 25099804,
+  "copiedRuntimeAssets": false,
+  "privateCredentialsIncluded": false,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3620,
+      "sha256": "09953097ae4707199d2261e9bd0d34b3627c3f0c5982e356a4d5661c40ab9d5f"
+    },
+    {
+      "path": "asset-check.html",
+      "bytes": 3062,
+      "sha256": "a2a5e0c17de57db3513f748ee0b105b583b2dbd123aedcbd4dca9262720b1c4f"
+    },
+    {
+      "path": "captures/attempt-1/failure.json",
+      "bytes": 789,
+      "sha256": "9147b0f46abd7d89b92b134e6a1a9777636ee31169f43a06bd754943a36477f2"
+    },
+    {
+      "path": "captures/attempt-1/meadow-attack-move-text-background.png",
+      "bytes": 199231,
+      "sha256": "ebd1a86e64e689803ecd3f0fe16b1367c45c7411ea16deb38b8dc5162123d220",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/attempt-1/meadow-attack-move.png",
+      "bytes": 215189,
+      "sha256": "8c4fc37b0562b3f1cbfebb1bd09bdb661a7cf50b58b037a37c5518003e8d9e2a",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/attempt-1/meadow-idle-text-background.png",
+      "bytes": 195312,
+      "sha256": "16aefba3969c681a8f0f38396d0f4541e457f8f6558a523574ca351d7f4b0427",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/attempt-1/meadow-idle.png",
+      "bytes": 207886,
+      "sha256": "93e6e10d70bdac01e6f836858d9d0184dd2458b93e385237c6ebe650774c076d",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/attempt-1/meadow-move-queued-text-background.png",
+      "bytes": 199231,
+      "sha256": "ebd1a86e64e689803ecd3f0fe16b1367c45c7411ea16deb38b8dc5162123d220",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/attempt-1/meadow-move-queued.png",
+      "bytes": 215189,
+      "sha256": "8c4fc37b0562b3f1cbfebb1bd09bdb661a7cf50b58b037a37c5518003e8d9e2a",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/attempt-2/live-capture-partial.json",
+      "bytes": 29580,
+      "sha256": "8bc28cffbf8adb2c8cb48a491dc985762e33f9807758a3bf79ce7cdce758c541"
+    },
+    {
+      "path": "captures/attempt-2/live-capture.json",
+      "bytes": 30032,
+      "sha256": "89c02a8ffac2e35ce1545bf51a39f9753f1d4d541fb5d809602cada129d97683"
+    },
+    {
+      "path": "captures/attempt-2/meadow-attack-move-text-background.png",
+      "bytes": 275857,
+      "sha256": "88da4969cfeafccb6e33884966511dc128aa5f41b1d5e81e8c1488fdce42785a",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/attempt-2/meadow-attack-move.png",
+      "bytes": 295961,
+      "sha256": "bc6349513a780bae0c50c369e25583711ad29b173003166cf5c06d137c4e8360",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/attempt-2/meadow-build-blocked-text-background.png",
+      "bytes": 276577,
+      "sha256": "94f2dd69e1655d01f46b2800efe0490b4599904976313ffef309f66c5af0727e",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/attempt-2/meadow-build-blocked.png",
+      "bytes": 296073,
+      "sha256": "daa84082f249869ee5971ddde89b42b37698879c30c9aaf8d9eb5278c5bcc846",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/attempt-2/meadow-build-clear-text-background.png",
+      "bytes": 275765,
+      "sha256": "39041bd938246c14f17d610cf4a28eb762370fd97418c5a6fdaddb4db3516f86",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/attempt-2/meadow-build-clear.png",
+      "bytes": 296120,
+      "sha256": "e659cdc5c52f40eed73335109b90469af63d5ecbeca2658870ae9e2a78bc099e",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/attempt-2/meadow-game-background.png",
+      "bytes": 225135,
+      "sha256": "1243fd02c09c46e6f13ab62327e6244097fccac63acb074269818ccd273e6cab",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/attempt-2/meadow-idle-text-background.png",
+      "bytes": 272301,
+      "sha256": "1b9efbf20ebcbb1f6e9998658098ca06d5964227e7b5928aba9b8a172c4428c7",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/attempt-2/meadow-idle.png",
+      "bytes": 285221,
+      "sha256": "fb15bed128e9cd0c60a70e847a4fae36862ec069c682a1d7d5c6a7c1033addd9",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/attempt-2/meadow-move-queued-text-background.png",
+      "bytes": 275857,
+      "sha256": "88da4969cfeafccb6e33884966511dc128aa5f41b1d5e81e8c1488fdce42785a",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/attempt-2/meadow-move-queued.png",
+      "bytes": 295961,
+      "sha256": "bc6349513a780bae0c50c369e25583711ad29b173003166cf5c06d137c4e8360",
+      "dimensions": [
+        1280,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/backgrounds/capture.json",
+      "bytes": 1052,
+      "sha256": "d65f785b9a47a6220dfc3e872e1b78a2541f23b18f7ae656957bbf87e6a6ccdf"
+    },
+    {
+      "path": "captures/backgrounds/meadow-game-background.png",
+      "bytes": 146730,
+      "sha256": "cd6cba420cbbd6add1157002311898a24a828f40366fda4bdac424b09efe55a0",
+      "dimensions": [
+        1024,
+        640
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/backgrounds/snow-game-background.png",
+      "bytes": 152628,
+      "sha256": "06eb8e8c0b2604add717f2d3bbc3e39310481e437895d37457ab03023d14f711",
+      "dimensions": [
+        1024,
+        640
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "captures/backgrounds/woodland-game-background.png",
+      "bytes": 164517,
+      "sha256": "a1aa90fe70be1e8dade17ee84f40e2263e99af4714e9c2d197a6b9fabed2c695",
+      "dimensions": [
+        1024,
+        640
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "contrast-proposals.json",
+      "bytes": 221310,
+      "sha256": "659b63ff3b41f07a34e0ca2b0333660686d389fd7ffe2345d92080d34faf3026"
+    },
+    {
+      "path": "contrast-runtime.json",
+      "bytes": 52542,
+      "sha256": "8e6409d32ef13cbd7bae77746254bcfc3cb66f089d89ce2cacdad0c579890663"
+    },
+    {
+      "path": "current-cursor-inventory.json",
+      "bytes": 5799,
+      "sha256": "4cf545cb0ed428da19f0bbb0ae280a8377eb0199bfbc5e2a57fb1f1c0599a196"
+    },
+    {
+      "path": "iterations/initial/asset-normal-size-check.png",
+      "bytes": 718598,
+      "sha256": "0f62e090db105360e9392ec361e5bee9b5b2224f14719ef8abc1a823de91a15e",
+      "dimensions": [
+        940,
+        1240
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/asset-render-review.json",
+      "bytes": 6120,
+      "sha256": "91ed22a61280a0008862aa03778f52f0b15517e05fdca973352652cf81afa790"
+    },
+    {
+      "path": "iterations/initial/preview.html",
+      "bytes": 12593,
+      "sha256": "5683ab17f22205a80b3574d801d4a6926eadc847ec5138d59fb0660f3d77f514"
+    },
+    {
+      "path": "iterations/initial/previews/journal-meadow-blocked-text-background.png",
+      "bytes": 331142,
+      "sha256": "20e5a8a0b3c9d4d30a12f32b668349791c29a652ae651a254f0615d01f41c012",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/journal-meadow-queued-text-background.png",
+      "bytes": 331620,
+      "sha256": "cdd709972cae42d1e21d4eb7bc09a9e738d0a43d1ebaa831163bbd589147da1b",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/journal-snow-blocked-text-background.png",
+      "bytes": 343662,
+      "sha256": "3a47b2932f9fb166b36b3809c0310dd61fef7f66e52ec173a556c08875ce888f",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/journal-snow-blocked.png",
+      "bytes": 376783,
+      "sha256": "e6ac36a0d63bd85e56aa12991510d51f6e76bd68da728e57c0915952a92c6fc4",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/journal-snow-queued-text-background.png",
+      "bytes": 343241,
+      "sha256": "1a4df1964da5960d348c1e44378a0bc7286b40afdde93a6ef071b85d0870a869",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/journal-woodland-blocked-text-background.png",
+      "bytes": 355820,
+      "sha256": "5adb0a87f659971ebd1f4b40f19b5ef4ae989bb590b75347861c79465e9452ed",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/journal-woodland-queued-grayscale.png",
+      "bytes": 280767,
+      "sha256": "2be6cef75a47c8d30d8efa8449fa731e27ea562219235b285ae439c570574faa",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/journal-woodland-queued-text-background.png",
+      "bytes": 356080,
+      "sha256": "64715394f37f734ccd38f35db24a9bdc2d597e3d1d217bca7879565e94d15c75",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/map-meadow-blocked-text-background.png",
+      "bytes": 341796,
+      "sha256": "e40f22e12de2140bd261d4414b50df3769df413384a74c46e24378115fb795c8",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/map-meadow-queued-text-background.png",
+      "bytes": 342107,
+      "sha256": "7b1ce26646f6ec430cce8401dee563ed0046f302c83e0c37041399c07a931630",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/map-snow-blocked-text-background.png",
+      "bytes": 353079,
+      "sha256": "abbaf00a7d29d07e938077e2de2cf22603b16cdac88a2d03b0a0f9ff485ceb59",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/map-snow-blocked.png",
+      "bytes": 385234,
+      "sha256": "7a36341c84c26b3d297cba9ebc7ad57ddb889d59f687319c95346029495da5ba",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/map-snow-queued-text-background.png",
+      "bytes": 352426,
+      "sha256": "930aba1a03fcac50f778732a6ba129c49cb33f8fec572ca6a9ec566f99a2c697",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/map-woodland-blocked-text-background.png",
+      "bytes": 365002,
+      "sha256": "eaa3c5bf6b7b1f4faaab2d373339470c7ed4f0d62fc95c04f89ca11c9f4ffe81",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/map-woodland-queued-grayscale.png",
+      "bytes": 288058,
+      "sha256": "b44ce35be452c730b67232970f54b5573252bcac31afc6b44f77f20b608f03e7",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/map-woodland-queued-text-background.png",
+      "bytes": 365782,
+      "sha256": "bee51ba953581bada94736dc68d51da517b609b0b7a33d2111809fe375755c4b",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/render-review.json",
+      "bytes": 127641,
+      "sha256": "5ba1c71f9f5ef9093ed9605b97539281f2696a1289353c14eeea46b7ff440df6"
+    },
+    {
+      "path": "iterations/initial/previews/three-directions-comparison.png",
+      "bytes": 788177,
+      "sha256": "9ee0e7ab36840cf5cfd2e78f38c976eb992b02edf0ce89cb92b06ddffc7817e0",
+      "dimensions": [
+        3864,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/wood-meadow-blocked-text-background.png",
+      "bytes": 400884,
+      "sha256": "45adb03bf3a1554b1fc316ff32544c64045a05426390e2fde67e1132c00d284b",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/wood-meadow-queued-text-background.png",
+      "bytes": 401296,
+      "sha256": "fd16e60af84a49609ff01c7c9a90e364948832b516689a910a2d3bb2fc8edcb0",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/wood-snow-blocked-text-background.png",
+      "bytes": 410816,
+      "sha256": "b9470b8395892dba48650e7b2227b4c93d615eb643506cd14d995c9504d25fba",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/wood-snow-blocked.png",
+      "bytes": 445921,
+      "sha256": "c56143c0e936d0665d9187f6ee403178053de10f19bd4c218655f12b14e539f0",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/wood-snow-queued-text-background.png",
+      "bytes": 410706,
+      "sha256": "dc645c2a95c51abcee1d36af0f15bfe4c371f493979b895a16322f0fcb90f9a6",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/wood-woodland-blocked-text-background.png",
+      "bytes": 419940,
+      "sha256": "1741e2bbcd461efd516657c86054091cbb4ba545b6a993fc19d61e69c1c4904c",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/wood-woodland-queued-grayscale.png",
+      "bytes": 312913,
+      "sha256": "9e24dee880e64e564d2c67227ef3a438a9620b6807d5036f5ca8ddb7de4de660",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/previews/wood-woodland-queued-text-background.png",
+      "bytes": 421558,
+      "sha256": "d8fed51a2f628c3e5bb022cbee68d390547eb2eb8b7902510ea4855e24d62c95",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "iterations/initial/render-executed.mjs",
+      "bytes": 4341,
+      "sha256": "04a859dea7ce80e4a9dded053155102b1b920c6ed856294dc68fa91ac918e301"
+    },
+    {
+      "path": "measure-contrast.py",
+      "bytes": 3167,
+      "sha256": "e31c1956370051595f626c0eaf1270e09939c7c11c4c3a7c1448819c43dc9bb6"
+    },
+    {
+      "path": "preview.html",
+      "bytes": 12632,
+      "sha256": "b6063fdbbb1cbf2a92ca808ab5c8a322ec34a82fbd4a5c0ee1aec02945a82d6e"
+    },
+    {
+      "path": "previews/asset-normal-size-check.png",
+      "bytes": 729377,
+      "sha256": "91dc231282434b28ca8bafb5c40143b6a0ff43d51bfbf09fc6aa858535068d50",
+      "dimensions": [
+        960,
+        1360
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/asset-render-review.json",
+      "bytes": 6120,
+      "sha256": "5708b238e1c378b97b6b8700c56583c81108b42f5f72fcdd6559f5e32588541c"
+    },
+    {
+      "path": "previews/journal-meadow-blocked-text-background.png",
+      "bytes": 322714,
+      "sha256": "5e6e353830ceac12b68a013f7ec6edab4de4d0073686a98b4b1a7a7182b1f2f5",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/journal-meadow-queued-text-background.png",
+      "bytes": 323471,
+      "sha256": "64d7860d8ae69fb1fa672eb562f109a6dcc7cd45a8b550e811ceceb941da8d51",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/journal-snow-blocked-text-background.png",
+      "bytes": 333001,
+      "sha256": "9c23c7f87d8fe999ee18fcb6a76de657340807faf3a01ca9958f3b9deabf9994",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/journal-snow-blocked.png",
+      "bytes": 378058,
+      "sha256": "bd281f2cf522f18191fd2363c70b3f70e36138b3cee71ceb0453cdcd73262a36",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/journal-snow-queued-text-background.png",
+      "bytes": 333091,
+      "sha256": "f0651f4a2c798cbeac8632b9f75464adcfc460e733169a2d491e90248433812d",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/journal-woodland-blocked-text-background.png",
+      "bytes": 343571,
+      "sha256": "3bd6af777ac85d609875fcddfcf4eede5f586340a96e132913ea05ed6d73c361",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/journal-woodland-queued-grayscale.png",
+      "bytes": 281744,
+      "sha256": "dd39b4a407d8d68bfcd18454f6994ad85f6909b79146fc9893051f5eb0920660",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/journal-woodland-queued-text-background.png",
+      "bytes": 343900,
+      "sha256": "778db8fae66e5a9ab0a48825d51e383ebcb8813de5c79fbdbff36759427909c3",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/map-meadow-blocked-text-background.png",
+      "bytes": 333123,
+      "sha256": "00d3c355d6f1eea19a74ed08fab19b548aab17aff9dde710681bb40f93d09189",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/map-meadow-queued-text-background.png",
+      "bytes": 332561,
+      "sha256": "dfe910fbc176a7d637a0f7adef44c68f0980636b97184cf96cf9ce74dc0740e1",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/map-snow-blocked-text-background.png",
+      "bytes": 342726,
+      "sha256": "a65b73120289e00dd78cbb39a729900ca7458a6ac551b8fa5ac336c3718bc247",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/map-snow-blocked.png",
+      "bytes": 385275,
+      "sha256": "ad45fb0fbb78e60983dc56b1537940223df57145eb588f2d4346f3674cd3d017",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/map-snow-queued-text-background.png",
+      "bytes": 343030,
+      "sha256": "e3a707d1d4e791c0297c1072a532e525fcd14e35962557b7926292df91e0dab9",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/map-woodland-blocked-text-background.png",
+      "bytes": 354686,
+      "sha256": "39f191b87ea3bd843af0c0372c6835934271240e845aa5500bb9f3992892a819",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/map-woodland-queued-grayscale.png",
+      "bytes": 288743,
+      "sha256": "f8d0eab5135377339564006e5411d8c68a99fb5979450025727a7e6be74abebe",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/map-woodland-queued-text-background.png",
+      "bytes": 355168,
+      "sha256": "0485cedacf8438ce71afa6bbf52adb6246c48165d93ef0b990255bf1db0b9536",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/render-review.json",
+      "bytes": 183873,
+      "sha256": "b881235d2e7fad90a68318b65802db923946ee109cd99344ef645bce943cb6b9"
+    },
+    {
+      "path": "previews/three-directions-comparison.png",
+      "bytes": 793792,
+      "sha256": "ee84f1fa7d748809b475dc0aac0f45b47e7d0381e8ed4f028fdadc4bfe41f892",
+      "dimensions": [
+        3864,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/wood-meadow-blocked-text-background.png",
+      "bytes": 392012,
+      "sha256": "b1dab49f1a149b41a8c42ca095ae969e901900d7425316edc5869003fa3c6c2c",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/wood-meadow-queued-text-background.png",
+      "bytes": 391520,
+      "sha256": "f6dd734e9ebd6063edfc6cf6bc5c8e088d9a4a849fb035e2789eb27ab40c2c1a",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/wood-snow-blocked-text-background.png",
+      "bytes": 401237,
+      "sha256": "8fb8857c72e8938508774aaffa1e1db98545d39450f0e9c5ba1f9837d34e6291",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/wood-snow-blocked.png",
+      "bytes": 447932,
+      "sha256": "4c940dfd4cf49d4486aec9ab34b86eb61f1174eef2598e01a063d0e87ca7ddb6",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/wood-snow-queued-text-background.png",
+      "bytes": 400839,
+      "sha256": "bc334affce17b2960622ed2bee6584399892028d575c5a8b6fd1ea26e6c80e34",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/wood-woodland-blocked-text-background.png",
+      "bytes": 412143,
+      "sha256": "cb003866232178215fd323cbfa783463cbbe62df5d11f00a520dada769258a79",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/wood-woodland-queued-grayscale.png",
+      "bytes": 313936,
+      "sha256": "cd86e5e35372a5679ea0514dfdd3773bea3e214976dccee3405d72b3b3e0781b",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "previews/wood-woodland-queued-text-background.png",
+      "bytes": 412005,
+      "sha256": "540a14d4a96e1371aa0632231b29d8280af42cffefeaae6e5c386af03b71988c",
+      "dimensions": [
+        1280,
+        1100
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "review.json",
+      "bytes": 2578,
+      "sha256": "a5a13f7265c9015f5379a6a8d4b9714507d3117bec5c7830426f69a2136abfc9"
+    },
+    {
+      "path": "source/README.md",
+      "bytes": 2380,
+      "sha256": "1e047b3bd29450d71d89c91fba8edc9609263d643385b9da30419e792bea9f11"
+    },
+    {
+      "path": "source/ui-audit-asset-board.mjs",
+      "bytes": 2095,
+      "sha256": "0a480b16241e09cf68b6c9fb2106d5f67f750c5187fcfbec79c7575c94260870"
+    },
+    {
+      "path": "source/ui-audit-background-capture.mjs",
+      "bytes": 2315,
+      "sha256": "e242f2c6a6598c1811283da40be6a4b36c099b0efddf816acd9ca6da2e819252"
+    },
+    {
+      "path": "source/ui-audit-cdp.mjs",
+      "bytes": 2863,
+      "sha256": "07450589e96596a2e2c3faa9ac1b0e5598f0b9702742229afca8702d9fe6a278"
+    },
+    {
+      "path": "source/ui-audit-live-capture.mjs",
+      "bytes": 6841,
+      "sha256": "01579f2e1a170dec58f4fb4d07a95eb898a54c8415232779f92479b86400b2bd"
+    },
+    {
+      "path": "source/ui-audit-render-previews.mjs",
+      "bytes": 4486,
+      "sha256": "a1f54d91edd43c8e4abb6f09b32fc25ced6b9828ceb4b97b6adff7979ae31189"
+    }
+  ]
+}

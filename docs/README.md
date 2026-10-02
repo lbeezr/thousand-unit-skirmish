@@ -85,6 +85,7 @@ from source/candidate packs. Then use the relevant contract:
 - [Unit/building kit](unit-building-art.md) and [GLB finish proposal](unit-building-art-output-proposal.md).
 - [Environment library](environment-pack-v1.md), [regional kit production](regional-environment-kits.md), and [interactive states](environment-state-pack-v1.md).
 - [Cursor/icon contract](ui-cursor-icon-contract.md).
+- [Vaelora HUD study](vaelora-hud-icon-audit-2026-10-02.md): verified state/asset inventory, sampled contrast, and three preserved visual directions on actual gameplay backgrounds.
 - [Asset directory index](../assets/README.md) for individual pack READMEs and provenance.
 
 ## Research and evidence
