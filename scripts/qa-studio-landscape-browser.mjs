@@ -1,5 +1,5 @@
-import {spawn} from 'node:child_process';
-import {readFile,writeFile,mkdtemp,mkdir} from 'node:fs/promises';
+import {startQaBrowser} from './temporary-resources.mjs';
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const ROOT=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -65,10 +65,11 @@ class Cdp {
 }
 
 
-const profile=await mkdtemp('/tmp/studio-landscape-chrome-');
-const chrome=spawn('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',['--headless=new','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--window-size=1440,1000','--user-data-dir='+profile,'about:blank'],{stdio:'ignore'});
+let browser;
 const out='docs/qa-evidence/studio-landscape-strokes-2026-09-30';let cdp;
 try{
+ browser=await startQaBrowser('studio-landscape-chrome-','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',['--headless=new','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--window-size=1440,1000']);
+ const {profile}=browser;
  let port;for(let i=0;i<100;i++){try{port=Number((await readFile(profile+'/DevToolsActivePort','utf8')).split('\n')[0]);if(port)break}catch{}await sleep(100)}
  const targets=await(await fetch('http://127.0.0.1:'+port+'/json/list')).json();cdp=new Cdp(targets.find(t=>t.type==='page').webSocketDebuggerUrl);
  await cdp.call('Page.enable');await cdp.call('Runtime.enable');await cdp.call('DOM.enable');await mkdir(out,{recursive:true});
@@ -95,4 +96,4 @@ try{
  await cdp.evaluate('document.querySelector("#studio-publish").click()');await sleep(1800);if(await cdp.evaluate('document.querySelector("#map-label-title")?.textContent')!==map.name)throw new Error('Save & Play failed: '+await cdp.evaluate('document.querySelector("#studio-message")?.textContent'));
  await cdp.evaluate('document.querySelector("#camera-fit-map").click()');await sleep(600);shot=await cdp.call('Page.captureScreenshot',{format:'png'});await writeFile(out+'/save-play.png',Buffer.from(shot.data,'base64'));
  await writeFile(out+'/report.json',JSON.stringify({source:'001301b9 + landscape-stroke working changes',curvedForest:true,resourcesOutsideStrokePreserved:true,fineErase:true,rectangleAlternative:true,download:true,saveAndPlay:true,errors},null,2)+'\n');if(errors.length)throw new Error(errors.join('\n'));console.log('Landscape stroke UI: curved forest, exact resource footprint, fine erase, rectangle alternative, Download JSON and Save & Play passed.');
-}finally{cdp?.close();chrome.kill('SIGTERM')}
+} finally {try {cdp?.close();} finally {await browser?.dispose();}}

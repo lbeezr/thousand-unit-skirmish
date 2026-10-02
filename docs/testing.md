@@ -123,6 +123,14 @@ start a separate worker with `RTS_MAX_PEERS=2` and run
 
 Chrome/Chromium is required; use `CHROME_PATH` if discovery fails.
 
+The vegetation, resource-direction, mist, meadow, landscape, settlement and
+terrain QA entrypoints create an invocation-owned profile under the job's
+temporary directory. Startup failures and capture exceptions dispose it; normal
+completion waits for Chrome to close before removal. Screenshots remain in their
+evidence directories. No old profiles or other release outputs are swept.
+`node --test scripts/temporary-resources.test.mjs` checks ownership, early failures,
+child shutdown and successful release cleanup with unrelated output retained.
+
 Before a browser proof, `node scripts/browser-preflight.mjs --launch` reuses the
 isolated CDP launcher, reads the browser version, and disposes its temporary
 profile. It emits versioned JSON and exits 0 for successful startup/cleanup or

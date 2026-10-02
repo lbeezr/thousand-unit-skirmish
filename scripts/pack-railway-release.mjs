@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { copyFile, lstat, mkdir, mkdtemp, readdir, readFile, writeFile } from 'node:fs/promises';
+import { copyFile, lstat, mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -121,20 +121,25 @@ async function copyEntry(relative) {
   copied.push(relative);
 }
 
-for (const entry of [...entries].sort()) await copyEntry(entry);
-if (!allowDirty && git('status', '--porcelain') !== '') {
-  throw new Error('Release checkout changed during packaging; discard this directory and retry');
-}
+try {
+  for (const entry of [...entries].sort()) await copyEntry(entry);
+  if (!allowDirty && git('status', '--porcelain') !== '') {
+    throw new Error('Release checkout changed during packaging; retry from a clean checkout');
+  }
 
-const digest = createHash('sha256');
-for (const relative of copied.sort()) {
-  digest.update(relative).update('\0').update(await readFile(path.join(destination, relative))).update('\0');
+  const digest = createHash('sha256');
+  for (const relative of copied.sort()) {
+    digest.update(relative).update('\0').update(await readFile(path.join(destination, relative))).update('\0');
+  }
+  const manifest = {
+    sourceRevision: revision,
+    sourceDirty: dirty,
+    digest: `sha256:${digest.digest('hex')}`,
+    files: copied,
+  };
+  await writeFile(path.join(destination, 'release-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+  console.log(JSON.stringify({ directory: destination, ...manifest }));
+} catch (error) {
+  await rm(destination, { recursive: true, force: true });
+  throw error;
 }
-const manifest = {
-  sourceRevision: revision,
-  sourceDirty: dirty,
-  digest: `sha256:${digest.digest('hex')}`,
-  files: copied,
-};
-await writeFile(path.join(destination, 'release-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
-console.log(JSON.stringify({ directory: destination, ...manifest }));

@@ -21,6 +21,12 @@ directory and reports the source revision and content digest. It rejects dirty
 checkouts. `--allow-dirty` is for disposable package tests and does not identify a
 reproducible committed release.
 
+If copying, verification or manifest creation fails, the packer removes only its
+new incomplete directory. A successful package stays available to its caller;
+keep it through staging and any approved promotion, then remove it when finished.
+The local release scenario stops its child before removing its own package and
+test volume, including when setup fails before server startup.
+
 On macOS the packer requests native copy-on-write cloning (`cp -c`) for regular
 files and falls back to ordinary copying when that command fails. Other platforms
 retain ordinary copying. The resulting files remain isolated snapshots; source
