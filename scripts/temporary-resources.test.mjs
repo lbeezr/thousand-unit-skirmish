@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
+import { once } from 'node:events';
 import { copyFile, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -158,6 +159,29 @@ test('a child ignoring termination is killed and closed before disposal', () => 
     assert.equal(await readFile(path.join(browser.profile, 'ready'), 'utf8'), 'ready');
     await browser.dispose(); await onlyRetained(scratch);
   } finally { await browser.dispose(); }
+}));
+
+test('an exited child with inherited pipes waits for close without another signal', () => fixture(async ({ root, scratch }) => {
+  const profile = await mkdtemp(path.join(scratch, 'pipe-profile-'));
+  const script = path.join(root, 'pipe-parent.mjs'), proof = path.join(root, 'pipe-proof');
+  const descendant = 'const fs = require("node:fs"); setTimeout(() => { fs.writeFileSync('
+    + JSON.stringify(proof) + ', fs.existsSync(' + JSON.stringify(profile) + ')?"profile-present":"profile-lost"); }, 600);';
+  await writeFile(script, 'import {spawn} from "node:child_process";\n'
+    + 'spawn(process.execPath, ["-e", ' + JSON.stringify(descendant) + '], {stdio:"inherit"}).unref(); process.exit(0);\n');
+  const child = spawn(process.execPath, [script], { stdio: ['ignore', 'pipe', 'pipe'] });
+  let closed = false; child.once('close', () => { closed = true; });
+  try {
+    await once(child, 'exit'); assert.equal(closed, false, 'descendant still holds the pipes');
+    child.kill = () => assert.fail('must not signal the exited process');
+    await stopChild(child, { graceMs: 30 });
+    assert.equal(closed, true, 'close is the disposal boundary');
+    assert.equal(await readFile(proof, 'utf8'), 'profile-present');
+    await stopChild(child); // Already closed is an immediate, safe repeated call.
+  } finally {
+    if (!closed) await once(child, 'close');
+    await rm(profile, { recursive: true, force: true });
+  }
+  await onlyRetained(scratch);
 }));
 
 test('all ten main QA entrypoints clean up after browser startup failure', { skip: process.platform !== 'linux' }, () => fixture(async ({ scratch }) => {

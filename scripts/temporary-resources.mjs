@@ -5,7 +5,10 @@ import path from 'node:path';
 
 // Stop only the child acquired by this invocation; wait before removing its data.
 export async function stopChild(child, { graceMs = 8000 } = {}) {
-  if (!child?.pid || child.exitCode !== null || child.signalCode !== null) return;
+  if (!child?.pid) return;
+  const exited = () => child.exitCode !== null || child.signalCode !== null;
+  // Descendants can hold inherited pipes after exit; closed streams mark safe disposal.
+  if (exited() && child.stdio.every(stream => !stream || stream.closed)) return;
   await new Promise((resolve, reject) => {
     let timer;
     const finish = error => {
@@ -15,8 +18,10 @@ export async function stopChild(child, { graceMs = 8000 } = {}) {
     };
     const closed = () => finish(), failed = error => finish(error);
     child.once('close', closed); child.once('error', failed);
-    timer = setTimeout(() => child.kill('SIGKILL'), graceMs);
-    child.kill('SIGTERM');
+    if (!exited()) {
+      timer = setTimeout(() => { if (!exited()) child.kill('SIGKILL'); }, graceMs);
+      child.kill('SIGTERM');
+    }
   });
 }
 
