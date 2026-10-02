@@ -94,7 +94,7 @@ function additiveMap(resourceNodes = [
   { id: 'food-cluster-1-4', type: 'food', x: 8.5, z: 10.5, stock: 13.5 },
   { id: 'existing-wood', type: 'wood', x: -3.5, z: 14.5, stock: 83 },
 ]) {
-  return { width: 64, height: 64, terrainBase: 'grass', terrainPatches: [], elevationPatches: [],
+  return { id: 'additive-test', name: 'ADDITIVE TEST', width: 64, height: 64, terrainBase: 'meadow', terrainPatches: [], elevationPatches: [],
     obstacles: [], spawnPoints: [{ team: 0, x: -20.5, z: 0.5 }, { team: 1, x: 20.5, z: 0.5 }], resourceNodes };
 }
 const pointCell = p => ({ column: Math.floor(p.x + 32), row: Math.floor(p.z + 32), width: 1, height: 1 });
