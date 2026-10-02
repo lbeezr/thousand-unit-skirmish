@@ -1,0 +1,269 @@
+{
+  "schema": "thousand-unit-skirmish.art-preservation-audit.v1",
+  "date": "2026-10-02",
+  "repository": "lbeezr/thousand-unit-skirmish",
+  "baseline": "9990ed3bb441fb0120a5aaad53d69798c18a66cc",
+  "scope": "Selected checkpoint integrity, curated source pixel inspection and artwork recovery/indexing; no runtime evidence",
+  "selectedCheckpoint": {
+    "manifest": "docs/art-direction/vaelora-v1/manifest.json",
+    "manifestSha256": "76289b13b1f3f841676ac0f3cfc0266e884360b84303fc8031bece8f6b77563a",
+    "entriesChecked": 21,
+    "checks": [
+      "git tracking",
+      "decoded dimensions",
+      "byte count",
+      "SHA-256"
+    ],
+    "result": "all match",
+    "exactGenerationPromptsPresentInCheckpoint": false
+  },
+  "inspectedSourceImages": [
+    {
+      "file": "docs/art-direction/vaelora-v1/bellweather-ecology.png",
+      "sha256": "043d3be76343e9e5c04850fe99be84333b977a7215e503152bf1ab9dc588ed40",
+      "bytes": 2881767,
+      "pixels": [
+        1536,
+        1024
+      ],
+      "tracked": true,
+      "visuallyInspected": true
+    },
+    {
+      "file": "docs/art-direction/vaelora-v1/underbough-ecology.png",
+      "sha256": "8a20fa0f121641e6066e144e80fa8f699c74a1884efab21c79c81bb5776cc264",
+      "bytes": 3135048,
+      "pixels": [
+        1536,
+        1024
+      ],
+      "tracked": true,
+      "visuallyInspected": true
+    },
+    {
+      "file": "docs/art-direction/vaelora-v1/sereward-ecology.png",
+      "sha256": "9c856d041c638cf3e2602b6500c87751f4f5ff5496b31f42cadb777bb1b02143",
+      "bytes": 2834725,
+      "pixels": [
+        1536,
+        1024
+      ],
+      "tracked": true,
+      "visuallyInspected": true
+    },
+    {
+      "file": "docs/art-direction/vaelora-v1/ellionar-ecology.png",
+      "sha256": "b1a4c22af679f031728c0d5bb66c43f7e41a8bee2748c396f6c962dbcb7ad1d2",
+      "bytes": 2945066,
+      "pixels": [
+        1536,
+        1024
+      ],
+      "tracked": true,
+      "visuallyInspected": true
+    },
+    {
+      "file": "docs/art-direction/vaelora-v1/veyrholds-ecology.png",
+      "sha256": "112c894249e14467b6905e685b715fe08d764d1c655cd88377734819f9f85dd5",
+      "bytes": 3108012,
+      "pixels": [
+        1536,
+        1024
+      ],
+      "tracked": true,
+      "visuallyInspected": true
+    },
+    {
+      "file": "docs/art-direction/vaelora-v1/pale-meridian-ecology.png",
+      "sha256": "f6fe68d0a40f0f118f37c40582c96ae0fb7c88ffe03977c8baac0ec500bd917e",
+      "bytes": 3116664,
+      "pixels": [
+        1536,
+        1024
+      ],
+      "tracked": true,
+      "visuallyInspected": true
+    },
+    {
+      "file": "docs/art-direction/vaelora-v1/siltmouths-ecology.png",
+      "sha256": "d8d7bbf05dee83f544ca322b5bf03ac3ec83a9c090d51c6991455f8f9ae95669",
+      "bytes": 2858079,
+      "pixels": [
+        1536,
+        1024
+      ],
+      "tracked": true,
+      "visuallyInspected": true
+    },
+    {
+      "file": "docs/art-direction/vaelora-v1/vesperra-ecology.png",
+      "sha256": "8775e1dd19596889cb5a89d508d0a9424399d3a07ffc389775774a5fc41fa7aa",
+      "bytes": 3020703,
+      "pixels": [
+        1536,
+        1024
+      ],
+      "tracked": true,
+      "visuallyInspected": true
+    },
+    {
+      "file": "docs/art-direction/vaelora-v1/sombral-mere-ecology.png",
+      "sha256": "3f268da6b8fe3d90f290661f0af6d5a742e2c4f5b40fe03d039ffdf76c5dcc5f",
+      "bytes": 2681253,
+      "pixels": [
+        1536,
+        1024
+      ],
+      "tracked": true,
+      "visuallyInspected": true
+    },
+    {
+      "file": "docs/art-direction/vaelora-v1/ru-lora-ecology.png",
+      "sha256": "de2facecd913436558baf31977e8aab4b5ab627649c6d2150ed49589010c8acc",
+      "bytes": 3068808,
+      "pixels": [
+        1536,
+        1024
+      ],
+      "tracked": true,
+      "visuallyInspected": true
+    },
+    {
+      "file": "docs/art-direction/vaelora-v1/bellweather-map.png",
+      "sha256": "53fd821208acfe8c40fbe516469f71553b3b8feb98b61913ca58c0e6f0e9732d",
+      "bytes": 3845695,
+      "pixels": [
+        1536,
+        1024
+      ],
+      "tracked": true,
+      "visuallyInspected": true
+    },
+    {
+      "file": "docs/art-direction/frontier-skirmish-direction-study-2026-09-26.png",
+      "sha256": "aea3f7ae681b4dbf3425297961b4f830dc8d7d3a7620b6eade15a9f6139e9109",
+      "bytes": 2189777,
+      "pixels": [
+        1536,
+        1024
+      ],
+      "tracked": true,
+      "visuallyInspected": true
+    },
+    {
+      "file": "docs/art-direction/neutral-human-chop-paintover-2026-09-29.png",
+      "sha256": "9a417c63ad87a62a44583912f40bc25eb856136687d123e1e5c594d26ce466f2",
+      "bytes": 776311,
+      "pixels": [
+        2172,
+        724
+      ],
+      "tracked": true,
+      "visuallyInspected": true
+    },
+    {
+      "file": "docs/art-direction/human-roster-v1/source/worker-walk-SE-v2.png",
+      "sha256": "a8c2b006555c39c55bfd8a31bf3f7d4552869b0ec0d6f210e450a0d38a7163c8",
+      "bytes": 1923031,
+      "pixels": [
+        1536,
+        1024
+      ],
+      "tracked": true,
+      "visuallyInspected": true
+    },
+    {
+      "file": "docs/art-direction/human-roster-v1/source/worker-walk-SE-v3.png",
+      "sha256": "a8ae80c22cdc0fbf7fcc24cdc8312fcabb0cb594d45ef0fd6e2960213125a525",
+      "bytes": 1733979,
+      "pixels": [
+        1536,
+        1024
+      ],
+      "tracked": true,
+      "visuallyInspected": true
+    }
+  ],
+  "trackedRasterFamilies": [
+    {
+      "directory": "docs/art-direction/vaelora-v1",
+      "trackedRasterCount": 24,
+      "bytes": 72009056,
+      "scope": "directory prefix; includes preview/evidence rasters where present"
+    },
+    {
+      "directory": "docs/art-direction/human-roster-v1/source",
+      "trackedRasterCount": 42,
+      "bytes": 67093682,
+      "scope": "directory prefix; includes preview/evidence rasters where present"
+    },
+    {
+      "directory": "docs/art-direction/human-mounted-v1/source",
+      "trackedRasterCount": 3,
+      "bytes": 6424981,
+      "scope": "directory prefix; includes preview/evidence rasters where present"
+    },
+    {
+      "directory": "docs/art-direction/boughward-roster-v1/source",
+      "trackedRasterCount": 7,
+      "bytes": 15808383,
+      "scope": "directory prefix; includes preview/evidence rasters where present"
+    },
+    {
+      "directory": "assets/buildings/frontier-civilization-concepts-v1",
+      "trackedRasterCount": 9,
+      "bytes": 15603691,
+      "scope": "directory prefix; includes preview/evidence rasters where present"
+    }
+  ],
+  "availableHistory": {
+    "shallow": false,
+    "query": "git log --all --name-only --format= -- docs/art-direction",
+    "historicalRasterPathsAbsentFromTrackedBaseline": [],
+    "boundary": "Available local Git refs only; excludes never-committed, ignored and Mac-only output"
+  },
+  "gaps": [
+    {
+      "id": "omitted-world-iterations",
+      "evidence": "docs/art-direction/vaelora-v1/README.md records earlier atlas, battlefield and culture sheets omitted",
+      "status": "unrecovered; exact source list unknown"
+    },
+    {
+      "id": "selected-world-prompts",
+      "evidence": "21 source filenames/hashes in selected manifest; no exact prompt archive in checkpoint",
+      "status": "recover from originating local session"
+    },
+    {
+      "id": "storehouse-pre-edit",
+      "originalOutputFilename": "exec-d6e36a1a-b930-4599-90d5-4674fdebc3b6.png",
+      "receipt": "assets/buildings/frontier-civilization-concepts-v1/prompts.json",
+      "selectedOutput": "assets/buildings/frontier-civilization-concepts-v1/storehouse.png",
+      "selectedSha256Verified": "976322d67489295e45f3533d20a51e02522f7d304b9c8446e79d70fcfdade8a8",
+      "status": "original absent from checkout and available concept-pack history; selected output verified"
+    },
+    {
+      "id": "mac-local-art",
+      "status": "not accessible; uncommitted/ignored counts and file existence unknown"
+    },
+    {
+      "id": "ignored-output",
+      "evidence": ".gitignore excludes assets/generated/ and meshy_output/",
+      "status": "local files there are not automatically tracked"
+    }
+  ],
+  "actions": {
+    "newGeneratedImages": 0,
+    "meshyJobs": 0,
+    "newBinaryFiles": 0,
+    "runtimeChanges": false,
+    "privateSourceFilesCopied": false
+  },
+  "reproduction": [
+    "git ls-files -z",
+    "git log --all --name-only --format= -- docs/art-direction",
+    "git log --all --name-only --format= -- assets/buildings/frontier-civilization-concepts-v1",
+    "python3: decode with PIL.Image; hashlib.sha256 and file stat against selected manifest",
+    "npm run docs:check",
+    "git diff --check"
+  ]
+}

@@ -20,6 +20,10 @@ Broad oaks, pear trees, barley fields, sheep pasture and meadow wildlife give Be
 
 Farm households, mills and market yards make ordinary seasonal work visible. Working development favors grain, wool, orchard produce and tools exchanged through dependable routes. Prosperity has maintenance costs and differences in landholding, but the region is not defined by a curse.
 
+The [Bellweather Sheep entry](../wildlife.md#bellweather-sheep) develops the animal
+already pictured in the ecology key. Its linked harvest/behavior and perspective
+design is a proposal; animal mechanics and new sprites are not implemented.
+
 ## Connections
 
 [Pellit](../settlements.md#pellit) is a proposed market town whose flour deliveries connect it commercially to [Ellionar](ellionar.md) and [Sereward](sereward.md). Its [First Loaf customs](../settlements.md#pellit) and shared reserves make harvest a social as well as economic event.
