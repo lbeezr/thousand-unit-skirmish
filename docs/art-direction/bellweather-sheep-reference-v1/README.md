@@ -35,5 +35,10 @@ generator output directory; this versioned repository copy has identical bytes.
 The pack preserves the exact prompt, reference role/hash and rejected registration.
 Generation does not establish clearance of every incidental output detail.
 
+**Later 2 October revisions:** [v2](../bellweather-sheep-reference-v2/README.md)
+removes misleading guides; [v3](../bellweather-sheep-reference-v3/README.md) adds
+approximate degree labels under the verified runtime convention. This v1 PNG,
+prompt, manifest and original rejection review remain unchanged.
+
 This is a local source branch based on the wildlife/index proposal. No third PR
 or merge is opened by this slice. Its wiki changes are not yet on fork main.

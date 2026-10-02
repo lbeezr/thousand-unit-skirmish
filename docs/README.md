@@ -75,6 +75,8 @@ from source/candidate packs. Then use the relevant contract:
 
 - [Art direction](art-direction-contract-v1.md) and [production lanes](art-production-lanes.md).
 - [Wildlife draft](wildlife-bellweather-sheep.md): inspected regional fauna, one Sheep proposal, behavior, habitat and future perspective/sprite coverage.
+- [Asset angle-reference standard](asset-angle-reference-standard.md): labeled rotations appropriate to asset type, verified runtime yaw/camera mapping, scale/root acceptance and angle-specific sprite-source provenance.
+- [Sheep model-reference pilot](bellweather-sheep-model-reference-pilot.md): one clean single-subject input recommendation and a measured local rotation contract; generation cap and walking remain separate decisions.
 - [Renderer state/GLB/environment contract](renderer-state-contract.md).
 - [Sprite-atlas format](sprite-atlas-contract-v1.md).
 - [First civilization style](frontier-civilization-art-style.md) and [illustrated architecture wiki](lore/frontier-architecture.md).

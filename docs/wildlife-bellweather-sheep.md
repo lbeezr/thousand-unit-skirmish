@@ -6,9 +6,11 @@ simulation, map placement or balance changes are delivered by this document.
 
 [Wiki wildlife entry](lore/wildlife.md) · [Art evolution](lore/art-evolution.md)
 
-**2 October source follow-up:** a [new reference candidate](art-direction/bellweather-sheep-reference-v1/README.md)
-has been generated and preserved separately from this original proposal. Its
-world-yaw labels fail registration review; no production sprite is claimed.
+**2 October source follow-ups:** the [v1 reference](art-direction/bellweather-sheep-reference-v1/README.md)
+and [v2 descriptive correction](art-direction/bellweather-sheep-reference-v2/README.md)
+remain preserved. The [current v3 angle reference](art-direction/bellweather-sheep-reference-v3/README.md)
+retains the Sheep design with corrected, explicitly approximate degree labels.
+It is not measured runtime registration; no production sprite is claimed.
 
 ## Observed source
 
@@ -92,12 +94,15 @@ coordinates and changes no resource-placement algorithm or existing food nodes.
 First prepare a same-animal anatomy sheet: front, left profile, right profile,
 rear, and elevated three-quarter. Preserve head shape, ear attachment, four legs,
 fleece mass and tail across views. Plain anatomy guides and painted concepts are
-separate review stages. The first reference candidate now exists; its dimensions
-and game headings need correction. No accepted game-ready sheet exists yet.
+separate review stages. The current v3 candidate carries corrected approximate
+angle labels; its actual camera, dimensions and root are unmeasured. No accepted
+game-ready sheet exists yet. The [angle-reference standard](asset-angle-reference-standard.md)
+defines the verified runtime mapping and future angle-specific source extraction.
 
 For game views, keep the [measured camera](art-direction/environment-camera-v1/README.md)
 fixed at 45° azimuth / 45.4359024848° elevation. Rotate the animal in eight world
-yaws from 0° through 315°; yaw zero points +Z. Label world yaw explicitly instead
+yaws from 0° through 315°; yaw zero points +Z, positive rotation turns toward +X.
+Label world yaw explicitly instead
 of guessing compass labels from the painting. Share one canvas, root, scale and
 light direction; use true rear/profile drawings rather than mirroring one view.
 
