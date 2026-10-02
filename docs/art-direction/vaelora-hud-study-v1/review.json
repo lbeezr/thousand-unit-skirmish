@@ -21,7 +21,8 @@
     "iterations/initial/asset-normal-size-check.png",
     "captures/backgrounds/meadow-game-background.png",
     "captures/backgrounds/snow-game-background.png",
-    "captures/backgrounds/woodland-game-background.png"
+    "captures/backgrounds/woodland-game-background.png",
+    "previews/compact-three-directions.png"
   ],
   "observations": [
     "Current pointer/hammer bodies and pale borders remain visible on the three board crops; badges and queue plus are small.",
@@ -29,7 +30,8 @@
     "Existing pale SVG icons need a dark plate on parchment.",
     "First sketch Objectives/Hold glyphs were unsupported in captured fonts; portable text retained in revised iteration.",
     "First asset-board viewport clipped lower notes; revised 960x1360 capture includes the complete board.",
-    "Grayscale wood preview retains live labels, state words and plus/cross shapes."
+    "Grayscale wood preview retains live labels, state words and plus/cross shapes.",
+    "Compact code-authored comparison has readable direction captions and complete thumbnails; it is presentation-only, not native-size text/badge acceptance."
   ],
   "measurementSummary": {
     "runtimeRegions": 75,

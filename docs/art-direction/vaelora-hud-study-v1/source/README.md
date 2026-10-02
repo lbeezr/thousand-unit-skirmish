@@ -1,12 +1,13 @@
 # Executed capture and render source
 
-These five files preserve the exact scripts used for the revised study:
+These files preserve the exact scripts used for the revised study:
 
 - [CDP bridge and owned Chromium lifecycle](ui-audit-cdp.mjs).
 - [Actual gameplay states](ui-audit-live-capture.mjs); executed with `meadow`.
 - [Three terrain backgrounds](ui-audit-background-capture.mjs).
 - [Three direction renders and text-hidden samples](ui-audit-render-previews.mjs).
 - [Native-size DOM cursor/icon board](ui-audit-asset-board.mjs).
+- [Compact three-concept presentation](ui-audit-compact-previews.mjs).
 
 They ran with Node 24.19.0, `/usr/bin/chromium`, and the repository's existing
 `scripts/fortified-crossing-fixture.mjs`, using disposable game servers and

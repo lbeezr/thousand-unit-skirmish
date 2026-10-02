@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-02",
+  "method": "code-authored thumbnail comparison of preserved original concept screenshots; not native-size evaluation",
+  "viewport": [
+    1740,
+    800
+  ],
+  "images": [
+    {
+      "src": "previews/journal-snow-blocked.png",
+      "ok": true
+    },
+    {
+      "src": "previews/wood-snow-blocked.png",
+      "ok": true
+    },
+    {
+      "src": "previews/map-snow-blocked.png",
+      "ok": true
+    }
+  ],
+  "height": 741,
+  "width": 1740,
+  "errors": []
+}

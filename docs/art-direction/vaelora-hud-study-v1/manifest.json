@@ -12,15 +12,15 @@
     "initial glyph-defective sketches and clipped first asset board preserved",
     "revised portable text and complete asset board"
   ],
-  "imageCount": 72,
-  "imageBytes": 25099804,
+  "imageCount": 73,
+  "imageBytes": 25464787,
   "copiedRuntimeAssets": false,
   "privateCredentialsIncluded": false,
   "files": [
     {
       "path": "README.md",
-      "bytes": 3620,
-      "sha256": "09953097ae4707199d2261e9bd0d34b3627c3f0c5982e356a4d5661c40ab9d5f"
+      "bytes": 3805,
+      "sha256": "bcc4fe51ca922e241567b0141a97ef5c81904b7b7997cfa985f063a8ce193de4"
     },
     {
       "path": "asset-check.html",
@@ -246,6 +246,11 @@
         640
       ],
       "mode": "RGB"
+    },
+    {
+      "path": "compact-preview.html",
+      "bytes": 1861,
+      "sha256": "fae5f9edbbe3573e0f2313e90ed97069712e18d4cbe4d791e09a86fa135252af"
     },
     {
       "path": "contrast-proposals.json",
@@ -568,6 +573,21 @@
       "sha256": "5708b238e1c378b97b6b8700c56583c81108b42f5f72fcdd6559f5e32588541c"
     },
     {
+      "path": "previews/compact-render-review.json",
+      "bytes": 487,
+      "sha256": "826fa04c67fe6f1bb3754ef95da223bc00e2d6f873fbdcfe031d7dedf6e53f9b"
+    },
+    {
+      "path": "previews/compact-three-directions.png",
+      "bytes": 364983,
+      "sha256": "4c83dce74a5f5fd333c4b80795ca3a4357b6aeb6330e3dcdcc65d8304e335446",
+      "dimensions": [
+        1740,
+        800
+      ],
+      "mode": "RGB"
+    },
+    {
       "path": "previews/journal-meadow-blocked-text-background.png",
       "bytes": 322714,
       "sha256": "5e6e353830ceac12b68a013f7ec6edab4de4d0073686a98b4b1a7a7182b1f2f5",
@@ -824,13 +844,13 @@
     },
     {
       "path": "review.json",
-      "bytes": 2578,
-      "sha256": "a5a13f7265c9015f5379a6a8d4b9714507d3117bec5c7830426f69a2136abfc9"
+      "bytes": 2784,
+      "sha256": "041381256e1dc471affbe58bfb186eb0b5f8e94d1836371389d904b3c9050100"
     },
     {
       "path": "source/README.md",
-      "bytes": 2380,
-      "sha256": "1e047b3bd29450d71d89c91fba8edc9609263d643385b9da30419e792bea9f11"
+      "bytes": 2446,
+      "sha256": "bfce6facefa32dafcbcf6d6500b02877e1f845e9d66282d17346c488b3ad2baa"
     },
     {
       "path": "source/ui-audit-asset-board.mjs",
@@ -846,6 +866,11 @@
       "path": "source/ui-audit-cdp.mjs",
       "bytes": 2863,
       "sha256": "07450589e96596a2e2c3faa9ac1b0e5598f0b9702742229afca8702d9fe6a278"
+    },
+    {
+      "path": "source/ui-audit-compact-previews.mjs",
+      "bytes": 1991,
+      "sha256": "106bd04a74deda87a9064837c618c68734f55296cf70c0fbc911a70ed47c03b6"
     },
     {
       "path": "source/ui-audit-live-capture.mjs",

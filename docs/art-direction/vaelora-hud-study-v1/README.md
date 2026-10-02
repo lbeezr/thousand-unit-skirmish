@@ -27,6 +27,9 @@ surface; ornament must remain distinct from real gameplay markers.
 
 ## Review and reproduction
 
+- [Compact three-concept preview](previews/compact-three-directions.png),
+  with readable direction captions. Presentation thumbnails; use full-size
+  images for text/badge evaluation.
 - [Three-direction comparison](previews/three-directions-comparison.png).
 - [All 16 cursors at 40 px; icons at 13/19/24 px](previews/asset-normal-size-check.png).
 - Grayscale proxies: [journal](previews/journal-woodland-queued-grayscale.png),
