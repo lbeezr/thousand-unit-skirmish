@@ -49,12 +49,15 @@ elevation/resource/objective connectivity helpers. All eight nodes and three
 objective zones are reachable for both seats; both bases are clear. No new
 throughput measurements, wildlife match or visual runtime proof was performed.
 
-Reproduce the stock calculation from repository root:
+Reproduce the **named baseline's** stock calculation from repository root. Read
+the pinned map from Git so a later map merge does not rewrite this historical
+measurement:
 
 ```sh
 node --input-type=module - <<'JS'
-import { readFileSync } from 'node:fs';
-const m = JSON.parse(readFileSync('maps/bellweather-millrace.json', 'utf8'));
+import { execFileSync } from 'node:child_process';
+const revision = '9990ed3bb441fb0120a5aaad53d69798c18a66cc';
+const m = JSON.parse(execFileSync('git', ['show', `${revision}:maps/bellweather-millrace.json`], { encoding: 'utf8' }));
 const stock = { food: 0, wood: 0 }, forest = new Set();
 for (const n of m.resourceNodes) stock[n.type] += n.stock;
 for (const o of m.obstacles) if (o.material === 'forest')
@@ -69,6 +72,10 @@ JS
 Use [the existing regional layout scenario](../scripts/vaelora-map-layout-scenario.mjs)
 for broader access checks; it also rewrites the layout SVG, so review its output
 diff. Reverify the owning server constant and map hash after a baseline changes.
+The concurrent [Millrace cluster pilot](https://github.com/lbeezr/thousand-unit-skirmish/pull/22)
+proposes 40 nodes and 5,604 total wood; that candidate is distinct from the eight-node
+baseline above. Each implementation report must name its actual revision and
+budgets rather than carry this historical total forward as current state.
 
 ## Metrics and evidence contract
 
@@ -109,8 +116,9 @@ decisions; existing 2,000-unit evidence does not establish supported capacity.
 | 1.3 | Record generator version and layout seed; isolate cosmetic and behavior RNG streams so an art change cannot move economic entities. Add replayable seed fixtures. |
 | 1.4 | Add a bounded one/three/six-worker delivery experiment and bank/cargo/spend conservation report using authoritative state. |
 
-**Acceptance:** current Millrace reproduces 2,800 food / 4,204 wood / 234 forest
-cells; legacy maps retain state/IDs; repeated seeds produce the same economic
+**Acceptance:** the pinned Millrace baseline reproduces 2,800 food / 4,204 wood /
+234 forest cells, and each later candidate reports its own declared supply;
+legacy maps retain state/IDs; repeated seeds produce the same economic
 layout; invalid resource/biome combinations identify their field; both-seat
 reports include real deposited stock and all excluded grants. **Risks:** schema
 churn, double counting, visual fields gaining simulation authority, and treating
