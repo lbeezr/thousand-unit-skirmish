@@ -13,6 +13,7 @@ start; this index covers maintained guides, contracts, experiments, and evidence
 | How should the game look and read? | [Art direction](art-direction-contract-v1.md) |
 | What are Vaelora’s selected zone maps and ecology keys? | [Art checkpoint](art-direction/vaelora-v1/README.md) |
 | Where do I read and extend Vaelora's lore? | [Lore wiki](lore/README.md): world, regions, peoples, institutions, history and magic |
+| Where are saved art iterations and preservation gaps? | [Art evolution](lore/art-evolution.md) |
 | What informs Vaelora's prose, continuity and world-building plan? | [Voice bible](lore-voice-bible.md), [research](lore-research.md), [strategy and plan](lore-strategy.md) |
 | Where is the first reviewable lore foundation? | [L1 writing package](lore-foundation-m1.md): principles, history, settlements, institutions and calibration fiction |
 | Who carries an art outcome through delivery? | [Art lanes](art-production-lanes.md) |
@@ -73,6 +74,7 @@ Start with the [asset guide](assets.md), which distinguishes active runtime path
 from source/candidate packs. Then use the relevant contract:
 
 - [Art direction](art-direction-contract-v1.md) and [production lanes](art-production-lanes.md).
+- [Wildlife draft](wildlife-bellweather-sheep.md): inspected regional fauna, one Sheep proposal, behavior, habitat and future perspective/sprite coverage.
 - [Renderer state/GLB/environment contract](renderer-state-contract.md).
 - [Sprite-atlas format](sprite-atlas-contract-v1.md).
 - [First civilization style](frontier-civilization-art-style.md) and [illustrated architecture wiki](lore/frontier-architecture.md).

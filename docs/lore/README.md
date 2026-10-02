@@ -23,6 +23,8 @@ Each regional entry includes its selected map and flora/fauna key. These are con
 | Time | [History](history.md), [Three Measures dispute](three-measures.md) |
 | Supernatural world | [Magic and materials](magic.md), [Colossumbra](colossumbra.md), [Lumastrazil](lumastrazil.md) |
 | Architecture | [Frontier settlement building kit](frontier-architecture.md) |
+| Wildlife | [Regional fauna and first Sheep design](wildlife.md) |
+| Visual development | [Art evolution: saved studies, rejected iterations and recovery gaps](art-evolution.md) |
 | Local places | [Pellit](settlements.md#pellit), [Istrava](settlements.md#istrava), [Tassel’s Ennd](settlements.md#tassels-ennd) |
 | Editorial reference | [Sources and open decisions](sources.md) |
 

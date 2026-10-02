@@ -35,4 +35,5 @@ New working additions in this wiki include modest livelihoods for less-developed
 
 ## Change record
 
+- 2 October 2026: added [wildlife](wildlife.md) from inspected selected ecology art and [art evolution](art-evolution.md) linking saved studies/rejected iterations. Sheep behavior and sprite coverage remain proposals; omitted original outputs and exact Vaelora prompts remain recovery gaps.
 - 30 September 2026: first connected wiki. Reorganized selected art, research and revised foundation into reference entries. Added working regional livelihoods and faction concerns. Preserved the earlier writing package as a dated record. Current priority shifted from additional scenes/scenario writing to expanding and reconciling entries.

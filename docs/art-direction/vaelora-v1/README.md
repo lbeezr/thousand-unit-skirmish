@@ -2,7 +2,7 @@
 
 User-selected concept checkpoint, 29 September 2026. Vaelora is the working world name.
 
-This collection retains the latest world atlas, ten individual zone maps and ten flora/fauna keys selected in the art-direction conversation. Earlier atlas, battlefield and culture-sheet iterations from that conversation are superseded and omitted. The old September 26 direction study remains solely as a dated historical reference linked by the archive.
+This collection retains the latest world atlas, ten individual zone maps and ten flora/fauna keys selected in the art-direction conversation. Earlier atlas, battlefield and culture-sheet iterations from that conversation were superseded and omitted from this selected package. The [art-evolution wiki](../../lore/art-evolution.md) now indexes preserved studies and records the missing-iteration recovery gaps; omitted outputs have not been recovered in the cloud checkout. The old September 26 direction study remains a dated historical reference, also accessible there.
 
 These are aspirational paintings, not playable maps, texture atlases, production models or evidence of runtime appearance. Camera, footprint, team cues and asset contracts remain authoritative. Specimen sizes are illustrative; tiny labels, incidental anatomy, ornaments and generated resource uses are not production specifications. Vesperra and the Sombral Mere currently lean especially magical. Field-guide names are provisional.
 
