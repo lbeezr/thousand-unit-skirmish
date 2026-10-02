@@ -171,6 +171,47 @@ checks do not replace a played opening with the Town Center present.
 `type`, world `x`/`z`, and positive finite `stock`. Map Studio can add, select, change stock, or remove
 nodes. Obstacle painting over a node removes it.
 
+Millrace expands its eight resource anchors into five-node seeded patches (40
+nodes), mirrored between seats. Each original anchor stays in place. Added nodes
+stay within four cells, two cells apart, outside the six-cell starting clearings,
+Town Centers, blockers and painted dirt tracks, at the anchor's elevation.
+Generation fails if it cannot place every node safely or both seats cannot reach
+them with Town Centers present. Terrain, forests and objectives are preserved.
+
+The explicit pilot settings are `MILLRACE_RESOURCE_CLUSTERS` in
+[`src/resource-cluster-authoring.mjs`](../src/resource-cluster-authoring.mjs): seed
+93000, five nodes per patch, food patch totals 650/750 and wood totals 975/1,125
+per seat. Food stays 2,800; node wood rises 2,800 → 4,200. Forest wood stays 1,404,
+so total gatherable wood rises 4,204 → 5,604 (+33.3%), excluding opening banks and
+scenario rewards. Worker gathering remains one unit/second while gathering with
+ten-unit cargo; more markers do not multiply a Worker's rate. Travel and total
+stock are separate balance variables; contested match pacing remains unmeasured.
+
+Shortest orthogonal routes from each spawn, with terrain/elevation and the real
+Town Center footprint present, give these equal-seat distances. Means weight each
+node by its stock; these are grid steps to node centers, not observed trip times.
+
+| Patch | Nearest before → after | Stock-weighted mean before → after |
+| --- | --- | --- |
+| Home food | 11 → 10 | 11 → 12.8 |
+| Home wood | 11 → 9 | 11 → 12.2 |
+| Expansion food | 29 → 24 | 29 → 28.2 |
+| Expansion wood | 30 → 28 | 30 → 31.4 |
+
+An automated two-seat opening delivered ten food and ten wood per seat from new
+nodes by 17.97 scenario seconds and conserved stock/cargo across restart. Using
+the original anchors on baseline and pilot delivered the same credit at 17.93
+and 17.97 seconds respectively (one tick apart). This is one opening sample;
+crowded throughput, contested balance and in-game cluster appearance still need
+match/camera observation.
+
+Regenerate only this pilot with `node scripts/seed-millrace-resources.mjs`.
+It changes only Millrace's `resourceNodes` and is idempotent. The regional builder
+applies the same profile after settlement paint. To customize an individual map,
+select/edit/remove the materialized nodes in Map Studio; regeneration replaces
+those edits. The editor still places individual food/wood sites; a cluster brush
+and new currencies are separate future work.
+
 Forest obstacles also have six wood per cell in the current simulation. They
 use a separate cell address (`row * width + column`) and mutable stock table,
 rather than consuming ordinary resource-node slots. Cutting a cell clears its

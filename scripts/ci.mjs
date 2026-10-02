@@ -62,6 +62,7 @@ run(['scripts/forest-habitat-scenario.mjs'], 'Graduated woodland habitat margins
 run(['scripts/forest-composition-scenario.mjs'], 'Regional dominant species groves');
 run(['scripts/forest-age-scenario.mjs'], 'Seeded irregular canopy ages preserve every root');
 run(['scripts/settlement-authoring-scenario.mjs'], 'Grounded starting settlements');
+run(['--test', 'scripts/resource-cluster-authoring.test.mjs'], 'Seeded Millrace resource clusters');
 run(['scripts/check-docs.mjs'], 'Documentation links');
 run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs'], 'Verified shipped audio and execution gates');
 run(['--test', 'scripts/zone-audio-import-contract.test.mjs'], 'Zone audio import provenance');
@@ -117,6 +118,7 @@ run(['--test', 'scripts/unit-health-visual.test.mjs'], 'Visible damaged-unit hea
 run(['--test', 'scripts/navigation-settings.test.mjs'], 'Camera navigation settings and controls');
 
 const scenarios = [
+  ['scripts/millrace-resource-scenario.mjs', 'Millrace cluster gathering and recovery'],
   ['scripts/regional-objective-scenario.mjs', 'Millrace both-seat hold and rematch', 'bellweather-millrace'],
   ['scripts/regional-objective-scenario.mjs', 'Rootways both-seat hold and rematch', 'underbough-rootways'],
   ['scripts/underbough-gameplay-proof.mjs', 'Rootways 250-unit economy and recovery (winner 0)', '0'],
