@@ -130,6 +130,17 @@ distinction between source availability and acceptance.
 
 ## Recovery gaps
 
+The [dated Sheep cloud-capture record](../qa-evidence/bellweather-sheep-static-reference-2026-10-02/README.md)
+indexes the producer's saved eight-view model reference and preserves a small
+derived capture contract. Cycles CPU completed the color views with denoising
+off; the rejected contact-shadow experiment remains diagnostic evidence. The
+model's 42.035° face/body turn keeps nose yaw separate from locomotion facing.
+Full private originals and the large bundle remain in Library, with identities
+in the private handoff. No large binary is duplicated here; the complete
+manifest was read, while the documentation worker's image materialization failed.
+
+### Historical source audit gaps
+
 | Gap | Verified boundary and next action |
 | --- | --- |
 | Earlier world/battlefield/culture iterations | The selected checkpoint explicitly recorded their omission. It gives neither a complete filename list nor prompts for those omitted outputs. No absent historical raster path was found in available `docs/art-direction` Git history. Recover the original outputs and selection reasons from the originating local session before claiming preservation. |

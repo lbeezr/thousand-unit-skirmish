@@ -1,8 +1,9 @@
 # Bellweather Sheep model-reference pilot contract
 
-**2 October 2026:** preparation only: one proposed textured, unrigged Sheep
-model, then local measured rotation renders. No Meshy job, input upload, balance
-check or credit spend was performed by this slice. The user now authorizes up to
+**2 October 2026:** input preparation and a documented producer cloud-render
+follow-up for one textured, unrigged Sheep reference. This documentation worker
+performed no Meshy job, provider input upload, balance check or credit spend.
+The user authorizes up to
 **60 Meshy credits total per unit/object** for a reusable saved base reference
 model. The parent-designated paid-call worker owns balance/estimate evidence and
 all provider submissions. This worker prepares inputs only. Walking remains a
@@ -21,7 +22,9 @@ The [clean single-Sheep input](art-direction/bellweather-sheep-model-input-v1/RE
 now exists as a separately preserved built-in ImageGen edit, 1254 × 1254,
 SHA-256 `0ff688101304a7c10e181b3363ce767e8fb0082d0f754817edee81e04a9bf904`.
 Pixel review confirms one complete subject without sheet labels/axes/grids.
-It has been saved to Library, not uploaded to Meshy.
+It was saved to Library by the input-preparation slice. The later producer
+model manifest cites this same public input and hash; this worker did not make
+the provider submission.
 
 Prepare one complete animal with breathing room, no neighboring sheep, sheet
 labels, guides or other objects. If unwanted ground guides remain, record a
@@ -99,6 +102,16 @@ that model's geometric consistency; it cannot prove hidden anatomy matches the
 drawn concept. No runtime loader or animation acceptance follows automatically.
 
 ## Walking is a later decision
+
+The [documented cloud result](qa-evidence/bellweather-sheep-static-reference-2026-10-02/README.md)
+records a working Cycles CPU capture default and eight unclipped 512 px views.
+The producer's measured nose/body-forward difference is 42.035°: these are
+face-heading reference rotations, not neutral locomotion facings. The original
+model and capture bundle remain in Library; this follow-up adds only a small
+derived contract and attributed review, with no private/large binary in Git.
+The documentation worker read the complete manifest but could not materialize
+the contact-sheet pixels, so it claims structural evidence rather than a new
+independent visual model review.
 
 After static appearance, axes, measured proportions and contact pass, verify a
 supported quadruped rig path. The Meshy skill's humanoid rig/bundled walk recipe
