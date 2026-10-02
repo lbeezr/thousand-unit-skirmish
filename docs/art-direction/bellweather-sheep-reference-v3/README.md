@@ -1,7 +1,7 @@
 # Bellweather Sheep angle reference v3
 
 **2 October 2026:** approximate-angle concept reference retaining the approved
-Sheep appearance. Local source branch; not yet integrated into fork main.
+Sheep appearance. Review source branch saved to the fork; not yet on fork main.
 
 ![Sheep approximate-angle reference v3](bellweather-sheep-reference-v3.png)
 

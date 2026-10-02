@@ -40,5 +40,6 @@ removes misleading guides; [v3](../bellweather-sheep-reference-v3/README.md) add
 approximate degree labels under the verified runtime convention. This v1 PNG,
 prompt, manifest and original rejection review remain unchanged.
 
-This is a local source branch based on the wildlife/index proposal. No third PR
-or merge is opened by this slice. Its wiki changes are not yet on fork main.
+This is a review source branch based on the wildlife/index proposal, saved to
+the fork after source validation. No third PR or merge is opened by this slice.
+Its wiki changes are not yet on fork main.

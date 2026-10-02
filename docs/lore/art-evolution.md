@@ -62,7 +62,7 @@ eight panels for future angle-specific source use; no sprites have been extracte
 The [asset angle-reference standard](../asset-angle-reference-standard.md) now
 requires labeled rotations appropriate to every asset type and separates concept
 intentions from calibrated sprite acceptance. All three Sheep iterations remain
-saved with their exact prompts and review status on this local source branch;
+saved with their exact prompts and review status on this review source branch;
 these additions are not yet integrated into fork main.
 
 The [Sheep model-reference pilot contract](../bellweather-sheep-model-reference-pilot.md)
