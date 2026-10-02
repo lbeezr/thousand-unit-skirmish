@@ -18,7 +18,9 @@ The [first species design](../wildlife-bellweather-sheep.md) proposes a small fl
 that players can claim, move and harvest for finite food. It also inventories
 the ten inspected ecology keys and specifies future anatomy, perspective and
 sprite work. These are game/art proposals, not established lore history or
-implemented mechanics. No new animal image or sprite accompanies this entry.
+implemented mechanics. A [new Sheep reference candidate](../art-direction/bellweather-sheep-reference-v1/README.md)
+now accompanies the entry; its game-yaw registration is rejected pending
+correction. No production animal sprite or runtime mechanic is delivered.
 
 **Sources:** [selected regional art](../art-direction/vaelora-v1/README.md),
 [Bellweather](regions/bellweather.md), and direct source-pixel review recorded in

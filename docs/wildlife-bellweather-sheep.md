@@ -1,10 +1,14 @@
 # Bellweather Sheep — first harvestable animal draft
 
-**Status, 2 October 2026:** source-based design proposal at fork main `9990ed3`.
+**Original proposal, 2 October 2026:** source-based design at fork main `9990ed3`.
 One species, existing illustrations only. No new art, sprites, models, animal
 simulation, map placement or balance changes are delivered by this document.
 
 [Wiki wildlife entry](lore/wildlife.md) · [Art evolution](lore/art-evolution.md)
+
+**2 October source follow-up:** a [new reference candidate](art-direction/bellweather-sheep-reference-v1/README.md)
+has been generated and preserved separately from this original proposal. Its
+world-yaw labels fail registration review; no production sprite is claimed.
 
 ## Observed source
 
@@ -88,7 +92,8 @@ coordinates and changes no resource-placement algorithm or existing food nodes.
 First prepare a same-animal anatomy sheet: front, left profile, right profile,
 rear, and elevated three-quarter. Preserve head shape, ear attachment, four legs,
 fleece mass and tail across views. Plain anatomy guides and painted concepts are
-separate review stages. Neither sheet exists yet.
+separate review stages. The first reference candidate now exists; its dimensions
+and game headings need correction. No accepted game-ready sheet exists yet.
 
 For game views, keep the [measured camera](art-direction/environment-camera-v1/README.md)
 fixed at 45° azimuth / 45.4359024848° elevation. Rotate the animal in eight world
@@ -126,8 +131,9 @@ picture would not implement this loop. A later gameplay slice must own entity
 identity, fog, authoritative transitions, cargo/drop-off reuse, recovery/rematch,
 AI behavior and Map Studio serialization before claiming harvestable animals.
 
-The next art outcome is one saved anatomy/perspective candidate with exact input
-references and review notes. Later inspect loaded art at 1280 × 720, recorded DPR,
+The next art outcome corrects the saved candidate's world-yaw interpretation
+against a deterministic camera guide, retaining v1 and its prompt/review. Later
+inspect loaded art at 1280 × 720, recorded DPR,
 ordinary 0.91 and strategic 0.48 zoom: sheep versus Worker/rock recognition, ground
 contact, eight headings, motion and resource states. A later two-seat match must
 prove contested claims, food conservation, blocked routes, worker death,

@@ -28,6 +28,22 @@ evidence, outside the 21-image generated concept manifest.
 
 ## Anatomy and appearance experiments
 
+### Bellweather Sheep — 2 October source candidate
+
+![New Sheep reference study v1](../art-direction/bellweather-sheep-reference-v1/bellweather-sheep-reference-v1.png)
+
+The [first Sheep reference sheet](../art-direction/bellweather-sheep-reference-v1/README.md)
+is a new built-in ImageGen attempt based on the selected Bellweather key.
+Its [exact prompt](../art-direction/bellweather-sheep-reference-v1/PROMPT.json),
+[manifest](../art-direction/bellweather-sheep-reference-v1/manifest.json) and
+[review](../art-direction/bellweather-sheep-reference-v1/review.json) preserve
+the output and its defects. Anatomy is a discussion candidate; world-yaw
+registration is rejected pending correction. Baked guide marks and dimensions
+are not runtime camera/pivot proof. Retain this attempt when another revision
+is produced.
+
+### Earlier Human and Orc studies
+
 The existing [Human reference](../art-direction/neutral-human-reference-2026-09-29.png)
 and [Orc reference](../art-direction/neutral-orc-reference-2026-09-29.png) precede
 the [neutral chopping poses](../art-direction/neutral-human-chop-keyposes-2026-09-29.png)
@@ -105,7 +121,9 @@ recovery has been verified. A text receipt alone is not a saved image.
 
 **Evidence:** [preservation audit](../art-direction/preservation-audit-2026-10-02.json)
 records checked source hashes, counts, inspected pixels and gaps. Images embedded
-above are existing tracked files; no image generation, Meshy job, repaint or
-runtime capture was performed for this index.
+above predate this index except the separately dated Sheep v1 follow-up. That
+follow-up made one built-in ImageGen sheet; no Meshy, paid external generation,
+repaint or runtime capture was performed. The dated preservation audit remains
+the record of the earlier source-only inspection, not a manifest of this new sheet.
 
 [Wildlife](wildlife.md) · [Wiki index](README.md) · [Documentation index](../README.md)
