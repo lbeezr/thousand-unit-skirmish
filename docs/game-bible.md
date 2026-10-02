@@ -129,6 +129,13 @@ mirrored armies will always draw; spatial tie-breaking can still matter. See
 
 ## Quality floor
 
+With no living friendly selection, Quick commands retains access to Commands,
+Production, Army and Idle workers while the selection command body is hidden.
+Selecting units or an owned building restores contextual commands; closing a
+detail drawer retains selection and returns focus to an available command.
+Resources, population, minimap and independent urgent feedback stay outside
+that visibility switch. See the [contextual HUD contract](contextual-hud-validation.md).
+
 - A first glance identifies the team, objective, route, and selection. The QA
   protocol measures this with a newcomer and a two-minute observation window.
 - Every important action gives immediate, specific feedback; rejected actions

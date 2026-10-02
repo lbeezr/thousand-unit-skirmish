@@ -95,6 +95,7 @@ run(['--test', 'scripts/pve-entry.test.mjs'], 'PvE entry observer settling');
 run(['--test', 'scripts/hud-layout.test.mjs'], 'Visible HUD layout');
 run(['--test', 'scripts/objective-summary.test.mjs', 'scripts/completion-event-labels.test.mjs'], 'Compact objectives and event feedback');
 run(['--test', 'scripts/selection-context.test.mjs'], 'Contextual selection');
+run(['--test', 'scripts/contextual-hud.test.mjs'], 'Empty selection HUD and command focus');
 run(['--test', 'scripts/roster-production-ui.test.mjs'], 'Roster production choices');
 run(['--test', 'scripts/building-placement-forest.test.mjs'], 'Disclosed forest building placement');
 run(['--test', 'scripts/population.test.mjs'], 'Population reservations and capacity');
