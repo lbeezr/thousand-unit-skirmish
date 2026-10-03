@@ -31,8 +31,8 @@ Actual packed main/stance/layout GET/HEAD bytes, MIME and hashes, plus six glyph
 serving/rejection checks, pass. This is local release evidence, not deployment
 or native browser acceptance.
 
-The latest read-only Railway staging observation at **22:55:42 UTC** reports
-SUCCESS deployment `df65855c-57e3-4979-a345-1c7e83e90173`, source
+The latest read-only Railway staging result reports SUCCESS deployment
+`df65855c-57e3-4979-a345-1c7e83e90173`, updated at **22:55:42 UTC**, source
 `0fb9a3dcc1f93f44b87fe5ea8ab8caabf9da0739`. Git ancestry contains PR134/PR150
 and excludes PR180/PR159/PR185. Earlier SUCCESS deployment
 `29d74cac-b078-4a88-8f2a-e3141a2f9465`, source
