@@ -13,6 +13,7 @@ test('Stone is explicit and preserves every baseline price and canonical pin', (
   assert.deepEqual(economyResources(STONE), ['food', 'wood', 'stone']);
   assert.equal(economyRulesetRevision(BASE), GAMEPLAY_RULESET_REVISION);
   assert.notEqual(economyRulesetRevision(STONE), GAMEPLAY_RULESET_REVISION);
+  assert.match(economyRulesetRevision(STONE), /^v1:[0-9a-f]{64}$/);
   for (const type of Object.keys(BUILDING_DEFINITIONS)) {
     assert.deepEqual(constructionCostForProfile(type), BUILDING_DEFINITIONS[type].cost);
     assert.deepEqual(constructionCostForProfile(type, STONE), type === 'watchtower'
@@ -68,4 +69,14 @@ test('paid Stone defense rejects fractional shortfalls atomically and refunds on
   assert.equal(creditEconomyRefund(paid, { food: 0, wood: 75 }, STONE).stone, paid.stone,
     'ordinary training refund cannot invent Stone');
   assert.throws(() => proportionalEconomyRefund(cost, 10, 0, STONE));
+});
+
+test('finite inputs cannot overflow into an infinite refund or bank', () => {
+  const cost = { food: 0, wood: 1e303, stone: 50 };
+  assert.throws(() => proportionalEconomyRefund(cost, 35, 35, STONE), /Invalid economy cost/);
+  const bank = { food: 0, wood: 1e308, stone: 0 };
+  const refund = { food: 0, wood: 1e308, stone: 0 };
+  assert.throws(() => creditEconomyRefund(bank, refund, STONE), /Invalid economy balance/);
+  assert.deepEqual(bank, { food: 0, wood: 1e308, stone: 0 }, 'overflow rejection never changes the input bank');
+  assert.deepEqual(refund, { food: 0, wood: 1e308, stone: 0 });
 });

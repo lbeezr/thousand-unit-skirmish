@@ -67,8 +67,8 @@ export function debitEconomyCost(balance, cost, profileId = DEFAULT_ECONOMY_PROF
   validateEconomyBalance(balance, profileId);
   validateEconomyCost(cost, profileId);
   if (Object.keys(cost).some(resource => balance[resource] + 1e-9 < cost[resource])) return null;
-  return Object.fromEntries(economyResources(profileId).map(resource =>
-    [resource, Math.max(0, balance[resource] - (cost[resource] ?? 0))]));
+  return validateEconomyBalance(Object.fromEntries(economyResources(profileId).map(resource =>
+    [resource, Math.max(0, balance[resource] - (cost[resource] ?? 0))])), profileId);
 }
 
 export function proportionalEconomyRefund(cost, remaining, duration, profileId = DEFAULT_ECONOMY_PROFILE_ID) {
@@ -77,19 +77,20 @@ export function proportionalEconomyRefund(cost, remaining, duration, profileId =
     throw new Error('Invalid paid-work refund interval');
   }
   const fraction = Math.max(0, Math.min(1, remaining / duration));
-  return Object.fromEntries(Object.entries(cost).map(([resource, amount]) =>
-    [resource, Math.round(amount * fraction * 1e6) / 1e6]));
+  return validateEconomyCost(Object.fromEntries(Object.entries(cost).map(([resource, amount]) =>
+    [resource, Math.round(amount * fraction * 1e6) / 1e6])), profileId);
 }
 
 export function creditEconomyRefund(balance, refund, profileId = DEFAULT_ECONOMY_PROFILE_ID) {
   validateEconomyBalance(balance, profileId);
   validateEconomyCost(refund, profileId);
-  return Object.fromEntries(economyResources(profileId).map(resource =>
-    [resource, creditResourceBalance(balance[resource], refund[resource] ?? 0)]));
+  return validateEconomyBalance(Object.fromEntries(economyResources(profileId).map(resource =>
+    [resource, creditResourceBalance(balance[resource], refund[resource] ?? 0)])), profileId);
 }
 
 // Baseline saves/wire retain their exact existing canonical gameplay pin.
 export const STONE_ECONOMY_RULESET_REVISION = await gameplayRulesetRevision({
+  version: 1,
   baseRulesetRevision: GAMEPLAY_RULESET_REVISION,
   economyProfileId: STONE_ECONOMY_PROFILE_ID,
   construction: { watchtower: constructionCostForProfile('watchtower', STONE_ECONOMY_PROFILE_ID) },
