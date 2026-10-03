@@ -6,19 +6,19 @@ import { pathingBaselineMap } from './pathing-baseline-cases.mjs';
 process.env.RTS_MAP='maps/open-field.json';process.env.RTS_GAME_MODE='pvp';process.env.RTS_PREGAME='0';
 process.env.RTS_TICK_DIAGNOSTICS='1';process.env.RTS_SEPARATION_DIAGNOSTICS='1';
 delete process.env.RTS_MATCH_STATE_PATH;
-async function movingGroup(kind='dynamic-goal') {
+async function movingGroup(kind='dynamic-goal',team=0) {
   const fixture=await createPathingReplayFixture(pathingBaselineMap({group:64,kind})),r=fixture.replay;
-  const army=r.units.filter(u=>u.team===0&&u.kind==='infantry');
-  r.order(0,{type:'move',ids:army.map(u=>u.id),x:16.5,z:.5});r.drain();
+  const army=r.units.filter(u=>u.team===team&&u.kind==='infantry');
+  r.order(team,{type:'move',ids:army.map(u=>u.id),x:16.5,z:.5});r.drain();
   for(let tick=0;tick<15;tick++)r.step();
   return {fixture,r,army};
 }
 
-test('paid obstruction relocates blocked formation goals without reusing surviving friendly goals',async()=>{
-  const {fixture,r,army}=await movingGroup();
+for(const team of [0,1])test(`seat ${team}: paid obstruction relocates blocked formation goals without reusing surviving friendly goals`,async()=>{
+  const {fixture,r,army}=await movingGroup('dynamic-goal',team);
   try {
-    const oldGoals=army.map(u=>u.moveGoalCell),worker=r.units.find(u=>u.kind==='worker'&&u.team===0);
-    const notices=r.order(0,{type:'build',ids:[worker.id],buildingType:'house',x:16.5,z:.5});r.drain();
+    const oldGoals=army.map(u=>u.moveGoalCell),worker=r.units.find(u=>u.kind==='worker'&&u.team===team);
+    const notices=r.order(team,{type:'build',ids:[worker.id],buildingType:'house',x:16.5,z:.5});r.drain();
     assert.ok(notices.some(n=>n.message.startsWith('BUILD ORDER')));
     const footprint=new Set(r.buildings.at(-1).footprint);
     assert.equal(footprint.size,9);
@@ -34,6 +34,25 @@ test('paid obstruction relocates blocked formation goals without reusing survivi
       assert.equal(u.pathIndex,u.path.length);assert.ok(Math.hypot(u.x-p.x,u.z-p.z)<.02);
     }
   } finally {await fixture.dispose();}
+});
+
+test('opponent movement destinations do not change friendly obstruction fallback cells',async()=>{
+  async function repair(opponentGoal) {
+    const {fixture,r,army}=await movingGroup();
+    try {
+      const oldGoals=army.map(u=>u.moveGoalCell);
+      if(opponentGoal!==undefined) {
+        const enemy=r.units.find(u=>u.team===1&&u.kind==='infantry'),p=r.point(opponentGoal);
+        r.order(1,{type:'move',ids:[enemy.id],x:p.x,z:p.z});r.drain();
+        assert.equal(enemy.moveGoalCell,opponentGoal);
+      }
+      const worker=r.units.find(u=>u.team===0&&u.kind==='worker');
+      r.order(0,{type:'build',ids:[worker.id],buildingType:'house',x:16.5,z:.5});r.drain();
+      return {goals:army.map(u=>u.moveGoalCell),relocated:army.find((u,i)=>u.moveGoalCell!==oldGoals[i]).moveGoalCell};
+    } finally {await fixture.dispose();}
+  }
+  const first=await repair();
+  assert.deepEqual((await repair(first.relocated)).goals,first.goals);
 });
 
 test('a footprint across the only choke is rejected without changing movement goals or navigation',async()=>{

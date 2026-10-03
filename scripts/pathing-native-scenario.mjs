@@ -26,6 +26,8 @@ try {
     orders.push({tick:client.latest.tick,command,notice:notice.message});
   }
   const started=performance.now(),startTick=client.latest.tick;
+  const done=u=>!u.movePlanningPending&&u.pathIndex===u.path.length
+    &&Math.hypot(u.x-(u.moveGoalCell%map.width-map.width/2+.5),u.z-(Math.floor(u.moveGoalCell/map.width)-map.height/2+.5))<.02;
   await order({type:'move',ids:army.map(u=>u[0]),unitGenerations:army.map(u=>u[8]),x:16.5,z:.5},/MOVE ORDER/);
   if(kind.startsWith('dynamic-')) {
     await client.state(s=>s.tick>=startTick+15,'obstruction tick');
@@ -37,8 +39,6 @@ try {
   while(performance.now()-started<50000) {
     saved=await fixture.checkpoint(s=>s.mapDefinition.id===map.id);
     const units=saved.state.units.filter(u=>ids.has(u.id));
-    const done=u=>!u.movePlanningPending&&u.pathIndex===u.path.length
-      &&Math.hypot(u.x-(u.moveGoalCell%map.width-map.width/2+.5),u.z-(Math.floor(u.moveGoalCell/map.width)-map.height/2+.5))<.02;
     arrived=units.filter(done).length;
     samples.push({tick:saved.state.tickNumber,arrived,pending:units.filter(u=>u.movePlanningPending).length,
       activePaths:units.filter(u=>u.pathIndex<u.path.length).length});
@@ -47,7 +47,7 @@ try {
   }
   const units=saved.state.units.filter(u=>ids.has(u.id)),goals=new Map();
   for(const u of units){const list=goals.get(u.moveGoalCell)||[];list.push(u.id);goals.set(u.moveGoalCell,list);}
-  const stalled=units.filter(u=>u.movePlanningPending||u.pathIndex<u.path.length)
+  const stalled=units.filter(u=>!done(u))
     .map(u=>({id:u.id,x:u.x,z:u.z,goal:u.moveGoalCell,pathIndex:u.pathIndex,pathLength:u.path.length,
       pending:u.movePlanningPending,revision:u.orderRevision,lastMoveTick:u.lastMoveTick,
       sharedGoalUnits:goals.get(u.moveGoalCell)}));
