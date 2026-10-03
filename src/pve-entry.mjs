@@ -68,7 +68,7 @@ function addRunStamp(document, mapLabel) {
   return { stamp, map, mapSeed, policySeed };
 }
 
-function mountPveEntry() {
+export function mountPveEntry() {
   const document = window.document;
   const actions = document.querySelector('.room-actions');
   const mapLabelContainer = document.querySelector('.map-label');
@@ -237,7 +237,7 @@ function mountPveEntry() {
   }
 }
 
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && window.document.documentElement?.dataset?.entry !== 'menu') {
   if (window.document.readyState === 'loading') {
     window.document.addEventListener('DOMContentLoaded', mountPveEntry, { once: true });
   } else {

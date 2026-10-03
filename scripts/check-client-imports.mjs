@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 
 // Audit served modules, so deployment/packaging omissions cannot hide behind
 // source-file checks. This follows static imports, not runtime asset requests.
-export async function checkClientImports(base, { authorization, fetchImpl = fetch } = {}) {
+export async function checkClientImports(base, { authorization, fetchImpl = fetch, entrypoints = ['/src/main.js'] } = {}) {
   const origin = new URL(base).origin;
-  const pending = ['/src/main.js'];
+  const pending = [...entrypoints];
   const visited = new Set();
   const checks = [];
   while (pending.length) {
@@ -30,6 +30,11 @@ export async function checkClientImports(base, { authorization, fetchImpl = fetc
           : specifier.startsWith('/') ? specifier : null;
       assert.ok(dependency, `unmapped browser import ${specifier} in ${modulePath}`);
       pending.push(dependency);
+    }
+    for (const [, specifier] of source.matchAll(/import\s*\(\s*['"]([^'"]+)['"]\s*\)/g)) {
+      const dependency = new URL(specifier, url);
+      assert.equal(dependency.origin, origin, `dynamic browser import must stay on the game origin: ${specifier}`);
+      pending.push(dependency.pathname);
     }
   }
   return checks;

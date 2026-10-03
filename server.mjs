@@ -7059,6 +7059,13 @@ function pruneExpiredSessions(now = Date.now()) {
   syncPregameSeats();
 }
 
+function sessionForResumeToken(token) {
+  if (typeof token !== 'string' || !/^[A-Za-z0-9_-]{43}$/.test(token)) return null;
+  const session = sessions.get(createHash('sha256').update(token).digest('base64url'));
+  return session && (session.peer && !session.peer.closed && !session.peer.socket.destroyed
+    || session.expiresAt > Date.now()) ? session : null;
+}
+
 function releasePeer(peer, graceful = false) {
   if (peer.closed) return;
   peer.closed = true;
@@ -7483,6 +7490,12 @@ const server = createServer(async (request, response) => {
     }));
     return;
   }
+  if (url.pathname === '/api/session' && request.method === 'GET') {
+    const session = sessionForResumeToken(request.headers['x-rts-resume-token']);
+    response.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' });
+    response.end(JSON.stringify({ valid: Boolean(session) }));
+    return;
+  }
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     response.writeHead(405);
     response.end('Method not allowed');
@@ -7515,6 +7528,7 @@ const server = createServer(async (request, response) => {
     'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',
     'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs',
     'src/room-lobby-ui.mjs', 'src/room-lobby-chat-ui.mjs', 'src/room-lobby.css',
+    'src/game-entry.mjs', 'src/game-entry-session.mjs', 'src/game-menu.css',
     'src/scenario-regions.mjs', 'src/scenario-authoring.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
     'src/shore-fishing.mjs', 'src/shore-fishing-placeholder.mjs', 'src/shore-fishing-placement.mjs',
     'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs', 'src/resource-brush-controls.mjs',
@@ -7685,6 +7699,10 @@ server.on('upgrade', (request, socket, head) => {
     .split(',').map((protocol) => protocol.trim());
   const resumeProtocol = requestedProtocols.find((protocol) => /^rts-resume\.[A-Za-z0-9_-]{43}$/.test(protocol));
   const resumeToken = resumeProtocol ? resumeProtocol.slice('rts-resume.'.length) : null;
+  if (url.searchParams.get('resumeOnly') === '1' && !sessionForResumeToken(resumeToken)) {
+    socket.end('HTTP/1.1 409 Conflict\r\nConnection: close\r\nContent-Length: 0\r\n\r\n');
+    return;
+  }
   const selectedProtocol = requestedProtocols.includes('rts-v1') ? 'rts-v1' : null;
   const compressionEnabled = hasCompatiblePerMessageDeflateOffer(request);
   const accept = createHash('sha1').update(`${key}258EAFA5-E914-47DA-95CA-C5AB0DC85B11`).digest('base64');
