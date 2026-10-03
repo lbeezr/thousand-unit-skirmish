@@ -71,8 +71,8 @@ function client(roomId, token) {
   };
   value.close = async () => {
     if (socket.readyState === WebSocket.CLOSED) return;
-    const closed = new Promise(resolve => socket.addEventListener('close', resolve, { once: true }));
-    socket.close(); await closed;
+    socket.close(1000, 'room chat scenario complete');
+    await until(() => socket.readyState === WebSocket.CLOSED, 'client disconnect');
   };
   return value;
 }
@@ -170,6 +170,8 @@ try {
     'room isolation and legacy admission', 'retry acknowledgement and rate limits across rejoin', 'readiness unchanged by chat',
     'chat/launch serialization and rematch', 'ephemeral recovery without checkpoint chat', 'public UI/private authority routes'] }));
 } finally {
-  await Promise.allSettled(clients.map(value => value.close()));
-  await stop(); await rm(directory, { recursive: true, force: true });
+  const closing = Promise.allSettled(clients.map(value => value.close()));
+  await stop();
+  await closing;
+  await rm(directory, { recursive: true, force: true });
 }

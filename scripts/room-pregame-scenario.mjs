@@ -78,7 +78,7 @@ function client(roomId, token) {
   };
   value.close = async () => {
     if (socket.readyState === WebSocket.CLOSED) return;
-    socket.close();
+    socket.close(1000, 'pregame scenario complete');
     await until(() => socket.readyState === WebSocket.CLOSED, 'client disconnect');
   };
   return value;
