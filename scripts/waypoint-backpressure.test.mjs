@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
+import { websocketFrameBytes } from '../src/networking/websocket-frame.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 function between(start, end) {
@@ -15,7 +16,7 @@ function transport() {
   const frames = [];
   let rows = [[7, 1]];
   const context = vm.createContext({
-    Buffer, MAX_PEER_QUEUED_BYTES: 1024, outboundQueueLimitDisconnects: 0,
+    Buffer, websocketFrameBytes, MAX_PEER_QUEUED_BYTES: 1024, outboundQueueLimitDisconnects: 0,
     peakOutboundQueuedBytes: 0, lastWaypointQueueCountsByTeam: [[], []],
     snapshotQueuedWaypointCounts: (team) => team === 0 ? rows : [],
     prepareJsonFrame: (message) => Buffer.from(JSON.stringify(message)),
@@ -24,7 +25,7 @@ function transport() {
     roomPayload: () => ({ type: 'state', mapId: 'new-map', queuedWaypointCounts: [] }),
   });
   vm.runInContext([
-    between('function websocketFrameBytes(', 'function sendPeerControlFrame('),
+    between('function canQueuePeerFrame(', 'function sendPeerControlFrame('),
     between('function broadcastWaypointQueueCounts()', 'function clientOrderToken('),
     `globalThis.peer = {
       team: 0, closed: false, backpressured: true, pendingState: null, pendingWaypointCounts: null,

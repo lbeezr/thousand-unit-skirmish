@@ -51,8 +51,11 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
     enqueueRouteRepairs:list=>repairs.push(...list),spreadInteractingUnits(){},advanceQueuedWaypoints(){}});
   vm.runInContext(server.slice(server.indexOf('function harvestNodeById('),server.indexOf('function routeWorker(')),context);
   vm.runInContext(server.slice(server.indexOf('function getMoveVector('),server.indexOf('// Units stop following paths')),context);
-  const movement=server.slice(server.indexOf('  const blockedRouteRepairs = [];'),
-    server.indexOf('\n}\n\nfunction encodeWebSocketFrame'));
+  const movementStart=server.indexOf('  const blockedRouteRepairs = [];');
+  const movementEndMarker='  advanceQueuedWaypoints();';
+  const movementEnd=server.indexOf(movementEndMarker,movementStart);
+  assert.ok(movementStart>=0&&movementEnd>movementStart,'real simulation movement source boundaries');
+  const movement=server.slice(movementStart,movementEnd+movementEndMarker.length);
   vm.runInContext(`function moveOneTick(){${movement}}`,context);
   if(realRepairs){
     Object.assign(context,{nearestOpenCell:c=>walkable(c)?c:-1,performance,TICK_RATE:30,
