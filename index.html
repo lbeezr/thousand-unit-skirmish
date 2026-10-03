@@ -156,9 +156,16 @@
             <button type="button" class="contextual-icon-command" data-context-proxy="order-target-toggle"><img src="/assets/ui/icons/move.svg" alt="" width="20" height="20"><span data-command-label>Target battlefield</span></button>
             <button type="button" class="contextual-icon-command" data-persistent-order="patrol"><img src="/assets/ui/icons/actions/patrol.svg" alt="" width="20" height="20"><span>Patrol · P</span></button>
             <button type="button" class="contextual-icon-command" data-persistent-order="follow"><img src="/assets/ui/icons/actions/follow.svg" alt="" width="20" height="20"><span>Follow · F</span></button>
-            <button type="button" class="contextual-icon-command" data-stationary-order="stop"><img src="/assets/ui/icons/actions/stop.svg" alt="" width="20" height="20"><span>Stop · S</span></button>
+            <button type="button" class="contextual-icon-command" data-stationary-order="stop" title="Clear current tasks and queued routes; military sets No attack. Explicit Attack remains available."><img src="/assets/ui/icons/actions/stop.svg" alt="" width="20" height="20"><span>Stop · S</span></button>
             <button type="button" class="contextual-icon-command" data-return-cargo hidden title="Deliver selected Workers’ resources or Skiffs’ food to a reachable owned drop-off"><img src="/assets/ui/icons/actions/return-cargo.svg" alt="" width="20" height="20"><span>Return cargo</span></button>
-            <button type="button" class="contextual-icon-command" data-stationary-order="holdPosition"><img src="/assets/ui/icons/actions/hold-position.svg" alt="" width="20" height="20"><span>Hold position · H</span></button>
+            <button type="button" class="contextual-icon-command" data-stationary-order="holdPosition" title="Stay in place; military sets Stand ground and never chases. A stance choice releases military Hold."><img src="/assets/ui/icons/actions/hold-position.svg" alt="" width="20" height="20"><span>Hold position · H</span></button>
+            <span class="contextual-stances" data-stance-controls data-command-layout role="group" aria-label="Military stance" hidden>
+              <span id="military-stance-status" data-stance-status>Stance</span>
+              <button type="button" data-combat-stance="aggressive" aria-pressed="false" aria-describedby="military-stance-status"><span data-stance-check aria-hidden="true" hidden>✓ </span>Aggressive</button>
+              <button type="button" data-combat-stance="defensive" aria-pressed="false" aria-describedby="military-stance-status"><span data-stance-check aria-hidden="true" hidden>✓ </span>Defensive</button>
+              <button type="button" data-combat-stance="standGround" aria-pressed="false" aria-describedby="military-stance-status"><span data-stance-check aria-hidden="true" hidden>✓ </span>Stand ground</button>
+              <button type="button" data-combat-stance="noAttack" aria-pressed="false" aria-describedby="military-stance-status"><span data-stance-check aria-hidden="true" hidden>✓ </span>No attack</button>
+            </span>
             <button type="button" class="contextual-icon-command" data-context-proxy="attack-move-toggle" title="Move while attacking enemies encountered · M"><img src="/assets/ui/icons/attack.svg" alt="" width="20" height="20"><span>Attack move · M</span></button>
             <button type="button" data-context-proxy="select-workers">Select workers</button>
             <button type="button" class="contextual-icon-command" data-context-build data-context-panel="economy" title="Open construction choices"><img src="/assets/ui/icons/build.svg" alt="" width="20" height="20"><span>Build</span></button>
@@ -324,8 +331,8 @@
             </div>
             <button type="button" class="attack-move-toggle contextual-icon-command" data-persistent-order="patrol" title="Patrol to a ground target and back, engaging enemies"><img src="/assets/ui/icons/actions/patrol.svg" alt="" width="20" height="20"><span>Patrol · P</span></button>
             <button type="button" class="attack-move-toggle contextual-icon-command" data-persistent-order="follow" title="Follow a living friendly unit"><img src="/assets/ui/icons/actions/follow.svg" alt="" width="20" height="20"><span>Follow · F</span></button>
-            <button type="button" class="attack-move-toggle contextual-icon-command" data-stationary-order="stop" title="Cancel all current tasks and queued routes"><img src="/assets/ui/icons/actions/stop.svg" alt="" width="20" height="20"><span>Stop · S</span></button>
-            <button type="button" class="attack-move-toggle contextual-icon-command" data-stationary-order="holdPosition" title="Stay in place and attack enemies within weapon range"><img src="/assets/ui/icons/actions/hold-position.svg" alt="" width="20" height="20"><span>Hold position · H</span></button>
+            <button type="button" class="attack-move-toggle contextual-icon-command" data-stationary-order="stop" title="Clear current tasks and queued routes; military sets No attack. Explicit Attack remains available."><img src="/assets/ui/icons/actions/stop.svg" alt="" width="20" height="20"><span>Stop · S</span></button>
+            <button type="button" class="attack-move-toggle contextual-icon-command" data-stationary-order="holdPosition" title="Stay in place; military sets Stand ground and never chases. A stance choice releases military Hold."><img src="/assets/ui/icons/actions/hold-position.svg" alt="" width="20" height="20"><span>Hold position · H</span></button>
             <button id="attack-move-toggle" class="attack-move-toggle" type="button" aria-pressed="false">
               <span>Attack move</span><span class="attack-move-key">M</span>
             </button>

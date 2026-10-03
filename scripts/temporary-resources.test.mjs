@@ -15,11 +15,13 @@ async function fixture(action) {
   try {
     await mkdir(path.join(root, 'scripts'), { recursive: true });
     await mkdir(path.join(root, 'src'));
+    await symlink(path.join(sourceRoot, 'node_modules'), path.join(root, 'node_modules'), 'dir');
     await mkdir(path.join(scratch, retained), { recursive: true });
     await writeFile(path.join(scratch, retained, 'screenshot.png'), 'unrelated screenshot bytes');
-    for (const script of ['pack-railway-release.mjs', 'railway-release-scenario.mjs', 'check-client-imports.mjs', 'temporary-resources.mjs']) {
+    for (const script of ['pack-railway-release.mjs', 'railway-release-scenario.mjs', 'check-client-imports.mjs', 'module-imports.mjs', 'temporary-resources.mjs']) {
       await copyFile(path.join(sourceRoot, 'scripts', script), path.join(root, 'scripts', script));
     }
+    await symlink(path.join(sourceRoot, 'node_modules'), path.join(root, 'node_modules'), 'dir');
     const runtime = ['room-supervisor.mjs', 'server.mjs', 'origin-policy.mjs', 'simulation-scheduler.mjs'];
     for (const file of runtime) await writeFile(path.join(root, file), 'process.exit(0);\n');
     await writeFile(path.join(root, 'src', 'kept.mjs'), 'export const kept = true;\n');

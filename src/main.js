@@ -27,6 +27,7 @@ import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvai
 import { mapVictoryRule, objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import { updateSelectionPortrait } from './selection-portrait.mjs';
+import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from './combat-stance-ui.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
 import { roomEntryUrl, AUTHENTICATION_MESSAGE } from './game-entry-session.mjs';
 import * as THREE from 'three';
@@ -3789,6 +3790,14 @@ function updateSelectionUI() {
   updateContextualCommands(priorCommandFocus);
 }
 
+function combatStanceContext() {
+  return { units, ids: selectedIds(), team: localTeam, winner: matchWinner,
+    building: latestBuildings.some(row => row.id === selectedBuildingId && row.team === localTeam),
+    online: socket?.readyState === WebSocket.OPEN };
+}
+function updateCombatStanceUI() {
+  updateCombatStanceControls(document, combatStanceContext());
+}
 function updateContextualCommands(priorFocus = document.activeElement) {
   const bar = document.querySelector('.contextual-command-bar');
   const quickAccess = document.querySelector('.hud-quick-access');
@@ -3805,6 +3814,7 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   bar.dataset.context = context.kind;
   if (bar.hidden !== (context.kind === 'none')) bar.hidden = context.kind === 'none';
   if (quickAccess.hidden !== !bar.hidden) quickAccess.hidden = !bar.hidden;
+  updateCombatStanceUI();
   document.querySelector('#assign-selected-group').disabled = !context.total;
   bar.querySelector('[data-context-summary]').textContent = building
     ? `${buildingLabel(building.type)} · ${ui.selectedBuildingHealth.textContent} · ${ui.selectedBuildingProduction.textContent}`
@@ -4606,6 +4616,7 @@ function applyState(state, initial = false) {
       if (units[id]?.team === localTeam) units[id].persistentOrder = { type, status, targetId };
     }
   }
+  applyUnitStances(units, state.unitStances, localTeam, UNIT_DEFINITIONS);
   if (Array.isArray(state.queuedWaypointCounts)) applyWaypointQueueCounts(state.queuedWaypointCounts);
   if (initial || changed) {
     for (let team = 0; team < 2; team++) {
@@ -4655,7 +4666,7 @@ function updateEnvironmentStateCaptureSnapshot(state) {
       stage: resourceVisualStage(node.stock, startingStock),
       x: node.x ?? definitionNode?.x ?? visual?.x ?? null, z: node.z ?? definitionNode?.z ?? visual?.z ?? null,
       ...(node.wildlifeSpecies === undefined ? {} : { wildlifeSpecies: node.wildlifeSpecies,
-        wildlifeState: node.wildlifeState, wildlifeHeading: node.wildlifeHeading,
+        wildlifeState: node.wildlifeState, wildlifeTeam: node.wildlifeTeam, wildlifeHeading: node.wildlifeHeading,
         ...(node.wildlifeActivity === undefined ? {} : { wildlifeActivity: node.wildlifeActivity }),
       }),
     };
@@ -5093,6 +5104,7 @@ function updateRoomUI(connected) {
 }
 
 function setConnection(status) {
+  updateCombatStanceUI();
   ui.networkStatus.parentElement.dataset.urgent = String(['OFFLINE', 'RECONNECTING', 'SEAT ACTIVE ELSEWHERE', 'INVALID ROOM LINK', 'ROOM NOT FOUND'].includes(status));
   ui.networkStatus.textContent = status;
   ui.matchStatus.textContent = status;
@@ -8501,6 +8513,7 @@ const hudRowObserver = new ResizeObserver(syncHudRows);
 for (const element of [hudHeader, hudObjective, hudCamera, appShell]) hudRowObserver.observe(element);
 syncHudRows();
 const contextualBar = document.querySelector('.contextual-command-bar');
+bindCombatStanceControls(document, combatStanceContext, sendCommand);
 if (contextualBar) {
   bindContextualCommandStrip(contextualBar.querySelector(':scope > .contextual-actions'));
   const quickAccess = document.querySelector('.hud-quick-access');

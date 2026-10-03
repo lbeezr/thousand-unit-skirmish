@@ -34,7 +34,7 @@ test('authored identity admits only food sheep and never runtime lifecycle', () 
   assert.equal(validWildlifeNodeDefinition(sheep), true);
   assert.equal(validWildlifeNodeDefinition({ ...sheep, wildlifeSpecies: undefined }), true);
   for (const change of [{ type: 'wood' }, { wildlifeSpecies: 'deer' }, { wildlifeSpecies: null },
-    { wildlifeState: 'alive' }, { wildlifeState: 'carcass' }, { wildlifeState: null }]) {
+    { wildlifeState: 'alive' }, { wildlifeState: 'carcass' }, { wildlifeState: null }, { wildlifeTeam: null }, { wildlifeTeam: 0 }]) {
     assert.equal(validWildlifeNodeDefinition({ ...sheep, ...change }), false);
   }
 });
@@ -71,8 +71,8 @@ test('checkpoint lifecycle cannot revive consumed stock or hide depleted stock',
 
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const gatherFunction = server.slice(server.indexOf('function assignGather('), server.indexOf('function stopGathering('));
-for (const team of [0, 1]) test(`seat ${team} validates its Workers and visibility without wildlife ownership`, () => {
-  const node = createResourceNodeState(sheep);
+for (const team of [0, 1]) test(`seat ${team} validates its Workers and visibility without owner restrictions`, () => {
+  const node = createResourceNodeState(sheep); node.wildlifeTeam = 1 - team;
   const unit = (id, owner, hp, canGather, cell = 0) => ({ id, team: owner, hp, canGather, x: cell, z: 0,
     orderRevision: 0, queuedWaypoints: [], cargo: 0, cargoType: null });
   const workers = [unit(0, team, 100, true), unit(1, 1 - team, 100, true),
