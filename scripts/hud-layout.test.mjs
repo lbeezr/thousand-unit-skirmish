@@ -27,24 +27,52 @@ test('preferences accept only supported presentation values', () => {
 });
 
 function commandStripFixture(t, width = 750) {
-  const dom = new JSDOM('<div id="strip"><button id="first">Idle workers</button><span><button id="last">Formation / route</button></span></div><button id="outside">Outside</button>');
+  const dom = new JSDOM('<div id="strip"><button id="first">Idle workers</button><button id="cargo" hidden>Return cargo</button><span><button id="last">Formation / route</button></span></div><button id="outside">Outside</button>');
   t.after(() => dom.window.close());
   const { document } = dom.window;
   const strip = document.querySelector('#strip');
-  const first = document.querySelector('#first'), last = document.querySelector('#last');
-  const frames = new Map(); let nextFrame = 1, scroll = 0;
+  const first = document.querySelector('#first'), cargo = document.querySelector('#cargo'), last = document.querySelector('#last');
+  const frames = new Map(), boxes = new Map(), resizeObservers = [], mutationObservers = [];
+  let nextFrame = 1, scroll = 0, viewportWidth = width, contentWidth = width + 300;
   dom.window.requestAnimationFrame = callback => { const id = nextFrame++; frames.set(id, callback); return id; };
   dom.window.cancelAnimationFrame = id => frames.delete(id);
+  dom.window.ResizeObserver = class {
+    constructor(callback) { this.callback = callback; this.targets = new Set(); resizeObservers.push(this); }
+    observe(target) { this.targets.add(target); }
+    unobserve(target) { this.targets.delete(target); }
+    disconnect() { this.disconnected = true; this.targets.clear(); }
+  };
+  dom.window.MutationObserver = class {
+    constructor(callback) { this.callback = callback; mutationObservers.push(this); }
+    observe(target, options) { this.target = target; this.options = options; }
+    disconnect() { this.disconnected = true; }
+  };
   Object.defineProperties(strip, {
-    clientWidth: { configurable: true, value: width }, clientLeft: { value: 0 },
-    scrollWidth: { configurable: true, value: width + 300 },
-    scrollLeft: { get: () => scroll, set: value => { scroll = Math.max(0, Math.min(300, value)); } },
+    clientWidth: { configurable: true, get: () => viewportWidth }, clientLeft: { value: 0 },
+    scrollWidth: { configurable: true, get: () => contentWidth },
+    scrollLeft: { get: () => scroll, set: value => { scroll = Math.max(0, Math.min(strip.scrollWidth - strip.clientWidth, value)); } },
   });
-  strip.getBoundingClientRect = () => ({ left: 320, right: 320 + width, width });
-  first.getBoundingClientRect = () => ({ left: 320 - scroll, right: 400 - scroll, width: 80 });
-  last.getBoundingClientRect = () => ({ left: 913.0625 - scroll, right: 1093.0625 - scroll, width: 180 });
+  strip.getBoundingClientRect = () => ({ left: 320, right: 320 + strip.clientWidth, width: strip.clientWidth, height: 52 });
+  const setBox = (button, start, width) => {
+    boxes.set(button, { start, width });
+    button.getBoundingClientRect = () => {
+      if (!button.isConnected || button.closest('[hidden]')) return { left: 0, right: 0, width: 0, height: 0 };
+      const box = boxes.get(button), left = 320 + box.start - scroll;
+      return { left, right: left + box.width, width: box.width, height: 44 };
+    };
+  };
+  setBox(first, 0, 80); setBox(cargo, 80, 110); setBox(last, 593.0625, 180);
   const unbind = bindContextualCommandStrip(strip); t.after(unbind);
-  return { dom, strip, first, last, unbind, frame() {
+  return { dom, strip, first, cargo, last, unbind, resizeObservers, mutationObservers, setBox,
+    setWidth(value) { viewportWidth = value; },
+    growBeforeLast(amount) { boxes.get(first).width += amount; boxes.get(cargo).start += amount; boxes.get(last).start += amount; contentWidth += amount; },
+    showCargo() { cargo.hidden = false; boxes.get(last).start += boxes.get(cargo).width; contentWidth += boxes.get(cargo).width; },
+    notifyResize() { resizeObservers.forEach(observer => observer.callback([...observer.targets].map(target => ({ target })))); },
+    mutate(addedNodes = [], removedNodes = []) {
+      mutationObservers.forEach(observer => observer.callback([{ type: 'childList', addedNodes, removedNodes }]));
+    },
+    pendingFrames: () => frames.size,
+    frame() {
     const callbacks = [...frames.values()]; frames.clear(); callbacks.forEach(callback => callback());
   }, wheel(options = {}) {
     const event = new dom.window.WheelEvent('wheel', { bubbles: true, cancelable: true, shiftKey: true, deltaY: 30, ...options });
@@ -123,6 +151,113 @@ test('disposing the strip cancels pending reveal and leaves wheel input native',
   f.last.focus(); f.strip.scrollLeft = 0; f.unbind(); f.frame();
   assert.equal(f.strip.scrollLeft, 0);
   assert.equal(f.wheel().defaultPrevented, false);
+});
+
+test('preceding cargo visibility and growing production text reveal the focused command without another focus event', t => {
+  const f = commandStripFixture(t);
+  f.last.focus(); f.frame();
+  for (const change of [() => f.showCargo(), () => {
+    f.first.textContent = 'Train Spearman · 60 food · Finish construction';
+    f.mutate([...f.first.childNodes]);
+    assert.equal(f.pendingFrames(), 0, 'text mutation alone waits for real box dimensions');
+    f.growBeforeLast(75.5);
+  }]) {
+    const previousScroll = f.strip.scrollLeft;
+    change(); f.notifyResize();
+    assert.equal(f.pendingFrames(), 1, 'a real box change queues one correction');
+    f.frame();
+    assert.equal(f.dom.window.document.activeElement, f.last);
+    assert.ok(f.strip.scrollLeft > previousScroll);
+    assert.ok(f.last.getBoundingClientRect().right <= f.strip.getBoundingClientRect().right);
+  }
+});
+
+test('viewport or enlarged-map width shrink reveals the focused label and coalesces resize notifications', t => {
+  const f = commandStripFixture(t);
+  f.last.focus(); f.frame();
+  f.setWidth(620); f.notifyResize(); f.notifyResize();
+  assert.equal(f.pendingFrames(), 1);
+  f.frame();
+  assert.ok(f.last.getBoundingClientRect().right <= f.strip.getBoundingClientRect().right);
+  assert.equal(f.dom.window.document.activeElement, f.last);
+});
+
+test('a fractional viewport shrink is detected even when integer clientWidth stays unchanged', t => {
+  const f = commandStripFixture(t);
+  f.setBox(f.last, 590, 180); f.notifyResize();
+  f.last.focus(); f.frame();
+  f.strip.getBoundingClientRect = () => ({ left: 320, right: 1069.5, width: 749.5, height: 52 });
+  f.notifyResize(); f.frame();
+  assert.equal(f.strip.clientWidth, 750);
+  assert.ok(f.last.getBoundingClientRect().right <= 1069.5);
+});
+
+test('inserted nested controls enter resize observation and reveal the moved focused command', t => {
+  const f = commandStripFixture(t), d = f.dom.window.document;
+  f.last.focus(); f.frame();
+  const group = d.createElement('span'), cargo = d.createElement('button');
+  cargo.textContent = 'Return cargo'; group.append(cargo); f.setBox(cargo, 80, 110);
+  f.strip.insertBefore(group, f.last.parentElement); f.growBeforeLast(110); f.mutate([group]);
+  f.frame();
+  assert.ok(f.last.getBoundingClientRect().right <= f.strip.getBoundingClientRect().right);
+  assert.ok(f.resizeObservers[0].targets.has(cargo));
+  assert.deepEqual(f.mutationObservers[0].options, { childList: true, subtree: true });
+});
+
+test('removed controls leave resize observation and reveal a focused command shifted left', t => {
+  const f = commandStripFixture(t);
+  f.setBox(f.first, 0, 593.0625);
+  f.last.focus(); f.frame();
+  f.first.remove(); f.setBox(f.last, 0, 180); f.mutate([], [f.first]); f.frame();
+  assert.equal(f.strip.scrollLeft, 0);
+  assert.ok(!f.resizeObservers[0].targets.has(f.first));
+  assert.equal(f.dom.window.document.activeElement, f.last);
+});
+
+test('unchanged text, hidden writes, initial resize delivery and hidden insertion preserve manual scrolling', t => {
+  const f = commandStripFixture(t), d = f.dom.window.document;
+  f.last.focus(); f.frame(); f.strip.scrollLeft = 0;
+  f.last.textContent = f.last.textContent; f.last.hidden = false;
+  f.mutate([...f.last.childNodes]); f.notifyResize(); f.frame();
+  assert.equal(f.strip.scrollLeft, 0, 'snapshot writes and identical geometry must not snap back');
+  const hidden = d.createElement('button'); hidden.hidden = true; hidden.textContent = 'Hidden action';
+  f.setBox(hidden, 80, 100); f.strip.prepend(hidden); f.mutate([hidden]); f.notifyResize(); f.frame();
+  assert.equal(f.strip.scrollLeft, 0, 'a hidden new control does not change visible layout');
+  assert.equal(f.pendingFrames(), 0);
+});
+
+test('layout correction keeps inspectable unavailable commands reachable', t => {
+  const f = commandStripFixture(t);
+  f.last.setAttribute('aria-disabled', 'true'); f.last.focus(); f.frame();
+  f.growBeforeLast(100); f.notifyResize(); f.frame();
+  assert.ok(f.last.getBoundingClientRect().right <= f.strip.getBoundingClientRect().right);
+  assert.equal(f.dom.window.document.activeElement, f.last);
+});
+
+for (const state of ['outside', 'hidden', 'disabled', 'removed']) {
+  test(`queued layout correction ignores later ${state} focus state`, t => {
+    const f = commandStripFixture(t);
+    f.last.focus(); f.frame(); f.growBeforeLast(110); f.notifyResize();
+    const before = f.strip.scrollLeft;
+    if (state === 'outside') f.dom.window.document.querySelector('#outside').focus();
+    if (state === 'hidden') f.strip.hidden = true;
+    if (state === 'disabled') f.last.disabled = true;
+    if (state === 'removed') f.last.remove();
+    const active = f.dom.window.document.activeElement;
+    f.frame();
+    assert.equal(f.strip.scrollLeft, before);
+    assert.equal(f.dom.window.document.activeElement, active, 'never restore or steal focus');
+  });
+}
+
+test('disposing layout observation disconnects targets and rejects queued observer callbacks', t => {
+  const f = commandStripFixture(t);
+  f.last.focus(); f.frame(); f.growBeforeLast(110); f.notifyResize();
+  f.unbind(); f.notifyResize(); f.mutate([f.first]); f.frame();
+  assert.equal(f.pendingFrames(), 0);
+  assert.equal(f.strip.scrollLeft, 24);
+  assert.equal(f.resizeObservers[0].disconnected, true);
+  assert.equal(f.mutationObservers[0].disconnected, true);
 });
 
 function minimapKeyboardFixture() {
