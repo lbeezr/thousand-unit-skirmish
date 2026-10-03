@@ -119,9 +119,10 @@ test('approximate roster reuses nearest authored action while exact lanes keep i
   const clips = new Map([['walk|north', hold], ['idle|north', hold],
     ['walk|north-east', front], ['walk|south-west', rear], ['gather-wood|south-east', wood]]);
   assert.equal(spriteActionClip(clips, 'walk', 'north', null, 'human'), hold);
-  assert.equal(spriteActionClip(clips, 'walk', 'north', null, 'human', true), front);
-  assert.equal(spriteActionClip(clips, 'walk', 'west', null, 'human', true), rear);
-  assert.equal(spriteActionClip(clips, 'gather', 'north', 'wood', 'human', true), wood);
+  assert.equal(spriteActionClip(clips, 'walk', 'north', null, 'human', true), hold);
+  assert.equal(spriteActionClip(clips, 'walk', 'north', null, 'infantry', true), front);
+  assert.equal(spriteActionClip(clips, 'walk', 'west', null, 'infantry', true), rear);
+  assert.equal(spriteActionClip(clips, 'gather', 'north', 'wood', 'infantry', true), wood);
 });
 
 
@@ -143,7 +144,9 @@ test('every available Human unit action and heading has first-pass graphics', as
         for (const resource of state === 'gather' ? ['food', 'wood'] : [null]) {
           const clip = spriteActionClip(clips, state, direction, resource, role === 'worker' ? 'human' : role, true);
           assert.ok(clip?.sequence?.length, `${role}/${state}/${direction}`);
-          if (state !== 'idle') assert.ok(clip.sequence.some(f => !f.frameId.startsWith('idle-')), `${role}/${state}/${direction} must have action graphics`);
+          if (role === 'worker' && ['walk', 'gather'].includes(state)) {
+            assert.equal(clip.directionId, direction, `${role}/${state}/${direction} keeps its facing`);
+          } else if (state !== 'idle') assert.ok(clip.sequence.some(f => !f.frameId.startsWith('idle-')), `${role}/${state}/${direction} must have action graphics`);
         }
       }
     }

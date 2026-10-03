@@ -32,6 +32,7 @@ import { readPveLaunchOptions } from './src/pve-match.mjs';
 import { townCenterSpawnPosition, townCenterFootprintCells } from './src/town-center-spawn.mjs';
 import { advanceTickDeadline } from './simulation-scheduler.mjs';
 import { privateProductionView } from './src/snapshot-private-production.mjs';
+import { headingToTarget } from './src/unit-heading.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const HOST = process.env.RTS_HOST || '127.0.0.1';
@@ -1751,9 +1752,18 @@ function snapshotUnits(viewTeam = null) {
     }
     const audioExecution = !mapDefinition.fogOfWar || unit.team === viewTeam ? workerAudioExecution(unit) : null;
     if (audioExecution) row[14] = audioExecution;
+    const workHeading = task === 'gathering' ? workerGatherHeading(unit) : null;
+    if (workHeading !== null) row[15] = workHeading;
     rows.push(row);
   }
   return rows;
+}
+
+function workerGatherHeading(unit) {
+  if (unit.hp <= 0 || unit.kind !== 'worker' || unit.gatherPhase !== 'gathering') return null;
+  const target = unit.gatherForestCell >= 0 ? cellToWorld(unit.gatherForestCell)
+    : resourceNodeStates.get(unit.gatherNodeId);
+  return target ? headingToTarget(unit.x, unit.z, target.x, target.z) : null;
 }
 
 function workerAudioExecution(unit) {
@@ -7121,6 +7131,7 @@ const server = createServer(async (request, response) => {
     return;
   }
   const publicClientAsset = [
+    'src/frontier-building-preview.mjs',
     'environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs',
     'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',
     'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs',
