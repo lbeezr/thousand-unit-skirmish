@@ -79,6 +79,8 @@ run(['--test', 'scripts/sheep-static-preview.test.mjs'], 'Sheep static reference
 run(['--test', 'scripts/sheep-directional-readiness.test.mjs'], 'Sheep directional source and anchor acceptance');
 run(['--test', 'scripts/neutral-wildlife-renderer.test.mjs'], 'Neutral wildlife render lifecycle and fallback');
 run(['scripts/wildlife-render-scenario.mjs'], 'Live wildlife snapshots and production art paths');
+run(['--test', 'scripts/millrace-sheep.test.mjs'], 'Default Millrace Sheep budget and exact legacy map compatibility');
+run(['scripts/millrace-sheep-scenario.mjs'], 'Normal default Sheep visibility, harvest, art and recovery');
 run(['--test', 'scripts/sprite-pixel-bounds.test.mjs'], 'Sprite pixel clipping regressions');
 run(['--test', 'scripts/building-sprites.test.mjs'], 'Default building sprites');
 run(['--test', 'scripts/captured-building-state-race.test.mjs', 'scripts/captured-building-manifest-retry.test.mjs', 'scripts/frontier-building-renderer.test.mjs', 'scripts/frontier-building-preview.test.mjs', 'scripts/building-lifecycle-validation.test.mjs'], 'Captured building lifecycle and source contracts');

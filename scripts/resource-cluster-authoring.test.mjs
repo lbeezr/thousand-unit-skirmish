@@ -6,6 +6,7 @@ import { buildElevationGrid } from '../src/map-utils.mjs';
 import { canTraverseElevation } from '../src/elevation.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 import { settlementGround } from '../src/settlement-authoring.mjs';
+import { seedMillraceSheep } from '../src/millrace-sheep.mjs';
 
 const map = JSON.parse(await readFile(new URL('../maps/bellweather-millrace.json', import.meta.url)));
 const baseline = JSON.parse(await readFile(new URL('./fixtures/settlement-ground-baseline.json', import.meta.url))).maps[map.id];
@@ -35,7 +36,7 @@ const paths = [distances(0), distances(1)];
 
 test('Millrace materializes the profile reproducibly without changing other map fields', () => {
   const input = JSON.stringify(map);
-  assert.deepEqual(seededMirroredResourceClusters(map), map.resourceNodes);
+  assert.deepEqual(seedMillraceSheep(seededMirroredResourceClusters(map)), map.resourceNodes);
   assert.equal(JSON.stringify(map), input);
   for (const [key, value] of Object.entries(before)) if (key !== 'resourceNodes') assert.deepEqual(map[key], value, key);
   assert.notDeepEqual(seededMirroredResourceClusters(map, { ...settings, seed: 93001 }), map.resourceNodes);

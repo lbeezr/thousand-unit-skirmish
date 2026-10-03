@@ -1,5 +1,6 @@
 import { findInvalidResourceVariant, isShoreFish, validResourceVariantState } from './src/shore-fishing.mjs';
 import { activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted, validWildlifeNodeDefinition, validWildlifeNodeState } from './src/wildlife-state.mjs';
+import { migrateMillraceSheepCheckpoint } from './src/millrace-sheep.mjs';
 import { validateMapRegion } from './src/regions.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, regionEntryTeam, validCompletionTrigger, completionTeam } from './src/scenario-regions.mjs';
 import { TERRAIN_MATERIALS } from './src/terrain-materials.mjs';
@@ -3037,12 +3038,16 @@ function validateMatchCheckpoint(snapshot) {
 }
 
 function restoreMatchCheckpoint(snapshot) {
-  const { definition, state, explored } = validateMatchCheckpoint(snapshot);
+  let { definition, state, explored } = validateMatchCheckpoint(snapshot);
   if (pveLaunchOptions && definition.id !== pveLaunchOptions.mapId) {
     throw new Error('PvE checkpoint map does not match its launch seed.');
   }
   if (shippedMapIds.has(definition.id)) {
     const shippedDefinition = mapCatalog.get(definition.id);
+    if (matchMapHash(shippedDefinition) !== snapshot.mapHash
+      && migrateMillraceSheepCheckpoint(snapshot, shippedDefinition, matchMapHash)) {
+      ({ definition, state, explored } = validateMatchCheckpoint(snapshot));
+    }
     assertSnapshot(matchMapHash(shippedDefinition) === snapshot.mapHash, 'shipped map changed since checkpoint');
   } else {
     mapCatalog.set(definition.id, definition);
