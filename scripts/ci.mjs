@@ -102,6 +102,8 @@ run(['--test', 'scripts/population.test.mjs'], 'Population reservations and capa
 run(['--test', 'scripts/population-readout.test.mjs'], 'Owned population presentation');
 run(['--test', 'scripts/population-ai.test.mjs'], 'AI capacity construction and recovery');
 run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue authority');
+run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle');
+run(['scripts/wildlife-food-scenario.mjs'], 'Both-seat wildlife gathering, depletion and recovery');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');
 run(['--test', 'scripts/base-lifecycle-ui.test.mjs'], 'Contextual cancellation and repair controls');
