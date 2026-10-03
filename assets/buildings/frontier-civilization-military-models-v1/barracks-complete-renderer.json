@@ -1,0 +1,100 @@
+{
+  "schema": "thousand-unit-skirmish.building-lifecycle-reference.v1",
+  "asset": "barracks",
+  "status": "Complete-only renderer; native gameplay acceptance pending",
+  "camera": {
+    "projection": "orthographic",
+    "framePixels": [
+      1024,
+      1024
+    ],
+    "pixelsPerWorldUnit": 128,
+    "elevationDegrees": 46,
+    "azimuthDegrees": [
+      0,
+      45,
+      90,
+      135,
+      180,
+      225,
+      270,
+      315
+    ],
+    "anchorPixelFromTopLeft": [
+      512,
+      647.1527325565025
+    ],
+    "background": "transparent"
+  },
+  "stateOrder": [
+    "complete"
+  ],
+  "states": [],
+  "completeState": {
+    "state": "complete",
+    "views": [
+      {
+        "index": 0,
+        "azimuthDegrees": 0,
+        "path": "captures/barracks-complete-view-00.png",
+        "sha256": "40f9e1cf8c516fbaa237dde66a6bb3b686a71c947a72acaab7661d8c78087439",
+        "bytes": 765449
+      },
+      {
+        "index": 1,
+        "azimuthDegrees": 45,
+        "path": "captures/barracks-complete-view-01.png",
+        "sha256": "c5c91aeb3e420218163bfe5f4793bb58dca31a0d95f26e4c20f6f7845886721d",
+        "bytes": 794619
+      },
+      {
+        "index": 2,
+        "azimuthDegrees": 90,
+        "path": "captures/barracks-complete-view-02.png",
+        "sha256": "dc91434fcdcf6eb12c21edb8d8e04fa178526a2bb064e18da954a0b6ddade734",
+        "bytes": 734887
+      },
+      {
+        "index": 3,
+        "azimuthDegrees": 135,
+        "path": "captures/barracks-complete-view-03.png",
+        "sha256": "76cb00ca490e25a651e5ea4d69c05c38654bb9a15d35efd198f8a16bf7cdb4b6",
+        "bytes": 760562
+      },
+      {
+        "index": 4,
+        "azimuthDegrees": 180,
+        "path": "captures/barracks-complete-view-04.png",
+        "sha256": "54958ea0f5d981dd1bde60bf7ba5399e56360662a929580c8f61724beeffb93f",
+        "bytes": 738029
+      },
+      {
+        "index": 5,
+        "azimuthDegrees": 225,
+        "path": "captures/barracks-complete-view-05.png",
+        "sha256": "43be32b02eddaae8028441b0197c5d0446042de361fd041919eba6650df2afb0",
+        "bytes": 767122
+      },
+      {
+        "index": 6,
+        "azimuthDegrees": 270,
+        "path": "captures/barracks-complete-view-06.png",
+        "sha256": "da4312833c2ac6b3744d5bd1c7f812ca69a1063e66c3ddb60c407e9f9c4aae1d",
+        "bytes": 732375
+      },
+      {
+        "index": 7,
+        "azimuthDegrees": 315,
+        "path": "captures/barracks-complete-view-07.png",
+        "sha256": "7366e033fe27265283b6933790c7fad99c985f0c4d7fd5ac63547b5524a80264",
+        "bytes": 780157
+      }
+    ]
+  },
+  "limitations": [
+    "No masks or baked team standard; use existing live standard geometry",
+    "No matched construction or damage views; retain older direct sprite fallback",
+    "Barracks proportions differ from concept illustration; native doorway/Worker review open",
+    "Procedural Blender bump nodes are not baked GLB normal maps"
+  ]
+}

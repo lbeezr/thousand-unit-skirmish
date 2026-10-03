@@ -8061,7 +8061,7 @@ const server = createServer(async (request, response) => {
       `${directory}/team-accent-mask.png`,
     ].includes(relative);
   });
-  const publicFrontierCompleteAsset = /^assets\/buildings\/(?:frontier-civilization-scale-pilot-v1\/(?:(?:town-center|house)-complete-renderer\.json|captures\/(?:town-center|house)-complete-view-0[0-7]\.png)|frontier-civilization-models-v1\/(?:(?:storehouse|stable|workshop|watchtower)-complete-renderer\.json|captures\/(?:storehouse|stable|workshop|watchtower)-complete-view-0[0-7]\.png))$/.test(relative);
+  const publicFrontierCompleteAsset = /^assets\/buildings\/(?:frontier-civilization-scale-pilot-v1\/(?:(?:town-center|house)-complete-renderer\.json|captures\/(?:town-center|house)-complete-view-0[0-7]\.png)|frontier-civilization-models-v1\/(?:(?:storehouse|stable|workshop|watchtower)-complete-renderer\.json|captures\/(?:storehouse|stable|workshop|watchtower)-complete-view-0[0-7]\.png)|frontier-civilization-military-models-v1\/(?:(?:barracks|archery-range)-complete-renderer\.json|captures\/(?:barracks|archery-range)-complete-view-0[0-7]\.png))$/.test(relative);
   const publicWildlifeAsset = [
     'assets/wildlife/bellweather-sheep-static-v1/static-preview-binding.json',
     'assets/wildlife/bellweather-sheep-static-v1/sprite-atlas-pack-v1.json',
