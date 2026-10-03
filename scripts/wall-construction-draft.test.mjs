@@ -8,6 +8,7 @@ import { GAMEPLAY_DEFINITIONS, BUILDING_DEFINITIONS, UNIT_DEFINITIONS,
   validateGameplayDefinitions } from '../src/gameplay-definitions.mjs';
 import { unfinishedRefund, buildingRepairStep } from '../src/base-lifecycle.mjs';
 import { canTraverseElevation } from '../src/elevation.mjs';
+import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { planWallLine } from '../src/wall-line-planner.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
@@ -30,7 +31,7 @@ const functions = [
   ['buildingAccessCells', 'findBuildingAttackApproachCell'],
   ['captureBuildingConnectivity', 'rejectBuild'], ['pendingMoveAssignmentsByUnit', 'pathIntersectsCells'],
   ['creditRefund', 'cancelTraining'], ['destroyBuilding', 'pendingMoveAssignmentsByUnit'],
-  ['updateBuildingAndProduction', 'updateTeamResearch'],
+  ['updateWallBuildOrders', 'updateTeamResearch'],
 ].map(([a, b]) => extract(a, b)).join('\n');
 
 function fixture(team = 0) {
@@ -50,7 +51,7 @@ function fixture(team = 0) {
     unfinishedRefund, buildingRepairStep: (b, wood, seconds) => buildingRepairStep(b, wood, seconds,
       { ...GAMEPLAY_DEFINITIONS, buildings: definitions }),
     unitHasCapability: (u, capability) => UNIT_DEFINITIONS[u.kind].capabilities.includes(capability),
-    navigationRevision: 0, attackFlowFields: new Map(), dirty: false,
+    activeWallBuildOrder, navigationRevision: 0, attackFlowFields: new Map(), dirty: false,
     broadcastGameplayNotice() {}, sendOrderNotice() {}, clearAttackTarget() {},
   });
   vm.runInContext(functions, context);
@@ -82,11 +83,11 @@ function fixture(team = 0) {
   return { context, worker, assessPlacement };
 }
 
-test('provisional tuning is configurable and never registers a default wall', () => {
+test('provisional registered tuning remains explicitly configurable without adding currency', () => {
   const extended = structuredClone(GAMEPLAY_DEFINITIONS);
   extended.buildings[definition.id] = definition;
   validateGameplayDefinitions(extended);
-  assert.equal(BUILDING_DEFINITIONS[definition.id], undefined);
+  assert.deepEqual(BUILDING_DEFINITIONS[definition.id], definition);
   assert.deepEqual(definition.cost, { food: 0, wood: 15 });
   assert.deepEqual(palisadeDraftDefinition({ ...tuning, cost: { food: 0, wood: 20 }, maxHp: 250 }).cost,
     { food: 0, wood: 20 });
@@ -284,4 +285,16 @@ test('parent-supplied one-cell palisade art layout maps all sixteen cardinal con
       assert.equal(record.z + dz, neighbour.z - dz, 'opposing half-arms meet at one z seam');
     }
   }
+});
+
+test('wall removal clears a dead Worker target so recovery never references a removed building', () => {
+  const f = fixture(), building = prepare().plan.buildings[0];
+  f.context.buildings.push(building); f.context.buildingsById.set(building.id, building);
+  f.context.buildingBlocked[119] = 1;
+  Object.assign(f.worker, { hp: 0, generation: 3, buildingTargetId: building.id,
+    wallBuildOrder: { ids: [building.id], generation: 3, revision: f.worker.orderRevision } });
+  f.context.destroyBuilding(building);
+  assert.equal(f.worker.buildingTargetId, null, 'full checkpoint validation requires every retained unit target to exist');
+  assert.equal(f.worker.wallBuildOrder, null);
+  assert.equal(f.context.teamWood[0], 100, 'death/destruction never credits construction refunds');
 });
