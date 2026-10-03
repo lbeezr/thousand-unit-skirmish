@@ -6,7 +6,8 @@
 The [Dock shoreline foundation](dock-shoreline-foundation.md) now uses it for
 live building placement and water berth clearance. The subsequent
 [Skiff slice](skiff-water-movement.md) adds one paid, unarmed water unit and
-Move/Stop orders. Transport, naval combat and boat cargo remain separate. Shore fishing
+Move/Stop orders. [Fishing cargo](skiff-fishing.md) now uses finite food and an
+owned Dock berth. Transport and naval combat remain separate. Shore fishing
 continues to use land Workers and finite food. Mill is now a food-only land
 drop-off; fish/skiff/dock art remains separate work.
 
@@ -95,7 +96,7 @@ blocked-berth completion, cardinal hull movement, owner validation and recovery.
 The adapter uses one-cell static shore clearance without inflating live hull
 reservations a second time; its tick checks hull occupancy before moving.
 
-Precise food cargo/drop-off, multi-boat formations/queued routes, transports,
+[Single-Skiff food delivery](skiff-fishing.md) is supported. Multi-boat formations/queued routes, transports,
 pier collision and naval combat remain later independent slices. Final art can
 replace the explicit placeholder after its dimensions and runtime binding are
 verified against the hull contract.

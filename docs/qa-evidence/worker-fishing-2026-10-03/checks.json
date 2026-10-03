@@ -57,11 +57,7 @@
   "smoothLoopAcceptance": false,
   "creativeAcceptance": false,
   "wiki": "docs/lore/art-evolution.md",
-  "privateLibrary": {
-    "poseStudy": "libfile_db5a33d96f9481919d423e1da9bb1f38",
-    "loop": "libfile_2152c1c5a8508191938e6d3bb41a7a89",
-    "sourceAndRuntime": "libfile_a18aa8f2e11c81919ce3d7d33000326e"
-  },
+  "privateLibrary": "Deliverable identities and original receipts retained in the private handoff",
   "initialCheckedBaseRevision": "ff1c168",
   "integrationBaseRevision": "f8f4980",
   "postRebaseCheckedCodeRevision": "e551c76797f2c644c7ac206c29c39a9b2fad9f0b",

@@ -211,6 +211,12 @@ acceptance for these items remains pending; use 1280 × 720 and 620 × 640.
   with small/large minimap. Check portrait framing and text at Retina scale.
   Tab to the portrait, open notes, then Escape and the close button: focus returns
   to the portrait and selection remains. Damage the Worker and verify live HP.
+  Check the registered abilities, base stats and Town Center training facts.
+  Tab to **World notes (working lore)**, use Enter/Space to open/close it and
+  confirm VoiceOver announces its disclosure state and the source link's new tab.
+  While its summary/link has focus, damage the Worker: focus and open state stay.
+  Clear selection or select Barracks/group: focus moves to the visible Selection
+  tab and lore closes. Escape dismisses the drawer without clearing selection.
   Select two Workers or a mixed group: the portrait disappears and the composition
   summary remains. Clear selection with notes open, dismiss and verify visible
   Quick-command focus. Check VoiceOver's Worker/family/role-note button name;

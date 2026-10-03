@@ -52,7 +52,7 @@ for (const team of [0, 1]) test(`seat ${team} snapshots keep every positive carg
         assert.deepEqual(sent, [{ type: 'returnCargo', ids: [0] }]);
         assert.deepEqual(toasts, []);
       } else {
-        assert.deepEqual(sent, []); assert.deepEqual(toasts, ['SELECT YOUR CARRYING WORKERS']);
+        assert.deepEqual(sent, []); assert.deepEqual(toasts, ['SELECT YOUR CARRYING WORKERS OR SKIFF']);
       }
     }
   }

@@ -9,4 +9,5 @@ for(const team of [0,1])for(const mode of ['active-route','queued-target','queue
   });
 for(const team of [0,1])test(`seat ${team}: closing paid gate preserves distinct queued formation destinations`,async()=>{
   const r=await runQueuedGateCase({team});assert.equal(r.distinctGoals,64);
+  assert.ok(r.maxPathLength<160,'returned builder does not cause repeated local detour growth');
 });

@@ -103,7 +103,10 @@ try {
   }
   await fixture.checkpoint(snapshot => workers.every(ids => ids.slice(0, 2).every(id => snapshot.state.units[id].cargo > 0)));
   const carrying = await stop(); record('stopped-real-cargo', carrying);
-  await fixture.stop(); const retained = await saved(); await reconnect();
+  await fixture.stop(); const retained = await saved();
+  // The exact Farm/movement-only revision preserves real planted stock and land cargo.
+  retained.rulesetRevision = 'v1:496509c24775ddfbd289faf9fbcc85dfef7d054d710c665caa9fe192c610ddcd';
+  await writeFile(fixture.checkpointPath, JSON.stringify(retained)); await reconnect();
   const resumed = await fixture.checkpoint(snapshot => snapshot.sequence > retained.sequence);
   assert.deepEqual(resumed.state.units.map(unit => unit.cargo), retained.state.units.map(unit => unit.cargo));
   assert.deepEqual(farms(resumed).map(building => building.harvestStock), farms(retained).map(building => building.harvestStock));

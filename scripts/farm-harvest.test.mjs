@@ -57,7 +57,7 @@ test('a prior content pin migrates existing work but cannot claim planted stock'
   const water = { schemaVersion: 22, rulesetRevision: skiffPin, state: {
     teamFood: [12.5, 20], teamWood: [25, 19.75],
     buildings: [gate, { type: 'dock', productionQueue: ['skiff'], queue: 1, trainingRemaining: 4 }],
-    units: [{ kind: 'skiff', movementDomain: 'water', path: [31, 32] }],
+    units: [{ kind: 'skiff', movementDomain: 'water', path: [31, 32], cargo: 0, cargoType: null, gatherNodeId: null, gatherPhase: '' }],
   } };
   const retained = structuredClone(water.state);
   assert.equal(context.migrateMatchCheckpoint(water).rulesetRevision, GAMEPLAY_RULESET_REVISION);
