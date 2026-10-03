@@ -7517,7 +7517,7 @@ const server = createServer(async (request, response) => {
     'src/room-lobby-ui.mjs', 'src/room-lobby-chat-ui.mjs', 'src/room-lobby.css',
     'src/scenario-regions.mjs', 'src/scenario-authoring.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
     'src/shore-fishing.mjs', 'src/shore-fishing-placeholder.mjs', 'src/shore-fishing-placement.mjs',
-    'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs',
+    'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs', 'src/resource-brush-controls.mjs',
     'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',

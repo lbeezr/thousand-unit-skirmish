@@ -9,6 +9,7 @@ function placementKey(map) {
     map.terrainPatches ?? [], map.elevationPatches ?? [], map.obstacles,
     map.spawnPoints, map.resourceNodes ?? []]);
 }
+export { placementKey as resourceBrushMapKey };
 
 // Read-only preview on a validated map. Stock is the entire patch budget.
 export function previewResourceBrush(map, settings) {

@@ -269,12 +269,25 @@ External resource/terrain edits stop history navigation until `reset()`; reset
 also belongs after populate, draft restore or resize. Save ordinary map nodes and
 selection through the existing draft/JSON format; reload starts fresh history.
 
-This slice does not change `src/main.js`, existing resource tools, defaults or any
-map. The UI owner's later integration boundary is the resource pointer branch,
-resource preview draw, and populate/restore/resize reset hooks. Keep its history
-separate from named-region/scenario-event undo. Test the operation with
-`node --test scripts/resource-brush-authoring.test.mjs`; a rendered brush control
-and human editor interaction remain unimplemented.
+In Map Studio, **Resource patches** is open by default under **Resource nodes**. Choose food
+or wood, a whole-number seed and **total patch stock** (at least 5). Enter a
+one-based anchor column/row and press **Preview**, or **Pick anchor** and click a
+map cell. Five dashed preview markers show their individual stocks; the status
+reports the shared total and seed. The fixed radius is four cells and spawn
+clearance is six cells. **Apply patch** adds exactly the previewed markers in one
+operation. **Cancel preview** or Escape clears it without adding resources.
+Enter in a patch field previews; Escape cancels a pending preview before closing
+Map Studio. The existing single-node tools retain their 300 food / 500 wood defaults.
+
+**Undo patch** and **Redo patch** restore nodes and selection independently of
+scenario history. Changing brush settings cancels the preview; changing resource
+stock, terrain, elevation, spawns or dimensions clears brush history. Loading or
+restoring a map starts a fresh session. Applied nodes use the existing draft,
+publish and JSON paths. No preview receipt or history is persisted. The controls
+are isolated in [`src/resource-brush-controls.mjs`](../src/resource-brush-controls.mjs).
+Run `node --test scripts/resource-brush-authoring.test.mjs scripts/resource-brush-controls.test.mjs`
+for operation, actual client-hook and DOM checks. These checks do not establish
+canvas appearance or unassisted human usability; those remain visual acceptance work.
 
 CI runs `node scripts/vaelora-map-layout-scenario.mjs --check-only` to validate
 all regional layouts without rewriting the SVG or dirtying the clean release
