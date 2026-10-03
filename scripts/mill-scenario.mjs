@@ -36,6 +36,33 @@ function conserved(snapshot) {
     assert.ok(Math.abs(bank + cargo + stock - budget) < 1e-6, `${type} stock, cargo and paid bank reconcile`);
   }
 }
+async function returnStoppedCargo(type, workerIndex, destinations) {
+  for (const team of [0, 1]) await command(team, { type: 'gather', ids: [workers[team][workerIndex]],
+    nodeId: `${type}-${team}` }, /GATHER ORDER/);
+  await fixture.checkpoint(snapshot => workers.every(ids => snapshot.state.units[ids[workerIndex]].cargoType === type
+    && snapshot.state.units[ids[workerIndex]].cargo > 0));
+  const stopped = await stopWorkers(); conserved(stopped);
+  const bankName = type === 'food' ? 'teamFood' : 'teamWood';
+  const carried = workers.map(ids => stopped.state.units[ids[workerIndex]].cargo);
+  for (const team of [0, 1]) {
+    await command(1 - team, { type: 'returnCargo', ids: [workers[team][workerIndex]] }, /RETURN CARGO REJECTED/);
+    await command(team, { type: 'returnCargo', ids: [workers[team][workerIndex]] }, /RETURN CARGO ORDER/);
+  }
+  const delivered = await fixture.checkpoint(snapshot => workers.every((ids, team) => {
+    const unit = snapshot.state.units[ids[workerIndex]];
+    return unit.cargo === 0 && snapshot.state[bankName][team] === stopped.state[bankName][team] + carried[team];
+  }));
+  conserved(delivered);
+  for (const [team, ids] of workers.entries()) {
+    const unit = delivered.state.units[ids[workerIndex]];
+    assert.equal(unit.dropoffBuildingId, destinations[team]);
+    assert.equal(unit.gatherNodeId, null); assert.equal(unit.gatherForestCell, -1);
+    assert.equal(unit.gatherPhase, '', 'explicit return stops after depositing');
+    await command(team, { type: 'returnCargo', ids: [ids[workerIndex]] }, /RETURN CARGO REJECTED/);
+  }
+  assert.deepEqual(delivered.state.resourceNodes.map(node => node.stock), stopped.state.resourceNodes.map(node => node.stock),
+    'returning retained cargo never gathers from or revives a source');
+}
 
 try {
   await fixture.start();
@@ -67,12 +94,14 @@ try {
   conserved(foodRoutes);
   await fixture.checkpoint(snapshot => snapshot.state.teamFood.every(food => food >= 1010));
   conserved(await stopWorkers());
+  await returnStoppedCargo('food', 0, [byTeam(complete, 0).id, byTeam(complete, 1).id]);
   const homeIds = clients.map((client, team) => client.latest.homeTownCenters.find(center => center.team === team).id);
   for (const team of [0, 1]) await command(team, { type: 'gather', ids: [workers[team][1]], nodeId: `wood-${team}` }, /GATHER ORDER/);
   const woodRoutes = await fixture.checkpoint(snapshot => workers.every((ids, team) => snapshot.state.units[ids[1]].dropoffBuildingId === homeIds[team]));
   conserved(woodRoutes);
   await fixture.checkpoint(snapshot => snapshot.state.teamWood.every(wood => wood >= 935));
   conserved(await stopWorkers());
+  await returnStoppedCargo('wood', 1, homeIds);
 
   // Damage is a declared checkpoint fixture; construction, gathering and bank credits above are real commands.
   await fixture.stop();
@@ -142,5 +171,5 @@ try {
   assert.ok(clients.every(client => client.latest.buildings.every(building => building.type !== 'mill')));
   assert.deepEqual((await fixture.checkpoint(snapshot => snapshot.sequence > final.sequence)).state.teamFood, final.state.teamFood,
     'recovery cannot credit a completed cargo deposit twice');
-  console.log('Mill passed: both-seat paid/unfinished construction recovery, owner checks, real food-to-Mill and wood-to-Town-Center deposits with conservation, paid repair recovery, proportional cancellation/replay rejection, destruction cargo rerouting and no duplicate recovery credit. Damage/assault positions were checkpoint fixtures; banks and cargo were never injected.');
+  console.log('Mill passed: both-seat paid/unfinished construction recovery, owner checks, real food-to-Mill and wood-to-Town-Center deposits, explicit retained food/wood Return cargo with conservation, paid repair recovery, proportional cancellation/replay rejection, destruction cargo rerouting and no duplicate recovery credit. Damage/assault positions were checkpoint fixtures; banks and cargo were never injected.');
 } finally { await fixture.dispose(); }

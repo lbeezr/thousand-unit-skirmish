@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
-import { BUILDING_DEFINITIONS, FACTION_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { BUILDING_DEFINITIONS, FACTION_DEFINITIONS, UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { hasGameplayCapability } from '../src/combat-rules.mjs';
+import { creditResourceBalance } from '../src/economy-ledger.mjs';
 import { buildingPresentation } from '../src/gameplay-presentation.mjs';
 import { frontierBuildingPreviewUrl } from '../src/frontier-building-preview.mjs';
 
@@ -10,6 +12,12 @@ const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const routing = server.slice(server.indexOf('function workerDropoffCandidates('), server.indexOf('function routeWorker(unit,'));
 const client = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const commandUI = client.slice(client.indexOf('function updateCommandUI('), client.indexOf('function syncTargetOrderUI('));
+function serverFunction(name) {
+  const start = server.indexOf(`function ${name}(`);
+  assert.ok(start >= 0, `${name} exists`);
+  const end = server.indexOf('\nfunction ', start + 1);
+  return server.slice(start, end < 0 ? undefined : end);
+}
 
 test('Mill is a cheaper food-only Frontier depot with an explicit existing placeholder', () => {
   assert.ok(FACTION_DEFINITIONS.frontier.buildings.includes('mill'));
@@ -51,6 +59,43 @@ for (const team of [0, 1]) test(`Mill routing filters resource, completion, owne
   assert.equal(context.workerAtDropoff(unit), false);
   assert.equal(unit.dropoffBuildingId, 3, 'a destroyed Mill reroutes food to the existing Storehouse');
   assert.equal(unit.cargo, 10, 'invalid destinations never consume cargo');
+});
+
+for (const team of [0, 1]) test(`Return cargo uses Mill for food and rejects wood when only Mill is available for seat ${team}`, () => {
+  const unit = { id: 0, team, kind: 'worker', hp: 35, generation: 3, x: 0, z: 0,
+    cargo: 0.5, cargoType: 'food', orderRevision: 2, queuedWaypoints: [], path: [],
+    gatherNodeId: null, gatherForestCell: -1, gatherPhase: '', moveGoalCell: -1 };
+  const building = { id: 1, team, complete: true, type: 'mill', footprint: [1] };
+  const notices = [];
+  const context = vm.createContext({ units: [unit], MAX_UNITS: 1000, dirty: false,
+    BUILDING_DEFINITIONS, navigationRevision: 4, WORKER_INTERACTION_RANGE: 1.2,
+    allMatchBuildings: () => [building], buildingsById: new Map([[1, building]]),
+    worldToCell: x => x, nearestOpenCell: cell => cell, buildingAccessCells: cells => cells,
+    walkableComponents: [0, 0], getAttackFlowFieldForGoals: goals => ({ goal: goals[0], goals: new Set(goals) }),
+    pathFromAttackFlow: (_, field) => [field.goal], distanceToBuildingEdge: () => 0,
+    unitHasCapability: (worker, capability) => hasGameplayCapability(UNIT_DEFINITIONS[worker.kind], capability),
+    sendOrderNotice: (_, command, message) => notices.push(message),
+    teamFood: [0, 0], teamWood: [0, 0], resourceNodeStates: new Map(),
+    creditResourceBalance, flushPendingForestClears() {},
+  });
+  vm.runInContext(['commandUnitAt', 'commandUnits', 'clearAttackMoveOrder',
+    'workerDropoffCandidates', 'routeWorkerToDropoff', 'workerAtDropoff', 'assignReturnCargo',
+    'stopGathering', 'updateWorkerEconomy'].map(serverFunction).join('\n'), context);
+  const order = () => context.assignReturnCargo({ team }, { type: 'returnCargo', ids: [0], unitGenerations: [3] });
+  order();
+  assert.match(notices.at(-1), /RETURN CARGO ORDER/);
+  assert.equal(unit.dropoffBuildingId, 1);
+  assert.equal(unit.gatherNodeId, null, 'returning food does not need a surviving source');
+  context.updateWorkerEconomy(); context.updateWorkerEconomy();
+  assert.equal(context.teamFood[team], 0.5);
+  assert.equal(unit.cargo, 0);
+  Object.assign(unit, { cargo: 7.25, cargoType: 'wood' }); context.dirty = false;
+  const before = structuredClone(unit);
+  order(); context.updateWorkerEconomy();
+  assert.match(notices.at(-1), /RETURN CARGO REJECTED · NO CARRYING WORKERS WITH A REACHABLE DROP-OFF/);
+  assert.deepEqual(structuredClone(unit), before, 'wood rejection preserves cargo and previous intent');
+  assert.equal(context.teamWood[team], 0);
+  assert.equal(context.dirty, false);
 });
 
 for (const team of [0, 1]) test(`selected depot hints describe registered resources for seat ${team}`, () => {

@@ -102,6 +102,9 @@ cargo. Mill accepts food; Storehouse (100 wood) and Town Center accept food and
 wood. Unfinished and enemy depots accept nothing. A destroyed depot makes the
 Worker choose another without losing cargo. Mill's House appearance is a temporary
 procedural placeholder; select it to see its Mill name and food-only function.
+Return cargo uses the same routing: stopped food can return to Mill, while stopped
+wood needs a compatible Storehouse or Town Center. If only Mills are reachable,
+returning wood is rejected and the Worker keeps its cargo.
 
 ## Camera, HUD, and sound
 
