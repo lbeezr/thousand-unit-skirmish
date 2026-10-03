@@ -125,8 +125,11 @@ try {
   }
   const resetTick = clients[0].latest.tick;
   clients[0].send({ type: 'reset' });
-  await clients[0].state(state => state.tick > resetTick && state.food.every(food => food === 0), 'rematch resets economy');
-  const rematch = await fixture.checkpoint(snapshot => snapshot.state.tickNumber > resetTick
+  await Promise.all(clients.map((client, team) => client.state(state => state.food[team] === 0
+    && state.resourceNodes.every(node => node.wildlifeState === 'alive'), `seat ${team} rematch resets economy`)));
+  assert.deepEqual(clients[0].latest.food, [0, null]);
+  assert.deepEqual(clients[1].latest.food, [null, 0]);
+  const rematch = await fixture.checkpoint(snapshot => snapshot.state.tickNumber >= resetTick && snapshot.sequence > exhaustedRecovery.sequence
     && snapshot.state.resourceNodes.every(node => node.wildlifeState === 'alive'));
   assertConserved(rematch);
   assert.equal(rematch.state.resourceNodes.reduce((total, node) => total + node.stock, 0), initialStock);
