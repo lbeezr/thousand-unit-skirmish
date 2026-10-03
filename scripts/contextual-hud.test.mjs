@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { selectionContext } from '../src/selection-context.mjs';
-import { updateSelectionPortrait, WORKER_PORTRAITS } from '../src/selection-portrait.mjs';
+import { updateSelectionPortrait, workerRoleFacts, WORKER_PORTRAITS } from '../src/selection-portrait.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { researchAction, researchOptions } from '../src/research-actions.mjs';
 import { setHudActionAvailability, isHudActionUnavailable } from '../src/hud-layout.mjs';
@@ -126,15 +126,93 @@ for (const team of [0, 1]) test(`seat ${team}: single Worker portrait opens dism
   assert.equal(f.w.commandDock.hidden, false);
   assert.equal(f.w.commandDock.dataset.activePanel, 'selection');
   assert.equal(notes.hidden, false);
-  assert.match(notes.textContent, /Gathers food and wood\. Builds and repairs structures\./);
+  assert.equal(notes.querySelector('[data-worker-abilities]').textContent, 'Move · Attack · Gather · Build · Repair');
+  assert.equal(notes.querySelector('[data-worker-health]').textContent, '100 / 100 HP');
+  assert.equal(notes.querySelector('[data-worker-movement]').textContent, 'Base move: 2.6 cells/s');
+  assert.equal(notes.querySelector('[data-worker-attack]').textContent, 'Base attack: 4 melee (1 vs structures) · 0.85s interval · 1.28 cells range');
+  assert.equal(notes.querySelector('[data-worker-training]').textContent, 'Town Center · 50 food · 25s · 1 population');
+  assert.equal(notes.querySelector('details').open, false);
   f.escape();
   assert.equal(f.w.commandDock.hidden, true);
   assert.equal(f.d.activeElement, portrait);
   assert.deepEqual([...f.w.selected], [own]);
   f.w.units[own].hp = 37; f.w.updateSelectionUI();
   assert.equal(health.textContent, 'Worker · 37 / 100 HP');
+  assert.equal(notes.querySelector('[data-worker-health]').textContent, '37 / 100 HP');
   assert.equal(portrait.querySelector('img'), image);
   assert.equal(f.d.activeElement, portrait);
+});
+
+test('Worker entry follows changed registry capabilities, stats, cost and producer rather than duplicating gameplay facts', () => {
+  const definition = {
+    ...UNIT_DEFINITIONS.worker, capabilities: ['move', 'attack', 'repair'],
+    cost: { food: 65, wood: 10 }, trainSeconds: 30, population: 2,
+    combat: { ...UNIT_DEFINITIONS.worker.combat, maxHp: 120, moveSpeed: 3, damage: 6, structureDamage: 2, period: 1, range: 1.5 },
+  };
+  const facts = workerRoleFacts({ hp: 42 }, definition, {
+    workshop: { label: 'Workshop', products: ['worker'] },
+    barracks: { label: 'Barracks', products: ['infantry'] },
+  });
+  assert.deepEqual(facts, {
+    health: '42 / 120 HP', abilities: 'Move · Attack · Repair', movement: 'Base move: 3 cells/s',
+    attack: 'Base attack: 6 melee (2 vs structures) · 1s interval · 1.5 cells range',
+    training: 'Workshop · 65 food + 10 wood · 30s · 2 population',
+  });
+});
+
+test('optional Worker world note quotes the inspected lore source and labels its status and destination', t => {
+  const f = fixture(); t.after(() => f.dom.window.close());
+  f.select([0]); f.click(f.bar.querySelector('[data-selection-portrait]'));
+  const details = f.d.querySelector('#selected-worker-notes details');
+  const lore = readFileSync(new URL('../docs/lore/world.md', import.meta.url), 'utf8');
+  assert.equal(details.open, false);
+  assert.equal(details.querySelector('summary').textContent, 'World notes (working lore)');
+  assert.equal(details.querySelector('q').textContent, 'The past survives in soil, craft, custom and argument.');
+  assert.ok(lore.includes(details.querySelector('q').textContent));
+  assert.match(lore, /connections below are working lore/);
+  const link = details.querySelector('a');
+  assert.equal(link.href, 'https://github.com/lbeezr/thousand-unit-skirmish/blob/3c2aabf8490e942a000927551bb37ab6e4e7094a/docs/lore/world.md#vaelora');
+  assert.equal(link.target, '_blank'); assert.ok(link.relList.contains('noopener'));
+  assert.match(link.textContent, /opens in a new tab/);
+  f.click(details.querySelector('summary')); assert.equal(details.open, true);
+  f.click(details.querySelector('summary')); assert.equal(details.open, false);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: live Worker snapshots preserve lore nodes, disclosure and keyboard focus; Escape dismisses`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const own = team * 2, portrait = f.bar.querySelector('[data-selection-portrait]');
+  f.select([own]); f.click(portrait);
+  const notes = f.d.querySelector('#selected-worker-notes'), details = notes.querySelector('details');
+  const summary = details.querySelector('summary'), link = details.querySelector('a');
+  f.click(summary);
+  for (const focused of [summary, link]) {
+    focused.focus(); f.w.units[own].hp = 64; f.w.updateSelectionUI();
+    assert.equal(details.open, true); assert.equal(details.querySelector('summary'), summary);
+    assert.equal(details.querySelector('a'), link); assert.equal(f.d.activeElement, focused);
+    assert.equal(notes.querySelector('[data-worker-health]').textContent, '64 / 100 HP');
+  }
+  f.escape();
+  assert.equal(f.w.commandDock.hidden, true); assert.equal(f.d.activeElement, portrait);
+  assert.deepEqual([...f.w.selected], [own]);
+});
+
+for (const [name, change] of [
+  ['cleared selection', f => f.select([])],
+  ['group', f => f.select([0, 1])],
+  ['Barracks', f => f.select([], { id: 8, team: 0, type: 'barracks', complete: true, hp: 1800, productionQueue: [] })],
+  ['dead Worker', f => { f.w.units[0].hp = 0; f.w.updateSelectionUI(); }],
+  ['unsupported appearance', f => { f.w.unitSpriteRuntime.roleForUnit = () => 'worker'; f.w.updateContextualCommands(); }],
+]) test(`focused Worker lore cannot leave hidden focus after ${name}`, t => {
+  const f = fixture(); t.after(() => f.dom.window.close());
+  f.select([0]); f.click(f.bar.querySelector('[data-selection-portrait]'));
+  const notes = f.d.querySelector('#selected-worker-notes'), details = notes.querySelector('details');
+  f.click(details.querySelector('summary')); details.querySelector('a').focus();
+  change(f);
+  assert.equal(notes.hidden, true); assert.equal(details.open, false);
+  assert.equal(f.d.activeElement, f.d.querySelector('#dock-tab-selection'));
+  assert.equal(f.d.activeElement.closest('[hidden]'), null);
+  f.escape(); assert.equal(f.w.commandDock.hidden, true);
+  assert.equal(f.d.activeElement.closest('[hidden]'), null);
 });
 
 test('Worker identity is hidden for groups, unsupported buildings, enemy, dead or spectator selections', t => {

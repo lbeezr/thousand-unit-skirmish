@@ -2,7 +2,8 @@
 
 One selected living friendly Worker now has a compact portrait, name and live HP.
 The portrait opens the existing dismissible Selection drawer with practical role
-notes. The same 52px slot now shows a selected owned Barracks's current lifecycle
+notes: registered abilities, live HP, base movement/attack stats and training
+producer, cost, duration and population. The same 52px slot shows a selected owned Barracks's current lifecycle
 frame and opens its existing structure details; health/production are not repeated
 in a new panel. Multiple units retain their composition summary. Unsupported
 buildings, enemy, dead, stale and spectator selections have no portrait.
@@ -19,15 +20,23 @@ record reuse of already public art; no new concept image was published.
 
 ## Small integration contract
 
-A later field-notes or codex entry can reuse these boundaries without enlarging
-the default HUD or creating a separate rules registry:
+The Worker entry uses these boundaries without enlarging the default HUD or
+creating a separate rules registry:
 
 | Field | Owner and current Worker value |
 | --- | --- |
 | Entry and role | `unit.worker`; `unitKind: worker`; label and all abilities come from [gameplay definitions](../src/gameplay-definitions.mjs) (`move`, `attack`, `gather`, `build`, `repair`) |
 | Appearance | Effective sprite role: `human` or `boughward-worker`; [portrait descriptors](../src/selection-portrait.mjs) supply illustration and viewport |
 | Live instance | Snapshot HP and current selection; never stored as general lore or attached to a multi-selection |
+| Gameplay facts | Base movement, damage/structure damage, interval and range; training cost, duration, population and producer products derive from the same definitions |
 | Culture and lore | Optional source-linked prose kept separate from appearance and gameplay capabilities; no individual name, birthplace, faction membership or ancestry-derived personality is established here |
+
+The initially collapsed **World notes (working lore)** disclosure quotes one
+sentence from the [Vaelora overview](lore/world.md). Its source link identifies
+an immutable version and announces a new tab. The same general world note serves
+both appearances. Live snapshots retain its nodes, open state and focus; removing
+the Worker entry closes it and moves any contained focus to the visible Selection
+tab. Escape retains the existing drawer dismissal and selection behavior.
 
 Human [peoples and cultures](lore/peoples.md#humans) describe varied agricultural,
 trading and traveling societies, not one universal Human culture. The selected
@@ -84,7 +93,8 @@ Barracks. Existing server routes and release Docker rules already include them.
 ## Evidence and limits
 
 The shipped HTML/client-handler tests cover both seats, live HP, notes open and
-Escape focus restoration, group summaries, invalid selections, effective
+Escape focus restoration, registry-derived facts, sourced optional lore,
+disclosure/link focus during live updates and entry removal, group summaries, invalid selections, effective
 appearance/legacy fallback, and decorative icon survival through target states.
 Asset checks verify source hashes, byte-identical reuse, viewport bounds,
 explicit HTTP allowlisting and release Docker inclusion. These checks are not
