@@ -28,7 +28,7 @@ creating a separate rules registry:
 | Entry and role | `unit.worker`; `unitKind: worker`; label and all abilities come from [gameplay definitions](../src/gameplay-definitions.mjs) (`move`, `attack`, `gather`, `build`, `repair`) |
 | Appearance | Effective sprite role: `human` or `boughward-worker`; [portrait descriptors](../src/selection-portrait.mjs) supply illustration and viewport |
 | Live instance | Snapshot HP and current selection; never stored as general lore or attached to a multi-selection |
-| Gameplay facts | Base movement, damage/structure damage, interval and range; training cost, duration, population and producer products derive from the same definitions |
+| Gameplay facts | Base movement, damage, attack class/target tags, interval and range; training cost, duration, population and producer products derive from the same definitions |
 | Culture and lore | Optional source-linked prose kept separate from appearance and gameplay capabilities; no individual name, birthplace, faction membership or ancestry-derived personality is established here |
 
 The initially collapsed **World notes (working lore)** disclosure quotes one

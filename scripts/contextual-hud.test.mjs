@@ -129,7 +129,7 @@ for (const team of [0, 1]) test(`seat ${team}: single Worker portrait opens dism
   assert.equal(notes.querySelector('[data-worker-abilities]').textContent, 'Move · Attack · Gather · Build · Repair');
   assert.equal(notes.querySelector('[data-worker-health]').textContent, '100 / 100 HP');
   assert.equal(notes.querySelector('[data-worker-movement]').textContent, 'Base move: 2.6 cells/s');
-  assert.equal(notes.querySelector('[data-worker-attack]').textContent, 'Base attack: 4 melee (1 vs structures) · 0.85s interval · 1.28 cells range');
+  assert.equal(notes.querySelector('[data-worker-attack]').textContent, 'Base attack: 4 melee vs ground · 0.85s interval · 1.28 cells range');
   assert.equal(notes.querySelector('[data-worker-training]').textContent, 'Town Center · 50 food · 25s · 1 population');
   assert.equal(notes.querySelector('details').open, false);
   f.escape();
@@ -147,7 +147,7 @@ test('Worker entry follows changed registry capabilities, stats, cost and produc
   const definition = {
     ...UNIT_DEFINITIONS.worker, capabilities: ['move', 'attack', 'repair'],
     cost: { food: 65, wood: 10 }, trainSeconds: 30, population: 2,
-    combat: { ...UNIT_DEFINITIONS.worker.combat, maxHp: 120, moveSpeed: 3, damage: 6, structureDamage: 2, period: 1, range: 1.5 },
+    combat: { ...UNIT_DEFINITIONS.worker.combat, maxHp: 120, moveSpeed: 3, damage: 6, targetTags: ['mounted'], period: 1, range: 1.5 },
   };
   const facts = workerRoleFacts({ hp: 42 }, definition, {
     workshop: { label: 'Workshop', products: ['worker'] },
@@ -155,7 +155,7 @@ test('Worker entry follows changed registry capabilities, stats, cost and produc
   });
   assert.deepEqual(facts, {
     health: '42 / 120 HP', abilities: 'Move · Attack · Repair', movement: 'Base move: 3 cells/s',
-    attack: 'Base attack: 6 melee (2 vs structures) · 1s interval · 1.5 cells range',
+    attack: 'Base attack: 6 melee vs mounted · 1s interval · 1.5 cells range',
     training: 'Workshop · 65 food + 10 wood · 30s · 2 population',
   });
 });

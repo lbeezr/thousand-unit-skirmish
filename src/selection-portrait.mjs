@@ -34,7 +34,7 @@ export function workerRoleFacts(unit, definition = UNIT_DEFINITIONS.worker, buil
       return label[0].toUpperCase() + label.slice(1);
     }).join(' · '),
     movement: `Base move: ${combat.moveSpeed} cells/s`,
-    attack: `Base attack: ${combat.damage} ${combat.attackClass} (${combat.structureDamage} vs structures) · ${combat.period}s interval · ${combat.range} cells range`,
+    attack: `Base attack: ${combat.damage} ${combat.attackClass} vs ${combat.targetTags.join(' / ')} · ${combat.period}s interval · ${combat.range} cells range`,
     training: `${producers.map(building => building.label).join(' / ') || 'No producer'} · ${cost} · ${definition.trainSeconds}s · ${definition.population} population`,
   };
 }
