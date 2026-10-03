@@ -4365,7 +4365,7 @@ function applyState(state, initial = false) {
   for (const row of state.units || []) {
     const [id, team, x, z, hp, kind, cargo, cargoType, generation = 0, taskStatus,
       targetedBy = 0, attackTick = -1, attackX = null, attackZ = null,
-      audioExecution = null, workHeading = null] = row;
+      audioExecution = null, workHeading = null, workResourceVariant = null] = row;
     const existingUnit = units[id];
     const unit = existingUnit || appendUnitFromState(row, !initial);
     if (!unit || unit.team !== team) continue;
@@ -4391,6 +4391,7 @@ function applyState(state, initial = false) {
       unit.defeatStartedAt = 0;
       unit.spriteClockState = null;
       unit.spriteClockStartedAt = null;
+      unit.workResourceVariant = null;
       unit.spawnStartedAt = initial ? 0 : performance.now();
       unit.lastPlayedAttackTick = -1;
       unit.angle = team === 0 ? Math.PI / 2 : -Math.PI / 2;
@@ -4403,6 +4404,9 @@ function applyState(state, initial = false) {
     unit.serverX = x;
     unit.serverZ = z;
     unit.workHeading = Number.isFinite(workHeading) ? workHeading : null;
+    // Clear on every snapshot, including legacy rows, travel, Stop and recovery.
+    unit.workResourceVariant = kind === 'worker' && taskStatus === 'gathering'
+      && workResourceVariant === 'shore-fish' ? workResourceVariant : null;
     if (kind && unit.kind !== kind) {
       unit.kind = kind;
       cargoVisualMayChange = true;
