@@ -614,7 +614,8 @@ const WORKER_SPAWN_OFFSETS = [
   [-1.1, -0.9], [1.1, -0.9], [-1.1, 0.9], [1.1, 0.9],
 ];
 const MAX_ATTACK_FLOW_FIELDS = 8;
-const MOVE_PLANNING_SLICE_BUDGET_MS = 5;
+const MOVE_PLANNING_MAX_WORK_ITEMS_PER_SLICE = 8;
+const MOVE_PLANNING_MAX_EXPANDED_CELLS_PER_SLICE = 4096;
 const attackMoveBucketRadius = Math.ceil(ATTACK_MOVE_ACQUIRE_RADIUS / SPATIAL_BUCKET_SIZE);
 const attackMoveBucketOffsets = [];
 for (let row = -attackMoveBucketRadius; row <= attackMoveBucketRadius; row++) {
@@ -3857,6 +3858,8 @@ function completeMovePlanningJob(job) {
       maxPathPlanningSliceMs: Number((job.maxPathPlanningSliceMs || 0).toFixed(3)),
       finalizationMs: Number((job.finalizationMs || 0).toFixed(3)),
       planningSliceCount: job.planningSliceCount,
+      maxPlanningSliceWorkItems: job.maxPlanningSliceWorkItems || 0,
+      maxPlanningSliceExpandedCells: job.maxPlanningSliceExpandedCells || 0,
     });
   }
   if (!job.silent) {
@@ -3948,8 +3951,15 @@ function processMovePlanningSlice(job) {
     }
 
     const sliceStartedAt = performance.now();
+    const expandedCellsAtStart = job.diagnostics.expandedCells;
+    let workItems = 0;
+    // Whole searches remain atomic. An oversized search finishes, then this
+    // job yields; clock observations measure work but never select assignments.
     while ((job.currentGoalGroup || job.nextGroup < job.groups.length)
-      && performance.now() - sliceStartedAt < MOVE_PLANNING_SLICE_BUDGET_MS) {
+      && workItems < MOVE_PLANNING_MAX_WORK_ITEMS_PER_SLICE
+      && job.diagnostics.expandedCells - expandedCellsAtStart
+        < MOVE_PLANNING_MAX_EXPANDED_CELLS_PER_SLICE) {
+      workItems++;
       if (!job.currentGoalGroup) {
         const [startCell, group] = job.groups[job.nextGroup++];
         const assignmentsByDestination = new Map();
@@ -3982,6 +3992,9 @@ function processMovePlanningSlice(job) {
       if (currentGroup.nextGoal >= currentGroup.goals.length) job.currentGoalGroup = null;
     }
     const sliceDurationMs = performance.now() - sliceStartedAt;
+    job.maxPlanningSliceWorkItems = Math.max(job.maxPlanningSliceWorkItems || 0, workItems);
+    job.maxPlanningSliceExpandedCells = Math.max(job.maxPlanningSliceExpandedCells || 0,
+      job.diagnostics.expandedCells - expandedCellsAtStart);
     job.pathPlanningWorkMs = (job.pathPlanningWorkMs || 0) + sliceDurationMs;
     job.maxPathPlanningSliceMs = Math.max(job.maxPathPlanningSliceMs || 0, sliceDurationMs);
     job.planningWorkMs += sliceDurationMs;
