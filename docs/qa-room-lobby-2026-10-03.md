@@ -114,3 +114,53 @@ preserving a newer deliberate focus choice. DOM tests cover overlapping Ready
 and chat replies. Native browser verification of the fix remains separate.
 Manual 250–2,000-unit presets, mobile sizes, supervisor restart, and a full
 accessibility/focus-trap verdict were outside that Mac check.
+
+## Seat guidance follow-up
+
+At main `604912130aaeae9a6cb0adea4cca380305afae66`, a spectator with an open
+Ember seat still reads “both seats occupied or reserved.” Ember with an open
+Azure host seat receives only generic Ready guidance. The follow-up distinguishes
+occupied/reserved/vacant seats, explains host departure without promoting Ember,
+and offers an ordinary spectator **Rejoin as player** only for a genuine vacancy.
+That action reloads existing admission; it cannot grant authority locally or
+override a reservation. Active-token waiters retain automatic recovery.
+
+The real protocol extension also reproduces a quiet-lobby expiry gap: after
+grace passes, clients retain the reserved-seat projection until another command
+or connection arrives. One hook now invokes the existing seat synchronization
+at the regular waiting-state cadence, making expiry invalidate readiness and
+publish the vacancy while simulation/supply remain frozen.
+
+The initial `8aaeae2` focused authority/lobby/chat UI tests pass 22 cases. The real supervisor
+scenario passes all 12 groups twice consecutively, including authoritative host
+reservation, vacancy after grace with no intervening client commands, one rejoin
+request, unchanged Ember identity, a newly admitted Azure identity and readiness
+reset. It now uses native TCP HTTP upgrades, masked WebSocket frames and explicit
+close acknowledgement; the prior Node native WebSocket close sporadically timed
+out. No runtime/protocol-library fix is claimed by the test transport change.
+Exact final review, integration and postmerge results belong in the owning PR.
+
+[PR #101](https://github.com/lbeezr/thousand-unit-skirmish/pull/101) final runtime
+`b32225d5d8fa7821d05a6733f139ada6aa50d1ec` integrates main `c003d4f` and passes
+all **910 unit tests**, 12 pregame groups, nine authenticated menu groups/90
+served modules, eight chat groups and the packaged release scenario. Docs pass
+451 Markdown files/2,945 links before this evidence-only update. The 23-case
+focused set also verifies that rejoin strips old Resume/Studio flags and preserves
+deliberate standalone entry; an expired old Resume cannot block requesting an
+open seat. The PR closure records independent review and actual postmerge counts.
+
+Mac remains offline. Retain the existing entry recipe and check this extension
+with normal browser sandboxing when available:
+
+1. Create/join with Azure and Ember; a third profile reads occupied status and
+   has no Ready/settings/rejoin authority.
+2. Leave Azure. Ember sees reservation then an open host seat, remains Ember,
+   and retains disabled host settings/launch controls. The waiting simulation
+   stays frozen through grace expiry.
+3. The spectator sees Rejoin only after a seat is actually open. Repeated clicks
+   produce one reload; admission supplies a new player identity and both seats
+   must ready again. Existing active-token waiters offer automatic recovery.
+4. If another player takes the vacancy first, the action disappears and focus
+   stays inside the lobby. Record native focus/layout/navigation observations
+   separately from DOM/protocol evidence. Capacity remains two opposing Frontier
+   seats, with no civilization/team selector or deployment added.
