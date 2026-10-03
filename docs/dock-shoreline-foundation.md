@@ -6,7 +6,8 @@ Dock is now a placeable Frontier land building beside water. It costs 100 wood,
 takes 20 accumulated Worker-seconds and has 1,200 HP. These are provisional
 foundation values, not naval balance tuning. It now produces the provisional
 [Skiff](skiff-water-movement.md), using the shared paid queue and population rules.
-It has no rally, drop-off, population or resource bonus. The existing procedural
+It accepts [Skiff food cargo](skiff-fishing.md) at its water berth. It has no
+Worker drop-off, rally, population or resource bonus. The existing procedural
 House is an explicit Dock appearance placeholder; no finished pier artwork or
 water-side pier collision is present.
 
@@ -74,6 +75,6 @@ are a topology handoff; automated DOM/commands do not establish rendered visual
 quality or unassisted human usability.
 
 Available gameplay is **place, construct, select, cancel, repair and attack a
-shoreline Dock foundation** through the existing building lifecycle. No boat
-can be trained or moved. Boat domain/continuous movement, production, population,
-cargo/drop-off, transports and naval combat remain subsequent scoped work.
+shoreline Dock foundation**, train and move one provisional Skiff, and deliver
+its finite fish food at the owned water berth. Transport and naval combat remain
+subsequent scoped work; the procedural appearances remain placeholders.

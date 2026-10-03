@@ -4,7 +4,8 @@
 
 Dock now trains **Skiff (placeholder)** through the existing paid production
 queue: provisional 75 wood, zero food, ten seconds and one population. It has
-120 HP, moves at 2.4 cells/second and cannot attack, gather or carry cargo.
+120 HP, moves at 2.4 cells/second and cannot attack.
+[Single-Skiff fishing](skiff-fishing.md) adds finite food cargo and owned Dock delivery.
 Both seats can select one owned boat and issue Move or Stop. Hold Position
 also stops it without attacking. Boats consume ordinary roster/population
 capacity but cannot alone keep an elimination match open. Existing land attacks
@@ -38,9 +39,9 @@ Select exactly one Skiff for Move. Mixed land/water or multiple-boat movement,
 queued waypoints, attack-move, patrol and follow reject without mutating orders.
 Attack-move, patrol, follow and formation controls are disabled for a Skiff
 selection. Dock rally targeting is unavailable; move the boat after spawning.
-Fishing cargo, food drop-off, transport, naval combat and multi-boat formations
-are separate follow-on work. Shore fish remain finite existing food gathered by
-land Workers; this change introduces no resource currency or regrowth.
+Fishing and Return cargo also accept one boat through their [cargo contract](skiff-fishing.md).
+Transport, naval combat and multi-boat formations remain follow-on work. Shore
+Workers and boats consume one finite food stock with no new currency or regrowth.
 
 ## Production and restart
 
@@ -57,10 +58,12 @@ Schema 22 remains additive. The exact preceding Gate/Dock content revision
 migrates its paid land match, gates and Docks to the current revision. The prior
 gate-free Dock revision `v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6`
 and existing older land migrations remain compatible. Older pins cannot
-claim Skiffs or paid Skiff queues. Recovery validates water positions, cardinal
+claim Skiffs or paid Skiff queues. The exact movement-only Skiff and Farm
+revisions migrate bare boats and paid queues; they cannot claim fishing state.
+Recovery validates water positions, cardinal
 routes and exact goals, centerline Stop positions, explicit domains, nonoverlapping
-live hull reservations, and absence of cargo, combat targets, land planning or
-unsupported orders. Rejected saves are preserved exactly. Static route validation
+live hull reservations, supported [food cargo and fishing intent](skiff-fishing.md),
+and absence of combat targets, land planning or unsupported orders. Rejected saves are preserved exactly. Static route validation
 allows another boat to occupy a future segment; the movement tick waits safely.
 
 ## Evidence and manual use

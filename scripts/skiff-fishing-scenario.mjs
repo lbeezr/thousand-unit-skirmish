@@ -8,6 +8,7 @@ import { createSkiffFishingContext } from '../src/skiff-fishing.mjs';
 import { waterRaster } from '../src/water-contours.mjs';
 
 const previousMovementPin = 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54';
+const previousFarmPin = 'v1:496509c24775ddfbd289faf9fbcc85dfef7d054d710c665caa9fe192c610ddcd';
 const map = { id: 'skiff-fishing-proof', name: 'Skiff fishing proof', width: 64, height: 64,
   terrainSeed: 19, fogOfWar: false, startingArmySize: 24, startingResources: { food: 1000, wood: 1000 },
   spawnPoints: [{ team: 0, x: -20, z: 0 }, { team: 1, x: 20, z: 0 }],
@@ -64,7 +65,7 @@ try {
   const migratedQueue = await fixture.checkpoint(snapshot => snapshot.rulesetRevision === GAMEPLAY_RULESET_REVISION);
   assert.equal(migratedQueue.matchId, paid.matchId); assert.deepEqual(migratedQueue.state.teamWood, [825, 825]);
   await fixture.checkpoint(snapshot => boats(snapshot).length === 2); await fixture.stop();
-  const bare = await saved(); bare.rulesetRevision = previousMovementPin;
+  const bare = await saved(); bare.rulesetRevision = previousFarmPin;
   await writeFile(fixture.checkpointPath, JSON.stringify(bare)); await reconnect();
   const migrated = await fixture.checkpoint(snapshot => snapshot.rulesetRevision === GAMEPLAY_RULESET_REVISION);
   assert.equal(migrated.matchId, bare.matchId); boatIds = [0, 1].map(team => boats(migrated).find(unit => unit.team === team).id);
@@ -118,6 +119,7 @@ try {
     ['off-approach harvesting', stopped, snapshot => { const unit = snapshot.state.units[boatIds[0]];
       Object.assign(unit, water.graph.pointAt(fishing.dockCell(docks(stopped).find(building => building.team === 0))), { gatherNodeId: 'fish-0', gatherPhase: 'gathering' }); }],
     ['old revision claiming cargo', stopped, snapshot => { snapshot.rulesetRevision = previousMovementPin; }],
+    ['Farm revision claiming fish cargo', stopped, snapshot => { snapshot.rulesetRevision = previousFarmPin; }],
     ['old revision claiming fishing intent', returning, snapshot => { snapshot.rulesetRevision = previousMovementPin; }],
   ]) { const invalid = structuredClone(source); mutate(invalid); await rejectSaved(invalid, reason); }
   console.log(JSON.stringify({ scenario: 'Both-seat finite Skiff fishing', movementOnlyQueueAndBoatMigration: true,

@@ -287,7 +287,7 @@ for (const team of [0, 1]) test(`seat ${team}: a carrying Skiff exposes Return c
   f.select([id]); assert.equal(f.bar.dataset.context, 'boats');
   const button = f.bar.querySelector('[data-return-cargo]');
   assert.equal(button.hidden, false); assert.equal(button.disabled, false);
-  assert.equal(f.bar.querySelector('[data-context-panel="build"]').hidden, true);
+  assert.equal(f.bar.querySelector('[data-context-build]').hidden, true);
   f.click(button); assert.equal(orders[0].type, 'returnCargo'); assert.deepEqual([...orders[0].ids], [id]);
   f.w.units[id].cargo = 0; f.select([id]); assert.equal(button.hidden, true);
 });
