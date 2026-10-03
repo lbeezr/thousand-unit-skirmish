@@ -149,6 +149,7 @@ run(['--test', 'scripts/hud-action-icons.test.mjs'], 'Default HUD action glyphs 
 run(['scripts/hud-action-icons-serving-scenario.mjs'], 'Default HUD action glyph HTTP bytes');
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
 run(['--test', 'scripts/match-modes.test.mjs'], 'Versioned match mode policies and map compatibility');
+run(['--test', 'scripts/match-mode-checkpoint.test.mjs'], 'Match mode checkpoint identity and legacy preservation');
 run(['--test', 'scripts/game-entry.test.mjs', 'scripts/game-navigation.test.mjs'], 'Explicit main menu and session entry');
 run(['scripts/game-menu-scenario.mjs'], 'Fresh menu matches and protected resume authority');
 run(['--test', 'scripts/room-pregame.test.mjs', 'scripts/room-lobby-ui.test.mjs'], 'Pregame authority and lobby controls');
@@ -289,6 +290,7 @@ const scenarios = [
   ['scripts/construction-connectivity-scenario.mjs', 'Construction preserves existing terrain connections'],
   ['scripts/elimination-scenario.mjs', 'Terminal elimination and reconnect'],
   ['scripts/victory-elimination-native-scenario.mjs', 'Existing elimination recovery and clock boundaries'],
+  ['scripts/match-mode-native-scenario.mjs', 'Skirmish rewards, defeat and versioned recovery'],
   ['scripts/persistent-command-scenario.mjs', 'Patrol and Follow authority/recovery'],
   ['scripts/stationary-command-scenario.mjs', 'Stop and hold authority/recovery'],
   ['scripts/queued-waypoint-scenario.mjs', 'Queued waypoint checkpoint recovery'],

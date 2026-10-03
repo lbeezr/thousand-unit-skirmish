@@ -1,9 +1,20 @@
 import { randomBytes } from 'node:crypto';
+import { matchModeDefinition, normalizeMatchMode } from './match-modes.mjs';
 
 const ROOM_ID_PATTERN = /^[A-Za-z0-9_-]{32}$/;
 const MAP_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/;
 const UINT32_MAX = 0xffff_ffff;
-const WORKER_LAUNCH_ENV_KEYS = ['RTS_GAME_MODE', 'RTS_PVE_MAP_SEED', 'RTS_PVE_POLICY_SEED', 'RTS_PREGAME', 'RTS_SOLO_PRACTICE'];
+const WORKER_LAUNCH_ENV_KEYS = ['RTS_GAME_MODE', 'RTS_PVE_MAP_SEED', 'RTS_PVE_POLICY_SEED', 'RTS_PREGAME', 'RTS_SOLO_PRACTICE',
+  'RTS_MATCH_MODE_ID', 'RTS_MATCH_MODE_VERSION'];
+
+function hasMatchModeFields(value) {
+  return value && typeof value === 'object'
+    && (Object.hasOwn(value, 'matchModeId') || Object.hasOwn(value, 'matchModeVersion'));
+}
+
+function explicitMatchMode(value) {
+  return hasMatchModeFields(value) ? normalizeMatchMode(value) : {};
+}
 
 function parseSeed(value, label) {
   const seed = typeof value === 'string' && /^\d+$/.test(value) ? Number(value) : value;
@@ -32,13 +43,17 @@ export function normalizeRoomLaunchOptions(value) {
     throw new TypeError('Room launch options must be an object.');
   }
   for (const key of Object.keys(value)) {
-    if (!['mode', 'mapSeed', 'policySeed', 'pregame', 'practice'].includes(key)) {
+    if (!['mode', 'mapSeed', 'policySeed', 'pregame', 'practice', 'matchModeId', 'matchModeVersion'].includes(key)) {
       throw new TypeError(`Unknown room launch option: ${key}.`);
     }
   }
   const mode = value.mode ?? 'pvp';
   if (mode !== 'pvp' && mode !== 'pve') {
     throw new TypeError('Room mode must be "pvp" or "pve".');
+  }
+  const matchMode = explicitMatchMode(value);
+  if (mode === 'pve' && !matchModeDefinition(matchMode).pveSupported) {
+    throw new TypeError('Skirmish does not support PvE until its base-elimination AI is accepted.');
   }
   const hasMapSeed = Object.hasOwn(value, 'mapSeed');
   const hasPolicySeed = Object.hasOwn(value, 'policySeed');
@@ -55,10 +70,11 @@ export function normalizeRoomLaunchOptions(value) {
     if (hasMapSeed || hasPolicySeed) {
       throw new TypeError('PvP rooms do not accept PvE seeds.');
     }
-    return { mode, ...(value.pregame === true ? { pregame: true } : {}), ...(value.practice === true ? { practice: true } : {}) };
+    return { mode, ...(value.pregame === true ? { pregame: true } : {}), ...(value.practice === true ? { practice: true } : {}), ...matchMode };
   }
   return {
     mode,
+    ...matchMode,
     ...(hasMapSeed ? { mapSeed: parseSeed(value.mapSeed, 'PvE map seed') } : {}),
     ...(hasPolicySeed ? { policySeed: parseSeed(value.policySeed, 'PvE policy seed') } : {}),
   };
@@ -76,7 +92,7 @@ export function completeRoomLaunchOptions(value, createSeed = randomSeed) {
     return seed;
   };
   return {
-    mode: 'pve',
+    ...options,
     mapSeed: nextSeed(options.mapSeed),
     policySeed: nextSeed(options.policySeed),
   };
@@ -89,6 +105,10 @@ export function buildRoomWorkerEnvironment(parentEnvironment, launchOptions) {
   environment.RTS_GAME_MODE = options.mode;
   if (options.pregame) environment.RTS_PREGAME = '1';
   if (options.practice) environment.RTS_SOLO_PRACTICE = '1';
+  if (hasMatchModeFields(options)) {
+    environment.RTS_MATCH_MODE_ID = options.matchModeId;
+    environment.RTS_MATCH_MODE_VERSION = String(options.matchModeVersion);
+  }
   if (options.mode === 'pve') {
     if (options.mapSeed === undefined || options.policySeed === undefined) {
       throw new TypeError('PvE worker launch options require both seeds.');
@@ -104,37 +124,43 @@ export function normalizeRoomMetadata(value) {
   const mapId = value.mapId;
   if (mapId === undefined || mapId === null) return null;
   if (typeof mapId !== 'string' || !MAP_ID_PATTERN.test(mapId)) return null;
-  return { mapId };
+  try { return { mapId, ...explicitMatchMode(value) }; }
+  catch { return null; }
 }
 
 export function roomResponseMetadata(room) {
   const launchOptions = requireCompleteLaunchOptions(room.launchOptions);
-  const roomMetadata = normalizeRoomMetadata({ mapId: room.mapId });
+  const roomMetadata = normalizeRoomMetadata(room);
+  const matchMode = explicitMatchMode(hasMatchModeFields(roomMetadata) ? roomMetadata : launchOptions);
   return {
     launchOptions,
-    ...(roomMetadata ? { mapId: roomMetadata.mapId, roomMetadata } : {}),
+    ...matchMode,
+    ...(roomMetadata ? { mapId: roomMetadata.mapId, roomMetadata: { ...roomMetadata, ...matchMode } } : {}),
   };
 }
 
 export function roomIndexDocument(rooms) {
   return {
-    version: 2,
+    version: 3,
     rooms: rooms.map((room) => {
       const launchOptions = requireCompleteLaunchOptions(room.launchOptions);
-      const roomMetadata = normalizeRoomMetadata({ mapId: room.mapId });
+      const roomMetadata = normalizeRoomMetadata(room);
+      if ((room.mapId != null || hasMatchModeFields(room)) && !roomMetadata) {
+        throw new TypeError('Invalid room metadata.');
+      }
       return {
         id: room.id,
         createdAt: room.createdAt,
         lastActiveAt: room.lastActiveAt,
         launchOptions,
-        ...(roomMetadata ? { mapId: roomMetadata.mapId } : {}),
+        ...(roomMetadata || {}),
       };
     }),
   };
 }
 
 export function normalizeRoomIndex(index) {
-  if (!index || ![1, 2].includes(index.version) || !Array.isArray(index.rooms)) return null;
+  if (!index || ![1, 2, 3].includes(index.version) || !Array.isArray(index.rooms)) return null;
   const seenIds = new Set();
   const rooms = [];
   for (const entry of index.rooms) {
@@ -144,21 +170,23 @@ export function normalizeRoomIndex(index) {
       || !Number.isFinite(entry.lastActiveAt)
       || seenIds.has(entry.id)) return null;
     seenIds.add(entry.id);
+    if (index.version < 3 && (hasMatchModeFields(entry) || hasMatchModeFields(entry.launchOptions)
+      || hasMatchModeFields(entry.roomMetadata))) return null;
     let launchOptions;
     try {
       launchOptions = index.version === 1 ? { mode: 'pvp' } : requireCompleteLaunchOptions(entry.launchOptions);
     } catch {
       return null;
     }
-    const roomMetadata = index.version === 2 ? normalizeRoomMetadata({ mapId: entry.mapId }) : null;
-    if (index.version === 2 && entry.mapId != null && !roomMetadata) return null;
+    const roomMetadata = index.version >= 2 ? normalizeRoomMetadata(entry) : null;
+    if (index.version >= 2 && (entry.mapId != null || hasMatchModeFields(entry)) && !roomMetadata) return null;
     rooms.push({
       id: entry.id,
       createdAt: entry.createdAt,
       lastActiveAt: entry.lastActiveAt,
       launchOptions,
-      ...(roomMetadata ? { mapId: roomMetadata.mapId } : {}),
+      ...(roomMetadata || {}),
     });
   }
-  return { version: 2, rooms };
+  return { version: 3, rooms };
 }

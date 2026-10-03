@@ -80,7 +80,7 @@ let indexSaveQueue = Promise.resolve();
 
 function makeRoom(id, values = {}) {
   const directory = path.join(ROOM_DIRECTORY, id);
-  const roomMetadata = normalizeRoomMetadata({ mapId: values.mapId });
+  const roomMetadata = normalizeRoomMetadata(values);
   return {
     id,
     directory,
@@ -90,6 +90,9 @@ function makeRoom(id, values = {}) {
     lastActiveAt: Number.isFinite(values.lastActiveAt) ? values.lastActiveAt : Date.now(),
     launchOptions: completeRoomLaunchOptions(values.launchOptions),
     mapId: roomMetadata?.mapId ?? null,
+    ...(roomMetadata?.matchModeId ? {
+      matchModeId: roomMetadata.matchModeId, matchModeVersion: roomMetadata.matchModeVersion,
+    } : {}),
     lastIndexWriteAt: 0,
     activeConnections: 0,
     pendingConnections: 0,
@@ -287,7 +290,7 @@ function logWorkerOutput(label, stream, isError = false) {
   });
 }
 
-function startWorker(customMapDirectory, matchStatePath, label, launchOptions = { mode: 'pvp' }) {
+function startWorker(customMapDirectory, matchStatePath, label, launchOptions = { mode: 'pvp' }, onRoomMetadata) {
   return new Promise((resolve, reject) => {
     const { RTS_ACCESS_PASSWORD: _accessPassword, ...parentEnvironment } = process.env;
     const workerEnvironment = buildRoomWorkerEnvironment(parentEnvironment, launchOptions);
@@ -309,6 +312,7 @@ function startWorker(customMapDirectory, matchStatePath, label, launchOptions = 
     logWorkerOutput(label, child.stderr, true);
 
     let settled = false;
+    let worker = null;
     const timeout = setTimeout(() => fail(new Error(`${label} did not become ready in time.`)), WORKER_START_TIMEOUT_MS);
     const fail = (error) => {
       if (settled) return;
@@ -318,11 +322,20 @@ function startWorker(customMapDirectory, matchStatePath, label, launchOptions = 
       reject(error);
     };
     child.on('message', (message) => {
+      if (worker && message?.type === 'roomMetadata') {
+        const roomMetadata = normalizeRoomMetadata(message.roomMetadata);
+        if (roomMetadata) {
+          worker.roomMetadata = roomMetadata;
+          onRoomMetadata?.(roomMetadata, worker);
+        }
+        return;
+      }
       if (settled || message?.type !== 'ready' || !Number.isInteger(message.port) || message.port < 1) return;
       settled = true;
       clearTimeout(timeout);
       const roomMetadata = normalizeRoomMetadata(message.roomMetadata);
-      resolve({ child, port: message.port, ...(roomMetadata ? { roomMetadata } : {}) });
+      worker = { child, port: message.port, ...(roomMetadata ? { roomMetadata } : {}) };
+      resolve(worker);
     });
     child.once('error', fail);
     child.once('exit', (code, signal) => {
@@ -332,6 +345,19 @@ function startWorker(customMapDirectory, matchStatePath, label, launchOptions = 
   });
 }
 
+function updateRoomMetadata(room, roomMetadata) {
+  if (!roomMetadata || (room.mapId === roomMetadata.mapId && room.matchModeId === roomMetadata.matchModeId
+    && room.matchModeVersion === roomMetadata.matchModeVersion)) return;
+  room.mapId = roomMetadata.mapId;
+  delete room.matchModeId;
+  delete room.matchModeVersion;
+  if (roomMetadata.matchModeId) {
+    room.matchModeId = roomMetadata.matchModeId;
+    room.matchModeVersion = roomMetadata.matchModeVersion;
+  }
+  void persistRoomIndex().catch((error) => console.error('Could not save room index:', error));
+}
+
 async function ensureRoomWorker(room) {
   if (room.worker?.child.exitCode === null) return room.worker;
   if (room.starting) return room.starting;
@@ -339,12 +365,12 @@ async function ensureRoomWorker(room) {
     await mkdir(room.customMapDirectory, { recursive: true });
     const worker = await startWorker(
       room.customMapDirectory, room.matchStatePath, `room ${room.id.slice(0, 8)}`, room.launchOptions,
+      (roomMetadata, worker) => {
+        if (room.worker === worker) updateRoomMetadata(room, roomMetadata);
+      },
     );
     room.worker = worker;
-    if (worker.roomMetadata?.mapId && room.mapId !== worker.roomMetadata.mapId) {
-      room.mapId = worker.roomMetadata.mapId;
-      void persistRoomIndex().catch((error) => console.error('Could not save room index:', error));
-    }
+    updateRoomMetadata(room, worker.roomMetadata);
     worker.child.once('exit', () => {
       if (room.worker !== worker) return;
       room.worker = null;

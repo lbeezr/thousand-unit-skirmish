@@ -17,7 +17,7 @@ let orderToken = 100;
 const command = (client, value, pattern) => client.command({ ...value, clientOrderToken: orderToken++ }, pattern);
 
 function conserved(saved, total) {
-  assert.equal(saved.schemaVersion, 26);
+  assert.equal(saved.schemaVersion, 27);
   const stock = saved.state.resourceNodes.filter(node => node.type === 'food').reduce((sum, node) => sum + node.stock, 0);
   const bank = saved.state.teamFood.reduce((sum, food) => sum + food, 0);
   const cargo = saved.state.units.filter(unit => unit.cargoType === 'food').reduce((sum, unit) => sum + unit.cargo, 0);
@@ -214,7 +214,7 @@ try {
   const lost = structuredClone(depletedRestart.saved); unitIn(lost, workers[0]).cargo = 0;
   assert.throws(() => conserved(lost, 4.25), /one authored food pool/);
   console.log(JSON.stringify({ scenario: 'automatic Sheep proximity claims', defaultMap: defaultMap.id,
-    radius: CLAIM_RADIUS, schema: 26, bothSeatRealDefaultMoveClaims: true, hiddenOwnershipRowsAbsent: true,
+    radius: CLAIM_RADIUS, schema: delivered.schemaVersion, bothSeatRealDefaultMoveClaims: true, hiddenOwnershipRowsAbsent: true,
     defaultClaimRecoveryAndEconomyUnchanged: true, contestedOwnerPresenceRetains: true,
     opposingRecaptureAfterOwnerLeaves: true, lastOwnerPersistsWithoutNearbyUnits: true, claimedOwnershipGrantsNoSight: true,
     opposingGatherActivatesOwnedAliveSheep: true, bothSeatSharedCarcassHarvest: true,
