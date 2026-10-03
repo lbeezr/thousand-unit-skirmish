@@ -1,4 +1,4 @@
-import { combatDamage } from '../src/combat-rules.mjs';
+import { combatDamage, canCombatTarget, hasGameplayCapability } from '../src/combat-rules.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
@@ -97,7 +97,9 @@ try {
   for (let slot = 0; slot < 4; slot++) assert.equal(initial.state.units[slot].attackCooldown,
     initial.state.units[slot+4].attackCooldown, 'opening cadence must match by team slot');
   const results = [];
-  for (const [kind, damage] of Object.entries(UNIT_DEFINITIONS).map(([kind, definition]) => [kind, combatDamage(definition, definition)])) {
+  for (const [kind, damage] of Object.entries(UNIT_DEFINITIONS).filter(([, definition]) =>
+    hasGameplayCapability(definition, 'attack') && canCombatTarget(definition, definition))
+    .map(([kind, definition]) => [kind, combatDamage(definition, definition)])) {
     for (const lowerIdTeam of [0, 1]) {
       for (const strikes of [1, 3, 'staggered']) {
         const fixture = structuredClone(initial);

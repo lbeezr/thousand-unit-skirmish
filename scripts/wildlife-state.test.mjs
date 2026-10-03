@@ -1,8 +1,8 @@
+import { GAMEPLAY_RULESET_REVISION } from '../src/gameplay-definitions.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
-import { GAMEPLAY_RULESET_REVISION } from '../src/gameplay-definitions.mjs';
 import { isShoreFish } from '../src/shore-fishing.mjs';
 import {
   activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted,
@@ -116,7 +116,7 @@ test('schema 19 ordinary maps migrate, but cannot forge unrecorded wildlife stat
   vm.runInContext(migration, context);
   const plain = { schemaVersion: 19, rulesVersion: 6, mapDefinition: { resourceNodes: [] }, state: { units: [] } };
   context.migrateMatchCheckpoint(plain);
-  assert.equal(plain.schemaVersion, schemaVersion);
+  assert.equal(plain.schemaVersion, 22);
   const invalid = { ...plain, schemaVersion: 19, mapDefinition: { resourceNodes: [sheep] } };
   context.migrateMatchCheckpoint(invalid);
   assert.equal(invalid.schemaVersion, 19, 'validation will reject wildlife predating its state schema');

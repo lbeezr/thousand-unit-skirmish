@@ -90,6 +90,7 @@ test('legacy migration conserves fractional banks/cargo and depletion; unsupport
   t.after(() => room.dispose()); await room.start(); await room.checkpoint(); await room.stop();
   const legacy = JSON.parse(await readFile(room.checkpointPath, 'utf8'));
   legacy.schemaVersion = 11; delete legacy.rulesetRevision; delete legacy.factionId;
+  delete legacy.economyProfileId; delete legacy.state.teamStone;
   legacy.state.teamFood = [137.25, 91.5]; legacy.state.teamWood = [203.75, 44.25];
   legacy.state.resourceNodes[0].stock = 0; legacy.state.resourceNodes[1].stock = 7.25;
   const worker = legacy.state.units.find(unit => unit.kind === 'worker');
@@ -101,7 +102,7 @@ test('legacy migration conserves fractional banks/cargo and depletion; unsupport
   assert.deepEqual(migrated.state.resourceNodes, legacy.state.resourceNodes, 'migration never replenishes depleted or partial stocks');
   const recoveredWorker = migrated.state.units.find(unit => unit.id === worker.id);
   assert.equal(recoveredWorker.cargo, worker.cargo); assert.equal(recoveredWorker.cargoType, worker.cargoType);
-  assert.equal(Object.hasOwn(migrated.state, 'teamStone'), false, 'legacy migration creates no mineral grant');
+  assert.deepEqual(migrated.state.teamStone, [0, 0], 'legacy migration creates no mineral grant');
 
   const { candidateNodes } = await createStoneAuthoringFixture();
   const stoneMap = structuredClone(migrated);

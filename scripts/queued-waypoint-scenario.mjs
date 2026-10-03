@@ -290,6 +290,7 @@ try {
   clients = [];
   const schemaTwoCheckpoint = JSON.parse(await readFile(checkpointPath, 'utf8'));
   schemaTwoCheckpoint.schemaVersion = 2;
+  delete schemaTwoCheckpoint.economyProfileId; delete schemaTwoCheckpoint.state.teamStone;
   for (const unit of schemaTwoCheckpoint.state.units) delete unit.queuedWaypoints;
   await writeFile(checkpointPath, JSON.stringify(schemaTwoCheckpoint));
   child = await startServer(port, checkpointPath, customMapDirectory);
