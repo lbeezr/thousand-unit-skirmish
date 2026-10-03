@@ -148,7 +148,12 @@ The [3 October building/environment audit](../art-runtime-audit-2026-10-03.md)
 links all eight Frontier concepts to the six completed model records and 48
 directional captures, distinguishes older default art, and records precise
 lifecycle and cloud-source gaps. The Town Center's existing Complete captures
-now have a bounded release preview path. Original source records remain intact.
+now have a bounded release preview path. The subsequent
+[finished-building runtime](../frontier-building-runtime.md) adopts saved Town
+Center and House Complete art in normal matches, with explicit missing-state
+fallback. Its [source receipt](../qa-evidence/default-frontier-buildings-2026-10-03/source-images.json)
+preserves hashes/decoded alpha bounds for all 48 existing frames; original
+source records remain intact. Deployed normal-match screenshots remain pending.
 
 The [Town Center authoring preparation](../frontier-town-center-authoring.md)
 adds a reusable empty Blender camera/state scaffold using those preserved

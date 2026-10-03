@@ -85,7 +85,7 @@ test('failed lifecycle frames expose fallback instead of the previous Complete a
    assert.match(warnings[0][1].message,failure==='http'?/HTTP 503|returned HTTP 503/:/SHA-256 differs/);
    update(100);await new Promise(setImmediate);
    assert.equal(sprite.visible,true,'repair can restore cached verified Complete artwork');
-   assert.notEqual(sprite.material.map,completeTexture);
+   assert.equal(sprite.material.map,completeTexture,'repair reuses the immutable verified Complete frame');
   });
  });
 });
@@ -106,11 +106,12 @@ test('a late failed Damaged request cannot hide a newer verified Critical frame'
 test('disposed captured buildings ignore a late failed frame',{timeout:3000},async()=>{
  await withFailedLifecycleFrame('disposed-failure',async({sprite,update,damaged,requested,warnings})=>{
   update(50);await requested.promise;
-  const texture=sprite.material.map,visible=sprite.visible;
   disposeCapturedBuildingSprite(sprite);
   damaged.resolve(new Response('unavailable',{status:503}));await new Promise(setImmediate);
-  assert.equal(sprite.visible,visible);
-  assert.equal(sprite.material.map,texture);
+  assert.equal(sprite.visible,false);
+  assert.equal(sprite.material.map,null);
+  assert.equal(sprite.userData.capturedBuildingArt.bodyDepth.visible,false);
+  assert.equal(sprite.userData.capturedBuildingArt.bodyDepth.material.map,null);
   assert.deepEqual(warnings,[]);
  });
 });

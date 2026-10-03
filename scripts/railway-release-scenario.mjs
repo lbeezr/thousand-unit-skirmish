@@ -245,32 +245,29 @@ try {
       createHash('sha256').update(await readFile(path.join(sourceRoot, file))).digest('hex'),
       `packed water study bytes must match ${file}`);
   }
-  // Ship exactly one already-authored Frontier family, preserving its captures.
+  // Default finished families retain exact source PNGs; no GLB/gallery/source upload.
   const frontierRoot = 'assets/buildings/frontier-civilization-scale-pilot-v1/';
-  const frontierManifestPath = frontierRoot + 'town-center-complete-renderer.json';
-  const frontierResponse = await fetch(`${base}/${frontierManifestPath}`, { headers: { authorization } });
-  assert.equal(frontierResponse.status, 200);
-  assert.match(frontierResponse.headers.get('content-type'), /application\/json/);
-  const frontier = await frontierResponse.json();
-  assert.equal(frontier.asset, 'town-center');
-  assert.deepEqual(frontier.stateOrder, ['complete']);
-  assert.equal(frontier.completeState.views.length, 8);
-  const frontierPaths = [frontierManifestPath];
-  for (const view of frontier.completeState.views) {
-    const assetPath = frontierRoot + view.path;
-    frontierPaths.push(assetPath);
-    assert.ok(contextRules.includes('!' + assetPath), `${assetPath} must be explicitly admitted`);
-    const response = await fetch(`${base}/${assetPath}`, { headers: { authorization } });
-    assert.equal(response.status, 200, assetPath);
-    assert.match(response.headers.get('content-type'), /image\/png/);
-    const bytes = Buffer.from(await response.arrayBuffer());
-    assert.equal(bytes.length, view.bytes);
-    assert.equal(createHash('sha256').update(bytes).digest('hex'), view.sha256, assetPath);
+  const frontierPaths = [];
+  for (const family of ['town-center', 'house']) {
+    const manifestPath = frontierRoot + family + '-complete-renderer.json';
+    const response = await fetch(`${base}/${manifestPath}`, { headers: { authorization } });
+    assert.equal(response.status, 200); assert.match(response.headers.get('content-type'), /application\/json/);
+    const frontier = await response.json();
+    assert.equal(frontier.asset, family); assert.deepEqual(frontier.stateOrder, ['complete']);
+    assert.equal(frontier.completeState.views.length, 8); frontierPaths.push(manifestPath);
+    for (const view of frontier.completeState.views) {
+      const assetPath = frontierRoot + view.path; frontierPaths.push(assetPath);
+      assert.ok(contextRules.includes('!' + assetPath), `${assetPath} must be explicitly admitted`);
+      const frame = await fetch(`${base}/${assetPath}`, { headers: { authorization } });
+      assert.equal(frame.status, 200, assetPath); assert.match(frame.headers.get('content-type'), /image\/png/);
+      const bytes = Buffer.from(await frame.arrayBuffer()); assert.equal(bytes.length, view.bytes);
+      assert.equal(createHash('sha256').update(bytes).digest('hex'), view.sha256, assetPath);
+    }
   }
   const releaseManifest = JSON.parse(await readFile(path.join(root, 'release-manifest.json'), 'utf8'));
   assert.deepEqual(releaseManifest.files.filter(file => file.startsWith(frontierRoot)).sort(), frontierPaths.sort(),
-    'the bounded preview must not package other families, source models or galleries');
-  for (const absent of ['house-complete-renderer.json', 'model-provenance.json', 'captures/house-complete-view-01.png']) {
+    'package exactly the selected registered sprites, without source models or galleries');
+  for (const absent of ['model-provenance.json', 'meshy_output/house.glb', 'preview.html']) {
     assert.equal((await fetch(`${base}/${frontierRoot}${absent}`, { headers: { authorization } })).status, 404);
   }
   const resourceStateModule = await fetch(`${base}/src/resource-visual-state.mjs`, { headers: { authorization } });

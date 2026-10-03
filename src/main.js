@@ -32,7 +32,7 @@ import { roomEntryUrl, AUTHENTICATION_MESSAGE } from './game-entry-session.mjs';
 import * as THREE from 'three';
 import { farmHarvestNode } from './farm-harvest.mjs';
 import { attachBuildingSprite } from './building-sprites.mjs';
-import { frontierBuildingPreviewUrl } from './frontier-building-preview.mjs';
+import { frontierBuildingManifestUrl } from './frontier-building-preview.mjs';
 import {
   createCapturedBuildingSprite, disposeCapturedBuildingSprite,
   updateCapturedBuildingSprite,
@@ -915,7 +915,8 @@ function createTownCenterVisual(building) {
   const standardRoot = new THREE.Group();
   standardRoot.position.set(-0.73, 0, -0.23);
   addBuildingStandard(standardRoot, spawn.team, 0, 0, 2.06);
-  fallbackRoot.add(standardRoot);
+  standardRoot.userData.buildingTeamStandard = true;
+  group.add(standardRoot);
 
   const capturedSprite = createCapturedBuildingSprite({ teamColor: TEAM_HEX[spawn.team] });
   group.add(capturedSprite);
@@ -953,7 +954,7 @@ function clearBuildingVisuals() {
   selectedBuildingId = null;
   for (const visual of buildingVisuals.values()) {
     disposeFrontierCapture(visual);
-    if (visual.captureEntry) { const index = capturedBuildingVisuals.indexOf(visual.captureEntry); if (index >= 0) capturedBuildingVisuals.splice(index, 1); }
+    if (visual.captureEntry) { const index = capturedBuildingVisuals.indexOf(visual.captureEntry); if (index >= 0) capturedBuildingVisuals.splice(index, 1); disposeCapturedBuildingSprite(visual.captureEntry.sprite); }
     visual.authoredSprite?.dispose();
     scene.remove(visual.group);
     visual.group.traverse((object) => {
@@ -1182,6 +1183,7 @@ function disposeBuildingVisual(visual) {
   if (visual.captureEntry) {
     const captureIndex = capturedBuildingVisuals.indexOf(visual.captureEntry);
     if (captureIndex >= 0) capturedBuildingVisuals.splice(captureIndex, 1);
+    disposeCapturedBuildingSprite(visual.captureEntry.sprite);
   }
   visual.authoredSprite?.dispose();
   scene.remove(visual.group);
@@ -1189,7 +1191,7 @@ function disposeBuildingVisual(visual) {
     if (!object.isSprite) object.geometry?.dispose();
     const materials = Array.isArray(object.material) ? object.material : [object.material];
     for (const material of materials) {
-      if (!material?.map?.userData?.sharedBuildingSprite) material?.map?.dispose();
+      if (!material?.map?.userData?.sharedBuildingSprite && !material?.map?.userData?.sharedCapturedFrame) material?.map?.dispose();
       material?.dispose();
     }
   });
@@ -1197,6 +1199,7 @@ function disposeBuildingVisual(visual) {
 
 function addBuildingStandard(group, team, x, z, height = 1.85) {
   const standard = new THREE.Group();
+  standard.userData.buildingTeamStandard = true;
   standard.position.set(x, 0, z);
   const pole = new THREE.Mesh(
     new THREE.CylinderGeometry(0.035, 0.045, height, 5),
@@ -1330,13 +1333,15 @@ function createGameplayBuildingVisual(building) {
     : role === 'town-center' ? createTownCenterVisual(building)
       : role === 'house' ? createHouseVisual(building)
         : role === 'barracks' ? createBarracksVisual(building) : createArcheryRangeVisual(building);
-  const manifestUrl = frontierBuildingPreviewUrl(building.type, frontierBuildingsPreview);
+  const manifestUrl = frontierBuildingManifestUrl(building.type, frontierBuildingsPreview);
   if (manifestUrl) {
     // Wrap artwork only; gameplay feedback and fog remain on the existing group.
     const feedback = new Set([visual.outline, visual.productionLamp, visual.rallyMarker,
       visual.healthIndicator?.group, visual.combatFeedback?.targetRing, visual.combatFeedback?.impactFlash]);
     const fallbackRoot = new THREE.Group();
-    for (const child of [...visual.group.children]) if (!feedback.has(child)) fallbackRoot.add(child);
+    for (const child of [...visual.group.children]) {
+      if (!feedback.has(child) && !child.userData.buildingTeamStandard) fallbackRoot.add(child);
+    }
     visual.group.add(fallbackRoot);
     const sprite = createCapturedBuildingSprite({ manifestUrl, teamColor: TEAM_HEX[building.team] });
     visual.group.add(sprite);

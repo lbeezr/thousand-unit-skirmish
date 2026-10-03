@@ -25,6 +25,15 @@ No runtime renderer or active game asset changes in this milestone. Construction
 
 ## Local tools
 
+### Default Complete adoption
+
+The existing Town Center and House Complete captures now bind normal matches
+without a URL flag. Both eight-view families are included in Docker packaging;
+missing construction/damage states use explicit per-state fallback. Original
+PNGs, registration, manifests and model provenance remain unchanged. The
+[runtime contract](../../../docs/frontier-building-runtime.md) records shared
+depth/textures, preserved gameplay/team cues and pending deployed-game QA.
+
 ### 3 October 2026 — bounded Town Center runtime preview
 
 The existing Town Center Complete renderer manifest and eight PNG captures are

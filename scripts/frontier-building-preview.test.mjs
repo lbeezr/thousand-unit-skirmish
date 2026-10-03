@@ -1,8 +1,18 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { frontierBuildingPreviewUrl } from '../src/frontier-building-preview.mjs';
+import { frontierBuildingPreviewUrl, frontierBuildingManifestUrl } from '../src/frontier-building-preview.mjs';
 
 const families = ['town-center', 'house', 'storehouse', 'stable', 'workshop', 'watchtower'];
+
+test('ordinary match URLs bind Town Center and House without a preview flag', () => {
+  for (const mode of [undefined, null, '']) {
+    for (const type of ['town-center', 'house']) assert.equal(frontierBuildingManifestUrl(type, mode), frontierBuildingPreviewUrl(type, '1'));
+    for (const type of ['storehouse', 'stable', 'workshop', 'watchtower', 'mill', 'farm', 'dock', 'constructor']) {
+      assert.equal(frontierBuildingManifestUrl(type, mode), null);
+    }
+  }
+  for (const type of families) assert.equal(frontierBuildingManifestUrl(type, '0'), null, 'explicit comparison opt-out remains available');
+});
 
 test('the named Town Center preview never requests another family', () => {
   const url = frontierBuildingPreviewUrl('town-center', 'town-center');
