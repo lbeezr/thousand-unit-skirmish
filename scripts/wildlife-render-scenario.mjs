@@ -7,13 +7,7 @@ import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.
 import { createStaticSheepRuntime } from '../src/sheep-static-preview.mjs';
 
 // Real worker HTTP/WS paths and Three meshes; PNG decoding is CPU-only, not WebGL evidence.
-const map = JSON.parse(await readFile(new URL('../docs/qa-evidence/neutral-wildlife-render-2026-10-03/preview-map.json', import.meta.url)));
-// Authored poses go through real map publication, not a preview switch. Keep the
-// historical capture fixture untouched; these nodes are disposable game tests.
-map.resourceNodes.push(
-  { id: 'north-companion', type: 'food', x: -12, z: 3, stock: 100, wildlifeSpecies: 'bellweather-sheep', wildlifeNoseYawDegrees: 0 },
-  { id: 'east-pose', type: 'food', x: -14, z: -6, stock: 100, wildlifeSpecies: 'bellweather-sheep', wildlifeNoseYawDegrees: 90 },
-);
+const map = JSON.parse(await readFile(new URL('../docs/qa-evidence/sheep-eight-view-default-2026-10-03/game-map.json', import.meta.url)));
 const fixture = await createFortifiedFixture({ mapPath: 'maps/open-field.json', timeoutMs: 40_000 });
 const OriginalImage = globalThis.Image;
 let renderer;
@@ -21,13 +15,13 @@ try {
   await fixture.start();
   const base = `http://127.0.0.1:${fixture.port}/`;
   const approved = ['src/neutral-wildlife-renderer.mjs', 'src/wildlife-state.mjs', 'src/sheep-static-preview.mjs',
-    'assets/wildlife/bellweather-sheep-public-reference-v1/static-preview-binding.json',
-    'assets/wildlife/bellweather-sheep-public-reference-v1/sprite-atlas-pack-v1.json',
-    'assets/wildlife/bellweather-sheep-public-reference-v1/sheep-atlas-runtime.png'];
+    'assets/wildlife/bellweather-sheep-static-v1/static-preview-binding.json',
+    'assets/wildlife/bellweather-sheep-static-v1/sprite-atlas-pack-v1.json',
+    'assets/wildlife/bellweather-sheep-static-v1/sheep-atlas-runtime.png'];
   for (const relative of approved) assert.equal((await fetch(new URL(relative, base))).status, 200, relative);
-  for (const relative of ['source/sheep-model-input.png', 'source-records.json', 'cloud-capture-contract.json',
-    'sheep-atlas-source.png', 'original.glb']) {
-    assert.equal((await fetch(new URL(`assets/wildlife/bellweather-sheep-public-reference-v1/${relative}`, base))).status, 404, relative);
+  for (const relative of ['source/sheep-yaw-000.png', 'source/sheep-yaw-315.png', 'source/capture-contract.json',
+    'source-records.json', 'source-admission.json', 'sheep-atlas-source.png', 'original.glb']) {
+    assert.equal((await fetch(new URL(`assets/wildlife/bellweather-sheep-static-v1/${relative}`, base))).status, 404, relative);
   }
   const main = await (await fetch(new URL('src/main.js', base))).text();
   assert.match(main, /import \{ createNeutralWildlifeRenderer \} from '\.\/neutral-wildlife-renderer\.mjs'/);
@@ -43,7 +37,7 @@ try {
   const scene = new THREE.Scene();
   renderer = createNeutralWildlifeRenderer({ THREE, scene, groundHeight: () => 0,
     loadArt: options => createStaticSheepRuntime({ ...options,
-      bindingUrl: new URL('assets/wildlife/bellweather-sheep-public-reference-v1/static-preview-binding.json', base).href }),
+      bindingUrl: new URL('assets/wildlife/bellweather-sheep-static-v1/static-preview-binding.json', base).href }),
   });
   const camera = new THREE.OrthographicCamera(-10, 10, 10, -10, .1, 100);
   camera.position.set(.78, 1.12, .78).normalize().multiplyScalar(20);
@@ -76,12 +70,18 @@ try {
   assert.equal(alive.nodes.some(node => node.id === 'ordinary-berries'), false);
   const group = scene.children.find(group => group.userData.wildlifeNodeId === 'visible-sheep');
   assert.equal(group.children[2].visible, true, 'verified atlas is attached to the live scene');
-  assert.ok(group.children[2].material.map.image.width === 512);
+  assert.ok(group.children[2].material.map.image.width === 2048);
   const northCompanion = scene.children.find(group => group.userData.wildlifeNodeId === 'north-companion');
   assert.equal(northCompanion.children[2].geometry, group.children[2].geometry, 'same pose shares immutable geometry');
-  assert.equal(alive.nodes.find(node => node.id === 'east-pose').mode, 'sheep-proxy', 'unavailable east pixels cannot use the north image');
+  assert.equal(alive.nodes.find(node => node.id === 'east-pose').mode, 'static-illustration');
   const eastGroup = scene.children.find(group => group.userData.wildlifeNodeId === 'east-pose');
   assert.equal(eastGroup.children[0].rotation.y, Math.PI / 2);
+  const meshes = map.resourceNodes.filter(node => node.wildlifeNoseYawDegrees !== undefined).map(node => {
+    assert.equal(alive.nodes.find(row => row.id === node.id).mode, 'static-illustration', node.id);
+    return scene.children.find(group => group.userData.wildlifeNodeId === node.id).children[2];
+  });
+  assert.equal(new Set(meshes.map(mesh => mesh.geometry)).size, 8, 'every admitted direction has independent UVs');
+  assert.equal(new Set(meshes.map(mesh => mesh.material)).size, 1, 'all directions share the verified color atlas');
   const savedPose = await fixture.checkpoint(saved => saved.mapDefinition.id === map.id);
   assert.equal(savedPose.mapDefinition.resourceNodes.find(node => node.id === 'east-pose').wildlifeNoseYawDegrees, 90);
   assert.ok(savedPose.state.resourceNodes.every(node => node.wildlifeNoseYawDegrees === undefined), 'static pose belongs to authored map data');
@@ -104,7 +104,7 @@ try {
   renderer.reset(client.welcome.map.resourceNodes);
   const recovered = represent(client.welcome.state);
   assert.equal(recovered.nodes.find(node => node.id === 'visible-sheep').visible, false);
-  assert.equal(recovered.nodes.find(node => node.id === 'east-pose').mode, 'sheep-proxy');
+  assert.equal(recovered.nodes.find(node => node.id === 'east-pose').mode, 'static-illustration');
   const beforeReset = client.messages.length;
   client.send({ type: 'reset' });
   const restoredState = await client.wait(state => state.type === 'state'
@@ -112,9 +112,9 @@ try {
   'rematch restores authored sheep', beforeReset);
   assert.equal(represent(restoredState).nodes.find(node => node.id === 'visible-sheep').mode, 'static-illustration');
   console.log(JSON.stringify({ scenario: 'neutral wildlife live render binding', productionHttpPaths: approved.length,
-    nonRuntimePathsRejected: 5, verifiedPublicAtlasLoaded: true, realSnapshotAliveCarcassDepletedRematch: true,
+    nonRuntimePathsRejected: 7, verifiedPublicAtlasLoaded: true, realSnapshotAliveCarcassDepletedRematch: true,
     hiddenWildlifeSuppressed: true, ordinaryFoodUnchanged: true, staticPosePublishedAndRecovered: true,
-    absentDirectionUsesProxy: true, sameDirectionSharesGeometry: true, invalidPosesRejected: 3, webglCapture: false }));
+    allEightAuthoredDirectionsAttached: true, sameDirectionSharesGeometry: true, invalidPosesRejected: 3, webglCapture: false }));
 } finally {
   renderer?.dispose(); globalThis.Image = OriginalImage; await fixture.dispose();
 }

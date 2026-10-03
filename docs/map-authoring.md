@@ -198,8 +198,8 @@ yaw 0 faces +Z and positive yaw turns toward +X. This static presentation pose
 stays in map data through import/export and checkpoint recovery; it adds no
 simulation heading or movement. The normal renderer selects an available exact
 static direction, otherwise its rotated geometric Sheep proxy. The current
-public pack contains only the north illustration; [runtime evidence](qa-sheep-static-directions-runtime-2026-10-03.md)
-records that limit. Dedicated wildlife brushes and claim/herding remain future
+public pack contains all eight static nose views; [current evidence](qa-sheep-eight-view-default-2026-10-03.md)
+records source, runtime and pending native appearance checks. Dedicated wildlife brushes and claim/herding remain future
 work. The default **Bellweather · Millrace** opts in at existing opening satellites
 `s0/s1-0-{1,3,4}`: three 130-food Sheep per side, including one visible on opening.
 This changes identity only; IDs, stock, coordinates, seed and build clearings remain

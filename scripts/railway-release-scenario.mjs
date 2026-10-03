@@ -118,16 +118,20 @@ try {
   const threeCore = await fetch(`${base}/vendor/three.core.js`, { headers: { authorization } });
   assert.equal(threeCore.status, 200);
   assert.match(threeCore.headers.get('content-type'), /javascript/);
-  const sheepDirectory = `${base}/assets/wildlife/bellweather-sheep-public-reference-v1/`;
+  const sheepDirectory = `${base}/assets/wildlife/bellweather-sheep-static-v1/`;
   const sheepBindingResponse = await fetch(`${sheepDirectory}static-preview-binding.json`, { headers: { authorization } });
-  assert.equal(sheepBindingResponse.status, 200, 'packed runtime preserves the public Sheep binding');
+  assert.equal(sheepBindingResponse.status, 200, 'packed runtime preserves the admitted eight-view Sheep binding');
   const sheepBinding = await sheepBindingResponse.json();
   const sheepManifestResponse = await fetch(new URL(sheepBinding.manifest, sheepDirectory), { headers: { authorization } });
   assert.equal(sheepManifestResponse.status, 200);
   const sheepManifestBytes = Buffer.from(await sheepManifestResponse.arrayBuffer());
   assert.equal(createHash('sha256').update(sheepManifestBytes).digest('hex'), sheepBinding.manifestSha256);
   const sheepManifest = JSON.parse(sheepManifestBytes);
+  assert.equal(sheepBinding.packId, 'bellweather-sheep-static-v1');
+  assert.equal(sheepBinding.directions.length, 8);
+  assert.deepEqual(sheepBinding.animations, []);
   const sheepPage = sheepManifest.pages[0];
+  assert.deepEqual(sheepPage.dimensionsPx, { width: 2048, height: 1024 });
   const sheepFile = sheepManifest.files.find(file => file.id === sheepPage.runtimeFileId);
   const sheepImageResponse = await fetch(new URL(sheepFile.path, sheepDirectory), { headers: { authorization } });
   assert.equal(sheepImageResponse.status, 200);
@@ -135,7 +139,7 @@ try {
   const packedManifest = JSON.parse(await readFile(path.join(root, 'release-manifest.json'), 'utf8'));
   assert.deepEqual(packedManifest.files.filter(file => file.startsWith('assets/wildlife/')).sort(),
     ['sheep-atlas-runtime.png', 'sprite-atlas-pack-v1.json', 'static-preview-binding.json']
-      .map(file => `assets/wildlife/bellweather-sheep-public-reference-v1/${file}`).sort(),
+      .map(file => `assets/wildlife/bellweather-sheep-static-v1/${file}`).sort(),
     'only three runtime Sheep files enter the package, with no originals or GLB');
   for (const clientFile of ['audio-zones.html', 'src/audio-zones.mjs', 'src/audio-zones.css']) {
     assert.equal((await fetch(`${base}/${clientFile}`, { headers: { authorization } })).status, 200,

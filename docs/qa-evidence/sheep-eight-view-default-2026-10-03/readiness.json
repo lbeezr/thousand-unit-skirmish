@@ -1,0 +1,55 @@
+{
+  "packId": "bellweather-sheep-static-v1",
+  "status": "directional-static-bytes-validated",
+  "errors": [],
+  "sourceViewsVerified": 8,
+  "declaredDirections": [
+    "north",
+    "north-east",
+    "east",
+    "south-east",
+    "south",
+    "south-west",
+    "west",
+    "north-west"
+  ],
+  "unavailableDirections": [],
+  "animations": [],
+  "anchorReview": [
+    {
+      "id": "idle-north",
+      "status": "unreviewed-estimate"
+    },
+    {
+      "id": "idle-north-east",
+      "status": "unreviewed-estimate"
+    },
+    {
+      "id": "idle-east",
+      "status": "unreviewed-estimate"
+    },
+    {
+      "id": "idle-south-east",
+      "status": "unreviewed-estimate"
+    },
+    {
+      "id": "idle-south",
+      "status": "unreviewed-estimate"
+    },
+    {
+      "id": "idle-south-west",
+      "status": "unreviewed-estimate"
+    },
+    {
+      "id": "idle-west",
+      "status": "unreviewed-estimate"
+    },
+    {
+      "id": "idle-north-west",
+      "status": "unreviewed-estimate"
+    }
+  ],
+  "publicationApproval": "not established by this check",
+  "visualAcceptance": "separate owner-run review",
+  "liveDirectionalIntegration": false
+}
