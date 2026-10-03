@@ -1,0 +1,16 @@
+{
+  "upstreamIllustration": {
+    "url": "https://github.com/lbeezr/thousand-unit-skirmish/blob/02e3ac9434ac0970dbe307f44791a40ffd61ba82/docs/art-direction/bellweather-sheep-model-input-v1/bellweather-sheep-model-input-yaw-000-v1.png",
+    "sha256": "0ff688101304a7c10e181b3363ce767e8fb0082d0f754817edee81e04a9bf904"
+  },
+  "captureContract": null,
+  "originalViewsPreserved": true,
+  "records": [
+    {
+      "filename": "sheep-model-input.png",
+      "sha256": "0ff688101304a7c10e181b3363ce767e8fb0082d0f754817edee81e04a9bf904",
+      "bytes": 1457172,
+      "directionId": "north"
+    }
+  ]
+}

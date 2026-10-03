@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bellweather Sheep static preview</title>
+<style>
+body{margin:0;background:#19251f;color:#eee7d6;font:14px/1.5 system-ui}main{max-width:1280px;margin:auto}header,footer{padding:12px 20px}h1{font-size:19px;margin:0}p{margin:5px 0}label{display:inline-block;margin:8px 14px 0 0}select{font:inherit;background:#28372d;color:inherit;padding:4px;border:1px solid #677362}canvas{display:block;width:100%;height:auto}#status{color:#d9c38c;min-height:22px}a{color:#b9d3df}button{font:inherit}details{margin-top:8px}
+</style>
+<script type="importmap">{"imports":{"three":"../node_modules/three/build/three.module.js"}}</script>
+</head>
+<body><main><header>
+<h1>Bellweather Sheep · static reference preview</h1>
+<p>One public illustrated view beside the current Human Worker. Cream fleece stays neutral. This is an appearance trial; sheep gameplay and animation are absent.</p>
+<label>Zoom <select id="zoom"><option value="6" selected>Detail · 6.0</option><option value="0.91">Play · 0.91</option><option value="0.48">Strategic · 0.48</option></select></label>
+<label>Nose view <select id="heading"><option value="north">0° · north key</option><option value="north-east">45° · unavailable</option><option value="east">90° · unavailable</option><option value="south-east">135° · unavailable</option><option value="south">180° · unavailable</option><option value="south-west">225° · unavailable</option><option value="west">270° · unavailable</option><option value="north-west">315° · unavailable</option></select></label>
+<label>State <select id="state"><option value="idle">Standing</option><option value="walk">Moving · no artwork</option><option value="carcass">Carcass · no artwork</option><option value="depleted">Depleted · no artwork</option><option value="hidden">Fog hidden</option></select></label>
+<p id="status" role="status">Loading verified source art…</p>
+</header><canvas id="scene" width="1280" height="720" aria-label="Static Sheep on pasture beside the existing Worker; ground crosses mark estimated roots"></canvas>
+<footer><p>Sheep left · Human Worker right · crosses mark roots · one ground square = one world unit. Play and strategic zoom use the game's 43-unit frustum at 1280 × 720, DPR 1.</p>
+<details><summary>Source and limitations</summary><p>The eight cloud-rendered views could not be downloaded: proxy 403. This one-view cutout derives only from the <a href="https://github.com/lbeezr/thousand-unit-skirmish/blob/02e3ac9434ac0970dbe307f44791a40ffd61ba82/docs/art-direction/bellweather-sheep-model-input-v1/README.md">already-public input illustration</a>. Its matte, hoof-center and scale are provisional. It has no calibrated camera, measured anatomy, walking, grazing, carcass or depletion art. The captured model's nose/body offset is about 42°; future static rotations must keep nose heading separate from movement. See <a href="../assets/wildlife/bellweather-sheep-public-reference-v1/README.md">pack provenance</a>.</p></details>
+</footer></main><script type="module">
+import * as THREE from 'three';
+import { CAMERA_VIEW_DIRECTION } from '../src/camera-controls.mjs';
+import { createUnitSpriteRuntime } from '../src/unit-sprite-runtime.mjs';
+import { createStaticSheepRuntime } from '../src/sheep-static-preview.mjs';
+const canvas=document.querySelector('#scene'), status=document.querySelector('#status');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(1);renderer.setSize(1280,720,false);renderer.outputColorSpace=THREE.SRGBColorSpace;
+const scene=new THREE.Scene();scene.background=new THREE.Color('#859175');
+const camera=new THREE.OrthographicCamera(-1,1,1,-1,.1,300);
+camera.position.set(...CAMERA_VIEW_DIRECTION).normalize().multiplyScalar(40);camera.lookAt(0,0,0);camera.updateMatrixWorld();
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(100,100),new THREE.MeshBasicMaterial({color:0xa4b28d}));
+ground.rotation.x=-Math.PI/2;scene.add(ground);
+const grid=new THREE.GridHelper(100,100,0x63755a,0x899b76);grid.position.y=.003;scene.add(grid);
+for(const x of [-.75,.75]){
+ const points=[new THREE.Vector3(x-.12,.008,0),new THREE.Vector3(x+.12,.008,0),new THREE.Vector3(x,.008,-.12),new THREE.Vector3(x,.008,.12)];
+ scene.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(points),new THREE.LineBasicMaterial({color:0xe5d1a0})));
+}
+const worker=createUnitSpriteRuntime({THREE,scene,capacity:1,teamHex:[0x5aa7d7,0xd7875a],cameraQuaternion:camera.quaternion,roles:['human'],roleSpriteVersions:{human:'v3'},humanAppearancePreview:true});
+worker.setCount(0,1);worker.setCount(1,0);worker.setVisible(true);
+const unit={kind:'worker',team:0,slot:0,hp:100,angle:0,renderX:.75,renderZ:0,task:'idle',walking:false};
+try{
+ const sheep=await createStaticSheepRuntime({THREE,scene,bindingUrl:new URL('../assets/wildlife/bellweather-sheep-public-reference-v1/static-preview-binding.json',import.meta.url)});
+ const workerReady=await worker.ready;
+ if(!workerReady)throw new Error('Worker comparison failed to load');
+ function draw(){
+  const zoom=Number(document.querySelector('#zoom').value);camera.zoom=zoom;
+  camera.left=-43*(1280/720)/2;camera.right=-camera.left;camera.top=43/2;camera.bottom=-camera.top;camera.updateProjectionMatrix();
+  const stateId=document.querySelector('#state').value,directionId=document.querySelector('#heading').value;
+  const shown=sheep.update({stateId,directionId,moving:stateId==='walk',visible:stateId!=='hidden',x:-.75,groundY:0,z:0},camera);
+  worker.update(unit,0,1);worker.markTeamDirty(0);
+  status.textContent=shown?'Public reference cutout visible · one static frame · estimated root/scale.':stateId==='hidden'?'Fog hidden: Sheep suppressed.':'No authored artwork for this state/view: Sheep suppressed.';
+  canvas.dataset.sheepVisible=String(shown);canvas.dataset.zoom=String(zoom);canvas.dataset.ready='true';
+  renderer.render(scene,camera);
+ }
+ for(const id of ['zoom','heading','state'])document.querySelector('#'+id).addEventListener('change',draw);
+ draw();
+}catch(error){status.textContent='Preview unavailable: '+error.message;canvas.dataset.error=error.message;console.error(error);}
+</script></body></html>

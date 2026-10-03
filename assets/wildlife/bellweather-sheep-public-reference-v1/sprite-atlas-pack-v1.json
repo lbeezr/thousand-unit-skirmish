@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "packId": "bellweather-sheep-public-reference-v1",
+  "packVersion": "0.1.0",
+  "maturity": "runtime-candidate",
+  "provenance": {
+    "license": "project-generated reference; no new SPDX license asserted",
+    "source": "https://github.com/lbeezr/thousand-unit-skirmish/blob/02e3ac9434ac0970dbe307f44791a40ffd61ba82/docs/art-direction/bellweather-sheep-model-input-v1/bellweather-sheep-model-input-yaw-000-v1.png",
+    "authoringTool": "Pillow; deterministic packing and RGB bleed",
+    "notes": "Preview only. Static idle clips; no walk/graze/dispatch/carcass/depletion animation. Pivots require runtime review."
+  },
+  "files": [
+    {
+      "id": "sheep-source",
+      "path": "sheep-atlas-source.png",
+      "usage": "source",
+      "format": "png",
+      "sha256": "91819f5f48882040bbb2bce61371f8b499880094423288a8d61256c5a3713620",
+      "dimensionsPx": {
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "id": "sheep-runtime",
+      "path": "sheep-atlas-runtime.png",
+      "usage": "runtime",
+      "format": "png",
+      "sha256": "35b9507f1ab20ffd1bdfd89be561da354f30641c5396949f2b82c9a98934d08b",
+      "dimensionsPx": {
+        "width": 512,
+        "height": 512
+      }
+    }
+  ],
+  "pages": [
+    {
+      "id": "sheep-color",
+      "sourceFileId": "sheep-source",
+      "runtimeFileId": "sheep-runtime",
+      "dimensionsPx": {
+        "width": 512,
+        "height": 512
+      },
+      "colorSpace": "srgb",
+      "pixelFormat": "rgba8",
+      "alphaMode": "straight",
+      "edgeRule": "bleed-rgb-under-transparent",
+      "gutterPx": 0,
+      "gutterRule": "none",
+      "wrapMode": "clamp",
+      "sampling": {
+        "generateMipmaps": false,
+        "minFilter": "linear",
+        "magFilter": "linear",
+        "uvInsetPx": 0.5,
+        "maxMipLevel": 0
+      }
+    }
+  ],
+  "assets": [
+    {
+      "id": "bellweather-sheep",
+      "kind": "prop",
+      "artBoundsWorld": {
+        "min": [
+          -0.5,
+          0,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.8,
+          0.5
+        ]
+      },
+      "heightWorld": 0.8,
+      "sortAnchorWorld": [
+        0,
+        0,
+        0
+      ],
+      "layers": [
+        {
+          "id": "actor",
+          "drawLayer": "actor"
+        }
+      ],
+      "frames": [
+        {
+          "id": "idle-north",
+          "canvasPx": {
+            "width": 512,
+            "height": 512
+          },
+          "groundPivotPx": {
+            "x": 273.5566188197767,
+            "y": 428.29984051036683
+          },
+          "groundPivotStatus": "unreviewed-estimate",
+          "alphaBoundsPx": {
+            "x": 19,
+            "y": 68,
+            "width": 457,
+            "height": 393
+          },
+          "fallbackRectPx": {
+            "pageId": "sheep-color",
+            "rectPx": {
+              "x": 0,
+              "y": 0,
+              "width": 512,
+              "height": 512
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "sheep-color",
+              "rectPx": {
+                "x": 0,
+                "y": 0,
+                "width": 512,
+                "height": 512
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        }
+      ],
+      "clips": [
+        {
+          "stateId": "idle",
+          "directionId": "north",
+          "loop": false,
+          "sequence": [
+            {
+              "frameId": "idle-north",
+              "durationMs": 1000
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

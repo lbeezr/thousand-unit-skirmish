@@ -6,6 +6,13 @@ simulation, map placement or balance changes are delivered by this document.
 
 [Wiki wildlife entry](lore/wildlife.md) · [Art evolution](lore/art-evolution.md)
 
+**3 October art follow-up:** a [one-view public-input preview](../assets/wildlife/bellweather-sheep-public-reference-v1/README.md)
+now has a static Three.js binding and original/source/runtime pairs. It is an
+isolated appearance trial with estimated registration, not the eight cloud
+rotations or a harvestable animal. The Library frame transfer and sandboxed
+browser capture are blocked; [checks and limits](qa-bellweather-sheep-static-preview-2026-10-03.md)
+separate consumer byte/CPU evidence from the producer's render observations.
+
 ## Observed source
 
 ![Selected Bellweather ecology key](art-direction/vaelora-v1/bellweather-ecology.png)
