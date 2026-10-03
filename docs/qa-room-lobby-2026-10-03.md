@@ -9,6 +9,16 @@ Runtime code and unit-test inputs are identical.
 Draft [PR #41](https://github.com/lbeezr/thousand-unit-skirmish/pull/41) owns the
 current head, independent review, integration and subsequent evidence.
 
+Final runtime integration `5e174291a24381a4c068ec60a109c1bb6c585880` also includes
+fork main `d34c1a18c7e0ba865e19907a2fbaf868b17fa0e4` (the neutral Sheep renderer).
+All 418 unit tests pass with zero failures/skips. The two-client lobby scenario,
+real-worker wildlife render scenario and packaged release scenario pass again.
+The complete served client import graph and 31 UI assets pass their packaged
+delivery checks. Documentation passes 413 Markdown files / 2,704 local links.
+The clean release contains 1,016 files, digest
+`sha256:e70fa7063375458ad7d484f4f2f7473c7da6bbb6389f1f2bdcd9c6bae86b55c2`.
+The results below retain the prior integrated runtime's recovery evidence.
+
 ## Results
 
 | Check | Observed result |
@@ -59,7 +69,8 @@ the ordered schema 19→20→21→22 migrations are preserved.
 
 Independent peer review remains pending at this checkpoint. The supplied
 reviewer thread `01a101a8-d970-7540-aae2-633aa37b000b` was not addressable by
-the delegated environment's collaboration tool (agent not found). The author
-requested review routing and retains responsibility for findings, guarded
+the delegated environment's collaboration tool (agent not found); the user's
+subsequent Petunia suggestion also resolves to no live agent in this environment.
+The author retains responsibility for review findings, guarded
 merge and postmerge checks. No additional workers were spawned and no review
 or repository protection was bypassed.
