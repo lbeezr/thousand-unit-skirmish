@@ -91,6 +91,10 @@ control/candidate matches before claiming better balance or approving gold/coppe
 
 ## Reproduction
 
+The [offline Stone authoring fixture](stone-authoring-preflight.md) prepares
+deterministic layout and compatibility proofs while the economic contract is
+pending. It admits no new runtime resource and chooses no price or paid sink.
+
 ```sh
 node --test scripts/gameplay-definitions.test.mjs scripts/ruleset-revision.test.mjs
 node scripts/ruleset-checkpoint-scenario.mjs

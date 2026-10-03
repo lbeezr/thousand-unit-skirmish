@@ -255,9 +255,13 @@ Worker-seconds, 1,200 HP and a 3 × 3 dry level-zero land footprint. Placement
 requires an adjacent clear 3 × 3 authored-water berth and an outward water
 route step, while preserving ordinary land access and active routes. It uses
 the existing building lifecycle and an explicit procedural House placeholder.
-It offers no production, drop-off, population or resource bonus; boats remain
-unavailable. [The Dock contract](dock-shoreline-foundation.md) defines the
-current berth handoff and subsequent naval work.
+It produces an unarmed **Skiff (placeholder)** for provisional 75 wood, 10 seconds
+and one population: 120 HP and 2.4 cells/second. Select one boat to Move or Stop
+within authored level-zero water; hull occupancy can pause routes and production.
+Dock has no rally, drop-off, population or resource bonus. Skiffs carry no fish,
+passengers or combat capability and cannot alone keep an elimination match open.
+[The Dock contract](dock-shoreline-foundation.md) defines placement;
+[Skiff movement](skiff-water-movement.md) defines the paid runtime and recovery.
 
 A one-cell Palisade uses **provisional test tuning** of 15 wood, five accumulated
 Worker-seconds and 300 HP. Whole lines reserve occupancy and pay atomically;

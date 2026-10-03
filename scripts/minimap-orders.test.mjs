@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
+import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 function between(start, end) {
@@ -25,6 +26,7 @@ function minimapFixture(team = 0) {
     MAP_WIDTH: 64, MAP_HEIGHT: 64, MAP_HALF_X: 32, MAP_HALF_Z: 32,
     THREE: { MathUtils: { clamp: (n, min, max) => Math.max(min, Math.min(max, n)) } },
     mapDefinition: { fogOfWar: true }, localTeam: team, matchWinner: -1,
+    UNIT_DEFINITIONS,
     selected: new Set([1, 2, 3, 4, 99]), selectedBuildingId: null,
     units: [null, { id: 1, team: 0, hp: 40, kind: 'worker', generation: 5 },
       { id: 2, team: 0, hp: 80, kind: 'infantry', generation: 6 },
@@ -50,6 +52,7 @@ function minimapFixture(team = 0) {
     between('function minimapMapRect(', 'function minimapPoint('),
     between('function worldFromMinimap(', 'function makeInstances('),
     between('function selectedIds()', 'function issueStationaryOrder('),
+    between('function selectedWaterUnits(', 'function updateCommandUI('),
     between('function sendCommand(', 'function projectUnit('),
     between('function issueMove(', 'function issueBuildingRallyPoint('),
     between('function canIssueMinimapMove(', 'function selectWholeTeam('),
@@ -93,6 +96,14 @@ test('Shift right-click queues a plain move, including when a targeting mode was
     assert.equal(f.w.attackMoveMode, false); assert.equal(f.w.persistentTargetMode, null);
     assert.equal(f.w.tapOrderArmed, false);
   }
+});
+
+test('minimap permits one Skiff Move and refuses mixed-domain or queued water movement', t => {
+  const f = minimapFixture(); t.after(() => f.dom.window.close());
+  f.w.units[1].kind = 'skiff'; f.w.selected = new Set([1]);
+  f.event('pointerdown'); assert.equal(f.sent.length, 1); assert.equal(f.sent[0].type, 'move');
+  f.event('pointerdown', { shiftKey: true }); assert.equal(f.sent.length, 1);
+  f.w.selected.add(2); f.event('pointerdown'); assert.equal(f.sent.length, 1);
 });
 
 test('empty, dead, foreign, spectator, building, placement and finished-match contexts cannot send', t => {
