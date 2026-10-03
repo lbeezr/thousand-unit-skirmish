@@ -1,6 +1,6 @@
 import { waterRaster } from './water-contours.mjs';
-import { buildElevationGrid } from './map-utils.mjs';
 import { isShoreFish } from './shore-fishing.mjs';
+import { shoreFishSitePositions } from './shore-fishing-placement.mjs';
 
 export const WATER_STUDY_FISH_LIMIT = 32;
 const FORWARD = [[-1, 0, 1], [-1, -1, Math.SQRT2], [0, -1, 1], [1, -1, Math.SQRT2]];
@@ -48,39 +48,38 @@ function idPhase(id) {
 export function selectWaterStudyFish(definition, {
   resourceNodes = [], visibleResourceIds = [], visibleWaterCells = [],
 } = {}) {
-  const { width, height } = definition, cells = waterRaster(definition);
-  const levels = buildElevationGrid(width, height, definition.elevationPatches);
-  const blocked = new Uint8Array(cells.length);
-  for (const o of definition.obstacles || []) for (let r = o.row; r < o.row + o.height; r++) {
-    for (let c = o.column; c < o.column + o.width; c++) {
-      if (c >= 0 && r >= 0 && c < width && r < height) blocked[r * width + c] = 1;
-    }
-  }
-  const resources = new Set(visibleResourceIds), water = new Set(visibleWaterCells);
+  return createWaterStudyFishSelector(definition)({ resourceNodes, visibleResourceIds, visibleWaterCells });
+}
+
+// Map geometry is stable between rebuilds. Cache the shared fixed school
+// positions once, so visibility cannot move a school to a different neighbor.
+export function createWaterStudyFishSelector(definition) {
+  let sites;
+  try { sites = new Map(shoreFishSitePositions(definition).map(site => [site.nodeId, site])); }
+  catch { return () => []; }
   const authored = new Map((definition.resourceNodes || []).map(n => [n.id, n]));
-  const candidates = [], seen = new Set();
-  for (const live of [...resourceNodes].sort((a, b) => String(a.id) < String(b.id) ? -1 : String(a.id) > String(b.id) ? 1 : 0)) {
-    const node = authored.get(live.id);
-    if (!node || typeof node.id !== 'string' || seen.has(node.id) || !resources.has(node.id)
-      || !isShoreFish(node) || !isShoreFish(live) || node.type !== 'food' || live.type !== 'food'
-      || node.wildlifeSpecies !== undefined || live.wildlifeSpecies !== undefined
-      || node.wildlifeState !== undefined || live.wildlifeState !== undefined
-      || !Number.isFinite(live.stock) || live.stock <= 0
-      || !Number.isFinite(node.x) || !Number.isFinite(node.z)) continue;
-    seen.add(node.id);
-    const c = Math.floor(node.x + width / 2), r = Math.floor(node.z + height / 2);
-    if (c < 0 || r < 0 || c >= width || r >= height || blocked[r * width + c] || levels[r * width + c] !== 0) continue;
-    const neighbour = [[c - 1, r], [c + 1, r], [c, r - 1], [c, r + 1]].find(([x, z]) =>
-      x >= 0 && z >= 0 && x < width && z < height && cells[z * width + x]
-      && levels[z * width + x] === 0 && water.has(z * width + x));
-    if (!neighbour) continue;
-    const [x, z] = neighbour;
-    candidates.push({ id: node.id, waterCell: z * width + x,
-      x: x + .5 - width / 2, z: z + .5 - height / 2,
-      approachX: node.x, approachZ: node.z, phase: idPhase(node.id) });
-    if (candidates.length === WATER_STUDY_FISH_LIMIT) break;
-  }
-  return candidates;
+  return ({ resourceNodes = [], visibleResourceIds = [], visibleWaterCells = [] } = {}) => {
+    if (!Array.isArray(resourceNodes) || !Array.isArray(visibleResourceIds) || !Array.isArray(visibleWaterCells)) return [];
+    const resources = new Set(visibleResourceIds), water = new Set(visibleWaterCells);
+    const candidates = [], seen = new Set();
+    for (const live of resourceNodes.filter(n => n && typeof n.id === 'string').sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0)) {
+      const node = authored.get(live.id), site = sites.get(live.id);
+      if (!node || typeof node.id !== 'string' || seen.has(node.id) || !resources.has(node.id)
+        || !site
+        || !isShoreFish(node) || !isShoreFish(live) || node.type !== 'food' || live.type !== 'food'
+        || node.wildlifeSpecies !== undefined || live.wildlifeSpecies !== undefined
+        || node.wildlifeState !== undefined || live.wildlifeState !== undefined
+        || !Number.isFinite(live.stock) || live.stock <= 0
+        || !Number.isFinite(node.x) || !Number.isFinite(node.z)) continue;
+      seen.add(node.id);
+      const waterCell = site.water.row * definition.width + site.water.column;
+      if (!water.has(waterCell)) continue;
+      candidates.push({ id: node.id, waterCell, x: site.water.x, z: site.water.z,
+        approachX: site.land.x, approachZ: site.land.z, phase: idPhase(node.id) });
+      if (candidates.length === WATER_STUDY_FISH_LIMIT) break;
+    }
+    return candidates;
+  };
 }
 
 export function waterStudyTime(seconds, { fixedTime = null, reducedMotion = false } = {}) {

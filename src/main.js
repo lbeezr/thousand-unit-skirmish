@@ -1,5 +1,6 @@
 import { findInvalidResourceVariant, isShoreFish } from './shore-fishing.mjs';
 import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from './shore-fishing-placeholder.mjs';
+import { createWaterStudyFishBinding } from './water-study-fish-binding.mjs';
 import { generateRollingGround, smoothGround } from './terrain-authoring.mjs';
 import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS, validateMapRegion } from './regions.mjs';
@@ -2209,7 +2210,10 @@ function applyForestState(state) {
 }
 
 let terrainSurface = null;
+let waterStudyFishBinding = null;
 function buildMap(definition) {
+  waterStudyFishBinding?.clear();
+  waterStudyFishBinding = null;
   wildlifeRenderer.reset([]);
   setActiveTerrain(definition);
   terrainSurface=null;
@@ -2258,6 +2262,7 @@ function buildMap(definition) {
   addMapObject(base);
   for (const surface of createGroundSurfaces(definition)) {
     if(surface.userData.terrainSurface) terrainSurface=surface;
+    if (surface.userData.waterStudy) waterStudyFishBinding = createWaterStudyFishBinding(definition, surface);
     addMapObject(surface);
   }
   buildConstructionGroundBatches();
@@ -4487,6 +4492,7 @@ function applyState(state, initial = false) {
     attackFocusMesh.instanceMatrix.needsUpdate = true;
     attackFocusDirty = false;
   }
+  waterStudyFishBinding?.update(state, { spectator: localTeam === null });
   updateFogFromState(state);
   applyForestState(state);
   if (Array.isArray(state.objectives)) updateObjectives(state.objectives);
@@ -9654,6 +9660,7 @@ function connectSocket() {
   connection.addEventListener('close', () => {
     if (socket !== connection) return;
     socket = null;
+    waterStudyFishBinding?.clear();
     roomLobby.disconnect();
     audio.stopWork(); orderAudioGate.reset();
     if (pageLeaving) return;
