@@ -3,6 +3,7 @@ import { farmHarvestNode, farmHarvestNodeId, farmBuildingId, validFarmStock } fr
 import { createDockPlacementContext } from './src/dock-placement.mjs';
 import { createWaterUnitRuntime, waterUnitOccupiedCells } from './src/water-unit-runtime.mjs';
 import { createSkiffFishingContext } from './src/skiff-fishing.mjs';
+import { SKIFF_GROUP_ORDER_LIMIT, planSkiffGroupMove, planSkiffGroupFishing, planSkiffGroupReturn } from './src/skiff-group-orders.mjs';
 import { activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted, validWildlifeNodeDefinition, validWildlifeNodeState } from './src/wildlife-state.mjs';
 import { migrateMillraceSheepCheckpoint } from './src/millrace-sheep.mjs';
 import { validateMapRegion } from './src/regions.mjs';
@@ -4143,15 +4144,15 @@ function assignReturnCargo(player, command) {
   const selectedWater = commandUnits(command).filter(unit => unit.hp > 0 && unit.team === player.team && unit.movementDomain === 'water');
   if (selectedWater.length) {
     const selectedOwn = commandUnits(command).filter(unit => unit.hp > 0 && unit.team === player.team);
-    if (selectedOwn.length !== 1 || selectedWater.length !== 1) {
-      sendOrderNotice(player, command, 'RETURN CARGO REJECTED · SELECT ONE SKIFF'); return;
+    if (selectedOwn.length !== selectedWater.length) {
+      sendOrderNotice(player, command, 'RETURN CARGO REJECTED · SELECT ONLY SKIFFS'); return;
     }
-    const unit = selectedWater[0], route = unit.cargo > 0 && unit.cargoType === 'food'
-      ? skiffFishingContext.deliveryRoute(unit, buildings, units) : null;
-    if (!route) { sendOrderNotice(player, command, 'RETURN CARGO REJECTED · NEED FOOD CARGO AND A REACHABLE OWNED DOCK'); return; }
-    assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: [unit.id] });
-    skiffFishingContext.start(unit, null, 'to-base', route); dirty = true;
-    sendOrderNotice(player, command, 'RETURN CARGO ORDER · SKIFF TO OWNED DOCK'); return;
+    if (selectedWater.length > SKIFF_GROUP_ORDER_LIMIT) { sendOrderNotice(player, command, `RETURN CARGO REJECTED · SKIFF GROUP LIMIT ${SKIFF_GROUP_ORDER_LIMIT}`); return; }
+    const plan = planSkiffGroupReturn(skiffFishingContext, selectedWater, buildings, units);
+    if (plan.status !== 'found') { sendOrderNotice(player, command, 'RETURN CARGO REJECTED · NEED FOOD CARGO AND DISTINCT REACHABLE OWNED DOCK BERTHS'); return; }
+    assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: plan.assignments.map(({ unit }) => unit.id) });
+    for (const { unit, route, nodeId, phase } of plan.assignments) skiffFishingContext.start(unit, nodeId, phase, route);
+    dirty = true; sendOrderNotice(player, command, `RETURN CARGO ORDER · ${plan.assignments.length} SKIFFS TO OWNED DOCK`); return;
   }
   for (const unit of commandUnits(command)) {
     if (unit.hp <= 0 || unit.team !== player.team || !unitHasCapability(unit, 'gather')
@@ -4185,10 +4186,11 @@ function assignReturnCargo(player, command) {
 
 function assignSkiffGather(player, command, selectedUnits) {
   if (command.queue) { sendOrderNotice(player, command, 'FISHING REJECTED · QUEUED FISHING IS UNAVAILABLE'); return; }
-  if (selectedUnits.length !== 1 || selectedUnits[0].kind !== 'skiff' || !unitHasCapability(selectedUnits[0], 'gather')) {
-    sendOrderNotice(player, command, 'FISHING REJECTED · SELECT ONE SKIFF'); return;
+  if (selectedUnits.some(unit => unit.kind !== 'skiff' || !unitHasCapability(unit, 'gather'))) {
+    sendOrderNotice(player, command, 'FISHING REJECTED · SELECT ONLY SKIFFS'); return;
   }
-  const unit = selectedUnits[0], node = resourceNodeStates.get(command.nodeId);
+  if (selectedUnits.length > SKIFF_GROUP_ORDER_LIMIT) { sendOrderNotice(player, command, `FISHING REJECTED · SKIFF GROUP LIMIT ${SKIFF_GROUP_ORDER_LIMIT}`); return; }
+  const node = resourceNodeStates.get(command.nodeId);
   if (Object.hasOwn(command, 'forestCell') || !isShoreFish(node)) {
     sendOrderNotice(player, command, 'FISHING REJECTED · SELECT A SHORE FISH SOURCE'); return;
   }
@@ -4196,15 +4198,13 @@ function assignSkiffGather(player, command, selectedUnits) {
     sendOrderNotice(player, command, 'FISHING REJECTED · RESOURCE NODE NOT VISIBLE'); return;
   }
   if (node.stock <= 0) { sendOrderNotice(player, command, 'RESOURCE NODE EMPTY'); return; }
-  const fishRoute = skiffFishingContext.fishRoute(unit, node, units);
-  const delivery = skiffFishingContext.deliveryRoute(unit, buildings, units);
-  if (!fishRoute || !delivery) {
-    sendOrderNotice(player, command, 'FISHING REJECTED · NEED REACHABLE WATER FISH AND AN OWNED DOCK'); return;
+  const plan = planSkiffGroupFishing(skiffFishingContext, selectedUnits, node, buildings, units);
+  if (plan.status !== 'found') {
+    sendOrderNotice(player, command, 'FISHING REJECTED · NEED DISTINCT REACHABLE WATER FISH APPROACHES AND OWNED DOCK BERTHS'); return;
   }
-  const full = unit.cargo >= UNIT_DEFINITIONS.skiff.fishing.carryCapacity;
-  assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: [unit.id] });
-  skiffFishingContext.start(unit, node.id, full ? 'to-base' : 'to-node', full ? delivery : fishRoute);
-  dirty = true; sendOrderNotice(player, command, 'FISHING ORDER · SKIFF · FINITE FOOD TO OWNED DOCK');
+  assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: selectedUnits.map(unit => unit.id) });
+  for (const { unit, route, phase, nodeId } of plan.assignments) skiffFishingContext.start(unit, nodeId, phase, route);
+  dirty = true; sendOrderNotice(player, command, `FISHING ORDER · ${plan.assignments.length} SKIFFS · FINITE FOOD TO OWNED DOCK`);
 }
 
 function assignGather(player, command) {
@@ -5911,19 +5911,20 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
     return;
   }
   if (selectedUnits.some(unit => unit.movementDomain === 'water')) {
-    if (selectedUnits.length !== 1 || selectedUnits.some(unit => unit.movementDomain !== 'water')) {
-      sendOrderNotice(player, command, 'MOVE REJECTED · SELECT ONE SKIFF'); return;
+    if (selectedUnits.some(unit => unit.movementDomain !== 'water')) {
+      sendOrderNotice(player, command, 'MOVE REJECTED · SELECT ONLY SKIFFS'); return;
     }
+    if (selectedUnits.length > SKIFF_GROUP_ORDER_LIMIT) { sendOrderNotice(player, command, `MOVE REJECTED · SKIFF GROUP LIMIT ${SKIFF_GROUP_ORDER_LIMIT}`); return; }
     if (command.type !== 'move' || command.queue === true || buildingTargetId !== null) {
       sendOrderNotice(player, command, 'MOVE REJECTED · SKIFF SUPPORTS MOVE AND STOP'); return;
     }
-    const unit = selectedUnits[0];
-    const route = waterUnitRuntime.plan(unit, Number(command.x), Number(command.z), units);
-    if (route.status !== 'found') { sendOrderNotice(player, command, `MOVE REJECTED · WATER ROUTE ${route.status.toUpperCase()}`); return; }
-    assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: [unit.id] });
-    unit.path = route.cells; unit.pathIndex = 0; unit.moveGoalCell = route.cells.at(-1);
-    unit.waterMoveBlocked = false; dirty = true;
-    sendOrderNotice(player, command, 'MOVE ORDER · SKIFF WATER ROUTE'); return;
+    const plan = planSkiffGroupMove(waterUnitRuntime, selectedUnits, Number(command.x), Number(command.z), units);
+    if (plan.status !== 'found') { sendOrderNotice(player, command, `MOVE REJECTED · WATER ROUTE ${plan.status.toUpperCase()}`); return; }
+    assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: selectedUnits.map(unit => unit.id) });
+    for (const { unit, route } of plan.assignments) {
+      unit.path = route.cells; unit.pathIndex = 0; unit.moveGoalCell = route.cells.at(-1); unit.waterMoveBlocked = false;
+    }
+    dirty = true; sendOrderNotice(player, command, `MOVE ORDER · ${plan.assignments.length} SKIFF WATER ROUTES`); return;
   }
 
   const centerX = Number(command.x);
@@ -6732,14 +6733,20 @@ function findAttackMoveTarget(unit, acquireRadius = ATTACK_MOVE_ACQUIRE_RADIUS, 
   return bestTarget;
 }
 
-function getUnitAttackPath(unit, target, flowBudget = null) {
+function getUnitAttackPath(unit, target, flowBudget = null, continueWaypoint = false) {
   // A water target cannot be snapped onto land to invent a firing position.
   const targetCell = worldToCell(target.x, target.z);
-  const start = nearestOpenCell(worldToCell(unit.x, unit.z));
   const range = UNIT_DEFINITIONS[unit.kind].combat.range;
   if (Math.hypot(target.x - unit.x, target.z - unit.z) <= range) {
     return { targetCell, path: [], reachable: true };
   }
+  const currentCell = worldToCell(unit.x, unit.z);
+  const waypoint = continueWaypoint ? unit.path[unit.pathIndex] : null;
+  // Finish the current legal step before rerouting a moving-target pursuit.
+  // Otherwise each target-cell change can reverse that step indefinitely.
+  const retainWaypoint = continueWaypoint && canTraverseUnitStep(currentCell, waypoint,
+    MAP_WIDTH, elevationLevelByCell, isWalkable);
+  const start = nearestOpenCell(retainWaypoint ? waypoint : currentCell);
   const component = walkableComponents[start];
   let key = targetCell;
   let goals = null;
@@ -6774,6 +6781,7 @@ function getUnitAttackPath(unit, target, flowBudget = null) {
   // Being in a goal cell does not guarantee the unit's continuous position is
   // within range. Finish moving to that cell's center before attempting a shot.
   if (atGoal && path.length === 0) path.push(start);
+  else if (retainWaypoint && path.length > 0) path.unshift(start);
   return { targetCell, path, reachable: Boolean(field) && path.length > 0 };
 }
 
@@ -6802,7 +6810,7 @@ function prepareAttackMovePaths() {
     }
     if (!target) continue;
     const previousBuilt = budget.built;
-    const approach = getUnitAttackPath(unit, target, budget);
+    const approach = getUnitAttackPath(unit, target, budget, unit.attackTargetId >= 0);
     if (budget.built > previousBuilt) attackFlowLastGrant.set(unit, tickNumber);
     plans.set(unit.id, { target, approach });
   }
@@ -7141,7 +7149,7 @@ function simulateTick() {
         }
         if (unit.repathTimer <= 0
           && (targetCell !== unit.lastAttackCell || unit.pathIndex >= unit.path.length)) {
-          const approach = unit.attackMove ? attackMovePlans.get(unit.id)?.approach : getUnitAttackPath(unit, target);
+          const approach = unit.attackMove ? attackMovePlans.get(unit.id)?.approach : getUnitAttackPath(unit, target, null, true);
           if (!approach) {
             unit.repathTimer = STEP_SECONDS;
             continue;

@@ -73,11 +73,11 @@ try {
   await command(1, { type: 'gather', ids: [boatIds[0]], nodeId: 'fish-0' }, /NO REACHABLE WORKERS SELECTED/);
   for (const team of [0, 1]) {
     await command(team, { type: 'gather', ids: [boatIds[team]], unitGenerations: [0], nodeId: `fish-${team}` }, /NO REACHABLE WORKERS SELECTED/);
-    await command(team, { type: 'gather', ids: [boatIds[team], workers[team][0]], nodeId: `fish-${team}` }, /SELECT ONE SKIFF/);
-    await command(team, { type: 'gather', ids: [boatIds[team]], nodeId: `fish-${1 - team}` }, /NEED REACHABLE WATER FISH AND AN OWNED DOCK/);
+    await command(team, { type: 'gather', ids: [boatIds[team], workers[team][0]], nodeId: `fish-${team}` }, /SELECT ONLY SKIFFS/);
+    await command(team, { type: 'gather', ids: [boatIds[team]], nodeId: `fish-${1 - team}` }, /NEED DISTINCT REACHABLE WATER FISH/);
     await command(team, { type: 'gather', ids: [boatIds[team]], forestCell: 0 }, /SELECT A SHORE FISH SOURCE/);
     await command(team, { type: 'gather', ids: [boatIds[team]], nodeId: `fish-${team}`, queue: true }, /QUEUED FISHING IS UNAVAILABLE/);
-    await command(team, { type: 'returnCargo', ids: [boatIds[team]] }, /NEED FOOD CARGO AND A REACHABLE OWNED DOCK/);
+    await command(team, { type: 'returnCargo', ids: [boatIds[team]] }, /NEED FOOD CARGO/);
     await command(team, { type: 'gather', ids: [boatIds[team]], nodeId: `fish-${team}` }, /FISHING ORDER/);
   }
   await fixture.stop(); const outbound = await saved(); safe(outbound);
@@ -95,8 +95,8 @@ try {
   const idle = await fixture.checkpoint(snapshot => snapshot.state.tickNumber > stopped.state.tickNumber + 5);
   for (const team of [0, 1]) {
     assert.equal(idle.state.units[boatIds[team]].cargo, loads[team]); assert.equal(stock(idle, team), stock(stopped, team));
-    await command(team, { type: 'returnCargo', ids: [boatIds[team], workers[team][0]] }, /SELECT ONE SKIFF/);
-    await command(team, { type: 'returnCargo', ids: [boatIds[team]] }, /SKIFF TO OWNED DOCK/);
+    await command(team, { type: 'returnCargo', ids: [boatIds[team], workers[team][0]] }, /SELECT ONLY SKIFFS/);
+    await command(team, { type: 'returnCargo', ids: [boatIds[team]] }, /SKIFFS TO OWNED DOCK/);
   }
   const delivered = await fixture.checkpoint(snapshot => boatIds.every(id => snapshot.state.units[id].cargo === 0 && snapshot.state.units[id].gatherPhase === ''));
   safe(delivered);
@@ -133,5 +133,5 @@ try {
     ownedSingleBoatAdmission: true, outboundAndHarvestingRecovery: true, stopAndFractionalReturnRecovery: true, automaticReturnAndResumeRecovery: true,
     sharedWorkerBoatStockConserved: true, finalFood: [1031, 1031], finalWood: [825, 825],
     depletedRestartWithoutRegrowth: true, invalidCheckpointsPreserved: true,
-    boundaries: 'one boat per order; provisional 10 food / 1 food per second; owned Dock only; existing food ledger; placeholder art; no passengers, weapons or queued fishing' }));
+    boundaries: 'this scenario checks one boat per order; group orders have a separate scenario; provisional 10 food / 1 food per second; owned Dock only; existing food ledger; placeholder art; no passengers, weapons or queued fishing' }));
 } finally { await fixture.dispose(); }

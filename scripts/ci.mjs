@@ -156,6 +156,8 @@ run(['--test', 'scripts/water-unit-runtime.test.mjs', 'scripts/skiff-contracts.t
 run(['scripts/skiff-scenario.mjs'], 'Both-seat paid Skiff production, berth occupancy and recovery');
 run(['--test', 'scripts/skiff-fishing.test.mjs'], 'Finite Skiff food, owned Dock delivery and conservation');
 run(['scripts/skiff-fishing-scenario.mjs'], 'Both-seat Skiff/Worker shared fish stock and cargo recovery');
+run(['--test', 'scripts/skiff-group-orders.test.mjs'], 'Exact selected Skiff group destinations and cargo conservation');
+run(['scripts/skiff-groups-scenario.mjs'], 'Both-seat selected Skiff movement/fishing/Return and restart');
 run(['scripts/water-route-map-scenario.mjs'], 'Water-only route components on shipped maps');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');
@@ -165,6 +167,8 @@ run(['--test', 'scripts/research-actions.test.mjs'], 'Shared technology availabi
 run(['--test', 'scripts/siege-ai.test.mjs'], 'Bounded siege acquisition and assault');
 run(['--test', 'scripts/combat-rules.test.mjs'], 'Shared combat classes, counters and effect scope');
 run(['--test', 'scripts/attack-target-geometry.test.mjs'], 'Attack-target geometry, queued transitions and fog');
+run(['--test', 'scripts/worker-combat-repath.test.mjs'], 'Both-seat moving-target pursuit across spawn orientations');
+run(['scripts/worker-combat-repath-native-scenario.mjs'], 'Native Worker combat pursuit and recovery');
 run(['scripts/attack-queue-native-scenario.mjs'], 'Native both-seat queued attack retreat and recovery');
 run(['--test', 'scripts/watchtower-targeting.test.mjs'], 'Bounded defense targeting and sight');
 run(['--test', 'scripts/economy-ledger.test.mjs'], 'Fractional cargo conservation');
