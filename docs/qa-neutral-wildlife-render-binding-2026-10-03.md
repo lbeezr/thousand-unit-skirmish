@@ -53,6 +53,11 @@ scene meshes, and drives alive/carcass/depleted/rematch through real seat snapsh
 and gathering. It also verifies six required module/art URLs return 200 and five
 non-runtime/source paths return 404. The complete client import graph passes its
 existing static allowlist check. Villager-facing regression tests remain green.
+The current shore-fishing integration retains its separate placeholder and
+excludes both fish and Sheep from berry batches. Docker COPY/context entries
+include exactly the public binding, manifest and runtime PNG. The existing
+release-package scenario verifies their HTTP availability and SHA-256 through
+the local room supervisor and excludes all original/source/GLB Sheep files.
 
 This is CPU, byte and live snapshot evidence. Chromium's existing SUID sandbox
 configuration still prevents a sandboxed browser launch; no WebGL screenshot,
