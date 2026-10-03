@@ -4535,6 +4535,7 @@ function applyWaypointQueueCounts(rows = []) {
 
 function updateRosterProductionOptions(container, selectedProducer = null, catalog = false) {
   if (!container) return;
+  const contextual = Object.hasOwn(container.dataset, 'contextProducts');
   const products = selectedProducer ? BUILDING_DEFINITIONS[selectedProducer.type]?.products || []
     : catalog ? [...new Set(Object.values(BUILDING_DEFINITIONS).flatMap((definition) => definition.products || []))]
       .filter((kind) => !['worker', 'infantry', 'archer'].includes(kind)) : [];
@@ -4547,6 +4548,7 @@ function updateRosterProductionOptions(container, selectedProducer = null, catal
       const button = document.createElement('button');
       button.type = 'button'; button.className = 'economy-action'; button.dataset.product = kind;
       button.addEventListener('click', () => {
+        if (button.disabled || button.getAttribute('aria-disabled') === 'true') return;
         const building = latestBuildings.find((row) => row.id === Number(button.dataset.producer));
         if (building) sendCommand({ type: 'trainUnit', kind, buildingId: building.id });
       });
@@ -4575,7 +4577,10 @@ function updateRosterProductionOptions(container, selectedProducer = null, catal
     button.dataset.producer = producer?.id ?? '';
     const authoritative = producer?.productionOptions?.find((option) => option.kind === definition.id);
     const authoritativeReason = authoritative && !authoritative.available ? authoritative.reason : '';
-    button.disabled = Boolean(reason || populationReason || authoritativeReason);
+    const unavailable = Boolean(reason || populationReason || authoritativeReason);
+    // Contextual products retain focus so their block reason stays discoverable.
+    button.disabled = unavailable && !contextual;
+    if (contextual) button.setAttribute('aria-disabled', String(unavailable));
     button.textContent = `Train ${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason || populationReason || authoritativeReason ? ` · ${authoritativeReason || reason || populationReason}` : ''}`;
   }
   container.hidden = products.length === 0;
