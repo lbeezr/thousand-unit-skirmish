@@ -45,7 +45,9 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
   async function refresh() {
     const revision = ++checkRevision;
     intentRevision++;
-    busy = false; candidate = null; controls(); message();
+    const saved = savedRoomSession(sessionStorage);
+    candidate = candidate && saved && candidate.room === saved.room && candidate.token === saved.token ? candidate : null;
+    busy = false; controls(); message();
     let nextEnabled = false, authenticationRequired = false;
     let failure = 'Room service is unavailable. Try reloading this page.';
     try {
@@ -59,9 +61,11 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
     enabled = nextEnabled;
     if (!enabled) message(failure);
     controls();
-    const saved = savedRoomSession(sessionStorage);
     if (saved && !authenticationRequired) {
-      try { if (await checkSession(saved) && revision === checkRevision) candidate = saved; }
+      try {
+        const valid = await checkSession(saved);
+        if (revision === checkRevision) candidate = valid ? saved : null;
+      }
       catch (error) { if (revision === checkRevision) message(error.message || 'Cannot check your saved session. Try again.'); }
       if (revision === checkRevision) controls();
     }
