@@ -152,8 +152,11 @@ renderer-only 129-item regression protects that distinction.
 The captured Town Center loader is a separate path: starting landmarks use
 Complete, while constructed Town Centers pass live progress and health. The
 loader exposes existing fallback art if the current state/view load fails.
-Complete-only Frontier preview families also yield to fallback for
-unavailable construction/damage states. Collision remains server-owned.
+The [normal Frontier Town Center/House binding](frontier-building-runtime.md)
+selects the existing Complete captures without a preview flag and yields to
+fallback per unavailable construction/damage state. Captured color/depth sprites
+share their image, transform, pivot and immutable frame texture; the depth child
+adds no picking target. Collision remains server-owned.
 
 Captured-building manifest attempts are shared by URL. A manifest HTTP 404 keeps
 fallback until `invalidateCapturedBuildingManifest(url)` is explicitly called;

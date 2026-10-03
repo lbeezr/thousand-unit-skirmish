@@ -58,7 +58,9 @@ Current runtime defaults:
   legacy preview flags retain their comparison paths. See the
   [Human](art-direction/human-roster-v1/README.md) and
   [Boughward](art-direction/boughward-roster-v1/README.md) source records.
-- Town Centers use the eight-view captured lifecycle pack, with procedural
+- [Finished Frontier buildings](frontier-building-runtime.md) now bind Town Center
+  and House Complete captures in normal matches without a preview flag. Town Centers
+  use the older eight-view captured lifecycle pack for missing states, with procedural
   fallback. Starting landmarks use Complete; constructed Town Centers pass live
   progress/health into the same loader for construction, damage and repair.
 - Barracks and Archery Ranges load their direct WebP sprites by default through
@@ -72,9 +74,9 @@ Current runtime defaults:
 - `?frontierBuildingsPreview=1` binds the newer Town Center, House, Storehouse,
   Stable, Workshop and Watchtower families. Each has eight Complete views;
   other lifecycle states use existing fallback art. These previews lack team
-  masks and are not default replacements. The Town Center manifest/eight PNGs
-  are packaged for `?frontierBuildingsPreview=town-center`; this selects only
-  that family. The other five previews are served from a full checkout but
+  masks. Town Center and House are now default Complete replacements, with
+  their manifests/eight PNGs packaged. `?frontierBuildingsPreview=town-center`
+  remains a named comparison override. The other four previews are served from a full checkout but
   remain absent from the Docker release. See the
   [building/environment runtime audit](art-runtime-audit-2026-10-03.md).
   New Barracks/Range concepts remain
