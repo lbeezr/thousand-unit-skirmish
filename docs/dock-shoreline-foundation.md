@@ -63,14 +63,15 @@ settlement fixture retains its paid ordinary land roster; Dock has its own
 shoreline fixture. Skiff production, movement and blocked recovery have a separate
 [`skiff-scenario`](../scripts/skiff-scenario.mjs).
 
-For a small manual match, select **SHORE FISHING**, gather the local 100 wood,
+For a small manual match, select **Lab · SHORE FISHING**, gather the local 175 wood,
 select a Worker and choose Dock in the building menu. A geometry-admitted site
 on the inner bank of Azure's pond is world `(-4.5, 8.5)` (one-based column 16,
 row 25); Ember's counterpart is `(4.5, 8.5)` (column 25, row 25). Move units out
 of the footprint if needed. Check the blocked preview inland, place/build the
 foundation, select it and inspect the **Skiff (placeholder)** production option.
-Train it when wood and population permit, select one boat, then target water to
-move. These coordinates
+Train it with the remaining 75 wood, select one boat, then target water to
+move. The [normal-game acceptance recipe](qa-skiff-normal-entry-2026-10-03.md)
+owns deployment status and the fishing → queued Move check. These coordinates
 are a topology handoff; automated DOM/commands do not establish rendered visual
 quality or unassisted human usability.
 

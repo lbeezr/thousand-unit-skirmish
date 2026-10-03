@@ -68,6 +68,7 @@ run(['--test', 'scripts/stone-map-profile.test.mjs'], 'Typed Stone layout and ma
 run(['--test', 'scripts/resource-brush-authoring.test.mjs'], 'Resource brush preview and editor transactions');
 run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush editor controls');
 run(['scripts/check-docs.mjs'], 'Documentation links');
+run(['--test', 'scripts/audit-asset-adoption.test.mjs'], 'Approved asset default bindings and release dependencies');
 run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs', 'scripts/audio-decoded-cache.test.mjs', 'scripts/audio-shared-decode.test.mjs', 'scripts/audio-settings.test.mjs', 'scripts/audio-roster-notices.test.mjs'], 'Verified shipped audio and execution gates');
 run(['--experimental-test-coverage', '--test-coverage-include=src/audio-shipped-response.mjs',
   '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
@@ -216,6 +217,7 @@ run(['--test', 'scripts/navigation-settings.test.mjs'], 'Camera navigation setti
 const scenarios = [
   ['scripts/shore-fishing-scenario.mjs', 'Both-seat shore fishing, cargo and depletion recovery'],
   ['scripts/shore-fishing-authoring-scenario.mjs', 'Selectable seeded shore fishing pilot and recovery'],
+  ['scripts/shore-fishing-adoption-scenario.mjs', 'Shipped pilot paid Dock/Skiff DOM choices and fishing Moves'],
   ['scripts/millrace-resource-scenario.mjs', 'Millrace cluster gathering and recovery'],
   ['scripts/regional-objective-scenario.mjs', 'Millrace both-seat hold and rematch', 'bellweather-millrace'],
   ['scripts/regional-objective-scenario.mjs', 'Rootways both-seat hold and rematch', 'underbough-rootways'],
