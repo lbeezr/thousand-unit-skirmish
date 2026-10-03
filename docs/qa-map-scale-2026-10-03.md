@@ -156,8 +156,11 @@ larger 1v1 candidate if exploration/expansion still needs room, and **224 × 224
 as a stress probe after measured acceptance. Quick custom modes and a massive
 Risk world have different pacing and limits; this audit does not select their defaults.
 
-The separate native researcher supplied these reference values; the full
-versioned AoE2 guide handoff remains pending. Warcraft's primary extraction is
+The separate native researcher supplied these reference values, then the verified
+three-page **Vaelora Classic RTS Map Scale Comparison.docx** in Library
+(`libfile_93e7a8531258819182e8a58667206939`, version 0), read in full for this audit.
+The report identifies current AoE2 extracted data with Update 185872 and the
+post-March-2024 preset naming scheme. Warcraft's primary extraction is
 [wc3v map configuration](https://github.com/jblanchette/wc3v/blob/master/helpers/mapConfiguration.json)
 and [building pathing](https://github.com/jblanchette/wc3v/blob/master/helpers/buildingPathing.json),
 with Blizzard's [classic ladder catalog](https://classic.battle.net/war3/maps/war3xmappictures.shtml).
@@ -186,10 +189,20 @@ values vary by version; this comparison uses Tiny/Medium only.
 
 Classic Echo Isles' supplied start straight-line separation is about 77 terrain
 tiles. At 128 Warcraft world units/tile and 270 units/s for a Footman/Grunt, the
-default-clock lower bound is **36.5 wall seconds**. This is a straight-line lower
+lower bound is **36.5 simulation seconds** (36.5 wall seconds if the clock factor
+is 1.0). This is a straight-line lower
 bound, not an actual path time, whereas our 19.6-second Millrace Infantry figure
 uses a cardinal route. Warcraft's real route can only be longer under these
-assumptions. AoE2 unit-travel calibration remains pending; do not invent it from
-tile counts. The proposed 50–60-second ordinary base route is a testable pacing
+assumptions. The Library report gives AoE2 Villager 0.8 and Scout Cavalry 1.2
+tiles/game-second, with a nominal Normal clock factor of 1.7 supported by a
+directly authored speed explanation, rather than current official documentation.
+A controlled 77-tile example is therefore 56.6 wall seconds for a Villager or
+37.7 for a Scout. It is **not a measured Arabia base route** and should not be
+presented as one. Current-build reference clock factors and AoE2 TC-envelope
+source quality remain medium confidence; the latter awaits an installed DE
+editor check. WC3's 4 × 4 full pathing envelope also differs from its 3 × 3 solid
+walk blocker. The proposed 50–60-second ordinary base route is a testable pacing
 choice, not asserted reference parity. The [reference record](qa-evidence/map-scale-2026-10-03/reference-summary.json)
-preserves supplied bounds, rulers, arithmetic and provenance limits.
+preserves supplied bounds, rulers, arithmetic and provenance limits. Library
+reading succeeded; its local-byte transfer failed in this executor, so no local
+DOCX extraction or independent raw-map parsing is claimed.
