@@ -171,6 +171,13 @@ checks do not replace a played opening with the Town Center present.
 `type`, world `x`/`z`, and positive finite `stock`. Map Studio can add, select, change stock, or remove
 nodes. Obstacle painting over a node removes it.
 
+Optional `resourceVariant: "shore-fish"` on a `food` node represents a finite
+[shore-fishing site](shore-fishing-foundation.md). Its land-side access marker
+must occupy open level 0 land beside cardinally adjacent level 0 water, reachable
+from both seats. Import/export and stock editing preserve the identity. Workers
+carry and deposit existing food; there is no regrowth or naval movement. The
+fish marker is a primitive placeholder, with dedicated art and brushes pending.
+
 An optional `wildlifeSpecies: "bellweather-sheep"` on a `food` node opts into the
 [neutral sheep foundation](wildlife-bellweather-sheep.md#implemented-neutral-food-foundation--3-october-2026).
 The same node ID and authored stock represent the living animal and its carcass;

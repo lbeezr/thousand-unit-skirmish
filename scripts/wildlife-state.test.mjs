@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { isShoreFish } from '../src/shore-fishing.mjs';
 import {
   activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted,
   validWildlifeNodeDefinition, validWildlifeNodeState,
@@ -62,7 +63,7 @@ for (const team of [0, 1]) test(`seat ${team} validates its Workers and visibili
     unit(2, team, 0, true), unit(3, team, 100, false), unit(4, team, 100, true, 1)];
   const notices = [], routes = [];
   let visible = true;
-  const context = vm.createContext({ resourceNodeStates: new Map([[node.id, node]]),
+  const context = vm.createContext({ isShoreFish, resourceNodeStates: new Map([[node.id, node]]),
     spawnByTeam: [{ x: 0, z: 0 }, { x: 0, z: 0 }], walkableComponents: [0, 1],
     WORKER_CARRY_CAPACITY: 10, dirty: false,
     worldToCell: x => x, nearestOpenCell: cell => cell, cellVisibleToTeam: () => visible,
@@ -96,11 +97,11 @@ for (const team of [0, 1]) test(`seat ${team} validates its Workers and visibili
 
 test('schema 19 ordinary maps migrate, but cannot forge unrecorded wildlife state', () => {
   const migration = server.slice(server.indexOf('function migrateMatchCheckpoint('), server.indexOf('async function drainMatchCheckpointWrites'));
-  const context = vm.createContext({ MATCH_CHECKPOINT_SCHEMA_VERSION: 20, MATCH_RULES_VERSION: 6 });
+  const context = vm.createContext({ MATCH_CHECKPOINT_SCHEMA_VERSION: 21, MATCH_RULES_VERSION: 6 });
   vm.runInContext(migration, context);
   const plain = { schemaVersion: 19, rulesVersion: 6, mapDefinition: { resourceNodes: [] }, state: { units: [] } };
   context.migrateMatchCheckpoint(plain);
-  assert.equal(plain.schemaVersion, 20);
+  assert.equal(plain.schemaVersion, 21);
   const invalid = { ...plain, schemaVersion: 19, mapDefinition: { resourceNodes: [sheep] } };
   context.migrateMatchCheckpoint(invalid);
   assert.equal(invalid.schemaVersion, 19, 'validation will reject wildlife predating its state schema');
