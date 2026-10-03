@@ -41,3 +41,17 @@ silhouettes with labels retained. Follow's connecting arrow and Return cargo's
 crate seam weaken at 16 px. Prefer the existing 20 px action-image size during a
 later integration; retain the written cargo label and Hold's no-chase explanation.
 This is a candidate recommendation, not native or unassisted recognition acceptance.
+
+## Follow and Return cargo refinement — 3 October 2026
+
+Follow keeps both unit silhouettes and uses a larger curved 2 px connection
+toward the leader. Return cargo uses a filled generic crate and one bent arrow
+entering an open receiver. It adds no harvesting tool, resource-specific mark
+or repeated Patrol route. Manifest IDs, paths, selectors and meanings stay unchanged.
+
+A private CPU comparison preserves the original sources and shows both versions
+at exact 16, 20 and 24 px, with grayscale at every size. The larger connection
+and filled crate remain visible at 16 px; retain the written labels and prefer
+the existing 20 px action-image size. This refinement does not bind or serve the
+icons. The compact HUD owner retains the separate default integration and
+parent-owned native game verification; source rendering does not close those steps.
