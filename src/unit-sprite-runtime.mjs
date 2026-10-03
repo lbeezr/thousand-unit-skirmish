@@ -1,4 +1,5 @@
 import { groundHeight } from './terrain-height.mjs';
+import { SHORE_FISH_VARIANT } from './shore-fishing.mjs';
 const UNIT_ROLES = Object.freeze(['worker', 'infantry', 'archer']);
 const CAST_ROLES = Object.freeze(['human', 'orc', 'elf', 'troll']);
 const DIRECTIONS = Object.freeze([
@@ -8,6 +9,15 @@ const SPRITE_ROOT = '/assets/units';
 const SPRITE_GROUND_LIFT = 0.018;
 
 export function spriteActionClip(clipByKey, state, direction, cargoType, role, approximateDirections = false) {
+  // Fishing is cosmetic work identity, never a new cargo or gather rule. Use
+  // only an actually authored heading; missing art retains its exact-facing
+  // food/gather/idle fallback, including in approximate legacy previews.
+  if (state === 'gather-fish') {
+    return clipByKey.get(`gather-fish|${direction}`)
+      || clipByKey.get(`gather-food|${direction}`)
+      || clipByKey.get(`gather|${direction}`)
+      || clipByKey.get(`idle|${direction}`);
+  }
   const gatherState = state === 'gather' && ['food', 'wood'].includes(cargoType)
       ? `gather-${cargoType}` : state;
   // Human walking/gathering has incomplete direction coverage. Keep its exact
@@ -119,7 +129,8 @@ export function activeState(unit, now, attackDurationMs = 900) {
   if (unit.kind === 'worker') {
     if (unit.task === 'repairing') return 'repair';
     if (unit.task === 'building') return 'build';
-    if (unit.task === 'gathering') return 'gather';
+    if (unit.task === 'gathering') return unit.workResourceVariant === SHORE_FISH_VARIANT
+      ? 'gather-fish' : 'gather';
     return 'idle';
   }
   return unit.attackStartedAt > 0 && now - unit.attackStartedAt < attackDurationMs ? 'attack' : 'idle';

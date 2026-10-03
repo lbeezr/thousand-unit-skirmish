@@ -110,7 +110,10 @@ definition. Match rules remain version 6.
 The current fish symbol is an explicit primitive placeholder attached to the
 resource ring. It bypasses berry sprites and uses the existing full/worked/low/
 depleted stock cues. The crowded-resource callout reads `FISH · FOOD`. This does
-not establish finished fish artwork, fishing animation or creative acceptance.
+not establish finished fish artwork or creative acceptance. The
+[Worker fishing pilot](worker-fishing-animation.md) adds a distinct cosmetic
+action contract and water-facing heading with safe existing-art fallbacks;
+its four-key source/runtime study remains private pending approval.
 The separate art lane owns fish and boat visuals.
 
 Water continues to block land Workers. This slice introduces no naval movement,
