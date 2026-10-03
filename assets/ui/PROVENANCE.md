@@ -30,3 +30,12 @@
 ## Handoff limits
 
 The preview is a source-art review board, not a browser compatibility certification. Verify cursor presentation in the actual target browsers when integrating. The manifest records mandatory fallbacks and hotspots. The kit does not rename or remove any visible text, status, or ARIA label.
+
+## Action glyph candidates v1 — 3 October 2026
+
+The six SVGs in [icons/actions](icons/actions/README.md) are original,
+project-authored vector sources for Patrol, Follow, Stop, Hold position, Return
+cargo and Formation. They use the existing 24 × 24 canvas, palette and compact
+strokes. No external source, font, generated image or paid provider was used.
+Their manifest records intended selectors and command meanings. These are
+candidate sources, not integrated HUD controls or native recognition evidence.
