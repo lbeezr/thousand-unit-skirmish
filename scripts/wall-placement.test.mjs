@@ -57,6 +57,14 @@ test('fractional bank checks and worker requirements cannot authorize a partial 
   assert.match(wallPlacementFeedback(preview(), { pending: true }), /WAITING FOR CONFIRMATION/);
 });
 
+test('only disclosed exact-zero node stock releases a wall site', () => {
+  const resourceNodes = [{ id: 'food', ...world(2, 1), stock: 10 }];
+  for (const stock of [undefined, 0.01, 10, NaN, -1]) {
+    assert.equal(preview({ resourceNodes, resourceStocks: new Map([['food', stock]]) }).valid, false);
+  }
+  assert.equal(preview({ resourceNodes, resourceStocks: new Map([['food', 0]]) }).valid, true);
+});
+
 test('pointer ownership, copied endpoints, cancellation and exactly one finish', () => {
   const gesture = new WallPlacementGesture(), anchor = cell(1, 1);
   assert.equal(gesture.begin(1, anchor), true); anchor.column = 7;

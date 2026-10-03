@@ -55,7 +55,9 @@ remain a follow-up, not an integration hold.
    Center or other building. The whole preview must turn red with a reason;
    release must send no build and create/pay for no subset. With insufficient
    wood, extend a short affordable line until its **NEED … WOOD** message appears;
-   shrink and retry. Whole-line affordability uses the exact bank, not its
+   shrink and retry. Exact-zero disclosed resource stock opens a depleted site;
+   unknown/positive stock and reset stocks keep its exclusion. Whole-line
+   affordability uses the exact bank, not its
    rounded readout. Off-map endpoints must reject rather than snap to the edge.
 6. During a drag use Escape, right-click, switch applications, or release over
    the HUD/outside the battlefield. None may place or charge the line. Start a

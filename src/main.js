@@ -7631,7 +7631,7 @@ function wallPlacementAt(points) {
     balance: { food: latestFood[localTeam] || 0, wood: latestWood[localTeam] || 0 }, team: localTeam,
     workers: selectedIds().filter(id => units[id]?.kind === 'worker').length,
     obstacles: mapDefinition?.obstacles, forestStocks: latestForestStocks,
-    resourceNodes: mapDefinition?.resourceNodes, triggers: mapDefinition?.triggers,
+    resourceNodes: mapDefinition?.resourceNodes, resourceStocks: latestResourceStocks, triggers: mapDefinition?.triggers,
     units: teamUnits.flatMap(team => team.map(unit => ({ x: unit.serverX, z: unit.serverZ, hp: unit.hp, visible: unit.visible }))),
     buildings: latestBuildings.map(building => ({ ...building, footprint: buildingFootprint(building.type) })),
   });

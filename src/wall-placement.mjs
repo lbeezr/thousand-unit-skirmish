@@ -32,7 +32,7 @@ export class WallPlacementGesture {
 // Uses disclosed occupancy only; admission and connectivity remain authoritative.
 export function previewWallPlacement({ width, height, points, axisOrder = 'column-first',
   segmentCost, balance, team, workers = 0, obstacles = [], forestStocks = new Map(),
-  resourceNodes = [], triggers = [], units = [], buildings = [] }) {
+  resourceNodes = [], resourceStocks = new Map(), triggers = [], units = [], buildings = [] }) {
   const existingWallCells = new Set();
   const occupiedCells = new Set();
   const reasons = new Map();
@@ -52,7 +52,7 @@ export function previewWallPlacement({ width, height, points, axisOrder = 'colum
     }
   }
   for (const unit of units) if (unit.hp > 0 && unit.visible !== false) occupy(cellOf(unit), 'MOVE UNITS OUT OF THIS LINE');
-  for (const node of resourceNodes) occupy(cellOf(node), 'RESOURCE IN THIS LINE');
+  for (const node of resourceNodes) if (resourceStocks.get(node.id) !== 0) occupy(cellOf(node), 'RESOURCE IN THIS LINE');
   const geometry = planWallLine({ width, height, points, axisOrder, existingWallCells, segmentCost, balance });
   if (!geometry.preview) return { ...geometry, valid: false, blockedReason: 'OUTSIDE THE MAP' };
   const blockedCells = new Set();

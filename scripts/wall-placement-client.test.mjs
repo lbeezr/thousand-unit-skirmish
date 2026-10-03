@@ -31,7 +31,7 @@ function fixture(t, team = 0) {
     pendingWallPreview: null,
     wallPlacementGhost: createWallPlacementGhost(), placementGhost: { visible: false },
     localTeam: team, matchWinner: -1, MAP_WIDTH: 20, MAP_HEIGHT: 20, MAP_HALF_X: 10, MAP_HALF_Z: 10,
-    latestFood: [0, 0], latestWood: [250, 250], latestBuildings: [], latestForestStocks: new Map(),
+    latestFood: [0, 0], latestWood: [250, 250], latestBuildings: [], latestForestStocks: new Map(), latestResourceStocks: new Map(),
     latestTeamResearch: [{}, {}],
     mapDefinition: { obstacles: [], resourceNodes: [], triggers: [] }, units, teamUnits: units.map(unit => [unit]),
     selected: new w.Set(), selectedIds: () => [...w.selected].filter(id => units[id]?.hp > 0 && units[id]?.team === team),
@@ -216,4 +216,14 @@ for (const team of [0, 1]) test(`seat ${team}: wall submission retains only expl
   f.pointer('pointerdown', 15, 15); f.pointer('pointerup', 35, 15);
   assert.equal(f.commands.length, 1); assert.deepEqual([...f.commands[0].ids], [team]);
   assert.equal(f.w.selected.has(2), false, 'unselected friendly Worker stays unselected');
+});
+
+test('wall preview follows the shared disclosed-resource cache through depletion and reset', t => {
+  const f = fixture(t); f.begin();
+  f.w.mapDefinition.resourceNodes = [{ id: 'food', x: -7.5, z: -8.5, stock: 10 }];
+  const points = [{ column: 1, row: 1 }, { column: 3, row: 1 }];
+  assert.equal(f.w.wallPlacementAt(points).valid, false, 'unknown retains authored exclusion');
+  f.w.latestResourceStocks.set('food', 0); assert.equal(f.w.wallPlacementAt(points).valid, true);
+  f.w.latestResourceStocks.set('food', 10); assert.equal(f.w.wallPlacementAt(points).valid, false, 'shared reset stock closes it again');
+  f.w.latestResourceStocks.clear(); assert.equal(f.w.wallPlacementAt(points).valid, false);
 });
