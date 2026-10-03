@@ -65,6 +65,16 @@ one paid boat per seat and is not a naval balance or larger-water map change.
 
 ## Local evidence and its limits
 
+At `aaf3e4b`, the shipped-pilot native proof below and existing shore-worker
+authoring/recovery proof pass. After clean integration with main `1757064`,
+`f5dcbb9` passes 105 focused map, menu/lobby, authoring, building/training,
+Skiff/minimap and HUD checks, plus documentation links. Its clean 1,113-file
+release has digest `sha256:532090e2d13afe46aaaa60912b474ffd6e10c16f74167102b3dfeb638975ffad`.
+The packaged supervisor serves the pilot byte-for-byte, with map SHA-256
+`84f64b57ab7e04f9ebc237656106c00ae246033d124e195d8d0d380a93aa1992`;
+its ordinary root menu → Create Room → two-seat pregame map/ready/launch path
+passes and uses the authored eight units. These are local checks, not staging.
+
 `node scripts/shore-fishing-adoption-scenario.mjs` selects the shipped catalog
 map, gathers its actual local wood, clicks the real HTML/DOM Dock and Skiff
 choices, executes shipped Shift-minimap handlers and restarts the authoritative
