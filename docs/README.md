@@ -85,6 +85,7 @@ from source/candidate packs. Then use the relevant contract:
 - [Building atlas production plan](building-atlas-production-plan.md): roster, references, scale and generation order.
 - [Building model/capture pipeline](building-asset-production-pipeline.md) and
   [direct 2D workflow](building-sprite-production-workflow.md).
+- [Frontier Town Center authoring preparation](frontier-town-center-authoring.md): empty Blender state/part collections and verified camera scaffold; source import and lifecycle artwork remain blocked.
 - [Unit/building kit](unit-building-art.md) and [GLB finish proposal](unit-building-art-output-proposal.md).
 - [Environment library](environment-pack-v1.md), [regional kit production](regional-environment-kits.md), and [interactive states](environment-state-pack-v1.md).
 - [Cursor/icon contract](ui-cursor-icon-contract.md).

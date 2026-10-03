@@ -97,6 +97,11 @@ directional captures, distinguishes older default art, and records precise
 lifecycle and cloud-source gaps. The Town Center's existing Complete captures
 now have a bounded release preview path. Original source records remain intact.
 
+The [Town Center authoring preparation](../frontier-town-center-authoring.md)
+adds a reusable empty Blender camera/state scaffold using those preserved
+capture records. Its camera mathematics and saved scene were checked; no model
+import, derived lifecycle art or new image iteration is supplied by that work.
+
 Keep each exploratory output under a distinct revision filename; retain rejected
 attempts and the reason they were rejected. Record date, exact prompt, input
 roles, source output ID, hash, dimensions, and selection/review status. For edits,
