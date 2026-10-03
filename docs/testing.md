@@ -36,9 +36,12 @@ accepts the same shard option for coverage inspection.
 and compile-only consumer explicitly. The current boundary covers
 [`canopy ages`](../src/forest-age-composition.mjs),
 [`woodland habitat`](../src/forest-habitat.mjs) and
-[`Underbough species`](../src/forest-composition.mjs): numeric cell identity and
+[`Underbough species`](../src/forest-composition.mjs), plus
+[`resource stages`](../src/resource-visual-state.mjs): numeric cell identity and
 world/grid coordinates, immutable authored rectangles, a row-major depth grid,
-numeric seed/spacing/factors and the five existing species IDs. The runtime
+numeric seed/spacing/factors, the five existing species IDs and four resource
+stage IDs with complete numeric fallback scales. Resource transition inputs
+remain unknown until membership checking narrows the filtered output. The runtime
 algorithms and serialization are unchanged; no generated JavaScript is shipped.
 
 `node --test scripts/check-types.test.mjs` compiles intentionally invalid
@@ -46,8 +49,16 @@ consumers in memory and requires the expected diagnostics for missing/string
 cell IDs, misspelled/nonnumeric coordinates, string seed/radius, string map
 keys/values, unchecked missing lookups and point mutation. Habitat/species cases
 also reject missing dimensions/rectangle rows, wrong obstacle materials,
-string depth/spacing and species typos. No suppression is used. Both checks run
-in `npm test`; existing `forest-age-scenario.mjs`, `forest-habitat-scenario.mjs`
+string depth/spacing and species typos. No suppression is used.
+Resource cases reject string stock, stage typos, wrong transition element types
+and mutation of the canonical stage list. `resource-visual-state-scenario.mjs`
+covers the existing thresholds and dirty-batch ordering;
+`node --test scripts/resource-visual-state.test.mjs` protects unknown membership
+without coercion and the stock/stage/scale path. Numeric stock/scale
+contracts apply to checked callers; legacy runtime coercion/fallback behavior
+is retained for unselected callers.
+
+Both checks run in `npm test`; existing `forest-age-scenario.mjs`, `forest-habitat-scenario.mjs`
 and `forest-composition-scenario.mjs` cover determinism, seed variation, spacing,
 glades, rectangle compression, root retention and input preservation.
 
@@ -60,15 +71,15 @@ separate from static types; unchecked callers are outside this initial boundary.
 
 The incremental type-safety stream owns this list and takes one bounded,
 reviewed/tested slice at a time under the existing merge authority. Completed:
-canopy identity/factors ([PR #162](https://github.com/lbeezr/thousand-unit-skirmish/pull/162))
-and the adjacent habitat/species contract. Re-rank after each merge from current
+canopy identity/factors ([PR #162](https://github.com/lbeezr/thousand-unit-skirmish/pull/162)),
+woodland habitat/species ([PR #167](https://github.com/lbeezr/thousand-unit-skirmish/pull/167))
+and resource stages. Re-rank after each merge from current
 main and active PR scopes; record a concrete defect risk before expanding.
 
 | Rank | Boundary | Defect risk and required proof | Scope/dependency |
 | --- | --- | --- | --- |
-| 1 | [Resource lifecycle stages](../src/resource-visual-state.mjs) | Stage-ID drift and wrong numeric stock/fallback scaling; negative stage/key cases plus exact threshold/unknown-input parity. | One stable pure leaf; preserve its existing legacy/unknown-stage fallback. |
-| 2 | [Terrain paint-mask output](../src/terrain-blend.mjs) | Rectangle coordinate drift and mismatched typed pixel buffers/dimensions; negative shapes plus exact RGBA/mask-order parity. | Pure helper only; do not touch shaders, atlas binding or renderer moves. |
-| 3 | Outbound WebSocket frame leaf | Byte-length/accounting and binary payload confusion; negative calls plus literal byte/ownership parity. | Defer until [the networking extraction](https://github.com/lbeezr/thousand-unit-skirmish/pull/164) merges and its owner agrees on the narrow checked-Node scope. |
+| 1 | [Terrain paint-mask output](../src/terrain-blend.mjs) | Rectangle coordinate drift and mismatched typed pixel buffers/dimensions; negative shapes plus exact RGBA/mask-order parity. | Pure helper only; do not touch shaders, atlas binding or renderer moves. |
+| 2 | [Outbound WebSocket frame leaf](../src/networking/websocket-frame.mjs) | Byte-length/accounting and binary payload confusion; negative calls plus literal byte/ownership parity. | [Extraction #164](https://github.com/lbeezr/thousand-unit-skirmish/pull/164) is merged; consume its existing signatures without leaf edits. [Scope coordination](https://github.com/lbeezr/thousand-unit-skirmish/pull/164#issuecomment-5974326194) retains coverage and scopes Node ambient types separately. |
 
 Do not expand into audio reader/production/research extractions, gameplay roots
 or active render/entry hotspots to chase coverage. Coordinate concrete moves or
@@ -110,9 +121,11 @@ defines dependency directions, the explicit cycle baseline and the separate
 HTTP/release obligations of a module move.
 For client import/module changes, include
 `node scripts/client-asset-allowlist-scenario.mjs`; the packed release scenario
-also traverses the served static import graph. The hosted Railway smoke uses
+also traverses served static, re-export and literal lazy imports. The hosted Railway smoke uses
 the same `scripts/check-client-imports.mjs` audit; focused fixtures cover missing
-transitive dependencies, cycles, incorrect MIME, and origin boundaries. See the
+transitive dependencies, cycles, compact/escaped syntax, ignored comment/string
+lookalikes, computed-import rejection, incorrect MIME and origin boundaries. Source
+and served audits share the parser in `scripts/module-imports.mjs`. See the
 [client-loading incident](qa-client-boot-recovery-2026-09-27.md).
 Use disposable rooms and directories: many scenarios publish maps, reset armies,
 restart workers, or deliberately disconnect clients.
@@ -133,6 +146,7 @@ Run from the repository root:
 | Area | Command |
 | --- | --- |
 | Normal finished Frontier building bindings, state fallback, grounding/facing, picking/depth and texture ownership | `node --test scripts/frontier-building-default.test.mjs`; [runtime contract and deployed-game acceptance](frontier-building-runtime.md) |
+| Unit snapshot receipt, work/event clocks, movement, slot reuse, fog and sprite LOD buffers | `node --test scripts/unit-presentation-client.test.mjs` ([CPU fixture](../scripts/unit-presentation-client-fixture.mjs): actual client source slices/constants, shipped Human/Boughward Worker manifests and Three instanced UV/matrix buffers; UI, network, procedural fallback and GPU pixels excluded). Add performing-action rows only after [producer alignment](worker-performing-action-contract-proposal.md). |
 | Building body occlusion, server cap and renderer-only 129th item; native fixture counters, query gates, serving and preservation | `node --test scripts/building-sprites.test.mjs scripts/building-occlusion-fixture.test.mjs`; [paired crowded scene and exact Mac GPU recipe](qa-building-occlusion-native-plan-2026-10-03.md) |
 | Map logic / elevation | `node scripts/map-utils-scenario.mjs` / `node scripts/elevation-scenario.mjs` |
 | Crowd deflection / terrain boundaries | `node --test scripts/unit-movement.test.mjs` (real authoritative movement blocks, cliffs, corners, working/striking separation and route repair) |

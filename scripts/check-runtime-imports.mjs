@@ -2,7 +2,10 @@ import { readdir, readFile } from 'node:fs/promises';
 import { isBuiltin } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parse } from 'acorn';
+import { moduleImports } from './module-imports.mjs';
+
+// Preserve the existing audit helper's public import path.
+export { moduleImports } from './module-imports.mjs';
 
 // Entry modules loaded by the five shipped HTML pages. main.js is reached lazily.
 export const BROWSER_ENTRYPOINTS = [
@@ -24,29 +27,6 @@ export const NODE_ONLY_MODULES = [
   'src/pve-model-proposal.mjs', // Offline Node model-request adapter.
   'src/networking/websocket-frame.mjs', // Server-only Node Buffer wire encoding.
 ];
-
-export function moduleImports(source, filename) {
-  const ast = parse(source, { ecmaVersion: 'latest', sourceType: 'module', locations: true });
-  const imports = new Set();
-  function visit(node) {
-    if (!node?.type) return;
-    if (['ImportDeclaration', 'ExportNamedDeclaration', 'ExportAllDeclaration', 'ImportExpression'].includes(node.type)
-      && node.source) {
-      // Computed imports hide dependency edges. Add a literal import or an explicit
-      // dispatch table instead of silently leaving an edge out of this check.
-      if (node.source.type !== 'Literal' || typeof node.source.value !== 'string') {
-        throw new Error(`${filename}:${node.loc.start.line}: runtime imports must use literal specifiers`);
-      }
-      imports.add(node.source.value);
-    }
-    for (const child of Object.values(node)) {
-      if (Array.isArray(child)) child.forEach(visit);
-      else if (child?.type) visit(child);
-    }
-  }
-  visit(ast);
-  return [...imports].sort();
-}
 
 export async function readRuntimeSources(root) {
   const sources = new Map();
