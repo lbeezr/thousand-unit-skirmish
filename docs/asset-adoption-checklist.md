@@ -119,6 +119,23 @@ all default/legacy action frames and fixes idle-placeholder inflation of authore
 attack/death lifetimes. Animation integration owner retains delivery and the
 linked parent-owned Mac recipe; source tests do not close in-game acceptance.
 
+## Terrain workstream backlog
+
+Owner: terrain art integration workstream. Rank is the next useful work order,
+not a gate on unrelated owners. [Inspected evidence/tool acceptance](terrain-candidate-readiness.md)
+records why the candidates below stay outside default rendering.
+
+| Rank / state | Outcome and smallest next action | Write boundary / dependency | Acceptance / retained owner |
+| --- | --- | --- | --- |
+| 1 — open, executor blocked | Finish painted-ground normal/strategic/closest-zoom comparison on staging source `32f11d58018404835fd47489441f9cdfef7c403b`, which contains [PR152](https://github.com/lbeezr/thousand-unit-skirmish/pull/152). Verify served mip hashes, seams, bleed, stretch, raised paint and uncovered regions. | [Existing QA note](qa-painted-ground-atlas-adoption.md) and PR evidence; requires working sandboxed browser/authorized staging HTTP or parent Mac execution. | Exact deployment/source plus actual ordinary stochastic game screenshots. Terrain owner retains acceptance; parent staging/Mac coordinator is the assigned downstream recipient. Platform delivery is proven; appearance/served bytes remain incomplete. |
+| 2 — implemented, checks accepted | [PR173](https://github.com/lbeezr/thousand-unit-skirmish/pull/173) checks the committed resource candidate's eight frames against source lineage and cropped layer reconstruction; exposes a read-only npm command and rejects corrupted pixels/offsets. | New pixel checker/tests, package script, candidate README and this evidence; depends only on existing public PNGs and Python/Pillow. No renderer/asset-byte edits. | Seven page/eight source hashes and exact RGBA recomposition pass; seven pixel-check tests, including corruption injections, pass. Independent review accepted the slice. Terrain owner owns merge and tool acceptance; game deployment is not required for this source tool. |
+| 3 — blocked on production/review contract | Select one resource family's reviewed ground registration and runtime export contract before any default atlas/layer admission. | Resource candidate metadata/exports only until consumer contract is accepted; agree with affected environment owner before `environment-art.mjs` overlap. Eight estimated pivots, absent runtime hashes and unreviewed HSV depth semantics remain. | Hash-bound runtime pages, accepted root/canvas registration, explicit four-state/directional fallback and normal-game depth/state proof. Terrain owner retains integration; required visual/semantic review remains incomplete. |
+| 4 — blocked on module contract | Resolve whether the cliff pilot is a low-ridge asset or a revised cliff module; establish height, matching joins, corner/cap handling and registration. | Public cliff authoring/review package and exact pilot interface; no normal obstacle binding, private publication or paid work. Existing 4 × 0.998 × 1.306 capture cannot be assumed to fit current cliffs. | Accepted straight/join/cap geometry and normal terrain/foliage depth proof on an identified build. Terrain owner retains this item; technical-art review precedes consumer edits. |
+
+After rank 2 acceptance, return to rank 1 when execution is available. Ranks 3–4
+remain blocked until their named input contracts exist; do not create more art,
+bind candidates or manufacture tool work merely to keep a PR queue moving.
+
 ## Maintaining this record
 
 Change the relevant row when binding, release or evidence changes; link the
