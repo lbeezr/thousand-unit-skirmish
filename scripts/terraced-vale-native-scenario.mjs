@@ -105,9 +105,18 @@ async function build(client, type, ids, target) {
   const completed = await client.state(state => state.buildings.some(row => row.team === client.team
     && row.type === type && row.complete && !previous.has(row.id)));
   const building = completed.buildings.find(row => row.team === client.team && row.type === type && row.complete && !previous.has(row.id));
+  let persisted;
+  for (let attempt = 0; attempt < 50; attempt++) {
+    const snapshot = JSON.parse(await readFile(path.join(temporary, 'match.json'), 'utf8'));
+    persisted = snapshot.state.buildings.find(row => row.id === building.id && row.complete);
+    if (persisted) break;
+    await sleep(100);
+  }
+  assert.ok(persisted, 'completed paid building must enter the authoritative checkpoint');
   report.economy.push({ team: client.team, type, target, before,
     after: { food: completed.food[client.team], wood: completed.wood[client.team] },
-    footprintCells: building.footprint.length, completeAtGameSeconds: completed.matchElapsedSeconds });
+    cost: BUILDING_DEFINITIONS[type].cost,
+    footprintCells: persisted.footprint.length, completeAtGameSeconds: completed.matchElapsedSeconds });
   emit('paid-building', report.economy.at(-1)); return building;
 }
 
