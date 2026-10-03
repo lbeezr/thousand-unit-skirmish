@@ -1,5 +1,6 @@
 import { createReconnaissancePolicy } from './pve-reconnaissance.mjs';
 import { createHomeDefensePolicy } from './pve-home-defense.mjs';
+import { createRegroupPolicy } from './pve-regroup.mjs';
 import { TECHNOLOGY_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
 import { farmHarvestNodeId } from './farm-harvest.mjs';
 /**
@@ -460,6 +461,7 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
   const productionPolicy = createProductionPolicy(normalizedSeed);
   const reconnaissancePolicy = createReconnaissancePolicy(normalizedSeed);
   const homeDefensePolicy = createHomeDefensePolicy();
+  const regroupPolicy = createRegroupPolicy();
   const gatherAssignments = new Map();
   const objectiveOwners = new Map();
   const lostObjectiveIds = new Set();
@@ -656,9 +658,10 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
     const allSoldiers = observation.units.friendly
       .filter(unit => unit.kind !== 'worker' && unit.hp > 0 && !reconnaissanceIds.has(unit.id)).sort((a, b) => a.id - b.id);
     const homeDefense = homeDefensePolicy.next(observation, allSoldiers);
+    const regroup = regroupPolicy.next(observation, allSoldiers, homeDefense.units);
     // Keep the opening economy first, but do not let rejected gather orders
     // consume every decision (the retry window is shorter than a normal turn).
-    if (gathering.length > 0 && !previousDecisionGatherOnly && homeDefense.units.length === 0 && homeDefense.released.length === 0) {
+    if (gathering.length > 0 && !previousDecisionGatherOnly && homeDefense.units.length === 0 && homeDefense.released.length === 0 && regroup.units.length === 0) {
       previousDecisionGatherOnly = true;
       return gathering;
     }
@@ -688,9 +691,11 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
       attackTick: unit.lastAttack?.tick ?? -1, progressTick: observation.tick });
     const availableSoldiers = allSoldiers.filter(unit => !activeKeys.has(soldierKey(unit)));
     const defending = new Set(homeDefense.units.map(soldierKey));
+    const rallying = new Set(regroup.units.map(soldierKey));
     for (const identity of defending) orderedSoldiers.delete(identity);
-    const soldiers = availableSoldiers.filter(unit => !defending.has(soldierKey(unit)));
-    const supportOrders = [...gathering, ...siegeOrders, ...homeDefense.commands];
+    for (const identity of rallying) orderedSoldiers.delete(identity);
+    const soldiers = availableSoldiers.filter(unit => !defending.has(soldierKey(unit)) && !rallying.has(soldierKey(unit)));
+    const supportOrders = [...gathering, ...siegeOrders, ...homeDefense.commands, ...regroup.commands];
     const liveSoldiers = new Set(soldiers.map(soldierKey));
     for (const key of orderedSoldiers) if (!liveSoldiers.has(key)) orderedSoldiers.delete(key);
     const reinforcements = soldiers.filter((unit) => !orderedSoldiers.has(soldierKey(unit)));
