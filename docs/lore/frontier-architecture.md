@@ -58,7 +58,14 @@ An open canopy shelters targets and bow equipment. Clear shooting lanes and expo
 
 The proposed Town Center base is 4.4 world units wide, compared with a 2.3-unit House. These starting targets address the observation that the current Town Center looks small and house-like. Individual wiki images are framed for detail and are **not to scale with one another**. Model/capture review must verify the complete family beside the current Worker before runtime adoption.
 
-The renderings depict Complete only, from one illustrative view. Existing game art remains active while registered direction, construction, damage and team-mask production continues. Mills, farms, castles and other future buildings remain separate design briefs until their gameplay roles and footprints are selected. See the [production plan](../building-atlas-production-plan.md).
+The illustrations depict Complete only, from one illustrative view. Controlled
+Complete captures of Town Center, House, Storehouse, Stable, Workshop and
+Watchtower now bind normal matches; their [ordinary-game acceptance](../qa-frontier-building-adoption.md)
+and remaining lifecycle/team work stay open. Barracks and Archery Range still
+use older direct sprites. Their new concepts are preserved here while matching
+models and registered views are produced under the [replacement plan](../frontier-barracks-range-authoring.md).
+Mills, farms, castles and other future art remain separate design briefs; the
+[production plan](../building-atlas-production-plan.md) records current gameplay coverage.
 
 **Sources:** selected Bellweather map/ecology and art contract; current building definitions at main `f896d09`; newly generated images using the built-in image-generation tool. Exact prompts, source outputs and hashes are retained in the [concept pack](../../assets/buildings/frontier-civilization-concepts-v1/README.md). The [style guide](../frontier-civilization-art-style.md) records architectural, scale and team-treatment decisions. This is new working visual development, not a quotation from private source stories.
 
@@ -70,8 +77,13 @@ The first model pilot renders these two buildings at the same world scale. Town 
 
 ![Controlled Town Center and House scale gallery](../../assets/buildings/frontier-civilization-scale-pilot-v1/scale-gallery-review.png)
 
-[Explore the eight-view gallery](../../assets/buildings/frontier-civilization-scale-pilot-v1/preview.html). These are Complete source captures; active game art, lifecycle states and team treatment still require integration.
+[Explore the eight-view gallery](../../assets/buildings/frontier-civilization-scale-pilot-v1/preview.html).
+These Complete captures now supply normal-match finished art with state fallback;
+actual game-scale acceptance, new lifecycle states and team treatment remain open.
 
 ## Support-building directional sources
 
-Storehouse, Stable, Workshop and Watchtower now have eight controlled Complete views each. [Review their shared-scale gallery](../../assets/buildings/frontier-civilization-models-v1/preview.html). These source captures extend the kit; doorway/bay scale acceptance, lifecycle/team treatment and active game integration remain outstanding.
+Storehouse, Stable, Workshop and Watchtower have eight controlled Complete views
+each. [Review their shared-scale gallery](../../assets/buildings/frontier-civilization-models-v1/preview.html).
+These captures also bind normal-match finished art; doorway/bay scale acceptance,
+ordinary-game verification and new lifecycle/team treatment remain outstanding.
