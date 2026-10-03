@@ -326,7 +326,11 @@ test('ordinary room lobby selects shipped Stone and both seats naturally pay, re
   const final = await room.checkpoint(snapshot => snapshot.sequence > completed.sequence); conserved(final);
   assert.equal(final.matchId, depleted.matchId); assert.deepEqual(final.state.teamStone, completed.state.teamStone);
   assert.deepEqual(final.state.resourceNodes, completed.state.resourceNodes);
-  assert.deepEqual(final.state.buildings, completed.state.buildings);
+  // Simulation resumes before the next checkpoint; its combat timer may tick.
+  const structuralDefense = ({ attackCooldown, ...building }) => building;
+  assert.deepEqual(final.state.buildings.map(structuralDefense), completed.state.buildings.map(structuralDefense));
+  assert.ok(final.state.buildings.every(building => Number.isFinite(building.attackCooldown)
+    && building.attackCooldown >= 0 && building.attackCooldown <= GAMEPLAY_DEFINITIONS.buildings.watchtower.combat.period));
   console.log(JSON.stringify({ proof: 'native-two-seat-stone-loop', mapId: map.id,
     entry: 'Create Room → Map → Lab · STONE DEFENSE FIELD → Ready → Launch match',
     shippedCatalog: true, customMapPublished: false, schemaVersion: final.schemaVersion,
