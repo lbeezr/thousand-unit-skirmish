@@ -25,6 +25,9 @@ test('actual selectors report adoption without making experiments permanent', as
   }
   assert.equal(report.results.find(row => row.id === 'bellweather-sheep').defaultBound, true);
   assert.equal(report.results.find(row => row.id === 'human-worker-fishing-SE').defaultBound, true);
+  for (const id of ['frontier-barracks', 'frontier-archery-range']) {
+    assert.equal(report.results.find(row => row.id === id).defaultBound, true);
+  }
   assert.match(report.inGameVerification, /not established/);
 });
 

@@ -174,14 +174,41 @@ retain both before and after. Link the pack or gallery here when saving a new
 iteration, then update the selected region/species entry if its direction changes.
 Selection status and runtime acceptance remain separate.
 
+## Military Complete iteration history
+
+The [local military capture pack](../../assets/buildings/frontier-civilization-military-models-v1/README.md)
+adds sixteen original Complete renders derived from the two already-public
+concepts. The [architecture entry](frontier-architecture.md#local-military-building-complete-sources)
+embeds their controlled front views. Geometry, project texture generators and
+portable source scripts have recorded hashes. Native gameplay and full style
+acceptance remain open; Barracks is taller/narrower than its illustration.
+
+| Stage | Preserved artifact / status | Reason for iteration |
+| --- | --- | --- |
+| Older direct military sprites | [Barracks](../../assets/buildings/barracks-sprite-test-v1/README.md), [Range](../../assets/buildings/archery-range-sprite-v1/README.md) | Retained loading/construction/damage fallback and historical design |
+| Selected cream/oak/sage concepts | [Original illustrated pair and prompts](../../assets/buildings/frontier-civilization-concepts-v1/README.md) | New architectural direction, not measured runtime images |
+| First Barracks render and source review | Saved privately with original editable sources | Doorway/proportion refinement; static Worker overlay was not native proof |
+| Interrupted source refinement | Saved privately with a failure note; not accepted capture metadata | Source guard failed, then the exact render process was stopped |
+| First eight Barracks views | Eight rejected PNGs and model/scripts saved privately | Duplicate rear masonry produced a dark foundation strip; originals retained |
+| First Range front view | Original PNG/model/scripts saved privately | Targets were hidden under canopy; moved forward, annex framing/windows added |
+| Corrected Complete pair | [Sixteen registered original PNGs](../../assets/buildings/frontier-civilization-military-models-v1/README.md#registered-views) | Independent source review found no blocker to bounded Complete-only adoption |
+
+Private rejected views and contact sheets have **not** been published in this
+wiki. This register documents their preservation status without claiming
+public visual access. Publication of that review history remains a separate
+permission boundary. The source archive and corrected contact sheets remain
+local after Library transfer was blocked; no successful Library save is claimed
+for those three artifacts. Original concept/runtime files remain separate.
+
 Avoid copying large images already in tracked packs. Recover missing local
 sources first, check size/provenance/privacy, and use a bounded source-pack PR.
 Deletion or disk cleanup must preserve artwork and dirty worktrees until their
 recovery has been verified. A text receipt alone is not a saved image.
 
 **Evidence:** [preservation audit](../art-direction/preservation-audit-2026-10-02.json)
-records checked source hashes, counts, inspected pixels and gaps. Images embedded
-above are existing tracked files; no image generation, Meshy job, repaint or
-runtime capture was performed for this index.
+records the original 2 October checked source hashes, counts, inspected pixels
+and gaps. That original index used existing tracked files without generation,
+Meshy, repaint or runtime capture. The subsequent military section records
+new local model renders separately; it does not claim native gameplay pixels.
 
 [Wildlife](wildlife.md) · [Wiki index](README.md) · [Documentation index](../README.md)

@@ -1,6 +1,6 @@
 {
   "id": "frontier-buildings-acceptance-flat",
-  "name": "Frontier buildings acceptance · flat",
+  "name": "Frontier buildings acceptance \u00b7 flat",
   "width": 64,
   "height": 64,
   "terrainSeed": 19,
@@ -138,6 +138,34 @@
     {
       "column": 45,
       "row": 32,
+      "width": 3,
+      "height": 3,
+      "material": "dirt"
+    },
+    {
+      "column": 10,
+      "row": 24,
+      "width": 3,
+      "height": 3,
+      "material": "dirt"
+    },
+    {
+      "column": 5,
+      "row": 24,
+      "width": 3,
+      "height": 3,
+      "material": "dirt"
+    },
+    {
+      "column": 51,
+      "row": 24,
+      "width": 3,
+      "height": 3,
+      "material": "dirt"
+    },
+    {
+      "column": 56,
+      "row": 24,
       "width": 3,
       "height": 3,
       "material": "dirt"

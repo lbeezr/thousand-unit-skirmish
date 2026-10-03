@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { frontierBuildingPreviewUrl, frontierBuildingManifestUrl } from '../src/frontier-building-preview.mjs';
 
-const families = ['town-center', 'house', 'storehouse', 'stable', 'workshop', 'watchtower'];
+const families = ['town-center', 'house', 'storehouse', 'stable', 'workshop', 'watchtower', 'barracks', 'archery-range'];
 
-test('ordinary match URLs bind all six finished families without a preview flag', () => {
+test('ordinary match URLs bind all eight finished families without a preview flag', () => {
   for (const mode of [undefined, null, '']) {
     for (const type of families) assert.equal(frontierBuildingManifestUrl(type, mode), frontierBuildingPreviewUrl(type, '1'));
     for (const type of ['mill', 'farm', 'dock', 'constructor']) {
@@ -37,7 +37,7 @@ test('full-checkout comparison and other named previews retain their bindings', 
     assert.equal(frontierBuildingPreviewUrl(type, type), url);
     assert.equal(frontierBuildingPreviewUrl(type, 'other'), null);
   }
-  for (const type of ['barracks', 'archery-range', 'constructor', '../house']) {
+  for (const type of ['constructor', '../house']) {
     assert.equal(frontierBuildingPreviewUrl(type, '1'), null);
   }
 });

@@ -2,13 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
-const packs=['frontier-civilization-scale-pilot-v1','frontier-civilization-models-v1'];
-test('all six Complete renderer manifests preserve captured pixels, scale and registration',async()=>{
+const packs=['frontier-civilization-scale-pilot-v1','frontier-civilization-models-v1','frontier-civilization-military-models-v1'];
+test('all eight Complete renderer manifests preserve captured pixels, scale and registration',async()=>{
  let count=0;
  for(const pack of packs){
   const root=new URL(`../assets/buildings/${pack}/`,import.meta.url);
   const records=JSON.parse(await readFile(new URL('captures/capture-manifest.json',root))).records;
   for(const asset of new Set(records.map(r=>r.asset))){
+   validateCaptureFamily(records.filter(r=>r.asset===asset));
    const m=JSON.parse(await readFile(new URL(`${asset}-complete-renderer.json`,root)));
    assert.equal(m.asset,asset);assert.deepEqual(m.stateOrder,['complete']);assert.equal(m.camera.pixelsPerWorldUnit,128);
    assert.deepEqual(m.camera.framePixels,[1024,1024]);assert.equal(m.completeState.views.length,8);
@@ -16,7 +17,7 @@ test('all six Complete renderer manifests preserve captured pixels, scale and re
    count++;
   }
  }
- assert.equal(count,6);
+ assert.equal(count,8);
 });
 
 

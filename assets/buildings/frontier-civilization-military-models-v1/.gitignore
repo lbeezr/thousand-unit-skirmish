@@ -1,0 +1,4 @@
+models/
+textures/
+source/__pycache__/
+captures/*-capture-receipt.json
