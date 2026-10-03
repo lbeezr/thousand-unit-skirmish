@@ -15,6 +15,7 @@ const water = createWaterUnitRuntime(map), fishing = createSkiffFishingContext(m
 const fixture = await createFortifiedFixture({ mapPath: 'maps/open-field.json', timeoutMs: 90_000 });
 let clients, tokens, workers, selected, unselected, order = 100;
 const command = async (team, value, expression) => {
+  if (value.type !== 'returnCargo') return clients[team].command({ ...value, clientOrderToken: order++ }, expression);
   const notice = await clients[team].command({ ...value, clientOrderToken: order++ }, /.*/);
   assert.match(notice.message, expression, `${value.type} seat ${team}`);
   return notice;
