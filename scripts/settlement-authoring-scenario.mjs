@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { settlementGround } from '../src/settlement-authoring.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 import { seededMirroredResourceClusters } from '../src/resource-cluster-authoring.mjs';
+import { seedMillraceSheep } from '../src/millrace-sheep.mjs';
 const paintGrid = map => {
   const cells = Array(map.width * map.height).fill(map.terrainBase);
   for (const rect of map.terrainPatches) for (let row = rect.row; row < rect.row + rect.height; row++) {
@@ -24,7 +25,7 @@ for (const id of ['bellweather-millrace', 'underbough-rootways']) {
   assert.deepEqual(patches, settlementPaint, 'woodland ground preserves the historical settlement paint');
   for (const key of Object.keys(before).filter(key => key !== 'terrainPatches' && key !== 'terrainBase')) {
     const expected = id === 'underbough-rootways' && key === 'obstacles' ? glades.obstacles
-      : id === 'bellweather-millrace' && key === 'resourceNodes' ? seededMirroredResourceClusters({ ...before, terrainPatches: patches }) : before[key];
+      : id === 'bellweather-millrace' && key === 'resourceNodes' ? seedMillraceSheep(seededMirroredResourceClusters({ ...before, terrainPatches: patches })) : before[key];
     assert.deepEqual(map[key], expected, `${key}: preserve historical settlement rules and approved layout`);
   }
   assert.equal(map.terrainBase, id === 'underbough-rootways' ? 'meadow' : before.terrainBase, 'authored clearing material is explicit');

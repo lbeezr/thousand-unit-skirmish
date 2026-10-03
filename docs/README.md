@@ -33,6 +33,7 @@ the build they name.
 | --- | --- |
 | Install, run locally, host on LAN, troubleshoot | [Local setup](getting-started.md) |
 | Learn controls, economy, objectives, and rematches | [Player guide](playing.md) |
+| Start a fresh game, join a room, or explicitly resume a saved seat | [Main menu entry](game-entry.md) |
 | Create a PvP lobby, ready and launch; inspect its protocol | [Pregame rooms](room-lobby.md) |
 | Reproduce a solo match | [Play vs AI](play-vs-ai.md) |
 | Find server defaults and limits | [Configuration](configuration.md) |
@@ -48,10 +49,12 @@ the build they name.
 | Understand overload behavior | [Simulation timing](simulation-timing.md) |
 | Author and validate scenario JSON | [Map authoring](map-authoring.md) |
 | Inspect isolated water routes before dock/boat integration | [Water navigation foundation](water-navigation-foundation.md) |
+| Place Dock foundations and inspect their land/water berth contract | [Dock shoreline foundation](dock-shoreline-foundation.md) |
 | Choose a map | [Catalog](maps.md), [Forked Vale](forked-vale-scenario.md), [Three Crowns](three-crowns-layout.md) |
 | Change the compact objective HUD | [Objective behavior and validation](battlefield-objectives-validation.md) |
 | Change owned population feedback | [Population header behavior and validation](population-header-validation.md) |
 | Change selection-dependent command visibility | [Contextual HUD behavior and validation](contextual-hud-validation.md) |
+| Add selected-unit portraits or connect future field notes | [Worker HUD art and integration contract](hud-art-integration.md) |
 | Change cues or captions | [Audio design](audio-design.md) |
 | Design each command, notice, alert and result sound | [UI sound direction](ui-audio-direction.md) |
 | Produce reusable effects and music | [Audio kit plan](audio-kit-plan.md) |
@@ -69,6 +72,7 @@ the build they name.
 - [Gameplay foundation plan](gameplay-foundation-plan.md): extensible roster, base development, combat/progression, and presentation/variant milestones.
 - [Core match tranche](core-playtest-tranche.md): next human session, observation record, and proposed scale profile.
 - [Balance](first-skirmish-balance.md): current no-tune baseline and next observations.
+- [Mill depot simulation](qa-mill-depot-economy-2026-10-03.md): paid travel comparisons, separate currency tradeoffs and limits; [Farm proposal](farm-capability-proposal.md): the next finite-stock content contract to resolve.
 - [QA and external playtests](qa-vertical-slice.md): acceptance and repeatable protocol.
 - [Map scale](map-scale-density.md), [living land](living-land-experiment.md), and
   [harvestable woodland](harvestable-woodland-pilot.md): implemented slices and proposed follow-ups.

@@ -931,7 +931,8 @@
       "type": "food",
       "x": -24.5,
       "z": 9.5,
-      "stock": 130
+      "stock": 130,
+      "wildlifeSpecies": "bellweather-sheep"
     },
     {
       "id": "s0-0-2",
@@ -945,14 +946,16 @@
       "type": "food",
       "x": -18.5,
       "z": 7.5,
-      "stock": 130
+      "stock": 130,
+      "wildlifeSpecies": "bellweather-sheep"
     },
     {
       "id": "s0-0-4",
       "type": "food",
       "x": -21.5,
       "z": 10.5,
-      "stock": 130
+      "stock": 130,
+      "wildlifeSpecies": "bellweather-sheep"
     },
     {
       "id": "s0-1",
@@ -1071,7 +1074,8 @@
       "type": "food",
       "x": 24.5,
       "z": 9.5,
-      "stock": 130
+      "stock": 130,
+      "wildlifeSpecies": "bellweather-sheep"
     },
     {
       "id": "s1-0-2",
@@ -1085,14 +1089,16 @@
       "type": "food",
       "x": 18.5,
       "z": 7.5,
-      "stock": 130
+      "stock": 130,
+      "wildlifeSpecies": "bellweather-sheep"
     },
     {
       "id": "s1-0-4",
       "type": "food",
       "x": 21.5,
       "z": 10.5,
-      "stock": 130
+      "stock": 130,
+      "wildlifeSpecies": "bellweather-sheep"
     },
     {
       "id": "s1-1",

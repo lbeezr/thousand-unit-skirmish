@@ -186,6 +186,10 @@ acceptance for these items remains pending; use 1280 × 720 and 620 × 640.
   Enlarge/shrink it with Worker, mixed army and Barracks selected at 1280, 800
   and 621px wide: the command bar must stay beside the map. At 620 and 360px,
   the map stays above the scrollable bar. Check short 800 × 420 too.
+- Edge scroll: with it enabled, hover 60px from each canvas edge; movement starts
+  inside the new 80px band and stops at 80px. Check after resize and at Retina
+  scale; editable focus, dialogs, drag selection and build placement still block
+  it. Saved speed and disabled settings remain effective.
 - Training: use the exact 60-food fixture above. Enter on Train Spearman keeps
   focus on the newly unavailable choice; Enter, Space and pointer activation
   send no additional request. Tab away/back and verify VoiceOver label, reason
@@ -202,6 +206,18 @@ acceptance for these items remains pending; use 1280 × 720 and 620 × 640.
   selection; building → Production → Escape keeps building selection. Clear
   selection to reach Quick commands. Verify Return cargo still appears for a
   carrying Worker and issues that order.
+- Worker visual: on both seats, select one Worker and inspect the compact
+  portrait, name/HP, target and Build icons at 1280 × 720, 800 × 420 and 360 × 480,
+  with small/large minimap. Check portrait framing and text at Retina scale.
+  Tab to the portrait, open notes, then Escape and the close button: focus returns
+  to the portrait and selection remains. Damage the Worker and verify live HP.
+  Select two Workers or a mixed group: the portrait disappears and the composition
+  summary remains. Clear selection with notes open, dismiss and verify visible
+  Quick-command focus. Check VoiceOver's Worker/family/role-note button name;
+  decorative images add no repeated command name and M remains visible.
+
+The [Worker art contract](hud-art-integration.md) records sources, framing,
+supported appearances and the future source-linked codex boundary.
 
 ## Compact enlarged-map clearance — 3 October 2026
 

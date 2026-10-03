@@ -34,7 +34,8 @@ function fixture(t, team = 0) {
     latestFood: [0, 0], latestWood: [250, 250], latestBuildings: [], latestForestStocks: new Map(), latestResourceStocks: new Map(),
     latestTeamResearch: [{}, {}],
     mapDefinition: { obstacles: [], resourceNodes: [], triggers: [] }, units, teamUnits: units.map(unit => [unit]),
-    selected: new w.Set(), selectedIds: () => [...w.selected].filter(id => units[id]?.hp > 0 && units[id]?.team === team),
+    selected: new w.Set([team]), selectedIds: () => [...w.selected].filter(id => units[id]?.hp > 0 && units[id]?.team === team),
+    selectedWorkerIds: () => w.selectedIds().filter(id => units[id]?.kind === 'worker'),
     buildingFootprint: type => BUILDING_DEFINITIONS[type].footprint,
     buildingWoodCost: type => BUILDING_DEFINITIONS[type].cost.wood,
     buildingLabel: type => BUILDING_DEFINITIONS[type].label,
@@ -56,7 +57,7 @@ function fixture(t, team = 0) {
   w.eval(between('function updateRosterBuildingOptions(', 'function updateEconomyUI('));
   // Isolate battlefield cursor picking; its logic has separate tests.
   w.syncBattlefieldCursor = () => {};
-  w.eval(between("renderer.domElement.addEventListener('pointerdown'", "minimapCanvas.addEventListener('pointerdown'"));
+  w.eval(between("renderer.domElement.addEventListener('pointerdown'", 'function canIssueMinimapMove('));
   w.eval(between("window.addEventListener('keydown', (event) => {\n  lastFriendlyUnitClick", "document.addEventListener('focusin'"));
   const pointer = (type, x, y, { id = 1, button = 0, shiftKey = false } = {}) => {
     const event = new w.MouseEvent(type, { clientX: x, clientY: y, button, shiftKey, bubbles: true, cancelable: true });

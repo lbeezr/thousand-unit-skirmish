@@ -8,6 +8,11 @@ Keep unit stats, production costs, and objective rewards as the current baseline
 until contested, seat-swapped player matches support a change. Existing scripts
 check fairness and opening mechanics; they do not establish human win rates.
 
+The [Mill depot study](qa-mill-depot-economy-2026-10-03.md) adds paid, both-seat
+travel simulations on three controlled placements. Mill and Storehouse overlap
+on food; nearby wood makes Storehouse's additional service useful. Preserve the
+provisional depot tuning: these cases supply no contested player evidence.
+
 The latest flat-map record in the prior ledger used `117284e` with Node 24.9.0.
 It is historical evidence, not a new measurement of the documentation branch.
 The full series, including failures and intermediate builds, is preserved in the

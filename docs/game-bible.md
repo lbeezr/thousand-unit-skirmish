@@ -104,6 +104,8 @@ a display never rounds insufficient stock up to the purchase price.
 ## Implemented scope
 
 - Azure and Ember seats, invite rooms, spectators, reconnects, and checkpoints.
+- Ordinary root entry opens the [main menu](game-entry.md), with deliberate fresh
+  game/room creation, join, validated Resume, isolated Map Studio and settings.
 - New PvP invite rooms have host map/army configuration, both-seat readiness,
   explicit launch and rematch/recovery through the [pregame lobby](room-lobby.md).
   Connected seats can exchange bounded plain-text pregame chat; history is
@@ -139,6 +141,16 @@ Selecting units or an owned building restores contextual commands; closing a
 detail drawer retains selection and returns focus to an available command.
 Resources, population, minimap and independent urgent feedback stay outside
 that visibility switch. See the [contextual HUD contract](contextual-hud-validation.md).
+
+Left-click or drag on the tactical map navigates the camera. Right-click moves
+only the living selected units owned by the player; Shift plus right-click
+queues a destination. These are ground movement orders, including in unexplored
+areas, with terrain and routes resolved by the authoritative server. A minimap
+order preserves selection and camera position and reveals no hidden targets.
+Tap Space to center the living owned selection or selected owned building in
+the HUD-safe battlefield area. Centering occurs on release so Space plus drag
+continues to pan; releasing after a drag leaves that viewpoint in place. Buttons,
+text controls, menus and dialogs retain their keyboard behavior.
 
 - A first glance identifies the team, objective, route, and selection. The QA
   protocol measures this with a newcomer and a two-minute observation window.
@@ -232,6 +244,20 @@ drop-off routing; wood still needs a Storehouse or Town Center. It produces no
 units or population and does not generate or multiply food. Mill currently uses
 the existing procedural House appearance as an explicit placeholder until its
 own art is authored. It uses the same paid repair and cancellation rules.
+
+The [controlled depot study](qa-mill-depot-economy-2026-10-03.md) records simulated
+food-trip savings and Storehouse's additional wood service, with no human matches
+or tuning change. Construction time and food/wood prices remain separate costs.
+The [Mill art brief](frontier-mill-art-brief.md) retains its food-only land role.
+
+Dock is a shoreline foundation: provisional 100 wood, 20 accumulated
+Worker-seconds, 1,200 HP and a 3 × 3 dry level-zero land footprint. Placement
+requires an adjacent clear 3 × 3 authored-water berth and an outward water
+route step, while preserving ordinary land access and active routes. It uses
+the existing building lifecycle and an explicit procedural House placeholder.
+It offers no production, drop-off, population or resource bonus; boats remain
+unavailable. [The Dock contract](dock-shoreline-foundation.md) defines the
+current berth handoff and subsequent naval work.
 
 A one-cell Palisade uses **provisional test tuning** of 15 wood, five accumulated
 Worker-seconds and 300 HP. Whole lines reserve occupancy and pay atomically;

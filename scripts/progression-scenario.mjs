@@ -1,4 +1,5 @@
-import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { cueForNotice } from '../src/audio-policy.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
@@ -56,6 +57,13 @@ function connect(port) {
 
 function send(client, command) {
   client.socket.send(JSON.stringify(command));
+}
+
+async function assertResearchAudio(client, team, technologyId) {
+  const prefix = `${team === 0 ? 'AZURE' : 'EMBER'} ${TECHNOLOGY_DEFINITIONS[technologyId].label.toUpperCase()} COMPLETE ·`;
+  const notice = await client.wait(m => m.type === 'notice' && m.message.startsWith(prefix));
+  assert.equal(cueForNotice(notice.message, { localTeam: team }), 'research-complete');
+  assert.equal(cueForNotice(notice.message, { localTeam: 1 - team }), null);
 }
 
 async function checkpointWith(checkpointPath, predicate) {
@@ -148,6 +156,7 @@ try {
   assert.deepEqual(clients[0].latest.scenarioEvents.map(e=>e.triggeredByTeam),[0,0,1,1]);
   for (const [team, client] of clients.entries()) {
     await client.wait(m => m.type === 'state' && m.teamResearch[team].militaryTier2);
+    await assertResearchAudio(client, team, 'military-tier-2');
     const barracks = client.latest.buildings.find(b => b.team === team && b.type === 'barracks');
     send(client, { type: 'researchUpgrade', buildingId: barracks.id, upgrade: 'military-armor' });
     await client.wait(m => m.type === 'state' && m.teamResearch[team].active?.type === 'military-armor');
@@ -159,10 +168,12 @@ try {
   await checkpointWith(checkpointPath, s => s.state.teamUpgrades.every(u => u.militaryArmor));
   for (const [team, client] of clients.entries()) {
     await client.wait(m => m.type === 'state' && m.teamResearch[team].militaryArmor);
+    await assertResearchAudio(client, team, 'military-armor');
     const stable = client.latest.buildings.find(b => b.team === team && b.type === 'stable');
     send(client, { type: 'researchUpgrade', buildingId: stable.id, upgrade: 'mounted-attack' });
   }
   const complete = await checkpointWith(checkpointPath, s => s.state.teamUpgrades.every(u => u.mountedAttack));
+  for (const [team, client] of clients.entries()) await assertResearchAudio(client, team, 'mounted-attack');
   assert.deepEqual(complete.state.teamFood, [580, 580]); assert.deepEqual(complete.state.teamWood, [275, 275]);
   await stop();
   const final = JSON.parse(await readFile(checkpointPath, 'utf8')); final.state.seatSessions = [];

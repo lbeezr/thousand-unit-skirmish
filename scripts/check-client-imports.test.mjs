@@ -63,3 +63,10 @@ test('a cross-origin import is rejected before credentials can be sent', async (
 test('an empty successful module is not accepted as a loaded client', async () => {
   await assert.rejects(audit({ '/src/main.js': { body: '' } }), /must not be empty/);
 });
+
+test('entrypoint audits include lazy game imports and reject cross-origin dynamic imports', async () => {
+  const server = fixture({ '/src/entry.mjs': { body: "await import('./main.js');" }, '/src/main.js': { body: 'export const ready = true;' } });
+  const checks = await checkClientImports('https://game.example', { authorization: 'Basic fixture', fetchImpl: server.fetchImpl, entrypoints: ['/src/entry.mjs'] });
+  assert.deepEqual(checks.map(row => row.path), ['/src/entry.mjs', '/src/main.js']);
+  await assert.rejects(audit({ '/src/main.js': { body: "import('https://other.example/game.js');" } }), /must stay on the game origin/);
+});
