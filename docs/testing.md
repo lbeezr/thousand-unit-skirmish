@@ -131,9 +131,11 @@ defines dependency directions, the explicit cycle baseline and the separate
 HTTP/release obligations of a module move.
 For client import/module changes, include
 `node scripts/client-asset-allowlist-scenario.mjs`; the packed release scenario
-also traverses the served static import graph. The hosted Railway smoke uses
+also traverses served static, re-export and literal lazy imports. The hosted Railway smoke uses
 the same `scripts/check-client-imports.mjs` audit; focused fixtures cover missing
-transitive dependencies, cycles, incorrect MIME, and origin boundaries. See the
+transitive dependencies, cycles, compact/escaped syntax, ignored comment/string
+lookalikes, computed-import rejection, incorrect MIME and origin boundaries. Source
+and served audits share the parser in `scripts/module-imports.mjs`. See the
 [client-loading incident](qa-client-boot-recovery-2026-09-27.md).
 Use disposable rooms and directories: many scenarios publish maps, reset armies,
 restart workers, or deliberately disconnect clients.
@@ -154,6 +156,7 @@ Run from the repository root:
 | Area | Command |
 | --- | --- |
 | Normal finished Frontier building bindings, state fallback, grounding/facing, picking/depth and texture ownership | `node --test scripts/frontier-building-default.test.mjs`; [runtime contract and deployed-game acceptance](frontier-building-runtime.md) |
+| Unit snapshot receipt, work/event clocks, movement, slot reuse, fog and sprite LOD buffers | `node --test scripts/unit-presentation-client.test.mjs` ([CPU fixture](../scripts/unit-presentation-client-fixture.mjs): actual client source slices/constants, shipped Human/Boughward Worker manifests and Three instanced UV/matrix buffers; UI, network, procedural fallback and GPU pixels excluded). Add performing-action rows only after [producer alignment](worker-performing-action-contract-proposal.md). |
 | Building body occlusion, server cap and renderer-only 129th item; native fixture counters, query gates, serving and preservation | `node --test scripts/building-sprites.test.mjs scripts/building-occlusion-fixture.test.mjs`; [paired crowded scene and exact Mac GPU recipe](qa-building-occlusion-native-plan-2026-10-03.md) |
 | Map logic / elevation | `node scripts/map-utils-scenario.mjs` / `node scripts/elevation-scenario.mjs` |
 | Crowd deflection / terrain boundaries | `node --test scripts/unit-movement.test.mjs` (real authoritative movement blocks, cliffs, corners, working/striking separation and route repair) |
