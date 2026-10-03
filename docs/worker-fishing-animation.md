@@ -40,6 +40,17 @@ east/west at their central land markers, so this first SE clip appears when a
 Worker approaches the real bank from the corresponding diagonal; those two
 ordinary central approaches do not falsely reuse SE art.
 
+The approved SE reach key also draws a small neutral rope and net rim from its
+measured outer net point to the canonical water-cell center. It uses two shared
+instanced batches per team and clears outside that actual reach key, on Stop,
+combat, movement, defeat, fog/LOD hiding and slot reuse. Other phases retain their
+bank-side work. Target derivation matches the current server position/bearing
+against the authored water points and fails closed on ambiguity or stale identity.
+This cosmetic extension does not move the actor, change gather reach or award food.
+The smaller bank ring remains at the land node; its small fish glyph identifies
+the water cell. Either glyph or bank ring picks the same existing land resource.
+Stock colours/scales, callouts and the fog overlay remain authoritative.
+
 The user explicitly approved publishing the fishing game images and continuing
 their default integration. That publication authority is distinct from complete
 motion, root and eight-heading acceptance. Full 3D source models remain private.
@@ -173,11 +184,18 @@ Other resource-ring orders and all Worker art remain unchanged. The actual
 Three transparent-list test checks the ordering at both relative camera depths,
 with depletion/rematch and parent-visibility assertions.
 
-The after-fix visual check remains open. Rerun the private Mac adapter on the
-checked revision through the current ordinary `?play=1&rendererCapture=environment-state`
-entry route, preserving the atlas and observer overlay hashes. Capture the
-ordinary view and a continuous close loop without pausing for delivery; then
-inspect net/hand readability, root and seam, retaining selection, stock and fog
-feedback. The source-only ring fix neither publishes candidate pixels nor
-establishes full art acceptance. Publication authority was subsequently granted
-for the fishing sprites; seven additional headings remain unproduced.
+The subsequent full chronological private Mac sequence closes the ring-order
+defect in the inspected phases. The boot root looks steady through the keys and
+wraps; four-pose hand/net changes remain visibly stepped. Max reach still stopped
+short of the visible water edge, while retrieve/collect legitimately stayed on
+the bank. That observation motivates the measured reach contact and smaller
+bank/water cues above, preserving the approved actor bytes.
+
+The contact/cue correction's GPU appearance check remains open. Rerun through
+the current ordinary `?play=1&rendererCapture=environment-state` entry route,
+using the shipped 0.14.0 pack and a recorded read-only observer. Capture ordinary
+view and a continuous close loop without pausing for delivery. Inspect the reach
+endpoint inside actual water, clear bank-side collection, steady root/wrap and
+selection/stock/fog feedback. Source tests check the actual Three geometry endpoint
+and cleanup but cannot establish its appearance. Publication authority is granted;
+seven additional fishing headings remain unproduced.

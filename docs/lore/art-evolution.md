@@ -89,8 +89,12 @@ shipped-art fallback. Initial cloud sandbox/storage failure prevented a
 game capture. Later private Mac QA exposed the amber bank ring obscuring the
 hands/net. The scoped
 renderer correction draws that ring beneath the Worker sprite while retaining
-its land, stock and fog contracts; after-fix readability/root/seam acceptance is
-still open. The private handoff preserves both capture attempts and Library
+its land, stock and fog contracts. A subsequent full private sequence confirmed
+that order and a visually steady planted boot, but max reach stopped short of
+actual water. The later source correction adds a measured reach-only rope/rim
+contact and smaller bank/water feedback without altering approved actor pixels.
+Its GPU appearance and final smooth-loop/root acceptance remain open.
+The private handoff preserves capture attempts and Library
 identities; the linked public record describes calibration pitfalls. Actor-art
 regeneration was unnecessary for the marker correction. The later authorized
 pixel integration retains the original four approved poses unchanged.

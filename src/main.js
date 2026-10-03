@@ -1,6 +1,7 @@
 import { createGateTimbers, updateGateTimbers } from './palisade-gate-visual.mjs';
 import { findInvalidResourceVariant, isShoreFish } from './shore-fishing.mjs';
 import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from './shore-fishing-placeholder.mjs';
+import { fishingVisualSites, createWorkerFishingContactRuntime } from './worker-fishing-contact.mjs';
 import { createWaterStudyFishBinding } from './water-study-fish-binding.mjs';
 import { generateRollingGround, smoothGround } from './terrain-authoring.mjs';
 import { mountResourceBrushControls } from './resource-brush-controls.mjs';
@@ -527,6 +528,8 @@ let unitLowDetailActive = false;
 let unitSpriteReady = false;
 let unitSpritePreviewActive = false;
 let unitSpriteMarkersActive = false;
+const workerFishingContactRuntime = createWorkerFishingContactRuntime({ THREE, scene, capacity: MAX_PER_TEAM,
+  getMap: () => mapDefinition });
 const unitSpriteRuntime = createUnitSpriteRuntime({
   THREE, scene, capacity: MAX_PER_TEAM, teamHex: TEAM_HEX, cameraQuaternion: camera.quaternion,
   roles: unitSpritePreviewRoles,
@@ -535,6 +538,7 @@ const unitSpriteRuntime = createUnitSpriteRuntime({
   teamCivilizations: humanRosterPreview ? ['human', 'boughward'] : null,
   castPreview,
   humanAppearancePreview: humanRosterPreview || roomPageUrl.searchParams.get('humanVaeloraPreview') === '1',
+  fishingContact: workerFishingContactRuntime,
 });
 unitSpriteRuntime.ready.then((loaded) => {
   if (!loaded) return;
@@ -1851,7 +1855,8 @@ function addResourceNodeVisual(node) {
   const ringMaterial = new THREE.MeshBasicMaterial({
     color: ringColor, side: THREE.DoubleSide, transparent: true, opacity: 0.78, depthWrite: false,
   });
-  const ring = new THREE.Mesh(new THREE.RingGeometry(0.55, 0.66, 24), ringMaterial);
+  const ring = new THREE.Mesh(isShoreFish(node)
+    ? new THREE.RingGeometry(0.27, 0.31, 24) : new THREE.RingGeometry(0.55, 0.66, 24), ringMaterial);
   ring.material.color.setHex(node.stock > 0 ? ringColor : 0x77806b);
   ring.material.opacity = node.stock > 0 ? 0.78 : 0.35;
   ring.rotation.x = -Math.PI / 2;
@@ -1870,9 +1875,13 @@ function addResourceNodeVisual(node) {
   callout.visible = false;
   addMapObject(callout);
   const fishPlaceholder = isShoreFish(node) ? createShoreFishPlaceholder() : null;
-  if (fishPlaceholder) { ring.add(fishPlaceholder); updateShoreFishPlaceholder(fishPlaceholder, stage); }
+  const fishingWater = fishPlaceholder ? fishingVisualSites(mapDefinition).find(site => site.nodeId === node.id)?.water : null;
+  if (fishPlaceholder) {
+    if (fishingWater) fishPlaceholder.position.set(fishingWater.x - node.x, node.z - fishingWater.z, 0.015);
+    ring.add(fishPlaceholder); updateShoreFishPlaceholder(fishPlaceholder, stage);
+  }
   resourceNodeVisuals.set(node.id, {
-    fishPlaceholder, type: nodeType, ring, stock: node.stock, startingStock: node.stock, stage,
+    fishPlaceholder, fishingWater, type: nodeType, ring, stock: node.stock, startingStock: node.stock, stage,
     x: node.x, z: node.z, callout,
     wildlifeSpecies: node.wildlifeSpecies,
   });
@@ -3439,6 +3448,8 @@ function updateUnitHealthVisual(unit) {
 }
 
 function updateUnitTransform(unit, now = performance.now()) {
+  // A recycled Worker slot must clear its cue even when the new kind bypasses sprites.
+  workerFishingContactRuntime.hide(unit);
   updateUnitHealthVisual(unit);
   const spawnProgress = unit.spawnStartedAt > 0
     ? THREE.MathUtils.clamp((now - unit.spawnStartedAt) / SPAWN_POSE_MS, 0, 1) : 1;
@@ -7288,15 +7299,19 @@ function pickResourceNodeAt(x, y, { visibleOnly = false } = {}) {
       const row = Math.floor(node.z + MAP_HEIGHT / 2);
       if (latestFogCells?.[row * MAP_WIDTH + column] !== 2) continue;
     }
-    screenPoint.set(node.x, groundHeight(node.x,node.z)+0.22, node.z).project(camera);
-    const nodeX = (screenPoint.x * 0.5 + 0.5) * rect.width;
-    const nodeY = (-screenPoint.y * 0.5 + 0.5) * rect.height;
-    const dx = nodeX - x;
-    const dy = nodeY - y;
-    const distance = dx * dx + dy * dy;
-    if (distance < nearestDistance) {
-      nearest = node;
-      nearestDistance = distance;
+    const water = isShoreFish(node) ? resourceNodeVisuals.get(node.id)?.fishingWater : null;
+    // Both the bank ring and its water glyph select the same land-owned node.
+    for (const point of water ? [node, water] : [node]) {
+      if (visibleOnly && point === water && mapDefinition.fogOfWar) {
+        const column = Math.floor(point.x + MAP_WIDTH / 2), row = Math.floor(point.z + MAP_HEIGHT / 2);
+        if (latestFogCells?.[row * MAP_WIDTH + column] !== 2) continue;
+      }
+      screenPoint.set(point.x, groundHeight(point.x,point.z)+0.22, point.z).project(camera);
+      const nodeX = (screenPoint.x * 0.5 + 0.5) * rect.width;
+      const nodeY = (-screenPoint.y * 0.5 + 0.5) * rect.height;
+      const dx = nodeX - x, dy = nodeY - y;
+      const distance = dx * dx + dy * dy;
+      if (distance < nearestDistance) { nearest = node; nearestDistance = distance; }
     }
   }
   return nearest;

@@ -11,14 +11,19 @@
   "privateQaAndLibraryIdentifiersPublished": false,
   "full3dSourcesPublished": false,
   "checks": {
-    "focusedTests": 46,
+    "focusedTests": 56,
     "atlasValidation": "passed",
     "sourceHashVerification": "passed",
     "runtimePngByteIdentityWithApprovedPilot": "passed",
     "liveShoreFishingScenario": "both seats bank 60 food; finite stock, cargo recovery, fog and rematch assertions pass",
-    "documentationLinks": "passed"
+    "documentationLinks": "passed",
+    "localReleaseScenario": "passed; guarded startup, HTTP/WebSocket auth, complete transitive browser imports, atlas hashes and packaged assets",
+    "contactLifecycleAndOpaqueAnchor": "passed; actual reach geometry ends in canonical water and real Skiff transform clears recycled Worker cue"
   },
-  "afterMarkerFixGpuCapture": "pending focused Mac recapture",
+  "afterMarkerFixGpuCapture": "full private chronological loop inspected; marker draw order corrected, planted root visually steady, max reach still short of actual water",
+  "contactAndMarkerCorrection": "measured actual SE reach key gets instanced rope/rim ending in canonical water; smaller bank ring and water glyph pick the same land node",
+  "independentReview": "opaque net anchor and main non-sprite slot cleanup verified; no remaining actionable findings",
+  "afterContactCorrectionGpuCapture": "pending focused Mac recapture",
   "finalRootAndLoopSeamAcceptance": "open",
   "remainingFishingHeadings": 7
 }
