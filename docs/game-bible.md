@@ -101,6 +101,13 @@ Resource stocks and worker cargo display whole units rounded down; costs and
 positive shortfalls round up. Affordability uses exact authoritative values, so
 a display never rounds insufficient stock up to the purchase price.
 
+Food/wood remains the playable economy. The next single-mineral recommendation
+is an explicit optional `stone-defense-v1` profile: finite `stone`, 200 stock per
+seat and 50 Stone added to new Watchtower construction. Ordinary matches and
+legacy paid work retain current food/wood prices. The [Stone contract](stone-defense-contract-proposal.md)
+defines provisional tuning and required typed payment/save work; the profile,
+bank and harvest loop are not implemented.
+
 ## Implemented scope
 
 - Azure and Ember seats, invite rooms, spectators, reconnects, and checkpoints.
