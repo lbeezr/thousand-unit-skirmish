@@ -28,6 +28,10 @@ unrelated building snapshots cannot acknowledge a wall request. A rejection
 releases input for retry. The preview has only disclosed occupancy, so fresh
 server connectivity/access or hidden-occupancy rejection can still occur.
 
+Palisade mode remains available at zero bank for free reuse, while the full
+preview/submission still rejects unaffordable new cells. Ordinary building
+entry retains its existing upfront price checks.
+
 The server derives all prices, identities, occupancy and team ownership from
 fresh authoritative state. Terrain, resources, objectives, live units, Town
 Centers, other buildings and enemy walls block admission. Friendly palisades may

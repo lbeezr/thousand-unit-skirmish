@@ -4683,7 +4683,7 @@ function updateRosterBuildingOptions(container) {
     const workers = localTeam === null ? [] : teamUnits[localTeam].filter((unit) => unit.kind === 'worker' && unit.hp > 0);
     const missing = (definition.requires || []).filter((id) => !latestTeamResearch[localTeam]?.[TECHNOLOGY_DEFINITIONS[id].upgradeKey]);
     button.disabled = localTeam === null || matchWinner >= 0 || buildPlacementPending || !workers.length || missing.length > 0
-      || latestFood[localTeam] < definition.cost.food || latestWood[localTeam] < definition.cost.wood;
+      || (definition.id !== 'palisade-wall' && (latestFood[localTeam] < definition.cost.food || latestWood[localTeam] < definition.cost.wood));
     button.textContent = `Build ${definition.label} · ${definition.cost.wood} WOOD${definition.cost.food ? ` + ${definition.cost.food} FOOD` : ''}${missing.length ? ' · RESEARCH REQUIRED' : ''}`;
     const active = buildPlacementActive && buildPlacementType === definition.id;
     button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active));
@@ -7775,8 +7775,8 @@ function beginBuildPlacement(type) {
   const foodCost = BUILDING_DEFINITIONS[type]?.cost.food || 0;
   const workers = teamUnits[localTeam].filter((unit) => unit.kind === 'worker' && unit.hp > 0);
   if (workers.length === 0) { showToast(`NO LIVING WORKERS TO CONSTRUCT ${label}`); return; }
-  if (latestFood[localTeam] < foodCost) { showToast(`${label} NEEDS ${foodCost} FOOD`); return; }
-  if (latestWood[localTeam] < woodCost) {
+  if (type !== 'palisade-wall' && latestFood[localTeam] < foodCost) { showToast(`${label} NEEDS ${foodCost} FOOD`); return; }
+  if (type !== 'palisade-wall' && latestWood[localTeam] < woodCost) {
     showToast(`${label} NEEDS ${formatResourceRequirement(woodCost)} WOOD`);
     return;
   }

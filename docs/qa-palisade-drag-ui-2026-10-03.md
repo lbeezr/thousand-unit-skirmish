@@ -47,7 +47,8 @@ remain a follow-up, not an integration hold.
    should place precisely the last preview. Tap a clear cell to place one paid
    post. Retrace friendly segments: reused cells show free and a fully reused
    line acknowledges **WALL ALREADY PLACED · NO CHARGE**, exits placement and
-   neither charges again nor restarts Worker work.
+   neither charges again nor restarts Worker work. Entry stays available even
+   at zero wood so free reuse works; any new cell still requires its full cost.
 5. Start a line through a disclosed live unit, forest/terrain, resource, Town
    Center or other building. The whole preview must turn red with a reason;
    release must send no build and create/pay for no subset. With insufficient

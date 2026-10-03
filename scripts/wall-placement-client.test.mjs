@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
-import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { WallPlacementGesture, wallCellAt, previewWallPlacement, wallPlacementFeedback } from '../src/wall-placement.mjs';
 import { createWallPlacementGhost } from '../src/wall-placement-ghost.mjs';
 import { classifyOrderNotice } from '../src/order-feedback.mjs';
@@ -26,12 +26,13 @@ function fixture(t, team = 0) {
   canvas.releasePointerCapture = id => { captures.delete(id); const event = new w.Event('lostpointercapture'); Object.defineProperty(event, 'pointerId', { value: id }); canvas.dispatchEvent(event); };
   w.matchMedia = () => ({ matches: false });
   const units = [0, 1].map(id => ({ id, kind: 'worker', hp: 100, team: id, serverX: 8.5, serverZ: 8.5 }));
-  Object.assign(w, { BUILDING_DEFINITIONS, WallPlacementGesture, wallCellAt, previewWallPlacement, wallPlacementFeedback,
+  Object.assign(w, { BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, WallPlacementGesture, wallCellAt, previewWallPlacement, wallPlacementFeedback,
     renderer: { domElement: canvas }, wallPlacementGesture: new WallPlacementGesture(), wallKeyboardCell: null,
     pendingWallPreview: null,
     wallPlacementGhost: createWallPlacementGhost(), placementGhost: { visible: false },
     localTeam: team, matchWinner: -1, MAP_WIDTH: 20, MAP_HEIGHT: 20, MAP_HALF_X: 10, MAP_HALF_Z: 10,
     latestFood: [0, 0], latestWood: [250, 250], latestBuildings: [], latestForestStocks: new Map(),
+    latestTeamResearch: [{}, {}],
     mapDefinition: { obstacles: [], resourceNodes: [], triggers: [] }, units, teamUnits: units.map(unit => [unit]),
     selected: new w.Set(), selectedIds: () => [...w.selected].filter(id => units[id]?.hp > 0 && units[id]?.team === team),
     buildingFootprint: type => BUILDING_DEFINITIONS[type].footprint,
@@ -52,6 +53,7 @@ function fixture(t, team = 0) {
     controlGroupIndexFromKey: () => null, appShell: d.createElement('div'),
   });
   w.eval(between('function wallPlacementAt(', 'function queueWorker('));
+  w.eval(between('function updateRosterBuildingOptions(', 'function updateEconomyUI('));
   // Isolate battlefield cursor picking; its logic has separate tests.
   w.syncBattlefieldCursor = () => {};
   w.eval(between("renderer.domElement.addEventListener('pointerdown'", "minimapCanvas.addEventListener('pointerdown'"));
@@ -183,4 +185,20 @@ test('terminal wall notices finish actual order feedback, including fully reused
   }
   assert.equal(f.w.applyOrderNotice(6, 'WALL ALREADY PLACED · NO CHARGE'), false);
   assert.equal(outcomes.length, 2);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: zero bank can enter the normal menu for free reuse; new cells remain unaffordable`, t => {
+  const f = fixture(t, team), menu = f.d.createElement('div'); f.d.body.append(menu);
+  f.w.latestWood[team] = 0;
+  f.w.latestBuildings = [{ id: 10, type: 'palisade-wall', team, x: -8.5, z: -8.5 }];
+  f.w.updateRosterBuildingOptions(menu);
+  assert.equal(menu.querySelector('[data-building="palisade-wall"]').disabled, false);
+  assert.equal(menu.querySelector('[data-building="storehouse"]').disabled, true, 'ordinary building price gates remain');
+  menu.querySelector('[data-building="palisade-wall"]').click(); assert.equal(f.w.buildPlacementActive, true);
+  f.pointer('pointerdown', 15, 15); f.pointer('pointermove', 25, 15);
+  assert.match(f.w.ui.placementStatus.textContent, /NEED 15 WOOD/);
+  f.pointer('pointerup', 25, 15); assert.equal(f.commands.length, 0);
+  f.pointer('pointerdown', 15, 15); f.pointer('pointerup', 15, 15);
+  assert.equal(f.commands.length, 1); assert.equal(f.commands[0].type, 'buildWall');
+  assert.match(f.w.ui.placementStatus.textContent, /0 NEW · 0 WOOD · 1 REUSED FREE/);
 });
