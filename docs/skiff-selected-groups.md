@@ -54,7 +54,9 @@ a full hold first. No fleet object, shared inventory, checkpoint schema or new
 currency is added; reservations are rebuilt from existing saved paths/goals.
 Existing single-boat saves remain valid.
 
-Queued water waypoints and queued fishing remain unavailable. This slice adds no
+[Water waypoints](skiff-water-waypoints.md) now accept Shift destinations on
+moving/idle Skiffs, with up to eight pending goals per boat. Shift during
+fishing/Return and queued fishing remain unavailable. This slice adds no
 naval weapons, passengers, transport, final boat/Dock art or rendered usability
 claim. All existing procedural placeholders remain explicit.
 

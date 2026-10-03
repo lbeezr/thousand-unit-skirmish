@@ -85,6 +85,7 @@ run(['--test', 'scripts/stationary-worker-pathing.test.mjs'], 'Stationary Worker
 run(['scripts/stationary-worker-native-scenario.mjs'], 'Native both-seat parked Worker formation recovery');
 run(['--test', 'scripts/fortified-site-clearance.test.mjs'], 'Fortified late-arrival construction clearance');
 run(['--test', 'scripts/sheep-static-preview.test.mjs'], 'Sheep static reference integrity and state boundary');
+run(['--test', 'scripts/sheep-eight-view-runtime.test.mjs'], 'Admitted eight-view Sheep source and default runtime');
 run(['--test', 'scripts/sheep-directional-readiness.test.mjs'], 'Sheep directional source and anchor acceptance');
 run(['--test', 'scripts/neutral-wildlife-renderer.test.mjs'], 'Neutral wildlife render lifecycle and fallback');
 run(['scripts/wildlife-render-scenario.mjs'], 'Live wildlife snapshots and production art paths');
@@ -158,6 +159,8 @@ run(['--test', 'scripts/skiff-fishing.test.mjs'], 'Finite Skiff food, owned Dock
 run(['scripts/skiff-fishing-scenario.mjs'], 'Both-seat Skiff/Worker shared fish stock and cargo recovery');
 run(['--test', 'scripts/skiff-group-orders.test.mjs'], 'Exact selected Skiff group destinations and cargo conservation');
 run(['scripts/skiff-groups-scenario.mjs'], 'Both-seat selected Skiff movement/fishing/Return and restart');
+run(['--test', 'scripts/skiff-waypoints.test.mjs'], 'Selected Skiff water waypoint tails, cargo and recovery');
+run(['scripts/skiff-waypoints-scenario.mjs'], 'Both-seat shipped minimap Skiff waypoints and selected Stop');
 run(['scripts/water-route-map-scenario.mjs'], 'Water-only route components on shipped maps');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');

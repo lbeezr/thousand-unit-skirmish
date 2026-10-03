@@ -31,6 +31,8 @@ with four headings per state. Independent channel gardens retain full plants.
 
 Current runtime defaults:
 
+- Alive Bellweather Sheep use the [approved eight-view static pack](../assets/wildlife/bellweather-sheep-static-v1/README.md) through the normal neutral renderer, including the six default Millrace Sheep. Carcasses use a food-cache marker; depleted and fog-hidden nodes disappear. Animal animations are absent; native ground/scale/occlusion review remains pending.
+
 - Bellweather woody hedgerows on meadow maps use the [hedgerow lifecycle atlas](environment-pack-v1.md#bellweather-hedgerow-lifecycle--30-september-2026), with matching cleared cut stems alongside the field maple lifecycle.
 - Sereward thorn acacias on sand maps use the [acacia lifecycle atlas](environment-pack-v1.md#sereward-thorn-acacia-lifecycle--30-september-2026), alongside palms. The [woody scrub companion](environment-pack-v1.md#sereward-woody-scrub-lifecycle--30-september-2026) has clipped, cut-back and cleared root-crown states.
 - Ellionar cultivated palms on garden-loam maps use the [palm lifecycle atlas](environment-pack-v1.md#ellionar-cultivated-palm-lifecycle--30-september-2026), including matching diamond-bark stumps. The [garden hedge companion](environment-pack-v1.md#ellionar-garden-hedge-lifecycle--30-september-2026) has clipped, cut-back and cleared wood states.

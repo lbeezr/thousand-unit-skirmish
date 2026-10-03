@@ -7,25 +7,21 @@ It delivers no new generated art or accepted animal stock/gatherer-cap balance.
 
 [Wiki wildlife entry](lore/wildlife.md) · [Art evolution](lore/art-evolution.md)
 
-**3 October art follow-up:** a [one-view public-input preview](../assets/wildlife/bellweather-sheep-public-reference-v1/README.md)
-now has original/source/runtime pairs and a [live neutral resource binding](qa-neutral-wildlife-render-binding-2026-10-03.md).
-Alive Sheep use that fixed static illustration, carcasses use a distinct food-cache
-marker, and depleted/hidden Sheep are suppressed. Registration remains estimated;
-the eight cloud rotations and animation remain absent. The Library frame transfer
-and sandboxed browser capture are blocked; [original checks and limits](qa-bellweather-sheep-static-preview-2026-10-03.md)
-separate consumer byte/CPU evidence from the producer's render observations.
+**3 October art follow-up:** the [approved eight-view static pack](../assets/wildlife/bellweather-sheep-static-v1/README.md)
+now replaces the earlier public-input illustration in the normal game renderer,
+including default Millrace Sheep. All eight original PNGs were materialized,
+visually inspected and preserved with provenance. Alive Sheep select their
+static authored nose view; missing/failed art uses the geometric proxy, carcasses
+use the food-cache marker, and depleted/hidden Sheep are suppressed. There is
+no animal animation or full model in runtime. [Current evidence](qa-sheep-eight-view-default-2026-10-03.md)
+records byte/pixel acceptance, simultaneous views, default both-seat game checks,
+packaging and the pending native ground/scale/occlusion review.
 
-The [directional readiness follow-up](qa-sheep-directional-readiness-2026-10-03.md)
-adds offline source/anchor/yaw acceptance tests and a minimal future integration
-proposal. It preserves the current live binding while the eight original view
-files and their separate publication permission remain unavailable.
-
-The [default static-direction runtime](qa-sheep-static-directions-runtime-2026-10-03.md)
-now validates an optional authored nose pose and keeps immutable UV geometry per
-supported frame. The normal game renderer selects that exact view, preserving
-independent simultaneous Sheep; missing views use the rotated geometric proxy.
-Omitted poses still use the existing public north illustration. The eight
-private views and all animal animations remain absent.
+Historical [one-view binding](qa-neutral-wildlife-render-binding-2026-10-03.md),
+[offline readiness](qa-sheep-directional-readiness-2026-10-03.md) and
+[static-pose runtime](qa-sheep-static-directions-runtime-2026-10-03.md) records
+preserve the earlier transfer/publication limits. Those limits were resolved
+for these eight approved PNG views; native appearance acceptance remains open.
 
 ## Implemented neutral food foundation — 3 October 2026
 

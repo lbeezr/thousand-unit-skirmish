@@ -59,6 +59,44 @@ sandbox must remain enabled. This slice has no browser or pixel validation;
 earlier population-slice captures do not validate it. No browser security flags
 were changed or disabled to run these checks.
 
+## Complete contextual command strip — 3 October 2026
+
+Mac QA reported clipping at main `20c4fcea1c35ac9920f04ecd6f891d55c31b0f56`,
+Chrome 154.0.8037.93, 1280 × 800, DPR1: New Game → PvE Bellweather Millrace →
+one Azure Worker at 100 HP with zero cargo. **Formation / route** wrapped into
+a second action row; only its upper strip remained visible. The relevant CSS
+was unchanged at implementation baseline `d99b30e`. A 52px identity plus two
+44px command rows, their 5px gap and 18px padding/borders need at least 163px
+inside the 128px bar cap. Existing vertical overflow did not make the partly
+clipped command apparent.
+
+Commands now occupy one horizontally scrollable row under the identity.
+Buttons keep 44px targets and full labels; groups and lifecycle actions stay
+in that row, and production/research containers keep their existing DOM.
+An 8px Chromium/WebKit scroll track/thumb exposes overflow; inset command focus
+rings remain inside the strip. The bar keeps its 128px cap and uses 7px padding
+to reserve room for a native scrollbar too. Minimap-aware width limits and
+measured-height offsets remain unchanged. The Worker's known 52px identity,
+44px row, 8px track and 16px padding/borders total 120px; this is a source sizing
+budget, not native pixel acceptance.
+
+Both-seat DOM cases open Formation / route, preserve its focused node through
+live HP updates and restore focus on Escape/close without changing selection.
+Geometry checks include the reported viewport and small/large minimaps.
+Synthetic geometry does not prove native overflow retrieval. The Library report
+was read, but image reads returned extracted text and image materialization
+failed; this cloud worker did not inspect the supplied native pixels. Optional
+assets missing from the QA sparse checkout are outside this clipping change.
+
+For native validation, repeat the exact reproduction, then Tab and Shift-Tab
+through Formation / route: its full label and ring must enter view. Open it and
+dismiss with Escape/close, retaining Worker selection and visible focus. Use
+horizontal trackpad swipe, Shift-wheel and the scroll thumb to reach both ends.
+Repeat at 800 × 420 and 360 × 480 with small/large minimaps, Workers, mixed groups
+and producing/researching Barracks. Verify map clearance, readable disabled
+reasons and that scrolling the strip does not pan the battlefield. Record
+browser, actual build, viewports and capture hashes.
+
 ## Tactical-map keyboard view — 3 October 2026
 
 After Fit map, navigating the focused tactical map with an arrow key cancels
@@ -206,6 +244,10 @@ acceptance for these items remains pending; use 1280 × 720 and 620 × 640.
   selection; building → Production → Escape keeps building selection. Clear
   selection to reach Quick commands. Verify Return cargo still appears for a
   carrying Worker and issues that order.
+  Scroll the single command strip to Formation / route; Tab/Shift-Tab must bring
+  its full label/ring into view. Open/dismiss it, retaining selection and focus.
+  Check the exact 1280 × 800 clipping reproduction above and narrow/large-map
+  cases with the visible overflow track, including unavailable production reasons.
 - Worker visual: on both seats, select one Worker and inspect the compact
   portrait, name/HP, target and Build icons at 1280 × 720, 800 × 420 and 360 × 480,
   with small/large minimap. Check portrait framing and text at Retina scale.

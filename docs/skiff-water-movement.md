@@ -36,7 +36,8 @@ retaining the route, and resumes when the other boat leaves. No automatic dynami
 reroute is promised. Adjacent arrivals can receive new routes away from each other.
 
 Select up to 16 Skiffs for Move, using distinct nearby water destinations.
-Mixed land/water, queued waypoints, attack-move, patrol and follow reject without
+Shift targets now admit [per-boat water waypoints](skiff-water-waypoints.md),
+including the minimap, while preserving cargo. Mixed land/water, attack-move, patrol and follow reject without
 mutating orders. [Group admission](skiff-selected-groups.md) defines bounded
 planning, exact controlled IDs and atomic capacity rejection.
 Attack-move, patrol, follow and formation controls are disabled for a Skiff
