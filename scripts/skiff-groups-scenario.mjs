@@ -98,7 +98,7 @@ try {
     await command(team, { type: 'gather', ids: [...selected[team], selected[team][0], unselected[1 - team]], nodeId: `fish-${team}` }, /2 SKIFFS/);
   }
   await fixture.checkpoint(snapshot => selected.flat().every(id => snapshot.state.units[id].cargo >= .1));
-  for (const team of [0, 1]) await command(team, { type: 'move', ids: selected[team], x: team ? 16.5 : -8.5, z: 15.5, queue: true }, /FINISH-OR-STOP-FISHING-FIRST/);
+  for (const team of [0, 1]) await command(team, { type: 'move', ids: selected[team], x: team ? 16.5 : -8.5, z: 15.5, queue: true }, /WAYPOINT QUEUED/);
   for (const team of [0, 1]) await command(team, { type: 'stop', ids: selected[team] }, /STOP ORDER/);
   await fixture.stop(); const stopped = await saved(); safe(stopped); exactUnselected(stopped);
   const loads = selected.map(ids => ids.map(id => stopped.state.units[id].cargo)); await reconnect();

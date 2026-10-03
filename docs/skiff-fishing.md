@@ -35,6 +35,12 @@ queued fishing remain unavailable. Boats remain unarmed
 and carry no passengers. The procedural boat and Dock appearances remain explicit
 placeholders; this change makes no finished-art or rendered usability claim.
 
+[Shift Move during fishing](skiff-fishing-next-move.md) ends the task after one
+current cargo delivery, then follows the accepted water waypoints. Depletion or
+an unavailable approach returns a partial load; a missing Dock retains cargo and
+the queue until real delivery is available. Shift during Return cargo starts the
+Move after that delivery. Stop/Hold cancel only the controlled boats' queued legs.
+
 ## Recovery and evidence
 
 The fishing fields introduced in schema 22 remain in schema 23, alongside the

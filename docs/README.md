@@ -56,6 +56,7 @@ the build they name.
 | Gather shared finite fish food with Skiffs and deliver at owned Dock berths | [Skiff fishing cargo](skiff-fishing.md) |
 | Move/fish/Return exactly selected boat groups with per-boat cargo and goals | [Selected Skiff groups](skiff-selected-groups.md) |
 | Queue selected Skiff water destinations from the battlefield or minimap | [Skiff water waypoints](skiff-water-waypoints.md) |
+| Finish one Skiff fishing load before its queued Move | [Fishing before the next Skiff Move](skiff-fishing-next-move.md) |
 | Choose a map | [Catalog](maps.md), [Forked Vale](forked-vale-scenario.md), [Three Crowns](three-crowns-layout.md) |
 | Change the compact objective HUD | [Objective behavior and validation](battlefield-objectives-validation.md) |
 | Change owned population feedback | [Population header behavior and validation](population-header-validation.md) |
