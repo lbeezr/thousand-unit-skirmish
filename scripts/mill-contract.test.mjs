@@ -1,0 +1,71 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import vm from 'node:vm';
+import { readFileSync } from 'node:fs';
+import { BUILDING_DEFINITIONS, FACTION_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { buildingPresentation } from '../src/gameplay-presentation.mjs';
+import { frontierBuildingPreviewUrl } from '../src/frontier-building-preview.mjs';
+
+const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
+const routing = server.slice(server.indexOf('function workerDropoffCandidates('), server.indexOf('function routeWorker(unit,'));
+const client = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
+const commandUI = client.slice(client.indexOf('function updateCommandUI('), client.indexOf('function syncTargetOrderUI('));
+
+test('Mill is a cheaper food-only Frontier depot with an explicit existing placeholder', () => {
+  assert.ok(FACTION_DEFINITIONS.frontier.buildings.includes('mill'));
+  assert.deepEqual(BUILDING_DEFINITIONS.mill.dropoff, ['food']);
+  assert.deepEqual(BUILDING_DEFINITIONS.mill.products, []);
+  assert.equal(BUILDING_DEFINITIONS.mill.populationCapacity, undefined);
+  assert.ok(BUILDING_DEFINITIONS.mill.cost.wood < BUILDING_DEFINITIONS.storehouse.cost.wood);
+  assert.ok(BUILDING_DEFINITIONS.mill.buildSeconds < BUILDING_DEFINITIONS.storehouse.buildSeconds);
+  assert.ok(BUILDING_DEFINITIONS.mill.maxHp < BUILDING_DEFINITIONS.storehouse.maxHp);
+  assert.deepEqual(buildingPresentation('mill'), { backend: 'procedural', role: 'house' });
+  assert.equal(frontierBuildingPreviewUrl('mill', '1'), null, 'no authored Mill asset is claimed');
+});
+
+for (const team of [0, 1]) test(`Mill routing filters resource, completion, ownership and reachability for seat ${team}`, () => {
+  const building = (id, owner, complete, type = 'mill') => ({ id, team: owner, complete, type, x: id, z: 0, footprint: [id] });
+  const buildings = [building(1, team, true, 'town-center'), building(2, team, true),
+    building(3, team, true, 'storehouse'), building(4, 1 - team, true),
+    building(5, team, false), building(6, team, true)];
+  const context = vm.createContext({ BUILDING_DEFINITIONS, navigationRevision: 4, WORKER_INTERACTION_RANGE: 1.2,
+    allMatchBuildings: () => buildings, buildingsById: new Map(buildings.map(row => [row.id, row])),
+    worldToCell: x => x, nearestOpenCell: cell => cell, buildingAccessCells: cells => cells,
+    walkableComponents: [0, 0, 0, 0, 0, 0, 1],
+    getAttackFlowFieldForGoals: goals => ({ goal: goals[0], goals: new Set(goals) }),
+    pathFromAttackFlow: (_, field) => Array(field.goal === 1 ? 20 : field.goal === 2 ? 2 : 8).fill(field.goal),
+    distanceToBuildingEdge: () => 0,
+  });
+  vm.runInContext(routing, context);
+  const unit = { team, x: 0, z: 0, cargo: 10, cargoType: 'food', orderRevision: 0 };
+  context.routeWorkerToDropoff(unit);
+  assert.equal(unit.dropoffBuildingId, 2, 'the nearest reachable completed friendly Mill accepts food');
+  assert.ok(!context.workerDropoffCandidates(unit).some(row => [4, 5].includes(row.id)));
+  assert.equal(context.workerAtDropoff(unit), true);
+  unit.cargoType = 'wood';
+  assert.equal(context.workerAtDropoff(unit), false, 'cached Mill destinations must recheck cargo type');
+  assert.equal(unit.dropoffBuildingId, 3, 'wood uses the Storehouse instead of any Mill');
+  assert.equal(unit.cargo, 10);
+  unit.cargoType = 'food'; context.routeWorkerToDropoff(unit);
+  buildings.splice(buildings.findIndex(row => row.id === 2), 1); context.buildingsById.delete(2);
+  assert.equal(context.workerAtDropoff(unit), false);
+  assert.equal(unit.dropoffBuildingId, 3, 'a destroyed Mill reroutes food to the existing Storehouse');
+  assert.equal(unit.cargo, 10, 'invalid destinations never consume cargo');
+});
+
+for (const team of [0, 1]) test(`selected depot hints describe registered resources for seat ${team}`, () => {
+  const context = vm.createContext({ BUILDING_DEFINITIONS, localTeam: team, selectedBuildingId: 7,
+    latestBuildings: [], ui: { commandHint: {}, commandTitle: {} }, persistentTargetMode: null,
+    tapOrderArmed: false, attackMoveMode: false, window: { matchMedia: () => ({ matches: false }) },
+    document: { querySelectorAll: () => [] }, buildingLabel: type => BUILDING_DEFINITIONS[type].label,
+    updateStationaryOrderControls() {}, updateBuildingResearchControls() {}, syncTargetOrderUI() {},
+    syncBattlefieldCursor() {}, updateContextualCommands() {},
+  });
+  vm.runInContext(commandUI, context);
+  for (const [type, resources] of [['mill', 'food'], ['storehouse', 'food and wood']]) {
+    context.latestBuildings = [{ id: 7, team, type, complete: true }];
+    context.updateCommandUI();
+    assert.equal(context.ui.commandHint.textContent, `Workers deposit ${resources} here when complete.`);
+    assert.match(context.ui.commandTitle.textContent, new RegExp(BUILDING_DEFINITIONS[type].label));
+  }
+});

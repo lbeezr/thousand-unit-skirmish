@@ -5,7 +5,7 @@ import { matureSettlementPlan as plan, settlementLayout, assertSettlementLedger 
 
 test('the inspection fixture uses the current paid roster, prerequisites and connected layout', () => {
   assert.equal(plan.map.startingArmySize, 24, 'total opening army, twelve per seat');
-  assert.deepEqual(settlementLayout(), { blockedCells: 244, connectedFreeCells: 3852 });
+  assert.deepEqual(settlementLayout(), { blockedCells: 262, connectedFreeCells: 3834 });
   assert.deepEqual([...plan.upgrades].sort(), Object.keys(T).sort());
   assert.ok(plan.upgrades.indexOf('military-tier-2') < plan.upgrades.indexOf('siege-engineering'));
   assert.ok(plan.pads.findIndex(([type]) => type === 'workshop') > plan.pads.findIndex(([type]) => type === 'town-center'));
@@ -15,14 +15,14 @@ test('the inspection fixture uses the current paid roster, prerequisites and con
       return U[kind].cost;
     })];
   assert.deepEqual(costs.reduce((sum, cost) => ({ food: sum.food + cost.food, wood: sum.wood + cost.wood }), { food: 0, wood: 0 }),
-    { food: 1385, wood: 2630 });
+    { food: 1385, wood: 2705 });
   assert.equal(15 + plan.pads.reduce((sum, [type]) => sum + (B[type].populationCapacity || 0), 0), 44);
   assert.equal(12 + plan.products.reduce((sum, [, kind]) => sum + U[kind].population, 0), 23);
 });
 
 test('paid-bank proof rejects duplicate credit, lost cargo and replenished stock', () => {
-  const spent = [{ food: 1385, wood: 2630 }, { food: 1385, wood: 2630 }];
-  const saved = { state: { teamFood: [621, 615], teamWood: [370, 370],
+  const spent = [{ food: 1385, wood: 2705 }, { food: 1385, wood: 2705 }];
+  const saved = { state: { teamFood: [621, 615], teamWood: [295, 295],
     resourceNodes: plan.map.resourceNodes.map(node => ({ ...node, stock: node.id === 's0-food' ? 190 : 200 })),
     units: [{ team: 0, cargoType: 'food', cargo: 4 }],
   } };

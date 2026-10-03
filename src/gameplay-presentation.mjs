@@ -40,6 +40,8 @@ export const BUILDING_PRESENTATION_PROFILES = Object.freeze({
   'building.watchtower': Object.freeze({ backend: 'procedural', role: 'watchtower' }),
   'building.town-center': Object.freeze({ backend: 'procedural', role: 'town-center' }),
   'building.storehouse': Object.freeze({ backend: 'procedural', role: 'house' }),
+  // Reuse the existing procedural House until a Mill asset is authored.
+  'building.mill': Object.freeze({ backend: 'procedural', role: 'house' }),
   'building.house': Object.freeze({ backend: 'procedural', role: 'house' }),
   'building.barracks': Object.freeze({ backend: 'procedural', role: 'barracks' }),
   'building.archery-range': Object.freeze({ backend: 'procedural', role: 'archery-range' }),

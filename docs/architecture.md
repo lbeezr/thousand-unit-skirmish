@@ -180,6 +180,14 @@ registered odd footprints (one to nine cells wide). Unit and building presentati
 profiles bind supported procedural roles independently of gameplay identity;
 they do not claim a skeletal animation backend.
 
+Mill is additive Frontier content using `dropoff: ['food']` and the existing
+construction, route selection, cancellation, repair and destruction handlers.
+The HUD derives accepted resources from that list. Its `building.mill` profile
+explicitly reuses the procedural House; no captured Mill asset is registered.
+Schema 22's exact pre-Mill ruleset `v1:d85f5a09decc0d0ade81803ab289b52ec5a08e84ff5a1771e85401d4c3611eab`
+migrates to the new revision without changing the persisted shape, existing
+stats, resources, identities or paid queues. Unknown revisions remain rejected.
+
 ### Base lifecycle commands
 
 `src/base-lifecycle.mjs` defines bounded proportional refunds and paid repair

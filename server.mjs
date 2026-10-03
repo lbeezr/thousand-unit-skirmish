@@ -3288,6 +3288,11 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.state.pregame = null;
     snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;
   }
+  // Mill is additive content with no persisted-shape or existing-stat changes.
+  if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
+    && snapshot.rulesetRevision === 'v1:d85f5a09decc0d0ade81803ab289b52ec5a08e84ff5a1771e85401d4c3611eab') {
+    snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+  }
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
   if ([1, 2, 3].includes(snapshot?.rulesVersion)
     && !snapshot?.mapDefinition?.elevationPatches?.some((patch) => patch.level > 0)) {
