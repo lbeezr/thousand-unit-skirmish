@@ -1,0 +1,61 @@
+{
+  "schema": "thousand-unit-skirmish.frontier-mask-dither-qa.v1",
+  "date": "2026-10-03",
+  "scope": "Mask-only output dithering control; no real asset production",
+  "environment": {
+    "blender": "4.3.2",
+    "device": "CPU",
+    "controlCanvas": [
+      64,
+      64
+    ],
+    "controlSamples": 1,
+    "controlThreads": 2
+  },
+  "reproduction": {
+    "defaultDither": {
+      "nonzeroAlphaPixels": 409,
+      "maximumAlpha": 0.003921568859368563
+    },
+    "undithered": {
+      "nonzeroAlphaPixels": 0,
+      "maximumAlpha": 0.0
+    },
+    "colorDitherRestored": 1.0,
+    "blenderVersion": "4.3.2"
+  },
+  "behavioralChecks": {
+    "BlenderAuthoring": {
+      "passed": 10,
+      "failed": 0
+    },
+    "ExistingPixelAndComposition": {
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "regressions": {
+    "neutralAlphaExactlyZero": true,
+    "legitimateOwnerAlphaOneOver255Preserved": true,
+    "colorDitherRestoredAfterSuccess": true,
+    "colorDitherRestoredAfterEncodingError": true
+  },
+  "codeSha256": {
+    "scripts/author-frontier-town-center-lifecycle.py": "dbfc360712c7a1f9e89082fa918abc887ad711cbab816c3f049f09dfed965cc3",
+    "scripts/frontier-lifecycle-authoring.test.py": "7f79cead75392d9580af6fea3373483fee8f67eac3bfd5552d01ddbb5503d818"
+  },
+  "policy": "Disable mask render dithering at source; preserve fractional coverage; do not threshold exported mask alpha.",
+  "boundaries": {
+    "nativeTownCenterRendered": false,
+    "nativeColorFilesModified": false,
+    "fishingAssetsTouched": false,
+    "providerCreditsSpent": 0,
+    "fullNpmSuiteRun": false,
+    "fullLifecycleFixtureRerun": false
+  },
+  "limitations": [
+    "This small synthetic control reproduces output noise and verifies the exporter setting; the native worker owns actual Town Center mask rerenders.",
+    "Color dithering state preservation is tested, not a fresh bit-for-bit color batch.",
+    "The generic pixel checker cannot distinguish faint intended coverage from quantization noise without semantic render evidence."
+  ]
+}
