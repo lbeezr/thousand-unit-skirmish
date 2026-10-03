@@ -1,12 +1,49 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { shoreFishSitePositions } from '../src/shore-fishing-placement.mjs';
+import { createWaterStudyFishBinding } from '../src/water-study-fish-binding.mjs';
+import { selectWaterStudyFish } from '../src/water-study-state.mjs';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 
 const map = JSON.parse(await readFile(new URL('../maps/shore-fishing.json', import.meta.url)));
 const sites = shoreFishSitePositions(map);
 const fixture = await createFortifiedFixture({ mapPath: 'maps/open-field.json', timeoutMs: 100_000 });
 let orderToken = 700;
+const observedClients = [];
+function observe(clients) { observedClients.push(...clients); return clients; }
+function assertLiveFishCues() {
+  const evidence = { packets: 0, activeBySeat: [0, 0], depleted: 0, fogSuppressed: 0 };
+  for (const client of observedClients) {
+    const binding = createWaterStudyFishBinding(map, { userData: {
+      updateWaterStudyFish: snapshot => selectWaterStudyFish(map, snapshot),
+    } });
+    for (const message of client.messages) {
+      const state = message.type === 'state' ? message : message.state;
+      if (!state || state.mapId !== map.id) continue;
+      evidence.packets++;
+      const schools = binding.update(state);
+      const packed = state.visibility ? Buffer.from(state.visibility.data, 'base64') : null;
+      const visible = cell => !map.fogOfWar || (packed && ((packed[cell >> 2] >> ((cell & 3) * 2)) & 3) === 2);
+      for (const site of sites) {
+        const live = state.resourceNodes.find(node => node.id === site.nodeId);
+        if (live) assert.equal(live.x, undefined, 'wire stock has no second position authority');
+        const bank = Math.floor(site.land.z + map.height / 2) * map.width + Math.floor(site.land.x + map.width / 2);
+        const water = site.water.row * map.width + site.water.column;
+        const expected = live?.stock > 0 && visible(bank) && visible(water);
+        const school = schools.find(school => school.id === site.nodeId);
+        assert.equal(Boolean(school), Boolean(expected), 'actual snapshot stock and BOTH current cells gate cues');
+        if (school) {
+          assert.deepEqual({ x: school.x, z: school.z }, { x: site.water.x, z: site.water.z });
+          evidence.activeBySeat[client.welcome.player.team]++;
+        } else if (live?.stock === 0) evidence.depleted++;
+        else if (!visible(bank) || !visible(water)) evidence.fogSuppressed++;
+      }
+    }
+  }
+  assert.ok(evidence.activeBySeat.every(count => count > 0));
+  assert.ok(evidence.depleted > 0 && evidence.fogSuppressed > 0);
+  return evidence;
+}
 async function command(client, value, expression) {
   return client.command({ ...value, clientOrderToken: orderToken++ }, expression);
 }
@@ -35,7 +72,7 @@ try {
   const handoff = await fetch(`http://127.0.0.1:${fixture.port}/src/shore-fishing-placement.mjs`);
   assert.equal(handoff.status, 200, 'renderer/brush position helper is available through the ordinary client allowlist');
   assert.match(await handoff.text(), /export function shoreFishSitePositions/);
-  let clients = [await fixture.connect(0), await fixture.connect(1)];
+  let clients = observe([await fixture.connect(0), await fixture.connect(1)]);
   const tokens = clients.map(client => client.welcome.player.sessionToken);
   assert.ok(clients[0].welcome.maps.some(entry => entry.id === map.id && /Lab.*SHORE FISHING/.test(entry.name)),
     'usable pilot is discoverable through the ordinary match map catalog');
@@ -62,7 +99,7 @@ try {
   assertConserved(saved);
   assert.ok(saved.state.units.some(unit => unit.cargo > 0));
   await fixture.start();
-  clients = [await fixture.connect(0, tokens[0]), await fixture.connect(1, tokens[1])];
+  clients = observe([await fixture.connect(0, tokens[0]), await fixture.connect(1, tokens[1])]);
   assert.ok(clients.every(client => client.welcome.recoveredFromCheckpoint && client.welcome.matchId === saved.matchId));
   const restored = await fixture.checkpoint(snapshot => snapshot.sequence > saved.sequence);
   assertConserved(restored);
@@ -71,7 +108,7 @@ try {
   assertConserved(delivered);
   for (const food of delivered.state.teamFood) assert.ok(Math.abs(food - 60) < 0.000001);
   await fixture.stop(); await fixture.start();
-  clients = [await fixture.connect(0, tokens[0]), await fixture.connect(1, tokens[1])];
+  clients = observe([await fixture.connect(0, tokens[0]), await fixture.connect(1, tokens[1])]);
   const emptyRecovery = await fixture.checkpoint(snapshot => snapshot.sequence > delivered.sequence);
   assertConserved(emptyRecovery);
   assert.ok(emptyRecovery.state.resourceNodes.filter(node => node.type === 'food').every(node => node.stock === 0));
@@ -84,5 +121,5 @@ try {
     ordinaryCatalogSelection: true, bothSeatFood: delivered.state.teamFood,
     foodBudget: 120, untouchedWoodBudget: 200, landWorkersStayOffWater: true,
     distinctStableLandAndWaterPositions: true, cargoAndDepletionRecovery: true,
-    rematchRestoresAuthoredStock: true, visualRenderingOwner: 'water lane' }));
+    rematchRestoresAuthoredStock: true, optInFishCueSnapshotEvidence: assertLiveFishCues(), visualRenderingOwner: 'water lane' }));
 } finally { await fixture.dispose(); }
