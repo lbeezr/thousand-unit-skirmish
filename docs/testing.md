@@ -143,7 +143,11 @@ defines dependency directions, the explicit cycle baseline and the separate
 HTTP/release obligations of a module move.
 For client import/module changes, include
 `node scripts/client-asset-allowlist-scenario.mjs`; the packed release scenario
-also traverses served static, re-export and literal lazy imports. The hosted Railway smoke uses
+also traverses served static, re-export and literal lazy imports for all five
+registered browser entrypoints. The exact client-path manifest lives in
+`src/server/client-asset-paths.mjs`; packed HTTP checks cover every declared path,
+HEAD/MIME behavior and rejected/private paths independently of the server's source
+declaration shape. The hosted Railway smoke uses
 the same `scripts/check-client-imports.mjs` audit; focused fixtures cover missing
 transitive dependencies, cycles, compact/escaped syntax, ignored comment/string
 lookalikes, computed-import rejection, incorrect MIME and origin boundaries. Source
