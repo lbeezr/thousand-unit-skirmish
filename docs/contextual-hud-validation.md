@@ -326,3 +326,29 @@ The cumulative Mac checklist above remains the native visual acceptance path.
 
 Record exact source revisions and proportionate results in the implementation PR.
 Private exploratory art and support artifacts remain outside this patch.
+
+## Six default action glyphs — 3 October 2026
+
+The normal selected-unit strip now shows Patrol, Follow, Stop, Hold position,
+Return cargo and Formation images at 20 px beside their retained names/hotkeys.
+Patrol/Follow/Stop/Hold use the same files in the Command drawer. Formation
+appears only for Workers, military, mixed and boat selections; building details
+keep their separate Rally / upgrade label without that image. No orders, cargo
+availability or selection/dismissal behavior change.
+
+After the parent-owned Mac QA machine reconnects, capture normal Bellweather
+Millrace gameplay on an identified deployed revision containing this integration
+and PR134's keyboard fix. At 1280 × 800 DPR1, and short/narrow sizes above, select
+a Worker and Tab/Shift-Tab through the full row: each whole label and focus ring
+must be visible after the 20 px additions. Inspect Follow's leader connection
+and Return cargo's crate/receiver at native size, both team appearances and
+Retina scale. For carrying food/wood/Stone Workers and a carrying Skiff, confirm
+the generic cargo image, text and actual deposit order. Empty cargo hides it.
+Select an army/mixed group, then a production building: Formation changes to
+Rally / upgrade details with no stale formation image. Use Enter on Formation,
+Escape and Close, retaining selection and restoring visible focus. Check physical
+Shift-wheel, native horizontal wheel/thumb drag and unchanged page/camera.
+VoiceOver should announce each written action/hotkey once; images add no name.
+Cloud DOM/HTTP/source checks and private CPU previews do not close this native
+check. Receiving owner: parent-owned Mac QA; HUD owner retains the outcome and
+Railway delivery owner supplies the exact relevant user deployment.

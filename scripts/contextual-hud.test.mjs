@@ -200,11 +200,16 @@ for (const team of [0, 1]) test(`seat ${team}: live Worker snapshots preserve lo
 for (const team of [0, 1]) test(`seat ${team}: Formation / route remains an operable stable focus target in the command strip`, t => {
   const f = fixture(team); t.after(() => f.dom.window.close());
   const own = team * 2, route = f.bar.querySelector('[data-context-details]');
+  const image = route.querySelector('img'), label = route.querySelector('[data-context-details-label]');
   f.select([own]);
   assert.equal(route.hidden, false); assert.equal(route.textContent, 'Formation / route');
+  assert.equal(image.hidden, false); assert.equal(image.getAttribute('src'), '/assets/ui/icons/actions/formation.svg');
+  image.dispatchEvent(new f.w.Event('error'));
+  assert.equal(route.textContent, 'Formation / route', 'image failure retains the written name');
   route.focus(); f.w.units[own].hp = 64; f.w.updateSelectionUI();
   assert.equal(f.d.activeElement, route);
   assert.equal(f.bar.querySelector('[data-context-details]'), route);
+  assert.equal(route.querySelector('img'), image); assert.equal(route.querySelector('[data-context-details-label]'), label);
   for (const dismiss of [() => f.escape(), () => f.click(f.d.querySelector('#dock-close'))]) {
     f.click(route);
     assert.equal(f.w.commandDock.dataset.activePanel, 'command');
@@ -212,6 +217,35 @@ for (const team of [0, 1]) test(`seat ${team}: Formation / route remains an oper
     assert.equal(f.w.commandDock.hidden, true); assert.equal(f.d.activeElement, route);
     assert.deepEqual([...f.w.selected], [own]);
   }
+});
+
+for (const team of [0, 1]) test(`seat ${team}: action glyphs survive selection updates and Formation stays specific to units`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const own = team * 2, boat = f.w.units.length;
+  f.w.units.push({ id: boat, team, kind: 'skiff', hp: 120, cargo: 1, cargoType: 'food' });
+  const details = f.bar.querySelector('[data-context-details]'), formation = details.querySelector('img');
+  const controls = [...f.d.querySelectorAll('[data-persistent-order], [data-stationary-order], [data-return-cargo]')];
+  const images = controls.map(button => button.querySelector('img'));
+  const labels = controls.map(button => button.textContent);
+  const titles = controls.map(button => button.title);
+  for (const ids of [[own], [own + 1], [own, own + 1], [boat]]) {
+    f.select(ids);
+    assert.equal(formation.hidden, false); assert.equal(details.hidden, false);
+    assert.equal(details.textContent, 'Formation / route');
+    controls.forEach((button, i) => {
+      assert.equal(button.querySelector('img'), images[i]);
+      images[i].dispatchEvent(new f.w.Event('error'));
+      assert.equal(button.textContent, labels[i]); assert.equal(button.title, titles[i]);
+    });
+  }
+  for (const type of ['barracks', 'house']) {
+    f.select([], { id: 8, team, type, complete: true, hp: 1800, productionQueue: [] });
+    assert.equal(details.querySelector('img'), formation);
+    assert.equal(formation.hidden, true, 'building rally/upgrade controls do not imply formation');
+    assert.equal(details.textContent, 'Rally / upgrade details');
+    assert.equal(details.hidden, type === 'house');
+  }
+  f.select([]); assert.equal(formation.hidden, true); assert.equal(details.hidden, true);
 });
 
 for (const [name, change] of [
@@ -359,17 +393,21 @@ for (const team of [0, 1]) test(`seat ${team}: Return cargo appears for carrying
   const f = fixture(team); t.after(() => f.dom.window.close());
   const own = team * 2, enemy = (1 - team) * 2;
   const button = f.bar.querySelector('[data-return-cargo]'), orders = [];
+  const image = button.querySelector('img');
+  assert.equal(image.getAttribute('src'), '/assets/ui/icons/actions/return-cargo.svg');
   f.w.sendTrackedOrder = command => { orders.push(command); return 100; };
   f.w.setAttackMoveMode = () => {};
   f.w.eval(between('function issueReturnCargo(', "for (const button of document.querySelectorAll('[data-stationary-order]'))"));
   f.select([own]); assert.equal(button.hidden, true);
   Object.assign(f.w.units[own], { cargo: 0.5, cargoType: 'food' });
   f.select([own, own + 1]); assert.equal(button.hidden, false); assert.equal(button.disabled, false);
+  assert.equal(button.querySelector('img'), image); assert.equal(button.textContent, 'Return cargo');
   f.click(button); assert.deepEqual([...orders[0].ids], [own]); assert.equal(orders[0].type, 'returnCargo');
   f.select([enemy]); assert.equal(button.hidden, true);
   f.select([], { id: 8, team, type: 'barracks', complete: true, hp: 1800, productionQueue: [] });
   assert.equal(button.hidden, true);
   f.w.matchWinner = team; f.select([own]); assert.equal(button.disabled, true);
+  assert.equal(button.querySelector('img'), image);
   f.w.matchWinner = -1; f.w.units[own].cargo = 0; f.select([own]); assert.equal(button.hidden, true);
 });
 
