@@ -2,20 +2,22 @@
 
 [Architecture wiki](lore/frontier-architecture.md) · [Adoption checklist](asset-adoption-checklist.md) · [Capture pipeline](building-asset-production-pipeline.md)
 
-The two military buildings still use the older artwork in normal matches.
-The newer cream/oak/sage designs exist as preserved Complete concepts, but
-neither has matching production models or captured runtime views. This is a
-production gap before renderer adoption. Archery Range is a building that
+The two military buildings now have locally authored cream/oak/sage Complete
+models and sixteen registered views in the
+[military source/capture pack](../assets/buildings/frontier-civilization-military-models-v1/README.md).
+The normal selector uses these finished views; the older direct sprites retain
+loading and missing-state fallback. This is a Complete-only integration,
+with deployment and native gameplay acceptance still open. Archery Range
 produces Archers; the Archer unit and its combat behavior are separate work.
 
 The building workstream owns replacement of **both** buildings through source
 production, default binding, release inclusion, identified delivery and actual
-gameplay verification. This source audit closes none of those replacement
-steps. Acceptance for the six already adopted Frontier families remains open
+gameplay verification. Source review and local runtime/release checks do not
+close that outcome. Acceptance for the six earlier Frontier families remains open
 under [PR141](https://github.com/lbeezr/thousand-unit-skirmish/pull/141) and the
 [ordinary-game recipe](qa-frontier-building-adoption.md).
 
-## Verified inventory · 3 October 2026
+## Original inventory before local production · 3 October 2026
 
 Inspected checkout `d063ad5dada38dbccdaa4321fb9f80eb9385aa40`, its tracked files,
 the public Git tree at `00ff45d9702dfbcf9da6f6ac88e0ca4381e374dc`, both new
@@ -67,6 +69,18 @@ rings or assume an independently fitted wiki image establishes world scale.
 
 ## Next bounded production and adoption slices
 
+The first two slices below now have original local models and sixteen Complete
+captures, with hash, embedded-texture/UV/triangle checks and independent pixel
+review. Barracks has 54 meshes, 14 materials and 16,006 triangles; Range has 61
+meshes, 18 materials and 15,238 triangles. Both bases measure 2.8 × 2.8 within
+floating-point precision. Raw measured ground projections remain recorded
+beside the shared analytical anchor; no original PNG pixels were changed to
+correct metadata roundoff. Sources and rejected iterations remain private;
+public provenance identifies their hashes without exposing review archives.
+New Complete defaults retain the existing live standards, health, selection,
+rally and body-depth path. Full style, Worker clearance and gameplay verification
+remain pending; the taller/narrower Barracks is an explicit source difference.
+
 1. **Author the new Complete pair.** Derive editable geometry and materials from
    the preserved concepts, with grounded origins and usable back faces. Local
    Blender is available in this audited cloud environment; the optional
@@ -80,8 +94,8 @@ rings or assume an independently fitted wiki image establishes world scale.
    elevation, azimuths 0–315° in 45° steps, 128 pixels/world unit, 1024-square
    frames and the established ground pivot. Produce sixteen transparent
    Complete PNGs, their capture/measurement/provenance records and two
-   compatible Complete renderer manifests. These are required new outputs,
-   not files presently delivered. Correct ownership through neutral source
+   compatible Complete renderer manifests. These outputs are now present in
+   the local military pack. Correct ownership through neutral source
    standards plus live team geometry or verified aligned masks.
 3. **Adopt one useful family at a time.** Add the verified manifest to the
    existing captured-building selector; admit only its manifest and requested

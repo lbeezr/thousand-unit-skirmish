@@ -32,7 +32,7 @@ export function validateCaptureFamily(rows) {
 }
 
 async function main() {
-const packs = ['frontier-civilization-scale-pilot-v1', 'frontier-civilization-models-v1'];
+const packs = ['frontier-civilization-scale-pilot-v1', 'frontier-civilization-models-v1', 'frontier-civilization-military-models-v1'];
 for (const pack of packs) {
   const root = new URL(`../assets/buildings/${pack}/`, import.meta.url);
   const captures = JSON.parse(await readFile(new URL('captures/capture-manifest.json', root), 'utf8')).records;
@@ -59,7 +59,7 @@ for (const pack of packs) {
     await writeFile(new URL(`${asset}-complete-renderer.json`, root), JSON.stringify(manifest, null, 2)+'\n');
   }
 }
-console.log('Built six Complete-only manifests for the existing game renderer.');
+console.log('Built eight Complete-only manifests for the existing game renderer.');
 
 }
 if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) await main();

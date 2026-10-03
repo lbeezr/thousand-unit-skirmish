@@ -1,0 +1,263 @@
+{
+  "schemaVersion": 1,
+  "packId": "environment.frontier-resource-oak-fallback",
+  "packVersion": "0.1.0",
+  "status": "runtime-export-unbound",
+  "sourceBindings": {
+    "candidateManifestSha256": "5eab150c16fd2dd75fe873c206235e91897f0e7e7d346f0ca27a192dcecf4bd4",
+    "sourcePageSha256": "a134ccc0d1ef46e1e33845e20a08e59662f951677f68461d2cf6004d4ae15110",
+    "interactiveManifestSha256": "f55d11ecc6a717bc47b85df9972345ec9f12d71480b3b06bbacf162743c6d212"
+  },
+  "registration": {
+    "basis": "inherited-active-frontier-interactive-v1",
+    "pivotConvention": "bottom-center, canvas-local pixels",
+    "geometry": "existing 4.1 x 3.75 cameraFacing plane; translate Y by height/2",
+    "visualReview": "No new pivot or scale chosen; ordinary-game acceptance pending"
+  },
+  "page": {
+    "dimensionsPx": [
+      2752,
+      2880
+    ],
+    "cellPx": [
+      1376,
+      1440
+    ],
+    "layout": [
+      2,
+      2
+    ],
+    "gutterPx": 64,
+    "gutterRule": "edge-rgb-transparent-alpha",
+    "sampling": {
+      "colorSpace": "srgb",
+      "alphaMode": "straight",
+      "generateMipmaps": false,
+      "maxMipLevel": 5,
+      "minFilter": "linear-mipmap-linear",
+      "magFilter": "linear",
+      "wrapMode": "clamp",
+      "anisotropy": 1,
+      "uvInsetPx": 0.5,
+      "consumerMustCapLod": true
+    }
+  },
+  "frames": [
+    {
+      "id": "full",
+      "sourcePath": "assets/environment/frontier-interactive-v1/oak-full.png",
+      "sourceSha256": "e99f1c70c28cedd8406dea44b72186f25a40ef88c1a3f72d7690298f5e584753",
+      "canvasPx": {
+        "width": 1226,
+        "height": 1283
+      },
+      "groundPivotPx": {
+        "x": 613.0,
+        "y": 1283
+      },
+      "worldSize": {
+        "width": 4.1,
+        "height": 3.75
+      },
+      "rectPx": {
+        "x": 64,
+        "y": 64,
+        "width": 1226,
+        "height": 1283
+      },
+      "uvRectTopLeft": {
+        "min": [
+          0.0234375,
+          0.022395833333333334
+        ],
+        "max": [
+          0.46856831395348836,
+          0.4675347222222222
+        ]
+      }
+    },
+    {
+      "id": "worked",
+      "sourcePath": "assets/environment/frontier-interactive-v1/oak-worked.png",
+      "sourceSha256": "17f433b67aa6a4a0784ecac1293aba4796c3f2ab7491b6bf3bcf61f49de8018f",
+      "canvasPx": {
+        "width": 1226,
+        "height": 1283
+      },
+      "groundPivotPx": {
+        "x": 613.0,
+        "y": 1283
+      },
+      "worldSize": {
+        "width": 4.1,
+        "height": 3.75
+      },
+      "rectPx": {
+        "x": 1440,
+        "y": 64,
+        "width": 1226,
+        "height": 1283
+      },
+      "uvRectTopLeft": {
+        "min": [
+          0.5234375,
+          0.022395833333333334
+        ],
+        "max": [
+          0.9685683139534884,
+          0.4675347222222222
+        ]
+      }
+    },
+    {
+      "id": "low",
+      "sourcePath": "assets/environment/frontier-interactive-v1/oak-low.png",
+      "sourceSha256": "ea255be33ebc77d62a5fb1176175565ef56745ef6568b74a75ed228022127528",
+      "canvasPx": {
+        "width": 1226,
+        "height": 1283
+      },
+      "groundPivotPx": {
+        "x": 613.0,
+        "y": 1283
+      },
+      "worldSize": {
+        "width": 4.1,
+        "height": 3.75
+      },
+      "rectPx": {
+        "x": 64,
+        "y": 1504,
+        "width": 1226,
+        "height": 1283
+      },
+      "uvRectTopLeft": {
+        "min": [
+          0.0234375,
+          0.5223958333333333
+        ],
+        "max": [
+          0.46856831395348836,
+          0.9675347222222223
+        ]
+      }
+    },
+    {
+      "id": "depleted",
+      "sourcePath": "assets/environment/frontier-interactive-v1/oak-depleted.png",
+      "sourceSha256": "65c38d012c7184d01761bf53144be407fa03c215e66c150e9893e5a35c0c1371",
+      "canvasPx": {
+        "width": 1226,
+        "height": 1283
+      },
+      "groundPivotPx": {
+        "x": 613.0,
+        "y": 1283
+      },
+      "worldSize": {
+        "width": 4.1,
+        "height": 3.75
+      },
+      "rectPx": {
+        "x": 1440,
+        "y": 1504,
+        "width": 1226,
+        "height": 1283
+      },
+      "uvRectTopLeft": {
+        "min": [
+          0.5234375,
+          0.5223958333333333
+        ],
+        "max": [
+          0.9685683139534884,
+          0.9675347222222223
+        ]
+      }
+    }
+  ],
+  "direction": "one existing authored view",
+  "consumerSelection": {
+    "ordinaryGenericOakStates": [
+      "worked",
+      "low",
+      "depleted"
+    ],
+    "full": "Preserve existing default Meshy directional/full art; this full cutout applies only to meshyResources=0",
+    "regionalWood": "Preserve existing regional profiles and state art",
+    "failedExport": "Preserve existing individual interactive WebP fallback"
+  },
+  "drawContract": "full cutout, existing alphaTest 0.08 and depthWrite; no HSV layer sorting",
+  "remaining": [
+    "Default consumer and release admission",
+    "Ordinary-game zoom/state/depth acceptance"
+  ],
+  "provenance": {
+    "source": "Existing public project-owned oak candidate full-cutout PNG page",
+    "command": "python3 scripts/prepare-oak-fallback-atlas.py --write",
+    "encoding": "Lossless WebP; exact hidden RGB; independent premultiplied BOX cell mips",
+    "pillowVersion": "12.3.0"
+  },
+  "mipFiles": [
+    {
+      "level": 0,
+      "path": "runtime/oak-fallback-mip-0.webp",
+      "sha256": "da3de9b4b0d5da95978531ca5c94b7265d6157df53e522d1dbba70c79724b51e",
+      "dimensionsPx": [
+        2752,
+        2880
+      ],
+      "bytes": 3631014
+    },
+    {
+      "level": 1,
+      "path": "runtime/oak-fallback-mip-1.webp",
+      "sha256": "39af2839c5ee720ee2ac2a4d11c21b11df6ee5b8bccc012a4aa061bf565ffc80",
+      "dimensionsPx": [
+        1376,
+        1440
+      ],
+      "bytes": 1020546
+    },
+    {
+      "level": 2,
+      "path": "runtime/oak-fallback-mip-2.webp",
+      "sha256": "727ccea9ade7bfa0301a7dbd49a97d5afbb87a48734945145a1ea4319277f652",
+      "dimensionsPx": [
+        688,
+        720
+      ],
+      "bytes": 283070
+    },
+    {
+      "level": 3,
+      "path": "runtime/oak-fallback-mip-3.webp",
+      "sha256": "6884d006b1c3c2aa5af094c0b6c974d523bb3c9894bc520e3db508b127f6c045",
+      "dimensionsPx": [
+        344,
+        360
+      ],
+      "bytes": 81372
+    },
+    {
+      "level": 4,
+      "path": "runtime/oak-fallback-mip-4.webp",
+      "sha256": "868175725ef401aa5f34f6678911d4e2aad282b9a577f7357ca5a0b254a2a6b1",
+      "dimensionsPx": [
+        172,
+        180
+      ],
+      "bytes": 24594
+    },
+    {
+      "level": 5,
+      "path": "runtime/oak-fallback-mip-5.webp",
+      "sha256": "ea3c808c1be34fdc5c4c07fa1d16179bd690b87859960c5736364fcb864f94e3",
+      "dimensionsPx": [
+        86,
+        90
+      ],
+      "bytes": 7452
+    }
+  ]
+}

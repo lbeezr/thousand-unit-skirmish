@@ -2,9 +2,10 @@ import { createWildlifeMotion, freezeWildlifeMotion } from './wildlife-motion.mj
 // Neutral wildlife shares the existing food-node pool and routing.
 // Authored maps contain identity/stock; lifecycle belongs to the room worker.
 export const BELLWEATHER_SHEEP_SPECIES = 'bellweather-sheep';
+export const validWildlifeTeam = team => team === null || team === 0 || team === 1;
 
 export function validWildlifeNodeDefinition(node) {
-  return node.wildlifeState === undefined
+  return node.wildlifeState === undefined && node.wildlifeTeam === undefined
     && node.wildlifeMotion === undefined && node.wildlifeActivity === undefined && node.wildlifeHeading === undefined
     && (node.wildlifeNoseYawDegrees === undefined
       || (node.wildlifeSpecies === BELLWEATHER_SHEEP_SPECIES
@@ -19,14 +20,15 @@ export function createResourceNodeState(node) {
     id: node.id, type: node.type, x: node.x, z: node.z, stock: node.stock,
     ...(node.resourceVariant === undefined ? {} : { resourceVariant: node.resourceVariant }),
     ...(node.wildlifeSpecies === undefined ? {} : {
-      wildlifeSpecies: node.wildlifeSpecies, wildlifeState: 'alive', wildlifeMotion: createWildlifeMotion(node),
+      wildlifeSpecies: node.wildlifeSpecies, wildlifeState: 'alive', wildlifeTeam: null, wildlifeMotion: createWildlifeMotion(node),
     }),
   };
 }
 
 export function validWildlifeNodeState(node, definition) {
   if (node.wildlifeSpecies !== definition.wildlifeSpecies) return false;
-  if (definition.wildlifeSpecies === undefined) return node.wildlifeState === undefined && node.wildlifeMotion === undefined;
+  if (definition.wildlifeSpecies === undefined) return node.wildlifeState === undefined && node.wildlifeMotion === undefined && node.wildlifeTeam === undefined;
+  if (node.wildlifeTeam !== undefined && !validWildlifeTeam(node.wildlifeTeam)) return false;
   if (node.wildlifeState === 'alive') return node.stock === definition.stock;
   if (node.wildlifeState === 'carcass') return node.stock > 0;
   return node.wildlifeState === 'depleted' && node.stock === 0;

@@ -1,6 +1,7 @@
 # Resource sprite-atlas candidate
 
-**Status:** source-only v0.1.0. The active interactive environment pack is unchanged.
+**Status:** the layer manifest remains source-only v0.1.0. A separate oak full-cutout
+runtime export is unbound; the active interactive environment pack is unchanged.
 [Sprite contract](../../../docs/sprite-atlas-contract-v1.md)
 
 ## Contents
@@ -42,9 +43,10 @@ python3 scripts/resource-atlas-pixels.test.py
 ```
 
 [preview.html](preview.html) exposes states, layers, rectangles, alpha bounds,
-and pivots. Pages use sRGB/straight alpha, no gutter or mipmaps, linear sampling,
-and half-pixel UV inset. Runtime encodes/hashes are absent because the pack is
-source-only. Adoption needs pivot/layer-order review, runtime exports, and a loader.
+and pivots. Layer pages use sRGB/straight alpha, no gutter or mipmaps, linear sampling,
+and half-pixel UV inset. Layer runtime encodes/hashes are absent because that
+manifest is source-only. Split-layer adoption needs semantic depth review,
+runtime exports and a loader.
 
 The read-only pixel command checks the **committed** pages and canvas offsets,
 independently of the builder's recorded claims: seven page hashes/dimensions,
@@ -55,3 +57,35 @@ alpha is unchanged. The JSON report binds manifest/lineage hashes and keeps
 It requires Python 3 and Pillow and writes no package/art files. Node CI does not
 install Pillow; run this authoring check explicitly in a Pillow-capable environment.
 See [candidate findings and ranked work](../../../docs/terrain-candidate-readiness.md).
+
+## Oak full-cutout runtime export
+
+[oak-fallback-runtime.json](oak-fallback-runtime.json) is a separate, hash-bound
+export contract for the existing oak full/worked/low/depleted cutouts. A 2 × 2
+layout (2752 × 2880) avoids the source row's 4904-pixel width. Six authored lossless
+WebPs in `runtime/` use 64-pixel transparent-alpha/edge-RGB gutters, independent
+premultiplied BOX cell filtering and a required mip-5 cap. Source samples in mip 0
+remain exact; half-pixel UV insets and the active 4.1 × 3.75 bottom-center plane
+registration are retained. Normal full oak must keep the existing Meshy directional
+design; this full cutout applies only to `meshyResources=0`. Regional wood stays
+on its current profiles. No HSV layers are used by this fallback path.
+
+The reference export is 5,048,048 encoded bytes and 40.30 MiB of decoded RGBA
+across six levels, before driver overhead. It is lossless, unlike the current
+quality-86 WebPs (1,266,974 bytes for all four oak files); it does not establish a
+transfer or memory improvement. A consuming slice must assess the cost and normal
+zoom/state appearance. These files are unbound and omitted from the game release.
+Terrain integration owns the subsequent consumer/admission work and acceptance.
+
+Read-only acceptance, including actual current renderer factory registration:
+
+```sh
+npm run validate:oak-fallback-atlas
+python3 scripts/oak-fallback-atlas.test.py
+node --test scripts/oak-fallback-registration.test.mjs
+```
+
+To rebuild only the six oak exports and this companion contract from existing
+public source pixels, run `python3 scripts/prepare-oak-fallback-atlas.py --write`.
+Existing destinations are rejected unless `--overwrite` is also supplied. It
+does not alter the source/layer manifest, original PNGs, gameplay or renderer.

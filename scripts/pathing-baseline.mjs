@@ -39,11 +39,15 @@ for(const spec of cases) {
   for(let repeat=0;repeat<repeats;repeat++) {
     const map=pathingBaselineMap(spec),fixture=await createPathingReplayFixture(map),r=fixture.replay;
     try {
-      const selected=r.units.filter(u=>u.team===0&&u.kind==='infantry');
+      const team=spec.team??0;
+      const selected=r.units.filter(u=>u.team===team&&u.kind==='infantry');
       assert.equal(selected.length,spec.group);
-      const notices=r.order(0,{type:'move',ids:selected.map(u=>u.id),
-        unitGenerations:selected.map(u=>u.generation),x:16.5,z:.5,clientOrderToken:1});
+      const notices=r.order(team,{type:'move',ids:selected.map(u=>u.id),
+        unitGenerations:selected.map(u=>u.generation),x:team?-16.5:16.5,z:.5,clientOrderToken:1});
       r.drain();assert.ok(notices.some(n=>n.message.startsWith('MOVE ORDER')));
+      // Later repairs can evict the initial order from the server's 32-sample
+      // diagnostic window. Retain its operation counts before ticking.
+      const initialPlanning={...r.planning.at(-1)};
       const initialPaths=selected.map(u=>({id:u.id,goal:u.moveGoalCell,path:u.path.slice()}));
       const progress=new Map(selected.map(u=>[u.id,{best:remainingDistance(r,u),tick:0,
         revision:u.orderRevision,maxStall:0,flagged:false,episodes:0,recovered:0}]));
@@ -103,9 +107,11 @@ for(const spec of cases) {
       runs.push({sourceSha256:fixture.sourceSha256,traceSha256:trace.digest('hex'),
         initialRouteSha256:createHash('sha256').update(JSON.stringify(initialPaths)).digest('hex'),
         ticks:r.tick,arrived,firstArrival,stalled,events,samples,
-        tickMs:quantiles(timings),simulationMs:quantiles(simulation),
+        tickMs:quantiles(timings),simulationMs:quantiles(simulation),initialPlanning,
         planning:r.planning.map(p=>({mode:p.mode,unitCount:p.unitCount,searchCount:p.searchCount,
-          expandedCells:p.expandedCells,maxPlanningSliceMs:p.maxPlanningSliceMs})),
+          expandedCells:p.expandedCells,maxPlanningSliceMs:p.maxPlanningSliceMs,
+          planningSliceCount:p.planningSliceCount,maxPlanningSliceWorkItems:p.maxPlanningSliceWorkItems,
+          maxPlanningSliceExpandedCells:p.maxPlanningSliceExpandedCells})),
         separation:r.separation,invalidSteps,unreachableGoals,
         maxNoProgressTicks:Math.max(...[...progress.values()].map(p=>p.maxStall)),
         noProgressEpisodes:[...progress.values()].reduce((n,p)=>n+p.episodes,0),

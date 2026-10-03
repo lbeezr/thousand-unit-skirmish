@@ -74,15 +74,53 @@ were captured; no sandbox-disabling flags were used. The parent staging/Mac
 coordinator must run the existing ordinary-game/zoom recipe and hash checks in
 the authorized user environment; terrain integration retains acceptance ownership.
 
-## Next selection and stop boundary
+## Contract resolution and receiving owners
 
-After this tool slice merges, the highest-value next action is painted-ground
-normal/strategic/closest-zoom evidence at the identified staging revision. That
-action is blocked in this executor by browser startup and the staging HTTP tunnel.
-Resource default adoption still needs a reviewed ground registration/export
-contract; a passing pixel report cannot select a different default resource design
-or prove the HSV layers' semantic depth. Cliff binding remains blocked by the
-module/height/join/cap contract. No further automatic candidate runtime binding is
-justified by the inspected evidence. Keep these items open, with the receiving
-owners and smallest next actions in the ranked backlog; continue when the missing
-execution or accepted contract becomes available.
+Followthrough inspected main `2ab16dea20406f237c834419d5d9c60711b9281c`.
+The earlier broad resource-contract blockage mixed independently solvable export
+work with new semantic depth choices. Terrain integration owns the technical art
+and subsequent consumer; it is not waiting for a parent to approve routine exports.
+
+| Exact contract question | Proposed resolution / receiving owner | Evidence / actual remaining dependency |
+| --- | --- | --- |
+| Must resource pivots or scale change to use a full-cutout atlas? | No. Terrain integration retains the active source canvas, bottom-center root and 4.1 × 3.75 oak plane. | The actual `createWoodResourceInstances()` factories verify all three ordinary depletion states and all four legacy states against the companion export. Geometry/root positions match; this is registration equivalence, not new visual approval. |
+| Does the fallback need HSV foreground/background mattes? | No. Terrain integration keeps the whole cutout and current alpha/depth behavior. Semantic layers remain a separate production outcome. | The source pixel checker still passes all eight frames; no color-based layer enters the fallback draw contract. |
+| Should normal full oak or regional wood be replaced? | No. The receiving consumer is terrain integration: generic oak worked/low/depleted, with full cutout only for `meshyResources=0`. | Actual factory checks preserve default Meshy full/directional geometry and Underbough root-oak. Before overlapping edits, agree this exact selector/UV boundary with the affected environment renderer owner. No building sprite paths are in scope. |
+| Can the 4904-wide source oak row become a bounded runtime page? | Yes. Terrain integration prepared the separate [oak export contract](../assets/environment/frontier-resource-atlas-v1-candidate/oak-fallback-runtime.json) and six authored mips in a 2752 × 2880 2 × 2 layout. | Six hash/dimension/pixel checks, half-pixel insets, 64-pixel gutters, independent cell filtering and inherited registration pass. A consumer must cap sampling at mip 5 and use the stated fallback path. Berries remains independently owned export work, not parent-blocked. |
+| Is the lossless atlas a justified production transfer/memory cost? | Terrain integration must assess the receiving runtime path before default admission. | 5,048,048 encoded bytes and 40.30 MiB decoded RGBA versus 1,266,974 encoded bytes for the four existing quality-86 oak WebPs. This is a lossless reference export, not a claimed optimization. Do not ship redundant individual files/atlas without explaining the cost. |
+| Should the existing cliff model represent a low ridge or replace tall cliff obstacles? | Proposed receiving design owner: parent acting in art direction, with terrain integration retaining all technical work. Proposed answer: retain it as a low-ridge source and keep the current tall cliff/cap art unless a tall-cliff source-repair direction is chosen. | Normal cliff selection begins at obstacle elevation ≥1.75; measured model peak is 0.998. The decision changes the asset's intended role, rather than granting routine tool or publication permission. No new paid generation is required to inspect/plan either direction. |
+| Do existing source ends establish matching repeated cliff joins/caps? | No. Terrain integration owns join/overlap/depth measurement and any bounded public-source repair after the intended role is settled. | The 0.05-unit end bands top out at 0.194/0.244 with 0.758/0.724 depth spans. Corners are not a current selector requirement; straight placement and end handling are the first consumer contract. Vertex bands do not prove continuous surfaces or safe overlap at the current two-cell placement spacing. |
+
+The oak companion contract has status `runtime-export-unbound`. Original PNGs,
+the seven-page source manifest, gameplay and shared renderer remain unchanged.
+Lossless mip 0 retains every source RGBA sample; levels 1–5 match independently
+filtered source cells. The four pixel/contract tests inject RGB-only mip changes,
+registration/UV/LOD changes, missing levels and accidental overwrites. The Node
+factory test exercises current normal/legacy/regional resource creation with
+image decode mocked. No GPU appearance or live delivery follows from these tests.
+
+```sh
+npm run validate:oak-fallback-atlas
+python3 scripts/oak-fallback-atlas.test.py
+node --test scripts/oak-fallback-registration.test.mjs
+python3 scripts/inspect-cliff-end-bands.py
+```
+
+The cliff read-only inspection checks original model SHA-256, all 516,571 actual
+positions, accessor bounds and the existing capture normalization. It does not
+modify or recapture the GLB, nor establish normals, join distance, depth pixels or
+GPU performance. No private-source transfer/publication, new art generation,
+paid provider, credential or security changes were used.
+
+## Next selection
+
+Parent has queued painted-ground Mac QA after Skiff/combat/Practice; terrain
+integration retains that acceptance. Keep its ordinary stochastic zoom/hash
+recipe open rather than blocking independent technical readiness behind the
+executor's browser/HTTP failure. The next resource action is a bounded receiving
+consumer/packaging proposal for generic oak depletion, with the exact selection
+and cost above; agree any shared-file overlap locally before editing it. Berries
+can be prepared separately if that path is useful. For the cliff, send the precise
+low-ridge versus tall-cliff role question to the proposed design owner while
+continuing independent source/depth validation. No generic parent approval gate
+or semantic-layer review is imposed on the oak fallback export.

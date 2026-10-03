@@ -5,6 +5,8 @@ const manifests = Object.freeze(Object.fromEntries([
   ['stable', 'frontier-civilization-models-v1'],
   ['workshop', 'frontier-civilization-models-v1'],
   ['watchtower', 'frontier-civilization-models-v1'],
+  ['barracks', 'frontier-civilization-military-models-v1'],
+  ['archery-range', 'frontier-civilization-military-models-v1'],
 ].map(([type, pack]) => [type,
   new URL(`../assets/buildings/${pack}/${type}-complete-renderer.json`, import.meta.url).href,
 ])));

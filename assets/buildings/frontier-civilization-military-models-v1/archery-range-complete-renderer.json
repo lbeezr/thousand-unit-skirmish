@@ -1,0 +1,100 @@
+{
+  "schema": "thousand-unit-skirmish.building-lifecycle-reference.v1",
+  "asset": "archery-range",
+  "status": "Complete-only renderer; native gameplay acceptance pending",
+  "camera": {
+    "projection": "orthographic",
+    "framePixels": [
+      1024,
+      1024
+    ],
+    "pixelsPerWorldUnit": 128,
+    "elevationDegrees": 46,
+    "azimuthDegrees": [
+      0,
+      45,
+      90,
+      135,
+      180,
+      225,
+      270,
+      315
+    ],
+    "anchorPixelFromTopLeft": [
+      512,
+      647.1527325565025
+    ],
+    "background": "transparent"
+  },
+  "stateOrder": [
+    "complete"
+  ],
+  "states": [],
+  "completeState": {
+    "state": "complete",
+    "views": [
+      {
+        "index": 0,
+        "azimuthDegrees": 0,
+        "path": "captures/archery-range-complete-view-00.png",
+        "sha256": "f33193369ee91473728429dbb1d42646cc15064e1d9c290d06372e48a588a7a5",
+        "bytes": 754660
+      },
+      {
+        "index": 1,
+        "azimuthDegrees": 45,
+        "path": "captures/archery-range-complete-view-01.png",
+        "sha256": "a09351ec92be0fd340aad0fe680b02279964cc2ccc5ff5bd4028f08afa60bda4",
+        "bytes": 797159
+      },
+      {
+        "index": 2,
+        "azimuthDegrees": 90,
+        "path": "captures/archery-range-complete-view-02.png",
+        "sha256": "3a599a5bbd99a00023b5e8cddece4e10f52b19e82af53c4c9d705db8d45d41bd",
+        "bytes": 748236
+      },
+      {
+        "index": 3,
+        "azimuthDegrees": 135,
+        "path": "captures/archery-range-complete-view-03.png",
+        "sha256": "eeab6c21aa02dcdb372e490564033104d9957358a3cb7bb7f7e64049879bcda2",
+        "bytes": 769127
+      },
+      {
+        "index": 4,
+        "azimuthDegrees": 180,
+        "path": "captures/archery-range-complete-view-04.png",
+        "sha256": "ed909ca74e6c4843c2321a7bedb218f8e22ff5a668106aad19896172ce2ca30e",
+        "bytes": 727010
+      },
+      {
+        "index": 5,
+        "azimuthDegrees": 225,
+        "path": "captures/archery-range-complete-view-05.png",
+        "sha256": "08b08c74ff67bfad25b04ac5abc709eef14548c63ec79b47a92849741afdba25",
+        "bytes": 783849
+      },
+      {
+        "index": 6,
+        "azimuthDegrees": 270,
+        "path": "captures/archery-range-complete-view-06.png",
+        "sha256": "3f9676acef3987dfd7d561ab4406500e0954be063e9d42ddd87bd87edec56327",
+        "bytes": 773670
+      },
+      {
+        "index": 7,
+        "azimuthDegrees": 315,
+        "path": "captures/archery-range-complete-view-07.png",
+        "sha256": "6b0f2d544ce1455a123169ea3776476d0683b32e8b5de41a81348956c5a2460d",
+        "bytes": 798407
+      }
+    ]
+  },
+  "limitations": [
+    "No masks or baked team standard; use existing live standard geometry",
+    "No matched construction or damage views; retain older direct sprite fallback",
+    "Barracks proportions differ from concept illustration; native doorway/Worker review open",
+    "Procedural Blender bump nodes are not baked GLB normal maps"
+  ]
+}

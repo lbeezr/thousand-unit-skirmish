@@ -6,7 +6,7 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { validWildlifeMotion, sameWildlifeCell, freezeWildlifeMotion } from '../src/wildlife-motion.mjs';
-import { createResourceNodeState, validWildlifeNodeState } from '../src/wildlife-state.mjs';
+import { createResourceNodeState, validWildlifeNodeState, validWildlifeTeam } from '../src/wildlife-state.mjs';
 import { validResourceVariantState } from '../src/shore-fishing.mjs';
 
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
@@ -96,7 +96,7 @@ test('checkpoint overlap uses validated remaining stock at authored positions', 
     resourceNodes: types.map((type, index) => ({ ...type, x: index - 1.5, z: -0.5, stock: 100 })) };
   function check(rows) {
     const context = vm.createContext({ ...economyClientBindings(), buildingBlocksMovement, definition, state: { resourceNodes: rows }, finite: Number.isFinite,
-      validWildlifeNodeState, validResourceVariantState, validWildlifeMotion, sameWildlifeCell,
+      validWildlifeNodeState, validWildlifeTeam, validResourceVariantState, validWildlifeMotion, sameWildlifeCell,
       assertSnapshot: (condition, message) => { assert.ok(condition, message); },
     });
     vm.runInContext(savedResources, context);

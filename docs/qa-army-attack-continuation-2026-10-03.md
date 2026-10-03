@@ -75,6 +75,10 @@ revision are recorded in the PR.
 
 ## Inventory and next incremental stance scope
 
+The inventory below records the pre-stance source at this investigation. The
+subsequent [stance slice and exact evidence](qa-military-stances-2026-10-03.md)
+implement its approved simulation work; ordinary HUD/deployed acceptance remains open.
+
 There is no Aggressive/Defensive/Stand Ground/No Attack UI or persisted stance
 field. Existing behavior: Move/spawned military remains passive while idle;
 Stop leaves idle, Hold acquires only within weapon range, and Attack Move/

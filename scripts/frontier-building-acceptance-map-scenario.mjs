@@ -9,13 +9,13 @@ import { terrainHeightField } from '../src/terrain-height.mjs';
 
 // Two documentation fixtures enter the real publishMap boundary. No art viewer,
 // checkpoint mutation, browser screenshot or native acceptance is claimed.
-const families = ['town-center', 'house', 'storehouse', 'stable', 'workshop', 'watchtower'];
+const families = ['town-center', 'house', 'storehouse', 'stable', 'workshop', 'watchtower', 'barracks', 'archery-range'];
 const pads = matureSettlementPlan.pads.filter(([type], index, rows) => families.includes(type)
   && rows.findIndex(row => row[0] === type) === index);
-assert.equal(pads.length, 6);
+assert.equal(pads.length, 8);
 const cost = pads.reduce((sum, [type]) => ({ food: sum.food + B[type].cost.food,
   wood: sum.wood + B[type].cost.wood }), { ...T['military-tier-2'].cost });
-assert.deepEqual(cost, { food: 350, wood: 1325 });
+assert.deepEqual(cost, { food: 350, wood: 1650 });
 settlementLayout(); // Original superset's footprint/reachability assertion.
 const fixture = await createFortifiedFixture({ mapPath: 'maps/open-field.json', timeoutMs: 15_000 });
 try {
@@ -51,7 +51,7 @@ try {
       assert.equal(client.latest.homeTownCenters.find(row => row.team === team).x, team ? 23.5 : -23.5);
     }
     console.log(JSON.stringify({ file: filename, sha256: createHash('sha256').update(bytes).digest('hex'),
-      admitted: true, legalPads: 12, fogOfWar: raised, paidTownCenterHeight: raised ? 1.6 : 0,
+      admitted: true, legalPads: 16, fogOfWar: raised, paidTownCenterHeight: raised ? 1.6 : 0,
       visualAcceptance: 'pending' }));
   }
 } finally { await fixture.dispose(); }

@@ -40,10 +40,10 @@ A **sprite sheet** is the regular grid of views/states. A **texture atlas** is t
 
 Complete the original eight-building concept family before multiplying its states. Produce each useful pack progressively; existing Barracks/Range art and playable Mill logic need not wait for a roster-wide replacement.
 
-The concept family is now preserved in the architecture wiki, and six new
-Complete families have default bindings. The two remaining military buildings
-still use their older direct sprites. Follow the [Barracks/Archery Range replacement plan](frontier-barracks-range-authoring.md)
-for the verified source gap, first new Complete captures and full lifecycle
+The concept family is preserved in the architecture wiki, and eight new
+Complete families have default bindings. The military pair has original local
+models/captures; older direct sprites remain state/loading fallback. Follow the [Barracks/Archery Range replacement plan](frontier-barracks-range-authoring.md)
+for source limits, ordinary-game acceptance and full lifecycle
 ownership. Older construction GLBs and Range atlas candidates are retained
 comparisons, not matching production models of the new concepts.
 

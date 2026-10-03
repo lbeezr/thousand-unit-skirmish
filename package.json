@@ -10,12 +10,13 @@
     "start": "node room-supervisor.mjs",
     "test": "node scripts/ci.mjs",
     "architecture:check": "node scripts/check-runtime-imports.mjs",
-    "check:types": "tsc --project tsconfig.check-js.json --pretty false",
+    "check:types": "tsc --project tsconfig.check-js.json --pretty false && tsc --project tsconfig.check-node.json --pretty false",
     "build:painted-material-atlas": "python3 scripts/build-painted-material-atlas.py",
     "validate:visual-pack": "node scripts/validate-visual-pack.mjs",
     "validate:sprite-atlas": "node scripts/validate-sprite-atlas.mjs",
     "validate:painted-material-atlas": "node scripts/validate-painted-material-atlas.mjs",
     "validate:resource-atlas-pixels": "python3 scripts/inspect-resource-atlas-pixels.py",
+    "validate:oak-fallback-atlas": "python3 scripts/prepare-oak-fallback-atlas.py",
     "preview:sprite-atlas": "node scripts/preview-sprite-atlas.mjs",
     "report:sprite-atlas-handoff": "node scripts/report-sprite-atlas-handoff.mjs",
     "release:pack": "node scripts/pack-railway-release.mjs",
@@ -30,6 +31,7 @@
     "three": "0.180.0"
   },
   "devDependencies": {
+    "@types/node": "24.19.1",
     "acorn": "8.15.0",
     "jsdom": "26.1.0",
     "typescript": "5.9.3"

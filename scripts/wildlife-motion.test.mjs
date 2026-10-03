@@ -84,7 +84,7 @@ test('actual checkpoint capture copies private motion before deferred serializat
   const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
   const capture = source.slice(source.indexOf('function captureMatchCheckpoint('), source.indexOf('function assertSnapshot('));
   const node = createResourceNodeState(definition);
-  const defaults = { MATCH_CHECKPOINT_SCHEMA_VERSION: 24, MATCH_RULES_VERSION: 6,
+  const defaults = { MATCH_CHECKPOINT_SCHEMA_VERSION: 25, MATCH_RULES_VERSION: 6,
     sessions: new Map(), resourceNodeStates: new Map([[node.id, node]]), units: [], buildings: [],
     teamUpgrades: [{}, {}], teamResearch: [null, null], workerProduction: [{}, {}], homeTownCenters: [{}, {}],
     triggerStates: new Map(), scenarioEventStates: new Map(), victoryHoldState: { activeTeams: [], progressSeconds: [], triggerIds: [] },

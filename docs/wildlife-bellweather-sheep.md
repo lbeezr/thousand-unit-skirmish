@@ -26,8 +26,9 @@ for these eight approved PNG views; native appearance acceptance remains open.
 
 The next [one-heading local walk candidate](sheep-local-walk-candidate.md) records
 verified Blender/Rigify availability and producer-reported hoof landmarks.
-Private GLB materialization is blocked, so joints, weights, deformation and
-walking renders remain unverified; no animal animation is added.
+The private GLB has since been recovered and source-verified by the read-only
+inspector. Joints, weights, deformation and walking renders remain unverified;
+no animal animation is added. The ranked backlog below owns the next source step.
 
 ## Implemented neutral food foundation — 3 October 2026
 
@@ -49,7 +50,7 @@ The first authorized Worker in normal interaction range changes it once to a
 stationary `carcass`; activation itself grants no food. Existing gathering then
 moves stock into food cargo at the unchanged rate/carry limit and deposits at
 valid food drop-offs. Either seat may gather the same visible carcass, regardless
-of who activated it. There is no ownership or claim check. Repeated orders and
+of who activated it. Gather has no ownership restriction; automatic living claims are described below. Repeated orders and
 interruption preserve the same stock pool; exhausting it sets `depleted` and
 rejects new gathering. Wildlife adds no sight/population or path blocker
 and is absent from combat targeting. No gatherer cap is introduced in this slice.
@@ -74,8 +75,29 @@ without changing stock/cargo; schema24 restores current positions and progress.
 Carcass/depleted motion stays frozen, including through recovery. The renderer,
 resource click target, ring, callout and minimap consume disclosed positions;
 missing/fog-hidden rows immediately hide and expose no remembered click target.
-No ownership field or claiming/herding is included here. The user's automatic
-proximity-claim direction and team collar are the next separately scoped slice.
+The motion slice adds no ownership. The subsequent automatic claim slice below
+adds only a real team label; controllable herding and collar art remain separate.
+
+Alive Sheep now claim automatically when a living land unit is within **1.4
+world units**, the Sheep cell is currently visible to that team, and the short
+segment crosses only legal open land/elevation (including diagonal corner checks).
+Workers, Scouts and other mobile land roster units are eligible; water units,
+dead units, distant units and blocked approaches are excluded. No Claim click,
+stock conversion or food reward is added. Any eligible current-owner presence
+retains ownership; otherwise the nearest eligible unit claims or recaptures,
+with exact distance ties settled by lower stable unit ID. Without a contender,
+the last owner remains. Claim changes apply only while alive: carcass/depleted
+labels stay frozen and shared Gather rights remain unchanged.
+
+Visible rows and checkpoint schema **26** carry `wildlifeTeam: null | 0 | 1`
+(neutral, Azure, Ember). The label grants no sight, population or movement rights
+in this slice. Exact schema25 saves initialize neutral labels without altering
+position, private motion, stock, cargo or banks; older compatible migrations
+chain through motion24 and stance25. Current saves validate/restore actual ownership. Authoring
+rejects runtime team labels; rematch resets them to neutral. The public field
+is the actual collar input for art task `01a101a8-fba6-7323-a40c-27efd0112007`;
+no collar asset or herd selection/order binding is invented here.
+[Claim/recovery evidence](qa-sheep-claims-2026-10-03.md) records the owned follow-ups.
 
 Stop after depletion preserves a Worker's final cargo. Select that Worker and
 choose **Return cargo** to deliver it to a reachable completed owned food drop-off,
@@ -116,7 +138,7 @@ real map publication/orders, tests hidden/foreign-worker rejection, fractional
 stock conservation with lost-cargo/duplicate-credit negative controls, shared
 carcass access after Stop, partial/depleted recovery, both-seat deposits, rematch
 and rejection of a contradictory saved lifecycle. Its fixture stocks are test
-values, not balance choices. Accepted appearance, claim/herding, combat dispatch, regional
+values, not balance choices. Accepted appearance, controllable herding, combat dispatch, regional
 placement, AI-specific wildlife policy and browser match evidence remain separate
 outcomes. The high-detail Sheep GLB is an art reference, not a runtime mesh. The
 neutral client renderer is separate from unit heading and environment art owners.
@@ -127,19 +149,21 @@ The wildlife worker retains this ranked queue through normal integration and
 verified delivery; useful small PRs ship independently.
 
 1. **Bounded neutral motion** ([PR165](https://github.com/lbeezr/thousand-unit-skirmish/pull/165)).
-   Finish exact-head independent review, schema24/HTTP/package checks, ordinary
-   guarded merge, then verify deployed default Millrace. Write scope: motion,
+   Merged `7d536563dda96a5aa8338a266c311f3a2c5ba8c5`, independently reviewed
+   `adfba206891338f4a17d43a8f6cd2a1dc736b89f`;1323 unit checks and postmerge
+   default scenario passed. Next: verify deployed default Millrace. Write scope: motion,
    room snapshot/recovery/tick, minimal disclosed-pose renderer/client binding.
    Browser SUID sandbox failure leaves native appearance incomplete; active
    Railway owner owns staging delivery in the adoption ledger.
-2. **Automatic ownership**. Proposed contract: living land units, visible alive
+2. **Automatic ownership** ([PR194](https://github.com/lbeezr/thousand-unit-skirmish/pull/194)). Implemented contract: living land units, visible alive
    Sheep, radius1.4 world units and a clear legal land segment (no walls/water/
    impassable elevation). Existing owner's nearby eligible presence retains it;
    otherwise nearest eligible unit claims/recaptures, exact ties by stable unit
-   ID. Snapshot/checkpoint `wildlifeTeam: null|0|1`; ownership grants no food,
+   ID. Snapshot/checkpoint schema26 `wildlifeTeam: null|0|1`; ownership grants no food,
    movement, sight or population. Preserve existing shared Gather rights in this
-   first ownership slice. Confirm the shared simulation/art contract before
-   code; no invented Claim click. Write scope: pure claims, tick/state recovery,
+   first ownership slice. Public team contract is the real collar input; no
+   invented Claim click. Next: independent review, guarded merge, staging and
+   ordinary-game claim/collar acceptance with the active art owner. Write scope: pure claims, tick/state recovery,
    both-seat fog/tie/blocked/claim-reclaim tests. Art task
    `01a101a8-fba6-7323-a40c-27efd0112007` consumes the real team field for collars.
 3. **Controllable herding**. After ownership, agree ordinary selection/order
@@ -153,6 +177,29 @@ verified delivery; useful small PRs ship independently.
    from the active Sheep owner, retain explicit fallbacks, and check normal and
    strategic appearance at the identified deployed revision. No new generation
    or paid service is authorized by this queue.
+
+The next herding authority contract uses one existing food-node ID, independent
+of numeric unit selection: `herd {nodeId,x,z,resourceEpoch,clientOrderToken}`
+and `stopWildlife {nodeId,resourceEpoch,clientOrderToken}`. The epoch is the
+existing resource/forest epoch and stale orders reject. Only the current owner
+may order a currently visible alive Sheep; the exact destination must be
+currently visible, in map bounds and legal land before navigation lookup. Trial
+travel speed is0.6 world units/second. No new sight or food is granted. Existing
+land navigation supplies the route; Stop, recapture or accepted Worker Gather
+cancels travel at the actual position. A persisted local graze anchor prevents
+a stopped/arrived Sheep from returning to the original authored coordinate.
+Moving-node construction, gate occupancy, fog, gather and checkpoint checks
+remain part of the authority slice.
+
+The UI owner must agree the ordinary selection binding before overlapping
+client edits: separate `selectedWildlifeId: null|string`, owned alive Sheep
+left-click selection, right-click/touch legal ground to herd, Stop, normal order
+acknowledgements, and immediate selection clearing on fog/omission, recapture
+or harvest. The renderer supplies only a currently disclosed selectable row;
+HUD code must not use environment-capture diagnostics as gameplay state. That
+client agreement is pending; pure authority/navigation/recovery work proceeds
+independently.
+
 
 ## Observed source
 
@@ -200,8 +247,8 @@ context, not a second resource in this pilot.
 | State | Proposed behavior and player feedback |
 | --- | --- |
 | Unclaimed grazing | Small head dips and occasional short steps inside its pasture; no combat aggression. Visible selection says `Unclaimed · Food 100`. |
-| Claiming | Explicit Worker interaction claims a visible living sheep within normal interaction range. Viewing or scouting it alone does not transfer ownership. Competing requests must resolve through server authority and show the result to both seats. |
-| Claimed / moving | Owner selects the sheep and orders a ground destination. Walk slowly, stay on passable ground, stop with a clear blocked-route notice. Stop cancels travel. Retain the claim until death or rematch in this first proposal; stealing/recapture is a later decision. |
+| Claiming | Automatic nearby living-land-unit claiming is implemented as specified above. Visible proximity and a clear land segment are required; authority resolves nearest/stable-ID ties and owner-presence retention. |
+| Claimed / moving | Owner selects the sheep and orders a ground destination. Walk slowly, stay on passable ground, stop with a clear blocked-route notice. Stop cancels travel. Current automatic recapture requires the prior owner to have no eligible nearby presence. Controllable travel is the next outcome. |
 | Harvest activation | Owner's explicit Worker Gather starts a brief non-graphic dispatch/settle action. It stops movement and permanently changes the animal to a stationary carcass at that location. No food is banked by the transition itself. |
 | Carcass gathering | Reuse food cargo and valid food drop-offs. Proposed stock: 100 food per animal; proposed gatherer cap: three. Preserve remaining stock across interruptions and worker loss. A carcass is a shared food site; enemy Workers may gather it when visible and reachable. |
 | Depleted | At zero stock, end gathering and remove the resource target; a short fading remnant must not grant food or block a route. No breeding, regeneration, decay loss or restocking in the pilot. |
@@ -303,3 +350,67 @@ upstream behavior. Both references were read on 2 October 2026.
 primary design references above. Proposed behavior, scale and stock are new
 design work. The [preservation audit](art-direction/preservation-audit-2026-10-02.json)
 records inspected files and verification scope. No Meshy or paid generation ran.
+
+## Ranked wildlife art backlog — 3 October 2026
+
+The wildlife art owner retains faithful Sheep production, public admission of
+approved exports, default binding, release delivery and actual in-game acceptance.
+This is the ongoing user-requested workstream, not a completed animation milestone.
+Keep each outcome small, review its exact head, merge under existing authority,
+and take the next ready item without waiting for a new parent approval.
+The [local walk candidate](sheep-local-walk-candidate.md) and
+[asset adoption ledger](asset-adoption-checklist.md) retain the existing production
+and delivered-appearance limits.
+
+At source main `14590fb2189f76c3babb3a5e43e9a2c5edcac76b`, the eight approved
+static views remain the default art. The existing private model has now been
+recovered through supported private transfer, verified against the preserved
+source contract and imported by the read-only inspector. It has no existing
+armature or animation; actual joint fit and deformation review remain the next
+source step. Genuine walking, grazing and prone carcass frames are still absent.
+A private reviewed reference/UI study preserves unchanged approved stills,
+an estimated collar/emblem treatment and the production specification. It supplies
+no new animal pose, clip, owner state, runtime binding or appearance acceptance.
+Do not retry an unchanged unavailable transport indefinitely; resume source work
+when a supported route or usable source input changes. Never publish private
+source, substitute purchased generation, or alter security to close that gap.
+
+| Rank | Next outcome and action | Write boundary and dependencies | Acceptance |
+| --- | --- | --- | --- |
+| 1 | **Source inspection — in progress.** Preserve the verified original and review actual limb/neck attachment after the completed source-pinned import. | Private working area and inspection receipts; original model stays immutable and out of Git/runtime. Readable source bytes are verified; joint fit/deformation remain unreviewed. | Exact original hash/byte guard passes; imported topology, actual joints and four hoof contacts are reviewed; original remains unchanged. Tool acceptance is inspection evidence, not a deployed-game claim. |
+| 2 | **Graze and carcass trial — source-dependent.** Author one body-forward heading's small head-down/up loop and a distinct non-graphic prone pose. | New private Blender copies, color captures, timing/provenance and rejected iterations. Requires reviewed neck/limb deformation from rank 1. | Same animal/camera, 512 px canvas, root `[256,256]`, 256 px/world unit and fixed lighting; planted grazing hooves, grounded prone limbs, stable fleece and no baked floor/shadow. Independent review; carcass is visibly distinct from standing. |
+| 3 | **Genuine walk trial — source-dependent.** Fit a small local rig and capture one heading's four contact plus four passing keys. | Private rig/debug-contact/capture files; no paid rigging or base regeneration. Requires reviewed limb fit and stable weights. | Actual leg articulation; world-space stance contact, penetration and cycle closure measured; root travel removed only for sprite capture; explicit stride and frame timings. A bobbing/translating still does not count as walking. |
+| 4 | **Approved action binding — input/interface-dependent.** Admit only the reviewed exports explicitly approved for publication, then bind available graze/walk/carcass coverage by default. | Atlas builder/manifest, Sheep loader and exact server/release asset allowlist. Requires new-export publication approval and agreement with the simulation owner before shared client edits. | Exact source/runtime hashes, fixed pivots/scale, explicit clips and missing-heading fallbacks; stock/food remaining, harvest freeze, fog/omission, depletion, reset and disposal preserved. HTTP/release checks pass. Unsupported action art remains explicitly static/marker fallback. |
+| 5 | **True-ownership cues — authority-dependent.** Fit the collar and accessible emblem/selection treatment only after real claim state exists. | Sheep overlay/mask and agreed selection UI; coordinate with the simulation and HUD owners. Requires the user's claim-method decision and validated server ownership, including carcass/reset semantics. | Neutral remains unmarked; only actual owner enables a cue. Shapes/text accompany team color. Placement holds at every admitted heading/pose; fog/depletion hides cues; proximity, viewer seat and Gather never invent ownership. |
+| 6 | **Delivered native acceptance — open and retained.** Verify the approved binding on the identified relevant deployment and normal/default Millrace. | Existing QA/adoption records and bounded game captures; active Railway/native owners support delivery and capture. Requires a deployed revision containing the binding and a working sandboxed browser. | Exact source/release/deployment recorded separately; ordinary/strategic/close motion, ground contact, foliage occlusion, carcass food remaining, exhaustion, both-seat visibility and rematch observed. CPU/atlas/merge evidence alone cannot close this item. |
+
+The active simulation owner retains bounded movement, food conservation and
+checkpoint recovery from merged [PR165](https://github.com/lbeezr/thousand-unit-skirmish/pull/165).
+That slice already edits shared position consumers; the art owner does
+not duplicate its `src/main.js`, neutral renderer or server changes. Its disclosed
+wire fields are current `x`/`z`, radians `wildlifeHeading` (zero +Z, positive +X)
+and `wildlifeActivity: idle|grazing|wandering`. Movement integration does not supply
+articulated action clips or close the separate native appearance acceptance.
+The [specific heading question](https://github.com/lbeezr/thousand-unit-skirmish/pull/165#issuecomment-5974302024)
+must distinguish authored nose pose from body-forward action captures before
+rank 4 proceeds. Existing idle views have about 42 degrees of head/body offset;
+do not relabel them as neutral walking frames or apply that offset twice.
+
+For moving integration, art, ground height, fog, picking, rings/callouts, minimap
+and diagnostic captures must use one disclosed authoritative current position.
+The simulation owner decides pasture-cell/access/construction policy; a visual
+offset or collar creates no sight, occupancy, food pool or gather right. Harvest
+freezes the live pose/position and shows the resource state while food remains;
+depleted and undisclosed nodes hide immediately. Exact recovery/rematch remains
+a simulation requirement as well as a visual check.
+
+New private exports require explicit public-repository publication approval;
+the earlier eight-view approval is not approval for new motion/carcass artwork.
+Existing local-rig work is authorized, but purchased rigging, regeneration,
+additional provider spending and expanded access are not. If execution becomes
+unavailable, checkpoint private/source work and report recovery needs promptly.
+At this checkpoint, source inspection is active, the shared heading interface
+is unresolved, ownership is absent and normal Linux browser preflight
+fails before screenshots. These conditions pause their dependent actions only.
+Continue any ranked item whose input, interface and authorization are ready;
+when none is ready, report the concrete blockers without inventing extra work.
