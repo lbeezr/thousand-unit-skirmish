@@ -1849,7 +1849,9 @@ function addResourceNodeVisual(node) {
   ring.material.opacity = node.stock > 0 ? 0.78 : 0.35;
   ring.rotation.x = -Math.PI / 2;
   ring.position.set(node.x, groundHeight(node.x,node.z)+0.035, node.z);
-  ring.renderOrder = 2;
+  // The bank marker belongs beneath the Worker sprite (order 1.1), so its
+  // amber stroke cannot paint over the hands/net. Keep the land/picking anchor.
+  ring.renderOrder = isShoreFish(node) ? 1 : 2;
   addMapObject(ring);
 
   const callout = new THREE.Sprite(new THREE.SpriteMaterial({
