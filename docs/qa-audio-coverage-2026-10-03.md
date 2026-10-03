@@ -7,6 +7,7 @@ technology definitions, notice/snapshot routing, shipped manifests and source
 provenance. This is a code/source audit, not a listening acceptance or new asset
 license verification. Some catalog maps are diagnostics/reviews, not curated
 match experiences. Existing source masters, hashes and provenance remain intact.
+Latest-main follow-up at `2aea6d1` also inspected the new wall-line order UI.
 
 ## Score and ambience coverage
 
@@ -34,9 +35,11 @@ performance guarantees; current runtime compositions fit each actual duration.
 | All seven unit types ready/death | Local authoritative generations; one representative per cue/snapshot, silent initial/reset/older ticks. Missing fogged rows are not death. | No missing lifecycle route found. Distinct role voices are unproduced candidates. |
 | Shore fishing and harvestable sheep | Gather acknowledgement follows applied order token. Actual nearby living local worker execution reports `food`; food variants cover both activities. Depletion uses the existing empty-node cue. | No missing food route found. Fish/sheep identity is not exposed as a distinct audio resource; no animal or splash recording exists in the current UI kit. Keep generic feedback rather than invent an unrelated sound. |
 | Mill, palisade and all other buildings | Friendly observed incomplete-to-complete transition emits at most one `building-complete` per reconciliation; initial state is silent. Selection falls back from building type to generic cue. Repair execution is local/nearby. | Generic completion is present. The caller supplies no building type for completion, so type-specific completion clips need a deliberate metadata slice, not an asset-only binding. |
+| Palisade line order | New UI already sends a pending `build` event. Authoritative success is `WALL BUILD ORDER`; later segment work is `WALL BUILD SEQUENCE`. | Reproduced missing acknowledgement: audio gate did not recognize the applied wall-line notice. Fixed to return the existing build cue once for its issued token, never once per segment. |
 | Discovery/objectives, combat, defeat | Existing reward-team/objective/combat gates and urgent ducking distinguish gameplay events. | No score-state selector; signatures are not assigned. Do not add enemy-position or wildlife-presence audio observers. |
 
-The implemented change affects two notice classifiers only. The existing player
+The implemented change affects queue/research classifiers and one applied-order
+notice pattern. The existing player
 notice handler, order-token gate, lifecycle reducer, visibility/fog filtering,
 work cadence, sound limits and playback cancellation remain in control. It adds
 no per-unit/per-building sound loop or new game message.
@@ -64,7 +67,7 @@ remains separate from technical playback and creative audition decisions.
 
 ## Verification scope
 
-`scripts/audio-roster-notices.test.mjs` first reproduced both gaps, then passed
+`scripts/audio-roster-notices.test.mjs` first reproduced both roster gaps, then passed
 for all seven unit labels and all six technology labels, both local seats,
 spectators/opponent research, rejection/planning precedence and unrelated notice
 formats. The existing Barracks, mounted and siege production scenarios now
@@ -74,3 +77,6 @@ the siege scenario checks Siege Engineering. Runtime cue/mute/cooldown tests
 remain the scheduling evidence. PR evidence records completed runs and exact
 scope. The Mac listening session and aggregate project suite are separate;
 neither is claimed complete by this audit.
+The wall-line fixture checks issued token, planning/failure/reset cancellation,
+duplicate success and later-segment silence. Main's actual pending event was
+`build`, while the pre-fix applied wall notice returned no event.

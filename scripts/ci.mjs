@@ -69,6 +69,7 @@ run(['scripts/check-docs.mjs'], 'Documentation links');
 run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs', 'scripts/audio-decoded-cache.test.mjs', 'scripts/audio-shared-decode.test.mjs', 'scripts/audio-settings.test.mjs', 'scripts/audio-roster-notices.test.mjs'], 'Verified shipped audio and execution gates');
 run(['--test', 'scripts/zone-audio-import-contract.test.mjs'], 'Zone audio import provenance');
 run(['scripts/audio-shipped-serving-scenario.mjs'], 'Authoritative shipped audio serving');
+run(['scripts/audio-wall-order-scenario.mjs'], 'Applied wall-line audio acknowledgement');
 run(['--test', 'scripts/hosted-scale-profile.test.mjs'], 'Hosted scale measurement integrity');
 run(['--test', 'scripts/unit-sprite-clock.test.mjs'], 'Sprite animation clock');
 run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work facing');
@@ -114,6 +115,7 @@ run(['--test', 'scripts/building-placement-forest.test.mjs'], 'Disclosed forest 
 run(['--test', 'scripts/wall-line-planner.test.mjs'], 'Atomic modular wall-line authoring');
 run(['--test', 'scripts/wall-construction-draft.test.mjs'], 'Draft paid palisade preparation and lifecycle contracts');
 run(['--test', 'scripts/palisade-runtime.test.mjs'], 'Palisade order identity and placeholder connections');
+run(['--test', 'scripts/wall-placement.test.mjs', 'scripts/wall-placement-client.test.mjs'], 'Atomic palisade drag and keyboard placement');
 run(['scripts/paid-palisade-scenario.mjs'], 'Paid palisade atomic placement and Worker recovery');
 run(['--test', 'scripts/population.test.mjs'], 'Population reservations and capacity');
 run(['--test', 'scripts/population-readout.test.mjs'], 'Owned population presentation');
