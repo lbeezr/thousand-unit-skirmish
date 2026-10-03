@@ -69,6 +69,9 @@ run(['--test', 'scripts/resource-brush-authoring.test.mjs'], 'Resource brush pre
 run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush editor controls');
 run(['scripts/check-docs.mjs'], 'Documentation links');
 run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs', 'scripts/audio-decoded-cache.test.mjs', 'scripts/audio-shared-decode.test.mjs', 'scripts/audio-settings.test.mjs', 'scripts/audio-roster-notices.test.mjs'], 'Verified shipped audio and execution gates');
+run(['--experimental-test-coverage', '--test-coverage-include=src/audio-shipped-response.mjs',
+  '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
+  '--test', 'scripts/audio-shipped-response.test.mjs'], 'Shipped audio response coverage floor (100%)');
 run(['--test', 'scripts/zone-audio-import-contract.test.mjs'], 'Zone audio import provenance');
 run(['scripts/audio-shipped-serving-scenario.mjs'], 'Authoritative shipped audio serving');
 run(['scripts/audio-wall-order-scenario.mjs'], 'Applied wall-line audio acknowledgement');
@@ -145,6 +148,7 @@ run(['--test', 'scripts/population-ai.test.mjs'], 'AI capacity construction and 
 run(['--test', 'scripts/pve-worker-recovery.test.mjs'], 'PvE last-slot Worker recovery and fixed-tick economy replay');
 run(['--test', 'scripts/pve-farm-policy.test.mjs'], 'PvE finite paid Farm starvation recovery and replant replay');
 run(['--test', 'scripts/pve-home-defense.test.mjs'], 'PvE visible economic raids, bounded defense and objective recovery replay');
+run(['--test', 'scripts/pve-regroup.test.mjs'], 'PvE bounded regroup after wipeout, paid recovery and restart replay');
 run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue authority');
 run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle');
 run(['scripts/wildlife-food-scenario.mjs'], 'Both-seat wildlife gathering, depletion and recovery');

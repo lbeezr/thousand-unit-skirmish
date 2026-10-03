@@ -96,3 +96,24 @@ pure-policy evidence; it does not claim a new runtime obstruction or
 deployed-match observation. The pinned OpenRA research
 above remains the source for the general progress-watch/backoff technique;
 per-soldier watches are this project's independent design decision.
+
+## Regroup after a wipeout — 3 October 2026
+
+After the last owned combat troop dies, replacements rally at the first
+replacement's observed position. Five available combat troops release the group;
+otherwise it releases 3,600 simulation ticks (120 seconds) after the first
+available replacement. Workers, Scouts, Siege Engines and urgent home defenders
+do not count toward that group. Production keeps its existing paid budgets.
+The opening army and reinforcements joining a surviving army retain their normal
+objective behavior.
+
+Rally orders preserve generations, suppress retries during movement, arrival or
+combat, and retry a stationary troop at most every 300 ticks. Active combat is
+also preserved when the rest of the group releases. A fresh policy after restart
+infers recovery from a small owned army and a living owned Barracks or paid
+foundation; it starts a new bounded wait, without adding checkpoint fields.
+Release counts available troops, rather than requiring physical clustering.
+
+The [dated regroup evidence](qa-pve-regroup-2026-10-03.md) records the original
+Millrace failure, paid both-seat checkpoint regressions, and matched comparisons
+on all four accepted maps, including pressure delays and a deadline draw.
