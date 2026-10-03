@@ -84,6 +84,14 @@ regressions cover both seats' relocation, preserved surviving destinations,
 opponent-goal independence and rejection without navigation/goal mutation.
 All 46 focused movement, facing, Return cargo, palisade, water graph and
 CI-sharding regressions pass; syntax, documentation links and diff checks pass.
+After current Dock, sheep/checkpoint, minimap and selected-construction changes
+are integrated at `9b35f046da1ba63bb006b4f78dd6b7941ac27463`, all seven canonical
+trace pairs still match the earlier candidate. All 68 focused integration checks
+pass; native arrival remains 64/64 with no shared goals or unfinished paths
+(718 sampled relative ticks). Server SHA-256:
+`05adff89d895d22489fe4ed053d811d75441565884cebeda99af22071229a86a`.
+The retained record includes this source and native order trace separately from
+the earlier measured snapshot.
 
 ## Timing and limits
 
