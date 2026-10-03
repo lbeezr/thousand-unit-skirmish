@@ -131,7 +131,11 @@ async function main() {
     for (const team of [0, 1]) {
       const buildings = saved.state.buildings.filter(b => b.team === team);
       assert.equal(buildings.length, pads.length); assert.ok(buildings.every(b => b.complete));
-      for (const type of Object.keys(B)) assert.equal(buildings.filter(b => b.type === type).length, type === 'house' ? 3 : 1);
+      for (const type of Object.keys(B)) {
+        const expected = pads.filter(([plannedType]) => plannedType === type).length;
+        assert.equal(buildings.filter(b => b.type === type).length, expected,
+          `team${team} ${type} count matches the paid fixture plan`);
+      }
       for (const { upgradeKey } of Object.values(T)) assert.equal(saved.state.teamUpgrades[team][upgradeKey], true);
       assert.equal(saved.state.teamResearch[team], null);
       assert.equal(saved.state.units.filter(u => u.team === team).length, 20);

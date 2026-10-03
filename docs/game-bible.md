@@ -106,6 +106,8 @@ a display never rounds insufficient stock up to the purchase price.
 - Azure and Ember seats, invite rooms, spectators, reconnects, and checkpoints.
 - New PvP invite rooms have host map/army configuration, both-seat readiness,
   explicit launch and rematch/recovery through the [pregame lobby](room-lobby.md).
+  Connected seats can exchange bounded plain-text pregame chat; history is
+  ephemeral and spectators read only.
 - Workers, Infantry, Archers, Spearmen, Scouts, Riders and Siege Engines; food/wood
   gathering, construction, queues, rally points, population reservations and bounded research.
 - Box/Line/Column destinations, direct attacks, attack move, queued waypoints,

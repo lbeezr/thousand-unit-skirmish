@@ -37,7 +37,7 @@ function fixture(team) {
   }
   const noop = () => {};
   const context = vm.createContext({
-    applyLobby() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {} },
+    applyLobby() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {}, updateChat() {} },
     waterStudyFishBinding: { update(state, options) { fishUpdates.push({ state, options }); }, clear() {} },
     WebSocket, URL, performance: {now: () => 1000}, location: {protocol:'http:',host:'localhost'},
     document: {querySelector:element,querySelectorAll:() => []}, window: {clearTimeout:noop},

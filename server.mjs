@@ -33,6 +33,7 @@ import { townCenterSpawnPosition, townCenterFootprintCells } from './src/town-ce
 import { advanceTickDeadline } from './simulation-scheduler.mjs';
 import { privateProductionView } from './src/snapshot-private-production.mjs';
 import { RoomPregame, validatePregameCheckpoint } from './src/room-pregame.mjs';
+import { RoomLobbyChat } from './src/room-lobby-chat.mjs';
 import { headingToTarget } from './src/unit-heading.mjs';
 import { preparePaidWallLine } from './src/wall-construction-draft.mjs';
 import { activeWallBuildOrder } from './src/wall-build-order.mjs';
@@ -876,6 +877,7 @@ let inboundControlRateLimitDisconnects = 0;
 let commandQueueLimitRejections = 0;
 const sessions = new Map();
 let pregame = null;
+const lobbyChat = new RoomLobbyChat();
 let pregameMapPublicationPending = false;
 
 function syncPregameSeats() {
@@ -6113,6 +6115,20 @@ async function handleCommand(player, command) {
   if (shuttingDown || !command || typeof command.type !== 'string') return;
   if (pregame) {
     syncPregameSeats();
+    if (command.type === 'sendLobbyChat') {
+      try {
+        const result = lobbyChat.send(player, command, pregame);
+        const packet = { type: 'lobbyChat', messages: lobbyChat.history(), ack: result.ack };
+        if (result.inserted) broadcast(packet);
+        else player.sendJson(packet);
+      } catch (error) {
+        player.sendJson({ type: 'lobbyChatRejected',
+          clientMessageId: typeof command.clientMessageId === 'string' && command.clientMessageId.length <= 64
+            ? command.clientMessageId : null,
+          message: String(error.message) });
+      }
+      return;
+    }
     if (['configureLobby', 'setReady', 'launchMatch'].includes(command.type)) {
       try {
         if (pregameMapPublicationPending) throw new Error('Wait for the host’s map publication to finish.');
@@ -7502,10 +7518,10 @@ const server = createServer(async (request, response) => {
     'src/water-study-fish-binding.mjs',
     'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',
     'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs',
-    'src/room-lobby-ui.mjs', 'src/room-lobby.css',
+    'src/room-lobby-ui.mjs', 'src/room-lobby-chat-ui.mjs', 'src/room-lobby.css',
     'src/scenario-regions.mjs', 'src/scenario-authoring.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
     'src/shore-fishing.mjs', 'src/shore-fishing-placeholder.mjs', 'src/shore-fishing-placement.mjs',
-    'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs',
+    'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs', 'src/resource-brush-controls.mjs',
     'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
@@ -7704,6 +7720,7 @@ server.on('upgrade', (request, socket, head) => {
     },
     map: mapDefinition, maps: mapCatalogPayload(),
     state: roomPayload(peer.team),
+    ...(pregame ? { lobbyChat: lobbyChat.history() } : {}),
   });
   broadcast({ type: 'room', connected: connectedCount() });
   broadcastPregame();

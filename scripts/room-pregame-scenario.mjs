@@ -78,9 +78,8 @@ function client(roomId, token) {
   };
   value.close = async () => {
     if (socket.readyState === WebSocket.CLOSED) return;
-    const closed = new Promise(resolve => socket.addEventListener('close', resolve, { once: true }));
-    socket.close();
-    await closed;
+    socket.close(1000, 'pregame scenario complete');
+    await until(() => socket.readyState === WebSocket.CLOSED, 'client disconnect');
   };
   return value;
 }
@@ -264,7 +263,8 @@ try {
     'launch/unready race and duplicate launch', 'running seat rejoin', 'Map Studio publication returns to lobby',
     'rematch and duplicate reset', 'host disconnect/rejoin/expiry/replacement', 'late join and public module delivery'] }));
 } finally {
-  await Promise.allSettled(clients.map(value => value.close()));
+  const closing = Promise.allSettled(clients.map(value => value.close()));
   await stop();
+  await closing;
   await rm(directory, { recursive: true, force: true });
 }
