@@ -56,6 +56,7 @@ assigned team changes, or a rematch starts.
 | Attack a unit | Right-click a visible enemy. Repeated clicks can cycle overlapping targets. |
 | Attack a production building | Right-click it with military selected; workers cannot attack structures. |
 | Gather | Right-click a food/wood node or harvestable forest cell with workers selected. |
+| Return cargo | Select carrying workers and choose **Return cargo** in the selection bar. |
 | Construct | Choose Build barracks/range, then left-click a valid site. |
 | Resume construction | Select the unfinished site and use Resume construction. |
 | Set a rally | Select a friendly Barracks or Range, then right-click ground. |
@@ -72,6 +73,10 @@ attack move resumes its route and can acquire another enemy.
 ## Economy and production
 
 Workers gather finite resources, carry up to 10, return to base, and repeat.
+Stop and other orders retain carried resources. **Return cargo** sends selected
+carrying workers to a reachable completed owned drop-off for their resource,
+then leaves them idle. This also delivers the final food from an exhausted sheep;
+it needs no new Gather order. An unavailable drop-off preserves the cargo.
 Forest cells currently yield six wood each; exhaustion clears their movement
 and sight block. Berry brushwood and regrowth are future experiments.
 

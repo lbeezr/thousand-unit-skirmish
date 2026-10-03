@@ -1827,8 +1827,9 @@ function snapshotQueuedWaypointCounts(viewTeam = null) {
 function workerTaskStatus(unit) {
   if (unit.holdingPosition) return 'holding';
   if (unit.persistentOrder) return unit.persistentOrder.type === 'patrol' ? 'patrolling' : 'following';
+  if (unit.gatherPhase === 'to-base') return 'returning';
   if (unit.gatherNodeId !== null || unit.gatherForestCell >= 0) {
-    return unit.gatherPhase === 'to-base' ? 'returning' : 'gathering';
+    return 'gathering';
   }
   if (unit.buildingTargetId !== null) return unit.repairing ? 'repairing' : 'building';
   if (unit.attackTargetId >= 0 || unit.attackBuildingTargetId >= 0) return 'attacking';
@@ -3932,6 +3933,43 @@ function assignForestGather(player, command) {
   sendOrderNotice(player, command, `GATHER ORDER · ${selectedUnits.length} WORKERS`);
 }
 
+function assignReturnCargo(player, command) {
+  if (![0, 1].includes(player.team) || !Array.isArray(command.ids)
+    || Object.keys(command).some(key => !['type', 'ids', 'unitGenerations', 'clientOrderToken'].includes(key))) {
+    sendOrderNotice(player, command, 'RETURN CARGO REJECTED · SELECT YOUR CARRYING WORKERS');
+    return;
+  }
+  const deliveries = [];
+  for (const unit of commandUnits(command)) {
+    if (unit.hp <= 0 || unit.team !== player.team || !unitHasCapability(unit, 'gather')
+      || !(unit.cargo > 0) || !['food', 'wood'].includes(unit.cargoType)) continue;
+    // Reuse the existing route selection without changing a rejected unit's order.
+    const route = { ...unit };
+    routeWorkerToDropoff(route);
+    if (route.moveGoalCell >= 0) deliveries.push({ unit, route });
+  }
+  if (!deliveries.length) {
+    sendOrderNotice(player, command, 'RETURN CARGO REJECTED · NO CARRYING WORKERS WITH A REACHABLE DROP-OFF');
+    return;
+  }
+  for (const { unit, route } of deliveries) {
+    unit.orderRevision++;
+    unit.queuedWaypoints.length = 0;
+    clearAttackMoveOrder(unit);
+    unit.movePlanningPending = false;
+    unit.buildingTargetId = null; unit.repairing = false;
+    unit.attackTargetId = -1; unit.attackBuildingTargetId = -1;
+    unit.repathTimer = 0; unit.lastAttackCell = -1;
+    unit.gatherNodeId = null; unit.gatherForestCell = -1;
+    unit.gatherPhase = 'to-base';
+    for (const key of ['dropoffBuildingId', 'dropoffNavigationRevision', 'moveGoalCell', 'path', 'pathIndex']) {
+      unit[key] = route[key];
+    }
+  }
+  dirty = true;
+  sendOrderNotice(player, command, `RETURN CARGO ORDER · ${deliveries.length} WORKERS`);
+}
+
 function assignGather(player, command) {
   if (player.team === null || !Array.isArray(command.ids)) {
     sendOrderNotice(player, command, 'GATHER REJECTED · NO VALID WORKERS');
@@ -4094,7 +4132,19 @@ function updateWorkerEconomy() {
       } else updateForestWorkerEconomy(unit);
       continue;
     }
-    if (unit.gatherNodeId === null) continue;
+    if (unit.gatherNodeId === null) {
+      if (unit.gatherPhase === 'to-base' && workerAtDropoff(unit)) {
+        if (unit.cargo > 0) {
+          const bank = unit.cargoType === 'wood' ? teamWood : teamFood;
+          bank[unit.team] = creditResourceBalance(bank[unit.team], unit.cargo);
+          unit.cargo = 0;
+          unit.cargoType = null;
+        }
+        stopGathering(unit);
+        dirty = true;
+      }
+      continue;
+    }
     const node = resourceNodeStates.get(unit.gatherNodeId);
     if (!node) {
       stopGathering(unit);
@@ -5933,7 +5983,7 @@ async function handleCommand(player, command) {
       return;
     }
   }
-  if (matchWinner >= 0 && ['stop', 'holdPosition', 'patrol', 'follow', 'move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'train', 'build', 'trainArcher', 'trainUnit', 'trainWorker', 'setRallyPoint', 'researchUpgrade', 'cancelConstruction', 'cancelTraining', 'cancelResearch', 'repairBuilding'].includes(command.type)) {
+  if (matchWinner >= 0 && ['stop', 'holdPosition', 'patrol', 'follow', 'move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'returnCargo', 'train', 'build', 'trainArcher', 'trainUnit', 'trainWorker', 'setRallyPoint', 'researchUpgrade', 'cancelConstruction', 'cancelTraining', 'cancelResearch', 'repairBuilding'].includes(command.type)) {
     sendOrderNotice(player, command, player.team === 0
       ? 'MATCH OVER · RESET BATTLEFIELD TO PLAY AGAIN'
       : 'MATCH OVER · WAIT FOR HOST TO RESET');
@@ -5947,6 +5997,7 @@ async function handleCommand(player, command) {
   if (command.type === 'attack') assignAttack(player, command);
   if (command.type === 'attackBuilding') assignAttackBuilding(player, command);
   if (command.type === 'gather') assignGather(player, command);
+  if (command.type === 'returnCargo') assignReturnCargo(player, command);
   if (command.type === 'trainUnit') trainUnit(player, command);
   if (command.type === 'train') trainInfantry(player, command);
   if (command.type === 'trainWorker') trainWorker(player);
