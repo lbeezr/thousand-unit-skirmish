@@ -38,6 +38,18 @@ Forest cells use `row * map.width + column`; they are not resource-node IDs.
 The PvE v1 observation below does not expose the forest stock table, so adding
 forest strategy requires an explicit observation change.
 
+## Terrain boundaries during movement
+
+The authoritative simulation checks actual movement after crowd separation,
+including stationary working/striking separation. `src/unit-movement.mjs` applies
+the planner's one-level elevation limit and requires both side cells of a diagonal
+crossing to be walkable with legal elevation edges. An illegal crowd deflection
+falls back toward the current route waypoint. If both steps are rejected, or a
+waypoint becomes blocked, the existing bounded route-repair queue rebuilds from
+the actual cell; combat pursuit requests its normal replanning instead. This rule
+concerns simulation
+positions; renderer headings and interpolation consume the resulting snapshots.
+
 ## PvE observation v1
 
 `toOpponentObservation` in `src/pve-opponent.mjs` builds an allow-listed DTO from
