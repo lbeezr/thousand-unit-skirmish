@@ -31,10 +31,10 @@
 !assets/ui/
 !assets/ui/**
 !assets/wildlife/
-!assets/wildlife/bellweather-sheep-public-reference-v1/
-!assets/wildlife/bellweather-sheep-public-reference-v1/static-preview-binding.json
-!assets/wildlife/bellweather-sheep-public-reference-v1/sprite-atlas-pack-v1.json
-!assets/wildlife/bellweather-sheep-public-reference-v1/sheep-atlas-runtime.png
+!assets/wildlife/bellweather-sheep-static-v1/
+!assets/wildlife/bellweather-sheep-static-v1/static-preview-binding.json
+!assets/wildlife/bellweather-sheep-static-v1/sprite-atlas-pack-v1.json
+!assets/wildlife/bellweather-sheep-static-v1/sheep-atlas-runtime.png
 !package.json
 !package-lock.json
 !deploy/

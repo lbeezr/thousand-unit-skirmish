@@ -8065,9 +8065,9 @@ const server = createServer(async (request, response) => {
   });
   const publicFrontierCompleteAsset = /^assets\/buildings\/(?:frontier-civilization-scale-pilot-v1\/(?:(?:town-center|house)-complete-renderer\.json|captures\/(?:town-center|house)-complete-view-0[0-7]\.png)|frontier-civilization-models-v1\/(?:(?:storehouse|stable|workshop|watchtower)-complete-renderer\.json|captures\/(?:storehouse|stable|workshop|watchtower)-complete-view-0[0-7]\.png))$/.test(relative);
   const publicWildlifeAsset = [
-    'assets/wildlife/bellweather-sheep-public-reference-v1/static-preview-binding.json',
-    'assets/wildlife/bellweather-sheep-public-reference-v1/sprite-atlas-pack-v1.json',
-    'assets/wildlife/bellweather-sheep-public-reference-v1/sheep-atlas-runtime.png',
+    'assets/wildlife/bellweather-sheep-static-v1/static-preview-binding.json',
+    'assets/wildlife/bellweather-sheep-static-v1/sprite-atlas-pack-v1.json',
+    'assets/wildlife/bellweather-sheep-static-v1/sheep-atlas-runtime.png',
   ].includes(relative);
   const buildingPackRoot = 'assets/buildings/town-center-lifecycle-meshy-v1';
   const publicBuildingLifecycleManifest = relative === `${buildingPackRoot}/lifecycle-grid.json`;
