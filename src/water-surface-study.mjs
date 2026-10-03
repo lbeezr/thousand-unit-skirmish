@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { buildWaterSurfaceGeometry, WATER_LEVEL } from './water-surface-geometry.mjs';
-import { buildWaterStudyField, selectWaterStudyFish, waterStudyTime, WATER_STUDY_FISH_LIMIT } from './water-study-state.mjs';
+import { buildWaterStudyField, createWaterStudyFishSelector, waterStudyTime, WATER_STUDY_FISH_LIMIT } from './water-study-state.mjs';
 
 export function waterStudyOptions(search = '', reducedMotion = false) {
   const params = new URLSearchParams(search);
@@ -141,8 +141,9 @@ export function createWaterSurfaceStudy(definition, {
     }
   };
   mesh.userData.setWaterStudyMotion = value => { settings = { ...settings, reducedMotion: value === true }; };
+  const selectFish = fallback ? () => [] : createWaterStudyFishSelector(definition);
   mesh.userData.updateWaterStudyFish = snapshot => {
-    const fish = fallback ? [] : selectWaterStudyFish(definition, snapshot);
+    const fish = selectFish(snapshot);
     if (!ripples) return fish;
     ripples.count = fish.length; ripples.visible = fish.length > 0 && !settings.reducedMotion;
     const transform = new THREE.Matrix4(), phase = ripples.geometry.getAttribute('phase');

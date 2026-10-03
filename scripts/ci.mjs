@@ -72,6 +72,7 @@ run(['--test', 'scripts/hosted-scale-profile.test.mjs'], 'Hosted scale measureme
 run(['--test', 'scripts/unit-sprite-clock.test.mjs'], 'Sprite animation clock');
 run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work facing');
 run(['--test', 'scripts/unit-movement.test.mjs'], 'Unit separation terrain boundaries');
+run(['--test', 'scripts/fortified-site-clearance.test.mjs'], 'Fortified late-arrival construction clearance');
 run(['--test', 'scripts/sheep-static-preview.test.mjs'], 'Sheep static reference integrity and state boundary');
 run(['--test', 'scripts/sheep-directional-readiness.test.mjs'], 'Sheep directional source and anchor acceptance');
 run(['--test', 'scripts/neutral-wildlife-renderer.test.mjs'], 'Neutral wildlife render lifecycle and fallback');
@@ -118,7 +119,7 @@ run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle')
 run(['scripts/wildlife-food-scenario.mjs'], 'Both-seat wildlife gathering, depletion and recovery');
 run(['--test', 'scripts/shore-fishing.test.mjs', 'scripts/shore-fishing-placeholder.test.mjs'], 'Shore fish bank access and placeholder');
 run(['--test', 'scripts/shore-fishing-placement.test.mjs'], 'Seeded shore fishing authoring and land/water positions');
-run(['--test', 'scripts/water-surface-study.test.mjs'], 'Opt-in water appearance and visible fish ripples');
+run(['--test', 'scripts/water-surface-study.test.mjs', 'scripts/water-study-fish-binding.test.mjs'], 'Opt-in water appearance and visible fish ripples');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');
 run(['--test', 'scripts/base-lifecycle-ui.test.mjs'], 'Contextual cancellation and repair controls');
@@ -207,6 +208,7 @@ const scenarios = [
   ['scripts/vaelora-map-layout-scenario.mjs', 'Vaelora roster with Town Center collisions', '--check-only'],
   ['scripts/forked-vale-layout.mjs', 'Forked Vale layout'],
   ['scripts/fortified-crossing-layout.mjs', 'Fortified Crossing layout'],
+  ['scripts/fortified-construction-clearance-scenario.mjs', 'Fortified 2000-unit paid construction clearance'],
   ['scripts/fortified-crossing-combined.mjs', 'Fortified Crossing combined economy, orders, events, result and recovery', '0'],
   ['scripts/frontier-160-layout.mjs', 'Frontier 160 layout'],
   ['scripts/generate-highland-grove.mjs', 'Highland Grove playable layout', '--check'],

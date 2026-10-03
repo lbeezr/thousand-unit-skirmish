@@ -1,5 +1,6 @@
 import { findInvalidResourceVariant, isShoreFish } from './shore-fishing.mjs';
 import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from './shore-fishing-placeholder.mjs';
+import { createWaterStudyFishBinding } from './water-study-fish-binding.mjs';
 import { generateRollingGround, smoothGround } from './terrain-authoring.mjs';
 import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS, validateMapRegion } from './regions.mjs';
@@ -14,7 +15,7 @@ import { ownedPopulationReadout } from './population-readout.mjs';
 import { SHIPPED_AUDIO_REFERENCES } from './audio-shipped-catalog.mjs';
 import { validateMapAudioReference } from './audio-event-profile.mjs';
 import { battlefieldCursor } from './battlefield-cursor.mjs';
-import { visibleHudRects, hudSafeRect, normalizeHudPreferences } from './hud-layout.mjs';
+import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable } from './hud-layout.mjs';
 import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
@@ -1716,6 +1717,7 @@ function updateBuildingResearchControls(selectedBuilding) {
 
 function updateResearchOptions(container, building) {
   if (!container || typeof container.replaceChildren !== 'function') return;
+  const contextual = Object.hasOwn(container.dataset, 'contextResearchOptions');
   const own = building && building.team === localTeam;
   const teamState = localTeam === null ? null : latestTeamResearch[localTeam];
   const state = { team: localTeam, food: latestFood[localTeam] || 0, wood: latestWood[localTeam] || 0,
@@ -1727,7 +1729,10 @@ function updateResearchOptions(container, building) {
     for (const option of options) {
       const button = document.createElement('button'); button.type = 'button';
       button.className = 'economy-action'; button.dataset.technology = option.upgrade;
-      button.addEventListener('click', () => sendCommand({ type: 'researchUpgrade', buildingId: building.id, upgrade: option.upgrade }));
+      button.addEventListener('click', () => {
+        if (isHudActionUnavailable(button)) return;
+        sendCommand({ type: 'researchUpgrade', buildingId: building.id, upgrade: option.upgrade });
+      });
       container.append(button);
     }
   }
@@ -1735,7 +1740,7 @@ function updateResearchOptions(container, building) {
     const button = container.children[index]; const definition = TECHNOLOGY_DEFINITIONS[option.upgrade];
     const authoritative = building.researchOptions?.find(row => row.upgrade === option.upgrade);
     const reason = authoritative?.available === false ? authoritative.reason : option.reason;
-    button.disabled = !option.available || authoritative?.available === false;
+    setHudActionAvailability(button, !option.available || authoritative?.available === false, contextual);
     button.textContent = `${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason ? ` · ${reason}` : ''}`;
   }
 }
@@ -2209,7 +2214,10 @@ function applyForestState(state) {
 }
 
 let terrainSurface = null;
+let waterStudyFishBinding = null;
 function buildMap(definition) {
+  waterStudyFishBinding?.clear();
+  waterStudyFishBinding = null;
   wildlifeRenderer.reset([]);
   setActiveTerrain(definition);
   terrainSurface=null;
@@ -2258,6 +2266,7 @@ function buildMap(definition) {
   addMapObject(base);
   for (const surface of createGroundSurfaces(definition)) {
     if(surface.userData.terrainSurface) terrainSurface=surface;
+    if (surface.userData.waterStudy) waterStudyFishBinding = createWaterStudyFishBinding(definition, surface);
     addMapObject(surface);
   }
   buildConstructionGroundBatches();
@@ -4487,6 +4496,7 @@ function applyState(state, initial = false) {
     attackFocusMesh.instanceMatrix.needsUpdate = true;
     attackFocusDirty = false;
   }
+  waterStudyFishBinding?.update(state, { spectator: localTeam === null });
   updateFogFromState(state);
   applyForestState(state);
   if (Array.isArray(state.objectives)) updateObjectives(state.objectives);
@@ -4578,7 +4588,7 @@ function updateRosterProductionOptions(container, selectedProducer = null, catal
       const button = document.createElement('button');
       button.type = 'button'; button.className = 'economy-action'; button.dataset.product = kind;
       button.addEventListener('click', () => {
-        if (button.disabled || button.getAttribute('aria-disabled') === 'true') return;
+        if (isHudActionUnavailable(button)) return;
         const building = latestBuildings.find((row) => row.id === Number(button.dataset.producer));
         if (building) sendCommand({ type: 'trainUnit', kind, buildingId: building.id });
       });
@@ -4608,9 +4618,7 @@ function updateRosterProductionOptions(container, selectedProducer = null, catal
     const authoritative = producer?.productionOptions?.find((option) => option.kind === definition.id);
     const authoritativeReason = authoritative && !authoritative.available ? authoritative.reason : '';
     const unavailable = Boolean(reason || populationReason || authoritativeReason);
-    // Contextual products retain focus so their block reason stays discoverable.
-    button.disabled = unavailable && !contextual;
-    if (contextual) button.setAttribute('aria-disabled', String(unavailable));
+    setHudActionAvailability(button, unavailable, contextual);
     button.textContent = `Train ${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason || populationReason || authoritativeReason ? ` · ${authoritativeReason || reason || populationReason}` : ''}`;
   }
   container.hidden = products.length === 0;
@@ -9654,6 +9662,7 @@ function connectSocket() {
   connection.addEventListener('close', () => {
     if (socket !== connection) return;
     socket = null;
+    waterStudyFishBinding?.clear();
     roomLobby.disconnect();
     audio.stopWork(); orderAudioGate.reset();
     if (pageLeaving) return;
