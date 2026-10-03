@@ -9,7 +9,7 @@ parent coordinates staging/Mac support and the separate HUD/animation owners.
 
 | Rank | Concrete outcome / evidence | Next action and acceptance | Write boundary / dependency |
 | --- | --- | --- | --- |
-| 1 | Four authoritative stances and idle self-defense, PR #159. Paid/native checks cover combat and recovery; normal HUD and identified deployed acceptance remain open. | Integrate the [stable stance contract](military-stances.md), identify the deployed source, and exercise both-seat normal controls, mixed selection, Stop/Hold, retreat, repeated kills and recovery. Retain exact source/deployment evidence and distinguish actual HP damage from animation. | Combat owner: server/stance tests and fixes; HUD owner: client controls; parent: staging/Mac coordination. Normal-client work depends on HUD integration and an identified deployed build. |
+| 1 | Four authoritative stances and idle self-defense, PR #159. [Exact simulation evidence](qa-military-stances-2026-10-03.md): 201 checks, paid native Archers, Defensive return restart and schema-23/24 recovery pass; normal HUD and identified deployed acceptance remain open. | Integrate the [stable stance contract](military-stances.md), identify the deployed source, and exercise both-seat normal controls, mixed selection, Stop/Hold, retreat, repeated kills and recovery. Retain exact source/deployment evidence and distinguish actual HP damage from animation. | Combat owner: server/stance tests and fixes; [HUD owner](hud-controls-backlog.md): client controls; parent: staging/Mac coordination. Normal-client work depends on HUD integration and an identified deployed build. |
 | 2 | Stand Ground/Hold crowd displacement, route-outside-leash candidate starvation, and permanently suppressed defense after paid-wall return blockage were reproduced during PR #159 review and fixed with paid regressions. | Keep these regressions in the acceptance floor; replay any user report against the actual command/obstacle/stance ledger before proposing another change. No remaining server failure is claimed from these resolved cases. | Authoritative combat only. Coordinate with the pathing owner before changing shared planner/waypoint helpers. |
 | 3 | Attack pose/arrows usability is still unverified here because Chromium sandbox startup fails. Actual firing/damage works in native checks. | Animation owner compares authoritative shot tick/target position and actual displacement against displayed pose/heading on the identified user build. Combat owner fixes only a confirmed protocol or server event defect. | Renderer/animation write scope belongs to that owner; combat does not duplicate it. Mac/rendered observation is a dependency. |
 
@@ -44,4 +44,7 @@ The pre-fix `d503d90` baseline failed
 Vaelora siltmouths landscape-v2 audio reference, and
 `shore-fishing-authoring-scenario.mjs:90` because the catalog name fails
 `/Lab.*SHORE FISHING/`. These are concrete shore/audio owner work routed through
-the parent, not waived combat checks. Record current-main results separately.
+the parent, not waived combat checks. Current integrated main `9feda661` repairs
+the authoring audio fixture and all seven placement tests pass. The catalog-label
+failure at `shore-fishing-authoring-scenario.mjs:90` remains. See exact
+[stance integration evidence](qa-military-stances-2026-10-03.md).

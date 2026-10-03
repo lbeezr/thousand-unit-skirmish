@@ -51,7 +51,8 @@ Fresh matches/production use the new default. Rematch clears per-unit choices.
 
 Write scope: authoritative server, stance policy module, focused paid/native
 reproducers and gameplay/testing documentation. No renderer or HUD edits here.
-Required checks cover both seats, paid Archers and Infantry, repeated target
+The [identified simulation evidence](qa-military-stances-2026-10-03.md) records
+the tested revision and remaining deployment/client acceptance. Required checks cover both seats, paid Archers and Infantry, repeated target
 loss, fog/obstacles, leash/return, Stop/Hold/new Move, mixed Workers, malformed or
 stale commands and checkpoint recovery. Native accepted commands and damage
 must establish combat behavior; UI and deployment identity remain explicit
@@ -62,3 +63,5 @@ expects the shipped Vaelora siltmouths landscape-v2 audio reference, which the
 generator omits; `shore-fishing-authoring-scenario.mjs:90` expects a catalog name
 matching `/Lab.*SHORE FISHING/`. Both were reproduced on pristine `d503d90`.
 Parent coordinates the shore/audio owner; these failures are not waived.
+Current-main audio fixture repair passes all seven placement checks; the
+catalog-label assertion at authoring line 90 remains open.
