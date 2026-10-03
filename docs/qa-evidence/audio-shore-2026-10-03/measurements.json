@@ -1,0 +1,513 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-03",
+  "revision": "edf93b3dd07d7a578e72c4d19f9c9e92e2f1d12a",
+  "method": "FFmpeg decoded source PCM at 48 kHz stereo, exact steady-state current bus/track gains; independent composition cycles with 2 s linear entrance and 3 s exit fades; analytically reconstructed triangle cues with current exponential frequency/envelope; no Web Audio capture or hearing",
+  "mix": {
+    "overall": 0.25,
+    "effects": 1,
+    "voice": 1,
+    "music": 0.5,
+    "ambience": 0.4
+  },
+  "busGains": {
+    "master": 0.195,
+    "effects": 0.52,
+    "music": 0.275,
+    "ambience": 0.072
+  },
+  "modeledRelativeStartOffsetSeconds": 0,
+  "actualRelativeStartupPhaseCaptured": false,
+  "sources": {
+    "siltmouths-music": {
+      "path": "assets/audio/vaelora-zones-v1/sources/tus_siltmouths_music_01_v001.mp3",
+      "sha256": "cc4515570c1a359d8cbcb893d931422f7a6721872edc97fb879412cc511b7eec",
+      "catalogDurationSeconds": 30.024,
+      "decodedSeconds": 30.0,
+      "decodedRate": 48000,
+      "channels": 2,
+      "rmsDbfs": -23.930329959370592,
+      "peakDbfs": -0.9496288893852766,
+      "rawEofWrapMaxStepDbfs": -13.246334931664556,
+      "runtimeCutSeconds": 29.024000000000004,
+      "unfadedRuntimeCutWrapMaxStepDbfs": -17.75235602976744
+    },
+    "siltmouths-contrast": {
+      "path": "assets/audio/vaelora-zones-v1/sources/tus_siltmouths_contrast_01_v001.mp3",
+      "sha256": "e3b54de352dec6015fac548271b0caeefb9110655836f2bf3991a16c9bad64e3",
+      "catalogDurationSeconds": 30.040816,
+      "decodedSeconds": 30.0,
+      "decodedRate": 48000,
+      "channels": 2,
+      "rmsDbfs": -38.12149196864101,
+      "peakDbfs": -10.965155167424633,
+      "rawEofWrapMaxStepDbfs": -53.900915370656726,
+      "runtimeCutSeconds": 29.040815999999996,
+      "unfadedRuntimeCutWrapMaxStepDbfs": -32.082840506597975
+    },
+    "bellweather-music": {
+      "path": "assets/audio/vaelora-zones-v1/sources/tus_bellweather_music_01_v001.mp3",
+      "sha256": "51b4f9bb79eec35803a757e0b861f565b6bf191f456605298cc47375844f94fc",
+      "catalogDurationSeconds": 30.024,
+      "decodedSeconds": 30.0,
+      "decodedRate": 48000,
+      "channels": 2,
+      "rmsDbfs": -16.03666818555166,
+      "peakDbfs": -1.6483503293720942,
+      "rawEofWrapMaxStepDbfs": -54.48267359840723,
+      "runtimeCutSeconds": 29.024000000000004,
+      "unfadedRuntimeCutWrapMaxStepDbfs": -45.46604307246771
+    },
+    "bellweather-contrast": {
+      "path": "assets/audio/vaelora-zones-v1/sources/tus_bellweather_contrast_01_v001.mp3",
+      "sha256": "9ea48684cd7491b52bab53a06ce4d6e14a057dab75c09e9cff3d9cd97026aa78",
+      "catalogDurationSeconds": 30.040816,
+      "decodedSeconds": 30.0,
+      "decodedRate": 48000,
+      "channels": 2,
+      "rmsDbfs": -24.85264495901179,
+      "peakDbfs": -3.6341667858113693,
+      "rawEofWrapMaxStepDbfs": -34.65462846099633,
+      "runtimeCutSeconds": 29.040815999999996,
+      "unfadedRuntimeCutWrapMaxStepDbfs": -35.506395040314885
+    }
+  },
+  "pairs": {
+    "siltmouths": {
+      "rmsDbfs": -59.03855040401973,
+      "peakDbfs": -35.46579367639727,
+      "clippedSamples": 0,
+      "musicPeriodSeconds": 29.024000000000004,
+      "waterBedPeriodSeconds": 29.040815999999996,
+      "musicSeam": {
+        "periodSeconds": 29.024000000000004,
+        "fadedCutWrapMaxStepDbfs": -186.22624556046392,
+        "renderedBoundaryMaxStepDbfs": -186.22624556046392,
+        "stableRmsDbfs": -58.49141996816363,
+        "boundary100msRmsDbfs": -100.78090402749413,
+        "boundary100msMinusStableDb": -42.2894840593305,
+        "boundary1sMinusStableDb": -18.430796200831246
+      },
+      "waterBedSeam": {
+        "periodSeconds": 29.040815999999996,
+        "fadedCutWrapMaxStepDbfs": -175.22566503383317,
+        "renderedBoundaryMaxStepDbfs": -175.22566503383317,
+        "stableRmsDbfs": -79.73832790469133,
+        "boundary100msRmsDbfs": -116.8431734379376,
+        "boundary100msMinusStableDb": -37.10484553324626,
+        "boundary1sMinusStableDb": -20.731503069478705
+      },
+      "normalMixCues": {
+        "gather-work": {
+          "activeSeconds": 0.07,
+          "cueRmsDbfs": -53.346405533375304,
+          "probeWindows": 96,
+          "samplingIntervalSeconds": 0.25,
+          "coverage": "Discrete cue-length windows, not continuous sliding minima",
+          "broadband": {
+            "minimum": -2.939,
+            "p10": -0.9,
+            "median": 12.688,
+            "p90": 25.164,
+            "maximum": 28.631
+          },
+          "band300to700": {
+            "minimum": -1.634,
+            "p10": 4.335,
+            "median": 20.074,
+            "p90": 36.359,
+            "maximum": 43.365
+          },
+          "worstBroadbandAtSeconds": 16.25
+        },
+        "move": {
+          "activeSeconds": 0.09,
+          "cueRmsDbfs": -50.81196510684435,
+          "probeWindows": 96,
+          "samplingIntervalSeconds": 0.25,
+          "coverage": "Discrete cue-length windows, not continuous sliding minima",
+          "broadband": {
+            "minimum": 0.652,
+            "p10": 1.877,
+            "median": 16.004,
+            "p90": 27.8,
+            "maximum": 31.628
+          },
+          "band300to700": {
+            "minimum": 1.163,
+            "p10": 2.389,
+            "median": 21.863,
+            "p90": 37.583,
+            "maximum": 45.269
+          },
+          "worstBroadbandAtSeconds": 16.25
+        },
+        "resource-empty": {
+          "activeSeconds": 0.11,
+          "cueRmsDbfs": -55.26788316620693,
+          "probeWindows": 96,
+          "samplingIntervalSeconds": 0.25,
+          "coverage": "Discrete cue-length windows, not continuous sliding minima",
+          "broadband": {
+            "minimum": -2.944,
+            "p10": -1.94,
+            "median": 5.333,
+            "p90": 22.318,
+            "maximum": 27.398
+          },
+          "band300to700": {
+            "minimum": -1.667,
+            "p10": -0.774,
+            "median": 17.487,
+            "p90": 31.958,
+            "maximum": 41.713
+          },
+          "worstBroadbandAtSeconds": 16.25
+        }
+      },
+      "music25PercentCues": {
+        "gather-work": {
+          "activeSeconds": 0.07,
+          "cueRmsDbfs": -53.346405533375304,
+          "probeWindows": 96,
+          "samplingIntervalSeconds": 0.25,
+          "coverage": "Discrete cue-length windows, not continuous sliding minima",
+          "broadband": {
+            "minimum": 3.079,
+            "p10": 5.091,
+            "median": 16.713,
+            "p90": 29.55,
+            "maximum": 33.595
+          },
+          "band300to700": {
+            "minimum": 4.385,
+            "p10": 10.35,
+            "median": 25.776,
+            "p90": 40.638,
+            "maximum": 47.875
+          },
+          "worstBroadbandAtSeconds": 16.25
+        },
+        "move": {
+          "activeSeconds": 0.09,
+          "cueRmsDbfs": -50.81196510684435,
+          "probeWindows": 96,
+          "samplingIntervalSeconds": 0.25,
+          "coverage": "Discrete cue-length windows, not continuous sliding minima",
+          "broadband": {
+            "minimum": 6.669,
+            "p10": 7.879,
+            "median": 20.021,
+            "p90": 32.306,
+            "maximum": 36.679
+          },
+          "band300to700": {
+            "minimum": 7.182,
+            "p10": 8.417,
+            "median": 27.723,
+            "p90": 40.889,
+            "maximum": 49.917
+          },
+          "worstBroadbandAtSeconds": 16.25
+        },
+        "resource-empty": {
+          "activeSeconds": 0.11,
+          "cueRmsDbfs": -55.26788316620693,
+          "probeWindows": 96,
+          "samplingIntervalSeconds": 0.25,
+          "coverage": "Discrete cue-length windows, not continuous sliding minima",
+          "broadband": {
+            "minimum": 3.073,
+            "p10": 4.045,
+            "median": 11.014,
+            "p90": 26.222,
+            "maximum": 32.679
+          },
+          "band300to700": {
+            "minimum": 4.352,
+            "p10": 5.21,
+            "median": 23.065,
+            "p90": 33.597,
+            "maximum": 46.229
+          },
+          "worstBroadbandAtSeconds": 16.25
+        }
+      }
+    },
+    "bellweather": {
+      "rmsDbfs": -50.583697686138095,
+      "peakDbfs": -35.92909949705876,
+      "clippedSamples": 0,
+      "musicPeriodSeconds": 29.024000000000004,
+      "waterBedPeriodSeconds": 29.040815999999996,
+      "musicSeam": {
+        "periodSeconds": 29.024000000000004,
+        "fadedCutWrapMaxStepDbfs": -185.97833062738377,
+        "renderedBoundaryMaxStepDbfs": -185.97833062738377,
+        "stableRmsDbfs": -49.849930340246466,
+        "boundary100msRmsDbfs": -89.71572602352398,
+        "boundary100msMinusStableDb": -39.86579568327752,
+        "boundary1sMinusStableDb": -24.95756636854164
+      },
+      "waterBedSeam": {
+        "periodSeconds": 29.040815999999996,
+        "fadedCutWrapMaxStepDbfs": -178.6200347355552,
+        "renderedBoundaryMaxStepDbfs": -178.6200347355552,
+        "stableRmsDbfs": -66.33774769847261,
+        "boundary100msRmsDbfs": -106.5796255806952,
+        "boundary100msMinusStableDb": -40.24187788222258,
+        "boundary1sMinusStableDb": -18.02401714274319
+      },
+      "normalMixCues": {
+        "gather-work": {
+          "activeSeconds": 0.07,
+          "cueRmsDbfs": -53.346405533375304,
+          "probeWindows": 96,
+          "samplingIntervalSeconds": 0.25,
+          "coverage": "Discrete cue-length windows, not continuous sliding minima",
+          "broadband": {
+            "minimum": -8.182,
+            "p10": -6.646,
+            "median": -2.757,
+            "p90": 0.194,
+            "maximum": 3.591
+          },
+          "band300to700": {
+            "minimum": -4.509,
+            "p10": -3.107,
+            "median": 0.283,
+            "p90": 3.415,
+            "maximum": 7.444
+          },
+          "worstBroadbandAtSeconds": 10.0
+        },
+        "move": {
+          "activeSeconds": 0.09,
+          "cueRmsDbfs": -50.81196510684435,
+          "probeWindows": 96,
+          "samplingIntervalSeconds": 0.25,
+          "coverage": "Discrete cue-length windows, not continuous sliding minima",
+          "broadband": {
+            "minimum": -5.627,
+            "p10": -4.329,
+            "median": -0.124,
+            "p90": 2.648,
+            "maximum": 6.243
+          },
+          "band300to700": {
+            "minimum": -2.815,
+            "p10": -1.467,
+            "median": 2.098,
+            "p90": 5.506,
+            "maximum": 9.267
+          },
+          "worstBroadbandAtSeconds": 10.0
+        },
+        "resource-empty": {
+          "activeSeconds": 0.11,
+          "cueRmsDbfs": -55.26788316620693,
+          "probeWindows": 96,
+          "samplingIntervalSeconds": 0.25,
+          "coverage": "Discrete cue-length windows, not continuous sliding minima",
+          "broadband": {
+            "minimum": -10.297,
+            "p10": -8.761,
+            "median": -4.582,
+            "p90": -1.56,
+            "maximum": 1.845
+          },
+          "band300to700": {
+            "minimum": -6.457,
+            "p10": -4.988,
+            "median": -1.736,
+            "p90": 1.922,
+            "maximum": 5.663
+          },
+          "worstBroadbandAtSeconds": 13.75
+        }
+      },
+      "music25PercentCues": {
+        "gather-work": {
+          "activeSeconds": 0.07,
+          "cueRmsDbfs": -53.346405533375304,
+          "probeWindows": 96,
+          "samplingIntervalSeconds": 0.25,
+          "coverage": "Discrete cue-length windows, not continuous sliding minima",
+          "broadband": {
+            "minimum": -2.296,
+            "p10": -0.77,
+            "median": 2.877,
+            "p90": 5.635,
+            "maximum": 8.383
+          },
+          "band300to700": {
+            "minimum": 1.393,
+            "p10": 2.847,
+            "median": 6.169,
+            "p90": 9.117,
+            "maximum": 13.051
+          },
+          "worstBroadbandAtSeconds": 10.0
+        },
+        "move": {
+          "activeSeconds": 0.09,
+          "cueRmsDbfs": -50.81196510684435,
+          "probeWindows": 96,
+          "samplingIntervalSeconds": 0.25,
+          "coverage": "Discrete cue-length windows, not continuous sliding minima",
+          "broadband": {
+            "minimum": 0.289,
+            "p10": 1.577,
+            "median": 5.485,
+            "p90": 8.087,
+            "maximum": 11.07
+          },
+          "band300to700": {
+            "minimum": 3.142,
+            "p10": 4.508,
+            "median": 7.984,
+            "p90": 11.265,
+            "maximum": 14.817
+          },
+          "worstBroadbandAtSeconds": 13.75
+        },
+        "resource-empty": {
+          "activeSeconds": 0.11,
+          "cueRmsDbfs": -55.26788316620693,
+          "probeWindows": 96,
+          "samplingIntervalSeconds": 0.25,
+          "coverage": "Discrete cue-length windows, not continuous sliding minima",
+          "broadband": {
+            "minimum": -4.369,
+            "p10": -2.867,
+            "median": 1.079,
+            "p90": 3.634,
+            "maximum": 6.669
+          },
+          "band300to700": {
+            "minimum": -0.487,
+            "p10": 0.987,
+            "median": 4.142,
+            "p90": 7.687,
+            "maximum": 11.162
+          },
+          "worstBroadbandAtSeconds": 13.75
+        }
+      }
+    }
+  },
+  "privateComparison": {
+    "fileName": "shore-fishing-siltmouths-then-bellweather-normal-mix.wav",
+    "durationSeconds": 48,
+    "rate": 48000,
+    "channels": 2,
+    "pcmBits": 24,
+    "peakDbfs": -33.21738981989297,
+    "clippedSamples": 0,
+    "sha256": "60cafc8cb7ce727923cfb9cdab5b37505c2cb431a358f076bb9ca2c5e98aa0a2",
+    "timeline": [
+      {
+        "startSeconds": 0,
+        "endSeconds": 14,
+        "pair": "siltmouths",
+        "segment": "normal-mix source time 4\u201318 s",
+        "cues": [
+          {
+            "atSeconds": 3.005,
+            "cue": "gather-work"
+          },
+          {
+            "atSeconds": 4.505,
+            "cue": "gather-work"
+          },
+          {
+            "atSeconds": 6.005,
+            "cue": "gather-work"
+          },
+          {
+            "atSeconds": 7.505,
+            "cue": "move"
+          },
+          {
+            "atSeconds": 9.005,
+            "cue": "gather-work"
+          },
+          {
+            "atSeconds": 10.505,
+            "cue": "gather-work"
+          },
+          {
+            "atSeconds": 12.005,
+            "cue": "resource-empty"
+          }
+        ]
+      },
+      {
+        "startSeconds": 15,
+        "endSeconds": 29,
+        "pair": "bellweather",
+        "segment": "normal-mix source time 4\u201318 s",
+        "cues": [
+          {
+            "atSeconds": 18.005,
+            "cue": "gather-work"
+          },
+          {
+            "atSeconds": 19.505,
+            "cue": "gather-work"
+          },
+          {
+            "atSeconds": 21.005,
+            "cue": "gather-work"
+          },
+          {
+            "atSeconds": 22.505,
+            "cue": "move"
+          },
+          {
+            "atSeconds": 24.005,
+            "cue": "gather-work"
+          },
+          {
+            "atSeconds": 25.505,
+            "cue": "gather-work"
+          },
+          {
+            "atSeconds": 27.005,
+            "cue": "resource-empty"
+          }
+        ]
+      },
+      {
+        "startSeconds": 30,
+        "endSeconds": 38,
+        "pair": "siltmouths",
+        "segment": "current-fade loop boundary",
+        "boundarySeconds": 34
+      },
+      {
+        "startSeconds": 39,
+        "endSeconds": 47,
+        "pair": "bellweather",
+        "segment": "current-fade loop boundary",
+        "boundarySeconds": 43
+      }
+    ]
+  },
+  "limits": [
+    "No auditory input support: audio tool returned content omitted; neither candidate has been heard here.",
+    "RMS/300\u2013700 Hz energy ratios are interference indicators, not psychoacoustic masking or recognition scores.",
+    "Analytic cue approximation differs from Web Audio oscillator implementation and omits startup smoothing/hardware output.",
+    "Modeled clip fades produce a substantial level valley; no seamless-crossfade or heard-seam acceptance is established.",
+    "Both independent players start at modeled time zero. Actual runtime starts follow independent/sequential async decode and were not captured; combined valley timing and first-cycle ratios assume that relative phase.",
+    "Water contrast replaces the current terrain source only in this private render; no map/default/profile edit.",
+    "Existing source authorization/provenance reused; no new provider call, rights grant or public audio distribution."
+  ],
+  "execution": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "matplotlib": "3.10.8",
+    "ffmpeg": "ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers"
+  }
+}

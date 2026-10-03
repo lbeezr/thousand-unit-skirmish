@@ -65,6 +65,11 @@ provenance does not contain a new license grant. This slice introduces no new
 asset distribution or rights claim. The [existing kit rights note](audio-kit-plan.md#music-rights-boundary)
 remains separate from technical playback and creative audition decisions.
 
+The first [Shore Fishing comparison](qa-shore-audio-audition-2026-10-03.md) now
+records measured cue/background energy and loop boundaries, plus a private
+normal-mix sample. Siltmouths is the provisional audition candidate; actual
+hearing and a default profile assignment remain open.
+
 ## Verification scope
 
 `scripts/audio-roster-notices.test.mjs` first reproduced both roster gaps, then passed

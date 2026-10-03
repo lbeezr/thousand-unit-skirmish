@@ -4,8 +4,12 @@
 
 ## Start a match
 
-Choose **Play vs AI** for a solo match, or create a **New room** and share the
-invite link for 1v1. Azure is the host and controls map changes and rematches.
+The ordinary game URL opens the [main menu](game-entry.md). Choose **New Game**
+for a fresh Play vs AI match, or **Create Room** and share the invite for 1v1.
+**Join Room** accepts an invite/code; **Resume** appears for a server-validated
+saved session. Root entry never automatically loads an old battlefield.
+**Map Studio** opens a separate fresh host workspace; **Settings** works before
+entering a match. Azure is the host and controls map changes and rematches.
 Ember is the second player. Further connections watch as spectators.
 
 New invite rooms open a [pregame lobby](room-lobby.md). The host selects the map
@@ -151,6 +155,8 @@ match until Azure starts another match or changes maps.
 A lost connection retries automatically. Return through the same tab/session to
 reclaim your seat within the configured grace window. See [local setup](getting-started.md)
 if you join as a spectator or cannot connect.
+The match menu's **Main Menu** link and lobby's **Leave room** return to the
+root menu without resetting the match or removing saved session tokens.
 
 If the connection drops while a building request is waiting for confirmation,
 the placement preview closes. After reconnecting, check whether the building

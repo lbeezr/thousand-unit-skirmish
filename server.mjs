@@ -4810,13 +4810,31 @@ function replanPathsBlockedBy(footprint) {
 }
 
 function enqueueRouteRepairs(repairs, { mode = 'blocked-route-repair', orderLabel = 'ROUTE REPAIR' } = {}) {
+  if (repairs.length === 0) return;
   const assignments = [];
   const groups = new Map();
+  // A new footprint can cover several formation goals. Reserve surviving
+  // friendly goals before relocating blocked ones, rather than collapsing
+  // several soldiers onto the same nearest-open cell and trapping their peers.
+  const goalsByTeam = [new Set(), new Set()];
+  const pending = pendingMoveAssignmentsByUnit();
+  for (const unit of units) {
+    const destination = pending.get(unit.id)?.destination ?? unit.moveGoalCell;
+    if (unit.hp > 0 && unit.kind !== 'worker' && isWalkable(destination)) {
+      goalsByTeam[unit.team].add(destination);
+    }
+  }
   for (const { unit, destination: requestedDestination } of repairs) {
     if (!unit || unit.hp <= 0 || units[unit.id] !== unit) continue;
-    const destination = nearestOpenCell(requestedDestination);
-    if (destination < 0) continue;
     const startCell = nearestOpenCell(worldToCell(unit.x, unit.z));
+    let destination = nearestOpenCell(requestedDestination);
+    if (unit.kind !== 'worker' && !isWalkable(requestedDestination)) {
+      const available = findAvailableCellNear(requestedDestination,
+        walkableComponents[startCell], goalsByTeam[unit.team]);
+      if (available >= 0) destination = available;
+    }
+    if (destination < 0) continue;
+    if (unit.kind !== 'worker') goalsByTeam[unit.team].add(destination);
     const wallOrder = activeWallBuildOrder(unit);
     unit.orderRevision++;
     if (wallOrder) wallOrder.revision = unit.orderRevision;
@@ -7094,6 +7112,13 @@ function pruneExpiredSessions(now = Date.now()) {
   syncPregameSeats();
 }
 
+function sessionForResumeToken(token, now = Date.now()) {
+  if (typeof token !== 'string' || !/^[A-Za-z0-9_-]{43}$/.test(token)) return null;
+  const session = sessions.get(createHash('sha256').update(token).digest('base64url'));
+  return session && (session.peer && !session.peer.closed && !session.peer.socket.destroyed
+    || session.expiresAt > now) ? session : null;
+}
+
 function releasePeer(peer, graceful = false) {
   if (peer.closed) return;
   peer.closed = true;
@@ -7171,8 +7196,7 @@ function dispatchPeerTextMessage(peer, payload, compressed) {
   } catch {}
 }
 
-function createPeer(socket, resumeToken, compressionEnabled = false) {
-  const now = Date.now();
+function createPeer(socket, resumeToken, compressionEnabled = false, now = Date.now()) {
   pruneExpiredSessions(now);
   const resumeTokenHash = resumeToken ? createHash('sha256').update(resumeToken).digest('base64url') : null;
   const resumable = resumeTokenHash ? sessions.get(resumeTokenHash) : null;
@@ -7518,6 +7542,12 @@ const server = createServer(async (request, response) => {
     }));
     return;
   }
+  if (url.pathname === '/api/session' && request.method === 'GET') {
+    const session = sessionForResumeToken(request.headers['x-rts-resume-token']);
+    response.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' });
+    response.end(JSON.stringify({ valid: Boolean(session) }));
+    return;
+  }
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     response.writeHead(405);
     response.end('Method not allowed');
@@ -7550,6 +7580,7 @@ const server = createServer(async (request, response) => {
     'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',
     'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs',
     'src/room-lobby-ui.mjs', 'src/room-lobby-chat-ui.mjs', 'src/room-lobby.css',
+    'src/game-entry.mjs', 'src/game-entry-session.mjs', 'src/game-menu.css',
     'src/scenario-regions.mjs', 'src/scenario-authoring.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
     'src/shore-fishing.mjs', 'src/shore-fishing-placeholder.mjs', 'src/shore-fishing-placement.mjs',
     'src/dock-placement.mjs', 'src/water-route-graph.mjs',
@@ -7718,11 +7749,18 @@ server.on('upgrade', (request, socket, head) => {
     socket.destroy();
     return;
   }
-  pruneExpiredSessions();
+  // Use one admission instant so an expiry boundary cannot pass the strict
+  // Resume check and then allocate a different seat in createPeer.
+  const admissionTime = Date.now();
+  pruneExpiredSessions(admissionTime);
   const requestedProtocols = String(request.headers['sec-websocket-protocol'] || '')
     .split(',').map((protocol) => protocol.trim());
   const resumeProtocol = requestedProtocols.find((protocol) => /^rts-resume\.[A-Za-z0-9_-]{43}$/.test(protocol));
   const resumeToken = resumeProtocol ? resumeProtocol.slice('rts-resume.'.length) : null;
+  if (url.searchParams.get('resumeOnly') === '1' && !sessionForResumeToken(resumeToken, admissionTime)) {
+    socket.end('HTTP/1.1 409 Conflict\r\nConnection: close\r\nContent-Length: 0\r\n\r\n');
+    return;
+  }
   const selectedProtocol = requestedProtocols.includes('rts-v1') ? 'rts-v1' : null;
   const compressionEnabled = hasCompatiblePerMessageDeflateOffer(request);
   const accept = createHash('sha1').update(`${key}258EAFA5-E914-47DA-95CA-C5AB0DC85B11`).digest('base64');
@@ -7739,7 +7777,7 @@ server.on('upgrade', (request, socket, head) => {
   ].join('\r\n');
   socket.write(handshake);
   socket.setNoDelay(true);
-  const peer = createPeer(socket, resumeToken, compressionEnabled);
+  const peer = createPeer(socket, resumeToken, compressionEnabled, admissionTime);
   dirty = true;
   peer.sendJson({
     type: 'welcome',

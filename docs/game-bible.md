@@ -104,6 +104,8 @@ a display never rounds insufficient stock up to the purchase price.
 ## Implemented scope
 
 - Azure and Ember seats, invite rooms, spectators, reconnects, and checkpoints.
+- Ordinary root entry opens the [main menu](game-entry.md), with deliberate fresh
+  game/room creation, join, validated Resume, isolated Map Studio and settings.
 - New PvP invite rooms have host map/army configuration, both-seat readiness,
   explicit launch and rematch/recovery through the [pregame lobby](room-lobby.md).
   Connected seats can exchange bounded plain-text pregame chat; history is
@@ -242,6 +244,11 @@ drop-off routing; wood still needs a Storehouse or Town Center. It produces no
 units or population and does not generate or multiply food. Mill currently uses
 the existing procedural House appearance as an explicit placeholder until its
 own art is authored. It uses the same paid repair and cancellation rules.
+
+The [controlled depot study](qa-mill-depot-economy-2026-10-03.md) records simulated
+food-trip savings and Storehouse's additional wood service, with no human matches
+or tuning change. Construction time and food/wood prices remain separate costs.
+The [Mill art brief](frontier-mill-art-brief.md) retains its food-only land role.
 
 Dock is a shoreline foundation: provisional 100 wood, 20 accumulated
 Worker-seconds, 1,200 HP and a 3 × 3 dry level-zero land footprint. Placement
