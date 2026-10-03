@@ -235,8 +235,8 @@ Regenerate only this pilot with `node scripts/seed-millrace-resources.mjs`.
 It changes only Millrace's `resourceNodes` and is idempotent. The regional builder
 applies the same profile after settlement paint. To customize an individual map,
 select/edit/remove the materialized nodes in Map Studio; regeneration replaces
-those edits. The editor still places individual food/wood sites; a cluster brush
-and new currencies are separate future work.
+those edits. Map Studio can place individual food/wood sites or additive resource
+patches; new currencies remain separate future work.
 
 The pure `appendSeededResourceCluster(map, settings)` helper prepares one additive
 food/wood patch on a validated map. Supply `seed`, anchor `x`/`z`, `type` and an
@@ -269,12 +269,33 @@ External resource/terrain edits stop history navigation until `reset()`; reset
 also belongs after populate, draft restore or resize. Save ordinary map nodes and
 selection through the existing draft/JSON format; reload starts fresh history.
 
-This slice does not change `src/main.js`, existing resource tools, defaults or any
-map. The UI owner's later integration boundary is the resource pointer branch,
-resource preview draw, and populate/restore/resize reset hooks. Keep its history
-separate from named-region/scenario-event undo. Test the operation with
-`node --test scripts/resource-brush-authoring.test.mjs`; a rendered brush control
-and human editor interaction remain unimplemented.
+In Map Studio, **Resource patches** is open by default under **Resource nodes**. Choose food
+or wood, a whole-number seed, **markers** (1–16), **radius** (1–8 cells) and
+**total patch stock** (at least one stock per marker). Defaults remain five
+markers within four cells. Changing count or radius keeps the entered total;
+it does not multiply stock or change existing nodes. For example, 101 stock
+with three markers and radius 2 creates a tight pocket with stocks 34/34/33;
+five markers and radius 8 can spread the same budget farther from the anchor.
+Radius is a maximum distance, with two-cell minimum spacing. A crowded patch
+may not fit: reduce the count, widen the radius or choose another anchor.
+Enter a one-based anchor column/row and press **Preview**, or **Pick anchor**
+and click a map cell. Dashed preview markers show individual stocks; the status
+reports count, shared total, radius and seed. Spawn clearance stays six cells.
+**Apply patch** adds exactly the previewed markers in one
+operation. **Cancel preview** or Escape clears it without adding resources.
+Enter in a patch field previews; Escape cancels a pending preview before closing
+Map Studio. The existing single-node tools retain their 300 food / 500 wood defaults.
+
+**Undo patch** and **Redo patch** restore nodes and selection independently of
+scenario history. Changing brush settings cancels the preview; changing resource
+stock, terrain, elevation, spawns or dimensions clears brush history. Loading or
+restoring a map starts a fresh session. Count and radius use ordinary draft form
+fields. Applied nodes use the existing draft,
+publish and JSON paths. No preview receipt or history is persisted. The controls
+are isolated in [`src/resource-brush-controls.mjs`](../src/resource-brush-controls.mjs).
+Run `node --test scripts/resource-brush-authoring.test.mjs scripts/resource-brush-controls.test.mjs`
+for operation, actual client-hook and DOM checks. These checks do not establish
+canvas appearance or unassisted human usability; those remain visual acceptance work.
 
 CI runs `node scripts/vaelora-map-layout-scenario.mjs --check-only` to validate
 all regional layouts without rewriting the SVG or dirtying the clean release

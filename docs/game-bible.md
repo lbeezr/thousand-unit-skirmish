@@ -106,6 +106,8 @@ a display never rounds insufficient stock up to the purchase price.
 - Azure and Ember seats, invite rooms, spectators, reconnects, and checkpoints.
 - New PvP invite rooms have host map/army configuration, both-seat readiness,
   explicit launch and rematch/recovery through the [pregame lobby](room-lobby.md).
+  Connected seats can exchange bounded plain-text pregame chat; history is
+  ephemeral and spectators read only.
 - Workers, Infantry, Archers, Spearmen, Scouts, Riders and Siege Engines; food/wood
   gathering, construction, queues, rally points, population reservations and bounded research.
 - Box/Line/Column destinations, direct attacks, attack move, queued waypoints,
@@ -236,12 +238,23 @@ food-trip savings and Storehouse's additional wood service, with no human matche
 or tuning change. Construction time and food/wood prices remain separate costs.
 The [Mill art brief](frontier-mill-art-brief.md) retains its food-only land role.
 
+Dock is a shoreline foundation: provisional 100 wood, 20 accumulated
+Worker-seconds, 1,200 HP and a 3 × 3 dry level-zero land footprint. Placement
+requires an adjacent clear 3 × 3 authored-water berth and an outward water
+route step, while preserving ordinary land access and active routes. It uses
+the existing building lifecycle and an explicit procedural House placeholder.
+It offers no production, drop-off, population or resource bonus; boats remain
+unavailable. [The Dock contract](dock-shoreline-foundation.md) defines the
+current berth handoff and subsequent naval work.
+
 A one-cell Palisade uses **provisional test tuning** of 15 wood, five accumulated
 Worker-seconds and 300 HP. Whole lines reserve occupancy and pay atomically;
 existing friendly segments are reused without charge. Workers construct new
 segments in a persisted sequence, interrupted by another player order. Both teams
-obey the same ordinary blocking rules. The single-cell registry menu works;
-line authoring UI and finished wall art remain future work. See the
+obey the same ordinary blocking rules. The normal Palisade menu previews and
+places an atomic drag line, with Shift selecting its elbow and arrows/Enter
+supporting keyboard endpoints. Invalid lines and aggregate cost are visible
+before submission. Finished wall art remains separate work. See the
 [paid palisade contract](palisade-runtime.md). No stone currency or gate policy is introduced.
 
 ## Cancellation and repair

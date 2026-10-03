@@ -48,6 +48,7 @@ the build they name.
 | Understand overload behavior | [Simulation timing](simulation-timing.md) |
 | Author and validate scenario JSON | [Map authoring](map-authoring.md) |
 | Inspect isolated water routes before dock/boat integration | [Water navigation foundation](water-navigation-foundation.md) |
+| Place Dock foundations and inspect their land/water berth contract | [Dock shoreline foundation](dock-shoreline-foundation.md) |
 | Choose a map | [Catalog](maps.md), [Forked Vale](forked-vale-scenario.md), [Three Crowns](three-crowns-layout.md) |
 | Change the compact objective HUD | [Objective behavior and validation](battlefield-objectives-validation.md) |
 | Change owned population feedback | [Population header behavior and validation](population-header-validation.md) |
@@ -85,6 +86,8 @@ from source/candidate packs. Then use the relevant contract:
 - [Renderer state/GLB/environment contract](renderer-state-contract.md).
 - [Water surface study](water-surface-study.md): opt-in apparent depth, directional motion, and visibility-gated shore-fish ripple preview.
 - [Sprite-atlas format](sprite-atlas-contract-v1.md).
+- [Generated strip adoption](sprite-strip-adoption-contract.md): shared scale/ground anchors, exact color/mask seed lock, explicit timing and reviewed helper boundaries.
+- [Worker fishing pilot](worker-fishing-animation.md): private crouched hand-net study, exact-heading default integration and unchanged food authority.
 - [First civilization style](frontier-civilization-art-style.md) and [illustrated architecture wiki](lore/frontier-architecture.md).
 - [Building atlas production plan](building-atlas-production-plan.md): roster, references, scale and generation order.
 - [Building model/capture pipeline](building-asset-production-pipeline.md) and

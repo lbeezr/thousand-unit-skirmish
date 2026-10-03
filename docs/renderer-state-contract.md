@@ -83,6 +83,13 @@ retain the last heading. Zero yaw is +Z, increasing toward +X. With the fixed
 not screen compass directions. Billboard rotation does not require a second yaw
 offset.
 
+Shore-fish work turns toward the canonical derived water visual while Worker
+movement/gather authority remains at its land marker. Optional row index 16
+identifies that active work variant; the default renderer selects `gather-fish`
+with exact-heading food/gather/idle fallback and a separate cosmetic clock.
+Legacy rows clear the variant. The [private pilot](worker-fishing-animation.md)
+records source coverage and pending public-art approval; it changes no economy.
+
 The default Human Worker keeps exact walk/gather facings. Its v3 pack has only
 three animated walk directions and one animated food-gather direction; other
 directions hold their authored idle facing. Boughward's first-pass Worker still

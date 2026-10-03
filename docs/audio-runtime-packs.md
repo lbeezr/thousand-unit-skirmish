@@ -70,6 +70,18 @@ Check: `node scripts/audio-lifecycle-scenario.mjs`.
 Stop and Hold Position orders use `unit.<kind>.stop` and `unit.<kind>.hold`,
 then `cue.stop`/`cue.hold`, with synthesized stationary confirmation fallback.
 
+Queue acknowledgements use registered unit labels, including Spearman, Scout,
+Rider and Siege Engine. All registered local technology completions use
+`research-complete` rather than the production-complete cue; opponent research
+stays silent. The existing player notice delivery and cue cooldowns are retained.
+Palisade lines use the existing build cue once after `WALL BUILD ORDER` applies
+to their issued token; planning, failures, repeated notices and later segment
+work stay silent.
+Check: `node --test scripts/audio-roster-notices.test.mjs` plus the roster-options
+and progression scenarios. The [coverage and reuse audit](qa-audio-coverage-2026-10-03.md)
+records current map scores, fishing/wildlife/building routes and the next bounded
+mix auditions from existing sources.
+
 ## Shipped delivery and execution feedback
 
 Map Studio offers the `rts-feedback-test` / `worker-actions` v1 profile as supplied
@@ -105,8 +117,10 @@ scheduling, not a human listening or discoverability session.
 
 ## Next bounded audio slice
 
-Verify volume/mute persistence across a fresh audio instance with an in-memory
-storage fixture, including legacy settings migration, malformed stored JSON and
-write failures. Choose a fix only after reproducing a gap; retain the existing
-settings key and defaults. Browser listening remains a separate owner check when
-a working sandbox is available.
+Run the [short Mac listening session](audio-design.md#short-mac-listening-session)
+on the recent music/cue fixes, then choose one reproduced audible issue or one
+specific existing-track mix change. Settings persistence/migration/storage-failure
+fixtures passed without a runtime defect; the key and defaults are retained.
+Prioritize a concrete doubled entrance, stale acknowledgement, loop seam or cue
+masking observation, with commit and mix recorded. Use existing originals and
+preserve their provenance; no new generation is needed for this listening slice.

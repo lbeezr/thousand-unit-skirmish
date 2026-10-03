@@ -75,3 +75,42 @@ subsequent Petunia suggestion also resolves to no live agent in this environment
 The author retains responsibility for review findings, guarded
 merge and postmerge checks. No additional workers were spawned and no review
 or repository protection was bypassed.
+
+## Closed PR and postmerge checks
+
+[Independent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/41#pullrequestreview-5401055373)
+at exact head `218e53cfba6041ba8fe247bcde302fbda495541c` found no blockers. It
+independently reran all 418 unit tests, the two-client lobby, ruleset and fishing
+scenarios, and probed suspended map publication with the real command handler.
+The shared-account COMMENT records independent agent review, not a separate
+account's formal GitHub approval.
+
+PR #41 merged normally with an expected-head guard as
+`ffdc9a78f36f48d2b64a72de57d320388674a672`. On an isolated checkout of that exact
+merge: all 432 unit tests, all 11 pregame scenario groups, the complete legacy
+supervisor recovery/isolation/protocol scenario, packaged release/import/art
+and 31 UI asset checks pass. Documentation passes 414 files / 2,707 local links.
+The merge tree equals the separately checked current-main candidate tree.
+The clean local release contains 1,017 files, digest
+`sha256:7ba363acba3c029126eea91fc0284964b0a8e00ed3fc40442d409396449b8001`.
+[Closure comment](https://github.com/lbeezr/thousand-unit-skirmish/pull/41#issuecomment-5969790482)
+retains the results and the separate Mac appearance/focus/input follow-up.
+No deployment or cloud sandbox bypass was performed.
+
+## Mac browser follow-up
+
+[Mac QA](https://github.com/lbeezr/thousand-unit-skirmish/pull/41#issuecomment-5969864079)
+checked merge `ffdc9a78f36f48d2b64a72de57d320388674a672` in normal-sandbox
+Chrome 154.0.8037.93, two isolated clients at 1280×800, with an eight-unit
+authored Pregame Arena. Prelaunch simulation/supply freeze, guest authority,
+map-change readiness invalidation, both-ready launch, duplicate-launch identity
+and supply, stable Ember reload, and the running menu passed. The panel fit;
+Leave wrapped and stayed visible.
+
+Ready's pending/acknowledgement render dropped keyboard focus to BODY in both
+clients; initial guest focus was also BODY. PR #57 fixes initial enabled-control
+focus and restores the sending control after acknowledgement/rejection, while
+preserving a newer deliberate focus choice. DOM tests cover overlapping Ready
+and chat replies. Native browser verification of the fix remains separate.
+Manual 250–2,000-unit presets, mobile sizes, supervisor restart, and a full
+accessibility/focus-trap verdict were outside that Mac check.

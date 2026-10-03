@@ -6,8 +6,11 @@ import { matureSettlementPlan as plan, settlementLayout, assertSettlementLedger 
 test('the inspection fixture uses the current paid roster, prerequisites and connected layout', () => {
   assert.equal(plan.map.startingArmySize, 24, 'total opening army, twelve per seat');
   assert.deepEqual(settlementLayout(), { blockedCells: 264, connectedFreeCells: 3832 });
-  assert.deepEqual([...new Set(plan.pads.map(([type]) => type))].sort(), Object.keys(B).sort(),
-    'the live settlement plan constructs every registered building');
+  assert.deepEqual([...new Set(plan.pads.map(([type]) => type))].sort(),
+    Object.keys(B).filter(type => !B[type].placement).sort(),
+    'the open-field settlement constructs every ordinary land building');
+  assert.deepEqual(Object.keys(B).filter(type => B[type].placement), ['dock'],
+    'Dock is covered by its separate both-seat shoreline fixture');
   assert.deepEqual([...plan.upgrades].sort(), Object.keys(T).sort());
   assert.ok(plan.upgrades.indexOf('military-tier-2') < plan.upgrades.indexOf('siege-engineering'));
   assert.ok(plan.pads.findIndex(([type]) => type === 'workshop') > plan.pads.findIndex(([type]) => type === 'town-center'));

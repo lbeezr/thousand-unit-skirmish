@@ -58,6 +58,14 @@ so restart during delivery neither replenishes sheep nor credits food twice.
 [Interrupted delivery evidence](qa-interrupted-cargo-return-2026-10-03.md) keeps
 the original failing fixture and both-seat recovery checks.
 
+At zero stock, the depleted carcass also releases its construction exclusion
+and stops contributing a resource access point to building-connectivity checks.
+The browser releases only sites whose zero stock has been disclosed; unknown
+or positive stock remains protected. This uses the same rule for ordinary finite
+food/wood nodes. It neither moves animals nor replenishes stock, and all other
+construction guards remain in force. [Depleted-site evidence](qa-depleted-resource-construction-2026-10-03.md)
+proves both-seat paid construction and recovery on the cleared sites.
+
 Checkpoint schema 20 saves species, lifecycle, stock and existing Worker intent/
 cargo together. It validates `alive` only at full authored stock, `carcass` only
 with positive remaining stock and `depleted` only at zero. Schema 19 ordinary

@@ -12,6 +12,9 @@ New invite rooms open a [pregame lobby](room-lobby.md). The host selects the map
 and starting army, both players ready, then the host launches. Settings changes
 or disconnects clear readiness. Reset/rematch returns to this lobby; old rooms
 and Play vs AI retain their existing entry flow.
+Both connected seats can use **Room chat** before launch; spectators can read.
+Recent messages survive a seat reconnect and rematch, but clear when the room
+server restarts. Chat does not change readiness.
 
 When you take a player seat, the camera starts at your Town Center. Use **Fit
 map** for an overview. Reconnecting to the same seat keeps your current view.
@@ -58,12 +61,20 @@ assigned team changes, or a rematch starts.
 | Gather | Right-click a food/wood node or harvestable forest cell with workers selected. |
 | Return cargo | Select carrying workers and choose **Return cargo** in the selection bar. |
 | Construct | Choose Build barracks/range, then left-click a valid site. |
+| Build a Palisade line | Choose Palisade in Build, then drag/release across clear cells. Shift changes the elbow. A tap places one cell; Escape or right-click cancels. |
+| Place a wall with the keyboard | While the battlefield is focused in Palisade mode, arrows move the endpoint; Enter anchors, then Enter places. |
 | Resume construction | Select the unfinished site and use Resume construction. |
 | Set a rally | Select a friendly Barracks or Range, then right-click ground. |
 
 Choose Box, Line, or Column before a move or attack-move order. Line and Column
 face the destination. A plain ground order replaces queued waypoints. The order
 feedback reports sending, planning, applied, rejected, or interrupted state.
+
+Palisade placement shows the whole line's new segments and total cost. Existing
+friendly segments are reused free. Invalid or unaffordable lines place nothing;
+the server also rejects lines that cut a route or lack Worker access. The current
+15-wood price per new segment is provisional. Workers construct paid segments
+in sequence until another order interrupts them.
 
 Attack move can engage a visible enemy already within weapon range across a
 cliff or gap. Pursuit continues while a firing position remains reachable. If
@@ -79,6 +90,9 @@ then leaves them idle. This also delivers the final food from an exhausted sheep
 it needs no new Gather order. An unavailable drop-off preserves the cargo.
 Forest cells currently yield six wood each; exhaustion clears their movement
 and sight block. Berry brushwood and regrowth are future experiments.
+An exhausted finite resource node also releases its construction site. Living
+sheep, partial carcasses and other positive-stock nodes still protect their
+cells. Buildings, units, terrain and route checks continue to apply.
 
 | Action | Cost | Time / condition |
 | --- | --- | --- |
@@ -111,6 +125,8 @@ returning wood is rejected and the Worker keeps its cargo.
 Scroll to zoom. Pan at a battlefield edge, with middle-drag, or with Space + drag.
 Use the tactical map to move the camera; its focused arrow-key controls also pan.
 Camera settings and help expose the available navigation controls.
+Mouse edge scrolling starts within 80 CSS pixels of any battlefield-canvas edge
+(previously 40); saved speed and enabled/disabled preferences still apply.
 
 The compact objective summary keeps active victory/deadline countdowns visible.
 Open Objectives for prerequisites, rewards, live cards, and recent notices.
