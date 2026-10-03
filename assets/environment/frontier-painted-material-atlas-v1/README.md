@@ -1,6 +1,8 @@
 # Painted ground material atlas v1
 
-**Status:** source/runtime candidate. Gameplay still uses individual ground textures.
+**Status:** default runtime for the eight represented ground paints. Regional/quiet
+replacements and other materials retain their individual textures. Deployed
+appearance verification remains incomplete; [owner and evidence](../../../docs/qa-painted-ground-atlas-adoption.md).
 [Asset guide](../../../docs/assets.md) · [Provenance](PROVENANCE.md)
 
 ## Layout and sampling
@@ -11,12 +13,18 @@ The assembled page is 1920 × 1920, opaque sRGB RGB8, clamped at page edges.
 Material repetition remains world-aligned with a 12-world-unit period.
 
 `uvRectTopLeft` records normalized pixel-center bounds. Inset half a pixel,
-flip the WebGL v coordinate, and split geometry at integer repeat boundaries
-so mirrored UVs preserve the existing world alignment and feather alpha.
+flip the WebGL v coordinate, and fold samples at integer repeat boundaries.
+The runtime folds UVs at each shader read, after stochastic rotation/offset;
+geometry splits alone cannot preserve that sampling. The existing split-quad
+helper remains available for consumers that interpolate atlas UVs in geometry.
+World alignment and the independent feather mask remain unchanged.
 
 Six authored runtime mips are 1920, 960, 480, 240, 120, and 60 px square.
 Levels 0–3 use WebP quality 86; 4–5 are lossless to avoid compression-block drift.
-A future loader must cap sampling at level 5 to avoid neighboring-slot blending.
+The loader supplies only these six authored mips, disables GPU mip generation,
+and allocates a shared page through Three r180's immutable texture storage.
+The sampling shader also caps the gradient footprint at mip 5 to keep distant
+and anisotropic reads inside the mirrored gutters.
 
 ## Sources and rebuild
 
@@ -32,6 +40,7 @@ python3 scripts/build-painted-material-atlas.py
 python3 scripts/build-painted-material-atlas.py --check
 npm run validate:painted-material-atlas
 node scripts/painted-material-atlas-uv-scenario.mjs
+node --test scripts/painted-material-atlas-runtime.test.mjs
 ```
 
 The builder writes atlas, mips, preview, and manifest. `--check` compares an
@@ -40,6 +49,11 @@ source allowlist, hashes, image headers, mips, slot placement, and UV arithmetic
 
 ## Adoption limits
 
-Runtime loader, mip cap, split-quad UV integration, and game-zoom review are
-separate work. This ground atlas is distinct from the GLB sample's material atlas
-and the sprite-page format.
+Normal `createGroundSurfaces()` uses these paints through the
+[runtime loader](../../../src/painted-material-atlas-runtime.mjs) and
+[sampling shader](../../../src/terrain-texture-sampling.mjs), with no preview gate.
+The manifest and six WebPs ship; source/preview PNGs are not runtime files.
+If manifest/mip loading fails, existing individual paints remain usable.
+Game-zoom review and exact deployed revision evidence remain owner-held work.
+This ground atlas is distinct from the resource/cliff candidates, the GLB
+sample's material atlas, and the sprite-page format.

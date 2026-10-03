@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { RESOURCE_VISUAL_STAGES, resourceVisualStage } from './resource-visual-state.mjs';
 import { createGroundMistStudy, groundMistEnabled } from './terrain-atmosphere.mjs';
 import { applyTerrainTextureSampling } from './terrain-texture-sampling.mjs';
+import { groundTextureName, loadPaintedMaterialAtlas } from './painted-material-atlas-runtime.mjs';
 import { buildTerrainBlendMasks, buildForestGroundMask } from './terrain-blend.mjs';
 import { buildWaterSurfaceGeometry, WATER_LEVEL } from './water-surface-geometry.mjs';
 import { createWaterSurfaceStudy, waterSurfaceOptions } from './water-surface-study.mjs';
@@ -13,7 +14,7 @@ import { createShoreBankShade } from './shore-bank-shade.mjs';
 import { forestHabitatDepth, forestCanopyFactor, forestMarginCanopyFactor } from './forest-habitat.mjs';
 import { forestAgeFactors } from './forest-age-composition.mjs';
 import { underboughForestSpecies } from './forest-composition.mjs';
-import { regionalGroundTextureName, regionalGroundVariantTextureName, regionalGroundColor } from './regional-ground-kits.mjs';
+import { regionalGroundColor } from './regional-ground-kits.mjs';
 import { shorePlantPositions } from './shore-vegetation.mjs';
 import { meadowPlantGroups, drylandPlantGroups, snowPlantGroups, ridgePlantGroups, lunarPlantGroups, marshPlantGroups, junglePlantGroups } from './meadow-vegetation.mjs';
 import { gardenPlantGroups } from './garden-vegetation.mjs';
@@ -305,26 +306,16 @@ async function loadResourceStateAssets() {
 
 export const resourceStateAssetsReady = loadResourceStateAssets();
 
+const paintedGrounds = await loadPaintedMaterialAtlas().catch(error => {
+  console.warn('Painted ground atlas unavailable; using individual textures', error.message);
+  return null;
+});
 const grounds = new Map();
 function groundTexture(material, definition, variant = false) {
-  const query = new URLSearchParams(globalThis.location?.search ?? '');
-  const enabled = query.get('regionalGrounds') !== 'legacy';
-  let name = variant ? regionalGroundVariantTextureName(definition, material,
-    enabled && query.get('groundVariants') !== 'single') : regionalGroundTextureName(definition, material, enabled);
+  const name = groundTextureName(material, definition, variant, globalThis.location?.search ?? '');
   if (!name) return null;
-  if (name === 'meadow' && new URLSearchParams(globalThis.location?.search ?? '').get('meadowSurface') === 'quiet') {
-    name = 'bellweather-quiet-meadow';
-  }
-  if (name === 'tidal-mud' && new URLSearchParams(globalThis.location?.search ?? '').get('tidalSurface') !== 'legacy') {
-    name = 'siltmouths-quiet-mud';
-  }
-  if (name === 'snow' && new URLSearchParams(globalThis.location?.search ?? '').get('snowSurface') !== 'legacy') {
-    name = 'pale-meridian-quiet-snow';
-  }
-  if (name === 'jungle-loam' && (!definition?.region || definition.region === 'vesperra')
-    && query.get('jungleSurface') !== 'legacy') {
-    name = 'vesperra-quiet-loam';
-  }
+  const painted = paintedGrounds?.texture(name);
+  if (painted) return painted;
   if (grounds.has(name)) return grounds.get(name);
   const texture = textureLoader.load(`${ASSET_ROOT}${name}.webp?v=vaelora-ground-v2`);
   texture.colorSpace = THREE.SRGBColorSpace;
