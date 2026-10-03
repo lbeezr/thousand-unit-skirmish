@@ -79,6 +79,7 @@ Run from the repository root:
 
 | Area | Command |
 | --- | --- |
+| Building body occlusion, server cap and renderer-only 129th item; native fixture counters, query gates, serving and preservation | `node --test scripts/building-sprites.test.mjs scripts/building-occlusion-fixture.test.mjs`; [paired crowded scene and exact Mac GPU recipe](qa-building-occlusion-native-plan-2026-10-03.md) |
 | Map logic / elevation | `node scripts/map-utils-scenario.mjs` / `node scripts/elevation-scenario.mjs` |
 | Crowd deflection / terrain boundaries | `node --test scripts/unit-movement.test.mjs` (real authoritative movement blocks, cliffs, corners, working/striking separation and route repair) |
 | Formation destinations after paid obstruction | `node --test scripts/pathing-replay.test.mjs`; `node scripts/pathing-native-scenario.mjs dynamic-goal` (both-seat reservation, opponent goal independence, native arrival) |
