@@ -1,0 +1,155 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { normalizeMatchMode, matchModeDefinition, assertMatchModeCompatibility,
+  effectiveMapForMatchMode, matchModeCatalog } from '../src/match-modes.mjs';
+
+const authored = { matchModeId: 'authored', matchModeVersion: 1 };
+const objective = { matchModeId: 'objective-control', matchModeVersion: 1 };
+const skirmish = { matchModeId: 'skirmish', matchModeVersion: 1 };
+const maps = ['bellweather-millrace', 'underbough-rootways'].map(id =>
+  JSON.parse(readFileSync(new URL(`../maps/${id}.json`, import.meta.url))));
+function deepFreeze(value) {
+  if (value && typeof value === 'object') {
+    for (const child of Object.values(value)) deepFreeze(child);
+    Object.freeze(value);
+  }
+  return value;
+}
+
+test('legacy omission preserves authored identity independently of opponent setup', () => {
+  for (const options of [undefined, {}, { mode: 'pvp' }, { mode: 'pve', practice: false }]) {
+    assert.deepEqual(normalizeMatchMode(options), authored);
+  }
+  for (const mode of [authored, objective, skirmish]) {
+    assert.deepEqual(normalizeMatchMode({ mode: 'pvp', ...mode }), mode);
+  }
+});
+
+test('partial, unknown and malformed mode identities reject without coercion', () => {
+  for (const value of [null, [], 'skirmish', 1]) assert.throws(() => normalizeMatchMode(value), /object/);
+  for (const value of [{ matchModeId: 'skirmish' }, { matchModeVersion: 1 },
+    { matchModeId: undefined }]) {
+    assert.throws(() => normalizeMatchMode(value), /both matchModeId and matchModeVersion/);
+  }
+  for (const id of [undefined, null, '', 'unknown', 'Skirmish', ' skirmish']) {
+    assert.throws(() => normalizeMatchMode({ matchModeId: id, matchModeVersion: 1 }), /Unsupported matchModeId/);
+  }
+  for (const version of [undefined, null, 0, 2, '1', 1.5, true]) {
+    assert.throws(() => normalizeMatchMode({ matchModeId: 'skirmish', matchModeVersion: version }), /Unsupported matchModeVersion/);
+  }
+});
+
+test('registry exposes the agreed policy and honest AI support as immutable descriptors', () => {
+  assert.deepEqual(matchModeDefinition(), { id: 'authored', version: 1, label: 'Authored Rules',
+    victoryPolicy: 'authored', aiStrategyId: 'capture-posts', pveSupported: true, selectable: false });
+  assert.deepEqual(matchModeDefinition(objective), { id: 'objective-control', version: 1, label: 'Objective Control',
+    victoryPolicy: 'authored', aiStrategyId: 'capture-posts', pveSupported: true, selectable: true });
+  assert.deepEqual(matchModeDefinition(skirmish), { id: 'skirmish', version: 1, label: 'Skirmish',
+    victoryPolicy: 'recovery-elimination', aiStrategyId: 'base-elimination', pveSupported: false, selectable: true });
+  assert.throws(() => { matchModeDefinition(skirmish).pveSupported = true; }, TypeError);
+});
+
+for (const original of maps) {
+  test(`${original.id}: authored and Objective Control preserve exact map content in independent clones`, () => {
+    const map = deepFreeze(structuredClone(original));
+    for (const mode of [undefined, authored, objective]) {
+      const effective = effectiveMapForMatchMode(map, mode);
+      assert.deepEqual(effective, original);
+      assert.notEqual(effective, map);
+      assert.notEqual(effective.triggers, map.triggers);
+      effective.triggers[0].foodReward = 999;
+      assert.equal(map.triggers[0].foodReward, 75);
+    }
+    assert.deepEqual(map, original);
+  });
+
+  test(`${original.id}: Skirmish removes every capture victory while preserving rewards and economy`, () => {
+    const map = deepFreeze(structuredClone(original));
+    const effective = effectiveMapForMatchMode(map, skirmish);
+    assert.equal(effective.triggers.some(trigger => trigger.victory === true), false);
+    assert.equal(Object.hasOwn(effective, 'victoryHoldSeconds'), false);
+    assert.equal(Object.hasOwn(effective, 'timedVictory'), false);
+    assert.deepEqual(effective.triggers.map(trigger =>
+      [trigger.requiredUnits, trigger.captureSeconds, trigger.foodReward, trigger.woodReward]),
+    original.id === 'bellweather-millrace'
+      ? [[5, 9, 75, 50], [5, 9, 75, 50], [8, 12, 0, 0]]
+      : [[5, 9, 75, 50], [5, 9, 75, 50], [4, 12, 75, 120]]);
+    for (let index = 0; index < map.triggers.length; index++) {
+      for (const key of Object.keys(map.triggers[index]).filter(key => key !== 'victory')) {
+        assert.deepEqual(effective.triggers[index][key], map.triggers[index][key], `post ${index}: ${key}`);
+      }
+    }
+    assert.deepEqual(effective.scenarioEvents, [{ id: 'relief', name: 'Traveling supplies',
+      type: 'timed-supply', afterSeconds: 120, team: 'both', foodReward: 100, woodReward: 75 }]);
+    assert.equal(effective.startingArmySize, 24);
+    assert.deepEqual(effective.startingResources, { food: 150, wood: 250 });
+    for (const key of Object.keys(map).filter(key =>
+      !['triggers', 'victoryHoldSeconds', 'timedVictory'].includes(key))) {
+      assert.deepEqual(effective[key], map[key], key);
+    }
+    assert.deepEqual(map, original);
+    effective.triggers[0].zone.column = 0;
+    effective.scenarioEvents[0].foodReward = 999;
+    assert.deepEqual(map, original);
+  });
+}
+
+test('legacy elimination-plus-deadline maps retain their hybrid rules', () => {
+  const map = deepFreeze({ id: 'legacy-hybrid', startingResources: { food: 75, wood: 20 },
+    triggers: [{ id: 'supply', victory: false, foodReward: 25 }],
+    timedVictory: { objectiveId: 'supply', afterSeconds: 90 }, scenarioEvents: [] });
+  assert.equal(assertMatchModeCompatibility(undefined, map, { mode: 'pve' }).id, 'authored');
+  const effective = effectiveMapForMatchMode(map);
+  assert.deepEqual(effective, map);
+  assert.notEqual(effective.timedVictory, map.timedVictory);
+  assert.throws(() => effectiveMapForMatchMode(map, objective), /not compatible/);
+});
+
+test('map compatibility does not silently change unsupported selections', () => {
+  for (const map of maps) {
+    for (const mode of [authored, objective, skirmish]) {
+      assert.equal(assertMatchModeCompatibility(mode, map).id, mode.matchModeId);
+      assert.equal(assertMatchModeCompatibility(mode, map, { mode: 'pvp', practice: true }).id, mode.matchModeId);
+    }
+  }
+  const custom = { id: 'custom-objective', triggers: [{ id: 'win', victory: true }] };
+  assert.equal(assertMatchModeCompatibility(objective, custom).id, 'objective-control');
+  assert.throws(() => assertMatchModeCompatibility(skirmish, custom), /not compatible/);
+  assert.throws(() => effectiveMapForMatchMode(custom, skirmish), /not compatible/);
+  assert.throws(() => assertMatchModeCompatibility(objective, { id: 'land-only', triggers: [] }), /not compatible/);
+  assert.equal(assertMatchModeCompatibility(authored, { id: 'land-only', triggers: [] }).id, 'authored');
+});
+
+test('Skirmish rejects PvE while retaining explicit human Practice', () => {
+  for (const map of maps) {
+    assert.throws(() => assertMatchModeCompatibility(skirmish, map, { mode: 'pve' }), /does not support PvE/);
+    assert.equal(assertMatchModeCompatibility(skirmish, map, { mode: 'pvp', practice: true }).id, 'skirmish');
+    for (const mode of [authored, objective]) {
+      assert.equal(assertMatchModeCompatibility(mode, map, { mode: 'pve' }).pveSupported, true);
+    }
+  }
+});
+
+test('invalid opponent/Practice context rejects rather than hiding catalog errors', () => {
+  for (const options of [{ mode: 'coop' }, { practice: 'true' }, { mode: 'pve', practice: true }]) {
+    assert.throws(() => assertMatchModeCompatibility(authored, maps[0], options));
+    assert.throws(() => matchModeCatalog(maps[0], options));
+  }
+  for (const map of [null, [], 'bellweather-millrace']) {
+    assert.throws(() => assertMatchModeCompatibility(authored, map), /validated map object/);
+    assert.throws(() => matchModeCatalog(map), /validated map object/);
+  }
+});
+
+test('catalog includes hidden authored and only compatible, supported selectable modes', () => {
+  const ids = (map, options) => matchModeCatalog(map, options).map(mode => mode.id);
+  for (const map of maps) {
+    assert.deepEqual(ids(map), ['authored', 'objective-control', 'skirmish']);
+    assert.deepEqual(ids(map, { mode: 'pvp', practice: true }), ['authored', 'objective-control', 'skirmish']);
+    assert.deepEqual(ids(map, { mode: 'pve' }), ['authored', 'objective-control']);
+    assert.equal(matchModeCatalog(map)[0].selectable, false);
+  }
+  assert.deepEqual(ids({ id: 'lab', triggers: [] }), ['authored']);
+  assert.deepEqual(ids({ id: 'custom', triggers: [{ victory: true }] }), ['authored', 'objective-control']);
+});

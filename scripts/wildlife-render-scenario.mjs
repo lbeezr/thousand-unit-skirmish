@@ -14,7 +14,7 @@ let renderer;
 try {
   await fixture.start();
   const base = `http://127.0.0.1:${fixture.port}/`;
-  const approved = ['src/neutral-wildlife-renderer.mjs', 'src/wildlife-state.mjs', 'src/sheep-static-preview.mjs',
+  const approved = ['src/neutral-wildlife-renderer.mjs', 'src/wildlife-state.mjs', 'src/wildlife-motion.mjs', 'src/sheep-static-preview.mjs',
     'assets/wildlife/bellweather-sheep-static-v1/static-preview-binding.json',
     'assets/wildlife/bellweather-sheep-static-v1/sprite-atlas-pack-v1.json',
     'assets/wildlife/bellweather-sheep-static-v1/sheep-atlas-runtime.png'];

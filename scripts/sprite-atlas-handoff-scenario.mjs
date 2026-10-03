@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
+import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createSpriteAtlasHandoff, validateSpriteAtlas } from './sprite-atlas-contract.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -49,3 +51,56 @@ assert.equal(asset.review.unreviewedPivotFrameIds.length, 5);
 
 assert.throws(() => createSpriteAtlasHandoff({ ...validation, errors: ['bad manifest'] }), /valid sprite-atlas manifest/);
 process.stdout.write('Sprite-atlas handoff scenario passed: exact frame metadata, masks, clips, bounds, hashes, and review limits.\n');
+
+const temporary = await mkdtemp(path.join(os.tmpdir(), 'sprite-atlas-diagnostics-'));
+try {
+  const input = path.join(temporary, 'private-manifest.json');
+  await writeFile(input, 'privatekey=secret');
+  const malformed = await validateSpriteAtlas(input);
+  assert.equal(malformed.diagnostic.code, 'manifest-invalid-json');
+  assert.ok(malformed.diagnostic.cause instanceof SyntaxError);
+  assert.match(malformed.errors[0], /valid JSON.*retry/);
+  assert.doesNotMatch(JSON.stringify(malformed), /privatekey|secret|private-manifest/);
+  for (const script of ['validate-sprite-atlas.mjs', 'report-sprite-atlas-handoff.mjs', 'preview-sprite-atlas.mjs']) {
+    const run = spawnSync(process.execPath, [path.join(root, 'scripts', script), input], {encoding: 'utf8', timeout: 5000});
+    assert.ifError(run.error); assert.equal(run.status, 1, run.stderr);
+    assert.match(run.stderr, /valid JSON.*retry/);
+    assert.doesNotMatch(run.stderr, /privatekey|secret|private-manifest|node:internal/);
+    assert.equal(run.stdout, '');
+  }
+  const missing = await validateSpriteAtlas(path.join(temporary, 'private-missing', 'manifest.json'));
+  assert.equal(missing.diagnostic.code, 'manifest-unreadable');
+  assert.equal(missing.diagnostic.cause.code, 'ENOENT');
+  assert.match(missing.errors[0], /file path and permissions.*retry/);
+  assert.doesNotMatch(JSON.stringify(missing), /private-missing/);
+  assert.deepEqual((await validateSpriteAtlas(manifestPath)).errors, [], 'valid retry must not retain prior input failures');
+  await assert.rejects(validateSpriteAtlas(null), {name: 'TypeError'}, 'programmer argument faults remain exceptions');
+
+  // Isolate broken bundled-schema fixtures; never edit the repository's own schemas.
+  const scripts = path.join(temporary, 'scripts'), schemas = path.join(temporary, 'schemas');
+  await mkdir(scripts); await mkdir(schemas);
+  for (const name of ['sprite-atlas-contract.mjs', 'validate-sprite-atlas.mjs']) {
+    await copyFile(path.join(root, 'scripts', name), path.join(scripts, name));
+  }
+  const isolated = await import(pathToFileURL(path.join(scripts, 'sprite-atlas-contract.mjs')).href);
+  let unavailable = await isolated.validateSpriteAtlas(manifestPath);
+  assert.equal(unavailable.diagnostic.code, 'schema-unavailable');
+  assert.equal(unavailable.diagnostic.cause.code, 'ENOENT');
+  assert.match(unavailable.errors[0], /bundled.*schema.*checkout.*retry/i);
+  const names = ['sprite-atlas-pack-v1.schema.json', 'sprite-atlas-capture-v1.schema.json'];
+  for (const name of names) await copyFile(path.join(root, 'schemas', name), path.join(schemas, name));
+  for (const name of names) {
+    await writeFile(path.join(schemas, name), 'privatekey=secret');
+    unavailable = await isolated.validateSpriteAtlas(manifestPath);
+    assert.equal(unavailable.diagnostic.code, 'schema-unavailable');
+    assert.ok(unavailable.diagnostic.cause instanceof SyntaxError);
+    assert.doesNotMatch(JSON.stringify(unavailable), /privatekey|secret/);
+    const run = spawnSync(process.execPath, [path.join(scripts, 'validate-sprite-atlas.mjs'), manifestPath], {encoding: 'utf8', timeout: 5000});
+    assert.ifError(run.error); assert.equal(run.status, 1, run.stderr);
+    assert.match(run.stderr, /checkout.*retry/);
+    assert.doesNotMatch(run.stderr, /privatekey|secret|node:internal/);
+    await copyFile(path.join(root, 'schemas', name), path.join(schemas, name));
+    assert.deepEqual((await isolated.validateSpriteAtlas(manifestPath)).errors, [], 'repair permits a valid retry');
+  }
+} finally { await rm(temporary, {recursive: true, force: true}); }
+process.stdout.write('Sprite-atlas input/schema causes, safe CLI diagnostics and retry checks passed.\n');
