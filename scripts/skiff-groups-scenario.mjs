@@ -111,8 +111,17 @@ try {
   for (const team of [0, 1]) await command(team, { type: 'gather', ids: selected[team], nodeId: `fish-${team}` }, /2 SKIFFS/);
   await fixture.checkpoint(snapshot => selected.flat().some(id => snapshot.state.units[id].cargo === 10 && snapshot.state.units[id].gatherPhase === 'to-base'));
   await fixture.stop(); const automatic = await saved(); safe(automatic); exactUnselected(automatic); await reconnect();
-  const exhausted = await fixture.checkpoint(snapshot => [0, 1].every(team => nodeStock(snapshot, team) === 0)
-    && selected.flat().every(id => snapshot.state.units[id].cargo === 0 && snapshot.state.units[id].gatherPhase === ''));
+  let exhausted;
+  try {
+    exhausted = await fixture.checkpoint(snapshot => [0, 1].every(team => nodeStock(snapshot, team) === 0)
+      && selected.flat().every(id => snapshot.state.units[id].cargo === 0 && snapshot.state.units[id].gatherPhase === ''));
+  } catch (error) {
+    const snapshot = await saved();
+    console.error(JSON.stringify({ stage: 'automatic-fishing-depletion', food: snapshot.state.teamFood,
+      stock: [0, 1].map(team => nodeStock(snapshot, team)), units: boats(snapshot).map(unit => ({ ...identity(unit),
+        blocked: unit.waterMoveBlocked, retry: unit.repathTimer, dropoffBuildingId: unit.dropoffBuildingId })) }));
+    throw error;
+  }
   safe(exhausted); exactUnselected(exhausted); assert.deepEqual(exhausted.state.teamFood, [1031, 1031]); assert.deepEqual(exhausted.state.teamWood, [675, 675]);
   await fixture.stop(); const depleted = await saved(); await reconnect();
   const recovered = await fixture.checkpoint(snapshot => snapshot.state.tickNumber > depleted.state.tickNumber + 5); safe(recovered); exactUnselected(recovered);

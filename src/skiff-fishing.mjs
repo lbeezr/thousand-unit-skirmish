@@ -40,8 +40,15 @@ export function createSkiffFishingContext(map, water) {
   const dockCell = building => dockCells(building)[0] ?? -1;
   function reservedRoute(unit, cell, units, options = {}) {
     if (options.budget && options.budget.remaining <= 0) return { status: 'budget-exhausted', cells: [] };
+    // Economy trips yield to active water traffic, including the return leg of
+    // another boat. Merely reserving goals permits opposite-direction routes
+    // to meet head-on and retain their cargo forever. No route means wait/retry.
+    const reservedTransitCells = [...(options.reservedTransitCells ?? []), ...units
+      .filter(other => other !== unit && other.hp > 0 && other.movementDomain === 'water'
+        && !options.ignoredGoalIds?.has(other.id) && moving(other))
+      .flatMap(other => other.path.slice(other.pathIndex))];
     const point = graph.pointAt(cell), route = water.planReserved(unit, point.x, point.z, units,
-      { ...options, maxExpandedCells: Math.min(4096, graph.cellCount, options.budget?.remaining ?? 4096) });
+      { ...options, reservedTransitCells, maxExpandedCells: Math.min(4096, graph.cellCount, options.budget?.remaining ?? 4096) });
     if (options.budget) options.budget.remaining -= route.expandedCells;
     return route;
   }

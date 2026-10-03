@@ -41,7 +41,7 @@ export function createWaterUnitRuntime(definition) {
       // again would strand two independently routed boats that finish adjacent.
       return plan(unit, x, z, units, maxExpandedCells);
     },
-    planReserved(unit, x, z, units, { reservedGoalCells = [], forbiddenGoalCells = new Set(), ignoredGoalIds = new Set(), maxExpandedCells = Math.min(4096, graph.cellCount) } = {}) {
+    planReserved(unit, x, z, units, { reservedGoalCells = [], reservedTransitCells = [], forbiddenGoalCells = new Set(), ignoredGoalIds = new Set(), maxExpandedCells = Math.min(4096, graph.cellCount) } = {}) {
       const goal = graph.cellAt(x, z), start = graph.cellAt(unit.x, unit.z);
       const others = waterActors(units).filter(actor => actor !== unit && !ignoredGoalIds.has(actor.id)
         && actor.pathIndex < actor.path.length);
@@ -50,7 +50,7 @@ export function createWaterUnitRuntime(definition) {
       if (forbiddenGoalCells.has(goal) || others.some(actor => actor.path.slice(actor.pathIndex).includes(goal))) {
         return { status: 'invalid-endpoints', expandedCells: 0, cells: [] };
       }
-      const destinations = [...others.map(actor => actor.moveGoalCell), ...reservedGoalCells].filter(cell => cell !== start);
+      const destinations = [...others.map(actor => actor.moveGoalCell), ...reservedGoalCells, ...reservedTransitCells].filter(cell => cell !== start);
       return plan(unit, x, z, units, maxExpandedCells, destinations);
     },
     validRoute(unit) {

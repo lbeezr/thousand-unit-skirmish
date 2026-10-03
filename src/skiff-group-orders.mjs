@@ -9,7 +9,7 @@ const optionsFor = selected => ({ ignoredGoalIds: new Set(selected.map(unit => u
   reservedGoalCells: new Set(), forbiddenGoalCells: new Set(), budget: { remaining: PLANNING_BUDGET } });
 const reserve = (options, route) => {
   options.reservedGoalCells.add(route.cells.at(-1));
-  for (const cell of route.cells) options.forbiddenGoalCells.add(cell);
+  for (const cell of route.cells) { options.forbiddenGoalCells.add(cell); options.reservedTransitCells?.add(cell); }
 };
 const ordered = selected => [...selected].sort((a, b) => a.id - b.id);
 
@@ -48,7 +48,7 @@ export function planSkiffGroupMove(water, selected, x, z, units) {
 
 export function planSkiffGroupFishing(fishing, selected, node, buildings, units) {
   if (!validSelection(selected)) return { status: 'invalid-skiff-group', assignments: [] };
-  const options = optionsFor(selected), assignments = [];
+  const options = { ...optionsFor(selected), reservedTransitCells: new Set() }, assignments = [];
   for (const unit of ordered(selected)) {
     const fish = fishing.fishRoute(unit, node, units, options);
     const delivery = fishing.deliveryRoute(unit, buildings, units, options);
@@ -64,7 +64,7 @@ export function planSkiffGroupReturn(fishing, selected, buildings, units) {
   if (!validSelection(selected)) return { status: 'invalid-skiff-group', assignments: [] };
   const carrying = selected.filter(unit => unit.cargo > 0 && unit.cargoType === 'food');
   if (!carrying.length) return { status: 'no-food-cargo', assignments: [] };
-  const options = optionsFor(carrying), assignments = [];
+  const options = { ...optionsFor(carrying), reservedTransitCells: new Set() }, assignments = [];
   for (const unit of ordered(carrying)) {
     const route = fishing.deliveryRoute(unit, buildings, units, options);
     if (!route) return { status: 'need-distinct-owned-dock-routes', assignments: [] };

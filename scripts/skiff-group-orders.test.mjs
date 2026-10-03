@@ -7,15 +7,16 @@ import { createSkiffFishingContext } from '../src/skiff-fishing.mjs';
 import { planSkiffGroupMove, planSkiffGroupFishing, planSkiffGroupReturn, SKIFF_GROUP_ORDER_LIMIT } from '../src/skiff-group-orders.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
-function fixture(stock = 31) {
+function fixture(stock = 31, productionBerthOccupied = false) {
   const map = { width: 64, height: 64, spawnPoints: [{ team: 0, x: -20, z: 0 }, { team: 1, x: 20, z: 0 }],
-    obstacles: [18, 43].map(column => ({ column, row: 42, width: 6, height: 8, material: 'water' })),
+    obstacles: [18, 43].map(column => ({ column, row: 42, width: productionBerthOccupied ? 8 : 6, height: productionBerthOccupied ? 10 : 8, material: 'water' })),
     resourceNodes: [0, 1].map(team => ({ id: `fish-${team}`, type: 'food', resourceVariant: 'shore-fish',
-      x: team ? 15.5 : -9.5, z: 9.5, stock })) };
+      x: (team ? 15.5 : -9.5) + (productionBerthOccupied ? 2 : 0), z: 9.5, stock })) };
   const water = createWaterUnitRuntime(map), fishing = createSkiffFishingContext(map, water);
   const buildings = [0, 1].map(team => ({ id: team + 1, type: 'dock', team, hp: 1200, complete: true,
     x: team ? 12.5 : -12.5, z: 8.5 }));
-  const units = [0, 1].flatMap(team => [0, 1, 2].map(index => ({ ...water.graph.pointAt((46 + (index === 2 ? 2 : 0)) * 64 + (team ? 44 : 19) + (index === 1 ? 1 : 0)),
+  const units = [0, 1].flatMap(team => [0, 1, 2].map(index => ({ ...water.graph.pointAt((productionBerthOccupied ? (index === 2 ? 43 : 47) : 46 + (index === 2 ? 2 : 0)) * 64
+    + (team ? 44 : 19) + (productionBerthOccupied && index < 2 ? 4 - index : index === 1 ? 1 : 0)),
     id: team * 3 + index, team, kind: 'skiff', movementDomain: 'water', hp: 120,
     cargo: 0, cargoType: null, gatherNodeId: null, gatherForestCell: -1, gatherPhase: '', dropoffBuildingId: null,
     path: [], pathIndex: 0, moveGoalCell: -1, waterMoveBlocked: false, holdingPosition: false, repathTimer: 0, orderRevision: 1 })));
@@ -90,6 +91,47 @@ test('both seats group-fish distinct approaches and preserve one finite stock th
     assert.equal(f.world.nodes.get(`fish-${team}`).stock, 0);
     assert.deepEqual(f.world.units[team * 3 + 2], before[team * 3 + 2]);
   }
+});
+
+test('occupied production berths: Stop/Return/restart and resumed fishing yield to opposing traffic until all stock is banked', () => {
+  const f = fixture(31, true), before = structuredClone(f.units), selected = () => f.world.units.filter(unit => unit.id % 3 < 2);
+  const startFish = () => {
+    for (const team of [0, 1]) f.apply(planSkiffGroupFishing(f.fishing, selected().filter(unit => unit.team === team),
+      f.world.nodes.get(`fish-${team}`), f.buildings, f.world.units), true);
+  };
+  const until = predicate => {
+    for (let i = 0; i < 4000; i++) { if (predicate()) return; f.tick(); f.safe(); }
+    assert.fail(JSON.stringify({ food: f.world.teamFood, units: selected() }));
+  };
+  startFish(); until(() => selected().every(unit => unit.cargo >= .1));
+  selected().forEach(f.stop); f.world.units = structuredClone(f.world.units);
+  const cargo = selected().reduce((sum, unit) => sum + unit.cargo, 0);
+  for (const team of [0, 1]) f.apply(planSkiffGroupReturn(f.fishing, selected().filter(unit => unit.team === team), f.buildings, f.world.units), true);
+  until(() => selected().every(unit => unit.cargo === 0 && unit.gatherPhase === ''));
+  assert.ok(Math.abs(f.world.teamFood.reduce((a, b) => a + b) - 2000 - cargo) < 1e-8);
+  startFish(); until(() => selected().some(unit => unit.gatherPhase === 'to-base'));
+  f.world.units = structuredClone(f.world.units);
+  until(() => selected().every(unit => unit.cargo === 0 && unit.gatherPhase === '')
+    && [...f.world.nodes.values()].every(node => node.stock === 0));
+  assert.deepEqual(f.world.teamFood, [1031, 1031]);
+  for (const team of [0, 1]) assert.deepEqual(f.world.units[team * 3 + 2], before[team * 3 + 2]);
+});
+
+test('an outgoing fishing trip cannot reuse an active returning trip in reverse', () => {
+  const f = fixture(31, true), outgoing = f.units[0], returning = f.units[1];
+  Object.assign(outgoing, f.water.graph.pointAt(2772));
+  Object.assign(returning, f.water.graph.pointAt(2776), { cargo: 10, cargoType: 'food' });
+  f.world.nodes.get('fish-0').stock -= 10;
+  const cells = [2776, 2775, 2774, 2773, 2837, 2836, 2835];
+  f.fishing.start(returning, 'fish-0', 'to-base', { cells, buildingId: 1 });
+  const planned = f.fishing.fishRoute(outgoing, f.world.nodes.get('fish-0'), f.units);
+  assert.equal(planned, null, 'both approaches are on active return traffic; outbound waits');
+  Object.assign(outgoing, { gatherNodeId: 'fish-0', gatherPhase: 'to-node', repathTimer: 0 });
+  f.world.units = structuredClone(f.units);
+  for (let i = 0; i < 4000; i++) { f.tick(); f.safe(); }
+  assert.equal(f.world.teamFood[0], 1031); assert.equal(f.world.nodes.get('fish-0').stock, 0);
+  assert.ok(f.world.units.slice(0, 2).every(unit => unit.cargo === 0 && unit.gatherPhase === ''));
+  assert.deepEqual(f.world.units[2], f.units[2]);
 });
 
 test('group Return cargo reaches distinct owned berth cells, deposits each fractional load once and leaves unselected orders intact', () => {

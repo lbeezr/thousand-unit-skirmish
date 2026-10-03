@@ -35,9 +35,10 @@ passing another berth on the way.
 Planners reserve other boats' persisted route goals and avoid parking on active
 transit routes. Within a batch, later destinations cannot occupy earlier transit
 paths. Actual hull occupancy still controls movement; a transient obstruction
-pauses a route safely. Automatic fishing delivery/resume applies the same
-destination reservations. No general traffic solver or automatic dynamic detour
-is promised. Move boats away from occupied fishing/berth cells or use another
+pauses a route safely. Fishing and cargo routes also reserve active transit
+cells, taking a disjoint route or waiting and retrying until the traffic clears.
+This prevents outgoing and returning boats meeting head-on. No general water
+traffic solver is promised. Move boats away from occupied fishing/berth cells or use another
 source/Dock if there is insufficient room.
 
 ## Stop, restart and boundaries
