@@ -12,6 +12,10 @@ export const SHEEP_DIRECTIONS = Object.freeze([
 const SCREEN_HEADINGS = ['down-left', 'down', 'down-right', 'right', 'up-right', 'up', 'up-left', 'left'];
 const UNAVAILABLE = ['walk', 'graze', 'dispatch', 'carcass', 'depleted'];
 const PUBLIC_SHA = '0ff688101304a7c10e181b3363ce767e8fb0082d0f754817edee81e04a9bf904';
+// Immutable, already-public v1 derivatives; updated package hashes alone cannot
+// establish that new pixels came from the approved illustrated reference.
+const PUBLIC_SOURCE_SHA = '91819f5f48882040bbb2bce61371f8b499880094423288a8d61256c5a3713620';
+const PUBLIC_RUNTIME_SHA = '35b9507f1ab20ffd1bdfd89be561da354f30641c5396949f2b82c9a98934d08b';
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const json = async filename => JSON.parse(await readFile(filename, 'utf8'));
@@ -65,6 +69,7 @@ export function sheepPackMetadataErrors(manifest, binding, contract) {
   check(binding?.packId === manifest?.packId && binding?.assetId === 'bellweather-sheep'
     && binding?.previewOnly === true && binding?.stateId === 'idle' && same(binding?.animations, [])
     && same(binding?.unavailableStates, UNAVAILABLE), 'binding must declare static idle only and absent action art');
+  check(binding?.manifest === 'sprite-atlas-pack-v1.json', 'binding manifest must name the audited sprite-atlas-pack-v1.json');
   check(same(binding?.directions, directions), 'binding direction coverage does not match its source kind');
   check(binding?.cameraCalibrated === directional && binding?.noseYawOnly === directional
     && binding?.projectedPixelsPerWorldUnit === (directional ? 256 : 512), 'binding camera/nose/scale provenance mismatch');
@@ -116,18 +121,26 @@ export async function auditSheepDirectionalReadiness(packDirectory, contractPath
   const errors = [...validation.errors, ...sheepCaptureContractErrors(contract), ...sheepPackMetadataErrors(manifest, binding, contract)];
   if (sha(await readFile(manifestPath)) !== binding.manifestSha256) errors.push('binding manifest digest mismatch');
   const directional = manifest.packId === 'bellweather-sheep-static-v1';
+  const asset = manifest.assets?.find(item => item.id === 'bellweather-sheep');
   let sourceViewsVerified = 0;
   try {
+    if (validation.errors.length) throw new Error('atlas contract failed before source verification');
     const records = await json(path.join(root, 'source-records.json'));
     if (!records.originalViewsPreserved || records.records?.length !== binding.directions.length) errors.push('missing original source records');
+    // Follow the same asset/page/file references as the runtime loader, rather
+    // than validating an unused file with a conventional filename.
+    const page = manifest.pages.find(item => item.id === asset.frames[0].fallbackRectPx.pageId);
+    const sourceFile = manifest.files.find(item => item.id === page.sourceFileId);
+    const runtimeFile = manifest.files.find(item => item.id === page.runtimeFileId);
+    const sourceBytes = await readFile(path.join(root, sourceFile.path));
+    const runtimeBytes = await readFile(path.join(root, runtimeFile.path));
+    const source = decodeRgba8(sourceBytes), runtime = decodeRgba8(runtimeBytes);
     if (directional) {
       const consumed = await readFile(path.join(root, 'source/capture-contract.json'));
       if (sha(consumed) !== sha(await readFile(contractPath)) || sha(consumed) !== records.captureContract?.sha256
         || consumed.length !== records.captureContract?.bytes || binding.source !== 'source/capture-contract.json') {
         errors.push('consumed capture contract differs from the audited contract');
       }
-      const source = decodeRgba8(await readFile(path.join(root, 'sheep-atlas-source.png')));
-      const runtime = decodeRgba8(await readFile(path.join(root, 'sheep-atlas-runtime.png')));
       for (const [index, view] of contract.views.entries()) {
         const record = records.records[index];
         const bytes = await readFile(path.join(root, 'source', view.filename));
@@ -148,7 +161,7 @@ export async function auditSheepDirectionalReadiness(packDirectory, contractPath
           || Math.min(box.x, box.y, 512 - box.x - box.width, 512 - box.y - box.height) < 2) {
           errors.push(`${view.clip_key}: transparency/count/margin mismatch`);
         }
-        const frame = manifest.assets[0].frames[index];
+        const frame = asset.frames.find(item => item.id === `idle-${view.clip_key}`);
         if (!same(frame.alphaBoundsPx, measureFrameAlpha(image, { x: 0, y: 0, width: 512, height: 512 }, 8))) {
           errors.push(`${view.clip_key}: declared frame alpha bounds mismatch`);
         }
@@ -168,8 +181,20 @@ export async function auditSheepDirectionalReadiness(packDirectory, contractPath
       }
     } else {
       const bytes = await readFile(path.join(root, 'source/sheep-model-input.png'));
-      if (sha(bytes) !== PUBLIC_SHA || records.records?.[0]?.sha256 !== PUBLIC_SHA) errors.push('public fallback original digest mismatch');
-      else sourceViewsVerified = 1;
+      const record = records.records?.[0];
+      if (sha(bytes) !== PUBLIC_SHA || record?.sha256 !== PUBLIC_SHA
+        || record?.filename !== 'sheep-model-input.png' || record?.directionId !== 'north' || record?.bytes !== bytes.length) {
+        errors.push('public fallback original digest/identity mismatch');
+      } else sourceViewsVerified = 1;
+      if (sha(sourceBytes) !== PUBLIC_SOURCE_SHA || sha(runtimeBytes) !== PUBLIC_RUNTIME_SHA) {
+        errors.push('public fallback derived atlas differs from approved v1 pixels');
+      }
+      const frame = asset.frames.find(item => item.id === 'idle-north');
+      for (const image of [source, runtime]) {
+        if (!same(frame.alphaBoundsPx, measureFrameAlpha(image, frame.fallbackRectPx.rectPx, 8))) {
+          errors.push('public fallback declared alpha bounds disagree with decoded pixels');
+        }
+      }
     }
   } catch (error) { errors.push('source bytes/records cannot be verified: ' + error.message); }
   return {
@@ -179,7 +204,7 @@ export async function auditSheepDirectionalReadiness(packDirectory, contractPath
     declaredDirections: binding.directions,
     unavailableDirections: SHEEP_DIRECTIONS.filter(direction => !binding.directions.includes(direction)),
     animations: binding.animations,
-    anchorReview: manifest.assets?.[0]?.frames?.map(frame => ({ id: frame.id, status: frame.groundPivotStatus })),
+    anchorReview: asset?.frames?.map(frame => ({ id: frame.id, status: frame.groundPivotStatus })),
     publicationApproval: 'not established by this check',
     visualAcceptance: 'separate owner-run review',
     liveDirectionalIntegration: false,

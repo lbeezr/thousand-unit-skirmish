@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mkdir, mkdtemp, readFile, rm, writeFile, unlink } from 'node:fs/promises';
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile, unlink } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import os from 'node:os';
@@ -108,6 +108,52 @@ test('approved public fallback has one readable view and cannot claim eight dire
     assert.equal(Boolean(staticSheepFrame(manifest, binding, { ...idle, directionId })), directionId === 'north');
   }
   assert.ok(sheepPackMetadataErrors(manifest, { ...binding, directions: SHEEP_DIRECTIONS }, contract).length);
+  assert.match(sheepPackMetadataErrors(manifest, { ...binding, manifest: 'alternate.json' }, contract).join('\n'), /binding manifest/);
+});
+
+test('public fallback rejects replaced derived pixels, false alpha bounds and original records', async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), 'sheep-fallback-test-'));
+  try {
+    await cp(pack, directory, { recursive: true });
+    const manifestPath = path.join(directory, 'sprite-atlas-pack-v1.json');
+    const bindingPath = path.join(directory, 'static-preview-binding.json');
+    const manifest = JSON.parse(await readFile(manifestPath));
+    const binding = JSON.parse(await readFile(bindingPath));
+    const writeManifest = async value => {
+      const bytes = Buffer.from(JSON.stringify(value));
+      await writeFile(manifestPath, bytes);
+      await writeFile(bindingPath, JSON.stringify({ ...binding, manifestSha256: digest(bytes) }));
+    };
+    for (const file of manifest.files) {
+      const image = decodeRgba8(await readFile(path.join(directory, file.path)));
+      const mirrored = Buffer.alloc(image.pixels.length);
+      for (let y = 0; y < 512; y++) for (let x = 0; x < 512; x++) {
+        mirrored.set(image.pixels.subarray((y * 512 + 511 - x) * 4, (y * 512 + 512 - x) * 4), (y * 512 + x) * 4);
+      }
+      const bytes = png(512, 512, mirrored);
+      await writeFile(path.join(directory, file.path), bytes);
+      file.sha256 = digest(bytes);
+    }
+    await writeManifest(manifest);
+    assert.match((await auditSheepDirectionalReadiness(directory, publicContractPath)).errors.join('\n'), /differs from approved v1 pixels/,
+      'valid package hashes cannot establish public fallback derivation');
+    await cp(pack, directory, { recursive: true });
+    const originalManifest = JSON.parse(await readFile(manifestPath));
+    originalManifest.assets[0].frames[0].alphaBoundsPx.x++;
+    await writeManifest(originalManifest);
+    assert.match((await auditSheepDirectionalReadiness(directory, publicContractPath)).errors.join('\n'), /alpha bounds disagree/);
+    await cp(pack, directory, { recursive: true });
+    const recordsPath = path.join(directory, 'source-records.json');
+    const records = JSON.parse(await readFile(recordsPath));
+    for (const mutate of [value => { value.filename = 'unrelated.png'; }, value => { value.bytes++; }]) {
+      const changed = structuredClone(records); mutate(changed.records[0]);
+      await writeFile(recordsPath, JSON.stringify(changed));
+      assert.match((await auditSheepDirectionalReadiness(directory, publicContractPath)).errors.join('\n'), /original digest\/identity/);
+    }
+    await cp(pack, directory, { recursive: true });
+    await writeFile(bindingPath, JSON.stringify({ ...binding, manifest: 'missing.json' }));
+    assert.match((await auditSheepDirectionalReadiness(directory, publicContractPath)).errors.join('\n'), /binding manifest/);
+  } finally { await rm(directory, { recursive: true, force: true }); }
 });
 
 test('producer nose-yaw labels match the real fixed camera without a second body offset', () => {
@@ -195,6 +241,17 @@ test('eight synthetic geometry fixtures exercise registration and corrupted-sour
     assert.match((await auditSheepDirectionalReadiness(output, fixtureContractPath)).errors.join('\n'), /mirrored a view/,
       'self-consistent output hashes cannot hide a mirrored original');
     for (const file of manifest.files) await writeFile(path.join(output, file.path), originalPage);
+    await writeFile(path.join(output, 'sprite-atlas-pack-v1.json'), JSON.stringify(manifest));
+    await writeFile(path.join(output, 'static-preview-binding.json'), JSON.stringify(binding));
+    const redirectedManifest = structuredClone(manifest);
+    const runtimeFile = redirectedManifest.files.find(file => file.id === redirectedManifest.pages[0].runtimeFileId);
+    runtimeFile.path = 'alternate-runtime.png'; runtimeFile.sha256 = digest(mirroredPage);
+    await writeFile(path.join(output, runtimeFile.path), mirroredPage);
+    const redirectedManifestBytes = Buffer.from(JSON.stringify(redirectedManifest));
+    await writeFile(path.join(output, 'sprite-atlas-pack-v1.json'), redirectedManifestBytes);
+    await writeFile(path.join(output, 'static-preview-binding.json'), JSON.stringify({ ...binding, manifestSha256: digest(redirectedManifestBytes) }));
+    assert.match((await auditSheepDirectionalReadiness(output, fixtureContractPath)).errors.join('\n'), /mirrored a view/,
+      'audit must decode the runtime file the manifest actually references');
     await writeFile(path.join(output, 'sprite-atlas-pack-v1.json'), JSON.stringify(manifest));
     await writeFile(path.join(output, 'static-preview-binding.json'), JSON.stringify(binding));
     const original = await readFile(path.join(output, 'source/sheep-yaw-090.png'));

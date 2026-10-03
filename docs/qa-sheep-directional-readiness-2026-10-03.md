@@ -8,12 +8,15 @@ renderer, gameplay state, default maps and active Mac capture remain unchanged.
 ## Available art and acceptance
 
 The [read-only audit](../scripts/sheep-directional-readiness.mjs) verifies the
-existing atlas contract, binding digest, preserved originals, direction coverage,
-static clip declarations and full-canvas registration. Its
+existing atlas contract, exact binding manifest/digest, preserved originals,
+direction coverage, static clip declarations and full-canvas registration. Its
 [current result](qa-evidence/sheep-directional-readiness-2026-10-03/readiness.json)
 confirms one public illustrated frame (`north`), one non-looping idle clip and no
 animations. The seven other directions cannot resolve from that pack. Its pivot
 `[273.5566,428.2998]` and 512 projected pixels/world unit remain estimates.
+The immutable public v1 source/runtime atlas hashes are pinned to their approved
+outputs, and their decoded alpha bounds must match the manifest. Replacing those
+pixels and updating package hashes cannot pass this fallback audit.
 
 The [public producer capture contract](../assets/wildlife/bellweather-sheep-public-reference-v1/cloud-capture-contract.json)
 describes eight 512px RGBA views, nose yaw 0–315° in 45° increments, common root
@@ -43,7 +46,9 @@ full 512px cells in a 2048 × 1024 atlas, equal pivots and one world scale. It
 verifies each original digest/dimensions/alpha bounds and compares source-atlas
 pixels and runtime alpha/opaque RGB against those originals. Changed crops,
 anchors, source identity, mirrored pixels, animation claims, baked-shadow metadata
-and altered consumed contracts fail. Physical root placement never follows alpha
+and altered consumed contracts fail. The audit follows the asset's actual page
+file references, so an alternate runtime filename cannot hide changed pixels.
+Physical root placement never follows alpha
 bounds. A valid byte report still grants neither publication permission nor
 ground-contact/appearance approval.
 
