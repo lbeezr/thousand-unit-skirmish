@@ -42,5 +42,7 @@ export function activateWildlifeHarvest(node) {
 }
 
 export function markWildlifeDepleted(node) {
-  if (node.wildlifeSpecies !== undefined && node.stock === 0) node.wildlifeState = 'depleted';
+  if (node.wildlifeSpecies !== undefined && node.stock === 0) {
+    node.wildlifeState = 'depleted'; freezeWildlifeMotion(node);
+  }
 }

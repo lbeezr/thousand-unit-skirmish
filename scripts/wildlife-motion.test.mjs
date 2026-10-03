@@ -100,3 +100,14 @@ test('actual checkpoint capture copies private motion before deferred serializat
   node.x += .01; node.wildlifeMotion.waitTicks--;
   assert.notEqual(savedNode.x, node.x); assert.notEqual(savedNode.wildlifeMotion.waitTicks, node.wildlifeMotion.waitTicks);
 });
+
+
+test('off-center meadow anchors never persist a goal across the resource-cell edge', () => {
+  const offCenter = { ...definition, x: .85, z: .85 }, node = createResourceNodeState(offCenter);
+  for (let tick = 0; tick < 1800; tick++) {
+    stepWildlifeMotion(node, offCenter, { canStep: (from, to) => sameWildlifeCell(to, offCenter, map) });
+    assert.equal(sameWildlifeCell(node, offCenter, map), true);
+    assert.equal(sameWildlifeCell({ x: node.wildlifeMotion.targetX, z: node.wildlifeMotion.targetZ }, offCenter, map), true);
+    assert.equal(validWildlifeMotion(node, offCenter), true);
+  }
+});

@@ -72,6 +72,12 @@ export function stepWildlifeMotion(node, definition, { paused = false, canStep }
     const radius = 0.2 + ((value >>> 8) % 151) / 1000;
     motion.targetX = definition.x + Math.sin(angle) * radius;
     motion.targetZ = definition.z + Math.cos(angle) * radius;
+    // Persist only legal goals, including off-center authored meadow anchors.
+    if (!canStep({ x: node.x, z: node.z }, { x: motion.targetX, z: motion.targetZ })) {
+      motion.targetX = node.x; motion.targetZ = node.z;
+      motion.waitTicks = 90; motion.activity = 'idle';
+      return previousActivity !== motion.activity;
+    }
   }
   const dx = motion.targetX - node.x, dz = motion.targetZ - node.z, distance = Math.hypot(dx, dz);
   const amount = Math.min(distance, SHEEP_WANDER_SPEED / 30);
