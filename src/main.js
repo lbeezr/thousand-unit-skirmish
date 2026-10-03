@@ -3681,6 +3681,10 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   for (const button of bar.querySelectorAll('[data-stationary-order], [data-persistent-order]')) {
     button.hidden = !['workers', 'military', 'mixed'].includes(context.kind);
   }
+  for (const button of bar.querySelectorAll('[data-return-cargo]')) {
+    button.hidden = Boolean(building) || context.cargo.food + context.cargo.wood <= 0;
+    button.disabled = localTeam === null || matchWinner >= 0 || button.hidden;
+  }
   updateRosterProductionOptions(bar.querySelector('[data-context-products]'), building);
   updateResearchOptions(bar.querySelector('[data-context-research-options]'), building);
   for (const button of bar.querySelectorAll('[data-context-proxy]')) {
@@ -7026,7 +7030,7 @@ function applyOrderNotice(token, message) {
     finishOrderStatus(token, message, 'failed');
     return true;
   }
-  if (/^(STOP ORDER|HOLD POSITION ORDER|PATROL ORDER|FOLLOW ORDER|REPAIR ORDER|MOVE ORDER|ATTACK MOVE ORDER|WAYPOINT ORDER|ATTACK ORDER|ATTACK BUILDING ORDER|GATHER ORDER|BUILD ORDER|BUILD RESUME ORDER) · /.test(message)
+  if (/^(STOP ORDER|HOLD POSITION ORDER|PATROL ORDER|FOLLOW ORDER|REPAIR ORDER|MOVE ORDER|ATTACK MOVE ORDER|WAYPOINT ORDER|ATTACK ORDER|ATTACK BUILDING ORDER|GATHER ORDER|RETURN CARGO ORDER|BUILD ORDER|BUILD RESUME ORDER) · /.test(message)
     || message.startsWith('WAYPOINT QUEUED · ')) {
     finishOrderStatus(token, message, 'applied');
     return true;
@@ -7286,6 +7290,20 @@ function issueStationaryOrder(type) {
     setAttackMoveMode(false, false);
   }
 }
+function issueReturnCargo() {
+  if (localTeam === null || matchWinner >= 0) return;
+  const ids = selectedIds().filter(id => units[id]?.kind === 'worker' && units[id].cargo > 0);
+  if (!ids.length) { showToast('SELECT YOUR CARRYING WORKERS'); return; }
+  if (sendTrackedOrder({ type: 'returnCargo', ids }, 'RETURN CARGO', ids.length, 'WORKERS')) {
+    persistentTargetMode = null;
+    setTapOrderArmed(false, false);
+    setAttackMoveMode(false, false);
+  }
+}
+for (const button of document.querySelectorAll('[data-return-cargo]')) {
+  button.addEventListener('click', issueReturnCargo);
+}
+
 for (const button of document.querySelectorAll('[data-stationary-order]')) {
   button.addEventListener('click', () => issueStationaryOrder(button.dataset.stationaryOrder));
 }

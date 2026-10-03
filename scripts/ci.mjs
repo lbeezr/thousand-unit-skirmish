@@ -123,6 +123,8 @@ run(['--test', 'scripts/siege-ai.test.mjs'], 'Bounded siege acquisition and assa
 run(['--test', 'scripts/combat-rules.test.mjs'], 'Shared combat classes, counters and effect scope');
 run(['--test', 'scripts/watchtower-targeting.test.mjs'], 'Bounded defense targeting and sight');
 run(['--test', 'scripts/economy-ledger.test.mjs'], 'Fractional cargo conservation');
+run(['--test', 'scripts/return-cargo.test.mjs'], 'Explicit cargo return authority and controls');
+run(['scripts/interrupted-cargo-return-scenario.mjs'], 'Interrupted final sheep-food delivery and restart');
 run(['--test', 'scripts/underbough-gathering-evidence.test.mjs'], 'Rootways gathering provenance before rewards');
 run(['--test', 'scripts/base-lifecycle.test.mjs'], 'Cancel refunds and proportional repair');
 run(['--test', 'scripts/storehouse-routing.test.mjs'], 'Reachable drop-off route selection');
