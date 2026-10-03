@@ -1349,5 +1349,60 @@
     "focusedPassed": 130,
     "replayPairs": 16,
     "extraWaypointAndBudgetProbesPassed": true
+  },
+  "integration": {
+    "main": "14a621ce56d904df3beef71d553b67793c89aaa5",
+    "head": "7c4af0957ca90fd4d914b0281c3cbbd199fd7b29",
+    "sourceSha256": "f440a921f40e24569aa61288222086867fc78aa340635ff945b09ff7900912b8",
+    "focusedPassed": 176,
+    "pursuitPairs": 16,
+    "attackLossPairs": 12,
+    "allTracesMatchEarlierCandidate": true,
+    "originalNativeScenarioUnchangedAndPassed": true,
+    "native": {
+      "head": "aa54efb7c08d20a73e585653170670746741faa6",
+      "sourceSha256": "f440a921f40e24569aa61288222086867fc78aa340635ff945b09ff7900912b8",
+      "records": [
+        {
+          "workerTeam": 0,
+          "workerHp": 0,
+          "infantryHp": 60,
+          "ticks": 390,
+          "restartDuringPursuit": true,
+          "pursuitDistanceMoved": [
+            1.4,
+            1.5744596155772699
+          ],
+          "activePathsAtRestart": true,
+          "postCombatRestartStable": true,
+          "parkedRosterUnchanged": true
+        },
+        {
+          "workerTeam": 1,
+          "workerHp": 0,
+          "infantryHp": 60,
+          "ticks": 330,
+          "restartDuringPursuit": true,
+          "pursuitDistanceMoved": [
+            1.880848534267859,
+            1.7426097127697324
+          ],
+          "activePathsAtRestart": true,
+          "postCombatRestartStable": true,
+          "parkedRosterUnchanged": true
+        }
+      ],
+      "limits": [
+        "ordinary two-seat native starting roster and attack commands; no actor/HP/position injection",
+        "native proof uses open fog-off map and direct attacks; fixed-body matrix also covers Attack Move and four spawn orientations",
+        "no renderer, deployment or performance claim"
+      ]
+    },
+    "independentReview": {
+      "head": "7c4af0957ca90fd4d914b0281c3cbbd199fd7b29",
+      "findings": 0,
+      "focusedPassed": 87
+    },
+    "strengthening": "Native aa54efb requires both actors to move >.2 cells with active paths before restart; production server unchanged from7c4af09."
   }
 }

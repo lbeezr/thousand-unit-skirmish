@@ -81,6 +81,21 @@ fog authority remains covered by the existing attack-loss controls.
 
 ## Reproduction
 
+Main's selected-Skiff groups at `14a621c` integrate cleanly into `7c4af09`.
+The server SHA-256 becomes
+`f440a921f40e24569aa61288222086867fc78aa340635ff945b09ff7900912b8`.
+All 176 checks pass, including Skiff groups/fishing, and both the 16 pursuit
+pairs and 12 attack-loss pairs repeat with unchanged traces. The unchanged
+native Worker script passes both duels again. Independent integration review
+reports no findings, with 87 focused tests passing.
+
+The clean native rerun at `aa54efb` strengthens the restart predicate: both actors
+must have moved more than .2 cells and retain active paths before shutdown.
+Both seats pass pursuit and post-combat recovery at 60 Infantry HP; the source
+hash matches `7c4af09`. [PR 125](https://github.com/lbeezr/thousand-unit-skirmish/pull/125)
+records final exact-head merge and postmerge verification. Hosted CI remains
+queued without a green-CI claim.
+
 Run the commands in the [testing guide](testing.md). The matrix's `--observe`
 mode records bounded failure on the historical source using the read-only
 adapter; it does not change production rules.
