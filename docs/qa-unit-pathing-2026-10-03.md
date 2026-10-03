@@ -18,7 +18,7 @@ approximately `(-0.4428, 0.0551)` in one tick, crossing from cell 27/level 0 to
 cell 35/level 2. Stationary gathering beside left/right berries also crosses that
 cliff. A separate fixture enters open diagonal cell 36 past blocked side cell 35.
 Stationary melee separation also crosses the cliff. Four of the nine regression
-tests fail on the baseline; all nine pass with the boundary guard.
+tests fail on the baseline; those nine pass with the boundary guard.
 
 These are actual simulation position errors, independent of sprite headings or
 art coverage. The fixtures deliberately arrange the crowd; the ordinary live
@@ -31,10 +31,17 @@ of diagonal crossings. Three authoritative movement checks use it. The existing
 route fallback, separation forces, movement speeds, planner, orders, checkpoint
 shape and animation clocks retain their contracts.
 
-Nine focused regressions cover walking and stationary gathering/striking, berries
+Eleven focused regressions cover walking and stationary gathering/striking, berries
 on either side, blocked corners, all eight adjacent directions and uphill/downhill
 limits, one-level slopes, open ground, bounds and multi-cell jumps, and repair
-after a waypoint becomes blocked. PR #36's seven facing regressions also pass.
+after a waypoint becomes blocked. Independent review reproduced a reachable-route
+stall after a legal crowd deflection left its old next waypoint across a cliff or
+blocked corner. The simulation now requests the existing bounded repair when both
+physical steps are rejected, or invalidates a combat pursuit for its normal
+planner. Additional regressions run the real repair queue and planned-assignment
+application: one queued repair during 300 waiting ticks, retained queued intent,
+arrival after a known legal cardinal rejoin, and combat-target retention. Rejected
+steps do not update the movement timestamp. PR #36's seven facing regressions pass.
 
 Owner-run native WebSocket scenarios pass queued move/attack and checkpoint
 recovery, fog-private queue/focus metadata, a 1,000-unit queued-order sample,

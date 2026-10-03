@@ -6572,6 +6572,20 @@ function simulateTick() {
           MAP_WIDTH, elevationLevelByCell, isWalkable)) {
           unit.x = fallbackX;
           unit.z = fallbackZ;
+        } else {
+          // A legal crowd deflection can leave the old next waypoint behind
+          // a cliff or corner. Rebuild from the actual cell instead of stalling.
+          if (unit.attackTargetId >= 0 || unit.attackBuildingTargetId >= 0) {
+            unit.path = [];
+            unit.pathIndex = 0;
+            unit.lastAttackCell = -1;
+            unit.repathTimer = 0;
+          } else {
+            const destination = unit.moveGoalCell >= 0
+              ? unit.moveGoalCell : unit.path[unit.path.length - 1];
+            blockedRouteRepairs.push({ unit, destination });
+          }
+          break;
         }
       }
       unit.x = Math.max(-MAP_HALF_X + 0.5, Math.min(MAP_HALF_X - 0.5, unit.x));

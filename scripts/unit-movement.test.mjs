@@ -9,10 +9,12 @@ const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const width = 8, half = width / 2, bucketSize = 1.2, bucketColumns = 7;
 const cell = (x,z) => Math.floor(z+half)*width+Math.floor(x+half);
 const point = c => ({x:c%width-half+.5,z:Math.floor(c/width)-half+.5});
-function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[]} = {}) {
+function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs=false} = {}) {
   const mover = {id:0,team:0,hp:100,kind,x,z,path:[28],pathIndex:0,
     attackTargetId:-1,attackBuildingTargetId:-1,holdingPosition:false,
-    gatherForestCell:-1,gatherNodeId:'berries',gatherPhase:'gathering'};
+    gatherForestCell:-1,gatherNodeId:'berries',gatherPhase:'gathering',
+    orderRevision:0,movePlanningPending:false,moveGoalCell:28,buildingTargetId:null,
+    queuedWaypoints:[],attackMove:false,lastMoveTick:0};
   const units = [mover,...[-.05,-.12,-.19].map((offset,i)=>({id:i+1,team:0,hp:100,kind,
     x,z:z+offset,path:[],pathIndex:0,attackTargetId:-1,attackBuildingTargetId:-1,
     gatherForestCell:-1,gatherNodeId:null,gatherPhase:''}))];
@@ -48,6 +50,15 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[]} = {}) {
   const movement=server.slice(server.indexOf('  const blockedRouteRepairs = [];'),
     server.indexOf('\n}\n\nfunction encodeWebSocketFrame'));
   vm.runInContext(`function moveOneTick(){${movement}}`,context);
+  if(realRepairs){
+    Object.assign(context,{nearestOpenCell:c=>walkable(c)?c:-1,performance,TICK_RATE:30,
+      nextMoveOrderId:1,movePlanningEpoch:0,movePlanningQueue:[],
+      pendingMoveStartBroadcasts:new Set(),scheduleNextMovePlanning(){}});
+    vm.runInContext(server.slice(server.indexOf('function enqueueRouteRepairs('),
+      server.indexOf('function isResourceCell(')),context);
+    vm.runInContext(server.slice(server.indexOf('function applyPlannedMoveAssignment('),
+      server.indexOf('function takeMoveStartBroadcastRequest(')),context);
+  }
   const spread=server.slice(server.indexOf('function spreadInteractingUnits('),
     server.indexOf('// Bounded, rotating enemy-bucket scans'));
   return {mover,units,levels,blockedCells,walkable,context,repairs,
@@ -127,4 +138,46 @@ test('a newly blocked waypoint still schedules the existing route repair', () =>
   assert.deepEqual({x:f.mover.x,z:f.mover.z},before);
   assert.equal(f.repairs.length,1);assert.equal(f.repairs[0].unit,f.mover);
   assert.equal(f.repairs[0].destination,28);
+});
+
+test('legal crowd deflection repairs once, preserves the queued route and rejoins', () => {
+  for(const terrain of ['slope','corner']){
+    const f=fixture({x:-.01,z:.001,cliff:false,realRepairs:true});
+    for(const other of f.units.slice(1))other.hp=0;
+    if(terrain==='slope'){f.levels[27]=1;f.levels[35]=2;}else f.blockedCells.add(36);
+    assert.equal(canTraverseUnitStep(27,28,width,f.levels,f.walkable),true,'original route legal');
+    assert.equal(canTraverseUnitStep(27,35,width,f.levels,f.walkable),true,'prior crowd deflection legal');
+    f.mover.gatherNodeId=null;f.mover.gatherPhase='';
+    f.mover.attackMove=true;f.mover.queuedWaypoints=[{destination:29,attackMove:false}];
+    const queued=f.mover.queuedWaypoints;
+    f.move();
+    assert.equal(f.context.movePlanningQueue.length,1,`${terrain} requests repair`);
+    assert.equal(f.mover.movePlanningPending,true);
+    assert.equal(f.mover.lastMoveTick,0,'rejected movement is not marked as motion');
+    assert.equal(f.mover.queuedWaypoints,queued);
+    for(let tick=0;tick<300;tick++)f.move();
+    assert.equal(f.context.movePlanningQueue.length,1,'pending repair is not requeued each tick');
+    const job=f.context.movePlanningQueue[0];const assignment=job.assignments[0];
+    assert.equal(assignment.destination,28);
+    assignment.path=[27,28]; // Known legal cardinal return, delivered through real assignment application.
+    assert.equal(f.context.applyPlannedMoveAssignment(job,assignment),true);
+    assert.equal(f.mover.attackMoveRouteReady,true);assert.equal(f.mover.movePlanningPending,false);
+    for(let tick=0;tick<100&&f.mover.pathIndex<f.mover.path.length;tick++)f.move();
+    assert.equal(f.mover.pathIndex,2);assert.deepEqual({x:f.mover.x,z:f.mover.z},point(28));
+    assert.equal(f.mover.queuedWaypoints,queued);assert.equal(queued.length,1);
+  }
+});
+
+test('a terrain-rejected combat step invalidates its pursuit route for normal replanning', () => {
+  for(const targetKey of ['attackTargetId','attackBuildingTargetId']){
+    const f=fixture({x:-.01,z:.001,cliff:false});f.levels[27]=1;f.levels[35]=2;
+    for(const other of f.units.slice(1))other.hp=0;
+    f.mover[targetKey]=1;f.mover.lastAttackCell=28;f.mover.repathTimer=2;
+    f.move();
+    assert.equal(f.mover.path.length,0);assert.equal(f.mover.pathIndex,0);
+    assert.equal(f.mover.lastAttackCell,-1);assert.equal(f.mover.repathTimer,0);
+    assert.equal(f.mover[targetKey],1,'target intent is retained for the existing combat planner');
+    assert.equal(f.repairs.length,0,'combat replanning owns pursuit, rather than a move job');
+    assert.equal(f.mover.lastMoveTick,0);
+  }
 });
