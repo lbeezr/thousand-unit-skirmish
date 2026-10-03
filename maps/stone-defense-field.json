@@ -1,0 +1,101 @@
+{
+  "id": "stone-defense-field",
+  "name": "STONE DEFENSE FIELD",
+  "summary": "64 × 64 · STONE DEFENSE · 200 STONE PER SEAT",
+  "width": 64,
+  "height": 64,
+  "terrainSeed": 881,
+  "fogOfWar": true,
+  "spawnPoints": [
+    {
+      "team": 0,
+      "x": -20,
+      "z": 0
+    },
+    {
+      "team": 1,
+      "x": 20,
+      "z": 0
+    }
+  ],
+  "resourceNodes": [
+    {
+      "id": "azure-berries",
+      "type": "food",
+      "x": -14,
+      "z": 5,
+      "stock": 300
+    },
+    {
+      "id": "ember-berries",
+      "type": "food",
+      "x": 14,
+      "z": 5,
+      "stock": 300
+    },
+    {
+      "id": "azure-timber",
+      "type": "wood",
+      "x": -14,
+      "z": -5,
+      "stock": 300
+    },
+    {
+      "id": "ember-timber",
+      "type": "wood",
+      "x": 14,
+      "z": -5,
+      "stock": 300
+    },
+    {
+      "id": "stone-candidate-s0-0",
+      "type": "stone",
+      "x": -12.5,
+      "z": 10.5,
+      "stock": 67
+    },
+    {
+      "id": "stone-candidate-s0-0-1",
+      "type": "stone",
+      "x": -14.5,
+      "z": 8.5,
+      "stock": 67
+    },
+    {
+      "id": "stone-candidate-s0-0-2",
+      "type": "stone",
+      "x": -15.5,
+      "z": 12.5,
+      "stock": 66
+    },
+    {
+      "id": "stone-candidate-s1-0",
+      "type": "stone",
+      "x": 12.5,
+      "z": 10.5,
+      "stock": 67
+    },
+    {
+      "id": "stone-candidate-s1-0-1",
+      "type": "stone",
+      "x": 14.5,
+      "z": 8.5,
+      "stock": 67
+    },
+    {
+      "id": "stone-candidate-s1-0-2",
+      "type": "stone",
+      "x": 15.5,
+      "z": 12.5,
+      "stock": 66
+    }
+  ],
+  "obstacles": [],
+  "triggers": [],
+  "economyProfileId": "stone-defense-v1",
+  "startingArmySize": 24,
+  "startingResources": {
+    "food": 300,
+    "wood": 600
+  }
+}

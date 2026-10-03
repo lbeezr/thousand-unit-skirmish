@@ -12,6 +12,7 @@ import { seededMirroredResourceClusters, appendSeededResourceCluster } from '../
 import { applyResourceBrush, createResourceBrushEditor, previewResourceBrush,
   resourceBrushMapKey } from '../src/resource-brush-authoring.mjs';
 import { mountResourceBrushControls } from '../src/resource-brush-controls.mjs';
+import { createRoomLobby } from '../src/room-lobby-ui.mjs';
 import { createStoneAuthoringFixture } from './stone-authoring-fixture.mjs';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 import * as mapUtils from '../src/map-utils.mjs';
@@ -181,23 +182,56 @@ test('a profile-mislabelled checkpoint with valid baseline pin/checksum is rejec
   assert.ok((await Promise.all(rejected.map(name => readFile(path.join(room.directory, name), 'utf8')))).includes(original));
 });
 
-test('both seats naturally harvest finite Stone, pay and refund defense, and recover exact conservation', async t => {
-  const room = await createFortifiedFixture({ mapPath: 'maps/open-field.json', timeoutMs: 90000 });
-  t.after(() => room.dispose()); await room.start();
+test('ordinary room lobby selects shipped Stone and both seats naturally pay, refund and recover conservation', async t => {
+  const fixture = await createFortifiedFixture({ supervisor: true, mapPath: null, timeoutMs: 90000 });
+  t.after(() => fixture.dispose()); await fixture.start();
+  const response = await fetch(`http://127.0.0.1:${fixture.port}/api/rooms`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mode: 'pvp', pregame: true }),
+  });
+  assert.equal(response.status, 201);
+  const { roomId } = await response.json();
+  const checkpointPath = path.join(fixture.directory, 'rooms', 'rooms', roomId, 'match-state.json');
+  const room = { ...fixture, checkpointPath,
+    checkpoint: predicate => fixture.checkpoint(predicate, checkpointPath),
+    connect: (team, token) => fixture.connect(team, token, roomId) };
   let clients = [await room.connect(0), await room.connect(1)];
   const tokens = clients.map(client => client.welcome.player.sessionToken);
   const { baseMap } = await createStoneAuthoringFixture();
-  const map = { ...baseMap, id: 'stone-natural-loop-proof', name: 'Stone natural loop proof',
-    startingArmySize: 24, startingResources: { food: 300, wood: 600 }, economyProfileId: STONE_ECONOMY_PROFILE_ID };
-  const nodes = seededMirroredResourceClusters(map, { seed: 93000, nodesPerPatch: 3, radius: 4, spawnClearance: 6,
-    patches: [{ type: 'stone', x: -12.5, z: 10.5, stock: 200 }] })
-    .map(node => ({ ...node, id: `stone-candidate-${node.id}` }));
-  map.resourceNodes = [...baseMap.resourceNodes, ...nodes];
-  clients[0].send({ type: 'publishMap', map, persist: true });
+  const map = JSON.parse(await readFile(new URL('../maps/stone-defense-field.json', import.meta.url), 'utf8'));
+  const nodes = map.resourceNodes.filter(node => node.type === 'stone');
+  assert.equal(map.economyProfileId, STONE_ECONOMY_PROFILE_ID);
+  const lobbyViews = clients.map(client => {
+    const dom = new JSDOM('<dialog></dialog>'); t.after(() => dom.window.close());
+    const root = dom.window.document.querySelector('dialog');
+    root.showModal = () => { root.open = true; }; root.close = () => { root.open = false; };
+    const ui = createRoomLobby({ root, send: command => { client.send(command); return true; }, copyInvite() {} });
+    return { dom, root, ui };
+  });
+  const updateLobby = lobby => lobbyViews.forEach((view, team) => view.ui.update(lobby, clients[team].welcome.player));
+  const joined = await clients[0].wait(message => message.type === 'lobby' && message.lobby.seats.length === 2);
+  updateLobby(joined.lobby);
+  const select = lobbyViews[0].root.querySelector('#lobby-map');
+  assert.equal(select.disabled, false);
+  assert.equal([...select.options].find(option => option.value === map.id)?.textContent, 'Lab · STONE DEFENSE FIELD');
+  select.value = map.id; select.dispatchEvent(new lobbyViews[0].dom.window.Event('change'));
   await Promise.all(clients.map(client => client.wait(message => message.type === 'mapChange' && message.map.id === map.id)));
-  await clients[0].wait(message => message.type === 'mapPublished' && message.mapId === map.id);
-  const authored = JSON.parse(await readFile(path.join(room.directory, 'custom', `${map.id}.json`), 'utf8'));
-  assert.deepEqual(authored.resourceNodes, map.resourceNodes);
+  const configured = await clients[0].wait(message => message.type === 'lobby' && message.lobby.mapId === map.id);
+  assert.equal(configured.lobby.armySize, 24); updateLobby(configured.lobby);
+  for (const [team, client] of clients.entries()) {
+    const after = client.messages.length;
+    lobbyViews[team].root.querySelector('#lobby-ready').click();
+    const ready = await client.wait(message => message.type === 'lobby'
+      && message.lobby.seats.some(seat => seat.id === client.welcome.player.id && seat.ready), 'ordinary Ready', after);
+    updateLobby(ready.lobby);
+  }
+  assert.equal(lobbyViews[0].root.querySelector('#lobby-launch').disabled, false);
+  lobbyViews[0].root.querySelector('#lobby-launch').click();
+  const launched = await clients[0].wait(message => message.type === 'lobby' && message.lobby.phase === 'running');
+  updateLobby(launched.lobby);
+  assert.ok(lobbyViews.every(view => !view.root.open));
+  assert.ok(clients.every(client => !client.messages.some(message => message.type === 'mapPublished')));
+  assert.ok(!(await readdir(path.join(path.dirname(checkpointPath), 'custom-maps'))).includes(`${map.id}.json`));
   const workers = clients.map((client, team) => client.latest.units.filter(row => row[1] === team && row[5] === 'worker').map(row => row[0]));
   const ownNodes = team => nodes.filter(node => node.id.startsWith(`stone-candidate-s${team}-`));
   const spent = [0, 0];
@@ -280,7 +314,9 @@ test('both seats naturally harvest finite Stone, pay and refund defense, and rec
   const final = await room.checkpoint(snapshot => snapshot.sequence > depleted.sequence); conserved(final);
   assert.equal(final.matchId, depleted.matchId); assert.deepEqual(final.state.teamStone, depleted.state.teamStone);
   assert.deepEqual(final.state.resourceNodes, depleted.state.resourceNodes);
-  console.log(JSON.stringify({ proof: 'native-two-seat-stone-loop', schemaVersion: final.schemaVersion,
+  console.log(JSON.stringify({ proof: 'native-two-seat-stone-loop', mapId: map.id,
+    entry: 'Create Room → Map → Lab · STONE DEFENSE FIELD → Ready → Launch match',
+    shippedCatalog: true, customMapPublished: false, schemaVersion: final.schemaVersion,
     rulesetRevision: final.rulesetRevision, stockPerSeat: 200, initialStone: 0,
     bankedBeforeDefense: banked.state.teamStone, paidStone: paid.state.teamStone,
     consumedConstruction: spent, finalStone: final.state.teamStone,

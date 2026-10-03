@@ -54,6 +54,29 @@ posts, green harvestable forests, blue water, gray stone, brown/red resource nod
 and translucent cream high ground.
 These are layout schematics; the in-game renderer supplies the current regional art.
 
+## Stone defense lab
+
+Choose **Create Room → Map → Lab · STONE DEFENSE FIELD**, invite a second player,
+then both choose **Ready** and the host chooses **Launch match**. The shipped
+[Stone Defense Field](../maps/stone-defense-field.json) needs no Map Studio
+import, custom JSON or debug setting. It uses Open Field's ground and food/wood
+layout with 24 starting units, 300 food and 600 wood per seat, fog and zero
+starting Stone. Each home side has three finite gray Stone markers totaling
+200 (67/67/66). Existing food/wood-only maps keep their original prices.
+
+Select Workers and right-click a gray Stone marker. Workers carry Stone back
+to their Town Center; **Return cargo** also delivers carried Stone. Once at
+least 50 Stone is banked, select a Worker and build a Watchtower on clear level
+ground. This map's explicit Stone profile charges **50 food + 150 wood +
+50 Stone**. Stone does not regrow; a Mill remains a food-only drop-off.
+
+This is a playable resource/defense test map, with existing gray markers rather
+than new ore art. Stone-aware AI and human-match tuning remain separate work.
+The native regression selects the shipped map through the real room lobby and
+uses normal Worker commands on both seats, including payment/refund/restart
+conservation. Browser appearance and play on the deployed revision still need
+live verification; the map was not present in the earlier PR124 deployment.
+
 ## Regional art and audio
 
 Ground choice selects the existing regional vegetation and material family. As

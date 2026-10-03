@@ -54,7 +54,9 @@ and unknown IDs reject. Pure cluster helpers now use its shared `economyResource
 registry, so the exact Stone selector can materialize typed `stone` nodes without
 a wood alias. The agreed candidate keeps the historical anchors, seed,
 geometry and stable namespace, with stocks 67/67/66 per seat. The historical
-101-stock rejection fixture remains unchanged. No candidate map enters the shipped catalog.
+101-stock rejection fixture remains unchanged. The ordinary map catalog now includes
+[Lab · STONE DEFENSE FIELD](../maps/stone-defense-field.json), using this agreed
+200-stock layout and the explicit Stone profile.
 Brush previews and undo/redo history include the resolved profile in their placement
 fingerprint, so changing the profile requires a fresh preview/history. Omitted and
 explicit baseline selectors retain the exact legacy fingerprint.
@@ -64,23 +66,27 @@ Stone profile, with the shared profile pin and paid Watchtower price. Omitted
 selectors remain absent for legacy checksums. A mislabelled baseline checkpoint
 is rejected and retained byte-exact. No ledger or migration implementation is duplicated.
 
-To author Stone, import a map with `"economyProfileId":"stone-defense-v1"`.
+To play Stone, choose **Create Room → Map → Lab · STONE DEFENSE FIELD**, then
+both players ready and the host launches. No import or debug flag is needed.
+To author another Stone map, import a map with `"economyProfileId":"stone-defense-v1"`.
 The existing Resource Patches brush then includes Stone; a 200-stock patch with
 three markers splits 67/67/66. Preview/apply/undo/redo use the normal controls.
 Food/wood-only maps keep their original choices. The map editor uses a gray
 `S` marker distinct from berries; terrain Stone remains blocking terrain.
 
 Run `node --test scripts/stone-map-profile.test.mjs scripts/stone-authoring-fixture.test.mjs`.
-The native test publishes the six authored nodes without modifying saved banks,
-cargo or stock. Both seats start with zero Stone, recover real carried Stone after a restart, return it
+The native test creates an ordinary invite room, selects the shipped map with the
+actual lobby UI, readies both seats and launches without publishing custom JSON.
+It never modifies saved banks, cargo or stock. Both seats start with zero Stone,
+recover real carried Stone after a restart, return it
 to their Town Center and exhaust their first 67-stock node. A Watchtower spends
 50 food / 150 wood / 50 Stone. A restart preserves the frozen paid foundation;
 cancellation refunds only its unbuilt fraction, and replay cannot refund twice.
 Remaining nodes deplete to zero, with stock + cargo + bank + paid/lost construction
 equal to 200 per seat through another restart. Food/wood nodes remain exact.
 This is an authoritative server/client-command proof, not a human match or ore-art
-acceptance. The test persists its map only in a disposable custom catalog.
-No candidate map or generated asset is added to the checked-in catalog.
+acceptance. Room checkpoints are disposable; the map itself comes from the
+checked-in shipped catalog. No generated ore asset is added.
 
 ## Placement and visual brief for the later vertical slice
 
