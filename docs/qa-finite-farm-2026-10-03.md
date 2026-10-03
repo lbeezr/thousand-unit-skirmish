@@ -17,6 +17,7 @@ not 24 Workers. Each native Farm seat starts at 300 food / 600 wood on a flat
 | Proof | Clean source | Result |
 | --- | --- | --- |
 | Farm lifecycle, both seats | `823a0afd4712ffe1ab8e18a696785d6b69796f0d` | All twelve conservation stages passed; [raw record](qa-evidence/finite-farm-2026-10-03/farm-823a0af.json). |
+| Fogged Farm lifecycle and real owned-source AI observations, both seats | `1aa5e3420728cf33aee3b277850f5581028a7863` | All twelve stages passed, including actual wire → observation → deterministic Gather; [raw record](qa-evidence/finite-farm-2026-10-03/farm-fog-1aa5e34.json). |
 | Complete paid land settlement, ordinary dispatch order | `319bbdef97caf214134223d7a185ad8c0489f1b6` | 56 paid commands, 271.668 seconds; [manifest](qa-evidence/finite-farm-2026-10-03/settlement-319bbde-normal.json). |
 | Same settlement, reversed seat dispatch order | `319bbdef97caf214134223d7a185ad8c0489f1b6` | 56 paid commands, 271.928 seconds; [manifest](qa-evidence/finite-farm-2026-10-03/settlement-319bbde-reverse.json). |
 | Existing Mill lifecycle and actual paid Skiff recovery | `823a0afd4712ffe1ab8e18a696785d6b69796f0d` | Both native scenarios passed. Skiff checkpoint was repinned to exact pre-Farm Skiff content, preserving match ID, boats, paid queues and banks. |
@@ -60,13 +61,20 @@ A further review reproduced fogged owned Farms missing from AI observations:
 the occupied center cell can be hidden even though the server publishes the
 owned structure. The adapter now admits validated owned Farm sources under
 owned-building visibility, retaining neutral-node and enemy filtering. Both-seat
-fogged adapter tests pass. Native fogged policy proof is recorded below when
-complete; the earlier clean runs above disable fog and do not prove that fix.
+fogged adapter tests pass. The clean native fogged run at `1aa5e34` also passed
+the complete lifecycle with actual owned-source policy observations on both
+seats. The earlier runs disable fog and do not prove that fix.
 
 At `823a0af`, 74 focused Farm, registry, menu, settlement, Mill, Return cargo,
 worker audio/fishing and Gate/Skiff contract tests passed. The served-import
 check initially caught the missing Farm module allowlist entry; after adding it,
 all 89 imported client modules were served. No static-load failure remains.
+
+At `1aa5e34`, the same 74 focused checks passed with fog filtering coverage;
+all 90 imported client modules were served after the latest main integration.
+Documentation checks passed (456 Markdown files, 2,993 local links). The native
+PvE WebSocket smoke also passed both bot seats with an injected fake provider;
+no paid provider request was made.
 
 ## Reproduce and next observations
 

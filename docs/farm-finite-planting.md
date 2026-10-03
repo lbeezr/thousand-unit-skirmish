@@ -72,10 +72,13 @@ No crop artwork or paid model is claimed. Distinct field art can follow the actu
 3 × 3 plot and its productive/exhausted stock states. The deterministic harvester
 sees and gathers existing owned Farms through the same bounded node policy;
 automatic AI planting/replanting is not part of this slice.
+Owned Farm sources use owned-building visibility under fog; hidden neutral and
+enemy sources retain their existing filtering.
 
 ```sh
 node --test scripts/farm-harvest.test.mjs scripts/farm-client.test.mjs scripts/roster-building-ui.test.mjs
 node scripts/farm-scenario.mjs --output=NEW_DIRECTORY
+node scripts/farm-scenario.mjs --fog --output=ANOTHER_NEW_DIRECTORY
 node scripts/mature-settlement-scenario.mjs
 node scripts/mature-settlement-scenario.mjs --reverse-seats
 ```
