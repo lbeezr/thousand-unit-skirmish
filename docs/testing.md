@@ -134,6 +134,7 @@ Run from the repository root:
 | PvE production budgets | `node scripts/pve-production-scenario.mjs` |
 | PvE Worker recovery with one free population slot | `node --test scripts/pve-worker-recovery.test.mjs`; [fixed-tick paid recovery and checkpoint evidence](qa-pve-worker-recovery-2026-10-03.md) |
 | PvE paid Farm starvation recovery, finite replant and no-spam guards | `node --test scripts/pve-farm-policy.test.mjs`; [both-seat deterministic restart evidence](qa-pve-paid-farm-2026-10-03.md) |
+| PvE visible Worker/building raids and bounded objective recovery | `node --test scripts/pve-home-defense.test.mjs`; [both-seat raid, fog and restart evidence](qa-pve-home-defense-2026-10-03.md) |
 | PvE destroyed producer replacement | `node scripts/pve-barracks-recovery-scenario.mjs` |
 | PvE objective retake after losses | `node scripts/pve-objective-recovery-runtime-scenario.mjs TEAM SEED` (teams `0`, `1`; CI seed `20260925`, additional audited seed `4294967295`) |
 | Contested seeded PvE match | `node scripts/pve-contested-match-scenario.mjs 300 20260925 4294967295` |
