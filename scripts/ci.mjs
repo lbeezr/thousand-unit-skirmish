@@ -64,6 +64,7 @@ run(['scripts/forest-age-scenario.mjs'], 'Seeded irregular canopy ages preserve 
 run(['scripts/settlement-authoring-scenario.mjs'], 'Grounded starting settlements');
 run(['--test', 'scripts/resource-cluster-authoring.test.mjs'], 'Seeded Millrace resource clusters');
 run(['--test', 'scripts/stone-authoring-fixture.test.mjs'], 'Proposed Stone layout and legacy compatibility boundaries');
+run(['--test', 'scripts/stone-map-profile.test.mjs'], 'Typed Stone layout and map profile compatibility');
 run(['--test', 'scripts/resource-brush-authoring.test.mjs'], 'Resource brush preview and editor transactions');
 run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush editor controls');
 run(['scripts/check-docs.mjs'], 'Documentation links');

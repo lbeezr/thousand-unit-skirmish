@@ -1,17 +1,17 @@
-# Proposed Stone authoring fixture
+# Stone profile authoring and natural-loop proof
 
-This is preparation for the [mineral decision](mineral-economy-readiness.md),
-not a playable map or an adopted economy. Content/balance is currently completing
-Farm. Its Stone report must select the economic ID, distinct paid sink, price,
-node budget, and baseline/profile compatibility policy before runtime admission.
-`stone` is only the proposed ID here; renaming the fixture after that report is
-part of the coordinated implementation.
+This prepares map/schema integration for the [Stone contract](stone-defense-contract-proposal.md).
+The selected experimental ID is `stone`, with a 50-Stone Watchtower component
+and 200 finite stock per seat. Finite Farm is integrated; its owned crop pool
+stays separate from neutral authored nodes. Explicit Stone maps use the merged
+typed ledger, client surfaces and schema-23 recovery; this slice adds matching
+node admission and deterministic placement.
 
 The [content recommendation](stone-defense-contract-proposal.md) now keeps ID
 `stone` and proposes an optional Watchtower sink at 50 Stone, with 200 finite
 stock per seat and explicit legacy-profile migration. The 101-stock preflight
 below remains uneven compatibility test data; the later playable candidate uses
-a separate 67/67/66 stock split. Runtime admission remains closed meanwhile.
+a separate 67/67/66 stock split. Baseline maps continue rejecting Stone nodes.
 
 ## Deterministic layout and node shape
 
@@ -36,17 +36,51 @@ This establishes layout constraints, not contested-match balance or path parity.
 Run `node --test scripts/stone-authoring-fixture.test.mjs`. Native host publication
 rejects proposed Stone nodes and zero/positive starting Stone banks without
 changing the live map, food/wood banks or saved catalog. Normal brush authoring
-also rejects Stone. A real schema-11 checkpoint fixture migrates with exact
+rejects Stone under the baseline profile. A real schema-11 checkpoint fixture migrates with exact
 fractional food/wood banks, cargo, partial stock and depleted stock preserved;
 it receives no mineral grant. These are injected compatibility fixtures, not
 proof of a live Stone harvest or paid spend.
 
-Current rules reject Stone map/cargo saves and an incompatible future ruleset
-pin carrying a hypothetical Stone bank; each rejected file remains byte-exact.
-This does not define a Stone schema or migration. The eventual runtime owner
-must preserve old paid queues/refunds and depleted nodes, explicitly initialize
-any new bank under the agreed legacy policy, and keep incompatible saves
-recoverable. Adding a field to a same-pin save is not a supported mineral profile.
+Baseline rules reject Stone map/cargo saves and an incompatible ruleset pin;
+each rejected file remains byte-exact. The merged runtime owner supplies the
+schema-23 migration, preserving old paid prices with a zero Stone bank.
+Adding a field to a same-pin baseline save is not a supported mineral profile.
+
+## Profile-aware schema and placement interface
+
+The [runtime interface](stone-runtime-interface.md) owns `map.economyProfileId`:
+omission means `food-wood-v1`; the experiment is `stone-defense-v1`. Null, empty
+and unknown IDs reject. Pure cluster helpers now use its shared `economyResources`
+registry, so the exact Stone selector can materialize typed `stone` nodes without
+a wood alias. The agreed candidate keeps the historical anchors, seed,
+geometry and stable namespace, with stocks 67/67/66 per seat. The historical
+101-stock rejection fixture remains unchanged. No candidate map enters the shipped catalog.
+Brush previews and undo/redo history include the resolved profile in their placement
+fingerprint, so changing the profile requires a fresh preview/history. Omitted and
+explicit baseline selectors retain the exact legacy fingerprint.
+
+Normal import and native host publication admit Stone nodes only under the named
+Stone profile, with the shared profile pin and paid Watchtower price. Omitted
+selectors remain absent for legacy checksums. A mislabelled baseline checkpoint
+is rejected and retained byte-exact. No ledger or migration implementation is duplicated.
+
+To author Stone, import a map with `"economyProfileId":"stone-defense-v1"`.
+The existing Resource Patches brush then includes Stone; a 200-stock patch with
+three markers splits 67/67/66. Preview/apply/undo/redo use the normal controls.
+Food/wood-only maps keep their original choices. The map editor uses a gray
+`S` marker distinct from berries; terrain Stone remains blocking terrain.
+
+Run `node --test scripts/stone-map-profile.test.mjs scripts/stone-authoring-fixture.test.mjs`.
+The native test publishes the six authored nodes without modifying saved banks,
+cargo or stock. Both seats start with zero Stone, recover real carried Stone after a restart, return it
+to their Town Center and exhaust their first 67-stock node. A Watchtower spends
+50 food / 150 wood / 50 Stone. A restart preserves the frozen paid foundation;
+cancellation refunds only its unbuilt fraction, and replay cannot refund twice.
+Remaining nodes deplete to zero, with stock + cargo + bank + paid/lost construction
+equal to 200 per seat through another restart. Food/wood nodes remain exact.
+This is an authoritative server/client-command proof, not a human match or ore-art
+acceptance. The test persists its map only in a disposable custom catalog.
+No candidate map or generated asset is added to the checked-in catalog.
 
 ## Placement and visual brief for the later vertical slice
 

@@ -1,5 +1,6 @@
 import { buildElevationGrid, findUnreachableResourceNode } from './map-utils.mjs';
 import { townCenterFootprintCells } from './town-center-spawn.mjs';
+import { economyResources } from './economy-profile.mjs';
 
 // Patch totals, not per-marker stocks. Ordinary nodes remain editable in Map Studio.
 export const MILLRACE_RESOURCE_CLUSTERS = Object.freeze({
@@ -54,6 +55,7 @@ function orderedOffsets(seed, patch, radius, distribution) {
 }
 
 export function seededMirroredResourceClusters(map, settings = MILLRACE_RESOURCE_CLUSTERS) {
+  const resourceIds = economyResources(map.economyProfileId);
   const { seed, nodesPerPatch: count, radius, spawnClearance, patches, distribution = 'uniform' } = settings;
   if (!Number.isSafeInteger(seed) || !Number.isInteger(count) || count < 1 || count > 16
     || !Number.isInteger(radius) || radius < 1 || radius > 8
@@ -65,7 +67,7 @@ export function seededMirroredResourceClusters(map, settings = MILLRACE_RESOURCE
   const { width, height, cell, inside, blocked, paint, elevation } = clusterGround(map);
   const taken = new Set();
   for (const patch of patches) {
-    if (!['food', 'wood'].includes(patch.type) || !Number.isInteger(patch.stock) || patch.stock < count
+    if (!resourceIds.includes(patch.type) || !Number.isInteger(patch.stock) || patch.stock < count
       || !Number.isFinite(patch.x) || !Number.isFinite(patch.z) || patch.x >= 0
       || !inside(patch.x, patch.z) || blocked[cell(patch.x, patch.z)] || blocked[cell(-patch.x, patch.z)]
       || taken.has(cell(patch.x, patch.z)) || taken.has(cell(-patch.x, patch.z))) {
@@ -102,6 +104,7 @@ export function seededMirroredResourceClusters(map, settings = MILLRACE_RESOURCE
 // Pure append on a validated map: totalStock is the one patch's entire budget.
 // Return the complete node array only after admission; never mutate map/settings.
 export function appendSeededResourceCluster(map, settings = {}) {
+  const resourceIds = economyResources(map.economyProfileId);
   const { seed, nodesPerPatch: count = 5, radius = 4, spawnClearance = 6, distribution = 'uniform',
     type, x, z, totalStock } = settings;
   const existing = map.resourceNodes ?? [];
@@ -109,7 +112,7 @@ export function appendSeededResourceCluster(map, settings = {}) {
     || !Number.isInteger(radius) || radius < 1 || radius > 8
     || !Number.isInteger(spawnClearance) || spawnClearance < 0 || spawnClearance > 16
     || !['uniform', 'core-falloff'].includes(distribution)
-    || !['food', 'wood'].includes(type) || !Number.isFinite(x) || !Number.isFinite(z)
+    || !resourceIds.includes(type) || !Number.isFinite(x) || !Number.isFinite(z)
     || !Number.isSafeInteger(totalStock) || totalStock < count
     || !Array.isArray(existing) || existing.length + count > 128) {
     throw new Error('Invalid additive resource cluster settings, total stock or node budget.');
@@ -118,7 +121,7 @@ export function appendSeededResourceCluster(map, settings = {}) {
   const occupied = new Set(), ids = new Set();
   for (const node of existing) {
     if (!node || typeof node.id !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(node.id)
-      || ids.has(node.id) || !['food', 'wood'].includes(node.type)
+      || ids.has(node.id) || !resourceIds.includes(node.type)
       || !Number.isFinite(node.x) || !Number.isFinite(node.z) || !inside(node.x, node.z)
       || !Number.isFinite(node.stock) || node.stock <= 0 || occupied.has(cell(node.x, node.z))) {
       throw new Error('Invalid or duplicate existing resource node ID/cell.');

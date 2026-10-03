@@ -1,13 +1,16 @@
 import { appendSeededResourceCluster } from './resource-cluster-authoring.mjs';
+import { DEFAULT_ECONOMY_PROFILE_ID, resolveEconomyProfileId } from './economy-profile.mjs';
 
 const copy = value => JSON.parse(JSON.stringify(value));
 const previews = new WeakMap();
 // Only placement inputs and map identity invalidate a preview/history. Names,
 // objectives and other unrelated editor fields may change without being replaced.
 function placementKey(map) {
+  const profileId = resolveEconomyProfileId(map.economyProfileId);
   return JSON.stringify([map.id, map.width, map.height, map.terrainBase,
     map.terrainPatches ?? [], map.elevationPatches ?? [], map.obstacles,
-    map.spawnPoints, map.resourceNodes ?? []]);
+    map.spawnPoints, map.resourceNodes ?? [],
+    ...(profileId === DEFAULT_ECONOMY_PROFILE_ID ? [] : [profileId])]);
 }
 export { placementKey as resourceBrushMapKey };
 

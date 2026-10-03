@@ -6,9 +6,9 @@ The shared field is `map.economyProfileId`. Omission resolves to `food-wood-v1`;
 the explicit experiment ID is `stone-defense-v1`. Unknown IDs, null and empty
 strings are invalid. The helpers are merged. The server integration adds typed banks, deposits,
 Watchtower payment/refunds and checkpoint recovery. The client supports profile pins,
-typed banks/cargo, drop-off labels and the paid Watchtower price; authoritative Stone nodes
-and authoring controls remain pending. This is not
-yet a playable Stone economy.
+typed banks/cargo, drop-off labels and the paid Watchtower price. Profile-specific
+node admission and the existing patch brush now support Stone, with a
+[natural two-seat conservation proof](stone-authoring-preflight.md#profile-aware-schema-and-placement-interface).
 
 `src/economy-profile.mjs` owns the single additional price: new Watchtower
 construction costs its existing food/wood amounts plus 50 Stone only in the
@@ -28,7 +28,7 @@ See the [dated native ledger/recovery evidence](qa-stone-ledger-recovery-2026-10
 The map owner can target the unchanged `{id,type,x,z,stock}` node shape with
 `type:"stone"`, 200 per seat in 67/67/66 nodes, no regrowth and zero initial Stone.
 Authoritative/editor/cluster admission must use the same resolved profile; keep
-Stone closed until typed deposits and the paid Watchtower loop are integrated.
+the exact explicit profile required for Stone nodes.
 Town Center/Storehouse accept Stone; Mill remains food-only. Terrain stones stay
 blocking terrain. Existing uneven 101-stock rejection fixtures remain separate.
 
