@@ -62,6 +62,24 @@ appearance and staging deployment are separate follow-ups under the recipe below
 
 ## Exact Mac QA recipe
 
+### Post-menu interruption audit
+
+At main `b29d9746013a8ef24bb66c6cb56cccbac055bbed`, five new regressions reproduce
+401/503 being treated as expired Resume, a JSON parse error for the plain-text
+401 creation challenge, and ambiguous direct invite/Resume authentication.
+[PR #94](https://github.com/lbeezr/thousand-unit-skirmish/pull/94) keeps a previously
+validated Resume choice through interruptions and gives sign-in/retry guidance.
+Tokens and match identity remain intact; no new room or peer substitutes for Resume.
+
+The authenticated supervisor scenario now has nine groups, including real 401
+responses with invalid local test authorization headers, restored sign-in using
+the unchanged test server, and the same saved Resume target. Direct invalid/missing
+invites and stale Resume also stop before socket admission without a fresh-game
+fallback. Exact build/check totals and postmerge results are in the PR closure.
+Existing authentication configuration and saved match data are untouched.
+
+### Browser steps
+
 Use the PR's final merge locally, then the identified deployed build once the
 Railway owner switches it. Keep normal browser sandboxing and existing auth.
 
@@ -87,6 +105,12 @@ Railway owner switches it. Keep normal browser sandboxing and existing auth.
 8. Back/forward through menu and game: no frozen pending buttons, duplicate
    socket or unexpected default match. Record actual focus, Enter, layout,
    loading/error and unaided discoverability findings separately from DOM checks.
+9. In a local browser run, intercept a session/room response with HTTP 401,
+   then restore normal responses and reload/retry. See sign-in guidance rather
+   than expiry/JSON errors; the same saved Resume target remains. Repeat a
+   session check with HTTP 503: retry Resume, with no fresh room or game peer
+   created during the interruption. Keep browser observations separate from
+   the automated HTTP/VM evidence above.
 
 No visual polish milestone, extra civilization/allied team capacity, deletion of
 old saved data, authentication setting change or Railway deployment is claimed.
