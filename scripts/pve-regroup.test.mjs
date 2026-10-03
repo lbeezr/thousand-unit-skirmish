@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRegroupPolicy, PVE_REGROUP_LIMITS as limits } from '../src/pve-regroup.mjs';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
-import { createPveHeadlessFixture } from './pve-headless-fixture.mjs';
+import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
 
 process.env.RTS_MAP = 'maps/open-field.json';
 process.env.RTS_GAME_MODE = 'pvp';
@@ -160,7 +160,7 @@ async function recoveryReplay(team, initial) {
         if (wipedAt !== null) maxReplacements = Math.max(maxReplacements, army.length);
         if (wipedAt !== null && restoredAt === null && army.length >= 2 && army.length < limits.units) {
           r.drain(); const before = r.observe(team), checkpoint = r.checkpoint(); r.restore(checkpoint);
-          assert.deepEqual(r.observe(team), before, 'restart preserves paid queues, rally paths, units, fog, cargo and banks');
+          assertRecoveredWorkerObservation(r.observe(team), before, 'restart preserves paid queues, rally paths, units, fog, cargo and banks');
           policy = createDeterministicPolicy(20260925); shadow = createDeterministicPolicy(20260925);
           restoredAt = observation.tick; trace.push({ tick: restoredAt, restart: true });
           observation = toOpponentObservation(r.observe(team), team, map);
