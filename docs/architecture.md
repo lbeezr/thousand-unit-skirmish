@@ -66,6 +66,17 @@ browser entrypoint. This checks import edges, not browser globals, injected
 callbacks, runtime asset fetches or gameplay semantics. It also scans unreferenced
 `src` modules and nested folders, so new files cannot evade the cycle check.
 
+Acceptance is safer parallel ownership, not folder count or reduced line count.
+A shared-rule owner can change a helper's internals and focused contracts while
+the world owner changes topology and the presentation owner consumes disclosed
+state, provided their exported signatures and value semantics remain stable.
+Those changes need no edits to `main.js` or `server.mjs`; host edits belong to
+actual orchestration/interface changes. The source graph protects this first
+boundary by refusing imports back into hosts, tools, browser boot or Three from
+authoritative rule closures. Check consumer regressions before claiming a stable
+interface. This slice itself edits no runtime files and touches the shared CI
+registry only to register its two checks.
+
 The browser uses native ESM without a bundler. `index.html`, the environment
 review and water study map `three` to `/vendor/three.module.js`; the server serves
 that module and `three.core.js` from the installed package. `server.mjs` admits
@@ -77,6 +88,8 @@ Acorn is a pinned development dependency; production installs omit it.
 
 The first folder-migration candidate is the offline `pve-model-proposal.mjs`
 Node adapter, which is outside browser closures and normal hosted simulation.
+Its sole current source importer is `scripts/pve-opponent-scenario.mjs`, so that
+move can establish a Node-adapter folder without a `main.js`/`server.mjs` edit.
 Before moving it, agree that exact scope with the existing quality owner through
 the producer and refresh its importers. Keep the active room-launch/game-mode
 and gameplay hot spots out of this first migration. For a served module, update
