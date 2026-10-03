@@ -83,6 +83,8 @@ Run from the repository root:
 | Crowd deflection / terrain boundaries | `node --test scripts/unit-movement.test.mjs` (real authoritative movement blocks, cliffs, corners, working/striking separation and route repair) |
 | Formation destinations after paid obstruction | `node --test scripts/pathing-replay.test.mjs`; `node scripts/pathing-native-scenario.mjs dynamic-goal` (both-seat reservation, opponent goal independence, native arrival) |
 | Bounded choke baseline / deterministic replay | `PATHING_BASELINE_RECORD=/tmp/pathing.json node scripts/pathing-baseline.mjs all 2` (seven fixed-tick cases; [source evidence and limits](qa-pathing-goal-repair-2026-10-03.md)) |
+| Dynamic paid walls / queued formation legs | `node --test scripts/dynamic-wall-pathing.test.mjs`; `DYNAMIC_WALL_RECORD=/tmp/walls.json node scripts/dynamic-wall-pathing.mjs 2`; `node scripts/dynamic-wall-native-scenario.mjs` (both seats, 16/64 Infantry, route obstruction, future targets and removal; [evidence](qa-queued-wall-pathing-2026-10-03.md)) |
+| Manual gate closure over future formation targets | `QUEUED_GATE_RECORD=/tmp/gates.json node scripts/queued-gate-pathing.mjs`; add `--observe --park-builder` for the separate parked-Worker congestion probe |
 | Default map geometry | `node scripts/forked-vale-layout.mjs` |
 | Fortified Crossing foundation | `node scripts/fortified-crossing-layout.mjs` and `node scripts/fortified-crossing-economy.mjs`; [evidence and scale runner](qa-custom-skirmish.md) |
 | Fortified late-arrival construction clearance | `node --test scripts/fortified-site-clearance.test.mjs` and `node scripts/fortified-construction-clearance-scenario.mjs 2000`; [diagnosis](qa-fortified-clearance-2026-10-03.md) |
