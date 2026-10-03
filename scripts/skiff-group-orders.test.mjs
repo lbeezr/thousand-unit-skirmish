@@ -152,6 +152,19 @@ test('group Return lets the near approach leave first when boat IDs put the fart
   assert.deepEqual(f.world.units[2], before[2]);
 });
 
+test('reissuing group fishing from distinct Dock berths lets the nearer outbound boat leave first', () => {
+  const f = fixture(31, true), selected = f.units.slice(0, 2);
+  selected.forEach((unit, index) => Object.assign(unit, f.water.graph.pointAt(index ? 2772 : 2835)));
+  const before = structuredClone(f.units);
+  const plan = planSkiffGroupFishing(f.fishing, selected, f.world.nodes.get('fish-0'), f.buildings, f.units);
+  assert.equal(plan.status, 'found'); assert.deepEqual(f.units, before);
+  assert.equal(new Set(plan.assignments.map(({ route }) => route.cells.at(-1))).size, 2);
+  f.apply(plan, true); f.world.units = structuredClone(f.units);
+  for (let i = 0; i < 4000; i++) { f.tick(); f.safe(); }
+  assert.equal(f.world.teamFood[0], 1031); assert.equal(f.world.nodes.get('fish-0').stock, 0);
+  assert.deepEqual(f.world.units[2], before[2]);
+});
+
 test('group Return cargo reaches distinct owned berth cells, deposits each fractional load once and leaves unselected orders intact', () => {
   const f = fixture(), selected = [f.units[0], f.units[1]], before = structuredClone(f.units[2]);
   selected.forEach((unit, index) => { unit.cargo = index ? 4.25 : .005; unit.cargoType = 'food'; f.world.nodes.get('fish-0').stock -= unit.cargo; });
@@ -183,6 +196,10 @@ test('insufficient distinct fish or Dock targets preserve every existing order a
   selected[0].cargo = 1; selected[0].cargoType = 'food';
   assert.notEqual(planSkiffGroupReturn(f.fishing, selected, [{ ...f.buildings[0], team: 1 }], f.units).status, 'found');
   assert.equal(selected[0].cargo, 1); assert.equal(selected[0].gatherPhase, '');
+  selected.forEach(unit => { unit.cargo = 10; unit.cargoType = 'food'; });
+  const fullHolds = structuredClone(f.units);
+  assert.notEqual(planSkiffGroupFishing(f.fishing, selected, f.world.nodes.get('fish-0'), f.buildings, f.units).status, 'found');
+  assert.deepEqual(f.units, fullHolds, 'full holds do not bypass source approach capacity');
 });
 
 test('a future destination is reserved, parking on transit paths is refused, and the current occupant can sail away', () => {

@@ -48,16 +48,25 @@ export function planSkiffGroupMove(water, selected, x, z, units) {
 
 export function planSkiffGroupFishing(fishing, selected, node, buildings, units) {
   if (!validSelection(selected)) return { status: 'invalid-skiff-group', assignments: [] };
+  if ((fishing.siteAt(node?.id)?.cells.length ?? 0) < selected.length) return { status: 'need-distinct-fish-and-owned-dock-routes', assignments: [] };
   const options = { ...optionsFor(selected), reservedTransitCells: new Set() }, assignments = [];
+  const candidates = [];
   for (const unit of ordered(selected)) {
     const fish = fishing.fishRoute(unit, node, units, options);
     const delivery = fishing.deliveryRoute(unit, buildings, units, options);
     if (!fish || !delivery) return { status: 'need-distinct-fish-and-owned-dock-routes', assignments: [] };
     const phase = unit.cargo >= UNIT_DEFINITIONS.skiff.fishing.carryCapacity ? 'to-base' : 'to-node';
-    const route = phase === 'to-base' ? delivery : fish;
+    candidates.push({ unit, phase, route: phase === 'to-base' ? delivery : fish });
+  }
+  candidates.sort((a, b) => a.route.cells.length - b.route.cells.length || a.unit.id - b.unit.id);
+  for (const [index, candidate] of candidates.entries()) {
+    const { unit, phase } = candidate;
+    const route = index === 0 ? candidate.route : phase === 'to-base'
+      ? fishing.deliveryRoute(unit, buildings, units, options) : fishing.fishRoute(unit, node, units, options);
+    if (!route) return { status: 'need-distinct-fish-and-owned-dock-routes', assignments: [] };
     reserve(options, route); assignments.push({ unit, route, phase, nodeId: node.id });
   }
-  return { status: 'found', assignments };
+  return { status: 'found', assignments: assignments.sort((a, b) => a.unit.id - b.unit.id) };
 }
 
 export function planSkiffGroupReturn(fishing, selected, buildings, units) {

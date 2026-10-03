@@ -18,6 +18,8 @@ each route expands at most 4,096 cells. Missing room, a disconnected member or
 budget exhaustion rejects the entire controlled group before changing orders.
 
 Group fishing assigns distinct admitted casting approaches to the same source.
+Fishing trips are admitted by shortest immediate route first, with boat ID
+breaking ties, so boats can leave adjacent berths without trapping one another.
 The stock remains one finite existing food pool shared with Workers. A source
 with only one safe approach, including each shipped pilot pond corner, admits
 one boat at a time; a larger selection rejects without replacing prior orders.
