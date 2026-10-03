@@ -184,9 +184,10 @@ Mill is additive Frontier content using `dropoff: ['food']` and the existing
 construction, route selection, cancellation, repair and destruction handlers.
 The HUD derives accepted resources from that list. Its `building.mill` profile
 explicitly reuses the procedural House; no captured Mill asset is registered.
-Schema 22's exact pre-Mill ruleset `v1:d85f5a09decc0d0ade81803ab289b52ec5a08e84ff5a1771e85401d4c3611eab`
+Schema 22's exact pre-Mill ruleset `v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801`
 migrates to the new revision without changing the persisted shape, existing
 stats, resources, identities or paid queues. Unknown revisions remain rejected.
+The earlier pre-palisade revision retains its existing guarded migration.
 
 ### Base lifecycle commands
 

@@ -149,6 +149,29 @@ class AuthoringBehavior(unittest.TestCase):
             self.assertEqual(tuple(derived["complete"]["Neutral_Ochre_Prop"].color), (0, 0, 0, 1))
             self.assertFalse(derived["complete"]["Neutral_Ochre_Prop"]["team_mask"])
 
+    def test_runtime_mask_uses_owner_alpha_and_keeps_neutral_transparent(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "mask.png"
+            image = bpy.data.images.new("Synthetic_Mask_Protocol", width=3, height=1, alpha=True)
+            image.colorspace_settings.name = "Non-Color"
+            image.alpha_mode = "STRAIGHT"
+            image.pixels[:] = [0, 0, 0, 1, 1, 1, 1, 1, .5, .5, .5, .4]
+            image.filepath_raw = str(path)
+            image.file_format = "PNG"
+            image.save()
+            bpy.data.images.remove(image)
+            module.encode_runtime_mask(path)
+            result = bpy.data.images.load(str(path), check_existing=False)
+            result.colorspace_settings.name = "Non-Color"
+            result.alpha_mode = "STRAIGHT"
+            values = list(result.pixels)
+            bpy.data.images.remove(result)
+            self.assertAlmostEqual(values[3], 0, delta=2 / 255)
+            self.assertAlmostEqual(values[7], 1, delta=2 / 255)
+            self.assertAlmostEqual(values[11], .2, delta=2 / 255)
+            self.assertEqual(values[4:7], [1, 1, 1])
+            self.assertEqual(values[8:11], [1, 1, 1])
+
 
 suite = unittest.defaultTestLoader.loadTestsFromTestCase(AuthoringBehavior)
 result = unittest.TextTestRunner(verbosity=2).run(suite)

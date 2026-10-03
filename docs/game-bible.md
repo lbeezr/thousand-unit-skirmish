@@ -231,6 +231,14 @@ units or population and does not generate or multiply food. Mill currently uses
 the existing procedural House appearance as an explicit placeholder until its
 own art is authored. It uses the same paid repair and cancellation rules.
 
+A one-cell Palisade uses **provisional test tuning** of 15 wood, five accumulated
+Worker-seconds and 300 HP. Whole lines reserve occupancy and pay atomically;
+existing friendly segments are reused without charge. Workers construct new
+segments in a persisted sequence, interrupted by another player order. Both teams
+obey the same ordinary blocking rules. The single-cell registry menu works;
+line authoring UI and finished wall art remain future work. See the
+[paid palisade contract](palisade-runtime.md). No stone currency or gate policy is introduced.
+
 ## Cancellation and repair
 
 Canceling unfinished construction refunds the unbuilt fraction of its food/wood

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { canTraverseUnitStep } from '../src/unit-movement.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
@@ -34,7 +35,7 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
   for(const [b,ids] of grouped){teamHeads[0][b]=ids[0];teamCounts[0][b]=ids.length;
     for(let i=0;i<ids.length;i++)teamNext[0][ids[i]]=ids[(i+1)%ids.length];}
   const repairs = [];
-  const context = vm.createContext({units,UNIT_DEFINITIONS,MAP_WIDTH:width,MAP_HALF_X:half,MAP_HALF_Z:half,
+  const context = vm.createContext({units,UNIT_DEFINITIONS,activeWallBuildOrder,MAP_WIDTH:width,MAP_HALF_X:half,MAP_HALF_Z:half,
     STEP_SECONDS:1/30,MIN_SEPARATION:.56,SPATIAL_BUCKET_SIZE:bucketSize,WALK_SPEED:2.6,
     WORKER_INTERACTION_RANGE:1.4,BUILDER_INTERACTION_RANGE:1.4,
     spatialBucketColumns:bucketColumns,spatialBucketRows:bucketColumns,spatialBucketHeads:heads,
@@ -180,4 +181,17 @@ test('a terrain-rejected combat step invalidates its pursuit route for normal re
     assert.equal(f.repairs.length,0,'combat replanning owns pursuit, rather than a move job');
     assert.equal(f.mover.lastMoveTick,0);
   }
+});
+
+test('internal route repair preserves an active palisade sequence revision', () => {
+  const f=fixture({cliff:false,realRepairs:true});
+  f.mover.generation=3;
+  f.mover.wallBuildOrder={ids:[4,5],generation:3,revision:f.mover.orderRevision};
+  const order=f.mover.wallBuildOrder;
+  f.context.enqueueRouteRepairs([{unit:f.mover,destination:28}]);
+  assert.equal(f.mover.orderRevision,1);
+  assert.equal(order.revision,1);
+  assert.equal(activeWallBuildOrder(f.mover),order);
+  f.mover.orderRevision++;
+  assert.equal(activeWallBuildOrder(f.mover),null,'a later player revision still invalidates the sequence');
 });

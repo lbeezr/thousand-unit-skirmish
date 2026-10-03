@@ -20,7 +20,7 @@ A **sprite sheet** is the regular grid of views/states. A **texture atlas** is t
 
 ## Current roster and production queue
 
-`src/gameplay-definitions.mjs` defines nine buildings, including the playable food-only Mill with a procedural House placeholder. The original eight-building source concept family remains its own art outcome. Footprint is square occupancy in world cells, not image canvas size. Existing direct sprites cover Barracks and Archery Range. Town Center uses captured directional lifecycle artwork through `src/captured-building-art.mjs`; `src/main.js` passes the live building state. Some pack READMEs still describe older static-center behavior, so use current code and expansion/repair rules when planning coverage.
+`src/gameplay-definitions.mjs` defines ten buildings, including Palisade and the playable food-only Mill with a procedural House placeholder. The original eight-building source concept family remains its own art outcome. Footprint is square occupancy in world cells, not image canvas size. Existing direct sprites cover Barracks and Archery Range. Town Center uses captured directional lifecycle artwork through `src/captured-building-art.mjs`; `src/main.js` passes the live building state. Some pack READMEs still describe older static-center behavior, so use current code and expansion/repair rules when planning coverage.
 
 | Order | Building | Current footprint | Gameplay identity | Art brief and useful reference |
 | --- | --- | --- | --- | --- |

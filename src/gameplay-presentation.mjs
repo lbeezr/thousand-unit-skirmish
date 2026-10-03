@@ -35,6 +35,7 @@ export function unitPresentation(kind) {
 }
 
 export const BUILDING_PRESENTATION_PROFILES = Object.freeze({
+  'building.palisade': Object.freeze({ backend: 'procedural', role: 'palisade' }),
   'building.workshop': Object.freeze({ backend: 'procedural', role: 'archery-range' }),
   'building.stable': Object.freeze({ backend: 'procedural', role: 'barracks' }),
   'building.watchtower': Object.freeze({ backend: 'procedural', role: 'watchtower' }),
@@ -49,7 +50,7 @@ export const BUILDING_PRESENTATION_PROFILES = Object.freeze({
 export function validateBuildingPresentationBindings(buildings = BUILDING_DEFINITIONS, profiles = BUILDING_PRESENTATION_PROFILES) {
   for (const [id, definition] of Object.entries(buildings)) {
     const profile = profiles[definition.presentation];
-    if (!profile || profile.backend !== 'procedural' || !['house', 'barracks', 'archery-range', 'town-center', 'watchtower'].includes(profile.role)) {
+    if (!profile || profile.backend !== 'procedural' || !['palisade', 'house', 'barracks', 'archery-range', 'town-center', 'watchtower'].includes(profile.role)) {
       throw new Error(`Unsupported building presentation binding ${definition.presentation}: ${id}`);
     }
   }

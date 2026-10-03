@@ -34,6 +34,9 @@ import { advanceTickDeadline } from './simulation-scheduler.mjs';
 import { privateProductionView } from './src/snapshot-private-production.mjs';
 import { RoomPregame, validatePregameCheckpoint } from './src/room-pregame.mjs';
 import { headingToTarget } from './src/unit-heading.mjs';
+import { preparePaidWallLine } from './src/wall-construction-draft.mjs';
+import { activeWallBuildOrder } from './src/wall-build-order.mjs';
+import { palisadeConnections } from './src/palisade-profile.mjs';
 import { canTraverseUnitStep } from './src/unit-movement.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -1613,7 +1616,7 @@ function makeUnit(id, team, x, z, kind, teamSlot) {
     attackMoveScanTick: tickNumber + (id % ATTACK_MOVE_SCAN_INTERVAL_TICKS),
     attackMoveBucketScanOffset: id % attackMoveBucketOffsets.length,
     kind, cargo: 0, cargoType: null, gatherNodeId: null, gatherForestCell: -1, gatherPhase: '', dropoffBuildingId: null, dropoffNavigationRevision: -1,
-    buildingTargetId: null, repairing: false, moveGoalCell: -1, queuedWaypoints: [],
+    buildingTargetId: null, repairing: false, wallBuildOrder: null, moveGoalCell: -1, queuedWaypoints: [],
   };
 }
 
@@ -2443,6 +2446,8 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
       (buildingAttackers.get(unit.attackBuildingTargetId) || 0) + 1);
   }
   const viewBuildings = buildings.filter((building) => !fogView || buildingVisibleToTeam(viewTeam, building));
+  const visibleWallCells = [0, 1].map(team => new Set(viewBuildings.filter(building =>
+    building.team === team && building.type === 'palisade-wall').map(building => building.footprint[0])));
   const resourceNodes = mapDefinition.resourceNodes.filter((node) => !fogView
     || cellVisibleToTeam(viewTeam, worldToCell(node.x, node.z)));
   return {
@@ -2515,6 +2520,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
     })),
     buildings: viewBuildings.map((building) => ({
       id: building.id, team: building.team, type: building.type,
+      ...(building.type === 'palisade-wall' ? { connections: palisadeConnections(building.footprint[0], MAP_WIDTH, MAP_HEIGHT, visibleWallCells[building.team]) } : {}),
       x: building.x, z: building.z, hp: building.hp, maxHp: BUILDING_DEFINITIONS[building.type].maxHp,
       attackers: buildingAttackers.get(building.id) || 0,
       lastAttackTick: building.lastAttackTick ?? -1,
@@ -2578,6 +2584,7 @@ function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
       pregame: pregame?.checkpoint() ?? null,
     units: units.map((unit) => ({
       ...unit,
+      wallBuildOrder: activeWallBuildOrder(unit) ? { ...unit.wallBuildOrder, ids: [...unit.wallBuildOrder.ids] } : null,
       persistentOrder: unit.persistentOrder ? { ...unit.persistentOrder } : null,
       path: [...unit.path],
       attackMoveResumePath: unit.attackMoveResumePath === null
@@ -2695,6 +2702,14 @@ function validateMatchCheckpoint(snapshot) {
       && (unit.lastAttackX === undefined || finite(unit.lastAttackX))
       && (unit.lastAttackZ === undefined || finite(unit.lastAttackZ))
       && integerIn(unit.orderRevision, 0, Number.MAX_SAFE_INTEGER), `invalid unit combat state ${index}`);
+    const wallOrder = unit.wallBuildOrder;
+    assertSnapshot(wallOrder === undefined || wallOrder === null || (
+      unitHasCapability(unit, 'build') && unit.hp > 0 && unit.repairing !== true
+      && wallOrder.generation === unit.generation && wallOrder.revision === unit.orderRevision
+      && Array.isArray(wallOrder.ids) && wallOrder.ids.length > 0 && wallOrder.ids.length <= MAX_BUILDINGS
+      && new Set(wallOrder.ids).size === wallOrder.ids.length
+      && wallOrder.ids.every(id => integerIn(id, 1, HOME_TOWN_CENTER_ID_BASE - 1))
+    ), `invalid wall build order ${index}`);
     const persistent = unit.persistentOrder;
     assertSnapshot(persistent === undefined || persistent === null || (
       ['patrol', 'follow'].includes(persistent.type)
@@ -2980,6 +2995,14 @@ function validateMatchCheckpoint(snapshot) {
         && checkpointForestMask[forestCell] === 1,
       'unit references an invalid forest target');
     }
+    if (unit.wallBuildOrder) {
+      assertSnapshot(unit.wallBuildOrder.ids.every(id => state.buildings.some(building =>
+        building.id === id && building.type === 'palisade-wall' && building.team === unit.team)),
+      'wall build order references unavailable segments');
+      assertSnapshot(unit.buildingTargetId === unit.wallBuildOrder.ids[0]
+        || (unit.buildingTargetId === null && state.buildings.find(building => building.id === unit.wallBuildOrder.ids[0])?.complete),
+      'wall build order target does not match its sequence');
+    }
     if (unit.buildingTargetId !== null) assertSnapshot(buildingIds.has(unit.buildingTargetId) || state.homeTownCenters[unit.buildingTargetId - HOME_TOWN_CENTER_ID_BASE]?.hp > 0, 'unit references unknown building');
     if (unit.attackBuildingTargetId >= 0) {
       const homeTeam = unit.attackBuildingTargetId - HOME_TOWN_CENTER_ID_BASE;
@@ -3032,6 +3055,7 @@ function restoreMatchCheckpoint(snapshot) {
   for (const record of state.units) {
     units.push({
       ...record,
+      wallBuildOrder: record.wallBuildOrder ? { ...record.wallBuildOrder, ids: [...record.wallBuildOrder.ids] } : null,
       holdingPosition: record.holdingPosition ?? false,
       persistentOrder: record.persistentOrder ? { ...record.persistentOrder } : null,
       gatherForestCell: record.gatherForestCell ?? -1,
@@ -3289,9 +3313,17 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.state.pregame = null;
     snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;
   }
-  // Mill is additive content with no persisted-shape or existing-stat changes.
+  if (snapshot?.rulesetRevision === 'v1:d85f5a09decc0d0ade81803ab289b52ec5a08e84ff5a1771e85401d4c3611eab'
+    && Array.isArray(snapshot.state?.buildings) && Array.isArray(snapshot.state?.units)
+    && !snapshot.state.buildings.some(building => building.type === 'palisade-wall')
+    && !snapshot.state.units.some(unit => unit.wallBuildOrder != null)) {
+    snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+  }
+  // Mill only adds a food depot; retain existing palisades and paid work unchanged.
   if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
-    && snapshot.rulesetRevision === 'v1:d85f5a09decc0d0ade81803ab289b52ec5a08e84ff5a1771e85401d4c3611eab') {
+    && snapshot.rulesetRevision === 'v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801'
+    && Array.isArray(snapshot.state?.buildings)
+    && !snapshot.state.buildings.some(building => building.type === 'mill')) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
@@ -4547,10 +4579,21 @@ function destroyBuilding(building) {
     rebuildHomeTownCenterBlocking();
   } else for (const cell of building.footprint) buildingBlocked[cell] = 0;
   for (const unit of units) {
-    if (unit.hp <= 0) continue;
+    const wallOrder = activeWallBuildOrder(unit);
+    if (wallOrder) {
+      wallOrder.ids = wallOrder.ids.filter(id => id !== building.id);
+      if (!wallOrder.ids.length) unit.wallBuildOrder = null;
+    }
+    if (unit.hp <= 0) {
+      unit.wallBuildOrder = null;
+      if (unit.buildingTargetId === building.id) { unit.buildingTargetId = null; unit.repairing = false; }
+      if (unit.attackBuildingTargetId === building.id) clearAttackTarget(unit);
+      continue;
+    }
     if (unit.attackBuildingTargetId === building.id) clearAttackTarget(unit);
     if (unit.buildingTargetId !== building.id) continue;
     unit.orderRevision++;
+    if (wallOrder && wallOrder.ids.length) wallOrder.revision = unit.orderRevision;
     unit.buildingTargetId = null; unit.repairing = false;
     unit.movePlanningPending = false;
     unit.attackTargetId = -1;
@@ -4564,6 +4607,7 @@ function destroyBuilding(building) {
   visionCoverageBySourceCell = new Array(CELL_COUNT);
   attackFlowFields.clear();
   rebuildWalkableComponents();
+  updateWallBuildOrders();
   dirty = true;
   const teamName = building.team === 0 ? 'AZURE' : 'EMBER';
   const label = buildingRulesFor(building.type)?.label || 'BUILDING';
@@ -4742,7 +4786,9 @@ function enqueueRouteRepairs(repairs, { mode = 'blocked-route-repair', orderLabe
     const destination = nearestOpenCell(requestedDestination);
     if (destination < 0) continue;
     const startCell = nearestOpenCell(worldToCell(unit.x, unit.z));
+    const wallOrder = activeWallBuildOrder(unit);
     unit.orderRevision++;
+    if (wallOrder) wallOrder.revision = unit.orderRevision;
     unit.movePlanningPending = true;
     unit.attackMoveRouteReady = false;
     unit.path = [];
@@ -4896,10 +4942,117 @@ function resumeBuildingConstruction(player, command) {
   sendOrderNotice(player, command, 'CONSTRUCTION RESUMED · WORKERS ROUTING');
 }
 
+function buildWallLine(player, command) {
+  if (player.team === null || !Array.isArray(command.ids)) return;
+  const selectedWorkers = commandUnits(command)
+    .filter(unit => unit.hp > 0 && unit.team === player.team && unitHasCapability(unit, 'build'));
+  if (!selectedWorkers.length) { rejectBuild(player, 'SELECT A WORKER', command); return; }
+  const existingWallCells = new Set(buildings.filter(building =>
+    building.team === player.team && building.type === 'palisade-wall').flatMap(building => building.footprint));
+  const blockedCells = [], occupiedCells = new Set();
+  const resourceCells = new Set(mapDefinition.resourceNodes.map(node => worldToCell(node.x, node.z)));
+  for (let cell = 0; cell < CELL_COUNT; cell++) {
+    if (blocked[cell] || townCenterBlocked[cell] || resourceCells.has(cell)) blockedCells.push(cell);
+    if (buildingBlocked[cell] && !existingWallCells.has(cell)) occupiedCells.add(cell);
+  }
+  for (const trigger of mapDefinition.triggers) {
+    for (let row = trigger.zone.row; row < trigger.zone.row + trigger.zone.height; row++) {
+      for (let column = trigger.zone.column; column < trigger.zone.column + trigger.zone.width; column++) {
+        occupiedCells.add(cellIndex(column, row));
+      }
+    }
+  }
+  for (const unit of units) if (unit.hp > 0) occupiedCells.add(worldToCell(unit.x, unit.z));
+  let builders = [];
+  const assessPlacement = cells => {
+    const previousConnectivity = captureBuildingConnectivity();
+    const previousComponents = walkableComponents.slice();
+    try {
+      for (const cell of cells) buildingBlocked[cell] = 1;
+      rebuildWalkableComponents();
+      const entitiesConnected = canPlaceBuildingWithoutDisconnectingEntities(previousConnectivity);
+      const activeRoutesConnected = activeMoveRoutesRemainConnected(previousComponents);
+      const accessByCell = cells.map(cell => ({ cell, access: buildingAccessCells([cell]) }));
+      const teamComponent = walkableComponents[nearestOpenCell(worldToCell(spawnByTeam[player.team].x, spawnByTeam[player.team].z))];
+      if (!accessByCell.every(entry => entry.access.some(cell => walkableComponents[cell] === teamComponent))) {
+        return { entitiesConnected: false, activeRoutesConnected, access: [] };
+      }
+      const groups = new Map();
+      for (const worker of selectedWorkers) {
+        const component = walkableComponents[nearestOpenCell(worldToCell(worker.x, worker.z))];
+        if (component < 0) continue;
+        const group = groups.get(component) || []; group.push(worker); groups.set(component, group);
+      }
+      let chosenComponent = -1;
+      for (const [component, group] of groups) {
+        if (group.length > builders.length && accessByCell.every(entry => entry.access.some(cell => walkableComponents[cell] === component))) {
+          chosenComponent = component; builders = group;
+        }
+      }
+      const access = chosenComponent < 0 ? [] : accessByCell.map(entry => ({ cell: entry.cell,
+        accessCell: entry.access.find(cell => walkableComponents[cell] === chosenComponent) }));
+      return { entitiesConnected, activeRoutesConnected, access };
+    } finally {
+      for (const cell of cells) buildingBlocked[cell] = 0;
+      rebuildWalkableComponents();
+    }
+  };
+  let prepared;
+  try {
+    const definition = BUILDING_DEFINITIONS['palisade-wall'];
+    prepared = preparePaidWallLine({ width: MAP_WIDTH, height: MAP_HEIGHT,
+      points: command.points, axisOrder: command.axisOrder,
+      blockedCells, occupiedCells, existingWallCells, team: player.team,
+      tuning: { cost: definition.cost, buildSeconds: definition.buildSeconds, maxHp: definition.maxHp, footprint: definition.footprint },
+      balance: { food: teamFood[player.team], wood: teamWood[player.team] },
+      buildingCount: buildings.length, buildingLimit: MAX_BUILDINGS,
+      nextBuildingId, idCeiling: HOME_TOWN_CENTER_ID_BASE, assessPlacement });
+  } catch (error) {
+    if (!(error instanceof TypeError)) throw error;
+    rejectBuild(player, 'INVALID WALL LINE', command); return;
+  }
+  if (!prepared.plan) {
+    const reason = { invalid: 'SPACE BLOCKED OR OUTSIDE THE MAP', 'would-block-route': 'WOULD BLOCK A ROUTE',
+      'no-reachable-workers': 'NO REACHABLE WORKERS', 'building-limit': 'BUILDING LIMIT REACHED',
+      'id-limit': 'BUILDING ID LIMIT REACHED', 'insufficient-resources': 'INSUFFICIENT RESOURCES' }[prepared.status];
+    rejectBuild(player, reason || 'INVALID WALL LINE', command); return;
+  }
+  const plan = prepared.plan;
+  if (!plan.buildings.length) { sendOrderNotice(player, command, 'WALL ALREADY PLACED · NO CHARGE'); return; }
+  // Admission, debit, identity and union occupancy commit synchronously once.
+  for (const building of plan.buildings) {
+    buildings.push(building); buildingsById.set(building.id, building);
+    buildingBlocked[building.footprint[0]] = 1;
+  }
+  teamWood[player.team] -= plan.cost.wood; teamFood[player.team] -= plan.cost.food;
+  nextBuildingId = plan.nextBuildingId;
+  navigationRevision++;
+  visionCoverageBySourceCell = new Array(CELL_COUNT);
+  attackFlowFields.clear(); rebuildWalkableComponents();
+  replanPathsBlockedBy(plan.buildings.map(building => building.footprint[0]));
+  const first = plan.buildings[0], access = cellToWorld(plan.access[0].accessCell);
+  assignFormationMove(player, { type: 'move', ids: builders.map(unit => unit.id),
+    unitGenerations: builders.map(unit => unit.generation), x: access.x, z: access.z,
+    clientOrderToken: command.clientOrderToken }, first.id, 'WALL BUILD ORDER');
+  for (const unit of builders) unit.wallBuildOrder = { ids: plan.buildings.map(building => building.id),
+    generation: unit.generation, revision: unit.orderRevision };
+  dirty = true;
+  sendOrderNotice(player, command, `PALISADE LINE PLACED · ${plan.buildings.length} SEGMENTS · ${plan.cost.wood} WOOD`);
+}
+
 function buildBuilding(player, command) {
   if (player.team === null || !Array.isArray(command.ids)) return;
   if (command.buildingId !== undefined && command.buildingId !== null) {
     resumeBuildingConstruction(player, command);
+    return;
+  }
+  if (command.buildingType === 'palisade-wall') {
+    const x = Number(command.x), z = Number(command.z);
+    if (!Number.isFinite(x) || !Number.isFinite(z) || Math.abs(x) >= MAP_HALF_X || Math.abs(z) >= MAP_HALF_Z) {
+      rejectBuild(player, 'OUTSIDE THE MAP', command); return;
+    }
+    const cell = worldToCell(x, z);
+    buildWallLine(player, { ...command, points: [{ column: cell % MAP_WIDTH, row: Math.floor(cell / MAP_WIDTH) }] });
     return;
   }
   const rules = buildingRulesFor(command.buildingType);
@@ -5166,7 +5319,29 @@ function routeProducedUnitToBuildingRally(unit, building) {
   }
 }
 
+function updateWallBuildOrders() {
+  for (const unit of units) {
+    const order = activeWallBuildOrder(unit);
+    if (!order) { unit.wallBuildOrder = null; continue; }
+    order.ids = order.ids.filter(id => {
+      const building = buildingsById.get(id);
+      return building && building.team === unit.team && building.type === 'palisade-wall' && !building.complete;
+    });
+    if (!order.ids.length) { unit.wallBuildOrder = null; continue; }
+    if (unit.buildingTargetId === order.ids[0]) continue;
+    const building = buildingsById.get(order.ids[0]);
+    const approach = findBuildingAttackApproachCell(unit, buildingAccessCells(building.footprint));
+    if (!approach) { unit.wallBuildOrder = null; unit.buildingTargetId = null; continue; }
+    const point = cellToWorld(approach.goal);
+    assignFormationMove({ team: unit.team, sendJson() {} }, {
+      type: 'move', ids: [unit.id], unitGenerations: [unit.generation], x: point.x, z: point.z,
+    }, building.id, 'WALL BUILD SEQUENCE');
+    order.revision = unit.orderRevision;
+  }
+}
+
 function updateBuildingAndProduction() {
+  updateWallBuildOrders();
   for (const unit of units) {
     if (unit.hp <= 0 || !unitHasCapability(unit, unit.repairing ? 'repair' : 'build') || unit.buildingTargetId === null) continue;
     const building = buildingsById.get(unit.buildingTargetId);
@@ -5470,6 +5645,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
     if (destination < 0) return;
     reservedDestinations.add(destination);
     if (queueWaypoint && canQueueBehindCurrentRoute(unit)) {
+      unit.wallBuildOrder = null;
       unit.persistentOrder = null;
       unit.queuedWaypoints.push({ destination, attackMove });
       queuedCount++;
@@ -5988,7 +6164,7 @@ async function handleCommand(player, command) {
       return;
     }
   }
-  if (matchWinner >= 0 && ['stop', 'holdPosition', 'patrol', 'follow', 'move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'returnCargo', 'train', 'build', 'trainArcher', 'trainUnit', 'trainWorker', 'setRallyPoint', 'researchUpgrade', 'cancelConstruction', 'cancelTraining', 'cancelResearch', 'repairBuilding'].includes(command.type)) {
+  if (matchWinner >= 0 && ['stop', 'holdPosition', 'patrol', 'follow', 'move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'returnCargo', 'train', 'build', 'buildWall', 'trainArcher', 'trainUnit', 'trainWorker', 'setRallyPoint', 'researchUpgrade', 'cancelConstruction', 'cancelTraining', 'cancelResearch', 'repairBuilding'].includes(command.type)) {
     sendOrderNotice(player, command, player.team === 0
       ? 'MATCH OVER · RESET BATTLEFIELD TO PLAY AGAIN'
       : 'MATCH OVER · WAIT FOR HOST TO RESET');
@@ -6007,6 +6183,7 @@ async function handleCommand(player, command) {
   if (command.type === 'train') trainInfantry(player, command);
   if (command.type === 'trainWorker') trainWorker(player);
   if (command.type === 'build') buildBuilding(player, command);
+  if (command.type === 'buildWall') buildWallLine(player, command);
   if (command.type === 'trainArcher') trainArcher(player, command);
   if (command.type === 'setRallyPoint') setBuildingRallyPoint(player, command);
   if (command.type === 'researchUpgrade') researchUpgrade(player, command);
@@ -7317,13 +7494,14 @@ const server = createServer(async (request, response) => {
     'src/neutral-wildlife-renderer.mjs', 'src/wildlife-state.mjs', 'src/sheep-static-preview.mjs',
     'environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs',
     'water-study.html', 'src/water-study-preview.mjs', 'src/water-surface-study.mjs', 'src/water-study-state.mjs',
+    'src/water-study-fish-binding.mjs',
     'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',
     'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs',
     'src/room-lobby-ui.mjs', 'src/room-lobby.css',
     'src/scenario-regions.mjs', 'src/scenario-authoring.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
     'src/shore-fishing.mjs', 'src/shore-fishing-placeholder.mjs', 'src/shore-fishing-placement.mjs',
     'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs',
-    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
+    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
     'src/terrain-authoring.mjs', 'src/terrain-height.mjs', 'src/regions.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs',
@@ -7333,7 +7511,7 @@ const server = createServer(async (request, response) => {
     'src/audio-composition.mjs', 'src/audio-composer.mjs', 'src/audio-composer.css',
     'audio-studio.html', 'audio-zones.html', 'src/audio-zones.mjs', 'src/audio-zones.css', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs',
     'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs',
-    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
+    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs', 'src/shore-vegetation.mjs', 'src/meadow-vegetation.mjs', 'src/garden-vegetation.mjs', 'src/environment-plant-assets.mjs', 'src/podvine-view-pack.mjs', 'src/podvine-worked-pack.mjs', 'src/podvine-low-pack.mjs', 'src/veilcap-view-pack.mjs', 'src/veilcap-worked-pack.mjs', 'src/sunbloom-view-pack.mjs', 'src/sunbloom-crown-pack.mjs', 'src/sunbloom-worked-pack.mjs', 'src/sunbloom-low-pack.mjs', 'src/terrain-blend.mjs', 'src/terrain-texture-sampling.mjs', 'src/terrain-atmosphere.mjs', 'src/terrain-materials.mjs',
     'src/forest-habitat.mjs', 'src/forest-age-composition.mjs', 'src/forest-composition.mjs', 'src/regional-ground-kits.mjs', 'src/water-contours.mjs',
   ].includes(relative);
