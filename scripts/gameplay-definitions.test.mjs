@@ -51,3 +51,37 @@ test('registry rejects duplicate identities, broken faction rosters and prerequi
     assert.throws(() => validateGameplayDefinitions(definitions), reason);
   }
 });
+
+for (const unitId of GAMEPLAY_DEFINITIONS.factions.frontier.units) {
+  test(`faction roster rejects ${unitId} when no faction building can train it`, () => {
+    const definitions = structuredClone(GAMEPLAY_DEFINITIONS);
+    for (const building of Object.values(definitions.buildings)) {
+      building.products = building.products.filter(id => id !== unitId);
+    }
+    assert.throws(() => validateGameplayDefinitions(definitions),
+      new RegExp(`Faction frontier unit ${unitId} requires a producer in its building roster`));
+  });
+}
+
+test('a producer outside the faction cannot satisfy its unit roster', () => {
+  const definitions = structuredClone(GAMEPLAY_DEFINITIONS);
+  definitions.factions['test-roster'] = {
+    id: 'test-roster', label: 'Test roster', units: ['archer'], buildings: ['house'], technologies: [],
+  };
+  assert.throws(() => validateGameplayDefinitions(definitions),
+    /Faction test-roster unit archer requires a producer in its building roster/);
+});
+
+test('unit coverage permits alternate and shared producers with an independent faction subset', () => {
+  const definitions = structuredClone(GAMEPLAY_DEFINITIONS);
+  definitions.buildings.barracks.products.push('archer');
+  definitions.factions['test-roster'] = {
+    id: 'test-roster', label: 'Test roster', units: ['infantry', 'spearman', 'archer'],
+    buildings: ['house', 'barracks'], technologies: [],
+  };
+  assert.equal(validateGameplayDefinitions(definitions), definitions,
+    'the subset can train archers from its Barracks without the globally registered Archery Range');
+  definitions.buildings['archery-range'].products = [];
+  assert.equal(validateGameplayDefinitions(definitions), definitions,
+    'moving a product between registered buildings preserves coverage');
+});

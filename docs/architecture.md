@@ -31,7 +31,7 @@ or reveal hidden state.
 Neutral stationary Sheep use optional wildlife identity on an existing food node
 and one conserved stock pool. Worker arrival activates its carcass once; both
 seats reuse normal cargo/drop-offs. Species/lifecycle are fog-filtered with the
-resource snapshot and saved in checkpoint schema 20, which rejects inconsistent
+resource snapshot and saved in checkpoint schema 22, which rejects inconsistent
 lifecycle/stock and migrates schema 19 ordinary maps. This is the
 [neutral food foundation](wildlife-bellweather-sheep.md#implemented-neutral-food-foundation--3-october-2026),
 with claim/herding and client art integration left as separate work.
@@ -106,6 +106,12 @@ checkpoint paths. Workers capture authoritative state every 30 simulation ticks
 and write atomically. Schema/rules validation decides whether a checkpoint can
 be migrated, restored, or rejected.
 
+[Pregame invite rooms](room-lobby.md) use the existing seat sessions and isolated
+workers. `src/room-pregame.mjs` owns revisions, readiness and the launch gate;
+the client panel is in `src/room-lobby-ui.mjs`. Schema 22 adds the optional
+pregame phase and migrates schema 21 matches without resetting their running
+state. Both unit simulation and scenario execution wait for explicit launch.
+
 Outbound state coalesces for slow readers; per-peer queues and inbound messages
 are bounded. Resume tokens are room-scoped and persisted as hashes. The detailed
 `/health` response exposes timing, queue, and checkpoint diagnostics.
@@ -150,6 +156,14 @@ SHA-256 revision excludes labels and presentation bindings; gameplay values and
 ordered product lists participate. Snapshots carry the revision, default faction
 and unit wire mapping. A browser with a different revision asks for a reload
 before applying the state.
+
+Each unit in a faction roster must be trainable by at least one building in that
+faction's building roster. A globally registered producer outside the faction
+does not satisfy this check. Producers may share products, and a unit may move
+between producers; every product must still belong to the faction's unit roster.
+Validation names the faction and unit when a roster loses its last producer.
+Frontier is the only registered gameplay faction; Vaelora's regional art and lore
+do not register additional playable civilizations.
 
 Checkpoint schema 13 pins this identity. Schema 11 saves migrate to the current
 compatible opening roster; an unknown pinned revision is rejected and the exact
@@ -220,6 +234,23 @@ state determines effects for both existing and newly produced entities. Cached
 resolved effects invalidate when that state changes, including rematch, and use a
 stable content-ID order. Numeric ranges are bounded at 16 cells. Schema 16
 explicitly migrates the known defense revision without rewriting entity HP/queues.
+
+The validator rejects unsupported combat fields and capability names, even when
+a content edit adds that name to `combatRules.capabilities`. A new behavior needs
+a runtime handler and an explicit contract change before content can declare it.
+
+| Contract | Supported content |
+| --- | --- |
+| Unit combat | Required object: `mode`, `attackClass`, `targetTags`, `tagMultipliers`, `maxHp`, `moveSpeed`, `range`, `damage`, `period`, `structureDamage`. Numeric stats are finite and positive; range is at most 16 cells. |
+| Unit capabilities | `move`, `attack`, `attack-structures`, `gather`, `build`, `repair`. Every unit requires `move`: the runtime does not support immobile unit definitions. |
+| Damage classification | Buildings require the `structure` tag; units cannot have it. This tag selects the structure damage stat instead of ordinary damage. |
+| Structure attacks | A unit with `attack-structures` needs at least one eligible building target using tag intersection, including specialized targets such as `defense`. An explicit `structure` target tag requires that permission. `attack` controls unit targets independently, so a structure-only attacker is permitted. The Worker's existing positive `structureDamage` remains dormant without the permission and eligible targets. |
+| Building combat | Optional object: `mode`, `attackClass`, `targetTags`, `tagMultipliers`, `range`, `damage`, `period`. Defenses scan unit targets only, so `structure` targets and unit-only combat fields are rejected. Building HP remains the top-level `maxHp`; building capabilities are unsupported. |
+
+Both combat modes are `melee` or `ranged`; attack classes, target tags and
+multipliers must reference the declared vocabularies. Armor is nonnegative by
+declared class. Declaring projectile speed or splash radius does not add a
+projectile or area-damage behavior and fails validation.
 
 Technology availability is derived by `src/research-actions.mjs` for authoritative
 commands, building option snapshots, HUD and the filtered opponent adapter. Stable

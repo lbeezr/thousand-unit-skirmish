@@ -1,0 +1,116 @@
+const TEAMS = ['Azure', 'Ember'];
+const SIZES = [250, 500, 1000, 2000];
+
+export function createRoomLobby({ root, send, copyInvite }) {
+  const doc = root.ownerDocument;
+  function element(tag, text, parent = root) {
+    const node = doc.createElement(tag);
+    if (text) node.textContent = text;
+    parent.append(node);
+    return node;
+  }
+  root.setAttribute('aria-labelledby', 'room-lobby-title');
+  element('h2', 'Pregame lobby').id = 'room-lobby-title';
+  element('p', 'PvP · 1v1 · Frontier faction');
+  const seats = element('ul');
+  seats.setAttribute('aria-label', 'Player seats');
+  const rows = TEAMS.map(name => element('li', name, seats));
+  const mapLabel = element('label', 'Map');
+  const map = element('select', null, mapLabel);
+  map.id = 'lobby-map';
+  const sizeLabel = element('label', 'Total starting units');
+  const size = element('select', null, sizeLabel);
+  size.id = 'lobby-army-size';
+  const help = element('p', 'The host chooses settings. Changes and disconnects clear readiness.');
+  help.className = 'room-lobby-help';
+  const status = element('p');
+  status.setAttribute('role', 'status');
+  status.setAttribute('aria-live', 'polite');
+  status.id = 'lobby-status';
+  const actions = element('div');
+  actions.className = 'room-lobby-actions';
+  const invite = element('button', 'Copy invite', actions);
+  const ready = element('button', 'Ready', actions);
+  ready.id = 'lobby-ready';
+  const launch = element('button', 'Launch match', actions);
+  launch.id = 'lobby-launch';
+  const leave = element('a', 'Leave room', actions);
+  leave.href = '/';
+  for (const button of [invite, ready, launch]) button.type = 'button';
+  let lobby = null;
+  let player = null;
+  let online = false;
+  let pending = false;
+  let rejection = '';
+
+  function render() {
+    const visible = lobby?.phase === 'lobby';
+    if (!visible) {
+      if (root.open) root.close();
+      return;
+    }
+    if (!root.open) root.showModal();
+    const own = lobby.seats.find(seat => seat.id === player?.id && seat.team === player?.team && seat.connected);
+    const host = own?.team === 0;
+    for (let team = 0; team < 2; team++) {
+      const seat = lobby.seats.find(row => row.team === team);
+      rows[team].textContent = `${TEAMS[team]}${team === 0 ? ' (host)' : ''}: ${!seat ? 'Waiting for player' : !seat.connected ? 'Disconnected · seat reserved' : seat.ready ? 'Ready' : 'Not ready'}${seat?.id === player?.id ? ' · You' : ''}`;
+    }
+    map.replaceChildren();
+    for (const entry of lobby.maps) {
+      const option = element('option', entry.name, map);
+      option.value = entry.id;
+    }
+    map.value = lobby.mapId;
+    size.replaceChildren();
+    // Authored map openings can be smaller than the manual army-size presets.
+    for (const count of [...new Set([lobby.armySize, ...SIZES])].sort((a, b) => a - b)) {
+      const option = element('option', String(count), size);
+      option.value = String(count);
+    }
+    size.value = String(lobby.armySize);
+    map.disabled = size.disabled = !online || pending || !host;
+    ready.disabled = !online || pending || !own;
+    ready.textContent = own?.ready ? 'Not ready' : 'Ready';
+    launch.hidden = !host;
+    launch.disabled = !online || pending || !host || !lobby.canLaunch;
+    status.textContent = !online ? 'Reconnecting. Readiness clears when a player disconnects.'
+      : rejection || (pending ? 'Waiting for server…' : !own ? 'Spectating · both seats occupied or reserved.'
+      : lobby.canLaunch ? 'Both players ready. The host can launch.'
+      : 'Review the settings, then ready for this match.');
+  }
+
+  function submit(command) {
+    if (!lobby || pending || !online) return;
+    rejection = '';
+    pending = send({ ...command, revision: lobby.revision }) === true;
+    render();
+  }
+  map.addEventListener('change', () => submit({ type: 'configureLobby', mapId: map.value }));
+  size.addEventListener('change', () => submit({ type: 'configureLobby', armySize: Number(size.value) }));
+  ready.addEventListener('click', () => {
+    const own = lobby?.seats.find(seat => seat.id === player?.id && seat.team === player?.team);
+    submit({ type: 'setReady', ready: !own?.ready });
+  });
+  launch.addEventListener('click', () => submit({ type: 'launchMatch' }));
+  invite.addEventListener('click', copyInvite);
+  root.addEventListener('cancel', event => event.preventDefault());
+  return {
+    update(next, identity, connected = true) {
+      lobby = next;
+      player = identity;
+      online = connected;
+      pending = false;
+      rejection = '';
+      render();
+    },
+    reject(message, next, identity) {
+      lobby = next;
+      player = identity;
+      pending = false;
+      rejection = message;
+      render();
+    },
+    disconnect() { online = false; pending = false; render(); },
+  };
+}
