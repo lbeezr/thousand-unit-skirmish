@@ -13,6 +13,8 @@ import { unitPresentation, buildingPresentation } from './gameplay-presentation.
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, GAMEPLAY_RULESET_REVISION } from './gameplay-definitions.mjs';
 import { createDockPlacementContext } from './dock-placement.mjs';
 import { formatResourceStock, formatResourceRequirement } from './resource-format.mjs';
+import { WallPlacementGesture, wallCellAt, previewWallPlacement, wallPlacementFeedback } from './wall-placement.mjs';
+import { createWallPlacementGhost } from './wall-placement-ghost.mjs';
 import { ownedPopulationReadout } from './population-readout.mjs';
 import { SHIPPED_AUDIO_REFERENCES } from './audio-shipped-catalog.mjs';
 import { validateMapAudioReference } from './audio-event-profile.mjs';
@@ -456,7 +458,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setClearColor(0x859175, 1);
 viewport.prepend(renderer.domElement);
-renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Use the arrow keys to move the camera, middle drag or Space + drag to pan, scroll to zoom toward the pointer, or push the mouse against any screen edge to scroll when edge scroll is enabled. Use Center selection, Home base, or Fit map to navigate. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Press S to stop selected units or H to hold position and attack within range without pursuing. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
+renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Use the arrow keys to move the camera, middle drag or Space + drag to pan, scroll to zoom toward the pointer, or push the mouse against any screen edge to scroll when edge scroll is enabled. Use Center selection, Home base, or Fit map to navigate. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Press S to stop selected units or H to hold position and attack within range without pursuing. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. Choose Palisade to drag a wall line; Shift changes its bend. While placing a wall, arrow keys move the grid endpoint, Enter starts then places the line, and Escape cancels. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
 renderer.domElement.dataset.cursorMode = 'select';
 renderer.domElement.tabIndex = 0;
 
@@ -661,6 +663,9 @@ let buildPlacementType = 'archery-range';
 let buildPlacementPending = false;
 let pendingBuildOrderToken = null;
 let pendingBuildBaseline = new Set();
+const wallPlacementGesture = new WallPlacementGesture();
+let wallKeyboardCell = null;
+let pendingWallPreview = null;
 let toastTimer = 0;
 let audioCaptionTimer = 0;
 let fieldOrderFeedbackTimer = 0;
@@ -1644,7 +1649,7 @@ function reconcileBuildings(buildings = [], initial = false) {
   if (priorSelectedBuildingId !== selectedBuildingId) {
     updateEconomyUI();
   }
-  if (buildPlacementPending && rows.some((building) => building.team === localTeam
+  if (buildPlacementPending && buildPlacementType !== 'palisade-wall' && rows.some((building) => building.team === localTeam
     && !pendingBuildBaseline.has(building.id))) {
     const placed = rows.find((building) => building.team === localTeam && !pendingBuildBaseline.has(building.id));
     buildPlacementPending = false;
@@ -2186,10 +2191,17 @@ function refreshForestStumpTransforms() {
   forestStumpMesh.visible = forestStumpCount > 0;
 }
 
-function applyForestState(state) {
+function applyForestState(state, initial = false) {
+  const epochChanged = Number.isSafeInteger(state.forestEpoch) && latestForestEpoch !== state.forestEpoch;
+  if (initial || epochChanged) {
+    // Rematches reset all finite stocks, including nodes omitted by fog. A new
+    // server can reuse an epoch, so welcome receipts also discard old knowledge.
+    latestResourceStocks.clear();
+    for (const node of mapDefinition?.resourceNodes || []) latestResourceStocks.set(node.id, node.stock);
+  }
   if (!Number.isSafeInteger(state.forestEpoch)) return;
   let visualChanged = false;
-  if (latestForestEpoch !== state.forestEpoch) {
+  if (epochChanged) {
     for (const [cell, stock] of latestForestStocks) {
       if (stock < 6) {
         setForestTreeVisual(cell, 6);
@@ -3273,6 +3285,8 @@ const ghostBarracksRoofPanels = [-1, 1].map((side) => {
 placementGhost.visible = false;
 placementGhost.renderOrder = 4;
 scene.add(placementGhost);
+const wallPlacementGhost = createWallPlacementGhost();
+scene.add(wallPlacementGhost.group);
 
 function updateUnitCargoCueColor(unit) {
   const state = unitCargoVisualState(unit.kind, unit.hp, unit.visible, unit.cargo, unit.cargoType);
@@ -4369,7 +4383,7 @@ function applyState(state, initial = false) {
   for (const row of state.units || []) {
     const [id, team, x, z, hp, kind, cargo, cargoType, generation = 0, taskStatus,
       targetedBy = 0, attackTick = -1, attackX = null, attackZ = null,
-      audioExecution = null, workHeading = null] = row;
+      audioExecution = null, workHeading = null, workResourceVariant = null] = row;
     const existingUnit = units[id];
     const unit = existingUnit || appendUnitFromState(row, !initial);
     if (!unit || unit.team !== team) continue;
@@ -4395,6 +4409,7 @@ function applyState(state, initial = false) {
       unit.defeatStartedAt = 0;
       unit.spriteClockState = null;
       unit.spriteClockStartedAt = null;
+      unit.workResourceVariant = null;
       unit.spawnStartedAt = initial ? 0 : performance.now();
       unit.lastPlayedAttackTick = -1;
       unit.angle = team === 0 ? Math.PI / 2 : -Math.PI / 2;
@@ -4407,6 +4422,9 @@ function applyState(state, initial = false) {
     unit.serverX = x;
     unit.serverZ = z;
     unit.workHeading = Number.isFinite(workHeading) ? workHeading : null;
+    // Clear on every snapshot, including legacy rows, travel, Stop and recovery.
+    unit.workResourceVariant = kind === 'worker' && taskStatus === 'gathering'
+      && workResourceVariant === 'shore-fish' ? workResourceVariant : null;
     if (kind && unit.kind !== kind) {
       unit.kind = kind;
       cargoVisualMayChange = true;
@@ -4504,7 +4522,7 @@ function applyState(state, initial = false) {
   }
   waterStudyFishBinding?.update(state, { spectator: localTeam === null });
   updateFogFromState(state);
-  applyForestState(state);
+  applyForestState(state, initial);
   if (Array.isArray(state.objectives)) updateObjectives(state.objectives);
   updateVictoryHoldCard(state.victoryHold, state.winner, state.winnerReason, state.scenarioClockStarted);
   updateScenarioEventCards(state.scenarioEvents || [], state.matchElapsedSeconds, state.scenarioClockStarted);
@@ -4682,7 +4700,7 @@ function updateRosterBuildingOptions(container) {
     const workers = localTeam === null ? [] : teamUnits[localTeam].filter((unit) => unit.kind === 'worker' && unit.hp > 0);
     const missing = (definition.requires || []).filter((id) => !latestTeamResearch[localTeam]?.[TECHNOLOGY_DEFINITIONS[id].upgradeKey]);
     button.disabled = localTeam === null || matchWinner >= 0 || buildPlacementPending || !workers.length || missing.length > 0
-      || latestFood[localTeam] < definition.cost.food || latestWood[localTeam] < definition.cost.wood;
+      || (definition.id !== 'palisade-wall' && (latestFood[localTeam] < definition.cost.food || latestWood[localTeam] < definition.cost.wood));
     button.textContent = `Build ${definition.label} · ${definition.cost.wood} WOOD${definition.cost.food ? ` + ${definition.cost.food} FOOD` : ''}${missing.length ? ' · RESEARCH REQUIRED' : ''}`;
     const active = buildPlacementActive && buildPlacementType === definition.id;
     button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active));
@@ -7084,7 +7102,8 @@ function applyOrderNotice(token, message) {
     return true;
   }
   if (/^(STOP ORDER|HOLD POSITION ORDER|PATROL ORDER|FOLLOW ORDER|REPAIR ORDER|MOVE ORDER|ATTACK MOVE ORDER|WAYPOINT ORDER|ATTACK ORDER|ATTACK BUILDING ORDER|GATHER ORDER|RETURN CARGO ORDER|BUILD ORDER|BUILD RESUME ORDER) · /.test(message)
-    || message.startsWith('WAYPOINT QUEUED · ')) {
+    || message.startsWith('WAYPOINT QUEUED · ') || message.startsWith('PALISADE LINE PLACED ·')
+    || message === 'WALL ALREADY PLACED · NO CHARGE') {
     finishOrderStatus(token, message, 'applied');
     return true;
   }
@@ -7094,7 +7113,7 @@ function applyOrderNotice(token, message) {
 function sendTrackedOrder(command, label, count, unitName = 'UNITS') {
   const token = beginOrderStatus(label, count, unitName);
   if (sendCommand({ ...command, clientOrderToken: token })) {
-    orderAudioGate.sent(token, { cue: command.type === 'stop' ? 'stop' : command.type === 'holdPosition' ? 'hold' : command.type === 'patrol' ? 'patrol' : command.type === 'follow' ? 'follow' : command.type === 'repairBuilding' ? 'repair' : command.type === 'build' ? 'build'
+    orderAudioGate.sent(token, { cue: command.type === 'stop' ? 'stop' : command.type === 'holdPosition' ? 'hold' : command.type === 'patrol' ? 'patrol' : command.type === 'follow' ? 'follow' : command.type === 'repairBuilding' ? 'repair' : command.type === 'build' || command.type === 'buildWall' ? 'build'
       : command.type === 'gather' ? 'gather'
         : command.type === 'attack' || command.type === 'attackBuilding' || command.type === 'attackMove'
           ? 'attack' : 'move', kind: units[command.ids?.[0]]?.kind,
@@ -7579,6 +7598,8 @@ function buildPlacementAt(clientX, clientY) {
       if (blocksSite) { blockedReason ||= 'TERRAIN BLOCKS THIS SITE'; break; }
     }
     for (const node of mapDefinition.resourceNodes || []) {
+      // Unknown or positive stock keeps the authored exclusion, as with forest.
+      if (latestResourceStocks.get(node.id) === 0) continue;
       const nodeColumn = Math.floor(node.x + MAP_HALF_X);
       const nodeRow = Math.floor(node.z + MAP_HALF_Z);
       if (nodeColumn >= startColumn && nodeColumn < startColumn + footprint
@@ -7610,8 +7631,56 @@ function buildPlacementAt(clientX, clientY) {
   return { x, z, column: centerColumn, row: centerRow, valid: !blockedReason, blockedReason };
 }
 
+function wallPlacementAt(points) {
+  if (!points) return null;
+  return previewWallPlacement({ width: MAP_WIDTH, height: MAP_HEIGHT, points,
+    axisOrder: cursorShift ? 'row-first' : 'column-first',
+    segmentCost: BUILDING_DEFINITIONS['palisade-wall'].cost,
+    balance: { food: latestFood[localTeam] || 0, wood: latestWood[localTeam] || 0 }, team: localTeam,
+    workers: selectedIds().filter(id => units[id]?.kind === 'worker').length,
+    obstacles: mapDefinition?.obstacles, forestStocks: latestForestStocks,
+    resourceNodes: mapDefinition?.resourceNodes, resourceStocks: latestResourceStocks, triggers: mapDefinition?.triggers,
+    units: teamUnits.flatMap(team => team.map(unit => ({ x: unit.serverX, z: unit.serverZ, hp: unit.hp, visible: unit.visible }))),
+    buildings: latestBuildings.map(building => ({ ...building, footprint: buildingFootprint(building.type) })),
+  });
+}
+
+function wallPointerCell(clientX, clientY) {
+  if (!Number.isFinite(clientX) || !Number.isFinite(clientY)) return null;
+  const rect = renderer.domElement.getBoundingClientRect();
+  // Captured release over a HUD or outside the canvas cancels instead of projecting through it.
+  if (clientX < rect.left || clientX >= rect.right || clientY < rect.top || clientY >= rect.bottom
+    || !renderer.domElement.contains(document.elementFromPoint(clientX, clientY))) return null;
+  return wallCellAt(worldAt(clientX, clientY), MAP_WIDTH, MAP_HEIGHT);
+}
+
+function resetWallPlacement(preservePending = false) {
+  const owner = wallPlacementGesture.owner;
+  wallPlacementGesture.cancel(); wallKeyboardCell = null;
+  if (!preservePending) pendingWallPreview = null;
+  wallPlacementGhost.group.visible = false;
+  if (typeof owner === 'number' && renderer.domElement.hasPointerCapture(owner)) renderer.domElement.releasePointerCapture(owner);
+}
+
 function updateBuildPlacementGhost(clientX, clientY) {
   if (!buildPlacementActive) return;
+  if (buildPlacementType === 'palisade-wall') {
+    placementGhost.visible = false;
+    if (typeof wallPlacementGesture.owner === 'number') {
+      wallPlacementGesture.move(wallPlacementGesture.owner, wallPointerCell(clientX, clientY));
+    }
+    const points = wallPlacementGesture.anchor ? wallPlacementGesture.points()
+      : wallPlacementGesture.points(wallKeyboardCell || wallPointerCell(clientX, clientY));
+    const placement = pendingWallPreview || wallPlacementAt(points);
+    wallPlacementGhost.update(placement?.preview, { valid: placement?.valid, halfX: MAP_HALF_X, halfZ: MAP_HALF_Z, groundHeight });
+    if (ui.placementStatus) {
+      ui.placementStatus.textContent = wallPlacementFeedback(placement, { pending: buildPlacementPending,
+        dragging: Boolean(wallPlacementGesture.anchor), keyboard: wallPlacementGesture.owner === 'keyboard' });
+      ui.placementStatus.dataset.state = placement?.valid && !buildPlacementPending ? 'clear' : 'blocked';
+    }
+    syncBattlefieldCursor(); return;
+  }
+  wallPlacementGhost.group.visible = false;
   const placement = buildPlacementAt(clientX, clientY);
   placementGhost.visible = Boolean(placement);
   if (ui.placementStatus) {
@@ -7644,7 +7713,8 @@ function updateBuildPlacementHint() {
   guidanceToggle.setAttribute('aria-expanded', String(!guidanceDismissed));
   const activeLabel = buildingLabel(buildPlacementType);
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
-  if (ui.fieldHintPrimaryKey) ui.fieldHintPrimaryKey.textContent = coarsePointer ? 'TAP' : 'LMB';
+  const wall = buildPlacementActive && buildPlacementType === 'palisade-wall';
+  if (ui.fieldHintPrimaryKey) ui.fieldHintPrimaryKey.textContent = wall ? 'DRAG / ENTER' : coarsePointer ? 'TAP' : 'LMB';
   if (ui.fieldHintAction) ui.fieldHintAction.textContent = buildPlacementActive ? `PLACE ${activeLabel}`
     : tapOrderArmed ? 'ISSUE ORDER' : coarsePointer ? 'SELECT UNITS' : 'DRAG TO SELECT';
   if (ui.fieldHintSecondaryKey) ui.fieldHintSecondaryKey.textContent = buildPlacementActive
@@ -7654,7 +7724,8 @@ function updateBuildPlacementHint() {
     : tapOrderArmed ? 'CANCEL TARGET' : coarsePointer ? 'TAP TARGET' : 'MOVE / ATTACK';
   if (ui.placementStatus) {
     ui.placementStatus.hidden = !buildPlacementActive;
-    ui.placementStatus.textContent = buildPlacementActive ? `CHOOSE A CLEAR ${buildingFootprint(buildPlacementType)} × ${buildingFootprint(buildPlacementType)} SITE` : '';
+    ui.placementStatus.textContent = wall ? 'DRAG A LINE · SHIFT: OTHER BEND · ARROWS / ENTER: KEYBOARD'
+      : buildPlacementActive ? `CHOOSE A CLEAR ${buildingFootprint(buildPlacementType)} × ${buildingFootprint(buildPlacementType)} SITE` : '';
     ui.placementStatus.dataset.state = 'ready';
   }
   syncTargetOrderUI();
@@ -7716,6 +7787,7 @@ function cancelBuildPlacement(announce = true) {
   pendingBuildOrderToken = null;
   pendingBuildBaseline = new Set();
   placementGhost.visible = false;
+  resetWallPlacement();
   updateBuildPlacementHint();
   if (typeof closeDockDetails === 'function') closeDockDetails({ restoreFocus: false });
   updateEconomyUI();
@@ -7730,8 +7802,8 @@ function beginBuildPlacement(type) {
   const foodCost = BUILDING_DEFINITIONS[type]?.cost.food || 0;
   const workers = teamUnits[localTeam].filter((unit) => unit.kind === 'worker' && unit.hp > 0);
   if (workers.length === 0) { showToast(`NO LIVING WORKERS TO CONSTRUCT ${label}`); return; }
-  if (latestFood[localTeam] < foodCost) { showToast(`${label} NEEDS ${foodCost} FOOD`); return; }
-  if (latestWood[localTeam] < woodCost) {
+  if (type !== 'palisade-wall' && latestFood[localTeam] < foodCost) { showToast(`${label} NEEDS ${foodCost} FOOD`); return; }
+  if (type !== 'palisade-wall' && latestWood[localTeam] < woodCost) {
     showToast(`${label} NEEDS ${formatResourceRequirement(woodCost)} WOOD`);
     return;
   }
@@ -7748,19 +7820,26 @@ function beginBuildPlacement(type) {
   buildPlacementActive = true;
   buildPlacementPending = false;
   placementGhost.visible = false;
+  resetWallPlacement();
   pendingBuildOrderToken = null;
   pendingBuildBaseline = new Set(latestBuildings.filter((building) => building.team === localTeam).map((building) => building.id));
   updateBuildPlacementHint();
   if (typeof closeDockDetails === 'function') closeDockDetails({ restoreFocus: false });
   updateEconomyUI();
+  if (type === 'palisade-wall') {
+    renderer.domElement.focus({ preventScroll: true });
+    showToast('PALISADE · DRAG A LINE · SHIFT: OTHER BEND · ARROWS / ENTER: KEYBOARD · ESC: CANCEL', 3000);
+    return;
+  }
   showToast(window.matchMedia('(pointer: coarse)').matches
     ? `${label} SITE · TAP TO PLACE · TAP BUILD AGAIN TO CANCEL`
     : `${label} SITE · LEFT-CLICK TO PLACE · ESC TO CANCEL`, 2000);
 }
 
-function submitBuildPlacement(clientX, clientY) {
+function submitBuildPlacement(clientX, clientY, wallPoints = null) {
   if (!buildPlacementActive || buildPlacementPending) return;
-  const placement = buildPlacementAt(clientX, clientY);
+  const wall = buildPlacementType === 'palisade-wall';
+  const placement = wall ? wallPlacementAt(wallPoints) : buildPlacementAt(clientX, clientY);
   if (!placement) { showToast('MOVE THE POINTER OVER THE BATTLEFIELD'); return; }
   if (!placement.valid) {
     showToast(`${buildingLabel(buildPlacementType)} SITE BLOCKED · ${placement.blockedReason}`);
@@ -7769,15 +7848,47 @@ function submitBuildPlacement(clientX, clientY) {
   const ids = selectedIds().filter((id) => units[id]?.kind === 'worker');
   if (ids.length === 0) { showToast(`SELECT WORKERS TO CONSTRUCT ${buildingLabel(buildPlacementType)}`); return; }
   pendingBuildBaseline = new Set(latestBuildings.filter((building) => building.team === localTeam).map((building) => building.id));
-  const buildOrderToken = sendTrackedOrder({
+  const command = wall ? { type: 'buildWall', ids, points: wallPoints,
+    axisOrder: cursorShift ? 'row-first' : 'column-first' } : {
     type: 'build', buildingType: buildPlacementType, ids, x: placement.x, z: placement.z,
-  }, 'BUILD', ids.length, 'WORKERS');
+  };
+  const buildOrderToken = sendTrackedOrder(command, 'BUILD', ids.length, 'WORKERS');
   if (buildOrderToken !== null) {
     pendingBuildOrderToken = buildOrderToken;
     buildPlacementPending = true;
+    resetWallPlacement();
+    if (wall) pendingWallPreview = placement;
     updateEconomyUI();
     showToast(`${buildingLabel(buildPlacementType)} REQUEST SENT · WAITING FOR SERVER`, 1600);
   }
+}
+
+function wallPlacementKeydown(event) {
+  if (!buildPlacementActive || buildPlacementType !== 'palisade-wall' || buildPlacementPending
+    || event.target !== renderer.domElement || event.altKey || event.ctrlKey || event.metaKey
+    || typeof wallPlacementGesture.owner === 'number') return false;
+  const offsets = { ArrowUp: [0, -1], ArrowRight: [1, 0], ArrowDown: [0, 1], ArrowLeft: [-1, 0] };
+  if (!offsets[event.key] && event.key !== 'Enter') return false;
+  event.preventDefault();
+  cursorShift = event.shiftKey;
+  wallKeyboardCell ||= wallPointerCell(cursorPointer?.x, cursorPointer?.y)
+    || wallCellAt(cameraTarget, MAP_WIDTH, MAP_HEIGHT);
+  if (offsets[event.key]) {
+    const [dx, dz] = offsets[event.key];
+    wallKeyboardCell = { column: wallKeyboardCell.column + dx, row: wallKeyboardCell.row + dz };
+    wallPlacementGesture.move('keyboard', wallKeyboardCell);
+  } else if (!event.repeat) {
+    if (!wallPlacementGesture.anchor) wallPlacementGesture.begin('keyboard', wallKeyboardCell);
+    else {
+      const points = wallPlacementGesture.points(wallKeyboardCell);
+      if (wallPlacementAt(points)?.valid) {
+        wallPlacementGesture.finish('keyboard', wallKeyboardCell, true);
+        submitBuildPlacement(null, null, points);
+      } else showToast(`PALISADE LINE BLOCKED · ${wallPlacementAt(points)?.blockedReason}`);
+    }
+  }
+  updateBuildPlacementGhost(cursorPointer?.x, cursorPointer?.y);
+  return true;
 }
 
 function queueWorker() {
@@ -7945,6 +8056,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
     return;
   }
   if (event.button === 1 || (event.button === 0 && spaceDown)) {
+    if (buildPlacementActive && buildPlacementType === 'palisade-wall') resetWallPlacement(buildPlacementPending);
     lastFriendlyUnitClick = null;
     lastUnitPickState = null;
     mapFitActive = false;
@@ -7958,7 +8070,16 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
   if (buildPlacementActive) {
     lastUnitPickState = null;
     event.preventDefault();
-    submitBuildPlacement(event.clientX, event.clientY);
+    if (buildPlacementType === 'palisade-wall') {
+      if (buildPlacementPending || typeof wallPlacementGesture.owner === 'number') return;
+      wallPlacementGesture.cancel(); wallKeyboardCell = null;
+      cursorPointer = { x: event.clientX, y: event.clientY }; cursorShift = event.shiftKey;
+      if (wallPlacementGesture.begin(event.pointerId, wallPointerCell(event.clientX, event.clientY))) {
+        renderer.domElement.focus({ preventScroll: true });
+        renderer.domElement.setPointerCapture(event.pointerId);
+        updateBuildPlacementGhost(event.clientX, event.clientY);
+      }
+    } else submitBuildPlacement(event.clientX, event.clientY);
     return;
   }
   if (tapOrderArmed) {
@@ -7982,6 +8103,8 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
 
 renderer.domElement.addEventListener('pointerleave', () => { cursorPointer = null; });
 renderer.domElement.addEventListener('pointermove', (event) => {
+  if (buildPlacementActive && buildPlacementType === 'palisade-wall'
+    && typeof wallPlacementGesture.owner === 'number' && wallPlacementGesture.owner !== event.pointerId) return;
   cursorPointer = { x: event.clientX, y: event.clientY };
   cursorShift = event.shiftKey;
   if (tapOrderPointer?.id === event.pointerId) return;
@@ -8002,6 +8125,11 @@ renderer.domElement.addEventListener('pointermove', (event) => {
     return;
   }
   if (buildPlacementActive) {
+    if (buildPlacementType === 'palisade-wall') {
+      if (typeof wallPlacementGesture.owner === 'number' && wallPlacementGesture.owner !== event.pointerId) return;
+      if (wallPlacementGesture.owner !== 'keyboard') wallKeyboardCell = null;
+      wallPlacementGesture.move(event.pointerId, wallPointerCell(event.clientX, event.clientY));
+    }
     updateBuildPlacementGhost(event.clientX, event.clientY);
     return;
   }
@@ -8025,6 +8153,14 @@ renderer.domElement.addEventListener('pointermove', (event) => {
 });
 
 function finishPointer(event) {
+  if (wallPlacementGesture.owner === event.pointerId) {
+    cursorShift = event.shiftKey;
+    const points = wallPlacementGesture.finish(event.pointerId, wallPointerCell(event.clientX, event.clientY), event.type === 'pointerup' && event.button === 0);
+    if (renderer.domElement.hasPointerCapture(event.pointerId)) renderer.domElement.releasePointerCapture(event.pointerId);
+    if (points) submitBuildPlacement(event.clientX, event.clientY, points);
+    updateBuildPlacementGhost(event.clientX, event.clientY);
+    return;
+  }
   if (tapOrderPointer?.id === event.pointerId) {
     const wasTap = event.type === 'pointerup'
       && Math.hypot(event.clientX - tapOrderPointer.x, event.clientY - tapOrderPointer.y) <= 12;
@@ -8052,6 +8188,9 @@ function finishPointer(event) {
 
 renderer.domElement.addEventListener('pointerup', finishPointer);
 renderer.domElement.addEventListener('pointercancel', finishPointer);
+renderer.domElement.addEventListener('lostpointercapture', (event) => {
+  if (wallPlacementGesture.owner === event.pointerId) resetWallPlacement();
+});
 
 minimapCanvas.addEventListener('pointerdown', (event) => {
   if (event.button !== 0) return;
@@ -8714,6 +8853,7 @@ window.addEventListener('keydown', (event) => {
   lastUnitPickState = null;
   if (document.fullscreenElement === appShell && event.key === 'Escape') return;
   const editing = keyboardTargetIsEditing(event);
+  if (!editing && wallPlacementKeydown(event)) return;
   if (cameraNavigationKeydown(event)) return;
   const buttonFocused = event.target instanceof Element && Boolean(event.target.closest('button'));
   if (event.code === 'Space') {
@@ -8789,6 +8929,7 @@ window.addEventListener('keyup', (event) => {
   syncBattlefieldCursor();
 });
 window.addEventListener('blur', () => {
+  resetWallPlacement(buildPlacementPending);
   cursorPointer = null;
   cursorShift = false;
   if (tapOrderArmed) setTapOrderArmed(false, false);
@@ -8803,6 +8944,7 @@ window.addEventListener('blur', () => {
 });
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== 'visible') {
+    resetWallPlacement(buildPlacementPending);
     edgeScrollPointer = null;
     clearHeldCameraKeys();
   }
@@ -9662,6 +9804,7 @@ function connectSocket() {
       const appliedAudio = orderAudioGate.observe(noticeToken, notice);
       if (appliedAudio) audio.playEvent(appliedAudio);
       if (feedback.applyOrderStatus) applyOrderNotice(noticeToken, notice);
+      if (feedback.completePendingBuild) cancelBuildPlacement(false);
       if (feedback.showToast) {
         const cue = cueForNotice(notice, { localTeam, tokenized: noticeToken !== null });
         if (cue && !notice.endsWith(' READY')) audio.playEvent({ cue });
@@ -9670,6 +9813,7 @@ function connectSocket() {
         if (feedback.clearPendingBuild) {
           buildPlacementPending = false;
           pendingBuildOrderToken = null;
+          pendingWallPreview = null;
           updateEconomyUI();
         }
         if (feedback.showToast) showToast(notice, 2200);
@@ -9745,9 +9889,9 @@ let fpsTime = 0;
 let renderStatsTime = 0;
 let lastIdlePoseStep = -1;
 function animate(now) {
-  if (cursorPointer && now - lastCursorSample >= 100) {
+  if ((cursorPointer || wallKeyboardCell || wallPlacementGesture.anchor || pendingWallPreview) && now - lastCursorSample >= 100) {
     lastCursorSample = now;
-    if (buildPlacementActive) updateBuildPlacementGhost(cursorPointer.x, cursorPointer.y);
+    if (buildPlacementActive) updateBuildPlacementGhost(cursorPointer?.x, cursorPointer?.y);
     else syncBattlefieldCursor();
   }
   requestAnimationFrame(animate);

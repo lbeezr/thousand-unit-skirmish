@@ -246,8 +246,10 @@ A one-cell Palisade uses **provisional test tuning** of 15 wood, five accumulate
 Worker-seconds and 300 HP. Whole lines reserve occupancy and pay atomically;
 existing friendly segments are reused without charge. Workers construct new
 segments in a persisted sequence, interrupted by another player order. Both teams
-obey the same ordinary blocking rules. The single-cell registry menu works;
-line authoring UI and finished wall art remain future work. See the
+obey the same ordinary blocking rules. The normal Palisade menu previews and
+places an atomic drag line, with Shift selecting its elbow and arrows/Enter
+supporting keyboard endpoints. Invalid lines and aggregate cost are visible
+before submission. Finished wall art remains separate work. See the
 [paid palisade contract](palisade-runtime.md). No stone currency or gate policy is introduced.
 
 ## Cancellation and repair

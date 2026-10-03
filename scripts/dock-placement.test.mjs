@@ -92,12 +92,14 @@ for (const team of [0, 1]) test(`seat ${team} browser preview enforces the share
     buildingFootprint: type => B[type].footprint, buildingWoodCost: type => B[type].cost.wood,
     formatResourceRequirement: String, worldAt: () => ({ x: -1.5, z: -1.5 }),
     selectedIds: () => [0], units: [{ kind: 'worker' }], teamUnits: [[], []],
-    latestForestStocks: new Map(),
+    latestForestStocks: new Map(), latestResourceStocks: new Map(),
   });
   vm.runInContext(placement, context);
   assert.equal(context.buildPlacementAt(0, 0).valid, true);
-  context.mapDefinition.resourceNodes.push({ x: -1.5, z: -1.5, stock: 10 });
+  context.mapDefinition.resourceNodes.push({ id: 'shore-food', x: -1.5, z: -1.5, stock: 10 });
   assert.equal(context.buildPlacementAt(0, 0).blockedReason, 'RESOURCE IN THIS SITE');
+  context.latestResourceStocks.set('shore-food', 0);
+  assert.equal(context.buildPlacementAt(0, 0).valid, true, 'disclosed depletion retains the current land rule');
   context.mapDefinition.resourceNodes.length = 0;
   context.latestBuildings.push({ type: 'house', x: -1.5, z: -1.5 });
   assert.equal(context.buildPlacementAt(0, 0).blockedReason, 'ANOTHER BUILDING TOO CLOSE');
