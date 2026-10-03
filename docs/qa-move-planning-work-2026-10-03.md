@@ -17,18 +17,22 @@ remain roster-bounded rather than separately preempted.
 
 ## Source and checks
 
-The integrated runtime tested at `8b7d5a2bccb6221337c0995664e98295b69303a0` has
-server SHA-256 `216ef785a7a7a42edb812bb85f5c3bea023ffd313706c183092e856c41961737`.
+After current-main stance integration, fixed-tick checks run at `b98f6f2` and
+native checks at `2be3cf0`; both have server SHA-256
+`8da27f1aa21612266acac78e602a0736ba26639f2ece3b1d3a630a88da018a15`.
 The production change is confined to planning constants, `processMovePlanningSlice`
 and its diagnostic record. Route search, command assignment, generation checks,
 ownership, fog, combat and movement timing retain their existing contracts.
 
-157 combined movement, persistent/Stop, queued cargo, pursuit, attack-target and
-CI-sharding checks pass; two further scheduler controls pass for dead/recycled
-actors, match cancellation and zero-search stale groups. Type checking, syntax,
+209 combined movement, persistent/Stop, queued cargo, pursuit, attack-target,
+military stance and CI-sharding checks pass. Scheduler controls include dead/recycled
+actors, match cancellation and zero-search stale groups. Browser/server type checking, syntax,
 documentation links and whitespace checks pass. The nine scheduler cases enter
 normal CI. The first dependency install failed because the default npm cache was
 unwritable; installing the unchanged lockfile with a private `/tmp` cache succeeds.
+The earlier integration at `8b7d5a2` (server `216ef785…`) passed 157 checks plus
+two new controls and native arrival at 2,070 / 2,040 ticks. The final native control
+goals use opposite clear-ground z signs to avoid the new idle enemy stance behavior.
 
 ## Routes and native recovery
 
@@ -51,7 +55,7 @@ Actual asynchronous two-seat WebSocket servers pass for
 routes finish after a restart during active travel. Three overlapping ordinary
 orders then preserve eight Stops and eight newer Move destinations; exact applied
 goals and revisions survive arrival and a second idle restart. Native arrival
-ticks are 2,070 / 2,040. Planning diagnostics are captured before process restarts.
+ticks are 2,040 / 2,070. Planning diagnostics are captured before process restarts.
 
 ## Preserved failure and limits
 

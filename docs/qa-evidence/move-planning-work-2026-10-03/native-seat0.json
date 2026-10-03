@@ -1,6 +1,6 @@
 {
-  "head": "8b7d5a2bccb6221337c0995664e98295b69303a0",
-  "sourceSha256": "216ef785a7a7a42edb812bb85f5c3bea023ffd313706c183092e856c41961737",
+  "head": "2be3cf03b605d194feda0f07efd50145e36a0977",
+  "sourceSha256": "8da27f1aa21612266acac78e602a0736ba26639f2ece3b1d3a630a88da018a15",
   "team": 0,
   "map": {
     "id": "pathing-large-single-choke-996-seat-0",
@@ -52,10 +52,10 @@
   "selected": 996,
   "arrived": 996,
   "midTick": 180,
-  "arrivalTicks": 2070,
+  "arrivalTicks": 2040,
   "orders": [
     {
-      "tick": 60,
+      "tick": 42,
       "type": "move",
       "selected": 996,
       "x": 16.5,
@@ -63,7 +63,7 @@
       "notice": "MOVE ORDER \u00b7 996 UNITS"
     },
     {
-      "tick": 2079,
+      "tick": 2052,
       "type": "stop",
       "selected": 8,
       "x": null,
@@ -71,7 +71,7 @@
       "notice": "STOP ORDER \u00b7 8 UNITS"
     },
     {
-      "tick": 2079,
+      "tick": 2052,
       "type": "move",
       "selected": 8,
       "x": 44.5,
@@ -79,7 +79,7 @@
       "notice": "MOVE ORDER \u00b7 8 UNITS"
     },
     {
-      "tick": 2079,
+      "tick": 2052,
       "type": "move",
       "selected": 24,
       "x": 44.5,
@@ -154,29 +154,16 @@
       "team": -1,
       "mode": "blocked-route-repair",
       "unitCount": 1,
-      "searchCount": 0,
-      "expandedCells": 0,
+      "searchCount": 1,
+      "expandedCells": 60,
       "planningSliceCount": 2,
       "maxPlanningSliceWorkItems": 1,
-      "maxPlanningSliceExpandedCells": 0,
+      "maxPlanningSliceExpandedCells": 60,
       "nonEmptyPaths": 1,
       "routeFailures": 0
     },
     {
-      "orderId": 3,
-      "team": -1,
-      "mode": "blocked-route-repair",
-      "unitCount": 1,
-      "searchCount": 0,
-      "expandedCells": 0,
-      "planningSliceCount": 2,
-      "maxPlanningSliceWorkItems": 1,
-      "maxPlanningSliceExpandedCells": 0,
-      "nonEmptyPaths": 1,
-      "routeFailures": 0
-    },
-    {
-      "orderId": 5,
+      "orderId": 4,
       "team": 0,
       "mode": "shared-start",
       "unitCount": 8,
@@ -189,7 +176,7 @@
       "routeFailures": 0
     },
     {
-      "orderId": 4,
+      "orderId": 3,
       "team": 0,
       "mode": "shared-start",
       "unitCount": 8,

@@ -1,6 +1,6 @@
 {
-  "head": "8b7d5a2bccb6221337c0995664e98295b69303a0",
-  "sourceSha256": "216ef785a7a7a42edb812bb85f5c3bea023ffd313706c183092e856c41961737",
+  "head": "2be3cf03b605d194feda0f07efd50145e36a0977",
+  "sourceSha256": "8da27f1aa21612266acac78e602a0736ba26639f2ece3b1d3a630a88da018a15",
   "team": 1,
   "map": {
     "id": "pathing-large-single-choke-996-seat-1",
@@ -52,10 +52,10 @@
   "selected": 996,
   "arrived": 996,
   "midTick": 180,
-  "arrivalTicks": 2040,
+  "arrivalTicks": 2070,
   "orders": [
     {
-      "tick": 69,
+      "tick": 39,
       "type": "move",
       "selected": 996,
       "x": -16.5,
@@ -63,7 +63,7 @@
       "notice": "MOVE ORDER \u00b7 996 UNITS"
     },
     {
-      "tick": 2070,
+      "tick": 2102,
       "type": "stop",
       "selected": 8,
       "x": null,
@@ -71,19 +71,19 @@
       "notice": "STOP ORDER \u00b7 8 UNITS"
     },
     {
-      "tick": 2070,
+      "tick": 2102,
       "type": "move",
       "selected": 8,
       "x": -44.5,
-      "z": -28.5,
+      "z": 28.5,
       "notice": "MOVE ORDER \u00b7 8 UNITS"
     },
     {
-      "tick": 2070,
+      "tick": 2102,
       "type": "move",
       "selected": 24,
       "x": -44.5,
-      "z": -24.5,
+      "z": 24.5,
       "notice": "MOVE ORDER \u00b7 8 UNITS"
     }
   ],
@@ -94,42 +94,42 @@
   "replacementResults": [
     {
       "id": 1012,
-      "goal": 4370,
+      "goal": 11666,
       "revision": 3
     },
     {
       "id": 1013,
-      "goal": 4371,
+      "goal": 11667,
       "revision": 3
     },
     {
       "id": 1014,
-      "goal": 4372,
+      "goal": 11668,
       "revision": 3
     },
     {
       "id": 1015,
-      "goal": 4498,
+      "goal": 11794,
       "revision": 3
     },
     {
       "id": 1016,
-      "goal": 4499,
+      "goal": 11795,
       "revision": 3
     },
     {
       "id": 1017,
-      "goal": 4500,
+      "goal": 11796,
       "revision": 3
     },
     {
       "id": 1018,
-      "goal": 4626,
+      "goal": 11922,
       "revision": 3
     },
     {
       "id": 1019,
-      "goal": 4627,
+      "goal": 11923,
       "revision": 3
     }
   ],
@@ -189,176 +189,7 @@
       "routeFailures": 0
     },
     {
-      "orderId": 5,
-      "team": -1,
-      "mode": "blocked-route-repair",
-      "unitCount": 1,
-      "searchCount": 0,
-      "expandedCells": 0,
-      "planningSliceCount": 2,
-      "maxPlanningSliceWorkItems": 1,
-      "maxPlanningSliceExpandedCells": 0,
-      "nonEmptyPaths": 1,
-      "routeFailures": 0
-    },
-    {
       "orderId": 6,
-      "team": -1,
-      "mode": "blocked-route-repair",
-      "unitCount": 1,
-      "searchCount": 0,
-      "expandedCells": 0,
-      "planningSliceCount": 2,
-      "maxPlanningSliceWorkItems": 1,
-      "maxPlanningSliceExpandedCells": 0,
-      "nonEmptyPaths": 1,
-      "routeFailures": 0
-    },
-    {
-      "orderId": 7,
-      "team": -1,
-      "mode": "blocked-route-repair",
-      "unitCount": 1,
-      "searchCount": 0,
-      "expandedCells": 0,
-      "planningSliceCount": 2,
-      "maxPlanningSliceWorkItems": 1,
-      "maxPlanningSliceExpandedCells": 0,
-      "nonEmptyPaths": 1,
-      "routeFailures": 0
-    },
-    {
-      "orderId": 8,
-      "team": -1,
-      "mode": "blocked-route-repair",
-      "unitCount": 1,
-      "searchCount": 0,
-      "expandedCells": 0,
-      "planningSliceCount": 2,
-      "maxPlanningSliceWorkItems": 1,
-      "maxPlanningSliceExpandedCells": 0,
-      "nonEmptyPaths": 1,
-      "routeFailures": 0
-    },
-    {
-      "orderId": 9,
-      "team": -1,
-      "mode": "blocked-route-repair",
-      "unitCount": 1,
-      "searchCount": 0,
-      "expandedCells": 0,
-      "planningSliceCount": 2,
-      "maxPlanningSliceWorkItems": 1,
-      "maxPlanningSliceExpandedCells": 0,
-      "nonEmptyPaths": 1,
-      "routeFailures": 0
-    },
-    {
-      "orderId": 10,
-      "team": -1,
-      "mode": "blocked-route-repair",
-      "unitCount": 1,
-      "searchCount": 0,
-      "expandedCells": 0,
-      "planningSliceCount": 2,
-      "maxPlanningSliceWorkItems": 1,
-      "maxPlanningSliceExpandedCells": 0,
-      "nonEmptyPaths": 1,
-      "routeFailures": 0
-    },
-    {
-      "orderId": 11,
-      "team": -1,
-      "mode": "blocked-route-repair",
-      "unitCount": 1,
-      "searchCount": 0,
-      "expandedCells": 0,
-      "planningSliceCount": 2,
-      "maxPlanningSliceWorkItems": 1,
-      "maxPlanningSliceExpandedCells": 0,
-      "nonEmptyPaths": 1,
-      "routeFailures": 0
-    },
-    {
-      "orderId": 12,
-      "team": -1,
-      "mode": "blocked-route-repair",
-      "unitCount": 1,
-      "searchCount": 0,
-      "expandedCells": 0,
-      "planningSliceCount": 2,
-      "maxPlanningSliceWorkItems": 1,
-      "maxPlanningSliceExpandedCells": 0,
-      "nonEmptyPaths": 1,
-      "routeFailures": 0
-    },
-    {
-      "orderId": 13,
-      "team": -1,
-      "mode": "blocked-route-repair",
-      "unitCount": 1,
-      "searchCount": 0,
-      "expandedCells": 0,
-      "planningSliceCount": 2,
-      "maxPlanningSliceWorkItems": 1,
-      "maxPlanningSliceExpandedCells": 0,
-      "nonEmptyPaths": 1,
-      "routeFailures": 0
-    },
-    {
-      "orderId": 14,
-      "team": -1,
-      "mode": "blocked-route-repair",
-      "unitCount": 1,
-      "searchCount": 0,
-      "expandedCells": 0,
-      "planningSliceCount": 2,
-      "maxPlanningSliceWorkItems": 1,
-      "maxPlanningSliceExpandedCells": 0,
-      "nonEmptyPaths": 1,
-      "routeFailures": 0
-    },
-    {
-      "orderId": 15,
-      "team": -1,
-      "mode": "blocked-route-repair",
-      "unitCount": 1,
-      "searchCount": 0,
-      "expandedCells": 0,
-      "planningSliceCount": 2,
-      "maxPlanningSliceWorkItems": 1,
-      "maxPlanningSliceExpandedCells": 0,
-      "nonEmptyPaths": 1,
-      "routeFailures": 0
-    },
-    {
-      "orderId": 16,
-      "team": -1,
-      "mode": "blocked-route-repair",
-      "unitCount": 1,
-      "searchCount": 0,
-      "expandedCells": 0,
-      "planningSliceCount": 2,
-      "maxPlanningSliceWorkItems": 1,
-      "maxPlanningSliceExpandedCells": 0,
-      "nonEmptyPaths": 1,
-      "routeFailures": 0
-    },
-    {
-      "orderId": 17,
-      "team": -1,
-      "mode": "blocked-route-repair",
-      "unitCount": 1,
-      "searchCount": 1,
-      "expandedCells": 58,
-      "planningSliceCount": 2,
-      "maxPlanningSliceWorkItems": 1,
-      "maxPlanningSliceExpandedCells": 58,
-      "nonEmptyPaths": 1,
-      "routeFailures": 0
-    },
-    {
-      "orderId": 19,
       "team": 1,
       "mode": "shared-start",
       "unitCount": 8,
@@ -371,7 +202,7 @@
       "routeFailures": 0
     },
     {
-      "orderId": 18,
+      "orderId": 5,
       "team": 1,
       "mode": "shared-start",
       "unitCount": 8,

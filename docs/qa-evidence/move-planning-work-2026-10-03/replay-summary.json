@@ -1,8 +1,8 @@
 {
   "baselineHead": "4467986",
   "baselineServerSha256": "32812ad0d9ab3d0e4aaf2254b39e305168e7b0602e1963cba226837d4e754e04",
-  "candidateHead": "8b7d5a2bccb6221337c0995664e98295b69303a0",
-  "candidateServerSha256": "216ef785a7a7a42edb812bb85f5c3bea023ffd313706c183092e856c41961737",
+  "candidateHead": "2be3cf03b605d194feda0f07efd50145e36a0977",
+  "candidateServerSha256": "8da27f1aa21612266acac78e602a0736ba26639f2ece3b1d3a630a88da018a15",
   "node": "v24.19.0",
   "mapFactory": "scripts/pathing-baseline-cases.mjs",
   "mapFactorySha256": "9c505ff3fdaf1bf11a3feb58f8c7cb3840fe4403a266c4bee6c354de2d83eb3a",
