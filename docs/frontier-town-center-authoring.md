@@ -81,3 +81,121 @@ Then author the states, inspect a small aligned comparison, and only afterward
 capture five states × eight views plus forty aligned masks. Preserve intermediate
 masters, reports and selected art iterations in the existing architecture/art
 evolution record when publication of those actual outputs is authorized.
+
+
+## Fixture-tested lifecycle automation
+
+The [authoring runner](../scripts/author-frontier-town-center-lifecycle.py)
+imports this preparation script directly; it does not duplicate the camera or
+collection scaffold. It pins the scaffold's content hash so a changed calibration
+requires an explicit update. Outputs must be new private directories outside
+the checkout.
+
+```bash
+blender --background --python-exit-code 1 \
+  --python scripts/author-frontier-town-center-lifecycle.py -- \
+  --fixture --output-dir /workspace/town-center-private-lifecycle-pilot/fixture-01
+python scripts/verify-building-lifecycle-pixels.py \
+  /workspace/town-center-private-lifecycle-pilot/fixture-01 --write-sheets
+node scripts/validate-building-lifecycle.mjs \
+  /workspace/town-center-private-lifecycle-pilot/fixture-01/renderer-manifest.json \
+  --require-lifecycle --require-team-masks
+```
+
+This produces a **synthetic test building**, five states × eight color views
+and forty aligned owner-alpha masks. It is not derived Frontier artwork and is
+never enabled in the game. The fixture's simple owner marker and test lighting
+are not approved faction standards or a Complete render match.
+
+Recipes explicitly select named semantic parts. Unchanged parts share mesh
+data; edited parts receive independent copies. The runner checks the master
+data remains unchanged, keeps the calibrated root and cameras fixed, and
+refuses automated edits in Complete. Optional construction props can remain
+in the authoring master but be excluded from Complete's reviewed selection.
+
+Masks use semantic owner tags rather than color-key extraction. The opaque
+grayscale render retains neutral-geometry occlusion, then the exporter converts
+its selected coverage into white RGB plus owner-only alpha. The runtime uses
+Canvas `destination-in`, which reads alpha; neutral architecture must be
+transparent in the final mask. The earlier PR #54 fixture had full-building
+alpha and could recolor neutral geometry despite its grayscale RGB selection.
+Its dated receipt is historical; use the corrected
+[owner-alpha validation record](qa-frontier-lifecycle-alpha-masks-2026-10-03.json).
+An occluded
+standard can produce a black mask in that view; every state must have a visible
+cue in at least one direction for this fixture check. Real art still requires
+ownership readability at game size.
+
+The [pixel checker](../scripts/verify-building-lifecycle-pixels.py) decodes
+and hashes the actual PNGs, verifies dimensions and white owner-mask RGB,
+checks that mask alpha does not exceed color coverage or escape it, and creates
+explicitly labeled review sheets. Whole-image alpha equality is not expected:
+neutral geometry is opaque in color and transparent in the mask.
+Metadata admission remains a separate existing validator.
+
+Run the targeted behavioral and failure-injection checks:
+
+```bash
+blender --background --python-exit-code 1 \
+  --python scripts/frontier-lifecycle-authoring.test.py
+python scripts/building-lifecycle-pixels.test.py
+```
+
+These need installed Blender 4.3.2 and Python with Pillow/NumPy. They do not
+install software or call a provider. The synthetic-only measured result is in
+[the validation record](qa-frontier-lifecycle-automation-2026-10-03.json).
+Private .blend files, renders, GLBs and Library identifiers are absent from Git.
+
+### Real-source insertion
+
+When the supported source transfer succeeds, `--import-source /absolute/model.glb`
+with a new `--output-dir` verifies the original hash, imports it without editing
+its bytes, applies the existing root calibration once, and saves an editable
+scene and mesh/material inventory privately. Semantic parts are left unassigned;
+the importer does not pretend arbitrary source meshes are architectural parts.
+
+Partition or reconstruct meaningful architecture, assign each master mesh a
+unique `semantic_part` and `team_mask` boolean, and preserve the verified source
+provenance, calibrated root/cameras and empty state collections. Match Complete
+appearance first. Then `--authored-blend /absolute/master.blend --source-glb
+/absolute/model.glb --recipe /absolute/recipe.json --output-dir /absolute/new-output`
+captures an unaccepted authored candidate. Review the Complete selection against
+the original: metadata and source hashes cannot certify its silhouette or style.
+
+The real model remains unreadable in this cloud workspace. No actual Frontier
+geometry, owner-standard correctness, lifecycle art, render parity or game
+acceptance is established by the fixture.
+
+### Source-transfer diagnosis, 3 October 2026
+
+This diagnosis is specific to the original selected executor. The user later
+reported a successful supported resolved-reference Library transfer in the
+native cloud worker, with the recorded original byte count and hash. Actual
+source inspection and lifecycle production belong to that worker. No transfer
+retry or duplicate production is required from the automation lane.
+
+The current Library filename search resolves the recorded original. The
+supported search/list route is the current bundled `library_download.py`
+helper supplied with the complete search result, selection `000` and a
+private destination. Its network-enabled execution exits 1 with:
+
+```text
+library download request failed: hosted apps tools/list request failed: network
+```
+
+The failure occurs at helper tool discovery, before requesting model bytes.
+No HTTP status, authorization-denial response or automatic approval-review
+rejection was returned. This establishes a repeatable helper/transport failure;
+it does **not** establish that the failure is transient or that policy denied
+the model. GitHub access succeeds in the same environment.
+
+An earlier lower-level `library_prepare_materialize` call returned transfer
+metadata, but the bundled `library_file_transfer.py materialize` helper failed:
+
+```text
+library file transfer failed: download failed
+```
+
+That earlier direct preparation was not the current search/list fast path
+and was not repeated in this continuation. No alternate transfer route was
+used. Transfer URLs and credentials are not recorded here.

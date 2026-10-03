@@ -49,6 +49,7 @@ Run from the repository root:
 | Crowd deflection / terrain boundaries | `node --test scripts/unit-movement.test.mjs` (real authoritative movement blocks, cliffs, corners, working/striking separation and route repair) |
 | Default map geometry | `node scripts/forked-vale-layout.mjs` |
 | Fortified Crossing foundation | `node scripts/fortified-crossing-layout.mjs` and `node scripts/fortified-crossing-economy.mjs`; [evidence and scale runner](qa-custom-skirmish.md) |
+| Fortified late-arrival construction clearance | `node --test scripts/fortified-site-clearance.test.mjs` and `node scripts/fortified-construction-clearance-scenario.mjs 2000`; [diagnosis](qa-fortified-clearance-2026-10-03.md) |
 | Larger map geometry | `node scripts/frontier-160-layout.mjs` |
 | Highland Grove definition | `node scripts/generate-highland-grove.mjs --check` |
 | Complete Forked Vale scenario, each winner | `node scripts/forked-vale-scenario.mjs 0` and `node scripts/forked-vale-scenario.mjs 1` |

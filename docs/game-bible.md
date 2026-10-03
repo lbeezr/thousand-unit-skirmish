@@ -224,6 +224,14 @@ the Worker replans and retains its cargo. With no reachable drop-off it waits
 with the cargo rather than banking it remotely. Storehouses provide no units or
 population. Their current House-shaped procedural presentation is a placeholder.
 
+A one-cell Palisade uses **provisional test tuning** of 15 wood, five accumulated
+Worker-seconds and 300 HP. Whole lines reserve occupancy and pay atomically;
+existing friendly segments are reused without charge. Workers construct new
+segments in a persisted sequence, interrupted by another player order. Both teams
+obey the same ordinary blocking rules. The single-cell registry menu works;
+line authoring UI and finished wall art remain future work. See the
+[paid palisade contract](palisade-runtime.md). No stone currency or gate policy is introduced.
+
 ## Cancellation and repair
 
 Canceling unfinished construction refunds the unbuilt fraction of its food/wood

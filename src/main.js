@@ -1,5 +1,6 @@
 import { findInvalidResourceVariant, isShoreFish } from './shore-fishing.mjs';
 import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from './shore-fishing-placeholder.mjs';
+import { createWaterStudyFishBinding } from './water-study-fish-binding.mjs';
 import { generateRollingGround, smoothGround } from './terrain-authoring.mjs';
 import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS, validateMapRegion } from './regions.mjs';
@@ -14,7 +15,7 @@ import { ownedPopulationReadout } from './population-readout.mjs';
 import { SHIPPED_AUDIO_REFERENCES } from './audio-shipped-catalog.mjs';
 import { validateMapAudioReference } from './audio-event-profile.mjs';
 import { battlefieldCursor } from './battlefield-cursor.mjs';
-import { visibleHudRects, hudSafeRect, normalizeHudPreferences } from './hud-layout.mjs';
+import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable } from './hud-layout.mjs';
 import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
@@ -1296,7 +1297,8 @@ const frontierBuildingsPreview = roomPageUrl.searchParams.get('frontierBuildings
 
 function createGameplayBuildingVisual(building) {
   const role = buildingPresentation(building.type).role;
-  const visual = role === 'watchtower' ? createWatchtowerVisual(building)
+  const visual = role === 'palisade' ? createPalisadeVisual(building)
+    : role === 'watchtower' ? createWatchtowerVisual(building)
     : role === 'town-center' ? createTownCenterVisual(building)
       : role === 'house' ? createHouseVisual(building)
         : role === 'barracks' ? createBarracksVisual(building) : createArcheryRangeVisual(building);
@@ -1314,6 +1316,34 @@ function createGameplayBuildingVisual(building) {
     capturedBuildingVisuals.push(visual.frontierCaptureEntry);
   }
   return visual;
+}
+
+// Geometry-only layout placeholder; the authored modular wall kit is separate.
+function createPalisadeVisual(building) {
+  const group = new THREE.Group(), timber = new THREE.MeshBasicMaterial({ color: 0x705443 });
+  const walls = new THREE.Group(); group.add(walls);
+  const post = new THREE.Mesh(new THREE.BoxGeometry(0.22, 1.4, 0.22), timber);
+  post.position.y = 0.7; walls.add(post);
+  const arms = {};
+  for (const [direction, dx, dz] of [['north', 0, -1], ['east', 1, 0], ['south', 0, 1], ['west', -1, 0]]) {
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(dx ? 0.5 : 0.12, 0.65, dz ? 0.5 : 0.12), timber);
+    arm.position.set(dx * 0.25, 0.65, dz * 0.25); walls.add(arm); arms[direction] = arm;
+  }
+  const teamColor = TEAM_HEX[building.team];
+  const outline = new THREE.Mesh(new THREE.RingGeometry(0.65, 0.7, 4),
+    new THREE.MeshBasicMaterial({ color: teamColor, transparent: true, opacity: 0.9, side: THREE.DoubleSide }));
+  outline.rotation.x = -Math.PI / 2; outline.rotation.z = Math.PI / 4; outline.position.y = 0.04; group.add(outline);
+  const healthIndicator = createBuildingHealthIndicator(); group.add(healthIndicator.group);
+  const combatFeedback = createBuildingCombatFeedback(); group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
+  const visual = { group, walls, arms, outline, teamColor, healthIndicator, combatFeedback };
+  scene.add(group); updatePalisadeVisual(visual, building); return visual;
+}
+
+function updatePalisadeVisual(visual, building) {
+  visual.group.position.set(building.x, groundHeight(building.x, building.z), building.z);
+  visual.walls.scale.y = Math.max(0.08, THREE.MathUtils.clamp(Number(building.progress) || 0, 0, 1));
+  for (const [direction, arm] of Object.entries(visual.arms)) arm.visible = building.connections?.includes(direction) === true;
+  updateBuildingHealthIndicator(visual, building);
 }
 
 function createArcheryRangeVisual(building) {
@@ -1576,7 +1606,8 @@ function reconcileBuildings(buildings = [], initial = false) {
       disposeBuildingVisual(visual);
       visual = createGameplayBuildingVisual(building);
       buildingVisuals.set(building.id, visual);
-    } else if (buildingPresentation(building.type).role === 'watchtower') updateWatchtowerVisual(visual, building);
+    } else if (buildingPresentation(building.type).role === 'palisade') updatePalisadeVisual(visual, building);
+    else if (buildingPresentation(building.type).role === 'watchtower') updateWatchtowerVisual(visual, building);
     else if (buildingPresentation(building.type).role === 'town-center') updateTownCenterVisual(visual, building);
     else if (buildingPresentation(building.type).role === 'house') updateHouseVisual(visual, building);
     else if (buildingPresentation(building.type).role === 'barracks') updateBarracksVisual(visual, building);
@@ -1686,6 +1717,7 @@ function updateBuildingResearchControls(selectedBuilding) {
 
 function updateResearchOptions(container, building) {
   if (!container || typeof container.replaceChildren !== 'function') return;
+  const contextual = Object.hasOwn(container.dataset, 'contextResearchOptions');
   const own = building && building.team === localTeam;
   const teamState = localTeam === null ? null : latestTeamResearch[localTeam];
   const state = { team: localTeam, food: latestFood[localTeam] || 0, wood: latestWood[localTeam] || 0,
@@ -1697,7 +1729,10 @@ function updateResearchOptions(container, building) {
     for (const option of options) {
       const button = document.createElement('button'); button.type = 'button';
       button.className = 'economy-action'; button.dataset.technology = option.upgrade;
-      button.addEventListener('click', () => sendCommand({ type: 'researchUpgrade', buildingId: building.id, upgrade: option.upgrade }));
+      button.addEventListener('click', () => {
+        if (isHudActionUnavailable(button)) return;
+        sendCommand({ type: 'researchUpgrade', buildingId: building.id, upgrade: option.upgrade });
+      });
       container.append(button);
     }
   }
@@ -1705,7 +1740,7 @@ function updateResearchOptions(container, building) {
     const button = container.children[index]; const definition = TECHNOLOGY_DEFINITIONS[option.upgrade];
     const authoritative = building.researchOptions?.find(row => row.upgrade === option.upgrade);
     const reason = authoritative?.available === false ? authoritative.reason : option.reason;
-    button.disabled = !option.available || authoritative?.available === false;
+    setHudActionAvailability(button, !option.available || authoritative?.available === false, contextual);
     button.textContent = `${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason ? ` · ${reason}` : ''}`;
   }
 }
@@ -2179,7 +2214,10 @@ function applyForestState(state) {
 }
 
 let terrainSurface = null;
+let waterStudyFishBinding = null;
 function buildMap(definition) {
+  waterStudyFishBinding?.clear();
+  waterStudyFishBinding = null;
   wildlifeRenderer.reset([]);
   setActiveTerrain(definition);
   terrainSurface=null;
@@ -2228,6 +2266,7 @@ function buildMap(definition) {
   addMapObject(base);
   for (const surface of createGroundSurfaces(definition)) {
     if(surface.userData.terrainSurface) terrainSurface=surface;
+    if (surface.userData.waterStudy) waterStudyFishBinding = createWaterStudyFishBinding(definition, surface);
     addMapObject(surface);
   }
   buildConstructionGroundBatches();
@@ -3681,6 +3720,10 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   for (const button of bar.querySelectorAll('[data-stationary-order], [data-persistent-order]')) {
     button.hidden = !['workers', 'military', 'mixed'].includes(context.kind);
   }
+  for (const button of bar.querySelectorAll('[data-return-cargo]')) {
+    button.hidden = Boolean(building) || context.cargo.food + context.cargo.wood <= 0;
+    button.disabled = localTeam === null || matchWinner >= 0 || button.hidden;
+  }
   updateRosterProductionOptions(bar.querySelector('[data-context-products]'), building);
   updateResearchOptions(bar.querySelector('[data-context-research-options]'), building);
   for (const button of bar.querySelectorAll('[data-context-proxy]')) {
@@ -4453,6 +4496,7 @@ function applyState(state, initial = false) {
     attackFocusMesh.instanceMatrix.needsUpdate = true;
     attackFocusDirty = false;
   }
+  waterStudyFishBinding?.update(state, { spectator: localTeam === null });
   updateFogFromState(state);
   applyForestState(state);
   if (Array.isArray(state.objectives)) updateObjectives(state.objectives);
@@ -4531,6 +4575,7 @@ function applyWaypointQueueCounts(rows = []) {
 
 function updateRosterProductionOptions(container, selectedProducer = null, catalog = false) {
   if (!container) return;
+  const contextual = Object.hasOwn(container.dataset, 'contextProducts');
   const products = selectedProducer ? BUILDING_DEFINITIONS[selectedProducer.type]?.products || []
     : catalog ? [...new Set(Object.values(BUILDING_DEFINITIONS).flatMap((definition) => definition.products || []))]
       .filter((kind) => !['worker', 'infantry', 'archer'].includes(kind)) : [];
@@ -4543,6 +4588,7 @@ function updateRosterProductionOptions(container, selectedProducer = null, catal
       const button = document.createElement('button');
       button.type = 'button'; button.className = 'economy-action'; button.dataset.product = kind;
       button.addEventListener('click', () => {
+        if (isHudActionUnavailable(button)) return;
         const building = latestBuildings.find((row) => row.id === Number(button.dataset.producer));
         if (building) sendCommand({ type: 'trainUnit', kind, buildingId: building.id });
       });
@@ -4571,7 +4617,8 @@ function updateRosterProductionOptions(container, selectedProducer = null, catal
     button.dataset.producer = producer?.id ?? '';
     const authoritative = producer?.productionOptions?.find((option) => option.kind === definition.id);
     const authoritativeReason = authoritative && !authoritative.available ? authoritative.reason : '';
-    button.disabled = Boolean(reason || populationReason || authoritativeReason);
+    const unavailable = Boolean(reason || populationReason || authoritativeReason);
+    setHudActionAvailability(button, unavailable, contextual);
     button.textContent = `Train ${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason || populationReason || authoritativeReason ? ` · ${authoritativeReason || reason || populationReason}` : ''}`;
   }
   container.hidden = products.length === 0;
@@ -7026,7 +7073,7 @@ function applyOrderNotice(token, message) {
     finishOrderStatus(token, message, 'failed');
     return true;
   }
-  if (/^(STOP ORDER|HOLD POSITION ORDER|PATROL ORDER|FOLLOW ORDER|REPAIR ORDER|MOVE ORDER|ATTACK MOVE ORDER|WAYPOINT ORDER|ATTACK ORDER|ATTACK BUILDING ORDER|GATHER ORDER|BUILD ORDER|BUILD RESUME ORDER) · /.test(message)
+  if (/^(STOP ORDER|HOLD POSITION ORDER|PATROL ORDER|FOLLOW ORDER|REPAIR ORDER|MOVE ORDER|ATTACK MOVE ORDER|WAYPOINT ORDER|ATTACK ORDER|ATTACK BUILDING ORDER|GATHER ORDER|RETURN CARGO ORDER|BUILD ORDER|BUILD RESUME ORDER) · /.test(message)
     || message.startsWith('WAYPOINT QUEUED · ')) {
     finishOrderStatus(token, message, 'applied');
     return true;
@@ -7286,6 +7333,20 @@ function issueStationaryOrder(type) {
     setAttackMoveMode(false, false);
   }
 }
+function issueReturnCargo() {
+  if (localTeam === null || matchWinner >= 0) return;
+  const ids = selectedIds().filter(id => units[id]?.kind === 'worker' && units[id].cargo > 0);
+  if (!ids.length) { showToast('SELECT YOUR CARRYING WORKERS'); return; }
+  if (sendTrackedOrder({ type: 'returnCargo', ids }, 'RETURN CARGO', ids.length, 'WORKERS')) {
+    persistentTargetMode = null;
+    setTapOrderArmed(false, false);
+    setAttackMoveMode(false, false);
+  }
+}
+for (const button of document.querySelectorAll('[data-return-cargo]')) {
+  button.addEventListener('click', issueReturnCargo);
+}
+
 for (const button of document.querySelectorAll('[data-stationary-order]')) {
   button.addEventListener('click', () => issueStationaryOrder(button.dataset.stationaryOrder));
 }
@@ -9604,6 +9665,7 @@ function connectSocket() {
   connection.addEventListener('close', () => {
     if (socket !== connection) return;
     socket = null;
+    waterStudyFishBinding?.clear();
     roomLobby.disconnect();
     audio.stopWork(); orderAudioGate.reset();
     if (pageLeaving) return;

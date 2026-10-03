@@ -18,6 +18,7 @@ function fixture({ pending = true, state = 'pending' } = {}) {
   let reconnects = 0;
   let workStops = 0;
   let orderResets = 0;
+  let fishClears = 0;
   class WebSocket {
     constructor() { this.events = new Map(); connections.push(this); }
     addEventListener(type, listener) { this.events.set(type, listener); }
@@ -25,6 +26,7 @@ function fixture({ pending = true, state = 'pending' } = {}) {
   }
   const context = vm.createContext({
     applyLobby() {}, roomLobby: { disconnect() {}, updateChat() {} },
+    waterStudyFishBinding: { clear() { fishClears++; } },
     audio: { stopWork() { workStops++; } }, orderAudioGate: { reset() { orderResets++; } },
     WebSocket, URL, location: { protocol: 'http:', host: 'localhost' },
     sessionStorage: { getItem: () => null }, window: { clearTimeout() {} },
@@ -45,7 +47,7 @@ function fixture({ pending = true, state = 'pending' } = {}) {
     scheduleReconnect() { reconnects++; },
   });
   vm.runInContext(`${declaration('cancelBuildPlacement', 'beginBuildPlacement')}\n${socketSource}\nconnectSocket();`, context);
-  return { context, connections, toasts, economyUpdates: () => economyUpdates, reconnects: () => reconnects, workStops: () => workStops, orderResets: () => orderResets };
+  return { context, connections, toasts, economyUpdates: () => economyUpdates, reconnects: () => reconnects, workStops: () => workStops, orderResets: () => orderResets, fishClears: () => fishClears };
 }
 
 for (const state of ['pending', 'planning', 'applied']) {
@@ -62,6 +64,7 @@ for (const state of ['pending', 'planning', 'applied']) {
     assert.equal(f.reconnects(), 1);
     assert.equal(f.workStops(), 1, 'disconnect stops work playback');
     assert.equal(f.orderResets(), 1, 'disconnect discards pending success audio');
+    assert.equal(f.fishClears(), 1, 'disconnect clears fish activity until a fresh snapshot');
     assert.deepEqual(f.toasts, [], 'do not claim the authoritative build was cancelled');
     if (state !== 'applied') assert.match(f.context.ui.orderStatus.textContent, /STATUS UNKNOWN/);
   });
@@ -80,8 +83,10 @@ test('a stale connection close cannot cancel a placement on the current connecti
   vm.runInContext('connectSocket()', f.context);
   f.connections[0].emit('close');
   assert.equal(f.context.buildPlacementPending, true);
+  assert.equal(f.fishClears(), 0, 'stale socket close cannot hide current activity');
   assert.equal(f.reconnects(), 0);
   f.connections[1].emit('close');
+  assert.equal(f.fishClears(), 1);
   assert.equal(f.context.buildPlacementPending, false);
   assert.equal(f.reconnects(), 1);
 });

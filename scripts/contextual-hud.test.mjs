@@ -3,9 +3,11 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { selectionContext } from '../src/selection-context.mjs';
-import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { researchAction, researchOptions } from '../src/research-actions.mjs';
+import { setHudActionAvailability, isHudActionUnavailable } from '../src/hud-layout.mjs';
 import { livingIdleWorkerIds, livingUnitIdsOfKinds } from '../src/unit-selection.mjs';
-import { formatResourceStock } from '../src/resource-format.mjs';
+import { formatResourceStock, formatResourceRequirement } from '../src/resource-format.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
@@ -33,7 +35,9 @@ function fixture(team = 0) {
   w.ui = {};
   for (const [, name, selector] of source.matchAll(/^\s*(\w+): document\.querySelector\('([^']+)'\)/gm)) w.ui[name] = d.querySelector(selector);
   Object.assign(w, {
-    selectionContext, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, formatResourceStock,
+    selectionContext, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
+    researchAction, researchOptions, setHudActionAvailability, isHudActionUnavailable,
+    formatResourceStock, formatResourceRequirement,
     livingIdleWorkerIds, livingUnitIdsOfKinds, localTeam: team, matchWinner: -1,
     units: [
       { id: 0, team: 0, kind: 'worker', hp: 100, task: 'idle' },
@@ -49,8 +53,12 @@ function fixture(team = 0) {
     dockTabs: [...d.querySelectorAll('[data-dock-tab]')], appShell: d.querySelector('.app-shell'),
     matchMenu: d.querySelector('#match-menu'), helpPanel: d.querySelector('#help-panel'),
     scenarioBriefPanel: d.querySelector('#scenario-brief-panel'),
-    updateBuildingLifecycleActions() {}, updateRosterProductionOptions(container) { container.replaceChildren(); },
-    updateResearchOptions(container) { container.replaceChildren(); },
+    latestFood: [500, 500], latestWood: [500, 500], latestPopulation: [null, null],
+    latestWorkerProduction: [null, null], latestRosterSize: 4,
+    latestTeamResearch: [{}, {}],
+    BARRACKS_QUEUE_LIMIT: 5, MAX_PER_TEAM: 1000, MAX_UNITS: 2000,
+    sentCommands: [], sendCommand(command) { w.sentCommands.push(command); },
+    updateBuildingLifecycleActions() {},
     updateCommandUI() {}, updateEconomyUI() {}, updateBuildingSelectionVisual() {},
     syncSelectionMesh() {}, clearHeldCameraKeys() {}, showToast() {},
     keyboardTargetIsEditing: event => event.target?.matches('input, select, textarea'),
@@ -68,6 +76,8 @@ function fixture(team = 0) {
   w.eval([
     fn('updateStationaryOrderControls', 'updateSelectionUI'),
     fn('updateSelectionUI', 'updateContextualCommands'), fn('updateContextualCommands', 'updateControlGroupUI'),
+    fn('updateRosterProductionOptions', 'updateBuildingLifecycleActions'),
+    fn('updateResearchOptions', 'buildingWoodCost'),
     fn('selectedIds', 'issueStationaryOrder'), fn('controlGroupKeyLabel', 'clearControlGroups'),
     fn('clearActiveControlGroup', 'assignControlGroup'), fn('assignControlGroup', 'centerCameraOnControlGroup'),
     fn('recallControlGroup', 'syncSelectionMesh'),
@@ -93,6 +103,24 @@ function fixture(team = 0) {
     escape() { d.activeElement.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true, cancelable: true })); },
   };
 }
+
+for (const team of [0, 1]) test(`seat ${team}: Return cargo appears for carrying workers and sends their order`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const own = team * 2, enemy = (1 - team) * 2;
+  const button = f.bar.querySelector('[data-return-cargo]'), orders = [];
+  f.w.sendTrackedOrder = command => { orders.push(command); return 100; };
+  f.w.setAttackMoveMode = () => {};
+  f.w.eval(between('function issueReturnCargo(', "for (const button of document.querySelectorAll('[data-stationary-order]'))"));
+  f.select([own]); assert.equal(button.hidden, true);
+  Object.assign(f.w.units[own], { cargo: 0.5, cargoType: 'food' });
+  f.select([own, own + 1]); assert.equal(button.hidden, false); assert.equal(button.disabled, false);
+  f.click(button); assert.deepEqual([...orders[0].ids], [own]); assert.equal(orders[0].type, 'returnCargo');
+  f.select([enemy]); assert.equal(button.hidden, true);
+  f.select([], { id: 8, team, type: 'barracks', complete: true, hp: 1800, productionQueue: [] });
+  assert.equal(button.hidden, true);
+  f.w.matchWinner = team; f.select([own]); assert.equal(button.disabled, true);
+  f.w.matchWinner = -1; f.w.units[own].cargo = 0; f.select([own]); assert.equal(button.hidden, true);
+});
 
 for (const team of [0, 1]) test(`seat ${team}: empty → Worker → army → building → empty preserves selections and essential access`, t => {
   const f = fixture(team); t.after(() => f.dom.window.close());
@@ -204,4 +232,95 @@ test('enemy, dead, stale and spectator selections retain global access without s
     f.click(f.w.dockToggle); assert.equal(f.w.commandDock.hidden, false);
     f.escape(); assert.deepEqual([...f.w.selected], ids);
   }
+});
+
+for (const team of [0, 1]) test(`seat ${team}: unavailable contextual training retains focus and exposes its reason without sending`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const building = { id: 8, team, type: 'barracks', complete: true, hp: 1800, maxHp: 1800, productionQueue: [] };
+  f.select([], building);
+  const train = f.bar.querySelector('[data-product="spearman"]'); train.focus();
+  assert.equal(f.d.activeElement, train);
+  const blockedStates = [
+    [() => { f.w.latestFood[team] = 59.99; }, /Need 1 food/],
+    [() => { f.w.latestFood[team] = 500; building.productionQueue = Array(5).fill('infantry'); }, /Queue full/],
+    [() => { building.productionQueue = []; building.productionBlocked = true; }, /Clear spawn area/],
+    [() => { building.productionBlocked = false; f.w.latestPopulation[team] = { available: 0 }; }, /Population full/],
+    [() => { f.w.latestPopulation[team].available = 10; f.w.latestRosterSize = 2000; }, /Unit cap reached/],
+    [() => { f.w.latestRosterSize = 4; building.productionOptions = [{ kind: 'spearman', available: false, reason: 'REQUIRES MILITARY TIER II' }]; }, /REQUIRES MILITARY TIER II/],
+    [() => { building.productionOptions = []; f.w.matchWinner = team; }, /Match finished/],
+  ];
+  for (const [apply, reason] of blockedStates) {
+    apply(); f.w.updateContextualCommands();
+    assert.equal(f.d.activeElement, train, 'availability changes must not move keyboard focus to another command');
+    assert.equal(train.disabled, false, 'reason remains reachable with keyboard focus');
+    assert.equal(train.getAttribute('aria-disabled'), 'true'); assert.match(train.textContent, reason);
+    train.click(); assert.equal(f.w.sentCommands.length, 0, 'unavailable activation sends no production request');
+  }
+  f.w.matchWinner = -1; f.w.updateContextualCommands();
+  assert.equal(train.getAttribute('aria-disabled'), 'false'); assert.equal(f.d.activeElement, train);
+  train.click();
+  assert.deepEqual(JSON.parse(JSON.stringify(f.w.sentCommands)), [{ type: 'trainUnit', kind: 'spearman', buildingId: 8 }]);
+  f.select([]);
+  assert.equal(f.d.activeElement, f.w.dockToggle, 'a hidden selection still restores visible command focus');
+});
+
+test('initially unavailable contextual training can receive focus for its cost explanation', t => {
+  const f = fixture(); t.after(() => f.dom.window.close());
+  f.w.latestFood[0] = 0;
+  f.select([], { id: 8, team: 0, type: 'barracks', complete: true, hp: 1800, maxHp: 1800 });
+  const train = f.bar.querySelector('[data-product="spearman"]'); train.focus();
+  assert.equal(f.d.activeElement, train);
+  assert.equal(train.getAttribute('aria-disabled'), 'true'); assert.match(train.textContent, /Need 60 food/);
+  assert.equal(f.w.getComputedStyle(train).opacity, '0.55');
+  assert.equal(f.w.getComputedStyle(train).cursor, 'not-allowed');
+  for (const detail of [0, 1]) train.dispatchEvent(new f.w.MouseEvent('click', { bubbles: true, detail }));
+  assert.equal(f.w.sentCommands.length, 0, 'both keyboard-style and pointer-style activation are guarded');
+});
+
+for (const team of [0, 1]) test(`seat ${team}: unavailable contextual research retains inspectable focus and blocks activation`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const building = { id: 8, team, type: 'barracks', complete: true, hp: 1800, maxHp: 1800 };
+  f.select([], building);
+  const research = f.bar.querySelector('[data-technology="infantry-attack"]'); research.focus();
+  assert.equal(f.d.activeElement, research);
+  const upgradeKey = TECHNOLOGY_DEFINITIONS['infantry-attack'].upgradeKey;
+  const blockedStates = [
+    [() => { f.w.latestFood[team] = 0; }, /NEED/],
+    [() => { f.w.latestFood[team] = 500; building.complete = false; }, /COMPLETE BUILDING/],
+    [() => { building.complete = true; f.w.latestTeamResearch[team].active = { type: 'infantry-attack' }; }, /RESEARCH IN PROGRESS/],
+    [() => { f.w.latestTeamResearch[team].active = null; f.w.latestTeamResearch[team][upgradeKey] = true; }, /ALREADY COMPLETED/],
+    [() => { f.w.latestTeamResearch[team][upgradeKey] = false; building.researchOptions = [{ upgrade: 'infantry-attack', available: false, reason: 'WAIT FOR AUTHORITATIVE STATE' }]; }, /WAIT FOR AUTHORITATIVE STATE/],
+    [() => { building.researchOptions = []; f.w.matchWinner = team; }, /MATCH FINISHED/],
+  ];
+  for (const [apply, reason] of blockedStates) {
+    apply(); f.w.updateContextualCommands();
+    assert.equal(f.d.activeElement, research, 'availability updates must not move research focus to another command');
+    assert.equal(research.disabled, false); assert.equal(research.getAttribute('aria-disabled'), 'true');
+    assert.match(research.textContent, reason);
+    for (const detail of [0, 1]) research.dispatchEvent(new f.w.MouseEvent('click', { bubbles: true, detail }));
+    assert.equal(f.w.sentCommands.length, 0);
+  }
+  f.w.matchWinner = -1; f.w.updateContextualCommands();
+  assert.equal(research.getAttribute('aria-disabled'), 'false'); assert.equal(f.d.activeElement, research);
+  research.click();
+  assert.deepEqual(JSON.parse(JSON.stringify(f.w.sentCommands)), [{ type: 'researchUpgrade', buildingId: 8, upgrade: 'infantry-attack' }]);
+  f.select([]); assert.equal(f.d.activeElement, f.w.dockToggle);
+});
+
+test('unavailable research prerequisites remain focusable for their explanation', t => {
+  const f = fixture(); t.after(() => f.dom.window.close());
+  f.select([], { id: 8, team: 0, type: 'barracks', complete: true, hp: 1800, maxHp: 1800 });
+  const research = f.bar.querySelector('[data-technology="military-armor"]'); research.focus();
+  assert.equal(f.d.activeElement, research); assert.equal(research.getAttribute('aria-disabled'), 'true');
+  assert.match(research.textContent, /REQUIRES MILITARY TIER II/);
+  research.click(); assert.equal(f.w.sentCommands.length, 0);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: Build already opens inspectable details with no resources and restores focus`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  f.w.latestFood[team] = f.w.latestWood[team] = 0; f.select([team * 2]);
+  const build = f.bar.querySelector('[data-context-build]');
+  assert.equal(build.disabled, false); f.click(build);
+  assert.equal(f.w.commandDock.hidden, false); assert.equal(f.w.commandDock.dataset.activePanel, 'economy');
+  f.escape(); assert.equal(f.d.activeElement, build); assert.deepEqual([...f.w.selected], [team * 2]);
 });

@@ -15,6 +15,11 @@ the eight cloud rotations and animation remain absent. The Library frame transfe
 and sandboxed browser capture are blocked; [original checks and limits](qa-bellweather-sheep-static-preview-2026-10-03.md)
 separate consumer byte/CPU evidence from the producer's render observations.
 
+The [directional readiness follow-up](qa-sheep-directional-readiness-2026-10-03.md)
+adds offline source/anchor/yaw acceptance tests and a minimal future integration
+proposal. It preserves the current live binding while the eight original view
+files and their separate publication permission remain unavailable.
+
 ## Implemented neutral food foundation — 3 October 2026
 
 [Authoritative state](../src/wildlife-state.mjs) admits one optional resource-node
@@ -36,6 +41,15 @@ of who activated it. There is no ownership or claim check. Repeated orders and
 interruption preserve the same stock pool; exhausting it sets `depleted` and
 rejects new gathering. Wildlife adds no movement/sight/population or path blocker
 and is absent from combat targeting. No gatherer cap is introduced in this slice.
+
+Stop after depletion preserves a Worker's final cargo. Select that Worker and
+choose **Return cargo** to deliver it to a reachable completed owned food drop-off,
+then become idle. The authoritative `returnCargo` order accepts living own
+gather-capable carriers and references no resource node; exhausted/stale Gather
+orders still reject. Return intent and cargo use the existing checkpoint fields,
+so restart during delivery neither replenishes sheep nor credits food twice.
+[Interrupted delivery evidence](qa-interrupted-cargo-return-2026-10-03.md) keeps
+the original failing fixture and both-seat recovery checks.
 
 Checkpoint schema 20 saves species, lifecycle, stock and existing Worker intent/
 cargo together. It validates `alive` only at full authored stock, `carcass` only
