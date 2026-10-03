@@ -7527,6 +7527,8 @@ function buildPlacementAt(clientX, clientY) {
       if (blocksSite) { blockedReason ||= 'TERRAIN BLOCKS THIS SITE'; break; }
     }
     for (const node of mapDefinition.resourceNodes || []) {
+      // Unknown or positive stock keeps the authored exclusion, as with forest.
+      if (latestResourceStocks.get(node.id) === 0) continue;
       const nodeColumn = Math.floor(node.x + MAP_HALF_X);
       const nodeRow = Math.floor(node.z + MAP_HALF_Z);
       if (nodeColumn >= startColumn && nodeColumn < startColumn + footprint

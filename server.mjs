@@ -2777,10 +2777,22 @@ function validateMatchCheckpoint(snapshot) {
       }
     }
   }
-  const resourceCells = new Set(definition.resourceNodes.map((node) => (
-    Math.floor(node.z + definition.height / 2) * definition.width
-      + Math.floor(node.x + definition.width / 2)
-  )));
+  assertSnapshot(Array.isArray(state.resourceNodes) && state.resourceNodes.length === definition.resourceNodes.length,
+    'invalid resource nodes');
+  const resourceIds = new Set();
+  for (const node of state.resourceNodes) {
+    const definitionNode = definition.resourceNodes.find((item) => item.id === node?.id);
+    assertSnapshot(definitionNode && !resourceIds.has(node.id) && node.type === definitionNode.type
+      && finite(node.stock) && node.stock >= 0 && node.stock <= definitionNode.stock
+      && validWildlifeNodeState(node, definitionNode)
+      && validResourceVariantState(node, definitionNode), 'invalid resource node state');
+    resourceIds.add(node.id);
+  }
+  const resourceCells = new Set(state.resourceNodes.filter(node => node.stock > 0).map((node) => {
+    const authored = definition.resourceNodes.find(item => item.id === node.id);
+    return Math.floor(authored.z + definition.height / 2) * definition.width
+      + Math.floor(authored.x + definition.width / 2);
+  }));
   for (const building of state.buildings) {
     const rules = buildingRulesFor(building?.type);
     assertSnapshot(building && integerIn(building.id, 1, Number.MAX_SAFE_INTEGER)
@@ -2838,17 +2850,6 @@ function validateMatchCheckpoint(snapshot) {
   }
   assertSnapshot(integerIn(state.nextBuildingId, 1, Number.MAX_SAFE_INTEGER)
     && state.nextBuildingId < HOME_TOWN_CENTER_ID_BASE && state.nextBuildingId > Math.max(0, ...buildingIds), 'invalid next building ID');
-  assertSnapshot(Array.isArray(state.resourceNodes) && state.resourceNodes.length === definition.resourceNodes.length,
-    'invalid resource nodes');
-  const resourceIds = new Set();
-  for (const node of state.resourceNodes) {
-    const definitionNode = definition.resourceNodes.find((item) => item.id === node?.id);
-    assertSnapshot(definitionNode && !resourceIds.has(node.id) && node.type === definitionNode.type
-      && finite(node.stock) && node.stock >= 0 && node.stock <= definitionNode.stock
-      && validWildlifeNodeState(node, definitionNode)
-      && validResourceVariantState(node, definitionNode), 'invalid resource node state');
-    resourceIds.add(node.id);
-  }
   assertSnapshot(Array.isArray(state.triggerStates) && state.triggerStates.length === definition.triggers.length,
     'invalid trigger states');
   const triggerIds = new Set();
@@ -4770,7 +4771,7 @@ function enqueueRouteRepairs(repairs, { mode = 'blocked-route-repair', orderLabe
 
 function isResourceCell(cell) {
   for (const node of mapDefinition.resourceNodes) {
-    if (worldToCell(node.x, node.z) === cell) return true;
+    if (resourceNodeStates.get(node.id)?.stock !== 0 && worldToCell(node.x, node.z) === cell) return true;
   }
   return false;
 }
@@ -4793,7 +4794,9 @@ function captureBuildingConnectivity() {
     }
   };
   for (const spawn of spawnByTeam) addAccess([nearestOpenCell(worldToCell(spawn.x, spawn.z))]);
-  for (const node of mapDefinition.resourceNodes) addAccess([worldToCell(node.x, node.z)]);
+  for (const node of mapDefinition.resourceNodes) {
+    if (resourceNodeStates.get(node.id)?.stock !== 0) addAccess([worldToCell(node.x, node.z)]);
+  }
   for (const unit of units) {
     if (unit.hp > 0) addAccess([nearestOpenCell(worldToCell(unit.x, unit.z))]);
   }

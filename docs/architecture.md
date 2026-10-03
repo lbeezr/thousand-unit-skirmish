@@ -39,7 +39,10 @@ with claim/herding and client art integration left as separate work.
 Building placement compares connectivity before and after its proposed footprint.
 It preserves existing connections among bases, units, resources, and building
 access, including Town Centers, without requiring separate authored islands to
-connect. Footprint occupancy and active move-route checks apply independently;
+connect. Exact-zero resource stock releases the node's footprint exclusion and
+resource access point; positive or unknown stock retains both. The browser uses
+disclosed stock and restores the authored exclusion on map/rematch initialization.
+Footprint occupancy and active move-route checks apply independently;
 see [construction evidence](qa-construction-connectivity-2026-09-27.md).
 
 Archer building attacks use reachable cells within weapon range as approach

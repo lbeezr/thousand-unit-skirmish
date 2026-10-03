@@ -127,6 +127,8 @@ run(['--test', 'scripts/watchtower-targeting.test.mjs'], 'Bounded defense target
 run(['--test', 'scripts/economy-ledger.test.mjs'], 'Fractional cargo conservation');
 run(['--test', 'scripts/return-cargo.test.mjs'], 'Explicit cargo return authority and controls');
 run(['scripts/interrupted-cargo-return-scenario.mjs'], 'Interrupted final sheep-food delivery and restart');
+run(['--test', 'scripts/depleted-resource-construction.test.mjs'], 'Disclosed depleted resource construction sites');
+run(['scripts/depleted-resource-construction-scenario.mjs'], 'Paid construction on depleted resource sites and restart');
 run(['--test', 'scripts/underbough-gathering-evidence.test.mjs'], 'Rootways gathering provenance before rewards');
 run(['--test', 'scripts/base-lifecycle.test.mjs'], 'Cancel refunds and proportional repair');
 run(['--test', 'scripts/storehouse-routing.test.mjs'], 'Reachable drop-off route selection');
