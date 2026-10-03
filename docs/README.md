@@ -64,6 +64,7 @@ the build they name.
 | Change the compact objective HUD | [Objective behavior and validation](battlefield-objectives-validation.md) |
 | Change owned population feedback | [Population header behavior and validation](population-header-validation.md) |
 | Change selection-dependent command visibility | [Contextual HUD behavior and validation](contextual-hud-validation.md) |
+| Continue the compact HUD and controls lane | [Ranked HUD backlog and interfaces](hud-controls-backlog.md) |
 | Add selected-unit portraits or connect future field notes | [Worker HUD art and integration contract](hud-art-integration.md) |
 | Change cues or captions | [Audio design](audio-design.md) |
 | Design each command, notice, alert and result sound | [UI sound direction](ui-audio-direction.md) |
@@ -83,6 +84,7 @@ the build they name.
 - [Core match tranche](core-playtest-tranche.md): next human session, observation record, and proposed scale profile.
 - [Balance](first-skirmish-balance.md): current no-tune baseline and next observations.
 - [Victory audit and mode proposal](victory-modes-audit-2026-10-03.md): exact authored victories, recoverable base defeat, and separate Skirmish/custom-inspired directions.
+- [Mode contract](match-mode-contract.md) and [playable-modes backlog](playable-modes-backlog.md): shared versioned identity, map/lobby/AI boundaries and ranked incremental acceptance.
 - [Mill depot simulation](qa-mill-depot-economy-2026-10-03.md): paid travel comparisons and separate currency tradeoffs; [finite Farm contract](farm-finite-planting.md) and [Farm QA](qa-finite-farm-2026-10-03.md): provisional paid planting, stock, cancellation and recovery. The [earlier proposal](farm-capability-proposal.md) preserves its design history.
 - [Provisional Stone contract](stone-defense-contract-proposal.md): one optional Watchtower sink, finite budget and preserved legacy prices; implementation remains pending.
 - [Stone runtime interface](stone-runtime-interface.md): explicit profile selector, typed price/refund helpers and map/runtime ownership; live admission remains closed.
@@ -118,6 +120,7 @@ from source/candidate packs. Then use the relevant contract:
 - [Frontier Town Center authoring preparation](frontier-town-center-authoring.md): empty Blender state/part collections and verified camera scaffold; source import and lifecycle artwork remain blocked.
 - [Unit/building kit](unit-building-art.md) and [GLB finish proposal](unit-building-art-output-proposal.md).
 - [Environment library](environment-pack-v1.md), [regional kit production](regional-environment-kits.md), and [interactive states](environment-state-pack-v1.md).
+- [Terrain candidate readiness](terrain-candidate-readiness.md): read-only resource pixel checks, inspected cliff limits and the [ranked terrain backlog](asset-adoption-checklist.md#terrain-workstream-backlog).
 - [Cursor/icon contract](ui-cursor-icon-contract.md).
 - [Asset directory index](../assets/README.md) for individual pack READMEs and provenance.
 

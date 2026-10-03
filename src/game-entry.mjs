@@ -145,6 +145,9 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
     try { localStorage?.setItem('tus-audio-v1', JSON.stringify({ ...readAudioSettings(localStorage), enabled: sound.checked, volume: Number(volume.value) / 100 })); } catch {}
   }
   sound.addEventListener('change', saveAudio); volume.addEventListener('input', saveAudio);
+  // A server request can settle after page exit, before back-cache restoration.
+  // It must not navigate or refresh the menu the player has already left.
+  win.addEventListener('pagehide', () => { checkRevision++; intentRevision++; });
   win.addEventListener('pageshow', event => { if (event.persisted) void refresh(); });
   win.markPrototypeReady?.();
   await refresh();

@@ -5,7 +5,8 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
-import { validWildlifeNodeState } from '../src/wildlife-state.mjs';
+import { validWildlifeMotion, sameWildlifeCell, freezeWildlifeMotion } from '../src/wildlife-motion.mjs';
+import { createResourceNodeState, validWildlifeNodeState } from '../src/wildlife-state.mjs';
 import { validResourceVariantState } from '../src/shore-fishing.mjs';
 
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
@@ -95,23 +96,31 @@ test('checkpoint overlap uses validated remaining stock at authored positions', 
     resourceNodes: types.map((type, index) => ({ ...type, x: index - 1.5, z: -0.5, stock: 100 })) };
   function check(rows) {
     const context = vm.createContext({ ...economyClientBindings(), buildingBlocksMovement, definition, state: { resourceNodes: rows }, finite: Number.isFinite,
-      validWildlifeNodeState, validResourceVariantState,
+      validWildlifeNodeState, validResourceVariantState, validWildlifeMotion, sameWildlifeCell,
       assertSnapshot: (condition, message) => { assert.ok(condition, message); },
     });
     vm.runInContext(savedResources, context);
     return Array.from(vm.runInContext('resourceCells', context));
   }
-  const rows = definition.resourceNodes.map(node => ({ ...node,
-    ...(node.wildlifeSpecies ? { wildlifeState: 'alive' } : {}) }));
+  const rows = definition.resourceNodes.map(createResourceNodeState);
   assert.equal(check(rows).length, 4);
-  const depletedRows = rows.map(node => ({ ...node, stock: 0,
-    ...(node.wildlifeSpecies ? { wildlifeState: 'depleted' } : {}) }));
+  const depletedRows = rows.map(node => {
+    const saved = structuredClone(node); saved.stock = 0;
+    if (saved.wildlifeSpecies) { saved.wildlifeState = 'depleted'; freezeWildlifeMotion(saved); }
+    return saved;
+  });
   assert.equal(check(depletedRows).length, 0);
-  const partial = rows.map(node => ({ ...node, stock: 0.25,
-    ...(node.wildlifeSpecies ? { wildlifeState: 'carcass' } : {}) }));
+  const partial = rows.map(node => {
+    const saved = structuredClone(node); saved.stock = .25;
+    if (saved.wildlifeSpecies) { saved.wildlifeState = 'carcass'; freezeWildlifeMotion(saved); }
+    return saved;
+  });
   assert.equal(check(partial).length, 4);
   const movedStateRows = rows.map(node => ({ ...node, x: 1000, z: 1000 }));
-  assert.deepEqual(check(movedStateRows), check(rows), 'untrusted saved coordinates cannot move the exclusion');
+  assert.throws(() => check(movedStateRows), /invalid resource/, 'invalid current coordinates cannot move the exclusion');
+  const wandered = structuredClone(rows);
+  const animal = wandered.find(node => node.wildlifeSpecies); animal.x += .1;
+  assert.deepEqual(check(wandered), check(rows), 'legal continuous motion retains the authored exclusion cell');
   for (const invalid of [rows.slice(1), [rows[0], rows[0], rows[2], rows[3]],
     rows.map(node => ({ ...node, stock: -1 })),
     [{ ...depletedRows[0], wildlifeState: 'alive' }, ...depletedRows.slice(1)],

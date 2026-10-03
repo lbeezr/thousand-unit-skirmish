@@ -56,6 +56,7 @@ run(['scripts/check-runtime-imports.mjs'], 'Runtime dependency boundaries and cy
 run(['node_modules/typescript/bin/tsc', '--project', 'tsconfig.check-js.json', '--pretty', 'false'],
   'Strict checked JavaScript boundary');
 run(['--test', 'scripts/check-types.test.mjs'], 'Checked JavaScript contract negative cases');
+run(['--test', 'scripts/resource-visual-state.test.mjs'], 'Resource stage membership and legacy transitions');
 
 run(['--test', 'scripts/scenario-regions.test.mjs'], 'Named scenario regions');
 run(['--test', 'scripts/scenario-authoring.test.mjs'], 'Visual scenario authoring contracts');
@@ -76,7 +77,7 @@ run(['--test', 'scripts/resource-brush-authoring.test.mjs'], 'Resource brush pre
 run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush editor controls');
 run(['scripts/check-docs.mjs'], 'Documentation links');
 run(['--test', 'scripts/audit-asset-adoption.test.mjs'], 'Approved asset default bindings and release dependencies');
-run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs', 'scripts/audio-decoded-cache.test.mjs', 'scripts/audio-shared-decode.test.mjs', 'scripts/audio-settings.test.mjs', 'scripts/audio-roster-notices.test.mjs'], 'Verified shipped audio and execution gates');
+run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs', 'scripts/audio-synthesis-lifecycle.test.mjs', 'scripts/audio-decoded-cache.test.mjs', 'scripts/audio-shared-decode.test.mjs', 'scripts/audio-settings.test.mjs', 'scripts/audio-roster-notices.test.mjs'], 'Verified shipped audio and execution gates');
 run(['--experimental-test-coverage', '--test-coverage-include=src/audio-shipped-response.mjs',
   '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
   '--test', 'scripts/audio-shipped-response.test.mjs'], 'Shipped audio response coverage floor (100%)');
@@ -129,6 +130,9 @@ run(['--test', 'scripts/waypoint-backpressure.test.mjs'], 'Waypoint metadata und
 run(['--experimental-test-coverage', '--test-coverage-include=src/networking/websocket-frame.mjs',
   '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
   '--test', 'scripts/websocket-frame.test.mjs'], 'Outbound WebSocket frame coverage floor (100%)');
+run(['--experimental-test-coverage', '--test-coverage-include=src/networking/websocket-deflate-offer.mjs',
+  '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
+  '--test', 'scripts/websocket-deflate-offer.test.mjs'], 'WebSocket deflate-offer coverage floor (100%)');
 run(['--test', 'scripts/worker-shutdown.test.mjs'], 'Signal-aware room worker shutdown');
 run(['--test', 'scripts/check-client-imports.test.mjs'], 'Served client import graph');
 run(['--test', 'scripts/snapshot-private-production.test.mjs'], 'Seat-private production snapshots');
@@ -137,6 +141,7 @@ run(['--test', 'scripts/battlefield-cursor.test.mjs'], 'Battlefield cursor state
 run(['--test', 'scripts/hud-action-icons.test.mjs'], 'Default HUD action glyphs and semantics');
 run(['scripts/hud-action-icons-serving-scenario.mjs'], 'Default HUD action glyph HTTP bytes');
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
+run(['--test', 'scripts/match-modes.test.mjs'], 'Versioned match mode policies and map compatibility');
 run(['--test', 'scripts/game-entry.test.mjs', 'scripts/game-navigation.test.mjs'], 'Explicit main menu and session entry');
 run(['scripts/game-menu-scenario.mjs'], 'Fresh menu matches and protected resume authority');
 run(['--test', 'scripts/room-pregame.test.mjs', 'scripts/room-lobby-ui.test.mjs'], 'Pregame authority and lobby controls');
@@ -168,6 +173,8 @@ run(['--test', 'scripts/pve-home-defense.test.mjs'], 'PvE visible economic raids
 run(['--test', 'scripts/pve-regroup.test.mjs'], 'PvE bounded regroup after wipeout, paid recovery and restart replay');
 run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue authority');
 run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle');
+run(['--test', 'scripts/wildlife-motion.test.mjs'], 'Bounded deterministic Sheep motion');
+run(['scripts/sheep-motion-scenario.mjs'], 'Default both-seat Sheep motion and recovery');
 run(['scripts/wildlife-food-scenario.mjs'], 'Both-seat wildlife gathering, depletion and recovery');
 run(['scripts/fractional-cargo-return-scenario.mjs'], 'Both-seat sub-cent Sheep cargo and production-client return recovery');
 run(['--test', 'scripts/shore-fishing.test.mjs', 'scripts/shore-fishing-placeholder.test.mjs'], 'Shore fish bank access and placeholder');
