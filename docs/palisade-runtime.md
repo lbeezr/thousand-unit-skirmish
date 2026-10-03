@@ -43,7 +43,8 @@ construct through the existing formation/interaction/build-time mechanisms.
 Completion advances to the next unfinished segment; no extra payment occurs.
 Internal route repair carries the sequence to its new revision. A new player
 Move, Gather, Attack, Stop/Hold, Patrol/Follow, repair or construction order
-invalidates the previous sequence. Death and recycled unit generations cannot
+invalidates the previous sequence, including a queued Move accepted during a
+segment-completion window. A rejected full waypoint queue retains the work. Death and recycled unit generations cannot
 resume it. Interrupted construction stays paid and unfinished until resumed or
 cancelled through ordinary building controls.
 
