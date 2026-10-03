@@ -141,7 +141,7 @@ function responsiveHudFixture(width, height) {
   return { dom, d, pixels, bar, map: d.querySelector('.minimap-panel') };
 }
 
-for (const [width, height] of [[1280, 720], [800, 640], [621, 640], [800, 420], [620, 640], [360, 480]]) {
+for (const [width, height] of [[1280, 800], [1280, 720], [800, 640], [621, 640], [800, 420], [620, 640], [360, 480]]) {
   test(`compact selection bar clears small/large map at ${width} × ${height}`, t => {
     const f = responsiveHudFixture(width, height); t.after(() => f.dom.window.close());
     for (const size of ['small', 'large', 'small']) {
