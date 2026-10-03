@@ -78,10 +78,10 @@ for (const [name, setup, productive] of [
   f.economy(); assert.ok(f.unit.cargo > 0);
   f.context.stopGathering(f.unit); const stopped = baseline(f); f.economy();
   assert.equal(f.unit.cargo, stopped.cargo); assert.equal(f.state(), 'idle');
-  record('Stop', f, stopped, false);
+  record('simulated-target-clear', f, stopped, false);
   f.unit.gatherNodeId = 'berries'; f.unit.gatherPhase = 'to-node';
   const resumed = baseline(f); f.economy(); assert.ok(f.unit.cargo > resumed.cargo);
-  record('resume-arrival', f, resumed, true);
+  record('simulated-target-reassignment-arrival', f, resumed, true);
 }
 
 for (const [name, setup, productive] of [
@@ -112,11 +112,38 @@ assert.deepEqual(first.rows, swapped.rows);
 assert.deepEqual(first.progress, swapped.progress);
 assert.notEqual(first.performer, swapped.performer);
 
+// A productive repair dirties state, but the retained assignment does not do so
+// after the available wood is exhausted. Clearing a future transient receipt
+// must therefore also request delivery; otherwise the last positive can persist.
+const exhaustedRepair = fixture();
+exhaustedRepair.unit.buildingTargetId = 1;
+exhaustedRepair.unit.repairing = true;
+exhaustedRepair.near.complete = true;
+exhaustedRepair.context.teamWood[0] = buildingRepairStep(exhaustedRepair.near, 100, 1 / 30).wood;
+const productiveRepairHp = exhaustedRepair.near.hp;
+exhaustedRepair.construction();
+assert.ok(exhaustedRepair.near.hp > productiveRepairHp);
+assert.equal(exhaustedRepair.context.teamWood[0], 0);
+assert.equal(exhaustedRepair.context.dirty, true);
+const repairExhaustionBroadcast = [];
+for (const tick of [4, 5, 6]) {
+  exhaustedRepair.context.tickNumber = tick;
+  exhaustedRepair.context.dirty = false;
+  const before = baseline(exhaustedRepair);
+  exhaustedRepair.construction();
+  assert.equal(exhaustedRepair.near.hp, before.hp);
+  assert.equal(exhaustedRepair.context.dirty, false);
+  repairExhaustionBroadcast.push({ tick, hpDelta: exhaustedRepair.near.hp - before.hp,
+    task: exhaustedRepair.row()[9], dirty: exhaustedRepair.context.dirty });
+}
+
 const report = { scope: 'current-wire-authoritative-progress-probe',
   sourceRevision: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
   checks, constructionAmbiguity: { rowsAndProgressIdentical: true, performers: [first.performer, swapped.performer] },
+  repairExhaustionBroadcast,
   gap: 'Row 9 describes intent; row 14 lacks construction and can report gather outside reach. No per-Worker positive-progress receipt exists.',
   limits: ['actual server functions exercised in a deterministic VM; no network, GPU or deployed claim',
+    'target clear/reassignment is simulated; actual Stop commands, order-revision invalidation and routes are not exercised',
     'dated diagnostic; not registered as a permanent CI assertion of incorrect presentation'] };
 if (process.argv[2]) writeFileSync(process.argv[2], JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify(report, null, 2));

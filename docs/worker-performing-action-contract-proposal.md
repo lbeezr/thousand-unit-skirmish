@@ -28,13 +28,18 @@ evidence, not a live-server or game appearance claim.
 | Shared building progress / HP | Work or damage contributed to a building. | Does not identify the contributing Worker. Two overlapping Workers can swap near/far assignments with identical unit rows and identical resulting building progress, while the actual performer changes. |
 | Worker target, phase and reach predicates | Available inside authoritative work code. | Not all are transported; duplicating them client-side would infer authority and drift from actual grant branches. |
 
-Arrival and resumed arrival increase cargo; blocked approach, queued task and
+Arrival and simulated reassignment at arrival increase cargo; blocked approach, queued task and
 retained gather phase outside reach do not. Depleted/full-cargo work switches
-to returning. Stop clears the gather target and produces no work. Build arrival
+to returning. Simulated target clearing produces idle and no work. These two
+fixture cases do not exercise actual Stop/resume commands, order-revision
+invalidation or real routes; those remain implementation acceptance checks. Build arrival
 advances progress; distant build wait does not. Repair arrival advances HP;
 distant repair and zero-wood repair do not. Current sprites still choose work in
 several of the zero-progress cases. The probe records actual deltas, task, row 14
 and sprite state for each case; it also proves the construction ambiguity above.
+After a repair consumes the last available wood, three subsequent fixture ticks
+retain `repairing` intent with zero progress and `dirty=false`. A receipt clear
+must request a broadcast to avoid leaving the previous work frame active.
 
 Reproduce with `node scripts/worker-performing-action-probe.mjs REPORT.json`.
 This dated diagnostic is not a permanent CI assertion that incorrect presentation
@@ -69,6 +74,15 @@ reuse, completion, depletion/return and rematch cannot expose a stale receipt.
 Do not persist receipts in checkpoints. Following recovery, idle remains valid
 until the first positive grant reconstructs actual activity.
 
+Activity transitions must also make the authoritative state **dirty**, including
+positive action → null when the order remains assigned but no productive mutation
+occurs. The current tick broadcaster sends only dirty state. Clearing a transient
+receipt without a broadcast can leave the last positive repair visible after wood
+runs out. Compare action identity against the preceding step/published state and
+request delivery through the existing bounded snapshot cadence; continuous positive
+work need not add an extra broadcast. A positive→null transition must be delivered
+even when task, position, cargo, building progress and HP all remain unchanged.
+
 Actual current productive branches are `updateForestWorkerEconomy`,
 `updateWorkerEconomy`, and the Worker loop in `updateBuildingAndProduction`.
 These additions and `snapshotUnits` emission are the producer's bounded scope.
@@ -95,6 +109,9 @@ authored clip coverage; this proposal adds no facing or new pose art.
 Keep row 9 unchanged for HUD/task controls. Apply the same activity gate to the
 sprite path, procedural work pose and work-phase update scheduling. A stale task
 must not keep hammer/axe animation running after positive activity disappears.
+Receipt changes must refresh the unit transform/dirty sprite buffers even when
+task and position are unchanged; otherwise a null could leave the last work frame
+drawn until unrelated input or motion occurs.
 An absent/unknown field fails closed to idle/walk; do not use row 9 or a guessed
 target to invent activity during mixed/legacy snapshot delivery.
 
@@ -106,6 +123,8 @@ and rematch. Check food/wood selection with empty/previous cargo type, both defa
 civilizations, selected/unselected Workers, interruption/resumption and continuous
 clock behavior. Include real WebSocket snapshot checks and actual instanced frame
 selection with shipped manifests; never infer new animation from missing artwork.
+Include a positive repair snapshot followed by no-wood wait with all other fields
+stable: a new null snapshot must arrive and update the actual frame without input.
 
 Native acceptance uses the [ordinary-game animation recipe](qa-unit-animation-audit-2026-10-03.md#visual-gap-and-exact-ordinary-game-recipe)
 on an identified served revision containing producer and consumer. Add blocked
