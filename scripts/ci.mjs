@@ -72,6 +72,7 @@ run(['--test', 'scripts/hosted-scale-profile.test.mjs'], 'Hosted scale measureme
 run(['--test', 'scripts/unit-sprite-clock.test.mjs'], 'Sprite animation clock');
 run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work facing');
 run(['--test', 'scripts/unit-movement.test.mjs'], 'Unit separation terrain boundaries');
+run(['--test', 'scripts/fortified-site-clearance.test.mjs'], 'Fortified late-arrival construction clearance');
 run(['--test', 'scripts/sheep-static-preview.test.mjs'], 'Sheep static reference integrity and state boundary');
 run(['--test', 'scripts/neutral-wildlife-renderer.test.mjs'], 'Neutral wildlife render lifecycle and fallback');
 run(['scripts/wildlife-render-scenario.mjs'], 'Live wildlife snapshots and production art paths');
@@ -199,6 +200,7 @@ const scenarios = [
   ['scripts/vaelora-map-layout-scenario.mjs', 'Vaelora roster with Town Center collisions', '--check-only'],
   ['scripts/forked-vale-layout.mjs', 'Forked Vale layout'],
   ['scripts/fortified-crossing-layout.mjs', 'Fortified Crossing layout'],
+  ['scripts/fortified-construction-clearance-scenario.mjs', 'Fortified 2000-unit paid construction clearance'],
   ['scripts/fortified-crossing-combined.mjs', 'Fortified Crossing combined economy, orders, events, result and recovery', '0'],
   ['scripts/frontier-160-layout.mjs', 'Frontier 160 layout'],
   ['scripts/generate-highland-grove.mjs', 'Highland Grove playable layout', '--check'],

@@ -56,6 +56,19 @@ ordinary PRs use checks proportionate to their changes under
 
 ## Known findings and historical evidence
 
+### Fortified 2,000-unit construction clearance — 3 October 2026
+
+The reported rendered ceiling is reproducible with native clients on `7f9c8fd`:
+after 120 seconds and 3,601 simulation ticks, 7 Azure and 4 Ember soldiers still
+occupy the future Barracks sites. Every one has completed a route with its goal
+inside that footprint. The initial large destination box overlaps the sites;
+late arrivals refill them after the runner's single evacuation. A bounded harness
+helper redirects newly observed occupants once per generation until the paid
+build is accepted, including an arrival between observation and placement.
+The [investigation](qa-fortified-clearance-2026-10-03.md) records the baseline,
+1,000-unit control, corrected both-seat native construction and limits. Navigation
+rules are unchanged. Full rendered 2,000-unit capacity remains unproven.
+
 ### Crowd separation and terrain boundaries — 3 October 2026
 
 Fork main `90ad320` planned legal elevation routes but checked only destination

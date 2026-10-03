@@ -1,0 +1,63 @@
+{
+  "status": "candidate worktree before commit; functional proof, no hardware comparison",
+  "records": [
+    {
+      "head": "7f9c8fd8fbe4e667735db08346d1b690ace12fc6",
+      "size": 1000,
+      "startingArmySize": 996,
+      "acceptedTick": 273,
+      "clearanceTicks": 271,
+      "completionTick": 660,
+      "wallSeconds": 22.027522427,
+      "clearance": [
+        {
+          "elapsedMs": 6026.919072000001,
+          "redirected": 47,
+          "moveOrders": 11,
+          "occupancyRetries": 0
+        },
+        {
+          "elapsedMs": 5049.726336999999,
+          "redirected": 53,
+          "moveOrders": 9,
+          "occupancyRetries": 0
+        }
+      ],
+      "bothSeatPaidBarracksComplete": true,
+      "actualFootprintsEmpty": true,
+      "limits": [
+        "server-only construction/gathering opening; no full combat/audio/render/recovery workload",
+        "cloud host not isolated; no hardware timing improvement or supported capacity claim"
+      ]
+    },
+    {
+      "head": "7f9c8fd8fbe4e667735db08346d1b690ace12fc6",
+      "size": 2000,
+      "startingArmySize": 1996,
+      "acceptedTick": 406,
+      "clearanceTicks": 403,
+      "completionTick": 780,
+      "wallSeconds": 26.163917327000004,
+      "clearance": [
+        {
+          "elapsedMs": 10560.743172999999,
+          "redirected": 99,
+          "moveOrders": 20,
+          "occupancyRetries": 0
+        },
+        {
+          "elapsedMs": 8556.115006,
+          "redirected": 85,
+          "moveOrders": 17,
+          "occupancyRetries": 0
+        }
+      ],
+      "bothSeatPaidBarracksComplete": true,
+      "actualFootprintsEmpty": true,
+      "limits": [
+        "server-only construction/gathering opening; no full combat/audio/render/recovery workload",
+        "cloud host not isolated; no hardware timing improvement or supported capacity claim"
+      ]
+    }
+  ]
+}
