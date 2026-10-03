@@ -95,6 +95,14 @@ The [water surface study](../water-surface-study.md) records the current contour
 primary rendering references and a reusable opt-in comparison scene. Browser
 startup failed in cloud, so it adds no claimed screenshot or new image iteration.
 
+The 3 October Mac review subsequently compiled/linked the surface and ripple
+programs on Apple M2 and checked the comparison, fallback and an actual match
+pond. The user accepted this first pass. The [same record](../water-surface-study.md#verification-and-limits)
+now distinguishes that owner-run visual evidence from the later tested live
+fish binding and default integration. Saved screenshots remain in the user's
+Library; this repository update does not copy their private bytes or claim a
+newly generated image.
+
 The [3 October building/environment audit](../art-runtime-audit-2026-10-03.md)
 links all eight Frontier concepts to the six completed model records and 48
 directional captures, distinguishes older default art, and records precise
