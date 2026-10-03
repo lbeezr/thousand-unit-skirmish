@@ -104,6 +104,8 @@ a display never rounds insufficient stock up to the purchase price.
 ## Implemented scope
 
 - Azure and Ember seats, invite rooms, spectators, reconnects, and checkpoints.
+- Ordinary root entry opens the [main menu](game-entry.md), with deliberate fresh
+  game/room creation, join, validated Resume, isolated Map Studio and settings.
 - New PvP invite rooms have host map/army configuration, both-seat readiness,
   explicit launch and rematch/recovery through the [pregame lobby](room-lobby.md).
   Connected seats can exchange bounded plain-text pregame chat; history is

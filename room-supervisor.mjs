@@ -528,6 +528,19 @@ async function handleRequest(request, response) {
     return;
   }
 
+  if (url.pathname === '/api/session' && request.method === 'GET' && url.searchParams.has('room')) {
+    const id = url.searchParams.get('room');
+    const room = ROOM_ID_PATTERN.test(id || '') ? rooms.get(id) : null;
+    if (!room || roomExpired(room)) { sendJson(response, 404, { valid: false }); return; }
+    room.pendingConnections++;
+    try {
+      const worker = await ensureRoomWorker(room);
+      proxyHttp(request, response, worker);
+    } catch { sendJson(response, 503, { valid: false }); }
+    finally { room.pendingConnections--; }
+    return;
+  }
+
   if (url.pathname === '/api/rooms' && request.method === 'POST') {
     if (!sameOrigin(request)) {
       request.resume();

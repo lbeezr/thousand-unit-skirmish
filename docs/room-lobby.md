@@ -14,7 +14,7 @@ can **Launch match**, after both connected seats are ready. Changing map, army
 size or participants clears everyone's readiness. Disconnect/reconnect also
 requires readying again. **Not ready** withdraws a player's acknowledgement.
 The match does not advance movement, combat, production, capture or scenario
-events until launch. **Leave room** exits to the shared battlefield.
+events until launch. **Leave room** returns to the [main menu](game-entry.md).
 
 The current game supports two opposing seats using the Frontier gameplay
 faction. There are no selectable civilization rulesets, allies, additional

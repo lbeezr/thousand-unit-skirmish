@@ -280,6 +280,12 @@ includes reproduction commands and known limitations.
 
 ## Report the result
 
+Main menu regressions: `node --test scripts/game-entry.test.mjs scripts/game-navigation.test.mjs`
+and `node scripts/game-menu-scenario.mjs` check the [entry contract](game-entry.md),
+fresh/stale profiles, explicit session validation, room isolation, both-seat
+authority, navigation and packaged lazy client imports. The [dated evidence and
+Mac recipe](qa-game-entry-2026-10-03.md) separates local proof from native staging QA.
+
 Pregame regressions: `node --test scripts/room-pregame.test.mjs scripts/room-lobby-ui.test.mjs scripts/room-launch-options.test.mjs`
 and `node scripts/room-pregame-scenario.mjs` cover the [lobby contract](room-lobby.md),
 including both-client authority, paused scenarios, launch races and seat/phase
