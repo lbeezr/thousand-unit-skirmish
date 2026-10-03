@@ -29,6 +29,17 @@ within the same reserves and retry limits. See the [production rules and evidenc
 
 After casualties, the opponent can use its last surviving Worker to rebuild a
 lost Barracks when resources permit, then reinforce the current objective.
+It also restores lost Workers from an available Town Center. An affordable
+Worker uses the last free population slot before the opponent tries to expand
+capacity for larger military units; see the [recovery regression](qa-pve-worker-recovery-2026-10-03.md).
+
+When food falls below its 100-food recruitment budget and no observed productive
+food node remains, the opponent can plant one paid Farm near an owned food
+drop-off. It keeps 25 wood, plus the full House cost when capacity is nearly
+full; Worker recovery and urgent housing take priority. A crop supplies only
+200 food. Replanting clears the observed exhausted owned plot without a refund,
+then pays 60 wood for a fresh foundation. See the
+[both-seat starvation and restart regression](qa-pve-paid-farm-2026-10-03.md).
 
 ## Authority and limits
 

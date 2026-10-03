@@ -44,3 +44,8 @@ until a valid arrival. DOM tests click the actual contextual action for both
 seats, check selection visibility and match-end disabling, and verify generation
 metadata and applied-order feedback. Native browser rendering is outside this
 economy/recovery slice.
+
+A later [queued delivery regression](qa-queued-cargo-return-2026-10-03.md)
+preserves this command's authority and conservation contract while allowing its
+accepted Shift ground waypoints to continue after deposit. The original
+interrupted-delivery measurements above remain specific to their recorded build.

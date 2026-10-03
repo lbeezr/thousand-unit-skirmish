@@ -1,0 +1,1079 @@
+{
+  "date": "2026-10-03",
+  "node": "v24.19.0",
+  "helperSha256": "067a8e6d0cb2fd625f5d094dd120c7a8ad8fc02e1e98380bf00735a638a82106",
+  "baseline": {
+    "idle": {
+      "head": "cec4c892df6dfbee2c4be9bb0dc2f0b654005029",
+      "records": [
+        {
+          "team": 0,
+          "group": 64,
+          "mode": "queued-gate",
+          "metrics": {
+            "team": 0,
+            "group": 64,
+            "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+            "ticks": 682,
+            "arrived": 64,
+            "distinctGoals": 64,
+            "invalidSteps": 0,
+            "unreachableGoals": 0,
+            "maxPathLength": 33,
+            "onlyNamedBuilder": true,
+            "builderReturned": false,
+            "parkOrder": null,
+            "parkedIntentPreserved": true,
+            "maxNoProgressTicks": 449,
+            "unblockedDestinationsPreserved": true,
+            "unfinished": [],
+            "builderPosition": {
+              "x": 15.5,
+              "z": -0.5
+            }
+          },
+          "traceSha256": [
+            "f961c5fc0266fae95290c4abe2af9e533e48dadc881a02d2b854c6cb600b9791",
+            "f961c5fc0266fae95290c4abe2af9e533e48dadc881a02d2b854c6cb600b9791"
+          ]
+        },
+        {
+          "team": 1,
+          "group": 64,
+          "mode": "queued-gate",
+          "metrics": {
+            "team": 1,
+            "group": 64,
+            "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+            "ticks": 2700,
+            "arrived": 63,
+            "distinctGoals": 64,
+            "invalidSteps": 0,
+            "unreachableGoals": 0,
+            "maxPathLength": 68,
+            "onlyNamedBuilder": true,
+            "builderReturned": false,
+            "parkOrder": null,
+            "parkedIntentPreserved": true,
+            "maxNoProgressTicks": 1902,
+            "unblockedDestinationsPreserved": true,
+            "unfinished": [
+              {
+                "id": 127,
+                "x": 17.399126662237652,
+                "z": 1.5,
+                "goal": {
+                  "x": 18.5,
+                  "z": 3.5
+                },
+                "pathIndex": 27,
+                "pathLength": 31
+              }
+            ],
+            "builderPosition": {
+              "x": 17.5,
+              "z": 1.5
+            }
+          },
+          "traceSha256": [
+            "13198c438aeb4fbf14003afcf5ecd49090b5104b52abfcef275aa8e10da239fa",
+            "13198c438aeb4fbf14003afcf5ecd49090b5104b52abfcef275aa8e10da239fa"
+          ]
+        }
+      ],
+      "limits": [
+        "production gate handler and paid natural completion, canonical fixed ticks; no renderer or native scheduling claim"
+      ]
+    },
+    "stop": {
+      "head": "cec4c892df6dfbee2c4be9bb0dc2f0b654005029",
+      "records": [
+        {
+          "team": 0,
+          "group": 64,
+          "mode": "queued-gate",
+          "metrics": {
+            "team": 0,
+            "group": 64,
+            "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+            "ticks": 682,
+            "arrived": 64,
+            "distinctGoals": 64,
+            "invalidSteps": 0,
+            "unreachableGoals": 0,
+            "maxPathLength": 33,
+            "onlyNamedBuilder": true,
+            "builderReturned": false,
+            "parkOrder": "stop",
+            "parkedIntentPreserved": true,
+            "maxNoProgressTicks": 449,
+            "unblockedDestinationsPreserved": true,
+            "unfinished": [],
+            "builderPosition": {
+              "x": 15.5,
+              "z": -0.5
+            }
+          },
+          "traceSha256": [
+            "f961c5fc0266fae95290c4abe2af9e533e48dadc881a02d2b854c6cb600b9791",
+            "f961c5fc0266fae95290c4abe2af9e533e48dadc881a02d2b854c6cb600b9791"
+          ]
+        },
+        {
+          "team": 1,
+          "group": 64,
+          "mode": "queued-gate",
+          "metrics": {
+            "team": 1,
+            "group": 64,
+            "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+            "ticks": 2700,
+            "arrived": 63,
+            "distinctGoals": 64,
+            "invalidSteps": 0,
+            "unreachableGoals": 0,
+            "maxPathLength": 68,
+            "onlyNamedBuilder": true,
+            "builderReturned": false,
+            "parkOrder": "stop",
+            "parkedIntentPreserved": true,
+            "maxNoProgressTicks": 1902,
+            "unblockedDestinationsPreserved": true,
+            "unfinished": [
+              {
+                "id": 127,
+                "x": 17.399126662237652,
+                "z": 1.5,
+                "goal": {
+                  "x": 18.5,
+                  "z": 3.5
+                },
+                "pathIndex": 27,
+                "pathLength": 31
+              }
+            ],
+            "builderPosition": {
+              "x": 17.5,
+              "z": 1.5
+            }
+          },
+          "traceSha256": [
+            "13198c438aeb4fbf14003afcf5ecd49090b5104b52abfcef275aa8e10da239fa",
+            "13198c438aeb4fbf14003afcf5ecd49090b5104b52abfcef275aa8e10da239fa"
+          ]
+        }
+      ],
+      "limits": [
+        "production gate handler and paid natural completion, canonical fixed ticks; no renderer or native scheduling claim"
+      ]
+    },
+    "hold": {
+      "head": "cec4c892df6dfbee2c4be9bb0dc2f0b654005029",
+      "records": [
+        {
+          "team": 0,
+          "group": 64,
+          "mode": "queued-gate",
+          "metrics": {
+            "team": 0,
+            "group": 64,
+            "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+            "ticks": 682,
+            "arrived": 64,
+            "distinctGoals": 64,
+            "invalidSteps": 0,
+            "unreachableGoals": 0,
+            "maxPathLength": 33,
+            "onlyNamedBuilder": true,
+            "builderReturned": false,
+            "parkOrder": "holdPosition",
+            "parkedIntentPreserved": true,
+            "maxNoProgressTicks": 449,
+            "unblockedDestinationsPreserved": true,
+            "unfinished": [],
+            "builderPosition": {
+              "x": 15.5,
+              "z": -0.5
+            }
+          },
+          "traceSha256": [
+            "f961c5fc0266fae95290c4abe2af9e533e48dadc881a02d2b854c6cb600b9791",
+            "f961c5fc0266fae95290c4abe2af9e533e48dadc881a02d2b854c6cb600b9791"
+          ]
+        },
+        {
+          "team": 1,
+          "group": 64,
+          "mode": "queued-gate",
+          "metrics": {
+            "team": 1,
+            "group": 64,
+            "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+            "ticks": 2700,
+            "arrived": 63,
+            "distinctGoals": 64,
+            "invalidSteps": 0,
+            "unreachableGoals": 0,
+            "maxPathLength": 68,
+            "onlyNamedBuilder": true,
+            "builderReturned": false,
+            "parkOrder": "holdPosition",
+            "parkedIntentPreserved": true,
+            "maxNoProgressTicks": 1902,
+            "unblockedDestinationsPreserved": true,
+            "unfinished": [
+              {
+                "id": 127,
+                "x": 17.399126662237652,
+                "z": 1.5,
+                "goal": {
+                  "x": 18.5,
+                  "z": 3.5
+                },
+                "pathIndex": 27,
+                "pathLength": 31
+              }
+            ],
+            "builderPosition": {
+              "x": 17.5,
+              "z": 1.5
+            }
+          },
+          "traceSha256": [
+            "13198c438aeb4fbf14003afcf5ecd49090b5104b52abfcef275aa8e10da239fa",
+            "13198c438aeb4fbf14003afcf5ecd49090b5104b52abfcef275aa8e10da239fa"
+          ]
+        }
+      ],
+      "limits": [
+        "production gate handler and paid natural completion, canonical fixed ticks; no renderer or native scheduling claim"
+      ]
+    }
+  },
+  "candidate": {
+    "idle": {
+      "head": "83f69ba6c108dc674eddc464855874dded86f2d8",
+      "records": [
+        {
+          "team": 0,
+          "group": 64,
+          "mode": "queued-gate",
+          "metrics": {
+            "team": 0,
+            "group": 64,
+            "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+            "ticks": 670,
+            "arrived": 64,
+            "distinctGoals": 64,
+            "invalidSteps": 0,
+            "unreachableGoals": 0,
+            "maxPathLength": 33,
+            "onlyNamedBuilder": true,
+            "builderReturned": false,
+            "parkOrder": null,
+            "parkedIntentPreserved": true,
+            "maxNoProgressTicks": 439,
+            "unblockedDestinationsPreserved": true,
+            "unfinished": [],
+            "builderPosition": {
+              "x": 15.5,
+              "z": -0.5
+            }
+          },
+          "traceSha256": [
+            "0d225cb7b87c69694796feeb0b00ff899d8d76ab428a8268afc88f2e80e9cad6",
+            "0d225cb7b87c69694796feeb0b00ff899d8d76ab428a8268afc88f2e80e9cad6"
+          ]
+        },
+        {
+          "team": 1,
+          "group": 64,
+          "mode": "queued-gate",
+          "metrics": {
+            "team": 1,
+            "group": 64,
+            "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+            "ticks": 1219,
+            "arrived": 64,
+            "distinctGoals": 64,
+            "invalidSteps": 0,
+            "unreachableGoals": 0,
+            "maxPathLength": 69,
+            "onlyNamedBuilder": true,
+            "builderReturned": false,
+            "parkOrder": null,
+            "parkedIntentPreserved": true,
+            "maxNoProgressTicks": 404,
+            "unblockedDestinationsPreserved": true,
+            "unfinished": [],
+            "builderPosition": {
+              "x": 17.5,
+              "z": 1.5
+            }
+          },
+          "traceSha256": [
+            "8f72c8acf08e536e052a94fdc99240ec8de588140fd14b3fbc54ad9607b17f26",
+            "8f72c8acf08e536e052a94fdc99240ec8de588140fd14b3fbc54ad9607b17f26"
+          ]
+        }
+      ],
+      "limits": [
+        "production gate handler and paid natural completion, canonical fixed ticks; no renderer or native scheduling claim"
+      ]
+    },
+    "stop": {
+      "head": "83f69ba6c108dc674eddc464855874dded86f2d8",
+      "records": [
+        {
+          "team": 0,
+          "group": 64,
+          "mode": "queued-gate",
+          "metrics": {
+            "team": 0,
+            "group": 64,
+            "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+            "ticks": 670,
+            "arrived": 64,
+            "distinctGoals": 64,
+            "invalidSteps": 0,
+            "unreachableGoals": 0,
+            "maxPathLength": 33,
+            "onlyNamedBuilder": true,
+            "builderReturned": false,
+            "parkOrder": "stop",
+            "parkedIntentPreserved": true,
+            "maxNoProgressTicks": 439,
+            "unblockedDestinationsPreserved": true,
+            "unfinished": [],
+            "builderPosition": {
+              "x": 15.5,
+              "z": -0.5
+            }
+          },
+          "traceSha256": [
+            "0d225cb7b87c69694796feeb0b00ff899d8d76ab428a8268afc88f2e80e9cad6",
+            "0d225cb7b87c69694796feeb0b00ff899d8d76ab428a8268afc88f2e80e9cad6"
+          ]
+        },
+        {
+          "team": 1,
+          "group": 64,
+          "mode": "queued-gate",
+          "metrics": {
+            "team": 1,
+            "group": 64,
+            "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+            "ticks": 1219,
+            "arrived": 64,
+            "distinctGoals": 64,
+            "invalidSteps": 0,
+            "unreachableGoals": 0,
+            "maxPathLength": 69,
+            "onlyNamedBuilder": true,
+            "builderReturned": false,
+            "parkOrder": "stop",
+            "parkedIntentPreserved": true,
+            "maxNoProgressTicks": 404,
+            "unblockedDestinationsPreserved": true,
+            "unfinished": [],
+            "builderPosition": {
+              "x": 17.5,
+              "z": 1.5
+            }
+          },
+          "traceSha256": [
+            "8f72c8acf08e536e052a94fdc99240ec8de588140fd14b3fbc54ad9607b17f26",
+            "8f72c8acf08e536e052a94fdc99240ec8de588140fd14b3fbc54ad9607b17f26"
+          ]
+        }
+      ],
+      "limits": [
+        "production gate handler and paid natural completion, canonical fixed ticks; no renderer or native scheduling claim"
+      ]
+    },
+    "hold": {
+      "head": "83f69ba6c108dc674eddc464855874dded86f2d8",
+      "records": [
+        {
+          "team": 0,
+          "group": 64,
+          "mode": "queued-gate",
+          "metrics": {
+            "team": 0,
+            "group": 64,
+            "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+            "ticks": 670,
+            "arrived": 64,
+            "distinctGoals": 64,
+            "invalidSteps": 0,
+            "unreachableGoals": 0,
+            "maxPathLength": 33,
+            "onlyNamedBuilder": true,
+            "builderReturned": false,
+            "parkOrder": "holdPosition",
+            "parkedIntentPreserved": true,
+            "maxNoProgressTicks": 439,
+            "unblockedDestinationsPreserved": true,
+            "unfinished": [],
+            "builderPosition": {
+              "x": 15.5,
+              "z": -0.5
+            }
+          },
+          "traceSha256": [
+            "0d225cb7b87c69694796feeb0b00ff899d8d76ab428a8268afc88f2e80e9cad6",
+            "0d225cb7b87c69694796feeb0b00ff899d8d76ab428a8268afc88f2e80e9cad6"
+          ]
+        },
+        {
+          "team": 1,
+          "group": 64,
+          "mode": "queued-gate",
+          "metrics": {
+            "team": 1,
+            "group": 64,
+            "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+            "ticks": 1219,
+            "arrived": 64,
+            "distinctGoals": 64,
+            "invalidSteps": 0,
+            "unreachableGoals": 0,
+            "maxPathLength": 69,
+            "onlyNamedBuilder": true,
+            "builderReturned": false,
+            "parkOrder": "holdPosition",
+            "parkedIntentPreserved": true,
+            "maxNoProgressTicks": 404,
+            "unblockedDestinationsPreserved": true,
+            "unfinished": [],
+            "builderPosition": {
+              "x": 17.5,
+              "z": 1.5
+            }
+          },
+          "traceSha256": [
+            "8f72c8acf08e536e052a94fdc99240ec8de588140fd14b3fbc54ad9607b17f26",
+            "8f72c8acf08e536e052a94fdc99240ec8de588140fd14b3fbc54ad9607b17f26"
+          ]
+        }
+      ],
+      "limits": [
+        "production gate handler and paid natural completion, canonical fixed ticks; no renderer or native scheduling claim"
+      ]
+    }
+  },
+  "paidWallControls": {
+    "head": "83f69ba6c108dc674eddc464855874dded86f2d8",
+    "records": [
+      {
+        "team": 0,
+        "group": 16,
+        "mode": "active-route",
+        "metrics": {
+          "team": 0,
+          "group": 16,
+          "mode": "active-route",
+          "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+          "ticks": 729,
+          "arrived": 16,
+          "distinctGoals": 16,
+          "initialDistinctGoals": 16,
+          "intercepted": 16,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 28,
+          "tickMs": {
+            "p95": 0.155,
+            "max": 2.762
+          }
+        },
+        "traceSha256": [
+          "d04f6b8efd3b03c9db1c16a5657886546e5b7ccfcf04c8c62d135501dd220f90",
+          "d04f6b8efd3b03c9db1c16a5657886546e5b7ccfcf04c8c62d135501dd220f90"
+        ]
+      },
+      {
+        "team": 0,
+        "group": 16,
+        "mode": "queued-target",
+        "metrics": {
+          "team": 0,
+          "group": 16,
+          "mode": "queued-target",
+          "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+          "ticks": 633,
+          "arrived": 16,
+          "distinctGoals": 16,
+          "initialDistinctGoals": 16,
+          "intercepted": 4,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 343,
+          "tickMs": {
+            "p95": 0.175,
+            "max": 0.743
+          }
+        },
+        "traceSha256": [
+          "18f2a80af248ff957bf8c2f9a560d1608ee11ae14c7b6d586b6c4ad8ae469bb4",
+          "18f2a80af248ff957bf8c2f9a560d1608ee11ae14c7b6d586b6c4ad8ae469bb4"
+        ]
+      },
+      {
+        "team": 0,
+        "group": 16,
+        "mode": "queued-removal",
+        "metrics": {
+          "team": 0,
+          "group": 16,
+          "mode": "queued-removal",
+          "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+          "ticks": 618,
+          "arrived": 16,
+          "distinctGoals": 16,
+          "initialDistinctGoals": 16,
+          "intercepted": 4,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 339,
+          "tickMs": {
+            "p95": 0.169,
+            "max": 0.575
+          }
+        },
+        "traceSha256": [
+          "debbb8c0b7878ee501af33aee7087161e0011398e13fe7566d6a2ca6029c091f",
+          "debbb8c0b7878ee501af33aee7087161e0011398e13fe7566d6a2ca6029c091f"
+        ]
+      },
+      {
+        "team": 0,
+        "group": 64,
+        "mode": "active-route",
+        "metrics": {
+          "team": 0,
+          "group": 64,
+          "mode": "active-route",
+          "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+          "ticks": 763,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "initialDistinctGoals": 64,
+          "intercepted": 64,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 35,
+          "tickMs": {
+            "p95": 0.279,
+            "max": 2.255
+          }
+        },
+        "traceSha256": [
+          "1b437339b533a13664cc752edb7a71a095f97f367926cfd3cb4d816889837426",
+          "1b437339b533a13664cc752edb7a71a095f97f367926cfd3cb4d816889837426"
+        ]
+      },
+      {
+        "team": 0,
+        "group": 64,
+        "mode": "queued-target",
+        "metrics": {
+          "team": 0,
+          "group": 64,
+          "mode": "queued-target",
+          "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+          "ticks": 703,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "initialDistinctGoals": 64,
+          "intercepted": 7,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 456,
+          "tickMs": {
+            "p95": 0.286,
+            "max": 2.321
+          }
+        },
+        "traceSha256": [
+          "bee409b2fc9beabd144b7f48488d52d1e719e723a79c5c9eb70fbaf54c1ab5cf",
+          "bee409b2fc9beabd144b7f48488d52d1e719e723a79c5c9eb70fbaf54c1ab5cf"
+        ]
+      },
+      {
+        "team": 0,
+        "group": 64,
+        "mode": "queued-removal",
+        "metrics": {
+          "team": 0,
+          "group": 64,
+          "mode": "queued-removal",
+          "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+          "ticks": 693,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "initialDistinctGoals": 64,
+          "intercepted": 7,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 445,
+          "tickMs": {
+            "p95": 0.265,
+            "max": 1.539
+          }
+        },
+        "traceSha256": [
+          "7b00e4085e07a881b4f8a7f6ade14f236af0e61193f7e99fd9937540e162a3a3",
+          "7b00e4085e07a881b4f8a7f6ade14f236af0e61193f7e99fd9937540e162a3a3"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 16,
+        "mode": "active-route",
+        "metrics": {
+          "team": 1,
+          "group": 16,
+          "mode": "active-route",
+          "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+          "ticks": 861,
+          "arrived": 16,
+          "distinctGoals": 16,
+          "initialDistinctGoals": 16,
+          "intercepted": 16,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 28,
+          "tickMs": {
+            "p95": 0.105,
+            "max": 0.867
+          }
+        },
+        "traceSha256": [
+          "2ddc06847ecd1db89648afd3428579be4e6d83b6c10a5c562f9ebccedcaba167",
+          "2ddc06847ecd1db89648afd3428579be4e6d83b6c10a5c562f9ebccedcaba167"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 16,
+        "mode": "queued-target",
+        "metrics": {
+          "team": 1,
+          "group": 16,
+          "mode": "queued-target",
+          "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+          "ticks": 1134,
+          "arrived": 16,
+          "distinctGoals": 16,
+          "initialDistinctGoals": 16,
+          "intercepted": 4,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 337,
+          "tickMs": {
+            "p95": 0.141,
+            "max": 4.219
+          }
+        },
+        "traceSha256": [
+          "1b8cab63c82b03457caa98398a27f7312483749cc8f5749f1b525332c0d9cab7",
+          "1b8cab63c82b03457caa98398a27f7312483749cc8f5749f1b525332c0d9cab7"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 16,
+        "mode": "queued-removal",
+        "metrics": {
+          "team": 1,
+          "group": 16,
+          "mode": "queued-removal",
+          "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+          "ticks": 1094,
+          "arrived": 16,
+          "distinctGoals": 16,
+          "initialDistinctGoals": 16,
+          "intercepted": 4,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 339,
+          "tickMs": {
+            "p95": 0.092,
+            "max": 0.75
+          }
+        },
+        "traceSha256": [
+          "48ac1eb5d02d7e990d507565636a24c76f9e2e2159f28d2b4a0235dbe67ff5f7",
+          "48ac1eb5d02d7e990d507565636a24c76f9e2e2159f28d2b4a0235dbe67ff5f7"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 64,
+        "mode": "active-route",
+        "metrics": {
+          "team": 1,
+          "group": 64,
+          "mode": "active-route",
+          "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+          "ticks": 1008,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "initialDistinctGoals": 64,
+          "intercepted": 64,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 86,
+          "tickMs": {
+            "p95": 0.194,
+            "max": 1.576
+          }
+        },
+        "traceSha256": [
+          "ae742f680efcb7643902b686ad9091d33c4e57849332f98663e57849ff303bb8",
+          "ae742f680efcb7643902b686ad9091d33c4e57849332f98663e57849ff303bb8"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 64,
+        "mode": "queued-target",
+        "metrics": {
+          "team": 1,
+          "group": 64,
+          "mode": "queued-target",
+          "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+          "ticks": 1246,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "initialDistinctGoals": 64,
+          "intercepted": 7,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 407,
+          "tickMs": {
+            "p95": 0.173,
+            "max": 2.431
+          }
+        },
+        "traceSha256": [
+          "53cb10f0d7967e8ce2446b585f076f4bdf4539a006ebe5b5439aa0637bd82ae9",
+          "53cb10f0d7967e8ce2446b585f076f4bdf4539a006ebe5b5439aa0637bd82ae9"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 64,
+        "mode": "queued-removal",
+        "metrics": {
+          "team": 1,
+          "group": 64,
+          "mode": "queued-removal",
+          "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+          "ticks": 1218,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "initialDistinctGoals": 64,
+          "intercepted": 7,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 399,
+          "tickMs": {
+            "p95": 0.154,
+            "max": 0.888
+          }
+        },
+        "traceSha256": [
+          "f8b23a2e2bfc8689980bec8274e04ae076676dfad5e7892e81ca6b3cfb2c8cfc",
+          "f8b23a2e2bfc8689980bec8274e04ae076676dfad5e7892e81ca6b3cfb2c8cfc"
+        ]
+      }
+    ],
+    "limits": [
+      "real server bodies; canonical planning drains between ticks; native scheduling/rendering excluded",
+      "cloud host not isolated; tick timings observational, no speedup or capacity claim"
+    ]
+  },
+  "returnedBuilderControls": {
+    "head": "83f69ba6c108dc674eddc464855874dded86f2d8",
+    "records": [
+      {
+        "team": 0,
+        "group": 64,
+        "mode": "queued-gate",
+        "metrics": {
+          "team": 0,
+          "group": 64,
+          "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+          "ticks": 683,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxPathLength": 33,
+          "onlyNamedBuilder": true,
+          "builderReturned": true,
+          "parkOrder": null,
+          "parkedIntentPreserved": false,
+          "maxNoProgressTicks": 453,
+          "unblockedDestinationsPreserved": true,
+          "unfinished": [],
+          "builderPosition": {
+            "x": -27.5,
+            "z": 0.5
+          }
+        },
+        "traceSha256": [
+          "facf6ec61391cb98afab7b799ecde354a0988f7730857c437b66557adc7e0e81",
+          "facf6ec61391cb98afab7b799ecde354a0988f7730857c437b66557adc7e0e81"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 64,
+        "mode": "queued-gate",
+        "metrics": {
+          "team": 1,
+          "group": 64,
+          "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+          "ticks": 1235,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxPathLength": 68,
+          "onlyNamedBuilder": true,
+          "builderReturned": true,
+          "parkOrder": null,
+          "parkedIntentPreserved": false,
+          "maxNoProgressTicks": 418,
+          "unblockedDestinationsPreserved": true,
+          "unfinished": [],
+          "builderPosition": {
+            "x": 28.5,
+            "z": 22.5
+          }
+        },
+        "traceSha256": [
+          "a83145625e617c5aca6b7aabe144f6974ff7ea10abf2fd72dbf9a08f8f8df1d5",
+          "a83145625e617c5aca6b7aabe144f6974ff7ea10abf2fd72dbf9a08f8f8df1d5"
+        ]
+      }
+    ],
+    "limits": [
+      "production gate handler and paid natural completion, canonical fixed ticks; no renderer or native scheduling claim"
+    ]
+  },
+  "native": {
+    "head": "83f69ba6c108dc674eddc464855874dded86f2d8",
+    "sourceSha256": "d714c57cdd5a9b3804461db4d7e05e71d2aec427e2ca5e411e3b848fc0bc73a7",
+    "records": [
+      {
+        "team": 0,
+        "group": 64,
+        "parkOrder": "stop",
+        "arrived": 64,
+        "distinctGoals": 64,
+        "onlyNamedBuilder": true,
+        "parkedIntent": {
+          "x": 15.5,
+          "z": -0.5,
+          "holdingPosition": false,
+          "orderRevision": 2,
+          "moveGoalCell": -1,
+          "path": [],
+          "queuedWaypoints": [],
+          "buildingTargetId": null
+        },
+        "parkedIntentPreserved": true,
+        "snapshotsChecked": 505,
+        "unblockedDestinationsPreserved": true,
+        "ticks": 660
+      },
+      {
+        "team": 1,
+        "group": 64,
+        "parkOrder": "holdPosition",
+        "arrived": 64,
+        "distinctGoals": 64,
+        "onlyNamedBuilder": true,
+        "parkedIntent": {
+          "x": 17.5,
+          "z": 1.5,
+          "holdingPosition": true,
+          "orderRevision": 2,
+          "moveGoalCell": -1,
+          "path": [],
+          "queuedWaypoints": [],
+          "buildingTargetId": null
+        },
+        "parkedIntentPreserved": true,
+        "snapshotsChecked": 997,
+        "unblockedDestinationsPreserved": true,
+        "ticks": 1290
+      }
+    ],
+    "limits": [
+      "actual two-seat asynchronous WebSocket server, paid natural gate and explicit Stop/Hold; no renderer, deployed or performance claim"
+    ]
+  },
+  "focusedTestsPassed": 66,
+  "independentReview": "No remaining findings at exact 83f69ba. Adjacent-Worker loop and shared route mutation resolved.",
+  "limits": [
+    "Local 5x5 cardinal detour; 64-candidate occupancy query; incomplete query/no passage/occupied goal retain existing soft separation.",
+    "At most one successful local replacement per unit per tick; final destinations and blocker command intent preserved.",
+    "Fixed-tick traces exclude native scheduling. Native commands exclude renderer and deployment. No isolated speedup or supported capacity claim."
+  ],
+  "rejectedReturnedBuilderCandidate": {
+    "head": "50b29bd81580c067dd76e827a4fffc30bb65d599",
+    "records": [
+      {
+        "team": 0,
+        "metrics": {
+          "team": 0,
+          "group": 64,
+          "sourceSha256": "6c1acfdb902438cb9c46977ecdd1afd08b8d13b0bec6e2134407c63165f10420",
+          "ticks": 696,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxPathLength": 33,
+          "onlyNamedBuilder": true,
+          "builderReturned": true,
+          "parkOrder": null,
+          "parkedIntentPreserved": false,
+          "maxNoProgressTicks": 465,
+          "unblockedDestinationsPreserved": true,
+          "unfinished": [],
+          "builderPosition": {
+            "x": -27.5,
+            "z": 0.5
+          }
+        },
+        "traceSha256": [
+          "eb220631cc283cd2a4d0dc1168181f60a6d9a81caae5169f09288e1e157d87d0",
+          "eb220631cc283cd2a4d0dc1168181f60a6d9a81caae5169f09288e1e157d87d0"
+        ]
+      },
+      {
+        "team": 1,
+        "metrics": {
+          "team": 1,
+          "group": 64,
+          "sourceSha256": "6c1acfdb902438cb9c46977ecdd1afd08b8d13b0bec6e2134407c63165f10420",
+          "ticks": 2700,
+          "arrived": 63,
+          "distinctGoals": 64,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxPathLength": 2763,
+          "onlyNamedBuilder": true,
+          "builderReturned": true,
+          "parkOrder": null,
+          "parkedIntentPreserved": false,
+          "maxNoProgressTicks": 2699,
+          "unblockedDestinationsPreserved": true,
+          "unfinished": [
+            {
+              "id": 94,
+              "x": 28.50000000000001,
+              "z": 22.068620189633165,
+              "goal": {
+                "x": -11.5,
+                "z": 0.5
+              },
+              "pathIndex": 0,
+              "pathLength": 2763
+            }
+          ],
+          "builderPosition": {
+            "x": 28.5,
+            "z": 22.5
+          }
+        },
+        "traceSha256": [
+          "c20db874cc8a61edcb8f94e6938b4e0e2ae3e7d20ca27f35065934c9dc94b4e3",
+          "c20db874cc8a61edcb8f94e6938b4e0e2ae3e7d20ca27f35065934c9dc94b4e3"
+        ]
+      }
+    ],
+    "helperSha256": "03e05a63fb1c217818926126d765d3ae5522e8fcf4a6b0748ab6553dd946904a"
+  },
+  "currentMainIntegration": {
+    "head": "aea3612474219c2c70aa217c7961ceb165995833",
+    "main": "2bcb358",
+    "serverSha256": "db6b4e94af4f4eec28424af61ea22416584484e71f452fee51f9d8a5ccfbf03e",
+    "helperUnchanged": true,
+    "focusedTestsPassed": 93,
+    "replayCases": 20,
+    "bothTraceHashesPerCaseMatchReviewedCandidate": true,
+    "native": {
+      "head": "aea3612474219c2c70aa217c7961ceb165995833",
+      "sourceSha256": "db6b4e94af4f4eec28424af61ea22416584484e71f452fee51f9d8a5ccfbf03e",
+      "records": [
+        {
+          "team": 0,
+          "group": 64,
+          "parkOrder": "stop",
+          "arrived": 64,
+          "distinctGoals": 64,
+          "onlyNamedBuilder": true,
+          "parkedIntent": {
+            "x": 15.5,
+            "z": -0.5,
+            "holdingPosition": false,
+            "orderRevision": 2,
+            "moveGoalCell": -1,
+            "path": [],
+            "queuedWaypoints": [],
+            "buildingTargetId": null
+          },
+          "parkedIntentPreserved": true,
+          "snapshotsChecked": 505,
+          "unblockedDestinationsPreserved": true,
+          "ticks": 660
+        },
+        {
+          "team": 1,
+          "group": 64,
+          "parkOrder": "holdPosition",
+          "arrived": 64,
+          "distinctGoals": 64,
+          "onlyNamedBuilder": true,
+          "parkedIntent": {
+            "x": 17.5,
+            "z": 1.5,
+            "holdingPosition": true,
+            "orderRevision": 2,
+            "moveGoalCell": -1,
+            "path": [],
+            "queuedWaypoints": [],
+            "buildingTargetId": null
+          },
+          "parkedIntentPreserved": true,
+          "snapshotsChecked": 965,
+          "unblockedDestinationsPreserved": true,
+          "ticks": 1260
+        }
+      ],
+      "limits": [
+        "actual two-seat asynchronous WebSocket server, paid natural gate and explicit Stop/Hold; no renderer, deployed or performance claim"
+      ]
+    },
+    "fixtureAdaptation": "Actual harvestNodeById source loaded in movement/facing fixtures after Farm merge."
+  }
+}

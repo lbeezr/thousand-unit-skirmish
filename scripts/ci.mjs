@@ -80,6 +80,8 @@ run(['--test', 'scripts/pathing-replay.test.mjs'], 'Obstructed formation goals a
 run(['scripts/pathing-native-scenario.mjs', 'dynamic-goal'], 'Native paid obstruction and formation arrival');
 run(['--test', 'scripts/dynamic-wall-pathing.test.mjs'], 'Paid wall and closed gate queued formation destinations');
 run(['scripts/dynamic-wall-native-scenario.mjs'], 'Native both-seat queued paid wall arrival');
+run(['--test', 'scripts/stationary-worker-pathing.test.mjs'], 'Stationary Worker local detours and preserved Stop/Hold intent');
+run(['scripts/stationary-worker-native-scenario.mjs'], 'Native both-seat parked Worker formation recovery');
 run(['--test', 'scripts/fortified-site-clearance.test.mjs'], 'Fortified late-arrival construction clearance');
 run(['--test', 'scripts/sheep-static-preview.test.mjs'], 'Sheep static reference integrity and state boundary');
 run(['--test', 'scripts/sheep-directional-readiness.test.mjs'], 'Sheep directional source and anchor acceptance');
@@ -135,6 +137,8 @@ run(['scripts/paid-palisade-scenario.mjs'], 'Paid palisade atomic placement and 
 run(['--test', 'scripts/population.test.mjs'], 'Population reservations and capacity');
 run(['--test', 'scripts/population-readout.test.mjs'], 'Owned population presentation');
 run(['--test', 'scripts/population-ai.test.mjs'], 'AI capacity construction and recovery');
+run(['--test', 'scripts/pve-worker-recovery.test.mjs'], 'PvE last-slot Worker recovery and fixed-tick economy replay');
+run(['--test', 'scripts/pve-farm-policy.test.mjs'], 'PvE finite paid Farm starvation recovery and replant replay');
 run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue authority');
 run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle');
 run(['scripts/wildlife-food-scenario.mjs'], 'Both-seat wildlife gathering, depletion and recovery');
@@ -148,6 +152,8 @@ run(['--test', 'scripts/dock-placement.test.mjs'], 'Dock shoreline and water ber
 run(['scripts/dock-scenario.mjs'], 'Both-seat paid Dock construction and recovery');
 run(['--test', 'scripts/water-unit-runtime.test.mjs', 'scripts/skiff-contracts.test.mjs'], 'Skiff water movement, paid queue and placeholder controls');
 run(['scripts/skiff-scenario.mjs'], 'Both-seat paid Skiff production, berth occupancy and recovery');
+run(['--test', 'scripts/skiff-fishing.test.mjs'], 'Finite Skiff food, owned Dock delivery and conservation');
+run(['scripts/skiff-fishing-scenario.mjs'], 'Both-seat Skiff/Worker shared fish stock and cargo recovery');
 run(['scripts/water-route-map-scenario.mjs'], 'Water-only route components on shipped maps');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');
@@ -159,6 +165,8 @@ run(['--test', 'scripts/combat-rules.test.mjs'], 'Shared combat classes, counter
 run(['--test', 'scripts/watchtower-targeting.test.mjs'], 'Bounded defense targeting and sight');
 run(['--test', 'scripts/economy-ledger.test.mjs'], 'Fractional cargo conservation');
 run(['--test', 'scripts/return-cargo.test.mjs'], 'Explicit cargo return authority and controls');
+run(['--test', 'scripts/queued-cargo-return.test.mjs'], 'Delivery completion, queued routes and preserved cargo');
+run(['scripts/queued-cargo-return-native-scenario.mjs'], 'Native both-seat queued cargo delivery and restart');
 run(['scripts/interrupted-cargo-return-scenario.mjs'], 'Interrupted final sheep-food delivery and restart');
 run(['--test', 'scripts/depleted-resource-construction.test.mjs'], 'Disclosed depleted resource construction sites');
 run(['scripts/depleted-resource-construction-scenario.mjs'], 'Paid construction on depleted resource sites and restart');
@@ -167,6 +175,7 @@ run(['--test', 'scripts/base-lifecycle.test.mjs'], 'Cancel refunds and proportio
 run(['--test', 'scripts/storehouse-routing.test.mjs'], 'Reachable drop-off route selection');
 run(['--test', 'scripts/mill-contract.test.mjs'], 'Food-only Mill routing, menu and placeholder contracts');
 run(['--test', 'scripts/farm-harvest.test.mjs', 'scripts/farm-client.test.mjs'], 'Finite Farm stock, identity, ownership and controls');
+run(['--test', 'scripts/economy-profile.test.mjs'], 'Explicit Stone profile and typed price/refund contracts');
 run(['scripts/farm-scenario.mjs', '--fog'], 'Both-seat paid Farm planting, finite depletion and recovery');
 run(['--test', 'scripts/depot-economy-analysis.test.mjs', 'scripts/depot-source-snapshot.test.mjs'], 'Depot measurement placements, accounting, payback math and source provenance');
 run(['scripts/depot-economy-scenario.mjs', '--smoke'], 'Paid depot measurement smoke and both-seat conservation');

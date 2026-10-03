@@ -243,6 +243,11 @@ the Worker replans and retains its cargo. With no reachable drop-off it waits
 with the cargo rather than banking it remotely. Storehouses provide no units or
 population. Their current House-shaped procedural presentation is a placeholder.
 
+Return cargo delivers the existing load of each selected carrying Worker without
+resuming its former gather target. Shift Move or Attack Move can queue behind the
+delivery; those legs begin after the cargo is deposited once. Stop and Hold cancel
+both delivery and the queued legs while preserving the carried load.
+
 Mill is the food-only alternative: 75 wood, 15 seconds of Worker construction,
 1,000 HP and a 3 × 3 footprint. These are provisional tunable values: its lower
 price, shorter build time and lower durability trade away Storehouse's wood
@@ -277,10 +282,16 @@ the existing building lifecycle and an explicit procedural House placeholder.
 It produces an unarmed **Skiff (placeholder)** for provisional 75 wood, 10 seconds
 and one population: 120 HP and 2.4 cells/second. Select one boat to Move or Stop
 within authored level-zero water; hull occupancy can pause routes and production.
-Dock has no rally, drop-off, population or resource bonus. Skiffs carry no fish,
-passengers or combat capability and cannot alone keep an elimination match open.
+Skiffs gather the same finite shore-fish food as land Workers from a reachable
+water approach: provisional 10 food capacity and 1 food per second. A completed
+owned Dock accepts their cargo at its water berth; land Worker drop-offs retain
+their existing rules. Stop retains cargo, Return cargo delivers once, and ordinary
+fishing resumes after delivery until depletion. Dock has no rally, population
+or resource bonus. Skiffs carry no passengers or combat capability and cannot
+alone keep an elimination match open.
 [The Dock contract](dock-shoreline-foundation.md) defines placement;
-[Skiff movement](skiff-water-movement.md) defines the paid runtime and recovery.
+[Skiff movement](skiff-water-movement.md) defines paid movement and recovery;
+[Skiff fishing](skiff-fishing.md) defines single-boat finite food delivery.
 
 A one-cell Palisade uses **provisional test tuning** of 15 wood, five accumulated
 Worker-seconds and 300 HP. Whole lines reserve occupancy and pay atomically;

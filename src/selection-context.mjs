@@ -6,14 +6,18 @@ export function selectionContext(units, ids, team, building = null) {
   const counts = Object.fromEntries(Object.keys(UNIT_DEFINITIONS).map((kind) => [kind, 0]));
   const cargo = { food: 0, wood: 0 };
   let workerCount = 0;
+  let boatCount = 0;
   for (const unit of living) {
     if (Object.hasOwn(counts, unit.kind)) counts[unit.kind]++;
     const gathers = UNIT_DEFINITIONS[unit.kind]?.capabilities.includes('gather');
-    if (gathers) workerCount++;
+    const water = UNIT_DEFINITIONS[unit.kind]?.movementDomain === 'water';
+    if (water) boatCount++;
+    if (gathers && !water) workerCount++;
     if (gathers && unit.cargoType in cargo) cargo[unit.cargoType] += Math.max(0, unit.cargo || 0);
   }
   const friendlyBuilding = building?.team === team ? building : null;
   const kind = friendlyBuilding ? 'building' : !living.length ? 'none'
-    : workerCount === living.length ? 'workers' : workerCount ? 'mixed' : 'military';
+    : boatCount === living.length ? 'boats' : boatCount ? 'mixed'
+      : workerCount === living.length ? 'workers' : workerCount ? 'mixed' : 'military';
   return { kind, counts, cargo, total: living.length, building: friendlyBuilding };
 }

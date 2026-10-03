@@ -5,7 +5,8 @@
 An authored shore-fishing site uses the existing finite food pool. Workers
 gather at its land-side bank marker, carry `food`, and deposit it at existing
 completed Town Centers or Storehouses. Depletion exhausts that node's stock;
-restart does not refill it. Host rematch restores the authored starting stock,
+restart does not refill it. [Single-Skiff fishing](skiff-fishing.md) uses that same
+stock from a reachable water approach and delivers to an owned Dock. Host rematch restores the authored starting stock,
 as it does for ordinary food and wood nodes.
 
 ## Authoring contract
@@ -32,7 +33,8 @@ also check team ownership, land connectivity and fish visibility.
 `resourceVariant` is optional on existing nodes. Only `shore-fish` is currently
 registered, it requires `type: "food"`, and it cannot also have wildlife species
 or carcass lifecycle. Sheep remain `wildlifeSpecies: "bellweather-sheep"`. Fish
-adds no currency, cargo type, gathering rate or second food pool.
+adds no currency, cargo type or second food pool. Worker rates retain their
+existing values; the Skiff registry declares its provisional fishing rate.
 
 Import authored JSON into Map Studio. Stock changes, selection, removal,
 undo/redo and export preserve the variant; a bank marker appears as `F` in the

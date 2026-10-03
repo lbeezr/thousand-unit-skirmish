@@ -1030,6 +1030,10 @@ html, body { width: 100%; height: 100%; overflow: hidden; }
 .contextual-icon-command img { flex:0 0 20px; }
 .selected-worker-notes { padding:8px; border:1px solid var(--line); border-radius:4px; }
 .selected-worker-notes p { margin:5px 0 0; font-size:12px; line-height:18px; }
+.selected-worker-notes details { margin-top:5px; border-top:1px solid var(--line); }
+.selected-worker-notes summary { min-height:44px; padding:12px 0; box-sizing:border-box; font-size:12px; line-height:20px; cursor:pointer; }
+.selected-worker-notes a { color:var(--lime); text-underline-offset:3px; }
+.selected-worker-notes summary:focus-visible, .selected-worker-notes a:focus-visible { outline:2px solid var(--lime); outline-offset:2px; }
 .contextual-summary:empty, [data-context-reason]:empty { display:none; }
 .contextual-actions, .contextual-groups, .group-assignment { display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
 .contextual-command-bar button, .group-assignment button, .group-assignment select { min-height:44px; padding:6px 9px; color:#e7efd7; background:#233532; border:1px solid #52625b; border-radius:4px; font-size:14px; }
