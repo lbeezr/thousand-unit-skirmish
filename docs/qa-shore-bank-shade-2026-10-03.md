@@ -32,7 +32,7 @@ elevation, node position or food/wood budget changes.
 | Underbough Rootways | 0 | 0 | 0 / 0; no qualifying water bank |
 
 A strict limit of 4,096 quads bounds the new allocation to 16,384 vertices /
-8,192 triangles (about 508 KiB of position, RGBA and index buffers). A more
+8,192 triangles (496 KiB of position, RGBA and Uint16 index buffers). A more
 complex shoreline omits the whole decorative batch instead of drawing a partial
 bank or allocating without a bound. These are CPU geometry counts and an
 architectural budget; they do not prove GPU frame times in a crowded match.
@@ -92,6 +92,11 @@ static water quality, source immutability, alpha taper/non-picking, island
 direction, dry/boundary/raised omission and pathological topology ceiling. The
 contour scenario passes all 511 local footprints and 189,440 interior samples;
 water surface, terrain atmosphere and terrain blend scenarios also pass.
+
+Packed HTTP import-closure checking initially caught the new module missing
+from the server's explicit public allowlist. The exact module is now admitted;
+the release scenario also checks its served MIME and byte hash. This changes
+asset delivery only, with no simulation or authority rule change.
 
 Native observation remains: inspect an ordinary default match at zoom 0.91 and
 0.48 beside Workers, resource rings and fog, including a narrow crossing and raised
