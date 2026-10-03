@@ -54,6 +54,10 @@ Stock colours/scales, callouts and the fog overlay remain authoritative.
 The user explicitly approved publishing the fishing game images and continuing
 their default integration. That publication authority is distinct from complete
 motion, root and eight-heading acceptance. Full 3D source models remain private.
+For the later east slice, the user approved the six-key visual direction and
+authorized publication of its game-ready runtime sprites only after actual
+in-game scale, facing and timing checks pass. East source experiments and
+archives stay private. The existing approved SE source release is unchanged.
 
 The [public SE source record](art-direction/human-roster-v1/fishing-SE-v1/README.md)
 preserves the raw image, exact executed request, earlier draft, seed/reference,
@@ -230,20 +234,30 @@ pose rises about five pixels and two middle net paths overshoot their endpoints.
 The next correction must preserve body anatomy and constrain those net paths;
 whole-frame shifts and per-pose scaling would conceal the defect.
 
+A smaller private six-key prototype retains the two useful reach/retrieve
+intermediates and the four original endpoints. Actual renderer, source-pixel
+preservation and served real-server checks pass; these are not GPU screenshots.
+Its capture plan observes natural key changes instead of sampling at a fixed
+cadence that can miss the shortest key. The user approves this visual direction;
+source repair remains scoped to the visible body bounce and collection/wrap
+motion, preserving its appearance. Further headings wait until the motion and
+pivot contract is settled.
+
 ## Ranked continuation backlog
 
 This lane owns fishing-only actor samples, registration, source provenance,
 manifest sequences, contact calibration and its acceptance records. It preserves
 the shipped Worker actions, authoritative food timing/cargo/rate and navigation.
-Game-pixel publication is authorized; new headings still need their actual art
-validation. Full 3D sources remain private and paid-provider work is deferred.
+East runtime publication is explicitly conditional on actual in-game visual
+checks; its experiments and archives remain private. Full 3D sources remain
+private and paid-provider work is deferred.
 
 | Rank | Next action | Dependency and acceptance | Write boundary |
 | --- | --- | --- | --- |
-| 1 | Inspect the complete east v3 private game capture, including water contact and Stop. | A working normally sandboxed browser/GPU; source and real-server checks already pass. Inspect ordinary scale, all four natural poses, planted sole, alpha and canonical water endpoint. Cloud preflight cannot produce GPU screenshots. | Private capture kit and this evidence record; no default east admission before inspection. |
+| 1 | Inspect the approved east six-key private game capture, including water contact, timing and Stop. | A working normally sandboxed browser/GPU; source and real-server checks already pass. Inspect ordinary scale/facing, all six natural poses, planted sole, alpha and canonical water endpoint. Cloud preflight cannot produce GPU screenshots. | Private capture evidence; no public east runtime sprites or default admission before the actual visual pass. |
 | 2 | Correct the reviewed intermediate body bounce and net overshoot, preserving the original four keys. | Can proceed as a private motion study while rank 1 awaits capture. Compare each transition and the wrap against the original adult identity, anatomical scale and planted root; eight keys alone do not establish smooth motion. Preserve the 1,300 ms cosmetic loop. | New private iteration, prompts, source keys, registration and preview; no simulation or shared animation-state writes. |
-| 3 | Admit one verified east slice through a focused reviewed PR. | Rank 1 passes; source/atlas validation, old-action preservation, exact-heading fallback and actual contact cleanup pass. Motion polish can remain honestly separate. After merge, run served-release/runtime checks and own the relevant deployed/default verification for this slice; unavailable browser access remains an explicit slice blocker. | Fishing source record, Human atlas/manifest, measured contact table and affected tests/docs only. |
-| 4 | Produce and validate the next actual heading, then repeat small slices. | Use the shipped heading and approved worker identity, fixed camera/root/scale, new asymmetric poses and real water approach. Do not count mirrors or nearest-heading reuse as authored coverage. | One heading's art/manifest/contact evidence at a time. |
+| 3 | Admit one verified east slice through a focused reviewed PR. | Rank 1 passes; source/atlas validation, old-action preservation, exact-heading fallback and actual contact cleanup pass. Motion polish can remain honestly separate. After merge, run served-release/runtime checks and own the relevant deployed/default verification for this slice; unavailable browser access remains an explicit slice blocker. | Game-ready Human runtime atlas/manifest, measured contact table and affected tests/docs only; source experiments and archives remain private. |
+| 4 | Produce and validate the next actual heading, then repeat small slices. | East motion/pivot contract is settled. Use the shipped heading and approved worker identity, fixed camera/root/scale, new asymmetric poses and real water approach. Do not count mirrors or nearest-heading reuse as authored coverage. | One heading's art/manifest/contact evidence at a time. |
 | 5 | Complete directional and smooth-loop acceptance, then deployed-browser follow-through. | Every admitted heading has natural in-game contact/root/transition inspection; deployed acceptance requires the actual deployed browser. Local-source captures do not satisfy it. | Bounded acceptance evidence and necessary fixes; preserve all earlier iterations. |
 
 The existing state interface selects `gather-fish` only for the stationary active
@@ -251,6 +265,7 @@ shore-fish variant, uses its separate cosmetic clock and exact-heading fallback,
 and consumes manifest frame durations. The motion study uses that interface
 without changing `src/unit-sprite-runtime.mjs` or `src/main.js`. Before any shared
 state-module change, coordinate the exact proposed contract with the unit-animation
-state owner. No concurrent animation PR was found during this checkpoint; an
-owner identity has not been established in repository records. Other lanes retain
-navigation, Dock foundations and fish-ripple ownership.
+state owner through the [current animation audit](qa-unit-animation-audit-2026-10-03.md).
+The authored-duration registry correction preserves this manifest, cosmetic clock
+and exact-heading interface. Other lanes retain navigation, Dock foundations and
+fish-ripple ownership.
