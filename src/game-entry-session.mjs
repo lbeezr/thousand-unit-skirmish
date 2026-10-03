@@ -2,6 +2,14 @@ export const ROOM_ID_PATTERN = /^[A-Za-z0-9_-]{32}$/;
 export const SESSION_TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
 export const SESSION_STORAGE_PREFIX = 'thousand-unit-skirmish-session:';
 export const LAST_ROOM_STORAGE_KEY = 'thousand-unit-skirmish-last-room';
+export const AUTHENTICATION_MESSAGE = 'Reload this page to sign in to the server, then retry.';
+
+export function requireEntryAuthentication(response) {
+  if (response.status !== 401) return;
+  const error = new Error(AUTHENTICATION_MESSAGE);
+  error.status = 401;
+  throw error;
+}
 
 export function savedRoomSession(storage) {
   try {

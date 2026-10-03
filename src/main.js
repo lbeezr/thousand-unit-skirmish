@@ -24,7 +24,7 @@ import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import { updateSelectionPortrait } from './selection-portrait.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
-import { roomEntryUrl } from './game-entry-session.mjs';
+import { roomEntryUrl, AUTHENTICATION_MESSAGE } from './game-entry-session.mjs';
 import * as THREE from 'three';
 import { attachBuildingSprite } from './building-sprites.mjs';
 import { frontierBuildingPreviewUrl } from './frontier-building-preview.mjs';
@@ -9694,6 +9694,9 @@ async function connect() {
     try {
       const response = await fetch(`/api/rooms/${encodeURIComponent(ROOM_ID)}`, { cache: 'no-store' });
       if (pageLeaving || attempt !== connectionAttempt) return;
+      if (response.status === 401) {
+        setConnection('SIGN-IN REQUIRED'); showToast(AUTHENTICATION_MESSAGE.toUpperCase(), 6000); return;
+      }
       if (response.status === 404) {
         setConnection('ROOM NOT FOUND');
         showToast('INVITE LINK EXPIRED OR INVALID', 2800);
@@ -9712,6 +9715,10 @@ async function connect() {
       const response = await fetch(`/api/session${HAS_ROOM_PARAMETER ? `?room=${encodeURIComponent(ROOM_ID)}` : ''}`, {
         headers: { 'x-rts-resume-token': token || '' }, cache: 'no-store',
       });
+      if (pageLeaving || attempt !== connectionAttempt) return;
+      if (response.status === 401) {
+        setConnection('SIGN-IN REQUIRED'); showToast(AUTHENTICATION_MESSAGE.toUpperCase(), 6000); return;
+      }
       if (response.status >= 500) throw new Error('Session service unavailable.');
       const valid = response.ok && (await response.json()).valid === true;
       if (pageLeaving || attempt !== connectionAttempt) return;

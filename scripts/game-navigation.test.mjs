@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
-import { roomEntryUrl } from '../src/game-entry-session.mjs';
+import { roomEntryUrl, AUTHENTICATION_MESSAGE } from '../src/game-entry-session.mjs';
 import { createPveRoomUrl } from '../src/pve-entry.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
@@ -63,4 +63,24 @@ for (const resume of [false, true]) test(`a delayed ${resume ? 'Resume' : 'room'
   await old;
   assert.equal(admitted.length, 1, 'the old request cannot open another socket');
   assert.equal(retries.length, 0);
+});
+
+for (const entry of ['invite', 'resume']) test(`${entry} auth interruption pauses admission without claiming expiry or creating another room`, async () => {
+  const statuses = [], toasts = [], admitted = [], retries = [];
+  let interrupted = true;
+  const context = vm.createContext({ pageLeaving: false, connectionAttempt: 0, localTeam: null,
+    HAS_ROOM_PARAMETER: entry === 'invite', ROOM_ID: 'R'.repeat(32), ROOM_ID_PATTERN: /^[A-Za-z0-9_-]{32}$/,
+    RESUME_REQUESTED: entry === 'resume', entrySessionConfirmed: false, ROOM_SESSION_STORAGE_KEY: 'saved',
+    sessionStorage: { getItem: () => 'T'.repeat(43) }, URL, AUTHENTICATION_MESSAGE,
+    setConnection(value) { statuses.push(value); }, showToast(value) { toasts.push(value); },
+    scheduleReconnect() { retries.push(true); }, connectSocket(options) { admitted.push(options); },
+    fetch: async () => interrupted ? { ok: false, status: 401 } : { ok: true, status: 200, json: async () => ({ valid: true }) },
+    window: { location: { href: `https://game.test/?${entry === 'resume' ? 'resume=1' : `room=${'R'.repeat(32)}`}` } } });
+  vm.runInContext(source.slice(source.indexOf('async function connect()'), source.indexOf('\nfunction connectSocket(')), context);
+  await context.connect();
+  assert.equal(statuses.at(-1), 'SIGN-IN REQUIRED');
+  assert.match(toasts.at(-1), /reload.*sign.in/i);
+  assert.equal(admitted.length, 0); assert.equal(retries.length, 0);
+  interrupted = false; await context.connect();
+  assert.equal(admitted.length, 1); assert.equal(admitted[0].resumeOnly, entry === 'resume');
 });

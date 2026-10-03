@@ -1,7 +1,7 @@
 import { createPveRoomUrl, mountPveEntry } from './pve-entry.mjs';
 import { createNavigationSettings } from './navigation-settings.mjs';
 import { readAudioSettings } from './audio.mjs';
-import { savedRoomSession, sessionStatusUrl, roomEntryUrl, inviteRoomId, isGameEntry, ROOM_ID_PATTERN } from './game-entry-session.mjs';
+import { savedRoomSession, sessionStatusUrl, roomEntryUrl, inviteRoomId, isGameEntry, ROOM_ID_PATTERN, requireEntryAuthentication } from './game-entry-session.mjs';
 
 export async function bootGameEntry({ win = window, fetchImpl = (...args) => win.fetch(...args),
   navigate = url => win.location.assign(url), loadGame = async () => {
@@ -37,24 +37,32 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
     const response = await fetchImpl(sessionStatusUrl(value.room), {
       headers: { 'x-rts-resume-token': value.token }, cache: 'no-store',
     });
-    return response.ok && (await response.json()).valid === true;
+    requireEntryAuthentication(response);
+    if (response.status === 404) return false;
+    if (!response.ok) throw new Error('Cannot check your saved session. Try again.');
+    return (await response.json()).valid === true;
   }
   async function refresh() {
     const revision = ++checkRevision;
     intentRevision++;
     busy = false; candidate = null; controls(); message();
-    let nextEnabled = false;
+    let nextEnabled = false, authenticationRequired = false;
+    let failure = 'Room service is unavailable. Try reloading this page.';
     try {
       const response = await fetchImpl('/api/rooms/status', { cache: 'no-store' });
+      requireEntryAuthentication(response);
       nextEnabled = response.ok && (await response.json()).enabled === true;
-    } catch {}
+    } catch (error) {
+      if (error.status === 401) { authenticationRequired = true; failure = error.message; }
+    }
     if (revision !== checkRevision) return;
     enabled = nextEnabled;
-    if (!enabled) message('Room service is unavailable. Try reloading this page.');
+    if (!enabled) message(failure);
     controls();
     const saved = savedRoomSession(sessionStorage);
-    if (saved) {
-      try { if (await checkSession(saved) && revision === checkRevision) candidate = saved; } catch {}
+    if (saved && !authenticationRequired) {
+      try { if (await checkSession(saved) && revision === checkRevision) candidate = saved; }
+      catch (error) { if (revision === checkRevision) message(error.message || 'Cannot check your saved session. Try again.'); }
       if (revision === checkRevision) controls();
     }
   }
@@ -66,6 +74,7 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
       const options = mode === 'pve' ? { mode: 'pve' } : { mode: 'pvp', ...(mode === 'pvp' ? { pregame: true } : {}) };
       const response = await fetchImpl('/api/rooms', { method: 'POST',
         headers: { 'content-type': 'application/json' }, body: JSON.stringify(options), cache: 'no-store' });
+      requireEntryAuthentication(response);
       const result = await response.json();
       if (intent !== intentRevision) return;
       if (!response.ok || !ROOM_ID_PATTERN.test(result.roomId || '')) throw new Error(result.error || 'Room creation failed.');
@@ -86,7 +95,7 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
         candidate = null; busy = false; controls(); message('That session has expired. Create or join a room.'); return;
       }
       navigate(roomEntryUrl(win.location.href, saved.room, { resume: true }).href);
-    } catch { if (intent === intentRevision) { busy = false; controls(); message('Cannot check your session. Try again.'); } }
+    } catch (error) { if (intent === intentRevision) { busy = false; controls(); message(error.message || 'Cannot check your saved session. Try again.'); } }
   });
   join.addEventListener('click', () => { joinActive = true; joinDialog.showModal(); joinDialog.querySelector('input').focus(); });
   joinDialog.querySelector('form').addEventListener('submit', async event => {
@@ -99,6 +108,7 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
       busy = true; controls(); feedback.textContent = 'Checking the room…';
       const response = await fetchImpl(`/api/rooms/${room}`, { cache: 'no-store' });
       if (intent !== intentRevision || !joinDialog.open) return;
+      requireEntryAuthentication(response);
       if (!response.ok) throw new Error(response.status === 404 ? 'Room expired or not found.' : 'Room service is unavailable.');
       navigate(roomEntryUrl(win.location.href, room).href);
     } catch (error) { if (intent === intentRevision) { busy = false; controls(); feedback.textContent = String(error.message); } }

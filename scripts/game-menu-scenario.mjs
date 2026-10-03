@@ -78,14 +78,14 @@ async function connect(room, token, resumeOnly = false) {
   client.close = () => client.socket.destroy();
   return client;
 }
-async function menu(stored = {}) {
+async function menu(stored = {}, fetchImpl = api) {
   const html = await (await api('/')).text();
   const dom = new JSDOM(html, { url: base }), navigations = [];
   for (const [key, value] of Object.entries(stored)) dom.window.sessionStorage.setItem(key, value);
   for (const dialog of dom.window.document.querySelectorAll('dialog')) {
     dialog.showModal = () => { dialog.open = true; }; dialog.close = () => { dialog.open = false; };
   }
-  await bootGameEntry({ win: dom.window, fetchImpl: api, navigate: url => navigations.push(new URL(url)),
+  await bootGameEntry({ win: dom.window, fetchImpl, navigate: url => navigations.push(new URL(url)),
     loadGame: async () => { throw new Error('Menu must not load the renderer'); } });
   return { dom, navigations, click: id => dom.window.document.getElementById(id).click() };
 }
@@ -114,6 +114,20 @@ try {
   assert.equal(resume.dom.window.document.getElementById('menu-resume').hidden, false);
   assert.equal((await peek('default', defaultToken)).value.valid, true);
   assert.equal((await peek('default', 'X'.repeat(43))).value.valid, false);
+  let interruptAuthentication = false;
+  const interruptedResume = await menu({ [`${SESSION_STORAGE_PREFIX}default`]: defaultToken }, (url, options = {}) =>
+    api(url, { ...options, headers: { ...options.headers, ...(interruptAuthentication ? { authorization: 'Basic invalid-local-test' } : {}) } }));
+  interruptAuthentication = true;
+  interruptedResume.click('menu-resume');
+  await until(() => /sign in/.test(interruptedResume.dom.window.document.getElementById('game-menu-status').textContent), 'Resume sign-in guidance');
+  assert.equal(interruptedResume.navigations.length, 0);
+  assert.equal(interruptedResume.dom.window.document.getElementById('menu-resume').hidden, false);
+  assert.equal(interruptedResume.dom.window.sessionStorage.getItem(`${SESSION_STORAGE_PREFIX}default`), defaultToken);
+  assert.equal((await (await api('/health')).json()).connected, 2, 'interrupted authentication cannot allocate a peer');
+  interruptAuthentication = false; interruptedResume.click('menu-resume');
+  await until(() => interruptedResume.navigations.length, 'same saved Resume after sign-in');
+  assert.equal(interruptedResume.navigations[0].searchParams.get('resume'), '1');
+  assert.equal(interruptedResume.navigations[0].searchParams.has('room'), false);
   assert.equal((await connect('default', 'X'.repeat(43), true)).status, 409);
   const activeResume = await connect('default', defaultToken, true);
   assert.equal(activeResume.welcome.player.resumePending, true);
@@ -155,7 +169,7 @@ try {
   const imports = await checkClientImports(base, { authorization, entrypoints: ['/src/game-entry.mjs'] });
   assert.ok(imports.some(entry => entry.path === '/src/main.js'), 'lazy game client is packaged and admitted');
   console.log(JSON.stringify({ passed: ['authenticated menu without automatic default admission', 'read-only active/stale session inspection',
-    'strict Resume cannot allocate a new seat', 'fresh PvP lobby and both-seat launch', 'explicit saved-room Resume',
+    'interrupted authentication retains saved Resume without admission', 'strict Resume cannot allocate a new seat', 'fresh PvP lobby and both-seat launch', 'explicit saved-room Resume',
     'fresh AI and Map Studio rooms', 'old default identity/checkpoint retained', 'entry and lazy client import delivery'], modules: imports.length }));
 } finally {
   for (const client of clients) client.socket.destroy();

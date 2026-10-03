@@ -38,6 +38,12 @@ unchanged after successful admission. Explicit `?play=1` retains the legacy
 shared-battlefield entry for diagnostics; authored renderer links retain their
 existing deliberate preview/capture entry. None is required for ordinary play.
 
+An interrupted server sign-in shows **SIGN-IN REQUIRED** with a reload instruction,
+and opens no game socket. The menu preserves saved tokens and any already validated
+Resume choice. A temporary server failure also keeps Resume available to retry;
+only a successful invalid-session result or missing room is treated as expiry.
+New Game always creates a separate fresh room; it never replaces a failed Resume.
+
 ## Authority and delivery
 
 GET `/api/session`, optionally with `room`, inspects the existing token sent
