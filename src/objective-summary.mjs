@@ -3,11 +3,39 @@ const time = (value) => {
   const seconds = Math.ceil(Math.max(0, Number(value) || 0));
   return seconds < 60 ? `${seconds}s` : `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 };
+
+// Describe existing authored rules; this does not select or alter a match mode.
+export function mapVictoryRule(definition = {}) {
+  const triggers = definition.triggers || [];
+  const victories = triggers.filter((item) => item.victory === true);
+  const deadline = definition.timedVictory;
+  const label = victories.length ? 'Objective Control'
+    : deadline ? 'Elimination + Deadline' : 'Elimination';
+  let description;
+  if (victories.length) {
+    const target = victories.length === 1 ? 'the marked victory zone'
+      : definition.victoryMode === 'all' ? `all ${victories.length} marked victory zones` : 'any marked victory zone';
+    const hold = definition.victoryHoldSeconds || 0;
+    description = hold > 0
+      ? `Own ${target} for ${time(hold)} to win. Leaving a zone keeps ownership; losing the required ownership resets the hold.`
+      : `${definition.victoryMode === 'all' ? 'Own' : 'Capture'} ${target} to win.`;
+    description += ' Army or Town Center loss does not end this mode.';
+  } else {
+    description = 'A team is defeated when it has no living land units, no paid land-unit queues, and no completed producer that can afford and legally spawn a land unit. Workers count; Skiffs alone do not. Losing a Town Center alone is not defeat.';
+  }
+  if (deadline) {
+    const zone = triggers.find((item) => item.id === deadline.objectiveId);
+    description += ` At ${time(deadline.afterSeconds)}, the current owner of ${zone?.name || 'the decisive zone'} wins; unclaimed is a draw.`;
+  }
+  return { label, description: `${label} · ${description}` };
+}
+
 export function objectiveSummary(definition = {}, states = [], { team = null, hold, elapsed = 0, started = false, winner = -1 } = {}) {
   const triggers = definition.triggers || [];
   const byId = new Map(states.map((state) => [state.id, state]));
   const urgent = [];
   if (winner >= 0) return { action: winner === 2 ? 'Match drawn' : `${winner === 0 ? 'Azure' : 'Ember'} wins`, urgent: '' };
+  const rule = mapVictoryRule(definition);
   if (started) {
     for (let index = 0; index < 2; index++) {
       if (hold?.activeTeams?.[index]) urgent.push(`${index === 0 ? 'Azure' : 'Ember'} wins in ${time((definition.victoryHoldSeconds || 0) - (hold.progressSeconds?.[index] || 0))}`);
@@ -17,7 +45,7 @@ export function objectiveSummary(definition = {}, states = [], { team = null, ho
       urgent.push(`Deadline ${time(definition.timedVictory.afterSeconds - elapsed)} · ${zone?.name || 'decisive zone'}`);
     }
   }
-  if (team !== 0 && team !== 1) return { action: 'Spectating · open objectives for the win rule', urgent: urgent.join(' · ') };
+  if (team !== 0 && team !== 1) return { action: `${rule.label} · Spectating · open objectives for the win rule`, urgent: urgent.join(' · ') };
   const victories = triggers.filter((item) => item.victory);
   const pending = victories.filter((item) => byId.get(item.id)?.owner !== team);
   const alreadyWinning = definition.victoryMode !== 'all' && victories.some((item) => byId.get(item.id)?.owner === team);
@@ -35,8 +63,8 @@ export function objectiveSummary(definition = {}, states = [], { team = null, ho
     target = prerequisite;
   }
   const action = target ? `Capture ${target.name} · ${target.requiredUnits} units`
-    : victories.length ? 'Defend your victory zones' : 'Eliminate the opposing army';
-  return { action, urgent: urgent.join(' · ') };
+    : victories.length ? 'Defend your victory zones' : 'Eliminate land units and usable production';
+  return { action: `${rule.label} · ${action}`, urgent: urgent.join(' · ') };
 }
 
 export function rememberNotice(history, message, now = Date.now()) {
