@@ -48,6 +48,49 @@ test('native Stone profile exposes no initial grant, rejects unpaid defense and 
     assert.equal(recovered.state.units[unit.id].cargo, 3.125);
     assert.equal(recovered.state.units[unit.id].cargoType, 'stone');
   }
+
+  // Seed only this declared recovery fixture; the subsequent commands and accounting are native.
+  const funded = structuredClone(recovered); funded.state.teamStone = [100.25, 113.5];
+  await writeFile(room.checkpointPath, JSON.stringify(funded)); await room.start();
+  clients = [await room.connect(0, tokens[0]), await room.connect(1, tokens[1])];
+  for (const [team, client] of clients.entries()) {
+    const worker = workers[team];
+    await client.command({ type: 'returnCargo', ids: [worker.id] }, /RETURN CARGO/);
+    await client.state(state => state.units.find(row => row[0] === worker.id)?.[6] === 0
+      && state.stone[team] === funded.state.teamStone[team] + 3.125, 'typed Stone Town Center deposit');
+    assert.equal(client.latest.food[team], 300); assert.equal(client.latest.wood[team], 600);
+    await client.command({ type: 'build', buildingType: 'watchtower', ids: [worker.id],
+      x: (team ? 1 : -1) * 10.5, z: 8.5 }, /WATCHTOWER/);
+    await client.state(state => state.buildings.some(building => building.team === team
+      && building.type === 'watchtower' && !building.complete && building.progress > 0.03), 'paid partial Watchtower');
+  }
+  await room.stop(); const paid = JSON.parse(await readFile(room.checkpointPath, 'utf8'));
+  assert.deepEqual(paid.state.teamFood, [250, 250]); assert.deepEqual(paid.state.teamWood, [450, 450]);
+  assert.deepEqual(paid.state.teamStone, [53.375, 66.625]);
+  assert.ok(workers.every(worker => paid.state.units[worker.id].cargo === 0));
+  const towers = [0, 1].map(team => paid.state.buildings.find(building => building.team === team));
+  assert.ok(towers.every(building => building && !building.complete));
+  await room.start(); clients = [await room.connect(0, tokens[0]), await room.connect(1, tokens[1])];
+  for (const [team, client] of clients.entries()) {
+    assert.ok(client.welcome.recoveredFromCheckpoint);
+    assert.equal(client.latest.stone[team], paid.state.teamStone[team]);
+    assert.ok(client.latest.buildings.some(building => building.id === towers[team].id && !building.complete));
+    await clients[1 - team].command({ type: 'cancelConstruction', buildingId: towers[team].id }, /CANCEL REJECTED/);
+    await client.command({ type: 'cancelConstruction', buildingId: towers[team].id }, /CONSTRUCTION CANCELLED.*STONE/);
+    await client.state(state => !state.buildings.some(building => building.id === towers[team].id)
+      && state.stone[team] > paid.state.teamStone[team], 'proportional typed cancellation');
+    const refunded = [...client.latest.stone];
+    await client.command({ type: 'cancelConstruction', buildingId: towers[team].id }, /CANCEL REJECTED/);
+    assert.equal(client.latest.stone[team], refunded[team]);
+  }
+  await room.stop(); const canceled = JSON.parse(await readFile(room.checkpointPath, 'utf8'));
+  assert.equal(canceled.state.buildings.length, 0);
+  for (const team of [0, 1]) {
+    const stoneRefund = canceled.state.teamStone[team] - paid.state.teamStone[team];
+    assert.ok(stoneRefund > 0 && stoneRefund < 50);
+    assert.ok(Math.abs(canceled.state.teamFood[team] - paid.state.teamFood[team] - stoneRefund) < 0.000002);
+    assert.ok(Math.abs(canceled.state.teamWood[team] - paid.state.teamWood[team] - 3 * stoneRefund) < 0.000002);
+  }
   for (const change of [s => delete s.state.teamStone, s => delete s.economyProfileId,
     s => delete s.mapDefinition.economyProfileId, s => s.rulesetRevision = `v1:${'0'.repeat(64)}`]) {
     const invalid = structuredClone(recovered); change(invalid); const bytes = JSON.stringify(invalid);
