@@ -8003,6 +8003,7 @@ minimapCanvas.addEventListener('keydown', (event) => {
   else if (event.key === 'ArrowUp') cameraTarget.z -= steps;
   else if (event.key === 'ArrowDown') cameraTarget.z += steps;
   else return;
+  mapFitActive = false;
   event.preventDefault();
   setCamera();
   drawMinimap(performance.now(), true);
