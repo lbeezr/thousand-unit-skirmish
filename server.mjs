@@ -4817,9 +4817,11 @@ function enqueueRouteRepairs(repairs, { mode = 'blocked-route-repair', orderLabe
   // friendly goals before relocating blocked ones, rather than collapsing
   // several soldiers onto the same nearest-open cell and trapping their peers.
   const goalsByTeam = [new Set(), new Set()];
+  const pending = pendingMoveAssignmentsByUnit();
   for (const unit of units) {
-    if (unit.hp > 0 && unit.kind !== 'worker' && isWalkable(unit.moveGoalCell)) {
-      goalsByTeam[unit.team].add(unit.moveGoalCell);
+    const destination = pending.get(unit.id)?.destination ?? unit.moveGoalCell;
+    if (unit.hp > 0 && unit.kind !== 'worker' && isWalkable(destination)) {
+      goalsByTeam[unit.team].add(destination);
     }
   }
   for (const { unit, destination: requestedDestination } of repairs) {

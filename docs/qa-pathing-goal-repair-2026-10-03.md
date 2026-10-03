@@ -34,7 +34,14 @@ Reserve live friendly military destinations before relocating blocked goals,
 then reserve each chosen replacement. Use the existing radius-eight search in
 the unit's land component. Surviving walkable player destinations stay fixed.
 Reservations are per team: an opponent's movement destination does not change
-friendly replacement choice. Worker repair destinations and build/cargo semantics
+friendly replacement choice. Reserve the effective live pending destination when
+planning has not applied a replacement to the unit field yet. Independent review
+reproduced two paid Houses at `(16.5, 0.5)` and `(19.5, 0.5)` before draining
+planning: the earlier fix left only 62 distinct goals. This was a reservation
+defect; all 64 eventually arrived, so no persistent two-build stall is claimed.
+Both-seat regressions now place those ordinary paid footprints without draining
+between commands, then require 64 distinct reachable goals and arrival.
+Worker repair destinations and build/cargo semantics
 retain their existing rules; no new checkpoint or command fields are introduced.
 An empty repair queue returns before scanning the army.
 

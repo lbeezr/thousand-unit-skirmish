@@ -55,6 +55,28 @@ test('opponent movement destinations do not change friendly obstruction fallback
   assert.deepEqual((await repair(first.relocated)).goals,first.goals);
 });
 
+for(const team of [0,1])test(`seat ${team}: consecutive paid footprints reserve pending repaired destinations before planning drains`,async()=>{
+  const {fixture,r,army}=await movingGroup('dynamic-goal',team);
+  try {
+    const workers=r.units.filter(u=>u.team===team&&u.kind==='worker');
+    const first=r.order(team,{type:'build',ids:[workers[0].id],buildingType:'house',x:16.5,z:.5});
+    assert.equal(r.buildings.length,1,'first paid footprint is admitted before planning drains');
+    assert.ok(!first.some(n=>/REJECTED|FAILED/.test(n.message)));
+    assert.ok(army.some(u=>u.movePlanningPending&&!r.isWalkable(u.moveGoalCell)),
+      'first repair is pending while the unit still stores its blocked original destination');
+    const second=r.order(team,{type:'build',ids:[workers[1].id],buildingType:'house',x:19.5,z:.5});
+    assert.ok(!second.some(n=>/REJECTED|FAILED/.test(n.message)));
+    assert.equal(r.buildings.length,2,'second paid footprint is admitted before planning drains');r.drain();
+    assert.equal(new Set(army.map(u=>u.moveGoalCell)).size,64);
+    for(const u of army)assert.equal(r.components[r.cell(u.x,u.z)],r.components[u.moveGoalCell]);
+    for(let tick=0;tick<1000&&army.some(u=>u.pathIndex<u.path.length);tick++)r.step();
+    for(const u of army) {
+      const p=r.point(u.moveGoalCell);
+      assert.equal(u.pathIndex,u.path.length);assert.ok(Math.hypot(u.x-p.x,u.z-p.z)<.02);
+    }
+  } finally {await fixture.dispose();}
+});
+
 test('a footprint across the only choke is rejected without changing movement goals or navigation',async()=>{
   const {fixture,r,army}=await movingGroup('disconnect-rejection');
   try {
