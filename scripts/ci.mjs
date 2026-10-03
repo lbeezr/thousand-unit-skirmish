@@ -89,6 +89,7 @@ run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing 
 run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach contact and bank/water picking');
 run(['--test', 'scripts/unit-movement.test.mjs'], 'Unit separation terrain boundaries');
 run(['--test', 'scripts/pathing-replay.test.mjs'], 'Obstructed formation goals and team reservation');
+run(['--test', 'scripts/move-planning-slices.test.mjs'], 'Clock-independent route planning, stale results and fair queue turns');
 run(['scripts/pathing-native-scenario.mjs', 'dynamic-goal'], 'Native paid obstruction and formation arrival');
 run(['--test', 'scripts/dynamic-wall-pathing.test.mjs'], 'Paid wall and closed gate queued formation destinations');
 run(['scripts/dynamic-wall-native-scenario.mjs'], 'Native both-seat queued paid wall arrival');
