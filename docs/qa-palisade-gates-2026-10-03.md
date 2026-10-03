@@ -45,3 +45,36 @@ both seats and launch an open map. For each seat:
 Record exact commit, browser/device, both-seat observations and screenshots if
 the human session is run. Do not treat analytic geometry or DOM assertions as
 rendered appearance evidence. Gate artwork and final price balance remain open.
+
+## Cloud executor recovery and focus correction
+
+The recovered executor runs Node 24.19.0 against main
+`14590fb2189f76c3babb3a5e43e9a2c5edcac76b`. Fresh focused tests and the paid
+gate, paid wall and selected-Worker construction scenarios pass; these are new
+local runs, separate from the merged foundation's historical evidence. The exact
+reviewed focus-fix revision and final checks are recorded in its PR.
+
+Actual lifecycle controls reproduced a keyboard defect on both seats: focus
+on Open/Close gate moved to the page body when a damage snapshot added Repair.
+Completed repairs caused the same loss when removing that action. The bounded
+client correction restores the surviving action's focus only for the same
+selected building, without scrolling. Both-seat DOM regressions check damage,
+repair, current-state commands, unrelated focus, changing gate selection and
+removing the selected building. They do not establish browser keyboard input
+or rendered appearance.
+
+Normal browser verification remains blocked. The existing preflight initially
+reported sandbox and storage failures; explicit writable temporary XDG config
+and cache paths removed the storage failure, leaving `sandbox-unavailable`.
+No screenshots were produced and no sandbox flags or permissions were changed.
+The next acceptance step needs a provider-provisioned working Chrome sandbox
+and WebGL2 runtime, or the parent-owned Mac QA session above.
+
+The retained walls/gates owner continues normal placement, connection,
+selection and gate-pathing acceptance. Rank further small fixes only from
+reproduced findings; coordinate server navigation/order changes with the active
+movement owner. Coastal technical art owns the final palisade export/adoption
+contract in [PR #153](https://github.com/lbeezr/thousand-unit-skirmish/pull/153#issuecomment-5974309838).
+Its exact export-to-consumer proposal remains an input to presentation work.
+Parent staging coordination must identify the relevant deployed revision;
+source checks and a merge do not supply deployment or normal-player acceptance.
