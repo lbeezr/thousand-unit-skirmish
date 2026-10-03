@@ -15,7 +15,7 @@ const ordered = selected => [...selected].sort((a, b) => a.id - b.id);
 
 // Preflight the whole controlled selection. The caller commits only a found
 // result; no actor, cargo, order or source stock is mutated by these planners.
-export function planSkiffGroupMove(water, selected, x, z, units, { reserveQueuedGoals = false } = {}) {
+export function planSkiffGroupMove(water, selected, x, z, units, { reserveQueuedGoals = false, liveUnits = null, retainedRouteIds = new Set() } = {}) {
   if (!validSelection(selected)) return { status: 'invalid-skiff-group', assignments: [] };
   const graph = water.graph, target = graph.cellAt(x, z);
   if (!Number.isFinite(x) || !Number.isFinite(z) || !graph.isNavigable(target)) return { status: 'invalid-endpoints', assignments: [] };
@@ -31,13 +31,22 @@ export function planSkiffGroupMove(water, selected, x, z, units, { reserveQueued
   const options = optionsFor(selected), assignments = [];
   if (reserveQueuedGoals) options.ignoredQueuedGoalIds = new Set();
   for (const unit of ordered(selected)) {
-    const occupied = new Set(water.reservations(units, unit));
+    // Queued members plan from future tails; idle members depart immediately
+    // and must yield to the real hulls/transit of retained moving members.
+    const immediate = liveUnits && !retainedRouteIds.has(unit.id);
+    const actors = immediate ? liveUnits.map(actor => actor.id === unit.id ? unit : actor) : units;
+    const routeOptions = immediate ? { ...options,
+      ignoredGoalIds: new Set([...options.ignoredGoalIds].filter(id => !retainedRouteIds.has(id))),
+      reservedTransitCells: liveUnits.filter(actor => actor.hp > 0 && retainedRouteIds.has(actor.id))
+        .flatMap(actor => actor.path.slice(actor.pathIndex)),
+    } : options;
+    const occupied = new Set(water.reservations(actors, unit));
     let found = null;
     for (const { cell } of candidates) {
       if (occupied.has(cell) || options.reservedGoalCells.has(cell)) continue;
       if (options.budget.remaining <= 0) break;
-      const point = graph.pointAt(cell), route = water.planReserved(unit, point.x, point.z, units,
-        { ...options, maxExpandedCells: Math.min(4096, graph.cellCount, options.budget.remaining) });
+      const point = graph.pointAt(cell), route = water.planReserved(unit, point.x, point.z, actors,
+        { ...routeOptions, maxExpandedCells: Math.min(4096, graph.cellCount, options.budget.remaining) });
       options.budget.remaining -= route.expandedCells;
       if (route.status === 'found') { found = route; break; }
     }

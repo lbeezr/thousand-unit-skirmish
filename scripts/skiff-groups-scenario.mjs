@@ -134,5 +134,5 @@ try {
   console.log(JSON.stringify({ scenario: 'Both-seat exact selected Skiff groups', selectedBoatsPerSeat: 2, untouchedBoatsPerSeat: 1,
     distinctMoveFishAndDockDestinations: true, staleForeignMixedAndQueueRejections: true,
     perBoatMoveStopReturnAndAutomaticRecovery: true, finiteSharedFoodConserved: true, finalFood: [1031, 1031], finalWood: [675, 675],
-    boundaries: 'up to16 selected Skiffs; atomic capacity rejection; no queued orders, passengers, weapons or final art' }));
+    boundaries: 'up to16 selected Skiffs; atomic capacity rejection; unqueued-order proof; water waypoints tested separately; no passengers, weapons or final art' }));
 } finally { await fixture.dispose(); }

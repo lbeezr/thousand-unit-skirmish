@@ -14,10 +14,13 @@ The existing per-unit waypoint queue holds at most eight pending destinations.
 Shift on an idle boat starts its first route immediately. Shift on a moving
 boat appends a destination without replacing its current path. Boats with
 different route/queue lengths append from their own accepted tails.
+An idle member starts against the moving members' live hulls and retained
+transit paths, so it cannot park across a selected boat's current route.
 
 Every command preflights the entire controlled selection on the water graph,
 assigning distinct destinations near the clicked navigable center with the
-existing 16,384-cell budget and 4,096 expansions per route. Land targets,
+existing 16,384-cell budget and at most 4,096 expansions per route, capped to
+the map's cell count. Land targets,
 disconnected basins, mixed selections, unavailable room or any full queue reject
 without changing the group's orders or cargo. A single boat retains the exact
 clicked destination. Repeated destinations for the same boat remain valid.

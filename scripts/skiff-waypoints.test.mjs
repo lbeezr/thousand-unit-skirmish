@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFile } from 'node:fs/promises';
 import { createWaterUnitRuntime, waterUnitOccupiedCells } from '../src/water-unit-runtime.mjs';
 import { planSkiffGroupMove } from '../src/skiff-group-orders.mjs';
 import { planSkiffWaypoints, validSkiffWaypoints, advanceSkiffWaypoints } from '../src/skiff-waypoints.mjs';
@@ -87,6 +88,48 @@ test('mixed idle/moving selection appends from each accepted tail without replac
     assert.ok(Math.hypot(unit.x - point.x, unit.z - point.z) < 1e-7); assert.equal(unit.queuedWaypoints.length, 0);
   }
 });
+
+test('an idle Shift member cannot park on the retained transit of the moving member', () => {
+  const f = fixture(), [a, b] = f.selected(0);
+  Object.assign(a, f.water.graph.pointAt(2771), { path: [2771, 2772, 2773, 2774, 2775, 2776, 2777, 2778], moveGoalCell: 2778 });
+  Object.assign(b, f.water.graph.pointAt(2838)); f.units[2].hp = 0;
+  const active = [...a.path], plan = f.queue([a, b], 23, 43);
+  assert.equal(plan.status, 'found'); assert.deepEqual(a.path, active);
+  const immediate = plan.assignments.find(assignment => assignment.unit === b);
+  assert.ok(immediate.route.cells.every(cell => !active.includes(cell)), 'immediate boat yields to live retained transit');
+  const goals = plan.assignments.map(assignment => assignment.destination);
+  f.recover(); for (let i = 0; i < 700; i++) f.tick();
+  for (let i = 0; i < 2; i++) {
+    const unit = f.selected(0)[i], point = f.water.graph.pointAt(goals[i]);
+    assert.ok(Math.hypot(unit.x - point.x, unit.z - point.z) < 1e-7); assert.equal(unit.queuedWaypoints.length, 0);
+  }
+});
+
+const pilot = JSON.parse(await readFile(new URL('../maps/shore-fishing.json', import.meta.url), 'utf8'));
+for (const map of [{ width: 32, height: 32, obstacles: [{ column: 8, row: 8, width: 8, height: 8, material: 'water' }] }, pilot]) {
+  test(`${map.id ?? '32x32 water'}: accepted waypoints finish on maps smaller than the route expansion cap`, () => {
+    const water = createWaterUnitRuntime(map);
+    const start = Array.from({ length: water.graph.cellCount }, (_, cell) => cell).find(cell => water.graph.isNavigable(cell));
+    const destination = start + water.graph.width + 1;
+    let unit = { ...fixture().units[0], ...water.graph.pointAt(start) };
+    for (const cell of [destination, start]) {
+      const point = water.graph.pointAt(cell), plan = planSkiffWaypoints(water, [unit], point.x, point.z, [unit]);
+      assert.equal(plan.status, 'found');
+      const assignment = plan.assignments[0];
+      if (assignment.append) unit.queuedWaypoints.push({ destination: assignment.destination, attackMove: false });
+      else { unit.path = assignment.route.cells; unit.moveGoalCell = assignment.destination; }
+    }
+    assert.equal(unit.queuedWaypoints.length, 1);
+    unit = structuredClone(unit);
+    for (let tick = 0; tick < 300; tick++) {
+      water.advance([unit], 1 / 30, () => 2.4); advanceSkiffWaypoints(water, [unit], 1 / 30);
+      assert.ok(water.validRoute(unit)); assert.ok(validSkiffWaypoints(water, unit));
+    }
+    assert.equal(unit.queuedWaypoints.length, 0); assert.equal(unit.moveGoalCell, -1);
+    assert.equal(unit.x, water.graph.pointAt(start).x); assert.equal(unit.z, water.graph.pointAt(start).z);
+    assert.equal(unit.cargo, .005);
+  });
+}
 
 test('fishing/return, mixed domains, land and disconnected Shift orders reject without changing any intent', () => {
   const f = fixture(), unit = f.units[0];

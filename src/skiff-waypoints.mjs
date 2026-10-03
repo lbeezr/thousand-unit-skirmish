@@ -19,7 +19,9 @@ export function planSkiffWaypoints(water, selected, x, z, units, queueLimit = 8)
     projected.set(unit.id, { ...unit, x: point.x, z: point.z, path: [], pathIndex: 0, moveGoalCell: -1 });
   }
   const actors = units.map(unit => projected.get(unit.id) ?? unit);
-  const plan = planSkiffGroupMove(water, selected.map(unit => projected.get(unit.id)), x, z, actors, { reserveQueuedGoals: true });
+  const retainedRouteIds = new Set(selected.filter(unit => moving(unit) || unit.queuedWaypoints.length > 0).map(unit => unit.id));
+  const plan = planSkiffGroupMove(water, selected.map(unit => projected.get(unit.id)), x, z, actors,
+    { reserveQueuedGoals: true, liveUnits: units, retainedRouteIds });
   if (plan.status !== 'found') return plan;
   const originals = new Map(selected.map(unit => [unit.id, unit]));
   return { status: 'found', assignments: plan.assignments.map(({ unit, route }) => {
@@ -48,7 +50,8 @@ export function advanceSkiffWaypoints(water, units, seconds) {
     if (unit.repathTimer > 0 || remaining <= 0 || attempts >= SKIFF_GROUP_ORDER_LIMIT) continue;
     attempts++;
     const point = water.graph.pointAt(unit.queuedWaypoints[0].destination);
-    const route = water.planReserved(unit, point.x, point.z, units, { maxExpandedCells: Math.min(4096, remaining) });
+    const route = water.planReserved(unit, point.x, point.z, units,
+      { maxExpandedCells: Math.min(4096, water.graph.cellCount, remaining) });
     remaining -= route.expandedCells;
     if (route.status !== 'found') { unit.repathTimer = 1; changed = true; continue; }
     unit.queuedWaypoints.shift(); unit.path = route.cells; unit.pathIndex = 0;
