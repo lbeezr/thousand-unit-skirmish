@@ -61,6 +61,14 @@ so restart during delivery neither replenishes sheep nor credits food twice.
 [Interrupted delivery evidence](qa-interrupted-cargo-return-2026-10-03.md) keeps
 the original failing fixture and both-seat recovery checks.
 
+Positive final loads smaller than the snapshot's usual cent precision also remain
+actionable. A `0.004`-food Sheep previously left real cargo after Stop, but its
+rounded zero browser value disabled Return cargo even after restart. The snapshot
+now preserves positive loads that would round to zero; the existing control can
+deliver them once without changing stock, gathering or deposit rules.
+[Fractional delivery evidence](qa-fractional-cargo-return-2026-10-03.md) covers both
+seats, depleted sources and recovery with actual production client functions.
+
 At zero stock, the depleted carcass also releases its construction exclusion
 and stops contributing a resource access point to building-connectivity checks.
 The browser releases only sites whose zero stock has been disclosed; unknown

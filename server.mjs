@@ -1776,9 +1776,12 @@ function snapshotUnits(viewTeam = null) {
     const task = unit.kind === 'worker'
       && (!mapDefinition.fogOfWar || viewTeam === null || viewTeam === unit.team)
       ? workerTaskStatus(unit) : null;
+    const roundedCargo = Math.round(unit.cargo * 100) / 100;
+    // Carrying-state controls must retain even a sub-cent final resource load.
+    const cargo = unit.cargo > 0 && roundedCargo === 0 ? unit.cargo : roundedCargo;
     const row = [
       unit.id, unit.team, Math.round(unit.x * 100) / 100,
-      Math.round(unit.z * 100) / 100, unit.hp, unit.kind, Math.round(unit.cargo * 100) / 100,
+      Math.round(unit.z * 100) / 100, unit.hp, unit.kind, cargo,
       unit.cargoType, unit.generation,
     ];
     row.push(task, focusedByUnit[unit.id] || 0);
