@@ -232,6 +232,33 @@ node array with collision-free IDs. Failure changes neither input. This helper
 does not mirror the new patch or add editor controls; Millrace's mirrored
 replacement generator and materialized map remain unchanged.
 
+[`src/resource-brush-authoring.mjs`](../src/resource-brush-authoring.mjs) adds a
+reusable operation and thin editor adapter on that helper. `previewResourceBrush`
+returns immutable seeded marker positions and the explicit patch-total settings;
+`applyResourceBrush` returns exactly those admitted nodes plus the originals.
+Changing map identity, terrain, elevation, spawns or existing nodes invalidates
+the preview. JSON-copied previews must be regenerated. No input is mutated and
+rejected admission commits nothing.
+
+`createResourceBrushEditor({readMap, readSelectedId, commit, limit})` provides
+preview/cancel/apply and bounded resource-only undo/redo (default 64 operations).
+`readMap` supplies the current validated editor definition, including compressed
+ground/obstacles/elevation and `editorResourceNodes`, rather than stale source
+terrain. `commit` must synchronously replace `{resourceNodes, selectedResourceId}`
+atomically or throw before writing. Redraw, control synchronization and draft
+saving run after a successful operation. Each patch is one history entry; undo
+restores the prior node selection. Unrelated editor fields are never replaced.
+External resource/terrain edits stop history navigation until `reset()`; reset
+also belongs after populate, draft restore or resize. Save ordinary map nodes and
+selection through the existing draft/JSON format; reload starts fresh history.
+
+This slice does not change `src/main.js`, existing resource tools, defaults or any
+map. The UI owner's later integration boundary is the resource pointer branch,
+resource preview draw, and populate/restore/resize reset hooks. Keep its history
+separate from named-region/scenario-event undo. Test the operation with
+`node --test scripts/resource-brush-authoring.test.mjs`; a rendered brush control
+and human editor interaction remain unimplemented.
+
 CI runs `node scripts/vaelora-map-layout-scenario.mjs --check-only` to validate
 all regional layouts without rewriting the SVG or dirtying the clean release
 checkout. Run it without the flag to explicitly regenerate the dated diagram;
