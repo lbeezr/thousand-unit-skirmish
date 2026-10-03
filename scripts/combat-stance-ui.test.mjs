@@ -4,8 +4,63 @@ import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { applyUnitStances, stanceSelection, STANCE_CHOICES, updateCombatStanceControls, bindCombatStanceControls } from '../src/combat-stance-ui.mjs';
+import { bindContextualCommandStrip } from '../src/hud-layout.mjs';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+
+test('status-only stance growth keeps the focused control visible without scrolling unchanged snapshots', t => {
+  const f = fixture(t), w = f.dom.window, strip = f.group.parentElement;
+  const frames = new Map(), observers = []; let serial = 0, scroll = 0;
+  w.requestAnimationFrame = callback => { frames.set(++serial, callback); return serial; };
+  w.cancelAnimationFrame = id => frames.delete(id);
+  w.ResizeObserver = class {
+    constructor(callback) { this.callback = callback; this.targets = new Set(); observers.push(this); }
+    observe(target) { this.targets.add(target); } unobserve(target) { this.targets.delete(target); }
+    disconnect() { this.targets.clear(); }
+  };
+  Object.defineProperties(strip, {
+    clientWidth: { value: 750 }, clientLeft: { value: 0 }, scrollWidth: { value: 1800 },
+    scrollLeft: { get: () => scroll, set: value => { scroll = Math.max(0, Math.min(1050, value)); } },
+  });
+  strip.getBoundingClientRect = () => ({ left: 0, right: 750, width: 750, height: 44 });
+  const status = f.group.querySelector('[data-stance-status]');
+  const statusWidth = () => status.textContent.length * 7;
+  for (const button of strip.querySelectorAll('button'))
+    button.getBoundingClientRect = () => ({ left: 0, right: 80, width: 80, height: 44 });
+  f.group.getBoundingClientRect = () => {
+    const left = 330 - scroll, width = statusWidth() + 420;
+    return { left, right: left + width, width, height: 44 };
+  };
+  for (const [index, button] of [...f.group.querySelectorAll('button')].entries())
+    button.getBoundingClientRect = () => {
+      const left = 330 + statusWidth() + index * 105 - scroll;
+      return { left, right: left + 100, width: 100, height: 44 };
+    };
+  const flush = () => { for (const callback of [...frames.values()]) callback(); frames.clear(); };
+  f.update([[0, 3, 'aggressive']]);
+  const dispose = bindContextualCommandStrip(strip); t.after(dispose);
+  const button = f.button('noAttack'); button.focus(); flush();
+  assert.ok(button.getBoundingClientRect().right <= 750);
+  let sizes = new Map([...observers[0].targets].map(target => [target, target.getBoundingClientRect().width]));
+  const deliverActualResizes = () => {
+    const changed = [...observers[0].targets].filter(target => sizes.get(target) !== target.getBoundingClientRect().width);
+    sizes = new Map([...observers[0].targets].map(target => [target, target.getBoundingClientRect().width]));
+    if (changed.length) observers[0].callback(changed.map(target => ({ target })));
+    flush();
+  };
+  f.context.online = false; updateCombatStanceControls(f.root, f.context); deliverActualResizes();
+  assert.equal(f.root.activeElement, button);
+  assert.ok(button.getBoundingClientRect().right <= 750, 'a reason shifts buttons although their widths and viewport are unchanged');
+  assert.equal(button.getAttribute('aria-disabled'), 'true');
+  strip.scrollLeft = 0;
+  updateCombatStanceControls(f.root, f.context); deliverActualResizes();
+  assert.equal(strip.scrollLeft, 0, 'the same reason snapshot preserves player scrolling');
+  f.context.online = true; f.context.winner = 0;
+  updateCombatStanceControls(f.root, f.context); deliverActualResizes();
+  assert.equal(f.root.activeElement, button);
+  assert.ok(button.getBoundingClientRect().right <= 750, 'match-end status also reveals the retained focus');
+});
+
 function fixture(t, team = 0) {
   const dom = new JSDOM(html); t.after(() => dom.window.close());
   const root = dom.window.document, group = root.querySelector('[data-stance-controls]');

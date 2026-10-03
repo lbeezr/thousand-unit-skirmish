@@ -26,6 +26,9 @@ Hold. Disconnection and match end retain inspectable unavailable reasons and
 block activation; the handler also rechecks current selection/state before send.
 Snapshot updates preserve button nodes and focused controls. Existing selection
 focus recovery handles a stance group that becomes hidden.
+The strip observes the marked stance group's size as well as buttons so a
+longer mixed/offline/finished status keeps the focused command fully visible.
+Unchanged status snapshots retain ordinary player scrolling.
 
 ## Acceptance and remaining delivery
 
@@ -43,7 +46,8 @@ use the ordinary military selection on that identified build: select paid
 Infantry/Archers on both seats, issue all four choices, confirm the subsequent
 snapshot, then select a mixed Worker/army group and verify Workers retain tasks.
 Check Stop → No attack, Hold → Stand ground, mixed selection, reconnect/rematch,
-full Tab/Shift-Tab visibility with small/large minimap, Escape/Close focus recovery
+full Tab/Shift-Tab visibility with small/large minimap and growing status reasons,
+Escape/Close focus recovery
 and VoiceOver's names/pressed/unavailable states. Combat owner supplies policy
 behavior proof; HUD owner retains actual control usability. Track open work in
 the [ranked backlog](hud-controls-backlog.md).
