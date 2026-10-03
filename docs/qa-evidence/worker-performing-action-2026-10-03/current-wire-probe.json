@@ -1,6 +1,6 @@
 {
   "scope": "current-wire-authoritative-progress-probe",
-  "sourceRevision": "c5527f77087b57ea6d9c716555c711402bd3b592",
+  "sourceRevision": "5e4d54c92ef2da6632028f35f77995c67d4bdf1d",
   "checks": [
     {
       "name": "arrival",
@@ -63,7 +63,7 @@
       "currentSpriteState": "idle"
     },
     {
-      "name": "Stop",
+      "name": "simulated-target-clear",
       "productive": false,
       "cargoDelta": 0,
       "progressDelta": 0,
@@ -73,7 +73,7 @@
       "currentSpriteState": "idle"
     },
     {
-      "name": "resume-arrival",
+      "name": "simulated-target-reassignment-arrival",
       "productive": true,
       "cargoDelta": 0.06666666666666667,
       "progressDelta": 0,
@@ -140,9 +140,30 @@
       1
     ]
   },
+  "repairExhaustionBroadcast": [
+    {
+      "tick": 4,
+      "hpDelta": 0,
+      "task": "repairing",
+      "dirty": false
+    },
+    {
+      "tick": 5,
+      "hpDelta": 0,
+      "task": "repairing",
+      "dirty": false
+    },
+    {
+      "tick": 6,
+      "hpDelta": 0,
+      "task": "repairing",
+      "dirty": false
+    }
+  ],
   "gap": "Row 9 describes intent; row 14 lacks construction and can report gather outside reach. No per-Worker positive-progress receipt exists.",
   "limits": [
     "actual server functions exercised in a deterministic VM; no network, GPU or deployed claim",
+    "target clear/reassignment is simulated; actual Stop commands, order-revision invalidation and routes are not exercised",
     "dated diagnostic; not registered as a permanent CI assertion of incorrect presentation"
   ]
 }

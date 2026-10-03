@@ -15,7 +15,8 @@ combat, paid generation or missing-art changes are proposed.
 
 The [13-case current-wire probe](qa-evidence/worker-performing-action-2026-10-03/current-wire-probe.json)
 exercises the actual server snapshot, economy and construction/repair functions
-at main `c5527f77087b57ea6d9c716555c711402bd3b592`. This is deterministic CPU
+at reviewed source `5e4d54c92ef2da6632028f35f77995c67d4bdf1d`, based on main
+`14590fb2189f76c3babb3a5e43e9a2c5edcac76b`. This is deterministic CPU
 evidence, not a live-server or game appearance claim.
 
 | Existing signal | What it establishes | Why it cannot drive all work animation |
@@ -87,6 +88,18 @@ Actual current productive branches are `updateForestWorkerEconomy`,
 `updateWorkerEconomy`, and the Worker loop in `updateBuildingAndProduction`.
 These additions and `snapshotUnits` emission are the producer's bounded scope.
 No changes to combat tick/cooldown, target selection, stance or weapon authority.
+
+The supplied OpenRA/EA study informed three original invariants for this slice:
+authority supplies productive action identity, final presentation precedence is
+explicit, and cosmetic choices never consume gameplay RNG. The inspected pinned
+[attack notification consumer](https://github.com/OpenRA/OpenRA/blob/b6fc03fcfaef1277592bbd4cbc7d44dd85219902/OpenRA.Mods.Common/Traits/Render/WithAttackAnimation.cs#L62-L79)
+and [infantry update ordering](https://github.com/OpenRA/OpenRA/blob/b6fc03fcfaef1277592bbd4cbc7d44dd85219902/OpenRA.Mods.Common/Traits/Render/WithInfantryBody.cs#L148-L178)
+are research references, not imported implementation. Worker work is continuous
+positive-progress evidence; it does not require a new combat windup or weapon
+phase protocol. Existing attack tick deduplication remains independent. Required
+tests vary presentation cadence, visibility and missing clips while asserting
+unchanged authoritative resource/progress deltas. No engine transplant or combat
+policy change belongs in this contract.
 
 ## Animation consumer and acceptance
 
