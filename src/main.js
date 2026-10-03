@@ -1336,6 +1336,13 @@ function createGameplayBuildingVisual(building) {
   const manifestUrl = frontierBuildingManifestUrl(building.type, frontierBuildingsPreview);
   if (manifestUrl) {
     // Wrap artwork only; gameplay feedback and fog remain on the existing group.
+    // Production factories may have nested their standard in an older art
+    // fallback. Keep its world transform while exposing live team feedback.
+    const standards = [];
+    visual.group.traverse(child => { if (child.userData.buildingTeamStandard) standards.push(child); });
+    for (const standard of standards) {
+      if (standard.parent !== visual.group) visual.group.attach(standard);
+    }
     const feedback = new Set([visual.outline, visual.productionLamp, visual.rallyMarker,
       visual.healthIndicator?.group, visual.combatFeedback?.targetRing, visual.combatFeedback?.impactFlash]);
     const fallbackRoot = new THREE.Group();

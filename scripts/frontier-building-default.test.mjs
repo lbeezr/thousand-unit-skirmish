@@ -6,18 +6,20 @@ import vm from 'node:vm';
 import * as THREE from 'three';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { buildingPresentation } from '../src/gameplay-presentation.mjs';
+import { attachBuildingSprite } from '../src/building-sprites.mjs';
+import { barracksModelVisualState, buildingFinishedDetailsVisible } from '../src/building-visual-state.mjs';
 import { frontierBuildingManifestUrl } from '../src/frontier-building-preview.mjs';
 import { createCapturedBuildingSprite, updateCapturedBuildingSprite, disposeCapturedBuildingSprite } from '../src/captured-building-art.mjs';
 
 // Real renderer factories and verified public file bytes, with DOM decode mocked.
 // This is a source/binding/lifecycle test; it does not execute WebGL or certify pixels.
-test('normal Town Center/House factories use existing Complete art and truthful per-state fallbacks for both teams', async () => {
+test('normal factories use all six existing Complete families and truthful per-state fallbacks for both teams', async () => {
   const previous = { fetch: globalThis.fetch, Image: globalThis.Image, document: globalThis.document, warn: console.warn };
   const main = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
   const functionSource = name => {
     const start = main.indexOf(`function ${name}(`);
     assert.ok(start >= 0, name);
-    return main.slice(start, main.indexOf('\nfunction ', start + 1));
+    return main.slice(start, main.indexOf('\n}', start + 1) + 2);
   };
   const fetched = [];
   globalThis.fetch = async url => {
@@ -31,14 +33,17 @@ test('normal Town Center/House factories use existing Complete art and truthful 
   console.warn = () => {};
   const scene = new THREE.Scene(), capturedBuildingVisuals = [], TEAM_HEX = [0x5aa7d7, 0xe67a5e];
   const context = vm.createContext({ THREE, scene, capturedBuildingVisuals, TEAM_HEX, buildingPresentation,
+    dummy: new THREE.Object3D(), attachBuildingSprite, barracksModelVisualState, buildingFinishedDetailsVisible,
     frontierBuildingManifestUrl, frontierBuildingsPreview: null, createCapturedBuildingSprite,
     groundHeight: () => 1.6, updateBuildingHealthIndicator() {}, updateBuildingProductionCue() {},
     createBuildingHealthIndicator: () => ({ group: new THREE.Group() }),
     createBuildingCombatFeedback: () => ({ targetRing: new THREE.Group(), impactFlash: new THREE.Group() }),
     createBuildingRallyMarker: () => new THREE.Group(),
   });
-  for (const name of ['addBuildingStandard', 'createTownCenterVisual', 'updateTownCenterVisual',
-    'createHouseVisual', 'updateHouseVisual', 'createGameplayBuildingVisual']) vm.runInContext(functionSource(name), context);
+  for (const name of ['addBuildingStandard', 'createBuildingProductionLamp', 'createTownCenterVisual', 'updateTownCenterVisual',
+    'createHouseVisual', 'updateHouseVisual', 'createWatchtowerVisual', 'updateWatchtowerVisual',
+    'createBarracksVisual', 'updateBarracksVisual', 'createArcheryRangeVisual', 'updateArcheryRangeVisual',
+    'createGameplayBuildingVisual']) vm.runInContext(functionSource(name), context);
   const camera = new THREE.OrthographicCamera(-20, 20, 20, -20, .1, 300);
   camera.position.set(80, 112, 80); camera.lookAt(0, 0, 0); camera.updateMatrixWorld();
   const step = () => {
@@ -54,8 +59,12 @@ test('normal Town Center/House factories use existing Complete art and truthful 
   const visuals = [], textures = new Map();
   try {
     assert.equal(BUILDING_DEFINITIONS['town-center'].footprint, 5);
-    assert.equal(BUILDING_DEFINITIONS.house.footprint, 3);
-    for (const team of [0, 1]) for (const type of ['town-center', 'house']) {
+    const families = ['town-center', 'house', 'storehouse', 'stable', 'workshop', 'watchtower'];
+    for (const type of families.slice(1)) assert.equal(BUILDING_DEFINITIONS[type].footprint, 3);
+    const update = { 'town-center': context.updateTownCenterVisual, house: context.updateHouseVisual,
+      storehouse: context.updateHouseVisual, stable: context.updateBarracksVisual,
+      workshop: context.updateArcheryRangeVisual, watchtower: context.updateWatchtowerVisual };
+    for (const team of [0, 1]) for (const type of families) {
       const building = { type, team, x: team ? -50 : 50, z: 0, home: type === 'town-center', complete: true, progress: 1, hp: 100, maxHp: 100 };
       const visual = context.createGameplayBuildingVisual(building); visuals.push(visual);
       const entry = visual.frontierCaptureEntry;
@@ -69,8 +78,18 @@ test('normal Town Center/House factories use existing Complete art and truthful 
       assert.equal(entry.fallbackRoot.visible, false);
       if (textures.has(type)) assert.equal(entry.sprite.material.map, textures.get(type), 'unmasked frame texture is shared across teams and instances');
       else textures.set(type, entry.sprite.material.map);
-      assert.ok(visual.group.children.some(child => child.userData.buildingTeamStandard && child.visible), 'team standard stays outside the hidden fallback');
+      assert.ok(visual.group.children.some(child => child.userData.buildingTeamStandard && child.visible), type + ': team standard stays outside the hidden fallback');
+      if (type === 'stable' || type === 'workshop') {
+        const standard = visual.group.children.find(child => child.userData.buildingTeamStandard);
+        const expected = type === 'stable' ? [1.24, 0, 1.15] : [-1.18, 0, 1.17];
+        standard.position.toArray().forEach((value, index) => assert.ok(Math.abs(value - expected[index]) < 1e-12,
+          'extracting a nested standard preserves its local/world position'));
+      }
       assert.equal(visual.outline.parent, visual.group); assert.equal(visual.healthIndicator.group.parent, visual.group);
+      assert.equal(visual.combatFeedback.targetRing.parent, visual.group);
+      assert.equal(visual.combatFeedback.impactFlash.parent, visual.group);
+      if (visual.productionLamp) assert.equal(visual.productionLamp.parent, visual.group);
+      if (visual.rallyMarker) assert.equal(visual.rallyMarker.parent, visual.group);
       assert.equal(depth.material.map, entry.sprite.material.map); assert.equal(depth.geometry, entry.sprite.geometry);
       assert.equal(depth.material.alphaTest, .9); assert.equal(depth.material.colorWrite, false); assert.equal(depth.material.depthWrite, true);
       scene.updateMatrixWorld(true); assert.deepEqual(depth.matrixWorld.elements, entry.sprite.matrixWorld.elements);
@@ -81,25 +100,27 @@ test('normal Town Center/House factories use existing Complete art and truthful 
       assert.equal(hits.length, 1); assert.equal(hits[0].object, entry.sprite, 'depth never adds a picking target');
       for (const state of [{ complete: false, progress: .05 }, { complete: false, progress: .5 }, { complete: true, progress: 1, hp: 50 }, { complete: true, progress: 1, hp: 20 }]) {
         entry.lifecycleInput = { ...building, ...state };
-        if (type === 'house') context.updateHouseVisual(visual, entry.lifecycleInput);
-        else context.updateTownCenterVisual(visual, entry.lifecycleInput);
+        update[type](visual, entry.lifecycleInput);
         step();
         assert.equal(entry.sprite.visible, false, 'missing Foundation/Frame/Damaged/Critical cannot show Complete');
         assert.equal(entry.fallbackRoot.visible, true);
-        if (type === 'house' && state.complete === false) assert.equal(visual.roof.visible, false, 'construction fallback omits its finished roof');
+        if (state.complete === false) {
+          if (visual.roof) assert.equal(visual.roof.visible, false, 'construction fallback omits its finished roof');
+          if (visual.roofPanels) for (const panel of visual.roofPanels) assert.equal(panel.visible, false);
+        }
         if (type === 'town-center') {
           await settle(() => visual.captureEntry.sprite.visible);
           const expected = state.complete === false ? state.progress < .275 ? 'foundation' : 'frame' : state.hp > 30 ? 'damaged' : 'critical';
           assert.ok(visual.captureEntry.sprite.userData.capturedBuildingArt.requestKey.startsWith(expected + ':'), 'older authored lifecycle fallback selects the real state');
         }
       }
-      entry.lifecycleInput = building; await settle(() => entry.sprite.visible);
+      entry.lifecycleInput = building; update[type](visual, building); await settle(() => entry.sprite.visible);
+      assert.ok(visual.group.children.some(child => child.userData.buildingTeamStandard && child.visible), 'repair restores live team standard');
       visual.group.visible = false;
       assert.equal(entry.sprite.parent.visible, false, 'authoritative hidden group owns both captured passes');
       visual.group.visible = true;
     }
-    assert.ok(fetched.some(url => url.includes('house-complete-view-01.png')));
-    assert.ok(fetched.some(url => url.includes('town-center-complete-view-01.png')));
+    for (const type of families) assert.ok(fetched.some(url => url.includes(type + '-complete-view-01.png')));
     const houseTexture = textures.get('house'); let releases = 0;
     houseTexture.addEventListener('dispose', () => releases++);
     const houses = visuals.filter(visual => visual.frontierCaptureEntry.sprite.userData.capturedBuildingArt.manifest.asset === 'house');

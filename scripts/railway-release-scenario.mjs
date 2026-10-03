@@ -246,9 +246,11 @@ try {
       `packed water study bytes must match ${file}`);
   }
   // Default finished families retain exact source PNGs; no GLB/gallery/source upload.
-  const frontierRoot = 'assets/buildings/frontier-civilization-scale-pilot-v1/';
+  const frontierRoots = ['frontier-civilization-scale-pilot-v1', 'frontier-civilization-models-v1']
+    .map(pack => `assets/buildings/${pack}/`);
   const frontierPaths = [];
-  for (const family of ['town-center', 'house']) {
+  for (const family of ['town-center', 'house', 'storehouse', 'stable', 'workshop', 'watchtower']) {
+    const frontierRoot = frontierRoots[['town-center', 'house'].includes(family) ? 0 : 1];
     const manifestPath = frontierRoot + family + '-complete-renderer.json';
     const response = await fetch(`${base}/${manifestPath}`, { headers: { authorization } });
     assert.equal(response.status, 200); assert.match(response.headers.get('content-type'), /application\/json/);
@@ -265,9 +267,10 @@ try {
     }
   }
   const releaseManifest = JSON.parse(await readFile(path.join(root, 'release-manifest.json'), 'utf8'));
-  assert.deepEqual(releaseManifest.files.filter(file => file.startsWith(frontierRoot)).sort(), frontierPaths.sort(),
+  assert.deepEqual(releaseManifest.files.filter(file => frontierRoots.some(root => file.startsWith(root))).sort(), frontierPaths.sort(),
     'package exactly the selected registered sprites, without source models or galleries');
-  for (const absent of ['model-provenance.json', 'meshy_output/house.glb', 'preview.html']) {
+  assert.equal(frontierPaths.length, 54, 'six manifests and 48 original frames');
+  for (const frontierRoot of frontierRoots) for (const absent of ['model-provenance.json', 'meshy_output/house.glb', 'preview.html']) {
     assert.equal((await fetch(`${base}/${frontierRoot}${absent}`, { headers: { authorization } })).status, 404);
   }
   const resourceStateModule = await fetch(`${base}/src/resource-visual-state.mjs`, { headers: { authorization } });

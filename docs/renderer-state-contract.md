@@ -152,7 +152,7 @@ renderer-only 129-item regression protects that distinction.
 The captured Town Center loader is a separate path: starting landmarks use
 Complete, while constructed Town Centers pass live progress and health. The
 loader exposes existing fallback art if the current state/view load fails.
-The [normal Frontier Town Center/House binding](frontier-building-runtime.md)
+The [normal six-family Frontier binding](frontier-building-runtime.md)
 selects the existing Complete captures without a preview flag and yields to
 fallback per unavailable construction/damage state. Captured color/depth sprites
 share their image, transform, pivot and immutable frame texture; the depth child

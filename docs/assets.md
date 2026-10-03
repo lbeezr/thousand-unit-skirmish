@@ -58,8 +58,8 @@ Current runtime defaults:
   legacy preview flags retain their comparison paths. See the
   [Human](art-direction/human-roster-v1/README.md) and
   [Boughward](art-direction/boughward-roster-v1/README.md) source records.
-- [Finished Frontier buildings](frontier-building-runtime.md) now bind Town Center
-  and House Complete captures in normal matches without a preview flag. Town Centers
+- [Finished Frontier buildings](frontier-building-runtime.md) now bind all six saved
+  Complete families (Town Center, House, Storehouse, Stable, Workshop, Watchtower) in normal matches without a preview flag. Town Centers
   use the older eight-view captured lifecycle pack for missing states, with procedural
   fallback. Starting landmarks use Complete; constructed Town Centers pass live
   progress/health into the same loader for construction, damage and repair.
@@ -74,10 +74,10 @@ Current runtime defaults:
 - `?frontierBuildingsPreview=1` binds the newer Town Center, House, Storehouse,
   Stable, Workshop and Watchtower families. Each has eight Complete views;
   other lifecycle states use existing fallback art. These previews lack team
-  masks. Town Center and House are now default Complete replacements, with
-  their manifests/eight PNGs packaged. `?frontierBuildingsPreview=town-center`
-  remains a named comparison override. The other four previews are served from a full checkout but
-  remain absent from the Docker release. See the
+  masks. All six are now default Complete replacements, with
+  six manifests and 48 original PNGs packaged. `?frontierBuildingsPreview=town-center`
+  remains a named comparison override. `?frontierBuildingsPreview=0` restores
+  earlier fallback art for comparison. See the
   [building/environment runtime audit](art-runtime-audit-2026-10-03.md).
   New Barracks/Range concepts remain
   source-only; their older direct sprites are active. No separate Boughward
@@ -108,8 +108,8 @@ This server is for static review; run the game through `npm start`.
 The pack READMEs describe current integration; older captions on the review page
 may describe its original review-only state.
 
-The Dockerfile includes the active Barracks, Range, and Town Center runtime
-packs. It still omits the atlas page. Release packaging checks file delivery;
+The Dockerfile includes the active Barracks/Range packs and all six finished
+Frontier building families. It still omits the atlas page. Release packaging checks file delivery;
 a capture of the identified deployed build establishes hosted appearance.
 
 Review pages and contact sheets explain an asset. In-game screenshots establish
