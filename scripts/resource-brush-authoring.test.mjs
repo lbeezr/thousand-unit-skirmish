@@ -136,7 +136,7 @@ test('ordinary host save/restart/load preserves applied brush nodes and serves t
   assert.equal(result.type, 'mapPublished', result.message); assert.equal(result.persisted, true);
   const saved = JSON.parse(await readFile(path.join(room.directory, 'custom', `${state.map.id}.json`), 'utf8'));
   assert.deepEqual(saved.resourceNodes, expected);
-  const pending = ['/src/resource-brush-authoring.mjs'], visited = new Set();
+  const pending = ['/src/resource-brush-authoring.mjs', '/src/resource-brush-controls.mjs'], visited = new Set();
   while (pending.length) {
     const module = pending.pop(); if (visited.has(module)) continue; visited.add(module);
     const url = new URL(module, `http://127.0.0.1:${room.port}`), response = await fetch(url);

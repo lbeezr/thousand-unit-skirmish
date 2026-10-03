@@ -12,6 +12,9 @@ New invite rooms open a [pregame lobby](room-lobby.md). The host selects the map
 and starting army, both players ready, then the host launches. Settings changes
 or disconnects clear readiness. Reset/rematch returns to this lobby; old rooms
 and Play vs AI retain their existing entry flow.
+Both connected seats can use **Room chat** before launch; spectators can read.
+Recent messages survive a seat reconnect and rematch, but clear when the room
+server restarts. Chat does not change readiness.
 
 When you take a player seat, the camera starts at your Town Center. Use **Fit
 map** for an overview. Reconnecting to the same seat keeps your current view.

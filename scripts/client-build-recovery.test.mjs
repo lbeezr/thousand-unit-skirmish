@@ -31,7 +31,7 @@ function fixture({ pending = true, state = 'pending' } = {}) {
     pendingWallPreview: [{ column: 1, row: 1 }],
     wallPlacementGhost: { group: { visible: true } },
     renderer: { domElement: { hasPointerCapture() { return false; } } },
-    applyLobby() {}, roomLobby: { disconnect() {} },
+    applyLobby() {}, roomLobby: { disconnect() {}, updateChat() {} },
     waterStudyFishBinding: { clear() { fishClears++; } },
     audio: { stopWork() { workStops++; } }, orderAudioGate: { reset() { orderResets++; }, observe() {} },
     classifyOrderNotice, applyOrderNotice() {}, cueForNotice() {},

@@ -2,6 +2,7 @@ import { findInvalidResourceVariant, isShoreFish } from './shore-fishing.mjs';
 import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from './shore-fishing-placeholder.mjs';
 import { createWaterStudyFishBinding } from './water-study-fish-binding.mjs';
 import { generateRollingGround, smoothGround } from './terrain-authoring.mjs';
+import { mountResourceBrushControls } from './resource-brush-controls.mjs';
 import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS, validateMapRegion } from './regions.mjs';
 import { regionGestureZone, ScenarioEditHistory } from './scenario-authoring.mjs';
@@ -624,6 +625,7 @@ let selectedEditorTriggerId = null;
 let selectedEditorScenarioEventId = null;
 let editorTriggerCreationPending = false;
 let editorResourceNodes = [];
+let resourceBrushControls = null;
 let selectedEditorResourceId = null;
 let editorTool = 'stone';
 let editorDrag = null;
@@ -6064,6 +6066,7 @@ function populateMapEditor(definition, message) {
   ui.studioPublish.disabled = false;
   editorDrag = null;
   editorPanDrag = null;
+  resourceBrushControls?.reset();
   fitMapStudioViewport();
   setEditorTool('stone');
   recordScenarioEdit();
@@ -6398,6 +6401,7 @@ function elevationBrushTarget(tool, currentLevel) {
 }
 
 function setEditorTool(tool) {
+  resourceBrushControls?.cancel();
   editorTool = tool;
   ui.studioGrid.dataset.editorTool = tool;
   for (const button of document.querySelectorAll('[data-map-tool]')) {
@@ -6625,6 +6629,7 @@ function paintEditorElevationStroke(drag, next) {
 
 function drawEditorGrid() {
   if (!editorDefinition) return;
+  resourceBrushControls?.sync();
   const canvas = ui.studioGrid;
   const viewportSize = mapStudioViewportSize();
   const size = mapStudioCanvasSize({
@@ -6775,6 +6780,7 @@ function drawEditorGrid() {
       context.stroke();
     }
   }
+  resourceBrushControls?.draw(context, editorDefinition);
   for (const spawn of editorDefinition.spawnPoints) {
     const x = spawn.x + editorDefinition.width / 2;
     const y = spawn.z + editorDefinition.height / 2;
@@ -9105,6 +9111,20 @@ document.querySelector('#studio-download').addEventListener('click', downloadEdi
 ui.studioAddTrigger.addEventListener('click', beginAddingEditorTrigger);
 ui.studioRemoveTrigger.addEventListener('click', removeSelectedEditorTrigger);
 ui.studioRemoveResource.addEventListener('click', removeSelectedEditorResourceNode);
+resourceBrushControls = mountResourceBrushControls({
+  host: ui.mapStudio.querySelector('.resource-node-fields'),
+  readMap: () => editorDefinition ? withCurrentEditorElevation({
+    ...editorDefinition, id: ui.studioId.value, terrainBase: ui.studioTerrainBase.value,
+    terrainPatches: compressEditorGround(), obstacles: compressEditorObstacles(),
+    resourceNodes: editorResourceNodes,
+  }) : null,
+  readSelectedId: () => selectedEditorResourceId,
+  commit: ({ resourceNodes, selectedResourceId }) => {
+    editorResourceNodes = resourceNodes; selectedEditorResourceId = selectedResourceId;
+  },
+  redraw: drawEditorGrid,
+  onCommitted: () => { syncEditorResourceControls(); drawEditorGrid(); scheduleMapStudioDraftSave(); },
+});
 ui.studioResourceStock.addEventListener('input', () => {
   if (saveSelectedEditorResourceStock()) drawEditorGrid();
 });
@@ -9195,6 +9215,10 @@ for (const button of document.querySelectorAll('[data-map-tool]')) {
 }
 ui.studioGrid.addEventListener('pointerdown', (event) => {
   if (!editorDefinition) return;
+  if (event.button === 0 && resourceBrushControls?.picking) {
+    const cell = editorCellFromPointer(event);
+    if (cell && resourceBrushControls.pickAt(cell)) { event.preventDefault(); return; }
+  }
   const shouldPan = event.button === 1 || (event.button === 0 && editorTool === 'pan');
   if (shouldPan) {
     editorPanDrag = {
@@ -9654,6 +9678,7 @@ function connectSocket() {
       } catch {}
       setPlayer(message.player);
       applyLobby(message.state.lobby);
+      roomLobby.updateChat(message.lobbyChat || [], null, true);
       setMapCatalog(message.maps, message.map.id);
       if (ui.orderStatus?.textContent.startsWith('CONNECTION LOST')
         || ui.orderStatus?.textContent.startsWith('SERVER DID NOT CONFIRM')) {
@@ -9705,6 +9730,8 @@ function connectSocket() {
     }
     if (message.type === 'state') { applyLobby(message.lobby); applyState(message); return; }
     if (message.type === 'lobby') { applyLobby(message.lobby); return; }
+    if (message.type === 'lobbyChat') { roomLobby.updateChat(message.messages, message.ack); return; }
+    if (message.type === 'lobbyChatRejected') { roomLobby.rejectChat(message.message, message.clientMessageId); return; }
     if (message.type === 'lobbyRejected') {
       latestLobby = message.lobby;
       roomLobby.reject(message.message, message.lobby, lobbyPlayer);
