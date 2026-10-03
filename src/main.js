@@ -2846,7 +2846,8 @@ function drawMinimap(now = performance.now(), force = false) {
     if (fogState === 0) continue;
     if (node.wildlifeSpecies !== undefined
       && (fogState !== 2 || !wildlifeRenderer.isAvailable(node.id))) continue;
-    const point = minimapPoint(node.x, node.z, rect);
+    const position = node.wildlifeSpecies === undefined ? node : wildlifeRenderer.positionFor?.(node.id) ?? node;
+    const point = minimapPoint(position.x, position.z, rect);
     const stock = latestResourceStocks.get(node.id) ?? node.stock;
     context.globalAlpha = fogState === 1 ? 0.55 : 1;
     context.beginPath();
@@ -4649,7 +4650,11 @@ function updateEnvironmentStateCaptureSnapshot(state) {
     return {
       id: node.id, type: node.type, stock: node.stock, startingStock,
       stage: resourceVisualStage(node.stock, startingStock),
-      x: definitionNode?.x ?? visual?.x ?? null, z: definitionNode?.z ?? visual?.z ?? null,
+      x: node.x ?? definitionNode?.x ?? visual?.x ?? null, z: node.z ?? definitionNode?.z ?? visual?.z ?? null,
+      ...(node.wildlifeSpecies === undefined ? {} : { wildlifeSpecies: node.wildlifeSpecies,
+        wildlifeState: node.wildlifeState, wildlifeHeading: node.wildlifeHeading,
+        ...(node.wildlifeActivity === undefined ? {} : { wildlifeActivity: node.wildlifeActivity }),
+      }),
     };
   });
   const buildings = (Array.isArray(state.buildings) ? state.buildings : []).map((building) => ({
@@ -4847,6 +4852,11 @@ function updateEconomyUI(state = {}, initial = false) {
       if (visual) {
         const available = wildlifeRenderer.isAvailable(node.id);
         visual.ring.visible = available;
+        const position = wildlifeRenderer.positionFor?.(node.id);
+        if (position) {
+          visual.x = position.x; visual.z = position.z;
+          visual.ring.position.set(position.x, groundHeight(position.x, position.z) + .035, position.z);
+        }
         if (!available) visual.callout.visible = false;
       }
     }
@@ -7308,8 +7318,10 @@ function pickResourceNodeAt(x, y, { visibleOnly = false } = {}) {
   const rect = renderer.domElement.getBoundingClientRect();
   let nearest = null;
   let nearestDistance = 26 * 26;
-  for (const node of [...mapDefinition.resourceNodes,
+  for (const authored of [...mapDefinition.resourceNodes,
     ...latestBuildings.filter(building => building.team === localTeam).map(farmHarvestNode).filter(Boolean)]) {
+    const position = authored.wildlifeSpecies === undefined ? null : wildlifeRenderer.positionFor?.(authored.id);
+    const node = position ? { ...authored, ...position } : authored;
     if (node.wildlifeSpecies !== undefined && !wildlifeRenderer.isAvailable(node.id)) continue;
     if (visibleOnly && mapDefinition.fogOfWar) {
       const column = Math.floor(node.x + MAP_WIDTH / 2);

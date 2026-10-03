@@ -6,6 +6,7 @@ import { createSkiffFishingContext } from './src/skiff-fishing.mjs';
 import { SKIFF_GROUP_ORDER_LIMIT, planSkiffGroupMove, planSkiffGroupFishing, planSkiffGroupReturn } from './src/skiff-group-orders.mjs';
 import { planSkiffWaypoints, validSkiffWaypoints, advanceSkiffWaypoints } from './src/skiff-waypoints.mjs';
 import { activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted, validWildlifeNodeDefinition, validWildlifeNodeState } from './src/wildlife-state.mjs';
+import { migrateWildlifeMotionCheckpoint, sameWildlifeCell, wildlifeCell, wildlifeStepUnoccupied, stepWildlifeMotion, validWildlifeMotion } from './src/wildlife-motion.mjs';
 import { migrateMillraceSheepCheckpoint } from './src/millrace-sheep.mjs';
 import { validateMapRegion } from './src/regions.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, regionEntryTeam, validCompletionTrigger, completionTeam } from './src/scenario-regions.mjs';
@@ -65,7 +66,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 23;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 24;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -2509,7 +2510,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
   const visibleWallCells = [0, 1].map(team => new Set(viewBuildings.filter(building =>
     building.team === team && isPalisade(building.type)).map(building => building.footprint[0])));
   const resourceNodes = mapDefinition.resourceNodes.filter((node) => !fogView
-    || cellVisibleToTeam(viewTeam, worldToCell(node.x, node.z)));
+    || cellVisibleToTeam(viewTeam, worldToCell((resourceNodeStates.get(node.id) ?? node).x, (resourceNodeStates.get(node.id) ?? node).z)));
   return {
     ...(viewTeam === 0 ? {scenarioTrace: scenarioDiagnosticTrace()} : {}),
     type: 'state', economyProfileId: matchEconomyProfileId(), rulesetRevision: economyRulesetRevision(matchEconomyProfileId()), factionId: DEFAULT_FACTION_ID, unitWireIds: UNIT_WIRE_IDS, tick: tickNumber, armySize: currentArmySize,
@@ -2607,13 +2608,16 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
         ? Math.max(0, Math.min(1,
           1 - building.trainingRemaining / UNIT_DEFINITIONS[building.productionQueue[0]].trainSeconds)) : 0,
     })),
-    resourceNodes: [...resourceNodes.map(({ id, type, resourceVariant }) => ({
-      id, type, ...(resourceVariant === undefined ? {} : { resourceVariant }), stock: resourceNodeStates.get(id)?.stock ?? 0,
-      ...(resourceNodeStates.get(id)?.wildlifeSpecies === undefined ? {} : {
-        wildlifeSpecies: resourceNodeStates.get(id).wildlifeSpecies,
-        wildlifeState: resourceNodeStates.get(id).wildlifeState,
-      }),
-    })), ...viewBuildings.map(farmHarvestNode).filter(Boolean).map(node => ({ ...node }))],
+    resourceNodes: [...resourceNodes.map(({ id, type, resourceVariant }) => {
+      const node = resourceNodeStates.get(id);
+      return { id, type, ...(resourceVariant === undefined ? {} : { resourceVariant }), stock: node?.stock ?? 0,
+        ...(node?.wildlifeSpecies === undefined ? {} : {
+          wildlifeSpecies: node.wildlifeSpecies, wildlifeState: node.wildlifeState,
+          x: node.x, z: node.z, wildlifeHeading: node.wildlifeMotion.heading,
+          ...(node.wildlifeState === 'alive' ? { wildlifeActivity: node.wildlifeMotion.activity } : {}),
+        }),
+      };
+    }), ...viewBuildings.map(farmHarvestNode).filter(Boolean).map(node => ({ ...node }))],
     forestEpoch,
     forestStocks: forestStockEntries(fogView ? viewTeam : null),
   };
@@ -2670,7 +2674,9 @@ function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
       buildings: buildings.map((building) => ({ ...building, productionQueue: [...building.productionQueue], footprint: [...building.footprint] })),
       nextBuildingId,
       homeTownCenters: homeTownCenters.map((center) => ({ hp: center.hp, rallyCell: center.rallyCell })),
-      resourceNodes: [...resourceNodeStates.values()].map((node) => ({ ...node })),
+      resourceNodes: [...resourceNodeStates.values()].map((node) => ({ ...node,
+        ...(node.wildlifeMotion ? { wildlifeMotion: { ...node.wildlifeMotion } } : {}),
+      })),
       forestStocks: forestStockEntries(),
       forestEpoch,
       triggerStates: [...triggerStates.values()].map((state) => ({ ...state, unitCounts: [...state.unitCounts] })),
@@ -2892,7 +2898,12 @@ function validateMatchCheckpoint(snapshot) {
     assertSnapshot(definitionNode && !resourceIds.has(node.id) && node.type === definitionNode.type
       && finite(node.stock) && node.stock >= 0 && node.stock <= definitionNode.stock
       && validWildlifeNodeState(node, definitionNode)
-      && validResourceVariantState(node, definitionNode), 'invalid resource node state');
+      && validResourceVariantState(node, definitionNode)
+      && (definitionNode.wildlifeSpecies === undefined
+        ? node.x === definitionNode.x && node.z === definitionNode.z
+        : validWildlifeMotion(node, definitionNode) && sameWildlifeCell(node, definitionNode, definition)
+          && sameWildlifeCell({ x: node.wildlifeMotion.targetX, z: node.wildlifeMotion.targetZ }, definitionNode, definition)),
+    'invalid resource node state');
     resourceIds.add(node.id);
   }
   const resourceCells = new Set(state.resourceNodes.filter(node => node.stock > 0).map((node) => {
@@ -3203,7 +3214,10 @@ function restoreMatchCheckpoint(snapshot) {
   for (const node of state.resourceNodes) {
     const restored = resourceNodeStates.get(node.id);
     restored.stock = node.stock;
-    if (restored.wildlifeSpecies !== undefined) restored.wildlifeState = node.wildlifeState;
+    if (restored.wildlifeSpecies !== undefined) {
+      restored.wildlifeState = node.wildlifeState; restored.x = node.x; restored.z = node.z;
+      restored.wildlifeMotion = { ...node.wildlifeMotion };
+    }
   }
   triggerStates = new Map(state.triggerStates.map((trigger) => [trigger.id, {
     ...trigger, unitCounts: [...trigger.unitCounts],
@@ -3311,7 +3325,7 @@ function migrateMatchCheckpoint(snapshot) {
   // A pin predating Farm still cannot claim a paid planting or harvest state.
   if (![GAMEPLAY_RULESET_REVISION, previousMovementPins[0]].includes(snapshot?.rulesetRevision)
     && snapshot?.state?.buildings?.some(building => building.type === 'farm' || building.harvestStock !== undefined)) return snapshot;
-  if ([22, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && previousMovementPins.includes(snapshot.rulesetRevision)
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
@@ -3452,7 +3466,7 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // Mill only adds a food depot; retain existing palisades and paid work unchanged.
-  if ([22, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801'
     && Array.isArray(snapshot.state?.buildings)
     && !snapshot.state.buildings.some(building => building.type === 'mill')
@@ -3460,23 +3474,23 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // The gate is additive; accept only the exact preceding definition set, without invented gate state.
-  if ([22, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6'
     && Array.isArray(snapshot.state?.buildings)
     && !snapshot.state.buildings.some(building => building.type === 'palisade-gate' || Object.hasOwn(building, 'gateOpen'))) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // Additive Dock content preserves the exact previous Mill roster and paid work.
-  if ([22, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2'
     && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   // Exact pre-Skiff Gate/Dock content retains its existing buildings, banks and work.
-  if ([22, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b'
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
 
   // Farm adds only new paid crop state; retain exact pre-Farm Skiff work unchanged.
-  if ([22, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
@@ -3484,7 +3498,7 @@ function migrateMatchCheckpoint(snapshot) {
     && !snapshot?.mapDefinition?.elevationPatches?.some((patch) => patch.level > 0)) {
     snapshot.rulesVersion = MATCH_RULES_VERSION;
   }
-  if ([22, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion) && Array.isArray(snapshot.state?.units)) {
+  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion) && Array.isArray(snapshot.state?.units)) {
     for (const unit of snapshot.state.units) if (unit && typeof unit === 'object') unit.persistentOrder ??= null;
   }
   return snapshot;
@@ -3590,7 +3604,9 @@ async function initializeMatchFromCheckpoint() {
     return;
   }
   try {
-    restoreMatchCheckpoint(migrateEconomyCheckpoint(migrateMatchCheckpoint(JSON.parse(serialized))));
+    const snapshot = migrateEconomyCheckpoint(migrateMatchCheckpoint(JSON.parse(serialized)));
+    migrateWildlifeMotionCheckpoint(snapshot);
+    restoreMatchCheckpoint(snapshot);
     console.log(`Restored match ${matchId} from checkpoint ${checkpointSequence} at tick ${tickNumber}.`);
   } catch (error) {
     console.warn('Match checkpoint was rejected; starting a fresh match:', String(error?.message || error));
@@ -7102,6 +7118,27 @@ function accumulateBuildingAttacks() {
   }
 }
 
+function updateWildlifeMotion() {
+  const gatherTargets = new Set(units.filter(unit => unit.hp > 0 && unit.kind === 'worker'
+    && unitHasCapability(unit, 'gather') && ['to-node', 'gathering'].includes(unit.gatherPhase))
+    .map(unit => unit.gatherNodeId));
+  const occupied = units.filter(unit => unit.hp > 0);
+  for (const definition of mapDefinition.resourceNodes) {
+    if (definition.wildlifeSpecies === undefined) continue;
+    const node = resourceNodeStates.get(definition.id);
+    const otherSheep = [...resourceNodeStates.values()].filter(other => other.id !== node.id
+      && other.wildlifeState === 'alive');
+    if (stepWildlifeMotion(node, definition, {
+      paused: gatherTargets.has(node.id),
+      canStep: (from, to) => sameWildlifeCell(to, definition, mapDefinition)
+        && canTraverseUnitStep(wildlifeCell(from, mapDefinition), wildlifeCell(to, mapDefinition),
+          MAP_WIDTH, elevationLevelByCell, isWalkable)
+        && wildlifeStepUnoccupied(from, to, occupied)
+        && wildlifeStepUnoccupied(from, to, otherSheep),
+    })) dirty = true;
+  }
+}
+
 function simulateTick() {
   if (SEPARATION_DIAGNOSTICS_ENABLED) {
     separationTickCandidateVisits = 0;
@@ -7394,6 +7431,7 @@ function simulateTick() {
   enqueueRouteRepairs(blockedRouteRepairs);
   spreadInteractingUnits();
   advanceQueuedWaypoints();
+  updateWildlifeMotion();
 }
 
 function sendFrame(socket, opcode, payload = Buffer.alloc(0)) {
@@ -7938,7 +7976,7 @@ const server = createServer(async (request, response) => {
   }
   const publicClientAsset = [
     'src/frontier-building-preview.mjs',
-    'src/neutral-wildlife-renderer.mjs', 'src/wildlife-state.mjs', 'src/sheep-static-preview.mjs',
+    'src/neutral-wildlife-renderer.mjs', 'src/wildlife-state.mjs', 'src/wildlife-motion.mjs', 'src/sheep-static-preview.mjs',
     'environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs',
     'water-study.html', 'src/water-study-preview.mjs', 'src/water-surface-study.mjs', 'src/water-study-state.mjs',
     'src/water-study-fish-binding.mjs',

@@ -17,10 +17,9 @@ the current write scope. The shipped-audio reader already has its own owner.
 
 | Rank/status | Reproduction and outcome | Write boundary | Next action/dependency | Acceptance owner |
 | --- | --- | --- | --- | --- |
-| 1 — active | A blocked database open is cached forever: two `listPacks()` attempts call `indexedDB.open()` once. A later successful completion of the rejected open leaves a connection unused and open. Release failed cached promises, share concurrent retries, close abandoned successful connections, keep raw storage details in the cause rather than the message. | `src/audio-library-store.mjs`, `scripts/audio-library.test.mjs`, this note | Regressions now pass for blocked/error/programmer-fault retry, concurrent callers and late success. Finish review and merge; no known source overlap. | Error-handling owner: source/package and browser acceptance. Parent: coordinated runtime release. Native acceptance is blocked by the executor's unavailable Linux browser sandbox; identify the deployed source and use a provider runtime with a working sandbox. |
-| 2 — confirmed | A Blob whose `text()` rejects is reported as `Audio pack is not valid JSON`; its read error is lost. Separate unreadable file from JSON syntax failure, retain causes, prove successful retry. | Same library/parser and existing test script, after rank 1 | Use a deferred/rejecting Blob to prove correct messaging and no storage mutation. | Source: error-handling owner. Runtime release: parent; browser import acceptance remains owned by this stream. |
-| 3 — confirmed | `validateSpriteAtlas()` combines user manifest and bundled schema reads, then appends raw `error.message`. Node JSON syntax errors include malformed input excerpts. A synthetic private token reproduces the exposure. | Sprite-atlas contract and its CLI consumers/tests; narrow before writing | Separate invalid user input from unavailable bundled schemas; preserve useful diagnostics without contents. Verify library and actual CLI invocations. | Error-handling owner; tooling only, no production deployment. |
-| 4 — confirmed | `validate-visual-pack.mjs /nonexistent-parent/manifest.json` reaches parent `realpath()` before its input catch; stderr contains a raw Node stack and absolute path. | Validator and existing visual-pack path-safety scenario | Give expected missing-path/permission errors retry guidance while preserving programmer faults. Verify real invalid and valid CLI invocations. | Error-handling owner; tooling only, no production deployment. |
+| 1 — active | A Blob whose `text()` rejects is reported as `Audio pack is not valid JSON`; its read error is lost. Separate unreadable file from JSON syntax failure, retain causes, prove successful retry. | `src/audio-library-store.mjs`, `scripts/audio-library.test.mjs`, this note | Syntax/read-failure, no-storage-access, retry and programmer-fault regressions now pass. Finish review and merge; no known source overlap. | Source and browser import acceptance: error-handling owner. Runtime release: parent. Native acceptance has the sandbox blocker below. |
+| 2 — confirmed | `validateSpriteAtlas()` combines user manifest and bundled schema reads, then appends raw `error.message`. Node JSON syntax errors include malformed input excerpts. A synthetic private token reproduces the exposure. | Sprite-atlas contract and its CLI consumers/tests; narrow before writing | Separate invalid user input from unavailable bundled schemas; preserve useful diagnostics without contents. Verify library and actual CLI invocations. | Error-handling owner; tooling only, no production deployment. |
+| 3 — confirmed | `validate-visual-pack.mjs /nonexistent-parent/manifest.json` reaches parent `realpath()` before its input catch; stderr contains a raw Node stack and absolute path. | Validator and existing visual-pack path-safety scenario | Give expected missing-path/permission errors retry guidance while preserving programmer faults. Verify real invalid and valid CLI invocations. | Error-handling owner; tooling only, no production deployment. |
 
 ## Completed evidence
 
@@ -35,6 +34,18 @@ the current write scope. The shipped-audio reader already has its own owner.
   68-byte image/manifest. Image SHA-256:
   `880ab29fcec83622dac6492f1c061f1e85a0f19948b2732169732d96ac37547f`.
   No GPU or live-game appearance claim; production deployment is not applicable.
+
+- **Audio-library open retry/cleanup source integration:**
+  [PR #166](https://github.com/lbeezr/thousand-unit-skirmish/pull/166), merge
+  `944b64ded22260d0a18362300b6244deab59d347`.
+  [Independent COMMENT review](https://github.com/lbeezr/thousand-unit-skirmish/pull/166#pullrequestreview-5403255919)
+  found no blockers. Archive byte/metadata checks, blocked/error/programmer-fault
+  and concurrent retry/late-success cleanup, audio runtime policy, served client
+  imports and packaged-release checks pass before and after merge. The reviewed
+  files match merged files. **Native/deployed acceptance remains incomplete:**
+  parent retains coordinated release; this stream retains normal Audio Studio
+  and blocked-open retry observation on that identified deployment using a
+  provider runtime with a working browser sandbox.
 
 The [IndexedDB opening algorithm](https://w3c.github.io/IndexedDB/#open-a-database-connection)
 fires `blocked`, waits for the existing connections to close, then continues
