@@ -43,6 +43,7 @@ export function createRoomLobby({ root, send, copyInvite }) {
   let player = null;
   let online = false;
   let pending = false;
+  let pendingFocus = null;
   let rejection = '';
   const chat = createRoomLobbyChat({ root: element('section'), send });
 
@@ -52,7 +53,7 @@ export function createRoomLobby({ root, send, copyInvite }) {
       if (root.open) root.close();
       return;
     }
-    if (!root.open) root.showModal();
+    const opening = !root.open;
     const own = lobby.seats.find(seat => seat.id === player?.id && seat.team === player?.team && seat.connected);
     const host = own?.team === 0;
     for (let team = 0; team < 2; team++) {
@@ -81,12 +82,26 @@ export function createRoomLobby({ root, send, copyInvite }) {
       : rejection || (pending ? 'Waiting for server…' : !own ? 'Spectating · both seats occupied or reserved.'
       : lobby.canLaunch ? 'Both players ready. The host can launch.'
       : 'Review the settings, then ready for this match.');
+    if (opening) {
+      root.showModal();
+      (host && !map.disabled ? map : own && !ready.disabled ? ready : invite).focus({ preventScroll: true });
+    }
+  }
+
+  function restorePendingFocus() {
+    const target = pendingFocus;
+    pendingFocus = null;
+    // A user who moved to another enabled control while waiting keeps that focus.
+    if (!target || !root.open || ![doc.body, root, target].includes(doc.activeElement)) return;
+    (target.disabled || target.hidden ? invite : target).focus({ preventScroll: true });
   }
 
   function submit(command) {
     if (!lobby || pending || !online) return;
     rejection = '';
+    const focused = root.contains(doc.activeElement) ? doc.activeElement : null;
     pending = send({ ...command, revision: lobby.revision }) === true;
+    pendingFocus = pending ? focused : null;
     render();
   }
   map.addEventListener('change', () => submit({ type: 'configureLobby', mapId: map.value }));
@@ -97,6 +112,9 @@ export function createRoomLobby({ root, send, copyInvite }) {
   });
   launch.addEventListener('click', () => submit({ type: 'launchMatch' }));
   invite.addEventListener('click', copyInvite);
+  root.addEventListener('focusin', event => {
+    if (pendingFocus && event.target !== pendingFocus) pendingFocus = null;
+  });
   root.addEventListener('cancel', event => event.preventDefault());
   return {
     update(next, identity, connected = true) {
@@ -107,6 +125,7 @@ export function createRoomLobby({ root, send, copyInvite }) {
       rejection = '';
       chat.context(lobby, player, online);
       render();
+      restorePendingFocus();
     },
     reject(message, next, identity) {
       lobby = next;
@@ -115,6 +134,7 @@ export function createRoomLobby({ root, send, copyInvite }) {
       rejection = message;
       chat.context(lobby, player, online);
       render();
+      restorePendingFocus();
     },
     updateChat(messages, ack, reset) { chat.update(messages, ack, reset); },
     rejectChat(message, clientMessageId) { chat.reject(message, clientMessageId); },

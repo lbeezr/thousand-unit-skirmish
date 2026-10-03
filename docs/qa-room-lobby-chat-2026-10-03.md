@@ -56,6 +56,14 @@ player's readiness update, rejection retains its draft, reconnect displays the
 current history, and rematch/restart show the documented history behavior.
 Typing in the input uses the existing dialog/editing-target keyboard guard.
 
+PR #57 also fixes the [Mac-observed Ready focus loss](https://github.com/lbeezr/thousand-unit-skirmish/pull/41#issuecomment-5969864079)
+in the shared lobby component. The dialog opens on the host's enabled Map or
+guest's Ready control. Acknowledgements/rejections restore the sending control
+when disabling it moved focus to BODY; a newer deliberate control choice wins,
+including overlapping Ready/chat requests. Seventeen focused authority/DOM
+tests pass. This is a DOM regression check; the fix still needs native browser
+verification on the final build.
+
 The cloud Chromium SUID sandbox remains unavailable. No browser sandbox bypass
 or native appearance/focus/input claim is made by these DOM/HTTP/WebSocket
 checks. No deployment, paid service, new simulation civilization/team capacity

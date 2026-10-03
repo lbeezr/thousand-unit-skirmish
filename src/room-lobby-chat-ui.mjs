@@ -31,6 +31,7 @@ export function createRoomLobbyChat({ root, send, createId = () =>
   status.id = 'lobby-chat-status';
   status.setAttribute('role', 'status');
   let lobby = null, player = null, online = false, pending = null, rejection = '';
+  let pendingFocus = null;
   let messages = [];
 
   function ownSeat() {
@@ -58,33 +59,46 @@ export function createRoomLobbyChat({ root, send, createId = () =>
     }
     if (atEnd) log.scrollTop = log.scrollHeight;
   }
+  function restorePendingFocus() {
+    const target = pendingFocus;
+    pendingFocus = null;
+    if (target && !target.disabled && [doc.body, target].includes(doc.activeElement)) target.focus({ preventScroll: true });
+  }
+  doc.addEventListener('focusin', event => {
+    if (pendingFocus && ![pendingFocus, doc.body, doc.documentElement].includes(event.target)) pendingFocus = null;
+  });
   form.addEventListener('submit', event => {
     event.preventDefault();
     if (input.disabled || !input.value.trim()) return;
     const clientMessageId = createId();
     rejection = '';
-    if (send({ type: 'sendLobbyChat', clientMessageId, text: input.value }) === true) pending = clientMessageId;
+    if (send({ type: 'sendLobbyChat', clientMessageId, text: input.value }) === true) {
+      pending = clientMessageId;
+      pendingFocus = [input, button].includes(doc.activeElement) ? doc.activeElement : null;
+    }
     else rejection = 'Connection is offline. Your draft stays here.';
     renderControls();
   });
   return {
     context(next, identity, connected) {
       if (!connected || !online || player?.id !== identity?.id || player?.team !== identity?.team
-        || lobby?.phase !== next?.phase) { pending = null; rejection = ''; }
+        || lobby?.phase !== next?.phase) { pending = null; pendingFocus = null; rejection = ''; }
       lobby = next; player = identity; online = connected;
       renderHistory(); renderControls();
     },
     update(next, ack, reset = false) {
-      if (reset) { log.replaceChildren(); pending = null; rejection = ''; }
+      if (reset) { log.replaceChildren(); pending = null; pendingFocus = null; rejection = ''; }
       messages = Array.isArray(next) ? next : [];
+      let accepted = false;
       if (pending && ack?.playerId === player?.id && ack.clientMessageId === pending) {
-        pending = null; input.value = ''; rejection = '';
+        pending = null; input.value = ''; rejection = ''; accepted = true;
       }
       renderHistory(); renderControls();
+      if (accepted) restorePendingFocus();
     },
     reject(message, clientMessageId) {
       if (pending !== clientMessageId) return;
-      pending = null; rejection = message; renderControls();
+      pending = null; rejection = message; renderControls(); restorePendingFocus();
     },
   };
 }

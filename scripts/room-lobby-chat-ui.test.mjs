@@ -109,3 +109,17 @@ test('a browser without secure-context randomUUID still sends a bounded request 
   assert.match(sent[0].clientMessageId, /^[A-Za-z0-9_-]{1,64}$/);
   assert.equal(sent[0].text, 'LAN lobby');
 });
+
+test('chat acknowledgement/rejection restores its control, without stealing deliberate focus', () => {
+  const f = fixture(), doc = f.dom.window.document;
+  f.input.value = 'First'; f.input.focus(); f.submit(); f.input.blur();
+  f.ui.update([message(1, 'First')], { playerId: host.id, clientMessageId: 'client-1' });
+  assert.equal(doc.activeElement, f.input);
+  f.input.value = 'Rejected'; f.submit(); f.input.blur();
+  f.ui.reject('Wait', 'client-2');
+  assert.equal(doc.activeElement, f.input);
+  f.submit(); f.input.blur();
+  const elsewhere = doc.createElement('button'); doc.body.append(elsewhere); elsewhere.focus();
+  f.ui.update([message(1, 'First'), message(2, 'Rejected', host, 'client-3')], { playerId: host.id, clientMessageId: 'client-3' });
+  assert.equal(doc.activeElement, elsewhere);
+});

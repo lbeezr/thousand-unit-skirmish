@@ -96,3 +96,21 @@ The clean local release contains 1,017 files, digest
 [Closure comment](https://github.com/lbeezr/thousand-unit-skirmish/pull/41#issuecomment-5969790482)
 retains the results and the separate Mac appearance/focus/input follow-up.
 No deployment or cloud sandbox bypass was performed.
+
+## Mac browser follow-up
+
+[Mac QA](https://github.com/lbeezr/thousand-unit-skirmish/pull/41#issuecomment-5969864079)
+checked merge `ffdc9a78f36f48d2b64a72de57d320388674a672` in normal-sandbox
+Chrome 154.0.8037.93, two isolated clients at 1280×800, with an eight-unit
+authored Pregame Arena. Prelaunch simulation/supply freeze, guest authority,
+map-change readiness invalidation, both-ready launch, duplicate-launch identity
+and supply, stable Ember reload, and the running menu passed. The panel fit;
+Leave wrapped and stayed visible.
+
+Ready's pending/acknowledgement render dropped keyboard focus to BODY in both
+clients; initial guest focus was also BODY. PR #57 fixes initial enabled-control
+focus and restores the sending control after acknowledgement/rejection, while
+preserving a newer deliberate focus choice. DOM tests cover overlapping Ready
+and chat replies. Native browser verification of the fix remains separate.
+Manual 250–2,000-unit presets, mobile sizes, supervisor restart, and a full
+accessibility/focus-trap verdict were outside that Mac check.
