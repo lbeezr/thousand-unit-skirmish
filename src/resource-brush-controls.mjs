@@ -1,4 +1,5 @@
 import { createResourceBrushEditor, resourceBrushMapKey } from './resource-brush-authoring.mjs';
+import { economyResources } from './economy-profile.mjs';
 
 // DOM/canvas adapter; preview receipts and history live only in this editor session.
 export function mountResourceBrushControls({ host, readMap, readSelectedId, commit, redraw, onCommitted }) {
@@ -60,6 +61,16 @@ export function mountResourceBrushControls({ host, readMap, readSelectedId, comm
       const map = readMap();
       if (!map) { preview = null; picking = false; refresh(false); return false; }
       const key = resourceBrushMapKey(map);
+      const select = field('type'), resources = economyResources(map.economyProfileId);
+      if (select.options.length !== resources.length) {
+        const selected = select.value;
+        select.replaceChildren(...resources.map(type => {
+          const option = host.ownerDocument.createElement('option');
+          option.value = type; option.textContent = type[0].toUpperCase() + type.slice(1);
+          return option;
+        }));
+        select.value = resources.includes(selected) ? selected : 'food';
+      }
       if (!editor) editor = createResourceBrushEditor({ readMap, readSelectedId, commit });
       else if (key !== observedKey) {
         editor.reset(); preview = null; picking = false;
@@ -145,7 +156,7 @@ export function mountResourceBrushControls({ host, readMap, readSelectedId, comm
     draw(context, map) {
       if (!preview) return;
       context.save(); context.setLineDash([0.16, 0.12]); context.lineWidth = 0.12;
-      context.strokeStyle = preview.settings.type === 'wood' ? '#d5ef78' : '#ffe39a';
+      context.strokeStyle = preview.settings.type === 'stone' ? '#b8bbc4' : preview.settings.type === 'wood' ? '#d5ef78' : '#ffe39a';
       context.fillStyle = '#fff'; context.font = '0.65px monospace'; context.textAlign = 'center';
       for (const node of preview.nodes) {
         const x = node.x + map.width / 2, y = node.z + map.height / 2;

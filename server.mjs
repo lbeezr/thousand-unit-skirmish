@@ -430,7 +430,7 @@ function validateMapDefinition(definition, filename) {
   const resourceNodeIds = new Set();
   for (const node of resourceNodes) {
     if (typeof node?.id !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(node.id)
-      || resourceNodeIds.has(node.id) || !['food', 'wood'].includes(node.type)
+      || resourceNodeIds.has(node.id) || !economyResources(definition.economyProfileId).includes(node.type)
       || !Number.isFinite(node.x) || !Number.isFinite(node.z)
       || Math.abs(node.x) >= definition.width / 2 || Math.abs(node.z) >= definition.height / 2
       || !Number.isFinite(node.stock) || node.stock <= 0 || !validWildlifeNodeDefinition(node)) {

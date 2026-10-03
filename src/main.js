@@ -6183,6 +6183,7 @@ function populateMapEditor(definition, message) {
 function validateImportedMap(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('JSON must contain a map object.');
   const definition = JSON.parse(JSON.stringify(value));
+  const allowedResources = economyResources(definition.economyProfileId);
   validateMapAudioReference(definition.audio);
   definition.victoryMode ??= 'any';
   definition.fogOfWar ??= false;
@@ -6311,11 +6312,11 @@ function validateImportedMap(value) {
   const resourceIds = new Set();
   for (const node of definition.resourceNodes) {
     if (!node || typeof node.id !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(node.id)
-      || resourceIds.has(node.id) || !['food', 'wood'].includes(node.type)
+      || resourceIds.has(node.id) || !allowedResources.includes(node.type)
       || !Number.isFinite(node.x) || !Number.isFinite(node.z)
       || Math.abs(node.x) >= definition.width / 2 || Math.abs(node.z) >= definition.height / 2
       || !Number.isFinite(node.stock) || node.stock <= 0) {
-      throw new Error('Map has an invalid, duplicate, or out-of-bounds food or wood node.');
+      throw new Error('Map has an invalid, duplicate, out-of-bounds or unsupported resource node.');
     }
     resourceIds.add(node.id);
     const column = Math.floor(node.x + definition.width / 2);
@@ -6852,7 +6853,7 @@ function drawEditorGrid() {
     const x = node.x + editorDefinition.width / 2;
     const y = node.z + editorDefinition.height / 2;
     context.beginPath();
-    context.fillStyle = node.type === 'wood' ? '#9bb877' : '#e4bd63';
+    context.fillStyle = node.type === 'stone' ? '#b8bbc4' : node.type === 'wood' ? '#9bb877' : '#e4bd63';
     context.strokeStyle = 'rgba(16,24,17,.9)';
     context.lineWidth = 0.14;
     context.arc(x, y, 0.58, 0, Math.PI * 2);
@@ -6868,6 +6869,12 @@ function drawEditorGrid() {
       context.lineTo(x + 0.34, y + 0.07);
       context.closePath();
       context.fill();
+    } else if (node.type === 'stone') {
+      context.fillStyle = '#343842';
+      context.font = '0.7px monospace';
+      context.textAlign = 'center';
+      context.fillText('S', x, y + 0.24);
+      context.textAlign = 'start';
     } else if (isShoreFish(node)) {
       context.fillStyle = '#286173';
       context.font = '0.7px monospace';
