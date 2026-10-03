@@ -25,7 +25,12 @@ async function run(workerTeam) {
     }));
     const pursuit=await fixture.checkpoint(s=>s.state.units[workerId].attackTargetId===infantryId
       &&s.state.units[infantryId].attackTargetId===workerId&&s.state.units[workerId].hp===100
-      &&s.state.units[infantryId].hp===100);
+      &&s.state.units[infantryId].hp===100&&[workerId,infantryId].every(id=>{
+        const u=s.state.units[id],initial=before.state.units[id];
+        return u.pathIndex<u.path.length&&Math.hypot(u.x-initial.x,u.z-initial.z)>.2;
+      }));
+    const pursuitDistanceMoved=[workerId,infantryId].map(id=>Math.hypot(
+      pursuit.state.units[id].x-before.state.units[id].x,pursuit.state.units[id].z-before.state.units[id].z));
     await fixture.stop();await fixture.start();
     clients=[await fixture.connect(0,sessions[0]),await fixture.connect(1,sessions[1])];
     assert.ok(clients.every(c=>c.welcome.recoveredFromCheckpoint));
@@ -40,7 +45,8 @@ async function run(workerTeam) {
     assert.equal(stable.state.units[workerId].hp,0);assert.equal(stable.state.units[infantryId].hp,infantryHp);
     assert.equal(stable.state.units[infantryId].attackTargetId,-1);assert.deepEqual(parked(stable),parked(before));
     const result={workerTeam,workerHp:0,infantryHp,ticks:resolved.state.tickNumber-pursuit.state.tickNumber,
-      restartDuringPursuit:true,postCombatRestartStable:true,parkedRosterUnchanged:true};
+      restartDuringPursuit:true,pursuitDistanceMoved,activePathsAtRestart:true,
+      postCombatRestartStable:true,parkedRosterUnchanged:true};
     console.log(JSON.stringify(result));return result;
   } finally { await fixture.dispose(); }
 }
