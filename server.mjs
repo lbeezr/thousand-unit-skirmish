@@ -3316,6 +3316,7 @@ function migrateMatchCheckpoint(snapshot) {
   if (snapshot?.rulesetRevision === 'v1:d85f5a09decc0d0ade81803ab289b52ec5a08e84ff5a1771e85401d4c3611eab'
     && Array.isArray(snapshot.state?.buildings) && Array.isArray(snapshot.state?.units)
     && !snapshot.state.buildings.some(building => building.type === 'palisade-wall')
+    && !snapshot.state.buildings.some(building => building.type === 'mill')
     && !snapshot.state.units.some(unit => unit.wallBuildOrder != null)) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }

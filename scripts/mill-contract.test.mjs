@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
-import { BUILDING_DEFINITIONS, FACTION_DEFINITIONS, UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { BUILDING_DEFINITIONS, FACTION_DEFINITIONS, UNIT_DEFINITIONS, GAMEPLAY_RULESET_REVISION } from '../src/gameplay-definitions.mjs';
 import { hasGameplayCapability } from '../src/combat-rules.mjs';
 import { creditResourceBalance } from '../src/economy-ledger.mjs';
 import { buildingPresentation } from '../src/gameplay-presentation.mjs';
@@ -29,6 +29,21 @@ test('Mill is a cheaper food-only Frontier depot with an explicit existing place
   assert.ok(BUILDING_DEFINITIONS.mill.maxHp < BUILDING_DEFINITIONS.storehouse.maxHp);
   assert.deepEqual(buildingPresentation('mill'), { backend: 'procedural', role: 'house' });
   assert.equal(frontierBuildingPreviewUrl('mill', '1'), null, 'no authored Mill asset is claimed');
+});
+
+test('pre-Mill content pins cannot claim a Mill that their definitions never contained', () => {
+  const context = vm.createContext({ MATCH_CHECKPOINT_SCHEMA_VERSION: 22, MATCH_RULES_VERSION: 6,
+    GAMEPLAY_RULESET_REVISION });
+  vm.runInContext(serverFunction('migrateMatchCheckpoint'), context);
+  for (const rulesetRevision of [
+    'v1:d85f5a09decc0d0ade81803ab289b52ec5a08e84ff5a1771e85401d4c3611eab',
+    'v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801',
+  ]) {
+    const snapshot = { schemaVersion: 22, rulesVersion: 6, rulesetRevision,
+      state: { buildings: [{ type: 'mill' }], units: [] } };
+    assert.equal(context.migrateMatchCheckpoint(snapshot).rulesetRevision, rulesetRevision,
+      'unsupported content remains incompatible with the current restore validator');
+  }
 });
 
 for (const team of [0, 1]) test(`Mill routing filters resource, completion, ownership and reachability for seat ${team}`, () => {
