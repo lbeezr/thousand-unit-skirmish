@@ -60,10 +60,10 @@ assigned team changes, or a rematch starts.
 | Attack a production building | Right-click it with military selected; workers cannot attack structures. |
 | Gather | Right-click a food/wood node or harvestable forest cell with workers selected. |
 | Return cargo | Select carrying workers and choose **Return cargo** in the selection bar. |
-| Construct | Choose Build barracks/range, then left-click a valid site. |
-| Build a Palisade line | Choose Palisade in Build, then drag/release across clear cells. Shift changes the elbow. A tap places one cell; Escape or right-click cancels. |
+| Construct | Select the workers to assign, choose a building, then left-click a valid site. Only the selected living friendly workers receive the order. |
+| Build a Palisade line | Select the workers, choose Palisade in Build, then drag/release across clear cells. Shift changes the elbow. A tap places one cell; Escape or right-click cancels. |
 | Place a wall with the keyboard | While the battlefield is focused in Palisade mode, arrows move the endpoint; Enter anchors, then Enter places. |
-| Resume construction | Select the unfinished site and use Resume construction. |
+| Resume construction | Select the workers to help and use Resume construction; they go to the nearest unfinished friendly site. Other workers keep their orders. |
 | Set a rally | Select a friendly Barracks or Range, then right-click ground. |
 
 Choose Box, Line, or Column before a move or attack-move order. Line and Column
@@ -132,6 +132,9 @@ The compact objective summary keeps active victory/deadline countdowns visible.
 Open Objectives for prerequisites, rewards, live cards, and recent notices.
 Selection controls expose the relevant production or unit actions. Hints can be
 hidden and reopened; placement and targeting still show cancellation guidance.
+Select one Worker to see its portrait and live HP. Open its portrait for role
+notes in the Selection drawer; Escape or its close button dismisses the drawer.
+Multiple selections keep their group composition summary.
 
 Audio settings control effects, ambience, volume, and optional critical captions.
 The Audio check lets you audition and identify cues. Settings persist locally.

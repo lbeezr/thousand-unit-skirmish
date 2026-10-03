@@ -1,6 +1,7 @@
 import { findInvalidResourceVariant, isShoreFish, validResourceVariantState } from './src/shore-fishing.mjs';
 import { createDockPlacementContext } from './src/dock-placement.mjs';
 import { activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted, validWildlifeNodeDefinition, validWildlifeNodeState } from './src/wildlife-state.mjs';
+import { migrateMillraceSheepCheckpoint } from './src/millrace-sheep.mjs';
 import { validateMapRegion } from './src/regions.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, regionEntryTeam, validCompletionTrigger, completionTeam } from './src/scenario-regions.mjs';
 import { TERRAIN_MATERIALS } from './src/terrain-materials.mjs';
@@ -3045,12 +3046,16 @@ function validateMatchCheckpoint(snapshot) {
 }
 
 function restoreMatchCheckpoint(snapshot) {
-  const { definition, state, explored } = validateMatchCheckpoint(snapshot);
+  let { definition, state, explored } = validateMatchCheckpoint(snapshot);
   if (pveLaunchOptions && definition.id !== pveLaunchOptions.mapId) {
     throw new Error('PvE checkpoint map does not match its launch seed.');
   }
   if (shippedMapIds.has(definition.id)) {
     const shippedDefinition = mapCatalog.get(definition.id);
+    if (matchMapHash(shippedDefinition) !== snapshot.mapHash
+      && migrateMillraceSheepCheckpoint(snapshot, shippedDefinition, matchMapHash)) {
+      ({ definition, state, explored } = validateMatchCheckpoint(snapshot));
+    }
     assertSnapshot(matchMapHash(shippedDefinition) === snapshot.mapHash, 'shipped map changed since checkpoint');
   } else {
     mapCatalog.set(definition.id, definition);
@@ -7552,7 +7557,7 @@ const server = createServer(async (request, response) => {
     'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs', 'src/resource-brush-controls.mjs',
     'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
-    'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
+    'src/selection-context.mjs', 'src/selection-portrait.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
     'src/terrain-authoring.mjs', 'src/terrain-height.mjs', 'src/regions.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs',
     'src/audio-shipped-loader.mjs', 'src/audio-shipped-catalog.mjs', 'src/audio-decoded-cache.mjs',
     'src/audio-composition-player.mjs', 'src/audio-assets.mjs', 'src/audio-library-store.mjs',
@@ -7565,6 +7570,7 @@ const server = createServer(async (request, response) => {
     'src/forest-habitat.mjs', 'src/forest-age-composition.mjs', 'src/forest-composition.mjs', 'src/regional-ground-kits.mjs', 'src/water-contours.mjs',
   ].includes(relative);
   const publicUiAsset = [
+    'assets/ui/portraits/human-worker-source.png', 'assets/ui/portraits/boughward-worker-source.png',
     'assets/ui/cursors/select-add.png',
     'assets/ui/cursors/select-remove.png',
     'assets/ui/cursors/box-crossing.png',

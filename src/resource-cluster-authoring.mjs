@@ -37,19 +37,28 @@ function clusterGround(map) {
   return { width, height, cell, inside, blocked, paint, elevation };
 }
 
-function orderedOffsets(seed, patch, radius) {
+function orderedOffsets(seed, patch, radius, distribution) {
   const candidates = [];
   for (let dz = -radius; dz <= radius; dz++) for (let dx = -radius; dx <= radius; dx++) {
-    if (Math.hypot(dx, dz) <= radius && Math.hypot(dx, dz) >= 2) candidates.push({ dx, dz, rank: rank(seed, patch, dx, dz) });
+    const distance = Math.hypot(dx, dz);
+    if (distance > radius || distance < 2) continue;
+    const noise = rank(seed, patch, dx, dz);
+    // Seeded weighted ordering favors the core without excluding edge cells.
+    // Keep the original integer rank unchanged for the default distribution.
+    const priority = distribution === 'core-falloff'
+      ? -Math.log1p(-(noise + 0.5) / 0x100000000) * Math.exp(4 * (distance / radius) ** 2)
+      : noise;
+    candidates.push({ dx, dz, rank: priority });
   }
   return candidates.sort((a, b) => a.rank - b.rank || a.dz - b.dz || a.dx - b.dx);
 }
 
 export function seededMirroredResourceClusters(map, settings = MILLRACE_RESOURCE_CLUSTERS) {
-  const { seed, nodesPerPatch: count, radius, spawnClearance, patches } = settings;
+  const { seed, nodesPerPatch: count, radius, spawnClearance, patches, distribution = 'uniform' } = settings;
   if (!Number.isSafeInteger(seed) || !Number.isInteger(count) || count < 1 || count > 16
     || !Number.isInteger(radius) || radius < 1 || radius > 8
     || !Number.isInteger(spawnClearance) || spawnClearance < 0 || spawnClearance > 16
+    || !['uniform', 'core-falloff'].includes(distribution)
     || !Array.isArray(patches) || !patches.length || patches.length * count * 2 > 128) {
     throw new Error('Invalid resource cluster settings or node budget.');
   }
@@ -67,7 +76,7 @@ export function seededMirroredResourceClusters(map, settings = MILLRACE_RESOURCE
   const teams = [[], []];
   for (const [index, patch] of patches.entries()) {
     const positions = [{ dx: 0, dz: 0 }];
-    for (const candidate of orderedOffsets(seed, index, radius)) {
+    for (const candidate of orderedOffsets(seed, index, radius, distribution)) {
       if (positions.length === count) break;
       const x = patch.x + candidate.dx, z = patch.z + candidate.dz;
       if (!inside(x, z) || x >= 0 || positions.some(p => Math.hypot(p.dx - candidate.dx, p.dz - candidate.dz) < 2)) continue;
@@ -93,12 +102,13 @@ export function seededMirroredResourceClusters(map, settings = MILLRACE_RESOURCE
 // Pure append on a validated map: totalStock is the one patch's entire budget.
 // Return the complete node array only after admission; never mutate map/settings.
 export function appendSeededResourceCluster(map, settings = {}) {
-  const { seed, nodesPerPatch: count = 5, radius = 4, spawnClearance = 6,
+  const { seed, nodesPerPatch: count = 5, radius = 4, spawnClearance = 6, distribution = 'uniform',
     type, x, z, totalStock } = settings;
   const existing = map.resourceNodes ?? [];
   if (!Number.isSafeInteger(seed) || !Number.isInteger(count) || count < 1 || count > 16
     || !Number.isInteger(radius) || radius < 1 || radius > 8
     || !Number.isInteger(spawnClearance) || spawnClearance < 0 || spawnClearance > 16
+    || !['uniform', 'core-falloff'].includes(distribution)
     || !['food', 'wood'].includes(type) || !Number.isFinite(x) || !Number.isFinite(z)
     || !Number.isSafeInteger(totalStock) || totalStock < count
     || !Array.isArray(existing) || existing.length + count > 128) {
@@ -122,7 +132,7 @@ export function appendSeededResourceCluster(map, settings = {}) {
     && existing.every(n => Math.hypot(px - n.x, pz - n.z) >= 2);
   if (!safe(x, z)) throw new Error('Unsafe or occupied additive resource cluster anchor.');
   const positions = [{ x, z }];
-  for (const { dx, dz } of orderedOffsets(seed, 0, radius)) {
+  for (const { dx, dz } of orderedOffsets(seed, 0, radius, distribution)) {
     if (positions.length === count) break;
     const px = x + dx, pz = z + dz;
     if (safe(px, pz) && positions.every(p => Math.hypot(px - p.x, pz - p.z) >= 2)) {
