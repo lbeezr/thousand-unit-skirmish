@@ -88,5 +88,10 @@
     "passed": true,
     "markdownFiles": 411,
     "localLinks": 2696
+  },
+  "historicalMaskCompatibility": {
+    "runtimeCompatible": false,
+    "reason": "RGB selected owner cues, but full-building alpha would recolor neutral geometry with the runtime Canvas destination-in consumer.",
+    "supersededForMaskAdmissionBy": "qa-frontier-lifecycle-alpha-masks-2026-10-03.json"
   }
 }
