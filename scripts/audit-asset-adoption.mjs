@@ -21,8 +21,19 @@ export function normalRoster(main) {
   const start = main.indexOf('const humanRosterPreview =');
   const end = main.indexOf('const ROOM_ID =', start);
   assert.ok(start >= 0 && end > start, 'normal roster configuration must be inspectable');
-  return vm.runInNewContext(`${main.slice(start, end)}\n({ humanRosterPreview, unitSpritePreviewRoles, unitSpritePreviewVersions })`,
+  return vm.runInNewContext(`${main.slice(start, end)}\n({ humanRosterPreview, castPreview, unitSpritePreviewRoles, unitSpritePreviewVersions })`,
     { roomPageUrl: new URL('http://audit.invalid/?room=normal-match') }, { timeout: 1000 });
+}
+
+function unitRuntimeOptions(main, roster) {
+  const start = main.indexOf('const unitSpriteRuntime = createUnitSpriteRuntime({');
+  const end = main.indexOf('\n});', start);
+  assert.ok(start >= 0 && end > start, 'normal sprite runtime constructor must be inspectable');
+  return vm.runInNewContext(`${main.slice(start, end + 4)}\nunitSpriteRuntime`, {
+    ...roster, roomPageUrl: new URL('http://audit.invalid/?room=normal-match'),
+    THREE: {}, scene: {}, MAX_PER_TEAM: 1, TEAM_HEX: [], camera: { quaternion: {} },
+    workerFishingContactRuntime: {}, createUnitSpriteRuntime: options => options,
+  }, { timeout: 1000 });
 }
 
 async function clientGraph() {
@@ -41,6 +52,7 @@ export async function auditAssetAdoption({ registry, releaseFiles, main = null }
   const graph = await clientGraph();
   main ??= (await read('src/main.js')).toString();
   const roster = normalRoster(main);
+  const runtime = unitRuntimeOptions(main, roster);
   const packed = new Set(releaseFiles), ids = new Set(), results = [];
   for (const record of registry.records) {
     assert.ok(record.id && !ids.has(record.id), 'unique asset id required'); ids.add(record.id);
@@ -87,8 +99,9 @@ export async function auditAssetAdoption({ registry, releaseFiles, main = null }
       dependencies.push({ path: record.binding });
     } else if (record.probe === 'human-worker-fishing') {
       module = 'src/unit-sprite-runtime.mjs';
-      defaultBound = roster.humanRosterPreview && roster.unitSpritePreviewRoles.includes('human')
-        && `assets/units/${spriteDirectory('human', roster.unitSpritePreviewVersions.human)}/sprite-atlas-pack-v1.json` === record.manifest;
+      defaultBound = runtime.castPreview && runtime.humanAppearancePreview
+        && runtime.teamCivilizations?.[0] === 'human' && runtime.roles.includes('human')
+        && `assets/units/${spriteDirectory('human', runtime.roleSpriteVersions.human)}/sprite-atlas-pack-v1.json` === record.manifest;
       const clips = new Map(manifest.assets[0].clips.map(clip => [`${clip.stateId}|${clip.directionId}`, clip]));
       const state = activeState({ kind: 'worker', hp: 100, task: 'gathering', workResourceVariant: 'shore-fish' }, 1000);
       assert.equal(state, 'gather-fish');

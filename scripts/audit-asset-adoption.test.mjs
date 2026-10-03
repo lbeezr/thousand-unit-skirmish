@@ -38,6 +38,15 @@ test('a default Worker downgrade cannot silently strand the approved fishing man
   await assert.rejects(audit({ main }), /human-worker-fishing-SE: approved runtime asset is not default-bound/);
 });
 
+test('normal constructor must consume approved roles and versions', async () => {
+  const main = await readFile(path.join(root, 'src/main.js'), 'utf8');
+  for (const [from, to] of [
+    ['roles: unitSpritePreviewRoles,', 'roles: [],'],
+    ['roleSpriteVersions: unitSpritePreviewVersions,', "roleSpriteVersions: { human: 'v2' },"],
+  ]) await assert.rejects(audit({ main: main.replace(from, to) }),
+    /human-worker-fishing-SE: approved runtime asset is not default-bound/);
+});
+
 test('an unbound approved family needs an explicit integration owner and exit action', async () => {
   const changed = structuredClone(registry);
   changed.records = [changed.records.find(row => row.id === 'frontier-stable')];
@@ -48,7 +57,8 @@ test('an unbound approved family needs an explicit integration owner and exit ac
   ownerless.records[0].owner = '';
   await assert.rejects(audit({ registry: ownerless }), /integration owner required/);
   const noExit = structuredClone(registry);
-  delete noExit.records.find(row => row.id === 'frontier-stable').exception.nextAction;
+  noExit.records = [{ ...noExit.records.find(row => row.id === 'frontier-stable'),
+    exception: { reason: 'Test experiment', evidence: 'docs/asset-adoption-checklist.md' } }];
   await assert.rejects(audit({ registry: noExit }), /exception nextAction required/);
 });
 
