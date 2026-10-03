@@ -11,6 +11,9 @@
   },
   "files": [
     "src/forest-age-composition.mjs",
-    "scripts/type-contracts/canopy-valid.mjs"
+    "src/forest-habitat.mjs",
+    "src/forest-composition.mjs",
+    "scripts/type-contracts/canopy-valid.mjs",
+    "scripts/type-contracts/forest-valid.mjs"
   ]
 }

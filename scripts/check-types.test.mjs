@@ -40,10 +40,41 @@ const cases = [
     source: "forestAgeFactors([]).set(7, '1.05');" },
   { name: 'mutation of a caller-owned point', code: 2540,
     source: "/** @type {import('../../src/forest-age-composition.mjs').CanopyPoint} */ const point = {cell: 7, x: 1, z: 2}; point.cell = 8;" },
+  { name: 'string map width', code: 2322,
+    source: "forestHabitatDepth({width: '9', height: 9});" },
+  { name: 'missing map height', code: 2345,
+    source: 'forestHabitatDepth({width: 9});' },
+  { name: 'missing rectangle row', code: 2741,
+    source: 'forestHabitatDepth({width: 9, height: 9, obstacles: [{column: 1, width: 7, height: 7}]});' },
+  { name: 'misspelled rectangle coordinate', code: 2353,
+    source: 'forestHabitatDepth({width: 9, height: 9, obstacles: [{column: 1, row: 1, width: 7, height: 7, x: 1}]});' },
+  { name: 'unregistered obstacle material', code: 2322,
+    source: "forestHabitatDepth({width: 9, height: 9, obstacles: [{column: 1, row: 1, width: 7, height: 7, material: 'wood'}]});" },
+  { name: 'depth grid confused with a Map', code: 2339,
+    source: 'forestHabitatDepth({width: 9, height: 9}).get(7);' },
+  { name: 'string canopy depth', code: 2345,
+    source: "forestCanopyFactor('1');" },
+  { name: 'string margin coordinate', code: 2345,
+    source: "forestMarginCanopyFactor(1, '4', 4);" },
+  { name: 'string species coordinate', code: 2345,
+    source: "underboughForestSpecies('4', 4);" },
+  { name: 'string species seed', code: 2345,
+    source: "underboughForestSpecies(4, 4, '93002');" },
+  { name: 'string species habitat depth', code: 2345,
+    source: "underboughForestSpecies(4, 4, 93002, '1');" },
+  { name: 'string grove spacing', code: 2345,
+    source: "underboughForestSpecies(4, 4, 93002, 1, '6');" },
+  { name: 'misspelled species identity', code: 2820,
+    source: "/** @type {import('../../src/forest-composition.mjs').UnderboughForestSpecies} */ const typo = 'underbough-brambel';" },
 ];
 const fixturePath = path.join(root, 'scripts/type-contracts/canopy-invalid.mjs');
-const fixtureSource = [
+const fixtureImports = [
   "import { forestAgeFactors } from '../../src/forest-age-composition.mjs';",
+  "import { forestHabitatDepth, forestCanopyFactor, forestMarginCanopyFactor } from '../../src/forest-habitat.mjs';",
+  "import { underboughForestSpecies } from '../../src/forest-composition.mjs';",
+];
+const fixtureSource = [
+  ...fixtureImports,
   ...cases.map(item => item.source),
 ].join('\n');
 const host = ts.createCompilerHost(parsed.options);
@@ -61,7 +92,7 @@ test('negative fixtures produce only the expected contract failures', () => {
 for (const [index, item] of cases.entries()) {
   test(`the checker rejects ${item.name}`, () => {
     const onLine = diagnostics.filter(diagnostic => diagnostic.file?.fileName === fixturePath
-      && diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start).line === index + 1);
+      && diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start).line === index + fixtureImports.length);
     assert.deepEqual(onLine.map(diagnostic => diagnostic.code), [item.code], describe(onLine).join('\n'));
   });
 }

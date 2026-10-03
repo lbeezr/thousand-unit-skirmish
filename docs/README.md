@@ -64,6 +64,7 @@ the build they name.
 | Change the compact objective HUD | [Objective behavior and validation](battlefield-objectives-validation.md) |
 | Change owned population feedback | [Population header behavior and validation](population-header-validation.md) |
 | Change selection-dependent command visibility | [Contextual HUD behavior and validation](contextual-hud-validation.md) |
+| Continue the compact HUD and controls lane | [Ranked HUD backlog and interfaces](hud-controls-backlog.md) |
 | Add selected-unit portraits or connect future field notes | [Worker HUD art and integration contract](hud-art-integration.md) |
 | Change cues or captions | [Audio design](audio-design.md) |
 | Design each command, notice, alert and result sound | [UI sound direction](ui-audio-direction.md) |
@@ -83,6 +84,7 @@ the build they name.
 - [Core match tranche](core-playtest-tranche.md): next human session, observation record, and proposed scale profile.
 - [Balance](first-skirmish-balance.md): current no-tune baseline and next observations.
 - [Victory audit and mode proposal](victory-modes-audit-2026-10-03.md): exact authored victories, recoverable base defeat, and separate Skirmish/custom-inspired directions.
+- [Mode contract](match-mode-contract.md) and [playable-modes backlog](playable-modes-backlog.md): shared versioned identity, map/lobby/AI boundaries and ranked incremental acceptance.
 - [Mill depot simulation](qa-mill-depot-economy-2026-10-03.md): paid travel comparisons and separate currency tradeoffs; [finite Farm contract](farm-finite-planting.md) and [Farm QA](qa-finite-farm-2026-10-03.md): provisional paid planting, stock, cancellation and recovery. The [earlier proposal](farm-capability-proposal.md) preserves its design history.
 - [Provisional Stone contract](stone-defense-contract-proposal.md): one optional Watchtower sink, finite budget and preserved legacy prices; implementation remains pending.
 - [Stone runtime interface](stone-runtime-interface.md): explicit profile selector, typed price/refund helpers and map/runtime ownership; live admission remains closed.
