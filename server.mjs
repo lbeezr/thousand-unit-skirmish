@@ -6733,7 +6733,8 @@ function findAttackMoveTarget(unit, acquireRadius = ATTACK_MOVE_ACQUIRE_RADIUS, 
 }
 
 function getUnitAttackPath(unit, target, flowBudget = null) {
-  const targetCell = nearestOpenCell(worldToCell(target.x, target.z));
+  // A water target cannot be snapped onto land to invent a firing position.
+  const targetCell = worldToCell(target.x, target.z);
   const start = nearestOpenCell(worldToCell(unit.x, unit.z));
   const range = UNIT_DEFINITIONS[unit.kind].combat.range;
   if (Math.hypot(target.x - unit.x, target.z - unit.z) <= range) {
