@@ -91,11 +91,20 @@ checks cannot prove that an image never existed outside Git.
 
 ## Preservation practice
 
+The [water surface study](../water-surface-study.md) records the current contours,
+primary rendering references and a reusable opt-in comparison scene. Browser
+startup failed in cloud, so it adds no claimed screenshot or new image iteration.
+
 The [3 October building/environment audit](../art-runtime-audit-2026-10-03.md)
 links all eight Frontier concepts to the six completed model records and 48
 directional captures, distinguishes older default art, and records precise
 lifecycle and cloud-source gaps. The Town Center's existing Complete captures
 now have a bounded release preview path. Original source records remain intact.
+
+The [Town Center authoring preparation](../frontier-town-center-authoring.md)
+adds a reusable empty Blender camera/state scaffold using those preserved
+capture records. Its camera mathematics and saved scene were checked; no model
+import, derived lifecycle art or new image iteration is supplied by that work.
 
 Keep each exploratory output under a distinct revision filename; retain rejected
 attempts and the reason they were rejected. Record date, exact prompt, input

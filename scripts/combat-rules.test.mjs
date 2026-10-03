@@ -49,6 +49,63 @@ test('capabilities and validated combat references reject unsupported content', 
   }
 });
 
+test('capability vocabulary cannot declare handlers the runtime does not implement', () => {
+  for (const useCapability of [false, true]) {
+    const definitions = structuredClone(GAMEPLAY_DEFINITIONS);
+    definitions.combatRules.capabilities.push('teleport');
+    if (useCapability) definitions.units.worker.capabilities.push('teleport');
+    assert.throws(() => validateGameplayDefinitions(definitions), /Unsupported unit capability: teleport/);
+  }
+});
+
+for (const [label, mutate, reason] of [
+  ['array-shaped unit combat', d => { d.units.worker.combat = Object.assign([], d.units.worker.combat); }, /Invalid unit combat: worker/],
+  ['ignored unit projectile speed', d => { d.units.archer.combat.projectileSpeed = 12; }, /Unsupported combat field projectileSpeed: archer/],
+  ['ignored unit splash radius', d => { d.units['siege-engine'].combat.splashRadius = 2; }, /Unsupported combat field splashRadius: siege-engine/],
+  ['immobile unit declaration', d => { d.units.infantry.capabilities = ['attack', 'attack-structures']; }, /Missing move capability: infantry/],
+  ['structure permission without eligible targets', d => { d.units.infantry.combat.targetTags = ['ground']; }, /Structure attack capability has no eligible building targets: infantry/],
+  ['structure targets without permission', d => { d.units.infantry.capabilities = ['move', 'attack']; }, /Structure targets require attack-structures capability: infantry/],
+  ['worker structure targets without permission', d => { d.units.worker.combat.targetTags.push('structure'); }, /Structure targets require attack-structures capability: worker/],
+  ['unit classified as a structure', d => { d.units.infantry.tags.push('structure'); }, /Units cannot have the structure tag: infantry/],
+  ['building missing its damage classification', d => { d.buildings.house.tags = ['defense']; }, /Buildings require the structure tag: house/],
+  ['stationary defense structure targets', d => { d.buildings.watchtower.combat.targetTags.push('structure'); }, /Unsupported building structure targets: watchtower/],
+  ['ignored building structure damage', d => { d.buildings.watchtower.combat.structureDamage = 4; }, /Unsupported combat field structureDamage: watchtower/],
+  ['ignored building movement speed', d => { d.buildings.watchtower.combat.moveSpeed = 2; }, /Unsupported combat field moveSpeed: watchtower/],
+  ['building HP in the unit stat location', d => { d.buildings.watchtower.combat.maxHp = 1200; }, /Unsupported combat field maxHp: watchtower/],
+  ['ignored building capability declaration', d => { d.buildings.watchtower.capabilities = ['attack-structures']; }, /Unsupported building capabilities: watchtower/],
+]) test(`combat contract rejects ${label}`, () => {
+  const definitions = structuredClone(GAMEPLAY_DEFINITIONS);
+  mutate(definitions);
+  assert.throws(() => validateGameplayDefinitions(definitions), reason);
+});
+
+test('supported combat contracts preserve shipped content and independent attack permissions', () => {
+  const definitions = structuredClone(GAMEPLAY_DEFINITIONS);
+  assert.equal(validateGameplayDefinitions(definitions), definitions);
+  assert.deepEqual(definitions, GAMEPLAY_DEFINITIONS, 'validation must not rewrite stats or permissions');
+  assert.ok(definitions.units.worker.combat.structureDamage > 0,
+    'the shipped Worker retains its dormant structure damage stat without structure permission');
+  definitions.units.infantry.capabilities = ['move', 'attack-structures'];
+  definitions.units.infantry.combat.targetTags = ['structure'];
+  definitions.units.scout.capabilities = ['move'];
+  definitions.units.scout.combat.targetTags = ['ground'];
+  assert.equal(validateGameplayDefinitions(definitions), definitions,
+    'structure-only attacks and a mobile unit without attack permissions use existing handlers');
+  assert.equal(combatDamage(definitions.units.infantry, buildings.house), units.infantry.combat.structureDamage);
+  assert.equal(combatDamage(definitions.units.infantry, units.worker), 0);
+});
+
+test('a specialized structure attacker may target only defense-tagged buildings', () => {
+  const definitions = structuredClone(GAMEPLAY_DEFINITIONS);
+  const siege = definitions.units['siege-engine'];
+  siege.combat.targetTags = ['defense'];
+  assert.equal(validateGameplayDefinitions(definitions), definitions);
+  assert.equal(canCombatTarget(siege, definitions.buildings.watchtower), true);
+  assert.equal(combatDamage(siege, definitions.buildings.watchtower), 48);
+  assert.equal(canCombatTarget(siege, definitions.buildings.house), false);
+  assert.equal(combatDamage(siege, definitions.buildings.house), 0);
+});
+
 test('mounted roster has real reconnaissance, raiding and Spearman counter tradeoffs', () => {
   assert.equal(combatDamage(units.spearman, units.rider), 23);
   assert.equal(combatDamage(units.archer, units.rider), 5);
