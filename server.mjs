@@ -27,6 +27,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deflateRawSync, inflateRawSync, constants as zlibConstants } from 'node:zlib';
 import { encodeWebSocketFrame, websocketFrameBytes } from './src/networking/websocket-frame.mjs';
+import { hasCompatiblePerMessageDeflateOffer } from './src/networking/websocket-deflate-offer.mjs';
 import { configuredPublicOrigins, sameOriginRequest } from './origin-policy.mjs';
 import {
   buildElevationGrid, capturePrerequisiteIds, findInvalidCapturePrerequisite,
@@ -7805,34 +7806,6 @@ function isSameOriginWebSocketRequest(request) {
   });
 }
 
-function hasCompatiblePerMessageDeflateOffer(request) {
-  const extensions = request.headers['sec-websocket-extensions'];
-  if (typeof extensions !== 'string') return false;
-  return extensions.split(',').some((offer) => {
-    const [extensionName, ...parameters] = offer.split(';');
-    if (extensionName.trim().toLowerCase() !== 'permessage-deflate') return false;
-    const seen = new Set();
-    for (const parameter of parameters) {
-      const [rawName, rawValue] = parameter.trim().split('=', 2);
-      const name = rawName.trim().toLowerCase();
-      if (seen.has(name)) return false;
-      seen.add(name);
-      if (name === 'client_no_context_takeover' || name === 'server_no_context_takeover') {
-        if (rawValue !== undefined) return false;
-        continue;
-      }
-      if (name === 'client_max_window_bits') {
-        if (rawValue !== undefined && !/^(?:8|9|1[0-5])$/.test(rawValue.trim())) return false;
-        continue;
-      }
-      // The server uses the default 15-bit window and cannot honor a smaller server window.
-      if (name === 'server_max_window_bits') return false;
-      return false;
-    }
-    return true;
-  });
-}
-
 const server = createServer(async (request, response) => {
   if (shuttingDown) {
     response.writeHead(503, { connection: 'close', 'cache-control': 'no-store' });
@@ -8132,7 +8105,7 @@ server.on('upgrade', (request, socket, head) => {
     return;
   }
   const selectedProtocol = requestedProtocols.includes('rts-v1') ? 'rts-v1' : null;
-  const compressionEnabled = hasCompatiblePerMessageDeflateOffer(request);
+  const compressionEnabled = hasCompatiblePerMessageDeflateOffer(request.headers['sec-websocket-extensions']);
   const accept = createHash('sha1').update(`${key}258EAFA5-E914-47DA-95CA-C5AB0DC85B11`).digest('base64');
   const handshake = [
     'HTTP/1.1 101 Switching Protocols',
