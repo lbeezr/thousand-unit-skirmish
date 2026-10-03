@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import { UnitLifecycleAudioGate, OrderAudioGate, workAudioEvents } from '../src/audio-policy.mjs';
 import { createWaterStudyFishBinding } from '../src/water-study-fish-binding.mjs';
 import { selectWaterStudyFish } from '../src/water-study-state.mjs';
+import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const declaration = (name, next) => source.slice(source.indexOf(`function ${name}(`), source.indexOf(`\nfunction ${next}(`));
@@ -36,7 +37,7 @@ function fixture(team) {
   }
   const noop = () => {};
   const context = vm.createContext({
-    applyLobby() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {} },
+    applyLobby() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {}, updateChat() {} },
     waterStudyFishBinding: { update(state, options) { fishUpdates.push({ state, options }); }, clear() {} },
     WebSocket, URL, performance: {now: () => 1000}, location: {protocol:'http:',host:'localhost'},
     document: {querySelector:element,querySelectorAll:() => []}, window: {clearTimeout:noop},
@@ -72,9 +73,66 @@ function fixture(team) {
     'setArmySize(24); connectSocket();',
   ].join('\n'),context);
   const connect = () => { vm.runInContext('connectSocket()',context); return connections.at(-1); };
-  const welcome = (connection,state) => connection.message({type:'welcome',map,maps:[],state,
+  const welcome = (connection,state,definition = map) => connection.message({type:'welcome',map:definition,maps:[],state,
     player:{team,isHost:team === 0,resumed:true}});
   return {context,connections,connect,welcome,element,counts,fishUpdates};
+}
+
+function resourceFixture(team) {
+  const f = fixture(team);
+  const node = { id: 'formerly-depleted-sheep', type: 'food', wildlifeSpecies: 'bellweather-sheep',
+    stock: 100, x: -0.5, z: -0.5 };
+  const definition = { ...map, resourceNodes: [node] };
+  Object.assign(f.context, { mapDefinition: definition, BUILDING_DEFINITIONS,
+    MAP_WIDTH: 16, MAP_HEIGHT: 16, MAP_HALF_X: 8, MAP_HALF_Z: 8,
+    latestResourceStocks: new Map(), latestForestStocks: new Map(), latestForestEpoch: 7,
+    forestTreeSlots: new Map(), setForestTreeVisual() {}, drawMinimap() {},
+    resourceNodeVisuals: new Map(), wildlifeRenderer: { reconcile() {}, isAvailable: () => false },
+    buildPlacementType: 'house', latestFood: [150, 150], latestWood: [250, 250], latestBuildings: [],
+    buildingFootprint: type => BUILDING_DEFINITIONS[type].footprint,
+    buildingWoodCost: type => BUILDING_DEFINITIONS[type].cost.wood,
+    formatResourceRequirement: String, worldAt: () => ({ x: node.x, z: node.z }),
+    selectedIds: () => [team * 12],
+  });
+  const rowsStart = source.indexOf('  if (Array.isArray(state.resourceNodes))', source.indexOf('function updateEconomyUI('));
+  const rows = source.slice(rowsStart, source.indexOf('  if (ui.foodStock)', rowsStart));
+  // Keep actual socket/applyState receipt ordering and actual stock/preview code;
+  // omit unrelated economy DOM work and rendering objects from this fixture.
+  vm.runInContext([
+    source.slice(source.indexOf('function applyForestState('), source.indexOf('\nlet terrainSurface')),
+    declaration('updateResourceNodeVisual', 'updateResourceNodeCallouts'),
+    `function updateEconomyUI(state = {}) {\n${rows}\n}`,
+    declaration('buildPlacementAt', 'updateBuildPlacementGhost'),
+  ].join('\n'), f.context);
+  const packet = (overrides = {}) => ({ ...snapshot(team, { elapsed: 100 }),
+    forestEpoch: 7, forestStocks: [], resourceNodes: [{ ...node, stock: 0, wildlifeState: 'depleted' }], ...overrides });
+  f.connections[0].message(packet());
+  assert.equal(f.context.latestResourceStocks.get(node.id), 0);
+  assert.equal(f.context.buildPlacementAt(0, 0).valid, true);
+  return { ...f, node, definition, packet };
+}
+
+for (const team of [0, 1]) {
+  test(`seat ${team} hidden rematch resource restores construction exclusion on its reset epoch`, () => {
+    const f = resourceFixture(team), connection = f.connections[0];
+    connection.message(f.packet({ resourceNodes: [] }));
+    assert.equal(f.context.buildPlacementAt(0, 0).valid, true, 'ordinary fog omissions retain disclosed depletion');
+    connection.message(f.packet({ forestEpoch: 8, matchElapsedSeconds: 0, tick: 0, resourceNodes: [] }));
+    assert.equal(f.context.latestResourceStocks.get(f.node.id), 100);
+    assert.equal(f.context.buildPlacementAt(0, 0).blockedReason, 'RESOURCE IN THIS SITE');
+    connection.message(f.packet({ forestEpoch: 8, matchElapsedSeconds: 1, tick: 10 }));
+    assert.equal(f.context.buildPlacementAt(0, 0).valid, true, 'same-match disclosed depletion still releases the site');
+  });
+
+  test(`seat ${team} same-map welcome clears hidden resource depletion even when a fresh server reuses its epoch`, () => {
+    const f = resourceFixture(team), current = f.connect();
+    f.welcome(current, f.packet({ resourceNodes: [] }), f.definition);
+    assert.equal(f.context.latestForestEpoch, 7, 'numeric epoch alone cannot identify a fresh server');
+    assert.equal(f.context.latestResourceStocks.get(f.node.id), 100);
+    assert.equal(f.context.buildPlacementAt(0, 0).blockedReason, 'RESOURCE IN THIS SITE');
+    f.welcome(current, f.packet(), f.definition);
+    assert.equal(f.context.buildPlacementAt(0, 0).valid, true, 'welcome applies currently disclosed stock after clearing knowledge');
+  });
 }
 
 test('accepted state packets alone drive fish cues through recovery, omitted stocks and seat changes', () => {

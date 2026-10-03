@@ -14,11 +14,45 @@ syntax and runs focused logic, gameplay, map, PvE, visibility, recovery, asset
 contract, room, and release scenarios. CI uses Node 24. Browser/GPU appearance
 captures and sustained performance runs are separate.
 
+The [CI workflow](../.github/workflows/ci.yml) runs in the repository receiving
+the event. Its checkout uses that repository and event ref, so it does not
+depend on the upstream `lbliii/thousand-unit-skirmish` repository. The active
+fork is [lbeezr/thousand-unit-skirmish](https://github.com/lbeezr/thousand-unit-skirmish).
+Pushes to `main`, pull requests, and manual runs use the same checks. The workflow
+needs only the built-in read-only GitHub token; it uses no repository secrets
+and does not deploy to Railway.
+
 GitHub runs three independent jobs with `npm test -- --shard=1/3` (and `2/3`,
 `3/3`). Each registered check runs exactly once across those jobs; release
 packaging runs in job 1. Local `npm test` still runs the complete suite in order.
 `node scripts/ci.mjs --list` prints the registry without starting fixtures, and
 accepts the same shard option for coverage inspection.
+
+### Enable and verify fork CI
+
+Open the fork's [Actions page](https://github.com/lbeezr/thousand-unit-skirmish/actions).
+If GitHub offers to enable inherited workflows, enable them; if CI is individually
+disabled, enable that existing workflow. A missing run alone does not establish
+why CI is unavailable. With an already authorized GitHub CLI connection:
+
+```sh
+gh api repos/lbeezr/thousand-unit-skirmish/actions/workflows/ci.yml --jq '{id, state, path}'
+gh workflow enable ci.yml --repo lbeezr/thousand-unit-skirmish
+gh workflow run ci.yml --repo lbeezr/thousand-unit-skirmish --ref main
+gh run list --repo lbeezr/thousand-unit-skirmish --workflow ci.yml --commit COMMIT_SHA
+```
+
+Enable only when the returned state is disabled. Manual dispatch becomes
+available after the workflow containing `workflow_dispatch` reaches `main`.
+Select the intended branch/ref, then verify the run's `head_sha`, event,
+conclusion, and all three shard results against the intended commit. A PR run
+tests GitHub's merge ref by default; its head SHA identifies the proposed
+commit, while the push run validates the final `main` commit after merging.
+Zero runs or zero checks is unavailable CI, not a pass. Do not create a second
+workflow, add deployment tokens, broaden app permissions, or weaken repository
+rules to work around missing access. See the
+[deployment guide](deployment.md#github-source-and-deployment-triggers) for
+Railway's separate source and CI-wait settings.
 
 Use checks proportionate to a change, then run required repository checks.
 For client import/module changes, include
@@ -73,6 +107,7 @@ Run from the repository root:
 | Queue HUD metadata under backpressure | `node --test scripts/waypoint-backpressure.test.mjs` |
 | Route repair after construction | `node scripts/live-attack-move-repair-scenario.mjs` |
 | Research and rewards | `node scripts/research-scenario.mjs` |
+| [Food-only Mill evidence](qa-mill-food-dropoff-2026-10-03.md): contract/menu, paid construction, deposits, ownership and lifecycle recovery | `node --test scripts/mill-contract.test.mjs scripts/roster-building-ui.test.mjs` and `node scripts/mill-scenario.mjs` |
 | Paid mature settlement, all current roles, restart and host reset | `node scripts/mature-settlement-scenario.mjs` and `--reverse-seats`; [inspection checkpoint and scope](qa-mature-settlement-2026-10-02.md) |
 | Map persistence / timed events | `node scripts/map-persistence-scenario.mjs` / `node scripts/timed-event-scenario.mjs` |
 | Deadline victory | `node scripts/timed-victory-scenario.mjs` |
@@ -243,6 +278,9 @@ Pregame regressions: `node --test scripts/room-pregame.test.mjs scripts/room-lob
 and `node scripts/room-pregame-scenario.mjs` cover the [lobby contract](room-lobby.md),
 including both-client authority, paused scenarios, launch races and seat/phase
 recovery. Existing supervisor/PvE/expiry scenarios remain the legacy-flow checks.
+
+Chat regressions are in `scripts/room-lobby-chat.test.mjs`,
+`scripts/room-lobby-chat-ui.test.mjs` and `scripts/room-lobby-chat-scenario.mjs`.
 
 Separate logic, protocol, browser appearance, local performance, deployed
 behavior, and human comprehension. A pass in one category does not establish

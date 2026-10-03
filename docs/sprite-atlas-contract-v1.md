@@ -8,6 +8,10 @@ manifest establishes packaging integrity, not renderer adoption or visual approv
 
 Normative schema: [sprite-atlas-pack-v1.schema.json](../schemas/sprite-atlas-pack-v1.schema.json).
 
+Generated action strips enter this format through the
+[strip adoption contract](sprite-strip-adoption-contract.md), preserving declared
+scale, ground anchors, seed color/mask identity, direction and timing.
+
 ## Validate, preview, and report
 
 ```sh

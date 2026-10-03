@@ -1,5 +1,11 @@
 import { validWildlifeNodeDefinition, validWildlifeNodeState } from './wildlife-state.mjs';
 import { createStaticSheepRuntime } from './sheep-static-preview.mjs';
+import { normalizedDirection } from './unit-sprite-runtime.mjs';
+
+function staticPose(definition) {
+  return { stateId: 'idle', directionId: normalizedDirection((definition.wildlifeNoseYawDegrees ?? 0) * Math.PI / 180),
+    moving: false, visible: true };
+}
 
 // Stationary neutral resource presentation. Nose pose is not movement direction.
 export const WILDLIFE_RENDER_REGISTRY = Object.freeze({
@@ -93,6 +99,7 @@ export function createNeutralWildlifeRenderer({
         || !Number.isFinite(definition.stock) || definition.stock <= 0) continue;
       const group = new THREE.Group();
       const fallbacks = fallbackMeshes(THREE);
+      fallbacks.alive.rotation.y = (definition.wildlifeNoseYawDegrees ?? 0) * Math.PI / 180;
       group.add(fallbacks.alive, fallbacks.carcass); group.visible = false;
       group.userData.wildlifeNodeId = definition.id;
       scene.add(group);
@@ -113,11 +120,12 @@ export function createNeutralWildlifeRenderer({
       record.state = duplicate.has(id) ? 'hidden'
         : wildlifePresentation(record.definition, rows.get(id), isVisible(record.definition));
       // Hide immediately on snapshot arrival, before the next render frame.
+      const artAvailable = record.state === 'alive' && Boolean(template?.supports(staticPose(record.definition)));
       record.group.visible = record.state === 'alive' || record.state === 'carcass';
-      record.alive.visible = record.state === 'alive' && !template;
+      record.alive.visible = record.state === 'alive' && !artAvailable;
       record.carcass.visible = record.state === 'carcass';
-      if (record.art) record.art.visible = record.state === 'alive' && Boolean(template);
-      record.mode = record.state === 'alive' ? template ? 'static-illustration' : 'sheep-proxy'
+      if (record.art) record.art.visible = artAvailable;
+      record.mode = record.state === 'alive' ? artAvailable ? 'static-illustration' : 'sheep-proxy'
         : record.state === 'carcass' ? 'food-cache-marker' : 'hidden';
     }
   }
@@ -130,7 +138,7 @@ export function createNeutralWildlifeRenderer({
       group.position.set(definition.x, y, definition.z);
       if (record.state !== 'alive' || !template) continue;
       const shown = template.update({
-        stateId: 'idle', directionId: 'north', moving: false, visible: true,
+        ...staticPose(definition),
         x: 0, groundY: 0, z: 0,
       }, camera);
       if (!record.art && shown) {
@@ -138,6 +146,7 @@ export function createNeutralWildlifeRenderer({
         group.add(record.art);
       }
       if (record.art) {
+        record.art.geometry = template.mesh.geometry;
         record.art.visible = shown;
         record.art.position.copy(template.mesh.position);
         record.art.quaternion.copy(template.mesh.quaternion);

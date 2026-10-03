@@ -46,6 +46,60 @@ The UI distinguishes waiting for audio unlock, muted, silent mix, and unavailabl
 output. Audition controls use the current mix; critical samples also show their
 caption when captions are enabled.
 
+Storage is best effort: denied reads use defaults, and a failed write keeps the
+live mix working while a new instance sees the prior durable preferences (or
+defaults). A later edit retries saving. Legacy ambience level migrates to music
+when no valid music level is stored; legacy ambience mute keeps migrated music
+at zero. Explicit zero levels survive reload. Opening audio does not rewrite
+preferences; an intentional settings edit saves the full normalized mix.
+`node --test scripts/audio-settings.test.mjs` exercises fresh-instance round trips,
+migration, malformed JSON, denied storage, failed/recovered writes and disposal.
+The 2026-10-03 fixtures reproduced no runtime defect; this coverage adds no
+settings behavior change or promise of persistence when browser storage fails.
+
+## Short Mac listening session
+
+Use Node 24 and Chrome on Mac, from the repo root:
+
+```sh
+npm ci
+node --test scripts/audio-settings.test.mjs scripts/audio-music-lifecycle.test.mjs scripts/audio-cue-lifecycle.test.mjs scripts/audio-decoded-cache.test.mjs scripts/audio-shared-decode.test.mjs
+npm start
+```
+
+Open [localhost:4173](http://127.0.0.1:4173), start a disposable solo match and
+open Audio settings. Allow about ten minutes; use a comfortable headphone level.
+
+1. Enable audio and Regional ambience. Set Overall volume to 25%, Effects/Voice
+   to 100%, Music to 50% and Ambience to 40%. Try a cue, mute audio, then reload.
+   Confirm the mute and slider values
+   survived; re-enable audio and click once to activate it. Also save Music at
+   0%, reload and confirm it stays at zero before restoring 50%.
+2. On Bellweather · Millrace, listen briefly, switch tabs for five seconds and
+   return. Quickly toggle Enable audio, then Music 0%/50%, then Overall volume
+   0%/25%. Listen for one returning music loop, with no doubled entrance or stale
+   burst. Change to The Underbough and check that the old regional bed stops.
+3. Change to Fortified Crossing for its shipped technical cues. Stop nearby
+   workers so the quiet check has no ongoing work sounds. Select a worker and
+   issue Move; interrupt with Effects 0% or a tab switch, restore and wait quietly.
+   Old acknowledgements should stay stopped. After a second, issue a fresh order
+   and expect one acknowledgement. Then compare gathering wood/food: fresh work
+   cues every 1.5 seconds are expected. Close the match tab; sound should stop.
+   These recordings use Effects, not Voice.
+4. Repeat a few orders, then use Refresh decisions in Audio settings to identify
+   any silence or repeated acknowledgement. The tests above force delayed-decode,
+   Voice, disposal and shared-source races; ordinary listening alone cannot prove
+   one decode or the 24 MiB cache bound.
+5. Open `/audio-zones.html`. Compare the existing Bellweather and Underbough music
+   and landscape beds at similar perceived loudness, then try command cues over
+   each. Aim for Bellweather's warmth and Underbough's curious, watchful intimacy,
+   with orders still clear. Record one useful mix or masking change; audition
+   whole music takes separately because they are not synchronized stems.
+
+Keep a short note: commit, Chrome version, headphones/output, mix, and the action
+that caused a repeat, missing cue or seam. This recipe is prepared for Mac;
+cloud scheduling tests are not a completed listening session.
+
 ## Recognition check
 
 Audio settings offers ten shuffled trials: two each of move, attack, victory,

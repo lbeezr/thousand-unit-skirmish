@@ -12,7 +12,8 @@ let orderToken = 700;
 const observedClients = [];
 function observe(clients) { observedClients.push(...clients); return clients; }
 function assertLiveFishCues() {
-  const evidence = { packets: 0, activeBySeat: [0, 0], depleted: 0, fogSuppressed: 0 };
+  const evidence = { packets: 0, activeBySeat: [0, 0], depleted: 0, fogSuppressed: 0,
+    fishingWorkersBySeat: [0, 0] };
   for (const client of observedClients) {
     const binding = createWaterStudyFishBinding(map, { userData: {
       updateWaterStudyFish: snapshot => selectWaterStudyFish(map, snapshot),
@@ -21,6 +22,17 @@ function assertLiveFishCues() {
       const state = message.type === 'state' ? message : message.state;
       if (!state || state.mapId !== map.id) continue;
       evidence.packets++;
+      for (const row of state.units) {
+        if (row[16] === undefined || row[16] === null) continue;
+        assert.equal(row[16], 'shore-fish');
+        assert.equal(row[1], client.welcome.player.team, 'fog never discloses enemy work identity');
+        assert.equal(row[5], 'worker'); assert.equal(row[9], 'gathering'); assert.equal(row[7], 'food');
+        const target = sites[row[1]].water;
+        const expectedHeading = Math.atan2(target.x - row[2], target.z - row[3]);
+        const error = Math.atan2(Math.sin(row[15] - expectedHeading), Math.cos(row[15] - expectedHeading));
+        assert.ok(Math.abs(error) < 0.02, 'actual worker heads toward water; wire positions round to .01');
+        evidence.fishingWorkersBySeat[row[1]]++;
+      }
       const schools = binding.update(state);
       const packed = state.visibility ? Buffer.from(state.visibility.data, 'base64') : null;
       const visible = cell => !map.fogOfWar || (packed && ((packed[cell >> 2] >> ((cell & 3) * 2)) & 3) === 2);
@@ -41,6 +53,7 @@ function assertLiveFishCues() {
     }
   }
   assert.ok(evidence.activeBySeat.every(count => count > 0));
+  assert.ok(evidence.fishingWorkersBySeat.every(count => count > 0), 'both seats emit distinct fishing work');
   assert.ok(evidence.depleted > 0 && evidence.fogSuppressed > 0);
   return evidence;
 }

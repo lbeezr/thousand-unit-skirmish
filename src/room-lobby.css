@@ -23,3 +23,11 @@
 #room-lobby button:disabled { cursor: default; opacity: .55; }
 #room-lobby a { color: #d5ef78; margin-left: auto; }
 #room-lobby [hidden] { display: none; }
+.room-lobby-chat { margin-top: 18px; border-top: 1px solid #65715d; }
+.room-lobby-chat h3 { margin-bottom: 8px; font-size: 16px; }
+#lobby-chat-log { max-height: 150px; overflow: auto; padding: 0; list-style: none; overflow-wrap: anywhere; }
+#room-lobby .room-lobby-chat li { padding: 5px 0; }
+.room-lobby-chat form { display: flex; gap: 8px; align-items: end; }
+#room-lobby .room-lobby-chat label { flex: 1; min-width: 0; margin: 0; }
+#lobby-chat-text { width: 100%; box-sizing: border-box; margin-top: 4px; padding: 8px; }
+#lobby-chat-status { color: #b5c2ad; font-size: 12px; }

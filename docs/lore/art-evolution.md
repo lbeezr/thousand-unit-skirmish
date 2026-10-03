@@ -66,6 +66,24 @@ remain available. This folder tracks 42 source PNGs (67,093,682 bytes), includin
 failed and revised candidates. Its prompt and coverage records preserve the
 distinction between source availability and acceptance.
 
+## Private Worker fishing study — 3 October 2026
+
+The [Worker fishing record](../worker-fishing-animation.md) preserves a new
+four-key south-east hand-net study against the approved shipped Human Worker:
+crouch, reach, retrieve and collect. The private Library pose sheet, timed WebP
+and source/runtime archive retain the exact generation request, original output,
+seed, rejected/draft prompt distinction, hashes, extraction bounds and explicit
+ground registration. Its source remains private; this wiki publishes no new
+candidate pixels. No paid Meshy task or credits were used.
+
+The study is one actual heading and a blocking loop, with scale/root and creative
+acceptance pending. It does not establish eight directional clips or regional
+fishing lore. The default code integration keeps resource authority on land,
+faces the derived water spot, and uses safe shipped-art fallbacks until approved
+fishing keys are installed. Browser sandbox/storage failure leaves GPU appearance
+and live loop review unobserved. The linked record names each Library identity
+and the normalizer pitfalls that this pilot avoids.
+
 ## Other preserved families
 
 | Family | Saved source and evolution context |

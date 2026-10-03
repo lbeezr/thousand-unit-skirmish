@@ -33,7 +33,7 @@ function fixture() {
     zoom: 0.5, defaultCameraZoom: 0.91, cameraMinZoom: 0.1, mapFitActive: true,
     setConnection() {}, buildMap() {}, setMapCatalog() {}, setArmySize() {}, loadMapAudio() {},
     applyState() {}, updateRoomUI() {}, showToast() {}, resize() {},
-    applyLobby() {}, roomLobby: { disconnect() {} },
+    applyLobby() {}, roomLobby: { disconnect() {}, updateChat() {} },
     setPlayer(player) { context.localTeam = Number.isInteger(player.team) ? player.team : null; },
     centerCameraOnHomeBase() { centers.push(context.localTeam); },
   });
