@@ -10,7 +10,7 @@ import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
 process.env.RTS_MAP='maps/open-field.json';process.env.RTS_GAME_MODE='pvp';process.env.RTS_PREGAME='0';
 delete process.env.RTS_MATCH_STATE_PATH;
-export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true}={}) {
+export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true,parkOrder=null}={}) {
   const map=pathingBaselineMap({group:64}),fixture=await createPathingReplayFixture(map),r=fixture.replay;
   try {
     const army=r.units.filter(u=>u.team===team&&u.kind==='infantry'),ids=army.map(u=>u.id);
@@ -35,6 +35,17 @@ export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true
       while((worker.movePlanningPending||worker.pathIndex<worker.path.length)&&r.tick-workerReturnStart<2700)r.step();
       assert.equal(worker.pathIndex,worker.path.length);
     }
+    if(parkOrder) {
+      assert.ok(!returnBuilder&&['stop','holdPosition'].includes(parkOrder));
+      const label=parkOrder==='stop'?'STOP':'HOLD POSITION';
+      assert.ok(r.order(team,{type:parkOrder,ids:[worker.id],unitGenerations:[worker.generation]})
+        .some(n=>n.message.startsWith(label+' ORDER')));
+    }
+    const workerIntent=()=>({x:worker.x,z:worker.z,holdingPosition:worker.holdingPosition,
+      orderRevision:worker.orderRevision,moveGoalCell:worker.moveGoalCell,path:worker.path.slice(),
+      queuedWaypoints:worker.queuedWaypoints.slice(),buildingTargetId:worker.buildingTargetId,
+      gatherPhase:worker.gatherPhase,gatherNodeId:worker.gatherNodeId});
+    const parkedIntent=workerIntent();
     r.order(team,{type:'move',ids,x:-8.5,z:.5});r.drain();
     r.order(team,{type:'move',ids,x:16.5,z:.5,queue:true});r.drain();
     const requested=army.map(u=>u.queuedWaypoints[0].destination),current=army.map(u=>u.moveGoalCell);
@@ -46,14 +57,20 @@ export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true
     assert.deepEqual(army.map(u=>u.moveGoalCell),current);
     assert.deepEqual(army.map(u=>u.queuedWaypoints[0].destination),requested,'close preserves future queue intent');
     const trace=createHash('sha256');let invalidSteps=0,unreachableGoals=0;
+    const progress=new Map(army.map(u=>[u.id,{goal:u.moveGoalCell,remaining:Infinity,tick:r.tick,max:0}]));
     const done=u=>!u.queuedWaypoints.length&&!u.movePlanningPending&&u.pathIndex===u.path.length
       &&Math.hypot(u.x-r.point(u.moveGoalCell).x,u.z-r.point(u.moveGoalCell).z)<.02;
     while(r.tick-startTick<2700&&!army.every(done)) {
       const previous=army.map(u=>r.cell(u.x,u.z));r.step();
+      if(!returnBuilder)assert.deepEqual(workerIntent(),parkedIntent,'parked Worker keeps position and command intent');
       for(let i=0;i<army.length;i++) {
         const u=army[i],cell=r.cell(u.x,u.z);
         if(!canTraverseUnitStep(previous[i],cell,map.width,r.levels,r.isWalkable))invalidSteps++;
         if(r.components[cell]!==r.components[u.moveGoalCell])unreachableGoals++;
+        const p=progress.get(u.id);let x=u.x,z=u.z,remaining=0;
+        for(const c of u.path.slice(u.pathIndex)){const q=r.point(c);remaining+=Math.hypot(q.x-x,q.z-z);x=q.x;z=q.z;}
+        if(p.goal!==u.moveGoalCell||remaining<p.remaining-.05){p.goal=u.moveGoalCell;p.remaining=remaining;p.tick=r.tick;}
+        if(!done(u))p.max=Math.max(p.max,r.tick-p.tick);
       }
       trace.update(JSON.stringify(army.map(u=>[u.id,u.x,u.z,u.moveGoalCell,u.pathIndex,u.path,u.orderRevision,u.movePlanningPending,u.queuedWaypoints]))+'\n');
     }
@@ -64,7 +81,8 @@ export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true
     assert.ok(goals.every(c=>!gate.footprint.includes(c)));
     return {team,group:64,sourceSha256:fixture.sourceSha256,ticks:r.tick-startTick,arrived,
       distinctGoals:new Set(goals).size,requested,goals,invalidSteps,unreachableGoals,
-      onlyNamedBuilder:true,builderReturned:returnBuilder,unblockedDestinationsPreserved:true,
+      onlyNamedBuilder:true,builderReturned:returnBuilder,parkOrder,parkedIntentPreserved:!returnBuilder,
+      maxNoProgressTicks:Math.max(...[...progress.values()].map(p=>p.max)),unblockedDestinationsPreserved:true,
       unfinished:army.filter(u=>!done(u)).map(u=>({id:u.id,x:u.x,z:u.z,goal:r.point(u.moveGoalCell),pathIndex:u.pathIndex,pathLength:u.path.length})),
       builderPosition:{x:worker.x,z:worker.z},traceSha256:trace.digest('hex')};
   } finally {await fixture.dispose();}
@@ -73,7 +91,8 @@ if(process.argv[1]===fileURLToPath(import.meta.url)) {
   const records=[];
   for(const team of [0,1]) {
     const runs=[];for(let i=0;i<2;i++)runs.push(await runQueuedGateCase({team,
-      observe:process.argv.includes('--observe'),returnBuilder:!process.argv.includes('--park-builder')}));
+      observe:process.argv.includes('--observe'),returnBuilder:!process.argv.includes('--park-builder'),
+      parkOrder:process.argv.includes('--hold-builder')?'holdPosition':process.argv.includes('--stop-builder')?'stop':null}));
     assert.equal(runs[0].traceSha256,runs[1].traceSha256);
     records.push({team,runs});console.log(JSON.stringify({team,ticks:runs[0].ticks,arrived:runs[0].arrived,distinctGoals:runs[0].distinctGoals,repeatExact:true}));
   }
