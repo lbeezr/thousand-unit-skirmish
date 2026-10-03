@@ -8,6 +8,14 @@ Bindings resolve from a role, action, and resource (for example `unit.worker.gat
 
 The match decodes local Blobs on demand, limiting each composition to 24 MiB of decoded PCM, keeping a 24 MiB decoded-source cache, and allowing at most eight simultaneous sampled cues. A source over 16 MiB, unsupported codec, invalid trim, or decode failure is reported in the sound panel and falls back to synthesis. Music compositions use the shared Web Audio timeline player; map switches stop prior playback. The master, effects, voice, music, and ambience controls are saved under `tus-audio-v1`. Existing settings migrate with voice at 100% and music from the previous ambience level, with a previously disabled ambience setting keeping music muted.
 
+Profile music waits for a running audio context. Hiding the page, muting music or
+the master, setting master volume to zero, switching maps and disposing audio
+cancel both pending player-module loads and source decodes. Returning to an
+audible visible page starts one fresh loop; overlapping activation callbacks
+share the current load. Check: `node --test scripts/audio-music-lifecycle.test.mjs`.
+This uses a simulated Web Audio context and proves scheduling/cancellation,
+not browser listening, loop quality or human recognition.
+
 Focused checks: `node scripts/audio-runtime-scenario.mjs`, `node scripts/audio-runtime-playback-scenario.mjs`, `node scripts/audio-composition-player-scenario.mjs`, `node scripts/audio-policy-scenario.mjs`, and `node scripts/map-persistence-scenario.mjs`. The persistence check needs permission to bind a local loopback port.
 
 ## Unit lifecycle bindings
@@ -62,3 +70,11 @@ Checks: `node --test scripts/audio-shipped-loader.test.mjs scripts/audio-executi
 empty browser contexts: each fetches verified content, decodes all three distinct
 work bindings and stops them without importing a pack. It proves browser playback
 scheduling, not a human listening or discoverability session.
+
+## Next bounded audio slice
+
+Cancel pending sampled command/selection cues across hide/return and bus-mute
+transitions. A deferred selection voice decode can currently complete after a
+hide/return cycle, or schedule on a bus muted during decoding. Add cue lifecycle
+invalidation and recheck the selected bus before scheduling, with focused deferred
+decode regressions; preserve existing routing, cooldowns, captions and assets.
