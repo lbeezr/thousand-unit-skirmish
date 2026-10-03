@@ -46,6 +46,7 @@ the build they name.
 | Understand runtime boundaries and files | [Architecture](architecture.md) |
 | Run focused checks, browser scenarios, or measurements | [Testing](testing.md) |
 | Change commands, snapshots, or bot observations | [Gameplay contract](gameplay-command-observation-contract.md) |
+| Understand missing Stone/gold/copper and the next integration contract | [Mineral readiness audit](mineral-economy-readiness.md) |
 | Understand overload behavior | [Simulation timing](simulation-timing.md) |
 | Author and validate scenario JSON | [Map authoring](map-authoring.md) |
 | Inspect isolated water routes before dock/boat integration | [Water navigation foundation](water-navigation-foundation.md) |
