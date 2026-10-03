@@ -1,0 +1,391 @@
+{
+  "head": "8b7d5a2bccb6221337c0995664e98295b69303a0",
+  "sourceSha256": "216ef785a7a7a42edb812bb85f5c3bea023ffd313706c183092e856c41961737",
+  "team": 1,
+  "map": {
+    "id": "pathing-large-single-choke-996-seat-1",
+    "name": "PATHING BASELINE",
+    "width": 128,
+    "height": 128,
+    "terrainSeed": 881,
+    "fogOfWar": false,
+    "spawnPoints": [
+      {
+        "team": 0,
+        "x": -36,
+        "z": -44
+      },
+      {
+        "team": 1,
+        "x": 36,
+        "z": 0
+      }
+    ],
+    "startingArmySize": 2000,
+    "startingResources": {
+      "food": 500,
+      "wood": 500
+    },
+    "resourceNodes": [],
+    "triggers": [],
+    "scenarioEvents": [],
+    "obstacles": [
+      {
+        "id": "north-wall",
+        "column": 64,
+        "row": 0,
+        "width": 1,
+        "height": 64,
+        "material": "stone"
+      },
+      {
+        "id": "south-wall",
+        "column": 64,
+        "row": 65,
+        "width": 1,
+        "height": 63,
+        "material": "stone"
+      }
+    ]
+  },
+  "roster": 2000,
+  "selected": 996,
+  "arrived": 996,
+  "midTick": 180,
+  "arrivalTicks": 2040,
+  "orders": [
+    {
+      "tick": 69,
+      "type": "move",
+      "selected": 996,
+      "x": -16.5,
+      "z": 0.5,
+      "notice": "MOVE ORDER \u00b7 996 UNITS"
+    },
+    {
+      "tick": 2070,
+      "type": "stop",
+      "selected": 8,
+      "x": null,
+      "z": null,
+      "notice": "STOP ORDER \u00b7 8 UNITS"
+    },
+    {
+      "tick": 2070,
+      "type": "move",
+      "selected": 8,
+      "x": -44.5,
+      "z": -28.5,
+      "notice": "MOVE ORDER \u00b7 8 UNITS"
+    },
+    {
+      "tick": 2070,
+      "type": "move",
+      "selected": 24,
+      "x": -44.5,
+      "z": -24.5,
+      "notice": "MOVE ORDER \u00b7 8 UNITS"
+    }
+  ],
+  "activeRouteRestart": true,
+  "stopPreserved": 8,
+  "replacementPreserved": 8,
+  "idleRestart": true,
+  "replacementResults": [
+    {
+      "id": 1012,
+      "goal": 4370,
+      "revision": 3
+    },
+    {
+      "id": 1013,
+      "goal": 4371,
+      "revision": 3
+    },
+    {
+      "id": 1014,
+      "goal": 4372,
+      "revision": 3
+    },
+    {
+      "id": 1015,
+      "goal": 4498,
+      "revision": 3
+    },
+    {
+      "id": 1016,
+      "goal": 4499,
+      "revision": 3
+    },
+    {
+      "id": 1017,
+      "goal": 4500,
+      "revision": 3
+    },
+    {
+      "id": 1018,
+      "goal": 4626,
+      "revision": 3
+    },
+    {
+      "id": 1019,
+      "goal": 4627,
+      "revision": 3
+    }
+  ],
+  "initialPlanning": [
+    {
+      "orderId": 1,
+      "team": 1,
+      "mode": "shared-start",
+      "unitCount": 996,
+      "searchCount": 976,
+      "expandedCells": 481703,
+      "planningSliceCount": 147,
+      "maxPlanningSliceWorkItems": 8,
+      "maxPlanningSliceExpandedCells": 5146,
+      "nonEmptyPaths": 996,
+      "routeFailures": 0
+    }
+  ],
+  "overlappingPlanning": [
+    {
+      "orderId": 2,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 3,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 4,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 5,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 6,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 7,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 8,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 9,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 10,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 11,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 12,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 13,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 14,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 15,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 16,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 17,
+      "team": -1,
+      "mode": "blocked-route-repair",
+      "unitCount": 1,
+      "searchCount": 1,
+      "expandedCells": 58,
+      "planningSliceCount": 2,
+      "maxPlanningSliceWorkItems": 1,
+      "maxPlanningSliceExpandedCells": 58,
+      "nonEmptyPaths": 1,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 19,
+      "team": 1,
+      "mode": "shared-start",
+      "unitCount": 8,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 3,
+      "maxPlanningSliceWorkItems": 8,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 8,
+      "routeFailures": 0
+    },
+    {
+      "orderId": 18,
+      "team": 1,
+      "mode": "shared-start",
+      "unitCount": 8,
+      "searchCount": 0,
+      "expandedCells": 0,
+      "planningSliceCount": 5,
+      "maxPlanningSliceWorkItems": 8,
+      "maxPlanningSliceExpandedCells": 0,
+      "nonEmptyPaths": 8,
+      "routeFailures": 0
+    }
+  ],
+  "limits": [
+    "actual asynchronous two-seat loopback server; natural roster and ordinary commands, no actor injection",
+    "no renderer, deployment, comparable hardware speedup or supported capacity claim"
+  ]
+}

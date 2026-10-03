@@ -21,7 +21,7 @@ Skiff owner; art, rendering and map rules remain with their respective lanes.
 | Rank / status | Outcome and next action | Write boundary / dependency | Acceptance |
 | --- | --- | --- | --- |
 | 1 · active | Replace timer-selected planning work with deterministic destination/node budgets. Reproduce fast/delayed-clock service differences, then make one bounded correction. | `processMovePlanningSlice`, its work limits and diagnostics; pathing tests. No combat-loop edit. | Identical service work under changed clock observations; bounded destination attempts; whole-search node budget with documented atomic-search overshoot; stale Stop/replacement guards and waiting-order fairness; both-seat large-route traces, native planning/restart, focused review and postmerge checks. |
-| 2 · next | Establish both-seat 2,000-roster route completion and separation-work baseline; select a steering change only if a repeated failure or measured work bottleneck justifies one. | Movement test adapter and crowd scenarios first; `getMoveVector`/local-detour edits require exact shared boundary if combat also edits them. | All 996 selected units reach their assigned goals, zero illegal terrain steps, independent repeat hashes, unchanged idle/Stop/Hold intent, bounded stale/repair work. Record operation counts; no hardware speedup claim from an unisolated host. |
+| 2 · next | Reduce the preserved parked-formation replacement stall to a repeatable case, comparing current and baseline source before selecting a steering correction. Both-seat 2,000-roster route completion is already measured. | Movement test adapter and crowd scenarios first; `getMoveVector`/local-detour edits require exact shared boundary if combat also edits them. | Reproduce the two-unit stall independently, then prove selected replacements arrive while idle/Stop/Hold actors retain intent and position; zero illegal steps, both-seat repeat hashes and operation counts. No hardware speedup claim from an unisolated host. |
 | 3 · pending dependency | Move completed path results into an agreed authoritative tick phase if the current asynchronous application contract needs correction. Inspect accepted-tick/result generations before proposing changes. | Shared command/tick pipeline with combat owner. | Same accepted command log gives the same committed outcomes; replacement/Stop cancels old results; FIFO/fair queue service and recovery remain correct. Do not equate fixed slice budgets with a completed tick-pipeline redesign. |
 | 4 · pending capture | Complete the corrected rendered 2,000-unit workload through paid economy, combat and restart. | Existing browser workload; identified sandboxed WebGL2/runtime and device/network profile. | Actual rendered run, authoritative goals/positions, paid work and recovery. Native/tool-only checks cannot close the render/deployed acceptance gap. |
 
@@ -37,6 +37,12 @@ All reach their assigned goals by tick 2,018 with zero illegal or disconnected
 steps. Its initial planning job reports 943 searches and 472,109 expanded cells.
 Host timings are observational. A durable mirrored probe is the next baseline;
 the initial scene is retained separately rather than silently substituted.
+
+The [planning QA](qa-move-planning-work-2026-10-03.md) now retains the durable
+mirrored 128×128 baseline, unchanged candidate traces and native recovery.
+Both initial 996-unit routes complete. An additional replacement into a parked
+formation leaves two seat-1 Infantry stalled; this remains the next narrow
+correctness investigation, separate from the deterministic planning correction.
 
 `processMovePlanningSlice` currently stops work by elapsed milliseconds. A
 clock-independent service budget is the first concrete contract correction;

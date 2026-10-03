@@ -73,3 +73,21 @@ test('a waiting order receives a turn before a large order finishes',()=>{
   assert.ok(f.job.assignments.some(a=>!a.applied),'large job remains unfinished after its bounded turn');
   assert.equal(f.context.activeMovePlanningJob,second);
 });
+test('later slices reject dead or recycled actors and a cancelled match epoch',()=>{
+  const f=fixture();f.slice();
+  f.units[8].hp=0;
+  const recycled=f.units[9];f.units[9]={...recycled,orderRevision:2,path:[999]};
+  f.slice();
+  assert.ok(!f.searches.includes(108)&&!f.searches.includes(109));
+  assert.deepEqual(f.units[9].path,[999]);
+  const before=f.searches.slice();f.context.movePlanningEpoch++;
+  f.slice();assert.deepEqual(f.searches,before);assert.equal(f.context.activeMovePlanningJob,null);
+});
+test('stale empty start groups consume bounded turns even without a route search',()=>{
+  const f=fixture();for(const u of f.units)u.orderRevision++;
+  f.job.groups=f.job.assignments.map((a,i)=>[i,[a]]);
+  f.slice();assert.equal(f.searches.length,0);assert.equal(f.job.nextGroup,8);
+  f.slice();assert.equal(f.job.nextGroup,16);
+  f.slice();assert.equal(f.context.activeMovePlanningJob,null);
+  assert.deepEqual(f.notices,['ORDER SUPERSEDED · 0 UNITS']);
+});

@@ -51,6 +51,7 @@ the build they name.
 | Understand missing Stone/gold/copper and the next integration contract | [Mineral readiness audit](mineral-economy-readiness.md) |
 | Understand overload behavior | [Simulation timing](simulation-timing.md) |
 | Follow the ranked movement/pathing backlog and shared write boundaries | [Movement workstream](movement-pathing-workstream.md) |
+| Verify deterministic planning turns, large routes and native recovery | [Planning work QA](qa-move-planning-work-2026-10-03.md) |
 | Author and validate scenario JSON | [Map authoring](map-authoring.md) |
 | Work on connected walls and explicit manual gates | [Palisade runtime](palisade-runtime.md), [gates](palisade-gates.md) |
 | Inspect isolated water routes before dock/boat integration | [Water navigation foundation](water-navigation-foundation.md) |
