@@ -286,3 +286,15 @@ test('parent-supplied one-cell palisade art layout maps all sixteen cardinal con
     }
   }
 });
+
+test('wall removal clears a dead Worker target so recovery never references a removed building', () => {
+  const f = fixture(), building = prepare().plan.buildings[0];
+  f.context.buildings.push(building); f.context.buildingsById.set(building.id, building);
+  f.context.buildingBlocked[119] = 1;
+  Object.assign(f.worker, { hp: 0, generation: 3, buildingTargetId: building.id,
+    wallBuildOrder: { ids: [building.id], generation: 3, revision: f.worker.orderRevision } });
+  f.context.destroyBuilding(building);
+  assert.equal(f.worker.buildingTargetId, null, 'full checkpoint validation requires every retained unit target to exist');
+  assert.equal(f.worker.wallBuildOrder, null);
+  assert.equal(f.context.teamWood[0], 100, 'death/destruction never credits construction refunds');
+});

@@ -4527,7 +4527,12 @@ function destroyBuilding(building) {
       wallOrder.ids = wallOrder.ids.filter(id => id !== building.id);
       if (!wallOrder.ids.length) unit.wallBuildOrder = null;
     }
-    if (unit.hp <= 0) continue;
+    if (unit.hp <= 0) {
+      unit.wallBuildOrder = null;
+      if (unit.buildingTargetId === building.id) { unit.buildingTargetId = null; unit.repairing = false; }
+      if (unit.attackBuildingTargetId === building.id) clearAttackTarget(unit);
+      continue;
+    }
     if (unit.attackBuildingTargetId === building.id) clearAttackTarget(unit);
     if (unit.buildingTargetId !== building.id) continue;
     unit.orderRevision++;
