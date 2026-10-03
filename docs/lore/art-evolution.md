@@ -158,6 +158,9 @@ Complete families in normal matches, with explicit missing-state
 fallback. Its [source receipt](../qa-evidence/default-frontier-buildings-2026-10-03/source-images.json)
 preserves hashes/decoded alpha bounds for all 48 existing frames; original
 source records remain intact. Deployed normal-match screenshots remain pending.
+The [ordinary-game acceptance recipe](../qa-frontier-building-adoption.md)
+records the paid maps, interaction/state/camera checks and retained implementation
+ownership while Mac QA is offline. Its map files are preparation, not screenshots.
 
 The [Town Center authoring preparation](../frontier-town-center-authoring.md)
 adds a reusable empty Blender camera/state scaffold using those preserved

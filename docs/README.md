@@ -100,6 +100,7 @@ from source/candidate packs. Then use the relevant contract:
 - [Default low-bank shade](qa-shore-bank-shade-2026-10-03.md): contour-following land value cue, bounded geometry and preserved before/after CPU studies with native-render limits.
 - [Renderer state/GLB/environment contract](renderer-state-contract.md).
 - [Finished Frontier runtime](frontier-building-runtime.md): all six default finished building families, state fallback, packaging, shared depth/texture ownership and open normal-match QA.
+- [Ordinary-game building acceptance](qa-frontier-building-adoption.md): exact paid maps/sites, selected/hover/team semantics and pending deployed Mac coverage owned by the building workstream.
 - [Water surface and fish cues](water-surface-study.md): default apparent depth and directional motion, live visibility-gated shore-fish activity, static quality and reduced motion.
 - [Native water first-pass review](qa-water-surface-native-2026-10-03.md): Mac shader/appearance results, saved image provenance, resolved fallback comparison and remaining visual limits.
 - [Sprite-atlas format](sprite-atlas-contract-v1.md).
