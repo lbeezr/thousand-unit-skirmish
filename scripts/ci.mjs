@@ -141,6 +141,7 @@ run(['scripts/fractional-cargo-return-scenario.mjs'], 'Both-seat sub-cent Sheep 
 run(['--test', 'scripts/shore-fishing.test.mjs', 'scripts/shore-fishing-placeholder.test.mjs'], 'Shore fish bank access and placeholder');
 run(['--test', 'scripts/shore-fishing-placement.test.mjs'], 'Seeded shore fishing authoring and land/water positions');
 run(['--test', 'scripts/water-surface-study.test.mjs', 'scripts/water-study-fish-binding.test.mjs'], 'Default water surface, quality and visible fish ripples');
+run(['--test', 'scripts/shore-bank-shade.test.mjs'], 'Default low-bank shade, island topology and static geometry budget');
 run(['--test', 'scripts/water-route-graph.test.mjs'], 'Isolated water route topology and clearance');
 run(['--test', 'scripts/dock-placement.test.mjs'], 'Dock shoreline and water berth placement');
 run(['scripts/dock-scenario.mjs'], 'Both-seat paid Dock construction and recovery');

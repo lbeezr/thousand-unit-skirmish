@@ -20,6 +20,13 @@ four-Worker-training-price pool. They are provisional, with no adopted currency
 exchange rate or human balance evidence. Observe Farm/neutral-source travel,
 raid exposure and paid replanting in paired matches before retuning.
 
+The [single-Stone recommendation](stone-defense-contract-proposal.md) selects
+`stone`, one optional Watchtower construction sink (50 Stone plus its current
+food/wood price), zero starting bank and 200 finite stock per seat. These are
+provisional experiment values. Preserve the ordinary food/wood profile and old
+paid prices; typed deposit/payment/refund/recovery must precede runtime admission.
+
+
 The latest flat-map record in the prior ledger used `117284e` with Node 24.9.0.
 It is historical evidence, not a new measurement of the documentation branch.
 The full series, including failures and intermediate builds, is preserved in the

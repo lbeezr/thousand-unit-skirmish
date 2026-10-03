@@ -76,6 +76,8 @@ the build they name.
 - [Core match tranche](core-playtest-tranche.md): next human session, observation record, and proposed scale profile.
 - [Balance](first-skirmish-balance.md): current no-tune baseline and next observations.
 - [Mill depot simulation](qa-mill-depot-economy-2026-10-03.md): paid travel comparisons and separate currency tradeoffs; [finite Farm contract](farm-finite-planting.md) and [Farm QA](qa-finite-farm-2026-10-03.md): provisional paid planting, stock, cancellation and recovery. The [earlier proposal](farm-capability-proposal.md) preserves its design history.
+- [Provisional Stone contract](stone-defense-contract-proposal.md): one optional Watchtower sink, finite budget and preserved legacy prices; implementation remains pending.
+
 - [QA and external playtests](qa-vertical-slice.md): acceptance and repeatable protocol.
 - [Map scale](map-scale-density.md), [living land](living-land-experiment.md), and
   [harvestable woodland](harvestable-woodland-pilot.md): implemented slices and proposed follow-ups.
@@ -88,6 +90,7 @@ from source/candidate packs. Then use the relevant contract:
 
 - [Art direction](art-direction-contract-v1.md) and [production lanes](art-production-lanes.md).
 - [Wildlife draft](wildlife-bellweather-sheep.md): inspected regional fauna, one Sheep proposal, behavior, habitat and future perspective/sprite coverage.
+- [Default low-bank shade](qa-shore-bank-shade-2026-10-03.md): contour-following land value cue, bounded geometry and preserved before/after CPU studies with native-render limits.
 - [Renderer state/GLB/environment contract](renderer-state-contract.md).
 - [Water surface and fish cues](water-surface-study.md): default apparent depth and directional motion, live visibility-gated shore-fish activity, static quality and reduced motion.
 - [Native water first-pass review](qa-water-surface-native-2026-10-03.md): Mac shader/appearance results, saved image provenance, resolved fallback comparison and remaining visual limits.
