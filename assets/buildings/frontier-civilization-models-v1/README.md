@@ -14,3 +14,15 @@ All four jobs succeeded at 30 credits each: 120 total. [Provenance](model-proven
 Reviewed front, rear and side silhouettes in the full gallery. Storehouse remains notably low at its 2.8-unit base and needs actual Worker/door clearance review before runtime acceptance. Stable uses 2.75 units rather than the initial 2.8 target to contain its measured base depth within three cells. Generated rear details and pennants require art review; the source milestone does not approve these as final team/lifecycle packs.
 
 The desktop browser failed ImageBitmap decoding of one valid embedded color JPEG. The capture tool now uses Three.js DOM-image texture decoding; visual review confirmed restored original color without a paid rerun. Same-session model switching preserves native bounds after earlier models have been scaled.
+
+
+## Default runtime adoption · 3 October 2026
+
+The existing eight-view Storehouse, Stable, Workshop and Watchtower Complete
+captures now bind normal matches without a preview flag and are explicitly
+packaged as four manifests/32 PNGs. No source frame, model or capture record is
+changed. Missing construction/damage states use the existing procedural role
+per state; repair restores Complete. See the [runtime guide](../../../docs/frontier-building-runtime.md)
+for anchors, occupancy, depth/team feedback and source receipts. Deployed
+ordinary-game screenshots and native scale/contact review remain pending;
+this adoption does not claim lifecycle artwork or aligned masks exist.
