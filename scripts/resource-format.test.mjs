@@ -1,3 +1,4 @@
+import { economyClientBindings } from './economy-client-fixture.mjs';
 import { researchAction, researchOptions } from '../src/research-actions.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import assert from 'node:assert/strict';
@@ -14,7 +15,7 @@ function fixture(team) {
     classList: { toggle() {} }, setAttribute(name, value) { this.attributes[name] = value; },
     getAttribute(name) { return this.attributes[name] ?? null; }, querySelector: () => ({ textContent: '' }) });
   const ui = new Proxy({}, { get(target, key) { return target[key] ||= element(); } });
-  const context = vm.createContext({ ui, localTeam: team, matchWinner: -1,
+  const context = vm.createContext({ ...economyClientBindings(), ui, localTeam: team, matchWinner: -1,
     formatResourceStock, formatResourceRequirement, ownedPopulationReadout,
     UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, researchAction, researchOptions,
     latestFood: [0, 0], latestWood: [0, 0], latestWorkerProduction: [null, null], latestPopulation: [null, null],
@@ -133,4 +134,21 @@ for (const team of [0, 1]) test(`actual economy UI keeps both population readout
   assert.equal(ui.populationStock.textContent, '—');
   assert.equal(ui.populationStatus.textContent, 'POPULATION · JOIN A TEAM');
   assert.equal(ui.populationReadout.getAttribute('aria-label'), 'Population: join a team.');
+});
+
+for (const team of [0, 1]) test(`seat ${team}: typed Stone bank and cargo survive UI updates without food credit or opponent disclosure`, () => {
+  const { context, ui } = fixture(team);
+  context.mapDefinition.economyProfileId = 'stone-defense-v1';
+  context.teamUnits[team] = [{ hp: 35, team, kind: 'worker', cargoType: 'stone', cargo: 3.125 }];
+  const stone = [null, null]; stone[team] = 7.25;
+  context.updateEconomyUI({ stone });
+  assert.equal(ui.stoneStock.textContent, '7'); assert.equal(ui.stoneStockGroup.hidden, false);
+  assert.equal(context.latestStone[team], 7.25); assert.equal(context.latestStone[1 - team], null);
+  assert.equal(context.latestFood[team], 0);
+  assert.equal(ui.workerLoad.textContent, 'WORKER CARGO · 0 FOOD · 0 WOOD · 3 STONE');
+  context.updateEconomyUI(); assert.equal(context.latestStone[team], 7.25);
+  context.localTeam = null; context.updateEconomyUI(); assert.equal(ui.stoneStock.textContent, '—');
+  context.localTeam = team; delete context.mapDefinition.economyProfileId; context.updateEconomyUI();
+  assert.equal(ui.stoneStockGroup.hidden, true); assert.deepEqual([...context.latestStone], [0, 0]);
+  assert.equal(ui.workerLoad.textContent, 'WORKER CARGO · 0 FOOD · 0 WOOD');
 });

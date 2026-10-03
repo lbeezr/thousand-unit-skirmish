@@ -1,3 +1,4 @@
+import { economyClientBindings } from './economy-client-fixture.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -36,7 +37,7 @@ function fixture(team = 0) {
   w.ResizeObserver = class { constructor(callback) { this.callback = callback; this.targets = []; observers.push(this); } observe(target) { this.targets.push(target); } };
   w.ui = {};
   for (const [, name, selector] of source.matchAll(/^\s*(\w+): document\.querySelector\('([^']+)'\)/gm)) w.ui[name] = d.querySelector(selector);
-  Object.assign(w, {
+  Object.assign(w, { ...economyClientBindings(),
     selectionContext, updateSelectionPortrait, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
     castPreview: true, humanRosterPreview: true, roomPageUrl: new URL('http://localhost/'),
     unitSpriteRuntime: { roleForUnit: unit => unit.team === 0 ? 'human' : 'boughward-worker' },
@@ -601,4 +602,24 @@ for (const team of [0, 1]) test(`seat ${team}: Build already opens inspectable d
   assert.equal(build.disabled, false); f.click(build);
   assert.equal(f.w.commandDock.hidden, false); assert.equal(f.w.commandDock.dataset.activePanel, 'economy');
   f.escape(); assert.equal(f.d.activeElement, build); assert.deepEqual([...f.w.selected], [team * 2]);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: selected Stone cargo keeps its label and real Return cargo action`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const own = team * 2, orders = [];
+  f.w.sendTrackedOrder = command => { orders.push(command); return 100; };
+  f.w.setAttackMoveMode = () => {};
+  f.w.eval(between('function issueReturnCargo(', "for (const button of document.querySelectorAll('[data-stationary-order]'))"));
+  f.w.mapDefinition = { economyProfileId: 'stone-defense-v1' };
+  Object.assign(f.w.units[own], { cargoType: 'stone', cargo: 3.125, generation: 17 });
+  f.select([own]);
+  assert.match(f.bar.querySelector('[data-context-summary]').textContent, /Cargo 0 food \/ 0 wood \/ 3 stone/);
+  const button = f.bar.querySelector('[data-return-cargo]');
+  assert.equal(button.hidden, false); assert.equal(button.disabled, false);
+  f.click(button);
+  assert.equal(orders.at(-1).type, 'returnCargo');
+  assert.deepEqual([...orders.at(-1).ids], [own]);
+  assert.equal(f.w.units[own].cargo, 3.125, 'issuing the order never grants a bank or discards cargo');
+  f.w.mapDefinition = {}; f.w.updateSelectionUI();
+  assert.equal(button.hidden, true); assert.doesNotMatch(f.bar.querySelector('[data-context-summary]').textContent, /stone/);
 });

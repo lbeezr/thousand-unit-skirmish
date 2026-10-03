@@ -1,0 +1,64 @@
+{
+  "sourceRevision": "9a9142c0116a7eb38544771b67dc3ee00c3f30d4",
+  "sourceDirty": false,
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Chrome/151.0.7922.173",
+    "revision": "@a96602f30358e9b5d256a0464e7e4d4bec223004",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+    "jsVersion": "15.1.206.23"
+  },
+  "imports": 92,
+  "records": [
+    {
+      "team": 0,
+      "stone": "flex",
+      "stock": "0",
+      "tower": "Build Watchtower · 150 WOOD + 50 FOOD + 50 STONE",
+      "disabled": true,
+      "left": 209.125,
+      "right": 274.125,
+      "width": 1280,
+      "runtimeError": "",
+      "viewportWidth": 1280
+    },
+    {
+      "team": 0,
+      "stone": "flex",
+      "stock": "0",
+      "tower": "Build Watchtower · 150 WOOD + 50 FOOD + 50 STONE",
+      "disabled": true,
+      "left": 204.1875,
+      "right": 268.78125,
+      "width": 390,
+      "runtimeError": "",
+      "viewportWidth": 390
+    },
+    {
+      "team": 1,
+      "stone": "flex",
+      "stock": "0",
+      "tower": "Build Watchtower · 150 WOOD + 50 FOOD + 50 STONE",
+      "disabled": true,
+      "left": 209.125,
+      "right": 274.125,
+      "width": 1280,
+      "runtimeError": "",
+      "viewportWidth": 1280
+    },
+    {
+      "team": 1,
+      "stone": "flex",
+      "stock": "0",
+      "tower": "Build Watchtower · 150 WOOD + 50 FOOD + 50 STONE",
+      "disabled": true,
+      "left": 204.1875,
+      "right": 268.78125,
+      "width": 390,
+      "runtimeError": "",
+      "viewportWidth": 390
+    }
+  ],
+  "status": "passed",
+  "naturalHarvest": false
+}

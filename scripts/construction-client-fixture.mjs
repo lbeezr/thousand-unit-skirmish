@@ -1,3 +1,4 @@
+import { economyClientBindings } from './economy-client-fixture.mjs';
 // Runs real client selection, placement, resume and serialization functions.
 // Rendering/picking are supplied by the fixture; the emitted payload is real.
 import { readFileSync } from 'node:fs';
@@ -8,7 +9,7 @@ const source=readFileSync(new URL('../src/main.js',import.meta.url),'utf8');
 const span=(from,to)=>source.slice(source.indexOf(from),source.indexOf(to));
 export function constructionClientFixture({team=0,units,selection=[],buildings=[]}={}) {
   const payloads=[],toasts=[],selected=new Set(selection);let token=0;
-  const context=vm.createContext({units,selected,localTeam:team,selectedBuildingId:null,
+  const context=vm.createContext({ ...economyClientBindings(),units,selected,localTeam:team,selectedBuildingId:null,
     teamUnits:[0,1].map(t=>units.filter(u=>u?.team===t)),latestBuildings:buildings,
     latestFood:[1000,1000],latestWood:[1000,1000],BUILDING_DEFINITIONS,formatResourceRequirement,
     matchWinner:-1,tapOrderArmed:false,attackMoveMode:false,persistentTargetMode:null,

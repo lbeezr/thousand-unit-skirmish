@@ -1,3 +1,4 @@
+import { economyClientBindings } from './economy-client-fixture.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
@@ -85,7 +86,7 @@ for (const team of [0, 1]) test(`seat ${team} browser preview enforces the share
   const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
   const placement = source.slice(source.indexOf('function buildPlacementAt('), source.indexOf('\nfunction updateBuildPlacementGhost('));
   const map = { ...mapFor('east'), resourceNodes: [], triggers: [] };
-  const context = vm.createContext({ BUILDING_DEFINITIONS: B, buildPlacementType: 'dock',
+  const context = vm.createContext({ ...economyClientBindings(), BUILDING_DEFINITIONS: B, buildPlacementType: 'dock',
     MAP_WIDTH: 20, MAP_HEIGHT: 20, MAP_HALF_X: 10, MAP_HALF_Z: 10,
     mapDefinition: map, dockPlacementContext: createDockPlacementContext(map, B.dock), localTeam: team,
     latestFood: [0, 0], latestWood: [100, 100], latestBuildings: [],
@@ -113,7 +114,7 @@ for (const team of [0, 1]) test(`seat ${team} browser preview enforces the share
 test('only known compatible pre-Dock checkpoints migrate, and older pins cannot claim Dock content', () => {
   const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
   const migration = source.slice(source.indexOf('function migrateMatchCheckpoint('), source.indexOf('\nasync function drainMatchCheckpointWrites('));
-  const context = vm.createContext({ MATCH_CHECKPOINT_SCHEMA_VERSION: 22, MATCH_RULES_VERSION: 6, GAMEPLAY_RULESET_REVISION });
+  const context = vm.createContext({ ...economyClientBindings(), MATCH_CHECKPOINT_SCHEMA_VERSION: 22, MATCH_RULES_VERSION: 6, GAMEPLAY_RULESET_REVISION });
   vm.runInContext(migration, context);
   const prior = 'v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2';
   const paid = { schemaVersion: 22, rulesVersion: 6, rulesetRevision: prior,
