@@ -7,6 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
+import { PVE_REGROUP_LIMITS } from '../src/pve-regroup.mjs';
 
 const mapId = process.argv[2] || 'forked-vale';
 assert.ok(['forked-vale', 'woodland-expanse', 'bellweather-millrace', 'underbough-rootways'].includes(mapId));
@@ -64,13 +65,19 @@ try {
     client, team: client.welcome.player.team, seed: index === 0 ? 20260925 : 0xffff_ffff,
     policy: createDeterministicPolicy(index === 0 ? 20260925 : 0xffff_ffff),
     lastTick: -Infinity, commands: [], buildingIds: new Set(), trained: new Set(),
+    firstTrainedTick: null, firstReinforcementAdvanceTick: null,
     initialSoldiers: new Set(client.state.units.filter((unit) => unit[1] === index && unit[5] !== 'worker')
       .map((unit) => `${unit[0]}:${unit[8]}`)),
   }));
-  const deadline = Date.now() + 120_000;
+  // This proof waits for an ordered reinforcement as well as paid production.
+  // An opening wipeout can add one bounded rally after the first troop spawns.
+  const productionDeadline = Date.now() + 120_000;
+  const deadline = productionDeadline + PVE_REGROUP_LIMITS.maxWaitTicks / 30 * 1000;
   const complete = (run) => run.trained.size > 0 && run.commands.some(({ command }) => command.type === 'attackMove'
     && command.ids.some((id) => run.trained.has(id)));
   while (!runs.every(complete)) {
+    assert.ok(Date.now() < productionDeadline || runs.every(run => run.trained.size > 0),
+      'both seats must still produce a paid reinforcement within the original 120-second window');
     assert.ok(Date.now() < deadline, `production timeout: ${JSON.stringify(runs.map(({ team, commands, client }) => ({ team,
       commands, notices: client.messages.filter((message) => message.type === 'notice').slice(-8) })))}`);
     for (const run of runs) {
@@ -85,10 +92,15 @@ try {
       }
       assert.ok(run.buildingIds.size <= 1, 'at most one accepted Barracks per match');
       for (const unit of observation.units.friendly) {
-        if (['infantry', 'spearman'].includes(unit.kind) && !run.initialSoldiers.has(`${unit.id}:${unit.generation}`)) run.trained.add(unit.id);
+        if (['infantry', 'spearman'].includes(unit.kind) && !run.initialSoldiers.has(`${unit.id}:${unit.generation}`)) {
+          run.trained.add(unit.id); run.firstTrainedTick ??= observation.tick;
+        }
       }
       for (const command of run.policy.next(observation)) {
         run.commands.push({ tick: observation.tick, command });
+        if (command.type === 'attackMove' && command.ids.some(id => run.trained.has(id))) {
+          run.firstReinforcementAdvanceTick ??= observation.tick;
+        }
         run.client.socket.send(JSON.stringify({ ...command, clientOrderToken: run.commands.length }));
       }
     }
@@ -101,6 +113,8 @@ try {
     assert.ok(run.client.messages.some((message) => message.type === 'notice' && /^(INFANTRY|SPEARMAN) QUEUED/.test(message.message)));
     console.log(JSON.stringify({ map: mapId, team: run.team, seed: run.seed,
       buildingIds: [...run.buildingIds], trainedAndOrdered: [...run.trained],
+      firstTrainedSeconds: run.firstTrainedTick / 30,
+      firstReinforcementAdvanceSeconds: run.firstReinforcementAdvanceTick / 30,
       production: run.commands.filter(({ command }) => ['build', 'train', 'trainUnit'].includes(command.type)) }));
   }
 } finally {
