@@ -2850,10 +2850,16 @@ function drawMinimap(now = performance.now(), force = false) {
 function worldFromMinimap(event) {
   const rect = minimapCanvas.getBoundingClientRect();
   if (!mapDefinition || rect.width <= 0 || rect.height <= 0) return null;
-  // Invert the drawn map rectangle in backing pixels, including CSS scaling and letterboxing.
+  const style = getComputedStyle(minimapCanvas);
+  const inset = (side) => (parseFloat(style[`border${side}Width`]) || 0) + (parseFloat(style[`padding${side}`]) || 0);
+  const left = inset('Left'), top = inset('Top');
+  const width = rect.width - left - inset('Right');
+  const height = rect.height - top - inset('Bottom');
+  if (width <= 0 || height <= 0) return null;
+  // Invert the bitmap's content box, including CSS scaling, borders and map letterboxing.
   const mapRect = minimapMapRect(minimapCanvas.width, minimapCanvas.height);
-  const pixelX = (event.clientX - rect.left) * minimapCanvas.width / rect.width;
-  const pixelY = (event.clientY - rect.top) * minimapCanvas.height / rect.height;
+  const pixelX = (event.clientX - rect.left - left) * minimapCanvas.width / width;
+  const pixelY = (event.clientY - rect.top - top) * minimapCanvas.height / height;
   return {
     x: THREE.MathUtils.clamp((pixelX - mapRect.left) / mapRect.scale - MAP_HALF_X, -MAP_HALF_X, MAP_HALF_X),
     z: THREE.MathUtils.clamp((pixelY - mapRect.top) / mapRect.scale - MAP_HALF_Z, -MAP_HALF_Z, MAP_HALF_Z),
