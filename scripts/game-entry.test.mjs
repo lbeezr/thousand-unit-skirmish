@@ -124,6 +124,42 @@ test('cancel and browser-back restoration invalidate unfinished navigation', asy
   assert.deepEqual(f.navigations, []); assert.equal(f.node('menu-create-room').disabled, false);
 });
 
+for (const action of ['menu-new-game', 'menu-practice', 'menu-resume', 'menu-join']) {
+  for (const persisted of [false, true]) test(`${action} cannot navigate after leaving the menu (${persisted ? 'back cache' : 'unload'})`, async () => {
+    let waiting = false, finish;
+    const f = await fixture({ stored: action === 'menu-resume'
+      ? { [LAST_ROOM_STORAGE_KEY]: room, [`${SESSION_STORAGE_PREFIX}${room}`]: token } : {},
+      handler: path => path === '/api/rooms/status' ? json({ enabled: true })
+        : waiting ? new Promise(resolve => { finish = resolve; }) : json({ valid: true }) });
+    waiting = true;
+    f.node(action).click();
+    if (action === 'menu-join') {
+      const dialog = f.node('menu-join-dialog');
+      dialog.querySelector('input').value = room;
+      dialog.querySelector('form').dispatchEvent(new f.win.Event('submit', { cancelable: true }));
+    }
+    assert.equal(typeof finish, 'function', 'the selected action has a pending server request');
+    f.win.dispatchEvent(new f.win.PageTransitionEvent('pagehide', { persisted }));
+    finish(json({ roomId: room, valid: true, launchOptions: { mode: 'pve', mapSeed: 12, policySeed: 34 } }));
+    await turn();
+    assert.deepEqual(f.navigations, [], 'a response cannot move a page the player has left');
+    assert.deepEqual(f.loaded, []);
+    if (persisted) {
+      waiting = false;
+      f.win.dispatchEvent(new f.win.PageTransitionEvent('pageshow', { persisted: true }));
+      await turn();
+      if (action === 'menu-join') f.node('menu-join-dialog').querySelector('[data-close]').click();
+      waiting = true;
+      f.node('menu-practice').click();
+      finish(json({ roomId: 'N'.repeat(32) }));
+      await turn();
+      assert.equal(f.navigations.length, 1, 'returning permits an explicit fresh choice');
+      assert.equal(new URL(f.navigations[0]).searchParams.get('room'), 'N'.repeat(32));
+    }
+    f.win.close();
+  });
+}
+
 for (const cancel of ['button', 'escape']) test(`Join ${cancel} cancellation invalidates before queued close and preserves the next game action`, async () => {
   const pending = [];
   const f = await fixture({ handler: path => path === '/api/rooms/status' ? json({ enabled: true })
