@@ -120,3 +120,22 @@ test('lazy Three imports use the same alias as static imports', async () => {
   });
   assert.deepEqual(requests, ['/src/main.js', '/vendor/three.module.js', '/vendor/three.core.js']);
 });
+
+test('unmapped bare lazy specifiers fail before any dependency request', async () => {
+  for (const specifier of ['unmapped-package', '@scope/package', 'three/addons/helper.js', '.hidden.mjs']) {
+    const server = fixture({ '/src/main.js': { body: `import('${specifier}');` },
+      '/src/unmapped-package': { body: 'export const fake = true;' } });
+    await assert.rejects(checkClientImports('https://game.example', {
+      authorization: 'Basic fixture', fetchImpl: server.fetchImpl,
+    }), /unmapped browser import .* in \/src\/main.js/);
+    assert.deepEqual(server.requests, ['/src/main.js']);
+  }
+});
+
+test('relative, rooted and absolute same-origin lazy URLs retain their served paths', async () => {
+  const { requests } = await audit({
+    '/src/main.js': { body: "import('../src/helper.mjs'); import('/src/helper.mjs'); import('https://game.example/src/helper.mjs');" },
+    '/src/helper.mjs': { body: 'export const ready = true;' },
+  });
+  assert.deepEqual(requests, ['/src/main.js', '/src/helper.mjs']);
+});

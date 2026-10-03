@@ -34,6 +34,9 @@ export async function checkClientImports(base, { authorization, fetchImpl = fetc
       pending.push(dependency);
     }
     for (const specifier of dynamicImports) {
+      assert.ok(specifier === 'three' || specifier.startsWith('./') || specifier.startsWith('../')
+        || specifier.startsWith('/') || URL.canParse(specifier),
+      `unmapped browser import ${specifier} in ${modulePath}`);
       const dependency = new URL(specifier === 'three' ? '/vendor/three.module.js' : specifier, url);
       assert.equal(dependency.origin, origin, `dynamic browser import must stay on the game origin: ${specifier}`);
       pending.push(dependency.pathname);

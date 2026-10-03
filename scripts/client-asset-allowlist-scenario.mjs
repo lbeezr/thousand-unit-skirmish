@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { WORKER_PORTRAITS, BARRACKS_PORTRAIT } from '../src/selection-portrait.mjs';
 import { buildingSpriteUrl } from '../src/building-sprites.mjs';
+import { moduleImports } from './module-imports.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const html = readFileSync(path.join(root, 'index.html'), 'utf8');
@@ -39,7 +40,6 @@ assert.ok(entryModules.length > 0, 'HTML should declare at least one client modu
 
 const visited = new Set();
 const pending = [...entryModules];
-const importPattern = /(?:\bfrom\s*|\bimport\s*(?:\(\s*)?)['"]([^'"]+)['"]/g;
 while (pending.length > 0) {
   const modulePath = path.posix.normalize(pending.pop());
   if (visited.has(modulePath)) continue;
@@ -47,7 +47,7 @@ while (pending.length > 0) {
   assert.ok(allowed.has(modulePath) || modulePath === environmentModule,
     `client module ${modulePath} is imported but missing from the server static allowlist`);
   const source = readFileSync(path.join(root, modulePath), 'utf8');
-  for (const [, specifier] of source.matchAll(importPattern)) {
+  for (const specifier of moduleImports(source, modulePath)) {
     if (!specifier.startsWith('.')) continue;
     const dependency = path.posix.normalize(path.posix.join(path.posix.dirname(modulePath), specifier));
     assert.ok(dependency.startsWith('src/'), `unexpected client module path: ${dependency}`);

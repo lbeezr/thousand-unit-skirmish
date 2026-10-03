@@ -62,6 +62,7 @@ the build they name.
 | Queue selected Skiff water destinations from the battlefield or minimap | [Skiff water waypoints](skiff-water-waypoints.md) |
 | Finish one Skiff fishing load before its queued Move | [Fishing before the next Skiff Move](skiff-fishing-next-move.md) |
 | Verify Dock/Skiff through the normal game | [Ordinary entry and pending deployed acceptance](qa-skiff-normal-entry-2026-10-03.md) |
+| Choose the next justified naval gameplay task | [Ranked naval workstream and execution dependencies](naval-workstream.md) |
 | Choose a map | [Catalog](maps.md), [Forked Vale](forked-vale-scenario.md), [Three Crowns](three-crowns-layout.md) |
 | Change the compact objective HUD | [Objective behavior and validation](battlefield-objectives-validation.md) |
 | Change owned population feedback | [Population header behavior and validation](population-header-validation.md) |

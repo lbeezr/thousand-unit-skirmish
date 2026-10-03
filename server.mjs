@@ -54,6 +54,7 @@ import { isPalisade, validGateState, buildingBlocksMovement, planGateTransition 
 import { palisadeConnections } from './src/palisade-profile.mjs';
 import { canTraverseUnitStep } from './src/unit-movement.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
+import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const HOST = process.env.RTS_HOST || '127.0.0.1';
@@ -67,7 +68,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 24;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 25;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -908,6 +909,7 @@ activateMap(mapDefinition);
 const units = [];
 const pendingUnitDamage = new Float64Array(MAX_UNITS);
 const attackFlowLastGrant = new WeakMap();
+const automaticTargetRejections = new WeakMap();
 const pendingBuildingDamage = new Map();
 const unitGenerationCounters = new Uint32Array(MAX_UNITS);
 unitGenerationCounters.fill(randomBytes(4).readUInt32LE(0));
@@ -1648,7 +1650,7 @@ function nextUnitGeneration(id) {
 }
 
 function makeUnit(id, team, x, z, kind, teamSlot) {
-  return {
+  return initializeCombatStance({
     ...(UNIT_DEFINITIONS[kind].movementDomain === 'water' ? { movementDomain: 'water', waterMoveBlocked: false } : {}),
     id, generation: nextUnitGeneration(id), team, x, z, hp: UNIT_DEFINITIONS[kind].combat.maxHp, path: [], pathIndex: 0,
     attackTargetId: -1, attackBuildingTargetId: -1,
@@ -1664,7 +1666,7 @@ function makeUnit(id, team, x, z, kind, teamSlot) {
     attackMoveBucketScanOffset: id % attackMoveBucketOffsets.length,
     kind, cargo: 0, cargoType: null, gatherNodeId: null, gatherForestCell: -1, gatherPhase: '', dropoffBuildingId: null, dropoffNavigationRevision: -1,
     buildingTargetId: null, repairing: false, wallBuildOrder: null, moveGoalCell: -1, queuedWaypoints: [],
-  };
+  }, UNIT_DEFINITIONS[kind]);
 }
 
 function spawnProducedUnit(team, kind, x, z) {
@@ -2545,6 +2547,8 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
     fogOfWar: mapDefinition.fogOfWar,
     visibility: fogView ? snapshotVisibility(viewTeam) : null,
     persistentOrders: snapshotPersistentOrders(viewTeam),
+    unitStances: units.filter(unit => unit.hp > 0 && militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind])
+      && (viewTeam === null || unit.team === viewTeam)).map(unit => [unit.id, unit.generation, unit.combatStance]),
     units: snapshotUnits(fogView ? viewTeam : null), objectives: snapshotObjectives(fogView ? viewTeam : null),
     ...(includeWaypointCounts ? { queuedWaypointCounts: snapshotQueuedWaypointCounts(viewTeam) } : {}),
     food: fogView ? teamFood.map((amount, team) => team === viewTeam ? amount : null) : [...teamFood],
@@ -2819,6 +2823,9 @@ function validateMatchCheckpoint(snapshot) {
         : integerIn(persistent.targetId, 0, state.units.length - 1)
           && integerIn(persistent.targetGeneration, 1, 0xffffffff)
           && integerIn(persistent.lastTargetCell, -1, cellCount - 1))), `invalid persistent order ${index}`);
+    assertSnapshot(validCombatStanceState(unit, UNIT_DEFINITIONS[unit.kind])
+      && Math.abs(unit.stanceAnchorX) < definition.width / 2
+      && Math.abs(unit.stanceAnchorZ) < definition.height / 2, `invalid combat stance ${index}`);
     assertSnapshot((unit.holdingPosition === undefined || typeof unit.holdingPosition === 'boolean')
       && typeof unit.attackMove === 'boolean' && typeof unit.attackMoveRouteReady === 'boolean'
       && typeof unit.movePlanningPending === 'boolean'
@@ -3327,7 +3334,7 @@ function migrateMatchCheckpoint(snapshot) {
   // A pin predating Farm still cannot claim a paid planting or harvest state.
   if (![GAMEPLAY_RULESET_REVISION, previousMovementPins[0]].includes(snapshot?.rulesetRevision)
     && snapshot?.state?.buildings?.some(building => building.type === 'farm' || building.harvestStock !== undefined)) return snapshot;
-  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && previousMovementPins.includes(snapshot.rulesetRevision)
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
@@ -3468,7 +3475,7 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // Mill only adds a food depot; retain existing palisades and paid work unchanged.
-  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801'
     && Array.isArray(snapshot.state?.buildings)
     && !snapshot.state.buildings.some(building => building.type === 'mill')
@@ -3476,23 +3483,23 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // The gate is additive; accept only the exact preceding definition set, without invented gate state.
-  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6'
     && Array.isArray(snapshot.state?.buildings)
     && !snapshot.state.buildings.some(building => building.type === 'palisade-gate' || Object.hasOwn(building, 'gateOpen'))) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // Additive Dock content preserves the exact previous Mill roster and paid work.
-  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2'
     && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   // Exact pre-Skiff Gate/Dock content retains its existing buildings, banks and work.
-  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b'
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
 
   // Farm adds only new paid crop state; retain exact pre-Farm Skiff work unchanged.
-  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
@@ -3500,7 +3507,7 @@ function migrateMatchCheckpoint(snapshot) {
     && !snapshot?.mapDefinition?.elevationPatches?.some((patch) => patch.level > 0)) {
     snapshot.rulesVersion = MATCH_RULES_VERSION;
   }
-  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion) && Array.isArray(snapshot.state?.units)) {
+  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion) && Array.isArray(snapshot.state?.units)) {
     for (const unit of snapshot.state.units) if (unit && typeof unit === 'object') unit.persistentOrder ??= null;
   }
   return snapshot;
@@ -3608,7 +3615,7 @@ async function initializeMatchFromCheckpoint() {
   try {
     const snapshot = migrateEconomyCheckpoint(migrateMatchCheckpoint(JSON.parse(serialized)));
     migrateWildlifeMotionCheckpoint(snapshot);
-    restoreMatchCheckpoint(snapshot);
+    restoreMatchCheckpoint(migrateCombatStanceCheckpoint(snapshot, UNIT_DEFINITIONS));
     console.log(`Restored match ${matchId} from checkpoint ${checkpointSequence} at tick ${tickNumber}.`);
   } catch (error) {
     console.warn('Match checkpoint was rejected; starting a fresh match:', String(error?.message || error));
@@ -3865,6 +3872,9 @@ function completeMovePlanningJob(job) {
 }
 
 function clearAttackMoveOrder(unit) {
+  automaticTargetRejections.delete(unit);
+  unit.stanceCombat = false;
+  unit.stanceReturning = false;
   unit.persistentOrder = null;
   unit.holdingPosition = false;
   unit.attackMove = false;
@@ -3876,11 +3886,27 @@ function clearAttackMoveOrder(unit) {
 function clearAttackTarget(unit) {
   const completedMilitaryAttack = !unit.attackMove && !unit.holdingPosition
     && (unit.attackTargetId >= 0 || unit.attackBuildingTargetId >= 0)
-    && unit.kind !== 'worker' && unitHasCapability(unit, 'attack');
+    && unit.kind !== 'worker' && unitHasCapability(unit, 'attack') && unit.combatStance !== 'noAttack';
   unit.attackTargetId = -1;
   unit.attackBuildingTargetId = -1;
   unit.repathTimer = 0;
   unit.lastAttackCell = -1;
+  if (unit.stanceCombat && unit.queuedWaypoints.length > 0) {
+    clearAttackMoveOrder(unit);
+    unit.path = []; unit.pathIndex = 0;
+    unit.moveGoalCell = nearestOpenCell(worldToCell(unit.x, unit.z));
+    return;
+  }
+  if (unit.stanceCombat && unit.combatStance === 'defensive') {
+    unit.path = []; unit.pathIndex = 0;
+    unit.attackMoveResumePath = null; unit.attackMoveResumePathIndex = 0;
+    unit.stanceReturning = true;
+    unit.moveGoalCell = nearestOpenCell(worldToCell(unit.stanceAnchorX, unit.stanceAnchorZ));
+    unit.attackMoveRouteReady = false;
+    if (!unit.movePlanningPending) enqueueRouteRepairs([{ unit, destination: unit.moveGoalCell }]);
+    dirty = true;
+    return;
+  }
   if (unit.attackMove && unit.attackMoveResumePath !== null) {
     unit.path = unit.attackMoveResumePath;
     unit.pathIndex = unit.attackMoveResumePathIndex;
@@ -3901,6 +3927,8 @@ function clearAttackTarget(unit) {
       // A focused Attack finishes with local combat intent. Reuse attack-move's
       // bounded visible acquisition, pursuit leash and fair path budget; there
       // is no new travel destination and explicit Stop/Move still replace it.
+      unit.stanceCombat = true;
+      unit.stanceAnchorX = unit.x; unit.stanceAnchorZ = unit.z;
       unit.attackMove = true;
       unit.attackMoveRouteReady = true;
       unit.moveGoalCell = nearestOpenCell(worldToCell(unit.x, unit.z));
@@ -4198,7 +4226,7 @@ function assignReturnCargo(player, command) {
     if (selectedWater.length > SKIFF_GROUP_ORDER_LIMIT) { sendOrderNotice(player, command, `RETURN CARGO REJECTED · SKIFF GROUP LIMIT ${SKIFF_GROUP_ORDER_LIMIT}`); return; }
     const plan = planSkiffGroupReturn(skiffFishingContext, selectedWater, buildings, units);
     if (plan.status !== 'found') { sendOrderNotice(player, command, 'RETURN CARGO REJECTED · NEED FOOD CARGO AND DISTINCT REACHABLE OWNED DOCK BERTHS'); return; }
-    assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: plan.assignments.map(({ unit }) => unit.id) });
+    assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: plan.assignments.map(({ unit }) => unit.id) }, true);
     for (const { unit, route, nodeId, phase } of plan.assignments) skiffFishingContext.start(unit, nodeId, phase, route);
     dirty = true; sendOrderNotice(player, command, `RETURN CARGO ORDER · ${plan.assignments.length} SKIFFS TO OWNED DOCK`); return;
   }
@@ -4250,7 +4278,7 @@ function assignSkiffGather(player, command, selectedUnits) {
   if (plan.status !== 'found') {
     sendOrderNotice(player, command, 'FISHING REJECTED · NEED DISTINCT REACHABLE WATER FISH APPROACHES AND OWNED DOCK BERTHS'); return;
   }
-  assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: selectedUnits.map(unit => unit.id) });
+  assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: selectedUnits.map(unit => unit.id) }, true);
   for (const { unit, route, phase, nodeId } of plan.assignments) skiffFishingContext.start(unit, nodeId, phase, route);
   dirty = true; sendOrderNotice(player, command, `FISHING ORDER · ${plan.assignments.length} SKIFFS · FINITE FOOD TO OWNED DOCK`);
 }
@@ -5971,7 +5999,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
       : planSkiffGroupMove(waterUnitRuntime, selectedUnits, Number(command.x), Number(command.z), units);
     if (plan.status !== 'found') { sendOrderNotice(player, command, `MOVE REJECTED · WATER ROUTE ${plan.status.toUpperCase()}`); return; }
     const immediate = plan.assignments.filter(assignment => !assignment.append);
-    if (immediate.length) assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: immediate.map(({ unit }) => unit.id) });
+    if (immediate.length) assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: immediate.map(({ unit }) => unit.id) }, true);
     for (const { unit, route, destination, append } of plan.assignments) {
       if (append) { unit.queuedWaypoints.push({ destination, attackMove: false }); continue; }
       unit.path = route.cells; unit.pathIndex = 0; unit.moveGoalCell = route.cells.at(-1); unit.waterMoveBlocked = false;
@@ -6050,6 +6078,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
     unit.repathTimer = 0;
     unit.lastAttackCell = -1;
     unit.holdingPosition = false;
+    unit.stanceCombat = false; unit.stanceReturning = false;
     unit.persistentOrder = null;
     unit.attackMove = attackMove;
     unit.attackMoveRouteReady = false;
@@ -6146,7 +6175,7 @@ function assignFollowOrder(player, command) {
     leader = leader.persistentOrder?.type === 'follow' ? units[leader.persistentOrder.targetId] : null;
   }
   if (!selectedUnits.length) { sendOrderNotice(player, command, 'FOLLOW REJECTED · NO VALID UNITS'); return; }
-  assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: selectedUnits.map(unit => unit.id) });
+  assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: selectedUnits.map(unit => unit.id) }, true);
   for (const unit of selectedUnits) {
     unit.persistentOrder = { type: 'follow', targetId: target.id, targetGeneration: target.generation,
       status: 'following', nextTick: tickNumber + (unit.id % TICK_RATE), lastTargetCell: -1 };
@@ -6165,7 +6194,7 @@ function updatePersistentOrders() {
       target = units[order.targetId];
       if (!target || target.hp <= 0 || target.team !== unit.team || target.generation !== order.targetGeneration) {
         // Losing a friendly leader stops safely; a recycled slot is never followed.
-        assignStationaryOrder({ team: unit.team, sendJson() {} }, { type: 'stop', ids: [unit.id] });
+        assignStationaryOrder({ team: unit.team, sendJson() {} }, { type: 'stop', ids: [unit.id] }, true);
         continue;
       }
     }
@@ -6205,7 +6234,7 @@ function updatePersistentOrders() {
 
 // Stationary orders invalidate sliced planning jobs by revision, preserve carried
 // resources, and abandon work without canceling the shared construction itself.
-function assignStationaryOrder(player, command) {
+function assignStationaryOrder(player, command, preserveStance = false) {
   const label = command.type === 'holdPosition' ? 'HOLD POSITION' : 'STOP';
   const selectedUnits = player.team === null || !Array.isArray(command.ids) ? []
     : commandUnits(command).filter(unit => unit.hp > 0 && unit.team === player.team);
@@ -6217,6 +6246,7 @@ function assignStationaryOrder(player, command) {
     cancelGatherOrder(unit);
     clearAttackMoveOrder(unit);
     unit.holdingPosition = command.type === 'holdPosition';
+    if (!preserveStance && militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind])) unit.combatStance = unit.holdingPosition ? 'standGround' : 'noAttack';
     if (unit.movementDomain === 'water') unit.waterMoveBlocked = false;
     unit.orderRevision++;
     unit.movePlanningPending = false;
@@ -6234,6 +6264,133 @@ function assignStationaryOrder(player, command) {
   }
   dirty = true;
   sendOrderNotice(player, command, `${label} ORDER · ${selectedUnits.length} UNITS`);
+}
+
+function unitStancePolicy(unit) {
+  return combatStancePolicy(unit.combatStance, UNIT_DEFINITIONS[unit.kind].combat.range);
+}
+
+function automaticLeash(unit) {
+  return unitStancePolicy(unit).leash;
+}
+
+function automaticPositionAllowed(unit, x, z) {
+  return !unit.attackMove || (unit.attackTargetId < 0 && !unit.stanceReturning)
+    || !militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind])
+    || Math.hypot(x - unit.attackMoveAnchorX, z - unit.attackMoveAnchorZ) <= unitStancePolicy(unit).travel;
+}
+
+function abandonBlockedStanceReturn(unit) {
+  // A newly closed route must not suppress defense forever or slide the leash.
+  // Defend from this legal position under the original anchor until a new order.
+  unit.stanceReturning = false;
+  unit.path = []; unit.pathIndex = 0;
+  unit.movePlanningPending = false;
+  unit.moveGoalCell = nearestOpenCell(worldToCell(unit.x, unit.z));
+  unit.attackMoveRouteReady = true;
+  unit.attackMoveScanTick = tickNumber;
+  dirty = true;
+}
+
+function rejectAutomaticTarget(unit, target) {
+  if (!target) return;
+  const rejected = automaticTargetRejections.get(unit) || new Map();
+  if (rejected.size >= 8 && !rejected.has(target.id)) rejected.delete(rejected.keys().next().value);
+  rejected.set(target.id, { generation: target.generation, cell: worldToCell(target.x, target.z),
+    navigationRevision, stance: unit.combatStance, until: tickNumber + TICK_RATE });
+  automaticTargetRejections.set(unit, rejected);
+}
+
+function automaticTargetRejected(unit, target) {
+  const rejection = automaticTargetRejections.get(unit)?.get(target.id);
+  return rejection && rejection.generation === target.generation
+    && rejection.cell === worldToCell(target.x, target.z) && rejection.navigationRevision === navigationRevision
+    && rejection.stance === unit.combatStance && rejection.until > tickNumber
+    && Math.hypot(unit.x - target.x, unit.z - target.z) > UNIT_DEFINITIONS[unit.kind].combat.range;
+}
+
+function boundedAutomaticApproach(unit, target, approach) {
+  if (!approach?.reachable || !militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind])) return approach;
+  // Unit-target flow routes end at the target cell. Stop at the first legal
+  // firing point before checking bounds; ranged units need not reach that cell.
+  const range = UNIT_DEFINITIONS[unit.kind].combat.range;
+  const end = approach.path.findIndex(cell => {
+    const p = cellToWorld(cell); return Math.hypot(p.x - target.x, p.z - target.z) <= range;
+  });
+  const path = end < 0 ? approach.path : approach.path.slice(0, end + 1);
+  const anchor = unit.stanceCombat ? { x: unit.stanceAnchorX, z: unit.stanceAnchorZ }
+    : unit.attackTargetId >= 0 ? { x: unit.attackMoveAnchorX, z: unit.attackMoveAnchorZ } : unit;
+  const travel = unitStancePolicy(unit).travel;
+  if (path.some(cell => { const p = cellToWorld(cell); return Math.hypot(p.x - anchor.x, p.z - anchor.z) > travel; })) {
+    rejectAutomaticTarget(unit, target);
+    return { ...approach, reachable: false };
+  }
+  return { ...approach, path };
+}
+
+function assignCombatStance(player, command) {
+  if (!COMBAT_STANCES.includes(command.stance)) {
+    sendOrderNotice(player, command, 'STANCE REJECTED · INVALID STANCE');
+    return;
+  }
+  const selected = player.team === null || !Array.isArray(command.ids) ? []
+    : commandUnits(command).filter(unit => unit.hp > 0 && unit.team === player.team
+      && militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind]));
+  if (!selected.length) {
+    sendOrderNotice(player, command, 'STANCE REJECTED · NO VALID MILITARY UNITS');
+    return;
+  }
+  for (const unit of selected) {
+    // Automatic intent can be abandoned; explicit focused attacks and routes
+    // retain priority, including pending/queued ordinary Move legs.
+    if (unit.stanceCombat) {
+      unit.orderRevision++;
+      unit.movePlanningPending = false;
+      unit.path = []; unit.pathIndex = 0;
+      unit.moveGoalCell = nearestOpenCell(worldToCell(unit.x, unit.z));
+      unit.attackTargetId = -1; unit.attackBuildingTargetId = -1;
+      clearAttackMoveOrder(unit);
+    } else if (unit.attackMove && unit.attackTargetId >= 0) {
+      clearAttackTarget(unit);
+    }
+    unit.holdingPosition = false;
+    unit.combatStance = command.stance;
+    unit.attackMoveScanTick = tickNumber;
+  }
+  dirty = true;
+  sendOrderNotice(player, command, `STANCE ORDER · ${command.stance} · ${selected.length} UNITS`);
+}
+
+function prepareIdleStanceCombat() {
+  for (const unit of units) {
+    if (unit.hp <= 0 || !militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind])) continue;
+    if (unit.stanceReturning) {
+      if (!unit.movePlanningPending && unit.pathIndex >= unit.path.length) {
+        const anchor = cellToWorld(nearestOpenCell(worldToCell(unit.stanceAnchorX, unit.stanceAnchorZ)));
+        if (Math.hypot(unit.x - anchor.x, unit.z - anchor.z) < .02) {
+          unit.stanceReturning = false;
+          unit.attackMoveRouteReady = true;
+          unit.attackMoveScanTick = tickNumber;
+        } else if (worldToCell(unit.x, unit.z) === worldToCell(anchor.x, anchor.z)) {
+          // A route to the current cell has no waypoints, but a continuous
+          // position can still be short of its saved return point.
+          unit.path = [worldToCell(anchor.x, anchor.z)];
+          unit.pathIndex = 0;
+        } else {
+          abandonBlockedStanceReturn(unit);
+        }
+      }
+      continue;
+    }
+    if (unit.combatStance === 'noAttack' || unit.holdingPosition || unit.attackMove
+      || unit.persistentOrder || unit.movePlanningPending || unit.pathIndex < unit.path.length
+      || unit.queuedWaypoints.length || unit.attackTargetId >= 0 || unit.attackBuildingTargetId >= 0) continue;
+    unit.stanceCombat = true;
+    unit.stanceAnchorX = unit.x; unit.stanceAnchorZ = unit.z;
+    unit.attackMoveAnchorX = unit.x; unit.attackMoveAnchorZ = unit.z;
+    unit.attackMove = true; unit.attackMoveRouteReady = true;
+    unit.moveGoalCell = nearestOpenCell(worldToCell(unit.x, unit.z));
+  }
 }
 
 function assignAttack(player, command) {
@@ -6261,6 +6418,7 @@ function assignAttack(player, command) {
   const targetCell = worldToCell(target.x, target.z);
   const assignments = [];
   for (const unit of selectedUnits) {
+    if (unit.combatStance === 'standGround' && Math.hypot(unit.x - target.x, unit.z - target.z) > UNIT_DEFINITIONS[unit.kind].combat.range) continue;
     const approach = getUnitAttackPath(unit, target);
     if (!approach?.reachable) continue;
     assignments.push({ unit, path: approach.path });
@@ -6322,6 +6480,7 @@ function assignAttackBuilding(player, command) {
       assignments.push({ unit, start, goal: start, path: [] });
       continue;
     }
+    if (unit.combatStance === 'standGround') continue;
     const componentId = walkableComponents[start];
     if (componentId < 0) continue;
     const fieldKey = `${componentId}:${unit.kind}`;
@@ -6420,6 +6579,7 @@ function advanceQueuedWaypoints() {
     unit.attackTargetId = -1;
     unit.attackBuildingTargetId = -1;
     unit.movePlanningPending = true;
+    unit.stanceCombat = false; unit.stanceReturning = false;
     unit.attackMove = waypoint.attackMove;
     unit.attackMoveRouteReady = false;
     unit.attackMoveResumePath = null;
@@ -6595,12 +6755,13 @@ async function handleCommand(player, command) {
       return;
     }
   }
-  if (matchWinner >= 0 && ['stop', 'holdPosition', 'patrol', 'follow', 'move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'returnCargo', 'train', 'build', 'buildWall', 'setGateOpen', 'trainArcher', 'trainUnit', 'trainWorker', 'setRallyPoint', 'researchUpgrade', 'cancelConstruction', 'cancelTraining', 'cancelResearch', 'repairBuilding'].includes(command.type)) {
+  if (matchWinner >= 0 && ['setStance', 'stop', 'holdPosition', 'patrol', 'follow', 'move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'returnCargo', 'train', 'build', 'buildWall', 'setGateOpen', 'trainArcher', 'trainUnit', 'trainWorker', 'setRallyPoint', 'researchUpgrade', 'cancelConstruction', 'cancelTraining', 'cancelResearch', 'repairBuilding'].includes(command.type)) {
     sendOrderNotice(player, command, player.team === 0
       ? 'MATCH OVER · RESET BATTLEFIELD TO PLAY AGAIN'
       : 'MATCH OVER · WAIT FOR HOST TO RESET');
     return;
   }
+  if (command.type === 'setStance') assignCombatStance(player, command);
   if (command.type === 'stop' || command.type === 'holdPosition') assignStationaryOrder(player, command);
   if (command.type === 'patrol') assignPatrolOrder(player, command);
   if (command.type === 'follow') assignFollowOrder(player, command);
@@ -6766,8 +6927,10 @@ function findAttackMoveTarget(unit, acquireRadius = ATTACK_MOVE_ACQUIRE_RADIUS, 
       if (remaining === 1) activeBuckets--;
       visited++;
       if (!target || target.hp <= 0 || !canCombatTarget(UNIT_DEFINITIONS[unit.kind], UNIT_DEFINITIONS[target.kind])) continue;
+      if (automaticTargetRejected(unit, target)) continue;
       if (mapDefinition.fogOfWar
         && !cellVisibleToTeam(unit.team, worldToCell(target.x, target.z))) continue;
+      if (unit.stanceCombat && Math.hypot(target.x - unit.stanceAnchorX, target.z - unit.stanceAnchorZ) > unitStancePolicy(unit).leash) continue;
 
       const targetCell = nearestOpenCell(worldToCell(target.x, target.z));
       const dx = target.x - unit.x;
@@ -6843,7 +7006,8 @@ function prepareAttackMovePaths() {
   const plans = new Map();
   // Least recently served requests go first. Physical position breaks initial
   // ties so relabelling an army cannot buy it earlier pathfinding service.
-  const requesters = units.filter(unit => unit.hp > 0 && unit.attackMove);
+  const requesters = units.filter(unit => unit.hp > 0 && unit.attackMove && !unit.stanceReturning
+    && unit.combatStance !== 'noAttack');
   requesters.sort((a, b) => (attackFlowLastGrant.get(a) ?? -1) - (attackFlowLastGrant.get(b) ?? -1)
     || a.x - b.x || a.z - b.z || a.kind.localeCompare(b.kind));
   for (const unit of requesters) {
@@ -6854,16 +7018,19 @@ function prepareAttackMovePaths() {
       if (!target || target.hp <= 0 || target.team === unit.team
         || !unitHasCapability(unit, 'attack') || !canCombatTarget(UNIT_DEFINITIONS[unit.kind], UNIT_DEFINITIONS[target.kind])
         || (mapDefinition.fogOfWar && !cellVisibleToTeam(unit.team, worldToCell(target.x, target.z)))
-        || Math.hypot(target.x - unit.attackMoveAnchorX, target.z - unit.attackMoveAnchorZ) > ATTACK_MOVE_LEASH_RADIUS
+        || Math.hypot(target.x - unit.attackMoveAnchorX, target.z - unit.attackMoveAnchorZ) > automaticLeash(unit)
         || Math.hypot(target.x - unit.x, target.z - unit.z) <= (UNIT_DEFINITIONS[unit.kind].combat.range)
         || (worldToCell(target.x, target.z) === unit.lastAttackCell && unit.pathIndex < unit.path.length)) continue;
     } else if (unit.attackMoveRouteReady && !unit.movePlanningPending
       && unit.attackBuildingTargetId < 0 && tickNumber >= unit.attackMoveScanTick) {
-      target = findAttackMoveTarget(unit);
+      const policy = unitStancePolicy(unit);
+      target = findAttackMoveTarget(unit, policy.acquire,
+        policy.acquire <= ATTACK_MOVE_ACQUIRE_RADIUS ? attackMoveBucketOffsets : holdBucketOffsets);
     }
     if (!target) continue;
     const previousBuilt = budget.built;
-    const approach = getUnitAttackPath(unit, target, budget, unit.attackTargetId >= 0);
+    const approach = boundedAutomaticApproach(unit, target,
+      getUnitAttackPath(unit, target, budget, unit.attackTargetId >= 0));
     if (budget.built > previousBuilt) attackFlowLastGrant.set(unit, tickNumber);
     plans.set(unit.id, { target, approach });
   }
@@ -6983,6 +7150,7 @@ function spreadInteractingUnits() {
   const searchRadius = MIN_SEPARATION + WALK_SPEED * STEP_SECONDS;
   for (const unit of units) {
     if (unit.hp <= 0 || unit.movementDomain === 'water' || unit.pathIndex < unit.path.length) continue;
+    if (militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind]) && (unit.holdingPosition || unit.combatStance === 'standGround')) continue;
     let target = null;
     let building = null;
     let range = 0;
@@ -7078,6 +7246,7 @@ function spreadInteractingUnits() {
     }
     if (x <= -MAP_HALF_X + 0.5 || x >= MAP_HALF_X - 0.5
       || z <= -MAP_HALF_Z + 0.5 || z >= MAP_HALF_Z - 0.5
+      || !automaticPositionAllowed(unit, x, z)
       || !canTraverseUnitStep(worldToCell(unit.x, unit.z), worldToCell(x, z),
         MAP_WIDTH, elevationLevelByCell, isWalkable)) continue;
     unit.x = x;
@@ -7167,6 +7336,7 @@ function simulateTick() {
   if (!scenarioClockStarted && connectedCount() >= (soloPractice ? 1 : 2)) scenarioClockStarted = true;
   if (scenarioClockStarted) matchElapsedSeconds += STEP_SECONDS;
   rebuildSpatialBuckets();
+  prepareIdleStanceCombat();
   updatePersistentOrders();
   const attackMovePlans = prepareAttackMovePaths();
   // Resolve attacks together so a lethal hit cannot cancel a same-tick counterattack.
@@ -7191,7 +7361,7 @@ function simulateTick() {
         const leashX = target.x - unit.attackMoveAnchorX;
         const leashZ = target.z - unit.attackMoveAnchorZ;
         if (unit.attackMove && leashX * leashX + leashZ * leashZ
-          > ATTACK_MOVE_LEASH_RADIUS * ATTACK_MOVE_LEASH_RADIUS) {
+          > automaticLeash(unit) ** 2) {
           clearAttackTarget(unit);
           continue;
         }
@@ -7217,7 +7387,7 @@ function simulateTick() {
           }
           continue;
         }
-        if (unit.holdingPosition) {
+        if (unit.holdingPosition || unit.combatStance === 'standGround') {
           clearAttackTarget(unit);
           continue;
         }
@@ -7269,6 +7439,10 @@ function simulateTick() {
         }
         continue;
       }
+      if (unit.combatStance === 'standGround') {
+        clearAttackTarget(unit);
+        continue;
+      }
       if (unit.repathTimer <= 0
         && (targetCell !== unit.lastAttackCell || unit.pathIndex >= unit.path.length)) {
         const start = nearestOpenCell(worldToCell(unit.x, unit.z));
@@ -7291,6 +7465,7 @@ function simulateTick() {
     }
 
     if (unit.attackMove && unit.attackMoveRouteReady && !unit.movePlanningPending
+      && !unit.stanceReturning && unit.combatStance !== 'noAttack'
       && unit.attackTargetId < 0 && unit.attackBuildingTargetId < 0
       && tickNumber >= unit.attackMoveScanTick) {
       unit.attackMoveScanTick = tickNumber + ATTACK_MOVE_SCAN_INTERVAL_TICKS;
@@ -7301,8 +7476,8 @@ function simulateTick() {
         if (movePath?.reachable) {
           unit.attackMoveResumePath = unit.path;
           unit.attackMoveResumePathIndex = unit.pathIndex;
-          unit.attackMoveAnchorX = unit.x;
-          unit.attackMoveAnchorZ = unit.z;
+          unit.attackMoveAnchorX = unit.stanceCombat ? unit.stanceAnchorX : unit.x;
+          unit.attackMoveAnchorZ = unit.stanceCombat ? unit.stanceAnchorZ : unit.z;
           unit.attackTargetId = target.id;
           unit.repathTimer = 0.6;
           unit.lastAttackCell = movePath.targetCell;
@@ -7347,7 +7522,7 @@ function simulateTick() {
     if (unit.hp <= 0 || unit.movementDomain === 'water') continue;
     // A target can move within its current cell after the flow path ends.
     // Close that last gap directly so the attacker does not wait in place.
-    if (!unit.holdingPosition && unit.pathIndex >= unit.path.length && unit.attackTargetId >= 0) {
+    if (!unit.holdingPosition && unit.combatStance !== 'standGround' && unit.pathIndex >= unit.path.length && unit.attackTargetId >= 0) {
       const target = units[unit.attackTargetId];
       const range = UNIT_DEFINITIONS[unit.kind].combat.range;
       if (target?.hp > 0 && worldToCell(unit.x, unit.z) === worldToCell(target.x, target.z)) {
@@ -7358,7 +7533,7 @@ function simulateTick() {
           const step = Math.min(UNIT_DEFINITIONS[unit.kind].combat.moveSpeed * STEP_SECONDS, distance - range + 0.02);
           const x = unit.x + dx / distance * step;
           const z = unit.z + dz / distance * step;
-          if (isWalkable(worldToCell(x, z))) {
+          if (isWalkable(worldToCell(x, z)) && automaticPositionAllowed(unit, x, z)) {
             unit.x = x;
             unit.z = z;
             unit.lastMoveTick = tickNumber;
@@ -7394,6 +7569,11 @@ function simulateTick() {
         break;
       }
       if (move.reachedWaypoint) {
+        if (!automaticPositionAllowed(unit, move.target.x, move.target.z)) {
+          if (unit.stanceReturning) abandonBlockedStanceReturn(unit);
+          else { rejectAutomaticTarget(unit, units[unit.attackTargetId]); clearAttackTarget(unit); }
+          break;
+        }
         unit.x = move.target.x;
         unit.z = move.target.z;
         unit.pathIndex++;
@@ -7406,6 +7586,11 @@ function simulateTick() {
       const nextZ = unit.z + move.z * move.stepDistance;
       const nextCell = worldToCell(nextX, nextZ);
       const currentCell = worldToCell(unit.x, unit.z);
+      if (!automaticPositionAllowed(unit, nextX, nextZ)) {
+        if (unit.stanceReturning) abandonBlockedStanceReturn(unit);
+        else { rejectAutomaticTarget(unit, units[unit.attackTargetId]); clearAttackTarget(unit); }
+        break;
+      }
       if (canTraverseUnitStep(currentCell, nextCell, MAP_WIDTH, elevationLevelByCell, isWalkable)) {
         unit.x = nextX;
         unit.z = nextZ;
@@ -7416,7 +7601,7 @@ function simulateTick() {
         const fallbackX = unit.x + (targetX / length) * move.stepDistance;
         const fallbackZ = unit.z + (targetZ / length) * move.stepDistance;
         if (canTraverseUnitStep(currentCell, worldToCell(fallbackX, fallbackZ),
-          MAP_WIDTH, elevationLevelByCell, isWalkable)) {
+          MAP_WIDTH, elevationLevelByCell, isWalkable) && automaticPositionAllowed(unit, fallbackX, fallbackZ)) {
           unit.x = fallbackX;
           unit.z = fallbackZ;
         } else {

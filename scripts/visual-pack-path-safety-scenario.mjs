@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -29,6 +29,20 @@ function makeGlb(json) {
 
 function anchor(id) {
   return { id, node: id };
+}
+
+function runValidator(input, script = path.join(root, 'scripts/validate-visual-pack.mjs')) {
+  const result = spawnSync(process.execPath, [script, input], {cwd: root, encoding: 'utf8', timeout: 10000});
+  assert.ifError(result.error);
+  return result;
+}
+
+function expectLoadFailure(result, message) {
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, message);
+  assert.doesNotMatch(result.stderr, /node:internal|privatekey|secret/);
+  assert.equal(result.stderr.includes(tempRoot), false, 'expected failure must not echo the absolute input path');
+  assert.equal(result.stdout, '');
 }
 
 try {
@@ -132,6 +146,44 @@ try {
   assert.doesNotMatch(output, /uses skinning|embeds textures/,
     'the validator must not parse model bytes reached through an external symlink');
   console.log('Visual pack path-safety scenario passed: external model symlinks are rejected before GLB bytes are read.');
+
+  expectLoadFailure(runValidator(path.join(tempRoot, 'private-missing', 'manifest.json')), /file path and permissions.*retry/);
+  expectLoadFailure(runValidator(path.join(packRoot, 'private-missing.json')), /file path and permissions.*retry/);
+  expectLoadFailure(runValidator(packRoot), /file path and permissions.*retry/);
+  const privateInput = path.join(packRoot, 'private-input.json');
+  await writeFile(privateInput, 'privatekey=secret');
+  expectLoadFailure(runValidator(privateInput), /valid JSON.*retry/);
+  assert.equal(await readFile(privateInput, 'utf8'), 'privatekey=secret', 'validation leaves author input intact');
+  await writeFile(privateInput, JSON.stringify(manifest));
+  const retry = runValidator(privateInput);
+  assert.equal(retry.status, 1);
+  assert.match(retry.stderr, /file symlink escapes its pack directory: model\.glb/,
+    'repairing input reaches normal asset validation without weakening symlink checks');
+  assert.doesNotMatch(retry.stderr, /could not be read|must be valid JSON/);
+
+  // Break and repair only a copied tool/schema fixture, preserving shared source files.
+  const scripts = path.join(tempRoot, 'scripts'), schemas = path.join(tempRoot, 'schemas');
+  await mkdir(scripts); await mkdir(schemas);
+  const isolatedTool = path.join(scripts, 'validate-visual-pack.mjs');
+  const isolatedSchema = path.join(schemas, 'renderer-asset-pack-v1.schema.json');
+  await copyFile(path.join(root, 'scripts/validate-visual-pack.mjs'), isolatedTool);
+  const validInput = path.join(root, 'assets/environment/frontier-interactive-v1/manifest.json');
+  expectLoadFailure(runValidator(validInput, isolatedTool), /bundled.*schema.*checkout.*retry/i);
+  await writeFile(isolatedSchema, 'privatekey=secret');
+  expectLoadFailure(runValidator(validInput, isolatedTool), /bundled.*schema.*checkout.*retry/i);
+  await copyFile(path.join(root, 'schemas/renderer-asset-pack-v1.schema.json'), isolatedSchema);
+  const repaired = runValidator(validInput, isolatedTool);
+  assert.equal(repaired.status, 0, repaired.stderr);
+  assert.match(repaired.stdout, /Visual pack validation passed/);
+
+  await writeFile(isolatedSchema, JSON.stringify({type: 'object', properties: {packId: {enum: {}}}}));
+  const fault = runValidator(validInput, isolatedTool);
+  assert.equal(fault.status, 1);
+  assert.match(fault.stderr, /TypeError:.*is not a function/,
+    'unexpected schema processing faults remain programmer faults');
+  assert.match(fault.stderr, /at checkSchema/);
+  assert.doesNotMatch(fault.stderr, /file path and permissions|Check its syntax/);
+  console.log('Visual pack input/schema failures, safe messages, repair/retry and programmer-fault checks passed.');
 } finally {
   await rm(tempRoot, { recursive: true, force: true });
 }

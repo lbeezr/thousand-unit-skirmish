@@ -63,7 +63,7 @@ settlement fixture retains its paid ordinary land roster; Dock has its own
 shoreline fixture. Skiff production, movement and blocked recovery have a separate
 [`skiff-scenario`](../scripts/skiff-scenario.mjs).
 
-For a small manual match, select **Lab · SHORE FISHING**, gather the local 175 wood,
+For a small manual match, select **SHORE FISHING**, gather the local 175 wood,
 select a Worker and choose Dock in the building menu. A geometry-admitted site
 on the inner bank of Azure's pond is world `(-4.5, 8.5)` (one-based column 16,
 row 25); Ember's counterpart is `(4.5, 8.5)` (column 25, row 25). Move units out
