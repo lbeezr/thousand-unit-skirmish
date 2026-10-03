@@ -44,8 +44,10 @@ hardware benchmark or speedup claim. The performance skill was inspected; its
 the clearance window and redirects each ID/generation once. It attempts the
 ordinary paid build immediately when the observed site is empty; only an
 authoritative `UNITS IN FOOTPRINT` race is retried. Other errors fail the run.
-The loop retains the 120-second bound, avoids repeatedly replacing pending
-movement, and conservatively includes rounded snapshot borders.
+The loop bounds each awaited callback by the remaining 120-second deadline,
+avoids repeatedly replacing pending movement, and conservatively includes
+rounded snapshot borders. Native command filtering captures terminal errors so
+unrelated build rejections retain their actual reason.
 
 The rendered scale runner and new native scenario share that helper. The native
 scenario uses the same map, seed, unit count and first move orders; ordinary
@@ -59,9 +61,14 @@ the committed 1,000/2,000 construction openings and source hashes. The 2,000 run
 later main's cargo-return fix. These are functional
 opening results, not evidence of a faster navigation algorithm.
 
-Five helper regressions cover late arrivals, placement races, unrelated errors,
+Eight helper regressions cover late arrivals, placement races, unrelated errors,
 bounded stalled evacuation, reused generations, seat/worker/death filtering,
-rounded borders, and the actual 1,000/2,000 formation geometry. Existing movement,
+rounded borders, callback deadlines, native rejection filtering, and the actual
+1,000/2,000 formation geometry. Independent review of `2f053dc` reproduced two
+harness issues (deadline overrun and hidden placement rejections); both received
+focused regressions and corrections. The reviewer also completed a native
+2,000-unit opening with both paid Barracks complete and empty footprints.
+Existing movement,
 villager facing and CI shard checks pass. The native 2,000 case is registered in CI.
 
 ## Remaining proof

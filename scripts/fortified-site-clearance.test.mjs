@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
-import {clearAndBuildFortifiedSite, fortifiedSiteOccupants} from './fortified-site-clearance.mjs';
+import {clearAndBuildFortifiedSite, fortifiedSiteOccupants, sendFortifiedCommand} from './fortified-site-clearance.mjs';
 
 const row=(id,team=0,generation=1)=>[id,team,team?18.5:-18.5,-3.5,100,'infantry',0,null,generation];
 function fixture(states,notices=['BUILD ORDER · 2 WORKERS']){
@@ -35,6 +35,37 @@ test('a blocked evacuation remains bounded and reused generations are distinct',
   const reused=fixture([[row(1,0,1)],[row(1,0,2)],[]]);
   await clearAndBuildFortifiedSite(reused.options);
   assert.deepEqual(reused.moves,[['1:1'],['1:2']]);
+});
+
+test('a callback result after the deadline cannot report a successful build',async()=>{
+  const f=fixture([[]]);f.options.timeoutMs=1000;
+  f.options.build=async()=>{await f.options.sleep(1500);return {message:'BUILD ORDER · 2 WORKERS'};};
+  await assert.rejects(clearAndBuildFortifiedSite(f.options),/site clearance timed out/);
+});
+
+test('state, movement and build callbacks share the remaining wall-clock deadline',async()=>{
+  for(const callback of ['state','move','build']){
+    const f=fixture(callback==='move'?[[row(1)]]:[[]]);
+    f.options.timeoutMs=30;delete f.options.now;
+    f.options[callback]=()=>new Promise(()=>{});
+    const started=performance.now();
+    await assert.rejects(clearAndBuildFortifiedSite(f.options),/site clearance timed out/);
+    assert.ok(performance.now()-started<1000,`${callback} must not wait for a separate order timeout`);
+  }
+});
+
+test('native order filtering captures terminal failures and preserves placement reasons',async()=>{
+  const command={type:'build',clientOrderToken:1};
+  const notice={message:'BUILD REJECTED · UNKNOWN BUILDING TYPE'};
+  const client={command:async(sent,expression)=>{
+    assert.equal(sent,command);
+    assert.ok(expression.test(notice.message),'terminal rejection must reach the caller');
+    return notice;
+  }};
+  const f=fixture([[]]);
+  f.options.build=()=>sendFortifiedCommand(client,command,/BUILD ORDER|BUILD REJECTED/);
+  await assert.rejects(clearAndBuildFortifiedSite(f.options),/UNKNOWN BUILDING TYPE/);
+  await assert.rejects(sendFortifiedCommand(client,command,/BUILD ORDER/),/UNKNOWN BUILDING TYPE/);
 });
 
 test('site selection respects both seats and conservatively covers rounded footprint edges',()=>{

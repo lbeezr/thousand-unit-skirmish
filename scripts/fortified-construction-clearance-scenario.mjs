@@ -4,7 +4,7 @@ import {readFile,writeFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {createFortifiedFixture} from './fortified-crossing-fixture.mjs';
-import {clearAndBuildFortifiedSite} from './fortified-site-clearance.mjs';
+import {clearAndBuildFortifiedSite,sendFortifiedCommand} from './fortified-site-clearance.mjs';
 const size=Number(process.argv[2]??2000);
 assert.ok([250,1000,2000].includes(size));
 const legacy=process.argv[3]==='--baseline';
@@ -21,7 +21,7 @@ try{
   const samples=[],orders=[];
   async function order(team,type,units,extra,label){
     const command={type,ids:units.map(u=>u[0]),unitGenerations:units.map(u=>u[8]),...extra,clientOrderToken:token++};
-    const notice=await clients[team].command(command,label);orders.push({team,type,count:units.length,tick:clients[team].latest.tick,message:notice.message});return notice;
+    const notice=await sendFortifiedCommand(clients[team],command,label);orders.push({team,type,count:units.length,tick:clients[team].latest.tick,message:notice.message});return notice;
   }
   await Promise.all(clients.map(async(c,team)=>{
     await order(team,'move',c.latest.units.filter(u=>u[1]===team&&u[4]>0&&u[5]==='infantry'),{x:team?12.5:-12.5,z:10.5},/MOVE ORDER/);
@@ -57,7 +57,7 @@ try{
     const workers=c.latest.units.filter(u=>u[1]===team&&u[5]==='worker');
     const cleared=await clearAndBuildFortifiedSite({team,state:async()=>c.latest,
       move:(units,goal)=>order(team,'move',units,goal,/MOVE ORDER/),
-      build:()=>order(team,'build',workers.slice(0,2),{buildingType:'barracks',x:team?18.5:-18.5,z:-3.5},/BUILD ORDER|BUILD REJECTED · UNITS IN FOOTPRINT/),
+      build:()=>order(team,'build',workers.slice(0,2),{buildingType:'barracks',x:team?18.5:-18.5,z:-3.5},/BUILD ORDER|BUILD REJECTED/),
       onSample:sample=>samples.push({team,tick:c.latest.tick,...sample})});
     for(const [index,type] of ['food','wood'].entries()){
       const node=map.resourceNodes.find(n=>n.type===type&&(team?n.x>20:n.x< -20));
