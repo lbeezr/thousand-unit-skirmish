@@ -5,6 +5,11 @@ import { createRoomLobby } from '../src/room-lobby-ui.mjs';
 
 const host = { id: 'player-1', team: 0 };
 const guest = { id: 'player-2', team: 1 };
+function disabledControlBlur(doc) {
+  // JSDOM retains focus on disabled buttons; reproduce Chrome's BODY focus.
+  doc.body.tabIndex = -1;
+  doc.body.focus();
+}
 function fixture(player = host) {
   const dom = new JSDOM('<dialog id="room-lobby"></dialog>', { url: 'http://localhost/' });
   const root = dom.window.document.querySelector('dialog');
@@ -78,4 +83,52 @@ test('launch needs server readiness and keeps the modal until server acceptance'
   assert.equal(f.root.querySelector('a').href, 'http://localhost/');
   f.ui.update(null, host);
   assert.equal(f.root.open, false, 'legacy rooms have no modal');
+});
+
+test('host/guest enter on enabled controls and Ready acknowledgements/rejections retain focus', () => {
+  for (const player of [host, guest]) {
+    const f = fixture(player), ready = f.node('lobby-ready'), doc = f.dom.window.document;
+    assert.equal(doc.activeElement, f.node(player.team === 0 ? 'lobby-map' : 'lobby-ready'));
+    ready.focus(); ready.click();
+    disabledControlBlur(doc); assert.equal(doc.activeElement, doc.body);
+    f.ui.update({ ...f.state, seats: f.state.seats.map(seat => ({ ...seat, ready: seat.id === player.id })) }, player);
+    assert.equal(doc.activeElement, ready);
+    assert.equal(ready.textContent, 'Not ready');
+    ready.click(); disabledControlBlur(doc);
+    f.ui.reject('Lobby changed', { ...f.state, revision: 5 }, player);
+    assert.equal(doc.activeElement, ready);
+  }
+});
+
+test('acknowledgements do not steal another control or refocus a closed lobby', () => {
+  const f = fixture(), ready = f.node('lobby-ready'), doc = f.dom.window.document;
+  ready.focus(); ready.click(); disabledControlBlur(doc);
+  const invite = f.root.querySelector('button'); invite.focus();
+  f.ui.update(f.state, host);
+  assert.equal(doc.activeElement, invite);
+  ready.focus(); ready.click(); disabledControlBlur(doc);
+  f.ui.update({ ...f.state, phase: 'running' }, host);
+  assert.equal(f.root.open, false);
+  assert.equal(doc.activeElement, doc.body);
+});
+
+test('overlapping Ready and chat acknowledgements preserve the most recent control', () => {
+  const f = fixture(guest), ready = f.node('lobby-ready'), input = f.node('lobby-chat-text');
+  const doc = f.dom.window.document;
+  const submitChat = () => f.root.querySelector('form').dispatchEvent(new f.dom.window.Event('submit', { cancelable: true }));
+  ready.focus(); ready.click(); disabledControlBlur(doc);
+  input.focus(); input.value = 'Hello'; submitChat(); disabledControlBlur(doc);
+  const firstChat = f.sent.find(command => command.type === 'sendLobbyChat');
+  f.ui.update(f.state, guest);
+  assert.equal(doc.activeElement, doc.body, 'an older Ready acknowledgement cannot reclaim chat focus');
+  f.ui.updateChat([], { playerId: guest.id, clientMessageId: firstChat.clientMessageId });
+  assert.equal(doc.activeElement, input);
+
+  input.value = 'Second'; submitChat(); disabledControlBlur(doc);
+  const secondChat = f.sent.at(-1);
+  ready.focus(); ready.click(); disabledControlBlur(doc);
+  f.ui.updateChat([], { playerId: guest.id, clientMessageId: secondChat.clientMessageId });
+  assert.equal(doc.activeElement, doc.body, 'an older chat acknowledgement cannot reclaim Ready focus');
+  f.ui.update(f.state, guest);
+  assert.equal(doc.activeElement, ready);
 });

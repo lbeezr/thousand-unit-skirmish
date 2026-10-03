@@ -25,7 +25,7 @@ function fixture({ pending = true, state = 'pending' } = {}) {
     emit(type, data) { this.events.get(type)?.(data); }
   }
   const context = vm.createContext({
-    applyLobby() {}, roomLobby: { disconnect() {} },
+    applyLobby() {}, roomLobby: { disconnect() {}, updateChat() {} },
     waterStudyFishBinding: { clear() { fishClears++; } },
     audio: { stopWork() { workStops++; } }, orderAudioGate: { reset() { orderResets++; } },
     WebSocket, URL, location: { protocol: 'http:', host: 'localhost' },
