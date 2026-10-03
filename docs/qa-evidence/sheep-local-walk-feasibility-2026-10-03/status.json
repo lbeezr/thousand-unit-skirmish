@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "scope": "one-heading Sheep local walk feasibility",
+  "baseline": "7c6ec842349cab30afde9244c8953fee8ab91599",
+  "sourceAuthority": "Preserved producer contract; current consumer has no original GLB bytes",
+  "sourceMaterializationResult": "Private original model is not readable in this consumer environment through supported Library materialization",
+  "modelBytesInspected": false,
+  "jointPlacementReviewed": false,
+  "deformationReviewed": false,
+  "walkingFeasible": null,
+  "renderReviewCompleted": false,
+  "animationsProduced": [],
+  "sourceOrRuntimeModelPublished": false,
+  "paidProviderCalls": 0,
+  "nextSourceStep": "Supported private transfer of exact original GLB, checked against the preserved contract; a lossless compressed transport may fit the consumer capacity",
+  "capabilityReceipt": "local-capabilities.json",
+  "toolingChecks": {
+    "nonSheepPublicFixtureImported": true,
+    "fixtureMeshes": 8,
+    "fixtureVertices": 1324,
+    "fixtureTriangles": 680,
+    "fixtureOriginalUnchanged": true,
+    "sourceMismatchRejectedWithoutReceipt": true,
+    "existingReceiptOverwriteRejected": true
+  }
+}

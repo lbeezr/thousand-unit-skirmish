@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "baseRevision": "20c4fce",
+  "originalPackVersion": "0.13.0",
+  "originalManifestSha256": "b9d2b7e0308922a9dcc71fb42fe7c54363891efa397dee4103d5796dd0587601",
+  "originalDimensionsPx": {
+    "width": 2048,
+    "height": 2048
+  },
+  "originalRgbaSha256": "795ac91d13312bb1664616955e378cc8f45b6465f043b777e62588ae987e9906",
+  "originalFrames": 80,
+  "originalFrameMetadataSha256": "9e93c3ea712fc3fff783758660ea3da0b14ba743f4feb8a78e73691f4a2720c2",
+  "originalClips": 51,
+  "originalClipMetadataSha256": "af746842207e6f23182ce44ac73f51fddc36a1c8bfe9375014b64c017284812f",
+  "worldUnitsPerPixel": 0.0052421832906788795,
+  "onlyAddedHeading": "south-east",
+  "addedFrameCount": 4,
+  "loopDurationsMs": [
+    350,
+    300,
+    350,
+    300
+  ],
+  "pixelRegeneration": false
+}

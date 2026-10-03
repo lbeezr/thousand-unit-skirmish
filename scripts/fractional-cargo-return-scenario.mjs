@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
+import { economyResources } from '../src/economy-profile.mjs';
 
 // Tiny authored stocks expose a carrying-state bug; no runtime economy/position injection.
 // --reproduce-only asserts the original zero-wire/disabled-control behavior on an old build.
@@ -43,7 +44,7 @@ function productionReturnControl(client, team, id, transmit = false) {
     WORKER_TASK_STATES: new Set(['idle', 'returning']), nextAttackFocusSlot: 0,
     attackFocusMesh: {}, unitHealthBackground: {}, unitHealthFill: {},
     setUnitInstanceCount: noop, setUnitTint: noop, updateUnitTransform: noop, updateUnitCargoCueColor: noop,
-    TextEncoder, WebSocket: { OPEN: 1 }, mapDefinition: map,
+    TextEncoder, WebSocket: { OPEN: 1 }, mapDefinition: map, economyResources,
     socket: { readyState: 1, send(text) {
       const payload = JSON.parse(text); payloads.push(payload);
       if (transmit) client.send(payload);

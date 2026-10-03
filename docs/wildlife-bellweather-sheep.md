@@ -23,6 +23,11 @@ Historical [one-view binding](qa-neutral-wildlife-render-binding-2026-10-03.md),
 preserve the earlier transfer/publication limits. Those limits were resolved
 for these eight approved PNG views; native appearance acceptance remains open.
 
+The next [one-heading local walk candidate](sheep-local-walk-candidate.md) records
+verified Blender/Rigify availability and producer-reported hoof landmarks.
+Private GLB materialization is blocked, so joints, weights, deformation and
+walking renders remain unverified; no animal animation is added.
+
 ## Implemented neutral food foundation — 3 October 2026
 
 [Authoritative state](../src/wildlife-state.mjs) admits one optional resource-node
@@ -174,7 +179,8 @@ coordinates and changes no resource-placement algorithm or existing food nodes.
 First prepare a same-animal anatomy sheet: front, left profile, right profile,
 rear, and elevated three-quarter. Preserve head shape, ear attachment, four legs,
 fleece mass and tail across views. Plain anatomy guides and painted concepts are
-separate review stages. Neither sheet exists yet.
+separate review stages. The eight static captures now supply same-animal view
+evidence; neutral locomotion anatomy and joint fit remain unreviewed.
 
 For game views, keep the [measured camera](art-direction/environment-camera-v1/README.md)
 fixed at 45° azimuth / 45.4359024848° elevation. Rotate the animal in eight world
@@ -201,8 +207,8 @@ hashes, grounded pivots, explicit clips and alpha margins. Register a hoof-plane
 root; changing alpha bounds must not move the animal or shrink its body.
 Backgrounds, labels, shadows and ownership UI stay out of runtime cutouts.
 The original proposal supplied neither a wildlife loader nor a validated sprite
-manifest. The narrower implementation above now supplies a one-view static pack
-and neutral resource loader; the coverage in this table remains future art work.
+manifest. The narrower implementation above now supplies eight static idle views
+and the normal neutral resource loader; animated coverage in this table remains future art work.
 
 ## Implementation boundary and next proof
 

@@ -1,6 +1,7 @@
 import { createGateTimbers, updateGateTimbers } from './palisade-gate-visual.mjs';
 import { findInvalidResourceVariant, isShoreFish } from './shore-fishing.mjs';
 import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from './shore-fishing-placeholder.mjs';
+import { fishingVisualSites, createWorkerFishingContactRuntime } from './worker-fishing-contact.mjs';
 import { createWaterStudyFishBinding } from './water-study-fish-binding.mjs';
 import { generateRollingGround, smoothGround } from './terrain-authoring.mjs';
 import { mountResourceBrushControls } from './resource-brush-controls.mjs';
@@ -527,6 +528,8 @@ let unitLowDetailActive = false;
 let unitSpriteReady = false;
 let unitSpritePreviewActive = false;
 let unitSpriteMarkersActive = false;
+const workerFishingContactRuntime = createWorkerFishingContactRuntime({ THREE, scene, capacity: MAX_PER_TEAM,
+  getMap: () => mapDefinition });
 const unitSpriteRuntime = createUnitSpriteRuntime({
   THREE, scene, capacity: MAX_PER_TEAM, teamHex: TEAM_HEX, cameraQuaternion: camera.quaternion,
   roles: unitSpritePreviewRoles,
@@ -535,6 +538,7 @@ const unitSpriteRuntime = createUnitSpriteRuntime({
   teamCivilizations: humanRosterPreview ? ['human', 'boughward'] : null,
   castPreview,
   humanAppearancePreview: humanRosterPreview || roomPageUrl.searchParams.get('humanVaeloraPreview') === '1',
+  fishingContact: workerFishingContactRuntime,
 });
 unitSpriteRuntime.ready.then((loaded) => {
   if (!loaded) return;
@@ -1851,7 +1855,8 @@ function addResourceNodeVisual(node) {
   const ringMaterial = new THREE.MeshBasicMaterial({
     color: ringColor, side: THREE.DoubleSide, transparent: true, opacity: 0.78, depthWrite: false,
   });
-  const ring = new THREE.Mesh(new THREE.RingGeometry(0.55, 0.66, 24), ringMaterial);
+  const ring = new THREE.Mesh(isShoreFish(node)
+    ? new THREE.RingGeometry(0.27, 0.31, 24) : new THREE.RingGeometry(0.55, 0.66, 24), ringMaterial);
   ring.material.color.setHex(node.stock > 0 ? ringColor : 0x77806b);
   ring.material.opacity = node.stock > 0 ? 0.78 : 0.35;
   ring.rotation.x = -Math.PI / 2;
@@ -1870,9 +1875,13 @@ function addResourceNodeVisual(node) {
   callout.visible = false;
   addMapObject(callout);
   const fishPlaceholder = isShoreFish(node) ? createShoreFishPlaceholder() : null;
-  if (fishPlaceholder) { ring.add(fishPlaceholder); updateShoreFishPlaceholder(fishPlaceholder, stage); }
+  const fishingWater = fishPlaceholder ? fishingVisualSites(mapDefinition).find(site => site.nodeId === node.id)?.water : null;
+  if (fishPlaceholder) {
+    if (fishingWater) fishPlaceholder.position.set(fishingWater.x - node.x, node.z - fishingWater.z, 0.015);
+    ring.add(fishPlaceholder); updateShoreFishPlaceholder(fishPlaceholder, stage);
+  }
   resourceNodeVisuals.set(node.id, {
-    fishPlaceholder, type: nodeType, ring, stock: node.stock, startingStock: node.stock, stage,
+    fishPlaceholder, fishingWater, type: nodeType, ring, stock: node.stock, startingStock: node.stock, stage,
     x: node.x, z: node.z, callout,
     wildlifeSpecies: node.wildlifeSpecies,
   });
@@ -3439,6 +3448,8 @@ function updateUnitHealthVisual(unit) {
 }
 
 function updateUnitTransform(unit, now = performance.now()) {
+  // A recycled Worker slot must clear its cue even when the new kind bypasses sprites.
+  workerFishingContactRuntime.hide(unit);
   updateUnitHealthVisual(unit);
   const spawnProgress = unit.spawnStartedAt > 0
     ? THREE.MathUtils.clamp((now - unit.spawnStartedAt) / SPAWN_POSE_MS, 0, 1) : 1;
@@ -6183,6 +6194,7 @@ function populateMapEditor(definition, message) {
 function validateImportedMap(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('JSON must contain a map object.');
   const definition = JSON.parse(JSON.stringify(value));
+  const allowedResources = economyResources(definition.economyProfileId);
   validateMapAudioReference(definition.audio);
   definition.victoryMode ??= 'any';
   definition.fogOfWar ??= false;
@@ -6311,11 +6323,11 @@ function validateImportedMap(value) {
   const resourceIds = new Set();
   for (const node of definition.resourceNodes) {
     if (!node || typeof node.id !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(node.id)
-      || resourceIds.has(node.id) || !['food', 'wood'].includes(node.type)
+      || resourceIds.has(node.id) || !allowedResources.includes(node.type)
       || !Number.isFinite(node.x) || !Number.isFinite(node.z)
       || Math.abs(node.x) >= definition.width / 2 || Math.abs(node.z) >= definition.height / 2
       || !Number.isFinite(node.stock) || node.stock <= 0) {
-      throw new Error('Map has an invalid, duplicate, or out-of-bounds food or wood node.');
+      throw new Error('Map has an invalid, duplicate, out-of-bounds or unsupported resource node.');
     }
     resourceIds.add(node.id);
     const column = Math.floor(node.x + definition.width / 2);
@@ -6852,7 +6864,7 @@ function drawEditorGrid() {
     const x = node.x + editorDefinition.width / 2;
     const y = node.z + editorDefinition.height / 2;
     context.beginPath();
-    context.fillStyle = node.type === 'wood' ? '#9bb877' : '#e4bd63';
+    context.fillStyle = node.type === 'stone' ? '#b8bbc4' : node.type === 'wood' ? '#9bb877' : '#e4bd63';
     context.strokeStyle = 'rgba(16,24,17,.9)';
     context.lineWidth = 0.14;
     context.arc(x, y, 0.58, 0, Math.PI * 2);
@@ -6868,6 +6880,12 @@ function drawEditorGrid() {
       context.lineTo(x + 0.34, y + 0.07);
       context.closePath();
       context.fill();
+    } else if (node.type === 'stone') {
+      context.fillStyle = '#343842';
+      context.font = '0.7px monospace';
+      context.textAlign = 'center';
+      context.fillText('S', x, y + 0.24);
+      context.textAlign = 'start';
     } else if (isShoreFish(node)) {
       context.fillStyle = '#286173';
       context.font = '0.7px monospace';
@@ -7288,15 +7306,19 @@ function pickResourceNodeAt(x, y, { visibleOnly = false } = {}) {
       const row = Math.floor(node.z + MAP_HEIGHT / 2);
       if (latestFogCells?.[row * MAP_WIDTH + column] !== 2) continue;
     }
-    screenPoint.set(node.x, groundHeight(node.x,node.z)+0.22, node.z).project(camera);
-    const nodeX = (screenPoint.x * 0.5 + 0.5) * rect.width;
-    const nodeY = (-screenPoint.y * 0.5 + 0.5) * rect.height;
-    const dx = nodeX - x;
-    const dy = nodeY - y;
-    const distance = dx * dx + dy * dy;
-    if (distance < nearestDistance) {
-      nearest = node;
-      nearestDistance = distance;
+    const water = isShoreFish(node) ? resourceNodeVisuals.get(node.id)?.fishingWater : null;
+    // Both the bank ring and its water glyph select the same land-owned node.
+    for (const point of water ? [node, water] : [node]) {
+      if (visibleOnly && point === water && mapDefinition.fogOfWar) {
+        const column = Math.floor(point.x + MAP_WIDTH / 2), row = Math.floor(point.z + MAP_HEIGHT / 2);
+        if (latestFogCells?.[row * MAP_WIDTH + column] !== 2) continue;
+      }
+      screenPoint.set(point.x, groundHeight(point.x,point.z)+0.22, point.z).project(camera);
+      const nodeX = (screenPoint.x * 0.5 + 0.5) * rect.width;
+      const nodeY = (-screenPoint.y * 0.5 + 0.5) * rect.height;
+      const dx = nodeX - x, dy = nodeY - y;
+      const distance = dx * dx + dy * dy;
+      if (distance < nearestDistance) { nearest = node; nearestDistance = distance; }
     }
   }
   return nearest;

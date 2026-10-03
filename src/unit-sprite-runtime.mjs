@@ -229,6 +229,7 @@ export function castRoleForUnit(unit) {
 export function createUnitSpriteRuntime({
   THREE, scene, capacity, teamHex, cameraQuaternion, roles = UNIT_ROLES, roleSpriteVersions = {},
   castPreview = false, humanAppearancePreview = false, approximateActionDirections = false, teamCivilizations = null,
+  fishingContact = null,
 }) {
   const loader = new THREE.TextureLoader();
   const pendingCounts = [0, 0];
@@ -243,17 +244,20 @@ export function createUnitSpriteRuntime({
 
   function setCount(team, count) {
     pendingCounts[team] = count;
+    fishingContact?.setCount(team, count);
     for (const batch of batchesByTeam[team].values()) batch.mesh.count = count;
   }
 
   function setVisible(nextVisible) {
     visible = Boolean(nextVisible);
+    fishingContact?.setVisible(visible && ready);
     for (const teamBatches of batchesByTeam) {
       for (const batch of teamBatches.values()) batch.mesh.visible = visible && ready;
     }
   }
 
   function markTeamDirty(team) {
+    fishingContact?.markTeamDirty(team);
     for (const batch of batchesByTeam[team].values()) {
       batch.mesh.instanceMatrix.needsUpdate = true;
       batch.rectAttribute.needsUpdate = true;
@@ -272,6 +276,7 @@ export function createUnitSpriteRuntime({
   }
 
   function update(unit, now, visibleScale) {
+    fishingContact?.hide(unit);
     if (!ready) return;
     const role = roleForUnit(unit);
     const selectedPack = rolePacks.get(role);
@@ -328,6 +333,7 @@ export function createUnitSpriteRuntime({
     dummy.scale.set(rect.width * scale, rect.height * scale, 1);
     dummy.updateMatrix();
     currentBatch.mesh.setMatrixAt(unit.slot, dummy.matrix);
+    fishingContact?.update(unit, { role, state, frame, crop, matrix: dummy.matrix });
   }
 
   const zeroMatrix = new THREE.Matrix4().makeScale(0, 0, 0);
