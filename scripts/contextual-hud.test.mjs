@@ -94,6 +94,24 @@ function fixture(team = 0) {
   };
 }
 
+for (const team of [0, 1]) test(`seat ${team}: Return cargo appears for carrying workers and sends their order`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const own = team * 2, enemy = (1 - team) * 2;
+  const button = f.bar.querySelector('[data-return-cargo]'), orders = [];
+  f.w.sendTrackedOrder = command => { orders.push(command); return 100; };
+  f.w.setAttackMoveMode = () => {};
+  f.w.eval(between('function issueReturnCargo(', "for (const button of document.querySelectorAll('[data-stationary-order]'))"));
+  f.select([own]); assert.equal(button.hidden, true);
+  Object.assign(f.w.units[own], { cargo: 0.5, cargoType: 'food' });
+  f.select([own, own + 1]); assert.equal(button.hidden, false); assert.equal(button.disabled, false);
+  f.click(button); assert.deepEqual([...orders[0].ids], [own]); assert.equal(orders[0].type, 'returnCargo');
+  f.select([enemy]); assert.equal(button.hidden, true);
+  f.select([], { id: 8, team, type: 'barracks', complete: true, hp: 1800, productionQueue: [] });
+  assert.equal(button.hidden, true);
+  f.w.matchWinner = team; f.select([own]); assert.equal(button.disabled, true);
+  f.w.matchWinner = -1; f.w.units[own].cargo = 0; f.select([own]); assert.equal(button.hidden, true);
+});
+
 for (const team of [0, 1]) test(`seat ${team}: empty → Worker → army → building → empty preserves selections and essential access`, t => {
   const f = fixture(team); t.after(() => f.dom.window.close());
   const worker = team * 2, army = worker + 1;
