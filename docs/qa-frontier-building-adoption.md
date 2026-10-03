@@ -67,8 +67,10 @@ their own bases until both settlements are captured. Watchtower fires on enemies
 within seven cells; keep the later damage squad outside its range except when
 the tower itself is the deliberate target.
 
-After healthy completion, queue a Worker from each Town Center, a Scout from
-Stable and a Siege Engine from Workshop; set ground rally points and observe the
+After healthy completion, research **Siege Engineering** at Workshop (an
+additional 150 food / 150 wood, 30 seconds) before training a Siege Engine.
+Queue a Worker from each Town Center, a Scout from Stable and then a Siege Engine
+from Workshop; set ground rally points and observe the
 actual unit exit/rally and production cue while the finished image stays visible.
 House, Storehouse and Watchtower have no production queue or rally action. The
 existing [paid mature-settlement checkpoint recipe](qa-mature-settlement-2026-10-02.md)
