@@ -50,7 +50,10 @@ Azure keeps selection/payload/assigned builder `[0]`; Ember keeps `[8]`.
 Both unselected food/wood node IDs and the third Worker's queued destination
 remain unchanged in the authoritative checkpoint. The paid palisade recovery
 scenario and interrupted final sheep-cargo delivery also pass at this source.
-74 focused selection, connection, HUD, affordability, roster, Return cargo,
+Independent review found the House shortcut still enabled from roster count.
+Its eligibility now uses the selected Worker count, with both-seat HUD checks
+for empty, military, dead, foreign and eligible selections.
+76 focused selection, connection, HUD, affordability, roster, Return cargo,
 palisade, wall gesture and CI-sharding tests pass. Rendering/picking are supplied in these checks; no Chrome
 appearance or user's deployed session is claimed. Local browser sandbox/storage
 is unavailable. Integration/review evidence is recorded in the owning PR.

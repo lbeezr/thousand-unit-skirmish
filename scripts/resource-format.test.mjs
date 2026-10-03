@@ -23,7 +23,7 @@ function fixture(team) {
       { id: 2, team, type: 'archery-range', complete: true, queue: [] },
       { id: 1_000_000_000 + team, team, type: 'town-center', home: true, complete: true, queue: [] }],
     selectedBuildingId: 1, teamUnits: [0, 1].map(t => [{ hp: 100, team: t, kind: 'worker', cargoType: 'food', cargo: 9.999 }]),
-    selected: new Set([0]), units: [{ id: 0, team, hp: 100, kind: 'worker', x: 0, z: 0 }],
+    selected: new Set([0]), units: [{ id: 0, team, hp: 100, kind: 'worker', serverX: 0, serverZ: 0 }],
     MAX_PER_TEAM: 1000, MAX_UNITS: 2000, buildPlacementPending: false, buildPlacementActive: false,
     buildPlacementType: 'barracks', livingIdleWorkerIds: () => [],
     document: { querySelector: element }, mapDefinition: { resourceNodes: [{}] },
@@ -50,6 +50,20 @@ test('whole resource display preserves conservative stock and requirement bounda
   assert.equal(formatResourceRequirement(100 - 90.033333), '10');
   assert.equal(formatResourceStock(1234.99), (1234).toLocaleString());
   assert.equal(formatResourceRequirement(0), '0');
+});
+
+for (const team of [0, 1]) test(`seat ${team}: House, Barracks and Range require selected eligible workers`, () => {
+  const f = fixture(team);
+  f.context.units.push({ id: 1, team, hp: 100, kind: 'infantry' },
+    { id: 2, team, hp: 0, kind: 'worker' }, { id: 3, team: 1 - team, hp: 100, kind: 'worker' });
+  for (const selection of [[], [1], [2], [3], [0]]) {
+    f.context.selected.clear();
+    for (const id of selection) f.context.selected.add(id);
+    f.stocks(1000, 1000);
+    for (const name of ['buildHouse', 'buildBarracks', 'buildRange']) {
+      assert.equal(f.ui[name].disabled, !selection.includes(0), `${name} with selection ${selection}`);
+    }
+  }
 });
 
 for (const team of [0, 1]) test(`actual economy and research controls keep exact affordability for team ${team}`, () => {

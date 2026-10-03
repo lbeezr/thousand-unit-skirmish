@@ -4930,7 +4930,7 @@ function updateEconomyUI(state = {}, initial = false) {
     ui.populationStatus.textContent = populationReadout.detail;
   }
   if (ui.buildHouse) {
-    ui.buildHouse.disabled = localTeam === null || matchWinner >= 0 || wood < BUILDING_DEFINITIONS.house.cost.wood || ownedWorkers.length === 0 || buildPlacementPending;
+    ui.buildHouse.disabled = localTeam === null || matchWinner >= 0 || wood < BUILDING_DEFINITIONS.house.cost.wood || selectedWorkerCount === 0 || buildPlacementPending;
     ui.buildHouse.classList.toggle('active', buildPlacementActive && buildPlacementType === 'house');
     ui.buildHouse.setAttribute('aria-pressed', String(buildPlacementActive && buildPlacementType === 'house'));
   }
