@@ -4,6 +4,7 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { formatResourceRequirement } from '../src/resource-format.mjs';
+import { setHudActionAvailability, isHudActionUnavailable } from '../src/hud-layout.mjs';
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const fn = source.slice(source.indexOf('function updateRosterProductionOptions('), source.indexOf('function updateEconomyUI('));
 for (const team of [0, 1]) test(`roster production choices follow definitions and current affordability for seat ${team}`, () => {
@@ -11,7 +12,8 @@ for (const team of [0, 1]) test(`roster production choices follow definitions an
   const building = { id: 7, team, type: 'barracks', complete: true, queue: 0 };
   const container = { dataset: {}, children: [], replaceChildren() { this.children = []; }, append(button) { this.children.push(button); } };
   const context = vm.createContext({ UNIT_DEFINITIONS, BUILDING_DEFINITIONS, formatResourceRequirement,
-    document: { createElement() { return { dataset: {}, getAttribute() { return null; }, addEventListener(_, callback) { this.click = callback; } }; } },
+    setHudActionAvailability, isHudActionUnavailable,
+    document: { createElement() { return { dataset: {}, getAttribute() { return null; }, removeAttribute() {}, addEventListener(_, callback) { this.click = callback; } }; } },
     localTeam: team, latestBuildings: [building], teamUnits: [[], []],
     latestFood: [500, 500], latestWood: [500, 500], latestWorkerProduction: [null, null], latestPopulation: [null, null],
     BARRACKS_QUEUE_LIMIT: 5, MAX_PER_TEAM: 1000, MAX_UNITS: 2000, latestRosterSize: 0, matchWinner: -1,
@@ -56,7 +58,8 @@ for (const team of [0, 1]) test(`Stable exposes both mounted products and weight
   const commands = [];
   const container = { dataset: {}, children: [], replaceChildren() { this.children = []; }, append(button) { this.children.push(button); } };
   const context = vm.createContext({ UNIT_DEFINITIONS, BUILDING_DEFINITIONS, formatResourceRequirement,
-    document: { createElement() { return { dataset: {}, getAttribute() { return null; }, addEventListener(_, callback) { this.click = callback; } }; } },
+    setHudActionAvailability, isHudActionUnavailable,
+    document: { createElement() { return { dataset: {}, getAttribute() { return null; }, removeAttribute() {}, addEventListener(_, callback) { this.click = callback; } }; } },
     localTeam: team, latestBuildings: [building], teamUnits: [[], []], latestFood: [500, 500], latestWood: [500, 500],
     latestWorkerProduction: [null, null], latestPopulation: [{ available: 1 }, { available: 1 }],
     BARRACKS_QUEUE_LIMIT: 5, MAX_PER_TEAM: 1000, MAX_UNITS: 2000, latestRosterSize: 0, matchWinner: -1,
