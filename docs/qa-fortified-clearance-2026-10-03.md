@@ -53,8 +53,10 @@ gathering begins after build acceptance. It proves both paid Barracks complete
 and their actual checkpoint footprints contain no living units. No positions,
 stock, costs or completed structures are injected. The
 [candidate record](qa-evidence/fortified-clearance-2026-10-03/candidate.json) reports
-the 1,000/2,000 construction openings. The first corrected 2,000 case accepts both
-builds after 403 ticks and completes both by tick 780. These are functional
+the committed 1,000/2,000 construction openings and source hashes. The 2,000 run on
+`06b7842` uses the same server/map bytes as the baseline, accepts both builds after
+406 ticks and completes both by tick 810. The 1,000 integration run also includes
+later main's cargo-return fix. These are functional
 opening results, not evidence of a faster navigation algorithm.
 
 Five helper regressions cover late arrivals, placement races, unrelated errors,
