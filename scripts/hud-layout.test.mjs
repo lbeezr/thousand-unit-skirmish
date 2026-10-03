@@ -84,6 +84,18 @@ test('already visible commands do not move and oversized commands reveal their s
   assert.ok(f.last.getBoundingClientRect().left >= 320 && f.last.getBoundingClientRect().left < 321);
 });
 
+for (const width of [750, 749.5]) test(`a ${width}px near-fit command stays fully revealed without fractional oscillation`, t => {
+  const f = commandStripFixture(t);
+  f.last.getBoundingClientRect = () => ({ left: 320.6 - f.strip.scrollLeft, right: 320.6 + width - f.strip.scrollLeft, width });
+  f.last.focus();
+  const offset = f.strip.scrollLeft;
+  assert.ok(offset > 0 && offset < 1);
+  f.frame();
+  assert.equal(f.strip.scrollLeft, offset, 'the deferred recheck must not reverse the correction');
+  assert.ok(f.last.getBoundingClientRect().left >= 320);
+  assert.ok(f.last.getBoundingClientRect().right <= 1070);
+});
+
 for (const [mode, delta, expected] of [[0, 30, 30], [1, 2, 32], [2, 1, 300]]) {
   test(`Shift vertical wheel scrolls only the command strip (deltaMode ${mode})`, t => {
     const f = commandStripFixture(t);

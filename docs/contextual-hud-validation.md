@@ -115,7 +115,8 @@ Shift+vertical-wheel fallback scrolls this strip when it overflows; native
 horizontal deltas keep their normal handling. Neither path scrolls an ancestor,
 changes selection or issues an order. Renderer, geometry and action art are
 unchanged. DOM tests replay the measured fractional overflow, reverse traversal,
-later/hidden focus, overflow limits and pixel/line/page wheel deltas; they do not
+later/hidden focus, near-fit and oversized fractional buttons, overflow limits
+and pixel/line/page wheel deltas; they do not
 establish native acceptance.
 
 Repeat the same native Worker capture and every Tab/Shift-Tab full-visibility

@@ -51,11 +51,11 @@ export function bindContextualCommandStrip(strip) {
     const right = Math.min(viewport.right, left + strip.clientWidth);
     const bounds = button.getBoundingClientRect();
     const oversized = bounds.width > right - left;
-    const delta = oversized || bounds.left < left
-      ? bounds.left - left : Math.max(0, bounds.right - right);
-    // Reveal fractional clipping; oversized commands keep their start just inside.
-    if (delta) strip.scrollLeft += oversized ? Math.floor(delta)
-      : delta > 0 ? Math.ceil(delta) : Math.floor(delta);
+    const start = bounds.left - left, end = bounds.right - right;
+    const rounded = end > 0 ? Math.ceil(end) : Math.floor(Math.min(0, start));
+    // A near-fit button must not overshoot and clip its opposite edge on recheck.
+    const delta = oversized ? Math.floor(start) : Math.max(end, Math.min(start, rounded));
+    if (delta) strip.scrollLeft += delta;
   };
   const focus = event => {
     const button = event.target.closest?.('button');
