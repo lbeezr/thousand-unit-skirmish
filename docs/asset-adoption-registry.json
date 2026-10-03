@@ -20,24 +20,14 @@
       "owner": "Active Frontier renderer owner",
       "probe": "frontier-building",
       "building": "town-center",
-      "manifest": "assets/buildings/frontier-civilization-scale-pilot-v1/town-center-complete-renderer.json",
-      "exception": {
-        "reason": "Complete-only experiment: four lifecycle states/team masks missing; existing default bindings remain.",
-        "nextAction": "Integrate existing Complete views and release dependencies by default with lifecycle fallback; verify user build, then remove exception.",
-        "evidence": "docs/asset-adoption-checklist.md"
-      }
+      "manifest": "assets/buildings/frontier-civilization-scale-pilot-v1/town-center-complete-renderer.json"
     },
     {
       "id": "frontier-house",
       "owner": "Active Frontier renderer owner",
       "probe": "frontier-building",
       "building": "house",
-      "manifest": "assets/buildings/frontier-civilization-scale-pilot-v1/house-complete-renderer.json",
-      "exception": {
-        "reason": "Complete-only experiment: four lifecycle states/team masks missing; existing default bindings remain.",
-        "nextAction": "Integrate existing Complete views and release dependencies by default with lifecycle fallback; verify user build, then remove exception.",
-        "evidence": "docs/asset-adoption-checklist.md"
-      }
+      "manifest": "assets/buildings/frontier-civilization-scale-pilot-v1/house-complete-renderer.json"
     },
     {
       "id": "frontier-storehouse",
@@ -46,7 +36,7 @@
       "building": "storehouse",
       "manifest": "assets/buildings/frontier-civilization-models-v1/storehouse-complete-renderer.json",
       "exception": {
-        "reason": "Complete-only experiment: four lifecycle states/team masks missing; existing default bindings remain.",
+        "reason": "Existing Complete-family integration is in progress; this family is still opt-in in the current main, assigned to the active renderer owner.",
         "nextAction": "Integrate existing Complete views and release dependencies by default with lifecycle fallback; verify user build, then remove exception.",
         "evidence": "docs/asset-adoption-checklist.md"
       }
@@ -58,7 +48,7 @@
       "building": "stable",
       "manifest": "assets/buildings/frontier-civilization-models-v1/stable-complete-renderer.json",
       "exception": {
-        "reason": "Complete-only experiment: four lifecycle states/team masks missing; existing default bindings remain.",
+        "reason": "Existing Complete-family integration is in progress; this family is still opt-in in the current main, assigned to the active renderer owner.",
         "nextAction": "Integrate existing Complete views and release dependencies by default with lifecycle fallback; verify user build, then remove exception.",
         "evidence": "docs/asset-adoption-checklist.md"
       }
@@ -70,7 +60,7 @@
       "building": "workshop",
       "manifest": "assets/buildings/frontier-civilization-models-v1/workshop-complete-renderer.json",
       "exception": {
-        "reason": "Complete-only experiment: four lifecycle states/team masks missing; existing default bindings remain.",
+        "reason": "Existing Complete-family integration is in progress; this family is still opt-in in the current main, assigned to the active renderer owner.",
         "nextAction": "Integrate existing Complete views and release dependencies by default with lifecycle fallback; verify user build, then remove exception.",
         "evidence": "docs/asset-adoption-checklist.md"
       }
@@ -82,7 +72,7 @@
       "building": "watchtower",
       "manifest": "assets/buildings/frontier-civilization-models-v1/watchtower-complete-renderer.json",
       "exception": {
-        "reason": "Complete-only experiment: four lifecycle states/team masks missing; existing default bindings remain.",
+        "reason": "Existing Complete-family integration is in progress; this family is still opt-in in the current main, assigned to the active renderer owner.",
         "nextAction": "Integrate existing Complete views and release dependencies by default with lifecycle fallback; verify user build, then remove exception.",
         "evidence": "docs/asset-adoption-checklist.md"
       }

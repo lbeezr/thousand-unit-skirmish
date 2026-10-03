@@ -12,6 +12,9 @@ const release = JSON.parse(execFileSync(process.execPath, ['scripts/pack-railway
   { cwd: root, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 }));
 after(() => rm(release.directory, { recursive: true, force: true }));
 const audit = (changes = {}) => auditAssetAdoption({ registry: structuredClone(registry), releaseFiles: release.files, ...changes });
+const mainWithBuildingMode = async mode => (await readFile(path.join(root, 'src/main.js'), 'utf8')).replace(
+  "const frontierBuildingsPreview = roomPageUrl.searchParams.get('frontierBuildingsPreview');",
+  `const frontierBuildingsPreview = '${mode}';`);
 
 test('actual selectors report adoption without making experiments permanent', async () => {
   const report = await audit();
@@ -37,19 +40,21 @@ test('a default Worker downgrade cannot silently strand the approved fishing man
 
 test('an unbound approved family needs an explicit integration owner and exit action', async () => {
   const changed = structuredClone(registry);
-  delete changed.records.find(row => row.id === 'frontier-house').exception;
-  await assert.rejects(audit({ registry: changed }), /frontier-house: approved runtime asset is not default-bound/);
+  changed.records = [changed.records.find(row => row.id === 'frontier-stable')];
+  delete changed.records[0].exception;
+  await assert.rejects(audit({ registry: changed, main: await mainWithBuildingMode('0') }),
+    /frontier-stable: approved runtime asset is not default-bound/);
   const ownerless = structuredClone(registry);
   ownerless.records[0].owner = '';
   await assert.rejects(audit({ registry: ownerless }), /integration owner required/);
   const noExit = structuredClone(registry);
-  delete noExit.records.find(row => row.id === 'frontier-house').exception.nextAction;
+  delete noExit.records.find(row => row.id === 'frontier-stable').exception.nextAction;
   await assert.rejects(audit({ registry: noExit }), /exception nextAction required/);
 });
 
 test('enabling a default family cannot use its exception to conceal omitted release files', async () => {
-  const main = (await readFile(path.join(root, 'src/main.js'), 'utf8')).replace(
-    "const frontierBuildingsPreview = roomPageUrl.searchParams.get('frontierBuildingsPreview');",
-    "const frontierBuildingsPreview = 'house';");
-  await assert.rejects(audit({ main }), /frontier-house: default runtime dependency omitted from release/);
+  const record = registry.records.find(row => row.id === 'frontier-stable');
+  await assert.rejects(audit({ registry: { ...registry, records: [record] }, main: await mainWithBuildingMode('stable'),
+    releaseFiles: release.files.filter(file => file !== record.manifest) }),
+  /frontier-stable: default runtime dependency omitted from release/);
 });

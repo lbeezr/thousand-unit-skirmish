@@ -5,7 +5,7 @@ import { readFile, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
-import { frontierBuildingPreviewUrl } from '../src/frontier-building-preview.mjs';
+import { frontierBuildingManifestUrl, frontierBuildingPreviewUrl } from '../src/frontier-building-preview.mjs';
 import { WILDLIFE_RENDER_REGISTRY } from '../src/neutral-wildlife-renderer.mjs';
 import { activeState, spriteActionClip, spriteDirectory } from '../src/unit-sprite-runtime.mjs';
 import { checkClientImports } from './check-client-imports.mjs';
@@ -56,11 +56,11 @@ export async function auditAssetAdoption({ registry, releaseFiles, main = null }
     let defaultBound = false, module;
     if (record.probe === 'frontier-building') {
       module = 'src/frontier-building-preview.mjs';
-      assert.match(main, /frontierBuildingPreviewUrl\(building\.type, frontierBuildingsPreview\)/,
+      assert.match(main, /frontierBuildingManifestUrl\(building\.type, frontierBuildingsPreview\)/,
         'main must consume the building selector');
       const mode = vm.runInNewContext(main.match(/const frontierBuildingsPreview = ([^;]+);/)?.[1] || 'undefined',
         { roomPageUrl: new URL('http://audit.invalid/?room=normal-match') }, { timeout: 1000 });
-      const normal = frontierBuildingPreviewUrl(record.building, mode);
+      const normal = frontierBuildingManifestUrl(record.building, mode);
       const available = normal || frontierBuildingPreviewUrl(record.building, record.building);
       assert.ok(available, `${record.id}: registered Complete loader path required`);
       assert.equal(relativeUrl(available), record.manifest, `${record.id}: selector/manifest disagreement`);

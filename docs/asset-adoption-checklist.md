@@ -2,7 +2,9 @@
 
 [Working rules](../AGENTS.md) · [Planning](contributor-planning.md) · [Asset guide](assets.md) · [Historical building audit](art-runtime-audit-2026-10-03.md)
 
-Audit: fork main `90e7ad4c666916942c29670e339a8e79e03e0b18`, 3 October 2026.
+Original source audit: fork main `90e7ad4c666916942c29670e339a8e79e03e0b18`.
+Binding/release follow-up: `43def1c30b2f4fa18d5a5f83505e2c71b92fb2a0`,
+3 October 2026, including [renderer PR136](https://github.com/lbeezr/thousand-unit-skirmish/pull/136).
 This checklist records adoption gaps; it does not integrate the assets.
 The Frontier building row was subsequently updated by its implementation owner
 for [PR #136](https://github.com/lbeezr/thousand-unit-skirmish/pull/136) and
@@ -48,15 +50,15 @@ supplied. Both latest visual checks below therefore remain incomplete.
 ## Buildings, wildlife, fishing and HUD
 
 Package paths are under `assets/` unless linked otherwise. Release inclusion
-comes from an actual clean `release:pack` at the audit revision: 1,066 files,
-digest `sha256:ef1b91a857d08984e1dccbf5ab7abb1242ce07609c0cb0887f98fdfcd9843149`.
+comes from an actual clean `release:pack` at follow-up `43def1c`: 1,075 files,
+digest `sha256:26f23fe6b8c2174e20de5726c2ceb469c7dbad5665633d2ae622511a3b809b45`.
 It proves local package contents, not delivery of those bytes to a browser.
 
 | Package/family | Production and normal-game binding | Preview / release | Incomplete work → owner / next action |
 | --- | --- | --- | --- |
 | Frontier Town Center, House: `buildings/frontier-civilization-scale-pilot-v1`; Storehouse, Stable, Workshop, Watchtower: `buildings/frontier-civilization-models-v1` | Six **Complete-only** families now selected without preview flags; [runtime guide](frontier-building-runtime.md) records exact state fallback, shared texture/depth and retained team feedback. Source frames and authoritative occupancy are unchanged. | Six manifests + 48 original PNGs explicitly admitted; packed HTTP/hash checks pass. Named/`1` previews and `0` comparison remain available. | **Deployment and in-game adoption incomplete** → implementation owner retains [PR #141](https://github.com/lbeezr/thousand-unit-skirmish/pull/141); Railway delivery owner must serve an identified integrated revision, and the parent-owned Mac QA task must capture ordinary-game use for all six. Source/CPU/release checks cannot close those steps. Building production owner derives missing lifecycle/masks separately. |
 | `buildings/frontier-civilization-concepts-v1` | Eight selected concepts; new Barracks/Range have no matching model/view manifest in the two packs. | Reference only; not packed. | **Incomplete production** → building owner: derive new-design models/views before binding; existing Barracks/Range designs stay usable. |
-| `buildings/town-center-lifecycle-meshy-v1` | Default [captured loader](../src/captured-building-art.mjs): five states × eight views, team masks. | 81 files packed. | **Final adoption unverified here** → renderer owner: recorded-build construction/damage/repair, team/zoom/occlusion check. |
+| `buildings/town-center-lifecycle-meshy-v1` | Older [captured loader](../src/captured-building-art.mjs): five states × eight views, team masks; now supplies missing-state/loading fallback beneath the new Complete Town Center. | 81 files packed. | **Current combined appearance unverified here** → renderer owner: recorded-build construction/damage/repair, team/zoom/occlusion check. |
 | `buildings/barracks-sprite-test-v1`, `buildings/archery-range-sprite-v1` | Default [direct sprites](../src/building-sprites.mjs): five states × two teams. | Ten WebPs each packed. | **Full current-build appearance unverified** → renderer owner: both-team lifecycle/occlusion proof; [prior checks](qa-barracks-lifecycle-2026-09-27.md) are dated evidence. |
 | `buildings/archery-range-construction-v1` | Exported five-stage atlas with masks; pivot/game placement unverified; normal game uses the other Range pack. | Candidate/review only; omitted. | **Incomplete admission**, not a drop-in final replacement → building + renderer owners: resolve five-stage mapping/pivot and choose explicit adoption or retained comparison. |
 | `units-buildings/frontier-glb-sample-v2`, `frontier-barracks-construction-v1`, `frontier-archery-range-construction-v1` | GLB/source-review samples. Authoring manifests do not match runtime renderer schema; no gameplay GLB consumer. | Static reviews; omitted. | **Incomplete runtime production** → technical art owner: compatible export/capture and state mapping if these designs are chosen; no need to ship unused GLBs. |
