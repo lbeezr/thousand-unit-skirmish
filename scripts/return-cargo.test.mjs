@@ -90,6 +90,37 @@ function authority(team, overrides = {}) {
 }
 
 for (const team of [0, 1]) {
+  for(const loss of ['destroyed','unreachable'])test(`seat ${team}: queued delivery waits through ${loss} drop-off and deposits before one planning job`,()=>{
+    const {context,unit,buildings,order}=authority(team);
+    Object.assign(context,{tickNumber:20,ATTACK_MOVE_SCAN_INTERVAL_TICKS:6,nextMoveOrderId:1,
+      movePlanningEpoch:0,performance:{now:()=>0},SHARED_MOVE_PATHS:true,
+      movePlanningQueue:[],scheduleNextMovePlanning(){}});
+    vm.runInContext(fn(server,'advanceQueuedWaypoints'),context);
+    order();unit.queuedWaypoints=[{destination:4,attackMove:true}];
+    const dropoff=buildings[0];
+    if(loss==='destroyed'){buildings.shift();context.buildingsById.delete(dropoff.id);}
+    else context.walkableComponents[1]=1;
+    context.navigationRevision++;
+    for(let i=0;i<3;i++){context.updateWorkerEconomy();context.advanceQueuedWaypoints();}
+    assert.equal(unit.cargo,.5);assert.equal(context.teamFood[team],0);
+    assert.equal(unit.gatherPhase,'to-base');assert.equal(unit.queuedWaypoints.length,1);
+    assert.equal(unit.moveGoalCell,-1);assert.equal(context.movePlanningQueue.length,0);
+    if(loss==='destroyed'){
+      const replacement={...dropoff,id:5};buildings.unshift(replacement);context.buildingsById.set(5,replacement);
+    }
+    context.walkableComponents[1]=0;context.navigationRevision++;
+    context.updateWorkerEconomy();
+    unit.x=1;unit.pathIndex=unit.path.length;
+    context.advanceQueuedWaypoints();
+    assert.equal(unit.queuedWaypoints.length,1,'arrival alone cannot release the delivery queue');
+    assert.equal(unit.cargo,.5);assert.equal(context.movePlanningQueue.length,0);
+    context.updateWorkerEconomy();context.advanceQueuedWaypoints();
+    assert.equal(context.teamFood[team],.5);assert.equal(unit.cargo,0);assert.equal(unit.gatherPhase,'');
+    assert.equal(unit.queuedWaypoints.length,0);assert.equal(unit.moveGoalCell,4);assert.equal(unit.attackMove,true);
+    assert.equal(context.movePlanningQueue.length,1);
+    context.updateWorkerEconomy();context.advanceQueuedWaypoints();
+    assert.equal(context.teamFood[team],.5);assert.equal(context.movePlanningQueue.length,1,'no duplicate queued planning');
+  });
   test(`seat ${team} returns existing food/wood once and cancels previous intent`, () => {
     for (const [cargoType, cargo] of [['food', 0.5], ['wood', 7.25]]) {
       const { context, unit, order, notices } = authority(team, { cargoType, cargo });
