@@ -4,12 +4,16 @@ import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { headingToTarget } from '../src/unit-heading.mjs';
+import { farmBuildingId, farmHarvestNode } from '../src/farm-harvest.mjs';
 const source = await readFile(new URL('../server.mjs', import.meta.url), 'utf8');
 const body = source.slice(source.indexOf('function snapshotUnits('), source.indexOf('function snapshotQueuedWaypointCounts('));
+const harvestLookup = source.slice(source.indexOf('function harvestNodeById('), source.indexOf('\nfunction routeWorker('));
 function fixture(fogOfWar = true) {
   const worker = { id:0, team:0, x:0, z:0, hp:100, kind:'worker', generation:1, cargo:0, cargoType:null, gatherPhase:'to-node', gatherForestCell:-1, gatherNodeId:'berries', attackTargetId:-1, repairing:false, buildingTargetId:null };
   const context = vm.createContext({ units:[worker], mapDefinition:{ fogOfWar, resourceNodes:[{id:'berries',type:'food'}] }, BUILDING_DEFINITIONS, BUILDER_INTERACTION_RANGE:1.4, teamWood:[100,100], buildingsById:new Map(), resourceNodeStates:new Map(), headingToTarget, tickNumber:1, STATE_EVERY_TICKS:3, workerTaskStatus:()=>null, cellVisibleToTeam:()=>true, worldToCell:()=>0 });
-  vm.runInContext(body, context);
+  context.farmBuildingId = farmBuildingId; context.farmHarvestNode = farmHarvestNode;
+  context.resourceNodeStates.set('berries', { id: 'berries', type: 'food', stock: 100, x: 0, z: 0 });
+  vm.runInContext(harvestLookup + body, context);
   return {worker,context,execution:()=>context.workerAudioExecution(worker),row:(team)=>context.snapshotUnits(team)[0]};
 }
 test('authoritative execution begins at the resource and excludes travel, stopped or dead workers', () => {

@@ -1,4 +1,5 @@
 import { findInvalidResourceVariant, isShoreFish, validResourceVariantState } from './src/shore-fishing.mjs';
+import { farmHarvestNode, farmHarvestNodeId, farmBuildingId, validFarmStock } from './src/farm-harvest.mjs';
 import { createDockPlacementContext } from './src/dock-placement.mjs';
 import { createWaterUnitRuntime, waterUnitOccupiedCells } from './src/water-unit-runtime.mjs';
 import { activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted, validWildlifeNodeDefinition, validWildlifeNodeState } from './src/wildlife-state.mjs';
@@ -1812,7 +1813,7 @@ function snapshotUnits(viewTeam = null) {
 function workerGatherHeading(unit) {
   if (unit.hp <= 0 || unit.kind !== 'worker' || unit.gatherPhase !== 'gathering') return null;
   const target = unit.gatherForestCell >= 0 ? cellToWorld(unit.gatherForestCell)
-    : resourceNodeStates.get(unit.gatherNodeId);
+    : harvestNodeById(unit.gatherNodeId);
   const fishing = workerFishingPresentation(unit, target, mapDefinition);
   if (fishing) return fishing.heading;
   return target ? headingToTarget(unit.x, unit.z, target.x, target.z) : null;
@@ -1821,7 +1822,7 @@ function workerGatherHeading(unit) {
 function workerAudioExecution(unit) {
   if (unit.hp <= 0 || unit.kind !== 'worker') return null;
   if (unit.gatherPhase === 'gathering') return unit.gatherForestCell >= 0 ? 'wood'
-    : mapDefinition.resourceNodes.find((node) => node.id === unit.gatherNodeId)?.type || null;
+    : harvestNodeById(unit.gatherNodeId)?.type || null;
   if (!unit.repairing || teamWood[unit.team] <= 0) return null;
   const building = buildingsById.get(unit.buildingTargetId);
   if (!building || !building.complete || building.hp >= BUILDING_DEFINITIONS[building.type].maxHp) return null;
@@ -2547,8 +2548,11 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
     })),
     buildings: viewBuildings.map((building) => ({
       id: building.id, team: building.team, type: building.type,
+      ...(building.type === 'farm' ? { harvestStock: building.harvestStock,
+        harvestCapacity: BUILDING_DEFINITIONS.farm.harvest.stock } : {}),
       ...(building.type === 'palisade-gate' ? { gateOpen: building.gateOpen } : {}),
       ...(isPalisade(building.type) ? { connections: palisadeConnections(building.footprint[0], MAP_WIDTH, MAP_HEIGHT, visibleWallCells[building.team]) } : {}),
+
       x: building.x, z: building.z, hp: building.hp, maxHp: BUILDING_DEFINITIONS[building.type].maxHp,
       attackers: buildingAttackers.get(building.id) || 0,
       lastAttackTick: building.lastAttackTick ?? -1,
@@ -2567,13 +2571,13 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
         ? Math.max(0, Math.min(1,
           1 - building.trainingRemaining / UNIT_DEFINITIONS[building.productionQueue[0]].trainSeconds)) : 0,
     })),
-    resourceNodes: resourceNodes.map(({ id, type, resourceVariant }) => ({
+    resourceNodes: [...resourceNodes.map(({ id, type, resourceVariant }) => ({
       id, type, ...(resourceVariant === undefined ? {} : { resourceVariant }), stock: resourceNodeStates.get(id)?.stock ?? 0,
       ...(resourceNodeStates.get(id)?.wildlifeSpecies === undefined ? {} : {
         wildlifeSpecies: resourceNodeStates.get(id).wildlifeSpecies,
         wildlifeState: resourceNodeStates.get(id).wildlifeState,
       }),
-    })),
+    })), ...viewBuildings.map(farmHarvestNode).filter(Boolean).map(node => ({ ...node }))],
     forestEpoch,
     forestStocks: forestStockEntries(fogView ? viewTeam : null),
   };
@@ -2866,6 +2870,7 @@ function validateMatchCheckpoint(snapshot) {
       && building.footprint.every((cell) => integerIn(cell, 0, cellCount - 1))
       && (building.attackCooldown === undefined || (finite(building.attackCooldown) && building.attackCooldown >= 0 && building.attackCooldown <= (BUILDING_DEFINITIONS[building.type].combat?.period || 0)))
       && (building.attackScanOffset === undefined || integerIn(building.attackScanOffset, 0, Number.MAX_SAFE_INTEGER))
+      && validFarmStock(building, BUILDING_DEFINITIONS)
       && finite(building.progress) && building.progress >= 0 && building.progress <= 1
       && typeof building.complete === 'boolean' && integerIn(building.queue, 0, MAX_BUILDING_QUEUE)
       && finite(building.trainingRemaining) && building.trainingRemaining >= 0
@@ -3039,7 +3044,9 @@ function validateMatchCheckpoint(snapshot) {
     assertSnapshot(unit.attackTargetId < state.units.length, 'unit target is out of range');
     const forestCell = unit.gatherForestCell ?? -1;
     if (unit.gatherNodeId !== null) {
-      assertSnapshot(resourceIds.has(unit.gatherNodeId) && forestCell === -1,
+      const farm = state.buildings.find(building => building.id === farmBuildingId(unit.gatherNodeId));
+      assertSnapshot((resourceIds.has(unit.gatherNodeId)
+        || (farm?.type === 'farm' && farm.complete && farm.team === unit.team)) && forestCell === -1,
         'unit references unknown or conflicting gather targets');
     }
     if (forestCell >= 0) {
@@ -3253,15 +3260,20 @@ async function writeMatchCheckpointAtomically(serialized, sequence) {
 }
 
 function migrateMatchCheckpoint(snapshot) {
+  // A content pin predating Farm cannot claim a paid planting or harvest state.
+  if (snapshot?.rulesetRevision !== GAMEPLAY_RULESET_REVISION
+    && snapshot?.state?.buildings?.some(building => building.type === 'farm' || building.harvestStock !== undefined)) return snapshot;
   if (((Array.isArray(snapshot?.state?.units) && snapshot.state.units.some(unit => unit?.kind === 'skiff' || unit?.movementDomain === 'water'))
     || (Array.isArray(snapshot?.state?.buildings) && snapshot.state.buildings.some(building => Array.isArray(building?.productionQueue) && building.productionQueue.includes('skiff'))))
-    && snapshot.rulesetRevision !== GAMEPLAY_RULESET_REVISION) return snapshot;
+    && ![GAMEPLAY_RULESET_REVISION, 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'].includes(snapshot.rulesetRevision)) return snapshot;
+
   // Older definitions cannot claim content that they never admitted.
   if (Array.isArray(snapshot?.state?.buildings)
     && snapshot.state.buildings.some(building => building?.type === 'palisade-gate' || (building && Object.hasOwn(building, 'gateOpen')))
-    && ![GAMEPLAY_RULESET_REVISION, 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b'].includes(snapshot.rulesetRevision)) return snapshot;
+    && ![GAMEPLAY_RULESET_REVISION, 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b', 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'].includes(snapshot.rulesetRevision)) return snapshot;
   if (Array.isArray(snapshot?.state?.buildings) && snapshot.state.buildings.some(building => building?.type === 'dock')
-    && ![GAMEPLAY_RULESET_REVISION, 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b', 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6'].includes(snapshot.rulesetRevision)) return snapshot;
+    && ![GAMEPLAY_RULESET_REVISION, 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b', 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6', 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'].includes(snapshot.rulesetRevision)) return snapshot;
+
   if (snapshot?.schemaVersion === 2 && Array.isArray(snapshot.state?.units)) {
     for (const unit of snapshot.state.units) {
       if (unit && typeof unit === 'object' && !Array.isArray(unit) && unit.queuedWaypoints === undefined) {
@@ -3408,6 +3420,11 @@ function migrateMatchCheckpoint(snapshot) {
   // Exact pre-Skiff Gate/Dock content retains its existing buildings, banks and work.
   if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
     && snapshot.rulesetRevision === 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b'
+    && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+
+  // Farm adds only new paid crop state; retain exact pre-Farm Skiff work unchanged.
+  if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
+    && snapshot.rulesetRevision === 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
   if ([1, 2, 3].includes(snapshot?.rulesVersion)
@@ -3955,11 +3972,26 @@ function workerAtDropoff(unit) {
   return distance <= WORKER_INTERACTION_RANGE;
 }
 
+function harvestNodeById(id) {
+  return resourceNodeStates.get(id) ?? farmHarvestNode(buildingsById.get(farmBuildingId(id)));
+}
+
 function routeWorker(unit, phase, node) {
   unit.orderRevision++;
   unit.movePlanningPending = false;
   unit.gatherPhase = phase;
   if (phase === 'to-base') { routeWorkerToDropoff(unit); return; }
+  if (node.sourceBuildingId !== undefined) {
+    const start = nearestOpenCell(worldToCell(unit.x, unit.z));
+    const component = walkableComponents[start];
+    const building = buildingsById.get(node.sourceBuildingId);
+    const goals = buildingAccessCells(building.footprint).filter(cell => walkableComponents[cell] === component);
+    const field = goals.length ? getAttackFlowFieldForGoals(goals, `farm:${building.id}:${component}`) : null;
+    unit.moveGoalCell = field?.goal ?? -1;
+    unit.path = field ? pathFromAttackFlow(start, field) : [];
+    unit.pathIndex = 0;
+    return;
+  }
   const target = node;
   unit.moveGoalCell = worldToCell(target.x, target.z);
   const field = getAttackFlowField(worldToCell(target.x, target.z));
@@ -4100,9 +4132,13 @@ function assignGather(player, command) {
     return;
   }
   const nodeId = String(command.nodeId ?? '');
-  const node = resourceNodeStates.get(nodeId);
+  const node = harvestNodeById(nodeId);
   if (!node) {
     sendOrderNotice(player, command, 'GATHER REJECTED · RESOURCE NODE NOT FOUND');
+    return;
+  }
+  if (node.sourceBuildingId !== undefined && node.team !== player.team) {
+    sendOrderNotice(player, command, 'GATHER REJECTED · FARM BELONGS TO THE OTHER TEAM');
     return;
   }
   if (isShoreFish(node)
@@ -4119,10 +4155,12 @@ function assignGather(player, command) {
     return;
   }
 
-  const nodeCell = nearestOpenCell(worldToCell(node.x, node.z));
   const baseCell = nearestOpenCell(worldToCell(spawnByTeam[player.team].x, spawnByTeam[player.team].z));
-  const componentId = walkableComponents[nodeCell];
-  if (componentId < 0 || walkableComponents[baseCell] !== componentId) {
+  const componentId = walkableComponents[baseCell];
+  const access = node.sourceBuildingId !== undefined
+    ? buildingAccessCells(buildingsById.get(node.sourceBuildingId).footprint)
+    : [nearestOpenCell(worldToCell(node.x, node.z))];
+  if (componentId < 0 || !access.some(cell => walkableComponents[cell] === componentId)) {
     sendOrderNotice(player, command, `RESOURCE NODE UNREACHABLE · ${nodeId.toUpperCase()}`);
     return;
   }
@@ -4265,14 +4303,16 @@ function updateWorkerEconomy() {
       }
       continue;
     }
-    const node = resourceNodeStates.get(unit.gatherNodeId);
+    const node = harvestNodeById(unit.gatherNodeId);
     if (!node) {
       stopGathering(unit);
       dirty = true;
       continue;
     }
 
-    const nodeDistance = Math.hypot(node.x - unit.x, node.z - unit.z);
+    const nodeDistance = node.sourceBuildingId !== undefined
+      ? distanceToBuildingEdge(unit, buildingsById.get(node.sourceBuildingId))
+      : Math.hypot(node.x - unit.x, node.z - unit.z);
 
     if (unit.gatherPhase === 'to-node') {
       if ((unit.cargo > 0 && unit.cargoType !== node.type)
@@ -4528,6 +4568,11 @@ function creditRefund(team, refund) {
 
 function cancelConstruction(player, command) {
   const building = buildingsById.get(command.buildingId);
+  if (player.team !== null && building?.team === player.team && building.type === 'farm'
+    && building.complete && building.harvestStock === 0) {
+    destroyBuilding(building);
+    sendOrderNotice(player, command, 'EXHAUSTED FARM CLEARED · NO REFUND'); return;
+  }
   if (player.team === null || !building || building.team !== player.team || building.complete) {
     sendOrderNotice(player, command, 'CANCEL REJECTED · SELECT YOUR UNFINISHED BUILDING'); return;
   }
@@ -4660,6 +4705,13 @@ function destroyBuilding(building) {
   const index = buildings.indexOf(building);
   if (index >= 0) buildings.splice(index, 1);
   buildingsById.delete(building.id);
+  // Destroyed crop stock is lost; carried food remains real cargo and returns
+  // through the normal friendly-drop-off route without referencing a dead plot.
+  if (building.type === 'farm') for (const unit of units) {
+    if (unit.gatherNodeId !== farmHarvestNodeId(building.id)) continue;
+    stopGathering(unit);
+    if (unit.hp > 0 && unit.cargo > 0) routeWorker(unit, 'to-base', null);
+  }
   if (building.home) {
     building.hp = 0; building.rallyCell = -1;
     workerProduction[building.team] = { queue: 0, trainingRemaining: 0, productionBlocked: false };
@@ -4852,6 +4904,11 @@ function replanPathsBlockedBy(footprint) {
       // A generic nearest-open repair can finish outside harvesting range.
       // Rebuild this order against the tree's remaining approach cells.
       routeForestWorker(unit, 'to-node', unit.gatherForestCell);
+      continue;
+    }
+    const farmTarget = unit.gatherPhase === 'to-node' ? harvestNodeById(unit.gatherNodeId) : null;
+    if (farmTarget?.sourceBuildingId !== undefined) {
+      routeWorker(unit, 'to-node', farmTarget);
       continue;
     }
     if (attackMoveResumePathBlocked) {
@@ -5233,7 +5290,9 @@ function buildBuilding(player, command) {
     id, team: player.team, type: command.buildingType, x: center.x, z: center.z,
     footprint, hp: BUILDING_DEFINITIONS[command.buildingType].maxHp, progress: 0, complete: false, queue: 0, productionQueue: [], trainingRemaining: 0,
     productionBlocked: false, rallyCell: -1,
+    ...(command.buildingType === 'farm' ? { harvestStock: 0 } : {}),
     ...(command.buildingType === 'palisade-gate' ? { gateOpen: false } : {}),
+
   };
   const previousConnectivity = captureBuildingConnectivity();
   const previousComponents = walkableComponents.slice();
@@ -5532,6 +5591,7 @@ function updateBuildingAndProduction() {
     dirty = true;
     if (building.progress >= 1) {
       building.complete = true;
+      if (building.type === 'farm') building.harvestStock = BUILDING_DEFINITIONS.farm.harvest.stock;
       for (const builder of units) {
         if (builder.buildingTargetId === building.id) builder.buildingTargetId = null;
       }
@@ -6746,7 +6806,9 @@ function spreadInteractingUnits() {
       target = cellToWorld(unit.gatherForestCell);
       range = WORKER_INTERACTION_RANGE;
     } else if (unit.gatherPhase === 'gathering' && unit.gatherNodeId !== null) {
-      target = resourceNodeStates.get(unit.gatherNodeId);
+      const node = harvestNodeById(unit.gatherNodeId);
+      if (node?.sourceBuildingId !== undefined) building = buildingsById.get(node.sourceBuildingId);
+      else target = node;
       range = WORKER_INTERACTION_RANGE;
     } else if (unit.buildingTargetId !== null) {
       building = buildingsById.get(unit.buildingTargetId);
@@ -7743,7 +7805,7 @@ const server = createServer(async (request, response) => {
     'src/water-unit-runtime.mjs',
     'src/worker-fishing-presentation.mjs',
     'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs', 'src/resource-brush-controls.mjs',
-    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
+    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/selection-portrait.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
     'src/terrain-authoring.mjs', 'src/terrain-height.mjs', 'src/regions.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs',
@@ -7753,7 +7815,7 @@ const server = createServer(async (request, response) => {
     'src/audio-composition.mjs', 'src/audio-composer.mjs', 'src/audio-composer.css',
     'audio-studio.html', 'audio-zones.html', 'src/audio-zones.mjs', 'src/audio-zones.css', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs',
     'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs',
-    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
+    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs', 'src/shore-vegetation.mjs', 'src/meadow-vegetation.mjs', 'src/garden-vegetation.mjs', 'src/environment-plant-assets.mjs', 'src/podvine-view-pack.mjs', 'src/podvine-worked-pack.mjs', 'src/podvine-low-pack.mjs', 'src/veilcap-view-pack.mjs', 'src/veilcap-worked-pack.mjs', 'src/sunbloom-view-pack.mjs', 'src/sunbloom-crown-pack.mjs', 'src/sunbloom-worked-pack.mjs', 'src/sunbloom-low-pack.mjs', 'src/terrain-blend.mjs', 'src/terrain-texture-sampling.mjs', 'src/terrain-atmosphere.mjs', 'src/terrain-materials.mjs',
     'src/forest-habitat.mjs', 'src/forest-age-composition.mjs', 'src/forest-composition.mjs', 'src/regional-ground-kits.mjs', 'src/water-contours.mjs', 'src/shore-bank-shade.mjs',
   ].includes(relative);

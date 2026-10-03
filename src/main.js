@@ -27,6 +27,7 @@ import { updateSelectionPortrait } from './selection-portrait.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
 import { roomEntryUrl, AUTHENTICATION_MESSAGE } from './game-entry-session.mjs';
 import * as THREE from 'three';
+import { farmHarvestNode } from './farm-harvest.mjs';
 import { attachBuildingSprite } from './building-sprites.mjs';
 import { frontierBuildingPreviewUrl } from './frontier-building-preview.mjs';
 import {
@@ -4322,6 +4323,8 @@ function updateCommandUI() {
   const utilityBuilding = selectedBuilding && !BUILDING_DEFINITIONS[selectedBuilding.type]?.products.length;
   if (ui.commandHint) ui.commandHint.textContent = utilityBuilding ? BUILDING_DEFINITIONS[selectedBuilding.type].combat
       ? `Defends visible enemies within ${BUILDING_DEFINITIONS[selectedBuilding.type].combat.range} cells · ${BUILDING_DEFINITIONS[selectedBuilding.type].sight} sight.`
+      : BUILDING_DEFINITIONS[selectedBuilding.type].harvest
+        ? `Farm placeholder · ${formatResourceStock(selectedBuilding.harvestStock)} / ${BUILDING_DEFINITIONS.farm.harvest.stock} food remaining · Select Workers and right-click to harvest. No regrowth.`
       : BUILDING_DEFINITIONS[selectedBuilding.type].dropoff
         ? `Workers deposit ${BUILDING_DEFINITIONS[selectedBuilding.type].dropoff.join(' and ')} here when complete.`
         : `Adds ${BUILDING_DEFINITIONS[selectedBuilding.type].populationCapacity || 0} population capacity when complete.` : tapOrderArmed
@@ -4715,6 +4718,8 @@ function updateBuildingLifecycleActions() {
   const active = building && latestTeamResearch[localTeam]?.active?.buildingId === building.id;
   const choices = !building ? [] : [
     ...(!building.complete ? [{ type: 'cancelConstruction', label: 'Cancel construction · refund unfinished work' }] : []),
+    ...(building.type === 'farm' && building.complete && building.harvestStock === 0
+      ? [{ type: 'cancelConstruction', label: 'Clear exhausted Farm · no refund' }] : []),
     ...(building.complete && getBuildingQueueLength(building) > 0 ? [{ type: 'cancelTraining', label: 'Cancel last queued unit' }] : []),
     ...(building.complete && building.type === 'palisade-gate' ? [{ type: 'setGateOpen', label: building.gateOpen ? 'Close gate · blocks both teams' : 'Open gate · both teams may pass' }] : []),
     ...(active ? [{ type: 'cancelResearch', label: 'Cancel research · refund unfinished work' }] : []),
@@ -4969,7 +4974,10 @@ function updateEconomyUI(state = {}, initial = false) {
   }
   if (ui.foodStatus) {
     if (localTeam === null) ui.foodStatus.textContent = 'Join a team to gather and train.';
-    else if (!mapDefinition?.resourceNodes?.length) ui.foodStatus.textContent = 'This map has no food or wood nodes.';
+    else if (!mapDefinition?.resourceNodes?.length && !latestBuildings.some(building =>
+      building.type === 'farm' && building.team === localTeam && building.complete && building.harvestStock > 0)) {
+      ui.foodStatus.textContent = 'No food or wood nodes remain here. A paid Farm can plant finite food.';
+    }
     else if (ownedWorkers.length === 0) {
       ui.foodStatus.textContent = 'No living workers remain.';
     } else if (teamRosterCount >= MAX_PER_TEAM) ui.foodStatus.textContent = 'Army limit reached.';
@@ -7258,7 +7266,8 @@ function pickResourceNodeAt(x, y, { visibleOnly = false } = {}) {
   const rect = renderer.domElement.getBoundingClientRect();
   let nearest = null;
   let nearestDistance = 26 * 26;
-  for (const node of mapDefinition.resourceNodes) {
+  for (const node of [...mapDefinition.resourceNodes,
+    ...latestBuildings.filter(building => building.team === localTeam).map(farmHarvestNode).filter(Boolean)]) {
     if (node.wildlifeSpecies !== undefined && !wildlifeRenderer.isAvailable(node.id)) continue;
     if (visibleOnly && mapDefinition.fogOfWar) {
       const column = Math.floor(node.x + MAP_WIDTH / 2);
