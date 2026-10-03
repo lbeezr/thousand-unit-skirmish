@@ -43,6 +43,12 @@ status requests or globally freeze other streams. The six Frontier Complete
 bindings already have an active renderer owner; another worker should audit or
 package independent work without duplicating that binding change.
 
+Code quality is another parallel stream: give each small behavior-preserving
+ratchet or refactor a disjoint file scope, measured acceptance and relevant
+regression checks. It does not impose a global rewrite, lint/type rollout or
+quality gate on independent player-facing work. Coordinate an actual overlap
+with its affected owner before changing shared hot spots.
+
 Keep branches short-lived and PRs incremental. Refresh main before dependent
 work and before merging. The author resolves conflicts, runs proportionate
 checks, obtains independent review, merges under existing authority and handles
