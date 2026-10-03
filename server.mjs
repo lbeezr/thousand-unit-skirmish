@@ -4810,13 +4810,31 @@ function replanPathsBlockedBy(footprint) {
 }
 
 function enqueueRouteRepairs(repairs, { mode = 'blocked-route-repair', orderLabel = 'ROUTE REPAIR' } = {}) {
+  if (repairs.length === 0) return;
   const assignments = [];
   const groups = new Map();
+  // A new footprint can cover several formation goals. Reserve surviving
+  // friendly goals before relocating blocked ones, rather than collapsing
+  // several soldiers onto the same nearest-open cell and trapping their peers.
+  const goalsByTeam = [new Set(), new Set()];
+  const pending = pendingMoveAssignmentsByUnit();
+  for (const unit of units) {
+    const destination = pending.get(unit.id)?.destination ?? unit.moveGoalCell;
+    if (unit.hp > 0 && unit.kind !== 'worker' && isWalkable(destination)) {
+      goalsByTeam[unit.team].add(destination);
+    }
+  }
   for (const { unit, destination: requestedDestination } of repairs) {
     if (!unit || unit.hp <= 0 || units[unit.id] !== unit) continue;
-    const destination = nearestOpenCell(requestedDestination);
-    if (destination < 0) continue;
     const startCell = nearestOpenCell(worldToCell(unit.x, unit.z));
+    let destination = nearestOpenCell(requestedDestination);
+    if (unit.kind !== 'worker' && !isWalkable(requestedDestination)) {
+      const available = findAvailableCellNear(requestedDestination,
+        walkableComponents[startCell], goalsByTeam[unit.team]);
+      if (available >= 0) destination = available;
+    }
+    if (destination < 0) continue;
+    if (unit.kind !== 'worker') goalsByTeam[unit.team].add(destination);
     const wallOrder = activeWallBuildOrder(unit);
     unit.orderRevision++;
     if (wallOrder) wallOrder.revision = unit.orderRevision;
