@@ -1,13 +1,14 @@
 import { validWildlifeNodeDefinition, validWildlifeNodeState } from './wildlife-state.mjs';
+import { validWildlifePosition } from './wildlife-motion.mjs';
 import { createStaticSheepRuntime } from './sheep-static-preview.mjs';
 import { normalizedDirection } from './unit-sprite-runtime.mjs';
 
-function staticPose(definition) {
-  return { stateId: 'idle', directionId: normalizedDirection((definition.wildlifeNoseYawDegrees ?? 0) * Math.PI / 180),
+function staticPose(definition, snapshot) {
+  return { stateId: 'idle', directionId: normalizedDirection(snapshot?.wildlifeHeading ?? (definition.wildlifeNoseYawDegrees ?? 0) * Math.PI / 180),
     moving: false, visible: true };
 }
 
-// Stationary neutral resource presentation. Nose pose is not movement direction.
+// Existing static directions follow authoritative position/heading. Walk art is a separate binding.
 export const WILDLIFE_RENDER_REGISTRY = Object.freeze({
   'bellweather-sheep': Object.freeze({
     alive: 'eight-view-static',
@@ -25,7 +26,11 @@ export function wildlifePresentation(definition, snapshot, visible) {
     || !Number.isFinite(definition.stock) || definition.stock <= 0
     || snapshot?.id !== definition.id || snapshot.type !== definition.type
     || !Number.isFinite(snapshot.stock) || snapshot.stock < 0 || snapshot.stock > definition.stock
-    || !validWildlifeNodeState(snapshot, definition)) return 'hidden';
+    || !validWildlifeNodeState(snapshot, definition)
+    || ((snapshot.x !== undefined || snapshot.z !== undefined) && !validWildlifePosition(snapshot, definition))
+    || (snapshot.wildlifeHeading !== undefined && (!Number.isFinite(snapshot.wildlifeHeading)
+      || snapshot.wildlifeHeading < 0 || snapshot.wildlifeHeading >= Math.PI * 2))
+    || (snapshot.wildlifeActivity !== undefined && !['idle', 'grazing', 'wandering'].includes(snapshot.wildlifeActivity))) return 'hidden';
   return snapshot.wildlifeState;
 }
 
@@ -105,7 +110,7 @@ export function createNeutralWildlifeRenderer({
       scene.add(group);
       records.set(definition.id, {
         definition: { ...definition }, group, ...fallbacks,
-        state: 'hidden', mode: 'hidden', art: null,
+        state: 'hidden', mode: 'hidden', art: null, snapshot: null,
       });
     }
     ensureArt();
@@ -117,10 +122,13 @@ export function createNeutralWildlifeRenderer({
       rows.set(row?.id, row);
     }
     for (const [id, record] of records) {
+      const row = rows.get(id);
+      const point = row?.x !== undefined || row?.z !== undefined ? row : record.definition;
       record.state = duplicate.has(id) ? 'hidden'
-        : wildlifePresentation(record.definition, rows.get(id), isVisible(record.definition));
+        : wildlifePresentation(record.definition, row, isVisible(point));
+      record.snapshot = ['alive', 'carcass'].includes(record.state) ? { ...row } : null;
       // Hide immediately on snapshot arrival, before the next render frame.
-      const artAvailable = record.state === 'alive' && Boolean(template?.supports(staticPose(record.definition)));
+      const artAvailable = record.state === 'alive' && Boolean(template?.supports(staticPose(record.definition, record.snapshot)));
       record.group.visible = record.state === 'alive' || record.state === 'carcass';
       record.alive.visible = record.state === 'alive' && !artAvailable;
       record.carcass.visible = record.state === 'carcass';
@@ -133,12 +141,14 @@ export function createNeutralWildlifeRenderer({
     if (disposed) return;
     for (const record of records.values()) {
       const { definition, group } = record;
-      const y = groundHeight(definition.x, definition.z);
+      const x = record.snapshot?.x ?? definition.x, z = record.snapshot?.z ?? definition.z;
+      const y = groundHeight(x, z);
       if (!Number.isFinite(y)) { group.visible = false; continue; }
-      group.position.set(definition.x, y, definition.z);
+      group.position.set(x, y, z);
+      record.alive.rotation.y = record.snapshot?.wildlifeHeading ?? (definition.wildlifeNoseYawDegrees ?? 0) * Math.PI / 180;
       if (record.state !== 'alive' || !template) continue;
       const shown = template.update({
-        ...staticPose(definition),
+        ...staticPose(definition, record.snapshot),
         x: 0, groundY: 0, z: 0,
       }, camera);
       if (!record.art && shown) {
@@ -161,6 +171,10 @@ export function createNeutralWildlifeRenderer({
     isAvailable(id) {
       const record = records.get(id);
       return Boolean(record?.group.visible && ['alive', 'carcass'].includes(record.state));
+    },
+    positionFor(id) {
+      const record = records.get(id);
+      return record?.snapshot ? { x: record.snapshot.x ?? record.definition.x, z: record.snapshot.z ?? record.definition.z } : null;
     },
     diagnostics() {
       return { artStatus, nodes: [...records].map(([id, record]) => ({ id, state: record.state, mode: record.mode, visible: record.group.visible })) };

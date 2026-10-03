@@ -82,3 +82,28 @@ test('ordinary food never becomes wildlife and failed/late loaders preserve expl
  assert.equal(failed.diagnostics().artStatus,'fallback');assert.equal(failed.diagnostics().nodes[0].mode,'sheep-proxy');
  failed.dispose();
 });
+
+
+test('disclosed motion moves art, facing and click coordinates; missing/invalid rows hide immediately', async () => {
+ const scene=new THREE.Scene();let pose;
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial());
+ const template={mesh,supports:()=>true,update:value=>{pose=value;return true;},dispose:()=>{}};
+ const renderer=createNeutralWildlifeRenderer({THREE,scene,groundHeight:(x,z)=>x+z,loadArt:()=>template});
+ renderer.reset([definition]);await renderer.ready();
+ const snapshot={...row('alive'),x:definition.x+.2,z:definition.z+.1,wildlifeHeading:Math.PI/2,wildlifeActivity:'wandering'};
+ let fogPoint;
+ renderer.reconcile([snapshot],point=>{fogPoint=point;return true;});renderer.update(camera);
+ assert.equal(fogPoint.x,snapshot.x);
+ assert.deepEqual(renderer.positionFor(definition.id),{x:snapshot.x,z:snapshot.z});
+ assert.deepEqual(scene.children[0].position.toArray(),[snapshot.x,snapshot.x+snapshot.z,snapshot.z]);
+ assert.equal(pose.directionId,'east');assert.equal(pose.moving,false,'directional idle art has no invented walk clip');
+ renderer.reconcile([{...snapshot,wildlifeState:'carcass',stock:40,wildlifeActivity:undefined}],()=>true);
+ renderer.update(camera);assert.deepEqual(renderer.positionFor(definition.id),{x:snapshot.x,z:snapshot.z});
+ for(const patch of [{x:definition.x+1},{x:Infinity},{wildlifeHeading:NaN},{wildlifeActivity:'running'}]) {
+   renderer.reconcile([{...snapshot,...patch}],()=>true);assert.equal(renderer.positionFor(definition.id),null);
+   assert.equal(renderer.isAvailable(definition.id),false);
+ }
+ renderer.reconcile([snapshot],()=>true);renderer.reconcile([],()=>true);renderer.update(camera);
+ assert.equal(renderer.positionFor(definition.id),null);assert.equal(scene.children[0].visible,false);
+ renderer.dispose();mesh.geometry.dispose();mesh.material.dispose();
+});
