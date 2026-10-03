@@ -50,6 +50,12 @@ by `s`. Export metadata must retain that calibration, or the consuming integrati
 must use the explicit calibrated value. Keep anatomical size, art bounds,
 selection bounds and gameplay occupancy distinct.
 
+The existing [fishing pilot builder](../scripts/build-worker-fishing-pilot.py)
+already preserves the approved world-per-pixel ratio while appending registered
+keys to a copied atlas. It expects keys with shared scale/root, retains existing
+color/mask pixels, and records one actual heading. Keep that implementation in
+the fishing lane; use this contract to guide its inputs and acceptance evidence.
+
 For the calibrated 3D pipeline, preserve root/camera transforms, projected anchor
 and capture density directly. Do not apply silhouette-derived scale corrections
 after rendering. Record model yaw, clip and sample time for unit captures;
@@ -105,6 +111,8 @@ These are required implementation checks, not results claimed by this document:
 - Neutral skin/net remain untinted; owner accents respond to both team colors.
 - Transparent margins survive packing/cropping and final decoding without clipping.
 - Runtime world-per-pixel remains calibrated when equipment changes alpha bounds.
+- Art/culling bounds cover the expanded equipment envelope without changing
+  gameplay occupancy or using that envelope to fit the actor.
 
 Record inputs, rectangles, anchors, shared scale, timing, seed identities and
 results in the adapter's authoring receipt and the existing canonical manifest
