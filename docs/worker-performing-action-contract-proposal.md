@@ -1,9 +1,11 @@
 # Worker performing-action contract proposal
 
 **Proposed, not implemented or bound.** Animation integration owner requests the
-parent to route this exact producer/consumer boundary to the unit gameplay owner.
-The parent identifies the producer owner before changes to shared snapshot/work
-loops; the animation owner retains the consumer, integration and native acceptance.
+parent to align this exact producer/consumer boundary with the assigned economy/
+content gameplay producer. The producer owns the actual-progress receipt in shared
+snapshot/work loops and will supply the exact schema, enum, tick/version and
+defaults through the parent. Assignment does not mean this proposal is accepted.
+The animation owner retains the consumer, integration and native acceptance.
 Combat stance/reacquisition remains with its existing owner and is excluded.
 
 User outcome: a Worker waiting on a route, queued assignment, resource, build
@@ -138,6 +140,15 @@ clock behavior. Include real WebSocket snapshot checks and actual instanced fram
 selection with shipped manifests; never infer new animation from missing artwork.
 Include a positive repair snapshot followed by no-wood wait with all other fields
 stable: a new null snapshot must arrive and update the actual frame without input.
+
+The [client presentation fixture](../scripts/unit-presentation-client-fixture.mjs)
+already runs the actual `appendUnitFromState`, `applyState` and unit frame-scheduling
+source slices with real Three instanced buffers and default Human/Boughward Worker
+manifests. Its baseline tests cover current positive-work presentation, task
+interruption, attack deduplication, movement, slot reuse, fog and LOD. It assumes
+no new receipt format. Extend its row builder and cases only after producer
+alignment; it does not establish real commands, WebSocket delivery, GPU pixels,
+procedural fallback or producer validity by itself.
 
 Native acceptance uses the [ordinary-game animation recipe](qa-unit-animation-audit-2026-10-03.md#visual-gap-and-exact-ordinary-game-recipe)
 on an identified served revision containing producer and consumer. Add blocked

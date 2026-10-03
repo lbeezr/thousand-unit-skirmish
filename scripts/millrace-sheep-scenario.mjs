@@ -11,7 +11,7 @@ import { MILLRACE_SHEEP_IDS, MILLRACE_PRE_SHEEP_MAP_HASH } from '../src/millrace
 // No map publication, stock injection or preview option: use the worker's default.
 const fixture = await createFortifiedFixture({ mapPath: null, timeoutMs: 45_000 });
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('base64url');
-const stripIdentity = nodes => nodes.map(({ wildlifeSpecies, wildlifeState, ...node }) => node);
+const stripIdentity = nodes => nodes.map(({ wildlifeSpecies, wildlifeState, wildlifeMotion, ...node }) => node);
 const savedNode = (saved, id) => saved.state.resourceNodes.find(node => node.id === id);
 const originalImage = globalThis.Image;
 let renderer, token = 1;
@@ -76,10 +76,15 @@ try {
   }));
   conserved(partial);
   // The exact previous map/state format can represent this same naturally
-  // harvested stock and cargo. Remove identities only, preserving all economy.
+  // harvested stock and cargo. Restore its stationary positions and remove
+  // runtime motion/identity, preserving the naturally produced economy.
   const legacy = structuredClone(partial);
   legacy.mapDefinition.resourceNodes = stripIdentity(legacy.mapDefinition.resourceNodes);
-  legacy.state.resourceNodes = stripIdentity(legacy.state.resourceNodes);
+  legacy.state.resourceNodes = stripIdentity(legacy.state.resourceNodes).map(node => {
+    const authored = legacy.mapDefinition.resourceNodes.find(row => row.id === node.id);
+    return { ...node, x: authored.x, z: authored.z };
+  });
+  legacy.schemaVersion = 23;
   legacy.mapHash = hash(legacy.mapDefinition);
   assert.equal(legacy.mapHash, MILLRACE_PRE_SHEEP_MAP_HASH);
   await fixture.stop(); await writeFile(fixture.checkpointPath, JSON.stringify(legacy)); await fixture.start();

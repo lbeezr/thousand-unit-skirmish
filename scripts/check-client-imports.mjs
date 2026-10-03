@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
+import { moduleImportGroups } from './module-imports.mjs';
 
 // Audit served modules, so deployment/packaging omissions cannot hide behind
-// source-file checks. This follows static imports, not runtime asset requests.
+// source-file checks. This follows static/re-export/literal lazy imports,
+// not runtime asset requests.
 export async function checkClientImports(base, { authorization, fetchImpl = fetch, entrypoints = ['/src/main.js'] } = {}) {
   const origin = new URL(base).origin;
   const pending = [...entrypoints];
@@ -23,16 +25,19 @@ export async function checkClientImports(base, { authorization, fetchImpl = fetc
     const source = await response.text();
     assert.ok(source.trim(), `browser import ${modulePath} must not be empty`);
     checks.push({ path: modulePath, status: response.status });
-    const imports = source.matchAll(/(?:import|export)\s+(?:[^;'"`]*?\s+from\s*)?['"]([^'"]+)['"]/g);
-    for (const [, specifier] of imports) {
+    const { staticImports, dynamicImports } = moduleImportGroups(source, modulePath);
+    for (const specifier of staticImports) {
       const dependency = specifier === 'three' ? '/vendor/three.module.js'
         : specifier.startsWith('.') ? new URL(specifier, url).pathname
           : specifier.startsWith('/') ? specifier : null;
       assert.ok(dependency, `unmapped browser import ${specifier} in ${modulePath}`);
       pending.push(dependency);
     }
-    for (const [, specifier] of source.matchAll(/import\s*\(\s*['"]([^'"]+)['"]\s*\)/g)) {
-      const dependency = new URL(specifier, url);
+    for (const specifier of dynamicImports) {
+      assert.ok(specifier === 'three' || specifier.startsWith('./') || specifier.startsWith('../')
+        || specifier.startsWith('/') || URL.canParse(specifier),
+      `unmapped browser import ${specifier} in ${modulePath}`);
+      const dependency = new URL(specifier === 'three' ? '/vendor/three.module.js' : specifier, url);
       assert.equal(dependency.origin, origin, `dynamic browser import must stay on the game origin: ${specifier}`);
       pending.push(dependency.pathname);
     }

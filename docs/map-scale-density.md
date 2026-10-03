@@ -49,6 +49,17 @@ when the unit count stays fixed.
 
 ## Tools
 
+The [dated scale audit](qa-map-scale-2026-10-03.md) measures all shipped files,
+separates the ordinary roster from Lab/quick fixtures, and reports Worker,
+Infantry and Scout travel using shared simulation rules. Its
+[ranked backlog](map-scale-playability-backlog.md) owns larger-map proposals and
+acceptance; those dimensions are candidates, not changed defaults.
+
+```sh
+node scripts/map-scale-audit.mjs --summary-jsonl
+node --test scripts/map-scale-audit.test.mjs
+```
+
 ```sh
 node scripts/frontier-160-layout.mjs
 node scripts/frontier-160-map-studio-roundtrip.mjs

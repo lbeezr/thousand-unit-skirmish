@@ -11,9 +11,10 @@ It delivers no new generated art or accepted animal stock/gatherer-cap balance.
 now replaces the earlier public-input illustration in the normal game renderer,
 including default Millrace Sheep. All eight original PNGs were materialized,
 visually inspected and preserved with provenance. Alive Sheep select their
-static authored nose view; missing/failed art uses the geometric proxy, carcasses
+authoritative heading view (initially the authored nose pose); missing/failed art uses the geometric proxy, carcasses
 use the food-cache marker, and depleted/hidden Sheep are suppressed. There is
-no animal animation or full model in runtime. [Current evidence](qa-sheep-eight-view-default-2026-10-03.md)
+no articulated animal animation or full model in runtime; the bounded motion
+slice translates the existing static art. [Current evidence](qa-sheep-eight-view-default-2026-10-03.md)
 records byte/pixel acceptance, simultaneous views, default both-seat game checks,
 packaging and the pending native ground/scale/occlusion review.
 
@@ -50,8 +51,31 @@ moves stock into food cargo at the unchanged rate/carry limit and deposits at
 valid food drop-offs. Either seat may gather the same visible carcass, regardless
 of who activated it. There is no ownership or claim check. Repeated orders and
 interruption preserve the same stock pool; exhausting it sets `depleted` and
-rejects new gathering. Wildlife adds no movement/sight/population or path blocker
+rejects new gathering. Wildlife adds no sight/population or path blocker
 and is absent from combat targeting. No gatherer cap is introduced in this slice.
+
+Live Sheep now alternate deterministic `grazing`, `idle` and `wandering` activity.
+They take continuous steps at at most **0.18 world units/second**, inside a
+**0.35-world-unit radius** and their original resource cell. Land traversal,
+building/wall/TC masks and a swept 0.45-unit exclusion around living units/Sheep
+check each step. Motion consumes no random stream, food, cargo or bank balance.
+A valid pending Worker Gather order holds the Sheep at its current position;
+Stop releases that hold, while harvest activation freezes a carcass there.
+Authored definitions stay immutable, preserving fog cells, reachability and
+construction exclusions. [Motion/recovery evidence](qa-sheep-motion-2026-10-03.md)
+covers normal default Millrace and both seats. This is gentle positional motion
+with existing static directional art; grazing/walking clips remain art work.
+
+Visible state rows add actual `x`/`z` in world units, `wildlifeHeading` in radians
+(`[0, 2π)`, zero faces +Z, positive turns toward +X), and live-only
+`wildlifeActivity`. Sequence, target and remaining wait ticks stay private in
+checkpoint schema **24**. Exact stationary schema23 saves initialize motion
+without changing stock/cargo; schema24 restores current positions and progress.
+Carcass/depleted motion stays frozen, including through recovery. The renderer,
+resource click target, ring, callout and minimap consume disclosed positions;
+missing/fog-hidden rows immediately hide and expose no remembered click target.
+No ownership field or claiming/herding is included here. The user's automatic
+proximity-claim direction and team collar are the next separately scoped slice.
 
 Stop after depletion preserves a Worker's final cargo. Select that Worker and
 choose **Return cargo** to deliver it to a reachable completed owned food drop-off,
@@ -96,6 +120,39 @@ values, not balance choices. Accepted appearance, claim/herding, combat dispatch
 placement, AI-specific wildlife policy and browser match evidence remain separate
 outcomes. The high-detail Sheep GLB is an art reference, not a runtime mesh. The
 neutral client renderer is separate from unit heading and environment art owners.
+
+## Wildlife workstream queue — 3 October 2026
+
+The wildlife worker retains this ranked queue through normal integration and
+verified delivery; useful small PRs ship independently.
+
+1. **Bounded neutral motion** ([PR165](https://github.com/lbeezr/thousand-unit-skirmish/pull/165)).
+   Finish exact-head independent review, schema24/HTTP/package checks, ordinary
+   guarded merge, then verify deployed default Millrace. Write scope: motion,
+   room snapshot/recovery/tick, minimal disclosed-pose renderer/client binding.
+   Browser SUID sandbox failure leaves native appearance incomplete; active
+   Railway owner owns staging delivery in the adoption ledger.
+2. **Automatic ownership**. Proposed contract: living land units, visible alive
+   Sheep, radius1.4 world units and a clear legal land segment (no walls/water/
+   impassable elevation). Existing owner's nearby eligible presence retains it;
+   otherwise nearest eligible unit claims/recaptures, exact ties by stable unit
+   ID. Snapshot/checkpoint `wildlifeTeam: null|0|1`; ownership grants no food,
+   movement, sight or population. Preserve existing shared Gather rights in this
+   first ownership slice. Confirm the shared simulation/art contract before
+   code; no invented Claim click. Write scope: pure claims, tick/state recovery,
+   both-seat fog/tie/blocked/claim-reclaim tests. Art task
+   `01a101a8-fba6-7323-a40c-27efd0112007` consumes the real team field for collars.
+3. **Controllable herding**. After ownership, agree ordinary selection/order
+   binding with the UI owner, implement a bounded owner-only path to legal land
+   using existing navigation, and preserve the same food node ID/stock through
+   motion, Gather, depletion and recovery. This needs explicit moving-node fog,
+   construction and gather-route checks before relaxing the meadow-cell bound.
+   Acceptance: both seats issue real herd orders, blocked/foreign/fog-invalid
+   orders reject, interruption/restart does not teleport food or revive carcasses.
+4. **Art acceptance of activity/carcass/collar**. Consume verified admitted art
+   from the active Sheep owner, retain explicit fallbacks, and check normal and
+   strategic appearance at the identified deployed revision. No new generation
+   or paid service is authorized by this queue.
 
 ## Observed source
 

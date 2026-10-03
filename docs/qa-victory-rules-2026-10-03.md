@@ -48,6 +48,15 @@ with deployment `cf9bea37-1681-4b1c-8764-23eb260bedde` in **SUCCESS**, sourced f
 `lbeezr/thousand-unit-skirmish`, branch `main`. This source slice was not yet on
 that deployed revision. The old zero-change staged patch was not applied.
 
+Later readback confirmed staging deployment `29d74cac-b078-4a88-8f2a-e3141a2f9465`
+in SUCCESS at source `32f11d58018404835fd47489441f9cdfef7c403b`, including Practice.
+PR #158 subsequently passed independent exact-head review and merged as
+`65f2e67aac5525e3ec3e21d262729a56851f459b`. That merge is source integration, not
+live acceptance. Railway's read-only investigation identified `NO_INSTALLATION`
+as the reason automatic GitHub deployment is disabled. The implementation owner
+is using the existing staging-only manual build action without source/auth changes;
+its actual deployment result must be recorded separately.
+
 This workspace's network proxy rejected the staging game HTTPS tunnel with 403.
 Chromium's browser preflight reported sandbox/storage unavailable. No sandbox or
 auth bypass was attempted; no credentials or new service were created. The
