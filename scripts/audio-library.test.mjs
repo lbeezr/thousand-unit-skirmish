@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { validateAudioPack } from '../src/audio-assets.mjs';
-import { exportAudioPack, parseAudioPackArchive } from '../src/audio-library-store.mjs';
+import { createAudioLibraryStore, exportAudioPack, parseAudioPackArchive } from '../src/audio-library-store.mjs';
 
 const pack = {
   schemaVersion: 1, id: 'pack-test', name: 'Fixture',
@@ -54,3 +54,72 @@ invalidComposition.compositions[0].tracks[0].clips[0].startBeat = 28;
 invalidComposition.compositions[0].tracks[0].clips[0].durationBeats = 4 + 1e-7;
 assert.throws(() => validateAudioPack(invalidComposition), /extends past/,
   'storage uses the same timeline boundary as playback');
+
+// Deferred IndexedDB events exercise the real store without browser storage or timers.
+function emptyDatabase() {
+  return {
+    closes: 0,
+    close() { this.closes++; },
+    transaction(name, mode) {
+      assert.equal(name, 'packs'); assert.equal(mode, 'readonly');
+      const transaction = {};
+      transaction.objectStore = () => ({getAll() {
+        const request = {result: []};
+        queueMicrotask(() => { request.onsuccess(); transaction.oncomplete(); });
+        return request;
+      }});
+      return transaction;
+    },
+  };
+}
+
+for (const failure of ['blocked', 'error', 'programmer-fault']) {
+  const requests = [];
+  const original = failure === 'programmer-fault'
+    ? new TypeError('test adapter fault') : new DOMException('private storage detail: token=secret', 'UnknownError');
+  let opens = 0;
+  const store = createAudioLibraryStore({indexedDB: {open(name, version) {
+    assert.equal(name, 'tus-audio-library-v1'); assert.equal(version, 1);
+    if (++opens === 1 && failure === 'programmer-fault') throw original;
+    const request = {}; requests.push(request); return request;
+  }}});
+  const failed = assert.rejects(store.listPacks(), error => {
+    if (failure === 'programmer-fault') assert.equal(error, original);
+    else {
+      assert.match(error.message, /retry/);
+      assert.doesNotMatch(error.message + JSON.stringify(error), /private|secret/);
+      if (failure === 'error') assert.equal(error.cause, original);
+    }
+    return true;
+  });
+  if (failure === 'blocked') requests[0].onblocked();
+  if (failure === 'error') { requests[0].error = original; requests[0].onerror(); }
+  await failed;
+  const retry = Promise.all([store.listPacks(), store.listPacks()]);
+  retry.catch(() => {}); // Observe failures even if the regression assertion below fails.
+  assert.equal(opens, 2, 'a failed open must release the cache; concurrent retries share one fresh open');
+  const database = emptyDatabase();
+  const request = requests.at(-1); request.result = database; request.onsuccess();
+  assert.deepEqual(await retry, [[], []]);
+  assert.deepEqual(await store.listPacks(), []);
+  assert.equal(opens, 2, 'successful connections remain cached');
+  assert.equal(database.closes, 0, 'keep the current connection available');
+}
+
+{
+  const requests = [];
+  const store = createAudioLibraryStore({indexedDB: {open() { const request = {}; requests.push(request); return request; }}});
+  const failed = assert.rejects(store.listPacks(), /Close it and retry/);
+  requests[0].onblocked(); await failed;
+  const retry = store.listPacks(); retry.catch(() => {});
+  assert.equal(requests.length, 2);
+  const abandoned = emptyDatabase(), current = emptyDatabase();
+  requests[0].result = abandoned; requests[0].onsuccess();
+  assert.equal(abandoned.closes, 1, 'a blocked request can later succeed and must close its unused connection');
+  requests[1].result = current; requests[1].onsuccess();
+  assert.deepEqual(await retry, []);
+  assert.deepEqual(await store.listPacks(), []);
+  assert.equal(current.closes, 0, 'late completion must not replace or close the retry connection');
+  assert.equal(requests.length, 2);
+}
+console.log('Audio library database-open failure, shared retry and abandoned-connection cleanup checks passed');
