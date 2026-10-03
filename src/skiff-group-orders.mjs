@@ -65,10 +65,21 @@ export function planSkiffGroupReturn(fishing, selected, buildings, units) {
   const carrying = selected.filter(unit => unit.cargo > 0 && unit.cargoType === 'food');
   if (!carrying.length) return { status: 'no-food-cargo', assignments: [] };
   const options = { ...optionsFor(carrying), reservedTransitCells: new Set() }, assignments = [];
+  // Let the nearest delivery route leave first. Routing a farther boat around
+  // a nearer boat can otherwise reserve every exit of the nearer boat, even
+  // when this small group has disjoint berth routes in the opposite order.
+  const candidates = [];
   for (const unit of ordered(carrying)) {
     const route = fishing.deliveryRoute(unit, buildings, units, options);
     if (!route) return { status: 'need-distinct-owned-dock-routes', assignments: [] };
+    candidates.push({ unit, route });
+  }
+  candidates.sort((a, b) => a.route.cells.length - b.route.cells.length || a.unit.id - b.unit.id);
+  for (const [index, candidate] of candidates.entries()) {
+    const { unit } = candidate;
+    const route = index === 0 ? candidate.route : fishing.deliveryRoute(unit, buildings, units, options);
+    if (!route) return { status: 'need-distinct-owned-dock-routes', assignments: [] };
     reserve(options, route); assignments.push({ unit, route, phase: 'to-base', nodeId: null });
   }
-  return { status: 'found', assignments };
+  return { status: 'found', assignments: assignments.sort((a, b) => a.unit.id - b.unit.id) };
 }

@@ -27,7 +27,9 @@ and cargo remain provisional 1 food/second and 10 food per boat.
 Dock delivery now admits distinct navigable centers within its existing 3 × 3
 water berth. A group Return cargo order assigns a reachable owned completed live
 Dock berth to each carrying boat. Selected empty boats retain their current
-orders. Insufficient free berth routes rejects before cargo or orders change.
+orders. Routes are admitted by shortest owned-Dock route first, with boat ID
+breaking ties, so a farther boat does not trap a nearer boat behind its route.
+Insufficient free berth routes rejects before cargo or orders change.
 The primary production berth remains preferred when available. Workers retain
 their land drop-offs. Food credits only at the assigned berth, never while
 passing another berth on the way.

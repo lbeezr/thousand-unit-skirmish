@@ -14,7 +14,11 @@ const map = { id: 'selected-skiff-groups', name: 'Selected Skiff groups', width:
 const water = createWaterUnitRuntime(map), fishing = createSkiffFishingContext(map, water), wet = waterRaster(map);
 const fixture = await createFortifiedFixture({ mapPath: 'maps/open-field.json', timeoutMs: 90_000 });
 let clients, tokens, workers, selected, unselected, order = 100;
-const command = (team, value, expression) => clients[team].command({ ...value, clientOrderToken: order++ }, expression);
+const command = async (team, value, expression) => {
+  const notice = await clients[team].command({ ...value, clientOrderToken: order++ }, /.*/);
+  assert.match(notice.message, expression, `${value.type} seat ${team}`);
+  return notice;
+};
 const saved = async () => JSON.parse(await readFile(fixture.checkpointPath, 'utf8'));
 const boats = snapshot => snapshot.state.units.filter(unit => unit.kind === 'skiff' && unit.hp > 0);
 const ownBoats = (snapshot, team) => boats(snapshot).filter(unit => unit.team === team);

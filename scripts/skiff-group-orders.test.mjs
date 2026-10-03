@@ -134,6 +134,24 @@ test('an outgoing fishing trip cannot reuse an active returning trip in reverse'
   assert.deepEqual(f.world.units[2], f.units[2]);
 });
 
+test('group Return lets the near approach leave first when boat IDs put the farther approach first', () => {
+  const f = fixture(31, true), selected = f.units.slice(0, 2);
+  selected.forEach((unit, index) => {
+    Object.assign(unit, f.water.graph.pointAt(index ? 2775 : 2776), { cargo: index ? .1 : .2, cargoType: 'food' });
+    f.world.nodes.get('fish-0').stock -= unit.cargo;
+  });
+  const before = structuredClone(f.units), plan = planSkiffGroupReturn(f.fishing, selected, f.buildings, f.units);
+  assert.equal(plan.status, 'found'); assert.deepEqual(f.units, before);
+  assert.equal(new Set(plan.assignments.map(({ route }) => route.cells.at(-1))).size, 2);
+  const [a, b] = plan.assignments.map(({ route }) => new Set(route.cells));
+  assert.ok([...a].every(cell => !b.has(cell)), 'both admitted routes remain disjoint');
+  f.apply(plan, true); f.world.units = structuredClone(f.units);
+  for (let i = 0; i < 400; i++) { f.tick(); f.safe(); }
+  assert.ok(Math.abs(f.world.teamFood[0] - 1000.3) < 1e-8);
+  assert.ok(f.world.units.slice(0, 2).every(unit => unit.cargo === 0 && unit.gatherPhase === ''));
+  assert.deepEqual(f.world.units[2], before[2]);
+});
+
 test('group Return cargo reaches distinct owned berth cells, deposits each fractional load once and leaves unselected orders intact', () => {
   const f = fixture(), selected = [f.units[0], f.units[1]], before = structuredClone(f.units[2]);
   selected.forEach((unit, index) => { unit.cargo = index ? 4.25 : .005; unit.cargoType = 'food'; f.world.nodes.get('fish-0').stock -= unit.cargo; });
