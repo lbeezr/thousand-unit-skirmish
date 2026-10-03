@@ -38,15 +38,18 @@ installed. Publishing candidate pixels still needs the user's approval.
 
 ## Private deliverables and provenance
 
-| Deliverable | Authorized Library identity |
+| Deliverable | Purpose; stored privately in Library |
 | --- | --- |
-| `worker-fishing-SE-study.png` — four keys beside shipped idle | `libfile_db5a33d96f9481919d423e1da9bb1f38` |
-| `worker-fishing-SE-loop.webp` — 1,300 ms blocking loop | `libfile_2152c1c5a8508191938e6d3bb41a7a89` |
-| `worker-fishing-SE-private-pilot.zip` — raw source, exact request, draft prompt, reference canvas, extracted keys, registrations and copied runtime pack | `libfile_a18aa8f2e11c81919ce3d7d33000326e` |
-| `worker-fishing-SE-private-QA-kit.zip` — Mac recipe, selected-draw observer, fixed-affine calibration adapter and independent checks | `libfile_dd66a9ce7d108191b6348f182dcda5b9` |
+| `worker-fishing-SE-study.png` | Four keys beside shipped idle |
+| `worker-fishing-SE-loop.webp` | 1,300 ms blocking loop |
+| `worker-fishing-SE-private-pilot.zip` | Raw source, exact request, draft prompt, reference canvas, extracted keys, registrations and copied runtime pack |
+| `worker-fishing-SE-private-QA-kit.zip` | Mac recipe, selected-draw observer, fixed-affine calibration adapter and independent checks |
 
-The archive preserves the original ImageGen output
-`exec-55affbcf-8f5b-4476-9104-256676ee881c.png`, every source bound and hash,
+Library identifiers, exact capture metadata and private receipts remain in the
+private handoff. This public guide describes the production contract and source
+checks; it does not publish those private references.
+
+The archive preserves the original ImageGen output, every source bound and hash,
 four explicit boot-root landmarks, fixed canvas/pivot, shared scale and frame
 durations. None of its new generated pixels are published in this repository.
 The pose-sheet comparison is decoded CPU imagery, not a game screenshot.
@@ -143,15 +146,8 @@ host uploads saved all three private files and retained their Library identities
 
 ### Subsequent Mac capture and marker occlusion
 
-Private Mac QA on `75f4b7b38aacc291bb7e4952259d9cd9619cc11b` produced one ordinary
-view and 22 chronological close views across 7,633.4 ms. All four SE frame IDs
-were observed naturally, with a current visible decoded Human fishing draw,
-the real land approach/water heading, food cargo and successful Stop clearing.
-The observer is a recorded read-only diagnostic source overlay, not a stock-art
-build. Runtime exceptions were empty. Library retains the
-first ordinary frame (`libfile_8968faee89b481919f08651f960cc8bc`),
-report (`libfile_541e2f93ca348191be67c90f6d494778`) and full private provenance
-(`libfile_836ceb80b89c819185e9a48c3e85aba6`). These pixels remain private.
+Subsequent private Mac capture exposed marker occlusion. Its frame, report,
+selected-draw observations and full provenance remain in the private handoff.
 
 Pixel inspection of the ordinary frame and close reach/retrieve/collect poses
 shows the amber resource-ring stroke covering the Worker's hands/net. The ring

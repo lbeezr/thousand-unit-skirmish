@@ -81,12 +81,12 @@ acceptance pending. It does not establish eight directional clips or regional
 fishing lore. The default code integration keeps resource authority on land,
 faces the derived water spot, and uses safe shipped-art fallbacks until approved
 fishing keys are installed. Initial cloud sandbox/storage failure prevented a
-game capture. Later private Mac QA observed all four SE poses in 23 game captures
-and verified Stop, but the amber bank ring obscured the hands/net. The scoped
+game capture. Later private Mac QA exposed the amber bank ring obscuring the
+hands/net. The scoped
 renderer correction draws that ring beneath the Worker sprite while retaining
 its land, stock and fog contracts; after-fix readability/root/seam acceptance is
-still open. The linked record preserves both capture attempts, private Library
-identities and calibration pitfalls. No actor-art regeneration or public pixel
+still open. The private handoff preserves both capture attempts and Library
+identities; the linked public record describes calibration pitfalls. No actor-art regeneration or public pixel
 publication was used to address the marker occlusion.
 
 ## Other preserved families
