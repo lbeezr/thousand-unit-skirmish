@@ -38,6 +38,19 @@ test('authored identity admits only food sheep and never runtime lifecycle', () 
   }
 });
 
+test('optional authored nose yaw is finite Sheep presentation data, separate from live food state', () => {
+  for (const wildlifeNoseYawDegrees of [0, 45, 90, 315, 359.99]) {
+    const definition = { ...sheep, wildlifeNoseYawDegrees };
+    assert.equal(validWildlifeNodeDefinition(definition), true);
+    assert.deepEqual(createResourceNodeState(definition), createResourceNodeState(sheep),
+      'static pose adds no simulation heading or food-state field');
+  }
+  for (const wildlifeNoseYawDegrees of [-1, 360, NaN, Infinity, '90', null]) {
+    assert.equal(validWildlifeNodeDefinition({ ...sheep, wildlifeNoseYawDegrees }), false);
+  }
+  assert.equal(validWildlifeNodeDefinition({ ...sheep, wildlifeSpecies: undefined, wildlifeNoseYawDegrees: 0 }), false);
+});
+
 test('checkpoint lifecycle cannot revive consumed stock or hide depleted stock', () => {
   const live = createResourceNodeState(sheep);
   assert.equal(validWildlifeNodeState(live, sheep), true);

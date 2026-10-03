@@ -5,6 +5,11 @@ Implementation integrates main `ae88e0f`; the Sheep pack is unchanged.
 This increment changes offline acceptance tooling and tests only. The live neutral
 renderer, gameplay state, default maps and active Mac capture remain unchanged.
 
+The subsequent [default runtime slice](qa-sheep-static-directions-runtime-2026-10-03.md)
+implements authored static pose validation and immutable direction geometry from
+the proposal below. The eight-view art still requires readable original bytes
+and separate permission for public publication.
+
 ## Available art and acceptance
 
 The [read-only audit](../scripts/sheep-directional-readiness.mjs) verifies the
