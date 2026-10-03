@@ -144,6 +144,8 @@ run(['--test', 'scripts/water-surface-study.test.mjs', 'scripts/water-study-fish
 run(['--test', 'scripts/water-route-graph.test.mjs'], 'Isolated water route topology and clearance');
 run(['--test', 'scripts/dock-placement.test.mjs'], 'Dock shoreline and water berth placement');
 run(['scripts/dock-scenario.mjs'], 'Both-seat paid Dock construction and recovery');
+run(['--test', 'scripts/water-unit-runtime.test.mjs', 'scripts/skiff-contracts.test.mjs'], 'Skiff water movement, paid queue and placeholder controls');
+run(['scripts/skiff-scenario.mjs'], 'Both-seat paid Skiff production, berth occupancy and recovery');
 run(['scripts/water-route-map-scenario.mjs'], 'Water-only route components on shipped maps');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');
