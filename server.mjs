@@ -35,6 +35,7 @@ import { privateProductionView } from './src/snapshot-private-production.mjs';
 import { RoomPregame, validatePregameCheckpoint } from './src/room-pregame.mjs';
 import { RoomLobbyChat } from './src/room-lobby-chat.mjs';
 import { headingToTarget } from './src/unit-heading.mjs';
+import { workerFishingPresentation } from './src/worker-fishing-presentation.mjs';
 import { preparePaidWallLine } from './src/wall-construction-draft.mjs';
 import { activeWallBuildOrder } from './src/wall-build-order.mjs';
 import { palisadeConnections } from './src/palisade-profile.mjs';
@@ -1787,6 +1788,10 @@ function snapshotUnits(viewTeam = null) {
     if (audioExecution) row[14] = audioExecution;
     const workHeading = task === 'gathering' ? workerGatherHeading(unit) : null;
     if (workHeading !== null) row[15] = workHeading;
+    const fishing = task === 'gathering' ? workerFishingPresentation(
+      unit, resourceNodeStates.get(unit.gatherNodeId), mapDefinition,
+    ) : null;
+    if (fishing) row[16] = fishing.resourceVariant;
     rows.push(row);
   }
   return rows;
@@ -1796,6 +1801,8 @@ function workerGatherHeading(unit) {
   if (unit.hp <= 0 || unit.kind !== 'worker' || unit.gatherPhase !== 'gathering') return null;
   const target = unit.gatherForestCell >= 0 ? cellToWorld(unit.gatherForestCell)
     : resourceNodeStates.get(unit.gatherNodeId);
+  const fishing = workerFishingPresentation(unit, target, mapDefinition);
+  if (fishing) return fishing.heading;
   return target ? headingToTarget(unit.x, unit.z, target.x, target.z) : null;
 }
 
@@ -2794,10 +2801,22 @@ function validateMatchCheckpoint(snapshot) {
       }
     }
   }
-  const resourceCells = new Set(definition.resourceNodes.map((node) => (
-    Math.floor(node.z + definition.height / 2) * definition.width
-      + Math.floor(node.x + definition.width / 2)
-  )));
+  assertSnapshot(Array.isArray(state.resourceNodes) && state.resourceNodes.length === definition.resourceNodes.length,
+    'invalid resource nodes');
+  const resourceIds = new Set();
+  for (const node of state.resourceNodes) {
+    const definitionNode = definition.resourceNodes.find((item) => item.id === node?.id);
+    assertSnapshot(definitionNode && !resourceIds.has(node.id) && node.type === definitionNode.type
+      && finite(node.stock) && node.stock >= 0 && node.stock <= definitionNode.stock
+      && validWildlifeNodeState(node, definitionNode)
+      && validResourceVariantState(node, definitionNode), 'invalid resource node state');
+    resourceIds.add(node.id);
+  }
+  const resourceCells = new Set(state.resourceNodes.filter(node => node.stock > 0).map((node) => {
+    const authored = definition.resourceNodes.find(item => item.id === node.id);
+    return Math.floor(authored.z + definition.height / 2) * definition.width
+      + Math.floor(authored.x + definition.width / 2);
+  }));
   for (const building of state.buildings) {
     const rules = buildingRulesFor(building?.type);
     assertSnapshot(building && integerIn(building.id, 1, Number.MAX_SAFE_INTEGER)
@@ -2855,17 +2874,6 @@ function validateMatchCheckpoint(snapshot) {
   }
   assertSnapshot(integerIn(state.nextBuildingId, 1, Number.MAX_SAFE_INTEGER)
     && state.nextBuildingId < HOME_TOWN_CENTER_ID_BASE && state.nextBuildingId > Math.max(0, ...buildingIds), 'invalid next building ID');
-  assertSnapshot(Array.isArray(state.resourceNodes) && state.resourceNodes.length === definition.resourceNodes.length,
-    'invalid resource nodes');
-  const resourceIds = new Set();
-  for (const node of state.resourceNodes) {
-    const definitionNode = definition.resourceNodes.find((item) => item.id === node?.id);
-    assertSnapshot(definitionNode && !resourceIds.has(node.id) && node.type === definitionNode.type
-      && finite(node.stock) && node.stock >= 0 && node.stock <= definitionNode.stock
-      && validWildlifeNodeState(node, definitionNode)
-      && validResourceVariantState(node, definitionNode), 'invalid resource node state');
-    resourceIds.add(node.id);
-  }
   assertSnapshot(Array.isArray(state.triggerStates) && state.triggerStates.length === definition.triggers.length,
     'invalid trigger states');
   const triggerIds = new Set();
@@ -4824,7 +4832,7 @@ function enqueueRouteRepairs(repairs, { mode = 'blocked-route-repair', orderLabe
 
 function isResourceCell(cell) {
   for (const node of mapDefinition.resourceNodes) {
-    if (worldToCell(node.x, node.z) === cell) return true;
+    if (resourceNodeStates.get(node.id)?.stock !== 0 && worldToCell(node.x, node.z) === cell) return true;
   }
   return false;
 }
@@ -4847,7 +4855,9 @@ function captureBuildingConnectivity() {
     }
   };
   for (const spawn of spawnByTeam) addAccess([nearestOpenCell(worldToCell(spawn.x, spawn.z))]);
-  for (const node of mapDefinition.resourceNodes) addAccess([worldToCell(node.x, node.z)]);
+  for (const node of mapDefinition.resourceNodes) {
+    if (resourceNodeStates.get(node.id)?.stock !== 0) addAccess([worldToCell(node.x, node.z)]);
+  }
   for (const unit of units) {
     if (unit.hp > 0) addAccess([nearestOpenCell(worldToCell(unit.x, unit.z))]);
   }
@@ -4953,7 +4963,8 @@ function buildWallLine(player, command) {
   const existingWallCells = new Set(buildings.filter(building =>
     building.team === player.team && building.type === 'palisade-wall').flatMap(building => building.footprint));
   const blockedCells = [], occupiedCells = new Set();
-  const resourceCells = new Set(mapDefinition.resourceNodes.map(node => worldToCell(node.x, node.z)));
+  const resourceCells = new Set(mapDefinition.resourceNodes
+    .filter(node => resourceNodeStates.get(node.id)?.stock !== 0).map(node => worldToCell(node.x, node.z)));
   for (let cell = 0; cell < CELL_COUNT; cell++) {
     if (blocked[cell] || townCenterBlocked[cell] || resourceCells.has(cell)) blockedCells.push(cell);
     if (buildingBlocked[cell] && !existingWallCells.has(cell)) occupiedCells.add(cell);
@@ -7517,8 +7528,9 @@ const server = createServer(async (request, response) => {
     'src/room-lobby-ui.mjs', 'src/room-lobby-chat-ui.mjs', 'src/room-lobby.css',
     'src/scenario-regions.mjs', 'src/scenario-authoring.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
     'src/shore-fishing.mjs', 'src/shore-fishing-placeholder.mjs', 'src/shore-fishing-placement.mjs',
+    'src/worker-fishing-presentation.mjs',
     'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs', 'src/resource-brush-controls.mjs',
-    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
+    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
     'src/terrain-authoring.mjs', 'src/terrain-height.mjs', 'src/regions.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs',
@@ -7528,7 +7540,7 @@ const server = createServer(async (request, response) => {
     'src/audio-composition.mjs', 'src/audio-composer.mjs', 'src/audio-composer.css',
     'audio-studio.html', 'audio-zones.html', 'src/audio-zones.mjs', 'src/audio-zones.css', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs',
     'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs',
-    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
+    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs', 'src/shore-vegetation.mjs', 'src/meadow-vegetation.mjs', 'src/garden-vegetation.mjs', 'src/environment-plant-assets.mjs', 'src/podvine-view-pack.mjs', 'src/podvine-worked-pack.mjs', 'src/podvine-low-pack.mjs', 'src/veilcap-view-pack.mjs', 'src/veilcap-worked-pack.mjs', 'src/sunbloom-view-pack.mjs', 'src/sunbloom-crown-pack.mjs', 'src/sunbloom-worked-pack.mjs', 'src/sunbloom-low-pack.mjs', 'src/terrain-blend.mjs', 'src/terrain-texture-sampling.mjs', 'src/terrain-atmosphere.mjs', 'src/terrain-materials.mjs',
     'src/forest-habitat.mjs', 'src/forest-age-composition.mjs', 'src/forest-composition.mjs', 'src/regional-ground-kits.mjs', 'src/water-contours.mjs',
   ].includes(relative);

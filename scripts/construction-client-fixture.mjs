@@ -17,6 +17,8 @@ export function constructionClientFixture({team=0,units,selection=[],buildings=[
     placementGhost:{visible:false},buildingLabel:type=>BUILDING_DEFINITIONS[type].label.toUpperCase(),
     buildingWoodCost:type=>BUILDING_DEFINITIONS[type].cost.wood,
     window:{matchMedia:()=>({matches:false})},TextEncoder,WebSocket:{OPEN:1},
+    renderer:{domElement:{focus(){}}},resetWallPlacement(){},wallPlacementGesture:{},
+    wallPlacementAt:()=>({valid:true,points:[{column:1,row:1}],axisOrder:'column-first'}),
     socket:{readyState:1,send:text=>payloads.push(JSON.parse(text))},
     audio:{play(){},playEvent(){}},orderAudioGate:{sent(){}},beginOrderStatus:()=>++token,finishOrderStatus(){},
     showToast:text=>toasts.push(text),buildPlacementAt:()=>({valid:true,x:-16.5,z:10.5}),
