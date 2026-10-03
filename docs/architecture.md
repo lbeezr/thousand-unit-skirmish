@@ -59,8 +59,10 @@ are destinations for future small, cohesive moves, not a rename plan:
 
 These directions guide extraction. The first executable safeguard is narrower:
 runtime imports must resolve to exact relative runtime modules, Node builtins
-or the mapped `three` package. All `src` modules stay within `src`; only the two
-named Node adapters may import Node builtins. Browser closures cannot reach a
+or the mapped `three` package. All `src` modules stay within `src`; only the
+declared Node adapters may import Node builtins. The existing server-only
+`networking/websocket-frame` seam owns Node Buffer encoding, so its owner can
+test wire bytes independently of HTTP/gameplay orchestration. Browser closures cannot reach a
 Node adapter or unmapped package, and server closures cannot reach Three or a
 browser entrypoint. Package imports must match every consuming page's import
 map; the audio pages have no Three mapping. A contract test checks the five

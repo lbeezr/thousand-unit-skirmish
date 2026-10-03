@@ -19,7 +19,11 @@ export const BROWSER_PACKAGE_IMPORTS = {
 };
 export const SERVER_ENTRYPOINTS = ['room-supervisor.mjs', 'server.mjs'];
 // These are Node adapters, not cycle exceptions. Keep them out of browser closures.
-export const NODE_ONLY_MODULES = ['src/room-launch-options.mjs', 'src/pve-model-proposal.mjs'];
+export const NODE_ONLY_MODULES = [
+  'src/room-launch-options.mjs', // Node crypto-backed launch seeds.
+  'src/pve-model-proposal.mjs', // Offline Node model-request adapter.
+  'src/networking/websocket-frame.mjs', // Server-only Node Buffer wire encoding.
+];
 
 export function moduleImports(source, filename) {
   const ast = parse(source, { ecmaVersion: 'latest', sourceType: 'module', locations: true });
