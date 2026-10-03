@@ -22,6 +22,7 @@ to declare unpaid ore costs. A profile override and typed payment must agree.
 preserves fractional bank balances. Command/lifecycle ownership must still
 remove canceled work before any replay can refund it again. The server uses these helpers for the construction command and its cancellation.
 Other production/research costs remain two-resource; their refunds never create Stone.
+See the [dated native ledger/recovery evidence](qa-stone-ledger-recovery-2026-10-03.md).
 
 The map owner can target the unchanged `{id,type,x,z,stock}` node shape with
 `type:"stone"`, 200 per seat in 67/67/66 nodes, no regrowth and zero initial Stone.
