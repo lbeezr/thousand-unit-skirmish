@@ -43,6 +43,13 @@ the integrated PR #71 drag, keyboard, preview and wall payload behavior remains.
 The native two-seat scenario verifies single and cooperative assignments,
 unselected food/wood gathering and queued movement, empty/foreign/stale-generation
 rejection, nearest selected-helper resume, checkpoint restart and paid completion.
+Integrated source `d4945be32e05a77ab3a47cfd5ffa4a2350bda6d8` includes wall PR #71
+and the current camera settings. Client SHA-256:
+`67275cf8a110e43f51c0e3b734819b25a9cd8ebcefc2f8f7cef85c265e530089`.
+Azure keeps selection/payload/assigned builder `[0]`; Ember keeps `[8]`.
+Both unselected food/wood node IDs and the third Worker's queued destination
+remain unchanged in the authoritative checkpoint. The paid palisade recovery
+scenario and interrupted final sheep-cargo delivery also pass at this source.
 74 focused selection, connection, HUD, affordability, roster, Return cargo,
 palisade, wall gesture and CI-sharding tests pass. Rendering/picking are supplied in these checks; no Chrome
 appearance or user's deployed session is claimed. Local browser sandbox/storage
