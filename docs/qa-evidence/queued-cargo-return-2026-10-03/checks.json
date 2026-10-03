@@ -498,5 +498,427 @@
     "eight-unit open-field-derived finite delivery; no universal target-lifecycle or navigation proof",
     "no injected cargo or position in native runs",
     "no deployment, renderer or performance claim"
-  ]
+  ],
+  "integration": {
+    "head": "1c7c0df2d4fadc601b431288ac339c560fc051bb",
+    "main": "e75ddf9",
+    "passedTests": 138,
+    "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+    "replay": {
+      "head": "1c7c0df2d4fadc601b431288ac339c560fc051bb",
+      "records": [
+        {
+          "team": 0,
+          "type": "food",
+          "stock": 0.5,
+          "queuedType": "move",
+          "runs": [
+            {
+              "team": 0,
+              "type": "food",
+              "stock": 0.5,
+              "queuedType": "move",
+              "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+              "ticks": 316,
+              "arrived": true,
+              "deposited": 0.5,
+              "cargo": 0,
+              "gatherPhase": "",
+              "queued": 0,
+              "destination": 1488,
+              "moveGoalCell": 1488,
+              "position": {
+                "x": -15.5,
+                "z": -8.5
+              },
+              "traceSha256": "2b110c6bb3939ace5e649787ff55c27ebde257f62dd908706b293b51079f5a9f",
+              "unselectedUnitsUnchanged": true
+            },
+            {
+              "team": 0,
+              "type": "food",
+              "stock": 0.5,
+              "queuedType": "move",
+              "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+              "ticks": 316,
+              "arrived": true,
+              "deposited": 0.5,
+              "cargo": 0,
+              "gatherPhase": "",
+              "queued": 0,
+              "destination": 1488,
+              "moveGoalCell": 1488,
+              "position": {
+                "x": -15.5,
+                "z": -8.5
+              },
+              "traceSha256": "2b110c6bb3939ace5e649787ff55c27ebde257f62dd908706b293b51079f5a9f",
+              "unselectedUnitsUnchanged": true
+            }
+          ]
+        },
+        {
+          "team": 1,
+          "type": "food",
+          "stock": 0.5,
+          "queuedType": "move",
+          "runs": [
+            {
+              "team": 1,
+              "type": "food",
+              "stock": 0.5,
+              "queuedType": "move",
+              "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+              "ticks": 315,
+              "arrived": true,
+              "deposited": 0.5,
+              "cargo": 0,
+              "gatherPhase": "",
+              "queued": 0,
+              "destination": 1519,
+              "moveGoalCell": 1519,
+              "position": {
+                "x": 15.5,
+                "z": -8.5
+              },
+              "traceSha256": "8cea1874711f52c1b8a57d55dc0a7b53bc1467f0e9e61f1749cfcd113b314fed",
+              "unselectedUnitsUnchanged": true
+            },
+            {
+              "team": 1,
+              "type": "food",
+              "stock": 0.5,
+              "queuedType": "move",
+              "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+              "ticks": 315,
+              "arrived": true,
+              "deposited": 0.5,
+              "cargo": 0,
+              "gatherPhase": "",
+              "queued": 0,
+              "destination": 1519,
+              "moveGoalCell": 1519,
+              "position": {
+                "x": 15.5,
+                "z": -8.5
+              },
+              "traceSha256": "8cea1874711f52c1b8a57d55dc0a7b53bc1467f0e9e61f1749cfcd113b314fed",
+              "unselectedUnitsUnchanged": true
+            }
+          ]
+        },
+        {
+          "team": 0,
+          "type": "food",
+          "stock": 0.004,
+          "queuedType": "attackMove",
+          "runs": [
+            {
+              "team": 0,
+              "type": "food",
+              "stock": 0.004,
+              "queuedType": "attackMove",
+              "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+              "ticks": 303,
+              "arrived": true,
+              "deposited": 0.004,
+              "cargo": 0,
+              "gatherPhase": "",
+              "queued": 0,
+              "destination": 1488,
+              "moveGoalCell": 1488,
+              "position": {
+                "x": -15.5,
+                "z": -8.5
+              },
+              "traceSha256": "1907f256d0375c59e5b93401fe03e43cc9bd17a5835c80e015cd28d60a73b901",
+              "unselectedUnitsUnchanged": true
+            },
+            {
+              "team": 0,
+              "type": "food",
+              "stock": 0.004,
+              "queuedType": "attackMove",
+              "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+              "ticks": 303,
+              "arrived": true,
+              "deposited": 0.004,
+              "cargo": 0,
+              "gatherPhase": "",
+              "queued": 0,
+              "destination": 1488,
+              "moveGoalCell": 1488,
+              "position": {
+                "x": -15.5,
+                "z": -8.5
+              },
+              "traceSha256": "1907f256d0375c59e5b93401fe03e43cc9bd17a5835c80e015cd28d60a73b901",
+              "unselectedUnitsUnchanged": true
+            }
+          ]
+        },
+        {
+          "team": 1,
+          "type": "food",
+          "stock": 0.004,
+          "queuedType": "attackMove",
+          "runs": [
+            {
+              "team": 1,
+              "type": "food",
+              "stock": 0.004,
+              "queuedType": "attackMove",
+              "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+              "ticks": 303,
+              "arrived": true,
+              "deposited": 0.004,
+              "cargo": 0,
+              "gatherPhase": "",
+              "queued": 0,
+              "destination": 1519,
+              "moveGoalCell": 1519,
+              "position": {
+                "x": 15.5,
+                "z": -8.5
+              },
+              "traceSha256": "76f182c88055ee631939228aad9e611f8cb7e78c167feb0fa8648b27a48e6a3e",
+              "unselectedUnitsUnchanged": true
+            },
+            {
+              "team": 1,
+              "type": "food",
+              "stock": 0.004,
+              "queuedType": "attackMove",
+              "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+              "ticks": 303,
+              "arrived": true,
+              "deposited": 0.004,
+              "cargo": 0,
+              "gatherPhase": "",
+              "queued": 0,
+              "destination": 1519,
+              "moveGoalCell": 1519,
+              "position": {
+                "x": 15.5,
+                "z": -8.5
+              },
+              "traceSha256": "76f182c88055ee631939228aad9e611f8cb7e78c167feb0fa8648b27a48e6a3e",
+              "unselectedUnitsUnchanged": true
+            }
+          ]
+        },
+        {
+          "team": 0,
+          "type": "wood",
+          "stock": 7.25,
+          "queuedType": "move",
+          "runs": [
+            {
+              "team": 0,
+              "type": "wood",
+              "stock": 7.25,
+              "queuedType": "move",
+              "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+              "ticks": 316,
+              "arrived": true,
+              "deposited": 7.25,
+              "cargo": 0,
+              "gatherPhase": "",
+              "queued": 0,
+              "destination": 1488,
+              "moveGoalCell": 1488,
+              "position": {
+                "x": -15.5,
+                "z": -8.5
+              },
+              "traceSha256": "22761cc9e156aeaf3bb79e3df771d76ad5ec9a24b2b7aee11f4d25ddd09bd143",
+              "unselectedUnitsUnchanged": true
+            },
+            {
+              "team": 0,
+              "type": "wood",
+              "stock": 7.25,
+              "queuedType": "move",
+              "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+              "ticks": 316,
+              "arrived": true,
+              "deposited": 7.25,
+              "cargo": 0,
+              "gatherPhase": "",
+              "queued": 0,
+              "destination": 1488,
+              "moveGoalCell": 1488,
+              "position": {
+                "x": -15.5,
+                "z": -8.5
+              },
+              "traceSha256": "22761cc9e156aeaf3bb79e3df771d76ad5ec9a24b2b7aee11f4d25ddd09bd143",
+              "unselectedUnitsUnchanged": true
+            }
+          ]
+        },
+        {
+          "team": 1,
+          "type": "wood",
+          "stock": 7.25,
+          "queuedType": "move",
+          "runs": [
+            {
+              "team": 1,
+              "type": "wood",
+              "stock": 7.25,
+              "queuedType": "move",
+              "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+              "ticks": 315,
+              "arrived": true,
+              "deposited": 7.25,
+              "cargo": 0,
+              "gatherPhase": "",
+              "queued": 0,
+              "destination": 1519,
+              "moveGoalCell": 1519,
+              "position": {
+                "x": 15.5,
+                "z": -8.5
+              },
+              "traceSha256": "58fbdf19bdafb38d829c35542ebdd34c112e6bf752764b6a56e365630c978cb5",
+              "unselectedUnitsUnchanged": true
+            },
+            {
+              "team": 1,
+              "type": "wood",
+              "stock": 7.25,
+              "queuedType": "move",
+              "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+              "ticks": 315,
+              "arrived": true,
+              "deposited": 7.25,
+              "cargo": 0,
+              "gatherPhase": "",
+              "queued": 0,
+              "destination": 1519,
+              "moveGoalCell": 1519,
+              "position": {
+                "x": 15.5,
+                "z": -8.5
+              },
+              "traceSha256": "58fbdf19bdafb38d829c35542ebdd34c112e6bf752764b6a56e365630c978cb5",
+              "unselectedUnitsUnchanged": true
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "production bodies with fixed ticks and planning callbacks drained between ticks; no native scheduling or renderer claim"
+      ]
+    },
+    "allSixTracePairsMatchCandidate": true,
+    "native": {
+      "head": "1c7c0df2d4fadc601b431288ac339c560fc051bb",
+      "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+      "records": [
+        {
+          "type": "food",
+          "stock": 0.5,
+          "teams": [
+            0,
+            1
+          ],
+          "arrived": 2,
+          "waypointsPerWorker": 2,
+          "bank": [
+            0.5,
+            0.5
+          ],
+          "cargo": [
+            0,
+            0
+          ],
+          "snapshotsChecked": 270,
+          "unselectedUnitsUnchanged": true,
+          "hiddenForeignSourcesAndUnitsAbsent": true,
+          "foreignAndStaleGenerationRejected": true,
+          "deliveryQueueRecovery": true,
+          "postDepositRestartCreditOnce": true,
+          "ticks": 330
+        },
+        {
+          "type": "food",
+          "stock": 0.004,
+          "teams": [
+            0,
+            1
+          ],
+          "arrived": 2,
+          "waypointsPerWorker": 2,
+          "bank": [
+            0.004,
+            0.004
+          ],
+          "cargo": [
+            0,
+            0
+          ],
+          "snapshotsChecked": 292,
+          "unselectedUnitsUnchanged": true,
+          "hiddenForeignSourcesAndUnitsAbsent": true,
+          "foreignAndStaleGenerationRejected": true,
+          "deliveryQueueRecovery": true,
+          "postDepositRestartCreditOnce": true,
+          "ticks": 360
+        },
+        {
+          "type": "wood",
+          "stock": 7.25,
+          "teams": [
+            0,
+            1
+          ],
+          "arrived": 2,
+          "waypointsPerWorker": 2,
+          "bank": [
+            7.25,
+            7.25
+          ],
+          "cargo": [
+            0,
+            0
+          ],
+          "snapshotsChecked": 293,
+          "unselectedUnitsUnchanged": true,
+          "hiddenForeignSourcesAndUnitsAbsent": true,
+          "foreignAndStaleGenerationRejected": true,
+          "deliveryQueueRecovery": true,
+          "postDepositRestartCreditOnce": true,
+          "ticks": 360
+        }
+      ],
+      "limits": [
+        "actual asynchronous two-seat WebSocket server with natural gathering and restart; no injected cargo or position",
+        "selected delivery and two queued ground legs only; no universal target-lifecycle or navigation claim",
+        "no renderer, deployment or performance claim"
+      ]
+    },
+    "extraCoupledTests": {
+      "passed": 4,
+      "teams": [
+        0,
+        1
+      ],
+      "conditions": [
+        "destroyed and replacement drop-off",
+        "unreachable and reconnected drop-off"
+      ],
+      "queueWaitsForDeposit": true,
+      "cargoPreserved": true,
+      "planningJobsAfterDeposit": 1
+    },
+    "independentReview": {
+      "findings": 0,
+      "initialHead": "b7d8955bcc25748a492d00f725a3524971c105ab",
+      "integrationHead": "1c7c0df2d4fadc601b431288ac339c560fc051bb",
+      "initialFocusedPassed": 57,
+      "integrationFocusedPassed": 60
+    }
+  }
 }

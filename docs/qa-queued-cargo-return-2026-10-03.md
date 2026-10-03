@@ -77,6 +77,20 @@ universal crowd recovery, general navigation, deployment, rendered usability or
 performance. The independent review and final integration/postmerge details are
 recorded in the owning PR.
 
+Latest main `e75ddf9` (separate Skiff fishing and Worker role notes) is integrated
+at `1c7c0df2d4fadc601b431288ac339c560fc051bb`. Server SHA-256 is
+`efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440`.
+All 134 integration-focused checks pass, plus four added coupled drop-off loss
+regressions (138 checks total). Those call the real delivery/queue functions
+against destroyed/replacement or disconnected/reconnected drop-offs; cargo and
+queues wait, deposit happens once and exactly one queued planning job starts.
+All six integrated replay pairs match the candidate traces. Fresh asynchronous
+checks again pass all three loads on both seats through two queued legs and
+both restarts. Independent review reports no findings at the initial fix or its
+Skiff integration; it passed 57 initial and 60 integration-focused tests and
+independently probed both-seat drop-off loss/recovery. These counts overlap the
+author's checks and are not additive.
+
 ## Reproduction and native QA recipe
 
 Run `node --test scripts/queued-cargo-return.test.mjs`,
