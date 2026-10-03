@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "32f11d58018404835fd47489441f9cdfef7c403b",
+  "description": "All root and src JavaScript runtime modules, including literal dynamic imports and re-exports. No cyclic edges at this revision. Remove resolved entries; do not regenerate to admit a new cycle.",
+  "cycleEdges": []
+}

@@ -9,6 +9,7 @@
   "scripts": {
     "start": "node room-supervisor.mjs",
     "test": "node scripts/ci.mjs",
+    "architecture:check": "node scripts/check-runtime-imports.mjs",
     "check:types": "tsc --project tsconfig.check-js.json --pretty false",
     "build:painted-material-atlas": "python3 scripts/build-painted-material-atlas.py",
     "validate:visual-pack": "node scripts/validate-visual-pack.mjs",
@@ -28,6 +29,7 @@
     "three": "0.180.0"
   },
   "devDependencies": {
+    "acorn": "8.15.0",
     "jsdom": "26.1.0",
     "typescript": "5.9.3"
   }

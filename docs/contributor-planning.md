@@ -49,6 +49,24 @@ regression checks. It does not impose a global rewrite, lint/type rollout or
 quality gate on independent player-facing work. Coordinate an actual overlap
 with its affected owner before changing shared hot spots.
 
+### Continuing workstream, bounded PR
+
+A workstream goal outlives any one PR. Keep a short ranked backlog in its owning
+guide or task, with the next action, write scope, dependencies and observable
+acceptance for each justified item. After a reviewed, verified merge, refresh
+main and choose the highest useful ready item without another parent approval
+queue. A new PR keeps its own bounded outcome; the backlog is not a giant PR
+or an invitation to manufacture refactors.
+
+Record meaningful checkpoints with the exact source/check result, next scope
+and concrete blocker. Share results and blockers with the parent when the user
+requests check-ins; agree shared interfaces with the affected owner before
+overlapping edits. Pause dependent work for missing authorization, an unresolved
+ownership/interface conflict, unavailable execution, or no justified remaining
+item, and report that actual condition. Continue independent ready work. Tooling
+outcomes require tool/check acceptance; runtime outcomes retain deployment and
+in-game acceptance ownership.
+
 Keep branches short-lived and PRs incremental. Refresh main before dependent
 work and before merging. The author resolves conflicts, runs proportionate
 checks, obtains independent review, merges under existing authority and handles

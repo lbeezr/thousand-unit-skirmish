@@ -51,9 +51,11 @@ const syntaxFiles = [
 
 for (const file of syntaxFiles) run(['--check', file], `Syntax: ${file}`);
 
+run(['--test', 'scripts/check-runtime-imports.test.mjs'], 'Runtime dependency checker regressions');
+run(['scripts/check-runtime-imports.mjs'], 'Runtime dependency boundaries and cycle baseline');
 run(['node_modules/typescript/bin/tsc', '--project', 'tsconfig.check-js.json', '--pretty', 'false'],
   'Strict checked JavaScript boundary');
-run(['--test', 'scripts/check-types.test.mjs'], 'Checked canopy contract negative cases');
+run(['--test', 'scripts/check-types.test.mjs'], 'Checked JavaScript contract negative cases');
 
 run(['--test', 'scripts/scenario-regions.test.mjs'], 'Named scenario regions');
 run(['--test', 'scripts/scenario-authoring.test.mjs'], 'Visual scenario authoring contracts');
@@ -133,6 +135,7 @@ run(['--test', 'scripts/battlefield-cursor.test.mjs'], 'Battlefield cursor state
 run(['--test', 'scripts/hud-action-icons.test.mjs'], 'Default HUD action glyphs and semantics');
 run(['scripts/hud-action-icons-serving-scenario.mjs'], 'Default HUD action glyph HTTP bytes');
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
+run(['--test', 'scripts/match-modes.test.mjs'], 'Versioned match mode policies and map compatibility');
 run(['--test', 'scripts/game-entry.test.mjs', 'scripts/game-navigation.test.mjs'], 'Explicit main menu and session entry');
 run(['scripts/game-menu-scenario.mjs'], 'Fresh menu matches and protected resume authority');
 run(['--test', 'scripts/room-pregame.test.mjs', 'scripts/room-lobby-ui.test.mjs'], 'Pregame authority and lobby controls');
