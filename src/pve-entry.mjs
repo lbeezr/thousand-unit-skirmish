@@ -22,7 +22,7 @@ export function createPveRoomUrl(currentUrl, response) {
   if (!ROOM_ID_PATTERN.test(response?.roomId || '')) throw new TypeError('Room creation returned an invalid room ID.');
   const options = launchOptionsFrom(response);
   if (!options) throw new TypeError('Room creation did not return PvE launch options.');
-  const url = new URL(currentUrl);
+  const url = new URL('/', currentUrl);
   url.searchParams.set('room', response.roomId);
   url.searchParams.set('mode', 'pve');
   url.searchParams.set('mapSeed', String(options.mapSeed));

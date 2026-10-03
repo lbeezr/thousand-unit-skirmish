@@ -24,6 +24,7 @@ import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import { updateSelectionPortrait } from './selection-portrait.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
+import { roomEntryUrl } from './game-entry-session.mjs';
 import * as THREE from 'three';
 import { attachBuildingSprite } from './building-sprites.mjs';
 import { frontierBuildingPreviewUrl } from './frontier-building-preview.mjs';
@@ -9627,8 +9628,7 @@ async function createPrivateRoom() {
     if (!response.ok || !ROOM_ID_PATTERN.test(result.roomId || '')) {
       throw new Error(result.error || 'Room creation failed.');
     }
-    const inviteUrl = new URL(window.location.href);
-    inviteUrl.searchParams.set('room', result.roomId);
+    const inviteUrl = roomEntryUrl(window.location.href, result.roomId);
     window.location.assign(inviteUrl.href);
   } catch (error) {
     showToast(String(error?.message || 'ROOM CREATION FAILED').toUpperCase(), 2800);
@@ -9639,9 +9639,7 @@ async function createPrivateRoom() {
 
 async function copyRoomInvite() {
   if (!ROOM_ID_PATTERN.test(ROOM_ID || '')) return;
-  const inviteUrl = new URL(window.location.href);
-  inviteUrl.searchParams.set('room', ROOM_ID);
-  inviteUrl.hash = '';
+  const inviteUrl = roomEntryUrl(window.location.href, ROOM_ID);
   try {
     await navigator.clipboard.writeText(inviteUrl.href);
     showToast('ROOM INVITE COPIED', 1800);
@@ -9669,8 +9667,7 @@ function joinPrivateRoom(value) {
     ui.roomDialogError.textContent = 'Enter a valid room code or invite link.';
     return;
   }
-  const inviteUrl = new URL(window.location.href);
-  inviteUrl.searchParams.set('room', roomId);
+  const inviteUrl = roomEntryUrl(window.location.href, roomId);
   window.location.assign(inviteUrl.href);
 }
 

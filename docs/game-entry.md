@@ -28,6 +28,8 @@ the lobby's **Leave room** opens `/`; it keeps saved tokens and server data.
 Back/forward restoration closes the old connection and resumes through the
 existing connection path when returning to a game. Creating/back/cancelling
 an unfinished menu request cannot silently navigate later.
+Invites and room-changing actions remove entry-only Resume/Studio flags so a
+friend or fresh match is admitted through the ordinary room path.
 
 Explicit `?resume=1` requests the existing session (with `room` when applicable).
 The game checks it before admission; an expired session shows **SESSION EXPIRED**
