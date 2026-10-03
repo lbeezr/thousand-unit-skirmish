@@ -66,12 +66,29 @@ const cases = [
     source: "underboughForestSpecies(4, 4, 93002, 1, '6');" },
   { name: 'misspelled species identity', code: 2820,
     source: "/** @type {import('../../src/forest-composition.mjs').UnderboughForestSpecies} */ const typo = 'underbough-brambel';" },
+  { name: 'string resource stock', code: 2345,
+    source: "resourceVisualStage('66', 100);" },
+  { name: 'string starting stock', code: 2345,
+    source: "resourceVisualStage(66, '100');" },
+  { name: 'misspelled resource scale stage', code: 2345,
+    source: "resourceVisualScale('ful');" },
+  { name: 'resource stage treated as numeric scale', code: 2551,
+    source: 'resourceVisualStage(66, 100).toFixed(2);' },
+  { name: 'unknown value inserted into filtered transition output', code: 2345,
+    source: "resourceVisualTransitionStages('unknown', 'full').push('unknown');" },
+  { name: 'numeric value inserted into filtered transition output', code: 2345,
+    source: "resourceVisualTransitionStages('unknown', 'full').push(1);" },
+  { name: 'mutation of canonical resource stages', code: 2339,
+    source: "RESOURCE_VISUAL_STAGES.push('full');" },
+  { name: 'resource stage confused with an unrelated species ID', code: 2322,
+    source: "/** @type {import('../../src/forest-composition.mjs').UnderboughForestSpecies} */ const wrongKind = resourceVisualStage(66, 100);" },
 ];
 const fixturePath = path.join(root, 'scripts/type-contracts/canopy-invalid.mjs');
 const fixtureImports = [
   "import { forestAgeFactors } from '../../src/forest-age-composition.mjs';",
   "import { forestHabitatDepth, forestCanopyFactor, forestMarginCanopyFactor } from '../../src/forest-habitat.mjs';",
   "import { underboughForestSpecies } from '../../src/forest-composition.mjs';",
+  "import { RESOURCE_VISUAL_STAGES, resourceVisualScale, resourceVisualStage, resourceVisualTransitionStages } from '../../src/resource-visual-state.mjs';",
 ];
 const fixtureSource = [
   ...fixtureImports,
