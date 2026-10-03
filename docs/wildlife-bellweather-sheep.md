@@ -2,16 +2,17 @@
 
 **Status, 3 October 2026:** the original source-based proposal at fork main
 `9990ed3` remains the claim/herd design. A narrower neutral food foundation is now
-implemented below. It delivers no new art, sprites, runtime mesh, default-map
+implemented below. It delivers no new generated art, default-map
 placement or accepted stock/gatherer-cap balance.
 
 [Wiki wildlife entry](lore/wildlife.md) · [Art evolution](lore/art-evolution.md)
 
 **3 October art follow-up:** a [one-view public-input preview](../assets/wildlife/bellweather-sheep-public-reference-v1/README.md)
-now has a static Three.js binding and original/source/runtime pairs. It is an
-isolated appearance trial with estimated registration, not the eight cloud
-rotations or a harvestable animal. The Library frame transfer and sandboxed
-browser capture are blocked; [checks and limits](qa-bellweather-sheep-static-preview-2026-10-03.md)
+now has original/source/runtime pairs and a [live neutral resource binding](qa-neutral-wildlife-render-binding-2026-10-03.md).
+Alive Sheep use that fixed static illustration, carcasses use a distinct food-cache
+marker, and depleted/hidden Sheep are suppressed. Registration remains estimated;
+the eight cloud rotations and animation remain absent. The Library frame transfer
+and sandboxed browser capture are blocked; [original checks and limits](qa-bellweather-sheep-static-preview-2026-10-03.md)
 separate consumer byte/CPU evidence from the producer's render observations.
 
 ## Implemented neutral food foundation — 3 October 2026
@@ -50,10 +51,10 @@ real map publication/orders, tests hidden/foreign-worker rejection, fractional
 stock conservation with lost-cargo/duplicate-credit negative controls, shared
 carcass access after Stop, partial/depleted recovery, both-seat deposits, rematch
 and rejection of a contradictory saved lifecycle. Its fixture stocks are test
-values, not balance choices. Rendering, claim/herding, combat dispatch, regional
+values, not balance choices. Accepted appearance, claim/herding, combat dispatch, regional
 placement, AI-specific wildlife policy and browser match evidence remain separate
-outcomes. The high-detail Sheep GLB is an art reference, not a runtime mesh; client
-integration must be coordinated with the parent and sprite owner before it starts.
+outcomes. The high-detail Sheep GLB is an art reference, not a runtime mesh. The
+neutral client renderer is separate from unit heading and environment art owners.
 
 ## Observed source
 
@@ -163,7 +164,9 @@ Potential home: `assets/wildlife/bellweather-sheep-v1/`, once produced. Use the
 hashes, grounded pivots, explicit clips and alpha margins. Register a hoof-plane
 root; changing alpha bounds must not move the animal or shrink its body.
 Backgrounds, labels, shadows and ownership UI stay out of runtime cutouts.
-No wildlife loader or validated sprite manifest exists in this slice.
+The original proposal supplied neither a wildlife loader nor a validated sprite
+manifest. The narrower implementation above now supplies a one-view static pack
+and neutral resource loader; the coverage in this table remains future art work.
 
 ## Implementation boundary and next proof
 

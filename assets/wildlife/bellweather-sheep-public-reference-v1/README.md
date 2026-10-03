@@ -1,9 +1,11 @@
 # Bellweather Sheep static reference preview
 
 This is a **one-view illustrated appearance trial**, derived from the already-public
-single-Sheep model input. It is actually drawn by the isolated Three.js preview,
-beside the existing Human Worker. It is not the eight model-rendered rotations,
-a walking Sheep, a food node, or a released animal gameplay entity.
+single-Sheep model input. It is consumed by the isolated Three.js preview and the
+match client's [neutral resource renderer](../../../src/neutral-wildlife-renderer.mjs).
+The [live trial and state contract](../../../docs/qa-neutral-wildlife-render-binding-2026-10-03.md)
+use it only while an authoritative Sheep food node is alive. It is not the eight
+model-rendered rotations or a walking Sheep; appearance remains provisional.
 
 Run from the repository root:
 
@@ -16,8 +18,8 @@ Open `http://127.0.0.1:8767/scripts/bellweather-sheep-preview.html`.
 The detail view is 6.0 zoom; the ordinary 0.91 and strategic 0.48 settings use
 the game's 43-unit orthographic frustum, camera direction `[0.78,1.12,0.78]`,
 1280 × 720 and DPR 1. Ground crosses indicate roots. This local-only review
-page and module do not edit the shared match client, HUD, environment bindings
-or server gather/depletion rules.
+page remains local-only. The neutral renderer consumes the same pack through
+three explicit production art paths, without changing authoritative gather rules.
 
 ## Preserved source and transformation
 
