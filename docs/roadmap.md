@@ -10,6 +10,18 @@ sequence and acceptance criteria. Existing solo/two-seat checks are the regressi
 floor; expansion of gameplay functionality is the next development outcome.
 Art proceeds separately against stable presentation interfaces.
 
+The [victory audit](victory-modes-audit-2026-10-03.md) proposes separate economy
+Skirmish and current fast Objective Control. Agree the mode/restore interface and
+AI base-objective support before changing ordinary defaults. Quick original
+reinforcement/evolution modes and a regional territorial slice are later testing
+grounds developed alongside the longer RTS; research will choose their first
+bounded playable contracts.
+
+The [playable-modes backlog](playable-modes-backlog.md) owns the ranked small
+deliveries; [the versioned mode contract](match-mode-contract.md) is the shared
+registry, map, lobby and AI boundary. Human Skirmish comes before changing the
+ordinary default; accepted base-objective AI and normal entry remain prerequisites.
+
 Use the [RTS capability inventory](references/feature-coverage-inventory.md) as
 a loose roadmap for further maturity. AoE, openage and Warcraft identify systems
 we may match, adapt or improve; prioritize dependable player control, useful
@@ -178,7 +190,7 @@ They establish bounded automated behavior, with contested play still to observe.
 | Audio | All-zone source milestone is implemented: 44 originals across ten zones and eleven palettes, a comparison player, and Audio Studio import. Next: creative audition, loop edits, discovery/conflict arrangements and in-match cue recognition. | [All-zone evidence](qa-zone-audio-2026-09-30.md), [source pack](../assets/audio/vaelora-zones-v1/README.md), and later ten-trial results with mix/caption settings. |
 | Renderer | Integrate useful asset states while preserving fog, batching, and camera readability. | Exact pack/revision, representative runtime frame, focused checks. |
 | Art | Finish small independent unit, building, environment, vegetation, or material samples. | Source/runtime status, manifests, provenance, known limits. See [art lanes](art-production-lanes.md). |
-| Unit characters | The [default runtime binding](../src/main.js) selects Human/Boughward packs for Worker, Infantry, Spearman, Archer, Scout, Rider and Siege Engine, with nearest-authored action reuse. Verify the opposing rosters in a live match; refine directional animation and team accents. | [Sprite role mapping](../src/unit-sprite-runtime.mjs), [Human production history](art-direction/human-roster-v1/README.md) and [unit sprite exploration](unit-sprite-exploration.md) distinguish implementation from acceptance. Record runtime visibility, rights/provenance and player readability separately. Meshy remains deferred for this pass. |
+| Unit characters | Finish authoritative Worker performing-action presentation, then existing-action/direction integration through the [ranked animation backlog](qa-unit-animation-audit-2026-10-03.md#ranked-continuation-backlog). Default Human/Boughward roles remain selected in [main](../src/main.js); motion coverage differs by pack. | The proposed [producer/consumer contract](worker-performing-action-contract-proposal.md) needs the unit gameplay producer identified before shared protocol edits. [Sprite role mapping](../src/unit-sprite-runtime.mjs), [Human production history](art-direction/human-roster-v1/README.md) and [unit sprite exploration](unit-sprite-exploration.md) distinguish source, delivery and native acceptance. Missing artwork stays an explicit art dependency; Meshy remains deferred. |
 | Infrastructure | Keep staging healthy and measure hosted match/recovery behavior. | Deployment identity, ready/assets/WSS smoke, recovery and capacity evidence. |
 | QA | Convert player failures into repeatable defects and current-build observations. | [QA protocol](qa-vertical-slice.md) and dated evidence. |
 | PvE | Observe and improve the seeded opponent's opening, objective contest, and retake behavior. | Seeds, assigned seats, trace, solo-match observation. |

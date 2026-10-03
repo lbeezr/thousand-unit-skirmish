@@ -24,7 +24,7 @@ import { SHIPPED_AUDIO_REFERENCES } from './audio-shipped-catalog.mjs';
 import { validateMapAudioReference } from './audio-event-profile.mjs';
 import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip } from './hud-layout.mjs';
-import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
+import { mapVictoryRule, objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import { updateSelectionPortrait } from './selection-portrait.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
@@ -2581,7 +2581,7 @@ function buildMap(definition) {
   const title = document.querySelector('#map-label-title');
   const summary = document.querySelector('#map-summary');
   if (title) title.textContent = definition.name || definition.id.toUpperCase();
-  if (summary) summary.textContent = 'Open objectives for the win rule';
+  if (summary) summary.textContent = `${mapVictoryRule(definition).label} · Open objectives for the win rule`;
   document.querySelector('#scenario-brief-name').textContent = definition.name || definition.id.toUpperCase();
   document.querySelector('#scenario-brief-summary').textContent = definition.summary || 'Control the marked objectives and protect your army.';
   const deadline = document.querySelector('#scenario-brief-deadline');
@@ -2590,13 +2590,7 @@ function buildMap(definition) {
   deadline.textContent = definition.timedVictory
     ? `DEADLINE · ${formatVictoryHoldTime(definition.timedVictory.afterSeconds)} · Hold ${decisiveZone?.name || 'the decisive zone'} when time expires. Unclaimed is a draw.`
     : '';
-  const victoryZones = (definition.triggers || []).filter((trigger) => trigger.victory === true);
-  const holdSeconds = definition.victoryHoldSeconds ?? 0;
-  const target = victoryZones.length === 1 ? 'the victory zone'
-    : definition.victoryMode === 'all' ? `all ${victoryZones.length} victory zones` : 'any victory zone';
-  document.querySelector('#scenario-brief-win-rule').textContent = victoryZones.length === 0
-    ? 'Eliminate the opposing army to win.'
-    : `${holdSeconds > 0 ? 'Hold' : 'Capture'} ${target}${holdSeconds > 0 ? ` for ${formatVictoryHoldTime(holdSeconds)}` : ''} to win.${holdSeconds > 0 ? ' Losing control resets the hold.' : ''}`;
+  document.querySelector('#scenario-brief-win-rule').textContent = mapVictoryRule(definition).description;
   const briefZones = document.querySelector('#scenario-brief-zones');
   const briefZoneList = document.querySelector('#scenario-brief-zone-list');
   briefZones.hidden = !definition.triggers?.length;
@@ -2852,7 +2846,8 @@ function drawMinimap(now = performance.now(), force = false) {
     if (fogState === 0) continue;
     if (node.wildlifeSpecies !== undefined
       && (fogState !== 2 || !wildlifeRenderer.isAvailable(node.id))) continue;
-    const point = minimapPoint(node.x, node.z, rect);
+    const position = node.wildlifeSpecies === undefined ? node : wildlifeRenderer.positionFor?.(node.id) ?? node;
+    const point = minimapPoint(position.x, position.z, rect);
     const stock = latestResourceStocks.get(node.id) ?? node.stock;
     context.globalAlpha = fogState === 1 ? 0.55 : 1;
     context.beginPath();
@@ -4655,7 +4650,11 @@ function updateEnvironmentStateCaptureSnapshot(state) {
     return {
       id: node.id, type: node.type, stock: node.stock, startingStock,
       stage: resourceVisualStage(node.stock, startingStock),
-      x: definitionNode?.x ?? visual?.x ?? null, z: definitionNode?.z ?? visual?.z ?? null,
+      x: node.x ?? definitionNode?.x ?? visual?.x ?? null, z: node.z ?? definitionNode?.z ?? visual?.z ?? null,
+      ...(node.wildlifeSpecies === undefined ? {} : { wildlifeSpecies: node.wildlifeSpecies,
+        wildlifeState: node.wildlifeState, wildlifeHeading: node.wildlifeHeading,
+        ...(node.wildlifeActivity === undefined ? {} : { wildlifeActivity: node.wildlifeActivity }),
+      }),
     };
   });
   const buildings = (Array.isArray(state.buildings) ? state.buildings : []).map((building) => ({
@@ -4853,6 +4852,11 @@ function updateEconomyUI(state = {}, initial = false) {
       if (visual) {
         const available = wildlifeRenderer.isAvailable(node.id);
         visual.ring.visible = available;
+        const position = wildlifeRenderer.positionFor?.(node.id);
+        if (position) {
+          visual.x = position.x; visual.z = position.z;
+          visual.ring.position.set(position.x, groundHeight(position.x, position.z) + .035, position.z);
+        }
         if (!available) visual.callout.visible = false;
       }
     }
@@ -7314,8 +7318,10 @@ function pickResourceNodeAt(x, y, { visibleOnly = false } = {}) {
   const rect = renderer.domElement.getBoundingClientRect();
   let nearest = null;
   let nearestDistance = 26 * 26;
-  for (const node of [...mapDefinition.resourceNodes,
+  for (const authored of [...mapDefinition.resourceNodes,
     ...latestBuildings.filter(building => building.team === localTeam).map(farmHarvestNode).filter(Boolean)]) {
+    const position = authored.wildlifeSpecies === undefined ? null : wildlifeRenderer.positionFor?.(authored.id);
+    const node = position ? { ...authored, ...position } : authored;
     if (node.wildlifeSpecies !== undefined && !wildlifeRenderer.isAvailable(node.id)) continue;
     if (visibleOnly && mapDefinition.fogOfWar) {
       const column = Math.floor(node.x + MAP_WIDTH / 2);
