@@ -20,7 +20,7 @@ function fixture(team, obstacles = [{column: 6, row: 6, width: 3, height: 3, mat
     buildingWoodCost: type => BUILDING_DEFINITIONS[type].cost.wood,
     formatResourceRequirement: String, worldAt: () => ({x: -0.5, z: -0.5}),
     selectedIds: () => [0], units: [{kind: 'worker'}], teamUnits: [[], []],
-    latestForestEpoch: 1, latestForestStocks: new Map(),
+    latestForestEpoch: 1, latestForestStocks: new Map(), latestResourceStocks: new Map(),
     forestTreeSlots: new Map(cells.map(cell => [cell, {}])),
     setForestTreeVisual() {}, resourceVisualStage: value => value,
     drawMinimap() {}, performance: {now: () => 0},

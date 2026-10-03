@@ -1019,6 +1019,17 @@ html, body { width: 100%; height: 100%; overflow: hidden; }
 /* Frequent commands stay beside the battlefield; details retain existing controls. */
 .contextual-command-bar { position:absolute; z-index:12; bottom:14px; left:268px; right:14px; max-height:128px; padding:8px; background:rgba(13,22,23,.96); border:1px solid #52625b; border-radius:8px; overflow:auto; pointer-events:auto; }
 .contextual-summary { font-size:12px; line-height:18px; }
+.contextual-identity { display:flex; align-items:center; gap:8px; }
+.contextual-identity-text { min-width:0; overflow-wrap:anywhere; }
+.contextual-identity-text strong { color:var(--ink); font-size:12px; line-height:18px; }
+.contextual-command-bar .worker-portrait { flex:0 0 52px; width:52px; height:52px; padding:0; overflow:hidden; }
+.contextual-command-bar .worker-portrait:focus-visible { outline:2px solid var(--lime); outline-offset:2px; }
+.worker-portrait-art { display:block; position:relative; width:100%; height:100%; overflow:hidden; }
+.worker-portrait-art img { position:absolute; max-width:none; height:auto; }
+.contextual-command-bar .contextual-icon-command { display:inline-flex; align-items:center; gap:5px; }
+.contextual-icon-command img { flex:0 0 20px; }
+.selected-worker-notes { padding:8px; border:1px solid var(--line); border-radius:4px; }
+.selected-worker-notes p { margin:5px 0 0; font-size:12px; line-height:18px; }
 .contextual-summary:empty, [data-context-reason]:empty { display:none; }
 .contextual-actions, .contextual-groups, .group-assignment { display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
 .contextual-command-bar button, .group-assignment button, .group-assignment select { min-height:44px; padding:6px 9px; color:#e7efd7; background:#233532; border:1px solid #52625b; border-radius:4px; font-size:14px; }
@@ -1065,7 +1076,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; }
 .minimap-heading > span { flex: 1; }
 .minimap-heading button { min-width: 32px; min-height: 32px; padding: 0 6px; }
 .minimap-legend { font-size: 9px; }
-.app-shell[data-minimap-size="large"] .minimap-panel { width: min(280px, 36vw); }
+.app-shell[data-minimap-size="large"] .minimap-panel { width: var(--hud-minimap-width); }
 .minimap-reopen { position: absolute; z-index: 6; right: 16px; bottom: 14px; }
 .field-hint, .field-order-feedback { bottom: calc(var(--context-bar-height) + 76px); }
 .match-result { top: 45%; max-height: 65%; }
@@ -1081,7 +1092,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; }
   .camera-toolbar { top: 106px; right: 10px; left: auto; width: auto; flex-direction: row; }
   .map-label { top: 62px; left: 10px; max-width: calc(100% - 20px); }
   .minimap-panel { right: 10px; bottom: 14px; width: 144px; }
-  .hud-quick-access { left: 10px; max-width: calc(100% - 175px); overflow-x: auto; }
+  .hud-quick-access { left: 10px; max-width: calc(100% - var(--hud-minimap-width) - 31px); overflow-x: auto; }
   .hud-quick-access button { flex: 0 0 auto; padding: 0 8px; }
   .control-dock { left: 10px; width: min(580px, calc(100% - 20px)); }
 }
@@ -1116,15 +1127,23 @@ html, body { width: 100%; height: 100%; overflow: hidden; }
   .topbar .topbar-center[data-urgent="true"] { display: flex; position: absolute; top: 54px; right: 10px; padding: 8px; border: 1px solid #d69870; border-radius: 4px; background: #18261d; }
 }
 /* Keep the shared contextual bar clear of the tactical map and below dialogs. */
-.workspace .contextual-command-bar { z-index: 6; right: 202px; width: max-content; max-width: calc(100% - 218px); }
+.workspace { --hud-minimap-width: 170px; --hud-map-edge: 16px; --hud-map-gap: 16px; }
+.workspace .minimap-panel { width: var(--hud-minimap-width); }
+.workspace .contextual-command-bar { z-index: 6; right: calc(var(--hud-minimap-width) + var(--hud-map-edge) + var(--hud-map-gap)); width: max-content; max-width: calc(100% - var(--hud-minimap-width) - var(--hud-map-edge) - var(--hud-map-edge) - var(--hud-map-gap)); }
 @media (max-width: 920px) {
-  .workspace .contextual-command-bar { left: 10px; right: 168px; max-width: calc(100% - 178px); }
+  .workspace { --hud-minimap-width: 144px; --hud-map-edge: 10px; --hud-map-gap: 14px; }
+  .workspace .contextual-command-bar { left: 10px; }
 }
 @media (max-width: 620px) {
+  .workspace { --hud-minimap-width: 128px; }
   .workspace .contextual-command-bar { right: 10px; max-width: calc(100% - 20px); }
   .workspace:has(.contextual-command-bar) .minimap-panel,
   .workspace:has(.contextual-command-bar) .minimap-reopen { bottom: calc(var(--context-bar-height) + 22px); }
 }
+@media (max-height: 500px) {
+  .workspace { --hud-minimap-width: 128px; }
+}
+.app-shell[data-minimap-size="large"] .workspace { --hud-minimap-width: min(280px, 36vw); }
 /* Compact objectives keep live deadlines outside the optional field brief. */
 .map-label { flex-wrap: wrap; font-size: 12px; letter-spacing: 0; }
 .map-label #map-label-title, .map-label .map-label-sep, .map-label-dot { display: none; }

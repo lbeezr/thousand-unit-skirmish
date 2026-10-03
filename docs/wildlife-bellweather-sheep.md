@@ -2,8 +2,8 @@
 
 **Status, 3 October 2026:** the original source-based proposal at fork main
 `9990ed3` remains the claim/herd design. A narrower neutral food foundation is now
-implemented below. It delivers no new generated art, default-map
-placement or accepted stock/gatherer-cap balance.
+implemented below, with [six Sheep on the default Millrace map](qa-millrace-sheep-2026-10-03.md).
+It delivers no new generated art or accepted animal stock/gatherer-cap balance.
 
 [Wiki wildlife entry](lore/wildlife.md) · [Art evolution](lore/art-evolution.md)
 
@@ -34,8 +34,11 @@ identity, `wildlifeSpecies: "bellweather-sheep"`, only on existing `food` nodes.
 Maps still specify the ID, coordinates and finite positive stock; no additional
 food pool or currency is created. The node limit, open-cell, both-seat
 reachability, construction-site and food drop-off rules remain the existing ones.
-No shipped map opts in yet. [Map schema](map-authoring.md#resources-and-forests)
-contains the authoring contract; dedicated Map Studio controls are future work.
+**Bellweather · Millrace** opts in with three existing 130-food markers per home
+orchard; one is visible at each seat's opening. This preserves its total food,
+IDs, positions, seed and build clearings. [Map schema](map-authoring.md#resources-and-forests)
+contains the authoring contract; Map Studio's [resource brush](map-authoring.md#resources-and-forests)
+preserves existing wildlife identity while appending ordinary patches.
 
 The room worker starts each sheep `alive`. A seat's own living, gather-capable,
 reachable Worker may issue the existing `gather` command with the node ID only
@@ -57,6 +60,14 @@ orders still reject. Return intent and cargo use the existing checkpoint fields,
 so restart during delivery neither replenishes sheep nor credits food twice.
 [Interrupted delivery evidence](qa-interrupted-cargo-return-2026-10-03.md) keeps
 the original failing fixture and both-seat recovery checks.
+
+At zero stock, the depleted carcass also releases its construction exclusion
+and stops contributing a resource access point to building-connectivity checks.
+The browser releases only sites whose zero stock has been disclosed; unknown
+or positive stock remains protected. This uses the same rule for ordinary finite
+food/wood nodes. It neither moves animals nor replenishes stock, and all other
+construction guards remain in force. [Depleted-site evidence](qa-depleted-resource-construction-2026-10-03.md)
+proves both-seat paid construction and recovery on the cleared sites.
 
 Checkpoint schema 20 saves species, lifecycle, stock and existing Worker intent/
 cargo together. It validates `alive` only at full authored stock, `carcass` only

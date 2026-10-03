@@ -12,15 +12,34 @@ ruleset identity. The existing ten-wood full-repair floor remains unchanged.
 `buildWall` accepts ordinary `ids`/`unitGenerations`, optional `clientOrderToken`,
 1–256 grid `points: [{column,row}, ...]`, and the planner's `axisOrder`.
 The existing `build` command with `buildingType: 'palisade-wall'` delegates a
-single snapped cell to this same transaction. The registry building menu exposes
-that single-cell placement. A drag/line authoring UI remains separate work.
+single snapped cell to this same transaction. The normal registry building menu
+now exposes drag-line placement: press to anchor, drag to an endpoint, release
+to submit one `buildWall`. Shift switches the cardinal elbow; a tap places one
+cell. On the focused battlefield, arrows move the endpoint and Enter anchors
+then submits. Escape/RMB, lost capture and blur cancel an unsent gesture.
+
+The client uses the shared planner and registry price for the whole connected
+preview, aggregate exact-bank affordability and free friendly reuse. Known
+terrain/resources/objectives, visible units and building footprints block the
+whole preview. Off-map endpoints are never clamped. Release over HUD/outside
+the canvas sends nothing. Pending input suppresses repeat submission and retains
+the sent preview until its matching terminal notice, including no-charge reuse;
+unrelated building snapshots cannot acknowledge a wall request. A rejection
+releases input for retry. The preview has only disclosed occupancy, so fresh
+server connectivity/access or hidden-occupancy rejection can still occur.
+
+Palisade mode remains available at zero bank for free reuse, while the full
+preview/submission still rejects unaffordable new cells. Ordinary building
+entry retains its existing upfront price checks.
 
 The server derives all prices, identities, occupancy and team ownership from
-fresh authoritative state. Terrain, resources, objectives, live units, Town
+fresh authoritative state. Terrain, positive-stock resources, objectives, live units, Town
 Centers, other buildings and enemy walls block admission. Friendly palisades may
 be reused without charge or recreation. A fully reused request is a no-op: it
 does not reset progress or interrupt the current Worker order. Resuming stopped
 existing segments uses ordinary `build` with `buildingId`.
+Depleted resource cells are reusable; connectivity and checkpoint overlap use
+the same validated-stock rule as other buildings.
 
 All new cells are blocked together for the existing entity-connectivity and
 active-route guards. Every segment needs access from the team's spawn component
@@ -84,5 +103,7 @@ recovery. Existing draft tests still execute the real cancellation/destruction,
 damaged construction and checkpoint-building fragments.
 
 These prove bounded runtime behavior; contested-match balance and finished art
-are unclaimed. Neither a complete browser line-authoring flow nor hosted large
-match capacity is established by these checks.
+are unclaimed. [Drag UI checks and the native Mac recipe](qa-palisade-drag-ui-2026-10-03.md)
+cover the next client slice; cloud native-browser startup is unavailable, so
+DOM checks do not establish rendered/native usability. Hosted large-match
+capacity is not established by these checks.
