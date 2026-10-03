@@ -84,6 +84,7 @@ from source/candidate packs. Then use the relevant contract:
 - [Renderer state/GLB/environment contract](renderer-state-contract.md).
 - [Water surface study](water-surface-study.md): opt-in apparent depth, directional motion, and visibility-gated shore-fish ripple preview.
 - [Sprite-atlas format](sprite-atlas-contract-v1.md).
+- [Worker fishing pilot](worker-fishing-animation.md): private crouched hand-net study, exact-heading default integration and unchanged food authority.
 - [First civilization style](frontier-civilization-art-style.md) and [illustrated architecture wiki](lore/frontier-architecture.md).
 - [Building atlas production plan](building-atlas-production-plan.md): roster, references, scale and generation order.
 - [Building model/capture pipeline](building-asset-production-pipeline.md) and
