@@ -60,7 +60,7 @@ map and team. Real Three.js regressions cover a view where all four corners miss
 terrain and verify that observation preserves ray results. Failed runs include
 stage, boot/entry/map/team/network and camera diagnostics. Gameplay code is unchanged
 by this harness correction. A later Mac proof below exercised native interactions
-with a task-owned selector correction; an unmodified-runner pass remains outstanding.
+with a task-owned selector correction. The unmodified-runner pass is now recorded below.
 
 After integrating the new main menu, the fixture uses the documented explicit
 `?play=1` diagnostic route. Ordinary `/` opens the menu without a game WebSocket;
@@ -88,14 +88,39 @@ eligible IDs and no order. All native move/queue/camera assertions are retained.
 Source: Library `mac-input-report.md` (`libfile_ba46efb28a3c8191895f82086b6872f4`),
 with archive `mac-input-provenance.zip` (`libfile_d3634acdb74c8191a439d2db524a8930`).
 
+The unmodified committed runner passed on Mac at
+`3800988d60a9a6a41416c91d5ee4fdd9a9635964` using Chrome `154.0.8037.93`.
+It exited 0, recorded `passed: true`, stage `complete`, no diagnostics and
+`failure: null`, and produced six captures. Provenance confirms all assertions
+were retained; its runner SHA-256
+`d76dcf40902a19ce69ad13044bdecac513e9a25efb19833a50f01452ff836315`
+matches the committed source.
+
+Both Azure and Ember passed native move/Shift-queue for the four selected owned
+Workers, exact IDs and single sends, authoritative acknowledgements and queued
+checkpoints, selected movement, camera/selection preservation, unexplored
+destinations and unchanged unselected order revisions. The run covered small
+1280×720/DPR 1 and large 900×700/DPR 2 layouts. Left-click navigation, tap Space
+centering against Center selection, Space drag without release recentering and
+focused-button Space activation also passed without extra orders. The supplied
+provenance records pixel review of the Azure large-map queued-order screenshot.
+This closes the native automated minimap/Space request. Queue completion,
+unassisted human usability and the earlier separate edge-scroll observation
+remain outside this pass.
+
+Result/provenance: Library `provenance.json`
+(`libfile_77de47a227c8819192025684ef9dd08e`); reviewed screenshot
+`seat-0-large-dpr-2(1).png` (`libfile_394bfd84df24819182801ef110196a4d`).
+The isolated normal-sandbox browser and fixture were disposed before exit;
+the supplied closure reports all owned processes stopped and a clean checkout.
+
 ## Exact Mac automated recipe
 
 Use an isolated checkout containing the harness correction and installed Chrome:
 
 ```sh
-git fetch origin
-git switch codex/minimap-visible-worker-selection
-git pull --ff-only
+git fetch origin main
+git switch --detach 3800988d60a9a6a41416c91d5ee4fdd9a9635964
 npm ci
 node scripts/browser-preflight.mjs --launch
 node scripts/minimap-orders-browser.mjs --output=/tmp/minimap-orders-mac-proof-01
@@ -114,7 +139,8 @@ recentering on release, and focused-button Space activation, all without another
 order. It writes `result.json`, four minimap
 movement screenshots and two selection-centering screenshots. Review all six
 images before claiming a rendered visual pass. A failed run writes failure evidence
-and cannot report `passed: true`; this script has not been run successfully here.
+and cannot report `passed: true`. The Mac pass above establishes native input for
+the recorded fixture; this cloud runtime still cannot launch its Chromium.
 
 ## Exact human click recipe
 
