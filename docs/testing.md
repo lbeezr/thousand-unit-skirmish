@@ -55,6 +55,11 @@ rules to work around missing access. See the
 Railway's separate source and CI-wait settings.
 
 Use checks proportionate to a change, then run required repository checks.
+For dependency/folder changes, run `npm run architecture:check` and
+`node --test scripts/check-runtime-imports.test.mjs`. Both are registered in
+the suite. The [architecture guide](architecture.md#module-dependencies-and-gradual-organization)
+defines dependency directions, the explicit cycle baseline and the separate
+HTTP/release obligations of a module move.
 For client import/module changes, include
 `node scripts/client-asset-allowlist-scenario.mjs`; the packed release scenario
 also traverses the served static import graph. The hosted Railway smoke uses

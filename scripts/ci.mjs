@@ -51,6 +51,9 @@ const syntaxFiles = [
 
 for (const file of syntaxFiles) run(['--check', file], `Syntax: ${file}`);
 
+run(['--test', 'scripts/check-runtime-imports.test.mjs'], 'Runtime dependency checker regressions');
+run(['scripts/check-runtime-imports.mjs'], 'Runtime dependency boundaries and cycle baseline');
+
 run(['--test', 'scripts/scenario-regions.test.mjs'], 'Named scenario regions');
 run(['--test', 'scripts/scenario-authoring.test.mjs'], 'Visual scenario authoring contracts');
 run(['scripts/completion-event-scenario.mjs'], 'Completion event recovery and host diagnostics');
