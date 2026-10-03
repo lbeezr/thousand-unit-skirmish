@@ -3,7 +3,8 @@ import { createHash } from 'node:crypto';
 import { readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { WORKER_PORTRAITS } from '../src/selection-portrait.mjs';
+import { WORKER_PORTRAITS, BARRACKS_PORTRAIT } from '../src/selection-portrait.mjs';
+import { buildingSpriteUrl } from '../src/building-sprites.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const html = readFileSync(path.join(root, 'index.html'), 'utf8');
@@ -87,6 +88,22 @@ for (const [role, source, sha256] of [
   assert.ok(portrait.cropX >= 0 && portrait.cropY >= 0 && portrait.cropSize > 0);
   assert.ok(portrait.cropX + portrait.cropSize <= portrait.sourceWidth);
   assert.ok(portrait.cropY + portrait.cropSize <= image.readUInt32BE(20));
+}
+const barracksRoot = 'assets/buildings/barracks-sprite-test-v1';
+const barracksProvenance = readFileSync(path.join(root, barracksRoot, 'PROVENANCE.md'), 'utf8');
+const barracksHashes = new Map([...barracksProvenance.matchAll(/`runtime\/([^`]+)`\s*\|\s*`([a-f0-9]{64})`/g)]
+  .map(([, name, hash]) => [name, hash]));
+assert.equal(barracksHashes.size, 10, 'both teams retain all five existing Barracks frames');
+const barracksGrid = JSON.parse(readFileSync(path.join(root, barracksRoot, 'sprite-grid.json'), 'utf8'));
+assert.equal(BARRACKS_PORTRAIT.sourceWidth, barracksGrid.spriteFrame.pixels[0]);
+for (const team of [0, 1]) for (const state of [
+  { complete: false, progress: 0 }, { complete: false, progress: 0.5 },
+  { complete: true, hp: 1800 }, { complete: true, hp: 900 }, { complete: true, hp: 300 },
+]) {
+  const resource = buildingSpriteUrl({ type: 'barracks', team, maxHp: 1800, ...state }).slice(2);
+  const bytes = readFileSync(path.join(root, resource));
+  assert.equal(createHash('sha256').update(bytes).digest('hex'), barracksHashes.get(path.basename(resource)),
+    'Barracks thumbnail uses the retained shipped source');
 }
 const cursorManifest = JSON.parse(readFileSync(path.join(root, 'assets/ui/cursors/manifest.json'), 'utf8'));
 const style = readFileSync(path.join(root, 'style.css'), 'utf8');

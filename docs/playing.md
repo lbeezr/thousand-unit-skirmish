@@ -135,6 +135,8 @@ hidden and reopened; placement and targeting still show cancellation guidance.
 Select one Worker to see its portrait and live HP. Open its portrait for role
 notes in the Selection drawer; Escape or its close button dismisses the drawer.
 Multiple selections keep their group composition summary.
+Select an owned Barracks to see its construction/damage thumbnail; open it for
+the existing structure details. Its art follows the battlefield's current state.
 
 Audio settings control effects, ambience, volume, and optional critical captions.
 The Audio check lets you audition and identify cues. Settings persist locally.
