@@ -71,6 +71,14 @@ role/ownership exclusions and combat preservation at both release conditions.
 Both complete native replays match exactly. Finite stock, cargo, banks and
 spending reconcile for food and wood; each seat spends 320 food and 215 wood.
 
+The existing four-map real-socket production smoke also requires a paid troop to
+receive an advance order. Recorded first advances at 134–174 seconds exceed its
+former 120-second total budget. Its bounded budget now combines that production
+window with one maximum rally interval, and reports the first trained troop and
+reinforcement advance times. A separate deadline still requires both seats to
+produce a paid troop within 120 seconds. The paid queue, completed producer, opening orders,
+and trained-and-ordered assertions are retained.
+
 ## Matched current-engine comparisons
 
 Navigation/combat fixes landed after the original reproduction. At engine

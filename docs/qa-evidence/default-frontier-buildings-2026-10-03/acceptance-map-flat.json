@@ -1,0 +1,146 @@
+{
+  "id": "frontier-buildings-acceptance-flat",
+  "name": "Frontier buildings acceptance · flat",
+  "width": 64,
+  "height": 64,
+  "terrainSeed": 19,
+  "fogOfWar": false,
+  "startingArmySize": 24,
+  "startingResources": {
+    "food": 2000,
+    "wood": 3000
+  },
+  "spawnPoints": [
+    {
+      "team": 0,
+      "x": -20.5,
+      "z": 0
+    },
+    {
+      "team": 1,
+      "x": 20.5,
+      "z": 0
+    }
+  ],
+  "obstacles": [],
+  "triggers": [],
+  "scenarioEvents": [],
+  "resourceNodes": [
+    {
+      "id": "s0-food",
+      "type": "food",
+      "x": -18.5,
+      "z": 20.5,
+      "stock": 200
+    },
+    {
+      "id": "s0-wood",
+      "type": "wood",
+      "x": -22.5,
+      "z": 20.5,
+      "stock": 200
+    },
+    {
+      "id": "s1-food",
+      "type": "food",
+      "x": 18.5,
+      "z": 20.5,
+      "stock": 200
+    },
+    {
+      "id": "s1-wood",
+      "type": "wood",
+      "x": 22.5,
+      "z": 20.5,
+      "stock": 200
+    }
+  ],
+  "summary": "Ordinary paid buildings on mirrored soil pads; 24 units and 2000 food / 3000 wood per seat.",
+  "terrainBase": "meadow",
+  "terrainPatches": [
+    {
+      "column": 4,
+      "row": 43,
+      "width": 3,
+      "height": 3,
+      "material": "dirt"
+    },
+    {
+      "column": 5,
+      "row": 35,
+      "width": 3,
+      "height": 3,
+      "material": "dirt"
+    },
+    {
+      "column": 16,
+      "row": 24,
+      "width": 3,
+      "height": 3,
+      "material": "dirt"
+    },
+    {
+      "column": 21,
+      "row": 29,
+      "width": 3,
+      "height": 3,
+      "material": "dirt"
+    },
+    {
+      "column": 19,
+      "row": 38,
+      "width": 5,
+      "height": 5,
+      "material": "dirt"
+    },
+    {
+      "column": 16,
+      "row": 32,
+      "width": 3,
+      "height": 3,
+      "material": "dirt"
+    },
+    {
+      "column": 57,
+      "row": 43,
+      "width": 3,
+      "height": 3,
+      "material": "dirt"
+    },
+    {
+      "column": 56,
+      "row": 35,
+      "width": 3,
+      "height": 3,
+      "material": "dirt"
+    },
+    {
+      "column": 45,
+      "row": 24,
+      "width": 3,
+      "height": 3,
+      "material": "dirt"
+    },
+    {
+      "column": 40,
+      "row": 29,
+      "width": 3,
+      "height": 3,
+      "material": "dirt"
+    },
+    {
+      "column": 40,
+      "row": 38,
+      "width": 5,
+      "height": 5,
+      "material": "dirt"
+    },
+    {
+      "column": 45,
+      "row": 32,
+      "width": 3,
+      "height": 3,
+      "material": "dirt"
+    }
+  ]
+}

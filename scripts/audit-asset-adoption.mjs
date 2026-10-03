@@ -9,6 +9,8 @@ import { frontierBuildingManifestUrl, frontierBuildingPreviewUrl } from '../src/
 import { WILDLIFE_RENDER_REGISTRY } from '../src/neutral-wildlife-renderer.mjs';
 import { activeState, spriteActionClip, spriteDirectory } from '../src/unit-sprite-runtime.mjs';
 import { checkClientImports } from './check-client-imports.mjs';
+import { groundTextureName, PAINTED_MATERIAL_ATLAS_MANIFEST, PAINTED_MATERIAL_NAMES,
+  paintedMaterialAtlasDescriptor } from '../src/painted-material-atlas-runtime.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = relative => readFile(path.join(root, relative));
@@ -46,7 +48,7 @@ async function clientGraph() {
   return new Set(checks.map(item => item.path.slice(1)));
 }
 
-export async function auditAssetAdoption({ registry, releaseFiles, main = null, loadManifest = json }) {
+export async function auditAssetAdoption({ registry, releaseFiles, main = null, environment = null, loadManifest = json }) {
   assert.equal(registry.schemaVersion, 1);
   assert.ok(registry.scope?.trim() && registry.records?.length, 'state the bounded registry coverage');
   const graph = await clientGraph();
@@ -66,7 +68,19 @@ export async function auditAssetAdoption({ registry, releaseFiles, main = null, 
     const manifest = await loadManifest(record.manifest);
     const dependencies = [{ path: record.manifest, container: true }];
     let defaultBound = false, module;
-    if (record.probe === 'frontier-building') {
+    if (record.probe === 'painted-ground') {
+      module = 'src/painted-material-atlas-runtime.mjs';
+      assert.equal(relativeUrl(PAINTED_MATERIAL_ATLAS_MANIFEST), record.manifest);
+      const descriptor = paintedMaterialAtlasDescriptor(manifest);
+      environment ??= (await read('src/environment-art.mjs')).toString();
+      assert.match(main, /createGroundSurfaces\(definition\)/, 'main must consume normal ground surfaces');
+      assert.ok(graph.has('src/environment-art.mjs'), 'normal environment renderer must be reachable');
+      defaultBound = /const paintedGrounds = await loadPaintedMaterialAtlas\(\)/.test(environment)
+        && /const name = groundTextureName\(material, definition, variant,/.test(environment)
+        && /const painted = paintedGrounds\?\.texture\(name\);\s*if \(painted\) return painted;/.test(environment)
+        && PAINTED_MATERIAL_NAMES.every(name => descriptor.rects.has(groundTextureName(name, {}, false, '')));
+      dependencies.push(...descriptor.mipFiles);
+    } else if (record.probe === 'frontier-building') {
       module = 'src/frontier-building-preview.mjs';
       assert.match(main, /frontierBuildingManifestUrl\(building\.type, frontierBuildingsPreview\)/,
         'main must consume the building selector');
@@ -108,7 +122,7 @@ export async function auditAssetAdoption({ registry, releaseFiles, main = null, 
       assert.equal(spriteActionClip(clips, state, 'south-east', 'food', 'human')?.stateId, 'gather-fish');
     } else throw new Error(`${record.id}: unsupported default-binding probe ${record.probe}`);
     assert.ok(graph.has(module), `${record.id}: consumer not reachable from game entry`);
-    for (const file of manifest.files || []) {
+    for (const file of record.probe === 'painted-ground' ? [] : manifest.files || []) {
       if (['runtime', 'team-mask'].includes(file.usage)) dependencies.push({ ...file,
         path: path.join(path.dirname(record.manifest), file.path) });
     }

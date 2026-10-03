@@ -56,6 +56,7 @@ run(['--test', 'scripts/scenario-authoring.test.mjs'], 'Visual scenario authorin
 run(['scripts/completion-event-scenario.mjs'], 'Completion event recovery and host diagnostics');
 run(['scripts/region-event-scenario.mjs'], 'Region event recovery and rematch');
 run(['scripts/regional-ambience-scenario.mjs'], 'Regional ambience bus and lifecycle');
+run(['scripts/audio-shore-profile-scenario.mjs'], 'Ordinary Shore Fishing regional audio selection and lifecycle');
 run(['scripts/terrain-authoring-scenario.mjs'], 'Seeded terrain authoring and height surfaces');
 run(['scripts/landscape-authoring-scenario.mjs'], 'Organic regional landscape shapes');
 run(['scripts/forest-habitat-scenario.mjs'], 'Graduated woodland habitat margins');
@@ -99,6 +100,7 @@ run(['scripts/millrace-sheep-scenario.mjs'], 'Normal default Sheep visibility, h
 run(['--test', 'scripts/sprite-pixel-bounds.test.mjs'], 'Sprite pixel clipping regressions');
 run(['--test', 'scripts/building-sprites.test.mjs'], 'Default building sprites');
 run(['--test', 'scripts/frontier-building-default.test.mjs'], 'Normal finished Frontier building art, fallback and shared depth');
+run(['scripts/frontier-building-acceptance-map-scenario.mjs'], 'Ordinary building acceptance map admission and legal pads');
 run(['--test', 'scripts/building-occlusion-fixture.test.mjs'], 'Building occlusion QA controls, HTTP assets and timing evidence');
 run(['--test', 'scripts/captured-building-state-race.test.mjs', 'scripts/captured-building-manifest-retry.test.mjs', 'scripts/frontier-building-renderer.test.mjs', 'scripts/frontier-building-preview.test.mjs', 'scripts/building-lifecycle-validation.test.mjs'], 'Captured building lifecycle and source contracts');
 run(['--test', 'scripts/ci-sharding.test.mjs'], 'CI shard coverage');
@@ -176,6 +178,9 @@ run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation
 run(['--test', 'scripts/base-lifecycle-ui.test.mjs'], 'Contextual cancellation and repair controls');
 run(['--test', 'scripts/research-ui.test.mjs'], 'Registered research choices');
 run(['--test', 'scripts/research-actions.test.mjs'], 'Shared technology availability');
+run(['--experimental-test-coverage', '--test-coverage-include=src/gameplay-action-rules.mjs',
+  '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
+  '--test', 'scripts/gameplay-action-rules.test.mjs'], 'Production/research shared-rule coverage floor (100%)');
 run(['--test', 'scripts/siege-ai.test.mjs'], 'Bounded siege acquisition and assault');
 run(['--test', 'scripts/combat-rules.test.mjs'], 'Shared combat classes, counters and effect scope');
 run(['--test', 'scripts/attack-target-geometry.test.mjs'], 'Attack-target geometry, queued transitions and fog');
@@ -307,6 +312,7 @@ const scenarios = [
   ['scripts/visual-pack-path-safety-scenario.mjs', 'Visual pack path safety'],
   ['scripts/painted-material-atlas-scenario.mjs', 'Painted-material atlas manifest and file contract'],
   ['scripts/painted-material-atlas-uv-scenario.mjs', 'Painted-material atlas mirrored UV mapping'],
+  ['scripts/painted-material-atlas-runtime.test.mjs', 'Default painted-ground atlas runtime'],
   ['scripts/sprite-atlas-handoff-scenario.mjs', 'Sprite-atlas handoff audit'],
   ['scripts/cast-sprite-atlas-scenario.mjs', 'Cast sprite-atlas candidates'],
   ['scripts/archery-range-sprite-atlas-scenario.mjs', 'Archery Range sprite-atlas handoff'],

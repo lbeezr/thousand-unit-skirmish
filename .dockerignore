@@ -14,6 +14,9 @@
 !assets/environment/
 !assets/environment/frontier-v1/
 !assets/environment/frontier-v1/*.webp
+!assets/environment/frontier-painted-material-atlas-v1/
+!assets/environment/frontier-painted-material-atlas-v1/manifest.json
+!assets/environment/frontier-painted-material-atlas-v1/*.webp
 !assets/environment/frontier-v1/bellweather-lifecycle-atlas.json
 !assets/environment/frontier-v1/sereward-lifecycle-atlas.json
 !assets/environment/frontier-interactive-v1/

@@ -7959,7 +7959,7 @@ const server = createServer(async (request, response) => {
     'src/worker-fishing-presentation.mjs', 'src/worker-fishing-contact.mjs', 'src/unit-heading.mjs',
     'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs', 'src/resource-brush-controls.mjs',
     'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/economy-profile.mjs', 'src/economy-ledger.mjs', 'src/economy-client.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
-    'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
+    'src/gameplay-action-rules.mjs', 'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/selection-portrait.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
     'src/terrain-authoring.mjs', 'src/terrain-height.mjs', 'src/regions.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs',
     'src/audio-shipped-loader.mjs', 'src/audio-shipped-response.mjs', 'src/audio-shipped-catalog.mjs', 'src/audio-decoded-cache.mjs',
@@ -7970,7 +7970,7 @@ const server = createServer(async (request, response) => {
     'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs',
     'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/economy-profile.mjs', 'src/economy-ledger.mjs', 'src/economy-client.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs', 'src/shore-vegetation.mjs', 'src/meadow-vegetation.mjs', 'src/garden-vegetation.mjs', 'src/environment-plant-assets.mjs', 'src/podvine-view-pack.mjs', 'src/podvine-worked-pack.mjs', 'src/podvine-low-pack.mjs', 'src/veilcap-view-pack.mjs', 'src/veilcap-worked-pack.mjs', 'src/sunbloom-view-pack.mjs', 'src/sunbloom-crown-pack.mjs', 'src/sunbloom-worked-pack.mjs', 'src/sunbloom-low-pack.mjs', 'src/terrain-blend.mjs', 'src/terrain-texture-sampling.mjs', 'src/terrain-atmosphere.mjs', 'src/terrain-materials.mjs',
-    'src/forest-habitat.mjs', 'src/forest-age-composition.mjs', 'src/forest-composition.mjs', 'src/regional-ground-kits.mjs', 'src/water-contours.mjs', 'src/shore-bank-shade.mjs',
+    'src/forest-habitat.mjs', 'src/forest-age-composition.mjs', 'src/forest-composition.mjs', 'src/regional-ground-kits.mjs', 'src/painted-material-atlas-runtime.mjs', 'src/water-contours.mjs', 'src/shore-bank-shade.mjs',
   ].includes(relative);
   const publicUiAsset = [
     'assets/ui/portraits/human-worker-source.png', 'assets/ui/portraits/boughward-worker-source.png',
@@ -7995,6 +7995,7 @@ const server = createServer(async (request, response) => {
     'assets/ui/icons/attack.svg', 'assets/ui/icons/gather.svg', 'assets/ui/icons/build.svg',
   ].includes(relative);
   const publicEnvironmentModule = relative === 'src/environment-art.mjs';
+  const publicPaintedMaterialAtlasAsset = /^assets\/environment\/frontier-painted-material-atlas-v1\/(?:manifest\.json|frontier-painted-material-atlas-mip-[0-5]\.webp)$/.test(relative);
   const publicEnvironmentAtlasMetadata = ['bellweather', 'sereward', 'pale-meridian', 'siltmouths', 'vesperra', 'sombral-mere', 'underbough', 'underbough-bramble', 'underbough-root-oak', 'underbough-moss-hornbeam', 'underbough-young-hornbeam', 'underbough-leafy-hornbeam-v2', 'underbough-muted-copperleaf-v2', 'underbough-old-plum', 'veyrholds', 'ellionar', 'ellionar-hedge', 'sereward-acacia', 'sereward-scrub', 'bellweather-hedgerow', 'ru-lora-fringe'].some((region) =>
     relative === `assets/environment/frontier-v1/${region}-lifecycle-atlas.json`);
   const publicEnvironmentAsset = path.dirname(relative) === 'assets/environment/frontier-v1'
@@ -8078,7 +8079,7 @@ const server = createServer(async (request, response) => {
     || relative === 'assets/audio/vaelora-zones-v1/catalog.json'
     || /^assets\/audio\/vaelora-zones-v1\/sources\/tus_(?:bellweather|underbough|sereward|ellionar|veyrholds|pale-meridian|siltmouths|vesperra|sombral-mere|ru-lora-fringe|ru-lora-interior)_(?:music|terrain|contrast|signature)_0[12]_v001\.mp3$/.test(relative)
     || /^assets\/audio\/vaelora-pilot-v1\/sources\/tus_ui_(?:wood-token|iron-latch|muted-pluck|horn-note)_01_v001\.mp3$/.test(relative);
-  if (!publicZoneAudioAsset && !publicClientAsset && !publicEnvironmentModule && !publicEnvironmentAsset && !publicEnvironmentAtlasMetadata && !publicUiAsset
+  if (!publicZoneAudioAsset && !publicClientAsset && !publicEnvironmentModule && !publicPaintedMaterialAtlasAsset && !publicEnvironmentAsset && !publicEnvironmentAtlasMetadata && !publicUiAsset
     && !publicDirectionalResourceAtlas && !publicMeshyResourceAsset && !publicPodvineViewAsset && !publicInteractiveEnvironmentAsset && !publicEnvironmentPilotAsset && !publicBuildingSpriteAsset && !publicMapAsset
     && !publicFrontierCompleteAsset && !publicUnitSpriteAsset && !publicWildlifeAsset && !publicBuildingLifecycleManifest && !publicBuildingLifecycleRuntimeAsset) {
     response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });

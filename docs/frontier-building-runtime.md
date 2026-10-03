@@ -23,8 +23,8 @@ Complete sprite is hidden immediately and only that state uses fallback:
 | Town Center | `frontier-civilization-scale-pilot-v1/town-center-complete-renderer.json` | Existing five-state captured Town Center; procedural geometry while a fallback frame is unavailable |
 | House | `frontier-civilization-scale-pilot-v1/house-complete-renderer.json` | Existing construction/procedural House |
 | Storehouse | `frontier-civilization-models-v1/storehouse-complete-renderer.json` | Existing construction/procedural House role |
-| Stable | `frontier-civilization-models-v1/stable-complete-renderer.json` | Existing procedural Barracks role, with unfinished roof/details hidden |
-| Workshop | `frontier-civilization-models-v1/workshop-complete-renderer.json` | Existing procedural Range role, with unfinished roof/details hidden |
+| Stable | `frontier-civilization-models-v1/stable-complete-renderer.json` | Existing procedural Barracks role with its staged construction |
+| Workshop | `frontier-civilization-models-v1/workshop-complete-renderer.json` | Existing procedural Range role with its staged construction |
 | Watchtower | `frontier-civilization-models-v1/watchtower-complete-renderer.json` | Existing procedural Watchtower role |
 
 Repair to healthy Complete restores the preserved finished art. A pending,
@@ -33,6 +33,13 @@ construction/damage state. Destruction removes the group; no new collapse or
 ruins animation is claimed. The full lifecycle/mask validator remains useful
 for future authored coverage, but missing coverage does not reject the existing
 finished family from normal use.
+
+These procedural fallbacks retain their existing late-construction transitions:
+Stable roof from 75%, finished pieces from 90%; Workshop roof/pieces from 90%.
+House/Storehouse/Watchtower roofs wait for `complete=true`. Damage fallback for
+these five families uses completed procedural geometry with actual health
+feedback; no authored damaged geometry is claimed. Town Center alone has the
+older authored damaged/critical captures.
 
 All 48 existing source PNGs across the six families were independently hashed
 against the consuming fork's manifests and decoded as unclipped 1024-square
@@ -108,3 +115,8 @@ with truthful state fallback and no ghost depth/picking target. Preserve before,
 after and rejected iterations with hashes and link them from the art wiki.
 Neither this source check nor the separate Barracks depth-cost fixture proves
 that deployed normal-match acceptance. No such screenshot is claimed here yet.
+The building workstream retains that acceptance; Railway and Mac QA are supporting
+owners. The [exact ordinary-game recipe](qa-frontier-building-adoption.md) supplies
+two validated importable maps, paid pad coordinates, current selection/hover/team
+semantics, lifecycle thresholds and camera/ground/fog checks. Mac is offline;
+no handoff or merge closes these remaining steps.
