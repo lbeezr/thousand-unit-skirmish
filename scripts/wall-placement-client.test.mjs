@@ -56,7 +56,7 @@ function fixture(t, team = 0) {
   w.eval(between('function updateRosterBuildingOptions(', 'function updateEconomyUI('));
   // Isolate battlefield cursor picking; its logic has separate tests.
   w.syncBattlefieldCursor = () => {};
-  w.eval(between("renderer.domElement.addEventListener('pointerdown'", "minimapCanvas.addEventListener('pointerdown'"));
+  w.eval(between("renderer.domElement.addEventListener('pointerdown'", 'function canIssueMinimapMove('));
   w.eval(between("window.addEventListener('keydown', (event) => {\n  lastFriendlyUnitClick", "document.addEventListener('focusin'"));
   const pointer = (type, x, y, { id = 1, button = 0, shiftKey = false } = {}) => {
     const event = new w.MouseEvent(type, { clientX: x, clientY: y, button, shiftKey, bubbles: true, cancelable: true });
