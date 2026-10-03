@@ -273,6 +273,13 @@ for (const team of [0, 1]) test(`seat ${team}: real tuple decoding preserves Sto
   const changed = structuredClone(packet); changed.units[0][6] = 4.25;
   f.connections[0].message(changed);
   assert.equal(f.context.units[team * 12].cargo, 4.25); assert.equal(f.context.units[team * 12].cargoType, 'stone');
+  const food = structuredClone(changed); food.units[0][6] = 1; food.units[0][7] = 'food';
+  f.connections[0].message(food);
+  const unsupported = structuredClone(food); unsupported.units[0][6] = 3.125; unsupported.units[0][7] = 'gold';
+  f.connections[0].message(unsupported);
+  assert.equal(f.context.units[team * 12].cargoType, null, 'supplied unsupported cargo clears a previous food label');
+  assert.equal(f.context.sumTypedCargo(f.context.units, definition.economyProfileId).food, 0);
+  f.connections[0].message(changed);
   const mismatched = structuredClone(changed); mismatched.rulesetRevision = 'future-rules'; mismatched.units[0][6] = 10;
   f.connections[0].message(mismatched);
   assert.equal(f.context.units[team * 12].cargo, 4.25, 'mismatched snapshot cannot update typed cargo');

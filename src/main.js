@@ -4512,8 +4512,8 @@ function applyState(state, initial = false) {
       changed = true;
     }
     const nextCargo = Number.isFinite(cargo) ? cargo : unit.cargo || 0;
-    const nextCargoType = economyResources(mapDefinition?.economyProfileId).includes(cargoType) ? cargoType
-      : cargoType === null ? null : unit.cargoType;
+    const nextCargoType = cargoType === undefined ? unit.cargoType
+      : economyResources(mapDefinition?.economyProfileId).includes(cargoType) ? cargoType : null;
     if (unit.cargo !== nextCargo || unit.cargoType !== nextCargoType) {
       unit.cargo = nextCargo;
       unit.cargoType = nextCargoType;
