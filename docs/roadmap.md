@@ -44,8 +44,11 @@ construction and persisted Worker sequencing with provisional wood-only test
 tuning. The normal drag-line UI adds connected previews, whole-line cost,
 keyboard endpoints and cancellation; [checks and a Mac recipe](qa-palisade-drag-ui-2026-10-03.md)
 distinguish DOM/runtime evidence from pending native usability. Next wall
-outcomes are the independent modular art kit and player observations;
-gate ownership/traversal and final balance remain undecided.
+outcomes are the independent modular art kit and player observations. The
+[manual gate foundation](palisade-gates.md) now uses explicit owner operation
+and shared open/closed traversal, with conservative occupied/route-cut refusal
+and checkpoint recovery. Automatic/team-specific access and final balance remain
+future decisions; [native gate usability](qa-palisade-gates-2026-10-03.md) is unverified.
 
 ### Integrated core workstreams — 1 October 2026
 

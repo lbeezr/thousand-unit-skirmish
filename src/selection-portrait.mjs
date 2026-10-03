@@ -1,4 +1,5 @@
-import { UNIT_DEFINITIONS } from './gameplay-definitions.mjs';
+import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
+import { buildingSpriteUrl } from './building-sprites.mjs';
 
 // Byte-identical approved illustrations; framing is a CSS viewport, not an atlas face crop.
 export const WORKER_PORTRAITS = Object.freeze({
@@ -14,13 +15,23 @@ export const WORKER_PORTRAITS = Object.freeze({
   }),
 });
 
+// Same shipped building identity and lifecycle frames as the battlefield.
+export const BARRACKS_PORTRAIT = Object.freeze({
+  entryId: 'building.barracks', sourceWidth: 640,
+  cropX: 32, cropY: 64, cropSize: 576,
+});
+
 export function updateSelectionPortrait(root, context, unit, appearanceRole) {
-  const button = root.querySelector('[data-worker-portrait]');
+  const button = root.querySelector('[data-selection-portrait]');
   const health = root.querySelector('[data-worker-health]');
   const notes = root.querySelector('#selected-worker-notes');
-  const portrait = context.kind === 'workers' && context.total === 1
+  const workerPortrait = context.kind === 'workers' && context.total === 1
     && unit?.kind === 'worker' && unit.hp > 0 ? WORKER_PORTRAITS[appearanceRole] : null;
-  button.hidden = health.hidden = notes.hidden = !portrait;
+  const building = context.kind === 'building' && context.building?.type === 'barracks'
+    && context.building.hp > 0 ? context.building : null;
+  const portrait = building ? { ...BARRACKS_PORTRAIT, asset: buildingSpriteUrl(building).replace(/^\.\//, '/') } : workerPortrait;
+  button.hidden = !portrait;
+  health.hidden = notes.hidden = !workerPortrait;
   if (!portrait) return;
   const image = button.querySelector('img');
   if (image.getAttribute('src') !== portrait.asset) image.setAttribute('src', portrait.asset);
@@ -28,8 +39,12 @@ export function updateSelectionPortrait(root, context, unit, appearanceRole) {
   image.style.left = `${-portrait.cropX / portrait.cropSize * 100}%`;
   image.style.top = `${-portrait.cropY / portrait.cropSize * 100}%`;
   button.dataset.codexEntry = portrait.entryId;
-  button.setAttribute('aria-label', `Worker · ${portrait.appearanceFamily} — open role notes`);
-  button.title = `Worker · ${portrait.appearanceFamily} — open role notes`;
-  health.textContent = `Worker · ${Math.round(unit.hp)} / ${UNIT_DEFINITIONS.worker.combat.maxHp} HP`;
-  notes.querySelector('strong').textContent = `Worker · ${portrait.appearanceFamily}`;
+  const label = building ? BUILDING_DEFINITIONS.barracks.label : `Worker · ${portrait.appearanceFamily}`;
+  const action = building ? 'open structure details' : 'open role notes';
+  button.setAttribute('aria-label', `${label} — ${action}`);
+  button.title = `${label} — ${action}`;
+  if (workerPortrait) {
+    health.textContent = `Worker · ${Math.round(unit.hp)} / ${UNIT_DEFINITIONS.worker.combat.maxHp} HP`;
+    notes.querySelector('strong').textContent = label;
+  }
 }

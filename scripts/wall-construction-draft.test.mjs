@@ -1,3 +1,4 @@
+import { validGateState, buildingBlocksMovement } from '../src/palisade-gate.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -39,7 +40,7 @@ function fixture(team = 0) {
     buildingTargetId: null, repairing: false, orderRevision: 0,
     attackTargetId: -1, attackBuildingTargetId: -1, path: [], pathIndex: 0,
     queuedWaypoints: [], moveGoalCell: -1, gatherForestCell: -1, gatherPhase: '' };
-  const context = vm.createContext({ BUILDING_DEFINITIONS: definitions, UNIT_DEFINITIONS,
+  const context = vm.createContext({ validGateState, buildingBlocksMovement, BUILDING_DEFINITIONS: definitions, UNIT_DEFINITIONS,
     MAP_WIDTH: 16, MAP_HEIGHT: 16, MAP_HALF_X: 8, MAP_HALF_Z: 8, CELL_COUNT: 256,
     blocked: new Uint8Array(256), buildingBlocked: new Uint8Array(256), townCenterBlocked: new Uint8Array(256),
     elevationLevelByCell: new Uint8Array(256), canTraverseElevation,
@@ -212,7 +213,7 @@ test('existing checkpoint building checks accept one-cell records and reject cor
   assert.ok(start >= 0 && end > start);
   const records = prepare().plan.buildings;
   records[0].progress = 0.4; records[0].hp = 120;
-  const context = vm.createContext({ definition: { width: 16, height: 16, obstacles: [], resourceNodes: [] },
+  const context = vm.createContext({ validGateState, buildingBlocksMovement, definition: { width: 16, height: 16, obstacles: [], resourceNodes: [] },
     cellCount: 256, MAX_BUILDINGS: 128, MAX_BUILDING_QUEUE: 12, BUILDING_DEFINITIONS: definitions,
     UNIT_DEFINITIONS, checkpointForestMask: new Uint8Array(256), savedForestStocks: new Map(),
     FOREST_WOOD_PER_CELL: 100, buildingRulesFor: rules,

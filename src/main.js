@@ -1,3 +1,4 @@
+import { createGateTimbers, updateGateTimbers } from './palisade-gate-visual.mjs';
 import { findInvalidResourceVariant, isShoreFish } from './shore-fishing.mjs';
 import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from './shore-fishing-placeholder.mjs';
 import { createWaterStudyFishBinding } from './water-study-fish-binding.mjs';
@@ -24,6 +25,7 @@ import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import { updateSelectionPortrait } from './selection-portrait.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
+import { roomEntryUrl } from './game-entry-session.mjs';
 import * as THREE from 'three';
 import { attachBuildingSprite } from './building-sprites.mjs';
 import { frontierBuildingPreviewUrl } from './frontier-building-preview.mjs';
@@ -217,6 +219,8 @@ const unitSpritePreviewVersions = castPreview
 const unitSpritePreviewRoleSet = new Set(castPreview ? (humanRosterPreview ? ['worker', 'infantry', 'spearman', 'archer', 'scout', 'rider', 'siege-engine'] : ['worker']) : unitSpritePreviewRoles);
 const ROOM_ID = roomPageUrl.searchParams.get('room');
 const HAS_ROOM_PARAMETER = roomPageUrl.searchParams.has('room');
+const RESUME_REQUESTED = roomPageUrl.searchParams.get('resume') === '1';
+let entrySessionConfirmed = false;
 const ROOM_ID_PATTERN = /^[A-Za-z0-9_-]{32}$/;
 const ui = {
   total: document.querySelector('#unit-total'),
@@ -676,6 +680,7 @@ let orderStatusTimeout = null;
 let reconnectTimer = null;
 let reconnectDelayMs = 500;
 let pageLeaving = false;
+let connectionAttempt = 0;
 const SESSION_STORAGE_KEY = 'thousand-unit-skirmish-session';
 const ROOM_SESSION_STORAGE_KEY = `${SESSION_STORAGE_KEY}:${ROOM_ID || 'default'}`;
 const ROOM_INSTANCE_STORAGE_KEY = `${SESSION_STORAGE_KEY}:instance:${location.host}:${ROOM_ID || 'default'}`;
@@ -1332,12 +1337,15 @@ function createGameplayBuildingVisual(building) {
 function createPalisadeVisual(building) {
   const group = new THREE.Group(), timber = new THREE.MeshBasicMaterial({ color: 0x705443 });
   const walls = new THREE.Group(); group.add(walls);
-  const post = new THREE.Mesh(new THREE.BoxGeometry(0.22, 1.4, 0.22), timber);
-  post.position.y = 0.7; walls.add(post);
-  const arms = {};
-  for (const [direction, dx, dz] of [['north', 0, -1], ['east', 1, 0], ['south', 0, 1], ['west', -1, 0]]) {
-    const arm = new THREE.Mesh(new THREE.BoxGeometry(dx ? 0.5 : 0.12, 0.65, dz ? 0.5 : 0.12), timber);
-    arm.position.set(dx * 0.25, 0.65, dz * 0.25); walls.add(arm); arms[direction] = arm;
+  const arms = {}, gate = building.type === 'palisade-gate' ? createGateTimbers(THREE, timber) : null;
+  if (gate) walls.add(gate.group);
+  else {
+    const post = new THREE.Mesh(new THREE.BoxGeometry(0.22, 1.4, 0.22), timber);
+    post.position.y = 0.7; walls.add(post);
+    for (const [direction, dx, dz] of [['north', 0, -1], ['east', 1, 0], ['south', 0, 1], ['west', -1, 0]]) {
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(dx ? 0.5 : 0.12, 0.65, dz ? 0.5 : 0.12), timber);
+      arm.position.set(dx * 0.25, 0.65, dz * 0.25); walls.add(arm); arms[direction] = arm;
+    }
   }
   const teamColor = TEAM_HEX[building.team];
   const outline = new THREE.Mesh(new THREE.RingGeometry(0.65, 0.7, 4),
@@ -1345,7 +1353,7 @@ function createPalisadeVisual(building) {
   outline.rotation.x = -Math.PI / 2; outline.rotation.z = Math.PI / 4; outline.position.y = 0.04; group.add(outline);
   const healthIndicator = createBuildingHealthIndicator(); group.add(healthIndicator.group);
   const combatFeedback = createBuildingCombatFeedback(); group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
-  const visual = { group, walls, arms, outline, teamColor, healthIndicator, combatFeedback };
+  const visual = { group, walls, arms, gate, outline, teamColor, healthIndicator, combatFeedback };
   scene.add(group); updatePalisadeVisual(visual, building); return visual;
 }
 
@@ -1353,6 +1361,7 @@ function updatePalisadeVisual(visual, building) {
   visual.group.position.set(building.x, groundHeight(building.x, building.z), building.z);
   visual.walls.scale.y = Math.max(0.08, THREE.MathUtils.clamp(Number(building.progress) || 0, 0, 1));
   for (const [direction, arm] of Object.entries(visual.arms)) arm.visible = building.connections?.includes(direction) === true;
+  if (visual.gate) updateGateTimbers(visual.gate, building);
   updateBuildingHealthIndicator(visual, building);
 }
 
@@ -2284,7 +2293,7 @@ function buildMap(definition) {
   addMapObject(base);
   for (const surface of createGroundSurfaces(definition)) {
     if(surface.userData.terrainSurface) terrainSurface=surface;
-    if (surface.userData.waterStudy) waterStudyFishBinding = createWaterStudyFishBinding(definition, surface);
+    if (surface.userData.waterStudy?.quality === 'study') waterStudyFishBinding = createWaterStudyFishBinding(definition, surface);
     addMapObject(surface);
   }
   buildConstructionGroundBatches();
@@ -4681,6 +4690,7 @@ function updateBuildingLifecycleActions() {
   const choices = !building ? [] : [
     ...(!building.complete ? [{ type: 'cancelConstruction', label: 'Cancel construction · refund unfinished work' }] : []),
     ...(building.complete && getBuildingQueueLength(building) > 0 ? [{ type: 'cancelTraining', label: 'Cancel last queued unit' }] : []),
+    ...(building.complete && building.type === 'palisade-gate' ? [{ type: 'setGateOpen', label: building.gateOpen ? 'Close gate · blocks both teams' : 'Open gate · both teams may pass' }] : []),
     ...(active ? [{ type: 'cancelResearch', label: 'Cancel research · refund unfinished work' }] : []),
     ...(building.complete && building.hp < building.maxHp ? [{ type: 'repairBuilding', label: 'Repair with Workers · costs wood' }] : []),
   ];
@@ -4691,6 +4701,11 @@ function updateBuildingLifecycleActions() {
       const button = document.createElement('button'); button.type = 'button'; button.dataset.action = choice.type; button.textContent = choice.label;
       button.addEventListener('click', () => {
         const command = { type: choice.type, buildingId: building.id };
+        if (choice.type === 'setGateOpen') {
+          const current = latestBuildings.find(row => row.id === building.id && row.team === localTeam);
+          if (!current || !current.complete || current.type !== 'palisade-gate' || matchWinner >= 0) return;
+          command.open = !current.gateOpen;
+        }
         if (choice.type === 'repairBuilding') {
           command.ids = teamUnits[localTeam].filter((unit) => unit.hp > 0 && unit.kind === 'worker').map((unit) => unit.id);
         }
@@ -4700,8 +4715,12 @@ function updateBuildingLifecycleActions() {
       container.append(button);
     }
   }
-  for (const button of container.children) button.disabled = matchWinner >= 0
-    || (button.dataset.action === 'repairBuilding' && !teamUnits[localTeam].some((unit) => unit.hp > 0 && unit.kind === 'worker'));
+  for (const button of container.children) {
+    button.disabled = matchWinner >= 0
+      || (button.dataset.action === 'repairBuilding' && !teamUnits[localTeam].some(unit => unit.hp > 0 && unit.kind === 'worker'));
+    if (button.dataset.action === 'setGateOpen') button.textContent = building.gateOpen
+      ? 'Close gate · blocks both teams' : 'Open gate · both teams may pass';
+  }
   if (ui.cancelWorkerTraining) ui.cancelWorkerTraining.disabled = localTeam === null || matchWinner >= 0 || !(latestWorkerProduction[localTeam]?.queue > 0);
 }
 
@@ -9624,8 +9643,7 @@ async function createPrivateRoom() {
     if (!response.ok || !ROOM_ID_PATTERN.test(result.roomId || '')) {
       throw new Error(result.error || 'Room creation failed.');
     }
-    const inviteUrl = new URL(window.location.href);
-    inviteUrl.searchParams.set('room', result.roomId);
+    const inviteUrl = roomEntryUrl(window.location.href, result.roomId);
     window.location.assign(inviteUrl.href);
   } catch (error) {
     showToast(String(error?.message || 'ROOM CREATION FAILED').toUpperCase(), 2800);
@@ -9636,9 +9654,7 @@ async function createPrivateRoom() {
 
 async function copyRoomInvite() {
   if (!ROOM_ID_PATTERN.test(ROOM_ID || '')) return;
-  const inviteUrl = new URL(window.location.href);
-  inviteUrl.searchParams.set('room', ROOM_ID);
-  inviteUrl.hash = '';
+  const inviteUrl = roomEntryUrl(window.location.href, ROOM_ID);
   try {
     await navigator.clipboard.writeText(inviteUrl.href);
     showToast('ROOM INVITE COPIED', 1800);
@@ -9666,8 +9682,7 @@ function joinPrivateRoom(value) {
     ui.roomDialogError.textContent = 'Enter a valid room code or invite link.';
     return;
   }
-  const inviteUrl = new URL(window.location.href);
-  inviteUrl.searchParams.set('room', roomId);
+  const inviteUrl = roomEntryUrl(window.location.href, roomId);
   window.location.assign(inviteUrl.href);
 }
 
@@ -9683,6 +9698,7 @@ function scheduleReconnect(delay = reconnectDelayMs, increaseBackoff = true) {
 
 async function connect() {
   if (pageLeaving) return;
+  const attempt = ++connectionAttempt;
   setConnection(localTeam === null ? 'CONNECTING' : 'RECONNECTING');
   if (HAS_ROOM_PARAMETER) {
     if (!ROOM_ID_PATTERN.test(ROOM_ID || '')) {
@@ -9692,7 +9708,7 @@ async function connect() {
     }
     try {
       const response = await fetch(`/api/rooms/${encodeURIComponent(ROOM_ID)}`, { cache: 'no-store' });
-      if (pageLeaving) return;
+      if (pageLeaving || attempt !== connectionAttempt) return;
       if (response.status === 404) {
         setConnection('ROOM NOT FOUND');
         showToast('INVITE LINK EXPIRED OR INVALID', 2800);
@@ -9700,20 +9716,44 @@ async function connect() {
       }
       if (!response.ok) throw new Error('Room service is temporarily unavailable.');
     } catch {
+      if (pageLeaving || attempt !== connectionAttempt) return;
       scheduleReconnect();
       return;
     }
   }
-  connectSocket();
+  if (RESUME_REQUESTED && !entrySessionConfirmed) {
+    try {
+      const token = sessionStorage.getItem(ROOM_SESSION_STORAGE_KEY);
+      const response = await fetch(`/api/session${HAS_ROOM_PARAMETER ? `?room=${encodeURIComponent(ROOM_ID)}` : ''}`, {
+        headers: { 'x-rts-resume-token': token || '' }, cache: 'no-store',
+      });
+      if (response.status >= 500) throw new Error('Session service unavailable.');
+      const valid = response.ok && (await response.json()).valid === true;
+      if (pageLeaving || attempt !== connectionAttempt) return;
+      if (!valid) {
+        setConnection('SESSION EXPIRED');
+        showToast('SESSION EXPIRED · RETURN TO MAIN MENU TO CREATE OR JOIN A ROOM', 6000);
+        return;
+      }
+    } catch {
+      if (!pageLeaving && attempt === connectionAttempt) scheduleReconnect();
+      return;
+    }
+  }
+  if (pageLeaving || attempt !== connectionAttempt) return;
+  connectSocket({ resumeOnly: RESUME_REQUESTED && !entrySessionConfirmed,
+    onSessionConfirmed: () => { entrySessionConfirmed = true; },
+    openStudioAfterJoin: new URL(window.location.href).searchParams.get('studio') === '1' });
 }
 
-function connectSocket() {
+function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, openStudioAfterJoin = false } = {}) {
   if (pageLeaving) return;
   setConnection(localTeam === null ? 'CONNECTING' : 'RECONNECTING');
   let retryWhenSeatFree = false;
   const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
   const url = new URL(`${protocol}//${location.host}/ws`);
   if (HAS_ROOM_PARAMETER) url.searchParams.set('room', ROOM_ID);
+  if (resumeOnly) url.searchParams.set('resumeOnly', '1');
   let savedToken = null;
   try { savedToken = sessionStorage.getItem(ROOM_SESSION_STORAGE_KEY); } catch {}
   const websocketProtocols = ['rts-v1'];
@@ -9764,10 +9804,14 @@ function connectSocket() {
       }
       waitingForResume = message.player.resumePending === true;
       try {
-        if (message.player.sessionToken) sessionStorage.setItem(ROOM_SESSION_STORAGE_KEY, message.player.sessionToken);
+        if (message.player.sessionToken) {
+          sessionStorage.setItem(ROOM_SESSION_STORAGE_KEY, message.player.sessionToken);
+          sessionStorage.setItem('thousand-unit-skirmish-last-room', HAS_ROOM_PARAMETER ? ROOM_ID : 'default');
+        }
         else if (!waitingForResume) sessionStorage.removeItem(ROOM_SESSION_STORAGE_KEY);
       } catch {}
       setPlayer(message.player);
+      if (hasPlayerSeat) onSessionConfirmed();
       applyLobby(message.state.lobby);
       roomLobby.updateChat(message.lobbyChat || [], null, true);
       setMapCatalog(message.maps, message.map.id);
@@ -9784,6 +9828,13 @@ function connectSocket() {
         centerCameraOnHomeBase();
       }
       updateRoomUI(message.state.connected);
+      if (openStudioAfterJoin && isHost && message.state.lobby?.phase !== 'lobby') {
+        openStudioAfterJoin = false;
+        openMapStudio();
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.searchParams.delete('studio');
+        window.history.replaceState(window.history.state, '', cleanUrl.href);
+      }
       if (ui.mapStudio.open) {
         ui.studioPublish.disabled = false;
         ui.studioMessage.textContent = 'Connection restored. Review your draft and publish again if needed.';
@@ -9940,12 +9991,19 @@ function connectSocket() {
   });
 }
 
-window.addEventListener('beforeunload', () => {
+function releasePageConnection() {
+  if (pageLeaving) return;
   pageLeaving = true;
+  connectionAttempt++;
   if (reconnectTimer !== null) window.clearTimeout(reconnectTimer);
   reconnectTimer = null;
   socket?.close(1000, 'page unload');
-}, { once: true });
+}
+window.addEventListener('beforeunload', releasePageConnection, { once: true });
+window.addEventListener('pagehide', releasePageConnection);
+window.addEventListener('pageshow', event => {
+  if (event.persisted) { pageLeaving = false; socket = null; connect(); }
+});
 
 resize();
 updateControlGroupUI();

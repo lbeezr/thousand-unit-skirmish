@@ -1,3 +1,4 @@
+import { isPalisade } from './palisade-gate.mjs';
 import { planWallLine } from './wall-line-planner.mjs';
 import { formatResourceRequirement } from './resource-format.mjs';
 
@@ -43,7 +44,7 @@ export function previewWallPlacement({ width, height, points, axisOrder = 'colum
   };
   for (const building of buildings) {
     const center = cellOf(building), radius = Math.floor(building.footprint / 2);
-    if (building.type === 'palisade-wall' && building.team === team) {
+    if (isPalisade(building.type) && building.team === team) {
       if (inMap(center)) existingWallCells.add(center.row * width + center.column);
     } else for (let row = center.row - radius; row <= center.row + radius; row++) {
       for (let column = center.column - radius; column <= center.column + radius; column++) {

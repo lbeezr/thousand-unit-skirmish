@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { buildWaterStudyField, selectWaterStudyFish, waterStudyTime, WATER_STUDY_FISH_LIMIT } from '../src/water-study-state.mjs';
-import { createWaterSurfaceStudy, waterStudyOptions } from '../src/water-surface-study.mjs';
+import { createWaterSurfaceStudy, waterSurfaceOptions } from '../src/water-surface-study.mjs';
+import { createWaterStudyFishBinding } from '../src/water-study-fish-binding.mjs';
 import { buildWaterSurfaceGeometry } from '../src/water-surface-geometry.mjs';
 import { findInvalidResourceVariant } from '../src/shore-fishing.mjs';
 
@@ -59,13 +60,18 @@ test('study preserves original contour buffers, height and non-picking surface',
   original.dispose(); dispose(study);
 });
 
-test('explicit opt-in, finite fixed time, reduced motion and low quality preserve fallbacks', () => {
-  assert.equal(waterStudyOptions('').enabled, false);
-  assert.equal(waterStudyOptions('?waterStudy=garbage').enabled, false);
-  assert.equal(waterStudyOptions('?waterStudy=1').enabled, true);
-  assert.equal(waterStudyOptions('?waterStudyTime=').fixedTime, null);
-  assert.equal(waterStudyOptions('?waterStudyTime=Infinity').fixedTime, null);
-  assert.equal(waterStudyOptions('?waterStudyTime=0').fixedTime, 0);
+test('default surface, finite fixed time, reduced motion and explicit low quality preserve fallbacks', () => {
+  assert.deepEqual(waterSurfaceOptions(''), { quality: 'study', reducedMotion: false, fixedTime: null });
+  assert.deepEqual(waterSurfaceOptions('?waterStudy=0'), waterSurfaceOptions(''), 'retired permission toggle has no effect');
+  assert.equal(waterSurfaceOptions('?waterTime=').fixedTime, null);
+  assert.equal(waterSurfaceOptions('?waterTime=Infinity').fixedTime, null);
+  assert.equal(waterSurfaceOptions('?waterTime=0').fixedTime, 0);
+  assert.equal(waterSurfaceOptions('?waterQuality=low').quality, 'low');
+  assert.equal(waterSurfaceOptions('?waterStudyQuality=low').quality, 'low', 'existing static-quality links keep working');
+  assert.equal(waterSurfaceOptions('?waterQuality=study&waterStudyQuality=low').quality, 'study');
+  assert.equal(waterSurfaceOptions('?waterTime=16&waterStudyTime=12').fixedTime, 16);
+  assert.equal(waterSurfaceOptions('?waterStudyTime=12').fixedTime, 12);
+  assert.equal(waterSurfaceOptions('', true).reducedMotion, true);
   assert.equal(waterStudyTime(90, { fixedTime: 12 }), 12);
   assert.equal(waterStudyTime(90, { fixedTime: 12, reducedMotion: true }), 0);
   assert.equal(waterStudyTime(NaN), 0);
@@ -136,4 +142,61 @@ test('visible schools have a stable bounded instance budget independent of snaps
   const schools = selectWaterStudyFish(definition, snapshot);
   assert.equal(schools.length, WATER_STUDY_FISH_LIMIT);
   assert.deepEqual(selectWaterStudyFish(definition, { ...snapshot, resourceNodes: [...snapshot.resourceNodes].reverse() }), schools);
+});
+
+test('actual ground factory selects default water and live fish, with static/reduced-motion cleanup', async () => {
+  // Stub image/network delivery only: exercise the actual ground factory,
+  // Three materials, ownership and motion callbacks without claiming pixels.
+  const original = { load: THREE.TextureLoader.prototype.load, fetch: globalThis.fetch,
+    location: globalThis.location, matchMedia: globalThis.matchMedia, warn: console.warn };
+  const listeners = new Set();
+  const motion = { matches: false, addEventListener(_type, callback) { listeners.add(callback); },
+    removeEventListener(_type, callback) { listeners.delete(callback); } };
+  const surfaces = [];
+  try {
+    THREE.TextureLoader.prototype.load = () => new THREE.Texture();
+    globalThis.fetch = async () => ({ ok: false, status: 404 });
+    globalThis.location = { search: '' };
+    globalThis.matchMedia = () => motion;
+    console.warn = () => {};
+    const { createGroundSurfaces, resourceStateAssetsReady } = await import('../src/environment-art.mjs');
+    await resourceStateAssetsReady;
+    console.warn = original.warn;
+    const definition = { ...map(), id: 'default-fish', fogOfWar: false, terrainPatches: [] };
+    const defaults = createGroundSurfaces(definition); surfaces.push(...defaults);
+    const water = defaults.find(surface => surface.userData.waterStudy);
+    assert.ok(water.material.isShaderMaterial, 'ordinary map needs no preview query');
+    const binding = createWaterStudyFishBinding(definition, water);
+    binding.update({ mapId: definition.id, fogOfWar: false, visibility: null,
+      resourceNodes: [{ id: fish.id, type: 'food', resourceVariant: 'shore-fish', stock: 1 }] });
+    assert.equal(water.children[0].count, 1, 'default ground supports current match fish activity');
+    for (const listener of listeners) listener({ matches: true });
+    water.userData.updateWaterStudy(12);
+    assert.equal(water.material.uniforms.time.value, 0);
+    assert.equal(water.children[0].visible, false);
+    for (const listener of listeners) listener({ matches: false });
+    water.userData.updateWaterStudy(12);
+    assert.equal(water.children[0].visible, true);
+    water.material.dispose(); assert.equal(listeners.size, 0, 'map disposal removes preference listener');
+    globalThis.location.search = '?waterQuality=low';
+    const lowSurfaces = createGroundSurfaces(definition); surfaces.push(...lowSurfaces);
+    const low = lowSurfaces.find(surface => surface.userData.waterStudy);
+    assert.equal(low.material.isMeshBasicMaterial, true);
+    assert.equal(low.children.length, 0); assert.equal(low.userData.ownedGroundTextures, undefined);
+    const geometry = buildWaterSurfaceGeometry(definition);
+    assert.deepEqual(low.geometry.attributes.position.array, geometry.attributes.position.array);
+    geometry.dispose();
+    motion.matches = true; globalThis.location.search = '';
+    const reducedSurfaces = createGroundSurfaces(definition); surfaces.push(...reducedSurfaces);
+    const reduced = reducedSurfaces.find(surface => surface.userData.waterStudy);
+    reduced.userData.updateWaterStudy(12);
+    assert.equal(reduced.material.uniforms.time.value, 0, 'initial OS preference is respected');
+  } finally {
+    for (const surface of surfaces) dispose(surface);
+    THREE.TextureLoader.prototype.load = original.load; globalThis.fetch = original.fetch;
+    if (original.location === undefined) delete globalThis.location; else globalThis.location = original.location;
+    if (original.matchMedia === undefined) delete globalThis.matchMedia; else globalThis.matchMedia = original.matchMedia;
+    console.warn = original.warn;
+  }
+  assert.equal(listeners.size, 0);
 });

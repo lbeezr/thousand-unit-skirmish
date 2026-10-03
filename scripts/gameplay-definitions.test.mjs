@@ -33,6 +33,25 @@ test('invalid content cannot silently create free production or unknown products
   }
 });
 
+test('unimplemented mineral costs are rejected for units, buildings and research instead of being ignored', () => {
+  for (const [category, id] of [['units', 'worker'], ['buildings', 'storehouse'], ['technologies', 'infantry-attack']]) {
+    for (const resource of ['stone', 'gold', 'copper', 'foood']) for (const amount of [0, 100]) {
+      const definitions = structuredClone(GAMEPLAY_DEFINITIONS);
+      definitions[category][id].cost = { food: 0, wood: 0, [resource]: amount };
+      const before = JSON.stringify(definitions);
+      assert.throws(() => validateGameplayDefinitions(definitions),
+        new RegExp(`Unsupported cost resource ${resource}: ${id}`));
+      assert.equal(JSON.stringify(definitions), before, 'rejection cannot normalize away the unsupported charge');
+    }
+    const definitions = structuredClone(GAMEPLAY_DEFINITIONS);
+    definitions[category][id].cost = Object.assign([], { food: 0, wood: 0 });
+    assert.throws(() => validateGameplayDefinitions(definitions), new RegExp(`Invalid cost object: ${id}`));
+  }
+  const valid = structuredClone(GAMEPLAY_DEFINITIONS);
+  valid.units.worker.cost = { food: 0, wood: 0 };
+  assert.equal(validateGameplayDefinitions(valid), valid, 'explicit supported zero-cost content remains valid');
+});
+
 test('registry rejects duplicate identities, broken faction rosters and prerequisite cycles', () => {
   for (const [mutate, reason] of [
     [d => { d.units.spearman.wireId = d.units.infantry.wireId; }, /duplicate unit wire ID/],
