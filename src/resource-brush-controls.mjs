@@ -9,8 +9,14 @@ export function mountResourceBrushControls({ host, readMap, readSelectedId, comm
         <label>RESOURCE<select id="studio-brush-type"><option value="food">Food</option><option value="wood">Wood</option></select></label>
         <label>SEED<input id="studio-brush-seed" type="number" step="1" value="93000" required></label>
       </div>
+      <div class="studio-fields two-up">
+        <label>MARKERS<input id="studio-brush-count" type="number" min="1" max="16" step="1" value="5" required></label>
+        <label>RADIUS (CELLS)<input id="studio-brush-radius" type="number" min="1" max="8" step="1" value="4" required></label>
+      </div>
+      <label>DISTRIBUTION<select id="studio-brush-distribution"><option value="uniform">Even spread</option><option value="core-falloff">Core falloff</option></select></label>
       <label>TOTAL PATCH STOCK<input id="studio-brush-stock" type="number" min="5" step="1" value="300" required></label>
-      <small>Five markers share this total budget, within four cells of the anchor.</small>
+      <small>Markers share one stock budget. Radius is the maximum distance from the anchor; minimum spacing stays two cells. Crowded patches may not fit.</small>
+      <small>Core falloff favors a denser center with a thinner edge; it keeps the same stock budget.</small>
       <div class="studio-fields two-up">
         <label>ANCHOR COLUMN<input id="studio-brush-column" type="number" min="1" step="1" value="24" required></label>
         <label>ANCHOR ROW<input id="studio-brush-row" type="number" min="1" step="1" value="22" required></label>
@@ -31,7 +37,12 @@ export function mountResourceBrushControls({ host, readMap, readSelectedId, comm
   const buttons = Object.fromEntries([...panel.querySelectorAll('[data-brush]')].map(button => [button.dataset.brush, button]));
   const status = panel.querySelector('[role="status"]');
   let editor = null, observedKey = null, preview = null, picking = false;
+  function updateBudgetMinimum() {
+    const count = Number(field('count').value);
+    field('stock').min = String(Number.isSafeInteger(count) && count >= 1 && count <= 16 ? count : 1);
+  }
   function refresh(available = true) {
+    updateBudgetMinimum();
     buttons.pick.disabled = buttons.preview.disabled = !available;
     buttons.pick.setAttribute('aria-pressed', String(picking));
     buttons.apply.disabled = !available || !preview;
@@ -67,7 +78,7 @@ export function mountResourceBrushControls({ host, readMap, readSelectedId, comm
     editor.cancel(); preview = null; picking = false;
     try {
       const values = {};
-      for (const name of ['seed', 'stock', 'column', 'row']) {
+      for (const name of ['count', 'radius', 'seed', 'stock', 'column', 'row']) {
         const input = field(name), value = Number(input.value);
         const valid = input.checkValidity() && input.value !== '' && Number.isSafeInteger(value);
         input.setAttribute('aria-invalid', String(!valid));
@@ -76,9 +87,10 @@ export function mountResourceBrushControls({ host, readMap, readSelectedId, comm
       }
       const map = readMap();
       preview = editor.preview({ type: field('type').value, seed: values.seed, totalStock: values.stock,
+        nodesPerPatch: values.count, radius: values.radius, distribution: field('distribution').value,
         x: values.column - map.width / 2 - 0.5, z: values.row - map.height / 2 - 0.5 });
       const stocks = preview.nodes.map(node => node.stock);
-      status.textContent = `${preview.nodes.length} ${preview.settings.type} markers · ${values.stock} total stock · ${Math.min(...stocks)}–${Math.max(...stocks)} per marker · seed ${values.seed}. Apply to add.`;
+      status.textContent = `${preview.nodes.length} ${preview.settings.type} markers · ${values.stock} total stock · ${Math.min(...stocks)}–${Math.max(...stocks)} per marker · radius ${values.radius} cells · seed ${values.seed} · ${field('distribution').selectedOptions[0].textContent}. Apply to add.`;
       refresh(); buttons.apply.focus();
     } catch (error) { status.textContent = error.message; refresh(); }
     redraw();
@@ -101,8 +113,9 @@ export function mountResourceBrushControls({ host, readMap, readSelectedId, comm
   });
   buttons.cancel.addEventListener('click', () => { cancel(); buttons.preview.focus(); });
   for (const action of ['apply', 'undo', 'redo']) buttons[action].addEventListener('click', () => change(action));
-  panel.addEventListener('input', () => cancel('Settings changed; preview again.'));
-  panel.addEventListener('change', () => cancel('Settings changed; preview again.'));
+  for (const event of ['input', 'change']) panel.addEventListener(event, () => {
+    updateBudgetMinimum(); cancel('Settings changed; preview again.');
+  });
   panel.addEventListener('toggle', () => { if (!panel.open) cancel(); });
   panel.addEventListener('keydown', event => {
     if (event.key === 'Enter' && event.target.matches('input, select')) { event.preventDefault(); showPreview(); }

@@ -46,9 +46,10 @@ fields on other buildings. Footprint overlap validation reserves every building
 regardless of movement state. Restore derives the movement mask from completed
 open state, without repaying, relocating a unit standing in an open gate, or
 changing building identity. The exact preceding gate-free ruleset
-`v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2`
+`v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6`
 is recognized as additive; gate rows/fields under that old identity are rejected.
-Older Palisade/Mill migrations exclude invented gate state as well.
+Paid Docks from that exact preceding roster survive the migration.
+Older Palisade/Mill/Dock migrations exclude invented gate state as well.
 
 ## Art interface
 

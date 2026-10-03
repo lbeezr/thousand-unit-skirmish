@@ -138,7 +138,7 @@ test('only the exact preceding gate-free ruleset migrates; forged gate fields re
   const migration = server.slice(server.indexOf('function migrateMatchCheckpoint('), server.indexOf('async function drainMatchCheckpointWrites'));
   const c = vm.createContext({ MATCH_CHECKPOINT_SCHEMA_VERSION: 22, MATCH_RULES_VERSION: 6, GAMEPLAY_RULESET_REVISION });
   vm.runInContext(migration, c);
-  for (const prior of ['v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2',
+  for (const prior of ['v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6', 'v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2',
     'v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801',
     'v1:d85f5a09decc0d0ade81803ab289b52ec5a08e84ff5a1771e85401d4c3611eab']) {
     for (const buildings of [[], [gateRow()], [{ type: 'house', gateOpen: false }]]) {
@@ -148,5 +148,17 @@ test('only the exact preceding gate-free ruleset migrates; forged gate fields re
       c.migrateMatchCheckpoint(snapshot);
       assert.equal(snapshot.rulesetRevision, buildings.length ? prior : GAMEPLAY_RULESET_REVISION);
     }
+  }
+});
+
+test('exact preceding gate-free Dock ruleset retains paid Dock rows; older identities cannot invent them', () => {
+  const migration = server.slice(server.indexOf('function migrateMatchCheckpoint('), server.indexOf('async function drainMatchCheckpointWrites'));
+  const c = vm.createContext({ MATCH_CHECKPOINT_SCHEMA_VERSION: 22, MATCH_RULES_VERSION: 6, GAMEPLAY_RULESET_REVISION });
+  vm.runInContext(migration, c);
+  for (const revision of ['v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6', 'v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2']) {
+    const snapshot = { schemaVersion: 22, rulesVersion: 6, rulesetRevision: revision, state: { buildings: [{ type: 'dock', id: 9 }] } };
+    c.migrateMatchCheckpoint(snapshot);
+    assert.equal(snapshot.rulesetRevision, revision === 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6' ? GAMEPLAY_RULESET_REVISION : revision);
+    assert.equal(snapshot.state.buildings[0].id, 9);
   }
 });

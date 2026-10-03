@@ -6,6 +6,7 @@ import { buildElevationGrid } from '../src/map-utils.mjs';
 import { canTraverseElevation } from '../src/elevation.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 import { settlementGround } from '../src/settlement-authoring.mjs';
+import { seedMillraceSheep } from '../src/millrace-sheep.mjs';
 
 const map = JSON.parse(await readFile(new URL('../maps/bellweather-millrace.json', import.meta.url)));
 const baseline = JSON.parse(await readFile(new URL('./fixtures/settlement-ground-baseline.json', import.meta.url))).maps[map.id];
@@ -35,10 +36,11 @@ const paths = [distances(0), distances(1)];
 
 test('Millrace materializes the profile reproducibly without changing other map fields', () => {
   const input = JSON.stringify(map);
-  assert.deepEqual(seededMirroredResourceClusters(map), map.resourceNodes);
+  assert.deepEqual(seedMillraceSheep(seededMirroredResourceClusters(map)), map.resourceNodes);
+  assert.deepEqual(seedMillraceSheep(seededMirroredResourceClusters(map, { ...settings, distribution: 'uniform' })), map.resourceNodes);
   assert.equal(JSON.stringify(map), input);
   for (const [key, value] of Object.entries(before)) if (key !== 'resourceNodes') assert.deepEqual(map[key], value, key);
-  assert.notDeepEqual(seededMirroredResourceClusters(map, { ...settings, seed: 93001 }), map.resourceNodes);
+  assert.notDeepEqual(seedMillraceSheep(seededMirroredResourceClusters(map, { ...settings, seed: 93001 })), map.resourceNodes);
   assert.equal(map.resourceNodes.length, 40);
   assert.equal(new Set(map.resourceNodes.map(n => n.id)).size, 40);
   assert.equal(new Set(map.resourceNodes.map(cell)).size, 40);
@@ -81,7 +83,7 @@ test('explicit quantity settings conserve integer stock and fail closed on impos
   const nodes = seededMirroredResourceClusters(map, custom);
   assert.equal(nodes.length, 24); assert.ok(nodes.every(n => Number.isInteger(n.stock) && n.stock > 0));
   assert.equal(total(nodes, 'food'), 404); assert.equal(total(nodes, 'wood'), 404);
-  for (const invalid of [{ nodesPerPatch: 17 }, { radius: 0 }, { seed: NaN }, { patches: Array(13).fill(settings.patches[0]) }]) {
+  for (const invalid of [{ nodesPerPatch: 17 }, { radius: 0 }, { seed: NaN }, { distribution: 'unknown' }, { patches: Array(13).fill(settings.patches[0]) }]) {
     assert.throws(() => seededMirroredResourceClusters(map, { ...settings, ...invalid }), /settings|budget/);
   }
   assert.throws(() => seededMirroredResourceClusters({ ...map, obstacles: [{ column: 0, row: 0, width: map.width, height: map.height }] }), /anchor/);
@@ -112,6 +114,7 @@ test('append preserves existing stock and IDs, with a deterministic exact patch-
   const input = freeze(additiveMap()), options = freeze({ ...additiveSettings });
   const nodes = appendSeededResourceCluster(input, options), added = nodes.slice(2);
   assert.deepEqual(nodes, appendSeededResourceCluster(input, options));
+  assert.deepEqual(nodes, appendSeededResourceCluster(input, { ...options, distribution: 'uniform' }));
   assert.deepEqual(nodes.slice(0, 2), input.resourceNodes);
   assert.notEqual(nodes[0], input.resourceNodes[0]);
   assert.deepEqual(added.map(n => n.stock), [21, 20, 20, 20, 20]);
@@ -121,6 +124,47 @@ test('append preserves existing stock and IDs, with a deterministic exact patch-
   assert.notDeepEqual(added, appendSeededResourceCluster(input, { ...options, seed: 93001 }).slice(2));
   assert.deepEqual(added, appendSeededResourceCluster({ ...input, resourceNodes: [...input.resourceNodes].reverse() }, options).slice(2));
   nodes[0].stock = 1; assert.equal(input.resourceNodes[0].stock, 13.5);
+});
+
+test('core falloff produces reproducible denser cores with the same stock, spacing and radius', () => {
+  const input = freeze(additiveMap([])), original = JSON.stringify(input);
+  const request = { ...additiveSettings, x: 0.5, z: 10.5, nodesPerPatch: 9, radius: 8 };
+  const radial = { uniform: 0, 'core-falloff': 0 };
+  for (let seed = 93000; seed < 93064; seed++) for (const distribution of Object.keys(radial)) {
+    const options = freeze({ ...request, seed, distribution });
+    const nodes = appendSeededResourceCluster(input, options);
+    assert.deepEqual(nodes, appendSeededResourceCluster(input, options));
+    assert.equal(total(nodes, 'food'), 101); assert.equal(nodes.length, 9);
+    for (const [i, a] of nodes.entries()) {
+      const distance = Math.hypot(a.x - request.x, a.z - request.z);
+      assert.ok(distance <= 8); radial[distribution] += distance;
+      for (const b of nodes.slice(i + 1)) assert.ok(Math.hypot(a.x - b.x, a.z - b.z) >= 2);
+    }
+  }
+  assert.ok(radial['core-falloff'] < radial.uniform * 0.8, 'falloff must visibly favor the core over uniform spread');
+  assert.equal(JSON.stringify(input), original);
+  const options = { ...request, distribution: 'core-falloff' };
+  assert.notDeepEqual(appendSeededResourceCluster(input, options),
+    appendSeededResourceCluster(input, { ...options, seed: 93001 }));
+  console.log(JSON.stringify({ seeds: 64, markers: 9, radius: 8, patchStock: 101,
+    meanDistance: Object.fromEntries(Object.entries(radial).map(([key, value]) => [key, value / (64 * 9)])) }));
+});
+
+test('mirrored core-falloff patches retain equal-seat stock and accessible seeded groups', () => {
+  const options = { ...settings, distribution: 'core-falloff' }, original = JSON.stringify(map);
+  const nodes = seedMillraceSheep(seededMirroredResourceClusters(map, options));
+  assert.deepEqual(nodes, seedMillraceSheep(seededMirroredResourceClusters(map, options)));
+  assert.notDeepEqual(nodes, map.resourceNodes);
+  assert.equal(total(nodes, 'food'), total(map.resourceNodes, 'food'));
+  assert.equal(total(nodes, 'wood'), total(map.resourceNodes, 'wood'));
+  assert.deepEqual(nodes.filter(n => n.wildlifeSpecies).map(n => n.id), map.resourceNodes.filter(n => n.wildlifeSpecies).map(n => n.id));
+  for (const node of nodes.filter(n => n.id.startsWith('s0'))) {
+    const opposite = nodes.find(n => n.id === node.id.replace('s0', 's1'));
+    assert.deepEqual(opposite, { ...node, id: node.id.replace('s0', 's1'), x: -node.x });
+    assert.ok(paths.every(p => p[cell(node)] >= 0 && p[cell(opposite)] >= 0));
+    assert.equal(paths[0][cell(node)], paths[1][cell(opposite)]);
+  }
+  assert.equal(JSON.stringify(map), original);
 });
 
 test('repeated additions work on either side and the center without implicit mirroring', () => {
@@ -136,28 +180,34 @@ test('repeated additions work on either side and the center without implicit mir
 });
 
 test('existing candidate cells and their two-cell clearance are respected without losing existing nodes', () => {
-  const original = appendSeededResourceCluster(additiveMap([]), additiveSettings);
-  const reserved = { ...original[1], id: 'reserved', stock: 42 };
-  const nodes = appendSeededResourceCluster(additiveMap([reserved]), additiveSettings);
-  assert.equal(nodes.length, 6); assert.deepEqual(nodes[0], reserved);
-  assert.equal(total(nodes.slice(1), 'food'), 101);
-  assert.ok(nodes.slice(1).every(n => Math.hypot(n.x - reserved.x, n.z - reserved.z) >= 2));
-  assert.equal(new Set(nodes.map(n => `${Math.floor(n.x + 32)},${Math.floor(n.z + 32)}`)).size, 6);
-  rejectsUnchanged(additiveMap([reserved]), { ...additiveSettings, x: reserved.x, z: reserved.z }, /occupied/);
+  for (const distribution of ['uniform', 'core-falloff']) {
+    const options = { ...additiveSettings, distribution };
+    const original = appendSeededResourceCluster(additiveMap([]), options);
+    const reserved = { ...original[1], id: 'reserved', stock: 42 };
+    const nodes = appendSeededResourceCluster(additiveMap([reserved]), options);
+    assert.equal(nodes.length, 6); assert.deepEqual(nodes[0], reserved);
+    assert.equal(total(nodes.slice(1), 'food'), 101);
+    assert.ok(nodes.slice(1).every(n => Math.hypot(n.x - reserved.x, n.z - reserved.z) >= 2));
+    assert.equal(new Set(nodes.map(n => `${Math.floor(n.x + 32)},${Math.floor(n.z + 32)}`)).size, 6);
+    rejectsUnchanged(additiveMap([reserved]), { ...options, x: reserved.x, z: reserved.z }, /occupied/);
+  }
 });
 
 test('the 128-node budget includes existing nodes and fails before changing either input', () => {
   const dense = Array.from({ length: 124 }, (_, i) => ({ id: `old-${i}`, type: 'wood',
     x: -31.5 + i % 16, z: -31.5 + Math.floor(i / 16), stock: 1 }));
-  const nodes = appendSeededResourceCluster(additiveMap(dense.slice(0, 123)), { ...additiveSettings, x: 0.5, z: 10.5 });
-  assert.equal(nodes.length, 128); assert.deepEqual(nodes.slice(0, 123), dense.slice(0, 123));
-  rejectsUnchanged(additiveMap(dense), additiveSettings, /node budget/);
+  for (const distribution of ['uniform', 'core-falloff']) {
+    const options = { ...additiveSettings, distribution };
+    const nodes = appendSeededResourceCluster(additiveMap(dense.slice(0, 123)), { ...options, x: 0.5, z: 10.5 });
+    assert.equal(nodes.length, 128); assert.deepEqual(nodes.slice(0, 123), dense.slice(0, 123));
+    rejectsUnchanged(additiveMap(dense), options, /node budget/);
+  }
 });
 
 test('new stock must be an explicit safe integer total sufficient for every marker', () => {
   for (const invalid of [{ totalStock: undefined }, { totalStock: 4 }, { totalStock: 10.5 },
     { totalStock: Number.MAX_SAFE_INTEGER + 1 }, { totalStock: Infinity }, { seed: NaN },
-    { nodesPerPatch: 17 }, { radius: 0 }, { spawnClearance: -1 }, { type: 'gold' }]) {
+    { nodesPerPatch: 17 }, { radius: 0 }, { spawnClearance: -1 }, { type: 'gold' }, { distribution: 'unknown' }]) {
     rejectsUnchanged(additiveMap(), { ...additiveSettings, ...invalid }, /settings|stock|budget/);
   }
   const large = appendSeededResourceCluster(additiveMap([]), { ...additiveSettings, totalStock: Number.MAX_SAFE_INTEGER });
@@ -175,27 +225,36 @@ test('duplicate existing IDs or occupied cells and invalid existing nodes reject
 });
 
 test('anchors reject bounds, blockers, dirt, actual home footprints and spawn clearings', () => {
-  rejectsUnchanged(additiveMap(), { ...additiveSettings, x: 32 }, /anchor/);
-  rejectsUnchanged({ ...additiveMap(), obstacles: [{ ...pointCell(additiveSettings), material: 'stone' }] }, additiveSettings, /anchor/);
-  rejectsUnchanged({ ...additiveMap(), terrainPatches: [{ ...pointCell(additiveSettings), material: 'dirt' }] }, additiveSettings, /anchor/);
-  const input = additiveMap(), homeCell = townCenterFootprintCells(input.spawnPoints, 0, 64, 64)[0];
-  rejectsUnchanged(input, { ...additiveSettings, x: homeCell % 64 - 31.5, z: Math.floor(homeCell / 64) - 31.5, spawnClearance: 0 }, /anchor/);
-  rejectsUnchanged(additiveMap(), { ...additiveSettings, x: -20.5, z: 0.5 }, /anchor/);
+  for (const distribution of ['uniform', 'core-falloff']) {
+    const options = { ...additiveSettings, distribution };
+    rejectsUnchanged(additiveMap(), { ...options, x: 32 }, /anchor/);
+    rejectsUnchanged({ ...additiveMap(), obstacles: [{ ...pointCell(options), material: 'stone' }] }, options, /anchor/);
+    rejectsUnchanged({ ...additiveMap(), terrainPatches: [{ ...pointCell(options), material: 'dirt' }] }, options, /anchor/);
+    const input = additiveMap(), homeCell = townCenterFootprintCells(input.spawnPoints, 0, 64, 64)[0];
+    rejectsUnchanged(input, { ...options, x: homeCell % 64 - 31.5, z: Math.floor(homeCell / 64) - 31.5, spawnClearance: 0 }, /anchor/);
+    rejectsUnchanged(additiveMap(), { ...options, x: -20.5, z: 0.5 }, /anchor/);
+  }
 });
 
 test('satellites avoid blocked cells, dirt tracks and different elevations', () => {
-  const candidate = appendSeededResourceCluster(additiveMap([]), additiveSettings)[1];
-  const rect = pointCell(candidate);
-  for (const change of [{ obstacles: [{ ...rect, material: 'stone' }] },
-    { terrainPatches: [{ ...rect, material: 'dirt' }] }, { elevationPatches: [{ ...rect, level: 1 }] }]) {
-    const nodes = appendSeededResourceCluster({ ...additiveMap([]), ...change }, additiveSettings);
-    assert.equal(nodes.length, 5); assert.equal(total(nodes, 'food'), 101);
-    assert.ok(nodes.every(n => n.x !== candidate.x || n.z !== candidate.z));
+  for (const distribution of ['uniform', 'core-falloff']) {
+    const options = { ...additiveSettings, distribution };
+    const candidate = appendSeededResourceCluster(additiveMap([]), options)[1];
+    const rect = pointCell(candidate);
+    for (const change of [{ obstacles: [{ ...rect, material: 'stone' }] },
+      { terrainPatches: [{ ...rect, material: 'dirt' }] }, { elevationPatches: [{ ...rect, level: 1 }] }]) {
+      const nodes = appendSeededResourceCluster({ ...additiveMap([]), ...change }, options);
+      assert.equal(nodes.length, 5); assert.equal(total(nodes, 'food'), 101);
+      assert.ok(nodes.every(n => n.x !== candidate.x || n.z !== candidate.z));
+    }
   }
 });
 
 test('partial placement and final both-seat connectivity failures leave all state unchanged', () => {
-  rejectsUnchanged(additiveMap(), { ...additiveSettings, nodesPerPatch: 6, radius: 2 }, /insufficient safe space/);
-  rejectsUnchanged({ ...additiveMap([]), obstacles: [{ column: 32, row: 0, width: 1, height: 64, material: 'stone' }] },
-    additiveSettings, /reachable from both seats/);
+  for (const distribution of ['uniform', 'core-falloff']) {
+    const options = { ...additiveSettings, distribution };
+    rejectsUnchanged(additiveMap(), { ...options, nodesPerPatch: 6, radius: 2 }, /insufficient safe space/);
+    rejectsUnchanged({ ...additiveMap([]), obstacles: [{ column: 32, row: 0, width: 1, height: 64, material: 'stone' }] },
+      options, /reachable from both seats/);
+  }
 });

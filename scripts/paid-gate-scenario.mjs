@@ -122,12 +122,12 @@ try {
   // Exact pre-gate saves migrate; unknown or invalid gate state never silently resumes.
   await fixture.stop(); const current = JSON.parse(await readFile(fixture.checkpointPath, 'utf8'));
   const corrupt = structuredClone(current); delete corrupt.state.buildings.find(b => b.id === gate.id).gateOpen;
-  const source = JSON.stringify(corrupt); await writeFile(fixture.checkpointPath, source); await reconnect();
+  const source = JSON.stringify(corrupt); await writeFile(fixture.checkpointPath, source); tokens = null; await reconnect();
   await fixture.checkpoint(s => s.matchId !== current.matchId);
   const rejected = (await readdir(fixture.directory)).find(name => name.startsWith('match.json.rejected-'));
   assert.ok(rejected); assert.equal(await readFile(fixture.directory + '/' + rejected, 'utf8'), source);
   await fixture.stop(); const preGate = JSON.parse(await readFile(fixture.checkpointPath, 'utf8'));
-  preGate.rulesetRevision = 'v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2';
+  preGate.rulesetRevision = 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6';
   await writeFile(fixture.checkpointPath, JSON.stringify(preGate)); await reconnect();
   const migrated = await fixture.checkpoint(s => s.rulesetRevision === GAMEPLAY_RULESET_REVISION);
   assert.equal(migrated.matchId, preGate.matchId);

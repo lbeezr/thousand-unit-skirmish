@@ -1,5 +1,7 @@
 import { findInvalidResourceVariant, isShoreFish, validResourceVariantState } from './src/shore-fishing.mjs';
+import { createDockPlacementContext } from './src/dock-placement.mjs';
 import { activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted, validWildlifeNodeDefinition, validWildlifeNodeState } from './src/wildlife-state.mjs';
+import { migrateMillraceSheepCheckpoint } from './src/millrace-sheep.mjs';
 import { validateMapRegion } from './src/regions.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, regionEntryTeam, validCompletionTrigger, completionTeam } from './src/scenario-regions.mjs';
 import { TERRAIN_MATERIALS } from './src/terrain-materials.mjs';
@@ -634,6 +636,7 @@ const MIME_TYPES = {
 
 const configuredMatchMapId = pveLaunchOptions?.mapId ?? defaultMapId;
 let mapDefinition = mapCatalog.get(configuredMatchMapId);
+let dockPlacementContext = null;
 if (!mapDefinition) {
   throw new Error(`The selected PvE map "${pveLaunchOptions?.mapId}" is not shipped with this server.`);
 }
@@ -766,6 +769,7 @@ function resetVictoryHoldState() {
 
 function activateMap(definition) {
   mapDefinition = definition;
+  dockPlacementContext = createDockPlacementContext(definition, BUILDING_DEFINITIONS.dock);
   MAP_WIDTH = definition.width;
   MAP_HEIGHT = definition.height;
   MAP_HALF_X = MAP_WIDTH / 2;
@@ -2791,6 +2795,8 @@ function validateMatchCheckpoint(snapshot) {
       && integerIn(center.rallyCell, -1, cellCount - 1)), 'invalid home Town Centers');
   for (const team of [0, 1]) assertSnapshot(state.homeTownCenters[team].hp > 0 || state.workerProduction[team].queue === 0, 'destroyed home Town Center retains a queue');
   assertSnapshot(Array.isArray(state.buildings) && state.buildings.length <= MAX_BUILDINGS, 'invalid buildings');
+  const checkpointDockPlacement = state.buildings.some(building => building?.type === 'dock')
+    ? createDockPlacementContext(definition, BUILDING_DEFINITIONS.dock) : null;
   const buildingIds = new Set();
   const occupiedFootprintCells = new Set();
   const staticBlocked = new Uint8Array(cellCount);
@@ -2853,6 +2859,9 @@ function validateMatchCheckpoint(snapshot) {
     }
     assertSnapshot(building.footprint.length === expectedFootprint.size
       && building.footprint.every((cell) => expectedFootprint.has(cell)), 'invalid building footprint geometry');
+    if (building.type === 'dock') {
+      assertSnapshot(checkpointDockPlacement.accessAt(centerRow * definition.width + centerColumn).valid, 'invalid Dock shoreline placement');
+    }
     for (const cell of building.footprint) {
       assertSnapshot(!occupiedFootprintCells.has(cell) && !staticBlocked[cell] && !resourceCells.has(cell),
         'building overlaps a building, terrain, or resource');
@@ -3039,12 +3048,16 @@ function validateMatchCheckpoint(snapshot) {
 }
 
 function restoreMatchCheckpoint(snapshot) {
-  const { definition, state, explored } = validateMatchCheckpoint(snapshot);
+  let { definition, state, explored } = validateMatchCheckpoint(snapshot);
   if (pveLaunchOptions && definition.id !== pveLaunchOptions.mapId) {
     throw new Error('PvE checkpoint map does not match its launch seed.');
   }
   if (shippedMapIds.has(definition.id)) {
     const shippedDefinition = mapCatalog.get(definition.id);
+    if (matchMapHash(shippedDefinition) !== snapshot.mapHash
+      && migrateMillraceSheepCheckpoint(snapshot, shippedDefinition, matchMapHash)) {
+      ({ definition, state, explored } = validateMatchCheckpoint(snapshot));
+    }
     assertSnapshot(matchMapHash(shippedDefinition) === snapshot.mapHash, 'shipped map changed since checkpoint');
   } else {
     mapCatalog.set(definition.id, definition);
@@ -3209,6 +3222,12 @@ async function writeMatchCheckpointAtomically(serialized, sequence) {
 }
 
 function migrateMatchCheckpoint(snapshot) {
+  // Older definitions cannot claim content that they never admitted.
+  if (Array.isArray(snapshot?.state?.buildings)
+    && snapshot.state.buildings.some(building => building?.type === 'palisade-gate' || (building && Object.hasOwn(building, 'gateOpen')))
+    && snapshot.rulesetRevision !== GAMEPLAY_RULESET_REVISION) return snapshot;
+  if (Array.isArray(snapshot?.state?.buildings) && snapshot.state.buildings.some(building => building?.type === 'dock')
+    && ![GAMEPLAY_RULESET_REVISION, 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6'].includes(snapshot.rulesetRevision)) return snapshot;
   if (snapshot?.schemaVersion === 2 && Array.isArray(snapshot.state?.units)) {
     for (const unit of snapshot.state.units) {
       if (unit && typeof unit === 'object' && !Array.isArray(unit) && unit.queuedWaypoints === undefined) {
@@ -3343,11 +3362,15 @@ function migrateMatchCheckpoint(snapshot) {
   }
   // The gate is additive; accept only the exact preceding definition set, without invented gate state.
   if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
-    && snapshot.rulesetRevision === 'v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2'
+    && snapshot.rulesetRevision === 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6'
     && Array.isArray(snapshot.state?.buildings)
     && !snapshot.state.buildings.some(building => building.type === 'palisade-gate' || Object.hasOwn(building, 'gateOpen'))) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
+  // Additive Dock content preserves the exact previous Mill roster and paid work.
+  if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
+    && snapshot.rulesetRevision === 'v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2'
+    && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
   if ([1, 2, 3].includes(snapshot?.rulesVersion)
     && !snapshot?.mapDefinition?.elevationPatches?.some((patch) => patch.level > 0)) {
@@ -5117,6 +5140,10 @@ function buildBuilding(player, command) {
     || buildings.some(building => building.footprint.includes(cell)))) {
     rejectBuild(player, 'SPACE BLOCKED', command);
     return;
+  }
+  if (BUILDING_DEFINITIONS[command.buildingType].placement?.kind === 'shoreline') {
+    const berth = dockPlacementContext.accessAt(centerCell);
+    if (!berth.valid) { rejectBuild(player, berth.reason, command); return; }
   }
   if (footprint.some(isResourceCell)) {
     rejectBuild(player, 'RESOURCE NODE IN FOOTPRINT', command);
@@ -7583,11 +7610,12 @@ const server = createServer(async (request, response) => {
     'src/room-lobby-ui.mjs', 'src/room-lobby-chat-ui.mjs', 'src/room-lobby.css',
     'src/scenario-regions.mjs', 'src/scenario-authoring.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
     'src/shore-fishing.mjs', 'src/shore-fishing-placeholder.mjs', 'src/shore-fishing-placement.mjs',
+    'src/dock-placement.mjs', 'src/water-route-graph.mjs',
     'src/worker-fishing-presentation.mjs',
     'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs', 'src/resource-brush-controls.mjs',
     'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
-    'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
+    'src/selection-context.mjs', 'src/selection-portrait.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
     'src/terrain-authoring.mjs', 'src/terrain-height.mjs', 'src/regions.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs',
     'src/audio-shipped-loader.mjs', 'src/audio-shipped-catalog.mjs', 'src/audio-decoded-cache.mjs',
     'src/audio-composition-player.mjs', 'src/audio-assets.mjs', 'src/audio-library-store.mjs',
@@ -7600,6 +7628,7 @@ const server = createServer(async (request, response) => {
     'src/forest-habitat.mjs', 'src/forest-age-composition.mjs', 'src/forest-composition.mjs', 'src/regional-ground-kits.mjs', 'src/water-contours.mjs',
   ].includes(relative);
   const publicUiAsset = [
+    'assets/ui/portraits/human-worker-source.png', 'assets/ui/portraits/boughward-worker-source.png',
     'assets/ui/cursors/select-add.png',
     'assets/ui/cursors/select-remove.png',
     'assets/ui/cursors/box-crossing.png',

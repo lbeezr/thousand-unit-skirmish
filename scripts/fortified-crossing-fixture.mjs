@@ -29,7 +29,7 @@ export async function createFortifiedFixture({ mapPath = 'maps/fortified-crossin
   async function start() {
     child = spawn(process.execPath, [path.join(ROOT, supervisor ? 'room-supervisor.mjs' : 'server.mjs')], { cwd: ROOT,
       env: { ...process.env, PORT: String(port), RTS_HOST: '127.0.0.1', RTS_GAME_MODE: 'pvp',
-        RTS_MAP: mapPath, RTS_MATCH_STATE_PATH: checkpointPath,
+        RTS_MAP: mapPath ?? '', RTS_MATCH_STATE_PATH: checkpointPath,
         RTS_CUSTOM_MAP_DIRECTORY: path.join(directory, 'custom'),
         ...(supervisor ? { RTS_ROOM_DATA_DIRECTORY: path.join(directory, 'rooms') } : {}),
         ...(diagnostics ? { RTS_TICK_DIAGNOSTICS: '1', RTS_SEPARATION_DIAGNOSTICS: '1' } : {}) },

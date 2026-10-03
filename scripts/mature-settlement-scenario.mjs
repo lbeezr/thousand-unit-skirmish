@@ -13,7 +13,7 @@ const pads = [
   ['storehouse', -25.5, 4.5], ['mill', -28.5, 18.5], ['barracks', -20.5, -6.5],
   ['archery-range', -25.5, -6.5], ['stable', -14.5, -6.5],
   ['watchtower', -9.5, -1.5], ['town-center', -10.5, 8.5], ['workshop', -14.5, 1.5],
-  ['palisade-wall', -28.5, -14.5],
+  ['palisade-wall', -28.5, -14.5], ['palisade-gate', -26.5, -14.5],
 ];
 const products = [
   ['home', 'worker'], ['town-center', 'worker'], ['barracks', 'infantry'],

@@ -23,6 +23,12 @@ map the central post's owner wins at 15 minutes; an unclaimed deadline draws.
 Equal relief supplies arrive at two minutes.
 
 Millrace now has orchard-side food/wood expansions and three broad ford approaches.
+Three neutral Bellweather Sheep graze beside each home orchard, including one
+visible at the normal opening. Select **Bellweather · Millrace**, then select a
+Worker and right-click a Sheep to gather food. These six existing 130-food markers
+replace ordinary food identities; total map food remains 2,800. IDs, coordinates,
+seed, wood and starting banks remain unchanged. [Default Sheep evidence](qa-millrace-sheep-2026-10-03.md)
+covers both seats, the public static illustration and checkpoint compatibility.
 Rootways has paired copper woodland belts: gathering trees can open shorter routes
 between clearings, while armies can use the existing longer passages. Both
 flagships have seeded mirrored rolling ground and flat base, water and marker pads.

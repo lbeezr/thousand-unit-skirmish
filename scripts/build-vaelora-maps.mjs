@@ -2,6 +2,7 @@ import { generateRollingGround, compressGroundLevels } from '../src/terrain-auth
 import { shapeRegionalLandscape } from '../src/landscape-authoring.mjs';
 import { settlementGround } from '../src/settlement-authoring.mjs';
 import { seededMirroredResourceClusters } from '../src/resource-cluster-authoring.mjs';
+import { seedMillraceSheep } from '../src/millrace-sheep.mjs';
 // Deterministic authored layouts; rerun when changing the roster or source audio.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -85,7 +86,7 @@ for (const [index,[id,name,palette,terrainBase,layout,summary]] of roster.entrie
   if (id==='underbough-rootways') map.victoryHoldSeconds=30;
   if (['bellweather-millrace','underbough-rootways'].includes(id)) map.elevationPatches=compressGroundLevels(generateRollingGround(map,map.terrainSeed),width,height);
   if (['bellweather-millrace','underbough-rootways'].includes(id)) map.terrainPatches=settlementGround(map);
-  if (id==='bellweather-millrace') map.resourceNodes=seededMirroredResourceClusters(map);
+  if (id==='bellweather-millrace') map.resourceNodes=seedMillraceSheep(seededMirroredResourceClusters(map));
   if (['bellweather-millrace','underbough-rootways'].includes(id)) map.regions=[{id:'north-route',name:posts[0],zone:rect(center-18,12,36,12)},{id:'south-route',name:posts[1],zone:rect(center-18,48,36,12)}];
   await writeFile(`maps/${id}.json`,JSON.stringify(map,null,2)+'\n');
 }

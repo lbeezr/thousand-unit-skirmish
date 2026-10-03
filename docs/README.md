@@ -49,10 +49,12 @@ the build they name.
 | Author and validate scenario JSON | [Map authoring](map-authoring.md) |
 | Work on connected walls and explicit manual gates | [Palisade runtime](palisade-runtime.md), [gates](palisade-gates.md) |
 | Inspect isolated water routes before dock/boat integration | [Water navigation foundation](water-navigation-foundation.md) |
+| Place Dock foundations and inspect their land/water berth contract | [Dock shoreline foundation](dock-shoreline-foundation.md) |
 | Choose a map | [Catalog](maps.md), [Forked Vale](forked-vale-scenario.md), [Three Crowns](three-crowns-layout.md) |
 | Change the compact objective HUD | [Objective behavior and validation](battlefield-objectives-validation.md) |
 | Change owned population feedback | [Population header behavior and validation](population-header-validation.md) |
 | Change selection-dependent command visibility | [Contextual HUD behavior and validation](contextual-hud-validation.md) |
+| Add selected-unit portraits or connect future field notes | [Worker HUD art and integration contract](hud-art-integration.md) |
 | Change cues or captions | [Audio design](audio-design.md) |
 | Design each command, notice, alert and result sound | [UI sound direction](ui-audio-direction.md) |
 | Produce reusable effects and music | [Audio kit plan](audio-kit-plan.md) |
