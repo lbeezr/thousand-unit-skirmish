@@ -206,8 +206,9 @@ Deletion or disk cleanup must preserve artwork and dirty worktrees until their
 recovery has been verified. A text receipt alone is not a saved image.
 
 **Evidence:** [preservation audit](../art-direction/preservation-audit-2026-10-02.json)
-records checked source hashes, counts, inspected pixels and gaps. Images embedded
-above are existing tracked files; no image generation, Meshy job, repaint or
-runtime capture was performed for this index.
+records the original 2 October checked source hashes, counts, inspected pixels
+and gaps. That original index used existing tracked files without generation,
+Meshy, repaint or runtime capture. The subsequent military section records
+new local model renders separately; it does not claim native gameplay pixels.
 
 [Wildlife](wildlife.md) · [Wiki index](README.md) · [Documentation index](../README.md)

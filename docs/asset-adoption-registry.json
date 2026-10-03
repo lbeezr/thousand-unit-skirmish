@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "scope": "Approved-runtime coverage: eight-view Sheep, Human Worker SE fishing, six Frontier Complete families, eight painted ground materials with six authored mips. Concepts, unapproved candidates and other runtime families are outside this guard.",
+  "scope": "Approved-runtime coverage: eight-view Sheep, Human Worker SE fishing, eight Frontier Complete families, eight painted ground materials with six authored mips. Concepts, unapproved candidates and other runtime families are outside this guard.",
   "records": [
     {
       "id": "frontier-painted-material-atlas-v1",
@@ -62,6 +62,20 @@
       "probe": "frontier-building",
       "building": "watchtower",
       "manifest": "assets/buildings/frontier-civilization-models-v1/watchtower-complete-renderer.json"
+    },
+    {
+      "id": "frontier-barracks",
+      "owner": "Active Frontier building workstream",
+      "probe": "frontier-building",
+      "building": "barracks",
+      "manifest": "assets/buildings/frontier-civilization-military-models-v1/barracks-complete-renderer.json"
+    },
+    {
+      "id": "frontier-archery-range",
+      "owner": "Active Frontier building workstream",
+      "probe": "frontier-building",
+      "building": "archery-range",
+      "manifest": "assets/buildings/frontier-civilization-military-models-v1/archery-range-complete-renderer.json"
     }
   ]
 }
