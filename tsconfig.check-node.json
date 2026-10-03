@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.check-js.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "files": [
+    "src/networking/websocket-frame.mjs",
+    "scripts/type-contracts/websocket-frame-valid.mjs"
+  ]
+}
