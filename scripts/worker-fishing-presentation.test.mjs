@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import * as THREE from 'three';
 import { decodeRgba8, measureFrameAlpha } from './sprite-pixel-bounds.mjs';
@@ -41,7 +42,7 @@ test('ordinary play loads the approved Human v3 fishing pack without a pilot fla
 
 test('published atlas preserves prior action pixels/metadata and all four approved SE keys', async () => {
   const manifest = new URL('../assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json', import.meta.url);
-  assert.deepEqual((await validateSpriteAtlas(manifest.pathname)).errors, []);
+  assert.deepEqual((await validateSpriteAtlas(fileURLToPath(manifest))).errors, []);
   const asset = basePack.assets[0];
   assert.equal(sha256(JSON.stringify(asset.frames.slice(0, preservation.originalFrames))), preservation.originalFrameMetadataSha256);
   assert.equal(sha256(JSON.stringify(asset.clips.slice(0, preservation.originalClips))), preservation.originalClipMetadataSha256);
