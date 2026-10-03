@@ -73,14 +73,14 @@ export function clearWildlifeClaimSegment(unit, node, { map, levels, isWalkable 
   return true;
 }
 
-// Schema24 never recorded a claim. Initialize only its exact absent-team shape;
+// Schema25 never recorded a claim. Initialize only its exact absent-team shape;
 // normal validation still owns identity, stock, lifecycle, position and motion.
 export function migrateWildlifeClaimsCheckpoint(snapshot) {
-  if (snapshot?.schemaVersion !== 24 || !Array.isArray(snapshot.state?.resourceNodes)
+  if (snapshot?.schemaVersion !== 25 || !Array.isArray(snapshot.state?.resourceNodes)
     || snapshot.state.resourceNodes.some(node => !node || node.wildlifeTeam !== undefined)) return false;
   for (const node of snapshot.state.resourceNodes) {
     if (node.wildlifeSpecies === 'bellweather-sheep') node.wildlifeTeam = null;
   }
-  snapshot.schemaVersion = 25;
+  snapshot.schemaVersion = 26;
   return true;
 }

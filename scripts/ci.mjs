@@ -56,6 +56,10 @@ run(['scripts/check-runtime-imports.mjs'], 'Runtime dependency boundaries and cy
 run(['node_modules/typescript/bin/tsc', '--project', 'tsconfig.check-js.json', '--pretty', 'false'],
   'Strict checked JavaScript boundary');
 run(['--test', 'scripts/check-types.test.mjs'], 'Checked JavaScript contract negative cases');
+run(['node_modules/typescript/bin/tsc', '--project', 'tsconfig.check-node.json', '--pretty', 'false'],
+  'Strict checked Node framing boundary');
+run(['--test', 'scripts/check-node-types.test.mjs'], 'Node framing contract negative cases and ambient isolation');
+run(['--test', 'scripts/resource-visual-state.test.mjs'], 'Resource stage membership and legacy transitions');
 
 run(['--test', 'scripts/scenario-regions.test.mjs'], 'Named scenario regions');
 run(['--test', 'scripts/scenario-authoring.test.mjs'], 'Visual scenario authoring contracts');
@@ -86,6 +90,7 @@ run(['scripts/audio-wall-order-scenario.mjs'], 'Applied wall-line audio acknowle
 run(['--test', 'scripts/hosted-scale-profile.test.mjs'], 'Hosted scale measurement integrity');
 run(['--test', 'scripts/unit-sprite-clock.test.mjs'], 'Sprite animation clock');
 run(['--test', 'scripts/unit-animation-runtime.test.mjs'], 'Default unit action frames and lifetimes');
+run(['--test', 'scripts/unit-presentation-client.test.mjs'], 'Client snapshot and unit presentation buffers');
 run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work facing');
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
 run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach contact and bank/water picking');
@@ -123,10 +128,15 @@ run(['--test', 'scripts/performance-order-window.test.mjs'], 'Performance planni
 run(['--test', 'scripts/persistent-command.test.mjs'], 'Persistent tactical intent and bounded planning');
 run(['--test', 'scripts/stationary-command.test.mjs'], 'Stationary command tasks and controls');
 run(['--test', 'scripts/army-attack-continuation.test.mjs'], 'Focused military attack continuation and ordinary attack-move input');
+run(['--test', 'scripts/military-stance.test.mjs'], 'Military stances, idle defense, bounded return and command precedence');
+run(['scripts/military-stance-native-scenario.mjs'], 'Native two-seat stance commands and defensive return recovery');
 run(['--test', 'scripts/waypoint-backpressure.test.mjs'], 'Waypoint metadata under backpressure');
 run(['--experimental-test-coverage', '--test-coverage-include=src/networking/websocket-frame.mjs',
   '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
   '--test', 'scripts/websocket-frame.test.mjs'], 'Outbound WebSocket frame coverage floor (100%)');
+run(['--experimental-test-coverage', '--test-coverage-include=src/networking/websocket-deflate-offer.mjs',
+  '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
+  '--test', 'scripts/websocket-deflate-offer.test.mjs'], 'WebSocket deflate-offer coverage floor (100%)');
 run(['--test', 'scripts/worker-shutdown.test.mjs'], 'Signal-aware room worker shutdown');
 run(['--test', 'scripts/check-client-imports.test.mjs'], 'Served client import graph');
 run(['--test', 'scripts/snapshot-private-production.test.mjs'], 'Seat-private production snapshots');
@@ -239,6 +249,7 @@ const scenarios = [
   ['scripts/shore-fishing-scenario.mjs', 'Both-seat shore fishing, cargo and depletion recovery'],
   ['scripts/shore-fishing-authoring-scenario.mjs', 'Selectable seeded shore fishing pilot and recovery'],
   ['scripts/shore-fishing-adoption-scenario.mjs', 'Shipped pilot paid Dock/Skiff DOM choices and fishing Moves'],
+  ['scripts/shore-fishing-adoption-scenario.mjs', 'Normal one-player Practice paid fishing, Stop/Return and recovery', '--practice'],
   ['scripts/millrace-resource-scenario.mjs', 'Millrace cluster gathering and recovery'],
   ['scripts/regional-objective-scenario.mjs', 'Millrace both-seat hold and rematch', 'bellweather-millrace'],
   ['scripts/regional-objective-scenario.mjs', 'Rootways both-seat hold and rematch', 'underbough-rootways'],

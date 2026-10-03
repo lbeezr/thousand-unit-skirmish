@@ -3858,7 +3858,10 @@ function updateContextualCommands(priorFocus = document.activeElement) {
     button.textContent = `${controlGroupKeyLabel(index)} · ${controlGroups[index].size}`;
     button.setAttribute('aria-label', `Recall group ${controlGroupKeyLabel(index)}, ${controlGroups[index].size} units`);
   }
-  if (commandHadFocus && (!priorFocus.isConnected || priorFocus.disabled || priorFocus.closest('[hidden]')))
+  const currentFocus = document.activeElement;
+  const commandHasFocus = (bar.contains(currentFocus) || quickAccess?.contains(currentFocus))
+    && currentFocus.isConnected && !currentFocus.disabled && !currentFocus.closest('[hidden]');
+  if (commandHadFocus && !commandHasFocus && (!priorFocus.isConnected || priorFocus.disabled || priorFocus.closest('[hidden]')))
     commandFocusTarget()?.focus();
 }
 
@@ -4761,7 +4764,11 @@ function updateBuildingLifecycleActions() {
     ...(building.complete && building.hp < building.maxHp ? [{ type: 'repairBuilding', label: 'Repair with Workers · costs wood' }] : []),
   ];
   const signature = JSON.stringify([building?.id, choices.map((choice) => choice.type)]);
+  const focusedAction = document.activeElement?.parentElement === container
+    && container.dataset.buildingId === String(building?.id)
+    ? document.activeElement.dataset.action : null;
   if (container.dataset.signature !== signature) {
+    container.dataset.buildingId = String(building?.id);
     container.dataset.signature = signature; container.replaceChildren();
     for (const choice of choices) {
       const button = document.createElement('button'); button.type = 'button'; button.dataset.action = choice.type; button.textContent = choice.label;
@@ -4786,6 +4793,10 @@ function updateBuildingLifecycleActions() {
       || (button.dataset.action === 'repairBuilding' && !teamUnits[localTeam].some(unit => unit.hp > 0 && unit.kind === 'worker'));
     if (button.dataset.action === 'setGateOpen') button.textContent = building.gateOpen
       ? 'Close gate · blocks both teams' : 'Open gate · both teams may pass';
+  }
+  if (focusedAction) {
+    const button = [...container.children].find(child => child.dataset.action === focusedAction);
+    if (button && !button.disabled && document.activeElement !== button) button.focus({ preventScroll: true });
   }
   if (ui.cancelWorkerTraining) ui.cancelWorkerTraining.disabled = localTeam === null || matchWinner >= 0 || !(latestWorkerProduction[localTeam]?.queue > 0);
 }

@@ -13,6 +13,12 @@ delete process.env.RTS_MATCH_STATE_PATH;
 export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true,parkOrder=null}={}) {
   const map=pathingBaselineMap({group:64}),fixture=await createPathingReplayFixture(map),r=fixture.replay;
   try {
+    for(const seat of [0,1]) {
+      const passive=r.units.filter(u=>u.team===seat&&u.kind==='infantry');
+      assert.ok(r.order(seat,{type:'setStance',ids:passive.map(u=>u.id),
+        unitGenerations:passive.map(u=>u.generation),stance:'noAttack'})
+        .some(n=>n.message.startsWith('STANCE ORDER')));
+    }
     const army=r.units.filter(u=>u.team===team&&u.kind==='infantry'),ids=army.map(u=>u.id);
     const worker=r.units.find(u=>u.team===team&&u.kind==='worker'),wood=r.wood[team];
     const placed=r.order(team,{type:'build',buildingType:'palisade-gate',ids:[worker.id],unitGenerations:[worker.generation],x:16.5,z:.5});r.drain();
@@ -76,6 +82,7 @@ export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true
       trace.update(JSON.stringify(army.map(u=>[u.id,u.x,u.z,u.moveGoalCell,u.pathIndex,u.path,u.orderRevision,u.movePlanningPending,u.queuedWaypoints]))+'\n');
     }
     const goals=army.map(u=>u.moveGoalCell),arrived=army.filter(done).length;
+    assert.ok(army.every(u=>u.hp===100),'formation arrival excludes incidental combat');
     assert.equal(invalidSteps,0);assert.equal(unreachableGoals,0);
     if(!observe)assert.equal(arrived,64);
     const unblockedDestinationsPreserved=army.every((u,i)=>u.queuedWaypoints.length

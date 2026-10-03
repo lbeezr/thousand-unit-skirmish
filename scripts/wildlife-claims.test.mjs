@@ -199,15 +199,15 @@ test('actual land-segment guard rejects water/walls, blocked diagonals, cliffs a
   assert.equal(clearWildlifeClaimSegment(from, { x: Infinity, z: .5 }, options), false);
 });
 
-test('exact schema24 claim migration adds only neutral labels, never repairs a forged owner', () => {
-  const original = { schemaVersion: 24, state: { resourceNodes: [sheep(), sheep({ id: 'carcass', wildlifeState: 'carcass', stock: 42.5 }),
+test('exact schema25 claim migration adds only neutral labels, never repairs a forged owner', () => {
+  const original = { schemaVersion: 25, state: { resourceNodes: [sheep(), sheep({ id: 'carcass', wildlifeState: 'carcass', stock: 42.5 }),
     { id: 'wood', type: 'wood', stock: .004 }], teamFood: [151.25, 152.75], units: [unit({cargo:.004,cargoType:'food'})] } };
   for (const node of original.state.resourceNodes) delete node.wildlifeTeam;
   const saved = structuredClone(original);
-  assert.equal(migrateWildlifeClaimsCheckpoint(saved), true); assert.equal(saved.schemaVersion, 25);
+  assert.equal(migrateWildlifeClaimsCheckpoint(saved), true); assert.equal(saved.schemaVersion, 26);
   assert.deepEqual(saved.state.resourceNodes.slice(0,2).map(node=>node.wildlifeTeam), [null,null]);
   assert.equal(Object.hasOwn(saved.state.resourceNodes[2], 'wildlifeTeam'), false);
-  const normalized = structuredClone(saved); normalized.schemaVersion = 24;
+  const normalized = structuredClone(saved); normalized.schemaVersion = 25;
   for (const node of normalized.state.resourceNodes) delete node.wildlifeTeam;
   assert.deepEqual(normalized, original, 'stock, cargo, balances and existing motion stay byte-equivalent');
   for (const team of [null,0,1,2,'0']) {

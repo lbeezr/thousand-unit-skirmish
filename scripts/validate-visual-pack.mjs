@@ -652,6 +652,13 @@ async function validateEnvironmentPack() {
   if (budget.projectedBuildingDrawCallsPerStructure !== 0) report('environment pack must not add building draw calls');
 }
 
+class VisualPackLoadError extends Error {
+  constructor(code, message, cause) {
+    super(message, { cause });
+    this.code = code;
+  }
+}
+
 async function main() {
   const input = process.argv[2];
   if (!input || input === '--help' || input === '-h') {
@@ -660,15 +667,36 @@ async function main() {
     return;
   }
   manifestPath = path.resolve(input);
-  packRoot = await realpath(path.dirname(manifestPath));
+  let manifestText;
+  try {
+    packRoot = await realpath(path.dirname(manifestPath));
+    manifestText = await readFile(manifestPath, 'utf8');
+  } catch (error) {
+    if (error instanceof TypeError) throw error;
+    throw new VisualPackLoadError('manifest-unreadable',
+      'Cannot read visual-pack manifest. Check the file path and permissions, then retry.', error);
+  }
+  try {
+    manifest = JSON.parse(manifestText);
+  } catch (error) {
+    if (!(error instanceof SyntaxError)) throw error;
+    throw new VisualPackLoadError('manifest-invalid-json',
+      'Visual-pack manifest must be valid JSON. Check its syntax and retry.', error);
+  }
+  let schemaText;
+  const schemaMessage = 'Bundled visual-pack schema is unavailable or invalid. Repair the checkout and retry.';
+  try {
+    schemaText = await readFile(schemaPath, 'utf8');
+  } catch (error) {
+    if (error instanceof TypeError) throw error;
+    throw new VisualPackLoadError('schema-unavailable', schemaMessage, error);
+  }
   let schema;
   try {
-    schema = JSON.parse(await readFile(schemaPath, 'utf8'));
-    manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+    schema = JSON.parse(schemaText);
   } catch (error) {
-    console.error('Cannot read manifest or schema: ' + error.message);
-    process.exitCode = 1;
-    return;
+    if (!(error instanceof SyntaxError)) throw error;
+    throw new VisualPackLoadError('schema-invalid-json', schemaMessage, error);
   }
   const schemaIssues = checkSchema(manifest, schema, schema);
   if (schemaIssues.length) {
@@ -737,6 +765,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(error.stack || error.message);
+  console.error(error instanceof VisualPackLoadError ? error.message : error.stack || error.message);
   process.exitCode = 1;
 });

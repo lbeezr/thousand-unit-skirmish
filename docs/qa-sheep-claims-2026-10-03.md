@@ -14,25 +14,28 @@ eligible unit wins, exact ties by stable lower unit ID. No eligible contender
 means the last owner remains. Only alive Sheep change teams.
 
 `wildlifeTeam: null|0|1` is authoritative (neutral/Azure/Ember), persisted in
-schema25 and disclosed only with visible Sheep rows. It creates no food, cargo,
+schema26 and disclosed only with visible Sheep rows. It creates no food, cargo,
 bank, sight, population, motion, gather restriction, decay or currency. Shared
-Gather rights and frozen carcass/depletion remain. Exact absent-team schema24
-migration initializes neutral labels without changing existing motion/economy;
+Gather rights and frozen carcass/depletion remain. Exact absent-team schema25
+migration (after existing motion/stance upgrades) initializes neutral labels without changing existing motion/economy;
 current-state malformed teams reject. Rematch restores neutral authored Sheep.
 
 ## Evidence
 
 - `node --test scripts/wildlife-claims.test.mjs`: both seats, owner presence,
   recapture, no-contender retention, nearest/ties, radius, dead/water/blocked
-  exclusion, immutable food/units/banks/motion, whole land segment and exact24
+  exclusion, immutable food/units/banks/motion, whole land segment and exact25
   migration/forged-owner refusal.
 - `node --test scripts/wildlife-state.test.mjs`: authoring rejects runtime teams;
   own living Worker validation/Gather still succeeds against the other team label.
 - Motion/renderer/depleted-site regression checks continue to pass.
 - `node scripts/millrace-sheep-scenario.mjs`: actual default both-seat food/art,
   legacy pre-Sheep identity migration and restart preserve stock/cargo/banks.
-- Real Move/claim/reclaim/Gather/recovery scenario and independent exact-head
-  review are recorded in the focused PR when complete.
+- `node scripts/sheep-claims-scenario.mjs`: real default both-seat Move claims,
+  owner retention, recapture, hidden-row omission/no claimed sight, opposing
+  Gather, shared partial/depleted harvest, frozen labels and restart/Return
+  cargo conservation. Independent final-head review is recorded in
+  [PR194](https://github.com/lbeezr/thousand-unit-skirmish/pull/194).
 
 ## Delivery and remaining ownership
 

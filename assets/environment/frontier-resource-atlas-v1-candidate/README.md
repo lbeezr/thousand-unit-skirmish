@@ -37,9 +37,21 @@ From the repository root:
 
 ```sh
 node scripts/validate-sprite-atlas.mjs assets/environment/frontier-resource-atlas-v1-candidate/manifest.json
+npm run validate:resource-atlas-pixels
+python3 scripts/resource-atlas-pixels.test.py
 ```
 
 [preview.html](preview.html) exposes states, layers, rectangles, alpha bounds,
 and pivots. Pages use sRGB/straight alpha, no gutter or mipmaps, linear sampling,
 and half-pixel UV inset. Runtime encodes/hashes are absent because the pack is
 source-only. Adoption needs pivot/layer-order review, runtime exports, and a loader.
+
+The read-only pixel command checks the **committed** pages and canvas offsets,
+independently of the builder's recorded claims: seven page hashes/dimensions,
+eight original source hashes, fallback/source RGBA equality, disjoint layer alpha,
+exact recomposition and recorded alpha bounds. It checks RGB channels even when
+alpha is unchanged. The JSON report binds manifest/lineage hashes and keeps
+`runtimeReady: false`; a pass does not approve pivots or semantic depth mattes.
+It requires Python 3 and Pillow and writes no package/art files. Node CI does not
+install Pillow; run this authoring check explicitly in a Pillow-capable environment.
+See [candidate findings and ranked work](../../../docs/terrain-candidate-readiness.md).

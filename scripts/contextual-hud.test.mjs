@@ -34,7 +34,12 @@ function fixture(team = 0) {
     element.getBoundingClientRect = () => ({ height: visible(element) ? height : 0 });
   }
   const observers = [];
-  w.ResizeObserver = class { constructor(callback) { this.callback = callback; this.targets = []; observers.push(this); } observe(target) { this.targets.push(target); } };
+  w.ResizeObserver = class {
+    constructor(callback) { this.callback = callback; this.targets = []; observers.push(this); }
+    observe(target) { this.targets.push(target); }
+    unobserve(target) { this.targets = this.targets.filter(element => element !== target); }
+    disconnect() { this.targets = []; }
+  };
   w.ui = {};
   for (const [, name, selector] of source.matchAll(/^\s*(\w+): document\.querySelector\('([^']+)'\)/gm)) w.ui[name] = d.querySelector(selector);
   Object.assign(w, { ...economyClientBindings(),
@@ -517,9 +522,10 @@ test('closing a drawer whose opener became hidden, disabled or disconnected rest
 
 test('both command rows are observed; empty state reserves the Quick row, not a vanished bar', t => {
   const f = fixture(); t.after(() => f.dom.window.close());
-  assert.deepEqual(f.observers[0].targets, [f.bar, f.quick]);
+  const rowObserver = f.observers.find(observer => observer.targets.includes(f.bar) && observer.targets.includes(f.quick));
+  assert.deepEqual(rowObserver.targets, [f.bar, f.quick]);
   for (const [ids, expected] of [[[], '52px'], [[0], '86px'], [[1], '86px'], [[], '52px']]) {
-    f.select(ids); f.observers[0].callback();
+    f.select(ids); rowObserver.callback();
     assert.equal(f.d.querySelector('.workspace').style.getPropertyValue('--context-bar-height'), expected);
   }
 });
@@ -537,6 +543,33 @@ test('selection updates recover focus when a stationary control is disabled or a
   f.w.updateContextualCommands();
   assert.ok(f.d.activeElement.matches('button') && !f.d.activeElement.closest('[hidden]'));
   assert.deepEqual([...f.w.selected], [0]);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: combined lifecycle and contextual refresh retains gate action focus`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  f.w.eval(fn('updateBuildingLifecycleActions', 'updateRosterBuildingOptions'));
+  const gate = { id: 1, team, type: 'palisade-gate', complete: true, hp: 300, maxHp: 300, gateOpen: false };
+  f.select([], gate);
+  const action = () => f.d.querySelector('[data-action="setGateOpen"]');
+  action().focus(); action().click();
+  f.w.latestBuildings = [{ ...gate, hp: 299, gateOpen: true }]; f.w.updateContextualCommands();
+  assert.equal(f.d.activeElement, action(), 'contextual fallback must not override restored lifecycle focus');
+  assert.match(action().textContent, /Close gate/); action().click();
+  assert.deepEqual(JSON.parse(JSON.stringify(f.w.sentCommands)), [
+    { type: 'setGateOpen', buildingId: 1, open: true }, { type: 'setGateOpen', buildingId: 1, open: false },
+  ]);
+  f.w.latestBuildings = [gate]; f.w.updateSelectionUI();
+  assert.equal(f.d.activeElement, action(), 'selection refresh must preserve focus after Repair disappears');
+  const outside = f.d.querySelector('#match-menu-toggle'); outside.focus();
+  f.w.latestBuildings = [{ ...gate, hp: 299 }]; f.w.updateContextualCommands();
+  assert.equal(f.d.activeElement, outside, 'refresh must not steal unrelated focus');
+  action().focus(); f.select([], { ...gate, id: 2 });
+  assert.notEqual(f.d.activeElement, action(), 'changing gates must not transfer action focus');
+  action().focus(); f.w.matchWinner = team; f.w.updateContextualCommands();
+  assert.equal(action().disabled, true); assert.notEqual(f.d.activeElement, action());
+  assert.ok(!f.d.activeElement.disabled && !f.d.activeElement.closest('[hidden]'), 'disabled actions retain the visible fallback');
+  f.w.matchWinner = -1; f.w.updateContextualCommands(); action().focus(); f.select([]);
+  assert.equal(f.d.activeElement, f.w.dockToggle, 'removing selection retains global command access');
 });
 
 test('battlefield Escape cancels target modes before clearing selection; editing keeps selection', t => {

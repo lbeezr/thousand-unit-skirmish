@@ -70,3 +70,72 @@ test('entrypoint audits include lazy game imports and reject cross-origin dynami
   assert.deepEqual(checks.map(row => row.path), ['/src/entry.mjs', '/src/main.js']);
   await assert.rejects(audit({ '/src/main.js': { body: "import('https://other.example/game.js');" } }), /must stay on the game origin/);
 });
+
+test('comments, strings, templates and regular expressions cannot invent served imports', async () => {
+  const { requests } = await audit({ '/src/main.js': { body: `
+    // import './ghost.mjs';
+    /* export * from './comment.mjs'; */
+    const text = "import './string.mjs'";
+    const template = \`import('./template.mjs')\`;
+    const expression = /import 'regex.mjs'/;
+    export { text, template, expression };
+  ` } });
+  assert.deepEqual(requests, ['/src/main.js']);
+});
+
+test('compact imports and re-exports expose missing transitive modules', async () => {
+  await assert.rejects(audit({
+    '/src/main.js': { body: "import{value}from'./helper.mjs';" },
+    '/src/helper.mjs': { body: "export{value}from'./missing.mjs';" },
+  }), /browser import \/src\/missing.mjs must be served/);
+  await assert.rejects(audit({ '/src/main.js': { body: "export*from'./missing.mjs';" } }),
+    /browser import \/src\/missing.mjs must be served/);
+});
+
+test('escaped specifiers are decoded before URL resolution', async () => {
+  const { requests } = await audit({
+    '/src/main.js': { body: String.raw`import './hel\u0070er.mjs';` },
+    '/src/helper.mjs': { body: 'export const value = 1;' },
+  });
+  assert.deepEqual(requests, ['/src/main.js', '/src/helper.mjs']);
+});
+
+test('computed imports fail with their public path instead of hiding edges', async () => {
+  for (const body of ["const name = './missing.mjs'; import(name);", "import(`./${name}.mjs`);"]) {
+    await assert.rejects(audit({ '/src/main.js': { body } }),
+      /\/src\/main.js:1: runtime imports must use literal specifiers/);
+  }
+});
+
+test('invalid JavaScript fails with the served public path', async () => {
+  await assert.rejects(audit({ '/src/main.js': { body: 'export const = 1;' } }),
+    /\/src\/main.js: Unexpected token/);
+});
+
+test('lazy Three imports use the same alias as static imports', async () => {
+  const { requests } = await audit({
+    '/src/main.js': { body: "import('three'); import * as THREE from 'three';" },
+    '/vendor/three.module.js': { body: "export*from'./three.core.js';" },
+    '/vendor/three.core.js': { body: 'export const Core = 1;' },
+  });
+  assert.deepEqual(requests, ['/src/main.js', '/vendor/three.module.js', '/vendor/three.core.js']);
+});
+
+test('unmapped bare lazy specifiers fail before any dependency request', async () => {
+  for (const specifier of ['unmapped-package', '@scope/package', 'three/addons/helper.js', '.hidden.mjs']) {
+    const server = fixture({ '/src/main.js': { body: `import('${specifier}');` },
+      '/src/unmapped-package': { body: 'export const fake = true;' } });
+    await assert.rejects(checkClientImports('https://game.example', {
+      authorization: 'Basic fixture', fetchImpl: server.fetchImpl,
+    }), /unmapped browser import .* in \/src\/main.js/);
+    assert.deepEqual(server.requests, ['/src/main.js']);
+  }
+});
+
+test('relative, rooted and absolute same-origin lazy URLs retain their served paths', async () => {
+  const { requests } = await audit({
+    '/src/main.js': { body: "import('../src/helper.mjs'); import('/src/helper.mjs'); import('https://game.example/src/helper.mjs');" },
+    '/src/helper.mjs': { body: 'export const ready = true;' },
+  });
+  assert.deepEqual(requests, ['/src/main.js', '/src/helper.mjs']);
+});

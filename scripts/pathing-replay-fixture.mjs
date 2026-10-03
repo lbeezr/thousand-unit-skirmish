@@ -38,6 +38,9 @@ export const replay = {
     const player = { team, sendJson: notice => notices.push(notice) };
     if (command.type === 'move') assignFormationMove(player, command);
     else if (command.type === 'attackMove') assignFormationMove(player, command);
+    else if (command.type === 'setStance') assignCombatStance(player, command);
+    else if (command.type === 'patrol') assignPatrolOrder(player, command);
+    else if (command.type === 'follow') assignFollowOrder(player, command);
     else if (command.type === 'attack') assignAttack(player, command);
     else if (command.type === 'attackBuilding') assignAttackBuilding(player, command);
     else if (command.type === 'trainUnit') trainUnit(player, command);
@@ -63,6 +66,21 @@ export const replay = {
   get wood() { return teamWood; },
   get food() { return teamFood; }, get resources() { return resourceNodeStates; },
   snapshot(team) { return roomPayload(team); },
+  checkpoint() { return captureMatchCheckpoint(1); },
+  restore(snapshot) {
+    const migrated = migrateEconomyCheckpoint(migrateMatchCheckpoint(snapshot));
+    migrateWildlifeMotionCheckpoint(migrated);
+    migrateCombatStanceCheckpoint(migrated, UNIT_DEFINITIONS);
+    migrateWildlifeClaimsCheckpoint(migrated);
+    restoreMatchCheckpoint(migrated);
+  },
+  validate(snapshot) {
+    const migrated = migrateEconomyCheckpoint(migrateMatchCheckpoint(snapshot));
+    migrateWildlifeMotionCheckpoint(migrated);
+    migrateCombatStanceCheckpoint(migrated, UNIT_DEFINITIONS);
+    migrateWildlifeClaimsCheckpoint(migrated);
+    return validateMatchCheckpoint(migrated);
+  },
   get tick() { return tickNumber; }, get navigationRevision() { return navigationRevision; },
   point: cellToWorld, cell: worldToCell, isWalkable,
   get levels() { return elevationLevelByCell; },

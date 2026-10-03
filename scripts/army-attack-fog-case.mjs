@@ -20,12 +20,15 @@ export async function runUnqueuedFogLossCase(team) {
     assert.ok(check(), description);
   };
   try {
+    for (const seat of [0, 1]) order(seat, { type: 'setStance', stance: 'noAttack',
+      ids: r.units.filter(u => u.team === seat && u.kind !== 'worker').map(u => u.id) }, /STANCE ORDER/);
     order(team, { type: 'build', buildingType: 'archery-range', ids: workers(team).map(u => u.id),
       x: team ? 20.5 : -20.5, z: -8.5 }, /PLACED/);
     until(() => r.buildings.every(b => b.complete), 'paid range completes');
     order(team, { type: 'trainUnit', buildingId: r.buildings[0].id, kind: 'archer' }, /QUEUED/);
     until(() => r.units.some(u => u.kind === 'archer'), 'paid Archer spawns');
     const archer = r.units.find(u => u.kind === 'archer');
+    order(team, { type: 'setStance', ids: [archer.id], stance: 'noAttack' }, /STANCE ORDER/);
     const focused = workers(1 - team)[0], nearby = workers(1 - team)[1], observer = workers(team)[0];
     order(team, { type: 'move', ids: [archer.id], x: -20.5 * side, z: -14.5 }, /MOVE ORDER/);
     order(team, { type: 'move', ids: [observer.id], x: -2.5 * side, z: .5 }, /MOVE ORDER/);
@@ -36,6 +39,7 @@ export async function runUnqueuedFogLossCase(team) {
     for (let i = 0; i < 6; i++) r.step();
     assert.ok([focused, nearby].every(u => r.snapshot(team).units.some(row => row[0] === u.id)),
       'both targets visible at focused Attack admission');
+    order(team, { type: 'setStance', ids: [archer.id], stance: 'aggressive' }, /STANCE ORDER/);
     order(team, { type: 'attack', ids: [archer.id], unitGenerations: [archer.generation],
       targetId: focused.id, targetGeneration: focused.generation }, /ATTACK ORDER/);
     assert.equal(archer.attackTargetId, focused.id, 'clicked target receives priority');
