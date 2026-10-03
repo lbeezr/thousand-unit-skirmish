@@ -75,6 +75,7 @@ for (const target of ['default', room]) {
 
 for (const [id, expected, studio] of [
   ['menu-new-game', { mode: 'pve' }, false], ['menu-create-room', { mode: 'pvp', pregame: true }, false],
+  ['menu-practice', { mode: 'pvp', practice: true }, false],
   ['menu-studio', { mode: 'pvp' }, true],
 ]) {
   test(`${id} creates one clean room and strips prior entry parameters`, async () => {

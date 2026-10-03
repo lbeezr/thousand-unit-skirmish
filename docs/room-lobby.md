@@ -21,6 +21,11 @@ faction. There are no selectable civilization rulesets, allies, additional
 player seats. Presentation previews do not change this capacity.
 PvE remains the existing separate **Play vs AI** flow; a lobby's mode cannot
 change after creation.
+The main menu's **Practice** route starts a separate immediate-play room for
+one-player map testing, including labs. It has no AI commander and no pregame
+ready gate; normal map validation and host-only controls still apply. Use
+[the entry guide](game-entry.md) for this route rather than filling two lobby
+seats solely to test a map.
 
 ## Room chat
 

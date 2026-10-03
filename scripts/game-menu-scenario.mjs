@@ -95,13 +95,17 @@ async function peek(room, token) {
   return { status: response.status, value: await response.json() };
 }
 
-try {
+async function startSupervisor() {
   child = spawn(process.execPath, ['room-supervisor.mjs'], { cwd: root,
     env: { ...process.env, PORT: String(port), RTS_HOST: '127.0.0.1', RTS_ROOM_DATA_DIRECTORY: data,
       RTS_CUSTOM_MAP_DIRECTORY: path.join(data, 'default-maps'), RTS_MAX_ROOMS: '4',
       RTS_ACCESS_USER: 'menu-test', RTS_ACCESS_PASSWORD: 'local-test-password-for-entry' }, stdio: ['ignore', 'pipe', 'pipe'] });
   child.stdout.on('data', chunk => { output += chunk; }); child.stderr.on('data', chunk => { output += chunk; });
   await until(async () => { try { return (await api('/ready')).ok; } catch { return false; } }, 'ready');
+}
+
+try {
+  await startSupervisor();
   assert.equal((await fetch(`${base}/`)).status, 401);
   assert.equal((await fetch(`${base}/api/session`)).status, 401, 'resume inspection keeps existing authentication');
   const oldHost = await connect('default'), oldGuest = await connect('default');
@@ -159,18 +163,78 @@ try {
   const ai = await connect(aiMenu.navigations[0].searchParams.get('room'));
   assert.equal(ai.welcome.player.team, 0); assert.notEqual(ai.welcome.matchId, oldMatch);
   assert.notEqual(ai.welcome.matchId, host.welcome.matchId);
+  ai.send({ type: 'selectMap', mapId: 'frontier-materials' });
+  await until(() => ai.messages.some(row => /AI MATCH MAP IS FIXED.*PRACTICE/.test(row.message || '')), 'actionable AI map protection');
+  assert.equal(ai.welcome.state.practice, undefined);
+  ai.send({ type: 'selectArmySize', count: 250 });
+  await until(() => ai.messages.some(row => /AI MATCH ARMY IS FIXED.*PRACTICE/.test(row.message || '')), 'actionable AI army protection');
   const studioMenu = await menu(); studioMenu.click('menu-studio');
   await until(() => studioMenu.navigations.length, 'new studio');
   assert.equal(studioMenu.navigations[0].searchParams.get('studio'), '1');
   const studio = await connect(studioMenu.navigations[0].searchParams.get('room'));
   assert.equal(studio.welcome.player.isHost, true); assert.equal(studio.welcome.state.lobby, undefined);
+  const practiceMenu = await menu(); practiceMenu.click('menu-practice'); practiceMenu.click('menu-practice');
+  await until(() => practiceMenu.navigations.length, 'one fresh practice room');
+  assert.equal(practiceMenu.navigations.length, 1);
+  const practiceId = practiceMenu.navigations[0].searchParams.get('room');
+  assert.equal(practiceMenu.navigations[0].searchParams.has('studio'), false);
+  const practice = await connect(practiceId);
+  assert.equal(practice.welcome.state.practice, true);
+  assert.equal(practice.welcome.state.lobby, undefined);
+  assert.equal(practice.welcome.state.connected, 1, 'practice needs no second human or AI seat');
+  assert.notEqual(practice.welcome.matchId, oldMatch);
+  const practiceOptions = (await (await api(`/api/rooms/${practiceId}`)).json()).launchOptions;
+  assert.deepEqual(practiceOptions, { mode: 'pvp', practice: true });
+  const practiceCheckpoint = path.join(data, 'rooms', practiceId, 'match-state.json');
+  async function savedPractice(predicate) {
+    let saved;
+    await until(async () => {
+      try { saved = JSON.parse(await readFile(practiceCheckpoint)); return predicate(saved); }
+      catch { return false; }
+    }, 'solo practice progress');
+    return saved;
+  }
+  const labMaps = practice.welcome.maps.filter(map => map.name.startsWith('Lab · '));
+  assert.ok(labMaps.some(map => map.id === 'stone-defense-field'), 'current mineral lab is selectable');
+  for (const map of labMaps) {
+    const cursor = practice.messages.length;
+    practice.send({ type: 'selectMap', mapId: map.id });
+    await until(() => practice.messages.slice(cursor).some(row => row.type === 'mapChange' && row.map.id === map.id), `select ${map.id}`);
+    const change = practice.messages.slice(cursor).find(row => row.type === 'mapChange' && row.map.id === map.id);
+    assert.equal(change.state.practice, true); assert.equal(change.state.connected, 1);
+    assert.equal(change.state.armySize, change.map.startingArmySize ?? 1000);
+    await savedPractice(saved => saved.mapDefinition.id === map.id && saved.state.scenarioClockStarted && saved.state.matchElapsedSeconds > 0);
+  }
+  const beforeReset = await savedPractice(saved => saved.state.matchElapsedSeconds > 0);
+  practice.send({ type: 'reset' });
+  await until(() => practice.messages.some(row => row.type === 'notice' && row.message === 'BATTLEFIELD RESET'), 'practice rematch');
+  await savedPractice(saved => saved.sequence > beforeReset.sequence && saved.state.scenarioClockStarted && saved.state.matchElapsedSeconds > 0);
   await until(async () => { try { return JSON.parse(await readFile(path.join(data, 'default-match-state.json'))).matchId === oldMatch; } catch { return false; } }, 'old checkpoint retained');
   assert.equal((await (await api('/health')).json()).matchId, oldMatch);
   const imports = await checkClientImports(base, { authorization, entrypoints: ['/src/game-entry.mjs'] });
   assert.ok(imports.some(entry => entry.path === '/src/main.js'), 'lazy game client is packaged and admitted');
+  const practiceIdentity = practice.welcome.player, practiceMatch = practice.welcome.matchId;
+  const storedIndex = JSON.parse(await readFile(path.join(data, 'rooms.json')));
+  assert.deepEqual(storedIndex.rooms.find(room => room.id === practiceId).launchOptions, practiceOptions);
+  for (const client of clients) client.socket.destroy();
+  await stopChild(child); await startSupervisor();
+  const recoveredPractice = await connect(practiceId, practiceIdentity.sessionToken, true);
+  assert.equal(recoveredPractice.welcome.player.id, practiceIdentity.id);
+  assert.equal(recoveredPractice.welcome.player.resumed, true);
+  assert.equal(recoveredPractice.welcome.matchId, practiceMatch);
+  assert.equal(recoveredPractice.welcome.state.practice, true);
+  assert.equal(recoveredPractice.welcome.state.connected, 1);
+  const recoveredMap = labMaps.at(-1).id;
+  assert.equal(recoveredPractice.welcome.map.id, recoveredMap);
+  recoveredPractice.send({ type: 'selectMap', mapId: 'frontier-materials' });
+  await until(() => recoveredPractice.messages.some(row => row.type === 'mapChange' && row.map.id === 'frontier-materials'), 'unlocked map after recovery');
+  recoveredPractice.send({ type: 'gather', ids: [0], nodeId: 'azure-berries' });
+  await savedPractice(saved => saved.mapDefinition.id === 'frontier-materials' && saved.state.teamFood[0] > 0);
   console.log(JSON.stringify({ passed: ['authenticated menu without automatic default admission', 'read-only active/stale session inspection',
     'interrupted authentication retains saved Resume without admission', 'strict Resume cannot allocate a new seat', 'fresh PvP lobby and both-seat launch', 'explicit saved-room Resume',
-    'fresh AI and Map Studio rooms', 'old default identity/checkpoint retained', 'entry and lazy client import delivery'], modules: imports.length }));
+    'fresh AI and Map Studio rooms', 'one-player practice across all current lab maps and rematch',
+    'practice checkpoint/seat recovery and real Worker food deposit', 'actionable seeded AI map and army protection', 'old default identity/checkpoint retained', 'entry and lazy client import delivery'],
+    modules: imports.length, practiceLabMaps: labMaps.map(map => map.id) }));
 } finally {
   for (const client of clients) client.socket.destroy();
   await stopChild(child); await rm(data, { recursive: true, force: true });

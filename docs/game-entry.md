@@ -11,7 +11,13 @@ Worker/Barracks vignette beside the choices. It uses the working title and
 existing shipped images, with no additional controls or game-state meaning.
 Narrow and short layouts reduce the art to keep entry choices nearby.
 
-- **New Game** creates a fresh seeded Play vs AI room.
+- **New Game** creates a fresh seeded Play vs AI room on Millrace or Rootways.
+  Its map and authored army remain fixed for that match.
+- **Practice** creates a fresh room for one-player testing. Open Match Controls
+  and choose any **Battlefield**, including lab maps. Movement, economy, capture,
+  timed events and rematch run with one connected player. There is no AI commander;
+  enemy units retain their normal combat behavior. Map and army controls stay
+  available to Azure. A friend may join Ember, but a second seat is not required.
 - **Create Room** creates a fresh Frontier 1v1 pregame lobby; share its invite.
 - **Join Room** accepts a same-server invite or valid room code.
 - **Resume** appears when the most recently played room's locally saved token
@@ -48,6 +54,10 @@ and opens no game socket. The menu preserves saved tokens and any already valida
 Resume choice. A temporary server failure also keeps Resume available to retry;
 only a successful invalid-session result or missing room is treated as expiry.
 New Game always creates a separate fresh room; it never replaces a failed Resume.
+Practice also creates a separate room; returning through Resume keeps its map,
+progress and ordinary saved-seat recovery. Create Room retains its two-ready
+pregame launch gate. An AI map-change rejection directs players to Main Menu →
+Practice rather than pretending an unsupported AI map can be selected in place.
 
 ## Authority and delivery
 
