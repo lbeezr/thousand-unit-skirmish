@@ -51,6 +51,8 @@ const syntaxFiles = [
 
 for (const file of syntaxFiles) run(['--check', file], `Syntax: ${file}`);
 
+run(['--test', 'scripts/check-runtime-imports.test.mjs'], 'Runtime dependency checker regressions');
+run(['scripts/check-runtime-imports.mjs'], 'Runtime dependency boundaries and cycle baseline');
 run(['node_modules/typescript/bin/tsc', '--project', 'tsconfig.check-js.json', '--pretty', 'false'],
   'Strict checked JavaScript boundary');
 run(['--test', 'scripts/check-types.test.mjs'], 'Checked JavaScript contract negative cases');
