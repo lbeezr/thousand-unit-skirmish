@@ -7,6 +7,12 @@ node budget, and baseline/profile compatibility policy before runtime admission.
 `stone` is only the proposed ID here; renaming the fixture after that report is
 part of the coordinated implementation.
 
+The [content recommendation](stone-defense-contract-proposal.md) now keeps ID
+`stone` and proposes an optional Watchtower sink at 50 Stone, with 200 finite
+stock per seat and explicit legacy-profile migration. The 101-stock preflight
+below remains uneven compatibility test data; the later playable candidate uses
+a separate 67/67/66 stock split. Runtime admission remains closed meanwhile.
+
 ## Deterministic layout and node shape
 
 [The offline fixture](../scripts/stone-authoring-fixture.mjs) loads Open Field
