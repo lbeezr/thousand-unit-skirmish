@@ -45,6 +45,7 @@ import {
   unitActionPoseAllowed, unitCargoVisualState, unitWorkerActionPose,
 } from './unit-visual-state.mjs';
 import { createUnitSpriteRuntime } from './unit-sprite-runtime.mjs';
+import { createNeutralWildlifeRenderer } from './neutral-wildlife-renderer.mjs';
 import {
   MAX_ELEVATION_PATCHES, buildElevationGrid, capturePrerequisiteIds,
   findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
@@ -413,6 +414,7 @@ const unitLifecycleAudioGate = new UnitLifecycleAudioGate();
 const orderAudioGate = new OrderAudioGate();
 
 const scene = new THREE.Scene();
+const wildlifeRenderer = createNeutralWildlifeRenderer({ THREE, scene, groundHeight });
 scene.background = new THREE.Color(0x859175);
 scene.fog = new THREE.Fog(0x859175, 145, 235);
 
@@ -1783,7 +1785,9 @@ function addResourceNodeVisual(node) {
   resourceNodeVisuals.set(node.id, {
     type: nodeType, ring, stock: node.stock, startingStock: node.stock, stage,
     x: node.x, z: node.z, callout,
+    wildlifeSpecies: node.wildlifeSpecies,
   });
+  if (node.wildlifeSpecies !== undefined) ring.visible = false;
 }
 
 function updateResourceNodeVisual(id, stock) {
@@ -1809,7 +1813,12 @@ function updateResourceNodeCallouts(now, force = false) {
   const viewportRect = renderer.domElement.getBoundingClientRect();
   const pixelsPerWorldUnit = viewportRect.height * zoom / baseFrustum;
   const occlusionRects = visibleHudRects();
-  for (const visual of resourceNodeVisuals.values()) {
+  for (const [id, visual] of resourceNodeVisuals) {
+    if (visual.wildlifeSpecies !== undefined
+      && !wildlifeRenderer.isAvailable(id)) {
+      visual.callout.visible = false;
+      continue;
+    }
     if (visual.stock <= 0) {
       visual.callout.visible = false;
       continue;
@@ -1946,7 +1955,7 @@ function buildBerryNodeInstances(nodes = []) {
   berryNodeStages.clear();
   berryStageCounts.clear();
   for (const stage of RESOURCE_VISUAL_STAGES) berryStageCounts.set(stage, 0);
-  const berryNodes = nodes.filter((node) => node.type === 'food');
+  const berryNodes = nodes.filter((node) => node.type === 'food' && node.wildlifeSpecies === undefined);
   if (berryNodes.length === 0) return;
   const positions = berryNodes.map((node) => ({ x: node.x, z: node.z, scale: 1 }));
   for (let index = 0; index < berryNodes.length; index++) {
@@ -2145,6 +2154,7 @@ function applyForestState(state) {
 
 let terrainSurface = null;
 function buildMap(definition) {
+  wildlifeRenderer.reset([]);
   setActiveTerrain(definition);
   terrainSurface=null;
   fogTexture?.dispose();
@@ -2213,6 +2223,7 @@ function buildMap(definition) {
   // Town Centers are authoritative entities reconciled from match snapshots.
   buildWoodNodeInstances(definition.resourceNodes || []);
   buildBerryNodeInstances(definition.resourceNodes || []);
+  wildlifeRenderer.reset(definition.resourceNodes || []);
   for (const node of definition.resourceNodes || []) {
     addResourceNodeVisual(node);
     latestResourceStocks.set(node.id, node.stock);
@@ -2715,6 +2726,8 @@ function drawMinimap(now = performance.now(), force = false) {
     const row = Math.floor(node.z + MAP_HALF_Z);
     const fogState = latestFogCells?.[row * MAP_WIDTH + column] ?? 2;
     if (fogState === 0) continue;
+    if (node.wildlifeSpecies !== undefined
+      && (fogState !== 2 || !wildlifeRenderer.isAvailable(node.id))) continue;
     const point = minimapPoint(node.x, node.z, rect);
     const stock = latestResourceStocks.get(node.id) ?? node.stock;
     context.globalAlpha = fogState === 1 ? 0.55 : 1;
@@ -4610,6 +4623,17 @@ function updateEconomyUI(state = {}, initial = false) {
     latestTeamResearch = [state.teamResearch[0] || null, state.teamResearch[1] || null];
   }
   if (Array.isArray(state.resourceNodes)) {
+    wildlifeRenderer.reconcile(state.resourceNodes, node => {
+      if (!mapDefinition?.fogOfWar || localTeam === null) return true;
+      const column = Math.floor(node.x + MAP_HALF_X);
+      const row = Math.floor(node.z + MAP_HALF_Z);
+      return latestFogCells?.[row * MAP_WIDTH + column] === 2;
+    });
+    for (const node of mapDefinition?.resourceNodes || []) {
+      if (node.wildlifeSpecies === undefined) continue;
+      const visual = resourceNodeVisuals.get(node.id);
+      if (visual) visual.ring.visible = wildlifeRenderer.isAvailable(node.id);
+    }
     for (const node of state.resourceNodes) {
       if (node && typeof node.id === 'string' && Number.isFinite(node.stock)) {
         updateResourceNodeVisual(node.id, Math.max(0, node.stock));
@@ -7048,6 +7072,7 @@ function pickResourceNodeAt(x, y, { visibleOnly = false } = {}) {
   let nearest = null;
   let nearestDistance = 26 * 26;
   for (const node of mapDefinition.resourceNodes) {
+    if (node.wildlifeSpecies !== undefined && !wildlifeRenderer.isAvailable(node.id)) continue;
     if (visibleOnly && mapDefinition.fogOfWar) {
       const column = Math.floor(node.x + MAP_WIDTH / 2);
       const row = Math.floor(node.z + MAP_HEIGHT / 2);
@@ -9710,6 +9735,7 @@ function animate(now) {
     moveMarker.material.opacity = Math.max(0, 0.95 - moveMarkerAge * 0.9);
     if (moveMarkerAge > 1.05) moveMarker.visible = false;
   }
+  wildlifeRenderer.update(camera);
   updateResourceNodeCallouts(now);
   for (const visual of capturedBuildingVisuals) {
     updateCapturedBuildingSprite(visual.sprite, camera, visual.lifecycleInput);

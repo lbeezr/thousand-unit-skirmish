@@ -90,6 +90,17 @@ reuses one static pose per action across all headings. This is missing art
 coverage, not eight-direction animation. The [facing regression evidence](qa-evidence/villager-facing-2026-10-03/README.md)
 records decoded pixels, clip selection, camera projection and the browser-capture limit.
 
+## Neutral wildlife resources
+
+The [Bellweather Sheep renderer](../src/neutral-wildlife-renderer.mjs) consumes
+validated authored food-node identity and authoritative `alive`/`carcass`/`depleted`
+snapshots with current visibility. Alive uses a fixed public one-view illustration
+or an explicit geometric proxy; carcass uses a separate food-cache marker;
+depleted, omitted, fogged and inconsistent nodes are hidden. This stationary
+resource has no movement heading or walking animation. See the
+[live binding evidence and importable map](qa-neutral-wildlife-render-binding-2026-10-03.md)
+for provisional scale, art and browser limits.
+
 ## Building parts and state
 
 Buildings can use grouped parts because counts are low. Architecture is neutral;
