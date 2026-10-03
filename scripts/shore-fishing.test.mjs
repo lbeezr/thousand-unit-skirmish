@@ -6,6 +6,7 @@ import { findInvalidResourceVariant, isShoreFish, validResourceVariantState } fr
 import { buildElevationGrid, findUnreachableResourceNode } from '../src/map-utils.mjs';
 import { createResourceNodeState, validWildlifeNodeState } from '../src/wildlife-state.mjs';
 import { createResourceBrushEditor } from '../src/resource-brush-authoring.mjs';
+import { GAMEPLAY_RULESET_REVISION } from '../src/gameplay-definitions.mjs';
 
 const fish = { id: 'shore-fish', type: 'food', resourceVariant: 'shore-fish', x: -0.5, z: -0.5, stock: 22.5 };
 const map = { width: 16, height: 16, spawnPoints: [{ team: 0, x: -5.5, z: -0.5 },
@@ -30,7 +31,8 @@ test('schema 20 ordinary/sheep checkpoints migrate; fish cannot forge previously
   const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
   const migration = server.slice(server.indexOf('function migrateMatchCheckpoint('), server.indexOf('async function drainMatchCheckpointWrites'));
   const schemaVersion = Number(server.match(/const MATCH_CHECKPOINT_SCHEMA_VERSION = (\d+)/)[1]);
-  const context = vm.createContext({ MATCH_CHECKPOINT_SCHEMA_VERSION: schemaVersion, MATCH_RULES_VERSION: 6 });
+  const context = vm.createContext({ MATCH_CHECKPOINT_SCHEMA_VERSION: schemaVersion, MATCH_RULES_VERSION: 6,
+    GAMEPLAY_RULESET_REVISION });
   vm.runInContext(migration, context);
   for (const node of [{ ...fish, resourceVariant: undefined },
     { ...fish, resourceVariant: undefined, wildlifeSpecies: 'bellweather-sheep' }]) {
