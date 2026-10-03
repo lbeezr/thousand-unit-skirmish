@@ -6,6 +6,10 @@
 
 The ordinary game URL opens the [main menu](game-entry.md). Choose **New Game**
 for a fresh Play vs AI match, or **Create Room** and share the invite for 1v1.
+For lab maps or solo map testing, choose **Practice**, then use **Match Controls →
+Battlefield**. Practice starts with one player and has no AI commander; normal
+unit combat, economy and scenario rules still run. New Game's seeded AI match
+keeps its selected map fixed.
 **Join Room** accepts an invite/code; **Resume** appears for a server-validated
 saved session. Root entry never automatically loads an old battlefield.
 **Map Studio** opens a separate fresh host workspace; **Settings** works before

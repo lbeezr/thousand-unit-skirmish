@@ -75,7 +75,8 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
     const intent = ++intentRevision;
     busy = true; controls(); message('Creating a fresh room…');
     try {
-      const options = mode === 'pve' ? { mode: 'pve' } : { mode: 'pvp', ...(mode === 'pvp' ? { pregame: true } : {}) };
+      const options = mode === 'pve' ? { mode: 'pve' } : { mode: 'pvp',
+        ...(mode === 'pvp' ? { pregame: true } : {}), ...(mode === 'practice' ? { practice: true } : {}) };
       const response = await fetchImpl('/api/rooms', { method: 'POST',
         headers: { 'content-type': 'application/json' }, body: JSON.stringify(options), cache: 'no-store' });
       requireEntryAuthentication(response);
