@@ -117,6 +117,8 @@ from source/candidate packs. Then use the relevant contract:
 - [Performance baseline, 25 September](performance-reliability-baseline-2026-09-25.md).
 - [Environment runtime pilot](qa-evidence/environment-state-pack-v1/pilot/README.md).
 - [Technical-art checkpoint](technical-art-surfacing-checkpoint-2026-09-26.md).
+- [Building sprite body occlusion](qa-building-sprite-occlusion-2026-10-03.md):
+  shared-art depth pass, source alpha evidence, draw bound and pending native observation.
 - [Historical archive](archive/README.md): original measurements, ledgers, and prototype history.
 
 ## Keep these docs useful

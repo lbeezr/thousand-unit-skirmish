@@ -29,6 +29,9 @@ within the same reserves and retry limits. See the [production rules and evidenc
 
 After casualties, the opponent can use its last surviving Worker to rebuild a
 lost Barracks when resources permit, then reinforce the current objective.
+It also restores lost Workers from an available Town Center. An affordable
+Worker uses the last free population slot before the opponent tries to expand
+capacity for larger military units; see the [recovery regression](qa-pve-worker-recovery-2026-10-03.md).
 
 ## Authority and limits
 
