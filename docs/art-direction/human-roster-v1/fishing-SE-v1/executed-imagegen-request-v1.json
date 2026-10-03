@@ -1,0 +1,12 @@
+{
+  "prompt": "Edit the supplied canvas into a FOUR-key horizontal fishing strip. Preserve the approved Human Worker exactly: realistic adult proportions, brown swept hair and beard, cream rolled sleeves, sage vest/trousers, leather wrist cuffs and brown boots, brown backpack/yellow bedroll. Same elevated isometric orthographic view, WORLD SOUTH-EAST (SCREEN RIGHT) in all keys. Four equal slots: 1 stable crouch holding small folded tan rope hand net; 2 same crouch extends arms/net to screen right near ground; 3 draws net back with one tiny silver fish; 4 brings fish to belt pouch, net lowered, returns to key 1. TWO arms only. No axe. Same magnification/anatomical limb lengths; crouch lowers head naturally, do not enlarge body. Boots and projected ground root identical within each slot, approximate x center and y=89% slot height. Whole props/feet inside slots and generous clear margins. EXACTLY FOUR whole sprites in one horizontal row, all at same scale and camera. Transparent background; no scenery, water, labels or grid. Use supplied shipped idle solely as character identity/scale reference; do not retain standing idle in slot 1. Crisp painterly production game sprites, not chibi. This is a private animation pose study, all four keys generated together in one edit.",
+  "referenced_image_paths": [
+    "fishing-SE-edit-canvas.png"
+  ],
+  "transparent_background": true,
+  "output": "fishing-SE-source-v1.png",
+  "originalOutput": "exec-55affbcf-8f5b-4476-9104-256676ee881c.png",
+  "provider": "host-native OpenAI ImageGen; no Meshy rigging/credits",
+  "sourceHeading": "south-east",
+  "sourceFrames": 4
+}

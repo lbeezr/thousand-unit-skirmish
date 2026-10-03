@@ -197,6 +197,23 @@ for (const team of [0, 1]) test(`seat ${team}: live Worker snapshots preserve lo
   assert.deepEqual([...f.w.selected], [own]);
 });
 
+for (const team of [0, 1]) test(`seat ${team}: Formation / route remains an operable stable focus target in the command strip`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const own = team * 2, route = f.bar.querySelector('[data-context-details]');
+  f.select([own]);
+  assert.equal(route.hidden, false); assert.equal(route.textContent, 'Formation / route');
+  route.focus(); f.w.units[own].hp = 64; f.w.updateSelectionUI();
+  assert.equal(f.d.activeElement, route);
+  assert.equal(f.bar.querySelector('[data-context-details]'), route);
+  for (const dismiss of [() => f.escape(), () => f.click(f.d.querySelector('#dock-close'))]) {
+    f.click(route);
+    assert.equal(f.w.commandDock.dataset.activePanel, 'command');
+    dismiss();
+    assert.equal(f.w.commandDock.hidden, true); assert.equal(f.d.activeElement, route);
+    assert.deepEqual([...f.w.selected], [own]);
+  }
+});
+
 for (const [name, change] of [
   ['cleared selection', f => f.select([])],
   ['group', f => f.select([0, 1])],

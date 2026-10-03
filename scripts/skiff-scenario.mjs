@@ -95,7 +95,7 @@ try {
     await command(team, { type: 'move', ids: [boatIds[team]], x: 0, z: 0 }, /WATER ROUTE INVALID-ENDPOINTS/);
     await command(team, { type: 'move', ids: [boatIds[team]], x: team ? -12.5 : 12.5, z: 15.5 }, /WATER ROUTE DISCONNECTED/);
     await command(team, { type: 'move', ids: [boatIds[team], workers[team][0]], x: team ? 12.5 : -12.5, z: 15.5 }, /SELECT ONLY SKIFFS/);
-    await command(team, { type: 'move', ids: [boatIds[team]], x: team ? 12.5 : -12.5, z: 15.5, queue: true }, /SUPPORTS MOVE AND STOP/);
+    await command(team, { type: 'attackMove', ids: [boatIds[team]], x: team ? 12.5 : -12.5, z: 15.5, queue: true }, /SUPPORTS MOVE AND STOP/);
     await command(team, { type: 'gather', ids: [boatIds[team]], nodeId: `food-${team}` }, /FISHING REJECTED/);
     await command(team, { type: 'move', ids: [boatIds[team]], x: team ? 12.5 : -12.5, z: 15.5 }, /SKIFF WATER ROUTE/);
   }

@@ -4,6 +4,7 @@ import { createDockPlacementContext } from './src/dock-placement.mjs';
 import { createWaterUnitRuntime, waterUnitOccupiedCells } from './src/water-unit-runtime.mjs';
 import { createSkiffFishingContext } from './src/skiff-fishing.mjs';
 import { SKIFF_GROUP_ORDER_LIMIT, planSkiffGroupMove, planSkiffGroupFishing, planSkiffGroupReturn } from './src/skiff-group-orders.mjs';
+import { planSkiffWaypoints, validSkiffWaypoints, advanceSkiffWaypoints } from './src/skiff-waypoints.mjs';
 import { activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted, validWildlifeNodeDefinition, validWildlifeNodeState } from './src/wildlife-state.mjs';
 import { migrateMillraceSheepCheckpoint } from './src/millrace-sheep.mjs';
 import { validateMapRegion } from './src/regions.mjs';
@@ -2767,7 +2768,7 @@ function validateMatchCheckpoint(snapshot) {
         && typeof waypoint.attackMove === 'boolean'), `invalid unit route ${index}`);
     if (UNIT_DEFINITIONS[unit.kind].movementDomain === 'water') {
       assertSnapshot(unit.movementDomain === 'water' && typeof unit.waterMoveBlocked === 'boolean'
-        && checkpointWaterRuntime.validRoute(unit) && unit.queuedWaypoints.length === 0
+        && checkpointWaterRuntime.validRoute(unit) && validSkiffWaypoints(checkpointWaterRuntime, unit, MAX_QUEUED_WAYPOINTS)
         && unit.persistentOrder == null && unit.wallBuildOrder == null && !unit.attackMove
         && !unit.movePlanningPending && !unit.attackMoveRouteReady
         && unit.attackMoveResumePath === null && unit.attackTargetId === -1 && unit.attackBuildingTargetId === -1
@@ -3303,7 +3304,7 @@ function migrateMatchCheckpoint(snapshot) {
   if (snapshot?.rulesetRevision !== GAMEPLAY_RULESET_REVISION
     && Array.isArray(snapshot?.state?.units) && snapshot.state.units.some(unit =>
       (unit?.kind === 'skiff' || unit?.movementDomain === 'water')
-      && (unit.cargo !== 0 || unit.cargoType !== null || unit.gatherNodeId !== null || unit.gatherPhase !== ''))) return snapshot;
+      && (unit.cargo !== 0 || unit.cargoType !== null || unit.gatherNodeId !== null || unit.gatherPhase !== '' || unit.queuedWaypoints?.length > 0))) return snapshot;
   // A pin predating Farm still cannot claim a paid planting or harvest state.
   if (![GAMEPLAY_RULESET_REVISION, previousMovementPins[0]].includes(snapshot?.rulesetRevision)
     && snapshot?.state?.buildings?.some(building => building.type === 'farm' || building.harvestStock !== undefined)) return snapshot;
@@ -5915,16 +5916,20 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
       sendOrderNotice(player, command, 'MOVE REJECTED · SELECT ONLY SKIFFS'); return;
     }
     if (selectedUnits.length > SKIFF_GROUP_ORDER_LIMIT) { sendOrderNotice(player, command, `MOVE REJECTED · SKIFF GROUP LIMIT ${SKIFF_GROUP_ORDER_LIMIT}`); return; }
-    if (command.type !== 'move' || command.queue === true || buildingTargetId !== null) {
+    if (command.type !== 'move' || buildingTargetId !== null) {
       sendOrderNotice(player, command, 'MOVE REJECTED · SKIFF SUPPORTS MOVE AND STOP'); return;
     }
-    const plan = planSkiffGroupMove(waterUnitRuntime, selectedUnits, Number(command.x), Number(command.z), units);
+    const queued = command.queue === true;
+    const plan = queued ? planSkiffWaypoints(waterUnitRuntime, selectedUnits, Number(command.x), Number(command.z), units, MAX_QUEUED_WAYPOINTS)
+      : planSkiffGroupMove(waterUnitRuntime, selectedUnits, Number(command.x), Number(command.z), units);
     if (plan.status !== 'found') { sendOrderNotice(player, command, `MOVE REJECTED · WATER ROUTE ${plan.status.toUpperCase()}`); return; }
-    assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: selectedUnits.map(unit => unit.id) });
-    for (const { unit, route } of plan.assignments) {
+    const immediate = plan.assignments.filter(assignment => !assignment.append);
+    if (immediate.length) assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: immediate.map(({ unit }) => unit.id) });
+    for (const { unit, route, destination, append } of plan.assignments) {
+      if (append) { unit.queuedWaypoints.push({ destination, attackMove: false }); continue; }
       unit.path = route.cells; unit.pathIndex = 0; unit.moveGoalCell = route.cells.at(-1); unit.waterMoveBlocked = false;
     }
-    dirty = true; sendOrderNotice(player, command, `MOVE ORDER · ${plan.assignments.length} SKIFF WATER ROUTES`); return;
+    dirty = true; sendOrderNotice(player, command, `${queued ? (immediate.length ? 'WAYPOINT ORDER' : 'WAYPOINT QUEUED') : 'MOVE ORDER'} · ${plan.assignments.length} SKIFF WATER ROUTES`); return;
   }
 
   const centerX = Number(command.x);
@@ -6321,6 +6326,7 @@ function advanceQueuedWaypoints() {
       }
       continue;
     }
+    if (unit.movementDomain === 'water') continue;
     if (unit.queuedWaypoints.length === 0 || unit.movePlanningPending
       || unit.attackTargetId >= 0 || unit.attackBuildingTargetId >= 0
       || unit.gatherPhase === 'to-base'
@@ -7267,6 +7273,7 @@ function simulateTick() {
 
   if (waterUnitRuntime.advance(units, STEP_SECONDS, unit => UNIT_DEFINITIONS[unit.kind].combat.moveSpeed)) dirty = true;
   if (skiffFishingContext.update({ units, nodes: resourceNodeStates, buildings, teamFood }, STEP_SECONDS)) dirty = true;
+  if (advanceSkiffWaypoints(waterUnitRuntime, units, STEP_SECONDS)) dirty = true;
   const blockedRouteRepairs = [];
   for (const unit of units) {
     if (unit.hp <= 0 || unit.movementDomain === 'water') continue;
@@ -7949,7 +7956,7 @@ const server = createServer(async (request, response) => {
     'src/shore-fishing.mjs', 'src/shore-fishing-placeholder.mjs', 'src/shore-fishing-placement.mjs',
     'src/dock-placement.mjs', 'src/water-route-graph.mjs',
     'src/water-unit-runtime.mjs',
-    'src/worker-fishing-presentation.mjs',
+    'src/worker-fishing-presentation.mjs', 'src/worker-fishing-contact.mjs', 'src/unit-heading.mjs',
     'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs', 'src/resource-brush-controls.mjs',
     'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/economy-profile.mjs', 'src/economy-ledger.mjs', 'src/economy-client.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',

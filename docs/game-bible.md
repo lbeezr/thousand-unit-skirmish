@@ -282,6 +282,10 @@ the existing building lifecycle and an explicit procedural House placeholder.
 It produces an unarmed **Skiff (placeholder)** for provisional 75 wood, 10 seconds
 and one population: 120 HP and 2.4 cells/second. Select up to 16 Skiffs to Move or Stop
 within authored level-zero water; hull occupancy can pause routes and production.
+Shift water targets, including minimap right-clicks, queue up to eight pending
+destinations per boat. [Water queues](skiff-water-waypoints.md) preserve cargo,
+individual goals and recovery; Stop clears only the controlled boats' queues.
+Queuing behind fishing or Return cargo remains separate.
 Skiffs gather the same finite shore-fish food as land Workers from a reachable
 water approach: provisional 10 food capacity and 1 food per second. A completed
 owned Dock accepts their cargo at its water berth; land Worker drop-offs retain
@@ -400,7 +404,7 @@ no splash or friendly-fire exception. Workshop/engine geometry is placeholder
 presentation, and match-level costs/terrain/composition balance remain provisional.
 ### Human graphics first pass
 
-The normal game uses the Vaelora Human Worker, Infantry, Spearman and Archer sprite roster at the approved Human size/detail, plus initial Scout, Rider and Siege Engine cutouts. Mounted size and siege footprint remain provisional until live review. The latter three have distinct static idle, movement, attack and defeat poses reused across headings. Human Worker walking and gathering preserve their exact facing, holding the authored idle view where directional action art is missing. Other first-pass actions temporarily reuse the nearest authored action sequence. Stationary gatherers turn toward their authoritative resource target. Missing directional animation, smooth loops and team sash masks remain art work; Boughward's initial static poses still repeat across headings. Explicit legacy preview flags still select their respective art lanes. `humanRosterPreview=0` restores the older default cast preview.
+The normal game uses the Vaelora Human Worker, Infantry, Spearman and Archer sprite roster at the approved Human size/detail, plus initial Scout, Rider and Siege Engine cutouts. Mounted size and siege footprint remain provisional until live review. The latter three have distinct static idle, movement, attack and defeat poses reused across headings. Human Worker walking and gathering preserve their exact facing, holding the authored idle view where directional action art is missing. Shore fishing has a distinct four-pose Human south-east hand-net loop; other headings retain exact food/gather/idle fallbacks. Other first-pass actions temporarily reuse the nearest authored action sequence. Stationary gatherers turn toward their authoritative resource target. Missing directional animation, smooth loops and team sash masks remain art work; Boughward's initial static poses still repeat across headings. Explicit legacy preview flags still select their respective art lanes. `humanRosterPreview=0` restores the older default cast preview.
 
 ## Playable regional interpretation
 
