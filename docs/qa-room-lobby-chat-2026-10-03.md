@@ -30,11 +30,20 @@ across rejoin, unchanged ready state, send/launch ordering and rematch,
 ephemeral restart with stable seat recovery, public UI/private authority routes.
 No application accounts, chat backend or deployed service are used.
 
-The full Node suite passes 449 cases with zero failures/skips at the initial
-working implementation. Existing camera/build/rematch extraction fixtures retain
-their original assertions and supply the new welcome-history callback.
-Final head, integration/release evidence and independent review belong to the
-owning PR and will be recorded there.
+Final runtime integration `4548b854b5d4ca73d4963d8cdd7391787b53ebab` includes main
+`7606d84d165f7907ca8f8b1a8a5ce483bdb84e31`, preserving the movement, water study,
+shore authoring, audio lifecycle and HUD integrations. All 518 Node tests pass
+with zero failures/skips; the chat scenario's eight groups and existing pregame
+scenario's eleven groups pass. Existing camera/build/rematch extraction fixtures
+retain their original assertions and supply the new welcome-history callback.
+
+Documentation passes 418 Markdown files / 2,731 local links. Syntax, whitespace,
+31 Docker UI assets and the complete packaged client import/art delivery checks
+pass. The clean local release contains 1,026 files, digest
+`sha256:3cee536955f1aec405c6be0f882ee79a37d2a34a7f3cdef318fdf2848ec830a2`.
+The new public UI module returns 200; its server authority module returns 404.
+No chat history is added to frequent state packets or checkpoints. The owning
+PR records independent review, guarded merge and subsequent postmerge evidence.
 
 ## Browser check on Mac
 
