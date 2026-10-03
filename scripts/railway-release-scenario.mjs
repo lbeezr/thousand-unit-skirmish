@@ -231,6 +231,16 @@ try {
     }
   }
   await checkClientImports(base, { authorization });
+  for (const file of ['water-study.html', 'src/water-study-preview.mjs', 'src/water-surface-study.mjs', 'src/water-study-state.mjs']) {
+    assert.ok(packedManifest.files.includes(file), `water study release must contain ${file}`);
+    const response = await fetch(`${base}/${file}`, { headers: { authorization } });
+    assert.equal(response.status, 200, `packed water study must serve ${file}`);
+    assert.match(response.headers.get('content-type'), file.endsWith('.html') ? /text\/html/ : /javascript/);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    assert.equal(createHash('sha256').update(bytes).digest('hex'),
+      createHash('sha256').update(await readFile(path.join(sourceRoot, file))).digest('hex'),
+      `packed water study bytes must match ${file}`);
+  }
   // Ship exactly one already-authored Frontier family, preserving its captures.
   const frontierRoot = 'assets/buildings/frontier-civilization-scale-pilot-v1/';
   const frontierManifestPath = frontierRoot + 'town-center-complete-renderer.json';
