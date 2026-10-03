@@ -27,11 +27,11 @@ test('preferences accept only supported presentation values', () => {
 });
 
 function commandStripFixture(t, width = 750) {
-  const dom = new JSDOM('<div id="strip"><button id="first">Idle workers</button><span><button id="last">Formation / route</button></span></div><button id="outside">Outside</button>');
+  const dom = new JSDOM('<div id="strip"><button id="first">Idle workers</button><button id="cargo" hidden>Return cargo</button><span><button id="last">Formation / route</button></span></div><button id="outside">Outside</button>');
   t.after(() => dom.window.close());
   const { document } = dom.window;
   const strip = document.querySelector('#strip');
-  const first = document.querySelector('#first'), last = document.querySelector('#last');
+  const first = document.querySelector('#first'), cargo = document.querySelector('#cargo'), last = document.querySelector('#last');
   const frames = new Map(), boxes = new Map(), resizeObservers = [], mutationObservers = [];
   let nextFrame = 1, scroll = 0, viewportWidth = width, contentWidth = width + 300;
   dom.window.requestAnimationFrame = callback => { const id = nextFrame++; frames.set(id, callback); return id; };
@@ -61,11 +61,12 @@ function commandStripFixture(t, width = 750) {
       return { left, right: left + box.width, width: box.width, height: 44 };
     };
   };
-  setBox(first, 0, 80); setBox(last, 593.0625, 180);
+  setBox(first, 0, 80); setBox(cargo, 80, 110); setBox(last, 593.0625, 180);
   const unbind = bindContextualCommandStrip(strip); t.after(unbind);
-  return { dom, strip, first, last, unbind, resizeObservers, mutationObservers, setBox,
+  return { dom, strip, first, cargo, last, unbind, resizeObservers, mutationObservers, setBox,
     setWidth(value) { viewportWidth = value; },
-    growBeforeLast(amount) { boxes.get(first).width += amount; boxes.get(last).start += amount; contentWidth += amount; },
+    growBeforeLast(amount) { boxes.get(first).width += amount; boxes.get(cargo).start += amount; boxes.get(last).start += amount; contentWidth += amount; },
+    showCargo() { cargo.hidden = false; boxes.get(last).start += boxes.get(cargo).width; contentWidth += boxes.get(cargo).width; },
     notifyResize() { resizeObservers.forEach(observer => observer.callback([...observer.targets].map(target => ({ target })))); },
     mutate(addedNodes = [], removedNodes = []) {
       mutationObservers.forEach(observer => observer.callback([{ type: 'childList', addedNodes, removedNodes }]));
@@ -152,12 +153,17 @@ test('disposing the strip cancels pending reveal and leaves wheel input native',
   assert.equal(f.wheel().defaultPrevented, false);
 });
 
-test('preceding cargo visibility or growing production text reveals the focused command without another focus event', t => {
+test('preceding cargo visibility and growing production text reveal the focused command without another focus event', t => {
   const f = commandStripFixture(t);
   f.last.focus(); f.frame();
-  for (const growth of [110, 75.5]) {
+  for (const change of [() => f.showCargo(), () => {
+    f.first.textContent = 'Train Spearman · 60 food · Finish construction';
+    f.mutate([...f.first.childNodes]);
+    assert.equal(f.pendingFrames(), 0, 'text mutation alone waits for real box dimensions');
+    f.growBeforeLast(75.5);
+  }]) {
     const previousScroll = f.strip.scrollLeft;
-    f.growBeforeLast(growth); f.notifyResize();
+    change(); f.notifyResize();
     assert.equal(f.pendingFrames(), 1, 'a real box change queues one correction');
     f.frame();
     assert.equal(f.dom.window.document.activeElement, f.last);
@@ -174,6 +180,16 @@ test('viewport or enlarged-map width shrink reveals the focused label and coales
   f.frame();
   assert.ok(f.last.getBoundingClientRect().right <= f.strip.getBoundingClientRect().right);
   assert.equal(f.dom.window.document.activeElement, f.last);
+});
+
+test('a fractional viewport shrink is detected even when integer clientWidth stays unchanged', t => {
+  const f = commandStripFixture(t);
+  f.setBox(f.last, 590, 180); f.notifyResize();
+  f.last.focus(); f.frame();
+  f.strip.getBoundingClientRect = () => ({ left: 320, right: 1069.5, width: 749.5, height: 52 });
+  f.notifyResize(); f.frame();
+  assert.equal(f.strip.clientWidth, 750);
+  assert.ok(f.last.getBoundingClientRect().right <= 1069.5);
 });
 
 test('inserted nested controls enter resize observation and reveal the moved focused command', t => {
