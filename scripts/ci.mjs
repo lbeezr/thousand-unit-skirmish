@@ -154,6 +154,7 @@ run(['--test', 'scripts/room-lobby-chat.test.mjs', 'scripts/room-lobby-chat-ui.t
 run(['scripts/room-lobby-chat-scenario.mjs'], 'Real two-client room chat isolation and recovery');
 run(['--test', 'scripts/pve-entry.test.mjs'], 'PvE entry observer settling');
 run(['--test', 'scripts/hud-layout.test.mjs'], 'Visible HUD layout');
+run(['--test', 'scripts/combat-stance-ui.test.mjs'], 'Authoritative selected military stance controls');
 run(['--test', 'scripts/minimap-orders.test.mjs'], 'Tactical map selected-unit movement');
 run(['--test', 'scripts/minimap-browser-probe.test.mjs'], 'Minimap browser proof camera observation');
 run(['--test', 'scripts/selection-center-shortcut.test.mjs'], 'Selection camera shortcut and preserved Space drag');
