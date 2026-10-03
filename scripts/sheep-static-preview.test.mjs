@@ -4,6 +4,8 @@ import { createHash } from 'node:crypto';
 import test from 'node:test';
 import * as THREE from 'three';
 import { createStaticSheepRuntime, staticSheepFrame, sheepQuadPlacement } from '../src/sheep-static-preview.mjs';
+import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.mjs';
+import { encodeRgbaFixture } from './sheep-geometry-png-fixture.mjs';
 import { decodeRgba8, measureFrameAlpha } from './sprite-pixel-bounds.mjs';
 import { validateSpriteAtlas } from './sprite-atlas-contract.mjs';
 
@@ -110,5 +112,96 @@ test('the renderer verifies requested bytes, hides invalid states and disposes i
     assert.equal(scene.children.length, 0, 'corrupt texture must not create a scene mesh');
   } finally {
     globalThis.fetch = originalFetch; globalThis.Image = OriginalImage;
+  }
+});
+
+test('normal wildlife renderer keeps simultaneous static directions independent and falls back for absent views', async () => {
+  const originalFetch = globalThis.fetch, OriginalImage = globalThis.Image;
+  const fixtureManifest = structuredClone(manifest), fixtureBinding = structuredClone(binding);
+  fixtureManifest.packId = 'test-only-colored-geometry';
+  fixtureManifest.provenance.notes = 'Synthetic rectangle test; no Sheep art or directional acceptance claim';
+  const asset = fixtureManifest.assets[0], originalFrame = asset.frames[0];
+  asset.frames = ['north', 'east'].map((direction, index) => ({ ...structuredClone(originalFrame),
+    id: `idle-${direction}`, groundPivotPx: { x: 256, y: 256 },
+    alphaBoundsPx: { x: 96, y: 80, width: 225, height: 221 },
+    fallbackRectPx: { pageId: 'sheep-color', rectPx: { x: index * 512, y: 0, width: 512, height: 512 } },
+    frameRectsPx: [{ layerId: 'actor', pageId: 'sheep-color', offsetPx: { x: 0, y: 0 },
+      rectPx: { x: index * 512, y: 0, width: 512, height: 512 } }],
+  }));
+  asset.clips = ['north', 'east'].map(directionId => ({ stateId: 'idle', directionId, loop: false,
+    sequence: [{ frameId: `idle-${directionId}`, durationMs: 1000 }] }));
+  fixtureManifest.pages[0].dimensionsPx = { width: 1024, height: 512 };
+  const pixels = Buffer.alloc(1024 * 512 * 4);
+  for (let y = 80; y < 301; y++) for (let x = 96; x < 321; x++) for (let cell = 0; cell < 2; cell++) {
+    pixels.set([30 + cell * 180, 100, 180, 255], (y * 1024 + cell * 512 + x) * 4);
+  }
+  const pageBytes = encodeRgbaFixture(1024, 512, pixels);
+  const runtimeFile = fixtureManifest.files.find(file => file.id === fixtureManifest.pages[0].runtimeFileId);
+  runtimeFile.sha256 = createHash('sha256').update(pageBytes).digest('hex');
+  runtimeFile.dimensionsPx = fixtureManifest.pages[0].dimensionsPx;
+  const fixtureManifestBytes = Buffer.from(JSON.stringify(fixtureManifest));
+  Object.assign(fixtureBinding, { packId: fixtureManifest.packId, directions: ['north', 'east'],
+    projectedPixelsPerWorldUnit: 256,
+    manifestSha256: createHash('sha256').update(fixtureManifestBytes).digest('hex') });
+  const requests = [];
+  globalThis.fetch = async input => {
+    const url = new URL(input);
+    if (url.protocol === 'blob:') return originalFetch(url);
+    requests.push(url.pathname);
+    const name = url.pathname.split('/').at(-1);
+    return new Response(name === 'static-preview-binding.json' ? JSON.stringify(fixtureBinding)
+      : name === 'sprite-atlas-pack-v1.json' ? fixtureManifestBytes : pageBytes);
+  };
+  globalThis.Image = class {
+    async decode() {
+      const image = decodeRgba8(Buffer.from(await (await fetch(this.src)).arrayBuffer()));
+      this.width = image.width; this.height = image.height;
+    }
+  };
+  const scene = new THREE.Scene(), camera = new THREE.OrthographicCamera(-2, 2, 2, -2, .1, 100);
+  camera.position.set(.78, 1.12, .78).normalize().multiplyScalar(10);
+  camera.lookAt(0, 0, 0); camera.updateMatrixWorld();
+  const definitions = [0, 90, 180].map((wildlifeNoseYawDegrees, index) => ({ id: `pose-${index}`,
+    type: 'food', stock: 100, x: index * 3, z: 0, wildlifeSpecies: 'bellweather-sheep', wildlifeNoseYawDegrees }));
+  const rows = definitions.map(({ id }) => ({ id, type: 'food', stock: 100,
+    wildlifeSpecies: 'bellweather-sheep', wildlifeState: 'alive' }));
+  const renderer = createNeutralWildlifeRenderer({ THREE, scene, groundHeight: () => .2 });
+  try {
+    renderer.reset(definitions); await renderer.ready();
+    renderer.reconcile(rows, () => true); renderer.update(camera);
+    const group = id => scene.children.find(item => item.userData.wildlifeNodeId === id);
+    const north = group('pose-0').children[2], east = group('pose-1').children[2];
+    const northGeometry = north.geometry, eastGeometry = east.geometry;
+    const northUv = [...northGeometry.getAttribute('uv').array], eastUv = [...eastGeometry.getAttribute('uv').array];
+    assert.notEqual(northGeometry, eastGeometry);
+    assert.equal(north.material, east.material, 'one verified texture/material is shared');
+    assert.equal(northUv[0], .5 / 1024); assert.equal(eastUv[0], 512.5 / 1024);
+    assert.deepEqual(renderer.diagnostics().nodes.map(node => node.mode), ['static-illustration', 'static-illustration', 'sheep-proxy']);
+    assert.equal(group('pose-2').children.length, 2, 'absent south art never relabels a north frame');
+    assert.equal(group('pose-2').children[0].rotation.y, Math.PI);
+    let northDisposals = 0, eastDisposals = 0, materialDisposals = 0, textureDisposals = 0;
+    northGeometry.addEventListener('dispose', () => northDisposals++);
+    eastGeometry.addEventListener('dispose', () => eastDisposals++);
+    north.material.addEventListener('dispose', () => materialDisposals++);
+    north.material.map.addEventListener('dispose', () => textureDisposals++);
+    renderer.update(camera);
+    assert.equal(north.geometry, northGeometry); assert.equal(east.geometry, eastGeometry);
+    assert.deepEqual([...north.geometry.getAttribute('uv').array], northUv);
+    assert.deepEqual([...east.geometry.getAttribute('uv').array], eastUv);
+    renderer.reconcile(rows, () => true);
+    assert.equal(group('pose-2').children[0].visible, true, 'another snapshot cannot hide an unsupported-view proxy');
+    renderer.reset([...definitions].reverse()); renderer.reconcile(rows, () => true); renderer.update(camera);
+    assert.equal(group('pose-0').children[2].geometry, northGeometry);
+    assert.equal(group('pose-1').children[2].geometry, eastGeometry);
+    assert.deepEqual([...northGeometry.getAttribute('uv').array], northUv, 'reverse node order cannot overwrite another direction');
+    assert.equal(northDisposals + eastDisposals, 0, 'map reset removes instances, preserving shared direction geometry');
+    renderer.reconcile(rows.map(row => ({ ...row, wildlifeState: 'depleted', stock: 0 })), () => true);
+    assert.ok(scene.children.every(item => !item.visible));
+    renderer.dispose(); renderer.dispose();
+    assert.equal(scene.children.length, 0);
+    assert.deepEqual([northDisposals, eastDisposals, materialDisposals, textureDisposals], [1, 1, 1, 1]);
+    assert.equal(requests.length, 3, 'normal renderer uses one verified pack through reset');
+  } finally {
+    renderer.dispose(); globalThis.fetch = originalFetch; globalThis.Image = OriginalImage;
   }
 });

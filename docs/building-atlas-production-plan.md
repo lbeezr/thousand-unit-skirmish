@@ -20,20 +20,22 @@ A **sprite sheet** is the regular grid of views/states. A **texture atlas** is t
 
 ## Current roster and production queue
 
-`src/gameplay-definitions.mjs` defines eight buildings. Footprint is square occupancy in world cells, not image canvas size. Existing direct sprites cover Barracks and Archery Range. Town Center uses captured directional lifecycle artwork through `src/captured-building-art.mjs`; `src/main.js` passes the live building state. Some pack READMEs still describe older static-center behavior, so use current code and expansion/repair rules when planning coverage.
+`src/gameplay-definitions.mjs` defines ten buildings, including Palisade and the playable food-only Mill with a procedural House placeholder. The original eight-building source concept family remains its own art outcome. Footprint is square occupancy in world cells, not image canvas size. Existing direct sprites cover Barracks and Archery Range. Town Center uses captured directional lifecycle artwork through `src/captured-building-art.mjs`; `src/main.js` passes the live building state. Some pack READMEs still describe older static-center behavior, so use current code and expansion/repair rules when planning coverage.
 
 | Order | Building | Current footprint | Gameplay identity | Art brief and useful reference |
 | --- | --- | --- | --- | --- |
 | 1 | Town Center | 5 × 5 | Workers, resource drop-off, population, Tier II research | Civic anchor: broad main hall, secondary wing or arcade, prominent entrance/plaza and raised central feature. Village hall/longhouse plus restrained manor/keep massing. Rework scale and silhouette first; existing five-state/eight-view captures are a baseline. |
 | 1 | House | 3 × 3 | Population | Clearly smaller domestic cottage, one principal roof and chimney. Thatched cottage/timber-frame house. Produce alongside Town Center as the scale control. |
 | 2 | Storehouse | 3 × 3 | Food and wood drop-off | Broad loading opening, covered bay, crates/logs and grain storage. Granary/lumber shed. Must read differently from House. |
+| Later | Mill | 3 × 3 | Food-only drop-off; provisional 75 wood / 15 seconds / 1,000 HP | Procedural House placeholder is currently playable. Author a distinct windmill/watermill silhouette when useful; rotating machinery requires a separate layer/clip. Artwork does not change its drop-off rules. |
+| Later | Palisade | 1 × 1 | Paid defensive blocker | Existing procedural wall profile; finished connection and lifecycle art belongs to the wall outcome. It is outside the original eight-building concept family. |
 | 2 | Stable | 3 × 3 | Scout/Rider production and mounted research | Open stalls, paddock cues, hay and tack; recognizable horse-scale entrances. Reference stable. |
 | 2 | Workshop | 3 × 3 | Siege production and engineering | Wide assembly bay, beams, wheels and unfinished machinery. Forge/longhouse vocabulary; distinguish from a domestic smithy. |
 | 2 | Watchtower | 3 × 3 | Ranged defense and sight | Narrow elevated platform with strong vertical silhouette. Reference watchtower; tall does not mean a broad civic base. |
 | 3 | Barracks | 3 × 3 | Infantry/Spearman and military research | Military hall, weapon racks, training frontage and banners. Retain useful existing identity; bring camera/scale/directions into the shared contract. |
 | 3 | Archery Range | 3 × 3 | Archers and fletching research | Open shooting lanes, targets and canopy. Retain current useful design; targets must survive strategic zoom. |
 
-Complete designs for all eight before multiplying states. Produce each useful pack progressively; existing Barracks/Range art need not wait for a roster-wide replacement.
+Complete the original eight-building concept family before multiplying its states. Produce each useful pack progressively; existing Barracks/Range art and playable Mill logic need not wait for a roster-wide replacement.
 
 ## Scale comes before state multiplication
 
@@ -55,7 +57,7 @@ Measure visible alpha bounds and modeled ground dimensions separately. A project
 
 Use the existing preferred model-to-capture workflow: complete concept → matched lifecycle concepts/models → shared orthographic capture → manifest and runtime images. Start with eight azimuths at 45° intervals and 46° elevation, matching the Town Center convention. Review view switching before choosing 16 or the reference pack's 32 views; additional directions multiply all states and masks.
 
-For each of the eight implemented types, plan Foundation, Frame, Complete, Damaged and Critical: five states × eight directions = 40 color frames per type, 320 across the roster. Use aligned team masks for Azure/Ember rather than duplicating every color frame, where recoloring is visually reliable. Full-frame masks would add up to 320 mask frames. Exact atlas count follows cropping, resolution and memory measurements; 320 frames is coverage, not 320 separate required textures or generation calls.
+For each type in the original eight-building concept family, plan Foundation, Frame, Complete, Damaged and Critical: five states × eight directions = 40 color frames per type, 320 across that family. Use aligned team masks for Azure/Ember rather than duplicating every color frame, where recoloring is visually reliable. Full-frame masks would add up to 320 mask frames. Exact atlas count follows cropping, resolution and memory measurements; 320 frames is coverage, not 320 separate required textures or generation calls.
 
 Record actual simulation progress/HP mapping per pack; existing direct and captured paths use different thresholds. Derive all states from the same complete design and keep camera, scale and ground pivot registered. Ruins, fire loops, smoke, production animations and opening doors are later optional layers, tied to a supported gameplay cue. Do not invent destroyed-building persistence merely to use a ruins frame. Keep selection, health, rally and queue feedback in the renderer.
 
@@ -69,7 +71,6 @@ These are absent from the current building registry. Prepare reference boards or
 
 | Candidate | Proposed role to resolve | Reference/design direction |
 | --- | --- | --- |
-| Mill | Food processing/drop-off or economic upgrade; differentiate from Storehouse | Windmill/watermill. Animated machinery needs its own layer/clip, separate from camera directions. |
 | Farm | Renewable food plot and Worker interaction | Crop plot plus modest shed/farmhouse; prioritize field visibility. Planting/growth/depletion require an agreed economy contract. |
 | Lumber camp | Dedicated wood economy, if distinct from Storehouse | Lumber shed, log piles and covered cutting bay. |
 | Blacksmith | Dedicated upgrade building, if research moves from producers | Forge, chimney and open work area. Current forging research does not imply a separate implemented smithy. |
