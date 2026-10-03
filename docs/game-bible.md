@@ -282,6 +282,10 @@ the existing building lifecycle and an explicit procedural House placeholder.
 It produces an unarmed **Skiff (placeholder)** for provisional 75 wood, 10 seconds
 and one population: 120 HP and 2.4 cells/second. Select up to 16 Skiffs to Move or Stop
 within authored level-zero water; hull occupancy can pause routes and production.
+Shift water targets, including minimap right-clicks, queue up to eight pending
+destinations per boat. [Water queues](skiff-water-waypoints.md) preserve cargo,
+individual goals and recovery; Stop clears only the controlled boats' queues.
+Queuing behind fishing or Return cargo remains separate.
 Skiffs gather the same finite shore-fish food as land Workers from a reachable
 water approach: provisional 10 food capacity and 1 food per second. A completed
 owned Dock accepts their cargo at its water berth; land Worker drop-offs retain

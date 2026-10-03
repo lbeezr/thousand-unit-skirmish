@@ -157,6 +157,8 @@ run(['--test', 'scripts/skiff-fishing.test.mjs'], 'Finite Skiff food, owned Dock
 run(['scripts/skiff-fishing-scenario.mjs'], 'Both-seat Skiff/Worker shared fish stock and cargo recovery');
 run(['--test', 'scripts/skiff-group-orders.test.mjs'], 'Exact selected Skiff group destinations and cargo conservation');
 run(['scripts/skiff-groups-scenario.mjs'], 'Both-seat selected Skiff movement/fishing/Return and restart');
+run(['--test', 'scripts/skiff-waypoints.test.mjs'], 'Selected Skiff water waypoint tails, cargo and recovery');
+run(['scripts/skiff-waypoints-scenario.mjs'], 'Both-seat shipped minimap Skiff waypoints and selected Stop');
 run(['scripts/water-route-map-scenario.mjs'], 'Water-only route components on shipped maps');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');

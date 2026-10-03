@@ -55,6 +55,7 @@ the build they name.
 | Produce a provisional Skiff, move on water, and inspect queue/recovery rules | [Skiff water movement](skiff-water-movement.md) |
 | Gather shared finite fish food with Skiffs and deliver at owned Dock berths | [Skiff fishing cargo](skiff-fishing.md) |
 | Move/fish/Return exactly selected boat groups with per-boat cargo and goals | [Selected Skiff groups](skiff-selected-groups.md) |
+| Queue selected Skiff water destinations from the battlefield or minimap | [Skiff water waypoints](skiff-water-waypoints.md) |
 | Choose a map | [Catalog](maps.md), [Forked Vale](forked-vale-scenario.md), [Three Crowns](three-crowns-layout.md) |
 | Change the compact objective HUD | [Objective behavior and validation](battlefield-objectives-validation.md) |
 | Change owned population feedback | [Population header behavior and validation](population-header-validation.md) |

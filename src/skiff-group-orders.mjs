@@ -15,7 +15,7 @@ const ordered = selected => [...selected].sort((a, b) => a.id - b.id);
 
 // Preflight the whole controlled selection. The caller commits only a found
 // result; no actor, cargo, order or source stock is mutated by these planners.
-export function planSkiffGroupMove(water, selected, x, z, units) {
+export function planSkiffGroupMove(water, selected, x, z, units, { reserveQueuedGoals = false } = {}) {
   if (!validSelection(selected)) return { status: 'invalid-skiff-group', assignments: [] };
   const graph = water.graph, target = graph.cellAt(x, z);
   if (!Number.isFinite(x) || !Number.isFinite(z) || !graph.isNavigable(target)) return { status: 'invalid-endpoints', assignments: [] };
@@ -29,6 +29,7 @@ export function planSkiffGroupMove(water, selected, x, z, units) {
   }
   candidates.sort((a, b) => a.distance - b.distance || a.cell - b.cell);
   const options = optionsFor(selected), assignments = [];
+  if (reserveQueuedGoals) options.ignoredQueuedGoalIds = new Set();
   for (const unit of ordered(selected)) {
     const occupied = new Set(water.reservations(units, unit));
     let found = null;
