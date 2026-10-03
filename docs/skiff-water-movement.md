@@ -52,9 +52,11 @@ the berth clears. Cancellation follows the shared ledger: an unstarted tail
 refunds all 75 wood; the head refunds only its unconsumed training fraction.
 Destroyed Docks use the ordinary production destruction rules.
 
-Schema 22 remains additive. The exact preceding Dock content revision
-`v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6`
-migrates its paid land match and Docks to the current revision. Older pins cannot
+Schema 22 remains additive. The exact preceding Gate/Dock content revision
+`v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b`
+migrates its paid land match, gates and Docks to the current revision. The prior
+gate-free Dock revision `v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6`
+and existing older land migrations remain compatible. Older pins cannot
 claim Skiffs or paid Skiff queues. Recovery validates water positions, cardinal
 routes and exact goals, centerline Stop positions, explicit domains, nonoverlapping
 live hull reservations, and absence of cargo, combat targets, land planning or
@@ -73,7 +75,7 @@ The unit tests cover bounded water movement, speed, occupancy, adjacent arrival
 escape, interrupted routes, paid refunds/population, elimination and actual
 placeholder/command-control functions. The real WebSocket scenario covers both
 seats' paid production, owner/stale-generation/domain rejections, occupied-berth
-completion, paid/blocked/moving/Stop restart, prior-Dock migration, unchanged
+completion, paid/blocked/moving/Stop restart, prior-Dock/Gate migration, unchanged
 banks and retained invalid checkpoints. These checks run through ordinary CI.
 
 In **SHORE FISHING**, gather enough wood for a Dock and Skiff (175 total), build

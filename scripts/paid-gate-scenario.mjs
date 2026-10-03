@@ -61,8 +61,11 @@ try {
     await reject(team, withWorker(opened, team, { type: 'buildWall', points }), /WALL ALREADY PLACED.*NO CHARGE/);
   }
   await fixture.stop(); const saved = JSON.parse(await readFile(fixture.checkpointPath, 'utf8'));
+  // Skiff is additive to this exact land roster; paid open gates must survive.
+  saved.rulesetRevision = 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b';
+  await writeFile(fixture.checkpointPath, JSON.stringify(saved));
   await reconnect(); assert.ok(clients.every(c => c.welcome.recoveredFromCheckpoint && c.welcome.player.resumed));
-  const restored = await ledger(); assert.equal(restored.matchId, saved.matchId);
+  const restored = await ledger(s => s.rulesetRevision === GAMEPLAY_RULESET_REVISION); assert.equal(restored.matchId, saved.matchId);
   assert.deepEqual(restored.state.buildings.map(b => [b.id, b.gateOpen]), gateIds.map(id => [id, true]));
   assert.deepEqual(restored.state.teamWood, [285, 285]);
   for (const team of [0, 1]) {

@@ -8,6 +8,7 @@ import { createWaterUnitRuntime, waterUnitOccupiedCells } from '../src/water-uni
 import { waterRaster } from '../src/water-contours.mjs';
 
 const previousDockPin = 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6';
+const previousLandPin = 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b';
 const map = { id: 'skiff-water-proof', name: 'Skiff water proof', width: 64, height: 64,
   terrainSeed: 19, fogOfWar: false, startingArmySize: 24,
   startingResources: { food: 1000, wood: 1000 },
@@ -58,6 +59,10 @@ try {
   await writeFile(fixture.checkpointPath, JSON.stringify(preBoat)); await reconnect();
   const migrated = await fixture.checkpoint(snapshot => snapshot.rulesetRevision === GAMEPLAY_RULESET_REVISION);
   assert.equal(migrated.matchId, preBoat.matchId); assert.deepEqual(migrated.state.teamWood, [900, 900]);
+  await fixture.stop(); const priorLand = await saved(); priorLand.rulesetRevision = previousLandPin;
+  await writeFile(fixture.checkpointPath, JSON.stringify(priorLand)); await reconnect();
+  const migratedLand = await fixture.checkpoint(snapshot => snapshot.rulesetRevision === GAMEPLAY_RULESET_REVISION);
+  assert.equal(migratedLand.matchId, priorLand.matchId); assert.deepEqual(migratedLand.state.teamWood, [900, 900]);
   const dockIds = [0, 1].map(team => docks(migrated).find(building => building.team === team).id);
   await command(1, { type: 'trainUnit', buildingId: dockIds[0], kind: 'skiff' }, /TRAINING REJECTED/);
   await command(0, { type: 'setRallyPoint', buildingId: dockIds[0], x: -12.5, z: 15.5 }, /MOVE THE SKIFF AFTER SPAWN/);
@@ -117,8 +122,10 @@ try {
   ]) { const invalid = structuredClone(final); mutate(invalid); await rejectSaved(invalid, reason); }
   const oldQueue = structuredClone(paidSave); oldQueue.rulesetRevision = previousDockPin;
   await rejectSaved(oldQueue, 'old content pin with paid Skiff queue');
+  const preSkiffQueue = structuredClone(paidSave); preSkiffQueue.rulesetRevision = previousLandPin;
+  await rejectSaved(preSkiffQueue, 'immediately preceding land content pin cannot claim a paid Skiff queue');
   console.log(JSON.stringify({ scenario: 'Dock paid Skiff movement', bothSeatPaidProduction: true,
-    tailRefundAndPopulationReservation: true, priorDockPinMigration: true, paidQueueRecovery: true,
+    tailRefundAndPopulationReservation: true, priorDockAndGatePinMigration: true, paidQueueRecovery: true,
     blockedBerthRecovery: true, ownerAndDomainRejections: true, stopAndMovingRecovery: true,
     waterOnlyNonoverlappingHulls: true, invalidCheckpointPreserved: true,
     gameplayAvailability: 'Dock trains one unarmed Skiff placeholder; select one boat and Move/Stop on authored level-zero water; no fish cargo, transport, naval combat or rally' }));
