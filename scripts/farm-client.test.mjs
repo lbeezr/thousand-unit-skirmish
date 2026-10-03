@@ -3,6 +3,7 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
 import { farmHarvestNode } from '../src/farm-harvest.mjs';
+import { isShoreFish } from '../src/shore-fishing.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
 const main = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
@@ -14,7 +15,7 @@ function fn(name) {
 for (const team of [0, 1]) test(`seat ${team} can target its completed Farm and clear only exhaustion`, () => {
   const farm = { id: 10, type: 'farm', team, complete: true, hp: 600, x: 0, z: 0, harvestStock: 200 };
   const context = vm.createContext({ localTeam: team, mapDefinition: { resourceNodes: [], fogOfWar: false },
-    latestBuildings: [farm], farmHarvestNode, renderer: { domElement: { getBoundingClientRect: () => ({ width: 100, height: 100 }) } },
+    latestBuildings: [farm], farmHarvestNode, isShoreFish, renderer: { domElement: { getBoundingClientRect: () => ({ width: 100, height: 100 }) } },
     screenPoint: { x: 0, y: 0, set() { return this; }, project() { return this; } }, groundHeight: () => 0, camera: {} });
   vm.runInContext(fn('pickResourceNodeAt'), context);
   assert.equal(context.pickResourceNodeAt(50, 50).id, 'farm:10');
