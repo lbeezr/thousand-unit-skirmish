@@ -43,8 +43,10 @@ test('optional authored nose yaw is finite Sheep presentation data, separate fro
   for (const wildlifeNoseYawDegrees of [0, 45, 90, 315, 359.99]) {
     const definition = { ...sheep, wildlifeNoseYawDegrees };
     assert.equal(validWildlifeNodeDefinition(definition), true);
-    assert.deepEqual(createResourceNodeState(definition), createResourceNodeState(sheep),
-      'static pose adds no simulation heading or food-state field');
+    const state = createResourceNodeState(definition), baseline = createResourceNodeState(sheep);
+    assert.equal(state.wildlifeMotion.heading, wildlifeNoseYawDegrees * Math.PI / 180);
+    state.wildlifeMotion.heading = baseline.wildlifeMotion.heading;
+    assert.deepEqual(state, baseline, 'authored initial pose changes no food or lifecycle state');
   }
   for (const wildlifeNoseYawDegrees of [-1, 360, NaN, Infinity, '90', null]) {
     assert.equal(validWildlifeNodeDefinition({ ...sheep, wildlifeNoseYawDegrees }), false);
