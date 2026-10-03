@@ -39,6 +39,25 @@ sites/orders. Re-pinning that valid save to the exact prior ruleset preserves
 match identity, banks, Worker training, building IDs and wall construction orders.
 Older content pins cannot claim Mill entities; unknown revisions remain rejected.
 
+## Retained-cargo checkpoint freshness
+
+Full CI during default-water integration at `7c8de75` exposed an intermittent
+fixture race. An earlier stopped checkpoint could already satisfy the Stop
+predicate after a later Gather/Stop pair. One ordinary-command probe recorded
+0.4333333333333333 food in that earlier snapshot while the Worker actually
+returned 0.4666666666667 after one additional gather tick. Both Workers ended
+idle with zero cargo; the stale snapshot understated the expected deposit.
+
+`stopWorkers()` now records the acknowledgement time and persisted sequence after
+both Stop acknowledgements. It requires a newer checkpoint captured after that
+time plus its existing stopped predicates before capturing banks and cargo;
+an older in-flight capture cannot qualify when its write finishes afterward.
+Exact deposit equality, conservation, source-stock and
+duplicate-credit checks remain in place; server economy rules are unchanged.
+Two complete corrected Mill runs and 18 ledger/Mill/return/settlement unit checks
+passed. The unchanged food-return probe reproduced the stale-snapshot failure in
+one of three runs, confirming why a numeric tolerance alone would not fix it.
+
 ## Complete-roster regression evidence
 
 Both normal and reversed-seat settlement dispatch passed with clean source

@@ -14,8 +14,8 @@ export { placementKey as resourceBrushMapKey };
 // Read-only preview on a validated map. Stock is the entire patch budget.
 export function previewResourceBrush(map, settings) {
   const { seed, type, x, z, totalStock, nodesPerPatch = 5, radius = 4,
-    spawnClearance = 6 } = settings;
-  const options = Object.freeze({ seed, type, x, z, totalStock, nodesPerPatch, radius, spawnClearance });
+    spawnClearance = 6, distribution = 'uniform' } = settings;
+  const options = Object.freeze({ seed, type, x, z, totalStock, nodesPerPatch, radius, spawnClearance, distribution });
   const resourceNodes = appendSeededResourceCluster(map, options);
   const nodes = resourceNodes.slice((map.resourceNodes ?? []).length);
   const preview = Object.freeze({ settings: options,

@@ -1,0 +1,35 @@
+import { UNIT_DEFINITIONS } from './gameplay-definitions.mjs';
+
+// Byte-identical approved illustrations; framing is a CSS viewport, not an atlas face crop.
+export const WORKER_PORTRAITS = Object.freeze({
+  human: Object.freeze({
+    entryId: 'unit.worker', appearanceFamily: 'Human',
+    asset: '/assets/ui/portraits/human-worker-source.png',
+    sourceWidth: 1774, cropX: 970, cropY: 0, cropSize: 270,
+  }),
+  'boughward-worker': Object.freeze({
+    entryId: 'unit.worker', appearanceFamily: 'Boughward',
+    asset: '/assets/ui/portraits/boughward-worker-source.png',
+    sourceWidth: 266, cropX: 20, cropY: 0, cropSize: 240,
+  }),
+});
+
+export function updateSelectionPortrait(root, context, unit, appearanceRole) {
+  const button = root.querySelector('[data-worker-portrait]');
+  const health = root.querySelector('[data-worker-health]');
+  const notes = root.querySelector('#selected-worker-notes');
+  const portrait = context.kind === 'workers' && context.total === 1
+    && unit?.kind === 'worker' && unit.hp > 0 ? WORKER_PORTRAITS[appearanceRole] : null;
+  button.hidden = health.hidden = notes.hidden = !portrait;
+  if (!portrait) return;
+  const image = button.querySelector('img');
+  if (image.getAttribute('src') !== portrait.asset) image.setAttribute('src', portrait.asset);
+  image.style.width = `${portrait.sourceWidth / portrait.cropSize * 100}%`;
+  image.style.left = `${-portrait.cropX / portrait.cropSize * 100}%`;
+  image.style.top = `${-portrait.cropY / portrait.cropSize * 100}%`;
+  button.dataset.codexEntry = portrait.entryId;
+  button.setAttribute('aria-label', `Worker · ${portrait.appearanceFamily} — open role notes`);
+  button.title = `Worker · ${portrait.appearanceFamily} — open role notes`;
+  health.textContent = `Worker · ${Math.round(unit.hp)} / ${UNIT_DEFINITIONS.worker.combat.maxHp} HP`;
+  notes.querySelector('strong').textContent = `Worker · ${portrait.appearanceFamily}`;
+}
