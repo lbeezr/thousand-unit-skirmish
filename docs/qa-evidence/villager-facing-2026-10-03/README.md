@@ -75,5 +75,17 @@ No sandbox override or security change was attempted. Actual GPU appearance,
 human motion acceptance and a deployed-match observation remain unobserved.
 This code fix does not supply missing directional action art.
 
-The Sheep lane's open PR #35 consumes isolated preview modules and does not edit
-these unit-facing interfaces. No shared renderer edit needs a cross-task decision.
+At integrated code head `c177d0759a4315d17e13109d9e1c1cf162fb0051`, 39 focused
+tests pass including the upstream Sheep and resource-brush checks; independent
+review passes 45 tests and reports no actionable findings. The review's minor
+game-bible correction is included. [Integration results](integration-checks.json)
+also record an isolated Bellweather server/native WebSocket probe: actual
+gathering orders emit correct resource headings for both seats, including zero,
+and Stop removes them. The actual queued-waypoint/checkpoint scenario and
+mirrored Worker combat scenario pass. No hosted workflow runs are present at
+that exact code head.
+
+The merged Sheep PR #35 consumes isolated preview modules and does not edit
+these unit-facing interfaces. Updating to main `abcc2a4` also retains resource
+brush PR #32. The sole conflict was adjacent `scripts/ci.mjs` test registration;
+both checks were kept. No shared renderer edit needs a cross-task decision.
