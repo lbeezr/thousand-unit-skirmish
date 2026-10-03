@@ -1,3 +1,4 @@
+import { createGateTimbers, updateGateTimbers } from './palisade-gate-visual.mjs';
 import { findInvalidResourceVariant, isShoreFish } from './shore-fishing.mjs';
 import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from './shore-fishing-placeholder.mjs';
 import { createWaterStudyFishBinding } from './water-study-fish-binding.mjs';
@@ -1329,12 +1330,15 @@ function createGameplayBuildingVisual(building) {
 function createPalisadeVisual(building) {
   const group = new THREE.Group(), timber = new THREE.MeshBasicMaterial({ color: 0x705443 });
   const walls = new THREE.Group(); group.add(walls);
-  const post = new THREE.Mesh(new THREE.BoxGeometry(0.22, 1.4, 0.22), timber);
-  post.position.y = 0.7; walls.add(post);
-  const arms = {};
-  for (const [direction, dx, dz] of [['north', 0, -1], ['east', 1, 0], ['south', 0, 1], ['west', -1, 0]]) {
-    const arm = new THREE.Mesh(new THREE.BoxGeometry(dx ? 0.5 : 0.12, 0.65, dz ? 0.5 : 0.12), timber);
-    arm.position.set(dx * 0.25, 0.65, dz * 0.25); walls.add(arm); arms[direction] = arm;
+  const arms = {}, gate = building.type === 'palisade-gate' ? createGateTimbers(THREE, timber) : null;
+  if (gate) walls.add(gate.group);
+  else {
+    const post = new THREE.Mesh(new THREE.BoxGeometry(0.22, 1.4, 0.22), timber);
+    post.position.y = 0.7; walls.add(post);
+    for (const [direction, dx, dz] of [['north', 0, -1], ['east', 1, 0], ['south', 0, 1], ['west', -1, 0]]) {
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(dx ? 0.5 : 0.12, 0.65, dz ? 0.5 : 0.12), timber);
+      arm.position.set(dx * 0.25, 0.65, dz * 0.25); walls.add(arm); arms[direction] = arm;
+    }
   }
   const teamColor = TEAM_HEX[building.team];
   const outline = new THREE.Mesh(new THREE.RingGeometry(0.65, 0.7, 4),
@@ -1342,7 +1346,7 @@ function createPalisadeVisual(building) {
   outline.rotation.x = -Math.PI / 2; outline.rotation.z = Math.PI / 4; outline.position.y = 0.04; group.add(outline);
   const healthIndicator = createBuildingHealthIndicator(); group.add(healthIndicator.group);
   const combatFeedback = createBuildingCombatFeedback(); group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
-  const visual = { group, walls, arms, outline, teamColor, healthIndicator, combatFeedback };
+  const visual = { group, walls, arms, gate, outline, teamColor, healthIndicator, combatFeedback };
   scene.add(group); updatePalisadeVisual(visual, building); return visual;
 }
 
@@ -1350,6 +1354,7 @@ function updatePalisadeVisual(visual, building) {
   visual.group.position.set(building.x, groundHeight(building.x, building.z), building.z);
   visual.walls.scale.y = Math.max(0.08, THREE.MathUtils.clamp(Number(building.progress) || 0, 0, 1));
   for (const [direction, arm] of Object.entries(visual.arms)) arm.visible = building.connections?.includes(direction) === true;
+  if (visual.gate) updateGateTimbers(visual.gate, building);
   updateBuildingHealthIndicator(visual, building);
 }
 
@@ -4652,6 +4657,7 @@ function updateBuildingLifecycleActions() {
   const choices = !building ? [] : [
     ...(!building.complete ? [{ type: 'cancelConstruction', label: 'Cancel construction · refund unfinished work' }] : []),
     ...(building.complete && getBuildingQueueLength(building) > 0 ? [{ type: 'cancelTraining', label: 'Cancel last queued unit' }] : []),
+    ...(building.complete && building.type === 'palisade-gate' ? [{ type: 'setGateOpen', label: building.gateOpen ? 'Close gate · blocks both teams' : 'Open gate · both teams may pass' }] : []),
     ...(active ? [{ type: 'cancelResearch', label: 'Cancel research · refund unfinished work' }] : []),
     ...(building.complete && building.hp < building.maxHp ? [{ type: 'repairBuilding', label: 'Repair with Workers · costs wood' }] : []),
   ];
@@ -4662,6 +4668,11 @@ function updateBuildingLifecycleActions() {
       const button = document.createElement('button'); button.type = 'button'; button.dataset.action = choice.type; button.textContent = choice.label;
       button.addEventListener('click', () => {
         const command = { type: choice.type, buildingId: building.id };
+        if (choice.type === 'setGateOpen') {
+          const current = latestBuildings.find(row => row.id === building.id && row.team === localTeam);
+          if (!current || !current.complete || current.type !== 'palisade-gate' || matchWinner >= 0) return;
+          command.open = !current.gateOpen;
+        }
         if (choice.type === 'repairBuilding') {
           command.ids = teamUnits[localTeam].filter((unit) => unit.hp > 0 && unit.kind === 'worker').map((unit) => unit.id);
         }
@@ -4671,8 +4682,12 @@ function updateBuildingLifecycleActions() {
       container.append(button);
     }
   }
-  for (const button of container.children) button.disabled = matchWinner >= 0
-    || (button.dataset.action === 'repairBuilding' && !teamUnits[localTeam].some((unit) => unit.hp > 0 && unit.kind === 'worker'));
+  for (const button of container.children) {
+    button.disabled = matchWinner >= 0
+      || (button.dataset.action === 'repairBuilding' && !teamUnits[localTeam].some(unit => unit.hp > 0 && unit.kind === 'worker'));
+    if (button.dataset.action === 'setGateOpen') button.textContent = building.gateOpen
+      ? 'Close gate · blocks both teams' : 'Open gate · both teams may pass';
+  }
   if (ui.cancelWorkerTraining) ui.cancelWorkerTraining.disabled = localTeam === null || matchWinner >= 0 || !(latestWorkerProduction[localTeam]?.queue > 0);
 }
 

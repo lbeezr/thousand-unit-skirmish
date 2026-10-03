@@ -241,7 +241,13 @@ obey the same ordinary blocking rules. The normal Palisade menu previews and
 places an atomic drag line, with Shift selecting its elbow and arrows/Enter
 supporting keyboard endpoints. Invalid lines and aggregate cost are visible
 before submission. Finished wall art remains separate work. See the
-[paid palisade contract](palisade-runtime.md). No stone currency or gate policy is introduced.
+[paid palisade contract](palisade-runtime.md). No stone currency is introduced.
+
+A one-cell [Palisade Gate](palisade-gates.md) reuses that provisional profile.
+Only its owner operates the explicit open/closed control: a closed gate blocks
+both teams and an open gate lets both teams pass. Closing rejects occupied
+cells and cuts to existing entity/active-route access. Open gates still reserve
+their building footprint. Gate state and movement behavior survive checkpoints.
 
 ## Cancellation and repair
 

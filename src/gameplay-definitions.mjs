@@ -155,6 +155,7 @@ export const GAMEPLAY_DEFINITIONS = freezeTree(validateGameplayDefinitions({
   },
   buildings: {
     'palisade-wall': palisadeDraftDefinition(PALISADE_TUNING_PROPOSAL),
+    'palisade-gate': { ...palisadeDraftDefinition(PALISADE_TUNING_PROPOSAL), id: 'palisade-gate', label: 'Palisade Gate' },
     workshop: { id: 'workshop', label: 'Workshop', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, requires: ['military-tier-2'], cost: { food: 0, wood: 250 }, buildSeconds: 30, footprint: 3, maxHp: 1600, products: ['siege-engine'], presentation: 'building.workshop' },
     stable: { id: 'stable', label: 'Stable', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 200 }, buildSeconds: 25, footprint: 3, maxHp: 1600, products: ['scout', 'rider'], presentation: 'building.stable' },
     watchtower: { id: 'watchtower', label: 'Watchtower', tags: ['structure', 'defense'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 50, wood: 150 }, buildSeconds: 35, footprint: 3, maxHp: 1200, products: [], sight: 10, combat: { mode: 'ranged', attackClass: 'pierce', targetTags: ['ground'], tagMultipliers: {}, range: 7, damage: 8, period: 1.25 }, presentation: 'building.watchtower' },
@@ -166,7 +167,7 @@ export const GAMEPLAY_DEFINITIONS = freezeTree(validateGameplayDefinitions({
     barracks: { id: 'barracks', label: 'Barracks', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 175 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['infantry', 'spearman'], presentation: 'building.barracks' },
     'archery-range': { id: 'archery-range', label: 'Archery Range', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 150 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['archer'], presentation: 'building.archery-range' },
   },
-  factions: { frontier: { id: 'frontier', label: 'Frontier', units: ['worker', 'infantry', 'archer', 'spearman', 'scout', 'rider', 'siege-engine'], buildings: ['palisade-wall', 'house', 'barracks', 'archery-range', 'storehouse', 'mill', 'town-center', 'watchtower', 'stable', 'workshop'], technologies: ['infantry-attack', 'archer-attack', 'military-tier-2', 'military-armor', 'mounted-attack', 'siege-engineering'] } },
+  factions: { frontier: { id: 'frontier', label: 'Frontier', units: ['worker', 'infantry', 'archer', 'spearman', 'scout', 'rider', 'siege-engine'], buildings: ['palisade-wall', 'palisade-gate', 'house', 'barracks', 'archery-range', 'storehouse', 'mill', 'town-center', 'watchtower', 'stable', 'workshop'], technologies: ['infantry-attack', 'archer-attack', 'military-tier-2', 'military-armor', 'mounted-attack', 'siege-engineering'] } },
   technologies: {
     'siege-engineering': { id: 'siege-engineering', label: 'SIEGE ENGINEERING', building: 'workshop', upgradeKey: 'siegeEngineering', requires: ['military-tier-2'], effects: [], cost: { food: 150, wood: 150 }, durationSeconds: 30 },
     'military-tier-2': { id: 'military-tier-2', label: 'MILITARY TIER II', building: 'town-center', upgradeKey: 'militaryTier2', effects: [], cost: { food: 200, wood: 150 }, durationSeconds: 35 },

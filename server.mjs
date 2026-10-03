@@ -38,6 +38,7 @@ import { headingToTarget } from './src/unit-heading.mjs';
 import { workerFishingPresentation } from './src/worker-fishing-presentation.mjs';
 import { preparePaidWallLine } from './src/wall-construction-draft.mjs';
 import { activeWallBuildOrder } from './src/wall-build-order.mjs';
+import { isPalisade, validGateState, buildingBlocksMovement, planGateTransition } from './src/palisade-gate.mjs';
 import { palisadeConnections } from './src/palisade-profile.mjs';
 import { canTraverseUnitStep } from './src/unit-movement.mjs';
 
@@ -2456,7 +2457,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
   }
   const viewBuildings = buildings.filter((building) => !fogView || buildingVisibleToTeam(viewTeam, building));
   const visibleWallCells = [0, 1].map(team => new Set(viewBuildings.filter(building =>
-    building.team === team && building.type === 'palisade-wall').map(building => building.footprint[0])));
+    building.team === team && isPalisade(building.type)).map(building => building.footprint[0])));
   const resourceNodes = mapDefinition.resourceNodes.filter((node) => !fogView
     || cellVisibleToTeam(viewTeam, worldToCell(node.x, node.z)));
   return {
@@ -2529,7 +2530,8 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
     })),
     buildings: viewBuildings.map((building) => ({
       id: building.id, team: building.team, type: building.type,
-      ...(building.type === 'palisade-wall' ? { connections: palisadeConnections(building.footprint[0], MAP_WIDTH, MAP_HEIGHT, visibleWallCells[building.team]) } : {}),
+      ...(building.type === 'palisade-gate' ? { gateOpen: building.gateOpen } : {}),
+      ...(isPalisade(building.type) ? { connections: palisadeConnections(building.footprint[0], MAP_WIDTH, MAP_HEIGHT, visibleWallCells[building.team]) } : {}),
       x: building.x, z: building.z, hp: building.hp, maxHp: BUILDING_DEFINITIONS[building.type].maxHp,
       attackers: buildingAttackers.get(building.id) || 0,
       lastAttackTick: building.lastAttackTick ?? -1,
@@ -2821,7 +2823,7 @@ function validateMatchCheckpoint(snapshot) {
     const rules = buildingRulesFor(building?.type);
     assertSnapshot(building && integerIn(building.id, 1, Number.MAX_SAFE_INTEGER)
       && !buildingIds.has(building.id) && integerIn(building.team, 0, 1)
-      && rules && finite(building.x) && finite(building.z)
+      && rules && validGateState(building) && finite(building.x) && finite(building.z)
       && integerIn(building.rallyCell, -1, cellCount - 1)
       && Array.isArray(building.footprint) && building.footprint.length > 0
       && building.footprint.every((cell) => integerIn(cell, 0, cellCount - 1))
@@ -3087,7 +3089,7 @@ function restoreMatchCheckpoint(snapshot) {
     const building = { ...record, productionQueue: [...record.productionQueue], footprint: [...record.footprint] };
     for (const cell of building.footprint) {
       if (blocked[cell] || buildingBlocked[cell]) throw new Error('Invalid match checkpoint: building blocks invalid terrain.');
-      buildingBlocked[cell] = 1;
+      buildingBlocked[cell] = buildingBlocksMovement(building) ? 1 : 0;
     }
     buildings.push(building);
     buildingsById.set(building.id, building);
@@ -3327,6 +3329,7 @@ function migrateMatchCheckpoint(snapshot) {
     && Array.isArray(snapshot.state?.buildings) && Array.isArray(snapshot.state?.units)
     && !snapshot.state.buildings.some(building => building.type === 'palisade-wall')
     && !snapshot.state.buildings.some(building => building.type === 'mill')
+    && !snapshot.state.buildings.some(building => building.type === 'palisade-gate' || Object.hasOwn(building, 'gateOpen'))
     && !snapshot.state.units.some(unit => unit.wallBuildOrder != null)) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
@@ -3334,7 +3337,15 @@ function migrateMatchCheckpoint(snapshot) {
   if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
     && snapshot.rulesetRevision === 'v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801'
     && Array.isArray(snapshot.state?.buildings)
-    && !snapshot.state.buildings.some(building => building.type === 'mill')) {
+    && !snapshot.state.buildings.some(building => building.type === 'mill')
+    && !snapshot.state.buildings.some(building => building.type === 'palisade-gate' || Object.hasOwn(building, 'gateOpen'))) {
+    snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+  }
+  // The gate is additive; accept only the exact preceding definition set, without invented gate state.
+  if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
+    && snapshot.rulesetRevision === 'v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2'
+    && Array.isArray(snapshot.state?.buildings)
+    && !snapshot.state.buildings.some(building => building.type === 'palisade-gate' || Object.hasOwn(building, 'gateOpen'))) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
@@ -4961,13 +4972,17 @@ function buildWallLine(player, command) {
     .filter(unit => unit.hp > 0 && unit.team === player.team && unitHasCapability(unit, 'build'));
   if (!selectedWorkers.length) { rejectBuild(player, 'SELECT A WORKER', command); return; }
   const existingWallCells = new Set(buildings.filter(building =>
-    building.team === player.team && building.type === 'palisade-wall').flatMap(building => building.footprint));
+    building.team === player.team && isPalisade(building.type)).flatMap(building => building.footprint));
   const blockedCells = [], occupiedCells = new Set();
   const resourceCells = new Set(mapDefinition.resourceNodes
     .filter(node => resourceNodeStates.get(node.id)?.stock !== 0).map(node => worldToCell(node.x, node.z)));
   for (let cell = 0; cell < CELL_COUNT; cell++) {
     if (blocked[cell] || townCenterBlocked[cell] || resourceCells.has(cell)) blockedCells.push(cell);
     if (buildingBlocked[cell] && !existingWallCells.has(cell)) occupiedCells.add(cell);
+  }
+  // Open gates remain reserved structures even though their movement mask is clear.
+  for (const building of buildings) for (const cell of building.footprint) {
+    if (!existingWallCells.has(cell)) occupiedCells.add(cell);
   }
   for (const trigger of mapDefinition.triggers) {
     for (let row = trigger.zone.row; row < trigger.zone.row + trigger.zone.height; row++) {
@@ -5098,7 +5113,8 @@ function buildBuilding(player, command) {
   }
   const centerCell = worldToCell(x, z);
   const footprint = buildingFootprint(centerCell, command.buildingType);
-  if (!footprint || footprint.some((cell) => blocked[cell] || buildingBlocked[cell] || townCenterBlocked[cell])) {
+  if (!footprint || footprint.some((cell) => blocked[cell] || buildingBlocked[cell] || townCenterBlocked[cell]
+    || buildings.some(building => building.footprint.includes(cell)))) {
     rejectBuild(player, 'SPACE BLOCKED', command);
     return;
   }
@@ -5122,11 +5138,12 @@ function buildBuilding(player, command) {
   }
 
   const center = cellToWorld(centerCell);
-  const id = nextBuildingId++;
+  const id = nextBuildingId;
   const building = {
     id, team: player.team, type: command.buildingType, x: center.x, z: center.z,
     footprint, hp: BUILDING_DEFINITIONS[command.buildingType].maxHp, progress: 0, complete: false, queue: 0, productionQueue: [], trainingRemaining: 0,
     productionBlocked: false, rallyCell: -1,
+    ...(command.buildingType === 'palisade-gate' ? { gateOpen: false } : {}),
   };
   const previousConnectivity = captureBuildingConnectivity();
   const previousComponents = walkableComponents.slice();
@@ -5198,6 +5215,7 @@ function buildBuilding(player, command) {
     return;
   }
 
+  nextBuildingId++;
   buildings.push(building);
   buildingsById.set(id, building);
   navigationRevision++;
@@ -5213,6 +5231,42 @@ function buildBuilding(player, command) {
   }, id, 'BUILD ORDER');
   dirty = true;
   sendOrderNotice(player, command, `${rules.label} PLACED · WORKERS BUILDING`);
+}
+
+function setGateOpen(player, command) {
+  const building = buildingsById.get(command.buildingId);
+  const occupied = building && units.some(unit => unit.hp > 0
+    && building.footprint.includes(worldToCell(unit.x, unit.z)));
+  const canClose = () => {
+    const previousConnectivity = captureBuildingConnectivity();
+    const previousComponents = walkableComponents.slice();
+    const priorMask = building.footprint.map(cell => buildingBlocked[cell]);
+    try {
+      for (const cell of building.footprint) buildingBlocked[cell] = 1;
+      rebuildWalkableComponents();
+      return canPlaceBuildingWithoutDisconnectingEntities(previousConnectivity)
+        && activeMoveRoutesRemainConnected(previousComponents);
+    } finally {
+      building.footprint.forEach((cell, index) => { buildingBlocked[cell] = priorMask[index]; });
+      rebuildWalkableComponents();
+    }
+  };
+  const plan = planGateTransition({ building, team: player.team, open: command.open, occupied, canClose });
+  if (plan.status === 'rejected') {
+    sendOrderNotice(player, command, `GATE REJECTED · ${plan.reason}`); return;
+  }
+  if (plan.status === 'unchanged') {
+    sendOrderNotice(player, command, `GATE ALREADY ${plan.open ? 'OPEN' : 'CLOSED'} · NO CHANGE`); return;
+  }
+  building.gateOpen = plan.open;
+  for (const cell of building.footprint) buildingBlocked[cell] = plan.open ? 0 : 1;
+  navigationRevision++;
+  visionCoverageBySourceCell = new Array(CELL_COUNT);
+  attackFlowFields.clear();
+  rebuildWalkableComponents();
+  if (!plan.open) replanPathsBlockedBy(building.footprint);
+  dirty = true;
+  sendOrderNotice(player, command, `GATE ${plan.open ? 'OPEN · BOTH TEAMS MAY PASS' : 'CLOSED · BOTH TEAMS BLOCKED'}`);
 }
 
 function findProductionSpawnCell(building) {
@@ -6192,7 +6246,7 @@ async function handleCommand(player, command) {
       return;
     }
   }
-  if (matchWinner >= 0 && ['stop', 'holdPosition', 'patrol', 'follow', 'move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'returnCargo', 'train', 'build', 'buildWall', 'trainArcher', 'trainUnit', 'trainWorker', 'setRallyPoint', 'researchUpgrade', 'cancelConstruction', 'cancelTraining', 'cancelResearch', 'repairBuilding'].includes(command.type)) {
+  if (matchWinner >= 0 && ['stop', 'holdPosition', 'patrol', 'follow', 'move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'returnCargo', 'train', 'build', 'buildWall', 'setGateOpen', 'trainArcher', 'trainUnit', 'trainWorker', 'setRallyPoint', 'researchUpgrade', 'cancelConstruction', 'cancelTraining', 'cancelResearch', 'repairBuilding'].includes(command.type)) {
     sendOrderNotice(player, command, player.team === 0
       ? 'MATCH OVER · RESET BATTLEFIELD TO PLAY AGAIN'
       : 'MATCH OVER · WAIT FOR HOST TO RESET');
@@ -6212,6 +6266,7 @@ async function handleCommand(player, command) {
   if (command.type === 'trainWorker') trainWorker(player);
   if (command.type === 'build') buildBuilding(player, command);
   if (command.type === 'buildWall') buildWallLine(player, command);
+  if (command.type === 'setGateOpen') setGateOpen(player, command);
   if (command.type === 'trainArcher') trainArcher(player, command);
   if (command.type === 'setRallyPoint') setBuildingRallyPoint(player, command);
   if (command.type === 'researchUpgrade') researchUpgrade(player, command);
@@ -7530,7 +7585,7 @@ const server = createServer(async (request, response) => {
     'src/shore-fishing.mjs', 'src/shore-fishing-placeholder.mjs', 'src/shore-fishing-placement.mjs',
     'src/worker-fishing-presentation.mjs',
     'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs', 'src/resource-brush-controls.mjs',
-    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
+    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
     'src/terrain-authoring.mjs', 'src/terrain-height.mjs', 'src/regions.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs',
@@ -7540,7 +7595,7 @@ const server = createServer(async (request, response) => {
     'src/audio-composition.mjs', 'src/audio-composer.mjs', 'src/audio-composer.css',
     'audio-studio.html', 'audio-zones.html', 'src/audio-zones.mjs', 'src/audio-zones.css', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs',
     'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs',
-    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
+    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs', 'src/shore-vegetation.mjs', 'src/meadow-vegetation.mjs', 'src/garden-vegetation.mjs', 'src/environment-plant-assets.mjs', 'src/podvine-view-pack.mjs', 'src/podvine-worked-pack.mjs', 'src/podvine-low-pack.mjs', 'src/veilcap-view-pack.mjs', 'src/veilcap-worked-pack.mjs', 'src/sunbloom-view-pack.mjs', 'src/sunbloom-crown-pack.mjs', 'src/sunbloom-worked-pack.mjs', 'src/sunbloom-low-pack.mjs', 'src/terrain-blend.mjs', 'src/terrain-texture-sampling.mjs', 'src/terrain-atmosphere.mjs', 'src/terrain-materials.mjs',
     'src/forest-habitat.mjs', 'src/forest-age-composition.mjs', 'src/forest-composition.mjs', 'src/regional-ground-kits.mjs', 'src/water-contours.mjs',
   ].includes(relative);

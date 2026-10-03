@@ -47,6 +47,7 @@ the build they name.
 | Change commands, snapshots, or bot observations | [Gameplay contract](gameplay-command-observation-contract.md) |
 | Understand overload behavior | [Simulation timing](simulation-timing.md) |
 | Author and validate scenario JSON | [Map authoring](map-authoring.md) |
+| Work on connected walls and explicit manual gates | [Palisade runtime](palisade-runtime.md), [gates](palisade-gates.md) |
 | Inspect isolated water routes before dock/boat integration | [Water navigation foundation](water-navigation-foundation.md) |
 | Choose a map | [Catalog](maps.md), [Forked Vale](forked-vale-scenario.md), [Three Crowns](three-crowns-layout.md) |
 | Change the compact objective HUD | [Objective behavior and validation](battlefield-objectives-validation.md) |
