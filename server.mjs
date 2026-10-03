@@ -5887,7 +5887,8 @@ async function handleCommand(player, command) {
         else player.sendJson(packet);
       } catch (error) {
         player.sendJson({ type: 'lobbyChatRejected',
-          clientMessageId: typeof command.clientMessageId === 'string' ? command.clientMessageId : null,
+          clientMessageId: typeof command.clientMessageId === 'string' && command.clientMessageId.length <= 64
+            ? command.clientMessageId : null,
           message: String(error.message) });
       }
       return;

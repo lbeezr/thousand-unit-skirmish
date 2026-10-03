@@ -117,6 +117,8 @@ try {
     ['spoof', { playerId: guestIdentity.id }], ['host-one', { text: 'different' }],
   ]) await host.exchange({ ...chatCommand(id), ...patch }, rejected(id));
   assert.equal(host.chat.length, 2, 'rejected messages do not enter history');
+  const invalidId = await host.exchange(chatCommand('x'.repeat(1000)), rejected(null));
+  assert.equal(invalidId.clientMessageId, null, 'invalid request IDs cannot enlarge an acknowledgement');
   const spectator = client(roomId), duplicate = client(roomId, hostIdentity.sessionToken);
   await until(() => spectator.welcome && duplicate.welcome, 'spectators');
   assert.equal(duplicate.welcome.player.resumePending, true);

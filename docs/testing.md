@@ -243,6 +243,9 @@ and `node scripts/room-pregame-scenario.mjs` cover the [lobby contract](room-lob
 including both-client authority, paused scenarios, launch races and seat/phase
 recovery. Existing supervisor/PvE/expiry scenarios remain the legacy-flow checks.
 
+Chat regressions are in `scripts/room-lobby-chat.test.mjs`,
+`scripts/room-lobby-chat-ui.test.mjs` and `scripts/room-lobby-chat-scenario.mjs`.
+
 Separate logic, protocol, browser appearance, local performance, deployed
 behavior, and human comprehension. A pass in one category does not establish
 another. Keep raw measurements with their build; put current instructions here
@@ -265,5 +268,3 @@ Regional map/elevation regressions: `node scripts/terrain-authoring-scenario.mjs
 `node scripts/regional-objective-scenario.mjs bellweather-millrace` (repeat with
 `underbough-rootways`). The objective scenarios use the authored opening and each
 seat in turn; they prove routes, holds and rematches, not contested match balance.
-Chat regressions are in `scripts/room-lobby-chat.test.mjs`,
-`scripts/room-lobby-chat-ui.test.mjs` and `scripts/room-lobby-chat-scenario.mjs`.
