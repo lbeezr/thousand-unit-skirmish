@@ -72,7 +72,7 @@ function makeGround(scene, definition, field) {
 async function buildScene(specs, detailed = false, unitCount = 512) {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x859175);
   const definition = { width: detailed ? 24 : 128, height: detailed ? 24 : 128,
-    elevationPatches: detailed ? [{ column: 12, row: 0, width: 12, height: 24, level: 3 }] : [] };
+    elevationPatches: detailed ? [{ column: 12, row: 0, width: 12, height: 24, level: 2 }] : [] };
   const field = setActiveTerrain(definition); makeGround(scene, definition, field);
   const buildings = specs.map(spec => addBuilding(scene, spec));
   if (!(await Promise.all([...frames.values()].map(entry => entry.ready))).every(Boolean)) throw new Error('Building frame load failed');
@@ -272,8 +272,8 @@ async function run() {
     active = await buildScene(detailBuildingSpecs(), true, 8);
     for (const [name, direction, zoom] of [['default', CAMERA_VIEW_DIRECTION, .91], ['strategic', CAMERA_VIEW_DIRECTION, .48],
       ['other-azimuth', [-.78, 1.12, .78], .91], ['steeper', [1, 3, 1], .91]]) {
-      setCamera({ direction, zoom, span: 20, target: [0, 1.2, 0] });
-      const view = { name, direction, zoom, levelHeights: [0, 2.4] };
+      setCamera({ direction, zoom, span: 20, target: [0, .8, 0] });
+      const view = { name, direction, zoom, levelHeights: [0, 1.6] };
       const hits = {};
       for (const mode of ['baseline', 'candidate']) {
         setMode(mode); view[`${mode}Png`] = image();

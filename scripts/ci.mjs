@@ -115,6 +115,7 @@ run(['--test', 'scripts/check-client-imports.test.mjs'], 'Served client import g
 run(['--test', 'scripts/snapshot-private-production.test.mjs'], 'Seat-private production snapshots');
 
 run(['--test', 'scripts/battlefield-cursor.test.mjs'], 'Battlefield cursor states');
+run(['--test', 'scripts/hud-action-icons.test.mjs'], 'Candidate HUD action glyphs and semantics');
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
 run(['--test', 'scripts/game-entry.test.mjs', 'scripts/game-navigation.test.mjs'], 'Explicit main menu and session entry');
 run(['scripts/game-menu-scenario.mjs'], 'Fresh menu matches and protected resume authority');
@@ -162,6 +163,7 @@ run(['scripts/skiff-fishing-scenario.mjs'], 'Both-seat Skiff/Worker shared fish 
 run(['--test', 'scripts/skiff-group-orders.test.mjs'], 'Exact selected Skiff group destinations and cargo conservation');
 run(['scripts/skiff-groups-scenario.mjs'], 'Both-seat selected Skiff movement/fishing/Return and restart');
 run(['--test', 'scripts/skiff-waypoints.test.mjs'], 'Selected Skiff water waypoint tails, cargo and recovery');
+run(['--test', 'scripts/skiff-fishing-next-move.test.mjs'], 'Skiff one-load fishing completion before queued Move');
 run(['scripts/skiff-waypoints-scenario.mjs'], 'Both-seat shipped minimap Skiff waypoints and selected Stop');
 run(['scripts/water-route-map-scenario.mjs'], 'Water-only route components on shipped maps');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');

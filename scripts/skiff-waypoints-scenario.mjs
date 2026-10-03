@@ -74,25 +74,66 @@ try {
   const ready = await fixture.checkpoint(snapshot => [0, 1].every(team => ownBoats(snapshot, team).length === 3));
   unselected = [0, 1].map(team => ownBoats(ready, team).find(unit => !selected[team].includes(unit.id)).id);
   untouched = unselected.map(id => identity(ready.state.units[id])); safe(ready);
+  for (const team of [0, 1]) {
+    const f = minimapFixture(team); dom.push(f); f.w.units = [];
+    for (const unit of ready.state.units) f.w.units[unit.id] = { id: unit.id, generation: unit.generation, hp: unit.hp, team: unit.team, kind: unit.kind };
+    Object.assign(f.w, { mapDefinition: map, selected: new Set([...selected[team], unselected[1 - team]]), socket: { readyState: 1,
+      send(payload) { sent[team].push(JSON.parse(payload)); clients[team].socket.send(payload); } } });
+  }
+  // Fishing is continuous unless an accepted next Move bounds it to one load.
   for (const team of [0, 1]) await command(team, { type: 'gather', ids: selected[team], nodeId: `fish-${team}` }, /2 SKIFFS/);
   await fixture.checkpoint(snapshot => selected.flat().every(id => snapshot.state.units[id].cargo >= .1));
   for (const team of [0, 1]) {
-    await command(team, { type: 'move', ids: selected[team], x: team ? 20.5 : -4.5, z: 22.5, queue: true }, /FINISH-OR-STOP-FISHING-FIRST/);
-    await command(team, { type: 'stop', ids: selected[team] }, /STOP ORDER/);
+    const offset = team ? 25 : 0;
+    await minimap(team, 27 + offset, 54, true, /WAYPOINT QUEUED/);
+    await minimap(team, 27 + offset, 47, true, /WAYPOINT QUEUED/);
   }
-  const carrying = await fixture.checkpoint(snapshot => selected.flat().every(id => snapshot.state.units[id].gatherPhase === '')); safe(carrying);
+  await fixture.stop(); const fishingQueued = await saved(); safe(fishingQueued);
+  const fishingTails = selected.map(ids => ids.map(id => fishingQueued.state.units[id].queuedWaypoints.at(-1).destination));
+  assert.ok(selected.flat().every(id => fishingQueued.state.units[id].gatherPhase !== '' && fishingQueued.state.units[id].queuedWaypoints.length === 2));
+  await reconnect();
+  const oneLoad = await fixture.checkpoint(snapshot => selected.flat().every(id => snapshot.state.units[id].path.length === 0
+    && snapshot.state.units[id].queuedWaypoints.length === 0 && snapshot.state.units[id].gatherPhase === '')); safe(oneLoad);
+  for (const team of [0, 1]) {
+    close(oneLoad.state.teamFood[team], 1020); close(stock(oneLoad, team), 11);
+    for (let i = 0; i < 2; i++) {
+      const unit = oneLoad.state.units[selected[team][i]], point = water.graph.pointAt(fishingTails[team][i]); close(unit.x, point.x); close(unit.z, point.z);
+    }
+    await command(team, { type: 'gather', ids: selected[team], nodeId: `fish-${team}` }, /2 SKIFFS/);
+  }
+  await fixture.checkpoint(snapshot => selected.flat().every(id => snapshot.state.units[id].gatherPhase === 'gathering' && snapshot.state.units[id].cargo >= 1.5));
+  for (const team of [0, 1]) {
+    const offset = team ? 25 : 0;
+    await minimap(team, 23 + offset, 54, true, /WAYPOINT QUEUED/);
+    await minimap(team, 27 + offset, 54, true, /WAYPOINT QUEUED/);
+    await command(team, { type: 'stop', ids: [selected[team][0]] }, /STOP ORDER/);
+  }
+  await fixture.stop(); const stoppedFishing = await saved(); safe(stoppedFishing);
+  const stoppedLoads = selected.map(ids => stoppedFishing.state.units[ids[0]].cargo);
+  const remainingFishingTails = selected.map(ids => stoppedFishing.state.units[ids[1]].queuedWaypoints.at(-1).destination);
+  for (const ids of selected) {
+    assert.equal(stoppedFishing.state.units[ids[0]].queuedWaypoints.length, 0);
+    assert.equal(stoppedFishing.state.units[ids[0]].gatherPhase, '');
+    assert.equal(stoppedFishing.state.units[ids[1]].queuedWaypoints.length, 2);
+  }
+  await reconnect();
+  await fixture.checkpoint(snapshot => selected.every((ids, team) => stock(snapshot, team) === 0
+    && snapshot.state.units[ids[1]].gatherPhase === 'to-base' && snapshot.state.units[ids[1]].cargo > 0
+    && snapshot.state.units[ids[1]].cargo < 10 && snapshot.state.units[ids[1]].queuedWaypoints.length === 2));
+  await fixture.stop(); const partialReturn = await saved(); safe(partialReturn); await reconnect();
+  const carrying = await fixture.checkpoint(snapshot => selected.every(ids => snapshot.state.units[ids[1]].path.length === 0
+    && snapshot.state.units[ids[1]].queuedWaypoints.length === 0 && snapshot.state.units[ids[1]].gatherPhase === '')); safe(carrying);
   loads = selected.map(ids => ids.map(id => carrying.state.units[id].cargo));
   for (const team of [0, 1]) {
-    const f = minimapFixture(team); dom.push(f); f.w.units = [];
-    for (const unit of carrying.state.units) f.w.units[unit.id] = { id: unit.id, generation: unit.generation, hp: unit.hp, team: unit.team, kind: unit.kind };
-    Object.assign(f.w, { mapDefinition: map, selected: new Set([...selected[team], unselected[1 - team]]), socket: { readyState: 1,
-      send(payload) { sent[team].push(JSON.parse(payload)); clients[team].socket.send(payload); } } });
+    close(carrying.state.teamFood[team], 1031 - stoppedLoads[team]); assert.equal(stock(carrying, team), 0);
+    assert.equal(loads[team][0], stoppedLoads[team]); assert.equal(loads[team][1], 0);
+    const other = carrying.state.units[selected[team][1]], point = water.graph.pointAt(remainingFishingTails[team]); close(other.x, point.x); close(other.z, point.z);
     const offset = team ? 25 : 0;
     await minimap(team, 23 + offset, 54);
     await minimap(team, 27 + offset, 54, true, /WAYPOINT QUEUED/);
     await minimap(team, 27 + offset, 47, true, /WAYPOINT QUEUED/);
     assert.ok(sent[team].every(command => JSON.stringify(command.ids) === JSON.stringify(selected[team])));
-    assert.ok(sent[team].slice(1).every(command => command.queue === true && command.type === 'move'));
+    assert.ok(sent[team].slice(-2).every(command => command.queue === true && command.type === 'move'));
   }
   for (const team of [0, 1]) {
     await clients[team].wait(message => message.type === 'waypointQueueCounts'
@@ -130,11 +171,15 @@ try {
   for (const team of [0, 1]) await command(team, { type: 'stop', ids: [selected[team][0]] }, /STOP ORDER/);
   const stoppedCap = await fixture.checkpoint(snapshot => selected.every(ids => snapshot.state.units[ids[0]].queuedWaypoints.length === 0)); safe(stoppedCap);
   for (const team of [0, 1]) {
-    await command(team, { type: 'returnCargo', ids: selected[team] }, /2 SKIFFS TO OWNED DOCK/);
-    await command(team, { type: 'move', ids: selected[team], x: team ? 20.5 : -4.5, z: 22.5, queue: true }, /FINISH-OR-STOP-FISHING-FIRST/);
+    await command(team, { type: 'returnCargo', ids: selected[team] }, /1 SKIFFS TO OWNED DOCK/);
+    dom[team].w.selected = new Set([selected[team][0]]);
+    await minimap(team, 23 + (team ? 25 : 0), 54, true, /WAYPOINT QUEUED/);
   }
-  const banked = await fixture.checkpoint(snapshot => selected.flat().every(id => snapshot.state.units[id].cargo === 0 && snapshot.state.units[id].gatherPhase === '')); safe(banked);
-  for (const team of [0, 1]) { close(banked.state.teamFood[team], 1000 + loads[team].reduce((sum, load) => sum + load, 0)); assert.equal(stock(banked, team), stock(carrying, team)); }
+  await fixture.stop(); const manualReturn = await saved(); safe(manualReturn); await reconnect();
+  assert.ok(selected.every(ids => manualReturn.state.units[ids[0]].gatherPhase === 'to-base' && manualReturn.state.units[ids[0]].queuedWaypoints.length === 1));
+  const banked = await fixture.checkpoint(snapshot => selected.flat().every(id => snapshot.state.units[id].cargo === 0
+    && snapshot.state.units[id].gatherPhase === '' && snapshot.state.units[id].path.length === 0 && snapshot.state.units[id].queuedWaypoints.length === 0)); safe(banked);
+  for (const team of [0, 1]) { close(banked.state.teamFood[team], 1031); assert.equal(stock(banked, team), 0); }
   await fixture.stop(); const final = await saved();
   for (const [reason, waypoint] of [['land', { destination: 0, attackMove: false }], ['combat', { destination: 55 * 64 + 25, attackMove: true }],
     ['disconnected', { destination: 55 * 64 + 50, attackMove: false }]]) {
@@ -147,8 +192,10 @@ try {
   console.log(JSON.stringify({ scenario: 'Both-seat selected Skiff minimap waypoints', selectedBoatsPerSeat: 2, untouchedBoatsPerSeat: 1,
     realMinimapMoveAndShiftHandlers: true, perBoatFIFOAndRestart: true, exactSelectedStopClearsOnlyItsQueue: true,
     eightPendingWaypointsAndAtomicCap: true, replacementMoveClearsSelectedQueue: true,
+    fishingEndsAfterOneBankedLoad: true, partialDepletionReturnBeforeMove: true, gatheringAndReturnQueueRecovery: true,
+    oneBoatStopPreservesOtherFishingQueue: true, finalFood: [1031, 1031],
     fractionalFoodPreservedThenDeliveredOnce: true, invalidWaterQueuesPreserved: true,
-    boundaries: 'water Move only; queue after fishing/Return remains separate; no passengers, weapons or new art' }));
+    boundaries: 'next water Move after one fishing delivery; queued Gather remains unavailable; no passengers, weapons or new art' }));
 } catch (error) {
   try { const snapshot = await saved(); console.error(JSON.stringify({ stage: 'water-waypoints', tick: snapshot.state.tickNumber,
     boats: snapshot.state.units.filter(unit => unit.kind === 'skiff').map(unit => ({ ...identity(unit), blocked: unit.waterMoveBlocked, retry: unit.repathTimer })) })); } catch {}

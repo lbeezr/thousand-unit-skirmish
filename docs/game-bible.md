@@ -285,7 +285,11 @@ within authored level-zero water; hull occupancy can pause routes and production
 Shift water targets, including minimap right-clicks, queue up to eight pending
 destinations per boat. [Water queues](skiff-water-waypoints.md) preserve cargo,
 individual goals and recovery; Stop clears only the controlled boats' queues.
-Queuing behind fishing or Return cargo remains separate.
+Shift Move during fishing [waits for one current cargo delivery](skiff-fishing-next-move.md),
+then leaves any remaining stock; during Return cargo it waits for that delivery.
+Depleted or unavailable source approaches return partial food first, while missing
+Dock access preserves cargo and queued intent. Stop/Hold clear only the selected
+boats' queues while keeping their cargo.
 Skiffs gather the same finite shore-fish food as land Workers from a reachable
 water approach: provisional 10 food capacity and 1 food per second. A completed
 owned Dock accepts their cargo at its water berth; land Worker drop-offs retain

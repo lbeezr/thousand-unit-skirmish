@@ -12,6 +12,7 @@ const applyRoute = (unit, route) => {
   unit.moveGoalCell = route.cells.at(-1); unit.waterMoveBlocked = false;
 };
 const finish = unit => { clearRoute(unit); unit.gatherNodeId = null; unit.gatherPhase = ''; unit.dropoffBuildingId = null; };
+const leavingAfterDelivery = unit => (unit.queuedWaypoints?.length ?? 0) > 0;
 
 // Derive boat approaches from the SAME school visual/stock as shore Workers.
 // Bank x/z remains land authority. There is no authored second fish inventory.
@@ -63,6 +64,10 @@ export function createSkiffFishingContext(map, water) {
     return best;
   }
   function deliveryRoute(unit, buildings, units, options) {
+    // Delivery is temporary access before deferred Moves can run. Future goals
+    // must not reserve every berth and prevent the cargo that releases them.
+    const deliveryOptions = { ...options,
+      ignoredQueuedGoalIds: new Set(units.filter(actor => actor.movementDomain === 'water').map(actor => actor.id)) };
     const component = graph.componentAt(graph.cellAt(unit.x, unit.z));
     const candidates = buildings.filter(building => building.team === unit.team)
       .map(building => ({ building, cell: dockCell(building) }))
@@ -75,7 +80,7 @@ export function createSkiffFishingContext(map, water) {
     for (const { building, cell } of candidates) {
       const berths = dockCells(building).sort((a, b) => Number(at(unit, graph.pointAt(b))) - Number(at(unit, graph.pointAt(a))));
       for (const berth of berths) {
-        const route = reservedRoute(unit, berth, units, options);
+        const route = reservedRoute(unit, berth, units, deliveryOptions);
         if (route.status === 'found') return { ...route, buildingId: building.id };
       }
     }
@@ -110,6 +115,13 @@ export function createSkiffFishingContext(map, water) {
       const routeTo = (unit, phase, node) => {
         unit.gatherPhase = phase; unit.repathTimer = 1;
         const route = phase === 'to-base' ? deliveryRoute(unit, buildings, units) : fishRoute(unit, node, units);
+        // An accepted next Move bounds this fishing job to one load. If its
+        // source cannot be reached, deliver any partial load before releasing it.
+        if (!route && phase === 'to-node' && leavingAfterDelivery(unit)) {
+          if (unit.cargo > 0) routeTo(unit, 'to-base', node);
+          else { finish(unit); changed = true; }
+          return;
+        }
         if (route) { applyRoute(unit, route); if (phase === 'to-base') unit.dropoffBuildingId = route.buildingId; }
         else { clearRoute(unit); if (phase === 'to-base') unit.dropoffBuildingId = null; }
         changed = true;
@@ -123,7 +135,9 @@ export function createSkiffFishingContext(map, water) {
             if (unit.cargo > 0) routeTo(unit, 'to-base', node); else { finish(unit); changed = true; }
           } else if (!moving(unit) && atFish(unit, node)) {
             clearRoute(unit); unit.gatherPhase = 'gathering'; changed = true;
-          } else if (!moving(unit) && unit.repathTimer === 0) routeTo(unit, 'to-node', node);
+          } else if ((!moving(unit) || (leavingAfterDelivery(unit) && unit.waterMoveBlocked)) && unit.repathTimer === 0) {
+            routeTo(unit, 'to-node', node);
+          }
         }
         if (unit.gatherPhase === 'gathering') {
           if (!isShoreFish(node) || !atFish(unit, node)) {
@@ -148,7 +162,8 @@ export function createSkiffFishingContext(map, water) {
           if (cell >= 0 && at(unit, graph.pointAt(cell))) {
             teamFood[unit.team] = creditResourceBalance(teamFood[unit.team], unit.cargo);
             unit.cargo = 0; unit.cargoType = null; changed = true;
-            if (isShoreFish(node) && node.stock > 0) routeTo(unit, 'to-node', node); else finish(unit);
+            if (!leavingAfterDelivery(unit) && isShoreFish(node) && node.stock > 0) routeTo(unit, 'to-node', node);
+            else finish(unit);
           } else if (cell < 0 || (!moving(unit) && unit.repathTimer === 0)) {
             if (cell < 0 && (moving(unit) || unit.dropoffBuildingId !== null)) {
               clearRoute(unit); unit.dropoffBuildingId = null; changed = true;

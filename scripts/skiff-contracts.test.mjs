@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { unitPresentation } from '../src/gameplay-presentation.mjs';
+import { createWorkerFishingContactRuntime } from '../src/worker-fishing-contact.mjs';
 import { productionAction } from '../src/production-actions.mjs';
 import { unfinishedRefund } from '../src/base-lifecycle.mjs';
 import { teamPopulation } from '../src/population.mjs';
@@ -126,8 +127,14 @@ test('queued Skiff fishing preserves the actual server order and cargo before ro
 
 test('actual transform uses a procedural water placeholder and clears it when the slot becomes land', () => {
   const matrices = new Map(), mesh = { setMatrixAt: (slot, matrix) => matrices.set(slot, matrix.clone()) };
+  const hidden = [];
+  const fishingContact = createWorkerFishingContactRuntime({ THREE,
+    scene: new THREE.Scene(), capacity: 2, getMap: () => ({ resourceNodes: [] }) });
+  const workerFishingContactRuntime = { ...fishingContact, hide(unit) {
+    hidden.push({ team: unit.team, slot: unit.slot, kind: unit.kind }); fishingContact.hide(unit);
+  } };
   let lodScale = -1;
-  const context = vm.createContext({ ...economyClientBindings(), THREE, UNIT_DEFINITIONS, unitPresentation, boatMeshes: [mesh, mesh], unitArtMeshes: [[mesh, mesh]],
+  const context = vm.createContext({ ...economyClientBindings(), THREE, UNIT_DEFINITIONS, unitPresentation, workerFishingContactRuntime, boatMeshes: [mesh, mesh], unitArtMeshes: [[mesh, mesh]],
     dummy: new THREE.Object3D(), facing: new THREE.Quaternion(), worldUp: new THREE.Vector3(0, 1, 0),
     castPreview: false, unitSpritePreviewActive: false, unitLowDetailActive: false,
     SPAWN_POSE_MS: 600, DEFEAT_POSE_MS: 600, updateUnitHealthVisual() {}, updateUnitLodTransform: (_, scale) => { lodScale = scale; }, updateUnitFocusVisual() {}, updateUnitCargoCueColor() {},
@@ -146,5 +153,7 @@ test('actual transform uses a procedural water placeholder and clears it when th
     assert.equal(lodScale, 1, 'the Skiff remains visible as an existing siege marker when full-detail meshes are hidden');
     unit.kind = 'worker'; context.updateUnitTransform(unit, 1000);
     matrices.get(team).decompose(position, rotation, scale); assert.deepEqual(scale.toArray(), [0, 0, 0]);
+    assert.deepEqual(hidden.slice(-3), [{ team, slot: team, kind: 'skiff' }, { team, slot: team, kind: 'skiff' }, { team, slot: team, kind: 'worker' }],
+      'full-detail, simplified and recycled slots each clear the old fishing contact cue');
   }
 });
