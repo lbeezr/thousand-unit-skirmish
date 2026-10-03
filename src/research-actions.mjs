@@ -1,11 +1,11 @@
 import { GAMEPLAY_DEFINITIONS } from './gameplay-definitions.mjs';
+import { missingTechnologyPrerequisites, technologyRequirementReason, foodWoodShortfallReason } from './gameplay-action-rules.mjs';
 
 /** Shared research availability; caller supplies only its own economy and progress. */
 export function researchAction(building, technologyId, state, definitions = GAMEPLAY_DEFINITIONS) {
   const technology = Object.hasOwn(definitions.technologies, technologyId)
     ? definitions.technologies[technologyId] : null;
-  const missingPrerequisites = (technology?.requires || [])
-    .filter(id => !state.upgrades?.[definitions.technologies[id].upgradeKey]);
+  const missingPrerequisites = missingTechnologyPrerequisites(technology?.requires, state.upgrades, definitions.technologies);
   const reason = !technology ? 'UNKNOWN TECHNOLOGY'
     : !building || building.team !== state.team || building.type !== technology.building
       ? 'SELECT A FRIENDLY RESEARCH BUILDING'
@@ -14,9 +14,8 @@ export function researchAction(building, technologyId, state, definitions = GAME
     : state.upgrades?.[technology.upgradeKey] ? 'ALREADY COMPLETED'
     : state.active ? 'RESEARCH IN PROGRESS'
     : missingPrerequisites.length
-      ? `REQUIRES ${missingPrerequisites.map(id => definitions.technologies[id].label).join(' + ')}`
-    : state.food + 1e-9 < technology.cost.food || state.wood + 1e-9 < technology.cost.wood
-      ? `NEED ${technology.cost.food} FOOD + ${technology.cost.wood} WOOD` : '';
+      ? technologyRequirementReason(missingPrerequisites, definitions.technologies)
+    : foodWoodShortfallReason(state, technology.cost);
   return {
     type: 'researchUpgrade', buildingId: building?.id ?? null, upgrade: technologyId,
     cost: technology ? { ...technology.cost } : null,

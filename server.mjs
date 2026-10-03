@@ -7959,7 +7959,7 @@ const server = createServer(async (request, response) => {
     'src/worker-fishing-presentation.mjs', 'src/worker-fishing-contact.mjs', 'src/unit-heading.mjs',
     'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs', 'src/resource-brush-controls.mjs',
     'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/economy-profile.mjs', 'src/economy-ledger.mjs', 'src/economy-client.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
-    'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
+    'src/gameplay-action-rules.mjs', 'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/selection-portrait.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
     'src/terrain-authoring.mjs', 'src/terrain-height.mjs', 'src/regions.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs',
     'src/audio-shipped-loader.mjs', 'src/audio-shipped-response.mjs', 'src/audio-shipped-catalog.mjs', 'src/audio-decoded-cache.mjs',

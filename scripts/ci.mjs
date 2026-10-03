@@ -99,6 +99,7 @@ run(['scripts/millrace-sheep-scenario.mjs'], 'Normal default Sheep visibility, h
 run(['--test', 'scripts/sprite-pixel-bounds.test.mjs'], 'Sprite pixel clipping regressions');
 run(['--test', 'scripts/building-sprites.test.mjs'], 'Default building sprites');
 run(['--test', 'scripts/frontier-building-default.test.mjs'], 'Normal finished Frontier building art, fallback and shared depth');
+run(['scripts/frontier-building-acceptance-map-scenario.mjs'], 'Ordinary building acceptance map admission and legal pads');
 run(['--test', 'scripts/building-occlusion-fixture.test.mjs'], 'Building occlusion QA controls, HTTP assets and timing evidence');
 run(['--test', 'scripts/captured-building-state-race.test.mjs', 'scripts/captured-building-manifest-retry.test.mjs', 'scripts/frontier-building-renderer.test.mjs', 'scripts/frontier-building-preview.test.mjs', 'scripts/building-lifecycle-validation.test.mjs'], 'Captured building lifecycle and source contracts');
 run(['--test', 'scripts/ci-sharding.test.mjs'], 'CI shard coverage');
@@ -177,6 +178,9 @@ run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation
 run(['--test', 'scripts/base-lifecycle-ui.test.mjs'], 'Contextual cancellation and repair controls');
 run(['--test', 'scripts/research-ui.test.mjs'], 'Registered research choices');
 run(['--test', 'scripts/research-actions.test.mjs'], 'Shared technology availability');
+run(['--experimental-test-coverage', '--test-coverage-include=src/gameplay-action-rules.mjs',
+  '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
+  '--test', 'scripts/gameplay-action-rules.test.mjs'], 'Production/research shared-rule coverage floor (100%)');
 run(['--test', 'scripts/siege-ai.test.mjs'], 'Bounded siege acquisition and assault');
 run(['--test', 'scripts/combat-rules.test.mjs'], 'Shared combat classes, counters and effect scope');
 run(['--test', 'scripts/attack-target-geometry.test.mjs'], 'Attack-target geometry, queued transitions and fog');
