@@ -59,6 +59,7 @@ function fixture(team = 0) {
     syncSelectionMesh() {}, clearHeldCameraKeys() {}, showToast() {},
     keyboardTargetIsEditing: event => event.target?.matches('input, select, textarea'),
     cameraNavigationKeydown: () => false, audio: { playEvent() {} },
+    wallPlacementKeydown: () => false,
     getBuildingQueueLength: building => building.productionQueue?.length || 0,
     buildingLabel: type => BUILDING_DEFINITIONS[type].label,
     closeScenarioBrief() { w.scenarioBriefPanel.hidden = true; },

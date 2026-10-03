@@ -58,12 +58,20 @@ assigned team changes, or a rematch starts.
 | Gather | Right-click a food/wood node or harvestable forest cell with workers selected. |
 | Return cargo | Select carrying workers and choose **Return cargo** in the selection bar. |
 | Construct | Choose Build barracks/range, then left-click a valid site. |
+| Build a Palisade line | Choose Palisade in Build, then drag/release across clear cells. Shift changes the elbow. A tap places one cell; Escape or right-click cancels. |
+| Place a wall with the keyboard | While the battlefield is focused in Palisade mode, arrows move the endpoint; Enter anchors, then Enter places. |
 | Resume construction | Select the unfinished site and use Resume construction. |
 | Set a rally | Select a friendly Barracks or Range, then right-click ground. |
 
 Choose Box, Line, or Column before a move or attack-move order. Line and Column
 face the destination. A plain ground order replaces queued waypoints. The order
 feedback reports sending, planning, applied, rejected, or interrupted state.
+
+Palisade placement shows the whole line's new segments and total cost. Existing
+friendly segments are reused free. Invalid or unaffordable lines place nothing;
+the server also rejects lines that cut a route or lack Worker access. The current
+15-wood price per new segment is provisional. Workers construct paid segments
+in sequence until another order interrupts them.
 
 Attack move can engage a visible enemy already within weapon range across a
 cliff or gap. Pursuit continues while a firing position remains reachable. If
