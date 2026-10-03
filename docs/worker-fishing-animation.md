@@ -43,6 +43,7 @@ installed. Publishing candidate pixels still needs the user's approval.
 | `worker-fishing-SE-study.png` — four keys beside shipped idle | `libfile_db5a33d96f9481919d423e1da9bb1f38` |
 | `worker-fishing-SE-loop.webp` — 1,300 ms blocking loop | `libfile_2152c1c5a8508191938e6d3bb41a7a89` |
 | `worker-fishing-SE-private-pilot.zip` — raw source, exact request, draft prompt, reference canvas, extracted keys, registrations and copied runtime pack | `libfile_a18aa8f2e11c81919ce3d7d33000326e` |
+| `worker-fishing-SE-private-QA-kit.zip` — Mac recipe, selected-draw observer, fixed-affine calibration adapter and independent checks | `libfile_dd66a9ce7d108191b6348f182dcda5b9` |
 
 The archive preserves the original ImageGen output
 `exec-55affbcf-8f5b-4476-9104-256676ee881c.png`, every source bound and hash,
@@ -139,3 +140,33 @@ No game screenshot, GPU appearance, deployed observation or human loop
 acceptance was obtained; no sandbox/security bypass was attempted. The prepared
 Library helper failed before reservation at network tool discovery. Authenticated
 host uploads saved all three private files and retained their Library identities.
+
+### Subsequent Mac capture and marker occlusion
+
+Private Mac QA on `75f4b7b38aacc291bb7e4952259d9cd9619cc11b` produced one ordinary
+view and 22 chronological close views across 7,633.4 ms. All four SE frame IDs
+were observed naturally, with a current visible decoded Human fishing draw,
+the real land approach/water heading, food cargo and successful Stop clearing.
+The observer is a recorded read-only diagnostic source overlay, not a stock-art
+build. Runtime exceptions were empty. Library retains the
+first ordinary frame (`libfile_8968faee89b481919f08651f960cc8bc`),
+report (`libfile_541e2f93ca348191be67c90f6d494778`) and full private provenance
+(`libfile_836ceb80b89c819185e9a48c3e85aba6`). These pixels remain private.
+
+Pixel inspection of the ordinary frame and close reach/retrieve/collect poses
+shows the amber resource-ring stroke covering the Worker's hands/net. The ring
+drew at order 2, after unit sprites at 1.1. The scoped renderer correction draws
+only shore-fish rings at order 1, beneath the sprite. Its land position, pick
+target, size, colour, stock stages, callout and parent fog visibility stay intact.
+Other resource-ring orders and all Worker art remain unchanged. The actual
+Three transparent-list test checks the ordering at both relative camera depths,
+with depletion/rematch and parent-visibility assertions.
+
+The after-fix visual check remains open. Rerun the private Mac adapter on the
+checked revision through the current ordinary `?play=1&rendererCapture=environment-state`
+entry route, preserving the atlas and observer overlay hashes. Capture the
+ordinary view and a continuous close loop without pausing for delivery; then
+inspect net/hand readability, root and seam, retaining selection, stock and fog
+feedback. The source-only ring fix neither publishes candidate pixels nor
+establishes full art acceptance. Public pixel integration still requires the
+user's publication authority; seven additional headings remain unproduced.
