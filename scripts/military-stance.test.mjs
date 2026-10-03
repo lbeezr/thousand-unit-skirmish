@@ -1,6 +1,40 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createStanceCase } from './military-stance-case.mjs';
+import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
+import { armyAttackMap } from './army-attack-continuation-case.mjs';
+
+for (const schemaVersion of [23, 24]) {
+  test(`schema ${schemaVersion}: stance migration composes with wildlife and retains routes and food`, async () => {
+    const map = armyAttackMap();
+    map.resourceNodes = [{ id: 'migration-sheep', type: 'food', x: -20.5, z: .5,
+      stock: 100, wildlifeSpecies: 'bellweather-sheep' }];
+    const fixture = await createPathingReplayFixture(map), r = fixture.replay;
+    try {
+      const unit = r.units.find(u => u.team === 0 && u.kind === 'infantry');
+      const worker = r.units.find(u => u.team === 0 && u.kind === 'worker');
+      r.order(0, { type: 'move', ids: [unit.id], x: 18.5, z: 7.5 });
+      r.order(0, { type: 'gather', ids: [worker.id], nodeId: 'migration-sheep' });
+      r.drain(); for (let i = 0; i < 180; i++) r.step();
+      const legacy = r.checkpoint(), route = structuredClone(legacy.state.units[unit.id]);
+      const resources = structuredClone(legacy.state.resourceNodes), food = [...legacy.state.teamFood];
+      assert.ok(route.pathIndex < route.path.length, 'ordinary Move remains in flight');
+      legacy.schemaVersion = schemaVersion;
+      for (const u of legacy.state.units) for (const field of ['combatStance', 'stanceAnchorX', 'stanceAnchorZ', 'stanceCombat', 'stanceReturning']) delete u[field];
+      if (schemaVersion === 23) for (const node of legacy.state.resourceNodes) {
+        delete node.x; delete node.z; delete node.wildlifeMotion;
+      }
+      r.restore(legacy); const recovered = r.checkpoint();
+      assert.equal(recovered.schemaVersion, 25); r.validate(structuredClone(recovered));
+      const restored = recovered.state.units[unit.id];
+      for (const field of ['x', 'z', 'hp', 'path', 'pathIndex', 'moveGoalCell']) assert.deepEqual(restored[field], route[field]);
+      assert.deepEqual(recovered.state.teamFood, food);
+      assert.equal(recovered.state.resourceNodes[0].stock, resources[0].stock);
+      if (schemaVersion === 24) assert.deepEqual(recovered.state.resourceNodes, resources, 'live motion is preserved');
+      assert.equal(restored.combatStance, 'noAttack');
+    } finally { await fixture.dispose(); }
+  });
+}
 
 for (const team of [0, 1]) {
   for (const kind of ['infantry', 'archer']) for (const stance of ['aggressive', 'defensive', 'standGround', 'noAttack']) {
