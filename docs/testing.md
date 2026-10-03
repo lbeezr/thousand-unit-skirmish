@@ -81,6 +81,8 @@ Run from the repository root:
 | --- | --- |
 | Map logic / elevation | `node scripts/map-utils-scenario.mjs` / `node scripts/elevation-scenario.mjs` |
 | Crowd deflection / terrain boundaries | `node --test scripts/unit-movement.test.mjs` (real authoritative movement blocks, cliffs, corners, working/striking separation and route repair) |
+| Formation destinations after paid obstruction | `node --test scripts/pathing-replay.test.mjs`; `node scripts/pathing-native-scenario.mjs dynamic-goal` (both-seat reservation, opponent goal independence, native arrival) |
+| Bounded choke baseline / deterministic replay | `PATHING_BASELINE_RECORD=/tmp/pathing.json node scripts/pathing-baseline.mjs all 2` (seven fixed-tick cases; [source evidence and limits](qa-pathing-goal-repair-2026-10-03.md)) |
 | Default map geometry | `node scripts/forked-vale-layout.mjs` |
 | Fortified Crossing foundation | `node scripts/fortified-crossing-layout.mjs` and `node scripts/fortified-crossing-economy.mjs`; [evidence and scale runner](qa-custom-skirmish.md) |
 | Fortified late-arrival construction clearance | `node --test scripts/fortified-site-clearance.test.mjs` and `node scripts/fortified-construction-clearance-scenario.mjs 2000`; [diagnosis](qa-fortified-clearance-2026-10-03.md) |
