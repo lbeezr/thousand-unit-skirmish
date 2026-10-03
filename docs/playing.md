@@ -60,8 +60,8 @@ assigned team changes, or a rematch starts.
 | Attack a production building | Right-click it with military selected; workers cannot attack structures. |
 | Gather | Right-click a food/wood node or harvestable forest cell with workers selected. |
 | Return cargo | Select carrying workers and choose **Return cargo** in the selection bar. |
-| Construct | Choose Build barracks/range, then left-click a valid site. |
-| Resume construction | Select the unfinished site and use Resume construction. |
+| Construct | Select the workers to assign, choose a building, then left-click a valid site. Only the selected living friendly workers receive the order. |
+| Resume construction | Select the workers to help and use Resume construction; they go to the nearest unfinished friendly site. Other workers keep their orders. |
 | Set a rally | Select a friendly Barracks or Range, then right-click ground. |
 
 Choose Box, Line, or Column before a move or attack-move order. Line and Column

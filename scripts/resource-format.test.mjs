@@ -23,6 +23,7 @@ function fixture(team) {
       { id: 2, team, type: 'archery-range', complete: true, queue: [] },
       { id: 1_000_000_000 + team, team, type: 'town-center', home: true, complete: true, queue: [] }],
     selectedBuildingId: 1, teamUnits: [0, 1].map(t => [{ hp: 100, team: t, kind: 'worker', cargoType: 'food', cargo: 9.999 }]),
+    selected: new Set([0]), units: [{ id: 0, team, hp: 100, kind: 'worker', x: 0, z: 0 }],
     MAX_PER_TEAM: 1000, MAX_UNITS: 2000, buildPlacementPending: false, buildPlacementActive: false,
     buildPlacementType: 'barracks', livingIdleWorkerIds: () => [],
     document: { querySelector: element }, mapDefinition: { resourceNodes: [{}] },
@@ -35,6 +36,7 @@ function fixture(team) {
     + declaration('findTrainableBarracks', 'buildingLabel')
     + declaration('buildingLabel', 'updateBuildingResearchControls')
     + declaration('updateBuildingResearchControls', 'buildingWoodCost')
+    + declaration('selectedIds', 'issueStationaryOrder')
     + declaration('updateEconomyUI', 'updateRoomUI'), context);
   return { context, ui, stocks(food, wood) {
     const foods = [0, 0]; const woods = [0, 0]; foods[team] = food; woods[team] = wood;
