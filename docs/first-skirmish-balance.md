@@ -13,11 +13,19 @@ travel simulations on three controlled placements. Mill and Storehouse overlap
 on food; nearby wood makes Storehouse's additional service useful. Preserve the
 provisional depot tuning: these cases supply no contested player evidence.
 
+The [finite Farm prototype](farm-finite-planting.md) starts at 60 wood for 200
+food stock, with 15 Worker-seconds of construction and ordinary paid harvesting.
+These configurable values use the current Mill/House construction scale and a
+four-Worker-training-price pool. They are provisional, with no adopted currency
+exchange rate or human balance evidence. Observe Farm/neutral-source travel,
+raid exposure and paid replanting in paired matches before retuning.
+
 The [single-Stone recommendation](stone-defense-contract-proposal.md) selects
 `stone`, one optional Watchtower construction sink (50 Stone plus its current
 food/wood price), zero starting bank and 200 finite stock per seat. These are
 provisional experiment values. Preserve the ordinary food/wood profile and old
 paid prices; typed deposit/payment/refund/recovery must precede runtime admission.
+
 
 The latest flat-map record in the prior ledger used `117284e` with Node 24.9.0.
 It is historical evidence, not a new measurement of the documentation branch.
