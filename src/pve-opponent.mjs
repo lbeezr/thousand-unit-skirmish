@@ -1,4 +1,5 @@
 import { createReconnaissancePolicy } from './pve-reconnaissance.mjs';
+import { createHomeDefensePolicy } from './pve-home-defense.mjs';
 import { TECHNOLOGY_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
 import { farmHarvestNodeId } from './farm-harvest.mjs';
 /**
@@ -458,6 +459,7 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
   const normalizedSeed = seed >>> 0;
   const productionPolicy = createProductionPolicy(normalizedSeed);
   const reconnaissancePolicy = createReconnaissancePolicy(normalizedSeed);
+  const homeDefensePolicy = createHomeDefensePolicy();
   const gatherAssignments = new Map();
   const objectiveOwners = new Map();
   const lostObjectiveIds = new Set();
@@ -465,6 +467,7 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
   let fallbackTacticsStarted = false;
   let previousDecisionGatherOnly = false;
   let tacticalWatch = null;
+  let defenseRegroupId = null;
   const orderedSoldiers = new Set();
   const soldierKey = (unit) => `${unit.id}:${unit.generation}`;
   const recordOrderedSoldiers = (soldiers) => soldiers.forEach((unit) => orderedSoldiers.add(soldierKey(unit)));
@@ -650,9 +653,12 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
 
     recordObjectiveOwnership(observation);
     const gathering = nextGatherCommands(observation);
+    const allSoldiers = observation.units.friendly
+      .filter(unit => unit.kind !== 'worker' && unit.hp > 0 && !reconnaissanceIds.has(unit.id)).sort((a, b) => a.id - b.id);
+    const homeDefense = homeDefensePolicy.next(observation, allSoldiers);
     // Keep the opening economy first, but do not let rejected gather orders
     // consume every decision (the retry window is shorter than a normal turn).
-    if (gathering.length > 0 && !previousDecisionGatherOnly) {
+    if (gathering.length > 0 && !previousDecisionGatherOnly && homeDefense.units.length === 0 && homeDefense.released.length === 0) {
       previousDecisionGatherOnly = true;
       return gathering;
     }
@@ -680,9 +686,11 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
       unitGenerations: unassigned.map(unit => unit.generation), buildingId: defense.id }] : [];
     for (const unit of unassigned) siegeBuildingOrders.set(soldierKey(unit), { buildingId: defense.id, x: unit.x, z: unit.z,
       attackTick: unit.lastAttack?.tick ?? -1, progressTick: observation.tick });
-    const soldiers = observation.units.friendly
-      .filter((unit) => unit.kind !== 'worker' && unit.hp > 0 && !activeKeys.has(soldierKey(unit)) && !reconnaissanceIds.has(unit.id))
-      .sort((left, right) => left.id - right.id);
+    const availableSoldiers = allSoldiers.filter(unit => !activeKeys.has(soldierKey(unit)));
+    const defending = new Set(homeDefense.units.map(soldierKey));
+    for (const identity of defending) orderedSoldiers.delete(identity);
+    const soldiers = availableSoldiers.filter(unit => !defending.has(soldierKey(unit)));
+    const supportOrders = [...gathering, ...siegeOrders, ...homeDefense.commands];
     const liveSoldiers = new Set(soldiers.map(soldierKey));
     for (const key of orderedSoldiers) if (!liveSoldiers.has(key)) orderedSoldiers.delete(key);
     const reinforcements = soldiers.filter((unit) => !orderedSoldiers.has(soldierKey(unit)));
@@ -691,6 +699,7 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
       objectives, observation.team, soldiers, observation.map, lostObjectiveIds,
     );
     if (target) {
+      defenseRegroupId = null;
       const mustReissue = target.id !== tacticalObjectiveId || lostObjectiveIds.has(target.id);
       tacticalObjectiveId = target.id;
       const stalled = mustReissue ? [] : stalledTacticalSoldiers(
@@ -703,40 +712,58 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
         watchTacticalOrder(ordered, target.point, observation.tick, stalled.length > 0);
         recordOrderedSoldiers(ordered);
         lostObjectiveIds.delete(target.id);
-        return [...gathering, ...siegeOrders, {
+        return [...supportOrders, {
           type: 'attackMove',
           ids: ordered.map((unit) => unit.id),
           x: target.point.x,
           z: target.point.z,
         }];
       }
-      return [...gathering, ...siegeOrders];
+      return supportOrders;
     }
 
     tacticalObjectiveId = null;
     if (objectives.length > 0 || soldiers.length === 0) {
-      tacticalWatch = null;
       if (soldiers.length === 0) fallbackTacticsStarted = false;
-      return [...gathering, ...siegeOrders];
+      // When every objective is owned, released defenders regroup at the
+      // nearest public owned watch instead of remaining idle beside the raid.
+      const released = homeDefense.released;
+      const owned = objectives.filter(objective => objective.owner === observation.team && (released.length || objective.id === defenseRegroupId))
+        .map(objective => ({ id: objective.id, point: objectiveWorldPoint(objective, observation.map) })).filter(goal => goal.point)
+        .sort((a, b) => released.reduce((sum, unit) => sum + Math.hypot(unit.x - a.point.x, unit.z - a.point.z)
+          - Math.hypot(unit.x - b.point.x, unit.z - b.point.z), 0) || a.id.localeCompare(b.id))[0];
+      if (owned) {
+        defenseRegroupId = owned.id;
+        const stalled = stalledTacticalSoldiers(observation, soldiers, objectives.find(objective => objective.id === owned.id)?.zone);
+        const returning = new Set([...released, ...stalled].map(soldierKey));
+        const regroup = soldiers.filter(unit => returning.has(soldierKey(unit)));
+        if (regroup.length) {
+          watchTacticalOrder(regroup, owned.point, observation.tick, stalled.length > 0);
+          recordOrderedSoldiers(regroup);
+          return [...supportOrders, { type: 'attackMove', ids: regroup.map(unit => unit.id),
+            unitGenerations: regroup.map(unit => unit.generation), ...owned.point }];
+        }
+      } else { tacticalWatch = null; defenseRegroupId = null; }
+      return supportOrders;
     }
     if (fallbackTacticsStarted) {
       const stalled = stalledTacticalSoldiers(observation, soldiers);
-      if (stalled.length === 0 && reinforcements.length === 0) return [...gathering, ...siegeOrders];
+      if (stalled.length === 0 && reinforcements.length === 0) return supportOrders;
       const point = tacticalWatch.point;
       const retryKeys = new Set(stalled.map(soldierKey));
       const ordered = soldiers.filter((unit) => retryKeys.has(soldierKey(unit)) || !orderedSoldiers.has(soldierKey(unit)));
       watchTacticalOrder(ordered, point, observation.tick, stalled.length > 0);
       recordOrderedSoldiers(ordered);
-      return [...gathering, ...siegeOrders, { type: 'attackMove', ids: ordered.map((unit) => unit.id), ...point }];
+      return [...supportOrders, { type: 'attackMove', ids: ordered.map((unit) => unit.id), ...point }];
     }
 
-    const visibleTarget = observation.units.visibleEnemies
+    const visibleTarget = homeDefense.units.length ? null : observation.units.visibleEnemies
       .filter((unit) => unit.hp > 0)
       .sort((left, right) => left.id - right.id)[0];
     fallbackTacticsStarted = true;
     recordOrderedSoldiers(soldiers);
     watchTacticalOrder(soldiers, { x: visibleTarget?.x ?? 0, z: visibleTarget?.z ?? 0 }, observation.tick);
-    return [...gathering, ...siegeOrders, {
+    return [...supportOrders, {
       type: 'attackMove',
       ids: soldiers.map((unit) => unit.id),
       x: visibleTarget?.x ?? 0,
