@@ -115,6 +115,7 @@ run(['--test', 'scripts/capture-checkpoint.test.mjs'], 'Capture checkpoint artif
 run(['--test', 'scripts/performance-order-window.test.mjs'], 'Performance planning wave boundaries');
 run(['--test', 'scripts/persistent-command.test.mjs'], 'Persistent tactical intent and bounded planning');
 run(['--test', 'scripts/stationary-command.test.mjs'], 'Stationary command tasks and controls');
+run(['--test', 'scripts/army-attack-continuation.test.mjs'], 'Focused military attack continuation and ordinary attack-move input');
 run(['--test', 'scripts/waypoint-backpressure.test.mjs'], 'Waypoint metadata under backpressure');
 run(['--test', 'scripts/worker-shutdown.test.mjs'], 'Signal-aware room worker shutdown');
 run(['--test', 'scripts/check-client-imports.test.mjs'], 'Served client import graph');
