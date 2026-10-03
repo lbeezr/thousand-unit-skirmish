@@ -61,9 +61,11 @@ The proposed Town Center base is 4.4 world units wide, compared with a 2.3-unit 
 The illustrations depict Complete only, from one illustrative view. Controlled
 Complete captures of Town Center, House, Storehouse, Stable, Workshop and
 Watchtower now bind normal matches; their [ordinary-game acceptance](../qa-frontier-building-adoption.md)
-and remaining lifecycle/team work stay open. Barracks and Archery Range still
-use older direct sprites. Their new concepts are preserved here while matching
-models and registered views are produced under the [replacement plan](../frontier-barracks-range-authoring.md).
+and remaining lifecycle/team work stay open. Barracks and Archery Range now have
+original local Complete models and registered views under the
+[replacement plan](../frontier-barracks-range-authoring.md), with the old direct
+sprites retained as missing-state fallback. Deployment and native appearance
+remain unverified for the military pair.
 Mills, farms, castles and other future art remain separate design briefs; the
 [production plan](../building-atlas-production-plan.md) records current gameplay coverage.
 
@@ -87,3 +89,21 @@ Storehouse, Stable, Workshop and Watchtower have eight controlled Complete views
 each. [Review their shared-scale gallery](../../assets/buildings/frontier-civilization-models-v1/preview.html).
 These captures also bind normal-match finished art; doorway/bay scale acceptance,
 ordinary-game verification and new lifecycle/team treatment remain outstanding.
+
+## Local military-building Complete sources
+
+The new Barracks retains the enclosed arched entrance, organized weapons and
+side shelters. The Range has an open target bay, bow storage and framed annex.
+Both use the same 2.8-unit grounded base and full registered canvas; illustrations
+above remain independent concept compositions. These source images are
+Blender renders, not gameplay screenshots or accepted doorway/style proof.
+
+![Barracks controlled Complete 45-degree view](../../assets/buildings/frontier-civilization-military-models-v1/captures/barracks-complete-view-01.png)
+
+![Archery Range controlled Complete 45-degree view](../../assets/buildings/frontier-civilization-military-models-v1/captures/archery-range-complete-view-01.png)
+
+[Review all sixteen views and original authoring provenance](../../assets/buildings/frontier-civilization-military-models-v1/README.md).
+The [art-evolution register](art-evolution.md#military-complete-iteration-history)
+preserves the older public sprite lineage and records which rejected iterations
+remain private. Missing new lifecycle states and native team/Worker/ground
+acceptance remain owned by the building workstream.

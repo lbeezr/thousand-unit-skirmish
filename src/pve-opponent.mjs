@@ -1,6 +1,8 @@
 import { createReconnaissancePolicy } from './pve-reconnaissance.mjs';
 import { createHomeDefensePolicy } from './pve-home-defense.mjs';
 import { createRegroupPolicy } from './pve-regroup.mjs';
+import { createSkirmishTargetPolicy } from './pve-skirmish-targets.mjs';
+import { matchModeDefinition } from './match-modes.mjs';
 import { TECHNOLOGY_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
 import { farmHarvestNodeId } from './farm-harvest.mjs';
 /**
@@ -455,13 +457,15 @@ function nearestObjective(objectives, team, soldiers, map, lostObjectiveIds) {
 }
 
 /** Create a deterministic economy-and-tactics policy for an ordinary player seat. */
-export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
+export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED, matchMode = {}) {
   if (!Number.isSafeInteger(seed)) throw new TypeError('Opponent seed must be a safe integer.');
+  const strategy = matchModeDefinition(matchMode).aiStrategyId;
   const normalizedSeed = seed >>> 0;
   const productionPolicy = createProductionPolicy(normalizedSeed);
   const reconnaissancePolicy = createReconnaissancePolicy(normalizedSeed);
   const homeDefensePolicy = createHomeDefensePolicy();
   const regroupPolicy = createRegroupPolicy();
+  const skirmishPolicy = strategy === 'base-elimination' ? createSkirmishTargetPolicy(normalizedSeed) : null;
   const gatherAssignments = new Map();
   const objectiveOwners = new Map();
   const lostObjectiveIds = new Set();
@@ -696,6 +700,7 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
     for (const identity of rallying) orderedSoldiers.delete(identity);
     const soldiers = availableSoldiers.filter(unit => !defending.has(soldierKey(unit)) && !rallying.has(soldierKey(unit)));
     const supportOrders = [...gathering, ...siegeOrders, ...homeDefense.commands, ...regroup.commands];
+    if (skirmishPolicy) return [...supportOrders, ...skirmishPolicy.next(observation, soldiers)];
     const liveSoldiers = new Set(soldiers.map(soldierKey));
     for (const key of orderedSoldiers) if (!liveSoldiers.has(key)) orderedSoldiers.delete(key);
     const reinforcements = soldiers.filter((unit) => !orderedSoldiers.has(soldierKey(unit)));

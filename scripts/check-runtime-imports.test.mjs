@@ -12,6 +12,28 @@ function check(files, options = {}) {
   });
 }
 
+test('offline adapter compatibility preserves its four named exports and binding identity', async () => {
+  const legacy = await import('../src/pve-model-proposal.mjs');
+  const current = await import('../src/server/pve-model-proposal.mjs');
+  const names = ['MODEL_PROPOSAL_LIMITS', 'MODEL_PROPOSAL_SCHEMA_VERSION',
+    'attachModelProposalOpponent', 'parseModelProposal'];
+  assert.deepEqual(Object.keys(legacy), names);
+  assert.deepEqual(Object.keys(current), names);
+  for (const name of names) assert.equal(legacy[name], current[name], name);
+});
+
+test('every shipped browser entry rejects both offline adapter paths', async () => {
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  for (const entry of BROWSER_ENTRYPOINTS) {
+    for (const adapter of ['pve-model-proposal.mjs', 'server/pve-model-proposal.mjs']) {
+      const changed = new Map(sources);
+      changed.set(entry, `${sources.get(entry)}\nimport './${adapter}';`);
+      assert.throws(() => checkRuntimeImports(changed), /browser reaches a Node-only adapter/,
+        `${entry} -> ${adapter}`);
+    }
+  }
+});
+
 test('parse real imports, re-exports and nested lazy imports; ignore lookalike text', () => {
   assert.deepEqual(moduleImports(`
     // import './comment.mjs';

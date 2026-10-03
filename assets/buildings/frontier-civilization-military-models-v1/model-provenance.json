@@ -1,0 +1,420 @@
+{
+  "schema": "thousand-unit-skirmish.local-military-production.v1",
+  "method": "Original deterministic Blender geometry and project-authored texture generators; source concepts used only as visual references",
+  "providerCalls": 0,
+  "creditsSpent": 0,
+  "blenderVersion": "4.3.2",
+  "licenses": "New geometry, scripts and material textures are project-authored; public concept provenance remains in frontier-civilization-concepts-v1.",
+  "models": {
+    "barracks": {
+      "bytes": 1691300,
+      "sha256": "2411cb41f61f326e90da7ee8c8d6d4a67eb9da274d6a228f6f347c8a03c90ab3",
+      "meshes": 54,
+      "materials": 14,
+      "vertices": 31232,
+      "triangles": 16006,
+      "embeddedTextures": [
+        {
+          "name": "iron",
+          "bytes": 31406,
+          "sha256": "885d01bac8a5fc09f024a461277d6e6ad44ca97b6db4cdf769fe28cb95564c7c"
+        },
+        {
+          "name": "oak",
+          "bytes": 43866,
+          "sha256": "ba7e940b965997097222448c21d01d34a54d94cd63365576bae0c366dbd9e2c7"
+        },
+        {
+          "name": "oak_dark",
+          "bytes": 43897,
+          "sha256": "aaed4bc65a7df4f9ca564f65e57eada5b4b5af9cae6b80a912c224a2944bd278"
+        },
+        {
+          "name": "copper",
+          "bytes": 31514,
+          "sha256": "aa09d3f116180925379a655c7bd5f668acd75e89392d5ac829933e2a8ed8993d"
+        },
+        {
+          "name": "stone",
+          "bytes": 50326,
+          "sha256": "952fd61a90f4250c49bc2ff10483c54b3021432a6ab29730bf7d63f5b9c9d536"
+        },
+        {
+          "name": "plaster",
+          "bytes": 50329,
+          "sha256": "37cc9cd140e69f29090500bdfc0494611fed7e03ba2bd7dd2eca2a70e5723e76"
+        },
+        {
+          "name": "ochre",
+          "bytes": 47623,
+          "sha256": "02a57ff3ec1b29caf4d2b413a4d9b5586340a50d04be12959311aef7247a4447"
+        },
+        {
+          "name": "glass",
+          "bytes": 31547,
+          "sha256": "b53b9da86f782f5d8c6dcc13858ddf7fa12fd78c81219b94421b4c14044afcc1"
+        },
+        {
+          "name": "lantern",
+          "bytes": 31402,
+          "sha256": "20a52480c047011f55e1e51ec619613b0fb7a53f6bafea4f81022f574f093de9"
+        },
+        {
+          "name": "sage_0",
+          "bytes": 43021,
+          "sha256": "dcdba82bc8cf91eb9d6fded3b131a0a0048c5b05c32b339636d9f4be3e986a50"
+        },
+        {
+          "name": "sage_1",
+          "bytes": 43010,
+          "sha256": "5aa14322f9f6643e881e8dfa0ce62e2a8cd685df67c2f6dfada8b924476ff281"
+        },
+        {
+          "name": "sage_2",
+          "bytes": 42989,
+          "sha256": "91d1da8cb79ab2e51475ab640ef148481035de7ce711897ec8dafdd990e72bf2"
+        },
+        {
+          "name": "sage_3",
+          "bytes": 43001,
+          "sha256": "9cecf06283b625a7c77425764f47ca608e69128e16d02ffba24f2891833845a4"
+        },
+        {
+          "name": "sage_4",
+          "bytes": 42793,
+          "sha256": "60585918bf03cb9371d76382ec4eac53b5fb617750e4620facc82088cb7f866b"
+        }
+      ],
+      "boundsGame": {
+        "min": [
+          -1.399999976158142,
+          0.0,
+          -1.399999976158142
+        ],
+        "max": [
+          1.399999976158142,
+          3.4549999237060547,
+          1.399999976158142
+        ]
+      },
+      "baseBoundsGame": {
+        "min": [
+          -1.399999976158142,
+          0.0,
+          -1.399999976158142
+        ],
+        "max": [
+          1.399999976158142,
+          0.17655548453330994,
+          1.399999976158142
+        ]
+      },
+      "baseWidthRaw": 2.799999952316284,
+      "baseDepthRaw": 2.799999952316284,
+      "baseWidthRounded6": 2.8
+    },
+    "archery-range": {
+      "bytes": 1784056,
+      "sha256": "d4d1b3da7a7544351da191fdcc539b24a4bc2580df4d951848a24b0e21a85664",
+      "meshes": 61,
+      "materials": 18,
+      "vertices": 29122,
+      "triangles": 15238,
+      "embeddedTextures": [
+        {
+          "name": "oak_dark",
+          "bytes": 43897,
+          "sha256": "aaed4bc65a7df4f9ca564f65e57eada5b4b5af9cae6b80a912c224a2944bd278"
+        },
+        {
+          "name": "iron",
+          "bytes": 31406,
+          "sha256": "885d01bac8a5fc09f024a461277d6e6ad44ca97b6db4cdf769fe28cb95564c7c"
+        },
+        {
+          "name": "oak",
+          "bytes": 43866,
+          "sha256": "ba7e940b965997097222448c21d01d34a54d94cd63365576bae0c366dbd9e2c7"
+        },
+        {
+          "name": "plaster",
+          "bytes": 50329,
+          "sha256": "37cc9cd140e69f29090500bdfc0494611fed7e03ba2bd7dd2eca2a70e5723e76"
+        },
+        {
+          "name": "linen",
+          "bytes": 47660,
+          "sha256": "b95ec8241a90df3c8e4592a6ce455c50a13f630b5da7e1be8f23d274b3733b17"
+        },
+        {
+          "name": "stone",
+          "bytes": 50326,
+          "sha256": "952fd61a90f4250c49bc2ff10483c54b3021432a6ab29730bf7d63f5b9c9d536"
+        },
+        {
+          "name": "target",
+          "bytes": 47652,
+          "sha256": "bbb1032091d4b895cf22dcaa0f168c2a6acfb70b8b5fae31b104340add6efd7c"
+        },
+        {
+          "name": "copper",
+          "bytes": 31514,
+          "sha256": "aa09d3f116180925379a655c7bd5f668acd75e89392d5ac829933e2a8ed8993d"
+        },
+        {
+          "name": "lantern",
+          "bytes": 31402,
+          "sha256": "20a52480c047011f55e1e51ec619613b0fb7a53f6bafea4f81022f574f093de9"
+        },
+        {
+          "name": "ochre",
+          "bytes": 47623,
+          "sha256": "02a57ff3ec1b29caf4d2b413a4d9b5586340a50d04be12959311aef7247a4447"
+        },
+        {
+          "name": "sage_0",
+          "bytes": 43021,
+          "sha256": "dcdba82bc8cf91eb9d6fded3b131a0a0048c5b05c32b339636d9f4be3e986a50"
+        },
+        {
+          "name": "sage_1",
+          "bytes": 43010,
+          "sha256": "5aa14322f9f6643e881e8dfa0ce62e2a8cd685df67c2f6dfada8b924476ff281"
+        },
+        {
+          "name": "sage_2",
+          "bytes": 42989,
+          "sha256": "91d1da8cb79ab2e51475ab640ef148481035de7ce711897ec8dafdd990e72bf2"
+        },
+        {
+          "name": "sage_3",
+          "bytes": 43001,
+          "sha256": "9cecf06283b625a7c77425764f47ca608e69128e16d02ffba24f2891833845a4"
+        },
+        {
+          "name": "sage_4",
+          "bytes": 42793,
+          "sha256": "60585918bf03cb9371d76382ec4eac53b5fb617750e4620facc82088cb7f866b"
+        },
+        {
+          "name": "target_blue",
+          "bytes": 31421,
+          "sha256": "c7c086aa1a30f54d16836e11ac39576ad6a36bec85394e3bdcf1485cdce9a858"
+        },
+        {
+          "name": "target_red",
+          "bytes": 31490,
+          "sha256": "7cde231e1e9a6c8760cb67470a0f7a9374f1c2776dd7b1a5c286bf063790d5c1"
+        },
+        {
+          "name": "glass",
+          "bytes": 31547,
+          "sha256": "b53b9da86f782f5d8c6dcc13858ddf7fa12fd78c81219b94421b4c14044afcc1"
+        }
+      ],
+      "boundsGame": {
+        "min": [
+          -1.4810041189193726,
+          0.0,
+          -1.399999976158142
+        ],
+        "max": [
+          1.399999976158142,
+          3.237499952316284,
+          1.399999976158142
+        ]
+      },
+      "baseBoundsGame": {
+        "min": [
+          -1.399999976158142,
+          0.0,
+          -1.399999976158142
+        ],
+        "max": [
+          1.399999976158142,
+          0.17249999940395355,
+          1.399999976158142
+        ]
+      },
+      "baseWidthRaw": 2.799999952316284,
+      "baseDepthRaw": 2.799999952316284,
+      "baseWidthRounded6": 2.8
+    }
+  },
+  "registration": {
+    "definition": "Analytical ground projection using orthographic 8-unit canvas, aim y=1.52 and elevation=46 degrees. Original measured Blender float projections retained per row.",
+    "anchorPixelFromTopLeft": [
+      512,
+      647.1527325565025
+    ],
+    "maxMeasuredRoundoffPixels": 0.00046568568495786167,
+    "tolerancePixels": 0.001
+  },
+  "sourceScripts": [
+    {
+      "path": "source/build_military.py",
+      "renderedSourceSHA256": "337bb29bcdf345d80842c0bb832bd9decfc7b0f22774712207fd62ae7b41c90d",
+      "publishedSourceSHA256": "72aecfbd445de7ce796134039f6239735bc0053e3d346e8f17ed7561c802d3b3",
+      "changes": "Repository-relative path, output-directory creation and source status wording only; no geometry/material/camera changes"
+    },
+    {
+      "path": "source/build_range.py",
+      "renderedSourceSHA256": "1ec9b635fb6a9a047b9c0e321f2de8583c7671c948ecc2ae16ae8523eb8cdf20",
+      "publishedSourceSHA256": "1f97f4c0738c76bd3c2a3459c2337c58e214a56eb4511661089030ee248f7b2b",
+      "changes": "Repository-relative path, output-directory creation and publication wording only; no geometry/material/camera changes"
+    },
+    {
+      "path": "source/prepare_materials.py",
+      "renderedSourceSHA256": "30e4ce94993381d8385a57449218884062a17610b66a2c2c02b992785685b6a9",
+      "publishedSourceSHA256": "0f0c9c312d6168de422171b38d3fbbae436477ec90274e2ec39ef50c209d1d1c",
+      "changes": "Creates the texture output directory before using the unchanged deterministic material generator"
+    }
+  ],
+  "textures": [
+    {
+      "path": "textures/copper.png",
+      "bytes": 31514,
+      "sha256": "aa09d3f116180925379a655c7bd5f668acd75e89392d5ac829933e2a8ed8993d"
+    },
+    {
+      "path": "textures/glass.png",
+      "bytes": 31547,
+      "sha256": "b53b9da86f782f5d8c6dcc13858ddf7fa12fd78c81219b94421b4c14044afcc1"
+    },
+    {
+      "path": "textures/iron.png",
+      "bytes": 31406,
+      "sha256": "885d01bac8a5fc09f024a461277d6e6ad44ca97b6db4cdf769fe28cb95564c7c"
+    },
+    {
+      "path": "textures/lantern.png",
+      "bytes": 31402,
+      "sha256": "20a52480c047011f55e1e51ec619613b0fb7a53f6bafea4f81022f574f093de9"
+    },
+    {
+      "path": "textures/linen.png",
+      "bytes": 47660,
+      "sha256": "b95ec8241a90df3c8e4592a6ce455c50a13f630b5da7e1be8f23d274b3733b17"
+    },
+    {
+      "path": "textures/oak.png",
+      "bytes": 43866,
+      "sha256": "ba7e940b965997097222448c21d01d34a54d94cd63365576bae0c366dbd9e2c7"
+    },
+    {
+      "path": "textures/oak_dark.png",
+      "bytes": 43897,
+      "sha256": "aaed4bc65a7df4f9ca564f65e57eada5b4b5af9cae6b80a912c224a2944bd278"
+    },
+    {
+      "path": "textures/ochre.png",
+      "bytes": 47623,
+      "sha256": "02a57ff3ec1b29caf4d2b413a4d9b5586340a50d04be12959311aef7247a4447"
+    },
+    {
+      "path": "textures/plaster.png",
+      "bytes": 50329,
+      "sha256": "37cc9cd140e69f29090500bdfc0494611fed7e03ba2bd7dd2eca2a70e5723e76"
+    },
+    {
+      "path": "textures/sage.png",
+      "bytes": 42851,
+      "sha256": "fe5691225841a5b520e968c782b9f2ef488babc315c367eae1794b23d95cd201"
+    },
+    {
+      "path": "textures/sage_0.png",
+      "bytes": 43021,
+      "sha256": "dcdba82bc8cf91eb9d6fded3b131a0a0048c5b05c32b339636d9f4be3e986a50"
+    },
+    {
+      "path": "textures/sage_1.png",
+      "bytes": 43010,
+      "sha256": "5aa14322f9f6643e881e8dfa0ce62e2a8cd685df67c2f6dfada8b924476ff281"
+    },
+    {
+      "path": "textures/sage_2.png",
+      "bytes": 42989,
+      "sha256": "91d1da8cb79ab2e51475ab640ef148481035de7ce711897ec8dafdd990e72bf2"
+    },
+    {
+      "path": "textures/sage_3.png",
+      "bytes": 43001,
+      "sha256": "9cecf06283b625a7c77425764f47ca608e69128e16d02ffba24f2891833845a4"
+    },
+    {
+      "path": "textures/sage_4.png",
+      "bytes": 42793,
+      "sha256": "60585918bf03cb9371d76382ec4eac53b5fb617750e4620facc82088cb7f866b"
+    },
+    {
+      "path": "textures/stone.png",
+      "bytes": 50326,
+      "sha256": "952fd61a90f4250c49bc2ff10483c54b3021432a6ab29730bf7d63f5b9c9d536"
+    },
+    {
+      "path": "textures/target.png",
+      "bytes": 47652,
+      "sha256": "bbb1032091d4b895cf22dcaa0f168c2a6acfb70b8b5fae31b104340add6efd7c"
+    },
+    {
+      "path": "textures/target_blue.png",
+      "bytes": 31421,
+      "sha256": "c7c086aa1a30f54d16836e11ac39576ad6a36bec85394e3bdcf1485cdce9a858"
+    },
+    {
+      "path": "textures/target_red.png",
+      "bytes": 31490,
+      "sha256": "7cde231e1e9a6c8760cb67470a0f7a9374f1c2776dd7b1a5c286bf063790d5c1"
+    }
+  ],
+  "concepts": [
+    {
+      "asset": "barracks",
+      "sourceConcept": "assets/buildings/frontier-civilization-concepts-v1/barracks.png",
+      "sourceConceptSHA256": "2b607b401d2e20c1eb586360590ab9cd1a2bfc1c60373675e5df3ec24e5f8557"
+    },
+    {
+      "asset": "archery-range",
+      "sourceConcept": "assets/buildings/frontier-civilization-concepts-v1/archery-range.png",
+      "sourceConceptSHA256": "728caf60da4e74d8c29d99b0503a0d0d08230e33f0866c202e795a74f141a910"
+    }
+  ],
+  "limits": [
+    "Complete-only original renders; no matched construction/damage frames or team masks",
+    "Editable Blend/GLB and exploratory images are preserved privately; these are not public-source links or runtime meshes",
+    "Blender procedural bump nodes are not baked GLB normal maps",
+    "Project-specific GLB/PNG checks; game-dev CLI is unavailable",
+    "Native gameplay, Worker clearance, live flag legibility, deployment and matched-set appearance remain open"
+  ],
+  "portableSourceCheck": {
+    "blenderVersion": "4.3.2",
+    "textureHashesMatched": 19,
+    "records": [
+      {
+        "asset": "barracks",
+        "view": 1,
+        "exactFileReproduced": false,
+        "exactPixelsReproduced": true,
+        "meanChannelDifference": 0.0,
+        "maxChannelDifference": 0,
+        "differentPixels": 0,
+        "exactGLBReproduced": true,
+        "glbSHA256": "2411cb41f61f326e90da7ee8c8d6d4a67eb9da274d6a228f6f347c8a03c90ab3",
+        "sourceCommentCorrection": "After reproduction check, only the shared helper module docstring was clarified; executable geometry/material/camera code is unchanged"
+      },
+      {
+        "asset": "archery-range",
+        "view": 1,
+        "exactFileReproduced": false,
+        "exactPixelsReproduced": true,
+        "meanChannelDifference": 0.0,
+        "maxChannelDifference": 0,
+        "differentPixels": 0,
+        "exactGLBReproduced": true,
+        "glbSHA256": "d4d1b3da7a7544351da191fdcc539b24a4bc2580df4d951848a24b0e21a85664",
+        "sourceCommentCorrection": "After reproduction check, only the shared helper module docstring was clarified; executable geometry/material/camera code is unchanged"
+      }
+    ],
+    "limits": "Only view 01 reproduced from each portable source; source reproduction is not an all-view or native gameplay acceptance check"
+  }
+}

@@ -44,6 +44,8 @@ export function bindContextualCommandStrip(strip) {
   const view = strip.ownerDocument.defaultView;
   let frame = 0, pendingButton = null, disposed = false;
   let buttons = new Set(strip.querySelectorAll('button'));
+  const layoutSelector = 'button, [data-command-layout]';
+  let observed = new Set(strip.querySelectorAll(layoutSelector));
   const reveal = button => {
     if (disposed || !strip.contains(button) || button.closest('[hidden]') || button.disabled
       || strip.clientWidth <= 0 || strip.scrollWidth <= strip.clientWidth) return;
@@ -108,15 +110,18 @@ export function bindContextualCommandStrip(strip) {
     if (changed) scheduleReveal(strip.ownerDocument.activeElement);
   };
   const resizeObserver = new view.ResizeObserver(layoutChanged);
-  for (const element of [strip, ...buttons]) resizeObserver.observe(element);
+  // Labelled groups can shift their buttons while individual button sizes stay
+  // fixed. Only marked layout containers add observation beyond the controls.
+  for (const element of [strip, ...observed]) resizeObserver.observe(element);
   const mutationObserver = new view.MutationObserver(records => {
     if (disposed || !records.some(record => record.type === 'childList'
       && [...record.addedNodes, ...record.removedNodes].some(node => node.nodeType === 1
-        && (node.matches('button') || node.querySelector('button'))))) return;
-    const current = new Set(strip.querySelectorAll('button'));
-    for (const button of buttons) if (!current.has(button)) resizeObserver.unobserve(button);
-    for (const button of current) if (!buttons.has(button)) resizeObserver.observe(button);
-    buttons = current;
+        && (node.matches(layoutSelector) || node.querySelector(layoutSelector))))) return;
+    const current = new Set(strip.querySelectorAll(layoutSelector));
+    for (const element of observed) if (!current.has(element)) resizeObserver.unobserve(element);
+    for (const element of current) if (!observed.has(element)) resizeObserver.observe(element);
+    observed = current;
+    buttons = new Set(strip.querySelectorAll('button'));
     layoutChanged();
   });
   mutationObserver.observe(strip, { childList: true, subtree: true });
@@ -128,6 +133,6 @@ export function bindContextualCommandStrip(strip) {
     strip.removeEventListener('wheel', wheel);
     resizeObserver.disconnect(); mutationObserver.disconnect();
     if (frame) view.cancelAnimationFrame(frame);
-    frame = 0; pendingButton = null; buttons.clear(); layout = null;
+    frame = 0; pendingButton = null; buttons.clear(); observed.clear(); layout = null;
   };
 }

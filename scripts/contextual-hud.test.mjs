@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { selectionContext } from '../src/selection-context.mjs';
+import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from '../src/combat-stance-ui.mjs';
 import { updateSelectionPortrait, workerRoleFacts, WORKER_PORTRAITS } from '../src/selection-portrait.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { researchAction, researchOptions } from '../src/research-actions.mjs';
@@ -44,6 +45,7 @@ function fixture(team = 0) {
   for (const [, name, selector] of source.matchAll(/^\s*(\w+): document\.querySelector\('([^']+)'\)/gm)) w.ui[name] = d.querySelector(selector);
   Object.assign(w, { ...economyClientBindings(),
     selectionContext, updateSelectionPortrait, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
+    applyUnitStances, updateCombatStanceControls, bindCombatStanceControls, socket: { readyState: 1 },
     castPreview: true, humanRosterPreview: true, roomPageUrl: new URL('http://localhost/'),
     unitSpriteRuntime: { roleForUnit: unit => unit.team === 0 ? 'human' : 'boughward-worker' },
     researchAction, researchOptions, setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip,
@@ -114,6 +116,27 @@ function fixture(team = 0) {
     escape() { d.activeElement.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true, cancelable: true })); },
   };
 }
+
+for (const team of [0, 1]) test(`seat ${team}: shipped stance binding follows selection, confirmed snapshots and visible focus recovery`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const worker = team * 2, military = worker + 1;
+  for (const unit of f.w.units) unit.generation = 0;
+  applyUnitStances(f.w.units, [[military, 0, 'aggressive']], team, UNIT_DEFINITIONS);
+  f.select([worker, military]);
+  const group = f.bar.querySelector('[data-stance-controls]'), button = group.querySelector('[data-combat-stance="defensive"]');
+  assert.equal(group.hidden, false); f.click(button);
+  assert.deepEqual(JSON.parse(JSON.stringify(f.w.sentCommands)), [{ type: 'setStance', ids: [military], unitGenerations: [0], stance: 'defensive' }]);
+  assert.equal(button.getAttribute('aria-pressed'), 'false');
+  applyUnitStances(f.w.units, [[military, 0, 'defensive']], team, UNIT_DEFINITIONS); f.w.updateSelectionUI();
+  assert.equal(button.getAttribute('aria-pressed'), 'true'); assert.equal(f.d.activeElement, button);
+  f.select([worker]); assert.equal(group.hidden, true);
+  assert.equal(f.d.activeElement.closest('[hidden]'), null, 'existing selection recovery handles a hidden stance control');
+  f.select([military]); f.click(button);
+  f.w.eval(fn('setConnection', 'setPlayer'));
+  f.w.socket = null; f.w.setConnection('RECONNECTING');
+  assert.equal(button.getAttribute('aria-disabled'), 'true');
+  assert.equal(f.d.activeElement, button); button.click(); assert.equal(f.w.sentCommands.length, 2);
+});
 
 for (const team of [0, 1]) test(`seat ${team}: single Worker portrait opens dismissible notes and keeps live health and focus`, t => {
   const f = fixture(team); t.after(() => f.dom.window.close());

@@ -9,6 +9,7 @@ exact technical values; provenance files retain original source/generation recor
 | Package | Directory |
 | --- | --- |
 | [Frontier civilization Complete concepts](buildings/frontier-civilization-concepts-v1/README.md) | `buildings/frontier-civilization-concepts-v1` |
+| [Frontier military Complete sources and captures](buildings/frontier-civilization-military-models-v1/README.md) | `buildings/frontier-civilization-military-models-v1` |
 | [Archery Range construction sprites](buildings/archery-range-construction-v1/README.md) | `buildings/archery-range-construction-v1` |
 | [Archery Range sprites v1](buildings/archery-range-sprite-v1/README.md) | `buildings/archery-range-sprite-v1` |
 | [Barracks sprites v1](buildings/barracks-sprite-test-v1/README.md) | `buildings/barracks-sprite-test-v1` |

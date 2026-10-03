@@ -47,7 +47,9 @@ Ground and forbids their out-of-range focus. The fixture issues the normal No
 Attack command before a deliberate focused chase, preserving Hold while no
 such target exists. Both baseline reproductions then pass with paid recovery,
 deterministic replay and objective retake intact. No combat runtime is changed;
-final integrated/postmerge checks are recorded in PR #187.
+final integrated/postmerge checks are recorded in PR #187. Newer main
+`68e46aa` supplies the opponent owner's Aggressive variant of that fixture
+correction; the integration retains it, plus the transient recovery assertion.
 No new assets, costs, navigation/combat changes, checkpoint fields or deployment
 actions are part of the producer. A source merge does not establish appearance:
 animation integration retains version-aware ingestion, shipped-frame and

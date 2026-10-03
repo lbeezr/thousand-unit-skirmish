@@ -24,7 +24,8 @@ export const SERVER_ENTRYPOINTS = ['room-supervisor.mjs', 'server.mjs'];
 // These are Node adapters, not cycle exceptions. Keep them out of browser closures.
 export const NODE_ONLY_MODULES = [
   'src/room-launch-options.mjs', // Node crypto-backed launch seeds.
-  'src/pve-model-proposal.mjs', // Offline Node model-request adapter.
+  'src/pve-model-proposal.mjs', // Compatibility entry for the offline Node adapter.
+  'src/server/pve-model-proposal.mjs', // Offline Node model-request implementation.
   'src/networking/websocket-frame.mjs', // Server-only Node Buffer wire encoding.
 ];
 
