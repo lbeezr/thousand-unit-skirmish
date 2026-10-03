@@ -114,6 +114,7 @@ run(['scripts/room-lobby-chat-scenario.mjs'], 'Real two-client room chat isolati
 run(['--test', 'scripts/pve-entry.test.mjs'], 'PvE entry observer settling');
 run(['--test', 'scripts/hud-layout.test.mjs'], 'Visible HUD layout');
 run(['--test', 'scripts/minimap-orders.test.mjs'], 'Tactical map selected-unit movement');
+run(['--test', 'scripts/minimap-browser-probe.test.mjs'], 'Minimap browser proof camera observation');
 run(['--test', 'scripts/selection-center-shortcut.test.mjs'], 'Selection camera shortcut and preserved Space drag');
 run(['--test', 'scripts/objective-summary.test.mjs', 'scripts/completion-event-labels.test.mjs'], 'Compact objectives and event feedback');
 run(['--test', 'scripts/selection-context.test.mjs'], 'Contextual selection');
@@ -133,7 +134,7 @@ run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle')
 run(['scripts/wildlife-food-scenario.mjs'], 'Both-seat wildlife gathering, depletion and recovery');
 run(['--test', 'scripts/shore-fishing.test.mjs', 'scripts/shore-fishing-placeholder.test.mjs'], 'Shore fish bank access and placeholder');
 run(['--test', 'scripts/shore-fishing-placement.test.mjs'], 'Seeded shore fishing authoring and land/water positions');
-run(['--test', 'scripts/water-surface-study.test.mjs', 'scripts/water-study-fish-binding.test.mjs'], 'Opt-in water appearance and visible fish ripples');
+run(['--test', 'scripts/water-surface-study.test.mjs', 'scripts/water-study-fish-binding.test.mjs'], 'Default water surface, quality and visible fish ripples');
 run(['--test', 'scripts/water-route-graph.test.mjs'], 'Isolated water route topology and clearance');
 run(['--test', 'scripts/dock-placement.test.mjs'], 'Dock shoreline and water berth placement');
 run(['scripts/dock-scenario.mjs'], 'Both-seat paid Dock construction and recovery');

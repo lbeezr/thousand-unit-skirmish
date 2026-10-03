@@ -8,7 +8,7 @@ import { createGroundMistStudy, groundMistEnabled } from './terrain-atmosphere.m
 import { applyTerrainTextureSampling } from './terrain-texture-sampling.mjs';
 import { buildTerrainBlendMasks, buildForestGroundMask } from './terrain-blend.mjs';
 import { buildWaterSurfaceGeometry, WATER_LEVEL } from './water-surface-geometry.mjs';
-import { createWaterSurfaceStudy, waterStudyOptions } from './water-surface-study.mjs';
+import { createWaterSurfaceStudy, waterSurfaceOptions } from './water-surface-study.mjs';
 import { forestHabitatDepth, forestCanopyFactor, forestMarginCanopyFactor } from './forest-habitat.mjs';
 import { forestAgeFactors } from './forest-age-composition.mjs';
 import { underboughForestSpecies } from './forest-composition.mjs';
@@ -417,15 +417,11 @@ export function createGroundSurfaces(definition) {
   const waterGeometry = buildWaterSurfaceGeometry(definition);
   if (waterGeometry) {
     const motion = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
-    const study = waterStudyOptions(globalThis.location?.search ?? '', motion?.matches === true);
-    const water = study.enabled ? createWaterSurfaceStudy(definition, {
-      ...study, geometry: waterGeometry, getTime: () => performance.now() / 1000,
-    }) : new THREE.Mesh(waterGeometry, new THREE.MeshBasicMaterial({
-      vertexColors: true,
-      side: THREE.DoubleSide,
-      toneMapped: false,
-    }));
-    if (study.enabled && motion?.addEventListener) {
+    const options = waterSurfaceOptions(globalThis.location?.search ?? '', motion?.matches === true);
+    const water = createWaterSurfaceStudy(definition, {
+      ...options, geometry: waterGeometry, getTime: () => performance.now() / 1000,
+    });
+    if (motion?.addEventListener) {
       const change = event => water.userData.setWaterStudyMotion(event.matches);
       motion.addEventListener('change', change);
       water.material.addEventListener('dispose', () => motion.removeEventListener('change', change));

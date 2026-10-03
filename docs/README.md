@@ -46,6 +46,7 @@ the build they name.
 | Understand runtime boundaries and files | [Architecture](architecture.md) |
 | Run focused checks, browser scenarios, or measurements | [Testing](testing.md) |
 | Change commands, snapshots, or bot observations | [Gameplay contract](gameplay-command-observation-contract.md) |
+| Understand missing Stone/gold/copper and the next integration contract | [Mineral readiness audit](mineral-economy-readiness.md) |
 | Understand overload behavior | [Simulation timing](simulation-timing.md) |
 | Author and validate scenario JSON | [Map authoring](map-authoring.md) |
 | Inspect isolated water routes before dock/boat integration | [Water navigation foundation](water-navigation-foundation.md) |
@@ -86,7 +87,8 @@ from source/candidate packs. Then use the relevant contract:
 - [Art direction](art-direction-contract-v1.md) and [production lanes](art-production-lanes.md).
 - [Wildlife draft](wildlife-bellweather-sheep.md): inspected regional fauna, one Sheep proposal, behavior, habitat and future perspective/sprite coverage.
 - [Renderer state/GLB/environment contract](renderer-state-contract.md).
-- [Water surface study](water-surface-study.md): opt-in apparent depth, directional motion, and visibility-gated shore-fish ripple preview.
+- [Water surface and fish cues](water-surface-study.md): default apparent depth and directional motion, live visibility-gated shore-fish activity, static quality and reduced motion.
+- [Native water first-pass review](qa-water-surface-native-2026-10-03.md): Mac shader/appearance results, saved image provenance, resolved fallback comparison and remaining visual limits.
 - [Sprite-atlas format](sprite-atlas-contract-v1.md).
 - [Generated strip adoption](sprite-strip-adoption-contract.md): shared scale/ground anchors, exact color/mask seed lock, explicit timing and reviewed helper boundaries.
 - [Worker fishing pilot](worker-fishing-animation.md): private crouched hand-net study, exact-heading default integration and unchanged food authority.

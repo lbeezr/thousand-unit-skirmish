@@ -167,6 +167,11 @@ checks do not replace a played opening with the Town Center present.
 
 ## Resources and forests
 
+Only food/wood are banked currencies. Stone obstacles are blocking terrain;
+stone/gold/copper nodes remain unsupported. The
+[mineral readiness audit](mineral-economy-readiness.md) names the shared economy,
+save and content work needed before authoring a harvestable mineral.
+
 `resourceNodes` contains up to 128 finite food or wood sites, each with an `id`,
 `type`, world `x`/`z`, and positive finite `stock`. Map Studio can add, select, change stock, or remove
 nodes. Obstacle painting over a node removes it.
