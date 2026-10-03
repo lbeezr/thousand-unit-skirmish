@@ -12,7 +12,7 @@ export function armyAttackMap() {
 // Paid production and ordinary accepted commands; no unit positions, kinds,
 // damage, visibility or target state are patched by this reproducer.
 export async function runArmyAttackCase({ team = 0, kind = 'archer', group = 1,
-  type = 'attack', interrupt = null, observe = false, obstacle = false } = {}) {
+  type = 'attack', interrupt = null, observe = false, obstacle = false, stance = 'aggressive' } = {}) {
   const map = armyAttackMap();
   if (obstacle) map.obstacles = [{ column: 30, row: 30, width: 1, height: 3, material: 'stone' }];
   const fixture = await createPathingReplayFixture(map), r = fixture.replay;
@@ -30,6 +30,8 @@ export async function runArmyAttackCase({ team = 0, kind = 'archer', group = 1,
     orders.push({ tick: r.tick, seat, command, notices });
   };
   try {
+    for (const seat of [0, 1]) order(seat, { type: 'setStance', stance: 'noAttack',
+      ids: r.units.filter(u => u.team === seat && u.kind !== 'worker').map(u => u.id) }, /STANCE ORDER/);
     if (kind === 'archer') {
       order(team, { type: 'build', buildingType: 'archery-range', ids: workers(team).map(u => u.id),
         x: team ? 20.5 : -20.5, z: -8.5 }, /RANGE PLACED/);
@@ -42,6 +44,7 @@ export async function runArmyAttackCase({ team = 0, kind = 'archer', group = 1,
     }
     const attackers = r.units.filter(u => u.team === team && u.kind === kind).slice(0, group);
     assert.equal(attackers.length, group);
+    order(team, { type: 'setStance', ids: attackers.map(u => u.id), stance: 'noAttack' }, /STANCE ORDER/);
     const targets = workers(1 - team).slice(0, 2);
     for (const [i, target] of targets.entries()) order(1 - team,
       { type: 'move', ids: [target.id], x: .5 * side, z: .5 + i * 2 }, /MOVE ORDER/);
@@ -58,6 +61,7 @@ export async function runArmyAttackCase({ team = 0, kind = 'archer', group = 1,
     assert.ok(targets.every(t => r.snapshot(team).units.some(row => row[0] === t.id)), 'both targets visible');
     const distant = workers(1 - team).find(u => !targets.includes(u));
     assert.ok(distant && !r.snapshot(team).units.some(row => row[0] === distant.id));
+    order(team, { type: 'setStance', ids: attackers.map(u => u.id), stance }, /STANCE ORDER/);
     const startTick = r.tick, destination = { x: 7.5 * side, z: .5 };
     if (type === 'attack') order(team, { type, ids: attackers.map(u => u.id),
       unitGenerations: attackers.map(u => u.generation), targetId: targets[0].id,
@@ -104,7 +108,7 @@ export async function runArmyAttackCase({ team = 0, kind = 'archer', group = 1,
       assert.deepEqual(result.targetHp, [0, 0], JSON.stringify(result));
       if (type === 'attackMove') assert.equal(arrived, true, 'attack-move resumes its ground destination');
     }
-    if (interrupt === 'move') assert.ok(attackers.every(u => !u.attackMove && u.attackTargetId < 0));
+    if (interrupt === 'move') assert.ok(attackers.every(u => u.attackTargetId < 0 && !u.movePlanningPending && u.pathIndex === u.path.length));
     return result;
   } finally { await fixture.dispose(); }
 }
