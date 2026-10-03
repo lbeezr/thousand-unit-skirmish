@@ -6732,14 +6732,20 @@ function findAttackMoveTarget(unit, acquireRadius = ATTACK_MOVE_ACQUIRE_RADIUS, 
   return bestTarget;
 }
 
-function getUnitAttackPath(unit, target, flowBudget = null) {
+function getUnitAttackPath(unit, target, flowBudget = null, continueWaypoint = false) {
   // A water target cannot be snapped onto land to invent a firing position.
   const targetCell = worldToCell(target.x, target.z);
-  const start = nearestOpenCell(worldToCell(unit.x, unit.z));
   const range = UNIT_DEFINITIONS[unit.kind].combat.range;
   if (Math.hypot(target.x - unit.x, target.z - unit.z) <= range) {
     return { targetCell, path: [], reachable: true };
   }
+  const currentCell = worldToCell(unit.x, unit.z);
+  const waypoint = continueWaypoint ? unit.path[unit.pathIndex] : null;
+  // Finish the current legal step before rerouting a moving-target pursuit.
+  // Otherwise each target-cell change can reverse that step indefinitely.
+  const retainWaypoint = continueWaypoint && canTraverseUnitStep(currentCell, waypoint,
+    MAP_WIDTH, elevationLevelByCell, isWalkable);
+  const start = nearestOpenCell(retainWaypoint ? waypoint : currentCell);
   const component = walkableComponents[start];
   let key = targetCell;
   let goals = null;
@@ -6774,6 +6780,7 @@ function getUnitAttackPath(unit, target, flowBudget = null) {
   // Being in a goal cell does not guarantee the unit's continuous position is
   // within range. Finish moving to that cell's center before attempting a shot.
   if (atGoal && path.length === 0) path.push(start);
+  else if (retainWaypoint && path.length > 0) path.unshift(start);
   return { targetCell, path, reachable: Boolean(field) && path.length > 0 };
 }
 
@@ -6802,7 +6809,7 @@ function prepareAttackMovePaths() {
     }
     if (!target) continue;
     const previousBuilt = budget.built;
-    const approach = getUnitAttackPath(unit, target, budget);
+    const approach = getUnitAttackPath(unit, target, budget, unit.attackTargetId >= 0);
     if (budget.built > previousBuilt) attackFlowLastGrant.set(unit, tickNumber);
     plans.set(unit.id, { target, approach });
   }
@@ -7141,7 +7148,7 @@ function simulateTick() {
         }
         if (unit.repathTimer <= 0
           && (targetCell !== unit.lastAttackCell || unit.pathIndex >= unit.path.length)) {
-          const approach = unit.attackMove ? attackMovePlans.get(unit.id)?.approach : getUnitAttackPath(unit, target);
+          const approach = unit.attackMove ? attackMovePlans.get(unit.id)?.approach : getUnitAttackPath(unit, target, null, true);
           if (!approach) {
             unit.repathTimer = STEP_SECONDS;
             continue;

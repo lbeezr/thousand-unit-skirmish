@@ -164,6 +164,8 @@ run(['--test', 'scripts/research-actions.test.mjs'], 'Shared technology availabi
 run(['--test', 'scripts/siege-ai.test.mjs'], 'Bounded siege acquisition and assault');
 run(['--test', 'scripts/combat-rules.test.mjs'], 'Shared combat classes, counters and effect scope');
 run(['--test', 'scripts/attack-target-geometry.test.mjs'], 'Attack-target geometry, queued transitions and fog');
+run(['--test', 'scripts/worker-combat-repath.test.mjs'], 'Both-seat moving-target pursuit across spawn orientations');
+run(['scripts/worker-combat-repath-native-scenario.mjs'], 'Native Worker combat pursuit and recovery');
 run(['scripts/attack-queue-native-scenario.mjs'], 'Native both-seat queued attack retreat and recovery');
 run(['--test', 'scripts/watchtower-targeting.test.mjs'], 'Bounded defense targeting and sight');
 run(['--test', 'scripts/economy-ledger.test.mjs'], 'Fractional cargo conservation');
