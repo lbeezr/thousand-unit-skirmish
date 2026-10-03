@@ -58,8 +58,10 @@ stock, costs or completed structures are injected. The
 the committed 1,000/2,000 construction openings and source hashes. The 2,000 run on
 `06b7842` uses the same server/map bytes as the baseline, accepts both builds after
 406 ticks and completes both by tick 810. The 1,000 integration run also includes
-later main's cargo-return fix. These are functional
-opening results, not evidence of a faster navigation algorithm.
+later main's cargo-return fix. A post-review 2,000 run on `ded3b82` also passes:
+both builds accepted after 453 ticks, both complete by tick 840, with one
+authoritative occupancy race retried successfully. These are functional opening
+results, not evidence of a faster navigation algorithm.
 
 Eight helper regressions cover late arrivals, placement races, unrelated errors,
 bounded stalled evacuation, reused generations, seat/worker/death filtering,
@@ -68,8 +70,9 @@ rounded borders, callback deadlines, native rejection filtering, and the actual
 harness issues (deadline overrun and hidden placement rejections); both received
 focused regressions and corrections. The reviewer also completed a native
 2,000-unit opening with both paid Barracks complete and empty footprints.
-Existing movement,
-villager facing and CI shard checks pass. The native 2,000 case is registered in CI.
+All 92 focused clearance, movement, villager facing, cargo-return, CI shard and
+integrated audio-lifecycle tests pass, as do documentation links, syntax and diff
+checks. The native 2,000 case is registered in CI.
 
 ## Remaining proof
 
