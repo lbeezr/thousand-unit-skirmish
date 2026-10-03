@@ -1,0 +1,63 @@
+{
+  "upstreamIllustration": {
+    "url": "https://github.com/lbeezr/thousand-unit-skirmish/blob/02e3ac9434ac0970dbe307f44791a40ffd61ba82/docs/art-direction/bellweather-sheep-model-input-v1/bellweather-sheep-model-input-yaw-000-v1.png",
+    "sha256": "0ff688101304a7c10e181b3363ce767e8fb0082d0f754817edee81e04a9bf904"
+  },
+  "captureContract": {
+    "path": "source/capture-contract.json",
+    "sha256": "69002b3e8b411fed937f0574c7bc131768c8265e933dfc30e9c6c8fff2455b42",
+    "bytes": 21883,
+    "authority": "Consumed producer contract; not consumer render or pixel evidence"
+  },
+  "originalViewsPreserved": true,
+  "records": [
+    {
+      "filename": "sheep-yaw-000.png",
+      "sha256": "9f52edc3d8423853e06bda287638530e34ec5b1fc3364f3c2f9d283e41717a9e",
+      "bytes": 151023,
+      "directionId": "north"
+    },
+    {
+      "filename": "sheep-yaw-045.png",
+      "sha256": "60932c6bd16c99ac43d90d6483bfaf2741f28498886016ed66ab3ddb33047cbc",
+      "bytes": 152500,
+      "directionId": "north-east"
+    },
+    {
+      "filename": "sheep-yaw-090.png",
+      "sha256": "f669ba4b8299ba8a7aecfa1de77bb88e5f80eb51e941fb655d8ebe6afac74aed",
+      "bytes": 149131,
+      "directionId": "east"
+    },
+    {
+      "filename": "sheep-yaw-135.png",
+      "sha256": "4d2ab4871cfa3710eaa22ec41dc247eb5beb1724a8abc0cc58dbd90ad6baaca2",
+      "bytes": 153926,
+      "directionId": "south-east"
+    },
+    {
+      "filename": "sheep-yaw-180.png",
+      "sha256": "9eaf1fa7b907596e545a1196e80cf3b964cb06ea3dae93620f6448ea40889511",
+      "bytes": 154201,
+      "directionId": "south"
+    },
+    {
+      "filename": "sheep-yaw-225.png",
+      "sha256": "1fb1614da45cd474ba47d37fb75beed5cb15ba210ed68704f060c17b562be4f6",
+      "bytes": 159962,
+      "directionId": "south-west"
+    },
+    {
+      "filename": "sheep-yaw-270.png",
+      "sha256": "bcb6fad2fd5ff588b370bd427e1166925814cc5454a1ddc5002e6b914b589b70",
+      "bytes": 158348,
+      "directionId": "west"
+    },
+    {
+      "filename": "sheep-yaw-315.png",
+      "sha256": "570823e874f1defa7c44ac6bce906b88cf886fb4b3e7af5dc1998d85640b234c",
+      "bytes": 159416,
+      "directionId": "north-west"
+    }
+  ]
+}

@@ -84,6 +84,7 @@ run(['--test', 'scripts/stationary-worker-pathing.test.mjs'], 'Stationary Worker
 run(['scripts/stationary-worker-native-scenario.mjs'], 'Native both-seat parked Worker formation recovery');
 run(['--test', 'scripts/fortified-site-clearance.test.mjs'], 'Fortified late-arrival construction clearance');
 run(['--test', 'scripts/sheep-static-preview.test.mjs'], 'Sheep static reference integrity and state boundary');
+run(['--test', 'scripts/sheep-eight-view-runtime.test.mjs'], 'Admitted eight-view Sheep source and default runtime');
 run(['--test', 'scripts/sheep-directional-readiness.test.mjs'], 'Sheep directional source and anchor acceptance');
 run(['--test', 'scripts/neutral-wildlife-renderer.test.mjs'], 'Neutral wildlife render lifecycle and fallback');
 run(['scripts/wildlife-render-scenario.mjs'], 'Live wildlife snapshots and production art paths');

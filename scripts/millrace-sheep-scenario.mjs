@@ -49,7 +49,7 @@ try {
   camera.position.set(50, 75, 50); camera.lookAt(0, 0, 0); camera.updateMatrixWorld();
   renderer = createNeutralWildlifeRenderer({ THREE, scene, groundHeight: () => 0,
     loadArt: options => createStaticSheepRuntime({ ...options,
-      bindingUrl: new URL('assets/wildlife/bellweather-sheep-public-reference-v1/static-preview-binding.json', base).href }),
+      bindingUrl: new URL('assets/wildlife/bellweather-sheep-static-v1/static-preview-binding.json', base).href }),
   });
   renderer.reset(clients[0].welcome.map.resourceNodes); await renderer.ready();
   for (const team of [0, 1]) {
@@ -61,7 +61,7 @@ try {
     assert.equal(sheep.visible, true); assert.equal(sheep.mode, 'static-illustration');
     const group = scene.children.find(group => group.userData.wildlifeNodeId === sheep.id);
     assert.equal(group.visible, true);
-    assert.ok(group.children.some(mesh => mesh.isMesh && mesh.visible && mesh.material?.map?.image?.width === 512),
+    assert.ok(group.children.some(mesh => mesh.isMesh && mesh.visible && mesh.material?.map?.image?.width === 2048 && mesh.material.map.image.height === 1024),
       'each seat\'s visible opening Sheep has an actual attached textured illustration mesh');
   }
   for (const team of [0, 1]) await command(clients[team], {
