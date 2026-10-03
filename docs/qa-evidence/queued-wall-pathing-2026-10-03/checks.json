@@ -1,0 +1,1097 @@
+{
+  "date": "2026-10-03",
+  "node": "v24.19.0",
+  "wallBaseline": {
+    "head": "75f4b7b38aacc291bb7e4952259d9cd9619cc11b",
+    "records": [
+      {
+        "team": 0,
+        "group": 16,
+        "mode": "active-route",
+        "metrics": {
+          "sourceSha256": "8bbb6079d116c05ba5f7d5ea289c7642f04c6096fe055647c6f4227754822181",
+          "ticks": 722,
+          "arrived": 16,
+          "distinctGoals": 16,
+          "initialDistinctGoals": 16,
+          "intercepted": 16,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 3,
+          "tickMs": {
+            "p95": 0.148,
+            "max": 0.995
+          }
+        },
+        "traceSha256": [
+          "4c7d6e42aa4992699b772f324c0dd50ec178de324429d97927968ecf51cd1410",
+          "4c7d6e42aa4992699b772f324c0dd50ec178de324429d97927968ecf51cd1410"
+        ]
+      },
+      {
+        "team": 0,
+        "group": 16,
+        "mode": "queued-target",
+        "metrics": {
+          "sourceSha256": "8bbb6079d116c05ba5f7d5ea289c7642f04c6096fe055647c6f4227754822181",
+          "ticks": 869,
+          "arrived": 16,
+          "distinctGoals": 13,
+          "initialDistinctGoals": 16,
+          "intercepted": 4,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 594,
+          "tickMs": {
+            "p95": 0.127,
+            "max": 3.4
+          }
+        },
+        "traceSha256": [
+          "92bab7fa17cd54d0ace6fd38acb417da741ffacf837686816179f9df20bf876a",
+          "92bab7fa17cd54d0ace6fd38acb417da741ffacf837686816179f9df20bf876a"
+        ]
+      },
+      {
+        "team": 0,
+        "group": 16,
+        "mode": "queued-removal",
+        "metrics": {
+          "sourceSha256": "8bbb6079d116c05ba5f7d5ea289c7642f04c6096fe055647c6f4227754822181",
+          "ticks": 596,
+          "arrived": 16,
+          "distinctGoals": 16,
+          "initialDistinctGoals": 16,
+          "intercepted": 4,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 344,
+          "tickMs": {
+            "p95": 0.147,
+            "max": 1.35
+          }
+        },
+        "traceSha256": [
+          "b3821a6b719d34ff387e830b413e1a7bd89caf52612e0a0e08892e2d38e6da0f",
+          "b3821a6b719d34ff387e830b413e1a7bd89caf52612e0a0e08892e2d38e6da0f"
+        ]
+      },
+      {
+        "team": 0,
+        "group": 64,
+        "mode": "active-route",
+        "metrics": {
+          "sourceSha256": "8bbb6079d116c05ba5f7d5ea289c7642f04c6096fe055647c6f4227754822181",
+          "ticks": 773,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "initialDistinctGoals": 64,
+          "intercepted": 64,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 40,
+          "tickMs": {
+            "p95": 0.214,
+            "max": 1.951
+          }
+        },
+        "traceSha256": [
+          "9d427fb45fbc7b367b121cb92ac65690c07ea0a55760caebc5785256afc7a683",
+          "9d427fb45fbc7b367b121cb92ac65690c07ea0a55760caebc5785256afc7a683"
+        ]
+      },
+      {
+        "team": 0,
+        "group": 64,
+        "mode": "queued-target",
+        "metrics": {
+          "sourceSha256": "8bbb6079d116c05ba5f7d5ea289c7642f04c6096fe055647c6f4227754822181",
+          "ticks": 724,
+          "arrived": 64,
+          "distinctGoals": 57,
+          "initialDistinctGoals": 64,
+          "intercepted": 7,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 480,
+          "tickMs": {
+            "p95": 0.193,
+            "max": 2.093
+          }
+        },
+        "traceSha256": [
+          "e143ee068022f5584c340fd604a279a3793cd68ebe1379fc2faeb102e34012ea",
+          "e143ee068022f5584c340fd604a279a3793cd68ebe1379fc2faeb102e34012ea"
+        ]
+      },
+      {
+        "team": 0,
+        "group": 64,
+        "mode": "queued-removal",
+        "metrics": {
+          "sourceSha256": "8bbb6079d116c05ba5f7d5ea289c7642f04c6096fe055647c6f4227754822181",
+          "ticks": 703,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "initialDistinctGoals": 64,
+          "intercepted": 7,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 456,
+          "tickMs": {
+            "p95": 0.213,
+            "max": 1.417
+          }
+        },
+        "traceSha256": [
+          "e93dca9e8f10c6b40090608a96a7803a574b4222bb6c46ebf58f00dda7a2fe33",
+          "e93dca9e8f10c6b40090608a96a7803a574b4222bb6c46ebf58f00dda7a2fe33"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 16,
+        "mode": "active-route",
+        "metrics": {
+          "sourceSha256": "8bbb6079d116c05ba5f7d5ea289c7642f04c6096fe055647c6f4227754822181",
+          "ticks": 859,
+          "arrived": 16,
+          "distinctGoals": 16,
+          "initialDistinctGoals": 16,
+          "intercepted": 16,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 4,
+          "tickMs": {
+            "p95": 0.126,
+            "max": 2.785
+          }
+        },
+        "traceSha256": [
+          "23c568148c3a885292329c8ea4888f3ff20802e047e31812e95930060f7ccd7d",
+          "23c568148c3a885292329c8ea4888f3ff20802e047e31812e95930060f7ccd7d"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 16,
+        "mode": "queued-target",
+        "metrics": {
+          "sourceSha256": "8bbb6079d116c05ba5f7d5ea289c7642f04c6096fe055647c6f4227754822181",
+          "ticks": 2700,
+          "arrived": 13,
+          "distinctGoals": 13,
+          "initialDistinctGoals": 16,
+          "intercepted": 4,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 2011,
+          "tickMs": {
+            "p95": 0.067,
+            "max": 1.802
+          }
+        },
+        "traceSha256": [
+          "20054d1685f2d863a3532019b04e4f74ab3b72b19b02e54dd892bdf480c71e6a",
+          "20054d1685f2d863a3532019b04e4f74ab3b72b19b02e54dd892bdf480c71e6a"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 16,
+        "mode": "queued-removal",
+        "metrics": {
+          "sourceSha256": "8bbb6079d116c05ba5f7d5ea289c7642f04c6096fe055647c6f4227754822181",
+          "ticks": 1119,
+          "arrived": 16,
+          "distinctGoals": 16,
+          "initialDistinctGoals": 16,
+          "intercepted": 4,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 347,
+          "tickMs": {
+            "p95": 0.101,
+            "max": 0.766
+          }
+        },
+        "traceSha256": [
+          "ee110ed0e9a500a83d9cd96222fb5c92b606ad4533674032568902f805ed6c35",
+          "ee110ed0e9a500a83d9cd96222fb5c92b606ad4533674032568902f805ed6c35"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 64,
+        "mode": "active-route",
+        "metrics": {
+          "sourceSha256": "8bbb6079d116c05ba5f7d5ea289c7642f04c6096fe055647c6f4227754822181",
+          "ticks": 982,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "initialDistinctGoals": 64,
+          "intercepted": 64,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 68,
+          "tickMs": {
+            "p95": 0.184,
+            "max": 3.755
+          }
+        },
+        "traceSha256": [
+          "203a5542aac43a7f16915226564d4925663a694be17168d2640e91d313ba003d",
+          "203a5542aac43a7f16915226564d4925663a694be17168d2640e91d313ba003d"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 64,
+        "mode": "queued-target",
+        "metrics": {
+          "sourceSha256": "8bbb6079d116c05ba5f7d5ea289c7642f04c6096fe055647c6f4227754822181",
+          "ticks": 2700,
+          "arrived": 62,
+          "distinctGoals": 57,
+          "initialDistinctGoals": 64,
+          "intercepted": 7,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 1993,
+          "tickMs": {
+            "p95": 0.12,
+            "max": 2.893
+          }
+        },
+        "traceSha256": [
+          "6a87a4e1509edc61df0d9ceeb6abf95fa9743247433e8f71243e9c456187dd79",
+          "6a87a4e1509edc61df0d9ceeb6abf95fa9743247433e8f71243e9c456187dd79"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 64,
+        "mode": "queued-removal",
+        "metrics": {
+          "sourceSha256": "8bbb6079d116c05ba5f7d5ea289c7642f04c6096fe055647c6f4227754822181",
+          "ticks": 1272,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "initialDistinctGoals": 64,
+          "intercepted": 7,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 393,
+          "tickMs": {
+            "p95": 0.166,
+            "max": 3.628
+          }
+        },
+        "traceSha256": [
+          "5eee7c440056a732315d5bedab2ee88a3520e741beff4cd7f91e8f851fcaac65",
+          "5eee7c440056a732315d5bedab2ee88a3520e741beff4cd7f91e8f851fcaac65"
+        ]
+      }
+    ],
+    "limits": [
+      "real server bodies; canonical planning drains between ticks; native scheduling/rendering excluded",
+      "cloud host not isolated; tick timings observational, no speedup or capacity claim"
+    ]
+  },
+  "wallCandidate": {
+    "head": "c3d6dd2eaa1f24d3cffa6d35ace305a84f542015",
+    "records": [
+      {
+        "team": 0,
+        "group": 16,
+        "mode": "active-route",
+        "metrics": {
+          "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+          "ticks": 722,
+          "arrived": 16,
+          "distinctGoals": 16,
+          "initialDistinctGoals": 16,
+          "intercepted": 16,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 3,
+          "tickMs": {
+            "p95": 0.186,
+            "max": 1.055
+          }
+        },
+        "traceSha256": [
+          "4c7d6e42aa4992699b772f324c0dd50ec178de324429d97927968ecf51cd1410",
+          "4c7d6e42aa4992699b772f324c0dd50ec178de324429d97927968ecf51cd1410"
+        ]
+      },
+      {
+        "team": 0,
+        "group": 16,
+        "mode": "queued-target",
+        "metrics": {
+          "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+          "ticks": 594,
+          "arrived": 16,
+          "distinctGoals": 16,
+          "initialDistinctGoals": 16,
+          "intercepted": 4,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 352,
+          "tickMs": {
+            "p95": 0.147,
+            "max": 2.069
+          }
+        },
+        "traceSha256": [
+          "c274d61958b443bb667426d37a5d94a5e73a7804435a3c27657f44a75726e77b",
+          "c274d61958b443bb667426d37a5d94a5e73a7804435a3c27657f44a75726e77b"
+        ]
+      },
+      {
+        "team": 0,
+        "group": 16,
+        "mode": "queued-removal",
+        "metrics": {
+          "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+          "ticks": 596,
+          "arrived": 16,
+          "distinctGoals": 16,
+          "initialDistinctGoals": 16,
+          "intercepted": 4,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 344,
+          "tickMs": {
+            "p95": 0.205,
+            "max": 0.834
+          }
+        },
+        "traceSha256": [
+          "b3821a6b719d34ff387e830b413e1a7bd89caf52612e0a0e08892e2d38e6da0f",
+          "b3821a6b719d34ff387e830b413e1a7bd89caf52612e0a0e08892e2d38e6da0f"
+        ]
+      },
+      {
+        "team": 0,
+        "group": 64,
+        "mode": "active-route",
+        "metrics": {
+          "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+          "ticks": 773,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "initialDistinctGoals": 64,
+          "intercepted": 64,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 40,
+          "tickMs": {
+            "p95": 0.203,
+            "max": 1.186
+          }
+        },
+        "traceSha256": [
+          "9d427fb45fbc7b367b121cb92ac65690c07ea0a55760caebc5785256afc7a683",
+          "9d427fb45fbc7b367b121cb92ac65690c07ea0a55760caebc5785256afc7a683"
+        ]
+      },
+      {
+        "team": 0,
+        "group": 64,
+        "mode": "queued-target",
+        "metrics": {
+          "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+          "ticks": 688,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "initialDistinctGoals": 64,
+          "intercepted": 7,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 442,
+          "tickMs": {
+            "p95": 0.223,
+            "max": 1.938
+          }
+        },
+        "traceSha256": [
+          "a3374ad995858c15f4cd39fd5cda3a254a0895a26183323c92f42e99ac5a6d1a",
+          "a3374ad995858c15f4cd39fd5cda3a254a0895a26183323c92f42e99ac5a6d1a"
+        ]
+      },
+      {
+        "team": 0,
+        "group": 64,
+        "mode": "queued-removal",
+        "metrics": {
+          "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+          "ticks": 703,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "initialDistinctGoals": 64,
+          "intercepted": 7,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 456,
+          "tickMs": {
+            "p95": 0.332,
+            "max": 1.381
+          }
+        },
+        "traceSha256": [
+          "e93dca9e8f10c6b40090608a96a7803a574b4222bb6c46ebf58f00dda7a2fe33",
+          "e93dca9e8f10c6b40090608a96a7803a574b4222bb6c46ebf58f00dda7a2fe33"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 16,
+        "mode": "active-route",
+        "metrics": {
+          "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+          "ticks": 859,
+          "arrived": 16,
+          "distinctGoals": 16,
+          "initialDistinctGoals": 16,
+          "intercepted": 16,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 4,
+          "tickMs": {
+            "p95": 0.119,
+            "max": 1.744
+          }
+        },
+        "traceSha256": [
+          "23c568148c3a885292329c8ea4888f3ff20802e047e31812e95930060f7ccd7d",
+          "23c568148c3a885292329c8ea4888f3ff20802e047e31812e95930060f7ccd7d"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 16,
+        "mode": "queued-target",
+        "metrics": {
+          "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+          "ticks": 1120,
+          "arrived": 16,
+          "distinctGoals": 16,
+          "initialDistinctGoals": 16,
+          "intercepted": 4,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 357,
+          "tickMs": {
+            "p95": 0.113,
+            "max": 0.705
+          }
+        },
+        "traceSha256": [
+          "494d866fb70114bdc84b37cc28eb96460dbb2fbcdf2acbd7d0c90dd67d16ccf3",
+          "494d866fb70114bdc84b37cc28eb96460dbb2fbcdf2acbd7d0c90dd67d16ccf3"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 16,
+        "mode": "queued-removal",
+        "metrics": {
+          "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+          "ticks": 1119,
+          "arrived": 16,
+          "distinctGoals": 16,
+          "initialDistinctGoals": 16,
+          "intercepted": 4,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 347,
+          "tickMs": {
+            "p95": 0.082,
+            "max": 0.611
+          }
+        },
+        "traceSha256": [
+          "ee110ed0e9a500a83d9cd96222fb5c92b606ad4533674032568902f805ed6c35",
+          "ee110ed0e9a500a83d9cd96222fb5c92b606ad4533674032568902f805ed6c35"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 64,
+        "mode": "active-route",
+        "metrics": {
+          "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+          "ticks": 982,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "initialDistinctGoals": 64,
+          "intercepted": 64,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 68,
+          "tickMs": {
+            "p95": 0.174,
+            "max": 0.914
+          }
+        },
+        "traceSha256": [
+          "203a5542aac43a7f16915226564d4925663a694be17168d2640e91d313ba003d",
+          "203a5542aac43a7f16915226564d4925663a694be17168d2640e91d313ba003d"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 64,
+        "mode": "queued-target",
+        "metrics": {
+          "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+          "ticks": 1233,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "initialDistinctGoals": 64,
+          "intercepted": 7,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 412,
+          "tickMs": {
+            "p95": 0.172,
+            "max": 1.47
+          }
+        },
+        "traceSha256": [
+          "c0e71a2ce37000cba9845b6fb7d62dcad272ca19eb66fa428326e72e1d91220f",
+          "c0e71a2ce37000cba9845b6fb7d62dcad272ca19eb66fa428326e72e1d91220f"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 64,
+        "mode": "queued-removal",
+        "metrics": {
+          "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+          "ticks": 1272,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "initialDistinctGoals": 64,
+          "intercepted": 7,
+          "validRequestedPreserved": true,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxNoProgressTicks": 393,
+          "tickMs": {
+            "p95": 0.217,
+            "max": 3.909
+          }
+        },
+        "traceSha256": [
+          "5eee7c440056a732315d5bedab2ee88a3520e741beff4cd7f91e8f851fcaac65",
+          "5eee7c440056a732315d5bedab2ee88a3520e741beff4cd7f91e8f851fcaac65"
+        ]
+      }
+    ],
+    "limits": [
+      "real server bodies; canonical planning drains between ticks; native scheduling/rendering excluded",
+      "cloud host not isolated; tick timings observational, no speedup or capacity claim"
+    ]
+  },
+  "gateBaseline": {
+    "head": "75f4b7b38aacc291bb7e4952259d9cd9619cc11b",
+    "records": [
+      {
+        "team": 0,
+        "group": 64,
+        "mode": "queued-gate",
+        "metrics": {
+          "sourceSha256": "8bbb6079d116c05ba5f7d5ea289c7642f04c6096fe055647c6f4227754822181",
+          "ticks": 690,
+          "arrived": 64,
+          "distinctGoals": 63,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "onlyNamedBuilder": true,
+          "unblockedDestinationsPreserved": true
+        },
+        "traceSha256": [
+          "65d41465c0201fa24b653d276566eff5fe43bd5aa62fc716e7be8750064078f0",
+          "65d41465c0201fa24b653d276566eff5fe43bd5aa62fc716e7be8750064078f0"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 64,
+        "mode": "queued-gate",
+        "metrics": {
+          "sourceSha256": "8bbb6079d116c05ba5f7d5ea289c7642f04c6096fe055647c6f4227754822181",
+          "ticks": 1228,
+          "arrived": 64,
+          "distinctGoals": 63,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "onlyNamedBuilder": true,
+          "unblockedDestinationsPreserved": true
+        },
+        "traceSha256": [
+          "18ef7763b9966ea1e8c18670f3078fb6abccdef0111f8d898190bc2235485e6c",
+          "18ef7763b9966ea1e8c18670f3078fb6abccdef0111f8d898190bc2235485e6c"
+        ]
+      }
+    ],
+    "limits": [
+      "production gate handler and paid natural completion, canonical fixed ticks; no renderer or native scheduling claim"
+    ]
+  },
+  "gateCandidate": {
+    "head": "8371f8357408e9aa0ccf6c6bc0cd28db4e53743e",
+    "records": [
+      {
+        "team": 0,
+        "group": 64,
+        "mode": "queued-gate",
+        "metrics": {
+          "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+          "ticks": 708,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "onlyNamedBuilder": true,
+          "builderReturned": true,
+          "unblockedDestinationsPreserved": true,
+          "unfinished": [],
+          "builderPosition": {
+            "x": -27.5,
+            "z": 0.5
+          }
+        },
+        "traceSha256": [
+          "1d840999eb97ac28e40814700626eb648bb11ba721c3826f07769d700fcdebc8",
+          "1d840999eb97ac28e40814700626eb648bb11ba721c3826f07769d700fcdebc8"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 64,
+        "mode": "queued-gate",
+        "metrics": {
+          "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+          "ticks": 1228,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "onlyNamedBuilder": true,
+          "builderReturned": true,
+          "unblockedDestinationsPreserved": true,
+          "unfinished": [],
+          "builderPosition": {
+            "x": 28.5,
+            "z": 22.5
+          }
+        },
+        "traceSha256": [
+          "c3768df79e2bcaa8fb0df2dfe44ec6833d508982e81ab7a0718fa487cf3d9250",
+          "c3768df79e2bcaa8fb0df2dfe44ec6833d508982e81ab7a0718fa487cf3d9250"
+        ]
+      }
+    ],
+    "limits": [
+      "production gate handler and paid natural completion, canonical fixed ticks; no renderer or native scheduling claim"
+    ]
+  },
+  "parkedBuilderCandidate": {
+    "head": "c3d6dd2eaa1f24d3cffa6d35ace305a84f542015",
+    "records": [
+      {
+        "team": 0,
+        "group": 64,
+        "mode": "queued-gate",
+        "metrics": {
+          "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+          "ticks": 682,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "onlyNamedBuilder": true,
+          "builderReturned": false,
+          "unblockedDestinationsPreserved": true,
+          "unfinished": [],
+          "builderPosition": {
+            "x": 15.5,
+            "z": -0.5
+          }
+        },
+        "traceSha256": [
+          "f961c5fc0266fae95290c4abe2af9e533e48dadc881a02d2b854c6cb600b9791",
+          "f961c5fc0266fae95290c4abe2af9e533e48dadc881a02d2b854c6cb600b9791"
+        ]
+      },
+      {
+        "team": 1,
+        "group": 64,
+        "mode": "queued-gate",
+        "metrics": {
+          "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+          "ticks": 2700,
+          "arrived": 63,
+          "distinctGoals": 64,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "onlyNamedBuilder": true,
+          "builderReturned": false,
+          "unblockedDestinationsPreserved": true,
+          "unfinished": [
+            {
+              "id": 127,
+              "x": 17.399126662237652,
+              "z": 1.5,
+              "goal": {
+                "x": 18.5,
+                "z": 3.5
+              },
+              "pathIndex": 27,
+              "pathLength": 31
+            }
+          ],
+          "builderPosition": {
+            "x": 17.5,
+            "z": 1.5
+          }
+        },
+        "traceSha256": [
+          "13198c438aeb4fbf14003afcf5ecd49090b5104b52abfcef275aa8e10da239fa",
+          "13198c438aeb4fbf14003afcf5ecd49090b5104b52abfcef275aa8e10da239fa"
+        ]
+      }
+    ],
+    "limits": [
+      "production gate handler and paid natural completion, canonical fixed ticks; no renderer or native scheduling claim"
+    ]
+  },
+  "nativeCandidate": {
+    "head": "c3d6dd2eaa1f24d3cffa6d35ace305a84f542015",
+    "sourceSha256": "4e38cfffe73fa3d637e0427994f86f509c3e10c17a9d3ebad164089c00a2c527",
+    "records": [
+      {
+        "team": 0,
+        "group": 64,
+        "queuedBefore": [
+          2752,
+          2753,
+          2754,
+          2755,
+          2844,
+          2845,
+          2748,
+          2749,
+          2750,
+          2751,
+          2847,
+          2848,
+          2849,
+          2850,
+          2851,
+          2940,
+          2846,
+          2941,
+          3133,
+          3037,
+          2942,
+          2943,
+          2944,
+          2945,
+          2946,
+          2947,
+          3228,
+          3229,
+          3230,
+          3231,
+          3038,
+          3039,
+          3040,
+          3041,
+          3042,
+          3043,
+          3036,
+          3132,
+          3232,
+          3233,
+          3134,
+          3135,
+          3136,
+          3137,
+          3138,
+          3139,
+          3234,
+          3235,
+          3324,
+          3325,
+          3326,
+          3327,
+          3328,
+          3329,
+          3330,
+          3331,
+          3420,
+          3421,
+          3422,
+          3423,
+          3424,
+          3425,
+          3426,
+          3427
+        ],
+        "goalsAfter": [
+          2752,
+          2753,
+          2754,
+          2755,
+          2844,
+          2845,
+          2748,
+          2749,
+          2750,
+          2751,
+          2847,
+          2848,
+          2849,
+          2850,
+          2851,
+          2940,
+          2846,
+          2941,
+          2939,
+          3037,
+          2942,
+          2943,
+          2944,
+          2945,
+          2946,
+          2947,
+          3228,
+          3229,
+          3230,
+          3231,
+          3038,
+          3039,
+          3040,
+          3041,
+          3042,
+          3043,
+          3036,
+          3132,
+          3232,
+          3233,
+          2843,
+          2747,
+          2756,
+          2852,
+          2948,
+          3044,
+          3234,
+          3235,
+          3324,
+          3325,
+          3326,
+          3327,
+          3328,
+          3329,
+          3330,
+          3331,
+          3420,
+          3421,
+          3422,
+          3423,
+          3424,
+          3425,
+          3426,
+          3427
+        ],
+        "arrived": 64,
+        "distinctGoals": 64,
+        "onlyNamedBuilder": true,
+        "unblockedDestinationsPreserved": true,
+        "ticks": 690
+      },
+      {
+        "team": 1,
+        "group": 64,
+        "queuedBefore": [
+          2748,
+          2749,
+          2750,
+          2751,
+          2752,
+          2753,
+          2844,
+          2845,
+          2846,
+          2847,
+          2848,
+          2849,
+          2850,
+          2851,
+          2940,
+          2941,
+          2944,
+          2945,
+          2946,
+          2947,
+          3036,
+          3037,
+          3133,
+          2754,
+          2942,
+          2755,
+          3039,
+          3040,
+          3041,
+          3042,
+          3043,
+          3132,
+          3230,
+          3327,
+          2943,
+          3038,
+          3135,
+          3136,
+          3137,
+          3138,
+          3139,
+          3228,
+          3229,
+          3134,
+          3231,
+          3328,
+          3232,
+          3233,
+          3234,
+          3235,
+          3324,
+          3325,
+          3326,
+          3424,
+          3425,
+          3426,
+          3329,
+          3330,
+          3331,
+          3420,
+          3421,
+          3422,
+          3423,
+          3427
+        ],
+        "goalsAfter": [
+          2748,
+          2749,
+          2750,
+          2751,
+          2752,
+          2753,
+          2844,
+          2845,
+          2846,
+          2847,
+          2848,
+          2849,
+          2850,
+          2851,
+          2940,
+          2941,
+          2944,
+          2945,
+          2946,
+          2947,
+          3036,
+          3037,
+          2939,
+          2754,
+          2942,
+          2755,
+          3039,
+          3040,
+          3041,
+          3042,
+          3043,
+          3132,
+          3230,
+          3327,
+          2943,
+          3038,
+          2747,
+          2756,
+          2852,
+          2948,
+          3044,
+          3228,
+          3229,
+          2843,
+          3231,
+          3328,
+          3232,
+          3233,
+          3234,
+          3235,
+          3324,
+          3325,
+          3326,
+          3424,
+          3425,
+          3426,
+          3329,
+          3330,
+          3331,
+          3420,
+          3421,
+          3422,
+          3423,
+          3427
+        ],
+        "arrived": 64,
+        "distinctGoals": 64,
+        "onlyNamedBuilder": true,
+        "unblockedDestinationsPreserved": true,
+        "ticks": 1200
+      }
+    ],
+    "limits": [
+      "actual native two-seat WebSocket commands, no renderer/deployment evidence",
+      "native scheduling excluded from exact replay claim; no hosted capacity or speedup claim"
+    ]
+  },
+  "checks": {
+    "focusedPassed": 66,
+    "independentReview": "No findings at c3d6dd2 plus reviewed Gate harness; production unchanged from a941140. Parked-Worker limit independently reproduced."
+  },
+  "limits": [
+    "Native runs use actual asynchronous server and WebSocket commands. Fixed-tick runs disable timers and drain planning between ticks.",
+    "No isolation, speedup, hosted capacity, rendered/deployed appearance or universal crowd recovery claim.",
+    "If bounded relocation finds no free destination, existing nearest-open fallback remains."
+  ]
+}
