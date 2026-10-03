@@ -39,7 +39,7 @@ test('Millrace materializes the profile reproducibly without changing other map 
   assert.deepEqual(seedMillraceSheep(seededMirroredResourceClusters(map)), map.resourceNodes);
   assert.equal(JSON.stringify(map), input);
   for (const [key, value] of Object.entries(before)) if (key !== 'resourceNodes') assert.deepEqual(map[key], value, key);
-  assert.notDeepEqual(seededMirroredResourceClusters(map, { ...settings, seed: 93001 }), map.resourceNodes);
+  assert.notDeepEqual(seedMillraceSheep(seededMirroredResourceClusters(map, { ...settings, seed: 93001 })), map.resourceNodes);
   assert.equal(map.resourceNodes.length, 40);
   assert.equal(new Set(map.resourceNodes.map(n => n.id)).size, 40);
   assert.equal(new Set(map.resourceNodes.map(cell)).size, 40);

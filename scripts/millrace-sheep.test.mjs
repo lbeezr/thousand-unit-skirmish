@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
+import { mkdtemp, mkdir, symlink, writeFile, readFile, rm } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { MILLRACE_SHEEP_IDS, MILLRACE_PRE_SHEEP_MAP_HASH, seedMillraceSheep,
   migrateMillraceSheepCheckpoint } from '../src/millrace-sheep.mjs';
@@ -10,6 +15,23 @@ const map = JSON.parse(readFileSync(new URL('../maps/bellweather-millrace.json',
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('base64url');
 const stripIdentity = nodes => nodes.map(({ wildlifeSpecies, wildlifeState, ...node }) => node);
 const prior = { ...map, resourceNodes: stripIdentity(map.resourceNodes) };
+
+test('the actual bounded reseeding entry point preserves Sheep and map bytes on repeated runs', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'millrace-reseed-'));
+  try {
+    await mkdir(path.join(directory, 'scripts')); await mkdir(path.join(directory, 'maps'));
+    await symlink(fileURLToPath(new URL('../src', import.meta.url)), path.join(directory, 'src'), 'dir');
+    const entry = path.join(directory, 'scripts', 'seed-millrace-resources.mjs');
+    await writeFile(entry, readFileSync(new URL('./seed-millrace-resources.mjs', import.meta.url)));
+    const bytes = JSON.stringify(map, null, 2) + '\n', destination = path.join(directory, 'maps', 'bellweather-millrace.json');
+    await writeFile(destination, bytes);
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const result = JSON.parse(execFileSync(process.execPath, [entry], { cwd: directory, encoding: 'utf8' }));
+      assert.deepEqual(result, { map: map.id, nodes: 40, food: 2800, nodeWood: 4200 });
+      assert.equal(await readFile(destination, 'utf8'), bytes, 'regeneration retains identities, geometry and all other authored fields');
+    }
+  } finally { await rm(directory, { recursive: true, force: true }); }
+});
 function legacy() {
   return { schemaVersion: 22, mapHash: hash(prior), mapDefinition: structuredClone(prior), matchId: 'keep-this-match',
     state: { resourceNodes: prior.resourceNodes.map(node => ({ ...node })), teamFood: [151.5, 150], teamWood: [250, 249],

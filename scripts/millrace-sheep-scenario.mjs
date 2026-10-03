@@ -44,17 +44,25 @@ try {
       this.width = png.width; this.height = png.height;
     }
   };
-  renderer = createNeutralWildlifeRenderer({ THREE, scene: new THREE.Scene(), groundHeight: () => 0,
+  const scene = new THREE.Scene();
+  const camera = new THREE.OrthographicCamera(-50, 50, 50, -50, .1, 200);
+  camera.position.set(50, 75, 50); camera.lookAt(0, 0, 0); camera.updateMatrixWorld();
+  renderer = createNeutralWildlifeRenderer({ THREE, scene, groundHeight: () => 0,
     loadArt: options => createStaticSheepRuntime({ ...options,
       bindingUrl: new URL('assets/wildlife/bellweather-sheep-public-reference-v1/static-preview-binding.json', base).href }),
   });
   renderer.reset(clients[0].welcome.map.resourceNodes); await renderer.ready();
   for (const team of [0, 1]) {
     renderer.reconcile(clients[team].welcome.state.resourceNodes, () => true);
+    renderer.update(camera);
     const opening = renderer.diagnostics();
     assert.equal(opening.artStatus, 'ready');
     const sheep = opening.nodes.find(node => node.id === `s${team}-0-1`);
     assert.equal(sheep.visible, true); assert.equal(sheep.mode, 'static-illustration');
+    const group = scene.children.find(group => group.userData.wildlifeNodeId === sheep.id);
+    assert.equal(group.visible, true);
+    assert.ok(group.children.some(mesh => mesh.isMesh && mesh.visible && mesh.material?.map?.image?.width === 512),
+      'each seat\'s visible opening Sheep has an actual attached textured illustration mesh');
   }
   for (const team of [0, 1]) await command(clients[team], {
     type: 'gather', ids: [workers[team]], nodeId: `s${team}-0-1`,

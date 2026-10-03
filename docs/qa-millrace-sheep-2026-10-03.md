@@ -37,6 +37,13 @@ Validation:
 
 - `node --test scripts/millrace-sheep.test.mjs scripts/resource-cluster-authoring.test.mjs`
 - `node scripts/millrace-sheep-scenario.mjs`
+- `node scripts/settlement-authoring-scenario.mjs`
+
+The executable `seed-millrace-resources.mjs` is run twice against an isolated
+copy of the normal map; both runs retain all map bytes including Sheep identity.
+Both the bounded reseeder and full roster generator apply the same identity opt-in.
+The historical settlement proof still checks geometry/ground, with the six new
+resource identities in its expected current layout.
 
 The real worker uses its actual default map, without publication or stock
 injection. Both seats receive an immediately visible live Sheep, load its public
