@@ -76,6 +76,13 @@ milliseconds or shader compilation time.
 - Existing construction/damage updates and source-file resolution for both
   teams, together with the focused unit-clock, fishing and wildlife checks.
 
+After integration with main `3c2aabf`, candidate `4fa97aa` passed 65 focused
+tests (including the separate captured-building lifecycle suite). Documentation
+checking passed 457 Markdown files and 3,001 local links. A strict clean release
+contained 1,049 files; its actual HTTP/import-closure scenario passed, including
+startup guards, authentication, local Three and packaged asset hashes. All
+20 source-frame hashes and alpha counts were independently rechecked.
+
 The supported browser preflight in this environment previously returned
 `sandbox-unavailable` and `storage-unavailable`, producing no WebGL frame.
 The `game-dev` CLI is absent. No native screenshot, GPU timing, or user
