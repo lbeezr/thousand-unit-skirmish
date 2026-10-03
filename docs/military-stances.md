@@ -32,6 +32,10 @@ They interrupt automatic pursuit so the selected behavior takes effect promptly.
 | Stand Ground | Acquire only in weapon range; never chase. |
 | No Attack | No automatic acquisition; an explicit focused Attack remains available. |
 
+If a new obstruction makes Defensive return unreachable within its travel bound,
+it stops that return and defends from its current legal position under the original
+anchor. It never expands the leash or retries a failed return indefinitely.
+
 Hold Position sets military Stand Ground and retains its existing stationary
 order. Stop sets military No Attack and abandons current/queued work, preserving
 its existing indefinitely passive result. Worker Hold/Stop are unchanged.

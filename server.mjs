@@ -6249,6 +6249,18 @@ function automaticPositionAllowed(unit, x, z) {
     || Math.hypot(x - unit.attackMoveAnchorX, z - unit.attackMoveAnchorZ) <= unitStancePolicy(unit).travel;
 }
 
+function abandonBlockedStanceReturn(unit) {
+  // A newly closed route must not suppress defense forever or slide the leash.
+  // Defend from this legal position under the original anchor until a new order.
+  unit.stanceReturning = false;
+  unit.path = []; unit.pathIndex = 0;
+  unit.movePlanningPending = false;
+  unit.moveGoalCell = nearestOpenCell(worldToCell(unit.x, unit.z));
+  unit.attackMoveRouteReady = true;
+  unit.attackMoveScanTick = tickNumber;
+  dirty = true;
+}
+
 function rejectAutomaticTarget(unit, target) {
   if (!target) return;
   const rejected = automaticTargetRejections.get(unit) || new Map();
@@ -6333,9 +6345,8 @@ function prepareIdleStanceCombat() {
           // position can still be short of its saved return point.
           unit.path = [worldToCell(anchor.x, anchor.z)];
           unit.pathIndex = 0;
-        } else if (tickNumber >= unit.attackMoveScanTick) {
-          unit.attackMoveScanTick = tickNumber + TICK_RATE;
-          enqueueRouteRepairs([{ unit, destination: worldToCell(anchor.x, anchor.z) }]);
+        } else {
+          abandonBlockedStanceReturn(unit);
         }
       }
       continue;
@@ -7507,8 +7518,8 @@ function simulateTick() {
       }
       if (move.reachedWaypoint) {
         if (!automaticPositionAllowed(unit, move.target.x, move.target.z)) {
-          rejectAutomaticTarget(unit, units[unit.attackTargetId]);
-          clearAttackTarget(unit);
+          if (unit.stanceReturning) abandonBlockedStanceReturn(unit);
+          else { rejectAutomaticTarget(unit, units[unit.attackTargetId]); clearAttackTarget(unit); }
           break;
         }
         unit.x = move.target.x;
@@ -7524,8 +7535,8 @@ function simulateTick() {
       const nextCell = worldToCell(nextX, nextZ);
       const currentCell = worldToCell(unit.x, unit.z);
       if (!automaticPositionAllowed(unit, nextX, nextZ)) {
-        rejectAutomaticTarget(unit, units[unit.attackTargetId]);
-        clearAttackTarget(unit);
+        if (unit.stanceReturning) abandonBlockedStanceReturn(unit);
+        else { rejectAutomaticTarget(unit, units[unit.attackTargetId]); clearAttackTarget(unit); }
         break;
       }
       if (canTraverseUnitStep(currentCell, nextCell, MAP_WIDTH, elevationLevelByCell, isWalkable)) {

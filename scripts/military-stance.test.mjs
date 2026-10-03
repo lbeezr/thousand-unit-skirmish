@@ -204,4 +204,23 @@ for (const team of [0, 1]) {
       assert.ok(c.enemies[0].hp < 100, 'stationary fighter still deals authoritative damage');
     } finally { await c.dispose(); }
   });
+  test(`seat ${team}: a paid wall blocking Defensive return ends planning and keeps local defense active`, async () => {
+    const c = await createStanceCase({ team });
+    try {
+      c.stance('defensive'); c.until(() => c.unit.attackTargetId >= 0, 'Defensive acquires bait');
+      c.order(1 - team, { type: 'move', ids: [c.enemies[0].id], x: 4.5 * c.side, z: .5 });
+      c.until(() => c.unit.x * c.side > 2, 'fighter passes later wall site');
+      const worker = c.r.units.find(u => u.team === team && u.kind === 'worker');
+      c.order(team, { type: 'buildWall', ids: [worker.id],
+        points: [{ column: team ? 30 : 33, row: 28 }, { column: team ? 30 : 33, row: 36 }] }, /PALISADE LINE PLACED/);
+      c.order(1 - team, { type: 'move', ids: [c.enemies[0].id], x: 10.5 * c.side, z: .5 });
+      c.step(180); assert.equal(c.unit.stanceReturning, false); assert.equal(c.unit.movePlanningPending, false);
+      assert.equal(c.unit.stanceAnchorX, c.origin.x); assert.equal(c.unit.stanceAnchorZ, c.origin.z);
+      c.order(1 - team, { type: 'move', ids: [c.enemies[1].id], x: 2.5 * c.side, z: .5 });
+      c.until(() => c.enemies[1].hp < 100, 'unit still defends locally after failed return');
+      assert.ok(Math.hypot(c.unit.x - c.origin.x, c.unit.z - c.origin.z) <= 3 + 1e-6);
+      const saved = c.r.checkpoint(); c.r.restore(saved); c.r.drain();
+      assert.equal(c.r.units[c.unit.id].combatStance, 'defensive');
+    } finally { await c.dispose(); }
+  });
 }

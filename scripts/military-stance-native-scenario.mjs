@@ -49,9 +49,17 @@ try {
   }, 'Defensive automatic pursuit begins')));
   for (const l of lanes) await order(1 - l.team,
     { type: 'move', ids: [l.enemy[0]], x: 6.5 * l.side, z: l.z });
-  // Preserve an actual native return route through worker restart.
-  const returning = await fixture.checkpoint(s => lanes.every(l => {
-    const u = s.state.units[l.unit[0]]; return u.stanceReturning && u.pathIndex < u.path.length;
+  // Normal position broadcasts reveal the reversal toward each anchor. Stop
+  // promptly in that window instead of relying on a one-second checkpoint to
+  // happen to overlap a short return route.
+  await Promise.all(lanes.map(l => {
+    let farthest = 0;
+    return clients[l.team].state(s => {
+      const u = s.units.find(u => u[0] === l.unit[0]);
+      const progress = u ? (u[2] + 3.5 * l.side) * l.side : 0;
+      farthest = Math.max(farthest, progress);
+      return progress > .1 && progress < farthest - .05;
+    }, 'Defensive return toward saved anchor begins');
   }));
   const sessions = clients.map(c => c.welcome.player.sessionToken);
   await fixture.stop(); const saved = await fixture.checkpoint();
@@ -64,7 +72,7 @@ try {
     return !u.stanceReturning && !u.movePlanningPending && Math.hypot(u.x + 3.5 * l.side, u.z - l.z) < .02;
   }));
   for (const l of lanes) {
-    records.push({ team: l.team, unit: l.unit[0], returnCheckpointTick: returning.state.tickNumber,
+    records.push({ team: l.team, unit: l.unit[0], returnCheckpointTick: saved.state.tickNumber,
       restoredAtTick: saved.state.tickNumber, returnedAtTick: back.state.tickNumber,
       stance: back.state.units[l.unit[0]].combatStance, enemyHp: back.state.units[l.enemy[0]].hp });
     await order(l.team, { type: 'setStance', ids: [l.unit[0]], stance: 'aggressive' });
