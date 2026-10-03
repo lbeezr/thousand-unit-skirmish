@@ -97,6 +97,33 @@ and producing/researching Barracks. Verify map clearance, readable disabled
 reasons and that scrolling the strip does not pan the battlefield. Record
 browser, actual build, viewports and capture hashes.
 
+### Keyboard reveal follow-through — 3 October 2026
+
+Native Mac QA at `33ded0fe877c39b73adeb8cf8ff56e082e83bd1c` confirmed the
+single row and thumb/horizontal-wheel retrieval at 1280 × 800, DPR1, Chrome
+154.0.8037.93. Tab reached all 11 enabled Worker commands, but Formation / route
+remained 23.0625px beyond the strip's right edge with `scrollLeft` zero. CDP
+Shift-wheel with vertical delta also left the strip at zero. Physical OS-event
+Shift-wheel was not independently tested. Reverse traversal and drawer focus
+recovery stopped at the clipping assertion, so PR128 remains open for native
+keyboard closure. The report was read from Library; no cloud pixel claim is made.
+
+The direct action strip now reveals its focused button using its own viewport
+bounds and scroll offset, then rechecks once after browser focus scrolling.
+Changing focus or hiding the selection cancels the old target's effect. A
+Shift+vertical-wheel fallback scrolls this strip when it overflows; native
+horizontal deltas keep their normal handling. Neither path scrolls an ancestor,
+changes selection or issues an order. Renderer, geometry and action art are
+unchanged. DOM tests replay the measured fractional overflow, reverse traversal,
+later/hidden focus, overflow limits and pixel/line/page wheel deltas; they do not
+establish native acceptance.
+
+Repeat the same native Worker capture and every Tab/Shift-Tab full-visibility
+assertion, then Formation Enter → Escape and Enter → Close. Record retained
+selection, fully visible recovered focus, page scroll and camera observations.
+Retest CDP Shift+deltaY, horizontal deltaX and thumb drag in both directions.
+Retain the viewport/selection/minimap matrix above as broader follow-up checks.
+
 ## Tactical-map keyboard view — 3 October 2026
 
 After Fit map, navigating the focused tactical map with an arrow key cancels

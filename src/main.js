@@ -23,7 +23,7 @@ import { ownedPopulationReadout } from './population-readout.mjs';
 import { SHIPPED_AUDIO_REFERENCES } from './audio-shipped-catalog.mjs';
 import { validateMapAudioReference } from './audio-event-profile.mjs';
 import { battlefieldCursor } from './battlefield-cursor.mjs';
-import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable } from './hud-layout.mjs';
+import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip } from './hud-layout.mjs';
 import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import { updateSelectionPortrait } from './selection-portrait.mjs';
@@ -8469,6 +8469,7 @@ for (const element of [hudHeader, hudObjective, hudCamera, appShell]) hudRowObse
 syncHudRows();
 const contextualBar = document.querySelector('.contextual-command-bar');
 if (contextualBar) {
+  bindContextualCommandStrip(contextualBar.querySelector(':scope > .contextual-actions'));
   const quickAccess = document.querySelector('.hud-quick-access');
   const syncContextHeight = () => document.querySelector('.workspace').style.setProperty('--context-bar-height', `${Math.max(contextualBar.getBoundingClientRect().height, quickAccess.getBoundingClientRect().height)}px`);
   const commandRowObserver = new ResizeObserver(syncContextHeight);

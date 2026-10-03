@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
-import { hudSafeRect, normalizeHudPreferences } from '../src/hud-layout.mjs';
+import { hudSafeRect, normalizeHudPreferences, bindContextualCommandStrip } from '../src/hud-layout.mjs';
 const bounds = { left: 0, top: 0, right: 1280, bottom: 720 };
 test('closed and expanded HUD use actual visible rectangles without overlaps', () => {
   const header = { left: 0, top: 0, right: 1280, bottom: 54 };
@@ -24,6 +24,93 @@ test('offset fullscreen/resize bounds remain within the renderer', () => {
 test('preferences accept only supported presentation values', () => {
   assert.deepEqual(normalizeHudPreferences(null), { density: 'compact', minimap: 'small' });
   assert.deepEqual(normalizeHudPreferences({ density: 'comfortable', minimap: 'hidden', selection: 22 }), { density: 'comfortable', minimap: 'hidden' });
+});
+
+function commandStripFixture(t, width = 750) {
+  const dom = new JSDOM('<div id="strip"><button id="first">Idle workers</button><span><button id="last">Formation / route</button></span></div><button id="outside">Outside</button>');
+  t.after(() => dom.window.close());
+  const { document } = dom.window;
+  const strip = document.querySelector('#strip');
+  const first = document.querySelector('#first'), last = document.querySelector('#last');
+  const frames = new Map(); let nextFrame = 1, scroll = 0;
+  dom.window.requestAnimationFrame = callback => { const id = nextFrame++; frames.set(id, callback); return id; };
+  dom.window.cancelAnimationFrame = id => frames.delete(id);
+  Object.defineProperties(strip, {
+    clientWidth: { configurable: true, value: width }, clientLeft: { value: 0 },
+    scrollWidth: { configurable: true, value: width + 300 },
+    scrollLeft: { get: () => scroll, set: value => { scroll = Math.max(0, Math.min(300, value)); } },
+  });
+  strip.getBoundingClientRect = () => ({ left: 320, right: 320 + width, width });
+  first.getBoundingClientRect = () => ({ left: 320 - scroll, right: 400 - scroll, width: 80 });
+  last.getBoundingClientRect = () => ({ left: 913.0625 - scroll, right: 1093.0625 - scroll, width: 180 });
+  const unbind = bindContextualCommandStrip(strip); t.after(unbind);
+  return { dom, strip, first, last, unbind, frame() {
+    const callbacks = [...frames.values()]; frames.clear(); callbacks.forEach(callback => callback());
+  }, wheel(options = {}) {
+    const event = new dom.window.WheelEvent('wheel', { bubbles: true, cancelable: true, shiftKey: true, deltaY: 30, ...options });
+    strip.dispatchEvent(event); return event;
+  } };
+}
+
+test('focused Formation reveals the complete native-reported 23.0625px overflow', t => {
+  const f = commandStripFixture(t);
+  f.last.focus();
+  assert.equal(f.dom.window.document.activeElement, f.last);
+  assert.equal(f.strip.scrollLeft, 24);
+  assert.ok(f.last.getBoundingClientRect().right <= f.strip.getBoundingClientRect().right);
+  f.strip.scrollLeft = 0; f.frame(); // Simulate browser focus scrolling after focusin.
+  assert.equal(f.strip.scrollLeft, 24);
+  f.first.focus(); f.frame();
+  assert.equal(f.strip.scrollLeft, 0, 'reverse traversal reveals the leading command');
+});
+
+test('deferred reveal preserves later focus and ignores a hidden selection bar', t => {
+  const f = commandStripFixture(t);
+  f.last.focus(); f.strip.scrollLeft = 100;
+  f.dom.window.document.querySelector('#outside').focus(); f.frame();
+  assert.equal(f.strip.scrollLeft, 100);
+  f.last.focus(); f.strip.hidden = true; f.strip.scrollLeft = 0; f.frame();
+  assert.equal(f.strip.scrollLeft, 0);
+});
+
+test('already visible commands do not move and oversized commands reveal their start', t => {
+  const f = commandStripFixture(t);
+  f.first.focus(); f.frame(); assert.equal(f.strip.scrollLeft, 0);
+  Object.defineProperty(f.strip, 'clientWidth', { value: 120 });
+  f.strip.getBoundingClientRect = () => ({ left: 320, right: 440, width: 120 });
+  f.last.getBoundingClientRect = () => ({ left: 350.0625 - f.strip.scrollLeft, right: 530.0625 - f.strip.scrollLeft, width: 180 });
+  f.last.focus(); f.frame();
+  assert.equal(f.strip.scrollLeft, 30, 'oversized commands keep their leading edge inside without oscillation');
+  assert.ok(f.last.getBoundingClientRect().left >= 320 && f.last.getBoundingClientRect().left < 321);
+});
+
+for (const [mode, delta, expected] of [[0, 30, 30], [1, 2, 32], [2, 1, 300]]) {
+  test(`Shift vertical wheel scrolls only the command strip (deltaMode ${mode})`, t => {
+    const f = commandStripFixture(t);
+    assert.equal(f.wheel({ deltaMode: mode, deltaY: delta }).defaultPrevented, true);
+    assert.equal(f.strip.scrollLeft, expected);
+    assert.equal(f.dom.window.document.activeElement, f.dom.window.document.body);
+    assert.equal(f.wheel({ deltaMode: 0, deltaY: -1000 }).defaultPrevented, true);
+    assert.equal(f.strip.scrollLeft, 0);
+    assert.equal(f.wheel({ deltaY: -30 }).defaultPrevented, true, 'edge input does not scroll an ancestor');
+  });
+}
+
+test('native horizontal wheels, ordinary wheels, zoom and nonoverflow remain native', t => {
+  const f = commandStripFixture(t);
+  for (const options of [{ deltaX: 20 }, { shiftKey: false }, { ctrlKey: true }, { metaKey: true }, { cancelable: false }, { deltaY: 0 }]) {
+    assert.equal(f.wheel(options).defaultPrevented, false);
+    assert.equal(f.strip.scrollLeft, 0);
+  }
+  Object.defineProperty(f.strip, 'scrollWidth', { value: f.strip.clientWidth });
+  assert.equal(f.wheel().defaultPrevented, false);
+});
+
+test('disposing the strip cancels pending reveal and leaves wheel input native', t => {
+  const f = commandStripFixture(t);
+  f.last.focus(); f.strip.scrollLeft = 0; f.unbind(); f.frame();
+  assert.equal(f.strip.scrollLeft, 0);
+  assert.equal(f.wheel().defaultPrevented, false);
 });
 
 function minimapKeyboardFixture() {
