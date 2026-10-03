@@ -11,6 +11,7 @@ export function validWildlifeNodeDefinition(node) {
 export function createResourceNodeState(node) {
   return {
     id: node.id, type: node.type, x: node.x, z: node.z, stock: node.stock,
+    ...(node.resourceVariant === undefined ? {} : { resourceVariant: node.resourceVariant }),
     ...(node.wildlifeSpecies === undefined ? {} : {
       wildlifeSpecies: node.wildlifeSpecies, wildlifeState: 'alive',
     }),
