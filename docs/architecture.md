@@ -41,7 +41,8 @@ It preserves existing connections among bases, units, resources, and building
 access, including Town Centers, without requiring separate authored islands to
 connect. Exact-zero resource stock releases the node's footprint exclusion and
 resource access point; positive or unknown stock retains both. The browser uses
-disclosed stock and restores the authored exclusion on map/rematch initialization.
+disclosed stock and restores the authored exclusion on reset epochs and welcome
+receipts before applying current disclosed rows, including fog-hidden same-map resets.
 Footprint occupancy and active move-route checks apply independently;
 see [construction evidence](qa-construction-connectivity-2026-09-27.md).
 

@@ -69,8 +69,6 @@ for (const type of types) {
     }
     context.latestResourceStocks.set(node.id, 0);
     assert.equal(context.buildPlacementAt(0, 0).valid, true);
-    context.latestResourceStocks = new Map([[node.id, node.stock]]);
-    assert.equal(context.buildPlacementAt(0, 0).valid, false, 'map/rematch initialization restores the authored exclusion');
   });
 }
 

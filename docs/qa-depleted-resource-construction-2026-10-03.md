@@ -19,8 +19,12 @@ stock rule applies to atomic palisade-line admission. Only
 exact-zero stock releases them; unknown/positive stock remains protected. The
 checkpoint validates the complete saved resource table before checking building
 overlap, using validated remaining stock and authored positions for that check.
-actual browser build preview likewise ignores only disclosed zero stock, with
-authored blocking restored during map/rematch initialization. Remaining terrain,
+The browser build preview likewise ignores only disclosed zero stock, with
+authored blocking restored on authoritative reset epochs and welcome receipts.
+Independent review reproduced a fog-hidden depleted node retaining zero across
+same-map rematch; real socket/receipt tests now cover both seats, reset epochs,
+fresh-server epoch reuse, ordinary fog omissions and disclosed stock on welcome.
+Remaining terrain,
 units, objectives, buildings and active-route protections stay in force. This
 rule applies to finite ordinary food/wood and Sheep, with no resource deletion,
 new currency, stock regeneration, checkpoint shape or moving-animal change.
@@ -28,6 +32,7 @@ new currency, stock regeneration, checkpoint shape or moving-animal change.
 Validation commands:
 
 - `node --test scripts/depleted-resource-construction.test.mjs scripts/building-placement-forest.test.mjs`
+- `node --test scripts/client-rematch-recovery.test.mjs`
 - `node scripts/depleted-resource-construction-scenario.mjs`
 - `node scripts/interrupted-cargo-return-scenario.mjs`
 
