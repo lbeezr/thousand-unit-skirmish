@@ -18,6 +18,7 @@ function snapshot(team, { winner = -1, elapsed = 0, trained = false, generation 
 }
 function fixture(team) {
   const connections = [];
+  const fishUpdates = [];
   const elements = new Map();
   const counts = [0, 0];
   const element = (id) => {
@@ -34,6 +35,7 @@ function fixture(team) {
   const noop = () => {};
   const context = vm.createContext({
     applyLobby() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {} },
+    waterStudyFishBinding: { update(state, options) { fishUpdates.push({ state, options }); }, clear() {} },
     WebSocket, URL, performance: {now: () => 1000}, location: {protocol:'http:',host:'localhost'},
     document: {querySelector:element,querySelectorAll:() => []}, window: {clearTimeout:noop},
     sessionStorage: {getItem:() => null,setItem:noop,removeItem:noop},
@@ -70,8 +72,26 @@ function fixture(team) {
   const connect = () => { vm.runInContext('connectSocket()',context); return connections.at(-1); };
   const welcome = (connection,state) => connection.message({type:'welcome',map,maps:[],state,
     player:{team,isHost:team === 0,resumed:true}});
-  return {context,connections,connect,welcome,element,counts};
+  return {context,connections,connect,welcome,element,counts,fishUpdates};
 }
+
+test('accepted state packets alone drive fish cues through recovery, omitted stocks and seat changes', () => {
+  const f = fixture(0), old = f.connections[0];
+  const packet = { ...snapshot(0), resourceNodes: [{ id: 'fish', stock: 1 }], visibility: { data: 'current-packet' } };
+  old.message(packet);
+  assert.deepEqual(JSON.parse(JSON.stringify(f.fishUpdates.at(-1))), { state: packet, options: { spectator: false } });
+  const current = f.connect();
+  f.welcome(current, { ...packet, resourceNodes: [] });
+  assert.deepEqual(JSON.parse(JSON.stringify(f.fishUpdates.at(-1).state.resourceNodes)), []);
+  const count = f.fishUpdates.length;
+  old.message(packet);
+  assert.equal(f.fishUpdates.length, count, 'stale socket snapshots cannot restore stock activity');
+  current.message(snapshot(0));
+  assert.equal(f.fishUpdates.at(-1).state.resourceNodes, undefined, 'missing current nodes reach the binding for clearing');
+  f.context.localTeam = null;
+  current.message(packet);
+  assert.equal(f.fishUpdates.at(-1).options.spectator, true);
+});
 
 for (const team of [0,1]) for (const reconnect of [false,true]) {
   test(`seat ${team} removes prior production on ${reconnect ? 'reconnected' : 'connected'} rematch`, () => {

@@ -84,12 +84,32 @@ starting stock cannot create activity. Missing bank/water visibility, depletion,
 invalid mixed wildlife identity or a raised/blocked approach removes the cue.
 Stable resource IDs determine phase, independent of snapshot array order.
 
-The opt-in match surface leaves fish instances empty: it has no authoritative
-fog/stock adapter yet. The preview exercises the explicit adapter contract.
-Existing bank markers, Sheep rendering, economy and resource orders are unchanged.
-Connect actual filtered resource snapshots and both visibility inputs before
-using these ripples in a match; decorative activity must not announce hidden
-stocks or unrelated harvestable fish. Fish silhouettes and boats remain art work.
+The opt-in match now binds each accepted full server state packet through
+`createWaterStudyFishBinding`. Wire resource rows supply ID/variant/stock;
+the current map supplies land positions. The shared `shoreFishSitePositions`
+contract from [PR #49](https://github.com/lbeezr/thousand-unit-skirmish/pull/49)
+derives a fixed nearest adjacent water center, with lower cell index breaking
+ties. Geometry is cached per map. Hiding that cell removes activity; it cannot
+move the school to another visible neighbor.
+
+For player fog snapshots, the adapter decodes that packet's packed two-bit
+visibility and requires state 2 at both bank and water center. Explored state 1,
+unseen state 0 and reserved state 3 do not qualify. A missing/malformed packet,
+wrong map ID, missing resource list or contradictory fog setting clears activity.
+It never reads the UI's remembered stocks or a previous decoded fog grid.
+Only an explicit no-fog snapshot or the current spectator seat's unrestricted
+server snapshot with `visibility: null` qualifies without cell visibility.
+Disconnect/map rebuild clears instances before fresh recovery/rematch state.
+Existing bank markers, Sheep rendering, economy and resource orders remain shared.
+
+This remains behind `waterStudy=1`, with the same reduced-motion, low-quality,
+32-instance and one-cell-envelope limits. The restrained existing surface ring
+signals an active food site; its count does not quantify stock. The art lane's
+reported 1.8–2.6-pixel strategic fish silhouette length motivates evaluating the
+ring alongside future silhouettes. That observation is attributed to the art
+lane; this cloud adapter work does not establish pixel readability. No palette,
+contrast, amplitude or shader appearance was redesigned while Mac QA reviews
+the study. Fish silhouettes and boats remain art work.
 
 ## Verification and limits
 
@@ -98,8 +118,24 @@ opt-in/quality/time behavior, non-picking surfaces, live identity/stock, both fo
 inputs, separate bank/water positions, depletion clearing and the instance limit.
 The existing water scenarios cover 511 local footprints, 189,440 interior samples
 and island topology. Shore-fish and neutral-wildlife regressions also pass.
-The packed-release scenario checks all four study files over actual HTTP with
+The packed-release scenario checks all five study files over actual HTTP with
 correct MIME and source hashes, and follows the served game import closure.
+
+`scripts/water-study-fish-binding.test.mjs` exercises real packed fog bytes,
+fractional live stock, fixed nearest/tied water positions, malformed/omitted
+inputs, spectator transitions, map rebinding, recovery, caps and render gates.
+The existing socket lifecycle tests cover current/stale disconnects and accepted
+state delivery. `scripts/shore-fishing-authoring-scenario.mjs` checks both seats'
+actual filtered wire packets during gather, depletion, checkpoint recovery and
+rematch, alongside the existing 120-food/200-wood conservation proof.
+
+For native match review, select **Lab · SHORE FISHING** with `waterStudy=1` and
+`waterStudyTime=12`. Reveal a bank from land, gather its stock, then compare
+active/depleted and bank/water fog states at ordinary and strategic zoom. Also
+check reduced motion and `waterStudyQuality=low`. The standalone comparison
+recipe remains `/water-study.html`, 1280×720/DPR 1, Study, time 12 then 16,
+animation off, both visibility toggles on, depletion off; then toggle each
+visibility/depletion/reduced-motion case. Default adoption awaits visual review.
 
 Normal Chromium preflight failed sandbox/storage startup in this cloud workspace.
 No screenshot, GPU shader compilation, appearance acceptance or rendered
