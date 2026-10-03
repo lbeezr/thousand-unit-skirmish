@@ -1,4 +1,8 @@
 // Shared gameplay data. Presentation IDs identify profiles, never collision or combat rules.
+const supportedUnitCapabilities = new Set(['move', 'attack', 'attack-structures', 'gather', 'build', 'repair']);
+const buildingCombatFields = new Set(['mode', 'attackClass', 'targetTags', 'tagMultipliers', 'range', 'damage', 'period']);
+const unitCombatFields = new Set([...buildingCombatFields, 'maxHp', 'moveSpeed', 'structureDamage']);
+
 export function validateGameplayDefinitions(definitions) {
   if (!definitions || definitions.version !== 1) throw new Error('Unsupported gameplay definition version');
   for (const key of ['repairHpPerSecond', 'fullRepairWoodFraction', 'minimumRepairWood']) {
@@ -6,6 +10,7 @@ export function validateGameplayDefinitions(definitions) {
   }
   const { attackClasses, tags, capabilities, minimumDamage } = definitions.combatRules || {};
   for (const [name, values] of Object.entries({ attackClasses, tags, capabilities })) if (!Array.isArray(values) || !values.length || new Set(values).size !== values.length || values.some((value) => typeof value !== 'string' || !/^[a-z][a-z0-9-]*$/.test(value))) throw new Error(`Invalid combat rules ${name}`);
+  for (const capability of capabilities) if (!supportedUnitCapabilities.has(capability)) throw new Error(`Unsupported unit capability: ${capability}`);
   if (!Number.isFinite(minimumDamage) || minimumDamage <= 0) throw new Error('Invalid minimum damage');
   const wireIds = new Set();
   const upgradeKeys = new Set();
@@ -24,9 +29,14 @@ export function validateGameplayDefinitions(definitions) {
       }
       if (category !== 'technologies') {
         if (!Array.isArray(entry.tags) || !entry.tags.length || new Set(entry.tags).size !== entry.tags.length || entry.tags.some((tag) => !tags.includes(tag))) throw new Error(`Invalid combat tags: ${id}`);
+        if (category === 'units' && entry.tags.includes('structure')) throw new Error(`Units cannot have the structure tag: ${id}`);
+        if (category === 'buildings' && !entry.tags.includes('structure')) throw new Error(`Buildings require the structure tag: ${id}`);
         if (!entry.armor || typeof entry.armor !== 'object' || Array.isArray(entry.armor) || Object.entries(entry.armor).some(([key, value]) => !attackClasses.includes(key) || !Number.isFinite(value) || value < 0)) throw new Error(`Invalid armor: ${id}`);
         if (category === 'units' && (!Array.isArray(entry.capabilities) || new Set(entry.capabilities).size !== entry.capabilities.length || entry.capabilities.some((value) => !capabilities.includes(value)))) throw new Error(`Invalid capabilities: ${id}`);
-        if (entry.combat) {
+        if (category === 'units' || entry.combat !== undefined) {
+          if (!entry.combat || typeof entry.combat !== 'object' || Array.isArray(entry.combat)) throw new Error(`Invalid ${category === 'units' ? 'unit' : 'building'} combat: ${id}`);
+          const supportedFields = category === 'units' ? unitCombatFields : buildingCombatFields;
+          for (const key of Object.keys(entry.combat)) if (!supportedFields.has(key)) throw new Error(`Unsupported combat field ${key}: ${id}`);
           if (!attackClasses.includes(entry.combat.attackClass) || !['melee', 'ranged'].includes(entry.combat.mode)) throw new Error(`Invalid attack class or mode: ${id}`);
           if (!Array.isArray(entry.combat.targetTags) || !entry.combat.targetTags.length || new Set(entry.combat.targetTags).size !== entry.combat.targetTags.length || entry.combat.targetTags.some((tag) => !tags.includes(tag))) throw new Error(`Invalid target tags: ${id}`);
           if (!entry.combat.tagMultipliers || typeof entry.combat.tagMultipliers !== 'object' || Array.isArray(entry.combat.tagMultipliers) || Object.entries(entry.combat.tagMultipliers).some(([tag, value]) => !tags.includes(tag) || !Number.isFinite(value) || value <= 0)) throw new Error(`Invalid tag multiplier: ${id}`);
@@ -41,10 +51,13 @@ export function validateGameplayDefinitions(definitions) {
         for (const key of ['maxHp', 'moveSpeed', 'range', 'damage', 'period', 'structureDamage']) {
           if (!Number.isFinite(entry.combat?.[key]) || entry.combat[key] <= 0) throw new Error(`Invalid combat ${key}: ${id}`);
         }
+        if (!entry.capabilities.includes('move')) throw new Error(`Missing move capability: ${id}`);
+        if (entry.combat.targetTags.includes('structure') && !entry.capabilities.includes('attack-structures')) throw new Error(`Structure targets require attack-structures capability: ${id}`);
       }
       if (category === 'buildings') {
+        if (entry.capabilities !== undefined) throw new Error(`Unsupported building capabilities: ${id}`);
         if (entry.combat !== undefined) {
-          if (!entry.combat || typeof entry.combat !== 'object' || Array.isArray(entry.combat)) throw new Error(`Invalid building combat: ${id}`);
+          if (entry.combat.targetTags.includes('structure')) throw new Error(`Unsupported building structure targets: ${id}`);
           if (entry.combat.range > 16) throw new Error(`Invalid building combat range: ${id}`);
           for (const key of ['range', 'damage', 'period']) if (!Number.isFinite(entry.combat[key]) || entry.combat[key] <= 0) throw new Error(`Invalid building combat ${key}: ${id}`);
         }
@@ -70,6 +83,12 @@ export function validateGameplayDefinitions(definitions) {
       for (const required of entry.requires || []) {
         if (!Object.hasOwn(definitions.technologies, required)) throw new Error(`Unknown prerequisite ${required}: ${id}`);
       }
+    }
+  }
+  for (const [id, unit] of Object.entries(definitions.units)) {
+    if (unit.capabilities.includes('attack-structures')
+      && !Object.values(definitions.buildings).some(building => building.tags.some(tag => unit.combat.targetTags.includes(tag)))) {
+      throw new Error(`Structure attack capability has no eligible building targets: ${id}`);
     }
   }
   const graph = new Map();

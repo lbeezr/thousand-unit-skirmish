@@ -235,6 +235,23 @@ resolved effects invalidate when that state changes, including rematch, and use 
 stable content-ID order. Numeric ranges are bounded at 16 cells. Schema 16
 explicitly migrates the known defense revision without rewriting entity HP/queues.
 
+The validator rejects unsupported combat fields and capability names, even when
+a content edit adds that name to `combatRules.capabilities`. A new behavior needs
+a runtime handler and an explicit contract change before content can declare it.
+
+| Contract | Supported content |
+| --- | --- |
+| Unit combat | Required object: `mode`, `attackClass`, `targetTags`, `tagMultipliers`, `maxHp`, `moveSpeed`, `range`, `damage`, `period`, `structureDamage`. Numeric stats are finite and positive; range is at most 16 cells. |
+| Unit capabilities | `move`, `attack`, `attack-structures`, `gather`, `build`, `repair`. Every unit requires `move`: the runtime does not support immobile unit definitions. |
+| Damage classification | Buildings require the `structure` tag; units cannot have it. This tag selects the structure damage stat instead of ordinary damage. |
+| Structure attacks | A unit with `attack-structures` needs at least one eligible building target using tag intersection, including specialized targets such as `defense`. An explicit `structure` target tag requires that permission. `attack` controls unit targets independently, so a structure-only attacker is permitted. The Worker's existing positive `structureDamage` remains dormant without the permission and eligible targets. |
+| Building combat | Optional object: `mode`, `attackClass`, `targetTags`, `tagMultipliers`, `range`, `damage`, `period`. Defenses scan unit targets only, so `structure` targets and unit-only combat fields are rejected. Building HP remains the top-level `maxHp`; building capabilities are unsupported. |
+
+Both combat modes are `melee` or `ranged`; attack classes, target tags and
+multipliers must reference the declared vocabularies. Armor is nonnegative by
+declared class. Declaring projectile speed or splash radius does not add a
+projectile or area-damage behavior and fails validation.
+
 Technology availability is derived by `src/research-actions.mjs` for authoritative
 commands, building option snapshots, HUD and the filtered opponent adapter. Stable
 technology IDs map to registry upgrade keys; fresh completion records enumerate
