@@ -52,7 +52,14 @@ export function validateGameplayDefinitions(definitions) {
       }
       if (category === 'units') {
         if (entry.movementDomain !== undefined && !['land', 'water'].includes(entry.movementDomain)) throw new Error(`Unsupported movement domain: ${id}`);
-        if (entry.movementDomain === 'water' && (entry.capabilities.length !== 1 || entry.capabilities[0] !== 'move')) throw new Error(`Unsupported water capabilities: ${id}`);
+        if (entry.movementDomain === 'water' && (!entry.capabilities.includes('move') || entry.capabilities.some(capability => !['move', 'gather'].includes(capability)))) throw new Error(`Unsupported water capabilities: ${id}`);
+        if (entry.fishing !== undefined || (entry.movementDomain === 'water' && entry.capabilities.includes('gather'))) {
+          if (entry.movementDomain !== 'water' || !entry.capabilities.includes('gather') || !entry.fishing
+            || typeof entry.fishing !== 'object' || Array.isArray(entry.fishing)
+            || Object.keys(entry.fishing).some(key => !['gatherRate', 'carryCapacity'].includes(key))
+            || !Number.isFinite(entry.fishing.gatherRate) || entry.fishing.gatherRate <= 0 || entry.fishing.gatherRate > 10
+            || !Number.isFinite(entry.fishing.carryCapacity) || entry.fishing.carryCapacity <= 0 || entry.fishing.carryCapacity > 10) throw new Error(`Invalid water fishing: ${id}`);
+        }
         if (!Number.isInteger(entry.wireId) || entry.wireId < 0 || entry.wireId > 255 || wireIds.has(entry.wireId)) throw new Error(`Invalid or duplicate unit wire ID: ${id}`);
         wireIds.add(entry.wireId);
         if (entry.sight !== undefined && (!Number.isInteger(entry.sight) || entry.sight < 1 || entry.sight > 16)) throw new Error(`Invalid unit sight: ${id}`);
@@ -168,8 +175,8 @@ export const GAMEPLAY_DEFINITIONS = freezeTree(validateGameplayDefinitions({
   combatRules: { attackClasses: ['melee', 'pierce', 'siege'], tags: ['ground', 'water', 'worker', 'infantry', 'spearman', 'archer', 'mounted', 'scout', 'siege', 'structure', 'defense'], capabilities: ['move', 'attack', 'attack-structures', 'gather', 'build', 'repair'], minimumDamage: 0.5 },
   baseLifecycle: { repairHpPerSecond: 40, fullRepairWoodFraction: 0.3, minimumRepairWood: 10 },
   units: {
-    // Provisional unarmed, move-only boat. Geometry and fishing cargo are separate work.
-    skiff: { id: 'skiff', wireId: 7, label: 'Skiff (placeholder)', movementDomain: 'water', tags: ['ground', 'water'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move'], cost: { food: 0, wood: 75 }, trainSeconds: 10, population: 1, combat: { mode: 'melee', attackClass: 'melee', targetTags: [], tagMultipliers: {}, maxHp: 120, moveSpeed: 2.4, range: 0, damage: 0, period: 1, structureDamage: 0 }, presentation: 'unit.skiff' },
+    // Provisional unarmed fishing boat. Runtime geometry remains a placeholder.
+    skiff: { id: 'skiff', wireId: 7, label: 'Skiff (placeholder)', movementDomain: 'water', tags: ['ground', 'water'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move', 'gather'], fishing: { gatherRate: 1, carryCapacity: 10 }, cost: { food: 0, wood: 75 }, trainSeconds: 10, population: 1, combat: { mode: 'melee', attackClass: 'melee', targetTags: [], tagMultipliers: {}, maxHp: 120, moveSpeed: 2.4, range: 0, damage: 0, period: 1, structureDamage: 0 }, presentation: 'unit.skiff' },
     worker: { id: 'worker', wireId: 0, label: 'Worker', tags: ['ground', 'worker'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move', 'attack', 'gather', 'build', 'repair'], cost: { food: 50, wood: 0 }, trainSeconds: 25, population: 1, combat: { mode: 'melee', attackClass: 'melee', targetTags: ['ground'], tagMultipliers: {}, maxHp: 100, moveSpeed: 2.6, range: 1.28, damage: 4, period: 0.85, structureDamage: 1 }, presentation: 'unit.worker' },
     infantry: { id: 'infantry', wireId: 1, label: 'Infantry', tags: ['ground', 'infantry'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move', 'attack', 'attack-structures'], cost: { food: 50, wood: 0 }, trainSeconds: 12, population: 1, combat: { mode: 'melee', attackClass: 'melee', targetTags: ['ground', 'structure'], tagMultipliers: {}, maxHp: 100, moveSpeed: 2.6, range: 1.28, damage: 10, period: 0.85, structureDamage: 1.5 }, presentation: 'unit.infantry' },
     spearman: { id: 'spearman', wireId: 3, label: 'Spearman', tags: ['ground', 'spearman'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move', 'attack', 'attack-structures'], cost: { food: 60, wood: 20 }, trainSeconds: 12, population: 1, combat: { mode: 'melee', attackClass: 'melee', targetTags: ['ground', 'structure'], tagMultipliers: { mounted: 3 }, maxHp: 110, moveSpeed: 2.6, range: 1.4, damage: 8, period: 0.85, structureDamage: 1.2 }, presentation: 'unit.spearman' },

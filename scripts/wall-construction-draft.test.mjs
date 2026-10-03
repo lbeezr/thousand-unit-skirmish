@@ -1,3 +1,4 @@
+import { validFarmStock } from '../src/farm-harvest.mjs';
 import { validGateState, buildingBlocksMovement } from '../src/palisade-gate.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -213,7 +214,7 @@ test('existing checkpoint building checks accept one-cell records and reject cor
   assert.ok(start >= 0 && end > start);
   const records = prepare().plan.buildings;
   records[0].progress = 0.4; records[0].hp = 120;
-  const context = vm.createContext({ validGateState, buildingBlocksMovement, definition: { width: 16, height: 16, obstacles: [], resourceNodes: [] },
+  const context = vm.createContext({ validFarmStock, validGateState, buildingBlocksMovement, definition: { width: 16, height: 16, obstacles: [], resourceNodes: [] },
     cellCount: 256, MAX_BUILDINGS: 128, MAX_BUILDING_QUEUE: 12, BUILDING_DEFINITIONS: definitions,
     UNIT_DEFINITIONS, checkpointForestMask: new Uint8Array(256), savedForestStocks: new Map(),
     FOREST_WOOD_PER_CELL: 100, buildingRulesFor: rules,
