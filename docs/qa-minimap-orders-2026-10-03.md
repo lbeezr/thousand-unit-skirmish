@@ -47,16 +47,28 @@ The served client import allowlist passes. Native cloud Chromium preflight and
 the browser runner both fail before any game rendering because the runtime has
 no working Chromium sandbox (also reports unavailable Crashpad storage). No
 sandbox flags or permissions were weakened. Zero screenshots or native input
-passes are claimed from this runtime. The following runner is ready for Mac QA;
-its execution and screenshot review remain outstanding.
+passes are claimed from this runtime.
+
+The parent reports that the first Mac attempt on merged `74d9d56` timed out
+waiting for the initial camera outline before any interaction tests. The old
+runner required a dashed viewport polygon, but `drawMinimap` draws that polygon
+only when all four corner rays intersect the finite terrain mesh. A fitted or
+edge view can omit it, and later comparisons could reuse a stale polygon. The
+runner now observes the existing Three.js camera through an unchanged native
+raycast call, waits for a fresh sample after input, and separately checks boot,
+map and team. Real Three.js regressions cover a view where all four corners miss
+terrain and verify that observation preserves ray results. Failed runs include
+stage, boot/map/team/network and camera diagnostics. Gameplay code is unchanged
+by this harness correction. A successful native retry and screenshot review
+remain outstanding.
 
 ## Exact Mac automated recipe
 
-Use an isolated checkout of the PR branch and installed Chrome:
+Use an isolated checkout containing the harness correction and installed Chrome:
 
 ```sh
 git fetch origin
-git switch codex/minimap-unit-orders
+git switch codex/minimap-browser-camera-probe
 git pull --ff-only
 npm ci
 node scripts/browser-preflight.mjs --launch
@@ -69,7 +81,8 @@ fog fixture, selects the four Workers through native controls on Azure and Ember
 and exercises native right-click and Shift-right-click at small/large minimap
 sizes, 1280×720/DPR 1 and 900×700/DPR 2. It checks exact owned IDs, single sends,
 server acknowledgement, movement, queued checkpoints, unchanged selected count
-and camera outline. It then verifies left-click camera movement and tap Space
+and fresh camera position/orientation/frustum/zoom. The viewport outline is
+optional when a camera corner lies beyond terrain. It then verifies left-click camera movement and tap Space
 centering against the existing Center selection control, Space plus drag without
 recentering on release, and focused-button Space activation, all without another
 order. It writes `result.json`, four minimap
