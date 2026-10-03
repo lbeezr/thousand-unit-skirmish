@@ -140,7 +140,7 @@ const MAX_MAP_TRIGGERS = 32;
 const MAX_MAP_SCENARIO_EVENTS = 32;
 const MAX_SCENARIO_EVENT_REPEATS = 20;
 const MIN_SCENARIO_EVENT_REPEAT_SECONDS = 5;
-const CAMERA_EDGE_ZONE_PX = 40;
+const CAMERA_EDGE_ZONE_PX = 80;
 const CAMERA_EDGE_SPEED_PX_PER_SECOND = 650;
 // Full meshes failed the 0.91 worker-role gate; preserve role LOD in default play.
 // Sprite atlas previews remain opt-in through URL flags.

@@ -114,6 +114,8 @@ returning wood is rejected and the Worker keeps its cargo.
 Scroll to zoom. Pan at a battlefield edge, with middle-drag, or with Space + drag.
 Use the tactical map to move the camera; its focused arrow-key controls also pan.
 Camera settings and help expose the available navigation controls.
+Mouse edge scrolling starts within 80 CSS pixels of any battlefield-canvas edge
+(previously 40); saved speed and enabled/disabled preferences still apply.
 
 The compact objective summary keeps active victory/deadline countdowns visible.
 Open Objectives for prerequisites, rewards, live cards, and recent notices.
