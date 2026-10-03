@@ -1,7 +1,7 @@
 {
   "id": "shore-fishing",
   "name": "SHORE FISHING",
-  "summary": "Gather finite fish food from the bank. Workers approach on land; water remains blocked.",
+  "summary": "Build a shoreline Dock and train a Skiff from finite local wood; gather fish food by land or water.",
   "width": 40,
   "height": 32,
   "terrainSeed": 9300703,
@@ -16,8 +16,8 @@
   "resourceNodes": [
     { "id": "azure-food", "type": "food", "x": -7.5, "z": 5.5, "stock": 60 },
     { "id": "ember-food", "type": "food", "x": 7.5, "z": 5.5, "stock": 60 },
-    { "id": "azure-wood", "type": "wood", "x": -7.5, "z": -5.5, "stock": 100 },
-    { "id": "ember-wood", "type": "wood", "x": 7.5, "z": -5.5, "stock": 100 }
+    { "id": "azure-wood", "type": "wood", "x": -7.5, "z": -5.5, "stock": 175 },
+    { "id": "ember-wood", "type": "wood", "x": 7.5, "z": -5.5, "stock": 175 }
   ],
   "obstacles": [
     { "column": 10, "row": 22, "width": 4, "height": 4, "material": "water" },

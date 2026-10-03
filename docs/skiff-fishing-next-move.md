@@ -2,6 +2,12 @@
 
 [Water waypoints](skiff-water-waypoints.md) · [Fishing](skiff-fishing.md) · [Selected groups](skiff-selected-groups.md)
 
+**Gameplay delivery remains open.** [PR131](https://github.com/lbeezr/thousand-unit-skirmish/pull/131)
+merged at `00f79a0`; the latest staging revision reported verified by the parent
+is `19cae81`. Deployment of this slice and ordinary-user acceptance are not yet
+confirmed. The [normal-game acceptance recipe](qa-skiff-normal-entry-2026-10-03.md)
+owns that remaining check for the next coordinated staging refresh.
+
 Select owned Skiffs that are fishing and Shift-right-click water, including on
 the minimap. Their next Move waits for **one cargo delivery**, rather than
 waiting for the entire school to deplete. Each boat fills its current hold to

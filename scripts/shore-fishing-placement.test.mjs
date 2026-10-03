@@ -31,7 +31,7 @@ test('seeded pilot is reproducible and stock preserving, with no change to terra
   assert.deepEqual(authored(pilot, settings), pilot, 'explicit seed/anchors regenerate idempotently');
   for (const [key, value] of Object.entries(source)) if (key !== 'resourceNodes') assert.deepEqual(pilot[key], value, key);
   assert.equal(stock(pilot, 'food'), stock(source, 'food')); assert.equal(stock(pilot, 'food'), 120);
-  assert.equal(stock(pilot, 'wood'), stock(source, 'wood')); assert.equal(stock(pilot, 'wood'), 200);
+  assert.equal(stock(pilot, 'wood'), stock(source, 'wood')); assert.equal(stock(pilot, 'wood'), 350);
   assert.deepEqual(pilot.resourceNodes.map(node => [node.id, node.type, node.stock]), source.resourceNodes.map(node => [node.id, node.type, node.stock]));
   assert.deepEqual(pilot.resourceNodes.slice(2), source.resourceNodes.slice(2));
   assert.notDeepEqual(authored(source, { ...settings, seed: settings.seed + 1 }), pilot);

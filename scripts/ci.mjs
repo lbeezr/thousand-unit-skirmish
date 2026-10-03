@@ -211,6 +211,7 @@ run(['--test', 'scripts/navigation-settings.test.mjs'], 'Camera navigation setti
 const scenarios = [
   ['scripts/shore-fishing-scenario.mjs', 'Both-seat shore fishing, cargo and depletion recovery'],
   ['scripts/shore-fishing-authoring-scenario.mjs', 'Selectable seeded shore fishing pilot and recovery'],
+  ['scripts/shore-fishing-adoption-scenario.mjs', 'Shipped pilot paid Dock/Skiff DOM choices and fishing Moves'],
   ['scripts/millrace-resource-scenario.mjs', 'Millrace cluster gathering and recovery'],
   ['scripts/regional-objective-scenario.mjs', 'Millrace both-seat hold and rematch', 'bellweather-millrace'],
   ['scripts/regional-objective-scenario.mjs', 'Rootways both-seat hold and rematch', 'underbough-rootways'],
