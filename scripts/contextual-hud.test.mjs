@@ -539,6 +539,33 @@ test('selection updates recover focus when a stationary control is disabled or a
   assert.deepEqual([...f.w.selected], [0]);
 });
 
+for (const team of [0, 1]) test(`seat ${team}: combined lifecycle and contextual refresh retains gate action focus`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  f.w.eval(fn('updateBuildingLifecycleActions', 'updateRosterBuildingOptions'));
+  const gate = { id: 1, team, type: 'palisade-gate', complete: true, hp: 300, maxHp: 300, gateOpen: false };
+  f.select([], gate);
+  const action = () => f.d.querySelector('[data-action="setGateOpen"]');
+  action().focus(); action().click();
+  f.w.latestBuildings = [{ ...gate, hp: 299, gateOpen: true }]; f.w.updateContextualCommands();
+  assert.equal(f.d.activeElement, action(), 'contextual fallback must not override restored lifecycle focus');
+  assert.match(action().textContent, /Close gate/); action().click();
+  assert.deepEqual(JSON.parse(JSON.stringify(f.w.sentCommands)), [
+    { type: 'setGateOpen', buildingId: 1, open: true }, { type: 'setGateOpen', buildingId: 1, open: false },
+  ]);
+  f.w.latestBuildings = [gate]; f.w.updateSelectionUI();
+  assert.equal(f.d.activeElement, action(), 'selection refresh must preserve focus after Repair disappears');
+  const outside = f.d.querySelector('#match-menu-toggle'); outside.focus();
+  f.w.latestBuildings = [{ ...gate, hp: 299 }]; f.w.updateContextualCommands();
+  assert.equal(f.d.activeElement, outside, 'refresh must not steal unrelated focus');
+  action().focus(); f.select([], { ...gate, id: 2 });
+  assert.notEqual(f.d.activeElement, action(), 'changing gates must not transfer action focus');
+  action().focus(); f.w.matchWinner = team; f.w.updateContextualCommands();
+  assert.equal(action().disabled, true); assert.notEqual(f.d.activeElement, action());
+  assert.ok(!f.d.activeElement.disabled && !f.d.activeElement.closest('[hidden]'), 'disabled actions retain the visible fallback');
+  f.w.matchWinner = -1; f.w.updateContextualCommands(); action().focus(); f.select([]);
+  assert.equal(f.d.activeElement, f.w.dockToggle, 'removing selection retains global command access');
+});
+
 test('battlefield Escape cancels target modes before clearing selection; editing keeps selection', t => {
   const f = fixture(); t.after(() => f.dom.window.close());
   f.select([0]);

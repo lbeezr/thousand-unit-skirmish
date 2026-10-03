@@ -1,3 +1,4 @@
+import { createWildlifeMotion, freezeWildlifeMotion } from './wildlife-motion.mjs';
 import { BELLWEATHER_SHEEP_SPECIES } from './wildlife-state.mjs';
 
 // Existing mirrored opening markers: retain the dirt-track anchor as ordinary food.
@@ -43,5 +44,11 @@ export function migrateMillraceSheepCheckpoint(snapshot, shipped, hashMap) {
   snapshot.state.resourceNodes = snapshot.state.resourceNodes.map(node => ({ ...node,
     ...states.find(state => state.id === node.id),
   }));
+  if (snapshot.schemaVersion >= 24) for (const node of snapshot.state.resourceNodes) {
+    if (!MILLRACE_SHEEP_IDS.includes(node.id)) continue;
+    const definition = shipped.resourceNodes.find(item => item.id === node.id);
+    node.wildlifeMotion = createWildlifeMotion(definition);
+    if (node.wildlifeState !== 'alive') freezeWildlifeMotion(node);
+  }
   return true;
 }

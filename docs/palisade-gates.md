@@ -16,6 +16,9 @@ closed. Its owner can select it and use **Open gate · both teams may pass** or
 idempotent; duplicate requests do not toggle twice or invalidate navigation.
 Enemy players and spectators cannot operate it. Operation consumes no resources
 and recruits no Workers.
+The selected gate's action retains keyboard focus when damage adds a Repair
+action or completed repairs remove it. Focus stays with the same selected
+building and surviving action; snapshots do not move unrelated focus.
 
 Opening clears the gate's existing building movement mask for **both teams**.
 Closing stages that same mask and reuses the building connectivity and active

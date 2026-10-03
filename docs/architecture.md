@@ -82,6 +82,26 @@ authoritative rule closures. Check consumer regressions before claiming a stable
 interface. This slice itself edits no runtime files and touches the shared CI
 registry only to register its two checks.
 
+For future combat extractions, keep durable player orders/queues, stance policy,
+transient engagement, movement execution and disclosed visual events as distinct
+contracts. The pinned [OpenRA attack-move activity](https://github.com/OpenRA/OpenRA/blob/b6fc03fcfaef1277592bbd4cbc7d44dd85219902/OpenRA.Mods.Common/Activities/Move/AttackMoveActivity.cs)
+retains a movement factory while a temporary attack runs, then resumes movement.
+This supports a review question: does target invalidation preserve the parent
+goal and queue, while Stop still cancels authoritative work? These are future
+extraction criteria; the import check proves dependency edges only.
+
+Simulation acceptance should use accepted-tick commands and recorded seeds/map
+content, independently of render callbacks or network arrival timing. The pinned
+[Recoil synchronization test guidance](https://github.com/beyond-all-reason/RecoilEngine/blob/cce3f7cba839217ae2edebf94cc07a44497d1a13/test/synctest/README.md)
+uses fixed seeds/content and explains how wall-clock-derived UI order timing can
+break reproducibility. Preserve the repository's
+[`stationary-command`](../scripts/stationary-command.test.mjs),
+[`attack-target-geometry`](../scripts/attack-target-geometry.test.mjs) and
+[`pathing-replay`](../scripts/pathing-replay.test.mjs) contracts when their owners
+extract those responsibilities. Presentation consumes authoritative state/events;
+clip completion cannot create damage or cancel gameplay. These criteria use
+source studies to define testable boundaries; no upstream implementation is copied.
+
 The browser uses native ESM without a bundler. `index.html`, the environment
 review and water study map `three` to `/vendor/three.module.js`; the server serves
 that module and `three.core.js` from the installed package. `server.mjs` admits
@@ -90,6 +110,12 @@ release packer audits Docker COPY inputs and `.dockerignore`. Passing the source
 graph check therefore does not prove HTTP admission or release inclusion:
 retain the [served and packed import checks](testing.md#repository-checks).
 Acorn is a pinned development dependency; production installs omit it.
+The source and served audits share [`module-imports.mjs`](../scripts/module-imports.mjs)
+for static imports, re-exports and literal lazy imports. Comments/string/regular
+expression text cannot create edges; compact syntax and escaped specifiers must
+still expose dependencies. Computed imports fail with the owning path. Filesystem
+and served-URL resolution remain separate policies, including origin, credentials,
+MIME and the served Three alias. Runtime asset requests remain outside this audit.
 
 The first folder-migration candidate is the offline `pve-model-proposal.mjs`
 Node adapter, which is outside browser closures and normal hosted simulation.
@@ -113,15 +139,20 @@ boundary owner retains each slice through reviewed integration and its actual
 source/tool acceptance. Use the [continuing-work guidance](contributor-planning.md#continuing-workstream-bounded-pr)
 for checkpoints and real stop conditions.
 
+Completed tooling outcomes: the source boundary/cycle ratchet and shared
+source/served parser. The served audit now ignores commented imports and detects
+compact missing dependencies. Its arguments/results and the source checker's
+`moduleImports` import path remain stable; regression fixtures, source graph and
+real served/packed release checks cover the change.
+
 | Rank | Next action and evidence | Bounded write scope | Dependency and acceptance |
 | --- | --- | --- | --- |
-| 1 | Unify source/served import parsing. The served audit currently fetches a commented `import './ghost.mjs'` and passes a missing dependency written as valid `import{value}from'./missing.mjs'`. | Import-parser helper, the two audit scripts and focused fixtures; no runtime hosts. | Existing parser is ready. Both counterexamples, lazy/re-export/origin fixtures, source graph and packed-release checks must pass; preserve `checkClientImports` arguments/results. |
-| 2 | Move the offline PvE Node adapter into a cohesive server-adapter domain. | `src/pve-model-proposal.mjs`, its new implementation path and sole scenario consumer; preserve exported signatures. | Agree this exact first runtime-module scope with the existing quality owner through the producer. Fake-provider policy tests and source graph must pass; no hosted mode, credentials or spending changes. |
-| 3 | Separate client-module admission data from the HTTP host when the server owner is ready. Repeated central allowlist edits currently require touching `server.mjs` for each served helper. | A narrow module-path manifest, its server consumer and serving/release contract fixtures. | Agree the manifest format and ownership with the server owner before edits. Preserve exact admitted/denied URLs, origin/MIME behavior and packed imports; retain runtime release acceptance with the producer. |
+| 1 | Move the offline PvE Node adapter into a cohesive server-adapter domain. | `src/pve-model-proposal.mjs`, its new implementation path and sole scenario consumer; preserve exported signatures. | Agree this exact first runtime-module scope with the existing quality owner through the producer. Fake-provider policy tests and source graph must pass; no hosted mode, credentials or spending changes. |
+| 2 | Separate client-module admission data from the HTTP host when the server owner is ready. Repeated central allowlist edits currently require touching `server.mjs` for each served helper. | A narrow module-path manifest, its server consumer and serving/release contract fixtures. | Agree the manifest format and ownership with the server owner before edits. Preserve exact admitted/denied URLs, origin/MIME behavior and packed imports; retain runtime release acceptance with the producer. |
 
 Select the next useful ready item after each small merge. Coordinate real
 overlap rather than moving gameplay hot spots speculatively. A paused dependency
-does not block the independent tooling item or another owner's gameplay work.
+does not block another ready independent item or another owner's gameplay work.
 
 Neutral stationary Sheep use optional wildlife identity on an existing food node
 and one conserved stock pool. Worker arrival activates its carcass once; both
