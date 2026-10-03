@@ -38,6 +38,8 @@ export const replay = {
     const player = { team, sendJson: notice => notices.push(notice) };
     if (command.type === 'move') assignFormationMove(player, command);
     else if (command.type === 'attackMove') assignFormationMove(player, command);
+    else if (command.type === 'herd') assignWildlifeHerd(player, command);
+    else if (command.type === 'stopWildlife') stopWildlifeHerd(player, command);
     else if (command.type === 'setStance') assignCombatStance(player, command);
     else if (command.type === 'patrol') assignPatrolOrder(player, command);
     else if (command.type === 'follow') assignFollowOrder(player, command);
@@ -72,6 +74,7 @@ export const replay = {
     migrateWildlifeMotionCheckpoint(migrated);
     migrateCombatStanceCheckpoint(migrated, UNIT_DEFINITIONS);
     migrateWildlifeClaimsCheckpoint(migrated);
+    migrateWildlifeHerdCheckpoint(migrated);
     restoreMatchCheckpoint(migrated);
   },
   validate(snapshot) {
@@ -79,6 +82,7 @@ export const replay = {
     migrateWildlifeMotionCheckpoint(migrated);
     migrateCombatStanceCheckpoint(migrated, UNIT_DEFINITIONS);
     migrateWildlifeClaimsCheckpoint(migrated);
+    migrateWildlifeHerdCheckpoint(migrated);
     return validateMatchCheckpoint(migrated);
   },
   get tick() { return tickNumber; }, get navigationRevision() { return navigationRevision; },
