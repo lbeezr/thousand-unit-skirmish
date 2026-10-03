@@ -56,7 +56,8 @@ Existing single-boat saves remain valid.
 
 [Water waypoints](skiff-water-waypoints.md) now accept Shift destinations on
 moving/idle Skiffs, with up to eight pending goals per boat. Shift during
-fishing/Return and queued fishing remain unavailable. This slice adds no
+fishing/Return [waits for one cargo delivery](skiff-fishing-next-move.md).
+Queued fishing remains unavailable. This slice adds no
 naval weapons, passengers, transport, final boat/Dock art or rendered usability
 claim. All existing procedural placeholders remain explicit.
 

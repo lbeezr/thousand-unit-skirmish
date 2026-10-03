@@ -131,11 +131,14 @@ for (const map of [{ width: 32, height: 32, obstacles: [{ column: 8, row: 8, wid
   });
 }
 
-test('fishing/return, mixed domains, land and disconnected Shift orders reject without changing any intent', () => {
+test('fishing/return Shift orders append without replacing the active job; invalid water orders reject intact', () => {
   const f = fixture(), unit = f.units[0];
   for (const phase of ['to-node', 'gathering', 'to-base']) {
     unit.gatherPhase = phase; const before = structuredClone(unit);
-    assert.equal(f.queue([unit], 25, 54).status, 'finish-or-stop-fishing-first'); assert.deepEqual(unit, before);
+    const plan = f.queue([unit], 25, 54);
+    assert.equal(plan.status, 'found'); assert.equal(plan.assignments[0].append, true);
+    assert.deepEqual({ ...unit, queuedWaypoints: [] }, { ...before, queuedWaypoints: [] });
+    unit.queuedWaypoints = [];
   }
   unit.gatherPhase = '';
   assert.notEqual(f.queue([unit, { ...f.units[1], kind: 'worker', movementDomain: undefined }], 25, 54).status, 'found');
@@ -159,7 +162,7 @@ test('future destinations stay reserved; a blocked accepted head survives restar
   assert.equal(recovered.queuedWaypoints.length, 0); assert.equal(recovered.cargo, .005);
 });
 
-test('water checkpoint queues reject attack-move, shore, disconnected goals, excess length and fishing combinations', () => {
+test('water checkpoint queues admit fishing/return and reject combat, shore, disconnected goals, excess length and Hold', () => {
   const f = fixture(), unit = f.units[0], destination = 54 * 64 + 25;
   unit.queuedWaypoints = [{ destination, attackMove: false }]; assert.ok(validSkiffWaypoints(f.water, unit));
   for (const queue of [[{ destination, attackMove: true }], [{ destination: 0, attackMove: false }],
@@ -167,5 +170,6 @@ test('water checkpoint queues reject attack-move, shore, disconnected goals, exc
     unit.queuedWaypoints = queue; assert.equal(validSkiffWaypoints(f.water, unit), false);
   }
   unit.queuedWaypoints = [{ destination, attackMove: false }]; unit.gatherPhase = 'to-base';
-  assert.equal(validSkiffWaypoints(f.water, unit), false);
+  assert.equal(validSkiffWaypoints(f.water, unit), true);
+  unit.holdingPosition = true; assert.equal(validSkiffWaypoints(f.water, unit), false);
 });

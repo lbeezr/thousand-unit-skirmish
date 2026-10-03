@@ -41,15 +41,17 @@ their cargo. An ordinary Move replaces their queued route. Unselected boats'
 paths and queues remain intact. Existing owner-only waypoint counts update the
 selected-unit HUD without exposing other teams' queues.
 
-Fishing and Return cargo retain their current source, approach and delivery
-rules. Shift Move while either task is active rejects; finish the task or Stop
-before queuing. After Stop, boats may explore or flee with their retained food,
-then receive an explicit Return cargo order. Queued fishing and
-fishing-to-delivery-to-movement transitions are a separate slice.
+Shift Move during fishing waits for [one current cargo delivery](skiff-fishing-next-move.md)
+before movement, leaving any remaining stock. Shift during Return cargo waits
+for that delivery. Depleted/unavailable sources return partial loads; an empty
+boat proceeds. Missing delivery access retains cargo and queued intent. After
+Stop, boats may explore or flee with their retained food, then receive an
+explicit Return cargo order. Queued Gather remains unavailable.
 
 Schema 23 reuses the existing `{destination, attackMove:false}` queue records.
 Validation requires navigable connected water destinations and rejects attack
-waypoints, excess length and simultaneous fishing/queue intent. Earlier
+waypoints, excess length and held/queue intent; fishing queues retain the normal
+source/cargo/Dock validation. Earlier
 movement-only content pins cannot invent water queues. No new currency,
 passengers, weapons or boat/Dock artwork is introduced.
 
