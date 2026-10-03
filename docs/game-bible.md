@@ -243,6 +243,11 @@ the Worker replans and retains its cargo. With no reachable drop-off it waits
 with the cargo rather than banking it remotely. Storehouses provide no units or
 population. Their current House-shaped procedural presentation is a placeholder.
 
+Return cargo delivers the existing load of each selected carrying Worker without
+resuming its former gather target. Shift Move or Attack Move can queue behind the
+delivery; those legs begin after the cargo is deposited once. Stop and Hold cancel
+both delivery and the queued legs while preserving the carried load.
+
 Mill is the food-only alternative: 75 wood, 15 seconds of Worker construction,
 1,000 HP and a 3 × 3 footprint. These are provisional tunable values: its lower
 price, shorter build time and lower durability trade away Storehouse's wood

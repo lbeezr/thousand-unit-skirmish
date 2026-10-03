@@ -79,6 +79,7 @@ Run from the repository root:
 
 | Area | Command |
 | --- | --- |
+| Building body occlusion, server cap and renderer-only 129th item; native fixture counters, query gates, serving and preservation | `node --test scripts/building-sprites.test.mjs scripts/building-occlusion-fixture.test.mjs`; [paired crowded scene and exact Mac GPU recipe](qa-building-occlusion-native-plan-2026-10-03.md) |
 | Map logic / elevation | `node scripts/map-utils-scenario.mjs` / `node scripts/elevation-scenario.mjs` |
 | Crowd deflection / terrain boundaries | `node --test scripts/unit-movement.test.mjs` (real authoritative movement blocks, cliffs, corners, working/striking separation and route repair) |
 | Formation destinations after paid obstruction | `node --test scripts/pathing-replay.test.mjs`; `node scripts/pathing-native-scenario.mjs dynamic-goal` (both-seat reservation, opponent goal independence, native arrival) |
@@ -86,6 +87,7 @@ Run from the repository root:
 | Dynamic paid walls / queued formation legs | `node --test scripts/dynamic-wall-pathing.test.mjs`; `DYNAMIC_WALL_RECORD=/tmp/walls.json node scripts/dynamic-wall-pathing.mjs 2`; `node scripts/dynamic-wall-native-scenario.mjs` (both seats, 16/64 Infantry, route obstruction, future targets and removal; [evidence](qa-queued-wall-pathing-2026-10-03.md)) |
 | Manual gate closure over future formation targets | `QUEUED_GATE_RECORD=/tmp/gates.json node scripts/queued-gate-pathing.mjs`; add `--observe --park-builder` for the separate parked-Worker congestion probe |
 | Parked Worker route recovery / Stop and Hold | `node --test scripts/stationary-worker-pathing.test.mjs scripts/unit-movement.test.mjs`; `node scripts/queued-gate-pathing.mjs --park-builder --stop-builder` (or `--hold-builder`); `node scripts/stationary-worker-native-scenario.mjs`; [bounds and evidence](qa-stationary-worker-pathing-2026-10-03.md) |
+| Queued routes after finite cargo delivery | `node --test scripts/queued-cargo-return.test.mjs`; `QUEUED_CARGO_RECORD=/tmp/cargo.json node scripts/queued-cargo-return-case.mjs`; `QUEUED_CARGO_NATIVE_RECORD=/tmp/native-cargo.json node scripts/queued-cargo-return-native-scenario.mjs`; [failure, conservation and restart evidence](qa-queued-cargo-return-2026-10-03.md) |
 | Default map geometry | `node scripts/forked-vale-layout.mjs` |
 | Fortified Crossing foundation | `node scripts/fortified-crossing-layout.mjs` and `node scripts/fortified-crossing-economy.mjs`; [evidence and scale runner](qa-custom-skirmish.md) |
 | Fortified late-arrival construction clearance | `node --test scripts/fortified-site-clearance.test.mjs` and `node scripts/fortified-construction-clearance-scenario.mjs 2000`; [diagnosis](qa-fortified-clearance-2026-10-03.md) |
@@ -132,6 +134,7 @@ Run from the repository root:
 | PvE stalled-army retry policy / server reproduction | `node scripts/pve-tactical-retry-scenario.mjs` / `node scripts/pve-tactical-stall-runtime-scenario.mjs` |
 | PvE production budgets | `node scripts/pve-production-scenario.mjs` |
 | PvE Worker recovery with one free population slot | `node --test scripts/pve-worker-recovery.test.mjs`; [fixed-tick paid recovery and checkpoint evidence](qa-pve-worker-recovery-2026-10-03.md) |
+| PvE paid Farm starvation recovery, finite replant and no-spam guards | `node --test scripts/pve-farm-policy.test.mjs`; [both-seat deterministic restart evidence](qa-pve-paid-farm-2026-10-03.md) |
 | PvE destroyed producer replacement | `node scripts/pve-barracks-recovery-scenario.mjs` |
 | PvE objective retake after losses | `node scripts/pve-objective-recovery-runtime-scenario.mjs TEAM SEED` (teams `0`, `1`; CI seed `20260925`, additional audited seed `4294967295`) |
 | Contested seeded PvE match | `node scripts/pve-contested-match-scenario.mjs 300 20260925 4294967295` |

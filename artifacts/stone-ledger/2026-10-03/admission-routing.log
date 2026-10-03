@@ -1,0 +1,14 @@
+✔ offline Stone fixture is reproducible, mirrored, finite and separate from the playable map (59.131682ms)
+✔ proposed nodes have open, reachable cells, reserved base space and distinct footprints (13.246133ms)
+✔ normal authoring and authoritative publication reject Stone nodes and starting banks (1914.8042ms)
+✔ legacy migration conserves fractional banks/cargo and depletion; unsupported Stone saves remain recoverable (4024.496973ms)
+✔ drop-off choice measures reachable routes and preserves cargo for seat 0 (3.438683ms)
+✔ drop-off choice measures reachable routes and preserves cargo for seat 1 (1.679535ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9178.545436

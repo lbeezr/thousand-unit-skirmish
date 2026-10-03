@@ -91,6 +91,7 @@ run(['--test', 'scripts/millrace-sheep.test.mjs'], 'Default Millrace Sheep budge
 run(['scripts/millrace-sheep-scenario.mjs'], 'Normal default Sheep visibility, harvest, art and recovery');
 run(['--test', 'scripts/sprite-pixel-bounds.test.mjs'], 'Sprite pixel clipping regressions');
 run(['--test', 'scripts/building-sprites.test.mjs'], 'Default building sprites');
+run(['--test', 'scripts/building-occlusion-fixture.test.mjs'], 'Building occlusion QA controls, HTTP assets and timing evidence');
 run(['--test', 'scripts/captured-building-state-race.test.mjs', 'scripts/captured-building-manifest-retry.test.mjs', 'scripts/frontier-building-renderer.test.mjs', 'scripts/frontier-building-preview.test.mjs', 'scripts/building-lifecycle-validation.test.mjs'], 'Captured building lifecycle and source contracts');
 run(['--test', 'scripts/ci-sharding.test.mjs'], 'CI shard coverage');
 run(['--test', 'scripts/pve-reconnaissance.test.mjs'], 'Bounded Scout reconnaissance');
@@ -137,6 +138,7 @@ run(['--test', 'scripts/population.test.mjs'], 'Population reservations and capa
 run(['--test', 'scripts/population-readout.test.mjs'], 'Owned population presentation');
 run(['--test', 'scripts/population-ai.test.mjs'], 'AI capacity construction and recovery');
 run(['--test', 'scripts/pve-worker-recovery.test.mjs'], 'PvE last-slot Worker recovery and fixed-tick economy replay');
+run(['--test', 'scripts/pve-farm-policy.test.mjs'], 'PvE finite paid Farm starvation recovery and replant replay');
 run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue authority');
 run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle');
 run(['scripts/wildlife-food-scenario.mjs'], 'Both-seat wildlife gathering, depletion and recovery');
@@ -163,6 +165,8 @@ run(['--test', 'scripts/combat-rules.test.mjs'], 'Shared combat classes, counter
 run(['--test', 'scripts/watchtower-targeting.test.mjs'], 'Bounded defense targeting and sight');
 run(['--test', 'scripts/economy-ledger.test.mjs'], 'Fractional cargo conservation');
 run(['--test', 'scripts/return-cargo.test.mjs'], 'Explicit cargo return authority and controls');
+run(['--test', 'scripts/queued-cargo-return.test.mjs'], 'Delivery completion, queued routes and preserved cargo');
+run(['scripts/queued-cargo-return-native-scenario.mjs'], 'Native both-seat queued cargo delivery and restart');
 run(['scripts/interrupted-cargo-return-scenario.mjs'], 'Interrupted final sheep-food delivery and restart');
 run(['--test', 'scripts/depleted-resource-construction.test.mjs'], 'Disclosed depleted resource construction sites');
 run(['scripts/depleted-resource-construction-scenario.mjs'], 'Paid construction on depleted resource sites and restart');
