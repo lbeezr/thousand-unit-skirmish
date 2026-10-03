@@ -29,13 +29,14 @@ test('bank marker identifies existing food without introducing a second resource
 test('schema 20 ordinary/sheep checkpoints migrate; fish cannot forge previously unrecorded identity', () => {
   const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
   const migration = server.slice(server.indexOf('function migrateMatchCheckpoint('), server.indexOf('async function drainMatchCheckpointWrites'));
-  const context = vm.createContext({ MATCH_CHECKPOINT_SCHEMA_VERSION: 21, MATCH_RULES_VERSION: 6 });
+  const schemaVersion = Number(server.match(/const MATCH_CHECKPOINT_SCHEMA_VERSION = (\d+)/)[1]);
+  const context = vm.createContext({ MATCH_CHECKPOINT_SCHEMA_VERSION: schemaVersion, MATCH_RULES_VERSION: 6 });
   vm.runInContext(migration, context);
   for (const node of [{ ...fish, resourceVariant: undefined },
     { ...fish, resourceVariant: undefined, wildlifeSpecies: 'bellweather-sheep' }]) {
     const snapshot = { schemaVersion: 20, rulesVersion: 6, mapDefinition: { resourceNodes: [node] }, state: { units: [] } };
     context.migrateMatchCheckpoint(snapshot);
-    assert.equal(snapshot.schemaVersion, 21);
+    assert.equal(snapshot.schemaVersion, schemaVersion);
   }
   const invalid = { schemaVersion: 20, rulesVersion: 6, mapDefinition: { resourceNodes: [fish] }, state: { units: [] } };
   context.migrateMatchCheckpoint(invalid);

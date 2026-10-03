@@ -74,3 +74,15 @@ test('worker room metadata only accepts a bounded map identifier', () => {
     roomMetadata: { mapId: 'woodland-expanse' },
   });
 });
+
+test('pregame opts in only PvP rooms and survives worker/index round trips', () => {
+  const options = { mode: 'pvp', pregame: true };
+  assert.deepEqual(completeRoomLaunchOptions(options), options);
+  assert.deepEqual(normalizeRoomLaunchOptions({ pregame: false }), { mode: 'pvp' });
+  assert.throws(() => normalizeRoomLaunchOptions({ mode: 'pve', pregame: true }));
+  assert.throws(() => normalizeRoomLaunchOptions({ pregame: 'true' }));
+  assert.equal(buildRoomWorkerEnvironment({ RTS_PREGAME: '1' }, { mode: 'pvp' }).RTS_PREGAME, undefined);
+  assert.equal(buildRoomWorkerEnvironment({}, options).RTS_PREGAME, '1');
+  const document = roomIndexDocument([{ id: roomId, createdAt: 1, lastActiveAt: 2, launchOptions: options }]);
+  assert.deepEqual(normalizeRoomIndex(document), document);
+});

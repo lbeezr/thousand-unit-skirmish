@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#101713" />
     <title>Thousand Unit Skirmish</title>
     <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./src/room-lobby.css" />
     <script>
       window.reportPrototypeError = (message) => {
         window.clearTimeout(window.prototypeStartupTimeout);
@@ -38,6 +39,7 @@
     <script type="module" src="./src/pve-entry.mjs" onerror="window.reportPrototypeError('Could not load src/pve-entry.mjs')"></script>
   </head>
   <body>
+    <dialog id="room-lobby"></dialog>
     <div class="app-shell">
       <header class="topbar">
         <div class="brand-lockup">

@@ -17,6 +17,7 @@ import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences } from './hud-layout.mjs';
 import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
+import { createRoomLobby } from './room-lobby-ui.mjs';
 import * as THREE from 'three';
 import { attachBuildingSprite } from './building-sprites.mjs';
 import { frontierBuildingPreviewUrl } from './frontier-building-preview.mjs';
@@ -95,6 +96,25 @@ import {
 } from './unit-selection.mjs';
 
 let mapDefinition = null;
+let lobbyPlayer = null;
+let latestLobby = null;
+const roomLobby = createRoomLobby({ root: document.querySelector('#room-lobby'), send: sendCommand, copyInvite: copyRoomInvite });
+
+function applyLobby(lobby) {
+  latestLobby = lobby || null;
+  roomLobby.update(latestLobby, lobbyPlayer);
+  if (lobbyPlayer) updateLobbyHostControls();
+}
+
+function updateLobbyHostControls() {
+  if (!latestLobby) return;
+  ui.mapSelect.disabled = true;
+  for (const button of document.querySelectorAll('.size-options button')) button.disabled = true;
+  ui.mapStudioOpen.disabled = !isHost || latestLobby.phase === 'lobby';
+  ui.mapStudioOpen.title = latestLobby.phase === 'lobby' ? 'Launch before opening Map Studio' : 'Create a custom map and capture objectives';
+  document.querySelector('#reset-army').disabled = !isHost || latestLobby.phase === 'lobby';
+  ui.mapSelect.title = 'Reset to the lobby to choose a map';
+}
 let edgeScrollPointer = null;
 const heldCameraKeys = createCameraArrowKeys();
 let lastKeyboardPanTime = 0;
@@ -4878,6 +4898,7 @@ function setConnection(status) {
 }
 
 function setPlayer(player) {
+  lobbyPlayer = player;
   const previousTeam = localTeam;
   localTeam = Number.isInteger(player.team) ? player.team : null;
   if (previousTeam !== localTeam) {
@@ -4903,6 +4924,7 @@ function setPlayer(player) {
   ui.mapSelect.title = isHost ? 'Change map for both players' : 'Only the room host can change the map';
   ui.mapStudioOpen.disabled = !isHost;
   ui.mapStudioOpen.title = isHost ? 'Create a custom map and capture objectives' : 'Only the room host can author maps';
+  updateLobbyHostControls();
   updateCommandUI();
 }
 
@@ -9289,7 +9311,7 @@ async function createPrivateRoom() {
     const response = await fetch('/api/rooms', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: '{}',
+      body: JSON.stringify({ mode: 'pvp', pregame: true }),
       cache: 'no-store',
     });
     const result = await response.json().catch(() => ({}));
@@ -9440,6 +9462,7 @@ function connectSocket() {
         else if (!waitingForResume) sessionStorage.removeItem(ROOM_SESSION_STORAGE_KEY);
       } catch {}
       setPlayer(message.player);
+      applyLobby(message.state.lobby);
       setMapCatalog(message.maps, message.map.id);
       if (ui.orderStatus?.textContent.startsWith('CONNECTION LOST')
         || ui.orderStatus?.textContent.startsWith('SERVER DID NOT CONFIRM')) {
@@ -9478,6 +9501,7 @@ function connectSocket() {
       return;
     }
     if (message.type === 'mapChange') {
+      applyLobby(message.state.lobby);
       void loadMapAudio(message.map.audio);
       mapDefinition = message.map;
       buildMap(mapDefinition);
@@ -9488,7 +9512,14 @@ function connectSocket() {
       applyState(message.state, true);
       return;
     }
-    if (message.type === 'state') { applyState(message); return; }
+    if (message.type === 'state') { applyLobby(message.lobby); applyState(message); return; }
+    if (message.type === 'lobby') { applyLobby(message.lobby); return; }
+    if (message.type === 'lobbyRejected') {
+      latestLobby = message.lobby;
+      roomLobby.reject(message.message, message.lobby, lobbyPlayer);
+      showToast(message.message, 2400);
+      return;
+    }
     if (message.type === 'waypointQueueCounts') {
       applyWaypointQueueCounts(message.rows);
       return;
@@ -9569,6 +9600,7 @@ function connectSocket() {
   connection.addEventListener('close', () => {
     if (socket !== connection) return;
     socket = null;
+    roomLobby.disconnect();
     audio.stopWork(); orderAudioGate.reset();
     if (pageLeaving) return;
     const retryImmediately = retryWhenSeatFree;

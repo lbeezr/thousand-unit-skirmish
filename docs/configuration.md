@@ -18,6 +18,7 @@ and `src/pve-match.mjs` are authoritative.
 | `RTS_ROOM_IDLE_TTL_MS` | `21600000` | Six-hour idle expiry for invite-room data. |
 | `RTS_MAX_PEERS` | `32` | Connections per worker, including spectators; valid range 2–256. Compose defaults to 16. |
 | `RTS_SESSION_GRACE_MS` | `120000` | Seat reconnect window; valid range 1,000–3,600,000 ms. |
+| `RTS_PREGAME` | Unset | Worker pregame opt-in; supervisor supplies `1` for PvP rooms created with `pregame: true`. [Lobby protocol](room-lobby.md). |
 | `RTS_ROOM_DATA_DIRECTORY` | `room-data/` locally | Supervisor room records and checkpoints; defaults under the volume on Railway. |
 | `RTS_CUSTOM_MAP_DIRECTORY` | `custom-maps/` locally | Default-room/direct-worker authored maps; must be outside `maps/`. |
 | `RTS_MATCH_STATE_PATH` | Unset for direct worker | Checkpoint path assigned by the supervisor; keep separate from map directories. |

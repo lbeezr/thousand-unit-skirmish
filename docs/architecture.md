@@ -31,7 +31,7 @@ or reveal hidden state.
 Neutral stationary Sheep use optional wildlife identity on an existing food node
 and one conserved stock pool. Worker arrival activates its carcass once; both
 seats reuse normal cargo/drop-offs. Species/lifecycle are fog-filtered with the
-resource snapshot and saved in checkpoint schema 20, which rejects inconsistent
+resource snapshot and saved in checkpoint schema 22, which rejects inconsistent
 lifecycle/stock and migrates schema 19 ordinary maps. This is the
 [neutral food foundation](wildlife-bellweather-sheep.md#implemented-neutral-food-foundation--3-october-2026),
 with claim/herding and client art integration left as separate work.
@@ -105,6 +105,12 @@ The supervisor persists invite metadata and gives workers separate map and
 checkpoint paths. Workers capture authoritative state every 30 simulation ticks
 and write atomically. Schema/rules validation decides whether a checkpoint can
 be migrated, restored, or rejected.
+
+[Pregame invite rooms](room-lobby.md) use the existing seat sessions and isolated
+workers. `src/room-pregame.mjs` owns revisions, readiness and the launch gate;
+the client panel is in `src/room-lobby-ui.mjs`. Schema 22 adds the optional
+pregame phase and migrates schema 21 matches without resetting their running
+state. Both unit simulation and scenario execution wait for explicit launch.
 
 Outbound state coalesces for slow readers; per-peer queues and inbound messages
 are bounded. Resume tokens are room-scoped and persisted as hashes. The detailed
