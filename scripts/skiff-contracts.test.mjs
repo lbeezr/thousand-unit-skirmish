@@ -89,9 +89,22 @@ for (const team of [0, 1]) test(`Dock/Skiff command controls state their usable 
   assert.equal(context.buildingSupportsRally('dock'), false); assert.equal(context.buildingSupportsRally('barracks'), true);
   context.updateCommandUI(); assert.match(context.ui.commandHint.textContent, /Train a Skiff \(placeholder\)/);
   assert.equal(context.ui.buildingCommandDetails.hidden, true);
-  context.selectedBuildingId = null; context.updateCommandUI();
+  context.selectedBuildingId = null; context.attackMoveMode = true; context.persistentTargetMode = 'patrol'; context.updateCommandUI();
+  assert.equal(context.attackMoveMode, false); assert.equal(context.persistentTargetMode, null);
   assert.match(context.ui.commandHint.textContent, /Select one Skiff/); assert.equal(context.ui.attackMoveToggle.disabled, true);
   assert.ok(buttons.every(button => button.disabled)); assert.equal(context.ui.formationSelect.disabled, true);
+});
+
+test('Skiff battlefield right-click always targets a water Move without invoking attack/gather/follow picking', () => {
+  const calls = [];
+  const context = vm.createContext({ selectedBuildingId: null, selectedWaterUnits: () => true,
+    persistentTargetMode: 'follow', worldAt: () => ({ x: 4.5, z: 6.5 }),
+    issueMove: (...args) => calls.push(args),
+    renderer: { get domElement() { throw new Error('water Move must not enter land target picking'); } },
+  });
+  vm.runInContext(extract(client, 'issueContextOrder', 'buildPlacementAt'), context);
+  context.issueContextOrder(10, 20);
+  assert.deepEqual(calls, [[{ x: 4.5, z: 6.5 }, false, true]]);
 });
 
 test('actual transform uses a procedural water placeholder and clears it when the slot becomes land', () => {

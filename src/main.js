@@ -4289,6 +4289,7 @@ function selectedWaterUnits() {
 function updateCommandUI() {
   const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
     && building.team === localTeam) || null;
+  if (!selectedBuilding && selectedWaterUnits()) { attackMoveMode = false; persistentTargetMode = null; }
   updateStationaryOrderControls(selectedBuilding);
   const rallyCell = Number.isInteger(selectedBuilding?.rallyCell) ? selectedBuilding.rallyCell : -1;
   const mode = selectedBuilding ? buildingSupportsRally(selectedBuilding.type) ? 'RALLY' : 'BUILDING' : persistentTargetMode ? persistentTargetMode.toUpperCase() : attackMoveMode ? 'ATTACK MOVE' : 'MOVE';
@@ -7602,6 +7603,11 @@ function issueForestGather(cell) {
 function issueContextOrder(clientX, clientY, queueWaypoint = false) {
   if (selectedBuildingId !== null) {
     issueBuildingRallyPoint(clientX, clientY);
+    return;
+  }
+  if (selectedWaterUnits()) {
+    const point = worldAt(clientX, clientY);
+    if (point) issueMove(point, queueWaypoint, true);
     return;
   }
   const rect = renderer.domElement.getBoundingClientRect();
