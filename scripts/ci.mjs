@@ -74,7 +74,7 @@ run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work 
 run(['--test', 'scripts/sheep-static-preview.test.mjs'], 'Sheep static reference integrity and state boundary');
 run(['--test', 'scripts/sprite-pixel-bounds.test.mjs'], 'Sprite pixel clipping regressions');
 run(['--test', 'scripts/building-sprites.test.mjs'], 'Default building sprites');
-run(['--test', 'scripts/captured-building-state-race.test.mjs', 'scripts/captured-building-manifest-retry.test.mjs', 'scripts/frontier-building-renderer.test.mjs', 'scripts/building-lifecycle-validation.test.mjs'], 'Captured building lifecycle and source contracts');
+run(['--test', 'scripts/captured-building-state-race.test.mjs', 'scripts/captured-building-manifest-retry.test.mjs', 'scripts/frontier-building-renderer.test.mjs', 'scripts/frontier-building-preview.test.mjs', 'scripts/building-lifecycle-validation.test.mjs'], 'Captured building lifecycle and source contracts');
 run(['--test', 'scripts/ci-sharding.test.mjs'], 'CI shard coverage');
 run(['--test', 'scripts/pve-reconnaissance.test.mjs'], 'Bounded Scout reconnaissance');
 run(['--test', 'scripts/browser-performance-instrumentation.test.mjs'], 'Browser timing attribution');

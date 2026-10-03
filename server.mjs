@@ -7115,6 +7115,7 @@ const server = createServer(async (request, response) => {
     return;
   }
   const publicClientAsset = [
+    'src/frontier-building-preview.mjs',
     'environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs',
     'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',
     'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs',
