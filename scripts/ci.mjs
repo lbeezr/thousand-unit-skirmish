@@ -126,6 +126,8 @@ run(['--test', 'scripts/shore-fishing.test.mjs', 'scripts/shore-fishing-placehol
 run(['--test', 'scripts/shore-fishing-placement.test.mjs'], 'Seeded shore fishing authoring and land/water positions');
 run(['--test', 'scripts/water-surface-study.test.mjs', 'scripts/water-study-fish-binding.test.mjs'], 'Opt-in water appearance and visible fish ripples');
 run(['--test', 'scripts/water-route-graph.test.mjs'], 'Isolated water route topology and clearance');
+run(['--test', 'scripts/dock-placement.test.mjs'], 'Dock shoreline and water berth placement');
+run(['scripts/dock-scenario.mjs'], 'Both-seat paid Dock construction and recovery');
 run(['scripts/water-route-map-scenario.mjs'], 'Water-only route components on shipped maps');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');
