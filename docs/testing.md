@@ -128,6 +128,8 @@ Run from the repository root:
 | Contested seeded PvE match | `node scripts/pve-contested-match-scenario.mjs 300 20260925 4294967295` |
 | PvE live construction / reinforcements (legacy and regional maps) | `node scripts/pve-production-runtime-scenario.mjs forked-vale` and `woodland-expanse`; also `bellweather-millrace` and `underbough-rootways` |
 | Compact HUD | `node --test scripts/hud-layout.test.mjs scripts/selection-context.test.mjs scripts/objective-summary.test.mjs` |
+| Tactical-map movement and Space selection centering | `node --test scripts/minimap-orders.test.mjs scripts/selection-center-shortcut.test.mjs`; [native Mac recipe and evidence](qa-minimap-orders-2026-10-03.md) |
+| Native two-seat minimap input, camera preservation, responsive size and DPR | `node scripts/minimap-orders-browser.mjs --output=NEW_DIRECTORY` (installed Chrome) |
 | Audio policy | `node scripts/audio-policy-scenario.mjs` |
 
 Three Crowns also has both-seat scenarios: `node scripts/three-crowns-scenario.mjs 0`
