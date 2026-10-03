@@ -66,9 +66,10 @@ run(['--test', 'scripts/resource-cluster-authoring.test.mjs'], 'Seeded Millrace 
 run(['--test', 'scripts/resource-brush-authoring.test.mjs'], 'Resource brush preview and editor transactions');
 run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush editor controls');
 run(['scripts/check-docs.mjs'], 'Documentation links');
-run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs', 'scripts/audio-decoded-cache.test.mjs', 'scripts/audio-shared-decode.test.mjs', 'scripts/audio-settings.test.mjs'], 'Verified shipped audio and execution gates');
+run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs', 'scripts/audio-decoded-cache.test.mjs', 'scripts/audio-shared-decode.test.mjs', 'scripts/audio-settings.test.mjs', 'scripts/audio-roster-notices.test.mjs'], 'Verified shipped audio and execution gates');
 run(['--test', 'scripts/zone-audio-import-contract.test.mjs'], 'Zone audio import provenance');
 run(['scripts/audio-shipped-serving-scenario.mjs'], 'Authoritative shipped audio serving');
+run(['scripts/audio-wall-order-scenario.mjs'], 'Applied wall-line audio acknowledgement');
 run(['--test', 'scripts/hosted-scale-profile.test.mjs'], 'Hosted scale measurement integrity');
 run(['--test', 'scripts/unit-sprite-clock.test.mjs'], 'Sprite animation clock');
 run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work facing');
@@ -126,6 +127,8 @@ run(['--test', 'scripts/shore-fishing.test.mjs', 'scripts/shore-fishing-placehol
 run(['--test', 'scripts/shore-fishing-placement.test.mjs'], 'Seeded shore fishing authoring and land/water positions');
 run(['--test', 'scripts/water-surface-study.test.mjs', 'scripts/water-study-fish-binding.test.mjs'], 'Opt-in water appearance and visible fish ripples');
 run(['--test', 'scripts/water-route-graph.test.mjs'], 'Isolated water route topology and clearance');
+run(['--test', 'scripts/dock-placement.test.mjs'], 'Dock shoreline and water berth placement');
+run(['scripts/dock-scenario.mjs'], 'Both-seat paid Dock construction and recovery');
 run(['scripts/water-route-map-scenario.mjs'], 'Water-only route components on shipped maps');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');

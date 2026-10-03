@@ -20,6 +20,9 @@ for (const team of [0, 1]) test(`registry building menu preserves focus and exac
   const button = container.children.find((button) => button.dataset.building === 'storehouse');
   assert.ok(button); assert.equal(button.disabled, false); button.click();
   assert.deepEqual(placements, ['storehouse']);
+  const dock = container.children.find(row => row.dataset.building === 'dock');
+  assert.ok(dock); assert.match(dock.textContent, /Dock.*100 WOOD/);
+  dock.click(); assert.equal(placements.at(-1), 'dock');
   const mill = container.children.find(row => row.dataset.building === 'mill');
   assert.ok(mill); assert.match(mill.textContent, /Mill.*75 WOOD/);
   context.latestWood[team] = 74.99; context.updateRosterBuildingOptions(container);
