@@ -2,6 +2,7 @@ import { PALISADE_TUNING_PROPOSAL, palisadeDraftDefinition } from './palisade-pr
 
 // Shared gameplay data. Presentation IDs identify profiles, never collision or combat rules.
 const supportedUnitCapabilities = new Set(['move', 'attack', 'attack-structures', 'gather', 'build', 'repair']);
+const supportedResources = new Set(['food', 'wood']);
 const buildingCombatFields = new Set(['mode', 'attackClass', 'targetTags', 'tagMultipliers', 'range', 'damage', 'period']);
 const unitCombatFields = new Set([...buildingCombatFields, 'maxHp', 'moveSpeed', 'structureDamage']);
 
@@ -22,7 +23,11 @@ export function validateGameplayDefinitions(definitions) {
     for (const [id, entry] of Object.entries(entries)) {
       if (!entry || typeof entry !== 'object' || Array.isArray(entry) || !/^[a-z][a-z0-9-]*$/.test(id) || entry.id !== id) throw new Error(`Invalid ${category} ID: ${id}`);
       if (!entry.label || (category !== 'technologies' && !entry.presentation)) throw new Error(`Missing identity: ${id}`);
-      for (const resource of ['food', 'wood']) {
+      if (!entry.cost || typeof entry.cost !== 'object' || Array.isArray(entry.cost)) throw new Error(`Invalid cost object: ${id}`);
+      for (const resource of Object.keys(entry.cost)) {
+        if (!supportedResources.has(resource)) throw new Error(`Unsupported cost resource ${resource}: ${id}`);
+      }
+      for (const resource of supportedResources) {
         if (!Number.isFinite(entry.cost?.[resource]) || entry.cost[resource] < 0) throw new Error(`Invalid ${resource} cost: ${id}`);
       }
       for (const key of category === 'units' ? ['trainSeconds', 'population']
@@ -65,7 +70,7 @@ export function validateGameplayDefinitions(definitions) {
         }
         if (entry.sight !== undefined && (!Number.isInteger(entry.sight) || entry.sight < 1 || entry.sight > 16)) throw new Error(`Invalid building sight: ${id}`);
         if (entry.populationCapacity !== undefined && (!Number.isInteger(entry.populationCapacity) || entry.populationCapacity < 0)) throw new Error(`Invalid population capacity: ${id}`);
-        if (entry.dropoff !== undefined && (!Array.isArray(entry.dropoff) || !entry.dropoff.length || new Set(entry.dropoff).size !== entry.dropoff.length || entry.dropoff.some((resource) => !['food', 'wood'].includes(resource)))) throw new Error(`Invalid dropoff resources: ${id}`);
+        if (entry.dropoff !== undefined && (!Array.isArray(entry.dropoff) || !entry.dropoff.length || new Set(entry.dropoff).size !== entry.dropoff.length || entry.dropoff.some((resource) => !supportedResources.has(resource)))) throw new Error(`Invalid dropoff resources: ${id}`);
         if (!Number.isInteger(entry.footprint) || entry.footprint % 2 !== 1 || entry.footprint > 9) throw new Error(`Invalid footprint: ${id}`);
         if (entry.placement !== undefined && (!entry.placement || typeof entry.placement !== 'object'
           || Array.isArray(entry.placement) || entry.placement.kind !== 'shoreline'
