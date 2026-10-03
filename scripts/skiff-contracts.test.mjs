@@ -1,3 +1,4 @@
+import { economyClientBindings } from './economy-client-fixture.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
@@ -15,7 +16,7 @@ const extract = (source, start, end) => source.slice(source.indexOf(`function ${
 for (const team of [0, 1]) test(`Skiff paid admission and head/tail cancellation preserve the shared ledger for seat ${team}`, () => {
   const building = { id: 1, team, type: 'dock', complete: true, productionQueue: [], queue: 0, trainingRemaining: 0, productionBlocked: false };
   let available = 1; const notices = [];
-  const context = vm.createContext({ UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, productionAction, unfinishedRefund, MAX_BUILDING_QUEUE: 5,
+  const context = vm.createContext({ ...economyClientBindings(), UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, productionAction, unfinishedRefund, MAX_BUILDING_QUEUE: 5,
     buildingsById: new Map([[1, building]]), teamWood: [100, 100], teamFood: [100, 100], dirty: false,
     workerProduction: [{ queue: 0 }, { queue: 0 }], teamResearch: [null, null],
     productionContextForTeam: seat => ({ team: seat, populationAvailable: available, upgrades: {}, food: 100, wood: context.teamWood[seat],
@@ -40,7 +41,7 @@ for (const team of [0, 1]) test(`Skiff paid admission and head/tail cancellation
 });
 
 test('unarmed boats and boat-only queues cannot indefinitely hold elimination open', () => {
-  const context = vm.createContext({ UNIT_DEFINITIONS, BUILDING_DEFINITIONS, MAX_TEAM_ROSTER: 1000, MAX_UNITS: 2000,
+  const context = vm.createContext({ ...economyClientBindings(), UNIT_DEFINITIONS, BUILDING_DEFINITIONS, MAX_TEAM_ROSTER: 1000, MAX_UNITS: 2000,
     units: [{ team: 0, hp: 120, kind: 'skiff', movementDomain: 'water' }, { team: 1, hp: 100, kind: 'infantry' }],
     buildings: [{ type: 'dock', team: 0, complete: true, queue: 1, productionQueue: ['skiff'] }],
     workerProduction: [{ queue: 0 }, { queue: 0 }], teamWood: [1000, 1000], teamFood: [0, 0], teamUpgrades: [{}, {}],
@@ -62,7 +63,7 @@ test('unarmed boats and boat-only queues cannot indefinitely hold elimination op
 
 test('foreign Dock/Skiff probes retain ordinary ownership rejections before domain-specific hints', () => {
   const notices = [];
-  const context = vm.createContext({ BUILDING_DEFINITIONS, buildingsById: new Map([[1, { team: 1, type: 'dock' }]]),
+  const context = vm.createContext({ ...economyClientBindings(), BUILDING_DEFINITIONS, buildingsById: new Map([[1, { team: 1, type: 'dock' }]]),
     units: [{ id: 0, team: 1, hp: 120, generation: 3, movementDomain: 'water' }],
     commandUnits: () => [], sendOrderNotice: (_, __, message) => notices.push(message),
   });
@@ -77,7 +78,7 @@ test('foreign Dock/Skiff probes retain ordinary ownership rejections before doma
 
 for (const team of [0, 1]) test(`Dock/Skiff command controls state their usable actions for seat ${team}`, () => {
   const buttons = ['patrol', 'follow'].map(type => ({ dataset: { persistentOrder: type }, classList: { toggle() {} }, setAttribute() {} }));
-  const context = vm.createContext({ UNIT_DEFINITIONS, BUILDING_DEFINITIONS, localTeam: team, latestBuildings: [{ id: 7, team, type: 'dock' }],
+  const context = vm.createContext({ ...economyClientBindings(), UNIT_DEFINITIONS, BUILDING_DEFINITIONS, localTeam: team, latestBuildings: [{ id: 7, team, type: 'dock' }],
     selectedBuildingId: 7, units: [{ kind: 'skiff' }], selectedIds: () => [0],
     ui: { commandHint: {}, buildingCommandDetails: {}, attackMoveToggle: { classList: { toggle() {} }, setAttribute() {} }, formationSelect: {} },
     persistentTargetMode: null, attackMoveMode: false, tapOrderArmed: false, matchWinner: -1,
@@ -98,7 +99,7 @@ for (const team of [0, 1]) test(`Dock/Skiff command controls state their usable 
 test('Skiff right-click admits a shore fish source, otherwise water Move, without combat/follow picking', () => {
   const calls = [], toasts = [];
   let fish = null;
-  const context = vm.createContext({ selectedBuildingId: null, selectedWaterUnits: () => true,
+  const context = vm.createContext({ ...economyClientBindings(), selectedBuildingId: null, selectedWaterUnits: () => true,
     persistentTargetMode: 'follow', worldAt: () => ({ x: 4.5, z: 6.5 }),
     issueMove: (...args) => calls.push(args),
     issueGather: node => calls.push(node), pickResourceNodeAt: () => fish, showToast: message => toasts.push(message),
@@ -117,7 +118,7 @@ test('Skiff right-click admits a shore fish source, otherwise water Move, withou
 test('queued Skiff fishing preserves the actual server order and cargo before route planning', () => {
   const unit = { id: 0, kind: 'skiff', movementDomain: 'water', cargo: 3, path: [14, 15], gatherNodeId: 'fish', gatherPhase: 'to-base' };
   const before = structuredClone(unit), notices = [];
-  const context = vm.createContext({ sendOrderNotice: (_, __, message) => notices.push(message) });
+  const context = vm.createContext({ ...economyClientBindings(), sendOrderNotice: (_, __, message) => notices.push(message) });
   vm.runInContext(extract(server, 'assignSkiffGather', 'assignGather'), context);
   context.assignSkiffGather({ team: 0 }, { queue: true, nodeId: 'fish', ids: [0] }, [unit]);
   assert.match(notices.at(-1), /QUEUED FISHING IS UNAVAILABLE/); assert.deepEqual(unit, before);
@@ -126,7 +127,7 @@ test('queued Skiff fishing preserves the actual server order and cargo before ro
 test('actual transform uses a procedural water placeholder and clears it when the slot becomes land', () => {
   const matrices = new Map(), mesh = { setMatrixAt: (slot, matrix) => matrices.set(slot, matrix.clone()) };
   let lodScale = -1;
-  const context = vm.createContext({ THREE, UNIT_DEFINITIONS, unitPresentation, boatMeshes: [mesh, mesh], unitArtMeshes: [[mesh, mesh]],
+  const context = vm.createContext({ ...economyClientBindings(), THREE, UNIT_DEFINITIONS, unitPresentation, boatMeshes: [mesh, mesh], unitArtMeshes: [[mesh, mesh]],
     dummy: new THREE.Object3D(), facing: new THREE.Quaternion(), worldUp: new THREE.Vector3(0, 1, 0),
     castPreview: false, unitSpritePreviewActive: false, unitLowDetailActive: false,
     SPAWN_POSE_MS: 600, DEFEAT_POSE_MS: 600, updateUnitHealthVisual() {}, updateUnitLodTransform: (_, scale) => { lodScale = scale; }, updateUnitFocusVisual() {}, updateUnitCargoCueColor() {},

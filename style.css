@@ -281,6 +281,8 @@ h2 { font-size: 16px; font-weight: 700; }
 .resource-stock strong { color: #e4bd63; font: 600 13px 'Manrope', sans-serif; letter-spacing: -.02em; }
 .resource-icon { display: block; width: 13px; height: 13px; flex: 0 0 13px; }
 .wood-stock strong { color: #a8c381; }
+.resource-stock[hidden] { display: none; }
+.stone-stock strong { color: #aeb9c2; }
 .worker-tools { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; margin-top: 7px; }
 .worker-select-button { min-width: 0; min-height: 24px; margin-left: 0; padding: 0 3px; border: 1px solid rgba(115,184,232,.2); border-radius: 3px; background: rgba(115,184,232,.045); color: #9fc8e2; font: 500 6.5px 'DM Mono', monospace; letter-spacing: .02em; white-space: nowrap; cursor: pointer; transition: .15s ease; }
 .worker-select-button:hover:not(:disabled) { border-color: rgba(115,184,232,.48); background: rgba(115,184,232,.1); color: #c4e4f6; }

@@ -38,7 +38,7 @@ test('schema 20 ordinary/sheep checkpoints migrate; fish cannot forge previously
     { ...fish, resourceVariant: undefined, wildlifeSpecies: 'bellweather-sheep' }]) {
     const snapshot = { schemaVersion: 20, rulesVersion: 6, mapDefinition: { resourceNodes: [node] }, state: { units: [] } };
     context.migrateMatchCheckpoint(snapshot);
-    assert.equal(snapshot.schemaVersion, schemaVersion);
+    assert.equal(snapshot.schemaVersion, 22);
   }
   const invalid = { schemaVersion: 20, rulesVersion: 6, mapDefinition: { resourceNodes: [fish] }, state: { units: [] } };
   context.migrateMatchCheckpoint(invalid);

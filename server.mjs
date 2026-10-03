@@ -12,6 +12,8 @@ import { TERRAIN_MATERIALS } from './src/terrain-materials.mjs';
 import { researchAction, researchOptions, emptyTechnologyCompletions } from './src/research-actions.mjs';
 import { combatDamage, canCombatTarget, hasGameplayCapability } from './src/combat-rules.mjs';
 import { creditResourceBalance } from './src/economy-ledger.mjs';
+import { STONE_ECONOMY_PROFILE_ID, resolveEconomyProfileId, economyResources, economyRulesetRevision, constructionCostForProfile, acceptsProfileDropoff, debitEconomyCost, proportionalEconomyRefund, creditEconomyRefund } from './src/economy-profile.mjs';
+import { migrateEconomyCheckpoint, validateEconomyCheckpoint } from './src/economy-checkpoint.mjs';
 import { unfinishedRefund, buildingRepairStep } from './src/base-lifecycle.mjs';
 import { productionAction } from './src/production-actions.mjs';
 import { teamPopulation } from './src/population.mjs';
@@ -61,7 +63,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 22;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 23;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -152,6 +154,7 @@ function validateMapDefinition(definition, filename) {
   if (!definition || typeof definition !== 'object' || Array.isArray(definition)) {
     throw new Error(`Map ${filename} must contain a JSON object.`);
   }
+  resolveEconomyProfileId(definition.economyProfileId);
   validateMapAudioReference(definition.audio);
   validateMapRegion(definition.region);
   definition.victoryMode ??= 'any';
@@ -703,6 +706,7 @@ let scenarioClockStarted = false;
 let victoryHoldState = { activeTeams: [false, false], progressSeconds: [0, 0], triggerIds: [null, null] };
 let teamFood = [0, 0];
 let teamWood = [0, 0];
+let teamStone = [0, 0];
 let teamUpgrades = [
   emptyTechnologyCompletions(),
   emptyTechnologyCompletions(),
@@ -748,6 +752,25 @@ function rebuildHomeTownCenterBlocking() {
   }
 }
 function allMatchBuildings() { return [...buildings, ...homeTownCenters.filter((center) => center.hp > 0)]; }
+
+function matchEconomyProfileId() { return resolveEconomyProfileId(mapDefinition.economyProfileId); }
+function teamEconomyBalance(team) {
+  return { food: teamFood[team], wood: teamWood[team],
+    ...(matchEconomyProfileId() === STONE_ECONOMY_PROFILE_ID ? { stone: teamStone[team] } : {}) };
+}
+function setTeamEconomyBalance(team, balance) {
+  teamFood[team] = balance.food; teamWood[team] = balance.wood;
+  if (matchEconomyProfileId() === STONE_ECONOMY_PROFILE_ID) teamStone[team] = balance.stone;
+}
+function depositWorkerCargo(unit) {
+  if (!(unit.cargo > 0)) return;
+  const bank = unit.cargoType === 'food' ? teamFood : unit.cargoType === 'wood' ? teamWood
+    : unit.cargoType === 'stone' && matchEconomyProfileId() === STONE_ECONOMY_PROFILE_ID ? teamStone : null;
+  if (!bank) throw new Error('Unsupported Worker cargo cannot be deposited');
+  const total = creditResourceBalance(bank[unit.team], unit.cargo);
+  if (!Number.isFinite(total) || total < 0) throw new Error('Invalid Worker deposit balance');
+  bank[unit.team] = total; unit.cargo = 0; unit.cargoType = null; dirty = true;
+}
 
 function resetScenarioEventClock() {
   matchElapsedSeconds = 0;
@@ -1704,6 +1727,7 @@ function resetArmy(count = currentArmySize) {
   const startingResources = mapDefinition.startingResources ?? {};
   teamFood = [startingResources.food ?? 0, startingResources.food ?? 0];
   teamWood = [startingResources.wood ?? 0, startingResources.wood ?? 0];
+  teamStone = [0, 0];
   teamUpgrades = [
     emptyTechnologyCompletions(),
     emptyTechnologyCompletions(),
@@ -2485,7 +2509,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
     || cellVisibleToTeam(viewTeam, worldToCell(node.x, node.z)));
   return {
     ...(viewTeam === 0 ? {scenarioTrace: scenarioDiagnosticTrace()} : {}),
-    type: 'state', rulesetRevision: GAMEPLAY_RULESET_REVISION, factionId: DEFAULT_FACTION_ID, unitWireIds: UNIT_WIRE_IDS, tick: tickNumber, armySize: currentArmySize,
+    type: 'state', economyProfileId: matchEconomyProfileId(), rulesetRevision: economyRulesetRevision(matchEconomyProfileId()), factionId: DEFAULT_FACTION_ID, unitWireIds: UNIT_WIRE_IDS, tick: tickNumber, armySize: currentArmySize,
     ...(pregame ? { lobby: pregamePayload() } : {}),
     matchElapsedSeconds: Number(matchElapsedSeconds.toFixed(1)), scenarioClockStarted,
     victoryHold: (mapDefinition.victoryHoldSeconds ?? 0) > 0 ? {
@@ -2518,6 +2542,9 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
     ...(includeWaypointCounts ? { queuedWaypointCounts: snapshotQueuedWaypointCounts(viewTeam) } : {}),
     food: fogView ? teamFood.map((amount, team) => team === viewTeam ? amount : null) : [...teamFood],
     wood: fogView ? teamWood.map((amount, team) => team === viewTeam ? amount : null) : [...teamWood],
+    ...(matchEconomyProfileId() === STONE_ECONOMY_PROFILE_ID ? {
+      stone: fogView ? teamStone.map((amount, team) => team === viewTeam ? amount : null) : [...teamStone],
+    } : {}),
     teamResearch: teamUpgrades.map((upgrades, team) => {
       if (fogView && team !== viewTeam) return null;
       const active = teamResearch[team];
@@ -2608,7 +2635,8 @@ function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
   return {
     schemaVersion: MATCH_CHECKPOINT_SCHEMA_VERSION,
     rulesVersion: MATCH_RULES_VERSION,
-    rulesetRevision: GAMEPLAY_RULESET_REVISION,
+    economyProfileId: matchEconomyProfileId(),
+    rulesetRevision: economyRulesetRevision(matchEconomyProfileId()),
     factionId: DEFAULT_FACTION_ID,
     sequence,
     savedAt,
@@ -2631,6 +2659,7 @@ function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
       unitGenerationCounters: Array.from(unitGenerationCounters),
       teamFood: [...teamFood],
       teamWood: [...teamWood],
+      teamStone: [...teamStone],
       teamUpgrades: teamUpgrades.map((upgrades) => ({ ...upgrades })),
       teamResearch: teamResearch.map((research) => research ? { ...research } : null),
       workerProduction: workerProduction.map((production) => ({ ...production })),
@@ -2673,7 +2702,7 @@ function validCellPath(value, cellCount) {
 function validateMatchCheckpoint(snapshot) {
   assertSnapshot(snapshot && typeof snapshot === 'object' && !Array.isArray(snapshot), 'expected an object');
   assertSnapshot(snapshot.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION, 'unsupported schema version');
-  assertSnapshot(snapshot.rulesetRevision === GAMEPLAY_RULESET_REVISION, 'gameplay ruleset revision mismatch');
+  validateEconomyCheckpoint(snapshot);
   assertSnapshot(snapshot.factionId === DEFAULT_FACTION_ID, 'unsupported faction');
   assertSnapshot([1, 2, 3, 4, MATCH_RULES_VERSION].includes(snapshot.rulesVersion),
     'unsupported game rules version');
@@ -2785,7 +2814,7 @@ function validateMatchCheckpoint(snapshot) {
       && integerIn(unit.attackMoveScanTick, 0, Number.MAX_SAFE_INTEGER)
       && integerIn(unit.attackMoveBucketScanOffset, 0, targetBucketCapacity - 1), `invalid unit order state ${index}`);
     assertSnapshot(finite(unit.cargo) && unit.cargo >= 0 && unit.cargo <= WORKER_CARRY_CAPACITY
-      && (unit.cargoType === null || ['food', 'wood'].includes(unit.cargoType))
+      && (unit.cargoType === null || economyResources(snapshot.economyProfileId).includes(unit.cargoType))
       && (unit.gatherNodeId === null || typeof unit.gatherNodeId === 'string')
       && (unit.gatherForestCell === undefined || integerIn(unit.gatherForestCell, -1, cellCount - 1))
       && (unit.dropoffBuildingId === undefined || unit.dropoffBuildingId === null || integerIn(unit.dropoffBuildingId, 1, Number.MAX_SAFE_INTEGER))
@@ -3137,6 +3166,7 @@ function restoreMatchCheckpoint(snapshot) {
   unitGenerationCounters.set(state.unitGenerationCounters);
   teamFood = [...state.teamFood];
   teamWood = [...state.teamWood];
+  teamStone = [...state.teamStone];
   teamUpgrades = state.teamUpgrades.map((upgrades) => ({ ...upgrades }));
   teamResearch = state.teamResearch.map((research) => research ? { ...research } : null);
   workerProduction = state.workerProduction.map((production) => ({ ...production }));
@@ -3277,7 +3307,7 @@ function migrateMatchCheckpoint(snapshot) {
   // A pin predating Farm still cannot claim a paid planting or harvest state.
   if (![GAMEPLAY_RULESET_REVISION, previousMovementPins[0]].includes(snapshot?.rulesetRevision)
     && snapshot?.state?.buildings?.some(building => building.type === 'farm' || building.harvestStock !== undefined)) return snapshot;
-  if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
+  if ([22, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && previousMovementPins.includes(snapshot.rulesetRevision)
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
@@ -3407,7 +3437,7 @@ function migrateMatchCheckpoint(snapshot) {
   // Existing checkpoints predate a lobby; recover them as their running match.
   if (snapshot?.schemaVersion === 21) {
     snapshot.state.pregame = null;
-    snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;
+    snapshot.schemaVersion = 22;
   }
   if (snapshot?.rulesetRevision === 'v1:d85f5a09decc0d0ade81803ab289b52ec5a08e84ff5a1771e85401d4c3611eab'
     && Array.isArray(snapshot.state?.buildings) && Array.isArray(snapshot.state?.units)
@@ -3418,7 +3448,7 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // Mill only adds a food depot; retain existing palisades and paid work unchanged.
-  if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
+  if ([22, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801'
     && Array.isArray(snapshot.state?.buildings)
     && !snapshot.state.buildings.some(building => building.type === 'mill')
@@ -3426,23 +3456,23 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // The gate is additive; accept only the exact preceding definition set, without invented gate state.
-  if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
+  if ([22, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6'
     && Array.isArray(snapshot.state?.buildings)
     && !snapshot.state.buildings.some(building => building.type === 'palisade-gate' || Object.hasOwn(building, 'gateOpen'))) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // Additive Dock content preserves the exact previous Mill roster and paid work.
-  if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
+  if ([22, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2'
     && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   // Exact pre-Skiff Gate/Dock content retains its existing buildings, banks and work.
-  if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
+  if ([22, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b'
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
 
   // Farm adds only new paid crop state; retain exact pre-Farm Skiff work unchanged.
-  if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
+  if ([22, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
@@ -3450,7 +3480,7 @@ function migrateMatchCheckpoint(snapshot) {
     && !snapshot?.mapDefinition?.elevationPatches?.some((patch) => patch.level > 0)) {
     snapshot.rulesVersion = MATCH_RULES_VERSION;
   }
-  if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION && Array.isArray(snapshot.state?.units)) {
+  if ([22, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion) && Array.isArray(snapshot.state?.units)) {
     for (const unit of snapshot.state.units) if (unit && typeof unit === 'object') unit.persistentOrder ??= null;
   }
   return snapshot;
@@ -3556,7 +3586,7 @@ async function initializeMatchFromCheckpoint() {
     return;
   }
   try {
-    restoreMatchCheckpoint(migrateMatchCheckpoint(JSON.parse(serialized)));
+    restoreMatchCheckpoint(migrateEconomyCheckpoint(migrateMatchCheckpoint(JSON.parse(serialized))));
     console.log(`Restored match ${matchId} from checkpoint ${checkpointSequence} at tick ${tickNumber}.`);
   } catch (error) {
     console.warn('Match checkpoint was rejected; starting a fresh match:', String(error?.message || error));
@@ -3952,7 +3982,7 @@ function cancelGatherOrder(unit) {
 
 function workerDropoffCandidates(unit) {
   return allMatchBuildings().filter((building) => building.team === unit.team && building.complete
-      && BUILDING_DEFINITIONS[building.type].dropoff?.includes(unit.cargoType || 'food'))
+      && acceptsProfileDropoff(building.type, unit.cargoType || 'food', matchEconomyProfileId()))
       .map((building) => ({ ...building, goals: buildingAccessCells(building.footprint) }));
 }
 
@@ -3979,7 +4009,7 @@ function workerAtDropoff(unit) {
   const building = unit.dropoffBuildingId === null || unit.dropoffBuildingId === undefined
     ? null : buildingsById.get(unit.dropoffBuildingId);
   const valid = unit.dropoffBuildingId != null && (building?.complete && building.team === unit.team
-    && BUILDING_DEFINITIONS[building.type].dropoff?.includes(unit.cargoType || 'food'));
+    && acceptsProfileDropoff(building.type, unit.cargoType || 'food', matchEconomyProfileId()));
   if (!valid || unit.dropoffNavigationRevision !== navigationRevision) {
     unit.orderRevision++; unit.movePlanningPending = false;
     routeWorkerToDropoff(unit);
@@ -4126,7 +4156,7 @@ function assignReturnCargo(player, command) {
   }
   for (const unit of commandUnits(command)) {
     if (unit.hp <= 0 || unit.team !== player.team || !unitHasCapability(unit, 'gather')
-      || !(unit.cargo > 0) || !['food', 'wood'].includes(unit.cargoType)) continue;
+      || !(unit.cargo > 0) || !economyResources(matchEconomyProfileId()).includes(unit.cargoType)) continue;
     // Reuse the existing route selection without changing a rejected unit's order.
     const route = { ...unit };
     routeWorkerToDropoff(route);
@@ -4310,10 +4340,7 @@ function updateForestWorkerEconomy(unit) {
 
   if (unit.gatherPhase === 'to-base' && workerAtDropoff(unit)) {
     if (unit.cargo > 0) {
-      const bank = unit.cargoType === 'wood' ? teamWood : teamFood;
-      bank[unit.team] = creditResourceBalance(bank[unit.team], unit.cargo);
-      unit.cargo = 0;
-      unit.cargoType = null;
+      depositWorkerCargo(unit);
       dirty = true;
     }
     if (forestWoodRemaining[cell] > 0) routeForestWorker(unit, 'to-node', cell);
@@ -4354,10 +4381,7 @@ function updateWorkerEconomy() {
     if (unit.gatherNodeId === null) {
       if (unit.gatherPhase === 'to-base' && workerAtDropoff(unit)) {
         if (unit.cargo > 0) {
-          const bank = unit.cargoType === 'wood' ? teamWood : teamFood;
-          bank[unit.team] = creditResourceBalance(bank[unit.team], unit.cargo);
-          unit.cargo = 0;
-          unit.cargoType = null;
+          depositWorkerCargo(unit);
         }
         stopGathering(unit);
         dirty = true;
@@ -4416,10 +4440,7 @@ function updateWorkerEconomy() {
     if (unit.gatherPhase === 'to-base') {
       if (workerAtDropoff(unit)) {
         if (unit.cargo > 0) {
-          const bank = unit.cargoType === 'wood' ? teamWood : teamFood;
-          bank[unit.team] = creditResourceBalance(bank[unit.team], unit.cargo);
-          unit.cargo = 0;
-          unit.cargoType = null;
+          depositWorkerCargo(unit);
           dirty = true;
         }
         if (node.stock > 0) routeWorker(unit, 'to-node', node);
@@ -4637,9 +4658,11 @@ function cancelConstruction(player, command) {
   if (player.team === null || !building || building.team !== player.team || building.complete) {
     sendOrderNotice(player, command, 'CANCEL REJECTED · SELECT YOUR UNFINISHED BUILDING'); return;
   }
-  const refund = unfinishedRefund(BUILDING_DEFINITIONS[building.type].cost, 1 - building.progress, 1);
-  destroyBuilding(building); creditRefund(player.team, refund);
-  sendOrderNotice(player, command, `CONSTRUCTION CANCELLED · REFUND ${Math.round(refund.food)} FOOD + ${Math.round(refund.wood)} WOOD`);
+  const profile = matchEconomyProfileId();
+  const refund = proportionalEconomyRefund(constructionCostForProfile(building.type, profile), 1 - building.progress, 1, profile);
+  const balance = creditEconomyRefund(teamEconomyBalance(player.team), refund, profile);
+  destroyBuilding(building); setTeamEconomyBalance(player.team, balance); dirty = true;
+  sendOrderNotice(player, command, `CONSTRUCTION CANCELLED · REFUND ${Math.round(refund.food)} FOOD + ${Math.round(refund.wood)} WOOD${refund.stone !== undefined ? ` + ${Math.round(refund.stone)} STONE` : ''}`);
 }
 
 function cancelTraining(player, command) {
@@ -5362,6 +5385,9 @@ function buildBuilding(player, command) {
     ...(command.buildingType === 'palisade-gate' ? { gateOpen: false } : {}),
 
   };
+  const profile = matchEconomyProfileId();
+  const cost = constructionCostForProfile(building.type, profile);
+  const paidBalance = debitEconomyCost(teamEconomyBalance(player.team), cost, profile);
   const previousConnectivity = captureBuildingConnectivity();
   const previousComponents = walkableComponents.slice();
   for (const cell of footprint) buildingBlocked[cell] = 1;
@@ -5424,11 +5450,10 @@ function buildBuilding(player, command) {
     rejectBuild(player, 'NO REACHABLE WORKERS', command);
     return;
   }
-  if (teamWood[player.team] + 1e-9 < rules.woodCost
-    || teamFood[player.team] + 1e-9 < rules.constructionFoodCost) {
+  if (!paidBalance) {
     for (const cell of footprint) buildingBlocked[cell] = 0;
     rebuildWalkableComponents();
-    rejectBuild(player, `NEED ${rules.woodCost} WOOD${rules.constructionFoodCost ? ` + ${rules.constructionFoodCost} FOOD` : ''}`, command);
+    rejectBuild(player, `NEED ${cost.wood} WOOD${cost.food ? ` + ${cost.food} FOOD` : ''}${cost.stone !== undefined ? ` + ${cost.stone} STONE` : ''}`, command);
     return;
   }
 
@@ -5437,8 +5462,7 @@ function buildBuilding(player, command) {
   buildingsById.set(id, building);
   navigationRevision++;
   visionCoverageBySourceCell = new Array(CELL_COUNT);
-  teamWood[player.team] = Math.max(0, teamWood[player.team] - rules.woodCost);
-  teamFood[player.team] = Math.max(0, teamFood[player.team] - rules.constructionFoodCost);
+  setTeamEconomyBalance(player.team, paidBalance);
   attackFlowFields.clear();
   replanPathsBlockedBy(building.footprint);
   const access = cellToWorld(accessCell);
@@ -6710,7 +6734,8 @@ function findAttackMoveTarget(unit, acquireRadius = ATTACK_MOVE_ACQUIRE_RADIUS, 
 }
 
 function getUnitAttackPath(unit, target, flowBudget = null) {
-  const targetCell = nearestOpenCell(worldToCell(target.x, target.z));
+  // A water target cannot be snapped onto land to invent a firing position.
+  const targetCell = worldToCell(target.x, target.z);
   const start = nearestOpenCell(worldToCell(unit.x, unit.z));
   const range = UNIT_DEFINITIONS[unit.kind].combat.range;
   if (Math.hypot(target.x - unit.x, target.z - unit.z) <= range) {
@@ -7919,7 +7944,7 @@ const server = createServer(async (request, response) => {
     'src/water-unit-runtime.mjs',
     'src/worker-fishing-presentation.mjs',
     'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs', 'src/resource-brush-controls.mjs',
-    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
+    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/economy-profile.mjs', 'src/economy-ledger.mjs', 'src/economy-client.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/selection-portrait.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
     'src/terrain-authoring.mjs', 'src/terrain-height.mjs', 'src/regions.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs',
@@ -7929,7 +7954,7 @@ const server = createServer(async (request, response) => {
     'src/audio-composition.mjs', 'src/audio-composer.mjs', 'src/audio-composer.css',
     'audio-studio.html', 'audio-zones.html', 'src/audio-zones.mjs', 'src/audio-zones.css', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs',
     'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs',
-    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
+    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/economy-profile.mjs', 'src/economy-ledger.mjs', 'src/economy-client.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs', 'src/shore-vegetation.mjs', 'src/meadow-vegetation.mjs', 'src/garden-vegetation.mjs', 'src/environment-plant-assets.mjs', 'src/podvine-view-pack.mjs', 'src/podvine-worked-pack.mjs', 'src/podvine-low-pack.mjs', 'src/veilcap-view-pack.mjs', 'src/veilcap-worked-pack.mjs', 'src/sunbloom-view-pack.mjs', 'src/sunbloom-crown-pack.mjs', 'src/sunbloom-worked-pack.mjs', 'src/sunbloom-low-pack.mjs', 'src/terrain-blend.mjs', 'src/terrain-texture-sampling.mjs', 'src/terrain-atmosphere.mjs', 'src/terrain-materials.mjs',
     'src/forest-habitat.mjs', 'src/forest-age-composition.mjs', 'src/forest-composition.mjs', 'src/regional-ground-kits.mjs', 'src/water-contours.mjs', 'src/shore-bank-shade.mjs',
   ].includes(relative);

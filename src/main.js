@@ -11,9 +11,11 @@ import { validateScenarioRegions, validRegionEntryTrigger, validCompletionTrigge
 import { regionalGroundColor } from './regional-ground-kits.mjs';
 import { researchOptions, researchAction } from './research-actions.mjs';
 import { unitPresentation, buildingPresentation } from './gameplay-presentation.mjs';
-import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, GAMEPLAY_RULESET_REVISION } from './gameplay-definitions.mjs';
+import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from './gameplay-definitions.mjs';
 import { createDockPlacementContext } from './dock-placement.mjs';
 import { formatResourceStock, formatResourceRequirement } from './resource-format.mjs';
+import { STONE_ECONOMY_PROFILE_ID, resolveEconomyProfileId, economyResources, constructionCostForProfile } from './economy-profile.mjs';
+import { matchesEconomySnapshot, profileDropoffResources, sumTypedCargo } from './economy-client.mjs';
 import { WallPlacementGesture, wallCellAt, previewWallPlacement, wallPlacementFeedback } from './wall-placement.mjs';
 import { createWallPlacementGhost } from './wall-placement-ghost.mjs';
 import { ownedPopulationReadout } from './population-readout.mjs';
@@ -242,6 +244,9 @@ const ui = {
   populationStock: document.querySelector('#population-stock'),
   foodStock: document.querySelector('#food-stock'),
   woodStock: document.querySelector('#wood-stock'),
+  stoneStock: document.querySelector('#stone-stock'),
+  stoneStockGroup: document.querySelector('#stone-stock-group'),
+  resourceStocks: document.querySelector('.resource-stocks'),
   foodStatus: document.querySelector('#economy-status'),
   workerLoad: document.querySelector('#worker-load'),
   trainInfantry: document.querySelector('#train-infantry'),
@@ -486,6 +491,7 @@ const unitCargoPackColors = {
   none: new THREE.Color(0x9c754c),
   wood: new THREE.Color(0x9bb877),
   food: new THREE.Color(0xe4bd63),
+  stone: new THREE.Color(0xaeb9c2),
   unknown: new THREE.Color(0xb8ad92),
 };
 const unitCargoPackColorDirty = [false, false];
@@ -652,6 +658,7 @@ let scenarioClockSynchronizedAt = 0;
 let lastScenarioEventUiUpdateAt = -Infinity;
 let latestFood = [0, 0];
 let latestWood = [0, 0];
+let latestStone = [0, 0];
 let latestBuildings = [];
 let selectedBuildingId = null;
 let latestWorkerProduction = [null, null];
@@ -1780,7 +1787,7 @@ function resourceCalloutTexture(type) {
   canvas.width = 256;
   canvas.height = 64;
   const context = canvas.getContext('2d');
-  const accent = type === 'wood' ? '#9bb877' : '#e4bd63';
+  const accent = type === 'wood' ? '#9bb877' : type === 'stone' ? '#aeb9c2' : '#e4bd63';
   context.fillStyle = 'rgba(13, 21, 15, 0.96)';
   context.strokeStyle = 'rgba(235, 243, 222, 0.92)';
   context.lineWidth = 3;
@@ -1795,7 +1802,7 @@ function resourceCalloutTexture(type) {
   context.textAlign = 'left';
   context.textBaseline = 'middle';
   context.fillStyle = '#f2f6dd';
-  context.fillText(type === 'shore-fish' ? 'FISH · FOOD' : type === 'wood' ? 'WOOD' : 'FOOD', 50, 33);
+  context.fillText(type === 'shore-fish' ? 'FISH · FOOD' : type === 'wood' ? 'WOOD' : type === 'stone' ? 'STONE' : 'FOOD', 50, 33);
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   resourceCalloutTextures.set(type, texture);
@@ -1838,9 +1845,9 @@ function updateConstructionGroundBatches(buildings) {
 }
 
 function addResourceNodeVisual(node) {
-  const nodeType = node.type === 'wood' ? 'wood' : 'food';
+  const nodeType = node.type;
   const stage = resourceVisualStage(node.stock, node.stock);
-  const ringColor = nodeType === 'wood' ? 0x9bb877 : 0xe4bd63;
+  const ringColor = nodeType === 'wood' ? 0x9bb877 : nodeType === 'stone' ? 0xaeb9c2 : 0xe4bd63;
   const ringMaterial = new THREE.MeshBasicMaterial({
     color: ringColor, side: THREE.DoubleSide, transparent: true, opacity: 0.78, depthWrite: false,
   });
@@ -1880,12 +1887,12 @@ function updateResourceNodeVisual(id, stock) {
   const stage = resourceVisualStage(stock, visual.startingStock);
   if (visual.stage === stage) return;
   visual.stage = stage;
-  const nodeColor = visual.type === 'wood' ? 0x9bb877 : 0xe4bd63;
+  const nodeColor = visual.type === 'wood' ? 0x9bb877 : visual.type === 'stone' ? 0xaeb9c2 : 0xe4bd63;
   visual.ring.material.color.setHex(stock > 0 ? nodeColor : 0x77806b);
   visual.ring.material.opacity = stock > 0 ? 0.78 : 0.35;
   if (visual.fishPlaceholder) updateShoreFishPlaceholder(visual.fishPlaceholder, stage);
   else if (visual.type === 'wood') setWoodNodeTreeStage(id, stage);
-  else setBerryNodeStage(id, stage);
+  else if (visual.type === 'food') setBerryNodeStage(id, stage);
 }
 
 function updateResourceNodeCallouts(now, force = false) {
@@ -2679,7 +2686,7 @@ function buildMinimapBackground(definition) {
       Math.max(2.5, Math.min(5.5, rect.scale * 0.55)),
       0, Math.PI * 2,
     );
-    context.fillStyle = node.type === 'wood' ? '#9bb877' : '#e4bd63';
+    context.fillStyle = node.type === 'wood' ? '#9bb877' : node.type === 'stone' ? '#aeb9c2' : '#e4bd63';
     context.fill();
     context.strokeStyle = 'rgba(17,25,18,.92)';
     context.lineWidth = 1.5;
@@ -2834,7 +2841,7 @@ function drawMinimap(now = performance.now(), force = false) {
     context.beginPath();
     context.arc(point.x, point.y, 3.8, 0, Math.PI * 2);
     context.fillStyle = stock > 0
-      ? node.type === 'wood' ? '#9bb877' : '#e4bd63'
+      ? node.type === 'wood' ? '#9bb877' : node.type === 'stone' ? '#aeb9c2' : '#e4bd63'
       : '#717b68';
     context.fill();
   }
@@ -3719,7 +3726,7 @@ function updateSelectionUI() {
       ? 'Finish construction to unlock production.'
       : selectedBuilding.productionBlocked ? 'Production blocked · clear the spawn area.'
         : queued > 0 ? `${queued.toLocaleString()} ${troop} queued · ${training}% training`
-          : troop ? `Ready to train ${troop}.` : BUILDING_DEFINITIONS[selectedBuilding.type].dropoff?.length ? `Drop-off: ${BUILDING_DEFINITIONS[selectedBuilding.type].dropoff.join(' and ')}.` : `Population capacity +${BUILDING_DEFINITIONS[selectedBuilding.type].populationCapacity || 0}.`;
+          : troop ? `Ready to train ${troop}.` : BUILDING_DEFINITIONS[selectedBuilding.type].dropoff?.length ? `Drop-off: ${profileDropoffResources(selectedBuilding.type, mapDefinition?.economyProfileId).join(' and ')}.` : `Population capacity +${BUILDING_DEFINITIONS[selectedBuilding.type].populationCapacity || 0}.`;
   }
   let blue = 0;
   let red = 0;
@@ -3771,7 +3778,7 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   updateBuildingLifecycleActions();
   if (!bar) return;
   const building = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
-  const context = selectionContext(units, selected, localTeam, building);
+  const context = selectionContext(units, selected, localTeam, building, mapDefinition?.economyProfileId);
   const portraitUnit = context.total === 1 && !building ? units[selectedIds()[0]] : null;
   const portraitRole = portraitUnit && castPreview
     && (humanRosterPreview || roomPageUrl.searchParams.get('humanVaeloraPreview') === '1')
@@ -3783,12 +3790,12 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   document.querySelector('#assign-selected-group').disabled = !context.total;
   bar.querySelector('[data-context-summary]').textContent = building
     ? `${buildingLabel(building.type)} · ${ui.selectedBuildingHealth.textContent} · ${ui.selectedBuildingProduction.textContent}`
-    : context.total ? `${context.total} selected${context.kind === 'military' || context.kind === 'mixed' ? ` · ${ui.formationSelect.value} formation` : ''} · ${Object.entries(context.counts).filter(([, n]) => n).map(([role, n]) => `${n} ${role}`).join(' · ')}${context.counts.worker || context.counts.skiff ? ` · Cargo ${formatResourceStock(context.cargo.food)} food / ${formatResourceStock(context.cargo.wood)} wood` : ''}` : '';
+    : context.total ? `${context.total} selected${context.kind === 'military' || context.kind === 'mixed' ? ` · ${ui.formationSelect.value} formation` : ''} · ${Object.entries(context.counts).filter(([, n]) => n).map(([role, n]) => `${n} ${role}`).join(' · ')}${context.counts.worker || context.counts.skiff ? ` · Cargo ${Object.entries(context.cargo).map(([resource, stock]) => `${formatResourceStock(stock)} ${resource}`).join(' / ')}` : ''}` : '';
   for (const button of bar.querySelectorAll('[data-stationary-order], [data-persistent-order]')) {
     button.hidden = !['workers', 'military', 'mixed', 'boats'].includes(context.kind);
   }
   for (const button of bar.querySelectorAll('[data-return-cargo]')) {
-    button.hidden = Boolean(building) || context.cargo.food + context.cargo.wood <= 0;
+    button.hidden = Boolean(building) || Object.values(context.cargo).every(stock => stock <= 0);
     button.disabled = localTeam === null || matchWinner >= 0 || button.hidden;
   }
   updateRosterProductionOptions(bar.querySelector('[data-context-products]'), building);
@@ -4328,7 +4335,7 @@ function updateCommandUI() {
       : BUILDING_DEFINITIONS[selectedBuilding.type].harvest
         ? `Farm placeholder · ${formatResourceStock(selectedBuilding.harvestStock)} / ${BUILDING_DEFINITIONS.farm.harvest.stock} food remaining · Select Workers and right-click to harvest. No regrowth.`
       : BUILDING_DEFINITIONS[selectedBuilding.type].dropoff
-        ? `Workers deposit ${BUILDING_DEFINITIONS[selectedBuilding.type].dropoff.join(' and ')} here when complete.`
+        ? `Workers deposit ${profileDropoffResources(selectedBuilding.type, mapDefinition?.economyProfileId).join(' and ')} here when complete.`
         : `Adds ${BUILDING_DEFINITIONS[selectedBuilding.type].populationCapacity || 0} population capacity when complete.` : tapOrderArmed
     ? selectedBuilding ? 'Tap or click ground to set the rally point'
       : attackMoveMode ? 'Tap or click ground to advance and engage' : 'Tap or click ground, an enemy, or a resource'
@@ -4398,7 +4405,7 @@ function appendUnitFromState(row, animateSpawn = false) {
     attackStartedAt: 0, hitStartedAt: 0, spawnStartedAt: animateSpawn ? performance.now() : 0,
     defeatStartedAt: 0, lastPlayedAttackTick: -1,
     damageFlashUntil: 0,
-    kind, cargo, cargoType: cargoType === 'food' || cargoType === 'wood' ? cargoType : null,
+    kind, cargo, cargoType: economyResources(mapDefinition?.economyProfileId).includes(cargoType) ? cargoType : null,
     task: kind === 'worker' && WORKER_TASK_STATES.has(taskStatus) ? taskStatus
       : kind === 'worker' ? 'unknown' : null,
     queuedWaypointCount: 0,
@@ -4426,7 +4433,7 @@ function applyState(state, initial = false) {
   tracePanel.hidden = !isHost || !Array.isArray(state?.scenarioTrace);
   if (!tracePanel.hidden) document.querySelector('#studio-scenario-trace').textContent = state.scenarioTrace.map(row =>
     `${row.name}: ${row.status.toUpperCase()} · ${row.deliveries} deliveries · ${JSON.stringify(row.reason)} · recipients ${row.recipients.join(',')} · activated ${row.activatedAtSeconds ?? 'pending'} by ${row.activatedByTeam}`).join('\n');
-  if (state?.rulesetRevision && state.rulesetRevision !== GAMEPLAY_RULESET_REVISION) {
+  if (state && !matchesEconomySnapshot(state, mapDefinition?.economyProfileId)) {
     showToast('GAME RULES CHANGED · RELOAD TO RECONNECT', 10000);
     return;
   }
@@ -4505,8 +4512,8 @@ function applyState(state, initial = false) {
       changed = true;
     }
     const nextCargo = Number.isFinite(cargo) ? cargo : unit.cargo || 0;
-    const nextCargoType = cargoType === 'food' || cargoType === 'wood' ? cargoType
-      : cargoType === null ? null : unit.cargoType;
+    const nextCargoType = cargoType === undefined ? unit.cargoType
+      : economyResources(mapDefinition?.economyProfileId).includes(cargoType) ? cargoType : null;
     if (unit.cargo !== nextCargo || unit.cargoType !== nextCargoType) {
       unit.cargo = nextCargo;
       unit.cargoType = nextCargoType;
@@ -4774,17 +4781,27 @@ function updateRosterBuildingOptions(container) {
   }
   for (const button of container.children) {
     const definition = BUILDING_DEFINITIONS[button.dataset.building];
+    const cost = constructionCostForProfile(definition.id, mapDefinition?.economyProfileId);
     const workers = selectedWorkerIds();
     const missing = (definition.requires || []).filter((id) => !latestTeamResearch[localTeam]?.[TECHNOLOGY_DEFINITIONS[id].upgradeKey]);
     button.disabled = localTeam === null || matchWinner >= 0 || buildPlacementPending || !workers.length || missing.length > 0
-      || (definition.id !== 'palisade-wall' && (latestFood[localTeam] < definition.cost.food || latestWood[localTeam] < definition.cost.wood));
-    button.textContent = `Build ${definition.label} · ${definition.cost.wood} WOOD${definition.cost.food ? ` + ${definition.cost.food} FOOD` : ''}${missing.length ? ' · RESEARCH REQUIRED' : ''}`;
+      || (definition.id !== 'palisade-wall' && (latestFood[localTeam] < cost.food || latestWood[localTeam] < cost.wood
+        || (cost.stone !== undefined && latestStone[localTeam] < cost.stone)));
+    button.textContent = `Build ${definition.label} · ${cost.wood} WOOD${cost.food ? ` + ${cost.food} FOOD` : ''}${cost.stone !== undefined ? ` + ${cost.stone} STONE` : ''}${missing.length ? ' · RESEARCH REQUIRED' : ''}`;
     const active = buildPlacementActive && buildPlacementType === definition.id;
     button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active));
   }
 }
 
 function updateEconomyUI(state = {}, initial = false) {
+  const economyProfileId = resolveEconomyProfileId(mapDefinition?.economyProfileId);
+  const hasStone = economyProfileId === STONE_ECONOMY_PROFILE_ID;
+  if (!hasStone) latestStone = [0, 0];
+  else if (Array.isArray(state.stone)) latestStone = state.stone.map(value => value === null ? null : Number(value));
+  if (ui.stoneStockGroup) ui.stoneStockGroup.hidden = !hasStone;
+  if (ui.resourceStocks) ui.resourceStocks.dataset.economyProfile = economyProfileId;
+  if (ui.stoneStock) ui.stoneStock.textContent = localTeam === null || latestStone[localTeam] === null
+    ? '—' : formatResourceStock(latestStone[localTeam]);
   if (Array.isArray(state.population)) latestPopulation = state.population;
   if (Number.isFinite(state.rosterSize)) latestRosterSize = Math.max(0, Math.floor(state.rosterSize));
   if (Array.isArray(state.food)) latestFood = [Number(state.food[0]) || 0, Number(state.food[1]) || 0];
@@ -4854,15 +4871,10 @@ function updateEconomyUI(state = {}, initial = false) {
     : completedRange ? getBuildingQueueLength(completedRange) : 0;
   const infantryQueueLength = trainableBarracks ? getBuildingQueueLength(trainableBarracks)
     : completedBarracks ? getBuildingQueueLength(completedBarracks) : 0;
-  let carriedFood = 0;
-  let carriedWood = 0;
-  for (const worker of ownedWorkers) {
-    if (worker.cargoType === 'wood') carriedWood += worker.cargo || 0;
-    else if (worker.cargoType === 'food' || worker.cargo > 0) carriedFood += worker.cargo || 0;
-  }
+  const carried = sumTypedCargo(ownedWorkers, economyProfileId);
   if (ui.workerLoad) ui.workerLoad.textContent = localTeam === null
     ? 'WORKER CARGO · —'
-    : `WORKER CARGO · ${formatResourceStock(carriedFood)} FOOD · ${formatResourceStock(carriedWood)} WOOD`;
+    : `WORKER CARGO · ${formatResourceStock(carried.food)} FOOD · ${formatResourceStock(carried.wood)} WOOD${hasStone ? ` · ${formatResourceStock(carried.stone)} STONE` : ''}`;
   if (ui.trainInfantry) {
     ui.trainInfantry.disabled = localTeam === null || matchWinner >= 0 || !trainableBarracks
       || infantryQueueLength >= BARRACKS_QUEUE_LIMIT || food < INFANTRY_FOOD_COST || unitCapReached;
@@ -7679,6 +7691,7 @@ function issueContextOrder(clientX, clientY, queueWaypoint = false) {
 function buildPlacementAt(clientX, clientY) {
   const footprint = buildingFootprint(buildPlacementType);
   const woodCost = buildingWoodCost(buildPlacementType);
+  const cost = constructionCostForProfile(buildPlacementType, mapDefinition?.economyProfileId);
   const point = worldAt(clientX, clientY);
   if (!point) return null;
   const column = Math.floor(point.x + MAP_HALF_X);
@@ -7693,6 +7706,7 @@ function buildPlacementAt(clientX, clientY) {
   if (startColumn < 0 || startColumn + footprint > MAP_WIDTH || startRow < 0 || startRow + footprint > MAP_HEIGHT) blockedReason = 'TOO CLOSE TO MAP EDGE';
   else if (localTeam === null || latestWood[localTeam] < woodCost) blockedReason = `NEED ${formatResourceRequirement(woodCost)} WOOD`;
   else if (latestFood[localTeam] < (BUILDING_DEFINITIONS[buildPlacementType].cost.food || 0)) blockedReason = `NEED ${BUILDING_DEFINITIONS[buildPlacementType].cost.food} FOOD`;
+  else if (cost.stone !== undefined && latestStone[localTeam] < cost.stone) blockedReason = `NEED ${formatResourceRequirement(cost.stone)} STONE`;
   else if (!selectedIds().some((id) => units[id]?.kind === 'worker')) blockedReason = 'SELECT WORKERS';
   if (!blockedReason && BUILDING_DEFINITIONS[buildPlacementType].placement?.kind === 'shoreline') {
     const berth = dockPlacementContext?.accessAt(centerRow * MAP_WIDTH + centerColumn);
@@ -7918,13 +7932,17 @@ function beginBuildPlacement(type) {
   if (tapOrderArmed) setTapOrderArmed(false, false);
   const label = buildingLabel(type);
   const woodCost = buildingWoodCost(type);
-  const foodCost = BUILDING_DEFINITIONS[type]?.cost.food || 0;
+  const cost = constructionCostForProfile(type, mapDefinition?.economyProfileId);
+  const foodCost = cost.food;
   const workers = selectedWorkerIds();
   if (workers.length === 0) { showToast(`SELECT WORKERS TO CONSTRUCT ${label}`); return; }
   if (type !== 'palisade-wall' && latestFood[localTeam] < foodCost) { showToast(`${label} NEEDS ${foodCost} FOOD`); return; }
   if (type !== 'palisade-wall' && latestWood[localTeam] < woodCost) {
     showToast(`${label} NEEDS ${formatResourceRequirement(woodCost)} WOOD`);
     return;
+  }
+  if (cost.stone !== undefined && latestStone[localTeam] < cost.stone) {
+    showToast(`${label} NEEDS ${formatResourceRequirement(cost.stone)} STONE`); return;
   }
   attackMoveMode = false;
   persistentTargetMode = null;

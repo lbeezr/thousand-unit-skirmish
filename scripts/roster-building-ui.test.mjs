@@ -1,3 +1,4 @@
+import { economyClientBindings } from './economy-client-fixture.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
@@ -8,7 +9,7 @@ const fn = source.slice(source.indexOf('function updateRosterBuildingOptions('),
 for (const team of [0, 1]) test(`registry building menu preserves focus and exact costs for seat ${team}`, () => {
   const placements = [];
   const container = { children: [], replaceChildren() { this.children = []; }, append(button) { this.children.push(button); } };
-  const context = vm.createContext({ BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
+  const context = vm.createContext({ ...economyClientBindings(), BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
     document: { createElement() { return { dataset: {}, classList: { toggle() {} }, setAttribute() {}, addEventListener(_, callback) { this.click = callback; } }; } },
     localTeam: team, teamUnits: [[{ kind: 'worker', hp: 100 }], [{ kind: 'worker', hp: 100 }]],
     selectedWorkerIds: () => [0],

@@ -100,6 +100,7 @@ Run from the repository root:
 | In-range building attacks during construction repair | `node scripts/ranged-building-attack-scenario.mjs --edge-range-repair` |
 | Archer firing positions across gaps | `node scripts/archer-firing-approach-scenario.mjs` |
 | Cliff pursuit and attack-move alternatives | `node scripts/cliff-pursuit-scenario.mjs --direct` and without `--direct` |
+| Attack-target loss and queued route continuation | `node --test scripts/attack-target-geometry.test.mjs`; `ATTACK_QUEUE_RECORD=/tmp/attacks.json node scripts/attack-queue-case.mjs`; `ATTACK_QUEUE_NATIVE_RECORD=/tmp/native-attacks.json node scripts/attack-queue-native-scenario.mjs`; [failure and bounded evidence](qa-attack-queue-transitions-2026-10-03.md) |
 | Construction on disconnected terrain / route protection | `node scripts/construction-connectivity-scenario.mjs` |
 | Mirrored construction | `node scripts/opening-production-scenario.mjs --expect-builder-parity` |
 | Producer destruction, replacement builders, and population caps | `node scripts/production-lifecycle-scenario.mjs` |
@@ -135,6 +136,7 @@ Run from the repository root:
 | PvE production budgets | `node scripts/pve-production-scenario.mjs` |
 | PvE Worker recovery with one free population slot | `node --test scripts/pve-worker-recovery.test.mjs`; [fixed-tick paid recovery and checkpoint evidence](qa-pve-worker-recovery-2026-10-03.md) |
 | PvE paid Farm starvation recovery, finite replant and no-spam guards | `node --test scripts/pve-farm-policy.test.mjs`; [both-seat deterministic restart evidence](qa-pve-paid-farm-2026-10-03.md) |
+| PvE visible Worker/building raids and bounded objective recovery | `node --test scripts/pve-home-defense.test.mjs`; [both-seat raid, fog and restart evidence](qa-pve-home-defense-2026-10-03.md) |
 | PvE destroyed producer replacement | `node scripts/pve-barracks-recovery-scenario.mjs` |
 | PvE objective retake after losses | `node scripts/pve-objective-recovery-runtime-scenario.mjs TEAM SEED` (teams `0`, `1`; CI seed `20260925`, additional audited seed `4294967295`) |
 | Contested seeded PvE match | `node scripts/pve-contested-match-scenario.mjs 300 20260925 4294967295` |
