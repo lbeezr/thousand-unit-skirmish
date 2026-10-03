@@ -57,6 +57,12 @@ migration, malformed JSON, denied storage, failed/recovered writes and disposal.
 The 2026-10-03 fixtures reproduced no runtime defect; this coverage adds no
 settings behavior change or promise of persistence when browser storage fails.
 
+Transient synthesized cues and music-preview notes stop when their bus is
+muted. Master mute, Overall zero, hiding, map replacement and disposal stop all
+transient synthesis; returning requires a fresh cue. Nonzero level edits and
+independent buses preserve current notes. The [interruption regression receipt](qa-audio-synthesis-cancellation-2026-10-03.md)
+records modeled scheduling checks and the remaining exact-build listening step.
+
 ## Short Mac listening session
 
 Use Node 24 and Chrome on Mac, from the repo root:
