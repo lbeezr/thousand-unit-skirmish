@@ -7094,11 +7094,11 @@ function pruneExpiredSessions(now = Date.now()) {
   syncPregameSeats();
 }
 
-function sessionForResumeToken(token) {
+function sessionForResumeToken(token, now = Date.now()) {
   if (typeof token !== 'string' || !/^[A-Za-z0-9_-]{43}$/.test(token)) return null;
   const session = sessions.get(createHash('sha256').update(token).digest('base64url'));
   return session && (session.peer && !session.peer.closed && !session.peer.socket.destroyed
-    || session.expiresAt > Date.now()) ? session : null;
+    || session.expiresAt > now) ? session : null;
 }
 
 function releasePeer(peer, graceful = false) {
@@ -7178,8 +7178,7 @@ function dispatchPeerTextMessage(peer, payload, compressed) {
   } catch {}
 }
 
-function createPeer(socket, resumeToken, compressionEnabled = false) {
-  const now = Date.now();
+function createPeer(socket, resumeToken, compressionEnabled = false, now = Date.now()) {
   pruneExpiredSessions(now);
   const resumeTokenHash = resumeToken ? createHash('sha256').update(resumeToken).digest('base64url') : null;
   const resumable = resumeTokenHash ? sessions.get(resumeTokenHash) : null;
@@ -7732,12 +7731,15 @@ server.on('upgrade', (request, socket, head) => {
     socket.destroy();
     return;
   }
-  pruneExpiredSessions();
+  // Use one admission instant so an expiry boundary cannot pass the strict
+  // Resume check and then allocate a different seat in createPeer.
+  const admissionTime = Date.now();
+  pruneExpiredSessions(admissionTime);
   const requestedProtocols = String(request.headers['sec-websocket-protocol'] || '')
     .split(',').map((protocol) => protocol.trim());
   const resumeProtocol = requestedProtocols.find((protocol) => /^rts-resume\.[A-Za-z0-9_-]{43}$/.test(protocol));
   const resumeToken = resumeProtocol ? resumeProtocol.slice('rts-resume.'.length) : null;
-  if (url.searchParams.get('resumeOnly') === '1' && !sessionForResumeToken(resumeToken)) {
+  if (url.searchParams.get('resumeOnly') === '1' && !sessionForResumeToken(resumeToken, admissionTime)) {
     socket.end('HTTP/1.1 409 Conflict\r\nConnection: close\r\nContent-Length: 0\r\n\r\n');
     return;
   }
@@ -7757,7 +7759,7 @@ server.on('upgrade', (request, socket, head) => {
   ].join('\r\n');
   socket.write(handshake);
   socket.setNoDelay(true);
-  const peer = createPeer(socket, resumeToken, compressionEnabled);
+  const peer = createPeer(socket, resumeToken, compressionEnabled, admissionTime);
   dirty = true;
   peer.sendJson({
     type: 'welcome',
