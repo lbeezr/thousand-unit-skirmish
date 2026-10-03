@@ -252,6 +252,13 @@ try {
         `${entry.path} must match its manifest hash`);
     }
   }
+  // Nested Node adapters must be packaged for offline consumers without becoming
+  // HTTP client modules. Keep the original compatibility path equally private.
+  for (const filename of ['src/pve-model-proposal.mjs', 'src/server/pve-model-proposal.mjs']) {
+    assert.ok((await stat(path.join(root, filename))).isFile(), `packed offline adapter: ${filename}`);
+    assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 404,
+      `offline Node adapter must not be served: ${filename}`);
+  }
   await checkClientImports(base, { authorization, entrypoints: ['/src/game-entry.mjs'] });
   for (const file of ['water-study.html', 'src/water-study-preview.mjs', 'src/water-surface-study.mjs', 'src/water-study-state.mjs', 'src/water-study-fish-binding.mjs', 'src/shore-bank-shade.mjs']) {
     assert.ok(packedManifest.files.includes(file), `water study release must contain ${file}`);
