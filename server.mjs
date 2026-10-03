@@ -7498,7 +7498,7 @@ const server = createServer(async (request, response) => {
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
     'src/terrain-authoring.mjs', 'src/terrain-height.mjs', 'src/regions.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs',
-    'src/audio-shipped-loader.mjs', 'src/audio-shipped-catalog.mjs',
+    'src/audio-shipped-loader.mjs', 'src/audio-shipped-catalog.mjs', 'src/audio-decoded-cache.mjs',
     'src/audio-composition-player.mjs', 'src/audio-assets.mjs', 'src/audio-library-store.mjs',
     'src/audio-library-ui.mjs', 'src/audio-studio.mjs', 'src/audio-studio.css',
     'src/audio-composition.mjs', 'src/audio-composer.mjs', 'src/audio-composer.css',

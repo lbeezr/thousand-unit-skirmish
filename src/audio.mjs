@@ -1,5 +1,6 @@
 import { loadShippedAudio } from './audio-shipped-loader.mjs';
 import { createProfileDecisionGate, resolveEventBinding } from './audio-event-profile.mjs';
+import { createDecodedAudioCache } from './audio-decoded-cache.mjs';
 // Web Audio synthesis remains the fallback when an authored local pack is unavailable.
 const STORAGE_KEY = 'tus-audio-v1';
 const DEFAULT_SETTINGS = Object.freeze({
@@ -104,9 +105,7 @@ export function createGameAudio({
   const activeSynthesis = new Set();
   const MAX_ACTIVE_SAMPLES = 8;
   const profileGate = createProfileDecisionGate();
-  const decoded = new Map();
-  let decodedBytes = 0;
-  const MAX_DECODED_BYTES = 24 * 1024 * 1024;
+  const decodedCache = createDecodedAudioCache();
   let ambienceSource = null;
   let impactNoise = null;
   let musicTimer = null;
@@ -474,31 +473,14 @@ export function createGameAudio({
 
   function setPackStatus(message) { packStatus = message; onPackStatus?.(message); }
 
-  async function decodeSource(sourceId) {
-    if (decoded.has(sourceId)) {
-      const buffer = decoded.get(sourceId);
-      decoded.delete(sourceId); decoded.set(sourceId, buffer);
-      return buffer;
-    }
-    const ticket = packGeneration;
+  function decodeSource(sourceId) {
     const blob = activeSourceBlobs?.[sourceId];
-    if (!(blob instanceof Blob)) throw new Error(`Missing audio source ${sourceId}`);
-    if (blob.size > 16 * 1024 * 1024) throw new Error(`Audio source ${sourceId} exceeds the decode limit`);
-    const buffer = await context.decodeAudioData(await blob.arrayBuffer());
-    if (ticket !== packGeneration) throw new Error('Audio pack changed during decoding');
-    const bytes = buffer.length * buffer.numberOfChannels * 4;
-    if (bytes > MAX_DECODED_BYTES) throw new Error(`Decoded source ${sourceId} exceeds memory limit`);
-    if (decoded.has(sourceId)) {
-      const previous = decoded.get(sourceId);
-      decodedBytes -= previous.length * previous.numberOfChannels * 4; decoded.delete(sourceId);
-    }
-    while (decodedBytes + bytes > MAX_DECODED_BYTES && decoded.size) {
-      const [oldId, oldBuffer] = decoded.entries().next().value;
-      decodedBytes -= oldBuffer.length * oldBuffer.numberOfChannels * 4;
-      decoded.delete(oldId);
-    }
-    decoded.set(sourceId, buffer); decodedBytes += bytes;
-    return buffer;
+    const decoderContext = context;
+    return decodedCache.resolve(sourceId, async () => {
+      if (!(blob instanceof Blob)) throw new Error(`Missing audio source ${sourceId}`);
+      if (blob.size > 16 * 1024 * 1024) throw new Error(`Audio source ${sourceId} exceeds the decode limit`);
+      return decoderContext.decodeAudioData(await blob.arrayBuffer());
+    });
   }
 
   function stopProfileMusic() {
@@ -573,7 +555,7 @@ export function createGameAudio({
     stopProfileMusic();
     cancelSampledCues();
     profileGate.reset();
-    decoded.clear(); decodedBytes = 0;
+    decodedCache.clear();
     activePack = null; activeProfile = null; activeSourceBlobs = null;
     if (!reference) { setPackStatus('No audio pack assigned'); return; }
     setPackStatus(`Loading audio pack ${reference.packId}…`);
@@ -710,11 +692,12 @@ export function createGameAudio({
   doc?.addEventListener?.('visibilitychange', onVisibilityChange);
 
   return {
-    play, playEvent, stopWork, updateWork, getInspector: () => ({ status: packStatus, profileId: activeProfile?.id || null, bindings: Object.entries(activeProfile?.bindings || {}).map(([key, binding]) => ({ key, bus: binding.bus, sources: binding.variants.map(({ sourceId }) => ({ sourceId, available: activeSourceBlobs?.[sourceId] instanceof Blob })) })), activeSamples: activeSamples.size, activeVoices: activeVoiceSamples.size, activeWork: activeWorkSamples.size, decodedBytes, decisions: [...decisions] }), setMapAudio, getPackStatus: () => packStatus, preview, previewAmbience, unlock, setSettings,
+    play, playEvent, stopWork, updateWork, getInspector: () => ({ status: packStatus, profileId: activeProfile?.id || null, bindings: Object.entries(activeProfile?.bindings || {}).map(([key, binding]) => ({ key, bus: binding.bus, sources: binding.variants.map(({ sourceId }) => ({ sourceId, available: activeSourceBlobs?.[sourceId] instanceof Blob })) })), activeSamples: activeSamples.size, activeVoices: activeVoiceSamples.size, activeWork: activeWorkSamples.size, ...decodedCache.getStats(), decisions: [...decisions] }), setMapAudio, getPackStatus: () => packStatus, preview, previewAmbience, unlock, setSettings,
     getSettings: () => ({ ...settings }), getStatus: status,
     dispose() {
       if (disposed) return;
       disposed = true; packGeneration++;
+      decodedCache.clear();
       packAbort?.abort(); stopWork();
       doc?.removeEventListener?.('visibilitychange', onVisibilityChange);
       if (musicTimer !== null) globalThis.clearInterval(musicTimer);
