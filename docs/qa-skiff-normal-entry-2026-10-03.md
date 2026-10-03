@@ -112,7 +112,10 @@ one-player root Practice path spends 175 wood, banks `[10, 0]` before movement,
 then stops and recovers an observed 1.6-food load and returns it, ending food
 `[11.6, 0]` within existing fractional precision. The inactive seat retains
 its full 60 fish and 175 wood. The integrating PR records exact reviewed and
-postmerge source heads; this is local DOM/server tool acceptance only.
+postmerge source heads in [PR181](https://github.com/lbeezr/thousand-unit-skirmish/pull/181);
+this is local DOM/server tool acceptance only. Integration with main `9feda66`
+consumes the identical audio-fixture repair independently shipped in PR165;
+the final PR therefore has no fixture or runtime-map diff.
 
 The staging root was checked without credentials at 22:46 UTC: the network
 proxy denied its CONNECT tunnel with HTTP 403 before application access. An
