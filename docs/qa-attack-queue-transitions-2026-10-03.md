@@ -94,6 +94,24 @@ final integration and postmerge checks. Prior [parked-Worker congestion](qa-stat
 and [cargo delivery](qa-queued-cargo-return-2026-10-03.md) evidence and native
 recipes retain their original scope.
 
+## Reviewed main integration
+
+Main's Stone economy and schema-23 recovery changes at `80cb855` were integrated
+cleanly into `e6f20b415e6389c1d72313642cbc87414b00f3f4`. The production diff
+against that main remains the one target-cell expression and its comment.
+The integrated server SHA-256 is
+`e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f`.
+
+All 121 focused checks pass again. All twelve replay pairs repeat exactly and
+their trace hashes match the earlier candidate. A new native run on the clean
+committed integration passes for both seats, with 510 ticks to arrival, boats
+remaining visible at 106 / 113 HP, and both pursuit/arrival restarts stable.
+Its recorded HEAD and source hash are retained alongside the original evidence.
+Independent review reports no findings, with 94 integration checks passing and
+the attack/visibility/queue helpers and CI registrations confirmed unchanged.
+Documentation, syntax and diff checks pass. [PR 121](https://github.com/lbeezr/thousand-unit-skirmish/pull/121)
+records exact-head merge and postmerge results; hosted CI is not claimed green.
+
 ## Reproduction and ordinary browser recipe
 
 Run `node --test scripts/attack-target-geometry.test.mjs`,
