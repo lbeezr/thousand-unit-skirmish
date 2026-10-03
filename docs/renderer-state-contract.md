@@ -73,6 +73,12 @@ A reused generation starts its first sprite frame at elapsed zero, including
 when death and replacement are coalesced between snapshots or atlas loading is
 still pending. The prior generation's clock cannot advance the new role's clip.
 
+Sprite event lifetimes prefer authored action clips over idle placeholders for
+missing headings. An 850 ms attack must not inherit a 1,000 ms idle hold and
+replay its opening keys. Static action poses and entirely idle-backed legacy
+states retain their existing duration. The [unit animation audit](qa-unit-animation-audit-2026-10-03.md)
+records actual coverage, frame/transition checks and pending native acceptance.
+
 Movement heading uses `atan2(serverX - renderX, serverZ - renderZ)` through the
 existing interpolation and turn-rate limits. Stationary gathering uses the
 optional authoritative unit-row `workHeading` at index 15. A fresh attack retains

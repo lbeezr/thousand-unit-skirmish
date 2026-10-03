@@ -11,6 +11,8 @@ to develop. Map/build were not supplied. This audit uses main `d063ad5`, after
 the army target-reacquisition fix. It does not turn the reported time into a
 measured balance result. Refreshed against main `32f11d5` before publishing;
 the separate Lab/Practice entry fix is included in that base.
+Before final publication, main `4467986` was merged cleanly; subsequent capture,
+animation and type-check changes do not alter the audited server predicate.
 
 This slice names the **existing** authored rules in the normal objective strip
 and brief, corrects the elimination explanation, and adds native recovery-edge
@@ -173,9 +175,10 @@ source revision, deployment revision, observations and remaining limits.
 Quick original modes are useful testing grounds while the longer sprawling RTS
 develops in parallel. Do not equate CBA, Castle Blood or HeroFest from memory;
 the user's one-castle, automatic-unit evolution recollection may be a different
-variant. Dedicated research is forthcoming for AoE variants, Warcraft variants
-and real-time Risk. This slice introduces no spawning cadence, kill threshold,
-copied assets or third-party rules.
+variant. The three delivered AoE, Warcraft and real-time Risk reports have now
+been read through Library. Consumer-local materialization failed, so local bytes
+and their checksums are not verified here. This slice introduces no spawning
+cadence, kill threshold, copied assets or third-party rules.
 
 The parent's early research synthesis favors a first original one-stronghold,
 free-wave army battle with kill-based evolution, rather than a full hero-ability
@@ -185,6 +188,63 @@ Fixed-path cooperative tower defense is a subsequent candidate; champion surviva
 depends on abilities/revive. Inspect all two-team and `enemy = 1 - team`
 assumptions before adding allied players or NPC opponents. These are research
 directions, not registered modes or selected balance values.
+
+### First playable proposal — pending parent decision
+
+Choose a small original **Ascendant Siege** experiment: two human opponents,
+one designated stronghold each, free controllable reinforcements and one visible
+kill-earned evolution. Keep economy Skirmish developing alongside it. The
+[official AoE scenario spotlight](https://www.ageofempires.com/news/play-these-custom-scenarios-with-all-your-friends-in-aoe-ii-de/)
+describes automatic reinforcements and kill rewards in CBA; the historical
+[HeroFest guide](https://www.voobly.com/forum/thread/39063) describes a main castle
+and automatically spawned troops that evolve with kills. Those are inspiration,
+not one universal ruleset or evidence of a particular match duration. Blizzard's
+[Footmen Frenzy archive](https://classic.battle.net/mod/mapvault_archive1.shtml)
+also describes automatically produced armies and destroying opposing buildings.
+
+Proposed smallest contract and acceptance:
+
+- Register its own versioned `matchModeId` through the interface above. Use a
+  compact two-seat arena with existing terrain and units, visible routes between
+  homes and legal reinforcement exits. Both lobby seats see the rule and the
+  supported player count. Advertise human 1v1 initially; PvE remains unavailable
+  until a mode-specific bot is accepted. No cooperative or NPC-team expansion.
+- Designate each starting home as its single non-rebuildable stronghold with a
+  stable identity. Its destruction defeats that seat even if Workers, armies or
+  other producers survive; both destroyed on the same simulation tick draw.
+  Evaluate after the tick's damage has resolved, so iteration order cannot choose
+  the winner. Other building losses and capturing the center never end this mode.
+  Existing Skirmish elimination remains a different contract.
+- Emit bounded free waves on the authoritative match clock while the stronghold
+  lives. Observe a wave, rally it, fight with it and receive another wave in a
+  normal match. Respect a fixed entity cap and legal spawn space, show why a wave
+  is blocked, and avoid an accumulated burst after a cap or blocked exit clears.
+  Cadence, army cap and strength require a small measured balance pass.
+- Credit actual enemy military deaths exactly once. Self-deletion, friendly,
+  neutral, Worker or foundation losses cannot farm progression; reconnect and
+  duplicate death processing cannot repeat credit. Show progress and one tier
+  transition in normal combat. The first evolution changes future reinforcements;
+  it does not replace or heal existing selected units. Thresholds remain original,
+  explicit tuning values rather than copied variant constants.
+- Keep the first slice to army command, waves, progression and stronghold defeat.
+  Builders, repair, heroes, revive, doctrines and supply-post income are later
+  extensions. Start without optional supply sites so their effect can be measured
+  separately. This does not add Castle Blood spawning to ordinary Skirmish.
+- A fresh match waits for its supported seats before its timers start; existing
+  started-match disconnect behavior is disclosed. Reset clears waves/progression,
+  and restart restores the exact clock, next-wave state, core identities, scores,
+  credited-death state and final result. Final results stop waves and scoring.
+  No new resignation or inactivity-draw contract is assumed.
+- Accept on the served committed release through the ordinary menu/lobby, in both
+  seats: fight, evolve, destroy the enemy core, observe one terminal result, then
+  rematch. Add simultaneous core defeat, capped/blocked spawn, no-player start,
+  disconnect/recovery and duplicate-credit proof. Record first contact, evolution
+  and victory times, camping/feed/spawn-camp observations and entity counts; do
+  not promise a duration or ordinary Skirmish balance before those measurements.
+
+The victory owner proposes the terminal contract; the parent must agree its
+mode/lobby boundary and assign mode-specific AI support before implementation.
+This proposal adds no gameplay or default change to the clarity PR.
 
 A future original reinforcement/evolution mode and a future territorial mode
 remain distinct from center capture. For the fantasy-world territorial direction,

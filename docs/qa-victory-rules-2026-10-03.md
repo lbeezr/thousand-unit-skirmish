@@ -6,8 +6,10 @@
 
 Owner: the delegated victory-audit task. Audited main `d063ad5`, then refreshed
 against `32f11d5`, including separate target-reacquisition and Lab/Practice entry
-fixes. This small source slice names existing authored
-Objective Control/Elimination rules in the normal objective strip and brief. It
+fixes. After the later main `4467986` integration, focused tests and documentation
+links were checked again; the native server source remains unchanged. This source
+names existing Objective Control/Elimination rules in the normal objective strip
+and brief. It
 explains ownership-based holds, Workers, recoverable producers, Town Center loss
 and Skiff exclusions. It changes no map rule, timer, server win evaluation, AI
 policy, lobby configuration or default. The proposal remains a shared decision.
