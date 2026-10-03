@@ -37,12 +37,16 @@ and compile-only consumer explicitly. The current boundary covers
 [`canopy ages`](../src/forest-age-composition.mjs),
 [`woodland habitat`](../src/forest-habitat.mjs) and
 [`Underbough species`](../src/forest-composition.mjs), plus
-[`resource stages`](../src/resource-visual-state.mjs): numeric cell identity and
+[`resource stages`](../src/resource-visual-state.mjs) and
+[`terrain masks`](../src/terrain-blend.mjs): numeric cell identity and
 world/grid coordinates, immutable authored rectangles, a row-major depth grid,
 numeric seed/spacing/factors, the five existing species IDs and four resource
 stage IDs with complete numeric fallback scales. Resource transition inputs
 remain unknown until membership checking narrows the filtered output. The runtime
 algorithms and serialization are unchanged; no generated JavaScript is shipped.
+Terrain masks take immutable paint/forest rectangles and numeric dimensions/seed,
+then return ordered RGBA `Uint8Array` buffers with numeric pixel dimensions;
+forest ground masks require a null check before use.
 
 `node --test scripts/check-types.test.mjs` compiles intentionally invalid
 consumers in memory and requires the expected diagnostics for missing/string
@@ -57,6 +61,12 @@ covers the existing thresholds and dirty-batch ordering;
 without coercion and the stock/stage/scale path. Numeric stock/scale
 contracts apply to checked callers; legacy runtime coercion/fallback behavior
 is retained for unselected callers.
+Terrain cases reject missing/misspelled rectangle fields, numeric material IDs,
+string dimensions/seed/flags, floating-point pixel buffers, input mutation and
+unguarded absent masks. `terrain-blend-scenario.mjs` retains normalized joins,
+catalog/compression independence, organic-edge determinism and input preservation.
+Static types check buffer/dimension kinds; exact RGBA length and valid geometry
+remain runtime/scenario checks.
 
 Both checks run in `npm test`; existing `forest-age-scenario.mjs`, `forest-habitat-scenario.mjs`
 and `forest-composition-scenario.mjs` cover determinism, seed variation, spacing,
@@ -72,14 +82,14 @@ separate from static types; unchecked callers are outside this initial boundary.
 The incremental type-safety stream owns this list and takes one bounded,
 reviewed/tested slice at a time under the existing merge authority. Completed:
 canopy identity/factors ([PR #162](https://github.com/lbeezr/thousand-unit-skirmish/pull/162)),
-woodland habitat/species ([PR #167](https://github.com/lbeezr/thousand-unit-skirmish/pull/167))
-and resource stages. Re-rank after each merge from current
+woodland habitat/species ([PR #167](https://github.com/lbeezr/thousand-unit-skirmish/pull/167)),
+resource stages ([PR #178](https://github.com/lbeezr/thousand-unit-skirmish/pull/178))
+and terrain masks. Re-rank after each merge from current
 main and active PR scopes; record a concrete defect risk before expanding.
 
 | Rank | Boundary | Defect risk and required proof | Scope/dependency |
 | --- | --- | --- | --- |
-| 1 | [Terrain paint-mask output](../src/terrain-blend.mjs) | Rectangle coordinate drift and mismatched typed pixel buffers/dimensions; negative shapes plus exact RGBA/mask-order parity. | Pure helper only; do not touch shaders, atlas binding or renderer moves. |
-| 2 | [Outbound WebSocket frame leaf](../src/networking/websocket-frame.mjs) | Byte-length/accounting and binary payload confusion; negative calls plus literal byte/ownership parity. | [Extraction #164](https://github.com/lbeezr/thousand-unit-skirmish/pull/164) is merged; consume its existing signatures without leaf edits. [Scope coordination](https://github.com/lbeezr/thousand-unit-skirmish/pull/164#issuecomment-5974326194) retains coverage and scopes Node ambient types separately. |
+| 1 | [Outbound WebSocket frame leaf](../src/networking/websocket-frame.mjs) | Byte-length/accounting and binary payload confusion; negative calls plus literal byte/ownership parity. | [Extraction #164](https://github.com/lbeezr/thousand-unit-skirmish/pull/164) is merged; consume its existing signatures without leaf edits. [Scope coordination](https://github.com/lbeezr/thousand-unit-skirmish/pull/164#issuecomment-5974326194) retains coverage and scopes Node ambient types separately. |
 
 Do not expand into audio reader/production/research extractions, gameplay roots
 or active render/entry hotspots to chase coverage. Coordinate concrete moves or
