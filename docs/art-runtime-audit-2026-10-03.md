@@ -102,8 +102,9 @@ constructed/ruined geometry or authored silhouette consistency.
 
 ## Recommended single-scene polish proof
 
-Use the existing Underbough Rootways mature-settlement scene with one Town Center,
-Workers, a mixed woodland edge and water in the same view. Keep the same map
+Use the existing Underbough Rootways map with a bounded mature settlement: one
+Town Center, Workers, a mixed woodland edge and water in the same view. This scene
+is a proposed fixture, not an existing captured acceptance. Keep the same map
 revision/checkpoint, seed, camera transform, viewport/DPR, zoom, unit load and
 audio settings for every before/after. Work in this order:
 
