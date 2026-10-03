@@ -20,6 +20,13 @@ adds offline source/anchor/yaw acceptance tests and a minimal future integration
 proposal. It preserves the current live binding while the eight original view
 files and their separate publication permission remain unavailable.
 
+The [default static-direction runtime](qa-sheep-static-directions-runtime-2026-10-03.md)
+now validates an optional authored nose pose and keeps immutable UV geometry per
+supported frame. The normal game renderer selects that exact view, preserving
+independent simultaneous Sheep; missing views use the rotated geometric proxy.
+Omitted poses still use the existing public north illustration. The eight
+private views and all animal animations remain absent.
+
 ## Implemented neutral food foundation — 3 October 2026
 
 [Authoritative state](../src/wildlife-state.mjs) admits one optional resource-node
