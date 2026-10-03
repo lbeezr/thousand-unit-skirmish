@@ -3,6 +3,8 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import { UnitLifecycleAudioGate, OrderAudioGate, workAudioEvents } from '../src/audio-policy.mjs';
+import { createWaterStudyFishBinding } from '../src/water-study-fish-binding.mjs';
+import { selectWaterStudyFish } from '../src/water-study-state.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const declaration = (name, next) => source.slice(source.indexOf(`function ${name}(`), source.indexOf(`\nfunction ${next}(`));
@@ -91,6 +93,30 @@ test('accepted state packets alone drive fish cues through recovery, omitted sto
   f.context.localTeam = null;
   current.message(packet);
   assert.equal(f.fishUpdates.at(-1).options.spectator, true);
+});
+
+test('a malformed packet clears fish activity before the existing fog parser can throw', () => {
+  const f = fixture(0), connection = f.connections[0];
+  const definition = { id: map.id, width: 8, height: 8, fogOfWar: true,
+    obstacles: [{ column: 3, row: 1, width: 4, height: 6, material: 'water' }],
+    resourceNodes: [{ id: 'fish', type: 'food', resourceVariant: 'shore-fish', x: -1.5, z: -.5, stock: 60 }] };
+  let schools = [];
+  f.context.waterStudyFishBinding = createWaterStudyFishBinding(definition, { userData: {
+    updateWaterStudyFish(packet) { schools = selectWaterStudyFish(definition, packet); return schools; },
+  } });
+  const bytes = Buffer.alloc(16); bytes[6] = (2 << 4) | (2 << 6);
+  const packet = { ...snapshot(0), resourceNodes: [{ id: 'fish', type: 'food', resourceVariant: 'shore-fish', stock: 1 }],
+    visibility: { columns: 8, rows: 8, data: bytes.toString('base64') } };
+  Object.assign(f.context, { atob, MAP_WIDTH: 8, MAP_HEIGHT: 8, fogMesh: { visible: true } });
+  for (const resources of [[], [{ ...packet.resourceNodes[0], stock: 0 }]]) {
+    f.context.updateFogFromState = () => {};
+    connection.message(packet);
+    assert.equal(schools.length, 1);
+    vm.runInContext(declaration('updateFogFromState', 'setForestTreeVisual'), f.context);
+    assert.throws(() => connection.message({ ...packet, resourceNodes: resources,
+      visibility: { ...packet.visibility, data: '!' } }), /Invalid character/);
+    assert.deepEqual(schools, [], 'legacy fog parse failure cannot retain a prior school');
+  }
 });
 
 for (const team of [0,1]) for (const reconnect of [false,true]) {

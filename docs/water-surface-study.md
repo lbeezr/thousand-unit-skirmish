@@ -97,6 +97,8 @@ visibility and requires state 2 at both bank and water center. Explored state 1,
 unseen state 0 and reserved state 3 do not qualify. A missing/malformed packet,
 wrong map ID, missing resource list or contradictory fog setting clears activity.
 It never reads the UI's remembered stocks or a previous decoded fog grid.
+The binding runs before the existing fog overlay parser, so that parser's
+malformed-base64 exception cannot preserve prior fish activity.
 Only an explicit no-fog snapshot or the current spectator seat's unrestricted
 server snapshot with `visibility: null` qualifies without cell visibility.
 Disconnect/map rebuild clears instances before fresh recovery/rematch state.

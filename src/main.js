@@ -4462,8 +4462,8 @@ function applyState(state, initial = false) {
     attackFocusMesh.instanceMatrix.needsUpdate = true;
     attackFocusDirty = false;
   }
-  updateFogFromState(state);
   waterStudyFishBinding?.update(state, { spectator: localTeam === null });
+  updateFogFromState(state);
   applyForestState(state);
   if (Array.isArray(state.objectives)) updateObjectives(state.objectives);
   updateVictoryHoldCard(state.victoryHold, state.winner, state.winnerReason, state.scenarioClockStarted);
