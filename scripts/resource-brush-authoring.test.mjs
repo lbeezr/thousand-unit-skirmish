@@ -43,7 +43,7 @@ test('seeded preview is read-only, uses an explicit total budget and materialize
 
 test('collisions, invalid budget and exhausted node slots reject without writes or history', () => {
   for (const change of [{ totalStock: undefined }, { totalStock: 4 }, { totalStock: 1.5 },
-    { x: 8.5, z: 10.5 }, { x: 9.5, z: 10.5 }, { radius: 1 }, { nodesPerPatch: 17 }]) {
+    { x: 8.5, z: 10.5 }, { x: 9.5, z: 10.5 }, { radius: 1 }, { nodesPerPatch: 17 }, { distribution: 'unknown' }]) {
     const { state, editor } = fixture(), original = clone(state);
     assert.throws(() => editor.preview({ ...options, ...change }));
     assert.deepEqual(state, original); assert.equal(editor.canUndo, false);
@@ -126,7 +126,7 @@ test('history is bounded by operations and JSON save/load keeps node identities 
 
 test('ordinary host save/restart/load preserves applied brush nodes and serves the adapter import graph', async t => {
   const { state, editor } = fixture(); state.map.startingArmySize = 16;
-  add(editor); add(editor, { ...options, type: 'wood', x: 10.5, z: -10.5, totalStock: 103 });
+  add(editor); add(editor, { ...options, type: 'wood', x: 10.5, z: -10.5, totalStock: 103, distribution: 'core-falloff' });
   const expected = clone(state.map.resourceNodes);
   const room = await createFortifiedFixture({ mapPath: 'maps/open-field.json', timeoutMs: 15_000 });
   t.after(() => room.dispose()); await room.start();

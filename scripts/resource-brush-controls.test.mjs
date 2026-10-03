@@ -57,6 +57,7 @@ function fixture(t) {
 test('actual client callbacks use live terrain; preview and overlay are read-only and deterministic', t => {
   const f = fixture(t), original = copy(f.w.editorResourceNodes);
   assert.equal(f.field('count').value, '5'); assert.equal(f.field('radius').value, '4');
+  assert.equal(f.field('distribution').value, 'uniform');
   f.set('stock', 101); const a = f.preview();
   const legacy = previewResourceBrush({ ...f.w.editorDefinition, terrainPatches: [], resourceNodes: original },
     { type: 'food', seed: 93000, totalStock: 101, x: -8.5, z: -10.5 });
@@ -69,6 +70,27 @@ test('actual client callbacks use live terrain; preview and overlay are read-onl
   assert.equal(f.w.ui.studioResourceStock.value, '13.5');
   f.set('seed', 93001); assert.equal(f.markers().length, 0); assert.notDeepEqual(f.preview(), a);
   assert.equal(f.w.captureMapStudioFormValues()['studio-brush-seed'].value, '93001');
+});
+
+test('core falloff flows through preview, conserved budget, undo/redo and draft restoration', t => {
+  const f = fixture(t), original = copy(f.w.editorResourceNodes);
+  f.set('stock', 101); f.set('count', 9); f.set('radius', 8);
+  const spread = f.preview(); f.set('distribution', 'core-falloff');
+  assert.equal(f.button('apply').disabled, true); assert.equal(f.markers().length, 0);
+  assert.equal(f.field('stock').value, '101');
+  const core = f.preview(); assert.notDeepEqual(core, spread); assert.deepEqual(f.preview(), core);
+  assert.equal(core.reduce((sum, n) => sum + n.stock, 0), 101);
+  assert.match(f.status.textContent, /9 food markers.*101 total stock.*Core falloff/);
+  assert.deepEqual(f.w.editorResourceNodes, original);
+  const values = f.w.captureMapStudioFormValues(); assert.equal(values['studio-brush-distribution'].value, 'core-falloff');
+  f.button('apply').click(); const applied = copy(f.w.editorResourceNodes);
+  f.set('distribution', 'uniform'); assert.equal(f.button('undo').disabled, false);
+  f.button('undo').click(); assert.deepEqual(f.w.editorResourceNodes, original);
+  f.button('redo').click(); assert.deepEqual(f.w.editorResourceNodes, applied);
+  assert.deepEqual(applied.slice(1).map(n => ({ x: n.x + 32, y: n.z + 32, stock: n.stock })), core);
+  f.w.restoreMapStudioFormValues(values); f.w.resourceBrushControls.reset();
+  assert.equal(f.field('distribution').value, 'core-falloff'); assert.equal(f.button('undo').disabled, true);
+  assert.deepEqual(f.w.editorResourceNodes, applied);
 });
 
 test('tight and wider seeded patches share one unchanged budget and keep two-cell spacing', t => {
@@ -98,7 +120,7 @@ test('shape edits cancel pending receipts but retain exact apply/undo/redo and S
   f.w.editorResourceNodes.push({ id: 'fish', type: 'food', x: 16.5, z: 10.5, stock: 42.25, resourceVariant: 'shore-fish' });
   f.w.blockers = [{ column: 49, row: 42, width: 1, height: 1, material: 'water' }];
   const original = copy(f.w.editorResourceNodes);
-  f.set('stock', 101); f.set('count', 3); f.set('radius', 2);
+  f.set('stock', 101); f.set('count', 3); f.set('radius', 2); f.set('distribution', 'core-falloff');
   const nodes = f.preview(); f.button('apply').click();
   const applied = copy(f.w.editorResourceNodes), selection = f.w.selectedEditorResourceId;
   assert.deepEqual(applied.slice(0, 2), original);

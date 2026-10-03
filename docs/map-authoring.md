@@ -254,6 +254,14 @@ node array with collision-free IDs. Failure changes neither input. This helper
 does not mirror the new patch or add editor controls; Millrace's mirrored
 replacement generator and materialized map remain unchanged.
 
+Optional `distribution: "core-falloff"` favors candidates near the anchor through
+seeded weighted ordering, creating a denser core and thinner edge. All safe cells
+within the radius remain candidates; spacing or obstructions can push markers
+outward or make the requested count impossible. The default `"uniform"` retains
+the original ordering and exact seeded results. Both additive and mirrored
+helpers use this option without changing stock division or accessibility checks.
+It compiles to ordinary nodes, adding no saved-map field or runtime rule.
+
 [`src/resource-brush-authoring.mjs`](../src/resource-brush-authoring.mjs) adds a
 reusable operation and thin editor adapter on that helper. `previewResourceBrush`
 returns immutable seeded marker positions and the explicit patch-total settings;
@@ -275,13 +283,16 @@ also belongs after populate, draft restore or resize. Save ordinary map nodes an
 selection through the existing draft/JSON format; reload starts fresh history.
 
 In Map Studio, **Resource patches** is open by default under **Resource nodes**. Choose food
-or wood, a whole-number seed, **markers** (1–16), **radius** (1–8 cells) and
-**total patch stock** (at least one stock per marker). Defaults remain five
+or wood, a whole-number seed, **markers** (1–16), **radius** (1–8 cells),
+**distribution** (**Even spread** or **Core falloff**) and **total patch stock**
+(at least one stock per marker). Defaults remain Even spread with five
 markers within four cells. Changing count or radius keeps the entered total;
 it does not multiply stock or change existing nodes. For example, 101 stock
 with three markers and radius 2 creates a tight pocket with stocks 34/34/33;
 five markers and radius 8 can spread the same budget farther from the anchor.
-Radius is a maximum distance, with two-cell minimum spacing. A crowded patch
+Choose Core falloff for a denser center and loose edge at the same count, seed,
+radius and budget. Changing distribution cancels the pending preview. Radius
+is a maximum distance, with two-cell minimum spacing. A crowded patch
 may not fit: reduce the count, widen the radius or choose another anchor.
 Enter a one-based anchor column/row and press **Preview**, or **Pick anchor**
 and click a map cell. Dashed preview markers show individual stocks; the status
@@ -294,7 +305,7 @@ Map Studio. The existing single-node tools retain their 300 food / 500 wood defa
 **Undo patch** and **Redo patch** restore nodes and selection independently of
 scenario history. Changing brush settings cancels the preview; changing resource
 stock, terrain, elevation, spawns or dimensions clears brush history. Loading or
-restoring a map starts a fresh session. Count and radius use ordinary draft form
+restoring a map starts a fresh session. Count, radius and distribution use ordinary draft form
 fields. Applied nodes use the existing draft,
 publish and JSON paths. No preview receipt or history is persisted. The controls
 are isolated in [`src/resource-brush-controls.mjs`](../src/resource-brush-controls.mjs).
