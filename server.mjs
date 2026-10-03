@@ -1,6 +1,7 @@
 import { findInvalidResourceVariant, isShoreFish, validResourceVariantState } from './src/shore-fishing.mjs';
 import { farmHarvestNode, farmHarvestNodeId, farmBuildingId, validFarmStock } from './src/farm-harvest.mjs';
 import { createDockPlacementContext } from './src/dock-placement.mjs';
+import { createWaterUnitRuntime, waterUnitOccupiedCells } from './src/water-unit-runtime.mjs';
 import { activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted, validWildlifeNodeDefinition, validWildlifeNodeState } from './src/wildlife-state.mjs';
 import { migrateMillraceSheepCheckpoint } from './src/millrace-sheep.mjs';
 import { validateMapRegion } from './src/regions.mjs';
@@ -290,7 +291,7 @@ function validateMapDefinition(definition, filename) {
         || trigger.woodReward < 0 || trigger.woodReward > MAX_OBJECTIVE_FOOD_REWARD))
       || (trigger.unitCount !== undefined && (!Number.isInteger(trigger.unitCount)
         || trigger.unitCount < 0 || trigger.unitCount > 25))
-      || (trigger.unitKind !== undefined && !Object.hasOwn(UNIT_DEFINITIONS, trigger.unitKind))
+      || (trigger.unitKind !== undefined && (!Object.hasOwn(UNIT_DEFINITIONS, trigger.unitKind) || UNIT_DEFINITIONS[trigger.unitKind].movementDomain === 'water'))
       || (trigger.requires !== undefined && (typeof trigger.requires !== 'string'
         || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(trigger.requires)))
       || (trigger.requiresAll !== undefined && (trigger.requires !== undefined
@@ -398,7 +399,7 @@ function validateMapDefinition(definition, filename) {
         || event.woodReward < 0 || event.woodReward > MAX_OBJECTIVE_FOOD_REWARD))
       || (event.unitCount !== undefined && (!Number.isInteger(event.unitCount)
         || event.unitCount < 0 || event.unitCount > 25))
-      || (event.unitKind !== undefined && !Object.hasOwn(UNIT_DEFINITIONS, event.unitKind))
+      || (event.unitKind !== undefined && (!Object.hasOwn(UNIT_DEFINITIONS, event.unitKind) || UNIT_DEFINITIONS[event.unitKind].movementDomain === 'water'))
       || (event.technologyReward !== undefined && (typeof event.technologyReward !== 'string'
         || !researchRulesFor(event.technologyReward)))
       || (event.message !== undefined && (typeof event.message !== 'string' || event.message.length > 120))
@@ -638,6 +639,7 @@ const MIME_TYPES = {
 const configuredMatchMapId = pveLaunchOptions?.mapId ?? defaultMapId;
 let mapDefinition = mapCatalog.get(configuredMatchMapId);
 let dockPlacementContext = null;
+let waterUnitRuntime = null;
 if (!mapDefinition) {
   throw new Error(`The selected PvE map "${pveLaunchOptions?.mapId}" is not shipped with this server.`);
 }
@@ -771,6 +773,7 @@ function resetVictoryHoldState() {
 function activateMap(definition) {
   mapDefinition = definition;
   dockPlacementContext = createDockPlacementContext(definition, BUILDING_DEFINITIONS.dock);
+  waterUnitRuntime = createWaterUnitRuntime(definition);
   MAP_WIDTH = definition.width;
   MAP_HEIGHT = definition.height;
   MAP_HALF_X = MAP_WIDTH / 2;
@@ -1612,6 +1615,7 @@ function nextUnitGeneration(id) {
 
 function makeUnit(id, team, x, z, kind, teamSlot) {
   return {
+    ...(UNIT_DEFINITIONS[kind].movementDomain === 'water' ? { movementDomain: 'water', waterMoveBlocked: false } : {}),
     id, generation: nextUnitGeneration(id), team, x, z, hp: UNIT_DEFINITIONS[kind].combat.maxHp, path: [], pathIndex: 0,
     attackTargetId: -1, attackBuildingTargetId: -1,
     // Mirror the opening attack cadence by roster slot, not the global unit ID.
@@ -1864,6 +1868,12 @@ function aliveCounts() {
   return alive;
 }
 
+function eliminationAliveCounts() {
+  const alive = [0, 0];
+  for (const unit of units) if (unit.hp > 0 && unit.movementDomain !== 'water') alive[unit.team]++;
+  return alive;
+}
+
 const visionRaysByRadius = new Map([[VISION_RADIUS_CELLS, VISION_RAYS], [VISION_RADIUS_CELLS + HIGH_GROUND_VISION_BONUS_CELLS, HIGH_GROUND_VISION_RAYS]]);
 function markVisionFrom(team, x, z, sight = VISION_RADIUS_CELLS) {
   const centerColumn = Math.floor(x + MAP_HALF_X);
@@ -2037,7 +2047,7 @@ function scenarioReinforcementRoster() {
 }
 
 function deliverScenarioReinforcements(team, requestedCount, kind, reservedCells, roster) {
-  if (requestedCount <= 0) return 0;
+  if (requestedCount <= 0 || UNIT_DEFINITIONS[kind]?.movementDomain === 'water') return 0;
   const teamCapacity = Math.max(0, MAX_TEAM_ROSTER - roster.alive[team] - roster.queued[team]);
   const globalCapacity = Math.max(0,
     MAX_UNITS - roster.alive[0] - roster.alive[1] - roster.totalQueued);
@@ -2254,7 +2264,7 @@ function evaluateScenarioTriggers(deltaSeconds) {
     matchWinnerReason = 'capture';
     dirty = true;
   } else if (!mapDefinition.triggers.some((trigger) => trigger.victory === true)) {
-    const alive = aliveCounts();
+    const alive = eliminationAliveCounts();
     if (alive[0] === 0 || alive[1] === 0) {
       const azureCanRecover = canTeamStillFieldUnits(0, alive);
       const emberCanRecover = canTeamStillFieldUnits(1, alive);
@@ -2702,6 +2712,9 @@ function validateMatchCheckpoint(snapshot) {
     && state.unitGenerationCounters.length === MAX_UNITS
     && state.unitGenerationCounters.every((value) => integerIn(value, 0, 0xffffffff)), 'invalid unit generation table');
   const allowedKinds = new Set(Object.keys(UNIT_DEFINITIONS));
+  const checkpointWaterRuntime = state.units.some(unit => unit?.kind === 'skiff' || unit?.movementDomain === 'water')
+    ? createWaterUnitRuntime(definition) : null;
+  const checkpointWaterOccupancy = new Set();
   for (let index = 0; index < state.units.length; index++) {
     const unit = state.units[index];
     assertSnapshot(unit && typeof unit === 'object' && unit.id === index, `invalid unit ${index}`);
@@ -2716,6 +2729,21 @@ function validateMatchCheckpoint(snapshot) {
       && Array.isArray(unit.queuedWaypoints) && unit.queuedWaypoints.length <= MAX_QUEUED_WAYPOINTS
       && unit.queuedWaypoints.every((waypoint) => waypoint && integerIn(waypoint.destination, 0, cellCount - 1)
         && typeof waypoint.attackMove === 'boolean'), `invalid unit route ${index}`);
+    if (UNIT_DEFINITIONS[unit.kind].movementDomain === 'water') {
+      assertSnapshot(unit.movementDomain === 'water' && typeof unit.waterMoveBlocked === 'boolean'
+        && checkpointWaterRuntime.validRoute(unit) && unit.queuedWaypoints.length === 0
+        && unit.persistentOrder == null && unit.wallBuildOrder == null && !unit.attackMove
+        && !unit.movePlanningPending && !unit.attackMoveRouteReady
+        && unit.attackMoveResumePath === null && unit.attackTargetId === -1 && unit.attackBuildingTargetId === -1
+        && unit.cargo === 0 && unit.cargoType === null && unit.gatherNodeId === null
+        && unit.gatherForestCell === -1 && unit.gatherPhase === '' && unit.buildingTargetId === null && !unit.repairing,
+      `invalid water unit state ${index}`);
+      assertSnapshot(!unit.waterMoveBlocked || unit.pathIndex < unit.path.length, `blocked water unit without route ${index}`);
+      if (unit.hp > 0) for (const cell of waterUnitOccupiedCells(checkpointWaterRuntime.graph, unit)) {
+        assertSnapshot(!checkpointWaterOccupancy.has(cell), `overlapping water units ${index}`);
+        checkpointWaterOccupancy.add(cell);
+      }
+    } else assertSnapshot(unit.movementDomain === undefined || unit.movementDomain === 'land', `invalid land movement domain ${index}`);
     assertSnapshot(integerIn(unit.attackTargetId, -1, state.units.length - 1)
       && integerIn(unit.attackBuildingTargetId, -1, Number.MAX_SAFE_INTEGER)
       && finite(unit.attackCooldown) && finite(unit.repathTimer)
@@ -3235,13 +3263,17 @@ function migrateMatchCheckpoint(snapshot) {
   // A content pin predating Farm cannot claim a paid planting or harvest state.
   if (snapshot?.rulesetRevision !== GAMEPLAY_RULESET_REVISION
     && snapshot?.state?.buildings?.some(building => building.type === 'farm' || building.harvestStock !== undefined)) return snapshot;
+  if (((Array.isArray(snapshot?.state?.units) && snapshot.state.units.some(unit => unit?.kind === 'skiff' || unit?.movementDomain === 'water'))
+    || (Array.isArray(snapshot?.state?.buildings) && snapshot.state.buildings.some(building => Array.isArray(building?.productionQueue) && building.productionQueue.includes('skiff'))))
+    && ![GAMEPLAY_RULESET_REVISION, 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'].includes(snapshot.rulesetRevision)) return snapshot;
+
   // Older definitions cannot claim content that they never admitted.
   if (Array.isArray(snapshot?.state?.buildings)
     && snapshot.state.buildings.some(building => building?.type === 'palisade-gate' || (building && Object.hasOwn(building, 'gateOpen')))
-    && ![GAMEPLAY_RULESET_REVISION, 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b'].includes(snapshot.rulesetRevision)) return snapshot;
-
+    && ![GAMEPLAY_RULESET_REVISION, 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b', 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'].includes(snapshot.rulesetRevision)) return snapshot;
   if (Array.isArray(snapshot?.state?.buildings) && snapshot.state.buildings.some(building => building?.type === 'dock')
-    && ![GAMEPLAY_RULESET_REVISION, 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6', 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b'].includes(snapshot.rulesetRevision)) return snapshot;
+    && ![GAMEPLAY_RULESET_REVISION, 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b', 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6', 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'].includes(snapshot.rulesetRevision)) return snapshot;
+
   if (snapshot?.schemaVersion === 2 && Array.isArray(snapshot.state?.units)) {
     for (const unit of snapshot.state.units) {
       if (unit && typeof unit === 'object' && !Array.isArray(unit) && unit.queuedWaypoints === undefined) {
@@ -3385,9 +3417,15 @@ function migrateMatchCheckpoint(snapshot) {
   if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
     && snapshot.rulesetRevision === 'v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2'
     && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
-  // Farm adds optional stock only to new paid buildings; prior Gate work is unchanged.
+  // Exact pre-Skiff Gate/Dock content retains its existing buildings, banks and work.
   if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
-    && snapshot.rulesetRevision === 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b') snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+    && snapshot.rulesetRevision === 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b'
+    && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+
+  // Farm adds only new paid crop state; retain exact pre-Farm Skiff work unchanged.
+  if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
+    && snapshot.rulesetRevision === 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'
+    && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
   if ([1, 2, 3].includes(snapshot?.rulesVersion)
     && !snapshot?.mapDefinition?.elevationPatches?.some((patch) => patch.level > 0)) {
@@ -4342,17 +4380,21 @@ function queuedUnitsForTeam(team) {
 }
 
 function canTeamStillFieldUnits(team, alive) {
-  const queued = queuedUnitsForTeam(team);
+  const queued = (workerProduction[team]?.queue || 0) + buildings.filter(building => building.team === team)
+    .reduce((sum, building) => sum + (building.productionQueue || []).filter(kind => UNIT_DEFINITIONS[kind].movementDomain !== 'water').length, 0);
   if (alive[team] + queued > 0) return true;
-  const totalRoster = alive[0] + alive[1] + queuedUnitsTotal();
-  if (queued >= MAX_TEAM_ROSTER || totalRoster >= MAX_UNITS) return false;
-  if (teamFood[team] + 1e-9 >= WORKER_FOOD_COST
+  const roster = aliveCounts();
+  const totalRoster = roster[0] + roster[1] + queuedUnitsTotal();
+  if (roster[team] + queuedUnitsForTeam(team) >= MAX_TEAM_ROSTER || totalRoster >= MAX_UNITS) return false;
+  const availablePopulation = populationForTeam(team).available;
+  if (availablePopulation >= UNIT_DEFINITIONS.worker.population && teamFood[team] + 1e-9 >= WORKER_FOOD_COST
     && findTownCenterProductionSpawnCell(team) >= 0) return true;
   const upgrades = teamUpgrades[team];
   return buildings.some((building) => building.team === team && building.complete
     && BUILDING_DEFINITIONS[building.type].products.some((kind) => {
       const rule = UNIT_DEFINITIONS[kind];
-      return teamFood[team] + 1e-9 >= rule.cost.food && teamWood[team] + 1e-9 >= rule.cost.wood
+      return rule.movementDomain !== 'water' && availablePopulation >= rule.population
+        && teamFood[team] + 1e-9 >= rule.cost.food && teamWood[team] + 1e-9 >= rule.cost.wood
         && !missingGameplayPrerequisites(rule, upgrades).length && findProductionSpawnCell(building) >= 0;
     }));
 }
@@ -4736,7 +4778,7 @@ function routesShareWalkableComponent(startCell, goalCell) {
 function activeMoveRoutesRemainConnected(previousComponents) {
   const pending = pendingMoveAssignmentsByUnit();
   for (const unit of units) {
-    if (unit.hp <= 0) continue;
+    if (unit.hp <= 0 || unit.movementDomain === 'water') continue;
     const current = worldToCell(unit.x, unit.z);
     for (const waypoint of unit.queuedWaypoints) {
       if (!routesShareWalkableComponent(current, waypoint.destination)) return false;
@@ -4806,6 +4848,7 @@ function replanPathsBlockedBy(footprint) {
   const pending = pendingMoveAssignmentsByUnit();
   const repairs = [];
   for (const unit of units) {
+    if (unit.movementDomain === 'water') continue;
     if (unit.hp <= 0) continue;
     const pendingAssignment = pending.get(unit.id);
     const pendingPathStale = pendingAssignment
@@ -4968,7 +5011,7 @@ function captureBuildingConnectivity() {
     if (resourceNodeStates.get(node.id)?.stock !== 0) addAccess([worldToCell(node.x, node.z)]);
   }
   for (const unit of units) {
-    if (unit.hp > 0) addAccess([nearestOpenCell(worldToCell(unit.x, unit.z))]);
+    if (unit.hp > 0 && unit.movementDomain !== 'water') addAccess([nearestOpenCell(worldToCell(unit.x, unit.z))]);
   }
   for (const building of buildings) addAccess(buildingAccessCells(building.footprint));
   for (const center of homeTownCenters) if (center.hp > 0) addAccess(buildingAccessCells(center.footprint));
@@ -5376,6 +5419,11 @@ function setGateOpen(player, command) {
 }
 
 function findProductionSpawnCell(building) {
+  if (building.type === 'dock') {
+    const berth = createDockPlacementContext(mapDefinition, BUILDING_DEFINITIONS.dock,
+      { reservedCells: waterUnitRuntime.reservations(units) }).accessAt(worldToCell(building.x, building.z));
+    return berth.valid ? berth.spawnCell : -1;
+  }
   const accessCells = buildingAccessCells(building.footprint);
   if (accessCells.length === 0) return -1;
   const teamSpawn = spawnByTeam[building.team];
@@ -5443,6 +5491,9 @@ function setBuildingRallyPoint(player, command) {
     sendOrderNotice(player, command, 'RALLY POINT REJECTED · SELECT YOUR PRODUCTION BUILDING');
     return;
   }
+  if (building.type === 'dock') {
+    sendOrderNotice(player, command, 'RALLY POINT REJECTED · MOVE THE SKIFF AFTER SPAWN'); return;
+  }
   if (command.clear === true) {
     building.rallyCell = -1;
     dirty = true;
@@ -5469,6 +5520,7 @@ function setBuildingRallyPoint(player, command) {
 }
 
 function routeProducedUnitToBuildingRally(unit, building) {
+  if (unit?.movementDomain === 'water') return;
   if (!unit || !Number.isInteger(building.rallyCell) || building.rallyCell < 0) return;
   const teamComponent = walkableComponents[nearestOpenCell(worldToCell(unit.x, unit.z))];
   const resourceCells = new Set(mapDefinition.resourceNodes.map((node) => worldToCell(node.x, node.z)));
@@ -5766,6 +5818,21 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
     sendOrderNotice(player, command, 'MOVE REJECTED · NO VALID UNITS');
     return;
   }
+  if (selectedUnits.some(unit => unit.movementDomain === 'water')) {
+    if (selectedUnits.length !== 1 || selectedUnits.some(unit => unit.movementDomain !== 'water')) {
+      sendOrderNotice(player, command, 'MOVE REJECTED · SELECT ONE SKIFF'); return;
+    }
+    if (command.type !== 'move' || command.queue === true || buildingTargetId !== null) {
+      sendOrderNotice(player, command, 'MOVE REJECTED · SKIFF SUPPORTS MOVE AND STOP'); return;
+    }
+    const unit = selectedUnits[0];
+    const route = waterUnitRuntime.plan(unit, Number(command.x), Number(command.z), units);
+    if (route.status !== 'found') { sendOrderNotice(player, command, `MOVE REJECTED · WATER ROUTE ${route.status.toUpperCase()}`); return; }
+    assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: [unit.id] });
+    unit.path = route.cells; unit.pathIndex = 0; unit.moveGoalCell = route.cells.at(-1);
+    unit.waterMoveBlocked = false; dirty = true;
+    sendOrderNotice(player, command, 'MOVE ORDER · SKIFF WATER ROUTE'); return;
+  }
 
   const centerX = Number(command.x);
   const centerZ = Number(command.z);
@@ -5919,6 +5986,10 @@ function assignFollowOrder(player, command) {
     || !Number.isInteger(command.targetGeneration) || target.generation !== command.targetGeneration) {
     sendOrderNotice(player, command, 'FOLLOW REJECTED · LIVING FRIENDLY TARGET REQUIRED'); return;
   }
+  if (commandUnits(command).some(unit => unit.team === player.team && unit.movementDomain === 'water')
+    || target.movementDomain === 'water') {
+    sendOrderNotice(player, command, 'FOLLOW REJECTED · SKIFF SUPPORTS MOVE AND STOP'); return;
+  }
   const selectedUnits = commandUnits(command).filter(unit => unit.hp > 0 && unit.team === player.team && unit !== target);
   const selectedSet = new Set(selectedUnits.map(unit => unit.id));
   let leader = target; const visited = new Set();
@@ -6001,6 +6072,7 @@ function assignStationaryOrder(player, command) {
     cancelGatherOrder(unit);
     clearAttackMoveOrder(unit);
     unit.holdingPosition = command.type === 'holdPosition';
+    if (unit.movementDomain === 'water') unit.waterMoveBlocked = false;
     unit.orderRevision++;
     unit.movePlanningPending = false;
     unit.moveGoalCell = -1;
@@ -6146,6 +6218,7 @@ function assignAttackBuilding(player, command) {
 function advanceQueuedWaypoints() {
   const assignments = [];
   const assignmentsByStart = new Map();
+  let goalsByTeam = null;
 
   for (const unit of units) {
     if (unit.hp <= 0) {
@@ -6167,11 +6240,33 @@ function advanceQueuedWaypoints() {
     if (activeGoal < 0 || currentCell !== activeGoal) continue;
 
     const waypoint = unit.queuedWaypoints.shift();
-    const destination = nearestOpenCell(waypoint.destination);
+    let destination = nearestOpenCell(waypoint.destination);
+    if (unit.kind !== 'worker' && !isWalkable(waypoint.destination)) {
+      // A wall can cover a later formation destination while the first leg is
+      // still moving. Protect active and queued friendly destinations before
+      // relocating it; populate the bounded fallback pool only when needed.
+      if (!goalsByTeam) {
+        goalsByTeam = [new Set(), new Set()];
+        const pending = pendingMoveAssignmentsByUnit();
+        for (const other of units) {
+          if (other.hp <= 0 || other.kind === 'worker') continue;
+          const goals = goalsByTeam[other.team];
+          const goal = pending.get(other.id)?.destination ?? other.moveGoalCell;
+          if (isWalkable(goal)) goals.add(goal);
+          for (const queued of other.queuedWaypoints) {
+            if (isWalkable(queued.destination)) goals.add(queued.destination);
+          }
+        }
+      }
+      const available = findAvailableCellNear(waypoint.destination,
+        walkableComponents[currentCell], goalsByTeam[unit.team]);
+      if (available >= 0) destination = available;
+    }
     if (destination < 0) {
       dirty = true;
       continue;
     }
+    if (goalsByTeam && unit.kind !== 'worker') goalsByTeam[unit.team].add(destination);
     unit.orderRevision++;
     unit.path = [];
     unit.pathIndex = 0;
@@ -6649,7 +6744,7 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
       while (otherId !== -1) {
         const other = units[otherId];
         const nextId = spatialBucketNext[otherId];
-        if (otherId === unit.id || other.hp <= 0) {
+        if (otherId === unit.id || other.hp <= 0 || (other.movementDomain || 'land') !== (unit.movementDomain || 'land')) {
           otherId = nextId;
           continue;
         }
@@ -6741,7 +6836,7 @@ function spreadInteractingUnits() {
         for (let index = 0; index < count && visited < maxCandidates; index++) {
           const other = units[otherId];
           otherId = spatialBucketTeamNext[unit.team][otherId];
-          if (other.id === unit.id || other.hp <= 0) continue;
+          if (other.id === unit.id || other.hp <= 0 || (other.movementDomain || 'land') !== (unit.movementDomain || 'land')) continue;
           visited++;
           let dx = unit.x - other.x;
           let dz = unit.z - other.z;
@@ -7033,9 +7128,10 @@ function simulateTick() {
   updateBuildingAndProduction();
   updateTeamResearch();
 
+  if (waterUnitRuntime.advance(units, STEP_SECONDS, unit => UNIT_DEFINITIONS[unit.kind].combat.moveSpeed)) dirty = true;
   const blockedRouteRepairs = [];
   for (const unit of units) {
-    if (unit.hp <= 0) continue;
+    if (unit.hp <= 0 || unit.movementDomain === 'water') continue;
     // A target can move within its current cell after the flow path ends.
     // Close that last gap directly so the attacker does not wait in place.
     if (!unit.holdingPosition && unit.pathIndex >= unit.path.length && unit.attackTargetId >= 0) {
@@ -7706,9 +7802,10 @@ const server = createServer(async (request, response) => {
     'src/scenario-regions.mjs', 'src/scenario-authoring.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
     'src/shore-fishing.mjs', 'src/shore-fishing-placeholder.mjs', 'src/shore-fishing-placement.mjs',
     'src/dock-placement.mjs', 'src/water-route-graph.mjs',
+    'src/water-unit-runtime.mjs',
     'src/worker-fishing-presentation.mjs',
     'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs', 'src/resource-brush-controls.mjs',
-    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
+    'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/selection-portrait.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
     'src/terrain-authoring.mjs', 'src/terrain-height.mjs', 'src/regions.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs',
@@ -7718,7 +7815,7 @@ const server = createServer(async (request, response) => {
     'src/audio-composition.mjs', 'src/audio-composer.mjs', 'src/audio-composer.css',
     'audio-studio.html', 'audio-zones.html', 'src/audio-zones.mjs', 'src/audio-zones.css', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs',
     'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs',
-    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
+    'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs', 'src/shore-vegetation.mjs', 'src/meadow-vegetation.mjs', 'src/garden-vegetation.mjs', 'src/environment-plant-assets.mjs', 'src/podvine-view-pack.mjs', 'src/podvine-worked-pack.mjs', 'src/podvine-low-pack.mjs', 'src/veilcap-view-pack.mjs', 'src/veilcap-worked-pack.mjs', 'src/sunbloom-view-pack.mjs', 'src/sunbloom-crown-pack.mjs', 'src/sunbloom-worked-pack.mjs', 'src/sunbloom-low-pack.mjs', 'src/terrain-blend.mjs', 'src/terrain-texture-sampling.mjs', 'src/terrain-atmosphere.mjs', 'src/terrain-materials.mjs',
     'src/forest-habitat.mjs', 'src/forest-age-composition.mjs', 'src/forest-composition.mjs', 'src/regional-ground-kits.mjs', 'src/water-contours.mjs',
   ].includes(relative);

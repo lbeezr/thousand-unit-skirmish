@@ -11,7 +11,7 @@ import { frontierBuildingPreviewUrl } from '../src/frontier-building-preview.mjs
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const routing = server.slice(server.indexOf('function workerDropoffCandidates('), server.indexOf('function routeWorker(unit,'));
 const client = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
-const commandUI = client.slice(client.indexOf('function updateCommandUI('), client.indexOf('function syncTargetOrderUI('));
+const commandUI = client.slice(client.indexOf('function buildingSupportsRally('), client.indexOf('function syncTargetOrderUI('));
 function serverFunction(name) {
   const start = server.indexOf(`function ${name}(`);
   assert.ok(start >= 0, `${name} exists`);

@@ -58,7 +58,7 @@ bank/debit/refund work before any node type is admitted.
 
 The existing checkpoint schema remains 22. Current content pins require valid
 Farm stock, construction state and owned harvest references. The exact preceding
-Gate pin migrates Farm-free paid work, including Gate/Dock rows, without changing
+Skiff pin migrates Farm-free paid work, including Gate/Dock/Skiff rows, without changing
 banks, crop sources or unit identity. The older Dock pin retains its existing
 Gate-free migration. Older content pins cannot claim a Farm or planted stock. Restart
 restores unfinished work, remaining crop, cargo and depletion; rematch starts

@@ -53,8 +53,18 @@ test('a prior content pin migrates existing work but cannot claim planted stock'
   assert.equal(context.migrateMatchCheckpoint(recent).rulesetRevision, GAMEPLAY_RULESET_REVISION);
   assert.equal(recent.state.buildings[0], gate);
   assert.equal(recent.state.units[0].buildTargetId, 7);
+  const skiffPin = 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54';
+  const water = { schemaVersion: 22, rulesetRevision: skiffPin, state: {
+    teamFood: [12.5, 20], teamWood: [25, 19.75],
+    buildings: [gate, { type: 'dock', productionQueue: ['skiff'], queue: 1, trainingRemaining: 4 }],
+    units: [{ kind: 'skiff', movementDomain: 'water', path: [31, 32] }],
+  } };
+  const retained = structuredClone(water.state);
+  assert.equal(context.migrateMatchCheckpoint(water).rulesetRevision, GAMEPLAY_RULESET_REVISION);
+  assert.deepEqual({ ...water.state, units: water.state.units.map(({ persistentOrder, ...unit }) => unit) }, retained,
+    'pre-Farm Skiff boats, paid queues and fractional banks remain unchanged');
   for (const building of [{ type: 'farm', harvestStock: 200 }, { type: 'house', harvestStock: 200 }]) {
-    for (const pin of [previous, gatePin]) {
+    for (const pin of [previous, gatePin, skiffPin]) {
       const invalid = { schemaVersion: 22, rulesetRevision: pin, state: { buildings: [building], units: [] } };
       assert.equal(context.migrateMatchCheckpoint(invalid).rulesetRevision, pin);
     }

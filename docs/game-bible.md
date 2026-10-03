@@ -250,14 +250,30 @@ food-trip savings and Storehouse's additional wood service, with no human matche
 or tuning change. Construction time and food/wood prices remain separate costs.
 The [Mill art brief](frontier-mill-art-brief.md) retains its food-only land role.
 
+Farm is one finite paid planting: provisional 60 wood, 15 accumulated
+Worker-seconds, 600 HP and a 3 × 3 footprint. Completion creates 200 food stock
+once; only owned Workers harvest it at the ordinary rate and carry capacity,
+then deposit at Mill, Storehouse or Town Center. It grants no passive income,
+drop-off or population. An exhausted plot clears without refund; fresh planting
+costs another 60 wood and creates a new source ID. Unfinished cancellation uses
+the ordinary proportional refund and supplies no crop. Destruction discards
+remaining stock while preserving carried food; repair never regrows stock.
+Recovery retains progress, stock and cargo. The [Farm contract](farm-finite-planting.md)
+defines the explicit procedural House placeholder and current AI harvest limits.
+These values are tunable prototype choices, with no human balance acceptance.
+
 Dock is a shoreline foundation: provisional 100 wood, 20 accumulated
 Worker-seconds, 1,200 HP and a 3 × 3 dry level-zero land footprint. Placement
 requires an adjacent clear 3 × 3 authored-water berth and an outward water
 route step, while preserving ordinary land access and active routes. It uses
 the existing building lifecycle and an explicit procedural House placeholder.
-It offers no production, drop-off, population or resource bonus; boats remain
-unavailable. [The Dock contract](dock-shoreline-foundation.md) defines the
-current berth handoff and subsequent naval work.
+It produces an unarmed **Skiff (placeholder)** for provisional 75 wood, 10 seconds
+and one population: 120 HP and 2.4 cells/second. Select one boat to Move or Stop
+within authored level-zero water; hull occupancy can pause routes and production.
+Dock has no rally, drop-off, population or resource bonus. Skiffs carry no fish,
+passengers or combat capability and cannot alone keep an elimination match open.
+[The Dock contract](dock-shoreline-foundation.md) defines placement;
+[Skiff movement](skiff-water-movement.md) defines the paid runtime and recovery.
 
 A one-cell Palisade uses **provisional test tuning** of 15 wood, five accumulated
 Worker-seconds and 300 HP. Whole lines reserve occupancy and pay atomically;

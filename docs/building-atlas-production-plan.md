@@ -20,7 +20,7 @@ A **sprite sheet** is the regular grid of views/states. A **texture atlas** is t
 
 ## Current roster and production queue
 
-`src/gameplay-definitions.mjs` defines eleven buildings, including Palisade, the food-only Mill and the shoreline Dock foundation. Mill and Dock use explicit procedural House placeholders; Dock provides no boats or drop-off. The original eight-building source concept family remains its own art outcome. Footprint is square occupancy in world cells, not image canvas size. Existing direct sprites cover Barracks and Archery Range. Town Center uses captured directional lifecycle artwork through `src/captured-building-art.mjs`; `src/main.js` passes the live building state. Some pack READMEs still describe older static-center behavior, so use current code and expansion/repair rules when planning coverage.
+`src/gameplay-definitions.mjs` defines thirteen buildings, including Palisade Wall/Gate, the food-only Mill, finite Farm and shoreline Dock. Mill, Farm and Dock use explicit procedural House placeholders; Dock produces provisional Skiffs and provides no drop-off. The original eight-building source concept family remains its own art outcome. Footprint is square occupancy in world cells, not image canvas size. Existing direct sprites cover Barracks and Archery Range. Town Center uses captured directional lifecycle artwork through `src/captured-building-art.mjs`; `src/main.js` passes the live building state. Some pack READMEs still describe older static-center behavior, so use current code and expansion/repair rules when planning coverage.
 
 | Order | Building | Current footprint | Gameplay identity | Art brief and useful reference |
 | --- | --- | --- | --- | --- |
@@ -28,7 +28,9 @@ A **sprite sheet** is the regular grid of views/states. A **texture atlas** is t
 | 1 | House | 3 × 3 | Population | Clearly smaller domestic cottage, one principal roof and chimney. Thatched cottage/timber-frame house. Produce alongside Town Center as the scale control. |
 | 2 | Storehouse | 3 × 3 | Food and wood drop-off | Broad loading opening, covered bay, crates/logs and grain storage. Granary/lumber shed. Must read differently from House. |
 | Later | [Mill brief](frontier-mill-art-brief.md) | 3 × 3 | Food-only drop-off; provisional 75 wood / 15 seconds / 1,000 HP | Procedural House placeholder is currently playable. A distinct land-placeable grain-mill silhouette can follow; rotating machinery requires a separate layer/clip. Artwork does not change its drop-off rules. |
+| Later | [Finite Farm](farm-finite-planting.md) | 3 × 3 | Owner-harvested 200-food pool; provisional 60 wood / 15 Worker-seconds / 600 HP | Explicit House placeholder. Distinct field plus modest shed should expose productive/exhausted states without implying growth or automatic replanting. |
 | Later | Palisade | 1 × 1 | Paid defensive blocker | Existing procedural wall profile; finished connection and lifecycle art belongs to the wall outcome. It is outside the original eight-building concept family. |
+| Later | [Palisade Gate](palisade-gates.md) | 1 × 1 | Paid manually operated passage | Procedural open/closed leaves share the Wall profile; no finished Gatehouse artwork is claimed. |
 | Later | [Dock foundation](dock-shoreline-foundation.md) | 3 × 3 dry land beside water | Paid shoreline building; no production, drop-off or population | Procedural House placeholder; actual berth and future vessel rules belong to the Dock outcome. No pier or finished Dock art is claimed. |
 | 2 | Stable | 3 × 3 | Scout/Rider production and mounted research | Open stalls, paddock cues, hay and tack; recognizable horse-scale entrances. Reference stable. |
 | 2 | Workshop | 3 × 3 | Siege production and engineering | Wide assembly bay, beams, wheels and unfinished machinery. Forge/longhouse vocabulary; distinguish from a domestic smithy. |
@@ -72,12 +74,11 @@ These are absent from the current building registry. Prepare reference boards or
 
 | Candidate | Proposed role to resolve | Reference/design direction |
 | --- | --- | --- |
-| Farm | Renewable food plot and Worker interaction; [finite planting proposal](farm-capability-proposal.md) is the bounded first candidate | Crop plot plus modest shed/farmhouse; prioritize field visibility. Price/yield, ownership, destruction and recoverable planted stock remain open; growth and replanting are later decisions. |
 | Lumber camp | Dedicated wood economy, if distinct from Storehouse | Lumber shed, log piles and covered cutting bay. |
 | Blacksmith | Dedicated upgrade building, if research moves from producers | Forge, chimney and open work area. Current forging research does not imply a separate implemented smithy. |
 | Market | Trade/economy function | Market stall/courtyard. |
 | Castle/Keep | Major defensive or advanced-production role | Selected keep/castle family; substantially stronger fortified identity than civic Town Center. |
-| Future walls and Gatehouse | Defense beyond the registered Palisade; access control | Modular straight/corner/end/gate pieces; gate topology and open/closed states need their own contract. |
+| Future walls and Gatehouse | Defense beyond the registered Palisade Wall/Gate | Larger fortified gatehouse and wall families need selected gameplay roles and footprints. The one-cell manual Gate is listed above. |
 | Temple and specialty buildings | Only after a gameplay role is selected | Chapel/shrine references; no full production queue yet. Dock's implemented shoreline foundation is listed above. |
 
 ## Delivery sequence and review evidence
