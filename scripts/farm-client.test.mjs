@@ -40,7 +40,7 @@ for (const team of [0, 1]) test(`deterministic seat ${team} observes and harvest
     buildings, resourceNodes: buildings.map(farmHarvestNode),
     workerProduction: [null, null], teamResearch: [{}, {}], objectives: [] };
   const map = { id: state.mapId, width: 32, height: 32, resourceNodes: [], spawnPoints: [{ team: 0, x: -10, z: 0 }, { team: 1, x: 10, z: 0 }] };
-  const observation = toOpponentObservation(state, team, { map });
+  const observation = toOpponentObservation(state, team, map);
   assert.deepEqual(observation.resourceNodes.map(node => node.id), [`farm:${10 + team}`]);
   const policy = createDeterministicPolicy(19);
   const orders = policy.next(observation);
@@ -49,9 +49,15 @@ for (const team of [0, 1]) test(`deterministic seat ${team} observes and harvest
   state.visibility = { columns: 32, rows: 32, data: Buffer.alloc(32 * 32 / 4).toString('base64') };
   const neutral = { id: 'hidden-neutral-food', type: 'food', stock: 200, x: 8, z: 8 };
   map.resourceNodes.push(neutral); state.resourceNodes.push(neutral);
-  const fogged = toOpponentObservation(state, team, { map });
+  const fogged = toOpponentObservation(state, team, map);
   assert.deepEqual(fogged.resourceNodes.map(node => node.id), [`farm:${10 + team}`],
     'owned building remains usable under fog, while neutral and enemy food stay hidden');
   assert.ok(createDeterministicPolicy(19).next(fogged).some(order =>
     order.type === 'gather' && order.nodeId === `farm:${10 + team}`));
+  const mask = Buffer.alloc(32 * 32 / 4);
+  const neutralCell = (neutral.z + 16) * 32 + neutral.x + 16;
+  mask[neutralCell >> 2] |= 2 << ((neutralCell & 3) * 2);
+  state.visibility.data = mask.toString('base64');
+  assert.deepEqual(toOpponentObservation(state, team, map).resourceNodes.map(node => node.id),
+    [`farm:${10 + team}`, neutral.id], 'a visible authored food source is admitted through the map adapter');
 });

@@ -89,7 +89,7 @@ try {
   for (const team of [0, 1]) {
     const state = await clients[team].state(state => state.buildings.some(building =>
       building.id === originalIds[team] && building.complete), 'completed owned Farm observation');
-    const observation = toOpponentObservation(state, team, { map });
+    const observation = toOpponentObservation(state, team, map);
     assert.deepEqual(observation.resourceNodes.map(node => node.id), [farmHarvestNodeId(originalIds[team])]);
     const gather = createDeterministicPolicy(19).next(observation).find(order =>
       order.type === 'gather' && order.nodeId === farmHarvestNodeId(originalIds[team]));

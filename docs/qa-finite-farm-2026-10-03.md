@@ -76,6 +76,14 @@ Documentation checks passed (456 Markdown files, 2,993 local links). The native
 PvE WebSocket smoke also passed both bot seats with an injected fake provider;
 no paid provider request was made.
 
+Independent final live review verified fogged owned Farms and accepted policy
+Gather on both seats. It caught a fixture argument error (`{map}` rather than
+the adapter's direct `map` argument), which did not affect runtime or Farm
+source observations but made the neutral filtering test vacuous. Both callers
+are corrected, and a visible-neutral positive control now proves authored food
+passes the map adapter when its cell is visible. The recorded `1aa5e34` run
+predates that fixture correction; postmerge checks below use the corrected call.
+
 ## Reproduce and next observations
 
 ```sh
