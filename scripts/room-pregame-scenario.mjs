@@ -77,6 +77,9 @@ function client(roomId, token) {
     else if (message.type === 'state') value.state = message;
     if (message.lobby) value.lobby = message.lobby;
     else if (message.state?.lobby) value.lobby = message.state.lobby;
+    if (message.map) value.map = message.map;
+    if (value.ui && message.type === 'lobbyRejected') value.ui.reject(message.message, message.lobby, value.welcome.player);
+    else if (value.ui && (message.lobby || message.state?.lobby)) value.ui.update(value.lobby, value.welcome.player, true, value.map);
   }
   let buffer = Buffer.alloc(0);
   function consume(chunk) {
@@ -124,6 +127,14 @@ function client(roomId, token) {
     else request.destroy();
     await until(() => value.closed, 'client disconnect');
   };
+  value.mountUi = () => {
+    value.dom = new JSDOM('<dialog></dialog>', { url: `${origin}/?room=${roomId}` });
+    const root = value.dom.window.document.querySelector('dialog');
+    root.showModal = () => { root.open = true; }; root.close = () => { root.open = false; };
+    value.ui = createRoomLobby({ root, send: command => { value.send(command); return true; }, copyInvite: () => {} });
+    value.ui.update(value.lobby, value.welcome.player, true, value.map);
+    value.node = id => root.querySelector(`#${id}`);
+  };
   return value;
 }
 const map = {
@@ -169,8 +180,40 @@ try {
   }
   await duplicate.close();
   await spectator.close();
+  // Drive the actual DOM lobby through two real sockets and the mode owner's
+  // projected catalogs. These are protocol/DOM checks, not native pixel proof.
+  await host.exchange({ type: 'configureLobby', revision: host.lobby.revision,
+    mapId: 'bellweather-millrace', matchModeId: 'authored', matchModeVersion: 1 }, row => row.type === 'lobby' && row.lobby.mapId === 'bellweather-millrace');
+  await until(() => guest.lobby.mapId === 'bellweather-millrace', 'shared mode-capable map');
+  host.mountUi(); guest.mountUi();
+  assert.equal(guest.node('lobby-match-mode').disabled, true);
+  const modeSelect = host.node('lobby-match-mode');
+  modeSelect.value = 'skirmish@1'; modeSelect.dispatchEvent(new host.dom.window.Event('change'));
+  assert.equal(modeSelect.disabled, true); assert.equal(host.node('lobby-ready').disabled, true);
+  modeSelect.dispatchEvent(new host.dom.window.Event('change'));
+  await until(() => host.lobby.matchModeId === 'skirmish' && guest.lobby.matchModeId === 'skirmish'
+    && modeSelect.value === 'skirmish@1', 'both UI catalogs accept Skirmish');
+  assert.match(guest.node('lobby-match-mode-summary').textContent, /Capture posts grant bonuses/);
+  assert.equal(host.map.triggers.some(trigger => trigger.victory), false);
+  assert.deepEqual([...modeSelect.options].map(option => option.value), ['objective-control@1', 'skirmish@1']);
+  host.node('lobby-ready').click();
+  await until(() => host.lobby.seats.some(seat => seat.id === hostIdentity.id && seat.ready), 'UI host ready');
+  guest.node('lobby-ready').click();
+  await until(() => host.lobby.canLaunch && guest.lobby.canLaunch, 'UI two-seat launch gate');
+  await host.exchange({ type: 'configureLobby', revision: host.lobby.revision,
+    matchModeId: 'skirmish', matchModeVersion: 999 }, row => row.type === 'lobbyRejected');
+  assert.equal(host.lobby.canLaunch, true, 'rejected identity cannot clear accepted readiness');
+  const mapSelect = host.node('lobby-map');
+  assert.match([...mapSelect.options].find(option => option.value === map.id).textContent, /Authored Rules/);
+  mapSelect.value = map.id; mapSelect.dispatchEvent(new host.dom.window.Event('change'));
+  await until(() => host.lobby.mapId === map.id && guest.lobby.mapId === map.id
+    && host.lobby.matchModeId === 'authored' && guest.lobby.matchModeId === 'authored', 'atomic UI authored-map fallback');
+  assert.ok(host.lobby.seats.every(seat => !seat.ready));
+  assert.equal(host.node('lobby-launch').disabled, true);
+  assert.equal(host.state.scenarioClockStarted, false);
+  assert.match(host.node('lobby-match-mode').textContent, /Authored Rules/);
+  assert.match(host.node('lobby-match-mode-summary').textContent, /authored victory rules/);
   await host.exchange({ type: 'launchMatch', revision: host.lobby.revision }, row => row.type === 'lobbyRejected');
-  await host.exchange({ type: 'configureLobby', revision: host.lobby.revision, mapId: map.id }, row => row.type === 'mapChange');
   await until(() => guest.lobby.mapId === map.id, 'shared configuration');
   const stableUnits = host.state.units.map(row => row.slice(0, 5));
   const checkpoint = async predicate => {
@@ -337,10 +380,12 @@ try {
     'ready invalidation and stale revisions', 'duplicate-token spectators', 'pregame and running restart recovery',
     'launch/unready race and duplicate launch', 'running seat rejoin', 'Map Studio publication returns to lobby',
     'rematch and duplicate reset', 'host disconnect/rejoin/expiry/replacement', 'late join and public module delivery',
-    'spectator reservation/vacancy guidance and existing-seat rejoin'] }));
+    'spectator reservation/vacancy guidance and existing-seat rejoin',
+    'two real DOM lobbies configure Skirmish and atomically return to authored rules'] }));
 } finally {
   const closing = Promise.allSettled(clients.map(value => value.close()));
   await stop();
   await closing;
+  for (const value of clients) value.dom?.window.close();
   await rm(directory, { recursive: true, force: true });
 }
