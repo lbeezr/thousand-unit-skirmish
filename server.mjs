@@ -3851,6 +3851,9 @@ function clearAttackMoveOrder(unit) {
 }
 
 function clearAttackTarget(unit) {
+  const completedMilitaryAttack = !unit.attackMove && !unit.holdingPosition
+    && (unit.attackTargetId >= 0 || unit.attackBuildingTargetId >= 0)
+    && unit.kind !== 'worker' && unitHasCapability(unit, 'attack');
   unit.attackTargetId = -1;
   unit.attackBuildingTargetId = -1;
   unit.repathTimer = 0;
@@ -3871,6 +3874,17 @@ function clearAttackTarget(unit) {
     unit.pathIndex = 0;
     if (unit.queuedWaypoints.length > 0) {
       unit.moveGoalCell = nearestOpenCell(worldToCell(unit.x, unit.z));
+    } else if (completedMilitaryAttack) {
+      // A focused Attack finishes with local combat intent. Reuse attack-move's
+      // bounded visible acquisition, pursuit leash and fair path budget; there
+      // is no new travel destination and explicit Stop/Move still replace it.
+      unit.attackMove = true;
+      unit.attackMoveRouteReady = true;
+      unit.moveGoalCell = nearestOpenCell(worldToCell(unit.x, unit.z));
+      unit.attackMoveAnchorX = unit.x;
+      unit.attackMoveAnchorZ = unit.z;
+      unit.attackMoveScanTick = tickNumber;
+      dirty = true;
     }
   }
 }

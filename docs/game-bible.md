@@ -66,6 +66,16 @@ reconnect/checkpoint recovery. A new move, gather, build, repair, or attack orde
 replaces Hold; a rematch clears it. Held workers are excluded from idle-worker
 selection.
 
+Direct military Attack prioritizes the clicked visible target. When that target
+dies, becomes hidden or becomes unreachable, an unqueued order continues against
+nearby visible enemy units using attack-move's 4.8-cell acquisition radius,
+8-cell pursuit leash and bounded path planning. A queued order takes precedence
+after target loss. Workers finish a focused Attack without starting this local
+continuation. Stop, Hold Position and a replacement Move still interrupt combat.
+Units that have only moved or spawned remain idle; persistent combat stances are
+a separate planned feature. [Reproduction and acceptance](qa-army-attack-continuation-2026-10-03.md)
+distinguish this fix from default movement and stance behavior.
+
 Patrol (`P`) targets ground and repeatedly travels between each selected unit's
 current cell and its assigned formation destination. It engages visible enemies
 using the existing attack-move leash, then resumes the interrupted route. Follow
