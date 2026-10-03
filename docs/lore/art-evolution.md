@@ -66,28 +66,34 @@ remain available. This folder tracks 42 source PNGs (67,093,682 bytes), includin
 failed and revised candidates. Its prompt and coverage records preserve the
 distinction between source availability and acceptance.
 
-## Private Worker fishing study — 3 October 2026
+## Worker fishing study and approved SE release — 3 October 2026
 
 The [Worker fishing record](../worker-fishing-animation.md) preserves a new
 four-key south-east hand-net study against the approved shipped Human Worker:
 crouch, reach, retrieve and collect. The private Library pose sheet, timed WebP
 and source/runtime archive retain the exact generation request, original output,
 seed, rejected/draft prompt distinction, hashes, extraction bounds and explicit
-ground registration. Its source remains private; this wiki publishes no new
-candidate pixels. No paid Meshy task or credits were used.
+ground registration. The user subsequently approved public game-image release.
+The [SE source and calibration record](../art-direction/human-roster-v1/fishing-SE-v1/README.md)
+now preserves those art iterations in the repository; full 3D sources and private
+capture receipts remain private. No paid Meshy task or credits were used.
+
+![Approved SE crouch, reach, retrieve and collect poses beside shipped idle](../art-direction/human-roster-v1/fishing-SE-v1/worker-fishing-SE-study.png)
 
 The study is one actual heading and a blocking loop, with scale/root and creative
 acceptance pending. It does not establish eight directional clips or regional
 fishing lore. The default code integration keeps resource authority on land,
-faces the derived water spot, and uses safe shipped-art fallbacks until approved
-fishing keys are installed. Initial cloud sandbox/storage failure prevented a
+faces the derived water spot, and selects the four approved SE keys from Human
+v3 pack 0.14.0 in default play. All other fishing headings use the exact-facing
+shipped-art fallback. Initial cloud sandbox/storage failure prevented a
 game capture. Later private Mac QA exposed the amber bank ring obscuring the
 hands/net. The scoped
 renderer correction draws that ring beneath the Worker sprite while retaining
 its land, stock and fog contracts; after-fix readability/root/seam acceptance is
 still open. The private handoff preserves both capture attempts and Library
-identities; the linked public record describes calibration pitfalls. No actor-art regeneration or public pixel
-publication was used to address the marker occlusion.
+identities; the linked public record describes calibration pitfalls. Actor-art
+regeneration was unnecessary for the marker correction. The later authorized
+pixel integration retains the original four approved poses unchanged.
 
 ## Other preserved families
 

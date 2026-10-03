@@ -5,7 +5,7 @@
 
 The requested first direction is a Worker crouching on the bank, reaching with
 a small net, retrieving it and collecting the catch while facing the actual
-water spot. A private four-key south-east study now supplies those moments.
+water spot. The approved four-key south-east study now supplies those moments.
 It reads as a low hand-net/scoop action; a thrown cast net remains unproduced.
 This is one pose/blocking loop, not accepted smooth animation or eight-heading
 coverage. The default approved Human Worker is the reference, rather than the
@@ -24,17 +24,31 @@ at that variant. It follows the same task ownership/fog filtering as index 15's
 heading. Existing attack indices 11–13 and work-audio index 14 retain their
 meaning. The client clears absent/unknown identity on every snapshot, including
 legacy rows, travel, return and Stop. A reused generation clears it before the
-first transform. Cargo remains `food`, checkpoint schema remains 22 and match
-rules remain 6. Frame timing cannot award a catch or alter gathering rates.
+first transform. Cargo remains `food`; fishing art does not change the current
+checkpoint schema or match rules. Frame timing cannot award a catch or alter gathering rates.
 
 The ordinary sprite renderer selects `gather-fish` with its own elapsed clock.
 Movement, attack, repair and defeat retain their precedence. Only an authored
 fishing clip at the actual current heading can play. Missing fishing clips use
 that heading's food/gather/idle fallback even in approximate preview lanes.
 There is no mirroring, nearest-heading fishing reuse or permanent pilot flag.
-The public atlas currently has no fishing keys; its art remains unchanged.
-The private copied pack loads through this same default state selection when
-installed. Publishing candidate pixels still needs the user's approval.
+Human v3 pack 0.14.0 includes the four approved `gather-fish/south-east` keys
+through that default selection, without a fishing preview flag. All prior
+Worker action pixels, frames and clips remain intact. The other seven headings
+and Boughward retain their exact food/gather/idle fallback. Both Lab banks face
+east/west at their central land markers, so this first SE clip appears when a
+Worker approaches the real bank from the corresponding diagonal; those two
+ordinary central approaches do not falsely reuse SE art.
+
+The user explicitly approved publishing the fishing game images and continuing
+their default integration. That publication authority is distinct from complete
+motion, root and eight-heading acceptance. Full 3D source models remain private.
+
+The [public SE source record](art-direction/human-roster-v1/fishing-SE-v1/README.md)
+preserves the raw image, exact executed request, earlier draft, seed/reference,
+extracted and registered keys, calibration and hashes. The normalized key and
+runtime PNG bytes are unchanged from the approved private pilot. This is still
+a four-pose, 1,300 ms hand-net blocking loop rather than a smooth final animation.
 
 ## Private deliverables and provenance
 
@@ -51,7 +65,8 @@ checks; it does not publish those private references.
 
 The archive preserves the original ImageGen output, every source bound and hash,
 four explicit boot-root landmarks, fixed canvas/pivot, shared scale and frame
-durations. None of its new generated pixels are published in this repository.
+durations. The later authorized SE source release is linked above; private
+capture reports, observer overlays and Library identifiers remain in the handoff.
 The pose-sheet comparison is decoded CPU imagery, not a game screenshot.
 
 One whole-strip edit produced all four keys from shipped
@@ -164,5 +179,5 @@ entry route, preserving the atlas and observer overlay hashes. Capture the
 ordinary view and a continuous close loop without pausing for delivery; then
 inspect net/hand readability, root and seam, retaining selection, stock and fog
 feedback. The source-only ring fix neither publishes candidate pixels nor
-establishes full art acceptance. Public pixel integration still requires the
-user's publication authority; seven additional headings remain unproduced.
+establishes full art acceptance. Publication authority was subsequently granted
+for the fishing sprites; seven additional headings remain unproduced.

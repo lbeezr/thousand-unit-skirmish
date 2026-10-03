@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "packId": "cast-human-sprite",
-  "packVersion": "0.13.0",
+  "packVersion": "0.14.0",
   "maturity": "runtime-candidate",
   "provenance": {
     "license": "LicenseRef-Thousand-Unit-Skirmish-Internal-Review",
     "source": "Vaelora Human roster role and action sheets",
     "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging",
-    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations."
+    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four-key hand-net fishing pilot for the actual south-east heading, approved for public/default integration. Original four pose pixels preserved. Seven fishing headings remain unproduced; root/loop polish remains tracked in docs/worker-fishing-animation.md."
   },
   "files": [
     {
@@ -17,9 +17,9 @@
       "format": "png",
       "dimensionsPx": {
         "width": 2048,
-        "height": 2048
+        "height": 4096
       },
-      "sha256": "ab4f7dff1db93bfa640ce55eaaad6d32c96fb5719d4ca10691bf77ca93a9e36c"
+      "sha256": "f652e0439273ffbb2f69fd7df66c62e45f3dcf7256e153849df667ab71600356"
     },
     {
       "id": "cast-human-atlas-runtime",
@@ -28,9 +28,9 @@
       "format": "png",
       "dimensionsPx": {
         "width": 2048,
-        "height": 2048
+        "height": 4096
       },
-      "sha256": "ab4f7dff1db93bfa640ce55eaaad6d32c96fb5719d4ca10691bf77ca93a9e36c"
+      "sha256": "f652e0439273ffbb2f69fd7df66c62e45f3dcf7256e153849df667ab71600356"
     },
     {
       "id": "cast-human-team-mask",
@@ -39,9 +39,9 @@
       "format": "png",
       "dimensionsPx": {
         "width": 2048,
-        "height": 2048
+        "height": 4096
       },
-      "sha256": "47409785b30cc38f1ec62f219ce1c46f885427442416c0768dc470497ef784cb"
+      "sha256": "074b247161d7a4a1839f7d6dad87816a9ccf73b24acf29d75a7cd4629815cfb3"
     }
   ],
   "pages": [
@@ -52,7 +52,7 @@
       "maskFileId": "cast-human-team-mask",
       "dimensionsPx": {
         "width": 2048,
-        "height": 2048
+        "height": 4096
       },
       "colorSpace": "srgb",
       "pixelFormat": "rgba8",
@@ -3563,6 +3563,178 @@
             }
           ],
           "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-fish-south-east-0",
+          "groundPivotPx": {
+            "x": 256,
+            "y": 480
+          },
+          "canvasPx": {
+            "width": 512,
+            "height": 512
+          },
+          "alphaBoundsPx": {
+            "x": 224,
+            "y": 343,
+            "width": 106,
+            "height": 139
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 0,
+              "y": 2048,
+              "width": 512,
+              "height": 512
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 0,
+                "y": 2048,
+                "width": 512,
+                "height": 512
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-fish-south-east-1",
+          "groundPivotPx": {
+            "x": 256,
+            "y": 480
+          },
+          "canvasPx": {
+            "width": 512,
+            "height": 512
+          },
+          "alphaBoundsPx": {
+            "x": 223,
+            "y": 345,
+            "width": 176,
+            "height": 141
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 512,
+              "y": 2048,
+              "width": 512,
+              "height": 512
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 512,
+                "y": 2048,
+                "width": 512,
+                "height": 512
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-fish-south-east-2",
+          "groundPivotPx": {
+            "x": 256,
+            "y": 480
+          },
+          "canvasPx": {
+            "width": 512,
+            "height": 512
+          },
+          "alphaBoundsPx": {
+            "x": 224,
+            "y": 344,
+            "width": 141,
+            "height": 138
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 1024,
+              "y": 2048,
+              "width": 512,
+              "height": 512
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 1024,
+                "y": 2048,
+                "width": 512,
+                "height": 512
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-fish-south-east-3",
+          "groundPivotPx": {
+            "x": 256,
+            "y": 480
+          },
+          "canvasPx": {
+            "width": 512,
+            "height": 512
+          },
+          "alphaBoundsPx": {
+            "x": 223,
+            "y": 342,
+            "width": 128,
+            "height": 140
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 1536,
+              "y": 2048,
+              "width": 512,
+              "height": 512
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 1536,
+                "y": 2048,
+                "width": 512,
+                "height": 512
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
         }
       ],
       "clips": [
@@ -4376,6 +4548,29 @@
             {
               "frameId": "defeat-south-east-7",
               "durationMs": 100
+            }
+          ]
+        },
+        {
+          "stateId": "gather-fish",
+          "directionId": "south-east",
+          "loop": true,
+          "sequence": [
+            {
+              "frameId": "gather-fish-south-east-0",
+              "durationMs": 350
+            },
+            {
+              "frameId": "gather-fish-south-east-1",
+              "durationMs": 300
+            },
+            {
+              "frameId": "gather-fish-south-east-2",
+              "durationMs": 350
+            },
+            {
+              "frameId": "gather-fish-south-east-3",
+              "durationMs": 300
             }
           ]
         }

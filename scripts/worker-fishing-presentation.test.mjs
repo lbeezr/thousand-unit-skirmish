@@ -1,8 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import vm from 'node:vm';
 import * as THREE from 'three';
+import { decodeRgba8, measureFrameAlpha } from './sprite-pixel-bounds.mjs';
+import { validateSpriteAtlas } from './sprite-atlas-contract.mjs';
 import { workerFishingPresentation } from '../src/worker-fishing-presentation.mjs';
 import { shoreFishSitePositions } from '../src/shore-fishing-placement.mjs';
 import { headingToTarget } from '../src/unit-heading.mjs';
@@ -20,6 +23,55 @@ const worker = (site, team = 0) => ({ id: team, team, slot: 0, hp: 100, kind: 'w
 const main = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const basePack = JSON.parse(readFileSync(new URL('../assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json', import.meta.url)));
+const sourceRoot = new URL('../docs/art-direction/human-roster-v1/fishing-SE-v1/', import.meta.url);
+const preservation = JSON.parse(readFileSync(new URL('runtime-preservation.json', sourceRoot)));
+const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
+
+test('ordinary play loads the approved Human v3 fishing pack without a pilot flag', () => {
+  const start = main.indexOf('const humanRosterPreview =');
+  const end = main.indexOf('const unitSpritePreviewRoleSet =', start);
+  const binding = vm.runInNewContext(main.slice(start, end) + '\n({humanRosterPreview, castPreview, unitSpritePreviewRoles, unitSpritePreviewVersions})',
+    { roomPageUrl: new URL('http://localhost/?play=1') });
+  assert.equal(binding.humanRosterPreview, true);
+  assert.equal(binding.castPreview, true);
+  assert.ok(binding.unitSpritePreviewRoles.includes('human'));
+  assert.equal(binding.unitSpritePreviewVersions.human, 'v3');
+  assert.deepEqual(basePack.assets[0].clips.filter(c => c.stateId === 'gather-fish').map(c => c.directionId), ['south-east']);
+});
+
+test('published atlas preserves prior action pixels/metadata and all four approved SE keys', async () => {
+  const manifest = new URL('../assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json', import.meta.url);
+  assert.deepEqual((await validateSpriteAtlas(manifest.pathname)).errors, []);
+  const asset = basePack.assets[0];
+  assert.equal(sha256(JSON.stringify(asset.frames.slice(0, preservation.originalFrames))), preservation.originalFrameMetadataSha256);
+  assert.equal(sha256(JSON.stringify(asset.clips.slice(0, preservation.originalClips))), preservation.originalClipMetadataSha256);
+  assert.equal(asset.frames.length, preservation.originalFrames + 4);
+  assert.equal(asset.clips.length, preservation.originalClips + 1);
+  assert.equal(asset.heightWorld / Math.max(...asset.frames.map(f => f.alphaBoundsPx.height)), preservation.worldUnitsPerPixel);
+  const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', manifest)));
+  assert.deepEqual([image.width, image.height], [2048, 4096]);
+  assert.equal(sha256(image.pixels.subarray(0, preservation.originalDimensionsPx.height * image.width * 4)), preservation.originalRgbaSha256);
+  const clip = asset.clips.find(c => c.stateId === 'gather-fish');
+  assert.equal(clip.directionId, 'south-east');
+  assert.equal(clip.loop, true);
+  assert.deepEqual(clip.sequence.map(k => k.durationMs), [350, 300, 350, 300]);
+  for (const [index, key] of clip.sequence.entries()) {
+    const frame = asset.frames.find(f => f.id === key.frameId);
+    assert.deepEqual(frame.canvasPx, { width: 512, height: 512 });
+    assert.deepEqual(frame.groundPivotPx, { x: 256, y: 480 });
+    const rect = frame.frameRectsPx[0].rectPx;
+    assert.deepEqual(measureFrameAlpha(image, rect, 1), frame.alphaBoundsPx);
+    assert.ok(frame.alphaBoundsPx.x > 1 && frame.alphaBoundsPx.y > 1);
+    assert.ok(frame.alphaBoundsPx.x + frame.alphaBoundsPx.width < 511);
+    assert.ok(frame.alphaBoundsPx.y + frame.alphaBoundsPx.height < 511);
+    const approved = decodeRgba8(readFileSync(new URL(`fishing-SE-0${index}.png`, sourceRoot)));
+    for (let row = 0; row < rect.height; row++) {
+      const offset = ((rect.y + row) * image.width + rect.x) * 4;
+      assert.deepEqual(image.pixels.subarray(offset, offset + rect.width * 4),
+        approved.pixels.subarray(row * rect.width * 4, (row + 1) * rect.width * 4), `approved key ${index}, row ${row}`);
+    }
+  }
+});
 
 test('both actual Lab banks face the canonical water spot while retaining food and land authority', () => {
   for (const [team, site] of sites.entries()) {
@@ -119,8 +171,8 @@ test('one authored fishing heading never invents or mirrors seven others in any 
   }
 });
 
-// Optional private pilot path exercises its actual manifest without publishing
-// candidate pixels in this repository. The normal CI run uses shipped art.
+// The normal CI run exercises the shipped fishing keys. An optional manifest
+// override remains useful for private production iterations before admission.
 test('real renderer selects registered fishing keys and safe fallbacks with unchanged scale and UV handedness', async () => {
   const pack = process.env.FISHING_PILOT_MANIFEST
     ? JSON.parse(readFileSync(process.env.FISHING_PILOT_MANIFEST)) : basePack;
@@ -139,8 +191,7 @@ test('real renderer selects registered fishing keys and safe fallbacks with unch
       approximateActionDirections: true });
     assert.equal(await runtime.ready, true);
     const worldPerPixel = asset.heightWorld / Math.max(...asset.frames.map(f => f.alphaBoundsPx.height));
-    const baseAsset = basePack.assets[0];
-    assert.equal(worldPerPixel, baseAsset.heightWorld / Math.max(...baseAsset.frames.map(f => f.alphaBoundsPx.height)));
+    assert.equal(worldPerPixel, preservation.worldUnitsPerPixel);
     for (const team of [0, 1]) for (const [index, direction] of directions.entries()) {
       const unit = { ...worker(sites[team], team), angle: index * Math.PI / 4, workResourceVariant: 'shore-fish' };
       const clip = spriteActionClip(clips, 'gather-fish', direction, 'food', 'human', true);

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "scope": "approved Human SE fishing pixel publication and default integration",
+  "baseRevision": "20c4fce",
+  "publicationAuthority": "User explicitly approved public game-image publication and continuing default integration",
+  "runtimePack": "cast-human-sprite-v3@0.14.0",
+  "authoredFishingHeadings": ["south-east"],
+  "approvedKeyPixelsChanged": false,
+  "priorActionPixelsAndMetadataChanged": false,
+  "authoritativeSimulationChanged": false,
+  "privateQaAndLibraryIdentifiersPublished": false,
+  "full3dSourcesPublished": false,
+  "checks": {
+    "focusedTests": 46,
+    "atlasValidation": "passed",
+    "sourceHashVerification": "passed",
+    "runtimePngByteIdentityWithApprovedPilot": "passed",
+    "liveShoreFishingScenario": "both seats bank 60 food; finite stock, cargo recovery, fog and rematch assertions pass",
+    "documentationLinks": "passed"
+  },
+  "afterMarkerFixGpuCapture": "pending focused Mac recapture",
+  "finalRootAndLoopSeamAcceptance": "open",
+  "remainingFishingHeadings": 7
+}

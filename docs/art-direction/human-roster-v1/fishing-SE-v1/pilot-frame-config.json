@@ -1,0 +1,30 @@
+{
+  "heading": "south-east",
+  "packVersion": "0.14.0",
+  "canvasPx": {
+    "width": 512,
+    "height": 512
+  },
+  "groundPivotPx": {
+    "x": 256,
+    "y": 480
+  },
+  "frames": [
+    {
+      "path": "fishing-SE-00.png",
+      "durationMs": 350
+    },
+    {
+      "path": "fishing-SE-01.png",
+      "durationMs": 300
+    },
+    {
+      "path": "fishing-SE-02.png",
+      "durationMs": 350
+    },
+    {
+      "path": "fishing-SE-03.png",
+      "durationMs": 300
+    }
+  ]
+}
