@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { CAMERA_VIEW_DIRECTION } from '../src/camera-controls.mjs';
 import { headingToTarget } from '../src/unit-heading.mjs';
 import { workerFishingPresentation } from '../src/worker-fishing-presentation.mjs';
+import { farmHarvestNode, farmBuildingId } from '../src/farm-harvest.mjs';
 import { activeState, normalizedDirection, spriteActionClip, spriteAnimationTime,
   createUnitSpriteRuntime } from '../src/unit-sprite-runtime.mjs';
 
@@ -108,9 +109,10 @@ test('snapshot work heading comes from actual gathering target and preserves fog
     gatherPhase:'gathering', gatherForestCell:-1, gatherNodeId:'berries', attackTargetId:-1};
   const node = {id:'berries',type:'food',x:-1,z:1};
   const context = vm.createContext({ units:[worker], mapDefinition:{fogOfWar:true,resourceNodes:[node]},
-    harvestNodeById: id => id === node.id ? node : null, resourceNodeStates:new Map([['berries',node]]), headingToTarget, workerFishingPresentation,
+    resourceNodeStates:new Map([['berries',node]]),buildingsById:new Map(),farmHarvestNode,farmBuildingId,headingToTarget,workerFishingPresentation,
     workerTaskStatus:()=> 'gathering', cellToWorld:()=>({x:1,z:-1}), cellVisibleToTeam:()=>true,
     worldToCell:()=>0, tickNumber:10, STATE_EVERY_TICKS:3 });
+  vm.runInContext(server.slice(server.indexOf('function harvestNodeById('),server.indexOf('function routeWorker(')),context);
   vm.runInContext(server.slice(server.indexOf('function snapshotUnits('), server.indexOf('function snapshotPersistentOrders(')), context);
   for (const team of [0,1]) {
     worker.team = team;

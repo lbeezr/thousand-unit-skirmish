@@ -4,7 +4,9 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { canTraverseUnitStep } from '../src/unit-movement.mjs';
+import { findStationaryWorkerDetour } from '../src/unit-obstacle-detour.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { farmHarvestNode, farmBuildingId } from '../src/farm-harvest.mjs';
 
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const width = 8, half = width / 2, bucketSize = 1.2, bucketColumns = 7;
@@ -43,10 +45,11 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
     spatialBucketTeamNext:teamNext,spatialBucketOfUnit:bucketOf,
     spatialBucketColumn:x=>Math.max(0,Math.min(bucketColumns-1,Math.floor((x+half)/bucketSize))),
     spatialBucketRow:z=>Math.max(0,Math.min(bucketColumns-1,Math.floor((z+half)/bucketSize))),
-    elevationLevelByCell:levels,canTraverseUnitStep,SEPARATION_DIAGNOSTICS_ENABLED:false,
+    elevationLevelByCell:levels,canTraverseUnitStep,findStationaryWorkerDetour,SEPARATION_DIAGNOSTICS_ENABLED:false,
     tickNumber:1,dirty:false,worldToCell:cell,cellToWorld:point,isWalkable:walkable,
-    harvestNodeById:id=>context.resourceNodeStates.get(id), resourceNodeStates:new Map([['berries',{x,z:-1,hp:1}]]),buildingsById:new Map(),
+    resourceNodeStates:new Map([['berries',{x,z:-1,hp:1}]]),buildingsById:new Map(),farmHarvestNode,farmBuildingId,
     enqueueRouteRepairs:list=>repairs.push(...list),spreadInteractingUnits(){},advanceQueuedWaypoints(){}});
+  vm.runInContext(server.slice(server.indexOf('function harvestNodeById('),server.indexOf('function routeWorker(')),context);
   vm.runInContext(server.slice(server.indexOf('function getMoveVector('),server.indexOf('// Units stop following paths')),context);
   const movement=server.slice(server.indexOf('  const blockedRouteRepairs = [];'),
     server.indexOf('\n}\n\nfunction encodeWebSocketFrame'));
@@ -141,6 +144,27 @@ test('a newly blocked waypoint still schedules the existing route repair', () =>
   assert.deepEqual({x:f.mover.x,z:f.mover.z},before);
   assert.equal(f.repairs.length,1);assert.equal(f.repairs[0].unit,f.mover);
   assert.equal(f.repairs[0].destination,28);
+});
+
+test('no local detour in a one-cell passage retains soft separation and the stationary Worker',()=>{
+  const f=fixture({x:-.6,z:-.5,cliff:false});f.mover.path=[27,28,29];f.mover.moveGoalCell=29;
+  const blocker=f.units[1];Object.assign(blocker,{kind:'worker',x:-.5,z:-.5,holdingPosition:true,orderRevision:7});
+  for(const u of f.units.slice(2))u.hp=0;
+  for(let c=0;c<64;c++)if(Math.floor(c/width)!==3)f.blockedCells.add(c);
+  const before={x:blocker.x,z:blocker.z,holdingPosition:blocker.holdingPosition,orderRevision:blocker.orderRevision};
+  for(let i=0;i<200&&f.mover.pathIndex<f.mover.path.length;i++)f.move();
+  assert.equal(f.mover.pathIndex,f.mover.path.length);assert.equal(f.mover.moveGoalCell,29);
+  assert.deepEqual({x:f.mover.x,z:f.mover.z},point(29));assert.equal(f.repairs.length,0);
+  assert.deepEqual({x:blocker.x,z:blocker.z,holdingPosition:blocker.holdingPosition,orderRevision:blocker.orderRevision},before);
+});
+
+test('a local detour copies a shared planned path and leaves the other assignee intact',()=>{
+  const f=fixture({x:-.6,z:-.5,cliff:false}),shared=[27,28,29];f.mover.path=shared;
+  Object.assign(f.units[1],{kind:'worker',x:-.5,z:-.5});
+  f.units[2].hp=0;f.units[2].path=shared;f.units[3].hp=0;
+  f.move();assert.notEqual(f.mover.path,shared);assert.deepEqual(shared,[27,28,29]);
+  assert.equal(f.units[2].path,shared);assert.equal(f.units[2].pathIndex,0);
+  assert.equal(f.mover.path.at(-1),29);
 });
 
 test('legal crowd deflection repairs once, preserves the queued route and rejoins', () => {

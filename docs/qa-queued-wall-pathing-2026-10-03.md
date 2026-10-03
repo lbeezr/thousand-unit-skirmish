@@ -107,3 +107,7 @@ host was not isolated: diagnostic tick durations are observational, with no
 speedup or hosted-capacity claim. No renderer, deployed staging, Mac appearance,
 universal destination uniqueness or permanent-deadlock proof is claimed. The
 existing bounded fallback and stationary-unit congestion remain explicit limits.
+
+The recorded parked-Worker stall is addressed by the subsequent bounded
+[moving-unit detour slice](qa-stationary-worker-pathing-2026-10-03.md). The
+measurements above retain their original source and behavior.
