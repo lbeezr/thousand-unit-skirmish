@@ -263,7 +263,7 @@ External resource/terrain edits stop history navigation until `reset()`; reset
 also belongs after populate, draft restore or resize. Save ordinary map nodes and
 selection through the existing draft/JSON format; reload starts fresh history.
 
-In Map Studio, expand **Resource patches** under **Resource nodes**. Choose food
+In Map Studio, **Resource patches** is open by default under **Resource nodes**. Choose food
 or wood, a whole-number seed and **total patch stock** (at least 5). Enter a
 one-based anchor column/row and press **Preview**, or **Pick anchor** and click a
 map cell. Five dashed preview markers show their individual stocks; the status

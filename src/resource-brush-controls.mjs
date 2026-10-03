@@ -25,6 +25,7 @@ export function mountResourceBrushControls({ host, readMap, readSelectedId, comm
       </div>
       <small role="status" aria-live="polite">Pick an anchor or enter its column and row, then preview.</small>
     </div>`;
+  panel.open = true;
   host.append(panel);
   const field = name => panel.querySelector(`#studio-brush-${name}`);
   const buttons = Object.fromEntries([...panel.querySelectorAll('[data-brush]')].map(button => [button.dataset.brush, button]));

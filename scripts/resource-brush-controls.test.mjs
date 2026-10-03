@@ -38,7 +38,7 @@ function fixture(t) {
   w.eval(between('function captureMapStudioFormValues(', 'function restoreMapStudioFormValues('));
   w.eval(between('resourceBrushControls = mountResourceBrushControls({', "ui.studioResourceStock.addEventListener('input'"));
   w.eval(between("ui.studioGrid.addEventListener('pointerdown'", "ui.studioGrid.addEventListener('pointermove'"));
-  const panel = d.querySelector('.resource-node-fields details'); panel.open = true;
+  const panel = d.querySelector('.resource-node-fields details'); assert.equal(panel.open, true);
   const button = name => panel.querySelector(`[data-brush="${name}"]`);
   const field = name => panel.querySelector(`#studio-brush-${name}`);
   const markers = () => {
