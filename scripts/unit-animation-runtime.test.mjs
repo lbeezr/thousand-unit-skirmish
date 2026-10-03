@@ -1,0 +1,169 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import * as THREE from 'three';
+import { activeState, civilizationSpriteRole, createUnitSpriteRuntime, normalizedDirection,
+  spriteActionClip, spriteClipDuration } from '../src/unit-sprite-runtime.mjs';
+
+const directories = { human: 'cast-human-sprite-v3', infantry: 'infantry-sprite-v3',
+  spearman: 'spearman-sprite-v1', archer: 'archer-sprite-v2', scout: 'scout-sprite-v1',
+  rider: 'rider-sprite-v1', 'siege-engine': 'siege-engine-sprite-v1',
+  ...Object.fromEntries(['worker', 'infantry', 'spearman', 'archer', 'scout', 'rider', 'siege-engine']
+    .map(kind => [`boughward-${kind}`, `boughward-${kind}-sprite-v1`])) };
+const packs = Object.fromEntries(Object.entries(directories).map(([role, directory]) =>
+  [role, JSON.parse(readFileSync(new URL(`../assets/units/${directory}/sprite-atlas-pack-v1.json`, import.meta.url)))]));
+const directions = ['north', 'north-east', 'east', 'south-east', 'south', 'south-west', 'west', 'north-west'];
+
+async function withRuntime(run, role = null, version = null) {
+  const savedFetch = globalThis.fetch;
+  const urls = [];
+  globalThis.fetch = async url => {
+    urls.push(url);
+    return { ok: true, json: async () => JSON.parse(readFileSync(new URL(`..${url}`, import.meta.url))) };
+  };
+  class TextureLoader {
+    load(url, done) { const texture = new THREE.Texture(); queueMicrotask(() => done(texture)); return texture; }
+  }
+  try {
+    const scene = new THREE.Scene();
+    const roles = role ? [role] : Object.keys(directories);
+    const runtime = createUnitSpriteRuntime({ THREE: { ...THREE, TextureLoader }, scene, capacity: 1,
+      teamHex: [0x5aa7d7, 0xe67a5e], cameraQuaternion: new THREE.Quaternion(), roles,
+      roleSpriteVersions: { human: 'v3', infantry: 'v3', archer: 'v2', ...(version ? { [role]: version } : {}) },
+      teamCivilizations: role ? null : ['human', 'boughward'], humanAppearancePreview: role === 'human',
+      approximateActionDirections: true });
+    runtime.setCount(0, 1); runtime.setCount(1, 1); runtime.setVisible(true);
+    assert.equal(await runtime.ready, true);
+    await run(runtime, scene, urls);
+  } finally { globalThis.fetch = savedFetch; }
+}
+
+function actor(team = 0, kind = 'worker') {
+  return { id: team, team, slot: 0, kind, hp: 100, task: 'idle', angle: 3 * Math.PI / 4,
+    renderX: 0, renderZ: 0, walking: false, attackStartedAt: 0, defeatStartedAt: 0,
+    cargo: 0, cargoType: null, workResourceVariant: null };
+}
+
+function assertFrame(scene, role, team, frameId, message) {
+  const index = Object.keys(directories).indexOf(role) * 2 + team;
+  const asset = packs[role].assets[0], page = packs[role].pages[0];
+  const frame = asset.frames.find(frame => frame.id === frameId);
+  assert.ok(frame, frameId);
+  const rect = frame.frameRectsPx?.find(item => item.pageId === page.id)?.rectPx || frame.fallbackRectPx.rectPx;
+  const inset = page.sampling?.uvInsetPx ?? 0.5;
+  const expected = [(rect.x + inset) / page.dimensionsPx.width,
+    (rect.y + rect.height - inset) / page.dimensionsPx.height,
+    (rect.x + rect.width - inset) / page.dimensionsPx.width,
+    (rect.y + inset) / page.dimensionsPx.height];
+  assert.deepEqual(Array.from(scene.children[index].geometry.attributes.instanceAtlasRect.array),
+    Array.from(new Float32Array(expected)), message || frameId);
+}
+
+test('authored action lifetimes exclude idle placeholders but preserve static poses', async () => {
+  await withRuntime(runtime => {
+    for (const [role, attack, defeat] of [['human', 840, 840], ['infantry', 850, 850],
+      ['spearman', 880, 1080], ['archer', 1000, 850]]) {
+      const asset = packs[role].assets[0];
+      // Shipped actions can be shorter or longer than the 1,000 ms idle fallback.
+      for (const [state, expected] of [['attack', attack], ['defeat', defeat]]) {
+        const authored = asset.clips.find(clip => clip.stateId === state && clip.directionId === 'south-east');
+        assert.equal(spriteClipDuration(authored), expected, `${role}/${state} fixture`);
+        assert.equal(runtime.durationMs(role, state), expected, `${role}/${state} must not inherit idle time`);
+      }
+      assert.equal(runtime.durationMs(role, 'idle'), 1000);
+    }
+    for (const role of ['scout', 'rider', 'siege-engine', ...Object.keys(directories).filter(r => r.startsWith('boughward-'))]) {
+      for (const state of ['attack', 'defeat']) assert.equal(runtime.durationMs(role, state), 1000, `${role}/${state}`);
+    }
+  });
+});
+
+test('legacy Human v2 idle-only attack and defeat states keep their fallback lifetime', async () => {
+  await withRuntime((runtime, scene, urls) => {
+    assert.deepEqual(urls, ['/assets/units/cast-human-sprite-v2/sprite-atlas-pack-v1.json']);
+    assert.equal(runtime.durationMs('human', 'attack'), 1000);
+    assert.equal(runtime.durationMs('human', 'defeat'), 1000);
+    assert.equal(runtime.durationMs('human', 'idle'), 1000);
+  }, 'human', 'v2');
+});
+
+test('a fresh attack plays once then resumes idle or work, on both default civilizations', async () => {
+  await withRuntime((runtime, scene) => {
+    for (const team of [0, 1]) for (const kind of ['worker', 'infantry', 'spearman', 'archer', 'scout', 'rider', 'siege-engine']) {
+      const unit = actor(team, kind), role = civilizationSpriteRole(kind, team ? 'boughward' : 'human');
+      unit.task = kind === 'worker' ? 'gathering' : null; unit.cargoType = 'food';
+      const duration = runtime.durationMs(role, 'attack');
+      unit.attackStartedAt = 1000;
+      const clip = spriteActionClip(new Map(packs[role].assets[0].clips.map(c => [`${c.stateId}|${c.directionId}`, c])),
+        'attack', 'south-east', unit.cargoType, role, true);
+      runtime.update(unit, 1000, 1); assertFrame(scene, role, team, clip.sequence[0].frameId);
+      runtime.update(unit, 1000 + duration - 1, 1); assertFrame(scene, role, team, clip.sequence.at(-1).frameId);
+      runtime.update(unit, 1000 + duration, 1);
+      assert.equal(activeState(unit, 1000 + duration, duration), kind === 'worker' ? 'gather' : 'idle');
+      assertFrame(scene, role, team, `${kind === 'worker' ? 'gather-food' : 'idle'}-south-east-0`,
+        `${role} cannot replay the opening attack keys after the authored end`);
+      unit.attackStartedAt = 3000;
+      runtime.update(unit, 3000, 1); assertFrame(scene, role, team, clip.sequence[0].frameId);
+    }
+  });
+});
+
+test('ordinary Worker actions, interruption and resumption bind real frames regardless of selection', async () => {
+  await withRuntime((runtime, scene) => {
+    for (const team of [0, 1]) for (const selected of [false, true]) {
+      const unit = actor(team); unit.selected = selected;
+      const role = team ? 'boughward-worker' : 'human';
+      let now = 1000;
+      const draw = (changes, frameId) => {
+        Object.assign(unit, changes); runtime.update(unit, now, 1);
+        assertFrame(scene, role, team, frameId); now += 300;
+      };
+      draw({}, 'idle-south-east-0');
+      draw({ task: 'moving', walking: true }, 'walk-south-east-0');
+      draw({ walking: false, task: 'gathering', cargoType: 'wood' }, 'gather-wood-south-east-0');
+      runtime.update(unit, now, 1);
+      assertFrame(scene, role, team, `gather-wood-south-east-${team ? 0 : 2}`);
+      draw({ task: 'idle' }, 'idle-south-east-0');
+      draw({ task: 'gathering' }, 'gather-wood-south-east-0');
+      draw({ task: 'building' }, 'build-south-east-0');
+      draw({ task: 'repairing' }, 'repair-south-east-0');
+      draw({ walking: true }, 'walk-south-east-0');
+      draw({ walking: false }, 'repair-south-east-0');
+      draw({ task: 'gathering', cargoType: 'food' }, 'gather-food-south-east-0');
+      draw({ workResourceVariant: 'shore-fish' }, `${team ? 'gather-food' : 'gather-fish'}-south-east-0`);
+      draw({ task: 'returning', walking: true, cargo: 10, workResourceVariant: null }, 'walk-south-east-0');
+      draw({ walking: false }, 'idle-south-east-0');
+      draw({ task: 'idle', cargo: 0, cargoType: null }, 'idle-south-east-0');
+      const defeatAt = now;
+      draw({ hp: 0, defeatStartedAt: defeatAt, task: 'repairing', walking: true }, 'defeat-south-east-0');
+      runtime.update(unit, now + 10000, 1);
+      assertFrame(scene, role, team, `defeat-south-east-${team ? 0 : 7}`, 'death clamps instead of wrapping');
+    }
+  });
+});
+
+test('all shipped headings resolve available frames without resetting continuous walk/work clocks', async () => {
+  await withRuntime((runtime, scene) => {
+    for (const team of [0, 1]) {
+      const unit = actor(team), role = team ? 'boughward-worker' : 'human';
+      const clips = new Map(packs[role].assets[0].clips.map(c => [`${c.stateId}|${c.directionId}`, c]));
+      unit.task = 'moving'; unit.walking = true;
+      for (const [index, direction] of directions.entries()) {
+        unit.angle = index * Math.PI / 4;
+        assert.equal(normalizedDirection(unit.angle), direction);
+        runtime.update(unit, 1000 + index * 100, 1);
+        assert.equal(unit.spriteClockStartedAt, 1000, 'turning does not continually restart walk');
+        const clip = spriteActionClip(clips, 'walk', direction, null, role, true);
+        assertFrame(scene, role, team, clip.sequence[index % clip.sequence.length].frameId);
+      }
+      unit.walking = false; unit.task = 'gathering'; unit.cargoType = 'food';
+      runtime.update(unit, 2000, 1); assert.equal(unit.spriteClockStartedAt, 2000);
+      runtime.update(unit, 2300, 1); assert.equal(unit.spriteClockStartedAt, 2000);
+      runtime.update(unit, 10000, 0);
+      const mesh = scene.children[Object.keys(directories).indexOf(role) * 2 + team];
+      const matrix = new THREE.Matrix4(); mesh.getMatrixAt(0, matrix);
+      assert.equal(matrix.elements[0], 0, 'fog/LOD hiding clears the actor');
+      runtime.update(unit, 10100, 1); assert.equal(unit.spriteClockStartedAt, 2000, 'visibility resumes elapsed work');
+    }
+  });
+});

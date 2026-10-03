@@ -26,6 +26,7 @@ import { mkdir, open, readFile, readdir, rename, stat, unlink, writeFile } from 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deflateRawSync, inflateRawSync, constants as zlibConstants } from 'node:zlib';
+import { encodeWebSocketFrame, websocketFrameBytes } from './src/networking/websocket-frame.mjs';
 import { configuredPublicOrigins, sameOriginRequest } from './origin-policy.mjs';
 import {
   buildElevationGrid, capturePrerequisiteIds, findInvalidCapturePrerequisite,
@@ -7580,24 +7581,6 @@ function simulateTick() {
   advanceQueuedWaypoints();
 }
 
-function encodeWebSocketFrame(opcode, payload, compressed = false) {
-  let header;
-  if (payload.length < 126) {
-    header = Buffer.alloc(2);
-    header[1] = payload.length;
-  } else if (payload.length <= 0xffff) {
-    header = Buffer.alloc(4);
-    header[1] = 126;
-    header.writeUInt16BE(payload.length, 2);
-  } else {
-    header = Buffer.alloc(10);
-    header[1] = 127;
-    header.writeBigUInt64BE(BigInt(payload.length), 2);
-  }
-  header[0] = 0x80 | opcode | (compressed ? 0x40 : 0);
-  return Buffer.concat([header, payload]);
-}
-
 function sendFrame(socket, opcode, payload = Buffer.alloc(0)) {
   if (socket.destroyed || !socket.writable) return false;
   return socket.write(encodeWebSocketFrame(opcode, payload));
@@ -7626,11 +7609,6 @@ function prepareJsonFrame(message, allowCompression = false) {
   frame.rtsPayloadBytes = payload.length;
   frame.rtsCompressed = false;
   return frame;
-}
-
-function websocketFrameBytes(payloadBytes) {
-  const headerBytes = payloadBytes < 126 ? 2 : payloadBytes <= 0xffff ? 4 : 10;
-  return payloadBytes + headerBytes;
 }
 
 function canQueuePeerFrame(peer, frameBytes) {

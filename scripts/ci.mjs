@@ -51,6 +51,12 @@ const syntaxFiles = [
 
 for (const file of syntaxFiles) run(['--check', file], `Syntax: ${file}`);
 
+run(['--test', 'scripts/check-runtime-imports.test.mjs'], 'Runtime dependency checker regressions');
+run(['scripts/check-runtime-imports.mjs'], 'Runtime dependency boundaries and cycle baseline');
+run(['node_modules/typescript/bin/tsc', '--project', 'tsconfig.check-js.json', '--pretty', 'false'],
+  'Strict checked JavaScript boundary');
+run(['--test', 'scripts/check-types.test.mjs'], 'Checked JavaScript contract negative cases');
+
 run(['--test', 'scripts/scenario-regions.test.mjs'], 'Named scenario regions');
 run(['--test', 'scripts/scenario-authoring.test.mjs'], 'Visual scenario authoring contracts');
 run(['scripts/completion-event-scenario.mjs'], 'Completion event recovery and host diagnostics');
@@ -79,6 +85,7 @@ run(['scripts/audio-shipped-serving-scenario.mjs'], 'Authoritative shipped audio
 run(['scripts/audio-wall-order-scenario.mjs'], 'Applied wall-line audio acknowledgement');
 run(['--test', 'scripts/hosted-scale-profile.test.mjs'], 'Hosted scale measurement integrity');
 run(['--test', 'scripts/unit-sprite-clock.test.mjs'], 'Sprite animation clock');
+run(['--test', 'scripts/unit-animation-runtime.test.mjs'], 'Default unit action frames and lifetimes');
 run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work facing');
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
 run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach contact and bank/water picking');
@@ -119,6 +126,9 @@ run(['--test', 'scripts/army-attack-continuation.test.mjs'], 'Focused military a
 run(['--test', 'scripts/military-stance.test.mjs'], 'Military stances, idle defense, bounded return and command precedence');
 run(['scripts/military-stance-native-scenario.mjs'], 'Native two-seat stance commands and defensive return recovery');
 run(['--test', 'scripts/waypoint-backpressure.test.mjs'], 'Waypoint metadata under backpressure');
+run(['--experimental-test-coverage', '--test-coverage-include=src/networking/websocket-frame.mjs',
+  '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
+  '--test', 'scripts/websocket-frame.test.mjs'], 'Outbound WebSocket frame coverage floor (100%)');
 run(['--test', 'scripts/worker-shutdown.test.mjs'], 'Signal-aware room worker shutdown');
 run(['--test', 'scripts/check-client-imports.test.mjs'], 'Served client import graph');
 run(['--test', 'scripts/snapshot-private-production.test.mjs'], 'Seat-private production snapshots');
@@ -258,6 +268,7 @@ const scenarios = [
   ['scripts/simultaneous-lethal-combat-scenario.mjs', 'Simultaneous lethal combat fairness'],
   ['scripts/construction-connectivity-scenario.mjs', 'Construction preserves existing terrain connections'],
   ['scripts/elimination-scenario.mjs', 'Terminal elimination and reconnect'],
+  ['scripts/victory-elimination-native-scenario.mjs', 'Existing elimination recovery and clock boundaries'],
   ['scripts/persistent-command-scenario.mjs', 'Patrol and Follow authority/recovery'],
   ['scripts/stationary-command-scenario.mjs', 'Stop and hold authority/recovery'],
   ['scripts/queued-waypoint-scenario.mjs', 'Queued waypoint checkpoint recovery'],
