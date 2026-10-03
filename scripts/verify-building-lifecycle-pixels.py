@@ -47,13 +47,15 @@ def inspect(folder, write_sheets=False):
                 raise ValueError("Clipped or insufficiently padded fixture")
             if np.any(mask[:, :, 0] != mask[:, :, 1]) or np.any(mask[:, :, 1] != mask[:, :, 2]):
                 raise ValueError("Mask is not grayscale")
-            alpha_error = int(np.abs(color[:, :, 3].astype(int) - mask[:, :, 3].astype(int)).max())
-            outside = int(np.sum((mask[:, :, 0] > 2) & (color[:, :, 3] == 0)))
-            if alpha_error > 2 or outside:
-                raise ValueError(f"Color/mask coverage mismatch: alpha={alpha_error}, outside={outside}")
-            mask_pixels = int(np.sum(mask[:, :, 0] > 2))
+            if np.any((mask[:, :, 3] > 2) & (mask[:, :, 0] < 253)):
+                raise ValueError("Runtime mask must use white RGB and alpha owner coverage")
+            alpha_excess = int(np.maximum(mask[:, :, 3].astype(int) - color[:, :, 3].astype(int), 0).max())
+            outside = int(np.sum((mask[:, :, 3] > 2) & (color[:, :, 3] == 0)))
+            if alpha_excess > 2 or outside:
+                raise ValueError(f"Color/mask coverage mismatch: excess={alpha_excess}, outside={outside}")
+            mask_pixels = int(np.sum(mask[:, :, 3] > 2))
             checks.append({"state": state, "view": view["index"], "alphaBounds": list(alpha_bounds),
-                           "maximumAlphaError": alpha_error, "maskOutsideColorPixels": outside,
+                           "maximumMaskAlphaExcess": alpha_excess, "maskOutsideColorPixels": outside,
                            "maskNonzeroPixels": mask_pixels})
             if view["index"] == 1:
                 previews.append(Image.fromarray(color))
@@ -87,9 +89,10 @@ def inspect(folder, write_sheets=False):
                     contact.paste(im, xy, im)
                     d.text((xy[0] + 8, xy[1] + 232), f"{state} / {view['index'] * 45} deg", fill=(30, 36, 30))
         contact.save(folder / "synthetic-eight-view-contact-sheet.png" if synthetic else folder / "candidate-eight-view-contact-sheet.png")
-    result = {"schema": "thousand-unit-skirmish.lifecycle-pixel-validation.v1",
+    result = {"schema": "thousand-unit-skirmish.lifecycle-pixel-validation.v2",
               "syntheticFixture": synthetic, "runtimeAdoption": False, "decodedPairs": len(checks),
-              "maximumAlphaError": max(c["maximumAlphaError"] for c in checks),
+              "teamMaskEncoding": "rgba-white-owner-alpha-coverage",
+              "maximumMaskAlphaExcess": max(c["maximumMaskAlphaExcess"] for c in checks),
               "fullyOccludedMaskViews": sum(c["maskNonzeroPixels"] == 0 for c in checks),
               "checks": checks, "artAccepted": False}
     return result
@@ -105,7 +108,7 @@ def main():
         raise FileExistsError("Preserve the prior validation receipt")
     report = inspect(args.folder, args.write_sheets)
     path.write_text(json.dumps(report, indent=2) + "\n")
-    print(json.dumps({k: report[k] for k in ("syntheticFixture", "decodedPairs", "maximumAlphaError", "artAccepted")}))
+    print(json.dumps({k: report[k] for k in ("syntheticFixture", "decodedPairs", "maximumMaskAlphaExcess", "artAccepted")}))
 
 
 if __name__ == "__main__":

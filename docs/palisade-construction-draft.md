@@ -1,5 +1,11 @@
 # Paid palisade construction draft
 
+The reviewed draft was merged in PR #42. The subsequent
+[runtime slice](palisade-runtime.md) registers this explicitly provisional test
+profile and implements paid placement/recovery. This document preserves the
+original proposal and adapter plan; its inactive-registry statements describe the
+draft at `f665978`, before runtime integration.
+
 This is a proposal and executable preparation/lifecycle test harness, awaiting
 parent review alongside art kit `01a101c3-0d65-730a-9cd1-4a2cca605039`. It does
 not enable walls, register a default building, change the server or claim final
