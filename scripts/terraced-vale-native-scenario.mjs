@@ -7,6 +7,7 @@ import { createServer } from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const map = JSON.parse(await readFile(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
@@ -100,7 +101,7 @@ async function travel(client, id, target, kind) {
 async function build(client, type, ids, target) {
   const previous = new Set(client.current.buildings.map(row => row.id));
   const before = { food: client.current.food[client.team], wood: client.current.wood[client.team] };
-  await order(client, { type: 'build', buildingType: type, ids, ...target }, 'BUILD ORDER');
+  await order(client, { type: 'build', buildingType: type, ids, ...target }, `${BUILDING_DEFINITIONS[type].label.toUpperCase()} PLACED`);
   const completed = await client.state(state => state.buildings.some(row => row.team === client.team
     && row.type === type && row.complete && !previous.has(row.id)));
   const building = completed.buildings.find(row => row.team === client.team && row.type === type && row.complete && !previous.has(row.id));
