@@ -15,7 +15,7 @@ async function fixture({ url = 'http://game.test/', stored = {}, handler } = {})
   const requests = [], navigations = [], loaded = [];
   for (const dialog of win.document.querySelectorAll('dialog')) {
     dialog.showModal = () => { dialog.open = true; };
-    dialog.close = () => { dialog.open = false; dialog.dispatchEvent(new win.Event('close')); };
+    dialog.close = () => { dialog.open = false; setImmediate(() => dialog.dispatchEvent(new win.Event('close'))); };
   }
   win.markPrototypeReady = () => { win.document.documentElement.dataset.boot = 'ready'; };
   const controller = await bootGameEntry({ win, loadGame: async () => loaded.push(true), navigate: value => navigations.push(value),
@@ -121,6 +121,25 @@ test('cancel and browser-back restoration invalidate unfinished navigation', asy
   f.win.dispatchEvent(new f.win.PageTransitionEvent('pageshow', { persisted: true })); await turn();
   release(json({ roomId: room })); await turn();
   assert.deepEqual(f.navigations, []); assert.equal(f.node('menu-create-room').disabled, false);
+});
+
+for (const cancel of ['button', 'escape']) test(`Join ${cancel} cancellation invalidates before queued close and preserves the next game action`, async () => {
+  const pending = [];
+  const f = await fixture({ handler: path => path === '/api/rooms/status' ? json({ enabled: true })
+    : new Promise(resolve => pending.push(resolve)) });
+  f.node('menu-join').click(); const dialog = f.node('menu-join-dialog');
+  dialog.querySelector('input').value = room;
+  dialog.querySelector('form').dispatchEvent(new f.win.Event('submit', { cancelable: true }));
+  if (cancel === 'button') dialog.querySelector('[data-close]').click();
+  else { dialog.dispatchEvent(new f.win.Event('cancel', { cancelable: true })); dialog.close(); }
+  assert.equal(dialog.open, false);
+  pending[0](json({ ok: true }));
+  for (let i = 0; i < 5; i++) await Promise.resolve();
+  assert.deepEqual(f.navigations, [], 'a lookup resolved before queued close cannot navigate');
+  f.node('menu-create-room').click();
+  await turn(); // Deliver the earlier close while the new game request is pending.
+  pending[1](json({ roomId: room })); await turn();
+  assert.equal(f.navigations.length, 1, 'the old close cannot cancel the new action');
 });
 
 test('settings are available without a match and retain unrelated audio preferences', async () => {

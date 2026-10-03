@@ -18,10 +18,11 @@ The cloud browser sandbox restriction remains; no sandbox bypass was used.
 
 ## Local checks
 
-Twelve entry tests cover fresh/stale profiles, explicit validated default/room
+Fourteen entry tests cover fresh/stale profiles, explicit validated default/room
 Resume, invitation/refresh routing, fresh AI/PvP/Studio requests, duplicate clicks,
 same-server join validation, expiry, cancellation, browser-back restoration,
-settings persistence and retained audio mix values. A lifecycle test covers
+settings persistence and retained audio mix values. Cancel/Escape tests use queued
+native close timing and preserve a subsequent creation action. A lifecycle test covers
 closing once, cancelling reconnect and reconnecting on back/forward restoration.
 Two delayed-request cases prove an old room/Resume lookup cannot admit a second
 socket after a page has left and returned from the back/forward cache.

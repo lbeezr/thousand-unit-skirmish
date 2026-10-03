@@ -22,7 +22,7 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
   const join = root.querySelector('#menu-join');
   const joinDialog = doc.querySelector('#menu-join-dialog');
   const settingsDialog = doc.querySelector('#menu-settings-dialog');
-  let busy = false, enabled = false, candidate = null, checkRevision = 0, intentRevision = 0;
+  let busy = false, enabled = false, candidate = null, checkRevision = 0, intentRevision = 0, joinActive = false;
   let sessionStorage = null, localStorage = null;
   try { sessionStorage = win.sessionStorage; } catch {}
   try { localStorage = win.localStorage; } catch {}
@@ -88,25 +88,31 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
       navigate(roomEntryUrl(win.location.href, saved.room, { resume: true }).href);
     } catch { if (intent === intentRevision) { busy = false; controls(); message('Cannot check your session. Try again.'); } }
   });
-  join.addEventListener('click', () => { joinDialog.showModal(); joinDialog.querySelector('input').focus(); });
+  join.addEventListener('click', () => { joinActive = true; joinDialog.showModal(); joinDialog.querySelector('input').focus(); });
   joinDialog.querySelector('form').addEventListener('submit', async event => {
     event.preventDefault();
-    if (busy) return;
+    if (busy || !joinDialog.open) return;
     const intent = ++intentRevision;
     const feedback = joinDialog.querySelector('[role=status]');
     try {
       const room = inviteRoomId(joinDialog.querySelector('input').value, win.location.href);
       busy = true; controls(); feedback.textContent = 'Checking the room…';
       const response = await fetchImpl(`/api/rooms/${room}`, { cache: 'no-store' });
-      if (intent !== intentRevision) return;
+      if (intent !== intentRevision || !joinDialog.open) return;
       if (!response.ok) throw new Error(response.status === 404 ? 'Room expired or not found.' : 'Room service is unavailable.');
       navigate(roomEntryUrl(win.location.href, room).href);
     } catch (error) { if (intent === intentRevision) { busy = false; controls(); feedback.textContent = String(error.message); } }
   });
-  for (const dialog of [joinDialog, settingsDialog]) {
-    dialog.querySelector('[data-close]').addEventListener('click', () => dialog.close());
+  function cancelJoin() {
+    if (!joinActive) return;
+    joinActive = false; intentRevision++; busy = false; controls();
   }
-  joinDialog.addEventListener('close', () => { intentRevision++; busy = false; controls(); });
+  joinDialog.querySelector('[data-close]').addEventListener('click', () => { cancelJoin(); joinDialog.close(); });
+  joinDialog.addEventListener('cancel', cancelJoin);
+  // Native close is queued; do not let an earlier close cancel a reopened dialog
+  // or a fresh game action started after Cancel.
+  joinDialog.addEventListener('close', () => { if (!joinDialog.open) cancelJoin(); });
+  settingsDialog.querySelector('[data-close]').addEventListener('click', () => settingsDialog.close());
   const speed = settingsDialog.querySelector('#menu-camera-speed');
   const edge = settingsDialog.querySelector('#menu-edge-scroll');
   function showSettings() {
