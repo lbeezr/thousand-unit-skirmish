@@ -275,7 +275,7 @@ requires an adjacent clear 3 × 3 authored-water berth and an outward water
 route step, while preserving ordinary land access and active routes. It uses
 the existing building lifecycle and an explicit procedural House placeholder.
 It produces an unarmed **Skiff (placeholder)** for provisional 75 wood, 10 seconds
-and one population: 120 HP and 2.4 cells/second. Select one boat to Move or Stop
+and one population: 120 HP and 2.4 cells/second. Select up to 16 Skiffs to Move or Stop
 within authored level-zero water; hull occupancy can pause routes and production.
 Skiffs gather the same finite shore-fish food as land Workers from a reachable
 water approach: provisional 10 food capacity and 1 food per second. A completed
@@ -286,7 +286,10 @@ or resource bonus. Skiffs carry no passengers or combat capability and cannot
 alone keep an elimination match open.
 [The Dock contract](dock-shoreline-foundation.md) defines placement;
 [Skiff movement](skiff-water-movement.md) defines paid movement and recovery;
-[Skiff fishing](skiff-fishing.md) defines single-boat finite food delivery.
+[Skiff fishing](skiff-fishing.md) defines finite food delivery;
+[selected groups](skiff-selected-groups.md) preserve each controlled boat's cargo
+and destination, using distinct fish approaches and owned Dock berths.
+Insufficient reachable space rejects a group before changing its orders.
 
 A one-cell Palisade uses **provisional test tuning** of 15 wood, five accumulated
 Worker-seconds and 300 HP. Whole lines reserve occupancy and pay atomically;

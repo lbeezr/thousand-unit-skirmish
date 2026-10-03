@@ -91,7 +91,7 @@ for (const team of [0, 1]) test(`Dock/Skiff command controls state their usable 
   assert.equal(context.ui.buildingCommandDetails.hidden, true);
   context.selectedBuildingId = null; context.attackMoveMode = true; context.persistentTargetMode = 'patrol'; context.updateCommandUI();
   assert.equal(context.attackMoveMode, false); assert.equal(context.persistentTargetMode, null);
-  assert.match(context.ui.commandHint.textContent, /Select one Skiff/); assert.equal(context.ui.attackMoveToggle.disabled, true);
+  assert.match(context.ui.commandHint.textContent, /Select Skiffs/); assert.equal(context.ui.attackMoveToggle.disabled, true);
   assert.ok(buttons.every(button => button.disabled)); assert.equal(context.ui.formationSelect.disabled, true);
 });
 

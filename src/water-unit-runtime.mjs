@@ -26,17 +26,32 @@ export function createWaterUnitRuntime(definition) {
   const waterActors = units => units.filter(unit => unit.hp > 0 && unit.movementDomain === 'water');
   const occupiedCells = (units, except = null) => [...new Set(waterActors(units)
     .filter(unit => unit !== except).flatMap(unit => waterUnitOccupiedCells(graph, unit)))];
+  function plan(unit, x, z, units, maxExpandedCells, extraReservations = []) {
+    const start = graph.cellAt(unit.x, unit.z), goal = graph.cellAt(x, z);
+    if (!graph.isNavigable(start) || !graph.isNavigable(goal)) return { status: 'invalid-endpoints', expandedCells: 0, cells: [] };
+    const reservedCells = [...new Set([...staticReservations, ...occupiedCells(units, unit), ...extraReservations])];
+    const current = createWaterRouteGraph(geometry, { reservedCells });
+    return findWaterCellRoute(current, start, goal, { maxExpandedCells });
+  }
   return Object.freeze({
     graph,
     reservations: occupiedCells,
     plan(unit, x, z, units, maxExpandedCells = Math.min(4096, graph.cellCount)) {
-      const start = graph.cellAt(unit.x, unit.z), goal = graph.cellAt(x, z);
-      if (!graph.isNavigable(start) || !graph.isNavigable(goal)) return { status: 'invalid-endpoints', cells: [] };
       // Shore clearance belongs to the static mask. Expanding live reservations
       // again would strand two independently routed boats that finish adjacent.
-      const reservedCells = [...new Set([...staticReservations, ...occupiedCells(units, unit)])];
-      const current = createWaterRouteGraph(geometry, { reservedCells });
-      return findWaterCellRoute(current, start, goal, { maxExpandedCells });
+      return plan(unit, x, z, units, maxExpandedCells);
+    },
+    planReserved(unit, x, z, units, { reservedGoalCells = [], forbiddenGoalCells = new Set(), ignoredGoalIds = new Set(), maxExpandedCells = Math.min(4096, graph.cellCount) } = {}) {
+      const goal = graph.cellAt(x, z), start = graph.cellAt(unit.x, unit.z);
+      const others = waterActors(units).filter(actor => actor !== unit && !ignoredGoalIds.has(actor.id)
+        && actor.pathIndex < actor.path.length);
+      // Never park on another active route. Shared transit cells remain usable;
+      // their final destinations remain reserved through saved routes/goals.
+      if (forbiddenGoalCells.has(goal) || others.some(actor => actor.path.slice(actor.pathIndex).includes(goal))) {
+        return { status: 'invalid-endpoints', expandedCells: 0, cells: [] };
+      }
+      const destinations = [...others.map(actor => actor.moveGoalCell), ...reservedGoalCells].filter(cell => cell !== start);
+      return plan(unit, x, z, units, maxExpandedCells, destinations);
     },
     validRoute(unit) {
       const cell = graph.cellAt(unit.x, unit.z);
@@ -86,7 +101,7 @@ export function createWaterUnitRuntime(definition) {
           if (step === distance) unit.pathIndex++;
         }
         if (unit.waterMoveBlocked !== blocked) { unit.waterMoveBlocked = blocked; changed = true; }
-        if (unit.pathIndex >= unit.path.length) {
+        if (unit.pathIndex >= unit.path.length && unit.gatherPhase !== 'to-base') {
           unit.path = []; unit.pathIndex = 0; unit.moveGoalCell = -1; changed = true;
         }
       }
