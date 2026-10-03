@@ -10,7 +10,7 @@ const body = source.slice(source.indexOf('function snapshotUnits('), source.inde
 const harvestLookup = source.slice(source.indexOf('function harvestNodeById('), source.indexOf('\nfunction routeWorker('));
 function fixture(fogOfWar = true) {
   const worker = { id:0, team:0, x:0, z:0, hp:100, kind:'worker', generation:1, cargo:0, cargoType:null, gatherPhase:'to-node', gatherForestCell:-1, gatherNodeId:'berries', attackTargetId:-1, repairing:false, buildingTargetId:null };
-  const context = vm.createContext({ units:[worker], mapDefinition:{ fogOfWar, resourceNodes:[{id:'berries',type:'food'}] }, BUILDING_DEFINITIONS, BUILDER_INTERACTION_RANGE:1.4, teamWood:[100,100], buildingsById:new Map(), resourceNodeStates:new Map(), headingToTarget, tickNumber:1, STATE_EVERY_TICKS:3, workerTaskStatus:()=>null, cellVisibleToTeam:()=>true, worldToCell:()=>0 });
+  const context = vm.createContext({ workerPerformingAction: () => null, units:[worker], mapDefinition:{ fogOfWar, resourceNodes:[{id:'berries',type:'food'}] }, BUILDING_DEFINITIONS, BUILDER_INTERACTION_RANGE:1.4, teamWood:[100,100], buildingsById:new Map(), resourceNodeStates:new Map(), headingToTarget, tickNumber:1, STATE_EVERY_TICKS:3, workerTaskStatus:()=>null, cellVisibleToTeam:()=>true, worldToCell:()=>0 });
   context.farmBuildingId = farmBuildingId; context.farmHarvestNode = farmHarvestNode;
   context.resourceNodeStates.set('berries', { id: 'berries', type: 'food', stock: 100, x: 0, z: 0 });
   vm.runInContext(harvestLookup + body, context);
@@ -35,7 +35,7 @@ test('repair reports execution only in reach with a damaged completed building a
 test('fog withholds enemy work while no-fog shared roster retains execution for local filtering', () => {
   const fog=fixture(); fog.worker.gatherPhase='gathering';
   assert.equal(fog.row(0)[14],'food'); assert.equal(fog.row(1)[14],undefined);
-  fog.worker.gatherPhase=''; assert.equal(fog.row(0).length,11, 'idle rows retain their compact legacy shape');
+  fog.worker.gatherPhase=''; assert.equal(fog.row(0)[17],null, 'disclosed idle Workers explicitly clear the new receipt');
   const open=fixture(false); open.worker.gatherPhase='gathering';
   assert.equal(open.row(null)[14],'food');
 });

@@ -46,6 +46,7 @@ import { RoomPregame, validatePregameCheckpoint } from './src/room-pregame.mjs';
 import { RoomLobbyChat } from './src/room-lobby-chat.mjs';
 import { headingToTarget } from './src/unit-heading.mjs';
 import { workerFishingPresentation } from './src/worker-fishing-presentation.mjs';
+import { WORKER_PERFORMING_ACTION_VERSION, createWorkerPerformingActions } from './src/worker-performing-action.mjs';
 import { preparePaidWallLine } from './src/wall-construction-draft.mjs';
 import { activeWallBuildOrder } from './src/wall-build-order.mjs';
 import { isPalisade, validGateState, buildingBlocksMovement, planGateTransition } from './src/palisade-gate.mjs';
@@ -954,6 +955,7 @@ let currentArmySize = DEFAULT_STARTING_ARMY_SIZE;
 let nextPlayerId = 1;
 let tickNumber = 0;
 let dirty = true;
+const workerPerformingActions = createWorkerPerformingActions();
 const pendingMoveStartBroadcasts = new Set();
 const tickDurationsMs = new Float32Array(TICK_SAMPLE_WINDOW);
 const tickStartLagsMs = new Float32Array(TICK_SAMPLE_WINDOW);
@@ -1720,6 +1722,7 @@ function resetPvePolicy() {
 }
 
 function resetArmy(count = currentArmySize) {
+  workerPerformingActions.clear();
   cancelMovePlanningJobs('MATCH RESET');
   matchWinner = -1;
   matchWinnerTriggerId = null;
@@ -1798,6 +1801,26 @@ function resetArmy(count = currentArmySize) {
   dirty = true;
 }
 
+function compatibleWorkerPerformingAction(unit, receipt) {
+  if (receipt.action.startsWith('gather-')) {
+    if (unit.gatherPhase !== 'gathering') return false;
+    if (unit.gatherForestCell >= 0) return receipt.action === 'gather-wood'
+      && receipt.target === unit.gatherForestCell && forestWoodRemaining[unit.gatherForestCell] > 0;
+    const node = harvestNodeById(unit.gatherNodeId);
+    return receipt.target === unit.gatherNodeId && node?.stock > 0
+      && receipt.action === `gather-${node.type}`;
+  }
+  const building = buildingsById.get(unit.buildingTargetId);
+  if (!building || building.hp <= 0 || receipt.target !== unit.buildingTargetId) return false;
+  return receipt.action === 'repair'
+    ? unit.repairing && building.complete && building.hp < BUILDING_DEFINITIONS[building.type].maxHp
+    : !unit.repairing && !building.complete;
+}
+
+function workerPerformingAction(unit) {
+  return workerPerformingActions.read(unit, tickNumber, compatibleWorkerPerformingAction);
+}
+
 function snapshotUnits(viewTeam = null) {
   const rows = [];
   const focusedByUnit = new Uint16Array(units.length);
@@ -1837,6 +1860,9 @@ function snapshotUnits(viewTeam = null) {
       unit, resourceNodeStates.get(unit.gatherNodeId), mapDefinition,
     ) : null;
     if (fishing) row[16] = fishing.resourceVariant;
+    if (unit.kind === 'worker' && (!mapDefinition.fogOfWar || viewTeam === null || viewTeam === unit.team)) {
+      row[17] = workerPerformingAction(unit);
+    }
     rows.push(row);
   }
   return rows;
@@ -2512,6 +2538,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
     || cellVisibleToTeam(viewTeam, worldToCell(node.x, node.z)));
   return {
     ...(viewTeam === 0 ? {scenarioTrace: scenarioDiagnosticTrace()} : {}),
+    workerPerformingActionVersion: WORKER_PERFORMING_ACTION_VERSION,
     type: 'state', economyProfileId: matchEconomyProfileId(), rulesetRevision: economyRulesetRevision(matchEconomyProfileId()), factionId: DEFAULT_FACTION_ID, unitWireIds: UNIT_WIRE_IDS, tick: tickNumber, armySize: currentArmySize,
     ...(pregame ? { lobby: pregamePayload() } : {}),
     matchElapsedSeconds: Number(matchElapsedSeconds.toFixed(1)), scenarioClockStarted,
@@ -3154,6 +3181,7 @@ function restoreMatchCheckpoint(snapshot) {
   forestEpoch = state.forestEpoch;
   currentArmySize = state.currentArmySize;
   tickNumber = state.tickNumber;
+  workerPerformingActions.clear();
   units.length = 0;
   for (const record of state.units) {
     units.push({
@@ -4347,6 +4375,7 @@ function updateForestWorkerEconomy(unit) {
       if (unit.cargo <= 0) unit.cargoType = 'wood';
       unit.cargo = Math.min(WORKER_CARRY_CAPACITY, unit.cargo + amount);
       forestWoodRemaining[cell] = leftover <= 1e-5 ? 0 : leftover;
+      if (amount > 0) workerPerformingActions.record(unit, 'gather-wood', cell);
       forestStockChangedCells.add(cell);
       if (forestWoodRemaining[cell] === 0) pendingForestClears.add(cell);
       dirty = true;
@@ -4447,6 +4476,7 @@ function updateWorkerEconomy() {
         if (unit.cargo <= 0) unit.cargoType = node.type;
         unit.cargo = Math.min(WORKER_CARRY_CAPACITY, unit.cargo + amount);
         node.stock = emptied ? 0 : node.stock - amount;
+        if (amount > 0) workerPerformingActions.record(unit, `gather-${node.type}`, unit.gatherNodeId);
         if (emptied) markWildlifeDepleted(node);
         dirty = true;
         if (emptied) broadcastGameplayNotice(unit.team, node.x, node.z,
@@ -5690,14 +5720,21 @@ function updateBuildingAndProduction() {
     if (dx * dx + dz * dz > BUILDER_INTERACTION_RANGE * BUILDER_INTERACTION_RANGE) continue;
     if (unit.repairing) {
       const repair = buildingRepairStep(building, teamWood[unit.team], STEP_SECONDS);
-      if (repair.hp > 0) { building.hp += repair.hp; teamWood[unit.team] = Math.max(0, teamWood[unit.team] - repair.wood); dirty = true; }
+      if (repair.hp > 0) {
+        building.hp += repair.hp;
+        teamWood[unit.team] = Math.max(0, teamWood[unit.team] - repair.wood);
+        workerPerformingActions.record(unit, 'repair', building.id);
+        dirty = true;
+      }
       if (building.hp >= BUILDING_DEFINITIONS[building.type].maxHp - 1e-9) {
         building.hp = BUILDING_DEFINITIONS[building.type].maxHp; unit.buildingTargetId = null; unit.repairing = false;
       }
       continue;
     }
     const rules = buildingRulesFor(building.type);
+    const previousProgress = building.progress;
     building.progress = Math.min(1, building.progress + STEP_SECONDS / rules.buildSeconds);
+    if (building.progress > previousProgress) workerPerformingActions.record(unit, 'build', building.id);
     dirty = true;
     if (building.progress >= 1) {
       building.complete = true;
@@ -7111,6 +7148,7 @@ function simulateTick() {
     separationTickMaxCandidatesPerCall = 0;
   }
   tickNumber++;
+  workerPerformingActions.beginStep(tickNumber);
   if (pregame?.phase === 'lobby') return;
   if (matchWinner >= 0) return;
   if (!scenarioClockStarted && connectedCount() >= (soloPractice ? 1 : 2)) scenarioClockStarted = true;
@@ -8199,6 +8237,7 @@ function runSimulationTick() {
   }
   lastSimulationTickStartedAt = tickStartedAt;
   simulateTick();
+  if (workerPerformingActions.finishStep(tickNumber, compatibleWorkerPerformingAction)) dirty = true;
   recordSeparationWorkSample();
   const moveStartBroadcastRequested = takeMoveStartBroadcastRequest();
   const afterSimulation = tickDiagnosticSamples ? performance.now() : null;
