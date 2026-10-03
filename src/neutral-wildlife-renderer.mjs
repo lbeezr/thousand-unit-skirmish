@@ -10,11 +10,11 @@ function staticPose(definition) {
 // Stationary neutral resource presentation. Nose pose is not movement direction.
 export const WILDLIFE_RENDER_REGISTRY = Object.freeze({
   'bellweather-sheep': Object.freeze({
-    alive: 'public-illustrated-static',
+    alive: 'eight-view-static',
     aliveFallback: 'sheep-proxy',
     carcassFallback: 'food-cache-marker',
     depleted: 'hidden',
-    bindingUrl: new URL('../assets/wildlife/bellweather-sheep-public-reference-v1/static-preview-binding.json', import.meta.url).href,
+    bindingUrl: new URL('../assets/wildlife/bellweather-sheep-static-v1/static-preview-binding.json', import.meta.url).href,
   }),
 });
 
