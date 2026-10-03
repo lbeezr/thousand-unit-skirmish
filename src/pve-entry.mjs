@@ -22,7 +22,7 @@ export function createPveRoomUrl(currentUrl, response) {
   if (!ROOM_ID_PATTERN.test(response?.roomId || '')) throw new TypeError('Room creation returned an invalid room ID.');
   const options = launchOptionsFrom(response);
   if (!options) throw new TypeError('Room creation did not return PvE launch options.');
-  const url = new URL(currentUrl);
+  const url = new URL('/', currentUrl);
   url.searchParams.set('room', response.roomId);
   url.searchParams.set('mode', 'pve');
   url.searchParams.set('mapSeed', String(options.mapSeed));
@@ -68,7 +68,7 @@ function addRunStamp(document, mapLabel) {
   return { stamp, map, mapSeed, policySeed };
 }
 
-function mountPveEntry() {
+export function mountPveEntry() {
   const document = window.document;
   const actions = document.querySelector('.room-actions');
   const mapLabelContainer = document.querySelector('.map-label');
@@ -237,7 +237,7 @@ function mountPveEntry() {
   }
 }
 
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && window.document.documentElement?.dataset?.entry !== 'menu') {
   if (window.document.readyState === 'loading') {
     window.document.addEventListener('DOMContentLoaded', mountPveEntry, { once: true });
   } else {
