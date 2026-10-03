@@ -1,3 +1,5 @@
+import { findInvalidResourceVariant, isShoreFish } from './shore-fishing.mjs';
+import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from './shore-fishing-placeholder.mjs';
 import { generateRollingGround, smoothGround } from './terrain-authoring.mjs';
 import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS, validateMapRegion } from './regions.mjs';
@@ -1722,7 +1724,7 @@ function resourceCalloutTexture(type) {
   context.textAlign = 'left';
   context.textBaseline = 'middle';
   context.fillStyle = '#f2f6dd';
-  context.fillText(type === 'wood' ? 'WOOD' : 'FOOD', 50, 33);
+  context.fillText(type === 'shore-fish' ? 'FISH · FOOD' : type === 'wood' ? 'WOOD' : 'FOOD', 50, 33);
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   resourceCalloutTextures.set(type, texture);
@@ -1780,15 +1782,17 @@ function addResourceNodeVisual(node) {
   addMapObject(ring);
 
   const callout = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: resourceCalloutTexture(nodeType), transparent: true, depthTest: false,
+    map: resourceCalloutTexture(isShoreFish(node) ? 'shore-fish' : nodeType), transparent: true, depthTest: false,
     depthWrite: false, fog: false, toneMapped: false,
   }));
   callout.position.set(node.x, groundHeight(node.x,node.z)+1.8, node.z);
   callout.renderOrder = 15;
   callout.visible = false;
   addMapObject(callout);
+  const fishPlaceholder = isShoreFish(node) ? createShoreFishPlaceholder() : null;
+  if (fishPlaceholder) { ring.add(fishPlaceholder); updateShoreFishPlaceholder(fishPlaceholder, stage); }
   resourceNodeVisuals.set(node.id, {
-    type: nodeType, ring, stock: node.stock, startingStock: node.stock, stage,
+    fishPlaceholder, type: nodeType, ring, stock: node.stock, startingStock: node.stock, stage,
     x: node.x, z: node.z, callout,
   });
 }
@@ -1804,7 +1808,8 @@ function updateResourceNodeVisual(id, stock) {
   const nodeColor = visual.type === 'wood' ? 0x9bb877 : 0xe4bd63;
   visual.ring.material.color.setHex(stock > 0 ? nodeColor : 0x77806b);
   visual.ring.material.opacity = stock > 0 ? 0.78 : 0.35;
-  if (visual.type === 'wood') setWoodNodeTreeStage(id, stage);
+  if (visual.fishPlaceholder) updateShoreFishPlaceholder(visual.fishPlaceholder, stage);
+  else if (visual.type === 'wood') setWoodNodeTreeStage(id, stage);
   else setBerryNodeStage(id, stage);
 }
 
@@ -1953,7 +1958,7 @@ function buildBerryNodeInstances(nodes = []) {
   berryNodeStages.clear();
   berryStageCounts.clear();
   for (const stage of RESOURCE_VISUAL_STAGES) berryStageCounts.set(stage, 0);
-  const berryNodes = nodes.filter((node) => node.type === 'food');
+  const berryNodes = nodes.filter((node) => node.type === 'food' && !isShoreFish(node));
   if (berryNodes.length === 0) return;
   const positions = berryNodes.map((node) => ({ x: node.x, z: node.z, scale: 1 }));
   for (let index = 0; index < berryNodes.length; index++) {
@@ -6108,6 +6113,8 @@ function validateImportedMap(value) {
   }
   const elevationLevels = (definition.elevationPatches || []).some((patch) => patch.level > 0)
     ? buildElevationGrid(definition.width, definition.height, definition.elevationPatches) : null;
+  const invalidVariant = findInvalidResourceVariant(definition);
+  if (invalidVariant) throw new Error(`Resource node ${invalidVariant.nodeId}: ${invalidVariant.reason}.`);
   const unreachableNode = findUnreachableResourceNode(
     definition.width, definition.height, blockedCells, definition.spawnPoints, definition.resourceNodes,
     elevationLevels,
@@ -6648,6 +6655,12 @@ function drawEditorGrid() {
       context.lineTo(x + 0.34, y + 0.07);
       context.closePath();
       context.fill();
+    } else if (isShoreFish(node)) {
+      context.fillStyle = '#286173';
+      context.font = '0.7px monospace';
+      context.textAlign = 'center';
+      context.fillText('F', x, y + 0.24);
+      context.textAlign = 'start';
     } else {
       context.fillStyle = '#713c50';
       context.beginPath();
