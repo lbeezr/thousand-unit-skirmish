@@ -4638,7 +4638,11 @@ function updateEconomyUI(state = {}, initial = false) {
     for (const node of mapDefinition?.resourceNodes || []) {
       if (node.wildlifeSpecies === undefined) continue;
       const visual = resourceNodeVisuals.get(node.id);
-      if (visual) visual.ring.visible = wildlifeRenderer.isAvailable(node.id);
+      if (visual) {
+        const available = wildlifeRenderer.isAvailable(node.id);
+        visual.ring.visible = available;
+        if (!available) visual.callout.visible = false;
+      }
     }
     for (const node of state.resourceNodes) {
       if (node && typeof node.id === 'string' && Number.isFinite(node.stock)) {
