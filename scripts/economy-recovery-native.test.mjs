@@ -63,6 +63,7 @@ test('native Stone profile exposes no initial grant, rejects unpaid defense and 
       x: (team ? 1 : -1) * 10.5, z: 8.5 }, /WATCHTOWER/);
     await client.state(state => state.buildings.some(building => building.team === team
       && building.type === 'watchtower' && !building.complete && building.progress > 0.03), 'paid partial Watchtower');
+    await client.command({ type: 'stop', ids: [worker.id] }, /STOP ORDER/);
   }
   await room.stop(); const paid = JSON.parse(await readFile(room.checkpointPath, 'utf8'));
   assert.deepEqual(paid.state.teamFood, [250, 250]); assert.deepEqual(paid.state.teamWood, [450, 450]);
@@ -70,11 +71,13 @@ test('native Stone profile exposes no initial grant, rejects unpaid defense and 
   assert.ok(workers.every(worker => paid.state.units[worker.id].cargo === 0));
   const towers = [0, 1].map(team => paid.state.buildings.find(building => building.team === team));
   assert.ok(towers.every(building => building && !building.complete));
+  assert.ok(workers.every(worker => paid.state.units[worker.id].buildingTargetId === null));
   await room.start(); clients = [await room.connect(0, tokens[0]), await room.connect(1, tokens[1])];
   for (const [team, client] of clients.entries()) {
     assert.ok(client.welcome.recoveredFromCheckpoint);
     assert.equal(client.latest.stone[team], paid.state.teamStone[team]);
-    assert.ok(client.latest.buildings.some(building => building.id === towers[team].id && !building.complete));
+    const restored = client.latest.buildings.find(building => building.id === towers[team].id);
+    assert.ok(restored && !restored.complete); assert.equal(restored.progress, towers[team].progress);
     await clients[1 - team].command({ type: 'cancelConstruction', buildingId: towers[team].id }, /CANCEL REJECTED/);
     await client.command({ type: 'cancelConstruction', buildingId: towers[team].id }, /CONSTRUCTION CANCELLED.*STONE/);
     await client.state(state => !state.buildings.some(building => building.id === towers[team].id)
@@ -90,6 +93,11 @@ test('native Stone profile exposes no initial grant, rejects unpaid defense and 
     assert.ok(stoneRefund > 0 && stoneRefund < 50);
     assert.ok(Math.abs(canceled.state.teamFood[team] - paid.state.teamFood[team] - stoneRefund) < 0.000002);
     assert.ok(Math.abs(canceled.state.teamWood[team] - paid.state.teamWood[team] - 3 * stoneRefund) < 0.000002);
+    for (const [bank, cost] of [['teamFood', 50], ['teamWood', 150], ['teamStone', 50]]) {
+      const expectedRefund = Math.round(cost * (1 - towers[team].progress) * 1e6) / 1e6;
+      assert.ok(Math.abs(canceled.state[bank][team] - paid.state[bank][team] - expectedRefund) < 1e-10,
+        `${bank} restores the frozen unbuilt fraction within binary floating point precision`);
+    }
   }
   for (const change of [s => delete s.state.teamStone, s => delete s.economyProfileId,
     s => delete s.mapDefinition.economyProfileId, s => s.rulesetRevision = `v1:${'0'.repeat(64)}`]) {
