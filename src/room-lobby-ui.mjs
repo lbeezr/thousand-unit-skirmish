@@ -1,9 +1,20 @@
 import { createRoomLobbyChat } from './room-lobby-chat-ui.mjs';
+import { roomEntryUrl } from './game-entry-session.mjs';
 
 const TEAMS = ['Azure', 'Ember'];
 const SIZES = [250, 500, 1000, 2000];
 
-export function createRoomLobby({ root, send, copyInvite, rejoin = () => root.ownerDocument.defaultView.location.reload() }) {
+export function lobbyRejoinUrl(currentUrl) {
+  const current = new URL(currentUrl);
+  const target = roomEntryUrl(currentUrl, current.searchParams.get('room') || 'default');
+  if (!current.searchParams.has('room')) target.searchParams.set('play', '1');
+  return target;
+}
+
+export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
+  const win = root.ownerDocument.defaultView;
+  win.location.assign(lobbyRejoinUrl(win.location.href).href);
+} }) {
   const doc = root.ownerDocument;
   function element(tag, text, parent = root) {
     const node = doc.createElement(tag);

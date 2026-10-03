@@ -1,10 +1,19 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
-import { createRoomLobby } from '../src/room-lobby-ui.mjs';
+import { createRoomLobby, lobbyRejoinUrl } from '../src/room-lobby-ui.mjs';
 
 const host = { id: 'player-1', team: 0 };
 const guest = { id: 'player-2', team: 1 };
+
+test('rejoining requests ordinary room admission even after a resumed player became a spectator', () => {
+  const room = 'R'.repeat(32);
+  const target = lobbyRejoinUrl(`https://game.test/?room=${room}&resume=1&studio=1&mode=pve#old`);
+  assert.deepEqual([...target.searchParams], [['room', room]]);
+  assert.equal(target.hash, '');
+  assert.deepEqual([...lobbyRejoinUrl('https://game.test/?resume=1&play=1').searchParams], [['play', '1']],
+    'a standalone shared lobby keeps deliberate game entry');
+});
 function disabledControlBlur(doc) {
   // JSDOM retains focus on disabled buttons; reproduce Chrome's BODY focus.
   doc.body.tabIndex = -1;

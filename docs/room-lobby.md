@@ -58,6 +58,8 @@ request admission. Another player may take the seat first. It grants no local
 authority, never overrides a reserved seat and is absent for an active-token
 connection waiting to recover automatically. Host departure guidance explains
 Azure's reservation/vacancy while Ember retains its seat and guest controls.
+Rejoin removes entry-only Resume/Studio flags, so a player who became a spectator
+after losing an old session requests the vacant seat through ordinary admission.
 
 Disconnects during a running match retain the current running/recovery behavior.
 Running matches allow the existing vacant-seat joins and spectators. A recovered
