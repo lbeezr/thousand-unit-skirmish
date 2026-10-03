@@ -20,12 +20,13 @@ for (const schemaVersion of [23, 24]) {
       const resources = structuredClone(legacy.state.resourceNodes), food = [...legacy.state.teamFood];
       assert.ok(route.pathIndex < route.path.length, 'ordinary Move remains in flight');
       legacy.schemaVersion = schemaVersion;
+      delete legacy.matchModeId; delete legacy.matchModeVersion;
       for (const u of legacy.state.units) for (const field of ['combatStance', 'stanceAnchorX', 'stanceAnchorZ', 'stanceCombat', 'stanceReturning']) delete u[field];
       if (schemaVersion === 23) for (const node of legacy.state.resourceNodes) {
         delete node.x; delete node.z; delete node.wildlifeMotion;
       }
       r.restore(legacy); const recovered = r.checkpoint();
-      assert.equal(recovered.schemaVersion, 25); r.validate(structuredClone(recovered));
+      assert.equal(recovered.schemaVersion, 26); r.validate(structuredClone(recovered));
       const restored = recovered.state.units[unit.id];
       for (const field of ['x', 'z', 'hp', 'path', 'pathIndex', 'moveGoalCell']) assert.deepEqual(restored[field], route[field]);
       assert.deepEqual(recovered.state.teamFood, food);
@@ -181,18 +182,19 @@ for (const team of [0, 1]) {
     const c = await createStanceCase({ team });
     try {
       c.stance('defensive'); c.step(1); const snapshot = c.r.checkpoint();
-      assert.equal(snapshot.schemaVersion, 25); c.r.validate(structuredClone(snapshot));
+      assert.equal(snapshot.schemaVersion, 26); c.r.validate(structuredClone(snapshot));
       for (const mutation of [u => { u.combatStance = 'omniscient'; }, u => { u.stanceAnchorX = Infinity; },
         u => { u.stanceReturning = true; u.combatStance = 'aggressive'; }]) {
         const invalid = structuredClone(snapshot); mutation(invalid.state.units[c.unit.id]);
         assert.throws(() => c.r.validate(invalid), /combat stance/);
       }
       c.order(team, { type: 'stop', ids: [c.unit.id] }); const legacy = c.r.checkpoint(); legacy.schemaVersion = 23;
+      delete legacy.matchModeId; delete legacy.matchModeVersion;
       for (const u of legacy.state.units) for (const field of ['combatStance', 'stanceAnchorX', 'stanceAnchorZ', 'stanceCombat', 'stanceReturning']) delete u[field];
       for (const schemaVersion of [23, 24]) {
         const previous = structuredClone(legacy); previous.schemaVersion = schemaVersion;
         c.r.restore(structuredClone(previous)); assert.equal(c.r.units[c.unit.id].combatStance, 'noAttack');
-        assert.equal(c.r.checkpoint().schemaVersion, 25);
+        assert.equal(c.r.checkpoint().schemaVersion, 26);
         previous.state.units[c.unit.id].holdingPosition = true;
         c.r.restore(previous); assert.equal(c.r.units[c.unit.id].combatStance, 'standGround');
       }

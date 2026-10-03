@@ -63,7 +63,7 @@ try {
   }));
   const sessions = clients.map(c => c.welcome.player.sessionToken);
   await fixture.stop(); const saved = await fixture.checkpoint();
-  assert.equal(saved.schemaVersion, 25);
+  assert.equal(saved.schemaVersion, 26);
   assert.ok(lanes.every(l => saved.state.units[l.unit[0]].stanceReturning));
   await fixture.start(); clients = [await fixture.connect(0, sessions[0]), await fixture.connect(1, sessions[1])];
   assert.ok(clients.every(c => c.welcome.recoveredFromCheckpoint));

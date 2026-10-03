@@ -86,14 +86,14 @@ architecture is replaced.
 ## Protocol and persistence
 
 POST `/api/rooms` accepts `{ "mode": "pvp", "pregame": true }`. The supervisor
-persists this optional flag in its existing version-2 room index and passes
+persists this optional flag in its version-3 room index and passes
 `RTS_PREGAME=1` to the isolated worker. Inherited flags are cleared for legacy
 and PvE workers. PvE rejects the pregame field. The normal New room UI sends
 the opt-in flag; existing API callers default to immediate play.
 
 | Command | Fields and authority |
 | --- | --- |
-| `configureLobby` | `revision`, optional catalog `mapId`, optional supported `armySize`; connected Azure only, while waiting. Unknown, invalid or stale settings reject atomically. |
+| `configureLobby` | `revision`, optional catalog `mapId`, optional supported `armySize`, optional paired `matchModeId`/`matchModeVersion`; connected Azure only, while waiting. Unknown, invalid or stale settings reject atomically. |
 | `setReady` | `revision`, boolean `ready`; the connected sending seat only. |
 | `launchMatch` | `revision`; connected Azure only with both seats ready. A repeated accepted launch at that revision is an acknowledgement, not a second reset. |
 | `sendLobbyChat` | Bounded `clientMessageId` and plain `text`; connected Azure/Ember only while waiting. No sender fields or unknown fields are accepted. |
@@ -108,9 +108,18 @@ after the committed running phase and rejects. There is no intermediate phase.
 Welcome/state packets include a `lobby` projection for opted-in rooms, and
 `lobby` packets broadcast changes. The projection contains phase, revision,
 map/count, supported mode/faction, actual map catalog, seat ID/team/connection/
-ready and `canLaunch`. It contains no session tokens. `lobbyRejected` includes
+ready and `canLaunch`. The [match-mode contract](match-mode-contract.md) adds the
+effective identity/descriptor and per-map capability catalogs; a mode change also
+clears readiness. This protocol integration precedes the separately owned mode
+selector. It contains no session tokens. `lobbyRejected` includes
 the current projection and an actionable reason so clients recover from stale
 input. Existing `rts-v1` and `rts-resume` subprotocols remain.
+
+The current schema 26 also persists the explicit mode pair with the canonical
+map/hash; restore derives effective rules from that saved identity. Exact old
+schema-25 snapshots without mode fields recover as authored rules, independently
+of fresh launch defaults. Rooms-index v3 records effective worker metadata
+separately from immutable initial launch options.
 
 Checkpoint schema 22 adds `state.pregame` as `null` or `{phase, revision}`.
 Schema 21 migrates to `null`; older migrations retain their existing order,

@@ -46,6 +46,9 @@ import { advanceTickDeadline } from './simulation-scheduler.mjs';
 import { privateProductionView } from './src/snapshot-private-production.mjs';
 import { RoomPregame, validatePregameCheckpoint } from './src/room-pregame.mjs';
 import { RoomLobbyChat } from './src/room-lobby-chat.mjs';
+import { normalizeMatchMode, matchModeDefinition, assertMatchModeCompatibility,
+  effectiveMapForMatchMode, matchModeCatalog } from './src/match-modes.mjs';
+import { migrateMatchModeCheckpoint, validateMatchModeCheckpoint } from './src/match-mode-checkpoint.mjs';
 import { headingToTarget } from './src/unit-heading.mjs';
 import { workerFishingPresentation } from './src/worker-fishing-presentation.mjs';
 import { preparePaidWallLine } from './src/wall-construction-draft.mjs';
@@ -68,7 +71,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 25;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 26;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -109,6 +112,15 @@ const SHARED_MOVE_PATHS = process.env.RTS_SHARED_MOVE_PATHS !== '0';
 const SERVER_INSTANCE_ID = randomBytes(16).toString('base64url');
 const pveLaunchOptions = readPveLaunchOptions();
 const soloPractice = !pveLaunchOptions && process.env.RTS_PREGAME !== '1' && process.env.RTS_SOLO_PRACTICE === '1';
+const configuredMatchMode = normalizeMatchMode({
+  ...(process.env.RTS_MATCH_MODE_ID === undefined ? {} : { matchModeId: process.env.RTS_MATCH_MODE_ID }),
+  ...(process.env.RTS_MATCH_MODE_VERSION === undefined ? {} : {
+    matchModeVersion: /^\d+$/.test(process.env.RTS_MATCH_MODE_VERSION)
+      ? Number(process.env.RTS_MATCH_MODE_VERSION) : process.env.RTS_MATCH_MODE_VERSION,
+  }),
+});
+// Boot geometry before recovery; the saved identity wins over fresh launch settings.
+let matchMode = normalizeMatchMode();
 const PVE_DECISION_INTERVAL_MS = 1_000;
 let matchId = randomBytes(16).toString('base64url');
 let recoveredFromCheckpoint = false;
@@ -650,6 +662,7 @@ const MIME_TYPES = {
 
 const configuredMatchMapId = pveLaunchOptions?.mapId ?? defaultMapId;
 let mapDefinition = mapCatalog.get(configuredMatchMapId);
+let authoredMapDefinition = mapDefinition;
 let dockPlacementContext = null;
 let waterUnitRuntime = null;
 let skiffFishingContext = null;
@@ -804,7 +817,10 @@ function resetVictoryHoldState() {
 }
 
 function activateMap(definition) {
-  mapDefinition = definition;
+  assertMatchModeCompatibility(matchMode, definition, { mode: pveLaunchOptions ? 'pve' : 'pvp', practice: soloPractice });
+  authoredMapDefinition = definition;
+  mapDefinition = effectiveMapForMatchMode(definition, matchMode);
+  definition = mapDefinition;
   dockPlacementContext = createDockPlacementContext(definition, BUILDING_DEFINITIONS.dock);
   waterUnitRuntime = createWaterUnitRuntime(definition);
   skiffFishingContext = createSkiffFishingContext(definition, waterUnitRuntime);
@@ -900,6 +916,7 @@ function mapCatalogPayload() {
   const regional = (map) => Boolean(map.region || map.audio?.packId?.startsWith('vaelora-'));
   return [...mapCatalog.values()].sort((a, b) => Number(regional(b)) - Number(regional(a)) || a.name.localeCompare(b.name)).map((map) => ({
     id: map.id, name: shippedMapIds.has(map.id) && !regional(map) ? `Lab · ${map.name}` : map.name, summary: map.summary || `${map.width} × ${map.height}`,
+    matchModes: matchModeCatalog(map, { mode: pveLaunchOptions ? 'pve' : 'pvp', practice: soloPractice }),
   }));
 }
 
@@ -936,20 +953,28 @@ function syncPregameSeats() {
 function pregamePayload() {
   if (!pregame) return null;
   syncPregameSeats();
-  return { ...pregame.payload(), factionId: DEFAULT_FACTION_ID, maps: mapCatalogPayload() };
+  return { ...pregame.payload(), factionId: DEFAULT_FACTION_ID, maps: mapCatalogPayload(),
+    matchModes: matchModeCatalog(authoredMapDefinition), matchMode: matchModeDefinition(matchMode) };
 }
 
 function broadcastPregame() {
   if (pregame) broadcast({ type: 'lobby', lobby: pregamePayload() });
 }
 
+function roomMetadata() { return { mapId: authoredMapDefinition.id, ...matchMode }; }
+function sendRoomMetadata() {
+  if (process.env.RTS_MANAGED_WORKER === '1' && process.connected) {
+    process.send({ type: 'roomMetadata', roomMetadata: roomMetadata() }, () => {});
+  }
+}
+
 function returnToPregame() {
   if (!pregame) return;
-  pregame.reset(mapDefinition.id, currentArmySize);
+  pregame.reset(mapDefinition.id, currentArmySize, matchMode);
   broadcastPregame();
 }
 let pveOpponentActive = false;
-let pvePolicy = pveLaunchOptions ? createDeterministicPolicy(pveLaunchOptions.policySeed) : null;
+let pvePolicy = pveLaunchOptions ? createDeterministicPolicy(pveLaunchOptions.policySeed, matchMode) : null;
 let pveCommandsIssued = 0;
 let pveOpponentError = null;
 let pveDecisionInFlight = false;
@@ -1718,7 +1743,7 @@ function commandUnits(command) {
 
 function resetPvePolicy() {
   if (!pveLaunchOptions) return;
-  pvePolicy = createDeterministicPolicy(pveLaunchOptions.policySeed);
+  pvePolicy = createDeterministicPolicy(pveLaunchOptions.policySeed, matchMode);
   pveCommandsIssued = 0;
   pveOpponentError = null;
 }
@@ -2517,6 +2542,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
   return {
     ...(viewTeam === 0 ? {scenarioTrace: scenarioDiagnosticTrace()} : {}),
     type: 'state', economyProfileId: matchEconomyProfileId(), rulesetRevision: economyRulesetRevision(matchEconomyProfileId()), factionId: DEFAULT_FACTION_ID, unitWireIds: UNIT_WIRE_IDS, tick: tickNumber, armySize: currentArmySize,
+    ...matchMode, matchMode: matchModeDefinition(matchMode),
     ...(pregame ? { lobby: pregamePayload() } : {}),
     matchElapsedSeconds: Number(matchElapsedSeconds.toFixed(1)), scenarioClockStarted,
     ...(soloPractice ? { practice: true } : {}),
@@ -2654,8 +2680,9 @@ function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
     sequence,
     savedAt,
     matchId,
-    mapDefinition,
-    mapHash: matchMapHash(mapDefinition),
+    ...matchMode,
+    mapDefinition: authoredMapDefinition,
+    mapHash: matchMapHash(authoredMapDefinition),
     state: {
       tickNumber,
       currentArmySize,
@@ -2724,11 +2751,14 @@ function validateMatchCheckpoint(snapshot) {
   assertSnapshot(Number.isSafeInteger(snapshot.sequence) && snapshot.sequence >= 1, 'invalid sequence');
   assertSnapshot(Number.isFinite(snapshot.savedAt) && snapshot.savedAt > 0, 'invalid save time');
   assertSnapshot(typeof snapshot.matchId === 'string' && /^[A-Za-z0-9_-]{22}$/.test(snapshot.matchId), 'invalid match identity');
-  const definition = validateMapDefinition(snapshot.mapDefinition, 'match checkpoint');
+  const canonicalDefinition = validateMapDefinition(snapshot.mapDefinition, 'match checkpoint');
+  const savedMatchMode = validateMatchModeCheckpoint(snapshot);
+  assertMatchModeCompatibility(savedMatchMode, canonicalDefinition, { mode: pveLaunchOptions ? 'pve' : 'pvp', practice: soloPractice });
+  const definition = effectiveMapForMatchMode(canonicalDefinition, savedMatchMode);
   assertSnapshot(snapshot.rulesVersion === MATCH_RULES_VERSION
     || !definition.elevationPatches?.some((patch) => patch.level > 0),
   'elevated map requires current game rules');
-  assertSnapshot(snapshot.mapHash === matchMapHash(definition), 'map checksum mismatch');
+  assertSnapshot(snapshot.mapHash === matchMapHash(canonicalDefinition), 'map checksum mismatch');
   assertSnapshot(typeof snapshot.state === 'object' && snapshot.state !== null, 'missing simulation state');
   const state = snapshot.state;
   const savedPregame = validatePregameCheckpoint(state.pregame);
@@ -3141,11 +3171,11 @@ function validateMatchCheckpoint(snapshot) {
     'team population exceeds its living-unit and queued-production cap');
   assertSnapshot(aliveByTeam[0] + aliveByTeam[1] + queuedByTeam[0] + queuedByTeam[1] <= MAX_UNITS,
     'match population exceeds its living-unit and queued-production cap');
-  return { definition, state, explored };
+  return { definition: canonicalDefinition, state, explored, savedMatchMode };
 }
 
 function restoreMatchCheckpoint(snapshot) {
-  let { definition, state, explored } = validateMatchCheckpoint(snapshot);
+  let { definition, state, explored, savedMatchMode } = validateMatchCheckpoint(snapshot);
   if (pveLaunchOptions && definition.id !== pveLaunchOptions.mapId) {
     throw new Error('PvE checkpoint map does not match its launch seed.');
   }
@@ -3153,13 +3183,14 @@ function restoreMatchCheckpoint(snapshot) {
     const shippedDefinition = mapCatalog.get(definition.id);
     if (matchMapHash(shippedDefinition) !== snapshot.mapHash
       && migrateMillraceSheepCheckpoint(snapshot, shippedDefinition, matchMapHash)) {
-      ({ definition, state, explored } = validateMatchCheckpoint(snapshot));
+      ({ definition, state, explored, savedMatchMode } = validateMatchCheckpoint(snapshot));
     }
     assertSnapshot(matchMapHash(shippedDefinition) === snapshot.mapHash, 'shipped map changed since checkpoint');
   } else {
     mapCatalog.set(definition.id, definition);
     runtimeMapIds.add(definition.id);
   }
+  matchMode = savedMatchMode;
   activateMap(definition);
   for (const [cell, stock] of state.forestStocks) {
     forestWoodRemaining[cell] = stock;
@@ -3267,7 +3298,7 @@ function restoreMatchCheckpoint(snapshot) {
   nextCheckpointSequence = snapshot.sequence;
   recoveredFromCheckpoint = true;
   pregame = state.pregame || process.env.RTS_PREGAME === '1'
-    ? new RoomPregame(mapDefinition.id, currentArmySize, state.pregame ?? { phase: 'running', revision: 0 })
+    ? new RoomPregame(mapDefinition.id, currentArmySize, state.pregame ?? { phase: 'running', revision: 0 }, matchMode)
     : null;
   syncPregameSeats();
   lastCheckpointAt = snapshot.savedAt;
@@ -3333,7 +3364,7 @@ function migrateMatchCheckpoint(snapshot) {
   // A pin predating Farm still cannot claim a paid planting or harvest state.
   if (![GAMEPLAY_RULESET_REVISION, previousMovementPins[0]].includes(snapshot?.rulesetRevision)
     && snapshot?.state?.buildings?.some(building => building.type === 'farm' || building.harvestStock !== undefined)) return snapshot;
-  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && previousMovementPins.includes(snapshot.rulesetRevision)
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
@@ -3474,7 +3505,7 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // Mill only adds a food depot; retain existing palisades and paid work unchanged.
-  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801'
     && Array.isArray(snapshot.state?.buildings)
     && !snapshot.state.buildings.some(building => building.type === 'mill')
@@ -3482,23 +3513,23 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // The gate is additive; accept only the exact preceding definition set, without invented gate state.
-  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6'
     && Array.isArray(snapshot.state?.buildings)
     && !snapshot.state.buildings.some(building => building.type === 'palisade-gate' || Object.hasOwn(building, 'gateOpen'))) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // Additive Dock content preserves the exact previous Mill roster and paid work.
-  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2'
     && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   // Exact pre-Skiff Gate/Dock content retains its existing buildings, banks and work.
-  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b'
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
 
   // Farm adds only new paid crop state; retain exact pre-Farm Skiff work unchanged.
-  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
@@ -3506,7 +3537,7 @@ function migrateMatchCheckpoint(snapshot) {
     && !snapshot?.mapDefinition?.elevationPatches?.some((patch) => patch.level > 0)) {
     snapshot.rulesVersion = MATCH_RULES_VERSION;
   }
-  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion) && Array.isArray(snapshot.state?.units)) {
+  if ([22, 23, 24, 25, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion) && Array.isArray(snapshot.state?.units)) {
     for (const unit of snapshot.state.units) if (unit && typeof unit === 'object') unit.persistentOrder ??= null;
   }
   return snapshot;
@@ -3590,10 +3621,11 @@ function initializeCleanMatch() {
   tickNumber = 0;
   navigationRevision = 0;
   nextMoveOrderId = 1;
+  matchMode = { ...configuredMatchMode };
   activateMap(mapCatalog.get(configuredMatchMapId));
   resetArmy(mapDefinition.startingArmySize ?? DEFAULT_STARTING_ARMY_SIZE);
   pregame = process.env.RTS_PREGAME === '1' && !pveLaunchOptions
-    ? new RoomPregame(mapDefinition.id, currentArmySize) : null;
+    ? new RoomPregame(mapDefinition.id, currentArmySize, undefined, matchMode) : null;
 }
 
 async function initializeMatchFromCheckpoint() {
@@ -3614,7 +3646,9 @@ async function initializeMatchFromCheckpoint() {
   try {
     const snapshot = migrateEconomyCheckpoint(migrateMatchCheckpoint(JSON.parse(serialized)));
     migrateWildlifeMotionCheckpoint(snapshot);
-    restoreMatchCheckpoint(migrateCombatStanceCheckpoint(snapshot, UNIT_DEFINITIONS));
+    migrateCombatStanceCheckpoint(snapshot, UNIT_DEFINITIONS);
+    migrateMatchModeCheckpoint(snapshot);
+    restoreMatchCheckpoint(snapshot);
     console.log(`Restored match ${matchId} from checkpoint ${checkpointSequence} at tick ${tickNumber}.`);
   } catch (error) {
     console.warn('Match checkpoint was rejected; starting a fresh match:', String(error?.message || error));
@@ -3712,12 +3746,13 @@ function broadcastMapChange() {
   lastWaypointQueueCountsByTeam[0] = [];
   lastWaypointQueueCountsByTeam[1] = [];
   const maps = mapCatalogPayload();
+  sendRoomMetadata();
   for (const peer of peers) {
     // mapChange includes the authoritative snapshot for the new map. A
     // backpressured peer must not receive an older coalesced state afterward.
     peer.pendingState = null;
     peer.pendingWaypointCounts = null;
-    peer.sendJson({ type: 'mapChange', map: mapDefinition, maps, state: roomPayload(peer.team) });
+    peer.sendJson({ type: 'mapChange', ...matchMode, map: mapDefinition, maps, state: roomPayload(peer.team) });
   }
 }
 
@@ -6610,6 +6645,8 @@ function selectMap(player, mapId) {
   }
   const nextMap = mapCatalog.get(String(mapId));
   if (!nextMap || nextMap.id === mapDefinition.id) return;
+  try { assertMatchModeCompatibility(matchMode, nextMap); }
+  catch (error) { sendOrderNotice(player, 0, String(error.message)); return; }
   activateMap(nextMap);
   resetArmy(nextMap.startingArmySize ?? DEFAULT_STARTING_ARMY_SIZE);
   broadcastMapChange();
@@ -6641,6 +6678,7 @@ async function publishMap(player, rawDefinition, persist = false) {
   }
   try {
     const definition = validateMapDefinition(rawDefinition, 'custom map');
+    assertMatchModeCompatibility(matchMode, definition);
     if (shippedMapIds.has(definition.id)
       || (mapCatalog.has(definition.id) && !runtimeMapIds.has(definition.id))) {
       throw new Error('That map ID is already in the room. Choose another ID.');
@@ -6691,6 +6729,7 @@ async function handleCommand(player, command) {
         if (pregameMapPublicationPending) throw new Error('Wait for the host’s map publication to finish.');
         if (command.type === 'configureLobby') {
           if (pregame.configure(player, command, mapCatalog)) {
+            matchMode = normalizeMatchMode(pregame);
             activateMap(mapCatalog.get(pregame.mapId));
             resetArmy(pregame.armySize);
             broadcastMapChange();
@@ -8048,7 +8087,7 @@ const server = createServer(async (request, response) => {
     const peerTransport = [...peers];
     response.end(JSON.stringify({
       ok: true, tickRate: TICK_RATE, connected: connectedCount(), armySize: currentArmySize,
-      matchId,
+      matchId, ...matchMode,
       map: mapDefinition.id, width: MAP_WIDTH, height: MAP_HEIGHT, maps: mapCatalog.size,
       pve: {
         enabled: Boolean(pveLaunchOptions), active: pveOpponentActive,
@@ -8157,7 +8196,7 @@ const server = createServer(async (request, response) => {
     'src/audio-library-ui.mjs', 'src/audio-studio.mjs', 'src/audio-studio.css',
     'src/audio-composition.mjs', 'src/audio-composer.mjs', 'src/audio-composer.css',
     'audio-studio.html', 'audio-zones.html', 'src/audio-zones.mjs', 'src/audio-zones.css', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs',
-    'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/hud-layout.mjs',
+    'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/match-modes.mjs', 'src/hud-layout.mjs',
     'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/economy-profile.mjs', 'src/economy-ledger.mjs', 'src/economy-client.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs', 'src/shore-vegetation.mjs', 'src/meadow-vegetation.mjs', 'src/garden-vegetation.mjs', 'src/environment-plant-assets.mjs', 'src/podvine-view-pack.mjs', 'src/podvine-worked-pack.mjs', 'src/podvine-low-pack.mjs', 'src/veilcap-view-pack.mjs', 'src/veilcap-worked-pack.mjs', 'src/sunbloom-view-pack.mjs', 'src/sunbloom-crown-pack.mjs', 'src/sunbloom-worked-pack.mjs', 'src/sunbloom-low-pack.mjs', 'src/terrain-blend.mjs', 'src/terrain-texture-sampling.mjs', 'src/terrain-atmosphere.mjs', 'src/terrain-materials.mjs',
     'src/forest-habitat.mjs', 'src/forest-age-composition.mjs', 'src/forest-composition.mjs', 'src/regional-ground-kits.mjs', 'src/painted-material-atlas-runtime.mjs', 'src/water-contours.mjs', 'src/shore-bank-shade.mjs',
@@ -8356,7 +8395,7 @@ server.on('upgrade', (request, socket, head) => {
       sessionToken: peer.sessionToken || null, resumed: peer.resumed,
       resumePending: peer.resumePending,
     },
-    map: mapDefinition, maps: mapCatalogPayload(),
+    ...matchMode, map: mapDefinition, maps: mapCatalogPayload(),
     state: roomPayload(peer.team),
     ...(pregame ? { lobbyChat: lobbyChat.history() } : {}),
   });
@@ -8507,7 +8546,6 @@ server.listen(PORT, HOST, () => {
   const address = server.address();
   console.log(`RTS prototype server listening at http://${HOST}:${address.port} · map ${mapDefinition.id}`);
   if (process.env.RTS_MANAGED_WORKER === '1' && process.connected) {
-    process.send({ type: 'ready', port: address.port,
-      ...(pveLaunchOptions ? { roomMetadata: { mapId: mapDefinition.id } } : {}) });
+    process.send({ type: 'ready', port: address.port, roomMetadata: roomMetadata() });
   }
 });
