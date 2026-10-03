@@ -212,6 +212,34 @@ try {
     }
   }
   await checkClientImports(base, { authorization });
+  // Ship exactly one already-authored Frontier family, preserving its captures.
+  const frontierRoot = 'assets/buildings/frontier-civilization-scale-pilot-v1/';
+  const frontierManifestPath = frontierRoot + 'town-center-complete-renderer.json';
+  const frontierResponse = await fetch(`${base}/${frontierManifestPath}`, { headers: { authorization } });
+  assert.equal(frontierResponse.status, 200);
+  assert.match(frontierResponse.headers.get('content-type'), /application\/json/);
+  const frontier = await frontierResponse.json();
+  assert.equal(frontier.asset, 'town-center');
+  assert.deepEqual(frontier.stateOrder, ['complete']);
+  assert.equal(frontier.completeState.views.length, 8);
+  const frontierPaths = [frontierManifestPath];
+  for (const view of frontier.completeState.views) {
+    const assetPath = frontierRoot + view.path;
+    frontierPaths.push(assetPath);
+    assert.ok(contextRules.includes('!' + assetPath), `${assetPath} must be explicitly admitted`);
+    const response = await fetch(`${base}/${assetPath}`, { headers: { authorization } });
+    assert.equal(response.status, 200, assetPath);
+    assert.match(response.headers.get('content-type'), /image\/png/);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    assert.equal(bytes.length, view.bytes);
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), view.sha256, assetPath);
+  }
+  const releaseManifest = JSON.parse(await readFile(path.join(root, 'release-manifest.json'), 'utf8'));
+  assert.deepEqual(releaseManifest.files.filter(file => file.startsWith(frontierRoot)).sort(), frontierPaths.sort(),
+    'the bounded preview must not package other families, source models or galleries');
+  for (const absent of ['house-complete-renderer.json', 'model-provenance.json', 'captures/house-complete-view-01.png']) {
+    assert.equal((await fetch(`${base}/${frontierRoot}${absent}`, { headers: { authorization } })).status, 404);
+  }
   const resourceStateModule = await fetch(`${base}/src/resource-visual-state.mjs`, { headers: { authorization } });
   assert.equal(resourceStateModule.status, 200);
   assert.match(await resourceStateModule.text(), /resourceVisualStage/);

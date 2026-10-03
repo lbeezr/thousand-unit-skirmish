@@ -70,8 +70,11 @@ Current runtime defaults:
 - `?frontierBuildingsPreview=1` binds the newer Town Center, House, Storehouse,
   Stable, Workshop and Watchtower families. Each has eight Complete views;
   other lifecycle states use existing fallback art. These previews lack team
-  masks and are not default replacements. The six-family preview is served from
-  a full checkout but its manifests/PNGs are absent from the Docker release.
+  masks and are not default replacements. The Town Center manifest/eight PNGs
+  are packaged for `?frontierBuildingsPreview=town-center`; this selects only
+  that family. The other five previews are served from a full checkout but
+  remain absent from the Docker release. See the
+  [building/environment runtime audit](art-runtime-audit-2026-10-03.md).
   New Barracks/Range concepts remain
   source-only; their older direct sprites are active. No separate Boughward
   building family is present. See the
