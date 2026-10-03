@@ -6027,6 +6027,7 @@ function assignAttackBuilding(player, command) {
 function advanceQueuedWaypoints() {
   const assignments = [];
   const assignmentsByStart = new Map();
+  let goalsByTeam = null;
 
   for (const unit of units) {
     if (unit.hp <= 0) {
@@ -6048,11 +6049,33 @@ function advanceQueuedWaypoints() {
     if (activeGoal < 0 || currentCell !== activeGoal) continue;
 
     const waypoint = unit.queuedWaypoints.shift();
-    const destination = nearestOpenCell(waypoint.destination);
+    let destination = nearestOpenCell(waypoint.destination);
+    if (unit.kind !== 'worker' && !isWalkable(waypoint.destination)) {
+      // A wall can cover a later formation destination while the first leg is
+      // still moving. Protect active and queued friendly destinations before
+      // relocating it; populate the bounded fallback pool only when needed.
+      if (!goalsByTeam) {
+        goalsByTeam = [new Set(), new Set()];
+        const pending = pendingMoveAssignmentsByUnit();
+        for (const other of units) {
+          if (other.hp <= 0 || other.kind === 'worker') continue;
+          const goals = goalsByTeam[other.team];
+          const goal = pending.get(other.id)?.destination ?? other.moveGoalCell;
+          if (isWalkable(goal)) goals.add(goal);
+          for (const queued of other.queuedWaypoints) {
+            if (isWalkable(queued.destination)) goals.add(queued.destination);
+          }
+        }
+      }
+      const available = findAvailableCellNear(waypoint.destination,
+        walkableComponents[currentCell], goalsByTeam[unit.team]);
+      if (available >= 0) destination = available;
+    }
     if (destination < 0) {
       dirty = true;
       continue;
     }
+    if (goalsByTeam && unit.kind !== 'worker') goalsByTeam[unit.team].add(destination);
     unit.orderRevision++;
     unit.path = [];
     unit.pathIndex = 0;

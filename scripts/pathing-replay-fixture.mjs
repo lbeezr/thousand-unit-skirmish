@@ -38,6 +38,7 @@ export const replay = {
     const player = { team, sendJson: notice => notices.push(notice) };
     if (command.type === 'move') assignFormationMove(player, command);
     else if (command.type === 'build') buildBuilding(player, command);
+    else if (command.type === 'buildWall') buildWallLine(player, command);
     else if (command.type === 'cancelConstruction') cancelConstruction(player, command);
     else throw new Error('Unsupported replay command: ' + command.type);
     return notices;
@@ -51,6 +52,7 @@ export const replay = {
   },
   step() { this.drain(); runSimulationTick(); },
   get units() { return units; }, get buildings() { return buildings; },
+  get wood() { return teamWood; },
   get tick() { return tickNumber; }, get navigationRevision() { return navigationRevision; },
   point: cellToWorld, cell: worldToCell, isWalkable,
   get levels() { return elevationLevelByCell; },
