@@ -14,10 +14,11 @@ whether the endpoint cell was walkable.
 8 × 8 fixture. Rows 0–3 are level 0; rows 4–7 are level 2. A soldier at
 `(-0.5, -0.01)` follows the legal waypoint at `(0.5, -0.5)`. Three friendly
 neighbors above it produce separation toward the cliff. The baseline moves it to
-approximately `(-0.4438, 0.0560)` in one tick, crossing from cell 27/level 0 to
+approximately `(-0.4428, 0.0551)` in one tick, crossing from cell 27/level 0 to
 cell 35/level 2. Stationary gathering beside left/right berries also crosses that
 cliff. A separate fixture enters open diagonal cell 36 past blocked side cell 35.
-All three categories fail on the baseline and pass with the boundary guard.
+Stationary melee separation also crosses the cliff. Four of the nine regression
+tests fail on the baseline; all nine pass with the boundary guard.
 
 These are actual simulation position errors, independent of sprite headings or
 art coverage. The fixtures deliberately arrange the crowd; the ordinary live
