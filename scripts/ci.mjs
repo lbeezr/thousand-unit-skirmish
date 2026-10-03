@@ -115,6 +115,7 @@ run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue aut
 run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle');
 run(['scripts/wildlife-food-scenario.mjs'], 'Both-seat wildlife gathering, depletion and recovery');
 run(['--test', 'scripts/shore-fishing.test.mjs', 'scripts/shore-fishing-placeholder.test.mjs'], 'Shore fish bank access and placeholder');
+run(['--test', 'scripts/shore-fishing-placement.test.mjs'], 'Seeded shore fishing authoring and land/water positions');
 run(['--test', 'scripts/water-surface-study.test.mjs'], 'Opt-in water appearance and visible fish ripples');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');
@@ -125,6 +126,8 @@ run(['--test', 'scripts/siege-ai.test.mjs'], 'Bounded siege acquisition and assa
 run(['--test', 'scripts/combat-rules.test.mjs'], 'Shared combat classes, counters and effect scope');
 run(['--test', 'scripts/watchtower-targeting.test.mjs'], 'Bounded defense targeting and sight');
 run(['--test', 'scripts/economy-ledger.test.mjs'], 'Fractional cargo conservation');
+run(['--test', 'scripts/return-cargo.test.mjs'], 'Explicit cargo return authority and controls');
+run(['scripts/interrupted-cargo-return-scenario.mjs'], 'Interrupted final sheep-food delivery and restart');
 run(['--test', 'scripts/underbough-gathering-evidence.test.mjs'], 'Rootways gathering provenance before rewards');
 run(['--test', 'scripts/base-lifecycle.test.mjs'], 'Cancel refunds and proportional repair');
 run(['--test', 'scripts/storehouse-routing.test.mjs'], 'Reachable drop-off route selection');
@@ -139,6 +142,7 @@ run(['--test', 'scripts/navigation-settings.test.mjs'], 'Camera navigation setti
 
 const scenarios = [
   ['scripts/shore-fishing-scenario.mjs', 'Both-seat shore fishing, cargo and depletion recovery'],
+  ['scripts/shore-fishing-authoring-scenario.mjs', 'Selectable seeded shore fishing pilot and recovery'],
   ['scripts/millrace-resource-scenario.mjs', 'Millrace cluster gathering and recovery'],
   ['scripts/regional-objective-scenario.mjs', 'Millrace both-seat hold and rematch', 'bellweather-millrace'],
   ['scripts/regional-objective-scenario.mjs', 'Rootways both-seat hold and rematch', 'underbough-rootways'],

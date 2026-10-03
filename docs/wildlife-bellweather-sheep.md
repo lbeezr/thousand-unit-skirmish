@@ -42,6 +42,15 @@ interruption preserve the same stock pool; exhausting it sets `depleted` and
 rejects new gathering. Wildlife adds no movement/sight/population or path blocker
 and is absent from combat targeting. No gatherer cap is introduced in this slice.
 
+Stop after depletion preserves a Worker's final cargo. Select that Worker and
+choose **Return cargo** to deliver it to a reachable completed owned food drop-off,
+then become idle. The authoritative `returnCargo` order accepts living own
+gather-capable carriers and references no resource node; exhausted/stale Gather
+orders still reject. Return intent and cargo use the existing checkpoint fields,
+so restart during delivery neither replenishes sheep nor credits food twice.
+[Interrupted delivery evidence](qa-interrupted-cargo-return-2026-10-03.md) keeps
+the original failing fixture and both-seat recovery checks.
+
 Checkpoint schema 20 saves species, lifecycle, stock and existing Worker intent/
 cargo together. It validates `alive` only at full authored stock, `carcass` only
 with positive remaining stock and `depleted` only at zero. Schema 19 ordinary

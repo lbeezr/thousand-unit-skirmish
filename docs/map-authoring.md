@@ -177,6 +177,10 @@ must occupy open level 0 land beside cardinally adjacent level 0 water, reachabl
 from both seats. Import/export and stock editing preserve the identity. Workers
 carry and deposit existing food; there is no regrowth or naval movement. The
 fish marker is a primitive placeholder, with dedicated art and brushes pending.
+The selectable **Lab · SHORE FISHING** map and
+[seeded conversion command](shore-fishing-foundation.md#seeded-authoring-and-pilot)
+provide a usable stock-preserving pilot. The shared position helper keeps land
+approaches separate from one-cell water visual centers without new saved fields.
 
 An optional `wildlifeSpecies: "bellweather-sheep"` on a `food` node opts into the
 [neutral sheep foundation](wildlife-bellweather-sheep.md#implemented-neutral-food-foundation--3-october-2026).
