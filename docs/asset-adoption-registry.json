@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "scope": "Initial approved-runtime coverage: eight-view Sheep, Human Worker SE fishing, six Frontier Complete families. Concepts, unapproved candidates and other runtime families are outside this guard.",
+  "records": [
+    {
+      "id": "bellweather-sheep",
+      "owner": "Sheep renderer owner",
+      "probe": "sheep",
+      "manifest": "assets/wildlife/bellweather-sheep-static-v1/sprite-atlas-pack-v1.json",
+      "binding": "assets/wildlife/bellweather-sheep-static-v1/static-preview-binding.json"
+    },
+    {
+      "id": "human-worker-fishing-SE",
+      "owner": "Worker art/renderer owner",
+      "probe": "human-worker-fishing",
+      "manifest": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json"
+    },
+    {
+      "id": "frontier-town-center",
+      "owner": "Active Frontier renderer owner",
+      "probe": "frontier-building",
+      "building": "town-center",
+      "manifest": "assets/buildings/frontier-civilization-scale-pilot-v1/town-center-complete-renderer.json",
+      "exception": {
+        "reason": "Complete-only experiment: four lifecycle states/team masks missing; existing default bindings remain.",
+        "nextAction": "Integrate existing Complete views and release dependencies by default with lifecycle fallback; verify user build, then remove exception.",
+        "evidence": "docs/asset-adoption-checklist.md"
+      }
+    },
+    {
+      "id": "frontier-house",
+      "owner": "Active Frontier renderer owner",
+      "probe": "frontier-building",
+      "building": "house",
+      "manifest": "assets/buildings/frontier-civilization-scale-pilot-v1/house-complete-renderer.json",
+      "exception": {
+        "reason": "Complete-only experiment: four lifecycle states/team masks missing; existing default bindings remain.",
+        "nextAction": "Integrate existing Complete views and release dependencies by default with lifecycle fallback; verify user build, then remove exception.",
+        "evidence": "docs/asset-adoption-checklist.md"
+      }
+    },
+    {
+      "id": "frontier-storehouse",
+      "owner": "Active Frontier renderer owner",
+      "probe": "frontier-building",
+      "building": "storehouse",
+      "manifest": "assets/buildings/frontier-civilization-models-v1/storehouse-complete-renderer.json",
+      "exception": {
+        "reason": "Complete-only experiment: four lifecycle states/team masks missing; existing default bindings remain.",
+        "nextAction": "Integrate existing Complete views and release dependencies by default with lifecycle fallback; verify user build, then remove exception.",
+        "evidence": "docs/asset-adoption-checklist.md"
+      }
+    },
+    {
+      "id": "frontier-stable",
+      "owner": "Active Frontier renderer owner",
+      "probe": "frontier-building",
+      "building": "stable",
+      "manifest": "assets/buildings/frontier-civilization-models-v1/stable-complete-renderer.json",
+      "exception": {
+        "reason": "Complete-only experiment: four lifecycle states/team masks missing; existing default bindings remain.",
+        "nextAction": "Integrate existing Complete views and release dependencies by default with lifecycle fallback; verify user build, then remove exception.",
+        "evidence": "docs/asset-adoption-checklist.md"
+      }
+    },
+    {
+      "id": "frontier-workshop",
+      "owner": "Active Frontier renderer owner",
+      "probe": "frontier-building",
+      "building": "workshop",
+      "manifest": "assets/buildings/frontier-civilization-models-v1/workshop-complete-renderer.json",
+      "exception": {
+        "reason": "Complete-only experiment: four lifecycle states/team masks missing; existing default bindings remain.",
+        "nextAction": "Integrate existing Complete views and release dependencies by default with lifecycle fallback; verify user build, then remove exception.",
+        "evidence": "docs/asset-adoption-checklist.md"
+      }
+    },
+    {
+      "id": "frontier-watchtower",
+      "owner": "Active Frontier renderer owner",
+      "probe": "frontier-building",
+      "building": "watchtower",
+      "manifest": "assets/buildings/frontier-civilization-models-v1/watchtower-complete-renderer.json",
+      "exception": {
+        "reason": "Complete-only experiment: four lifecycle states/team masks missing; existing default bindings remain.",
+        "nextAction": "Integrate existing Complete views and release dependencies by default with lifecycle fallback; verify user build, then remove exception.",
+        "evidence": "docs/asset-adoption-checklist.md"
+      }
+    }
+  ]
+}

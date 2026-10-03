@@ -109,9 +109,20 @@ do not count approximate action reuse or idle holds as completed motion.
 
 Change the relevant row when binding, release or evidence changes; link the
 implementation owner's existing PR/task rather than creating another roadmap.
-Next automated guard: a small approved-runtime registry audit of selectors,
-reachable consuming modules, manifest dependencies and actual release contents,
-with explicit owner/reason/exit actions for experiments. Its initial coverage
-must be stated; a green static check cannot close deployment or in-game QA.
-Source/reference packages stay outside that runtime requirement. No default
-renderer changes are made by this audit.
+Run `npm run audit:asset-adoption` for the small
+[approved-runtime registry](asset-adoption-registry.json): eight-view Sheep,
+Human Worker SE fishing, and six Frontier Complete families. The guard evaluates
+normal URL selectors, checks reachable consuming modules, manifest runtime
+hashes/dependencies and an actual disposable release pack. It fails on lost
+default bindings or omitted default dependencies; owner-held experimental
+exceptions report **incomplete**, with a reason and exit action. Once an
+experiment becomes default, its exception cannot excuse missing release files.
+
+The focused mutation tests run in existing CI. Initial coverage is only these
+eight entries, not every resource/HUD/audio pack. Add a chosen approved runtime
+family with its concrete selector probe; do not register unused concepts merely
+because files exist. This is source/configuration/package evidence, not proof
+of HTTP admission, GPU appearance, listening or deployment. The existing
+`railway-release-scenario.mjs` checks real served HTTP assets; recorded deployed
+in-game evidence is still required. No default renderer changes are made by
+this audit, and it reads no credentials or private sources.

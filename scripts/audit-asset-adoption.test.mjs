@@ -1,0 +1,55 @@
+import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { readFile, rm } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import test, { after } from 'node:test';
+import { auditAssetAdoption } from './audit-asset-adoption.mjs';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const registry = JSON.parse(await readFile(path.join(root, 'docs/asset-adoption-registry.json')));
+const release = JSON.parse(execFileSync(process.execPath, ['scripts/pack-railway-release.mjs', '--allow-dirty'],
+  { cwd: root, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 }));
+after(() => rm(release.directory, { recursive: true, force: true }));
+const audit = (changes = {}) => auditAssetAdoption({ registry: structuredClone(registry), releaseFiles: release.files, ...changes });
+
+test('actual selectors report adoption without making experiments permanent', async () => {
+  const report = await audit();
+  assert.equal(report.results.length, registry.records.length);
+  for (const row of report.results) {
+    if (row.defaultBound) assert.equal(row.releaseIncluded, true);
+    else assert.ok(row.exception.nextAction);
+  }
+  assert.equal(report.results.find(row => row.id === 'bellweather-sheep').defaultBound, true);
+  assert.equal(report.results.find(row => row.id === 'human-worker-fishing-SE').defaultBound, true);
+  assert.match(report.inGameVerification, /not established/);
+});
+
+test('removing an approved default atlas from the actual pack inventory fails', async () => {
+  await assert.rejects(audit({ releaseFiles: release.files.filter(file => !file.endsWith('sheep-atlas-runtime.png')) }),
+    /default runtime dependency omitted from release/);
+});
+
+test('a default Worker downgrade cannot silently strand the approved fishing manifest', async () => {
+  const main = (await readFile(path.join(root, 'src/main.js'), 'utf8')).replace("{ human: 'v3', infantry:", "{ human: 'v2', infantry:");
+  await assert.rejects(audit({ main }), /human-worker-fishing-SE: approved runtime asset is not default-bound/);
+});
+
+test('an unbound approved family needs an explicit integration owner and exit action', async () => {
+  const changed = structuredClone(registry);
+  delete changed.records.find(row => row.id === 'frontier-house').exception;
+  await assert.rejects(audit({ registry: changed }), /frontier-house: approved runtime asset is not default-bound/);
+  const ownerless = structuredClone(registry);
+  ownerless.records[0].owner = '';
+  await assert.rejects(audit({ registry: ownerless }), /integration owner required/);
+  const noExit = structuredClone(registry);
+  delete noExit.records.find(row => row.id === 'frontier-house').exception.nextAction;
+  await assert.rejects(audit({ registry: noExit }), /exception nextAction required/);
+});
+
+test('enabling a default family cannot use its exception to conceal omitted release files', async () => {
+  const main = (await readFile(path.join(root, 'src/main.js'), 'utf8')).replace(
+    "const frontierBuildingsPreview = roomPageUrl.searchParams.get('frontierBuildingsPreview');",
+    "const frontierBuildingsPreview = 'house';");
+  await assert.rejects(audit({ main }), /frontier-house: default runtime dependency omitted from release/);
+});
