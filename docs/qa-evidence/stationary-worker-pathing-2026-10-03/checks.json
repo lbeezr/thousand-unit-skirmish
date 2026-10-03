@@ -936,5 +936,144 @@
     "Local 5x5 cardinal detour; 64-candidate occupancy query; incomplete query/no passage/occupied goal retain existing soft separation.",
     "At most one successful local replacement per unit per tick; final destinations and blocker command intent preserved.",
     "Fixed-tick traces exclude native scheduling. Native commands exclude renderer and deployment. No isolated speedup or supported capacity claim."
-  ]
+  ],
+  "rejectedReturnedBuilderCandidate": {
+    "head": "50b29bd81580c067dd76e827a4fffc30bb65d599",
+    "records": [
+      {
+        "team": 0,
+        "metrics": {
+          "team": 0,
+          "group": 64,
+          "sourceSha256": "6c1acfdb902438cb9c46977ecdd1afd08b8d13b0bec6e2134407c63165f10420",
+          "ticks": 696,
+          "arrived": 64,
+          "distinctGoals": 64,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxPathLength": 33,
+          "onlyNamedBuilder": true,
+          "builderReturned": true,
+          "parkOrder": null,
+          "parkedIntentPreserved": false,
+          "maxNoProgressTicks": 465,
+          "unblockedDestinationsPreserved": true,
+          "unfinished": [],
+          "builderPosition": {
+            "x": -27.5,
+            "z": 0.5
+          }
+        },
+        "traceSha256": [
+          "eb220631cc283cd2a4d0dc1168181f60a6d9a81caae5169f09288e1e157d87d0",
+          "eb220631cc283cd2a4d0dc1168181f60a6d9a81caae5169f09288e1e157d87d0"
+        ]
+      },
+      {
+        "team": 1,
+        "metrics": {
+          "team": 1,
+          "group": 64,
+          "sourceSha256": "6c1acfdb902438cb9c46977ecdd1afd08b8d13b0bec6e2134407c63165f10420",
+          "ticks": 2700,
+          "arrived": 63,
+          "distinctGoals": 64,
+          "invalidSteps": 0,
+          "unreachableGoals": 0,
+          "maxPathLength": 2763,
+          "onlyNamedBuilder": true,
+          "builderReturned": true,
+          "parkOrder": null,
+          "parkedIntentPreserved": false,
+          "maxNoProgressTicks": 2699,
+          "unblockedDestinationsPreserved": true,
+          "unfinished": [
+            {
+              "id": 94,
+              "x": 28.50000000000001,
+              "z": 22.068620189633165,
+              "goal": {
+                "x": -11.5,
+                "z": 0.5
+              },
+              "pathIndex": 0,
+              "pathLength": 2763
+            }
+          ],
+          "builderPosition": {
+            "x": 28.5,
+            "z": 22.5
+          }
+        },
+        "traceSha256": [
+          "c20db874cc8a61edcb8f94e6938b4e0e2ae3e7d20ca27f35065934c9dc94b4e3",
+          "c20db874cc8a61edcb8f94e6938b4e0e2ae3e7d20ca27f35065934c9dc94b4e3"
+        ]
+      }
+    ],
+    "helperSha256": "03e05a63fb1c217818926126d765d3ae5522e8fcf4a6b0748ab6553dd946904a"
+  },
+  "currentMainIntegration": {
+    "head": "aea3612474219c2c70aa217c7961ceb165995833",
+    "main": "2bcb358",
+    "serverSha256": "db6b4e94af4f4eec28424af61ea22416584484e71f452fee51f9d8a5ccfbf03e",
+    "helperUnchanged": true,
+    "focusedTestsPassed": 93,
+    "replayCases": 20,
+    "bothTraceHashesPerCaseMatchReviewedCandidate": true,
+    "native": {
+      "head": "aea3612474219c2c70aa217c7961ceb165995833",
+      "sourceSha256": "db6b4e94af4f4eec28424af61ea22416584484e71f452fee51f9d8a5ccfbf03e",
+      "records": [
+        {
+          "team": 0,
+          "group": 64,
+          "parkOrder": "stop",
+          "arrived": 64,
+          "distinctGoals": 64,
+          "onlyNamedBuilder": true,
+          "parkedIntent": {
+            "x": 15.5,
+            "z": -0.5,
+            "holdingPosition": false,
+            "orderRevision": 2,
+            "moveGoalCell": -1,
+            "path": [],
+            "queuedWaypoints": [],
+            "buildingTargetId": null
+          },
+          "parkedIntentPreserved": true,
+          "snapshotsChecked": 505,
+          "unblockedDestinationsPreserved": true,
+          "ticks": 660
+        },
+        {
+          "team": 1,
+          "group": 64,
+          "parkOrder": "holdPosition",
+          "arrived": 64,
+          "distinctGoals": 64,
+          "onlyNamedBuilder": true,
+          "parkedIntent": {
+            "x": 17.5,
+            "z": 1.5,
+            "holdingPosition": true,
+            "orderRevision": 2,
+            "moveGoalCell": -1,
+            "path": [],
+            "queuedWaypoints": [],
+            "buildingTargetId": null
+          },
+          "parkedIntentPreserved": true,
+          "snapshotsChecked": 965,
+          "unblockedDestinationsPreserved": true,
+          "ticks": 1260
+        }
+      ],
+      "limits": [
+        "actual two-seat asynchronous WebSocket server, paid natural gate and explicit Stop/Hold; no renderer, deployed or performance claim"
+      ]
+    },
+    "fixtureAdaptation": "Actual harvestNodeById source loaded in movement/facing fixtures after Farm merge."
+  }
 }

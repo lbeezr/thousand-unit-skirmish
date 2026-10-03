@@ -102,6 +102,20 @@ prior obstruction controls and the native command results. All 66 focused tests,
 syntax and diff checks pass. Independent review reports both identified path
 ownership/adjacent-blocker issues resolved and no remaining findings.
 
+The retained rejected candidate `50b29bd` reproduces the review's returned-builder
+regression: Ember unit 94 retains its first-leg queue after 2,700 ticks, path
+index zero and path length 2,763. Two adjacent Workers redirected its detours
+into each other. The fixed control arrives 64/64 with maximum path length 68;
+the old failure and both exact failing trace hashes remain in the retained record.
+
+After integrating main `2bcb358` (Farms and separate Skiff movement), the server
+SHA-256 is `db6b4e94af4f4eec28424af61ea22416584484e71f452fee51f9d8a5ccfbf03e`.
+The local helper is unchanged. All 93 focused checks pass, including Farm,
+Skiff/water movement and villager facing. The two older source fixtures now load
+the actual Farm harvest lookup. All twenty replay trace pairs match the reviewed
+candidate. Fresh native Stop/Hold commands reach 64/64 for each seat (660/1,260
+relative ticks), preserving builder intent and Gate closure invariants.
+
 The fixed-tick adapter drains planning between ticks and excludes wall-clock
 scheduling/listening. Native results use the asynchronous server independently
 of that adapter. Cloud timings are not isolated; no speedup, capacity or broad
