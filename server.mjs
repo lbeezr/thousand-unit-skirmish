@@ -32,7 +32,9 @@ import { readPveLaunchOptions } from './src/pve-match.mjs';
 import { townCenterSpawnPosition, townCenterFootprintCells } from './src/town-center-spawn.mjs';
 import { advanceTickDeadline } from './simulation-scheduler.mjs';
 import { privateProductionView } from './src/snapshot-private-production.mjs';
+import { RoomPregame, validatePregameCheckpoint } from './src/room-pregame.mjs';
 import { headingToTarget } from './src/unit-heading.mjs';
+import { canTraverseUnitStep } from './src/unit-movement.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const HOST = process.env.RTS_HOST || '127.0.0.1';
@@ -46,7 +48,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 21;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 22;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -870,6 +872,32 @@ let inboundControlPongsReceived = 0;
 let inboundControlRateLimitDisconnects = 0;
 let commandQueueLimitRejections = 0;
 const sessions = new Map();
+let pregame = null;
+let pregameMapPublicationPending = false;
+
+function syncPregameSeats() {
+  if (!pregame) return;
+  const now = Date.now();
+  const seats = [...sessions.values()].filter(session => session.peer || session.expiresAt > now)
+    .map(session => ({ id: session.id, team: session.team, connected: Boolean(session.peer && !session.peer.closed) }));
+  if (pregame.syncSeats(seats)) dirty = true;
+}
+
+function pregamePayload() {
+  if (!pregame) return null;
+  syncPregameSeats();
+  return { ...pregame.payload(), factionId: DEFAULT_FACTION_ID, maps: mapCatalogPayload() };
+}
+
+function broadcastPregame() {
+  if (pregame) broadcast({ type: 'lobby', lobby: pregamePayload() });
+}
+
+function returnToPregame() {
+  if (!pregame) return;
+  pregame.reset(mapDefinition.id, currentArmySize);
+  broadcastPregame();
+}
 let pveOpponentActive = false;
 let pvePolicy = pveLaunchOptions ? createDeterministicPolicy(pveLaunchOptions.policySeed) : null;
 let pveCommandsIssued = 0;
@@ -2419,6 +2447,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
   return {
     ...(viewTeam === 0 ? {scenarioTrace: scenarioDiagnosticTrace()} : {}),
     type: 'state', rulesetRevision: GAMEPLAY_RULESET_REVISION, factionId: DEFAULT_FACTION_ID, unitWireIds: UNIT_WIRE_IDS, tick: tickNumber, armySize: currentArmySize,
+    ...(pregame ? { lobby: pregamePayload() } : {}),
     matchElapsedSeconds: Number(matchElapsedSeconds.toFixed(1)), scenarioClockStarted,
     victoryHold: (mapDefinition.victoryHoldSeconds ?? 0) > 0 ? {
       durationSeconds: mapDefinition.victoryHoldSeconds,
@@ -2545,6 +2574,7 @@ function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
     state: {
       tickNumber,
       currentArmySize,
+      pregame: pregame?.checkpoint() ?? null,
     units: units.map((unit) => ({
       ...unit,
       persistentOrder: unit.persistentOrder ? { ...unit.persistentOrder } : null,
@@ -2612,6 +2642,11 @@ function validateMatchCheckpoint(snapshot) {
   assertSnapshot(snapshot.mapHash === matchMapHash(definition), 'map checksum mismatch');
   assertSnapshot(typeof snapshot.state === 'object' && snapshot.state !== null, 'missing simulation state');
   const state = snapshot.state;
+  const savedPregame = validatePregameCheckpoint(state.pregame);
+  if (savedPregame?.phase === 'lobby') {
+    assertSnapshot(state.scenarioClockStarted === false && state.matchElapsedSeconds === 0,
+      'waiting pregame cannot contain an advancing match clock');
+  }
   const cellCount = definition.width * definition.height;
   const finite = (value) => Number.isFinite(value);
   const integerIn = (value, min, max) => Number.isInteger(value) && value >= min && value <= max;
@@ -3080,6 +3115,10 @@ function restoreMatchCheckpoint(snapshot) {
   checkpointSequence = snapshot.sequence;
   nextCheckpointSequence = snapshot.sequence;
   recoveredFromCheckpoint = true;
+  pregame = state.pregame || process.env.RTS_PREGAME === '1'
+    ? new RoomPregame(mapDefinition.id, currentArmySize, state.pregame ?? { phase: 'running', revision: 0 })
+    : null;
+  syncPregameSeats();
   lastCheckpointAt = snapshot.savedAt;
   attackFlowFields.clear();
   rebuildSpatialBuckets();
@@ -3242,6 +3281,11 @@ function migrateMatchCheckpoint(snapshot) {
   // Schema 20 never recorded resource variant identity. Ordinary resources and
   // sheep are unchanged; a variant cannot be invented from an older checkpoint.
   if (snapshot?.schemaVersion === 20 && !snapshot.mapDefinition?.resourceNodes?.some(node => node.resourceVariant !== undefined)) {
+    snapshot.schemaVersion = 21;
+  }
+  // Existing checkpoints predate a lobby; recover them as their running match.
+  if (snapshot?.schemaVersion === 21) {
+    snapshot.state.pregame = null;
     snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;
   }
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
@@ -3335,6 +3379,8 @@ function initializeCleanMatch() {
   nextMoveOrderId = 1;
   activateMap(mapCatalog.get(configuredMatchMapId));
   resetArmy(mapDefinition.startingArmySize ?? DEFAULT_STARTING_ARMY_SIZE);
+  pregame = process.env.RTS_PREGAME === '1' && !pveLaunchOptions
+    ? new RoomPregame(mapDefinition.id, currentArmySize) : null;
 }
 
 async function initializeMatchFromCheckpoint() {
@@ -5817,6 +5863,7 @@ async function publishMap(player, rawDefinition, persist = false) {
     if (persist) persistedMapIds.add(definition.id);
     activateMap(definition);
     resetArmy(definition.startingArmySize ?? DEFAULT_STARTING_ARMY_SIZE);
+    returnToPregame();
     broadcastMapChange();
     broadcast({ type: 'notice', message: `${persist ? 'CUSTOM MAP SAVED' : 'CUSTOM MAP PUBLISHED'} · ${mapDefinition.name}` });
     player.sendJson({ type: 'mapPublished', mapId: mapDefinition.id, persisted: persist });
@@ -5828,6 +5875,64 @@ async function publishMap(player, rawDefinition, persist = false) {
 
 async function handleCommand(player, command) {
   if (shuttingDown || !command || typeof command.type !== 'string') return;
+  if (pregame) {
+    syncPregameSeats();
+    if (['configureLobby', 'setReady', 'launchMatch'].includes(command.type)) {
+      try {
+        if (pregameMapPublicationPending) throw new Error('Wait for the host’s map publication to finish.');
+        if (command.type === 'configureLobby') {
+          if (pregame.configure(player, command, mapCatalog)) {
+            activateMap(mapCatalog.get(pregame.mapId));
+            resetArmy(pregame.armySize);
+            broadcastMapChange();
+          }
+        } else if (command.type === 'setReady') {
+          pregame.setReady(player, command);
+        } else if (pregame.launch(player, command.revision)) {
+          scenarioClockStarted = true;
+          dirty = true;
+          broadcastState();
+        }
+        broadcastPregame();
+        void queueMatchCheckpoint();
+      } catch (error) {
+        player.sendJson({ type: 'lobbyRejected', message: String(error.message), lobby: pregamePayload() });
+      }
+      return;
+    }
+    if (['selectMap', 'selectArmySize'].includes(command.type)) {
+      player.sendJson({ type: 'lobbyRejected', message: 'Use the lobby settings before launch. Reset to return to the lobby.', lobby: pregamePayload() });
+      return;
+    }
+    if (command.type === 'reset') {
+      if (player.team !== 0 || pregameMapPublicationPending) {
+        player.sendJson({ type: 'lobbyRejected', message: 'Only the host can reset, after map publication finishes.', lobby: pregamePayload() });
+        return;
+      }
+      // Duplicate resets in a waiting lobby do not change revisions or rebuild units.
+      if (pregame.phase === 'running') {
+        resetArmy(currentArmySize);
+        returnToPregame();
+        broadcastState();
+        void queueMatchCheckpoint();
+      }
+      return;
+    }
+    if (pregame.phase === 'lobby') {
+      player.sendJson({ type: 'lobbyRejected', message: 'Ready in the lobby and wait for the host to launch.', lobby: pregamePayload() });
+      return;
+    }
+    if (command.type === 'publishMap') {
+      if (player.team !== 0 || pregameMapPublicationPending) {
+        player.sendJson({ type: 'mapRejected', message: 'Only the host can publish one map at a time.' });
+        return;
+      }
+      pregameMapPublicationPending = true;
+      try { await publishMap(player, command.map, command.persist === true); }
+      finally { pregameMapPublicationPending = false; }
+      return;
+    }
+  }
   if (matchWinner >= 0 && ['stop', 'holdPosition', 'patrol', 'follow', 'move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'train', 'build', 'trainArcher', 'trainUnit', 'trainWorker', 'setRallyPoint', 'researchUpgrade', 'cancelConstruction', 'cancelTraining', 'cancelResearch', 'repairBuilding'].includes(command.type)) {
     sendOrderNotice(player, command, player.team === 0
       ? 'MATCH OVER · RESET BATTLEFIELD TO PLAY AGAIN'
@@ -6263,7 +6368,8 @@ function spreadInteractingUnits() {
     }
     if (x <= -MAP_HALF_X + 0.5 || x >= MAP_HALF_X - 0.5
       || z <= -MAP_HALF_Z + 0.5 || z >= MAP_HALF_Z - 0.5
-      || !isWalkable(worldToCell(x, z))) continue;
+      || !canTraverseUnitStep(worldToCell(unit.x, unit.z), worldToCell(x, z),
+        MAP_WIDTH, elevationLevelByCell, isWalkable)) continue;
     unit.x = x;
     unit.z = z;
     unit.lastMoveTick = tickNumber;
@@ -6325,6 +6431,7 @@ function simulateTick() {
     separationTickMaxCandidatesPerCall = 0;
   }
   tickNumber++;
+  if (pregame?.phase === 'lobby') return;
   if (matchWinner >= 0) return;
   if (!scenarioClockStarted && connectedCount() >= 2) scenarioClockStarted = true;
   if (scenarioClockStarted) matchElapsedSeconds += STEP_SECONDS;
@@ -6556,7 +6663,8 @@ function simulateTick() {
       const nextX = unit.x + move.x * move.stepDistance;
       const nextZ = unit.z + move.z * move.stepDistance;
       const nextCell = worldToCell(nextX, nextZ);
-      if (isWalkable(nextCell)) {
+      const currentCell = worldToCell(unit.x, unit.z);
+      if (canTraverseUnitStep(currentCell, nextCell, MAP_WIDTH, elevationLevelByCell, isWalkable)) {
         unit.x = nextX;
         unit.z = nextZ;
       } else {
@@ -6565,9 +6673,24 @@ function simulateTick() {
         const length = Math.hypot(targetX, targetZ) || 1;
         const fallbackX = unit.x + (targetX / length) * move.stepDistance;
         const fallbackZ = unit.z + (targetZ / length) * move.stepDistance;
-        if (isWalkable(worldToCell(fallbackX, fallbackZ))) {
+        if (canTraverseUnitStep(currentCell, worldToCell(fallbackX, fallbackZ),
+          MAP_WIDTH, elevationLevelByCell, isWalkable)) {
           unit.x = fallbackX;
           unit.z = fallbackZ;
+        } else {
+          // A legal crowd deflection can leave the old next waypoint behind
+          // a cliff or corner. Rebuild from the actual cell instead of stalling.
+          if (unit.attackTargetId >= 0 || unit.attackBuildingTargetId >= 0) {
+            unit.path = [];
+            unit.pathIndex = 0;
+            unit.lastAttackCell = -1;
+            unit.repathTimer = 0;
+          } else {
+            const destination = unit.moveGoalCell >= 0
+              ? unit.moveGoalCell : unit.path[unit.path.length - 1];
+            blockedRouteRepairs.push({ unit, destination });
+          }
+          break;
         }
       }
       unit.x = Math.max(-MAP_HALF_X + 0.5, Math.min(MAP_HALF_X - 0.5, unit.x));
@@ -6683,6 +6806,7 @@ function pruneExpiredSessions(now = Date.now()) {
   for (const [tokenHash, session] of sessions) {
     if (!session.peer && session.expiresAt <= now) sessions.delete(tokenHash);
   }
+  syncPregameSeats();
 }
 
 function releasePeer(peer, graceful = false) {
@@ -6715,6 +6839,7 @@ function releasePeer(peer, graceful = false) {
     peer.socket.destroy();
   }
   broadcast({ type: 'room', connected: connectedCount() });
+  broadcastPregame();
 }
 
 function dispatchPeerTextMessage(peer, payload, compressed) {
@@ -6994,6 +7119,7 @@ function createPeer(socket, resumeToken, compressionEnabled = false) {
     peer.id = `spectator-${nextPlayerId++}`;
   }
   peers.add(peer);
+  syncPregameSeats();
   if (peer.team === 0) activatePveOpponent();
   return peer;
 }
@@ -7132,11 +7258,14 @@ const server = createServer(async (request, response) => {
   }
   const publicClientAsset = [
     'src/frontier-building-preview.mjs',
+    'src/neutral-wildlife-renderer.mjs', 'src/wildlife-state.mjs', 'src/sheep-static-preview.mjs',
     'environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs',
+    'water-study.html', 'src/water-study-preview.mjs', 'src/water-surface-study.mjs', 'src/water-study-state.mjs',
     'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',
     'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs',
+    'src/room-lobby-ui.mjs', 'src/room-lobby.css',
     'src/scenario-regions.mjs', 'src/scenario-authoring.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
-    'src/shore-fishing.mjs', 'src/shore-fishing-placeholder.mjs',
+    'src/shore-fishing.mjs', 'src/shore-fishing-placeholder.mjs', 'src/shore-fishing-placement.mjs',
     'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs',
     'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
@@ -7243,6 +7372,11 @@ const server = createServer(async (request, response) => {
     ].includes(relative);
   });
   const publicFrontierCompleteAsset = /^assets\/buildings\/(?:frontier-civilization-scale-pilot-v1\/(?:(?:town-center|house)-complete-renderer\.json|captures\/(?:town-center|house)-complete-view-0[0-7]\.png)|frontier-civilization-models-v1\/(?:(?:storehouse|stable|workshop|watchtower)-complete-renderer\.json|captures\/(?:storehouse|stable|workshop|watchtower)-complete-view-0[0-7]\.png))$/.test(relative);
+  const publicWildlifeAsset = [
+    'assets/wildlife/bellweather-sheep-public-reference-v1/static-preview-binding.json',
+    'assets/wildlife/bellweather-sheep-public-reference-v1/sprite-atlas-pack-v1.json',
+    'assets/wildlife/bellweather-sheep-public-reference-v1/sheep-atlas-runtime.png',
+  ].includes(relative);
   const buildingPackRoot = 'assets/buildings/town-center-lifecycle-meshy-v1';
   const publicBuildingLifecycleManifest = relative === `${buildingPackRoot}/lifecycle-grid.json`;
   const publicBuildingLifecycleRuntimeAsset = path.dirname(relative) === `${buildingPackRoot}/runtime`
@@ -7254,7 +7388,7 @@ const server = createServer(async (request, response) => {
     || /^assets\/audio\/vaelora-pilot-v1\/sources\/tus_ui_(?:wood-token|iron-latch|muted-pluck|horn-note)_01_v001\.mp3$/.test(relative);
   if (!publicZoneAudioAsset && !publicClientAsset && !publicEnvironmentModule && !publicEnvironmentAsset && !publicEnvironmentAtlasMetadata && !publicUiAsset
     && !publicDirectionalResourceAtlas && !publicMeshyResourceAsset && !publicPodvineViewAsset && !publicInteractiveEnvironmentAsset && !publicEnvironmentPilotAsset && !publicBuildingSpriteAsset && !publicMapAsset
-    && !publicFrontierCompleteAsset && !publicUnitSpriteAsset && !publicBuildingLifecycleManifest && !publicBuildingLifecycleRuntimeAsset) {
+    && !publicFrontierCompleteAsset && !publicUnitSpriteAsset && !publicWildlifeAsset && !publicBuildingLifecycleManifest && !publicBuildingLifecycleRuntimeAsset) {
     response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
     response.end('Not found');
     return;
@@ -7333,6 +7467,7 @@ server.on('upgrade', (request, socket, head) => {
     state: roomPayload(peer.team),
   });
   broadcast({ type: 'room', connected: connectedCount() });
+  broadcastPregame();
   socket.on('data', (chunk) => peer.consume(chunk));
   socket.on('close', () => releasePeer(peer, false));
   socket.on('error', () => releasePeer(peer, false));
@@ -7375,7 +7510,7 @@ function runSimulationTick() {
   if (scenarioEvaluated) {
     updateVisionMasks();
     const scenarioStartedAt = tickDiagnosticSamples ? performance.now() : null;
-    evaluateScenarioTriggers(STATE_EVERY_TICKS * STEP_SECONDS);
+    if (pregame?.phase !== 'lobby') evaluateScenarioTriggers(STATE_EVERY_TICKS * STEP_SECONDS);
     if (tickDiagnosticSamples) {
       afterVision = performance.now();
       scenarioMs = afterVision - scenarioStartedAt;

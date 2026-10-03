@@ -1,0 +1,23 @@
+{
+  "id": "wildlife-render-proof",
+  "name": "WILDLIFE RENDER PROOF",
+  "summary": "Static Sheep art and harvest lifecycle trial; stock values are test fixtures.",
+  "width": 64,
+  "height": 64,
+  "terrainSeed": 881,
+  "fogOfWar": true,
+  "startingArmySize": 8,
+  "startingResources": { "food": 0, "wood": 0 },
+  "spawnPoints": [
+    { "team": 0, "x": -20, "z": 0 },
+    { "team": 1, "x": 20, "z": 0 }
+  ],
+  "resourceNodes": [
+    { "id": "visible-sheep", "type": "food", "x": -15, "z": 6, "stock": 3.5, "wildlifeSpecies": "bellweather-sheep" },
+    { "id": "hidden-sheep", "type": "food", "x": 0, "z": 14, "stock": 100, "wildlifeSpecies": "bellweather-sheep" },
+    { "id": "ordinary-berries", "type": "food", "x": 15, "z": 6, "stock": 100 }
+  ],
+  "obstacles": [],
+  "triggers": [],
+  "scenarioEvents": []
+}

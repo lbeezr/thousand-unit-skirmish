@@ -30,12 +30,18 @@
 !assets/environment/frontier-interactive-v1/oak-worked.webp
 !assets/ui/
 !assets/ui/**
+!assets/wildlife/
+!assets/wildlife/bellweather-sheep-public-reference-v1/
+!assets/wildlife/bellweather-sheep-public-reference-v1/static-preview-binding.json
+!assets/wildlife/bellweather-sheep-public-reference-v1/sprite-atlas-pack-v1.json
+!assets/wildlife/bellweather-sheep-public-reference-v1/sheep-atlas-runtime.png
 !package.json
 !package-lock.json
 !deploy/
 !deploy/entrypoint.sh
 
 !environment-review.html
+!water-study.html
 !assets/environment/frontier-cliff-pilot-v1/
 !assets/environment/frontier-cliff-pilot-v1/runtime/
 !assets/environment/frontier-cliff-pilot-v1/runtime/**

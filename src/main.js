@@ -17,6 +17,7 @@ import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences } from './hud-layout.mjs';
 import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
+import { createRoomLobby } from './room-lobby-ui.mjs';
 import * as THREE from 'three';
 import { attachBuildingSprite } from './building-sprites.mjs';
 import { frontierBuildingPreviewUrl } from './frontier-building-preview.mjs';
@@ -47,6 +48,7 @@ import {
   unitActionPoseAllowed, unitCargoVisualState, unitWorkerActionPose,
 } from './unit-visual-state.mjs';
 import { createUnitSpriteRuntime } from './unit-sprite-runtime.mjs';
+import { createNeutralWildlifeRenderer } from './neutral-wildlife-renderer.mjs';
 import {
   MAX_ELEVATION_PATCHES, buildElevationGrid, capturePrerequisiteIds,
   findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
@@ -94,6 +96,25 @@ import {
 } from './unit-selection.mjs';
 
 let mapDefinition = null;
+let lobbyPlayer = null;
+let latestLobby = null;
+const roomLobby = createRoomLobby({ root: document.querySelector('#room-lobby'), send: sendCommand, copyInvite: copyRoomInvite });
+
+function applyLobby(lobby) {
+  latestLobby = lobby || null;
+  roomLobby.update(latestLobby, lobbyPlayer);
+  if (lobbyPlayer) updateLobbyHostControls();
+}
+
+function updateLobbyHostControls() {
+  if (!latestLobby) return;
+  ui.mapSelect.disabled = true;
+  for (const button of document.querySelectorAll('.size-options button')) button.disabled = true;
+  ui.mapStudioOpen.disabled = !isHost || latestLobby.phase === 'lobby';
+  ui.mapStudioOpen.title = latestLobby.phase === 'lobby' ? 'Launch before opening Map Studio' : 'Create a custom map and capture objectives';
+  document.querySelector('#reset-army').disabled = !isHost || latestLobby.phase === 'lobby';
+  ui.mapSelect.title = 'Reset to the lobby to choose a map';
+}
 let edgeScrollPointer = null;
 const heldCameraKeys = createCameraArrowKeys();
 let lastKeyboardPanTime = 0;
@@ -415,6 +436,7 @@ const unitLifecycleAudioGate = new UnitLifecycleAudioGate();
 const orderAudioGate = new OrderAudioGate();
 
 const scene = new THREE.Scene();
+const wildlifeRenderer = createNeutralWildlifeRenderer({ THREE, scene, groundHeight });
 scene.background = new THREE.Color(0x859175);
 scene.fog = new THREE.Fog(0x859175, 145, 235);
 
@@ -1787,7 +1809,9 @@ function addResourceNodeVisual(node) {
   resourceNodeVisuals.set(node.id, {
     fishPlaceholder, type: nodeType, ring, stock: node.stock, startingStock: node.stock, stage,
     x: node.x, z: node.z, callout,
+    wildlifeSpecies: node.wildlifeSpecies,
   });
+  if (node.wildlifeSpecies !== undefined) ring.visible = false;
 }
 
 function updateResourceNodeVisual(id, stock) {
@@ -1814,7 +1838,12 @@ function updateResourceNodeCallouts(now, force = false) {
   const viewportRect = renderer.domElement.getBoundingClientRect();
   const pixelsPerWorldUnit = viewportRect.height * zoom / baseFrustum;
   const occlusionRects = visibleHudRects();
-  for (const visual of resourceNodeVisuals.values()) {
+  for (const [id, visual] of resourceNodeVisuals) {
+    if (visual.wildlifeSpecies !== undefined
+      && !wildlifeRenderer.isAvailable(id)) {
+      visual.callout.visible = false;
+      continue;
+    }
     if (visual.stock <= 0) {
       visual.callout.visible = false;
       continue;
@@ -1951,7 +1980,8 @@ function buildBerryNodeInstances(nodes = []) {
   berryNodeStages.clear();
   berryStageCounts.clear();
   for (const stage of RESOURCE_VISUAL_STAGES) berryStageCounts.set(stage, 0);
-  const berryNodes = nodes.filter((node) => node.type === 'food' && !isShoreFish(node));
+  const berryNodes = nodes.filter((node) => node.type === 'food' && !isShoreFish(node)
+    && node.wildlifeSpecies === undefined);
   if (berryNodes.length === 0) return;
   const positions = berryNodes.map((node) => ({ x: node.x, z: node.z, scale: 1 }));
   for (let index = 0; index < berryNodes.length; index++) {
@@ -2150,6 +2180,7 @@ function applyForestState(state) {
 
 let terrainSurface = null;
 function buildMap(definition) {
+  wildlifeRenderer.reset([]);
   setActiveTerrain(definition);
   terrainSurface=null;
   fogTexture?.dispose();
@@ -2218,6 +2249,7 @@ function buildMap(definition) {
   // Town Centers are authoritative entities reconciled from match snapshots.
   buildWoodNodeInstances(definition.resourceNodes || []);
   buildBerryNodeInstances(definition.resourceNodes || []);
+  wildlifeRenderer.reset(definition.resourceNodes || []);
   for (const node of definition.resourceNodes || []) {
     addResourceNodeVisual(node);
     latestResourceStocks.set(node.id, node.stock);
@@ -2720,6 +2752,8 @@ function drawMinimap(now = performance.now(), force = false) {
     const row = Math.floor(node.z + MAP_HALF_Z);
     const fogState = latestFogCells?.[row * MAP_WIDTH + column] ?? 2;
     if (fogState === 0) continue;
+    if (node.wildlifeSpecies !== undefined
+      && (fogState !== 2 || !wildlifeRenderer.isAvailable(node.id))) continue;
     const point = minimapPoint(node.x, node.z, rect);
     const stock = latestResourceStocks.get(node.id) ?? node.stock;
     context.globalAlpha = fogState === 1 ? 0.55 : 1;
@@ -4615,6 +4649,21 @@ function updateEconomyUI(state = {}, initial = false) {
     latestTeamResearch = [state.teamResearch[0] || null, state.teamResearch[1] || null];
   }
   if (Array.isArray(state.resourceNodes)) {
+    wildlifeRenderer.reconcile(state.resourceNodes, node => {
+      if (!mapDefinition?.fogOfWar || localTeam === null) return true;
+      const column = Math.floor(node.x + MAP_HALF_X);
+      const row = Math.floor(node.z + MAP_HALF_Z);
+      return latestFogCells?.[row * MAP_WIDTH + column] === 2;
+    });
+    for (const node of mapDefinition?.resourceNodes || []) {
+      if (node.wildlifeSpecies === undefined) continue;
+      const visual = resourceNodeVisuals.get(node.id);
+      if (visual) {
+        const available = wildlifeRenderer.isAvailable(node.id);
+        visual.ring.visible = available;
+        if (!available) visual.callout.visible = false;
+      }
+    }
     for (const node of state.resourceNodes) {
       if (node && typeof node.id === 'string' && Number.isFinite(node.stock)) {
         updateResourceNodeVisual(node.id, Math.max(0, node.stock));
@@ -4849,6 +4898,7 @@ function setConnection(status) {
 }
 
 function setPlayer(player) {
+  lobbyPlayer = player;
   const previousTeam = localTeam;
   localTeam = Number.isInteger(player.team) ? player.team : null;
   if (previousTeam !== localTeam) {
@@ -4874,6 +4924,7 @@ function setPlayer(player) {
   ui.mapSelect.title = isHost ? 'Change map for both players' : 'Only the room host can change the map';
   ui.mapStudioOpen.disabled = !isHost;
   ui.mapStudioOpen.title = isHost ? 'Create a custom map and capture objectives' : 'Only the room host can author maps';
+  updateLobbyHostControls();
   updateCommandUI();
 }
 
@@ -7061,6 +7112,7 @@ function pickResourceNodeAt(x, y, { visibleOnly = false } = {}) {
   let nearest = null;
   let nearestDistance = 26 * 26;
   for (const node of mapDefinition.resourceNodes) {
+    if (node.wildlifeSpecies !== undefined && !wildlifeRenderer.isAvailable(node.id)) continue;
     if (visibleOnly && mapDefinition.fogOfWar) {
       const column = Math.floor(node.x + MAP_WIDTH / 2);
       const row = Math.floor(node.z + MAP_HEIGHT / 2);
@@ -7951,6 +8003,7 @@ minimapCanvas.addEventListener('keydown', (event) => {
   else if (event.key === 'ArrowUp') cameraTarget.z -= steps;
   else if (event.key === 'ArrowDown') cameraTarget.z += steps;
   else return;
+  mapFitActive = false;
   event.preventDefault();
   setCamera();
   drawMinimap(performance.now(), true);
@@ -9259,7 +9312,7 @@ async function createPrivateRoom() {
     const response = await fetch('/api/rooms', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: '{}',
+      body: JSON.stringify({ mode: 'pvp', pregame: true }),
       cache: 'no-store',
     });
     const result = await response.json().catch(() => ({}));
@@ -9410,6 +9463,7 @@ function connectSocket() {
         else if (!waitingForResume) sessionStorage.removeItem(ROOM_SESSION_STORAGE_KEY);
       } catch {}
       setPlayer(message.player);
+      applyLobby(message.state.lobby);
       setMapCatalog(message.maps, message.map.id);
       if (ui.orderStatus?.textContent.startsWith('CONNECTION LOST')
         || ui.orderStatus?.textContent.startsWith('SERVER DID NOT CONFIRM')) {
@@ -9448,6 +9502,7 @@ function connectSocket() {
       return;
     }
     if (message.type === 'mapChange') {
+      applyLobby(message.state.lobby);
       void loadMapAudio(message.map.audio);
       mapDefinition = message.map;
       buildMap(mapDefinition);
@@ -9458,7 +9513,14 @@ function connectSocket() {
       applyState(message.state, true);
       return;
     }
-    if (message.type === 'state') { applyState(message); return; }
+    if (message.type === 'state') { applyLobby(message.lobby); applyState(message); return; }
+    if (message.type === 'lobby') { applyLobby(message.lobby); return; }
+    if (message.type === 'lobbyRejected') {
+      latestLobby = message.lobby;
+      roomLobby.reject(message.message, message.lobby, lobbyPlayer);
+      showToast(message.message, 2400);
+      return;
+    }
     if (message.type === 'waypointQueueCounts') {
       applyWaypointQueueCounts(message.rows);
       return;
@@ -9539,6 +9601,7 @@ function connectSocket() {
   connection.addEventListener('close', () => {
     if (socket !== connection) return;
     socket = null;
+    roomLobby.disconnect();
     audio.stopWork(); orderAudioGate.reset();
     if (pageLeaving) return;
     const retryImmediately = retryWhenSeatFree;
@@ -9723,6 +9786,7 @@ function animate(now) {
     moveMarker.material.opacity = Math.max(0, 0.95 - moveMarkerAge * 0.9);
     if (moveMarkerAge > 1.05) moveMarker.visible = false;
   }
+  wildlifeRenderer.update(camera);
   updateResourceNodeCallouts(now);
   for (const visual of capturedBuildingVisuals) {
     updateCapturedBuildingSprite(visual.sprite, camera, visual.lifecycleInput);

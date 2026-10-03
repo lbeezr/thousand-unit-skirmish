@@ -1,0 +1,9 @@
+{
+  "seed": 9300703,
+  "radius": 3,
+  "spawnClearance": 6,
+  "sites": [
+    { "nodeId": "azure-food", "x": -10.5, "z": 8.5 },
+    { "nodeId": "ember-food", "x": 10.5, "z": 8.5 }
+  ]
+}

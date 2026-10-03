@@ -118,6 +118,25 @@ try {
   const threeCore = await fetch(`${base}/vendor/three.core.js`, { headers: { authorization } });
   assert.equal(threeCore.status, 200);
   assert.match(threeCore.headers.get('content-type'), /javascript/);
+  const sheepDirectory = `${base}/assets/wildlife/bellweather-sheep-public-reference-v1/`;
+  const sheepBindingResponse = await fetch(`${sheepDirectory}static-preview-binding.json`, { headers: { authorization } });
+  assert.equal(sheepBindingResponse.status, 200, 'packed runtime preserves the public Sheep binding');
+  const sheepBinding = await sheepBindingResponse.json();
+  const sheepManifestResponse = await fetch(new URL(sheepBinding.manifest, sheepDirectory), { headers: { authorization } });
+  assert.equal(sheepManifestResponse.status, 200);
+  const sheepManifestBytes = Buffer.from(await sheepManifestResponse.arrayBuffer());
+  assert.equal(createHash('sha256').update(sheepManifestBytes).digest('hex'), sheepBinding.manifestSha256);
+  const sheepManifest = JSON.parse(sheepManifestBytes);
+  const sheepPage = sheepManifest.pages[0];
+  const sheepFile = sheepManifest.files.find(file => file.id === sheepPage.runtimeFileId);
+  const sheepImageResponse = await fetch(new URL(sheepFile.path, sheepDirectory), { headers: { authorization } });
+  assert.equal(sheepImageResponse.status, 200);
+  assert.equal(createHash('sha256').update(Buffer.from(await sheepImageResponse.arrayBuffer())).digest('hex'), sheepFile.sha256);
+  const packedManifest = JSON.parse(await readFile(path.join(root, 'release-manifest.json'), 'utf8'));
+  assert.deepEqual(packedManifest.files.filter(file => file.startsWith('assets/wildlife/')).sort(),
+    ['sheep-atlas-runtime.png', 'sprite-atlas-pack-v1.json', 'static-preview-binding.json']
+      .map(file => `assets/wildlife/bellweather-sheep-public-reference-v1/${file}`).sort(),
+    'only three runtime Sheep files enter the package, with no originals or GLB');
   for (const clientFile of ['audio-zones.html', 'src/audio-zones.mjs', 'src/audio-zones.css']) {
     assert.equal((await fetch(`${base}/${clientFile}`, { headers: { authorization } })).status, 200,
       `zone audition release must serve ${clientFile}`);
@@ -212,6 +231,16 @@ try {
     }
   }
   await checkClientImports(base, { authorization });
+  for (const file of ['water-study.html', 'src/water-study-preview.mjs', 'src/water-surface-study.mjs', 'src/water-study-state.mjs']) {
+    assert.ok(packedManifest.files.includes(file), `water study release must contain ${file}`);
+    const response = await fetch(`${base}/${file}`, { headers: { authorization } });
+    assert.equal(response.status, 200, `packed water study must serve ${file}`);
+    assert.match(response.headers.get('content-type'), file.endsWith('.html') ? /text\/html/ : /javascript/);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    assert.equal(createHash('sha256').update(bytes).digest('hex'),
+      createHash('sha256').update(await readFile(path.join(sourceRoot, file))).digest('hex'),
+      `packed water study bytes must match ${file}`);
+  }
   // Ship exactly one already-authored Frontier family, preserving its captures.
   const frontierRoot = 'assets/buildings/frontier-civilization-scale-pilot-v1/';
   const frontierManifestPath = frontierRoot + 'town-center-complete-renderer.json';

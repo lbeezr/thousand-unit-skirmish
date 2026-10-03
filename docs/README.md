@@ -33,6 +33,7 @@ the build they name.
 | --- | --- |
 | Install, run locally, host on LAN, troubleshoot | [Local setup](getting-started.md) |
 | Learn controls, economy, objectives, and rematches | [Player guide](playing.md) |
+| Create a PvP lobby, ready and launch; inspect its protocol | [Pregame rooms](room-lobby.md) |
 | Reproduce a solo match | [Play vs AI](play-vs-ai.md) |
 | Find server defaults and limits | [Configuration](configuration.md) |
 | Package, deploy, recover, and back up | [Deployment](deployment.md) |
@@ -80,6 +81,7 @@ from source/candidate packs. Then use the relevant contract:
 - [Art direction](art-direction-contract-v1.md) and [production lanes](art-production-lanes.md).
 - [Wildlife draft](wildlife-bellweather-sheep.md): inspected regional fauna, one Sheep proposal, behavior, habitat and future perspective/sprite coverage.
 - [Renderer state/GLB/environment contract](renderer-state-contract.md).
+- [Water surface study](water-surface-study.md): opt-in apparent depth, directional motion, and visibility-gated shore-fish ripple preview.
 - [Sprite-atlas format](sprite-atlas-contract-v1.md).
 - [First civilization style](frontier-civilization-art-style.md) and [illustrated architecture wiki](lore/frontier-architecture.md).
 - [Building atlas production plan](building-atlas-production-plan.md): roster, references, scale and generation order.

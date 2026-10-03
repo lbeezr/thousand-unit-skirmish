@@ -7,7 +7,7 @@ ENV NODE_ENV=production \
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --no-audit --no-fund && apk add --no-cache su-exec
-COPY --chown=node:node server.mjs room-supervisor.mjs origin-policy.mjs simulation-scheduler.mjs index.html audio-studio.html audio-zones.html environment-review.html style.css ./
+COPY --chown=node:node server.mjs room-supervisor.mjs origin-policy.mjs simulation-scheduler.mjs index.html audio-studio.html audio-zones.html environment-review.html water-study.html style.css ./
 COPY --chown=node:node assets/audio/runtime/ ./assets/audio/runtime/
 COPY --chown=node:node assets/audio/vaelora-zones-v1/ ./assets/audio/vaelora-zones-v1/
 COPY --chown=node:node assets/audio/vaelora-pilot-v1/sources/ ./assets/audio/vaelora-pilot-v1/sources/
@@ -28,6 +28,7 @@ COPY --chown=node:node assets/environment/frontier-interactive-v1/berries-deplet
 COPY --chown=node:node assets/environment/frontier-interactive-v1/construction-earthwork.webp assets/environment/frontier-interactive-v1/construction-foundation.webp assets/environment/frontier-interactive-v1/oak-depleted.webp ./assets/environment/frontier-interactive-v1/
 COPY --chown=node:node assets/environment/frontier-interactive-v1/oak-full.webp assets/environment/frontier-interactive-v1/oak-low.webp assets/environment/frontier-interactive-v1/oak-worked.webp ./assets/environment/frontier-interactive-v1/
 COPY --chown=node:node assets/ui/ ./assets/ui/
+COPY --chown=node:node assets/wildlife/bellweather-sheep-public-reference-v1/static-preview-binding.json assets/wildlife/bellweather-sheep-public-reference-v1/sprite-atlas-pack-v1.json assets/wildlife/bellweather-sheep-public-reference-v1/sheep-atlas-runtime.png ./assets/wildlife/bellweather-sheep-public-reference-v1/
 COPY --chown=node:node assets/environment/frontier-cliff-pilot-v1/runtime/ ./assets/environment/frontier-cliff-pilot-v1/runtime/
 COPY --chown=node:node assets/buildings/barracks-sprite-test-v1/runtime/ ./assets/buildings/barracks-sprite-test-v1/runtime/
 COPY --chown=node:node assets/buildings/archery-range-sprite-v1/runtime/ ./assets/buildings/archery-range-sprite-v1/runtime/
