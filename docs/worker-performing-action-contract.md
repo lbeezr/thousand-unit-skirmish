@@ -58,6 +58,9 @@ mutation can reconstruct work.
 
 ## Acceptance and remaining integration
 
+[Producer source/release evidence](qa-worker-performing-action-producer-2026-10-03.md)
+records tested revisions and separates remaining client/deployment acceptance.
+
 `node --test scripts/worker-performing-action.test.mjs` exercises actual server
 work/snapshot branches for positive food/wood/Stone/Farm/forest grants, waits,
 stock/capacity exhaustion, per-builder attribution, repair wood exhaustion,
