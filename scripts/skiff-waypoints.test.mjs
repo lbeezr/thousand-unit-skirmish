@@ -1,0 +1,171 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { readFile } from 'node:fs/promises';
+import { createWaterUnitRuntime, waterUnitOccupiedCells } from '../src/water-unit-runtime.mjs';
+import { planSkiffGroupMove } from '../src/skiff-group-orders.mjs';
+import { planSkiffWaypoints, validSkiffWaypoints, advanceSkiffWaypoints } from '../src/skiff-waypoints.mjs';
+
+function fixture() {
+  const map = { width: 64, height: 64, obstacles: [18, 43].map(column => ({ column, row: 42, width: 12, height: 16, material: 'water' })) };
+  const water = createWaterUnitRuntime(map);
+  let units = [0, 1].flatMap(team => [0, 1, 2].map(index => ({
+    ...water.graph.pointAt((index === 2 ? 43 : 48) * 64 + (team ? 44 : 19) + (index < 2 ? index + 1 : 0)),
+    id: team * 3 + index, team, hp: 120, kind: 'skiff', movementDomain: 'water', cargo: index === 0 ? .005 : index === 1 ? 2.25 : 0,
+    cargoType: index < 2 ? 'food' : null, gatherPhase: '', gatherNodeId: null, gatherForestCell: -1,
+    path: [], pathIndex: 0, moveGoalCell: -1, queuedWaypoints: [], repathTimer: 0,
+    waterMoveBlocked: false, orderRevision: 1, holdingPosition: false,
+  })));
+  const point = (column, row) => water.graph.pointAt(row * 64 + column);
+  const selected = team => units.slice(team * 3, team * 3 + 2);
+  const move = (team, column, row) => {
+    const p = point(column, row), plan = planSkiffGroupMove(water, selected(team), p.x, p.z, units);
+    assert.equal(plan.status, 'found');
+    for (const { unit, route } of plan.assignments) { unit.path = route.cells; unit.moveGoalCell = route.cells.at(-1); }
+  };
+  const queue = (selection, column, row) => {
+    const p = point(column, row), before = structuredClone(units), plan = planSkiffWaypoints(water, selection, p.x, p.z, units);
+    assert.deepEqual(units, before, 'preflight never changes a route, queue or cargo');
+    if (plan.status === 'found') for (const { unit, route, destination, append } of plan.assignments) {
+      if (append) unit.queuedWaypoints.push({ destination, attackMove: false });
+      else { unit.path = route.cells; unit.pathIndex = 0; unit.moveGoalCell = destination; unit.holdingPosition = false; }
+    }
+    return plan;
+  };
+  const safe = () => {
+    const occupied = new Set();
+    for (const unit of units.filter(unit => unit.hp > 0)) {
+      assert.ok(water.validRoute(unit)); assert.ok(validSkiffWaypoints(water, unit));
+      for (const cell of waterUnitOccupiedCells(water.graph, unit)) { assert.ok(!occupied.has(cell)); occupied.add(cell); }
+    }
+  };
+  const tick = () => { water.advance(units, 1 / 30, () => 2.4); advanceSkiffWaypoints(water, units, 1 / 30); safe(); };
+  return { water, point, selected, move, queue, tick, safe, get units() { return units; }, recover() { units = structuredClone(units); } };
+}
+
+for (const team of [0, 1]) test(`seat ${team}: selected water waypoints retain individual tails, fractional cargo and restart`, () => {
+  const f = fixture(), offset = team ? 25 : 0, idle = structuredClone(f.units[team * 3 + 2]);
+  f.move(team, 23 + offset, 52);
+  const active = f.selected(team).map(unit => [...unit.path]);
+  assert.equal(f.queue(f.selected(team), 26 + offset, 53).status, 'found');
+  assert.equal(f.queue(f.selected(team), 27 + offset, 47).status, 'found');
+  assert.deepEqual(f.selected(team).map(unit => unit.path), active);
+  const goals = f.selected(team).map(unit => unit.queuedWaypoints.at(-1).destination);
+  assert.equal(new Set(goals).size, 2);
+  for (let i = 0; i < 8; i++) f.tick(); f.recover();
+  for (let i = 0; i < 700; i++) f.tick();
+  for (let i = 0; i < 2; i++) {
+    const unit = f.selected(team)[i], p = f.water.graph.pointAt(goals[i]);
+    assert.ok(Math.hypot(unit.x - p.x, unit.z - p.z) < 1e-7);
+    assert.equal(unit.queuedWaypoints.length, 0); assert.equal(unit.moveGoalCell, -1);
+    assert.equal(unit.cargo, i ? 2.25 : .005);
+  }
+  assert.deepEqual(f.units[team * 3 + 2], idle);
+});
+
+test('Shift on an idle boat starts immediately; repeated targets obey the shared eight-waypoint cap', () => {
+  const f = fixture(), unit = f.units[0];
+  assert.equal(f.queue([unit], 25, 54).assignments[0].append, false);
+  for (let i = 0; i < 8; i++) assert.equal(f.queue([unit], 25, 54).status, 'found');
+  const before = structuredClone(f.units);
+  assert.equal(f.queue([unit, f.units[1]], 27, 54).status, 'queue-limit'); assert.deepEqual(f.units, before);
+  for (let i = 0; i < 700; i++) f.tick();
+  assert.equal(unit.queuedWaypoints.length, 0); assert.equal(unit.cargo, .005);
+});
+
+test('mixed idle/moving selection appends from each accepted tail without replacing the moving boat', () => {
+  const f = fixture(); f.move(0, 23, 52);
+  const [a, b] = f.selected(0);
+  b.path = []; b.pathIndex = 0; b.moveGoalCell = -1; b.holdingPosition = true;
+  assert.equal(f.queue([a], 26, 53).status, 'found');
+  const active = structuredClone(a.path), plan = f.queue([a, b], 27, 47);
+  assert.equal(plan.status, 'found'); assert.deepEqual(a.path, active);
+  assert.equal(a.queuedWaypoints.length, 2); assert.equal(b.queuedWaypoints.length, 0);
+  assert.equal(b.holdingPosition, false);
+  const goals = plan.assignments.map(assignment => assignment.destination); assert.equal(new Set(goals).size, 2);
+  f.recover(); for (let i = 0; i < 700; i++) f.tick();
+  for (let i = 0; i < 2; i++) {
+    const unit = f.selected(0)[i], point = f.water.graph.pointAt(goals[i]);
+    assert.ok(Math.hypot(unit.x - point.x, unit.z - point.z) < 1e-7); assert.equal(unit.queuedWaypoints.length, 0);
+  }
+});
+
+test('an idle Shift member cannot park on the retained transit of the moving member', () => {
+  const f = fixture(), [a, b] = f.selected(0);
+  Object.assign(a, f.water.graph.pointAt(2771), { path: [2771, 2772, 2773, 2774, 2775, 2776, 2777, 2778], moveGoalCell: 2778 });
+  Object.assign(b, f.water.graph.pointAt(2838)); f.units[2].hp = 0;
+  const active = [...a.path], plan = f.queue([a, b], 23, 43);
+  assert.equal(plan.status, 'found'); assert.deepEqual(a.path, active);
+  const immediate = plan.assignments.find(assignment => assignment.unit === b);
+  assert.ok(immediate.route.cells.every(cell => !active.includes(cell)), 'immediate boat yields to live retained transit');
+  const goals = plan.assignments.map(assignment => assignment.destination);
+  f.recover(); for (let i = 0; i < 700; i++) f.tick();
+  for (let i = 0; i < 2; i++) {
+    const unit = f.selected(0)[i], point = f.water.graph.pointAt(goals[i]);
+    assert.ok(Math.hypot(unit.x - point.x, unit.z - point.z) < 1e-7); assert.equal(unit.queuedWaypoints.length, 0);
+  }
+});
+
+const pilot = JSON.parse(await readFile(new URL('../maps/shore-fishing.json', import.meta.url), 'utf8'));
+for (const map of [{ width: 32, height: 32, obstacles: [{ column: 8, row: 8, width: 8, height: 8, material: 'water' }] }, pilot]) {
+  test(`${map.id ?? '32x32 water'}: accepted waypoints finish on maps smaller than the route expansion cap`, () => {
+    const water = createWaterUnitRuntime(map);
+    const start = Array.from({ length: water.graph.cellCount }, (_, cell) => cell).find(cell => water.graph.isNavigable(cell));
+    const destination = start + water.graph.width + 1;
+    let unit = { ...fixture().units[0], ...water.graph.pointAt(start) };
+    for (const cell of [destination, start]) {
+      const point = water.graph.pointAt(cell), plan = planSkiffWaypoints(water, [unit], point.x, point.z, [unit]);
+      assert.equal(plan.status, 'found');
+      const assignment = plan.assignments[0];
+      if (assignment.append) unit.queuedWaypoints.push({ destination: assignment.destination, attackMove: false });
+      else { unit.path = assignment.route.cells; unit.moveGoalCell = assignment.destination; }
+    }
+    assert.equal(unit.queuedWaypoints.length, 1);
+    unit = structuredClone(unit);
+    for (let tick = 0; tick < 300; tick++) {
+      water.advance([unit], 1 / 30, () => 2.4); advanceSkiffWaypoints(water, [unit], 1 / 30);
+      assert.ok(water.validRoute(unit)); assert.ok(validSkiffWaypoints(water, unit));
+    }
+    assert.equal(unit.queuedWaypoints.length, 0); assert.equal(unit.moveGoalCell, -1);
+    assert.equal(unit.x, water.graph.pointAt(start).x); assert.equal(unit.z, water.graph.pointAt(start).z);
+    assert.equal(unit.cargo, .005);
+  });
+}
+
+test('fishing/return, mixed domains, land and disconnected Shift orders reject without changing any intent', () => {
+  const f = fixture(), unit = f.units[0];
+  for (const phase of ['to-node', 'gathering', 'to-base']) {
+    unit.gatherPhase = phase; const before = structuredClone(unit);
+    assert.equal(f.queue([unit], 25, 54).status, 'finish-or-stop-fishing-first'); assert.deepEqual(unit, before);
+  }
+  unit.gatherPhase = '';
+  assert.notEqual(f.queue([unit, { ...f.units[1], kind: 'worker', movementDomain: undefined }], 25, 54).status, 'found');
+  assert.notEqual(f.queue([unit], 0, 0).status, 'found');
+  assert.equal(f.queue([unit], 50, 54).status, 'disconnected');
+});
+
+test('future destinations stay reserved; a blocked accepted head survives restart and retries the same cell', () => {
+  const f = fixture(), a = f.units[0], b = f.units[1];
+  b.queuedWaypoints = [{ destination: 54 * 64 + 25, attackMove: false }];
+  assert.notEqual(f.queue([a], 25, 54).status, 'found'); b.queuedWaypoints = [];
+  const destination = 54 * 64 + 25;
+  a.queuedWaypoints = [{ destination, attackMove: false }];
+  Object.assign(b, f.water.graph.pointAt(destination));
+  advanceSkiffWaypoints(f.water, f.units, 1 / 30);
+  assert.equal(a.queuedWaypoints.length, 1); assert.equal(a.path.length, 0);
+  f.recover(); f.units[1].hp = 0;
+  for (let i = 0; i < 700; i++) f.tick();
+  const recovered = f.units[0], point = f.water.graph.pointAt(destination);
+  assert.ok(Math.hypot(recovered.x - point.x, recovered.z - point.z) < 1e-7);
+  assert.equal(recovered.queuedWaypoints.length, 0); assert.equal(recovered.cargo, .005);
+});
+
+test('water checkpoint queues reject attack-move, shore, disconnected goals, excess length and fishing combinations', () => {
+  const f = fixture(), unit = f.units[0], destination = 54 * 64 + 25;
+  unit.queuedWaypoints = [{ destination, attackMove: false }]; assert.ok(validSkiffWaypoints(f.water, unit));
+  for (const queue of [[{ destination, attackMove: true }], [{ destination: 0, attackMove: false }],
+    [{ destination: 54 * 64 + 50, attackMove: false }], Array.from({ length: 9 }, () => ({ destination, attackMove: false }))]) {
+    unit.queuedWaypoints = queue; assert.equal(validSkiffWaypoints(f.water, unit), false);
+  }
+  unit.queuedWaypoints = [{ destination, attackMove: false }]; unit.gatherPhase = 'to-base';
+  assert.equal(validSkiffWaypoints(f.water, unit), false);
+});

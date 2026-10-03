@@ -81,7 +81,6 @@ try {
     await command(team, { type: 'move', ids: selected[team], unitGenerations: [0, 0], x: team ? 16.5 : -8.5, z: 15.5 }, /NO VALID UNITS/);
     await command(team, { type: 'move', ids: [...selected[team], workers[team][0]], x: team ? 16.5 : -8.5, z: 15.5 }, /SELECT ONLY SKIFFS/);
     await command(team, { type: 'move', ids: selected[team], x: team ? -8.5 : 16.5, z: 15.5 }, /DISCONNECTED/);
-    await command(team, { type: 'move', ids: selected[team], x: team ? 16.5 : -8.5, z: 15.5, queue: true }, /SUPPORTS MOVE AND STOP/);
     await command(team, { type: 'move', ids: [...selected[team]].reverse(), x: team ? 16.5 : -8.5, z: 15.5 }, /2 SKIFF WATER ROUTES/);
   }
   await fixture.stop(); const moving = await saved(); safe(moving); exactUnselected(moving);
@@ -99,6 +98,7 @@ try {
     await command(team, { type: 'gather', ids: [...selected[team], selected[team][0], unselected[1 - team]], nodeId: `fish-${team}` }, /2 SKIFFS/);
   }
   await fixture.checkpoint(snapshot => selected.flat().every(id => snapshot.state.units[id].cargo >= .1));
+  for (const team of [0, 1]) await command(team, { type: 'move', ids: selected[team], x: team ? 16.5 : -8.5, z: 15.5, queue: true }, /FINISH-OR-STOP-FISHING-FIRST/);
   for (const team of [0, 1]) await command(team, { type: 'stop', ids: selected[team] }, /STOP ORDER/);
   await fixture.stop(); const stopped = await saved(); safe(stopped); exactUnselected(stopped);
   const loads = selected.map(ids => ids.map(id => stopped.state.units[id].cargo)); await reconnect();
@@ -134,5 +134,5 @@ try {
   console.log(JSON.stringify({ scenario: 'Both-seat exact selected Skiff groups', selectedBoatsPerSeat: 2, untouchedBoatsPerSeat: 1,
     distinctMoveFishAndDockDestinations: true, staleForeignMixedAndQueueRejections: true,
     perBoatMoveStopReturnAndAutomaticRecovery: true, finiteSharedFoodConserved: true, finalFood: [1031, 1031], finalWood: [675, 675],
-    boundaries: 'up to16 selected Skiffs; atomic capacity rejection; no queued orders, passengers, weapons or final art' }));
+    boundaries: 'up to16 selected Skiffs; atomic capacity rejection; unqueued-order proof; water waypoints tested separately; no passengers, weapons or final art' }));
 } finally { await fixture.dispose(); }

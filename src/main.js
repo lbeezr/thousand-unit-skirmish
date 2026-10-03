@@ -4344,7 +4344,7 @@ function updateCommandUI() {
       : coarsePointer ? 'Use Target battlefield, then tap a target'
         : attackMoveMode ? 'Right-click ground to advance and engage' : 'Right-click ground or an enemy';
   if (selectedBuilding?.type === 'dock' && ui.commandHint) ui.commandHint.textContent = 'Train a Skiff (placeholder) · owned boats deliver food at this Dock · no rally.';
-  if (!selectedBuilding && selectedWaterUnits() && ui.commandHint) ui.commandHint.textContent = 'Select Skiffs · target fish or water · boats need distinct approaches · Return cargo delivers to owned Dock berths · Stop keeps cargo.';
+  if (!selectedBuilding && selectedWaterUnits() && ui.commandHint) ui.commandHint.textContent = 'Select Skiffs · target fish or water · Shift targets queue up to 8 water waypoints while moving · finish or Stop fishing before queuing · Stop keeps cargo.';
   if (persistentTargetMode && ui.commandHint) ui.commandHint.textContent = `${tapOrderArmed ? 'Tap or click' : coarsePointer ? 'Use Target battlefield, then tap' : 'Right-click'} ${persistentTargetMode === 'follow' ? 'a friendly unit' : 'ground to set the second patrol endpoint'}`;
   for (const button of document.querySelectorAll('[data-persistent-order]')) {
     button.classList.toggle('active', button.dataset.persistentOrder === persistentTargetMode);
@@ -7539,7 +7539,7 @@ function issueMove(point, queueWaypoint = false, moveOnly = false) {
   if (localTeam === null) { showToast('SPECTATORS CANNOT ISSUE COMMANDS'); return; }
   const ids = selectedIds();
   if (ids.length === 0) { showToast('SELECT YOUR UNITS BEFORE ISSUING AN ORDER'); return; }
-  if (selectedWaterUnits() && (ids.some(id => units[id]?.kind !== 'skiff') || queueWaypoint)) { showToast('SELECT ONLY SKIFFS · WATER WAYPOINT QUEUES ARE UNAVAILABLE'); return; }
+  if (selectedWaterUnits() && ids.some(id => units[id]?.kind !== 'skiff')) { showToast('SELECT ONLY SKIFFS'); return; }
   const attackMoveOrder = !moveOnly && attackMoveMode;
   if (!moveOnly && persistentTargetMode === 'follow') { showToast('FOLLOW NEEDS A FRIENDLY UNIT TARGET'); return; }
   const patrolOrder = !moveOnly && persistentTargetMode === 'patrol';
