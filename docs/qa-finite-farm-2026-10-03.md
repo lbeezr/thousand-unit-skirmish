@@ -84,6 +84,23 @@ are corrected, and a visible-neutral positive control now proves authored food
 passes the map adapter when its cell is visible. The recorded `1aa5e34` run
 predates that fixture correction; postmerge checks below use the corrected call.
 
+## Merged-source verification
+
+Farm PR102 merged as `2f1be6e0b7b843c2805fd03053c45107f9d72a4e`.
+On that clean checkout, the corrected `--fog` native scenario passed all twelve
+stages again on both seats, including actual map/wire/policy observations,
+paid construction and replanting, exact depletion, retained cargo to Mill,
+destruction, restart without duplicate credit and host reset. The
+[postmerge raw record](qa-evidence/finite-farm-2026-10-03/farm-postmerge-2f1be6e.json)
+has `sourceDirty:false`, real banks/stock/cargo and the declared damage/attacker
+fixture limits. No resource supply was injected.
+
+The 74 focused checks, all 90 served client imports, documentation checks
+(456 Markdown files, 2,994 local links) and diff checks also passed on merged
+source. Independent final review found no runtime issues; all three reproduced
+Farm correctness findings and the map-argument fixture error are resolved.
+Hosted CI remained queued at the author check, so it is not recorded as a pass.
+
 ## Reproduce and next observations
 
 ```sh
