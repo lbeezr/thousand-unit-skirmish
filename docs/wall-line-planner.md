@@ -12,16 +12,22 @@ At fork main `abcc2a4`, the [building registry](../src/gameplay-definitions.mjs)
 has eight types with configurable `cost: {food, wood}` and square footprints.
 There is no wall/gate building type or stone currency. The Barracks gate and
 building walls in [the renderer](../src/main.js) are presentation parts, not
-independent fortifications. Environment stone obstacles are terrain.
+independent fortifications. The stone wall/passages in
+[pathfinding fixtures](../scripts/pathfinding-scenario.mjs) are static terrain;
+the gates in [objective fixtures](../scripts/trigger-scenario.mjs) are capture
+prerequisites. Neither is a buildable fortification prototype.
 
 The [server](../server.mjs) uses separate terrain, building and home Town Center
 occupancy masks. `buildBuilding` checks resources, objectives, live units,
 prerequisites and reachable Workers; tentative occupancy must preserve existing
-entity/active-route connectivity before payment. Construction/destruction
+entity/active-route connectivity before payment through
+`canPlaceBuildingWithoutDisconnectingEntities`. Construction/destruction
 replans routes through the existing components and A* pathfinder. These rules
 need a deliberate wall integration: calling the ordinary build command once per
 cell would allow partial payment/placement and would not establish an atomic line.
-No pathfinder or gameplay definition is changed by this foundation.
+`isWalkable` is global rather than team-specific: owner-only gate traversal would
+need a separate policy. No pathfinder or gameplay definition is changed by this
+foundation.
 
 ## Input and output contract
 
