@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { WORKER_PORTRAITS, BARRACKS_PORTRAIT } from '../src/selection-portrait.mjs';
+import { buildingSpriteUrl } from '../src/building-sprites.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const html = readFileSync(path.join(root, 'index.html'), 'utf8');
@@ -64,12 +67,43 @@ for (const resource of [
   'assets/ui/cursors/build-blocked.png', 'assets/ui/icons/wood.svg',
   'assets/ui/icons/food.svg', 'assets/ui/icons/move.svg',
   'assets/ui/icons/attack.svg', 'assets/ui/icons/gather.svg', 'assets/ui/icons/build.svg',
+  'assets/ui/portraits/human-worker-source.png', 'assets/ui/portraits/boughward-worker-source.png',
 ]) {
   assert.ok(allowedUi.has(resource), `UI asset is missing from the server allowlist: ${resource}`);
 }
 assert.match(server, /'\.svg': 'image\/svg\+xml'/, 'SVG icons need the correct response MIME type');
 for (const resource of allowedUi) {
   assert.ok(statSync(path.join(root, resource)).isFile(), `allowlisted UI asset is missing: ${resource}`);
+}
+for (const [role, source, sha256] of [
+  ['human', 'docs/art-direction/human-vaelora-sprites-v1/source/Idle/facings.png', '323071be89e1fc6e181ec4c7b946d28048043380b4faaa285f368e6efe1c54ad'],
+  ['boughward-worker', 'docs/art-direction/boughward-roster-v1/extracted/worker/00.png', '7296c0b24ad61c02b65bfc9d6d88c8f46391bfa1efbaeba2e4c2615de07f9aa6'],
+]) {
+  const portrait = WORKER_PORTRAITS[role], resource = portrait.asset.slice(1);
+  assert.ok(allowedUi.has(resource), `portrait must be served: ${resource}`);
+  const image = readFileSync(path.join(root, resource));
+  assert.equal(createHash('sha256').update(image).digest('hex'), sha256, 'portrait reuses inspected source bytes');
+  assert.deepEqual(image, readFileSync(path.join(root, source)), 'no new image or atlas face enlargement');
+  assert.equal(image.readUInt32BE(16), portrait.sourceWidth);
+  assert.ok(portrait.cropX >= 0 && portrait.cropY >= 0 && portrait.cropSize > 0);
+  assert.ok(portrait.cropX + portrait.cropSize <= portrait.sourceWidth);
+  assert.ok(portrait.cropY + portrait.cropSize <= image.readUInt32BE(20));
+}
+const barracksRoot = 'assets/buildings/barracks-sprite-test-v1';
+const barracksProvenance = readFileSync(path.join(root, barracksRoot, 'PROVENANCE.md'), 'utf8');
+const barracksHashes = new Map([...barracksProvenance.matchAll(/`runtime\/([^`]+)`\s*\|\s*`([a-f0-9]{64})`/g)]
+  .map(([, name, hash]) => [name, hash]));
+assert.equal(barracksHashes.size, 10, 'both teams retain all five existing Barracks frames');
+const barracksGrid = JSON.parse(readFileSync(path.join(root, barracksRoot, 'sprite-grid.json'), 'utf8'));
+assert.equal(BARRACKS_PORTRAIT.sourceWidth, barracksGrid.spriteFrame.pixels[0]);
+for (const team of [0, 1]) for (const state of [
+  { complete: false, progress: 0 }, { complete: false, progress: 0.5 },
+  { complete: true, hp: 1800 }, { complete: true, hp: 900 }, { complete: true, hp: 300 },
+]) {
+  const resource = buildingSpriteUrl({ type: 'barracks', team, maxHp: 1800, ...state }).slice(2);
+  const bytes = readFileSync(path.join(root, resource));
+  assert.equal(createHash('sha256').update(bytes).digest('hex'), barracksHashes.get(path.basename(resource)),
+    'Barracks thumbnail uses the retained shipped source');
 }
 const cursorManifest = JSON.parse(readFileSync(path.join(root, 'assets/ui/cursors/manifest.json'), 'utf8'));
 const style = readFileSync(path.join(root, 'style.css'), 'utf8');

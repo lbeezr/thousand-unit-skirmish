@@ -81,9 +81,12 @@ Run from the repository root:
 | --- | --- |
 | Map logic / elevation | `node scripts/map-utils-scenario.mjs` / `node scripts/elevation-scenario.mjs` |
 | Crowd deflection / terrain boundaries | `node --test scripts/unit-movement.test.mjs` (real authoritative movement blocks, cliffs, corners, working/striking separation and route repair) |
+| Formation destinations after paid obstruction | `node --test scripts/pathing-replay.test.mjs`; `node scripts/pathing-native-scenario.mjs dynamic-goal` (both-seat reservation, opponent goal independence, native arrival) |
+| Bounded choke baseline / deterministic replay | `PATHING_BASELINE_RECORD=/tmp/pathing.json node scripts/pathing-baseline.mjs all 2` (seven fixed-tick cases; [source evidence and limits](qa-pathing-goal-repair-2026-10-03.md)) |
 | Default map geometry | `node scripts/forked-vale-layout.mjs` |
 | Fortified Crossing foundation | `node scripts/fortified-crossing-layout.mjs` and `node scripts/fortified-crossing-economy.mjs`; [evidence and scale runner](qa-custom-skirmish.md) |
 | Fortified late-arrival construction clearance | `node --test scripts/fortified-site-clearance.test.mjs` and `node scripts/fortified-construction-clearance-scenario.mjs 2000`; [diagnosis](qa-fortified-clearance-2026-10-03.md) |
+| Selected construction workers | `node --test scripts/construction-selection.test.mjs` and `node scripts/construction-selection-scenario.mjs`; [reproduction and Mac check](qa-construction-selection-2026-10-03.md) |
 | Larger map geometry | `node scripts/frontier-160-layout.mjs` |
 | Highland Grove definition | `node scripts/generate-highland-grove.mjs --check` |
 | Complete Forked Vale scenario, each winner | `node scripts/forked-vale-scenario.mjs 0` and `node scripts/forked-vale-scenario.mjs 1` |
@@ -108,6 +111,7 @@ Run from the repository root:
 | Route repair after construction | `node scripts/live-attack-move-repair-scenario.mjs` |
 | Research and rewards | `node scripts/research-scenario.mjs` |
 | [Food-only Mill evidence](qa-mill-food-dropoff-2026-10-03.md): contract/menu, paid construction, deposits, ownership and lifecycle recovery | `node --test scripts/mill-contract.test.mjs scripts/roster-building-ui.test.mjs` and `node scripts/mill-scenario.mjs` |
+| [Simulated depot travel and paid economy comparisons](qa-mill-depot-economy-2026-10-03.md) | `node --test scripts/depot-economy-analysis.test.mjs scripts/depot-source-snapshot.test.mjs`; `node scripts/depot-economy-scenario.mjs --smoke`; full matrix: `node scripts/depot-economy-scenario.mjs --output=NEW_DIRECTORY` |
 | Paid mature settlement, all current roles, restart and host reset | `node scripts/mature-settlement-scenario.mjs` and `--reverse-seats`; [inspection checkpoint and scope](qa-mature-settlement-2026-10-02.md) |
 | Map persistence / timed events | `node scripts/map-persistence-scenario.mjs` / `node scripts/timed-event-scenario.mjs` |
 | Deadline victory | `node scripts/timed-victory-scenario.mjs` |
@@ -128,6 +132,8 @@ Run from the repository root:
 | Contested seeded PvE match | `node scripts/pve-contested-match-scenario.mjs 300 20260925 4294967295` |
 | PvE live construction / reinforcements (legacy and regional maps) | `node scripts/pve-production-runtime-scenario.mjs forked-vale` and `woodland-expanse`; also `bellweather-millrace` and `underbough-rootways` |
 | Compact HUD | `node --test scripts/hud-layout.test.mjs scripts/selection-context.test.mjs scripts/objective-summary.test.mjs` |
+| Tactical-map movement and Space selection centering | `node --test scripts/minimap-orders.test.mjs scripts/selection-center-shortcut.test.mjs`; [native Mac recipe and evidence](qa-minimap-orders-2026-10-03.md) |
+| Native two-seat minimap input, camera preservation, responsive size and DPR | `node scripts/minimap-orders-browser.mjs --output=NEW_DIRECTORY` (installed Chrome); camera observation regression: `node --test scripts/minimap-browser-probe.test.mjs` |
 | Audio policy | `node scripts/audio-policy-scenario.mjs` |
 
 Three Crowns also has both-seat scenarios: `node scripts/three-crowns-scenario.mjs 0`
@@ -273,6 +279,12 @@ comparing results. The [dated baseline](performance-reliability-baseline-2026-09
 includes reproduction commands and known limitations.
 
 ## Report the result
+
+Main menu regressions: `node --test scripts/game-entry.test.mjs scripts/game-navigation.test.mjs`
+and `node scripts/game-menu-scenario.mjs` check the [entry contract](game-entry.md),
+fresh/stale profiles, explicit session validation, room isolation, both-seat
+authority, navigation and packaged lazy client imports. The [dated evidence and
+Mac recipe](qa-game-entry-2026-10-03.md) separates local proof from native staging QA.
 
 Pregame regressions: `node --test scripts/room-pregame.test.mjs scripts/room-lobby-ui.test.mjs scripts/room-launch-options.test.mjs`
 and `node scripts/room-pregame-scenario.mjs` cover the [lobby contract](room-lobby.md),

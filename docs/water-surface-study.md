@@ -1,10 +1,11 @@
-# Water surface study
+# Water surface and fish cues
 
 [Renderer contract](renderer-state-contract.md) · [Shore fishing](shore-fishing-foundation.md) · [Runtime audit](art-runtime-audit-2026-10-03.md)
 
 3 October 2026; audited main `d34c1a1`. The user finds current water visually
-uninteresting and wants depth, motion and fish activity. This bounded opt-in
-study changes presentation while unit/pathfinding work remains the priority.
+uninteresting and wants depth, motion and fish activity. The initial opt-in
+study became the default after Mac shader/appearance review and the user's
+first-pass acceptance. Unit/pathfinding work remains the priority.
 
 ## Existing renderer
 
@@ -43,7 +44,7 @@ copy tutorial shader code/assets or simulate currents. The suggested Alexander
 Ameye page could not be accessed during this audit; no findings are attributed
 to it.
 
-## Preview and opt-in match surface
+## Match surface and comparison fixture
 
 Run the ordinary local server and open `/water-study.html`. It compares the
 current water with the study on identical inlet/island geometry, with controls
@@ -51,11 +52,13 @@ for logical time, animation, reduced motion, simple quality, fish-site visibilit
 water-cell visibility and depletion. The gold bank ring and the water-school
 position are separate. This is an isolated visual fixture, not a running match.
 
-For a match, append `?waterStudy=1` to the existing URL (use `&` when it already
-has parameters). `waterStudyTime=12` fixes the cosmetic frame; `waterStudyQuality=low`
-uses the original static material and allocates no field texture or ripple mesh.
-Without opt-in, the existing material remains active. Default adoption and
-creative acceptance are separate outcomes.
+Ordinary match URLs use the accepted surface and live fish cues by default;
+the temporary `waterStudy` permission toggle is retired. `waterQuality=low`
+selects the original static material and allocates no field texture or ripple
+mesh/binding. System reduced motion freezes the surface and suppresses fish
+ripples. These are accessibility/quality controls. `waterTime=12` fixes a cosmetic
+frame for repeatable captures. Existing `waterStudyQuality` and `waterStudyTime`
+links remain compatible; the shorter names take precedence when both are supplied.
 
 The shader reuses the original contour buffers. A two-pass approximate distance
 field needs one RGBA texel per map cell, one texture sample per surface fragment,
@@ -68,7 +71,7 @@ measured frame-time saving.
 Surface timing is a pure function of supplied seconds, the map seed and optional
 fixed time. The match's cosmetic driver supplies monotonic local seconds; it is
 not synchronized simulation time. Reduced motion uses time zero and suppresses
-fish ripples. System preference changes update the opt-in material and the
+fish ripples. System preference changes update the material and the
 listener is removed on material disposal. Ground picking keeps its existing
 terrain mesh; study water and ripple meshes do not raycast.
 Both study materials preserve the existing scene-distance fog with Three's
@@ -84,7 +87,7 @@ starting stock cannot create activity. Missing bank/water visibility, depletion,
 invalid mixed wildlife identity or a raised/blocked approach removes the cue.
 Stable resource IDs determine phase, independent of snapshot array order.
 
-The opt-in match now binds each accepted full server state packet through
+The match binds each accepted full server state packet through
 `createWaterStudyFishBinding`. Wire resource rows supply ID/variant/stock;
 the current map supplies land positions. The shared `shoreFishSitePositions`
 contract from [PR #49](https://github.com/lbeezr/thousand-unit-skirmish/pull/49)
@@ -104,19 +107,19 @@ server snapshot with `visibility: null` qualifies without cell visibility.
 Disconnect/map rebuild clears instances before fresh recovery/rematch state.
 Existing bank markers, Sheep rendering, economy and resource orders remain shared.
 
-This remains behind `waterStudy=1`, with the same reduced-motion, low-quality,
+Default integration retains the same reduced-motion, low-quality,
 32-instance and one-cell-envelope limits. The restrained existing surface ring
 signals an active food site; its count does not quantify stock. The art lane's
 reported 1.8–2.6-pixel strategic fish silhouette length motivates evaluating the
 ring alongside future silhouettes. That observation is attributed to the art
 lane; this cloud adapter work does not establish pixel readability. No palette,
-contrast, amplitude or shader appearance was redesigned while Mac QA reviews
-the study. Fish silhouettes and boats remain art work.
+contrast, amplitude or shader appearance was redesigned for default integration.
+Fish silhouettes and boats remain art work.
 
 ## Verification and limits
 
 `node --test scripts/water-surface-study.test.mjs` checks field/geometry integrity,
-opt-in/quality/time behavior, non-picking surfaces, live identity/stock, both fog
+default/quality/time behavior, non-picking surfaces, live identity/stock, both fog
 inputs, separate bank/water positions, depletion clearing and the instance limit.
 The existing water scenarios cover 511 local footprints, 189,440 interior samples
 and island topology. Shore-fish and neutral-wildlife regressions also pass.
@@ -131,16 +134,21 @@ state delivery. `scripts/shore-fishing-authoring-scenario.mjs` checks both seats
 actual filtered wire packets during gather, depletion, checkpoint recovery and
 rematch, alongside the existing 120-food/200-wood conservation proof.
 
-For native match review, select **Lab · SHORE FISHING** with `waterStudy=1` and
-`waterStudyTime=12`. Reveal a bank from land, gather its stock, then compare
+For native match review, select **Lab · SHORE FISHING** with an ordinary URL or
+`waterTime=12` for a fixed frame. Reveal a bank from land, gather its stock, then compare
 active/depleted and bank/water fog states at ordinary and strategic zoom. Also
-check reduced motion and `waterStudyQuality=low`. The standalone comparison
-recipe remains `/water-study.html`, 1280×720/DPR 1, Study, time 12 then 16,
+check reduced motion and `waterQuality=low`. The standalone comparison
+recipe remains `/water-study.html`, 1280×720/DPR 1, Standard, time 12 then 16,
 animation off, both visibility toggles on, depletion off; then toggle each
-visibility/depletion/reduced-motion case. Default adoption awaits visual review.
+visibility/depletion/reduced-motion case. The fixture remains a regression tool.
 
 Normal Chromium preflight failed sandbox/storage startup in this cloud workspace.
-No screenshot, GPU shader compilation, appearance acceptance or rendered
-performance measurement is claimed. Inspect the preview in a supported browser
-before selecting its palette, amplitude or default use. No browser security
-changes, asset generation or paid provider jobs were used.
+The [Mac QA record](qa-water-surface-native-2026-10-03.md) subsequently verified
+compiled/linked surface and ripple programs, comparison controls and an actual
+match pond at `b96557f`; the user accepted the visual direction as a first pass.
+Those shader bodies are unchanged. This cloud lane read the QA provenance,
+but Library returned extracted text for the PNGs, so no independent cloud pixel
+inspection is claimed. The later live fish binding has current-packet and real
+two-seat server proofs; its ordinary/strategic native cue recognition remains
+an incremental visual check. The Mac draw-rate smoke is not an overhead benchmark.
+No browser security changes, asset generation or paid provider jobs were used.

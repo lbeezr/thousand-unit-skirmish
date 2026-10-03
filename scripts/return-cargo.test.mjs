@@ -23,6 +23,40 @@ function worker(team, overrides = {}) {
     holdingPosition: true, persistentOrder: { type: 'patrol' }, attackMove: true,
     ...overrides };
 }
+
+for (const team of [0, 1]) test(`seat ${team} snapshots keep every positive cargo load actionable`, () => {
+  for (const cargoType of ['food', 'wood']) {
+    for (const [cargo, expected] of [[0, 0], [Number.MIN_VALUE, Number.MIN_VALUE],
+      [0.000001, 0.000001], [0.004, 0.004], [0.004999, 0.004999], [0.005, 0.01],
+      [0.5, 0.5], [7.253, 7.25], [10, 10]]) {
+      const unit = worker(team, { cargo, cargoType: cargo ? cargoType : null });
+      const authority = vm.createContext({ units: [unit], mapDefinition: { fogOfWar: true },
+        workerTaskStatus: () => 'idle', workerAudioExecution: () => null,
+        workerGatherHeading: () => null, workerFishingPresentation: () => null,
+        resourceNodeStates: new Map(), cellVisibleToTeam: () => false, worldToCell: () => 0 });
+      vm.runInContext(fn(server, 'snapshotUnits'), authority);
+      const own = JSON.parse(JSON.stringify(authority.snapshotUnits(team)))[0];
+      assert.equal(own[6], expected);
+      assert.equal(own[7], cargo ? cargoType : null);
+      assert.equal(authority.snapshotUnits(1 - team).length, 0, 'hidden foreign cargo remains undisclosed');
+      const sent = [], toasts = [];
+      const clientContext = vm.createContext({ localTeam: team, matchWinner: -1,
+        units: [{ ...unit, cargo: own[6], cargoType: own[7] }], selectedIds: () => [0],
+        sendTrackedOrder: command => { sent.push(JSON.parse(JSON.stringify(command))); return true; },
+        showToast: message => toasts.push(message), setTapOrderArmed() {}, setAttackMoveMode() {} });
+      const start = client.indexOf('function issueReturnCargo(');
+      const end = client.indexOf("for (const button of document.querySelectorAll('[data-return-cargo]'))", start);
+      vm.runInContext(client.slice(start, end), clientContext);
+      clientContext.issueReturnCargo();
+      if (cargo > 0) {
+        assert.deepEqual(sent, [{ type: 'returnCargo', ids: [0] }]);
+        assert.deepEqual(toasts, []);
+      } else {
+        assert.deepEqual(sent, []); assert.deepEqual(toasts, ['SELECT YOUR CARRYING WORKERS']);
+      }
+    }
+  }
+});
 function authority(team, overrides = {}) {
   const unit = worker(team, overrides);
   const buildings = [

@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { selectionContext } from '../src/selection-context.mjs';
+import { updateSelectionPortrait, WORKER_PORTRAITS } from '../src/selection-portrait.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { researchAction, researchOptions } from '../src/research-actions.mjs';
 import { setHudActionAvailability, isHudActionUnavailable } from '../src/hud-layout.mjs';
@@ -35,7 +36,9 @@ function fixture(team = 0) {
   w.ui = {};
   for (const [, name, selector] of source.matchAll(/^\s*(\w+): document\.querySelector\('([^']+)'\)/gm)) w.ui[name] = d.querySelector(selector);
   Object.assign(w, {
-    selectionContext, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
+    selectionContext, updateSelectionPortrait, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
+    castPreview: true, humanRosterPreview: true, roomPageUrl: new URL('http://localhost/'),
+    unitSpriteRuntime: { roleForUnit: unit => unit.team === 0 ? 'human' : 'boughward-worker' },
     researchAction, researchOptions, setHudActionAvailability, isHudActionUnavailable,
     formatResourceStock, formatResourceRequirement,
     livingIdleWorkerIds, livingUnitIdsOfKinds, localTeam: team, matchWinner: -1,
@@ -104,6 +107,156 @@ function fixture(team = 0) {
     escape() { d.activeElement.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true, cancelable: true })); },
   };
 }
+
+for (const team of [0, 1]) test(`seat ${team}: single Worker portrait opens dismissible notes and keeps live health and focus`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const own = team * 2, role = team === 0 ? 'human' : 'boughward-worker';
+  const portrait = f.bar.querySelector('[data-selection-portrait]'), image = portrait.querySelector('img');
+  const health = f.bar.querySelector('[data-worker-health]'), notes = f.d.querySelector('#selected-worker-notes');
+  assert.equal(portrait.hidden, true);
+  f.select([own]);
+  assert.equal(portrait.hidden, false);
+  assert.equal(image.getAttribute('src'), WORKER_PORTRAITS[role].asset);
+  assert.equal(image.alt, '');
+  assert.match(portrait.getAttribute('aria-label'), new RegExp(WORKER_PORTRAITS[role].appearanceFamily));
+  assert.equal(health.textContent, 'Worker · 100 / 100 HP');
+  assert.equal(portrait.dataset.codexEntry, 'unit.worker');
+  f.click(portrait);
+  assert.equal(f.w.commandDock.hidden, false);
+  assert.equal(f.w.commandDock.dataset.activePanel, 'selection');
+  assert.equal(notes.hidden, false);
+  assert.match(notes.textContent, /Gathers food and wood\. Builds and repairs structures\./);
+  f.escape();
+  assert.equal(f.w.commandDock.hidden, true);
+  assert.equal(f.d.activeElement, portrait);
+  assert.deepEqual([...f.w.selected], [own]);
+  f.w.units[own].hp = 37; f.w.updateSelectionUI();
+  assert.equal(health.textContent, 'Worker · 37 / 100 HP');
+  assert.equal(portrait.querySelector('img'), image);
+  assert.equal(f.d.activeElement, portrait);
+});
+
+test('Worker identity is hidden for groups, unsupported buildings, enemy, dead or spectator selections', t => {
+  const f = fixture(); t.after(() => f.dom.window.close());
+  const portrait = f.bar.querySelector('[data-selection-portrait]'), notes = f.d.querySelector('#selected-worker-notes');
+  f.w.units[4] = { id: 4, team: 0, kind: 'worker', hp: 100 };
+  for (const ids of [[0, 4], [0, 1], [1], [2], [99], []]) {
+    f.select([0]); f.select(ids);
+    assert.equal(portrait.hidden, true, `selection ${ids}`);
+    assert.equal(notes.hidden, true);
+    if (ids.length === 2) assert.match(f.bar.querySelector('[data-context-summary]').textContent, /2 selected/);
+  }
+  f.select([0]);
+  f.select([], { id: 8, team: 0, type: 'storehouse', complete: true, hp: 1200, productionQueue: [] });
+  assert.equal(portrait.hidden, true); assert.equal(notes.hidden, true);
+  f.select([0]); f.w.units[0].hp = 0; f.w.updateSelectionUI();
+  assert.equal(portrait.hidden, true);
+  f.w.units[0].hp = 100; f.select([0]); f.w.localTeam = null; f.w.updateSelectionUI();
+  assert.equal(portrait.hidden, true);
+});
+
+test('portrait follows the effective appearance and hides for unrepresented legacy/model previews', t => {
+  const f = fixture(); t.after(() => f.dom.window.close());
+  const portrait = f.bar.querySelector('[data-selection-portrait]');
+  f.w.unitSpriteRuntime.roleForUnit = () => 'boughward-worker'; f.select([0]);
+  assert.equal(portrait.querySelector('img').getAttribute('src'), WORKER_PORTRAITS['boughward-worker'].asset);
+  f.w.unitSpriteRuntime.roleForUnit = () => 'worker'; f.w.updateContextualCommands();
+  assert.equal(portrait.hidden, true);
+  f.w.unitSpriteRuntime.roleForUnit = () => 'human'; f.w.humanRosterPreview = false;
+  f.w.updateContextualCommands(); assert.equal(portrait.hidden, true);
+  f.w.roomPageUrl.searchParams.set('humanVaeloraPreview', '1');
+  f.w.updateContextualCommands(); assert.equal(portrait.hidden, false);
+  f.w.castPreview = false; f.w.updateContextualCommands(); assert.equal(portrait.hidden, true);
+});
+
+test('clearing a Worker while notes are open hides stale identity and restores visible focus on dismissal', t => {
+  const f = fixture(); t.after(() => f.dom.window.close());
+  const portrait = f.bar.querySelector('[data-selection-portrait]');
+  f.select([0]); f.click(portrait); f.select([]);
+  assert.equal(f.d.querySelector('#selected-worker-notes').hidden, true);
+  f.escape();
+  assert.equal(f.w.commandDock.hidden, true);
+  assert.equal(f.d.activeElement, f.w.dockToggle);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: Barracks portrait matches lifecycle/team art and opens existing structure details`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const button = f.bar.querySelector('[data-selection-portrait]'), image = button.querySelector('img');
+  const building = { id: 8, team, type: 'barracks', complete: false, hp: 1800, maxHp: 1800, progress: 0, productionQueue: [] };
+  const family = team === 0 ? 'azure' : 'ember';
+  for (const [changes, state] of [
+    [{ progress: 0.1999, complete: false }, 'foundation'],
+    [{ progress: 0.2 }, 'frame'],
+    [{ progress: 0.8999 }, 'frame'],
+    [{ progress: 0.9 }, 'complete'],
+    [{ complete: true, hp: 1188 }, 'complete'],
+    [{ hp: 1187 }, 'damaged'],
+    [{ hp: 594 }, 'damaged'],
+    [{ hp: 593 }, 'critical'],
+  ]) {
+    Object.assign(building, changes); f.select([], building);
+    assert.equal(button.hidden, false);
+    assert.equal(image.getAttribute('src'), `/assets/buildings/barracks-sprite-test-v1/runtime/barracks-${state}-${family}.webp`);
+    assert.equal(button.querySelector('img'), image);
+    assert.equal(button.getAttribute('aria-label'), 'Barracks — open structure details');
+    assert.equal(button.dataset.codexEntry, 'building.barracks');
+    assert.equal(f.bar.querySelector('[data-worker-health]').hidden, true);
+    assert.equal(f.d.querySelector('#selected-worker-notes').hidden, true);
+  }
+  f.click(button);
+  assert.equal(f.w.commandDock.dataset.activePanel, 'selection');
+  assert.equal(f.d.querySelector('#building-selection-card').hidden, false);
+  assert.match(f.d.querySelector('#selected-building-health').textContent, /593 \/ 1,800 HP/);
+  f.escape(); assert.equal(f.d.activeElement, button); assert.equal(f.w.selectedBuildingId, building.id);
+  building.hp = 1000; f.select([], building);
+  assert.equal(f.d.activeElement, button); assert.match(image.src, /damaged/);
+  building.hp = 0; f.select([], building); assert.equal(button.hidden, true);
+  assert.equal(f.d.activeElement.closest('[hidden]'), null);
+});
+
+test('Worker → Barracks → unsupported building → group keeps only current identity and recovers visible focus', t => {
+  const f = fixture(); t.after(() => f.dom.window.close());
+  const button = f.bar.querySelector('[data-selection-portrait]');
+  f.select([0]); f.click(button);
+  f.select([], { id: 8, team: 0, type: 'barracks', complete: true, hp: 1800, productionQueue: [] });
+  assert.equal(f.d.querySelector('#selected-worker-notes').hidden, true);
+  f.escape(); assert.equal(f.d.activeElement, button);
+  f.select([], { id: 9, team: 0, type: 'town-center', complete: true, hp: 2400, productionQueue: [] });
+  assert.equal(button.hidden, true); assert.equal(f.d.activeElement.closest('[hidden]'), null);
+  f.select([0, 1]); assert.equal(button.hidden, true);
+  assert.match(f.bar.querySelector('[data-context-summary]').textContent, /2 selected/);
+  f.select([], { id: 8, team: 1, type: 'barracks', complete: true, hp: 1800, productionQueue: [] });
+  assert.equal(button.hidden, true);
+  f.w.localTeam = null;
+  f.select([], { id: 8, team: 0, type: 'barracks', complete: true, hp: 1800, productionQueue: [] });
+  assert.equal(button.hidden, true);
+});
+
+test('decorative command icons preserve text, hotkeys, target states and the existing proxy action', t => {
+  const f = fixture(); t.after(() => f.dom.window.close());
+  f.select([0]);
+  const target = f.bar.querySelector('[data-context-proxy="order-target-toggle"]');
+  const image = target.querySelector('img');
+  assert.equal(target.textContent, 'Gather / move');
+  let activations = 0;
+  f.d.querySelector('#order-target-toggle').addEventListener('click', () => { activations++; f.w.tapOrderArmed = !f.w.tapOrderArmed; });
+  f.click(target);
+  assert.equal(activations, 1); assert.equal(target.textContent, 'Cancel target');
+  assert.equal(target.querySelector('img'), image);
+  f.click(target); assert.equal(activations, 2); assert.equal(target.textContent, 'Gather / move');
+  f.select([], { id: 8, team: 0, type: 'barracks', complete: true, hp: 1800, productionQueue: [] });
+  assert.equal(target.textContent, 'Set rally'); assert.equal(target.querySelector('img'), image);
+  f.select([1]); assert.equal(target.textContent, 'Target battlefield');
+  for (const [selector, asset, label] of [
+    ['[data-context-proxy="order-target-toggle"]', 'move', 'Target battlefield'],
+    ['[data-context-proxy="attack-move-toggle"]', 'attack', 'Attack move · M'],
+    ['[data-context-build]', 'build', 'Build'],
+  ]) {
+    const button = f.bar.querySelector(selector), icon = button.querySelector('img');
+    assert.equal(icon.alt, ''); assert.equal(icon.getAttribute('src'), `/assets/ui/icons/${asset}.svg`);
+    assert.equal(button.textContent, label); assert.ok(button.title);
+  }
+});
 
 for (const team of [0, 1]) test(`seat ${team}: Return cargo appears for carrying workers and sends their order`, t => {
   const f = fixture(team); t.after(() => f.dom.window.close());

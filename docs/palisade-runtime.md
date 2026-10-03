@@ -107,3 +107,11 @@ are unclaimed. [Drag UI checks and the native Mac recipe](qa-palisade-drag-ui-20
 cover the next client slice; cloud native-browser startup is unavailable, so
 DOM checks do not establish rendered/native usability. Hosted large-match
 capacity is not established by these checks.
+
+## Manual gate extension
+
+The [one-cell gate foundation](palisade-gates.md) adds explicit owner operation
+with shared open/closed traversal, reserved placement occupancy and recovery.
+Friendly gate cells join wall topology and are reused without payment. The
+original wall transaction and persisted Worker sequence still construct only
+new wall rows; gate construction uses ordinary single-building controls.

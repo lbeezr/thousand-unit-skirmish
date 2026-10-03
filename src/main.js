@@ -1,3 +1,4 @@
+import { createGateTimbers, updateGateTimbers } from './palisade-gate-visual.mjs';
 import { findInvalidResourceVariant, isShoreFish } from './shore-fishing.mjs';
 import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from './shore-fishing-placeholder.mjs';
 import { createWaterStudyFishBinding } from './water-study-fish-binding.mjs';
@@ -22,7 +23,9 @@ import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable } from './hud-layout.mjs';
 import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
+import { updateSelectionPortrait } from './selection-portrait.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
+import { roomEntryUrl } from './game-entry-session.mjs';
 import * as THREE from 'three';
 import { attachBuildingSprite } from './building-sprites.mjs';
 import { frontierBuildingPreviewUrl } from './frontier-building-preview.mjs';
@@ -216,6 +219,8 @@ const unitSpritePreviewVersions = castPreview
 const unitSpritePreviewRoleSet = new Set(castPreview ? (humanRosterPreview ? ['worker', 'infantry', 'spearman', 'archer', 'scout', 'rider', 'siege-engine'] : ['worker']) : unitSpritePreviewRoles);
 const ROOM_ID = roomPageUrl.searchParams.get('room');
 const HAS_ROOM_PARAMETER = roomPageUrl.searchParams.has('room');
+const RESUME_REQUESTED = roomPageUrl.searchParams.get('resume') === '1';
+let entrySessionConfirmed = false;
 const ROOM_ID_PATTERN = /^[A-Za-z0-9_-]{32}$/;
 const ui = {
   total: document.querySelector('#unit-total'),
@@ -458,7 +463,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setClearColor(0x859175, 1);
 viewport.prepend(renderer.domElement);
-renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Use the arrow keys to move the camera, middle drag or Space + drag to pan, scroll to zoom toward the pointer, or push the mouse against any screen edge to scroll when edge scroll is enabled. Use Center selection, Home base, or Fit map to navigate. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Press S to stop selected units or H to hold position and attack within range without pursuing. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. Choose Palisade to drag a wall line; Shift changes its bend. While placing a wall, arrow keys move the grid endpoint, Enter starts then places the line, and Escape cancels. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
+renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Use the arrow keys to move the camera, tap Space to center your selection, middle drag or Space + drag to pan, scroll to zoom toward the pointer, or push the mouse against any screen edge to scroll when edge scroll is enabled. Use Center selection, Home base, or Fit map to navigate. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Press S to stop selected units or H to hold position and attack within range without pursuing. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. Choose Palisade to drag a wall line; Shift changes its bend. While placing a wall, arrow keys move the grid endpoint, Enter starts then places the line, and Escape cancels. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
 renderer.domElement.dataset.cursorMode = 'select';
 renderer.domElement.tabIndex = 0;
 
@@ -676,6 +681,7 @@ let orderStatusTimeout = null;
 let reconnectTimer = null;
 let reconnectDelayMs = 500;
 let pageLeaving = false;
+let connectionAttempt = 0;
 const SESSION_STORAGE_KEY = 'thousand-unit-skirmish-session';
 const ROOM_SESSION_STORAGE_KEY = `${SESSION_STORAGE_KEY}:${ROOM_ID || 'default'}`;
 const ROOM_INSTANCE_STORAGE_KEY = `${SESSION_STORAGE_KEY}:instance:${location.host}:${ROOM_ID || 'default'}`;
@@ -1332,12 +1338,15 @@ function createGameplayBuildingVisual(building) {
 function createPalisadeVisual(building) {
   const group = new THREE.Group(), timber = new THREE.MeshBasicMaterial({ color: 0x705443 });
   const walls = new THREE.Group(); group.add(walls);
-  const post = new THREE.Mesh(new THREE.BoxGeometry(0.22, 1.4, 0.22), timber);
-  post.position.y = 0.7; walls.add(post);
-  const arms = {};
-  for (const [direction, dx, dz] of [['north', 0, -1], ['east', 1, 0], ['south', 0, 1], ['west', -1, 0]]) {
-    const arm = new THREE.Mesh(new THREE.BoxGeometry(dx ? 0.5 : 0.12, 0.65, dz ? 0.5 : 0.12), timber);
-    arm.position.set(dx * 0.25, 0.65, dz * 0.25); walls.add(arm); arms[direction] = arm;
+  const arms = {}, gate = building.type === 'palisade-gate' ? createGateTimbers(THREE, timber) : null;
+  if (gate) walls.add(gate.group);
+  else {
+    const post = new THREE.Mesh(new THREE.BoxGeometry(0.22, 1.4, 0.22), timber);
+    post.position.y = 0.7; walls.add(post);
+    for (const [direction, dx, dz] of [['north', 0, -1], ['east', 1, 0], ['south', 0, 1], ['west', -1, 0]]) {
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(dx ? 0.5 : 0.12, 0.65, dz ? 0.5 : 0.12), timber);
+      arm.position.set(dx * 0.25, 0.65, dz * 0.25); walls.add(arm); arms[direction] = arm;
+    }
   }
   const teamColor = TEAM_HEX[building.team];
   const outline = new THREE.Mesh(new THREE.RingGeometry(0.65, 0.7, 4),
@@ -1345,7 +1354,7 @@ function createPalisadeVisual(building) {
   outline.rotation.x = -Math.PI / 2; outline.rotation.z = Math.PI / 4; outline.position.y = 0.04; group.add(outline);
   const healthIndicator = createBuildingHealthIndicator(); group.add(healthIndicator.group);
   const combatFeedback = createBuildingCombatFeedback(); group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
-  const visual = { group, walls, arms, outline, teamColor, healthIndicator, combatFeedback };
+  const visual = { group, walls, arms, gate, outline, teamColor, healthIndicator, combatFeedback };
   scene.add(group); updatePalisadeVisual(visual, building); return visual;
 }
 
@@ -1353,6 +1362,7 @@ function updatePalisadeVisual(visual, building) {
   visual.group.position.set(building.x, groundHeight(building.x, building.z), building.z);
   visual.walls.scale.y = Math.max(0.08, THREE.MathUtils.clamp(Number(building.progress) || 0, 0, 1));
   for (const [direction, arm] of Object.entries(visual.arms)) arm.visible = building.connections?.includes(direction) === true;
+  if (visual.gate) updateGateTimbers(visual.gate, building);
   updateBuildingHealthIndicator(visual, building);
 }
 
@@ -2284,7 +2294,7 @@ function buildMap(definition) {
   addMapObject(base);
   for (const surface of createGroundSurfaces(definition)) {
     if(surface.userData.terrainSurface) terrainSurface=surface;
-    if (surface.userData.waterStudy) waterStudyFishBinding = createWaterStudyFishBinding(definition, surface);
+    if (surface.userData.waterStudy?.quality === 'study') waterStudyFishBinding = createWaterStudyFishBinding(definition, surface);
     addMapObject(surface);
   }
   buildConstructionGroundBatches();
@@ -2851,16 +2861,31 @@ function drawMinimap(now = performance.now(), force = false) {
   }
 }
 
-function focusCameraFromMinimap(event) {
-  mapFitActive = false;
+function worldFromMinimap(event) {
   const rect = minimapCanvas.getBoundingClientRect();
-  const mapRect = minimapMapRect(rect.width, rect.height);
-  const pixelX = THREE.MathUtils.clamp(event.clientX - rect.left, 0, rect.width);
-  const pixelY = THREE.MathUtils.clamp(event.clientY - rect.top, 0, rect.height);
-  cameraTarget.x = (pixelX - mapRect.left) / mapRect.scale - MAP_HALF_X;
-  cameraTarget.z = (pixelY - mapRect.top) / mapRect.scale - MAP_HALF_Z;
-  cameraTarget.x = THREE.MathUtils.clamp(cameraTarget.x, -MAP_HALF_X, MAP_HALF_X);
-  cameraTarget.z = THREE.MathUtils.clamp(cameraTarget.z, -MAP_HALF_Z, MAP_HALF_Z);
+  if (!mapDefinition || rect.width <= 0 || rect.height <= 0) return null;
+  const style = getComputedStyle(minimapCanvas);
+  const inset = (side) => (parseFloat(style[`border${side}Width`]) || 0) + (parseFloat(style[`padding${side}`]) || 0);
+  const left = inset('Left'), top = inset('Top');
+  const width = rect.width - left - inset('Right');
+  const height = rect.height - top - inset('Bottom');
+  if (width <= 0 || height <= 0) return null;
+  // Invert the bitmap's content box, including CSS scaling, borders and map letterboxing.
+  const mapRect = minimapMapRect(minimapCanvas.width, minimapCanvas.height);
+  const pixelX = (event.clientX - rect.left - left) * minimapCanvas.width / width;
+  const pixelY = (event.clientY - rect.top - top) * minimapCanvas.height / height;
+  return {
+    x: THREE.MathUtils.clamp((pixelX - mapRect.left) / mapRect.scale - MAP_HALF_X, -MAP_HALF_X, MAP_HALF_X),
+    z: THREE.MathUtils.clamp((pixelY - mapRect.top) / mapRect.scale - MAP_HALF_Z, -MAP_HALF_Z, MAP_HALF_Z),
+  };
+}
+
+function focusCameraFromMinimap(event) {
+  const point = worldFromMinimap(event);
+  if (!point) return;
+  mapFitActive = false;
+  cameraTarget.x = point.x;
+  cameraTarget.z = point.z;
   setCamera();
   drawMinimap(performance.now(), true);
 }
@@ -3744,6 +3769,11 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   if (!bar) return;
   const building = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
   const context = selectionContext(units, selected, localTeam, building);
+  const portraitUnit = context.total === 1 && !building ? units[selectedIds()[0]] : null;
+  const portraitRole = portraitUnit && castPreview
+    && (humanRosterPreview || roomPageUrl.searchParams.get('humanVaeloraPreview') === '1')
+    ? unitSpriteRuntime.roleForUnit(portraitUnit) : null;
+  updateSelectionPortrait(document, context, portraitUnit, portraitRole);
   bar.dataset.context = context.kind;
   if (bar.hidden !== (context.kind === 'none')) bar.hidden = context.kind === 'none';
   if (quickAccess.hidden !== !bar.hidden) quickAccess.hidden = !bar.hidden;
@@ -3771,7 +3801,11 @@ function updateContextualCommands(priorFocus = document.activeElement) {
       : action === 'select-workers' ? context.kind !== 'mixed' : false;
     button.disabled = source.disabled || (action.startsWith('train-') && building && (!building.complete || building.productionBlocked));
     if (source.hasAttribute('aria-pressed')) button.setAttribute('aria-pressed', source.getAttribute('aria-pressed'));
-    if (action === 'order-target-toggle') button.textContent = tapOrderArmed ? 'Cancel target' : building ? 'Set rally' : context.kind === 'workers' ? 'Gather / move' : 'Target battlefield';
+    if (action === 'order-target-toggle') {
+      const label = tapOrderArmed ? 'Cancel target' : building ? 'Set rally' : context.kind === 'workers' ? 'Gather / move' : 'Target battlefield';
+      button.querySelector('[data-command-label]').textContent = label;
+      button.title = tapOrderArmed ? 'Cancel battlefield targeting' : building ? 'Choose a rally destination on the battlefield' : 'Choose a destination, resource or enemy on the battlefield';
+    }
     if (action.startsWith('train-')) {
       button.setAttribute('aria-describedby', 'context-action-reason');
       const reason = !building?.complete ? 'Finish construction' : building.productionBlocked ? 'Clear spawn area'
@@ -4681,6 +4715,7 @@ function updateBuildingLifecycleActions() {
   const choices = !building ? [] : [
     ...(!building.complete ? [{ type: 'cancelConstruction', label: 'Cancel construction · refund unfinished work' }] : []),
     ...(building.complete && getBuildingQueueLength(building) > 0 ? [{ type: 'cancelTraining', label: 'Cancel last queued unit' }] : []),
+    ...(building.complete && building.type === 'palisade-gate' ? [{ type: 'setGateOpen', label: building.gateOpen ? 'Close gate · blocks both teams' : 'Open gate · both teams may pass' }] : []),
     ...(active ? [{ type: 'cancelResearch', label: 'Cancel research · refund unfinished work' }] : []),
     ...(building.complete && building.hp < building.maxHp ? [{ type: 'repairBuilding', label: 'Repair with Workers · costs wood' }] : []),
   ];
@@ -4691,6 +4726,11 @@ function updateBuildingLifecycleActions() {
       const button = document.createElement('button'); button.type = 'button'; button.dataset.action = choice.type; button.textContent = choice.label;
       button.addEventListener('click', () => {
         const command = { type: choice.type, buildingId: building.id };
+        if (choice.type === 'setGateOpen') {
+          const current = latestBuildings.find(row => row.id === building.id && row.team === localTeam);
+          if (!current || !current.complete || current.type !== 'palisade-gate' || matchWinner >= 0) return;
+          command.open = !current.gateOpen;
+        }
         if (choice.type === 'repairBuilding') {
           command.ids = teamUnits[localTeam].filter((unit) => unit.hp > 0 && unit.kind === 'worker').map((unit) => unit.id);
         }
@@ -4700,8 +4740,12 @@ function updateBuildingLifecycleActions() {
       container.append(button);
     }
   }
-  for (const button of container.children) button.disabled = matchWinner >= 0
-    || (button.dataset.action === 'repairBuilding' && !teamUnits[localTeam].some((unit) => unit.hp > 0 && unit.kind === 'worker'));
+  for (const button of container.children) {
+    button.disabled = matchWinner >= 0
+      || (button.dataset.action === 'repairBuilding' && !teamUnits[localTeam].some(unit => unit.hp > 0 && unit.kind === 'worker'));
+    if (button.dataset.action === 'setGateOpen') button.textContent = building.gateOpen
+      ? 'Close gate · blocks both teams' : 'Open gate · both teams may pass';
+  }
   if (ui.cancelWorkerTraining) ui.cancelWorkerTraining.disabled = localTeam === null || matchWinner >= 0 || !(latestWorkerProduction[localTeam]?.queue > 0);
 }
 
@@ -4722,7 +4766,7 @@ function updateRosterBuildingOptions(container) {
   }
   for (const button of container.children) {
     const definition = BUILDING_DEFINITIONS[button.dataset.building];
-    const workers = localTeam === null ? [] : teamUnits[localTeam].filter((unit) => unit.kind === 'worker' && unit.hp > 0);
+    const workers = selectedWorkerIds();
     const missing = (definition.requires || []).filter((id) => !latestTeamResearch[localTeam]?.[TECHNOLOGY_DEFINITIONS[id].upgradeKey]);
     button.disabled = localTeam === null || matchWinner >= 0 || buildPlacementPending || !workers.length || missing.length > 0
       || (definition.id !== 'palisade-wall' && (latestFood[localTeam] < definition.cost.food || latestWood[localTeam] < definition.cost.wood));
@@ -4789,7 +4833,9 @@ function updateEconomyUI(state = {}, initial = false) {
     .filter((building) => building.team === localTeam);
   const ownRanges = ownBuildings.filter((building) => building.type === 'archery-range');
   const ownBarracks = ownBuildings.filter((building) => building.type === 'barracks');
-  const construction = ownBuildings.find((building) => building.complete !== true) || null;
+  const construction = constructionForSelectedWorkers()
+    || ownBuildings.find((building) => building.complete !== true) || null;
+  const selectedWorkerCount = selectedWorkerIds().length;
   const rangeConstruction = ownRanges.find((building) => building.complete !== true) || null;
   const barracksConstruction = ownBarracks.find((building) => building.complete !== true) || null;
   const trainableRange = localTeam === null ? null : findTrainableArcheryRange(localTeam);
@@ -4818,21 +4864,20 @@ function updateEconomyUI(state = {}, initial = false) {
   }
   if (ui.buildBarracks) {
     ui.buildBarracks.disabled = localTeam === null || matchWinner >= 0 || wood < BARRACKS_WOOD_COST
-      || ownedWorkers.length === 0 || buildPlacementPending;
+      || selectedWorkerCount === 0 || buildPlacementPending;
     ui.buildBarracks.classList.toggle('active', buildPlacementActive && buildPlacementType === 'barracks');
     ui.buildBarracks.setAttribute('aria-pressed', String(buildPlacementActive && buildPlacementType === 'barracks'));
     ui.buildBarracks.setAttribute('aria-label', `Build Barracks for ${formatResourceRequirement(BARRACKS_WOOD_COST)} wood${
-      ownedWorkers.length === 0 ? ', no living workers' : ''
+      selectedWorkerCount === 0 ? ', select living workers first' : `, ${selectedWorkerCount} selected workers`
     }`);
   }
   if (ui.buildRange) {
-    const selectedWorkerCount = ownedWorkers.length;
     ui.buildRange.disabled = localTeam === null || matchWinner >= 0 || wood < ARCHERY_RANGE_WOOD_COST
       || selectedWorkerCount === 0 || buildPlacementPending;
     ui.buildRange.classList.toggle('active', buildPlacementActive && buildPlacementType === 'archery-range');
     ui.buildRange.setAttribute('aria-pressed', String(buildPlacementActive && buildPlacementType === 'archery-range'));
     ui.buildRange.setAttribute('aria-label', `Build archery range for ${formatResourceRequirement(ARCHERY_RANGE_WOOD_COST)} wood${
-      selectedWorkerCount === 0 ? ', no living workers' : ''
+      selectedWorkerCount === 0 ? ', select living workers first' : `, ${selectedWorkerCount} selected workers`
     }`);
   }
   const workerProduction = localTeam === null ? null : latestWorkerProduction[localTeam];
@@ -4868,12 +4913,12 @@ function updateEconomyUI(state = {}, initial = false) {
   if (ui.resumeRange) {
     const progress = construction ? Math.round((Number(construction.progress) || 0) * 100) : 0;
     ui.resumeRange.hidden = !construction;
-    ui.resumeRange.disabled = localTeam === null || matchWinner >= 0 || ownedWorkers.length === 0;
+    ui.resumeRange.disabled = localTeam === null || matchWinner >= 0 || selectedWorkerCount === 0;
     ui.resumeRange.setAttribute('aria-label', construction
-      ? `Send workers to finish ${buildingLabel(construction.type).toLowerCase()} ${construction.id}, ${progress} percent complete`
+      ? `Send ${selectedWorkerCount} selected workers to finish ${buildingLabel(construction.type).toLowerCase()} ${construction.id}, ${progress} percent complete`
       : 'No unfinished friendly Barracks or archery range');
     if (ui.resumeConstructionLabel) ui.resumeConstructionLabel.textContent = construction
-      ? `Send workers to ${buildingLabel(construction.type).toLowerCase()}` : 'Send workers to construction';
+      ? `Send selected workers to ${buildingLabel(construction.type).toLowerCase()}` : 'Send selected workers to construction';
     if (ui.resumeRangeProgress) ui.resumeRangeProgress.textContent = construction ? `${progress}% · FOCUS` : '';
   }
   if (ui.buildingStatus) {
@@ -4958,7 +5003,7 @@ function updateEconomyUI(state = {}, initial = false) {
     ui.populationStatus.textContent = populationReadout.detail;
   }
   if (ui.buildHouse) {
-    ui.buildHouse.disabled = localTeam === null || matchWinner >= 0 || wood < BUILDING_DEFINITIONS.house.cost.wood || ownedWorkers.length === 0 || buildPlacementPending;
+    ui.buildHouse.disabled = localTeam === null || matchWinner >= 0 || wood < BUILDING_DEFINITIONS.house.cost.wood || selectedWorkerCount === 0 || buildPlacementPending;
     ui.buildHouse.classList.toggle('active', buildPlacementActive && buildPlacementType === 'house');
     ui.buildHouse.setAttribute('aria-pressed', String(buildPlacementActive && buildPlacementType === 'house'));
   }
@@ -7377,6 +7422,21 @@ function selectedIds() {
   return [...selected].filter((id) => units[id]?.hp > 0 && units[id]?.team === localTeam);
 }
 
+function selectedWorkerIds() {
+  return selectedIds().filter((id) => units[id]?.kind === 'worker');
+}
+
+function constructionForSelectedWorkers() {
+  const workers = selectedWorkerIds().map((id) => units[id]);
+  if (workers.length === 0) return null;
+  const x = workers.reduce((sum, unit) => sum + unit.serverX, 0) / workers.length;
+  const z = workers.reduce((sum, unit) => sum + unit.serverZ, 0) / workers.length;
+  return latestBuildings.filter((building) => building.team === localTeam
+    && Object.hasOwn(BUILDING_DEFINITIONS, building.type) && building.complete !== true)
+    .sort((a, b) => ((a.x - x) ** 2 + (a.z - z) ** 2)
+      - ((b.x - x) ** 2 + (b.z - z) ** 2) || a.id - b.id)[0] || null;
+}
+
 function issueStationaryOrder(type) {
   persistentTargetMode = null;
   if (localTeam === null || matchWinner >= 0) return;
@@ -7449,14 +7509,14 @@ function setTapOrderArmed(enabled, announce = true) {
     : 'TARGETING CANCELLED');
 }
 
-function issueMove(point, queueWaypoint = false) {
+function issueMove(point, queueWaypoint = false, moveOnly = false) {
   if (localTeam === null) { showToast('SPECTATORS CANNOT ISSUE COMMANDS'); return; }
   const ids = selectedIds();
   if (ids.length === 0) { showToast('SELECT YOUR UNITS BEFORE ISSUING AN ORDER'); return; }
   if (selectedWaterUnits() && (ids.length !== 1 || queueWaypoint)) { showToast('SELECT ONE SKIFF · MOVE AND STOP ONLY'); return; }
-  const attackMoveOrder = attackMoveMode;
-  if (persistentTargetMode === 'follow') { showToast('FOLLOW NEEDS A FRIENDLY UNIT TARGET'); return; }
-  const patrolOrder = persistentTargetMode === 'patrol';
+  const attackMoveOrder = !moveOnly && attackMoveMode;
+  if (!moveOnly && persistentTargetMode === 'follow') { showToast('FOLLOW NEEDS A FRIENDLY UNIT TARGET'); return; }
+  const patrolOrder = !moveOnly && persistentTargetMode === 'patrol';
   const type = patrolOrder ? 'patrol' : attackMoveOrder ? 'attackMove' : 'move';
   const formation = ['line', 'column'].includes(ui.formationSelect?.value)
     ? ui.formationSelect.value : 'box';
@@ -7469,8 +7529,8 @@ function issueMove(point, queueWaypoint = false) {
     moveMarker.material.opacity = 0.95;
     moveMarker.visible = true;
     moveMarkerAge = 0;
-    if (patrolOrder) { persistentTargetMode = null; updateCommandUI(); }
-    if (attackMoveOrder) setAttackMoveMode(false, false);
+    if (patrolOrder || moveOnly) { persistentTargetMode = null; updateCommandUI(); }
+    if (attackMoveOrder || moveOnly) setAttackMoveMode(false, false);
   }
 }
 
@@ -7829,19 +7889,13 @@ function beginBuildPlacement(type) {
   const label = buildingLabel(type);
   const woodCost = buildingWoodCost(type);
   const foodCost = BUILDING_DEFINITIONS[type]?.cost.food || 0;
-  const workers = teamUnits[localTeam].filter((unit) => unit.kind === 'worker' && unit.hp > 0);
-  if (workers.length === 0) { showToast(`NO LIVING WORKERS TO CONSTRUCT ${label}`); return; }
+  const workers = selectedWorkerIds();
+  if (workers.length === 0) { showToast(`SELECT WORKERS TO CONSTRUCT ${label}`); return; }
   if (type !== 'palisade-wall' && latestFood[localTeam] < foodCost) { showToast(`${label} NEEDS ${foodCost} FOOD`); return; }
   if (type !== 'palisade-wall' && latestWood[localTeam] < woodCost) {
     showToast(`${label} NEEDS ${formatResourceRequirement(woodCost)} WOOD`);
     return;
   }
-  selected.clear();
-  for (const worker of workers) selected.add(worker.id);
-  clearActiveControlGroup();
-  selectionDirty = true;
-  syncSelectionMesh();
-  updateSelectionUI();
   attackMoveMode = false;
   persistentTargetMode = null;
   updateCommandUI();
@@ -7874,7 +7928,7 @@ function submitBuildPlacement(clientX, clientY, wallPoints = null) {
     showToast(`${buildingLabel(buildPlacementType)} SITE BLOCKED · ${placement.blockedReason}`);
     return;
   }
-  const ids = selectedIds().filter((id) => units[id]?.kind === 'worker');
+  const ids = selectedWorkerIds();
   if (ids.length === 0) { showToast(`SELECT WORKERS TO CONSTRUCT ${buildingLabel(buildPlacementType)}`); return; }
   pendingBuildBaseline = new Set(latestBuildings.filter((building) => building.team === localTeam).map((building) => building.id));
   const command = wall ? { type: 'buildWall', ids, points: wallPoints,
@@ -7979,30 +8033,20 @@ function startSelectedAttackResearch() {
 
 function resumeConstruction() {
   if (localTeam === null || matchWinner >= 0) return;
-  const building = latestBuildings.find((row) => row.team === localTeam
-    && Object.hasOwn(BUILDING_DEFINITIONS, row.type) && row.complete !== true);
+  const ids = selectedWorkerIds();
+  if (ids.length === 0) { showToast('SELECT WORKERS TO RESUME CONSTRUCTION'); return; }
+  const building = constructionForSelectedWorkers();
   if (!building) {
-    showToast('NO UNFINISHED FRIENDLY BARRACKS OR ARCHERY RANGE');
-    return;
-  }
-  const workers = teamUnits[localTeam].filter((unit) => unit.kind === 'worker' && unit.hp > 0);
-  if (workers.length === 0) {
-    showToast('NO LIVING WORKERS TO RESUME CONSTRUCTION');
+    showToast('NO UNFINISHED FRIENDLY CONSTRUCTION');
     return;
   }
   if (buildPlacementActive) cancelBuildPlacement(false);
-  selected.clear();
-  for (const worker of workers) selected.add(worker.id);
-  clearActiveControlGroup();
-  selectionDirty = true;
-  syncSelectionMesh();
-  updateSelectionUI();
   setAttackMoveMode(false, false);
   cameraTarget.set(building.x, 0, building.z);
   setCamera();
   drawMinimap(performance.now(), true);
-  if (sendTrackedOrder({ type: 'build', buildingId: building.id, ids: workers.map((worker) => worker.id) },
-    'RESUME BUILD', workers.length, 'WORKERS')) {
+  if (sendTrackedOrder({ type: 'build', buildingId: building.id, ids },
+    'RESUME BUILD', ids.length, 'WORKERS')) {
     showToast(`WORKERS SENT TO FINISH ${buildingLabel(building.type)} · ${Math.round((Number(building.progress) || 0) * 100)}%`);
   }
 }
@@ -8013,6 +8057,7 @@ let lastCursorSample = 0;
 let drag = null;
 let pan = null;
 let spaceDown = false;
+let spaceCenterPending = false;
 let movedPointer = false;
 renderer.domElement.addEventListener('contextmenu', (event) => event.preventDefault());
 function updateEdgeScrollPointer(event) {
@@ -8085,6 +8130,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
     return;
   }
   if (event.button === 1 || (event.button === 0 && spaceDown)) {
+    spaceCenterPending = false;
     if (buildPlacementActive && buildPlacementType === 'palisade-wall') resetWallPlacement(buildPlacementPending);
     lastFriendlyUnitClick = null;
     lastUnitPickState = null;
@@ -8221,7 +8267,25 @@ renderer.domElement.addEventListener('lostpointercapture', (event) => {
   if (wallPlacementGesture.owner === event.pointerId) resetWallPlacement();
 });
 
+function canIssueMinimapMove() {
+  return Boolean(mapDefinition) && localTeam !== null && matchWinner < 0
+    && !buildPlacementActive && selectedBuildingId === null && selectedIds().length > 0;
+}
+
+minimapCanvas.addEventListener('contextmenu', (event) => {
+  if (canIssueMinimapMove()) event.preventDefault();
+});
 minimapCanvas.addEventListener('pointerdown', (event) => {
+  if (event.button === 2) {
+    if (!canIssueMinimapMove() || minimapPointerId !== null) return;
+    const point = worldFromMinimap(event);
+    if (!point) return;
+    event.preventDefault();
+    event.stopPropagation();
+    issueMove(point, event.shiftKey, true);
+    if (tapOrderArmed) setTapOrderArmed(false, false);
+    return;
+  }
   if (event.button !== 0) return;
   event.preventDefault();
   event.stopPropagation();
@@ -8239,6 +8303,7 @@ function finishMinimapPointer(event) {
 }
 minimapCanvas.addEventListener('pointerup', finishMinimapPointer);
 minimapCanvas.addEventListener('pointercancel', finishMinimapPointer);
+minimapCanvas.addEventListener('lostpointercapture', finishMinimapPointer);
 minimapCanvas.addEventListener('keydown', (event) => {
   const steps = Math.max(MAP_WIDTH, MAP_HEIGHT) * 0.025;
   if (event.key === 'ArrowLeft') cameraTarget.x -= steps;
@@ -8410,6 +8475,7 @@ edgeScrollInput.addEventListener('change', () => {
 });
 
 function centerCameraOnSelection() {
+  if (!mapDefinition) return;
   const building = latestBuildings.find((item) => item.id === selectedBuildingId && item.team === localTeam);
   if (building) {
     const safe = cameraSafeRect();
@@ -8418,7 +8484,8 @@ function centerCameraOnSelection() {
     drawMinimap(performance.now(), true);
     return;
   }
-  const selectedUnits = [...selected].map((id) => units[id]).filter((unit) => unit && unit.hp > 0);
+  const selectedUnits = selectedIds().map((id) => units[id])
+    .filter((unit) => Number.isFinite(unit.renderX) && Number.isFinite(unit.renderZ));
   if (selectedUnits.length === 0) {
     showToast('SELECT A UNIT OR BUILDING FIRST');
     return;
@@ -8877,6 +8944,13 @@ function controlGroupIndexFromKey(event) {
   return number === 0 ? 9 : number - 1;
 }
 
+function selectionCenterShortcutAllowed(event) {
+  return !event.defaultPrevented && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
+    && Boolean(mapDefinition) && document.visibilityState === 'visible'
+    && !keyboardTargetIsEditing(event) && !ui.mapStudio.open && !document.querySelector('dialog[open]')
+    && !(event.target instanceof Element && event.target.closest('button, a[href], summary, [role="button"]'));
+}
+
 window.addEventListener('keydown', (event) => {
   lastFriendlyUnitClick = null;
   lastUnitPickState = null;
@@ -8884,10 +8958,12 @@ window.addEventListener('keydown', (event) => {
   const editing = keyboardTargetIsEditing(event);
   if (!editing && wallPlacementKeydown(event)) return;
   if (cameraNavigationKeydown(event)) return;
-  const buttonFocused = event.target instanceof Element && Boolean(event.target.closest('button'));
   if (event.code === 'Space') {
-    if (!editing && !buttonFocused) {
-      spaceDown = true;
+    if (selectionCenterShortcutAllowed(event)) {
+      if (!event.repeat && !spaceDown) {
+        spaceDown = true;
+        spaceCenterPending = !drag && !pan && !buildPlacementActive && !tapOrderArmed;
+      }
       syncBattlefieldCursor();
       event.preventDefault();
     }
@@ -8954,8 +9030,17 @@ window.addEventListener('keyup', (event) => {
   if (event.key === 'Shift') { cursorShift = false; syncBattlefieldCursor(); }
   if (event.key.startsWith('Arrow')) heldCameraKeys.release(event.key);
   if (event.code !== 'Space') return;
+  const center = spaceDown && spaceCenterPending && selectionCenterShortcutAllowed(event)
+    && !drag && !pan && !buildPlacementActive && !tapOrderArmed;
   spaceDown = false;
+  spaceCenterPending = false;
   syncBattlefieldCursor();
+  if (center) {
+    event.preventDefault();
+    if (selectedIds().length || latestBuildings.some(building => building.id === selectedBuildingId && building.team === localTeam)) {
+      centerCameraOnSelection();
+    }
+  }
 });
 window.addEventListener('blur', () => {
   resetWallPlacement(buildPlacementPending);
@@ -8963,6 +9048,7 @@ window.addEventListener('blur', () => {
   cursorShift = false;
   if (tapOrderArmed) setTapOrderArmed(false, false);
   spaceDown = false;
+  spaceCenterPending = false;
   clearHeldCameraKeys();
   pan = null;
   edgeScrollPointer = null;
@@ -8974,11 +9060,14 @@ window.addEventListener('blur', () => {
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== 'visible') {
     resetWallPlacement(buildPlacementPending);
+    spaceDown = false;
+    spaceCenterPending = false;
     edgeScrollPointer = null;
     clearHeldCameraKeys();
   }
 });
 document.addEventListener('focusin', (event) => {
+  if (!selectionCenterShortcutAllowed(event)) spaceCenterPending = false;
   if (event.target instanceof Element
     && event.target.closest('input, textarea, select, [contenteditable], dialog, [role="tab"]')) clearHeldCameraKeys();
 });
@@ -9583,8 +9672,7 @@ async function createPrivateRoom() {
     if (!response.ok || !ROOM_ID_PATTERN.test(result.roomId || '')) {
       throw new Error(result.error || 'Room creation failed.');
     }
-    const inviteUrl = new URL(window.location.href);
-    inviteUrl.searchParams.set('room', result.roomId);
+    const inviteUrl = roomEntryUrl(window.location.href, result.roomId);
     window.location.assign(inviteUrl.href);
   } catch (error) {
     showToast(String(error?.message || 'ROOM CREATION FAILED').toUpperCase(), 2800);
@@ -9595,9 +9683,7 @@ async function createPrivateRoom() {
 
 async function copyRoomInvite() {
   if (!ROOM_ID_PATTERN.test(ROOM_ID || '')) return;
-  const inviteUrl = new URL(window.location.href);
-  inviteUrl.searchParams.set('room', ROOM_ID);
-  inviteUrl.hash = '';
+  const inviteUrl = roomEntryUrl(window.location.href, ROOM_ID);
   try {
     await navigator.clipboard.writeText(inviteUrl.href);
     showToast('ROOM INVITE COPIED', 1800);
@@ -9625,8 +9711,7 @@ function joinPrivateRoom(value) {
     ui.roomDialogError.textContent = 'Enter a valid room code or invite link.';
     return;
   }
-  const inviteUrl = new URL(window.location.href);
-  inviteUrl.searchParams.set('room', roomId);
+  const inviteUrl = roomEntryUrl(window.location.href, roomId);
   window.location.assign(inviteUrl.href);
 }
 
@@ -9642,6 +9727,7 @@ function scheduleReconnect(delay = reconnectDelayMs, increaseBackoff = true) {
 
 async function connect() {
   if (pageLeaving) return;
+  const attempt = ++connectionAttempt;
   setConnection(localTeam === null ? 'CONNECTING' : 'RECONNECTING');
   if (HAS_ROOM_PARAMETER) {
     if (!ROOM_ID_PATTERN.test(ROOM_ID || '')) {
@@ -9651,7 +9737,7 @@ async function connect() {
     }
     try {
       const response = await fetch(`/api/rooms/${encodeURIComponent(ROOM_ID)}`, { cache: 'no-store' });
-      if (pageLeaving) return;
+      if (pageLeaving || attempt !== connectionAttempt) return;
       if (response.status === 404) {
         setConnection('ROOM NOT FOUND');
         showToast('INVITE LINK EXPIRED OR INVALID', 2800);
@@ -9659,20 +9745,44 @@ async function connect() {
       }
       if (!response.ok) throw new Error('Room service is temporarily unavailable.');
     } catch {
+      if (pageLeaving || attempt !== connectionAttempt) return;
       scheduleReconnect();
       return;
     }
   }
-  connectSocket();
+  if (RESUME_REQUESTED && !entrySessionConfirmed) {
+    try {
+      const token = sessionStorage.getItem(ROOM_SESSION_STORAGE_KEY);
+      const response = await fetch(`/api/session${HAS_ROOM_PARAMETER ? `?room=${encodeURIComponent(ROOM_ID)}` : ''}`, {
+        headers: { 'x-rts-resume-token': token || '' }, cache: 'no-store',
+      });
+      if (response.status >= 500) throw new Error('Session service unavailable.');
+      const valid = response.ok && (await response.json()).valid === true;
+      if (pageLeaving || attempt !== connectionAttempt) return;
+      if (!valid) {
+        setConnection('SESSION EXPIRED');
+        showToast('SESSION EXPIRED · RETURN TO MAIN MENU TO CREATE OR JOIN A ROOM', 6000);
+        return;
+      }
+    } catch {
+      if (!pageLeaving && attempt === connectionAttempt) scheduleReconnect();
+      return;
+    }
+  }
+  if (pageLeaving || attempt !== connectionAttempt) return;
+  connectSocket({ resumeOnly: RESUME_REQUESTED && !entrySessionConfirmed,
+    onSessionConfirmed: () => { entrySessionConfirmed = true; },
+    openStudioAfterJoin: new URL(window.location.href).searchParams.get('studio') === '1' });
 }
 
-function connectSocket() {
+function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, openStudioAfterJoin = false } = {}) {
   if (pageLeaving) return;
   setConnection(localTeam === null ? 'CONNECTING' : 'RECONNECTING');
   let retryWhenSeatFree = false;
   const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
   const url = new URL(`${protocol}//${location.host}/ws`);
   if (HAS_ROOM_PARAMETER) url.searchParams.set('room', ROOM_ID);
+  if (resumeOnly) url.searchParams.set('resumeOnly', '1');
   let savedToken = null;
   try { savedToken = sessionStorage.getItem(ROOM_SESSION_STORAGE_KEY); } catch {}
   const websocketProtocols = ['rts-v1'];
@@ -9723,10 +9833,14 @@ function connectSocket() {
       }
       waitingForResume = message.player.resumePending === true;
       try {
-        if (message.player.sessionToken) sessionStorage.setItem(ROOM_SESSION_STORAGE_KEY, message.player.sessionToken);
+        if (message.player.sessionToken) {
+          sessionStorage.setItem(ROOM_SESSION_STORAGE_KEY, message.player.sessionToken);
+          sessionStorage.setItem('thousand-unit-skirmish-last-room', HAS_ROOM_PARAMETER ? ROOM_ID : 'default');
+        }
         else if (!waitingForResume) sessionStorage.removeItem(ROOM_SESSION_STORAGE_KEY);
       } catch {}
       setPlayer(message.player);
+      if (hasPlayerSeat) onSessionConfirmed();
       applyLobby(message.state.lobby);
       roomLobby.updateChat(message.lobbyChat || [], null, true);
       setMapCatalog(message.maps, message.map.id);
@@ -9743,6 +9857,13 @@ function connectSocket() {
         centerCameraOnHomeBase();
       }
       updateRoomUI(message.state.connected);
+      if (openStudioAfterJoin && isHost && message.state.lobby?.phase !== 'lobby') {
+        openStudioAfterJoin = false;
+        openMapStudio();
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.searchParams.delete('studio');
+        window.history.replaceState(window.history.state, '', cleanUrl.href);
+      }
       if (ui.mapStudio.open) {
         ui.studioPublish.disabled = false;
         ui.studioMessage.textContent = 'Connection restored. Review your draft and publish again if needed.';
@@ -9899,12 +10020,19 @@ function connectSocket() {
   });
 }
 
-window.addEventListener('beforeunload', () => {
+function releasePageConnection() {
+  if (pageLeaving) return;
   pageLeaving = true;
+  connectionAttempt++;
   if (reconnectTimer !== null) window.clearTimeout(reconnectTimer);
   reconnectTimer = null;
   socket?.close(1000, 'page unload');
-}, { once: true });
+}
+window.addEventListener('beforeunload', releasePageConnection, { once: true });
+window.addEventListener('pagehide', releasePageConnection);
+window.addEventListener('pageshow', event => {
+  if (event.persisted) { pageLeaving = false; socket = null; connect(); }
+});
 
 resize();
 updateControlGroupUI();

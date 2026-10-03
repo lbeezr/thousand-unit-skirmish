@@ -206,6 +206,27 @@ acceptance for these items remains pending; use 1280 × 720 and 620 × 640.
   selection; building → Production → Escape keeps building selection. Clear
   selection to reach Quick commands. Verify Return cargo still appears for a
   carrying Worker and issues that order.
+- Worker visual: on both seats, select one Worker and inspect the compact
+  portrait, name/HP, target and Build icons at 1280 × 720, 800 × 420 and 360 × 480,
+  with small/large minimap. Check portrait framing and text at Retina scale.
+  Tab to the portrait, open notes, then Escape and the close button: focus returns
+  to the portrait and selection remains. Damage the Worker and verify live HP.
+  Select two Workers or a mixed group: the portrait disappears and the composition
+  summary remains. Clear selection with notes open, dismiss and verify visible
+  Quick-command focus. Check VoiceOver's Worker/family/role-note button name;
+  decorative images add no repeated command name and M remains visible.
+
+- Barracks visual: on both seats select a Barracks at 0%, 20% and 90%
+  construction, then at 100%, 65% and 32% health. Check its 52px thumbnail against
+  the same battlefield state and preserve existing name/health/production text.
+  Open the thumbnail for structure details, dismiss with Escape/close, and verify
+  focus returns without changing selection. Worker → Barracks → unsupported
+  building/group must hide stale Worker notes and retain visible focus. Use the
+  same desktop/short/narrow sizes above; framing and recognition remain native
+  QA, not a source-metadata acceptance claim.
+
+The [selection art contract](hud-art-integration.md) records sources, framing,
+supported appearances and the future source-linked codex boundary.
 
 ## Compact enlarged-map clearance — 3 October 2026
 

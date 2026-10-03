@@ -33,6 +33,7 @@ the build they name.
 | --- | --- |
 | Install, run locally, host on LAN, troubleshoot | [Local setup](getting-started.md) |
 | Learn controls, economy, objectives, and rematches | [Player guide](playing.md) |
+| Start a fresh game, join a room, or explicitly resume a saved seat | [Main menu entry](game-entry.md) |
 | Create a PvP lobby, ready and launch; inspect its protocol | [Pregame rooms](room-lobby.md) |
 | Reproduce a solo match | [Play vs AI](play-vs-ai.md) |
 | Find server defaults and limits | [Configuration](configuration.md) |
@@ -45,8 +46,10 @@ the build they name.
 | Understand runtime boundaries and files | [Architecture](architecture.md) |
 | Run focused checks, browser scenarios, or measurements | [Testing](testing.md) |
 | Change commands, snapshots, or bot observations | [Gameplay contract](gameplay-command-observation-contract.md) |
+| Understand missing Stone/gold/copper and the next integration contract | [Mineral readiness audit](mineral-economy-readiness.md) |
 | Understand overload behavior | [Simulation timing](simulation-timing.md) |
 | Author and validate scenario JSON | [Map authoring](map-authoring.md) |
+| Work on connected walls and explicit manual gates | [Palisade runtime](palisade-runtime.md), [gates](palisade-gates.md) |
 | Inspect isolated water routes before dock/boat integration | [Water navigation foundation](water-navigation-foundation.md) |
 | Place Dock foundations and inspect their land/water berth contract | [Dock shoreline foundation](dock-shoreline-foundation.md) |
 | Produce a provisional Skiff, move on water, and inspect queue/recovery rules | [Skiff water movement](skiff-water-movement.md) |
@@ -54,6 +57,7 @@ the build they name.
 | Change the compact objective HUD | [Objective behavior and validation](battlefield-objectives-validation.md) |
 | Change owned population feedback | [Population header behavior and validation](population-header-validation.md) |
 | Change selection-dependent command visibility | [Contextual HUD behavior and validation](contextual-hud-validation.md) |
+| Add selected-unit portraits or connect future field notes | [Worker HUD art and integration contract](hud-art-integration.md) |
 | Change cues or captions | [Audio design](audio-design.md) |
 | Design each command, notice, alert and result sound | [UI sound direction](ui-audio-direction.md) |
 | Produce reusable effects and music | [Audio kit plan](audio-kit-plan.md) |
@@ -71,6 +75,7 @@ the build they name.
 - [Gameplay foundation plan](gameplay-foundation-plan.md): extensible roster, base development, combat/progression, and presentation/variant milestones.
 - [Core match tranche](core-playtest-tranche.md): next human session, observation record, and proposed scale profile.
 - [Balance](first-skirmish-balance.md): current no-tune baseline and next observations.
+- [Mill depot simulation](qa-mill-depot-economy-2026-10-03.md): paid travel comparisons, separate currency tradeoffs and limits; [Farm proposal](farm-capability-proposal.md): the next finite-stock content contract to resolve.
 - [QA and external playtests](qa-vertical-slice.md): acceptance and repeatable protocol.
 - [Map scale](map-scale-density.md), [living land](living-land-experiment.md), and
   [harvestable woodland](harvestable-woodland-pilot.md): implemented slices and proposed follow-ups.
@@ -84,7 +89,8 @@ from source/candidate packs. Then use the relevant contract:
 - [Art direction](art-direction-contract-v1.md) and [production lanes](art-production-lanes.md).
 - [Wildlife draft](wildlife-bellweather-sheep.md): inspected regional fauna, one Sheep proposal, behavior, habitat and future perspective/sprite coverage.
 - [Renderer state/GLB/environment contract](renderer-state-contract.md).
-- [Water surface study](water-surface-study.md): opt-in apparent depth, directional motion, and visibility-gated shore-fish ripple preview.
+- [Water surface and fish cues](water-surface-study.md): default apparent depth and directional motion, live visibility-gated shore-fish activity, static quality and reduced motion.
+- [Native water first-pass review](qa-water-surface-native-2026-10-03.md): Mac shader/appearance results, saved image provenance, resolved fallback comparison and remaining visual limits.
 - [Sprite-atlas format](sprite-atlas-contract-v1.md).
 - [Generated strip adoption](sprite-strip-adoption-contract.md): shared scale/ground anchors, exact color/mask seed lock, explicit timing and reviewed helper boundaries.
 - [Worker fishing pilot](worker-fishing-animation.md): private crouched hand-net study, exact-heading default integration and unchanged food authority.

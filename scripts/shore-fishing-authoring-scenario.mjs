@@ -134,5 +134,5 @@ try {
     ordinaryCatalogSelection: true, bothSeatFood: delivered.state.teamFood,
     foodBudget: 120, untouchedWoodBudget: 200, landWorkersStayOffWater: true,
     distinctStableLandAndWaterPositions: true, cargoAndDepletionRecovery: true,
-    rematchRestoresAuthoredStock: true, optInFishCueSnapshotEvidence: assertLiveFishCues(), visualRenderingOwner: 'water lane' }));
+    rematchRestoresAuthoredStock: true, liveFishCueSnapshotEvidence: assertLiveFishCues(), visualRenderingOwner: 'water lane' }));
 } finally { await fixture.dispose(); }

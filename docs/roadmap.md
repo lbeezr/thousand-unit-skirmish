@@ -44,8 +44,11 @@ construction and persisted Worker sequencing with provisional wood-only test
 tuning. The normal drag-line UI adds connected previews, whole-line cost,
 keyboard endpoints and cancellation; [checks and a Mac recipe](qa-palisade-drag-ui-2026-10-03.md)
 distinguish DOM/runtime evidence from pending native usability. Next wall
-outcomes are the independent modular art kit and player observations;
-gate ownership/traversal and final balance remain undecided.
+outcomes are the independent modular art kit and player observations. The
+[manual gate foundation](palisade-gates.md) now uses explicit owner operation
+and shared open/closed traversal, with conservative occupied/route-cut refusal
+and checkpoint recovery. Automatic/team-specific access and final balance remain
+future decisions; [native gate usability](qa-palisade-gates-2026-10-03.md) is unverified.
 
 ### Integrated core workstreams — 1 October 2026
 
@@ -169,6 +172,7 @@ They establish bounded automated behavior, with contested play still to observe.
 | --- | --- | --- |
 | Gameplay | Fix a reproduced command, combat, economy, pathing, or recovery failure. | Build, reproduction, both-seat regression. |
 | Balance | Observe contested openings without changing established baselines prematurely. | [Opening and combat evidence](first-skirmish-balance.md), timings, losses, stocks, player explanations. |
+| Content | Resolve one finite Farm planting's price/yield, ownership and destruction policy before implementing its authoritative stock lifecycle. | [Farm capability proposal](farm-capability-proposal.md). Farm remains unimplemented; [Mill depot simulation](qa-mill-depot-economy-2026-10-03.md) preserves provisional tuning and the Mill/Storehouse role split. Distinct Mill art has a [3 × 3 food-only brief](frontier-mill-art-brief.md). |
 | Maps | Test Frontier Reach and Highland Grove routes, resources, elevation, and forest access in a match. | Layout/round-trip checks and actual route choices. |
 | Interface | Make selection, production, objectives, and rematches discoverable in the compact HUD. | Viewport, interaction capture, novice observation. |
 | Audio | All-zone source milestone is implemented: 44 originals across ten zones and eleven palettes, a comparison player, and Audio Studio import. Next: creative audition, loop edits, discovery/conflict arrangements and in-match cue recognition. | [All-zone evidence](qa-zone-audio-2026-09-30.md), [source pack](../assets/audio/vaelora-zones-v1/README.md), and later ten-trial results with mix/caption settings. |

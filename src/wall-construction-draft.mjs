@@ -11,7 +11,7 @@ import { palisadeDraftDefinition } from './palisade-profile.mjs';
  * The live adapter still owns synchronous commit, builder orders and checkpoints.
  */
 export function preparePaidWallLine({ tuning, team, balance, buildingCount, buildingLimit,
-  nextBuildingId, idCeiling, assessPlacement, ...geometry } = {}) {
+  nextBuildingId, idCeiling, assessPlacement, passableExistingWallCells = [], ...geometry } = {}) {
   const definition = palisadeDraftDefinition(tuning);
   if (![0, 1].includes(team) || !balance
     || ![buildingCount, buildingLimit, nextBuildingId, idCeiling].every(Number.isSafeInteger)
@@ -21,6 +21,15 @@ export function preparePaidWallLine({ tuning, team, balance, buildingCount, buil
   const result = planWallLine({ ...geometry, segmentCost: definition.cost, balance });
   const reject = status => ({ status, preview: result.preview, errors: result.errors, plan: null });
   if (!result.plan) return reject(result.status);
+  const passable = passableExistingWallCells;
+  if (!(Array.isArray(passable) || passable instanceof Set)
+    || (Array.isArray(passable) ? passable.length : passable.size) > geometry.width * geometry.height) {
+    throw new TypeError('Invalid passable existing wall cells.');
+  }
+  const existing = new Set(geometry.existingWallCells ?? []);
+  for (const cell of passable) if (!existing.has(cell)) {
+    throw new TypeError('Passable cells must be existing wall topology.');
+  }
   const added = result.plan.added;
   if (buildingCount + added.length > buildingLimit) return reject('building-limit');
   if (nextBuildingId + added.length >= idCeiling) return reject('id-limit');
@@ -29,6 +38,8 @@ export function preparePaidWallLine({ tuning, team, balance, buildingCount, buil
   if (added.length) {
     const cells = Object.freeze(added.map(p => p.cell));
     const wallCells = new Set([...result.preview.cells, ...(geometry.existingWallCells ?? [])]);
+    // A reserved open gate is part of topology, but is a legal Worker approach.
+    for (const cell of passable) wallCells.delete(cell);
     const assessment = assessPlacement(cells);
     if (!assessment || typeof assessment.entitiesConnected !== 'boolean'
       || typeof assessment.activeRoutesConnected !== 'boolean' || !Array.isArray(assessment.access)

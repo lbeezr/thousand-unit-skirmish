@@ -13,7 +13,7 @@ const pads = [
   ['storehouse', -25.5, 4.5], ['mill', -28.5, 18.5], ['barracks', -20.5, -6.5],
   ['archery-range', -25.5, -6.5], ['stable', -14.5, -6.5],
   ['watchtower', -9.5, -1.5], ['town-center', -10.5, 8.5], ['workshop', -14.5, 1.5],
-  ['palisade-wall', -28.5, -14.5],
+  ['palisade-wall', -28.5, -14.5], ['palisade-gate', -26.5, -14.5],
 ];
 const products = [
   ['home', 'worker'], ['town-center', 'worker'], ['barracks', 'infantry'],
@@ -142,7 +142,7 @@ async function main() {
       for (const kind of Object.keys(U).filter(kind => U[kind].movementDomain !== 'water')) assert.ok(saved.state.units.some(u => u.team === team && u.kind === kind && u.hp > 0));
       assert.ok(buildings.every(b => !b.queue && !b.productionBlocked));
       assert.equal(saved.state.workerProduction[team].queue, 0);
-      assert.deepEqual(spent[team], { food: 1385, wood: 2720 });
+      assert.deepEqual(spent[team], { food: 1385, wood: 2735 });
       assert.equal(clients[team].latest.population[team].capacity, 44);
       assert.equal(clients[team].latest.population[team].used, 23);
     }
