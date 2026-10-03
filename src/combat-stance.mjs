@@ -35,11 +35,11 @@ export function validCombatStanceState(unit, definition) {
 }
 
 export function migrateCombatStanceCheckpoint(snapshot, definitions) {
-  if (snapshot?.schemaVersion === 23 && Array.isArray(snapshot.state?.units)) {
+  if (snapshot?.schemaVersion === 24 && Array.isArray(snapshot.state?.units)) {
     for (const unit of snapshot.state.units) if (unit && definitions[unit.kind]) {
       initializeCombatStance(unit, definitions[unit.kind], true);
     }
-    snapshot.schemaVersion = 24;
+    snapshot.schemaVersion = 25;
   }
   return snapshot;
 }

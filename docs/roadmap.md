@@ -17,6 +17,11 @@ reinforcement/evolution modes and a regional territorial slice are later testing
 grounds developed alongside the longer RTS; research will choose their first
 bounded playable contracts.
 
+The [playable-modes backlog](playable-modes-backlog.md) owns the ranked small
+deliveries; [the versioned mode contract](match-mode-contract.md) is the shared
+registry, map, lobby and AI boundary. Human Skirmish comes before changing the
+ordinary default; accepted base-objective AI and normal entry remain prerequisites.
+
 Use the [RTS capability inventory](references/feature-coverage-inventory.md) as
 a loose roadmap for further maturity. AoE, openage and Warcraft identify systems
 we may match, adapt or improve; prioritize dependable player control, useful

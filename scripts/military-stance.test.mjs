@@ -147,7 +147,7 @@ for (const team of [0, 1]) {
     const c = await createStanceCase({ team });
     try {
       c.stance('defensive'); c.step(1); const snapshot = c.r.checkpoint();
-      assert.equal(snapshot.schemaVersion, 24); c.r.validate(structuredClone(snapshot));
+      assert.equal(snapshot.schemaVersion, 25); c.r.validate(structuredClone(snapshot));
       for (const mutation of [u => { u.combatStance = 'omniscient'; }, u => { u.stanceAnchorX = Infinity; },
         u => { u.stanceReturning = true; u.combatStance = 'aggressive'; }]) {
         const invalid = structuredClone(snapshot); mutation(invalid.state.units[c.unit.id]);
@@ -155,9 +155,13 @@ for (const team of [0, 1]) {
       }
       c.order(team, { type: 'stop', ids: [c.unit.id] }); const legacy = c.r.checkpoint(); legacy.schemaVersion = 23;
       for (const u of legacy.state.units) for (const field of ['combatStance', 'stanceAnchorX', 'stanceAnchorZ', 'stanceCombat', 'stanceReturning']) delete u[field];
-      c.r.restore(structuredClone(legacy)); assert.equal(c.r.units[c.unit.id].combatStance, 'noAttack');
-      legacy.state.units[c.unit.id].holdingPosition = true;
-      c.r.restore(legacy); assert.equal(c.r.units[c.unit.id].combatStance, 'standGround');
+      for (const schemaVersion of [23, 24]) {
+        const previous = structuredClone(legacy); previous.schemaVersion = schemaVersion;
+        c.r.restore(structuredClone(previous)); assert.equal(c.r.units[c.unit.id].combatStance, 'noAttack');
+        assert.equal(c.r.checkpoint().schemaVersion, 25);
+        previous.state.units[c.unit.id].holdingPosition = true;
+        c.r.restore(previous); assert.equal(c.r.units[c.unit.id].combatStance, 'standGround');
+      }
     } finally { await c.dispose(); }
   });
   test(`seat ${team}: No Attack suppresses opportunity targets during attack-move, Patrol and Follow`, async () => {

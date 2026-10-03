@@ -67,8 +67,16 @@ export const replay = {
   get food() { return teamFood; }, get resources() { return resourceNodeStates; },
   snapshot(team) { return roomPayload(team); },
   checkpoint() { return captureMatchCheckpoint(1); },
-  restore(snapshot) { restoreMatchCheckpoint(migrateCombatStanceCheckpoint(migrateEconomyCheckpoint(migrateMatchCheckpoint(snapshot)), UNIT_DEFINITIONS)); },
-  validate(snapshot) { return validateMatchCheckpoint(migrateCombatStanceCheckpoint(migrateEconomyCheckpoint(migrateMatchCheckpoint(snapshot)), UNIT_DEFINITIONS)); },
+  restore(snapshot) {
+    const migrated = migrateEconomyCheckpoint(migrateMatchCheckpoint(snapshot));
+    migrateWildlifeMotionCheckpoint(migrated);
+    restoreMatchCheckpoint(migrateCombatStanceCheckpoint(migrated, UNIT_DEFINITIONS));
+  },
+  validate(snapshot) {
+    const migrated = migrateEconomyCheckpoint(migrateMatchCheckpoint(snapshot));
+    migrateWildlifeMotionCheckpoint(migrated);
+    return validateMatchCheckpoint(migrateCombatStanceCheckpoint(migrated, UNIT_DEFINITIONS));
+  },
   get tick() { return tickNumber; }, get navigationRevision() { return navigationRevision; },
   point: cellToWorld, cell: worldToCell, isWalkable,
   get levels() { return elevationLevelByCell; },

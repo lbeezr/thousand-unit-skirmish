@@ -42,8 +42,8 @@ its existing indefinitely passive result. Worker Hold/Stop are unchanged.
 A subsequent stance choice releases military Hold, but does not create a ground
 destination. A new Move never silently becomes Attack Move.
 
-Checkpoint state persists stance, fixed anchor and automatic combat/return intent.
-Schema-23 idle military migrates to No Attack to preserve legacy passive Stop;
+Schema 25 persists stance, fixed anchor and automatic combat/return intent after
+the schema-24 wildlife motion migration. Schema-23/24 idle military migrates to No Attack to preserve legacy passive Stop;
 legacy held military becomes Stand Ground and combat-active military Aggressive.
 Fresh matches/production use the new default. Rematch clears per-unit choices.
 
