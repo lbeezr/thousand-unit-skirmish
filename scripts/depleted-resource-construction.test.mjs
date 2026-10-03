@@ -1,3 +1,4 @@
+import { buildingBlocksMovement } from '../src/palisade-gate.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -18,7 +19,7 @@ const types = [
   { id: 'fish', type: 'food', resourceVariant: 'shore-fish' },
 ];
 function authority(node, stock) {
-  const context = vm.createContext({ mapDefinition: { resourceNodes: [node] },
+  const context = vm.createContext({ buildingBlocksMovement, mapDefinition: { resourceNodes: [node] },
     resourceNodeStates: new Map(stock === undefined ? [] : [[node.id, { ...node, stock }]]),
     worldToCell: x => x, nearestOpenCell: cell => cell, walkableComponents: [0, 0, 0, 0],
     spawnByTeam: [{ x: 0, z: 0 }, { x: 1, z: 0 }],
@@ -29,7 +30,7 @@ function authority(node, stock) {
   return context;
 }
 function clientPreview(team, node) {
-  const context = vm.createContext({ BUILDING_DEFINITIONS, buildPlacementType: 'house',
+  const context = vm.createContext({ buildingBlocksMovement, BUILDING_DEFINITIONS, buildPlacementType: 'house',
     MAP_WIDTH: 16, MAP_HEIGHT: 16, MAP_HALF_X: 8, MAP_HALF_Z: 8,
     mapDefinition: { obstacles: [], resourceNodes: [node], triggers: [] }, localTeam: team,
     latestFood: [150, 150], latestWood: [250, 250], latestBuildings: [],
@@ -92,7 +93,7 @@ test('checkpoint overlap uses validated remaining stock at authored positions', 
   const definition = { width: 16, height: 16,
     resourceNodes: types.map((type, index) => ({ ...type, x: index - 1.5, z: -0.5, stock: 100 })) };
   function check(rows) {
-    const context = vm.createContext({ definition, state: { resourceNodes: rows }, finite: Number.isFinite,
+    const context = vm.createContext({ buildingBlocksMovement, definition, state: { resourceNodes: rows }, finite: Number.isFinite,
       validWildlifeNodeState, validResourceVariantState,
       assertSnapshot: (condition, message) => { assert.ok(condition, message); },
     });
@@ -123,7 +124,7 @@ test('atomic palisade admission shares the exact-zero resource exclusion', () =>
   const node = { id: 'sheep', x: 1, z: 0, stock: 100, type: 'food', wildlifeSpecies: 'bellweather-sheep' };
   for (const stock of [undefined, 100, 0.25, 0]) {
     let preparation;
-    const context = vm.createContext({ mapDefinition: { resourceNodes: [node], triggers: [] },
+    const context = vm.createContext({ buildingBlocksMovement, mapDefinition: { resourceNodes: [node], triggers: [] },
       resourceNodeStates: new Map(stock === undefined ? [] : [[node.id, { ...node, stock }]]),
       buildings: [], units: [{ hp: 100, x: 0, z: 0 }], commandUnits: () => [{ hp: 100, team: 0 }],
       unitHasCapability: () => true, worldToCell: x => x,

@@ -77,7 +77,15 @@ try {
   assert.ok(workers.every((ids, team) => deposited.state.units[ids[0]].dropoffBuildingId
     === clients[team].latest.homeTownCenters.find(center => center.team === team).id), 'Dock is not a food drop-off');
   for (const team of [0, 1]) await command(team, { type: 'stop', ids: workers[team] }, /STOP ORDER/);
-  await fixture.stop(); const completeSave = await saved(); await reconnect();
+  await fixture.stop(); const completeSave = await saved();
+  // Gate content is additive to this exact paid Dock roster; retain its match,
+  // bank and ordinary shoreline records when the gate definition is introduced.
+  const preGate = structuredClone(completeSave);
+  preGate.rulesetRevision = 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6';
+  await writeFile(fixture.checkpointPath, JSON.stringify(preGate)); await reconnect();
+  const gateMigrated = await fixture.checkpoint(snapshot => snapshot.rulesetRevision === GAMEPLAY_RULESET_REVISION);
+  assert.equal(gateMigrated.matchId, completeSave.matchId);
+  assert.deepEqual(gateMigrated.state.teamWood, completeSave.state.teamWood);
   assert.deepEqual(docks(await fixture.checkpoint()).map(building => [building.id, building.team, building.complete]),
     docks(completeSave).map(building => [building.id, building.team, building.complete]));
   await fixture.stop();
@@ -90,6 +98,6 @@ try {
   await rejectSaved(JSON.stringify(inland), 'a valid square inland footprint cannot recover as a Dock');
   console.log(JSON.stringify({ scenario: 'Dock shoreline foundation', bothSeatPaidConstruction: true,
     landWorkersOnly: true, clearWaterBerthAndExit: true, unfinishedAndCompletedRecovery: true,
-    preDockMigration: true, invalidDockCheckpointPreserved: true, foodStillUsesExistingDropoffs: true,
+    preDockMigration: true, paidPreGateDockMigration: true, invalidDockCheckpointPreserved: true, foodStillUsesExistingDropoffs: true,
     gameplayAvailability: 'place/build/select Dock foundation; boats, production, boat cargo and pier art unavailable' }));
 } finally { await fixture.dispose(); }

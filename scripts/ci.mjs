@@ -125,6 +125,8 @@ run(['--test', 'scripts/wall-line-planner.test.mjs'], 'Atomic modular wall-line 
 run(['--test', 'scripts/wall-construction-draft.test.mjs'], 'Draft paid palisade preparation and lifecycle contracts');
 run(['--test', 'scripts/palisade-runtime.test.mjs'], 'Palisade order identity and placeholder connections');
 run(['--test', 'scripts/wall-placement.test.mjs', 'scripts/wall-placement-client.test.mjs'], 'Atomic palisade drag and keyboard placement');
+run(['--test', 'scripts/palisade-gate.test.mjs'], 'Palisade gate operation, recovery and controls');
+run(['scripts/paid-gate-scenario.mjs'], 'Paid gate movement, safe closing and restart');
 run(['scripts/paid-palisade-scenario.mjs'], 'Paid palisade atomic placement and Worker recovery');
 run(['--test', 'scripts/population.test.mjs'], 'Population reservations and capacity');
 run(['--test', 'scripts/population-readout.test.mjs'], 'Owned population presentation');
