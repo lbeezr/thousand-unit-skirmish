@@ -23,14 +23,25 @@ function openDatabase(indexedDB) {
   if (!indexedDB) throw new Error('IndexedDB is unavailable. Open Audio Studio in a supported browser.');
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, 1);
+    let abandoned = false;
     request.onupgradeneeded = () => {
       const db = request.result;
       db.createObjectStore('packs', { keyPath: 'id' });
       db.createObjectStore('sources', { keyPath: ['packId', 'sourceId'] }).createIndex('packId', 'packId');
     };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(new Error(`Cannot open audio library: ${request.error?.message || 'unknown error'}`));
-    request.onblocked = () => reject(new Error('Audio library upgrade is blocked by another open tab. Close it and retry.'));
+    request.onsuccess = () => {
+      // A blocked open remains pending after our caller has received its error.
+      if (abandoned) request.result.close();
+      else resolve(request.result);
+    };
+    request.onerror = () => {
+      abandoned = true;
+      reject(new Error('Cannot open audio library. Check browser storage access and retry.', {cause: request.error}));
+    };
+    request.onblocked = () => {
+      abandoned = true;
+      reject(new Error('Audio library upgrade is blocked by another open tab. Close it and retry.'));
+    };
   });
 }
 
@@ -113,7 +124,10 @@ export async function parseAudioPackArchive(file) {
 
 export function createAudioLibraryStore({ indexedDB = globalThis.indexedDB, IDBKeyRange = globalThis.IDBKeyRange } = {}) {
   let databasePromise;
-  const database = () => databasePromise ||= openDatabase(indexedDB);
+  const database = () => databasePromise ||= openDatabase(indexedDB).catch(error => {
+    databasePromise = undefined;
+    throw error;
+  });
 
   async function listPacks() {
     const db = await database();
