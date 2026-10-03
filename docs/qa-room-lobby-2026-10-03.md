@@ -131,7 +131,7 @@ or connection arrives. One hook now invokes the existing seat synchronization
 at the regular waiting-state cadence, making expiry invalidate readiness and
 publish the vacancy while simulation/supply remain frozen.
 
-The focused authority/lobby/chat UI tests pass 22 cases. The real supervisor
+The initial `8aaeae2` focused authority/lobby/chat UI tests pass 22 cases. The real supervisor
 scenario passes all 12 groups twice consecutively, including authoritative host
 reservation, vacancy after grace with no intervening client commands, one rejoin
 request, unchanged Ember identity, a newly admitted Azure identity and readiness
@@ -139,6 +139,15 @@ reset. It now uses native TCP HTTP upgrades, masked WebSocket frames and explici
 close acknowledgement; the prior Node native WebSocket close sporadically timed
 out. No runtime/protocol-library fix is claimed by the test transport change.
 Exact final review, integration and postmerge results belong in the owning PR.
+
+[PR #101](https://github.com/lbeezr/thousand-unit-skirmish/pull/101) final runtime
+`b32225d5d8fa7821d05a6733f139ada6aa50d1ec` integrates main `c003d4f` and passes
+all **910 unit tests**, 12 pregame groups, nine authenticated menu groups/90
+served modules, eight chat groups and the packaged release scenario. Docs pass
+451 Markdown files/2,945 links before this evidence-only update. The 23-case
+focused set also verifies that rejoin strips old Resume/Studio flags and preserves
+deliberate standalone entry; an expired old Resume cannot block requesting an
+open seat. The PR closure records independent review and actual postmerge counts.
 
 Mac remains offline. Retain the existing entry recipe and check this extension
 with normal browser sandboxing when available:
