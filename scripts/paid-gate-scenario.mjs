@@ -73,6 +73,19 @@ try {
   assert.equal(closed.state.navigationRevision, restored.state.navigationRevision + 2);
   console.log('Both seats: paid selected-Worker completion, strict owner/manual operation, idempotence, reserved footprint, free friendly reuse, state/bank/token recovery and safe closing passed.');
 
+  // The preparation boundary must accept a walkable gate as the first approach
+  // cell for an adjacent new wall, while retaining its reserved building row.
+  for (const team of [0, 1]) {
+    const gate = closed.state.buildings.find(b => b.team === team);
+    await command(team, { type: 'setGateOpen', buildingId: gate.id, open: true }, /GATE OPEN/);
+    await command(team, withWorker(await ledger(), team, { type: 'buildWall',
+      points: [{ column: Math.floor(gate.x + 32) + 1, row: Math.floor(gate.z + 32) + 1 }] }), /PALISADE LINE PLACED/);
+  }
+  const adjacent = await ledger(s => s.state.buildings.length === 4 && s.state.buildings.every(b => b.complete));
+  assert.deepEqual(adjacent.state.teamWood, [270, 270]);
+  assert.ok(adjacent.state.buildings.filter(b => b.type === 'palisade-gate').every(b => b.gateOpen));
+  console.log('Both seats: paid adjacent wall construction accepts open-gate Worker access without closing or replacing the gate.');
+
   // Two crossings: build the closed gate while the other route remains available.
   const corridor = { ...map, id: map.id + '-corridor', name: 'Gate Corridor',
     spawnPoints: [{ team: 0, x: -14, z: 8.5 }, { team: 1, x: 14, z: 8.5 }],

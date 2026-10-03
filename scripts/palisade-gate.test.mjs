@@ -1,3 +1,4 @@
+import { preparePaidWallLine } from '../src/wall-construction-draft.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
@@ -161,4 +162,43 @@ test('exact preceding gate-free Dock ruleset retains paid Dock rows; older ident
     assert.equal(snapshot.rulesetRevision, revision === 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6' ? GAMEPLAY_RULESET_REVISION : revision);
     assert.equal(snapshot.state.buildings[0].id, 9);
   }
+});
+
+test('actual wall admission permits approaches through open gate topology while preserving closed gates', () => {
+ const source = server;
+ const fn = name => { const start=source.indexOf('function '+name+'('), end=source.indexOf('\nfunction ',start+1); assert.ok(start>=0 && end>start); return source.slice(start,end); };
+ for (const gateOpen of [true, false]) {
+ const notices=[],gate={id:1,type:'palisade-gate',team:0,complete:true,gateOpen,hp:300,footprint:[30]},worker={id:0,team:0,kind:'worker',hp:100,x:-3,z:-3,generation:1,orderRevision:1,path:[],queuedWaypoints:[]};
+ const c=vm.createContext({Set,Map,TypeError,isPalisade,buildingBlocksMovement,preparePaidWallLine,buildings:[gate],buildingsById:new Map([[1,gate]]),units:[worker],
+  MAP_WIDTH:9,MAP_HEIGHT:9,CELL_COUNT:81,MAX_BUILDINGS:128,HOME_TOWN_CENTER_ID_BASE:1000000,nextBuildingId:2,
+  blocked:new Uint8Array(81),buildingBlocked:new Uint8Array(81),townCenterBlocked:new Uint8Array(81),elevationLevelByCell:new Uint8Array(81),
+  mapDefinition:{resourceNodes:[],triggers:[]},resourceNodeStates:new Map(),homeTownCenters:[],spawnByTeam:[{x:-3,z:-3},{x:3,z:3}],
+  worldToCell:(x,z)=>Math.floor(z+4.5)*9+Math.floor(x+4.5),cellIndex:(x,z)=>z*9+x,cellToWorld:cell=>({x:cell%9-4,z:Math.floor(cell/9)-4}),
+  nearestOpenCell:cell=>cell,commandUnits:()=>[worker],unitHasCapability:()=>true,canTraverseElevation:()=>true,
+  activeMoveRoutesRemainConnected:()=>true,
+  BUILDING_DEFINITIONS:{'palisade-wall':{cost:{food:0,wood:15},buildSeconds:5,maxHp:300,footprint:1}},teamFood:[0,0],teamWood:[250,250],
+  navigationRevision:1,dirty:false,attackFlowFields:new Map(),replanPathsBlockedBy(){},assignFormationMove(){},
+  sendOrderNotice:(_,__,notice)=>notices.push(notice),rejectBuild:(_,reason)=>notices.push('BUILD REJECTED · '+reason),
+ });
+ c.buildingBlocked[30]=gateOpen?0:1;
+ vm.runInContext(['isWalkable','rebuildWalkableComponents','buildingAccessCells','captureBuildingConnectivity','canPlaceBuildingWithoutDisconnectingEntities','buildWallLine'].map(fn).join('\n'),c);
+ c.rebuildWalkableComponents();
+ c.buildWallLine({team:0},{ids:[0],points:[{column:4,row:4}]});
+ assert.equal(notices[0], 'PALISADE LINE PLACED · 1 SEGMENTS · 15 WOOD');
+ assert.equal(c.teamWood[0], 235); assert.equal(c.buildings.length, 2);
+ assert.equal(c.buildingBlocked[30], gateOpen ? 0 : 1);
+ assert.equal(c.buildings[0].gateOpen, gateOpen);
+ assert.equal(c.nextBuildingId, 3);
+ }
+});
+
+test('preparation permits only explicit existing passable topology as Worker access', () => {
+ const args = { tuning: { cost: {food:0,wood:15}, buildSeconds:5, maxHp:300, footprint:1 }, team:0, balance:{food:0,wood:15},
+  buildingCount:1, buildingLimit:128, nextBuildingId:2, idCeiling:1000000, width:9, height:9,
+  points:[{column:4,row:4}], existingWallCells:[30],
+  assessPlacement:()=>({entitiesConnected:true,activeRoutesConnected:true,access:[{cell:40,accessCell:30}]}),
+ };
+ assert.throws(()=>preparePaidWallLine(args), /Worker access/);
+ assert.equal(preparePaidWallLine({...args, passableExistingWallCells:[30]}).status, 'ready');
+ for (const bad of [[40], [31], null, '30', Array(82).fill(30)]) assert.throws(()=>preparePaidWallLine({...args, passableExistingWallCells:bad}), TypeError);
 });

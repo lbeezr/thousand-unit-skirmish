@@ -4996,6 +4996,8 @@ function buildWallLine(player, command) {
   if (!selectedWorkers.length) { rejectBuild(player, 'SELECT A WORKER', command); return; }
   const existingWallCells = new Set(buildings.filter(building =>
     building.team === player.team && isPalisade(building.type)).flatMap(building => building.footprint));
+  const passableExistingWallCells = new Set(buildings.filter(building =>
+    building.team === player.team && !buildingBlocksMovement(building)).flatMap(building => building.footprint));
   const blockedCells = [], occupiedCells = new Set();
   const resourceCells = new Set(mapDefinition.resourceNodes
     .filter(node => resourceNodeStates.get(node.id)?.stock !== 0).map(node => worldToCell(node.x, node.z)));
@@ -5054,7 +5056,7 @@ function buildWallLine(player, command) {
     const definition = BUILDING_DEFINITIONS['palisade-wall'];
     prepared = preparePaidWallLine({ width: MAP_WIDTH, height: MAP_HEIGHT,
       points: command.points, axisOrder: command.axisOrder,
-      blockedCells, occupiedCells, existingWallCells, team: player.team,
+      blockedCells, occupiedCells, existingWallCells, passableExistingWallCells, team: player.team,
       tuning: { cost: definition.cost, buildSeconds: definition.buildSeconds, maxHp: definition.maxHp, footprint: definition.footprint },
       balance: { food: teamFood[player.team], wood: teamWood[player.team] },
       buildingCount: buildings.length, buildingLimit: MAX_BUILDINGS,

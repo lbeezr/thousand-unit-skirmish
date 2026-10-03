@@ -37,6 +37,9 @@ An open gate still reserves its building footprint. Neither ordinary buildings
 nor an enemy wall line can occupy it. A friendly wall line reuses the gate cell
 without payment or changing its open state. Gates and walls derive the same
 same-team cardinal connections from disclosed buildings in each snapshot.
+The preparation boundary admits Worker approach cells through an explicit,
+bounded subset of existing completed-open gates; solid wall cells remain
+excluded. Reserving a gate for placement does not prohibit standing in it.
 Reusing an unfinished gate does not recruit its builder or turn it into a wall;
 resume that gate through ordinary construction controls.
 
