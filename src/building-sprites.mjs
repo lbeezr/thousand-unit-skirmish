@@ -48,7 +48,21 @@ export function attachBuildingSprite(group, parts, building, position = { x: 0, 
   sprite.scale.set(5, 5, 1);
   sprite.position.set(position.x, 0.035, position.z);
   sprite.visible = false;
-  group.add(fallback, sprite);
+  // Only solid artwork writes depth. The original blended pass keeps soft
+  // edges/shadows, while later unit sprites can be hidden by the building body.
+  const bodyDepth = new THREE.Sprite(new THREE.SpriteMaterial({
+    transparent: false, alphaTest: 0.9, colorWrite: false,
+    depthTest: true, depthWrite: true, toneMapped: false,
+  }));
+  applyBuildingGroundDepth(bodyDepth.material);
+  bodyDepth.geometry = sprite.geometry;
+  bodyDepth.center.copy(sprite.center);
+  bodyDepth.scale.copy(sprite.scale);
+  bodyDepth.position.copy(sprite.position);
+  bodyDepth.visible = false;
+  bodyDepth.userData.buildingBodyDepth = true;
+  bodyDepth.raycast = () => {};
+  group.add(fallback, sprite, bodyDepth);
   let currentUrl;
   let disposed = false;
   const controller = {
@@ -57,18 +71,22 @@ export function attachBuildingSprite(group, parts, building, position = { x: 0, 
       if (disposed || url === currentUrl) return;
       currentUrl = url;
       sprite.visible = false;
+      bodyDepth.visible = false;
       fallback.visible = true;
       if (!url) return;
       const entry = load(url);
       entry.ready.then((loaded) => {
         if (disposed || currentUrl !== url || !loaded) return;
         sprite.material.map = entry.texture;
+        bodyDepth.material.map = entry.texture;
         sprite.material.needsUpdate = true;
+        bodyDepth.material.needsUpdate = true;
         sprite.visible = true;
+        bodyDepth.visible = true;
         fallback.visible = false;
       });
     },
-    dispose() { disposed = true; },
+    dispose() { disposed = true; sprite.visible = false; bodyDepth.visible = false; },
   };
   controller.update(building);
   group.userData.buildingSprite = controller;

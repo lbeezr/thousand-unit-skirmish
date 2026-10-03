@@ -92,6 +92,15 @@ export function createProductionPolicy(seed) {
       const siegeCount = friendly.filter(unit => unit.kind === 'siege-engine').length;
       const siegeSlots = visibleDefense ? Math.max(0, 2 - siegeCount) : 0;
       if (observation.population?.available === 0 && observation.population.capacity >= 1000) return [];
+      // Restore the economy before requesting capacity for a larger military
+      // unit. An available one-population Worker can earn the wood for a House.
+      const workerProducer = observation.buildings.friendly.find((building) => building.complete
+        && building.queue === 0 && building.productionOptions?.some((option) => option.kind === 'worker' && option.available));
+      if (workers.length < 4 && workerProducer && friendly.length < limits.roster
+        && observation.resources.food >= UNIT_DEFINITIONS.worker.cost.food + limits.foodReserve) {
+        postpone(observation.tick);
+        return [{ type: 'trainUnit', kind: 'worker', buildingId: workerProducer.id }];
+      }
       const neededPopulation = siegeSlots ? UNIT_DEFINITIONS['siege-engine'].population : 2;
       if (observation.population && observation.population.available < neededPopulation && observation.population.capacity < 1000
         && friendly.filter((unit) => unit.kind !== 'worker').length < limits.military) {
@@ -108,13 +117,6 @@ export function createProductionPolicy(seed) {
         const point = sites[siteAttempt++ % sites.length];
         postpone(observation.tick);
         return [{ type: 'build', ids: [builder.id], unitGenerations: [builder.generation], buildingType: 'house', ...point }];
-      }
-      const workerProducer = observation.buildings.friendly.find((building) => building.complete
-        && building.queue === 0 && building.productionOptions?.some((option) => option.kind === 'worker' && option.available));
-      if (workers.length < 4 && workerProducer && friendly.length < limits.roster
-        && observation.resources.food >= UNIT_DEFINITIONS.worker.cost.food + limits.foodReserve) {
-        postpone(observation.tick);
-        return [{ type: 'trainUnit', kind: 'worker', buildingId: workerProducer.id }];
       }
       const damaged = observation.buildings.friendly.find((building) => building.complete && building.maxHp > 0 && building.hp < building.maxHp * 0.65);
       const repairer = workers.find((worker) => ['idle', 'gathering'].includes(worker.task) && worker.cargo === 0);
