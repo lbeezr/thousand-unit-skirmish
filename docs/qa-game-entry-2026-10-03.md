@@ -23,6 +23,8 @@ Resume, invitation/refresh routing, fresh AI/PvP/Studio requests, duplicate clic
 same-server join validation, expiry, cancellation, browser-back restoration,
 settings persistence and retained audio mix values. A lifecycle test covers
 closing once, cancelling reconnect and reconnecting on back/forward restoration.
+Two delayed-request cases prove an old room/Resume lookup cannot admit a second
+socket after a page has left and returned from the back/forward cache.
 The import audit has an explicit dynamic-dependency/cross-origin regression.
 
 The real supervisor scenario uses authenticated HTTP and independent native TCP
@@ -31,7 +33,7 @@ session inspection is read-only for active/stale tokens; strict Resume rejects
 unknown tokens before allocation; a fresh PvP lobby gives Azure/Ember and launches
 only after both ready; explicit room Resume preserves its target; AI and Studio
 create separate fresh matches; the old default match identity/checkpoint remains;
-all 82 entry/lazy-client modules are served. No deployed service or live-data
+all 88 entry/lazy-client modules are served on integrated main. No deployed service or live-data
 mutation is used. The owning PR records exact reviewed/integrated/postmerge builds.
 
 ## Exact Mac QA recipe

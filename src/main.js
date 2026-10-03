@@ -678,6 +678,7 @@ let orderStatusTimeout = null;
 let reconnectTimer = null;
 let reconnectDelayMs = 500;
 let pageLeaving = false;
+let connectionAttempt = 0;
 const SESSION_STORAGE_KEY = 'thousand-unit-skirmish-session';
 const ROOM_SESSION_STORAGE_KEY = `${SESSION_STORAGE_KEY}:${ROOM_ID || 'default'}`;
 const ROOM_INSTANCE_STORAGE_KEY = `${SESSION_STORAGE_KEY}:instance:${location.host}:${ROOM_ID || 'default'}`;
@@ -9685,6 +9686,7 @@ function scheduleReconnect(delay = reconnectDelayMs, increaseBackoff = true) {
 
 async function connect() {
   if (pageLeaving) return;
+  const attempt = ++connectionAttempt;
   setConnection(localTeam === null ? 'CONNECTING' : 'RECONNECTING');
   if (HAS_ROOM_PARAMETER) {
     if (!ROOM_ID_PATTERN.test(ROOM_ID || '')) {
@@ -9694,7 +9696,7 @@ async function connect() {
     }
     try {
       const response = await fetch(`/api/rooms/${encodeURIComponent(ROOM_ID)}`, { cache: 'no-store' });
-      if (pageLeaving) return;
+      if (pageLeaving || attempt !== connectionAttempt) return;
       if (response.status === 404) {
         setConnection('ROOM NOT FOUND');
         showToast('INVITE LINK EXPIRED OR INVALID', 2800);
@@ -9702,6 +9704,7 @@ async function connect() {
       }
       if (!response.ok) throw new Error('Room service is temporarily unavailable.');
     } catch {
+      if (pageLeaving || attempt !== connectionAttempt) return;
       scheduleReconnect();
       return;
     }
@@ -9713,13 +9716,19 @@ async function connect() {
         headers: { 'x-rts-resume-token': token || '' }, cache: 'no-store',
       });
       if (response.status >= 500) throw new Error('Session service unavailable.');
-      if (!response.ok || (await response.json()).valid !== true) {
+      const valid = response.ok && (await response.json()).valid === true;
+      if (pageLeaving || attempt !== connectionAttempt) return;
+      if (!valid) {
         setConnection('SESSION EXPIRED');
         showToast('SESSION EXPIRED · RETURN TO MAIN MENU TO CREATE OR JOIN A ROOM', 6000);
         return;
       }
-    } catch { scheduleReconnect(); return; }
+    } catch {
+      if (!pageLeaving && attempt === connectionAttempt) scheduleReconnect();
+      return;
+    }
   }
+  if (pageLeaving || attempt !== connectionAttempt) return;
   connectSocket({ resumeOnly: RESUME_REQUESTED && !entrySessionConfirmed,
     onSessionConfirmed: () => { entrySessionConfirmed = true; },
     openStudioAfterJoin: new URL(window.location.href).searchParams.get('studio') === '1' });
@@ -9973,6 +9982,7 @@ function connectSocket({ resumeOnly = false, onSessionConfirmed = () => {}, open
 function releasePageConnection() {
   if (pageLeaving) return;
   pageLeaving = true;
+  connectionAttempt++;
   if (reconnectTimer !== null) window.clearTimeout(reconnectTimer);
   reconnectTimer = null;
   socket?.close(1000, 'page unload');
