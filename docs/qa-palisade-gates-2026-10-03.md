@@ -58,10 +58,13 @@ Actual lifecycle controls reproduced a keyboard defect on both seats: focus
 on Open/Close gate moved to the page body when a damage snapshot added Repair.
 Completed repairs caused the same loss when removing that action. The bounded
 client correction restores the surviving action's focus only for the same
-selected building, without scrolling. Both-seat DOM regressions check damage,
-repair, current-state commands, unrelated focus, changing gate selection and
-removing the selected building. They do not establish browser keyboard input
-or rendered appearance.
+selected building, without scrolling. The contextual HUD fallback respects
+already-restored valid command focus. Independent review caught that fallback
+overriding the first correction with Army focus; the combined refresh regression
+failed on both seats before correcting it. Both-seat DOM regressions check
+damage, repair, current-state commands, unrelated focus, changing gate selection,
+disabled actions and removing the selected building. They do not establish
+browser keyboard input or rendered appearance.
 
 Normal browser verification remains blocked. The existing preflight initially
 reported sandbox and storage failures; explicit writable temporary XDG config

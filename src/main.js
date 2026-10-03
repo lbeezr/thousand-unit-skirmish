@@ -3857,7 +3857,10 @@ function updateContextualCommands(priorFocus = document.activeElement) {
     button.textContent = `${controlGroupKeyLabel(index)} · ${controlGroups[index].size}`;
     button.setAttribute('aria-label', `Recall group ${controlGroupKeyLabel(index)}, ${controlGroups[index].size} units`);
   }
-  if (commandHadFocus && (!priorFocus.isConnected || priorFocus.disabled || priorFocus.closest('[hidden]')))
+  const currentFocus = document.activeElement;
+  const commandHasFocus = (bar.contains(currentFocus) || quickAccess?.contains(currentFocus))
+    && currentFocus.isConnected && !currentFocus.disabled && !currentFocus.closest('[hidden]');
+  if (commandHadFocus && !commandHasFocus && (!priorFocus.isConnected || priorFocus.disabled || priorFocus.closest('[hidden]')))
     commandFocusTarget()?.focus();
 }
 
