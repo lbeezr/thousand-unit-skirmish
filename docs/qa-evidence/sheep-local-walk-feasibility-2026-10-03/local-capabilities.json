@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "scope": "sheep-local-rig-inspection",
+  "capabilities": {
+    "blender": "4.3.2",
+    "background": true,
+    "rigifyModule": true,
+    "animalMetarigs": [
+      "bird",
+      "cat",
+      "horse",
+      "shark",
+      "wolf"
+    ],
+    "coreIkProperties": {
+      "target": true,
+      "pole_target": true,
+      "chain_count": true,
+      "use_stretch": true
+    }
+  },
+  "paidProviderCalls": 0,
+  "assetWrites": [],
+  "modelBytesInspected": false
+}
