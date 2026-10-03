@@ -52,3 +52,11 @@ joins. Corners, caps, matching edges, and shape variants remain future work.
 Eight-frame alpha/depth checks and the original local gallery passed; those
 checks do not establish general terrain/foliage occlusion or game performance.
 Gameplay collision and walkable elevation are unaffected by this review pack.
+
+Read-only source geometry inspection:
+`python3 scripts/inspect-cliff-end-bands.py`. It verifies the original GLB hash,
+actual position bounds and capture normalization without Blender or GPU startup.
+The 0.05-world-unit end bands have maximum heights 0.194 and 0.244, versus a
+0.998 peak, and depth spans 0.758 and 0.724. These vertex-slab measurements do not
+prove matching surfaces, safe overlap or caps. The concrete receiving-owner
+questions are in [terrain readiness](../../../docs/terrain-candidate-readiness.md#contract-resolution-and-receiving-owners).

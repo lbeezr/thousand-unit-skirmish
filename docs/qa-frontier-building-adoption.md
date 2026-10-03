@@ -1,4 +1,4 @@
-# Ordinary-game acceptance for the six Frontier buildings
+# Ordinary-game acceptance for the eight Frontier buildings
 
 [Runtime contract](frontier-building-runtime.md) · [Source pixels and hashes](qa-evidence/default-frontier-buildings-2026-10-03/source-images.json) · [Art history](lore/art-evolution.md)
 
@@ -10,13 +10,19 @@ and [PR #141](https://github.com/lbeezr/thousand-unit-skirmish/pull/141), presen
 `c2649368a74a2c2daab345342b39608ba396da2c` and descendants. No new visual feature
 is needed for this acceptance pass.
 
+The local [military production slice](frontier-barracks-range-authoring.md) extends
+this recipe with paid Barracks and Archery Range. Both maps now include their
+four additional soil pads; the actual publishMap scenario verifies sixteen
+legal paid sites across the two seats. This extension does not close the six
+earlier families' acceptance or claim a new deployed revision/native capture.
+
 ## Identify the actual served build first
 
 Record the environment, successful deployment/source revision, browser/version,
 GPU, viewport dimensions, device pixel ratio, browser zoom, room and map ID. A
 merge or public `/ready` response does not identify the code a browser receives.
 Railway must report an integrated revision; then check the browser's actual
-`src/frontier-building-preview.mjs`, `src/captured-building-art.mjs` and the six
+`src/frontier-building-preview.mjs`, `src/captured-building-art.mjs` and the eight
 requested manifests/images against that checkout. Record response status and
 SHA-256, omitting credentials and session tokens. Preserve original screenshot
 files and their hashes before wiki indexing.
@@ -42,7 +48,8 @@ as the normal-default proof.
    `frontier-buildings-acceptance-flat`, 64 × 64, 12 units per seat, no fog,
    2,000 food / 3,000 wood per seat. This is the ordinary simulation and renderer,
    with a small authored opening; it is not an asset gallery or sprite fixture.
-3. Each seat selects Workers and pays for House, Storehouse, Stable, Watchtower
+3. Each seat selects Workers and pays for House, Storehouse, Stable, Watchtower,
+   Barracks, Archery Range
    and an expansion Town Center on the labelled-by-position soil pads below.
    Select the starting Town Center, research **Military Tier II** (200 food /
    150 wood, 35 seconds), wait for completion, then pay for Workshop. Capture
@@ -58,10 +65,12 @@ as the normal-default proof.
 | Watchtower | `(-9.5,-1.5)` | `(9.5,-1.5)` | `(22,30)` / `(41,30)` | 50 / 150; 35 |
 | Paid Town Center | `(-10.5,8.5)` | `(10.5,8.5)` | `(21,40)` / `(42,40)` | 100 / 400; 60 |
 | Workshop, after Tier II | `(-14.5,1.5)` | `(14.5,1.5)` | `(17,33)` / `(46,33)` | 0 / 250; 30 |
+| Barracks | `(-20.5,-6.5)` | `(20.5,-6.5)` | `(11,25)` / `(52,25)` | 0 / 175; 20 |
+| Archery Range | `(-25.5,-6.5)` | `(25.5,-6.5)` | `(6,25)` / `(57,25)` | 0 / 150; 20 |
 
 Soil pads show the paid **5 × 5 Town Center / 3 × 3 other** footprints. These
 are clear, nonoverlapping sites reused from the existing paid settlement plan.
-The six buildings plus Tier II cost **350 food / 1,325 wood per seat**; time
+The eight paid buildings plus Tier II cost **350 food / 1,650 wood per seat**; time
 spent walking, Worker count and interruption affect completion time. The bank
 also leaves room for training, damage repair and a replacement. Keep armies at
 their own bases until both settlements are captured. Watchtower fires on enemies
@@ -73,6 +82,8 @@ additional 150 food / 150 wood, 30 seconds) before training a Siege Engine.
 Queue a Worker from each Town Center, a Scout from Stable and then a Siege Engine
 from Workshop; set ground rally points and observe the
 actual unit exit/rally and production cue while the finished image stays visible.
+Also train an Infantry/Spearman from Barracks and an Archer from Range; inspect
+their actual production cues and exits/rally through each seat's ordinary UI.
 House, Storehouse and Watchtower have no production queue or rally action. The
 existing [paid mature-settlement checkpoint recipe](qa-mature-settlement-2026-10-02.md)
 can speed a separate local completed-art inspection; its older source receipt,
@@ -80,7 +91,7 @@ flat map and prebuilt checkpoint do not replace deployed construction/fog proof.
 
 ## State coverage and what fallback actually means
 
-All six new families contain **Complete only**. Above 60% health, completed
+All eight new families contain **Complete only**. Above 60% health, completed
 buildings use their preserved finished art. Incomplete progress **≤27.5%** asks
 for Foundation; **>27.5% and <100%** asks for Frame. Complete health **≤60% and
 >30%** asks for Damaged; **≤30%** asks for Critical. A missing state hides the
@@ -94,6 +105,7 @@ or repair above 60%, the finished family returns after its frame is available.
 | Watchtower | Existing taller House-derived tower; roof appears only when `complete=true` | Completed procedural tower and actual health indicator; no authored damage shape |
 | Stable | Existing Barracks geometry: foundation <25%, frame 25–<50%, walls 50–<75%, roof ≥75%, finish pieces/team standard ≥90% | Completed procedural Barracks role and actual health indicator; no authored damage shape |
 | Workshop | Existing Range geometry: posts grow with progress, roof/finish pieces/team standard ≥90% | Completed procedural Range role and actual health indicator; no authored damage shape |
+| Barracks and Archery Range | Retained direct Foundation <20%, Frame 20–<90%, older Complete ≥90%; procedural role while that frame loads | Retained direct Complete ≥66%, Damaged 33–<66%, Critical <33%, with actual health indicator |
 
 For every paid family capture early construction, either side of the 27.5%
 boundary, late construction (75%/90%), healthy completion, damage near 60%,
@@ -108,7 +120,8 @@ HUD percentages can straddle a threshold, so preserve the associated state value
 when available. Do not label procedural damage fallback as newly authored art.
 
 Town Center max HP is 2,400 (60% 1,440; 30% 720); House 800 (480/240);
-Storehouse and Watchtower 1,200 (720/360); Stable and Workshop 1,600 (960/480).
+Storehouse and Watchtower 1,200 (720/360); Stable and Workshop 1,600 (960/480);
+Barracks and Archery Range 1,800 (1,080/540).
 Health-bar color uses separate thresholds: green >55%, yellow >25%, red ≤25%.
 Its color alone does not identify the captured-image state. Fully repaired
 structures hide the bar. Destruction removes the building and its picks/depth;
@@ -124,8 +137,8 @@ again. Retain failed, rejected and intermediate screenshots as well as successes
 | Hover without selection | Ordinary select cursor; no new building hover tint or outline. |
 | Military selected, hover enemy building | Attack cursor; right-click orders building attack. Hover must not advance the unit-overlap target stack. |
 | Workers alone selected, hover enemy building | Unavailable cursor; building attacks require military. |
-| Friendly building selected | Town Center, Stable and Workshop use rally cursor/right-click ground; House, Storehouse and Watchtower use unavailable cursor for rally. Their normal production/action panels differ by actual type. |
-| Both teams' completed art | The PNG is shared across teams and has no aligned team mask. Painted pennants stay source-colored. Live standards differ in color **and shape**: Azure rectangular with one pale bar; Ember notched with two. Selection lime removes the outline's color distinction, so check the standard and HUD together. |
+| Friendly building selected | Town Center, Stable, Workshop, Barracks and Archery Range use rally cursor/right-click ground; House, Storehouse and Watchtower use unavailable cursor for rally. Their normal production/action panels differ by actual type. |
+| Both teams' completed art | The PNG is shared across teams and has no aligned team mask. The earlier six families' painted pennants stay source-colored; the military pair bakes no faction standard. Live standards differ in color **and shape**: Azure rectangular with one pale bar; Ember notched with two. Selection lime removes the outline's color distinction, so check the standard and HUD together. |
 | Transparent margin | Existing rectangle-based Three Sprite picking remains; no alpha-aware picker was added. Clicking a clear part of the full sprite quad may select it. Occupancy remains the server footprint. Body-depth child never adds a target. |
 
 Capture both teams at the **initial normal zoom 0.91**, then **Fit map** for the
@@ -171,7 +184,7 @@ does not imply a persistent building silhouette.
 
 Retain an evidence directory per attempt containing original PNGs, a hash
 manifest, source/release/deployment revisions, map JSON/hash, both seat/camera
-settings, and a short observation matrix for all six families and states. Link
+settings, and a short observation matrix for all eight families and states. Link
 the preserved files from the [art evolution wiki](lore/art-evolution.md) only
 after existence, hashes and pixels are verified. Keep the earlier incomplete
 Barracks depth-cost receipt; its partial timings do not substitute for this
@@ -182,7 +195,7 @@ accepts a recorded narrower result. Until then deployment/native boxes stay open
 ## Verified preparation, not native acceptance
 
 The factory regression executes actual ordinary picker, selection, cursor and
-health-update functions for all six families/both teams, plus late construction
+health-update functions for all eight families/both teams, plus late construction
 and exact 27.5%/60%/30% boundaries. It checks live flag color/shape, shared art,
 hidden-group picking, team-filtered friendly selection/enemy hover, retained
 feedback and repair. It mocks DOM image decoding and performs no WebGL capture.

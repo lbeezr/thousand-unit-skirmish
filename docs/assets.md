@@ -58,13 +58,14 @@ Current runtime defaults:
   legacy preview flags retain their comparison paths. See the
   [Human](art-direction/human-roster-v1/README.md) and
   [Boughward](art-direction/boughward-roster-v1/README.md) source records.
-- [Finished Frontier buildings](frontier-building-runtime.md) now bind all six saved
-  Complete families (Town Center, House, Storehouse, Stable, Workshop, Watchtower) in normal matches without a preview flag. Town Centers
+- [Finished Frontier buildings](frontier-building-runtime.md) now bind all eight
+  Complete families (Town Center, House, Storehouse, Stable, Workshop, Watchtower,
+  Barracks, Archery Range) in normal matches without a preview flag. Town Centers
   use the older eight-view captured lifecycle pack for missing states, with procedural
   fallback. Starting landmarks use Complete; constructed Town Centers pass live
   progress/health into the same loader for construction, damage and repair.
-- Barracks and Archery Ranges load their direct WebP sprites by default through
-  `src/building-sprites.mjs`, with procedural loading/error fallback. Construction
+- Barracks and Archery Ranges retain their older direct WebP sprites as missing-state
+  and loading fallback through `src/building-sprites.mjs`. The inner construction path
   uses 20%/90% transitions; completed health uses 66%/33% transitions. Their
   separate construction-atlas packs remain candidates.
   Both building types refresh their sprite on authoritative state updates;
@@ -72,15 +73,15 @@ Current runtime defaults:
 - Town Center footprints block movement and building placement. Captured image
   bounds do not define collision; `src/town-center-spawn.mjs` owns the footprint.
 - `?frontierBuildingsPreview=1` binds the newer Town Center, House, Storehouse,
-  Stable, Workshop and Watchtower families. Each has eight Complete views;
+  Stable, Workshop, Watchtower, Barracks and Archery Range families. Each has eight Complete views;
   other lifecycle states use existing fallback art. These previews lack team
-  masks. All six are now default Complete replacements, with
-  six manifests and 48 original PNGs packaged. `?frontierBuildingsPreview=town-center`
+  masks. All eight are default Complete replacements, with
+  eight manifests and 64 original PNGs packaged. `?frontierBuildingsPreview=town-center`
   remains a named comparison override. `?frontierBuildingsPreview=0` restores
   earlier fallback art for comparison. See the
   [building/environment runtime audit](art-runtime-audit-2026-10-03.md).
-  New Barracks/Range concepts remain
-  source-only; their older direct sprites are active. No separate Boughward
+  New Barracks/Range captures come from locally authored textured models;
+  their older direct sprites remain fallback. No separate Boughward
   building family is present. See the
   [binding audit](qa-art-runtime-contract-audit-2026-10-01.md).
 - The 40 px Meshy cursor PNGs are integrated. Older 32 px SVGs remain source history.
@@ -108,7 +109,7 @@ This server is for static review; run the game through `npm start`.
 The pack READMEs describe current integration; older captions on the review page
 may describe its original review-only state.
 
-The Dockerfile includes the active Barracks/Range packs and all six finished
+The Dockerfile includes the retained Barracks/Range fallback packs and all eight finished
 Frontier building families. It still omits the atlas page. Release packaging checks file delivery;
 a capture of the identified deployed build establishes hosted appearance.
 

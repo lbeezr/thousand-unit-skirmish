@@ -7,14 +7,14 @@ import * as THREE from 'three';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { buildingPresentation } from '../src/gameplay-presentation.mjs';
 import { battlefieldCursor } from '../src/battlefield-cursor.mjs';
-import { attachBuildingSprite } from '../src/building-sprites.mjs';
+import { attachBuildingSprite, buildingSpriteUrl } from '../src/building-sprites.mjs';
 import { barracksModelVisualState, buildingFinishedDetailsVisible } from '../src/building-visual-state.mjs';
 import { frontierBuildingManifestUrl } from '../src/frontier-building-preview.mjs';
 import { createCapturedBuildingSprite, updateCapturedBuildingSprite, disposeCapturedBuildingSprite } from '../src/captured-building-art.mjs';
 
 // Real renderer factories and verified public file bytes, with DOM decode mocked.
 // This is a source/binding/lifecycle test; it does not execute WebGL or certify pixels.
-test('normal factories use all six existing Complete families and truthful per-state fallbacks for both teams', async () => {
+test('normal factories use all eight Complete families and truthful per-state fallbacks for both teams', async () => {
   const previous = { fetch: globalThis.fetch, Image: globalThis.Image, document: globalThis.document, warn: console.warn };
   const main = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
   const functionSource = name => {
@@ -30,7 +30,25 @@ test('normal factories use all six existing Complete families and truthful per-s
     return new Response(bytes, { headers: { 'content-type': String(url).endsWith('.json') ? 'application/json' : 'image/png' } });
   };
   globalThis.Image = class { width = 1024; height = 1024; decode() { return Promise.resolve(); } };
-  globalThis.document = { createElement() { return { getContext() { return { drawImage() {}, fillRect() {} }; } }; } };
+  globalThis.document = {
+    createElement() { return { getContext() { return { drawImage() {}, fillRect() {} }; } }; },
+    createElementNS() {
+      const listeners = new Map();
+      let imageSource;
+      return { width: 640, height: 640,
+        addEventListener(name, fn) { listeners.set(name, fn); },
+        removeEventListener(name) { listeners.delete(name); },
+        set src(value) {
+          imageSource = value;
+          fetched.push(value);
+          // Load actual legacy bytes, while leaving browser image decode mocked.
+          readFile(new URL('../' + value.replace(/^\.\//, ''), import.meta.url))
+            .then(() => listeners.get('load')?.call(this), () => listeners.get('error')?.call(this));
+        },
+        get src() { return imageSource; },
+      };
+    },
+  };
   console.warn = () => {};
   const scene = new THREE.Scene(), capturedBuildingVisuals = [], TEAM_HEX = [0x5aa7d7, 0xe67a5e];
   const renderer = { domElement: { dataset: {}, getBoundingClientRect: () => ({ left: 0, top: 0, width: 1280, height: 720 }) } };
@@ -72,11 +90,12 @@ test('normal factories use all six existing Complete families and truthful per-s
   const visuals = [], textures = new Map(), teamShapes = new Map();
   try {
     assert.equal(BUILDING_DEFINITIONS['town-center'].footprint, 5);
-    const families = ['town-center', 'house', 'storehouse', 'stable', 'workshop', 'watchtower'];
+    const families = ['town-center', 'house', 'storehouse', 'stable', 'workshop', 'watchtower', 'barracks', 'archery-range'];
     for (const type of families.slice(1)) assert.equal(BUILDING_DEFINITIONS[type].footprint, 3);
     const update = { 'town-center': context.updateTownCenterVisual, house: context.updateHouseVisual,
       storehouse: context.updateHouseVisual, stable: context.updateBarracksVisual,
-      workshop: context.updateArcheryRangeVisual, watchtower: context.updateWatchtowerVisual };
+      workshop: context.updateArcheryRangeVisual, watchtower: context.updateWatchtowerVisual,
+      barracks: context.updateBarracksVisual, 'archery-range': context.updateArcheryRangeVisual };
     for (const team of [0, 1]) for (const type of families) {
       const building = { id: type + '-' + team, type, team, x: team ? -50 : 50, z: 0, home: type === 'town-center', complete: true, progress: 1, hp: 100, maxHp: 100 };
       const visual = context.createGameplayBuildingVisual(building); visuals.push(visual);
@@ -106,9 +125,9 @@ test('normal factories use all six existing Complete families and truthful per-s
       assert.equal(visual.outline.material.color.getHex(), 0xd5ef78); assert.equal(visual.outline.material.opacity, 1);
       context.updateBuildingSelectionVisual(visual, false);
       assert.equal(visual.outline.material.color.getHex(), TEAM_HEX[team]); assert.equal(visual.outline.material.opacity, .9);
-      if (type === 'stable' || type === 'workshop') {
+      if (['stable', 'workshop', 'barracks', 'archery-range'].includes(type)) {
         const standard = visual.group.children.find(child => child.userData.buildingTeamStandard);
-        const expected = type === 'stable' ? [1.24, 0, 1.15] : [-1.18, 0, 1.17];
+        const expected = type === 'stable' || type === 'barracks' ? [1.24, 0, 1.15] : [-1.18, 0, 1.17];
         standard.position.toArray().forEach((value, index) => assert.ok(Math.abs(value - expected[index]) < 1e-12,
           'extracting a nested standard preserves its local/world position'));
       }
@@ -134,8 +153,17 @@ test('normal factories use all six existing Complete families and truthful per-s
         step();
         assert.equal(entry.sprite.visible, false, 'missing Foundation/Frame/Damaged/Critical cannot show Complete');
         assert.equal(entry.fallbackRoot.visible, true);
+        if (['barracks', 'archery-range'].includes(type)) {
+          const expected = buildingSpriteUrl(entry.lifecycleInput);
+          await settle(() => {
+            let sprite;
+            entry.fallbackRoot.traverse(child => { if (child.isSprite && !child.userData.buildingBodyDepth) sprite = child; });
+            return sprite?.visible && sprite.material.map?.image?.src === expected;
+          });
+          assert.ok(fetched.includes(expected), 'actual legacy direct loader requests the correct missing-state art');
+        }
         if (state.complete === false) {
-          if (visual.roof) assert.equal(visual.roof.visible, type === 'workshop' && state.progress >= .9,
+          if (visual.roof) assert.equal(visual.roof.visible, ['workshop', 'archery-range'].includes(type) && state.progress >= .9,
             'fallback roof follows the existing role transition');
           if (visual.roofPanels) for (const panel of visual.roofPanels) assert.equal(panel.visible, state.progress >= .75);
         } else {

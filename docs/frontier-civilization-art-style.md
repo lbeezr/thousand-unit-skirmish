@@ -47,6 +47,7 @@ The [dated preview evidence](qa-frontier-building-runtime-preview-2026-09-30.md)
 records the original six Complete-only manifests and opt-in binding. Those six
 families now supply [default finished art](frontier-building-runtime.md);
 [ordinary-game acceptance](qa-frontier-building-adoption.md), team treatment
-and new lifecycle coverage remain open. Barracks and Archery Range still use
-older direct sprites: their [replacement inventory and plan](frontier-barracks-range-authoring.md)
-identify missing new-design models/views and continuing building ownership.
+and new lifecycle coverage remain open. Barracks and Archery Range now have
+original local Complete captures with default bindings and older direct
+state/loading fallback. Their [replacement inventory and plan](frontier-barracks-range-authoring.md)
+records source/proportion limits and continuing gameplay acceptance ownership.

@@ -9,9 +9,22 @@ activation, and paid evaluation remain separate decisions.
 
 ## Boundary
 
-`attachModelProposalOpponent` in `src/pve-model-proposal.mjs` is inert unless
+`attachModelProposalOpponent` in `src/server/pve-model-proposal.mjs` is inert unless
 explicitly enabled with an injected provider, synchronous conservative
 `estimateRequest`, and `reportsUsage: true`. Tests inject local fakes only.
+
+The implementation lives in the Node-adapter domain and depends on the portable
+`pve-opponent` policy/observation contract. Its sole repository consumer is the
+offline scenario runner. Both implementation and compatibility paths remain
+outside browser closures and the HTTP client allowlist; Docker's recursive `src`
+copy includes them for offline use.
+
+`src/pve-model-proposal.mjs` preserves the four existing named exports with the
+same function/object identities. The dependency-boundary owner retains this
+compatibility module until offline consumers have migrated to the canonical
+path. Removal requires a separate small PR updating the compatibility contract
+test and confirming that repository/documented offline consumers no longer use
+the old path; it is not part of this move.
 
 Inference stays outside the 30 Hz simulation callback. The helper sends an
 immutable PvE observation v1 plus proposal version, opaque request ID, source
