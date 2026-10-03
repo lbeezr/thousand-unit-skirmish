@@ -46,8 +46,17 @@ test('a prior content pin migrates existing work but cannot claim planted stock'
   const previous = 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6';
   const paid = { schemaVersion: 22, rulesetRevision: previous, state: { buildings: [{ type: 'mill' }, { type: 'dock' }], units: [] } };
   assert.equal(context.migrateMatchCheckpoint(paid).rulesetRevision, GAMEPLAY_RULESET_REVISION);
+  const gatePin = 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b';
+  const gate = { type: 'palisade-gate', gateOpen: true, progress: 1, complete: true };
+  const recent = { schemaVersion: 22, rulesetRevision: gatePin,
+    state: { buildings: [gate, { type: 'dock' }], units: [{ buildTargetId: 7 }] } };
+  assert.equal(context.migrateMatchCheckpoint(recent).rulesetRevision, GAMEPLAY_RULESET_REVISION);
+  assert.equal(recent.state.buildings[0], gate);
+  assert.equal(recent.state.units[0].buildTargetId, 7);
   for (const building of [{ type: 'farm', harvestStock: 200 }, { type: 'house', harvestStock: 200 }]) {
-    const invalid = { schemaVersion: 22, rulesetRevision: previous, state: { buildings: [building], units: [] } };
-    assert.equal(context.migrateMatchCheckpoint(invalid).rulesetRevision, previous);
+    for (const pin of [previous, gatePin]) {
+      const invalid = { schemaVersion: 22, rulesetRevision: pin, state: { buildings: [building], units: [] } };
+      assert.equal(context.migrateMatchCheckpoint(invalid).rulesetRevision, pin);
+    }
   }
 });

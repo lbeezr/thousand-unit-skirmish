@@ -67,13 +67,13 @@ try {
   for (const team of [0, 1]) await build(team, 'mill', workers[team]);
   await fixture.checkpoint(snapshot => snapshot.state.buildings.filter(building => building.type === 'mill').every(building => building.complete)
     && snapshot.state.buildings.length === 2);
-  // Re-pin a real, paid Farm-free save to the exact preceding Dock roster.
+  // Re-pin a real, paid Farm-free save to the exact preceding Gate roster.
   await fixture.stop(); const prior = await saved();
-  prior.rulesetRevision = 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6';
+  prior.rulesetRevision = 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b';
   await writeFile(fixture.checkpointPath, JSON.stringify(prior)); await reconnect();
   const migrated = await fixture.checkpoint(snapshot => snapshot.sequence > prior.sequence);
   assert.equal(migrated.matchId, prior.matchId); assert.deepEqual(migrated.state.teamWood, prior.state.teamWood);
-  record('prior-Dock-pin-preserved', migrated);
+  record('prior-Gate-pin-preserved', migrated);
   for (const team of [0, 1]) await build(team, 'farm', [workers[team][0]]);
   const foundation = await fixture.checkpoint(snapshot => farms(snapshot).length === 2 && farms(snapshot).every(building => !building.complete));
   assert.ok(farms(foundation).every(building => building.harvestStock === 0)); record('paid-unfinished', foundation);

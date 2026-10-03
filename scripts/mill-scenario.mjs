@@ -24,7 +24,13 @@ async function reconnect() {
 }
 async function stopWorkers() {
   for (const team of [0, 1]) await command(team, { type: 'stop', ids: workers[team] }, /STOP ORDER/);
-  return fixture.checkpoint(snapshot => workers.flat().every(id => snapshot.state.units[id].gatherPhase === ''
+  // A previous Stop snapshot can already match while a new Gather/Stop pair
+  // retains more cargo. Observe a state captured after both acknowledgements,
+  // including when an older capture finishes writing after the commands.
+  const acknowledgedAt = Date.now();
+  const afterCommands = (await saved()).sequence;
+  return fixture.checkpoint(snapshot => snapshot.sequence > afterCommands && snapshot.savedAt > acknowledgedAt
+    && workers.flat().every(id => snapshot.state.units[id].gatherPhase === ''
     && snapshot.state.units[id].buildingTargetId === null));
 }
 function conserved(snapshot) {

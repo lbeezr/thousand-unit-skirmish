@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-entry="menu">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,10 +7,11 @@
     <title>Thousand Unit Skirmish</title>
     <link rel="stylesheet" href="./style.css" />
     <link rel="stylesheet" href="./src/room-lobby.css" />
+    <link rel="stylesheet" href="./src/game-menu.css" />
     <script>
       window.reportPrototypeError = (message) => {
         window.clearTimeout(window.prototypeStartupTimeout);
-        const panel = document.querySelector('#runtime-error');
+        const panel = document.querySelector(document.documentElement.dataset.entry === 'menu' ? '#game-menu-status' : '#runtime-error');
         if (panel) { panel.textContent = `CLIENT ERROR · ${message}`; panel.classList.add('visible'); }
       };
       window.markPrototypeReady = () => {
@@ -35,10 +36,33 @@
         }
       }
     </script>
-    <script type="module" src="./src/main.js" onerror="window.reportPrototypeError('Could not load src/main.js')"></script>
-    <script type="module" src="./src/pve-entry.mjs" onerror="window.reportPrototypeError('Could not load src/pve-entry.mjs')"></script>
+    <script type="module" src="./src/game-entry.mjs" onerror="window.reportPrototypeError('Could not load game entry')"></script>
   </head>
   <body>
+    <main id="game-menu" aria-labelledby="game-menu-title">
+      <div class="game-menu-brand"><div class="eyebrow">FIELD COMMAND · FRONTIER</div><h1 id="game-menu-title">Thousand Unit<br>Skirmish</h1><p>Gather. Build. Command.</p></div>
+      <section class="game-menu-actions" aria-label="Main menu">
+        <button id="menu-new-game" data-create-game="pve" type="button" disabled><strong>New Game</strong><span>Play vs AI · a fresh seeded battlefield</span></button>
+        <button id="menu-create-room" data-create-game="pvp" type="button" disabled><strong>Create Room</strong><span>Invite a friend · Frontier 1v1 pregame lobby</span></button>
+        <button id="menu-join" type="button" disabled><strong>Join Room</strong><span>Use a room code or invite link</span></button>
+        <button id="menu-resume" type="button" hidden><strong>Resume</strong><span>Return to your saved player session</span></button>
+        <div class="game-menu-tools"><button id="menu-studio" data-create-game="studio" type="button" disabled>Map Studio</button><button id="menu-settings" type="button">Settings</button></div>
+        <p id="game-menu-status" role="status" aria-live="polite"></p>
+      </section>
+      <p class="game-menu-footer">Two opposing seats · Frontier faction</p>
+    </main>
+    <dialog id="menu-join-dialog" class="game-menu-dialog" aria-labelledby="menu-join-title"><form>
+      <h2 id="menu-join-title">Join Room</h2><label>Room code or invite link<input type="text" autocomplete="off" spellcheck="false" required></label>
+      <p role="status" aria-live="polite"></p><div><button type="button" data-close>Cancel</button><button type="submit">Join Room</button></div>
+    </form></dialog>
+    <dialog id="menu-settings-dialog" class="game-menu-dialog" aria-labelledby="menu-settings-title">
+      <h2 id="menu-settings-title">Settings</h2>
+      <label>Camera speed<input id="menu-camera-speed" type="range" min="50" max="200" step="10"></label>
+      <label><input id="menu-edge-scroll" type="checkbox"> Edge scroll</label>
+      <label><input id="menu-audio-enabled" type="checkbox"> Enable audio</label>
+      <label>Overall volume<input id="menu-audio-volume" type="range" min="0" max="100"></label>
+      <button type="button" data-close>Done</button>
+    </dialog>
     <dialog id="room-lobby"></dialog>
     <div class="app-shell">
       <header class="topbar">
@@ -118,7 +142,7 @@
 
         <div class="contextual-command-bar" role="region" aria-label="Selection commands" data-context="none" hidden>
           <div class="contextual-identity">
-            <button type="button" class="worker-portrait" data-worker-portrait data-context-panel="selection" aria-controls="command-deck" aria-label="Worker role notes" hidden><span class="worker-portrait-art" aria-hidden="true"><img alt="" decoding="async"></span></button>
+            <button type="button" class="selection-portrait" data-selection-portrait data-context-panel="selection" aria-controls="command-deck" aria-label="Selection details" hidden><span class="selection-portrait-art" aria-hidden="true"><img alt="" decoding="async"></span></button>
             <div class="contextual-identity-text"><strong data-worker-health hidden></strong><div class="contextual-summary" data-context-summary></div></div>
           </div>
           <div class="contextual-actions">
@@ -298,6 +322,7 @@
         <button id="hud-scrim" class="hud-scrim" type="button" aria-label="Close menu" hidden></button>
         <aside id="match-menu" class="match-menu" aria-label="Match menu" hidden>
           <button id="match-menu-close" class="hud-panel-close" type="button" aria-label="Close match menu">×</button>
+          <a id="return-main-menu" class="room-action" href="/">MAIN MENU</a>
           <div class="dock-heading">
             <div>
               <div class="eyebrow">MATCH <span>·</span> OPTIONS</div>

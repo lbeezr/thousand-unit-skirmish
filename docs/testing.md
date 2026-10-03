@@ -133,7 +133,7 @@ Run from the repository root:
 | PvE live construction / reinforcements (legacy and regional maps) | `node scripts/pve-production-runtime-scenario.mjs forked-vale` and `woodland-expanse`; also `bellweather-millrace` and `underbough-rootways` |
 | Compact HUD | `node --test scripts/hud-layout.test.mjs scripts/selection-context.test.mjs scripts/objective-summary.test.mjs` |
 | Tactical-map movement and Space selection centering | `node --test scripts/minimap-orders.test.mjs scripts/selection-center-shortcut.test.mjs`; [native Mac recipe and evidence](qa-minimap-orders-2026-10-03.md) |
-| Native two-seat minimap input, camera preservation, responsive size and DPR | `node scripts/minimap-orders-browser.mjs --output=NEW_DIRECTORY` (installed Chrome) |
+| Native two-seat minimap input, camera preservation, responsive size and DPR | `node scripts/minimap-orders-browser.mjs --output=NEW_DIRECTORY` (installed Chrome); camera observation regression: `node --test scripts/minimap-browser-probe.test.mjs` |
 | Audio policy | `node scripts/audio-policy-scenario.mjs` |
 
 Three Crowns also has both-seat scenarios: `node scripts/three-crowns-scenario.mjs 0`
@@ -279,6 +279,12 @@ comparing results. The [dated baseline](performance-reliability-baseline-2026-09
 includes reproduction commands and known limitations.
 
 ## Report the result
+
+Main menu regressions: `node --test scripts/game-entry.test.mjs scripts/game-navigation.test.mjs`
+and `node scripts/game-menu-scenario.mjs` check the [entry contract](game-entry.md),
+fresh/stale profiles, explicit session validation, room isolation, both-seat
+authority, navigation and packaged lazy client imports. The [dated evidence and
+Mac recipe](qa-game-entry-2026-10-03.md) separates local proof from native staging QA.
 
 Pregame regressions: `node --test scripts/room-pregame.test.mjs scripts/room-lobby-ui.test.mjs scripts/room-launch-options.test.mjs`
 and `node scripts/room-pregame-scenario.mjs` cover the [lobby contract](room-lobby.md),

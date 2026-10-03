@@ -113,6 +113,14 @@ sources are public. A future hidden event source must not expose private attribu
 work target. The [renderer contract](renderer-state-contract.md) defines conservative
 visual mapping. The renderer must never infer hidden changes.
 
+Unit cargo normally retains the existing two-decimal snapshot rounding. A positive
+load that would round to zero is sent at its authoritative precision, so carrying
+controls still accept the final fraction of a finite food/wood source. Exact zero
+stays zero. Checkpoints and resource deposits retain their existing precision;
+this transport rule neither grants food nor changes visibility or display formatting.
+[Fractional cargo evidence](qa-fractional-cargo-return-2026-10-03.md) exercises both
+seats through the production client command path and restart.
+
 ## Checks
 
 The deterministic policy assigns one Scout to reconnaissance separately from

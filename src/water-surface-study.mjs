@@ -2,11 +2,10 @@ import * as THREE from 'three';
 import { buildWaterSurfaceGeometry, WATER_LEVEL } from './water-surface-geometry.mjs';
 import { buildWaterStudyField, createWaterStudyFishSelector, waterStudyTime, WATER_STUDY_FISH_LIMIT } from './water-study-state.mjs';
 
-export function waterStudyOptions(search = '', reducedMotion = false) {
+export function waterSurfaceOptions(search = '', reducedMotion = false) {
   const params = new URLSearchParams(search);
-  const time = params.get('waterStudyTime');
-  return { enabled: params.get('waterStudy') === '1',
-    quality: params.get('waterStudyQuality') === 'low' ? 'low' : 'study', reducedMotion,
+  const time = params.get('waterTime') ?? params.get('waterStudyTime');
+  return { quality: (params.get('waterQuality') ?? params.get('waterStudyQuality')) === 'low' ? 'low' : 'study', reducedMotion,
     fixedTime: time !== null && time.trim() !== '' && Number.isFinite(Number(time)) ? Number(time) : null };
 }
 
