@@ -326,6 +326,21 @@ def encode_runtime_mask(path):
         bpy.data.images.remove(image)
 
 
+def render_owner_mask(path):
+    """Render semantic data without dithering; retain the color-pass setting."""
+    import bpy
+
+    scene = bpy.context.scene
+    color_dither = scene.render.dither_intensity
+    try:
+        scene.render.dither_intensity = 0
+        scene.render.filepath = str(path)
+        bpy.ops.render.render(write_still=True)
+        encode_runtime_mask(path)
+    finally:
+        scene.render.dither_intensity = color_dither
+
+
 def validate_capture_scene():
     import bpy
     from bpy_extras.object_utils import world_to_camera_view
@@ -407,9 +422,7 @@ def render(output, derived, synthetic):
             bpy.ops.render.render(write_still=True)
             bpy.context.view_layer.material_override = mask
             scene.view_settings.view_transform = "Raw"
-            scene.render.filepath = str(mask_path)
-            bpy.ops.render.render(write_still=True)
-            encode_runtime_mask(mask_path)
+            render_owner_mask(mask_path)
             views.append({"index": index, "azimuthDegrees": index * 45,
                           "path": color_path.name, "sha256": sha256(color_path),
                           "teamMaskPath": mask_path.name, "teamMaskSha256": sha256(mask_path)})
@@ -424,6 +437,7 @@ def render(output, derived, synthetic):
         "status": "SYNTHETIC TEST FIXTURE; not runtime art" if synthetic else "authored candidate; art review required",
         "syntheticFixture": synthetic, "runtimeAdoption": False,
         "teamMaskEncoding": "rgba-white-owner-alpha-coverage",
+        "teamMaskDitherIntensity": 0,
         "camera": {"projection": "orthographic", "framePixels": [1024, 1024],
                    "pixelsPerWorldUnit": 128, "elevationDegrees": 46,
                    "azimuthDegrees": [i * 45 for i in range(8)],
