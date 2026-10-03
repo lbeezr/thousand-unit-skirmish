@@ -5,7 +5,8 @@ import { createWaterUnitRuntime, waterUnitOccupiedCells } from './src/water-unit
 import { createSkiffFishingContext } from './src/skiff-fishing.mjs';
 import { SKIFF_GROUP_ORDER_LIMIT, planSkiffGroupMove, planSkiffGroupFishing, planSkiffGroupReturn } from './src/skiff-group-orders.mjs';
 import { planSkiffWaypoints, validSkiffWaypoints, advanceSkiffWaypoints } from './src/skiff-waypoints.mjs';
-import { activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted, validWildlifeNodeDefinition, validWildlifeNodeState } from './src/wildlife-state.mjs';
+import { activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted, validWildlifeNodeDefinition, validWildlifeNodeState, validWildlifeTeam } from './src/wildlife-state.mjs';
+import { migrateWildlifeClaimsCheckpoint, clearWildlifeClaimSegment, stepWildlifeClaims } from './src/wildlife-claims.mjs';
 import { migrateWildlifeMotionCheckpoint, sameWildlifeCell, wildlifeCell, wildlifeStepUnoccupied, stepWildlifeMotion, validWildlifeMotion } from './src/wildlife-motion.mjs';
 import { migrateMillraceSheepCheckpoint } from './src/millrace-sheep.mjs';
 import { validateMapRegion } from './src/regions.mjs';
@@ -66,7 +67,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 24;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 25;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -2612,7 +2613,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
       const node = resourceNodeStates.get(id);
       return { id, type, ...(resourceVariant === undefined ? {} : { resourceVariant }), stock: node?.stock ?? 0,
         ...(node?.wildlifeSpecies === undefined ? {} : {
-          wildlifeSpecies: node.wildlifeSpecies, wildlifeState: node.wildlifeState,
+          wildlifeSpecies: node.wildlifeSpecies, wildlifeState: node.wildlifeState, wildlifeTeam: node.wildlifeTeam,
           x: node.x, z: node.z, wildlifeHeading: node.wildlifeMotion.heading,
           ...(node.wildlifeState === 'alive' ? { wildlifeActivity: node.wildlifeMotion.activity } : {}),
         }),
@@ -2901,7 +2902,7 @@ function validateMatchCheckpoint(snapshot) {
       && validResourceVariantState(node, definitionNode)
       && (definitionNode.wildlifeSpecies === undefined
         ? node.x === definitionNode.x && node.z === definitionNode.z
-        : validWildlifeMotion(node, definitionNode) && sameWildlifeCell(node, definitionNode, definition)
+        : validWildlifeTeam(node.wildlifeTeam) && validWildlifeMotion(node, definitionNode) && sameWildlifeCell(node, definitionNode, definition)
           && sameWildlifeCell({ x: node.wildlifeMotion.targetX, z: node.wildlifeMotion.targetZ }, definitionNode, definition)),
     'invalid resource node state');
     resourceIds.add(node.id);
@@ -3215,7 +3216,7 @@ function restoreMatchCheckpoint(snapshot) {
     const restored = resourceNodeStates.get(node.id);
     restored.stock = node.stock;
     if (restored.wildlifeSpecies !== undefined) {
-      restored.wildlifeState = node.wildlifeState; restored.x = node.x; restored.z = node.z;
+      restored.wildlifeState = node.wildlifeState; restored.wildlifeTeam = node.wildlifeTeam; restored.x = node.x; restored.z = node.z;
       restored.wildlifeMotion = { ...node.wildlifeMotion };
     }
   }
@@ -3325,7 +3326,7 @@ function migrateMatchCheckpoint(snapshot) {
   // A pin predating Farm still cannot claim a paid planting or harvest state.
   if (![GAMEPLAY_RULESET_REVISION, previousMovementPins[0]].includes(snapshot?.rulesetRevision)
     && snapshot?.state?.buildings?.some(building => building.type === 'farm' || building.harvestStock !== undefined)) return snapshot;
-  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && previousMovementPins.includes(snapshot.rulesetRevision)
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
@@ -3466,7 +3467,7 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // Mill only adds a food depot; retain existing palisades and paid work unchanged.
-  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801'
     && Array.isArray(snapshot.state?.buildings)
     && !snapshot.state.buildings.some(building => building.type === 'mill')
@@ -3474,23 +3475,23 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // The gate is additive; accept only the exact preceding definition set, without invented gate state.
-  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6'
     && Array.isArray(snapshot.state?.buildings)
     && !snapshot.state.buildings.some(building => building.type === 'palisade-gate' || Object.hasOwn(building, 'gateOpen'))) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // Additive Dock content preserves the exact previous Mill roster and paid work.
-  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2'
     && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   // Exact pre-Skiff Gate/Dock content retains its existing buildings, banks and work.
-  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b'
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
 
   // Farm adds only new paid crop state; retain exact pre-Farm Skiff work unchanged.
-  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
@@ -3498,7 +3499,7 @@ function migrateMatchCheckpoint(snapshot) {
     && !snapshot?.mapDefinition?.elevationPatches?.some((patch) => patch.level > 0)) {
     snapshot.rulesVersion = MATCH_RULES_VERSION;
   }
-  if ([22, 23, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion) && Array.isArray(snapshot.state?.units)) {
+  if ([22, 23, 24, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion) && Array.isArray(snapshot.state?.units)) {
     for (const unit of snapshot.state.units) if (unit && typeof unit === 'object') unit.persistentOrder ??= null;
   }
   return snapshot;
@@ -3606,6 +3607,7 @@ async function initializeMatchFromCheckpoint() {
   try {
     const snapshot = migrateEconomyCheckpoint(migrateMatchCheckpoint(JSON.parse(serialized)));
     migrateWildlifeMotionCheckpoint(snapshot);
+    migrateWildlifeClaimsCheckpoint(snapshot);
     restoreMatchCheckpoint(snapshot);
     console.log(`Restored match ${matchId} from checkpoint ${checkpointSequence} at tick ${tickNumber}.`);
   } catch (error) {
@@ -7118,6 +7120,14 @@ function accumulateBuildingAttacks() {
   }
 }
 
+function updateWildlifeClaims() {
+  if (stepWildlifeClaims(resourceNodeStates.values(), units, { canClaim: (unit, node) =>
+    UNIT_DEFINITIONS[unit.kind]?.movementDomain !== 'water' && Object.hasOwn(UNIT_DEFINITIONS, unit.kind)
+    && cellVisibleToTeam(unit.team, wildlifeCell(node, mapDefinition))
+    && clearWildlifeClaimSegment(unit, node, { map: mapDefinition, levels: elevationLevelByCell, isWalkable }),
+  })) dirty = true;
+}
+
 function updateWildlifeMotion() {
   const gatherTargets = new Set(units.filter(unit => unit.hp > 0 && unit.kind === 'worker'
     && unitHasCapability(unit, 'gather') && ['to-node', 'gathering'].includes(unit.gatherPhase))
@@ -7152,6 +7162,7 @@ function simulateTick() {
   if (matchWinner >= 0) return;
   if (!scenarioClockStarted && connectedCount() >= (soloPractice ? 1 : 2)) scenarioClockStarted = true;
   if (scenarioClockStarted) matchElapsedSeconds += STEP_SECONDS;
+  updateWildlifeClaims();
   rebuildSpatialBuckets();
   updatePersistentOrders();
   const attackMovePlans = prepareAttackMovePaths();

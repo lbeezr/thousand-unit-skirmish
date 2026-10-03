@@ -49,7 +49,7 @@ The first authorized Worker in normal interaction range changes it once to a
 stationary `carcass`; activation itself grants no food. Existing gathering then
 moves stock into food cargo at the unchanged rate/carry limit and deposits at
 valid food drop-offs. Either seat may gather the same visible carcass, regardless
-of who activated it. There is no ownership or claim check. Repeated orders and
+of who activated it. Gather has no ownership restriction; automatic living claims are described below. Repeated orders and
 interruption preserve the same stock pool; exhausting it sets `depleted` and
 rejects new gathering. Wildlife adds no sight/population or path blocker
 and is absent from combat targeting. No gatherer cap is introduced in this slice.
@@ -74,8 +74,29 @@ without changing stock/cargo; schema24 restores current positions and progress.
 Carcass/depleted motion stays frozen, including through recovery. The renderer,
 resource click target, ring, callout and minimap consume disclosed positions;
 missing/fog-hidden rows immediately hide and expose no remembered click target.
-No ownership field or claiming/herding is included here. The user's automatic
-proximity-claim direction and team collar are the next separately scoped slice.
+The motion slice adds no ownership. The subsequent automatic claim slice below
+adds only a real team label; controllable herding and collar art remain separate.
+
+Alive Sheep now claim automatically when a living land unit is within **1.4
+world units**, the Sheep cell is currently visible to that team, and the short
+segment crosses only legal open land/elevation (including diagonal corner checks).
+Workers, Scouts and other mobile land roster units are eligible; water units,
+dead units, distant units and blocked approaches are excluded. No Claim click,
+stock conversion or food reward is added. Any eligible current-owner presence
+retains ownership; otherwise the nearest eligible unit claims or recaptures,
+with exact distance ties settled by lower stable unit ID. Without a contender,
+the last owner remains. Claim changes apply only while alive: carcass/depleted
+labels stay frozen and shared Gather rights remain unchanged.
+
+Visible rows and checkpoint schema **25** carry `wildlifeTeam: null | 0 | 1`
+(neutral, Azure, Ember). The label grants no sight, population or movement rights
+in this slice. Exact schema24 saves initialize neutral labels without altering
+position, private motion, stock, cargo or banks; older compatible migrations
+chain through24. Current saves validate/restore actual ownership. Authoring
+rejects runtime team labels; rematch resets them to neutral. The public field
+is the actual collar input for art task `01a101a8-fba6-7323-a40c-27efd0112007`;
+no collar asset or herd selection/order binding is invented here.
+[Claim/recovery evidence](qa-sheep-claims-2026-10-03.md) records the owned follow-ups.
 
 Stop after depletion preserves a Worker's final cargo. Select that Worker and
 choose **Return cargo** to deliver it to a reachable completed owned food drop-off,
@@ -116,7 +137,7 @@ real map publication/orders, tests hidden/foreign-worker rejection, fractional
 stock conservation with lost-cargo/duplicate-credit negative controls, shared
 carcass access after Stop, partial/depleted recovery, both-seat deposits, rematch
 and rejection of a contradictory saved lifecycle. Its fixture stocks are test
-values, not balance choices. Accepted appearance, claim/herding, combat dispatch, regional
+values, not balance choices. Accepted appearance, controllable herding, combat dispatch, regional
 placement, AI-specific wildlife policy and browser match evidence remain separate
 outcomes. The high-detail Sheep GLB is an art reference, not a runtime mesh. The
 neutral client renderer is separate from unit heading and environment art owners.
@@ -127,19 +148,21 @@ The wildlife worker retains this ranked queue through normal integration and
 verified delivery; useful small PRs ship independently.
 
 1. **Bounded neutral motion** ([PR165](https://github.com/lbeezr/thousand-unit-skirmish/pull/165)).
-   Finish exact-head independent review, schema24/HTTP/package checks, ordinary
-   guarded merge, then verify deployed default Millrace. Write scope: motion,
+   Merged `7d536563dda96a5aa8338a266c311f3a2c5ba8c5`, independently reviewed
+   `adfba206891338f4a17d43a8f6cd2a1dc736b89f`;1323 unit checks and postmerge
+   default scenario passed. Next: verify deployed default Millrace. Write scope: motion,
    room snapshot/recovery/tick, minimal disclosed-pose renderer/client binding.
    Browser SUID sandbox failure leaves native appearance incomplete; active
    Railway owner owns staging delivery in the adoption ledger.
-2. **Automatic ownership**. Proposed contract: living land units, visible alive
+2. **Automatic ownership**. Implemented contract: living land units, visible alive
    Sheep, radius1.4 world units and a clear legal land segment (no walls/water/
    impassable elevation). Existing owner's nearby eligible presence retains it;
    otherwise nearest eligible unit claims/recaptures, exact ties by stable unit
    ID. Snapshot/checkpoint `wildlifeTeam: null|0|1`; ownership grants no food,
    movement, sight or population. Preserve existing shared Gather rights in this
-   first ownership slice. Confirm the shared simulation/art contract before
-   code; no invented Claim click. Write scope: pure claims, tick/state recovery,
+   first ownership slice. Public team contract is the real collar input; no
+   invented Claim click. Next: independent review, guarded merge, staging and
+   ordinary-game claim/collar acceptance with the active art owner. Write scope: pure claims, tick/state recovery,
    both-seat fog/tie/blocked/claim-reclaim tests. Art task
    `01a101a8-fba6-7323-a40c-27efd0112007` consumes the real team field for collars.
 3. **Controllable herding**. After ownership, agree ordinary selection/order
@@ -200,8 +223,8 @@ context, not a second resource in this pilot.
 | State | Proposed behavior and player feedback |
 | --- | --- |
 | Unclaimed grazing | Small head dips and occasional short steps inside its pasture; no combat aggression. Visible selection says `Unclaimed · Food 100`. |
-| Claiming | Explicit Worker interaction claims a visible living sheep within normal interaction range. Viewing or scouting it alone does not transfer ownership. Competing requests must resolve through server authority and show the result to both seats. |
-| Claimed / moving | Owner selects the sheep and orders a ground destination. Walk slowly, stay on passable ground, stop with a clear blocked-route notice. Stop cancels travel. Retain the claim until death or rematch in this first proposal; stealing/recapture is a later decision. |
+| Claiming | Automatic nearby living-land-unit claiming is implemented as specified above. Visible proximity and a clear land segment are required; authority resolves nearest/stable-ID ties and owner-presence retention. |
+| Claimed / moving | Owner selects the sheep and orders a ground destination. Walk slowly, stay on passable ground, stop with a clear blocked-route notice. Stop cancels travel. Current automatic recapture requires the prior owner to have no eligible nearby presence. Controllable travel is the next outcome. |
 | Harvest activation | Owner's explicit Worker Gather starts a brief non-graphic dispatch/settle action. It stops movement and permanently changes the animal to a stationary carcass at that location. No food is banked by the transition itself. |
 | Carcass gathering | Reuse food cargo and valid food drop-offs. Proposed stock: 100 food per animal; proposed gatherer cap: three. Preserve remaining stock across interruptions and worker loss. A carcass is a shared food site; enemy Workers may gather it when visible and reachable. |
 | Depleted | At zero stock, end gathering and remove the resource target; a short fading remnant must not grant food or block a route. No breeding, regeneration, decay loss or restocking in the pilot. |

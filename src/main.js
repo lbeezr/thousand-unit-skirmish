@@ -4652,7 +4652,7 @@ function updateEnvironmentStateCaptureSnapshot(state) {
       stage: resourceVisualStage(node.stock, startingStock),
       x: node.x ?? definitionNode?.x ?? visual?.x ?? null, z: node.z ?? definitionNode?.z ?? visual?.z ?? null,
       ...(node.wildlifeSpecies === undefined ? {} : { wildlifeSpecies: node.wildlifeSpecies,
-        wildlifeState: node.wildlifeState, wildlifeHeading: node.wildlifeHeading,
+        wildlifeState: node.wildlifeState, wildlifeTeam: node.wildlifeTeam, wildlifeHeading: node.wildlifeHeading,
         ...(node.wildlifeActivity === undefined ? {} : { wildlifeActivity: node.wildlifeActivity }),
       }),
     };

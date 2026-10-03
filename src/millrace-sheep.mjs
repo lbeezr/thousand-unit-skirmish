@@ -48,6 +48,7 @@ export function migrateMillraceSheepCheckpoint(snapshot, shipped, hashMap) {
     if (!MILLRACE_SHEEP_IDS.includes(node.id)) continue;
     const definition = shipped.resourceNodes.find(item => item.id === node.id);
     node.wildlifeMotion = createWildlifeMotion(definition);
+    if (snapshot.schemaVersion >= 25) node.wildlifeTeam = null;
     if (node.wildlifeState !== 'alive') freezeWildlifeMotion(node);
   }
   return true;
