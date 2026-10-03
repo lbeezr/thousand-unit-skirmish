@@ -202,3 +202,18 @@ for (const team of [0, 1]) test(`seat ${team}: zero bank can enter the normal me
   assert.equal(f.commands.length, 1); assert.equal(f.commands[0].type, 'buildWall');
   assert.match(f.w.ui.placementStatus.textContent, /0 NEW · 0 WOOD · 1 REUSED FREE/);
 });
+
+for (const team of [0, 1]) test(`seat ${team}: wall submission retains only explicitly selected living friendly Workers`, t => {
+  const f = fixture(t, team);
+  const otherWorker = { id: 2, team, kind: 'worker', hp: 100, serverX: 7.5, serverZ: 7.5 };
+  f.w.units.push(otherWorker, { id: 3, team, kind: 'infantry', hp: 100 },
+    { id: 4, team: 1 - team, kind: 'worker', hp: 100 }, { id: 5, team, kind: 'worker', hp: 0 });
+  f.w.teamUnits[team].push(otherWorker);
+  f.begin();
+  // Entry selection is a separately reported/owned shared bug. Exercise the
+  // authoritative wall gesture's explicit selection after that entry point.
+  f.w.selected = new f.w.Set([team, 3, 4, 5]);
+  f.pointer('pointerdown', 15, 15); f.pointer('pointerup', 35, 15);
+  assert.equal(f.commands.length, 1); assert.deepEqual([...f.commands[0].ids], [team]);
+  assert.equal(f.w.selected.has(2), false, 'unselected friendly Worker stays unselected');
+});

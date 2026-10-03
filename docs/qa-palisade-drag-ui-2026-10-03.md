@@ -34,7 +34,9 @@ remain a follow-up, not an integration hold.
    wall preview parameters. Record the commit, browser version, map and seat.
 2. Select a Worker and open **Build**, then choose **Palisade**. Placement should
    focus the battlefield, show drag/keyboard/cancel instructions and leave Map
-   Studio closed. The existing build flow selects the team's living Workers.
+   Studio closed. Verify only explicitly selected Workers receive the order;
+   the user-reported shared build-entry recruitment bug is owned by the
+   pathing/order workstream, rather than a wall sequencing policy.
    Pan/zoom to clear nearby ground away from units, resources and Town Centers.
 3. Press on a clear cell and drag four cells along one grid axis. Before release,
    verify five connected green cells and **5 NEW · 75 WOOD** with the current
