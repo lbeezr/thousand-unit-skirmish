@@ -28,6 +28,13 @@ starts with four workers, eight infantry, 150 food, and 250 wood. Own both
 Fords to unlock Crossing Watch, then hold all three objectives for 20 seconds.
 At 15 minutes, the Watch owner wins; an unclaimed Watch means a draw.
 
+For the Stone resource test, choose **Create Room → Map → Lab · STONE DEFENSE
+FIELD**, ready both players, then launch. Select Workers and right-click its gray
+Stone markers; they return Stone to the Town Center. Bank 50 Stone, then select
+a Worker and build a Watchtower for 50 food + 150 wood + 50 Stone. The map starts
+with zero Stone and 200 finite stock per seat. See the [Stone lab](maps.md#stone-defense-lab)
+for its opening and exact map file. Other maps keep their existing prices.
+
 Select workers and send them to food or wood. Build a Barracks or Archery Range,
 train reinforcements, and choose which route to contest. Sending workers to an
 objective can help capture it, but leaves fewer gathering and exposes them to combat.
@@ -62,7 +69,7 @@ assigned team changes, or a rematch starts.
 | Attack move | Press `M` or choose Attack move, then right-click ground. The mode resets after the order. |
 | Attack a unit | Right-click a visible enemy. Repeated clicks can cycle overlapping targets. |
 | Attack a production building | Right-click it with military selected; workers cannot attack structures. |
-| Gather | Right-click a food/wood node or harvestable forest cell with workers selected. |
+| Gather | Right-click a food/wood node, Stone node on the Stone lab, or harvestable forest cell with workers selected. |
 | Return cargo | Select carrying workers and choose **Return cargo** in the selection bar. |
 | Construct | Select the workers to assign, choose a building, then left-click a valid site. Only the selected living friendly workers receive the order. |
 | Build a Palisade line | Select the workers, choose Palisade in Build, then drag/release across clear cells. Shift changes the elbow. A tap places one cell; Escape or right-click cancels. |

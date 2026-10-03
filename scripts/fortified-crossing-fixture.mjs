@@ -43,8 +43,9 @@ export async function createFortifiedFixture({ mapPath = 'maps/fortified-crossin
     }
     throw new Error(`Worker startup timeout: ${logs}`);
   }
-  async function connect(team, token = null) {
-    const socket = new WebSocket(`ws://127.0.0.1:${port}/ws`, token ? ['rts-v1', `rts-resume.${token}`] : ['rts-v1']);
+  async function connect(team, token = null, roomId = null) {
+    const socket = new WebSocket(`ws://127.0.0.1:${port}/ws${roomId ? `?room=${encodeURIComponent(roomId)}` : ''}`,
+      token ? ['rts-v1', `rts-resume.${token}`] : ['rts-v1']);
     const pending = new Set(), messages = []; let latest = null, closed = false;
     function finish(waiter, error, message) { pending.delete(waiter); clearTimeout(waiter.timer); error ? waiter.reject(error) : waiter.resolve(message); }
     socket.addEventListener('message', event => {
@@ -83,10 +84,10 @@ export async function createFortifiedFixture({ mapPath = 'maps/fortified-crossin
     assert.equal(client.welcome.player.team, team, 'fixture must reclaim requested seat');
     return client;
   }
-  async function checkpoint(predicate = () => true) {
+  async function checkpoint(predicate = () => true, filePath = checkpointPath) {
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
-      try { const saved = JSON.parse(await readFile(checkpointPath, 'utf8')); if (predicate(saved)) return saved; } catch (error) {
+      try { const saved = JSON.parse(await readFile(filePath, 'utf8')); if (predicate(saved)) return saved; } catch (error) {
         if (error.code !== 'ENOENT' && !(error instanceof SyntaxError)) throw error;
       }
       await sleep(40);

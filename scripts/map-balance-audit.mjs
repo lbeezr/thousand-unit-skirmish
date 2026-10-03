@@ -4,6 +4,7 @@ import path from 'node:path';
 import { buildElevationGrid } from '../src/map-utils.mjs';
 import { canTraverseElevation } from '../src/elevation.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { economyResources } from '../src/economy-profile.mjs';
 import { fileURLToPath } from 'node:url';
 
 const PROJECT_ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -145,11 +146,12 @@ function triggerTargets(trigger) {
 }
 
 const spawnTrees = spawnCells.map((cell) => searchFrom(cell));
-const stockTotals = [0, 0].map(() => ({ food: 0, wood: 0 }));
-const contestedStock = { food: 0, wood: 0 };
+const resources = economyResources(definition.economyProfileId);
+const stockTotals = [0, 0].map(() => Object.fromEntries(resources.map(type => [type, 0])));
+const contestedStock = Object.fromEntries(resources.map(type => [type, 0]));
 const resourceRows = [];
 for (const node of definition.resourceNodes ?? []) {
-  if (!['food', 'wood'].includes(node.type) || !Number.isFinite(node.stock) || node.stock <= 0
+  if (!resources.includes(node.type) || !Number.isFinite(node.stock) || node.stock <= 0
     || !Number.isFinite(node.x) || !Number.isFinite(node.z)
     || Math.abs(node.x) >= width / 2 || Math.abs(node.z) >= height / 2) {
     throw new Error(`Resource node ${node.id ?? '(unknown)'} is invalid.`);
@@ -206,7 +208,8 @@ console.log(`${definition.name ?? definition.id ?? path.basename(mapPath)} (${wi
 console.log(`Nominal single-unit walk speed: ${walkSpeed} cells/s; excludes uphill cost, formation, congestion, and command delay.`);
 console.log(`Spawn-to-spawn geometry: ${formatDistance(spawnToSpawn < 0 ? null : spawnToSpawn)} (not an observed first-contact time).`);
 console.log(`Starting resources per team: food ${startingResources.food ?? 0}, wood ${startingResources.wood ?? 0}.`);
-console.log(`Initial map stock by nearest spawn: team 0 food ${stockTotals[0].food}, wood ${stockTotals[0].wood}; team 1 food ${stockTotals[1].food}, wood ${stockTotals[1].wood}; tied food ${contestedStock.food}, wood ${contestedStock.wood}.`);
+const stockLabel = stock => resources.map(type => `${type} ${stock[type]}`).join(', ');
+console.log(`Initial map stock by nearest spawn: team 0 ${stockLabel(stockTotals[0])}; team 1 ${stockLabel(stockTotals[1])}; tied ${stockLabel(contestedStock)}.`);
 
 if (triggerRows.length > 0) {
   console.log('\nObjective travel and passable route alternatives:');
