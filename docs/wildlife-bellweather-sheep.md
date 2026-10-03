@@ -11,9 +11,10 @@ It delivers no new generated art or accepted animal stock/gatherer-cap balance.
 now replaces the earlier public-input illustration in the normal game renderer,
 including default Millrace Sheep. All eight original PNGs were materialized,
 visually inspected and preserved with provenance. Alive Sheep select their
-static authored nose view; missing/failed art uses the geometric proxy, carcasses
+authoritative heading view (initially the authored nose pose); missing/failed art uses the geometric proxy, carcasses
 use the food-cache marker, and depleted/hidden Sheep are suppressed. There is
-no animal animation or full model in runtime. [Current evidence](qa-sheep-eight-view-default-2026-10-03.md)
+no articulated animal animation or full model in runtime; the bounded motion
+slice translates the existing static art. [Current evidence](qa-sheep-eight-view-default-2026-10-03.md)
 records byte/pixel acceptance, simultaneous views, default both-seat game checks,
 packaging and the pending native ground/scale/occlusion review.
 
@@ -50,8 +51,31 @@ moves stock into food cargo at the unchanged rate/carry limit and deposits at
 valid food drop-offs. Either seat may gather the same visible carcass, regardless
 of who activated it. There is no ownership or claim check. Repeated orders and
 interruption preserve the same stock pool; exhausting it sets `depleted` and
-rejects new gathering. Wildlife adds no movement/sight/population or path blocker
+rejects new gathering. Wildlife adds no sight/population or path blocker
 and is absent from combat targeting. No gatherer cap is introduced in this slice.
+
+Live Sheep now alternate deterministic `grazing`, `idle` and `wandering` activity.
+They take continuous steps at at most **0.18 world units/second**, inside a
+**0.35-world-unit radius** and their original resource cell. Land traversal,
+building/wall/TC masks and a swept 0.45-unit exclusion around living units/Sheep
+check each step. Motion consumes no random stream, food, cargo or bank balance.
+A valid pending Worker Gather order holds the Sheep at its current position;
+Stop releases that hold, while harvest activation freezes a carcass there.
+Authored definitions stay immutable, preserving fog cells, reachability and
+construction exclusions. [Motion/recovery evidence](qa-sheep-motion-2026-10-03.md)
+covers normal default Millrace and both seats. This is gentle positional motion
+with existing static directional art; grazing/walking clips remain art work.
+
+Visible state rows add actual `x`/`z` in world units, `wildlifeHeading` in radians
+(`[0, 2π)`, zero faces +Z, positive turns toward +X), and live-only
+`wildlifeActivity`. Sequence, target and remaining wait ticks stay private in
+checkpoint schema **24**. Exact stationary schema23 saves initialize motion
+without changing stock/cargo; schema24 restores current positions and progress.
+Carcass/depleted motion stays frozen, including through recovery. The renderer,
+resource click target, ring, callout and minimap consume disclosed positions;
+missing/fog-hidden rows immediately hide and expose no remembered click target.
+No ownership field or claiming/herding is included here. The user's automatic
+proximity-claim direction and team collar are the next separately scoped slice.
 
 Stop after depletion preserves a Worker's final cargo. Select that Worker and
 choose **Return cargo** to deliver it to a reachable completed owned food drop-off,
