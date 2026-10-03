@@ -45,18 +45,27 @@ try {
     await order(lane.team, { type: 'attack', ids: lane.attackers.map(u => u[0]),
       unitGenerations: lane.attackers.map(u => u[8]), targetId: target.id, targetGeneration: target.generation }, /ATTACK ORDER/);
   }
-  const continuing = await fixture.checkpoint(s => lanes.every(l => s.state.units[l.targets[0]].hp === 0
-    && s.state.units[l.targets[1]].hp > 0 && l.attackers.every(a => s.state.units[a[0]].attackMove)));
+  // Observe normal broadcasts, then stop gracefully to checkpoint this short
+  // combat window rather than waiting for the periodic checkpoint cadence.
+  await Promise.all(lanes.map(l => clients[l.team].state(s => {
+    const focused = s.units.find(u => u[0] === l.targets[0]);
+    const next = s.units.find(u => u[0] === l.targets[1]);
+    return (!focused || focused[4] === 0) && next && next[4] > 0 && next[4] < 100;
+  }, 'focused target dead and second-target damage begins')));
   const sessions = clients.map(c => c.welcome.player.sessionToken);
   await fixture.stop();
   const saved = await fixture.checkpoint();
-  assert.ok(lanes.every(l => saved.state.units[l.targets[1]].hp > 0), 'recovery occurs during second-target combat');
+  assert.ok(lanes.every(l => saved.state.units[l.targets[0]].hp === 0
+    && saved.state.units[l.targets[1]].hp > 0 && saved.state.units[l.targets[1]].hp < 100
+    && l.attackers.some(a => saved.state.units[a[0]].attackTargetId === l.targets[1])),
+  'recovery occurs during actual second-target combat');
   await fixture.start(); clients = [await fixture.connect(0, sessions[0]), await fixture.connect(1, sessions[1])];
   assert.ok(clients.every(c => c.welcome.recoveredFromCheckpoint), 'both seats reclaimed recovered room');
   const finished = await fixture.checkpoint(s => lanes.every(l => l.targets.every(id => s.state.units[id].hp === 0)));
   for (const lane of lanes) {
     records.push({ team: lane.team, attackers: lane.attackers.map(a => a[0]), targets: lane.targets,
-      resumedAtTick: continuing.state.tickNumber, checkpointTick: saved.state.tickNumber,
+      resumedAtTick: saved.state.tickNumber, checkpointTick: saved.state.tickNumber,
+      secondTargetHpAtCheckpoint: saved.state.units[lane.targets[1]].hp,
       finishedAtTick: finished.state.tickNumber, targetHp: lane.targets.map(id => finished.state.units[id].hp),
       attackerHp: lane.attackers.map(a => finished.state.units[a[0]].hp) });
     await order(lane.team, { type: 'stop', ids: lane.attackers.map(a => a[0]) }, /STOP ORDER/);
