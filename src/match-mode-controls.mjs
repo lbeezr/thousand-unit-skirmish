@@ -57,7 +57,8 @@ export function createMatchModeControls({ root, onChange, id = 'match-mode' }) {
   const rule = doc.createElement('p'); details.append(rule); root.append(details);
   const status = doc.createElement('p'); status.id = `${id}-status`; status.setAttribute('role', 'status'); root.append(status);
   select.setAttribute('aria-describedby', `${summary.id} ${status.id}`);
-  let model = null, inputs = {}, pending = false;
+  let model = null, inputs = {}, request = null, pendingFocus = null, rejection = '';
+  const waiting = () => Boolean(request) || inputs.pending === true;
   function render() {
     const values = model.choices.map(choice => [key(choice), choice.label]);
     if (!values.length) values.push(['', 'Mode unavailable']);
@@ -67,21 +68,54 @@ export function createMatchModeControls({ root, onChange, id = 'match-mode' }) {
       }));
     }
     select.value = model.active ? key(model.active) : '';
-    select.disabled = !model.editable || inputs.editable !== true || inputs.online !== true || pending;
+    select.disabled = !model.editable || inputs.editable !== true || inputs.online !== true || waiting();
     summary.textContent = model.summary; rule.textContent = model.rule;
     details.hidden = !model.rule;
-    status.textContent = model.error || (pending ? 'Waiting for server…' : '');
+    status.textContent = model.error || rejection || (waiting() ? 'Waiting for server…' : '');
   }
+  function restorePendingFocus() {
+    const target = pendingFocus;
+    if (waiting()) return;
+    pendingFocus = null;
+    if (!target || target.disabled || !root.isConnected || root.closest('[hidden]')
+      || root.closest('dialog')?.open === false
+      || ![doc.body, doc.documentElement, root, target].includes(doc.activeElement)) return;
+    target.focus({ preventScroll: true });
+  }
+  doc.addEventListener('focusin', event => {
+    if (pendingFocus && ![pendingFocus, doc.body, doc.documentElement].includes(event.target)) pendingFocus = null;
+  });
   select.addEventListener('change', () => {
     if (select.disabled) return;
     const choice = model.choices.find(value => key(value) === select.value);
     if (!choice || key(choice) === key(model.active)) { render(); return; }
-    pending = onChange(identityFor(choice)) === true;
+    rejection = '';
+    request = { from: key(model.active), to: key(choice) };
+    pendingFocus = doc.activeElement === select ? select : null;
+    if (onChange(identityFor(choice)) !== true) {
+      request = null; pendingFocus = null;
+      rejection = 'Mode choice was not sent. Reconnect and try again.';
+    }
     render();
-    if (!pending) status.textContent = 'Mode choice was not sent. Reconnect and try again.';
   });
   return {
-    update(next) { inputs = next; model = matchModePresentation(next); pending = next.pending === true; render(); },
+    update(next) {
+      inputs = next; model = matchModePresentation(next);
+      const activeKey = model.active && key(model.active);
+      if (next.online !== true || next.editable !== true || !model.active || model.error) {
+        request = null; pendingFocus = null; rejection = '';
+      } else if (request && activeKey !== request.from) {
+        // Only an authoritative identity change settles a request. Unrelated
+        // state/catalog updates, including pending:false, cannot allow a resend.
+        request = null; rejection = '';
+      }
+      render(); restorePendingFocus();
+    },
+    reject(message) {
+      if (!request) return;
+      request = null; rejection = message || 'Mode choice was rejected. Review the settings and try again.';
+      render(); restorePendingFocus();
+    },
     get selectable() { return model?.editable === true; },
     get supported() { return Boolean(model?.active && !model.error); },
   };
