@@ -1,4 +1,5 @@
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from './gameplay-definitions.mjs';
+import { farmHarvestNodeId } from './farm-harvest.mjs';
 /** Bounded production using only the existing team-visible opponent DTO. */
 export const PVE_PRODUCTION_LIMITS = Object.freeze({
   openingDelayTicks: 300,
@@ -117,6 +118,36 @@ export function createProductionPolicy(seed) {
         const point = sites[siteAttempt++ % sites.length];
         postpone(observation.tick);
         return [{ type: 'build', ids: [builder.id], unitGenerations: [builder.generation], buildingType: 'house', ...point }];
+      }
+      // One paid recovery plot, using only owned buildings and observed crop
+      // stock. Worker replacement and urgent housing have already had priority.
+      const farms = observation.buildings.friendly.filter(building => building.team === observation.team
+        && building.type === 'farm' && building.hp > 0).sort((a, b) => a.id - b.id);
+      const farmer = workers.find(worker => ['idle', 'gathering'].includes(worker.task) && worker.cargo === 0);
+      if (farmer && farms.length === 1 && !farms[0].complete) {
+        postpone(observation.tick);
+        return [{ type: 'build', buildingId: farms[0].id, ids: [farmer.id], unitGenerations: [farmer.generation] }];
+      }
+      const foodDropoff = home && observation.buildings.friendly.filter(building => building.team === observation.team
+        && building.hp > 0 && building.complete && BUILDING_DEFINITIONS[building.type]?.dropoff?.includes('food'))
+        .sort((a, b) => Math.hypot(a.x - home.x, a.z - home.z) - Math.hypot(b.x - home.x, b.z - home.z) || a.id - b.id)[0];
+      const houseReserve = observation.population?.capacity < 1000 && observation.population.available <= neededPopulation
+        ? BUILDING_DEFINITIONS.house.cost.wood : 0;
+      const exhaustedFarm = farms.length === 1 && farms[0].complete
+        && observation.resourceNodes.some(node => node.id === farmHarvestNodeId(farms[0].id) && node.stock === 0);
+      if (farmer && foodDropoff && observation.resources.food < UNIT_DEFINITIONS.worker.cost.food + limits.foodReserve
+        && !observation.resourceNodes.some(node => node.type === 'food' && node.stock > 0)
+        && observation.resources.wood >= BUILDING_DEFINITIONS.farm.cost.wood + limits.woodReserve + houseReserve
+        && (farms.length === 0 || exhaustedFarm)) {
+        const sites = candidateSites(observation, foodDropoff, seed, 'farm');
+        if (sites.length) {
+          postpone(observation.tick);
+          // Clearing never refills a crop: wait for its disappearance, then
+          // recheck the budget and send a fresh authoritative paid build.
+          if (exhaustedFarm) return [{ type: 'cancelConstruction', buildingId: farms[0].id }];
+          const point = sites[siteAttempt++ % sites.length];
+          return [{ type: 'build', buildingType: 'farm', ids: [farmer.id], unitGenerations: [farmer.generation], ...point }];
+        }
       }
       const damaged = observation.buildings.friendly.find((building) => building.complete && building.maxHp > 0 && building.hp < building.maxHp * 0.65);
       const repairer = workers.find((worker) => ['idle', 'gathering'].includes(worker.task) && worker.cargo === 0);
