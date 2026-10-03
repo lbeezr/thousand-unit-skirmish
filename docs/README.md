@@ -88,6 +88,7 @@ from source/candidate packs. Then use the relevant contract:
 
 - [Art direction](art-direction-contract-v1.md) and [production lanes](art-production-lanes.md).
 - [Wildlife draft](wildlife-bellweather-sheep.md): inspected regional fauna, one Sheep proposal, behavior, habitat and future perspective/sprite coverage.
+- [Default low-bank shade](qa-shore-bank-shade-2026-10-03.md): contour-following land value cue, bounded geometry and preserved before/after CPU studies with native-render limits.
 - [Renderer state/GLB/environment contract](renderer-state-contract.md).
 - [Water surface and fish cues](water-surface-study.md): default apparent depth and directional motion, live visibility-gated shore-fish activity, static quality and reduced motion.
 - [Native water first-pass review](qa-water-surface-native-2026-10-03.md): Mac shader/appearance results, saved image provenance, resolved fallback comparison and remaining visual limits.

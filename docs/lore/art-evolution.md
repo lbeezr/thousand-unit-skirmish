@@ -109,6 +109,14 @@ checks cannot prove that an image never existed outside Git.
 
 ## Preservation practice
 
+The [3 October low-bank shade study](../qa-shore-bank-shade-2026-10-03.md) retains
+original and candidate renders at ordinary/strategic zoom, exact exported game
+geometry/materials, camera checks, settings and hashes. Its inputs are the existing
+public Shore Fishing map and ground texture. These are Cycles CPU studies with
+simple material settings, not generated concept art or native default-match
+screenshots. All four iterations remain saved; the new default bank cue is
+separate from the already accepted animated water.
+
 The [water surface study](../water-surface-study.md) records the current contours,
 primary rendering references and a reusable opt-in comparison scene. Browser
 startup failed in cloud, so it adds no claimed screenshot or new image iteration.

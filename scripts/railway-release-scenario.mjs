@@ -231,7 +231,7 @@ try {
     }
   }
   await checkClientImports(base, { authorization, entrypoints: ['/src/game-entry.mjs'] });
-  for (const file of ['water-study.html', 'src/water-study-preview.mjs', 'src/water-surface-study.mjs', 'src/water-study-state.mjs', 'src/water-study-fish-binding.mjs']) {
+  for (const file of ['water-study.html', 'src/water-study-preview.mjs', 'src/water-surface-study.mjs', 'src/water-study-state.mjs', 'src/water-study-fish-binding.mjs', 'src/shore-bank-shade.mjs']) {
     assert.ok(packedManifest.files.includes(file), `water study release must contain ${file}`);
     const response = await fetch(`${base}/${file}`, { headers: { authorization } });
     assert.equal(response.status, 200, `packed water study must serve ${file}`);
