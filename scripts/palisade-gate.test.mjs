@@ -4,6 +4,7 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import * as THREE from 'three';
+import { JSDOM } from 'jsdom';
 import { BUILDING_DEFINITIONS, GAMEPLAY_RULESET_REVISION } from '../src/gameplay-definitions.mjs';
 import { buildingBlocksMovement, isPalisade, planGateTransition, validGateState } from '../src/palisade-gate.mjs';
 import { createGateTimbers, updateGateTimbers } from '../src/palisade-gate-visual.mjs';
@@ -133,6 +134,40 @@ for (const team of [0, 1]) test(`actual gate button uses current state and prese
   assert.deepEqual(commands[1], { type: 'setGateOpen', buildingId: 1, open: false });
   c.matchWinner = 0; c.updateBuildingLifecycleActions(); assert.equal(button.disabled, true); button.click(); assert.equal(commands.length, 2);
   c.latestBuildings = [{ ...building, team: 1 - team }]; c.updateBuildingLifecycleActions(); assert.equal(container.children.length, 0);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: damage and repair snapshots retain focused gate operation`, () => {
+  const dom = new JSDOM('<button id="outside">Outside</button><div id="actions"></div>');
+  try {
+    const document = dom.window.document, container = document.querySelector('#actions');
+    const commands = [], building = gateRow({ team, maxHp: 300 });
+    const c = vm.createContext({ document, ui: { buildingLifecycleActions: container },
+      localTeam: team, selectedBuildingId: 1, latestBuildings: [building], matchWinner: -1,
+      latestTeamResearch: [{}, {}], latestWorkerProduction: [{}, {}], teamUnits: [[], []],
+      getBuildingQueueLength: () => 0, sendCommand: command => commands.push(JSON.parse(JSON.stringify(command))),
+    });
+    vm.runInContext(lifecycle, c); c.updateBuildingLifecycleActions();
+    const action = () => container.querySelector('[data-action="setGateOpen"]');
+    action().focus(); action().click();
+    assert.deepEqual(commands, [{ type: 'setGateOpen', buildingId: 1, open: true }]);
+    // The same authoritative update can open the gate and add a Repair action.
+    c.latestBuildings = [{ ...building, gateOpen: true, hp: 299 }]; c.updateBuildingLifecycleActions();
+    assert.equal(document.activeElement, action(), 'damage must retain the gate action focus');
+    assert.match(action().textContent, /Close gate/); action().click();
+    assert.deepEqual(commands.at(-1), { type: 'setGateOpen', buildingId: 1, open: false });
+    c.latestBuildings = [building]; c.updateBuildingLifecycleActions();
+    assert.equal(document.activeElement, action(), 'repair completion must retain the gate action focus');
+    assert.equal(container.children.length, 1); assert.match(action().textContent, /Open gate/);
+
+    const outside = document.querySelector('#outside'); outside.focus();
+    c.latestBuildings = [{ ...building, hp: 299 }]; c.updateBuildingLifecycleActions();
+    assert.equal(document.activeElement, outside, 'a snapshot must not steal unrelated focus');
+    action().focus();
+    c.selectedBuildingId = 2; c.latestBuildings = [gateRow({ id: 2, team, maxHp: 300 })]; c.updateBuildingLifecycleActions();
+    assert.notEqual(document.activeElement, action(), 'selection changes must not transfer action focus to another gate');
+    action().focus(); c.latestBuildings = []; c.updateBuildingLifecycleActions();
+    assert.equal(container.children.length, 0); assert.equal(document.activeElement, document.body);
+  } finally { dom.window.close(); }
 });
 
 test('only the exact preceding gate-free ruleset migrates; forged gate fields remain incompatible', () => {

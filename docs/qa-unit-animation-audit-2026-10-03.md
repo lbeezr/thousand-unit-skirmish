@@ -106,6 +106,34 @@ is to agree on an execution/facing presentation contract before any binding chan
 Attack tick/target fields remain compatible with the combat owner's continuation
 fix; that fix is not duplicated.
 
+The follow-up [performing-action proposal](worker-performing-action-contract-proposal.md)
+reproduces 13 actual-progress/wait cases and proves construction's per-Worker
+wire ambiguity. It proposes positive-mutation receipts at new row 17, with
+generation/order/tick guards, for parent routing to the unit gameplay producer
+owner. It is not a default binding or an implemented protocol extension.
+
+## Ranked continuation backlog
+
+The animation integration owner retains this workstream. Read current main and
+the relevant manifest before each slice. Select a concrete existing-asset defect
+when supported by reproduction; missing motion alone is not a binding defect.
+Small reviewed PRs and tooling milestones do not close ordinary-game acceptance.
+
+| Rank / status | Next action and bounded writes | Dependency / acceptance |
+| --- | --- | --- |
+| 1 — producer assigned; schema alignment pending | Align the [Worker performing-action contract](worker-performing-action-contract-proposal.md) with the economy/content producer; that owner records positive mutation receipts and clear transitions in `server.mjs`. Animation owner then consumes/clears the agreed field in the snapshot/presentation slice and gates sprite/procedural work with focused tests. No economy rates, orders, targeting or stance edits. | Exact schema/enum/tick/version/defaults come through the parent. Row 17 remains proposed, not agreed. The [client fixture](../scripts/unit-presentation-client-fixture.mjs) is prepared without a new wire assumption. Require actual commands/WebSocket delivery, wait/arrival/depletion/build/repair regressions, both-civilization instanced frames, release/deployed revision and ordinary-game clips. |
+| 2 — source/release milestone complete; delivery/appearance open | Retain PR161's attack/death lifetime correction through the identified staging build and Mac QA recipe below. Animation helper/tests remain owned here; Railway and Mac QA owners support delivery/capture. | Merged source `5f35c68f7c667bfd6eb977e0abcb551010fbcfd1`; clean release includes it. Latest read-back staging deployment `29d74cac-b078-4a88-8f2a-e3141a2f9465` is `SUCCESS` at source `32f11d58018404835fd47489441f9cdfef7c403b`, still before PR161. Read current deployment instead of assuming auto-deploy success; capture Infantry/Spearman/Worker event end and defeat on the containing build. |
+| 3 — exact work facing dependency | After productive action is authoritative, inspect whether the actual build/repair target heading can be disclosed using the existing heading contract without overlap. Agree the producer boundary before changing row 15 semantics. Consumer/tests remain narrow to unit facing helpers. | Build/repair headings are absent; no target-distance guess. Existing Human SE actions may still require documented approximation. Human gather/walk exact-heading fallback remains intentional. Verify selected/unselected approach, work and Stop/resume with an identified game build. |
+| 4 — art dependency; no generation authorized | Admit any subsequently supplied, rights-verified motion/headings through the current manifest contracts, one supported action/heading at a time. Re-run actual-frame and release admission checks. | Human Worker lacks five walking headings, seven land-work/fishing headings, carry/return/Stone actions; fishing has four stepped SE poses. Other Human military and fantasy coverage is recorded above. Art producer must supply real keys. Never synthesize missing motion or call a static heading an animation. |
+| 5 — separate wildlife/Coastal owners | Preserve accurate fallback and audit newly admitted contracts only when supplied by their owners; avoid their renderer/hooks. | Sheep has eight static idle views and no walking rig; Skiff adoption belongs to Coastal. Neither is an animation-helper fix currently justified by existing frames. |
+
+This checkpoint makes no further production binding change: the next productive
+slice needs the producer alignment in rank 1. Independent client harness preparation
+provides source/check acceptance while that contract is settled. Native capture remains unavailable
+in this executor. Dependent implementation and appearance acceptance stay open;
+tooling acceptance is the reproducible probe, documentation checks and independent
+review rather than a fictitious deployment.
+
 ## Visual gap and exact ordinary-game recipe
 
 The [browser preflight](qa-evidence/unit-animation-audit-2026-10-03/browser-preflight.json)

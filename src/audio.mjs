@@ -102,7 +102,7 @@ export function createGameAudio({
   const activeVoiceSamples = new Set();
   const activeSampleBuses = new Map();
   const sampleGenerations = { voice: 0, effects: 0, ambience: 0 };
-  const activeSynthesis = new Set();
+  const activeSynthesis = new Map();
   const MAX_ACTIVE_SAMPLES = 8;
   const profileGate = createProfileDecisionGate();
   const decodedCache = createDecodedAudioCache();
@@ -133,6 +133,18 @@ export function createGameAudio({
       activeSamples.delete(source); activeVoiceSamples.delete(source); activeWorkSamples.delete(source);
       activeSampleBuses.delete(source);
       try { source.stop(); } catch {}
+    }
+  }
+
+  function cancelSynthesis(destination = null) {
+    for (const [source, bus] of activeSynthesis) {
+      if (destination !== null && bus !== destination) continue;
+      // Release now: onended normally arrives later, after a quick unmute may
+      // already schedule a fresh cue. Detach it to avoid releasing twice.
+      const release = source.onended;
+      source.onended = null;
+      try { source.stop(); } catch {}
+      release?.();
     }
   }
 
@@ -267,7 +279,7 @@ export function createGameAudio({
       oscillator.connect(envelope);
       envelope.connect(destination);
       oscillator.onended = () => { activeSynthesis.delete(oscillator); oscillator.disconnect(); envelope.disconnect(); voiceCount--; };
-      activeSynthesis.add(oscillator);
+      activeSynthesis.set(oscillator, destination);
       oscillator.start(start);
       oscillator.stop(start + duration + 0.01);
       scheduledVoiceSerial++;
@@ -316,7 +328,7 @@ export function createGameAudio({
         activeSynthesis.delete(source);
         source.disconnect(); filter.disconnect(); envelope.disconnect(); transientVoiceCount--;
       };
-      activeSynthesis.add(source);
+      activeSynthesis.set(source, destination);
       source.start(start);
       source.stop(start + duration + 0.01);
       scheduledVoiceSerial++;
@@ -547,6 +559,7 @@ export function createGameAudio({
 
   async function setMapAudio(reference, libraryStore) {
     if (disposed) return;
+    cancelSynthesis();
     stopProfileAmbience();
     if (context && !ambienceSource) createAmbience();
     packAbort?.abort(); packAbort = new AbortController();
@@ -660,6 +673,13 @@ export function createGameAudio({
     for (const bus of Object.keys(sampleGenerations)) {
       if (isSampleBusAudible(bus, previousSettings) && !isSampleBusAudible(bus)) cancelSampledCues(bus);
     }
+    if (!settings.enabled || settings.volume <= 0) cancelSynthesis();
+    else {
+      if (previousSettings.effectsLevel > 0 && settings.effectsLevel <= 0) cancelSynthesis(effects);
+      if (previousSettings.musicLevel > 0 && settings.musicLevel <= 0) {
+        cancelSynthesis(music); cancelSynthesis(atmospherePreview);
+      }
+    }
     stopWork();
     save();
     applyLevels();
@@ -679,6 +699,7 @@ export function createGameAudio({
     if (disposed || !context) return;
     if (doc?.hidden) {
       cancelSampledCues();
+      cancelSynthesis();
       stopWork(); stopProfileAmbience();
       stopProfileMusic();
       suspendContext();
@@ -705,8 +726,7 @@ export function createGameAudio({
       stopProfileAmbience(); ambiencePlayer?.dispose();
       stopProfileMusic(); compositionPlayer?.dispose();
       cancelSampledCues();
-      for (const source of activeSynthesis) { try { source.stop(); } catch {} }
-      activeSynthesis.clear();
+      cancelSynthesis();
       ambienceSource?.stop();
       context?.close().catch(() => {});
     },

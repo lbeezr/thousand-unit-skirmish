@@ -32,25 +32,60 @@ accepts the same shard option for coverage inspection.
 
 `npm run check:types` uses locked TypeScript 5.9.3 with strict `checkJs` and
 `noEmit`. The explicit file list in
-[`tsconfig.check-js.json`](../tsconfig.check-js.json) covers only
-[`forestAgeFactors`](../src/forest-age-composition.mjs) and its compile-only
-consumer. This zero-error boundary checks numeric wood-cell identity and world
-x/z coordinates, read-only point inputs, numeric seed/radius and a numeric
-factor map keyed by cell. The runtime algorithm, inputs and output serialization
-are unchanged; no generated JavaScript is shipped.
+[`tsconfig.check-js.json`](../tsconfig.check-js.json) names each checked module
+and compile-only consumer explicitly. The current boundary covers
+[`canopy ages`](../src/forest-age-composition.mjs),
+[`woodland habitat`](../src/forest-habitat.mjs) and
+[`Underbough species`](../src/forest-composition.mjs), plus
+[`resource stages`](../src/resource-visual-state.mjs): numeric cell identity and
+world/grid coordinates, immutable authored rectangles, a row-major depth grid,
+numeric seed/spacing/factors, the five existing species IDs and four resource
+stage IDs with complete numeric fallback scales. Resource transition inputs
+remain unknown until membership checking narrows the filtered output. The runtime
+algorithms and serialization are unchanged; no generated JavaScript is shipped.
 
 `node --test scripts/check-types.test.mjs` compiles intentionally invalid
 consumers in memory and requires the expected diagnostics for missing/string
 cell IDs, misspelled/nonnumeric coordinates, string seed/radius, string map
-keys/values, unchecked missing lookups and point mutation. No suppression is
-used. Both checks run in `npm test`; the existing
-`node scripts/forest-age-scenario.mjs` covers runtime determinism, seed variation,
-spacing, root retention and input preservation.
+keys/values, unchecked missing lookups and point mutation. Habitat/species cases
+also reject missing dimensions/rectangle rows, wrong obstacle materials,
+string depth/spacing and species typos. No suppression is used.
+Resource cases reject string stock, stage typos, wrong transition element types
+and mutation of the canonical stage list. `resource-visual-state-scenario.mjs`
+covers the existing thresholds and dirty-batch ordering;
+`node --test scripts/resource-visual-state.test.mjs` protects unknown membership
+without coercion and the stock/stage/scale path. Numeric stock/scale
+contracts apply to checked callers; legacy runtime coercion/fallback behavior
+is retained for unselected callers.
+
+Both checks run in `npm test`; existing `forest-age-scenario.mjs`, `forest-habitat-scenario.mjs`
+and `forest-composition-scenario.mjs` cover determinism, seed variation, spacing,
+glades, rectangle compression, root retention and input preservation.
 
 Expand this boundary only with a bounded file scope and a zero-error result.
 Unselected gameplay/client files do not need a type cleanup to pass this check.
 Runtime validation of finite values, positive radius and unique cell IDs remains
 separate from static types; unchecked callers are outside this initial boundary.
+
+#### Ranked type-safety backlog
+
+The incremental type-safety stream owns this list and takes one bounded,
+reviewed/tested slice at a time under the existing merge authority. Completed:
+canopy identity/factors ([PR #162](https://github.com/lbeezr/thousand-unit-skirmish/pull/162)),
+woodland habitat/species ([PR #167](https://github.com/lbeezr/thousand-unit-skirmish/pull/167))
+and resource stages. Re-rank after each merge from current
+main and active PR scopes; record a concrete defect risk before expanding.
+
+| Rank | Boundary | Defect risk and required proof | Scope/dependency |
+| --- | --- | --- | --- |
+| 1 | [Terrain paint-mask output](../src/terrain-blend.mjs) | Rectangle coordinate drift and mismatched typed pixel buffers/dimensions; negative shapes plus exact RGBA/mask-order parity. | Pure helper only; do not touch shaders, atlas binding or renderer moves. |
+| 2 | [Outbound WebSocket frame leaf](../src/networking/websocket-frame.mjs) | Byte-length/accounting and binary payload confusion; negative calls plus literal byte/ownership parity. | [Extraction #164](https://github.com/lbeezr/thousand-unit-skirmish/pull/164) is merged; consume its existing signatures without leaf edits. [Scope coordination](https://github.com/lbeezr/thousand-unit-skirmish/pull/164#issuecomment-5974326194) retains coverage and scopes Node ambient types separately. |
+
+Do not expand into audio reader/production/research extractions, gameplay roots
+or active render/entry hotspots to chase coverage. Coordinate concrete moves or
+shared contract changes with their architecture/quality owners before editing.
+Unchanged-runtime tooling gates are complete when enforced and validated;
+deployment/in-game acceptance belongs to the runtime release owner when applicable.
 
 ### Enable and verify fork CI
 
@@ -79,11 +114,18 @@ rules to work around missing access. See the
 Railway's separate source and CI-wait settings.
 
 Use checks proportionate to a change, then run required repository checks.
+For dependency/folder changes, run `npm run architecture:check` and
+`node --test scripts/check-runtime-imports.test.mjs`. Both are registered in
+the suite. The [architecture guide](architecture.md#module-dependencies-and-gradual-organization)
+defines dependency directions, the explicit cycle baseline and the separate
+HTTP/release obligations of a module move.
 For client import/module changes, include
 `node scripts/client-asset-allowlist-scenario.mjs`; the packed release scenario
-also traverses the served static import graph. The hosted Railway smoke uses
+also traverses served static, re-export and literal lazy imports. The hosted Railway smoke uses
 the same `scripts/check-client-imports.mjs` audit; focused fixtures cover missing
-transitive dependencies, cycles, incorrect MIME, and origin boundaries. See the
+transitive dependencies, cycles, compact/escaped syntax, ignored comment/string
+lookalikes, computed-import rejection, incorrect MIME and origin boundaries. Source
+and served audits share the parser in `scripts/module-imports.mjs`. See the
 [client-loading incident](qa-client-boot-recovery-2026-09-27.md).
 Use disposable rooms and directories: many scenarios publish maps, reset armies,
 restart workers, or deliberately disconnect clients.
@@ -104,6 +146,7 @@ Run from the repository root:
 | Area | Command |
 | --- | --- |
 | Normal finished Frontier building bindings, state fallback, grounding/facing, picking/depth and texture ownership | `node --test scripts/frontier-building-default.test.mjs`; [runtime contract and deployed-game acceptance](frontier-building-runtime.md) |
+| Unit snapshot receipt, work/event clocks, movement, slot reuse, fog and sprite LOD buffers | `node --test scripts/unit-presentation-client.test.mjs` ([CPU fixture](../scripts/unit-presentation-client-fixture.mjs): actual client source slices/constants, shipped Human/Boughward Worker manifests and Three instanced UV/matrix buffers; UI, network, procedural fallback and GPU pixels excluded). Add performing-action rows only after [producer alignment](worker-performing-action-contract-proposal.md). |
 | Building body occlusion, server cap and renderer-only 129th item; native fixture counters, query gates, serving and preservation | `node --test scripts/building-sprites.test.mjs scripts/building-occlusion-fixture.test.mjs`; [paired crowded scene and exact Mac GPU recipe](qa-building-occlusion-native-plan-2026-10-03.md) |
 | Map logic / elevation | `node scripts/map-utils-scenario.mjs` / `node scripts/elevation-scenario.mjs` |
 | Crowd deflection / terrain boundaries | `node --test scripts/unit-movement.test.mjs` (real authoritative movement blocks, cliffs, corners, working/striking separation and route repair) |
@@ -149,6 +192,7 @@ Run from the repository root:
 | Paid mature settlement, all current roles, restart and host reset | `node scripts/mature-settlement-scenario.mjs` and `--reverse-seats`; [inspection checkpoint and scope](qa-mature-settlement-2026-10-02.md) |
 | Map persistence / timed events | `node scripts/map-persistence-scenario.mjs` / `node scripts/timed-event-scenario.mjs` |
 | Deadline victory | `node scripts/timed-victory-scenario.mjs` |
+| Elimination recovery, destroyed homes and disconnected clocks | `node scripts/victory-elimination-native-scenario.mjs` |
 | Seats and reconnects | `node scripts/resume-session-scenario.mjs` |
 | Delayed transport and interrupted orders, both seats | `node scripts/impaired-connection-scenario.mjs` |
 | Client rematch roster and stale sockets | `node --test scripts/client-rematch-recovery.test.mjs` |

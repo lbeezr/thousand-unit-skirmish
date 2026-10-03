@@ -39,6 +39,10 @@ the lobby's **Leave room** opens `/`; it keeps saved tokens and server data.
 Back/forward restoration closes the old connection and resumes through the
 existing connection path when returning to a game. Creating/back/cancelling
 an unfinished menu request cannot silently navigate later.
+Page exit invalidates pending creation, Join and Resume choices immediately,
+including responses that settle before back/forward restoration. Returning to
+the menu rechecks availability and permits a new explicit choice. A room creation
+already received by the server may still finish; existing room expiry handles it.
 Invites and room-changing actions remove entry-only Resume/Studio flags so a
 friend or fresh match is admitted through the ordinary room path.
 
@@ -78,3 +82,16 @@ Existing idle-room expiry still applies to invite data.
 `game-entry.mjs` is the HTML module entrypoint and loads `main.js` lazily for
 deliberate game routes. The packaged import audit starts there and follows
 literal dynamic imports as well as static dependencies.
+
+## Continuing entry and room backlog — 3 October 2026
+
+The room/entry owner retains these outcomes. This ranked queue is scoped to
+normal entry, reconnect, pregame rooms and match lifecycle. New code follows a
+reproduced failure; blocked native acceptance does not require speculative features.
+
+| Rank | Outcome and current evidence | Next action and acceptance | Write boundary and dependencies |
+| --- | --- | --- | --- |
+| 1 | Practice is selectable for solo lab testing. [PR #155](https://github.com/lbeezr/thousand-unit-skirmish/pull/155) merged at `32f11d5`; clean release includes it. Staging deployment `29d74cac-b078-4a88-8f2a-e3141a2f9465` is SUCCESS on that exact source, Online with one running/zero crashed replicas. All 13 lab maps, one-seat clock, restart/rejoin and Worker deposit have protocol evidence. Native use is still open. | Parent/native-QA owner runs ordinary root → Practice → Stone Defense Field → resource order → reload/Resume on the identified deployed source and records actual screen/input evidence in the linked PR. Room/entry fixes any entry failure and closes acceptance only after that observation. | `game-entry.mjs`, launch/entry modules and narrow server/main hooks if a failure demands them; no map/resource edits. Native browser availability and the parent-owned staging/user environment are the remaining dependency. |
+| 2 | A delayed New Game/Practice/Join/Resume result can navigate after the player leaves the menu, reproduced at `4467986`. | Invalidate the old choice on page exit. Regression must reject late navigation for ordinary unload and back-cache exit, then permit a new explicit Practice choice after return. A real delayed HTTP creation must also preserve existing peer counts and the server's ordinary expiry contract. Independently review, merge, package and observe the delayed-response path on an identified user build. | `src/game-entry.mjs`, `scripts/game-entry.test.mjs`, `scripts/game-menu-scenario.mjs` and this guide. No server, room index, checkpoint, token or mode-schema change. Entry owner owns delivery; native observation uses the same receiving QA owner as rank 1. |
+| 3 | The authoritative two-seat lobby, chat, host departure/grace, ready invalidation, launch races, rejoin and rematch have focused/protocol evidence; an unassisted complete invite match remains unproven. | Run Create Room → second-seat invite → settings/Ready → launch → disconnect/rejoin → result → rematch. Record the first concrete confusion/failure with source, map and both-seat state, then choose its smallest fix. | Own lobby/entry modules; coordinate any `server.mjs`/`main.js` hook before overlap. Depends on actual two-client native use, not a new account/chat service or extra engine seats. See [room contract](room-lobby.md) and [gameplay QA](qa-vertical-slice.md). |
+| 4 | Existing `pvp`/`pve` launch kinds and authored victory rules are distinct. [Mode-owner PR #158](https://github.com/lbeezr/thousand-unit-skirmish/pull/158) documents a separate match-mode proposal; no new mode or civilization choice is implemented by this queue. | Read the owner's final `matchModeId`/legacy-save contract before wiring any new room setting. Proceed only when a concrete supported mode and compatible default are agreed; until then preserve Frontier 1v1 and current seeded AI choices. | Mode owner retains schema/simulation rules. Room/entry would own only corresponding launch/lobby controls and protocol tests after interface agreement. No dependent code action is justified yet. |
