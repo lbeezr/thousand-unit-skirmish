@@ -114,3 +114,56 @@ Railway owner switches it. Keep normal browser sandboxing and existing auth.
 
 No visual polish milestone, extra civilization/allied team capacity, deletion of
 old saved data, authentication setting change or Railway deployment is claimed.
+
+## Lab map selection and one-player Practice — 3 October 2026
+
+The reported deployed source `00ff45d9702dfbcf9da6f6ac88e0ca4381e374dc` and
+current base `d503d90b7e7ff1c0ae7c760fdb9ca7140753cc73` both reproduce:
+New Game creates seeded PvE on Millrace/Rootways; `selectMap` rejects a lab with
+`PLAY VS AI MAP IS LOCKED FOR THIS MATCH`. This is a launch-identity guard, not
+proof that the selected map's terrain is incompatible. Create Room permits the
+lab but refuses launch with only Azure ready. The two-browser workaround is
+verified on both sources: Create Room, choose Lab · Frontier Materials, Copy
+invite to a second profile/tab, ready both seats and launch. Reproduction logs
+are `/tmp/rts-lab-lock-{baseline,current}.log` with harness
+`/tmp/rts-lab-lock-repro.mjs`.
+
+The AI chooser has a second UI defect: its `hidden` attribute is true, but the
+author stylesheet's `.map-picker { display:flex }` overrides the browser's hidden
+rule. Actual stylesheet computation on `00ff45d` reproduces `display:flex`;
+the bounded `src/pve-entry.mjs` hidden rule produces `display:none`. A regression
+also checks that Practice retains visible map/Studio controls. These are CSS/DOM
+results, not native screenshot evidence.
+
+The follow-up exposes **Practice** directly at root. It creates a separate
+`{mode:"pvp",practice:true}` room. Existing map/army/Map Studio controls apply;
+the scenario clock starts with one connected seat. It does not add an AI
+commander, unlock a seeded AI room or claim AI eligibility for untested maps.
+The existing validated catalogs, two-seat authority, checkpoint recovery and
+custom-map publication contracts remain. `practice` persists in the room index;
+its worker flag is cleared from all other room launches and cannot be combined
+with pregame/PvE. The actual server state supplies the Practice notice on entry
+and Resume. AI rejections now point to Main Menu → Practice.
+
+The owning PR records final source/release checks, independent review and exact
+deployment/native results. Runtime scope is `src/room-launch-options.mjs`,
+`src/game-entry.mjs`, root buttons in `index.html`, the narrow `applyState()`
+notice in `src/main.js` and the practice clock/state/AI-feedback hooks in
+`server.mjs`, plus the fixed-AI hidden rule in `src/pve-entry.mjs`. No map,
+resource, wildlife, stone or naval files are changed.
+The room/entry owner retains acceptance; the parent owns staging deployment
+coordination and native QA. A source merge does not close this reported bug.
+
+Native recipe on the identified deployed revision, with normal browser sandboxing:
+
+1. Ordinary root → Practice. Open Match Controls; the notice explains one-player
+   testing without an AI commander. Battlefield/army controls are usable.
+2. Select Lab · Stone Defense Field, then another lab. Confirm the loaded map,
+   authored army, visible resources and normal Worker orders. Mine/return a
+   legal resource using that map's existing depot rules. Verify timed/capture
+   behavior on a scenario map with only this player connected.
+3. Rematch, reload, then Main Menu → Resume: retain the same room/seat and
+   Practice route. A separate New Game still starts a seeded AI match.
+4. AI map/army attempts keep their guard and explain the Practice route. Create
+   Room still requires both seats ready. Check keyboard and narrow-menu layout;
+   capture the ordinary Practice button and started map for actual browser QA.

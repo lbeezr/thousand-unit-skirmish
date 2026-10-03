@@ -105,6 +105,7 @@ const RESEARCH_RULES = Object.freeze(Object.fromEntries(
 const SHARED_MOVE_PATHS = process.env.RTS_SHARED_MOVE_PATHS !== '0';
 const SERVER_INSTANCE_ID = randomBytes(16).toString('base64url');
 const pveLaunchOptions = readPveLaunchOptions();
+const soloPractice = !pveLaunchOptions && process.env.RTS_PREGAME !== '1' && process.env.RTS_SOLO_PRACTICE === '1';
 const PVE_DECISION_INTERVAL_MS = 1_000;
 let matchId = randomBytes(16).toString('base64url');
 let recoveredFromCheckpoint = false;
@@ -2514,6 +2515,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
     type: 'state', economyProfileId: matchEconomyProfileId(), rulesetRevision: economyRulesetRevision(matchEconomyProfileId()), factionId: DEFAULT_FACTION_ID, unitWireIds: UNIT_WIRE_IDS, tick: tickNumber, armySize: currentArmySize,
     ...(pregame ? { lobby: pregamePayload() } : {}),
     matchElapsedSeconds: Number(matchElapsedSeconds.toFixed(1)), scenarioClockStarted,
+    ...(soloPractice ? { practice: true } : {}),
     victoryHold: (mapDefinition.victoryHoldSeconds ?? 0) > 0 ? {
       durationSeconds: mapDefinition.victoryHoldSeconds,
       activeTeams: [...victoryHoldState.activeTeams],
@@ -6426,7 +6428,7 @@ function advanceQueuedWaypoints() {
 function selectMap(player, mapId) {
   if (player.team !== 0) return;
   if (pveLaunchOptions) {
-    sendOrderNotice(player, 0, 'PLAY VS AI MAP IS LOCKED FOR THIS MATCH');
+    sendOrderNotice(player, 0, 'AI MATCH MAP IS FIXED · MAIN MENU → PRACTICE FOR ALL MAPS');
     return;
   }
   const nextMap = mapCatalog.get(String(mapId));
@@ -6595,7 +6597,7 @@ async function handleCommand(player, command) {
   if (command.type === 'publishMap') await publishMap(player, command.map, command.persist === true);
   if (command.type === 'selectArmySize' && player.team === 0) {
     if (pveLaunchOptions) {
-      sendOrderNotice(player, command, 'PLAY VS AI ARMY SIZE IS LOCKED FOR THIS MATCH');
+      sendOrderNotice(player, command, 'AI MATCH ARMY IS FIXED · MAIN MENU → PRACTICE TO CHANGE IT');
       return;
     }
     const allowed = [250, 500, 1000, 2000];
@@ -7111,7 +7113,7 @@ function simulateTick() {
   tickNumber++;
   if (pregame?.phase === 'lobby') return;
   if (matchWinner >= 0) return;
-  if (!scenarioClockStarted && connectedCount() >= 2) scenarioClockStarted = true;
+  if (!scenarioClockStarted && connectedCount() >= (soloPractice ? 1 : 2)) scenarioClockStarted = true;
   if (scenarioClockStarted) matchElapsedSeconds += STEP_SECONDS;
   rebuildSpatialBuckets();
   updatePersistentOrders();

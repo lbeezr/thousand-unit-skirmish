@@ -28,6 +28,30 @@ packaging runs in job 1. Local `npm test` still runs the complete suite in order
 `node scripts/ci.mjs --list` prints the registry without starting fixtures, and
 accepts the same shard option for coverage inspection.
 
+### Incremental checked JavaScript
+
+`npm run check:types` uses locked TypeScript 5.9.3 with strict `checkJs` and
+`noEmit`. The explicit file list in
+[`tsconfig.check-js.json`](../tsconfig.check-js.json) covers only
+[`forestAgeFactors`](../src/forest-age-composition.mjs) and its compile-only
+consumer. This zero-error boundary checks numeric wood-cell identity and world
+x/z coordinates, read-only point inputs, numeric seed/radius and a numeric
+factor map keyed by cell. The runtime algorithm, inputs and output serialization
+are unchanged; no generated JavaScript is shipped.
+
+`node --test scripts/check-types.test.mjs` compiles intentionally invalid
+consumers in memory and requires the expected diagnostics for missing/string
+cell IDs, misspelled/nonnumeric coordinates, string seed/radius, string map
+keys/values, unchecked missing lookups and point mutation. No suppression is
+used. Both checks run in `npm test`; the existing
+`node scripts/forest-age-scenario.mjs` covers runtime determinism, seed variation,
+spacing, root retention and input preservation.
+
+Expand this boundary only with a bounded file scope and a zero-error result.
+Unselected gameplay/client files do not need a type cleanup to pass this check.
+Runtime validation of finite values, positive radius and unique cell IDs remains
+separate from static types; unchecked callers are outside this initial boundary.
+
 ### Enable and verify fork CI
 
 Open the fork's [Actions page](https://github.com/lbeezr/thousand-unit-skirmish/actions).

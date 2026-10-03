@@ -3,7 +3,7 @@ import { randomBytes } from 'node:crypto';
 const ROOM_ID_PATTERN = /^[A-Za-z0-9_-]{32}$/;
 const MAP_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/;
 const UINT32_MAX = 0xffff_ffff;
-const WORKER_LAUNCH_ENV_KEYS = ['RTS_GAME_MODE', 'RTS_PVE_MAP_SEED', 'RTS_PVE_POLICY_SEED', 'RTS_PREGAME'];
+const WORKER_LAUNCH_ENV_KEYS = ['RTS_GAME_MODE', 'RTS_PVE_MAP_SEED', 'RTS_PVE_POLICY_SEED', 'RTS_PREGAME', 'RTS_SOLO_PRACTICE'];
 
 function parseSeed(value, label) {
   const seed = typeof value === 'string' && /^\d+$/.test(value) ? Number(value) : value;
@@ -32,7 +32,7 @@ export function normalizeRoomLaunchOptions(value) {
     throw new TypeError('Room launch options must be an object.');
   }
   for (const key of Object.keys(value)) {
-    if (!['mode', 'mapSeed', 'policySeed', 'pregame'].includes(key)) {
+    if (!['mode', 'mapSeed', 'policySeed', 'pregame', 'practice'].includes(key)) {
       throw new TypeError(`Unknown room launch option: ${key}.`);
     }
   }
@@ -45,11 +45,17 @@ export function normalizeRoomLaunchOptions(value) {
   if (Object.hasOwn(value, 'pregame') && (typeof value.pregame !== 'boolean' || mode !== 'pvp')) {
     throw new TypeError('Pregame must be a boolean for a PvP room.');
   }
+  if (Object.hasOwn(value, 'practice') && (typeof value.practice !== 'boolean' || mode !== 'pvp')) {
+    throw new TypeError('Practice must be a boolean for a PvP room.');
+  }
+  if (value.practice === true && value.pregame === true) {
+    throw new TypeError('Practice starts with one player and cannot use the two-player pregame lobby.');
+  }
   if (mode === 'pvp') {
     if (hasMapSeed || hasPolicySeed) {
       throw new TypeError('PvP rooms do not accept PvE seeds.');
     }
-    return { mode, ...(value.pregame === true ? { pregame: true } : {}) };
+    return { mode, ...(value.pregame === true ? { pregame: true } : {}), ...(value.practice === true ? { practice: true } : {}) };
   }
   return {
     mode,
@@ -82,6 +88,7 @@ export function buildRoomWorkerEnvironment(parentEnvironment, launchOptions) {
   for (const key of WORKER_LAUNCH_ENV_KEYS) delete environment[key];
   environment.RTS_GAME_MODE = options.mode;
   if (options.pregame) environment.RTS_PREGAME = '1';
+  if (options.practice) environment.RTS_SOLO_PRACTICE = '1';
   if (options.mode === 'pve') {
     if (options.mapSeed === undefined || options.policySeed === undefined) {
       throw new TypeError('PvE worker launch options require both seeds.');

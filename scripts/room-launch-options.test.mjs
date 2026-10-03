@@ -86,3 +86,22 @@ test('pregame opts in only PvP rooms and survives worker/index round trips', () 
   const document = roomIndexDocument([{ id: roomId, createdAt: 1, lastActiveAt: 2, launchOptions: options }]);
   assert.deepEqual(normalizeRoomIndex(document), document);
 });
+
+test('practice is explicit, isolated from AI/pregame and survives room recovery', () => {
+  const options = { mode: 'pvp', practice: true };
+  assert.deepEqual(completeRoomLaunchOptions(options), options);
+  assert.deepEqual(normalizeRoomLaunchOptions({ practice: false }), { mode: 'pvp' });
+  for (const invalid of [{ mode: 'pve', practice: true }, { mode: 'pve', practice: false },
+    { practice: 'true' }, { practice: true, pregame: true }]) {
+    assert.throws(() => normalizeRoomLaunchOptions(invalid), /Practice|Practice starts/);
+  }
+  const inherited = { RTS_SOLO_PRACTICE: '1', RTS_PREGAME: '1' };
+  assert.deepEqual(buildRoomWorkerEnvironment(inherited, options), { RTS_GAME_MODE: 'pvp', RTS_SOLO_PRACTICE: '1' });
+  assert.equal(buildRoomWorkerEnvironment(inherited, { mode: 'pvp' }).RTS_SOLO_PRACTICE, undefined);
+  assert.equal(buildRoomWorkerEnvironment(inherited, { mode: 'pvp', pregame: true }).RTS_SOLO_PRACTICE, undefined);
+  assert.equal(buildRoomWorkerEnvironment(inherited, { mode: 'pve', mapSeed: 1, policySeed: 2 }).RTS_SOLO_PRACTICE, undefined);
+  assert.deepEqual(inherited, { RTS_SOLO_PRACTICE: '1', RTS_PREGAME: '1' });
+  const document = roomIndexDocument([{ id: roomId, createdAt: 1, lastActiveAt: 2, launchOptions: options }]);
+  assert.deepEqual(normalizeRoomIndex(document), document);
+  assert.deepEqual(roomResponseMetadata({ launchOptions: options }), { launchOptions: options });
+});
