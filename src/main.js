@@ -7627,9 +7627,10 @@ function wallPointerCell(clientX, clientY) {
   return wallCellAt(worldAt(clientX, clientY), MAP_WIDTH, MAP_HEIGHT);
 }
 
-function resetWallPlacement() {
+function resetWallPlacement(preservePending = false) {
   const owner = wallPlacementGesture.owner;
-  wallPlacementGesture.cancel(); wallKeyboardCell = null; pendingWallPreview = null;
+  wallPlacementGesture.cancel(); wallKeyboardCell = null;
+  if (!preservePending) pendingWallPreview = null;
   wallPlacementGhost.group.visible = false;
   if (typeof owner === 'number' && renderer.domElement.hasPointerCapture(owner)) renderer.domElement.releasePointerCapture(owner);
 }
@@ -8028,7 +8029,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
     return;
   }
   if (event.button === 1 || (event.button === 0 && spaceDown)) {
-    if (buildPlacementActive && buildPlacementType === 'palisade-wall') resetWallPlacement();
+    if (buildPlacementActive && buildPlacementType === 'palisade-wall') resetWallPlacement(buildPlacementPending);
     lastFriendlyUnitClick = null;
     lastUnitPickState = null;
     mapFitActive = false;
@@ -8901,7 +8902,7 @@ window.addEventListener('keyup', (event) => {
   syncBattlefieldCursor();
 });
 window.addEventListener('blur', () => {
-  resetWallPlacement();
+  resetWallPlacement(buildPlacementPending);
   cursorPointer = null;
   cursorShift = false;
   if (tapOrderArmed) setTapOrderArmed(false, false);
@@ -8916,7 +8917,7 @@ window.addEventListener('blur', () => {
 });
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== 'visible') {
-    resetWallPlacement();
+    resetWallPlacement(buildPlacementPending);
     edgeScrollPointer = null;
     clearHeldCameraKeys();
   }

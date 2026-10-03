@@ -80,6 +80,8 @@ for (const team of [0, 1]) test(`seat ${team}: normal menu starts drag, previews
   assert.equal(f.w.wallPlacementGhost.tiles.count, 6, 'pending line remains visible');
   f.w.latestWood[team] = 0; f.w.cursorShift = true; f.w.updateBuildPlacementGhost(45, 35);
   assert.match(f.w.ui.placementStatus.textContent, /6 NEW · 90 WOOD/, 'sent preview stays fixed through stock/Shift changes');
+  f.w.dispatchEvent(new f.w.Event('blur')); f.w.updateBuildPlacementGhost(null, null);
+  assert.equal(f.w.buildPlacementPending, true); assert.equal(f.w.wallPlacementGhost.tiles.count, 6, 'blur cannot discard a submitted preview');
   f.pointer('pointerup', 45, 35); f.pointer('pointerdown', 45, 35); f.pointer('pointerup', 45, 35);
   assert.equal(f.commands.length, 1, 'pending and repeated release cannot resend');
 });
