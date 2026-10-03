@@ -34,6 +34,7 @@ import { advanceTickDeadline } from './simulation-scheduler.mjs';
 import { privateProductionView } from './src/snapshot-private-production.mjs';
 import { RoomPregame, validatePregameCheckpoint } from './src/room-pregame.mjs';
 import { headingToTarget } from './src/unit-heading.mjs';
+import { canTraverseUnitStep } from './src/unit-movement.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const HOST = process.env.RTS_HOST || '127.0.0.1';
@@ -6367,7 +6368,8 @@ function spreadInteractingUnits() {
     }
     if (x <= -MAP_HALF_X + 0.5 || x >= MAP_HALF_X - 0.5
       || z <= -MAP_HALF_Z + 0.5 || z >= MAP_HALF_Z - 0.5
-      || !isWalkable(worldToCell(x, z))) continue;
+      || !canTraverseUnitStep(worldToCell(unit.x, unit.z), worldToCell(x, z),
+        MAP_WIDTH, elevationLevelByCell, isWalkable)) continue;
     unit.x = x;
     unit.z = z;
     unit.lastMoveTick = tickNumber;
@@ -6661,7 +6663,8 @@ function simulateTick() {
       const nextX = unit.x + move.x * move.stepDistance;
       const nextZ = unit.z + move.z * move.stepDistance;
       const nextCell = worldToCell(nextX, nextZ);
-      if (isWalkable(nextCell)) {
+      const currentCell = worldToCell(unit.x, unit.z);
+      if (canTraverseUnitStep(currentCell, nextCell, MAP_WIDTH, elevationLevelByCell, isWalkable)) {
         unit.x = nextX;
         unit.z = nextZ;
       } else {
@@ -6670,9 +6673,24 @@ function simulateTick() {
         const length = Math.hypot(targetX, targetZ) || 1;
         const fallbackX = unit.x + (targetX / length) * move.stepDistance;
         const fallbackZ = unit.z + (targetZ / length) * move.stepDistance;
-        if (isWalkable(worldToCell(fallbackX, fallbackZ))) {
+        if (canTraverseUnitStep(currentCell, worldToCell(fallbackX, fallbackZ),
+          MAP_WIDTH, elevationLevelByCell, isWalkable)) {
           unit.x = fallbackX;
           unit.z = fallbackZ;
+        } else {
+          // A legal crowd deflection can leave the old next waypoint behind
+          // a cliff or corner. Rebuild from the actual cell instead of stalling.
+          if (unit.attackTargetId >= 0 || unit.attackBuildingTargetId >= 0) {
+            unit.path = [];
+            unit.pathIndex = 0;
+            unit.lastAttackCell = -1;
+            unit.repathTimer = 0;
+          } else {
+            const destination = unit.moveGoalCell >= 0
+              ? unit.moveGoalCell : unit.path[unit.path.length - 1];
+            blockedRouteRepairs.push({ unit, destination });
+          }
+          break;
         }
       }
       unit.x = Math.max(-MAP_HALF_X + 0.5, Math.min(MAP_HALF_X - 0.5, unit.x));

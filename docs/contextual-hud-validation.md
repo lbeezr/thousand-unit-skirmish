@@ -59,5 +59,36 @@ sandbox must remain enabled. This slice has no browser or pixel validation;
 earlier population-slice captures do not validate it. No browser security flags
 were changed or disabled to run these checks.
 
+## Tactical-map keyboard view — 3 October 2026
+
+After Fit map, navigating the focused tactical map with an arrow key cancels
+automatic fit, as pointer navigation already does. A window resize or fullscreen
+transition then retains the manually chosen camera target, subject to the
+existing camera bounds and minimum zoom. Fit map remains automatic until actual
+navigation; unrelated keys do not cancel it.
+
+At baseline `f60fd03`, all four arrow directions reproduced a missing state
+transition: the shipped key handler moved the target but left automatic fit
+enabled, so the shipped resize handler called Fit map and replaced that target.
+The regression in `scripts/hud-layout.test.mjs` executes both handlers with the
+shipped focusable tactical-map element. It covers each direction, repeated keys,
+unhandled keys and the existing resize zoom limit. Renderer/layout and Fit map
+geometry are stubbed; these are DOM/state proofs, not pixel or native-input proof.
+
+Native reproduction/capture on a runtime with a working browser sandbox:
+
+1. Run `npm ci`, then `RTS_HOST=127.0.0.1 PORT=4174 node server.mjs` in a
+   disposable checkout. Open `http://127.0.0.1:4174/` at 1280 × 720.
+2. Click Fit map. Use Tab to focus the tactical-map canvas (past its size/hide
+   buttons), then press ArrowRight twice. Capture the battlefield and minimap
+   camera outline and record the focused element.
+3. Resize to 1024 × 720, then enter/exit fullscreen. The view should stay panned
+   rather than return to the fitted center. Repeat with the other arrow directions.
+4. Click Fit map again and resize without arrow navigation: fitting should still
+   follow the viewport. Record commit, browser version, viewports and capture hashes.
+
+Cloud preflight reported `sandbox-unavailable` and `storage-unavailable`; no
+sandbox bypass, native screenshot or visual-acceptance claim accompanies this fix.
+
 Record exact source revisions and proportionate results in the implementation PR.
 Private exploratory art and support artifacts remain outside this patch.

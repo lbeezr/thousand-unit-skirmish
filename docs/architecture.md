@@ -157,6 +157,14 @@ ordered product lists participate. Snapshots carry the revision, default faction
 and unit wire mapping. A browser with a different revision asks for a reload
 before applying the state.
 
+Each unit in a faction roster must be trainable by at least one building in that
+faction's building roster. A globally registered producer outside the faction
+does not satisfy this check. Producers may share products, and a unit may move
+between producers; every product must still belong to the faction's unit roster.
+Validation names the faction and unit when a roster loses its last producer.
+Frontier is the only registered gameplay faction; Vaelora's regional art and lore
+do not register additional playable civilizations.
+
 Checkpoint schema 13 pins this identity. Schema 11 saves migrate to the current
 compatible opening roster; an unknown pinned revision is rejected and the exact
 save is renamed to a `.rejected-*` file before a fresh match starts. Future roster
