@@ -18,7 +18,7 @@ function fixture({ reverseIds = false, swapTeams = false, cached = false } = {})
     movePlanningPending: false, attackMoveScanTick: 0,
   })).sort((a, b) => a.id - b.id);
   const context = vm.createContext({
-    units, attackFlowLastGrant: new WeakMap(), tickNumber: 1,
+    holdBucketOffsets: [], unitStancePolicy: () => ({ acquire: 4.8 }), units, attackFlowLastGrant: new WeakMap(), tickNumber: 1,
     findAttackMoveTarget: () => ({ id: 100 }),
     getUnitAttackPath(unit, target, budget) {
       if (cached && unit.x === -8) return { reachable: true, path: [1] };

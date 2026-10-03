@@ -57,9 +57,11 @@ records the implementation sequence and current limits.
 ## Stationary army orders
 
 Stop (`S`) abandons a unit's current task, attack, path planning and queued route.
-It leaves the unit idle until another order; it preserves carried resources and
+It leaves military in No Attack until another stance choice and workers idle
+until another order; it preserves carried resources and
 leaves shared construction in place. Hold Position (`H`) interrupts the same work,
-then attacks visible enemy units already within its weapon range without chasing.
+then sets military Stand Ground and attacks visible enemy units already within
+its weapon range without chasing. Worker Hold retains the same range-only defense.
 It does not automatically attack structures. Both commands apply to workers and
 military units, are available in the Orders/context controls, and persist through
 reconnect/checkpoint recovery. A new move, gather, build, repair, or attack order
@@ -68,13 +70,23 @@ selection.
 
 Direct military Attack prioritizes the clicked visible target. When that target
 dies, becomes hidden or becomes unreachable, an unqueued order continues against
-nearby visible enemy units using attack-move's 4.8-cell acquisition radius,
-8-cell pursuit leash and bounded path planning. A queued order takes precedence
+nearby visible enemy units according to its saved stance and bounded path
+planning. Aggressive uses attack-move's 4.8-cell acquisition radius and 8-cell
+pursuit leash. A queued order takes precedence
 after target loss. Workers finish a focused Attack without starting this local
 continuation. Stop, Hold Position and a replacement Move still interrupt combat.
-Units that have only moved or spawned remain idle; persistent combat stances are
-a separate planned feature. [Reproduction and acceptance](qa-army-attack-continuation-2026-10-03.md)
-distinguish this fix from default movement and stance behavior.
+New military defaults to Aggressive and defends locally while idle. Ordinary Move
+and every queued waypoint retain priority; stance resumes on final arrival.
+Aggressive acquisition uses a fixed idle anchor across successive kills. Defensive
+acquires within three cells or weapon range, travels at most three cells from its
+anchor and returns after combat. Stand Ground acquires only within weapon range
+and never chases, including an explicit out-of-range target. No Attack suppresses
+automatic acquisition but permits focused Attack, finishing passively. Stances
+apply only to military; Workers and unarmed units retain their current rules.
+Stance choices, anchors and return intent persist through checkpoint/reconnect;
+rematch starts fresh defaults. [Stance command/HUD contract](military-stances.md)
+and [reproduction and acceptance](qa-army-attack-continuation-2026-10-03.md)
+record the command boundaries and verification limits.
 
 Patrol (`P`) targets ground and repeatedly travels between each selected unit's
 current cell and its assigned formation destination. It engages visible enemies

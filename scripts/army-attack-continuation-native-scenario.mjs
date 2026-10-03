@@ -32,6 +32,7 @@ try {
   const lanes = [0, 1].map(team => ({ team, side: team ? -1 : 1, z: team ? 8.5 : -8.5,
     attackers: clients[team].latest.units.filter(u => u[1] === team && u[5] === 'archer'), targets: workers(1 - team).slice(0, 2) }));
   for (const lane of lanes) {
+    await order(lane.team, { type: 'setStance', ids: lane.attackers.map(u => u[0]), stance: 'noAttack' }, /STANCE ORDER/);
     await order(lane.team, { type: 'move', ids: lane.attackers.map(u => u[0]), x: -3.5 * lane.side, z: lane.z }, /MOVE ORDER/);
     for (const [i, id] of lane.targets.entries()) await order(1 - lane.team,
       { type: 'move', ids: [id], x: .5 * lane.side, z: lane.z + i * 2 }, /MOVE ORDER/);
@@ -42,6 +43,7 @@ try {
   for (const lane of lanes) {
     await clients[lane.team].state(s => lane.targets.every(id => s.units.some(u => u[0] === id)), 'targets normally visible');
     const target = staged.state.units[lane.targets[0]];
+    await order(lane.team, { type: 'setStance', ids: lane.attackers.map(u => u[0]), stance: 'aggressive' }, /STANCE ORDER/);
     await order(lane.team, { type: 'attack', ids: lane.attackers.map(u => u[0]),
       unitGenerations: lane.attackers.map(u => u[8]), targetId: target.id, targetGeneration: target.generation }, /ATTACK ORDER/);
   }
