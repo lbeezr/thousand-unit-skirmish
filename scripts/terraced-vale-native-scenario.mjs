@@ -79,11 +79,14 @@ async function closeClients() {
 }
 async function order(client, command, prefix) {
   const token = nextToken++; const began = performance.now();
-  const notice = client.wait(row => row.type === 'notice' && row.clientOrderToken === token);
+  const notice = client.wait(row => row.type === 'notice' && row.clientOrderToken === token
+    && !row.message.startsWith('PLANNING '));
   client.send({ ...command, clientOrderToken: token });
   const result = await notice; assert.ok(result.message.startsWith(prefix), result.message);
   return { finalNoticeMs: performance.now() - began, message: result.message };
 }
+// Concurrent journeys are all awaited later; keep early failures handled until then.
+function tracked(promise) { promise.catch(() => {}); return promise; }
 async function travel(client, id, target, kind) {
   const before = client.current, start = [...unit(before, id)], began = performance.now();
   const accepted = await order(client, { type: 'move', ids: [id], ...target }, 'MOVE ORDER');
@@ -124,17 +127,17 @@ try {
     const team = client.team, sign = team ? 1 : -1, workers = own(client.current, team, 'worker').map(row => row[0]);
     const infantry = own(client.current, team, 'infantry').map(row => row[0]);
     client.send({ type: 'move', ids: infantry.slice(1), x: sign * 68.5, z: 14.5 });
-    const foot = travel(client, infantry[0], { x: -sign * 57.5, z: -2.5 }, 'infantry');
-    const worker = travel(client, workers[0], { x: -sign * 57.5, z: 0.5 }, 'worker')
+    const foot = tracked(travel(client, infantry[0], { x: -sign * 57.5, z: -2.5 }, 'infantry'));
+    const worker = tracked(travel(client, workers[0], { x: -sign * 57.5, z: 0.5 }, 'worker')
       .then(() => travel(client, workers[0], { x: sign * 57.5, z: 0.5 }, 'worker-return'))
-      .then(() => order(client, { type: 'gather', ids: [workers[0]], nodeId: `s${team}-home-wood` }, 'GATHER ORDER'));
+      .then(() => order(client, { type: 'gather', ids: [workers[0]], nodeId: `s${team}-home-wood` }, 'GATHER ORDER')));
     await order(client, { type: 'gather', ids: [workers[3]], nodeId: `s${team}-home-wood` }, 'GATHER ORDER');
     const stable = await build(client, 'stable', workers.slice(1, 3), { x: sign * 57.5, z: 10.5 });
     await order(client, { type: 'gather', ids: [workers[1]], nodeId: `s${team}-home-food` }, 'GATHER ORDER');
     await order(client, { type: 'gather', ids: [workers[2]], nodeId: `s${team}-home-wood` }, 'GATHER ORDER');
     await order(client, { type: 'trainUnit', buildingId: stable.id, kind: 'scout' }, 'SCOUT QUEUED');
     const spawned = await client.state(state => own(state, team, 'scout').length === 1);
-    const scout = travel(client, own(spawned, team, 'scout')[0][0], { x: -sign * 57.5, z: 3.5 }, 'scout');
+    const scout = tracked(travel(client, own(spawned, team, 'scout')[0][0], { x: -sign * 57.5, z: 3.5 }, 'scout'));
     const food = await client.state(state => state.food[team] > 150 - 40);
     report.economy.push({ team, event: 'paid-food-deposit', stock: food.food[team], gameSeconds: food.matchElapsedSeconds });
     await order(client, { type: 'gather', ids: [workers[1]], nodeId: `s${team}-home-wood` }, 'GATHER ORDER');
