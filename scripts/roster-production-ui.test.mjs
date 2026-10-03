@@ -11,7 +11,7 @@ for (const team of [0, 1]) test(`roster production choices follow definitions an
   const building = { id: 7, team, type: 'barracks', complete: true, queue: 0 };
   const container = { dataset: {}, children: [], replaceChildren() { this.children = []; }, append(button) { this.children.push(button); } };
   const context = vm.createContext({ UNIT_DEFINITIONS, BUILDING_DEFINITIONS, formatResourceRequirement,
-    document: { createElement() { return { dataset: {}, addEventListener(_, callback) { this.click = callback; } }; } },
+    document: { createElement() { return { dataset: {}, getAttribute() { return null; }, addEventListener(_, callback) { this.click = callback; } }; } },
     localTeam: team, latestBuildings: [building], teamUnits: [[], []],
     latestFood: [500, 500], latestWood: [500, 500], latestWorkerProduction: [null, null], latestPopulation: [null, null],
     BARRACKS_QUEUE_LIMIT: 5, MAX_PER_TEAM: 1000, MAX_UNITS: 2000, latestRosterSize: 0, matchWinner: -1,
@@ -27,6 +27,7 @@ for (const team of [0, 1]) test(`roster production choices follow definitions an
   context.updateRosterProductionOptions(container, building);
   assert.equal(container.children.find((button) => button.dataset.product === 'spearman'), spear, 'resource updates preserve the focused button');
   assert.equal(spear.disabled, true); assert.match(spear.textContent, /Need 1 food/);
+  spear.click(); assert.equal(commands.length, 1, 'unavailable catalog activation remains blocked');
   context.latestFood[team] = 500; building.queue = 5;
   context.updateRosterProductionOptions(container, building);
   assert.equal(spear.disabled, true); assert.match(spear.textContent, /Queue full/);
@@ -55,7 +56,7 @@ for (const team of [0, 1]) test(`Stable exposes both mounted products and weight
   const commands = [];
   const container = { dataset: {}, children: [], replaceChildren() { this.children = []; }, append(button) { this.children.push(button); } };
   const context = vm.createContext({ UNIT_DEFINITIONS, BUILDING_DEFINITIONS, formatResourceRequirement,
-    document: { createElement() { return { dataset: {}, addEventListener(_, callback) { this.click = callback; } }; } },
+    document: { createElement() { return { dataset: {}, getAttribute() { return null; }, addEventListener(_, callback) { this.click = callback; } }; } },
     localTeam: team, latestBuildings: [building], teamUnits: [[], []], latestFood: [500, 500], latestWood: [500, 500],
     latestWorkerProduction: [null, null], latestPopulation: [{ available: 1 }, { available: 1 }],
     BARRACKS_QUEUE_LIMIT: 5, MAX_PER_TEAM: 1000, MAX_UNITS: 2000, latestRosterSize: 0, matchWinner: -1,
