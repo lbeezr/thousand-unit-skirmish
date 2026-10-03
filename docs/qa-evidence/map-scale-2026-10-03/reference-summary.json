@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "provenance": "Values supplied by the separately delegated native web researcher on 2026-10-03. Full Library handoff and AoE2 guide version/link remain pending; this executor did not independently extract the raw WC3 map files.",
+  "normalization": "Gross bounded area divided by that engine's declared HQ placement-envelope area. Not walkable/buildable area or building capacity. Our constructed TC side=5; initial home TC side=4. Reference ruler side=4.",
+  "sources": {
+    "wc3MapConfiguration": "https://github.com/jblanchette/wc3v/blob/master/helpers/mapConfiguration.json",
+    "wc3BuildingPathing": "https://github.com/jblanchette/wc3v/blob/master/helpers/buildingPathing.json",
+    "blizzardClassicCatalog": "https://classic.battle.net/war3/maps/war3xmappictures.shtml",
+    "aoe2Guide": "Zetnus Definitive Random Map Scripting Guide (native researcher supplied values; exact URL/version pending)"
+  },
+  "profiles": [
+    { "game": "AoE2 DE", "profile": "Typical 1v1 Tiny", "boundsKind": "map", "width": 120, "height": 120, "hqEnvelopeSide": 4, "grossHqEnvelopeAreas": 900 },
+    { "game": "AoE2 DE", "profile": "Typical 2v2 Medium", "boundsKind": "map", "width": 168, "height": 168, "hqEnvelopeSide": 4, "grossHqEnvelopeAreas": 1764 },
+    { "game": "WC3 classic", "profile": "Echo Isles", "boundsKind": "playable", "width": 116, "height": 84, "hqEnvelopeSide": 4, "grossHqEnvelopeAreas": 609 },
+    { "game": "WC3 classic", "profile": "Turtle Rock", "boundsKind": "playable", "width": 104, "height": 104, "hqEnvelopeSide": 4, "grossHqEnvelopeAreas": 676 },
+    { "game": "WC3 classic", "profile": "Twisted Meadows", "boundsKind": "playable", "width": 124, "height": 124, "editorCanvasWidth": 160, "editorCanvasHeight": 160, "hqEnvelopeSide": 4, "grossHqEnvelopeAreas": 961 }
+  ],
+  "echoIslesClassicInfantryTravel": {
+    "kind": "straight-line lower bound, not actual path",
+    "startDistanceTerrainTiles": 77,
+    "worldUnitsPerTerrainTile": 128,
+    "footmanGruntWorldUnitsPerWallSecondAtDefaultClock": 270,
+    "lowerBoundWallSeconds": 36.50370370370371
+  },
+  "versionLimits": "Modern Echo Isles v2.2 has different 108x88 playable bounds. AoE2 large-size values can vary by edition/version. No AoE2 unit travel estimate is admitted here."
+}
