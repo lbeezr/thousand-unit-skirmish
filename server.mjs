@@ -6290,6 +6290,11 @@ function prepareIdleStanceCombat() {
           unit.stanceReturning = false;
           unit.attackMoveRouteReady = true;
           unit.attackMoveScanTick = tickNumber;
+        } else if (worldToCell(unit.x, unit.z) === worldToCell(anchor.x, anchor.z)) {
+          // A route to the current cell has no waypoints, but a continuous
+          // position can still be short of its saved return point.
+          unit.path = [worldToCell(anchor.x, anchor.z)];
+          unit.pathIndex = 0;
         } else if (tickNumber >= unit.attackMoveScanTick) {
           unit.attackMoveScanTick = tickNumber + TICK_RATE;
           enqueueRouteRepairs([{ unit, destination: worldToCell(anchor.x, anchor.z) }]);
