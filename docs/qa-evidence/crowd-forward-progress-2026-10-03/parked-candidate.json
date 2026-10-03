@@ -1,0 +1,121 @@
+{
+  "head": "9b28054298ecd2100af506f665865b7cc8ea2560",
+  "records": [
+    {
+      "team": 0,
+      "lagTicks": 1,
+      "repeat": 0,
+      "sourceSha256": "bf78f947dc21fd514a15562fc0c13f6ffba09f608041962bea001deebd408508",
+      "arrivalTick": 1214,
+      "controlTicks": 484,
+      "arrived": 16,
+      "stalled": [],
+      "stopPreserved": 8,
+      "unselectedUnchanged": true,
+      "replacementGoalsPreserved": true,
+      "traceSha256": "547987fcddfcdb2ab4b642c21ea553ed956113c9c93cab8e2f7ac41b5a3fdd4d"
+    },
+    {
+      "team": 0,
+      "lagTicks": 1,
+      "repeat": 1,
+      "sourceSha256": "bf78f947dc21fd514a15562fc0c13f6ffba09f608041962bea001deebd408508",
+      "arrivalTick": 1214,
+      "controlTicks": 484,
+      "arrived": 16,
+      "stalled": [],
+      "stopPreserved": 8,
+      "unselectedUnchanged": true,
+      "replacementGoalsPreserved": true,
+      "traceSha256": "547987fcddfcdb2ab4b642c21ea553ed956113c9c93cab8e2f7ac41b5a3fdd4d"
+    },
+    {
+      "team": 0,
+      "lagTicks": 2,
+      "repeat": 0,
+      "sourceSha256": "bf78f947dc21fd514a15562fc0c13f6ffba09f608041962bea001deebd408508",
+      "arrivalTick": 1214,
+      "controlTicks": 483,
+      "arrived": 16,
+      "stalled": [],
+      "stopPreserved": 8,
+      "unselectedUnchanged": true,
+      "replacementGoalsPreserved": true,
+      "traceSha256": "0a4cd864ef7c92a8570d45580e44a88253f89270f43304db6b39bb8a0022fb10"
+    },
+    {
+      "team": 0,
+      "lagTicks": 2,
+      "repeat": 1,
+      "sourceSha256": "bf78f947dc21fd514a15562fc0c13f6ffba09f608041962bea001deebd408508",
+      "arrivalTick": 1214,
+      "controlTicks": 483,
+      "arrived": 16,
+      "stalled": [],
+      "stopPreserved": 8,
+      "unselectedUnchanged": true,
+      "replacementGoalsPreserved": true,
+      "traceSha256": "0a4cd864ef7c92a8570d45580e44a88253f89270f43304db6b39bb8a0022fb10"
+    },
+    {
+      "team": 1,
+      "lagTicks": 1,
+      "repeat": 0,
+      "sourceSha256": "bf78f947dc21fd514a15562fc0c13f6ffba09f608041962bea001deebd408508",
+      "arrivalTick": 1259,
+      "controlTicks": 415,
+      "arrived": 16,
+      "stalled": [],
+      "stopPreserved": 8,
+      "unselectedUnchanged": true,
+      "replacementGoalsPreserved": true,
+      "traceSha256": "ae422d2abefb6110a296fd0434f44b6f3afbf1af86958c0cb0ccbb6e10b7db18"
+    },
+    {
+      "team": 1,
+      "lagTicks": 1,
+      "repeat": 1,
+      "sourceSha256": "bf78f947dc21fd514a15562fc0c13f6ffba09f608041962bea001deebd408508",
+      "arrivalTick": 1259,
+      "controlTicks": 415,
+      "arrived": 16,
+      "stalled": [],
+      "stopPreserved": 8,
+      "unselectedUnchanged": true,
+      "replacementGoalsPreserved": true,
+      "traceSha256": "ae422d2abefb6110a296fd0434f44b6f3afbf1af86958c0cb0ccbb6e10b7db18"
+    },
+    {
+      "team": 1,
+      "lagTicks": 2,
+      "repeat": 0,
+      "sourceSha256": "bf78f947dc21fd514a15562fc0c13f6ffba09f608041962bea001deebd408508",
+      "arrivalTick": 1259,
+      "controlTicks": 414,
+      "arrived": 16,
+      "stalled": [],
+      "stopPreserved": 8,
+      "unselectedUnchanged": true,
+      "replacementGoalsPreserved": true,
+      "traceSha256": "fb4666731f0509d2e33ad82e632d0120a5fea773c4afc1ff2ea780d4811cbd48"
+    },
+    {
+      "team": 1,
+      "lagTicks": 2,
+      "repeat": 1,
+      "sourceSha256": "bf78f947dc21fd514a15562fc0c13f6ffba09f608041962bea001deebd408508",
+      "arrivalTick": 1259,
+      "controlTicks": 414,
+      "arrived": 16,
+      "stalled": [],
+      "stopPreserved": 8,
+      "unselectedUnchanged": true,
+      "replacementGoalsPreserved": true,
+      "traceSha256": "fb4666731f0509d2e33ad82e632d0120a5fea773c4afc1ff2ea780d4811cbd48"
+    }
+  ],
+  "limits": [
+    "fixed-tick planning callbacks drain between ticks; native interleaving checked separately",
+    "no renderer, deployment, comparable hardware speedup or supported capacity claim"
+  ]
+}

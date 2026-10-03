@@ -52,6 +52,7 @@ the build they name.
 | Understand overload behavior | [Simulation timing](simulation-timing.md) |
 | Follow the ranked movement/pathing backlog and shared write boundaries | [Movement workstream](movement-pathing-workstream.md) |
 | Verify deterministic planning turns, large routes and native recovery | [Planning work QA](qa-move-planning-work-2026-10-03.md) |
+| Verify route progress through a parked army and preserved Stop intent | [Crowd forward-progress QA](qa-crowd-forward-progress-2026-10-03.md) |
 | Author and validate scenario JSON | [Map authoring](map-authoring.md) |
 | Work on connected walls and explicit manual gates | [Palisade runtime](palisade-runtime.md), [gates](palisade-gates.md) |
 | Inspect isolated water routes before dock/boat integration | [Water navigation foundation](water-navigation-foundation.md) |
