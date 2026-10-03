@@ -18,7 +18,7 @@ try {
   await Promise.all(clients.map(c=>c.wait(m=>m.type==='mapChange'&&m.map.id===map.id,'large pathing map')));
   const army=clients[team].latest.units.filter(u=>u[1]===team&&u[5]==='infantry');
   assert.equal(army.length,996);
-  const ids=army.map(u=>u[0]),selected=new Set(ids),direction=team?-1:1;
+  const ids=army.map(u=>u[0]),selected=new Set(ids),direction=team?-1:1,clearDirection=team?1:-1;
   async function order(command,expected) {
     command.clientOrderToken=token++;
     const notice=await clients[team].command(command,new RegExp(`${expected.source}|REJECTED|FAILED`));
@@ -44,9 +44,9 @@ try {
   // Overlap three ordinary commands before the first planner's notice. The
   // generation guards must preserve Stop and the newer destination regardless
   // of whether the older order applied zero, some or all of its routes first.
-  const older=order({type:'move',ids:ids.slice(0,24),x:direction*44.5,z:-24.5},/MOVE ORDER|ORDER SUPERSEDED/);
+  const older=order({type:'move',ids:ids.slice(0,24),x:direction*44.5,z:clearDirection*24.5},/MOVE ORDER|ORDER SUPERSEDED/);
   const stop=order({type:'stop',ids:stoppedIds},/STOP ORDER/);
-  const replacement=order({type:'move',ids:replacementIds,x:direction*44.5,z:-28.5},/MOVE ORDER/);
+  const replacement=order({type:'move',ids:replacementIds,x:direction*44.5,z:clearDirection*28.5},/MOVE ORDER/);
   await Promise.all([older,stop,replacement]);
   const stopped=await fixture.checkpoint(s=>s.mapDefinition.id===map.id&&stoppedIds.every(id=>{
     const u=s.state.units[id];return !u.movePlanningPending&&u.path.length===0&&!u.attackMove;
@@ -54,7 +54,7 @@ try {
   const replacementResults=replacementIds.map(id=>{
     const u=stopped.state.units[id],goal=u.moveGoalCell;
     const x=goal%map.width-map.width/2+.5,z=Math.floor(goal/map.width)-map.height/2+.5;
-    assert.ok(Math.abs(x-direction*44.5)<=1&&z<=-27.5&&z>=-29.5,
+    assert.ok(Math.abs(x-direction*44.5)<=1&&clearDirection*z>=27.5&&clearDirection*z<=29.5,
       'newer command assigns goals in its own area, outside the older command formation');
     assert.equal(u.orderRevision,arrived.state.units[id].orderRevision+2);
     return {id,goal,revision:u.orderRevision};
