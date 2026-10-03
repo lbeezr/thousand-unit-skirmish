@@ -21,8 +21,13 @@ export function createSkiffFishingContext(map, water) {
   const sites = new Map(shoreFishSitePositions(map).map(site => {
     const cell = site.water.row * map.width + site.water.column;
     const column = cell % map.width, row = Math.floor(cell / map.width);
-    const candidates = [cell, column > 0 ? cell - 1 : -1, column + 1 < map.width ? cell + 1 : -1,
-      row > 0 ? cell - map.width : -1, row + 1 < map.height ? cell + map.width : -1];
+    // A one-cell casting margin around the visual includes pond corners. This
+    // is target reach, not a diagonal movement edge or relaxed hull clearance.
+    const candidates = [];
+    for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+      const x = column + dx, z = row + dz;
+      if (x >= 0 && x < map.width && z >= 0 && z < map.height) candidates.push(z * map.width + x);
+    }
     return [site.nodeId, Object.freeze({ ...site, land: Object.freeze(site.land), water: Object.freeze(site.water),
       cells: Object.freeze(candidates.filter(next => graph.isNavigable(next)).sort((a, b) => a - b)) })];
   }));

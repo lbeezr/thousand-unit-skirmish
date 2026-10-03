@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFileSync } from 'node:fs';
 import { createSkiffFishingContext } from '../src/skiff-fishing.mjs';
 import { createWaterUnitRuntime } from '../src/water-unit-runtime.mjs';
 import { waterRaster } from '../src/water-contours.mjs';
@@ -39,7 +40,7 @@ test('fish banks remain dry land; boats derive a reachable approach beside the s
     assert.equal(wet[f.water.graph.cellAt(site.water.x, site.water.z)], 1);
     assert.equal(f.water.graph.isNavigable(f.water.graph.cellAt(site.water.x, site.water.z)), false, 'shore margin remains outside hull clearance');
     const approach = f.water.graph.pointAt(route.cells.at(-1));
-    assert.equal(Math.hypot(approach.x - site.water.x, approach.z - site.water.z), 1);
+    assert.ok(Math.hypot(approach.x - site.water.x, approach.z - site.water.z) <= Math.SQRT2);
     assert.equal(f.fish.fishRoute(f.world.units[team], f.world.nodes.get(`fish-${1 - team}`), f.world.units), null);
   }
   assert.deepEqual(f.map, before);
@@ -61,6 +62,26 @@ test('both seats fill, drop food at owned Docks, resume, and exhaust finite stoc
     close(f.world.teamFood[team], 1012.1); assert.equal(f.world.nodes.get(`fish-${team}`).stock, 0);
     assert.equal(f.world.units[team].cargo, 0); assert.equal(f.world.units[team].gatherPhase, '');
   }
+});
+
+test('both shipped pilot pond corners have a safe fishing approach from the documented Dock sites', () => {
+  const map = JSON.parse(readFileSync(new URL('../maps/shore-fishing.json', import.meta.url)));
+  const before = structuredClone(map), water = createWaterUnitRuntime(map), fish = createSkiffFishingContext(map, water);
+  for (const team of [0, 1]) {
+    const dock = { id: team + 1, type: 'dock', team, hp: 1200, complete: true, x: team ? 4.5 : -4.5, z: 8.5 };
+    const berth = fish.dockCell(dock); assert.ok(berth >= 0);
+    const unit = { ...water.graph.pointAt(berth), team, hp: 120, movementDomain: 'water' };
+    const node = map.resourceNodes.find(node => node.id === (team ? 'ember-food' : 'azure-food'));
+    const route = fish.fishRoute(unit, node, [unit]); assert.ok(route);
+    const approach = water.graph.pointAt(route.cells.at(-1)), visual = fish.siteAt(node.id).water;
+    assert.equal(Math.hypot(approach.x - visual.x, approach.z - visual.z), Math.SQRT2);
+    assert.ok(fish.deliveryRoute({ ...unit, ...approach }, [dock], []));
+    for (let i = 1; i < route.cells.length; i++) {
+      const a = water.graph.pointAt(route.cells[i - 1]), b = water.graph.pointAt(route.cells[i]);
+      assert.equal(Math.abs(a.x - b.x) + Math.abs(a.z - b.z), 1, 'movement remains cardinal');
+    }
+  }
+  assert.deepEqual(map, before);
 });
 
 test('Stop and checkpoint retain tiny fractional cargo; manual Return cargo delivers once without resuming', () => {

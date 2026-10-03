@@ -10,7 +10,9 @@ second**. The registry includes that tuning in the gameplay ruleset revision.
 
 The node's `x/z` remains the land bank for Workers. Its existing position helper
 derives one adjacent water visual cell; the boat approach is that cell or one
-cardinal neighbor admitted by the existing hull-clearance graph. A source may
+of its eight neighbors admitted by the existing hull-clearance graph. This
+one-cell casting margin admits the shipped pilot's pond corners; it never adds
+diagonal movement edges. A source may
 support land fishing without having enough clear water for a Skiff. Disconnected,
 occupied or unrouteable approaches reject before replacing the boat's order.
 Initial fishing also requires a reachable owned Dock. No land snapping or new
