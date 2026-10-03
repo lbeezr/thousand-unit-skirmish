@@ -46,8 +46,10 @@ map supplies two seeded, mirrored sites using this contract.
 
 [`maps/shore-fishing.json`](../maps/shore-fishing.json) is a 40 × 32 laboratory
 map with eight starting units, fog, no starting food/wood, two 60-food fish sites
-and two untouched 100-wood sites. Select it through the ordinary match map
-picker. It is a gathering/recovery fixture, not a balanced regional skirmish or
+and two finite 175-wood sites, enough for each seat's 100-wood Dock and one
+75-wood Skiff. Select it through the ordinary match map picker or pregame lobby.
+The [normal-game acceptance recipe](qa-skiff-normal-entry-2026-10-03.md) records
+the controls and delivery status. It is a gathering/recovery fixture, not a balanced regional skirmish or
 finished landscape.
 
 Generate a new portable copy from the retained source and explicit settings:
@@ -138,6 +140,6 @@ stock-preserving authoring, one-cell land/water positions, reserved approaches,
 invalid placement, atomic failure and safe portable output.
 `node scripts/shore-fishing-authoring-scenario.mjs` selects the shipped pilot
 through the real host catalog, verifies the served handoff module, banks 60 food
-for each seat, conserves all 120 food and 200 wood, keeps Workers off water,
+for each seat, conserves all 120 food and 350 wood, keeps Workers off water,
 recovers positive cargo and depleted stocks, and restores authored stock on
 rematch. Both checks run in the ordinary CI runner.
