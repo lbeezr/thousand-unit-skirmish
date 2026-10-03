@@ -71,6 +71,23 @@ test('Shift on an idle boat starts immediately; repeated targets obey the shared
   assert.equal(unit.queuedWaypoints.length, 0); assert.equal(unit.cargo, .005);
 });
 
+test('mixed idle/moving selection appends from each accepted tail without replacing the moving boat', () => {
+  const f = fixture(); f.move(0, 23, 52);
+  const [a, b] = f.selected(0);
+  b.path = []; b.pathIndex = 0; b.moveGoalCell = -1; b.holdingPosition = true;
+  assert.equal(f.queue([a], 26, 53).status, 'found');
+  const active = structuredClone(a.path), plan = f.queue([a, b], 27, 47);
+  assert.equal(plan.status, 'found'); assert.deepEqual(a.path, active);
+  assert.equal(a.queuedWaypoints.length, 2); assert.equal(b.queuedWaypoints.length, 0);
+  assert.equal(b.holdingPosition, false);
+  const goals = plan.assignments.map(assignment => assignment.destination); assert.equal(new Set(goals).size, 2);
+  f.recover(); for (let i = 0; i < 700; i++) f.tick();
+  for (let i = 0; i < 2; i++) {
+    const unit = f.selected(0)[i], point = f.water.graph.pointAt(goals[i]);
+    assert.ok(Math.hypot(unit.x - point.x, unit.z - point.z) < 1e-7); assert.equal(unit.queuedWaypoints.length, 0);
+  }
+});
+
 test('fishing/return, mixed domains, land and disconnected Shift orders reject without changing any intent', () => {
   const f = fixture(), unit = f.units[0];
   for (const phase of ['to-node', 'gathering', 'to-base']) {

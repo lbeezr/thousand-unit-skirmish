@@ -125,6 +125,8 @@ try {
     await minimap(team, 26 + offset, 55, true, /QUEUE-LIMIT/);
   }
   const capped = await fixture.checkpoint(snapshot => selected.every(ids => snapshot.state.units[ids[0]].queuedWaypoints.length === 8)); safe(capped);
+  for (const team of [0, 1]) await minimap(team, (team ? 25 : 0) + 22, 55, false, /MOVE ORDER/);
+  const replaced = await fixture.checkpoint(snapshot => selected.every(ids => snapshot.state.units[ids[0]].queuedWaypoints.length === 0)); safe(replaced);
   for (const team of [0, 1]) await command(team, { type: 'stop', ids: [selected[team][0]] }, /STOP ORDER/);
   const stoppedCap = await fixture.checkpoint(snapshot => selected.every(ids => snapshot.state.units[ids[0]].queuedWaypoints.length === 0)); safe(stoppedCap);
   for (const team of [0, 1]) {
@@ -144,7 +146,8 @@ try {
   }
   console.log(JSON.stringify({ scenario: 'Both-seat selected Skiff minimap waypoints', selectedBoatsPerSeat: 2, untouchedBoatsPerSeat: 1,
     realMinimapMoveAndShiftHandlers: true, perBoatFIFOAndRestart: true, exactSelectedStopClearsOnlyItsQueue: true,
-    eightPendingWaypointsAndAtomicCap: true, fractionalFoodPreservedThenDeliveredOnce: true, invalidWaterQueuesPreserved: true,
+    eightPendingWaypointsAndAtomicCap: true, replacementMoveClearsSelectedQueue: true,
+    fractionalFoodPreservedThenDeliveredOnce: true, invalidWaterQueuesPreserved: true,
     boundaries: 'water Move only; queue after fishing/Return remains separate; no passengers, weapons or new art' }));
 } catch (error) {
   try { const snapshot = await saved(); console.error(JSON.stringify({ stage: 'water-waypoints', tick: snapshot.state.tickNumber,
