@@ -113,7 +113,8 @@ async function main() {
     for (const [type, leftX, z] of pads) {
       if (type === 'workshop') await fixture.checkpoint(s => s.state.teamUpgrades[team].militaryTier2);
       const x = team ? -leftX : leftX;
-      await pay(team, { type: 'build', buildingType: type, ids, x, z }, B[type], /PLACED · WORKERS BUILDING/);
+      await pay(team, { type: 'build', buildingType: type, ids, x, z }, B[type],
+        type === 'palisade-wall' ? /PALISADE LINE PLACED/ : /PLACED · WORKERS BUILDING/);
       await clients[team].state(s => s.buildings.some(b => b.team === team && b.type === type && b.x === x && b.z === z && b.complete), `completed ${type}`);
       log(`team${team} ${type} complete`);
     }
