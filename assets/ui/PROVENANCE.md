@@ -40,6 +40,11 @@ strokes. No external source, font, generated image or paid provider was used.
 Their manifest records intended selectors and command meanings. These are
 candidate sources, not integrated HUD controls or native recognition evidence.
 
+That PR130 source milestone is now followed by default labelled HUD integration.
+All six SVGs ship and are explicitly served at their original paths. Current
+native game verification and identified deployed delivery remain incomplete;
+see the [adoption ledger](../../docs/asset-adoption-checklist.md).
+
 ## Follow and Return cargo source refinement — 3 October 2026
 
 The Follow connection and Return cargo crate/receiver were refined by hand in
