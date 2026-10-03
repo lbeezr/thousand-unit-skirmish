@@ -121,19 +121,24 @@ absolute same-origin URL; an unmapped bare package cannot masquerade as a served
 relative file. The source HTTP-allowlist scenario uses the same parser, including
 its comment/escape/computed-import handling.
 
-The first folder-migration candidate is the offline `pve-model-proposal.mjs`
-Node adapter, which is outside browser closures and normal hosted simulation.
-Its sole current source importer is `scripts/pve-opponent-scenario.mjs`, so that
-move can establish a Node-adapter folder without a `main.js`/`server.mjs` edit.
-Before moving it, agree that exact scope with the existing quality owner through
-the producer and refresh its importers. Keep the active room-launch/game-mode
-and gameplay hot spots out of this first migration. For a served module, update
+The first runtime folder move places the offline model-proposal adapter in
+`src/server/pve-model-proposal.mjs`, depending on the portable `pve-opponent`
+policy/observation helper. Its sole scenario consumer uses that canonical path.
+The old `src/pve-model-proposal.mjs` forwards only the four existing named
+exports with identical bindings; its removal owner/criteria live in the
+[research guide](model-controlled-opponent-research.md#boundary). This allocated
+scope changes no browser or HTTP-host code. Both paths are declared Node adapters,
+rejected by every browser entrypoint and remain HTTP 404 even though Docker's
+recursive `src` copy includes them for offline use. Fake-provider policy and
+ordinary WebSocket command-path regressions retain the adapter's behavior.
+Keep active room-launch/game-mode and gameplay hot spots out of this migration.
+For a served module, update
 HTTP admission, imports and release tests together; preserve an existing public
 path only with a deliberate compatibility module forwarding the required named
 exports, a named removal owner and a removal condition. Avoid broad barrels.
-This check-only slice moves no files and changes no runtime binding. Deployment
-and in-game acceptance remain with the producer's release stream; they are not
-claimed by these source checks.
+This offline source/API milestone changes no hosted runtime binding. Producer
+release/deployment ownership remains explicit; source and packed-release checks
+do not claim a gameplay or visual change.
 
 ### Continuing boundary workstream
 
@@ -150,11 +155,22 @@ compact missing dependencies. Its arguments/results and the source checker's
 real served/packed release checks cover the change.
 The review follow-up rejects unmapped bare lazy packages before dependency fetch
 and removes duplicated import-regex parsing from the source allowlist scenario.
+The first allocated folder move gives the offline Node adapter a canonical
+`src/server` home while preserving its original API and client-serving boundary.
 
 | Rank | Next action and evidence | Bounded write scope | Dependency and acceptance |
 | --- | --- | --- | --- |
-| 1 | Move the offline PvE Node adapter into a cohesive server-adapter domain. | Move `src/pve-model-proposal.mjs` to `src/server/pve-model-proposal.mjs`; update its sole scenario consumer, Node-adapter inventory and research-doc pointer. Retain only its four named exports at the old path if compatibility is needed. | Agree this exact first runtime-module scope with the existing quality owner through the producer. Fake-provider policy tests and source graph must pass; no hosted mode, credentials or spending changes. The boundary owner must name a removal condition for any compatibility module. |
-| 2 | Separate client-module admission data from the HTTP host when the server owner is ready. Repeated central allowlist edits currently require touching `server.mjs` for each served helper. | A narrow module-path manifest, its server consumer and serving/release contract fixtures. | Agree the manifest format and ownership with the server owner before edits. Preserve exact admitted/denied URLs, origin/MIME behavior and packed imports; retain runtime release acceptance with the producer. |
+| 1 | Separate client-module admission data from the HTTP host when the server owner is ready. Repeated central allowlist edits currently require touching `server.mjs` for each served helper. | A narrow module-path manifest, its server consumer and serving/release contract fixtures. | Agree the manifest format and ownership with the server owner before edits. Preserve exact admitted/denied URLs, origin/MIME behavior and packed imports; retain runtime release acceptance with the producer. |
+
+Concrete interface proposal for that next slice: `src/server/client-asset-paths.mjs`
+exports a frozen `CLIENT_ASSET_PATHS` array matching today's `publicClientAsset`
+entries and `ENVIRONMENT_MODULE_PATH` matching the existing separate renderer
+path. The HTTP host retains its current exact membership/equality checks,
+authorization, normalization, MIME and all other asset rules. The source allowlist
+scenario consumes those constants; real HTTP/packed tests replace its dependence
+on parsing the host's literal array. Keep the UI/image/map admission rules out of
+this slice. Allocation and interface agreement with the server/quality owner are
+still needed before editing the host or introducing this manifest.
 
 Select the next useful ready item after each small merge. Coordinate real
 overlap rather than moving gameplay hot spots speculatively. A paused dependency
