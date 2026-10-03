@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "packId": "bellweather-sheep-public-reference-v1",
+  "assetId": "bellweather-sheep",
+  "manifest": "sprite-atlas-pack-v1.json",
+  "manifestSha256": "e5e0a79bffd73683835d859056373e2a137957e1462ee988bd8f486e8c47856e",
+  "previewOnly": true,
+  "stateId": "idle",
+  "animations": [],
+  "projectedPixelsPerWorldUnit": 512,
+  "cameraCalibrated": false,
+  "noseYawOnly": false,
+  "headBodyOffsetDegrees": null,
+  "directions": [
+    "north"
+  ],
+  "unavailableStates": [
+    "walk",
+    "graze",
+    "dispatch",
+    "carcass",
+    "depleted"
+  ],
+  "registration": "Illustrated reference: estimated hoof-center (670,1049) at original 1254 px; nominal width display trial. No calibrated anatomy or yaw.",
+  "source": "https://github.com/lbeezr/thousand-unit-skirmish/blob/02e3ac9434ac0970dbe307f44791a40ffd61ba82/docs/art-direction/bellweather-sheep-model-input-v1/bellweather-sheep-model-input-yaw-000-v1.png",
+  "transform": "Border-connected neutral matte/shadow removal; 1254 to 512 LANCZOS. Original RGB input preserved unchanged."
+}

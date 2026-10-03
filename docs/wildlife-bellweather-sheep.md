@@ -1,10 +1,59 @@
 # Bellweather Sheep — first harvestable animal draft
 
-**Status, 2 October 2026:** source-based design proposal at fork main `9990ed3`.
-One species, existing illustrations only. No new art, sprites, models, animal
-simulation, map placement or balance changes are delivered by this document.
+**Status, 3 October 2026:** the original source-based proposal at fork main
+`9990ed3` remains the claim/herd design. A narrower neutral food foundation is now
+implemented below. It delivers no new art, sprites, runtime mesh, default-map
+placement or accepted stock/gatherer-cap balance.
 
 [Wiki wildlife entry](lore/wildlife.md) · [Art evolution](lore/art-evolution.md)
+
+**3 October art follow-up:** a [one-view public-input preview](../assets/wildlife/bellweather-sheep-public-reference-v1/README.md)
+now has a static Three.js binding and original/source/runtime pairs. It is an
+isolated appearance trial with estimated registration, not the eight cloud
+rotations or a harvestable animal. The Library frame transfer and sandboxed
+browser capture are blocked; [checks and limits](qa-bellweather-sheep-static-preview-2026-10-03.md)
+separate consumer byte/CPU evidence from the producer's render observations.
+
+## Implemented neutral food foundation — 3 October 2026
+
+[Authoritative state](../src/wildlife-state.mjs) admits one optional resource-node
+identity, `wildlifeSpecies: "bellweather-sheep"`, only on existing `food` nodes.
+Maps still specify the ID, coordinates and finite positive stock; no additional
+food pool or currency is created. The node limit, open-cell, both-seat
+reachability, construction-site and food drop-off rules remain the existing ones.
+No shipped map opts in yet. [Map schema](map-authoring.md#resources-and-forests)
+contains the authoring contract; dedicated Map Studio controls are future work.
+
+The room worker starts each sheep `alive`. A seat's own living, gather-capable,
+reachable Worker may issue the existing `gather` command with the node ID only
+while its cell is currently visible. An accepted distant order leaves it alive.
+The first authorized Worker in normal interaction range changes it once to a
+stationary `carcass`; activation itself grants no food. Existing gathering then
+moves stock into food cargo at the unchanged rate/carry limit and deposits at
+valid food drop-offs. Either seat may gather the same visible carcass, regardless
+of who activated it. There is no ownership or claim check. Repeated orders and
+interruption preserve the same stock pool; exhausting it sets `depleted` and
+rejects new gathering. Wildlife adds no movement/sight/population or path blocker
+and is absent from combat targeting. No gatherer cap is introduced in this slice.
+
+Checkpoint schema 20 saves species, lifecycle, stock and existing Worker intent/
+cargo together. It validates `alive` only at full authored stock, `carcass` only
+with positive remaining stock and `depleted` only at zero. Schema 19 ordinary
+maps migrate without replenishment. Reconnect/restart retains partial carcasses
+and untouched live sheep; an explicit rematch restores authored live stock and
+resets the economy. There is no decay, reproduction, regeneration or restocking
+inside a match.
+
+Run `node --test scripts/wildlife-state.test.mjs` and
+`node scripts/wildlife-food-scenario.mjs`. The disposable two-seat scenario uses
+real map publication/orders, tests hidden/foreign-worker rejection, fractional
+stock conservation with lost-cargo/duplicate-credit negative controls, shared
+carcass access after Stop, partial/depleted recovery, both-seat deposits, rematch
+and rejection of a contradictory saved lifecycle. Its fixture stocks are test
+values, not balance choices. Rendering, claim/herding, combat dispatch, regional
+placement, AI-specific wildlife policy and browser match evidence remain separate
+outcomes. The high-detail Sheep GLB is an art reference, not a runtime mesh; client
+integration must be coordinated with the parent and sprite owner before it starts.
 
 ## Observed source
 

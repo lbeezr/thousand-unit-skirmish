@@ -1,3 +1,4 @@
+import { activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted, validWildlifeNodeDefinition, validWildlifeNodeState } from './src/wildlife-state.mjs';
 import { validateMapRegion } from './src/regions.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, regionEntryTeam, validCompletionTrigger, completionTeam } from './src/scenario-regions.mjs';
 import { TERRAIN_MATERIALS } from './src/terrain-materials.mjs';
@@ -43,7 +44,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 19;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 20;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -413,8 +414,8 @@ function validateMapDefinition(definition, filename) {
       || resourceNodeIds.has(node.id) || !['food', 'wood'].includes(node.type)
       || !Number.isFinite(node.x) || !Number.isFinite(node.z)
       || Math.abs(node.x) >= definition.width / 2 || Math.abs(node.z) >= definition.height / 2
-      || !Number.isFinite(node.stock) || node.stock <= 0) {
-      throw new Error(`Map ${filename} has an invalid or duplicate resource node.`);
+      || !Number.isFinite(node.stock) || node.stock <= 0 || !validWildlifeNodeDefinition(node)) {
+      throw new Error(`Map ${filename} has an invalid or duplicate resource node (wildlife requires food and bellweather-sheep; lifecycle is runtime-only).`);
     }
     resourceNodeIds.add(node.id);
     const column = Math.floor(node.x + definition.width / 2);
@@ -836,9 +837,7 @@ function activateMap(definition) {
   }]));
   resetScenarioEventClock();
   resetVictoryHoldState();
-  resourceNodeStates = new Map(definition.resourceNodes.map((node) => [node.id, {
-    id: node.id, type: node.type, x: node.x, z: node.z, stock: node.stock,
-  }]));
+  resourceNodeStates = new Map(definition.resourceNodes.map((node) => [node.id, createResourceNodeState(node)]));
 }
 
 function mapCatalogPayload() {
@@ -1668,7 +1667,7 @@ function resetArmy(count = currentArmySize) {
   rebuildWalkableComponents();
   for (const node of mapDefinition.resourceNodes) {
     const state = resourceNodeStates.get(node.id);
-    if (state) state.stock = node.stock;
+    if (state) Object.assign(state, createResourceNodeState(node));
   }
   units.length = 0;
   resetPvePolicy();
@@ -2491,6 +2490,10 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
     })),
     resourceNodes: resourceNodes.map(({ id, type }) => ({
       id, type, stock: resourceNodeStates.get(id)?.stock ?? 0,
+      ...(resourceNodeStates.get(id)?.wildlifeSpecies === undefined ? {} : {
+        wildlifeSpecies: resourceNodeStates.get(id).wildlifeSpecies,
+        wildlifeState: resourceNodeStates.get(id).wildlifeState,
+      }),
     })),
     forestEpoch,
     forestStocks: forestStockEntries(fogView ? viewTeam : null),
@@ -2790,7 +2793,8 @@ function validateMatchCheckpoint(snapshot) {
   for (const node of state.resourceNodes) {
     const definitionNode = definition.resourceNodes.find((item) => item.id === node?.id);
     assertSnapshot(definitionNode && !resourceIds.has(node.id) && node.type === definitionNode.type
-      && finite(node.stock) && node.stock >= 0 && node.stock <= definitionNode.stock, 'invalid resource node state');
+      && finite(node.stock) && node.stock >= 0 && node.stock <= definitionNode.stock
+      && validWildlifeNodeState(node, definitionNode), 'invalid resource node state');
     resourceIds.add(node.id);
   }
   assertSnapshot(Array.isArray(state.triggerStates) && state.triggerStates.length === definition.triggers.length,
@@ -3015,10 +3019,12 @@ function restoreMatchCheckpoint(snapshot) {
     unit.attackMoveResumePath = null;
   }
   nextBuildingId = state.nextBuildingId;
-  resourceNodeStates = new Map(definition.resourceNodes.map((node) => [node.id, {
-    id: node.id, type: node.type, x: node.x, z: node.z, stock: node.stock,
-  }]));
-  for (const node of state.resourceNodes) resourceNodeStates.get(node.id).stock = node.stock;
+  resourceNodeStates = new Map(definition.resourceNodes.map((node) => [node.id, createResourceNodeState(node)]));
+  for (const node of state.resourceNodes) {
+    const restored = resourceNodeStates.get(node.id);
+    restored.stock = node.stock;
+    if (restored.wildlifeSpecies !== undefined) restored.wildlifeState = node.wildlifeState;
+  }
   triggerStates = new Map(state.triggerStates.map((trigger) => [trigger.id, {
     ...trigger, unitCounts: [...trigger.unitCounts],
   }]));
@@ -3211,6 +3217,10 @@ function migrateMatchCheckpoint(snapshot) {
   if (snapshot?.schemaVersion === 18 && [GAMEPLAY_RULESET_REVISION, 'v1:a69d094a27f0df94c6b8404b7e9ee4f4632f42c5a68e0294883275f24ace89ca'].includes(snapshot.rulesetRevision)) {
     snapshot.state.teamUpgrades = snapshot.state.teamUpgrades.map(upgrades => ({ ...emptyTechnologyCompletions(), ...upgrades }));
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+    snapshot.schemaVersion = 19;
+  }
+  // Schema 19 could not author wildlife; retain its ordinary resource state.
+  if (snapshot?.schemaVersion === 19 && !snapshot.mapDefinition?.resourceNodes?.some(node => node.wildlifeSpecies !== undefined)) {
     snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;
   }
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
@@ -3870,6 +3880,10 @@ function assignGather(player, command) {
     sendOrderNotice(player, command, 'GATHER REJECTED · RESOURCE NODE NOT FOUND');
     return;
   }
+  if (node.wildlifeSpecies !== undefined && !cellVisibleToTeam(player.team, worldToCell(node.x, node.z))) {
+    sendOrderNotice(player, command, 'GATHER REJECTED · WILDLIFE NOT VISIBLE');
+    return;
+  }
   if (node.stock <= 0) {
     sendOrderNotice(player, command, `RESOURCE NODE EMPTY · ${nodeId.toUpperCase()}`);
     return;
@@ -4023,6 +4037,8 @@ function updateWorkerEconomy() {
         || unit.cargo >= WORKER_CARRY_CAPACITY || node.stock <= 0) {
         routeWorker(unit, 'to-base', node);
       } else if (nodeDistance <= WORKER_INTERACTION_RANGE) {
+        if (node.wildlifeSpecies !== undefined && !cellVisibleToTeam(unit.team, worldToCell(node.x, node.z))) continue;
+        if (activateWildlifeHarvest(node)) dirty = true;
         unit.orderRevision++;
         unit.gatherPhase = 'gathering';
         unit.path = [];
@@ -4046,6 +4062,7 @@ function updateWorkerEconomy() {
         if (unit.cargo <= 0) unit.cargoType = node.type;
         unit.cargo = Math.min(WORKER_CARRY_CAPACITY, unit.cargo + amount);
         node.stock = emptied ? 0 : node.stock - amount;
+        if (emptied) markWildlifeDepleted(node);
         dirty = true;
         if (emptied) broadcastGameplayNotice(unit.team, node.x, node.z,
           `RESOURCE NODE EMPTY · ${node.id.toUpperCase()}`);
@@ -7093,6 +7110,7 @@ const server = createServer(async (request, response) => {
     'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',
     'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs',
     'src/scenario-regions.mjs', 'src/scenario-authoring.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
+    'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs',
     'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',

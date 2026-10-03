@@ -171,6 +171,15 @@ checks do not replace a played opening with the Town Center present.
 `type`, world `x`/`z`, and positive finite `stock`. Map Studio can add, select, change stock, or remove
 nodes. Obstacle painting over a node removes it.
 
+An optional `wildlifeSpecies: "bellweather-sheep"` on a `food` node opts into the
+[neutral sheep foundation](wildlife-bellweather-sheep.md#implemented-neutral-food-foundation--3-october-2026).
+The same node ID and authored stock represent the living animal and its carcass;
+there is no second resource pool. Other species, wood wildlife and authored
+`wildlifeState` are rejected. Runtime lifecycle is `alive`, `carcass`, then
+`depleted`, visible only in the room's filtered state. Dedicated wildlife brushes,
+claim/herding and sprite bindings are not implemented. No shipped map uses this
+optional identity yet.
+
 Millrace expands its eight resource anchors into five-node seeded patches (40
 nodes), mirrored between seats. Each original anchor stays in place. Added nodes
 stay within four cells, two cells apart, outside the six-cell starting clearings,
@@ -222,6 +231,33 @@ elevation, home footprints and both-seat reachability, then returns a complete
 node array with collision-free IDs. Failure changes neither input. This helper
 does not mirror the new patch or add editor controls; Millrace's mirrored
 replacement generator and materialized map remain unchanged.
+
+[`src/resource-brush-authoring.mjs`](../src/resource-brush-authoring.mjs) adds a
+reusable operation and thin editor adapter on that helper. `previewResourceBrush`
+returns immutable seeded marker positions and the explicit patch-total settings;
+`applyResourceBrush` returns exactly those admitted nodes plus the originals.
+Changing map identity, terrain, elevation, spawns or existing nodes invalidates
+the preview. JSON-copied previews must be regenerated. No input is mutated and
+rejected admission commits nothing.
+
+`createResourceBrushEditor({readMap, readSelectedId, commit, limit})` provides
+preview/cancel/apply and bounded resource-only undo/redo (default 64 operations).
+`readMap` supplies the current validated editor definition, including compressed
+ground/obstacles/elevation and `editorResourceNodes`, rather than stale source
+terrain. `commit` must synchronously replace `{resourceNodes, selectedResourceId}`
+atomically or throw before writing. Redraw, control synchronization and draft
+saving run after a successful operation. Each patch is one history entry; undo
+restores the prior node selection. Unrelated editor fields are never replaced.
+External resource/terrain edits stop history navigation until `reset()`; reset
+also belongs after populate, draft restore or resize. Save ordinary map nodes and
+selection through the existing draft/JSON format; reload starts fresh history.
+
+This slice does not change `src/main.js`, existing resource tools, defaults or any
+map. The UI owner's later integration boundary is the resource pointer branch,
+resource preview draw, and populate/restore/resize reset hooks. Keep its history
+separate from named-region/scenario-event undo. Test the operation with
+`node --test scripts/resource-brush-authoring.test.mjs`; a rendered brush control
+and human editor interaction remain unimplemented.
 
 CI runs `node scripts/vaelora-map-layout-scenario.mjs --check-only` to validate
 all regional layouts without rewriting the SVG or dirtying the clean release
