@@ -506,7 +506,8 @@ const packMeshes = [null, null];
 const quiverMeshes = [null, null];
 const mountMeshes = [null, null];
 const siegeMeshes = [null, null];
-const unitArtMeshes = [siegeMeshes, mountMeshes, bodyMeshes, headMeshes, bowMeshes, shieldMeshes, spearMeshes, toolMeshes, packMeshes, quiverMeshes];
+const boatMeshes = [null, null];
+const unitArtMeshes = [boatMeshes, siegeMeshes, mountMeshes, bodyMeshes, headMeshes, bowMeshes, shieldMeshes, spearMeshes, toolMeshes, packMeshes, quiverMeshes];
 const unitLodRoleMeshes = [
   { worker: null, infantry: null, archer: null },
   { worker: null, infantry: null, archer: null },
@@ -3026,6 +3027,7 @@ const unitLodMarkerGeometries = [
 ];
 
 for (let team = 0; team < 2; team++) {
+  boatMeshes[team] = makeInstances(new THREE.BoxGeometry(0.6, 0.2, 0.45), new THREE.MeshBasicMaterial({ color: TEAM_HEX[team] }), MAX_PER_TEAM);
   siegeMeshes[team] = makeInstances(createSiegeGeometry(), new THREE.MeshBasicMaterial({ color: TEAM_HEX[team] }), MAX_PER_TEAM);
   mountMeshes[team] = makeInstances(createMountGeometry(), new THREE.MeshBasicMaterial({ color: 0x8b6947 }), MAX_PER_TEAM);
   bodyMeshes[team] = makeInstances(
@@ -3460,6 +3462,19 @@ function updateUnitTransform(unit, now = performance.now()) {
     updateUnitFocusVisual(unit);
     return;
   }
+  if (UNIT_DEFINITIONS[unit.kind].movementDomain === 'water') {
+    updateUnitLodTransform(unit, unitLowDetailActive ? visibleScale : 0);
+    dummy.position.set(unit.renderX, 0.16, unit.renderZ);
+    dummy.quaternion.copy(facing.setFromAxisAngle(worldUp, unit.angle));
+    dummy.scale.setScalar(0); dummy.updateMatrix();
+    unitArtMeshes.forEach(pair => pair[unit.team].setMatrixAt(unit.slot, dummy.matrix));
+    dummy.scale.setScalar(unitLowDetailActive ? 0 : visibleScale); dummy.updateMatrix();
+    boatMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
+    updateUnitFocusVisual(unit); return;
+  }
+  // A recycled boat slot must not retain its placeholder under a land unit.
+  dummy.scale.setScalar(0); dummy.updateMatrix();
+  boatMeshes[unit.team].setMatrixAt(unit.slot, dummy.matrix);
   if (unitLowDetailActive) {
     updateUnitLodTransform(unit, visibleScale);
     updateUnitCargoCueColor(unit);
@@ -3697,8 +3712,7 @@ function updateSelectionUI() {
     ui.selectedBuildingHealthBar.style.setProperty('--health-ratio', healthRatio);
     ui.selectedBuildingHealthBar.setAttribute('aria-valuemax', String(Math.round(maxHp)));
     ui.selectedBuildingHealthBar.setAttribute('aria-valuenow', String(Math.round(hp)));
-    ui.selectedBuildingProduction.textContent = selectedBuilding.type === 'dock'
-      ? 'Shoreline foundation · boats unavailable.' : !selectedBuilding.complete
+    ui.selectedBuildingProduction.textContent = !selectedBuilding.complete
       ? 'Finish construction to unlock production.'
       : selectedBuilding.productionBlocked ? 'Production blocked · clear the spawn area.'
         : queued > 0 ? `${queued.toLocaleString()} ${troop} queued · ${training}% training`
@@ -4264,12 +4278,21 @@ function updateMatchResult(winner, triggerId = null, reason = null) {
   updateCommandUI();
 }
 
+function buildingSupportsRally(type) {
+  return type !== 'dock' && BUILDING_DEFINITIONS[type]?.products.length > 0;
+}
+
+function selectedWaterUnits() {
+  return selectedIds().some(id => UNIT_DEFINITIONS[units[id].kind].movementDomain === 'water');
+}
+
 function updateCommandUI() {
   const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
     && building.team === localTeam) || null;
+  if (!selectedBuilding && selectedWaterUnits()) { attackMoveMode = false; persistentTargetMode = null; }
   updateStationaryOrderControls(selectedBuilding);
   const rallyCell = Number.isInteger(selectedBuilding?.rallyCell) ? selectedBuilding.rallyCell : -1;
-  const mode = selectedBuilding ? BUILDING_DEFINITIONS[selectedBuilding.type]?.products.length ? 'RALLY' : 'BUILDING' : persistentTargetMode ? persistentTargetMode.toUpperCase() : attackMoveMode ? 'ATTACK MOVE' : 'MOVE';
+  const mode = selectedBuilding ? buildingSupportsRally(selectedBuilding.type) ? 'RALLY' : 'BUILDING' : persistentTargetMode ? persistentTargetMode.toUpperCase() : attackMoveMode ? 'ATTACK MOVE' : 'MOVE';
   if (ui.commandMode) {
     ui.commandMode.textContent = mode;
     ui.commandMode.dataset.mode = selectedBuilding ? 'rally' : attackMoveMode ? 'attack-move' : 'move';
@@ -4308,12 +4331,15 @@ function updateCommandUI() {
       : (rallyCell >= 0 ? 'Right-click ground to move the production rally' : 'Right-click ground to set a production rally')
       : coarsePointer ? 'Use Target battlefield, then tap a target'
         : attackMoveMode ? 'Right-click ground to advance and engage' : 'Right-click ground or an enemy';
+  if (selectedBuilding?.type === 'dock' && ui.commandHint) ui.commandHint.textContent = 'Train a Skiff (placeholder), then select it and move on water. No rally or cargo.';
+  if (!selectedBuilding && selectedWaterUnits() && ui.commandHint) ui.commandHint.textContent = 'Select one Skiff · move on water or Stop · no queued waypoints or cargo.';
   if (persistentTargetMode && ui.commandHint) ui.commandHint.textContent = `${tapOrderArmed ? 'Tap or click' : coarsePointer ? 'Use Target battlefield, then tap' : 'Right-click'} ${persistentTargetMode === 'follow' ? 'a friendly unit' : 'ground to set the second patrol endpoint'}`;
   for (const button of document.querySelectorAll('[data-persistent-order]')) {
     button.classList.toggle('active', button.dataset.persistentOrder === persistentTargetMode);
     button.setAttribute('aria-pressed', String(button.dataset.persistentOrder === persistentTargetMode));
+    button.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding) || selectedWaterUnits();
   }
-  if (ui.buildingCommandDetails) ui.buildingCommandDetails.hidden = !selectedBuilding || !BUILDING_DEFINITIONS[selectedBuilding.type]?.products.length;
+  if (ui.buildingCommandDetails) ui.buildingCommandDetails.hidden = !selectedBuilding || !buildingSupportsRally(selectedBuilding.type);
   if (ui.buildingRallyReadout) {
     if (rallyCell >= 0) {
       const point = mapCellToWorld(rallyCell);
@@ -4328,9 +4354,9 @@ function updateCommandUI() {
   if (ui.attackMoveToggle) {
     ui.attackMoveToggle.classList.toggle('active', attackMoveMode);
     ui.attackMoveToggle.setAttribute('aria-pressed', String(attackMoveMode));
-    ui.attackMoveToggle.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding);
+    ui.attackMoveToggle.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding) || selectedWaterUnits();
   }
-  if (ui.formationSelect) ui.formationSelect.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding);
+  if (ui.formationSelect) ui.formationSelect.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding) || selectedWaterUnits();
   syncTargetOrderUI();
   syncBattlefieldCursor();
   updateContextualCommands();
@@ -4341,7 +4367,7 @@ function syncTargetOrderUI() {
   const selectedBuilding = latestBuildings.find((building) => building.id === selectedBuildingId
     && building.team === localTeam) || null;
   ui.orderTargetToggle.disabled = localTeam === null || matchWinner >= 0 || buildPlacementActive
-    || Boolean(selectedBuilding && !BUILDING_DEFINITIONS[selectedBuilding.type]?.products.length);
+    || Boolean(selectedBuilding && !buildingSupportsRally(selectedBuilding.type));
   ui.orderTargetToggle.classList.toggle('active', tapOrderArmed);
   ui.orderTargetToggle.setAttribute('aria-pressed', String(tapOrderArmed));
   ui.orderTargetToggle.querySelector('span').textContent = tapOrderArmed ? 'Cancel target'
@@ -6306,7 +6332,7 @@ function validateImportedMap(value) {
         || trigger.woodReward < 0 || trigger.woodReward > MAX_OBJECTIVE_FOOD_REWARD))
       || (trigger.unitCount !== undefined && (!Number.isInteger(trigger.unitCount)
         || trigger.unitCount < 0 || trigger.unitCount > MAX_TRIGGER_UNIT_REWARD))
-      || (trigger.unitKind !== undefined && !Object.hasOwn(UNIT_DEFINITIONS, trigger.unitKind))
+      || (trigger.unitKind !== undefined && (!Object.hasOwn(UNIT_DEFINITIONS, trigger.unitKind) || UNIT_DEFINITIONS[trigger.unitKind].movementDomain === 'water'))
       || (trigger.requires !== undefined && (typeof trigger.requires !== 'string'
         || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(trigger.requires)))
       || (trigger.requiresAll !== undefined && (trigger.requires !== undefined
@@ -6407,7 +6433,7 @@ function validateImportedMap(value) {
         || event.woodReward < 0 || event.woodReward > MAX_OBJECTIVE_FOOD_REWARD))
       || (event.unitCount !== undefined && (!Number.isInteger(event.unitCount)
         || event.unitCount < 0 || event.unitCount > 25))
-      || (event.unitKind !== undefined && !Object.hasOwn(UNIT_DEFINITIONS, event.unitKind))
+      || (event.unitKind !== undefined && (!Object.hasOwn(UNIT_DEFINITIONS, event.unitKind) || UNIT_DEFINITIONS[event.unitKind].movementDomain === 'water'))
       || (event.technologyReward !== undefined
         && !Object.hasOwn(TECHNOLOGY_DEFINITIONS, event.technologyReward))
       || (event.message !== undefined && (typeof event.message !== 'string' || event.message.length > 120))
@@ -7441,6 +7467,7 @@ for (const button of document.querySelectorAll('[data-stationary-order]')) {
 }
 
 function setPersistentTargetMode(type) {
+  if (selectedWaterUnits()) { showToast('SKIFF SUPPORTS MOVE AND STOP'); return; }
   if (localTeam === null || matchWinner >= 0 || !selectedIds().length) return;
   attackMoveMode = false;
   persistentTargetMode = persistentTargetMode === type ? null : type;
@@ -7454,6 +7481,7 @@ for (const button of document.querySelectorAll('[data-persistent-order]')) {
 }
 
 function setAttackMoveMode(enabled, announce = true) {
+  if (enabled && selectedWaterUnits()) { showToast('SKIFF SUPPORTS MOVE AND STOP'); return; }
   if (enabled && (localTeam === null || matchWinner >= 0)) return;
   if (enabled) persistentTargetMode = null;
   attackMoveMode = Boolean(enabled);
@@ -7466,6 +7494,7 @@ function setAttackMoveMode(enabled, announce = true) {
 function setTapOrderArmed(enabled, announce = true) {
   if (enabled) {
     if (localTeam === null || matchWinner >= 0) return;
+    if (latestBuildings.find(row => row.id === selectedBuildingId)?.type === 'dock') { showToast('MOVE THE SKIFF AFTER SPAWN'); return; }
     if (buildPlacementActive) { showToast('FINISH OR CANCEL BUILD PLACEMENT FIRST'); return; }
     if (selectedBuildingId === null && selectedIds().length === 0) {
       showToast('SELECT YOUR UNITS BEFORE ISSUING AN ORDER');
@@ -7485,6 +7514,7 @@ function issueMove(point, queueWaypoint = false, moveOnly = false) {
   if (localTeam === null) { showToast('SPECTATORS CANNOT ISSUE COMMANDS'); return; }
   const ids = selectedIds();
   if (ids.length === 0) { showToast('SELECT YOUR UNITS BEFORE ISSUING AN ORDER'); return; }
+  if (selectedWaterUnits() && (ids.length !== 1 || queueWaypoint)) { showToast('SELECT ONE SKIFF · MOVE AND STOP ONLY'); return; }
   const attackMoveOrder = !moveOnly && attackMoveMode;
   if (!moveOnly && persistentTargetMode === 'follow') { showToast('FOLLOW NEEDS A FRIENDLY UNIT TARGET'); return; }
   const patrolOrder = !moveOnly && persistentTargetMode === 'patrol';
@@ -7507,7 +7537,7 @@ function issueMove(point, queueWaypoint = false, moveOnly = false) {
 
 function issueBuildingRallyPoint(clientX, clientY) {
   const building = latestBuildings.find((row) => row.id === selectedBuildingId
-    && row.team === localTeam && BUILDING_DEFINITIONS[row.type]?.products.length > 0);
+    && row.team === localTeam && buildingSupportsRally(row.type));
   const point = worldAt(clientX, clientY);
   if (!building || !point) return;
   if (sendCommand({ type: 'setRallyPoint', buildingId: building.id, x: point.x, z: point.z })) {
@@ -7517,7 +7547,7 @@ function issueBuildingRallyPoint(clientX, clientY) {
 
 function clearSelectedBuildingRally() {
   const building = latestBuildings.find((row) => row.id === selectedBuildingId
-    && row.team === localTeam && BUILDING_DEFINITIONS[row.type]?.products.length > 0);
+    && row.team === localTeam && buildingSupportsRally(row.type));
   if (!building) return;
   if (sendCommand({ type: 'setRallyPoint', buildingId: building.id, clear: true })) {
     showToast('CLEARING PRODUCTION RALLY');
@@ -7573,6 +7603,11 @@ function issueForestGather(cell) {
 function issueContextOrder(clientX, clientY, queueWaypoint = false) {
   if (selectedBuildingId !== null) {
     issueBuildingRallyPoint(clientX, clientY);
+    return;
+  }
+  if (selectedWaterUnits()) {
+    const point = worldAt(clientX, clientY);
+    if (point) issueMove(point, queueWaypoint, true);
     return;
   }
   const rect = renderer.domElement.getBoundingClientRect();
@@ -7813,7 +7848,7 @@ function syncBattlefieldCursor() {
     canOrder: localTeam !== null && matchWinner < 0,
     building: buildPlacementActive, buildValid: ui.placementStatus?.dataset.state === 'clear',
     selectedBuilding: selectedBuildingId !== null,
-    rallySupported: Boolean(ownedBuilding && BUILDING_DEFINITIONS[ownedBuilding.type]?.products.length > 0),
+    rallySupported: Boolean(ownedBuilding && buildingSupportsRally(ownedBuilding.type)),
     count: ids.length, workers: ids.some((id) => units[id].kind === 'worker'),
     military: ids.some((id) => units[id].kind !== 'worker'),
     attackMove: attackMoveMode, armed: tapOrderArmed, shift: cursorShift,
@@ -9074,7 +9109,7 @@ if (ui.studioEventTechnologyReward) {
 }
 for (const selector of [ui.studioObjectiveUnitKind, ui.studioEventUnitKind]) {
   const initial = selector.value || 'infantry';
-  selector.replaceChildren(...Object.values(UNIT_DEFINITIONS).map((definition) => {
+  selector.replaceChildren(...Object.values(UNIT_DEFINITIONS).filter(definition => definition.movementDomain !== 'water').map((definition) => {
     const option = document.createElement('option'); option.value = definition.id; option.textContent = definition.label; return option;
   }));
   selector.value = initial;
