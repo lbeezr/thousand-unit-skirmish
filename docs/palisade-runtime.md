@@ -16,11 +16,13 @@ single snapped cell to this same transaction. The registry building menu exposes
 that single-cell placement. A drag/line authoring UI remains separate work.
 
 The server derives all prices, identities, occupancy and team ownership from
-fresh authoritative state. Terrain, resources, objectives, live units, Town
+fresh authoritative state. Terrain, positive-stock resources, objectives, live units, Town
 Centers, other buildings and enemy walls block admission. Friendly palisades may
 be reused without charge or recreation. A fully reused request is a no-op: it
 does not reset progress or interrupt the current Worker order. Resuming stopped
 existing segments uses ordinary `build` with `buildingId`.
+Depleted resource cells are reusable; connectivity and checkpoint overlap use
+the same validated-stock rule as other buildings.
 
 All new cells are blocked together for the existing entity-connectivity and
 active-route guards. Every segment needs access from the team's spawn component

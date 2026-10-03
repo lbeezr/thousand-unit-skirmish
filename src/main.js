@@ -2184,10 +2184,17 @@ function refreshForestStumpTransforms() {
   forestStumpMesh.visible = forestStumpCount > 0;
 }
 
-function applyForestState(state) {
+function applyForestState(state, initial = false) {
+  const epochChanged = Number.isSafeInteger(state.forestEpoch) && latestForestEpoch !== state.forestEpoch;
+  if (initial || epochChanged) {
+    // Rematches reset all finite stocks, including nodes omitted by fog. A new
+    // server can reuse an epoch, so welcome receipts also discard old knowledge.
+    latestResourceStocks.clear();
+    for (const node of mapDefinition?.resourceNodes || []) latestResourceStocks.set(node.id, node.stock);
+  }
   if (!Number.isSafeInteger(state.forestEpoch)) return;
   let visualChanged = false;
-  if (latestForestEpoch !== state.forestEpoch) {
+  if (epochChanged) {
     for (const [cell, stock] of latestForestStocks) {
       if (stock < 6) {
         setForestTreeVisual(cell, 6);
@@ -4365,7 +4372,7 @@ function applyState(state, initial = false) {
   for (const row of state.units || []) {
     const [id, team, x, z, hp, kind, cargo, cargoType, generation = 0, taskStatus,
       targetedBy = 0, attackTick = -1, attackX = null, attackZ = null,
-      audioExecution = null, workHeading = null] = row;
+      audioExecution = null, workHeading = null, workResourceVariant = null] = row;
     const existingUnit = units[id];
     const unit = existingUnit || appendUnitFromState(row, !initial);
     if (!unit || unit.team !== team) continue;
@@ -4391,6 +4398,7 @@ function applyState(state, initial = false) {
       unit.defeatStartedAt = 0;
       unit.spriteClockState = null;
       unit.spriteClockStartedAt = null;
+      unit.workResourceVariant = null;
       unit.spawnStartedAt = initial ? 0 : performance.now();
       unit.lastPlayedAttackTick = -1;
       unit.angle = team === 0 ? Math.PI / 2 : -Math.PI / 2;
@@ -4403,6 +4411,9 @@ function applyState(state, initial = false) {
     unit.serverX = x;
     unit.serverZ = z;
     unit.workHeading = Number.isFinite(workHeading) ? workHeading : null;
+    // Clear on every snapshot, including legacy rows, travel, Stop and recovery.
+    unit.workResourceVariant = kind === 'worker' && taskStatus === 'gathering'
+      && workResourceVariant === 'shore-fish' ? workResourceVariant : null;
     if (kind && unit.kind !== kind) {
       unit.kind = kind;
       cargoVisualMayChange = true;
@@ -4500,7 +4511,7 @@ function applyState(state, initial = false) {
   }
   waterStudyFishBinding?.update(state, { spectator: localTeam === null });
   updateFogFromState(state);
-  applyForestState(state);
+  applyForestState(state, initial);
   if (Array.isArray(state.objectives)) updateObjectives(state.objectives);
   updateVictoryHoldCard(state.victoryHold, state.winner, state.winnerReason, state.scenarioClockStarted);
   updateScenarioEventCards(state.scenarioEvents || [], state.matchElapsedSeconds, state.scenarioClockStarted);
@@ -7571,6 +7582,8 @@ function buildPlacementAt(clientX, clientY) {
       if (blocksSite) { blockedReason ||= 'TERRAIN BLOCKS THIS SITE'; break; }
     }
     for (const node of mapDefinition.resourceNodes || []) {
+      // Unknown or positive stock keeps the authored exclusion, as with forest.
+      if (latestResourceStocks.get(node.id) === 0) continue;
       const nodeColumn = Math.floor(node.x + MAP_HALF_X);
       const nodeRow = Math.floor(node.z + MAP_HALF_Z);
       if (nodeColumn >= startColumn && nodeColumn < startColumn + footprint

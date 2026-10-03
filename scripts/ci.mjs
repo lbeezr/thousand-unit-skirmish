@@ -72,6 +72,7 @@ run(['scripts/audio-shipped-serving-scenario.mjs'], 'Authoritative shipped audio
 run(['--test', 'scripts/hosted-scale-profile.test.mjs'], 'Hosted scale measurement integrity');
 run(['--test', 'scripts/unit-sprite-clock.test.mjs'], 'Sprite animation clock');
 run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work facing');
+run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
 run(['--test', 'scripts/unit-movement.test.mjs'], 'Unit separation terrain boundaries');
 run(['--test', 'scripts/fortified-site-clearance.test.mjs'], 'Fortified late-arrival construction clearance');
 run(['--test', 'scripts/sheep-static-preview.test.mjs'], 'Sheep static reference integrity and state boundary');
@@ -136,6 +137,8 @@ run(['--test', 'scripts/watchtower-targeting.test.mjs'], 'Bounded defense target
 run(['--test', 'scripts/economy-ledger.test.mjs'], 'Fractional cargo conservation');
 run(['--test', 'scripts/return-cargo.test.mjs'], 'Explicit cargo return authority and controls');
 run(['scripts/interrupted-cargo-return-scenario.mjs'], 'Interrupted final sheep-food delivery and restart');
+run(['--test', 'scripts/depleted-resource-construction.test.mjs'], 'Disclosed depleted resource construction sites');
+run(['scripts/depleted-resource-construction-scenario.mjs'], 'Paid construction on depleted resource sites and restart');
 run(['--test', 'scripts/underbough-gathering-evidence.test.mjs'], 'Rootways gathering provenance before rewards');
 run(['--test', 'scripts/base-lifecycle.test.mjs'], 'Cancel refunds and proportional repair');
 run(['--test', 'scripts/storehouse-routing.test.mjs'], 'Reachable drop-off route selection');
