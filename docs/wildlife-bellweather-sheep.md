@@ -339,11 +339,12 @@ source, substitute purchased generation, or alter security to close that gap.
 | 6 | **Delivered native acceptance — open and retained.** Verify the approved binding on the identified relevant deployment and normal/default Millrace. | Existing QA/adoption records and bounded game captures; active Railway/native owners support delivery and capture. Requires a deployed revision containing the binding and a working sandboxed browser. | Exact source/release/deployment recorded separately; ordinary/strategic/close motion, ground contact, foliage occlusion, carcass food remaining, exhaustion, both-seat visibility and rematch observed. CPU/atlas/merge evidence alone cannot close this item. |
 
 The active simulation owner retains bounded movement, food conservation and
-checkpoint recovery in [PR165](https://github.com/lbeezr/thousand-unit-skirmish/pull/165).
-That pending slice already edits shared position consumers; the art owner does
-not duplicate its `src/main.js`, neutral renderer or server changes. Its proposed
+checkpoint recovery from merged [PR165](https://github.com/lbeezr/thousand-unit-skirmish/pull/165).
+That slice already edits shared position consumers; the art owner does
+not duplicate its `src/main.js`, neutral renderer or server changes. Its disclosed
 wire fields are current `x`/`z`, radians `wildlifeHeading` (zero +Z, positive +X)
-and `wildlifeActivity: idle|grazing|wandering`; these are a PR contract until merged.
+and `wildlifeActivity: idle|grazing|wandering`. Movement integration does not supply
+articulated action clips or close the separate native appearance acceptance.
 The [specific heading question](https://github.com/lbeezr/thousand-unit-skirmish/pull/165#issuecomment-5974302024)
 must distinguish authored nose pose from body-forward action captures before
 rank 4 proceeds. Existing idle views have about 42 degrees of head/body offset;
