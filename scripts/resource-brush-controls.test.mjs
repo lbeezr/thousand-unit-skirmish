@@ -22,17 +22,20 @@ function fixture(t) {
     editorDefinition: { id: 'brush-ui', name: 'BRUSH UI', width: 64, height: 64,
       terrainBase: 'meadow', terrainPatches: [{ column: 0, row: 0, width: 64, height: 64, material: 'dirt' }],
       obstacles: [], spawnPoints: [{ team: 0, x: -20.5, z: 0.5 }, { team: 1, x: 20.5, z: 0.5 }] },
-    editorResourceNodes: [{ id: 'old', type: 'wood', x: 8.5, z: 10.5, stock: 13.5 }],
+    editorResourceNodes: [{ id: 'old', type: 'food', x: 8.5, z: 10.5, stock: 13.5, wildlifeSpecies: 'bellweather-sheep' }],
     selectedEditorResourceId: 'old', terrain: [], blockers: [], elevation: [], saves: 0, redraws: 0,
     compressEditorGround: () => w.terrain, compressEditorObstacles: () => w.blockers,
     withCurrentEditorElevation: map => ({ ...map, elevationPatches: w.elevation }),
-    syncEditorResourceControls: () => { w.ui.studioResourceStock.value = w.editorResourceNodes.find(n => n.id === w.selectedEditorResourceId)?.stock ?? 300; },
+    MAX_MAP_RESOURCE_NODES: 128, editorTriggerCreationPending: false, getSelectedEditorTrigger: () => null,
     drawEditorGrid: () => { w.redraws++; w.resourceBrushControls?.sync(); },
     scheduleMapStudioDraftSave: () => { w.saves++; },
     editorTool: 'pan', editorCellFromPointer: () => ({ column: 23, row: 21 }),
   });
-  w.ui.studioTerrainBase.value = 'meadow'; w.ui.studioResourceStock.value = 13.5;
+  w.ui.studioTerrainBase.value = 'meadow'; w.ui.studioResourceStock.value = 13.5; w.ui.studioId.value = 'brush-ui';
   w.ui.mapStudio.open = true;
+  w.eval(between('function getSelectedEditorResourceNode(', 'function saveSelectedEditorResourceStock('));
+  w.eval(between('function setEditorTool(', 'function mapStudioViewportSize('));
+  w.eval(between('function captureMapStudioFormValues(', 'function restoreMapStudioFormValues('));
   w.eval(between('resourceBrushControls = mountResourceBrushControls({', "ui.studioResourceStock.addEventListener('input'"));
   w.eval(between("ui.studioGrid.addEventListener('pointerdown'", "ui.studioGrid.addEventListener('pointermove'"));
   const panel = d.querySelector('.resource-node-fields details'); panel.open = true;
@@ -59,9 +62,10 @@ test('actual client callbacks use live terrain; preview and overlay are read-onl
   assert.equal(f.w.selectedEditorResourceId, 'old'); assert.equal(f.w.saves, 0);
   assert.equal(f.w.ui.studioResourceStock.value, '13.5');
   f.set('seed', 93001); assert.equal(f.markers().length, 0); assert.notDeepEqual(f.preview(), a);
+  assert.equal(f.w.captureMapStudioFormValues()['studio-brush-seed'].value, '93001');
 });
 
-test('apply/undo/redo preserve stock, metadata, selection and unrelated map fields with one save per operation', t => {
+test('apply/undo/redo preserve stock, Sheep identity and selection, and notify draft saving after success', t => {
   const f = fixture(t), original = copy(f.w.editorResourceNodes), map = copy(f.w.editorDefinition);
   const markers = f.preview(); f.button('apply').click();
   assert.equal(f.w.saves, 1); assert.equal(f.w.editorResourceNodes.length, 6);
@@ -119,6 +123,10 @@ test('external placement edits clear stale preview/history; metadata and failed 
   assert.equal(f.button('apply').disabled, true); assert.equal(f.button('undo').disabled, true);
   assert.equal(f.w.editorResourceNodes[0].stock, 7.25);
   f.set('column', 44); f.set('row', 22); f.preview(); f.button('apply').click();
+  const applied = copy(f.w.editorResourceNodes), saves = f.w.saves;
+  f.w.ui.studioId.value = 'renamed'; f.button('undo').click();
+  assert.equal(f.button('undo').disabled, true); assert.deepEqual(f.w.editorResourceNodes, applied);
+  assert.equal(f.w.saves, saves);
   f.w.withCurrentEditorElevation = () => { throw new Error('Too many elevation patches'); };
   assert.doesNotThrow(() => f.w.drawEditorGrid()); assert.equal(f.button('undo').disabled, true);
   assert.equal(f.markers().length, 0); assert.match(f.status.textContent, /Too many elevation/);
@@ -127,7 +135,10 @@ test('external placement edits clear stale preview/history; metadata and failed 
 test('same-map reload resets session; closing or changing tools clears overlays without adding nodes', t => {
   const f = fixture(t); f.preview(); f.button('apply').click(); f.w.resourceBrushControls.reset();
   assert.equal(f.button('undo').disabled, true); f.set('column', 44); f.preview();
-  f.w.resourceBrushControls.cancel(); assert.equal(f.markers().length, 0);
+  f.w.setEditorTool('stone'); assert.equal(f.markers().length, 0);
   f.preview(); f.w.ui.mapStudio.dispatchEvent(new f.w.Event('close')); assert.equal(f.markers().length, 0);
   assert.equal(f.w.saves, 1); assert.equal(f.w.editorResourceNodes.length, 6);
+  f.w.selectedEditorResourceId = null;
+  f.w.setEditorTool('resource-food'); assert.equal(f.w.ui.studioResourceStock.value, '300');
+  f.w.setEditorTool('resource-wood'); assert.equal(f.w.ui.studioResourceStock.value, '500');
 });

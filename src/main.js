@@ -8924,7 +8924,7 @@ ui.studioRemoveResource.addEventListener('click', removeSelectedEditorResourceNo
 resourceBrushControls = mountResourceBrushControls({
   host: ui.mapStudio.querySelector('.resource-node-fields'),
   readMap: () => editorDefinition ? withCurrentEditorElevation({
-    ...editorDefinition, terrainBase: ui.studioTerrainBase.value,
+    ...editorDefinition, id: ui.studioId.value, terrainBase: ui.studioTerrainBase.value,
     terrainPatches: compressEditorGround(), obstacles: compressEditorObstacles(),
     resourceNodes: editorResourceNodes,
   }) : null,
