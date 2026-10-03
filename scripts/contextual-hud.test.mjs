@@ -7,7 +7,7 @@ import { selectionContext } from '../src/selection-context.mjs';
 import { updateSelectionPortrait, workerRoleFacts, WORKER_PORTRAITS } from '../src/selection-portrait.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { researchAction, researchOptions } from '../src/research-actions.mjs';
-import { setHudActionAvailability, isHudActionUnavailable } from '../src/hud-layout.mjs';
+import { setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip } from '../src/hud-layout.mjs';
 import { livingIdleWorkerIds, livingUnitIdsOfKinds } from '../src/unit-selection.mjs';
 import { formatResourceStock, formatResourceRequirement } from '../src/resource-format.mjs';
 
@@ -41,7 +41,7 @@ function fixture(team = 0) {
     selectionContext, updateSelectionPortrait, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
     castPreview: true, humanRosterPreview: true, roomPageUrl: new URL('http://localhost/'),
     unitSpriteRuntime: { roleForUnit: unit => unit.team === 0 ? 'human' : 'boughward-worker' },
-    researchAction, researchOptions, setHudActionAvailability, isHudActionUnavailable,
+    researchAction, researchOptions, setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip,
     formatResourceStock, formatResourceRequirement,
     livingIdleWorkerIds, livingUnitIdsOfKinds, localTeam: team, matchWinner: -1,
     units: [
