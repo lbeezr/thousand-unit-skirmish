@@ -4,8 +4,10 @@
 
 The shared field is `map.economyProfileId`. Omission resolves to `food-wood-v1`;
 the explicit experiment ID is `stone-defense-v1`. Unknown IDs, null and empty
-strings are invalid. This slice supplies pure profile/payment helpers; it does
-not admit Stone maps, add live banks, or claim a playable Stone economy.
+strings are invalid. The helpers are merged. The server integration adds typed banks, deposits,
+Watchtower payment/refunds and checkpoint recovery; authoritative Stone nodes,
+authoring controls and client price/bank surfaces remain pending. This is not
+yet a playable Stone economy.
 
 `src/economy-profile.mjs` owns the single additional price: new Watchtower
 construction costs its existing food/wood amounts plus 50 Stone only in the
@@ -18,8 +20,8 @@ to declare unpaid ore costs. A profile override and typed payment must agree.
 `debitEconomyCost` rejects missing/nonfinite banks and produces no partial debit;
 `proportionalEconomyRefund` records the unbuilt fraction; `creditEconomyRefund`
 preserves fractional bank balances. Command/lifecycle ownership must still
-remove canceled work before any replay can refund it again. These pure helpers
-do not themselves execute a command or prove recovery.
+remove canceled work before any replay can refund it again. The server uses these helpers for the construction command and its cancellation.
+Other production/research costs remain two-resource; their refunds never create Stone.
 
 The map owner can target the unchanged `{id,type,x,z,stock}` node shape with
 `type:"stone"`, 200 per seat in 67/67/66 nodes, no regrowth and zero initial Stone.
@@ -30,19 +32,21 @@ blocking terrain. Existing uneven 101-stock rejection fixtures remain separate.
 
 The baseline profile retains the exact `GAMEPLAY_RULESET_REVISION` pin. The
 Stone profile has a distinct canonical pin incorporating the base revision,
-profile ID, Watchtower price and Stone drop-offs. Proposed checkpoint23 records
+profile ID, Watchtower price and Stone drop-offs. Checkpoint23 records
 `economyProfileId` and `state.teamStone`; exact supported legacy checkpoints
 remain baseline with zero Stone and unchanged paid prices. Do not mutate an
 omitted map field during migration: its existing map checksum must still match.
 Old/future pins cannot claim new mineral state. Unknown pins stay rejected and
-the file remains byte-exact. No migration or schema change is implemented here.
+the file remains byte-exact. The old content migration first reaches schema22, then the economy migration
+adds only the explicit baseline selector and `[0,0]` Stone bank. A schema22
+checkpoint claiming any Stone bank, cargo, source or profile is rejected.
 
-The intended wire fields are `economyProfileId` and a Stone-profile-only `stone`
+The server wire fields are `economyProfileId` and a Stone-profile-only `stone`
 bank array, with the existing opponent-null filtering under fog. Runtime owns
 typed cargo/deposit/spend/refund/checkpoint dispatch. Map ownership supplies
 profile/node/bank admission and placement; opponent ownership supplies Stone
 gather/spend policy. Farm AI planting remains with the opponent owner.
 
 ```sh
-node --test scripts/economy-profile.test.mjs scripts/gameplay-definitions.test.mjs scripts/ruleset-revision.test.mjs
+node --test scripts/economy-profile.test.mjs scripts/economy-checkpoint.test.mjs scripts/economy-server.test.mjs scripts/gameplay-definitions.test.mjs scripts/ruleset-revision.test.mjs
 ```

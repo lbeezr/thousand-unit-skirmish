@@ -1,3 +1,4 @@
+import { economyServerBindings, economyServerFunctions } from './economy-server-fixture.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -30,7 +31,7 @@ for (const team of [0, 1]) test(`seat ${team} snapshots keep every positive carg
       [0.000001, 0.000001], [0.004, 0.004], [0.004999, 0.004999], [0.005, 0.01],
       [0.5, 0.5], [7.253, 7.25], [10, 10]]) {
       const unit = worker(team, { cargo, cargoType: cargo ? cargoType : null });
-      const authority = vm.createContext({ units: [unit], mapDefinition: { fogOfWar: true },
+      const authority = vm.createContext({ ...economyServerBindings(), units: [unit], mapDefinition: { fogOfWar: true },
         workerTaskStatus: () => 'idle', workerAudioExecution: () => null,
         workerGatherHeading: () => null, workerFishingPresentation: () => null,
         resourceNodeStates: new Map(), cellVisibleToTeam: () => false, worldToCell: () => 0 });
@@ -40,7 +41,7 @@ for (const team of [0, 1]) test(`seat ${team} snapshots keep every positive carg
       assert.equal(own[7], cargo ? cargoType : null);
       assert.equal(authority.snapshotUnits(1 - team).length, 0, 'hidden foreign cargo remains undisclosed');
       const sent = [], toasts = [];
-      const clientContext = vm.createContext({ localTeam: team, matchWinner: -1,
+      const clientContext = vm.createContext({ ...economyServerBindings(), localTeam: team, matchWinner: -1,
         units: [{ ...unit, cargo: own[6], cargoType: own[7] }], selectedIds: () => [0],
         sendTrackedOrder: command => { sent.push(JSON.parse(JSON.stringify(command))); return true; },
         showToast: message => toasts.push(message), setTapOrderArmed() {}, setAttackMoveMode() {} });
@@ -66,7 +67,7 @@ function authority(team, overrides = {}) {
     { id: 4, team, complete: true, type: 'barracks', footprint: [4] },
   ];
   const notices = [];
-  const context = vm.createContext({ units: [unit], MAX_UNITS: 1000, dirty: false,
+  const context = vm.createContext({ ...economyServerBindings(), units: [unit], MAX_UNITS: 1000, dirty: false,
     BUILDING_DEFINITIONS, navigationRevision: 4, WORKER_INTERACTION_RANGE: 1.5,
     allMatchBuildings: () => buildings, buildingsById: new Map(buildings.map(b => [b.id, b])),
     worldToCell: x => x, nearestOpenCell: cell => cell, buildingAccessCells: cells => cells,
@@ -81,7 +82,7 @@ function authority(team, overrides = {}) {
   const names = ['commandUnitAt', 'commandUnits', 'clearAttackMoveOrder',
     'workerDropoffCandidates', 'routeWorkerToDropoff', 'workerAtDropoff',
     'assignReturnCargo', 'stopGathering', 'updateWorkerEconomy', 'workerTaskStatus'];
-  vm.runInContext(names.map(name => fn(server, name)).join('\n'), context);
+  vm.runInContext(economyServerFunctions + names.map(name => fn(server, name)).join('\n'), context);
   const order = extra => context.assignReturnCargo({ team }, {
     type: 'returnCargo', ids: [0], unitGenerations: [unit.generation], clientOrderToken: 100, ...extra,
   });
@@ -148,7 +149,7 @@ for (const team of [0, 1]) {
 
 test('Return cargo control sends only living friendly carrying workers with generation metadata', () => {
   const sent = [], status = [];
-  const context = vm.createContext({ localTeam: 0, matchWinner: -1, currentOrderToken: 100,
+  const context = vm.createContext({ ...economyServerBindings(), localTeam: 0, matchWinner: -1, currentOrderToken: 100,
     selected: new Set([0, 1, 2, 3, 4]), persistentTargetMode: 'follow',
     units: [worker(0), worker(1), worker(0, { hp: 0 }), worker(0, { cargo: 0 }), worker(0, { kind: 'infantry' })],
     socket: { readyState: 1, send: text => sent.push(JSON.parse(text)) }, WebSocket: { OPEN: 1 },

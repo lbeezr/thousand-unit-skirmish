@@ -1,3 +1,4 @@
+import { GAMEPLAY_RULESET_REVISION } from '../src/gameplay-definitions.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
@@ -76,7 +77,7 @@ test('Current older checkpoints explicitly initialize missing persistent intent'
   const migration = server.slice(server.indexOf('function migrateMatchCheckpoint('), server.indexOf('async function drainMatchCheckpointWrites'));
   const schemaVersion = Number(server.match(/const MATCH_CHECKPOINT_SCHEMA_VERSION = (\d+)/)[1]);
   const rulesVersion = Number(server.match(/const MATCH_RULES_VERSION = (\d+)/)[1]);
-  const context = vm.createContext({ MATCH_CHECKPOINT_SCHEMA_VERSION: schemaVersion, MATCH_RULES_VERSION: rulesVersion });
+  const context = vm.createContext({ MATCH_CHECKPOINT_SCHEMA_VERSION: schemaVersion, MATCH_RULES_VERSION: rulesVersion, GAMEPLAY_RULESET_REVISION });
   vm.runInContext(migration, context);
   const checkpoint = { schemaVersion, rulesVersion, state: { units: [{ id: 0 }] } };
   context.migrateMatchCheckpoint(checkpoint);
