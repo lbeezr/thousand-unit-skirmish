@@ -7112,8 +7112,12 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
   if (trackSeparationWork) {
     separationTickMaxCandidatesPerCall = Math.max(separationTickMaxCandidatesPerCall, unitCandidateVisits);
   }
-  let vx = dx + separationX * 0.62;
-  let vz = dz + separationZ * 0.62;
+  // Stacked parked units can otherwise outweigh the route and make a mover
+  // oscillate just outside the waypoint threshold. Keep repulsion softer than
+  // its intended direction; a single neighbor retains the existing force.
+  const separationScale = 0.62 / Math.max(1, Math.hypot(separationX, separationZ));
+  let vx = dx + separationX * separationScale;
+  let vz = dz + separationZ * separationScale;
   const length = Math.hypot(vx, vz) || 1;
   vx /= length;
   vz /= length;
