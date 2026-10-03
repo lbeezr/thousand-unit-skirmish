@@ -254,8 +254,8 @@
     {
       "path": "source/build_military.py",
       "renderedSourceSHA256": "337bb29bcdf345d80842c0bb832bd9decfc7b0f22774712207fd62ae7b41c90d",
-      "publishedSourceSHA256": "dbbc5e4265a0c995bee29b9509e77da3610e9d3f46ecddf23988eb5e7cc15832",
-      "changes": "Repository-relative path, output-directory creation and publication wording only; no geometry/material/camera changes"
+      "publishedSourceSHA256": "72aecfbd445de7ce796134039f6239735bc0053e3d346e8f17ed7561c802d3b3",
+      "changes": "Repository-relative path, output-directory creation and source status wording only; no geometry/material/camera changes"
     },
     {
       "path": "source/build_range.py",
@@ -267,7 +267,7 @@
       "path": "source/prepare_materials.py",
       "renderedSourceSHA256": "30e4ce94993381d8385a57449218884062a17610b66a2c2c02b992785685b6a9",
       "publishedSourceSHA256": "0f0c9c312d6168de422171b38d3fbbae436477ec90274e2ec39ef50c209d1d1c",
-      "changes": "Identical"
+      "changes": "Creates the texture output directory before using the unchanged deterministic material generator"
     }
   ],
   "textures": [
@@ -399,7 +399,8 @@
         "maxChannelDifference": 0,
         "differentPixels": 0,
         "exactGLBReproduced": true,
-        "glbSHA256": "2411cb41f61f326e90da7ee8c8d6d4a67eb9da274d6a228f6f347c8a03c90ab3"
+        "glbSHA256": "2411cb41f61f326e90da7ee8c8d6d4a67eb9da274d6a228f6f347c8a03c90ab3",
+        "sourceCommentCorrection": "After reproduction check, only the shared helper module docstring was clarified; executable geometry/material/camera code is unchanged"
       },
       {
         "asset": "archery-range",
@@ -410,7 +411,8 @@
         "maxChannelDifference": 0,
         "differentPixels": 0,
         "exactGLBReproduced": true,
-        "glbSHA256": "d4d1b3da7a7544351da191fdcc539b24a4bc2580df4d951848a24b0e21a85664"
+        "glbSHA256": "d4d1b3da7a7544351da191fdcc539b24a4bc2580df4d951848a24b0e21a85664",
+        "sourceCommentCorrection": "After reproduction check, only the shared helper module docstring was clarified; executable geometry/material/camera code is unchanged"
       }
     ],
     "limits": "Only view 01 reproduced from each portable source; source reproduction is not an all-view or native gameplay acceptance check"

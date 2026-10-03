@@ -1,7 +1,7 @@
 """Original, repeatable concept-derived architecture. Blender 4.3, no providers.
 
 Game coordinates are +Y up and +Z front. Blender uses (x,-z,y).
-Complete runtime frames are published; editable models and historical review sheets are retained privately.
+Complete frames have a separate runtime integration; editable models and historical review sheets are retained privately.
 """
 import bpy, math, json, hashlib, argparse, sys, random
 from pathlib import Path
