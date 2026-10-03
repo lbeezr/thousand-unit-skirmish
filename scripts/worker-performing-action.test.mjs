@@ -159,3 +159,16 @@ test('complete repair and fresh generation/rematch/recovery journals have no sta
   f.journal.beginStep(f.context.tickNumber); assert.equal(f.finish(), false);
   f.journal.record(f.unit, 'unknown', 'node'); assert.equal(f.action(), null);
 });
+
+// Tiny remaining wood can be consumed while HP addition rounds to the same
+// float. Presentation must follow actual HP progress without changing that math.
+test('a positive repair request with no representable HP increase has no activity', () => {
+  const f = fixture(); f.unit.gatherNodeId = null; f.unit.buildingTargetId = 1;
+  f.unit.repairing = true; f.building.complete = true;
+  f.context.teamWood[0] = 9 * buildingRepairStep(f.building, 100, 1 / 30).wood;
+  for (let i = 0; i < 9; i++) { f.next(); f.build(); assert.equal(f.action(), 'repair'); f.finish(); }
+  assert.ok(f.context.teamWood[0] > 0 && f.context.teamWood[0] < Number.EPSILON);
+  const hp = f.building.hp; f.next(); f.build();
+  assert.equal(f.building.hp, hp); assert.equal(f.context.teamWood[0], 0);
+  assert.equal(f.action(), null); assert.equal(f.finish(), true);
+});

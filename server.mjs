@@ -5738,9 +5738,10 @@ function updateBuildingAndProduction() {
     if (unit.repairing) {
       const repair = buildingRepairStep(building, teamWood[unit.team], STEP_SECONDS);
       if (repair.hp > 0) {
+        const previousHp = building.hp;
         building.hp += repair.hp;
         teamWood[unit.team] = Math.max(0, teamWood[unit.team] - repair.wood);
-        workerPerformingActions.record(unit, 'repair', building.id);
+        if (building.hp > previousHp) workerPerformingActions.record(unit, 'repair', building.id);
         dirty = true;
       }
       if (building.hp >= BUILDING_DEFINITIONS[building.type].maxHp - 1e-9) {

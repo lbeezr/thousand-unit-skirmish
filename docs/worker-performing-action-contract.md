@@ -30,6 +30,13 @@ Absent version/field, unknown versions/actions and generation changes mean no
 confirmed work; consumers must not reconstruct work from row 9 intent. Sparse
 legacy row slots retain their existing JSON null serialization behavior.
 
+Stance collision check: [military PR #159](https://github.com/lbeezr/thousand-unit-skirmish/pull/159)
+at `9afe392d6bce5276549a60e3189ff0dcd7095304` uses state-level
+`unitStances: [[id, generation, stance], ...]` and leaves positional rows unchanged.
+Row 17 is free; this marker and the stance array have distinct names. The stance
+owner retains its schema-25 migration. This presentation addition has no
+persisted fields and adds no checkpoint schema migration.
+
 ## Receipt lifetime and delivery
 
 The producer records beside existing positive mutations in the forest/node/Farm
