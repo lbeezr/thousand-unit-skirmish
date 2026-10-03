@@ -37,6 +37,29 @@ create separate fresh matches; the old default match identity/checkpoint remains
 all 88 entry/lazy-client modules are served on integrated main. No deployed service or live-data
 mutation is used. The owning PR records exact reviewed/integrated/postmerge builds.
 
+## Integration record
+
+[PR #88](https://github.com/lbeezr/thousand-unit-skirmish/pull/88) integrates fork
+main `518b3bd701f70835bf24ce026d6e83bfedb1190e`. Final runtime
+`65e661cb053986305230a6877a7421a8a9eccd7f` passes all **830 unit tests**, the
+eight authenticated menu protocol groups (88 served modules), the 11 pregame
+groups, eight chat groups and the packaged Railway release scenario. The earlier
+integrated `77dfdb7` also passes legacy supervisor limits/auth/origin/recovery,
+PvE room launch and room expiry. Documentation passes 438 Markdown files and
+2,847 local links before this evidence-only update.
+
+Independent review found and the author fixed three entry races: queued native
+dialog closure after Cancel/Escape, stale room/Resume fetches after back-cache
+restoration, and Resume flags leaking into invites/new rooms. Focused regressions
+execute the actual menu/connection/helper code. Strict Resume also uses one
+admission instant through token validation and peer creation, so a grace-period
+expiry boundary cannot allocate an unrelated seat.
+
+The clean runtime release contains 1,044 files with digest
+`sha256:113206684cedeb96b17e95ed55d42374e41a4da0c1b759048bc27ff62518219e`.
+The PR closure records the actual merge and postmerge checks. Native browser
+appearance and staging deployment are separate follow-ups under the recipe below.
+
 ## Exact Mac QA recipe
 
 Use the PR's final merge locally, then the identified deployed build once the
