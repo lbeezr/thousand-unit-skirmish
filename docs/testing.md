@@ -264,3 +264,5 @@ Regional map/elevation regressions: `node scripts/terrain-authoring-scenario.mjs
 `node scripts/regional-objective-scenario.mjs bellweather-millrace` (repeat with
 `underbough-rootways`). The objective scenarios use the authored opening and each
 seat in turn; they prove routes, holds and rematches, not contested match balance.
+Chat regressions are in `scripts/room-lobby-chat.test.mjs`,
+`scripts/room-lobby-chat-ui.test.mjs` and `scripts/room-lobby-chat-scenario.mjs`.

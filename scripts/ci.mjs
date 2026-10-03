@@ -97,6 +97,8 @@ run(['--test', 'scripts/snapshot-private-production.test.mjs'], 'Seat-private pr
 run(['--test', 'scripts/battlefield-cursor.test.mjs'], 'Battlefield cursor states');
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
 run(['--test', 'scripts/room-pregame.test.mjs', 'scripts/room-lobby-ui.test.mjs'], 'Pregame authority and lobby controls');
+run(['--test', 'scripts/room-lobby-chat.test.mjs', 'scripts/room-lobby-chat-ui.test.mjs'], 'Bounded pregame room chat');
+run(['scripts/room-lobby-chat-scenario.mjs'], 'Real two-client room chat isolation and recovery');
 run(['--test', 'scripts/pve-entry.test.mjs'], 'PvE entry observer settling');
 run(['--test', 'scripts/hud-layout.test.mjs'], 'Visible HUD layout');
 run(['--test', 'scripts/objective-summary.test.mjs', 'scripts/completion-event-labels.test.mjs'], 'Compact objectives and event feedback');

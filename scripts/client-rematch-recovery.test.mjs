@@ -33,7 +33,7 @@ function fixture(team) {
   }
   const noop = () => {};
   const context = vm.createContext({
-    applyLobby() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {} },
+    applyLobby() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {}, updateChat() {} },
     WebSocket, URL, performance: {now: () => 1000}, location: {protocol:'http:',host:'localhost'},
     document: {querySelector:element,querySelectorAll:() => []}, window: {clearTimeout:noop},
     sessionStorage: {getItem:() => null,setItem:noop,removeItem:noop},

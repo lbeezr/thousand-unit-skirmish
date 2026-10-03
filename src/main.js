@@ -9463,6 +9463,7 @@ function connectSocket() {
       } catch {}
       setPlayer(message.player);
       applyLobby(message.state.lobby);
+      roomLobby.updateChat(message.lobbyChat || [], null, true);
       setMapCatalog(message.maps, message.map.id);
       if (ui.orderStatus?.textContent.startsWith('CONNECTION LOST')
         || ui.orderStatus?.textContent.startsWith('SERVER DID NOT CONFIRM')) {
@@ -9514,6 +9515,8 @@ function connectSocket() {
     }
     if (message.type === 'state') { applyLobby(message.lobby); applyState(message); return; }
     if (message.type === 'lobby') { applyLobby(message.lobby); return; }
+    if (message.type === 'lobbyChat') { roomLobby.updateChat(message.messages, message.ack); return; }
+    if (message.type === 'lobbyChatRejected') { roomLobby.rejectChat(message.message, message.clientMessageId); return; }
     if (message.type === 'lobbyRejected') {
       latestLobby = message.lobby;
       roomLobby.reject(message.message, message.lobby, lobbyPlayer);

@@ -1,3 +1,5 @@
+import { createRoomLobbyChat } from './room-lobby-chat-ui.mjs';
+
 const TEAMS = ['Azure', 'Ember'];
 const SIZES = [250, 500, 1000, 2000];
 
@@ -42,6 +44,7 @@ export function createRoomLobby({ root, send, copyInvite }) {
   let online = false;
   let pending = false;
   let rejection = '';
+  const chat = createRoomLobbyChat({ root: element('section'), send });
 
   function render() {
     const visible = lobby?.phase === 'lobby';
@@ -102,6 +105,7 @@ export function createRoomLobby({ root, send, copyInvite }) {
       online = connected;
       pending = false;
       rejection = '';
+      chat.context(lobby, player, online);
       render();
     },
     reject(message, next, identity) {
@@ -109,8 +113,11 @@ export function createRoomLobby({ root, send, copyInvite }) {
       player = identity;
       pending = false;
       rejection = message;
+      chat.context(lobby, player, online);
       render();
     },
-    disconnect() { online = false; pending = false; render(); },
+    updateChat(messages, ack, reset) { chat.update(messages, ack, reset); },
+    rejectChat(message, clientMessageId) { chat.reject(message, clientMessageId); },
+    disconnect() { online = false; pending = false; chat.context(lobby, player, online); render(); },
   };
 }
