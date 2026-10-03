@@ -8,6 +8,7 @@ import { seedShoreFishSites, shoreFishSitePositions, SHORE_FISHING_PILOT_SETTING
 import { findInvalidResourceVariant } from '../src/shore-fishing.mjs';
 import { buildElevationGrid, findUnreachableResourceNode } from '../src/map-utils.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
+import { selectWaterStudyFish } from '../src/water-study-state.mjs';
 
 const source = JSON.parse(await readFile(new URL('./fixtures/shore-fishing-authoring-source.json', import.meta.url)));
 const pilot = JSON.parse(await readFile(new URL('../maps/shore-fishing.json', import.meta.url)));
@@ -67,6 +68,24 @@ test('both land approaches remain reachable with Town Centers and never require 
     const water = site.water.row * pilot.width + site.water.column;
     assert.equal(blocked[land], 0); assert.equal(blocked[water], 1);
   }
+});
+
+test('pilot positions agree with the separate water study selector and retain its visibility/depletion gates', () => {
+  const sites = shoreFishSitePositions(pilot);
+  const visible = { resourceNodes: pilot.resourceNodes,
+    visibleResourceIds: sites.map(site => site.nodeId),
+    visibleWaterCells: sites.map(site => site.water.row * pilot.width + site.water.column) };
+  const schools = selectWaterStudyFish(pilot, visible);
+  assert.equal(schools.length, sites.length);
+  for (const site of sites) {
+    const school = schools.find(school => school.id === site.nodeId);
+    assert.deepEqual({ x: school.x, z: school.z }, { x: site.water.x, z: site.water.z });
+    assert.deepEqual({ x: school.approachX, z: school.approachZ }, site.land);
+  }
+  assert.deepEqual(selectWaterStudyFish(pilot, { ...visible, visibleWaterCells: [] }), []);
+  assert.deepEqual(selectWaterStudyFish(pilot, { ...visible, visibleResourceIds: [] }), []);
+  assert.deepEqual(selectWaterStudyFish(pilot, { ...visible,
+    resourceNodes: pilot.resourceNodes.map(node => ({ ...node, stock: 0 })) }), []);
 });
 
 test('impossible shores, dirt paths, raised banks, disconnected land and unsafe stocks fail atomically', () => {
