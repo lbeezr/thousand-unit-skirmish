@@ -104,7 +104,7 @@
           </div>
           <section class="minimap-panel" aria-label="Tactical map">
             <div class="minimap-heading"><span>MAP</span><button id="minimap-size-toggle" type="button" aria-label="Enlarge tactical map">+</button><button id="minimap-hide" type="button" aria-label="Hide tactical map">−</button></div>
-            <canvas id="minimap-canvas" width="384" height="384" tabindex="0" aria-label="Tactical map. Azure units use square markers and Ember units use diamond markers; food, wood, and high ground are named in the legend. Click or drag to move the camera; use arrow keys while focused to pan.">Tactical map.</canvas>
+            <canvas id="minimap-canvas" width="384" height="384" tabindex="0" aria-label="Tactical map. Azure units use square markers and Ember units use diamond markers; food, wood, and high ground are named in the legend. Left-click or drag to move the camera; use arrow keys while focused to pan. Right-click to move selected units; Shift plus right-click queues a destination, including unexplored ground.">Tactical map.</canvas>
             <div class="minimap-legend"><span><i class="blue-dot"></i>AZURE</span><span><i class="red-dot"></i>EMBER</span><span><i class="food-dot"></i>FOOD</span><span><i class="wood-dot"></i>WOOD</span><span id="minimap-elevation-legend" hidden><i class="elevation-dot"></i>HIGH GROUND</span></div>
           </section>
           <button id="minimap-reopen" class="minimap-reopen" type="button" hidden>Map</button>
@@ -452,6 +452,7 @@
         <aside id="help-panel" class="help-panel" aria-label="Game controls" hidden>
           <div class="help-heading"><div><div class="eyebrow">FIELD GUIDE</div><h2>Controls</h2></div><button id="help-close" class="hud-panel-close" type="button" aria-label="Close controls">×</button></div>
           <p>Hold the arrow keys to move the camera. Middle drag or Space + drag also pans; scroll to zoom toward the pointer. Edge scroll is on by default and can be changed in Match Controls. Use the Center selection, Home base, and Fit map buttons on the battlefield.</p>
+          <p>On the tactical map, left-click or drag to navigate the camera. Right-click to move selected units; hold Shift to queue another destination. You can order movement into unexplored ground.</p>
           <p>Touch controls: select friendly units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource. Drag the tactical map to move the camera.</p>
           <p>Gather food or wood: select workers, then right-click a resource, or use Orders → Target battlefield and tap it. Build a Barracks or Archery Range from Build &amp; train, then choose a clear site; the field hint explains why a spot is blocked.</p>
             <div class="command-footnote"><span class="keycap">PAUSE + CLICK</span> Cycle stack <span class="footnote-sep">·</span> <span class="keycap">DOUBLE-CLICK</span> Select type<br><span class="keycap">SHIFT + DOUBLE-CLICK</span> Add type <span class="footnote-sep">·</span> <span class="keycap">SHIFT + RMB</span> Queue waypoint<br><span class="keycap">L→R DRAG</span> Enclosed <span class="footnote-sep">·</span> <span class="keycap">R→L DRAG</span> Crossing<br><span class="keycap">SHIFT + DRAG</span> Add selection <span class="footnote-sep">·</span> <span class="keycap">A</span> Select all</div>

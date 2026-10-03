@@ -2847,16 +2847,25 @@ function drawMinimap(now = performance.now(), force = false) {
   }
 }
 
-function focusCameraFromMinimap(event) {
-  mapFitActive = false;
+function worldFromMinimap(event) {
   const rect = minimapCanvas.getBoundingClientRect();
-  const mapRect = minimapMapRect(rect.width, rect.height);
-  const pixelX = THREE.MathUtils.clamp(event.clientX - rect.left, 0, rect.width);
-  const pixelY = THREE.MathUtils.clamp(event.clientY - rect.top, 0, rect.height);
-  cameraTarget.x = (pixelX - mapRect.left) / mapRect.scale - MAP_HALF_X;
-  cameraTarget.z = (pixelY - mapRect.top) / mapRect.scale - MAP_HALF_Z;
-  cameraTarget.x = THREE.MathUtils.clamp(cameraTarget.x, -MAP_HALF_X, MAP_HALF_X);
-  cameraTarget.z = THREE.MathUtils.clamp(cameraTarget.z, -MAP_HALF_Z, MAP_HALF_Z);
+  if (!mapDefinition || rect.width <= 0 || rect.height <= 0) return null;
+  // Invert the drawn map rectangle in backing pixels, including CSS scaling and letterboxing.
+  const mapRect = minimapMapRect(minimapCanvas.width, minimapCanvas.height);
+  const pixelX = (event.clientX - rect.left) * minimapCanvas.width / rect.width;
+  const pixelY = (event.clientY - rect.top) * minimapCanvas.height / rect.height;
+  return {
+    x: THREE.MathUtils.clamp((pixelX - mapRect.left) / mapRect.scale - MAP_HALF_X, -MAP_HALF_X, MAP_HALF_X),
+    z: THREE.MathUtils.clamp((pixelY - mapRect.top) / mapRect.scale - MAP_HALF_Z, -MAP_HALF_Z, MAP_HALF_Z),
+  };
+}
+
+function focusCameraFromMinimap(event) {
+  const point = worldFromMinimap(event);
+  if (!point) return;
+  mapFitActive = false;
+  cameraTarget.x = point.x;
+  cameraTarget.z = point.z;
   setCamera();
   drawMinimap(performance.now(), true);
 }
@@ -7417,13 +7426,13 @@ function setTapOrderArmed(enabled, announce = true) {
     : 'TARGETING CANCELLED');
 }
 
-function issueMove(point, queueWaypoint = false) {
+function issueMove(point, queueWaypoint = false, moveOnly = false) {
   if (localTeam === null) { showToast('SPECTATORS CANNOT ISSUE COMMANDS'); return; }
   const ids = selectedIds();
   if (ids.length === 0) { showToast('SELECT YOUR UNITS BEFORE ISSUING AN ORDER'); return; }
-  const attackMoveOrder = attackMoveMode;
-  if (persistentTargetMode === 'follow') { showToast('FOLLOW NEEDS A FRIENDLY UNIT TARGET'); return; }
-  const patrolOrder = persistentTargetMode === 'patrol';
+  const attackMoveOrder = !moveOnly && attackMoveMode;
+  if (!moveOnly && persistentTargetMode === 'follow') { showToast('FOLLOW NEEDS A FRIENDLY UNIT TARGET'); return; }
+  const patrolOrder = !moveOnly && persistentTargetMode === 'patrol';
   const type = patrolOrder ? 'patrol' : attackMoveOrder ? 'attackMove' : 'move';
   const formation = ['line', 'column'].includes(ui.formationSelect?.value)
     ? ui.formationSelect.value : 'box';
@@ -7436,8 +7445,8 @@ function issueMove(point, queueWaypoint = false) {
     moveMarker.material.opacity = 0.95;
     moveMarker.visible = true;
     moveMarkerAge = 0;
-    if (patrolOrder) { persistentTargetMode = null; updateCommandUI(); }
-    if (attackMoveOrder) setAttackMoveMode(false, false);
+    if (patrolOrder || moveOnly) { persistentTargetMode = null; updateCommandUI(); }
+    if (attackMoveOrder || moveOnly) setAttackMoveMode(false, false);
   }
 }
 
@@ -8184,7 +8193,25 @@ renderer.domElement.addEventListener('lostpointercapture', (event) => {
   if (wallPlacementGesture.owner === event.pointerId) resetWallPlacement();
 });
 
+function canIssueMinimapMove() {
+  return Boolean(mapDefinition) && localTeam !== null && matchWinner < 0
+    && !buildPlacementActive && selectedBuildingId === null && selectedIds().length > 0;
+}
+
+minimapCanvas.addEventListener('contextmenu', (event) => {
+  if (canIssueMinimapMove()) event.preventDefault();
+});
 minimapCanvas.addEventListener('pointerdown', (event) => {
+  if (event.button === 2) {
+    if (!canIssueMinimapMove() || minimapPointerId !== null) return;
+    const point = worldFromMinimap(event);
+    if (!point) return;
+    event.preventDefault();
+    event.stopPropagation();
+    issueMove(point, event.shiftKey, true);
+    if (tapOrderArmed) setTapOrderArmed(false, false);
+    return;
+  }
   if (event.button !== 0) return;
   event.preventDefault();
   event.stopPropagation();
@@ -8202,6 +8229,7 @@ function finishMinimapPointer(event) {
 }
 minimapCanvas.addEventListener('pointerup', finishMinimapPointer);
 minimapCanvas.addEventListener('pointercancel', finishMinimapPointer);
+minimapCanvas.addEventListener('lostpointercapture', finishMinimapPointer);
 minimapCanvas.addEventListener('keydown', (event) => {
   const steps = Math.max(MAP_WIDTH, MAP_HEIGHT) * 0.025;
   if (event.key === 'ArrowLeft') cameraTarget.x -= steps;
