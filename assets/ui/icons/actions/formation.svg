@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-label="Formation">
+  <path d="M4 5h16M4 12h16M4 19h16" fill="none" stroke="#e5e8d7" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="7" cy="5" r="2.5" fill="#d5ef78" stroke="#131b16" stroke-width="1"/>
+  <circle cx="17" cy="5" r="2.5" fill="#d5ef78" stroke="#131b16" stroke-width="1"/>
+  <circle cx="7" cy="12" r="2.5" fill="#d5ef78" stroke="#131b16" stroke-width="1"/>
+  <circle cx="17" cy="12" r="2.5" fill="#d5ef78" stroke="#131b16" stroke-width="1"/>
+  <circle cx="7" cy="19" r="2.5" fill="#d5ef78" stroke="#131b16" stroke-width="1"/>
+  <circle cx="17" cy="19" r="2.5" fill="#d5ef78" stroke="#131b16" stroke-width="1"/>
+</svg>
