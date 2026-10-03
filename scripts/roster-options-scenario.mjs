@@ -1,4 +1,5 @@
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { cueForNotice } from '../src/audio-policy.mjs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
@@ -57,7 +58,8 @@ function connect(port) {
       waiters.push(waiter);
     });
   }
-  return { socket, wait, clearMessages() { messages.length = 0; }, get latest() { return latest; } };
+  return { socket, wait, clearMessages() { messages.length = 0; }, get latest() { return latest; },
+    get notices() { return messages.filter(message => message.type === 'notice'); } };
 }
 
 function send(client, command) {
@@ -163,6 +165,18 @@ try {
     }
   }
   await checkpointWith(checkpointPath, (s) => s.state.buildings.every((b) => b.queue === 3));
+  for (const [team, client] of clients.entries()) {
+    await client.wait(m => m.type === 'notice' && m.message.startsWith(`${UNIT_DEFINITIONS[order[2]].label.toUpperCase()} QUEUED · 3/`));
+    const queueNotices = client.notices.filter(m => order.some(kind => m.message.startsWith(`${UNIT_DEFINITIONS[kind].label.toUpperCase()} QUEUED ·`)));
+    assert.equal(queueNotices.length, 3, 'only the recipient gets its three paid queue acknowledgements');
+    for (const notice of queueNotices) assert.equal(cueForNotice(notice.message, { localTeam: team }), 'queue');
+    if (siegeMode) {
+      const prefix = `${team === 0 ? 'AZURE' : 'EMBER'} SIEGE ENGINEERING COMPLETE ·`;
+      const notice = await client.wait(m => m.type === 'notice' && m.message.startsWith(prefix));
+      assert.equal(cueForNotice(notice.message, { localTeam: team }), 'research-complete');
+      assert.equal(cueForNotice(notice.message, { localTeam: 1 - team }), null);
+    }
+  }
   await stop();
   const saved = JSON.parse(await readFile(checkpointPath, 'utf8'));
   for (const building of saved.state.buildings) {

@@ -70,6 +70,18 @@ Check: `node scripts/audio-lifecycle-scenario.mjs`.
 Stop and Hold Position orders use `unit.<kind>.stop` and `unit.<kind>.hold`,
 then `cue.stop`/`cue.hold`, with synthesized stationary confirmation fallback.
 
+Queue acknowledgements use registered unit labels, including Spearman, Scout,
+Rider and Siege Engine. All registered local technology completions use
+`research-complete` rather than the production-complete cue; opponent research
+stays silent. The existing player notice delivery and cue cooldowns are retained.
+Palisade lines use the existing build cue once after `WALL BUILD ORDER` applies
+to their issued token; planning, failures, repeated notices and later segment
+work stay silent.
+Check: `node --test scripts/audio-roster-notices.test.mjs` plus the roster-options
+and progression scenarios. The [coverage and reuse audit](qa-audio-coverage-2026-10-03.md)
+records current map scores, fishing/wildlife/building routes and the next bounded
+mix auditions from existing sources.
+
 ## Shipped delivery and execution feedback
 
 Map Studio offers the `rts-feedback-test` / `worker-actions` v1 profile as supplied
