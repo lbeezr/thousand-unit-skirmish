@@ -191,11 +191,27 @@ short of the visible water edge, while retrieve/collect legitimately stayed on
 the bank. That observation motivates the measured reach contact and smaller
 bank/water cues above, preserving the approved actor bytes.
 
-The contact/cue correction's GPU appearance check remains open. Rerun through
-the current ordinary `?play=1&rendererCapture=environment-state` entry route,
-using the shipped 0.14.0 pack and a recorded read-only observer. Capture ordinary
-view and a continuous close loop without pausing for delivery. Inspect the reach
-endpoint inside actual water, clear bank-side collection, steady root/wrap and
-selection/stock/fog feedback. Source tests check the actual Three geometry endpoint
-and cleanup but cannot establish its appearance. Publication authority is granted;
-seven additional fishing headings remain unproduced.
+Subsequent normally sandboxed native QA inspected the complete ordinary view
+and chronological close loop using the shipped 0.14.0 pack. The reach cue connects
+to an endpoint inside visible water; retrieval and collection remain on the bank.
+The smaller bank ring and water glyph leave the hands/net readable without
+dominating the actor. The planted root looks steady through wraps, with no obvious
+clipping or floating floor artifact in the inspected frames. Stop clears both wire
+fields and the actual rendered contact slot. All four natural keys were observed,
+and the actor atlas bytes remained unchanged.
+
+That closes ordinary-game contact and marker readability for this SE slice.
+Deployed-browser acceptance remains open. The four blocking poses still step,
+including collect-to-crouch; this is not smooth-loop or full directional acceptance.
+Seven additional fishing headings remain unadmitted.
+
+The following private east study preserves both rejected
+directional attempts, then uses an exact-camera pose guide and one whole-strip
+anatomical calibration. Independent source review finds credible adult proportions
+and a steady planted boot, while the net remains above its intended ground target.
+A private default-path prototype adds a measured east reach contact, preserving
+the verified SE geometry, and passes actual renderer/geometry and real-server East
+approach checks. Its actual East water contact still needs in-game pixel inspection;
+it is not public/default heading coverage. Source alpha cleanup before affine
+resampling, zero ownership masks, prompts, references and all iterations remain
+in the private source archive. Smooth transitions remain unfinished.
