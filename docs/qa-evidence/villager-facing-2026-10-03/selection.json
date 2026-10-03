@@ -1,0 +1,161 @@
+{
+  "baseline": "fdd91730725902852723917c831de4831b1611c3",
+  "cameraViewDirection": [
+    0.78,
+    1.12,
+    0.78
+  ],
+  "yaw": "atan2(deltaX,deltaZ); zero=+Z",
+  "screenCardinals": {
+    "left": "north-west",
+    "right": "south-east",
+    "up": "south-west",
+    "down": "north-east"
+  },
+  "selections": [
+    {
+      "state": "walk",
+      "worldDirection": "north",
+      "beforeClip": "north-east",
+      "beforeFrame": "walk-north-east-0",
+      "afterClip": "north",
+      "afterFrame": "idle-north-0",
+      "afterFrameCount": 1
+    },
+    {
+      "state": "walk",
+      "worldDirection": "north-east",
+      "beforeClip": "north-east",
+      "beforeFrame": "walk-north-east-0",
+      "afterClip": "north-east",
+      "afterFrame": "walk-north-east-0",
+      "afterFrameCount": 8
+    },
+    {
+      "state": "walk",
+      "worldDirection": "east",
+      "beforeClip": "north-east",
+      "beforeFrame": "walk-north-east-0",
+      "afterClip": "east",
+      "afterFrame": "idle-east-0",
+      "afterFrameCount": 1
+    },
+    {
+      "state": "walk",
+      "worldDirection": "south-east",
+      "beforeClip": "south-east",
+      "beforeFrame": "walk-south-east-0",
+      "afterClip": "south-east",
+      "afterFrame": "walk-south-east-0",
+      "afterFrameCount": 8
+    },
+    {
+      "state": "walk",
+      "worldDirection": "south",
+      "beforeClip": "south-east",
+      "beforeFrame": "walk-south-east-0",
+      "afterClip": "south",
+      "afterFrame": "idle-south-0",
+      "afterFrameCount": 1
+    },
+    {
+      "state": "walk",
+      "worldDirection": "south-west",
+      "beforeClip": "south-west",
+      "beforeFrame": "walk-south-west-0",
+      "afterClip": "south-west",
+      "afterFrame": "walk-south-west-0",
+      "afterFrameCount": 8
+    },
+    {
+      "state": "walk",
+      "worldDirection": "west",
+      "beforeClip": "south-west",
+      "beforeFrame": "walk-south-west-0",
+      "afterClip": "west",
+      "afterFrame": "idle-west-0",
+      "afterFrameCount": 1
+    },
+    {
+      "state": "walk",
+      "worldDirection": "north-west",
+      "beforeClip": "north-east",
+      "beforeFrame": "walk-north-east-0",
+      "afterClip": "north-west",
+      "afterFrame": "idle-north-west-0",
+      "afterFrameCount": 1
+    },
+    {
+      "state": "gather",
+      "worldDirection": "north",
+      "beforeClip": "south-east",
+      "beforeFrame": "gather-food-south-east-0",
+      "afterClip": "north",
+      "afterFrame": "idle-north-0",
+      "afterFrameCount": 1
+    },
+    {
+      "state": "gather",
+      "worldDirection": "north-east",
+      "beforeClip": "south-east",
+      "beforeFrame": "gather-food-south-east-0",
+      "afterClip": "north-east",
+      "afterFrame": "idle-north-east-0",
+      "afterFrameCount": 1
+    },
+    {
+      "state": "gather",
+      "worldDirection": "east",
+      "beforeClip": "south-east",
+      "beforeFrame": "gather-food-south-east-0",
+      "afterClip": "east",
+      "afterFrame": "idle-east-0",
+      "afterFrameCount": 1
+    },
+    {
+      "state": "gather",
+      "worldDirection": "south-east",
+      "beforeClip": "south-east",
+      "beforeFrame": "gather-food-south-east-0",
+      "afterClip": "south-east",
+      "afterFrame": "gather-food-south-east-0",
+      "afterFrameCount": 8
+    },
+    {
+      "state": "gather",
+      "worldDirection": "south",
+      "beforeClip": "south-east",
+      "beforeFrame": "gather-food-south-east-0",
+      "afterClip": "south",
+      "afterFrame": "idle-south-0",
+      "afterFrameCount": 1
+    },
+    {
+      "state": "gather",
+      "worldDirection": "south-west",
+      "beforeClip": "south-east",
+      "beforeFrame": "gather-food-south-east-0",
+      "afterClip": "south-west",
+      "afterFrame": "idle-south-west-0",
+      "afterFrameCount": 1
+    },
+    {
+      "state": "gather",
+      "worldDirection": "west",
+      "beforeClip": "south-east",
+      "beforeFrame": "gather-food-south-east-0",
+      "afterClip": "west",
+      "afterFrame": "idle-west-0",
+      "afterFrameCount": 1
+    },
+    {
+      "state": "gather",
+      "worldDirection": "north-west",
+      "beforeClip": "south-east",
+      "beforeFrame": "gather-food-south-east-0",
+      "afterClip": "north-west",
+      "afterFrame": "idle-north-west-0",
+      "afterFrameCount": 1
+    }
+  ]
+}

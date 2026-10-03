@@ -10,9 +10,11 @@ const SPRITE_GROUND_LIFT = 0.018;
 export function spriteActionClip(clipByKey, state, direction, cargoType, role, approximateDirections = false) {
   const gatherState = state === 'gather' && ['food', 'wood'].includes(cargoType)
       ? `gather-${cargoType}` : state;
-  // First-pass roster: reuse the nearest authored action instead of idle holds.
-  // Keep this opt-in so other art lanes retain their exact-direction behavior.
-  if (approximateDirections && state !== 'idle') {
+  // Human walking/gathering has incomplete direction coverage. Keep its exact
+  // facing (including authored idle holds) rather than turn away from the order.
+  // Other first-pass roster actions retain their opt-in approximation.
+  const exactWorkerFacing = role === 'human' && ['walk', 'gather'].includes(state);
+  if (approximateDirections && state !== 'idle' && !exactWorkerFacing) {
     const states = [gatherState, state, ...(state === 'repair' ? ['build'] : [])];
     for (const action of new Set(states)) {
       const authored = DIRECTIONS.map((heading, index) => ({
@@ -92,7 +94,7 @@ function frameRectFor(frame, pageId, layerId) {
   return null;
 }
 
-function normalizedDirection(angle) {
+export function normalizedDirection(angle) {
   const circle = Math.PI * 2;
   const normalized = ((angle % circle) + circle) % circle;
   return DIRECTIONS[Math.round(normalized / (Math.PI / 4)) % DIRECTIONS.length];

@@ -1,0 +1,80 @@
+{
+  "codeHead": "c177d0759a4315d17e13109d9e1c1cf162fb0051",
+  "nativeGatherAndStop": {
+    "map": "bellweather-millrace",
+    "mode": "isolated authoritative Node server and native WebSocket; actual gathering orders, no injected state",
+    "observations": [
+      {
+        "team": 0,
+        "worker": 0,
+        "nodeId": "s0-0-1",
+        "roundedPosition": [
+          -24.5,
+          8.06
+        ],
+        "workHeading": 0,
+        "expectedFromRoundedPosition": 0,
+        "task": "gathering",
+        "audioExecution": "food"
+      },
+      {
+        "team": 1,
+        "worker": 12,
+        "nodeId": "s1-0-1",
+        "roundedPosition": [
+          24.5,
+          8
+        ],
+        "workHeading": 0,
+        "expectedFromRoundedPosition": 0,
+        "task": "gathering",
+        "audioExecution": "food"
+      }
+    ],
+    "stopClearsWorkHeading": true
+  },
+  "queuedWaypointRecovery": {
+    "workload": "two-client queued movement and checkpoint recovery",
+    "recoveredWaypoint": {
+      "x": -3.5,
+      "z": 9.5,
+      "attackMove": true
+    },
+    "recoveryTick": 315,
+    "pendingAttackMoveRouteRecovered": true,
+    "schemaTwoCheckpointMigrated": true,
+    "fogOfWarQueueCountsAreTeamPrivate": true,
+    "replacementClearedQueue": true,
+    "perUnitQueueLimit": 8,
+    "overLimitOrderRejected": true,
+    "directAttackTargetDefeated": true,
+    "queuedWaypointAfterDirectAttackReached": true,
+    "unitAttackFocusCountsAreFogPrivate": true,
+    "largeArmyQueuedUnits": 1000,
+    "largeArmyAcknowledgementMs": 13,
+    "noFogQueueCountsAreTeamPrivate": true
+  },
+  "workerCombat": {
+    "first": {
+      "azureKind": "worker",
+      "emberKind": "infantry",
+      "azureHp": 0,
+      "emberHp": 60,
+      "winner": "ember"
+    },
+    "second": {
+      "azureKind": "infantry",
+      "emberKind": "worker",
+      "azureHp": 60,
+      "emberHp": 0,
+      "winner": "azure"
+    }
+  },
+  "independentReview": {
+    "head": "c177d0759a4315d17e13109d9e1c1cf162fb0051",
+    "result": "no actionable findings",
+    "testsPassed": 45
+  },
+  "integratedFocusedTestsPassed": 39,
+  "hostedWorkflowRunsAtCodeHead": 0
+}

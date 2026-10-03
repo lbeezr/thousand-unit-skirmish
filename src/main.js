@@ -4287,7 +4287,8 @@ function applyState(state, initial = false) {
   const visibleEnemyIds = new Set();
   for (const row of state.units || []) {
     const [id, team, x, z, hp, kind, cargo, cargoType, generation = 0, taskStatus,
-      targetedBy = 0, attackTick = -1, attackX = null, attackZ = null] = row;
+      targetedBy = 0, attackTick = -1, attackX = null, attackZ = null,
+      audioExecution = null, workHeading = null] = row;
     const existingUnit = units[id];
     const unit = existingUnit || appendUnitFromState(row, !initial);
     if (!unit || unit.team !== team) continue;
@@ -4324,6 +4325,7 @@ function applyState(state, initial = false) {
     }
     unit.serverX = x;
     unit.serverZ = z;
+    unit.workHeading = Number.isFinite(workHeading) ? workHeading : null;
     if (kind && unit.kind !== kind) {
       unit.kind = kind;
       cargoVisualMayChange = true;
@@ -9660,6 +9662,9 @@ function animate(now) {
       unit.targetAngle = Math.atan2(dx, dz);
       unit.motionPhase += frameDelta * 14;
       moved = true;
+    } else if (unit.hp > 0 && unit.task === 'gathering' && !unit.attackStartedAt
+      && Number.isFinite(unit.workHeading)) {
+      unit.targetAngle = unit.workHeading;
     }
     let turning = false;
     if (unit.targetAngle !== unit.angle) {
