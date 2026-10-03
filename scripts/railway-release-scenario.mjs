@@ -186,6 +186,24 @@ try {
   assert.equal(environmentTexture.status, 200);
   assert.match(environmentTexture.headers.get('content-type'), /image\/webp/);
   assert.ok((await environmentTexture.arrayBuffer()).byteLength > 0);
+  const paintedRoot = 'assets/environment/frontier-painted-material-atlas-v1';
+  const paintedResponse = await fetch(`${base}/${paintedRoot}/manifest.json`, { headers: { authorization } });
+  assert.equal(paintedResponse.status, 200);
+  const paintedManifest = await paintedResponse.json();
+  const paintedFiles = paintedManifest.files.filter(file => file.usage === 'runtime');
+  assert.equal(paintedFiles.length, 6);
+  assert.deepEqual(packedManifest.files.filter(file => file.startsWith(paintedRoot + '/')).sort(),
+    [`${paintedRoot}/manifest.json`, ...paintedFiles.map(file => file.path)].sort(),
+    'only the painted ground manifest and six authored mips enter the release');
+  for (const file of paintedFiles) {
+    const response = await fetch(`${base}/${file.path}`, { headers: { authorization } });
+    assert.equal(response.status, 200, file.path);
+    assert.match(response.headers.get('content-type'), /image\/webp/);
+    assert.equal(createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'), file.sha256);
+  }
+  for (const source of ['frontier-painted-material-atlas.png', 'preview.png', 'PROVENANCE.md']) {
+    assert.equal((await fetch(`${base}/${paintedRoot}/${source}`, { headers: { authorization } })).status, 404);
+  }
   const interactiveManifestResponse = await fetch(
     `${base}/assets/environment/frontier-interactive-v1/manifest.json`, {
       headers: { authorization },

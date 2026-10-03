@@ -1,7 +1,13 @@
 {
   "schemaVersion": 1,
-  "scope": "Initial approved-runtime coverage: eight-view Sheep, Human Worker SE fishing, six Frontier Complete families. Concepts, unapproved candidates and other runtime families are outside this guard.",
+  "scope": "Approved-runtime coverage: eight-view Sheep, Human Worker SE fishing, six Frontier Complete families, eight painted ground materials with six authored mips. Concepts, unapproved candidates and other runtime families are outside this guard.",
   "records": [
+    {
+      "id": "frontier-painted-material-atlas-v1",
+      "owner": "Painted ground atlas adoption owner",
+      "probe": "painted-ground",
+      "manifest": "assets/environment/frontier-painted-material-atlas-v1/manifest.json"
+    },
     {
       "id": "bellweather-sheep",
       "owner": "Sheep renderer owner",

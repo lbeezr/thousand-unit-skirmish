@@ -41,6 +41,14 @@ test('a runtime capture missing its required digest cannot be called usable', as
     /runtime dependency digest required/);
 });
 
+test('painted ground guard rejects a missing authored mip and a disconnected default binding', async () => {
+  await assert.rejects(audit({ releaseFiles: release.files.filter(file => !file.endsWith('frontier-painted-material-atlas-mip-5.webp')) }),
+    /frontier-painted-material-atlas-v1: default runtime dependency omitted from release/);
+  const environment = (await readFile(path.join(root, 'src/environment-art.mjs'), 'utf8')).replace(
+    'if (painted) return painted;', 'if (false) return painted;');
+  await assert.rejects(audit({ environment }), /frontier-painted-material-atlas-v1: approved runtime asset is not default-bound/);
+});
+
 test('a default Worker downgrade cannot silently strand the approved fishing manifest', async () => {
   const main = (await readFile(path.join(root, 'src/main.js'), 'utf8')).replace("{ human: 'v3', infantry:", "{ human: 'v2', infantry:");
   await assert.rejects(audit({ main }), /human-worker-fishing-SE: approved runtime asset is not default-bound/);
