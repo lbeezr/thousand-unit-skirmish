@@ -1,13 +1,29 @@
 // Presentation-only species groups. Harvest cells, roots and stock stay owned
 // by the map and resource simulation.
+/**
+ * @typedef {'underbough-root-oak' | 'underbough-moss-hornbeam' |
+ *   'underbough-old-plum' | 'underbough-copperleaf'} UnderboughCanopySpecies
+ * @typedef {UnderboughCanopySpecies | 'underbough-bramble'} UnderboughForestSpecies
+ */
+
+/** @param {number} value @returns {number} */
 const random = value => {
   const n = Math.sin(value * 127.1 + 17.7) * 43758.5453;
   return n - Math.floor(n);
 };
+/** @param {number} value @returns {UnderboughCanopySpecies} */
 const family = value => value < .45 ? 'underbough-root-oak'
   : value < .75 ? 'underbough-moss-hornbeam'
     : value < .9 ? 'underbough-old-plum' : 'underbough-copperleaf';
 
+/**
+ * @param {number} column
+ * @param {number} row
+ * @param {number} [seed]
+ * @param {number} [habitatDepth]
+ * @param {number} [spacing]
+ * @returns {UnderboughForestSpecies}
+ */
 export function underboughForestSpecies(column, row, seed = 0, habitatDepth = 1, spacing = 10) {
   if (!Number.isFinite(spacing) || spacing < 2) throw new RangeError('Grove spacing must be at least two cells');
   const cellKey = column * 71 + row * 137 + seed * .17;
