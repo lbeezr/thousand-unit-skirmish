@@ -17,14 +17,15 @@ function fixture(player = host) {
   root.close = () => { root.open = false; };
   const sent = [];
   let invites = 0;
-  const ui = createRoomLobby({ root, send: command => { sent.push(command); return true; }, copyInvite: () => invites++ });
+  let rejoins = 0;
+  const ui = createRoomLobby({ root, send: command => { sent.push(command); return true; }, copyInvite: () => invites++, rejoin: () => rejoins++ });
   const state = {
     phase: 'lobby', revision: 4, mapId: 'map-a', armySize: 8, canLaunch: false,
     maps: [{ id: 'map-a', name: '<img src=x>' }, { id: 'map-b', name: 'Second map' }],
     seats: [{ ...host, connected: true, ready: false }, { ...guest, connected: true, ready: false }],
   };
   ui.update(state, player);
-  return { dom, root, ui, state, sent, player, get invites() { return invites; }, node: id => root.querySelector(`#${id}`) };
+  return { dom, root, ui, state, sent, player, get invites() { return invites; }, get rejoins() { return rejoins; }, node: id => root.querySelector(`#${id}`) };
 }
 
 test('host controls send supported configuration and suppress pending duplicate clicks', () => {
@@ -131,4 +132,72 @@ test('overlapping Ready and chat acknowledgements preserve the most recent contr
   assert.equal(doc.activeElement, doc.body, 'an older chat acknowledgement cannot reclaim Ready focus');
   f.ui.update(f.state, guest);
   assert.equal(doc.activeElement, ready);
+});
+
+test('a spectator sees actual seat availability and can request rejoin once', () => {
+  const spectator = { id: 'spectator-3', team: null }, f = fixture(spectator);
+  assert.match(f.node('lobby-status').textContent, /occupied/);
+  f.ui.update({ ...f.state, seats: f.state.seats.filter(seat => seat.team === 0) }, spectator);
+  assert.match(f.node('lobby-status').textContent, /seat is available/);
+  const rejoin = f.node('lobby-rejoin');
+  assert.equal(rejoin.hidden, false);
+  assert.equal(rejoin.disabled, false);
+  rejoin.click(); rejoin.click();
+  assert.equal(f.rejoins, 1);
+  assert.equal(f.sent.length, 0, 'rejoin uses existing admission, without seat-promotion commands');
+  assert.equal(f.node('lobby-ready').disabled, true);
+});
+
+test('host departure explains reservation and vacancy without promoting Ember', () => {
+  const f = fixture(guest);
+  f.ui.update({ ...f.state, seats: f.state.seats.map(seat => ({ ...seat, connected: seat.team !== 0, ready: false })) }, guest);
+  assert.match(f.node('lobby-status').textContent, /Host disconnected.*reserved.*remain Ember/);
+  f.ui.update({ ...f.state, seats: f.state.seats.filter(seat => seat.team !== 0) }, guest);
+  assert.match(f.node('lobby-status').textContent, /Host seat open.*new Azure host.*remain Ember/);
+  assert.equal(f.node('lobby-map').disabled, true);
+  assert.equal(f.node('lobby-launch').hidden, true);
+  assert.equal(f.node('lobby-rejoin').hidden, true, 'Ember keeps their current seat');
+});
+
+test('reserved seats and active-token recovery never offer a new-seat request', () => {
+  const spectator = { id: 'spectator-3', team: null }, f = fixture(spectator);
+  const reserved = { ...f.state, seats: f.state.seats.map(seat => ({ ...seat, connected: seat.team === 0 })) };
+  f.ui.update(reserved, spectator);
+  assert.match(f.node('lobby-status').textContent, /disconnected seats are reserved/);
+  assert.equal(f.node('lobby-rejoin').hidden, true);
+  f.node('lobby-rejoin').click(); assert.equal(f.rejoins, 0);
+  f.ui.update({ ...reserved, seats: [] }, { ...spectator, resumePending: true });
+  assert.match(f.node('lobby-status').textContent, /active in another connection.*rejoin automatically/);
+  assert.equal(f.node('lobby-rejoin').hidden, true);
+  f.node('lobby-rejoin').click(); assert.equal(f.rejoins, 0);
+});
+
+test('vacancy races, disconnect and launch withdraw the action without granting authority', () => {
+  const spectator = { id: 'spectator-3', team: null }, f = fixture(spectator);
+  const vacancy = { ...f.state, seats: [f.state.seats[0]] }, join = f.node('lobby-rejoin');
+  f.ui.update(vacancy, spectator); join.focus();
+  f.ui.update(f.state, spectator);
+  assert.equal(join.hidden, true);
+  assert.equal(f.dom.window.document.activeElement, f.root.querySelector('button'), 'a withdrawn action returns focus inside the lobby');
+  join.click(); assert.equal(f.rejoins, 0);
+  f.ui.update(vacancy, spectator); f.ui.disconnect();
+  assert.equal(join.disabled, true); join.click(); assert.equal(f.rejoins, 0);
+  f.ui.update(vacancy, spectator);
+  assert.equal(join.disabled, false);
+  f.ui.update({ ...vacancy, phase: 'running' }, spectator);
+  join.click(); assert.equal(f.rejoins, 0);
+  assert.equal(f.root.open, false);
+});
+
+test('Azure gets specific waiting/reconnect guidance while errors and pending requests stay visible', () => {
+  const f = fixture();
+  f.ui.update({ ...f.state, seats: [f.state.seats[0]] }, host);
+  assert.match(f.node('lobby-status').textContent, /Waiting for Ember.*Share the invite/);
+  const reserved = { ...f.state, seats: f.state.seats.map(seat => ({ ...seat, connected: seat.team === 0 })) };
+  f.ui.update(reserved, host);
+  assert.match(f.node('lobby-status').textContent, /Ember disconnected.*reserved/);
+  f.node('lobby-ready').click();
+  assert.match(f.node('lobby-status').textContent, /Waiting for server/);
+  f.ui.reject('Lobby changed', reserved, host);
+  assert.match(f.node('lobby-status').textContent, /Lobby changed/);
 });

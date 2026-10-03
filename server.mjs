@@ -7899,6 +7899,7 @@ function runSimulationTick() {
   let scenarioMs = 0;
   const scenarioEvaluated = tickNumber % STATE_EVERY_TICKS === 0;
   if (scenarioEvaluated) {
+    if (pregame?.phase === 'lobby') syncPregameSeats();
     updateVisionMasks();
     const scenarioStartedAt = tickDiagnosticSamples ? performance.now() : null;
     if (pregame?.phase !== 'lobby') evaluateScenarioTriggers(STATE_EVERY_TICKS * STEP_SECONDS);

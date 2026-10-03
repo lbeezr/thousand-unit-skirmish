@@ -52,6 +52,13 @@ seat using the existing admission rules. An occupied/reserved seat, including
 a second connection using an active resume token, is a spectator and cannot
 configure, ready or launch. Existing active-token recovery notification remains.
 
+The lobby distinguishes occupied, reserved and open seats. With a vacancy, an
+ordinary spectator sees **Rejoin as player**; it reloads the existing room to
+request admission. Another player may take the seat first. It grants no local
+authority, never overrides a reserved seat and is absent for an active-token
+connection waiting to recover automatically. Host departure guidance explains
+Azure's reservation/vacancy while Ember retains its seat and guest controls.
+
 Disconnects during a running match retain the current running/recovery behavior.
 Running matches allow the existing vacant-seat joins and spectators. A recovered
 running checkpoint stays running; a recovered pregame stays waiting with all
