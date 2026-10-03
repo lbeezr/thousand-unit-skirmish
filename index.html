@@ -196,7 +196,18 @@
                 <button type="button" data-open-dock-tab="economy">Build &amp; train <span>↗</span></button>
               </div>
             </div>
-            <div id="selected-worker-notes" class="selected-worker-notes" role="group" aria-label="Worker role notes" hidden><strong>Worker</strong><p>Gathers food and wood. Builds and repairs structures.</p><p>Use Gather / move to choose a resource or destination, or Build to open construction choices.</p></div>
+            <div id="selected-worker-notes" class="selected-worker-notes" role="group" aria-label="Worker role notes" hidden>
+              <strong>Worker</strong>
+              <p>Abilities: <span data-worker-abilities></span></p>
+              <p><span data-worker-health></span> · <span data-worker-movement></span></p>
+              <p data-worker-attack></p>
+              <p>Training: <span data-worker-training></span></p>
+              <details>
+                <summary>World notes (working lore)</summary>
+                <p><q>The past survives in soil, craft, custom and argument.</q></p>
+                <p>Source: <a href="https://github.com/lbeezr/thousand-unit-skirmish/blob/3c2aabf8490e942a000927551bb37ab6e4e7094a/docs/lore/world.md#vaelora" target="_blank" rel="noopener noreferrer">Vaelora world overview (opens in a new tab)</a></p>
+              </details>
+            </div>
             <div class="selection-count"><strong id="selected-total">0</strong><span>units selected</span></div>
             <div class="team-breakdown">
               <div><i class="team-dot blue-dot"></i><span>Azure</span><b id="selected-blue">0</b></div>
