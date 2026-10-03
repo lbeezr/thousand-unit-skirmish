@@ -1,0 +1,118 @@
+{
+  "schema": "thousand-unit-skirmish.frontier-lifecycle-owner-alpha-qa.v1",
+  "date": "2026-10-03",
+  "scope": "Correct offline owner mask encoding for the existing Canvas destination-in consumer; synthetic-only capture",
+  "previousFixtureMaskRuntimeCompatible": false,
+  "teamMaskEncoding": "rgba-white-owner-alpha-coverage",
+  "consumer": {
+    "path": "src/captured-building-art.mjs",
+    "sha256": "61ac3decabfdd60f833ea7fb8bf8d8b394ae06bac831685d54d69e42b7241982",
+    "operation": "destination-in reads mask alpha, then source-over at globalAlpha 0.86"
+  },
+  "environment": {
+    "Blender": "4.3.2",
+    "Python": "3.12.14",
+    "device": "CPU",
+    "threads": 8,
+    "samples": 8,
+    "denoising": false
+  },
+  "codeSha256": {
+    "scripts/author-frontier-town-center-lifecycle.py": "db195624e3538a2596d6130df077807b1407e124b5a705336575a5ab469021eb",
+    "scripts/verify-building-lifecycle-pixels.py": "7ac25c892e0d0fc701104a5773cd74a0e2f083c9872d04c6312b6110206cfa40",
+    "scripts/frontier-lifecycle-authoring.test.py": "75002fe9c057a46827c80e612441d0b75cdfcf5d61aa2532f3457dc2d71ab16b",
+    "scripts/building-lifecycle-pixels.test.py": "62ba291c2b1453242f7221c11b8b74c102b2f9ea524eaad15e4ec2d498609d28"
+  },
+  "behavioralChecks": {
+    "BlenderAuthoring": {
+      "passed": 9,
+      "failed": 0
+    },
+    "PythonPixelFailuresAndCanvasFormula": {
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "capture": {
+    "decodedPairs": 40,
+    "colorFrames": 40,
+    "maskFrames": 40,
+    "maximumMaskAlphaExcessOverColor": 0,
+    "maskOutsideColorPixels": 0,
+    "fullyOccludedMaskViews": 4,
+    "maximumAnchorErrorPixels": 0.00046568568495786167,
+    "reopenedWithFiveStatesIsolated": true,
+    "privateBlendSha256": "e26c124ba0721ce8d63e24938af564fc114651e33477a77fcf711ddab2449040",
+    "privateManifestSha256": "8175cf7c365999ab630a3ef2f147ba9dbd2d71b94f6ed1bf1bc4c393987451f6"
+  },
+  "actualCapturedFrameProbes": {
+    "Banner_Cloth": {
+      "pixelFromTopLeft": [
+        511,
+        732
+      ],
+      "color": [
+        0.2549019753932953,
+        0.501960813999176,
+        0.8274510502815247,
+        1.0
+      ],
+      "mask": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "Neutral_Ochre_Prop": {
+      "pixelFromTopLeft": [
+        204,
+        602
+      ],
+      "color": [
+        1.0,
+        0.8078432083129883,
+        0.3294117748737335,
+        1.0
+      ],
+      "mask": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "capturedFrameCompositionChecks": [
+    {
+      "teamRgb": [
+        220,
+        40,
+        20
+      ],
+      "neutralPixelUnchanged": true,
+      "ownerPixelRecolored": true
+    },
+    {
+      "teamRgb": [
+        20,
+        110,
+        220
+      ],
+      "neutralPixelUnchanged": true,
+      "ownerPixelRecolored": true
+    }
+  ],
+  "boundaries": {
+    "actualBrowserCapture": false,
+    "realTownCenterImported": false,
+    "approvedFrontierArt": false,
+    "runtimeAdoption": false,
+    "additionalMeshyCredits": 0
+  },
+  "limitations": [
+    "Pillow composition checks the same alpha operations as the inspected runtime source; it is not a browser or in-game capture.",
+    "Real source partitioning, Complete parity, approved owner geometry, and in-game acceptance remain with the native production worker.",
+    "Native source access is reported resolved by the user; no transfer retry or duplicate production occurred here."
+  ]
+}

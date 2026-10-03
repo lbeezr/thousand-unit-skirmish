@@ -30,12 +30,19 @@ mute/Stop/reset checks. [Combined QA](qa-custom-skirmish.md) owns exact builds,
 deployments, acceptance and limits.
 
 The rendered combined workload passes at 250/500/1,000 units. The diagnostic
-2,000 case cannot clear its construction site within the bounded attempt and
-never reaches the full workload; crowded movement/placement is a concrete core
-follow-up, not a supported capacity claim. Unassisted author and human-pair
+2,000 case stopped before the full workload. A [current investigation](qa-fortified-clearance-2026-10-03.md)
+traces that stopping condition to formation destinations refilling the construction
+site after a single evacuation. The corrected native 2,000-unit opening completes
+paid Barracks on both seats. The complete rendered workload and broader crowded
+movement remain follow-ups, not a supported capacity claim. Unassisted author and human-pair
 observations are still needed for discoverability and listening. Art remains
 independent. Authored entity placement/identity and death triggers remain later
 candidates from the loose capability inventory.
+
+The [paid palisade runtime](palisade-runtime.md) adds atomic connected-line
+construction and persisted Worker sequencing with provisional wood-only test
+tuning. Next wall outcomes are line authoring/preview UI and the independent
+modular art kit; gate ownership/traversal and final balance remain undecided.
 
 ### Integrated core workstreams — 1 October 2026
 
@@ -142,7 +149,7 @@ conditions of any new observation.
 
 | Stream | Next testable outcome | Evidence gap or dependency |
 | --- | --- | --- |
-| Gameplay | Reproduce the diagnostic 2,000-unit construction-site blockage on a named current build; fix the first observed movement/placement failure and replay that workload. | [Combined scale audit](qa-custom-skirmish.md#current-acceptance-audit) stops before the full workload. Intended device/network budgets are still needed before claiming supported capacity. |
+| Gameplay | Run the corrected rendered 2,000-unit fixture through paid economy, combat and recovery; trace any remaining movement failure against assigned goals and actual positions. | [Clearance diagnosis](qa-fortified-clearance-2026-10-03.md) passes the native construction opening. Full rendered workload and intended device/network budgets remain needed before claiming supported capacity. |
 | Maps | Observe contested economy-to-watch matches on Millrace and Rootways, then compare one channel, basin or ridge layout for congestion and expansion choices. | [Regional rules](maps.md), [paid 250-unit recovery/rematch proof](qa-underbough-gameplay-proof-2026-10-01.md) and [harvested-shortcut traversal](qa-rootways-woodland-shortcut-2026-10-01.md) supply automated regressions; human route decisions and balance remain unobserved. |
 | Art | Complete the new Frontier Town Center's existing five-state/mask contract using its recovered model, then verify build/damage/repair beside Workers in one Rootways scene. | The [current runtime audit](art-runtime-audit-2026-10-03.md) records six produced Complete-only families, the bounded Town Center release preview, four missing states and team masks, and the authorized Mac-source transfer still needed in cloud. Default adoption, collapse presentation and the other families remain separate outcomes; see [art lanes](art-production-lanes.md). |
 | Audio | Audition the eleven regional music/ambience palettes at comparable perceived loudness; run ten-trial cue recognition with captions off and on, recording mix settings and confusions. | [Source evidence](qa-zone-audio-2026-09-30.md) and [recognition protocol](audio-design.md#recognition-check) do not yet supply creative listening or fresh-player results. |

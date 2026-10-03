@@ -66,14 +66,16 @@ run(['--test', 'scripts/resource-cluster-authoring.test.mjs'], 'Seeded Millrace 
 run(['--test', 'scripts/resource-brush-authoring.test.mjs'], 'Resource brush preview and editor transactions');
 run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush editor controls');
 run(['scripts/check-docs.mjs'], 'Documentation links');
-run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs'], 'Verified shipped audio and execution gates');
+run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs', 'scripts/audio-decoded-cache.test.mjs', 'scripts/audio-shared-decode.test.mjs'], 'Verified shipped audio and execution gates');
 run(['--test', 'scripts/zone-audio-import-contract.test.mjs'], 'Zone audio import provenance');
 run(['scripts/audio-shipped-serving-scenario.mjs'], 'Authoritative shipped audio serving');
 run(['--test', 'scripts/hosted-scale-profile.test.mjs'], 'Hosted scale measurement integrity');
 run(['--test', 'scripts/unit-sprite-clock.test.mjs'], 'Sprite animation clock');
 run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work facing');
 run(['--test', 'scripts/unit-movement.test.mjs'], 'Unit separation terrain boundaries');
+run(['--test', 'scripts/fortified-site-clearance.test.mjs'], 'Fortified late-arrival construction clearance');
 run(['--test', 'scripts/sheep-static-preview.test.mjs'], 'Sheep static reference integrity and state boundary');
+run(['--test', 'scripts/sheep-directional-readiness.test.mjs'], 'Sheep directional source and anchor acceptance');
 run(['--test', 'scripts/neutral-wildlife-renderer.test.mjs'], 'Neutral wildlife render lifecycle and fallback');
 run(['scripts/wildlife-render-scenario.mjs'], 'Live wildlife snapshots and production art paths');
 run(['--test', 'scripts/sprite-pixel-bounds.test.mjs'], 'Sprite pixel clipping regressions');
@@ -108,6 +110,8 @@ run(['--test', 'scripts/roster-production-ui.test.mjs'], 'Roster production choi
 run(['--test', 'scripts/building-placement-forest.test.mjs'], 'Disclosed forest building placement');
 run(['--test', 'scripts/wall-line-planner.test.mjs'], 'Atomic modular wall-line authoring');
 run(['--test', 'scripts/wall-construction-draft.test.mjs'], 'Draft paid palisade preparation and lifecycle contracts');
+run(['--test', 'scripts/palisade-runtime.test.mjs'], 'Palisade order identity and placeholder connections');
+run(['scripts/paid-palisade-scenario.mjs'], 'Paid palisade atomic placement and Worker recovery');
 run(['--test', 'scripts/population.test.mjs'], 'Population reservations and capacity');
 run(['--test', 'scripts/population-readout.test.mjs'], 'Owned population presentation');
 run(['--test', 'scripts/population-ai.test.mjs'], 'AI capacity construction and recovery');
@@ -116,7 +120,9 @@ run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle')
 run(['scripts/wildlife-food-scenario.mjs'], 'Both-seat wildlife gathering, depletion and recovery');
 run(['--test', 'scripts/shore-fishing.test.mjs', 'scripts/shore-fishing-placeholder.test.mjs'], 'Shore fish bank access and placeholder');
 run(['--test', 'scripts/shore-fishing-placement.test.mjs'], 'Seeded shore fishing authoring and land/water positions');
-run(['--test', 'scripts/water-surface-study.test.mjs'], 'Opt-in water appearance and visible fish ripples');
+run(['--test', 'scripts/water-surface-study.test.mjs', 'scripts/water-study-fish-binding.test.mjs'], 'Opt-in water appearance and visible fish ripples');
+run(['--test', 'scripts/water-route-graph.test.mjs'], 'Isolated water route topology and clearance');
+run(['scripts/water-route-map-scenario.mjs'], 'Water-only route components on shipped maps');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');
 run(['--test', 'scripts/base-lifecycle-ui.test.mjs'], 'Contextual cancellation and repair controls');
@@ -205,6 +211,7 @@ const scenarios = [
   ['scripts/vaelora-map-layout-scenario.mjs', 'Vaelora roster with Town Center collisions', '--check-only'],
   ['scripts/forked-vale-layout.mjs', 'Forked Vale layout'],
   ['scripts/fortified-crossing-layout.mjs', 'Fortified Crossing layout'],
+  ['scripts/fortified-construction-clearance-scenario.mjs', 'Fortified 2000-unit paid construction clearance'],
   ['scripts/fortified-crossing-combined.mjs', 'Fortified Crossing combined economy, orders, events, result and recovery', '0'],
   ['scripts/frontier-160-layout.mjs', 'Frontier 160 layout'],
   ['scripts/generate-highland-grove.mjs', 'Highland Grove playable layout', '--check'],

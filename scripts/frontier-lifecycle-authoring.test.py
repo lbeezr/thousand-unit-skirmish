@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import bpy
 
@@ -148,6 +149,72 @@ class AuthoringBehavior(unittest.TestCase):
                 self.assertEqual(tuple(derived[state]["Banner_Cloth"].color), (1, 1, 1, 1))
             self.assertEqual(tuple(derived["complete"]["Neutral_Ochre_Prop"].color), (0, 0, 0, 1))
             self.assertFalse(derived["complete"]["Neutral_Ochre_Prop"]["team_mask"])
+
+    def test_runtime_mask_uses_owner_alpha_and_keeps_neutral_transparent(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "mask.png"
+            image = bpy.data.images.new("Synthetic_Mask_Protocol", width=4, height=1, alpha=True)
+            image.colorspace_settings.name = "Non-Color"
+            image.alpha_mode = "STRAIGHT"
+            image.pixels[:] = [0, 0, 0, 1, 1, 1, 1, 1, .5, .5, .5, .4,
+                              1 / 255, 1 / 255, 1 / 255, 1]
+            image.filepath_raw = str(path)
+            image.file_format = "PNG"
+            image.save()
+            bpy.data.images.remove(image)
+            module.encode_runtime_mask(path)
+            result = bpy.data.images.load(str(path), check_existing=False)
+            result.colorspace_settings.name = "Non-Color"
+            result.alpha_mode = "STRAIGHT"
+            values = list(result.pixels)
+            bpy.data.images.remove(result)
+            self.assertAlmostEqual(values[3], 0, delta=2 / 255)
+            self.assertAlmostEqual(values[7], 1, delta=2 / 255)
+            self.assertAlmostEqual(values[11], .2, delta=2 / 255)
+            self.assertEqual(values[4:7], [1, 1, 1])
+            self.assertEqual(values[8:11], [1, 1, 1])
+            self.assertAlmostEqual(values[15], 1 / 255, delta=1e-7)
+
+    def test_mask_render_has_exact_neutral_alpha_and_restores_color_dither(self):
+        with tempfile.TemporaryDirectory() as folder:
+            bpy.ops.wm.read_factory_settings(use_empty=True)
+            scene = bpy.context.scene
+            scene.render.engine = "CYCLES"
+            scene.cycles.device = "CPU"
+            scene.cycles.samples = 1
+            scene.cycles.use_denoising = False
+            scene.cycles.use_adaptive_sampling = False
+            scene.render.threads_mode = "FIXED"
+            scene.render.threads = 2
+            scene.render.resolution_x = scene.render.resolution_y = 64
+            scene.render.resolution_percentage = 100
+            scene.render.image_settings.file_format = "PNG"
+            scene.render.image_settings.color_mode = "RGBA"
+            scene.render.image_settings.color_depth = "8"
+            scene.render.film_transparent = True
+            scene.view_settings.view_transform = "Raw"
+            scene.render.dither_intensity = 1
+            bpy.ops.mesh.primitive_cube_add(size=2)
+            bpy.context.object.color = (0, 0, 0, 1)
+            data = bpy.data.cameras.new("Synthetic_Dither_Camera")
+            data.type = "ORTHO"
+            data.ortho_scale = 4
+            camera = bpy.data.objects.new(data.name, data)
+            scene.collection.objects.link(camera)
+            camera.location.z = 5
+            scene.camera = camera
+            bpy.context.view_layer.material_override = module.mask_material()
+            path = Path(folder) / "undithered-mask.png"
+            module.render_owner_mask(path)
+            self.assertEqual(scene.render.dither_intensity, 1)
+            image = bpy.data.images.load(str(path), check_existing=False)
+            image.colorspace_settings.name = "Non-Color"
+            self.assertEqual(max(list(image.pixels)[3::4]), 0)
+            bpy.data.images.remove(image)
+            with patch.object(module, "encode_runtime_mask", side_effect=RuntimeError("injected encode failure")):
+                with self.assertRaisesRegex(RuntimeError, "injected"):
+                    module.render_owner_mask(Path(folder) / "encode-failure.png")
+            self.assertEqual(scene.render.dither_intensity, 1)
 
 
 suite = unittest.defaultTestLoader.loadTestsFromTestCase(AuthoringBehavior)

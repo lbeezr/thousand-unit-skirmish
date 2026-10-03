@@ -1,0 +1,146 @@
+{
+  "status": "committed functional runs; no hardware timing comparison",
+  "comparison": "2000 commit06b7842 uses the same server/map bytes as baseline7f9c8fd; 1000 integration run includes later main fixes",
+  "records": [
+    {
+      "head": "5ea5a45da25e2b895e989ebc8da9679c3f9c7f15",
+      "sourceHashes": {
+        "../server.mjs": "93a978f9bee9d1d5a3f8e1461261fedf25a808a0c6af2d9c0647ba7838c7cfff",
+        "../maps/fortified-crossing.json": "11f3f8f5a054d6bed5b3ff4577dc548b1a63626f19effe035e6f53c1989b3d11",
+        "./fortified-site-clearance.mjs": "8acda044ae80c35b26a7c5ed971401b3194d4a3e1db284388a40a9f34b96d083",
+        "./fortified-construction-clearance-scenario.mjs": "0999e6b903b7b152d81b6897a45eb1edeca5c524056b330ccc13111cc51eb6a3"
+      },
+      "size": 1000,
+      "startingArmySize": 996,
+      "acceptedTick": 273,
+      "clearanceTicks": 272,
+      "completionTick": 660,
+      "wallSeconds": 22.121762968,
+      "clearance": [
+        {
+          "elapsedMs": 6141.09469,
+          "redirected": 47,
+          "moveOrders": 11,
+          "occupancyRetries": 0
+        },
+        {
+          "elapsedMs": 5125.415346000001,
+          "redirected": 52,
+          "moveOrders": 9,
+          "occupancyRetries": 0
+        }
+      ],
+      "bothSeatPaidBarracksComplete": true,
+      "actualFootprintsEmpty": true,
+      "limits": [
+        "server-only construction/gathering opening; no full combat/audio/render/recovery workload",
+        "cloud host not isolated; no hardware timing improvement or supported capacity claim"
+      ]
+    },
+    {
+      "head": "06b7842837a6ef471011d90158f5312b11c2339b",
+      "sourceHashes": {
+        "../server.mjs": "0ac32f7b7e12948bedaeede9f4e3a6b4a0832b81bc710b58723141b89b73915b",
+        "../maps/fortified-crossing.json": "11f3f8f5a054d6bed5b3ff4577dc548b1a63626f19effe035e6f53c1989b3d11",
+        "./fortified-site-clearance.mjs": "8acda044ae80c35b26a7c5ed971401b3194d4a3e1db284388a40a9f34b96d083",
+        "./fortified-construction-clearance-scenario.mjs": "0999e6b903b7b152d81b6897a45eb1edeca5c524056b330ccc13111cc51eb6a3"
+      },
+      "size": 2000,
+      "startingArmySize": 1996,
+      "acceptedTick": 408,
+      "clearanceTicks": 406,
+      "completionTick": 810,
+      "wallSeconds": 27.111277464000004,
+      "clearance": [
+        {
+          "elapsedMs": 10603.966681999998,
+          "redirected": 96,
+          "moveOrders": 21,
+          "occupancyRetries": 0
+        },
+        {
+          "elapsedMs": 8568.813038,
+          "redirected": 85,
+          "moveOrders": 17,
+          "occupancyRetries": 0
+        }
+      ],
+      "bothSeatPaidBarracksComplete": true,
+      "actualFootprintsEmpty": true,
+      "limits": [
+        "server-only construction/gathering opening; no full combat/audio/render/recovery workload",
+        "cloud host not isolated; no hardware timing improvement or supported capacity claim"
+      ]
+    },
+    {
+      "head": "ded3b829be09fdc85daf53679076b024d6517372",
+      "sourceHashes": {
+        "../server.mjs": "93a978f9bee9d1d5a3f8e1461261fedf25a808a0c6af2d9c0647ba7838c7cfff",
+        "../maps/fortified-crossing.json": "11f3f8f5a054d6bed5b3ff4577dc548b1a63626f19effe035e6f53c1989b3d11",
+        "./fortified-site-clearance.mjs": "d36a464b8cc6d7b03672a3d705500cc86f5809f3308270d9d232358b3bf63c71",
+        "./fortified-construction-clearance-scenario.mjs": "11fa5aa96da8d5183fee28e0d07a893d12dddb03f42b381368173d65bf5f2dda"
+      },
+      "size": 2000,
+      "startingArmySize": 1996,
+      "acceptedTick": 456,
+      "clearanceTicks": 453,
+      "completionTick": 840,
+      "wallSeconds": 28.157804869000003,
+      "clearance": [
+        {
+          "elapsedMs": 9165.905494,
+          "redirected": 97,
+          "moveOrders": 17,
+          "occupancyRetries": 0
+        },
+        {
+          "elapsedMs": 12184.086984,
+          "redirected": 93,
+          "moveOrders": 22,
+          "occupancyRetries": 1
+        }
+      ],
+      "bothSeatPaidBarracksComplete": true,
+      "actualFootprintsEmpty": true,
+      "limits": [
+        "server-only construction/gathering opening; no full combat/audio/render/recovery workload",
+        "cloud host not isolated; no hardware timing improvement or supported capacity claim"
+      ]
+    },
+    {
+      "head": "7ad859ae4e971a3d4052be1424803d474b1eb3f7",
+      "sourceHashes": {
+        "../server.mjs": "243577d3cd812d9664ab2351d2af9e7e4c828953088f26016b875109c01c99ba",
+        "../maps/fortified-crossing.json": "11f3f8f5a054d6bed5b3ff4577dc548b1a63626f19effe035e6f53c1989b3d11",
+        "./fortified-site-clearance.mjs": "d36a464b8cc6d7b03672a3d705500cc86f5809f3308270d9d232358b3bf63c71",
+        "./fortified-construction-clearance-scenario.mjs": "11fa5aa96da8d5183fee28e0d07a893d12dddb03f42b381368173d65bf5f2dda"
+      },
+      "size": 2000,
+      "startingArmySize": 1996,
+      "acceptedTick": 396,
+      "clearanceTicks": 393,
+      "completionTick": 780,
+      "wallSeconds": 26.430860698,
+      "clearance": [
+        {
+          "elapsedMs": 10081.6722,
+          "redirected": 98,
+          "moveOrders": 19,
+          "occupancyRetries": 0
+        },
+        {
+          "elapsedMs": 9064.506803,
+          "redirected": 84,
+          "moveOrders": 17,
+          "occupancyRetries": 0
+        }
+      ],
+      "bothSeatPaidBarracksComplete": true,
+      "actualFootprintsEmpty": true,
+      "limits": [
+        "server-only construction/gathering opening; no full combat/audio/render/recovery workload",
+        "cloud host not isolated; no hardware timing improvement or supported capacity claim"
+      ]
+    }
+  ]
+}

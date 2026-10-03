@@ -297,6 +297,50 @@ def mask_material():
     return material
 
 
+def encode_runtime_mask(path):
+    """Convert the occlusion-preserving grayscale pass to alpha owner coverage.
+
+    captured-building-art.mjs uses Canvas destination-in, which reads alpha,
+    not RGB luminance. Keep neutral geometry opaque during the render so it
+    occludes hidden owner cues, then make that neutral coverage transparent.
+    """
+    import array
+    import bpy
+
+    image = bpy.data.images.load(str(path), check_existing=False)
+    try:
+        image.colorspace_settings.name = "Non-Color"
+        image.alpha_mode = "STRAIGHT"
+        pixels = array.array("f", [0]) * (len(image.pixels))
+        image.pixels.foreach_get(pixels)
+        for index in range(0, len(pixels), 4):
+            coverage = max(0, min(1, pixels[index] * pixels[index + 3]))
+            value = 1 if coverage > 0 else 0
+            pixels[index] = pixels[index + 1] = pixels[index + 2] = value
+            pixels[index + 3] = coverage
+        image.pixels.foreach_set(pixels)
+        image.filepath_raw = str(path)
+        image.file_format = "PNG"
+        image.save()
+    finally:
+        bpy.data.images.remove(image)
+
+
+def render_owner_mask(path):
+    """Render semantic data without dithering; retain the color-pass setting."""
+    import bpy
+
+    scene = bpy.context.scene
+    color_dither = scene.render.dither_intensity
+    try:
+        scene.render.dither_intensity = 0
+        scene.render.filepath = str(path)
+        bpy.ops.render.render(write_still=True)
+        encode_runtime_mask(path)
+    finally:
+        scene.render.dither_intensity = color_dither
+
+
 def validate_capture_scene():
     import bpy
     from bpy_extras.object_utils import world_to_camera_view
@@ -378,8 +422,7 @@ def render(output, derived, synthetic):
             bpy.ops.render.render(write_still=True)
             bpy.context.view_layer.material_override = mask
             scene.view_settings.view_transform = "Raw"
-            scene.render.filepath = str(mask_path)
-            bpy.ops.render.render(write_still=True)
+            render_owner_mask(mask_path)
             views.append({"index": index, "azimuthDegrees": index * 45,
                           "path": color_path.name, "sha256": sha256(color_path),
                           "teamMaskPath": mask_path.name, "teamMaskSha256": sha256(mask_path)})
@@ -393,6 +436,8 @@ def render(output, derived, synthetic):
         "asset": "synthetic-town-center-fixture" if synthetic else "frontier-town-center-authoring-candidate",
         "status": "SYNTHETIC TEST FIXTURE; not runtime art" if synthetic else "authored candidate; art review required",
         "syntheticFixture": synthetic, "runtimeAdoption": False,
+        "teamMaskEncoding": "rgba-white-owner-alpha-coverage",
+        "teamMaskDitherIntensity": 0,
         "camera": {"projection": "orthographic", "framePixels": [1024, 1024],
                    "pixelsPerWorldUnit": 128, "elevationDegrees": 46,
                    "azimuthDegrees": [i * 45 for i in range(8)],

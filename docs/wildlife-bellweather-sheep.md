@@ -15,6 +15,11 @@ the eight cloud rotations and animation remain absent. The Library frame transfe
 and sandboxed browser capture are blocked; [original checks and limits](qa-bellweather-sheep-static-preview-2026-10-03.md)
 separate consumer byte/CPU evidence from the producer's render observations.
 
+The [directional readiness follow-up](qa-sheep-directional-readiness-2026-10-03.md)
+adds offline source/anchor/yaw acceptance tests and a minimal future integration
+proposal. It preserves the current live binding while the eight original view
+files and their separate publication permission remain unavailable.
+
 ## Implemented neutral food foundation — 3 October 2026
 
 [Authoritative state](../src/wildlife-state.mjs) admits one optional resource-node
