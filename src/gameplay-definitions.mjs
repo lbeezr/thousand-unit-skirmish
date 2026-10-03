@@ -40,19 +40,23 @@ export function validateGameplayDefinitions(definitions) {
           const supportedFields = category === 'units' ? unitCombatFields : buildingCombatFields;
           for (const key of Object.keys(entry.combat)) if (!supportedFields.has(key)) throw new Error(`Unsupported combat field ${key}: ${id}`);
           if (!attackClasses.includes(entry.combat.attackClass) || !['melee', 'ranged'].includes(entry.combat.mode)) throw new Error(`Invalid attack class or mode: ${id}`);
-          if (!Array.isArray(entry.combat.targetTags) || !entry.combat.targetTags.length || new Set(entry.combat.targetTags).size !== entry.combat.targetTags.length || entry.combat.targetTags.some((tag) => !tags.includes(tag))) throw new Error(`Invalid target tags: ${id}`);
+          if (!Array.isArray(entry.combat.targetTags) || (!entry.combat.targetTags.length && !(category === 'units' && entry.movementDomain === 'water')) || new Set(entry.combat.targetTags).size !== entry.combat.targetTags.length || entry.combat.targetTags.some((tag) => !tags.includes(tag))) throw new Error(`Invalid target tags: ${id}`);
           if (!entry.combat.tagMultipliers || typeof entry.combat.tagMultipliers !== 'object' || Array.isArray(entry.combat.tagMultipliers) || Object.entries(entry.combat.tagMultipliers).some(([tag, value]) => !tags.includes(tag) || !Number.isFinite(value) || value <= 0)) throw new Error(`Invalid tag multiplier: ${id}`);
         }
       }
       if (category === 'units') {
+        if (entry.movementDomain !== undefined && !['land', 'water'].includes(entry.movementDomain)) throw new Error(`Unsupported movement domain: ${id}`);
+        if (entry.movementDomain === 'water' && (entry.capabilities.length !== 1 || entry.capabilities[0] !== 'move')) throw new Error(`Unsupported water capabilities: ${id}`);
         if (!Number.isInteger(entry.wireId) || entry.wireId < 0 || entry.wireId > 255 || wireIds.has(entry.wireId)) throw new Error(`Invalid or duplicate unit wire ID: ${id}`);
         wireIds.add(entry.wireId);
         if (entry.sight !== undefined && (!Number.isInteger(entry.sight) || entry.sight < 1 || entry.sight > 16)) throw new Error(`Invalid unit sight: ${id}`);
         if (!Number.isInteger(entry.population)) throw new Error(`Invalid population: ${id}`);
         if (entry.combat?.range > 16) throw new Error(`Invalid combat range: ${id}`);
         for (const key of ['maxHp', 'moveSpeed', 'range', 'damage', 'period', 'structureDamage']) {
-          if (!Number.isFinite(entry.combat?.[key]) || entry.combat[key] <= 0) throw new Error(`Invalid combat ${key}: ${id}`);
+          const unarmedZero = entry.movementDomain === 'water' && ['range', 'damage', 'structureDamage'].includes(key);
+          if (!Number.isFinite(entry.combat?.[key]) || (unarmedZero ? entry.combat[key] !== 0 : entry.combat[key] <= 0)) throw new Error(`Invalid combat ${key}: ${id}`);
         }
+        if (entry.movementDomain === 'water' && entry.combat.targetTags.length) throw new Error(`Unarmed water units cannot target: ${id}`);
         if (!entry.capabilities.includes('move')) throw new Error(`Missing move capability: ${id}`);
         if (entry.combat.targetTags.includes('structure') && !entry.capabilities.includes('attack-structures')) throw new Error(`Structure targets require attack-structures capability: ${id}`);
       }
@@ -148,9 +152,11 @@ function freezeTree(value) {
 export const GAMEPLAY_DEFINITIONS = freezeTree(validateGameplayDefinitions({
   version: 1,
   defaultFaction: 'frontier',
-  combatRules: { attackClasses: ['melee', 'pierce', 'siege'], tags: ['ground', 'worker', 'infantry', 'spearman', 'archer', 'mounted', 'scout', 'siege', 'structure', 'defense'], capabilities: ['move', 'attack', 'attack-structures', 'gather', 'build', 'repair'], minimumDamage: 0.5 },
+  combatRules: { attackClasses: ['melee', 'pierce', 'siege'], tags: ['ground', 'water', 'worker', 'infantry', 'spearman', 'archer', 'mounted', 'scout', 'siege', 'structure', 'defense'], capabilities: ['move', 'attack', 'attack-structures', 'gather', 'build', 'repair'], minimumDamage: 0.5 },
   baseLifecycle: { repairHpPerSecond: 40, fullRepairWoodFraction: 0.3, minimumRepairWood: 10 },
   units: {
+    // Provisional unarmed, move-only boat. Geometry and fishing cargo are separate work.
+    skiff: { id: 'skiff', wireId: 7, label: 'Skiff (placeholder)', movementDomain: 'water', tags: ['ground', 'water'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move'], cost: { food: 0, wood: 75 }, trainSeconds: 10, population: 1, combat: { mode: 'melee', attackClass: 'melee', targetTags: [], tagMultipliers: {}, maxHp: 120, moveSpeed: 2.4, range: 0, damage: 0, period: 1, structureDamage: 0 }, presentation: 'unit.skiff' },
     worker: { id: 'worker', wireId: 0, label: 'Worker', tags: ['ground', 'worker'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move', 'attack', 'gather', 'build', 'repair'], cost: { food: 50, wood: 0 }, trainSeconds: 25, population: 1, combat: { mode: 'melee', attackClass: 'melee', targetTags: ['ground'], tagMultipliers: {}, maxHp: 100, moveSpeed: 2.6, range: 1.28, damage: 4, period: 0.85, structureDamage: 1 }, presentation: 'unit.worker' },
     infantry: { id: 'infantry', wireId: 1, label: 'Infantry', tags: ['ground', 'infantry'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move', 'attack', 'attack-structures'], cost: { food: 50, wood: 0 }, trainSeconds: 12, population: 1, combat: { mode: 'melee', attackClass: 'melee', targetTags: ['ground', 'structure'], tagMultipliers: {}, maxHp: 100, moveSpeed: 2.6, range: 1.28, damage: 10, period: 0.85, structureDamage: 1.5 }, presentation: 'unit.infantry' },
     spearman: { id: 'spearman', wireId: 3, label: 'Spearman', tags: ['ground', 'spearman'], armor: { melee: 0, pierce: 0, siege: 0 }, capabilities: ['move', 'attack', 'attack-structures'], cost: { food: 60, wood: 20 }, trainSeconds: 12, population: 1, combat: { mode: 'melee', attackClass: 'melee', targetTags: ['ground', 'structure'], tagMultipliers: { mounted: 3 }, maxHp: 110, moveSpeed: 2.6, range: 1.4, damage: 8, period: 0.85, structureDamage: 1.2 }, presentation: 'unit.spearman' },
@@ -168,13 +174,13 @@ export const GAMEPLAY_DEFINITIONS = freezeTree(validateGameplayDefinitions({
     storehouse: { id: 'storehouse', label: 'Storehouse', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 100 }, buildSeconds: 20, footprint: 3, maxHp: 1200, products: [], dropoff: ['food', 'wood'], presentation: 'building.storehouse' },
     // Provisional food-site investment: cheaper/faster and less durable than Storehouse.
     mill: { id: 'mill', label: 'Mill', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 75 }, buildSeconds: 15, footprint: 3, maxHp: 1000, products: [], dropoff: ['food'], presentation: 'building.mill' },
-    // Provisional shoreline foundation; boats and their production remain unavailable.
-    dock: { id: 'dock', label: 'Dock', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 100 }, buildSeconds: 20, footprint: 3, placement: { kind: 'shoreline', waterClearanceCells: 1 }, maxHp: 1200, products: [], presentation: 'building.dock' },
+    // Provisional shoreline producer; no pier collision, cargo or final Dock art.
+    dock: { id: 'dock', label: 'Dock', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 100 }, buildSeconds: 20, footprint: 3, placement: { kind: 'shoreline', waterClearanceCells: 1 }, maxHp: 1200, products: ['skiff'], presentation: 'building.dock' },
     house: { id: 'house', label: 'House', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 75 }, buildSeconds: 15, footprint: 3, maxHp: 800, products: [], populationCapacity: 8, presentation: 'building.house' },
     barracks: { id: 'barracks', label: 'Barracks', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 175 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['infantry', 'spearman'], presentation: 'building.barracks' },
     'archery-range': { id: 'archery-range', label: 'Archery Range', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 150 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['archer'], presentation: 'building.archery-range' },
   },
-  factions: { frontier: { id: 'frontier', label: 'Frontier', units: ['worker', 'infantry', 'archer', 'spearman', 'scout', 'rider', 'siege-engine'], buildings: ['palisade-wall', 'house', 'barracks', 'archery-range', 'storehouse', 'mill', 'dock', 'town-center', 'watchtower', 'stable', 'workshop'], technologies: ['infantry-attack', 'archer-attack', 'military-tier-2', 'military-armor', 'mounted-attack', 'siege-engineering'] } },
+  factions: { frontier: { id: 'frontier', label: 'Frontier', units: ['worker', 'infantry', 'archer', 'spearman', 'scout', 'rider', 'siege-engine', 'skiff'], buildings: ['palisade-wall', 'house', 'barracks', 'archery-range', 'storehouse', 'mill', 'dock', 'town-center', 'watchtower', 'stable', 'workshop'], technologies: ['infantry-attack', 'archer-attack', 'military-tier-2', 'military-armor', 'mounted-attack', 'siege-engineering'] } },
   technologies: {
     'siege-engineering': { id: 'siege-engineering', label: 'SIEGE ENGINEERING', building: 'workshop', upgradeKey: 'siegeEngineering', requires: ['military-tier-2'], effects: [], cost: { food: 150, wood: 150 }, durationSeconds: 30 },
     'military-tier-2': { id: 'military-tier-2', label: 'MILITARY TIER II', building: 'town-center', upgradeKey: 'militaryTier2', effects: [], cost: { food: 200, wood: 150 }, durationSeconds: 35 },

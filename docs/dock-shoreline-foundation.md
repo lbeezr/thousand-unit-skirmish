@@ -4,10 +4,11 @@
 
 Dock is now a placeable Frontier land building beside water. It costs 100 wood,
 takes 20 accumulated Worker-seconds and has 1,200 HP. These are provisional
-foundation values, not naval balance tuning. It provides no units, drop-off,
-population or resource bonus. Its selected-building card says that boats are
-unavailable. The existing procedural House is an explicit appearance placeholder;
-no pier, finished Dock artwork or skiff is present.
+foundation values, not naval balance tuning. It now produces the provisional
+[Skiff](skiff-water-movement.md), using the shared paid queue and population rules.
+It has no rally, drop-off, population or resource bonus. The existing procedural
+House is an explicit Dock appearance placeholder; no finished pier artwork or
+water-side pier collision is present.
 
 ## Land footprint and water access
 
@@ -31,10 +32,10 @@ space never satisfy the rule.
 The successful result contains `side`, `spawnCell`, `exitCell`,
 `spawnFootprint`, `route` and `waterComponent`. The two-cell route is an admitted
 outward topology step, not a moving boat. Optional `reservedCells` participates
-in berth and exit clearance. A future producer must build a fresh context with
-current water occupancy before admission and validate its full route/hull rules.
-No water berth is currently reserved by a Dock; there is no pier collision or
-vessel occupancy. Facing and access are derived, not checkpoint fields.
+in berth and exit clearance. Skiff admission and completion build a fresh context
+with both seats' live water hull occupancy. A completed paid queue waits without
+another debit until the berth clears. The Dock itself reserves only land; no pier
+collision exists. Facing and access are derived, not checkpoint fields.
 
 Client placement uses the same context, rebuilt when a map is applied. The
 server applies the shore rule before any reservation, cost debit or Worker
@@ -58,14 +59,17 @@ rejections, owner restrictions, unfinished/completed recovery, Workers staying
 on land, unavailable training, food using existing drop-offs, and preservation
 of rejected inland/old-content Dock checkpoints. The separate open-field
 settlement fixture retains its paid ordinary land roster; Dock has its own
-shoreline fixture.
+shoreline fixture. Skiff production, movement and blocked recovery have a separate
+[`skiff-scenario`](../scripts/skiff-scenario.mjs).
 
 For a small manual match, select **SHORE FISHING**, gather the local 100 wood,
 select a Worker and choose Dock in the building menu. A geometry-admitted site
 on the inner bank of Azure's pond is world `(-4.5, 8.5)` (one-based column 16,
 row 25); Ember's counterpart is `(4.5, 8.5)` (column 25, row 25). Move units out
 of the footprint if needed. Check the blocked preview inland, place/build the
-foundation, select it and confirm the boats-unavailable text. These coordinates
+foundation, select it and inspect the **Skiff (placeholder)** production option.
+Train it when wood and population permit, select one boat, then target water to
+move. These coordinates
 are a topology handoff; automated DOM/commands do not establish rendered visual
 quality or unassisted human usability.
 

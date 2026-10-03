@@ -67,10 +67,10 @@ test('context snapshots authored water/elevation and returned arrays cannot muta
   assert.ok(Object.isFrozen(context));
 });
 
-test('Dock explicitly declares provisional land/shore placement and placeholder, without production or drop-off', () => {
+test('Dock explicitly declares provisional land/shore placement, Skiff production and placeholder without drop-off', () => {
   assert.equal(B.dock.footprint, 3);
   assert.deepEqual(B.dock.placement, { kind: 'shoreline', waterClearanceCells: 1 });
-  assert.deepEqual(B.dock.products, []);
+  assert.deepEqual(B.dock.products, ['skiff']);
   assert.equal(B.dock.dropoff, undefined); assert.equal(B.dock.populationCapacity, undefined);
   assert.deepEqual(buildingPresentation('dock'), { backend: 'procedural', role: 'house' });
   for (const placement of [null, [], { kind: 'naval' }, { kind: 'shoreline', waterClearanceCells: 0 },

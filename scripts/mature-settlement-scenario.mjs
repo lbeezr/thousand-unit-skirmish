@@ -139,7 +139,7 @@ async function main() {
       for (const { upgradeKey } of Object.values(T)) assert.equal(saved.state.teamUpgrades[team][upgradeKey], true);
       assert.equal(saved.state.teamResearch[team], null);
       assert.equal(saved.state.units.filter(u => u.team === team).length, 20);
-      for (const kind of Object.keys(U)) assert.ok(saved.state.units.some(u => u.team === team && u.kind === kind && u.hp > 0));
+      for (const kind of Object.keys(U).filter(kind => U[kind].movementDomain !== 'water')) assert.ok(saved.state.units.some(u => u.team === team && u.kind === kind && u.hp > 0));
       assert.ok(buildings.every(b => !b.queue && !b.productionBlocked));
       assert.equal(saved.state.workerProduction[team].queue, 0);
       assert.deepEqual(spent[team], { food: 1385, wood: 2720 });

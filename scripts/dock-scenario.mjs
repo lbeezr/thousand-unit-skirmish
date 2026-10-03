@@ -91,5 +91,5 @@ try {
   console.log(JSON.stringify({ scenario: 'Dock shoreline foundation', bothSeatPaidConstruction: true,
     landWorkersOnly: true, clearWaterBerthAndExit: true, unfinishedAndCompletedRecovery: true,
     preDockMigration: true, invalidDockCheckpointPreserved: true, foodStillUsesExistingDropoffs: true,
-    gameplayAvailability: 'place/build/select Dock foundation; boats, production, boat cargo and pier art unavailable' }));
+    gameplayAvailability: 'place/build/select Dock; paid Skiff production has its separate skiff-scenario; boat cargo and final pier art unavailable' }));
 } finally { await fixture.dispose(); }
