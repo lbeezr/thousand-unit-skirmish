@@ -103,6 +103,24 @@ This check-only slice moves no files and changes no runtime binding. Deployment
 and in-game acceptance remain with the producer's release stream; they are not
 claimed by these source checks.
 
+### Continuing boundary workstream
+
+Goal: preserve stable exported contracts and reduce shared-host edits so rules,
+world, UI/presentation and tooling owners can work safely in parallel. The
+boundary owner retains each slice through reviewed integration and its actual
+source/tool acceptance. Use the [continuing-work guidance](contributor-planning.md#continuing-workstream-bounded-pr)
+for checkpoints and real stop conditions.
+
+| Rank | Next action and evidence | Bounded write scope | Dependency and acceptance |
+| --- | --- | --- | --- |
+| 1 | Unify source/served import parsing. The served audit currently fetches a commented `import './ghost.mjs'` and passes a missing dependency written as valid `import{value}from'./missing.mjs'`. | Import-parser helper, the two audit scripts and focused fixtures; no runtime hosts. | Existing parser is ready. Both counterexamples, lazy/re-export/origin fixtures, source graph and packed-release checks must pass; preserve `checkClientImports` arguments/results. |
+| 2 | Move the offline PvE Node adapter into a cohesive server-adapter domain. | `src/pve-model-proposal.mjs`, its new implementation path and sole scenario consumer; preserve exported signatures. | Agree this exact first runtime-module scope with the existing quality owner through the producer. Fake-provider policy tests and source graph must pass; no hosted mode, credentials or spending changes. |
+| 3 | Separate client-module admission data from the HTTP host when the server owner is ready. Repeated central allowlist edits currently require touching `server.mjs` for each served helper. | A narrow module-path manifest, its server consumer and serving/release contract fixtures. | Agree the manifest format and ownership with the server owner before edits. Preserve exact admitted/denied URLs, origin/MIME behavior and packed imports; retain runtime release acceptance with the producer. |
+
+Select the next useful ready item after each small merge. Coordinate real
+overlap rather than moving gameplay hot spots speculatively. A paused dependency
+does not block the independent tooling item or another owner's gameplay work.
+
 Neutral stationary Sheep use optional wildlife identity on an existing food node
 and one conserved stock pool. Worker arrival activates its carcass once; both
 seats reuse normal cargo/drop-offs. Species/lifecycle are fog-filtered with the
