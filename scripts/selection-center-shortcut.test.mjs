@@ -23,6 +23,8 @@ function fixture() {
       { id: 4, team: 0, hp: 0, renderX: 90, renderZ: 0 }],
     ui: { mapStudio: { open: false } }, spaceDown: false, spaceCenterPending: false,
     pan: null, drag: null, buildPlacementActive: false, tapOrderArmed: false, tapOrderPointer: null,
+    buildPlacementPending: false, wallPlacementGesture: { owner: null },
+    wallPlacementKeydown: () => false, resetWallPlacement: noop,
     lastFriendlyUnitClick: null, lastUnitPickState: null, movedPointer: false,
     cameraNavigationKeydown: () => false, syncBattlefieldCursor: noop,
     cameraSafeRect: () => ({ left: 10, top: 10, width: 80, height: 80 }),
