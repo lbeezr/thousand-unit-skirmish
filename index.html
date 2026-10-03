@@ -117,22 +117,25 @@
         </section>
 
         <div class="contextual-command-bar" role="region" aria-label="Selection commands" data-context="none" hidden>
-          <div class="contextual-summary" data-context-summary></div>
+          <div class="contextual-identity">
+            <button type="button" class="worker-portrait" data-worker-portrait data-context-panel="selection" aria-controls="command-deck" aria-label="Worker role notes" hidden><span class="worker-portrait-art" aria-hidden="true"><img alt="" decoding="async"></span></button>
+            <div class="contextual-identity-text"><strong data-worker-health hidden></strong><div class="contextual-summary" data-context-summary></div></div>
+          </div>
           <div class="contextual-actions">
             <button type="button" data-context-proxy="select-idle-workers">Idle workers</button>
             <button type="button" data-context-proxy="select-military">Army</button>
             <button type="button" data-context-panel="economy">Production</button>
             <button type="button" data-context-panel="selection">Groups</button>
             <span data-context-groups class="contextual-groups"></span>
-            <button type="button" data-context-proxy="order-target-toggle">Target battlefield</button>
+            <button type="button" class="contextual-icon-command" data-context-proxy="order-target-toggle"><img src="/assets/ui/icons/move.svg" alt="" width="20" height="20"><span data-command-label>Target battlefield</span></button>
             <button type="button" data-persistent-order="patrol">Patrol · P</button>
             <button type="button" data-persistent-order="follow">Follow · F</button>
             <button type="button" data-stationary-order="stop">Stop · S</button>
             <button type="button" data-return-cargo hidden title="Deliver selected Workers’ carried resources to a reachable owned drop-off">Return cargo</button>
             <button type="button" data-stationary-order="holdPosition">Hold position · H</button>
-            <button type="button" data-context-proxy="attack-move-toggle">Attack move · M</button>
+            <button type="button" class="contextual-icon-command" data-context-proxy="attack-move-toggle" title="Move while attacking enemies encountered · M"><img src="/assets/ui/icons/attack.svg" alt="" width="20" height="20"><span>Attack move · M</span></button>
             <button type="button" data-context-proxy="select-workers">Select workers</button>
-            <button type="button" data-context-build data-context-panel="economy">Build</button>
+            <button type="button" class="contextual-icon-command" data-context-build data-context-panel="economy" title="Open construction choices"><img src="/assets/ui/icons/build.svg" alt="" width="20" height="20"><span>Build</span></button>
             <button type="button" data-context-proxy="train-infantry">Train infantry · 50 food</button>
             <button type="button" data-context-proxy="train-archer">Train archer · 25 food / 45 wood</button>
             <button type="button" data-context-proxy="clear-building-rally">Clear rally</button>
@@ -169,6 +172,7 @@
                 <button type="button" data-open-dock-tab="economy">Build &amp; train <span>↗</span></button>
               </div>
             </div>
+            <div id="selected-worker-notes" class="selected-worker-notes" role="group" aria-label="Worker role notes" hidden><strong>Worker</strong><p>Gathers food and wood. Builds and repairs structures.</p><p>Use Gather / move to choose a resource or destination, or Build to open construction choices.</p></div>
             <div class="selection-count"><strong id="selected-total">0</strong><span>units selected</span></div>
             <div class="team-breakdown">
               <div><i class="team-dot blue-dot"></i><span>Azure</span><b id="selected-blue">0</b></div>

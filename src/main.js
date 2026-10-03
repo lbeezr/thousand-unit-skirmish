@@ -22,6 +22,7 @@ import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable } from './hud-layout.mjs';
 import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
+import { updateSelectionPortrait } from './selection-portrait.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
 import * as THREE from 'three';
 import { attachBuildingSprite } from './building-sprites.mjs';
@@ -3745,6 +3746,11 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   if (!bar) return;
   const building = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
   const context = selectionContext(units, selected, localTeam, building);
+  const portraitUnit = context.total === 1 && !building ? units[selectedIds()[0]] : null;
+  const portraitRole = portraitUnit && castPreview
+    && (humanRosterPreview || roomPageUrl.searchParams.get('humanVaeloraPreview') === '1')
+    ? unitSpriteRuntime.roleForUnit(portraitUnit) : null;
+  updateSelectionPortrait(document, context, portraitUnit, portraitRole);
   bar.dataset.context = context.kind;
   if (bar.hidden !== (context.kind === 'none')) bar.hidden = context.kind === 'none';
   if (quickAccess.hidden !== !bar.hidden) quickAccess.hidden = !bar.hidden;
@@ -3772,7 +3778,11 @@ function updateContextualCommands(priorFocus = document.activeElement) {
       : action === 'select-workers' ? context.kind !== 'mixed' : false;
     button.disabled = source.disabled || (action.startsWith('train-') && building && (!building.complete || building.productionBlocked));
     if (source.hasAttribute('aria-pressed')) button.setAttribute('aria-pressed', source.getAttribute('aria-pressed'));
-    if (action === 'order-target-toggle') button.textContent = tapOrderArmed ? 'Cancel target' : building ? 'Set rally' : context.kind === 'workers' ? 'Gather / move' : 'Target battlefield';
+    if (action === 'order-target-toggle') {
+      const label = tapOrderArmed ? 'Cancel target' : building ? 'Set rally' : context.kind === 'workers' ? 'Gather / move' : 'Target battlefield';
+      button.querySelector('[data-command-label]').textContent = label;
+      button.title = tapOrderArmed ? 'Cancel battlefield targeting' : building ? 'Choose a rally destination on the battlefield' : 'Choose a destination, resource or enemy on the battlefield';
+    }
     if (action.startsWith('train-')) {
       button.setAttribute('aria-describedby', 'context-action-reason');
       const reason = !building?.complete ? 'Finish construction' : building.productionBlocked ? 'Clear spawn area'

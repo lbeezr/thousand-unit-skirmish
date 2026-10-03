@@ -132,6 +132,9 @@ The compact objective summary keeps active victory/deadline countdowns visible.
 Open Objectives for prerequisites, rewards, live cards, and recent notices.
 Selection controls expose the relevant production or unit actions. Hints can be
 hidden and reopened; placement and targeting still show cancellation guidance.
+Select one Worker to see its portrait and live HP. Open its portrait for role
+notes in the Selection drawer; Escape or its close button dismisses the drawer.
+Multiple selections keep their group composition summary.
 
 Audio settings control effects, ambience, volume, and optional critical captions.
 The Audio check lets you audition and identify cues. Settings persist locally.
