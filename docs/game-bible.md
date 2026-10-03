@@ -243,6 +243,11 @@ units or population and does not generate or multiply food. Mill currently uses
 the existing procedural House appearance as an explicit placeholder until its
 own art is authored. It uses the same paid repair and cancellation rules.
 
+The [controlled depot study](qa-mill-depot-economy-2026-10-03.md) records simulated
+food-trip savings and Storehouse's additional wood service, with no human matches
+or tuning change. Construction time and food/wood prices remain separate costs.
+The [Mill art brief](frontier-mill-art-brief.md) retains its food-only land role.
+
 Dock is a shoreline foundation: provisional 100 wood, 20 accumulated
 Worker-seconds, 1,200 HP and a 3 × 3 dry level-zero land footprint. Placement
 requires an adjacent clear 3 × 3 authored-water berth and an outward water
