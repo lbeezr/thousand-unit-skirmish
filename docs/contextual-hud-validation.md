@@ -216,7 +216,16 @@ acceptance for these items remains pending; use 1280 × 720 and 620 × 640.
   Quick-command focus. Check VoiceOver's Worker/family/role-note button name;
   decorative images add no repeated command name and M remains visible.
 
-The [Worker art contract](hud-art-integration.md) records sources, framing,
+- Barracks visual: on both seats select a Barracks at 0%, 20% and 90%
+  construction, then at 100%, 65% and 32% health. Check its 52px thumbnail against
+  the same battlefield state and preserve existing name/health/production text.
+  Open the thumbnail for structure details, dismiss with Escape/close, and verify
+  focus returns without changing selection. Worker → Barracks → unsupported
+  building/group must hide stale Worker notes and retain visible focus. Use the
+  same desktop/short/narrow sizes above; framing and recognition remain native
+  QA, not a source-metadata acceptance claim.
+
+The [selection art contract](hud-art-integration.md) records sources, framing,
 supported appearances and the future source-linked codex boundary.
 
 ## Compact enlarged-map clearance — 3 October 2026
