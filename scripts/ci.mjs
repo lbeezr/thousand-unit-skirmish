@@ -127,6 +127,9 @@ run(['--test', 'scripts/waypoint-backpressure.test.mjs'], 'Waypoint metadata und
 run(['--experimental-test-coverage', '--test-coverage-include=src/networking/websocket-frame.mjs',
   '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
   '--test', 'scripts/websocket-frame.test.mjs'], 'Outbound WebSocket frame coverage floor (100%)');
+run(['--experimental-test-coverage', '--test-coverage-include=src/networking/websocket-deflate-offer.mjs',
+  '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
+  '--test', 'scripts/websocket-deflate-offer.test.mjs'], 'WebSocket deflate-offer coverage floor (100%)');
 run(['--test', 'scripts/worker-shutdown.test.mjs'], 'Signal-aware room worker shutdown');
 run(['--test', 'scripts/check-client-imports.test.mjs'], 'Served client import graph');
 run(['--test', 'scripts/snapshot-private-production.test.mjs'], 'Seat-private production snapshots');
