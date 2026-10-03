@@ -51,6 +51,9 @@ async function assault(team, initial = null, configured = true) {
       assert.equal(observation(team).objectives[0].owner, team, 'the reward post was captured legally');
       assert.equal(r.observe(team).winner, -1, 'reward ownership does not end Skirmish');
       assert.ok(observation(team).buildings.visibleEnemies.some(b => b.type === 'barracks'), 'the paid target is actually visible');
+      // Hold Position now persists Stand Ground. Restore the ordinary AI opening
+      // stance through its legal command before comparing the two policies.
+      await order(team, commandFor(observation(team).units.friendly.filter(u => u.kind !== 'worker'), 'setStance', { stance: 'aggressive' }));
       r.drain(); initial = r.checkpoint();
     }
     // Compare the common paid checkpoint onward; the first run alone has a prelude.
