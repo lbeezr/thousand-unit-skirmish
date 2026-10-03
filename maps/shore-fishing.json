@@ -1,0 +1,77 @@
+{
+  "id": "shore-fishing",
+  "name": "SHORE FISHING",
+  "summary": "Gather finite fish food from the bank. Workers approach on land; water remains blocked.",
+  "width": 40,
+  "height": 32,
+  "terrainSeed": 9300703,
+  "terrainBase": "meadow",
+  "fogOfWar": true,
+  "startingArmySize": 8,
+  "startingResources": {
+    "food": 0,
+    "wood": 0
+  },
+  "spawnPoints": [
+    {
+      "team": 0,
+      "x": -12.5,
+      "z": 0.5
+    },
+    {
+      "team": 1,
+      "x": 12.5,
+      "z": 0.5
+    }
+  ],
+  "resourceNodes": [
+    {
+      "id": "azure-food",
+      "type": "food",
+      "x": -10.5,
+      "z": 9.5,
+      "stock": 60,
+      "resourceVariant": "shore-fish"
+    },
+    {
+      "id": "ember-food",
+      "type": "food",
+      "x": 10.5,
+      "z": 9.5,
+      "stock": 60,
+      "resourceVariant": "shore-fish"
+    },
+    {
+      "id": "azure-wood",
+      "type": "wood",
+      "x": -7.5,
+      "z": -5.5,
+      "stock": 100
+    },
+    {
+      "id": "ember-wood",
+      "type": "wood",
+      "x": 7.5,
+      "z": -5.5,
+      "stock": 100
+    }
+  ],
+  "obstacles": [
+    {
+      "column": 10,
+      "row": 22,
+      "width": 4,
+      "height": 4,
+      "material": "water"
+    },
+    {
+      "column": 26,
+      "row": 22,
+      "width": 4,
+      "height": 4,
+      "material": "water"
+    }
+  ],
+  "triggers": [],
+  "scenarioEvents": []
+}

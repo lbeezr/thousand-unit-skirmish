@@ -95,6 +95,7 @@ forest cutting, command readability and music seams in [QA](qa-vertical-slice.md
 
 - **Fortified Crossing:** original 24-unit paired skirmish with 350 food/600 wood per seat. Secure North/South Signals, then capture and hold Vale Watch for 30 seconds. A named crossing, paid Barracks completion and infantry research join into delayed supplies. The versioned supplied feedback profile loads automatically. See the [map definition](../maps/fortified-crossing.json) and [combined acceptance and limits](qa-custom-skirmish.md).
 - **Forked Vale:** retained laboratory PvP economy-to-victory scenario. See its [rules and layout](forked-vale-scenario.md).
+- **SHORE FISHING:** 40 × 32 finite-food lab with eight units, two reachable 60-food fish banks and two 100-wood sites. Select **Lab · SHORE FISHING** to test land gathering and recovery. Fish artwork remains a primitive placeholder; see the [authoring and position contract](shore-fishing-foundation.md#seeded-authoring-and-pilot).
 - **Woodland Expanse:** larger solo-play alternative in the seeded PvE pool.
 - **Frontier Reach:** 160 × 160 regional resources, forests, river, and crossings;
   see [scale and density](map-scale-density.md).

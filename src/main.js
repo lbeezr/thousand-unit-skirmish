@@ -3711,6 +3711,10 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   for (const button of bar.querySelectorAll('[data-stationary-order], [data-persistent-order]')) {
     button.hidden = !['workers', 'military', 'mixed'].includes(context.kind);
   }
+  for (const button of bar.querySelectorAll('[data-return-cargo]')) {
+    button.hidden = Boolean(building) || context.cargo.food + context.cargo.wood <= 0;
+    button.disabled = localTeam === null || matchWinner >= 0 || button.hidden;
+  }
   updateRosterProductionOptions(bar.querySelector('[data-context-products]'), building);
   updateResearchOptions(bar.querySelector('[data-context-research-options]'), building);
   for (const button of bar.querySelectorAll('[data-context-proxy]')) {
@@ -4561,6 +4565,7 @@ function applyWaypointQueueCounts(rows = []) {
 
 function updateRosterProductionOptions(container, selectedProducer = null, catalog = false) {
   if (!container) return;
+  const contextual = Object.hasOwn(container.dataset, 'contextProducts');
   const products = selectedProducer ? BUILDING_DEFINITIONS[selectedProducer.type]?.products || []
     : catalog ? [...new Set(Object.values(BUILDING_DEFINITIONS).flatMap((definition) => definition.products || []))]
       .filter((kind) => !['worker', 'infantry', 'archer'].includes(kind)) : [];
@@ -4573,6 +4578,7 @@ function updateRosterProductionOptions(container, selectedProducer = null, catal
       const button = document.createElement('button');
       button.type = 'button'; button.className = 'economy-action'; button.dataset.product = kind;
       button.addEventListener('click', () => {
+        if (button.disabled || button.getAttribute('aria-disabled') === 'true') return;
         const building = latestBuildings.find((row) => row.id === Number(button.dataset.producer));
         if (building) sendCommand({ type: 'trainUnit', kind, buildingId: building.id });
       });
@@ -4601,7 +4607,10 @@ function updateRosterProductionOptions(container, selectedProducer = null, catal
     button.dataset.producer = producer?.id ?? '';
     const authoritative = producer?.productionOptions?.find((option) => option.kind === definition.id);
     const authoritativeReason = authoritative && !authoritative.available ? authoritative.reason : '';
-    button.disabled = Boolean(reason || populationReason || authoritativeReason);
+    const unavailable = Boolean(reason || populationReason || authoritativeReason);
+    // Contextual products retain focus so their block reason stays discoverable.
+    button.disabled = unavailable && !contextual;
+    if (contextual) button.setAttribute('aria-disabled', String(unavailable));
     button.textContent = `Train ${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason || populationReason || authoritativeReason ? ` · ${authoritativeReason || reason || populationReason}` : ''}`;
   }
   container.hidden = products.length === 0;
@@ -7056,7 +7065,7 @@ function applyOrderNotice(token, message) {
     finishOrderStatus(token, message, 'failed');
     return true;
   }
-  if (/^(STOP ORDER|HOLD POSITION ORDER|PATROL ORDER|FOLLOW ORDER|REPAIR ORDER|MOVE ORDER|ATTACK MOVE ORDER|WAYPOINT ORDER|ATTACK ORDER|ATTACK BUILDING ORDER|GATHER ORDER|BUILD ORDER|BUILD RESUME ORDER) · /.test(message)
+  if (/^(STOP ORDER|HOLD POSITION ORDER|PATROL ORDER|FOLLOW ORDER|REPAIR ORDER|MOVE ORDER|ATTACK MOVE ORDER|WAYPOINT ORDER|ATTACK ORDER|ATTACK BUILDING ORDER|GATHER ORDER|RETURN CARGO ORDER|BUILD ORDER|BUILD RESUME ORDER) · /.test(message)
     || message.startsWith('WAYPOINT QUEUED · ')) {
     finishOrderStatus(token, message, 'applied');
     return true;
@@ -7316,6 +7325,20 @@ function issueStationaryOrder(type) {
     setAttackMoveMode(false, false);
   }
 }
+function issueReturnCargo() {
+  if (localTeam === null || matchWinner >= 0) return;
+  const ids = selectedIds().filter(id => units[id]?.kind === 'worker' && units[id].cargo > 0);
+  if (!ids.length) { showToast('SELECT YOUR CARRYING WORKERS'); return; }
+  if (sendTrackedOrder({ type: 'returnCargo', ids }, 'RETURN CARGO', ids.length, 'WORKERS')) {
+    persistentTargetMode = null;
+    setTapOrderArmed(false, false);
+    setAttackMoveMode(false, false);
+  }
+}
+for (const button of document.querySelectorAll('[data-return-cargo]')) {
+  button.addEventListener('click', issueReturnCargo);
+}
+
 for (const button of document.querySelectorAll('[data-stationary-order]')) {
   button.addEventListener('click', () => issueStationaryOrder(button.dataset.stationaryOrder));
 }
