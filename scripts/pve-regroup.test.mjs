@@ -185,6 +185,10 @@ async function recoveryReplay(team, initial) {
         const activeGuards = enemyView.units.friendly.filter(u => guards.some(g => g.id === u.id) && u.hp > 0);
         const nextTarget = target ? `${target.id}:${target.generation}` : null;
         if (activeGuards.length && nextTarget !== targetKey) {
+          // Hold Position persists Stand Ground; an ordinary focused pursuit
+          // needs the same explicit stance change a human controller would use.
+          if (target) await order(enemy, { type: 'setStance', stance: 'aggressive',
+            ids: activeGuards.map(u => u.id), unitGenerations: activeGuards.map(u => u.generation) });
           await order(enemy, { ids: activeGuards.map(u => u.id), unitGenerations: activeGuards.map(u => u.generation),
             ...(target ? { type: 'attack', targetId: target.id, targetGeneration: target.generation } : { type: 'holdPosition' }) });
           targetKey = nextTarget;
