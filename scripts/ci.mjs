@@ -136,6 +136,7 @@ run(['scripts/interrupted-cargo-return-scenario.mjs'], 'Interrupted final sheep-
 run(['--test', 'scripts/underbough-gathering-evidence.test.mjs'], 'Rootways gathering provenance before rewards');
 run(['--test', 'scripts/base-lifecycle.test.mjs'], 'Cancel refunds and proportional repair');
 run(['--test', 'scripts/storehouse-routing.test.mjs'], 'Reachable drop-off route selection');
+run(['--test', 'scripts/mill-contract.test.mjs'], 'Food-only Mill routing, menu and placeholder contracts');
 run(['--test', 'scripts/roster-building-ui.test.mjs'], 'Registry building options');
 run(['--test', 'scripts/ruleset-revision.test.mjs'], 'Resolved ruleset identity and prerequisites');
 run(['--test', 'scripts/gameplay-definitions.test.mjs'], 'Gameplay definition validation');
@@ -197,6 +198,7 @@ const scenarios = [
   ['scripts/expansion-ai-runtime-scenario.mjs', 'Paid live AI base expansion (both seats)'],
   ['scripts/base-lifecycle-scenario.mjs', 'Base cancel/refund and interrupted repair'],
   ['scripts/storehouse-scenario.mjs', 'Storehouse drop-off and cargo recovery'],
+  ['scripts/mill-scenario.mjs', 'Both-seat paid Mill construction, food deposits and lifecycle recovery'],
   ['scripts/population-scenario.mjs', 'House population lifecycle'],
   ['scripts/progression-scenario.mjs', 'Military tier and technology recovery'],
   ['scripts/roster-options-scenario.mjs', 'Roster production and persistence'],

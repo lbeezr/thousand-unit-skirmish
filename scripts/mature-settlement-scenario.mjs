@@ -10,9 +10,10 @@ import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 
 const pads = [
   ['house', -26.5, 12.5], ['house', -22.5, 12.5], ['house', -18.5, 12.5],
-  ['storehouse', -25.5, 4.5], ['barracks', -20.5, -6.5],
+  ['storehouse', -25.5, 4.5], ['mill', -28.5, 18.5], ['barracks', -20.5, -6.5],
   ['archery-range', -25.5, -6.5], ['stable', -14.5, -6.5],
   ['watchtower', -9.5, -1.5], ['town-center', -10.5, 8.5], ['workshop', -14.5, 1.5],
+  ['palisade-wall', -28.5, -14.5],
 ];
 const products = [
   ['home', 'worker'], ['town-center', 'worker'], ['barracks', 'infantry'],
@@ -112,7 +113,8 @@ async function main() {
     for (const [type, leftX, z] of pads) {
       if (type === 'workshop') await fixture.checkpoint(s => s.state.teamUpgrades[team].militaryTier2);
       const x = team ? -leftX : leftX;
-      await pay(team, { type: 'build', buildingType: type, ids, x, z }, B[type], /PLACED · WORKERS BUILDING/);
+      await pay(team, { type: 'build', buildingType: type, ids, x, z }, B[type],
+        type === 'palisade-wall' ? /PALISADE LINE PLACED/ : /PLACED · WORKERS BUILDING/);
       await clients[team].state(s => s.buildings.some(b => b.team === team && b.type === type && b.x === x && b.z === z && b.complete), `completed ${type}`);
       log(`team${team} ${type} complete`);
     }
@@ -136,7 +138,7 @@ async function main() {
       for (const kind of Object.keys(U)) assert.ok(saved.state.units.some(u => u.team === team && u.kind === kind && u.hp > 0));
       assert.ok(buildings.every(b => !b.queue && !b.productionBlocked));
       assert.equal(saved.state.workerProduction[team].queue, 0);
-      assert.deepEqual(spent[team], { food: 1385, wood: 2630 });
+      assert.deepEqual(spent[team], { food: 1385, wood: 2720 });
       assert.equal(clients[team].latest.population[team].capacity, 44);
       assert.equal(clients[team].latest.population[team].used, 23);
     }

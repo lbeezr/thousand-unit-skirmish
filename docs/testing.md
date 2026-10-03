@@ -73,6 +73,7 @@ Run from the repository root:
 | Queue HUD metadata under backpressure | `node --test scripts/waypoint-backpressure.test.mjs` |
 | Route repair after construction | `node scripts/live-attack-move-repair-scenario.mjs` |
 | Research and rewards | `node scripts/research-scenario.mjs` |
+| [Food-only Mill evidence](qa-mill-food-dropoff-2026-10-03.md): contract/menu, paid construction, deposits, ownership and lifecycle recovery | `node --test scripts/mill-contract.test.mjs scripts/roster-building-ui.test.mjs` and `node scripts/mill-scenario.mjs` |
 | Paid mature settlement, all current roles, restart and host reset | `node scripts/mature-settlement-scenario.mjs` and `--reverse-seats`; [inspection checkpoint and scope](qa-mature-settlement-2026-10-02.md) |
 | Map persistence / timed events | `node scripts/map-persistence-scenario.mjs` / `node scripts/timed-event-scenario.mjs` |
 | Deadline victory | `node scripts/timed-victory-scenario.mjs` |
