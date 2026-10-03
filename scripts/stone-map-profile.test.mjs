@@ -311,14 +311,28 @@ test('ordinary room lobby selects shipped Stone and both seats naturally pay, re
   assert.ok(depleted.state.resourceNodes.filter(node => node.type === 'stone').every(node => node.stock === 0));
   for (const team of [0, 1]) assert.ok(Math.abs(depleted.state.teamStone[team] - (200 - spent[team])) < 1e-7);
   await room.start(); clients = [await room.connect(0, tokens[0]), await room.connect(1, tokens[1])];
-  const final = await room.checkpoint(snapshot => snapshot.sequence > depleted.sequence); conserved(final);
-  assert.equal(final.matchId, depleted.matchId); assert.deepEqual(final.state.teamStone, depleted.state.teamStone);
-  assert.deepEqual(final.state.resourceNodes, depleted.state.resourceNodes);
+  const recoveredDepletion = await room.checkpoint(snapshot => snapshot.sequence > depleted.sequence); conserved(recoveredDepletion);
+  assert.deepEqual(recoveredDepletion.state.teamStone, depleted.state.teamStone);
+  assert.deepEqual(recoveredDepletion.state.resourceNodes, depleted.state.resourceNodes);
+  for (const [team, client] of clients.entries()) {
+    await client.command({ type: 'build', buildingType: 'watchtower', ids: [workers[team][0]],
+      x: (team ? 1 : -1) * 10.5, z: -12.5 }, /WATCHTOWER/);
+  }
+  const completed = await room.checkpoint(snapshot => snapshot.state.buildings.length === 2
+    && snapshot.state.buildings.every(building => building.type === 'watchtower' && building.complete));
+  conserved(completed);
+  for (const team of [0, 1]) assert.ok(Math.abs(completed.state.teamStone[team] - (150 - spent[team])) < 1e-7);
+  await room.stop(); await room.start(); clients = [await room.connect(0, tokens[0]), await room.connect(1, tokens[1])];
+  const final = await room.checkpoint(snapshot => snapshot.sequence > completed.sequence); conserved(final);
+  assert.equal(final.matchId, depleted.matchId); assert.deepEqual(final.state.teamStone, completed.state.teamStone);
+  assert.deepEqual(final.state.resourceNodes, completed.state.resourceNodes);
+  assert.deepEqual(final.state.buildings, completed.state.buildings);
   console.log(JSON.stringify({ proof: 'native-two-seat-stone-loop', mapId: map.id,
     entry: 'Create Room → Map → Lab · STONE DEFENSE FIELD → Ready → Launch match',
     shippedCatalog: true, customMapPublished: false, schemaVersion: final.schemaVersion,
     rulesetRevision: final.rulesetRevision, stockPerSeat: 200, initialStone: 0,
     bankedBeforeDefense: banked.state.teamStone, paidStone: paid.state.teamStone,
     consumedConstruction: spent, finalStone: final.state.teamStone,
+    completedWatchtowers: final.state.buildings.map(building => ({ team: building.team, complete: building.complete })),
     naturalCargoRecovered: true, injectedEconomyState: false }));
 });

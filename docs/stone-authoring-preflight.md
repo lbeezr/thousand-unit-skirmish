@@ -84,6 +84,8 @@ to their Town Center and exhaust their first 67-stock node. A Watchtower spends
 cancellation refunds only its unbuilt fraction, and replay cannot refund twice.
 Remaining nodes deplete to zero, with stock + cargo + bank + paid/lost construction
 equal to 200 per seat through another restart. Food/wood nodes remain exact.
+Both seats then complete a paid Watchtower and recover the completed defenses
+and their debited banks through a final restart.
 This is an authoritative server/client-command proof, not a human match or ore-art
 acceptance. Room checkpoints are disposable; the map itself comes from the
 checked-in shipped catalog. No generated ore asset is added.

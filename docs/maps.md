@@ -74,7 +74,8 @@ This is a playable resource/defense test map, with existing gray markers rather
 than new ore art. Stone-aware AI and human-match tuning remain separate work.
 The native regression selects the shipped map through the real room lobby and
 uses normal Worker commands on both seats, including payment/refund/restart
-conservation. Browser appearance and play on the deployed revision still need
+conservation and completed Watchtowers that survive a restart. Browser appearance
+and play on the deployed revision still need
 live verification; the map was not present in the earlier PR124 deployment.
 
 ## Regional art and audio
