@@ -59,3 +59,21 @@ therefore remain incomplete until exact-build evidence is attached to the PR.
 After that bounded session, keep or adjust this provisional assignment. Only
 then consider a separate small adoption of the existing water contrast bed or
 signature; generation is not required for that backlog.
+
+## Staging source follow-up
+
+Read-only Railway metadata at 22:45 UTC on 3 October reports successful staging
+deployment `29d74cac-b078-4a88-8f2a-e3141a2f9465`, source
+`32f11d58018404835fd47489441f9cdfef7c403b`, one running replica, settled
+22:30:53 UTC. Git ancestry confirms it contains [PR151](https://github.com/lbeezr/thousand-unit-skirmish/pull/151)
+merge `790292e9546834ea08407706bf171ae28f438f9a`; its ordinary Shore map retains
+the exact public profile reference above. This establishes platform-reported
+source inclusion, not authenticated HTTP bytes, browser decode or listening.
+
+The `/ready` probe from this cloud executor was rejected before a remote
+response: CONNECT tunnel 403. The retained browser preflight reports
+`sandbox-unavailable`; no alternate native browser/hearing executor is exposed
+to this lane. Those dependent acceptance actions are stopped, with audio owner
+retaining the next exact-build session when an authorized listening environment
+is available. The [ranked backlog](audio-runtime-packs.md#ranked-audio-backlog)
+keeps independent reproduced correctness work separate from this blocked step.

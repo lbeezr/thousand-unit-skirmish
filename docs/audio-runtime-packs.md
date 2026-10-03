@@ -141,3 +141,21 @@ fixtures passed without a runtime defect; the key and defaults are retained.
 Prioritize a concrete doubled entrance, stale acknowledgement, loop seam or cue
 masking observation, with commit and mix recorded. Use existing originals and
 preserve their provenance; no new generation is needed for this listening slice.
+
+## Ranked audio backlog
+
+Audio owner retains these outcomes. A blocked listening dependency pauses only
+that action; independently reproduced runtime defects can ship in small PRs.
+Source inclusion, scheduling checks and measured levels never close listening.
+This queue uses the current guide rather than a second audio roadmap.
+
+| Rank / status | Bounded next action | Write boundary / dependency | Acceptance |
+| --- | --- | --- | --- |
+| 1 — source delivered; native acceptance blocked | Finish ordinary Shore Fishing profile delivery and cue/mute/loop listening. | [Shore receipt](qa-shore-audio-profile-2026-10-03.md#staging-source-follow-up) only until a specific defect is observed. Needs an authorized native browser/output and authenticated exact-build HTTP path; neither is exposed to this cloud lane. Railway delivery owner supports exact source identification. | Settled source containing PR151; matching manifest/original bytes; actual recorded observations of activation, saved mute/mix, clear food cues, one returning loop, tab/map return and loop boundary. |
+| 2 — reproduced; cancellation implemented in this slice | Stop old synthesized acknowledgements and preview notes across mute/return. | `src/audio.mjs`, `scripts/audio-synthesis-lifecycle.test.mjs`, existing audio CI registration and owning guides; no shared gameplay/message interface or new assets. Independent of hearing for the reproduced node-lifecycle fix; native runtime acceptance remains retained. | [Cancellation proof](qa-audio-synthesis-cancellation-2026-10-03.md): old nodes/graph/budgets released, independent buses preserved, one fresh cue and unchanged voice cap; clean package, identified containing deployment, ordinary-game interruption observation. |
+| 3 — conditional; await rank 1 observation | Resolve one heard Shore cue-masking or loop-seam issue, if the session reports one. | Existing public Siltmouths profile gain/fade/trim in a new version + hash-bound catalog/map reference only when justified; coordinate any shared runtime hook before editing it. Needs a timestamp, mix and offending cue/seam from actual hearing. | Repeat the same ordinary action and hear the specific problem corrected; preserve original masters/provenance, settings/mute lifecycle and clear orders. No numerical loudness result substitutes for acceptance. |
+| 4 — audition-only; dependent on accepted baseline | Audition one existing regional water contrast or signature against the current feedback before deciding on a separate binding. | Public catalog sources only; a small profile/version binding if accepted. Signature uses the existing affected-team event and deduplication gate, with no hidden-state observer. Needs baseline listening and explicit choice of replacement or layer. | Hear one useful distinction without masked commands or duplicate accents, then verify scoped binding/release/deployed ordinary use. Retain or reject the candidate explicitly; no generation or automatic wholesale adoption. |
+
+If rank 2 has shipped and native execution remains unavailable, stop dependent
+mix/binding changes and report that recovery need. Reopen implementation only
+for a concrete observed/reproduced defect or accepted existing-source choice.
