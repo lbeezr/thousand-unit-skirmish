@@ -54,9 +54,11 @@ export async function createUnitPresentationClientFixture({ localTeam = 0 } = {}
       teamHex: [0x5aa7d7, 0xe67a5e], cameraQuaternion: new THREE.Quaternion(), roles,
       roleSpriteVersions: { human: 'v3' }, teamCivilizations: ['human', 'boughward'],
       approximateActionDirections: true });
-    runtime.setVisible(true);
-    assert.equal(await runtime.ready, true);
   } finally { globalThis.fetch = originalFetch; }
+  // Construction synchronously dispatches atlas requests. Release the temporary
+  // fetch binding before yielding so concurrent fixtures preserve their caller's.
+  runtime.setVisible(true);
+  assert.equal(await runtime.ready, true);
 
   let clock = 1000;
   const transformCalls = [], dirtyTeams = [];

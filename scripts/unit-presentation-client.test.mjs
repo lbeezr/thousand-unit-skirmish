@@ -2,6 +2,18 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createUnitPresentationClientFixture, workerSnapshotRow as row } from './unit-presentation-client-fixture.mjs';
 
+test('concurrent fixture construction preserves the caller fetch binding', async () => {
+  const originalFetch = globalThis.fetch;
+  const fixtures = await Promise.all([createUnitPresentationClientFixture(), createUnitPresentationClientFixture()]);
+  try {
+    assert.equal(globalThis.fetch, originalFetch);
+    for (const fixture of fixtures) {
+      fixture.apply([row()], { initial: true });
+      assert.equal(fixture.frameId(0), 'idle-east-0');
+    }
+  } finally { for (const fixture of fixtures) fixture.dispose(); }
+});
+
 for (const team of [0, 1]) for (const selected of [false, true]) {
   test(`seat ${team}, selected ${selected}: actual snapshot/frame path advances work and resumes after task interruption`, async () => {
     const f = await createUnitPresentationClientFixture({ localTeam: team });
