@@ -32,6 +32,7 @@ the build they name.
 | --- | --- |
 | Install, run locally, host on LAN, troubleshoot | [Local setup](getting-started.md) |
 | Learn controls, economy, objectives, and rematches | [Player guide](playing.md) |
+| Create a PvP lobby, ready and launch; inspect its protocol | [Pregame rooms](room-lobby.md) |
 | Reproduce a solo match | [Play vs AI](play-vs-ai.md) |
 | Find server defaults and limits | [Configuration](configuration.md) |
 | Package, deploy, recover, and back up | [Deployment](deployment.md) |
