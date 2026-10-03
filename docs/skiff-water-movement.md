@@ -55,7 +55,7 @@ the berth clears. Cancellation follows the shared ledger: an unstarted tail
 refunds all 75 wood; the head refunds only its unconsumed training fraction.
 Destroyed Docks use the ordinary production destruction rules.
 
-Schema 22 remains additive. The exact preceding Gate/Dock content revision
+The water fields introduced in schema 22 remain in schema 23. The exact preceding Gate/Dock content revision
 `v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b`
 migrates its paid land match, gates and Docks to the current revision. The prior
 gate-free Dock revision `v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6`

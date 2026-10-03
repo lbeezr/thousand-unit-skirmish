@@ -37,8 +37,9 @@ placeholders; this change makes no finished-art or rendered usability claim.
 
 ## Recovery and evidence
 
-Schema 22 reuses the existing cargo, gather phase, source, drop-off and water
-route fields. Stop, outbound travel, partial gathering and automatic return
+The fishing fields introduced in schema 22 remain in schema 23, alongside the
+optional Stone economy fields. Boats reuse the existing food cargo, gather
+phase, source, drop-off and water route fields. Stop, outbound travel, partial gathering and automatic return
 retain intent and stock across restart. Validation rejects wrong cargo, foreign
 Dock references, unknown or disconnected sources and harvesting away from the
 admitted water approach. Rejected saves remain preserved. Exact preceding
