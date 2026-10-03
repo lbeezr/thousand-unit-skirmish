@@ -51,16 +51,21 @@ async function connectClient(team, resumeToken = null) {
   const socket = new WebSocket(`ws://127.0.0.1:${port}/ws`, ['rts-v1', ...(resumeToken ? [`rts-resume.${resumeToken}`] : [])]);
   const waiters = [], history = [];
   const client = { socket, team, current: null, send: command => socket.send(JSON.stringify(command)),
-    wait(predicate, timeoutMs = 120000) {
-      const existing = history.find(predicate); if (existing) return Promise.resolve(existing);
+    wait(predicate, timeoutMs = 120000, includeHistory = true) {
+      const existing = includeHistory && history.find(predicate); if (existing) return Promise.resolve(existing);
       return new Promise((resolve, reject) => { const waiter = { predicate, resolve, reject,
         timeout: setTimeout(() => { waiters.splice(waiters.indexOf(waiter), 1);
           reject(new Error(`Team ${team} timeout; recent notices ${JSON.stringify(history.filter(row => row.type === 'notice').slice(-5))}`)); }, timeoutMs) };
         waiters.push(waiter); });
     },
     state(predicate, timeoutMs) { if (this.current && predicate(this.current)) return Promise.resolve(this.current);
-      return this.wait(row => row.type === 'state' && predicate(row), timeoutMs); },
+      return this.wait(row => row.type === 'state' && predicate(row), timeoutMs, false); },
   };
+  socket.addEventListener('close', () => {
+    for (const waiter of waiters.splice(0)) {
+      clearTimeout(waiter.timeout); waiter.reject(new Error(`Team ${team} socket closed while waiting`));
+    }
+  });
   socket.addEventListener('message', event => { let row; try { row = JSON.parse(event.data); } catch { return; }
     if (row.type === 'state') client.current = row;
     if (row.state) client.current = row.state;
@@ -148,7 +153,7 @@ try {
     await order(client, { type: 'trainUnit', buildingId: stable.id, kind: 'scout' }, 'SCOUT QUEUED');
     const spawned = await client.state(state => own(state, team, 'scout').length === 1);
     const scout = tracked(travel(client, own(spawned, team, 'scout')[0][0], { x: -sign * 57.5, z: 3.5 }, 'scout'));
-    const food = await client.state(state => state.food[team] > 150 - 40);
+    const food = await client.state(state => state.tick >= spawned.tick && state.food[team] > 150 - 40);
     report.economy.push({ team, event: 'paid-food-deposit', stock: food.food[team], gameSeconds: food.matchElapsedSeconds });
     await order(client, { type: 'gather', ids: [workers[1]], nodeId: `s${team}-home-wood` }, 'GATHER ORDER');
     await Promise.all([foot, worker, scout]);
