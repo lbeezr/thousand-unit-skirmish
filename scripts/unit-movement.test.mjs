@@ -6,6 +6,7 @@ import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { canTraverseUnitStep } from '../src/unit-movement.mjs';
 import { findStationaryWorkerDetour } from '../src/unit-obstacle-detour.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { farmHarvestNode, farmBuildingId } from '../src/farm-harvest.mjs';
 
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const width = 8, half = width / 2, bucketSize = 1.2, bucketColumns = 7;
@@ -46,8 +47,9 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
     spatialBucketRow:z=>Math.max(0,Math.min(bucketColumns-1,Math.floor((z+half)/bucketSize))),
     elevationLevelByCell:levels,canTraverseUnitStep,findStationaryWorkerDetour,SEPARATION_DIAGNOSTICS_ENABLED:false,
     tickNumber:1,dirty:false,worldToCell:cell,cellToWorld:point,isWalkable:walkable,
-    resourceNodeStates:new Map([['berries',{x,z:-1,hp:1}]]),buildingsById:new Map(),
+    resourceNodeStates:new Map([['berries',{x,z:-1,hp:1}]]),buildingsById:new Map(),farmHarvestNode,farmBuildingId,
     enqueueRouteRepairs:list=>repairs.push(...list),spreadInteractingUnits(){},advanceQueuedWaypoints(){}});
+  vm.runInContext(server.slice(server.indexOf('function harvestNodeById('),server.indexOf('function routeWorker(')),context);
   vm.runInContext(server.slice(server.indexOf('function getMoveVector('),server.indexOf('// Units stop following paths')),context);
   const movement=server.slice(server.indexOf('  const blockedRouteRepairs = [];'),
     server.indexOf('\n}\n\nfunction encodeWebSocketFrame'));

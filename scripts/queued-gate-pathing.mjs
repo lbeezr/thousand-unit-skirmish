@@ -78,12 +78,15 @@ export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true
     const goals=army.map(u=>u.moveGoalCell),arrived=army.filter(done).length;
     assert.equal(invalidSteps,0);assert.equal(unreachableGoals,0);
     if(!observe)assert.equal(arrived,64);
-    assert.ok(goals.every((c,i)=>gate.footprint.includes(requested[i])||c===requested[i]));
+    const unblockedDestinationsPreserved=army.every((u,i)=>u.queuedWaypoints.length
+      ?u.queuedWaypoints[0].destination===requested[i]
+      :gate.footprint.includes(requested[i])||u.moveGoalCell===requested[i]);
+    assert.equal(unblockedDestinationsPreserved,true);
     assert.ok(goals.every(c=>!gate.footprint.includes(c)));
     return {team,group:64,sourceSha256:fixture.sourceSha256,ticks:r.tick-startTick,arrived,
       distinctGoals:new Set(goals).size,requested,goals,invalidSteps,unreachableGoals,maxPathLength,
       onlyNamedBuilder:true,builderReturned:returnBuilder,parkOrder,parkedIntentPreserved:!returnBuilder,
-      maxNoProgressTicks:Math.max(...[...progress.values()].map(p=>p.max)),unblockedDestinationsPreserved:true,
+      maxNoProgressTicks:Math.max(...[...progress.values()].map(p=>p.max)),unblockedDestinationsPreserved,
       unfinished:army.filter(u=>!done(u)).map(u=>({id:u.id,x:u.x,z:u.z,goal:r.point(u.moveGoalCell),pathIndex:u.pathIndex,pathLength:u.path.length})),
       builderPosition:{x:worker.x,z:worker.z},traceSha256:trace.digest('hex')};
   } finally {await fixture.dispose();}
