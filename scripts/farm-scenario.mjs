@@ -5,15 +5,17 @@ import path from 'node:path';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 import { BUILDING_DEFINITIONS as B, GAMEPLAY_RULESET_REVISION } from '../src/gameplay-definitions.mjs';
 import { farmHarvestNodeId } from '../src/farm-harvest.mjs';
+import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
 
 const outputArg = process.argv.slice(2).find(arg => arg.startsWith('--output='));
-assert.ok(process.argv.slice(2).every(arg => arg === outputArg), 'Usage: --output=NEW_DIRECTORY');
+const fogged = process.argv.includes('--fog');
+assert.ok(process.argv.slice(2).every(arg => arg === outputArg || arg === '--fog'), 'Usage: [--fog] [--output=NEW_DIRECTORY]');
 const output = outputArg ? path.resolve(outputArg.slice(9)) : null;
 if (output) await mkdir(output); // A prior record is never overwritten.
 const sourceRevision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const sourceDirty = execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim() !== '';
 const map = { id: 'finite-farm-proof', name: 'Finite Farm paid proof', width: 64, height: 64,
-  terrainSeed: 19, fogOfWar: false, startingArmySize: 24,
+  terrainSeed: 19, fogOfWar: fogged, startingArmySize: 24,
   startingResources: { food: 300, wood: 600 },
   spawnPoints: [{ team: 0, x: -20, z: 0 }, { team: 1, x: 20, z: 0 }],
   obstacles: [], resourceNodes: [], triggers: [], scenarioEvents: [] };
@@ -84,6 +86,15 @@ try {
   for (const team of [0, 1]) await command(team, { type: 'build', buildingId: originalIds[team], ids: workers[team] }, /CONSTRUCTION RESUMED/);
   const complete = await fixture.checkpoint(snapshot => farms(snapshot).length === 2 && farms(snapshot).every(building => building.complete));
   suppliedFood.fill(B.farm.harvest.stock); record('completed-after-recovery', complete);
+  for (const team of [0, 1]) {
+    const state = await clients[team].state(state => state.buildings.some(building =>
+      building.id === originalIds[team] && building.complete), 'completed owned Farm observation');
+    const observation = toOpponentObservation(state, team, { map });
+    assert.deepEqual(observation.resourceNodes.map(node => node.id), [farmHarvestNodeId(originalIds[team])]);
+    const gather = createDeterministicPolicy(19).next(observation).find(order =>
+      order.type === 'gather' && order.nodeId === farmHarvestNodeId(originalIds[team]));
+    assert.ok(gather, 'real owned Farm remains harvestable in deterministic observation, including fog');
+  }
   for (const team of [0, 1]) {
     await command(team, { type: 'gather', ids: [workers[team][0]], nodeId: farmHarvestNodeId(originalIds[1 - team]) }, /FARM BELONGS TO THE OTHER TEAM/);
     await command(1 - team, { type: 'cancelConstruction', buildingId: originalIds[team] }, /CANCEL REJECTED/);
@@ -170,6 +181,7 @@ try {
     rulesetRevision: GAMEPLAY_RULESET_REVISION, farmDefinition: B.farm, map, records,
     paidConstruction: true, ownerOnlyHarvest: true, unfinishedAndStockRecovery: true,
     priorContentPinPreserved: true, retainedCargoToMill: true, exactFiniteDepletion: true, paidReplanting: true,
+    foggedOwnedFarmPolicy: fogged,
     cancelledPlantingCreatesNoStock: true, destroyedStockLostAndCargoRetained: true,
     noDuplicateCreditAfterRecovery: true, hostReset: true, banksCargoStockInjected: false,
     declaredFixtures: ['Farm HP lowered and two existing initial Infantry positioned for a real destruction order.'],

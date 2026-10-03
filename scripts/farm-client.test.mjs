@@ -45,4 +45,13 @@ for (const team of [0, 1]) test(`deterministic seat ${team} observes and harvest
   const policy = createDeterministicPolicy(19);
   const orders = policy.next(observation);
   assert.ok(orders.some(order => order.type === 'gather' && order.nodeId === `farm:${10 + team}`));
+  state.fogOfWar = true;
+  state.visibility = { columns: 32, rows: 32, data: Buffer.alloc(32 * 32 / 4).toString('base64') };
+  const neutral = { id: 'hidden-neutral-food', type: 'food', stock: 200, x: 8, z: 8 };
+  map.resourceNodes.push(neutral); state.resourceNodes.push(neutral);
+  const fogged = toOpponentObservation(state, team, { map });
+  assert.deepEqual(fogged.resourceNodes.map(node => node.id), [`farm:${10 + team}`],
+    'owned building remains usable under fog, while neutral and enemy food stay hidden');
+  assert.ok(createDeterministicPolicy(19).next(fogged).some(order =>
+    order.type === 'gather' && order.nodeId === `farm:${10 + team}`));
 });

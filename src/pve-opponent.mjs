@@ -198,10 +198,12 @@ function visibleResources(state, map, visibility, team) {
       || !Number.isFinite(record.stock)) continue;
     const farm = record.sourceBuildingId === undefined ? null : state.buildings?.find(building =>
       building.id === record.sourceBuildingId && building.team === team && building.type === 'farm'
-      && building.complete && record.id === farmHarvestNodeId(building.id));
+      && building.complete && building.hp > 0 && record.type === 'food' && record.id === farmHarvestNodeId(building.id));
     const location = mapNodes.get(record.id) ?? farm;
     if (!location || !Number.isFinite(location.x) || !Number.isFinite(location.z)) continue;
-    if (visibility && visibility.cellStateAtWorld(location.x, location.z) !== 2) continue;
+    // The server always publishes owned structures, including occupied centers
+    // outside the cell visibility mask. Neutral authored nodes still need sight.
+    if (visibility && !farm && visibility.cellStateAtWorld(location.x, location.z) !== 2) continue;
     visible.push({ id: record.id, type: record.type, stock: record.stock, x: location.x, z: location.z });
   }
   return visible.sort((left, right) => left.id.localeCompare(right.id));
