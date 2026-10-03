@@ -121,9 +121,11 @@ defines dependency directions, the explicit cycle baseline and the separate
 HTTP/release obligations of a module move.
 For client import/module changes, include
 `node scripts/client-asset-allowlist-scenario.mjs`; the packed release scenario
-also traverses the served static import graph. The hosted Railway smoke uses
+also traverses served static, re-export and literal lazy imports. The hosted Railway smoke uses
 the same `scripts/check-client-imports.mjs` audit; focused fixtures cover missing
-transitive dependencies, cycles, incorrect MIME, and origin boundaries. See the
+transitive dependencies, cycles, compact/escaped syntax, ignored comment/string
+lookalikes, computed-import rejection, incorrect MIME and origin boundaries. Source
+and served audits share the parser in `scripts/module-imports.mjs`. See the
 [client-loading incident](qa-client-boot-recovery-2026-09-27.md).
 Use disposable rooms and directories: many scenarios publish maps, reset armies,
 restart workers, or deliberately disconnect clients.
