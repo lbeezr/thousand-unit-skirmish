@@ -24,7 +24,7 @@ import { SHIPPED_AUDIO_REFERENCES } from './audio-shipped-catalog.mjs';
 import { validateMapAudioReference } from './audio-event-profile.mjs';
 import { battlefieldCursor } from './battlefield-cursor.mjs';
 import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip } from './hud-layout.mjs';
-import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
+import { mapVictoryRule, objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import { updateSelectionPortrait } from './selection-portrait.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
@@ -2581,7 +2581,7 @@ function buildMap(definition) {
   const title = document.querySelector('#map-label-title');
   const summary = document.querySelector('#map-summary');
   if (title) title.textContent = definition.name || definition.id.toUpperCase();
-  if (summary) summary.textContent = 'Open objectives for the win rule';
+  if (summary) summary.textContent = `${mapVictoryRule(definition).label} · Open objectives for the win rule`;
   document.querySelector('#scenario-brief-name').textContent = definition.name || definition.id.toUpperCase();
   document.querySelector('#scenario-brief-summary').textContent = definition.summary || 'Control the marked objectives and protect your army.';
   const deadline = document.querySelector('#scenario-brief-deadline');
@@ -2590,13 +2590,7 @@ function buildMap(definition) {
   deadline.textContent = definition.timedVictory
     ? `DEADLINE · ${formatVictoryHoldTime(definition.timedVictory.afterSeconds)} · Hold ${decisiveZone?.name || 'the decisive zone'} when time expires. Unclaimed is a draw.`
     : '';
-  const victoryZones = (definition.triggers || []).filter((trigger) => trigger.victory === true);
-  const holdSeconds = definition.victoryHoldSeconds ?? 0;
-  const target = victoryZones.length === 1 ? 'the victory zone'
-    : definition.victoryMode === 'all' ? `all ${victoryZones.length} victory zones` : 'any victory zone';
-  document.querySelector('#scenario-brief-win-rule').textContent = victoryZones.length === 0
-    ? 'Eliminate the opposing army to win.'
-    : `${holdSeconds > 0 ? 'Hold' : 'Capture'} ${target}${holdSeconds > 0 ? ` for ${formatVictoryHoldTime(holdSeconds)}` : ''} to win.${holdSeconds > 0 ? ' Losing control resets the hold.' : ''}`;
+  document.querySelector('#scenario-brief-win-rule').textContent = mapVictoryRule(definition).description;
   const briefZones = document.querySelector('#scenario-brief-zones');
   const briefZoneList = document.querySelector('#scenario-brief-zone-list');
   briefZones.hidden = !definition.triggers?.length;
