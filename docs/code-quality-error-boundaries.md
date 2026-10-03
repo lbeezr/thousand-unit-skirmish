@@ -17,9 +17,8 @@ the current write scope. The shipped-audio reader already has its own owner.
 
 | Rank/status | Reproduction and outcome | Write boundary | Next action/dependency | Acceptance owner |
 | --- | --- | --- | --- | --- |
-| 1 — active | A Blob whose `text()` rejects is reported as `Audio pack is not valid JSON`; its read error is lost. Separate unreadable file from JSON syntax failure, retain causes, prove successful retry. | `src/audio-library-store.mjs`, `scripts/audio-library.test.mjs`, this note | Syntax/read-failure, no-storage-access, retry and programmer-fault regressions now pass. Finish review and merge; no known source overlap. | Source and browser import acceptance: error-handling owner. Runtime release: parent. Native acceptance has the sandbox blocker below. |
-| 2 — confirmed | `validateSpriteAtlas()` combines user manifest and bundled schema reads, then appends raw `error.message`. Node JSON syntax errors include malformed input excerpts. A synthetic private token reproduces the exposure. | Sprite-atlas contract and its CLI consumers/tests; narrow before writing | Separate invalid user input from unavailable bundled schemas; preserve useful diagnostics without contents. Verify library and actual CLI invocations. | Error-handling owner; tooling only, no production deployment. |
-| 3 — confirmed | `validate-visual-pack.mjs /nonexistent-parent/manifest.json` reaches parent `realpath()` before its input catch; stderr contains a raw Node stack and absolute path. | Validator and existing visual-pack path-safety scenario | Give expected missing-path/permission errors retry guidance while preserving programmer faults. Verify real invalid and valid CLI invocations. | Error-handling owner; tooling only, no production deployment. |
+| 1 — active | `validateSpriteAtlas()` combined user manifest and bundled schema reads, then appended raw `error.message`. Node JSON syntax errors include malformed input excerpts. A synthetic private token reproduces the exposure. | `scripts/sprite-atlas-contract.mjs`, existing handoff scenario, this note | Separate manifest read/JSON from unavailable bundled schemas. Add optional native diagnostic/cause while keeping `errors` safe; run actual three CLI consumers, isolated schema repair/retry and successful pack fixtures. Finish review/merge. | Error-handling owner; tooling only, no production deployment. |
+| 2 — confirmed | `validate-visual-pack.mjs /nonexistent-parent/manifest.json` reaches parent `realpath()` before its input catch; stderr contains a raw Node stack and absolute path. | Validator and existing visual-pack path-safety scenario | Give expected missing-path/permission errors retry guidance while preserving programmer faults. Verify real invalid and valid CLI invocations. | Error-handling owner; tooling only, no production deployment. |
 
 ## Completed evidence
 
@@ -46,6 +45,17 @@ the current write scope. The shipped-audio reader already has its own owner.
   parent retains coordinated release; this stream retains normal Audio Studio
   and blocked-open retry observation on that identified deployment using a
   provider runtime with a working browser sandbox.
+
+- **Archive read/syntax source integration:**
+  [PR #172](https://github.com/lbeezr/thousand-unit-skirmish/pull/172), merge
+  `f55ef4330fb0b3a19589930deff353495874982b`.
+  [Independent COMMENT review](https://github.com/lbeezr/thousand-unit-skirmish/pull/172#pullrequestreview-5403283747)
+  found no blockers. Read and syntax failures retain causes behind safe messages;
+  unexpected parser faults retain identity. Failed import does not open storage,
+  and retry preserves metadata/original bytes. Library, audio runtime, served
+  imports and packaged-release checks pass at merged main. **Native/deployed
+  import acceptance remains incomplete** with the same runtime release and
+  browser-sandbox ownership/blocker as PR #166.
 
 The [IndexedDB opening algorithm](https://w3c.github.io/IndexedDB/#open-a-database-connection)
 fires `blocked`, waits for the existing connections to close, then continues
