@@ -233,6 +233,15 @@ units or population and does not generate or multiply food. Mill currently uses
 the existing procedural House appearance as an explicit placeholder until its
 own art is authored. It uses the same paid repair and cancellation rules.
 
+Dock is a shoreline foundation: provisional 100 wood, 20 accumulated
+Worker-seconds, 1,200 HP and a 3 × 3 dry level-zero land footprint. Placement
+requires an adjacent clear 3 × 3 authored-water berth and an outward water
+route step, while preserving ordinary land access and active routes. It uses
+the existing building lifecycle and an explicit procedural House placeholder.
+It offers no production, drop-off, population or resource bonus; boats remain
+unavailable. [The Dock contract](dock-shoreline-foundation.md) defines the
+current berth handoff and subsequent naval work.
+
 A one-cell Palisade uses **provisional test tuning** of 15 wood, five accumulated
 Worker-seconds and 300 HP. Whole lines reserve occupancy and pay atomically;
 existing friendly segments are reused without charge. Workers construct new

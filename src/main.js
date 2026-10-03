@@ -11,6 +11,7 @@ import { regionalGroundColor } from './regional-ground-kits.mjs';
 import { researchOptions, researchAction } from './research-actions.mjs';
 import { unitPresentation, buildingPresentation } from './gameplay-presentation.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, GAMEPLAY_RULESET_REVISION } from './gameplay-definitions.mjs';
+import { createDockPlacementContext } from './dock-placement.mjs';
 import { formatResourceStock, formatResourceRequirement } from './resource-format.mjs';
 import { ownedPopulationReadout } from './population-readout.mjs';
 import { SHIPPED_AUDIO_REFERENCES } from './audio-shipped-catalog.mjs';
@@ -98,6 +99,7 @@ import {
 } from './unit-selection.mjs';
 
 let mapDefinition = null;
+let dockPlacementContext = null;
 let lobbyPlayer = null;
 let latestLobby = null;
 const roomLobby = createRoomLobby({ root: document.querySelector('#room-lobby'), send: sendCommand, copyInvite: copyRoomInvite });
@@ -2218,6 +2220,7 @@ function applyForestState(state) {
 let terrainSurface = null;
 let waterStudyFishBinding = null;
 function buildMap(definition) {
+  dockPlacementContext = createDockPlacementContext(definition, BUILDING_DEFINITIONS.dock);
   waterStudyFishBinding?.clear();
   waterStudyFishBinding = null;
   wildlifeRenderer.reset([]);
@@ -3655,7 +3658,8 @@ function updateSelectionUI() {
     ui.selectedBuildingHealthBar.style.setProperty('--health-ratio', healthRatio);
     ui.selectedBuildingHealthBar.setAttribute('aria-valuemax', String(Math.round(maxHp)));
     ui.selectedBuildingHealthBar.setAttribute('aria-valuenow', String(Math.round(hp)));
-    ui.selectedBuildingProduction.textContent = !selectedBuilding.complete
+    ui.selectedBuildingProduction.textContent = selectedBuilding.type === 'dock'
+      ? 'Shoreline foundation · boats unavailable.' : !selectedBuilding.complete
       ? 'Finish construction to unlock production.'
       : selectedBuilding.productionBlocked ? 'Production blocked · clear the spawn area.'
         : queued > 0 ? `${queued.toLocaleString()} ${troop} queued · ${training}% training`
@@ -7552,6 +7556,10 @@ function buildPlacementAt(clientX, clientY) {
   else if (localTeam === null || latestWood[localTeam] < woodCost) blockedReason = `NEED ${formatResourceRequirement(woodCost)} WOOD`;
   else if (latestFood[localTeam] < (BUILDING_DEFINITIONS[buildPlacementType].cost.food || 0)) blockedReason = `NEED ${BUILDING_DEFINITIONS[buildPlacementType].cost.food} FOOD`;
   else if (!selectedIds().some((id) => units[id]?.kind === 'worker')) blockedReason = 'SELECT WORKERS';
+  if (!blockedReason && BUILDING_DEFINITIONS[buildPlacementType].placement?.kind === 'shoreline') {
+    const berth = dockPlacementContext?.accessAt(centerRow * MAP_WIDTH + centerColumn);
+    if (!berth?.valid) blockedReason = berth?.reason || 'DOCK NEEDS CLEAR WATER BERTH';
+  }
   if (mapDefinition) {
     for (const obstacle of mapDefinition.obstacles || []) {
       const overlaps = startColumn < obstacle.column + obstacle.width
