@@ -32,6 +32,15 @@ The 24 × 24 SVG icons are `wood`, `food`, `move`, `attack`, `gather`, and `buil
 under `assets/ui/icons/`. Preserve resource labels, command title/hint, written
 costs, and accessible names. Icons supplement those meanings.
 
+[Action glyphs](../assets/ui/icons/actions/manifest.json) add Patrol, Follow,
+Stop, Hold position, Return cargo and Formation to existing controls at 20 px.
+Use empty image `alt`; retain written names, hotkeys and tooltips. The duplicate
+Patrol/Follow/Stop/Hold buttons in the Command drawer use the same sources.
+Return cargo retains its carrying-Worker/Skiff availability. Formation belongs
+only to selected-unit contexts; the shared building details button hides that
+image and keeps Rally / upgrade details. Selection updates preserve image and
+label nodes. Image load failure must leave written controls usable.
+
 ## Build and verify
 
 ```sh

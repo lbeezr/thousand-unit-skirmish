@@ -39,3 +39,16 @@ cargo and Formation. They use the existing 24 × 24 canvas, palette and compact
 strokes. No external source, font, generated image or paid provider was used.
 Their manifest records intended selectors and command meanings. These are
 candidate sources, not integrated HUD controls or native recognition evidence.
+
+That PR130 source milestone is now followed by default labelled HUD integration.
+All six SVGs ship and are explicitly served at their original paths. Current
+native game verification and identified deployed delivery remain incomplete;
+see the [adoption ledger](../../docs/asset-adoption-checklist.md).
+
+## Follow and Return cargo source refinement — 3 October 2026
+
+The Follow connection and Return cargo crate/receiver were refined by hand in
+their existing SVG sources, retaining the 24 × 24 canvas and pine/pale/lime
+palette. Original PR130 bytes remain in Git history and the private comparison.
+No external artwork, generated image or paid provider was used. Exact-size CPU
+renders support source inspection only; runtime and native acceptance are separate.

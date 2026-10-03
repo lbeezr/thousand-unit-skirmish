@@ -7993,6 +7993,9 @@ const server = createServer(async (request, response) => {
     'assets/ui/cursors/build-blocked.png', 'assets/ui/cursors/build-blocked.svg',
     'assets/ui/icons/wood.svg', 'assets/ui/icons/food.svg', 'assets/ui/icons/move.svg',
     'assets/ui/icons/attack.svg', 'assets/ui/icons/gather.svg', 'assets/ui/icons/build.svg',
+    'assets/ui/icons/actions/patrol.svg', 'assets/ui/icons/actions/follow.svg',
+    'assets/ui/icons/actions/stop.svg', 'assets/ui/icons/actions/hold-position.svg',
+    'assets/ui/icons/actions/return-cargo.svg', 'assets/ui/icons/actions/formation.svg',
   ].includes(relative);
   const publicEnvironmentModule = relative === 'src/environment-art.mjs';
   const publicPaintedMaterialAtlasAsset = /^assets\/environment\/frontier-painted-material-atlas-v1\/(?:manifest\.json|frontier-painted-material-atlas-mip-[0-5]\.webp)$/.test(relative);

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "candidate-not-integrated",
+  "status": "default-labelled-controls",
   "sourceSize": [24, 24],
   "reviewSizes": [16, 20, 24],
   "accessibleNamePolicy": "Keep visible labels, keyboard hints and tooltips; use empty alt for decorative button images.",

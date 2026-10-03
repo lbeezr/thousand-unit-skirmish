@@ -3848,8 +3848,10 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   }
   if (!building) bar.querySelector('[data-context-reason]').textContent = '';
   bar.querySelector('[data-context-build]').hidden = context.kind !== 'workers';
-  bar.querySelector('[data-context-details]').hidden = context.kind === 'none' || Boolean(building && !BUILDING_DEFINITIONS[building.type]?.products.length);
-  bar.querySelector('[data-context-details]').textContent = building ? 'Rally / upgrade details' : 'Formation / route';
+  const details = bar.querySelector('[data-context-details]');
+  details.hidden = context.kind === 'none' || Boolean(building && !BUILDING_DEFINITIONS[building.type]?.products.length);
+  details.querySelector('[data-context-details-label]').textContent = building ? 'Rally / upgrade details' : 'Formation / route';
+  details.querySelector('[data-context-formation-icon]').hidden = !['workers', 'military', 'mixed', 'boats'].includes(context.kind);
   const research = bar.querySelector('[data-context-research]');
   research.hidden = !building || !BUILDING_DEFINITIONS[building.type]?.products.length;
   research.textContent = building ? `${ui.buildingRallyReadout.textContent} · ${ui.buildingResearchReadout.textContent}` : '';
