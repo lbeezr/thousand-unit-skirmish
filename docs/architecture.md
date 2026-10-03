@@ -28,6 +28,65 @@ visibility, and match results. The browser owns selection, camera, HUD, audio,
 and visual interpolation. A renderer fallback cannot change gameplay occupancy
 or reveal hidden state.
 
+## Module dependencies and gradual organization
+
+`npm run architecture:check` parses imports, re-exports and literal lazy imports
+with Acorn; it does not execute game modules. At source revision `32f11d5`
+(3 October 2026), the graph contains 141 `src` modules plus five root JavaScript
+modules, 253 distinct local dependency edges, 105 modules reachable from the
+five shipped browser entrypoints and 53 reachable from the two Node hosts.
+Twenty-four modules are shared by those closures. The command prints the exact
+shared set so a refactor can check its actual consumers.
+
+There are **no cyclic edges** at that revision, including lazy imports.
+[`runtime-import-baseline.json`](../scripts/fixtures/runtime-import-baseline.json)
+records this explicit empty baseline. The checker compares every cyclic edge,
+including self-imports and new edges within an existing cyclic component.
+New edges fail; resolved entries must be removed from the baseline. Do not
+regenerate the ledger to admit a new cycle or add wildcard/module exemptions.
+
+The useful target domains are responsibilities first; these directory names
+are destinations for future small, cohesive moves, not a rename plan:
+
+| Domain | Existing evidence | Dependency direction |
+| --- | --- | --- |
+| `src/rules/` | `gameplay-definitions`, `gameplay-action-rules`, `production-actions`, `research-actions`, `economy-profile`, `palisade-profile`, `farm-harvest` | Browser, simulation and AI consume rules and validated definitions. Rules do not import their hosts, UI or rendering. Keep shared business-rule extractions with their existing quality owner. |
+| `src/world/` | `map-utils` → `elevation`; `shore-fishing-placement` → `map-utils`, `town-center-spawn`, `shore-fishing` | Simulation and browser authoring consume portable topology/placement helpers. Authoring may consume rules; shared topology must not depend on editor controls. |
+| `src/presentation/` | `environment-art` → Three, terrain/world helpers and plant packs; `selection-portrait` → definitions, building sprites and resource formatting | Rendering/audio/HUD consume disclosed snapshots, rules and world data. Authoritative simulation does not consume renderers or mutate gameplay through presentation. |
+| `src/client/` | `game-entry` lazily imports `main`; `main` composes lobby, input, HUD, world authoring and presentation | Browser entry/UI code composes lower domains and owns DOM, storage, audio and WebSocket interaction. Lower domains do not import browser boot code. |
+| `src/server/` and root Node hosts | `room-supervisor` → `room-launch-options`; `server` → shared rules, topology and deterministic PvE; `pve-model-proposal` is an offline Node adapter | Node adapters depend on portable rules/world helpers. Supervisor, transport, persistence and scheduling stay outside browser closures. |
+| `scripts/` | Scenario runners and asset/release tools import runtime helpers | Tools/tests may consume runtime modules; runtime modules must not consume tools/tests. |
+
+These directions guide extraction. The first executable safeguard is narrower:
+runtime imports must resolve to exact relative runtime modules, Node builtins
+or the mapped `three` package. All `src` modules stay within `src`; only the two
+named Node adapters may import Node builtins. Browser closures cannot reach a
+Node adapter or unmapped package, and server closures cannot reach Three or a
+browser entrypoint. This checks import edges, not browser globals, injected
+callbacks, runtime asset fetches or gameplay semantics. It also scans unreferenced
+`src` modules and nested folders, so new files cannot evade the cycle check.
+
+The browser uses native ESM without a bundler. `index.html`, the environment
+review and water study map `three` to `/vendor/three.module.js`; the server serves
+that module and `three.core.js` from the installed package. `server.mjs` admits
+client module paths explicitly. Docker copies `src/` recursively, while the
+release packer audits Docker COPY inputs and `.dockerignore`. Passing the source
+graph check therefore does not prove HTTP admission or release inclusion:
+retain the [served and packed import checks](testing.md#repository-checks).
+Acorn is a pinned development dependency; production installs omit it.
+
+The first folder-migration candidate is the offline `pve-model-proposal.mjs`
+Node adapter, which is outside browser closures and normal hosted simulation.
+Before moving it, agree that exact scope with the existing quality owner through
+the producer and refresh its importers. Keep the active room-launch/game-mode
+and gameplay hot spots out of this first migration. For a served module, update
+HTTP admission, imports and release tests together; preserve an existing public
+path only with a deliberate compatibility module forwarding the required named
+exports, a named removal owner and a removal condition. Avoid broad barrels.
+This check-only slice moves no files and changes no runtime binding. Deployment
+and in-game acceptance remain with the producer's release stream; they are not
+claimed by these source checks.
+
 Neutral stationary Sheep use optional wildlife identity on an existing food node
 and one conserved stock pool. Worker arrival activates its carcass once; both
 seats reuse normal cargo/drop-offs. Species/lifecycle are fog-filtered with the
