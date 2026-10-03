@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { workerFishingPresentation } from '../src/worker-fishing-presentation.mjs';
 import { shoreFishSitePositions } from '../src/shore-fishing-placement.mjs';
 import { headingToTarget } from '../src/unit-heading.mjs';
+import { farmBuildingId, farmHarvestNode } from '../src/farm-harvest.mjs';
 import { activeState, normalizedDirection, spriteActionClip, spriteAnimationTime,
   createUnitSpriteRuntime } from '../src/unit-sprite-runtime.mjs';
 
@@ -50,11 +51,12 @@ test('travel, returning cargo, dead units, other resources and forest work canno
 test('wire identity and water heading are seat-private and leave existing attack/audio offsets intact', () => {
   const unit = { ...worker(sites[0]), lastAttackTick: 10, lastAttackX: 7, lastAttackZ: 8, attackTargetId: -1 };
   const context = vm.createContext({ units: [unit], mapDefinition: { ...map, fogOfWar: true },
-    resourceNodeStates: new Map(map.resourceNodes.map(n => [n.id, n])),
+    resourceNodeStates: new Map(map.resourceNodes.map(n => [n.id, n])), farmBuildingId, farmHarvestNode, buildingsById: new Map(),
     headingToTarget, workerFishingPresentation, workerTaskStatus: u => u.gatherPhase === 'gathering' ? 'gathering' : 'idle',
     workerAudioExecution: () => 'food', cellToWorld: () => ({ x: 0, z: 0 }),
     cellVisibleToTeam: () => true, worldToCell: () => 0, tickNumber: 10, STATE_EVERY_TICKS: 3 });
-  vm.runInContext(server.slice(server.indexOf('function snapshotUnits('), server.indexOf('function snapshotPersistentOrders(')), context);
+  const lookup = server.slice(server.indexOf('function harvestNodeById('), server.indexOf('\nfunction routeWorker('));
+  vm.runInContext(lookup + server.slice(server.indexOf('function snapshotUnits('), server.indexOf('function snapshotPersistentOrders(')), context);
   for (const team of [0, 1]) {
     unit.team = team;
     const row = context.snapshotUnits(team)[0];

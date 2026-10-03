@@ -101,6 +101,13 @@ Resource stocks and worker cargo display whole units rounded down; costs and
 positive shortfalls round up. Affordability uses exact authoritative values, so
 a display never rounds insufficient stock up to the purchase price.
 
+Food/wood remains the playable economy. The next single-mineral recommendation
+is an explicit optional `stone-defense-v1` profile: finite `stone`, 200 stock per
+seat and 50 Stone added to new Watchtower construction. Ordinary matches and
+legacy paid work retain current food/wood prices. The [Stone contract](stone-defense-contract-proposal.md)
+defines provisional tuning and required typed payment/save work; the profile,
+bank and harvest loop are not implemented.
+
 ## Implemented scope
 
 - Azure and Ember seats, invite rooms, spectators, reconnects, and checkpoints.
@@ -249,6 +256,18 @@ The [controlled depot study](qa-mill-depot-economy-2026-10-03.md) records simula
 food-trip savings and Storehouse's additional wood service, with no human matches
 or tuning change. Construction time and food/wood prices remain separate costs.
 The [Mill art brief](frontier-mill-art-brief.md) retains its food-only land role.
+
+Farm is one finite paid planting: provisional 60 wood, 15 accumulated
+Worker-seconds, 600 HP and a 3 × 3 footprint. Completion creates 200 food stock
+once; only owned Workers harvest it at the ordinary rate and carry capacity,
+then deposit at Mill, Storehouse or Town Center. It grants no passive income,
+drop-off or population. An exhausted plot clears without refund; fresh planting
+costs another 60 wood and creates a new source ID. Unfinished cancellation uses
+the ordinary proportional refund and supplies no crop. Destruction discards
+remaining stock while preserving carried food; repair never regrows stock.
+Recovery retains progress, stock and cargo. The [Farm contract](farm-finite-planting.md)
+defines the explicit procedural House placeholder and current AI harvest limits.
+These values are tunable prototype choices, with no human balance acceptance.
 
 Dock is a shoreline foundation: provisional 100 wood, 20 accumulated
 Worker-seconds, 1,200 HP and a 3 × 3 dry level-zero land footprint. Placement

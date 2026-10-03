@@ -1,4 +1,5 @@
 import { PALISADE_TUNING_PROPOSAL, palisadeDraftDefinition } from './palisade-profile.mjs';
+import { FARM_TUNING_PROPOSAL as FARM } from './farm-harvest.mjs';
 
 // Shared gameplay data. Presentation IDs identify profiles, never collision or combat rules.
 const supportedUnitCapabilities = new Set(['move', 'attack', 'attack-structures', 'gather', 'build', 'repair']);
@@ -82,6 +83,13 @@ export function validateGameplayDefinitions(definitions) {
         if (entry.sight !== undefined && (!Number.isInteger(entry.sight) || entry.sight < 1 || entry.sight > 16)) throw new Error(`Invalid building sight: ${id}`);
         if (entry.populationCapacity !== undefined && (!Number.isInteger(entry.populationCapacity) || entry.populationCapacity < 0)) throw new Error(`Invalid population capacity: ${id}`);
         if (entry.dropoff !== undefined && (!Array.isArray(entry.dropoff) || !entry.dropoff.length || new Set(entry.dropoff).size !== entry.dropoff.length || entry.dropoff.some((resource) => !supportedResources.has(resource)))) throw new Error(`Invalid dropoff resources: ${id}`);
+        if (id === 'farm' && entry.harvest === undefined) throw new Error('Farm requires finite harvest rules');
+        if (entry.harvest !== undefined && (id !== 'farm' || !entry.harvest
+          || entry.harvest.type !== 'food' || entry.harvest.access !== 'owner'
+          || !Number.isFinite(entry.harvest.stock) || entry.harvest.stock <= 0
+          || Object.keys(entry.harvest).some(key => !['type', 'access', 'stock'].includes(key)))) {
+          throw new Error(`Unsupported finite harvest source: ${id}`);
+        }
         if (!Number.isInteger(entry.footprint) || entry.footprint % 2 !== 1 || entry.footprint > 9) throw new Error(`Invalid footprint: ${id}`);
         if (entry.placement !== undefined && (!entry.placement || typeof entry.placement !== 'object'
           || Array.isArray(entry.placement) || entry.placement.kind !== 'shoreline'
@@ -187,13 +195,16 @@ export const GAMEPLAY_DEFINITIONS = freezeTree(validateGameplayDefinitions({
     storehouse: { id: 'storehouse', label: 'Storehouse', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 100 }, buildSeconds: 20, footprint: 3, maxHp: 1200, products: [], dropoff: ['food', 'wood'], presentation: 'building.storehouse' },
     // Provisional food-site investment: cheaper/faster and less durable than Storehouse.
     mill: { id: 'mill', label: 'Mill', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 75 }, buildSeconds: 15, footprint: 3, maxHp: 1000, products: [], dropoff: ['food'], presentation: 'building.mill' },
+    farm: { id: 'farm', label: 'Farm', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: FARM.wood }, buildSeconds: FARM.buildSeconds, footprint: FARM.footprint, maxHp: FARM.maxHp, products: [], harvest: { type: 'food', stock: FARM.foodStock, access: 'owner' }, presentation: 'building.farm' },
     // Provisional shoreline producer; no pier collision, cargo or final Dock art.
     dock: { id: 'dock', label: 'Dock', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 100 }, buildSeconds: 20, footprint: 3, placement: { kind: 'shoreline', waterClearanceCells: 1 }, maxHp: 1200, products: ['skiff'], presentation: 'building.dock' },
+
     house: { id: 'house', label: 'House', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 75 }, buildSeconds: 15, footprint: 3, maxHp: 800, products: [], populationCapacity: 8, presentation: 'building.house' },
     barracks: { id: 'barracks', label: 'Barracks', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 175 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['infantry', 'spearman'], presentation: 'building.barracks' },
     'archery-range': { id: 'archery-range', label: 'Archery Range', tags: ['structure'], armor: { melee: 0, pierce: 0, siege: 0 }, cost: { food: 0, wood: 150 }, buildSeconds: 20, footprint: 3, maxHp: 1800, products: ['archer'], presentation: 'building.archery-range' },
   },
-  factions: { frontier: { id: 'frontier', label: 'Frontier', units: ['worker', 'infantry', 'archer', 'spearman', 'scout', 'rider', 'siege-engine', 'skiff'], buildings: ['palisade-wall', 'palisade-gate', 'house', 'barracks', 'archery-range', 'storehouse', 'mill', 'dock', 'town-center', 'watchtower', 'stable', 'workshop'], technologies: ['infantry-attack', 'archer-attack', 'military-tier-2', 'military-armor', 'mounted-attack', 'siege-engineering'] } },
+  factions: { frontier: { id: 'frontier', label: 'Frontier', units: ['worker', 'infantry', 'archer', 'spearman', 'scout', 'rider', 'siege-engine', 'skiff'], buildings: ['palisade-wall', 'palisade-gate', 'house', 'barracks', 'archery-range', 'storehouse', 'mill', 'farm', 'dock', 'town-center', 'watchtower', 'stable', 'workshop'], technologies: ['infantry-attack', 'archer-attack', 'military-tier-2', 'military-armor', 'mounted-attack', 'siege-engineering'] } },
+
   technologies: {
     'siege-engineering': { id: 'siege-engineering', label: 'SIEGE ENGINEERING', building: 'workshop', upgradeKey: 'siegeEngineering', requires: ['military-tier-2'], effects: [], cost: { food: 150, wood: 150 }, durationSeconds: 30 },
     'military-tier-2': { id: 'military-tier-2', label: 'MILITARY TIER II', building: 'town-center', upgradeKey: 'militaryTier2', effects: [], cost: { food: 200, wood: 150 }, durationSeconds: 35 },

@@ -45,6 +45,8 @@ export const BUILDING_PRESENTATION_PROFILES = Object.freeze({
   'building.storehouse': Object.freeze({ backend: 'procedural', role: 'house' }),
   // Reuse the existing procedural House until a Mill asset is authored.
   'building.mill': Object.freeze({ backend: 'procedural', role: 'house' }),
+  // Clearly labeled Farm prototype; this is an existing House placeholder.
+  'building.farm': Object.freeze({ backend: 'procedural', role: 'house' }),
   // Dock land foundation placeholder; no pier or finished Dock artwork is claimed.
   'building.dock': Object.freeze({ backend: 'procedural', role: 'house' }),
   'building.house': Object.freeze({ backend: 'procedural', role: 'house' }),

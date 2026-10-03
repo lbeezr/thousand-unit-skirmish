@@ -1,0 +1,817 @@
+{
+  "fixtureVersion": 1,
+  "map": "mature-settlement-audit",
+  "rulesetRevision": "v1:8cdf9d2ce480914bee402a7285c8730f3987674983a8131f9611d4a65a423cf2",
+  "sourceRevision": "319bbdef97caf214134223d7a185ad8c0489f1b6",
+  "sourceDirty": false,
+  "reverseSeats": false,
+  "elapsedSeconds": 271.668,
+  "layout": {
+    "blockedCells": 284,
+    "connectedFreeCells": 3812
+  },
+  "spent": [
+    {
+      "food": 1385,
+      "wood": 2795
+    },
+    {
+      "food": 1385,
+      "wood": 2795
+    }
+  ],
+  "ledger": [
+    {
+      "team": 0,
+      "command": "build",
+      "type": "house",
+      "cost": {
+        "food": 0,
+        "wood": 75
+      },
+      "bank": {
+        "food": 2000,
+        "wood": 2925
+      },
+      "tick": 7
+    },
+    {
+      "team": 1,
+      "command": "build",
+      "type": "house",
+      "cost": {
+        "food": 0,
+        "wood": 75
+      },
+      "bank": {
+        "food": 2000,
+        "wood": 2925
+      },
+      "tick": 7
+    },
+    {
+      "team": 0,
+      "command": "researchUpgrade",
+      "type": "military-tier-2",
+      "cost": {
+        "food": 200,
+        "wood": 150
+      },
+      "bank": {
+        "food": 1800,
+        "wood": 2775
+      },
+      "tick": 9
+    },
+    {
+      "team": 1,
+      "command": "researchUpgrade",
+      "type": "military-tier-2",
+      "cost": {
+        "food": 200,
+        "wood": 150
+      },
+      "bank": {
+        "food": 1800,
+        "wood": 2775
+      },
+      "tick": 9
+    },
+    {
+      "team": 0,
+      "command": "build",
+      "type": "house",
+      "cost": {
+        "food": 0,
+        "wood": 75
+      },
+      "bank": {
+        "food": 1800,
+        "wood": 2700
+      },
+      "tick": 283
+    },
+    {
+      "team": 1,
+      "command": "build",
+      "type": "house",
+      "cost": {
+        "food": 0,
+        "wood": 75
+      },
+      "bank": {
+        "food": 1800,
+        "wood": 2700
+      },
+      "tick": 295
+    },
+    {
+      "team": 0,
+      "command": "build",
+      "type": "house",
+      "cost": {
+        "food": 0,
+        "wood": 75
+      },
+      "bank": {
+        "food": 1800,
+        "wood": 2625
+      },
+      "tick": 403
+    },
+    {
+      "team": 1,
+      "command": "build",
+      "type": "house",
+      "cost": {
+        "food": 0,
+        "wood": 75
+      },
+      "bank": {
+        "food": 1800,
+        "wood": 2625
+      },
+      "tick": 412
+    },
+    {
+      "team": 0,
+      "command": "build",
+      "type": "storehouse",
+      "cost": {
+        "food": 0,
+        "wood": 100
+      },
+      "bank": {
+        "food": 1800,
+        "wood": 2525
+      },
+      "tick": 562
+    },
+    {
+      "team": 1,
+      "command": "build",
+      "type": "storehouse",
+      "cost": {
+        "food": 0,
+        "wood": 100
+      },
+      "bank": {
+        "food": 1800,
+        "wood": 2525
+      },
+      "tick": 568
+    },
+    {
+      "team": 0,
+      "command": "build",
+      "type": "mill",
+      "cost": {
+        "food": 0,
+        "wood": 75
+      },
+      "bank": {
+        "food": 1800,
+        "wood": 2450
+      },
+      "tick": 808
+    },
+    {
+      "team": 1,
+      "command": "build",
+      "type": "mill",
+      "cost": {
+        "food": 0,
+        "wood": 75
+      },
+      "bank": {
+        "food": 1800,
+        "wood": 2450
+      },
+      "tick": 808
+    },
+    {
+      "team": 0,
+      "command": "build",
+      "type": "barracks",
+      "cost": {
+        "food": 0,
+        "wood": 175
+      },
+      "bank": {
+        "food": 1800,
+        "wood": 2275
+      },
+      "tick": 1069
+    },
+    {
+      "team": 1,
+      "command": "build",
+      "type": "barracks",
+      "cost": {
+        "food": 0,
+        "wood": 175
+      },
+      "bank": {
+        "food": 1800,
+        "wood": 2275
+      },
+      "tick": 1075
+    },
+    {
+      "team": 0,
+      "command": "build",
+      "type": "farm",
+      "cost": {
+        "food": 0,
+        "wood": 60
+      },
+      "bank": {
+        "food": 1800,
+        "wood": 2215
+      },
+      "tick": 1531
+    },
+    {
+      "team": 0,
+      "command": "researchUpgrade",
+      "type": "infantry-attack",
+      "cost": {
+        "food": 100,
+        "wood": 75
+      },
+      "bank": {
+        "food": 1700,
+        "wood": 2140
+      },
+      "tick": 1533
+    },
+    {
+      "team": 1,
+      "command": "build",
+      "type": "farm",
+      "cost": {
+        "food": 0,
+        "wood": 60
+      },
+      "bank": {
+        "food": 1800,
+        "wood": 2215
+      },
+      "tick": 1549
+    },
+    {
+      "team": 1,
+      "command": "researchUpgrade",
+      "type": "infantry-attack",
+      "cost": {
+        "food": 100,
+        "wood": 75
+      },
+      "bank": {
+        "food": 1700,
+        "wood": 2140
+      },
+      "tick": 1551
+    },
+    {
+      "team": 0,
+      "command": "build",
+      "type": "archery-range",
+      "cost": {
+        "food": 0,
+        "wood": 150
+      },
+      "bank": {
+        "food": 1700,
+        "wood": 1990
+      },
+      "tick": 1732
+    },
+    {
+      "team": 1,
+      "command": "build",
+      "type": "archery-range",
+      "cost": {
+        "food": 0,
+        "wood": 150
+      },
+      "bank": {
+        "food": 1700,
+        "wood": 1990
+      },
+      "tick": 1759
+    },
+    {
+      "team": 0,
+      "command": "build",
+      "type": "stable",
+      "cost": {
+        "food": 0,
+        "wood": 200
+      },
+      "bank": {
+        "food": 1700,
+        "wood": 1790
+      },
+      "tick": 1906
+    },
+    {
+      "team": 1,
+      "command": "build",
+      "type": "stable",
+      "cost": {
+        "food": 0,
+        "wood": 200
+      },
+      "bank": {
+        "food": 1700,
+        "wood": 1790
+      },
+      "tick": 1933
+    },
+    {
+      "team": 0,
+      "command": "build",
+      "type": "watchtower",
+      "cost": {
+        "food": 50,
+        "wood": 150
+      },
+      "bank": {
+        "food": 1650,
+        "wood": 1640
+      },
+      "tick": 2188
+    },
+    {
+      "team": 1,
+      "command": "build",
+      "type": "watchtower",
+      "cost": {
+        "food": 50,
+        "wood": 150
+      },
+      "bank": {
+        "food": 1650,
+        "wood": 1640
+      },
+      "tick": 2215
+    },
+    {
+      "team": 0,
+      "command": "researchUpgrade",
+      "type": "archer-attack",
+      "cost": {
+        "food": 125,
+        "wood": 125
+      },
+      "bank": {
+        "food": 1525,
+        "wood": 1515
+      },
+      "tick": 2313
+    },
+    {
+      "team": 1,
+      "command": "researchUpgrade",
+      "type": "archer-attack",
+      "cost": {
+        "food": 125,
+        "wood": 125
+      },
+      "bank": {
+        "food": 1525,
+        "wood": 1515
+      },
+      "tick": 2313
+    },
+    {
+      "team": 0,
+      "command": "build",
+      "type": "town-center",
+      "cost": {
+        "food": 100,
+        "wood": 400
+      },
+      "bank": {
+        "food": 1425,
+        "wood": 1115
+      },
+      "tick": 2542
+    },
+    {
+      "team": 1,
+      "command": "build",
+      "type": "town-center",
+      "cost": {
+        "food": 100,
+        "wood": 400
+      },
+      "bank": {
+        "food": 1425,
+        "wood": 1115
+      },
+      "tick": 2572
+    },
+    {
+      "team": 0,
+      "command": "researchUpgrade",
+      "type": "military-armor",
+      "cost": {
+        "food": 100,
+        "wood": 100
+      },
+      "bank": {
+        "food": 1325,
+        "wood": 1015
+      },
+      "tick": 3063
+    },
+    {
+      "team": 1,
+      "command": "researchUpgrade",
+      "type": "military-armor",
+      "cost": {
+        "food": 100,
+        "wood": 100
+      },
+      "bank": {
+        "food": 1325,
+        "wood": 1015
+      },
+      "tick": 3063
+    },
+    {
+      "team": 0,
+      "command": "build",
+      "type": "workshop",
+      "cost": {
+        "food": 0,
+        "wood": 250
+      },
+      "bank": {
+        "food": 1325,
+        "wood": 765
+      },
+      "tick": 3091
+    },
+    {
+      "team": 1,
+      "command": "build",
+      "type": "workshop",
+      "cost": {
+        "food": 0,
+        "wood": 250
+      },
+      "bank": {
+        "food": 1325,
+        "wood": 765
+      },
+      "tick": 3121
+    },
+    {
+      "team": 0,
+      "command": "build",
+      "type": "palisade-wall",
+      "cost": {
+        "food": 0,
+        "wood": 15
+      },
+      "bank": {
+        "food": 1325,
+        "wood": 750
+      },
+      "tick": 3352
+    },
+    {
+      "team": 1,
+      "command": "build",
+      "type": "palisade-wall",
+      "cost": {
+        "food": 0,
+        "wood": 15
+      },
+      "bank": {
+        "food": 1325,
+        "wood": 750
+      },
+      "tick": 3388
+    },
+    {
+      "team": 0,
+      "command": "build",
+      "type": "palisade-gate",
+      "cost": {
+        "food": 0,
+        "wood": 15
+      },
+      "bank": {
+        "food": 1325,
+        "wood": 735
+      },
+      "tick": 3742
+    },
+    {
+      "team": 1,
+      "command": "build",
+      "type": "palisade-gate",
+      "cost": {
+        "food": 0,
+        "wood": 15
+      },
+      "bank": {
+        "food": 1325,
+        "wood": 735
+      },
+      "tick": 3775
+    },
+    {
+      "team": 0,
+      "command": "researchUpgrade",
+      "type": "siege-engineering",
+      "cost": {
+        "food": 150,
+        "wood": 150
+      },
+      "bank": {
+        "food": 1175,
+        "wood": 585
+      },
+      "tick": 3813
+    },
+    {
+      "team": 1,
+      "command": "researchUpgrade",
+      "type": "siege-engineering",
+      "cost": {
+        "food": 150,
+        "wood": 150
+      },
+      "bank": {
+        "food": 1175,
+        "wood": 585
+      },
+      "tick": 3813
+    },
+    {
+      "team": 0,
+      "command": "researchUpgrade",
+      "type": "mounted-attack",
+      "cost": {
+        "food": 120,
+        "wood": 100
+      },
+      "bank": {
+        "food": 1055,
+        "wood": 485
+      },
+      "tick": 6567
+    },
+    {
+      "team": 1,
+      "command": "researchUpgrade",
+      "type": "mounted-attack",
+      "cost": {
+        "food": 120,
+        "wood": 100
+      },
+      "bank": {
+        "food": 1055,
+        "wood": 485
+      },
+      "tick": 6567
+    },
+    {
+      "team": 0,
+      "command": "trainUnit",
+      "type": "worker",
+      "cost": {
+        "food": 50,
+        "wood": 0
+      },
+      "bank": {
+        "food": 1005,
+        "wood": 485
+      },
+      "tick": 6570
+    },
+    {
+      "team": 1,
+      "command": "trainUnit",
+      "type": "worker",
+      "cost": {
+        "food": 50,
+        "wood": 0
+      },
+      "bank": {
+        "food": 1005,
+        "wood": 485
+      },
+      "tick": 6570
+    },
+    {
+      "team": 0,
+      "command": "trainUnit",
+      "type": "worker",
+      "cost": {
+        "food": 50,
+        "wood": 0
+      },
+      "bank": {
+        "food": 955,
+        "wood": 485
+      },
+      "tick": 6573
+    },
+    {
+      "team": 1,
+      "command": "trainUnit",
+      "type": "worker",
+      "cost": {
+        "food": 50,
+        "wood": 0
+      },
+      "bank": {
+        "food": 955,
+        "wood": 485
+      },
+      "tick": 6573
+    },
+    {
+      "team": 0,
+      "command": "trainUnit",
+      "type": "infantry",
+      "cost": {
+        "food": 50,
+        "wood": 0
+      },
+      "bank": {
+        "food": 905,
+        "wood": 485
+      },
+      "tick": 6576
+    },
+    {
+      "team": 1,
+      "command": "trainUnit",
+      "type": "infantry",
+      "cost": {
+        "food": 50,
+        "wood": 0
+      },
+      "bank": {
+        "food": 905,
+        "wood": 485
+      },
+      "tick": 6576
+    },
+    {
+      "team": 0,
+      "command": "trainUnit",
+      "type": "spearman",
+      "cost": {
+        "food": 60,
+        "wood": 20
+      },
+      "bank": {
+        "food": 845,
+        "wood": 465
+      },
+      "tick": 6579
+    },
+    {
+      "team": 1,
+      "command": "trainUnit",
+      "type": "spearman",
+      "cost": {
+        "food": 60,
+        "wood": 20
+      },
+      "bank": {
+        "food": 845,
+        "wood": 465
+      },
+      "tick": 6579
+    },
+    {
+      "team": 0,
+      "command": "trainUnit",
+      "type": "archer",
+      "cost": {
+        "food": 25,
+        "wood": 45
+      },
+      "bank": {
+        "food": 820,
+        "wood": 420
+      },
+      "tick": 6582
+    },
+    {
+      "team": 1,
+      "command": "trainUnit",
+      "type": "archer",
+      "cost": {
+        "food": 25,
+        "wood": 45
+      },
+      "bank": {
+        "food": 820,
+        "wood": 420
+      },
+      "tick": 6582
+    },
+    {
+      "team": 0,
+      "command": "trainUnit",
+      "type": "scout",
+      "cost": {
+        "food": 40,
+        "wood": 30
+      },
+      "bank": {
+        "food": 780,
+        "wood": 390
+      },
+      "tick": 6585
+    },
+    {
+      "team": 1,
+      "command": "trainUnit",
+      "type": "scout",
+      "cost": {
+        "food": 40,
+        "wood": 30
+      },
+      "bank": {
+        "food": 780,
+        "wood": 390
+      },
+      "tick": 6585
+    },
+    {
+      "team": 0,
+      "command": "trainUnit",
+      "type": "rider",
+      "cost": {
+        "food": 85,
+        "wood": 25
+      },
+      "bank": {
+        "food": 695,
+        "wood": 365
+      },
+      "tick": 6588
+    },
+    {
+      "team": 1,
+      "command": "trainUnit",
+      "type": "rider",
+      "cost": {
+        "food": 85,
+        "wood": 25
+      },
+      "bank": {
+        "food": 695,
+        "wood": 365
+      },
+      "tick": 6588
+    },
+    {
+      "team": 0,
+      "command": "trainUnit",
+      "type": "siege-engine",
+      "cost": {
+        "food": 80,
+        "wood": 160
+      },
+      "bank": {
+        "food": 615,
+        "wood": 205
+      },
+      "tick": 6591
+    },
+    {
+      "team": 1,
+      "command": "trainUnit",
+      "type": "siege-engine",
+      "cost": {
+        "food": 80,
+        "wood": 160
+      },
+      "bank": {
+        "food": 615,
+        "wood": 205
+      },
+      "tick": 6591
+    }
+  ],
+  "restartCargo": 3.9999999999999996,
+  "paidConstruction": true,
+  "paidResearch": true,
+  "paidProductionExits": true,
+  "restoredQueuesResearchCargo": true,
+  "hostReset": true,
+  "visualQA": "not captured",
+  "checkpointSha256": "267e470af03765ed2d6b635591fd992bf5b553b909baf6a48ad624bff30ea656"
+}

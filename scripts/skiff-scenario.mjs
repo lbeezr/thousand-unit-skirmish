@@ -9,6 +9,7 @@ import { waterRaster } from '../src/water-contours.mjs';
 
 const previousDockPin = 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6';
 const previousLandPin = 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b';
+const previousSkiffPin = 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54';
 const map = { id: 'skiff-water-proof', name: 'Skiff water proof', width: 64, height: 64,
   terrainSeed: 19, fogOfWar: false, startingArmySize: 24,
   startingResources: { food: 1000, wood: 1000 },
@@ -76,10 +77,13 @@ try {
   const paid = await fixture.checkpoint(snapshot => docks(snapshot).find(building => building.team === 0).queue === 2);
   assert.deepEqual(paid.state.teamWood, [750, 825]); assert.deepEqual(paid.state.teamFood, [1000, 1000]);
   assert.equal(pop(paid, 0).reserved, 2); assert.equal(pop(paid, 1).reserved, 1);
-  await fixture.stop(); const paidSave = await saved(); await reconnect();
+  // Recover real paid boats/queues from the exact pre-Farm Skiff ruleset.
+  await fixture.stop(); const paidSave = await saved(); paidSave.rulesetRevision = previousSkiffPin;
+  await writeFile(fixture.checkpointPath, JSON.stringify(paidSave)); await reconnect();
   const blocked = await fixture.checkpoint(snapshot => boats(snapshot).length === 2
     && docks(snapshot).find(building => building.team === 0).productionBlocked);
   assertSafe(blocked); assert.equal(docks(blocked).find(building => building.team === 0).queue, 1);
+  assert.equal(blocked.matchId, paidSave.matchId, 'pre-Farm paid Skiff work retains match identity');
   assert.deepEqual(blocked.state.teamWood, paidSave.state.teamWood);
   await fixture.stop(); const blockedSave = await saved(); await reconnect();
   const recovered = await fixture.checkpoint(snapshot => snapshot.state.tickNumber > blockedSave.state.tickNumber);
