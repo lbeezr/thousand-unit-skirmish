@@ -4,10 +4,10 @@ import { frontierBuildingPreviewUrl, frontierBuildingManifestUrl } from '../src/
 
 const families = ['town-center', 'house', 'storehouse', 'stable', 'workshop', 'watchtower'];
 
-test('ordinary match URLs bind Town Center and House without a preview flag', () => {
+test('ordinary match URLs bind all six finished families without a preview flag', () => {
   for (const mode of [undefined, null, '']) {
-    for (const type of ['town-center', 'house']) assert.equal(frontierBuildingManifestUrl(type, mode), frontierBuildingPreviewUrl(type, '1'));
-    for (const type of ['storehouse', 'stable', 'workshop', 'watchtower', 'mill', 'farm', 'dock', 'constructor']) {
+    for (const type of families) assert.equal(frontierBuildingManifestUrl(type, mode), frontierBuildingPreviewUrl(type, '1'));
+    for (const type of ['mill', 'farm', 'dock', 'constructor']) {
       assert.equal(frontierBuildingManifestUrl(type, mode), null);
     }
   }

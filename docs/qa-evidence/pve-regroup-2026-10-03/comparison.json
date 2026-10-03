@@ -1,0 +1,169 @@
+{
+  "engineRevision": "7c6ec842349cab30afde9244c8953fee8ab91599",
+  "baselinePolicySha256": "8c228ca3aed70c24b0d71ea06e4755c3086a69e3c352fdd495f65062c355e7ca",
+  "candidatePolicySha256": "0c35a64a24ec84e1029b6eba4ad27e4371a9ffa7a509b397f62a4b3e05d98680",
+  "policyHashMethod": "SHA256(pve-opponent.mjs text + pve-regroup.mjs text, absent module contributes empty string)",
+  "originalMillrace": {
+    "engineRevision": "20c4fcea1c35ac9920f04ecd6f891d55c31b0f56",
+    "seeds": [
+      20260925,
+      0
+    ],
+    "initialCheckpointSha256": "5d3050f88378a1d24984ad68ec7fd1e05995c0f45187ca4aedc4fd49dcf45ad1",
+    "baselineTraceSha256": "6ee8d901330237b42c03faad8a542ef7cf1d02e2fcb90fd16b583689e56a30bf",
+    "candidateTraceSha256": "986ecbcae4e6e1fcb003f42f7cbbac5946878ed28ac82ab6305d21198a3b0740",
+    "completeReplayEqual": true,
+    "fullTerminalStateReplayEqual": true,
+    "baselineSeconds": 330.5,
+    "candidateSeconds": 614.5,
+    "baselineWinner": 1,
+    "candidateWinner": 1,
+    "firstTenCombatReplacementsDeadBy330_5": {
+      "baseline": 10,
+      "candidate": 7
+    },
+    "totalMilitaryDeathsBy330_5": {
+      "baseline": 18,
+      "candidate": 15
+    },
+    "baselineRecoveryWindow": {
+      "fromSeconds": 30,
+      "toSeconds": 330,
+      "samples": 301,
+      "maxMilitary": 2,
+      "oneSecondSamplesWithAtMostTwo": 301,
+      "oneSecondSamplesWithAtLeastFive": 0,
+      "maximumCaptureProgressSeconds": 0,
+      "objectivesOwned": 0
+    },
+    "candidateRecoveryWindow": {
+      "fromSeconds": 30,
+      "toSeconds": 330,
+      "samples": 301,
+      "maxMilitary": 7,
+      "oneSecondSamplesWithAtMostTwo": 60,
+      "oneSecondSamplesWithAtLeastFive": 133,
+      "maximumCaptureProgressSeconds": 8.399999999999986,
+      "objectivesOwned": 2
+    },
+    "firstPostWipeoutAdvance": {
+      "orderSize": 5,
+      "tick": 5100,
+      "seconds": 170,
+      "id": 25,
+      "generation": 3059705440,
+      "kind": "infantry",
+      "friendlyMilitary": 6,
+      "visibleEnemyMilitary": 0,
+      "objectiveId": "post-1",
+      "requiredUnits": 5,
+      "observableObjectiveCounts": [
+        0,
+        0
+      ],
+      "target": {
+        "x": 0,
+        "z": 18
+      },
+      "birthTick": 1651,
+      "deathTick": 6421,
+      "secondsAliveAfterOrder": 44.03333333333333
+    },
+    "candidateFirstTenReplacements": [
+      {
+        "id": 25,
+        "generation": 3059705440,
+        "team": 0,
+        "kind": "infantry",
+        "birthTick": 1651,
+        "deathTick": 6421,
+        "deadBy330_5": true
+      },
+      {
+        "id": 27,
+        "generation": 3059705440,
+        "team": 0,
+        "kind": "spearman",
+        "birthTick": 2161,
+        "deathTick": 8825,
+        "deadBy330_5": true
+      },
+      {
+        "id": 29,
+        "generation": 3059705440,
+        "team": 0,
+        "kind": "infantry",
+        "birthTick": 2671,
+        "deathTick": 8708,
+        "deadBy330_5": true
+      },
+      {
+        "id": 31,
+        "generation": 3059705440,
+        "team": 0,
+        "kind": "infantry",
+        "birthTick": 3271,
+        "deathTick": 12719,
+        "deadBy330_5": false
+      },
+      {
+        "id": 33,
+        "generation": 3059705440,
+        "team": 0,
+        "kind": "infantry",
+        "birthTick": 5071,
+        "deathTick": 6458,
+        "deadBy330_5": true
+      },
+      {
+        "id": 34,
+        "generation": 3059705440,
+        "team": 0,
+        "kind": "rider",
+        "birthTick": 5820,
+        "deathTick": 6328,
+        "deadBy330_5": true
+      },
+      {
+        "id": 37,
+        "generation": 3059705440,
+        "team": 0,
+        "kind": "spearman",
+        "birthTick": 6421,
+        "deathTick": 9060,
+        "deadBy330_5": true
+      },
+      {
+        "id": 40,
+        "generation": 3059705440,
+        "team": 0,
+        "kind": "rider",
+        "birthTick": 7170,
+        "deathTick": 8629,
+        "deadBy330_5": true
+      },
+      {
+        "id": 44,
+        "generation": 3059705440,
+        "team": 0,
+        "kind": "infantry",
+        "birthTick": 8131,
+        "deathTick": 12703,
+        "deadBy330_5": false
+      },
+      {
+        "id": 46,
+        "generation": 3059705440,
+        "team": 0,
+        "kind": "infantry",
+        "birthTick": 8671,
+        "deathTick": 12777,
+        "deadBy330_5": false
+      }
+    ]
+  },
+  "matrixFile": "matrix.csv",
+  "matrixCases": 32,
+  "completeMatrixMatches": 64,
+  "matrixCsvSha256": "a4418450a970bd1d0e860f92be40bfaed3f1b9c6781af31118fe64fee15da319"
+}
