@@ -27,8 +27,9 @@ Initial positioning and every Worker's first full delivery precede the measured
 supply minus paid cost per resource and seat, after payment, gathering and Stop.
 No bank credit or carried cargo is injected.
 
-Mirror seat 0's X coordinates for seat 1; Z is unchanged. Home center is at
-(-24.5, 0.5). Near-home food/wood are at (-24.5, 5.5)/(-24.5, 9.5), with the added
+Mirror seat 0's X coordinates for seat 1; Z is unchanged. Workers spawn at
+(-24.5, 0.5); the free home center is offset to (-27.5, 0.5) by the existing
+center-placement rule. Near-home food/wood are at (-24.5, 5.5)/(-24.5, 9.5), with the added
 depot at (-20.5, 7.5). Remote food is at (-8.5, 16.5), with the depot at
 (-12.5, 18.5). Remote-food leaves wood at (-24.5, 5.5); remote-mixed moves wood
 to (-8.5, 20.5). Footprints and node clearance are checked against the registry.
@@ -131,6 +132,15 @@ uses its recorded clean revision. A paid output-enabled smoke and focused source
 drift/output tests verify the fix. CI includes the bounded smoke and helper tests,
 not the full matrix. Independent review checked the method, currency accounting,
 art contract and CI entry; both source-provenance findings were addressed.
+
+After integrating main `e381d50`, the [paid smoke record](qa-evidence/mill-depot-economy-2026-10-03/integrated-smoke.json)
+passed on clean `b550c690650f1959165d95175baf51eb4dc89045`. The new Dock changes
+the registry revision to `v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6`;
+the three compared depots retain the measured definitions. All 25 focused
+analysis/provenance, Mill, menu, retained-cargo and settlement checks passed.
+The open-field settlement still covers every ordinary land building; Dock's
+special placement is explicitly covered by the separate both-seat shoreline
+fixture. This change adds no roster member or gameplay tuning.
 
 The [Mill identity brief](frontier-mill-art-brief.md) supplies its actual land
 placement, 3 × 3 footprint and food-only role for an owned-source art slice.
