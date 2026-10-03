@@ -34,7 +34,7 @@ Run the CPU checks from the repository root:
 node --test scripts/building-sprites.test.mjs scripts/building-occlusion-fixture.test.mjs
 ```
 
-The 16 checks cover lifecycle/depth contracts, actual admission, 129 renderer
+The 17 checks cover lifecycle/depth contracts, actual admission, 129 renderer
 items, scene planning, quantiles, query cleanup/disjoint handling, conservative
 GPU attribution, failed-start recovery, all served hashes/MIME types and
 byte-preserving evidence extraction. They do not execute WebGL or decode the
@@ -55,7 +55,7 @@ only body-depth visibility changes.
 | 128 buildings + 512 Workers, each zoom | Same measurements; strategic view must submit all 128 body passes |
 | Renderer-only 129 buildings | Actual body submissions must equal 129; this bypasses server admission only in the QA scene |
 | Opaque roof behind/front, transparent margin, low-alpha edge | 24 paired GPU pixel probes at heights 0/2.4 and three camera directions |
-| Four buildings and eight Workers on flat/raised ground | Four paired PNG views: normal, strategic, opposite azimuth, steeper |
+| Four buildings and eight Workers on flat/raised ground (0/1.6 world units, valid levels 0/2) | Four paired PNG views: normal, strategic, opposite azimuth, steeper |
 | Body and transparent-margin picking | Eight real Three raycasts per view must hit existing color sprites, with identical hit lists in both modes |
 | Hidden/revealed building group | Both color and depth submissions disappear together and return together |
 
@@ -65,6 +65,14 @@ images for soft edges, shadows and ground contact. The rectangular color-sprite
 picking behavior is deliberately preserved; this is not an alpha-aware selection
 change or an authoritative gameplay-selection test. Group hiding exercises the
 fog visibility contract without rendering a fog overlay.
+
+The Mac run exposed an invalid level-3 detail patch after the timing blocks.
+The detail scene now uses the actual maximum level 2 (1.6 world units); a CPU
+regression executes its source definition through the real terrain/elevation
+boundary and samples every building anchor. Independent pixel probes still use
+0/2.4 world-unit transforms as a shader stress test, without authoring an invalid
+map patch. Preserve the earlier incomplete receipt; its completed timing blocks
+do not establish the later picking/fog/detail checks.
 
 The stress scene uses a simple untextured terrain mesh. It omits simulation,
 HUD, resources, production cues, production LOD and the rest of a match. Both

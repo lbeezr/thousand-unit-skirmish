@@ -7,10 +7,25 @@ import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
 import { buildingSpriteUrl } from '../src/building-sprites.mjs';
+import { terrainHeightField } from '../src/terrain-height.mjs';
 import { crowdedBuildingSpecs, detailBuildingSpecs, summarizeSamples } from './building-occlusion-fixture.mjs';
 import { createGpuSampler, readGpuIdentity } from './building-occlusion-metrics.mjs';
 import { createBuildingOcclusionReviewServer } from './serve-building-occlusion-review.mjs';
 import { extractBuildingOcclusionEvidence } from './extract-building-occlusion-evidence.mjs';
+
+test('actual detail-scene definition passes the real elevation boundary and grounds every building', async () => {
+  const source = await readFile(new URL('./building-occlusion-review.mjs', import.meta.url), 'utf8');
+  const declaration = source.match(/const definition = \{ width: detailed[\s\S]*?;\n/)[0];
+  const context = vm.createContext({ detailed: true });
+  vm.runInContext(declaration + 'globalThis.definition = definition;', context);
+  const field = terrainHeightField(context.definition);
+  for (const [index, spec] of detailBuildingSpecs().entries()) {
+    assert.ok(Math.abs(field.sample(spec.x, spec.z) - (index % 2 ? 1.6 : 0)) < 1e-6);
+  }
+  assert.equal(field.levels.some(level => level > 2), false);
+  const flat = vm.runInNewContext(declaration + 'definition', { detailed: false });
+  assert.equal(terrainHeightField(flat).raised, false);
+});
 
 test('crowded fixture covers all 20 unchanged frames, unique pads and the renderer-only 129th building', () => {
   for (const count of [32, 128, 129]) {
