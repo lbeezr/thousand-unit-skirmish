@@ -205,7 +205,17 @@ function loadRolePack(THREE, loader, role, version) {
     const frameById = new Map(asset.frames.map((frame) => [frame.id, frame]));
     const clipByKey = new Map(asset.clips.map((clip) => [`${clip.stateId}|${clip.directionId}`, clip]));
     const durationByState = new Map();
-    for (const clip of asset.clips) durationByState.set(clip.stateId, Math.max(durationByState.get(clip.stateId) || 0, spriteClipDuration(clip)));
+    const authoredDurationByState = new Map();
+    for (const clip of asset.clips) {
+      const duration = spriteClipDuration(clip);
+      durationByState.set(clip.stateId, Math.max(durationByState.get(clip.stateId) || 0, duration));
+      // Idle placeholders for missing headings must not prolong an authored
+      // attack/death. A looping attack would otherwise replay its opening keys.
+      if (clip.sequence.some(({ frameId }) => !frameId.startsWith('idle-'))) {
+        authoredDurationByState.set(clip.stateId, Math.max(authoredDurationByState.get(clip.stateId) || 0, duration));
+      }
+    }
+    for (const [state, duration] of authoredDurationByState) durationByState.set(state, duration);
     const layerId = asset.layers?.find((layer) => layer.drawLayer === 'actor')?.id || 'actor';
     const maxAlphaHeight = Math.max(1, ...asset.frames.map((frame) => frame.alphaBoundsPx?.height || frame.canvasPx.height));
     return {
