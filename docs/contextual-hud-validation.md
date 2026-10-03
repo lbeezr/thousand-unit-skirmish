@@ -186,6 +186,10 @@ acceptance for these items remains pending; use 1280 × 720 and 620 × 640.
   Enlarge/shrink it with Worker, mixed army and Barracks selected at 1280, 800
   and 621px wide: the command bar must stay beside the map. At 620 and 360px,
   the map stays above the scrollable bar. Check short 800 × 420 too.
+- Edge scroll: with it enabled, hover 60px from each canvas edge; movement starts
+  inside the new 80px band and stops at 80px. Check after resize and at Retina
+  scale; editable focus, dialogs, drag selection and build placement still block
+  it. Saved speed and disabled settings remain effective.
 - Training: use the exact 60-food fixture above. Enter on Train Spearman keeps
   focus on the newly unavailable choice; Enter, Space and pointer activation
   send no additional request. Tab away/back and verify VoiceOver label, reason
