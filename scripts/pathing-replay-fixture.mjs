@@ -39,6 +39,7 @@ export const replay = {
     if (command.type === 'move') assignFormationMove(player, command);
     else if (command.type === 'build') buildBuilding(player, command);
     else if (command.type === 'buildWall') buildWallLine(player, command);
+    else if (command.type === 'setGateOpen') setGateOpen(player, command);
     else if (command.type === 'cancelConstruction') cancelConstruction(player, command);
     else throw new Error('Unsupported replay command: ' + command.type);
     return notices;
