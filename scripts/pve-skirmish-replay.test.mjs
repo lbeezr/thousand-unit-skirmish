@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { createPveHeadlessFixture } from './pve-headless-fixture.mjs';
+import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
 
 const identity = { matchModeId: 'skirmish', matchModeVersion: 1 };
@@ -80,7 +80,7 @@ async function assault(team, initial = null, configured = true) {
         if (!current) { destroyedAt = view.tick; break; }
         if (configured && damagedAt !== null && restartedAt === null) {
           r.drain(); const before = r.observe(team), checkpoint = r.checkpoint(); r.restore(checkpoint);
-          assert.deepEqual(r.observe(team), before, 'restart preserves authoritative sight, banks, paths and damage');
+          assertRecoveredWorkerObservation(r.observe(team), before, 'restart preserves authoritative sight, banks, paths and damage');
           policy = createDeterministicPolicy(20260925, identity); shadow = createDeterministicPolicy(20260925, identity);
           restartedAt = view.tick; trace.push({ tick: view.tick, restart: true });
         }

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
-import { createPveHeadlessFixture } from './pve-headless-fixture.mjs';
+import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
 import { createHomeDefensePolicy, PVE_HOME_DEFENSE_LIMITS } from '../src/pve-home-defense.mjs';
 
 process.env.RTS_MAP = 'maps/open-field.json';
@@ -78,7 +78,7 @@ async function raidReplay(team, seed, targetType, initialCheckpoint) {
           ? 'responding' : defeatedAt !== null && !restarts.some(event => event.stage === 'regrouping') && observation.tick >= defeatedAt + 30 ? 'regrouping' : null;
         if (restart) {
           r.drain(); const snapshot = r.checkpoint(), before = r.observe(team); r.restore(snapshot);
-          assert.deepEqual(r.observe(team), before, 'checkpoint preserves real raid, orders, casualties, cargo, bank and fog');
+          assertRecoveredWorkerObservation(r.observe(team), before, 'checkpoint preserves real raid, orders, casualties, cargo, bank and fog');
           policy = createDeterministicPolicy(seed); shadow = createDeterministicPolicy(seed);
           restarts.push({ tick: observation.tick, stage: restart }); trace.push({ tick: observation.tick, restart });
         }

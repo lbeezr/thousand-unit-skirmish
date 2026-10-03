@@ -108,7 +108,7 @@ test('snapshot work heading comes from actual gathering target and preserves fog
   const worker = {...villager(), id:0, team:0, x:0, z:0, cargo:0, generation:1,
     gatherPhase:'gathering', gatherForestCell:-1, gatherNodeId:'berries', attackTargetId:-1};
   const node = {id:'berries',type:'food',x:-1,z:1};
-  const context = vm.createContext({ units:[worker], mapDefinition:{fogOfWar:true,resourceNodes:[node]},
+  const context = vm.createContext({ workerPerformingAction: () => null, units:[worker], mapDefinition:{fogOfWar:true,resourceNodes:[node]},
     resourceNodeStates:new Map([['berries',node]]),buildingsById:new Map(),farmHarvestNode,farmBuildingId,headingToTarget,workerFishingPresentation,
     workerTaskStatus:()=> 'gathering', cellToWorld:()=>({x:1,z:-1}), cellVisibleToTeam:()=>true,
     worldToCell:()=>0, tickNumber:10, STATE_EVERY_TICKS:3 });

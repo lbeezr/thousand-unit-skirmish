@@ -1,4 +1,5 @@
-// Dated current-wire probe, not a producer or an animation heuristic.
+// Dated legacy-wire probe, not a producer or an animation heuristic.
+// New activity is excluded so the recorded pre-receipt ambiguity stays reproducible.
 // Run before agreeing the explicit per-Worker performingAction contract.
 import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -28,7 +29,7 @@ function fixture() {
   const node = { id: 'berries', x: 0, z: 0, type: 'food', stock: 10 };
   const near = { id: 1, type: 'house', x: 0, z: 0, hp: 100, complete: false, progress: 0 };
   const far = { ...near, id: 2, x: 20 };
-  const context = vm.createContext({ units: [unit], mapDefinition: { fogOfWar: false },
+  const context = vm.createContext({ workerPerformingAction: () => null, workerPerformingActions: { record() {} }, units: [unit], mapDefinition: { fogOfWar: false },
     BUILDING_DEFINITIONS, BUILDER_INTERACTION_RANGE: 1.4, WORKER_INTERACTION_RANGE: 1.4,
     WORKER_CARRY_CAPACITY: 10, GATHER_RATE: 2, STEP_SECONDS: 1 / 30,
     tickNumber: 3, STATE_EVERY_TICKS: 3, teamWood: [100, 100], dirty: false,
@@ -104,7 +105,7 @@ function indistinguishableBuilds(swap) {
   const f = fixture(), second = worker(1); f.context.units.push(second);
   f.unit.buildingTargetId = swap ? 2 : 1; second.buildingTargetId = swap ? 1 : 2;
   f.construction();
-  return { rows: Array.from(f.context.snapshotUnits(null), row => Array.from(row)),
+  return { rows: Array.from(f.context.snapshotUnits(null), row => Array.from(row).slice(0, 17)),
     progress: [f.near.progress, f.far.progress], performer: swap ? 1 : 0 };
 }
 const first = indistinguishableBuilds(false), swapped = indistinguishableBuilds(true);
