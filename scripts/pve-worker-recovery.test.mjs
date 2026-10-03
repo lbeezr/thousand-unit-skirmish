@@ -4,6 +4,7 @@ import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opp
 import { createPveHeadlessFixture } from './pve-headless-fixture.mjs';
 import { createProductionPolicy, PVE_PRODUCTION_LIMITS as limits } from '../src/pve-production.mjs';
 import { productionAction } from '../src/production-actions.mjs';
+import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
 process.env.RTS_MAP = 'maps/open-field.json';
 process.env.RTS_GAME_MODE = 'pvp';
@@ -20,14 +21,20 @@ async function runLossRecovery(team, seed) {
     triggers: [], scenarioEvents: [] };
   const fixture = await createPveHeadlessFixture(map), r = fixture.replay;
   try {
-    // A validated casualty checkpoint: all four Workers lost; six of the eight
-    // surviving military are Riders. Fourteen population leaves one free slot.
+    // A validated casualty checkpoint: all four Workers lost; both bounded
+    // Riders and Siege Engines survive with four Infantry, using 14 population.
     const loss = r.checkpoint();
-    let riders = 0;
+    const militaryKinds = ['rider', 'rider', 'siege-engine', 'siege-engine', 'infantry', 'infantry', 'infantry', 'infantry'];
+    let militaryIndex = 0;
     for (const unit of loss.state.units.filter(unit => unit.team === team)) {
       if (unit.kind === 'worker') unit.hp = 0;
-      else if (riders++ < 6) { unit.kind = 'rider'; unit.hp = 130; }
+      else {
+        unit.kind = militaryKinds[militaryIndex++];
+        unit.hp = UNIT_DEFINITIONS[unit.kind].combat.maxHp;
+      }
     }
+    loss.state.teamUpgrades[team].militaryTier2 = true;
+    loss.state.teamUpgrades[team].siegeEngineering = true;
     r.restore(loss);
     const first = toOpponentObservation(r.observe(team), team, map);
     assert.deepEqual(first.population, { used: 14, reserved: 0, capacity: 15, available: 1 });

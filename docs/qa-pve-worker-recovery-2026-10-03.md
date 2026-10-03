@@ -19,8 +19,9 @@ combat and gathering policies retain their existing rules.
 
 [`pve-worker-recovery.test.mjs`](../scripts/pve-worker-recovery.test.mjs) starts a
 fogged 80 × 64 fixture with the ordinary 24-unit opening and 100 food / zero wood.
-A validated checkpoint models the loss of all four Workers with six Riders and
-two Infantry surviving on the tested seat: 14 used population out of 15.
+A validated checkpoint models the loss of all four Workers with two Riders,
+two unlocked Siege Engines and four Infantry surviving on the tested seat:
+14 used population out of 15, within the policy's current composition limits.
 The Town Center's authoritative production option explicitly permits a Worker.
 The enemy opening remains hidden. The other seat does not issue orders.
 
@@ -39,6 +40,12 @@ food, reserves the final population slot and spawns a real Worker after 750 tick
 The policy assigns it to the observed wood node; real movement, gathering,
 cargo return and deposit replenish the bank. A validated checkpoint round trip
 preserves the recovered Worker, resource balances, fog and population.
+
+The original loss fixture used six Riders and two Infantry with the same
+population. Review also checked the current-policy composition above: all six
+seat/seed cases failed against the baseline production module and passed on the
+fix with identical queue, spawn and deposit ticks. That composition is now the
+permanent regression.
 
 The test-only headless adapter replaces timers, socket listening and deferred
 planning scheduling in a temporary server copy. Command, observation,
@@ -62,6 +69,12 @@ duplicate observations, rejected-order backoff, queued/full population, the
 1,000 population ceiling, busy/blocked/destroyed/unfinished/foreign producers,
 the four-Worker target, roster limit, visible siege demand and ordinary House
 expansion. The new regression is registered in the full repository suite.
+
+All three local `npm test -- --shard=N/3` runs passed at `b886728` (726 registered
+checks, including release integration). That build includes queued-wall main
+`cec4c89`; later main integration and the fixture refinement receive the focused
+checks above. The earlier unsharded invocation was interrupted to integrate main
+and run the documented shards; it is not counted as a full pass.
 
 This is a deterministic local gameplay improvement after a checkpoint-injected
 loss. It does not establish adversarial survival, human enjoyment, browser
