@@ -81,5 +81,11 @@
       "file": "scripts/render-shore-bank-study.py",
       "sha256": "6cadbc667e1d816dd5732c875e89c2f9e6d07e6afda4af4d4620bcf4ff164492"
     }
-  ]
+  ],
+  "studySourceCommit": "8e4d20fd8cf128fd5ddea39e60e97c30512b192a",
+  "runtimeFollowup": {
+    "change": "forceSinglePass avoids redundant transparent back-face draw in WebGL; original exported geometry/material colors and study hashes preserved",
+    "file": "src/shore-bank-shade.mjs",
+    "sha256": "c2e75b50205ab63219d959abf023b6f0fdb8de3795c38cc0ae6280d1c99dfd08"
+  }
 }

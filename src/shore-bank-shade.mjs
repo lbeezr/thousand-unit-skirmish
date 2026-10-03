@@ -62,6 +62,7 @@ export function createShoreBankShade(definition) {
   const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
     color: 0x27362d, vertexColors: true, opacity: SHORE_BANK_OPACITY,
     transparent: true, depthWrite: false, side: THREE.DoubleSide,
+    forceSinglePass: true, // Flat strips need no separate transparent back-face draw.
     toneMapped: false, fog: true,
   }));
   mesh.raycast = () => {};

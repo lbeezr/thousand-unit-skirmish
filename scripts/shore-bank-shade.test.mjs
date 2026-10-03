@@ -28,6 +28,7 @@ test('one static, non-picking transparent batch feathers on the land side', () =
   assert.equal(shade.material.fog, true);
   assert.equal(shade.material.depthWrite, false);
   assert.equal(shade.material.transparent, true);
+  assert.equal(shade.material.forceSinglePass, true, 'flat double-sided decoration uses one Three draw pass');
   assert.equal(shade.material.opacity, SHORE_BANK_OPACITY);
   assert.equal(shade.onBeforeRender, THREE.Object3D.prototype.onBeforeRender);
   const hits = []; shade.raycast(new THREE.Raycaster(), hits); assert.deepEqual(hits, []);

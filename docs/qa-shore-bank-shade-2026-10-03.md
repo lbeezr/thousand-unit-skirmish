@@ -18,7 +18,9 @@ Opaque water hides the inside portion. This is a painted value cue, not a
 simulation of sunlight, bank height, bottom geometry or cast shadows.
 
 Each map adds at most one static MeshBasic batch, no textures and no per-frame
-callback. It does not raycast or read resources, stock, visibility or ownership.
+callback. `forceSinglePass` avoids Three r180's default second draw for transparent
+double-sided materials; this flat strip needs only one pass. It does not raycast
+or read resources, stock, visibility or ownership.
 Normal map teardown owns its geometry/material. Dry islands receive shade toward
 their dry interiors; map boundaries create no imaginary shore. Raised banks are
 omitted rather than bridged across a wall. No authored map, obstacle, route,
@@ -76,6 +78,11 @@ preserve all four original/candidate rasters, exact mesh/material input, camera,
 map/source hashes and settings. The full evidence set is about 2.45 MB. Existing
 art is referenced, not copied into a new source pack; no image generation provider,
 paid job, private fish artwork or new sprite was used.
+
+Study source hashes identify input commit `8e4d20f`. The later single-pass flag
+reduces the WebGL draw count without changing exported geometry/material colors;
+its separate hash is retained in the comparison record rather than rewriting
+the original study input hashes. It adds no new visual iteration.
 
 Reproduce into a **new** output directory:
 
