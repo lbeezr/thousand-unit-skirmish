@@ -165,6 +165,24 @@ test('reissuing group fishing from distinct Dock berths lets the nearer outbound
   assert.deepEqual(f.world.units[2], before[2]);
 });
 
+test('full holds still need distinct reachable fish approaches when an unselected hull occupies one', () => {
+  const f = fixture(31, true), selected = f.units.slice(0, 2), node = f.world.nodes.get('fish-0');
+  selected.forEach((unit, index) => Object.assign(unit, f.water.graph.pointAt(index ? 2772 : 2835), { cargo: 10, cargoType: 'food' }));
+  Object.assign(f.units[2], f.water.graph.pointAt(2776)); node.stock -= 20;
+  assert.equal(f.fishing.siteAt(node.id).cells.length, 2);
+  assert.deepEqual(selected.map(unit => f.fishing.fishRoute(unit, node, f.units).cells.at(-1)), [2775, 2775]);
+  const before = structuredClone(f.world);
+  assert.equal(planSkiffGroupFishing(f.fishing, selected, node, f.buildings, f.units).status, 'need-distinct-fish-and-owned-dock-routes');
+  assert.deepEqual(f.world, before); f.safe();
+  Object.assign(f.units[2], f.water.graph.pointAt(2771));
+  const idle = structuredClone(f.units[2]);
+  f.apply(planSkiffGroupFishing(f.fishing, selected, node, f.buildings, f.units), true);
+  f.world.units = structuredClone(f.units);
+  for (let i = 0; i < 4000; i++) { f.tick(); f.safe(); }
+  assert.equal(f.world.teamFood[0], 1031); assert.equal(f.world.nodes.get('fish-0').stock, 0);
+  assert.deepEqual(f.world.units[2], idle);
+});
+
 test('group Return cargo reaches distinct owned berth cells, deposits each fractional load once and leaves unselected orders intact', () => {
   const f = fixture(), selected = [f.units[0], f.units[1]], before = structuredClone(f.units[2]);
   selected.forEach((unit, index) => { unit.cargo = index ? 4.25 : .005; unit.cargoType = 'food'; f.world.nodes.get('fish-0').stock -= unit.cargo; });

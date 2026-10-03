@@ -56,7 +56,18 @@ export function planSkiffGroupFishing(fishing, selected, node, buildings, units)
     const delivery = fishing.deliveryRoute(unit, buildings, units, options);
     if (!fish || !delivery) return { status: 'need-distinct-fish-and-owned-dock-routes', assignments: [] };
     const phase = unit.cargo >= UNIT_DEFINITIONS.skiff.fishing.carryCapacity ? 'to-base' : 'to-node';
-    candidates.push({ unit, phase, route: phase === 'to-base' ? delivery : fish });
+    candidates.push({ unit, phase, fish, route: phase === 'to-base' ? delivery : fish });
+  }
+  // Full holds head to the Dock first, but still need one distinct reachable
+  // source approach each. Keep this admission separate from immediate routes.
+  if (candidates.some(candidate => candidate.phase === 'to-base')) {
+    const sourceOptions = { ...optionsFor(selected), budget: options.budget };
+    const bySource = [...candidates].sort((a, b) => a.fish.cells.length - b.fish.cells.length || a.unit.id - b.unit.id);
+    for (const [index, candidate] of bySource.entries()) {
+      const fish = index === 0 ? candidate.fish : fishing.fishRoute(candidate.unit, node, units, sourceOptions);
+      if (!fish) return { status: 'need-distinct-fish-and-owned-dock-routes', assignments: [] };
+      sourceOptions.reservedGoalCells.add(fish.cells.at(-1));
+    }
   }
   candidates.sort((a, b) => a.route.cells.length - b.route.cells.length || a.unit.id - b.unit.id);
   for (const [index, candidate] of candidates.entries()) {
