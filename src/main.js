@@ -7626,7 +7626,10 @@ function issueContextOrder(clientX, clientY, queueWaypoint = false) {
   if (selectedWaterUnits()) {
     const rect = renderer.domElement.getBoundingClientRect();
     const node = pickResourceNodeAt(clientX - rect.left, clientY - rect.top);
-    if (node && isShoreFish(node)) { issueGather(node); return; }
+    if (node && isShoreFish(node)) {
+      if (queueWaypoint) { showToast('QUEUED FISHING IS UNAVAILABLE · SELECT ONE SKIFF'); return; }
+      issueGather(node); return;
+    }
     const point = worldAt(clientX, clientY);
     if (point) issueMove(point, queueWaypoint, true);
     return;

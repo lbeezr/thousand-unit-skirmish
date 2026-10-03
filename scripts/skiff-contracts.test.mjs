@@ -96,12 +96,12 @@ for (const team of [0, 1]) test(`Dock/Skiff command controls state their usable 
 });
 
 test('Skiff right-click admits a shore fish source, otherwise water Move, without combat/follow picking', () => {
-  const calls = [];
+  const calls = [], toasts = [];
   let fish = null;
   const context = vm.createContext({ selectedBuildingId: null, selectedWaterUnits: () => true,
     persistentTargetMode: 'follow', worldAt: () => ({ x: 4.5, z: 6.5 }),
     issueMove: (...args) => calls.push(args),
-    issueGather: node => calls.push(node), pickResourceNodeAt: () => fish,
+    issueGather: node => calls.push(node), pickResourceNodeAt: () => fish, showToast: message => toasts.push(message),
     isShoreFish: node => node?.resourceVariant === 'shore-fish',
     renderer: { domElement: { getBoundingClientRect: () => ({ left: 0, top: 0 }) } },
   });
@@ -110,6 +110,17 @@ test('Skiff right-click admits a shore fish source, otherwise water Move, withou
   assert.deepEqual(calls, [[{ x: 4.5, z: 6.5 }, false, true]]);
   fish = { id: 'fish', resourceVariant: 'shore-fish' }; context.issueContextOrder(10, 20);
   assert.equal(calls.at(-1), fish);
+  context.issueContextOrder(10, 20, true); assert.equal(calls.length, 2);
+  assert.match(toasts.at(-1), /QUEUED FISHING IS UNAVAILABLE/);
+});
+
+test('queued Skiff fishing preserves the actual server order and cargo before route planning', () => {
+  const unit = { id: 0, kind: 'skiff', movementDomain: 'water', cargo: 3, path: [14, 15], gatherNodeId: 'fish', gatherPhase: 'to-base' };
+  const before = structuredClone(unit), notices = [];
+  const context = vm.createContext({ sendOrderNotice: (_, __, message) => notices.push(message) });
+  vm.runInContext(extract(server, 'assignSkiffGather', 'assignGather'), context);
+  context.assignSkiffGather({ team: 0 }, { queue: true, nodeId: 'fish', ids: [0] }, [unit]);
+  assert.match(notices.at(-1), /QUEUED FISHING IS UNAVAILABLE/); assert.deepEqual(unit, before);
 });
 
 test('actual transform uses a procedural water placeholder and clears it when the slot becomes land', () => {

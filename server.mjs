@@ -4153,6 +4153,7 @@ function assignReturnCargo(player, command) {
 }
 
 function assignSkiffGather(player, command, selectedUnits) {
+  if (command.queue) { sendOrderNotice(player, command, 'FISHING REJECTED · QUEUED FISHING IS UNAVAILABLE'); return; }
   if (selectedUnits.length !== 1 || selectedUnits[0].kind !== 'skiff' || !unitHasCapability(selectedUnits[0], 'gather')) {
     sendOrderNotice(player, command, 'FISHING REJECTED · SELECT ONE SKIFF'); return;
   }

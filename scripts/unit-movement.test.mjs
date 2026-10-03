@@ -45,7 +45,7 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
     spatialBucketRow:z=>Math.max(0,Math.min(bucketColumns-1,Math.floor((z+half)/bucketSize))),
     elevationLevelByCell:levels,canTraverseUnitStep,SEPARATION_DIAGNOSTICS_ENABLED:false,
     tickNumber:1,dirty:false,worldToCell:cell,cellToWorld:point,isWalkable:walkable,
-    resourceNodeStates:new Map([['berries',{x,z:-1,hp:1}]]),buildingsById:new Map(),
+    harvestNodeById:id=>context.resourceNodeStates.get(id), resourceNodeStates:new Map([['berries',{x,z:-1,hp:1}]]),buildingsById:new Map(),
     enqueueRouteRepairs:list=>repairs.push(...list),spreadInteractingUnits(){},advanceQueuedWaypoints(){}});
   vm.runInContext(server.slice(server.indexOf('function getMoveVector('),server.indexOf('// Units stop following paths')),context);
   const movement=server.slice(server.indexOf('  const blockedRouteRepairs = [];'),

@@ -76,10 +76,17 @@ try {
     await command(team, { type: 'gather', ids: [boatIds[team], workers[team][0]], nodeId: `fish-${team}` }, /SELECT ONE SKIFF/);
     await command(team, { type: 'gather', ids: [boatIds[team]], nodeId: `fish-${1 - team}` }, /NEED REACHABLE WATER FISH AND AN OWNED DOCK/);
     await command(team, { type: 'gather', ids: [boatIds[team]], forestCell: 0 }, /SELECT A SHORE FISH SOURCE/);
+    await command(team, { type: 'gather', ids: [boatIds[team]], nodeId: `fish-${team}`, queue: true }, /QUEUED FISHING IS UNAVAILABLE/);
     await command(team, { type: 'returnCargo', ids: [boatIds[team]] }, /NEED FOOD CARGO AND A REACHABLE OWNED DOCK/);
     await command(team, { type: 'gather', ids: [boatIds[team]], nodeId: `fish-${team}` }, /FISHING ORDER/);
   }
+  await fixture.stop(); const outbound = await saved(); safe(outbound);
+  assert.ok(boatIds.every(id => outbound.state.units[id].gatherPhase === 'to-node' && outbound.state.units[id].path.length > 0));
+  await reconnect();
   await fixture.checkpoint(snapshot => boatIds.every(id => snapshot.state.units[id].cargo >= .1));
+  await fixture.stop(); const harvesting = await saved(); safe(harvesting);
+  assert.ok(boatIds.every(id => harvesting.state.units[id].gatherPhase === 'gathering'));
+  await reconnect();
   for (const team of [0, 1]) await command(team, { type: 'stop', ids: [boatIds[team]] }, /STOP ORDER/);
   await fixture.stop(); const stopped = await saved(); safe(stopped);
   assert.deepEqual(stopped.state.teamFood, [1000, 1000]);
@@ -123,7 +130,7 @@ try {
     ['old revision claiming fishing intent', returning, snapshot => { snapshot.rulesetRevision = previousMovementPin; }],
   ]) { const invalid = structuredClone(source); mutate(invalid); await rejectSaved(invalid, reason); }
   console.log(JSON.stringify({ scenario: 'Both-seat finite Skiff fishing', movementOnlyQueueAndBoatMigration: true,
-    ownedSingleBoatAdmission: true, stopAndFractionalReturnRecovery: true, automaticReturnAndResumeRecovery: true,
+    ownedSingleBoatAdmission: true, outboundAndHarvestingRecovery: true, stopAndFractionalReturnRecovery: true, automaticReturnAndResumeRecovery: true,
     sharedWorkerBoatStockConserved: true, finalFood: [1031, 1031], finalWood: [825, 825],
     depletedRestartWithoutRegrowth: true, invalidCheckpointsPreserved: true,
     boundaries: 'one boat per order; provisional 10 food / 1 food per second; owned Dock only; existing food ledger; placeholder art; no passengers, weapons or queued fishing' }));
