@@ -93,7 +93,11 @@ its land, stock and fog contracts. A subsequent full private sequence confirmed
 that order and a visually steady planted boot, but max reach stopped short of
 actual water. The later source correction adds a measured reach-only rope/rim
 contact and smaller bank/water feedback without altering approved actor pixels.
-Its GPU appearance and final smooth-loop/root acceptance remain open.
+Subsequent complete native-game capture verified that cue's visible water contact,
+bank-side collection and smaller marker readability without changing actor bytes.
+Final smooth-loop/directional and deployed-browser acceptance remain open. A later
+private east study retains two rejected direction attempts and an exact-camera
+guided prototype; its new heading/contact still needs game pixel inspection.
 The private handoff preserves capture attempts and Library
 identities; the linked public record describes calibration pitfalls. Actor-art
 regeneration was unnecessary for the marker correction. The later authorized
@@ -149,8 +153,8 @@ links all eight Frontier concepts to the six completed model records and 48
 directional captures, distinguishes older default art, and records precise
 lifecycle and cloud-source gaps. The Town Center's existing Complete captures
 now have a bounded release preview path. The subsequent
-[finished-building runtime](../frontier-building-runtime.md) adopts saved Town
-Center and House Complete art in normal matches, with explicit missing-state
+[finished-building runtime](../frontier-building-runtime.md) adopts all six saved
+Complete families in normal matches, with explicit missing-state
 fallback. Its [source receipt](../qa-evidence/default-frontier-buildings-2026-10-03/source-images.json)
 preserves hashes/decoded alpha bounds for all 48 existing frames; original
 source records remain intact. Deployed normal-match screenshots remain pending.

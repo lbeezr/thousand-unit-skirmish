@@ -3,12 +3,13 @@
 [Asset guide](assets.md) · [Renderer contract](renderer-state-contract.md) ·
 [Preserved source history](lore/art-evolution.md)
 
-The existing finished **Town Center and House** captures are now selected in
-ordinary matches without a preview URL flag. Both starting and paid Town Centers
-use the same finished civic-hall design. The House's eight existing PNGs and
-manifest join the already packaged Town Center; no model or new binary is added.
-Storehouse, Stable, Workshop and Watchtower are the next default bindings in
-this integration task, using their existing eight-view families.
+The existing finished **Town Center, House, Storehouse, Stable, Workshop and
+Watchtower** captures are selected in ordinary matches without a preview URL
+flag. Both starting and paid Town Centers use the same finished civic-hall
+design. All six manifests and 48 original PNGs enter the release; no model,
+new artwork or new binary is added. Town Center/House integrated first in
+[PR #136](https://github.com/lbeezr/thousand-unit-skirmish/pull/136); the four
+support families use the same loader and source-preservation contract.
 
 ## Existing art, truthful state fallback
 
@@ -21,6 +22,10 @@ Complete sprite is hidden immediately and only that state uses fallback:
 | --- | --- | --- |
 | Town Center | `frontier-civilization-scale-pilot-v1/town-center-complete-renderer.json` | Existing five-state captured Town Center; procedural geometry while a fallback frame is unavailable |
 | House | `frontier-civilization-scale-pilot-v1/house-complete-renderer.json` | Existing construction/procedural House |
+| Storehouse | `frontier-civilization-models-v1/storehouse-complete-renderer.json` | Existing construction/procedural House role |
+| Stable | `frontier-civilization-models-v1/stable-complete-renderer.json` | Existing procedural Barracks role, with unfinished roof/details hidden |
+| Workshop | `frontier-civilization-models-v1/workshop-complete-renderer.json` | Existing procedural Range role, with unfinished roof/details hidden |
+| Watchtower | `frontier-civilization-models-v1/watchtower-complete-renderer.json` | Existing procedural Watchtower role |
 
 Repair to healthy Complete restores the preserved finished art. A pending,
 failed or superseded image cannot leave a finished sprite over an unavailable
@@ -32,9 +37,10 @@ finished family from normal use.
 All 48 existing source PNGs across the six families were independently hashed
 against the consuming fork's manifests and decoded as unclipped 1024-square
 RGBA. The [source receipt](qa-evidence/default-frontier-buildings-2026-10-03/source-images.json)
-records exact paths, bytes, SHA-256 and alpha bounds. Town Center/House view 01
-pixels were inspected again for this integration. They retain their civic-hall
-and small-house designs; source PNGs, registered capture records and manifests
+records exact paths, bytes, SHA-256 and alpha bounds. View 01 pixels of all six
+families were inspected again for this integration. They retain the civic hall,
+small house, low warehouse, stable courtyard, workshop and roofed watchtower;
+source PNGs, registered capture records and manifests
 are unchanged. Original ignored GLBs are unnecessary for using these sprites
 and are not added to public runtime packaging.
 
@@ -45,7 +51,7 @@ The recorded camera remains orthographic at 46° elevation, eight 45° azimuths,
 retains the measured 4.4-unit Town Center and 2.3-unit House base widths; there
 is no independent fitting/cropping. Orthographic facing uses camera direction,
 so panning and different map positions cannot choose a different heading.
-Game occupancy remains the authoritative **5 × 5 Town Center / 3 × 3 House**;
+Game occupancy remains the authoritative **5 × 5 Town Center / 3 × 3 others**;
 the renderer does not change placement, collision or costs.
 
 The original blended captured color pass keeps its existing alpha edges and
@@ -54,8 +60,11 @@ ground-depth correction as PR #107, with alpha test 0.9 and no picking handler.
 Its child transform, center, image and shared Sprite geometry match the color
 sprite exactly. It inherits fog visibility and disappears with the parent.
 Existing selection, health, production, combat and rally objects remain on the
-outer group. Team standards remain outside hidden fallback geometry. These
-Complete captures have no aligned team masks: their painted pennants retain
+outer group. Team standards remain outside hidden fallback geometry, including
+standards
+nested by the older production-building sprite wrapper; reparenting preserves
+their world transforms. These Complete captures have no aligned team masks:
+their painted pennants retain
 source colors, while the existing live standards/outline/cues retain team color
 and shape. This does not claim newly authored team variants.
 
@@ -90,8 +99,9 @@ import graph and private/source exclusions.
 
 This task remains open until the integrated revision is deployed and observed
 in an **ordinary game without preview flags**. Mac QA should record the served
-revision and room/map, then capture both teams' starting Town Centers and a paid
-House at normal/strategic zoom, with actual Workers, selection/production/rally
+revision and room/map, then capture both teams' starting Town Centers and paid
+House, Storehouse, Stable, Workshop and Watchtower at normal/strategic zoom, with
+actual Workers, selection/production/rally
 feedback and terrain contact. Exercise foundation → frame → Complete, damage
 → repair, fog hiding and destruction; finished art must appear on completion,
 with truthful state fallback and no ghost depth/picking target. Preserve before,

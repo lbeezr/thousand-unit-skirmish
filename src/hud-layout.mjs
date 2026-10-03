@@ -38,3 +38,49 @@ export function setHudActionAvailability(button, unavailable, inspectable = fals
 export function isHudActionUnavailable(button) {
   return button.disabled || button.getAttribute('aria-disabled') === 'true';
 }
+
+export function bindContextualCommandStrip(strip) {
+  if (!strip) return () => {};
+  const view = strip.ownerDocument.defaultView;
+  let frame = 0;
+  const reveal = button => {
+    if (!strip.contains(button) || button.closest('[hidden]') || button.disabled
+      || strip.clientWidth <= 0 || strip.scrollWidth <= strip.clientWidth) return;
+    const viewport = strip.getBoundingClientRect();
+    const left = viewport.left + strip.clientLeft;
+    const right = Math.min(viewport.right, left + strip.clientWidth);
+    const bounds = button.getBoundingClientRect();
+    const oversized = bounds.width > right - left;
+    const start = bounds.left - left, end = bounds.right - right;
+    const rounded = end > 0 ? Math.ceil(end) : Math.floor(Math.min(0, start));
+    // A near-fit button must not overshoot and clip its opposite edge on recheck.
+    const delta = oversized ? Math.floor(start) : Math.max(end, Math.min(start, rounded));
+    if (delta) strip.scrollLeft += delta;
+  };
+  const focus = event => {
+    const button = event.target.closest?.('button');
+    if (!button || !strip.contains(button) || strip.clientWidth <= 0) return;
+    reveal(button);
+    if (frame) view.cancelAnimationFrame(frame);
+    // Recheck after the browser's own focus scrolling; never move a later focus.
+    frame = view.requestAnimationFrame(() => {
+      frame = 0;
+      if (strip.ownerDocument.activeElement === button) reveal(button);
+    });
+  };
+  const wheel = event => {
+    if (!event.shiftKey || event.ctrlKey || event.metaKey || !event.cancelable
+      || event.defaultPrevented || event.deltaX
+      || !event.deltaY || strip.clientWidth <= 0 || strip.scrollWidth <= strip.clientWidth) return;
+    const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? strip.clientWidth : 1;
+    strip.scrollLeft += event.deltaY * unit;
+    event.preventDefault();
+  };
+  strip.addEventListener('focusin', focus);
+  strip.addEventListener('wheel', wheel, { passive: false });
+  return () => {
+    strip.removeEventListener('focusin', focus);
+    strip.removeEventListener('wheel', wheel);
+    if (frame) view.cancelAnimationFrame(frame);
+  };
+}

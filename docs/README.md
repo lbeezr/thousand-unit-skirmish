@@ -59,6 +59,7 @@ the build they name.
 | Move/fish/Return exactly selected boat groups with per-boat cargo and goals | [Selected Skiff groups](skiff-selected-groups.md) |
 | Queue selected Skiff water destinations from the battlefield or minimap | [Skiff water waypoints](skiff-water-waypoints.md) |
 | Finish one Skiff fishing load before its queued Move | [Fishing before the next Skiff Move](skiff-fishing-next-move.md) |
+| Verify Dock/Skiff through the normal game | [Ordinary entry and pending deployed acceptance](qa-skiff-normal-entry-2026-10-03.md) |
 | Choose a map | [Catalog](maps.md), [Forked Vale](forked-vale-scenario.md), [Three Crowns](three-crowns-layout.md) |
 | Change the compact objective HUD | [Objective behavior and validation](battlefield-objectives-validation.md) |
 | Change owned population feedback | [Population header behavior and validation](population-header-validation.md) |
@@ -99,7 +100,7 @@ from source/candidate packs. Then use the relevant contract:
 - [Wildlife draft](wildlife-bellweather-sheep.md): inspected regional fauna, one Sheep proposal, behavior, habitat and future perspective/sprite coverage.
 - [Default low-bank shade](qa-shore-bank-shade-2026-10-03.md): contour-following land value cue, bounded geometry and preserved before/after CPU studies with native-render limits.
 - [Renderer state/GLB/environment contract](renderer-state-contract.md).
-- [Finished Frontier runtime](frontier-building-runtime.md): default Town Center/House art, state fallback, packaging, shared depth/texture ownership and open normal-match QA.
+- [Finished Frontier runtime](frontier-building-runtime.md): all six default finished building families, state fallback, packaging, shared depth/texture ownership and open normal-match QA.
 - [Water surface and fish cues](water-surface-study.md): default apparent depth and directional motion, live visibility-gated shore-fish activity, static quality and reduced motion.
 - [Native water first-pass review](qa-water-surface-native-2026-10-03.md): Mac shader/appearance results, saved image provenance, resolved fallback comparison and remaining visual limits.
 - [Sprite-atlas format](sprite-atlas-contract-v1.md).

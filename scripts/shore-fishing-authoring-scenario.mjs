@@ -66,7 +66,7 @@ function assertConserved(snapshot) {
   const cargo = state.units.filter(unit => unit.cargoType === 'food').reduce((sum, unit) => sum + unit.cargo, 0);
   assert.ok(Math.abs(stock + cargo + state.teamFood[0] + state.teamFood[1] - 120) < 0.000001);
   assert.deepEqual(state.teamWood, [0, 0]);
-  assert.deepEqual(state.resourceNodes.filter(node => node.type === 'wood').map(node => node.stock), [100, 100]);
+  assert.deepEqual(state.resourceNodes.filter(node => node.type === 'wood').map(node => node.stock), [175, 175]);
   assert.deepEqual(shoreFishSitePositions(snapshot.mapDefinition), sites, 'stable separate water visuals and land approach after recovery');
   for (const unit of state.units) {
     const column = Math.floor(unit.x + map.width / 2), row = Math.floor(unit.z + map.height / 2);
@@ -132,7 +132,7 @@ try {
   assertConserved(rematch);
   console.log(JSON.stringify({ scenario: 'seeded shore fishing pilot', map: map.id,
     ordinaryCatalogSelection: true, bothSeatFood: delivered.state.teamFood,
-    foodBudget: 120, untouchedWoodBudget: 200, landWorkersStayOffWater: true,
+    foodBudget: 120, untouchedWoodBudget: 350, landWorkersStayOffWater: true,
     distinctStableLandAndWaterPositions: true, cargoAndDepletionRecovery: true,
     rematchRestoresAuthoredStock: true, liveFishCueSnapshotEvidence: assertLiveFishCues(), visualRenderingOwner: 'water lane' }));
 } finally { await fixture.dispose(); }
