@@ -1,3 +1,8 @@
+import { UNIT_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from './gameplay-definitions.mjs';
+
+const UNIT_QUEUE_PREFIXES = Object.values(UNIT_DEFINITIONS).map(({ label }) => `${label.toUpperCase()} QUEUED ·`);
+const RESEARCH_COMPLETE_LABELS = Object.values(TECHNOLOGY_DEFINITIONS).map(({ label }) => label.toUpperCase());
+
 // Audio decisions live outside the renderer so every unit snapshot can be reduced
 // to a few meaningful events rather than a sound per unit.
 export function cueForNotice(message, { localTeam = null, tokenized = false } = {}) {
@@ -8,10 +13,9 @@ export function cueForNotice(message, { localTeam = null, tokenized = false } = 
   if (notice.startsWith('RESOURCE NODE EMPTY ·')) return 'resource-empty';
   if (/(REJECTED|FAILED|UNAVAILABLE|UNREACHABLE|SERVER BUSY|CANCELLED|SUPERSEDED|MATCH OVER|UNIT CAP REACHED)/.test(notice)) return 'reject';
   if (notice.startsWith('RALLY POINT ')) return 'rally';
-  if (/^(WORKER|INFANTRY|ARCHER) QUEUED ·/.test(notice)) return 'queue';
+  if (UNIT_QUEUE_PREFIXES.some((prefix) => notice.startsWith(prefix))) return 'queue';
   if (/^.+ STARTED ·/.test(notice) && !notice.startsWith('PLANNING ')) return 'queue';
-  if (teamName && (notice.startsWith(`${teamName} INFANTRY FORGING COMPLETE ·`)
-    || notice.startsWith(`${teamName} ARCHER FLETCHING COMPLETE ·`))) return 'research-complete';
+  if (teamName && RESEARCH_COMPLETE_LABELS.some((label) => notice.startsWith(`${teamName} ${label} COMPLETE ·`))) return 'research-complete';
   if (notice.includes(' COMPLETE ·') && teamName && notice.startsWith(`${teamName} `)) return 'complete';
   if (teamName && notice.startsWith(`${teamName} `) && notice.endsWith(' READY')) return 'complete';
   // Tokenized build success is emitted by OrderAudioGate after BUILD ORDER, not while path planning.
