@@ -4259,7 +4259,9 @@ function stopGathering(unit) {
   unit.path = [];
   unit.pathIndex = 0;
   unit.movePlanningPending = false;
-  unit.moveGoalCell = -1;
+  // A completed delivery can have Shift waypoints waiting behind it.
+  unit.moveGoalCell = unit.queuedWaypoints.length > 0
+    ? nearestOpenCell(worldToCell(unit.x, unit.z)) : -1;
 }
 
 function updateForestWorkerEconomy(unit) {
@@ -6296,6 +6298,7 @@ function advanceQueuedWaypoints() {
     }
     if (unit.queuedWaypoints.length === 0 || unit.movePlanningPending
       || unit.attackTargetId >= 0 || unit.attackBuildingTargetId >= 0
+      || unit.gatherPhase === 'to-base'
       || unit.gatherNodeId !== null || unit.gatherForestCell >= 0 || unit.buildingTargetId !== null
       || unit.pathIndex < unit.path.length
       || (unit.attackMoveResumePath !== null
