@@ -145,6 +145,10 @@ only the living selected units owned by the player; Shift plus right-click
 queues a destination. These are ground movement orders, including in unexplored
 areas, with terrain and routes resolved by the authoritative server. A minimap
 order preserves selection and camera position and reveals no hidden targets.
+Tap Space to center the living owned selection or selected owned building in
+the HUD-safe battlefield area. Centering occurs on release so Space plus drag
+continues to pan; releasing after a drag leaves that viewpoint in place. Buttons,
+text controls, menus and dialogs retain their keyboard behavior.
 
 - A first glance identifies the team, objective, route, and selection. The QA
   protocol measures this with a newcomer and a two-minute observation window.

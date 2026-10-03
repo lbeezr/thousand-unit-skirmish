@@ -456,7 +456,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setClearColor(0x859175, 1);
 viewport.prepend(renderer.domElement);
-renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Use the arrow keys to move the camera, middle drag or Space + drag to pan, scroll to zoom toward the pointer, or push the mouse against any screen edge to scroll when edge scroll is enabled. Use Center selection, Home base, or Fit map to navigate. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Press S to stop selected units or H to hold position and attack within range without pursuing. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. Choose Palisade to drag a wall line; Shift changes its bend. While placing a wall, arrow keys move the grid endpoint, Enter starts then places the line, and Escape cancels. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
+renderer.domElement.setAttribute('aria-label', 'Online isometric battlefield. Use the arrow keys to move the camera, tap Space to center your selection, middle drag or Space + drag to pan, scroll to zoom toward the pointer, or push the mouse against any screen edge to scroll when edge scroll is enabled. Use Center selection, Home base, or Fit map to navigate. Click a friendly unit to select it; pause briefly, then click the same spot to cycle through stacked units. Double-click a friendly unit to select visible on-screen friendlies of its type, or hold Shift to add them. Drag left to right to select units enclosed by the box; drag right to left to select units the box crosses; hold Shift to add either selection. Press S to stop selected units or H to hold position and attack within range without pursuing. Right-click ground to move or attack-move (M), Shift plus right-click to queue a waypoint, or right-click an enemy to attack and pause briefly before clicking again to cycle stacked targets. Choose Palisade to drag a wall line; Shift changes its bend. While placing a wall, arrow keys move the grid endpoint, Enter starts then places the line, and Escape cancels. On touch screens, select units, open Orders, choose Target battlefield, then tap a destination, enemy, or resource.');
 renderer.domElement.dataset.cursorMode = 'select';
 renderer.domElement.tabIndex = 0;
 
@@ -7991,6 +7991,7 @@ let lastCursorSample = 0;
 let drag = null;
 let pan = null;
 let spaceDown = false;
+let spaceCenterPending = false;
 let movedPointer = false;
 renderer.domElement.addEventListener('contextmenu', (event) => event.preventDefault());
 function updateEdgeScrollPointer(event) {
@@ -8063,6 +8064,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
     return;
   }
   if (event.button === 1 || (event.button === 0 && spaceDown)) {
+    spaceCenterPending = false;
     if (buildPlacementActive && buildPlacementType === 'palisade-wall') resetWallPlacement(buildPlacementPending);
     lastFriendlyUnitClick = null;
     lastUnitPickState = null;
@@ -8407,6 +8409,7 @@ edgeScrollInput.addEventListener('change', () => {
 });
 
 function centerCameraOnSelection() {
+  if (!mapDefinition) return;
   const building = latestBuildings.find((item) => item.id === selectedBuildingId && item.team === localTeam);
   if (building) {
     const safe = cameraSafeRect();
@@ -8415,7 +8418,8 @@ function centerCameraOnSelection() {
     drawMinimap(performance.now(), true);
     return;
   }
-  const selectedUnits = [...selected].map((id) => units[id]).filter((unit) => unit && unit.hp > 0);
+  const selectedUnits = selectedIds().map((id) => units[id])
+    .filter((unit) => Number.isFinite(unit.renderX) && Number.isFinite(unit.renderZ));
   if (selectedUnits.length === 0) {
     showToast('SELECT A UNIT OR BUILDING FIRST');
     return;
@@ -8874,6 +8878,13 @@ function controlGroupIndexFromKey(event) {
   return number === 0 ? 9 : number - 1;
 }
 
+function selectionCenterShortcutAllowed(event) {
+  return !event.defaultPrevented && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
+    && Boolean(mapDefinition) && document.visibilityState === 'visible'
+    && !keyboardTargetIsEditing(event) && !ui.mapStudio.open && !document.querySelector('dialog[open]')
+    && !(event.target instanceof Element && event.target.closest('button, a[href], summary, [role="button"]'));
+}
+
 window.addEventListener('keydown', (event) => {
   lastFriendlyUnitClick = null;
   lastUnitPickState = null;
@@ -8881,10 +8892,12 @@ window.addEventListener('keydown', (event) => {
   const editing = keyboardTargetIsEditing(event);
   if (!editing && wallPlacementKeydown(event)) return;
   if (cameraNavigationKeydown(event)) return;
-  const buttonFocused = event.target instanceof Element && Boolean(event.target.closest('button'));
   if (event.code === 'Space') {
-    if (!editing && !buttonFocused) {
-      spaceDown = true;
+    if (selectionCenterShortcutAllowed(event)) {
+      if (!event.repeat && !spaceDown) {
+        spaceDown = true;
+        spaceCenterPending = !drag && !pan && !buildPlacementActive && !tapOrderArmed;
+      }
       syncBattlefieldCursor();
       event.preventDefault();
     }
@@ -8951,8 +8964,17 @@ window.addEventListener('keyup', (event) => {
   if (event.key === 'Shift') { cursorShift = false; syncBattlefieldCursor(); }
   if (event.key.startsWith('Arrow')) heldCameraKeys.release(event.key);
   if (event.code !== 'Space') return;
+  const center = spaceDown && spaceCenterPending && selectionCenterShortcutAllowed(event)
+    && !drag && !pan && !buildPlacementActive && !tapOrderArmed;
   spaceDown = false;
+  spaceCenterPending = false;
   syncBattlefieldCursor();
+  if (center) {
+    event.preventDefault();
+    if (selectedIds().length || latestBuildings.some(building => building.id === selectedBuildingId && building.team === localTeam)) {
+      centerCameraOnSelection();
+    }
+  }
 });
 window.addEventListener('blur', () => {
   resetWallPlacement(buildPlacementPending);
@@ -8960,6 +8982,7 @@ window.addEventListener('blur', () => {
   cursorShift = false;
   if (tapOrderArmed) setTapOrderArmed(false, false);
   spaceDown = false;
+  spaceCenterPending = false;
   clearHeldCameraKeys();
   pan = null;
   edgeScrollPointer = null;
@@ -8971,11 +8994,14 @@ window.addEventListener('blur', () => {
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== 'visible') {
     resetWallPlacement(buildPlacementPending);
+    spaceDown = false;
+    spaceCenterPending = false;
     edgeScrollPointer = null;
     clearHeldCameraKeys();
   }
 });
 document.addEventListener('focusin', (event) => {
+  if (!selectionCenterShortcutAllowed(event)) spaceCenterPending = false;
   if (event.target instanceof Element
     && event.target.closest('input, textarea, select, [contenteditable], dialog, [role="tab"]')) clearHeldCameraKeys();
 });

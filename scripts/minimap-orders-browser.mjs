@@ -89,6 +89,7 @@ try {
     for (const [size, width, height, dpr] of [['small', 1280, 720, 1], ['large', 900, 700, 2]]) {
       await page.cdp.call('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: dpr, mobile: false });
       if (size === 'large') await click(page, '#minimap-size-toggle');
+      await page.cdp.evaluate('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
       await page.wait(`__minimapProof.cameraOutline?.length===4`, 'camera outline drawn');
       const before = await read(page), point = await mapPoint(page, x, 30);
       const fog = await page.cdp.evaluate(`(()=>{const v=__minimapProof.latest.visibility,bytes=atob(v.data),cell=78*160+${x}+80;return(bytes.charCodeAt(cell>>2)>>((cell&3)*2))&3})()`);
@@ -98,7 +99,8 @@ try {
       const moved = await read(page), command = moved.sent.at(-1);
       assert.equal(moved.sent.length, before.sent.length + 1, 'one native click sends one command');
       assert.equal(command.type, 'move'); assert.deepEqual(command.ids, ids);
-      assert.ok(Math.abs(command.x - x) < 1e-8 && Math.abs(command.z - 30) < 1e-8);
+      const pixelTolerance = await page.cdp.evaluate("160/Math.min(document.querySelector('#minimap-canvas').clientWidth,document.querySelector('#minimap-canvas').clientHeight)");
+      assert.ok(Math.abs(command.x - x) <= pixelTolerance && Math.abs(command.z - 30) <= pixelTolerance, 'destination matches within one native pointer pixel');
       assert.equal(moved.selected, 4); assert.deepEqual(moved.outline, before.outline, 'right-click preserves camera');
       await clickAt(page, ...await mapPoint(page, x, 40), 'right', true);
       await page.wait(`document.querySelector('#order-status').textContent.startsWith('WAYPOINT QUEUED')`, 'native Shift-right-click queued');
@@ -118,6 +120,39 @@ try {
     await clickAt(page, ...await mapPoint(page, -x, -20));
     await page.wait(`JSON.stringify(__minimapProof.cameraOutline)!==${JSON.stringify(JSON.stringify(cameraBefore.outline))}`, 'left click changes camera');
     assert.equal((await read(page)).sent.length, cameraBefore.sent.length, 'left click sends no units');
+    // Give the battlefield keyboard focus without selecting/deselecting anything.
+    await page.cdp.evaluate("document.querySelector('#viewport canvas').focus({preventScroll:true})");
+    const beforeSpace = await read(page);
+    for (const type of ['keyDown', 'keyUp']) await page.cdp.call('Input.dispatchKeyEvent', { type, key: ' ', code: 'Space', windowsVirtualKeyCode: 32 });
+    await page.wait(`JSON.stringify(__minimapProof.cameraOutline)!==${JSON.stringify(JSON.stringify(beforeSpace.outline))}`, 'Space tap centers selection');
+    const centered = await read(page);
+    assert.equal(centered.selected, 4); assert.equal(centered.sent.length, beforeSpace.sent.length);
+    // Compare the shortcut to the existing native Center selection control.
+    await click(page, '#camera-center-selection');
+    await page.cdp.evaluate('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+    const buttonCentered = await read(page);
+    assert.ok(buttonCentered.outline.every((point, i) => point.every((value, axis) =>
+      Math.abs(value - centered.outline[i][axis]) <= 1.5)), 'Space reaches the Center selection view, allowing brief unit movement');
+    const capture = await page.cdp.call('Page.captureScreenshot', { format: 'png' });
+    await writeFile(path.join(output, `seat-${team}-space-centered.png`), Buffer.from(capture.data, 'base64'));
+    await page.cdp.evaluate("document.querySelector('#viewport canvas').focus({preventScroll:true})");
+    const dragPoint = await page.cdp.evaluate("(()=>{const r=document.querySelector('#viewport canvas').getBoundingClientRect();return [r.left+r.width*0.6,r.top+r.height*0.4]})()");
+    await page.cdp.call('Input.dispatchKeyEvent', { type: 'keyDown', key: ' ', code: 'Space', windowsVirtualKeyCode: 32 });
+    await page.cdp.call('Input.dispatchMouseEvent', { type: 'mousePressed', x: dragPoint[0], y: dragPoint[1], button: 'left', clickCount: 1 });
+    await page.cdp.call('Input.dispatchMouseEvent', { type: 'mouseMoved', x: dragPoint[0] + 45, y: dragPoint[1] + 20, button: 'left', buttons: 1 });
+    await page.cdp.call('Input.dispatchMouseEvent', { type: 'mouseReleased', x: dragPoint[0] + 45, y: dragPoint[1] + 20, button: 'left', clickCount: 1 });
+    await page.wait(`JSON.stringify(__minimapProof.cameraOutline)!==${JSON.stringify(JSON.stringify(buttonCentered.outline))}`, 'Space drag pans');
+    const dragged = await read(page);
+    await page.cdp.call('Input.dispatchKeyEvent', { type: 'keyUp', key: ' ', code: 'Space', windowsVirtualKeyCode: 32 });
+    await page.cdp.evaluate('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+    assert.deepEqual((await read(page)).outline, dragged.outline, 'release after Space drag cannot center');
+    await page.cdp.evaluate("document.querySelector('#minimap-size-toggle').focus()");
+    const beforeButton = await page.cdp.evaluate("document.querySelector('.app-shell').dataset.minimapSize");
+    for (const type of ['keyDown', 'keyUp']) await page.cdp.call('Input.dispatchKeyEvent', { type, key: ' ', code: 'Space', windowsVirtualKeyCode: 32 });
+    await page.wait(`document.querySelector('.app-shell').dataset.minimapSize!==${JSON.stringify(beforeButton)}`, 'focused button retains Space activation');
+    const afterButton = await read(page);
+    assert.equal(afterButton.selected, 4); assert.equal(afterButton.sent.length, centered.sent.length);
+    records.push({ team, control: 'left-click camera, Space centering, Space drag and focused-button activation', selected: centered.selected, orderCountPreserved: true, matchesCenterButton: true });
   }
   const saved = await fixture.checkpoint();
   for (const u of saved.state.units.filter(u => !selectedIDs.includes(u.id))) assert.equal(u.orderRevision, baseline.state.units[u.id].orderRevision, 'unselected unit never ordered');
