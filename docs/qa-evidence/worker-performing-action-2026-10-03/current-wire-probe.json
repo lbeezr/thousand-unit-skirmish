@@ -1,0 +1,148 @@
+{
+  "scope": "current-wire-authoritative-progress-probe",
+  "sourceRevision": "c5527f77087b57ea6d9c716555c711402bd3b592",
+  "checks": [
+    {
+      "name": "arrival",
+      "productive": true,
+      "cargoDelta": 0.06666666666666667,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "gathering",
+      "audioExecution": "food",
+      "currentSpriteState": "gather"
+    },
+    {
+      "name": "blocked-approach",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "gathering",
+      "audioExecution": null,
+      "currentSpriteState": "gather"
+    },
+    {
+      "name": "queued-task",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "gathering",
+      "audioExecution": null,
+      "currentSpriteState": "gather"
+    },
+    {
+      "name": "retained-gather-phase-out-of-reach",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "gathering",
+      "audioExecution": "food",
+      "currentSpriteState": "gather"
+    },
+    {
+      "name": "resource-depleted",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "returning",
+      "audioExecution": null,
+      "currentSpriteState": "idle"
+    },
+    {
+      "name": "capacity-full",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "returning",
+      "audioExecution": null,
+      "currentSpriteState": "idle"
+    },
+    {
+      "name": "Stop",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "idle",
+      "audioExecution": null,
+      "currentSpriteState": "idle"
+    },
+    {
+      "name": "resume-arrival",
+      "productive": true,
+      "cargoDelta": 0.06666666666666667,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "gathering",
+      "audioExecution": "food",
+      "currentSpriteState": "gather"
+    },
+    {
+      "name": "build-arrival",
+      "productive": true,
+      "cargoDelta": 0,
+      "progressDelta": 0.0022222222222222222,
+      "hpDelta": 0,
+      "task": "building",
+      "audioExecution": null,
+      "currentSpriteState": "build"
+    },
+    {
+      "name": "build-wait",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "building",
+      "audioExecution": null,
+      "currentSpriteState": "build"
+    },
+    {
+      "name": "repair-arrival",
+      "productive": true,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 1.3333333333333286,
+      "task": "repairing",
+      "audioExecution": "repair",
+      "currentSpriteState": "repair"
+    },
+    {
+      "name": "repair-out-of-reach",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "repairing",
+      "audioExecution": null,
+      "currentSpriteState": "repair"
+    },
+    {
+      "name": "repair-no-wood",
+      "productive": false,
+      "cargoDelta": 0,
+      "progressDelta": 0,
+      "hpDelta": 0,
+      "task": "repairing",
+      "audioExecution": null,
+      "currentSpriteState": "repair"
+    }
+  ],
+  "constructionAmbiguity": {
+    "rowsAndProgressIdentical": true,
+    "performers": [
+      0,
+      1
+    ]
+  },
+  "gap": "Row 9 describes intent; row 14 lacks construction and can report gather outside reach. No per-Worker positive-progress receipt exists.",
+  "limits": [
+    "actual server functions exercised in a deterministic VM; no network, GPU or deployed claim",
+    "dated diagnostic; not registered as a permanent CI assertion of incorrect presentation"
+  ]
+}

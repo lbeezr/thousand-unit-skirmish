@@ -106,6 +106,12 @@ is to agree on an execution/facing presentation contract before any binding chan
 Attack tick/target fields remain compatible with the combat owner's continuation
 fix; that fix is not duplicated.
 
+The follow-up [performing-action proposal](worker-performing-action-contract-proposal.md)
+reproduces 13 actual-progress/wait cases and proves construction's per-Worker
+wire ambiguity. It proposes positive-mutation receipts at new row 17, with
+generation/order/tick guards, for parent routing to the unit gameplay producer
+owner. It is not a default binding or an implemented protocol extension.
+
 ## Visual gap and exact ordinary-game recipe
 
 The [browser preflight](qa-evidence/unit-animation-audit-2026-10-03/browser-preflight.json)
