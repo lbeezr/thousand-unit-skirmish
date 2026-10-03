@@ -4344,7 +4344,7 @@ function updateCommandUI() {
       : coarsePointer ? 'Use Target battlefield, then tap a target'
         : attackMoveMode ? 'Right-click ground to advance and engage' : 'Right-click ground or an enemy';
   if (selectedBuilding?.type === 'dock' && ui.commandHint) ui.commandHint.textContent = 'Train a Skiff (placeholder) · owned boats deliver food at this Dock · no rally.';
-  if (!selectedBuilding && selectedWaterUnits() && ui.commandHint) ui.commandHint.textContent = 'Select one Skiff · target fish or water · Return cargo delivers food to your Dock · Stop keeps cargo.';
+  if (!selectedBuilding && selectedWaterUnits() && ui.commandHint) ui.commandHint.textContent = 'Select Skiffs · target fish or water · boats need distinct approaches · Return cargo delivers to owned Dock berths · Stop keeps cargo.';
   if (persistentTargetMode && ui.commandHint) ui.commandHint.textContent = `${tapOrderArmed ? 'Tap or click' : coarsePointer ? 'Use Target battlefield, then tap' : 'Right-click'} ${persistentTargetMode === 'follow' ? 'a friendly unit' : 'ground to set the second patrol endpoint'}`;
   for (const button of document.querySelectorAll('[data-persistent-order]')) {
     button.classList.toggle('active', button.dataset.persistentOrder === persistentTargetMode);
@@ -7481,10 +7481,10 @@ function issueStationaryOrder(type) {
 function issueReturnCargo() {
   if (localTeam === null || matchWinner >= 0) return;
   const selectedUnits = selectedIds(), water = selectedUnits.some(id => units[id]?.kind === 'skiff');
-  if (water && selectedUnits.length !== 1) { showToast('SELECT ONE SKIFF'); return; }
+  if (water && selectedUnits.some(id => units[id]?.kind !== 'skiff')) { showToast('SELECT ONLY SKIFFS'); return; }
   const ids = selectedUnits.filter(id => ['worker', 'skiff'].includes(units[id]?.kind) && units[id].cargo > 0);
   if (!ids.length) { showToast('SELECT YOUR CARRYING WORKERS OR SKIFF'); return; }
-  if (sendTrackedOrder({ type: 'returnCargo', ids }, 'RETURN CARGO', ids.length, water ? 'SKIFF' : 'WORKERS')) {
+  if (sendTrackedOrder({ type: 'returnCargo', ids }, 'RETURN CARGO', ids.length, water ? 'SKIFFS' : 'WORKERS')) {
     persistentTargetMode = null;
     setTapOrderArmed(false, false);
     setAttackMoveMode(false, false);
@@ -7546,7 +7546,7 @@ function issueMove(point, queueWaypoint = false, moveOnly = false) {
   if (localTeam === null) { showToast('SPECTATORS CANNOT ISSUE COMMANDS'); return; }
   const ids = selectedIds();
   if (ids.length === 0) { showToast('SELECT YOUR UNITS BEFORE ISSUING AN ORDER'); return; }
-  if (selectedWaterUnits() && (ids.length !== 1 || queueWaypoint)) { showToast('SELECT ONE SKIFF · MOVE AND STOP ONLY'); return; }
+  if (selectedWaterUnits() && (ids.some(id => units[id]?.kind !== 'skiff') || queueWaypoint)) { showToast('SELECT ONLY SKIFFS · WATER WAYPOINT QUEUES ARE UNAVAILABLE'); return; }
   const attackMoveOrder = !moveOnly && attackMoveMode;
   if (!moveOnly && persistentTargetMode === 'follow') { showToast('FOLLOW NEEDS A FRIENDLY UNIT TARGET'); return; }
   const patrolOrder = !moveOnly && persistentTargetMode === 'patrol';
@@ -7609,8 +7609,8 @@ function issueGather(node) {
   if (localTeam === null) { showToast('SPECTATORS CANNOT ISSUE COMMANDS'); return; }
   if (selectedWaterUnits()) {
     const ids = selectedIds();
-    if (ids.length !== 1 || !isShoreFish(node)) { showToast('SELECT ONE SKIFF AND A SHORE FISH SOURCE'); return; }
-    sendTrackedOrder({ type: 'gather', ids, nodeId: node.id }, 'FISH', 1, 'SKIFF'); return;
+    if (ids.some(id => units[id]?.kind !== 'skiff') || !isShoreFish(node)) { showToast('SELECT ONLY SKIFFS AND A SHORE FISH SOURCE'); return; }
+    sendTrackedOrder({ type: 'gather', ids, nodeId: node.id }, 'FISH', ids.length, 'SKIFFS'); return;
   }
   const workers = selectedIds().filter((id) => units[id]?.kind === 'worker');
   if (workers.length === 0) {
@@ -7646,7 +7646,7 @@ function issueContextOrder(clientX, clientY, queueWaypoint = false) {
     const rect = renderer.domElement.getBoundingClientRect();
     const node = pickResourceNodeAt(clientX - rect.left, clientY - rect.top);
     if (node && isShoreFish(node)) {
-      if (queueWaypoint) { showToast('QUEUED FISHING IS UNAVAILABLE · SELECT ONE SKIFF'); return; }
+      if (queueWaypoint) { showToast('QUEUED FISHING IS UNAVAILABLE · SELECT ONLY SKIFFS'); return; }
       issueGather(node); return;
     }
     const point = worldAt(clientX, clientY);

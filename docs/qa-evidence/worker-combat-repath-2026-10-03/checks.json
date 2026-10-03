@@ -1,0 +1,1408 @@
+{
+  "originalNative": {
+    "command": "node scripts/worker-combat-scenario.mjs",
+    "fixtureSha256": "f9f8bd2fb45ab82f5a5030af7c3ba51a17e0b8ea3b8836ae23d161e1f013e0fc",
+    "head": "20c4fcea1c35ac9920f04ecd6f891d55c31b0f56",
+    "timeoutMs": 35000,
+    "failed": true,
+    "secondDuelStarted": false,
+    "snapshots": [
+      {
+        "tick": 1044,
+        "units": [
+          [
+            0,
+            0,
+            -6.5,
+            0.33,
+            100,
+            "worker",
+            0,
+            null,
+            3596476535,
+            "attacking",
+            1
+          ],
+          [
+            9,
+            1,
+            7.5,
+            -1.16,
+            100,
+            "infantry",
+            0,
+            null,
+            3596476535,
+            null,
+            1
+          ]
+        ]
+      },
+      {
+        "tick": 1047,
+        "units": [
+          [
+            0,
+            0,
+            -6.5,
+            0.41,
+            100,
+            "worker",
+            0,
+            null,
+            3596476535,
+            "attacking",
+            1
+          ],
+          [
+            9,
+            1,
+            7.5,
+            -1.25,
+            100,
+            "infantry",
+            0,
+            null,
+            3596476535,
+            null,
+            1
+          ]
+        ]
+      },
+      {
+        "tick": 1050,
+        "units": [
+          [
+            0,
+            0,
+            -6.5,
+            0.15,
+            100,
+            "worker",
+            0,
+            null,
+            3596476535,
+            "attacking",
+            1
+          ],
+          [
+            9,
+            1,
+            7.5,
+            -0.99,
+            100,
+            "infantry",
+            0,
+            null,
+            3596476535,
+            null,
+            1
+          ]
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "head": "20c4fcea1c35ac9920f04ecd6f891d55c31b0f56",
+    "records": [
+      {
+        "workerTeam": 0,
+        "rotation": 0,
+        "orderType": "attack",
+        "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+        "ticks": 1200,
+        "firstDamageTick": null,
+        "workerHp": 100,
+        "infantryHp": 100,
+        "workerPosition": {
+          "x": -6.5,
+          "z": 0.15333333333333332
+        },
+        "infantryPosition": {
+          "x": 7.5,
+          "z": -0.9893491680982078
+        },
+        "traceSha256": "d5d9740c77d1d11ecc815fd29a954b035508687f9062bcf7e4035a1ae9750fd8",
+        "traceSha256BothRuns": [
+          "d5d9740c77d1d11ecc815fd29a954b035508687f9062bcf7e4035a1ae9750fd8",
+          "d5d9740c77d1d11ecc815fd29a954b035508687f9062bcf7e4035a1ae9750fd8"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 0,
+        "rotation": 0,
+        "orderType": "attackMove",
+        "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+        "ticks": 362,
+        "firstDamageTick": 128,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -0.028206267806889507,
+          "z": -0.5
+        },
+        "infantryPosition": {
+          "x": 1.243798119565652,
+          "z": -0.44780107960590365
+        },
+        "traceSha256": "eca95d2fa963e20804d77da0be487312e592cfd5ebdb9ed6a9d15cf45ab00a97",
+        "traceSha256BothRuns": [
+          "eca95d2fa963e20804d77da0be487312e592cfd5ebdb9ed6a9d15cf45ab00a97",
+          "eca95d2fa963e20804d77da0be487312e592cfd5ebdb9ed6a9d15cf45ab00a97"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 0,
+        "rotation": 1,
+        "orderType": "attack",
+        "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+        "ticks": 349,
+        "firstDamageTick": 115,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -1.1903888858150862,
+          "z": 0.4178793098941679
+        },
+        "infantryPosition": {
+          "x": -0.25132487541020304,
+          "z": -0.4163584521362908
+        },
+        "traceSha256": "44beeaed41be4d3d7375c57269f88e49c25892d26b84bc67293a079fd8d04b72",
+        "traceSha256BothRuns": [
+          "44beeaed41be4d3d7375c57269f88e49c25892d26b84bc67293a079fd8d04b72",
+          "44beeaed41be4d3d7375c57269f88e49c25892d26b84bc67293a079fd8d04b72"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 0,
+        "rotation": 1,
+        "orderType": "attackMove",
+        "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+        "ticks": 377,
+        "firstDamageTick": 143,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -0.08555641157388028,
+          "z": 1.5
+        },
+        "infantryPosition": {
+          "x": -0.8262218896024767,
+          "z": 0.5817691433119373
+        },
+        "traceSha256": "ef490182c7bee1227f6d4efaae6d9f2e94c355d7b85459fb483d768bb5bc1077",
+        "traceSha256BothRuns": [
+          "ef490182c7bee1227f6d4efaae6d9f2e94c355d7b85459fb483d768bb5bc1077",
+          "ef490182c7bee1227f6d4efaae6d9f2e94c355d7b85459fb483d768bb5bc1077"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 0,
+        "rotation": 2,
+        "orderType": "attack",
+        "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+        "ticks": 504,
+        "firstDamageTick": 270,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -6.192362393414752,
+          "z": -0.18385073909775285
+        },
+        "infantryPosition": {
+          "x": -7.346478920378344,
+          "z": 0.32449805717456615
+        },
+        "traceSha256": "36c2eac15131cba5dba2f6567864000b4ca4c9d8e71e69fe7ad750f0ed6846fb",
+        "traceSha256BothRuns": [
+          "36c2eac15131cba5dba2f6567864000b4ca4c9d8e71e69fe7ad750f0ed6846fb",
+          "36c2eac15131cba5dba2f6567864000b4ca4c9d8e71e69fe7ad750f0ed6846fb"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 0,
+        "rotation": 2,
+        "orderType": "attackMove",
+        "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+        "ticks": 350,
+        "firstDamageTick": 116,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -0.9835180388129794,
+          "z": -0.5
+        },
+        "infantryPosition": {
+          "x": -1.927135064746871,
+          "z": 0.27495869892314556
+        },
+        "traceSha256": "97ce67ed4c1fc7cc7d9f9f119f837363cffef38f173dbcc2d27bfe3dea177796",
+        "traceSha256BothRuns": [
+          "97ce67ed4c1fc7cc7d9f9f119f837363cffef38f173dbcc2d27bfe3dea177796",
+          "97ce67ed4c1fc7cc7d9f9f119f837363cffef38f173dbcc2d27bfe3dea177796"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 0,
+        "rotation": 3,
+        "orderType": "attack",
+        "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+        "ticks": 350,
+        "firstDamageTick": 116,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -1.3163116639492325,
+          "z": 0.33075448478716796
+        },
+        "infantryPosition": {
+          "x": -0.22602742992673197,
+          "z": -0.3352996090258161
+        },
+        "traceSha256": "4bc72a357c0ff8f092e9b5531b605b3a9b4a69b986defbfe6d0e8733cf4725e7",
+        "traceSha256BothRuns": [
+          "4bc72a357c0ff8f092e9b5531b605b3a9b4a69b986defbfe6d0e8733cf4725e7",
+          "4bc72a357c0ff8f092e9b5531b605b3a9b4a69b986defbfe6d0e8733cf4725e7"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 0,
+        "rotation": 3,
+        "orderType": "attackMove",
+        "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+        "ticks": 355,
+        "firstDamageTick": 121,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -0.17888974490721554,
+          "z": -0.5
+        },
+        "infantryPosition": {
+          "x": -0.9449272702764713,
+          "z": 0.41675368413649855
+        },
+        "traceSha256": "2ec89d1e479aa928a2107ff8e49a9bccf37c670ab1a5e3dda8ed6f743c7e58a9",
+        "traceSha256BothRuns": [
+          "2ec89d1e479aa928a2107ff8e49a9bccf37c670ab1a5e3dda8ed6f743c7e58a9",
+          "2ec89d1e479aa928a2107ff8e49a9bccf37c670ab1a5e3dda8ed6f743c7e58a9"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 1,
+        "rotation": 0,
+        "orderType": "attack",
+        "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+        "ticks": 504,
+        "firstDamageTick": 270,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -6.192362393414752,
+          "z": -0.18385073909775285
+        },
+        "infantryPosition": {
+          "x": -7.346478920378344,
+          "z": 0.32449805717456615
+        },
+        "traceSha256": "de894754b34cc8f8cbe582d233831a3452d3fb2ea2425032700c2f92cb9cfc1a",
+        "traceSha256BothRuns": [
+          "de894754b34cc8f8cbe582d233831a3452d3fb2ea2425032700c2f92cb9cfc1a",
+          "de894754b34cc8f8cbe582d233831a3452d3fb2ea2425032700c2f92cb9cfc1a"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 1,
+        "rotation": 0,
+        "orderType": "attackMove",
+        "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+        "ticks": 349,
+        "firstDamageTick": 115,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -1.0832185726168118,
+          "z": -0.5
+        },
+        "infantryPosition": {
+          "x": -1.987076290552904,
+          "z": 0.4248303598631177
+        },
+        "traceSha256": "5300312e4df46c918f506eec6db416becd5b47fe06039f7bea080443f1cdc041",
+        "traceSha256BothRuns": [
+          "5300312e4df46c918f506eec6db416becd5b47fe06039f7bea080443f1cdc041",
+          "5300312e4df46c918f506eec6db416becd5b47fe06039f7bea080443f1cdc041"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 1,
+        "rotation": 1,
+        "orderType": "attack",
+        "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+        "ticks": 350,
+        "firstDamageTick": 116,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -1.3163116639492325,
+          "z": 0.33075448478716796
+        },
+        "infantryPosition": {
+          "x": -0.22602742992673197,
+          "z": -0.3352996090258161
+        },
+        "traceSha256": "0fdc5737cc2cee8bc1933621b0022cb8c1dd6cd54fc470974cafaf77cbaa346b",
+        "traceSha256BothRuns": [
+          "0fdc5737cc2cee8bc1933621b0022cb8c1dd6cd54fc470974cafaf77cbaa346b",
+          "0fdc5737cc2cee8bc1933621b0022cb8c1dd6cd54fc470974cafaf77cbaa346b"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 1,
+        "rotation": 1,
+        "orderType": "attackMove",
+        "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+        "ticks": 355,
+        "firstDamageTick": 121,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -0.17888974490721554,
+          "z": -0.5
+        },
+        "infantryPosition": {
+          "x": -0.9449272702764713,
+          "z": 0.41675368413649855
+        },
+        "traceSha256": "2e67dc9613032b81f81f63f8ecbcb1c1c0d292edca83769b4b866e065b7d034a",
+        "traceSha256BothRuns": [
+          "2e67dc9613032b81f81f63f8ecbcb1c1c0d292edca83769b4b866e065b7d034a",
+          "2e67dc9613032b81f81f63f8ecbcb1c1c0d292edca83769b4b866e065b7d034a"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 1,
+        "rotation": 2,
+        "orderType": "attack",
+        "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+        "ticks": 1200,
+        "firstDamageTick": null,
+        "workerHp": 100,
+        "infantryHp": 100,
+        "workerPosition": {
+          "x": -6.5,
+          "z": 0.15333333333333332
+        },
+        "infantryPosition": {
+          "x": 7.5,
+          "z": -0.9893491680982078
+        },
+        "traceSha256": "3109e57037ec7c9483b206bf345fde13d57f28958b4cbd60196da34cf4d2a852",
+        "traceSha256BothRuns": [
+          "3109e57037ec7c9483b206bf345fde13d57f28958b4cbd60196da34cf4d2a852",
+          "3109e57037ec7c9483b206bf345fde13d57f28958b4cbd60196da34cf4d2a852"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 1,
+        "rotation": 2,
+        "orderType": "attackMove",
+        "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+        "ticks": 379,
+        "firstDamageTick": 145,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": 0.05773009053562267,
+          "z": -0.5
+        },
+        "infantryPosition": {
+          "x": 0.9091530899421151,
+          "z": -1.4330806650562067
+        },
+        "traceSha256": "afa9d21b6a375425f566f23011683af50b87df94c159ede21324930523aa3029",
+        "traceSha256BothRuns": [
+          "afa9d21b6a375425f566f23011683af50b87df94c159ede21324930523aa3029",
+          "afa9d21b6a375425f566f23011683af50b87df94c159ede21324930523aa3029"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 1,
+        "rotation": 3,
+        "orderType": "attack",
+        "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+        "ticks": 349,
+        "firstDamageTick": 115,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -1.1903888858150862,
+          "z": 0.4178793098941679
+        },
+        "infantryPosition": {
+          "x": -0.25132487541020304,
+          "z": -0.4163584521362908
+        },
+        "traceSha256": "7072bdeb8a11c4d8ca0fc3c3c5f3fdd1195cd7cd11a0c62075b41d20814ba6ba",
+        "traceSha256BothRuns": [
+          "7072bdeb8a11c4d8ca0fc3c3c5f3fdd1195cd7cd11a0c62075b41d20814ba6ba",
+          "7072bdeb8a11c4d8ca0fc3c3c5f3fdd1195cd7cd11a0c62075b41d20814ba6ba"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 1,
+        "rotation": 3,
+        "orderType": "attackMove",
+        "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+        "ticks": 377,
+        "firstDamageTick": 143,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -0.08555641157388028,
+          "z": 1.5
+        },
+        "infantryPosition": {
+          "x": -0.8262218896024767,
+          "z": 0.5817691433119373
+        },
+        "traceSha256": "fdee7599c8ebbf3e4698247109ae5216ef323dc885d5542522c63d40a6061027",
+        "traceSha256BothRuns": [
+          "fdee7599c8ebbf3e4698247109ae5216ef323dc885d5542522c63d40a6061027",
+          "fdee7599c8ebbf3e4698247109ae5216ef323dc885d5542522c63d40a6061027"
+        ],
+        "repeatExact": true
+      }
+    ]
+  },
+  "reversal": {
+    "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+    "acceptedAttackNotices": [
+      [
+        {
+          "type": "notice",
+          "message": "ATTACK ORDER · 1 UNITS"
+        }
+      ],
+      [
+        {
+          "type": "notice",
+          "message": "ATTACK ORDER · 1 UNITS"
+        }
+      ]
+    ],
+    "samples": [
+      {
+        "tick": 1,
+        "units": [
+          {
+            "id": 0,
+            "x": -8.5,
+            "z": -1.4133333333333333,
+            "hp": 100,
+            "target": 9,
+            "pathIndex": 0,
+            "nextWaypoint": 2007
+          },
+          {
+            "id": 9,
+            "x": 8.040699790991455,
+            "z": 0.3634843929360624,
+            "hp": 100,
+            "target": 0,
+            "pathIndex": 0,
+            "nextWaypoint": 2024
+          }
+        ]
+      },
+      {
+        "tick": 101,
+        "units": [
+          {
+            "id": 0,
+            "x": -6.475604125935167,
+            "z": -0.10550992272184025,
+            "hp": 100,
+            "target": 9,
+            "pathIndex": 0,
+            "nextWaypoint": 2009
+          },
+          {
+            "id": 9,
+            "x": 7.5,
+            "z": -0.7293491680982078,
+            "hp": 100,
+            "target": 0,
+            "pathIndex": 0,
+            "nextWaypoint": 2023
+          }
+        ]
+      },
+      {
+        "tick": 201,
+        "units": [
+          {
+            "id": 0,
+            "x": -6.5,
+            "z": -0.1066666666650018,
+            "hp": 100,
+            "target": 9,
+            "pathIndex": 1,
+            "nextWaypoint": 2073
+          },
+          {
+            "id": 9,
+            "x": 7.5,
+            "z": -0.7293491680982078,
+            "hp": 100,
+            "target": 0,
+            "pathIndex": 1,
+            "nextWaypoint": 1959
+          }
+        ]
+      },
+      {
+        "tick": 301,
+        "units": [
+          {
+            "id": 0,
+            "x": -6.5,
+            "z": -0.9733333333333334,
+            "hp": 100,
+            "target": 9,
+            "pathIndex": 1,
+            "nextWaypoint": 1945
+          },
+          {
+            "id": 9,
+            "x": 7.5,
+            "z": 0.13731749856845887,
+            "hp": 100,
+            "target": 0,
+            "pathIndex": 1,
+            "nextWaypoint": 2087
+          }
+        ]
+      },
+      {
+        "tick": 401,
+        "units": [
+          {
+            "id": 0,
+            "x": -6.5,
+            "z": 0.24,
+            "hp": 100,
+            "target": 9,
+            "pathIndex": 0,
+            "nextWaypoint": 2009
+          },
+          {
+            "id": 9,
+            "x": 7.5,
+            "z": -1.0760158347648745,
+            "hp": 100,
+            "target": 0,
+            "pathIndex": 0,
+            "nextWaypoint": 2023
+          }
+        ]
+      },
+      {
+        "tick": 501,
+        "units": [
+          {
+            "id": 0,
+            "x": -6.5,
+            "z": -0.45333333333333337,
+            "hp": 100,
+            "target": 9,
+            "pathIndex": 1,
+            "nextWaypoint": 2073
+          },
+          {
+            "id": 9,
+            "x": 7.5,
+            "z": -0.38268250143154114,
+            "hp": 100,
+            "target": 0,
+            "pathIndex": 0,
+            "nextWaypoint": 2023
+          }
+        ]
+      },
+      {
+        "tick": 601,
+        "units": [
+          {
+            "id": 0,
+            "x": -6.5,
+            "z": -0.6266666666666667,
+            "hp": 100,
+            "target": 9,
+            "pathIndex": 1,
+            "nextWaypoint": 1945
+          },
+          {
+            "id": 9,
+            "x": 7.5,
+            "z": -0.2093491680982078,
+            "hp": 100,
+            "target": 0,
+            "pathIndex": 1,
+            "nextWaypoint": 2087
+          }
+        ]
+      },
+      {
+        "tick": 701,
+        "units": [
+          {
+            "id": 0,
+            "x": -6.5,
+            "z": 0.41333333333333333,
+            "hp": 100,
+            "target": 9,
+            "pathIndex": 1,
+            "nextWaypoint": 2073
+          },
+          {
+            "id": 9,
+            "x": 7.5,
+            "z": -1.2493491680982078,
+            "hp": 100,
+            "target": 0,
+            "pathIndex": 1,
+            "nextWaypoint": 1959
+          }
+        ]
+      },
+      {
+        "tick": 801,
+        "units": [
+          {
+            "id": 0,
+            "x": -6.5,
+            "z": -0.8,
+            "hp": 100,
+            "target": 9,
+            "pathIndex": 0,
+            "nextWaypoint": 2009
+          },
+          {
+            "id": 9,
+            "x": 7.5,
+            "z": -0.036015834764874466,
+            "hp": 100,
+            "target": 0,
+            "pathIndex": 0,
+            "nextWaypoint": 2023
+          }
+        ]
+      },
+      {
+        "tick": 901,
+        "units": [
+          {
+            "id": 0,
+            "x": -6.5,
+            "z": -0.28,
+            "hp": 100,
+            "target": 9,
+            "pathIndex": 0,
+            "nextWaypoint": 2009
+          },
+          {
+            "id": 9,
+            "x": 7.5,
+            "z": -0.5560158347648745,
+            "hp": 100,
+            "target": 0,
+            "pathIndex": 0,
+            "nextWaypoint": 2023
+          }
+        ]
+      },
+      {
+        "tick": 1001,
+        "units": [
+          {
+            "id": 0,
+            "x": -6.5,
+            "z": 0.06666666666666665,
+            "hp": 100,
+            "target": 9,
+            "pathIndex": 1,
+            "nextWaypoint": 2073
+          },
+          {
+            "id": 9,
+            "x": 7.5,
+            "z": -0.9026825014315412,
+            "hp": 100,
+            "target": 0,
+            "pathIndex": 1,
+            "nextWaypoint": 1959
+          }
+        ]
+      },
+      {
+        "tick": 1101,
+        "units": [
+          {
+            "id": 0,
+            "x": -6.5,
+            "z": -1.1466666666666667,
+            "hp": 100,
+            "target": 9,
+            "pathIndex": 1,
+            "nextWaypoint": 1945
+          },
+          {
+            "id": 9,
+            "x": 7.5,
+            "z": 0.3106508319017922,
+            "hp": 100,
+            "target": 0,
+            "pathIndex": 1,
+            "nextWaypoint": 2087
+          }
+        ]
+      }
+    ]
+  },
+  "candidate": {
+    "head": "1f4b7799c1f1976174f16003f3058d9b5a8653bb",
+    "records": [
+      {
+        "workerTeam": 0,
+        "rotation": 0,
+        "orderType": "attack",
+        "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+        "ticks": 402,
+        "firstDamageTick": 168,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -0.026666666666654626,
+          "z": -1.5
+        },
+        "infantryPosition": {
+          "x": 1.1578329600957846,
+          "z": -1.5
+        },
+        "traceSha256": "979dbc2fc40ee50cf18d0b619eea441dedbb84a04d3f8b0b1e87ad8036afc9c5",
+        "traceSha256BothRuns": [
+          "979dbc2fc40ee50cf18d0b619eea441dedbb84a04d3f8b0b1e87ad8036afc9c5",
+          "979dbc2fc40ee50cf18d0b619eea441dedbb84a04d3f8b0b1e87ad8036afc9c5"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 0,
+        "rotation": 0,
+        "orderType": "attackMove",
+        "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+        "ticks": 403,
+        "firstDamageTick": 169,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": 0.7415396011402231,
+          "z": -0.5
+        },
+        "infantryPosition": {
+          "x": 1.5865929153508478,
+          "z": 0.4622935599084329
+        },
+        "traceSha256": "506cbd259d118ca4f881fb52c9be71b4d9f2ebef4dbb76c53ed53b96b48497c2",
+        "traceSha256BothRuns": [
+          "506cbd259d118ca4f881fb52c9be71b4d9f2ebef4dbb76c53ed53b96b48497c2",
+          "506cbd259d118ca4f881fb52c9be71b4d9f2ebef4dbb76c53ed53b96b48497c2"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 0,
+        "rotation": 1,
+        "orderType": "attack",
+        "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+        "ticks": 349,
+        "firstDamageTick": 115,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -1.076021977856095,
+          "z": 0.5
+        },
+        "infantryPosition": {
+          "x": -0.3152934676635202,
+          "z": -0.5
+        },
+        "traceSha256": "d6fa7cf70c34490fe50fc90064ea3ed3df0c6394a619ec88eee2b482c9651ea1",
+        "traceSha256BothRuns": [
+          "d6fa7cf70c34490fe50fc90064ea3ed3df0c6394a619ec88eee2b482c9651ea1",
+          "d6fa7cf70c34490fe50fc90064ea3ed3df0c6394a619ec88eee2b482c9651ea1"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 0,
+        "rotation": 1,
+        "orderType": "attackMove",
+        "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+        "ticks": 377,
+        "firstDamageTick": 143,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -0.08555641157388028,
+          "z": 1.5
+        },
+        "infantryPosition": {
+          "x": -0.8262218896024767,
+          "z": 0.5817691433119373
+        },
+        "traceSha256": "ef490182c7bee1227f6d4efaae6d9f2e94c355d7b85459fb483d768bb5bc1077",
+        "traceSha256BothRuns": [
+          "ef490182c7bee1227f6d4efaae6d9f2e94c355d7b85459fb483d768bb5bc1077",
+          "ef490182c7bee1227f6d4efaae6d9f2e94c355d7b85459fb483d768bb5bc1077"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 0,
+        "rotation": 2,
+        "orderType": "attack",
+        "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+        "ticks": 357,
+        "firstDamageTick": 123,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -0.6173113554772407,
+          "z": -1.5
+        },
+        "infantryPosition": {
+          "x": -1.7587358070815788,
+          "z": -1.5
+        },
+        "traceSha256": "d89cb2109c6928d9b933af8d08d58d4531c84c9496fb4005c0a7ea50c561e749",
+        "traceSha256BothRuns": [
+          "d89cb2109c6928d9b933af8d08d58d4531c84c9496fb4005c0a7ea50c561e749",
+          "d89cb2109c6928d9b933af8d08d58d4531c84c9496fb4005c0a7ea50c561e749"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 0,
+        "rotation": 2,
+        "orderType": "attackMove",
+        "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+        "ticks": 354,
+        "firstDamageTick": 120,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -1.008152660939071,
+          "z": -0.5
+        },
+        "infantryPosition": {
+          "x": -1.7775390926363002,
+          "z": 0.5
+        },
+        "traceSha256": "a2c69e4950a22370cae66ced40ac4ed2b92fa2f9ee5edf559854586fad8cfb53",
+        "traceSha256BothRuns": [
+          "a2c69e4950a22370cae66ced40ac4ed2b92fa2f9ee5edf559854586fad8cfb53",
+          "a2c69e4950a22370cae66ced40ac4ed2b92fa2f9ee5edf559854586fad8cfb53"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 0,
+        "rotation": 3,
+        "orderType": "attack",
+        "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+        "ticks": 350,
+        "firstDamageTick": 116,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -1.5,
+          "z": -0.25444358842612025
+        },
+        "infantryPosition": {
+          "x": -0.2946598407479928,
+          "z": -0.5
+        },
+        "traceSha256": "60110ff65f4775e4c9420972923ea8677fcc742e8fa197a5ccc3f364c7e79f30",
+        "traceSha256BothRuns": [
+          "60110ff65f4775e4c9420972923ea8677fcc742e8fa197a5ccc3f364c7e79f30",
+          "60110ff65f4775e4c9420972923ea8677fcc742e8fa197a5ccc3f364c7e79f30"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 0,
+        "rotation": 3,
+        "orderType": "attackMove",
+        "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+        "ticks": 355,
+        "firstDamageTick": 121,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -0.17888974490721554,
+          "z": -0.5
+        },
+        "infantryPosition": {
+          "x": -0.9449272702764713,
+          "z": 0.41675368413649855
+        },
+        "traceSha256": "2ec89d1e479aa928a2107ff8e49a9bccf37c670ab1a5e3dda8ed6f743c7e58a9",
+        "traceSha256BothRuns": [
+          "2ec89d1e479aa928a2107ff8e49a9bccf37c670ab1a5e3dda8ed6f743c7e58a9",
+          "2ec89d1e479aa928a2107ff8e49a9bccf37c670ab1a5e3dda8ed6f743c7e58a9"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 1,
+        "rotation": 0,
+        "orderType": "attack",
+        "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+        "ticks": 357,
+        "firstDamageTick": 123,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -0.6173113554772407,
+          "z": -1.5
+        },
+        "infantryPosition": {
+          "x": -1.7587358070815788,
+          "z": -1.5
+        },
+        "traceSha256": "e3a5f3a6f0921ed6f642988a997d10b408f9714c850992d160d9a5f855708a52",
+        "traceSha256BothRuns": [
+          "e3a5f3a6f0921ed6f642988a997d10b408f9714c850992d160d9a5f855708a52",
+          "e3a5f3a6f0921ed6f642988a997d10b408f9714c850992d160d9a5f855708a52"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 1,
+        "rotation": 0,
+        "orderType": "attackMove",
+        "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+        "ticks": 353,
+        "firstDamageTick": 119,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -1.1315020898809895,
+          "z": -0.5
+        },
+        "infantryPosition": {
+          "x": -1.9192256537958132,
+          "z": 0.5
+        },
+        "traceSha256": "cfe442244b68e895e98bfb7407c178fafd79097d4283b07e916a45df17fd0493",
+        "traceSha256BothRuns": [
+          "cfe442244b68e895e98bfb7407c178fafd79097d4283b07e916a45df17fd0493",
+          "cfe442244b68e895e98bfb7407c178fafd79097d4283b07e916a45df17fd0493"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 1,
+        "rotation": 1,
+        "orderType": "attack",
+        "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+        "ticks": 350,
+        "firstDamageTick": 116,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -1.5,
+          "z": -0.25444358842612025
+        },
+        "infantryPosition": {
+          "x": -0.2946598407479928,
+          "z": -0.5
+        },
+        "traceSha256": "ef2cad9ba6eba9940d84ec87169d8a72c3cf814a4b73af1179d785261348da91",
+        "traceSha256BothRuns": [
+          "ef2cad9ba6eba9940d84ec87169d8a72c3cf814a4b73af1179d785261348da91",
+          "ef2cad9ba6eba9940d84ec87169d8a72c3cf814a4b73af1179d785261348da91"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 1,
+        "rotation": 1,
+        "orderType": "attackMove",
+        "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+        "ticks": 355,
+        "firstDamageTick": 121,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -0.17888974490721554,
+          "z": -0.5
+        },
+        "infantryPosition": {
+          "x": -0.9449272702764713,
+          "z": 0.41675368413649855
+        },
+        "traceSha256": "2e67dc9613032b81f81f63f8ecbcb1c1c0d292edca83769b4b866e065b7d034a",
+        "traceSha256BothRuns": [
+          "2e67dc9613032b81f81f63f8ecbcb1c1c0d292edca83769b4b866e065b7d034a",
+          "2e67dc9613032b81f81f63f8ecbcb1c1c0d292edca83769b4b866e065b7d034a"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 1,
+        "rotation": 2,
+        "orderType": "attack",
+        "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+        "ticks": 402,
+        "firstDamageTick": 168,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -0.026666666666654626,
+          "z": -1.5
+        },
+        "infantryPosition": {
+          "x": 1.1578329600957846,
+          "z": -1.5
+        },
+        "traceSha256": "c82a088edd8edcb1f028c2b168abd943b22265614f2551328575489e1bcb5b67",
+        "traceSha256BothRuns": [
+          "c82a088edd8edcb1f028c2b168abd943b22265614f2551328575489e1bcb5b67",
+          "c82a088edd8edcb1f028c2b168abd943b22265614f2551328575489e1bcb5b67"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 1,
+        "rotation": 2,
+        "orderType": "attackMove",
+        "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+        "ticks": 390,
+        "firstDamageTick": 156,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -0.5,
+          "z": -1.2392502634866482
+        },
+        "infantryPosition": {
+          "x": 0.7042783616570998,
+          "z": -1.4364517737928537
+        },
+        "traceSha256": "83ab7845a72d94ecce7514480c5805da23c1f795942bfef412fb1826c307d944",
+        "traceSha256BothRuns": [
+          "83ab7845a72d94ecce7514480c5805da23c1f795942bfef412fb1826c307d944",
+          "83ab7845a72d94ecce7514480c5805da23c1f795942bfef412fb1826c307d944"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 1,
+        "rotation": 3,
+        "orderType": "attack",
+        "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+        "ticks": 349,
+        "firstDamageTick": 115,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -1.076021977856095,
+          "z": 0.5
+        },
+        "infantryPosition": {
+          "x": -0.3152934676635202,
+          "z": -0.5
+        },
+        "traceSha256": "9f7134245ee721569fa651ee2248a317da49c742d03dac1df7399f6c0e3ccc61",
+        "traceSha256BothRuns": [
+          "9f7134245ee721569fa651ee2248a317da49c742d03dac1df7399f6c0e3ccc61",
+          "9f7134245ee721569fa651ee2248a317da49c742d03dac1df7399f6c0e3ccc61"
+        ],
+        "repeatExact": true
+      },
+      {
+        "workerTeam": 1,
+        "rotation": 3,
+        "orderType": "attackMove",
+        "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+        "ticks": 377,
+        "firstDamageTick": 143,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "workerPosition": {
+          "x": -0.08555641157388028,
+          "z": 1.5
+        },
+        "infantryPosition": {
+          "x": -0.8262218896024767,
+          "z": 0.5817691433119373
+        },
+        "traceSha256": "fdee7599c8ebbf3e4698247109ae5216ef323dc885d5542522c63d40a6061027",
+        "traceSha256BothRuns": [
+          "fdee7599c8ebbf3e4698247109ae5216ef323dc885d5542522c63d40a6061027",
+          "fdee7599c8ebbf3e4698247109ae5216ef323dc885d5542522c63d40a6061027"
+        ],
+        "repeatExact": true
+      }
+    ]
+  },
+  "originalNativeCandidate": {
+    "first": {
+      "azureKind": "worker",
+      "emberKind": "infantry",
+      "azureHp": 0,
+      "emberHp": 60,
+      "winner": "ember"
+    },
+    "second": {
+      "azureKind": "infantry",
+      "emberKind": "worker",
+      "azureHp": 60,
+      "emberHp": 0,
+      "winner": "azure"
+    }
+  },
+  "native": {
+    "head": "1f4b7799c1f1976174f16003f3058d9b5a8653bb",
+    "sourceSha256": "ce165999686db6087f012c7e79068ade2c95619fde4901a3a888083e750d36a6",
+    "records": [
+      {
+        "workerTeam": 0,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "ticks": 390,
+        "restartDuringPursuit": true,
+        "postCombatRestartStable": true,
+        "parkedRosterUnchanged": true
+      },
+      {
+        "workerTeam": 1,
+        "workerHp": 0,
+        "infantryHp": 60,
+        "ticks": 330,
+        "restartDuringPursuit": true,
+        "postCombatRestartStable": true,
+        "parkedRosterUnchanged": true
+      }
+    ],
+    "limits": [
+      "ordinary two-seat native starting roster and attack commands; no actor/HP/position injection",
+      "native proof uses open fog-off map and direct attacks; fixed-body matrix also covers Attack Move and four spawn orientations",
+      "no renderer, deployment or performance claim"
+    ]
+  },
+  "attackLossControls": [
+    {
+      "team": 0,
+      "orderType": "attack",
+      "mode": "dead",
+      "ticks": 1049,
+      "traceSha256": "b5a63a23e65e300c81ae005a49ae6991d07b8e8eb11fb03da9e3a7193faa0872",
+      "matchesPriorMergedCase": true,
+      "repeatExact": true
+    },
+    {
+      "team": 0,
+      "orderType": "attack",
+      "mode": "hidden",
+      "ticks": 87,
+      "traceSha256": "25feeede9bcd3ec1071e1dabad2d6a206064cab33434afe40c48f5cf97f05021",
+      "matchesPriorMergedCase": true,
+      "repeatExact": true
+    },
+    {
+      "team": 0,
+      "orderType": "attack",
+      "mode": "unreachable",
+      "ticks": 524,
+      "traceSha256": "63f4f02344ae709c82a6c1e71a2f9efc8fa92f1b6feaac08a521f958240eee0b",
+      "matchesPriorMergedCase": true,
+      "repeatExact": true
+    },
+    {
+      "team": 0,
+      "orderType": "attackMove",
+      "mode": "dead",
+      "ticks": 1049,
+      "traceSha256": "64624acb431b3711433a4f6004cfdc68aa68e691a92731e9d818f1b807845edf",
+      "matchesPriorMergedCase": true,
+      "repeatExact": true
+    },
+    {
+      "team": 0,
+      "orderType": "attackMove",
+      "mode": "hidden",
+      "ticks": 481,
+      "traceSha256": "3b5a997851b1760e2b182229dbcf53ccffa1449136b37322f7ae79ca250d0ffb",
+      "matchesPriorMergedCase": true,
+      "repeatExact": true
+    },
+    {
+      "team": 0,
+      "orderType": "attackMove",
+      "mode": "unreachable",
+      "ticks": 524,
+      "traceSha256": "bf12f8f95829fb47ddbdb0728b64b3abdbcdae70f9eaca8dbc158406d35122c8",
+      "matchesPriorMergedCase": true,
+      "repeatExact": true
+    },
+    {
+      "team": 1,
+      "orderType": "attack",
+      "mode": "dead",
+      "ticks": 1037,
+      "traceSha256": "9d27f560e6047acc269f075b79a7aae98d1c49f8dd8d256a9985b8d93c46b1d5",
+      "matchesPriorMergedCase": true,
+      "repeatExact": true
+    },
+    {
+      "team": 1,
+      "orderType": "attack",
+      "mode": "hidden",
+      "ticks": 85,
+      "traceSha256": "b247c7cb8f5a433553c0f361b11cfd107a3285d1523efdb61eab7725335978d3",
+      "matchesPriorMergedCase": true,
+      "repeatExact": true
+    },
+    {
+      "team": 1,
+      "orderType": "attack",
+      "mode": "unreachable",
+      "ticks": 512,
+      "traceSha256": "f795211e7b7d631f0be93d2a9907bb4a40ac83c520affc6f9ad27dbd5ce972fc",
+      "matchesPriorMergedCase": true,
+      "repeatExact": true
+    },
+    {
+      "team": 1,
+      "orderType": "attackMove",
+      "mode": "dead",
+      "ticks": 1037,
+      "traceSha256": "905a9af22de1f428824efbd2857bb485605c525b34dc63ba552b1077f62820d2",
+      "matchesPriorMergedCase": true,
+      "repeatExact": true
+    },
+    {
+      "team": 1,
+      "orderType": "attackMove",
+      "mode": "hidden",
+      "ticks": 469,
+      "traceSha256": "c81f85f80937dc3b0a2e72132f23c04bf562b5f1da3664bf7ff7029d0421ff14",
+      "matchesPriorMergedCase": true,
+      "repeatExact": true
+    },
+    {
+      "team": 1,
+      "orderType": "attackMove",
+      "mode": "unreachable",
+      "ticks": 512,
+      "traceSha256": "e8594d122250acf699b58afd1c74aaed7470f2ecb116f1d51f87625b57e27893",
+      "matchesPriorMergedCase": true,
+      "repeatExact": true
+    }
+  ],
+  "checks": {
+    "baselineFailed": 2,
+    "baselinePassed": 14,
+    "candidateMatrixPassed": 16,
+    "waypointGuardsPassed": 3,
+    "focusedPassed": 154,
+    "cliffScenariosPassed": 2
+  },
+  "limits": [
+    "Original native fixture timeout is reproduced, not waived; second duel never ran on baseline.",
+    "New native proof is fog-off direct combat and ordinary roster/commands without actor/HP/position injection.",
+    "No full-suite, renderer, deployment, combat parity or performance claim."
+  ],
+  "independentReview": {
+    "head": "1f4b7799c1f1976174f16003f3058d9b5a8653bb",
+    "findings": 0,
+    "focusedPassed": 130,
+    "replayPairs": 16,
+    "extraWaypointAndBudgetProbesPassed": true
+  },
+  "integration": {
+    "main": "14a621ce56d904df3beef71d553b67793c89aaa5",
+    "head": "7c4af0957ca90fd4d914b0281c3cbbd199fd7b29",
+    "sourceSha256": "f440a921f40e24569aa61288222086867fc78aa340635ff945b09ff7900912b8",
+    "focusedPassed": 176,
+    "pursuitPairs": 16,
+    "attackLossPairs": 12,
+    "allTracesMatchEarlierCandidate": true,
+    "originalNativeScenarioUnchangedAndPassed": true,
+    "native": {
+      "head": "aa54efb7c08d20a73e585653170670746741faa6",
+      "sourceSha256": "f440a921f40e24569aa61288222086867fc78aa340635ff945b09ff7900912b8",
+      "records": [
+        {
+          "workerTeam": 0,
+          "workerHp": 0,
+          "infantryHp": 60,
+          "ticks": 390,
+          "restartDuringPursuit": true,
+          "pursuitDistanceMoved": [
+            1.4,
+            1.5744596155772699
+          ],
+          "activePathsAtRestart": true,
+          "postCombatRestartStable": true,
+          "parkedRosterUnchanged": true
+        },
+        {
+          "workerTeam": 1,
+          "workerHp": 0,
+          "infantryHp": 60,
+          "ticks": 330,
+          "restartDuringPursuit": true,
+          "pursuitDistanceMoved": [
+            1.880848534267859,
+            1.7426097127697324
+          ],
+          "activePathsAtRestart": true,
+          "postCombatRestartStable": true,
+          "parkedRosterUnchanged": true
+        }
+      ],
+      "limits": [
+        "ordinary two-seat native starting roster and attack commands; no actor/HP/position injection",
+        "native proof uses open fog-off map and direct attacks; fixed-body matrix also covers Attack Move and four spawn orientations",
+        "no renderer, deployment or performance claim"
+      ]
+    },
+    "independentReview": {
+      "head": "7c4af0957ca90fd4d914b0281c3cbbd199fd7b29",
+      "findings": 0,
+      "focusedPassed": 87
+    },
+    "strengthening": "Native aa54efb requires both actors to move >.2 cells with active paths before restart; production server unchanged from7c4af09."
+  }
+}
