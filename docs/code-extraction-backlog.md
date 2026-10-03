@@ -10,8 +10,8 @@ owners retain their tooling and broader migrations.
 
 | Rank / state | Evidence and next action | Write boundary | Dependencies and acceptance |
 | --- | --- | --- | --- |
-| 1 — implementing | The server's 27-line deflate-offer rule is unchanged since prototype `691c6d2` and has no direct unit contract. Extract its raw header decision and retain current negotiation behavior. | `src/networking/websocket-deflate-offer.mjs`, one server import/call/removal, dedicated tests, adjacent CI coverage registration and this note. | Literal offer cases, exact baseline parity, real accepted/declined handshakes, package smoke, independent review and guarded merge. Quality owner retains coordinated deployed transport acceptance. |
-| 2 — audit before selecting | Tick duration and start lag repeat sorted ring-window quantiles in `tickTimingPayload`. Inspect consumers, sample ordering and rounding before claiming a shared contract. Similar separation-count/browser percentiles may mean different things. | No writes reserved. Potential pure diagnostic helper and exact timing adapters/tests; counters, scheduler and performance policy remain outside this slice. | First prove useful shared semantics and check ownership of any overlapping performance interface. Preserve output names, nulls, rounding and window behavior. Defer if the only benefit is moving lines. |
+| 1 — [PR170 in review](https://github.com/lbeezr/thousand-unit-skirmish/pull/170) | The server's 27-line deflate-offer rule is unchanged since prototype `691c6d2` and had no direct unit contract. Its raw header decision is now isolated with current negotiation behavior retained. | `src/networking/websocket-deflate-offer.mjs`, one server import/call/removal, dedicated tests, adjacent CI coverage registration and this note. | 38 literal cases, 9,223 baseline decisions, strict checkJs, 10 real accepted/declined handshakes and package smoke pass. Finish independent review and guarded merge. Quality owner retains coordinated deployed transport acceptance. |
+| 2 — audit before selecting | Tick duration and start lag repeat sorted ring-window quantiles in `tickTimingPayload`. Actual browser/pathfinding/staging percentile helpers differ in rounding and empty results; a cross-tool consolidation is unjustified. Inspect the two server timing windows' sample ordering and rounding next. | No writes reserved. Potential pure diagnostic helper and exact timing adapters/tests; counters, scheduler and performance policy remain outside this slice. | First prove useful shared semantics and check ownership of any overlapping performance interface. Preserve output names, nulls, rounding and window behavior. Defer if the only benefit is moving lines. |
 | 3 — deferred | Checkpoint validation is roughly 400 lines; main exceeds 10,000 lines and imports 54 modules at the audited baseline. Both are real coupling hotspots, but save invariants and active feature owners require stable seams first. | No checkpoint/save, HUD, renderer binding, combat, animation, lab entry, mode config, Skiff, AGENTS or shared planning-guide edits reserved. | Agree any shared interface with its affected owner and establish behavior evidence before editing. No bulk moves, generalized protocols or coincidental abstraction. |
 
 ## Integrated code milestones
@@ -26,10 +26,11 @@ owners retain their tooling and broader migrations.
 
 The quality owner retains these acceptance steps, coordinated with the source
 task parent's staging deployment and native QA. No independent redeploy or
-config/auth change is authorized. Last verified SUCCESS deployment was
-`cf9bea37-1681-4b1c-8764-23eb260bedde`, source
-`00ff45d9702dfbcf9da6f6ac88e0ca4381e374dc`: ancestry includes PR138 and excludes
-PR144/164. Confirm actual deployment/source ancestry before claiming inclusion.
+config/auth change is authorized. Read-only Railway inspection now confirms
+SUCCESS deployment `df65855c-57e3-4979-a345-1c7e83e90173`, source
+`0fb9a3dcc1f93f44b87fe5ea8ab8caabf9da0739` (3 October, 22:55 UTC).
+Git ancestry includes PR138/144/164; this establishes deployment inclusion,
+not native acceptance. PR170 is excluded until a later deployed source contains it.
 
 In this executor, staging CONNECT probes failed with proxy 403 before application
 HTTP, and supported Chromium preflight reported unavailable sandbox/storage.
