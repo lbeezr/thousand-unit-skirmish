@@ -171,6 +171,15 @@ checks do not replace a played opening with the Town Center present.
 `type`, world `x`/`z`, and positive finite `stock`. Map Studio can add, select, change stock, or remove
 nodes. Obstacle painting over a node removes it.
 
+An optional `wildlifeSpecies: "bellweather-sheep"` on a `food` node opts into the
+[neutral sheep foundation](wildlife-bellweather-sheep.md#implemented-neutral-food-foundation--3-october-2026).
+The same node ID and authored stock represent the living animal and its carcass;
+there is no second resource pool. Other species, wood wildlife and authored
+`wildlifeState` are rejected. Runtime lifecycle is `alive`, `carcass`, then
+`depleted`, visible only in the room's filtered state. Dedicated wildlife brushes,
+claim/herding and sprite bindings are not implemented. No shipped map uses this
+optional identity yet.
+
 Millrace expands its eight resource anchors into five-node seeded patches (40
 nodes), mirrored between seats. Each original anchor stays in place. Added nodes
 stay within four cells, two cells apart, outside the six-cell starting clearings,
