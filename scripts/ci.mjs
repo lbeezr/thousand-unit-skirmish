@@ -177,6 +177,9 @@ run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation
 run(['--test', 'scripts/base-lifecycle-ui.test.mjs'], 'Contextual cancellation and repair controls');
 run(['--test', 'scripts/research-ui.test.mjs'], 'Registered research choices');
 run(['--test', 'scripts/research-actions.test.mjs'], 'Shared technology availability');
+run(['--experimental-test-coverage', '--test-coverage-include=src/gameplay-action-rules.mjs',
+  '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
+  '--test', 'scripts/gameplay-action-rules.test.mjs'], 'Production/research shared-rule coverage floor (100%)');
 run(['--test', 'scripts/siege-ai.test.mjs'], 'Bounded siege acquisition and assault');
 run(['--test', 'scripts/combat-rules.test.mjs'], 'Shared combat classes, counters and effect scope');
 run(['--test', 'scripts/attack-target-geometry.test.mjs'], 'Attack-target geometry, queued transitions and fog');
