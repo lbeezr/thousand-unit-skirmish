@@ -1,0 +1,4533 @@
+{
+  "date": "2026-10-02",
+  "method": "HTML/CSS direction mockups over directly captured gameplay backgrounds; not integrated screenshots",
+  "viewport": [
+    1280,
+    1100
+  ],
+  "devicePixelRatio": 1,
+  "results": [
+    {
+      "theme": "journal",
+      "images": [
+        {
+          "src": "../../../../assets/ui/icons/food.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/icons/wood.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/cursors/build-blocked.png",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/icons/move.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/icons/gather.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/icons/build.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/icons/attack.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/cursors/select.png",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/cursors/move-queued.png",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/cursors/build-blocked.png",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/cursors/build-blocked.png",
+          "ok": true
+        }
+      ],
+      "boards": 1,
+      "contentHeight": 1060,
+      "backgroundStateChecks": [
+        {
+          "theme": "journal",
+          "terrain": "snow",
+          "state": "blocked",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "Pastures, paths & provisions",
+              "rect": [
+                106,
+                137.5,
+                170,
+                17
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                361,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                485.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "× BLOCKED · ANOTHER BUILDING TOO CLOSE",
+              "rect": [
+                36,
+                561,
+                366.046875,
+                19
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Choose a clear site. Escape cancels placement.",
+              "rect": [
+                36,
+                584,
+                366.046875,
+                18
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                38,
+                644,
+                1014,
+                32
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                38,
+                688,
+                94.828125,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                140.828125,
+                688,
+                127.171875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                276,
+                688,
+                105.1875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                389.1875,
+                688,
+                145.171875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                542.359375,
+                688,
+                88.53125,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                638.890625,
+                688,
+                220.21875,
+                54
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                89.828125,
+                717,
+                26.15625,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                186.828125,
+                717,
+                70.171875,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                322,
+                717,
+                48.1875,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                473.828125,
+                717,
+                10.890625,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                762.609375,
+                706.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                38,
+                754,
+                1014,
+                14
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        },
+        {
+          "theme": "journal",
+          "terrain": "snow",
+          "state": "queued",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "Pastures, paths & provisions",
+              "rect": [
+                106,
+                137.5,
+                170,
+                17
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                361,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                485.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "+ QUEUED MOVE · 2 WAYPOINTS",
+              "rect": [
+                36,
+                561,
+                260.09375,
+                19
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Shift adds a destination. S stops the selected Workers.",
+              "rect": [
+                36,
+                584,
+                329.03125,
+                18
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                38,
+                644,
+                1014,
+                32
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                38,
+                688,
+                94.828125,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                140.828125,
+                688,
+                127.171875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                276,
+                688,
+                105.1875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                389.1875,
+                688,
+                145.171875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                542.359375,
+                688,
+                88.53125,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                638.890625,
+                688,
+                220.21875,
+                54
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                89.828125,
+                717,
+                26.15625,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                186.828125,
+                717,
+                70.171875,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                322,
+                717,
+                48.1875,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                473.828125,
+                717,
+                10.890625,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                762.609375,
+                706.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                38,
+                754,
+                1014,
+                14
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        },
+        {
+          "theme": "journal",
+          "terrain": "woodland",
+          "state": "blocked",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "Pastures, paths & provisions",
+              "rect": [
+                106,
+                137.5,
+                170,
+                17
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                361,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                485.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "× BLOCKED · ANOTHER BUILDING TOO CLOSE",
+              "rect": [
+                36,
+                561,
+                366.046875,
+                19
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Choose a clear site. Escape cancels placement.",
+              "rect": [
+                36,
+                584,
+                366.046875,
+                18
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                38,
+                644,
+                1014,
+                32
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                38,
+                688,
+                94.828125,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                140.828125,
+                688,
+                127.171875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                276,
+                688,
+                105.1875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                389.1875,
+                688,
+                145.171875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                542.359375,
+                688,
+                88.53125,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                638.890625,
+                688,
+                220.21875,
+                54
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                89.828125,
+                717,
+                26.15625,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                186.828125,
+                717,
+                70.171875,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                322,
+                717,
+                48.1875,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                473.828125,
+                717,
+                10.890625,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                762.609375,
+                706.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                38,
+                754,
+                1014,
+                14
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        },
+        {
+          "theme": "journal",
+          "terrain": "woodland",
+          "state": "queued",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "Pastures, paths & provisions",
+              "rect": [
+                106,
+                137.5,
+                170,
+                17
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                361,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                485.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "+ QUEUED MOVE · 2 WAYPOINTS",
+              "rect": [
+                36,
+                561,
+                260.09375,
+                19
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Shift adds a destination. S stops the selected Workers.",
+              "rect": [
+                36,
+                584,
+                329.03125,
+                18
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                38,
+                644,
+                1014,
+                32
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                38,
+                688,
+                94.828125,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                140.828125,
+                688,
+                127.171875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                276,
+                688,
+                105.1875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                389.1875,
+                688,
+                145.171875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                542.359375,
+                688,
+                88.53125,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                638.890625,
+                688,
+                220.21875,
+                54
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                89.828125,
+                717,
+                26.15625,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                186.828125,
+                717,
+                70.171875,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                322,
+                717,
+                48.1875,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                473.828125,
+                717,
+                10.890625,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                762.609375,
+                706.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                38,
+                754,
+                1014,
+                14
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        },
+        {
+          "theme": "journal",
+          "terrain": "meadow",
+          "state": "blocked",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "Pastures, paths & provisions",
+              "rect": [
+                106,
+                137.5,
+                170,
+                17
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                361,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                485.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "× BLOCKED · ANOTHER BUILDING TOO CLOSE",
+              "rect": [
+                36,
+                561,
+                366.046875,
+                19
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Choose a clear site. Escape cancels placement.",
+              "rect": [
+                36,
+                584,
+                366.046875,
+                18
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                38,
+                644,
+                1014,
+                32
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                38,
+                688,
+                94.828125,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                140.828125,
+                688,
+                127.171875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                276,
+                688,
+                105.1875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                389.1875,
+                688,
+                145.171875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                542.359375,
+                688,
+                88.53125,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                638.890625,
+                688,
+                220.21875,
+                54
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                89.828125,
+                717,
+                26.15625,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                186.828125,
+                717,
+                70.171875,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                322,
+                717,
+                48.1875,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                473.828125,
+                717,
+                10.890625,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                762.609375,
+                706.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                38,
+                754,
+                1014,
+                14
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        },
+        {
+          "theme": "journal",
+          "terrain": "meadow",
+          "state": "queued",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "Pastures, paths & provisions",
+              "rect": [
+                106,
+                137.5,
+                170,
+                17
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                361,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                485.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "+ QUEUED MOVE · 2 WAYPOINTS",
+              "rect": [
+                36,
+                561,
+                260.09375,
+                19
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Shift adds a destination. S stops the selected Workers.",
+              "rect": [
+                36,
+                584,
+                329.03125,
+                18
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                38,
+                644,
+                1014,
+                32
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                38,
+                688,
+                94.828125,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                140.828125,
+                688,
+                127.171875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                276,
+                688,
+                105.1875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                389.1875,
+                688,
+                145.171875,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                542.359375,
+                688,
+                88.53125,
+                54
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                638.890625,
+                688,
+                220.21875,
+                54
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgb(242, 235, 220)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                89.828125,
+                717,
+                26.15625,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                186.828125,
+                717,
+                70.171875,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                322,
+                717,
+                48.1875,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                473.828125,
+                717,
+                10.890625,
+                17
+              ],
+              "color": "rgb(36, 48, 38)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                762.609375,
+                706.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                38,
+                754,
+                1014,
+                14
+              ],
+              "color": "rgb(83, 96, 80)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        }
+      ],
+      "grayscaleProxy": true,
+      "scaledViewport": {
+        "width": 960,
+        "height": 800,
+        "contentHeight": 1060,
+        "fixedBoardWidth": 1280,
+        "responsive": false
+      }
+    },
+    {
+      "theme": "wood",
+      "images": [
+        {
+          "src": "../../../../assets/ui/icons/food.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/icons/wood.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/cursors/build-blocked.png",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/icons/move.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/icons/gather.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/icons/build.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/icons/attack.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/cursors/select.png",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/cursors/move-queued.png",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/cursors/build-blocked.png",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/cursors/build-blocked.png",
+          "ok": true
+        }
+      ],
+      "boards": 1,
+      "contentHeight": 1060,
+      "backgroundStateChecks": [
+        {
+          "theme": "wood",
+          "terrain": "snow",
+          "state": "blocked",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "The commander's field kit",
+              "rect": [
+                107,
+                137.5,
+                170,
+                17
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                362,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                486.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "× BLOCKED · ANOTHER BUILDING TOO CLOSE",
+              "rect": [
+                37,
+                562,
+                366.046875,
+                19
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Choose a clear site. Escape cancels placement.",
+              "rect": [
+                37,
+                585,
+                366.046875,
+                18
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                39,
+                641,
+                1012,
+                32
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                39,
+                685,
+                94.828125,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                141.828125,
+                685,
+                127.171875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                277,
+                685,
+                105.1875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                390.1875,
+                685,
+                145.171875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                543.359375,
+                685,
+                88.53125,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                639.890625,
+                685,
+                220.21875,
+                56
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                90.828125,
+                714,
+                26.15625,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                187.828125,
+                714,
+                70.171875,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                323,
+                714,
+                48.1875,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                474.828125,
+                714,
+                10.890625,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                763.609375,
+                703.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                39,
+                753,
+                1012,
+                14
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        },
+        {
+          "theme": "wood",
+          "terrain": "snow",
+          "state": "queued",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "The commander's field kit",
+              "rect": [
+                107,
+                137.5,
+                170,
+                17
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                362,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                486.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "+ QUEUED MOVE · 2 WAYPOINTS",
+              "rect": [
+                37,
+                562,
+                260.09375,
+                19
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Shift adds a destination. S stops the selected Workers.",
+              "rect": [
+                37,
+                585,
+                329.03125,
+                18
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                39,
+                641,
+                1012,
+                32
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                39,
+                685,
+                94.828125,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                141.828125,
+                685,
+                127.171875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                277,
+                685,
+                105.1875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                390.1875,
+                685,
+                145.171875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                543.359375,
+                685,
+                88.53125,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                639.890625,
+                685,
+                220.21875,
+                56
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                90.828125,
+                714,
+                26.15625,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                187.828125,
+                714,
+                70.171875,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                323,
+                714,
+                48.1875,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                474.828125,
+                714,
+                10.890625,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                763.609375,
+                703.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                39,
+                753,
+                1012,
+                14
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        },
+        {
+          "theme": "wood",
+          "terrain": "woodland",
+          "state": "blocked",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "The commander's field kit",
+              "rect": [
+                107,
+                137.5,
+                170,
+                17
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                362,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                486.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "× BLOCKED · ANOTHER BUILDING TOO CLOSE",
+              "rect": [
+                37,
+                562,
+                366.046875,
+                19
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Choose a clear site. Escape cancels placement.",
+              "rect": [
+                37,
+                585,
+                366.046875,
+                18
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                39,
+                641,
+                1012,
+                32
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                39,
+                685,
+                94.828125,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                141.828125,
+                685,
+                127.171875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                277,
+                685,
+                105.1875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                390.1875,
+                685,
+                145.171875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                543.359375,
+                685,
+                88.53125,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                639.890625,
+                685,
+                220.21875,
+                56
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                90.828125,
+                714,
+                26.15625,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                187.828125,
+                714,
+                70.171875,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                323,
+                714,
+                48.1875,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                474.828125,
+                714,
+                10.890625,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                763.609375,
+                703.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                39,
+                753,
+                1012,
+                14
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        },
+        {
+          "theme": "wood",
+          "terrain": "woodland",
+          "state": "queued",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "The commander's field kit",
+              "rect": [
+                107,
+                137.5,
+                170,
+                17
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                362,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                486.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "+ QUEUED MOVE · 2 WAYPOINTS",
+              "rect": [
+                37,
+                562,
+                260.09375,
+                19
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Shift adds a destination. S stops the selected Workers.",
+              "rect": [
+                37,
+                585,
+                329.03125,
+                18
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                39,
+                641,
+                1012,
+                32
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                39,
+                685,
+                94.828125,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                141.828125,
+                685,
+                127.171875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                277,
+                685,
+                105.1875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                390.1875,
+                685,
+                145.171875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                543.359375,
+                685,
+                88.53125,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                639.890625,
+                685,
+                220.21875,
+                56
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                90.828125,
+                714,
+                26.15625,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                187.828125,
+                714,
+                70.171875,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                323,
+                714,
+                48.1875,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                474.828125,
+                714,
+                10.890625,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                763.609375,
+                703.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                39,
+                753,
+                1012,
+                14
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        },
+        {
+          "theme": "wood",
+          "terrain": "meadow",
+          "state": "blocked",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "The commander's field kit",
+              "rect": [
+                107,
+                137.5,
+                170,
+                17
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                362,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                486.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "× BLOCKED · ANOTHER BUILDING TOO CLOSE",
+              "rect": [
+                37,
+                562,
+                366.046875,
+                19
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Choose a clear site. Escape cancels placement.",
+              "rect": [
+                37,
+                585,
+                366.046875,
+                18
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                39,
+                641,
+                1012,
+                32
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                39,
+                685,
+                94.828125,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                141.828125,
+                685,
+                127.171875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                277,
+                685,
+                105.1875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                390.1875,
+                685,
+                145.171875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                543.359375,
+                685,
+                88.53125,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                639.890625,
+                685,
+                220.21875,
+                56
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                90.828125,
+                714,
+                26.15625,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                187.828125,
+                714,
+                70.171875,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                323,
+                714,
+                48.1875,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                474.828125,
+                714,
+                10.890625,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                763.609375,
+                703.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                39,
+                753,
+                1012,
+                14
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        },
+        {
+          "theme": "wood",
+          "terrain": "meadow",
+          "state": "queued",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "The commander's field kit",
+              "rect": [
+                107,
+                137.5,
+                170,
+                17
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                362,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                486.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "+ QUEUED MOVE · 2 WAYPOINTS",
+              "rect": [
+                37,
+                562,
+                260.09375,
+                19
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Shift adds a destination. S stops the selected Workers.",
+              "rect": [
+                37,
+                585,
+                329.03125,
+                18
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                39,
+                641,
+                1012,
+                32
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                39,
+                685,
+                94.828125,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                141.828125,
+                685,
+                127.171875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                277,
+                685,
+                105.1875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                390.1875,
+                685,
+                145.171875,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                543.359375,
+                685,
+                88.53125,
+                56
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                639.890625,
+                685,
+                220.21875,
+                56
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgb(56, 53, 43)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                90.828125,
+                714,
+                26.15625,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                187.828125,
+                714,
+                70.171875,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                323,
+                714,
+                48.1875,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                474.828125,
+                714,
+                10.890625,
+                17
+              ],
+              "color": "rgb(240, 229, 205)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                763.609375,
+                703.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                39,
+                753,
+                1012,
+                14
+              ],
+              "color": "rgb(195, 187, 169)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        }
+      ],
+      "grayscaleProxy": true,
+      "scaledViewport": {
+        "width": 960,
+        "height": 800,
+        "contentHeight": 1060,
+        "fixedBoardWidth": 1280,
+        "responsive": false
+      }
+    },
+    {
+      "theme": "map",
+      "images": [
+        {
+          "src": "../../../../assets/ui/icons/food.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/icons/wood.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/cursors/build-blocked.png",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/icons/move.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/icons/gather.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/icons/build.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/icons/attack.svg",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/cursors/select.png",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/cursors/move-queued.png",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/cursors/build-blocked.png",
+          "ok": true
+        },
+        {
+          "src": "../../../../assets/ui/cursors/build-blocked.png",
+          "ok": true
+        }
+      ],
+      "boards": 1,
+      "contentHeight": 1060,
+      "backgroundStateChecks": [
+        {
+          "theme": "map",
+          "terrain": "snow",
+          "state": "blocked",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "Survey the living world",
+              "rect": [
+                105,
+                139.5,
+                170,
+                17
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                360,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                484.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "× BLOCKED · ANOTHER BUILDING TOO CLOSE",
+              "rect": [
+                35,
+                560,
+                366.046875,
+                19
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Choose a clear site. Escape cancels placement.",
+              "rect": [
+                35,
+                583,
+                366.046875,
+                18
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                37,
+                645,
+                1016,
+                32
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                37,
+                689,
+                94.828125,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                139.828125,
+                689,
+                127.171875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                275,
+                689,
+                105.1875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                388.1875,
+                689,
+                145.171875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                541.359375,
+                689,
+                88.53125,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                637.890625,
+                689,
+                220.21875,
+                54
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                88.828125,
+                718,
+                26.15625,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                185.828125,
+                718,
+                70.171875,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                321,
+                718,
+                48.1875,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                472.828125,
+                718,
+                10.890625,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                761.609375,
+                707.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                37,
+                755,
+                1016,
+                14
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        },
+        {
+          "theme": "map",
+          "terrain": "snow",
+          "state": "queued",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "Survey the living world",
+              "rect": [
+                105,
+                139.5,
+                170,
+                17
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                360,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                484.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "+ QUEUED MOVE · 2 WAYPOINTS",
+              "rect": [
+                35,
+                560,
+                260.09375,
+                19
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Shift adds a destination. S stops the selected Workers.",
+              "rect": [
+                35,
+                583,
+                329.03125,
+                18
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                37,
+                645,
+                1016,
+                32
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                37,
+                689,
+                94.828125,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                139.828125,
+                689,
+                127.171875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                275,
+                689,
+                105.1875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                388.1875,
+                689,
+                145.171875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                541.359375,
+                689,
+                88.53125,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                637.890625,
+                689,
+                220.21875,
+                54
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                88.828125,
+                718,
+                26.15625,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                185.828125,
+                718,
+                70.171875,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                321,
+                718,
+                48.1875,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                472.828125,
+                718,
+                10.890625,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                761.609375,
+                707.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                37,
+                755,
+                1016,
+                14
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        },
+        {
+          "theme": "map",
+          "terrain": "woodland",
+          "state": "blocked",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "Survey the living world",
+              "rect": [
+                105,
+                139.5,
+                170,
+                17
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                360,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                484.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "× BLOCKED · ANOTHER BUILDING TOO CLOSE",
+              "rect": [
+                35,
+                560,
+                366.046875,
+                19
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Choose a clear site. Escape cancels placement.",
+              "rect": [
+                35,
+                583,
+                366.046875,
+                18
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                37,
+                645,
+                1016,
+                32
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                37,
+                689,
+                94.828125,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                139.828125,
+                689,
+                127.171875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                275,
+                689,
+                105.1875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                388.1875,
+                689,
+                145.171875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                541.359375,
+                689,
+                88.53125,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                637.890625,
+                689,
+                220.21875,
+                54
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                88.828125,
+                718,
+                26.15625,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                185.828125,
+                718,
+                70.171875,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                321,
+                718,
+                48.1875,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                472.828125,
+                718,
+                10.890625,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                761.609375,
+                707.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                37,
+                755,
+                1016,
+                14
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        },
+        {
+          "theme": "map",
+          "terrain": "woodland",
+          "state": "queued",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "Survey the living world",
+              "rect": [
+                105,
+                139.5,
+                170,
+                17
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                360,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                484.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "+ QUEUED MOVE · 2 WAYPOINTS",
+              "rect": [
+                35,
+                560,
+                260.09375,
+                19
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Shift adds a destination. S stops the selected Workers.",
+              "rect": [
+                35,
+                583,
+                329.03125,
+                18
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                37,
+                645,
+                1016,
+                32
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                37,
+                689,
+                94.828125,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                139.828125,
+                689,
+                127.171875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                275,
+                689,
+                105.1875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                388.1875,
+                689,
+                145.171875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                541.359375,
+                689,
+                88.53125,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                637.890625,
+                689,
+                220.21875,
+                54
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                88.828125,
+                718,
+                26.15625,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                185.828125,
+                718,
+                70.171875,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                321,
+                718,
+                48.1875,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                472.828125,
+                718,
+                10.890625,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                761.609375,
+                707.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                37,
+                755,
+                1016,
+                14
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        },
+        {
+          "theme": "map",
+          "terrain": "meadow",
+          "state": "blocked",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "Survey the living world",
+              "rect": [
+                105,
+                139.5,
+                170,
+                17
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                360,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                484.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "× BLOCKED · ANOTHER BUILDING TOO CLOSE",
+              "rect": [
+                35,
+                560,
+                366.046875,
+                19
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Choose a clear site. Escape cancels placement.",
+              "rect": [
+                35,
+                583,
+                366.046875,
+                18
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                37,
+                645,
+                1016,
+                32
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                37,
+                689,
+                94.828125,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                139.828125,
+                689,
+                127.171875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                275,
+                689,
+                105.1875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                388.1875,
+                689,
+                145.171875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                541.359375,
+                689,
+                88.53125,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                637.890625,
+                689,
+                220.21875,
+                54
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                88.828125,
+                718,
+                26.15625,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                185.828125,
+                718,
+                70.171875,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                321,
+                718,
+                48.1875,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                472.828125,
+                718,
+                10.890625,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                761.609375,
+                707.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                37,
+                755,
+                1016,
+                14
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        },
+        {
+          "theme": "map",
+          "terrain": "meadow",
+          "state": "queued",
+          "samples": [
+            {
+              "selector": ".brand small",
+              "text": "Survey the living world",
+              "rect": [
+                105,
+                139.5,
+                170,
+                17
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "FOOD",
+              "rect": [
+                360,
+                137,
+                39.75,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".stock small",
+              "text": "WOOD",
+              "rect": [
+                484.75,
+                137,
+                41.4375,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".order-tag strong",
+              "text": "+ QUEUED MOVE · 2 WAYPOINTS",
+              "rect": [
+                35,
+                560,
+                260.09375,
+                19
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "16px"
+            },
+            {
+              "selector": ".order-tag small",
+              "text": "Shift adds a destination. S stops the selected Workers.",
+              "rect": [
+                35,
+                583,
+                329.03125,
+                18
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "13px"
+            },
+            {
+              "selector": ".summary",
+              "text": "4 WORKERSBuild & provisionREADY · 4/4 AVAILABLE",
+              "rect": [
+                37,
+                645,
+                1016,
+                32
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "15px"
+            },
+            {
+              "selector": ".action",
+              "text": "MoveRMB",
+              "rect": [
+                37,
+                689,
+                94.828125,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "GatherFood / wood",
+              "rect": [
+                139.828125,
+                689,
+                127.171875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "House75 wood",
+              "rect": [
+                275,
+                689,
+                105.1875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Attack moveM",
+              "rect": [
+                388.1875,
+                689,
+                145.171875,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "Ⅱ Hold · H",
+              "rect": [
+                541.359375,
+                689,
+                88.53125,
+                54
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action",
+              "text": "🔒 Train archerRequires range",
+              "rect": [
+                637.890625,
+                689,
+                220.21875,
+                54
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgb(28, 57, 54)",
+              "fontSize": "14px"
+            },
+            {
+              "selector": ".action small",
+              "text": "RMB",
+              "rect": [
+                88.828125,
+                718,
+                26.15625,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Food / wood",
+              "rect": [
+                185.828125,
+                718,
+                70.171875,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "75 wood",
+              "rect": [
+                321,
+                718,
+                48.1875,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "M",
+              "rect": [
+                472.828125,
+                718,
+                10.890625,
+                17
+              ],
+              "color": "rgb(227, 240, 229)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".action small",
+              "text": "Requires range",
+              "rect": [
+                761.609375,
+                707.5,
+                85.5,
+                17
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            },
+            {
+              "selector": ".keys",
+              "text": "All cues pair shape + word · Costs remain written · 44+ px action targets",
+              "rect": [
+                37,
+                755,
+                1016,
+                14
+              ],
+              "color": "rgb(180, 204, 194)",
+              "background": "rgba(0, 0, 0, 0)",
+              "fontSize": "12px"
+            }
+          ]
+        }
+      ],
+      "grayscaleProxy": true,
+      "scaledViewport": {
+        "width": 960,
+        "height": 800,
+        "contentHeight": 1060,
+        "fixedBoardWidth": 1280,
+        "responsive": false
+      }
+    }
+  ],
+  "errors": []
+}

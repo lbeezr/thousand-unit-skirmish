@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vaelora HUD direction study</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#111c18;color:#eef0df;font-family:system-ui,sans-serif}
+body{--paper:#e8dfc9;--ink:#243026;--muted:#536050;--edge:#90866e;--accent:#476242;--button:#f2ebdc;--warning:#852f2c}
+.board{width:1280px;min-height:1060px;overflow:hidden;position:relative;background:#111c18}
+.caption{height:82px;padding:16px 24px;background:#0e1a16;color:#f1f0dc;border-bottom:1px solid #788c7b}
+.caption span{display:block;font:12px ui-monospace,monospace;color:#c5d2be;letter-spacing:.06em}.caption h1{margin:4px 0 0;font-size:26px;font-weight:650}
+.game{position:relative;height:720px;background:url('captures/backgrounds/snow-game-background.png') center/cover}
+.top{position:absolute;left:18px;right:18px;top:16px;height:70px;display:flex;align-items:center;gap:22px;padding:10px 20px}
+.skin{background:var(--paper);color:var(--ink);border:2px solid var(--edge);box-shadow:0 3px 12px #0005}
+.sigil{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--edge);border-radius:50%;font:26px Georgia,serif}
+.brand{min-width:170px}.brand strong{font:20px Georgia,serif;letter-spacing:.05em}.brand small{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+.stock{display:flex;align-items:center;gap:10px;border-left:1px solid var(--edge);padding-left:18px}.stock b{font:700 22px ui-monospace,monospace}.stock small{display:block;font-size:12px;letter-spacing:.06em}
+.plate{background:#15231b;border:1px solid #97a889;border-radius:5px;width:34px;height:34px;display:grid;place-items:center}.plate img{width:24px;height:24px}
+.phase{margin-left:auto;text-align:right;font-size:13px}.phase b{display:block;font-size:15px}.clock{font:600 18px ui-monospace,monospace}
+.menu{width:44px;height:44px;font-size:22px;border:1px solid var(--edge);background:var(--button);color:var(--ink)}
+.objective{position:absolute;top:100px;left:18px;padding:12px 16px;max-width:490px;font-size:14px}
+.objective b{display:block;margin-bottom:5px}.objective small{font-size:13px;color:var(--muted)}.objective .tick{margin-left:9px;border:1px solid var(--edge);padding:4px 7px}
+.field-marker{position:absolute;left:648px;top:345px;color:#fff;display:grid;place-items:center;width:38px;height:38px;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 3px #142019;font-size:25px;font-weight:800}
+.pointer{position:absolute;left:691px;top:394px;width:40px;height:40px}.pointer img{width:40px;height:40px}
+.order-tag{position:absolute;top:465px;left:18px;max-width:630px;padding:12px 16px;font:14px ui-monospace,monospace}.order-tag strong{font-size:16px}.order-tag small{display:block;margin-top:4px;font:13px system-ui,sans-serif;color:var(--muted)}
+.dock{position:absolute;left:18px;right:208px;bottom:18px;min-height:144px;padding:14px 18px}
+.summary{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:15px}.summary strong{font-weight:750}.summary .health{margin-left:auto;font:13px ui-monospace,monospace}
+.unit-stamp{border:1px solid var(--edge);padding:5px 9px;background:var(--button)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.action{min-height:48px;display:flex;align-items:center;gap:7px;padding:7px 10px;font:600 14px system-ui,sans-serif;border:1px solid var(--edge);color:var(--ink);background:var(--button);border-radius:4px}
+.action.active{outline:2px solid var(--accent);outline-offset:1px}.action.locked{border-style:dashed;color:var(--muted)}
+.action small{font-size:12px;font-weight:500}.action .plate{width:28px;height:28px}.action .plate img{width:22px;height:22px}
+.keys{font:12px ui-monospace,monospace;margin-top:12px;color:var(--muted)}
+.map{position:absolute;right:18px;bottom:18px;width:170px;height:162px;padding:12px}.map b{font-size:13px}.map svg{width:140px;height:91px;display:block;margin:4px 0}.map small{font-size:11px;color:var(--muted)}
+.review{padding:20px 24px;background:#0e1a16;border-top:1px solid #71846f;display:grid;grid-template-columns:1.5fr 1fr;gap:22px;color:#ebeedf}
+.review h2{margin:0 0 8px;font-size:17px}.review p{margin:0 0 8px;color:#c7d3bf;line-height:1.45;font-size:13px}
+.states{display:flex;flex-wrap:wrap;gap:7px}.state{display:flex;align-items:center;gap:6px;font:12px ui-monospace,monospace;border:1px solid #788b70;border-radius:3px;padding:6px 8px;background:#15251b}
+.state i{font-size:17px;font-style:normal;color:#eff1dd}.current{display:flex;gap:15px;align-items:center;margin-top:9px}.current img{width:40px;height:40px}.current span{font:11px ui-monospace,monospace;color:#c6d5be}.current .x2 img{width:80px;height:80px;image-rendering:pixelated}
+.notes{font-size:12px;color:#b9cbb3;margin-top:8px}.not-live{font-weight:700;color:#ffe6a2}
+body[data-theme="wood"]{--paper:#2d2922;--ink:#f0e5cd;--muted:#c3bba9;--edge:#897a59;--accent:#d9c18b;--button:#38352b;--warning:#ffd0b8}
+:is(body[data-theme="wood"],.board[data-theme="wood"]) .skin{background:repeating-linear-gradient(2deg,#2d2922,#2d2922 9px,#312c24 10px,#2d2922 11px);border-radius:3px;border-width:3px}
+:is(body[data-theme="wood"],.board[data-theme="wood"]) .skin:before{content:"";position:absolute;width:5px;height:5px;top:7px;left:7px;background:#c5b58d;box-shadow:0 0 0 1px #111a16}
+:is(body[data-theme="wood"],.board[data-theme="wood"]) .brand strong{font-family:Georgia,serif}:is(body[data-theme="wood"],.board[data-theme="wood"]) .action{border-bottom:3px solid #928264}
+body[data-theme="map"]{--paper:#132b2c;--ink:#e3f0e5;--muted:#b4ccc2;--edge:#5b8980;--accent:#cae9b8;--button:#1c3936;--warning:#ffdbb0}
+:is(body[data-theme="map"],.board[data-theme="map"]) .skin{border-radius:12px 3px;border-width:1px;box-shadow:0 2px 12px #061713b0, inset 0 0 0 4px #244741}
+:is(body[data-theme="map"],.board[data-theme="map"]) .skin:after{content:"";position:absolute;pointer-events:none;right:8px;top:8px;width:24px;height:18px;border-right:1px solid #8bbdaa;border-top:1px solid #8bbdaa;border-radius:0 16px 0 0}
+:is(body[data-theme="map"],.board[data-theme="map"]) .brand strong{font-family:system-ui,sans-serif;font-weight:500;letter-spacing:.12em}
+.comparison{display:flex;gap:12px;align-items:flex-start;width:3864px}
+.comparison .board{flex:0 0 1280px}
+</style>
+<div id="boards"></div>
+<script>
+const query=new URLSearchParams(location.search);
+const direction={
+journal:{name:'01 · The field journal',brand:'VAELORA',sub:'Pastures, paths & provisions',description:'Parchment panels, dark botanical ink, folio rules. Decoration stays at the margins; all action text stays live and high contrast.',risk:'Existing pale glyphs need their dark icon plates on parchment. Avoid distressed text and dense paper grain.'},
+wood:{name:'02 · Oak & iron',brand:'VAELORA',sub:"The commander's field kit",description:'Warm timber rhythm, brass fasteners and iron tool plates. Reuses the current pointer/hammer material language without new 3D UI generation.',risk:'Keep grain outside reading areas. Larger frames can obscure terrain; silhouette and label outrank material detail.'},
+map:{name:'03 · The quiet wayfinder',brand:'VAELORA',sub:'Survey the living world',description:'Matte map green, restrained route arcs and pale ink. The magical identity comes from geometry, with steady surfaces and no animated glow.',risk:'Avoid translucency over terrain or luminous text blur. Ornament must not resemble target markers or objective rings.'}
+};
+function board(theme){
+ const d=direction[theme], terrain=query.get('terrain')||'snow',state=query.get('state')||'blocked';
+ const block=state==='blocked', marker=block?'×':'✓',cursor=block?'build-blocked':'move-queued';
+ return '<article class="board" data-theme="'+theme+'"><header class="caption"><span>2 OCTOBER 2026 · DIRECTION PROPOSAL · GAME BACKGROUND: '+terrain.toUpperCase()+'</span><h1>'+d.name+'</h1></header>'+
+ '<div class="game" style="background-image:url(captures/backgrounds/'+terrain+'-game-background.png)"><div class="top skin"><div class="sigil">V</div><div class="brand"><strong>'+d.brand+'</strong><small>'+d.sub+'</small></div>'+
+ '<div class="stock"><span class="plate"><img src="../../../../assets/ui/icons/food.svg" alt=""></span><div><b>150</b><small>FOOD</small></div></div><div class="stock"><span class="plate"><img src="../../../../assets/ui/icons/wood.svg" alt=""></span><div><b>250</b><small>WOOD</small></div></div><div class="phase"><b>Azure · 12 units</b><span>Waiting for player 2</span></div><button class="menu" aria-label="Menu">≡</button></div>'+
+ '<aside class="objective skin"><b>'+({snow:'Pale Meridian · Observation Road',woodland:'Underbough · Rootways',meadow:'Bellweather · Millrace'}[terrain])+'</b><small>Control a capture zone to win <span class="tick">OBJECTIVES &gt;</span></small></aside>'+
+ '<div class="field-marker">'+marker+'</div><div class="pointer"><img src="../../../../assets/ui/cursors/'+cursor+'.png" alt="Existing '+cursor+' cursor sample"></div>'+
+ '<div class="order-tag skin"><strong>'+ (block?'× BLOCKED · ANOTHER BUILDING TOO CLOSE':'+ QUEUED MOVE · 2 WAYPOINTS')+'</strong><small>'+ (block?'Choose a clear site. Escape cancels placement.':'Shift adds a destination. S stops the selected Workers.')+'</small></div>'+
+ '<section class="dock skin"><div class="summary"><span class="unit-stamp">4 WORKERS</span><strong>Build & provision</strong><span class="health">READY · 4/4 AVAILABLE</span></div><div class="actions">'+
+ [['move','Move','RMB'],['gather','Gather','Food / wood'],['build','House','75 wood'],['attack','Attack move','M']].map((a,i)=>'<button class="action '+(i===2?'active':'')+'"><span class="plate"><img src="../../../../assets/ui/icons/'+a[0]+'.svg" alt=""></span><span>'+a[1]+'<br><small>'+a[2]+'</small></span></button>').join('')+
+ '<button class="action"><span>II Hold · H</span></button><button class="action locked" disabled><span>[locked] Train archer<br><small>Requires range</small></span></button></div><div class="keys">All cues pair shape + word · Costs remain written · 44+ px action targets</div></section>'+
+ '<aside class="map skin"><b>TACTICAL MAP</b><svg viewBox="0 0 140 91" aria-label="Indicative map area"><rect x="0" y="0" width="140" height="91" fill="#10201b"/><path d="M12 68 44 43 61 56 80 26 125 15" stroke="#c4d5b4" fill="none" stroke-width="2"/><path d="M18 25 48 17 60 35 41 40Z" fill="#667e62"/><circle cx="41" cy="61" r="5" fill="#eef1d0"/><path d="m110 60 5 7-5 7-5-7Z" fill="#ffd3b4"/></svg><small>Shape + label team cues</small></aside></div>'+
+ '<footer class="review"><div><h2>'+d.description+'</h2><p>'+d.risk+'</p><p class="not-live">CONCEPT OVERLAY · actual captured game background; proposed HUD is not integrated.</p><div class="states">'+[['✓','Ready'],['▣','Selected'],['+','Queued'],['↻','Working'],['×','Blocked'],['∅','Empty'],['↩','Returning'],['⚒','Repair']].map(a=>'<span class="state"><i>'+a[0]+'</i>'+a[1]+'</span>').join('')+'</div><div class="notes">State symbols are exploratory. Confirm compatibility, scaling and non-color cues before production.</div></div>'+
+ '<div><h2>Existing cursor reuse</h2><p>40 px samples at authored size; 80 px diagnostic magnification at right. These are DOM samples, not captured native OS cursor pixels.</p><div class="current"><span><img src="../../../../assets/ui/cursors/select.png" alt="select"><br>Select</span><span><img src="../../../../assets/ui/cursors/move-queued.png" alt="queued move"><br>Queue +</span><span><img src="../../../../assets/ui/cursors/build-blocked.png" alt="blocked build"><br>Blocked ×</span><span class="x2"><img src="../../../../assets/ui/cursors/build-blocked.png" alt="blocked diagnostic"><br>2× diagnostic</span></div></div></footer></article>';
+}
+const themes=query.get('compare')==='1'?['journal','wood','map']:[query.get('theme')||'journal'];
+if(themes.length===1)document.body.dataset.theme=themes[0];
+const host=document.querySelector('#boards');host.className=themes.length===3?'comparison':'';
+host.innerHTML=themes.map(board).join('');
+// Each comparison panel gets its own tokens; no live game code or settings change.
+if(themes.length===3)for(const el of document.querySelectorAll('.board')){
+ const t=el.dataset.theme; const palette=t==='wood'?['#2d2922','#f0e5cd','#c3bba9','#897a59','#d9c18b','#38352b']:t==='map'?['#132b2c','#e3f0e5','#b4ccc2','#5b8980','#cae9b8','#1c3936']:['#e8dfc9','#243026','#536050','#90866e','#476242','#f2ebdc'];
+ ['paper','ink','muted','edge','accent','button'].forEach((k,i)=>el.style.setProperty('--'+k,palette[i]));
+}
+</script></html>

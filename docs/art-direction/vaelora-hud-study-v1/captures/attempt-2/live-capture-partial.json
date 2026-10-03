@@ -1,0 +1,1221 @@
+{
+  "sourceRevision": "68f859f903ad09119594dcafca83f6de8362a9ed",
+  "complete": false,
+  "records": [
+    {
+      "label": "meadow-idle",
+      "boot": "ready",
+      "cursor": "select",
+      "cursorCss": "url(\"http://127.0.0.1:43261/assets/ui/cursors/select.png\") 4 4, default",
+      "selected": "0",
+      "placement": {
+        "state": "ready",
+        "text": "",
+        "visible": false
+      },
+      "fontsReady": "loaded",
+      "viewport": [
+        1280,
+        800
+      ],
+      "samples": [
+        {
+          "selector": "#food-stock",
+          "text": "150",
+          "rect": [
+            78.125,
+            21,
+            28.953125,
+            18.890625
+          ],
+          "color": "rgb(228, 189, 99)",
+          "fontSize": "18px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": "#wood-stock",
+          "text": "250",
+          "rect": [
+            148.125,
+            21,
+            28.953125,
+            18.890625
+          ],
+          "color": "rgb(168, 195, 129)",
+          "fontSize": "18px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".resource-stock span",
+          "text": "FOOD",
+          "rect": [
+            78.125,
+            39.890625,
+            31.140625,
+            14
+          ],
+          "color": "rgb(123, 137, 122)",
+          "fontSize": "12px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".resource-stock span",
+          "text": "WOOD",
+          "rect": [
+            148.125,
+            39.890625,
+            31.140625,
+            14
+          ],
+          "color": "rgb(123, 137, 122)",
+          "fontSize": "12px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": "#map-summary",
+          "text": "Capture North Ford · 5 units",
+          "rect": [
+            31,
+            87.890625,
+            202.296875,
+            14
+          ],
+          "color": "rgba(242, 246, 221, 0.85)",
+          "fontSize": "12px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".field-hint",
+          "text": "Hide hintsLMB DRAG TO SELECT · RMB MOVE / ATTACK",
+          "rect": [
+            18,
+            669,
+            403.21875,
+            43
+          ],
+          "color": "rgba(242, 246, 221, 0.82)",
+          "fontSize": "10px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Idle workers",
+          "rect": [
+            25,
+            733,
+            101.625,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Army",
+          "rect": [
+            131.625,
+            733,
+            54.96875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Production",
+          "rect": [
+            191.59375,
+            733,
+            92.21875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Groups",
+          "rect": [
+            288.8125,
+            733,
+            68.140625,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "label": "meadow-move-queued",
+      "boot": "ready",
+      "cursor": "move-queued",
+      "cursorCss": "url(\"http://127.0.0.1:43261/assets/ui/cursors/move-queued.png\") 4 4, default",
+      "selected": "4",
+      "placement": {
+        "state": "ready",
+        "text": "",
+        "visible": false
+      },
+      "fontsReady": "loaded",
+      "viewport": [
+        1280,
+        800
+      ],
+      "samples": [
+        {
+          "selector": "#food-stock",
+          "text": "150",
+          "rect": [
+            78.125,
+            21,
+            28.953125,
+            18.890625
+          ],
+          "color": "rgb(228, 189, 99)",
+          "fontSize": "18px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": "#wood-stock",
+          "text": "250",
+          "rect": [
+            148.125,
+            21,
+            28.953125,
+            18.890625
+          ],
+          "color": "rgb(168, 195, 129)",
+          "fontSize": "18px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".resource-stock span",
+          "text": "FOOD",
+          "rect": [
+            78.125,
+            39.890625,
+            31.140625,
+            14
+          ],
+          "color": "rgb(123, 137, 122)",
+          "fontSize": "12px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".resource-stock span",
+          "text": "WOOD",
+          "rect": [
+            148.125,
+            39.890625,
+            31.140625,
+            14
+          ],
+          "color": "rgb(123, 137, 122)",
+          "fontSize": "12px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": "#map-summary",
+          "text": "Capture North Ford · 5 units",
+          "rect": [
+            31,
+            87.890625,
+            202.296875,
+            14
+          ],
+          "color": "rgba(242, 246, 221, 0.85)",
+          "fontSize": "12px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".field-hint",
+          "text": "Hide hintsLMB DRAG TO SELECT · RMB MOVE / ATTACK",
+          "rect": [
+            18,
+            651,
+            403.21875,
+            43
+          ],
+          "color": "rgba(242, 246, 221, 0.82)",
+          "fontSize": "10px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Idle workers",
+          "rect": [
+            25,
+            733,
+            101.625,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Army",
+          "rect": [
+            131.625,
+            733,
+            54.96875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Production",
+          "rect": [
+            191.59375,
+            733,
+            92.21875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Groups",
+          "rect": [
+            288.8125,
+            733,
+            68.140625,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Gather / move",
+          "rect": [
+            366.953125,
+            733,
+            114.21875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Patrol · P",
+          "rect": [
+            486.171875,
+            733,
+            78.46875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Follow · F",
+          "rect": [
+            569.640625,
+            733,
+            80.453125,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Stop · S",
+          "rect": [
+            655.09375,
+            733,
+            68.546875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Hold position · H",
+          "rect": [
+            728.640625,
+            733,
+            129.3125,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Build",
+          "rect": [
+            862.953125,
+            733,
+            53.59375,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Formation / route",
+          "rect": [
+            926.546875,
+            733,
+            136.3125,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "label": "meadow-attack-move",
+      "boot": "ready",
+      "cursor": "attack-move",
+      "cursorCss": "url(\"http://127.0.0.1:43261/assets/ui/cursors/attack-move.png\") 4 4, default",
+      "selected": "4",
+      "placement": {
+        "state": "ready",
+        "text": "",
+        "visible": false
+      },
+      "fontsReady": "loaded",
+      "viewport": [
+        1280,
+        800
+      ],
+      "samples": [
+        {
+          "selector": "#food-stock",
+          "text": "150",
+          "rect": [
+            78.125,
+            21,
+            28.953125,
+            18.890625
+          ],
+          "color": "rgb(228, 189, 99)",
+          "fontSize": "18px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": "#wood-stock",
+          "text": "250",
+          "rect": [
+            148.125,
+            21,
+            28.953125,
+            18.890625
+          ],
+          "color": "rgb(168, 195, 129)",
+          "fontSize": "18px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".resource-stock span",
+          "text": "FOOD",
+          "rect": [
+            78.125,
+            39.890625,
+            31.140625,
+            14
+          ],
+          "color": "rgb(123, 137, 122)",
+          "fontSize": "12px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".resource-stock span",
+          "text": "WOOD",
+          "rect": [
+            148.125,
+            39.890625,
+            31.140625,
+            14
+          ],
+          "color": "rgb(123, 137, 122)",
+          "fontSize": "12px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": "#map-summary",
+          "text": "Capture North Ford · 5 units",
+          "rect": [
+            31,
+            87.890625,
+            202.296875,
+            14
+          ],
+          "color": "rgba(242, 246, 221, 0.85)",
+          "fontSize": "12px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".field-hint",
+          "text": "Hide hintsLMB DRAG TO SELECT · RMB MOVE / ATTACK",
+          "rect": [
+            18,
+            651,
+            403.21875,
+            43
+          ],
+          "color": "rgba(242, 246, 221, 0.82)",
+          "fontSize": "10px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Idle workers",
+          "rect": [
+            25,
+            733,
+            101.625,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Army",
+          "rect": [
+            131.625,
+            733,
+            54.96875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Production",
+          "rect": [
+            191.59375,
+            733,
+            92.21875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Groups",
+          "rect": [
+            288.8125,
+            733,
+            68.140625,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Gather / move",
+          "rect": [
+            366.953125,
+            733,
+            114.21875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Patrol · P",
+          "rect": [
+            486.171875,
+            733,
+            78.46875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Follow · F",
+          "rect": [
+            569.640625,
+            733,
+            80.453125,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Stop · S",
+          "rect": [
+            655.09375,
+            733,
+            68.546875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Hold position · H",
+          "rect": [
+            728.640625,
+            733,
+            129.3125,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Build",
+          "rect": [
+            862.953125,
+            733,
+            53.59375,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Formation / route",
+          "rect": [
+            926.546875,
+            733,
+            136.3125,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "label": "meadow-build-clear",
+      "boot": "ready",
+      "cursor": "build-valid",
+      "cursorCss": "url(\"http://127.0.0.1:43261/assets/ui/cursors/build-valid.png\") 6 6, default",
+      "selected": "4",
+      "placement": {
+        "state": "clear",
+        "text": "CLEAR 3 × 3 SITE",
+        "visible": true
+      },
+      "fontsReady": "loaded",
+      "viewport": [
+        1280,
+        800
+      ],
+      "samples": [
+        {
+          "selector": "#food-stock",
+          "text": "150",
+          "rect": [
+            78.125,
+            21,
+            28.953125,
+            18.890625
+          ],
+          "color": "rgb(228, 189, 99)",
+          "fontSize": "18px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": "#wood-stock",
+          "text": "250",
+          "rect": [
+            148.125,
+            21,
+            28.953125,
+            18.890625
+          ],
+          "color": "rgb(168, 195, 129)",
+          "fontSize": "18px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".resource-stock span",
+          "text": "FOOD",
+          "rect": [
+            78.125,
+            39.890625,
+            31.140625,
+            14
+          ],
+          "color": "rgb(123, 137, 122)",
+          "fontSize": "12px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".resource-stock span",
+          "text": "WOOD",
+          "rect": [
+            148.125,
+            39.890625,
+            31.140625,
+            14
+          ],
+          "color": "rgb(123, 137, 122)",
+          "fontSize": "12px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": "#map-summary",
+          "text": "Capture North Ford · 5 units",
+          "rect": [
+            31,
+            87.890625,
+            202.296875,
+            14
+          ],
+          "color": "rgba(242, 246, 221, 0.85)",
+          "fontSize": "12px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": "#placement-status",
+          "text": "CLEAR 3 × 3 SITE",
+          "rect": [
+            29,
+            668,
+            279.34375,
+            17
+          ],
+          "color": "rgb(213, 239, 120)",
+          "fontSize": "10px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".field-hint",
+          "text": "Hide hintsLMB PLACE HOUSE · RMB / ESC CANCELCLEAR 3 × 3 SITE",
+          "rect": [
+            18,
+            634,
+            301.34375,
+            60
+          ],
+          "color": "rgba(242, 246, 221, 0.82)",
+          "fontSize": "10px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Idle workers",
+          "rect": [
+            25,
+            733,
+            101.625,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Army",
+          "rect": [
+            131.625,
+            733,
+            54.96875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Production",
+          "rect": [
+            191.59375,
+            733,
+            92.21875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Groups",
+          "rect": [
+            288.8125,
+            733,
+            68.140625,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Gather / move",
+          "rect": [
+            366.953125,
+            733,
+            114.21875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 0.55,
+          "disabled": true
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Patrol · P",
+          "rect": [
+            486.171875,
+            733,
+            78.46875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Follow · F",
+          "rect": [
+            569.640625,
+            733,
+            80.453125,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Stop · S",
+          "rect": [
+            655.09375,
+            733,
+            68.546875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Hold position · H",
+          "rect": [
+            728.640625,
+            733,
+            129.3125,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Build",
+          "rect": [
+            862.953125,
+            733,
+            53.59375,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Formation / route",
+          "rect": [
+            926.546875,
+            733,
+            136.3125,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "label": "meadow-build-blocked",
+      "boot": "ready",
+      "cursor": "build-blocked",
+      "cursorCss": "url(\"http://127.0.0.1:43261/assets/ui/cursors/build-blocked.png\") 6 6, not-allowed",
+      "selected": "4",
+      "placement": {
+        "state": "blocked",
+        "text": "BLOCKED · MOVE UNITS OUT OF THIS SITE",
+        "visible": true
+      },
+      "fontsReady": "loaded",
+      "viewport": [
+        1280,
+        800
+      ],
+      "samples": [
+        {
+          "selector": "#food-stock",
+          "text": "150",
+          "rect": [
+            78.125,
+            21,
+            28.953125,
+            18.890625
+          ],
+          "color": "rgb(228, 189, 99)",
+          "fontSize": "18px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": "#wood-stock",
+          "text": "250",
+          "rect": [
+            148.125,
+            21,
+            28.953125,
+            18.890625
+          ],
+          "color": "rgb(168, 195, 129)",
+          "fontSize": "18px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".resource-stock span",
+          "text": "FOOD",
+          "rect": [
+            78.125,
+            39.890625,
+            31.140625,
+            14
+          ],
+          "color": "rgb(123, 137, 122)",
+          "fontSize": "12px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".resource-stock span",
+          "text": "WOOD",
+          "rect": [
+            148.125,
+            39.890625,
+            31.140625,
+            14
+          ],
+          "color": "rgb(123, 137, 122)",
+          "fontSize": "12px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": "#map-summary",
+          "text": "Capture North Ford · 5 units",
+          "rect": [
+            31,
+            87.890625,
+            202.296875,
+            14
+          ],
+          "color": "rgba(242, 246, 221, 0.85)",
+          "fontSize": "12px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": "#placement-status",
+          "text": "BLOCKED · MOVE UNITS OUT OF THIS SITE",
+          "rect": [
+            29,
+            668,
+            279.34375,
+            17
+          ],
+          "color": "rgb(255, 179, 157)",
+          "fontSize": "10px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".field-hint",
+          "text": "Hide hintsLMB PLACE HOUSE · RMB / ESC CANCELBLOCKED · MOVE UNITS OUT OF THIS SITE",
+          "rect": [
+            18,
+            634,
+            301.34375,
+            60
+          ],
+          "color": "rgba(242, 246, 221, 0.82)",
+          "fontSize": "10px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Idle workers",
+          "rect": [
+            25,
+            733,
+            101.625,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Army",
+          "rect": [
+            131.625,
+            733,
+            54.96875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Production",
+          "rect": [
+            191.59375,
+            733,
+            92.21875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Groups",
+          "rect": [
+            288.8125,
+            733,
+            68.140625,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Gather / move",
+          "rect": [
+            366.953125,
+            733,
+            114.21875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 0.55,
+          "disabled": true
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Patrol · P",
+          "rect": [
+            486.171875,
+            733,
+            78.46875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Follow · F",
+          "rect": [
+            569.640625,
+            733,
+            80.453125,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Stop · S",
+          "rect": [
+            655.09375,
+            733,
+            68.546875,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Hold position · H",
+          "rect": [
+            728.640625,
+            733,
+            129.3125,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Build",
+          "rect": [
+            862.953125,
+            733,
+            53.59375,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        },
+        {
+          "selector": ".contextual-command-bar button",
+          "text": "Formation / route",
+          "rect": [
+            926.546875,
+            733,
+            136.3125,
+            44
+          ],
+          "color": "rgb(231, 239, 215)",
+          "fontSize": "14px",
+          "opacity": 1,
+          "disabled": false
+        }
+      ]
+    }
+  ]
+}

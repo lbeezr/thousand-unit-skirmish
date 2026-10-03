@@ -1,0 +1,338 @@
+[
+  {
+    "mode": "select",
+    "file": "assets/ui/cursors/select.png",
+    "bytes": 2337,
+    "sha256": "dbfa6926aaf0a5b887e98cc3a64c5db9f5f53dc7bff62904806268646abf2b30",
+    "dimensions": [
+      40,
+      40
+    ],
+    "hotspot": [
+      4,
+      4
+    ],
+    "fallback": "default",
+    "alphaBounds": [
+      0,
+      0,
+      33,
+      39
+    ]
+  },
+  {
+    "mode": "select-add",
+    "file": "assets/ui/cursors/select-add.png",
+    "bytes": 2982,
+    "sha256": "708a5ba2d0087eb68d1c05c4b22efb0c7691d6b7ec3a94efbbfb6f597dc0b4ef",
+    "dimensions": [
+      40,
+      40
+    ],
+    "hotspot": [
+      4,
+      4
+    ],
+    "fallback": "default",
+    "alphaBounds": [
+      0,
+      0,
+      40,
+      40
+    ]
+  },
+  {
+    "mode": "select-remove",
+    "file": "assets/ui/cursors/select-remove.png",
+    "bytes": 2859,
+    "sha256": "ee2f50ecce7d106dfb04bdd1201313e216641db2c5b266ed42750e4b354fcd5d",
+    "dimensions": [
+      40,
+      40
+    ],
+    "hotspot": [
+      4,
+      4
+    ],
+    "fallback": "default",
+    "alphaBounds": [
+      0,
+      0,
+      40,
+      40
+    ]
+  },
+  {
+    "mode": "box-select",
+    "file": "assets/ui/cursors/box-select.png",
+    "bytes": 2827,
+    "sha256": "cb5cabf573f39c537314ec2bd8bf4d44727bf5ea741283057a1cd0a15f8bc2a0",
+    "dimensions": [
+      40,
+      40
+    ],
+    "hotspot": [
+      4,
+      4
+    ],
+    "fallback": "default",
+    "alphaBounds": [
+      0,
+      0,
+      40,
+      40
+    ]
+  },
+  {
+    "mode": "box-crossing",
+    "file": "assets/ui/cursors/box-crossing.png",
+    "bytes": 2952,
+    "sha256": "053dbb2aa434eaa213d4f1fe292f923838135abe4ca9efb2336d9a3a5f88298d",
+    "dimensions": [
+      40,
+      40
+    ],
+    "hotspot": [
+      4,
+      4
+    ],
+    "fallback": "default",
+    "alphaBounds": [
+      0,
+      0,
+      40,
+      40
+    ]
+  },
+  {
+    "mode": "move",
+    "file": "assets/ui/cursors/move.png",
+    "bytes": 2974,
+    "sha256": "448d7e2f9468e60f58a91dca81ff75a0d342d00f95ed3f75a1c7dba0320c4bca",
+    "dimensions": [
+      40,
+      40
+    ],
+    "hotspot": [
+      4,
+      4
+    ],
+    "fallback": "default",
+    "alphaBounds": [
+      0,
+      0,
+      40,
+      40
+    ]
+  },
+  {
+    "mode": "move-queued",
+    "file": "assets/ui/cursors/move-queued.png",
+    "bytes": 3150,
+    "sha256": "c5b3f13bae2c3bcc9f8f9c61d83b8a8c846d6ea65587477ec03281599f26f5a4",
+    "dimensions": [
+      40,
+      40
+    ],
+    "hotspot": [
+      4,
+      4
+    ],
+    "fallback": "default",
+    "alphaBounds": [
+      0,
+      0,
+      40,
+      40
+    ]
+  },
+  {
+    "mode": "attack",
+    "file": "assets/ui/cursors/attack.png",
+    "bytes": 3007,
+    "sha256": "dec72d96b391ba80278c1bfb972aa868783c0cdff40c981dfbf1c073ab1642c7",
+    "dimensions": [
+      40,
+      40
+    ],
+    "hotspot": [
+      4,
+      4
+    ],
+    "fallback": "default",
+    "alphaBounds": [
+      0,
+      0,
+      40,
+      40
+    ]
+  },
+  {
+    "mode": "attack-move",
+    "file": "assets/ui/cursors/attack-move.png",
+    "bytes": 3078,
+    "sha256": "be425023141231f7f2c53bf0a09d4915b138983a5da5ac37d8279aac34613976",
+    "dimensions": [
+      40,
+      40
+    ],
+    "hotspot": [
+      4,
+      4
+    ],
+    "fallback": "default",
+    "alphaBounds": [
+      0,
+      0,
+      40,
+      40
+    ]
+  },
+  {
+    "mode": "attack-move-queued",
+    "file": "assets/ui/cursors/attack-move-queued.png",
+    "bytes": 3213,
+    "sha256": "29dff2677ac3725ad9417fa190aa962e1b9f126b6d92f6e8bf9e302076b4edbc",
+    "dimensions": [
+      40,
+      40
+    ],
+    "hotspot": [
+      4,
+      4
+    ],
+    "fallback": "default",
+    "alphaBounds": [
+      0,
+      0,
+      40,
+      40
+    ]
+  },
+  {
+    "mode": "gather",
+    "file": "assets/ui/cursors/gather.png",
+    "bytes": 2993,
+    "sha256": "cd76128c2fb6b2e0d5ad4436c481f348bf4656ee133be77d852fa26a19d33222",
+    "dimensions": [
+      40,
+      40
+    ],
+    "hotspot": [
+      4,
+      4
+    ],
+    "fallback": "default",
+    "alphaBounds": [
+      0,
+      0,
+      40,
+      40
+    ]
+  },
+  {
+    "mode": "gather-wood",
+    "file": "assets/ui/cursors/gather-wood.png",
+    "bytes": 2984,
+    "sha256": "2b26c9e158e796f87dd7902a0c3d40251ad2c59e46cc7852df0fd245c76f0255",
+    "dimensions": [
+      40,
+      40
+    ],
+    "hotspot": [
+      4,
+      4
+    ],
+    "fallback": "default",
+    "alphaBounds": [
+      0,
+      0,
+      40,
+      40
+    ]
+  },
+  {
+    "mode": "rally",
+    "file": "assets/ui/cursors/rally.png",
+    "bytes": 2888,
+    "sha256": "bc8213d31242aa89d976cd019e7090bb76cadc21b2f9c102a8daa53178621bac",
+    "dimensions": [
+      40,
+      40
+    ],
+    "hotspot": [
+      4,
+      4
+    ],
+    "fallback": "default",
+    "alphaBounds": [
+      0,
+      0,
+      40,
+      40
+    ]
+  },
+  {
+    "mode": "build-valid",
+    "file": "assets/ui/cursors/build-valid.png",
+    "bytes": 2531,
+    "sha256": "d11bcd8b0561873e1c6e22b489ed54b52e7e30f8b2f18243ed4830dff1639fdf",
+    "dimensions": [
+      40,
+      40
+    ],
+    "hotspot": [
+      6,
+      6
+    ],
+    "fallback": "default",
+    "alphaBounds": [
+      0,
+      0,
+      39,
+      40
+    ]
+  },
+  {
+    "mode": "build-blocked",
+    "file": "assets/ui/cursors/build-blocked.png",
+    "bytes": 3001,
+    "sha256": "ee3cabd89781a2db1058b66ca9d9dcfe3117d53d10f0b1776f629632e9c21a18",
+    "dimensions": [
+      40,
+      40
+    ],
+    "hotspot": [
+      6,
+      6
+    ],
+    "fallback": "not-allowed",
+    "alphaBounds": [
+      0,
+      0,
+      40,
+      40
+    ]
+  },
+  {
+    "mode": "unavailable",
+    "file": "assets/ui/cursors/unavailable.png",
+    "bytes": 3031,
+    "sha256": "e213e183080818c3047ed9a6278067682720581c8d6090d94ca55e1ee0daaa71",
+    "dimensions": [
+      40,
+      40
+    ],
+    "hotspot": [
+      4,
+      4
+    ],
+    "fallback": "not-allowed",
+    "alphaBounds": [
+      0,
+      0,
+      40,
+      40
+    ]
+  }
+]

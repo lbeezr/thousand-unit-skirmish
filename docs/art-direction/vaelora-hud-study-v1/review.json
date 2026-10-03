@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-02",
+  "status": "three unselected design proposals; no runtime adoption",
+  "sourceRevision": "68f859f903ad09119594dcafca83f6de8362a9ed",
+  "methods": [
+    "inspect source resolver, bindings, manifest and asset pixels",
+    "direct owned Chromium CDP capture of actual game states",
+    "code-authored 2D overlays on actual backgrounds",
+    "text-hidden screenshot rectangle sampling",
+    "grayscale color-removal proxy only"
+  ],
+  "visuallyInspected": [
+    "previews/journal-snow-blocked.png",
+    "previews/wood-snow-blocked.png",
+    "previews/map-snow-blocked.png",
+    "previews/wood-woodland-queued-grayscale.png",
+    "previews/asset-normal-size-check.png",
+    "iterations/initial/previews/journal-snow-blocked.png",
+    "iterations/initial/previews/wood-snow-blocked.png",
+    "iterations/initial/previews/map-snow-blocked.png",
+    "iterations/initial/asset-normal-size-check.png",
+    "captures/backgrounds/meadow-game-background.png",
+    "captures/backgrounds/snow-game-background.png",
+    "captures/backgrounds/woodland-game-background.png",
+    "previews/compact-three-directions.png"
+  ],
+  "observations": [
+    "Current pointer/hammer bodies and pale borders remain visible on the three board crops; badges and queue plus are small.",
+    "Attack and attack-move badges look close at authored size; separate PNG bytes do not imply sufficiently distinct semantics.",
+    "Existing pale SVG icons need a dark plate on parchment.",
+    "First sketch Objectives/Hold glyphs were unsupported in captured fonts; portable text retained in revised iteration.",
+    "First asset-board viewport clipped lower notes; revised 960x1360 capture includes the complete board.",
+    "Grayscale wood preview retains live labels, state words and plus/cross shapes.",
+    "Compact code-authored comparison has readable direction captions and complete thumbnails; it is presentation-only, not native-size text/badge acceptance."
+  ],
+  "measurementSummary": {
+    "runtimeRegions": 75,
+    "runtimeBelowTarget": 0,
+    "runtimeMinimum": 4.725,
+    "proposalRegionsPerDirection": 138,
+    "proposalBelowTarget": 0,
+    "proposalMinima": {
+      "journal": 5.014,
+      "wood": 6.425,
+      "map": 7.321
+    }
+  },
+  "acceptanceLimits": [
+    "Not sealed game-dev captures; executable unavailable.",
+    "No native OS cursor capture or click-alignment acceptance.",
+    "No full color-vision simulation or human readability acceptance.",
+    "Fixed-width sketch overflows a 960x800 viewport; not responsive.",
+    "Values/objective prose/mini-map are illustrative; background gameplay is actual.",
+    "No live harvest/depletion/repair/patrol/follow or production outcome capture.",
+    "No new imagegen output, Meshy task, credits or runtime UI change."
+  ]
+}

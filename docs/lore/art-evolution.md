@@ -75,7 +75,25 @@ distinction between source availability and acceptance.
 | Frontier buildings | [Eight illustrated concepts in this wiki](frontier-architecture.md), [source pack](../../assets/buildings/frontier-civilization-concepts-v1/README.md), [exact prompts/output references](../../assets/buildings/frontier-civilization-concepts-v1/prompts.json) |
 | Perspective construction | [Measured camera, eight-heading guide and Root Oak proxy](../art-direction/environment-camera-v1/README.md); construction evidence separate from painted production art |
 
-## Recovery gaps
+## HUD direction study, 2 October 2026
+
+The [HUD study gallery](../art-direction/vaelora-hud-study-v1/README.md) preserves
+three code-authored directions: parchment field journal, oak and iron, and a
+restrained magical map. They reuse the [existing UI kit](../../assets/ui/README.md)
+on directly captured game backgrounds. The proposed HUD is not integrated.
+The [dated audit](../vaelora-hud-icon-audit-2026-10-02.md) separates current bound
+states, source findings, static cursor checks, measured text and proposals.
+
+The [first comparison](../art-direction/vaelora-hud-study-v1/iterations/initial/previews/three-directions-comparison.png)
+retains unsupported font glyphs. The
+[revised comparison](../art-direction/vaelora-hud-study-v1/previews/three-directions-comparison.png)
+uses portable text and a semantic disabled button. Original partial gameplay
+captures and a clipped first asset board remain in the pack. All exploratory
+PNGs are inventoried; existing cursor/icon files are linked rather than copied.
+This study adds no new ImageGen output or Meshy job. Original exploration and
+selection status remain visible alongside the revised proposals.
+
+## Recovery gaps (historical audit)
 
 | Gap | Verified boundary and next action |
 | --- | --- |
@@ -111,7 +129,8 @@ recovery has been verified. A text receipt alone is not a saved image.
 
 **Evidence:** [preservation audit](../art-direction/preservation-audit-2026-10-02.json)
 records checked source hashes, counts, inspected pixels and gaps. Images embedded
-above are existing tracked files; no image generation, Meshy job, repaint or
-runtime capture was performed for this index.
+in the original audit are existing tracked files; that indexing slice performed
+no image generation, Meshy job, repaint or runtime capture. The separately dated
+HUD study above adds direct capture evidence and code-authored proposal images.
 
 [Wildlife](wildlife.md) · [Wiki index](README.md) · [Documentation index](../README.md)
