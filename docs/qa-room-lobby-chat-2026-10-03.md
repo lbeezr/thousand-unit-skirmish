@@ -65,6 +65,24 @@ The clean package at `8848192` contains 1,029 files, digest
 `sha256:3e9960d45f1f301d18d3da9f9781a68d3d9c2741fbae5946ffc127f99075ca40`.
 The owning PR records the final packaged-delivery/review/postmerge results.
 
+Final integrated runtime `519cf0fba87da583bcaf7ebdeab70164b51d9464` includes main
+`c5e58259be58785a0742bf58b6df5853445ed111` (Mill, shared decoded audio, and water
+route graph). All 656 Node tests, chat eight groups, pregame eleven groups,
+ruleset checkpoint recovery, and packaged delivery pass. Documentation passes
+424 files / 2,762 links. The clean package contains 1,031 files, digest
+`sha256:372d1ec80a656e4788f04dabce86a724269cdeda10a67d8d3f9a2b95c0a79d62`.
+
+[Independent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/57#pullrequestreview-5401285680)
+at `5e89c0a` found no blocking runtime issue and independently passed all 623
+then-current unit tests, chat, legacy supervisor and a pregame retry. Its first
+pregame run timed out closing a duplicate-token spectator. Both owned scenario
+helpers now use an explicit normal close code/reason with bounded waits and
+supervisor-first final disposal. Three consecutive pregame runs and a chat run
+completed, followed by the integrated runs above. This establishes bounded
+scenario cleanup; it does not claim a root cause for the earlier close flake.
+The shared-account COMMENT is independent agent review, not separate-account
+formal approval. The PR records review of the final cleanup/integration delta.
+
 ## Browser check on Mac
 
 Use two independent profiles on the exact local build. Verify ordinary and
