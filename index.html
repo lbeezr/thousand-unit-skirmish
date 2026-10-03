@@ -159,6 +159,13 @@
             <button type="button" class="contextual-icon-command" data-stationary-order="stop"><img src="/assets/ui/icons/actions/stop.svg" alt="" width="20" height="20"><span>Stop · S</span></button>
             <button type="button" class="contextual-icon-command" data-return-cargo hidden title="Deliver selected Workers’ resources or Skiffs’ food to a reachable owned drop-off"><img src="/assets/ui/icons/actions/return-cargo.svg" alt="" width="20" height="20"><span>Return cargo</span></button>
             <button type="button" class="contextual-icon-command" data-stationary-order="holdPosition"><img src="/assets/ui/icons/actions/hold-position.svg" alt="" width="20" height="20"><span>Hold position · H</span></button>
+            <span class="contextual-stances" data-stance-controls role="group" aria-label="Military stance" hidden>
+              <span id="military-stance-status" data-stance-status>Stance</span>
+              <button type="button" data-combat-stance="aggressive" aria-pressed="false" aria-describedby="military-stance-status"><span data-stance-check aria-hidden="true" hidden>✓ </span>Aggressive</button>
+              <button type="button" data-combat-stance="defensive" aria-pressed="false" aria-describedby="military-stance-status"><span data-stance-check aria-hidden="true" hidden>✓ </span>Defensive</button>
+              <button type="button" data-combat-stance="standGround" aria-pressed="false" aria-describedby="military-stance-status"><span data-stance-check aria-hidden="true" hidden>✓ </span>Stand ground</button>
+              <button type="button" data-combat-stance="noAttack" aria-pressed="false" aria-describedby="military-stance-status"><span data-stance-check aria-hidden="true" hidden>✓ </span>No attack</button>
+            </span>
             <button type="button" class="contextual-icon-command" data-context-proxy="attack-move-toggle" title="Move while attacking enemies encountered · M"><img src="/assets/ui/icons/attack.svg" alt="" width="20" height="20"><span>Attack move · M</span></button>
             <button type="button" data-context-proxy="select-workers">Select workers</button>
             <button type="button" class="contextual-icon-command" data-context-build data-context-panel="economy" title="Open construction choices"><img src="/assets/ui/icons/build.svg" alt="" width="20" height="20"><span>Build</span></button>
