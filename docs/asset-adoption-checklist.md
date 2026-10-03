@@ -113,7 +113,11 @@ and bind by team. `worker-sprite-v1/v2/v3`, `infantry-sprite-v1/v2`,
 ship as explicit legacy comparisons, not defaults. `infantry-meshy-reference-v1`
 is an omitted source reference. **Authored action/direction/team-mask finish and
 fresh deployed roster appearance remain incomplete** → unit art/renderer owners;
-do not count approximate action reuse or idle holds as completed motion.
+do not count approximate action reuse or idle holds as completed motion. The
+[animation integration audit](qa-unit-animation-audit-2026-10-03.md) inventories
+all default/legacy action frames and fixes idle-placeholder inflation of authored
+attack/death lifetimes. Animation integration owner retains delivery and the
+linked parent-owned Mac recipe; source tests do not close in-game acceptance.
 
 ## Maintaining this record
 

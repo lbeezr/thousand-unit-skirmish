@@ -51,6 +51,10 @@ const syntaxFiles = [
 
 for (const file of syntaxFiles) run(['--check', file], `Syntax: ${file}`);
 
+run(['node_modules/typescript/bin/tsc', '--project', 'tsconfig.check-js.json', '--pretty', 'false'],
+  'Strict checked JavaScript boundary');
+run(['--test', 'scripts/check-types.test.mjs'], 'Checked canopy contract negative cases');
+
 run(['--test', 'scripts/scenario-regions.test.mjs'], 'Named scenario regions');
 run(['--test', 'scripts/scenario-authoring.test.mjs'], 'Visual scenario authoring contracts');
 run(['scripts/completion-event-scenario.mjs'], 'Completion event recovery and host diagnostics');
@@ -79,6 +83,7 @@ run(['scripts/audio-shipped-serving-scenario.mjs'], 'Authoritative shipped audio
 run(['scripts/audio-wall-order-scenario.mjs'], 'Applied wall-line audio acknowledgement');
 run(['--test', 'scripts/hosted-scale-profile.test.mjs'], 'Hosted scale measurement integrity');
 run(['--test', 'scripts/unit-sprite-clock.test.mjs'], 'Sprite animation clock');
+run(['--test', 'scripts/unit-animation-runtime.test.mjs'], 'Default unit action frames and lifetimes');
 run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work facing');
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
 run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach contact and bank/water picking');

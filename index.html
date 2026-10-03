@@ -42,7 +42,8 @@
     <main id="game-menu" aria-labelledby="game-menu-title">
       <div class="game-menu-brand"><div class="eyebrow">FIELD COMMAND · FRONTIER</div><h1 id="game-menu-title">Thousand Unit<br>Skirmish</h1><p>Gather. Build. Command.</p></div>
       <section class="game-menu-actions" aria-label="Main menu">
-        <button id="menu-new-game" data-create-game="pve" type="button" disabled><strong>New Game</strong><span>Play vs AI · a fresh seeded battlefield</span></button>
+        <button id="menu-new-game" data-create-game="pve" type="button" disabled><strong>New Game</strong><span>Play vs AI · seeded Millrace or Rootways</span></button>
+        <button id="menu-practice" data-create-game="practice" type="button" disabled><strong>Practice</strong><span>All maps, including labs · one player, no AI commander</span></button>
         <button id="menu-create-room" data-create-game="pvp" type="button" disabled><strong>Create Room</strong><span>Invite a friend · Frontier 1v1 pregame lobby</span></button>
         <button id="menu-join" type="button" disabled><strong>Join Room</strong><span>Use a room code or invite link</span></button>
         <button id="menu-resume" type="button" hidden><strong>Resume</strong><span>Return to your saved player session</span></button>
@@ -335,6 +336,7 @@
         <aside id="match-menu" class="match-menu" aria-label="Match menu" hidden>
           <button id="match-menu-close" class="hud-panel-close" type="button" aria-label="Close match menu">×</button>
           <a id="return-main-menu" class="room-action" href="/">MAIN MENU</a>
+          <p id="practice-status" role="status" hidden>Solo practice · no AI commander. Choose any Battlefield map below.</p>
           <div class="dock-heading">
             <div>
               <div class="eyebrow">MATCH <span>·</span> OPTIONS</div>

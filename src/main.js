@@ -4464,6 +4464,8 @@ function applyState(state, initial = false) {
     return;
   }
   if (!state || (mapDefinition && state.mapId && state.mapId !== mapDefinition.id)) return;
+  const practiceStatus = document.querySelector('#practice-status');
+  if (practiceStatus) practiceStatus.hidden = state.practice !== true;
   const matchRestarted = (matchWinner >= 0 && state.winner === -1)
     || (Number.isFinite(state.matchElapsedSeconds) && state.matchElapsedSeconds + 1 < latestMatchElapsedSeconds);
   const audioReset = initial || (state.armySize && state.armySize !== currentArmySize) || matchRestarted;
