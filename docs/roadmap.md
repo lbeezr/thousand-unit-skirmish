@@ -41,8 +41,11 @@ candidates from the loose capability inventory.
 
 The [paid palisade runtime](palisade-runtime.md) adds atomic connected-line
 construction and persisted Worker sequencing with provisional wood-only test
-tuning. Next wall outcomes are line authoring/preview UI and the independent
-modular art kit; gate ownership/traversal and final balance remain undecided.
+tuning. The normal drag-line UI adds connected previews, whole-line cost,
+keyboard endpoints and cancellation; [checks and a Mac recipe](qa-palisade-drag-ui-2026-10-03.md)
+distinguish DOM/runtime evidence from pending native usability. Next wall
+outcomes are the independent modular art kit and player observations;
+gate ownership/traversal and final balance remain undecided.
 
 ### Integrated core workstreams — 1 October 2026
 

@@ -187,9 +187,15 @@ An optional `wildlifeSpecies: "bellweather-sheep"` on a `food` node opts into th
 The same node ID and authored stock represent the living animal and its carcass;
 there is no second resource pool. Other species, wood wildlife and authored
 `wildlifeState` are rejected. Runtime lifecycle is `alive`, `carcass`, then
-`depleted`, visible only in the room's filtered state. Dedicated wildlife brushes,
-claim/herding and sprite bindings are not implemented. No shipped map uses this
-optional identity yet.
+`depleted`, visible only in the room's filtered state. Sheep may also specify
+`wildlifeNoseYawDegrees`, finite in `[0,360)` with an omitted default of 0: nose
+yaw 0 faces +Z and positive yaw turns toward +X. This static presentation pose
+stays in map data through import/export and checkpoint recovery; it adds no
+simulation heading or movement. The normal renderer selects an available exact
+static direction, otherwise its rotated geometric Sheep proxy. The current
+public pack contains only the north illustration; [runtime evidence](qa-sheep-static-directions-runtime-2026-10-03.md)
+records that limit. Dedicated wildlife brushes and claim/herding remain future
+work. No shipped map places this optional identity yet.
 
 Millrace expands its eight resource anchors into five-node seeded patches (40
 nodes), mirrored between seats. Each original anchor stays in place. Added nodes
@@ -263,12 +269,25 @@ External resource/terrain edits stop history navigation until `reset()`; reset
 also belongs after populate, draft restore or resize. Save ordinary map nodes and
 selection through the existing draft/JSON format; reload starts fresh history.
 
-This slice does not change `src/main.js`, existing resource tools, defaults or any
-map. The UI owner's later integration boundary is the resource pointer branch,
-resource preview draw, and populate/restore/resize reset hooks. Keep its history
-separate from named-region/scenario-event undo. Test the operation with
-`node --test scripts/resource-brush-authoring.test.mjs`; a rendered brush control
-and human editor interaction remain unimplemented.
+In Map Studio, **Resource patches** is open by default under **Resource nodes**. Choose food
+or wood, a whole-number seed and **total patch stock** (at least 5). Enter a
+one-based anchor column/row and press **Preview**, or **Pick anchor** and click a
+map cell. Five dashed preview markers show their individual stocks; the status
+reports the shared total and seed. The fixed radius is four cells and spawn
+clearance is six cells. **Apply patch** adds exactly the previewed markers in one
+operation. **Cancel preview** or Escape clears it without adding resources.
+Enter in a patch field previews; Escape cancels a pending preview before closing
+Map Studio. The existing single-node tools retain their 300 food / 500 wood defaults.
+
+**Undo patch** and **Redo patch** restore nodes and selection independently of
+scenario history. Changing brush settings cancels the preview; changing resource
+stock, terrain, elevation, spawns or dimensions clears brush history. Loading or
+restoring a map starts a fresh session. Applied nodes use the existing draft,
+publish and JSON paths. No preview receipt or history is persisted. The controls
+are isolated in [`src/resource-brush-controls.mjs`](../src/resource-brush-controls.mjs).
+Run `node --test scripts/resource-brush-authoring.test.mjs scripts/resource-brush-controls.test.mjs`
+for operation, actual client-hook and DOM checks. These checks do not establish
+canvas appearance or unassisted human usability; those remain visual acceptance work.
 
 CI runs `node scripts/vaelora-map-layout-scenario.mjs --check-only` to validate
 all regional layouts without rewriting the SVG or dirtying the clean release

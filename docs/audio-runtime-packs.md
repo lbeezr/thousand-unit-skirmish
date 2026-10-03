@@ -27,6 +27,26 @@ pending work and rejects later playback calls while context closure is pending.
 Check: `node --test scripts/audio-cue-lifecycle.test.mjs` uses deferred decoder and
 close promises plus a fake cooldown clock; it is scheduling evidence, not listening.
 
+Concurrent consumers of one source in the current pack share its Blob read and
+decode. Each cue keeps its own playback eligibility: muting voice can cancel a
+selection while an effects cue still uses the same result. Failed decodes release
+all pending consumers and allow a fresh retry. Map replacement and disposal clear
+the cache and invalidate pending results; an old same-ID decode cannot clear or
+populate the replacement pack's job. Cache hits refresh LRU order. Decoded PCM is
+charged once per retained source within the existing 24 MiB cache bound; active
+playback may still hold a buffer after cache eviction, so this is not a total
+Web Audio memory ceiling.
+
+On 2026-10-03, the deferred runtime fixture with three eligible same-source cues
+measured three Blob reads and three decodes before sharing, then one of each
+afterward. All three sample nodes receive the same decoded object, charged once
+at 400 bytes in the fixture. Checks:
+`node --test scripts/audio-decoded-cache.test.mjs scripts/audio-shared-decode.test.mjs`
+cover concurrent consumers, reference release, failure/retry, LRU eviction,
+24 MiB boundaries, independent bus cancellation and late pack/disposal completion.
+These simulated contexts measure duplicate work and scheduling, not listening
+quality or timing speedups. Existing recordings and provenance are unchanged.
+
 Focused checks: `node scripts/audio-runtime-scenario.mjs`, `node scripts/audio-runtime-playback-scenario.mjs`, `node scripts/audio-composition-player-scenario.mjs`, `node scripts/audio-policy-scenario.mjs`, and `node scripts/map-persistence-scenario.mjs`. The persistence check needs permission to bind a local loopback port.
 
 ## Unit lifecycle bindings
@@ -71,7 +91,8 @@ invalidate pending decodes. Continuous playback comes from fresh observed snapsh
 so there is no unattended timer or per-worker looping node.
 
 The sound panel's inspector exposes profile bindings, source availability, load
-status, active samples/voices/work, decoded bytes and the last 24 decisions. Decisions
+status, active samples/voices/work, retained decoded bytes/sources, pending shared
+sources/consumers and the last 24 decisions. Decisions
 identify binding/speech cooldowns, muted or locked playback, voice/sample limits,
 decode failures and synthesized fallback.
 
@@ -84,7 +105,10 @@ scheduling, not a human listening or discoverability session.
 
 ## Next bounded audio slice
 
-Deduplicate simultaneous decodes of the same source within a pack. Preserve the
-24 MiB decoded cache bound and test pack switches while a shared decode is pending,
-successful/error continuations and exact retained-byte accounting. Keep routing,
-cooldowns, captions and source provenance unchanged.
+Run the [short Mac listening session](audio-design.md#short-mac-listening-session)
+on the recent music/cue fixes, then choose one reproduced audible issue or one
+specific existing-track mix change. Settings persistence/migration/storage-failure
+fixtures passed without a runtime defect; the key and defaults are retained.
+Prioritize a concrete doubled entrance, stale acknowledgement, loop seam or cue
+masking observation, with commit and mix recorded. Use existing originals and
+preserve their provenance; no new generation is needed for this listening slice.

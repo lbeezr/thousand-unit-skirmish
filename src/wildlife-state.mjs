@@ -4,6 +4,10 @@ export const BELLWEATHER_SHEEP_SPECIES = 'bellweather-sheep';
 
 export function validWildlifeNodeDefinition(node) {
   return node.wildlifeState === undefined
+    && (node.wildlifeNoseYawDegrees === undefined
+      || (node.wildlifeSpecies === BELLWEATHER_SHEEP_SPECIES
+        && Number.isFinite(node.wildlifeNoseYawDegrees)
+        && node.wildlifeNoseYawDegrees >= 0 && node.wildlifeNoseYawDegrees < 360))
     && (node.wildlifeSpecies === undefined
       || (node.wildlifeSpecies === BELLWEATHER_SHEEP_SPECIES && node.type === 'food'));
 }

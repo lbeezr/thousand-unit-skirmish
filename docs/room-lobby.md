@@ -18,9 +18,30 @@ events until launch. **Leave room** exits to the shared battlefield.
 
 The current game supports two opposing seats using the Frontier gameplay
 faction. There are no selectable civilization rulesets, allies, additional
-player seats or room chat. Presentation previews do not change this capacity.
+player seats. Presentation previews do not change this capacity.
 PvE remains the existing separate **Play vs AI** flow; a lobby's mode cannot
 change after creation.
+
+## Room chat
+
+The two connected seats can exchange plain text in **Room chat** before launch.
+Messages use the room's Azure/Ember seat identities; spectators can read them but
+cannot send. Chat does not alter settings, readiness or the simulation. A send
+racing launch either arrives before the transition or rejects once play starts.
+Rematch reveals the same room conversation again.
+
+Each message allows up to 240 characters. A seat can send five messages in ten
+seconds; reconnecting to that seat does not reset the limit. The server retains
+the latest 32 messages in memory and acknowledges recent same-seat retries
+without appending another message. Clients retain draft text while reconnecting
+or after rejection. Review the received history before resending a draft whose
+delivery was interrupted.
+
+Rejoining receives the current room history. A worker restart clears messages;
+chat is not saved to match checkpoints, browser storage or an external service.
+No account, custom display name, cross-room channel, game-time chat or moderation
+service is added by this pregame slice. Existing immediate-play and solo rooms
+retain their original entry paths.
 
 ## Recovery and rematch
 
@@ -61,6 +82,7 @@ the opt-in flag; existing API callers default to immediate play.
 | `configureLobby` | `revision`, optional catalog `mapId`, optional supported `armySize`; connected Azure only, while waiting. Unknown, invalid or stale settings reject atomically. |
 | `setReady` | `revision`, boolean `ready`; the connected sending seat only. |
 | `launchMatch` | `revision`; connected Azure only with both seats ready. A repeated accepted launch at that revision is an acknowledgement, not a second reset. |
+| `sendLobbyChat` | Bounded `clientMessageId` and plain `text`; connected Azure/Ember only while waiting. No sender fields or unknown fields are accepted. |
 
 The sending peer supplies identity; command payloads cannot choose a player ID
 or team. Settings and connection changes increment the revision and invalidate
@@ -84,6 +106,16 @@ An opted-in checkpoint also preserves its phase if an index rebuild loses the
 creation flag. Invalid pregame shapes reject through existing checkpoint
 quarantine/fresh-match handling.
 
+Opted-in welcome packets also contain separate `lobbyChat` history. Accepted
+`lobbyChat` packets contain the bounded `messages` and authoritative
+`ack: {playerId, clientMessageId}`; a duplicate is acknowledged only to its
+sender. `lobbyChatRejected` carries that request's identifier and reason.
+History is absent from the high-frequency state projection and checkpoints.
+Retry/rate records stay with the existing seat ID during its grace period and
+are discarded after replacement. The latest 64 accepted IDs per seat are
+remembered for retries; this is a bounded window, not permanent exactly-once
+delivery across old-ID reuse or worker restart. No checkpoint schema changes.
+
 ## Verification
 
 `node --test scripts/room-pregame.test.mjs scripts/room-lobby-ui.test.mjs scripts/room-launch-options.test.mjs`
@@ -94,5 +126,11 @@ storage to verify freeze, both-seat configuration, stale messages, spectators,
 launch races, rejoin, phase recovery, publication, rematch and host replacement.
 Keep the existing supervisor, PvE, expiry and checkpoint regressions alongside it.
 These checks do not establish native browser appearance or unassisted usability.
+Chat authority/DOM regressions are in `scripts/room-lobby-chat.test.mjs` and
+`scripts/room-lobby-chat-ui.test.mjs`; `scripts/room-lobby-chat-scenario.mjs`
+checks real two-room isolation, authoritative senders, read-only spectators,
+retry/rate behavior through rejoin, launch ordering, rematch and ephemeral
+restart. [Chat evidence](qa-room-lobby-chat-2026-10-03.md) records its build and
+native-browser limits.
 The [3 October evidence](qa-room-lobby-2026-10-03.md) records exact integration
 builds, results and remaining review/browser limits.

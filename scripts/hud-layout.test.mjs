@@ -87,3 +87,77 @@ test('manual tactical-map navigation retains resize zoom limits without recenter
   assert.equal(f.w.cameraTarget.x, 1.6);
   assert.equal(f.w.zoom, 0.4); assert.equal(f.w.camera.zoom, 0.4);
 });
+
+function responsiveHudFixture(width, height) {
+  const dom = new JSDOM(readFileSync(new URL('../index.html', import.meta.url), 'utf8'), {
+    runScripts: 'outside-only', url: 'http://localhost/',
+  });
+  const w = dom.window, d = w.document, style = d.createElement('style');
+  style.textContent = readFileSync(new URL('../style.css', import.meta.url), 'utf8'); d.head.append(style);
+  const activeRules = rules => [...rules].flatMap(rule => {
+    if (rule.type === 1) return [rule];
+    if (rule.type !== 4) return [];
+    const conditions = [...rule.conditionText.matchAll(/\((min|max)-(width|height):\s*(\d+)px\)/g)];
+    // These geometry checks use size media queries; pointer-specific targets are separate.
+    return conditions.length && conditions.every(([, limit, axis, n]) => limit === 'min'
+      ? { width, height }[axis] >= Number(n) : { width, height }[axis] <= Number(n)) ? activeRules(rule.cssRules) : [];
+  });
+  const rules = activeRules(style.sheet.cssRules);
+  function declaration(element, property) {
+    if (element.style.getPropertyValue(property)) return element.style.getPropertyValue(property);
+    let value = '', priority = -1;
+    for (const rule of rules) for (const selector of rule.selectorText.split(',')) {
+      const candidate = rule.style.getPropertyValue(property);
+      if (!candidate || !element.matches(selector.trim())) continue;
+      // :has() takes its simple class argument's specificity. Reject other
+      // functions rather than pretending jsdom supplies a browser layout/cascade.
+      const weightedSelector = selector.replace(/:has\((\.[\w-]+)\)/g, ' $1');
+      assert.doesNotMatch(weightedSelector, /[():]/, `geometry selector: ${selector}`);
+      const attributes = (weightedSelector.match(/\[[^\]]+\]/g) || []).length;
+      const plain = weightedSelector.replace(/\[[^\]]+\]/g, '');
+      const weight = (plain.match(/#[\w-]+/g) || []).length * 10000
+        + ((plain.match(/\.[\w-]+/g) || []).length + attributes) * 100
+        + plain.split(/[\s>+~]+/).filter(part => /^[a-z]/i.test(part)).length
+        + (rule.style.getPropertyPriority(property) === 'important' ? 1000000 : 0);
+      if (weight >= priority) { priority = weight; value = candidate; }
+    }
+    return value || (property.startsWith('--') && element.parentElement ? declaration(element.parentElement, property) : '');
+  }
+  function pixels(element, property) {
+    const expand = value => value.replace(/var\((--[\w-]+)\)/g, (_, token) => expand(declaration(element, token)));
+    const expression = expand(declaration(element, property))
+      .replace(/([\d.]+)(px|vw|dvh|%)/g, (_, n, unit) => String(Number(n) * (unit === 'px' ? 1 : unit === 'dvh' ? height / 100 : width / 100)))
+      .replace(/calc\(/g, '(').replace(/min\(/g, 'Math.min(');
+    assert.ok(expression.length && /^[\d\s.+\-*/(),]*$/.test(expression.replaceAll('Math.min', '')), `supported CSS length: ${expression}`);
+    const value = Function(`return (${expression});`)();
+    assert.ok(Number.isFinite(value)); return value;
+  }
+  const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
+  Object.assign(w, { appShell: d.querySelector('.app-shell'), normalizeHudPreferences });
+  w.eval(source.slice(source.indexOf('let hudPreferences;'), source.indexOf('function syncFullscreenToggle(')));
+  const workspace = d.querySelector('.workspace'), bar = d.querySelector('.contextual-command-bar');
+  workspace.style.setProperty('--context-bar-height', '128px');
+  bar.hidden = false; d.querySelector('.hud-quick-access').hidden = true;
+  return { dom, d, pixels, bar, map: d.querySelector('.minimap-panel') };
+}
+
+for (const [width, height] of [[1280, 720], [800, 640], [621, 640], [800, 420], [620, 640], [360, 480]]) {
+  test(`compact selection bar clears small/large map at ${width} × ${height}`, t => {
+    const f = responsiveHudFixture(width, height); t.after(() => f.dom.window.close());
+    for (const size of ['small', 'large', 'small']) {
+      assert.equal(f.d.querySelector('.app-shell').dataset.minimapSize, size);
+      const barRight = f.pixels(f.bar, 'left') + f.pixels(f.bar, 'max-width');
+      const mapLeft = width - f.pixels(f.map, 'right') - f.pixels(f.map, 'width');
+      assert.ok(barRight <= width, 'the full command width stays inside the viewport');
+      if (width > 620) assert.ok(mapLeft - barRight >= 8, `${size} map must clear the bar's width cap: gap ${mapLeft - barRight}px`);
+      else assert.ok(f.pixels(f.map, 'bottom') - (f.pixels(f.bar, 'bottom') + f.pixels(f.bar, 'max-height')) >= 8,
+        'narrow layouts stack the map above the observed bar height');
+      if (width > 620 && width <= 920) {
+        const quick = f.d.querySelector('.hud-quick-access');
+        assert.ok(mapLeft - (f.pixels(quick, 'left') + f.pixels(quick, 'max-width')) >= 8,
+          'empty-selection Quick commands use the same current map width');
+      }
+      f.d.querySelector('#minimap-size-toggle').click();
+    }
+  });
+}

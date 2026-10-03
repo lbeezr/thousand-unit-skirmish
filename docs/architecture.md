@@ -39,7 +39,11 @@ with claim/herding and client art integration left as separate work.
 Building placement compares connectivity before and after its proposed footprint.
 It preserves existing connections among bases, units, resources, and building
 access, including Town Centers, without requiring separate authored islands to
-connect. Footprint occupancy and active move-route checks apply independently;
+connect. Exact-zero resource stock releases the node's footprint exclusion and
+resource access point; positive or unknown stock retains both. The browser uses
+disclosed stock and restores the authored exclusion on reset epochs and welcome
+receipts before applying current disclosed rows, including fog-hidden same-map resets.
+Footprint occupancy and active move-route checks apply independently;
 see [construction evidence](qa-construction-connectivity-2026-09-27.md).
 
 Archer building attacks use reachable cells within weapon range as approach
@@ -78,6 +82,7 @@ A presentation ID is a binding identifier; it does not yet load an animation.
 | `src/main.js` | Browser integration, rendering, input, Map Studio, and snapshot reconciliation. |
 | `src/map-utils.mjs`, `src/elevation.mjs`, `src/map-resize.mjs` | Shared map validation, connectivity, elevation costs, and editor resizing. |
 | `src/formation-assignment.mjs`, `src/unit-selection.mjs` | Formation and selection logic used by focused scenarios. |
+| `src/wall-line-planner.mjs`, `src/wall-placement.mjs`, `src/wall-placement-ghost.mjs` | Shared atomic wall geometry, disclosed-cell placement/input state, and bounded connected preview instances. |
 | `src/pve-*.mjs` | Seeded solo launch, filtered opponent observation, deterministic policy, optional fake-provider research helper. |
 | `src/hud-layout.mjs`, `src/selection-context.mjs`, `src/objective-summary.mjs` | HUD geometry, selection actions, objectives, and notice history. |
 | `src/*visual-state.mjs`, `src/environment-art.mjs`, `src/captured-building-art.mjs`, `src/building-sprites.mjs` | Snapshot-to-art mapping, environment batches, directional Town Center views, and Barracks/Range sprites. |
@@ -179,6 +184,15 @@ product names and population. Building construction and persisted geometry use
 registered odd footprints (one to nine cells wide). Unit and building presentation
 profiles bind supported procedural roles independently of gameplay identity;
 they do not claim a skeletal animation backend.
+
+Mill is additive Frontier content using `dropoff: ['food']` and the existing
+construction, route selection, cancellation, repair and destruction handlers.
+The HUD derives accepted resources from that list. Its `building.mill` profile
+explicitly reuses the procedural House; no captured Mill asset is registered.
+Schema 22's exact pre-Mill ruleset `v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801`
+migrates to the new revision without changing the persisted shape, existing
+stats, resources, identities or paid queues. Unknown revisions remain rejected.
+The earlier pre-palisade revision retains its existing guarded migration.
 
 ### Base lifecycle commands
 

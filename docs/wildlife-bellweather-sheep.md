@@ -20,6 +20,13 @@ adds offline source/anchor/yaw acceptance tests and a minimal future integration
 proposal. It preserves the current live binding while the eight original view
 files and their separate publication permission remain unavailable.
 
+The [default static-direction runtime](qa-sheep-static-directions-runtime-2026-10-03.md)
+now validates an optional authored nose pose and keeps immutable UV geometry per
+supported frame. The normal game renderer selects that exact view, preserving
+independent simultaneous Sheep; missing views use the rotated geometric proxy.
+Omitted poses still use the existing public north illustration. The eight
+private views and all animal animations remain absent.
+
 ## Implemented neutral food foundation — 3 October 2026
 
 [Authoritative state](../src/wildlife-state.mjs) admits one optional resource-node
@@ -50,6 +57,14 @@ orders still reject. Return intent and cargo use the existing checkpoint fields,
 so restart during delivery neither replenishes sheep nor credits food twice.
 [Interrupted delivery evidence](qa-interrupted-cargo-return-2026-10-03.md) keeps
 the original failing fixture and both-seat recovery checks.
+
+At zero stock, the depleted carcass also releases its construction exclusion
+and stops contributing a resource access point to building-connectivity checks.
+The browser releases only sites whose zero stock has been disclosed; unknown
+or positive stock remains protected. This uses the same rule for ordinary finite
+food/wood nodes. It neither moves animals nor replenishes stock, and all other
+construction guards remain in force. [Depleted-site evidence](qa-depleted-resource-construction-2026-10-03.md)
+proves both-seat paid construction and recovery on the cleared sites.
 
 Checkpoint schema 20 saves species, lifecycle, stock and existing Worker intent/
 cargo together. It validates `alive` only at full authored stock, `carcass` only

@@ -52,7 +52,7 @@ test('alive, carcass and depleted are distinct; omitted/fogged nodes are immedia
 test('late art load cannot resurrect a carcass; authoritative rematch may restore alive', async () => {
  const waiting=Promise.withResolvers();let loads=0,disposed=0,updates=0;
  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial());
- const template={mesh,update: state=>{updates++;assert.equal(state.directionId,'north');assert.equal(state.moving,false);return true;},dispose:()=>{disposed++;}};
+ const template={mesh,supports:state=>state.directionId==='north',update: state=>{updates++;assert.equal(state.directionId,'north');assert.equal(state.moving,false);return true;},dispose:()=>{disposed++;}};
  const renderer=createNeutralWildlifeRenderer({THREE,scene:new THREE.Scene(),groundHeight:()=>0,loadArt:()=>{loads++;return waiting.promise;}});
  renderer.reset([definition]);
  renderer.reconcile([row('carcass',80)],()=>true);renderer.update(camera);
