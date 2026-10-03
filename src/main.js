@@ -4712,7 +4712,7 @@ function updateRosterBuildingOptions(container) {
   }
   for (const button of container.children) {
     const definition = BUILDING_DEFINITIONS[button.dataset.building];
-    const workers = localTeam === null ? [] : teamUnits[localTeam].filter((unit) => unit.kind === 'worker' && unit.hp > 0);
+    const workers = selectedWorkerIds();
     const missing = (definition.requires || []).filter((id) => !latestTeamResearch[localTeam]?.[TECHNOLOGY_DEFINITIONS[id].upgradeKey]);
     button.disabled = localTeam === null || matchWinner >= 0 || buildPlacementPending || !workers.length || missing.length > 0
       || (definition.id !== 'palisade-wall' && (latestFood[localTeam] < definition.cost.food || latestWood[localTeam] < definition.cost.wood));
@@ -4779,7 +4779,9 @@ function updateEconomyUI(state = {}, initial = false) {
     .filter((building) => building.team === localTeam);
   const ownRanges = ownBuildings.filter((building) => building.type === 'archery-range');
   const ownBarracks = ownBuildings.filter((building) => building.type === 'barracks');
-  const construction = ownBuildings.find((building) => building.complete !== true) || null;
+  const construction = constructionForSelectedWorkers()
+    || ownBuildings.find((building) => building.complete !== true) || null;
+  const selectedWorkerCount = selectedWorkerIds().length;
   const rangeConstruction = ownRanges.find((building) => building.complete !== true) || null;
   const barracksConstruction = ownBarracks.find((building) => building.complete !== true) || null;
   const trainableRange = localTeam === null ? null : findTrainableArcheryRange(localTeam);
@@ -4808,21 +4810,20 @@ function updateEconomyUI(state = {}, initial = false) {
   }
   if (ui.buildBarracks) {
     ui.buildBarracks.disabled = localTeam === null || matchWinner >= 0 || wood < BARRACKS_WOOD_COST
-      || ownedWorkers.length === 0 || buildPlacementPending;
+      || selectedWorkerCount === 0 || buildPlacementPending;
     ui.buildBarracks.classList.toggle('active', buildPlacementActive && buildPlacementType === 'barracks');
     ui.buildBarracks.setAttribute('aria-pressed', String(buildPlacementActive && buildPlacementType === 'barracks'));
     ui.buildBarracks.setAttribute('aria-label', `Build Barracks for ${formatResourceRequirement(BARRACKS_WOOD_COST)} wood${
-      ownedWorkers.length === 0 ? ', no living workers' : ''
+      selectedWorkerCount === 0 ? ', select living workers first' : `, ${selectedWorkerCount} selected workers`
     }`);
   }
   if (ui.buildRange) {
-    const selectedWorkerCount = ownedWorkers.length;
     ui.buildRange.disabled = localTeam === null || matchWinner >= 0 || wood < ARCHERY_RANGE_WOOD_COST
       || selectedWorkerCount === 0 || buildPlacementPending;
     ui.buildRange.classList.toggle('active', buildPlacementActive && buildPlacementType === 'archery-range');
     ui.buildRange.setAttribute('aria-pressed', String(buildPlacementActive && buildPlacementType === 'archery-range'));
     ui.buildRange.setAttribute('aria-label', `Build archery range for ${formatResourceRequirement(ARCHERY_RANGE_WOOD_COST)} wood${
-      selectedWorkerCount === 0 ? ', no living workers' : ''
+      selectedWorkerCount === 0 ? ', select living workers first' : `, ${selectedWorkerCount} selected workers`
     }`);
   }
   const workerProduction = localTeam === null ? null : latestWorkerProduction[localTeam];
@@ -4858,12 +4859,12 @@ function updateEconomyUI(state = {}, initial = false) {
   if (ui.resumeRange) {
     const progress = construction ? Math.round((Number(construction.progress) || 0) * 100) : 0;
     ui.resumeRange.hidden = !construction;
-    ui.resumeRange.disabled = localTeam === null || matchWinner >= 0 || ownedWorkers.length === 0;
+    ui.resumeRange.disabled = localTeam === null || matchWinner >= 0 || selectedWorkerCount === 0;
     ui.resumeRange.setAttribute('aria-label', construction
-      ? `Send workers to finish ${buildingLabel(construction.type).toLowerCase()} ${construction.id}, ${progress} percent complete`
+      ? `Send ${selectedWorkerCount} selected workers to finish ${buildingLabel(construction.type).toLowerCase()} ${construction.id}, ${progress} percent complete`
       : 'No unfinished friendly Barracks or archery range');
     if (ui.resumeConstructionLabel) ui.resumeConstructionLabel.textContent = construction
-      ? `Send workers to ${buildingLabel(construction.type).toLowerCase()}` : 'Send workers to construction';
+      ? `Send selected workers to ${buildingLabel(construction.type).toLowerCase()}` : 'Send selected workers to construction';
     if (ui.resumeRangeProgress) ui.resumeRangeProgress.textContent = construction ? `${progress}% · FOCUS` : '';
   }
   if (ui.buildingStatus) {
@@ -4948,7 +4949,7 @@ function updateEconomyUI(state = {}, initial = false) {
     ui.populationStatus.textContent = populationReadout.detail;
   }
   if (ui.buildHouse) {
-    ui.buildHouse.disabled = localTeam === null || matchWinner >= 0 || wood < BUILDING_DEFINITIONS.house.cost.wood || ownedWorkers.length === 0 || buildPlacementPending;
+    ui.buildHouse.disabled = localTeam === null || matchWinner >= 0 || wood < BUILDING_DEFINITIONS.house.cost.wood || selectedWorkerCount === 0 || buildPlacementPending;
     ui.buildHouse.classList.toggle('active', buildPlacementActive && buildPlacementType === 'house');
     ui.buildHouse.setAttribute('aria-pressed', String(buildPlacementActive && buildPlacementType === 'house'));
   }
@@ -7367,6 +7368,21 @@ function selectedIds() {
   return [...selected].filter((id) => units[id]?.hp > 0 && units[id]?.team === localTeam);
 }
 
+function selectedWorkerIds() {
+  return selectedIds().filter((id) => units[id]?.kind === 'worker');
+}
+
+function constructionForSelectedWorkers() {
+  const workers = selectedWorkerIds().map((id) => units[id]);
+  if (workers.length === 0) return null;
+  const x = workers.reduce((sum, unit) => sum + unit.serverX, 0) / workers.length;
+  const z = workers.reduce((sum, unit) => sum + unit.serverZ, 0) / workers.length;
+  return latestBuildings.filter((building) => building.team === localTeam
+    && Object.hasOwn(BUILDING_DEFINITIONS, building.type) && building.complete !== true)
+    .sort((a, b) => ((a.x - x) ** 2 + (a.z - z) ** 2)
+      - ((b.x - x) ** 2 + (b.z - z) ** 2) || a.id - b.id)[0] || null;
+}
+
 function issueStationaryOrder(type) {
   persistentTargetMode = null;
   if (localTeam === null || matchWinner >= 0) return;
@@ -7815,19 +7831,13 @@ function beginBuildPlacement(type) {
   const label = buildingLabel(type);
   const woodCost = buildingWoodCost(type);
   const foodCost = BUILDING_DEFINITIONS[type]?.cost.food || 0;
-  const workers = teamUnits[localTeam].filter((unit) => unit.kind === 'worker' && unit.hp > 0);
-  if (workers.length === 0) { showToast(`NO LIVING WORKERS TO CONSTRUCT ${label}`); return; }
+  const workers = selectedWorkerIds();
+  if (workers.length === 0) { showToast(`SELECT WORKERS TO CONSTRUCT ${label}`); return; }
   if (type !== 'palisade-wall' && latestFood[localTeam] < foodCost) { showToast(`${label} NEEDS ${foodCost} FOOD`); return; }
   if (type !== 'palisade-wall' && latestWood[localTeam] < woodCost) {
     showToast(`${label} NEEDS ${formatResourceRequirement(woodCost)} WOOD`);
     return;
   }
-  selected.clear();
-  for (const worker of workers) selected.add(worker.id);
-  clearActiveControlGroup();
-  selectionDirty = true;
-  syncSelectionMesh();
-  updateSelectionUI();
   attackMoveMode = false;
   persistentTargetMode = null;
   updateCommandUI();
@@ -7860,7 +7870,7 @@ function submitBuildPlacement(clientX, clientY, wallPoints = null) {
     showToast(`${buildingLabel(buildPlacementType)} SITE BLOCKED · ${placement.blockedReason}`);
     return;
   }
-  const ids = selectedIds().filter((id) => units[id]?.kind === 'worker');
+  const ids = selectedWorkerIds();
   if (ids.length === 0) { showToast(`SELECT WORKERS TO CONSTRUCT ${buildingLabel(buildPlacementType)}`); return; }
   pendingBuildBaseline = new Set(latestBuildings.filter((building) => building.team === localTeam).map((building) => building.id));
   const command = wall ? { type: 'buildWall', ids, points: wallPoints,
@@ -7965,30 +7975,20 @@ function startSelectedAttackResearch() {
 
 function resumeConstruction() {
   if (localTeam === null || matchWinner >= 0) return;
-  const building = latestBuildings.find((row) => row.team === localTeam
-    && Object.hasOwn(BUILDING_DEFINITIONS, row.type) && row.complete !== true);
+  const ids = selectedWorkerIds();
+  if (ids.length === 0) { showToast('SELECT WORKERS TO RESUME CONSTRUCTION'); return; }
+  const building = constructionForSelectedWorkers();
   if (!building) {
-    showToast('NO UNFINISHED FRIENDLY BARRACKS OR ARCHERY RANGE');
-    return;
-  }
-  const workers = teamUnits[localTeam].filter((unit) => unit.kind === 'worker' && unit.hp > 0);
-  if (workers.length === 0) {
-    showToast('NO LIVING WORKERS TO RESUME CONSTRUCTION');
+    showToast('NO UNFINISHED FRIENDLY CONSTRUCTION');
     return;
   }
   if (buildPlacementActive) cancelBuildPlacement(false);
-  selected.clear();
-  for (const worker of workers) selected.add(worker.id);
-  clearActiveControlGroup();
-  selectionDirty = true;
-  syncSelectionMesh();
-  updateSelectionUI();
   setAttackMoveMode(false, false);
   cameraTarget.set(building.x, 0, building.z);
   setCamera();
   drawMinimap(performance.now(), true);
-  if (sendTrackedOrder({ type: 'build', buildingId: building.id, ids: workers.map((worker) => worker.id) },
-    'RESUME BUILD', workers.length, 'WORKERS')) {
+  if (sendTrackedOrder({ type: 'build', buildingId: building.id, ids },
+    'RESUME BUILD', ids.length, 'WORKERS')) {
     showToast(`WORKERS SENT TO FINISH ${buildingLabel(building.type)} · ${Math.round((Number(building.progress) || 0) * 100)}%`);
   }
 }
