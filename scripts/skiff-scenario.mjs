@@ -96,7 +96,7 @@ try {
     await command(team, { type: 'move', ids: [boatIds[team]], x: team ? -12.5 : 12.5, z: 15.5 }, /WATER ROUTE DISCONNECTED/);
     await command(team, { type: 'move', ids: [boatIds[team], workers[team][0]], x: team ? 12.5 : -12.5, z: 15.5 }, /SELECT ONE SKIFF/);
     await command(team, { type: 'move', ids: [boatIds[team]], x: team ? 12.5 : -12.5, z: 15.5, queue: true }, /SUPPORTS MOVE AND STOP/);
-    await command(team, { type: 'gather', ids: [boatIds[team]], nodeId: `food-${team}` }, /NO REACHABLE WORKERS SELECTED/);
+    await command(team, { type: 'gather', ids: [boatIds[team]], nodeId: `food-${team}` }, /FISHING REJECTED/);
     await command(team, { type: 'move', ids: [boatIds[team]], x: team ? 12.5 : -12.5, z: 15.5 }, /SKIFF WATER ROUTE/);
   }
   await clients[1].state(state => state.units.find(unit => unit[0] === boatIds[1])?.[3] > 11.6, 'Skiff starts moving');
@@ -118,7 +118,7 @@ try {
   for (const [reason, mutate] of [
     ['missing movement domain', snapshot => { delete snapshot.state.units[boatIds[0]].movementDomain; }],
     ['dry actor position', snapshot => { snapshot.state.units[boatIds[0]].x = 0; }],
-    ['unsupported fish cargo', snapshot => { snapshot.state.units[boatIds[0]].cargo = 1; snapshot.state.units[boatIds[0]].cargoType = 'food'; }],
+    ['unsupported wood cargo', snapshot => { snapshot.state.units[boatIds[0]].cargo = 1; snapshot.state.units[boatIds[0]].cargoType = 'wood'; }],
     ['off-center idle position', snapshot => { snapshot.state.units[boatIds[0]].x += .2; snapshot.state.units[boatIds[0]].z += .2; }],
     ['land-planner pending state', snapshot => { snapshot.state.units[boatIds[0]].movePlanningPending = true; }],
     ['overlapping hulls', snapshot => { const a = boats(snapshot)[0], b = boats(snapshot)[2]; b.x = a.x; b.z = a.z; }],
@@ -132,5 +132,5 @@ try {
     tailRefundAndPopulationReservation: true, priorDockAndGatePinMigration: true, paidQueueRecovery: true,
     blockedBerthRecovery: true, ownerAndDomainRejections: true, stopAndMovingRecovery: true,
     waterOnlyNonoverlappingHulls: true, invalidCheckpointPreserved: true,
-    gameplayAvailability: 'Dock trains one unarmed Skiff placeholder; select one boat and Move/Stop on authored level-zero water; no fish cargo, transport, naval combat or rally' }));
+    gameplayAvailability: 'Dock trains an unarmed Skiff placeholder; this scenario verifies single-boat water Move/Stop, production and recovery; fishing cargo has its own scenario; no transport, naval combat or rally' }));
 } finally { await fixture.dispose(); }

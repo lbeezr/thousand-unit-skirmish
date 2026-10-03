@@ -77,7 +77,7 @@ for (const team of [0, 1]) test(`seat ${team} validates its Workers and visibili
     unit(2, team, 0, true), unit(3, team, 100, false), unit(4, team, 100, true, 1)];
   const notices = [], routes = [];
   let visible = true;
-  const context = vm.createContext({ isShoreFish, resourceNodeStates: new Map([[node.id, node]]), harvestNodeById: id => id === node.id ? node : null,
+  const context = vm.createContext({ isShoreFish, farmBuildingId: () => null, harvestNodeById: id => context.resourceNodeStates.get(id), resourceNodeStates: new Map([[node.id, node]]),
     spawnByTeam: [{ x: 0, z: 0 }, { x: 0, z: 0 }], walkableComponents: [0, 1],
     WORKER_CARRY_CAPACITY: 10, dirty: false,
     worldToCell: x => x, nearestOpenCell: cell => cell, cellVisibleToTeam: () => visible,
@@ -112,7 +112,7 @@ for (const team of [0, 1]) test(`seat ${team} validates its Workers and visibili
 test('schema 19 ordinary maps migrate, but cannot forge unrecorded wildlife state', () => {
   const migration = server.slice(server.indexOf('function migrateMatchCheckpoint('), server.indexOf('async function drainMatchCheckpointWrites'));
   const schemaVersion = Number(server.match(/const MATCH_CHECKPOINT_SCHEMA_VERSION = (\d+)/)[1]);
-  const context = vm.createContext({ MATCH_CHECKPOINT_SCHEMA_VERSION: schemaVersion, MATCH_RULES_VERSION: 6, GAMEPLAY_RULESET_REVISION });
+  const context = vm.createContext({ GAMEPLAY_RULESET_REVISION, MATCH_CHECKPOINT_SCHEMA_VERSION: schemaVersion, MATCH_RULES_VERSION: 6 });
   vm.runInContext(migration, context);
   const plain = { schemaVersion: 19, rulesVersion: 6, mapDefinition: { resourceNodes: [] }, state: { units: [] } };
   context.migrateMatchCheckpoint(plain);

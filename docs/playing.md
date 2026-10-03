@@ -137,7 +137,9 @@ Open Objectives for prerequisites, rewards, live cards, and recent notices.
 Selection controls expose the relevant production or unit actions. Hints can be
 hidden and reopened; placement and targeting still show cancellation guidance.
 Select one Worker to see its portrait and live HP. Open its portrait for role
-notes in the Selection drawer; Escape or its close button dismisses the drawer.
+notes in the Selection drawer: abilities, live health, base stats and training
+requirements. World notes are optional and initially collapsed, with a source
+link; they do not change gameplay. Escape or the close button dismisses the drawer.
 Multiple selections keep their group composition summary.
 Select an owned Barracks to see its construction/damage thumbnail; open it for
 the existing structure details. Its art follows the battlefield's current state.

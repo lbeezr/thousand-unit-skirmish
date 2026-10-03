@@ -2,6 +2,7 @@ import { findInvalidResourceVariant, isShoreFish, validResourceVariantState } fr
 import { farmHarvestNode, farmHarvestNodeId, farmBuildingId, validFarmStock } from './src/farm-harvest.mjs';
 import { createDockPlacementContext } from './src/dock-placement.mjs';
 import { createWaterUnitRuntime, waterUnitOccupiedCells } from './src/water-unit-runtime.mjs';
+import { createSkiffFishingContext } from './src/skiff-fishing.mjs';
 import { activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted, validWildlifeNodeDefinition, validWildlifeNodeState } from './src/wildlife-state.mjs';
 import { migrateMillraceSheepCheckpoint } from './src/millrace-sheep.mjs';
 import { validateMapRegion } from './src/regions.mjs';
@@ -644,6 +645,7 @@ const configuredMatchMapId = pveLaunchOptions?.mapId ?? defaultMapId;
 let mapDefinition = mapCatalog.get(configuredMatchMapId);
 let dockPlacementContext = null;
 let waterUnitRuntime = null;
+let skiffFishingContext = null;
 if (!mapDefinition) {
   throw new Error(`The selected PvE map "${pveLaunchOptions?.mapId}" is not shipped with this server.`);
 }
@@ -798,6 +800,7 @@ function activateMap(definition) {
   mapDefinition = definition;
   dockPlacementContext = createDockPlacementContext(definition, BUILDING_DEFINITIONS.dock);
   waterUnitRuntime = createWaterUnitRuntime(definition);
+  skiffFishingContext = createSkiffFishingContext(definition, waterUnitRuntime);
   MAP_WIDTH = definition.width;
   MAP_HEIGHT = definition.height;
   MAP_HALF_X = MAP_WIDTH / 2;
@@ -2745,6 +2748,8 @@ function validateMatchCheckpoint(snapshot) {
   const checkpointWaterRuntime = state.units.some(unit => unit?.kind === 'skiff' || unit?.movementDomain === 'water')
     ? createWaterUnitRuntime(definition) : null;
   const checkpointWaterOccupancy = new Set();
+  const checkpointFishing = checkpointWaterRuntime ? createSkiffFishingContext(definition, checkpointWaterRuntime) : null;
+  const checkpointFishNodes = new Map(definition.resourceNodes.map(node => [node.id, node]));
   for (let index = 0; index < state.units.length; index++) {
     const unit = state.units[index];
     assertSnapshot(unit && typeof unit === 'object' && unit.id === index, `invalid unit ${index}`);
@@ -2765,8 +2770,8 @@ function validateMatchCheckpoint(snapshot) {
         && unit.persistentOrder == null && unit.wallBuildOrder == null && !unit.attackMove
         && !unit.movePlanningPending && !unit.attackMoveRouteReady
         && unit.attackMoveResumePath === null && unit.attackTargetId === -1 && unit.attackBuildingTargetId === -1
-        && unit.cargo === 0 && unit.cargoType === null && unit.gatherNodeId === null
-        && unit.gatherForestCell === -1 && unit.gatherPhase === '' && unit.buildingTargetId === null && !unit.repairing,
+        && checkpointFishing.validState(unit, checkpointFishNodes, Array.isArray(state.buildings) ? state.buildings : [])
+        && unit.buildingTargetId === null && !unit.repairing,
       `invalid water unit state ${index}`);
       assertSnapshot(!unit.waterMoveBlocked || unit.pathIndex < unit.path.length, `blocked water unit without route ${index}`);
       if (unit.hp > 0) for (const cell of waterUnitOccupiedCells(checkpointWaterRuntime.graph, unit)) {
@@ -3291,9 +3296,21 @@ async function writeMatchCheckpointAtomically(serialized, sequence) {
 }
 
 function migrateMatchCheckpoint(snapshot) {
-  // A content pin predating Farm cannot claim a paid planting or harvest state.
+  // Prior movement-only definitions cannot claim fish cargo or fishing intent.
+  const previousMovementPins = ['v1:496509c24775ddfbd289faf9fbcc85dfef7d054d710c665caa9fe192c610ddcd',
+    'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'];
   if (snapshot?.rulesetRevision !== GAMEPLAY_RULESET_REVISION
+    && Array.isArray(snapshot?.state?.units) && snapshot.state.units.some(unit =>
+      (unit?.kind === 'skiff' || unit?.movementDomain === 'water')
+      && (unit.cargo !== 0 || unit.cargoType !== null || unit.gatherNodeId !== null || unit.gatherPhase !== ''))) return snapshot;
+  // A pin predating Farm still cannot claim a paid planting or harvest state.
+  if (![GAMEPLAY_RULESET_REVISION, previousMovementPins[0]].includes(snapshot?.rulesetRevision)
     && snapshot?.state?.buildings?.some(building => building.type === 'farm' || building.harvestStock !== undefined)) return snapshot;
+  if ([22, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+    && previousMovementPins.includes(snapshot.rulesetRevision)
+    && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) {
+    snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+  }
   if (((Array.isArray(snapshot?.state?.units) && snapshot.state.units.some(unit => unit?.kind === 'skiff' || unit?.movementDomain === 'water'))
     || (Array.isArray(snapshot?.state?.buildings) && snapshot.state.buildings.some(building => Array.isArray(building?.productionQueue) && building.productionQueue.includes('skiff'))))
     && ![GAMEPLAY_RULESET_REVISION, 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'].includes(snapshot.rulesetRevision)) return snapshot;
@@ -4123,6 +4140,19 @@ function assignReturnCargo(player, command) {
     return;
   }
   const deliveries = [];
+  const selectedWater = commandUnits(command).filter(unit => unit.hp > 0 && unit.team === player.team && unit.movementDomain === 'water');
+  if (selectedWater.length) {
+    const selectedOwn = commandUnits(command).filter(unit => unit.hp > 0 && unit.team === player.team);
+    if (selectedOwn.length !== 1 || selectedWater.length !== 1) {
+      sendOrderNotice(player, command, 'RETURN CARGO REJECTED · SELECT ONE SKIFF'); return;
+    }
+    const unit = selectedWater[0], route = unit.cargo > 0 && unit.cargoType === 'food'
+      ? skiffFishingContext.deliveryRoute(unit, buildings, units) : null;
+    if (!route) { sendOrderNotice(player, command, 'RETURN CARGO REJECTED · NEED FOOD CARGO AND A REACHABLE OWNED DOCK'); return; }
+    assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: [unit.id] });
+    skiffFishingContext.start(unit, null, 'to-base', route); dirty = true;
+    sendOrderNotice(player, command, 'RETURN CARGO ORDER · SKIFF TO OWNED DOCK'); return;
+  }
   for (const unit of commandUnits(command)) {
     if (unit.hp <= 0 || unit.team !== player.team || !unitHasCapability(unit, 'gather')
       || !(unit.cargo > 0) || !economyResources(matchEconomyProfileId()).includes(unit.cargoType)) continue;
@@ -4153,10 +4183,38 @@ function assignReturnCargo(player, command) {
   sendOrderNotice(player, command, `RETURN CARGO ORDER · ${deliveries.length} WORKERS`);
 }
 
+function assignSkiffGather(player, command, selectedUnits) {
+  if (command.queue) { sendOrderNotice(player, command, 'FISHING REJECTED · QUEUED FISHING IS UNAVAILABLE'); return; }
+  if (selectedUnits.length !== 1 || selectedUnits[0].kind !== 'skiff' || !unitHasCapability(selectedUnits[0], 'gather')) {
+    sendOrderNotice(player, command, 'FISHING REJECTED · SELECT ONE SKIFF'); return;
+  }
+  const unit = selectedUnits[0], node = resourceNodeStates.get(command.nodeId);
+  if (Object.hasOwn(command, 'forestCell') || !isShoreFish(node)) {
+    sendOrderNotice(player, command, 'FISHING REJECTED · SELECT A SHORE FISH SOURCE'); return;
+  }
+  if (!cellVisibleToTeam(player.team, worldToCell(node.x, node.z))) {
+    sendOrderNotice(player, command, 'FISHING REJECTED · RESOURCE NODE NOT VISIBLE'); return;
+  }
+  if (node.stock <= 0) { sendOrderNotice(player, command, 'RESOURCE NODE EMPTY'); return; }
+  const fishRoute = skiffFishingContext.fishRoute(unit, node, units);
+  const delivery = skiffFishingContext.deliveryRoute(unit, buildings, units);
+  if (!fishRoute || !delivery) {
+    sendOrderNotice(player, command, 'FISHING REJECTED · NEED REACHABLE WATER FISH AND AN OWNED DOCK'); return;
+  }
+  const full = unit.cargo >= UNIT_DEFINITIONS.skiff.fishing.carryCapacity;
+  assignStationaryOrder({ ...player, sendJson() {} }, { type: 'stop', ids: [unit.id] });
+  skiffFishingContext.start(unit, node.id, full ? 'to-base' : 'to-node', full ? delivery : fishRoute);
+  dirty = true; sendOrderNotice(player, command, 'FISHING ORDER · SKIFF · FINITE FOOD TO OWNED DOCK');
+}
+
 function assignGather(player, command) {
   if (player.team === null || !Array.isArray(command.ids)) {
     sendOrderNotice(player, command, 'GATHER REJECTED · NO VALID WORKERS');
     return;
+  }
+  const selectedOwn = commandUnits(command).filter(unit => unit.hp > 0 && unit.team === player.team);
+  if (selectedOwn.some(unit => unit.movementDomain === 'water')) {
+    assignSkiffGather(player, command, selectedOwn); return;
   }
   if (Object.hasOwn(command, 'forestCell')) {
     assignForestGather(player, command);
@@ -4310,7 +4368,7 @@ function flushPendingForestClears() {
 
 function updateWorkerEconomy() {
   for (const unit of units) {
-    if (unit.hp <= 0 || !unitHasCapability(unit, 'gather')) continue;
+    if (unit.hp <= 0 || unit.movementDomain === 'water' || !unitHasCapability(unit, 'gather')) continue;
     if (unit.gatherForestCell >= 0) {
       if (!forestCellMask[unit.gatherForestCell]) {
         stopGathering(unit);
@@ -4729,6 +4787,13 @@ function destroyBuilding(building) {
   const index = buildings.indexOf(building);
   if (index >= 0) buildings.splice(index, 1);
   buildingsById.delete(building.id);
+  for (const unit of units) if (unit.movementDomain === 'water' && unit.dropoffBuildingId === building.id) {
+    unit.dropoffBuildingId = null;
+    if (unit.gatherPhase === 'to-base') {
+      unit.path = []; unit.pathIndex = 0; unit.moveGoalCell = -1;
+      unit.waterMoveBlocked = false; unit.repathTimer = 0;
+    }
+  }
   // Destroyed crop stock is lost; carried food remains real cargo and returns
   // through the normal friendly-drop-off route without referencing a dead plot.
   if (building.type === 'farm') for (const unit of units) {
@@ -6852,7 +6917,7 @@ function spreadInteractingUnits() {
   const maxCandidates = 64;
   const searchRadius = MIN_SEPARATION + WALK_SPEED * STEP_SECONDS;
   for (const unit of units) {
-    if (unit.hp <= 0 || unit.pathIndex < unit.path.length) continue;
+    if (unit.hp <= 0 || unit.movementDomain === 'water' || unit.pathIndex < unit.path.length) continue;
     let target = null;
     let building = null;
     let range = 0;
@@ -7189,6 +7254,7 @@ function simulateTick() {
   updateTeamResearch();
 
   if (waterUnitRuntime.advance(units, STEP_SECONDS, unit => UNIT_DEFINITIONS[unit.kind].combat.moveSpeed)) dirty = true;
+  if (skiffFishingContext.update({ units, nodes: resourceNodeStates, buildings, teamFood }, STEP_SECONDS)) dirty = true;
   const blockedRouteRepairs = [];
   for (const unit of units) {
     if (unit.hp <= 0 || unit.movementDomain === 'water') continue;

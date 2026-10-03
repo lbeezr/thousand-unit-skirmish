@@ -150,6 +150,8 @@ run(['--test', 'scripts/dock-placement.test.mjs'], 'Dock shoreline and water ber
 run(['scripts/dock-scenario.mjs'], 'Both-seat paid Dock construction and recovery');
 run(['--test', 'scripts/water-unit-runtime.test.mjs', 'scripts/skiff-contracts.test.mjs'], 'Skiff water movement, paid queue and placeholder controls');
 run(['scripts/skiff-scenario.mjs'], 'Both-seat paid Skiff production, berth occupancy and recovery');
+run(['--test', 'scripts/skiff-fishing.test.mjs'], 'Finite Skiff food, owned Dock delivery and conservation');
+run(['scripts/skiff-fishing-scenario.mjs'], 'Both-seat Skiff/Worker shared fish stock and cargo recovery');
 run(['scripts/water-route-map-scenario.mjs'], 'Water-only route components on shipped maps');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');
