@@ -4,6 +4,7 @@ import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
 import { TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { researchAction, researchOptions } from '../src/research-actions.mjs';
+import { setHudActionAvailability, isHudActionUnavailable } from '../src/hud-layout.mjs';
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const fn = source.slice(source.indexOf('function updateResearchOptions('), source.indexOf('function buildingWoodCost('));
 for (const team of [0, 1]) test(`research buttons follow registered choices, prerequisites and focused state for seat ${team}`, () => {
@@ -11,17 +12,20 @@ for (const team of [0, 1]) test(`research buttons follow registered choices, pre
   const container = { dataset: {}, children: [], replaceChildren() { this.children = []; }, append(button) { this.children.push(button); } };
   const building = { id: 4, team, type: 'barracks', complete: true };
   const context = vm.createContext({ TECHNOLOGY_DEFINITIONS, researchAction, researchOptions,
+    setHudActionAvailability, isHudActionUnavailable,
     localTeam: team, latestFood: [1000, 1000], latestWood: [1000, 1000], latestTeamResearch: [{}, {}], matchWinner: -1,
-    document: { createElement() { return { dataset: {}, addEventListener(_, fn) { this.click = fn; } }; } },
+    document: { createElement() { return { dataset: {}, getAttribute() { return null; }, removeAttribute() {}, addEventListener(_, fn) { this.click = fn; } }; } },
     sendCommand: command => commands.push(command) });
   vm.runInContext(fn, context); context.updateResearchOptions(container, building);
   const armor = container.children.find(button => button.dataset.technology === 'military-armor');
   assert.ok(armor); assert.equal(armor.disabled, true); assert.match(armor.textContent, /REQUIRES MILITARY TIER II/);
+  armor.click(); assert.equal(commands.length, 0, 'unavailable drawer research sends no request');
   context.latestTeamResearch[team].militaryTier2 = true; context.updateResearchOptions(container, building);
   assert.equal(container.children.find(button => button.dataset.technology === 'military-armor'), armor);
   assert.equal(armor.disabled, false); armor.click();
   assert.deepEqual(JSON.parse(JSON.stringify(commands)), [{ type: 'researchUpgrade', buildingId: 4, upgrade: 'military-armor' }]);
   context.latestTeamResearch[team].active = { type: 'infantry-attack' }; context.updateResearchOptions(container, building);
   assert.equal(armor.disabled, true); assert.match(armor.textContent, /RESEARCH IN PROGRESS/);
+  armor.click(); assert.equal(commands.length, 1, 'researching drawer choice remains blocked');
   building.team = 1 - team; context.updateResearchOptions(container, building); assert.equal(container.children.length, 0);
 });
