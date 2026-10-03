@@ -1,5 +1,6 @@
 import { findInvalidResourceVariant, isShoreFish } from './shore-fishing.mjs';
 import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from './shore-fishing-placeholder.mjs';
+import { createWaterStudyFishBinding } from './water-study-fish-binding.mjs';
 import { generateRollingGround, smoothGround } from './terrain-authoring.mjs';
 import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS, validateMapRegion } from './regions.mjs';
@@ -1296,7 +1297,8 @@ const frontierBuildingsPreview = roomPageUrl.searchParams.get('frontierBuildings
 
 function createGameplayBuildingVisual(building) {
   const role = buildingPresentation(building.type).role;
-  const visual = role === 'watchtower' ? createWatchtowerVisual(building)
+  const visual = role === 'palisade' ? createPalisadeVisual(building)
+    : role === 'watchtower' ? createWatchtowerVisual(building)
     : role === 'town-center' ? createTownCenterVisual(building)
       : role === 'house' ? createHouseVisual(building)
         : role === 'barracks' ? createBarracksVisual(building) : createArcheryRangeVisual(building);
@@ -1314,6 +1316,34 @@ function createGameplayBuildingVisual(building) {
     capturedBuildingVisuals.push(visual.frontierCaptureEntry);
   }
   return visual;
+}
+
+// Geometry-only layout placeholder; the authored modular wall kit is separate.
+function createPalisadeVisual(building) {
+  const group = new THREE.Group(), timber = new THREE.MeshBasicMaterial({ color: 0x705443 });
+  const walls = new THREE.Group(); group.add(walls);
+  const post = new THREE.Mesh(new THREE.BoxGeometry(0.22, 1.4, 0.22), timber);
+  post.position.y = 0.7; walls.add(post);
+  const arms = {};
+  for (const [direction, dx, dz] of [['north', 0, -1], ['east', 1, 0], ['south', 0, 1], ['west', -1, 0]]) {
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(dx ? 0.5 : 0.12, 0.65, dz ? 0.5 : 0.12), timber);
+    arm.position.set(dx * 0.25, 0.65, dz * 0.25); walls.add(arm); arms[direction] = arm;
+  }
+  const teamColor = TEAM_HEX[building.team];
+  const outline = new THREE.Mesh(new THREE.RingGeometry(0.65, 0.7, 4),
+    new THREE.MeshBasicMaterial({ color: teamColor, transparent: true, opacity: 0.9, side: THREE.DoubleSide }));
+  outline.rotation.x = -Math.PI / 2; outline.rotation.z = Math.PI / 4; outline.position.y = 0.04; group.add(outline);
+  const healthIndicator = createBuildingHealthIndicator(); group.add(healthIndicator.group);
+  const combatFeedback = createBuildingCombatFeedback(); group.add(combatFeedback.targetRing, combatFeedback.impactFlash);
+  const visual = { group, walls, arms, outline, teamColor, healthIndicator, combatFeedback };
+  scene.add(group); updatePalisadeVisual(visual, building); return visual;
+}
+
+function updatePalisadeVisual(visual, building) {
+  visual.group.position.set(building.x, groundHeight(building.x, building.z), building.z);
+  visual.walls.scale.y = Math.max(0.08, THREE.MathUtils.clamp(Number(building.progress) || 0, 0, 1));
+  for (const [direction, arm] of Object.entries(visual.arms)) arm.visible = building.connections?.includes(direction) === true;
+  updateBuildingHealthIndicator(visual, building);
 }
 
 function createArcheryRangeVisual(building) {
@@ -1576,7 +1606,8 @@ function reconcileBuildings(buildings = [], initial = false) {
       disposeBuildingVisual(visual);
       visual = createGameplayBuildingVisual(building);
       buildingVisuals.set(building.id, visual);
-    } else if (buildingPresentation(building.type).role === 'watchtower') updateWatchtowerVisual(visual, building);
+    } else if (buildingPresentation(building.type).role === 'palisade') updatePalisadeVisual(visual, building);
+    else if (buildingPresentation(building.type).role === 'watchtower') updateWatchtowerVisual(visual, building);
     else if (buildingPresentation(building.type).role === 'town-center') updateTownCenterVisual(visual, building);
     else if (buildingPresentation(building.type).role === 'house') updateHouseVisual(visual, building);
     else if (buildingPresentation(building.type).role === 'barracks') updateBarracksVisual(visual, building);
@@ -2179,7 +2210,10 @@ function applyForestState(state) {
 }
 
 let terrainSurface = null;
+let waterStudyFishBinding = null;
 function buildMap(definition) {
+  waterStudyFishBinding?.clear();
+  waterStudyFishBinding = null;
   wildlifeRenderer.reset([]);
   setActiveTerrain(definition);
   terrainSurface=null;
@@ -2228,6 +2262,7 @@ function buildMap(definition) {
   addMapObject(base);
   for (const surface of createGroundSurfaces(definition)) {
     if(surface.userData.terrainSurface) terrainSurface=surface;
+    if (surface.userData.waterStudy) waterStudyFishBinding = createWaterStudyFishBinding(definition, surface);
     addMapObject(surface);
   }
   buildConstructionGroundBatches();
@@ -4457,6 +4492,7 @@ function applyState(state, initial = false) {
     attackFocusMesh.instanceMatrix.needsUpdate = true;
     attackFocusDirty = false;
   }
+  waterStudyFishBinding?.update(state, { spectator: localTeam === null });
   updateFogFromState(state);
   applyForestState(state);
   if (Array.isArray(state.objectives)) updateObjectives(state.objectives);
@@ -9624,6 +9660,7 @@ function connectSocket() {
   connection.addEventListener('close', () => {
     if (socket !== connection) return;
     socket = null;
+    waterStudyFishBinding?.clear();
     roomLobby.disconnect();
     audio.stopWork(); orderAudioGate.reset();
     if (pageLeaving) return;
