@@ -56,6 +56,18 @@ ordinary PRs use checks proportionate to their changes under
 
 ## Known findings and historical evidence
 
+### Crowd separation and terrain boundaries — 3 October 2026
+
+Fork main `90ad320` planned legal elevation routes but checked only destination
+walkability when applying crowd separation. A deterministic fixture running the
+real server movement blocks pushed a soldier and a stationary gatherer across a
+level-0/level-2 cliff, and cut an open diagonal destination past a blocked corner.
+Actual movement now checks crossed terrain boundaries, retaining legal route
+fallback and dynamic waypoint repair. The [dated record](qa-unit-pathing-2026-10-03.md)
+separates these failing fixtures from live route/recovery regression checks and
+the small choke test. The historical 2,000-unit construction crowding limit
+remains open; this change does not establish a larger supported capacity.
+
 ### Villager walk and gathering facing — 3 October 2026
 
 Fork main `fdd9173` used animated-direction approximation that turned a
