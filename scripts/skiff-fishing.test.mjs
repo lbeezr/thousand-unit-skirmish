@@ -105,8 +105,8 @@ test('Stop and checkpoint retain tiny fractional cargo; manual Return cargo deli
 test('blocked, destroyed, unfinished, foreign and land drop-offs never bank boat food remotely', () => {
   const f = fixture(10); const unit = f.world.units[0]; f.start(0);
   while (unit.gatherPhase !== 'gathering') f.tick();
-  const blocker = { ...structuredClone(unit), id: 2, team: 1, ...f.water.graph.pointAt(f.fish.dockCell(f.world.buildings[0])), gatherPhase: '' };
-  f.world.units.push(blocker);
+  const blockers = f.fish.dockCells(f.world.buildings[0]).map((cell, index) => ({ ...structuredClone(unit), id: 2 + index, team: 1, ...f.water.graph.pointAt(cell), gatherPhase: '' }));
+  f.world.units.push(...blockers);
   for (let i = 0; i < 400; i++) f.tick();
   assert.equal(unit.cargo, 10); assert.equal(f.world.teamFood[0], 1000);
   assert.equal(unit.gatherPhase, 'to-base'); assert.equal(unit.path.length, 0);
@@ -119,7 +119,7 @@ test('blocked, destroyed, unfinished, foreign and land drop-offs never bank boat
   assert.equal(unit.dropoffBuildingId, null); assert.ok(f.fish.validState(unit, f.world.nodes, f.world.buildings));
   for (let i = 0; i < 100; i++) f.tick();
   assert.equal(unit.cargo, 10); assert.equal(f.world.teamFood[0], 1000);
-  blocker.hp = 0; f.world.buildings.push(dock);
+  for (const blocker of blockers) blocker.hp = 0; f.world.buildings.push(dock);
   for (let i = 0; i < 200; i++) f.tick();
   assert.equal(unit.cargo, 0); assert.equal(f.world.teamFood[0], 1010); close(f.conserved(0), 10);
 });

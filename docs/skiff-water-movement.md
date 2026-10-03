@@ -5,8 +5,8 @@
 Dock now trains **Skiff (placeholder)** through the existing paid production
 queue: provisional 75 wood, zero food, ten seconds and one population. It has
 120 HP, moves at 2.4 cells/second and cannot attack.
-[Single-Skiff fishing](skiff-fishing.md) adds finite food cargo and owned Dock delivery.
-Both seats can select one owned boat and issue Move or Stop. Hold Position
+[Skiff fishing](skiff-fishing.md) adds finite food cargo and owned Dock delivery.
+Both seats can select [owned boat groups](skiff-selected-groups.md) and issue Move or Stop. Hold Position
 also stops it without attacking. Boats consume ordinary roster/population
 capacity but cannot alone keep an elimination match open. Existing land attacks
 can damage them when in range; this slice adds no naval combat weapons.
@@ -35,12 +35,14 @@ can converge; the tick checks hull occupancy before moving, pauses safely while
 retaining the route, and resumes when the other boat leaves. No automatic dynamic
 reroute is promised. Adjacent arrivals can receive new routes away from each other.
 
-Select exactly one Skiff for Move. Mixed land/water or multiple-boat movement,
-queued waypoints, attack-move, patrol and follow reject without mutating orders.
+Select up to 16 Skiffs for Move, using distinct nearby water destinations.
+Mixed land/water, queued waypoints, attack-move, patrol and follow reject without
+mutating orders. [Group admission](skiff-selected-groups.md) defines bounded
+planning, exact controlled IDs and atomic capacity rejection.
 Attack-move, patrol, follow and formation controls are disabled for a Skiff
 selection. Dock rally targeting is unavailable; move the boat after spawning.
-Fishing and Return cargo also accept one boat through their [cargo contract](skiff-fishing.md).
-Transport, naval combat and multi-boat formations remain follow-on work. Shore
+Fishing and Return cargo also accept selected groups through their [cargo contract](skiff-fishing.md).
+Transport, naval combat and specialized multi-boat formations remain follow-on work. Shore
 Workers and boats consume one finite food stock with no new currency or regrowth.
 
 ## Production and restart
@@ -53,7 +55,7 @@ the berth clears. Cancellation follows the shared ledger: an unstarted tail
 refunds all 75 wood; the head refunds only its unconsumed training fraction.
 Destroyed Docks use the ordinary production destruction rules.
 
-Schema 22 remains additive. The exact preceding Gate/Dock content revision
+The water fields introduced in schema 22 remain in schema 23. The exact preceding Gate/Dock content revision
 `v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b`
 migrates its paid land match, gates and Docks to the current revision. The prior
 gate-free Dock revision `v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6`
