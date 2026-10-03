@@ -113,6 +113,7 @@ run(['--test', 'scripts/check-client-imports.test.mjs'], 'Served client import g
 run(['--test', 'scripts/snapshot-private-production.test.mjs'], 'Seat-private production snapshots');
 
 run(['--test', 'scripts/battlefield-cursor.test.mjs'], 'Battlefield cursor states');
+run(['--test', 'scripts/hud-action-icons.test.mjs'], 'Candidate HUD action glyphs and semantics');
 run(['--test', 'scripts/room-launch-options.test.mjs'], 'Room launch contract');
 run(['--test', 'scripts/game-entry.test.mjs', 'scripts/game-navigation.test.mjs'], 'Explicit main menu and session entry');
 run(['scripts/game-menu-scenario.mjs'], 'Fresh menu matches and protected resume authority');

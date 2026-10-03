@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "status": "candidate-not-integrated",
+  "sourceSize": [24, 24],
+  "reviewSizes": [16, 20, 24],
+  "accessibleNamePolicy": "Keep visible labels, keyboard hints and tooltips; use empty alt for decorative button images.",
+  "actions": [
+    {
+      "id": "patrol",
+      "source": "assets/ui/icons/actions/patrol.svg",
+      "label": "Patrol",
+      "selector": "[data-persistent-order=\"patrol\"]",
+      "meaning": "Travel between two endpoints and resume the route after engaging enemies."
+    },
+    {
+      "id": "follow",
+      "source": "assets/ui/icons/actions/follow.svg",
+      "label": "Follow",
+      "selector": "[data-persistent-order=\"follow\"]",
+      "meaning": "Follow a living friendly leader; this does not order combat or a convoy formation."
+    },
+    {
+      "id": "stop",
+      "source": "assets/ui/icons/actions/stop.svg",
+      "label": "Stop",
+      "selector": "[data-stationary-order=\"stop\"]",
+      "meaning": "Cancel current tasks and queued routes while preserving carried resources."
+    },
+    {
+      "id": "holdPosition",
+      "source": "assets/ui/icons/actions/hold-position.svg",
+      "label": "Hold position",
+      "selector": "[data-stationary-order=\"holdPosition\"]",
+      "meaning": "Stay in place and attack visible enemy units within weapon range, without chasing, automatic structure attacks or a defense bonus."
+    },
+    {
+      "id": "returnCargo",
+      "source": "assets/ui/icons/actions/return-cargo.svg",
+      "label": "Return cargo",
+      "selector": "[data-return-cargo]",
+      "meaning": "Deliver carried resources to a reachable compatible owned drop-off; this does not start gathering."
+    },
+    {
+      "id": "formation",
+      "source": "assets/ui/icons/actions/formation.svg",
+      "label": "Formation",
+      "selector": "[data-context-details][data-context-panel=\"command\"]",
+      "selectionContexts": ["workers", "military", "mixed", "boats"],
+      "meaning": "Open formation and route controls; opening the drawer does not apply a formation or issue a move."
+    }
+  ]
+}
