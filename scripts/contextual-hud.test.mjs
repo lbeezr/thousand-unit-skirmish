@@ -3,7 +3,9 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { selectionContext } from '../src/selection-context.mjs';
-import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { researchAction, researchOptions } from '../src/research-actions.mjs';
+import { setHudActionAvailability, isHudActionUnavailable } from '../src/hud-layout.mjs';
 import { livingIdleWorkerIds, livingUnitIdsOfKinds } from '../src/unit-selection.mjs';
 import { formatResourceStock, formatResourceRequirement } from '../src/resource-format.mjs';
 
@@ -33,7 +35,9 @@ function fixture(team = 0) {
   w.ui = {};
   for (const [, name, selector] of source.matchAll(/^\s*(\w+): document\.querySelector\('([^']+)'\)/gm)) w.ui[name] = d.querySelector(selector);
   Object.assign(w, {
-    selectionContext, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, formatResourceStock, formatResourceRequirement,
+    selectionContext, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
+    researchAction, researchOptions, setHudActionAvailability, isHudActionUnavailable,
+    formatResourceStock, formatResourceRequirement,
     livingIdleWorkerIds, livingUnitIdsOfKinds, localTeam: team, matchWinner: -1,
     units: [
       { id: 0, team: 0, kind: 'worker', hp: 100, task: 'idle' },
@@ -51,10 +55,10 @@ function fixture(team = 0) {
     scenarioBriefPanel: d.querySelector('#scenario-brief-panel'),
     latestFood: [500, 500], latestWood: [500, 500], latestPopulation: [null, null],
     latestWorkerProduction: [null, null], latestRosterSize: 4,
+    latestTeamResearch: [{}, {}],
     BARRACKS_QUEUE_LIMIT: 5, MAX_PER_TEAM: 1000, MAX_UNITS: 2000,
     sentCommands: [], sendCommand(command) { w.sentCommands.push(command); },
     updateBuildingLifecycleActions() {},
-    updateResearchOptions(container) { container.replaceChildren(); },
     updateCommandUI() {}, updateEconomyUI() {}, updateBuildingSelectionVisual() {},
     syncSelectionMesh() {}, clearHeldCameraKeys() {}, showToast() {},
     keyboardTargetIsEditing: event => event.target?.matches('input, select, textarea'),
@@ -73,6 +77,7 @@ function fixture(team = 0) {
     fn('updateStationaryOrderControls', 'updateSelectionUI'),
     fn('updateSelectionUI', 'updateContextualCommands'), fn('updateContextualCommands', 'updateControlGroupUI'),
     fn('updateRosterProductionOptions', 'updateBuildingLifecycleActions'),
+    fn('updateResearchOptions', 'buildingWoodCost'),
     fn('selectedIds', 'issueStationaryOrder'), fn('controlGroupKeyLabel', 'clearControlGroups'),
     fn('clearActiveControlGroup', 'assignControlGroup'), fn('assignControlGroup', 'centerCameraOnControlGroup'),
     fn('recallControlGroup', 'syncSelectionMesh'),
@@ -270,4 +275,52 @@ test('initially unavailable contextual training can receive focus for its cost e
   assert.equal(f.w.getComputedStyle(train).cursor, 'not-allowed');
   for (const detail of [0, 1]) train.dispatchEvent(new f.w.MouseEvent('click', { bubbles: true, detail }));
   assert.equal(f.w.sentCommands.length, 0, 'both keyboard-style and pointer-style activation are guarded');
+});
+
+for (const team of [0, 1]) test(`seat ${team}: unavailable contextual research retains inspectable focus and blocks activation`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const building = { id: 8, team, type: 'barracks', complete: true, hp: 1800, maxHp: 1800 };
+  f.select([], building);
+  const research = f.bar.querySelector('[data-technology="infantry-attack"]'); research.focus();
+  assert.equal(f.d.activeElement, research);
+  const upgradeKey = TECHNOLOGY_DEFINITIONS['infantry-attack'].upgradeKey;
+  const blockedStates = [
+    [() => { f.w.latestFood[team] = 0; }, /NEED/],
+    [() => { f.w.latestFood[team] = 500; building.complete = false; }, /COMPLETE BUILDING/],
+    [() => { building.complete = true; f.w.latestTeamResearch[team].active = { type: 'infantry-attack' }; }, /RESEARCH IN PROGRESS/],
+    [() => { f.w.latestTeamResearch[team].active = null; f.w.latestTeamResearch[team][upgradeKey] = true; }, /ALREADY COMPLETED/],
+    [() => { f.w.latestTeamResearch[team][upgradeKey] = false; building.researchOptions = [{ upgrade: 'infantry-attack', available: false, reason: 'WAIT FOR AUTHORITATIVE STATE' }]; }, /WAIT FOR AUTHORITATIVE STATE/],
+    [() => { building.researchOptions = []; f.w.matchWinner = team; }, /MATCH FINISHED/],
+  ];
+  for (const [apply, reason] of blockedStates) {
+    apply(); f.w.updateContextualCommands();
+    assert.equal(f.d.activeElement, research, 'availability updates must not move research focus to another command');
+    assert.equal(research.disabled, false); assert.equal(research.getAttribute('aria-disabled'), 'true');
+    assert.match(research.textContent, reason);
+    for (const detail of [0, 1]) research.dispatchEvent(new f.w.MouseEvent('click', { bubbles: true, detail }));
+    assert.equal(f.w.sentCommands.length, 0);
+  }
+  f.w.matchWinner = -1; f.w.updateContextualCommands();
+  assert.equal(research.getAttribute('aria-disabled'), 'false'); assert.equal(f.d.activeElement, research);
+  research.click();
+  assert.deepEqual(JSON.parse(JSON.stringify(f.w.sentCommands)), [{ type: 'researchUpgrade', buildingId: 8, upgrade: 'infantry-attack' }]);
+  f.select([]); assert.equal(f.d.activeElement, f.w.dockToggle);
+});
+
+test('unavailable research prerequisites remain focusable for their explanation', t => {
+  const f = fixture(); t.after(() => f.dom.window.close());
+  f.select([], { id: 8, team: 0, type: 'barracks', complete: true, hp: 1800, maxHp: 1800 });
+  const research = f.bar.querySelector('[data-technology="military-armor"]'); research.focus();
+  assert.equal(f.d.activeElement, research); assert.equal(research.getAttribute('aria-disabled'), 'true');
+  assert.match(research.textContent, /REQUIRES MILITARY TIER II/);
+  research.click(); assert.equal(f.w.sentCommands.length, 0);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: Build already opens inspectable details with no resources and restores focus`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  f.w.latestFood[team] = f.w.latestWood[team] = 0; f.select([team * 2]);
+  const build = f.bar.querySelector('[data-context-build]');
+  assert.equal(build.disabled, false); f.click(build);
+  assert.equal(f.w.commandDock.hidden, false); assert.equal(f.w.commandDock.dataset.activePanel, 'economy');
+  f.escape(); assert.equal(f.d.activeElement, build); assert.deepEqual([...f.w.selected], [team * 2]);
 });
