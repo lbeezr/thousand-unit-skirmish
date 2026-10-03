@@ -111,6 +111,20 @@ try {
     assert.equal(client.latest.factionId, DEFAULT_FACTION_ID);
     assert.deepEqual(client.latest.unitWireIds, UNIT_WIRE_IDS);
   }
+  const fundedMap = JSON.parse(await readFile(path.join(ROOT, 'maps/open-field.json'), 'utf8'));
+  Object.assign(fundedMap, { id: 'ruleset-recovery-proof', startingArmySize: 24,
+    startingResources: { food: 500, wood: 500 } });
+  for (const client of clients) client.clearMessages();
+  send(clients[0], { type: 'publishMap', map: fundedMap });
+  await Promise.all(clients.map(client => client.wait(message => message.type === 'mapChange'
+    && message.state.mapId === fundedMap.id)));
+  for (const [team, client] of clients.entries()) {
+    client.clearMessages();
+    send(client, { type: 'trainUnit', kind: 'worker',
+      buildingId: client.latest.homeTownCenters.find(building => building.team === team).id });
+    await client.wait(message => message.type === 'notice' && /QUEUED/.test(message.message));
+  }
+  await checkpointWith(checkpointPath, snapshot => snapshot.state.workerProduction.every(production => production.queue === 1));
   await stop();
   const original = JSON.parse(await readFile(checkpointPath, 'utf8'));
   assert.equal(original.schemaVersion, 22); assert.equal(original.rulesetRevision, GAMEPLAY_RULESET_REVISION);
@@ -129,6 +143,38 @@ try {
   const contentMigrated = JSON.parse(await readFile(checkpointPath, 'utf8'));
   assert.equal(contentMigrated.matchId, original.matchId, 'the explicitly compatible Storehouse addition retains the existing match');
   assert.equal(contentMigrated.rulesetRevision, GAMEPLAY_RULESET_REVISION);
+  // Keep real paid queues and palisade construction from the immediately prior ruleset.
+  const paidFixture = structuredClone(original); paidFixture.state.seatSessions = [];
+  await writeFile(checkpointPath, JSON.stringify(paidFixture)); await start();
+  for (const [team, client] of clients.entries()) {
+    client.clearMessages();
+    const workerId = client.latest.units.find(unit => unit[1] === team && unit[5] === 'worker')[0];
+    send(client, { type: 'build', buildingType: 'palisade-wall', ids: [workerId], x: team ? 25.5 : -25.5, z: -12.5 });
+    await client.wait(message => message.type === 'notice' && /PALISADE LINE PLACED/.test(message.message));
+  }
+  await stop();
+  const priorMill = JSON.parse(await readFile(checkpointPath, 'utf8'));
+  assert.equal(priorMill.state.buildings.length, 2);
+  assert.ok(priorMill.state.units.some(unit => unit.wallBuildOrder));
+  priorMill.rulesetRevision = 'v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801';
+  priorMill.state.seatSessions = [];
+  await writeFile(checkpointPath, JSON.stringify(priorMill)); await start(); await stop();
+  const millMigrated = JSON.parse(await readFile(checkpointPath, 'utf8'));
+  assert.equal(millMigrated.matchId, original.matchId, 'additive Mill content preserves the prior Frontier match');
+  assert.equal(millMigrated.rulesetRevision, GAMEPLAY_RULESET_REVISION);
+  assert.deepEqual(millMigrated.state.teamFood, priorMill.state.teamFood, 'the old paid Worker queues retain their spending');
+  assert.deepEqual(millMigrated.state.teamWood, priorMill.state.teamWood);
+  assert.deepEqual(millMigrated.state.buildings.map(building => [building.id, building.team, building.type, building.complete]),
+    priorMill.state.buildings.map(building => [building.id, building.team, building.type, building.complete]),
+    'existing paid palisade sites retain their identities');
+  assert.deepEqual(millMigrated.state.units.filter(unit => unit.wallBuildOrder).map(unit => [unit.id, unit.wallBuildOrder]),
+    priorMill.state.units.filter(unit => unit.wallBuildOrder).map(unit => [unit.id, unit.wallBuildOrder]),
+    'Mill migration preserves the existing wall construction orders');
+  for (const [team, production] of millMigrated.state.workerProduction.entries()) {
+    assert.equal(production.queue, 1);
+    assert.ok(production.trainingRemaining > 0 && production.trainingRemaining <= priorMill.state.workerProduction[team].trainingRemaining,
+      'existing paid training retains its remaining timer');
+  }
   const incompatible = structuredClone(restored); incompatible.rulesetRevision = 'v1:' + '0'.repeat(64); incompatible.state.seatSessions = [];
   const incompatibleSource = JSON.stringify(incompatible);
   await writeFile(checkpointPath, incompatibleSource); await start(); await stop();

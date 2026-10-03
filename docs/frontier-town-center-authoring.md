@@ -133,6 +133,14 @@ explicitly labeled review sheets. Whole-image alpha equality is not expected:
 neutral geometry is opaque in color and transparent in the mask.
 Metadata admission remains a separate existing validator.
 
+The semantic mask pass explicitly disables output dithering and restores the
+color-pass setting afterward, including on errors. Dithering can turn a true
+black neutral pixel into RGB `1/255`, which the encoder would correctly turn
+into nonzero alpha. Do not threshold exported coverage to hide that noise:
+legitimate owner antialias coverage of `1/255` is preserved. The
+[dithering regression record](qa-frontier-mask-dither-2026-10-03.json) reproduces
+the issue with a small synthetic neutral surface and verifies the correction.
+
 Run the targeted behavioral and failure-injection checks:
 
 ```bash

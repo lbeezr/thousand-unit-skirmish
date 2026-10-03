@@ -65,7 +65,7 @@ run(['scripts/settlement-authoring-scenario.mjs'], 'Grounded starting settlement
 run(['--test', 'scripts/resource-cluster-authoring.test.mjs'], 'Seeded Millrace resource clusters');
 run(['--test', 'scripts/resource-brush-authoring.test.mjs'], 'Resource brush preview and editor transactions');
 run(['scripts/check-docs.mjs'], 'Documentation links');
-run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs'], 'Verified shipped audio and execution gates');
+run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs', 'scripts/audio-decoded-cache.test.mjs', 'scripts/audio-shared-decode.test.mjs'], 'Verified shipped audio and execution gates');
 run(['--test', 'scripts/zone-audio-import-contract.test.mjs'], 'Zone audio import provenance');
 run(['scripts/audio-shipped-serving-scenario.mjs'], 'Authoritative shipped audio serving');
 run(['--test', 'scripts/hosted-scale-profile.test.mjs'], 'Hosted scale measurement integrity');
@@ -122,6 +122,8 @@ run(['scripts/wildlife-food-scenario.mjs'], 'Both-seat wildlife gathering, deple
 run(['--test', 'scripts/shore-fishing.test.mjs', 'scripts/shore-fishing-placeholder.test.mjs'], 'Shore fish bank access and placeholder');
 run(['--test', 'scripts/shore-fishing-placement.test.mjs'], 'Seeded shore fishing authoring and land/water positions');
 run(['--test', 'scripts/water-surface-study.test.mjs', 'scripts/water-study-fish-binding.test.mjs'], 'Opt-in water appearance and visible fish ripples');
+run(['--test', 'scripts/water-route-graph.test.mjs'], 'Isolated water route topology and clearance');
+run(['scripts/water-route-map-scenario.mjs'], 'Water-only route components on shipped maps');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');
 run(['--test', 'scripts/base-lifecycle-ui.test.mjs'], 'Contextual cancellation and repair controls');
@@ -136,6 +138,7 @@ run(['scripts/interrupted-cargo-return-scenario.mjs'], 'Interrupted final sheep-
 run(['--test', 'scripts/underbough-gathering-evidence.test.mjs'], 'Rootways gathering provenance before rewards');
 run(['--test', 'scripts/base-lifecycle.test.mjs'], 'Cancel refunds and proportional repair');
 run(['--test', 'scripts/storehouse-routing.test.mjs'], 'Reachable drop-off route selection');
+run(['--test', 'scripts/mill-contract.test.mjs'], 'Food-only Mill routing, menu and placeholder contracts');
 run(['--test', 'scripts/roster-building-ui.test.mjs'], 'Registry building options');
 run(['--test', 'scripts/ruleset-revision.test.mjs'], 'Resolved ruleset identity and prerequisites');
 run(['--test', 'scripts/gameplay-definitions.test.mjs'], 'Gameplay definition validation');
@@ -197,6 +200,7 @@ const scenarios = [
   ['scripts/expansion-ai-runtime-scenario.mjs', 'Paid live AI base expansion (both seats)'],
   ['scripts/base-lifecycle-scenario.mjs', 'Base cancel/refund and interrupted repair'],
   ['scripts/storehouse-scenario.mjs', 'Storehouse drop-off and cargo recovery'],
+  ['scripts/mill-scenario.mjs', 'Both-seat paid Mill construction, food deposits and lifecycle recovery'],
   ['scripts/population-scenario.mjs', 'House population lifecycle'],
   ['scripts/progression-scenario.mjs', 'Military tier and technology recovery'],
   ['scripts/roster-options-scenario.mjs', 'Roster production and persistence'],

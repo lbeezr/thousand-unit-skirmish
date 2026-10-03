@@ -88,6 +88,7 @@ and sight block. Berry brushwood and regrowth are future experiments.
 | Train Worker at Town Center | 50 food | 25 seconds. |
 | Build Barracks | 175 wood | Workers construct a valid level 3 × 3 site. |
 | Build Archery Range | 150 wood | Workers construct a valid level 3 × 3 site. |
+| Build Mill | 75 wood | 15 seconds; completed friendly food-only drop-off, 1,000 HP and a 3 × 3 site. Provisional balance values. |
 | Train Infantry at Barracks | 50 food | 12 seconds. |
 | Train Archer at Range | 25 food + 45 wood | 7 seconds. |
 | Infantry Forging | 100 food + 75 wood | 25 seconds at a completed Barracks. |
@@ -97,6 +98,16 @@ Production queues hold five units and reserve population. Blocked exits pause
 spawning until space opens. Each attack upgrade adds 20% damage to its unit type;
 only one research job runs per team at a time. Destroying a production building
 loses its queue and active research.
+
+Choose Mill from the building menu with Workers selected to shorten a food trip.
+Workers choose the nearest reachable completed friendly depot that accepts their
+cargo. Mill accepts food; Storehouse (100 wood) and Town Center accept food and
+wood. Unfinished and enemy depots accept nothing. A destroyed depot makes the
+Worker choose another without losing cargo. Mill's House appearance is a temporary
+procedural placeholder; select it to see its Mill name and food-only function.
+Return cargo uses the same routing: stopped food can return to Mill, while stopped
+wood needs a compatible Storehouse or Town Center. If only Mills are reachable,
+returning wood is rejected and the Worker keeps its cargo.
 
 ## Camera, HUD, and sound
 

@@ -3318,7 +3318,15 @@ function migrateMatchCheckpoint(snapshot) {
   if (snapshot?.rulesetRevision === 'v1:d85f5a09decc0d0ade81803ab289b52ec5a08e84ff5a1771e85401d4c3611eab'
     && Array.isArray(snapshot.state?.buildings) && Array.isArray(snapshot.state?.units)
     && !snapshot.state.buildings.some(building => building.type === 'palisade-wall')
+    && !snapshot.state.buildings.some(building => building.type === 'mill')
     && !snapshot.state.units.some(unit => unit.wallBuildOrder != null)) {
+    snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
+  }
+  // Mill only adds a food depot; retain existing palisades and paid work unchanged.
+  if (snapshot?.schemaVersion === MATCH_CHECKPOINT_SCHEMA_VERSION
+    && snapshot.rulesetRevision === 'v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801'
+    && Array.isArray(snapshot.state?.buildings)
+    && !snapshot.state.buildings.some(building => building.type === 'mill')) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
@@ -7514,7 +7522,7 @@ const server = createServer(async (request, response) => {
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',
     'src/selection-context.mjs', 'src/unit-visual-state.mjs', 'src/unit-sprite-runtime.mjs',
     'src/terrain-authoring.mjs', 'src/terrain-height.mjs', 'src/regions.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs',
-    'src/audio-shipped-loader.mjs', 'src/audio-shipped-catalog.mjs',
+    'src/audio-shipped-loader.mjs', 'src/audio-shipped-catalog.mjs', 'src/audio-decoded-cache.mjs',
     'src/audio-composition-player.mjs', 'src/audio-assets.mjs', 'src/audio-library-store.mjs',
     'src/audio-library-ui.mjs', 'src/audio-studio.mjs', 'src/audio-studio.css',
     'src/audio-composition.mjs', 'src/audio-composer.mjs', 'src/audio-composer.css',
