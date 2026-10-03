@@ -135,6 +135,18 @@ test('a second pointer cannot change, replace or release the active line', t => 
   f.pointer('pointerup', 35, 15); assert.equal(f.commands[0].points[1].column, 3);
 });
 
+test('camera changes refresh the captured endpoint before release; pan initiation cancels unsent work', t => {
+  const f = fixture(t); f.begin(); f.pointer('pointerdown', 15, 15); f.pointer('pointermove', 35, 15);
+  f.w.worldAt = (x, y) => ({ x: x / 10 - 9, z: y / 10 - 10 });
+  f.w.updateBuildPlacementGhost(35, 15);
+  assert.equal(f.w.wallPlacementGesture.end.column, 4); assert.equal(f.w.wallPlacementGhost.tiles.count, 4);
+  f.pointer('pointerup', 35, 15); assert.equal(f.commands[0].points[1].column, 4);
+  f.w.cancelBuildPlacement(false); f.begin(); f.pointer('pointerdown', 15, 15);
+  f.pointer('pointerdown', 35, 15, { button: 1 }); f.pointer('pointerup', 35, 15, { button: 1 });
+  assert.equal(f.commands.length, 1, 'middle-button release cannot commit a left drag');
+  assert.equal(f.w.wallPlacementGesture.anchor, null);
+});
+
 test('focused keyboard arrows and two Enter presses place one line; typing and key repeats do not submit', t => {
   const f = fixture(t); f.begin(); f.key('Enter');
   f.key('ArrowRight'); f.key('ArrowRight', { repeat: true }); f.key('ArrowDown', { shiftKey: true });

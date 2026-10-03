@@ -7636,6 +7636,9 @@ function updateBuildPlacementGhost(clientX, clientY) {
   if (!buildPlacementActive) return;
   if (buildPlacementType === 'palisade-wall') {
     placementGhost.visible = false;
+    if (typeof wallPlacementGesture.owner === 'number') {
+      wallPlacementGesture.move(wallPlacementGesture.owner, wallPointerCell(clientX, clientY));
+    }
     const points = wallPlacementGesture.anchor ? wallPlacementGesture.points()
       : wallPlacementGesture.points(wallKeyboardCell || wallPointerCell(clientX, clientY));
     const placement = pendingWallPreview || wallPlacementAt(points);
@@ -8023,6 +8026,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
     return;
   }
   if (event.button === 1 || (event.button === 0 && spaceDown)) {
+    if (buildPlacementActive && buildPlacementType === 'palisade-wall') resetWallPlacement();
     lastFriendlyUnitClick = null;
     lastUnitPickState = null;
     mapFitActive = false;
@@ -8121,7 +8125,7 @@ renderer.domElement.addEventListener('pointermove', (event) => {
 function finishPointer(event) {
   if (wallPlacementGesture.owner === event.pointerId) {
     cursorShift = event.shiftKey;
-    const points = wallPlacementGesture.finish(event.pointerId, wallPointerCell(event.clientX, event.clientY), event.type === 'pointerup');
+    const points = wallPlacementGesture.finish(event.pointerId, wallPointerCell(event.clientX, event.clientY), event.type === 'pointerup' && event.button === 0);
     if (renderer.domElement.hasPointerCapture(event.pointerId)) renderer.domElement.releasePointerCapture(event.pointerId);
     if (points) submitBuildPlacement(event.clientX, event.clientY, points);
     updateBuildPlacementGhost(event.clientX, event.clientY);
