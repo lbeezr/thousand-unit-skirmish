@@ -143,8 +143,20 @@ try {
   const contentMigrated = JSON.parse(await readFile(checkpointPath, 'utf8'));
   assert.equal(contentMigrated.matchId, original.matchId, 'the explicitly compatible Storehouse addition retains the existing match');
   assert.equal(contentMigrated.rulesetRevision, GAMEPLAY_RULESET_REVISION);
-  const priorMill = structuredClone(original);
-  priorMill.rulesetRevision = 'v1:d85f5a09decc0d0ade81803ab289b52ec5a08e84ff5a1771e85401d4c3611eab';
+  // Keep real paid queues and palisade construction from the immediately prior ruleset.
+  const paidFixture = structuredClone(original); paidFixture.state.seatSessions = [];
+  await writeFile(checkpointPath, JSON.stringify(paidFixture)); await start();
+  for (const [team, client] of clients.entries()) {
+    client.clearMessages();
+    const workerId = client.latest.units.find(unit => unit[1] === team && unit[5] === 'worker')[0];
+    send(client, { type: 'build', buildingType: 'palisade-wall', ids: [workerId], x: team ? 25.5 : -25.5, z: -12.5 });
+    await client.wait(message => message.type === 'notice' && /PALISADE LINE PLACED/.test(message.message));
+  }
+  await stop();
+  const priorMill = JSON.parse(await readFile(checkpointPath, 'utf8'));
+  assert.equal(priorMill.state.buildings.length, 2);
+  assert.ok(priorMill.state.units.some(unit => unit.wallBuildOrder));
+  priorMill.rulesetRevision = 'v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801';
   priorMill.state.seatSessions = [];
   await writeFile(checkpointPath, JSON.stringify(priorMill)); await start(); await stop();
   const millMigrated = JSON.parse(await readFile(checkpointPath, 'utf8'));
@@ -152,6 +164,12 @@ try {
   assert.equal(millMigrated.rulesetRevision, GAMEPLAY_RULESET_REVISION);
   assert.deepEqual(millMigrated.state.teamFood, priorMill.state.teamFood, 'the old paid Worker queues retain their spending');
   assert.deepEqual(millMigrated.state.teamWood, priorMill.state.teamWood);
+  assert.deepEqual(millMigrated.state.buildings.map(building => [building.id, building.team, building.type, building.complete]),
+    priorMill.state.buildings.map(building => [building.id, building.team, building.type, building.complete]),
+    'existing paid palisade sites retain their identities');
+  assert.deepEqual(millMigrated.state.units.filter(unit => unit.wallBuildOrder).map(unit => [unit.id, unit.wallBuildOrder]),
+    priorMill.state.units.filter(unit => unit.wallBuildOrder).map(unit => [unit.id, unit.wallBuildOrder]),
+    'Mill migration preserves the existing wall construction orders');
   for (const [team, production] of millMigrated.state.workerProduction.entries()) {
     assert.equal(production.queue, 1);
     assert.ok(production.trainingRemaining > 0 && production.trainingRemaining <= priorMill.state.workerProduction[team].trainingRemaining,
