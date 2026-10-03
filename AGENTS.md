@@ -31,6 +31,25 @@ slices progressively, stating what is unfinished or not yet visible in game. Unf
 pending preview, a future loader, or milestone evidence does not create a publication hold. The
 Worker/Barracks v0.2 source sample is explicitly released for an author-owned merge.
 
+Generation, runtime export, a preview, and PR merge are milestones. A requested in-game
+asset outcome is complete only when normal gameplay uses it by default, the served release
+includes its files, the relevant user environment runs an identified revision containing it,
+and actual in-game use is verified at that revision. Preserve sources and provenance. Keep
+unfinished production, binding, release, deployment, and appearance work explicit in the
+[asset adoption checklist](docs/asset-adoption-checklist.md), with an owner and next action.
+Concepts and retained comparisons need not ship; label them honestly. A preview switch needs
+a concrete experimental reason and an owner responsible for default adoption or retirement.
+
+## Planning and decomposition
+
+Use the [contributor planning guide](docs/contributor-planning.md) for substantive work.
+Choose small vertical outcomes with observable acceptance, a named owner, relevant evidence,
+dependencies, and a bounded write scope. Plan runtime integration, release inclusion,
+deployment, and in-game verification from the start. Small fixes need only a short PR note.
+Keep independent streams moving in parallel; agree on shared interfaces before overlapping
+edits. Use short-lived incremental branches, and own conflicts and fix-forward work. Do not
+accumulate a large disconnected PR or turn the producer into an approval queue.
+
 ## Shared work
 
 Use code, focused PRs, and short decision notes as shared state. Read current `main` and the
@@ -58,6 +77,14 @@ Infrastructure, and the producer are not routine approval queues. If an actual r
 a named action, state its source, scope, owner, and next step in the relevant PR or task, and
 surface a user decision promptly. Do not infer a hold from uncertainty or extend a specific held
 decision to adjacent work.
+
+The implementation owner retains the requested outcome through default integration,
+packaging, deployment to the relevant user environment, and in-game verification. When a
+downstream step belongs to another active owner, record that receiving owner and a linked
+artifact/task; a handoff or merge does not close the outcome. Report exact source/release and
+deployed revisions separately, and keep unverifiable steps incomplete. Use existing authority;
+do not bypass protections, expand sensitive permissions, or infer deployment from a merge.
+Do not wait for absent or queued hosted CI unless an actual repository protection requires it.
 
 ## Appearance and performance
 

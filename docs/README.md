@@ -18,6 +18,8 @@ start; this index covers maintained guides, contracts, experiments, and evidence
 | What informs Vaelora's prose, continuity and world-building plan? | [Voice bible](lore-voice-bible.md), [research](lore-research.md), [strategy and plan](lore-strategy.md) |
 | Where is the first reviewable lore foundation? | [L1 writing package](lore-foundation-m1.md): principles, history, settlements, institutions and calibration fiction |
 | Who carries an art outcome through delivery? | [Art lanes](art-production-lanes.md) |
+| What art is still absent from normal play or unverified on the user build? | [Asset adoption checklist](asset-adoption-checklist.md) |
+| How do we split work without losing integration ownership? | [Contributor planning](contributor-planning.md), [PR checklist](../.github/pull_request_template.md) |
 | How do contributors coordinate and integrate? | [AGENTS.md](../AGENTS.md) |
 | What does the implementation currently do? | Task guides and contracts, checked against source |
 

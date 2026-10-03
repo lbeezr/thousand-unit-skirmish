@@ -1,0 +1,113 @@
+# Asset adoption checklist
+
+[Working rules](../AGENTS.md) · [Planning](contributor-planning.md) · [Asset guide](assets.md) · [Historical building audit](art-runtime-audit-2026-10-03.md)
+
+Audit: fork main `90e7ad4c666916942c29670e339a8e79e03e0b18`, 3 October 2026.
+This checklist records adoption gaps; it does not integrate the assets.
+Owner names below are role owners reported in the active work or existing
+[art lanes](art-production-lanes.md). **Unassigned** means no accepting worker
+was identified. Source-only and superseded comparisons have no obligation to
+replace current art.
+
+## Definition of done
+
+- [ ] Normal gameplay uses the intended art by default in the relevant map/action/state.
+- [ ] The served release contains every requested runtime file; HTTP/hash checks pass.
+- [ ] The relevant user environment runs an identified revision/release containing it.
+- [ ] Actual in-game use on that revision is verified, with a map, observation and evidence.
+
+Generation, exported files, an opt-in preview and PR merge are milestones.
+Unchecked steps remain **incomplete**, with an owner/next action. Technical
+delivery does not establish visual or listening acceptance. Preserve original
+art, prompts, manifests and provenance; never publish a private source to close
+a transfer gap. These criteria do not prevent incremental scoped merges.
+
+## Exact deployment evidence
+
+Railway read-only `environment-status` + `list-deployments`, inspected about
+20:23 UTC on 3 October 2026, identified one running replica in each environment:
+
+| Environment | Successful active deployment | Platform-reported source revision | Meaning |
+| --- | --- | --- | --- |
+| staging | `734d7f69-b4bc-4257-88b6-d8f565bdc5ae` (success 20:14:44 UTC) | `19cae81f7636ebfe426911695a423d93a81e59ed` | Contains [PR126 Sheep](https://github.com/lbeezr/thousand-unit-skirmish/pull/126) merge `7c6ec842349cab30afde9244c8953fee8ab91599` and [PR123 fishing](https://github.com/lbeezr/thousand-unit-skirmish/pull/123) merge `02b8ee378df5053091833e5236e8f3c008fae269`, checked with git ancestry. |
+| production | `34b1722b-de5b-4583-98fa-89735746f6fb` (success 15:07:23 UTC) | `67b166748f6cc82c0a76319478f4475da1ab9083` | Contains neither merge. Eight-view Sheep and approved SE fishing delivery here are **incomplete**. |
+
+Project `32da8e2c-3377-49ed-8df0-45f72ecdc562`, service `game`
+`408356ca-c8cd-4932-abca-d5ebef430dd5`. These are deployment metadata and ancestry,
+not authenticated asset-byte or fresh in-game observation. No credentials were
+read and no deployment was changed. The public `/ready` endpoint exposes only
+readiness, so it cannot establish a running revision. Railway owner retains
+delivery and exact-build smoke; production promotion stays within its existing
+authorization boundary. Which environment the user's browser targets was not
+supplied. Both latest visual checks below therefore remain incomplete.
+
+## Buildings, wildlife, fishing and HUD
+
+Package paths are under `assets/` unless linked otherwise. Release inclusion
+comes from an actual clean `release:pack` at the audit revision: 1,066 files,
+digest `sha256:ef1b91a857d08984e1dccbf5ab7abb1242ce07609c0cb0887f98fdfcd9843149`.
+It proves local package contents, not delivery of those bytes to a browser.
+
+| Package/family | Production and normal-game binding | Preview / release | Incomplete work → owner / next action |
+| --- | --- | --- | --- |
+| Frontier Town Center, House: `buildings/frontier-civilization-scale-pilot-v1`; Storehouse, Stable, Workshop, Watchtower: `buildings/frontier-civilization-models-v1` | Six loader-compatible **Complete-only** families, eight views each; [selector](../src/frontier-building-preview.mjs) returns none at default URLs. Old Town Center art and procedural support buildings remain. | `frontierBuildingsPreview=1` or family name. Only new Town Center's manifest + eight PNGs ship; other five omitted. | **Incomplete default adoption** → active renderer owner already integrating all six; consume preserved views, retain missing-state fallback, admit every selected file, then verify deployed normal use. Do not duplicate that work. Building production owner derives missing lifecycle/masks separately. |
+| `buildings/frontier-civilization-concepts-v1` | Eight selected concepts; new Barracks/Range have no matching model/view manifest in the two packs. | Reference only; not packed. | **Incomplete production** → building owner: derive new-design models/views before binding; existing Barracks/Range designs stay usable. |
+| `buildings/town-center-lifecycle-meshy-v1` | Default [captured loader](../src/captured-building-art.mjs): five states × eight views, team masks. | 81 files packed. | **Final adoption unverified here** → renderer owner: recorded-build construction/damage/repair, team/zoom/occlusion check. |
+| `buildings/barracks-sprite-test-v1`, `buildings/archery-range-sprite-v1` | Default [direct sprites](../src/building-sprites.mjs): five states × two teams. | Ten WebPs each packed. | **Full current-build appearance unverified** → renderer owner: both-team lifecycle/occlusion proof; [prior checks](qa-barracks-lifecycle-2026-09-27.md) are dated evidence. |
+| `buildings/archery-range-construction-v1` | Exported five-stage atlas with masks; pivot/game placement unverified; normal game uses the other Range pack. | Candidate/review only; omitted. | **Incomplete admission**, not a drop-in final replacement → building + renderer owners: resolve five-stage mapping/pivot and choose explicit adoption or retained comparison. |
+| `units-buildings/frontier-glb-sample-v2`, `frontier-barracks-construction-v1`, `frontier-archery-range-construction-v1` | GLB/source-review samples. Authoring manifests do not match runtime renderer schema; no gameplay GLB consumer. | Static reviews; omitted. | **Incomplete runtime production** → technical art owner: compatible export/capture and state mapping if these designs are chosen; no need to ship unused GLBs. |
+| `buildings/town-center-sprite-v1`, `town-center-meshy-review-v1`, `town-center-state-concepts-v1` | Legacy direct Complete, earlier captured Complete and lifecycle source concepts. Default lifecycle pack supersedes them. | Direct/concepts omitted; eight earlier captured WebPs still packed. | Retained lineage, **not new adoption targets** → building owner preserves provenance; renderer owner can audit redundant release copies separately. |
+| Mill, Dock, Skiff, palisade wall/gate, shore-fish glyph | Normal gameplay mechanics use procedural placeholders in [main](../src/main.js), [water units](../src/water-unit-runtime.mjs), [fish marker](../src/shore-fishing-placeholder.mjs). No independent authored runtime pack found. | Placeholder code ships; no art gate. | **Incomplete production** → art recipient **unassigned**: produce one registered boat/Dock or modular wall family against the existing gameplay contract. Gameplay owners retain functioning rules. |
+| `wildlife/bellweather-sheep-static-v1` | Eight approved static idle views in the default [wildlife registry](../src/neutral-wildlife-renderer.mjs), including normal Millrace opening Sheep. Carcass remains marker; empty/fog-hidden nodes disappear. | Three runtime files packed, no opt-in. Historical `previewOnly` metadata is not a current runtime gate. | **Staging source delivered; appearance incomplete** → Sheep owner runs [normal/all-view game recipe](qa-sheep-eight-view-default-2026-10-03.md); Railway owner retains production delivery. Walk/graze/carcass animation absent. |
+| `wildlife/bellweather-sheep-public-reference-v1`; [Sheep concept/model-input records](wildlife-bellweather-sheep.md) | Earlier single-view/reference lineage; superseded by eight-view pack. [Local walk candidate](sheep-local-walk-candidate.md) is capability/inspection planning, not a walking clip. | Old pack omitted; private GLB not published. | **Walking production incomplete** → Sheep owner: supported private transfer, hash-verified rig feasibility, one actual articulated heading. Preserve idle art. |
+| `units/cast-human-sprite-v3` + [fishing SE source](art-direction/human-roster-v1/fishing-SE-v1/README.md) | Default Human Worker v0.14.0 has four SE fishing keys + water-contact cue. Seven headings/Boughward keep exact food/gather/idle fallback; ordinary central Lab approaches are east/west. | Three unit runtime files packed, no fishing flag. | **Staging source delivered; broader motion/appearance incomplete** → Worker art/renderer owner: smooth/root/contact check on actual SE approach, then seven headings; Railway owner retains production delivery. [Contract](worker-fishing-animation.md). |
+| `ui/cursors`, `ui/icons` original six SVGs, `ui/portraits` | Native PNG cursors, six labelled icons, Human/Boughward Worker portrait; Barracks portrait reuses its actual battlefield frames. [HUD bindings](hud-art-integration.md). | UI directory packed, admitted active files served. Old SVG cursor sources are history. | **Native usability/recognition incomplete** → active HUD owner: game pointer/zoom/layout review; other roster/building portraits need deliberate matching framing. |
+| `ui/icons/actions` six new glyphs ([PR130](https://github.com/lbeezr/thousand-unit-skirmish/pull/130)) | Source candidates; no controls bound and server rejects these paths. | Directory copy packs sources **despite no serving/default use**; absent from the observed staging source revision. | **Incomplete source refinement/admission** → active HUD owner: improve weak 16px Follow/cargo details, bind appropriate labelled controls, add serving/default-use proof. This merge alone does not deliver new HUD art. |
+
+The original `lbliii` retained commit
+`99d18c2e74335e6a6fe6bef75ab9dbafcaec1821` was compared through its Git tree
+against fork files with `git hash-object`: scale-pilot 44/45 identical (only
+README changed), models 81/81 identical, concepts 13/13 identical, no missing
+files. All 48 PNG captures, renderer manifests and model provenance match.
+Recorded ignored GLB paths are not present here; that does not prove source
+models are lost elsewhere. Each new Complete-only family still lacks four
+lifecycle states and aligned team masks; destruction/ruins also needs an engine
+presentation contract. Preserve the [historical audit](art-runtime-audit-2026-10-03.md)
+for those exact production details.
+
+## Resources, terrain and audio
+
+| Package/family | Actual use and release | Incomplete work → owner / next action |
+| --- | --- | --- |
+| `environment/frontier-v1`, `frontier-interactive-v1` | Default grounds, regional forest/depletion atlases, vegetation/scenery and resource states via [environment art](../src/environment-art.mjs); 488/11 files packed. `meshyResources=0` is comparison; young/pocket forest-age modes are experiments. | **Broader current-build verification incomplete** → environment/renderer owners: map-specific depletion/reset, crossings and normal/strategic views. Regional decorative plants do not imply distinct harvestable resources. |
+| `environment/vaelora-region-kits-v2` | Source palette/Root Oak/Hornbeam/Plum etc.; runtime derivatives live in `frontier-v1` and are used there. Source directory omitted intentionally. Original/muted canopy comparisons and young-tree experiments retain explicit switches. | **Directional production incomplete** → vegetation owner: consistent additional tree headings; preserve rejected 90° attempts. [Existing gameplay proof](qa-underbough-gameplay-proof-2026-10-01.md) is dated, not today's deployment observation. |
+| `environment/frontier-meshy-fixed-camera-v3`, `frontier-meshy-sprites-v1` | V3 oak/pine eight-heading forest frames and oak/berry full-resource atlases are default; 18 selected files packed. V1 default single-view resource path/fallback remains; all 24 v1 WebPs packed. | **Matching depletion art incomplete** → vegetation owner: same-design worked/low/depleted captures; currently uses interactive art. V3 standalone berry frames/pine atlas are not default requests. |
+| `environment/frontier-meshy-fixed-camera-v2` | Earlier fit/capture reference; superseded by v3; omitted. | Retained comparison → technical art owner preserves provenance; do not force the older fit to ship. |
+| `environment/vesperra-podvine-low-v1`, `vesperra-veilcap-worked-v2`, `ellionar-sunbloom-low-v4` | Current default directional full/worked/low plant selectors; one atlas each packed. `plantViews=legacy` compares single-view sources. | **Anatomical/directional and full kit acceptance incomplete** → vegetation owner: game-scale root/state review; no pod/flower gathering rule is established. |
+| `vesperra-podvine-views-v1`, `vesperra-podvine-worked-v1`, `vesperra-veilcap-views-v1`, `ellionar-sunbloom-views-v1`, `ellionar-sunbloom-crowns-v2`, `ellionar-sunbloom-worked-v3` under `environment/` | Earlier plant exports still packed/served, with descriptor modules; normal environment imports the newer packs above. | Superseded runtime lineage, **not six missing default features** → environment owner: retain source lineage; separately assess unnecessary release bytes. |
+| `environment/frontier-painted-material-atlas-v1` | Six runtime mips exported; normal grounds use individual textures. No loader/mip cap/split-quad integration; omitted. | **Exported but unbound candidate** → technical art + renderer owners: integrate UV/mip contract only if atlas adoption is selected, then game-zoom compare. |
+| `environment/frontier-resource-atlas-v1-candidate` | Layered oak/berry **source** atlas; no runtime encodes/hashes, reviewed depth matte/pivots or loader; omitted. | **Incomplete production** → technical art owner: review layers/registration and export before requesting integration. |
+| `environment/sereward-succulent-action-v1` | Four exported poses; review-only, no harvesting gameplay binding; omitted. Current decorative succulents remain separate. | **Incomplete registration/gameplay admission** → vegetation owner + gameplay recipient **unassigned**: resolve anatomical anchors and whether a distinct harvest action is wanted; do not map leaf cutting to forest wood depletion. |
+| `environment/vaelora-ground-studies-v1`, `frontier-v2-concepts`, `frontier-cliff-pilot-v1` | Ground accent/design sources unbound/omitted. Cliff has eight color/depth runtime views **packed** for `/environment-review.html`, not normal terrain. | **Experimental production/adoption incomplete** → environment/technical art owners: ground motif scale/repetition or cliff height/join/depth review, then select one normal-game integration; no automatic concept shipping requirement. |
+| `audio/runtime` | Eleven regional v2 landscape profiles + technical `rts-feedback-test/v1`; [hash-bound shipped catalog](../src/audio-shipped-catalog.mjs), map selection and input unlock consume them. All runtime files packed. Twelve regional maps + Fortified Crossing bind recorded packs; other maps synthesize. | **Listening/mix acceptance incomplete** → audio owner: exact-build cue/mute/loop audition. No authored Shore Fishing assignment; [audition](qa-shore-audio-audition-2026-10-03.md) remains provisional. |
+| `audio/vaelora-zones-v1`, `audio/vaelora-pilot-v1` | Zone catalog: 44 originals; regional runtime uses 11 music + 11 terrain beds. Eleven contrast beds + eleven signatures are audition-only. Pilot sources include four shipped UI ingredients; its music originals are candidates. Source directories are packed, which does not establish map/event bindings. | **Selected audio adoption incomplete** → audio owner: audition existing Shore Fishing water bed or signature against the current cue; select/bind only the accepted material. [Coverage audit](qa-audio-coverage-2026-10-03.md) owns event/score limits. No new recordings required. |
+
+Remaining unit packages are covered by the [normal roster mapping](assets.md#know-what-is-actually-in-game):
+Human seven-role v3/v2/v1 set and all seven `boughward-*-sprite-v1` packs ship
+and bind by team. `worker-sprite-v1/v2/v3`, `infantry-sprite-v1/v2`,
+`archer-sprite-v1`, `cast-human-sprite-v1/v2`, and `cast-orc/elf/troll-sprite-v1`
+ship as explicit legacy comparisons, not defaults. `infantry-meshy-reference-v1`
+is an omitted source reference. **Authored action/direction/team-mask finish and
+fresh deployed roster appearance remain incomplete** → unit art/renderer owners;
+do not count approximate action reuse or idle holds as completed motion.
+
+## Maintaining this record
+
+Change the relevant row when binding, release or evidence changes; link the
+implementation owner's existing PR/task rather than creating another roadmap.
+Next automated guard: a small approved-runtime registry audit of selectors,
+reachable consuming modules, manifest dependencies and actual release contents,
+with explicit owner/reason/exit actions for experiments. Its initial coverage
+must be stated; a green static check cannot close deployment or in-game QA.
+Source/reference packages stay outside that runtime requirement. No default
+renderer changes are made by this audit.
