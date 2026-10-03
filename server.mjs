@@ -4946,7 +4946,8 @@ function buildWallLine(player, command) {
   const existingWallCells = new Set(buildings.filter(building =>
     building.team === player.team && building.type === 'palisade-wall').flatMap(building => building.footprint));
   const blockedCells = [], occupiedCells = new Set();
-  const resourceCells = new Set(mapDefinition.resourceNodes.map(node => worldToCell(node.x, node.z)));
+  const resourceCells = new Set(mapDefinition.resourceNodes
+    .filter(node => resourceNodeStates.get(node.id)?.stock !== 0).map(node => worldToCell(node.x, node.z)));
   for (let cell = 0; cell < CELL_COUNT; cell++) {
     if (blocked[cell] || townCenterBlocked[cell] || resourceCells.has(cell)) blockedCells.push(cell);
     if (buildingBlocked[cell] && !existingWallCells.has(cell)) occupiedCells.add(cell);

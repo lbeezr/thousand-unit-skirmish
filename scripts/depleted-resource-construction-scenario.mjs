@@ -8,9 +8,9 @@ import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 const reproduceOnly = process.argv.includes('--reproduce-only');
 const map = JSON.parse(await readFile(new URL('../maps/open-field.json', import.meta.url)));
 const storeCost = BUILDING_DEFINITIONS.storehouse.cost.wood;
-const houseCost = BUILDING_DEFINITIONS.house.cost.wood;
+const wallCost = reproduceOnly ? 0 : BUILDING_DEFINITIONS['palisade-wall'].cost.wood;
 Object.assign(map, { id: 'depleted-sheep-site-proof', name: 'DEPLETED SHEEP SITE', startingArmySize: 8,
-  fogOfWar: false, startingResources: { food: 0, wood: reproduceOnly ? 100 : storeCost + houseCost }, scenarioEvents: [],
+  fogOfWar: false, startingResources: { food: 0, wood: reproduceOnly ? 100 : storeCost + wallCost }, scenarioEvents: [],
   resourceNodes: [0, 1].map(team => ({ id: `sheep-${team}`, type: 'food',
     x: team ? 12.5 : -12.5, z: 6.5, stock: 0.5, wildlifeSpecies: 'bellweather-sheep' })),
 });
@@ -59,10 +59,11 @@ try {
   const workers = clients.map((client, team) => client.latest.units.filter(row => row[1] === team && row[5] === 'worker').map(row => row[0]));
   const build = (team, kind, site, ids = [workers[team][0]]) => command(clients[team], {
     type: 'build', buildingType: kind, ids, x: site.x, z: site.z,
-  }, /BUILD REJECTED|STOREHOUSE PLACED|HOUSE PLACED/);
+  }, /BUILD REJECTED|STOREHOUSE PLACED|PALISADE LINE PLACED/);
   const initial = await fixture.checkpoint(snapshot => snapshot.mapDefinition.id === map.id);
   for (const team of [0, 1]) {
     assert.match((await build(team, 'storehouse', map.resourceNodes[team])).message, /RESOURCE NODE IN FOOTPRINT/);
+    if (!reproduceOnly) assert.match((await build(team, 'palisade-wall', map.resourceNodes[2 + team], [workers[team][1]])).message, /SPACE BLOCKED/);
   }
   const rejected = await fixture.checkpoint(snapshot => snapshot.sequence > initial.sequence);
   conserved(rejected); assert.equal(rejected.state.buildings.length, 0);
@@ -93,7 +94,7 @@ try {
     conserved(recovered); depleted(recovered);
     for (const team of [0, 1]) {
       assert.match((await build(team, 'storehouse', map.resourceNodes[team])).message, /STOREHOUSE PLACED/);
-      assert.match((await build(team, 'house', map.resourceNodes[2 + team], [workers[team][1]])).message, /HOUSE PLACED/);
+      assert.match((await build(team, 'palisade-wall', map.resourceNodes[2 + team], [workers[team][1]])).message, /PALISADE LINE PLACED/);
     }
     const constructing = await fixture.checkpoint(snapshot => snapshot.state.buildings.length === 4
       && snapshot.state.buildings.every(building => building.progress > 0 && !building.complete));
@@ -124,7 +125,10 @@ try {
       && snapshot.state.teamFood.every(food => food === 0) && snapshot.state.resourceNodes.every(node => node.stock > 0));
     conserved(rematch);
     assert.deepEqual(rematch.state.teamWood, [map.startingResources.wood, map.startingResources.wood]);
-    for (const team of [0, 1]) assert.match((await build(team, 'storehouse', map.resourceNodes[team])).message, /RESOURCE NODE IN FOOTPRINT/);
+    for (const team of [0, 1]) {
+      assert.match((await build(team, 'storehouse', map.resourceNodes[team])).message, /RESOURCE NODE IN FOOTPRINT/);
+      assert.match((await build(team, 'palisade-wall', map.resourceNodes[2 + team], [workers[team][1]])).message, /SPACE BLOCKED/);
+    }
     // A saved zero is trusted only after the complete resource table validates.
     // A restored positive resource may never coexist with a building footprint.
     for (const kind of ['positive-overlap', 'duplicate-resource', 'missing-resource']) {

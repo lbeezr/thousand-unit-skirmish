@@ -14,7 +14,8 @@ selected build. The ordinary scenario adds finite timber and untouched Sheep
 to test fixed construction and the guards together.
 
 The server now uses current stock when checking resource-cell occupancy and
-capturing resource access points for proposed-building connectivity. Only
+capturing resource access points for proposed-building connectivity. The same
+stock rule applies to atomic palisade-line admission. Only
 exact-zero stock releases them; unknown/positive stock remains protected. The
 checkpoint validates the complete saved resource table before checking building
 overlap, using validated remaining stock and authored positions for that check.
@@ -38,7 +39,7 @@ a terrain restriction even after exhaustion.
 
 The real-server scenario rejects living resource sites without spending wood,
 gathers both Sheep and timber pools, restarts depleted state, and builds a paid
-Storehouse and House on each side's exhausted cells. A restart during construction
+Storehouse and Palisade on each side's exhausted cells. A restart during construction
 preserves progress and the single debit; all four buildings finish normally.
 Food/wood stock plus both banks, carried resources and paid construction equals
 the authored budget at every boundary. A duplicate-debit negative control fails

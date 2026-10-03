@@ -119,3 +119,26 @@ test('checkpoint overlap uses validated remaining stock at authored positions', 
     assert.throws(() => check(invalid), /invalid resource/);
   }
 });
+
+test('atomic palisade admission shares the exact-zero resource exclusion', () => {
+  const wall = server.slice(server.indexOf('function buildWallLine('), server.indexOf('function buildBuilding('));
+  const node = { id: 'sheep', x: 1, z: 0, stock: 100, type: 'food', wildlifeSpecies: 'bellweather-sheep' };
+  for (const stock of [undefined, 100, 0.25, 0]) {
+    let preparation;
+    const context = vm.createContext({ mapDefinition: { resourceNodes: [node], triggers: [] },
+      resourceNodeStates: new Map(stock === undefined ? [] : [[node.id, { ...node, stock }]]),
+      buildings: [], units: [{ hp: 100, x: 0, z: 0 }], commandUnits: () => [{ hp: 100, team: 0 }],
+      unitHasCapability: () => true, worldToCell: x => x,
+      CELL_COUNT: 2, MAP_WIDTH: 2, MAP_HEIGHT: 1, MAX_BUILDINGS: 32,
+      HOME_TOWN_CENTER_ID_BASE: 1000, nextBuildingId: 1, BUILDING_DEFINITIONS,
+      blocked: [0, 0], townCenterBlocked: [0, 0], buildingBlocked: [0, 0],
+      teamFood: [0, 0], teamWood: [100, 100], rejectBuild() {},
+      preparePaidWallLine: args => { preparation = args; return { plan: null, status: 'invalid' }; },
+    });
+    vm.runInContext(wall, context);
+    context.buildWallLine({ team: 0 }, { ids: [0], points: [{ column: 1, row: 0 }] });
+    assert.deepEqual(Array.from(preparation.blockedCells), stock === 0 ? [] : [1]);
+    assert.deepEqual(Array.from(preparation.occupiedCells), [0], 'living unit occupancy remains independent');
+    assert.deepEqual(context.teamWood, [100, 100]);
+  }
+});
