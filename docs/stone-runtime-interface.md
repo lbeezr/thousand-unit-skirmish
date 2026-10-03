@@ -54,6 +54,7 @@ cargo, Worker cargo and Town Center/Storehouse labels appear only in the Stone
 profile. Mill remains food-only. Unknown cargo is never displayed as food.
 An empty-node profile proves these surfaces and recovery readiness, not natural harvesting.
 The Stone node marker is a plain gray indicator, without an authored ore asset.
+See the [dated client surface evidence](qa-stone-client-surfaces-2026-10-03.md).
 
 ```sh
 node --test scripts/economy-profile.test.mjs scripts/economy-checkpoint.test.mjs scripts/economy-server.test.mjs scripts/gameplay-definitions.test.mjs scripts/ruleset-revision.test.mjs
