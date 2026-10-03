@@ -28,6 +28,14 @@ visibility, and match results. The browser owns selection, camera, HUD, audio,
 and visual interpolation. A renderer fallback cannot change gameplay occupancy
 or reveal hidden state.
 
+Neutral stationary Sheep use optional wildlife identity on an existing food node
+and one conserved stock pool. Worker arrival activates its carcass once; both
+seats reuse normal cargo/drop-offs. Species/lifecycle are fog-filtered with the
+resource snapshot and saved in checkpoint schema 20, which rejects inconsistent
+lifecycle/stock and migrates schema 19 ordinary maps. This is the
+[neutral food foundation](wildlife-bellweather-sheep.md#implemented-neutral-food-foundation--3-october-2026),
+with claim/herding and client art integration left as separate work.
+
 Building placement compares connectivity before and after its proposed footprint.
 It preserves existing connections among bases, units, resources, and building
 access, including Town Centers, without requiring separate authored islands to
