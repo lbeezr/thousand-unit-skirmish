@@ -12,7 +12,7 @@ mode owner retains gameplay acceptance. No ordinary default change is included.
 ## Native behavior
 
 `node scripts/match-mode-native-scenario.mjs` passed eight cases on runtime
-SHA-256 `65022ce9d11eaaafc561e4c7e0e7198005dd10199f841adf16c73f801152900d`.
+SHA-256 `2e45b9b8df66275dda004fa12dd363c250a33b0bf33f01c4b7e48d0b08727eb7`.
 [Retained native records](qa-evidence/skirmish-runtime-2026-10-03/native.json)
 pin the runtime bytes. The normal Millrace worker starts with `skirmish@1` through explicit launch fields.
 An actual North Ford capture at about 26 seconds awards 75 food and 50 wood.
@@ -48,6 +48,9 @@ automatic combat anchor. The fixture now clears automatic stance movement for
 the focused lethal attack and holds cloned capacity-test units passive. These
 are test-state corrections; gameplay combat/construction is unchanged. The full
 production scenario now passes, including replacement production at 2,000 units.
+
+The public mode registry was served byte-exact by the native HTTP worker. The
+client import/asset admission check also passes after the stance-HUD integration.
 
 ## Scope and remaining acceptance
 

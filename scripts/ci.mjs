@@ -96,6 +96,7 @@ run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing 
 run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach contact and bank/water picking');
 run(['--test', 'scripts/unit-movement.test.mjs'], 'Unit separation terrain boundaries');
 run(['--test', 'scripts/pathing-replay.test.mjs'], 'Obstructed formation goals and team reservation');
+run(['--test', 'scripts/move-planning-slices.test.mjs'], 'Clock-independent route planning, stale results and fair queue turns');
 run(['scripts/pathing-native-scenario.mjs', 'dynamic-goal'], 'Native paid obstruction and formation arrival');
 run(['--test', 'scripts/dynamic-wall-pathing.test.mjs'], 'Paid wall and closed gate queued formation destinations');
 run(['scripts/dynamic-wall-native-scenario.mjs'], 'Native both-seat queued paid wall arrival');
@@ -154,6 +155,7 @@ run(['--test', 'scripts/room-lobby-chat.test.mjs', 'scripts/room-lobby-chat-ui.t
 run(['scripts/room-lobby-chat-scenario.mjs'], 'Real two-client room chat isolation and recovery');
 run(['--test', 'scripts/pve-entry.test.mjs'], 'PvE entry observer settling');
 run(['--test', 'scripts/hud-layout.test.mjs'], 'Visible HUD layout');
+run(['--test', 'scripts/combat-stance-ui.test.mjs'], 'Authoritative selected military stance controls');
 run(['--test', 'scripts/minimap-orders.test.mjs'], 'Tactical map selected-unit movement');
 run(['--test', 'scripts/minimap-browser-probe.test.mjs'], 'Minimap browser proof camera observation');
 run(['--test', 'scripts/selection-center-shortcut.test.mjs'], 'Selection camera shortcut and preserved Space drag');

@@ -625,7 +625,8 @@ const WORKER_SPAWN_OFFSETS = [
   [-1.1, -0.9], [1.1, -0.9], [-1.1, 0.9], [1.1, 0.9],
 ];
 const MAX_ATTACK_FLOW_FIELDS = 8;
-const MOVE_PLANNING_SLICE_BUDGET_MS = 5;
+const MOVE_PLANNING_MAX_WORK_ITEMS_PER_SLICE = 8;
+const MOVE_PLANNING_MAX_EXPANDED_CELLS_PER_SLICE = 4096;
 const attackMoveBucketRadius = Math.ceil(ATTACK_MOVE_ACQUIRE_RADIUS / SPATIAL_BUCKET_SIZE);
 const attackMoveBucketOffsets = [];
 for (let row = -attackMoveBucketRadius; row <= attackMoveBucketRadius; row++) {
@@ -3891,6 +3892,8 @@ function completeMovePlanningJob(job) {
       maxPathPlanningSliceMs: Number((job.maxPathPlanningSliceMs || 0).toFixed(3)),
       finalizationMs: Number((job.finalizationMs || 0).toFixed(3)),
       planningSliceCount: job.planningSliceCount,
+      maxPlanningSliceWorkItems: job.maxPlanningSliceWorkItems || 0,
+      maxPlanningSliceExpandedCells: job.maxPlanningSliceExpandedCells || 0,
     });
   }
   if (!job.silent) {
@@ -3982,8 +3985,15 @@ function processMovePlanningSlice(job) {
     }
 
     const sliceStartedAt = performance.now();
+    const expandedCellsAtStart = job.diagnostics.expandedCells;
+    let workItems = 0;
+    // Whole searches remain atomic. An oversized search finishes, then this
+    // job yields; clock observations measure work but never select assignments.
     while ((job.currentGoalGroup || job.nextGroup < job.groups.length)
-      && performance.now() - sliceStartedAt < MOVE_PLANNING_SLICE_BUDGET_MS) {
+      && workItems < MOVE_PLANNING_MAX_WORK_ITEMS_PER_SLICE
+      && job.diagnostics.expandedCells - expandedCellsAtStart
+        < MOVE_PLANNING_MAX_EXPANDED_CELLS_PER_SLICE) {
+      workItems++;
       if (!job.currentGoalGroup) {
         const [startCell, group] = job.groups[job.nextGroup++];
         const assignmentsByDestination = new Map();
@@ -4016,6 +4026,9 @@ function processMovePlanningSlice(job) {
       if (currentGroup.nextGoal >= currentGroup.goals.length) job.currentGoalGroup = null;
     }
     const sliceDurationMs = performance.now() - sliceStartedAt;
+    job.maxPlanningSliceWorkItems = Math.max(job.maxPlanningSliceWorkItems || 0, workItems);
+    job.maxPlanningSliceExpandedCells = Math.max(job.maxPlanningSliceExpandedCells || 0,
+      job.diagnostics.expandedCells - expandedCellsAtStart);
     job.pathPlanningWorkMs = (job.pathPlanningWorkMs || 0) + sliceDurationMs;
     job.maxPathPlanningSliceMs = Math.max(job.maxPathPlanningSliceMs || 0, sliceDurationMs);
     job.planningWorkMs += sliceDurationMs;
@@ -8196,7 +8209,7 @@ const server = createServer(async (request, response) => {
     'src/audio-library-ui.mjs', 'src/audio-studio.mjs', 'src/audio-studio.css',
     'src/audio-composition.mjs', 'src/audio-composer.mjs', 'src/audio-composer.css',
     'audio-studio.html', 'audio-zones.html', 'src/audio-zones.mjs', 'src/audio-zones.css', 'src/audio-recognition-check.mjs', 'src/camera-controls.mjs',
-    'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/match-modes.mjs', 'src/hud-layout.mjs',
+    'src/navigation-settings.mjs', 'src/objective-summary.mjs', 'src/match-modes.mjs', 'src/hud-layout.mjs', 'src/combat-stance-ui.mjs',
     'src/resource-format.mjs', 'src/gameplay-definitions.mjs', 'src/economy-profile.mjs', 'src/economy-ledger.mjs', 'src/economy-client.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/captured-building-art.mjs', 'src/water-surface-geometry.mjs', 'src/shore-vegetation.mjs', 'src/meadow-vegetation.mjs', 'src/garden-vegetation.mjs', 'src/environment-plant-assets.mjs', 'src/podvine-view-pack.mjs', 'src/podvine-worked-pack.mjs', 'src/podvine-low-pack.mjs', 'src/veilcap-view-pack.mjs', 'src/veilcap-worked-pack.mjs', 'src/sunbloom-view-pack.mjs', 'src/sunbloom-crown-pack.mjs', 'src/sunbloom-worked-pack.mjs', 'src/sunbloom-low-pack.mjs', 'src/terrain-blend.mjs', 'src/terrain-texture-sampling.mjs', 'src/terrain-atmosphere.mjs', 'src/terrain-materials.mjs',
     'src/forest-habitat.mjs', 'src/forest-age-composition.mjs', 'src/forest-composition.mjs', 'src/regional-ground-kits.mjs', 'src/painted-material-atlas-runtime.mjs', 'src/water-contours.mjs', 'src/shore-bank-shade.mjs',
