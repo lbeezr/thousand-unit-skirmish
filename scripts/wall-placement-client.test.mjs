@@ -1,3 +1,4 @@
+import { economyClientBindings } from './economy-client-fixture.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
@@ -26,7 +27,7 @@ function fixture(t, team = 0) {
   canvas.releasePointerCapture = id => { captures.delete(id); const event = new w.Event('lostpointercapture'); Object.defineProperty(event, 'pointerId', { value: id }); canvas.dispatchEvent(event); };
   w.matchMedia = () => ({ matches: false });
   const units = [0, 1].map(id => ({ id, kind: 'worker', hp: 100, team: id, serverX: 8.5, serverZ: 8.5 }));
-  Object.assign(w, { BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, WallPlacementGesture, wallCellAt, previewWallPlacement, wallPlacementFeedback,
+  Object.assign(w, { ...economyClientBindings(), BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, WallPlacementGesture, wallCellAt, previewWallPlacement, wallPlacementFeedback,
     renderer: { domElement: canvas }, wallPlacementGesture: new WallPlacementGesture(), wallKeyboardCell: null,
     pendingWallPreview: null,
     wallPlacementGhost: createWallPlacementGhost(), placementGhost: { visible: false },

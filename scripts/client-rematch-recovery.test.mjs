@@ -1,3 +1,4 @@
+import { economyClientBindings } from './economy-client-fixture.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -36,7 +37,7 @@ function fixture(team) {
     close() {}
   }
   const noop = () => {};
-  const context = vm.createContext({
+  const context = vm.createContext({ ...economyClientBindings(),
     applyLobby() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {}, updateChat() {} },
     waterStudyFishBinding: { update(state, options) { fishUpdates.push({ state, options }); }, clear() {} },
     WebSocket, URL, performance: {now: () => 1000}, location: {protocol:'http:',host:'localhost'},
@@ -258,3 +259,28 @@ for (const team of [0,1]) {
     assert.equal(f.context.teamUnits[team].length,12);
   });
 }
+
+for (const team of [0, 1]) test(`seat ${team}: real tuple decoding preserves Stone cargo through cold welcome and ordinary updates`, () => {
+  const f = fixture(team), definition = { ...map, economyProfileId: 'stone-defense-v1' };
+  f.context.buildMap = () => {};
+  // Exercise production append/apply functions; the cargo tuple layout is unchanged.
+  const packet = { ...snapshot(team), economyProfileId: definition.economyProfileId,
+    rulesetRevision: f.context.economyRulesetRevision(definition.economyProfileId), stone: team === 0 ? [7.25, null] : [null, 7.25] };
+  packet.units[0][6] = 3.125; packet.units[0][7] = 'stone';
+  f.welcome(f.connections[0], packet, definition);
+  assert.equal(f.context.units[team * 12].cargo, 3.125);
+  assert.equal(f.context.units[team * 12].cargoType, 'stone');
+  const changed = structuredClone(packet); changed.units[0][6] = 4.25;
+  f.connections[0].message(changed);
+  assert.equal(f.context.units[team * 12].cargo, 4.25); assert.equal(f.context.units[team * 12].cargoType, 'stone');
+  const food = structuredClone(changed); food.units[0][6] = 1; food.units[0][7] = 'food';
+  f.connections[0].message(food);
+  const unsupported = structuredClone(food); unsupported.units[0][6] = 3.125; unsupported.units[0][7] = 'gold';
+  f.connections[0].message(unsupported);
+  assert.equal(f.context.units[team * 12].cargoType, null, 'supplied unsupported cargo clears a previous food label');
+  assert.equal(f.context.sumTypedCargo(f.context.units, definition.economyProfileId).food, 0);
+  f.connections[0].message(changed);
+  const mismatched = structuredClone(changed); mismatched.rulesetRevision = 'future-rules'; mismatched.units[0][6] = 10;
+  f.connections[0].message(mismatched);
+  assert.equal(f.context.units[team * 12].cargo, 4.25, 'mismatched snapshot cannot update typed cargo');
+});
