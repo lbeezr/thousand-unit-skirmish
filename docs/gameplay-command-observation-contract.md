@@ -103,7 +103,8 @@ sources are public. A future hidden event source must not expose private attribu
 | --- | --- |
 | Unit row `[id, team, x, z, hp, kind, cargo, cargoType, generation, task, focusedBy, ...]` | Task intent is `gathering`, `returning`, `building`, `attacking`, or null; derive idle/movement from positions. Generations distinguish reused slots. |
 | Optional tail `[lastAttackTick, lastAttackX, lastAttackZ]` | Deduplicated recent attack event. Fog can null enemy target coordinates. |
-| Optional unit row index `15`, `workHeading` | World yaw toward the authoritative resource/forest target during actual gathering; zero points along +Z. Omitted during travel, return, idle, death, or overlapping targets. Enemy work remains withheld under fog. Index `14` retains its existing work-audio execution value. |
+| Optional unit row index `15`, `workHeading` | World yaw toward the resource/forest target during actual gathering; shore fish uses its canonical derived water visual while land gather authority stays unchanged. Zero points along +Z. Omitted during travel, return, idle, death, or overlapping targets. Enemy work remains withheld under fog. Index `14` retains its existing work-audio execution value. |
+| Optional unit row index `16`, `workResourceVariant` | `shore-fish` only during active own/shared Worker gathering at that variant; omitted otherwise. Cosmetic `gather-fish` selection, never cargo, timing or navigation authority. Legacy/absent/unknown values clear on receipt. |
 | Building `progress`, `complete`, `hp`, `maxHp`, `attackers`, `queue`, `trainingRemaining`, `trainingProgress`, `productionBlocked`, `rallyCell` | Construction, damage, and production. Enemy rally is hidden under fog with `-1`. |
 | Resource `{id, type, stock}` | Current visible stock. Initial stock comes from map data; there is no `maxStock` state field. |
 | `forestStocks`, `forestEpoch` | Changed forest stock and epoch, filtered by viewer. |

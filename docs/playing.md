@@ -90,6 +90,9 @@ then leaves them idle. This also delivers the final food from an exhausted sheep
 it needs no new Gather order. An unavailable drop-off preserves the cargo.
 Forest cells currently yield six wood each; exhaustion clears their movement
 and sight block. Berry brushwood and regrowth are future experiments.
+An exhausted finite resource node also releases its construction site. Living
+sheep, partial carcasses and other positive-stock nodes still protect their
+cells. Buildings, units, terrain and route checks continue to apply.
 
 | Action | Cost | Time / condition |
 | --- | --- | --- |

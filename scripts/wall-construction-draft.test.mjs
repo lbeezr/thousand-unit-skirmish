@@ -218,7 +218,7 @@ test('existing checkpoint building checks accept one-cell records and reject cor
     FOREST_WOOD_PER_CELL: 100, buildingRulesFor: rules,
     finite: Number.isFinite, integerIn: (n, low, high) => Number.isInteger(n) && n >= low && n <= high,
     assertSnapshot: (ok, message) => { if (!ok) throw new Error(message); } });
-  const validate = rows => { context.state = { buildings: rows }; vm.runInContext(`{${source.slice(start, end)}}`, context); };
+  const validate = rows => { context.state = { buildings: rows, resourceNodes: [] }; vm.runInContext(`{${source.slice(start, end)}}`, context); };
   const recovered = JSON.parse(JSON.stringify(records));
   validate(recovered);
   assert.deepEqual(recovered, records, 'partial construction, damaged HP, identity and queues survive JSON');
