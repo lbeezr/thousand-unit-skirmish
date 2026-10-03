@@ -8,6 +8,7 @@ const DEFAULT_MANIFEST_URL = new URL(
 const manifestRequests = new Map();
 const MANIFEST_RETRY_MS = 5000;
 const imagePromises = new Map();
+const frameTextures = new Map();
 
 function asAbsoluteUrl(path, baseUrl) {
   return new URL(path, baseUrl).href;
@@ -115,8 +116,10 @@ function findState(manifest, name) {
 
 function nearestViewIndex(camera, position, azimuths) {
   if (!camera || !Array.isArray(azimuths) || azimuths.length === 0) return 0;
-  const dx = camera.position.x - position.x;
-  const dz = camera.position.z - position.z;
+  // Orthographic view direction is shared across the map, including after pan.
+  const towardCamera = camera.isOrthographicCamera ? camera.getWorldDirection(new THREE.Vector3()).negate() : null;
+  const dx = towardCamera?.x ?? camera.position.x - position.x;
+  const dz = towardCamera?.z ?? camera.position.z - position.z;
   const cameraAzimuth = (Math.atan2(dx, dz) * 180 / Math.PI + 360) % 360;
   let bestIndex = 0;
   let bestDelta = Infinity;
@@ -170,6 +173,41 @@ async function composeFrame(view, teamColor, manifestUrl) {
   return canvas;
 }
 
+function leaseFrame(view, teamColor, manifestUrl) {
+  const masked = teamColorCss(teamColor) && view.teamMaskPath && view.teamMaskSha256;
+  const key = JSON.stringify([asAbsoluteUrl(view.path, manifestUrl), view.sha256,
+    masked ? [asAbsoluteUrl(view.teamMaskPath, manifestUrl), view.teamMaskSha256, teamColorCss(teamColor)] : null]);
+  let entry = frameTextures.get(key);
+  if (!entry) {
+    entry = { references: 0, texture: null };
+    frameTextures.set(key, entry);
+    entry.ready = composeFrame(view, masked ? teamColor : null, manifestUrl).then(canvas => {
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.minFilter = THREE.LinearMipmapLinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.generateMipmaps = true;
+      texture.userData.sharedCapturedFrame = true;
+      entry.texture = texture;
+      if (!entry.references) texture.dispose();
+      return texture;
+    }).catch(error => {
+      if (frameTextures.get(key) === entry) frameTextures.delete(key);
+      throw error;
+    });
+  }
+  entry.references++;
+  let released = false;
+  return { ready: entry.ready, release() {
+    if (released) return;
+    released = true;
+    if (--entry.references === 0) {
+      if (frameTextures.get(key) === entry) frameTextures.delete(key);
+      entry.texture?.dispose();
+    }
+  } };
+}
+
 export function createCapturedBuildingSprite({
   manifestUrl = DEFAULT_MANIFEST_URL,
   teamColor = null,
@@ -187,7 +225,17 @@ export function createCapturedBuildingSprite({
   const sprite = new THREE.Sprite(material);
   sprite.visible = false;
   sprite.renderOrder = 0.9;
+  const bodyDepth = new THREE.Sprite(new THREE.SpriteMaterial({
+    transparent: false, alphaTest: 0.9, colorWrite: false,
+    depthTest: true, depthWrite: true, toneMapped: false,
+  }));
+  applyBuildingGroundDepth(bodyDepth.material);
+  bodyDepth.userData.buildingBodyDepth = true;
+  bodyDepth.raycast = () => {};
+  // A child shares the parent's exact world transform; do not scale it again.
+  sprite.add(bodyDepth);
   sprite.userData.capturedBuildingArt = {
+    bodyDepth,
     manifestUrl: new URL(manifestUrl, import.meta.url).href,
     teamColor,
     manifest: null,
@@ -197,6 +245,8 @@ export function createCapturedBuildingSprite({
     worldPosition: new THREE.Vector3(),
     requestKey: null,
     requestVersion: 0,
+    currentFrame: null,
+    pendingFrame: null,
     disposed: false,
     warned: false,
   };
@@ -214,6 +264,7 @@ export function updateCapturedBuildingSprite(sprite, camera, lifecycleInput = 'c
     data.manifest = null;
     data.requestKey = null;
     data.requestVersion++;
+    data.pendingFrame?.release(); data.pendingFrame = null;
     sprite.visible = false;
     pending.then((manifest) => {
       if (!currentManifestRequest(data, pending)) return;
@@ -238,6 +289,7 @@ function requestCurrentFrame(sprite, data) {
     // A Complete-only source must yield to its fallback during construction/damage.
     // Invalidate pending loads so an older frame cannot become visible afterward.
     if (data.requestKey !== null) { data.requestKey = null; ++data.requestVersion; }
+    data.pendingFrame?.release(); data.pendingFrame = null;
     sprite.visible = false;
     if (!data.warned) {
       data.warned = true;
@@ -253,6 +305,10 @@ function requestCurrentFrame(sprite, data) {
   if (data.requestKey === requestKey) return;
   data.requestKey = requestKey;
   const version = ++data.requestVersion;
+  sprite.visible = false;
+  data.pendingFrame?.release();
+  const frame = leaseFrame(view, data.teamColor, data.manifestUrl);
+  data.pendingFrame = frame;
 
   const dimensions = data.manifest.camera.framePixels;
   const pixelsPerWorldUnit = data.manifest.camera.pixelsPerWorldUnit;
@@ -260,23 +316,23 @@ function requestCurrentFrame(sprite, data) {
     sprite.scale.set(dimensions[0] / pixelsPerWorldUnit, dimensions[1] / pixelsPerWorldUnit, 1);
     sprite.center.set(data.manifest.camera.anchorPixelFromTopLeft[0] / dimensions[0],
       1 - data.manifest.camera.anchorPixelFromTopLeft[1] / dimensions[1]);
+    data.bodyDepth.center.copy(sprite.center);
     sprite.position.y = 0.035;
   }
 
-  composeFrame(view, data.teamColor, data.manifestUrl).then((canvas) => {
+  frame.ready.then((texture) => {
     if (!currentManifestRequest(data) || version !== data.requestVersion) return;
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.minFilter = THREE.LinearMipmapLinearFilter;
-    texture.magFilter = THREE.LinearFilter;
-    texture.generateMipmaps = true;
-    const previous = sprite.material.map;
+    data.pendingFrame = null;
+    data.currentFrame?.release(); data.currentFrame = frame;
     sprite.material.map = texture;
+    data.bodyDepth.material.map = texture;
+    data.bodyDepth.material.needsUpdate = true;
     sprite.material.needsUpdate = true;
     sprite.visible = true;
-    previous?.dispose();
   }).catch((error) => {
+    frame.release();
     if (!currentManifestRequest(data) || version !== data.requestVersion) return;
+    data.pendingFrame = null;
     sprite.visible = false;
     if (!data.warned) {
       data.warned = true;
@@ -287,7 +343,15 @@ function requestCurrentFrame(sprite, data) {
 
 export function disposeCapturedBuildingSprite(sprite) {
   const data = sprite?.userData?.capturedBuildingArt;
-  if (!data) return;
+  if (!data || data.disposed) return;
   data.disposed = true;
   data.requestVersion++;
+  sprite.visible = false;
+  data.bodyDepth.visible = false;
+  data.pendingFrame?.release(); data.pendingFrame = null;
+  data.currentFrame?.release(); data.currentFrame = null;
+  sprite.material.map = null;
+  data.bodyDepth.material.map = null;
+  data.bodyDepth.material.dispose();
+  sprite.material.dispose();
 }

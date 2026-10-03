@@ -4,6 +4,9 @@
 [Preserved art](lore/art-evolution.md) · [Preferred pipeline](building-asset-production-pipeline.md)
 
 Audit baseline: fork main `9b6214605baf702d9f90ff61b3f2f9e5c77b9d9e`.
+This dated audit preserves the earlier preview-only checkpoint. Subsequent
+[normal finished-building integration](frontier-building-runtime.md) replaces
+the adoption hold with per-state fallback; consult that guide for current bindings.
 All eight selected concept PNGs match their source manifest. Six families have
 successful model-production provenance and 48 captured PNGs, all matching their
 renderer-manifest hashes; all 48 decode as unclipped 1024-square RGBA. View 01 pixels for all six were inspected in this cloud

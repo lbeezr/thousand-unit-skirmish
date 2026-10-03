@@ -18,6 +18,8 @@ start; this index covers maintained guides, contracts, experiments, and evidence
 | What informs Vaelora's prose, continuity and world-building plan? | [Voice bible](lore-voice-bible.md), [research](lore-research.md), [strategy and plan](lore-strategy.md) |
 | Where is the first reviewable lore foundation? | [L1 writing package](lore-foundation-m1.md): principles, history, settlements, institutions and calibration fiction |
 | Who carries an art outcome through delivery? | [Art lanes](art-production-lanes.md) |
+| What art is still absent from normal play or unverified on the user build? | [Asset adoption checklist](asset-adoption-checklist.md) |
+| How do we split work without losing integration ownership? | [Contributor planning](contributor-planning.md), [PR checklist](../.github/pull_request_template.md) |
 | How do contributors coordinate and integrate? | [AGENTS.md](../AGENTS.md) |
 | What does the implementation currently do? | Task guides and contracts, checked against source |
 
@@ -97,6 +99,7 @@ from source/candidate packs. Then use the relevant contract:
 - [Wildlife draft](wildlife-bellweather-sheep.md): inspected regional fauna, one Sheep proposal, behavior, habitat and future perspective/sprite coverage.
 - [Default low-bank shade](qa-shore-bank-shade-2026-10-03.md): contour-following land value cue, bounded geometry and preserved before/after CPU studies with native-render limits.
 - [Renderer state/GLB/environment contract](renderer-state-contract.md).
+- [Finished Frontier runtime](frontier-building-runtime.md): default Town Center/House art, state fallback, packaging, shared depth/texture ownership and open normal-match QA.
 - [Water surface and fish cues](water-surface-study.md): default apparent depth and directional motion, live visibility-gated shore-fish activity, static quality and reduced motion.
 - [Native water first-pass review](qa-water-surface-native-2026-10-03.md): Mac shader/appearance results, saved image provenance, resolved fallback comparison and remaining visual limits.
 - [Sprite-atlas format](sprite-atlas-contract-v1.md).
