@@ -105,6 +105,16 @@ for (const team of [0, 1]) for (const state of [
   assert.equal(createHash('sha256').update(bytes).digest('hex'), barracksHashes.get(path.basename(resource)),
     'Barracks thumbnail uses the retained shipped source');
 }
+const menuStyle = readFileSync(path.join(root, 'src/game-menu.css'), 'utf8');
+assert.ok(allowed.has('src/game-menu.css'), 'entry menu stylesheet must be served');
+const menuSources = new Set([
+  WORKER_PORTRAITS.human.asset,
+  `/${buildingSpriteUrl({ type: 'barracks', team: 0, complete: true, hp: 1800, maxHp: 1800 }).slice(2)}`,
+]);
+for (const [, asset] of menuStyle.matchAll(/url\(['"]([^'"]+)['"]\)/g)) {
+  assert.ok(menuSources.has(asset), `menu art must reuse a verified shipped source: ${asset}`);
+  assert.ok(statSync(path.join(root, asset.slice(1))).isFile(), `menu art is missing: ${asset}`);
+}
 const cursorManifest = JSON.parse(readFileSync(path.join(root, 'assets/ui/cursors/manifest.json'), 'utf8'));
 const style = readFileSync(path.join(root, 'style.css'), 'utf8');
 for (const [state, cursor] of Object.entries(cursorManifest.cursors)) {

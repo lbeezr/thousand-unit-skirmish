@@ -2,8 +2,12 @@
 
 [Roadmap](roadmap.md) · [Building atlas plan](building-atlas-production-plan.md)
 
-Farm is an existing planned building candidate, absent from the current registry
-and gameplay. A useful first implementation would be one finite paid planting
+This is the earlier 3 October planning assessment. The [finite Farm contract](farm-finite-planting.md)
+records the adopted provisional prototype values and policies; the questions
+below preserve the original scope discussion.
+
+Farm was an existing planned building candidate, absent from the registry
+and gameplay at this assessment. A useful first implementation would be one finite paid planting
 that creates a local food source. This proposal narrows the atlas plan's future
 renewable-food role to a testable cycle; replenishing, growth seasons and automatic
 replanting are separate decisions. It supplies food stock for Workers to carry

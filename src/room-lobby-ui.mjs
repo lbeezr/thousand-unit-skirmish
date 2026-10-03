@@ -1,9 +1,20 @@
 import { createRoomLobbyChat } from './room-lobby-chat-ui.mjs';
+import { roomEntryUrl } from './game-entry-session.mjs';
 
 const TEAMS = ['Azure', 'Ember'];
 const SIZES = [250, 500, 1000, 2000];
 
-export function createRoomLobby({ root, send, copyInvite }) {
+export function lobbyRejoinUrl(currentUrl) {
+  const current = new URL(currentUrl);
+  const target = roomEntryUrl(currentUrl, current.searchParams.get('room') || 'default');
+  if (!current.searchParams.has('room')) target.searchParams.set('play', '1');
+  return target;
+}
+
+export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
+  const win = root.ownerDocument.defaultView;
+  win.location.assign(lobbyRejoinUrl(win.location.href).href);
+} }) {
   const doc = root.ownerDocument;
   function element(tag, text, parent = root) {
     const node = doc.createElement(tag);
@@ -36,16 +47,40 @@ export function createRoomLobby({ root, send, copyInvite }) {
   ready.id = 'lobby-ready';
   const launch = element('button', 'Launch match', actions);
   launch.id = 'lobby-launch';
+  const join = element('button', 'Rejoin as player', actions);
+  join.id = 'lobby-rejoin';
   const leave = element('a', 'Leave room', actions);
   leave.href = '/';
-  for (const button of [invite, ready, launch]) button.type = 'button';
+  for (const button of [invite, ready, launch, join]) button.type = 'button';
   let lobby = null;
   let player = null;
   let online = false;
   let pending = false;
   let pendingFocus = null;
+  let rejoining = false;
   let rejection = '';
   const chat = createRoomLobbyChat({ root: element('section'), send });
+
+  function canRejoin() {
+    return lobby?.phase === 'lobby' && online && player?.team === null && !player.resumePending
+      && [0, 1].some(team => !lobby.seats.some(seat => seat.team === team));
+  }
+
+  function seatGuidance(own) {
+    if (!own) {
+      if (player?.resumePending) return 'Your seat is active in another connection. Close it to rejoin automatically.';
+      if (canRejoin()) return 'A player seat is available. Rejoin to request it; another player may join first.';
+      return lobby.seats.some(seat => !seat.connected)
+        ? 'Spectating · disconnected seats are reserved for their players.'
+        : 'Spectating · both player seats are occupied.';
+    }
+    const other = lobby.seats.find(seat => seat.team !== own.team);
+    if (own.team === 1 && !other) return 'Host seat open. Share the invite for a new Azure host; you remain Ember.';
+    if (own.team === 1 && !other.connected) return 'Host disconnected. Azure is reserved while they reconnect; you remain Ember.';
+    if (!other) return 'Waiting for Ember. Share the invite, then both players ready.';
+    if (!other.connected) return 'Ember disconnected. Their seat is reserved while they reconnect.';
+    return lobby.canLaunch ? 'Both players ready. The host can launch.' : 'Review the settings, then ready for this match.';
+  }
 
   function render() {
     const visible = lobby?.phase === 'lobby';
@@ -78,13 +113,15 @@ export function createRoomLobby({ root, send, copyInvite }) {
     ready.textContent = own?.ready ? 'Not ready' : 'Ready';
     launch.hidden = !host;
     launch.disabled = !online || pending || !host || !lobby.canLaunch;
+    const joinFocused = doc.activeElement === join;
+    join.hidden = !canRejoin();
+    join.disabled = join.hidden || pending || rejoining;
+    if (joinFocused && join.hidden && root.open) invite.focus({ preventScroll: true });
     status.textContent = !online ? 'Reconnecting. Readiness clears when a player disconnects.'
-      : rejection || (pending ? 'Waiting for server…' : !own ? 'Spectating · both seats occupied or reserved.'
-      : lobby.canLaunch ? 'Both players ready. The host can launch.'
-      : 'Review the settings, then ready for this match.');
+      : rejection || (rejoining ? 'Rejoining room…' : pending ? 'Waiting for server…' : seatGuidance(own));
     if (opening) {
       root.showModal();
-      (host && !map.disabled ? map : own && !ready.disabled ? ready : invite).focus({ preventScroll: true });
+      (host && !map.disabled ? map : own && !ready.disabled ? ready : !join.disabled ? join : invite).focus({ preventScroll: true });
     }
   }
 
@@ -112,12 +149,19 @@ export function createRoomLobby({ root, send, copyInvite }) {
   });
   launch.addEventListener('click', () => submit({ type: 'launchMatch' }));
   invite.addEventListener('click', copyInvite);
+  join.addEventListener('click', () => {
+    if (!canRejoin() || pending || rejoining) return;
+    rejoining = true;
+    render();
+    rejoin();
+  });
   root.addEventListener('focusin', event => {
     if (pendingFocus && event.target !== pendingFocus) pendingFocus = null;
   });
   root.addEventListener('cancel', event => event.preventDefault());
   return {
     update(next, identity, connected = true) {
+      if (player?.id !== identity?.id || next?.phase !== 'lobby' || !connected) rejoining = false;
       lobby = next;
       player = identity;
       online = connected;
@@ -138,6 +182,6 @@ export function createRoomLobby({ root, send, copyInvite }) {
     },
     updateChat(messages, ack, reset) { chat.update(messages, ack, reset); },
     rejectChat(message, clientMessageId) { chat.reject(message, clientMessageId); },
-    disconnect() { online = false; pending = false; chat.context(lobby, player, online); render(); },
+    disconnect() { online = false; pending = false; rejoining = false; chat.context(lobby, player, online); render(); },
   };
 }

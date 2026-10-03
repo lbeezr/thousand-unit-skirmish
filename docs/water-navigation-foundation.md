@@ -4,8 +4,9 @@
 
 3 October 2026; the graph was introduced against baseline `ae88e0f`.
 The [Dock shoreline foundation](dock-shoreline-foundation.md) now uses it for
-live building placement and water berth clearance. It still adds no playable
-boat, movement domain, transport, naval combat or boat cargo. Shore fishing
+live building placement and water berth clearance. The subsequent
+[Skiff slice](skiff-water-movement.md) adds one paid, unarmed water unit and
+Move/Stop orders. Transport, naval combat and boat cargo remain separate. Shore fishing
 continues to use land Workers and finite food. Mill is now a food-only land
 drop-off; fish/skiff/dock art remains separate work.
 
@@ -17,13 +18,13 @@ drop-off; fish/skiff/dock art remains separate work.
 | Land routes | Server `isWalkable` excludes all obstacles, building footprints and home Town Centers. Components/A* use cardinal cells and elevation rules. | Feeding this land mask into water routing would block every water cell. Keep domain masks separate. |
 | Land movement | `canTraverseUnitStep` checks crossed boundaries, including both open sides for diagonal crowd deflection. | Cell-center routes alone do not validate a moving hull's continuous sweep or separation. |
 | Buildings | `buildBuilding` requires an open, level footprint without resources, objectives, units or connectivity loss, plus a reachable land Worker approach. Dock adds a dry level-zero foundation and adjacent clear water berth. | The current Dock has only land occupancy. A later pier needs an explicit water reservation and admission validation. |
-| Production | `findProductionSpawnCell` searches open land in the owner's spawn component, reserving units/resource cells; queues wait when no room exists. | A boat needs an explicitly reserved water spawn with footprint clearance and a water route. No such runtime producer exists here. |
+| Production | `findProductionSpawnCell` searches open land in the owner's spawn component, reserving units/resource cells; queues wait when no room exists. | A boat needs an explicitly reserved water spawn with footprint clearance and a water route. Dock now uses fresh reserved water berth/exit clearance for Skiff production; other producers retain this land contract. |
 | Fish | Node `x/z` is a land bank; the position helper derives an adjacent one-cell water visual center. Stock/cargo are food. | Cosmetic schools are neither vessels nor water destinations for Workers. |
 
-The pathing lane's existing server functions and shared land helpers are not
-edited. The standalone API below is the proposed water-domain handoff. It does
-not introduce a shared `movementDomain` schema before runtime integration is
-designed and coordinated.
+The standalone graph remains independent of shared land masks. The Skiff adapter
+uses its own tick and planner, excludes water actors from land separation and
+construction-route guards, and declares water identity in registry/saved actors.
+Land traversal helpers and A* retain their existing contracts.
 
 ## Isolated topology API
 
@@ -82,21 +83,19 @@ proves water cells remain blocked for land units, checks fish water/land
 positions and preserves every map field. Both checks enter the ordinary CI
 runner. The two pilot ponds remain disconnected; this graph creates no bridge.
 
-The topology API remains a simulation foundation; its first live caller is the
-Dock placement helper. It is not registered as a unit movement domain.
-Live shore-fishing and existing movement checks remain integration regressions;
-no boat has moved in a match and no final art or browser appearance is claimed.
+The graph's first live caller was Dock placement. It now also supports the
+separate Skiff runtime, proven in a real two-seat WebSocket match with production,
+occupancy, movement and recovery. Live shore-fishing and existing land movement
+remain integration regressions. Final art and browser appearance are not claimed.
 
-## Follow-on admission order
+## Current integration and follow-ons
 
-1. The current Dock validates a land foundation, reachable Worker approach and
-   clear outward water berth. Add explicit pier/boat reservations and choose
-   their physical footprints with the skiff/dock art contract when introduced.
-2. Coordinate an authoritative water-domain adapter with the pathing lane,
-   including continuous step/clearance rules, occupancy updates, command
-   validation, queued routes, interruption and checkpoint recovery.
-3. Add one registered boat/producer with ordinary costs, population, queue and
-   blocked-spawn behavior, then a precise food cargo/drop-off contract. Verify
-   both seats and recovery before making it playable.
+Dock and Skiff now cover land construction, paid production, population,
+blocked-berth completion, cardinal hull movement, owner validation and recovery.
+The adapter uses one-cell static shore clearance without inflating live hull
+reservations a second time; its tick checks hull occupancy before moving.
 
-Transports and naval combat remain later independent slices.
+Precise food cargo/drop-off, multi-boat formations/queued routes, transports,
+pier collision and naval combat remain later independent slices. Final art can
+replace the explicit placeholder after its dimensions and runtime binding are
+verified against the hull contract.

@@ -4,6 +4,8 @@ import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.m
 // These profiles bind the existing procedural instanced geometry. Asset-backed and
 // skeletal animation backends must declare and implement their own capabilities.
 export const UNIT_PRESENTATION_PROFILES = Object.freeze({
+  // Existing siege marker at low detail; the live full-detail Skiff is a plain box.
+  'unit.skiff': Object.freeze({ backend: 'procedural', role: 'siege', headTint: 0x8b6947, bodyTint: 0x8b6947, bodyTintWeight: 0 }),
   'unit.siege-engine': Object.freeze({ backend: 'procedural', role: 'siege', headTint: 0x8b6947, bodyTint: 0x8b6947, bodyTintWeight: 0 }),
   'unit.scout': Object.freeze({ backend: 'procedural', role: 'mounted', headTint: 0x987953, bodyTint: 0xc8af78, bodyTintWeight: 0.35 }),
   'unit.rider': Object.freeze({ backend: 'procedural', role: 'mounted', headTint: 0xabb2ad, bodyTint: 0xabb2ad, bodyTintWeight: 0 }),
@@ -43,6 +45,8 @@ export const BUILDING_PRESENTATION_PROFILES = Object.freeze({
   'building.storehouse': Object.freeze({ backend: 'procedural', role: 'house' }),
   // Reuse the existing procedural House until a Mill asset is authored.
   'building.mill': Object.freeze({ backend: 'procedural', role: 'house' }),
+  // Clearly labeled Farm prototype; this is an existing House placeholder.
+  'building.farm': Object.freeze({ backend: 'procedural', role: 'house' }),
   // Dock land foundation placeholder; no pier or finished Dock artwork is claimed.
   'building.dock': Object.freeze({ backend: 'procedural', role: 'house' }),
   'building.house': Object.freeze({ backend: 'procedural', role: 'house' }),

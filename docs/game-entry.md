@@ -6,6 +6,11 @@ The ordinary root URL opens the main menu. It does not load the renderer or
 connect a WebSocket, even when this browser has an old player token. The menu's
 room-service lookup and optional session check do not allocate a player seat.
 
+The menu's [existing-art composition](game-menu-art-study.md) adds a decorative
+Worker/Barracks vignette beside the choices. It uses the working title and
+existing shipped images, with no additional controls or game-state meaning.
+Narrow and short layouts reduce the art to keep entry choices nearby.
+
 - **New Game** creates a fresh seeded Play vs AI room.
 - **Create Room** creates a fresh Frontier 1v1 pregame lobby; share its invite.
 - **Join Room** accepts a same-server invite or valid room code.

@@ -9,6 +9,7 @@ import { applyTerrainTextureSampling } from './terrain-texture-sampling.mjs';
 import { buildTerrainBlendMasks, buildForestGroundMask } from './terrain-blend.mjs';
 import { buildWaterSurfaceGeometry, WATER_LEVEL } from './water-surface-geometry.mjs';
 import { createWaterSurfaceStudy, waterSurfaceOptions } from './water-surface-study.mjs';
+import { createShoreBankShade } from './shore-bank-shade.mjs';
 import { forestHabitatDepth, forestCanopyFactor, forestMarginCanopyFactor } from './forest-habitat.mjs';
 import { forestAgeFactors } from './forest-age-composition.mjs';
 import { underboughForestSpecies } from './forest-composition.mjs';
@@ -464,6 +465,11 @@ export function createGroundSurfaces(definition) {
   if (forestMask) {
     meshes.push(blendSurface(forestMask, -0.012,
       GROUND_RENDER_ORDER + TERRAIN_MATERIALS.length));
+  }
+  const bankShade = createShoreBankShade(definition);
+  if (bankShade) {
+    bankShade.renderOrder = -2; // After terrain paint, before haze, props and water.
+    meshes.push(bankShade);
   }
   const atmosphere = new URLSearchParams(globalThis.location?.search ?? '');
   const atmosphereDefinition = { ...definition, terrainBase: base };

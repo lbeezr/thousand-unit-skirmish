@@ -2,26 +2,52 @@ html[data-entry="menu"] .app-shell,
 html[data-entry="game"] #game-menu { display: none; }
 html[data-entry="menu"] { height: auto; min-height: 100dvh; overflow: auto; }
 html[data-entry="menu"] body { height: auto; min-height: 100dvh; overflow: auto; }
-#game-menu { min-height: 100dvh; display: grid; grid-template-columns: 1fr minmax(280px, 420px); align-content: center; align-items: center; gap: 48px; padding: clamp(24px, 7vw, 96px); background: radial-gradient(ellipse at 10% 20%, #2d3b2b, #101713 70%); }
-.game-menu-brand h1 { font-size: clamp(38px, 5vw, 76px); line-height: 1.04; letter-spacing: -.04em; margin: 24px 0; }
-.game-menu-brand p { color: var(--muted); font-size: 18px; }
-.game-menu-actions { display: grid; gap: 12px; }
-.game-menu-actions > button { display: grid; text-align: left; padding: 20px; gap: 7px; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); background: var(--panel); cursor: pointer; }
-.game-menu-actions > button strong { font-size: 20px; }
-.game-menu-actions > button span { color: var(--muted); font-size: 13px; }
-#menu-new-game { border-color: #738147; }
+#game-menu { min-height: 100dvh; display: grid; grid-template-columns: minmax(0, 480px) minmax(280px, 360px); justify-content: center; align-content: center; align-items: center; column-gap: clamp(24px, 5vw, 64px); row-gap: 24px; padding: clamp(24px, 5vw, 64px); background: radial-gradient(ellipse at 20% 35%, #263426, #101713 70%); }
+.game-menu-brand { position: relative; min-width: 0; padding-bottom: 184px; }
+.game-menu-brand .eyebrow { font-size: 11px; line-height: 1.4; color: var(--muted); }
+.game-menu-brand h1 { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(36px, 4.8vw, 64px); line-height: 1.06; letter-spacing: -.035em; margin: 16px 0 14px; }
+.game-menu-brand p { color: var(--muted); font-size: 16px; line-height: 1.5; margin: 0; }
+/* Existing shipped art, confined below the title. Empty, pointer-inert decoration
+   adds no accessible names, routes, controls or faction claims. */
+.game-menu-brand::before, .game-menu-brand::after { content: ''; position: absolute; pointer-events: none; background-repeat: no-repeat; }
+.game-menu-brand::before { left: 92px; bottom: 0; width: 200px; height: 200px; background-image: url('/assets/buildings/barracks-sprite-test-v1/runtime/barracks-complete-azure.webp'); background-size: contain; background-position: center; }
+/* Same Human Worker viewport as selection: x970/y0/270px in a 1774px sheet.
+   Background-position is relative to the remaining space, unlike image left. */
+.game-menu-brand::after { left: 10px; bottom: 20px; width: 112px; height: 112px; background-image: url('/assets/ui/portraits/human-worker-source.png'); background-size: 657.037037% auto; background-position: 64.494681% 0; }
+.game-menu-actions { min-width: 0; display: grid; gap: 10px; }
+.game-menu-actions > button { min-width: 0; display: grid; text-align: left; padding: 15px 18px; gap: 5px; border: 1px solid var(--line); border-radius: 5px; color: var(--ink); background: var(--panel); cursor: pointer; }
+.game-menu-actions > button strong { font-size: 18px; line-height: 1.25; }
+.game-menu-actions > button span { color: var(--muted); font-size: 13px; line-height: 1.45; }
+#menu-new-game { border-color: #738147; box-shadow: inset 3px 0 0 #738147; }
 .game-menu-actions > button:hover:not(:disabled), .game-menu-tools button:hover { background: var(--panel-soft); border-color: var(--lime); }
-.game-menu-actions button:focus-visible, .game-menu-dialog button:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+.game-menu-actions button:focus-visible, .game-menu-dialog :is(button, input):focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
 .game-menu-actions > button[hidden] { display: none; }
-.game-menu-actions button:disabled { opacity: .55; cursor: wait; }
-.game-menu-tools { display: flex; gap: 12px; }
+.game-menu-actions button:disabled { color: var(--muted); cursor: wait; }
+.game-menu-tools { display: flex; flex-wrap: wrap; gap: 10px; }
 .game-menu-tools button, .game-menu-dialog button { padding: 12px 18px; border: 1px solid var(--line); border-radius: 5px; background: var(--panel); color: var(--ink); cursor: pointer; }
-#game-menu-status { min-height: 2.5em; margin: 0; font-size: 13px; color: var(--lime); }
-.game-menu-footer { grid-column: 1 / -1; color: var(--quiet); font-size: 12px; }
+#game-menu-status { min-height: 2.5em; margin: 0; font-size: 13px; line-height: 1.5; color: var(--lime); overflow-wrap: anywhere; }
+.game-menu-footer { grid-column: 1 / -1; margin: 0; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; line-height: 1.5; }
 .game-menu-dialog { width: min(440px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow: auto; padding: 28px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink); }
 .game-menu-dialog::backdrop { background: #080e0ccc; }
 .game-menu-dialog label { display: block; margin: 20px 0; font-size: 14px; }
-.game-menu-dialog input[type="text"] { display: block; width: 100%; margin-top: 8px; padding: 12px; background: var(--panel-soft); border: 1px solid var(--line); color: var(--ink); }
+.game-menu-dialog input[type="text"] { display: block; width: 100%; margin-top: 8px; padding: 12px; font: inherit; background: var(--panel-soft); border: 1px solid var(--line); color: var(--ink); }
 .game-menu-dialog input[type="range"] { display: block; width: 100%; margin-top: 8px; }
 .game-menu-dialog [role="status"] { color: var(--ember); }
-@media (max-width: 760px) { #game-menu { grid-template-columns: 1fr; gap: 24px; } .game-menu-brand h1 { margin: 12px 0; } .game-menu-footer { margin: 0; } }
+@media (max-width: 760px) {
+  #game-menu { grid-template-columns: minmax(0, 480px); }
+  .game-menu-brand { padding-bottom: 160px; }
+  .game-menu-brand h1 { font-size: 44px; }
+  .game-menu-brand::before { width: 180px; height: 180px; }
+  .game-menu-brand::after { width: 100px; height: 100px; }
+}
+@media (max-width: 520px) {
+  .game-menu-brand { padding: 0 96px 0 0; }
+  .game-menu-brand h1 { font-size: clamp(32px, 8vw, 44px); }
+  .game-menu-brand::before { display: none; }
+  .game-menu-brand::after { left: auto; right: 0; bottom: 8px; width: 80px; height: 80px; }
+}
+@media (max-height: 560px) {
+  #game-menu { align-content: start; padding: 24px; }
+  .game-menu-brand { padding: 0; }
+  .game-menu-brand::before, .game-menu-brand::after { display: none; }
+}
