@@ -5,6 +5,7 @@ import { readFile, writeFile, mkdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
+import { captureDepotSources, assertDepotSourcesUnchanged } from './depot-source-snapshot.mjs';
 import { BUILDING_DEFINITIONS, GAMEPLAY_RULESET_REVISION } from '../src/gameplay-definitions.mjs';
 import { DEPOT_CASES, DEPOT_LAYOUTS, DEPOT_STRATEGIES, depotCaseId, depotMap, depotPlot,
   depotCost, assertDepotLedger, summarizeDepotFrames, compareDepotResults } from './depot-economy-analysis.mjs';
@@ -129,14 +130,15 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     cases = [{ layout, strategy, foodWorkers: Number(count) }];
   }
   const output = outputArg ? path.resolve(outputArg.slice(9)) : null;
+  const sourceRevision = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).trim();
+  const sourceDirty = execFileSync('git', ['status', '--porcelain'], { cwd: ROOT, encoding: 'utf8' }).trim() !== '';
+  const sourceOptions = { outputDirectory: output };
+  const sourceSnapshot = await captureDepotSources(ROOT, sourceOptions);
   if (output) {
     try { await stat(output); throw new Error(`Output already exists: ${output}`); }
     catch (error) { if (error.code !== 'ENOENT') throw error; }
     await mkdir(output, { recursive: true });
   }
-  const sourceRevision = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).trim();
-  const sourceStatus = execFileSync('git', ['status', '--porcelain'], { cwd: ROOT, encoding: 'utf8' }).trim();
-  const sourceDirty = sourceStatus !== '';
   const results = new Array(cases.length); let next = 0, failed = false;
   // Independent rooms; this measures simulation ticks and economy, not host speed.
   const rooms = await Promise.allSettled(Array.from({ length: Math.min(4, cases.length) }, async () => {
@@ -144,9 +146,14 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       const index = next++, spec = cases[index];
       console.log(JSON.stringify({ stage: 'start', caseId: depotCaseId(spec) }));
       let measurement;
-      try { measurement = await measureDepotCase(spec, { windowSeconds: smoke ? 20 : 60 }); }
+      try {
+        await assertDepotSourcesUnchanged(ROOT, sourceSnapshot, sourceOptions);
+        measurement = await measureDepotCase(spec, { windowSeconds: smoke ? 20 : 60 });
+        await assertDepotSourcesUnchanged(ROOT, sourceSnapshot, sourceOptions);
+      }
       catch (error) { failed = true; throw error; }
-      const result = { sourceRevision, sourceDirty, rulesetRevision: GAMEPLAY_RULESET_REVISION,
+      const result = { sourceRevision, sourceDirty, sourceContentSha256: sourceSnapshot.sourceContentSha256,
+        rulesetRevision: GAMEPLAY_RULESET_REVISION,
         evidenceType: 'authoritative-server-simulation', ...measurement };
       results[index] = result;
       if (output) await writeFile(path.join(output, `${result.caseId}.json`), JSON.stringify(result, null, 2) + '\n');
@@ -157,10 +164,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   if (errors.length) throw new AggregateError(errors, 'Depot study failed; all active rooms were cleaned up');
   assert.equal(execFileSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).trim(), sourceRevision,
     'freeze the source revision during measurement');
-  assert.equal(execFileSync('git', ['status', '--porcelain'], { cwd: ROOT, encoding: 'utf8' }).trim(), sourceStatus,
-    'freeze the working tree during measurement');
+  await assertDepotSourcesUnchanged(ROOT, sourceSnapshot, sourceOptions);
   const report = { version: 1, evidenceType: 'authoritative-server-simulation', humanMatches: 0,
-    sourceRevision, sourceDirty, rulesetRevision: GAMEPLAY_RULESET_REVISION, nodeVersion: process.version,
+    sourceRevision, sourceDirty, ...sourceSnapshot, rulesetRevision: GAMEPLAY_RULESET_REVISION, nodeVersion: process.version,
     cases: results, comparisons: !smoke && !caseArg ? compareDepotResults(results) : [],
     limits: ['Uncontested flat maps; no raids, depletion, player decisions or native rendering.',
       'Positions/cargo are wire samples at 0.1-second resolution; final conservation uses authoritative checkpoint values.',

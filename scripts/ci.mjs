@@ -137,7 +137,7 @@ run(['--test', 'scripts/underbough-gathering-evidence.test.mjs'], 'Rootways gath
 run(['--test', 'scripts/base-lifecycle.test.mjs'], 'Cancel refunds and proportional repair');
 run(['--test', 'scripts/storehouse-routing.test.mjs'], 'Reachable drop-off route selection');
 run(['--test', 'scripts/mill-contract.test.mjs'], 'Food-only Mill routing, menu and placeholder contracts');
-run(['--test', 'scripts/depot-economy-analysis.test.mjs'], 'Depot measurement placements, accounting and payback math');
+run(['--test', 'scripts/depot-economy-analysis.test.mjs', 'scripts/depot-source-snapshot.test.mjs'], 'Depot measurement placements, accounting, payback math and source provenance');
 run(['scripts/depot-economy-scenario.mjs', '--smoke'], 'Paid depot measurement smoke and both-seat conservation');
 run(['--test', 'scripts/roster-building-ui.test.mjs'], 'Registry building options');
 run(['--test', 'scripts/ruleset-revision.test.mjs'], 'Resolved ruleset identity and prerequisites');

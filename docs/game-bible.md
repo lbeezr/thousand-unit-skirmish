@@ -231,6 +231,11 @@ units or population and does not generate or multiply food. Mill currently uses
 the existing procedural House appearance as an explicit placeholder until its
 own art is authored. It uses the same paid repair and cancellation rules.
 
+The [controlled depot study](qa-mill-depot-economy-2026-10-03.md) records simulated
+food-trip savings and Storehouse's additional wood service, with no human matches
+or tuning change. Construction time and food/wood prices remain separate costs.
+The [Mill art brief](frontier-mill-art-brief.md) retains its food-only land role.
+
 A one-cell Palisade uses **provisional test tuning** of 15 wood, five accumulated
 Worker-seconds and 300 HP. Whole lines reserve occupancy and pay atomically;
 existing friendly segments are reused without charge. Workers construct new

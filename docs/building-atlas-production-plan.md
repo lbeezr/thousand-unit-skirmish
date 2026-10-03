@@ -71,7 +71,7 @@ These are absent from the current building registry. Prepare reference boards or
 
 | Candidate | Proposed role to resolve | Reference/design direction |
 | --- | --- | --- |
-| Farm | Renewable food plot and Worker interaction | Crop plot plus modest shed/farmhouse; prioritize field visibility. Planting/growth/depletion require an agreed economy contract. |
+| Farm | Renewable food plot and Worker interaction; [finite planting proposal](farm-capability-proposal.md) is the bounded first candidate | Crop plot plus modest shed/farmhouse; prioritize field visibility. Price/yield, ownership, destruction and recoverable planted stock remain open; growth and replanting are later decisions. |
 | Lumber camp | Dedicated wood economy, if distinct from Storehouse | Lumber shed, log piles and covered cutting bay. |
 | Blacksmith | Dedicated upgrade building, if research moves from producers | Forge, chimney and open work area. Current forging research does not imply a separate implemented smithy. |
 | Market | Trade/economy function | Market stall/courtyard. |
