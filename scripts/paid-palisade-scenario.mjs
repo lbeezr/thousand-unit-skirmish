@@ -61,6 +61,7 @@ try {
   assert.deepEqual(complete.state.teamWood, [255, 255], 'sequence completion/recovery never pays a second time');
   assert.equal(complete.state.nextBuildingId, 7);
   assert.equal(complete.matchId, saved.matchId);
+  console.log('Paid-line restart and natural sequential completion passed.');
   for (const team of [0, 1]) await command(team, withWorker(complete, team, wall(team)), /WALL ALREADY PLACED.*NO CHARGE/);
   const repeated = await ledger(); assert.deepEqual(repeated.state.teamWood, [255, 255]); assert.equal(repeated.state.nextBuildingId, 7);
   for (const team of [0, 1]) {
@@ -84,6 +85,7 @@ try {
   const recovered = await fixture.checkpoint(s => s.state.buildings.length === 10 && s.state.buildings.every(b => b.complete)
     && s.state.units.every(unit => !unit.wallBuildOrder));
   assert.deepEqual(recovered.state.teamWood, [225, 225], 'cancelled pending segments refund once across a restart');
+  console.log('Pending removal, refund and restart passed.');
   for (const team of [0, 1]) {
     await command(team, withWorker(recovered, team, wall(team, 47)), /PALISADE LINE PLACED/);
     await command(team, withWorker(recovered, team, { type: 'stop' }), /STOP ORDER/);
@@ -94,6 +96,7 @@ try {
   const stable = await fixture.checkpoint(s => s.state.tickNumber >= stopped.state.tickNumber + 30);
   assert.deepEqual(stable.state.buildings.filter(b => !b.complete).map(b => b.progress), stoppedProgress, 'Stop interrupts the whole sequence through reconnect');
   assert.deepEqual(stable.state.teamWood, [180, 180]);
+  console.log('Stop interruption persisted through restart.');
   // Removing a currently targeted, not-yet-started segment advances the remaining sequence.
   for (const team of [0, 1]) await command(team, withWorker(stable, team, { type: 'buildWall',
     points: [{ column: team ? 39 : 23, row: 51 }, { column: team ? 41 : 25, row: 51 }] }), /PALISADE LINE PLACED/);
@@ -112,17 +115,19 @@ try {
   const advancedComplete = await fixture.checkpoint(s => s.state.buildings.filter(b => b.z === 19.5).every(b => b.complete)
     && s.state.units.every(unit => !unit.wallBuildOrder));
   assert.deepEqual(advancedComplete.state.teamWood, [150, 150]);
+  console.log('Current removal, sequence advance and restart passed.');
   // Full union route cut remains illegal even though each endpoint alone leaves a route.
-  const corridor = { ...map, id: map.id + '-corridor', name: 'Palisade Corridor', obstacles: [...map.obstacles,
-    { column: 0, row: 20, width: 19, height: 1 }, { column: 22, row: 20, width: 9, height: 1 }],
+  const corridor = { ...map, id: map.id + '-corridor', name: 'Palisade Corridor', obstacles: [
+    { column: 0, row: 20, width: 19, height: 1 }, { column: 22, row: 20, width: 42, height: 1 }],
     resourceNodes: [{ id: 'north-food', type: 'food', x: -14.5, z: -16.5, stock: 100 }] };
   clients[0].send({ type: 'publishMap', map: corridor });
-  await clients[0].wait(m => m.type === 'mapChange' && m.state.mapId === corridor.id);
+  const publication = await clients[0].wait(m => (m.type === 'mapChange' && m.state.mapId === corridor.id) || m.type === 'mapRejected', 'corridor publication');
+  assert.equal(publication.type, 'mapChange', publication.message);
   const beforeCut = await fixture.checkpoint(s => s.mapDefinition.id === corridor.id);
   await command(0, withWorker(beforeCut, 0, { type: 'buildWall',
     points: [{ column: 19, row: 20 }, { column: 21, row: 20 }] }), /WOULD BLOCK A ROUTE/);
   const afterCut = await fixture.checkpoint(s => s.mapDefinition.id === corridor.id && s.state.tickNumber > beforeCut.state.tickNumber);
-  assert.deepEqual(afterCut.state.teamWood, [300, 300]); assert.equal(afterCut.state.nextBuildingId, 1);
+  assert.deepEqual(afterCut.state.teamWood, [300, 300]); assert.equal(afterCut.state.nextBuildingId, beforeCut.state.nextBuildingId);
   assert.equal(afterCut.state.navigationRevision, beforeCut.state.navigationRevision);
   assert.equal(afterCut.state.buildings.length, 0);
   // Exact compatible pre-palisade revision preserves the complete match and migrates missing queues.
