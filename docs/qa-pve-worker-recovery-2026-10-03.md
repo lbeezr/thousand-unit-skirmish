@@ -72,8 +72,10 @@ expansion. The new regression is registered in the full repository suite.
 
 All three local `npm test -- --shard=N/3` runs passed at `b886728` (726 registered
 checks, including release integration). That build includes queued-wall main
-`cec4c89`; later main integration and the fixture refinement receive the focused
-checks above. The earlier unsharded invocation was interrupted to integrate main
+`cec4c89`. After integrating main `7d00942`, including finite Farm and Skiff,
+the refined fixture and all 40 focused tests pass again at `861596c`, alongside
+the five policy scenarios, documentation links and whitespace checks.
+The earlier unsharded invocation was interrupted to integrate main
 and run the documented shards; it is not counted as a full pass.
 
 This is a deterministic local gameplay improvement after a checkpoint-injected
