@@ -12,5 +12,5 @@ export function unitWorkerActionPose(kind, visible, task, cargoType, walking) {
 export function unitCargoVisualState(kind, hp, visible, cargo, cargoType) {
   if (kind !== 'worker' || !(hp > 0) || visible === false
     || !Number.isFinite(cargo) || cargo <= 0) return 'none';
-  return cargoType === 'wood' || cargoType === 'food' ? cargoType : 'unknown';
+  return ['wood', 'food', 'stone'].includes(cargoType) ? cargoType : 'unknown';
 }

@@ -1,3 +1,4 @@
+import { economyClientBindings } from './economy-client-fixture.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import test from 'node:test';
@@ -12,7 +13,7 @@ const receipt = source.slice(source.indexOf('function applyForestState('),
 const width = 16;
 const cells = Array.from({length: 9}, (_, i) => (6 + Math.floor(i / 3)) * width + 6 + i % 3);
 function fixture(team, obstacles = [{column: 6, row: 6, width: 3, height: 3, material: 'forest'}]) {
-  const context = vm.createContext({BUILDING_DEFINITIONS, buildPlacementType: 'house',
+  const context = vm.createContext({ ...economyClientBindings(),BUILDING_DEFINITIONS, buildPlacementType: 'house',
     MAP_WIDTH: width, MAP_HEIGHT: width, MAP_HALF_X: 8, MAP_HALF_Z: 8,
     mapDefinition: {obstacles, resourceNodes: [], triggers: []}, localTeam: team,
     latestFood: [150, 150], latestWood: [250, 250], latestBuildings: [],

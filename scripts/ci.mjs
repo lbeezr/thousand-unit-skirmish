@@ -173,6 +173,7 @@ run(['--test', 'scripts/mill-contract.test.mjs'], 'Food-only Mill routing, menu 
 run(['--test', 'scripts/farm-harvest.test.mjs', 'scripts/farm-client.test.mjs'], 'Finite Farm stock, identity, ownership and controls');
 run(['--test', 'scripts/economy-profile.test.mjs'], 'Explicit Stone profile and typed price/refund contracts');
 run(['--test', 'scripts/economy-checkpoint.test.mjs', 'scripts/economy-server.test.mjs'], 'Typed economy payment, deposit and checkpoint conservation');
+run(['--test', 'scripts/economy-client.test.mjs'], 'Typed economy client profile, cargo and affordability');
 run(['--test', 'scripts/economy-recovery-native.test.mjs'], 'Native economy profile identity and exact rejected recovery preservation');
 run(['scripts/farm-scenario.mjs', '--fog'], 'Both-seat paid Farm planting, finite depletion and recovery');
 run(['--test', 'scripts/depot-economy-analysis.test.mjs', 'scripts/depot-source-snapshot.test.mjs'], 'Depot measurement placements, accounting, payback math and source provenance');

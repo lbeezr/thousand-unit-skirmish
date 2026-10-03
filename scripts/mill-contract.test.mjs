@@ -1,3 +1,4 @@
+import { economyClientBindings } from './economy-client-fixture.mjs';
 import { economyServerBindings, economyServerFunctions } from './economy-server-fixture.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -33,7 +34,7 @@ test('Mill is a cheaper food-only Frontier depot with an explicit existing place
 });
 
 test('pre-Mill content pins cannot claim a Mill that their definitions never contained', () => {
-  const context = vm.createContext({ ...economyServerBindings(), MATCH_CHECKPOINT_SCHEMA_VERSION: 22, MATCH_RULES_VERSION: 6,
+  const context = vm.createContext({ ...economyClientBindings(), ...economyServerBindings(), MATCH_CHECKPOINT_SCHEMA_VERSION: 22, MATCH_RULES_VERSION: 6,
     GAMEPLAY_RULESET_REVISION });
   vm.runInContext(serverFunction('migrateMatchCheckpoint'), context);
   for (const rulesetRevision of [
@@ -52,7 +53,7 @@ for (const team of [0, 1]) test(`Mill routing filters resource, completion, owne
   const buildings = [building(1, team, true, 'town-center'), building(2, team, true),
     building(3, team, true, 'storehouse'), building(4, 1 - team, true),
     building(5, team, false), building(6, team, true)];
-  const context = vm.createContext({ ...economyServerBindings(), BUILDING_DEFINITIONS, navigationRevision: 4, WORKER_INTERACTION_RANGE: 1.2,
+  const context = vm.createContext({ ...economyClientBindings(), ...economyServerBindings(), BUILDING_DEFINITIONS, navigationRevision: 4, WORKER_INTERACTION_RANGE: 1.2,
     allMatchBuildings: () => buildings, buildingsById: new Map(buildings.map(row => [row.id, row])),
     worldToCell: x => x, nearestOpenCell: cell => cell, buildingAccessCells: cells => cells,
     walkableComponents: [0, 0, 0, 0, 0, 0, 1],
@@ -83,7 +84,7 @@ for (const team of [0, 1]) test(`Return cargo uses Mill for food and rejects woo
     gatherNodeId: null, gatherForestCell: -1, gatherPhase: '', moveGoalCell: -1 };
   const building = { id: 1, team, complete: true, type: 'mill', footprint: [1] };
   const notices = [];
-  const context = vm.createContext({ ...economyServerBindings(), units: [unit], MAX_UNITS: 1000, dirty: false,
+  const context = vm.createContext({ ...economyClientBindings(), ...economyServerBindings(), units: [unit], MAX_UNITS: 1000, dirty: false,
     BUILDING_DEFINITIONS, navigationRevision: 4, WORKER_INTERACTION_RANGE: 1.2,
     allMatchBuildings: () => [building], buildingsById: new Map([[1, building]]),
     worldToCell: x => x, nearestOpenCell: cell => cell, buildingAccessCells: cells => cells,
@@ -115,7 +116,7 @@ for (const team of [0, 1]) test(`Return cargo uses Mill for food and rejects woo
 });
 
 for (const team of [0, 1]) test(`selected depot hints describe registered resources for seat ${team}`, () => {
-  const context = vm.createContext({ ...economyServerBindings(), BUILDING_DEFINITIONS, localTeam: team, selectedBuildingId: 7,
+  const context = vm.createContext({ ...economyClientBindings(), ...economyServerBindings(), BUILDING_DEFINITIONS, localTeam: team, selectedBuildingId: 7,
     latestBuildings: [], ui: { commandHint: {}, commandTitle: {} }, persistentTargetMode: null,
     tapOrderArmed: false, attackMoveMode: false, window: { matchMedia: () => ({ matches: false }) },
     document: { querySelectorAll: () => [] }, buildingLabel: type => BUILDING_DEFINITIONS[type].label,

@@ -1,3 +1,4 @@
+import { economyClientBindings } from './economy-client-fixture.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -36,7 +37,7 @@ function fixture(team) {
     close() {}
   }
   const noop = () => {};
-  const context = vm.createContext({
+  const context = vm.createContext({ ...economyClientBindings(),
     applyLobby() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {}, updateChat() {} },
     waterStudyFishBinding: { update(state, options) { fishUpdates.push({ state, options }); }, clear() {} },
     WebSocket, URL, performance: {now: () => 1000}, location: {protocol:'http:',host:'localhost'},

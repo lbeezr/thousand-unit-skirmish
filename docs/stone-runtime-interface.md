@@ -5,8 +5,9 @@
 The shared field is `map.economyProfileId`. Omission resolves to `food-wood-v1`;
 the explicit experiment ID is `stone-defense-v1`. Unknown IDs, null and empty
 strings are invalid. The helpers are merged. The server integration adds typed banks, deposits,
-Watchtower payment/refunds and checkpoint recovery; authoritative Stone nodes,
-authoring controls and client price/bank surfaces remain pending. This is not
+Watchtower payment/refunds and checkpoint recovery. The client supports profile pins,
+typed banks/cargo, drop-off labels and the paid Watchtower price; authoritative Stone nodes
+and authoring controls remain pending. This is not
 yet a playable Stone economy.
 
 `src/economy-profile.mjs` owns the single additional price: new Watchtower
@@ -47,6 +48,15 @@ typed cargo/deposit/spend/refund/checkpoint dispatch. Map ownership supplies
 profile/node/bank admission and placement; opponent ownership supplies Stone
 gather/spend policy. Farm AI planting remains with the opponent owner.
 
+The client loads prices from `constructionCostForProfile`, keeps fractional balances
+for affordability and displays conservative whole stocks. Stone bank/card, selected
+cargo, Worker cargo and Town Center/Storehouse labels appear only in the Stone
+profile. Mill remains food-only. Unknown cargo is never displayed as food.
+An empty-node profile proves these surfaces and recovery readiness, not natural harvesting.
+The Stone node marker is a plain gray indicator, without an authored ore asset.
+
 ```sh
 node --test scripts/economy-profile.test.mjs scripts/economy-checkpoint.test.mjs scripts/economy-server.test.mjs scripts/gameplay-definitions.test.mjs scripts/ruleset-revision.test.mjs
+node --test scripts/economy-client.test.mjs scripts/resource-format.test.mjs scripts/contextual-hud.test.mjs
+node scripts/economy-client-browser.mjs --output=/tmp/stone-client-surfaces-proof
 ```
