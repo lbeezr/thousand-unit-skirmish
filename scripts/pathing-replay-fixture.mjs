@@ -38,6 +38,9 @@ export const replay = {
     const player = { team, sendJson: notice => notices.push(notice) };
     if (command.type === 'move') assignFormationMove(player, command);
     else if (command.type === 'attackMove') assignFormationMove(player, command);
+    else if (command.type === 'attack') assignAttack(player, command);
+    else if (command.type === 'attackBuilding') assignAttackBuilding(player, command);
+    else if (command.type === 'trainUnit') trainUnit(player, command);
     else if (command.type === 'gather') assignGather(player, command);
     else if (command.type === 'returnCargo') assignReturnCargo(player, command);
     else if (command.type === 'build') buildBuilding(player, command);
@@ -59,6 +62,7 @@ export const replay = {
   get units() { return units; }, get buildings() { return buildings; },
   get wood() { return teamWood; },
   get food() { return teamFood; }, get resources() { return resourceNodeStates; },
+  snapshot(team) { return roomPayload(team); },
   get tick() { return tickNumber; }, get navigationRevision() { return navigationRevision; },
   point: cellToWorld, cell: worldToCell, isWalkable,
   get levels() { return elevationLevelByCell; },
