@@ -3,12 +3,12 @@ import { normalizeMatchMode } from './match-modes.mjs';
 /** Run after existing content migrations; legacy matches keep their authored rules. */
 export function migrateMatchModeCheckpoint(snapshot) {
   if (!snapshot || typeof snapshot !== 'object' || Array.isArray(snapshot)
-    || snapshot.schemaVersion !== 25 || snapshot.rulesVersion !== 6
+    || snapshot.schemaVersion !== 26 || snapshot.rulesVersion !== 6
     || !snapshot.state || typeof snapshot.state !== 'object' || Array.isArray(snapshot.state)
     || Object.hasOwn(snapshot, 'matchModeId') || Object.hasOwn(snapshot, 'matchModeVersion')) {
     return snapshot;
   }
-  snapshot.schemaVersion = 26;
+  snapshot.schemaVersion = 27;
   snapshot.matchModeId = 'authored';
   snapshot.matchModeVersion = 1;
   return snapshot;
@@ -19,7 +19,7 @@ export function validateMatchModeCheckpoint(snapshot) {
   if (!snapshot || typeof snapshot !== 'object' || Array.isArray(snapshot)) {
     throw new Error('Invalid match checkpoint: expected an object');
   }
-  if (snapshot.schemaVersion !== 26) {
+  if (snapshot.schemaVersion !== 27) {
     throw new Error('Invalid match checkpoint: unsupported match mode schema version');
   }
   if (snapshot.rulesVersion !== 6) {

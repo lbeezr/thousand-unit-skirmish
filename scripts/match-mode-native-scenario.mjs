@@ -74,7 +74,7 @@ try {
   clients.forEach(assertSkirmish);
   const fresh = await fixture.checkpoint();
   assertIdentity(fresh, 'skirmish');
-  assert.equal(fresh.schemaVersion, 26);
+  assert.equal(fresh.schemaVersion, 27);
   assert.deepEqual(fresh.mapDefinition, authored.mapDefinition);
   assert.equal(fresh.mapHash, authored.mapHash);
   records.push({ name: 'Fresh Skirmish projects client rules and preserves canonical map/checksum', mapHash: fresh.mapHash });
@@ -143,7 +143,7 @@ try {
 
   const legacy = structuredClone(authored);
   // Mode identity was added after military stance; retain that prior state shape.
-  legacy.schemaVersion = 25;
+  legacy.schemaVersion = 26;
   delete legacy.matchModeId; delete legacy.matchModeVersion;
   legacy.state.triggerStates.forEach(state => Object.assign(state,
     { owner: state.id === 'post-2' ? 1 : 0, progressTeam: -1, progress: 0 }));
@@ -159,7 +159,7 @@ try {
   assert.equal(deadline.state.matchWinnerReason, 'timed-control');
   assert.equal(deadline.state.matchWinnerTriggerId, 'post-2');
   assert.equal(deadline.mapHash, authored.mapHash);
-  records.push({ name: 'Genuine schema-25 authored identity beats fresh Skirmish configuration and retains deadline',
+  records.push({ name: 'Genuine schema-26 authored identity beats fresh Skirmish configuration and retains deadline',
     schemaVersion: deadline.schemaVersion, winner: 1, reason: 'timed-control' });
 
   for (const identity of [{ matchModeId: 'unknown', matchModeVersion: 1 },

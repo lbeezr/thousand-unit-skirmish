@@ -71,12 +71,14 @@ export const replay = {
     const migrated = migrateEconomyCheckpoint(migrateMatchCheckpoint(snapshot));
     migrateWildlifeMotionCheckpoint(migrated);
     migrateCombatStanceCheckpoint(migrated, UNIT_DEFINITIONS);
+    migrateWildlifeClaimsCheckpoint(migrated);
     restoreMatchCheckpoint(migrateMatchModeCheckpoint(migrated));
   },
   validate(snapshot) {
     const migrated = migrateEconomyCheckpoint(migrateMatchCheckpoint(snapshot));
     migrateWildlifeMotionCheckpoint(migrated);
     migrateCombatStanceCheckpoint(migrated, UNIT_DEFINITIONS);
+    migrateWildlifeClaimsCheckpoint(migrated);
     return validateMatchCheckpoint(migrateMatchModeCheckpoint(migrated));
   },
   get tick() { return tickNumber; }, get navigationRevision() { return navigationRevision; },

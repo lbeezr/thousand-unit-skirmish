@@ -115,9 +115,9 @@ selector. It contains no session tokens. `lobbyRejected` includes
 the current projection and an actionable reason so clients recover from stale
 input. Existing `rts-v1` and `rts-resume` subprotocols remain.
 
-The current schema 26 also persists the explicit mode pair with the canonical
+The current schema 27 also persists the explicit mode pair with the canonical
 map/hash; restore derives effective rules from that saved identity. Exact old
-schema-25 snapshots without mode fields recover as authored rules, independently
+schema-26 snapshots without mode fields recover as authored rules, independently
 of fresh launch defaults. Rooms-index v3 records effective worker metadata
 separately from immutable initial launch options.
 

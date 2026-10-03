@@ -1,5 +1,7 @@
 import { stopChild } from './temporary-resources.mjs';
 import { checkClientImports } from './check-client-imports.mjs';
+import { BROWSER_ENTRYPOINTS } from './check-runtime-imports.mjs';
+import { CLIENT_ASSET_PATHS, ENVIRONMENT_MODULE_PATH } from '../src/server/client-asset-paths.mjs';
 import assert from 'node:assert/strict';
 import { createHash, randomBytes } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
@@ -111,6 +113,30 @@ try {
   assert.equal((await fetch(`${base}/`, { headers: { authorization: 'Basic bad' } })).status, 401);
   assert.equal((await fetch(`${base}/`, { headers: { authorization } })).status, 200);
   assert.equal((await fetch(`${base}/health`, { headers: { authorization } })).status, 200);
+  // Exercise the actual packed HTTP host, independently of source declaration
+  // shape. A manifest entry omitted from server membership must fail here.
+  for (const filename of new Set([...CLIENT_ASSET_PATHS, ENVIRONMENT_MODULE_PATH])) {
+    const response = await fetch(`${base}/${filename}`, { method: 'HEAD', headers: { authorization } });
+    assert.equal(response.status, 200, `client admission path must be served: ${filename}`);
+    assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
+    assert.equal(response.headers.get('cache-control'), 'no-store', filename);
+    assert.match(response.headers.get('content-type') || '', filename.endsWith('.html') ? /text\/html/
+      : filename.endsWith('.css') ? /text\/css/ : /(?:java|ecma)script/, filename);
+    assert.equal((await response.arrayBuffer()).byteLength, 0, `HEAD must omit the body: ${filename}`);
+  }
+  for (const filename of ['server.mjs', 'scripts/check-runtime-imports.mjs', 'src/server/client-asset-paths.mjs',
+    'src/room-launch-options.mjs', 'src/main.js.map', 'src/main.js/extra', 'SRC/main.js', 'src//main.js']) {
+    assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 404,
+      `exact client admission must deny: ${filename}`);
+  }
+  for (const filename of ['%73rc/main.js', 'src%2Fmain.js']) {
+    assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 200,
+      `existing decoded-path admission: ${filename}`);
+  }
+  assert.equal((await fetch(`${base}/%E0%A4%A`, { headers: { authorization } })).status, 400);
+  assert.equal((await fetch(`${base}/%2e%2e%2fserver.mjs`, { headers: { authorization } })).status, 403);
+  assert.equal((await fetch(`${base}/src/main.js`, { method: 'POST', headers: { authorization } })).status, 405);
+  assert.equal((await fetch(`${base}/src/server/client-asset-paths.mjs`)).status, 401);
   const three = await fetch(`${base}/vendor/three.module.js`, { headers: { authorization } });
   assert.equal(three.status, 200);
   assert.match(three.headers.get('content-type'), /javascript/);
@@ -259,7 +285,7 @@ try {
     assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 404,
       `offline Node adapter must not be served: ${filename}`);
   }
-  await checkClientImports(base, { authorization, entrypoints: ['/src/game-entry.mjs'] });
+  await checkClientImports(base, { authorization, entrypoints: BROWSER_ENTRYPOINTS.map(filename => `/${filename}`) });
   for (const file of ['water-study.html', 'src/water-study-preview.mjs', 'src/water-surface-study.mjs', 'src/water-study-state.mjs', 'src/water-study-fish-binding.mjs', 'src/shore-bank-shade.mjs']) {
     assert.ok(packedManifest.files.includes(file), `water study release must contain ${file}`);
     const response = await fetch(`${base}/${file}`, { headers: { authorization } });

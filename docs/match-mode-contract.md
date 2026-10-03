@@ -73,7 +73,7 @@ inactivity draw, new clock behavior or minimum-duration guarantee is added.
   migration must preserve legacy authored snapshots, including hybrid deadlines,
   elapsed clocks, owners, holds and terminal results. Old snapshots cannot claim
   new mode fields. Unknown versions use the existing checkpoint-retention error
-  path. Schema 26 stores the explicit pair; exact schema-25/rules-6 snapshots
+  path. Schema 27 stores the explicit pair; exact schema-26/rules-6 snapshots
   without either mode field migrate to `authored@1` after existing content migrations.
   Earlier schema fixtures must actually omit both fields. Rooms-index version 3
   separates initial `launchOptions` from effective worker metadata, including

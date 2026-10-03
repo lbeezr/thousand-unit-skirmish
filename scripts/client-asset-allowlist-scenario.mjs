@@ -6,19 +6,19 @@ import { fileURLToPath } from 'node:url';
 import { WORKER_PORTRAITS, BARRACKS_PORTRAIT } from '../src/selection-portrait.mjs';
 import { buildingSpriteUrl } from '../src/building-sprites.mjs';
 import { moduleImports } from './module-imports.mjs';
+import { BROWSER_ENTRYPOINTS } from './check-runtime-imports.mjs';
+import { CLIENT_ASSET_PATHS, ENVIRONMENT_MODULE_PATH } from '../src/server/client-asset-paths.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const html = readFileSync(path.join(root, 'index.html'), 'utf8');
 const server = readFileSync(path.join(root, 'server.mjs'), 'utf8');
 const environmentArt = readFileSync(path.join(root, 'src/environment-art.mjs'), 'utf8');
-const clientAllowlist = server.match(/const publicClientAsset = \[([\s\S]*?)\]\.includes\(relative\);/);
-assert.ok(clientAllowlist, 'server static client asset allowlist should be declared');
-const allowed = new Set([...clientAllowlist[1].matchAll(/'([^']+)'/g)].map((match) => match[1]));
+assert.ok(Object.isFrozen(CLIENT_ASSET_PATHS), 'client admission paths must remain immutable');
+const allowed = new Set(CLIENT_ASSET_PATHS);
 const uiAllowlist = server.match(/const publicUiAsset = \[([\s\S]*?)\]\.includes\(relative\);/);
 assert.ok(uiAllowlist, 'server UI asset allowlist should be declared');
 const allowedUi = new Set([...uiAllowlist[1].matchAll(/'([^']+)'/g)].map((match) => match[1]));
-const environmentModule = server.match(/const publicEnvironmentModule = relative === '([^']+)'/)?.[1];
-assert.ok(environmentModule, 'server should explicitly allow the environment renderer module');
+const environmentModule = ENVIRONMENT_MODULE_PATH;
 assert.ok(allowed.has('src/water-surface-geometry.mjs'), 'water geometry module should be statically served');
 const spriteNames = environmentArt.match(/const spriteNames = \[([\s\S]*?)\];/);
 assert.ok(spriteNames, 'environment renderer should declare its environment sprite families');
@@ -39,7 +39,7 @@ const entryModules = [...html.matchAll(/<script\s+type="module"\s+src="\.\/([^\"
 assert.ok(entryModules.length > 0, 'HTML should declare at least one client module entry point');
 
 const visited = new Set();
-const pending = [...entryModules];
+const pending = [...new Set([...entryModules, ...BROWSER_ENTRYPOINTS])];
 while (pending.length > 0) {
   const modulePath = path.posix.normalize(pending.pop());
   if (visited.has(modulePath)) continue;

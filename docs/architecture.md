@@ -110,6 +110,13 @@ release packer audits Docker COPY inputs and `.dockerignore`. Passing the source
 graph check therefore does not prove HTTP admission or release inclusion:
 retain the [served and packed import checks](testing.md#repository-checks).
 Acorn is a pinned development dependency; production installs omit it.
+`src/server/client-asset-paths.mjs` owns the immutable exact client-path list and
+separate renderer-module path. A client-module owner updates that small manifest
+instead of the HTTP host. The host retains membership/equality checks and all
+authorization, decoding, normalization, MIME and non-client asset rules. The
+source allowlist and packed import audit cover all five registered browser
+entrypoints; real packed HTTP tests check every declared path and denied paths,
+including the manifest itself and offline Node adapters.
 The source and served audits share [`module-imports.mjs`](../scripts/module-imports.mjs)
 for static imports, re-exports and literal lazy imports. Comments/string/regular
 expression text cannot create edges; compact syntax and escaped specifiers must
@@ -157,20 +164,19 @@ The review follow-up rejects unmapped bare lazy packages before dependency fetch
 and removes duplicated import-regex parsing from the source allowlist scenario.
 The first allocated folder move gives the offline Node adapter a canonical
 `src/server` home while preserving its original API and client-serving boundary.
+The allocated client-admission extraction moves its exact path data into the
+server-domain manifest and removes source tests' dependence on the host's literal
+array shape. No admission entry or other serving rule changes. All five browser
+closures now receive source and served-package admission checks.
 
-| Rank | Next action and evidence | Bounded write scope | Dependency and acceptance |
-| --- | --- | --- | --- |
-| 1 | Separate client-module admission data from the HTTP host when the server owner is ready. Repeated central allowlist edits currently require touching `server.mjs` for each served helper. | A narrow module-path manifest, its server consumer and serving/release contract fixtures. | Agree the manifest format and ownership with the server owner before edits. Preserve exact admitted/denied URLs, origin/MIME behavior and packed imports; retain runtime release acceptance with the producer. |
-
-Concrete interface proposal for that next slice: `src/server/client-asset-paths.mjs`
-exports a frozen `CLIENT_ASSET_PATHS` array matching today's `publicClientAsset`
-entries and `ENVIRONMENT_MODULE_PATH` matching the existing separate renderer
-path. The HTTP host retains its current exact membership/equality checks,
-authorization, normalization, MIME and all other asset rules. The source allowlist
-scenario consumes those constants; real HTTP/packed tests replace its dependence
-on parsing the host's literal array. Keep the UI/image/map admission rules out of
-this slice. Allocation and interface agreement with the server/quality owner are
-still needed before editing the host or introducing this manifest.
+There is currently no justified remaining migration in this bounded backlog.
+The active room-launch/mode, gameplay and rendering domains retain their owners;
+moving their files merely to reduce the flat-file count has no demonstrated
+parallel-ownership benefit. Rank a new item when an actual shared-host edit,
+dependency violation or consumer contract motivates it, with its exact write
+scope and acceptance. For preserved contracts, announce that scope and proceed
+unless an actual conflicting owner/edit appears; changed shared interfaces still
+need agreement with the affected owner.
 
 Select the next useful ready item after each small merge. Coordinate real
 overlap rather than moving gameplay hot spots speculatively. A paused dependency

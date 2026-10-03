@@ -12,7 +12,7 @@ mode owner retains gameplay acceptance. No ordinary default change is included.
 ## Native behavior
 
 `node scripts/match-mode-native-scenario.mjs` passed eight cases on runtime
-SHA-256 `2e45b9b8df66275dda004fa12dd363c250a33b0bf33f01c4b7e48d0b08727eb7`.
+SHA-256 `d59c49ba44a688f7b218cca233a6faeaa2b3d12f33338bfd7ec608cd4cb9e76c`.
 [Retained native records](qa-evidence/skirmish-runtime-2026-10-03/native.json)
 pin the runtime bytes. The normal Millrace worker starts with `skirmish@1` through explicit launch fields.
 An actual North Ford capture at about 26 seconds awards 75 food and 50 wood.
@@ -24,7 +24,7 @@ match duration.
 
 The welcome uses effective bonus-only post rules, while the checkpoint preserves
 the canonical map, checksum, capture/reward/event fields and exact identity.
-Saved Skirmish overrides missing fresh launch fields. A genuine schema-25 legacy
+Saved Skirmish overrides missing fresh launch fields. A genuine schema-26 legacy
 snapshot without either field recovers authored deadline rules despite fresh
 Skirmish launch settings. Unknown IDs/versions are rejected and retained
 byte-for-byte through the existing recovery path.
@@ -38,8 +38,8 @@ publication, spectators and host reservation/replacement.
 
 The 38 focused registry/checkpoint/launch/pregame tests pass. Current main's
 military stance migration composes before mode migration: wildlife 23→24,
-stances 24→25, mode identity 25→26. All 50 stance tests plus its native return/
-restart scenario pass after integration. Exact old fixtures omit mode fields;
+stances 24→25, Sheep claims 25→26, mode identity 26→27. Stance and Sheep
+regressions plus both native scenarios pass after integration. Exact old fixtures omit mode fields;
 legacy saves claiming them are not accepted as new modes.
 
 A broader production check exposed a stale synthetic fixture also reproduced on
@@ -50,7 +50,8 @@ are test-state corrections; gameplay combat/construction is unchanged. The full
 production scenario now passes, including replacement production at 2,000 units.
 
 The public mode registry was served byte-exact by the native HTTP worker. The
-client import/asset admission check also passes after the stance-HUD integration.
+client import/asset admission check also passes after the stance-HUD integration
+and extracted manifest; its 107-module probe includes the explicit mode entry.
 
 ## Scope and remaining acceptance
 

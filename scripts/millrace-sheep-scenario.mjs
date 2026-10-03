@@ -11,7 +11,7 @@ import { MILLRACE_SHEEP_IDS, MILLRACE_PRE_SHEEP_MAP_HASH } from '../src/millrace
 // No map publication, stock injection or preview option: use the worker's default.
 const fixture = await createFortifiedFixture({ mapPath: null, timeoutMs: 45_000 });
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('base64url');
-const stripIdentity = nodes => nodes.map(({ wildlifeSpecies, wildlifeState, wildlifeMotion, ...node }) => node);
+const stripIdentity = nodes => nodes.map(({ wildlifeSpecies, wildlifeState, wildlifeMotion, wildlifeTeam, ...node }) => node);
 const savedNode = (saved, id) => saved.state.resourceNodes.find(node => node.id === id);
 const originalImage = globalThis.Image;
 let renderer, token = 1;
