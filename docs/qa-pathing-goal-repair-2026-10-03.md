@@ -100,6 +100,14 @@ pass; native arrival remains 64/64 with no shared goals or unfinished paths
 The retained record includes this source and native order trace separately from
 the earlier measured snapshot.
 
+Independent review confirms the pending-destination correction at
+`852ce7dcbbcc08b9f96287930e80e545a5c64581`, with no remaining findings.
+All 70 focused checks pass. The final seven trace pairs still match the earlier
+candidate, and a fresh native run reaches 64/64 at 718 sampled relative ticks,
+without shared goals or unfinished paths. Final server SHA-256:
+`6405a77ff6ac23b40dfa75c81410f209f6827c9fa9cfdd116affcc2fc78952fb`.
+The retained record preserves this reviewed source and its diagnostic timings.
+
 ## Timing and limits
 
 The baseline diagnostic records tick/simulation p50, p95 and maximum, planning
