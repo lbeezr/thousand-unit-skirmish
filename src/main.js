@@ -7356,8 +7356,8 @@ function selectedWorkerIds() {
 function constructionForSelectedWorkers() {
   const workers = selectedWorkerIds().map((id) => units[id]);
   if (workers.length === 0) return null;
-  const x = workers.reduce((sum, unit) => sum + unit.x, 0) / workers.length;
-  const z = workers.reduce((sum, unit) => sum + unit.z, 0) / workers.length;
+  const x = workers.reduce((sum, unit) => sum + unit.serverX, 0) / workers.length;
+  const z = workers.reduce((sum, unit) => sum + unit.serverZ, 0) / workers.length;
   return latestBuildings.filter((building) => building.team === localTeam
     && Object.hasOwn(BUILDING_DEFINITIONS, building.type) && building.complete !== true)
     .sort((a, b) => ((a.x - x) ** 2 + (a.z - z) ** 2)

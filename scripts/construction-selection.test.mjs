@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { constructionClientFixture } from './construction-client-fixture.mjs';
 const units=Array.from({length:10},(_,id)=>({id,team:id<5?0:1,hp:id%5===4?0:100,
-  kind:id%5===3?'infantry':'worker',generation:20+id,x:id<5?-20:20,z:0}));
+  kind:id%5===3?'infantry':'worker',generation:20+id,serverX:id<5?-20:20,serverZ:0}));
 for(const team of [0,1]) {
   const base=team*5;
   test(`seat ${team}: one selected worker stays selected and is the sole serialized builder`,()=>{
@@ -37,7 +37,7 @@ for(const team of [0,1]) {
   test(`seat ${team}: nearby construction help uses selected workers without replacing selection`,()=>{
     const buildings=[{id:1,team,type:'house',complete:false,x:team?-20:20,z:0},
       {id:2,team,type:'house',complete:false,x:team?18:-18,z:0},
-      {id:3,team:1-team,type:'house',complete:false,x:units[base].x,z:0}];
+      {id:3,team:1-team,type:'house',complete:false,x:units[base].serverX,z:0}];
     const f=constructionClientFixture({team,units,selection:[base],buildings});
     f.context.resumeConstruction();assert.deepEqual([...f.selected],[base]);
     assert.deepEqual(f.payloads[0].ids,[base]);assert.equal(f.payloads[0].buildingId,2);

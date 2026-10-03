@@ -12,7 +12,7 @@ Object.assign(map,{id:'selected-worker-construction',startingArmySize:16,fogOfWa
 const fixture=await createFortifiedFixture({mapPath:'maps/open-field.json',timeoutMs:30000});
 const clientSha256=createHash('sha256').update(await readFile(new URL('../src/main.js',import.meta.url))).digest('hex');
 let token=100;
-const unitsFor=c=>c.latest.units.map(u=>({id:u[0],team:u[1],x:u[2],z:u[3],hp:u[4],kind:u[5],generation:u[8]}));
+const unitsFor=c=>c.latest.units.map(u=>({id:u[0],team:u[1],serverX:u[2],serverZ:u[3],hp:u[4],kind:u[5],generation:u[8]}));
 const events=[];
 try {
   await fixture.start();let clients=[await fixture.connect(0),await fixture.connect(1)];
