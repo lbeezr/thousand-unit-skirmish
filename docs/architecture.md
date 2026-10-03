@@ -116,6 +116,10 @@ expression text cannot create edges; compact syntax and escaped specifiers must
 still expose dependencies. Computed imports fail with the owning path. Filesystem
 and served-URL resolution remain separate policies, including origin, credentials,
 MIME and the served Three alias. Runtime asset requests remain outside this audit.
+Lazy imports must use the mapped `three` alias, a relative/rooted path or an
+absolute same-origin URL; an unmapped bare package cannot masquerade as a served
+relative file. The source HTTP-allowlist scenario uses the same parser, including
+its comment/escape/computed-import handling.
 
 The first folder-migration candidate is the offline `pve-model-proposal.mjs`
 Node adapter, which is outside browser closures and normal hosted simulation.
@@ -144,10 +148,12 @@ source/served parser. The served audit now ignores commented imports and detects
 compact missing dependencies. Its arguments/results and the source checker's
 `moduleImports` import path remain stable; regression fixtures, source graph and
 real served/packed release checks cover the change.
+The review follow-up rejects unmapped bare lazy packages before dependency fetch
+and removes duplicated import-regex parsing from the source allowlist scenario.
 
 | Rank | Next action and evidence | Bounded write scope | Dependency and acceptance |
 | --- | --- | --- | --- |
-| 1 | Move the offline PvE Node adapter into a cohesive server-adapter domain. | `src/pve-model-proposal.mjs`, its new implementation path and sole scenario consumer; preserve exported signatures. | Agree this exact first runtime-module scope with the existing quality owner through the producer. Fake-provider policy tests and source graph must pass; no hosted mode, credentials or spending changes. |
+| 1 | Move the offline PvE Node adapter into a cohesive server-adapter domain. | Move `src/pve-model-proposal.mjs` to `src/server/pve-model-proposal.mjs`; update its sole scenario consumer, Node-adapter inventory and research-doc pointer. Retain only its four named exports at the old path if compatibility is needed. | Agree this exact first runtime-module scope with the existing quality owner through the producer. Fake-provider policy tests and source graph must pass; no hosted mode, credentials or spending changes. The boundary owner must name a removal condition for any compatibility module. |
 | 2 | Separate client-module admission data from the HTTP host when the server owner is ready. Repeated central allowlist edits currently require touching `server.mjs` for each served helper. | A narrow module-path manifest, its server consumer and serving/release contract fixtures. | Agree the manifest format and ownership with the server owner before edits. Preserve exact admitted/denied URLs, origin/MIME behavior and packed imports; retain runtime release acceptance with the producer. |
 
 Select the next useful ready item after each small merge. Coordinate real
