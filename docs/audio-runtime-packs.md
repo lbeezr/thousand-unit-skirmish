@@ -105,8 +105,10 @@ scheduling, not a human listening or discoverability session.
 
 ## Next bounded audio slice
 
-Verify volume/mute persistence across a fresh audio instance with an in-memory
-storage fixture, including legacy settings migration, malformed stored JSON and
-write failures. Choose a fix only after reproducing a gap; retain the existing
-settings key and defaults. Browser listening remains a separate owner check when
-a working sandbox is available.
+Run the [short Mac listening session](audio-design.md#short-mac-listening-session)
+on the recent music/cue fixes, then choose one reproduced audible issue or one
+specific existing-track mix change. Settings persistence/migration/storage-failure
+fixtures passed without a runtime defect; the key and defaults are retained.
+Prioritize a concrete doubled entrance, stale acknowledgement, loop seam or cue
+masking observation, with commit and mix recorded. Use existing originals and
+preserve their provenance; no new generation is needed for this listening slice.
