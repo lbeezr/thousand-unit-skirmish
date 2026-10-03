@@ -3,13 +3,15 @@
 [Working rules](../AGENTS.md) · [Planning](contributor-planning.md) · [Asset guide](assets.md) · [Historical building audit](art-runtime-audit-2026-10-03.md)
 
 Original source audit: fork main `90e7ad4c666916942c29670e339a8e79e03e0b18`.
-Binding/release follow-up: `43def1c30b2f4fa18d5a5f83505e2c71b92fb2a0`,
-3 October 2026, including [renderer PR136](https://github.com/lbeezr/thousand-unit-skirmish/pull/136).
+Binding follow-up: `1757064b5e78a2ac2d9329771f6c16a599afd95b`,
+3 October 2026, including renderer [PR136](https://github.com/lbeezr/thousand-unit-skirmish/pull/136)
+and [PR141](https://github.com/lbeezr/thousand-unit-skirmish/pull/141).
 This checklist records adoption gaps; it does not integrate the assets.
 The Frontier building row was subsequently updated by its implementation owner
 for [PR #136](https://github.com/lbeezr/thousand-unit-skirmish/pull/136) and
 [PR #141](https://github.com/lbeezr/thousand-unit-skirmish/pull/141); the dated
-deployment table and earlier package receipt below remain historical evidence.
+deployment table below remains dated evidence; the release receipt was rerun
+after both merges.
 Owner names below are role owners reported in the active work or existing
 [art lanes](art-production-lanes.md). **Unassigned** means no accepting worker
 was identified. Source-only and superseded comparisons have no obligation to
@@ -31,7 +33,7 @@ a transfer gap. These criteria do not prevent incremental scoped merges.
 ## Exact deployment evidence
 
 Railway read-only `environment-status` + `list-deployments`, inspected about
-20:23 UTC on 3 October 2026, identified one running replica in each environment:
+20:57 UTC on 3 October 2026, identified one running replica in each environment:
 
 | Environment | Successful active deployment | Platform-reported source revision | Meaning |
 | --- | --- | --- | --- |
@@ -45,13 +47,16 @@ read and no deployment was changed. The public `/ready` endpoint exposes only
 readiness, so it cannot establish a running revision. Railway owner retains
 delivery and exact-build smoke; production promotion stays within its existing
 authorization boundary. Which environment the user's browser targets was not
-supplied. Both latest visual checks below therefore remain incomplete.
+supplied. Sheep/fishing visual checks below remain incomplete. Neither observed deployment
+contains the later PR136/PR141 six-family Frontier default integration; its
+delivery and ordinary-game screenshots are also **incomplete**. The parent-owned
+Mac QA machine was reported offline at the latest routing check.
 
 ## Buildings, wildlife, fishing and HUD
 
 Package paths are under `assets/` unless linked otherwise. Release inclusion
-comes from an actual clean `release:pack` at follow-up `43def1c`: 1,075 files,
-digest `sha256:26f23fe6b8c2174e20de5726c2ceb469c7dbad5665633d2ae622511a3b809b45`.
+comes from an actual clean `release:pack` at follow-up `1757064`: 1,113 files,
+digest `sha256:8fe4de1ee7c932004572d35990b484c75a1e9f78c4735451e83595f09d638642`.
 It proves local package contents, not delivery of those bytes to a browser.
 
 | Package/family | Production and normal-game binding | Preview / release | Incomplete work → owner / next action |
@@ -117,8 +122,9 @@ Human Worker SE fishing, and six Frontier Complete families. The guard evaluates
 normal URL selectors, checks reachable consuming modules, manifest runtime
 hashes/dependencies and an actual disposable release pack. It fails on lost
 default bindings or omitted default dependencies; owner-held experimental
-exceptions report **incomplete**, with a reason and exit action. Once an
-experiment becomes default, its exception cannot excuse missing release files.
+exceptions report **incomplete**, with a reason and exit action. All eight
+current entries require default binding; none retain an experimental exception.
+Once an experiment becomes default, its exception cannot excuse missing release files.
 
 The focused mutation tests run in existing CI. Initial coverage is only these
 eight entries, not every resource/HUD/audio pack. Add a chosen approved runtime

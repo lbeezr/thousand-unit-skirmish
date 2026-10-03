@@ -71,7 +71,9 @@ test('an unbound approved family needs an explicit integration owner and exit ac
 });
 
 test('enabling a default family cannot use its exception to conceal omitted release files', async () => {
-  const record = registry.records.find(row => row.id === 'frontier-stable');
+  const record = { ...registry.records.find(row => row.id === 'frontier-stable'),
+    exception: { reason: 'Test experiment', nextAction: 'Verify and remove exception',
+      evidence: 'docs/asset-adoption-checklist.md' } };
   await assert.rejects(audit({ registry: { ...registry, records: [record] }, main: await mainWithBuildingMode('stable'),
     releaseFiles: release.files.filter(file => file !== record.manifest) }),
   /frontier-stable: default runtime dependency omitted from release/);
