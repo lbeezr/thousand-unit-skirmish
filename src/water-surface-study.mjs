@@ -20,8 +20,9 @@ export function createWaterSurfaceStudy(definition, {
   const material = fallback ? new THREE.MeshBasicMaterial({
     vertexColors: true, side: THREE.DoubleSide, toneMapped: false,
   }) : new THREE.ShaderMaterial({
-    side: THREE.DoubleSide, toneMapped: false,
+    side: THREE.DoubleSide, toneMapped: false, fog: true,
     uniforms: {
+      ...THREE.UniformsUtils.clone(THREE.UniformsLib.fog),
       mapSize: { value: new THREE.Vector2(definition.width, definition.height) },
       shoreField: { value: null }, time: { value: 0 },
       seed: { value: (Math.trunc(definition.terrainSeed || 0) >>> 0) % 997 },
@@ -34,11 +35,14 @@ export function createWaterSurfaceStudy(definition, {
       varying vec3 shoreColor;
       varying float shoreBand;
       attribute vec3 color;
+      #include <fog_pars_vertex>
       void main() {
         waterPosition = position.xz;
         shoreColor = color;
         shoreBand = clamp((position.y - 0.032) / 0.004, 0.0, 1.0);
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * mvPosition;
+        #include <fog_vertex>
       }
     `,
     fragmentShader: /* glsl */`
@@ -50,6 +54,7 @@ export function createWaterSurfaceStudy(definition, {
       varying vec2 waterPosition;
       varying vec3 shoreColor;
       varying float shoreBand;
+      #include <fog_pars_fragment>
       void main() {
         vec2 uv = (waterPosition + mapSize * 0.5) / mapSize;
         float apparentDepth = texture2D(shoreField, uv).g;
@@ -65,6 +70,7 @@ export function createWaterSurfaceStudy(definition, {
         color = mix(color, shoreColor, shoreBand * 0.8);
         gl_FragColor = vec4(color, 1.0);
         #include <colorspace_fragment>
+        #include <fog_fragment>
       }
     `,
   });
@@ -83,15 +89,19 @@ export function createWaterSurfaceStudy(definition, {
     material.uniforms.shoreField.value = texture;
     mesh.userData.ownedGroundTextures = [texture];
     const rippleMaterial = new THREE.ShaderMaterial({
-      transparent: true, depthWrite: false, toneMapped: false,
-      uniforms: { time: { value: 0 }, motion: { value: reducedMotion ? 0 : 1 }, tint: { value: new THREE.Color(0x9bc0bc) } },
+      transparent: true, depthWrite: false, toneMapped: false, fog: true,
+      uniforms: { ...THREE.UniformsUtils.clone(THREE.UniformsLib.fog),
+        time: { value: 0 }, motion: { value: reducedMotion ? 0 : 1 }, tint: { value: new THREE.Color(0x9bc0bc) } },
       vertexShader: /* glsl */`
         attribute float phase;
         varying vec2 localUv;
         varying float fishPhase;
+        #include <fog_pars_vertex>
         void main() {
           localUv = uv; fishPhase = phase;
-          gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(position, 1.0);
+          vec4 mvPosition = modelViewMatrix * instanceMatrix * vec4(position, 1.0);
+          gl_Position = projectionMatrix * mvPosition;
+          #include <fog_vertex>
         }
       `,
       fragmentShader: /* glsl */`
@@ -99,6 +109,7 @@ export function createWaterSurfaceStudy(definition, {
         uniform vec3 tint;
         varying vec2 localUv;
         varying float fishPhase;
+        #include <fog_pars_fragment>
         void main() {
           float t = fract(time * 0.16 + fishPhase);
           float radius = mix(0.12, 0.46, t);
@@ -108,6 +119,7 @@ export function createWaterSurfaceStudy(definition, {
           if (alpha < 0.002) discard;
           gl_FragColor = vec4(tint, alpha);
           #include <colorspace_fragment>
+          #include <fog_fragment>
         }
       `,
     });

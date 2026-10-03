@@ -52,6 +52,10 @@ test('study preserves original contour buffers, height and non-picking surface',
   const raycaster = new THREE.Raycaster(new THREE.Vector3(-.5, 10, -.5), new THREE.Vector3(0, -1, 0));
   assert.deepEqual(raycaster.intersectObject(study, true), []);
   assert.equal(study.material.uniforms.shoreField.value.colorSpace, THREE.NoColorSpace);
+  for (const material of [study.material, study.children[0].material]) {
+    assert.equal(material.fog, true);
+    assert.ok(material.uniforms.fogColor.value.isColor, 'shared fog uniforms support existing scene-distance fog');
+  }
   original.dispose(); dispose(study);
 });
 

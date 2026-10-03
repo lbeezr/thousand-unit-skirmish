@@ -71,6 +71,8 @@ not synchronized simulation time. Reduced motion uses time zero and suppresses
 fish ripples. System preference changes update the opt-in material and the
 listener is removed on material disposal. Ground picking keeps its existing
 terrain mesh; study water and ripple meshes do not raycast.
+Both study materials preserve the existing scene-distance fog with Three's
+shared fog uniforms/chunks; this does not replace fog-of-war visibility.
 
 ## Fish visibility and resource boundary
 
