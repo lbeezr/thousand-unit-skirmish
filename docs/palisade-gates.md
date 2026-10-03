@@ -31,7 +31,9 @@ a military unit reaches that later leg, a blocked destination uses the existing
 bounded component search while reserving friendly current, pending and queued
 military destinations. Walkable assigned destinations stay fixed. See the
 [queued wall/gate checks](qa-queued-wall-pathing-2026-10-03.md) for both-seat
-arrival evidence and the separate parked-Worker congestion limit.
+arrival evidence. Moving military can take a bounded local detour around nearby
+stationary Workers while preserving the Workers' Stop/Hold orders; see the
+[parked-Worker recovery checks](qa-stationary-worker-pathing-2026-10-03.md).
 
 This conservative foundation cannot close the last passage between existing
 entities. Trapping, team-specific access, automatic opening, locks, siege rules

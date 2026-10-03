@@ -45,6 +45,7 @@ import { activeWallBuildOrder } from './src/wall-build-order.mjs';
 import { isPalisade, validGateState, buildingBlocksMovement, planGateTransition } from './src/palisade-gate.mjs';
 import { palisadeConnections } from './src/palisade-profile.mjs';
 import { canTraverseUnitStep } from './src/unit-movement.mjs';
+import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const HOST = process.env.RTS_HOST || '127.0.0.1';
@@ -6715,7 +6716,7 @@ function prepareAttackMovePaths() {
   return plans;
 }
 
-function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.moveSpeed * STEP_SECONDS) {
+function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.moveSpeed * STEP_SECONDS, allowLocalDetour = true) {
   if (unit.pathIndex >= unit.path.length || remainingStep <= 0) return null;
   const trackSeparationWork = SEPARATION_DIAGNOSTICS_ENABLED;
   let unitCandidateVisits = 0;
@@ -6732,6 +6733,7 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
 
   let separationX = 0;
   let separationZ = 0;
+  let detourCellsTried = null;
   const minColumn = Math.max(0, Math.floor((unit.x - MIN_SEPARATION + MAP_HALF_X) / SPATIAL_BUCKET_SIZE));
   const maxColumn = Math.min(spatialBucketColumns - 1,
     Math.floor((unit.x + MIN_SEPARATION + MAP_HALF_X) / SPATIAL_BUCKET_SIZE));
@@ -6763,6 +6765,18 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
           otherId = nextId;
           continue;
         }
+        if (allowLocalDetour && idleFriendly && !other.movePlanningPending
+          && other.kind === 'worker' && distanceSquared < MIN_SEPARATION * MIN_SEPARATION) {
+          const blockerCell = worldToCell(other.x, other.z);
+          if (!detourCellsTried?.has(blockerCell)) {
+            detourCellsTried ??= new Set();
+            detourCellsTried.add(blockerCell);
+            const detour = findStationaryWorkerDetour(unit, other, MAP_WIDTH,
+              elevationLevelByCell, isWalkable, cellToWorld, worldToCell,
+              () => stationaryWorkerCellsNear(unit, blockerCell));
+            if (detour) return { detour };
+          }
+        }
         if (distanceSquared >= 0.0001 && distanceSquared < MIN_SEPARATION * MIN_SEPARATION) {
           if (trackSeparationWork) separationTickCloseNeighborContributions++;
           const distance = Math.sqrt(distanceSquared);
@@ -6783,6 +6797,28 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
   vx /= length;
   vz /= length;
   return { x: vx, z: vz, target, stepDistance: remainingStep };
+}
+
+function stationaryWorkerCellsNear(unit, blockerCell) {
+  const occupied = new Set([blockerCell]);
+  const center = cellToWorld(blockerCell);
+  let visited = 0;
+  for (let row = spatialBucketRow(center.z - 2.5); row <= spatialBucketRow(center.z + 2.5); row++) {
+    for (let column = spatialBucketColumn(center.x - 2.5); column <= spatialBucketColumn(center.x + 2.5); column++) {
+      let id = spatialBucketHeads[row * spatialBucketColumns + column];
+      while (id !== -1) {
+        if (++visited > 64) return null;
+        const other = units[id];
+        if (other !== unit && other.hp > 0 && other.team === unit.team && other.kind === 'worker'
+          && !other.movePlanningPending && other.pathIndex >= other.path.length
+          && other.attackTargetId < 0 && other.attackBuildingTargetId < 0) {
+          occupied.add(worldToCell(other.x, other.z));
+        }
+        id = spatialBucketNext[id];
+      }
+    }
+  }
+  return occupied;
 }
 
 // Units stop following paths while working or striking. Keep separating them
@@ -7156,9 +7192,17 @@ function simulateTick() {
     }
     if (unit.holdingPosition || unit.pathIndex >= unit.path.length) continue;
     let remainingStep = UNIT_DEFINITIONS[unit.kind].combat.moveSpeed * STEP_SECONDS;
+    let allowLocalDetour = true;
     while (remainingStep > 0 && unit.pathIndex < unit.path.length) {
-      const move = getMoveVector(unit, remainingStep);
+      const move = getMoveVector(unit, remainingStep, allowLocalDetour);
       if (!move) break;
+      if (move.detour) {
+        unit.path = unit.path.slice(); // Planning can share identical routes.
+        unit.path.splice(unit.pathIndex, move.detour.replaceCount, ...move.detour.path);
+        allowLocalDetour = false;
+        dirty = true;
+        continue;
+      }
       if (!isWalkable(worldToCell(move.target.x, move.target.z))) {
         if (unit.attackTargetId >= 0 || unit.attackBuildingTargetId >= 0) {
           unit.path = [];
