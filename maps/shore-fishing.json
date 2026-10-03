@@ -73,5 +73,11 @@
     }
   ],
   "triggers": [],
-  "scenarioEvents": []
+  "scenarioEvents": [],
+  "audio": {
+    "packId": "vaelora-siltmouths",
+    "profileId": "landscape",
+    "version": "v2",
+    "sha256": "1d64164f3d97048f3e68ef2b094d04359281da7ddafed86cbeee628b83ce8c44"
+  }
 }
