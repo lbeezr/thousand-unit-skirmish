@@ -147,10 +147,17 @@ try {
     send(client, { type: 'move', ids: [team*10], x: team ? 6.5 : -6.5, z: team ? -3.5 : 3.5 });
   }
   const recovered = await checkpointWith(checkpointPath, cp => cp.state.tickNumber > followed.state.tickNumber + 90
-    && [0, 1].every(team => cp.state.units[team*10+4].attackTargetId === (direct ? -1 : (1-team)*10+2)));
+    && [0, 1].every(team => cp.state.units[team*10+4].attackTargetId === (1-team)*10+2));
   for (const team of [0, 1]) {
     const unit = recovered.state.units[team*10+4];
-    assert.equal(unit.attackMove, !direct);
+    assert.equal(unit.attackMove, true, 'target loss retains bounded local combat intent');
+    const nearby = recovered.state.units[(1-team)*10+2];
+    assert.equal(unit.attackMoveRouteReady, true);
+    assert.ok(nearby.hp < 100, 'the reachable local alternative takes real damage');
+    assert.ok(Math.hypot(nearby.x-unit.x, nearby.z-unit.z) <= 4.8,
+      'continuation engages an alternative inside local acquisition range');
+    assert.ok(recovered.state.units[(1-team)*10].hp > 0,
+      'the unreachable focus is released rather than pursued across the cliff');
     assert.ok(team ? unit.x > 0 : unit.x < 0, 'pursuit must not cross the cliff');
   }
   console.log(`${direct ? 'Direct attack' : 'Attack-move'}: both seats fire across cliffs and recover after unreachable retreat`);
