@@ -84,3 +84,24 @@ for (const entry of ['invite', 'resume']) test(`${entry} auth interruption pause
   interrupted = false; await context.connect();
   assert.equal(admitted.length, 1); assert.equal(admitted[0].resumeOnly, entry === 'resume');
 });
+
+test('invalid/missing direct invitations and stale Resume stop before admission without a fresh-game fallback', async () => {
+  for (const target of ['invalid', 'missing', 'stale']) {
+    const statuses = [], admitted = [], retries = [], requests = [];
+    const context = vm.createContext({ pageLeaving: false, connectionAttempt: 0, localTeam: null,
+      HAS_ROOM_PARAMETER: target !== 'stale', ROOM_ID: target === 'invalid' ? 'bad' : 'R'.repeat(32),
+      ROOM_ID_PATTERN: /^[A-Za-z0-9_-]{32}$/, RESUME_REQUESTED: target === 'stale', entrySessionConfirmed: false,
+      ROOM_SESSION_STORAGE_KEY: 'saved', sessionStorage: { getItem: () => 'T'.repeat(43) }, URL,
+      setConnection(value) { statuses.push(value); }, showToast() {},
+      scheduleReconnect() { retries.push(true); }, connectSocket(options) { admitted.push(options); },
+      fetch: async (url, options) => { requests.push({ url, options }); return target === 'missing'
+        ? { ok: false, status: 404 } : { ok: true, status: 200, json: async () => ({ valid: false }) }; },
+      window: { location: { href: 'https://game.test/' } } });
+    vm.runInContext(source.slice(source.indexOf('async function connect()'), source.indexOf('\nfunction connectSocket(')), context);
+    await context.connect();
+    assert.equal(statuses.at(-1), { invalid: 'INVALID ROOM LINK', missing: 'ROOM NOT FOUND', stale: 'SESSION EXPIRED' }[target]);
+    assert.equal(admitted.length, 0); assert.equal(retries.length, 0);
+    assert.equal(requests.filter(row => row.options?.method === 'POST').length, 0);
+    if (target === 'invalid') assert.equal(requests.length, 0);
+  }
+});
