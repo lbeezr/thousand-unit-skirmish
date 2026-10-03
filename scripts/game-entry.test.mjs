@@ -161,3 +161,54 @@ test('invite and refresh route to the existing game exactly once; root refresh r
   assert.deepEqual(refreshed.loaded, [true]);
   assert.equal((await fixture()).loaded.length, 0);
 });
+
+for (const status of [401, 503]) test(`Resume HTTP ${status} is an interruption, retains the saved choice, and retries the same room`, async () => {
+  let responseStatus = 200;
+  const f = await fixture({ stored: { [LAST_ROOM_STORAGE_KEY]: room, [`${SESSION_STORAGE_PREFIX}${room}`]: token },
+    handler: path => path === '/api/rooms/status' ? json({ enabled: true }) : responseStatus === 200
+      ? json({ valid: true }) : new Response('Authentication required.', { status: responseStatus }) });
+  responseStatus = status; f.node('menu-resume').click(); await turn();
+  assert.deepEqual(f.navigations, []);
+  assert.equal(f.node('menu-resume').hidden, false);
+  assert.match(f.node('game-menu-status').textContent, status === 401 ? /sign.in/i : /cannot check/i);
+  assert.doesNotMatch(f.node('game-menu-status').textContent, /expired/i);
+  assert.equal(f.win.sessionStorage.getItem(`${SESSION_STORAGE_PREFIX}${room}`), token);
+  responseStatus = 200; f.node('menu-resume').click(); await turn();
+  const target = new URL(f.navigations[0]);
+  assert.equal(target.searchParams.get('resume'), '1'); assert.equal(target.searchParams.get('room'), room);
+  assert.equal(f.requests.filter(row => row.options?.method === 'POST').length, 0);
+});
+
+test('menu, create and join authentication interruptions show a sign-in action without parsing a text challenge as JSON', async () => {
+  let interrupted = false;
+  const handler = () => interrupted ? new Response('Authentication required.', { status: 401 }) : json({ enabled: true });
+  const f = await fixture({ handler }); interrupted = true;
+  f.node('menu-create-room').click(); await turn();
+  assert.match(f.node('game-menu-status').textContent, /sign.in/i);
+  assert.doesNotMatch(f.node('game-menu-status').textContent, /JSON|Unexpected token/i);
+  f.node('menu-join').click(); const dialog = f.node('menu-join-dialog');
+  dialog.querySelector('input').value = room;
+  dialog.querySelector('form').dispatchEvent(new f.win.Event('submit', { cancelable: true })); await turn();
+  assert.match(dialog.querySelector('[role=status]').textContent, /sign.in/i);
+  const root = await fixture({ handler });
+  assert.match(root.node('game-menu-status').textContent, /sign.in/i);
+  assert.deepEqual(root.loaded, []); assert.deepEqual(root.navigations, []);
+});
+
+for (const status of [401, 503]) test(`back-cache refresh preserves only the same previously validated Resume during HTTP ${status}`, async () => {
+  let responseStatus = 200, valid = true;
+  const f = await fixture({ stored: { [LAST_ROOM_STORAGE_KEY]: room, [`${SESSION_STORAGE_PREFIX}${room}`]: token },
+    handler: path => responseStatus !== 200 ? new Response('Temporarily interrupted', { status: responseStatus })
+      : json(path === '/api/rooms/status' ? { enabled: true } : { valid }) });
+  responseStatus = status;
+  f.win.dispatchEvent(new f.win.PageTransitionEvent('pageshow', { persisted: true })); await turn();
+  assert.equal(f.node('menu-resume').hidden, false); assert.equal(f.node('menu-resume').disabled, false);
+  assert.deepEqual(f.loaded, []); assert.deepEqual(f.navigations, []);
+  responseStatus = 200; f.node('menu-resume').click(); await turn();
+  assert.equal(new URL(f.navigations[0]).searchParams.get('room'), room);
+  valid = false; await f.controller.refresh(); assert.equal(f.node('menu-resume').hidden, true);
+  valid = true; await f.controller.refresh(); assert.equal(f.node('menu-resume').hidden, false);
+  f.win.sessionStorage.setItem(`${SESSION_STORAGE_PREFIX}${room}`, 'X'.repeat(43));
+  responseStatus = status; await f.controller.refresh();
+  assert.equal(f.node('menu-resume').hidden, true, 'a different unvalidated token cannot inherit a cached Resume choice');
+});
