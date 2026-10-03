@@ -33,6 +33,14 @@ test('removing an approved default atlas from the actual pack inventory fails', 
     /default runtime dependency omitted from release/);
 });
 
+test('a runtime capture missing its required digest cannot be called usable', async () => {
+  const record = registry.records.find(row => row.id === 'frontier-town-center');
+  const manifest = JSON.parse(await readFile(path.join(root, record.manifest)));
+  delete manifest.completeState.views[0].sha256;
+  await assert.rejects(audit({ registry: { ...registry, records: [record] }, loadManifest: async () => manifest }),
+    /runtime dependency digest required/);
+});
+
 test('a default Worker downgrade cannot silently strand the approved fishing manifest', async () => {
   const main = (await readFile(path.join(root, 'src/main.js'), 'utf8')).replace("{ human: 'v3', infantry:", "{ human: 'v2', infantry:");
   await assert.rejects(audit({ main }), /human-worker-fishing-SE: approved runtime asset is not default-bound/);

@@ -46,7 +46,7 @@ async function clientGraph() {
   return new Set(checks.map(item => item.path.slice(1)));
 }
 
-export async function auditAssetAdoption({ registry, releaseFiles, main = null }) {
+export async function auditAssetAdoption({ registry, releaseFiles, main = null, loadManifest = json }) {
   assert.equal(registry.schemaVersion, 1);
   assert.ok(registry.scope?.trim() && registry.records?.length, 'state the bounded registry coverage');
   const graph = await clientGraph();
@@ -63,8 +63,8 @@ export async function auditAssetAdoption({ registry, releaseFiles, main = null }
       }
       await read(record.exception.evidence);
     }
-    const manifest = await json(record.manifest);
-    const dependencies = [{ path: record.manifest }];
+    const manifest = await loadManifest(record.manifest);
+    const dependencies = [{ path: record.manifest, container: true }];
     let defaultBound = false, module;
     if (record.probe === 'frontier-building') {
       module = 'src/frontier-building-preview.mjs';
@@ -96,7 +96,7 @@ export async function auditAssetAdoption({ registry, releaseFiles, main = null }
       const descriptor = await json(record.binding);
       assert.equal(path.join(path.dirname(record.binding), descriptor.manifest), record.manifest);
       assert.equal(createHash('sha256').update(await read(record.manifest)).digest('hex'), descriptor.manifestSha256);
-      dependencies.push({ path: record.binding });
+      dependencies.push({ path: record.binding, container: true });
     } else if (record.probe === 'human-worker-fishing') {
       module = 'src/unit-sprite-runtime.mjs';
       defaultBound = runtime.castPreview && runtime.humanAppearancePreview
@@ -117,8 +117,12 @@ export async function auditAssetAdoption({ registry, releaseFiles, main = null }
       assert.ok(!path.isAbsolute(file.path) && !file.path.split(path.sep).includes('..'),
         `${record.id}: unsafe runtime dependency`);
       const bytes = await read(file.path);
-      if (file.sha256) assert.equal(createHash('sha256').update(bytes).digest('hex'), file.sha256,
-        `${record.id}: runtime hash ${file.path}`);
+      if (!file.container) {
+        assert.match(file.sha256 || '', /^[a-f0-9]{64}$/i,
+          `${record.id}: runtime dependency digest required ${file.path}`);
+        assert.equal(createHash('sha256').update(bytes).digest('hex'), file.sha256.toLowerCase(),
+          `${record.id}: runtime hash ${file.path}`);
+      }
       if (!packed.has(file.path)) missing.push(file.path);
     }
     assert.ok(defaultBound || record.exception, `${record.id}: approved runtime asset is not default-bound; owner-held exception required`);
