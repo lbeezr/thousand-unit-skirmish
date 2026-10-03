@@ -55,8 +55,9 @@ node scripts/seed-shore-fish.mjs scripts/fixtures/shore-fishing-authoring-source
 ```
 
 The command requires a new output path and will not overwrite the input or an
-existing destination. Import the result into Map Studio and validate before
-publishing. To author another map, export a validated map and supply settings
+existing destination. Import the result into Map Studio, change its Map ID to
+a new value such as `my-shore-fishing` (shipped IDs cannot be overwritten), then
+validate and **Save & Play Map**. To author another map, export a validated map and supply settings
 containing a safe-integer `seed`, integer `radius` from 0–8 (default 3), integer
 `spawnClearance` from 0–16 (default 6), and one to sixteen
 `sites: [{nodeId, x, z}]` with explicit in-bounds search anchors. Each ID must
