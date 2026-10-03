@@ -82,6 +82,30 @@ const cases = [
     source: "RESOURCE_VISUAL_STAGES.push('full');" },
   { name: 'resource stage confused with an unrelated species ID', code: 2322,
     source: "/** @type {import('../../src/forest-composition.mjs').UnderboughForestSpecies} */ const wrongKind = resourceVisualStage(66, 100);" },
+  { name: 'string paint-mask width', code: 2322,
+    source: "buildTerrainBlendMasks({width: '4', height: 4}, ['meadow'], 'meadow');" },
+  { name: 'missing paint-mask height', code: 2345,
+    source: "buildTerrainBlendMasks({width: 4}, ['meadow'], 'meadow');" },
+  { name: 'missing paint rectangle row', code: 2741,
+    source: "buildTerrainBlendMasks({width: 4, height: 4, terrainPatches: [{column: 0, width: 2, height: 4, material: 'sand'}]}, ['meadow', 'sand'], 'meadow');" },
+  { name: 'misspelled paint rectangle coordinate', code: 2353,
+    source: "buildTerrainBlendMasks({width: 4, height: 4, terrainPatches: [{column: 0, row: 0, width: 2, height: 4, material: 'sand', x: 0}]}, ['meadow', 'sand'], 'meadow');" },
+  { name: 'numeric paint material identity', code: 2322,
+    source: "buildTerrainBlendMasks({width: 4, height: 4, terrainPatches: [{column: 0, row: 0, width: 2, height: 4, material: 1}]}, ['meadow'], 'meadow');" },
+  { name: 'numeric material catalog entry', code: 2322,
+    source: "buildTerrainBlendMasks({width: 4, height: 4}, [1], 'meadow');" },
+  { name: 'string organic-edge flag', code: 2345,
+    source: "buildTerrainBlendMasks({width: 4, height: 4}, ['meadow'], 'meadow', 'false');" },
+  { name: 'string terrain seed', code: 2322,
+    source: "buildForestGroundMask({width: 4, height: 4, terrainSeed: '42'});" },
+  { name: 'float buffer confused with RGBA bytes', code: 2322,
+    source: "/** @type {import('../../src/terrain-blend.mjs').TerrainBlendMask} */ const wrongPixels = {material: 'sand', width: 8, height: 8, pixels: new Float32Array(256)};" },
+  { name: 'text mask dimension', code: 2322,
+    source: "/** @type {import('../../src/terrain-blend.mjs').TerrainBlendMask} */ const wrongDimension = {material: 'sand', width: '8', height: 8, pixels: new Uint8Array(256)};" },
+  { name: 'unguarded absent forest ground mask', code: 2531,
+    source: 'buildForestGroundMask({width: 4, height: 4}).pixels.subarray(0, 4);' },
+  { name: 'mutation of caller-owned paint rectangle', code: 2540,
+    source: "/** @type {import('../../src/terrain-blend.mjs').TerrainPaintPatch} */ const patch = {column: 0, row: 0, width: 2, height: 4, material: 'sand'}; patch.row = 1;" },
 ];
 const fixturePath = path.join(root, 'scripts/type-contracts/canopy-invalid.mjs');
 const fixtureImports = [
@@ -89,6 +113,7 @@ const fixtureImports = [
   "import { forestHabitatDepth, forestCanopyFactor, forestMarginCanopyFactor } from '../../src/forest-habitat.mjs';",
   "import { underboughForestSpecies } from '../../src/forest-composition.mjs';",
   "import { RESOURCE_VISUAL_STAGES, resourceVisualScale, resourceVisualStage, resourceVisualTransitionStages } from '../../src/resource-visual-state.mjs';",
+  "import { buildTerrainBlendMasks, buildForestGroundMask } from '../../src/terrain-blend.mjs';",
 ];
 const fixtureSource = [
   ...fixtureImports,
