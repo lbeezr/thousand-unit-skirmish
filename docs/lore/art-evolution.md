@@ -91,6 +91,10 @@ checks cannot prove that an image never existed outside Git.
 
 ## Preservation practice
 
+The [water surface study](../water-surface-study.md) records the current contours,
+primary rendering references and a reusable opt-in comparison scene. Browser
+startup failed in cloud, so it adds no claimed screenshot or new image iteration.
+
 The [3 October building/environment audit](../art-runtime-audit-2026-10-03.md)
 links all eight Frontier concepts to the six completed model records and 48
 directional captures, distinguishes older default art, and records precise

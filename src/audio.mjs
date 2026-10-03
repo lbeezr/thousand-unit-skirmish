@@ -94,6 +94,8 @@ export function createGameAudio({
   }
   let packStatus = 'No audio pack assigned';
   let profileMusicReady = false;
+  let profileMusicLoading = false;
+  let musicGeneration = 0;
   const activeSamples = new Set();
   const activeVoiceSamples = new Set();
   const MAX_ACTIVE_SAMPLES = 8;
@@ -333,6 +335,14 @@ export function createGameAudio({
     }).catch(() => {});
   }
 
+  function suspendContext() {
+    context?.suspend().then(() => {
+      // A quick unmute/return can happen before suspension has completed.
+      if (!doc?.hidden && hasAudibleOutput()) unlock();
+      emitStatus();
+    }).catch(() => {});
+  }
+
 
   function isUrgentCue(cue) {
     return cue.includes('alert') || ['victory', 'defeat', 'draw', 'objective', 'objective-lost', 'base-lost'].includes(cue);
@@ -464,24 +474,36 @@ export function createGameAudio({
     return buffer;
   }
 
-  async function startProfileMusic() {
+  function stopProfileMusic() {
+    musicGeneration++;
     compositionPlayer?.stop();
     profileMusicReady = false;
-    const ticket = packGeneration;
-    if (!activeProfile?.music?.defaultCompositionId || !context || context.state === 'closed'
-      || doc?.hidden || settings.musicLevel <= 0) return;
+    profileMusicLoading = false;
+  }
+
+  function canPlayProfileMusic() {
+    return activeProfile?.music?.defaultCompositionId && context?.state === 'running'
+      && !doc?.hidden && settings.enabled && settings.volume > 0 && settings.musicLevel > 0;
+  }
+
+  async function startProfileMusic() {
+    if (profileMusicReady || profileMusicLoading || !canPlayProfileMusic()) return;
     const composition = activePack?.compositions?.find((item) => item.id === activeProfile.music.defaultCompositionId);
     if (!composition) { setPackStatus(`Composition ${activeProfile.music.defaultCompositionId} is missing; synthesized music is available.`); return; }
-    if (!compositionPlayer) {
-      const { createCompositionPlayer } = await import('./audio-composition-player.mjs');
-      if (ticket !== packGeneration) return;
-      compositionPlayer = createCompositionPlayer({ context, destination: music, resolveBuffer: decodeSource });
-    }
+    const ticket = packGeneration, generation = ++musicGeneration;
+    profileMusicLoading = true;
     try {
+      if (!compositionPlayer) {
+        const { createCompositionPlayer } = await import('./audio-composition-player.mjs');
+        if (ticket !== packGeneration || generation !== musicGeneration || !canPlayProfileMusic()) return;
+        compositionPlayer = createCompositionPlayer({ context, destination: music, resolveBuffer: decodeSource });
+      }
       const started = await compositionPlayer.play(composition, { loop: true });
-      if (ticket === packGeneration) profileMusicReady = started === true;
+      if (ticket === packGeneration && generation === musicGeneration) profileMusicReady = started === true;
     } catch (error) {
-      if (ticket === packGeneration) setPackStatus(`Music could not play: ${error.message}. Synthesized feedback remains available.`);
+      if (ticket === packGeneration && generation === musicGeneration) setPackStatus(`Music could not play: ${error.message}. Synthesized feedback remains available.`);
+    } finally {
+      if (ticket === packGeneration && generation === musicGeneration) profileMusicLoading = false;
     }
   }
 
@@ -520,8 +542,7 @@ export function createGameAudio({
     packAbort?.abort(); packAbort = new AbortController();
     stopWork();
     const ticket = ++packGeneration;
-    compositionPlayer?.stop();
-    profileMusicReady = false;
+    stopProfileMusic();
     for (const source of activeSamples) { try { source.stop(); } catch {} }
     activeSamples.clear(); activeVoiceSamples.clear();
     profileGate.reset();
@@ -621,14 +642,14 @@ export function createGameAudio({
     stopWork();
     save();
     applyLevels();
-    if (previousMusicLevel <= 0 && settings.musicLevel > 0 && activeProfile) void startProfileMusic();
-    else if (previousMusicLevel > 0 && settings.musicLevel <= 0) { compositionPlayer?.stop(); profileMusicReady = false; }
+    if (!settings.enabled || settings.volume <= 0 || settings.musicLevel <= 0) stopProfileMusic();
+    else if (previousMusicLevel <= 0 && activeProfile) void startProfileMusic();
     if (previousAmbience !== (settings.enabled && settings.ambience && settings.ambienceLevel > 0)) {
       stopProfileAmbience();
       if (settings.enabled && settings.ambience && settings.ambienceLevel > 0) void startProfileAmbience();
     }
     if (hasAudibleOutput()) unlock();
-    else context?.suspend().catch(() => {});
+    else suspendContext();
     emitStatus();
     return { ...settings };
   }
@@ -637,8 +658,8 @@ export function createGameAudio({
     if (!context) return;
     if (doc?.hidden) {
       stopWork(); stopProfileAmbience();
-      compositionPlayer?.stop(); profileMusicReady = false;
-      context.suspend().then(emitStatus).catch(() => {});
+      stopProfileMusic();
+      suspendContext();
     } else if (hasAudibleOutput()) {
       context.resume().then(() => {
         if (activeProfile) { void startProfileMusic(); void startProfileAmbience(); }
@@ -657,7 +678,7 @@ export function createGameAudio({
       if (musicTimer !== null) globalThis.clearInterval(musicTimer);
       if (duckTimer !== null) globalThis.clearTimeout(duckTimer);
       stopProfileAmbience(); ambiencePlayer?.dispose();
-      compositionPlayer?.dispose();
+      stopProfileMusic(); compositionPlayer?.dispose();
       for (const source of activeSamples) { try { source.stop(); } catch {} }
       activeSamples.clear(); activeVoiceSamples.clear();
       ambienceSource?.stop();
