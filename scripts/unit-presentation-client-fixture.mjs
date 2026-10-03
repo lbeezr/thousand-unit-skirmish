@@ -4,6 +4,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import * as THREE from 'three';
+import { applyUnitStances } from '../src/combat-stance-ui.mjs';
+import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { economyClientBindings } from './economy-client-fixture.mjs';
 import { createUnitSpriteRuntime } from '../src/unit-sprite-runtime.mjs';
 import { shouldUpdateUnitTransformForFrame } from '../src/unit-lod-state.mjs';
@@ -64,7 +66,7 @@ export async function createUnitPresentationClientFixture({ localTeam = 0 } = {}
   const transformCalls = [], dirtyTeams = [];
   const noop = () => {};
   const elements = new Map();
-  const context = vm.createContext({ ...economyClientBindings(), THREE,
+  const context = vm.createContext({ ...economyClientBindings(), THREE, applyUnitStances, UNIT_DEFINITIONS,
     mapDefinition: { id: 'unit-presentation-fixture' }, localTeam, isHost: false,
     document: { querySelector(id) {
       if (!elements.has(id)) elements.set(id, { hidden: false, textContent: '' });

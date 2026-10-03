@@ -53,6 +53,7 @@ try {
   await fixture.stop();
   const legacy = JSON.parse(await readFile(fixture.checkpointPath, 'utf8'));
   legacy.schemaVersion = 20;
+  delete legacy.matchModeId; delete legacy.matchModeVersion;
   delete legacy.economyProfileId; delete legacy.state.teamStone;
   await writeFile(fixture.checkpointPath, JSON.stringify(legacy));
   await fixture.start();

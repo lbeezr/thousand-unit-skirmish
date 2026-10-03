@@ -23,6 +23,9 @@ const origin = `http://127.0.0.1:${port}`;
 let supervisor;
 let output = '';
 const clients = [];
+const authored = { matchModeId: 'authored', matchModeVersion: 1 };
+const skirmish = { matchModeId: 'skirmish', matchModeVersion: 1 };
+const identity = value => ({ matchModeId: value.matchModeId, matchModeVersion: value.matchModeVersion });
 
 async function until(predicate, label) {
   const deadline = Date.now() + TIMEOUT;
@@ -157,6 +160,14 @@ try {
   assert.equal(launchOptions.pregame, true);
   const roomDirectory = path.join(directory, 'rooms', roomId);
   const checkpointPath = path.join(roomDirectory, 'match-state.json');
+  const checkpoint = async predicate => {
+    let saved;
+    await until(async () => {
+      try { saved = JSON.parse(await readFile(checkpointPath, 'utf8')); return predicate(saved); }
+      catch { return false; }
+    }, 'checkpoint');
+    return saved;
+  };
   await writeFile(path.join(roomDirectory, 'custom-maps', `${map.id}.json`), JSON.stringify(map));
   let host = client(roomId);
   await until(() => host.welcome, 'host welcome');
@@ -168,6 +179,13 @@ try {
   assert.equal(host.lobby.phase, 'lobby');
   assert.equal(host.state.scenarioClockStarted, false);
   assert.equal(host.lobby.factionId, 'frontier');
+  assert.deepEqual(identity(host.welcome), authored);
+  assert.deepEqual(identity(host.state), authored);
+  assert.deepEqual(identity(host.lobby), authored);
+  assert.equal(host.lobby.mapId, 'bellweather-millrace');
+  const initialCheckpoint = await checkpoint(row => row.state.pregame?.phase === 'lobby');
+  const ready = async value => value.exchange({ type: 'setReady', revision: value.lobby.revision, ready: true },
+    row => row.type === 'lobby' && row.lobby.seats.some(seat => seat.id === value.welcome.player.id && seat.ready));
   const spectator = client(roomId);
   const duplicate = client(roomId, hostIdentity.sessionToken);
   await until(() => spectator.welcome && duplicate.welcome, 'spectator welcomes');
@@ -214,16 +232,82 @@ try {
   assert.match(host.node('lobby-match-mode').textContent, /Authored Rules/);
   assert.match(host.node('lobby-match-mode-summary').textContent, /authored victory rules/);
   await host.exchange({ type: 'launchMatch', revision: host.lobby.revision }, row => row.type === 'lobbyRejected');
+
+  await ready(host);
+  await ready(guest);
+  await until(() => host.lobby.canLaunch, 'both ready before mode change');
+  const authoredRevision = host.lobby.revision;
+  const modeChange = await host.exchange({ type: 'configureLobby', revision: authoredRevision,
+    mapId: 'bellweather-millrace', ...skirmish }, row => row.type === 'mapChange');
+  await until(() => guest.lobby.matchModeId === 'skirmish', 'shared Skirmish configuration');
+  assert.deepEqual(identity(modeChange), skirmish);
+  assert.deepEqual(identity(modeChange.state), skirmish);
+  assert.deepEqual(identity(host.lobby), skirmish);
+  assert.deepEqual(identity(guest.lobby), skirmish);
+  assert.equal(host.lobby.revision, authoredRevision + 1);
+  assert.equal(host.lobby.canLaunch, false);
+  assert.ok(host.lobby.seats.every(seat => !seat.ready));
+  assert.ok(guest.lobby.seats.every(seat => !seat.ready));
+  assert.equal(modeChange.map.triggers.some(trigger => trigger.victory === true), false);
+  assert.equal(Object.hasOwn(modeChange.map, 'victoryHoldSeconds'), false);
+  assert.equal(Object.hasOwn(modeChange.map, 'timedVictory'), false);
+  const skirmishCheckpoint = await checkpoint(row => row.matchModeId === 'skirmish'
+    && row.state.pregame.revision === host.lobby.revision);
+  assert.deepEqual(identity(skirmishCheckpoint), skirmish);
+  assert.deepEqual(skirmishCheckpoint.mapDefinition, initialCheckpoint.mapDefinition,
+    'checkpoint keeps canonical victory metadata');
+  assert.equal(skirmishCheckpoint.mapHash, initialCheckpoint.mapHash);
+  assert.ok(skirmishCheckpoint.mapDefinition.triggers.some(trigger => trigger.victory === true));
+  assert.equal(skirmishCheckpoint.mapDefinition.victoryHoldSeconds, 20);
+  assert.equal(skirmishCheckpoint.mapDefinition.timedVictory.afterSeconds, 900);
+  let roomMetadata;
+  await until(async () => {
+    roomMetadata = await (await fetch(`${origin}/api/rooms/${roomId}`)).json();
+    return roomMetadata.matchModeId === 'skirmish';
+  }, 'effective room metadata');
+  assert.deepEqual(identity(roomMetadata), skirmish);
+  assert.deepEqual(identity(roomMetadata.roomMetadata), skirmish);
+  assert.deepEqual(roomMetadata.launchOptions, launchOptions, 'original launch options stay unchanged');
+
+  await ready(host);
+  await ready(guest);
+  await until(() => host.lobby.canLaunch, 'both ready before invalid mode settings');
+  const skirmishRevision = host.lobby.revision;
+  for (const [sender, command] of [
+    [guest, { ...authored }],
+    [host, { revision: authoredRevision, ...authored }],
+    [host, { matchModeId: 'authored' }],
+    [host, { matchModeVersion: 1 }],
+    [host, { ...authored, matchModeVersion: 2 }],
+    [host, { mapId: map.id, armySize: 250 }],
+  ]) {
+    const before = structuredClone(host.lobby);
+    const rejected = await sender.exchange({ type: 'configureLobby', revision: skirmishRevision, ...command },
+      row => row.type === 'lobbyRejected');
+    assert.deepEqual(rejected.lobby, before, 'invalid mode/map settings preserve readiness and configuration');
+    assert.deepEqual(host.lobby, before);
+  }
+  await checkpoint(row => row.matchModeId === 'skirmish' && row.sequence > skirmishCheckpoint.sequence);
+  await stop();
+  await start();
+  host = client(roomId, hostIdentity.sessionToken);
+  guest = client(roomId, guestIdentity.sessionToken);
+  await until(() => host.welcome && guest.welcome && host.lobby.seats.every(seat => seat.connected),
+    'Skirmish lobby recovery');
+  assert.equal(host.welcome.recoveredFromCheckpoint, true);
+  assert.deepEqual(identity(host.welcome), skirmish);
+  assert.deepEqual(identity(host.state), skirmish);
+  assert.deepEqual(identity(host.lobby), skirmish);
+  assert.deepEqual(identity(guest.lobby), skirmish);
+  assert.equal(host.lobby.mapId, 'bellweather-millrace');
+  assert.ok(host.lobby.seats.every(seat => !seat.ready), 'recovery retains mode without restoring ready consent');
+  assert.equal(host.welcome.map.triggers.some(trigger => trigger.victory === true), false);
+  await host.exchange({ type: 'configureLobby', revision: host.lobby.revision, ...authored }, row => row.type === 'mapChange');
+  await until(() => guest.lobby.matchModeId === 'authored', 'shared authored return');
+  assert.deepEqual(identity(host.lobby), authored);
+  await host.exchange({ type: 'configureLobby', revision: host.lobby.revision, mapId: map.id }, row => row.type === 'mapChange');
   await until(() => guest.lobby.mapId === map.id, 'shared configuration');
   const stableUnits = host.state.units.map(row => row.slice(0, 5));
-  const checkpoint = async predicate => {
-    let saved;
-    await until(async () => {
-      try { saved = JSON.parse(await readFile(checkpointPath, 'utf8')); return predicate(saved); }
-      catch { return false; }
-    }, 'checkpoint');
-    return saved;
-  };
   const saved = await checkpoint(row => row.state.pregame?.phase === 'lobby' && row.mapDefinition.id === map.id);
   await host.exchange({ type: 'gather', ids: [0], nodeId: 'food' }, row => row.type === 'lobbyRejected');
   await host.exchange({ type: 'selectArmySize', count: 500 }, row => row.type === 'lobbyRejected');
@@ -234,8 +318,6 @@ try {
   assert.equal(frozen.state.scenarioEventStates[0].fired, false, 'supply is gated');
   assert.deepEqual(frozen.state.units.map(unit => [unit.id, unit.team, Number(unit.x.toFixed(3)), Number(unit.z.toFixed(3)), unit.hp]), stableUnits);
 
-  const ready = async value => value.exchange({ type: 'setReady', revision: value.lobby.revision, ready: true },
-    row => row.type === 'lobby' && row.lobby.seats.some(seat => seat.id === value.welcome.player.id && seat.ready));
   await ready(host);
   await ready(guest);
   await until(() => host.lobby.canLaunch, 'both ready');
@@ -297,7 +379,8 @@ try {
   await stop();
   const indexPath = path.join(directory, 'rooms.json');
   const oldIndex = JSON.parse(await readFile(indexPath, 'utf8'));
-  await writeFile(indexPath, JSON.stringify({ version: 1, rooms: oldIndex.rooms.map(({ launchOptions, ...entry }) => entry) }));
+  await writeFile(indexPath, JSON.stringify({ version: 1,
+    rooms: oldIndex.rooms.map(({ launchOptions, matchModeId, matchModeVersion, ...entry }) => entry) }));
   await start();
   host = client(roomId, hostIdentity.sessionToken);
   guest = client(roomId, guestIdentity.sessionToken);
@@ -376,7 +459,10 @@ try {
     assert.ok((await response.text()).length > 100);
   }
   assert.equal((await fetch(`${origin}/src/room-pregame.mjs`)).status, 404, 'server authority module stays private');
-  console.log(JSON.stringify({ passed: ['two-seat authority and settings validation', 'simulation/capture/supply freeze',
+  console.log(JSON.stringify({ passed: ['two-seat authority and settings validation',
+    'versioned mode change clears both seats and projects bonus-only posts',
+    'atomic mode/map rejection and effective metadata without launch option mutation',
+    'canonical victory checkpoint and Skirmish lobby recovery', 'simulation/capture/supply freeze',
     'ready invalidation and stale revisions', 'duplicate-token spectators', 'pregame and running restart recovery',
     'launch/unready race and duplicate launch', 'running seat rejoin', 'Map Studio publication returns to lobby',
     'rematch and duplicate reset', 'host disconnect/rejoin/expiry/replacement', 'late join and public module delivery',

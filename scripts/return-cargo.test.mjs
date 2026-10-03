@@ -31,7 +31,7 @@ for (const team of [0, 1]) test(`seat ${team} snapshots keep every positive carg
       [0.000001, 0.000001], [0.004, 0.004], [0.004999, 0.004999], [0.005, 0.01],
       [0.5, 0.5], [7.253, 7.25], [10, 10]]) {
       const unit = worker(team, { cargo, cargoType: cargo ? cargoType : null });
-      const authority = vm.createContext({ ...economyServerBindings(), units: [unit], mapDefinition: { fogOfWar: true },
+      const authority = vm.createContext({ workerPerformingAction: () => null, ...economyServerBindings(), units: [unit], mapDefinition: { fogOfWar: true },
         workerTaskStatus: () => 'idle', workerAudioExecution: () => null,
         workerGatherHeading: () => null, workerFishingPresentation: () => null,
         resourceNodeStates: new Map(), cellVisibleToTeam: () => false, worldToCell: () => 0 });
