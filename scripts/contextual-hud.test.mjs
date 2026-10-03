@@ -13,6 +13,7 @@ import { formatResourceStock, formatResourceRequirement } from '../src/resource-
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+const minimapProof = readFileSync(new URL('./minimap-orders-browser.mjs', import.meta.url), 'utf8');
 const between = (start, end) => {
   const a = source.indexOf(start), b = source.indexOf(end, a + start.length);
   assert.ok(a >= 0 && b > a, `client source bounds: ${start}`);
@@ -319,6 +320,36 @@ for (const team of [0, 1]) test(`seat ${team}: Quick commands and control-group 
   f.escape(); assert.equal(f.quick.hidden, false);
   f.d.activeElement.dispatchEvent(new f.w.KeyboardEvent('keydown', { key: '1', code: 'Digit1', bubbles: true }));
   assert.deepEqual([...f.w.selected], [team * 2 + 1]); assert.equal(f.bar.hidden, false);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: minimap browser proof selects four owned Workers from the visible empty-selection control`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  f.d.documentElement.dataset.entry = 'game';
+  for (const id of [4, 5, 6, 7, 8, 9]) {
+    f.w.units.push({ id, team: id % 2, kind: 'worker', hp: 100, task: 'idle' });
+  }
+  f.w.units.push({ id: 10, team, kind: 'worker', hp: 0, task: 'idle' },
+    { id: 11, team, kind: 'worker', hp: 100, task: 'gather' });
+  f.w.teamUnits = [0, 1].map(seat => f.w.units.filter(unit => unit.team === seat));
+  f.d.querySelector('#quick-idle').disabled = f.w.ui.selectIdleWorkers.disabled = false;
+  f.select([]);
+  assert.equal(f.bar.hidden, true); assert.equal(f.quick.hidden, false);
+  assert.equal(f.w.commandDock.hidden, true);
+
+  // Exercise the runner's actual selector, so returning to the hidden proxy fails here.
+  const start = minimapProof.indexOf('stage = `seat ${team}: select Workers`;');
+  assert.ok(start >= 0, 'initial Worker-selection step exists');
+  const step = minimapProof.slice(start, minimapProof.indexOf('const ids =', start));
+  const selector = step.match(/await click\(page, '([^']+)'\);/)?.[1];
+  assert.ok(selector, 'runner selects through a native control click');
+  const control = f.d.querySelector(selector);
+  assert.ok(control && !control.disabled && !control.closest('[hidden]'), 'initial control is visible and enabled');
+  f.click(control);
+  assert.deepEqual([...f.w.selected], [team * 2, 4 + team, 6 + team, 8 + team]);
+  assert.equal(f.d.querySelector('#selected-total').textContent, '4');
+  assert.equal(f.bar.hidden, false); assert.equal(f.quick.hidden, true);
+  assert.equal(f.w.commandDock.hidden, true);
+  assert.deepEqual(f.w.sentCommands, [], 'selection issues no unit order');
 });
 
 test('closing a drawer whose opener became hidden, disabled or disconnected restores visible focus', t => {
