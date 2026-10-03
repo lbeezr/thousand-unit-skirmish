@@ -48,9 +48,11 @@ predicate after a later Gather/Stop pair. One ordinary-command probe recorded
 returned 0.4666666666667 after one additional gather tick. Both Workers ended
 idle with zero cargo; the stale snapshot understated the expected deposit.
 
-`stopWorkers()` now reads the persisted sequence after both Stop acknowledgements
-and requires a newer checkpoint plus its existing stopped predicates before
-capturing banks and cargo. Exact deposit equality, conservation, source-stock and
+`stopWorkers()` now records the acknowledgement time and persisted sequence after
+both Stop acknowledgements. It requires a newer checkpoint captured after that
+time plus its existing stopped predicates before capturing banks and cargo;
+an older in-flight capture cannot qualify when its write finishes afterward.
+Exact deposit equality, conservation, source-stock and
 duplicate-credit checks remain in place; server economy rules are unchanged.
 Two complete corrected Mill runs and 18 ledger/Mill/return/settlement unit checks
 passed. The unchanged food-return probe reproduced the stale-snapshot failure in
