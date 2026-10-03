@@ -85,7 +85,9 @@ class FakeAudioContext {
   createGain() { const gain = { ...node(), gain: parameter() }; this.gains.push(gain); return gain; }
   createOscillator() {
     oscillators++;
-    const oscillator = { ...node(), frequency: parameter(), onended: null };
+    const oscillator = { ...node(), frequency: parameter(), onended: null, active: false,
+      start() { this.active = true; },
+      stop(at) { if (at === undefined) { this.active = false; this.onended?.(); } } };
     this.oscillatorNodes.push(oscillator);
     return oscillator;
   }
@@ -157,6 +159,8 @@ try {
   assert.equal(oscillators, 6, 'two thousand same-frame move orders make one move tone');
   assert.deepEqual(cues, ['select', 'building-complete', 'battle-alert', 'move']);
   audio.setSettings({ enabled: false });
+  assert.equal(createdContext.oscillatorNodes.filter(oscillator => oscillator.active).length, 0,
+    'master mute releases the earlier active tone budget');
   assert.equal(audio.getStatus(), 'muted');
   assert.equal(createdContext.suspendCalls, 1);
   const scheduledBeforeMute = cues.length;
@@ -199,14 +203,18 @@ try {
   assert.equal(audio.play('base-lost'), false, 'repeated building losses are rate limited');
   assert.equal(audio.play('resource-empty'), true);
   for (const cue of ['attack', 'gather', 'build', 'queue']) audio.play(cue);
+  assert.equal(audio.preview('select'), true, 'fresh post-mute cues can fill the remaining routine voice');
   const saturatedCount = oscillators;
-  assert.equal(saturatedCount, 12, 'routine cues stop at twelve active voices');
+  assert.equal(createdContext.oscillatorNodes.filter(oscillator => oscillator.active).length, 12,
+    'routine cues stop at twelve currently active voices, excluding cancelled earlier tones');
+  assert.equal(audio.preview('select'), false, 'the next routine note is suppressed at the active cap');
+  assert.equal(oscillators, saturatedCount);
   assert.equal(audio.play('objective'), true);
-  assert.equal(oscillators, 15, 'three-note objective cue retains room above routine limit');
+  assert.equal(oscillators, saturatedCount + 3, 'three-note objective cue retains room above routine limit');
   assert.equal(cues.at(-1), 'objective');
   doc.hidden = true;
   assert.equal(audio.play('defeat'), false, 'hidden tab does not schedule sounds');
-  assert.equal(oscillators, 15);
+  assert.equal(oscillators, saturatedCount + 3);
   assert.ok(statuses.includes('muted') && statuses.includes('running'));
   audio.dispose();
 
