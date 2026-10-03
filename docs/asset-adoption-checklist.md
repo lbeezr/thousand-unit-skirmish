@@ -4,6 +4,10 @@
 
 Audit: fork main `90e7ad4c666916942c29670e339a8e79e03e0b18`, 3 October 2026.
 This checklist records adoption gaps; it does not integrate the assets.
+The Frontier building row was subsequently updated by its implementation owner
+for [PR #136](https://github.com/lbeezr/thousand-unit-skirmish/pull/136) and
+[PR #141](https://github.com/lbeezr/thousand-unit-skirmish/pull/141); the dated
+deployment table and earlier package receipt below remain historical evidence.
 Owner names below are role owners reported in the active work or existing
 [art lanes](art-production-lanes.md). **Unassigned** means no accepting worker
 was identified. Source-only and superseded comparisons have no obligation to
@@ -50,7 +54,7 @@ It proves local package contents, not delivery of those bytes to a browser.
 
 | Package/family | Production and normal-game binding | Preview / release | Incomplete work → owner / next action |
 | --- | --- | --- | --- |
-| Frontier Town Center, House: `buildings/frontier-civilization-scale-pilot-v1`; Storehouse, Stable, Workshop, Watchtower: `buildings/frontier-civilization-models-v1` | Six loader-compatible **Complete-only** families, eight views each; [selector](../src/frontier-building-preview.mjs) returns none at default URLs. Old Town Center art and procedural support buildings remain. | `frontierBuildingsPreview=1` or family name. Only new Town Center's manifest + eight PNGs ship; other five omitted. | **Incomplete default adoption** → active renderer owner already integrating all six; consume preserved views, retain missing-state fallback, admit every selected file, then verify deployed normal use. Do not duplicate that work. Building production owner derives missing lifecycle/masks separately. |
+| Frontier Town Center, House: `buildings/frontier-civilization-scale-pilot-v1`; Storehouse, Stable, Workshop, Watchtower: `buildings/frontier-civilization-models-v1` | Six **Complete-only** families now selected without preview flags; [runtime guide](frontier-building-runtime.md) records exact state fallback, shared texture/depth and retained team feedback. Source frames and authoritative occupancy are unchanged. | Six manifests + 48 original PNGs explicitly admitted; packed HTTP/hash checks pass. Named/`1` previews and `0` comparison remain available. | **Deployment and in-game adoption incomplete** → implementation owner retains [PR #141](https://github.com/lbeezr/thousand-unit-skirmish/pull/141); Railway delivery owner must serve an identified integrated revision, and the parent-owned Mac QA task must capture ordinary-game use for all six. Source/CPU/release checks cannot close those steps. Building production owner derives missing lifecycle/masks separately. |
 | `buildings/frontier-civilization-concepts-v1` | Eight selected concepts; new Barracks/Range have no matching model/view manifest in the two packs. | Reference only; not packed. | **Incomplete production** → building owner: derive new-design models/views before binding; existing Barracks/Range designs stay usable. |
 | `buildings/town-center-lifecycle-meshy-v1` | Default [captured loader](../src/captured-building-art.mjs): five states × eight views, team masks. | 81 files packed. | **Final adoption unverified here** → renderer owner: recorded-build construction/damage/repair, team/zoom/occlusion check. |
 | `buildings/barracks-sprite-test-v1`, `buildings/archery-range-sprite-v1` | Default [direct sprites](../src/building-sprites.mjs): five states × two teams. | Ten WebPs each packed. | **Full current-build appearance unverified** → renderer owner: both-team lifecycle/occlusion proof; [prior checks](qa-barracks-lifecycle-2026-09-27.md) are dated evidence. |
