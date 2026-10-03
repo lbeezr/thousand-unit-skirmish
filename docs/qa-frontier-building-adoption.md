@@ -120,7 +120,8 @@ HUD percentages can straddle a threshold, so preserve the associated state value
 when available. Do not label procedural damage fallback as newly authored art.
 
 Town Center max HP is 2,400 (60% 1,440; 30% 720); House 800 (480/240);
-Storehouse and Watchtower 1,200 (720/360); Stable and Workshop 1,600 (960/480).
+Storehouse and Watchtower 1,200 (720/360); Stable and Workshop 1,600 (960/480);
+Barracks and Archery Range 1,800 (1,080/540).
 Health-bar color uses separate thresholds: green >55%, yellow >25%, red ≤25%.
 Its color alone does not identify the captured-image state. Fully repaired
 structures hide the bar. Destruction removes the building and its picks/depth;
@@ -136,8 +137,8 @@ again. Retain failed, rejected and intermediate screenshots as well as successes
 | Hover without selection | Ordinary select cursor; no new building hover tint or outline. |
 | Military selected, hover enemy building | Attack cursor; right-click orders building attack. Hover must not advance the unit-overlap target stack. |
 | Workers alone selected, hover enemy building | Unavailable cursor; building attacks require military. |
-| Friendly building selected | Town Center, Stable and Workshop use rally cursor/right-click ground; House, Storehouse and Watchtower use unavailable cursor for rally. Their normal production/action panels differ by actual type. |
-| Both teams' completed art | The PNG is shared across teams and has no aligned team mask. Painted pennants stay source-colored. Live standards differ in color **and shape**: Azure rectangular with one pale bar; Ember notched with two. Selection lime removes the outline's color distinction, so check the standard and HUD together. |
+| Friendly building selected | Town Center, Stable, Workshop, Barracks and Archery Range use rally cursor/right-click ground; House, Storehouse and Watchtower use unavailable cursor for rally. Their normal production/action panels differ by actual type. |
+| Both teams' completed art | The PNG is shared across teams and has no aligned team mask. The earlier six families' painted pennants stay source-colored; the military pair bakes no faction standard. Live standards differ in color **and shape**: Azure rectangular with one pale bar; Ember notched with two. Selection lime removes the outline's color distinction, so check the standard and HUD together. |
 | Transparent margin | Existing rectangle-based Three Sprite picking remains; no alpha-aware picker was added. Clicking a clear part of the full sprite quad may select it. Occupancy remains the server footprint. Body-depth child never adds a target. |
 
 Capture both teams at the **initial normal zoom 0.91**, then **Fit map** for the
@@ -194,7 +195,7 @@ accepts a recorded narrower result. Until then deployment/native boxes stay open
 ## Verified preparation, not native acceptance
 
 The factory regression executes actual ordinary picker, selection, cursor and
-health-update functions for all six families/both teams, plus late construction
+health-update functions for all eight families/both teams, plus late construction
 and exact 27.5%/60%/30% boundaries. It checks live flag color/shape, shared art,
 hidden-group picking, team-filtered friendly selection/enemy hover, retained
 feedback and repair. It mocks DOM image decoding and performs no WebGL capture.
