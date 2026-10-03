@@ -2,11 +2,12 @@
 
 [Shore fishing](shore-fishing-foundation.md) · [Water presentation](water-surface-study.md) · [Movement QA](qa-unit-pathing-2026-10-03.md)
 
-3 October 2026; inspected integration baseline `ae88e0f`. This is an isolated,
-testable water route graph. It adds no playable boat, dock, unit, command,
-production entry, transport, naval combat, cargo rule or checkpoint field.
-Shore fishing continues to use land Workers and the existing finite food pool.
-Fish/skiff/dock art and the planned food-only Mill remain separate lanes.
+3 October 2026; the graph was introduced against baseline `ae88e0f`.
+The [Dock shoreline foundation](dock-shoreline-foundation.md) now uses it for
+live building placement and water berth clearance. It still adds no playable
+boat, movement domain, transport, naval combat or boat cargo. Shore fishing
+continues to use land Workers and finite food. Mill is now a food-only land
+drop-off; fish/skiff/dock art remains separate work.
 
 ## Current movement and shore contracts
 
@@ -15,7 +16,7 @@ Fish/skiff/dock art and the planned food-only Mill remain separate lanes.
 | Authored water | `waterRaster` reads `water` obstacle rectangles. Terrain paint and cosmetic depth/curves do not change cell collision. Diagonal wet cells remain separate. | Use authored logical water, not rendered shore outlines, to admit routes. |
 | Land routes | Server `isWalkable` excludes all obstacles, building footprints and home Town Centers. Components/A* use cardinal cells and elevation rules. | Feeding this land mask into water routing would block every water cell. Keep domain masks separate. |
 | Land movement | `canTraverseUnitStep` checks crossed boundaries, including both open sides for diagonal crowd deflection. | Cell-center routes alone do not validate a moving hull's continuous sweep or separation. |
-| Buildings | `buildBuilding` requires an open, level footprint without resources, objectives, units or connectivity loss, plus a reachable land Worker approach. | A shoreline dock cannot use the current ordinary footprint rule unchanged. It needs separate land approach, pier reservation and admission validation. |
+| Buildings | `buildBuilding` requires an open, level footprint without resources, objectives, units or connectivity loss, plus a reachable land Worker approach. Dock adds a dry level-zero foundation and adjacent clear water berth. | The current Dock has only land occupancy. A later pier needs an explicit water reservation and admission validation. |
 | Production | `findProductionSpawnCell` searches open land in the owner's spawn component, reserving units/resource cells; queues wait when no room exists. | A boat needs an explicitly reserved water spawn with footprint clearance and a water route. No such runtime producer exists here. |
 | Fish | Node `x/z` is a land bank; the position helper derives an adjacent one-cell water visual center. Stock/cargo are food. | Cosmetic schools are neither vessels nor water destinations for Workers. |
 
@@ -81,16 +82,16 @@ proves water cells remain blocked for land units, checks fish water/land
 positions and preserves every map field. Both checks enter the ordinary CI
 runner. The two pilot ponds remain disconnected; this graph creates no bridge.
 
-These are offline simulation foundations. The module is not imported by the
-live server/client, exposed in controls, or registered as a movement domain.
+The topology API remains a simulation foundation; its first live caller is the
+Dock placement helper. It is not registered as a unit movement domain.
 Live shore-fishing and existing movement checks remain integration regressions;
 no boat has moved in a match and no final art or browser appearance is claimed.
 
 ## Follow-on admission order
 
-1. Validate a bounded dock candidate with reachable land Worker approach,
-   explicit water reservation, clear production spawn and preserved land/water
-   routes; choose its footprint with the skiff/dock art contract.
+1. The current Dock validates a land foundation, reachable Worker approach and
+   clear outward water berth. Add explicit pier/boat reservations and choose
+   their physical footprints with the skiff/dock art contract when introduced.
 2. Coordinate an authoritative water-domain adapter with the pathing lane,
    including continuous step/clearance rules, occupancy updates, command
    validation, queued routes, interruption and checkpoint recovery.
