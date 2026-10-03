@@ -352,3 +352,29 @@ VoiceOver should announce each written action/hotkey once; images add no name.
 Cloud DOM/HTTP/source checks and private CPU previews do not close this native
 check. Receiving owner: parent-owned Mac QA; HUD owner retains the outcome and
 Railway delivery owner supplies the exact relevant user deployment.
+
+## Focused command after live layout changes — 3 October 2026
+
+Baseline `14590fb` reveals a command on focus but never rechecks an already
+focused label when preceding cargo/production controls grow or the strip narrows.
+The bounded fix observes the strip and its buttons for actual horizontal layout
+changes; child-list observation only discovers button insertion/removal. Repeated
+unchanged text/hidden writes and manual scrolling alone must not reset the strip.
+One animation-frame correction retains focus and selection, skipping hidden,
+disabled, removed or later outside focus. Disposal releases both observers.
+
+Synthetic DOM/geometry tests cover growth, minimap/viewport shrink, nested added
+and removed controls, unchanged updates/manual scrolling, deferred focus states
+and cleanup. These checks do not supply native pixels or deployed acceptance.
+
+Pending native recipe, owned by the parent Mac QA lane: on an identified deployed
+revision containing this fix, enter PvE Bellweather Millrace at 1280 × 800 DPR1.
+Tab to fully reveal Formation, then let a selected Worker gain cargo so Return
+cargo appears before it. Keep keyboard focus and verify the whole Formation
+label/ring. Repeat with growing production text, enlarged minimap and 620/360px
+widths; remove a preceding control and check reverse-edge recovery. Manually
+scroll away, apply unchanged snapshots and confirm no snap-back. Verify physical
+Shift-wheel, native horizontal wheel/thumb drag, dismissal and selection retention.
+Record source/deployed revisions, browser, rectangles, PNG/hash and observations.
+The HUD owner retains implementation/source checks; the receiving Railway owner
+retains delivery of the identified user build. No deployment is part of this slice.

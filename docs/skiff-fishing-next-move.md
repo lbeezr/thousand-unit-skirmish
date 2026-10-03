@@ -3,10 +3,12 @@
 [Water waypoints](skiff-water-waypoints.md) · [Fishing](skiff-fishing.md) · [Selected groups](skiff-selected-groups.md)
 
 **Gameplay delivery remains open.** [PR131](https://github.com/lbeezr/thousand-unit-skirmish/pull/131)
-merged at `00f79a0`; the latest staging revision reported verified by the parent
-is `19cae81`. Deployment of this slice and ordinary-user acceptance are not yet
-confirmed. The [normal-game acceptance recipe](qa-skiff-normal-entry-2026-10-03.md)
-owns that remaining check for the next coordinated staging refresh.
+merged at `00f79a0`. Read-only Railway metadata on 3 October at 22:45 UTC confirms
+staging source `32f11d5` contains it, the paid pilot correction and normal
+Practice entry. Actual ordinary-user acceptance remains unverified because this
+executor cannot reach staging or launch its sandboxed browser. The
+[normal-game acceptance recipe](qa-skiff-normal-entry-2026-10-03.md) and
+[naval backlog](naval-workstream.md) retain that outcome and recovery action.
 
 Select owned Skiffs that are fishing and Shift-right-click water, including on
 the minimap. Their next Move waits for **one cargo delivery**, rather than

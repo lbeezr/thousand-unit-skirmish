@@ -35,7 +35,12 @@ function fixture(team = 0) {
     element.getBoundingClientRect = () => ({ height: visible(element) ? height : 0 });
   }
   const observers = [];
-  w.ResizeObserver = class { constructor(callback) { this.callback = callback; this.targets = []; observers.push(this); } observe(target) { this.targets.push(target); } };
+  w.ResizeObserver = class {
+    constructor(callback) { this.callback = callback; this.targets = []; observers.push(this); }
+    observe(target) { this.targets.push(target); }
+    unobserve(target) { this.targets = this.targets.filter(element => element !== target); }
+    disconnect() { this.targets = []; }
+  };
   w.ui = {};
   for (const [, name, selector] of source.matchAll(/^\s*(\w+): document\.querySelector\('([^']+)'\)/gm)) w.ui[name] = d.querySelector(selector);
   Object.assign(w, { ...economyClientBindings(),
@@ -540,9 +545,10 @@ test('closing a drawer whose opener became hidden, disabled or disconnected rest
 
 test('both command rows are observed; empty state reserves the Quick row, not a vanished bar', t => {
   const f = fixture(); t.after(() => f.dom.window.close());
-  assert.deepEqual(f.observers[0].targets, [f.bar, f.quick]);
+  const rowObserver = f.observers.find(observer => observer.targets.includes(f.bar) && observer.targets.includes(f.quick));
+  assert.deepEqual(rowObserver.targets, [f.bar, f.quick]);
   for (const [ids, expected] of [[[], '52px'], [[0], '86px'], [[1], '86px'], [[], '52px']]) {
-    f.select(ids); f.observers[0].callback();
+    f.select(ids); rowObserver.callback();
     assert.equal(f.d.querySelector('.workspace').style.getPropertyValue('--context-bar-height'), expected);
   }
 });
