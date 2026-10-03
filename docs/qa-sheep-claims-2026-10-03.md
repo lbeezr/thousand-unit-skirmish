@@ -37,6 +37,15 @@ current-state malformed teams reject. Rematch restores neutral authored Sheep.
   cargo conservation. Independent final-head review is recorded in
   [PR194](https://github.com/lbeezr/thousand-unit-skirmish/pull/194).
 
+The broad regression run initially passed1509/1514 checks (the51 military
+checks ran separately). Its five failures were shared baseline fixtures:
+three release-cleanup probes omitted the extracted parser dependency, reproduced
+against main331df727 in an isolated script archive; two PvE recovery attacks
+needed the explicit aggressive stance already fixed on refreshed main. The
+release fixture now copies the actual parser and links its ordinary installed
+dependencies. All29 affected temporary-resource/PvE regroup checks pass. The
+final integrated suite and exact release digest are recorded in PR194.
+
 ## Delivery and remaining ownership
 
 The normal authoritative runtime enables claiming without a preview switch.
