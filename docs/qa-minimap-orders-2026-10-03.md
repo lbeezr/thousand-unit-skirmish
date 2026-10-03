@@ -1,6 +1,6 @@
 # Tactical map movement and selection centering — 3 October 2026
 
-[Testing](testing.md) · [Game bible](game-bible.md) · [PR #76](https://github.com/lbeezr/thousand-unit-skirmish/pull/76)
+[Testing](testing.md) · [Game bible](game-bible.md) · [PR #76](https://github.com/lbeezr/thousand-unit-skirmish/pull/76) · [Harness correction #89](https://github.com/lbeezr/thousand-unit-skirmish/pull/89)
 
 The former tactical-map pointer handler accepted only the left button and moved
 or dragged the camera. Selected units had no minimap destination control.
@@ -58,9 +58,16 @@ runner now observes the existing Three.js camera through an unchanged native
 raycast call, waits for a fresh sample after input, and separately checks boot,
 map and team. Real Three.js regressions cover a view where all four corners miss
 terrain and verify that observation preserves ray results. Failed runs include
-stage, boot/map/team/network and camera diagnostics. Gameplay code is unchanged
+stage, boot/entry/map/team/network and camera diagnostics. Gameplay code is unchanged
 by this harness correction. A successful native retry and screenshot review
 remain outstanding.
+
+After integrating the new main menu, the fixture uses the documented explicit
+`?play=1` diagnostic route. Ordinary `/` opens the menu without a game WebSocket;
+the runner separately requires `data-entry="game"` before input.
+The integrated harness correction passes 58 camera/input/HUD/navigation/entry
+checks and the served import audit covers 88 modules from the game entrypoint.
+Independent review found no camera-probe or entry-route blockers.
 
 ## Exact Mac automated recipe
 
@@ -92,7 +99,7 @@ and cannot report `passed: true`; this script has not been run successfully here
 
 ## Exact human click recipe
 
-Start a disposable local worker, then open its URL in one regular and one private
+Start a disposable local worker, then open `http://127.0.0.1:4174/?play=1` in one regular and one private
 Chrome window to obtain different seats:
 
 ```sh

@@ -68,9 +68,10 @@ try {
   browser = await createFortifiedBrowser();
   for (const team of [0, 1]) {
     stage = `seat ${team}: map and client boot`;
-    const page = await browser.page(`http://127.0.0.1:${fixture.port}/`, { beforeScript: instrument + (team === 0 ? `;sessionStorage.setItem('thousand-unit-skirmish-session:default',${JSON.stringify(token)});` : '') });
+    // Deliberate diagnostic game entry; the ordinary root now opens the main menu.
+    const page = await browser.page(`http://127.0.0.1:${fixture.port}/?play=1`, { beforeScript: instrument + (team === 0 ? `;sessionStorage.setItem('thousand-unit-skirmish-session:default',${JSON.stringify(token)});` : '') });
     pages.push(page);
-    await page.wait(`document.documentElement.dataset.boot==='ready'&&__minimapProof.latest?.mapId===${JSON.stringify(map.id)}`, 'synced map and client boot');
+    await page.wait(`document.documentElement.dataset.boot==='ready'&&document.documentElement.dataset.entry==='game'&&__minimapProof.latest?.mapId===${JSON.stringify(map.id)}`, 'synced map and client boot');
     assert.equal((await read(page)).team, team);
     // Import the cached module used by the game; observe its existing raycaster unchanged.
     // Corner rays still run when the optional minimap viewport outline cannot be drawn.
@@ -169,7 +170,7 @@ try {
 finally {
   const diagnostics = failure ? await Promise.all(pages.map(async (page, seat) => ({
     seat, errors: page.errors,
-    view: await page.cdp.evaluate(`({boot:document.documentElement.dataset.boot||null,mapId:window.__minimapProof?.latest?.mapId||null,team:window.__minimapProof?.team??null,network:document.querySelector('#network-status')?.textContent||'',runtimeError:document.querySelector('#runtime-error')?.textContent||'',camera:window.__minimapProof?.camera||null,cameraSamples:window.__minimapProof?.cameraSamples||0})`).catch(error => ({ unavailable: error.message })),
+    view: await page.cdp.evaluate(`({boot:document.documentElement.dataset.boot||null,entry:document.documentElement.dataset.entry||null,mapId:window.__minimapProof?.latest?.mapId||null,team:window.__minimapProof?.team??null,network:document.querySelector('#network-status')?.textContent||'',runtimeError:document.querySelector('#runtime-error')?.textContent||'',menuError:document.querySelector('#game-menu-status')?.textContent||'',camera:window.__minimapProof?.camera||null,cameraSamples:window.__minimapProof?.cameraSamples||0})`).catch(error => ({ unavailable: error.message })),
   }))) : [];
   await writeFile(path.join(output, 'result.json'), JSON.stringify({ passed: !failure, browser: browser?.version || null, stage, records, diagnostics, failure: failure?.message || null }, null, 2));
   await browser?.dispose(); await fixture.dispose();
