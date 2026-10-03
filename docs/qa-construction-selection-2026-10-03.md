@@ -37,13 +37,14 @@ friendly registered construction, measured from their mean position with stable
 ID ties. Its label and action choose the same site. It preserves selection and
 does not recruit other workers. Server interaction, cooperative build progress,
 nearest builder access, palisade sequences and cargo-return logic are unchanged.
-The wall single-cell menu goes through the same selected-worker placement.
+The wall line and single-cell menu preserve the same selected-worker scope;
+the integrated PR #71 drag, keyboard, preview and wall payload behavior remains.
 
 The native two-seat scenario verifies single and cooperative assignments,
 unselected food/wood gathering and queued movement, empty/foreign/stale-generation
 rejection, nearest selected-helper resume, checkpoint restart and paid completion.
-52 focused selection, connection, HUD, affordability, roster, Return cargo and
-palisade tests pass. Rendering/picking are supplied in these checks; no Chrome
+74 focused selection, connection, HUD, affordability, roster, Return cargo,
+palisade, wall gesture and CI-sharding tests pass. Rendering/picking are supplied in these checks; no Chrome
 appearance or user's deployed session is claimed. Local browser sandbox/storage
 is unavailable. Integration/review evidence is recorded in the owning PR.
 
