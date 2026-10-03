@@ -3,12 +3,13 @@ import { setHudActionAvailability, isHudActionUnavailable } from './hud-layout.m
 // Localized control text for the command IDs in docs/military-stances.md.
 // Authoritative eligibility and stance come from generation-matched snapshots.
 export const STANCE_CHOICES = Object.freeze([
-  { id: 'aggressive', label: 'Aggressive', hint: 'Military only: acquire nearby visible enemies and pursue within a bounded area.' },
-  { id: 'defensive', label: 'Defensive', hint: 'Military only: defend near the anchor and return after combat.' },
-  { id: 'standGround', label: 'Stand ground', hint: 'Military only: attack within weapon range without chasing.' },
-  { id: 'noAttack', label: 'No attack', hint: 'Military only: do not acquire targets automatically; explicit Attack remains available.' },
+  { id: 'aggressive', label: 'Aggressive', hint: 'Military only: acquire visible enemies within 4.8 cells; pursue up to 8 cells from the anchor.' },
+  { id: 'defensive', label: 'Defensive', hint: 'Military only: acquire within 3 cells or weapon range; travel up to 3 cells from the anchor, then return.' },
+  { id: 'standGround', label: 'Stand ground', hint: 'Military only: acquire in weapon range; never chase, even with focused Attack.' },
+  { id: 'noAttack', label: 'No attack', hint: 'Military only: no automatic acquisition; explicit focused Attack still works.' },
 ]);
 const valid = new Set(STANCE_CHOICES.map(choice => choice.id));
+const orderHint = 'Keeps Move and queued waypoints; focused Attack has priority within this stance. Releases military Hold without moving. Stop clears orders and sets No attack.';
 
 export function applyUnitStances(units, rows, team, definitions) {
   for (const unit of units) if (unit) unit.combatStance = null;
@@ -45,7 +46,7 @@ export function updateCombatStanceControls(root, context) {
       const pressed = model.stance === choice?.id;
       button.setAttribute('aria-pressed', String(pressed));
       button.querySelector('[data-stance-check]').hidden = !pressed;
-      button.title = [choice?.hint, model.reason].filter(Boolean).join(' ');
+      button.title = [choice?.hint, orderHint, model.reason].filter(Boolean).join(' ');
       setHudActionAvailability(button, !model.selected.length || Boolean(model.reason), true);
     }
   }

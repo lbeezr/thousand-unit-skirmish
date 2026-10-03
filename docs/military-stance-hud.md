@@ -1,14 +1,17 @@
 # Selected military stance controls
 
 HUD owner: HUD integration lane. Combat owner retains simulation and the
-[command/snapshot contract](https://github.com/lbeezr/thousand-unit-skirmish/blob/f2b487dbb98ce3856d88bf4f14b1d7a6041abdfa/docs/military-stances.md)
-in [PR159](https://github.com/lbeezr/thousand-unit-skirmish/pull/159).
+[command/snapshot contract](military-stances.md)
+merged in [PR159](https://github.com/lbeezr/thousand-unit-skirmish/pull/159) at
+`913afa2b0658327988b69533d6a93ea4b2e901dd`.
 
 The existing selected-unit command strip has four written choices: Aggressive,
 Defensive, Stand ground and No attack. A checkmark and `aria-pressed` identify a
 confirmed common choice; Mixed is written when eligible selections differ.
 Tooltips explain automatic acquisition/chase limits and that military alone is
-affected. The controls add no panel or keyboard shortcut and retain the strip's
+affected, existing Move/queued waypoint priority, focused Attack, release of
+military Hold and Stop clearing orders into No attack. The controls add no panel
+or keyboard shortcut and retain the strip's
 44px targets, overflow, existing actions and dismissible drawer.
 
 Only current own-seat, living, armed military with a matching
@@ -40,8 +43,9 @@ fresh activation guards and hidden-group focus recovery. Source checks do not
 establish native layout, VoiceOver or authoritative combat behavior.
 
 The HUD PR retains default integration, served module/release checks and an
-identified user deployment. The combat command provider must be integrated before
-claiming a working normal-game stance outcome. After parent-owned Mac reconnect,
+identified user deployment. The combat provider is integrated with schema 25;
+its [simulation/recovery evidence](qa-military-stances-2026-10-03.md) retains policy
+acceptance separately. After parent-owned Mac reconnect,
 use the ordinary military selection on that identified build: select paid
 Infantry/Archers on both seats, issue all four choices, confirm the subsequent
 snapshot, then select a mixed Worker/army group and verify Workers retain tasks.
