@@ -112,15 +112,32 @@ modify or recapture the GLB, nor establish normals, join distance, depth pixels 
 GPU performance. No private-source transfer/publication, new art generation,
 paid provider, credential or security changes were used.
 
-## Next selection
+## Accepted continuation and next selection
+
+Parent accepted generic oak worked/low/depleted runtime adoption and selected
+the cliff source's low-ridge role; no parent design decision remains pending.
+The normal [three-state oak pack](../assets/environment/frontier-oak-depletion-atlas-v1/README.md)
+is separate from the four-state lossless reference. Its six quality-86 mips total
+1,191,760 bytes plus JSON and 27.54 MiB decoded RGBA. Alpha remains unchanged
+against independent source-cell filtering. Inherited root/canvas/scale and
+existing full/directional/regional selection remain. The successful loader
+decodes verified bytes once and skips the three individual state downloads;
+those individual files still ship as failure fallbacks. This adds 373,820 encoded
+bytes and about 3.55 MiB decoded compared with the three old state images.
+The approved-runtime guard and packaged HTTP checks cover the new default path;
+[identified delivery and ordinary game stock/zoom/depth acceptance](qa-oak-depletion-atlas-adoption.md)
+remain owned by terrain integration. Shared renderer edits touch only resource
+selection/sampling; construction/building sprite behavior is preserved.
+
+Keep the low ridge out of normal binding until its [semantic placement constraints](../assets/environment/frontier-cliff-pilot-v1/README.md#low-ridge-placement-constraints)
+pass: use existing nonwalkable stone occupancy, contain the 4 × 1.306 footprint,
+match actual obstacle/vision height and flat terrain support, keep scale/view/depth
+registration, and prove two-cell repeats and terminal readability. Do not add
+navigation obstacles, change sight rules, imply walkable plateaus or stretch this
+source into tall walls. Current tall cliff/cap defaults remain. Terrain integration
+owns the join/cap/depth/readability work, with no generic parent approval gate.
 
 Parent has queued painted-ground Mac QA after Skiff/combat/Practice; terrain
-integration retains that acceptance. Keep its ordinary stochastic zoom/hash
-recipe open rather than blocking independent technical readiness behind the
-executor's browser/HTTP failure. The next resource action is a bounded receiving
-consumer/packaging proposal for generic oak depletion, with the exact selection
-and cost above; agree any shared-file overlap locally before editing it. Berries
-can be prepared separately if that path is useful. For the cliff, send the precise
-low-ridge versus tall-cliff role question to the proposed design owner while
-continuing independent source/depth validation. No generic parent approval gate
-or semantic-layer review is imposed on the oak fallback export.
+integration retains that separate acceptance. Continue justified technical work
+while the executor browser/HTTP failure persists. Berries remains a distinct
+later slice once the oak receiving path has ordinary-game evidence.

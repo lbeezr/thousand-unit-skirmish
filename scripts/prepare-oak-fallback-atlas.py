@@ -86,16 +86,16 @@ def layout(records):
     return cell, dimensions, frames
 
 
-def padded_cell(source, dimensions):
+def padded_cell(source, dimensions, pad=PAD):
     # Extend boundary RGB into transparent padding; keep all source samples exact.
     cell = Image.new("RGBA", dimensions)
-    x_spans = [(0, PAD, 0, 1), (PAD, PAD + source.width, 0, source.width),
-               (PAD + source.width, dimensions[0], source.width - 1, source.width)]
-    y_spans = [(0, PAD, 0, 1), (PAD, PAD + source.height, 0, source.height),
-               (PAD + source.height, dimensions[1], source.height - 1, source.height)]
+    x_spans = [(0, pad, 0, 1), (pad, pad + source.width, 0, source.width),
+               (pad + source.width, dimensions[0], source.width - 1, source.width)]
+    y_spans = [(0, pad, 0, 1), (pad, pad + source.height, 0, source.height),
+               (pad + source.height, dimensions[1], source.height - 1, source.height)]
     for left, right, sx, ex in x_spans:
         for top, bottom, sy, ey in y_spans:
-            if left == PAD and top == PAD:
+            if left == pad and top == pad:
                 piece = source
             else:
                 piece = source.crop((sx, sy, ex, ey)).resize((right - left, bottom - top), Image.Resampling.NEAREST)

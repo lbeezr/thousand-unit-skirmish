@@ -124,6 +124,7 @@ from source/candidate packs. Then use the relevant contract:
 - [Unit/building kit](unit-building-art.md) and [GLB finish proposal](unit-building-art-output-proposal.md).
 - [Environment library](environment-pack-v1.md), [regional kit production](regional-environment-kits.md), and [interactive states](environment-state-pack-v1.md).
 - [Terrain candidate readiness](terrain-candidate-readiness.md): read-only resource pixel checks, inspected cliff limits and the [ranked terrain backlog](asset-adoption-checklist.md#terrain-workstream-backlog).
+- [Generic oak depletion adoption](qa-oak-depletion-atlas-adoption.md): default state atlas, payload/runtime cost and retained deployment/game acceptance.
 - [Cursor/icon contract](ui-cursor-icon-contract.md).
 - [Asset directory index](../assets/README.md) for individual pack READMEs and provenance.
 
