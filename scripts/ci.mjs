@@ -56,6 +56,7 @@ run(['scripts/check-runtime-imports.mjs'], 'Runtime dependency boundaries and cy
 run(['node_modules/typescript/bin/tsc', '--project', 'tsconfig.check-js.json', '--pretty', 'false'],
   'Strict checked JavaScript boundary');
 run(['--test', 'scripts/check-types.test.mjs'], 'Checked JavaScript contract negative cases');
+run(['--test', 'scripts/resource-visual-state.test.mjs'], 'Resource stage membership and legacy transitions');
 
 run(['--test', 'scripts/scenario-regions.test.mjs'], 'Named scenario regions');
 run(['--test', 'scripts/scenario-authoring.test.mjs'], 'Visual scenario authoring contracts');
