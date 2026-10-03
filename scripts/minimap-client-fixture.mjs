@@ -64,4 +64,3 @@ export function minimapFixture(team = 0) {
     },
   };
 }
-
