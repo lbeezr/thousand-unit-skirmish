@@ -32,6 +32,12 @@ The tests exercise conservative stock display, exact fractional affordability,
 selection/Return cargo, private opponent-null banks, baseline reset, Mill food-only
 labels, and existing Farm/Dock/Skiff/wall/rematch surfaces.
 
+Review found that a supplied unsupported cargo type could retain a prior food
+label. `9a9142c` clears that type; omitted tuple fields retain legacy compatibility.
+Both-seat tuple transitions and 75 focused checks passed, and independent review
+confirmed the fix with 40 tuple checks. The same native browser proof passed again
+on clean `9a9142c`: [reviewed checks](../artifacts/stone-client-surfaces/2026-10-03/reviewed-checks.json).
+
 ```sh
 node --test scripts/economy-client.test.mjs scripts/client-rematch-recovery.test.mjs scripts/building-placement-forest.test.mjs scripts/dock-placement.test.mjs scripts/resource-format.test.mjs scripts/roster-building-ui.test.mjs scripts/depleted-resource-construction.test.mjs scripts/mill-contract.test.mjs scripts/construction-selection.test.mjs scripts/contextual-hud.test.mjs scripts/skiff-contracts.test.mjs scripts/wall-placement-client.test.mjs scripts/unit-visual-state.test.mjs scripts/selection-context.test.mjs scripts/skiff-fishing.test.mjs
 node scripts/economy-client-browser.mjs --output=/tmp/stone-client-surfaces-proof
