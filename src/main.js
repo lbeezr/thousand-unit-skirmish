@@ -17,7 +17,7 @@ import { ownedPopulationReadout } from './population-readout.mjs';
 import { SHIPPED_AUDIO_REFERENCES } from './audio-shipped-catalog.mjs';
 import { validateMapAudioReference } from './audio-event-profile.mjs';
 import { battlefieldCursor } from './battlefield-cursor.mjs';
-import { visibleHudRects, hudSafeRect, normalizeHudPreferences } from './hud-layout.mjs';
+import { visibleHudRects, hudSafeRect, normalizeHudPreferences, setHudActionAvailability, isHudActionUnavailable } from './hud-layout.mjs';
 import { objectiveSummary, rememberNotice } from './objective-summary.mjs';
 import { selectionContext } from './selection-context.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
@@ -1722,6 +1722,7 @@ function updateBuildingResearchControls(selectedBuilding) {
 
 function updateResearchOptions(container, building) {
   if (!container || typeof container.replaceChildren !== 'function') return;
+  const contextual = Object.hasOwn(container.dataset, 'contextResearchOptions');
   const own = building && building.team === localTeam;
   const teamState = localTeam === null ? null : latestTeamResearch[localTeam];
   const state = { team: localTeam, food: latestFood[localTeam] || 0, wood: latestWood[localTeam] || 0,
@@ -1733,7 +1734,10 @@ function updateResearchOptions(container, building) {
     for (const option of options) {
       const button = document.createElement('button'); button.type = 'button';
       button.className = 'economy-action'; button.dataset.technology = option.upgrade;
-      button.addEventListener('click', () => sendCommand({ type: 'researchUpgrade', buildingId: building.id, upgrade: option.upgrade }));
+      button.addEventListener('click', () => {
+        if (isHudActionUnavailable(button)) return;
+        sendCommand({ type: 'researchUpgrade', buildingId: building.id, upgrade: option.upgrade });
+      });
       container.append(button);
     }
   }
@@ -1741,7 +1745,7 @@ function updateResearchOptions(container, building) {
     const button = container.children[index]; const definition = TECHNOLOGY_DEFINITIONS[option.upgrade];
     const authoritative = building.researchOptions?.find(row => row.upgrade === option.upgrade);
     const reason = authoritative?.available === false ? authoritative.reason : option.reason;
-    button.disabled = !option.available || authoritative?.available === false;
+    setHudActionAvailability(button, !option.available || authoritative?.available === false, contextual);
     button.textContent = `${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason ? ` · ${reason}` : ''}`;
   }
 }
@@ -4249,7 +4253,7 @@ function updateCommandUI() {
   if (ui.commandHint) ui.commandHint.textContent = utilityBuilding ? BUILDING_DEFINITIONS[selectedBuilding.type].combat
       ? `Defends visible enemies within ${BUILDING_DEFINITIONS[selectedBuilding.type].combat.range} cells · ${BUILDING_DEFINITIONS[selectedBuilding.type].sight} sight.`
       : BUILDING_DEFINITIONS[selectedBuilding.type].dropoff
-        ? 'Workers deposit food and wood here when complete.'
+        ? `Workers deposit ${BUILDING_DEFINITIONS[selectedBuilding.type].dropoff.join(' and ')} here when complete.`
         : `Adds ${BUILDING_DEFINITIONS[selectedBuilding.type].populationCapacity || 0} population capacity when complete.` : tapOrderArmed
     ? selectedBuilding ? 'Tap or click ground to set the rally point'
       : attackMoveMode ? 'Tap or click ground to advance and engage' : 'Tap or click ground, an enemy, or a resource'
@@ -4591,7 +4595,7 @@ function updateRosterProductionOptions(container, selectedProducer = null, catal
       const button = document.createElement('button');
       button.type = 'button'; button.className = 'economy-action'; button.dataset.product = kind;
       button.addEventListener('click', () => {
-        if (button.disabled || button.getAttribute('aria-disabled') === 'true') return;
+        if (isHudActionUnavailable(button)) return;
         const building = latestBuildings.find((row) => row.id === Number(button.dataset.producer));
         if (building) sendCommand({ type: 'trainUnit', kind, buildingId: building.id });
       });
@@ -4621,9 +4625,7 @@ function updateRosterProductionOptions(container, selectedProducer = null, catal
     const authoritative = producer?.productionOptions?.find((option) => option.kind === definition.id);
     const authoritativeReason = authoritative && !authoritative.available ? authoritative.reason : '';
     const unavailable = Boolean(reason || populationReason || authoritativeReason);
-    // Contextual products retain focus so their block reason stays discoverable.
-    button.disabled = unavailable && !contextual;
-    if (contextual) button.setAttribute('aria-disabled', String(unavailable));
+    setHudActionAvailability(button, unavailable, contextual);
     button.textContent = `Train ${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason || populationReason || authoritativeReason ? ` · ${authoritativeReason || reason || populationReason}` : ''}`;
   }
   container.hidden = products.length === 0;

@@ -27,3 +27,14 @@ export function hudSafeRect(bounds, obstacles, gap = 8) {
 export function normalizeHudPreferences(value = {}) {
   return { density: value?.density === 'comfortable' ? 'comfortable' : 'compact', minimap: ['small', 'large', 'hidden'].includes(value?.minimap) ? value.minimap : 'small' };
 }
+
+export function setHudActionAvailability(button, unavailable, inspectable = false) {
+  // Keep contextual costs and block reasons reachable without moving focus.
+  button.disabled = unavailable && !inspectable;
+  if (inspectable) button.setAttribute('aria-disabled', String(unavailable));
+  else button.removeAttribute('aria-disabled');
+}
+
+export function isHudActionUnavailable(button) {
+  return button.disabled || button.getAttribute('aria-disabled') === 'true';
+}

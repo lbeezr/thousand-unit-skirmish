@@ -222,6 +222,15 @@ the Worker replans and retains its cargo. With no reachable drop-off it waits
 with the cargo rather than banking it remotely. Storehouses provide no units or
 population. Their current House-shaped procedural presentation is a placeholder.
 
+Mill is the food-only alternative: 75 wood, 15 seconds of Worker construction,
+1,000 HP and a 3 × 3 footprint. These are provisional tunable values: its lower
+price, shorter build time and lower durability trade away Storehouse's wood
+drop-off. It accepts any existing food cargo through the same friendly completed
+drop-off routing; wood still needs a Storehouse or Town Center. It produces no
+units or population and does not generate or multiply food. Mill currently uses
+the existing procedural House appearance as an explicit placeholder until its
+own art is authored. It uses the same paid repair and cancellation rules.
+
 A one-cell Palisade uses **provisional test tuning** of 15 wood, five accumulated
 Worker-seconds and 300 HP. Whole lines reserve occupancy and pay atomically;
 existing friendly segments are reused without charge. Workers construct new
