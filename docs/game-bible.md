@@ -107,6 +107,15 @@ custom skirmish with construction, research and crossing rewards.
 Larger maps test travel, resource regions, forest clearing, and elevation.
 Match length and economy pacing must come from observed play.
 
+The current normal objective strip names authored **Objective Control** or
+**Elimination** rules explicitly. Objective maps can finish before substantial
+base development; they disable elimination. The [victory audit and mode proposal](victory-modes-audit-2026-10-03.md)
+records the precise recovery-aware defeat rules and a pending separation of
+economy Skirmish from fast Objective Control. Quick original custom-inspired
+modes should test the core while the longer RTS develops in parallel; automatic
+reinforcement/evolution and fantasy-world territorial play remain distinct later
+slices, with research and a representative regional proof before a full world map.
+
 Resource stocks and worker cargo display whole units rounded down; costs and
 positive shortfalls round up. Affordability uses exact authoritative values, so
 a display never rounds insufficient stock up to the purchase price.

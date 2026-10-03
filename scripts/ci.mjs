@@ -261,6 +261,7 @@ const scenarios = [
   ['scripts/simultaneous-lethal-combat-scenario.mjs', 'Simultaneous lethal combat fairness'],
   ['scripts/construction-connectivity-scenario.mjs', 'Construction preserves existing terrain connections'],
   ['scripts/elimination-scenario.mjs', 'Terminal elimination and reconnect'],
+  ['scripts/victory-elimination-native-scenario.mjs', 'Existing elimination recovery and clock boundaries'],
   ['scripts/persistent-command-scenario.mjs', 'Patrol and Follow authority/recovery'],
   ['scripts/stationary-command-scenario.mjs', 'Stop and hold authority/recovery'],
   ['scripts/queued-waypoint-scenario.mjs', 'Queued waypoint checkpoint recovery'],

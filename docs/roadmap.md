@@ -10,6 +10,13 @@ sequence and acceptance criteria. Existing solo/two-seat checks are the regressi
 floor; expansion of gameplay functionality is the next development outcome.
 Art proceeds separately against stable presentation interfaces.
 
+The [victory audit](victory-modes-audit-2026-10-03.md) proposes separate economy
+Skirmish and current fast Objective Control. Agree the mode/restore interface and
+AI base-objective support before changing ordinary defaults. Quick original
+reinforcement/evolution modes and a regional territorial slice are later testing
+grounds developed alongside the longer RTS; research will choose their first
+bounded playable contracts.
+
 Use the [RTS capability inventory](references/feature-coverage-inventory.md) as
 a loose roadmap for further maturity. AoE, openage and Warcraft identify systems
 we may match, adapt or improve; prioritize dependable player control, useful

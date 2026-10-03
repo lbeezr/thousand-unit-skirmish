@@ -14,13 +14,18 @@ not surveyed locations or confirmation of unresolved inhabitants. Multiple maps
 can share a region. Bellweather has a crossing map and an open orchard common;
 Ru’Lora has distinct living-fringe and petrified-interior expeditions.
 
-Every opening has 24 units, 150 food and 250 wood per seat, fog, mirrored resources,
+Every opening has 24 total units, 150 food and 250 wood per seat, fog, mirrored resources,
 clear Town Center footprints and three capture posts. Millrace and the remaining
 roster require both outer posts to unlock the watch, then all three owned for
 20 seconds. Rootways instead requires both outer clearings for 30 seconds;
 its central Supply Grove pays food/wood without being a prerequisite. On every
 map the central post's owner wins at 15 minutes; an unclaimed deadline draws.
 Equal relief supplies arrive at two minutes.
+
+These are **Objective Control** scenarios. Marked-zone maps disable army/base
+elimination; ownership persists after troops leave. A fast uncontested opening
+can satisfy the current win rules. See the [victory audit](victory-modes-audit-2026-10-03.md)
+for all authored rule values and the pending separate Skirmish default proposal.
 
 Millrace now has orchard-side food/wood expansions and three broad ford approaches.
 Three neutral Bellweather Sheep graze beside each home orchard, including one
