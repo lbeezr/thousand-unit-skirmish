@@ -121,6 +121,8 @@ run(['--test', 'scripts/performance-order-window.test.mjs'], 'Performance planni
 run(['--test', 'scripts/persistent-command.test.mjs'], 'Persistent tactical intent and bounded planning');
 run(['--test', 'scripts/stationary-command.test.mjs'], 'Stationary command tasks and controls');
 run(['--test', 'scripts/army-attack-continuation.test.mjs'], 'Focused military attack continuation and ordinary attack-move input');
+run(['--test', 'scripts/military-stance.test.mjs'], 'Military stances, idle defense, bounded return and command precedence');
+run(['scripts/military-stance-native-scenario.mjs'], 'Native two-seat stance commands and defensive return recovery');
 run(['--test', 'scripts/waypoint-backpressure.test.mjs'], 'Waypoint metadata under backpressure');
 run(['--test', 'scripts/worker-shutdown.test.mjs'], 'Signal-aware room worker shutdown');
 run(['--test', 'scripts/check-client-imports.test.mjs'], 'Served client import graph');
