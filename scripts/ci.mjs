@@ -104,6 +104,7 @@ run(['--test', 'scripts/contextual-hud.test.mjs'], 'Empty selection HUD and comm
 run(['--test', 'scripts/roster-production-ui.test.mjs'], 'Roster production choices');
 run(['--test', 'scripts/building-placement-forest.test.mjs'], 'Disclosed forest building placement');
 run(['--test', 'scripts/wall-line-planner.test.mjs'], 'Atomic modular wall-line authoring');
+run(['--test', 'scripts/wall-construction-draft.test.mjs'], 'Draft paid palisade preparation and lifecycle contracts');
 run(['--test', 'scripts/population.test.mjs'], 'Population reservations and capacity');
 run(['--test', 'scripts/population-readout.test.mjs'], 'Owned population presentation');
 run(['--test', 'scripts/population-ai.test.mjs'], 'AI capacity construction and recovery');
