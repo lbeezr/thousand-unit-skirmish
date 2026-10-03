@@ -30,7 +30,7 @@ function groundDepthShader() {
 
 test('building ground-depth shader matches projected ground contact without flattening to the near plane', () => {
   const patched = groundDepthShader();
-  for (const direction of [CAMERA_VIEW_DIRECTION, [8, 10, 8], [1, 3, 1]]) {
+  for (const direction of [CAMERA_VIEW_DIRECTION, [8, 10, 8], [1, 3, 1], [-.78, 1.12, .78], [.78, 1.12, -.78]]) {
     for (const height of [0, 2.4]) {
       const root = new THREE.Vector3(2, height + .035, -1);
       const camera = new THREE.OrthographicCamera(-4, 4, 4, -4, .1, 300);
@@ -225,6 +225,62 @@ test('body-depth cost stays at one extra shared-geometry pass per loaded sprite 
   assert.ok(bodyPasses.every(pass => pass.visible && pass.material.side === THREE.FrontSide),
     'one front-face draw, without the transparent DoubleSide two-draw path');
   scene.traverse(child => child.material?.dispose()); texture.dispose();
+});
+
+test('renderer depth correctness has no 128-item truncation and does not add picking hits', async () => {
+  const scene = new THREE.Scene(), texture = new THREE.Texture();
+  const camera = new THREE.OrthographicCamera(-4, 4, 4, -4, .1, 300);
+  camera.position.set(10, 12, 10); camera.lookAt(0, 0, 0); camera.updateMatrixWorld();
+  const groups = [];
+  for (let i = 0; i < 129; i++) {
+    const group = new THREE.Group(); scene.add(group); groups.push(group);
+    group.position.set(i * 8, i % 2 ? 2.4 : 0, 0);
+    attachBuildingSprite(group, [], { type: 'barracks', team: i % 2, complete: true }, undefined,
+      () => ({ texture, ready: Promise.resolve(true) }));
+  }
+  await Promise.resolve(); scene.updateMatrixWorld(true);
+  for (const group of groups) {
+    const depth = group.children.find(child => child.userData.buildingBodyDepth);
+    assert.equal(depth.visible, true, 'every loaded building retains its own depth pass, including the last');
+    assert.equal(depth.material.depthWrite, true);
+  }
+  const last = groups.at(-1), color = last.children.find(child => child.isSprite);
+  camera.position.copy(last.position).add(new THREE.Vector3(10, 12, 10));
+  camera.lookAt(last.position); camera.updateMatrixWorld();
+  const raycaster = new THREE.Raycaster(); raycaster.setFromCamera(new THREE.Vector2(0, .35), camera);
+  const hits = raycaster.intersectObject(last, true);
+  assert.equal(hits.length, 1, 'actual Three raycast retains the original rectangular color-sprite hit');
+  assert.equal(hits[0].object, color, 'the added depth sprite cannot become a duplicate selection target');
+  scene.traverse(child => child.material?.dispose()); texture.dispose();
+});
+
+test('authoritative cap rejects new buildings before worker lookup but keeps existing construction resumable', () => {
+  const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
+  const start = server.indexOf('function buildBuilding(');
+  const source = server.slice(start, server.indexOf('\nfunction ', start + 1));
+  const limit = Number(server.match(/const MAX_BUILDINGS = (\d+);/)[1]);
+  const notices = []; let lookups = 0, resumes = 0;
+  const context = vm.createContext({ MAX_BUILDINGS: limit, buildings: [], teamUpgrades: [[], []],
+    BUILDING_DEFINITIONS: { barracks: {} }, buildingRulesFor: () => ({}),
+    missingGameplayPrerequisites: () => [],
+    rejectBuild: (_player, reason) => notices.push(reason),
+    commandUnits: () => { lookups++; return []; },
+    resumeBuildingConstruction: () => { resumes++; },
+  });
+  vm.runInContext(source, context);
+  const player = { team: 0 }, command = { buildingType: 'barracks', ids: [0], x: 1, z: 1 };
+  context.buildings = Array.from({ length: limit - 1 }, (_, id) => ({ id }));
+  context.buildBuilding(player, command);
+  assert.equal(notices.pop(), 'SELECT A WORKER'); assert.equal(lookups, 1);
+  for (const count of [limit, limit + 1]) {
+    context.buildings = Array.from({ length: count }, (_, id) => ({ id }));
+    context.buildBuilding(player, command);
+    assert.equal(notices.pop(), 'BUILDING LIMIT REACHED');
+    assert.equal(context.buildings.length, count, 'rejection admits no new building');
+    assert.equal(lookups, 1, 'reject before selecting builders or reaching the construction/debit path');
+  }
+  context.buildBuilding(player, { ...command, buildingId: 127 });
+  assert.equal(resumes, 1, 'resuming an existing ID does not allocate another building');
 });
 
 test('live Barracks updates advance the sprite through construction and damage for both teams', async () => {

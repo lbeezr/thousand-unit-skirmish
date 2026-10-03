@@ -121,6 +121,8 @@ from source/candidate packs. Then use the relevant contract:
 - [Technical-art checkpoint](technical-art-surfacing-checkpoint-2026-09-26.md).
 - [Building sprite body occlusion](qa-building-sprite-occlusion-2026-10-03.md):
   shared-art depth pass, source alpha evidence, draw bound and pending native observation.
+- [Native building occlusion comparison](qa-building-occlusion-native-plan-2026-10-03.md):
+  crowded paired fixture, 128/129 boundary tests, actual draw/GPU counters and exact Mac recipe; native results pending.
 - [Historical archive](archive/README.md): original measurements, ledgers, and prototype history.
 
 ## Keep these docs useful
