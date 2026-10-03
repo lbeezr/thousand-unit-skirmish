@@ -87,7 +87,7 @@ try {
   assert.match(await handoff.text(), /export function shoreFishSitePositions/);
   let clients = observe([await fixture.connect(0), await fixture.connect(1)]);
   const tokens = clients.map(client => client.welcome.player.sessionToken);
-  assert.ok(clients[0].welcome.maps.some(entry => entry.id === map.id && /Lab.*SHORE FISHING/.test(entry.name)),
+  assert.ok(clients[0].welcome.maps.some(entry => entry.id === map.id && entry.name.endsWith(map.name)),
     'usable pilot is discoverable through the ordinary match map catalog');
   const after = clients.map(client => client.messages.length);
   clients[0].send({ type: 'selectMap', mapId: map.id });

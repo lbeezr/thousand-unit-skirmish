@@ -1,7 +1,17 @@
 // Visual-only paint masks. Map cells still own collision, elevation and resources.
+/**
+ * @typedef {Readonly<{column: number, row: number, width: number, height: number,
+ *   material: string}>} TerrainPaintPatch
+ * @typedef {Readonly<{width: number, height: number, terrainSeed?: number,
+ *   terrainPatches?: ReadonlyArray<TerrainPaintPatch> | null,
+ *   obstacles?: ReadonlyArray<import('./forest-habitat.mjs').ForestObstacle> | null}>} TerrainMaskMap
+ * @typedef {{material: string, width: number, height: number, pixels: Uint8Array}} TerrainBlendMask
+ */
 const KERNEL = [1, 4, 6, 4, 1];
+/** @param {number} value @param {number} maximum @returns {number} */
 const clamp = (value, maximum) => Math.max(0, Math.min(maximum, value));
 
+/** @param {Float32Array} source @param {number} width @param {number} height @returns {Float32Array} */
 function blur(source, width, height) {
   const horizontal = new Float32Array(source.length);
   const result = new Float32Array(source.length);
@@ -24,6 +34,14 @@ function blur(source, width, height) {
   return result;
 }
 
+/**
+ * @param {Float32Array} field
+ * @param {number} width
+ * @param {number} height
+ * @param {number} x
+ * @param {number} y
+ * @returns {number}
+ */
 function sample(field, width, height, x, y) {
   x = clamp(x, width - 1);
   y = clamp(y, height - 1);
@@ -34,6 +52,13 @@ function sample(field, width, height, x, y) {
     + (field[y1 * width + x0] * (1 - tx) + field[y1 * width + x1] * tx) * ty;
 }
 
+/**
+ * @param {TerrainMaskMap} definition
+ * @param {ReadonlyArray<string>} materials
+ * @param {string} base
+ * @param {boolean} [organic]
+ * @returns {TerrainBlendMask[]} Ordered RGBA byte masks at twice the map dimensions.
+ */
 export function buildTerrainBlendMasks(definition, materials, base, organic = false) {
   const scale = 2;
   const width = definition.width * scale, height = definition.height * scale;
@@ -56,6 +81,7 @@ export function buildTerrainBlendMasks(definition, materials, base, organic = fa
   // every border or making the last catalog material dominate a three-way join.
   const order = [baseIndex, ...materials.map((_, i) => i).filter(i => i !== baseIndex && present.has(i))];
   const cumulative = new Float32Array(width * height);
+  /** @type {TerrainBlendMask[]} */
   const masks = [];
   const displacedX = new Float32Array(width * height);
   const displacedY = new Float32Array(width * height);
@@ -95,6 +121,7 @@ export function buildTerrainBlendMasks(definition, materials, base, organic = fa
   return masks;
 }
 
+/** @param {TerrainMaskMap} definition @param {string} [material] @returns {TerrainBlendMask | null} */
 export function buildForestGroundMask(definition, material = 'forest-floor') {
   const terrainPatches = (definition.obstacles || [])
     .filter(rect => rect.material === 'forest')

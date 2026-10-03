@@ -98,7 +98,7 @@ async function peek(room, token) {
 async function startSupervisor() {
   child = spawn(process.execPath, ['room-supervisor.mjs'], { cwd: root,
     env: { ...process.env, PORT: String(port), RTS_HOST: '127.0.0.1', RTS_ROOM_DATA_DIRECTORY: data,
-      RTS_CUSTOM_MAP_DIRECTORY: path.join(data, 'default-maps'), RTS_MAX_ROOMS: '4',
+      RTS_CUSTOM_MAP_DIRECTORY: path.join(data, 'default-maps'), RTS_MAX_ROOMS: '5',
       RTS_ACCESS_USER: 'menu-test', RTS_ACCESS_PASSWORD: 'local-test-password-for-entry' }, stdio: ['ignore', 'pipe', 'pipe'] });
   child.stdout.on('data', chunk => { output += chunk; }); child.stderr.on('data', chunk => { output += chunk; });
   await until(async () => { try { return (await api('/ready')).ok; } catch { return false; } }, 'ready');
@@ -137,6 +137,28 @@ try {
   assert.equal(activeResume.welcome.player.resumePending, true);
   assert.equal(activeResume.welcome.player.team, null);
   assert.equal(activeResume.welcome.matchId, oldMatch);
+  let finishCreation, createdWhileAway, deliveredCreation = false;
+  const delayedMenu = await menu({}, async (url, options = {}) => {
+    const response = await api(url, options);
+    if (options.method === 'POST') {
+      createdWhileAway = (await response.clone().json()).roomId;
+      await new Promise(resolve => { finishCreation = resolve; });
+      const readJson = response.json.bind(response);
+      response.json = async () => { const value = await readJson(); deliveredCreation = true; return value; };
+    }
+    return response;
+  });
+  const peersBeforeExit = (await (await api('/health')).json()).connectedInvitePeers;
+  delayedMenu.click('menu-practice');
+  await until(() => finishCreation, 'pending real Practice creation response');
+  delayedMenu.dom.window.dispatchEvent(new delayedMenu.dom.window.PageTransitionEvent('pagehide', { persisted: true }));
+  finishCreation();
+  await until(() => deliveredCreation, 'completed creation after menu exit');
+  assert.equal(delayedMenu.navigations.length, 0, 'late real HTTP creation cannot navigate a departed menu');
+  assert.equal((await (await api('/health')).json()).connectedInvitePeers, peersBeforeExit);
+  assert.deepEqual((await (await api(`/api/rooms/${createdWhileAway}`)).json()).launchOptions, { mode: 'pvp', practice: true },
+    'an already accepted room creation remains governed by ordinary room expiry');
+  delayedMenu.dom.window.close();
   profile.click('menu-create-room'); profile.click('menu-create-room');
   await until(() => profile.navigations.length, 'create PvP');
   const pvpRoom = profile.navigations[0].searchParams.get('room');
@@ -231,7 +253,7 @@ try {
   recoveredPractice.send({ type: 'gather', ids: [0], nodeId: 'azure-berries' });
   await savedPractice(saved => saved.mapDefinition.id === 'frontier-materials' && saved.state.teamFood[0] > 0);
   console.log(JSON.stringify({ passed: ['authenticated menu without automatic default admission', 'read-only active/stale session inspection',
-    'interrupted authentication retains saved Resume without admission', 'strict Resume cannot allocate a new seat', 'fresh PvP lobby and both-seat launch', 'explicit saved-room Resume',
+    'interrupted authentication retains saved Resume without admission', 'strict Resume cannot allocate a new seat', 'departed menu ignores completed real Practice creation', 'fresh PvP lobby and both-seat launch', 'explicit saved-room Resume',
     'fresh AI and Map Studio rooms', 'one-player practice across all current lab maps and rematch',
     'practice checkpoint/seat recovery and real Worker food deposit', 'actionable seeded AI map and army protection', 'old default identity/checkpoint retained', 'entry and lazy client import delivery'],
     modules: imports.length, practiceLabMaps: labMaps.map(map => map.id) }));

@@ -39,7 +39,7 @@ existing values; the Skiff registry declares its provisional fishing rate.
 Import authored JSON into Map Studio. Stock changes, selection, removal,
 undo/redo and export preserve the variant; a bank marker appears as `F` in the
 Studio. Export/publish validation checks the same shoreline rule as the server.
-There is no dedicated fish placement brush. The selectable **Lab · SHORE FISHING**
+There is no dedicated fish placement brush. The selectable **SHORE FISHING**
 map supplies two seeded, mirrored sites using this contract.
 
 ## Seeded authoring and pilot
