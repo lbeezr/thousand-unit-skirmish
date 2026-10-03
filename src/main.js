@@ -1,3 +1,5 @@
+import { findInvalidResourceVariant, isShoreFish } from './shore-fishing.mjs';
+import { createShoreFishPlaceholder, updateShoreFishPlaceholder } from './shore-fishing-placeholder.mjs';
 import { generateRollingGround, smoothGround } from './terrain-authoring.mjs';
 import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS, validateMapRegion } from './regions.mjs';
@@ -18,6 +20,7 @@ import { selectionContext } from './selection-context.mjs';
 import { createRoomLobby } from './room-lobby-ui.mjs';
 import * as THREE from 'three';
 import { attachBuildingSprite } from './building-sprites.mjs';
+import { frontierBuildingPreviewUrl } from './frontier-building-preview.mjs';
 import {
   createCapturedBuildingSprite, disposeCapturedBuildingSprite,
   updateCapturedBuildingSprite,
@@ -1287,15 +1290,7 @@ function updateWatchtowerVisual(visual, building) {
   }
 }
 
-const frontierCompleteManifests = Object.freeze(Object.fromEntries([
-  ['town-center', 'frontier-civilization-scale-pilot-v1'],
-  ['house', 'frontier-civilization-scale-pilot-v1'],
-  ['storehouse', 'frontier-civilization-models-v1'],
-  ['stable', 'frontier-civilization-models-v1'],
-  ['workshop', 'frontier-civilization-models-v1'],
-  ['watchtower', 'frontier-civilization-models-v1'],
-].map(([type, pack]) => [type, new URL(`../assets/buildings/${pack}/${type}-complete-renderer.json`, import.meta.url).href])));
-const frontierBuildingsPreview = roomPageUrl.searchParams.get('frontierBuildingsPreview') === '1';
+const frontierBuildingsPreview = roomPageUrl.searchParams.get('frontierBuildingsPreview');
 
 function createGameplayBuildingVisual(building) {
   const role = buildingPresentation(building.type).role;
@@ -1303,8 +1298,8 @@ function createGameplayBuildingVisual(building) {
     : role === 'town-center' ? createTownCenterVisual(building)
       : role === 'house' ? createHouseVisual(building)
         : role === 'barracks' ? createBarracksVisual(building) : createArcheryRangeVisual(building);
-  const manifestUrl = frontierCompleteManifests[building.type];
-  if (frontierBuildingsPreview && manifestUrl) {
+  const manifestUrl = frontierBuildingPreviewUrl(building.type, frontierBuildingsPreview);
+  if (manifestUrl) {
     // Wrap artwork only; gameplay feedback and fog remain on the existing group.
     const feedback = new Set([visual.outline, visual.productionLamp, visual.rallyMarker,
       visual.healthIndicator?.group, visual.combatFeedback?.targetRing, visual.combatFeedback?.impactFlash]);
@@ -1742,7 +1737,7 @@ function resourceCalloutTexture(type) {
   context.textAlign = 'left';
   context.textBaseline = 'middle';
   context.fillStyle = '#f2f6dd';
-  context.fillText(type === 'wood' ? 'WOOD' : 'FOOD', 50, 33);
+  context.fillText(type === 'shore-fish' ? 'FISH · FOOD' : type === 'wood' ? 'WOOD' : 'FOOD', 50, 33);
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   resourceCalloutTextures.set(type, texture);
@@ -1800,15 +1795,17 @@ function addResourceNodeVisual(node) {
   addMapObject(ring);
 
   const callout = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: resourceCalloutTexture(nodeType), transparent: true, depthTest: false,
+    map: resourceCalloutTexture(isShoreFish(node) ? 'shore-fish' : nodeType), transparent: true, depthTest: false,
     depthWrite: false, fog: false, toneMapped: false,
   }));
   callout.position.set(node.x, groundHeight(node.x,node.z)+1.8, node.z);
   callout.renderOrder = 15;
   callout.visible = false;
   addMapObject(callout);
+  const fishPlaceholder = isShoreFish(node) ? createShoreFishPlaceholder() : null;
+  if (fishPlaceholder) { ring.add(fishPlaceholder); updateShoreFishPlaceholder(fishPlaceholder, stage); }
   resourceNodeVisuals.set(node.id, {
-    type: nodeType, ring, stock: node.stock, startingStock: node.stock, stage,
+    fishPlaceholder, type: nodeType, ring, stock: node.stock, startingStock: node.stock, stage,
     x: node.x, z: node.z, callout,
   });
 }
@@ -1824,7 +1821,8 @@ function updateResourceNodeVisual(id, stock) {
   const nodeColor = visual.type === 'wood' ? 0x9bb877 : 0xe4bd63;
   visual.ring.material.color.setHex(stock > 0 ? nodeColor : 0x77806b);
   visual.ring.material.opacity = stock > 0 ? 0.78 : 0.35;
-  if (visual.type === 'wood') setWoodNodeTreeStage(id, stage);
+  if (visual.fishPlaceholder) updateShoreFishPlaceholder(visual.fishPlaceholder, stage);
+  else if (visual.type === 'wood') setWoodNodeTreeStage(id, stage);
   else setBerryNodeStage(id, stage);
 }
 
@@ -1973,7 +1971,7 @@ function buildBerryNodeInstances(nodes = []) {
   berryNodeStages.clear();
   berryStageCounts.clear();
   for (const stage of RESOURCE_VISUAL_STAGES) berryStageCounts.set(stage, 0);
-  const berryNodes = nodes.filter((node) => node.type === 'food');
+  const berryNodes = nodes.filter((node) => node.type === 'food' && !isShoreFish(node));
   if (berryNodes.length === 0) return;
   const positions = berryNodes.map((node) => ({ x: node.x, z: node.z, scale: 1 }));
   for (let index = 0; index < berryNodes.length; index++) {
@@ -4307,7 +4305,8 @@ function applyState(state, initial = false) {
   const visibleEnemyIds = new Set();
   for (const row of state.units || []) {
     const [id, team, x, z, hp, kind, cargo, cargoType, generation = 0, taskStatus,
-      targetedBy = 0, attackTick = -1, attackX = null, attackZ = null] = row;
+      targetedBy = 0, attackTick = -1, attackX = null, attackZ = null,
+      audioExecution = null, workHeading = null] = row;
     const existingUnit = units[id];
     const unit = existingUnit || appendUnitFromState(row, !initial);
     if (!unit || unit.team !== team) continue;
@@ -4344,6 +4343,7 @@ function applyState(state, initial = false) {
     }
     unit.serverX = x;
     unit.serverZ = z;
+    unit.workHeading = Number.isFinite(workHeading) ? workHeading : null;
     if (kind && unit.kind !== kind) {
       unit.kind = kind;
       cargoVisualMayChange = true;
@@ -6130,6 +6130,8 @@ function validateImportedMap(value) {
   }
   const elevationLevels = (definition.elevationPatches || []).some((patch) => patch.level > 0)
     ? buildElevationGrid(definition.width, definition.height, definition.elevationPatches) : null;
+  const invalidVariant = findInvalidResourceVariant(definition);
+  if (invalidVariant) throw new Error(`Resource node ${invalidVariant.nodeId}: ${invalidVariant.reason}.`);
   const unreachableNode = findUnreachableResourceNode(
     definition.width, definition.height, blockedCells, definition.spawnPoints, definition.resourceNodes,
     elevationLevels,
@@ -6670,6 +6672,12 @@ function drawEditorGrid() {
       context.lineTo(x + 0.34, y + 0.07);
       context.closePath();
       context.fill();
+    } else if (isShoreFish(node)) {
+      context.fillStyle = '#286173';
+      context.font = '0.7px monospace';
+      context.textAlign = 'center';
+      context.fillText('F', x, y + 0.24);
+      context.textAlign = 'start';
     } else {
       context.fillStyle = '#713c50';
       context.beginPath();
@@ -9692,6 +9700,9 @@ function animate(now) {
       unit.targetAngle = Math.atan2(dx, dz);
       unit.motionPhase += frameDelta * 14;
       moved = true;
+    } else if (unit.hp > 0 && unit.task === 'gathering' && !unit.attackStartedAt
+      && Number.isFinite(unit.workHeading)) {
+      unit.targetAngle = unit.workHeading;
     }
     let turning = false;
     if (unit.targetAngle !== unit.angle) {

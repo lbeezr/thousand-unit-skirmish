@@ -91,6 +91,12 @@ checks cannot prove that an image never existed outside Git.
 
 ## Preservation practice
 
+The [3 October building/environment audit](../art-runtime-audit-2026-10-03.md)
+links all eight Frontier concepts to the six completed model records and 48
+directional captures, distinguishes older default art, and records precise
+lifecycle and cloud-source gaps. The Town Center's existing Complete captures
+now have a bounded release preview path. Original source records remain intact.
+
 Keep each exploratory output under a distinct revision filename; retain rejected
 attempts and the reason they were rejected. Record date, exact prompt, input
 roles, source output ID, hash, dimensions, and selection/review status. For edits,

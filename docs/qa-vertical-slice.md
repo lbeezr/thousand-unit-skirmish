@@ -56,6 +56,20 @@ ordinary PRs use checks proportionate to their changes under
 
 ## Known findings and historical evidence
 
+### Villager walk and gathering facing — 3 October 2026
+
+Fork main `fdd9173` used animated-direction approximation that turned a
+screen-left Human Worker walk to front-facing art and every berry-gather heading
+to the sole right-facing clip. Exact Human walk/gather selection now retains
+authored idle facings when directional action art is absent. A new optional
+authoritative work heading turns stationary gatherers toward their resource,
+preserving movement/attack precedence, fog/ownership and default timing. The
+[dated evidence](qa-evidence/villager-facing-2026-10-03/README.md) includes actual
+decoded atlas pixels, all-eight-heading camera/UV/matrix checks, arrival/path/jitter
+regressions and both-seat private snapshots. Boughward's identical static headings
+remain an art limitation. Cloud browser startup failed its sandbox preflight;
+GPU and deployed appearance are unobserved.
+
 ### Grounded settlement sites — 30 September 2026
 
 Source `83645bed` plus settlement-ground changes: Bellweather Millrace and

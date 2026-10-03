@@ -73,6 +73,23 @@ A reused generation starts its first sprite frame at elapsed zero, including
 when death and replacement are coalesced between snapshots or atlas loading is
 still pending. The prior generation's clock cannot advance the new role's clip.
 
+Movement heading uses `atan2(serverX - renderX, serverZ - renderZ)` through the
+existing interpolation and turn-rate limits. Stationary gathering uses the
+optional authoritative unit-row `workHeading` at index 15. A fresh attack retains
+its target heading; walking still suppresses work. Idle and near-zero displacement
+retain the last heading. Zero yaw is +Z, increasing toward +X. With the fixed
+`[0.78, 1.12, 0.78]` camera, screen-left/right/up/down correspond to
+`north-west`/`south-east`/`south-west`/`north-east`; atlas labels are world yaw,
+not screen compass directions. Billboard rotation does not require a second yaw
+offset.
+
+The default Human Worker keeps exact walk/gather facings. Its v3 pack has only
+three animated walk directions and one animated food-gather direction; other
+directions hold their authored idle facing. Boughward's first-pass Worker still
+reuses one static pose per action across all headings. This is missing art
+coverage, not eight-direction animation. The [facing regression evidence](qa-evidence/villager-facing-2026-10-03/README.md)
+records decoded pixels, clip selection, camera projection and the browser-capture limit.
+
 ## Building parts and state
 
 Buildings can use grouped parts because counts are low. Architecture is neutral;

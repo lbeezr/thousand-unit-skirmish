@@ -1,3 +1,4 @@
+import { findInvalidResourceVariant, isShoreFish, validResourceVariantState } from './src/shore-fishing.mjs';
 import { activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted, validWildlifeNodeDefinition, validWildlifeNodeState } from './src/wildlife-state.mjs';
 import { validateMapRegion } from './src/regions.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, regionEntryTeam, validCompletionTrigger, completionTeam } from './src/scenario-regions.mjs';
@@ -32,6 +33,7 @@ import { townCenterSpawnPosition, townCenterFootprintCells } from './src/town-ce
 import { advanceTickDeadline } from './simulation-scheduler.mjs';
 import { privateProductionView } from './src/snapshot-private-production.mjs';
 import { RoomPregame, validatePregameCheckpoint } from './src/room-pregame.mjs';
+import { headingToTarget } from './src/unit-heading.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const HOST = process.env.RTS_HOST || '127.0.0.1';
@@ -45,7 +47,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 21;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 22;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -424,6 +426,10 @@ function validateMapDefinition(definition, filename) {
     if (obstacleCells[row * definition.width + column]) {
       throw new Error(`Map ${filename} resource node ${node.id} must be on an open cell.`);
     }
+  }
+  const invalidVariant = findInvalidResourceVariant(definition);
+  if (invalidVariant) {
+    throw new Error(`Map ${filename} resource node ${invalidVariant.nodeId}: ${invalidVariant.reason}.`);
   }
   const unreachableNode = findUnreachableResourceNode(
     definition.width, definition.height, obstacleCells, definition.spawnPoints, resourceNodes, elevationLevels,
@@ -1773,9 +1779,18 @@ function snapshotUnits(viewTeam = null) {
     }
     const audioExecution = !mapDefinition.fogOfWar || unit.team === viewTeam ? workerAudioExecution(unit) : null;
     if (audioExecution) row[14] = audioExecution;
+    const workHeading = task === 'gathering' ? workerGatherHeading(unit) : null;
+    if (workHeading !== null) row[15] = workHeading;
     rows.push(row);
   }
   return rows;
+}
+
+function workerGatherHeading(unit) {
+  if (unit.hp <= 0 || unit.kind !== 'worker' || unit.gatherPhase !== 'gathering') return null;
+  const target = unit.gatherForestCell >= 0 ? cellToWorld(unit.gatherForestCell)
+    : resourceNodeStates.get(unit.gatherNodeId);
+  return target ? headingToTarget(unit.x, unit.z, target.x, target.z) : null;
 }
 
 function workerAudioExecution(unit) {
@@ -2516,8 +2531,8 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
         ? Math.max(0, Math.min(1,
           1 - building.trainingRemaining / UNIT_DEFINITIONS[building.productionQueue[0]].trainSeconds)) : 0,
     })),
-    resourceNodes: resourceNodes.map(({ id, type }) => ({
-      id, type, stock: resourceNodeStates.get(id)?.stock ?? 0,
+    resourceNodes: resourceNodes.map(({ id, type, resourceVariant }) => ({
+      id, type, ...(resourceVariant === undefined ? {} : { resourceVariant }), stock: resourceNodeStates.get(id)?.stock ?? 0,
       ...(resourceNodeStates.get(id)?.wildlifeSpecies === undefined ? {} : {
         wildlifeSpecies: resourceNodeStates.get(id).wildlifeSpecies,
         wildlifeState: resourceNodeStates.get(id).wildlifeState,
@@ -2828,7 +2843,8 @@ function validateMatchCheckpoint(snapshot) {
     const definitionNode = definition.resourceNodes.find((item) => item.id === node?.id);
     assertSnapshot(definitionNode && !resourceIds.has(node.id) && node.type === definitionNode.type
       && finite(node.stock) && node.stock >= 0 && node.stock <= definitionNode.stock
-      && validWildlifeNodeState(node, definitionNode), 'invalid resource node state');
+      && validWildlifeNodeState(node, definitionNode)
+      && validResourceVariantState(node, definitionNode), 'invalid resource node state');
     resourceIds.add(node.id);
   }
   assertSnapshot(Array.isArray(state.triggerStates) && state.triggerStates.length === definition.triggers.length,
@@ -3261,8 +3277,13 @@ function migrateMatchCheckpoint(snapshot) {
   if (snapshot?.schemaVersion === 19 && !snapshot.mapDefinition?.resourceNodes?.some(node => node.wildlifeSpecies !== undefined)) {
     snapshot.schemaVersion = 20;
   }
+  // Schema 20 never recorded resource variant identity. Ordinary resources and
+  // sheep are unchanged; a variant cannot be invented from an older checkpoint.
+  if (snapshot?.schemaVersion === 20 && !snapshot.mapDefinition?.resourceNodes?.some(node => node.resourceVariant !== undefined)) {
+    snapshot.schemaVersion = 21;
+  }
   // Existing checkpoints predate a lobby; recover them as their running match.
-  if (snapshot?.schemaVersion === 20) {
+  if (snapshot?.schemaVersion === 21) {
     snapshot.state.pregame = null;
     snapshot.schemaVersion = MATCH_CHECKPOINT_SCHEMA_VERSION;
   }
@@ -3923,6 +3944,11 @@ function assignGather(player, command) {
   const node = resourceNodeStates.get(nodeId);
   if (!node) {
     sendOrderNotice(player, command, 'GATHER REJECTED · RESOURCE NODE NOT FOUND');
+    return;
+  }
+  if (isShoreFish(node)
+    && !cellVisibleToTeam(player.team, worldToCell(node.x, node.z))) {
+    sendOrderNotice(player, command, 'GATHER REJECTED · RESOURCE NODE NOT VISIBLE');
     return;
   }
   if (node.wildlifeSpecies !== undefined && !cellVisibleToTeam(player.team, worldToCell(node.x, node.z))) {
@@ -7213,11 +7239,13 @@ const server = createServer(async (request, response) => {
     return;
   }
   const publicClientAsset = [
+    'src/frontier-building-preview.mjs',
     'environment-review.html', 'src/environment-review.mjs', 'src/environment-pilot.mjs',
     'index.html', 'style.css', 'vendor/three.module.js', 'vendor/three.core.js', 'src/main.js',
     'src/building-sprites.mjs', 'src/battlefield-cursor.mjs', 'src/pve-entry.mjs', 'src/pve-match.mjs',
     'src/room-lobby-ui.mjs', 'src/room-lobby.css',
     'src/scenario-regions.mjs', 'src/scenario-authoring.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs', 'src/map-resize.mjs',
+    'src/shore-fishing.mjs', 'src/shore-fishing-placeholder.mjs',
     'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs',
     'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',

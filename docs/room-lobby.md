@@ -76,9 +76,9 @@ ready and `canLaunch`. It contains no session tokens. `lobbyRejected` includes
 the current projection and an actionable reason so clients recover from stale
 input. Existing `rts-v1` and `rts-resume` subprotocols remain.
 
-Checkpoint schema 21 adds `state.pregame` as `null` or `{phase, revision}`.
-Schema 20 migrates to `null`; older migrations retain their existing order,
-including schema-19 ordinary resource compatibility. An older saved running
+Checkpoint schema 22 adds `state.pregame` as `null` or `{phase, revision}`.
+Schema 21 migrates to `null`; older migrations retain their existing order,
+including schema-19 ordinary resources and schema-20 fishing compatibility. An older saved running
 match with an opt-in launch flag recovers as running, never as a new lobby.
 An opted-in checkpoint also preserves its phase if an index rebuild loses the
 creation flag. Invalid pregame shapes reject through existing checkpoint

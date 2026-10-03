@@ -14,6 +14,7 @@ start; this index covers maintained guides, contracts, experiments, and evidence
 | What are Vaelora’s selected zone maps and ecology keys? | [Art checkpoint](art-direction/vaelora-v1/README.md) |
 | Where do I read and extend Vaelora's lore? | [Lore wiki](lore/README.md): world, regions, peoples, institutions, history and magic |
 | Where are saved art iterations and preservation gaps? | [Art evolution](lore/art-evolution.md) |
+| Which new art is bound, and what supplies depth, motion and atmosphere? | [Building/environment runtime audit](art-runtime-audit-2026-10-03.md) |
 | What informs Vaelora's prose, continuity and world-building plan? | [Voice bible](lore-voice-bible.md), [research](lore-research.md), [strategy and plan](lore-strategy.md) |
 | Where is the first reviewable lore foundation? | [L1 writing package](lore-foundation-m1.md): principles, history, settlements, institutions and calibration fiction |
 | Who carries an art outcome through delivery? | [Art lanes](art-production-lanes.md) |
