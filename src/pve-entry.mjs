@@ -37,6 +37,7 @@ function addStyles(document) {
   const style = document.createElement('style');
   style.id = 'pve-entry-styles';
   style.textContent = `
+    .map-picker[hidden], #map-studio-open[hidden] { display:none; }
     .map-label.pve-run-active { flex-wrap:wrap; }
     .pve-run-stamp { display:flex; flex:1 0 100%; flex-wrap:wrap; align-items:center; gap:4px 10px; min-width:0; margin-top:4px; padding-top:4px; border-top:1px solid rgba(230,238,217,.12); color:#b7c1ad; font:500 8px 'DM Mono',monospace; letter-spacing:.06em; white-space:normal; }
     .pve-run-stamp[hidden] { display:none; }
