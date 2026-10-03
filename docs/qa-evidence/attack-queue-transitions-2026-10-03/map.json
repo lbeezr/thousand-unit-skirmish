@@ -1,0 +1,37 @@
+{
+  "id": "attack-queue-water",
+  "name": "ATTACK QUEUE WATER",
+  "width": 64,
+  "height": 64,
+  "terrainSeed": 19,
+  "fogOfWar": true,
+  "startingArmySize": 24,
+  "startingResources": {
+    "food": 1000,
+    "wood": 1000
+  },
+  "spawnPoints": [
+    {
+      "team": 0,
+      "x": -20,
+      "z": 0
+    },
+    {
+      "team": 1,
+      "x": 20,
+      "z": 0
+    }
+  ],
+  "obstacles": [
+    {
+      "column": 25,
+      "row": 42,
+      "width": 14,
+      "height": 14,
+      "material": "water"
+    }
+  ],
+  "resourceNodes": [],
+  "triggers": [],
+  "scenarioEvents": []
+}

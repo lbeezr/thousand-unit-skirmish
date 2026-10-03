@@ -351,6 +351,12 @@ so a lethal counterattack still lands in the same tick. Existing role timings,
 ranges and damage are preserved; Spearman's threefold mounted modifier becomes
 player-visible when the mounted roster ships.
 
+A direct unit attack ends when its target dies, leaves friendly visibility, or
+has no reachable firing position; queued ground orders can then continue. Attack
+Move resumes its ground route when an engagement ends. A visible enemy boat
+retains its real position for weapon range and reachable shore approaches. This
+does not add weapons or combat orders to the unarmed Skiff.
+
 ### Mounted foundation roster (2026-09-29)
 
 The Frontier Stable offers a fragile, fast Scout with eleven-cell sight and a

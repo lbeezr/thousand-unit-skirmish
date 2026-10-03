@@ -99,6 +99,7 @@ Run from the repository root:
 | In-range building attacks during construction repair | `node scripts/ranged-building-attack-scenario.mjs --edge-range-repair` |
 | Archer firing positions across gaps | `node scripts/archer-firing-approach-scenario.mjs` |
 | Cliff pursuit and attack-move alternatives | `node scripts/cliff-pursuit-scenario.mjs --direct` and without `--direct` |
+| Attack-target loss and queued route continuation | `node --test scripts/attack-target-geometry.test.mjs`; `ATTACK_QUEUE_RECORD=/tmp/attacks.json node scripts/attack-queue-case.mjs`; `ATTACK_QUEUE_NATIVE_RECORD=/tmp/native-attacks.json node scripts/attack-queue-native-scenario.mjs`; [failure and bounded evidence](qa-attack-queue-transitions-2026-10-03.md) |
 | Construction on disconnected terrain / route protection | `node scripts/construction-connectivity-scenario.mjs` |
 | Mirrored construction | `node scripts/opening-production-scenario.mjs --expect-builder-parity` |
 | Producer destruction, replacement builders, and population caps | `node scripts/production-lifecycle-scenario.mjs` |
