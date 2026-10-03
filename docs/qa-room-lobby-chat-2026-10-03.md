@@ -45,6 +45,26 @@ The new public UI module returns 200; its server authority module returns 404.
 No chat history is added to frequent state packets or checkpoints. The owning
 PR records independent review, guarded merge and subsequent postmerge evidence.
 
+## Current-main and focus integration
+
+Runtime head `8848192025d1880df8aec8c9b5375371e3be6b19` integrates main
+`9e7aadbff2039edd220896c829565edfb2205937`, including palisades, cargo return,
+fish ripple binding and contextual research accessibility. The two recovery
+fixture conflicts preserve both chat and fish hooks. All 623 Node tests pass
+with zero failures/skips, including 17 focused room/chat authority and focus
+cases. The chat protocol scenario passes all eight groups. Documentation passes
+422 files / 2,753 local links; runtime syntax and whitespace checks pass.
+
+The pregame scenario printed all eleven passing groups but hung awaiting a
+client close during teardown. Its final cleanup now starts client closes,
+stops its owned supervisor, and bounds the wait for each close. The rerun
+completed successfully with all original eleven checks. This changes the test
+cleanup only; no room/session runtime behavior changes.
+
+The clean package at `8848192` contains 1,029 files, digest
+`sha256:3e9960d45f1f301d18d3da9f9781a68d3d9c2741fbae5946ffc127f99075ca40`.
+The owning PR records the final packaged-delivery/review/postmerge results.
+
 ## Browser check on Mac
 
 Use two independent profiles on the exact local build. Verify ordinary and
