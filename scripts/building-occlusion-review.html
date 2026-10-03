@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Building sprite occlusion QA</title>
+<style>
+body{margin:20px;background:#ece7d9;color:#354132;font:15px/1.5 system-ui}main{max-width:1280px;margin:auto}
+canvas{display:block;width:100%;aspect-ratio:16/9;background:#859175}button,select{font:inherit;padding:6px;margin:6px}
+pre{white-space:pre-wrap;max-height:400px;overflow:auto}#status{min-height:24px}
+</style>
+<script type="importmap">{"imports":{"three":"/vendor/three.module.js"}}</script>
+<main>
+<h1>Building sprite occlusion QA</h1>
+<p>Local renderer fixture using unchanged shipped Barracks, Range and Human/Boughward Workers.
+Paired modes differ only in body-depth visibility. This is a render diagnostic, not a paid match or whole-game performance proof.</p>
+<label>Pixel ratio <select id="dpr"><option value="game">Current game cap (up to 1.75)</option><option value="1">Controlled DPR 1</option></select></label>
+<button id="run">Run paired checks and samples</button><button id="save" disabled>Save evidence JSON with paired PNGs</button>
+<p id="status">Ready to start. Keep this tab visible during the run (about one minute).</p>
+<canvas id="scene" width="1280" height="720" aria-label="Crowded building occlusion scene"></canvas>
+<pre id="result"></pre>
+<p>Evidence includes measured draw submissions, optional native GPU elapsed-time queries, CPU submission time,
+frame intervals, fixed camera/source hashes, picking and diagnostic pixel tests, and original/candidate PNGs.
+No frame-time acceptance is inferred from draw counts. Missing GPU queries are recorded as unavailable.</p>
+</main>
+<script type="module" src="/scripts/building-occlusion-review.mjs"></script>
+</html>

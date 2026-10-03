@@ -141,7 +141,10 @@ fog visibility, and hide together while a frame is unavailable or disposed.
 This adds one draw per visible loaded direct-sprite building, at most 128 under
 the current match building limit, with no extra texture or geometry buffer.
 See [source and depth-contract evidence](qa-building-sprite-occlusion-2026-10-03.md)
-for the native GPU observation still pending.
+and the [crowded native comparison recipe](qa-building-occlusion-native-plan-2026-10-03.md)
+for the native GPU observation still pending. The server admission limit bounds
+ordinary matches; the renderer does not skip later passes at 128. A separate
+renderer-only 129-item regression protects that distinction.
 The captured Town Center loader is a separate path: starting landmarks use
 Complete, while constructed Town Centers pass live progress and health. The
 loader exposes existing fallback art if the current state/view load fails.
