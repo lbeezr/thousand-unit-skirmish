@@ -128,6 +128,13 @@ invite to a second profile/tab, ready both seats and launch. Reproduction logs
 are `/tmp/rts-lab-lock-{baseline,current}.log` with harness
 `/tmp/rts-lab-lock-repro.mjs`.
 
+The AI chooser has a second UI defect: its `hidden` attribute is true, but the
+author stylesheet's `.map-picker { display:flex }` overrides the browser's hidden
+rule. Actual stylesheet computation on `00ff45d` reproduces `display:flex`;
+the bounded `src/pve-entry.mjs` hidden rule produces `display:none`. A regression
+also checks that Practice retains visible map/Studio controls. These are CSS/DOM
+results, not native screenshot evidence.
+
 The follow-up exposes **Practice** directly at root. It creates a separate
 `{mode:"pvp",practice:true}` room. Existing map/army/Map Studio controls apply;
 the scenario clock starts with one connected seat. It does not add an AI
@@ -142,7 +149,8 @@ The owning PR records final source/release checks, independent review and exact
 deployment/native results. Runtime scope is `src/room-launch-options.mjs`,
 `src/game-entry.mjs`, root buttons in `index.html`, the narrow `applyState()`
 notice in `src/main.js` and the practice clock/state/AI-feedback hooks in
-`server.mjs`. No map, resource, wildlife, stone or naval files are changed.
+`server.mjs`, plus the fixed-AI hidden rule in `src/pve-entry.mjs`. No map,
+resource, wildlife, stone or naval files are changed.
 The room/entry owner retains acceptance; the parent owns staging deployment
 coordination and native QA. A source merge does not close this reported bug.
 
