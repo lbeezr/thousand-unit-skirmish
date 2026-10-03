@@ -16,6 +16,17 @@ share the current load. Check: `node --test scripts/audio-music-lifecycle.test.m
 This uses a simulated Web Audio context and proves scheduling/cancellation,
 not browser listening, loop quality or human recognition.
 
+Sampled selection/command cues also cancel pending successful or failed decodes
+across hide/return, master mute/zero volume and mute/restore of their own effects,
+voice or ambience bus. Cancellation suppresses stale samples, synthesized error
+fallback and profile captions; muting another bus preserves eligible cues.
+Active samples on the interrupted bus stop rather than resume on return. Fresh
+interactions use the existing binding/speech cooldowns and schedule once.
+Disposal immediately stops samples and synthesized cues/previews, invalidates
+pending work and rejects later playback calls while context closure is pending.
+Check: `node --test scripts/audio-cue-lifecycle.test.mjs` uses deferred decoder and
+close promises plus a fake cooldown clock; it is scheduling evidence, not listening.
+
 Focused checks: `node scripts/audio-runtime-scenario.mjs`, `node scripts/audio-runtime-playback-scenario.mjs`, `node scripts/audio-composition-player-scenario.mjs`, `node scripts/audio-policy-scenario.mjs`, and `node scripts/map-persistence-scenario.mjs`. The persistence check needs permission to bind a local loopback port.
 
 ## Unit lifecycle bindings
@@ -73,8 +84,7 @@ scheduling, not a human listening or discoverability session.
 
 ## Next bounded audio slice
 
-Cancel pending sampled command/selection cues across hide/return and bus-mute
-transitions. A deferred selection voice decode can currently complete after a
-hide/return cycle, or schedule on a bus muted during decoding. Add cue lifecycle
-invalidation and recheck the selected bus before scheduling, with focused deferred
-decode regressions; preserve existing routing, cooldowns, captions and assets.
+Deduplicate simultaneous decodes of the same source within a pack. Preserve the
+24 MiB decoded cache bound and test pack switches while a shared decode is pending,
+successful/error continuations and exact retained-byte accounting. Keep routing,
+cooldowns, captions and source provenance unchanged.
