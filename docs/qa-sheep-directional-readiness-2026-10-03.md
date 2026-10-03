@@ -1,7 +1,7 @@
 # Sheep directional readiness — 3 October 2026
 
 Art/Mac QA baseline: main `d34c1a18c7e0ba865e19907a2fbaf868b17fa0e4`, after PR #39.
-Implementation integrates current main `1625bd5`; the Sheep pack is unchanged.
+Implementation integrates main `ae88e0f`; the Sheep pack is unchanged.
 This increment changes offline acceptance tooling and tests only. The live neutral
 renderer, gameplay state, default maps and active Mac capture remain unchanged.
 
@@ -48,8 +48,8 @@ pixels and runtime alpha/opaque RGB against those originals. Changed crops,
 anchors, source identity, mirrored pixels, animation claims, baked-shadow metadata
 and altered consumed contracts fail. The audit follows the asset's actual page
 file references, so an alternate runtime filename cannot hide changed pixels.
-Physical root placement never follows alpha
-bounds. A valid byte report still grants neither publication permission nor
+Physical root placement never follows alpha bounds. A valid byte report still
+grants neither publication permission nor
 ground-contact/appearance approval.
 
 Run:
