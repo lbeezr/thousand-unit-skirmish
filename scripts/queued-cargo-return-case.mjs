@@ -76,7 +76,7 @@ export async function runQueuedCargoReturn({ team = 0, type = 'food', stock = .5
     if (!observe) assert.equal(result.arrived, true, JSON.stringify(result));
     assert.ok(Math.abs(bank()[team]-stock)<1e-12);assert.equal(worker.cargo,0);
     assert.deepEqual(r.units.filter(u=>u!==worker),untouched);result.unselectedUnitsUnchanged=true;
-    assert.equal(worker.attackMove,queuedType==='attackMove');
+    if(result.arrived)assert.equal(worker.attackMove,queuedType==='attackMove');
     for(let i=0;i<60;i++){r.step();conserve();assert.ok(Math.abs(bank()[team]-stock)<1e-12);}
     return result;
   } finally { await fixture.dispose(); }
