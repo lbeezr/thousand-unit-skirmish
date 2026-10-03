@@ -4246,7 +4246,7 @@ function updateCommandUI() {
   if (ui.commandHint) ui.commandHint.textContent = utilityBuilding ? BUILDING_DEFINITIONS[selectedBuilding.type].combat
       ? `Defends visible enemies within ${BUILDING_DEFINITIONS[selectedBuilding.type].combat.range} cells · ${BUILDING_DEFINITIONS[selectedBuilding.type].sight} sight.`
       : BUILDING_DEFINITIONS[selectedBuilding.type].dropoff
-        ? 'Workers deposit food and wood here when complete.'
+        ? `Workers deposit ${BUILDING_DEFINITIONS[selectedBuilding.type].dropoff.join(' and ')} here when complete.`
         : `Adds ${BUILDING_DEFINITIONS[selectedBuilding.type].populationCapacity || 0} population capacity when complete.` : tapOrderArmed
     ? selectedBuilding ? 'Tap or click ground to set the rally point'
       : attackMoveMode ? 'Tap or click ground to advance and engage' : 'Tap or click ground, an enemy, or a resource'

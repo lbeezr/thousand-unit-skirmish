@@ -19,6 +19,15 @@ for (const team of [0, 1]) test(`registry building menu preserves focus and exac
   const button = container.children.find((button) => button.dataset.building === 'storehouse');
   assert.ok(button); assert.equal(button.disabled, false); button.click();
   assert.deepEqual(placements, ['storehouse']);
+  const mill = container.children.find(row => row.dataset.building === 'mill');
+  assert.ok(mill); assert.match(mill.textContent, /Mill.*75 WOOD/);
+  context.latestWood[team] = 74.99; context.updateRosterBuildingOptions(container);
+  assert.equal(mill.disabled, true, 'Mill uses its exact registered price');
+  context.latestWood[team] = 75; context.latestFood[team] = 0;
+  context.updateRosterBuildingOptions(container); assert.equal(mill.disabled, false); mill.click();
+  assert.equal(placements.at(-1), 'mill');
+  context.latestFood[team] = 500; context.latestWood[team] = 100;
+  context.updateRosterBuildingOptions(container);
   const center = container.children.find((row) => row.dataset.building === 'town-center');
   assert.ok(center); assert.equal(center.disabled, true);
   context.latestWood[team] = 400; context.latestFood[team] = 99; context.updateRosterBuildingOptions(container);

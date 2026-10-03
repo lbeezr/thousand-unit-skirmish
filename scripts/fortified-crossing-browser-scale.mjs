@@ -5,6 +5,7 @@ import {execFileSync} from 'node:child_process';
 import os from 'node:os';
 import {createFortifiedFixture} from './fortified-crossing-fixture.mjs';
 import {createFortifiedBrowser} from './fortified-browser-fixture.mjs';
+import {clearAndBuildFortifiedSite} from './fortified-site-clearance.mjs';
 const duration=Number(process.argv[2]??20),sizes=(process.argv[3]??'250,500,1000,2000').split(',').map(Number);
 assert.ok(Number.isInteger(duration)&&duration>=10&&duration<=40);
 assert.ok(sizes.length<=4&&sizes.every(n=>[250,500,1000,2000].includes(n)));
@@ -28,7 +29,7 @@ for(const size of sizes){
     await fixture.start();const origin=`http://127.0.0.1:${fixture.port}`;
     for(const team of [0,1]){const browser=await createFortifiedBrowser();browsers.push(browser);const page=await browser.page(origin,{beforeScript:instrumentation});pages.push(page);await page.wait(`window.__fortifiedProbe?.welcome?.player.team===${team}&&document.documentElement.dataset.boot==='ready'`,'player boot');await page.cdp.call('Input.dispatchMouseEvent',{type:'mousePressed',x:20,y:20,button:'left',buttons:1,clickCount:1});await page.cdp.call('Input.dispatchMouseEvent',{type:'mouseReleased',x:20,y:20,button:'left',clickCount:1});await page.cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',x:600,y:350});}
     async function state(team){return pages[team].cdp.evaluate('window.__fortifiedProbe.state');}
-    async function send(team,command,label=/ORDER/){const orderToken=token++;const issued=await pages[team].cdp.evaluate(`(() => {const at=performance.now();window.__fortifiedProbe.socket.send(JSON.stringify(${JSON.stringify({...command,clientOrderToken:orderToken})}));return at;})()`);const message=await pages[team].wait(`window.__fortifiedProbe.notices.find(n=>n.token===${orderToken}&&(new RegExp(${JSON.stringify(label.source)},${JSON.stringify(label.flags)}).test(n.message)||/REJECTED|FAILED|MATCH OVER/.test(n.message)))`,'applied order',120000);assert.ok(label.test(message.message),message.message);return message.receivedAt-issued;}
+    async function send(team,command,label=/ORDER/,returnNotice=false){const orderToken=token++;const issued=await pages[team].cdp.evaluate(`(() => {const at=performance.now();window.__fortifiedProbe.socket.send(JSON.stringify(${JSON.stringify({...command,clientOrderToken:orderToken})}));return at;})()`);const message=await pages[team].wait(`window.__fortifiedProbe.notices.find(n=>n.token===${orderToken}&&(new RegExp(${JSON.stringify(label.source)},${JSON.stringify(label.flags)}).test(n.message)||/REJECTED|FAILED|MATCH OVER/.test(n.message)))`,'applied order',120000);assert.ok(label.test(message.message),message.message);return returnNotice?message:message.receivedAt-issued;}
     const scaled=structuredClone(map);scaled.id=`fortified-browser-scale-${size}`;scaled.startingArmySize=size-4;
     await pages[0].cdp.evaluate(`window.__fortifiedProbe.socket.send(JSON.stringify({type:'publishMap',map:${JSON.stringify(scaled)}}))`);
     await Promise.all(pages.map(p=>p.wait(`window.__fortifiedProbe.state?.mapId===${JSON.stringify(scaled.id)}`,'scaled map')));
@@ -38,15 +39,15 @@ for(const size of sizes){
       const s=await state(team),army=s.units.filter(u=>u[1]===team&&u[4]>0&&u[5]==='infantry');
       await send(team,{type:'move',ids:army.map(u=>u[0]),unitGenerations:army.map(u=>u[8]),x:team?12.5:-12.5,z:10.5},/MOVE ORDER/);
       await sleep(3000);
-      const clearing=(await state(team)).units.filter(u=>u[1]===team&&u[4]>0&&u[5]!=='worker'&&Math.abs(u[2]-(team?18.5:-18.5))<1.5&&Math.abs(u[3]+3.5)<1.5);
-      if(clearing.length)await send(team,{type:'move',ids:clearing.map(u=>u[0]),unitGenerations:clearing.map(u=>u[8]),x:team?30.5:-30.5,z:-10.5},/MOVE ORDER/);
-      await page.wait(`!window.__fortifiedProbe.state.units.some(u=>u[1]===${team}&&u[4]>0&&u[5]!=='worker'&&Math.abs(u[2]-(${team?18.5:-18.5}))<1.5&&Math.abs(u[3]+3.5)<1.5)`,'vacated Barracks site',120000);
     }));
+    const clearance=[];
     stage='economy, execution audio and completion warmup';
     await Promise.all(pages.map(async(page,team)=>{
       const s=await state(team),workers=s.units.filter(u=>u[1]===team&&u[5]==='worker');
+      clearance[team]=await clearAndBuildFortifiedSite({team,state:()=>state(team),
+        move:(units,goal)=>send(team,{type:'move',ids:units.map(u=>u[0]),unitGenerations:units.map(u=>u[8]),...goal},/MOVE ORDER/),
+        build:()=>send(team,{type:'build',ids:workers.slice(0,2).map(u=>u[0]),unitGenerations:workers.slice(0,2).map(u=>u[8]),buildingType:'barracks',x:team?18.5:-18.5,z:-3.5},/BUILD ORDER|BUILD REJECTED · UNITS IN FOOTPRINT/,true)});
       for(const [index,type] of ['food','wood'].entries()){const node=map.resourceNodes.find(n=>n.type===type&&(team?n.x>20:n.x< -20));await send(team,{type:'gather',ids:[workers[index+2][0]],nodeId:node.id},/GATHER ORDER/);}
-      await send(team,{type:'build',ids:workers.slice(0,2).map(u=>u[0]),buildingType:'barracks',x:team?18.5:-18.5,z:-3.5},/BUILD ORDER/);
       const built=await page.wait(`window.__fortifiedProbe.state.buildings.find(b=>b.team===${team}&&b.type==='barracks'&&b.complete)`,'completed Barracks',120000);
       await page.cdp.evaluate(`window.__fortifiedProbe.socket.send(JSON.stringify({type:'researchUpgrade',buildingId:${built.id},upgrade:'infantry-attack'}))`);
       await page.wait(`window.__fortifiedProbe.state.teamResearch[${team}].active?.type==='infantry-attack'`,'active paid research');
@@ -86,7 +87,7 @@ for(const size of sizes){
     stage='browser seat recovery';const saved=await fixture.checkpoint();await fixture.stop();const restart=performance.now();await fixture.start();
     await Promise.all(pages.map((p,t)=>p.wait(`window.__fortifiedProbe.welcome?.recoveredFromCheckpoint===true&&window.__fortifiedProbe.welcome.player.team===${t}`,'browser seat recovery',30000)));
     const after=await fixture.checkpoint();assert.ok(after.state.matchElapsedSeconds>=saved.state.matchElapsedSeconds);
-    results.push({size,measuredTotal,survivors,combatCasualties:measuredTotal-survivors,startingArmySize:scaled.startingArmySize,durationSeconds:duration,healthSamples:samples.length,appliedNoticeMs:quantiles(orderDelays),recoveryMs:performance.now()-restart,render,tickTiming:samples.at(-1).tickTiming,movePlanning:samples.at(-1).movePlanning,transport:samples.at(-1).transport,checkpoint:samples.at(-1).checkpoint,browser:browsers.map(b=>b.version.product)});
+    results.push({size,measuredTotal,survivors,combatCasualties:measuredTotal-survivors,startingArmySize:scaled.startingArmySize,clearance,durationSeconds:duration,healthSamples:samples.length,appliedNoticeMs:quantiles(orderDelays),recoveryMs:performance.now()-restart,render,tickTiming:samples.at(-1).tickTiming,movePlanning:samples.at(-1).movePlanning,transport:samples.at(-1).transport,checkpoint:samples.at(-1).checkpoint,browser:browsers.map(b=>b.version.product)});
     if(process.env.FORTIFIED_SCALE_RECORD)await writeFile(process.env.FORTIFIED_SCALE_RECORD,JSON.stringify({build,recordedAt:new Date().toISOString(),results},null,2));
     console.error(`Combined browser scale ${size}: ${samples.length} health samples, two rendered seats, audio and recovery passed`);
   }catch(error){
