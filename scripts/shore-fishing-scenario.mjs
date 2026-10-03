@@ -49,7 +49,7 @@ try {
   await fixture.start();
   let clients = [await fixture.connect(0), await fixture.connect(1)];
   const tokens = clients.map(client => client.welcome.player.sessionToken);
-  await fixture.checkpoint(snapshot => snapshot.mapDefinition.id === 'open-field');
+  const schemaVersion = (await fixture.checkpoint(snapshot => snapshot.mapDefinition.id === 'open-field')).schemaVersion;
   await fixture.stop();
   const legacy = JSON.parse(await readFile(fixture.checkpointPath, 'utf8'));
   legacy.schemaVersion = 20;
@@ -57,7 +57,7 @@ try {
   await fixture.start();
   clients = [await fixture.connect(0, tokens[0]), await fixture.connect(1, tokens[1])];
   assert.ok(clients.every(client => client.welcome.recoveredFromCheckpoint));
-  await fixture.checkpoint(snapshot => snapshot.schemaVersion === 21);
+  await fixture.checkpoint(snapshot => snapshot.schemaVersion === schemaVersion);
   const invalidMaps = [];
   for (const change of [{ type: 'wood' }, { resourceVariant: 'ocean-fish' }, { resourceVariant: null },
     { wildlifeSpecies: 'bellweather-sheep' }, { x: -14.5, z: 7.5 }, { x: -10.5, z: 6.5 }]) {
@@ -76,7 +76,7 @@ try {
   await clients[1].wait(message => message.type === 'mapChange' && message.map.id === map.id);
   const starting = await fixture.checkpoint(snapshot => snapshot.mapDefinition.id === map.id);
   assertConserved(starting);
-  assert.equal(starting.schemaVersion, 21, 'optional identity is recorded in the checkpoint');
+  assert.equal(starting.schemaVersion, schemaVersion, 'optional identity is recorded in the checkpoint');
   assert.ok(starting.state.resourceNodes.every(node => node.resourceVariant === 'shore-fish'));
   assert.ok(starting.mapDefinition.resourceNodes.every(node => node.resourceVariant === 'shore-fish'));
   assert.ok(clients.every(client => !client.latest.resourceNodes.some(node => node.id === 'hidden-fish')));

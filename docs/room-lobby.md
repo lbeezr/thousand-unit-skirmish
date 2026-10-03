@@ -94,3 +94,5 @@ storage to verify freeze, both-seat configuration, stale messages, spectators,
 launch races, rejoin, phase recovery, publication, rematch and host replacement.
 Keep the existing supervisor, PvE, expiry and checkpoint regressions alongside it.
 These checks do not establish native browser appearance or unassisted usability.
+The [3 October evidence](qa-room-lobby-2026-10-03.md) records exact integration
+builds, results and remaining review/browser limits.
