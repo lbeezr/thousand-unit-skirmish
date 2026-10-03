@@ -235,6 +235,8 @@ try {
   assert.equal((await (await api('/health')).json()).matchId, oldMatch);
   const imports = await checkClientImports(base, { authorization, entrypoints: ['/src/game-entry.mjs'] });
   assert.ok(imports.some(entry => entry.path === '/src/main.js'), 'lazy game client is packaged and admitted');
+  const modeImports = await checkClientImports(base, { authorization, entrypoints: ['/src/match-mode-controls.mjs'] });
+  assert.ok(modeImports.some(entry => entry.path === '/src/match-modes.mjs'), 'prepared mode UI and registry are served through the existing authenticated worker');
   const practiceIdentity = practice.welcome.player, practiceMatch = practice.welcome.matchId;
   const storedIndex = JSON.parse(await readFile(path.join(data, 'rooms.json')));
   assert.deepEqual(storedIndex.rooms.find(room => room.id === practiceId).launchOptions, practiceOptions);
@@ -256,7 +258,7 @@ try {
     'interrupted authentication retains saved Resume without admission', 'strict Resume cannot allocate a new seat', 'departed menu ignores completed real Practice creation', 'fresh PvP lobby and both-seat launch', 'explicit saved-room Resume',
     'fresh AI and Map Studio rooms', 'one-player practice across all current lab maps and rematch',
     'practice checkpoint/seat recovery and real Worker food deposit', 'actionable seeded AI map and army protection', 'old default identity/checkpoint retained', 'entry and lazy client import delivery'],
-    modules: imports.length, practiceLabMaps: labMaps.map(map => map.id) }));
+    modules: imports.length, modeUiModules: modeImports.length, practiceLabMaps: labMaps.map(map => map.id) }));
 } finally {
   for (const client of clients) client.socket.destroy();
   await stopChild(child); await rm(data, { recursive: true, force: true });

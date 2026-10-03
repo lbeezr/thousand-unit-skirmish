@@ -1,0 +1,88 @@
+import { matchModeDefinition, assertMatchModeCompatibility } from './match-modes.mjs';
+import { mapVictoryRule } from './objective-summary.mjs';
+
+const key = value => `${value.id}@${value.version}`;
+const identityFor = value => ({ matchModeId: value.id, matchModeVersion: value.version });
+
+// The caller supplies the runtime's allowed catalog and current map, when
+// available. Presentation never projects a new simulation map or chooses AI.
+export function matchModePresentation({ identity = {}, catalog, map, opponentMode = 'pvp' } = {}) {
+  try {
+    const active = matchModeDefinition(identity);
+    if (!['pvp', 'pve'].includes(opponentMode)) throw new Error('Unknown opponent setup.');
+    if (opponentMode === 'pve' && !active.pveSupported) throw new Error('This mode is unavailable for Play vs AI.');
+    const choices = new Map();
+    if (Array.isArray(catalog)) for (const supplied of catalog) {
+      try {
+        const known = matchModeDefinition(identityFor(supplied));
+        const descriptor = { ...known, selectable: known.selectable && supplied.selectable === true };
+        if (opponentMode === 'pve' && !descriptor.pveSupported) continue;
+        if (map) assertMatchModeCompatibility(identityFor(descriptor), map, { mode: opponentMode });
+        if (descriptor.selectable || key(descriptor) === key(active)) choices.set(key(descriptor), descriptor);
+      } catch { /* A newer/incompatible descriptor cannot become a local choice. */ }
+    }
+    const allowed = choices.has(key(active));
+    if (!allowed) choices.set(key(active), active);
+    const elimination = active.victoryPolicy === 'recovery-elimination';
+    return {
+      active, choices: [...choices.values()],
+      editable: allowed && choices.size > 1,
+      summary: elimination
+        ? 'Defeat the opposing land force and its remaining ways to recover. Capture posts grant bonuses; holding them or reaching the map deadline does not win.'
+        : 'This map’s authored victory rules apply. Review the win condition before readying.',
+      rule: elimination
+        ? 'Workers and paid land-unit queues keep a team alive, as does a completed producer that can afford and legally spawn a land unit. Skiffs alone do not. Losing a Town Center alone is not defeat.'
+        : map ? mapVictoryRule(map).description : 'Capture, hold, deadline or elimination rules remain those of the authored map.',
+      error: Array.isArray(catalog) && !allowed ? 'Current mode is unavailable for these settings. Review the map and mode before readying.' : '',
+    };
+  } catch (error) {
+    return { active: null, choices: [], editable: false, summary: 'Mode unavailable.', rule: '',
+      error: error.message === 'This mode is unavailable for Play vs AI.' ? error.message
+        : 'This game version cannot configure the match’s mode. Reload to reconnect.' };
+  }
+}
+
+export function createMatchModeControls({ root, onChange, id = 'match-mode' }) {
+  const doc = root.ownerDocument;
+  root.classList.add('match-mode-controls');
+  const label = doc.createElement('label');
+  label.textContent = 'Victory mode';
+  const select = doc.createElement('select');
+  select.id = id;
+  label.append(select); root.append(label);
+  const summary = doc.createElement('p');
+  summary.id = `${id}-summary`; summary.className = 'match-mode-summary'; root.append(summary);
+  const details = doc.createElement('details');
+  const title = doc.createElement('summary'); title.textContent = 'Win condition'; details.append(title);
+  const rule = doc.createElement('p'); details.append(rule); root.append(details);
+  const status = doc.createElement('p'); status.id = `${id}-status`; status.setAttribute('role', 'status'); root.append(status);
+  select.setAttribute('aria-describedby', `${summary.id} ${status.id}`);
+  let model = null, inputs = {}, pending = false;
+  function render() {
+    const values = model.choices.map(choice => [key(choice), choice.label]);
+    if (!values.length) values.push(['', 'Mode unavailable']);
+    if (JSON.stringify([...select.options].map(option => [option.value, option.textContent])) !== JSON.stringify(values)) {
+      select.replaceChildren(...values.map(([value, text]) => {
+        const option = doc.createElement('option'); option.value = value; option.textContent = text; return option;
+      }));
+    }
+    select.value = model.active ? key(model.active) : '';
+    select.disabled = !model.editable || inputs.editable !== true || inputs.online !== true || pending;
+    summary.textContent = model.summary; rule.textContent = model.rule;
+    details.hidden = !model.rule;
+    status.textContent = model.error || (pending ? 'Waiting for server…' : '');
+  }
+  select.addEventListener('change', () => {
+    if (select.disabled) return;
+    const choice = model.choices.find(value => key(value) === select.value);
+    if (!choice || key(choice) === key(model.active)) { render(); return; }
+    pending = onChange(identityFor(choice)) === true;
+    render();
+    if (!pending) status.textContent = 'Mode choice was not sent. Reconnect and try again.';
+  });
+  return {
+    update(next) { inputs = next; model = matchModePresentation(next); pending = next.pending === true; render(); },
+    get selectable() { return model?.editable === true; },
+    get supported() { return Boolean(model?.active && !model.error); },
+  };
+}
