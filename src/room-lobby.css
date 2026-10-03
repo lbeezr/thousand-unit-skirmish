@@ -1,0 +1,25 @@
+#room-lobby {
+  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100vh - 40px);
+  box-sizing: border-box;
+  overflow: auto;
+  padding: 24px;
+  color: #e5eadf;
+  background: #19211c;
+  border: 1px solid #65715d;
+  border-radius: 10px;
+  font: 14px/1.5 system-ui, sans-serif;
+}
+#room-lobby::backdrop { background: rgb(8 13 10 / 72%); }
+#room-lobby h2 { margin: 0; font-size: 22px; }
+#room-lobby ul { padding: 0; list-style: none; }
+#room-lobby li { padding: 8px 0; border-bottom: 1px solid #394437; }
+#room-lobby label { display: block; margin: 14px 0; }
+#room-lobby select { display: block; width: 100%; margin-top: 4px; padding: 8px; }
+#room-lobby .room-lobby-help { color: #b5c2ad; font-size: 12px; }
+#lobby-status { min-height: 42px; }
+.room-lobby-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+#room-lobby button { padding: 9px 12px; cursor: pointer; }
+#room-lobby button:disabled { cursor: default; opacity: .55; }
+#room-lobby a { color: #d5ef78; margin-left: auto; }
+#room-lobby [hidden] { display: none; }

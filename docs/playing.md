@@ -8,6 +8,11 @@ Choose **Play vs AI** for a solo match, or create a **New room** and share the
 invite link for 1v1. Azure is the host and controls map changes and rematches.
 Ember is the second player. Further connections watch as spectators.
 
+New invite rooms open a [pregame lobby](room-lobby.md). The host selects the map
+and starting army, both players ready, then the host launches. Settings changes
+or disconnects clear readiness. Reset/rematch returns to this lobby; old rooms
+and Play vs AI retain their existing entry flow.
+
 When you take a player seat, the camera starts at your Town Center. Use **Fit
 map** for an overview. Reconnecting to the same seat keeps your current view.
 

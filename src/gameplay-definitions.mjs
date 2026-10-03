@@ -94,10 +94,15 @@ export function validateGameplayDefinitions(definitions) {
       if (!Array.isArray(roster) || new Set(roster).size !== roster.length) throw new Error(`Invalid or duplicate faction ${category}: ${id}`);
       for (const contentId of roster) if (!Object.hasOwn(definitions[category], contentId)) throw new Error(`Unknown faction ${category} ${contentId}: ${id}`);
     }
+    const producedUnits = new Set();
     for (const buildingId of faction.buildings) {
       const building = definitions.buildings[buildingId];
-      for (const kind of building.products) if (!faction.units.includes(kind)) throw new Error(`Faction ${id} producer ${buildingId} requires unit ${kind}`);
+      for (const kind of building.products) {
+        if (!faction.units.includes(kind)) throw new Error(`Faction ${id} producer ${buildingId} requires unit ${kind}`);
+        producedUnits.add(kind);
+      }
     }
+    for (const kind of faction.units) if (!producedUnits.has(kind)) throw new Error(`Faction ${id} unit ${kind} requires a producer in its building roster`);
     for (const technologyId of faction.technologies) if (!faction.buildings.includes(definitions.technologies[technologyId].building)) throw new Error(`Faction ${id} technology ${technologyId} requires its research building`);
     for (const category of ['units', 'buildings', 'technologies']) {
       for (const contentId of faction[category]) for (const required of definitions[category][contentId].requires || []) {

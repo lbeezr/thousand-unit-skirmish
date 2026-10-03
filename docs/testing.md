@@ -46,6 +46,7 @@ Run from the repository root:
 | Area | Command |
 | --- | --- |
 | Map logic / elevation | `node scripts/map-utils-scenario.mjs` / `node scripts/elevation-scenario.mjs` |
+| Crowd deflection / terrain boundaries | `node --test scripts/unit-movement.test.mjs` (real authoritative movement blocks, cliffs, corners, working/striking separation and route repair) |
 | Default map geometry | `node scripts/forked-vale-layout.mjs` |
 | Fortified Crossing foundation | `node scripts/fortified-crossing-layout.mjs` and `node scripts/fortified-crossing-economy.mjs`; [evidence and scale runner](qa-custom-skirmish.md) |
 | Larger map geometry | `node scripts/frontier-160-layout.mjs` |
@@ -236,6 +237,11 @@ comparing results. The [dated baseline](performance-reliability-baseline-2026-09
 includes reproduction commands and known limitations.
 
 ## Report the result
+
+Pregame regressions: `node --test scripts/room-pregame.test.mjs scripts/room-lobby-ui.test.mjs scripts/room-launch-options.test.mjs`
+and `node scripts/room-pregame-scenario.mjs` cover the [lobby contract](room-lobby.md),
+including both-client authority, paused scenarios, launch races and seat/phase
+recovery. Existing supervisor/PvE/expiry scenarios remain the legacy-flow checks.
 
 Separate logic, protocol, browser appearance, local performance, deployed
 behavior, and human comprehension. A pass in one category does not establish
