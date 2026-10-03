@@ -115,6 +115,23 @@ empty browser contexts: each fetches verified content, decodes all three distinc
 work bindings and stops them without importing a pack. It proves browser playback
 scheduling, not a human listening or discoverability session.
 
+## Ordinary Shore Fishing profile
+
+The normal `shore-fishing` map now references the existing public
+`vaelora-siltmouths` / `landscape` v2 profile and its registered manifest hash.
+It loads the Siltmouths score and reed-wind **terrain** bed automatically for
+both seats; no local Audio Studio import or preview flag is needed. Worker
+selection, food orders and other unbound gameplay cues retain synthesis.
+The earlier private water comparison used `siltmouths-contrast`, which is not
+in this shipped profile. Contrast water and regional signatures remain unbound.
+
+This is a provisional aesthetic assignment, not listening acceptance. Existing
+mute, visibility, map-switch and disposal cancellation stays in control.
+[Adoption evidence and remaining delivery/listening work](qa-shore-audio-profile-2026-10-03.md)
+are owned by the audio lane. Check:
+`node scripts/audio-shore-profile-scenario.mjs` (real ordinary-map messages and
+HTTP bytes; modeled scheduling, not browser hearing).
+
 ## Next bounded audio slice
 
 Run the [short Mac listening session](audio-design.md#short-mac-listening-session)

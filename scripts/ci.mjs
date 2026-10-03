@@ -56,6 +56,7 @@ run(['--test', 'scripts/scenario-authoring.test.mjs'], 'Visual scenario authorin
 run(['scripts/completion-event-scenario.mjs'], 'Completion event recovery and host diagnostics');
 run(['scripts/region-event-scenario.mjs'], 'Region event recovery and rematch');
 run(['scripts/regional-ambience-scenario.mjs'], 'Regional ambience bus and lifecycle');
+run(['scripts/audio-shore-profile-scenario.mjs'], 'Ordinary Shore Fishing regional audio selection and lifecycle');
 run(['scripts/terrain-authoring-scenario.mjs'], 'Seeded terrain authoring and height surfaces');
 run(['scripts/landscape-authoring-scenario.mjs'], 'Organic regional landscape shapes');
 run(['scripts/forest-habitat-scenario.mjs'], 'Graduated woodland habitat margins');
