@@ -35,3 +35,9 @@ the existing panel backing, including grayscale. A CPU contact sheet can show
 source rendering, but does not establish native game reachability, recognition
 or accessibility. Native horizontal-strip recapture remains separate; integration
 will need the existing [icon contract](../../../../docs/ui-cursor-icon-contract.md).
+
+Initial CPU source review at 16, 20 and 24 px, plus 24 px grayscale, found distinct
+silhouettes with labels retained. Follow's connecting arrow and Return cargo's
+crate seam weaken at 16 px. Prefer the existing 20 px action-image size during a
+later integration; retain the written cargo label and Hold's no-chase explanation.
+This is a candidate recommendation, not native or unassisted recognition acceptance.
