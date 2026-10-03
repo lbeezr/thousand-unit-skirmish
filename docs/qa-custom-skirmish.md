@@ -165,6 +165,15 @@ failed; this is a recorded crowded movement/placement follow-up, not a passing
 capacity result. The runner preserves each completed case and failure diagnostics
 through `FORTIFIED_SCALE_RECORD` and exits nonzero on the ceiling failure.
 
+The [3 October investigation](qa-fortified-clearance-2026-10-03.md) reproduces
+this stopping condition on fork main with native clients. At 2,000, the army's
+destination box overlaps the future Barracks sites: late arrivals finish their
+orders inside the footprints after the runner's single evacuation. The corrected
+harness evacuates new arrivals until an authoritative paid build is accepted.
+Both native construction openings pass; the corrected complete rendered workload
+still needs a new run. The dated measurements above remain evidence of the old
+failed warmup and do not establish a navigation deadlock or supported capacity.
+
 Headless frame intervals do not establish windowed GPU performance. Loopback
 applied notices do not establish internet latency. Probe overhead, fog-limited
 rendered populations, casualties and overlapping inspector polls bound these
