@@ -905,6 +905,7 @@ activateMap(mapDefinition);
 const units = [];
 const pendingUnitDamage = new Float64Array(MAX_UNITS);
 const attackFlowLastGrant = new WeakMap();
+const automaticTargetRejections = new WeakMap();
 const pendingBuildingDamage = new Map();
 const unitGenerationCounters = new Uint32Array(MAX_UNITS);
 unitGenerationCounters.fill(randomBytes(4).readUInt32LE(0));
@@ -3850,6 +3851,7 @@ function completeMovePlanningJob(job) {
 }
 
 function clearAttackMoveOrder(unit) {
+  automaticTargetRejections.delete(unit);
   unit.stanceCombat = false;
   unit.stanceReturning = false;
   unit.persistentOrder = null;
@@ -6242,9 +6244,45 @@ function automaticLeash(unit) {
 }
 
 function automaticPositionAllowed(unit, x, z) {
-  return !unit.attackMove || unit.attackTargetId < 0
+  return !unit.attackMove || (unit.attackTargetId < 0 && !unit.stanceReturning)
     || !militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind])
     || Math.hypot(x - unit.attackMoveAnchorX, z - unit.attackMoveAnchorZ) <= unitStancePolicy(unit).travel;
+}
+
+function rejectAutomaticTarget(unit, target) {
+  if (!target) return;
+  const rejected = automaticTargetRejections.get(unit) || new Map();
+  if (rejected.size >= 8 && !rejected.has(target.id)) rejected.delete(rejected.keys().next().value);
+  rejected.set(target.id, { generation: target.generation, cell: worldToCell(target.x, target.z),
+    navigationRevision, stance: unit.combatStance, until: tickNumber + TICK_RATE });
+  automaticTargetRejections.set(unit, rejected);
+}
+
+function automaticTargetRejected(unit, target) {
+  const rejection = automaticTargetRejections.get(unit)?.get(target.id);
+  return rejection && rejection.generation === target.generation
+    && rejection.cell === worldToCell(target.x, target.z) && rejection.navigationRevision === navigationRevision
+    && rejection.stance === unit.combatStance && rejection.until > tickNumber
+    && Math.hypot(unit.x - target.x, unit.z - target.z) > UNIT_DEFINITIONS[unit.kind].combat.range;
+}
+
+function boundedAutomaticApproach(unit, target, approach) {
+  if (!approach?.reachable || !militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind])) return approach;
+  // Unit-target flow routes end at the target cell. Stop at the first legal
+  // firing point before checking bounds; ranged units need not reach that cell.
+  const range = UNIT_DEFINITIONS[unit.kind].combat.range;
+  const end = approach.path.findIndex(cell => {
+    const p = cellToWorld(cell); return Math.hypot(p.x - target.x, p.z - target.z) <= range;
+  });
+  const path = end < 0 ? approach.path : approach.path.slice(0, end + 1);
+  const anchor = unit.stanceCombat ? { x: unit.stanceAnchorX, z: unit.stanceAnchorZ }
+    : unit.attackTargetId >= 0 ? { x: unit.attackMoveAnchorX, z: unit.attackMoveAnchorZ } : unit;
+  const travel = unitStancePolicy(unit).travel;
+  if (path.some(cell => { const p = cellToWorld(cell); return Math.hypot(p.x - anchor.x, p.z - anchor.z) > travel; })) {
+    rejectAutomaticTarget(unit, target);
+    return { ...approach, reachable: false };
+  }
+  return { ...approach, path };
 }
 
 function assignCombatStance(player, command) {
@@ -6847,6 +6885,7 @@ function findAttackMoveTarget(unit, acquireRadius = ATTACK_MOVE_ACQUIRE_RADIUS, 
       if (remaining === 1) activeBuckets--;
       visited++;
       if (!target || target.hp <= 0 || !canCombatTarget(UNIT_DEFINITIONS[unit.kind], UNIT_DEFINITIONS[target.kind])) continue;
+      if (automaticTargetRejected(unit, target)) continue;
       if (mapDefinition.fogOfWar
         && !cellVisibleToTeam(unit.team, worldToCell(target.x, target.z))) continue;
       if (unit.stanceCombat && Math.hypot(target.x - unit.stanceAnchorX, target.z - unit.stanceAnchorZ) > unitStancePolicy(unit).leash) continue;
@@ -6948,7 +6987,8 @@ function prepareAttackMovePaths() {
     }
     if (!target) continue;
     const previousBuilt = budget.built;
-    const approach = getUnitAttackPath(unit, target, budget, unit.attackTargetId >= 0);
+    const approach = boundedAutomaticApproach(unit, target,
+      getUnitAttackPath(unit, target, budget, unit.attackTargetId >= 0));
     if (budget.built > previousBuilt) attackFlowLastGrant.set(unit, tickNumber);
     plans.set(unit.id, { target, approach });
   }
@@ -7068,6 +7108,7 @@ function spreadInteractingUnits() {
   const searchRadius = MIN_SEPARATION + WALK_SPEED * STEP_SECONDS;
   for (const unit of units) {
     if (unit.hp <= 0 || unit.movementDomain === 'water' || unit.pathIndex < unit.path.length) continue;
+    if (militaryCombatant(unit, UNIT_DEFINITIONS[unit.kind]) && (unit.holdingPosition || unit.combatStance === 'standGround')) continue;
     let target = null;
     let building = null;
     let range = 0;
@@ -7163,6 +7204,7 @@ function spreadInteractingUnits() {
     }
     if (x <= -MAP_HALF_X + 0.5 || x >= MAP_HALF_X - 0.5
       || z <= -MAP_HALF_Z + 0.5 || z >= MAP_HALF_Z - 0.5
+      || !automaticPositionAllowed(unit, x, z)
       || !canTraverseUnitStep(worldToCell(unit.x, unit.z), worldToCell(x, z),
         MAP_WIDTH, elevationLevelByCell, isWalkable)) continue;
     unit.x = x;
@@ -7465,6 +7507,7 @@ function simulateTick() {
       }
       if (move.reachedWaypoint) {
         if (!automaticPositionAllowed(unit, move.target.x, move.target.z)) {
+          rejectAutomaticTarget(unit, units[unit.attackTargetId]);
           clearAttackTarget(unit);
           break;
         }
@@ -7481,6 +7524,7 @@ function simulateTick() {
       const nextCell = worldToCell(nextX, nextZ);
       const currentCell = worldToCell(unit.x, unit.z);
       if (!automaticPositionAllowed(unit, nextX, nextZ)) {
+        rejectAutomaticTarget(unit, units[unit.attackTargetId]);
         clearAttackTarget(unit);
         break;
       }

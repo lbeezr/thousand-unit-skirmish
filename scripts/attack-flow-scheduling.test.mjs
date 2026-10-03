@@ -19,7 +19,7 @@ function fixture({ reverseIds = false, swapTeams = false, cached = false } = {})
   })).sort((a, b) => a.id - b.id);
   const context = vm.createContext({
     ATTACK_MOVE_ACQUIRE_RADIUS: 4.8, attackMoveBucketOffsets: [], holdBucketOffsets: [],
-    unitStancePolicy: () => ({ acquire: 4.8 }), units, attackFlowLastGrant: new WeakMap(), tickNumber: 1,
+    unitStancePolicy: () => ({ acquire: 4.8 }), boundedAutomaticApproach: (_, __, approach) => approach, units, attackFlowLastGrant: new WeakMap(), tickNumber: 1,
     findAttackMoveTarget: () => ({ id: 100 }),
     getUnitAttackPath(unit, target, budget) {
       if (cached && unit.x === -8) return { reachable: true, path: [1] };

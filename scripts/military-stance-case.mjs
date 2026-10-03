@@ -6,7 +6,8 @@ import { armyAttackMap } from './army-attack-continuation-case.mjs';
 export async function createStanceCase({ team = 0, kind = 'infantry', targets = [[2.5, .5], [2.5, 2.5]], obstacle = false, reveal = false, fog = true } = {}) {
   const map = armyAttackMap(), side = team ? -1 : 1;
   map.fogOfWar = fog;
-  if (obstacle) map.obstacles = [{ column: 33, row: 31, width: 1, height: 3, material: 'stone' }];
+  if (obstacle) map.obstacles = [typeof obstacle === 'object' ? obstacle
+    : { column: 33, row: 31, width: 1, height: 3, material: 'stone' }];
   const fixture = await createPathingReplayFixture(map), r = fixture.replay, orders = [];
   const workers = seat => r.units.filter(u => u.team === seat && u.kind === 'worker');
   function order(seat, command, expected = /ORDER|PLACED|QUEUED/) {

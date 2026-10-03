@@ -180,4 +180,28 @@ for (const team of [0, 1]) {
       assert.equal(c.r.snapshot(null).unitStances.length, c.r.units.filter(u => u.kind !== 'worker').length);
     } finally { await c.dispose(); }
   });
+  test(`seat ${team}: Defensive skips a closer route outside its leash and attacks the reachable alternative`, async () => {
+    const c = await createStanceCase({ team, reveal: true, targets: [[2.5, .5], [-2.5, .5]],
+      obstacle: { column: team ? 30 : 33, row: 28, width: 1, height: 9, material: 'stone' } });
+    try {
+      c.stance('defensive'); let maxTravel = 0;
+      for (let i = 0; i < 1000; i++) {
+        c.r.step(); maxTravel = Math.max(maxTravel, Math.hypot(c.unit.x - c.origin.x, c.unit.z - c.origin.z));
+      }
+      assert.deepEqual(c.enemies.map(e => e.hp), [100, 0]); assert.ok(maxTravel <= 3 + 1e-6);
+      assert.ok(Math.hypot(c.unit.x - c.origin.x, c.unit.z - c.origin.z) < .02);
+    } finally { await c.dispose(); }
+  });
+  for (const hold of [false, true]) test(`seat ${team}: ${hold ? 'Hold' : 'Stand Ground'} remains fixed while a friendly Worker shares its cell`, async () => {
+    const c = await createStanceCase({ team, targets: [[1.5, .5]] });
+    try {
+      const worker = c.r.units.find(u => u.team === team && u.kind === 'worker');
+      c.order(team, { type: 'move', ids: [worker.id], x: .5 * c.side, z: .5 });
+      c.until(() => !worker.movePlanningPending && worker.pathIndex === worker.path.length, 'friendly Worker arrives');
+      if (hold) c.order(team, { type: 'holdPosition', ids: [c.unit.id] });
+      else c.stance('standGround');
+      for (let i = 0; i < 30; i++) { c.r.step(); assert.deepEqual({ x: c.unit.x, z: c.unit.z }, c.origin); }
+      assert.ok(c.enemies[0].hp < 100, 'stationary fighter still deals authoritative damage');
+    } finally { await c.dispose(); }
+  });
 }

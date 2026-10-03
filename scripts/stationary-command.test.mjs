@@ -15,7 +15,7 @@ for (const type of ['stop', 'holdPosition']) test(`${type} preserves cargo and s
     attackTargetId: 1, attackBuildingTargetId: 2 };
   const building = { id: 5, hp: 600, complete: false };
   const notices = [];
-  const context = vm.createContext({ militaryCombatant: () => false, UNIT_DEFINITIONS: {}, dirty: false, tickNumber: 24, commandUnits: () => [unit],
+  const context = vm.createContext({ automaticTargetRejections: new WeakMap(), militaryCombatant: () => false, UNIT_DEFINITIONS: {}, dirty: false, tickNumber: 24, commandUnits: () => [unit],
     sendOrderNotice: (_, __, notice) => notices.push(notice) });
   vm.runInContext(clearAttack + clearGather + stationary, context);
   context.assignStationaryOrder({ team: 1 }, { type, ids: [3] });

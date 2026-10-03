@@ -38,6 +38,7 @@ function fixture({kind='infantry',x=-.5,z=-.01,cliff=true,blocked=[],realRepairs
     for(let i=0;i<ids.length;i++)teamNext[0][ids[i]]=ids[(i+1)%ids.length];}
   const repairs = [];
   const context = vm.createContext({units,UNIT_DEFINITIONS,activeWallBuildOrder,MAP_WIDTH:width,MAP_HALF_X:half,MAP_HALF_Z:half,
+    militaryCombatant: unit => unit.kind !== 'worker', automaticPositionAllowed: () => true,
     STEP_SECONDS:1/30,MIN_SEPARATION:.56,SPATIAL_BUCKET_SIZE:bucketSize,WALK_SPEED:2.6,
     WORKER_INTERACTION_RANGE:1.4,BUILDER_INTERACTION_RANGE:1.4,
     spatialBucketColumns:bucketColumns,spatialBucketRows:bucketColumns,spatialBucketHeads:heads,
