@@ -2184,10 +2184,17 @@ function refreshForestStumpTransforms() {
   forestStumpMesh.visible = forestStumpCount > 0;
 }
 
-function applyForestState(state) {
+function applyForestState(state, initial = false) {
+  const epochChanged = Number.isSafeInteger(state.forestEpoch) && latestForestEpoch !== state.forestEpoch;
+  if (initial || epochChanged) {
+    // Rematches reset all finite stocks, including nodes omitted by fog. A new
+    // server can reuse an epoch, so welcome receipts also discard old knowledge.
+    latestResourceStocks.clear();
+    for (const node of mapDefinition?.resourceNodes || []) latestResourceStocks.set(node.id, node.stock);
+  }
   if (!Number.isSafeInteger(state.forestEpoch)) return;
   let visualChanged = false;
-  if (latestForestEpoch !== state.forestEpoch) {
+  if (epochChanged) {
     for (const [cell, stock] of latestForestStocks) {
       if (stock < 6) {
         setForestTreeVisual(cell, 6);
@@ -4504,7 +4511,7 @@ function applyState(state, initial = false) {
   }
   waterStudyFishBinding?.update(state, { spectator: localTeam === null });
   updateFogFromState(state);
-  applyForestState(state);
+  applyForestState(state, initial);
   if (Array.isArray(state.objectives)) updateObjectives(state.objectives);
   updateVictoryHoldCard(state.victoryHold, state.winner, state.winnerReason, state.scenarioClockStarted);
   updateScenarioEventCards(state.scenarioEvents || [], state.matchElapsedSeconds, state.scenarioClockStarted);
@@ -7575,6 +7582,8 @@ function buildPlacementAt(clientX, clientY) {
       if (blocksSite) { blockedReason ||= 'TERRAIN BLOCKS THIS SITE'; break; }
     }
     for (const node of mapDefinition.resourceNodes || []) {
+      // Unknown or positive stock keeps the authored exclusion, as with forest.
+      if (latestResourceStocks.get(node.id) === 0) continue;
       const nodeColumn = Math.floor(node.x + MAP_HALF_X);
       const nodeRow = Math.floor(node.z + MAP_HALF_Z);
       if (nodeColumn >= startColumn && nodeColumn < startColumn + footprint
