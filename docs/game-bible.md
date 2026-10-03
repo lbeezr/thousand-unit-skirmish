@@ -357,6 +357,11 @@ Move resumes its ground route when an engagement ends. A visible enemy boat
 retains its real position for weapon range and reachable shore approaches. This
 does not add weapons or combat orders to the unarmed Skiff.
 
+When an enemy moves during an existing pursuit, the attacker finishes its current
+legal path step before following the refreshed route. Blocked or cliff-crossing
+steps are discarded. A new attack replaces the previous route immediately;
+target death, fog loss and explicit Stop/Hold still end or interrupt pursuit.
+
 ### Mounted foundation roster (2026-09-29)
 
 The Frontier Stable offers a fragile, fast Scout with eleven-cell sight and a
