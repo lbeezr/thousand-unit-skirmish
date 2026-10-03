@@ -112,6 +112,12 @@ world coordinates while the body advances; during swing, lift and replace it.
 Measure ground penetration, stance-foot drift, mesh collapse and cycle closure.
 Body bobbing or whole-model sliding cannot substitute for the leg motion.
 
+Keep the world-root travel in the debug receipt. For the sprite capture, remove
+only that ground-root XZ travel while retaining the articulated joint poses,
+so the canvas root stays fixed. Record stride length and cycle duration for a
+future simulation speed match; planted hooves must stay fixed in the debug
+world-motion test before this conversion.
+
 Render only **body-forward heading 0** at the existing fixed oblique camera,
 512×512, root `[256,256]`, 256 px/world unit and the preserved world lighting.
 Start with four contact keys plus four passing keys and an explicitly authored
