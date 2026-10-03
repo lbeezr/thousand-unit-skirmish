@@ -59,8 +59,8 @@ raycast call, waits for a fresh sample after input, and separately checks boot,
 map and team. Real Three.js regressions cover a view where all four corners miss
 terrain and verify that observation preserves ray results. Failed runs include
 stage, boot/entry/map/team/network and camera diagnostics. Gameplay code is unchanged
-by this harness correction. A successful native retry and screenshot review
-remain outstanding.
+by this harness correction. A later Mac proof below exercised native interactions
+with a task-owned selector correction; an unmodified-runner pass remains outstanding.
 
 After integrating the new main menu, the fixture uses the documented explicit
 `?play=1` diagnostic route. Ordinary `/` opens the menu without a game WebSocket;
@@ -69,13 +69,32 @@ The integrated harness correction passes 58 camera/input/HUD/navigation/entry
 checks and the served import audit covers 88 modules from the game entrypoint.
 Independent review found no camera-probe or entry-route blockers.
 
+At `75f4b7b38aacc291bb7e4952259d9cd9619cc11b`, Mac QA booted both seats
+with fresh camera samples, then the committed runner stopped at Worker selection:
+the empty-selection HUD hides the contextual Idle proxy. The task-owned adapter
+clicked the visible `#quick-idle` control. That run passed both seats' minimap
+move/queue, exact owned IDs, selection and camera preservation, left-click
+navigation, Space centering/drag and focused-button behavior at both sizes/DPRs;
+six input screenshots were inspected. Extra selected-worker Build and editable
+Space guards also passed in that adapter. Its aggregate result stayed false
+because a separate edge-scroll observation failed; no edge-scroll pass or
+queue-completion claim is implied here.
+
+The committed runner now clicks that same visible Idle control. Both-seat
+regressions read its actual selector and execute the shipped HUD selection
+handlers with empty selection, a closed drawer, four eligible owned Workers,
+foreign Workers and dead/busy owned Workers. They require exactly the four
+eligible IDs and no order. All native move/queue/camera assertions are retained.
+Source: Library `mac-input-report.md` (`libfile_ba46efb28a3c8191895f82086b6872f4`),
+with archive `mac-input-provenance.zip` (`libfile_d3634acdb74c8191a439d2db524a8930`).
+
 ## Exact Mac automated recipe
 
 Use an isolated checkout containing the harness correction and installed Chrome:
 
 ```sh
 git fetch origin
-git switch codex/minimap-browser-camera-probe
+git switch codex/minimap-visible-worker-selection
 git pull --ff-only
 npm ci
 node scripts/browser-preflight.mjs --launch
@@ -84,7 +103,7 @@ node scripts/minimap-orders-browser.mjs --output=/tmp/minimap-orders-mac-proof-0
 
 Choose a new output directory on each run. The runner creates and cleans up its
 own server, two browser contexts and profiles. It publishes a small rectangular
-fog fixture, selects the four Workers through native controls on Azure and Ember,
+fog fixture, selects the four Workers through the visible quick Idle control on Azure and Ember,
 and exercises native right-click and Shift-right-click at small/large minimap
 sizes, 1280×720/DPR 1 and 900×700/DPR 2. It checks exact owned IDs, single sends,
 server acknowledgement, movement, queued checkpoints, unchanged selected count
