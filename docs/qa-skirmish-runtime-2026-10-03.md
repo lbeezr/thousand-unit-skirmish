@@ -72,3 +72,32 @@ served-match acceptance. Clarity's previously identified staging deployment was
 `0fb9a3dcc1f93f44b87fe5ea8ab8caabf9da0739` (SUCCESS, contains PR #158).
 That deployment predates this runtime slice; the next coordinated build and its
 mode/legacy normal-match checks remain owned and incomplete.
+
+## Post-merge verification
+
+[PR #200](https://github.com/lbeezr/thousand-unit-skirmish/pull/200) merged at
+`dc6e5ac752cf82a73b946a4976bd24ebfe52d3d8`. Independent review approved local
+`49efd9831bd522f9a1e414f47c569d9ffc3ef44c`, tree
+`bf9ab5ec5bd929a58a439a94ac7eb352624eeab5`; the published candidate had that
+exact tree. It passed 106 focused checks, browser/Node types, imports, syntax,
+docs and 107-module admission. Its clean 1,152-file release package had digest
+`sha256:678df8bf07f3b839c6d6c04e207746ecfd456bfa07d8ebd18bece45acb915a89`.
+That package identifies the reviewed candidate, not the subsequently merged
+source or a deployed release.
+
+Concurrent Worker activity and objective AI rotation changes entered the merge.
+The eight native mode cases were repeated on the exact merged source above;
+[merged native records](qa-evidence/skirmish-runtime-2026-10-03/merged-native.json)
+pin server SHA-256
+`49a7d1832a8194dc5b8bfe5f1341e99bfe14f1d5189fe019fd94f0ba6e854b46`.
+The 38 mode/launch/checkpoint/pregame checks plus eight objective-rotation checks
+also passed (46 total). This includes paid wall obstruction and checkpoint
+replay for both AI seats under authored objective rules.
+
+A read-only Railway lookup after merge still identified staging deployment
+`df65855c-57e3-4979-a345-1c7e83e90173`, source
+`0fb9a3dcc1f93f44b87fe5ea8ab8caabf9da0739`. No new staging execution was
+performed. Delivery owner `01a10227-2c6d` must identify a deployed source
+containing PR #200 before mode-owner live acceptance. The selector and AI owners
+retain their documented dependencies; no ordinary-default or PvE-capability
+change follows from this merge.
