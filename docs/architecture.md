@@ -62,7 +62,10 @@ runtime imports must resolve to exact relative runtime modules, Node builtins
 or the mapped `three` package. All `src` modules stay within `src`; only the two
 named Node adapters may import Node builtins. Browser closures cannot reach a
 Node adapter or unmapped package, and server closures cannot reach Three or a
-browser entrypoint. This checks import edges, not browser globals, injected
+browser entrypoint. Package imports must match every consuming page's import
+map; the audio pages have no Three mapping. A contract test checks the five
+registered entrypoints against their shipped HTML. Register a new entrypoint
+and its document's package policy together. This checks import edges, not browser globals, injected
 callbacks, runtime asset fetches or gameplay semantics. It also scans unreferenced
 `src` modules and nested folders, so new files cannot evade the cycle check.
 

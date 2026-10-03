@@ -9,6 +9,14 @@ export const BROWSER_ENTRYPOINTS = [
   'src/game-entry.mjs', 'src/audio-studio.mjs', 'src/audio-zones.mjs',
   'src/environment-review.mjs', 'src/water-study-preview.mjs',
 ];
+// Native ESM package imports are scoped to each HTML document's import map.
+export const BROWSER_PACKAGE_IMPORTS = {
+  'src/game-entry.mjs': ['three'],
+  'src/audio-studio.mjs': [],
+  'src/audio-zones.mjs': [],
+  'src/environment-review.mjs': ['three'],
+  'src/water-study-preview.mjs': ['three'],
+};
 export const SERVER_ENTRYPOINTS = ['room-supervisor.mjs', 'server.mjs'];
 // These are Node adapters, not cycle exceptions. Keep them out of browser closures.
 export const NODE_ONLY_MODULES = ['src/room-launch-options.mjs', 'src/pve-model-proposal.mjs'];
@@ -119,6 +127,7 @@ function dependencyPaths(graph, entrypoints) {
 
 export function checkRuntimeImports(sources, {
   browserEntrypoints = BROWSER_ENTRYPOINTS,
+  browserPackageImports = BROWSER_PACKAGE_IMPORTS,
   serverEntrypoints = SERVER_ENTRYPOINTS,
   nodeOnlyModules = NODE_ONLY_MODULES,
   cycleBaseline = [],
@@ -139,9 +148,6 @@ export function checkRuntimeImports(sources, {
     if (browser.has(filename)) {
       const chain = browser.get(filename).join(' -> ');
       if (nodeOnlyModules.includes(filename)) errors.push(`${chain}: browser reaches a Node-only adapter`);
-      for (const specifier of external) {
-        if (specifier !== 'three') errors.push(`${chain} -> ${specifier}: unsupported browser import (only three is mapped)`);
-      }
     }
     if (server.has(filename)) {
       const chain = server.get(filename).join(' -> ');
@@ -149,6 +155,18 @@ export function checkRuntimeImports(sources, {
         errors.push(`${chain}: server reaches a browser entrypoint`);
       }
       if (external.includes('three')) errors.push(`${chain} -> three: server rules cannot depend on rendering`);
+    }
+  }
+  // A module shared by two pages must satisfy both import maps, even if the
+  // combined browser traversal reached it first through the Three-mapped page.
+  for (const entrypoint of browserEntrypoints) {
+    const mapped = browserPackageImports[entrypoint] ?? [];
+    for (const [filename, chain] of dependencyPaths(graph, [entrypoint])) {
+      for (const specifier of graph.get(filename).external) {
+        if (isBuiltin(specifier) || !mapped.includes(specifier)) {
+          errors.push(`${chain.join(' -> ')} -> ${specifier}: unsupported browser import for ${entrypoint}`);
+        }
+      }
     }
   }
   const cycles = cyclicEdges(graph);

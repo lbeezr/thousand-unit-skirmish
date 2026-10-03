@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, writeFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { checkRuntimeImports, moduleImports, readRuntimeSources, runtimeImportGraph, cyclicEdges } from './check-runtime-imports.mjs';
+import { JSDOM } from 'jsdom';
+import { BROWSER_ENTRYPOINTS, BROWSER_PACKAGE_IMPORTS, checkRuntimeImports, moduleImports, readRuntimeSources, runtimeImportGraph, cyclicEdges } from './check-runtime-imports.mjs';
 
 function check(files, options = {}) {
   return checkRuntimeImports(new Map(Object.entries(files)), {
@@ -54,7 +55,7 @@ test('shared leaf modules can serve both runtimes; only three has a browser mapp
     'src/client.mjs': "import './shared.mjs'; import 'three';",
     'src/shared.mjs': 'export const rule = 1;',
     'server.mjs': "import './src/shared.mjs'; import 'node:http';",
-  }, { browserEntrypoints: ['src/client.mjs'], serverEntrypoints: ['server.mjs'] });
+  }, { browserEntrypoints: ['src/client.mjs'], browserPackageImports: { 'src/client.mjs': ['three'] }, serverEntrypoints: ['server.mjs'] });
   assert.deepEqual(result.sharedModules, ['src/shared.mjs']);
   assert.equal(result.browserModules, 2);
   assert.equal(result.serverModules, 2);
@@ -63,6 +64,35 @@ test('shared leaf modules can serve both runtimes; only three has a browser mapp
       browserEntrypoints: ['src/client.mjs'],
     }), /unsupported browser import/);
   }
+});
+
+test('a shared helper must satisfy every entrypoint import map', () => {
+  const files = {
+    'src/game.mjs': "import './helper.mjs'", 'src/audio.mjs': "import('./helper.mjs')", 'src/helper.mjs': "import 'three'",
+  };
+  const options = { browserEntrypoints: ['src/game.mjs', 'src/audio.mjs'], browserPackageImports: { 'src/game.mjs': ['three'], 'src/audio.mjs': [] } };
+  assert.throws(() => check(files, options), /src\/audio.mjs -> src\/helper.mjs -> three: unsupported browser import/);
+  assert.doesNotThrow(() => check(files, { ...options, browserPackageImports: { 'src/game.mjs': ['three'], 'src/audio.mjs': ['three'] } }));
+});
+
+test('registered browser package policies match the five shipped HTML entrypoints', async () => {
+  const registered = [];
+  for (const filename of ['index.html', 'audio-studio.html', 'audio-zones.html', 'environment-review.html', 'water-study.html']) {
+    const dom = new JSDOM(await readFile(new URL(`../${filename}`, import.meta.url), 'utf8'));
+    try {
+      const imports = {};
+      for (const script of dom.window.document.querySelectorAll('script[type="importmap"]')) {
+        Object.assign(imports, JSON.parse(script.textContent).imports);
+      }
+      for (const script of dom.window.document.querySelectorAll('script[type="module"][src]')) {
+        const entrypoint = path.posix.normalize(script.getAttribute('src'));
+        registered.push(entrypoint);
+        assert.deepEqual(Object.keys(imports).sort(), BROWSER_PACKAGE_IMPORTS[entrypoint], `${filename}: package policy must match the document import map`);
+        if (imports.three) assert.equal(path.posix.normalize(imports.three), 'vendor/three.module.js');
+      }
+    } finally { dom.window.close(); }
+  }
+  assert.deepEqual(registered.sort(), [...BROWSER_ENTRYPOINTS].sort());
 });
 
 test('browser closure rejects a transitive Node adapter with the full dependency path', () => {
