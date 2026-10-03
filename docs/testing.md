@@ -31,7 +31,7 @@ accepts the same shard option for coverage inspection.
 ### Incremental checked JavaScript
 
 `npm run check:types` uses locked TypeScript 5.9.3 with strict `checkJs` and
-`noEmit`. The explicit file list in
+`noEmit`. Browser-compatible leaves keep `types: []`. The explicit file list in
 [`tsconfig.check-js.json`](../tsconfig.check-js.json) names each checked module
 and compile-only consumer explicitly. The current boundary covers
 [`canopy ages`](../src/forest-age-composition.mjs),
@@ -68,7 +68,18 @@ catalog/compression independence, organic-edge determinism and input preservatio
 Static types check buffer/dimension kinds; exact RGBA length and valid geometry
 remain runtime/scenario checks.
 
-Both checks run in `npm test`; existing `forest-age-scenario.mjs`, `forest-habitat-scenario.mjs`
+[`tsconfig.check-node.json`](../tsconfig.check-node.json) separately checks the
+existing [outbound framing leaf](../src/networking/websocket-frame.mjs) and its
+compile-only consumer. It inherits the same strict/no-emit settings with locked
+development-only `@types/node` 24.19.1. No runtime leaf or signature is changed.
+`node --test scripts/check-node-types.test.mjs` rejects text/plain/float/null
+payloads, string opcodes/flags/counts and Buffer/number confusion, and proves
+`Buffer`/`process` globals still fail in the browser boundary. Existing native
+framing tests retain 100% line/branch/function coverage, exact literal headers,
+byte-length thresholds and independent ownership for offset byte views.
+
+Both compiler configurations and their negative tests run in `npm test`;
+existing `forest-age-scenario.mjs`, `forest-habitat-scenario.mjs`
 and `forest-composition-scenario.mjs` cover determinism, seed variation, spacing,
 glades, rectangle compression, root retention and input preservation.
 
@@ -83,13 +94,14 @@ The incremental type-safety stream owns this list and takes one bounded,
 reviewed/tested slice at a time under the existing merge authority. Completed:
 canopy identity/factors ([PR #162](https://github.com/lbeezr/thousand-unit-skirmish/pull/162)),
 woodland habitat/species ([PR #167](https://github.com/lbeezr/thousand-unit-skirmish/pull/167)),
-resource stages ([PR #178](https://github.com/lbeezr/thousand-unit-skirmish/pull/178))
-and terrain masks. Re-rank after each merge from current
+resource stages ([PR #178](https://github.com/lbeezr/thousand-unit-skirmish/pull/178)),
+terrain masks ([PR #188](https://github.com/lbeezr/thousand-unit-skirmish/pull/188))
+and the separately scoped Node framing gate. Re-rank after each merge from current
 main and active PR scopes; record a concrete defect risk before expanding.
 
-| Rank | Boundary | Defect risk and required proof | Scope/dependency |
+| Rank / state | Boundary | Defect risk and required proof | Scope/dependency |
 | --- | --- | --- | --- |
-| 1 | [Outbound WebSocket frame leaf](../src/networking/websocket-frame.mjs) | Byte-length/accounting and binary payload confusion; negative calls plus literal byte/ownership parity. | [Extraction #164](https://github.com/lbeezr/thousand-unit-skirmish/pull/164) is merged; consume its existing signatures without leaf edits. [Scope coordination](https://github.com/lbeezr/thousand-unit-skirmish/pull/164#issuecomment-5974326194) retains coverage and scopes Node ambient types separately. |
+| 1 — reassess when evidence appears | Next stable pure-data boundary | Select a concrete unchecked shape/identity/ownership risk with a positive consumer, a failing negative case and exact runtime/serialization proof. The current ready queue is exhausted. | No additional source writes reserved. Deflate-offer inputs intentionally remain `unknown` and its boolean contract already has strict-check/coverage evidence from its extraction; topology/cell helpers have active gameplay consumers and no new type defect reproduced in this audit. Revisit a documented defect or an agreed stable seam; avoid annotations solely to increase coverage. |
 
 Do not expand into audio reader/production/research extractions, gameplay roots
 or active render/entry hotspots to chase coverage. Coordinate concrete moves or
@@ -180,6 +192,7 @@ Run from the repository root:
 | Cliff pursuit and attack-move alternatives | `node scripts/cliff-pursuit-scenario.mjs --direct` and without `--direct` |
 | Attack-target loss and queued route continuation | `node --test scripts/attack-target-geometry.test.mjs`; `ATTACK_QUEUE_RECORD=/tmp/attacks.json node scripts/attack-queue-case.mjs`; `ATTACK_QUEUE_NATIVE_RECORD=/tmp/native-attacks.json node scripts/attack-queue-native-scenario.mjs`; [failure and bounded evidence](qa-attack-queue-transitions-2026-10-03.md) |
 | Direct military Attack continuation | `node --test scripts/army-attack-continuation.test.mjs`; `ARMY_ATTACK_NATIVE_RECORD=/tmp/army-native.json node scripts/army-attack-continuation-native-scenario.mjs`; [reproduction, stance inventory and appearance limits](qa-army-attack-continuation-2026-10-03.md) |
+| Military stances and idle defense | `node --test scripts/military-stance.test.mjs`; `MILITARY_STANCE_NATIVE_RECORD=/tmp/stance-native.json node scripts/military-stance-native-scenario.mjs`; [stance command/HUD and acceptance contract](military-stances.md) |
 | Moving-target pursuit and Worker-combat timeout | `node scripts/worker-combat-scenario.mjs`; `node --test scripts/worker-combat-repath.test.mjs`; `WORKER_COMBAT_RECORD=/tmp/worker-pursuit.json node scripts/worker-combat-repath-case.mjs`; `WORKER_COMBAT_NATIVE_RECORD=/tmp/native-worker-pursuit.json node scripts/worker-combat-repath-native-scenario.mjs`; [baseline failure and recovery evidence](qa-worker-combat-repath-2026-10-03.md) |
 | Construction on disconnected terrain / route protection | `node scripts/construction-connectivity-scenario.mjs` |
 | Mirrored construction | `node scripts/opening-production-scenario.mjs --expect-builder-parity` |

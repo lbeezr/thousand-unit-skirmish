@@ -14,6 +14,14 @@ delete process.env.RTS_MATCH_STATE_PATH;
 export async function runDynamicWallCase({team=0,group=64,mode='queued-target',maxTicks=2700,observe=false}={}) {
   const map=pathingBaselineMap({group}),fixture=await createPathingReplayFixture(map),r=fixture.replay;
   try {
+    // Isolate topology and formation arrival from the fresh Aggressive default.
+    // In the reverse-seat route, arrivals are close enough to fight the idle army.
+    for(const seat of [0,1]) {
+      const passive=r.units.filter(u=>u.team===seat&&u.kind==='infantry');
+      assert.ok(r.order(seat,{type:'setStance',ids:passive.map(u=>u.id),
+        unitGenerations:passive.map(u=>u.generation),stance:'noAttack'})
+        .some(n=>n.message.startsWith('STANCE ORDER')));
+    }
     const army=r.units.filter(u=>u.team===team&&u.kind==='infantry'),ids=army.map(u=>u.id);
     const queued=mode!=='active-route',goalX=queued?16.5:team?-16.5:16.5;
     r.order(team,{type:'move',ids,x:queued?-8.5:goalX,z:.5});r.drain();
@@ -62,6 +70,7 @@ export async function runDynamicWallCase({team=0,group=64,mode='queued-target',m
       trace.update(JSON.stringify(army.map(u=>[u.id,u.x,u.z,u.moveGoalCell,u.pathIndex,u.path,u.orderRevision,u.movePlanningPending,u.queuedWaypoints]))+'\n');
     }
     const goals=army.map(u=>u.moveGoalCell),arrived=army.filter(done).length;
+    assert.ok(army.every(u=>u.hp===100),'formation arrival excludes incidental combat');
     const validRequestedPreserved=army.every((u,i)=>!r.isWalkable(requested[i])||u.moveGoalCell===requested[i]);
     assert.equal(invalidSteps,0);assert.equal(unreachableGoals,0);
     if(!observe)assert.equal(arrived,group);
