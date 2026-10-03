@@ -12,7 +12,8 @@ current head, independent review, integration and subsequent evidence.
 Final runtime integration `5e174291a24381a4c068ec60a109c1bb6c585880` also includes
 fork main `d34c1a18c7e0ba865e19907a2fbaf868b17fa0e4` (the neutral Sheep renderer).
 All 418 unit tests pass with zero failures/skips. The two-client lobby scenario,
-real-worker wildlife render scenario and packaged release scenario pass again.
+legacy supervisor recovery/protocol scenario, real-worker wildlife render
+scenario and packaged release scenario pass again.
 The complete served client import graph and 31 UI assets pass their packaged
 delivery checks. Documentation passes 413 Markdown files / 2,704 local links.
 The clean release contains 1,016 files, digest
