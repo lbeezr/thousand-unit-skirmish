@@ -237,6 +237,11 @@ includes reproduction commands and known limitations.
 
 ## Report the result
 
+Pregame regressions: `node --test scripts/room-pregame.test.mjs scripts/room-lobby-ui.test.mjs scripts/room-launch-options.test.mjs`
+and `node scripts/room-pregame-scenario.mjs` cover the [lobby contract](room-lobby.md),
+including both-client authority, paused scenarios, launch races and seat/phase
+recovery. Existing supervisor/PvE/expiry scenarios remain the legacy-flow checks.
+
 Separate logic, protocol, browser appearance, local performance, deployed
 behavior, and human comprehension. A pass in one category does not establish
 another. Keep raw measurements with their build; put current instructions here
