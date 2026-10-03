@@ -42,7 +42,38 @@ assert.throws(() => validateAudioPack({ ...pack, compositions: [{ ...withComposi
 }] }), /[Dd]uplicate.*ID/);
 await assert.rejects(exportAudioPack(pack, {}), /no original bytes/);
 await assert.rejects(exportAudioPack(pack, { wood: new Blob([new Uint8Array(16 * 1024 * 1024 + 1)]) }), /16 MiB source limit/);
-await assert.rejects(parseAudioPackArchive(new Blob(['invalid'])), /not valid JSON/);
+await assert.rejects(parseAudioPackArchive(new Blob(['private-token=secret'])), error => {
+  assert.match(error.message, /not valid JSON/);
+  assert.ok(error.cause instanceof SyntaxError);
+  assert.doesNotMatch(error.message + JSON.stringify(error), /private|secret/);
+  return true;
+});
+
+{
+  const readFailure = new DOMException('private file detail: token=secret', 'NotReadableError');
+  const file = new Blob(['fixture']); let reads = 0;
+  file.text = async () => { if (++reads === 1) throw readFailure; return archive.text(); };
+  const store = createAudioLibraryStore({indexedDB: {open() { assert.fail('unreadable archive must not open storage'); }}});
+  await assert.rejects(store.importPack(file), error => {
+    assert.equal(error.cause, readFailure);
+    assert.match(error.message, /could not be read.*retry/);
+    assert.doesNotMatch(error.message, /JSON/);
+    assert.doesNotMatch(error.message + JSON.stringify(error), /private|secret/);
+    return true;
+  });
+  const retry = await parseAudioPackArchive(file);
+  assert.equal(reads, 2);
+  assert.deepEqual(retry.pack, pack);
+  assert.deepEqual(new Uint8Array(await retry.sourceBlobs.wood.arrayBuffer()), new Uint8Array(await original.arrayBuffer()));
+}
+
+{
+  const fault = new TypeError('archive reader returned an unexpected value');
+  const file = new Blob(['fixture']);
+  file.text = async () => ({toString() { throw fault; }});
+  await assert.rejects(parseAudioPackArchive(file), error => error === fault,
+    'parser programmer faults must not become invalid author JSON');
+}
 const broken = JSON.parse(await archive.text());
 broken.sources.wood.byteLength++;
 await assert.rejects(parseAudioPackArchive(new Blob([JSON.stringify(broken)])), /declared byte length/);

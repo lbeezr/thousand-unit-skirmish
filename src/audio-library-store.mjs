@@ -102,8 +102,15 @@ export async function exportAudioPack(value, sourceBlobs) {
 export async function parseAudioPackArchive(file) {
   if (!(file instanceof Blob)) throw new Error('Choose an audio pack file');
   if (file.size > MAX_ARCHIVE_BYTES) throw new Error('Archive exceeds the 90 MiB import limit');
+  let text;
+  try { text = await file.text(); }
+  catch (error) { throw new Error('Audio pack file could not be read. Choose the file again and retry.', {cause: error}); }
   let archive;
-  try { archive = JSON.parse(await file.text()); } catch { throw new Error('Audio pack is not valid JSON'); }
+  try { archive = JSON.parse(text); }
+  catch (error) {
+    if (!(error instanceof SyntaxError)) throw error;
+    throw new Error('Audio pack is not valid JSON', {cause: error});
+  }
   if (archive?.format !== ARCHIVE_FORMAT) throw new Error('Unsupported audio archive format; expected tus-audio-pack-v1');
   const pack = validateAudioPack(archive.pack);
   if (!archive.sources || typeof archive.sources !== 'object' || Array.isArray(archive.sources)) throw new Error('Archive is missing source bytes');
