@@ -62,6 +62,9 @@ later main's cargo-return fix. A post-review 2,000 run on `ded3b82` also passes:
 both builds accepted after 453 ticks, both complete by tick 840, with one
 authoritative occupancy race retried successfully. These are functional opening
 results, not evidence of a faster navigation algorithm.
+After integrating main `ff1c168` (including paid palisades and water-rendering
+changes), the 2,000 opening on `7ad859a` accepts both builds within 393 ticks and
+completes both by tick 780. Both actual footprints remain empty.
 
 Eight helper regressions cover late arrivals, placement races, unrelated errors,
 bounded stalled evacuation, reused generations, seat/worker/death filtering,
@@ -72,7 +75,12 @@ focused regressions and corrections. The reviewer also completed a native
 2,000-unit opening with both paid Barracks complete and empty footprints.
 All 92 focused clearance, movement, villager facing, cargo-return, CI shard and
 integrated audio-lifecycle tests pass, as do documentation links, syntax and diff
-checks. The native 2,000 case is registered in CI.
+checks. Independent re-review of `ded3b82` reports no remaining findings and
+passes 28 focused checks. The final main integration preserves the reviewed
+harness code and passes 33 clearance, movement, facing, CI shard and palisade
+checks. The legacy 1,000 replay mode also clears (272 ticks). The native 2,000
+case is registered in CI. No hosted workflow runs or commit statuses were
+reported for the pushed pre-integration head; these are local checks.
 
 ## Remaining proof
 
