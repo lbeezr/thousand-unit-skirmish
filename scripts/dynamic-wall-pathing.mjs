@@ -11,7 +11,7 @@ import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 process.env.RTS_MAP='maps/open-field.json';process.env.RTS_GAME_MODE='pvp';process.env.RTS_PREGAME='0';
 process.env.RTS_TICK_DIAGNOSTICS='1';process.env.RTS_SEPARATION_DIAGNOSTICS='1';
 delete process.env.RTS_MATCH_STATE_PATH;
-export async function runDynamicWallCase({team=0,group=64,mode='queued-target',maxTicks=2700}={}) {
+export async function runDynamicWallCase({team=0,group=64,mode='queued-target',maxTicks=2700,observe=false}={}) {
   const map=pathingBaselineMap({group}),fixture=await createPathingReplayFixture(map),r=fixture.replay;
   try {
     const army=r.units.filter(u=>u.team===team&&u.kind==='infantry'),ids=army.map(u=>u.id);
@@ -63,7 +63,8 @@ export async function runDynamicWallCase({team=0,group=64,mode='queued-target',m
     }
     const goals=army.map(u=>u.moveGoalCell),arrived=army.filter(done).length;
     const validRequestedPreserved=army.every((u,i)=>!r.isWalkable(requested[i])||u.moveGoalCell===requested[i]);
-    assert.equal(invalidSteps,0);assert.equal(unreachableGoals,0);assert.equal(arrived,group);
+    assert.equal(invalidSteps,0);assert.equal(unreachableGoals,0);
+    if(!observe)assert.equal(arrived,group);
     assert.equal(validRequestedPreserved,true);
     if(mode==='queued-removal'){assert.equal(removed,true);assert.deepEqual(goals,requested);}
     return {team,group,mode,sourceSha256:fixture.sourceSha256,ticks:r.tick,arrived,
@@ -76,14 +77,15 @@ export async function runDynamicWallCase({team=0,group=64,mode='queued-target',m
 }
 if(process.argv[1]===fileURLToPath(import.meta.url)) {
   const repeats=Number(process.argv[2]??2);assert.ok(Number.isInteger(repeats)&&repeats>=1&&repeats<=3);
+  const observe=process.argv.includes('--observe');
   const records=[];
   for(const team of [0,1])for(const group of [16,64])for(const mode of ['active-route','queued-target','queued-removal']) {
-    const runs=[];for(let i=0;i<repeats;i++)runs.push(await runDynamicWallCase({team,group,mode}));
+    const runs=[];for(let i=0;i<repeats;i++)runs.push(await runDynamicWallCase({team,group,mode,observe}));
     assert.ok(runs.every(r=>r.traceSha256===runs[0].traceSha256),'canonical replay must repeat exactly');
     records.push({team,group,mode,runs});
     console.log(JSON.stringify({team,group,mode,ticks:runs[0].ticks,arrived:runs[0].arrived,distinctGoals:runs[0].distinctGoals,repeatExact:repeats>1}));
   }
-  const report={head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),node:process.version,records,
+  const report={head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),node:process.version,observe,records,
     limits:['real server bodies; canonical planning drains between ticks; native scheduling/rendering excluded','cloud host not isolated; tick timings observational, no speedup or capacity claim']};
   if(process.env.DYNAMIC_WALL_RECORD)await writeFile(process.env.DYNAMIC_WALL_RECORD,JSON.stringify(report,null,2)+'\n');
 }
