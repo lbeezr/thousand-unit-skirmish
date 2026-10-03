@@ -79,7 +79,7 @@ These are bounded checks, not a green full-suite, renderer, deployment, general
 combat parity or performance claim. The native Worker proof uses fog-off terrain;
 fog authority remains covered by the existing attack-loss controls.
 
-## Reproduction
+## Reviewed main integration
 
 Main's selected-Skiff groups at `14a621c` integrate cleanly into `7c4af09`.
 The server SHA-256 becomes
@@ -95,6 +95,8 @@ Both seats pass pursuit and post-combat recovery at 60 Infantry HP; the source
 hash matches `7c4af09`. [PR 125](https://github.com/lbeezr/thousand-unit-skirmish/pull/125)
 records final exact-head merge and postmerge verification. Hosted CI remains
 queued without a green-CI claim.
+
+## Reproduction
 
 Run the commands in the [testing guide](testing.md). The matrix's `--observe`
 mode records bounded failure on the historical source using the read-only
