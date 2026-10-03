@@ -51,6 +51,11 @@ timeout reproduced on clean main `1850b3b9d7ace7db572470411167d90d217236f8`.
 Its remaining checks passed separately. This is not a green full-suite claim.
 Hosted CI was queued, without a hosted pass claim.
 
+The later [Worker pursuit investigation](qa-worker-combat-repath-2026-10-03.md)
+reproduces that unchanged fixture failure and isolates moving-target path
+reversal. Its focused correction and native recovery evidence do not change the
+historical segmented-suite result above into a full-suite pass.
+
 ```sh
 node --test scripts/economy-profile.test.mjs scripts/economy-checkpoint.test.mjs scripts/economy-server.test.mjs scripts/economy-recovery-native.test.mjs scripts/gameplay-definitions.test.mjs scripts/ruleset-revision.test.mjs
 node --test scripts/stone-authoring-fixture.test.mjs scripts/storehouse-routing.test.mjs scripts/pve-farm-policy.test.mjs scripts/queued-cargo-return.test.mjs
