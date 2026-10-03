@@ -66,6 +66,16 @@ reconnect/checkpoint recovery. A new move, gather, build, repair, or attack orde
 replaces Hold; a rematch clears it. Held workers are excluded from idle-worker
 selection.
 
+Direct military Attack prioritizes the clicked visible target. When that target
+dies, becomes hidden or becomes unreachable, an unqueued order continues against
+nearby visible enemy units using attack-move's 4.8-cell acquisition radius,
+8-cell pursuit leash and bounded path planning. A queued order takes precedence
+after target loss. Workers finish a focused Attack without starting this local
+continuation. Stop, Hold Position and a replacement Move still interrupt combat.
+Units that have only moved or spawned remain idle; persistent combat stances are
+a separate planned feature. [Reproduction and acceptance](qa-army-attack-continuation-2026-10-03.md)
+distinguish this fix from default movement and stance behavior.
+
 Patrol (`P`) targets ground and repeatedly travels between each selected unit's
 current cell and its assigned formation destination. It engages visible enemies
 using the existing attack-move leash, then resumes the interrupted route. Follow
@@ -96,6 +106,15 @@ custom skirmish with construction, research and crossing rewards.
 [Forked Vale](forked-vale-scenario.md) remains a laboratory scenario.
 Larger maps test travel, resource regions, forest clearing, and elevation.
 Match length and economy pacing must come from observed play.
+
+The current normal objective strip names authored **Objective Control** or
+**Elimination** rules explicitly. Objective maps can finish before substantial
+base development; they disable elimination. The [victory audit and mode proposal](victory-modes-audit-2026-10-03.md)
+records the precise recovery-aware defeat rules and a pending separation of
+economy Skirmish from fast Objective Control. Quick original custom-inspired
+modes should test the core while the longer RTS develops in parallel; automatic
+reinforcement/evolution and fantasy-world territorial play remain distinct later
+slices, with research and a representative regional proof before a full world map.
 
 Resource stocks and worker cargo display whole units rounded down; costs and
 positive shortfalls round up. Affordability uses exact authoritative values, so

@@ -1030,6 +1030,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; }
 .selection-portrait-art img { position:absolute; max-width:none; height:auto; }
 .contextual-command-bar .contextual-icon-command { display:inline-flex; align-items:center; gap:5px; }
 .contextual-icon-command img { flex:0 0 20px; }
+.attack-move-toggle.contextual-icon-command { justify-content:flex-start; gap:5px; }
 .selected-worker-notes { padding:8px; border:1px solid var(--line); border-radius:4px; }
 .selected-worker-notes p { margin:5px 0 0; font-size:12px; line-height:18px; }
 .selected-worker-notes details { margin-top:5px; border-top:1px solid var(--line); }

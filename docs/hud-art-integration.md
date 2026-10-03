@@ -9,7 +9,11 @@ in a new panel. Multiple units retain their composition summary. Unsupported
 buildings, enemy, dead, stale and spectator selections have no portrait.
 The existing Build, battlefield target and Attack move commands use the original
 [purpose-drawn icons](../assets/ui/PROVENANCE.md), retaining visible labels and
-the established M hotkey. Return cargo keeps its distinct text and behavior.
+the established M hotkey. Patrol, Follow, Stop, Hold position, Return cargo and
+Formation now use [action glyphs](../assets/ui/icons/actions/README.md) by default
+in existing labelled controls at 20 px. The Command drawer's duplicate tactical
+controls use the same files. Formation remains hidden for building details;
+Return cargo retains its distinct text, tooltip and carrying-Worker/Skiff behavior.
 
 The portrait resolves the effective sprite appearance, rather than inferring
 ancestry from seat number. Normal Human/Boughward rendering and the explicit
@@ -96,6 +100,14 @@ The shipped HTML/client-handler tests cover both seats, live HP, notes open and
 Escape focus restoration, registry-derived facts, sourced optional lore,
 disclosure/link focus during live updates and entry removal, group summaries, invalid selections, effective
 appearance/legacy fallback, and decorative icon survival through target states.
+Action checks cover all six default bindings, both seats' unit/building/empty
+transitions, stable image/label nodes through live updates, text after an image
+error and unchanged cargo ordering. A dedicated HTTP scenario checks default
+HTML plus all six GET/HEAD responses, MIME and source hashes; source-only
+manifest/README and unapproved paths remain rejected. It also accepts a clean
+release directory to verify packaged serving. Deployment and native in-game
+appearance/keyboard verification remain incomplete in the
+[adoption ledger](asset-adoption-checklist.md); the active HUD owner retains them.
 Asset checks verify source hashes, byte-identical reuse, viewport bounds,
 explicit HTTP allowlisting and release Docker inclusion. These checks are not
 native pixel, pointer, Retina or VoiceOver acceptance. Follow the

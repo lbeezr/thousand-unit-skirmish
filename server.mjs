@@ -26,6 +26,7 @@ import { mkdir, open, readFile, readdir, rename, stat, unlink, writeFile } from 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deflateRawSync, inflateRawSync, constants as zlibConstants } from 'node:zlib';
+import { encodeWebSocketFrame, websocketFrameBytes } from './src/networking/websocket-frame.mjs';
 import { configuredPublicOrigins, sameOriginRequest } from './origin-policy.mjs';
 import {
   buildElevationGrid, capturePrerequisiteIds, findInvalidCapturePrerequisite,
@@ -104,6 +105,7 @@ const RESEARCH_RULES = Object.freeze(Object.fromEntries(
 const SHARED_MOVE_PATHS = process.env.RTS_SHARED_MOVE_PATHS !== '0';
 const SERVER_INSTANCE_ID = randomBytes(16).toString('base64url');
 const pveLaunchOptions = readPveLaunchOptions();
+const soloPractice = !pveLaunchOptions && process.env.RTS_PREGAME !== '1' && process.env.RTS_SOLO_PRACTICE === '1';
 const PVE_DECISION_INTERVAL_MS = 1_000;
 let matchId = randomBytes(16).toString('base64url');
 let recoveredFromCheckpoint = false;
@@ -2513,6 +2515,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
     type: 'state', economyProfileId: matchEconomyProfileId(), rulesetRevision: economyRulesetRevision(matchEconomyProfileId()), factionId: DEFAULT_FACTION_ID, unitWireIds: UNIT_WIRE_IDS, tick: tickNumber, armySize: currentArmySize,
     ...(pregame ? { lobby: pregamePayload() } : {}),
     matchElapsedSeconds: Number(matchElapsedSeconds.toFixed(1)), scenarioClockStarted,
+    ...(soloPractice ? { practice: true } : {}),
     victoryHold: (mapDefinition.victoryHoldSeconds ?? 0) > 0 ? {
       durationSeconds: mapDefinition.victoryHoldSeconds,
       activeTeams: [...victoryHoldState.activeTeams],
@@ -3851,6 +3854,9 @@ function clearAttackMoveOrder(unit) {
 }
 
 function clearAttackTarget(unit) {
+  const completedMilitaryAttack = !unit.attackMove && !unit.holdingPosition
+    && (unit.attackTargetId >= 0 || unit.attackBuildingTargetId >= 0)
+    && unit.kind !== 'worker' && unitHasCapability(unit, 'attack');
   unit.attackTargetId = -1;
   unit.attackBuildingTargetId = -1;
   unit.repathTimer = 0;
@@ -3871,6 +3877,17 @@ function clearAttackTarget(unit) {
     unit.pathIndex = 0;
     if (unit.queuedWaypoints.length > 0) {
       unit.moveGoalCell = nearestOpenCell(worldToCell(unit.x, unit.z));
+    } else if (completedMilitaryAttack) {
+      // A focused Attack finishes with local combat intent. Reuse attack-move's
+      // bounded visible acquisition, pursuit leash and fair path budget; there
+      // is no new travel destination and explicit Stop/Move still replace it.
+      unit.attackMove = true;
+      unit.attackMoveRouteReady = true;
+      unit.moveGoalCell = nearestOpenCell(worldToCell(unit.x, unit.z));
+      unit.attackMoveAnchorX = unit.x;
+      unit.attackMoveAnchorZ = unit.z;
+      unit.attackMoveScanTick = tickNumber;
+      dirty = true;
     }
   }
 }
@@ -6411,7 +6428,7 @@ function advanceQueuedWaypoints() {
 function selectMap(player, mapId) {
   if (player.team !== 0) return;
   if (pveLaunchOptions) {
-    sendOrderNotice(player, 0, 'PLAY VS AI MAP IS LOCKED FOR THIS MATCH');
+    sendOrderNotice(player, 0, 'AI MATCH MAP IS FIXED · MAIN MENU → PRACTICE FOR ALL MAPS');
     return;
   }
   const nextMap = mapCatalog.get(String(mapId));
@@ -6580,7 +6597,7 @@ async function handleCommand(player, command) {
   if (command.type === 'publishMap') await publishMap(player, command.map, command.persist === true);
   if (command.type === 'selectArmySize' && player.team === 0) {
     if (pveLaunchOptions) {
-      sendOrderNotice(player, command, 'PLAY VS AI ARMY SIZE IS LOCKED FOR THIS MATCH');
+      sendOrderNotice(player, command, 'AI MATCH ARMY IS FIXED · MAIN MENU → PRACTICE TO CHANGE IT');
       return;
     }
     const allowed = [250, 500, 1000, 2000];
@@ -7096,7 +7113,7 @@ function simulateTick() {
   tickNumber++;
   if (pregame?.phase === 'lobby') return;
   if (matchWinner >= 0) return;
-  if (!scenarioClockStarted && connectedCount() >= 2) scenarioClockStarted = true;
+  if (!scenarioClockStarted && connectedCount() >= (soloPractice ? 1 : 2)) scenarioClockStarted = true;
   if (scenarioClockStarted) matchElapsedSeconds += STEP_SECONDS;
   rebuildSpatialBuckets();
   updatePersistentOrders();
@@ -7379,24 +7396,6 @@ function simulateTick() {
   advanceQueuedWaypoints();
 }
 
-function encodeWebSocketFrame(opcode, payload, compressed = false) {
-  let header;
-  if (payload.length < 126) {
-    header = Buffer.alloc(2);
-    header[1] = payload.length;
-  } else if (payload.length <= 0xffff) {
-    header = Buffer.alloc(4);
-    header[1] = 126;
-    header.writeUInt16BE(payload.length, 2);
-  } else {
-    header = Buffer.alloc(10);
-    header[1] = 127;
-    header.writeBigUInt64BE(BigInt(payload.length), 2);
-  }
-  header[0] = 0x80 | opcode | (compressed ? 0x40 : 0);
-  return Buffer.concat([header, payload]);
-}
-
 function sendFrame(socket, opcode, payload = Buffer.alloc(0)) {
   if (socket.destroyed || !socket.writable) return false;
   return socket.write(encodeWebSocketFrame(opcode, payload));
@@ -7425,11 +7424,6 @@ function prepareJsonFrame(message, allowCompression = false) {
   frame.rtsPayloadBytes = payload.length;
   frame.rtsCompressed = false;
   return frame;
-}
-
-function websocketFrameBytes(payloadBytes) {
-  const headerBytes = payloadBytes < 126 ? 2 : payloadBytes <= 0xffff ? 4 : 10;
-  return payloadBytes + headerBytes;
 }
 
 function canQueuePeerFrame(peer, frameBytes) {
@@ -7993,6 +7987,9 @@ const server = createServer(async (request, response) => {
     'assets/ui/cursors/build-blocked.png', 'assets/ui/cursors/build-blocked.svg',
     'assets/ui/icons/wood.svg', 'assets/ui/icons/food.svg', 'assets/ui/icons/move.svg',
     'assets/ui/icons/attack.svg', 'assets/ui/icons/gather.svg', 'assets/ui/icons/build.svg',
+    'assets/ui/icons/actions/patrol.svg', 'assets/ui/icons/actions/follow.svg',
+    'assets/ui/icons/actions/stop.svg', 'assets/ui/icons/actions/hold-position.svg',
+    'assets/ui/icons/actions/return-cargo.svg', 'assets/ui/icons/actions/formation.svg',
   ].includes(relative);
   const publicEnvironmentModule = relative === 'src/environment-art.mjs';
   const publicPaintedMaterialAtlasAsset = /^assets\/environment\/frontier-painted-material-atlas-v1\/(?:manifest\.json|frontier-painted-material-atlas-mip-[0-5]\.webp)$/.test(relative);

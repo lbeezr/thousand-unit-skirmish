@@ -3,9 +3,10 @@ import {mkdir, rm, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 
 export class CaptureCheckpointError extends Error {
-  constructor(code, message) { super(message); this.name = 'CaptureCheckpointError'; this.code = code; }
+  constructor(code, message, options) { super(message, options); this.name = 'CaptureCheckpointError'; this.code = code; }
 }
-const fail = (code, message) => { throw new CaptureCheckpointError(code, message); };
+// Messages are safe to present; causes remain available for explicit local diagnosis.
+const fail = (code, message, options) => { throw new CaptureCheckpointError(code, message, options); };
 const pngSignature = Buffer.from('89504e470d0a1a0a', 'hex');
 const maxImageBytes = 32 * 1024 * 1024;
 
@@ -62,7 +63,8 @@ function imageBytes(data, viewport) {
 }
 
 // Consumes the page returned by createFortifiedBrowser(); never launches a browser.
-export async function captureCheckpoint({page, revision, browserVersion, mapId, checkpoint, outputDirectory} = {}) {
+export async function captureCheckpoint({page, revision, browserVersion, mapId, checkpoint, outputDirectory} = {},
+  {fileSystem = {mkdir, rm, writeFile}} = {}) {
   if (typeof page?.cdp?.call !== 'function' || typeof page?.cdp?.evaluate !== 'function') {
     fail('capture-runtime-unavailable', 'A live isolated CDP page is required; run browser preflight first.');
   }
@@ -75,20 +77,20 @@ export async function captureCheckpoint({page, revision, browserVersion, mapId, 
   const directory = path.join(outputDirectory, checkpoint);
   let created = false;
   try {
-    try { await mkdir(directory); created = true; }
+    try { await fileSystem.mkdir(directory); created = true; }
     catch (error) {
       fail(error.code === 'EEXIST' ? 'capture-output-exists' : 'capture-storage-unavailable',
-        'Capture needs a new checkpoint directory beneath a writable existing output directory.');
+        'Capture needs a new checkpoint directory beneath a writable existing output directory.', {cause: error});
     }
     let view, screenshot, after;
     try {
       view = await page.cdp.evaluate(captureView);
-    } catch { fail('capture-runtime-unavailable', 'The isolated CDP page could not report capture readiness.'); }
+    } catch (error) { fail('capture-runtime-unavailable', 'The isolated CDP page could not report capture readiness.', {cause: error}); }
     const viewport = readyView(view, mapId);
     try { screenshot = await page.cdp.call('Page.captureScreenshot', {format: 'png', captureBeyondViewport: false}); }
-    catch { fail('capture-runtime-unavailable', 'CDP screenshot capture failed; no capture bundle was published.'); }
+    catch (error) { fail('capture-runtime-unavailable', 'CDP screenshot capture failed; no capture bundle was published.', {cause: error}); }
     try { after = await page.cdp.evaluate(captureView); }
-    catch { fail('capture-runtime-unavailable', 'The applied map could not be rechecked after capture.'); }
+    catch (error) { fail('capture-runtime-unavailable', 'The applied map could not be rechecked after capture.', {cause: error}); }
     const afterViewport = readyView(after, mapId);
     if (Object.keys(viewport).some(key => viewport[key] !== afterViewport[key])) {
       fail('capture-not-ready', 'The viewport changed during capture; no capture bundle was published.');
@@ -102,14 +104,17 @@ export async function captureCheckpoint({page, revision, browserVersion, mapId, 
         sha256: createHash('sha256').update(image.bytes).digest('hex')},
       evidence: {kind: 'cdp-screenshot', visualReview: 'not-performed', humanPlaytest: 'not-performed'}};
     try {
-      await writeFile(path.join(directory, 'color.png'), image.bytes, {flag: 'wx'});
-      await writeFile(path.join(directory, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`, {flag: 'wx'});
-    } catch { fail('capture-storage-unavailable', 'Capture bundle files could not be written.'); }
+      await fileSystem.writeFile(path.join(directory, 'color.png'), image.bytes, {flag: 'wx'});
+      await fileSystem.writeFile(path.join(directory, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`, {flag: 'wx'});
+    } catch (error) { fail('capture-storage-unavailable', 'Capture bundle files could not be written.', {cause: error}); }
     return {directory, manifest};
   } catch (error) {
     if (created) {
-      try { await rm(directory, {recursive: true, force: true}); }
-      catch { fail('capture-cleanup-failed', 'Failed capture cleanup needs attention before another capture.'); }
+      try { await fileSystem.rm(directory, {recursive: true, force: true}); }
+      catch (cleanupError) {
+        fail('capture-cleanup-failed', 'Failed capture cleanup needs attention before another capture.',
+          {cause: new AggregateError([error, cleanupError], 'Capture and cleanup failed.')});
+      }
     }
     throw error;
   }

@@ -42,7 +42,8 @@
     <main id="game-menu" aria-labelledby="game-menu-title">
       <div class="game-menu-brand"><div class="eyebrow">FIELD COMMAND · FRONTIER</div><h1 id="game-menu-title">Thousand Unit<br>Skirmish</h1><p>Gather. Build. Command.</p></div>
       <section class="game-menu-actions" aria-label="Main menu">
-        <button id="menu-new-game" data-create-game="pve" type="button" disabled><strong>New Game</strong><span>Play vs AI · a fresh seeded battlefield</span></button>
+        <button id="menu-new-game" data-create-game="pve" type="button" disabled><strong>New Game</strong><span>Play vs AI · seeded Millrace or Rootways</span></button>
+        <button id="menu-practice" data-create-game="practice" type="button" disabled><strong>Practice</strong><span>All maps, including labs · one player, no AI commander</span></button>
         <button id="menu-create-room" data-create-game="pvp" type="button" disabled><strong>Create Room</strong><span>Invite a friend · Frontier 1v1 pregame lobby</span></button>
         <button id="menu-join" type="button" disabled><strong>Join Room</strong><span>Use a room code or invite link</span></button>
         <button id="menu-resume" type="button" hidden><strong>Resume</strong><span>Return to your saved player session</span></button>
@@ -153,11 +154,11 @@
             <button type="button" data-context-panel="selection">Groups</button>
             <span data-context-groups class="contextual-groups"></span>
             <button type="button" class="contextual-icon-command" data-context-proxy="order-target-toggle"><img src="/assets/ui/icons/move.svg" alt="" width="20" height="20"><span data-command-label>Target battlefield</span></button>
-            <button type="button" data-persistent-order="patrol">Patrol · P</button>
-            <button type="button" data-persistent-order="follow">Follow · F</button>
-            <button type="button" data-stationary-order="stop">Stop · S</button>
-            <button type="button" data-return-cargo hidden title="Deliver selected Workers’ resources or Skiffs’ food to a reachable owned drop-off">Return cargo</button>
-            <button type="button" data-stationary-order="holdPosition">Hold position · H</button>
+            <button type="button" class="contextual-icon-command" data-persistent-order="patrol"><img src="/assets/ui/icons/actions/patrol.svg" alt="" width="20" height="20"><span>Patrol · P</span></button>
+            <button type="button" class="contextual-icon-command" data-persistent-order="follow"><img src="/assets/ui/icons/actions/follow.svg" alt="" width="20" height="20"><span>Follow · F</span></button>
+            <button type="button" class="contextual-icon-command" data-stationary-order="stop"><img src="/assets/ui/icons/actions/stop.svg" alt="" width="20" height="20"><span>Stop · S</span></button>
+            <button type="button" class="contextual-icon-command" data-return-cargo hidden title="Deliver selected Workers’ resources or Skiffs’ food to a reachable owned drop-off"><img src="/assets/ui/icons/actions/return-cargo.svg" alt="" width="20" height="20"><span>Return cargo</span></button>
+            <button type="button" class="contextual-icon-command" data-stationary-order="holdPosition"><img src="/assets/ui/icons/actions/hold-position.svg" alt="" width="20" height="20"><span>Hold position · H</span></button>
             <button type="button" class="contextual-icon-command" data-context-proxy="attack-move-toggle" title="Move while attacking enemies encountered · M"><img src="/assets/ui/icons/attack.svg" alt="" width="20" height="20"><span>Attack move · M</span></button>
             <button type="button" data-context-proxy="select-workers">Select workers</button>
             <button type="button" class="contextual-icon-command" data-context-build data-context-panel="economy" title="Open construction choices"><img src="/assets/ui/icons/build.svg" alt="" width="20" height="20"><span>Build</span></button>
@@ -167,7 +168,7 @@
             <div data-context-research-options></div>
             <div data-context-products></div>
             <div id="building-lifecycle-actions" class="contextual-actions"></div>
-            <button type="button" data-context-details data-context-panel="command">Details / formation</button>
+            <button type="button" class="contextual-icon-command" data-context-details data-context-panel="command"><img data-context-formation-icon src="/assets/ui/icons/actions/formation.svg" alt="" width="20" height="20" hidden><span data-context-details-label>Details / formation</span></button>
           </div>
           <small id="context-action-reason" data-context-reason></small>
           <small data-context-research hidden></small>
@@ -321,10 +322,10 @@
                 <option value="column">Column</option>
               </select>
             </div>
-            <button type="button" class="attack-move-toggle" data-persistent-order="patrol" title="Patrol to a ground target and back, engaging enemies">Patrol · P</button>
-            <button type="button" class="attack-move-toggle" data-persistent-order="follow" title="Follow a living friendly unit">Follow · F</button>
-            <button type="button" class="attack-move-toggle" data-stationary-order="stop" title="Cancel all current tasks and queued routes">Stop · S</button>
-            <button type="button" class="attack-move-toggle" data-stationary-order="holdPosition" title="Stay in place and attack enemies within weapon range">Hold position · H</button>
+            <button type="button" class="attack-move-toggle contextual-icon-command" data-persistent-order="patrol" title="Patrol to a ground target and back, engaging enemies"><img src="/assets/ui/icons/actions/patrol.svg" alt="" width="20" height="20"><span>Patrol · P</span></button>
+            <button type="button" class="attack-move-toggle contextual-icon-command" data-persistent-order="follow" title="Follow a living friendly unit"><img src="/assets/ui/icons/actions/follow.svg" alt="" width="20" height="20"><span>Follow · F</span></button>
+            <button type="button" class="attack-move-toggle contextual-icon-command" data-stationary-order="stop" title="Cancel all current tasks and queued routes"><img src="/assets/ui/icons/actions/stop.svg" alt="" width="20" height="20"><span>Stop · S</span></button>
+            <button type="button" class="attack-move-toggle contextual-icon-command" data-stationary-order="holdPosition" title="Stay in place and attack enemies within weapon range"><img src="/assets/ui/icons/actions/hold-position.svg" alt="" width="20" height="20"><span>Hold position · H</span></button>
             <button id="attack-move-toggle" class="attack-move-toggle" type="button" aria-pressed="false">
               <span>Attack move</span><span class="attack-move-key">M</span>
             </button>
@@ -335,6 +336,7 @@
         <aside id="match-menu" class="match-menu" aria-label="Match menu" hidden>
           <button id="match-menu-close" class="hud-panel-close" type="button" aria-label="Close match menu">×</button>
           <a id="return-main-menu" class="room-action" href="/">MAIN MENU</a>
+          <p id="practice-status" role="status" hidden>Solo practice · no AI commander. Choose any Battlefield map below.</p>
           <div class="dock-heading">
             <div>
               <div class="eyebrow">MATCH <span>·</span> OPTIONS</div>

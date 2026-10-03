@@ -82,6 +82,7 @@ the build they name.
 - [Gameplay foundation plan](gameplay-foundation-plan.md): extensible roster, base development, combat/progression, and presentation/variant milestones.
 - [Core match tranche](core-playtest-tranche.md): next human session, observation record, and proposed scale profile.
 - [Balance](first-skirmish-balance.md): current no-tune baseline and next observations.
+- [Victory audit and mode proposal](victory-modes-audit-2026-10-03.md): exact authored victories, recoverable base defeat, and separate Skirmish/custom-inspired directions.
 - [Mill depot simulation](qa-mill-depot-economy-2026-10-03.md): paid travel comparisons and separate currency tradeoffs; [finite Farm contract](farm-finite-planting.md) and [Farm QA](qa-finite-farm-2026-10-03.md): provisional paid planting, stock, cancellation and recovery. The [earlier proposal](farm-capability-proposal.md) preserves its design history.
 - [Provisional Stone contract](stone-defense-contract-proposal.md): one optional Watchtower sink, finite budget and preserved legacy prices; implementation remains pending.
 - [Stone runtime interface](stone-runtime-interface.md): explicit profile selector, typed price/refund helpers and map/runtime ownership; live admission remains closed.
@@ -102,6 +103,7 @@ from source/candidate packs. Then use the relevant contract:
 - [Renderer state/GLB/environment contract](renderer-state-contract.md).
 - [Finished Frontier runtime](frontier-building-runtime.md): all six default finished building families, state fallback, packaging, shared depth/texture ownership and open normal-match QA.
 - [Ordinary-game building acceptance](qa-frontier-building-adoption.md): exact paid maps/sites, selected/hover/team semantics and pending deployed Mac coverage owned by the building workstream.
+- [Barracks and Archery Range replacement](frontier-barracks-range-authoring.md): inspected new concepts versus old default sprites, precise production gaps and retained ownership through default gameplay verification.
 - [Water surface and fish cues](water-surface-study.md): default apparent depth and directional motion, live visibility-gated shore-fish activity, static quality and reduced motion.
 - [Native water first-pass review](qa-water-surface-native-2026-10-03.md): Mac shader/appearance results, saved image provenance, resolved fallback comparison and remaining visual limits.
 - [Sprite-atlas format](sprite-atlas-contract-v1.md).

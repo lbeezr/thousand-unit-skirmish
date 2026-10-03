@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFileSync } from 'node:fs';
+import { JSDOM } from 'jsdom';
 
 // Model reflected attributes like the browser: assigning the same value still
 // queues a mutation. Drain in bounded batches so a regression fails, not hangs.
@@ -111,4 +113,29 @@ test('PvE entry settles after room status and host UI updates', async () => {
       else globalThis[key] = value;
     }
   }
+});
+
+test('actual author CSS hides fixed AI map/Studio controls and preserves Practice controls', async () => {
+  const original = { window: globalThis.window, MutationObserver: globalThis.MutationObserver, fetch: globalThis.fetch };
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  const styles = readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+  try {
+    for (const mode of ['pve', 'practice']) {
+      const dom = new JSDOM(html, { url: `https://game.test/?room=${'R'.repeat(32)}${mode === 'pve' ? '&mode=pve&mapSeed=1&policySeed=2' : ''}` });
+      const sheet = dom.window.document.createElement('style'); sheet.textContent = styles; dom.window.document.head.append(sheet);
+      globalThis.window = dom.window;
+      globalThis.MutationObserver = dom.window.MutationObserver;
+      globalThis.fetch = async url => ({ ok: true, json: async () => url.endsWith('/status') ? { enabled: true }
+        : { launchOptions: mode === 'pve' ? { mode: 'pve', mapSeed: 1, policySeed: 2 } : { mode: 'pvp', practice: true } } });
+      const { mountPveEntry } = await import('../src/pve-entry.mjs'); mountPveEntry();
+      await new Promise(resolve => setImmediate(resolve));
+      const picker = dom.window.document.querySelector('.map-picker');
+      const studio = dom.window.document.querySelector('#map-studio-open');
+      assert.equal(picker.hidden, mode === 'pve');
+      assert.equal(studio.hidden, mode === 'pve');
+      assert.equal(dom.window.getComputedStyle(picker).display, mode === 'pve' ? 'none' : 'flex');
+      assert.equal(dom.window.getComputedStyle(studio).display === 'none', mode === 'pve');
+      dom.window.close();
+    }
+  } finally { Object.assign(globalThis, original); }
 });
