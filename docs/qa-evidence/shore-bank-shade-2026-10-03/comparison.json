@@ -1,0 +1,85 @@
+{
+  "scope": "Controlled Cycles CPU study; no WebGL or game screenshot evidence",
+  "comparisons": {
+    "0.91": {
+      "pixelsChangedOverOneLevel": 2546,
+      "fraction": 0.0027625868055555555,
+      "meanAbsoluteRGBDelta": 0.007269965277777778,
+      "meanRGBBeforeChanged": 96.43898926420529,
+      "meanRGBAfterChanged": 93.96019900497512,
+      "maxChannelDelta": 7,
+      "changedOutsideBankMaskWithThreePixelMargin": 0
+    },
+    "0.48": {
+      "pixelsChangedOverOneLevel": 733,
+      "fraction": 0.0007953559027777777,
+      "meanAbsoluteRGBDelta": 0.0020033998842592595,
+      "meanRGBBeforeChanged": 98.02364711232379,
+      "meanRGBAfterChanged": 95.7012278308322,
+      "maxChannelDelta": 6,
+      "changedOutsideBankMaskWithThreePixelMargin": 0
+    }
+  },
+  "files": [
+    {
+      "file": "after-zoom-0.48.png",
+      "bytes": 510654,
+      "sha256": "ffd6bd908aaa0353f6de5178a9bbe278bf7d5e812e99ed599296d99612fe6488"
+    },
+    {
+      "file": "after-zoom-0.91.png",
+      "bytes": 670348,
+      "sha256": "a78115af2259efb809dd37955097d577b0be56222d0129ba5d33662a3893692f"
+    },
+    {
+      "file": "before-zoom-0.48.png",
+      "bytes": 510663,
+      "sha256": "b4a76cfa84880a79a55299a5548d60bc319ecd7f8b96c54543a7438f3732c037"
+    },
+    {
+      "file": "before-zoom-0.91.png",
+      "bytes": 670443,
+      "sha256": "c6e5536d73d06e449c6c0bf4c54fee3c2d9ddc01297cd9b4fd7992e2ba0e82ac"
+    },
+    {
+      "file": "render.json",
+      "bytes": 1890,
+      "sha256": "4ddc494a73115db9d94c205b777793d52aaec2f7e9ced5d6823501fb7612470b"
+    },
+    {
+      "file": "scene.json",
+      "bytes": 85048,
+      "sha256": "36c92e1d2bcc044d0649f23a34199e2f174ec70cb2d49c7b82bb721945af7090"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "file": "src/shore-bank-shade.mjs",
+      "sha256": "d0aae5f8e596e2a9bdde574d5cd9b270b519c17d4331e6675ab06769d347c242"
+    },
+    {
+      "file": "src/environment-art.mjs",
+      "sha256": "65bb5a52146d2ead9b68ce847aa7343279ce5c717faf5a2846d66df29d5d9a25"
+    },
+    {
+      "file": "src/water-contours.mjs",
+      "sha256": "8a66f693650ce678aa10e0789e3db810b9177692ff8ee1f165e21c4320303dee"
+    },
+    {
+      "file": "src/water-surface-geometry.mjs",
+      "sha256": "4f9ff52453130e54edc713899c4e774823368c7cdd7866e67b9597e10539d134"
+    },
+    {
+      "file": "src/terrain-height.mjs",
+      "sha256": "ea2fd45af26db2a50542251a69c8057238cbfa5bc76e2e3b50cf061196fd3887"
+    },
+    {
+      "file": "scripts/export-shore-bank-study.mjs",
+      "sha256": "8a91fe370f410d3d144c7790d54a9bc8c16be04baccde15d746c074caffb645e"
+    },
+    {
+      "file": "scripts/render-shore-bank-study.py",
+      "sha256": "6cadbc667e1d816dd5732c875e89c2f9e6d07e6afda4af4d4620bcf4ff164492"
+    }
+  ]
+}
