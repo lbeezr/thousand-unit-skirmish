@@ -6,7 +6,7 @@ const identityFor = value => ({ matchModeId: value.id, matchModeVersion: value.v
 
 // The caller supplies the runtime's allowed catalog and current map, when
 // available. Presentation never projects a new simulation map or chooses AI.
-export function matchModePresentation({ identity = {}, catalog, map, opponentMode = 'pvp' } = {}) {
+export function matchModePresentation({ identity = {}, catalog, map, canonicalMap = map, opponentMode = 'pvp' } = {}) {
   try {
     const active = matchModeDefinition(identity);
     if (!['pvp', 'pve'].includes(opponentMode)) throw new Error('Unknown opponent setup.');
@@ -17,7 +17,7 @@ export function matchModePresentation({ identity = {}, catalog, map, opponentMod
         const known = matchModeDefinition(identityFor(supplied));
         const descriptor = { ...known, selectable: known.selectable && supplied.selectable === true };
         if (opponentMode === 'pve' && !descriptor.pveSupported) continue;
-        if (map) assertMatchModeCompatibility(identityFor(descriptor), map, { mode: opponentMode });
+        if (canonicalMap) assertMatchModeCompatibility(identityFor(descriptor), canonicalMap, { mode: opponentMode });
         if (descriptor.selectable || key(descriptor) === key(active)) choices.set(key(descriptor), descriptor);
       } catch { /* A newer/incompatible descriptor cannot become a local choice. */ }
     }
@@ -40,6 +40,27 @@ export function matchModePresentation({ identity = {}, catalog, map, opponentMod
       error: error.message === 'This mode is unavailable for Play vs AI.' ? error.message
         : 'This game version cannot configure the match’s mode. Reload to reconnect.' };
   }
+}
+
+// Catalog descriptors describe canonical compatibility. The map received by
+// the browser may already have Skirmish's effective victory flags removed.
+export function lobbyMapConfiguration(lobby, entry) {
+  if (entry.selectable === false) return null;
+  const active = matchModeDefinition(lobby);
+  if (!Array.isArray(entry.matchModes)) return active.id === 'authored' ? { mapId: entry.id } : null;
+  const allowed = entry.matchModes.flatMap(value => {
+    try { return [matchModeDefinition(identityFor(value))]; } catch { return []; }
+  });
+  if (allowed.some(value => key(value) === key(active))) return { mapId: entry.id };
+  const fallback = allowed.find(value => value.id === 'authored');
+  return fallback ? { mapId: entry.id, ...identityFor(fallback) } : null;
+}
+
+export function mapChoiceLabel(entry, configuration) {
+  const size = entry.sizeTierLabel && Number.isInteger(entry.width) && Number.isInteger(entry.height)
+    ? `${entry.sizeTierLabel} · ${entry.width} × ${entry.height} · ` : '';
+  const mode = configuration?.matchModeId ? ` · ${matchModeDefinition(configuration).label}` : '';
+  return `${size}${entry.name}${entry.legacyCurrent ? ' · Current legacy map' : ''}${mode}`;
 }
 
 export function createMatchModeControls({ root, onChange, id = 'match-mode' }) {
@@ -118,5 +139,6 @@ export function createMatchModeControls({ root, onChange, id = 'match-mode' }) {
     },
     get selectable() { return model?.editable === true; },
     get supported() { return Boolean(model?.active && !model.error); },
+    get pending() { return waiting(); },
   };
 }
