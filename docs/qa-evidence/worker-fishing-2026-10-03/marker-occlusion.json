@@ -2,18 +2,8 @@
   "schemaVersion": 1,
   "scope": "shore-fish marker occlusion source correction",
   "baseRevision": "121b8eee96f53e3f85fedc9c5f3b5ec39e8e2f5e",
-  "observedMacRevision": "75f4b7b38aacc291bb7e4952259d9cd9619cc11b",
-  "privateMacEvidence": {
-    "ordinaryFrameLibraryId": "libfile_8968faee89b481919f08651f960cc8bc",
-    "reportLibraryId": "libfile_541e2f93ca348191be67c90f6d494778",
-    "provenanceLibraryId": "libfile_836ceb80b89c819185e9a48c3e85aba6",
-    "completedCaptures": 23,
-    "closeLoopSpanMs": 7633.4,
-    "allFourNaturalSEFramesObserved": true,
-    "stopVerified": true,
-    "pixelsInspectedBeforeFix": ["ordinary-game-view", "close-loop-00", "close-loop-02", "close-loop-04"],
-    "finding": "Amber ring stroke crosses the hands and net; ring order 2 follows sprite order 1.1"
-  },
+  "privateEvidence": "Capture references and exact metadata retained in the private handoff",
+  "observedDefect": "Amber ring stroke crosses the hands and net; ring order 2 follows sprite order 1.1",
   "correction": {
     "shoreFishRingOrder": 1,
     "workerSpriteOrder": 1.1,
