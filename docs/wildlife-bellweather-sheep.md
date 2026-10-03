@@ -121,6 +121,39 @@ placement, AI-specific wildlife policy and browser match evidence remain separat
 outcomes. The high-detail Sheep GLB is an art reference, not a runtime mesh. The
 neutral client renderer is separate from unit heading and environment art owners.
 
+## Wildlife workstream queue — 3 October 2026
+
+The wildlife worker retains this ranked queue through normal integration and
+verified delivery; useful small PRs ship independently.
+
+1. **Bounded neutral motion** ([PR165](https://github.com/lbeezr/thousand-unit-skirmish/pull/165)).
+   Finish exact-head independent review, schema24/HTTP/package checks, ordinary
+   guarded merge, then verify deployed default Millrace. Write scope: motion,
+   room snapshot/recovery/tick, minimal disclosed-pose renderer/client binding.
+   Browser SUID sandbox failure leaves native appearance incomplete; active
+   Railway owner owns staging delivery in the adoption ledger.
+2. **Automatic ownership**. Proposed contract: living land units, visible alive
+   Sheep, radius1.4 world units and a clear legal land segment (no walls/water/
+   impassable elevation). Existing owner's nearby eligible presence retains it;
+   otherwise nearest eligible unit claims/recaptures, exact ties by stable unit
+   ID. Snapshot/checkpoint `wildlifeTeam: null|0|1`; ownership grants no food,
+   movement, sight or population. Preserve existing shared Gather rights in this
+   first ownership slice. Confirm the shared simulation/art contract before
+   code; no invented Claim click. Write scope: pure claims, tick/state recovery,
+   both-seat fog/tie/blocked/claim-reclaim tests. Art task
+   `01a101a8-fba6-7323-a40c-27efd0112007` consumes the real team field for collars.
+3. **Controllable herding**. After ownership, agree ordinary selection/order
+   binding with the UI owner, implement a bounded owner-only path to legal land
+   using existing navigation, and preserve the same food node ID/stock through
+   motion, Gather, depletion and recovery. This needs explicit moving-node fog,
+   construction and gather-route checks before relaxing the meadow-cell bound.
+   Acceptance: both seats issue real herd orders, blocked/foreign/fog-invalid
+   orders reject, interruption/restart does not teleport food or revive carcasses.
+4. **Art acceptance of activity/carcass/collar**. Consume verified admitted art
+   from the active Sheep owner, retain explicit fallbacks, and check normal and
+   strategic appearance at the identified deployed revision. No new generation
+   or paid service is authorized by this queue.
+
 ## Observed source
 
 ![Selected Bellweather ecology key](art-direction/vaelora-v1/bellweather-ecology.png)
