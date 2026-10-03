@@ -83,7 +83,7 @@ try {
   const selectedIDs = [];
   for (const [team, page] of pages.entries()) {
     stage = `seat ${team}: select Workers`;
-    await click(page, '.contextual-command-bar [data-context-proxy="select-idle-workers"]');
+    await click(page, '#quick-idle');
     await page.wait(`document.querySelector('#selected-total').textContent==='4'`, 'four Workers selected');
     const ids = await page.cdp.evaluate(`__minimapProof.latest.units.filter(u=>u[1]===${team}&&u[5]==='worker'&&u[4]>0).map(u=>u[0])`);
     selectedIDs.push(...ids);

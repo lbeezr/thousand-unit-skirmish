@@ -1,11 +1,15 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { randomBytes } from 'node:crypto';
 import { once } from 'node:events';
+import { request as httpRequest } from 'node:http';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { JSDOM } from 'jsdom';
+import { createRoomLobby } from '../src/room-lobby-ui.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const TIMEOUT = 15_000;
@@ -51,21 +55,59 @@ async function stop() {
   const timer = setTimeout(() => supervisor.kill('SIGKILL'), 8000);
   try { await exited; } finally { clearTimeout(timer); }
 }
+function clientFrame(opcode, input) {
+  const payload = Buffer.from(input), mask = randomBytes(4);
+  assert.ok(payload.length < 65536, 'bounded scenario command');
+  const header = Buffer.alloc(payload.length < 126 ? 2 : 4);
+  header[0] = 0x80 | opcode;
+  header[1] = 0x80 | (payload.length < 126 ? payload.length : 126);
+  if (payload.length >= 126) header.writeUInt16BE(payload.length, 2);
+  for (let i = 0; i < payload.length; i++) payload[i] ^= mask[i % 4];
+  return Buffer.concat([header, mask, payload]);
+}
+// Native TCP upgrades keep disconnects deterministic; Node's native WebSocket
+// close occasionally never sends/finishes in this long recovery scenario.
 function client(roomId, token) {
-  const socket = new WebSocket(`${origin.replace('http', 'ws')}/ws?room=${roomId}`,
-    ['rts-v1', ...(token ? [`rts-resume.${token}`] : [])]);
-  const value = { socket, messages: [], state: null, lobby: null, welcome: null };
+  const value = { socket: null, closed: false, messages: [], state: null, lobby: null, welcome: null };
   clients.push(value);
-  socket.addEventListener('message', event => {
-    const message = JSON.parse(event.data);
+  function receive(message) {
     value.messages.push(message);
     if (message.type === 'welcome') value.welcome = message;
     if (message.state) value.state = message.state;
     else if (message.type === 'state') value.state = message;
     if (message.lobby) value.lobby = message.lobby;
     else if (message.state?.lobby) value.lobby = message.state.lobby;
+  }
+  let buffer = Buffer.alloc(0);
+  function consume(chunk) {
+    buffer = Buffer.concat([buffer, chunk]);
+    while (buffer.length >= 2) {
+      const opcode = buffer[0] & 15;
+      let length = buffer[1] & 127, offset = 2;
+      if (length === 126) { if (buffer.length < 4) return; length = buffer.readUInt16BE(2); offset = 4; }
+      if (length === 127) { if (buffer.length < 10) return; length = Number(buffer.readBigUInt64BE(2)); offset = 10; }
+      if (buffer.length < offset + length) return;
+      const payload = buffer.subarray(offset, offset + length); buffer = buffer.subarray(offset + length);
+      if (opcode === 1) receive(JSON.parse(payload.toString()));
+      else if (opcode === 8) value.socket.end();
+      else if (opcode === 9) value.socket.write(clientFrame(10, payload));
+    }
+  }
+  const request = httpRequest(`${origin}/ws?room=${roomId}`, { headers: {
+    origin, connection: 'Upgrade', upgrade: 'websocket', 'sec-websocket-version': '13',
+    'sec-websocket-key': randomBytes(16).toString('base64'),
+    'sec-websocket-protocol': ['rts-v1', ...(token ? [`rts-resume.${token}`] : [])].join(', '),
+  } });
+  request.setTimeout(5000, () => request.destroy(new Error('Scenario upgrade timed out')));
+  request.on('error', error => { output += `\nScenario client: ${error.message}`; value.closed = true; });
+  request.on('response', response => { response.resume(); output += `\nScenario upgrade HTTP ${response.statusCode}`; value.closed = true; });
+  request.on('upgrade', (_response, socket, head) => {
+    value.socket = socket; socket.on('data', consume); socket.on('error', () => {});
+    socket.on('close', () => { value.closed = true; });
+    if (head.length) consume(head);
   });
-  value.send = command => socket.send(JSON.stringify(command));
+  request.end();
+  value.send = command => value.socket.write(clientFrame(1, JSON.stringify(command)));
   value.exchange = async (command, predicate) => {
     const cursor = value.messages.length;
     value.send(command);
@@ -77,9 +119,10 @@ function client(roomId, token) {
     return result;
   };
   value.close = async () => {
-    if (socket.readyState === WebSocket.CLOSED) return;
-    socket.close(1000, 'pregame scenario complete');
-    await until(() => socket.readyState === WebSocket.CLOSED, 'client disconnect');
+    if (value.closed) return;
+    if (value.socket && !value.socket.destroyed) value.socket.write(clientFrame(8, Buffer.from([0x03, 0xe8])));
+    else request.destroy();
+    await until(() => value.closed, 'client disconnect');
   };
   return value;
 }
@@ -197,6 +240,7 @@ try {
   assert.equal(host.messages.filter(row => row.type === 'scenarioEvent').length, 1, 'one opening supply delivery');
   const runningIdentity = (await checkpoint(row => row.state.pregame.phase === 'running')).matchId;
   await guest.close();
+  await until(() => host.lobby.seats.some(seat => seat.team === 1 && !seat.connected), 'running guest reservation');
   const runningLateJoin = client(roomId);
   await until(() => runningLateJoin.welcome, 'running late join during seat grace');
   assert.equal(runningLateJoin.welcome.player.team, null);
@@ -241,6 +285,7 @@ try {
   assert.equal(resumed.welcome.player.id, hostIdentity.id);
   assert.ok(resumed.lobby.seats.every(seat => !seat.ready));
   await resumed.close();
+  await until(() => guest.lobby.seats.some(seat => seat.team === 0 && !seat.connected), 'resumed host reservation');
   await delay(1500);
   const replacement = client(roomId);
   await until(() => replacement.welcome, 'host replacement after grace');
@@ -251,6 +296,36 @@ try {
   const late = client(roomId, hostIdentity.sessionToken);
   await until(() => late.welcome, 'expired token late join');
   assert.equal(late.welcome.player.team, null);
+  const dom = new JSDOM('<dialog></dialog>', { url: `${origin}/?room=${roomId}` });
+  const root = dom.window.document.querySelector('dialog');
+  root.showModal = () => { root.open = true; };
+  root.close = () => { root.open = false; };
+  let rejoinRequests = 0;
+  const lobbyUI = createRoomLobby({ root, send: command => { late.send(command); return true; },
+    copyInvite() {}, rejoin: () => rejoinRequests++ });
+  lobbyUI.update(late.lobby, late.welcome.player);
+  assert.match(root.querySelector('#lobby-status').textContent, /occupied/);
+  await replacement.close();
+  await until(() => late.lobby.seats.some(seat => seat.team === 0 && !seat.connected), 'spectator sees host reservation');
+  lobbyUI.update(late.lobby, late.welcome.player);
+  assert.match(root.querySelector('#lobby-status').textContent, /reserved/);
+  assert.equal(root.querySelector('#lobby-rejoin').hidden, true);
+  await until(() => !late.lobby.seats.some(seat => seat.team === 0), 'spectator sees host vacancy after grace');
+  assert.ok(late.lobby.seats.some(seat => seat.id === guestIdentity.id && seat.team === 1 && seat.connected),
+    'the authoritative projection still gives Ember its original seat');
+  lobbyUI.update(late.lobby, late.welcome.player);
+  assert.match(root.querySelector('#lobby-status').textContent, /seat is available/);
+  root.querySelector('#lobby-rejoin').click(); root.querySelector('#lobby-rejoin').click();
+  assert.equal(rejoinRequests, 1);
+  assert.equal(root.querySelector('#lobby-ready').disabled, true, 'requesting rejoin grants no local authority');
+  await late.close();
+  const rejoined = client(roomId); // Existing page reload/admission path, without an expired token.
+  await until(() => rejoined.welcome, 'spectator rejoin request admitted');
+  assert.equal(rejoined.welcome.player.team, 0);
+  assert.notEqual(rejoined.welcome.player.id, late.welcome.player.id);
+  assert.notEqual(rejoined.welcome.player.id, hostIdentity.id);
+  assert.ok(rejoined.lobby.seats.every(seat => !seat.ready));
+  assert.equal(rejoined.lobby.canLaunch, false);
   for (const [asset, mime] of [['src/room-lobby-ui.mjs', 'javascript'], ['src/room-lobby.css', 'text/css']]) {
     const response = await fetch(`${origin}/${asset}`);
     assert.equal(response.status, 200);
@@ -261,7 +336,8 @@ try {
   console.log(JSON.stringify({ passed: ['two-seat authority and settings validation', 'simulation/capture/supply freeze',
     'ready invalidation and stale revisions', 'duplicate-token spectators', 'pregame and running restart recovery',
     'launch/unready race and duplicate launch', 'running seat rejoin', 'Map Studio publication returns to lobby',
-    'rematch and duplicate reset', 'host disconnect/rejoin/expiry/replacement', 'late join and public module delivery'] }));
+    'rematch and duplicate reset', 'host disconnect/rejoin/expiry/replacement', 'late join and public module delivery',
+    'spectator reservation/vacancy guidance and existing-seat rejoin'] }));
 } finally {
   const closing = Promise.allSettled(clients.map(value => value.close()));
   await stop();

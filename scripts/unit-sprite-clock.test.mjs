@@ -126,14 +126,14 @@ test('approximate roster reuses nearest authored action while exact lanes keep i
 });
 
 
-test('every available Human unit action and heading has first-pass graphics', async () => {
+test('every available Human land unit action and heading has first-pass graphics', async () => {
   const { readFile } = await import('node:fs/promises');
   const { UNIT_DEFINITIONS } = await import('../src/gameplay-definitions.mjs');
   const { spriteActionClip } = await import('../src/unit-sprite-runtime.mjs');
   const packs = { worker: 'cast-human-sprite-v3', infantry: 'infantry-sprite-v3',
     archer: 'archer-sprite-v2', spearman: 'spearman-sprite-v1', scout: 'scout-sprite-v1',
     rider: 'rider-sprite-v1', 'siege-engine': 'siege-engine-sprite-v1' };
-  assert.deepEqual(Object.keys(packs).sort(), Object.keys(UNIT_DEFINITIONS).sort());
+  assert.deepEqual(Object.keys(packs).sort(), Object.keys(UNIT_DEFINITIONS).filter(kind => UNIT_DEFINITIONS[kind].movementDomain !== 'water').sort());
   for (const [role, directory] of Object.entries(packs)) {
     const pack = JSON.parse(await readFile(new URL(`../assets/units/${directory}/sprite-atlas-pack-v1.json`, import.meta.url), 'utf8'));
     const asset = pack.assets[0];
@@ -153,11 +153,12 @@ test('every available Human unit action and heading has first-pass graphics', as
   }
 });
 
-test('default rival routes every unit role to Boughward with required action coverage', async () => {
+test('default rival routes every land unit role to Boughward with required action coverage', async () => {
   const {readFile} = await import('node:fs/promises');
   const {UNIT_DEFINITIONS} = await import('../src/gameplay-definitions.mjs');
   const {civilizationSpriteRole,spriteDirectory,spriteActionClip} = await import('../src/unit-sprite-runtime.mjs');
   for(const kind of Object.keys(UNIT_DEFINITIONS)) {
+    if (UNIT_DEFINITIONS[kind].movementDomain === 'water') continue; // Explicit procedural Skiff placeholder, no shipped sprite pack.
     assert.equal(civilizationSpriteRole(kind,'human'),kind==='worker'?'human':kind);
     const role=civilizationSpriteRole(kind,'boughward');
     assert.equal(role,`boughward-${kind}`);

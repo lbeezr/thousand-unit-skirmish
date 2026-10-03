@@ -133,6 +133,15 @@ one matching variant. Production signal geometry remains renderer-owned.
 Keep footprint, selection, health, and rally readable. Barracks/Range direct
 sprites use construction thresholds 20%/90% and completed-health thresholds
 66%/33% in `src/building-sprites.mjs`; procedural geometry is their fallback.
+Their selected texture is also shared by a color-disabled opaque body-depth
+pass (alpha test 0.9), before transparent actors. The original blended color
+pass (alpha test 0.08, no depth writes) retains soft edges and painted shadows.
+Both use the same ground anchor and depth correction, inherit the outer group's
+fog visibility, and hide together while a frame is unavailable or disposed.
+This adds one draw per visible loaded direct-sprite building, at most 128 under
+the current match building limit, with no extra texture or geometry buffer.
+See [source and depth-contract evidence](qa-building-sprite-occlusion-2026-10-03.md)
+for the native GPU observation still pending.
 The captured Town Center loader is a separate path: starting landmarks use
 Complete, while constructed Town Centers pass live progress and health. The
 loader exposes existing fallback art if the current state/view load fails.

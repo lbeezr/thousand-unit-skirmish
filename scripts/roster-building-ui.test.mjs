@@ -24,6 +24,12 @@ for (const team of [0, 1]) test(`registry building menu preserves focus and exac
   assert.ok(dock); assert.match(dock.textContent, /Dock.*100 WOOD/);
   dock.click(); assert.equal(placements.at(-1), 'dock');
   const mill = container.children.find(row => row.dataset.building === 'mill');
+  const farm = container.children.find(row => row.dataset.building === 'farm');
+  assert.ok(farm); assert.match(farm.textContent, /Farm.*60 WOOD/);
+  context.latestWood[team] = 59.99; context.updateRosterBuildingOptions(container);
+  assert.equal(farm.disabled, true);
+  context.latestWood[team] = 60; context.updateRosterBuildingOptions(container);
+  assert.equal(farm.disabled, false); farm.click(); assert.equal(placements.at(-1), 'farm');
   assert.ok(mill); assert.match(mill.textContent, /Mill.*75 WOOD/);
   context.latestWood[team] = 74.99; context.updateRosterBuildingOptions(container);
   assert.equal(mill.disabled, true, 'Mill uses its exact registered price');

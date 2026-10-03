@@ -17,6 +17,12 @@ vertex color pattern gives modest variation, but no animated surface or modeled
 bottom. Raised terrain does not create a bathymetric water volume. Actual routes
 remain the obstacle/elevation contract.
 
+The [3 October low-bank shade](qa-shore-bank-shade-2026-10-03.md) adds a default
+feathered land-side value cue on level-zero shores. It follows the same outline,
+leaves this accepted surface unchanged, and adds one bounded static batch without
+a texture or per-frame update. Its saved comparison is a Cycles CPU study;
+native default match appearance and crowded GPU timing remain unobserved.
+
 PR #38 adds `resourceVariant: "shore-fish"` to finite food nodes. Their position
 is a reachable, level-zero bank marker beside cardinally adjacent level-zero
 water. Stock owns depletion; food cargo/drop-off rules are shared. The existing

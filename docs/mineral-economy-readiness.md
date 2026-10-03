@@ -47,6 +47,13 @@ before and after the guard. Existing valid saves retain the same pin.
 
 ## Proposed next mineral slice and ownership
 
+The subsequent content recommendation is now explicit in the
+[provisional Stone defense contract](stone-defense-contract-proposal.md): `stone`,
+one Watchtower construction sink, 50-Stone price, 200 finite stock per seat and
+an optional profile with preserved legacy food/wood prices. This audit's code
+still admits only food/wood. The recommendation does not create a mineral bank
+or authorize widening admission before the paid loop exists.
+
 Recommend one **Stone** vertical slice with one consequential existing defense
 spend, before evaluating one physical metal or separate gold/copper. This is a
 proposal: no mineral identity, price or stock budget is adopted here. The
@@ -90,6 +97,10 @@ Only then expose Stone in normal mineral-enabled map editing/play. Run paired
 control/candidate matches before claiming better balance or approving gold/copper.
 
 ## Reproduction
+
+The [offline Stone authoring fixture](stone-authoring-preflight.md) prepares
+deterministic layout and compatibility proofs while the economic contract is
+pending. It admits no new runtime resource and chooses no price or paid sink.
 
 ```sh
 node --test scripts/gameplay-definitions.test.mjs scripts/ruleset-revision.test.mjs

@@ -63,6 +63,7 @@ run(['scripts/forest-composition-scenario.mjs'], 'Regional dominant species grov
 run(['scripts/forest-age-scenario.mjs'], 'Seeded irregular canopy ages preserve every root');
 run(['scripts/settlement-authoring-scenario.mjs'], 'Grounded starting settlements');
 run(['--test', 'scripts/resource-cluster-authoring.test.mjs'], 'Seeded Millrace resource clusters');
+run(['--test', 'scripts/stone-authoring-fixture.test.mjs'], 'Proposed Stone layout and legacy compatibility boundaries');
 run(['--test', 'scripts/resource-brush-authoring.test.mjs'], 'Resource brush preview and editor transactions');
 run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush editor controls');
 run(['scripts/check-docs.mjs'], 'Documentation links');
@@ -141,9 +142,12 @@ run(['scripts/fractional-cargo-return-scenario.mjs'], 'Both-seat sub-cent Sheep 
 run(['--test', 'scripts/shore-fishing.test.mjs', 'scripts/shore-fishing-placeholder.test.mjs'], 'Shore fish bank access and placeholder');
 run(['--test', 'scripts/shore-fishing-placement.test.mjs'], 'Seeded shore fishing authoring and land/water positions');
 run(['--test', 'scripts/water-surface-study.test.mjs', 'scripts/water-study-fish-binding.test.mjs'], 'Default water surface, quality and visible fish ripples');
+run(['--test', 'scripts/shore-bank-shade.test.mjs'], 'Default low-bank shade, island topology and static geometry budget');
 run(['--test', 'scripts/water-route-graph.test.mjs'], 'Isolated water route topology and clearance');
 run(['--test', 'scripts/dock-placement.test.mjs'], 'Dock shoreline and water berth placement');
 run(['scripts/dock-scenario.mjs'], 'Both-seat paid Dock construction and recovery');
+run(['--test', 'scripts/water-unit-runtime.test.mjs', 'scripts/skiff-contracts.test.mjs'], 'Skiff water movement, paid queue and placeholder controls');
+run(['scripts/skiff-scenario.mjs'], 'Both-seat paid Skiff production, berth occupancy and recovery');
 run(['scripts/water-route-map-scenario.mjs'], 'Water-only route components on shipped maps');
 run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and affordability');
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');
@@ -162,6 +166,8 @@ run(['--test', 'scripts/underbough-gathering-evidence.test.mjs'], 'Rootways gath
 run(['--test', 'scripts/base-lifecycle.test.mjs'], 'Cancel refunds and proportional repair');
 run(['--test', 'scripts/storehouse-routing.test.mjs'], 'Reachable drop-off route selection');
 run(['--test', 'scripts/mill-contract.test.mjs'], 'Food-only Mill routing, menu and placeholder contracts');
+run(['--test', 'scripts/farm-harvest.test.mjs', 'scripts/farm-client.test.mjs'], 'Finite Farm stock, identity, ownership and controls');
+run(['scripts/farm-scenario.mjs', '--fog'], 'Both-seat paid Farm planting, finite depletion and recovery');
 run(['--test', 'scripts/depot-economy-analysis.test.mjs', 'scripts/depot-source-snapshot.test.mjs'], 'Depot measurement placements, accounting, payback math and source provenance');
 run(['scripts/depot-economy-scenario.mjs', '--smoke'], 'Paid depot measurement smoke and both-seat conservation');
 run(['--test', 'scripts/roster-building-ui.test.mjs'], 'Registry building options');
