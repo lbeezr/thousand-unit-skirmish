@@ -7,6 +7,9 @@ function cellSet(values, cellCount, name) {
   if (!Array.isArray(values) && !(values instanceof Set)) {
     throw new TypeError(`${name} must be an array or Set of cell indices.`);
   }
+  if ((Array.isArray(values) ? values.length : values.size) > cellCount) {
+    throw new TypeError(`${name} exceeds the map's cell count.`);
+  }
   const cells = new Set(values);
   for (const cell of cells) if (!Number.isInteger(cell) || cell < 0 || cell >= cellCount) {
     throw new TypeError(`Invalid ${name} cell index.`);

@@ -39,7 +39,9 @@ deduplicated. Output is sorted by cell index; connections always follow
 `north, east, south, west`. Pieces are `post`, `end`, `straight`, `corner`, or
 `junction`, with connections distinguishing T and four-way joins.
 
-Supply arrays or Sets of cell **indices**, not occupancy masks:
+Supply arrays or Sets of cell **indices**, not occupancy masks. Each collection
+is limited to the map's cell count before cloning/deduplication; callers with
+duplicate per-entity facts should form a Set first:
 
 - `blockedCells`: terrain, reserved cells, resource nodes and capture zones;
   retained forest stays blocked until depletion is known in the caller's snapshot.

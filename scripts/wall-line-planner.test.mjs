@@ -205,6 +205,15 @@ test('malformed inputs and currency extensions fail before returning a usable pl
   ]) assert.throws(() => line([point(2, 3), point(5, 3)], options), TypeError);
 });
 
+test('occupancy facts are bounded before cloning or deduplicating input', () => {
+  for (const field of ['blockedCells', 'occupiedCells', 'existingWallCells']) {
+    assert.throws(() => line([point(2, 3)], { [field]: Array(257).fill(0) }), /cell count/);
+    assert.throws(() => line([point(2, 3)], { [field]: new Set(Array.from({ length: 257 }, (_, i) => i)) }), /cell count/);
+  }
+  const result = line([point(2, 3)], { occupiedCells: Array(256).fill(0) });
+  assert.equal(result.status, 'ready', 'duplicates within the explicit fact budget are legal');
+});
+
 test('bounded generated lines preserve reciprocal connections and complete rejection', () => {
   for (let start = 0; start < 25; start++) for (let end = 0; end < 25; end++) {
     const options = { width: 5, height: 5, segmentCost,
