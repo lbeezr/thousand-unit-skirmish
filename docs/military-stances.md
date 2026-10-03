@@ -63,5 +63,5 @@ expects the shipped Vaelora siltmouths landscape-v2 audio reference, which the
 generator omits; `shore-fishing-authoring-scenario.mjs:90` expects a catalog name
 matching `/Lab.*SHORE FISHING/`. Both were reproduced on pristine `d503d90`.
 Parent coordinates the shore/audio owner; these failures are not waived.
-Current-main audio fixture repair passes all seven placement checks; the
-catalog-label assertion at authoring line 90 remains open.
+Final current-main audio fixture and catalog-label repairs pass all seven
+placement checks and the native authoring scenario.

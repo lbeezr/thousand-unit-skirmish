@@ -10,11 +10,11 @@ retains simulation, integration and gameplay acceptance. The
 [PR159](https://github.com/lbeezr/thousand-unit-skirmish/pull/159) adds authoritative
 Aggressive, Defensive, Stand Ground and No Attack without changing ordinary
 ground-click Move or military balance. Tested revision:
-`c852c7a74bec352ff31f9489fb4aab54dccb0334`, integrated with main
-`9feda6617d227ad41e196a50e1ab3af9eb905528`.
+`9afe392d6bce5276549a60e3189ff0dcd7095304`, integrated with main
+`75fe5df332b917730f19fb3a273862212f2884a9`.
 
 Server SHA-256:
-`fbe9b4315bc8e2eb3ab666f0e75a7e60c5c6aacb62678ba457bd4556515d9c64`.
+`e3dc8e3d7187d6ce17bf9ef50685b081e307cebfec43a39342edd945c693363c`.
 Stance module SHA-256:
 `cf62d9179301c0d1b45f9bb097008d1d6e80dbcf7ed01e740933dc964b9f9a74`.
 
@@ -32,16 +32,16 @@ motion while preserving legacy passive idle military.
 | Focused combat, stance, flow fairness, geometry, Worker pursuit, movement/economy, paid wall/gate, parked Worker and migration tests | 201 passed, zero failed. All 50 stance cases included. |
 | Native two-seat stance commands | All four accepted; Stand Ground does not chase; Defensive automatically pursues and returns; restart saved the actual return at tick 458, both seats finish at tick 510; Aggressive causes actual HP loss; Stop becomes passive. |
 | Native three paid Archers per seat | Focused first targets die; second targets have 93/86 HP at restart tick 1473; all four targets reach zero by tick 1920 without new Attack orders; all six Archers retain 70 HP; Stop clears continuation. |
-| Native typed economy checkpoint/recovery | Passed with schema 25. |
-| Default Millrace Sheep migration/recovery | Passed: stock/cargo/identity conserved, current restart credits once and legacy state retained. |
+| Native typed economy checkpoint/recovery | Passed with schema 25 at `c852c7a`; final integration changes only the reviewed WebSocket handshake extraction. |
+| Default Millrace Sheep migration/recovery | Passed at `c852c7a`: stock/cargo/identity conserved, current restart credits once and legacy state retained. |
 | Packaged Railway release | Passed guarded startup, Basic Auth HTTP/WebSocket, module/asset inclusion and hashes, volume paths. |
-| Origin proxy, import boundaries and strict checked JavaScript | Passed. |
+| Import boundaries, strict checked JavaScript and protocol/client fixtures | Passed; 48 deflate/client tests. Origin proxy also passes at `c852c7a`. |
 
 Native runs use ordinary commands, paid production, real worker timing,
 WebSocket admission and checkpoint recovery; no actor/HP/vision injection.
-Artifacts retained in this executor: `/tmp/stance-schema25-native.json`,
-`/tmp/stance-schema25-archer.json`, focused/release/economy/Sheep logs with the
-same prefix. Reproduce the native ledgers with the environment variables
+Artifacts retained in this executor: `/tmp/stance-final-integration-native.json`,
+`/tmp/stance-final-integration-archer.json`, tests/release logs with the same prefix; economy/Sheep logs retain the
+`/tmp/stance-schema25-` prefix. Reproduce the native ledgers with the environment variables
 `MILITARY_STANCE_NATIVE_RECORD` and `ARMY_ATTACK_NATIVE_RECORD` and the
 corresponding checked-in native scenario scripts.
 
@@ -55,9 +55,9 @@ The earlier broad CI shards were run across intermediate source updates and do
 not establish a full exact-head CI pass. Their owned stance-return sampling and
 incidental topology combat failures are fixed and pass above. The origin-proxy
 check was rerun successfully after integration. Current main repairs the old
-shore audio fixture: all seven placement checks now pass. The separate
-`shore-fishing-authoring-scenario.mjs:90` catalog-label assertion still fails;
-parent coordinates its shore owner. This is an explicit remaining shared check.
+shore audio fixture and catalog-label expectation: all seven placement checks
+and the full native shore authoring scenario now pass at the final integration.
+The historical baseline failures are resolved by their owning main changes.
 
 ## Deployment and player acceptance still open
 

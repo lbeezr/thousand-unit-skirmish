@@ -45,6 +45,7 @@ Vaelora siltmouths landscape-v2 audio reference, and
 `shore-fishing-authoring-scenario.mjs:90` because the catalog name fails
 `/Lab.*SHORE FISHING/`. These are concrete shore/audio owner work routed through
 the parent, not waived combat checks. Current integrated main `9feda661` repairs
-the authoring audio fixture and all seven placement tests pass. The catalog-label
-failure at `shore-fishing-authoring-scenario.mjs:90` remains. See exact
+the authoring audio fixture. Final integrated main `75fe5df3` also repairs the
+catalog-label expectation; all seven placement checks and the native authoring
+scenario now pass. See exact
 [stance integration evidence](qa-military-stances-2026-10-03.md).
