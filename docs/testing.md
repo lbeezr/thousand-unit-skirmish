@@ -86,6 +86,7 @@ Run from the repository root:
 | Default map geometry | `node scripts/forked-vale-layout.mjs` |
 | Fortified Crossing foundation | `node scripts/fortified-crossing-layout.mjs` and `node scripts/fortified-crossing-economy.mjs`; [evidence and scale runner](qa-custom-skirmish.md) |
 | Fortified late-arrival construction clearance | `node --test scripts/fortified-site-clearance.test.mjs` and `node scripts/fortified-construction-clearance-scenario.mjs 2000`; [diagnosis](qa-fortified-clearance-2026-10-03.md) |
+| Selected construction workers | `node --test scripts/construction-selection.test.mjs` and `node scripts/construction-selection-scenario.mjs`; [reproduction and Mac check](qa-construction-selection-2026-10-03.md) |
 | Larger map geometry | `node scripts/frontier-160-layout.mjs` |
 | Highland Grove definition | `node scripts/generate-highland-grove.mjs --check` |
 | Complete Forked Vale scenario, each winner | `node scripts/forked-vale-scenario.mjs 0` and `node scripts/forked-vale-scenario.mjs 1` |
@@ -130,6 +131,8 @@ Run from the repository root:
 | Contested seeded PvE match | `node scripts/pve-contested-match-scenario.mjs 300 20260925 4294967295` |
 | PvE live construction / reinforcements (legacy and regional maps) | `node scripts/pve-production-runtime-scenario.mjs forked-vale` and `woodland-expanse`; also `bellweather-millrace` and `underbough-rootways` |
 | Compact HUD | `node --test scripts/hud-layout.test.mjs scripts/selection-context.test.mjs scripts/objective-summary.test.mjs` |
+| Tactical-map movement and Space selection centering | `node --test scripts/minimap-orders.test.mjs scripts/selection-center-shortcut.test.mjs`; [native Mac recipe and evidence](qa-minimap-orders-2026-10-03.md) |
+| Native two-seat minimap input, camera preservation, responsive size and DPR | `node scripts/minimap-orders-browser.mjs --output=NEW_DIRECTORY` (installed Chrome) |
 | Audio policy | `node scripts/audio-policy-scenario.mjs` |
 
 Three Crowns also has both-seat scenarios: `node scripts/three-crowns-scenario.mjs 0`

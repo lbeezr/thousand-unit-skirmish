@@ -195,7 +195,11 @@ simulation heading or movement. The normal renderer selects an available exact
 static direction, otherwise its rotated geometric Sheep proxy. The current
 public pack contains only the north illustration; [runtime evidence](qa-sheep-static-directions-runtime-2026-10-03.md)
 records that limit. Dedicated wildlife brushes and claim/herding remain future
-work. No shipped map places this optional identity yet.
+work. The default **Bellweather · Millrace** opts in at existing opening satellites
+`s0/s1-0-{1,3,4}`: three 130-food Sheep per side, including one visible on opening.
+This changes identity only; IDs, stock, coordinates, seed and build clearings remain
+the existing cluster layout. [Default Sheep evidence](qa-millrace-sheep-2026-10-03.md)
+records both-seat access, food conservation and the exact prior-map save migration.
 
 Millrace expands its eight resource anchors into five-node seeded patches (40
 nodes), mirrored between seats. Each original anchor stays in place. Added nodes
@@ -233,7 +237,8 @@ match/camera observation.
 
 Regenerate only this pilot with `node scripts/seed-millrace-resources.mjs`.
 It changes only Millrace's `resourceNodes` and is idempotent. The regional builder
-applies the same profile after settlement paint. To customize an individual map,
+applies the same profile after settlement paint. Both entry points retain the six
+Sheep identities after cluster placement. To customize an individual map,
 select/edit/remove the materialized nodes in Map Studio; regeneration replaces
 those edits. Map Studio can place individual food/wood sites or additive resource
 patches; new currencies remain separate future work.

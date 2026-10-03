@@ -82,6 +82,8 @@ run(['--test', 'scripts/sheep-static-preview.test.mjs'], 'Sheep static reference
 run(['--test', 'scripts/sheep-directional-readiness.test.mjs'], 'Sheep directional source and anchor acceptance');
 run(['--test', 'scripts/neutral-wildlife-renderer.test.mjs'], 'Neutral wildlife render lifecycle and fallback');
 run(['scripts/wildlife-render-scenario.mjs'], 'Live wildlife snapshots and production art paths');
+run(['--test', 'scripts/millrace-sheep.test.mjs'], 'Default Millrace Sheep budget and exact legacy map compatibility');
+run(['scripts/millrace-sheep-scenario.mjs'], 'Normal default Sheep visibility, harvest, art and recovery');
 run(['--test', 'scripts/sprite-pixel-bounds.test.mjs'], 'Sprite pixel clipping regressions');
 run(['--test', 'scripts/building-sprites.test.mjs'], 'Default building sprites');
 run(['--test', 'scripts/captured-building-state-race.test.mjs', 'scripts/captured-building-manifest-retry.test.mjs', 'scripts/frontier-building-renderer.test.mjs', 'scripts/frontier-building-preview.test.mjs', 'scripts/building-lifecycle-validation.test.mjs'], 'Captured building lifecycle and source contracts');
@@ -109,6 +111,8 @@ run(['--test', 'scripts/room-lobby-chat.test.mjs', 'scripts/room-lobby-chat-ui.t
 run(['scripts/room-lobby-chat-scenario.mjs'], 'Real two-client room chat isolation and recovery');
 run(['--test', 'scripts/pve-entry.test.mjs'], 'PvE entry observer settling');
 run(['--test', 'scripts/hud-layout.test.mjs'], 'Visible HUD layout');
+run(['--test', 'scripts/minimap-orders.test.mjs'], 'Tactical map selected-unit movement');
+run(['--test', 'scripts/selection-center-shortcut.test.mjs'], 'Selection camera shortcut and preserved Space drag');
 run(['--test', 'scripts/objective-summary.test.mjs', 'scripts/completion-event-labels.test.mjs'], 'Compact objectives and event feedback');
 run(['--test', 'scripts/selection-context.test.mjs'], 'Contextual selection');
 run(['--test', 'scripts/contextual-hud.test.mjs'], 'Empty selection HUD and command focus');
@@ -153,6 +157,8 @@ run(['--test', 'scripts/roster-building-ui.test.mjs'], 'Registry building option
 run(['--test', 'scripts/ruleset-revision.test.mjs'], 'Resolved ruleset identity and prerequisites');
 run(['--test', 'scripts/gameplay-definitions.test.mjs'], 'Gameplay definition validation');
 run(['--test', 'scripts/client-build-recovery.test.mjs'], 'Build placement connection recovery');
+run(['--test', 'scripts/construction-selection.test.mjs'], 'Selected-only construction client commands');
+run(['scripts/construction-selection-scenario.mjs'], 'Both-seat selected builders and unselected work recovery');
 run(['--test', 'scripts/client-rematch-recovery.test.mjs'], 'Client roster and ownership after rematch');
 run(['--test', 'scripts/client-camera-recovery.test.mjs'], 'Camera ownership through seat recovery');
 run(['--test', 'scripts/unit-health-visual.test.mjs'], 'Visible damaged-unit health indicators');

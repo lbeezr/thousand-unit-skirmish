@@ -11,6 +11,7 @@ for (const team of [0, 1]) test(`registry building menu preserves focus and exac
   const context = vm.createContext({ BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
     document: { createElement() { return { dataset: {}, classList: { toggle() {} }, setAttribute() {}, addEventListener(_, callback) { this.click = callback; } }; } },
     localTeam: team, teamUnits: [[{ kind: 'worker', hp: 100 }], [{ kind: 'worker', hp: 100 }]],
+    selectedWorkerIds: () => [0],
     latestFood: [500, 500], latestWood: [100, 100], latestTeamResearch: [{}, {}],
     matchWinner: -1, buildPlacementPending: false, buildPlacementActive: false, buildPlacementType: 'house',
     beginBuildPlacement: (id) => placements.push(id), cancelBuildPlacement: () => placements.push('cancel'),
@@ -43,4 +44,7 @@ for (const team of [0, 1]) test(`registry building menu preserves focus and exac
   assert.equal(container.children.find((row) => row === button), button); assert.equal(button.disabled, true);
   context.latestWood[team] = 100; context.buildPlacementActive = true; context.buildPlacementType = 'storehouse';
   context.updateRosterBuildingOptions(container); button.click(); assert.equal(placements.at(-1), 'cancel');
+  context.selectedWorkerIds = () => [];
+  context.updateRosterBuildingOptions(container);
+  assert.ok(container.children.every(row => row.disabled), 'construction needs explicit worker selection');
 });
