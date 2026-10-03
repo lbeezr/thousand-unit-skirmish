@@ -96,8 +96,9 @@ rendering and its appearance checks.
 ## Runtime and recovery
 
 The optional variant survives `createResourceNodeState`, seat-filtered resource
-snapshots, host reset and checkpoint restore. Checkpoint schema 21 records that
-identity alongside existing stock/cargo/worker intent. Schema 20 ordinary food,
+snapshots, host reset and checkpoint restore. Current checkpoint schema 22
+retains the schema 21 fish identity alongside existing stock/cargo/worker intent;
+the lobby addition introduces no fishing fields. Schema 20 ordinary food,
 wood and sheep saves migrate without changing their economy. A schema 20 save
 that claims a newly authored fish variant cannot invent previously unrecorded
 identity. Current saves reject a runtime variant that differs from its authored
