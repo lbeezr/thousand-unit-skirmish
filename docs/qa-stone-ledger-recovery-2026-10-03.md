@@ -11,7 +11,7 @@ sockets. Both seats see their own zero bank and an opponent-null bank, and canno
 build a Watchtower without 50 Stone. Banks, occupancy and next building ID stay
 unchanged. A declared checkpoint fixture then supplies fractional Stone bank/cargo
 only for recovery testing. Each real Worker returns 3.125 Stone to its Town Center
-once, without food or wood credit. Actual Watchtower commands pay 50 food / 150 wood / 
+once, without food or wood credit. Actual Watchtower commands pay 50 food / 150 wood /
 50 Stone. Builders stop while construction is partial; cold recovery preserves the
 paid banks, zero delivered cargo, building IDs and exact frozen progress. Foreign
 and replayed cancellations reject. Refunds equal each price times the frozen
