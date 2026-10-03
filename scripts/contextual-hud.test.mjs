@@ -276,6 +276,21 @@ for (const team of [0, 1]) test(`seat ${team}: Return cargo appears for carrying
   f.w.matchWinner = -1; f.w.units[own].cargo = 0; f.select([own]); assert.equal(button.hidden, true);
 });
 
+for (const team of [0, 1]) test(`seat ${team}: a carrying Skiff exposes Return cargo and keeps Worker build controls hidden`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const id = f.w.units.length, orders = [];
+  f.w.units.push({ id, team, kind: 'skiff', hp: 120, cargo: .005, cargoType: 'food' });
+  f.w.sendTrackedOrder = command => { orders.push(command); return 100; };
+  f.w.setAttackMoveMode = () => {};
+  f.w.eval(between('function issueReturnCargo(', "for (const button of document.querySelectorAll('[data-stationary-order]'))"));
+  f.select([id]); assert.equal(f.bar.dataset.context, 'boats');
+  const button = f.bar.querySelector('[data-return-cargo]');
+  assert.equal(button.hidden, false); assert.equal(button.disabled, false);
+  assert.equal(f.bar.querySelector('[data-context-panel="build"]').hidden, true);
+  f.click(button); assert.equal(orders[0].type, 'returnCargo'); assert.deepEqual([...orders[0].ids], [id]);
+  f.w.units[id].cargo = 0; f.select([id]); assert.equal(button.hidden, true);
+});
+
 for (const team of [0, 1]) test(`seat ${team}: empty → Worker → army → building → empty preserves selections and essential access`, t => {
   const f = fixture(team); t.after(() => f.dom.window.close());
   const worker = team * 2, army = worker + 1;

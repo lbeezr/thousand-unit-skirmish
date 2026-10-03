@@ -3780,9 +3780,9 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   document.querySelector('#assign-selected-group').disabled = !context.total;
   bar.querySelector('[data-context-summary]').textContent = building
     ? `${buildingLabel(building.type)} · ${ui.selectedBuildingHealth.textContent} · ${ui.selectedBuildingProduction.textContent}`
-    : context.total ? `${context.total} selected${context.kind === 'military' || context.kind === 'mixed' ? ` · ${ui.formationSelect.value} formation` : ''} · ${Object.entries(context.counts).filter(([, n]) => n).map(([role, n]) => `${n} ${role}`).join(' · ')}${context.counts.worker ? ` · Cargo ${formatResourceStock(context.cargo.food)} food / ${formatResourceStock(context.cargo.wood)} wood` : ''}` : '';
+    : context.total ? `${context.total} selected${context.kind === 'military' || context.kind === 'mixed' ? ` · ${ui.formationSelect.value} formation` : ''} · ${Object.entries(context.counts).filter(([, n]) => n).map(([role, n]) => `${n} ${role}`).join(' · ')}${context.counts.worker || context.counts.skiff ? ` · Cargo ${formatResourceStock(context.cargo.food)} food / ${formatResourceStock(context.cargo.wood)} wood` : ''}` : '';
   for (const button of bar.querySelectorAll('[data-stationary-order], [data-persistent-order]')) {
-    button.hidden = !['workers', 'military', 'mixed'].includes(context.kind);
+    button.hidden = !['workers', 'military', 'mixed', 'boats'].includes(context.kind);
   }
   for (const button of bar.querySelectorAll('[data-return-cargo]')) {
     button.hidden = Boolean(building) || context.cargo.food + context.cargo.wood <= 0;
@@ -4331,8 +4331,8 @@ function updateCommandUI() {
       : (rallyCell >= 0 ? 'Right-click ground to move the production rally' : 'Right-click ground to set a production rally')
       : coarsePointer ? 'Use Target battlefield, then tap a target'
         : attackMoveMode ? 'Right-click ground to advance and engage' : 'Right-click ground or an enemy';
-  if (selectedBuilding?.type === 'dock' && ui.commandHint) ui.commandHint.textContent = 'Train a Skiff (placeholder), then select it and move on water. No rally or cargo.';
-  if (!selectedBuilding && selectedWaterUnits() && ui.commandHint) ui.commandHint.textContent = 'Select one Skiff · move on water or Stop · no queued waypoints or cargo.';
+  if (selectedBuilding?.type === 'dock' && ui.commandHint) ui.commandHint.textContent = 'Train a Skiff (placeholder) · owned boats deliver food at this Dock · no rally.';
+  if (!selectedBuilding && selectedWaterUnits() && ui.commandHint) ui.commandHint.textContent = 'Select one Skiff · target fish or water · Return cargo delivers food to your Dock · Stop keeps cargo.';
   if (persistentTargetMode && ui.commandHint) ui.commandHint.textContent = `${tapOrderArmed ? 'Tap or click' : coarsePointer ? 'Use Target battlefield, then tap' : 'Right-click'} ${persistentTargetMode === 'follow' ? 'a friendly unit' : 'ground to set the second patrol endpoint'}`;
   for (const button of document.querySelectorAll('[data-persistent-order]')) {
     button.classList.toggle('active', button.dataset.persistentOrder === persistentTargetMode);
@@ -7450,9 +7450,11 @@ function issueStationaryOrder(type) {
 }
 function issueReturnCargo() {
   if (localTeam === null || matchWinner >= 0) return;
-  const ids = selectedIds().filter(id => units[id]?.kind === 'worker' && units[id].cargo > 0);
-  if (!ids.length) { showToast('SELECT YOUR CARRYING WORKERS'); return; }
-  if (sendTrackedOrder({ type: 'returnCargo', ids }, 'RETURN CARGO', ids.length, 'WORKERS')) {
+  const selectedUnits = selectedIds(), water = selectedUnits.some(id => units[id]?.kind === 'skiff');
+  if (water && selectedUnits.length !== 1) { showToast('SELECT ONE SKIFF'); return; }
+  const ids = selectedUnits.filter(id => ['worker', 'skiff'].includes(units[id]?.kind) && units[id].cargo > 0);
+  if (!ids.length) { showToast('SELECT YOUR CARRYING WORKERS OR SKIFF'); return; }
+  if (sendTrackedOrder({ type: 'returnCargo', ids }, 'RETURN CARGO', ids.length, water ? 'SKIFF' : 'WORKERS')) {
     persistentTargetMode = null;
     setTapOrderArmed(false, false);
     setAttackMoveMode(false, false);
@@ -7575,6 +7577,11 @@ function issueAttackBuilding(target) {
 
 function issueGather(node) {
   if (localTeam === null) { showToast('SPECTATORS CANNOT ISSUE COMMANDS'); return; }
+  if (selectedWaterUnits()) {
+    const ids = selectedIds();
+    if (ids.length !== 1 || !isShoreFish(node)) { showToast('SELECT ONE SKIFF AND A SHORE FISH SOURCE'); return; }
+    sendTrackedOrder({ type: 'gather', ids, nodeId: node.id }, 'FISH', 1, 'SKIFF'); return;
+  }
   const workers = selectedIds().filter((id) => units[id]?.kind === 'worker');
   if (workers.length === 0) {
     showToast('SELECT WORKERS FIRST · USE THE SELECT WORKERS BUTTON');
@@ -7606,6 +7613,9 @@ function issueContextOrder(clientX, clientY, queueWaypoint = false) {
     return;
   }
   if (selectedWaterUnits()) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    const node = pickResourceNodeAt(clientX - rect.left, clientY - rect.top);
+    if (node && isShoreFish(node)) { issueGather(node); return; }
     const point = worldAt(clientX, clientY);
     if (point) issueMove(point, queueWaypoint, true);
     return;

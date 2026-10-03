@@ -17,7 +17,7 @@ function move(context, unit, destination, actors = [unit]) {
 
 test('Skiff has stable water identity, paid population and explicit zero offensive capabilities', () => {
   assert.equal(U.skiff.wireId, 7); assert.equal(U.skiff.movementDomain, 'water');
-  assert.deepEqual(U.skiff.capabilities, ['move']); assert.deepEqual(U.skiff.combat.targetTags, []);
+  assert.deepEqual(U.skiff.capabilities, ['move', 'gather']); assert.deepEqual(U.skiff.combat.targetTags, []);
   assert.equal(U.skiff.combat.damage, 0); assert.equal(U.skiff.combat.structureDamage, 0);
   assert.equal(U.skiff.cost.wood, 75); assert.equal(U.skiff.population, 1);
   assert.deepEqual(B.dock.products, ['skiff']);
