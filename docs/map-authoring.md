@@ -187,9 +187,15 @@ An optional `wildlifeSpecies: "bellweather-sheep"` on a `food` node opts into th
 The same node ID and authored stock represent the living animal and its carcass;
 there is no second resource pool. Other species, wood wildlife and authored
 `wildlifeState` are rejected. Runtime lifecycle is `alive`, `carcass`, then
-`depleted`, visible only in the room's filtered state. Dedicated wildlife brushes,
-claim/herding and sprite bindings are not implemented. No shipped map uses this
-optional identity yet.
+`depleted`, visible only in the room's filtered state. Sheep may also specify
+`wildlifeNoseYawDegrees`, finite in `[0,360)` with an omitted default of 0: nose
+yaw 0 faces +Z and positive yaw turns toward +X. This static presentation pose
+stays in map data through import/export and checkpoint recovery; it adds no
+simulation heading or movement. The normal renderer selects an available exact
+static direction, otherwise its rotated geometric Sheep proxy. The current
+public pack contains only the north illustration; [runtime evidence](qa-sheep-static-directions-runtime-2026-10-03.md)
+records that limit. Dedicated wildlife brushes and claim/herding remain future
+work. No shipped map places this optional identity yet.
 
 Millrace expands its eight resource anchors into five-node seeded patches (40
 nodes), mirrored between seats. Each original anchor stays in place. Added nodes

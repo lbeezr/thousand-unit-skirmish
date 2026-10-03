@@ -8,6 +8,12 @@ import { createStaticSheepRuntime } from '../src/sheep-static-preview.mjs';
 
 // Real worker HTTP/WS paths and Three meshes; PNG decoding is CPU-only, not WebGL evidence.
 const map = JSON.parse(await readFile(new URL('../docs/qa-evidence/neutral-wildlife-render-2026-10-03/preview-map.json', import.meta.url)));
+// Authored poses go through real map publication, not a preview switch. Keep the
+// historical capture fixture untouched; these nodes are disposable game tests.
+map.resourceNodes.push(
+  { id: 'north-companion', type: 'food', x: -12, z: 3, stock: 100, wildlifeSpecies: 'bellweather-sheep', wildlifeNoseYawDegrees: 0 },
+  { id: 'east-pose', type: 'food', x: -14, z: -6, stock: 100, wildlifeSpecies: 'bellweather-sheep', wildlifeNoseYawDegrees: 90 },
+);
 const fixture = await createFortifiedFixture({ mapPath: 'maps/open-field.json', timeoutMs: 40_000 });
 const OriginalImage = globalThis.Image;
 let renderer;
@@ -42,7 +48,15 @@ try {
   const camera = new THREE.OrthographicCamera(-10, 10, 10, -10, .1, 100);
   camera.position.set(.78, 1.12, .78).normalize().multiplyScalar(20);
   camera.lookAt(0, 0, 0); camera.updateMatrixWorld();
-  const client = await fixture.connect(0);
+  let client = await fixture.connect(0);
+  for (const wildlifeNoseYawDegrees of [-1, 360, null]) {
+    const invalid = structuredClone(map);
+    invalid.resourceNodes[0].wildlifeNoseYawDegrees = wildlifeNoseYawDegrees;
+    const before = client.messages.length;
+    client.send({ type: 'publishMap', map: invalid, persist: true });
+    assert.match((await client.wait(message => message.type === 'mapRejected', 'invalid pose rejected', before)).message, /invalid.*resource node/);
+    assert.equal(client.latest.mapId, 'open-field', 'invalid pose cannot replace a running map');
+  }
   const after = client.messages.length;
   client.send({ type: 'publishMap', map, persist: true });
   await client.wait(message => message.type === 'mapPublished', 'typed sheep map accepted', after);
@@ -63,6 +77,14 @@ try {
   const group = scene.children.find(group => group.userData.wildlifeNodeId === 'visible-sheep');
   assert.equal(group.children[2].visible, true, 'verified atlas is attached to the live scene');
   assert.ok(group.children[2].material.map.image.width === 512);
+  const northCompanion = scene.children.find(group => group.userData.wildlifeNodeId === 'north-companion');
+  assert.equal(northCompanion.children[2].geometry, group.children[2].geometry, 'same pose shares immutable geometry');
+  assert.equal(alive.nodes.find(node => node.id === 'east-pose').mode, 'sheep-proxy', 'unavailable east pixels cannot use the north image');
+  const eastGroup = scene.children.find(group => group.userData.wildlifeNodeId === 'east-pose');
+  assert.equal(eastGroup.children[0].rotation.y, Math.PI / 2);
+  const savedPose = await fixture.checkpoint(saved => saved.mapDefinition.id === map.id);
+  assert.equal(savedPose.mapDefinition.resourceNodes.find(node => node.id === 'east-pose').wildlifeNoseYawDegrees, 90);
+  assert.ok(savedPose.state.resourceNodes.every(node => node.wildlifeNoseYawDegrees === undefined), 'static pose belongs to authored map data');
   const worker = client.latest.units.find(unit => unit[1] === 0 && unit[5] === 'worker')[0];
   await client.command({ type: 'gather', ids: [worker], nodeId: 'visible-sheep', clientOrderToken: 1 }, /GATHER ORDER/);
   const carcassState = await client.state(state => state.resourceNodes.some(node => node.id === 'visible-sheep'
@@ -73,6 +95,16 @@ try {
     && node.wildlifeState === 'depleted'), 'gather exhausts sheep');
   assert.equal(represent(depletedState).nodes.find(node => node.id === 'visible-sheep').visible, false);
   assert.equal(renderer.isAvailable('visible-sheep'), false);
+  await fixture.checkpoint(saved => saved.state.resourceNodes.some(node => node.id === 'visible-sheep' && node.wildlifeState === 'depleted'));
+  const sessionToken = client.welcome.player.sessionToken;
+  await fixture.stop(); await fixture.start();
+  client = await fixture.connect(0, sessionToken);
+  assert.equal(client.welcome.recoveredFromCheckpoint, true);
+  assert.equal(client.welcome.map.resourceNodes.find(node => node.id === 'east-pose').wildlifeNoseYawDegrees, 90);
+  renderer.reset(client.welcome.map.resourceNodes);
+  const recovered = represent(client.welcome.state);
+  assert.equal(recovered.nodes.find(node => node.id === 'visible-sheep').visible, false);
+  assert.equal(recovered.nodes.find(node => node.id === 'east-pose').mode, 'sheep-proxy');
   const beforeReset = client.messages.length;
   client.send({ type: 'reset' });
   const restoredState = await client.wait(state => state.type === 'state'
@@ -81,7 +113,8 @@ try {
   assert.equal(represent(restoredState).nodes.find(node => node.id === 'visible-sheep').mode, 'static-illustration');
   console.log(JSON.stringify({ scenario: 'neutral wildlife live render binding', productionHttpPaths: approved.length,
     nonRuntimePathsRejected: 5, verifiedPublicAtlasLoaded: true, realSnapshotAliveCarcassDepletedRematch: true,
-    hiddenWildlifeSuppressed: true, ordinaryFoodUnchanged: true, webglCapture: false }));
+    hiddenWildlifeSuppressed: true, ordinaryFoodUnchanged: true, staticPosePublishedAndRecovered: true,
+    absentDirectionUsesProxy: true, sameDirectionSharesGeometry: true, invalidPosesRejected: 3, webglCapture: false }));
 } finally {
   renderer?.dispose(); globalThis.Image = OriginalImage; await fixture.dispose();
 }

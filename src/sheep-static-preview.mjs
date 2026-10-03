@@ -1,4 +1,4 @@
-// Preview-only binding for stationary Sheep references. Snapshot/gameplay owners
+// Static Sheep binding used by the normal neutral renderer. Snapshot/gameplay owners
 // must explicitly supply visibility and idle state; moving/dead/resource states
 // have no authored art and are never represented by a live idle Sheep.
 import { spriteGroundDepthBias } from './unit-sprite-runtime.mjs';
@@ -78,27 +78,38 @@ export async function createStaticSheepRuntime({ THREE, scene, bindingUrl }) {
     depthTest: true, depthWrite: false, side: THREE.DoubleSide, toneMapped: false,
   });
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material);
+  const geometries = new Map();
+  const initialGeometry = mesh.geometry;
   mesh.visible = false;
   scene.add(mesh);
   const local = new THREE.Vector3(), up = new THREE.Vector3(), toward = new THREE.Vector3();
   let disposed = false;
+  function geometryForFrame(frame) {
+    if (geometries.has(frame.id)) return geometries.get(frame.id);
+    const rect = frame.fallbackRectPx.rectPx;
+    if (frame.fallbackRectPx.pageId !== page.id) throw new Error('Sheep preview supports one color page');
+    const geometry = new THREE.PlaneGeometry(1, 1);
+    const width = page.dimensionsPx.width, height = page.dimensionsPx.height;
+    // A direction owns immutable UVs. Live instances share this geometry safely;
+    // switching the template frame must not turn every cloned Sheep with it.
+    const uv = geometry.getAttribute('uv');
+    const x0 = (rect.x + .5) / width, x1 = (rect.x + rect.width - .5) / width;
+    const y0 = (rect.y + .5) / height, y1 = (rect.y + rect.height - .5) / height;
+    uv.setXY(0, x0, y0); uv.setXY(1, x1, y0);
+    uv.setXY(2, x0, y1); uv.setXY(3, x1, y1);
+    geometries.set(frame.id, geometry);
+    return geometry;
+  }
   return {
     binding, manifest, mesh,
+    supports(state) { return !disposed && Boolean(staticSheepFrame(manifest, binding, state)); },
     update(state, camera) {
       const frame = !disposed && ['x', 'groundY', 'z'].every(key => Number.isFinite(state?.[key]))
         ? staticSheepFrame(manifest, binding, state) : null;
       mesh.visible = Boolean(frame);
       if (!frame) return false;
       const placement = sheepQuadPlacement(frame, binding.projectedPixelsPerWorldUnit);
-      const rect = frame.fallbackRectPx.rectPx;
-      if (frame.fallbackRectPx.pageId !== page.id) throw new Error('Sheep preview supports one color page');
-      const width = page.dimensionsPx.width, height = page.dimensionsPx.height;
-      // Full-canvas registration, half-texel inset, no dynamic alpha-bound fitting.
-      const uv = mesh.geometry.getAttribute('uv');
-      const x0 = (rect.x + .5) / width, x1 = (rect.x + rect.width - .5) / width;
-      const y0 = (rect.y + .5) / height, y1 = (rect.y + rect.height - .5) / height;
-      uv.setXY(0, x0, y0); uv.setXY(1, x1, y0);
-      uv.setXY(2, x0, y1); uv.setXY(3, x1, y1); uv.needsUpdate = true;
+      mesh.geometry = geometryForFrame(frame);
       mesh.quaternion.copy(camera.quaternion);
       up.set(0, 1, 0).applyQuaternion(camera.quaternion);
       toward.set(0, 0, 1).applyQuaternion(camera.quaternion);
@@ -109,8 +120,11 @@ export async function createStaticSheepRuntime({ THREE, scene, bindingUrl }) {
       return true;
     },
     dispose() {
+      if (disposed) return;
       disposed = true; mesh.visible = false;
-      scene.remove(mesh); mesh.geometry.dispose(); material.dispose(); texture.dispose();
+      scene.remove(mesh); initialGeometry.dispose();
+      for (const geometry of geometries.values()) geometry.dispose();
+      geometries.clear(); material.dispose(); texture.dispose();
     },
   };
 }
