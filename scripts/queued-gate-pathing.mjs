@@ -56,7 +56,7 @@ export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true
     r.drain();assert.equal(r.navigationRevision,beforeClose+1);assert.equal(gate.gateOpen,false);
     assert.deepEqual(army.map(u=>u.moveGoalCell),current);
     assert.deepEqual(army.map(u=>u.queuedWaypoints[0].destination),requested,'close preserves future queue intent');
-    const trace=createHash('sha256');let invalidSteps=0,unreachableGoals=0;
+    const trace=createHash('sha256');let invalidSteps=0,unreachableGoals=0,maxPathLength=0;
     const progress=new Map(army.map(u=>[u.id,{goal:u.moveGoalCell,remaining:Infinity,tick:r.tick,max:0}]));
     const done=u=>!u.queuedWaypoints.length&&!u.movePlanningPending&&u.pathIndex===u.path.length
       &&Math.hypot(u.x-r.point(u.moveGoalCell).x,u.z-r.point(u.moveGoalCell).z)<.02;
@@ -65,6 +65,7 @@ export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true
       if(!returnBuilder)assert.deepEqual(workerIntent(),parkedIntent,'parked Worker keeps position and command intent');
       for(let i=0;i<army.length;i++) {
         const u=army[i],cell=r.cell(u.x,u.z);
+        maxPathLength=Math.max(maxPathLength,u.path.length);
         if(!canTraverseUnitStep(previous[i],cell,map.width,r.levels,r.isWalkable))invalidSteps++;
         if(r.components[cell]!==r.components[u.moveGoalCell])unreachableGoals++;
         const p=progress.get(u.id);let x=u.x,z=u.z,remaining=0;
@@ -80,7 +81,7 @@ export async function runQueuedGateCase({team=0,observe=false,returnBuilder=true
     assert.ok(goals.every((c,i)=>gate.footprint.includes(requested[i])||c===requested[i]));
     assert.ok(goals.every(c=>!gate.footprint.includes(c)));
     return {team,group:64,sourceSha256:fixture.sourceSha256,ticks:r.tick-startTick,arrived,
-      distinctGoals:new Set(goals).size,requested,goals,invalidSteps,unreachableGoals,
+      distinctGoals:new Set(goals).size,requested,goals,invalidSteps,unreachableGoals,maxPathLength,
       onlyNamedBuilder:true,builderReturned:returnBuilder,parkOrder,parkedIntentPreserved:!returnBuilder,
       maxNoProgressTicks:Math.max(...[...progress.values()].map(p=>p.max)),unblockedDestinationsPreserved:true,
       unfinished:army.filter(u=>!done(u)).map(u=>({id:u.id,x:u.x,z:u.z,goal:r.point(u.moveGoalCell),pathIndex:u.pathIndex,pathLength:u.path.length})),

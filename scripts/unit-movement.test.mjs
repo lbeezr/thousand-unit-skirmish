@@ -156,6 +156,15 @@ test('no local detour in a one-cell passage retains soft separation and the stat
   assert.deepEqual({x:blocker.x,z:blocker.z,holdingPosition:blocker.holdingPosition,orderRevision:blocker.orderRevision},before);
 });
 
+test('a local detour copies a shared planned path and leaves the other assignee intact',()=>{
+  const f=fixture({x:-.6,z:-.5,cliff:false}),shared=[27,28,29];f.mover.path=shared;
+  Object.assign(f.units[1],{kind:'worker',x:-.5,z:-.5});
+  f.units[2].hp=0;f.units[2].path=shared;f.units[3].hp=0;
+  f.move();assert.notEqual(f.mover.path,shared);assert.deepEqual(shared,[27,28,29]);
+  assert.equal(f.units[2].path,shared);assert.equal(f.units[2].pathIndex,0);
+  assert.equal(f.mover.path.at(-1),29);
+});
+
 test('legal crowd deflection repairs once, preserves the queued route and rejoins', () => {
   for(const terrain of ['slope','corner']){
     const f=fixture({x:-.01,z:.001,cliff:false,realRepairs:true});

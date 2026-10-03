@@ -42,6 +42,20 @@ test('map edges reject row wrapping during a local detour',()=>{
   const r=findStationaryWorkerDetour(unit,blocker,width,levels,()=>true,point,cell);assert.ok(r);
   let from=cell(unit.x,unit.z);for(const to of r.path){assert.ok(canTraverseUnitStep(from,to,width,levels,()=>true));from=to;}
 });
+test('two adjacent parked Workers cannot route the mover into each other',()=>{
+  const unit={x:-.5,z:-.6,path:[27,19,20],pathIndex:0},blocker={x:-.5,z:-.5};
+  const r=findStationaryWorkerDetour(unit,blocker,width,levels,()=>true,point,cell,()=>new Set([27,19]));
+  assert.equal(r,null,'occupied rejoin retains the existing route instead of alternating detours');
+  assert.deepEqual(unit.path,[27,19,20]);
+});
+test('near-perpendicular floating point jitter does not trigger a detour',()=>{
+  const unit={x:-.5+1e-14,z:-.9,path:[26,18],pathIndex:0},blocker={x:-.5,z:-.5};
+  assert.equal(findStationaryWorkerDetour(unit,blocker,width,levels,()=>true,point,cell),null);
+});
+test('incomplete local occupancy query preserves the route',()=>{
+  const unit={x:-.6,z:-.5,path:[27,28,29],pathIndex:0},blocker={x:-.5,z:-.5};
+  assert.equal(findStationaryWorkerDetour(unit,blocker,width,levels,()=>true,point,cell,()=>null),null);
+});
 for(const team of [0,1])for(const parkOrder of [null,'stop','holdPosition'])
   test(`seat ${team}: parked ${parkOrder??'idle'} builder remains fixed while 64 queued units arrive`,async()=>{
     const r=await runQueuedGateCase({team,returnBuilder:false,parkOrder});

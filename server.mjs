@@ -6643,7 +6643,8 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
             detourCellsTried ??= new Set();
             detourCellsTried.add(blockerCell);
             const detour = findStationaryWorkerDetour(unit, other, MAP_WIDTH,
-              elevationLevelByCell, isWalkable, cellToWorld, worldToCell);
+              elevationLevelByCell, isWalkable, cellToWorld, worldToCell,
+              () => stationaryWorkerCellsNear(unit, blockerCell));
             if (detour) return { detour };
           }
         }
@@ -6667,6 +6668,28 @@ function getMoveVector(unit, remainingStep = UNIT_DEFINITIONS[unit.kind].combat.
   vx /= length;
   vz /= length;
   return { x: vx, z: vz, target, stepDistance: remainingStep };
+}
+
+function stationaryWorkerCellsNear(unit, blockerCell) {
+  const occupied = new Set([blockerCell]);
+  const center = cellToWorld(blockerCell);
+  let visited = 0;
+  for (let row = spatialBucketRow(center.z - 2.5); row <= spatialBucketRow(center.z + 2.5); row++) {
+    for (let column = spatialBucketColumn(center.x - 2.5); column <= spatialBucketColumn(center.x + 2.5); column++) {
+      let id = spatialBucketHeads[row * spatialBucketColumns + column];
+      while (id !== -1) {
+        if (++visited > 64) return null;
+        const other = units[id];
+        if (other !== unit && other.hp > 0 && other.team === unit.team && other.kind === 'worker'
+          && !other.movePlanningPending && other.pathIndex >= other.path.length
+          && other.attackTargetId < 0 && other.attackBuildingTargetId < 0) {
+          occupied.add(worldToCell(other.x, other.z));
+        }
+        id = spatialBucketNext[id];
+      }
+    }
+  }
+  return occupied;
 }
 
 // Units stop following paths while working or striking. Keep separating them
@@ -7042,6 +7065,7 @@ function simulateTick() {
       const move = getMoveVector(unit, remainingStep, allowLocalDetour);
       if (!move) break;
       if (move.detour) {
+        unit.path = unit.path.slice(); // Planning can share identical routes.
         unit.path.splice(unit.pathIndex, move.detour.replaceCount, ...move.detour.path);
         allowLocalDetour = false;
         dirty = true;
