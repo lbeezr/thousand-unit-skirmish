@@ -36,7 +36,8 @@ as the normal-default proof.
    then selected. Both must use the finished civic-hall family in normal play.
 2. In this disposable room, Azure opens **Match Controls → Map Studio → Import
    JSON** and imports [the flat acceptance map](qa-evidence/default-frontier-buildings-2026-10-03/acceptance-map-flat.json).
-   Validate, then **Save & Play Map**. This resets the room; if it returns to the
+   Import validates automatically; confirm **Loaded <filename>. Review the map
+   ID…**, review the imported settings, then **Save & Play Map**. This resets the room; if it returns to the
    pregame lobby, ready both seats and launch again. Confirm map ID
    `frontier-buildings-acceptance-flat`, 64 × 64, 12 units per seat, no fog,
    2,000 food / 3,000 wood per seat. This is the ordinary simulation and renderer,
@@ -96,8 +97,10 @@ or repair above 60%, the finished family returns after its frame is available.
 
 For every paid family capture early construction, either side of the 27.5%
 boundary, late construction (75%/90%), healthy completion, damage near 60%,
-Critical near 30%, and repair back above 60%. Stop builders and use the existing
-Resume Construction action if a state passes too quickly. Send a small opposing
+Critical near 30%, and repair back above 60%. Stop builders if a state passes
+too quickly. To resume, select Workers and use **Send selected workers to
+<building>**; confirm that control names the intended unfinished structure.
+Send a small opposing
 military squad to attack one structure, stop it before crossing each threshold,
 then select the damaged owner structure and use **Repair with Workers**. Workers
 alone cannot attack buildings. Record the actual displayed HP/progress; rounded
