@@ -126,11 +126,13 @@ test('queued Skiff fishing preserves the actual server order and cargo before ro
 
 test('actual transform uses a procedural water placeholder and clears it when the slot becomes land', () => {
   const matrices = new Map(), mesh = { setMatrixAt: (slot, matrix) => matrices.set(slot, matrix.clone()) };
+  const hidden = [];
   let lodScale = -1;
   const context = vm.createContext({ ...economyClientBindings(), THREE, UNIT_DEFINITIONS, unitPresentation, boatMeshes: [mesh, mesh], unitArtMeshes: [[mesh, mesh]],
     dummy: new THREE.Object3D(), facing: new THREE.Quaternion(), worldUp: new THREE.Vector3(0, 1, 0),
     castPreview: false, unitSpritePreviewActive: false, unitLowDetailActive: false,
     SPAWN_POSE_MS: 600, DEFEAT_POSE_MS: 600, updateUnitHealthVisual() {}, updateUnitLodTransform: (_, scale) => { lodScale = scale; }, updateUnitFocusVisual() {}, updateUnitCargoCueColor() {},
+    workerFishingContactRuntime: { hide: unit => hidden.push({ team: unit.team, slot: unit.slot, kind: unit.kind }) },
   });
   vm.runInContext(extract(client, 'updateUnitTransform', 'setArmySize'), context);
   for (const team of [0, 1]) {
@@ -146,5 +148,7 @@ test('actual transform uses a procedural water placeholder and clears it when th
     assert.equal(lodScale, 1, 'the Skiff remains visible as an existing siege marker when full-detail meshes are hidden');
     unit.kind = 'worker'; context.updateUnitTransform(unit, 1000);
     matrices.get(team).decompose(position, rotation, scale); assert.deepEqual(scale.toArray(), [0, 0, 0]);
+    assert.deepEqual(hidden.slice(-3), [{ team, slot: team, kind: 'skiff' }, { team, slot: team, kind: 'skiff' }, { team, slot: team, kind: 'worker' }],
+      'full-detail, simplified and recycled slots each clear the old fishing contact cue');
   }
 });
