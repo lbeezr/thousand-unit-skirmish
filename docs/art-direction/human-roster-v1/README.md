@@ -2,6 +2,11 @@
 
 User goal, 30 September 2026: complete Humans for every implemented unit type. The approved Human Worker game appearance sets the size/detail baseline; no Meshy stage. Current registry: Worker, Infantry, Spearman, Archer. Future mounted/siege units are outside the current roster.
 
+The [approved SE fishing release](fishing-SE-v1/README.md) adds four unchanged
+hand-net poses to Human v3 pack 0.14.0 in default play. It preserves all existing
+Worker action pixels and exact-heading fallbacks. Publication is authorized;
+seven fishing headings, smooth-loop and final root acceptance remain incomplete.
+
 ## Completion gates
 
 Each role needs eight directional facings with idle, alternating walk, role attack and complete defeat coverage; Workers additionally need wood/food gathering and build/repair. Consistent identity, handedness, camera, grounded pivots, non-clipped weapons, neutral equipment and separate team sash mask are required. Pack validation, state/timing tests and in-game captures at ordinary/strategic zoom establish acceptance. Static pose holds are previews and cannot satisfy animation completion.

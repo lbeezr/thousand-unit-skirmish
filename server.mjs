@@ -7956,7 +7956,7 @@ const server = createServer(async (request, response) => {
     'src/shore-fishing.mjs', 'src/shore-fishing-placeholder.mjs', 'src/shore-fishing-placement.mjs',
     'src/dock-placement.mjs', 'src/water-route-graph.mjs',
     'src/water-unit-runtime.mjs',
-    'src/worker-fishing-presentation.mjs',
+    'src/worker-fishing-presentation.mjs', 'src/worker-fishing-contact.mjs', 'src/unit-heading.mjs',
     'src/resource-brush-authoring.mjs', 'src/resource-cluster-authoring.mjs', 'src/resource-brush-controls.mjs',
     'src/map-studio-viewport.mjs', 'src/order-feedback.mjs', 'src/resource-visual-state.mjs', 'src/resource-format.mjs', 'src/population-readout.mjs', 'src/gameplay-definitions.mjs', 'src/economy-profile.mjs', 'src/economy-ledger.mjs', 'src/economy-client.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/palisade-gate.mjs', 'src/palisade-gate-visual.mjs', 'src/wall-line-planner.mjs', 'src/wall-placement.mjs', 'src/wall-placement-ghost.mjs', 'src/gameplay-presentation.mjs', 'src/population.mjs', 'src/production-actions.mjs', 'src/research-actions.mjs',
     'src/building-visual-state.mjs', 'src/unit-lod-state.mjs', 'src/unit-selection.mjs',

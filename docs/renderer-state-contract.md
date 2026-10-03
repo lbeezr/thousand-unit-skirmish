@@ -87,8 +87,12 @@ Shore-fish work turns toward the canonical derived water visual while Worker
 movement/gather authority remains at its land marker. Optional row index 16
 identifies that active work variant; the default renderer selects `gather-fish`
 with exact-heading food/gather/idle fallback and a separate cosmetic clock.
-Legacy rows clear the variant. The [private pilot](worker-fishing-animation.md)
-records source coverage and pending public-art approval; it changes no economy.
+Legacy rows clear the variant. The [approved SE pilot](worker-fishing-animation.md)
+records the four original poses and remaining directional coverage. Its measured
+reach key uses shared instanced neutral contact cues to the canonical water cell;
+other phases stay on the bank. Matching the current server bearing fails closed
+on ambiguity. The actor root/scale, gather distance, cargo and economy remain
+unchanged. Small bank/water resource cues pick the same existing land node.
 
 The default Human Worker keeps exact walk/gather facings. Its v3 pack has only
 three animated walk directions and one animated food-gather direction; other
