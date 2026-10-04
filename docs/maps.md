@@ -78,6 +78,10 @@ routes connect the land halves. It uses 24 opening units, 150 food/250 wood per
 seat, zero starting Stone, finite resources and the existing `stone-defense-v1`
 prices. The 135-unit static base route takes 51.9 Worker seconds.
 See [the map and acceptance record](qa-confluence-grounds-2026-10-04.md).
+The [opening correction and save contract](qa-confluence-opening-2026-10-04.md)
+moves both home berries/timber within the unchanged nine-unit invariant. Fresh
+games and explicit host reset use corrected positions; recognized old saves
+retain their geometry and real resource state until reset.
 
 This arena replaces ordinary testing needs served by compact examples. It does
 not delete or rename those canonical files. The mode owner retains the separate

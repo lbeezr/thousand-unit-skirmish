@@ -1,0 +1,323 @@
+{
+  "evidenceType": "authoritative-process-and-DOM-proof",
+  "sourceRevision": "77bb0c1b2d8379b24c18518bea9318047f6be430",
+  "sourceDirty": false,
+  "sourceHashes": {
+    "server.mjs": "7ccea1b3541a60b69ba4b4d43e67a93e6b5c490239641a1ceb86e2e923db09bd",
+    "src/water-unit-runtime.mjs": "f7e47052f14b6444e7612a5a98da158390fde37dad87b946c2be4e16ccf4c0f6",
+    "maps/siltmouths-confluence-grounds.json": "02582970bdaac4caaf2d6ad5c8261b824b32462d08ba9155c2815b12cf0ec9ec",
+    "scripts/skiff-counterflow-scenario.mjs": "2f502bd9a069bb1d1cdce47c9639ec4f4d99462e4a0444f6cdf7beda9eef38f6"
+  },
+  "mapId": "siltmouths-confluence-grounds",
+  "actualRootPracticeEntry": true,
+  "injectedState": false,
+  "paidWoodPerSeat": 175,
+  "records": [
+    {
+      "stage": "two-paid-docks-and-skiffs",
+      "tick": 840,
+      "wallSeconds": 29.275673962,
+      "food": [
+        150,
+        150
+      ],
+      "wood": [
+        75,
+        75
+      ],
+      "boats": [
+        {
+          "id": 24,
+          "team": 0,
+          "x": -48.5,
+          "z": 26.5,
+          "goal": -1,
+          "pathIndex": 0,
+          "pathLength": 0,
+          "blocked": false,
+          "queued": [],
+          "cargo": 0,
+          "phase": ""
+        },
+        {
+          "id": 25,
+          "team": 1,
+          "x": 48.5,
+          "z": 26.5,
+          "goal": -1,
+          "pathIndex": 0,
+          "pathLength": 0,
+          "blocked": false,
+          "queued": [],
+          "cargo": 0,
+          "phase": ""
+        }
+      ]
+    },
+    {
+      "stage": "reciprocal-collision-cold-checkpoint",
+      "tick": 1622,
+      "wallSeconds": 55.360955185,
+      "food": [
+        150,
+        150
+      ],
+      "wood": [
+        75,
+        75
+      ],
+      "boats": [
+        {
+          "id": 24,
+          "team": 0,
+          "x": -0.4200000000000114,
+          "z": 40.5,
+          "goal": 20602,
+          "pathIndex": 63,
+          "pathLength": 114,
+          "blocked": true,
+          "queued": [
+            {
+              "destination": 20764,
+              "attackMove": false
+            }
+          ],
+          "cargo": 0,
+          "phase": ""
+        },
+        {
+          "id": 25,
+          "team": 1,
+          "x": 0.4200000000000114,
+          "z": 40.5,
+          "goal": 20517,
+          "pathIndex": 63,
+          "pathLength": 114,
+          "blocked": true,
+          "queued": [
+            {
+              "destination": 20675,
+              "attackMove": false
+            }
+          ],
+          "cargo": 0,
+          "phase": ""
+        }
+      ]
+    },
+    {
+      "stage": "both-original-goals-and-pending-moves-completed-after-recovery",
+      "tick": 2370,
+      "wallSeconds": 81.093509584,
+      "food": [
+        150,
+        150
+      ],
+      "wood": [
+        75,
+        75
+      ],
+      "boats": [
+        {
+          "id": 24,
+          "team": 0,
+          "x": 44.5,
+          "z": 49.5,
+          "goal": -1,
+          "pathIndex": 0,
+          "pathLength": 0,
+          "blocked": false,
+          "queued": [],
+          "cargo": 0,
+          "phase": ""
+        },
+        {
+          "id": 25,
+          "team": 1,
+          "x": -44.5,
+          "z": 49.5,
+          "goal": -1,
+          "pathIndex": 0,
+          "pathLength": 0,
+          "blocked": false,
+          "queued": [],
+          "cargo": 0,
+          "phase": ""
+        }
+      ]
+    },
+    {
+      "stage": "selected-stop-keeps-boat-idle-and-clears-pending-intent",
+      "tick": 3000,
+      "wallSeconds": 102.07917481700001,
+      "food": [
+        150,
+        150
+      ],
+      "wood": [
+        75,
+        75
+      ],
+      "boats": [
+        {
+          "id": 24,
+          "team": 0,
+          "x": 0.42000000000059406,
+          "z": 49.5,
+          "goal": -1,
+          "pathIndex": 0,
+          "pathLength": 0,
+          "blocked": false,
+          "queued": [],
+          "cargo": 0,
+          "phase": ""
+        },
+        {
+          "id": 25,
+          "team": 1,
+          "x": 2.100000000000577,
+          "z": 50.5,
+          "goal": 20922,
+          "pathIndex": 4,
+          "pathLength": 45,
+          "blocked": false,
+          "queued": [],
+          "cargo": 0,
+          "phase": ""
+        }
+      ]
+    },
+    {
+      "stage": "replacement-goal-and-other-seat-arrival",
+      "tick": 3600,
+      "wallSeconds": 122.09950031400001,
+      "food": [
+        150,
+        150
+      ],
+      "wood": [
+        75,
+        75
+      ],
+      "boats": [
+        {
+          "id": 24,
+          "team": 0,
+          "x": -42.5,
+          "z": 52.49999999999998,
+          "goal": -1,
+          "pathIndex": 0,
+          "pathLength": 0,
+          "blocked": false,
+          "queued": [],
+          "cargo": 0,
+          "phase": ""
+        },
+        {
+          "id": 25,
+          "team": 1,
+          "x": 42.5,
+          "z": 50.5,
+          "goal": -1,
+          "pathIndex": 0,
+          "pathLength": 0,
+          "blocked": false,
+          "queued": [],
+          "cargo": 0,
+          "phase": ""
+        }
+      ]
+    },
+    {
+      "stage": "stopped-positive-fish-cargo-cold-checkpoint",
+      "tick": 4141,
+      "wallSeconds": 140.14393808600002,
+      "food": [
+        150,
+        150
+      ],
+      "wood": [
+        75,
+        75
+      ],
+      "boats": [
+        {
+          "id": 24,
+          "team": 0,
+          "x": -55.5,
+          "z": 26.5,
+          "goal": -1,
+          "pathIndex": 0,
+          "pathLength": 0,
+          "blocked": false,
+          "queued": [],
+          "cargo": 1.7333333333333354,
+          "phase": ""
+        },
+        {
+          "id": 25,
+          "team": 1,
+          "x": 55.5,
+          "z": 26.5,
+          "goal": -1,
+          "pathIndex": 0,
+          "pathLength": 0,
+          "blocked": false,
+          "queued": [],
+          "cargo": 2.5666666666666673,
+          "phase": ""
+        }
+      ]
+    },
+    {
+      "stage": "retained-food-deposited-once-at-owned-docks",
+      "tick": 4260,
+      "wallSeconds": 144.81101011500002,
+      "food": [
+        151.73333333333335,
+        152.56666666666666
+      ],
+      "wood": [
+        75,
+        75
+      ],
+      "boats": [
+        {
+          "id": 24,
+          "team": 0,
+          "x": -48.5,
+          "z": 26.5,
+          "goal": -1,
+          "pathIndex": 0,
+          "pathLength": 0,
+          "blocked": false,
+          "queued": [],
+          "cargo": 0,
+          "phase": ""
+        },
+        {
+          "id": 25,
+          "team": 1,
+          "x": 48.5,
+          "z": 26.5,
+          "goal": -1,
+          "pathIndex": 0,
+          "pathLength": 0,
+          "blocked": false,
+          "queued": [],
+          "cargo": 0,
+          "phase": ""
+        }
+      ]
+    }
+  ],
+  "acceptance": {
+    "reciprocalPassing": true,
+    "pendingQueueColdRecovery": true,
+    "selectedStop": true,
+    "replacement": true,
+    "positiveCargoColdRecovery": true,
+    "ownedDockDeposits": true
+  },
+  "limits": "No rendered browser frames, physical pointer/minimap use, screenshots, deployment or traffic-capacity claim."
+}

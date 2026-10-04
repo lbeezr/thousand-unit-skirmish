@@ -13,7 +13,7 @@ export async function generateConfluenceGrounds() {
     const mirror = c => team ? 159 - c : c;
     const node = (id, c, r, type, stock, extra = {}) => resources.push({ id: `s${team}-${id}`,
       x: mirror(c) - 79.5, z: r - 79.5, type, stock, ...extra });
-    node('berries', 29, 86, 'food', 240); node('timber', 29, 70, 'wood', 500);
+    node('berries', 29, 84, 'food', 240); node('timber', 29, 76, 'wood', 500);
     for (const [i, c, r, stock] of [[0, 28, 66, 67], [1, 34, 73, 67], [2, 30, 75, 66]]) node(`stone-${i}`, c, r, 'stone', stock);
     for (const [i, c, r] of [[0, 30, 83], [1, 31, 87], [2, 33, 84]]) node(`sheep-${i}`, c, r, 'food', 130,
       { wildlifeSpecies: 'bellweather-sheep' });

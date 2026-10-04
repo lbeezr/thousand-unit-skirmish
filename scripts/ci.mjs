@@ -68,7 +68,7 @@ run(['scripts/region-event-scenario.mjs'], 'Region event recovery and rematch');
 run(['scripts/regional-ambience-scenario.mjs'], 'Regional ambience bus and lifecycle');
 run(['scripts/audio-shore-profile-scenario.mjs'], 'Ordinary Shore Fishing regional audio selection and lifecycle');
 run(['scripts/terrain-authoring-scenario.mjs'], 'Seeded terrain authoring and height surfaces');
-run(['--test', 'scripts/map-scale-audit.test.mjs', 'scripts/confluence-grounds.test.mjs', 'scripts/riven-escarpment.test.mjs', 'scripts/crownroads.test.mjs'], 'Source-bound scale audit, Confluence arena and Medium/Large layouts');
+run(['--test', 'scripts/map-scale-audit.test.mjs', 'scripts/confluence-grounds.test.mjs', 'scripts/confluence-opening-compat.test.mjs', 'scripts/confluence-opening-checkpoint.test.mjs', 'scripts/riven-escarpment.test.mjs', 'scripts/crownroads.test.mjs'], 'Source-bound scale audit, Confluence arena and Medium/Large layouts');
 run(['scripts/landscape-authoring-scenario.mjs'], 'Organic regional landscape shapes');
 run(['scripts/forest-habitat-scenario.mjs'], 'Graduated woodland habitat margins');
 run(['scripts/forest-composition-scenario.mjs'], 'Regional dominant species groves');

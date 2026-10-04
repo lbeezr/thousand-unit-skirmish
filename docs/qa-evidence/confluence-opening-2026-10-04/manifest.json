@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "canonicalMapId": "siltmouths-confluence-grounds",
+  "previousNormalizedMapHash": "3uGjdX_oWE2AtGuLaem-L7BWf1Or-KMiZtY6sVZLMTI",
+  "correctedNormalizedMapHash": "aaJfD4u2B3Bga0xkgDjc7J98Y149wZl1Wc-hpzk6HNI",
+  "correctedCanonicalFileSha256": "02582970bdaac4caaf2d6ad5c8261b824b32462d08ba9155c2815b12cf0ec9ec",
+  "acceptedCrossRevisionSource": {
+    "revision": "be94025984753e4ed608f9bc5a9bfae43ebd9a84",
+    "dirty": false
+  },
+  "legacySource": {
+    "revision": "b7db83641be61c480a7b41dc6478feeed57ed690",
+    "dirty": false
+  },
+  "acceptedPaidAndNavalSource": "77bb0c1b2d8379b24c18518bea9318047f6be430",
+  "auditSource": "766761eb9dd6ba33f82aaea4297ce6e2e64ab004",
+  "crossRevisionStages": 13,
+  "positiveCheckpointEdits": false,
+  "privateSessionsPublished": false,
+  "qualification": [
+    "Immediate recovery equality uses unchanged authority functions with I/O timers replaced by the existing fixed-tick adapter.",
+    "Native no-peer continuation is compared over exact <=60 elapsed ticks with no pending or new asynchronous move planning.",
+    "Running worlds continue without peers; no pause behavior was added.",
+    "Four earlier collector attempts remain failed or incomplete; no accepted receipt is relabeled to another source.",
+    "No rendered/deployed/balance/traffic-capacity acceptance."
+  ],
+  "artifacts": [
+    {
+      "file": "audit-summary.jsonl.gz",
+      "bytes": 13167,
+      "sha256": "6b72a4f7590b69fdee23a06ad03bf0eff24d6c02d1c6ded6d8accbccd34755bf",
+      "decodedBytes": 119789,
+      "decodedSha256": "e98222c7bf72110cf6f776fa6f9c47912dbaf998ff7877f35193402e5ee35a7d"
+    },
+    {
+      "file": "collector-health-timeout.json.gz",
+      "bytes": 2867,
+      "sha256": "2017d7c219a3ebe5df28ddf26d5aa53d74f7b3d8031c1916d1b43993b9f78b20",
+      "decodedBytes": 24361,
+      "decodedSha256": "e6db3d8f9f19f893536e311a8545461b71f65f9b88de977d76d4705feddc0f29"
+    },
+    {
+      "file": "collector-lobby-revision.json.gz",
+      "bytes": 5154,
+      "sha256": "ab5d756f0a004b532da35f274a84507a050efb829e34f82b605bf01c3541e8ca",
+      "decodedBytes": 93983,
+      "decodedSha256": "f00cd00ddc2e70647dc7b5b99583f576a956a6c1519ce4719a63ccf3908864e3"
+    },
+    {
+      "file": "collector-running-world.json.gz",
+      "bytes": 3350,
+      "sha256": "9f3e08289c06283917d2ecca314167e48521e577fd06e5fcbe3c36ecc59b179e",
+      "decodedBytes": 26333,
+      "decodedSha256": "c46319ef17ece937f905a8c21c3b631754a10d695ebec2687808648d8d9305dc"
+    },
+    {
+      "file": "collector-session-field.json.gz",
+      "bytes": 2887,
+      "sha256": "12593a32404a280cf6ef0cd89a8552e9da2d6d4935b0b54d440fd5af3375ef4a",
+      "decodedBytes": 24572,
+      "decodedSha256": "adaf369a21c35b92da82fc690be0a2ad4d1f2c73eb2bf510794b1152d61a35bb"
+    },
+    {
+      "file": "cross-revision.json.gz",
+      "bytes": 6768,
+      "sha256": "0eb9162119a4644196322f480f0fe3aaad2b21435a5285ee0584d4b40d2a622c",
+      "decodedBytes": 139583,
+      "decodedSha256": "68b86509b50c0c1387523d0998a956ee824d11ed4dc1f24bf427b3dfd9fc9165"
+    },
+    {
+      "file": "naval-counterflow.json",
+      "bytes": 7085,
+      "sha256": "fd12edc2acb5bccc53129e9e19efb2ec0d0141d490f888759a3597a7d574e05d",
+      "decodedBytes": 7085,
+      "decodedSha256": "fd12edc2acb5bccc53129e9e19efb2ec0d0141d490f888759a3597a7d574e05d"
+    },
+    {
+      "file": "paid-arena-retained-economy.json.gz",
+      "bytes": 4231,
+      "sha256": "117bf67f552d9bba0401abdd6774667584ea21efb0cfdddb22a6f22f81d7678a",
+      "decodedBytes": 51591,
+      "decodedSha256": "dd9680c80b0ab544013b6cc848f45811098319d4bdb3d6953f73bd8d7fb4207a"
+    },
+    {
+      "file": "paid-arena-source-inputs.json.gz",
+      "bytes": 38111,
+      "sha256": "6fe2f2ca139163b29a7f9ad98fd131de6c857ef8f2e1aa6bc685b3302831095e",
+      "decodedBytes": 113513,
+      "decodedSha256": "e1ff883949c22e6471d3211747374f6fac169ae026a8d8b48d4b93afe1f20511"
+    },
+    {
+      "file": "paid-arena.json.gz",
+      "bytes": 3271,
+      "sha256": "c8ae528ae74ceff259da0a586652059eb7e700377f8e1656e88490129994d08a",
+      "decodedBytes": 84394,
+      "decodedSha256": "eb80763d956457eb22805033586d40b56d970ba17dd9c98bbff0541a72ad8234"
+    }
+  ]
+}

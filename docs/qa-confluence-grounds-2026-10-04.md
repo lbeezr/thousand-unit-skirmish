@@ -10,9 +10,11 @@ Vale's resources; the wildlife owner retains the ordinary Tiny Sheep change.
 
 ## Authored layout and measured geometry
 
-[Layout schematic](confluence-grounds-layout.svg) shows the actual authored cells,
-home/expansion campuses, Dock pads and finite resources. This is a source layout,
-not a rendered in-game screenshot.
+[Original layout schematic](confluence-grounds-layout.svg) retains the authored
+cells, campuses, Dock pads and resources of this dated source record. The
+[four-node opening follow-up](qa-confluence-opening-2026-10-04.md) records the
+corrected canonical home positions and preserved saved-world contract, with new
+native receipts. This schematic is a source layout, not a rendered screenshot.
 
 The map has connected southern fishing bays, legal Dock banks, two broad fords
 and high northern/southern land alternatives. Flat 41 × 41 home campuses and

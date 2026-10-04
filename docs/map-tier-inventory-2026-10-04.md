@@ -128,6 +128,13 @@ owned massive territorial/Risk world do not define economy-map scale.
 
 ## Confluence invariant and compatibility
 
+This section and its native opening projection retain the inventory's original
+baseline. The [subsequent correction and source-qualified proof](qa-confluence-opening-2026-10-04.md)
+implements the minimal four-node proposal and exact legacy-definition contract
+below. The literal nine-unit check now passes; both food and wood are visible in
+fresh games. Old saves keep their geometry/depletion/cargo/paid work until an
+explicit reset. This dated inventory and its machine snapshot are not relabeled.
+
 The unchanged layout scenario requires each seat's food and wood node within
 nine Euclidean world units of spawn. It **already counts Sheep**. Nearest food
 is 9.486833 units away; timber 12.806248. The [native opening projection](qa-evidence/map-tier-inventory-2026-10-04/confluence-opening-before.json)
