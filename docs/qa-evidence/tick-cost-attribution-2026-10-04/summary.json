@@ -1,0 +1,3236 @@
+{
+  "schemaVersion": 1,
+  "reports": [
+    {
+      "filename": "tick-attribution-observed-0.json.gz",
+      "sha256": "7197e83ca3947fe1a5fd2853b5294080dc6ddf7d1f6d75a6aa29e9a73de99155",
+      "storedSha256": "6b89a4d48eb981e34623f3265480995c16280712299a51acc5b4ae34c7a651b0",
+      "head": "2aba1ccfe3bfa075dd3000301a47b8e2d4b4d29f",
+      "serverSha256": "bba377a6af627f30cc2acd88fb52e2cbec3c7491add5ebb56394975c39e0bdc0",
+      "policy": 0,
+      "size": 2000,
+      "instrumented": true,
+      "startTick": 1770,
+      "endTick": 2700,
+      "casualties": 566,
+      "wholeTickMs": {
+        "count": 930,
+        "min": 1.308,
+        "p50": 5.567,
+        "p95": 16.299,
+        "p99": 22.043,
+        "max": 139.277
+      },
+      "components": {
+        "simulationMs": {
+          "count": 930,
+          "min": 1.308,
+          "p50": 3.203,
+          "p95": 8.077,
+          "p99": 13.772,
+          "max": 139.275
+        },
+        "visionMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 2.64,
+          "p99": 4.494,
+          "max": 9.498
+        },
+        "scenarioMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.025,
+          "p99": 0.108,
+          "max": 2.862
+        },
+        "broadcastMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0.001,
+          "p95": 7.407,
+          "p99": 10.46,
+          "max": 23.432
+        },
+        "checkpointMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.001,
+          "p99": 2.273,
+          "max": 7.401
+        }
+      },
+      "overBudgetTicks": 2,
+      "zeroTickPlanningOverruns": 2,
+      "overrunDominantComponents": {
+        "simulationMs": 2
+      },
+      "overruns": [
+        {
+          "tickNumber": 2510,
+          "durationMs": 139.277,
+          "cpuMs": 139.594,
+          "simulationMs": 139.275,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.002,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2511,
+          "durationMs": 34.512,
+          "cpuMs": 36.959,
+          "simulationMs": 19.145,
+          "visionMs": 3.554,
+          "scenarioMs": 0.025,
+          "scenarioEvaluated": true,
+          "broadcastMs": 11.787,
+          "checkpointMs": 0.001
+        }
+      ],
+      "activeTickPlanningMs": {
+        "count": 0,
+        "min": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "max": null
+      },
+      "transport": {
+        "beforeTick": 1773,
+        "afterTick": 2703,
+        "compressionPeers": [
+          2,
+          2
+        ],
+        "counterDeltas": {
+          "jsonFramesSent": 1794,
+          "jsonPayloadBytesSent": 77925032,
+          "jsonWireBytesSent": 10237068,
+          "compressedFramesSent": 638,
+          "compressedPayloadBytesSent": 77868002,
+          "compressedWireBytesSent": 10177726,
+          "coalescedStateSnapshots": 0,
+          "outboundQueueLimitDisconnects": 0
+        },
+        "peakQueuedBytes": [
+          0,
+          0
+        ]
+      },
+      "functional": {
+        "spent": [
+          {
+            "food": 150,
+            "wood": 325
+          },
+          {
+            "food": 150,
+            "wood": 325
+          }
+        ],
+        "economyProgress": [
+          {
+            "team": 0,
+            "resource": "food",
+            "nodeId": "food-17-39",
+            "harvested": 18.833333333316205,
+            "deposited": 20
+          },
+          {
+            "team": 0,
+            "resource": "wood",
+            "nodeId": "wood-17-25",
+            "harvested": 20.266666666648234,
+            "deposited": 20
+          },
+          {
+            "team": 1,
+            "resource": "food",
+            "nodeId": "food-62-39",
+            "harvested": 20.399999999981446,
+            "deposited": 20
+          },
+          {
+            "team": 1,
+            "resource": "wood",
+            "nodeId": "wood-62-25",
+            "harvested": 21.899999999980082,
+            "deposited": 20
+          }
+        ],
+        "paidLedger": true,
+        "checkpointRecovery": true
+      },
+      "attribution": {
+        "adapterSha256": "f9731f6eacd6d02a4dd03ed852a33437d8ab29026db696ded826e15a05235177",
+        "rowWindow": {
+          "start": {
+            "tickNumber": 1772,
+            "monotonicMs": 59527.45372
+          },
+          "end": {
+            "tickNumber": 2703,
+            "monotonicMs": 90953.11361
+          }
+        },
+        "profileWindows": {
+          "cpu": {
+            "startRequest": {
+              "tickNumber": 1772,
+              "monotonicMs": 59487.987015
+            },
+            "startCompletion": {
+              "tickNumber": 1772,
+              "monotonicMs": 59527.287981
+            },
+            "stopRequest": {
+              "tickNumber": 2703,
+              "monotonicMs": 90953.119451
+            },
+            "stopCompletion": {
+              "tickNumber": 2703,
+              "monotonicMs": 90963.439115
+            }
+          },
+          "allocation": {
+            "startRequest": {
+              "tickNumber": 1772,
+              "monotonicMs": 59527.345833
+            },
+            "startCompletion": {
+              "tickNumber": 1772,
+              "monotonicMs": 59527.447046
+            },
+            "stopRequest": {
+              "tickNumber": 2703,
+              "monotonicMs": 90963.443603
+            },
+            "stopCompletion": {
+              "tickNumber": 2703,
+              "monotonicMs": 91008.569079
+            }
+          }
+        },
+        "capturedRows": 931,
+        "witnessRows": 928,
+        "firstWitnessRow": 1773,
+        "lastWitnessRow": 2700,
+        "counters": {
+          "jsonPayloadBytes": 77834891,
+          "jsonWireBytes": 10211519,
+          "stateFrames": 638,
+          "statePayloadBytes": 77779423,
+          "stateWireBytes": 10153787,
+          "stateUnitRows": 854299,
+          "ensureVisionCalls": 669,
+          "ensureVisionHits": 669,
+          "ensureVisionMisses": 0,
+          "coverageInvalidationMisses": 0,
+          "tickInvalidationMisses": 0,
+          "visionSourceCalls": 642044,
+          "visionDuplicateSources": 195880,
+          "visionApplications": 446164,
+          "visionCoverageHits": 443251,
+          "visionCoverageMisses": 2913
+        },
+        "timings": {
+          "roomPayload": {
+            "calls": 638,
+            "totalInclusiveMs": 621.087132000117,
+            "activeTickMs": {
+              "count": 319,
+              "min": 1.08849100000225,
+              "p50": 1.7213409999967553,
+              "p95": 3.5000529999961145,
+              "p99": 5.1589010000025155,
+              "max": 7.5908480000070995
+            }
+          },
+          "prepareJsonFrame": {
+            "calls": 1770,
+            "totalInclusiveMs": 1227.019626000052,
+            "activeTickMs": {
+              "count": 492,
+              "min": 0.026940999989164993,
+              "p50": 2.6565540000010515,
+              "p95": 5.493462999991607,
+              "p99": 8.636665999991237,
+              "max": 16.742227000009734
+            }
+          },
+          "frameStringify": {
+            "calls": 1770,
+            "totalInclusiveMs": 620.5345559997295,
+            "activeTickMs": {
+              "count": 492,
+              "min": 0.007255000018631108,
+              "p50": 1.2891790000139736,
+              "p95": 2.9464920000027632,
+              "p99": 4.619265000001178,
+              "max": 12.081272999988869
+            }
+          },
+          "deflateRawSync": {
+            "calls": 638,
+            "totalInclusiveMs": 525.9589739998482,
+            "activeTickMs": {
+              "count": 319,
+              "min": 0.8694950000062818,
+              "p50": 1.5259560000122292,
+              "p95": 2.6788610000076005,
+              "p99": 3.955152000009548,
+              "max": 5.120416000005207
+            }
+          },
+          "encodeWebSocketFrame": {
+            "calls": 1770,
+            "totalInclusiveMs": 11.916670999904454,
+            "activeTickMs": {
+              "count": 492,
+              "min": 0.005931000006967224,
+              "p50": 0.018241999991005287,
+              "p95": 0.05542499999864958,
+              "p99": 0.2371830000047339,
+              "max": 0.47080800001276657
+            }
+          },
+          "updateVisionMasks": {
+            "calls": 319,
+            "totalInclusiveMs": 657.2233069999565,
+            "activeTickMs": {
+              "count": 319,
+              "min": 0.8755620000010822,
+              "p50": 1.9233920000115177,
+              "p95": 3.425714999990305,
+              "p99": 5.830455000002985,
+              "max": 9.493883000002825
+            }
+          },
+          "captureMatchCheckpoint": {
+            "calls": 31,
+            "totalInclusiveMs": 68.46455400002014,
+            "activeTickMs": {
+              "count": 31,
+              "min": 1.1199559999949997,
+              "p50": 1.6509680000017397,
+              "p95": 5.997191999995266,
+              "p99": 7.361817000011797,
+              "max": 7.361817000011797
+            }
+          }
+        },
+        "netHeapDeltaBytes": {
+          "count": 928,
+          "min": 656640,
+          "p50": 2322560,
+          "p95": 5609448,
+          "p99": 6906912,
+          "max": 8871712
+        },
+        "externalOccupancyBytes": {
+          "count": 928,
+          "min": 8897178,
+          "p50": 16754480,
+          "p95": 38540395,
+          "p99": 42586739,
+          "max": 46342575
+        },
+        "arrayBufferOccupancyBytes": {
+          "count": 928,
+          "min": 4957257,
+          "p50": 12828320,
+          "p95": 34713626,
+          "p99": 38759970,
+          "max": 42515806
+        },
+        "gc": {
+          "overlapScope": "observer tick span (setup and post-duration memory sampling included), not native duration alone",
+          "entries": 57,
+          "totalObservedDurationMs": 172.45909297466278,
+          "ticksOverlapping": 0,
+          "overBudgetOverlapping": 0,
+          "largest": []
+        },
+        "allocation": {
+          "sampledEntries": 34931,
+          "estimatedBytes": 2421895632,
+          "sampleSizeSum": 2417375424,
+          "categories": {
+            "other/observer/runtime": 137538752,
+            "planner": 15421888,
+            "checkpoint capture": 70168296,
+            "private payload": 511100088,
+            "JSON/compression/framing": 78019344,
+            "simulation": 1565159536,
+            "vision": 44487728
+          },
+          "top": [
+            {
+              "name": "getMoveVector",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 7299,
+              "estimatedBytes": 407110720,
+              "stack": [
+                {
+                  "name": "listOnTimeout",
+                  "url": "node:internal/timers",
+                  "line": 576
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "getMoveVector",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7299
+                }
+              ]
+            },
+            {
+              "name": "snapshotUnits",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 1904,
+              "estimatedBytes": 399695776,
+              "stack": [
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "broadcastState",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 3837
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 22
+                },
+                {
+                  "name": "roomPayload",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 2611
+                },
+                {
+                  "name": "snapshotUnits",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 1904
+                }
+              ]
+            },
+            {
+              "name": "findAttackMoveTarget",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 7133,
+              "estimatedBytes": 220113728,
+              "stack": [
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "prepareAttackMovePaths",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7263
+                },
+                {
+                  "name": "findAttackMoveTarget",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7133
+                }
+              ]
+            },
+            {
+              "name": "simulateTick",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 7675,
+              "estimatedBytes": 142244112,
+              "stack": [
+                {
+                  "name": "processTimers",
+                  "url": "node:internal/timers",
+                  "line": 556
+                },
+                {
+                  "name": "listOnTimeout",
+                  "url": "node:internal/timers",
+                  "line": 576
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7675
+                }
+              ]
+            },
+            {
+              "name": "(anonymous)",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 7270,
+              "estimatedBytes": 121846304,
+              "stack": [
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "prepareAttackMovePaths",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7263
+                },
+                {
+                  "name": "sort",
+                  "url": "",
+                  "line": 0
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7270
+                }
+              ]
+            },
+            {
+              "name": "spreadInteractingUnits",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 7411,
+              "estimatedBytes": 115488528,
+              "stack": [
+                {
+                  "name": "listOnTimeout",
+                  "url": "node:internal/timers",
+                  "line": 576
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "spreadInteractingUnits",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7411
+                }
+              ]
+            },
+            {
+              "name": "wrapped.stringify",
+              "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+              "line": 32,
+              "estimatedBytes": 77870840,
+              "stack": [
+                {
+                  "name": "(root)",
+                  "url": "",
+                  "line": 0
+                },
+                {
+                  "name": "processImmediate",
+                  "url": "node:internal/timers",
+                  "line": 486
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 3706
+                },
+                {
+                  "name": "wrapped.stringify",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 32
+                }
+              ]
+            },
+            {
+              "name": "wrapped.stringify",
+              "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+              "line": 32,
+              "estimatedBytes": 72704472,
+              "stack": [
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "broadcastState",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 3837
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 22
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 38
+                },
+                {
+                  "name": "prepareJsonFrame",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8009
+                },
+                {
+                  "name": "wrapped.stringify",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 32
+                }
+              ]
+            },
+            {
+              "name": "prepareAttackMovePaths",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 7263,
+              "estimatedBytes": 70140368,
+              "stack": [
+                {
+                  "name": "listOnTimeout",
+                  "url": "node:internal/timers",
+                  "line": 576
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "prepareAttackMovePaths",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7263
+                }
+              ]
+            },
+            {
+              "name": "roomPayload",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 2611,
+              "estimatedBytes": 68915952,
+              "stack": [
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "broadcastState",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 3837
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 22
+                },
+                {
+                  "name": "roomPayload",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 2611
+                }
+              ]
+            },
+            {
+              "name": "technologyCombatEffects",
+              "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/src/combat-rules.mjs",
+              "line": 13,
+              "estimatedBytes": 66699816,
+              "stack": [
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "damageForEntities",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 597
+                },
+                {
+                  "name": "combatDamage",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/src/combat-rules.mjs",
+                  "line": 32
+                },
+                {
+                  "name": "technologyCombatEffects",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/src/combat-rules.mjs",
+                  "line": 13
+                }
+              ]
+            },
+            {
+              "name": "hypot",
+              "url": "",
+              "line": 0,
+              "estimatedBytes": 62397888,
+              "stack": [
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "spreadInteractingUnits",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7411
+                },
+                {
+                  "name": "hypot",
+                  "url": "",
+                  "line": 0
+                }
+              ]
+            },
+            {
+              "name": "(anonymous)",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 2785,
+              "estimatedBytes": 61989016,
+              "stack": [
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "queueMatchCheckpoint",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 3745
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 22
+                },
+                {
+                  "name": "captureMatchCheckpoint",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 2755
+                },
+                {
+                  "name": "map",
+                  "url": "",
+                  "line": 0
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 2785
+                }
+              ]
+            },
+            {
+              "name": "filter",
+              "url": "",
+              "line": 0,
+              "estimatedBytes": 46160576,
+              "stack": [
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "updateWildlifeMotion",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7620
+                },
+                {
+                  "name": "filter",
+                  "url": "",
+                  "line": 0
+                }
+              ]
+            },
+            {
+              "name": "next",
+              "url": "",
+              "line": 0,
+              "estimatedBytes": 39923600,
+              "stack": [
+                {
+                  "name": "listOnTimeout",
+                  "url": "node:internal/timers",
+                  "line": 576
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "next",
+                  "url": "",
+                  "line": 0
+                }
+              ]
+            }
+          ]
+        },
+        "cpu": {
+          "samples": 27385,
+          "durationMs": 31465.48,
+          "sampleIntervalWeightMs": 31464.309999999554,
+          "categories": {
+            "other/observer/runtime/idle": 25412.71599999966,
+            "simulation": 3475.523999999993,
+            "vision": 671.0070000000006,
+            "private payload": 547.8810000000003,
+            "JSON/compression/framing": 1239.7089999999998,
+            "planner": 45.23600000000001,
+            "checkpoint capture": 72.23700000000001
+          },
+          "top": [
+            {
+              "name": "(idle)",
+              "url": "",
+              "line": 0,
+              "sampledIntervalMs": 23706.897999999583
+            },
+            {
+              "name": "getMoveVector",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 7299,
+              "sampledIntervalMs": 827.1539999999998
+            },
+            {
+              "name": "wrapped.stringify",
+              "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+              "line": 32,
+              "sampledIntervalMs": 622.4250000000001
+            },
+            {
+              "name": "writeSync",
+              "url": "",
+              "line": 0,
+              "sampledIntervalMs": 488.56999999999977
+            },
+            {
+              "name": "markVisionFrom",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 2016,
+              "sampledIntervalMs": 417.5780000000004
+            },
+            {
+              "name": "wrapped.stringify",
+              "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+              "line": 32,
+              "sampledIntervalMs": 342.1080000000001
+            },
+            {
+              "name": "simulateTick",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 7675,
+              "sampledIntervalMs": 337.5490000000001
+            },
+            {
+              "name": "(garbage collector)",
+              "url": "",
+              "line": 0,
+              "sampledIntervalMs": 323.00500000000017
+            },
+            {
+              "name": "findAttackMoveTarget",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 7133,
+              "sampledIntervalMs": 294.384
+            },
+            {
+              "name": "buildAttackFlowNextCells",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 1544,
+              "sampledIntervalMs": 291.48499999999996
+            },
+            {
+              "name": "spreadInteractingUnits",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 7411,
+              "sampledIntervalMs": 267.07399999999996
+            },
+            {
+              "name": "technologyCombatEffects",
+              "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/src/combat-rules.mjs",
+              "line": 13,
+              "sampledIntervalMs": 232.25600000000014
+            },
+            {
+              "name": "prepareAttackMovePaths",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 7263,
+              "sampledIntervalMs": 205.58900000000008
+            },
+            {
+              "name": "(anonymous)",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 7270,
+              "sampledIntervalMs": 195.35600000000005
+            },
+            {
+              "name": "updateVisionMasks",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 2059,
+              "sampledIntervalMs": 185.8359999999999
+            },
+            {
+              "name": "snapshotUnits",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 1904,
+              "sampledIntervalMs": 174.634
+            },
+            {
+              "name": "tickTimingPayload",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 1085,
+              "sampledIntervalMs": 172.94799999999998
+            },
+            {
+              "name": "roomPayload",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 2611,
+              "sampledIntervalMs": 148.505
+            },
+            {
+              "name": "canCombatTarget",
+              "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/src/combat-rules.mjs",
+              "line": 10,
+              "sampledIntervalMs": 123.69999999999993
+            },
+            {
+              "name": "updateWildlifeMotion",
+              "url": "file:///tmp/rts-tick-attribution-cXoDyS/server-attribution.mjs",
+              "line": 7620,
+              "sampledIntervalMs": 85.09099999999998
+            }
+          ]
+        },
+        "limits": [
+          "inclusive function timings overlap; do not add nested timings",
+          "heap deltas are net live-heap change, not allocated bytes; sampled allocation estimates include collected objects",
+          "payload/frame lengths count constructed bytes, not native allocation or peer traffic; external/arrayBuffer snapshots are retained occupancy",
+          "V8 heap sampling does not measure all external allocations; use health.transport for peer traffic",
+          "row/GC capture and CPU/allocation profiles have separately recorded endpoints; GC durations may extend beyond the row window",
+          "wrappers, heap/CPU sampling and GC observation add overhead; use uninstrumented runs for whole-tick comparison"
+        ]
+      }
+    },
+    {
+      "filename": "tick-attribution-observed-4.json.gz",
+      "sha256": "c1e7c8432af614054dfecd5939b3e162a48d52cb871f000ce55a334c9b3c26f7",
+      "storedSha256": "e0e92bcae91656541cf562b762daec6ba604ee5a28f42b65f025c85bb02517da",
+      "head": "2aba1ccfe3bfa075dd3000301a47b8e2d4b4d29f",
+      "serverSha256": "bba377a6af627f30cc2acd88fb52e2cbec3c7491add5ebb56394975c39e0bdc0",
+      "policy": 4,
+      "size": 2000,
+      "instrumented": true,
+      "startTick": 1830,
+      "endTick": 2760,
+      "casualties": 384,
+      "wholeTickMs": {
+        "count": 930,
+        "min": 0.769,
+        "p50": 5.252,
+        "p95": 16.515,
+        "p99": 23.058,
+        "max": 52.408
+      },
+      "components": {
+        "simulationMs": {
+          "count": 930,
+          "min": 0.769,
+          "p50": 2.922,
+          "p95": 8.444,
+          "p99": 14.054,
+          "max": 41.453
+        },
+        "visionMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 2.52,
+          "p99": 3.845,
+          "max": 6.523
+        },
+        "scenarioMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.034,
+          "p99": 0.081,
+          "max": 0.28
+        },
+        "broadcastMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0.001,
+          "p95": 7.656,
+          "p99": 10.907,
+          "max": 34.71
+        },
+        "checkpointMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.001,
+          "p99": 2.669,
+          "max": 12.485
+        }
+      },
+      "overBudgetTicks": 5,
+      "zeroTickPlanningOverruns": 5,
+      "overrunDominantComponents": {
+        "simulationMs": 2,
+        "broadcastMs": 3
+      },
+      "overruns": [
+        {
+          "tickNumber": 1968,
+          "durationMs": 37.642,
+          "cpuMs": 45.415,
+          "simulationMs": 24.578,
+          "visionMs": 5.298,
+          "scenarioMs": 0.034,
+          "scenarioEvaluated": true,
+          "broadcastMs": 7.733,
+          "checkpointMs": 0,
+          "planningMs": 0.001,
+          "planningTurns": 0,
+          "planningWorkItems": 0,
+          "planningExpandedCells": 0
+        },
+        {
+          "tickNumber": 2025,
+          "durationMs": 41.454,
+          "cpuMs": 13.286,
+          "simulationMs": 7.004,
+          "visionMs": 6.523,
+          "scenarioMs": 0.034,
+          "scenarioEvaluated": true,
+          "broadcastMs": 27.891,
+          "checkpointMs": 0.001,
+          "planningMs": 0.001,
+          "planningTurns": 0,
+          "planningWorkItems": 0,
+          "planningExpandedCells": 0
+        },
+        {
+          "tickNumber": 2052,
+          "durationMs": 51.254,
+          "cpuMs": 53.07,
+          "simulationMs": 41.453,
+          "visionMs": 2.288,
+          "scenarioMs": 0.025,
+          "scenarioEvaluated": true,
+          "broadcastMs": 7.488,
+          "checkpointMs": 0,
+          "planningMs": 0.001,
+          "planningTurns": 0,
+          "planningWorkItems": 0,
+          "planningExpandedCells": 0
+        },
+        {
+          "tickNumber": 2583,
+          "durationMs": 35.605,
+          "cpuMs": 20.218,
+          "simulationMs": 15.363,
+          "visionMs": 2.204,
+          "scenarioMs": 0.026,
+          "scenarioEvaluated": true,
+          "broadcastMs": 18.012,
+          "checkpointMs": 0,
+          "planningMs": 0.001,
+          "planningTurns": 0,
+          "planningWorkItems": 0,
+          "planningExpandedCells": 0
+        },
+        {
+          "tickNumber": 2586,
+          "durationMs": 52.408,
+          "cpuMs": 18.948,
+          "simulationMs": 15.891,
+          "visionMs": 1.78,
+          "scenarioMs": 0.027,
+          "scenarioEvaluated": true,
+          "broadcastMs": 34.71,
+          "checkpointMs": 0.001,
+          "planningMs": 0.002,
+          "planningTurns": 0,
+          "planningWorkItems": 0,
+          "planningExpandedCells": 0
+        }
+      ],
+      "activeTickPlanningMs": {
+        "count": 198,
+        "min": 0.063,
+        "p50": 0.148,
+        "p95": 0.844,
+        "p99": 5.221,
+        "max": 6.982
+      },
+      "transport": {
+        "beforeTick": 1833,
+        "afterTick": 2763,
+        "compressionPeers": [
+          2,
+          2
+        ],
+        "counterDeltas": {
+          "jsonFramesSent": 1426,
+          "jsonPayloadBytesSent": 75717527,
+          "jsonWireBytesSent": 9732142,
+          "compressedFramesSent": 638,
+          "compressedPayloadBytesSent": 75678529,
+          "compressedWireBytesSent": 9691568,
+          "coalescedStateSnapshots": 0,
+          "outboundQueueLimitDisconnects": 0
+        },
+        "peakQueuedBytes": [
+          0,
+          0
+        ]
+      },
+      "functional": {
+        "spent": [
+          {
+            "food": 150,
+            "wood": 325
+          },
+          {
+            "food": 150,
+            "wood": 325
+          }
+        ],
+        "economyProgress": [
+          {
+            "team": 0,
+            "resource": "food",
+            "nodeId": "food-17-39",
+            "harvested": 18.89999999998281,
+            "deposited": 20
+          },
+          {
+            "team": 0,
+            "resource": "wood",
+            "nodeId": "wood-17-25",
+            "harvested": 20.23333333331493,
+            "deposited": 20
+          },
+          {
+            "team": 1,
+            "resource": "food",
+            "nodeId": "food-62-39",
+            "harvested": 20.366666666648143,
+            "deposited": 20
+          },
+          {
+            "team": 1,
+            "resource": "wood",
+            "nodeId": "wood-62-25",
+            "harvested": 21.933333333313385,
+            "deposited": 20
+          }
+        ],
+        "paidLedger": true,
+        "checkpointRecovery": true
+      },
+      "attribution": {
+        "adapterSha256": "f9731f6eacd6d02a4dd03ed852a33437d8ab29026db696ded826e15a05235177",
+        "rowWindow": {
+          "start": {
+            "tickNumber": 1832,
+            "monotonicMs": 61665.624005
+          },
+          "end": {
+            "tickNumber": 2763,
+            "monotonicMs": 92871.707656
+          }
+        },
+        "profileWindows": {
+          "cpu": {
+            "startRequest": {
+              "tickNumber": 1832,
+              "monotonicMs": 61616.383004
+            },
+            "startCompletion": {
+              "tickNumber": 1832,
+              "monotonicMs": 61665.384849
+            },
+            "stopRequest": {
+              "tickNumber": 2763,
+              "monotonicMs": 92871.716459
+            },
+            "stopCompletion": {
+              "tickNumber": 2763,
+              "monotonicMs": 92889.041709
+            }
+          },
+          "allocation": {
+            "startRequest": {
+              "tickNumber": 1832,
+              "monotonicMs": 61665.447983
+            },
+            "startCompletion": {
+              "tickNumber": 1832,
+              "monotonicMs": 61665.616184
+            },
+            "stopRequest": {
+              "tickNumber": 2763,
+              "monotonicMs": 92889.047523
+            },
+            "stopCompletion": {
+              "tickNumber": 2763,
+              "monotonicMs": 92930.396388
+            }
+          }
+        },
+        "capturedRows": 931,
+        "witnessRows": 928,
+        "firstWitnessRow": 1833,
+        "lastWitnessRow": 2760,
+        "counters": {
+          "jsonPayloadBytes": 75626267,
+          "jsonWireBytes": 9707988,
+          "stateFrames": 638,
+          "statePayloadBytes": 75588157,
+          "stateWireBytes": 9668330,
+          "stateUnitRows": 812088,
+          "ensureVisionCalls": 669,
+          "ensureVisionHits": 669,
+          "ensureVisionMisses": 0,
+          "coverageInvalidationMisses": 0,
+          "tickInvalidationMisses": 0,
+          "visionSourceCalls": 654791,
+          "visionDuplicateSources": 187296,
+          "visionApplications": 467495,
+          "visionCoverageHits": 464577,
+          "visionCoverageMisses": 2918
+        },
+        "timings": {
+          "roomPayload": {
+            "calls": 638,
+            "totalInclusiveMs": 646.5128809999733,
+            "activeTickMs": {
+              "count": 319,
+              "min": 1.187804999994114,
+              "p50": 1.8859669999947073,
+              "p95": 3.3438739999983227,
+              "p99": 4.814513000004808,
+              "max": 7.908058000000892
+            }
+          },
+          "prepareJsonFrame": {
+            "calls": 1412,
+            "totalInclusiveMs": 1266.3256780000447,
+            "activeTickMs": {
+              "count": 451,
+              "min": 0.029680000006919727,
+              "p50": 2.6534470000187866,
+              "p95": 5.84622700001637,
+              "p99": 10.277291000005789,
+              "max": 32.437647999991896
+            }
+          },
+          "frameStringify": {
+            "calls": 1412,
+            "totalInclusiveMs": 650.6854139997158,
+            "activeTickMs": {
+              "count": 451,
+              "min": 0.007595999995828606,
+              "p50": 1.3079049999942072,
+              "p95": 3.1133650000119815,
+              "p99": 4.829606999992393,
+              "max": 30.09326300000248
+            }
+          },
+          "deflateRawSync": {
+            "calls": 638,
+            "totalInclusiveMs": 545.4523079999126,
+            "activeTickMs": {
+              "count": 319,
+              "min": 0.8131570000041393,
+              "p50": 1.4175640000030398,
+              "p95": 2.7163020000007236,
+              "p99": 5.785115000006044,
+              "max": 19.483431000000564
+            }
+          },
+          "encodeWebSocketFrame": {
+            "calls": 1412,
+            "totalInclusiveMs": 11.114742999903683,
+            "activeTickMs": {
+              "count": 451,
+              "min": 0.006239999987883493,
+              "p50": 0.021000000000640284,
+              "p95": 0.05841399998462293,
+              "p99": 0.12020000000484288,
+              "max": 0.2543839999998454
+            }
+          },
+          "updateVisionMasks": {
+            "calls": 319,
+            "totalInclusiveMs": 663.830944000103,
+            "activeTickMs": {
+              "count": 319,
+              "min": 1.0075599999981932,
+              "p50": 2.0031350000062957,
+              "p95": 3.286263999994844,
+              "p99": 5.762367999996059,
+              "max": 6.518404999995255
+            }
+          },
+          "captureMatchCheckpoint": {
+            "calls": 31,
+            "totalInclusiveMs": 83.30948799999169,
+            "activeTickMs": {
+              "count": 31,
+              "min": 1.239592999991146,
+              "p50": 2.0086950000113575,
+              "p95": 10.419727000000421,
+              "p99": 12.376604999997653,
+              "max": 12.376604999997653
+            }
+          }
+        },
+        "netHeapDeltaBytes": {
+          "count": 928,
+          "min": 172064,
+          "p50": 1983848,
+          "p95": 5376720,
+          "p99": 6678480,
+          "max": 7996392
+        },
+        "externalOccupancyBytes": {
+          "count": 928,
+          "min": 9094669,
+          "p50": 13326755,
+          "p95": 19785721,
+          "p99": 23051053,
+          "max": 24142289
+        },
+        "arrayBufferOccupancyBytes": {
+          "count": 928,
+          "min": 4972265,
+          "p50": 9329354,
+          "p95": 15610418,
+          "p99": 19198989,
+          "max": 20315520
+        },
+        "gc": {
+          "overlapScope": "observer tick span (setup and post-duration memory sampling included), not native duration alone",
+          "entries": 65,
+          "totalObservedDurationMs": 143.89828003942966,
+          "ticksOverlapping": 0,
+          "overBudgetOverlapping": 0,
+          "largest": []
+        },
+        "allocation": {
+          "sampledEntries": 31288,
+          "estimatedBytes": 2179293920,
+          "sampleSizeSum": 2172579800,
+          "categories": {
+            "other/observer/runtime": 130906048,
+            "checkpoint capture": 65945752,
+            "private payload": 487327296,
+            "JSON/compression/framing": 72896408,
+            "planner": 15879448,
+            "simulation": 1361509304,
+            "vision": 44829664
+          },
+          "top": [
+            {
+              "name": "getMoveVector",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 7299,
+              "estimatedBytes": 401207848,
+              "stack": [
+                {
+                  "name": "listOnTimeout",
+                  "url": "node:internal/timers",
+                  "line": 576
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "getMoveVector",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7299
+                }
+              ]
+            },
+            {
+              "name": "snapshotUnits",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 1904,
+              "estimatedBytes": 373057192,
+              "stack": [
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "broadcastState",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 3837
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 22
+                },
+                {
+                  "name": "roomPayload",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 2611
+                },
+                {
+                  "name": "snapshotUnits",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 1904
+                }
+              ]
+            },
+            {
+              "name": "(anonymous)",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 7270,
+              "estimatedBytes": 141575064,
+              "stack": [
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "prepareAttackMovePaths",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7263
+                },
+                {
+                  "name": "sort",
+                  "url": "",
+                  "line": 0
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7270
+                }
+              ]
+            },
+            {
+              "name": "simulateTick",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 7675,
+              "estimatedBytes": 129528960,
+              "stack": [
+                {
+                  "name": "processTimers",
+                  "url": "node:internal/timers",
+                  "line": 556
+                },
+                {
+                  "name": "listOnTimeout",
+                  "url": "node:internal/timers",
+                  "line": 576
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7675
+                }
+              ]
+            },
+            {
+              "name": "canCombatTarget",
+              "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/src/combat-rules.mjs",
+              "line": 10,
+              "estimatedBytes": 97064120,
+              "stack": [
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "prepareAttackMovePaths",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7263
+                },
+                {
+                  "name": "findAttackMoveTarget",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7133
+                },
+                {
+                  "name": "canCombatTarget",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/src/combat-rules.mjs",
+                  "line": 10
+                }
+              ]
+            },
+            {
+              "name": "wrapped.stringify",
+              "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+              "line": 32,
+              "estimatedBytes": 77259968,
+              "stack": [
+                {
+                  "name": "(root)",
+                  "url": "",
+                  "line": 0
+                },
+                {
+                  "name": "processImmediate",
+                  "url": "node:internal/timers",
+                  "line": 486
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 3706
+                },
+                {
+                  "name": "wrapped.stringify",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 32
+                }
+              ]
+            },
+            {
+              "name": "spreadInteractingUnits",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 7411,
+              "estimatedBytes": 76752032,
+              "stack": [
+                {
+                  "name": "listOnTimeout",
+                  "url": "node:internal/timers",
+                  "line": 576
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "spreadInteractingUnits",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7411
+                }
+              ]
+            },
+            {
+              "name": "wrapped.stringify",
+              "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+              "line": 32,
+              "estimatedBytes": 69223920,
+              "stack": [
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "broadcastState",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 3837
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 22
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 38
+                },
+                {
+                  "name": "prepareJsonFrame",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8009
+                },
+                {
+                  "name": "wrapped.stringify",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 32
+                }
+              ]
+            },
+            {
+              "name": "roomPayload",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 2611,
+              "estimatedBytes": 68378424,
+              "stack": [
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "broadcastState",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 3837
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 22
+                },
+                {
+                  "name": "roomPayload",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 2611
+                }
+              ]
+            },
+            {
+              "name": "findAttackMoveTarget",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 7133,
+              "estimatedBytes": 65019648,
+              "stack": [
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "prepareAttackMovePaths",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7263
+                },
+                {
+                  "name": "findAttackMoveTarget",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7133
+                }
+              ]
+            },
+            {
+              "name": "prepareAttackMovePaths",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 7263,
+              "estimatedBytes": 64136552,
+              "stack": [
+                {
+                  "name": "listOnTimeout",
+                  "url": "node:internal/timers",
+                  "line": 576
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "prepareAttackMovePaths",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7263
+                }
+              ]
+            },
+            {
+              "name": "(anonymous)",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 2785,
+              "estimatedBytes": 56798032,
+              "stack": [
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "queueMatchCheckpoint",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 3745
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 22
+                },
+                {
+                  "name": "captureMatchCheckpoint",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 2755
+                },
+                {
+                  "name": "map",
+                  "url": "",
+                  "line": 0
+                },
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 2785
+                }
+              ]
+            },
+            {
+              "name": "technologyCombatEffects",
+              "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/src/combat-rules.mjs",
+              "line": 13,
+              "estimatedBytes": 47483920,
+              "stack": [
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "damageForEntities",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 597
+                },
+                {
+                  "name": "combatDamage",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/src/combat-rules.mjs",
+                  "line": 32
+                },
+                {
+                  "name": "technologyCombatEffects",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/src/combat-rules.mjs",
+                  "line": 13
+                }
+              ]
+            },
+            {
+              "name": "filter",
+              "url": "",
+              "line": 0,
+              "estimatedBytes": 43041960,
+              "stack": [
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "updateWildlifeMotion",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7620
+                },
+                {
+                  "name": "filter",
+                  "url": "",
+                  "line": 0
+                }
+              ]
+            },
+            {
+              "name": "hypot",
+              "url": "",
+              "line": 0,
+              "estimatedBytes": 40112928,
+              "stack": [
+                {
+                  "name": "(anonymous)",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8815
+                },
+                {
+                  "name": "wrapped.runSimulationTick",
+                  "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+                  "line": 80
+                },
+                {
+                  "name": "runSimulationTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 8748
+                },
+                {
+                  "name": "simulateTick",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7675
+                },
+                {
+                  "name": "spreadInteractingUnits",
+                  "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+                  "line": 7411
+                },
+                {
+                  "name": "hypot",
+                  "url": "",
+                  "line": 0
+                }
+              ]
+            }
+          ]
+        },
+        "cpu": {
+          "samples": 27544,
+          "durationMs": 31261.061,
+          "sampleIntervalWeightMs": 31254.476999999464,
+          "categories": {
+            "other/observer/runtime/idle": 25392.990999999445,
+            "simulation": 3215.177000000014,
+            "vision": 664.2599999999999,
+            "private payload": 642.1610000000005,
+            "JSON/compression/framing": 1240.015999999999,
+            "planner": 16.895999999999997,
+            "checkpoint capture": 82.97599999999997
+          },
+          "top": [
+            {
+              "name": "(idle)",
+              "url": "",
+              "line": 0,
+              "sampledIntervalMs": 23921.83399999947
+            },
+            {
+              "name": "getMoveVector",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 7299,
+              "sampledIntervalMs": 797.322
+            },
+            {
+              "name": "wrapped.stringify",
+              "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+              "line": 32,
+              "sampledIntervalMs": 631.6390000000004
+            },
+            {
+              "name": "writeSync",
+              "url": "",
+              "line": 0,
+              "sampledIntervalMs": 469.6850000000001
+            },
+            {
+              "name": "markVisionFrom",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 2016,
+              "sampledIntervalMs": 389.123
+            },
+            {
+              "name": "simulateTick",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 7675,
+              "sampledIntervalMs": 347.83800000000025
+            },
+            {
+              "name": "(garbage collector)",
+              "url": "",
+              "line": 0,
+              "sampledIntervalMs": 320.0720000000002
+            },
+            {
+              "name": "wrapped.stringify",
+              "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/scripts/tick-attribution-observer.mjs",
+              "line": 32,
+              "sampledIntervalMs": 304.803
+            },
+            {
+              "name": "(anonymous)",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 7270,
+              "sampledIntervalMs": 294.43400000000014
+            },
+            {
+              "name": "findAttackMoveTarget",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 7133,
+              "sampledIntervalMs": 284.5639999999999
+            },
+            {
+              "name": "prepareAttackMovePaths",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 7263,
+              "sampledIntervalMs": 236.2209999999998
+            },
+            {
+              "name": "buildAttackFlowNextCells",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 1544,
+              "sampledIntervalMs": 202.21600000000012
+            },
+            {
+              "name": "spreadInteractingUnits",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 7411,
+              "sampledIntervalMs": 201.6899999999999
+            },
+            {
+              "name": "updateVisionMasks",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 2059,
+              "sampledIntervalMs": 194.91000000000005
+            },
+            {
+              "name": "snapshotUnits",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 1904,
+              "sampledIntervalMs": 186.08199999999994
+            },
+            {
+              "name": "roomPayload",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 2611,
+              "sampledIntervalMs": 170.98199999999994
+            },
+            {
+              "name": "canCombatTarget",
+              "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/src/combat-rules.mjs",
+              "line": 10,
+              "sampledIntervalMs": 115.72399999999998
+            },
+            {
+              "name": "rebuildSpatialBuckets",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 7101,
+              "sampledIntervalMs": 92.58699999999997
+            },
+            {
+              "name": "technologyCombatEffects",
+              "url": "file:///workspace/thousand-unit-skirmish-tick-proposal/src/combat-rules.mjs",
+              "line": 13,
+              "sampledIntervalMs": 89.23999999999998
+            },
+            {
+              "name": "runSimulationTick",
+              "url": "file:///tmp/rts-tick-attribution-lHA4lH/server-attribution.mjs",
+              "line": 8748,
+              "sampledIntervalMs": 80.36699999999999
+            }
+          ]
+        },
+        "limits": [
+          "inclusive function timings overlap; do not add nested timings",
+          "heap deltas are net live-heap change, not allocated bytes; sampled allocation estimates include collected objects",
+          "payload/frame lengths count constructed bytes, not native allocation or peer traffic; external/arrayBuffer snapshots are retained occupancy",
+          "V8 heap sampling does not measure all external allocations; use health.transport for peer traffic",
+          "row/GC capture and CPU/allocation profiles have separately recorded endpoints; GC durations may extend beyond the row window",
+          "wrappers, heap/CPU sampling and GC observation add overhead; use uninstrumented runs for whole-tick comparison"
+        ]
+      }
+    },
+    {
+      "filename": "tick-attribution-plain-0-r1.json.gz",
+      "sha256": "b2dbaa5ab3cc3145b11756609aebad790690347d0a2992a098e36c0da78d7af0",
+      "storedSha256": "16b8372c9d6167a4be9080ba659dbafc5fee835fdde548356a348e6917f00fc9",
+      "head": "7094b81b428d620250c4d24da976432109eb4b68",
+      "serverSha256": "bba377a6af627f30cc2acd88fb52e2cbec3c7491add5ebb56394975c39e0bdc0",
+      "policy": 0,
+      "size": 2000,
+      "instrumented": false,
+      "startTick": 1770,
+      "endTick": 2700,
+      "casualties": 549,
+      "wholeTickMs": {
+        "count": 930,
+        "min": 1.221,
+        "p50": 5.742,
+        "p95": 23.151,
+        "p99": 55.134,
+        "max": 158.994
+      },
+      "components": {
+        "simulationMs": {
+          "count": 930,
+          "min": 1.22,
+          "p50": 2.88,
+          "p95": 13.641,
+          "p99": 44.692,
+          "max": 105.423
+        },
+        "visionMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 2.516,
+          "p99": 4.651,
+          "max": 135.505
+        },
+        "scenarioMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.028,
+          "p99": 0.072,
+          "max": 0.374
+        },
+        "broadcastMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0.001,
+          "p95": 8.467,
+          "p99": 17.171,
+          "max": 28.932
+        },
+        "checkpointMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.001,
+          "p99": 1.956,
+          "max": 2.814
+        }
+      },
+      "overBudgetTicks": 22,
+      "zeroTickPlanningOverruns": 22,
+      "overrunDominantComponents": {
+        "broadcastMs": 5,
+        "simulationMs": 16,
+        "visionMs": 1
+      },
+      "overruns": [
+        {
+          "tickNumber": 2490,
+          "durationMs": 36.624,
+          "cpuMs": 18.574,
+          "simulationMs": 5.781,
+          "visionMs": 8.272,
+          "scenarioMs": 0.029,
+          "scenarioEvaluated": true,
+          "broadcastMs": 20.784,
+          "checkpointMs": 1.758
+        },
+        {
+          "tickNumber": 2493,
+          "durationMs": 47.612,
+          "cpuMs": 18.548,
+          "simulationMs": 10.643,
+          "visionMs": 8.222,
+          "scenarioMs": 0.027,
+          "scenarioEvaluated": true,
+          "broadcastMs": 28.72,
+          "checkpointMs": 0.001
+        },
+        {
+          "tickNumber": 2515,
+          "durationMs": 58.122,
+          "cpuMs": 58.128,
+          "simulationMs": 58.12,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.001,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2535,
+          "durationMs": 39.376,
+          "cpuMs": 40.648,
+          "simulationMs": 22.29,
+          "visionMs": 4.212,
+          "scenarioMs": 0.059,
+          "scenarioEvaluated": true,
+          "broadcastMs": 12.814,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2544,
+          "durationMs": 158.994,
+          "cpuMs": 158.192,
+          "simulationMs": 10.688,
+          "visionMs": 135.505,
+          "scenarioMs": 0.047,
+          "scenarioEvaluated": true,
+          "broadcastMs": 12.755,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2632,
+          "durationMs": 65.413,
+          "cpuMs": 65.419,
+          "simulationMs": 65.411,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.002,
+          "checkpointMs": 0.001
+        },
+        {
+          "tickNumber": 2633,
+          "durationMs": 45.747,
+          "cpuMs": 45.746,
+          "simulationMs": 45.745,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.001,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2641,
+          "durationMs": 44.694,
+          "cpuMs": 19.892,
+          "simulationMs": 44.692,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.002,
+          "checkpointMs": 0.001
+        },
+        {
+          "tickNumber": 2642,
+          "durationMs": 44.39,
+          "cpuMs": 45.891,
+          "simulationMs": 44.388,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.002,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2643,
+          "durationMs": 41.471,
+          "cpuMs": 41.472,
+          "simulationMs": 22.562,
+          "visionMs": 3.272,
+          "scenarioMs": 0.025,
+          "scenarioEvaluated": true,
+          "broadcastMs": 15.612,
+          "checkpointMs": 0.001
+        },
+        {
+          "tickNumber": 2646,
+          "durationMs": 44.206,
+          "cpuMs": 44.211,
+          "simulationMs": 17.84,
+          "visionMs": 2.458,
+          "scenarioMs": 0.028,
+          "scenarioEvaluated": true,
+          "broadcastMs": 23.878,
+          "checkpointMs": 0.001
+        },
+        {
+          "tickNumber": 2649,
+          "durationMs": 42.785,
+          "cpuMs": 43.694,
+          "simulationMs": 17.524,
+          "visionMs": 2.29,
+          "scenarioMs": 0.027,
+          "scenarioEvaluated": true,
+          "broadcastMs": 22.944,
+          "checkpointMs": 0.001
+        },
+        {
+          "tickNumber": 2673,
+          "durationMs": 35.243,
+          "cpuMs": 35.08,
+          "simulationMs": 9.086,
+          "visionMs": 4.603,
+          "scenarioMs": 0.028,
+          "scenarioEvaluated": true,
+          "broadcastMs": 21.526,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2684,
+          "durationMs": 33.812,
+          "cpuMs": 26.631,
+          "simulationMs": 33.811,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.001,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2685,
+          "durationMs": 56.536,
+          "cpuMs": 58.94,
+          "simulationMs": 31.272,
+          "visionMs": 1.756,
+          "scenarioMs": 0.036,
+          "scenarioEvaluated": true,
+          "broadcastMs": 23.471,
+          "checkpointMs": 0.001
+        },
+        {
+          "tickNumber": 2687,
+          "durationMs": 103.633,
+          "cpuMs": 90.157,
+          "simulationMs": 103.631,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.002,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2688,
+          "durationMs": 78.858,
+          "cpuMs": 67.517,
+          "simulationMs": 29.583,
+          "visionMs": 20.306,
+          "scenarioMs": 0.037,
+          "scenarioEvaluated": true,
+          "broadcastMs": 28.932,
+          "checkpointMs": 0.001
+        },
+        {
+          "tickNumber": 2689,
+          "durationMs": 105.425,
+          "cpuMs": 32.747,
+          "simulationMs": 105.423,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.001,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2690,
+          "durationMs": 55.134,
+          "cpuMs": 32.765,
+          "simulationMs": 55.132,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.002,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2691,
+          "durationMs": 73.498,
+          "cpuMs": 38.608,
+          "simulationMs": 55.05,
+          "visionMs": 1.248,
+          "scenarioMs": 0.03,
+          "scenarioEvaluated": true,
+          "broadcastMs": 17.171,
+          "checkpointMs": 0.001
+        },
+        {
+          "tickNumber": 2693,
+          "durationMs": 47.016,
+          "cpuMs": 25.606,
+          "simulationMs": 47.014,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.002,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2694,
+          "durationMs": 83.399,
+          "cpuMs": 39.651,
+          "simulationMs": 75.547,
+          "visionMs": 1.033,
+          "scenarioMs": 0.02,
+          "scenarioEvaluated": true,
+          "broadcastMs": 6.799,
+          "checkpointMs": 0.001
+        }
+      ],
+      "activeTickPlanningMs": {
+        "count": 0,
+        "min": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "max": null
+      },
+      "transport": {
+        "beforeTick": 1771,
+        "afterTick": 2706,
+        "compressionPeers": [
+          2,
+          2
+        ],
+        "counterDeltas": {
+          "jsonFramesSent": 1780,
+          "jsonPayloadBytesSent": 78036535,
+          "jsonWireBytesSent": 10267372,
+          "compressedFramesSent": 638,
+          "compressedPayloadBytesSent": 77980191,
+          "compressedWireBytesSent": 10208744,
+          "coalescedStateSnapshots": 0,
+          "outboundQueueLimitDisconnects": 0
+        },
+        "peakQueuedBytes": [
+          0,
+          0
+        ]
+      },
+      "functional": {
+        "spent": [
+          {
+            "food": 150,
+            "wood": 325
+          },
+          {
+            "food": 150,
+            "wood": 325
+          }
+        ],
+        "economyProgress": [
+          {
+            "team": 0,
+            "resource": "food",
+            "nodeId": "food-17-39",
+            "harvested": 18.89999999998281,
+            "deposited": 20
+          },
+          {
+            "team": 0,
+            "resource": "wood",
+            "nodeId": "wood-17-25",
+            "harvested": 20.23333333331493,
+            "deposited": 20
+          },
+          {
+            "team": 1,
+            "resource": "food",
+            "nodeId": "food-62-39",
+            "harvested": 20.23333333331493,
+            "deposited": 20
+          },
+          {
+            "team": 1,
+            "resource": "wood",
+            "nodeId": "wood-62-25",
+            "harvested": 21.933333333313385,
+            "deposited": 20
+          }
+        ],
+        "paidLedger": true,
+        "checkpointRecovery": true
+      }
+    },
+    {
+      "filename": "tick-attribution-plain-0-r2.json.gz",
+      "sha256": "043ea9ea6d259b2712a0f39a3586f0c49773d70129c1e50fda710c9e352d7d8d",
+      "storedSha256": "cdd640c812a7860f45c0bc3b524136ba04983abd88aa581f45fd8f3b683b30fd",
+      "head": "2aba1ccfe3bfa075dd3000301a47b8e2d4b4d29f",
+      "serverSha256": "bba377a6af627f30cc2acd88fb52e2cbec3c7491add5ebb56394975c39e0bdc0",
+      "policy": 0,
+      "size": 2000,
+      "instrumented": false,
+      "startTick": 1770,
+      "endTick": 2700,
+      "casualties": 542,
+      "wholeTickMs": {
+        "count": 930,
+        "min": 1.202,
+        "p50": 5.648,
+        "p95": 17.419,
+        "p99": 34.699,
+        "max": 176.385
+      },
+      "components": {
+        "simulationMs": {
+          "count": 930,
+          "min": 1.174,
+          "p50": 2.8,
+          "p95": 11.224,
+          "p99": 21.342,
+          "max": 137.69
+        },
+        "visionMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 2.354,
+          "p99": 5.99,
+          "max": 18.893
+        },
+        "scenarioMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.028,
+          "p99": 0.137,
+          "max": 1.452
+        },
+        "broadcastMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0.001,
+          "p95": 7.332,
+          "p99": 12.199,
+          "max": 27.205
+        },
+        "checkpointMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.001,
+          "p99": 1.833,
+          "max": 9.182
+        }
+      },
+      "overBudgetTicks": 10,
+      "zeroTickPlanningOverruns": 10,
+      "overrunDominantComponents": {
+        "simulationMs": 6,
+        "broadcastMs": 4
+      },
+      "overruns": [
+        {
+          "tickNumber": 2125,
+          "durationMs": 51.82,
+          "cpuMs": 51.817,
+          "simulationMs": 51.819,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.001,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2400,
+          "durationMs": 50.17,
+          "cpuMs": 50.14,
+          "simulationMs": 13.221,
+          "visionMs": 7.755,
+          "scenarioMs": 0.029,
+          "scenarioEvaluated": true,
+          "broadcastMs": 19.983,
+          "checkpointMs": 9.182
+        },
+        {
+          "tickNumber": 2402,
+          "durationMs": 36.389,
+          "cpuMs": 38.103,
+          "simulationMs": 36.384,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.006,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2403,
+          "durationMs": 41.651,
+          "cpuMs": 41.596,
+          "simulationMs": 23.094,
+          "visionMs": 5.99,
+          "scenarioMs": 0.04,
+          "scenarioEvaluated": true,
+          "broadcastMs": 12.526,
+          "checkpointMs": 0.001
+        },
+        {
+          "tickNumber": 2408,
+          "durationMs": 39.983,
+          "cpuMs": 42.012,
+          "simulationMs": 39.959,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.023,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2409,
+          "durationMs": 176.385,
+          "cpuMs": 176.389,
+          "simulationMs": 137.69,
+          "visionMs": 12.59,
+          "scenarioMs": 0.048,
+          "scenarioEvaluated": true,
+          "broadcastMs": 26.056,
+          "checkpointMs": 0.001
+        },
+        {
+          "tickNumber": 2439,
+          "durationMs": 34.931,
+          "cpuMs": 29.709,
+          "simulationMs": 10.292,
+          "visionMs": 10.578,
+          "scenarioMs": 0.02,
+          "scenarioEvaluated": true,
+          "broadcastMs": 14.04,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2460,
+          "durationMs": 34.699,
+          "cpuMs": 34.702,
+          "simulationMs": 12.455,
+          "visionMs": 1.442,
+          "scenarioMs": 0.581,
+          "scenarioEvaluated": true,
+          "broadcastMs": 15.073,
+          "checkpointMs": 5.15
+        },
+        {
+          "tickNumber": 2530,
+          "durationMs": 49.989,
+          "cpuMs": 25.715,
+          "simulationMs": 49.988,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.001,
+          "checkpointMs": 0
+        },
+        {
+          "tickNumber": 2532,
+          "durationMs": 55.348,
+          "cpuMs": 40.317,
+          "simulationMs": 15.183,
+          "visionMs": 12.924,
+          "scenarioMs": 0.035,
+          "scenarioEvaluated": true,
+          "broadcastMs": 27.205,
+          "checkpointMs": 0.001
+        }
+      ],
+      "activeTickPlanningMs": {
+        "count": 0,
+        "min": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "max": null
+      },
+      "transport": {
+        "beforeTick": 1771,
+        "afterTick": 2702,
+        "compressionPeers": [
+          2,
+          2
+        ],
+        "counterDeltas": {
+          "jsonFramesSent": 1740,
+          "jsonPayloadBytesSent": 78171129,
+          "jsonWireBytesSent": 10281491,
+          "compressedFramesSent": 638,
+          "compressedPayloadBytesSent": 78116745,
+          "compressedWireBytesSent": 10224903,
+          "coalescedStateSnapshots": 0,
+          "outboundQueueLimitDisconnects": 0
+        },
+        "peakQueuedBytes": [
+          0,
+          0
+        ]
+      },
+      "functional": {
+        "spent": [
+          {
+            "food": 150,
+            "wood": 325
+          },
+          {
+            "food": 150,
+            "wood": 325
+          }
+        ],
+        "economyProgress": [
+          {
+            "team": 0,
+            "resource": "food",
+            "nodeId": "food-17-39",
+            "harvested": 18.833333333316205,
+            "deposited": 20
+          },
+          {
+            "team": 0,
+            "resource": "wood",
+            "nodeId": "wood-17-25",
+            "harvested": 20.266666666648234,
+            "deposited": 20
+          },
+          {
+            "team": 1,
+            "resource": "food",
+            "nodeId": "food-62-39",
+            "harvested": 20.53333333331466,
+            "deposited": 20
+          },
+          {
+            "team": 1,
+            "resource": "wood",
+            "nodeId": "wood-62-25",
+            "harvested": 21.86666666664678,
+            "deposited": 20
+          }
+        ],
+        "paidLedger": true,
+        "checkpointRecovery": true
+      }
+    },
+    {
+      "filename": "tick-attribution-plain-4-r1.json.gz",
+      "sha256": "f907e14c904447f60182d58e14bf634378abb9ae026d4b8a635e267f363256dd",
+      "storedSha256": "2891eb1bde21c2171a54394ee284373b4f0350794e1bbd4ae52cf568d87e962f",
+      "head": "2aba1ccfe3bfa075dd3000301a47b8e2d4b4d29f",
+      "serverSha256": "bba377a6af627f30cc2acd88fb52e2cbec3c7491add5ebb56394975c39e0bdc0",
+      "policy": 4,
+      "size": 2000,
+      "instrumented": false,
+      "startTick": 1830,
+      "endTick": 2760,
+      "casualties": 414,
+      "wholeTickMs": {
+        "count": 930,
+        "min": 0.691,
+        "p50": 4.963,
+        "p95": 14.725,
+        "p99": 22.561,
+        "max": 63.121
+      },
+      "components": {
+        "simulationMs": {
+          "count": 930,
+          "min": 0.69,
+          "p50": 2.929,
+          "p95": 7.061,
+          "p99": 11.391,
+          "max": 49.585
+        },
+        "visionMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 2.383,
+          "p99": 4.205,
+          "max": 5.688
+        },
+        "scenarioMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.039,
+          "p99": 0.186,
+          "max": 0.646
+        },
+        "broadcastMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0.001,
+          "p95": 6.942,
+          "p99": 9.742,
+          "max": 33.679
+        },
+        "checkpointMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.001,
+          "p99": 2.028,
+          "max": 8.598
+        }
+      },
+      "overBudgetTicks": 4,
+      "zeroTickPlanningOverruns": 4,
+      "overrunDominantComponents": {
+        "simulationMs": 3,
+        "broadcastMs": 1
+      },
+      "overruns": [
+        {
+          "tickNumber": 2227,
+          "durationMs": 41.342,
+          "cpuMs": 28.33,
+          "simulationMs": 41.341,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.001,
+          "checkpointMs": 0,
+          "planningMs": 0.001,
+          "planningTurns": 0,
+          "planningWorkItems": 0,
+          "planningExpandedCells": 0
+        },
+        {
+          "tickNumber": 2229,
+          "durationMs": 36.457,
+          "cpuMs": 50.922,
+          "simulationMs": 17.177,
+          "visionMs": 2.951,
+          "scenarioMs": 0.391,
+          "scenarioEvaluated": true,
+          "broadcastMs": 15.938,
+          "checkpointMs": 0,
+          "planningMs": 0.001,
+          "planningTurns": 0,
+          "planningWorkItems": 0,
+          "planningExpandedCells": 0
+        },
+        {
+          "tickNumber": 2283,
+          "durationMs": 63.121,
+          "cpuMs": 70.484,
+          "simulationMs": 49.585,
+          "visionMs": 4.747,
+          "scenarioMs": 0.186,
+          "scenarioEvaluated": true,
+          "broadcastMs": 8.602,
+          "checkpointMs": 0.001,
+          "planningMs": 0.015,
+          "planningTurns": 0,
+          "planningWorkItems": 0,
+          "planningExpandedCells": 0
+        },
+        {
+          "tickNumber": 2562,
+          "durationMs": 40.379,
+          "cpuMs": 40.418,
+          "simulationMs": 5.31,
+          "visionMs": 1.37,
+          "scenarioMs": 0.018,
+          "scenarioEvaluated": true,
+          "broadcastMs": 33.679,
+          "checkpointMs": 0.002,
+          "planningMs": 0.099,
+          "planningTurns": 0,
+          "planningWorkItems": 0,
+          "planningExpandedCells": 0
+        }
+      ],
+      "activeTickPlanningMs": {
+        "count": 193,
+        "min": 0.062,
+        "p50": 0.125,
+        "p95": 0.874,
+        "p99": 5.156,
+        "max": 12.991
+      },
+      "transport": {
+        "beforeTick": 1832,
+        "afterTick": 2761,
+        "compressionPeers": [
+          2,
+          2
+        ],
+        "counterDeltas": {
+          "jsonFramesSent": 1476,
+          "jsonPayloadBytesSent": 74472028,
+          "jsonWireBytesSent": 9547608,
+          "compressedFramesSent": 630,
+          "compressedPayloadBytesSent": 74430188,
+          "compressedWireBytesSent": 9504076,
+          "coalescedStateSnapshots": 0,
+          "outboundQueueLimitDisconnects": 0
+        },
+        "peakQueuedBytes": [
+          0,
+          0
+        ]
+      },
+      "functional": {
+        "spent": [
+          {
+            "food": 150,
+            "wood": 325
+          },
+          {
+            "food": 150,
+            "wood": 325
+          }
+        ],
+        "economyProgress": [
+          {
+            "team": 0,
+            "resource": "food",
+            "nodeId": "food-17-39",
+            "harvested": 18.833333333316205,
+            "deposited": 20
+          },
+          {
+            "team": 0,
+            "resource": "wood",
+            "nodeId": "wood-17-25",
+            "harvested": 20.266666666648234,
+            "deposited": 20
+          },
+          {
+            "team": 1,
+            "resource": "food",
+            "nodeId": "food-62-39",
+            "harvested": 20.366666666648143,
+            "deposited": 20
+          },
+          {
+            "team": 1,
+            "resource": "wood",
+            "nodeId": "wood-62-25",
+            "harvested": 21.899999999980082,
+            "deposited": 20
+          }
+        ],
+        "paidLedger": true,
+        "checkpointRecovery": true
+      }
+    },
+    {
+      "filename": "tick-attribution-plain-4-r2.json.gz",
+      "sha256": "76776d22e98a13f41d6727984704f0f699e12e3d22338ec4e66cceb688e2b332",
+      "storedSha256": "01eb2a15ce3cdd2f16dacb69bc749d0da055118ec394a144f450209fe6900b8d",
+      "head": "2aba1ccfe3bfa075dd3000301a47b8e2d4b4d29f",
+      "serverSha256": "bba377a6af627f30cc2acd88fb52e2cbec3c7491add5ebb56394975c39e0bdc0",
+      "policy": 4,
+      "size": 2000,
+      "instrumented": false,
+      "startTick": 1830,
+      "endTick": 2760,
+      "casualties": 380,
+      "wholeTickMs": {
+        "count": 930,
+        "min": 0.79,
+        "p50": 4.606,
+        "p95": 13.809,
+        "p99": 21.906,
+        "max": 46.999
+      },
+      "components": {
+        "simulationMs": {
+          "count": 930,
+          "min": 0.779,
+          "p50": 2.569,
+          "p95": 7.087,
+          "p99": 14.038,
+          "max": 38.93
+        },
+        "visionMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 2.232,
+          "p99": 3.532,
+          "max": 20.388
+        },
+        "scenarioMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.027,
+          "p99": 0.062,
+          "max": 1.111
+        },
+        "broadcastMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0.001,
+          "p95": 6.348,
+          "p99": 8.963,
+          "max": 28.721
+        },
+        "checkpointMs": {
+          "count": 930,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.001,
+          "p99": 1.832,
+          "max": 14.495
+        }
+      },
+      "overBudgetTicks": 2,
+      "zeroTickPlanningOverruns": 2,
+      "overrunDominantComponents": {
+        "simulationMs": 1,
+        "broadcastMs": 1
+      },
+      "overruns": [
+        {
+          "tickNumber": 2719,
+          "durationMs": 38.931,
+          "cpuMs": 12.713,
+          "simulationMs": 38.93,
+          "visionMs": 0,
+          "scenarioMs": 0,
+          "scenarioEvaluated": false,
+          "broadcastMs": 0.001,
+          "checkpointMs": 0,
+          "planningMs": 0.001,
+          "planningTurns": 0,
+          "planningWorkItems": 0,
+          "planningExpandedCells": 0
+        },
+        {
+          "tickNumber": 2721,
+          "durationMs": 46.999,
+          "cpuMs": 17.494,
+          "simulationMs": 17.173,
+          "visionMs": 1.086,
+          "scenarioMs": 0.019,
+          "scenarioEvaluated": true,
+          "broadcastMs": 28.721,
+          "checkpointMs": 0.001,
+          "planningMs": 0.002,
+          "planningTurns": 0,
+          "planningWorkItems": 0,
+          "planningExpandedCells": 0
+        }
+      ],
+      "activeTickPlanningMs": {
+        "count": 192,
+        "min": 0.061,
+        "p50": 0.105,
+        "p95": 0.724,
+        "p99": 1.72,
+        "max": 2.484
+      },
+      "transport": {
+        "beforeTick": 1831,
+        "afterTick": 2763,
+        "compressionPeers": [
+          2,
+          2
+        ],
+        "counterDeltas": {
+          "jsonFramesSent": 1422,
+          "jsonPayloadBytesSent": 74665546,
+          "jsonWireBytesSent": 9568730,
+          "compressedFramesSent": 630,
+          "compressedPayloadBytesSent": 74626352,
+          "compressedWireBytesSent": 9527952,
+          "coalescedStateSnapshots": 0,
+          "outboundQueueLimitDisconnects": 0
+        },
+        "peakQueuedBytes": [
+          0,
+          0
+        ]
+      },
+      "functional": {
+        "spent": [
+          {
+            "food": 150,
+            "wood": 325
+          },
+          {
+            "food": 150,
+            "wood": 325
+          }
+        ],
+        "economyProgress": [
+          {
+            "team": 0,
+            "resource": "food",
+            "nodeId": "food-17-39",
+            "harvested": 18.866666666649508,
+            "deposited": 20
+          },
+          {
+            "team": 0,
+            "resource": "wood",
+            "nodeId": "wood-17-25",
+            "harvested": 20.23333333331493,
+            "deposited": 20
+          },
+          {
+            "team": 1,
+            "resource": "food",
+            "nodeId": "food-62-39",
+            "harvested": 20.366666666648143,
+            "deposited": 20
+          },
+          {
+            "team": 1,
+            "resource": "wood",
+            "nodeId": "wood-62-25",
+            "harvested": 21.933333333313385,
+            "deposited": 20
+          }
+        ],
+        "paidLedger": true,
+        "checkpointRecovery": true
+      }
+    }
+  ]
+}

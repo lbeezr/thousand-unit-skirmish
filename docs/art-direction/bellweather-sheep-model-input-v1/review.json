@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-02",
+  "reviewer": "author source-pixel review",
+  "result": "Suitable clean single-subject input candidate for the separately owned bounded model pilot.",
+  "observations": [
+    "One complete Sheep is visible in front-three-quarter pose; cream layered wool, pale sheep face, lateral brown-pink ears and dark cloven hooves retain the source design.",
+    "Four planted lower legs/hooves are visible, with complete ears and the small tail within the image.",
+    "No headings, degree text, axes, grids, other sheep, pedestal or scene objects are visible; near-white background and subtle contact shadow.",
+    "Image is a new isolated edit, not a byte crop or a calibrated render; apparent size/framing differ from the parent sheet."
+  ],
+  "limitations": [
+    "Approximate intended yaw 0; no measured camera/scale/root or exact anatomy equality.",
+    "Hidden surfaces and model topology are unknown until the actual generated GLB is inspected.",
+    "No Meshy upload/generation, rigging, walking or runtime integration performed."
+  ],
+  "nextProof": "The paid-call owner selects this saved input under the user's per-object cap, preserves the resulting model/task receipts, inspects anatomy and renders rotations using the measured pilot contract."
+}

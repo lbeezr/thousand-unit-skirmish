@@ -1,4 +1,5 @@
-/** Stable, server-owned launch rules for the curated Play vs AI map pool. */
+/** Server-owned Play vs AI presets with the historical seeded map pool preserved. */
+import { matchModeDefinition, normalizeMatchMode } from './match-modes.mjs';
 
 export const PVE_MAP_IDS = Object.freeze(['bellweather-millrace', 'underbough-rootways']);
 
@@ -26,10 +27,20 @@ export function readPveLaunchOptions(environment = process.env) {
 
   const mapSeed = parseUint32Seed(environment.RTS_PVE_MAP_SEED, 'RTS_PVE_MAP_SEED');
   const policySeed = parseUint32Seed(environment.RTS_PVE_POLICY_SEED, 'RTS_PVE_POLICY_SEED');
+  const identity = normalizeMatchMode({
+    ...(environment.RTS_MATCH_MODE_ID === undefined ? {} : { matchModeId: environment.RTS_MATCH_MODE_ID }),
+    ...(environment.RTS_MATCH_MODE_VERSION === undefined ? {} : {
+      matchModeVersion: /^\d+$/.test(environment.RTS_MATCH_MODE_VERSION)
+        ? Number(environment.RTS_MATCH_MODE_VERSION) : environment.RTS_MATCH_MODE_VERSION,
+    }),
+  });
   return Object.freeze({
     mode,
     mapSeed,
     policySeed,
-    mapId: selectPveMapId(mapSeed),
+    // Only the explicit new identity chooses the accepted Tiny preset. Historical
+    // omission/Authored/Objective Control retain the exact seed-owned map pool.
+    mapId: identity.matchModeId === 'skirmish'
+      ? matchModeDefinition(identity).defaultMapId : selectPveMapId(mapSeed),
   });
 }

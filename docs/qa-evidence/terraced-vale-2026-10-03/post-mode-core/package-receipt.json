@@ -1,0 +1,11 @@
+{
+  "sourceRevision": "1784387cb300597ff12102f331aea775834a0541",
+  "sourceDirty": false,
+  "releaseDigest": "sha256:813c629c18683f5d58cfa8d660820c95fa93d4fdab0154555ebc59cf50a29436",
+  "fileCount": 1164,
+  "mapIncluded": true,
+  "policyIncluded": true,
+  "sourceMapSHA256": "1d91efb4f377f5c382f5a18e31e30d70efae17fb7434f133b878a2802c309dbd",
+  "packedMapSHA256": "1d91efb4f377f5c382f5a18e31e30d70efae17fb7434f133b878a2802c309dbd",
+  "directory": "/tmp/rts-release-nIzyRA"
+}

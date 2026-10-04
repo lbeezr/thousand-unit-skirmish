@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "artifacts": [
+    {
+      "path": "grid-cost.json.gz",
+      "bytes": 2475,
+      "sha256": "ff3d7f7861eec0276271cb67e8e0fe618c6967851f3504f576cdcf7cabee414f",
+      "uncompressedSha256": "8255d8e703c8691ccbea04d2261f5c4d45bdd543c369ba21e8def4b2bc3a118f"
+    },
+    {
+      "path": "layout.png",
+      "bytes": 83672,
+      "sha256": "accd63f1de90738fdfaf77fd406383ca4f209b840c3421d77d459578a76b8b52"
+    },
+    {
+      "path": "native-24-check.json",
+      "bytes": 840,
+      "sha256": "3597d11e9c747e28f74e81ae35f4c796fac0a0e9a2ffc8e473992f71d5dbf753"
+    },
+    {
+      "path": "native-24.json.gz",
+      "bytes": 16520,
+      "sha256": "ec802d55533e4e64c41139be262ac413b66207cdeb5d2f92c877fc218c495155",
+      "uncompressedSha256": "c6c614cac16f5444f4e8ff121ed8b4174e9e074d4a423f0aa8c562be275e53a3"
+    },
+    {
+      "path": "paid-native.json.gz",
+      "bytes": 3234,
+      "sha256": "1db2da1840ce6da55ed1b1cbebd17ba60eed5adf62e7e35bbea36b37c390ef2e",
+      "uncompressedSha256": "2e0ad929ccb6ce6f0d888282694f1680e6986a88c1360299b00c399594986f15"
+    },
+    {
+      "path": "paid-source-inputs.json.gz",
+      "bytes": 37457,
+      "sha256": "68aee93682d4ee358e25c20a98decf4d34c7e64a6e565cb3c1a37202023db054",
+      "uncompressedSha256": "df634fbbcc07fbf4bc1feca60b9f89f5245608636a99308d8f8a5d960c4a47c2"
+    },
+    {
+      "path": "static-audit.json.gz",
+      "bytes": 6229,
+      "sha256": "29ef632eef7b6a22d49bda235d6fa0a95de3eec1ff08680c1edb7eb9562f04dc",
+      "uncompressedSha256": "54a4d81c577f55f8370517181027c37a565213fccaac8c1f2a00dcd2e67e93f4"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 8942,
+      "sha256": "a1069e2e13e7e446736580a4dd329213784117cfb8e958036b5d58db9a744e94"
+    }
+  ]
+}

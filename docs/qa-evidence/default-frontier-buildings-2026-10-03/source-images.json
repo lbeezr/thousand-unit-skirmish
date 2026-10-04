@@ -1,0 +1,626 @@
+[
+  {
+    "asset": "house",
+    "view": 0,
+    "file": "assets/buildings/frontier-civilization-scale-pilot-v1/captures/house-complete-view-00.png",
+    "bytes": 310535,
+    "sha256": "0d745bf0f4c11a28acd4246d71af122d6125531e99f687e0e4cba385fc1001c8",
+    "alphaBounds": [
+      353,
+      290,
+      662,
+      783
+    ]
+  },
+  {
+    "asset": "house",
+    "view": 1,
+    "file": "assets/buildings/frontier-civilization-scale-pilot-v1/captures/house-complete-view-01.png",
+    "bytes": 349403,
+    "sha256": "ada321da06567d9ea9a111ab1be9e8b3b6013ead2ae76e4add1680296276d613",
+    "alphaBounds": [
+      299,
+      332,
+      737,
+      788
+    ]
+  },
+  {
+    "asset": "house",
+    "view": 2,
+    "file": "assets/buildings/frontier-civilization-scale-pilot-v1/captures/house-complete-view-02.png",
+    "bytes": 297169,
+    "sha256": "a60126a019dbff8cc3ee49e21fc4e255ab7f595a5a09338fe5bb778b7ca09dd2",
+    "alphaBounds": [
+      307,
+      404,
+      701,
+      753
+    ]
+  },
+  {
+    "asset": "house",
+    "view": 3,
+    "file": "assets/buildings/frontier-civilization-scale-pilot-v1/captures/house-complete-view-03.png",
+    "bytes": 328045,
+    "sha256": "e14bf7cf8030b99815b364f8a480c4e61db3dc64f291887858b4e08db408166f",
+    "alphaBounds": [
+      312,
+      318,
+      736,
+      808
+    ]
+  },
+  {
+    "asset": "house",
+    "view": 4,
+    "file": "assets/buildings/frontier-civilization-scale-pilot-v1/captures/house-complete-view-04.png",
+    "bytes": 292576,
+    "sha256": "3b8e227015e1f8b9f9a53fce0daab53e0affbd2470742d63d51cb1d375cedbdf",
+    "alphaBounds": [
+      362,
+      280,
+      671,
+      783
+    ]
+  },
+  {
+    "asset": "house",
+    "view": 5,
+    "file": "assets/buildings/frontier-civilization-scale-pilot-v1/captures/house-complete-view-05.png",
+    "bytes": 347892,
+    "sha256": "e3db48276468b7e4178720db8a44bf439243832261caf1fc201b24f595300331",
+    "alphaBounds": [
+      287,
+      323,
+      725,
+      802
+    ]
+  },
+  {
+    "asset": "house",
+    "view": 6,
+    "file": "assets/buildings/frontier-civilization-scale-pilot-v1/captures/house-complete-view-06.png",
+    "bytes": 310365,
+    "sha256": "eb80d5103bfb089f291c83a7b428fed92c536de638240f5ef0318d0029d529ed",
+    "alphaBounds": [
+      323,
+      361,
+      717,
+      753
+    ]
+  },
+  {
+    "asset": "house",
+    "view": 7,
+    "file": "assets/buildings/frontier-civilization-scale-pilot-v1/captures/house-complete-view-07.png",
+    "bytes": 350656,
+    "sha256": "fd521c5f3b955c0b122b7b683008b9fb9e2f545c0a898403c72e225244833599",
+    "alphaBounds": [
+      288,
+      306,
+      712,
+      800
+    ]
+  },
+  {
+    "asset": "town-center",
+    "view": 0,
+    "file": "assets/buildings/frontier-civilization-scale-pilot-v1/captures/town-center-complete-view-00.png",
+    "bytes": 620699,
+    "sha256": "35e051c13b419c8e98b216b486d37ba5cc6571c7ac8c75737a547b4415c2a7f6",
+    "alphaBounds": [
+      230,
+      219,
+      794,
+      842
+    ]
+  },
+  {
+    "asset": "town-center",
+    "view": 1,
+    "file": "assets/buildings/frontier-civilization-scale-pilot-v1/captures/town-center-complete-view-01.png",
+    "bytes": 699296,
+    "sha256": "ff1608b8f3b3f61a519af57b3abad1ff222b739afcb9c853b7aa6d138652b456",
+    "alphaBounds": [
+      170,
+      286,
+      867,
+      891
+    ]
+  },
+  {
+    "asset": "town-center",
+    "view": 2,
+    "file": "assets/buildings/frontier-civilization-scale-pilot-v1/captures/town-center-complete-view-02.png",
+    "bytes": 595615,
+    "sha256": "e7c4bca0fdcf546cab40723999acbc7aa92bbf27b97c485d63717eb286d34ec4",
+    "alphaBounds": [
+      240,
+      271,
+      784,
+      848
+    ]
+  },
+  {
+    "asset": "town-center",
+    "view": 3,
+    "file": "assets/buildings/frontier-civilization-scale-pilot-v1/captures/town-center-complete-view-03.png",
+    "bytes": 687189,
+    "sha256": "c53ba897c21c7e20ca24dd780bf853e0c470e01a09c1a3d2437a11a9e5f9d9da",
+    "alphaBounds": [
+      172,
+      271,
+      837,
+      902
+    ]
+  },
+  {
+    "asset": "town-center",
+    "view": 4,
+    "file": "assets/buildings/frontier-civilization-scale-pilot-v1/captures/town-center-complete-view-04.png",
+    "bytes": 635852,
+    "sha256": "7511f7b51e2478c1d021fdcec8cc386635f1441dc47b62c777b4860737fe808e",
+    "alphaBounds": [
+      230,
+      211,
+      794,
+      842
+    ]
+  },
+  {
+    "asset": "town-center",
+    "view": 5,
+    "file": "assets/buildings/frontier-civilization-scale-pilot-v1/captures/town-center-complete-view-05.png",
+    "bytes": 695788,
+    "sha256": "3185884c727702ddd82c339b5f71f1292225ed9421d212196ebfbf86208ee374",
+    "alphaBounds": [
+      157,
+      225,
+      854,
+      880
+    ]
+  },
+  {
+    "asset": "town-center",
+    "view": 6,
+    "file": "assets/buildings/frontier-civilization-scale-pilot-v1/captures/town-center-complete-view-06.png",
+    "bytes": 628430,
+    "sha256": "5e8bba55c29591fbf4d9382272e49e60aa33b241e572cd0bbbe4d0bc8da47b5b",
+    "alphaBounds": [
+      240,
+      249,
+      784,
+      849
+    ]
+  },
+  {
+    "asset": "town-center",
+    "view": 7,
+    "file": "assets/buildings/frontier-civilization-scale-pilot-v1/captures/town-center-complete-view-07.png",
+    "bytes": 677415,
+    "sha256": "64ee3115dd61b1d55b043738de25090fc41269faab4fd6992f25a6dc39945c5e",
+    "alphaBounds": [
+      187,
+      203,
+      852,
+      892
+    ]
+  },
+  {
+    "asset": "stable",
+    "view": 0,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/stable-complete-view-00.png",
+    "bytes": 315671,
+    "sha256": "9a951c1acbbbee9ff99be382f35dd75b179a9cc38b8c0962476de015c0433be4",
+    "alphaBounds": [
+      336,
+      381,
+      702,
+      784
+    ]
+  },
+  {
+    "asset": "stable",
+    "view": 1,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/stable-complete-view-01.png",
+    "bytes": 337184,
+    "sha256": "950f2045730dcad42752ed2995c64bca6555484156034a74505ca35c847287c2",
+    "alphaBounds": [
+      261,
+      369,
+      766,
+      791
+    ]
+  },
+  {
+    "asset": "stable",
+    "view": 2,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/stable-complete-view-02.png",
+    "bytes": 288752,
+    "sha256": "e191774f5ced30b0c9e374c32fde037f5f97a7d5c87920a426b96f0fc9eb00cc",
+    "alphaBounds": [
+      322,
+      394,
+      702,
+      774
+    ]
+  },
+  {
+    "asset": "stable",
+    "view": 3,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/stable-complete-view-03.png",
+    "bytes": 311769,
+    "sha256": "47685dc3c819bc48e8756d96ee868dd5975b8c32ff26f659d2cce833bffd7ad9",
+    "alphaBounds": [
+      311,
+      436,
+      768,
+      830
+    ]
+  },
+  {
+    "asset": "stable",
+    "view": 4,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/stable-complete-view-04.png",
+    "bytes": 274071,
+    "sha256": "f9c71905f9fa550a522d38bb9bada365432e0d94622d4a3a05b6ef7b7561efd0",
+    "alphaBounds": [
+      322,
+      454,
+      688,
+      781
+    ]
+  },
+  {
+    "asset": "stable",
+    "view": 5,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/stable-complete-view-05.png",
+    "bytes": 327403,
+    "sha256": "8e2744068e047869d8530c5eb683d9a8b4bed5af8b00506cf60923ef682f5ad1",
+    "alphaBounds": [
+      258,
+      413,
+      763,
+      828
+    ]
+  },
+  {
+    "asset": "stable",
+    "view": 6,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/stable-complete-view-06.png",
+    "bytes": 309692,
+    "sha256": "bbed052aabb53aad8b3a5b8b6a729066e29e9804601aa1604a2f29eaeb724731",
+    "alphaBounds": [
+      322,
+      430,
+      702,
+      772
+    ]
+  },
+  {
+    "asset": "stable",
+    "view": 7,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/stable-complete-view-07.png",
+    "bytes": 347214,
+    "sha256": "0e8df60ce293af83a60fe6517e8609e24a6f1a4208178eb88d2605109fc011fd",
+    "alphaBounds": [
+      256,
+      399,
+      713,
+      827
+    ]
+  },
+  {
+    "asset": "storehouse",
+    "view": 0,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/storehouse-complete-view-00.png",
+    "bytes": 216694,
+    "sha256": "8ae39d6559d1509d40346973914e0dad7667d2ec965f0bcb8393b5895b8a7f8a",
+    "alphaBounds": [
+      332,
+      476,
+      692,
+      743
+    ]
+  },
+  {
+    "asset": "storehouse",
+    "view": 1,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/storehouse-complete-view-01.png",
+    "bytes": 231843,
+    "sha256": "78967b4330137a7a6c5d7360e0446fafd699faea4b860436bcf0c6982f319593",
+    "alphaBounds": [
+      315,
+      465,
+      707,
+      792
+    ]
+  },
+  {
+    "asset": "storehouse",
+    "view": 2,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/storehouse-complete-view-02.png",
+    "bytes": 203466,
+    "sha256": "f16d022ca287db48b72716827b4875354587746f59f325aae090c2cfaa875a04",
+    "alphaBounds": [
+      378,
+      436,
+      646,
+      773
+    ]
+  },
+  {
+    "asset": "storehouse",
+    "view": 3,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/storehouse-complete-view-03.png",
+    "bytes": 235030,
+    "sha256": "44ac71203c8de3e4672569bc59c38864513f2f8b2f14f81009b92b907e007fca",
+    "alphaBounds": [
+      311,
+      466,
+      705,
+      787
+    ]
+  },
+  {
+    "asset": "storehouse",
+    "view": 4,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/storehouse-complete-view-04.png",
+    "bytes": 218583,
+    "sha256": "7d509b0a02b18e3af08195ab466ffb0a1642114b4e65f166afb50b34d03ea6a8",
+    "alphaBounds": [
+      332,
+      447,
+      692,
+      743
+    ]
+  },
+  {
+    "asset": "storehouse",
+    "view": 5,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/storehouse-complete-view-05.png",
+    "bytes": 230202,
+    "sha256": "b3bb6d2e4e92923969371bdeba1cdc9e5c235e021a2da38eb983eac5829cce86",
+    "alphaBounds": [
+      317,
+      451,
+      709,
+      786
+    ]
+  },
+  {
+    "asset": "storehouse",
+    "view": 6,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/storehouse-complete-view-06.png",
+    "bytes": 199487,
+    "sha256": "c717a713cd88902ad487e693b967407cacbaf2b50719e03b06caca94052efb85",
+    "alphaBounds": [
+      378,
+      482,
+      646,
+      776
+    ]
+  },
+  {
+    "asset": "storehouse",
+    "view": 7,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/storehouse-complete-view-07.png",
+    "bytes": 223943,
+    "sha256": "03cd77c184ce4ead0618e57d94280b2f4014430f5c96d1a4f4722582c6bdb651",
+    "alphaBounds": [
+      319,
+      466,
+      713,
+      789
+    ]
+  },
+  {
+    "asset": "watchtower",
+    "view": 0,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/watchtower-complete-view-00.png",
+    "bytes": 218786,
+    "sha256": "7ab02a9b1939ea1fbc6ad2b48759de9dd25bfec59777748c071dd67c7a254fdd",
+    "alphaBounds": [
+      396,
+      324,
+      631,
+      727
+    ]
+  },
+  {
+    "asset": "watchtower",
+    "view": 1,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/watchtower-complete-view-01.png",
+    "bytes": 237133,
+    "sha256": "ca88178ea726318f9fe11cc9a099446fc956285ed03f438a189c025a05f7a875",
+    "alphaBounds": [
+      368,
+      319,
+      659,
+      752
+    ]
+  },
+  {
+    "asset": "watchtower",
+    "view": 2,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/watchtower-complete-view-02.png",
+    "bytes": 194643,
+    "sha256": "33461c66259fb4b1da274ed46a279efce39a8b18ef22bc51b6b1a17653817103",
+    "alphaBounds": [
+      400,
+      317,
+      624,
+      730
+    ]
+  },
+  {
+    "asset": "watchtower",
+    "view": 3,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/watchtower-complete-view-03.png",
+    "bytes": 230609,
+    "sha256": "dd5e59a2d077848e3446f3b6b830c656f7676400a21a50307d1a1c5750cee8b4",
+    "alphaBounds": [
+      366,
+      319,
+      656,
+      752
+    ]
+  },
+  {
+    "asset": "watchtower",
+    "view": 4,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/watchtower-complete-view-04.png",
+    "bytes": 211597,
+    "sha256": "f924a9d872db12e383e916e7167aecb557cbfe5886ac941ad37301e41e5b1aed",
+    "alphaBounds": [
+      393,
+      324,
+      628,
+      727
+    ]
+  },
+  {
+    "asset": "watchtower",
+    "view": 5,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/watchtower-complete-view-05.png",
+    "bytes": 231573,
+    "sha256": "4e81272b7ecc53004704c7381535e8676eb7d5e426c7f5845c926b9ddfae1ff3",
+    "alphaBounds": [
+      365,
+      302,
+      656,
+      750
+    ]
+  },
+  {
+    "asset": "watchtower",
+    "view": 6,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/watchtower-complete-view-06.png",
+    "bytes": 193789,
+    "sha256": "3a1b548fb0932bae89faf07609bda670af547fbd99b8dc9a943a1c04a924664a",
+    "alphaBounds": [
+      400,
+      279,
+      624,
+      730
+    ]
+  },
+  {
+    "asset": "watchtower",
+    "view": 7,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/watchtower-complete-view-07.png",
+    "bytes": 228890,
+    "sha256": "8be8582b78236f8f961114d78178953a398f6e2385d3b718061a865c25562021",
+    "alphaBounds": [
+      368,
+      294,
+      658,
+      750
+    ]
+  },
+  {
+    "asset": "workshop",
+    "view": 0,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/workshop-complete-view-00.png",
+    "bytes": 270751,
+    "sha256": "0663dc16f8cf0bc9116fc97e8dbf69147bdada1a46148380b9a05aaee97d3a42",
+    "alphaBounds": [
+      328,
+      403,
+      692,
+      749
+    ]
+  },
+  {
+    "asset": "workshop",
+    "view": 1,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/workshop-complete-view-01.png",
+    "bytes": 278543,
+    "sha256": "6f9b87d2e43fcdf3bb6b9637ef99c40f92ba8ed05d9bfcf333efcac42cc63a5a",
+    "alphaBounds": [
+      322,
+      420,
+      709,
+      787
+    ]
+  },
+  {
+    "asset": "workshop",
+    "view": 2,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/workshop-complete-view-02.png",
+    "bytes": 231473,
+    "sha256": "0e3fa3cb0a823bc154c2d17047b70bad373933e4f6312fd30cc1005f14956f40",
+    "alphaBounds": [
+      370,
+      435,
+      656,
+      776
+    ]
+  },
+  {
+    "asset": "workshop",
+    "view": 3,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/workshop-complete-view-03.png",
+    "bytes": 287371,
+    "sha256": "160cc8d40d52436ccda0eb1f1f740ff76ef16c2790add4c3a1f507a4140f176e",
+    "alphaBounds": [
+      317,
+      384,
+      735,
+      788
+    ]
+  },
+  {
+    "asset": "workshop",
+    "view": 4,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/workshop-complete-view-04.png",
+    "bytes": 283528,
+    "sha256": "202776ae2420bb1ad726bc19ef66ae1d399a0a60b4d162065001ddf5749e8fb4",
+    "alphaBounds": [
+      332,
+      361,
+      696,
+      749
+    ]
+  },
+  {
+    "asset": "workshop",
+    "view": 5,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/workshop-complete-view-05.png",
+    "bytes": 291778,
+    "sha256": "807e0da8922739ee749396a00ea478f7c0c3babb659062013a421e87a48c0e34",
+    "alphaBounds": [
+      315,
+      369,
+      702,
+      807
+    ]
+  },
+  {
+    "asset": "workshop",
+    "view": 6,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/workshop-complete-view-06.png",
+    "bytes": 246477,
+    "sha256": "e439331a4390769f08956b38f298e4b89bee26ba150a61847bb50f5786e58279",
+    "alphaBounds": [
+      368,
+      403,
+      654,
+      776
+    ]
+  },
+  {
+    "asset": "workshop",
+    "view": 7,
+    "file": "assets/buildings/frontier-civilization-models-v1/captures/workshop-complete-view-07.png",
+    "bytes": 289121,
+    "sha256": "e2941fa0e44b55ac9ae24ef61168b8293cce5be8d2d2c1de355de3a3b2d75bae",
+    "alphaBounds": [
+      289,
+      420,
+      707,
+      783
+    ]
+  }
+]

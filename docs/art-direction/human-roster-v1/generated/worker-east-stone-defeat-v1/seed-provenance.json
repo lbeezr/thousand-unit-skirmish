@@ -1,0 +1,10 @@
+{
+  "sourceRevision": "68a6fa9feff8d31ee108d1dc6e77964494a58ba2",
+  "frameId": "walk-east-0",
+  "manifest": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json",
+  "seedSha256": "b2b92a316c4ceace8bf6f0ab0cc277989da2113171cb95bfb98f4745e18d5ad4",
+  "direction": "east",
+  "screenDirection": "down-right/front three-quarter",
+  "tool": "built-in ImageGen approved under standing bounded public-seed authorization",
+  "retainedSourceAssessment": "Actual legacy/public sources inspected before production; earlier current-character action keys remain SE-facing. This uses actual public walk East bearing, no relabel or mirror."
+}

@@ -19,8 +19,8 @@
   "files": [
     {
       "path": "README.md",
-      "bytes": 3805,
-      "sha256": "bcc4fe51ca922e241567b0141a97ef5c81904b7b7997cfa985f063a8ce193de4"
+      "bytes": 5362,
+      "sha256": "a4e8da2ab95c97b0897a48c8daef3003ca2a59410e61bd19493b8adbd3ac2cd3"
     },
     {
       "path": "asset-check.html",
@@ -215,7 +215,9 @@
     {
       "path": "captures/backgrounds/capture.json",
       "bytes": 1052,
-      "sha256": "d65f785b9a47a6220dfc3e872e1b78a2541f23b18f7ae656957bbf87e6a6ccdf"
+      "sha256": "d65f785b9a47a6220dfc3e872e1b78a2541f23b18f7ae656957bbf87e6a6ccdf",
+      "availability": "missing-from-inspected-git-history",
+      "recovery": "Original expected identity retained; no executed receipt bytes reconstructed."
     },
     {
       "path": "captures/backgrounds/meadow-game-background.png",
@@ -844,8 +846,8 @@
     },
     {
       "path": "review.json",
-      "bytes": 2784,
-      "sha256": "041381256e1dc471affbe58bfb186eb0b5f8e94d1836371389d904b3c9050100"
+      "bytes": 3557,
+      "sha256": "5744688ba401dbf241c8887f5ee43b944766969ce8e4bbf900761b59117e0bb0"
     },
     {
       "path": "source/README.md",
@@ -882,5 +884,15 @@
       "bytes": 4486,
       "sha256": "a1f54d91edd43c8e4abb6f09b32fc25ced6b9828ceb4b97b6adff7979ae31189"
     }
-  ]
+  ],
+  "preservationAudit": {
+    "date": "2026-10-04",
+    "expectedEntries": 100,
+    "availableEntries": 99,
+    "missingEntries": 1,
+    "publication": "paused; existing draft repaired only",
+    "originalHead": "732c40c0d12d89aab9358e795a672f2c738c4d8c",
+    "unchangedImages": 73,
+    "unchangedImageBytes": 25464787
+  }
 }

@@ -1,0 +1,1064 @@
+{
+  "baseline": {
+    "head": "1850b3b9d7ace7db572470411167d90d217236f8",
+    "records": [
+      {
+        "team": 0,
+        "runs": [
+          {
+            "team": 0,
+            "mode": "unreachable",
+            "queuedType": "move",
+            "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+            "ticks": 1200,
+            "arrived": false,
+            "goal": 1099,
+            "attackTargetId": 25,
+            "queued": 1,
+            "releasedAt": null,
+            "hiddenAt": null,
+            "targetVisible": true,
+            "targetHp": 113,
+            "minTargetHp": 113,
+            "attackerPosition": {
+              "x": -6.5,
+              "z": 9.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 16.5
+            },
+            "traceSha256": "ff4b72cdbe5abeb7510f0476a48dab0ace4a13e7eb51469a47481f9c14d45d26"
+          },
+          {
+            "team": 0,
+            "mode": "unreachable",
+            "queuedType": "move",
+            "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+            "ticks": 1200,
+            "arrived": false,
+            "goal": 1099,
+            "attackTargetId": 25,
+            "queued": 1,
+            "releasedAt": null,
+            "hiddenAt": null,
+            "targetVisible": true,
+            "targetHp": 113,
+            "minTargetHp": 113,
+            "attackerPosition": {
+              "x": -6.5,
+              "z": 9.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 16.5
+            },
+            "traceSha256": "ff4b72cdbe5abeb7510f0476a48dab0ace4a13e7eb51469a47481f9c14d45d26"
+          }
+        ]
+      },
+      {
+        "team": 1,
+        "runs": [
+          {
+            "team": 1,
+            "mode": "unreachable",
+            "queuedType": "move",
+            "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+            "ticks": 1200,
+            "arrived": false,
+            "goal": 1140,
+            "attackTargetId": 25,
+            "queued": 1,
+            "releasedAt": null,
+            "hiddenAt": null,
+            "targetVisible": true,
+            "targetHp": 113,
+            "minTargetHp": 113,
+            "attackerPosition": {
+              "x": -6.5,
+              "z": 9.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 16.5
+            },
+            "traceSha256": "9c1aa8e51ad13ff83221f5e6a26fdda997e776092f25472bcbe0b537da173de2"
+          },
+          {
+            "team": 1,
+            "mode": "unreachable",
+            "queuedType": "move",
+            "sourceSha256": "efc3e8f114fce2e5836ff2f49508f8d2fb7ecc4fdc2a2b043e4097dfb50c3440",
+            "ticks": 1200,
+            "arrived": false,
+            "goal": 1140,
+            "attackTargetId": 25,
+            "queued": 1,
+            "releasedAt": null,
+            "hiddenAt": null,
+            "targetVisible": true,
+            "targetHp": 113,
+            "minTargetHp": 113,
+            "attackerPosition": {
+              "x": -6.5,
+              "z": 9.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 16.5
+            },
+            "traceSha256": "9c1aa8e51ad13ff83221f5e6a26fdda997e776092f25472bcbe0b537da173de2"
+          }
+        ]
+      }
+    ]
+  },
+  "candidate": {
+    "head": "cc5a2169a6a85507aeddb95b75c1775ee5dbdeb4",
+    "records": [
+      {
+        "team": 0,
+        "orderType": "attack",
+        "mode": "dead",
+        "runs": [
+          {
+            "team": 0,
+            "mode": "dead",
+            "orderType": "attack",
+            "queuedType": "move",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 1049,
+            "arrived": true,
+            "goal": 1099,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 552,
+            "hiddenAt": null,
+            "targetVisible": false,
+            "targetHp": 0,
+            "minTargetHp": 0,
+            "attackerPosition": {
+              "x": -20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 11.5
+            },
+            "traceSha256": "b5a63a23e65e300c81ae005a49ae6991d07b8e8eb11fb03da9e3a7193faa0872"
+          },
+          {
+            "team": 0,
+            "mode": "dead",
+            "orderType": "attack",
+            "queuedType": "move",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 1049,
+            "arrived": true,
+            "goal": 1099,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 552,
+            "hiddenAt": null,
+            "targetVisible": false,
+            "targetHp": 0,
+            "minTargetHp": 0,
+            "attackerPosition": {
+              "x": -20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 11.5
+            },
+            "traceSha256": "b5a63a23e65e300c81ae005a49ae6991d07b8e8eb11fb03da9e3a7193faa0872"
+          }
+        ]
+      },
+      {
+        "team": 0,
+        "orderType": "attack",
+        "mode": "hidden",
+        "runs": [
+          {
+            "team": 0,
+            "mode": "hidden",
+            "orderType": "attack",
+            "queuedType": "move",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 87,
+            "arrived": true,
+            "goal": 1099,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 9,
+            "hiddenAt": 8,
+            "targetVisible": false,
+            "targetHp": 120,
+            "minTargetHp": 120,
+            "attackerPosition": {
+              "x": -20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 11.5
+            },
+            "traceSha256": "25feeede9bcd3ec1071e1dabad2d6a206064cab33434afe40c48f5cf97f05021"
+          },
+          {
+            "team": 0,
+            "mode": "hidden",
+            "orderType": "attack",
+            "queuedType": "move",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 87,
+            "arrived": true,
+            "goal": 1099,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 9,
+            "hiddenAt": 8,
+            "targetVisible": false,
+            "targetHp": 120,
+            "minTargetHp": 120,
+            "attackerPosition": {
+              "x": -20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 11.5
+            },
+            "traceSha256": "25feeede9bcd3ec1071e1dabad2d6a206064cab33434afe40c48f5cf97f05021"
+          }
+        ]
+      },
+      {
+        "team": 0,
+        "orderType": "attack",
+        "mode": "unreachable",
+        "runs": [
+          {
+            "team": 0,
+            "mode": "unreachable",
+            "orderType": "attack",
+            "queuedType": "move",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 524,
+            "arrived": true,
+            "goal": 1099,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 27,
+            "hiddenAt": null,
+            "targetVisible": true,
+            "targetHp": 113,
+            "minTargetHp": 113,
+            "attackerPosition": {
+              "x": -20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 16.5
+            },
+            "traceSha256": "63f4f02344ae709c82a6c1e71a2f9efc8fa92f1b6feaac08a521f958240eee0b"
+          },
+          {
+            "team": 0,
+            "mode": "unreachable",
+            "orderType": "attack",
+            "queuedType": "move",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 524,
+            "arrived": true,
+            "goal": 1099,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 27,
+            "hiddenAt": null,
+            "targetVisible": true,
+            "targetHp": 113,
+            "minTargetHp": 113,
+            "attackerPosition": {
+              "x": -20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 16.5
+            },
+            "traceSha256": "63f4f02344ae709c82a6c1e71a2f9efc8fa92f1b6feaac08a521f958240eee0b"
+          }
+        ]
+      },
+      {
+        "team": 0,
+        "orderType": "attackMove",
+        "mode": "dead",
+        "runs": [
+          {
+            "team": 0,
+            "mode": "dead",
+            "orderType": "attackMove",
+            "queuedType": "attackMove",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 1049,
+            "arrived": true,
+            "goal": 1099,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 552,
+            "hiddenAt": null,
+            "targetVisible": false,
+            "targetHp": 0,
+            "minTargetHp": 0,
+            "attackerPosition": {
+              "x": -20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 11.5
+            },
+            "traceSha256": "64624acb431b3711433a4f6004cfdc68aa68e691a92731e9d818f1b807845edf"
+          },
+          {
+            "team": 0,
+            "mode": "dead",
+            "orderType": "attackMove",
+            "queuedType": "attackMove",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 1049,
+            "arrived": true,
+            "goal": 1099,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 552,
+            "hiddenAt": null,
+            "targetVisible": false,
+            "targetHp": 0,
+            "minTargetHp": 0,
+            "attackerPosition": {
+              "x": -20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 11.5
+            },
+            "traceSha256": "64624acb431b3711433a4f6004cfdc68aa68e691a92731e9d818f1b807845edf"
+          }
+        ]
+      },
+      {
+        "team": 0,
+        "orderType": "attackMove",
+        "mode": "hidden",
+        "runs": [
+          {
+            "team": 0,
+            "mode": "hidden",
+            "orderType": "attackMove",
+            "queuedType": "attackMove",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 481,
+            "arrived": true,
+            "goal": 1099,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 7,
+            "hiddenAt": 6,
+            "targetVisible": false,
+            "targetHp": 120,
+            "minTargetHp": 120,
+            "attackerPosition": {
+              "x": -20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 11.5
+            },
+            "traceSha256": "3b5a997851b1760e2b182229dbcf53ccffa1449136b37322f7ae79ca250d0ffb"
+          },
+          {
+            "team": 0,
+            "mode": "hidden",
+            "orderType": "attackMove",
+            "queuedType": "attackMove",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 481,
+            "arrived": true,
+            "goal": 1099,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 7,
+            "hiddenAt": 6,
+            "targetVisible": false,
+            "targetHp": 120,
+            "minTargetHp": 120,
+            "attackerPosition": {
+              "x": -20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 11.5
+            },
+            "traceSha256": "3b5a997851b1760e2b182229dbcf53ccffa1449136b37322f7ae79ca250d0ffb"
+          }
+        ]
+      },
+      {
+        "team": 0,
+        "orderType": "attackMove",
+        "mode": "unreachable",
+        "runs": [
+          {
+            "team": 0,
+            "mode": "unreachable",
+            "orderType": "attackMove",
+            "queuedType": "attackMove",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 524,
+            "arrived": true,
+            "goal": 1099,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 27,
+            "hiddenAt": null,
+            "targetVisible": true,
+            "targetHp": 113,
+            "minTargetHp": 113,
+            "attackerPosition": {
+              "x": -20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 16.5
+            },
+            "traceSha256": "bf12f8f95829fb47ddbdb0728b64b3abdbcdae70f9eaca8dbc158406d35122c8"
+          },
+          {
+            "team": 0,
+            "mode": "unreachable",
+            "orderType": "attackMove",
+            "queuedType": "attackMove",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 524,
+            "arrived": true,
+            "goal": 1099,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 27,
+            "hiddenAt": null,
+            "targetVisible": true,
+            "targetHp": 113,
+            "minTargetHp": 113,
+            "attackerPosition": {
+              "x": -20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 16.5
+            },
+            "traceSha256": "bf12f8f95829fb47ddbdb0728b64b3abdbcdae70f9eaca8dbc158406d35122c8"
+          }
+        ]
+      },
+      {
+        "team": 1,
+        "orderType": "attack",
+        "mode": "dead",
+        "runs": [
+          {
+            "team": 1,
+            "mode": "dead",
+            "orderType": "attack",
+            "queuedType": "move",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 1037,
+            "arrived": true,
+            "goal": 1140,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 552,
+            "hiddenAt": null,
+            "targetVisible": false,
+            "targetHp": 0,
+            "minTargetHp": 0,
+            "attackerPosition": {
+              "x": 20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 11.5
+            },
+            "traceSha256": "9d27f560e6047acc269f075b79a7aae98d1c49f8dd8d256a9985b8d93c46b1d5"
+          },
+          {
+            "team": 1,
+            "mode": "dead",
+            "orderType": "attack",
+            "queuedType": "move",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 1037,
+            "arrived": true,
+            "goal": 1140,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 552,
+            "hiddenAt": null,
+            "targetVisible": false,
+            "targetHp": 0,
+            "minTargetHp": 0,
+            "attackerPosition": {
+              "x": 20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 11.5
+            },
+            "traceSha256": "9d27f560e6047acc269f075b79a7aae98d1c49f8dd8d256a9985b8d93c46b1d5"
+          }
+        ]
+      },
+      {
+        "team": 1,
+        "orderType": "attack",
+        "mode": "hidden",
+        "runs": [
+          {
+            "team": 1,
+            "mode": "hidden",
+            "orderType": "attack",
+            "queuedType": "move",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 85,
+            "arrived": true,
+            "goal": 1140,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 8,
+            "hiddenAt": 7,
+            "targetVisible": false,
+            "targetHp": 120,
+            "minTargetHp": 120,
+            "attackerPosition": {
+              "x": 20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 11.5
+            },
+            "traceSha256": "b247c7cb8f5a433553c0f361b11cfd107a3285d1523efdb61eab7725335978d3"
+          },
+          {
+            "team": 1,
+            "mode": "hidden",
+            "orderType": "attack",
+            "queuedType": "move",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 85,
+            "arrived": true,
+            "goal": 1140,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 8,
+            "hiddenAt": 7,
+            "targetVisible": false,
+            "targetHp": 120,
+            "minTargetHp": 120,
+            "attackerPosition": {
+              "x": 20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 11.5
+            },
+            "traceSha256": "b247c7cb8f5a433553c0f361b11cfd107a3285d1523efdb61eab7725335978d3"
+          }
+        ]
+      },
+      {
+        "team": 1,
+        "orderType": "attack",
+        "mode": "unreachable",
+        "runs": [
+          {
+            "team": 1,
+            "mode": "unreachable",
+            "orderType": "attack",
+            "queuedType": "move",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 512,
+            "arrived": true,
+            "goal": 1140,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 27,
+            "hiddenAt": null,
+            "targetVisible": true,
+            "targetHp": 113,
+            "minTargetHp": 113,
+            "attackerPosition": {
+              "x": 20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 16.5
+            },
+            "traceSha256": "f795211e7b7d631f0be93d2a9907bb4a40ac83c520affc6f9ad27dbd5ce972fc"
+          },
+          {
+            "team": 1,
+            "mode": "unreachable",
+            "orderType": "attack",
+            "queuedType": "move",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 512,
+            "arrived": true,
+            "goal": 1140,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 27,
+            "hiddenAt": null,
+            "targetVisible": true,
+            "targetHp": 113,
+            "minTargetHp": 113,
+            "attackerPosition": {
+              "x": 20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 16.5
+            },
+            "traceSha256": "f795211e7b7d631f0be93d2a9907bb4a40ac83c520affc6f9ad27dbd5ce972fc"
+          }
+        ]
+      },
+      {
+        "team": 1,
+        "orderType": "attackMove",
+        "mode": "dead",
+        "runs": [
+          {
+            "team": 1,
+            "mode": "dead",
+            "orderType": "attackMove",
+            "queuedType": "attackMove",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 1037,
+            "arrived": true,
+            "goal": 1140,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 552,
+            "hiddenAt": null,
+            "targetVisible": false,
+            "targetHp": 0,
+            "minTargetHp": 0,
+            "attackerPosition": {
+              "x": 20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 11.5
+            },
+            "traceSha256": "905a9af22de1f428824efbd2857bb485605c525b34dc63ba552b1077f62820d2"
+          },
+          {
+            "team": 1,
+            "mode": "dead",
+            "orderType": "attackMove",
+            "queuedType": "attackMove",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 1037,
+            "arrived": true,
+            "goal": 1140,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 552,
+            "hiddenAt": null,
+            "targetVisible": false,
+            "targetHp": 0,
+            "minTargetHp": 0,
+            "attackerPosition": {
+              "x": 20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 11.5
+            },
+            "traceSha256": "905a9af22de1f428824efbd2857bb485605c525b34dc63ba552b1077f62820d2"
+          }
+        ]
+      },
+      {
+        "team": 1,
+        "orderType": "attackMove",
+        "mode": "hidden",
+        "runs": [
+          {
+            "team": 1,
+            "mode": "hidden",
+            "orderType": "attackMove",
+            "queuedType": "attackMove",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 469,
+            "arrived": true,
+            "goal": 1140,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 7,
+            "hiddenAt": 6,
+            "targetVisible": false,
+            "targetHp": 120,
+            "minTargetHp": 120,
+            "attackerPosition": {
+              "x": 20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 11.5
+            },
+            "traceSha256": "c81f85f80937dc3b0a2e72132f23c04bf562b5f1da3664bf7ff7029d0421ff14"
+          },
+          {
+            "team": 1,
+            "mode": "hidden",
+            "orderType": "attackMove",
+            "queuedType": "attackMove",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 469,
+            "arrived": true,
+            "goal": 1140,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 7,
+            "hiddenAt": 6,
+            "targetVisible": false,
+            "targetHp": 120,
+            "minTargetHp": 120,
+            "attackerPosition": {
+              "x": 20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 11.5
+            },
+            "traceSha256": "c81f85f80937dc3b0a2e72132f23c04bf562b5f1da3664bf7ff7029d0421ff14"
+          }
+        ]
+      },
+      {
+        "team": 1,
+        "orderType": "attackMove",
+        "mode": "unreachable",
+        "runs": [
+          {
+            "team": 1,
+            "mode": "unreachable",
+            "orderType": "attackMove",
+            "queuedType": "attackMove",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 512,
+            "arrived": true,
+            "goal": 1140,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 27,
+            "hiddenAt": null,
+            "targetVisible": true,
+            "targetHp": 113,
+            "minTargetHp": 113,
+            "attackerPosition": {
+              "x": 20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 16.5
+            },
+            "traceSha256": "e8594d122250acf699b58afd1c74aaed7470f2ecb116f1d51f87625b57e27893"
+          },
+          {
+            "team": 1,
+            "mode": "unreachable",
+            "orderType": "attackMove",
+            "queuedType": "attackMove",
+            "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+            "ticks": 512,
+            "arrived": true,
+            "goal": 1140,
+            "attackTargetId": -1,
+            "queued": 0,
+            "releasedAt": 27,
+            "hiddenAt": null,
+            "targetVisible": true,
+            "targetHp": 113,
+            "minTargetHp": 113,
+            "attackerPosition": {
+              "x": 20.5,
+              "z": -14.5
+            },
+            "targetPosition": {
+              "x": 0.5,
+              "z": 16.5
+            },
+            "traceSha256": "e8594d122250acf699b58afd1c74aaed7470f2ecb116f1d51f87625b57e27893"
+          }
+        ]
+      }
+    ],
+    "limits": [
+      "real server bodies; fixed ticks with planning callbacks drained between ticks; native timing and rendering excluded"
+    ]
+  },
+  "native": {
+    "head": "1850b3b9d7ace7db572470411167d90d217236f8",
+    "sourceSha256": "abba7cfdedeb6c9eb31e22cc8478703ebd72cc10310209e616a3892576d97c7f",
+    "records": [
+      {
+        "team": 0,
+        "queuedType": "move",
+        "initialVisibleShot": true,
+        "initialTargetHp": 113,
+        "arrived": true,
+        "goal": 1099,
+        "targetHp": 106,
+        "targetVisibleAtCompletion": true,
+        "attackTargetId": -1,
+        "queued": 0,
+        "restartDuringPursuit": true,
+        "postArrivalRestartStable": true,
+        "snapshotsChecked": 415,
+        "ticks": 510
+      },
+      {
+        "team": 1,
+        "queuedType": "attackMove",
+        "initialVisibleShot": true,
+        "initialTargetHp": 113,
+        "arrived": true,
+        "goal": 1140,
+        "targetHp": 113,
+        "targetVisibleAtCompletion": true,
+        "attackTargetId": -1,
+        "queued": 0,
+        "restartDuringPursuit": true,
+        "postArrivalRestartStable": true,
+        "snapshotsChecked": 415,
+        "ticks": 510
+      }
+    ],
+    "limits": [
+      "actual two-seat servers, paid natural Archer/Skiff production and ordinary commands; no actor/HP/position injection",
+      "native proof covers visible unreachable retreat and queued Move/Attack Move; death/fog loss have fixed-body tests",
+      "no renderer, deployment, naval balance or performance claim"
+    ]
+  },
+  "nativeSourceCommit": "cc5a2169a6a85507aeddb95b75c1775ee5dbdeb4",
+  "checks": {
+    "failingBeforeFix": 3,
+    "newFocusedPassed": 18,
+    "broaderFocusedPassed": 121
+  },
+  "limits": [
+    "unit-target geometry only; death and fog loss are fixed-body controls",
+    "native run captured the dirty candidate on1850; server SHA matches committed cc5a216",
+    "no actor, HP or position injection in native proof",
+    "no renderer, deployment, exhaustive target-lifecycle, naval balance or performance claim"
+  ],
+  "integration": {
+    "head": "e6f20b415e6389c1d72313642cbc87414b00f3f4",
+    "main": "80cb855f3905582e24f7732c424ae8ac185b7f58",
+    "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+    "focusedPassed": 121,
+    "replayPairs": [
+      {
+        "team": 0,
+        "orderType": "attack",
+        "mode": "dead",
+        "ticks": 1049,
+        "releasedAt": 552,
+        "traceSha256": "b5a63a23e65e300c81ae005a49ae6991d07b8e8eb11fb03da9e3a7193faa0872",
+        "repeatExact": true,
+        "matchesEarlierCandidate": true
+      },
+      {
+        "team": 0,
+        "orderType": "attack",
+        "mode": "hidden",
+        "ticks": 87,
+        "releasedAt": 9,
+        "traceSha256": "25feeede9bcd3ec1071e1dabad2d6a206064cab33434afe40c48f5cf97f05021",
+        "repeatExact": true,
+        "matchesEarlierCandidate": true
+      },
+      {
+        "team": 0,
+        "orderType": "attack",
+        "mode": "unreachable",
+        "ticks": 524,
+        "releasedAt": 27,
+        "traceSha256": "63f4f02344ae709c82a6c1e71a2f9efc8fa92f1b6feaac08a521f958240eee0b",
+        "repeatExact": true,
+        "matchesEarlierCandidate": true
+      },
+      {
+        "team": 0,
+        "orderType": "attackMove",
+        "mode": "dead",
+        "ticks": 1049,
+        "releasedAt": 552,
+        "traceSha256": "64624acb431b3711433a4f6004cfdc68aa68e691a92731e9d818f1b807845edf",
+        "repeatExact": true,
+        "matchesEarlierCandidate": true
+      },
+      {
+        "team": 0,
+        "orderType": "attackMove",
+        "mode": "hidden",
+        "ticks": 481,
+        "releasedAt": 7,
+        "traceSha256": "3b5a997851b1760e2b182229dbcf53ccffa1449136b37322f7ae79ca250d0ffb",
+        "repeatExact": true,
+        "matchesEarlierCandidate": true
+      },
+      {
+        "team": 0,
+        "orderType": "attackMove",
+        "mode": "unreachable",
+        "ticks": 524,
+        "releasedAt": 27,
+        "traceSha256": "bf12f8f95829fb47ddbdb0728b64b3abdbcdae70f9eaca8dbc158406d35122c8",
+        "repeatExact": true,
+        "matchesEarlierCandidate": true
+      },
+      {
+        "team": 1,
+        "orderType": "attack",
+        "mode": "dead",
+        "ticks": 1037,
+        "releasedAt": 552,
+        "traceSha256": "9d27f560e6047acc269f075b79a7aae98d1c49f8dd8d256a9985b8d93c46b1d5",
+        "repeatExact": true,
+        "matchesEarlierCandidate": true
+      },
+      {
+        "team": 1,
+        "orderType": "attack",
+        "mode": "hidden",
+        "ticks": 85,
+        "releasedAt": 8,
+        "traceSha256": "b247c7cb8f5a433553c0f361b11cfd107a3285d1523efdb61eab7725335978d3",
+        "repeatExact": true,
+        "matchesEarlierCandidate": true
+      },
+      {
+        "team": 1,
+        "orderType": "attack",
+        "mode": "unreachable",
+        "ticks": 512,
+        "releasedAt": 27,
+        "traceSha256": "f795211e7b7d631f0be93d2a9907bb4a40ac83c520affc6f9ad27dbd5ce972fc",
+        "repeatExact": true,
+        "matchesEarlierCandidate": true
+      },
+      {
+        "team": 1,
+        "orderType": "attackMove",
+        "mode": "dead",
+        "ticks": 1037,
+        "releasedAt": 552,
+        "traceSha256": "905a9af22de1f428824efbd2857bb485605c525b34dc63ba552b1077f62820d2",
+        "repeatExact": true,
+        "matchesEarlierCandidate": true
+      },
+      {
+        "team": 1,
+        "orderType": "attackMove",
+        "mode": "hidden",
+        "ticks": 469,
+        "releasedAt": 7,
+        "traceSha256": "c81f85f80937dc3b0a2e72132f23c04bf562b5f1da3664bf7ff7029d0421ff14",
+        "repeatExact": true,
+        "matchesEarlierCandidate": true
+      },
+      {
+        "team": 1,
+        "orderType": "attackMove",
+        "mode": "unreachable",
+        "ticks": 512,
+        "releasedAt": 27,
+        "traceSha256": "e8594d122250acf699b58afd1c74aaed7470f2ecb116f1d51f87625b57e27893",
+        "repeatExact": true,
+        "matchesEarlierCandidate": true
+      }
+    ],
+    "native": {
+      "head": "e6f20b415e6389c1d72313642cbc87414b00f3f4",
+      "sourceSha256": "e1a2f15b19446559cf66c30e43a9a3a22cd8105b579075d3716a8924f1193b5f",
+      "records": [
+        {
+          "team": 0,
+          "queuedType": "move",
+          "initialVisibleShot": true,
+          "initialTargetHp": 113,
+          "arrived": true,
+          "goal": 1099,
+          "targetHp": 106,
+          "targetVisibleAtCompletion": true,
+          "attackTargetId": -1,
+          "queued": 0,
+          "restartDuringPursuit": true,
+          "postArrivalRestartStable": true,
+          "snapshotsChecked": 411,
+          "ticks": 510
+        },
+        {
+          "team": 1,
+          "queuedType": "attackMove",
+          "initialVisibleShot": true,
+          "initialTargetHp": 113,
+          "arrived": true,
+          "goal": 1140,
+          "targetHp": 113,
+          "targetVisibleAtCompletion": true,
+          "attackTargetId": -1,
+          "queued": 0,
+          "restartDuringPursuit": true,
+          "postArrivalRestartStable": true,
+          "snapshotsChecked": 408,
+          "ticks": 510
+        }
+      ],
+      "limits": [
+        "actual two-seat servers, paid natural Archer/Skiff production and ordinary commands; no actor/HP/position injection",
+        "native proof covers visible unreachable retreat and queued Move/Attack Move; death/fog loss have fixed-body tests",
+        "no renderer, deployment, naval balance or performance claim"
+      ]
+    },
+    "independentReview": {
+      "findings": 0,
+      "integrationChecksPassed": 94,
+      "codeUnchanged": true
+    }
+  }
+}

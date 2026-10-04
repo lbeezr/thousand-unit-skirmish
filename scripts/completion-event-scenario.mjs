@@ -29,6 +29,8 @@ async function startServer(port, customMapDirectory, matchStatePath = null) {
       ...process.env,
       PORT: String(port),
       RTS_HOST: '127.0.0.1',
+      // This compact authoring scenario is an explicit internal fixture.
+      RTS_MAP: 'maps/open-field.json',
       RTS_CUSTOM_MAP_DIRECTORY: customMapDirectory,
       ...(matchStatePath ? { RTS_MATCH_STATE_PATH: matchStatePath } : {}),
     },
@@ -173,6 +175,8 @@ try {
   const azureWelcome = await azure.waitForMessage(m => m.type === 'welcome');
   let ember = createClient(port); clients.push(ember); await ember.opened;
   const emberWelcome = await ember.waitForMessage(m => m.type === 'welcome');
+  assert.equal(azureWelcome.map.id, 'open-field');
+  assert.deepEqual([azureWelcome.matchModeId, azureWelcome.matchModeVersion], ['authored', 1]);
   const base = JSON.parse(await readFile(new URL('../maps/open-field.json', import.meta.url), 'utf8'));
   const map = {...base, id: 'completion-events', name: 'Completion Events', startingArmySize: 8,
     fogOfWar: false, startingResources: {food: 0, wood: 0},

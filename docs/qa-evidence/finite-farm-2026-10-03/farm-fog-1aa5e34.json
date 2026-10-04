@@ -1,0 +1,519 @@
+{
+  "evidenceType": "authoritative-server-scenario",
+  "humanMatches": 0,
+  "sourceRevision": "1aa5e3420728cf33aee3b277850f5581028a7863",
+  "sourceDirty": false,
+  "rulesetRevision": "v1:496509c24775ddfbd289faf9fbcc85dfef7d054d710c665caa9fe192c610ddcd",
+  "farmDefinition": {
+    "id": "farm",
+    "label": "Farm",
+    "tags": [
+      "structure"
+    ],
+    "armor": {
+      "melee": 0,
+      "pierce": 0,
+      "siege": 0
+    },
+    "cost": {
+      "food": 0,
+      "wood": 60
+    },
+    "buildSeconds": 15,
+    "footprint": 3,
+    "maxHp": 600,
+    "products": [],
+    "harvest": {
+      "type": "food",
+      "stock": 200,
+      "access": "owner"
+    },
+    "presentation": "building.farm"
+  },
+  "map": {
+    "id": "finite-farm-proof",
+    "name": "Finite Farm paid proof",
+    "width": 64,
+    "height": 64,
+    "terrainSeed": 19,
+    "fogOfWar": true,
+    "startingArmySize": 24,
+    "startingResources": {
+      "food": 300,
+      "wood": 600
+    },
+    "spawnPoints": [
+      {
+        "team": 0,
+        "x": -20,
+        "z": 0
+      },
+      {
+        "team": 1,
+        "x": 20,
+        "z": 0
+      }
+    ],
+    "obstacles": [],
+    "resourceNodes": [],
+    "triggers": [],
+    "scenarioEvents": []
+  },
+  "records": [
+    {
+      "stage": "prior-Skiff-pin-preserved",
+      "tick": 270,
+      "food": [
+        300,
+        300
+      ],
+      "wood": [
+        525,
+        525
+      ],
+      "farms": [],
+      "cargo": [
+        0,
+        0
+      ],
+      "suppliedFood": [
+        0,
+        0
+      ],
+      "spentWood": [
+        75,
+        75
+      ],
+      "lostCrop": [
+        0,
+        0
+      ]
+    },
+    {
+      "stage": "paid-unfinished",
+      "tick": 300,
+      "food": [
+        300,
+        300
+      ],
+      "wood": [
+        465,
+        465
+      ],
+      "farms": [
+        {
+          "id": 3,
+          "team": 0,
+          "complete": false,
+          "progress": 0,
+          "harvestStock": 0
+        },
+        {
+          "id": 4,
+          "team": 1,
+          "complete": false,
+          "progress": 0,
+          "harvestStock": 0
+        }
+      ],
+      "cargo": [
+        0,
+        0
+      ],
+      "suppliedFood": [
+        0,
+        0
+      ],
+      "spentWood": [
+        135,
+        135
+      ],
+      "lostCrop": [
+        0,
+        0
+      ]
+    },
+    {
+      "stage": "completed-after-recovery",
+      "tick": 480,
+      "food": [
+        300,
+        300
+      ],
+      "wood": [
+        465,
+        465
+      ],
+      "farms": [
+        {
+          "id": 3,
+          "team": 0,
+          "complete": true,
+          "progress": 1,
+          "harvestStock": 200
+        },
+        {
+          "id": 4,
+          "team": 1,
+          "complete": true,
+          "progress": 1,
+          "harvestStock": 200
+        }
+      ],
+      "cargo": [
+        0,
+        0
+      ],
+      "suppliedFood": [
+        200,
+        200
+      ],
+      "spentWood": [
+        135,
+        135
+      ],
+      "lostCrop": [
+        0,
+        0
+      ]
+    },
+    {
+      "stage": "stopped-real-cargo",
+      "tick": 540,
+      "food": [
+        300,
+        300
+      ],
+      "wood": [
+        465,
+        465
+      ],
+      "farms": [
+        {
+          "id": 3,
+          "team": 0,
+          "complete": true,
+          "progress": 1,
+          "harvestStock": 198.06666666666678
+        },
+        {
+          "id": 4,
+          "team": 1,
+          "complete": true,
+          "progress": 1,
+          "harvestStock": 198.06666666666678
+        }
+      ],
+      "cargo": [
+        1.9333333333333331,
+        1.9333333333333331
+      ],
+      "suppliedFood": [
+        200,
+        200
+      ],
+      "spentWood": [
+        135,
+        135
+      ],
+      "lostCrop": [
+        0,
+        0
+      ]
+    },
+    {
+      "stage": "exact-finite-depletion",
+      "tick": 2130,
+      "food": [
+        500.0000000000082,
+        500.00000000000824
+      ],
+      "wood": [
+        465,
+        465
+      ],
+      "farms": [
+        {
+          "id": 3,
+          "team": 0,
+          "complete": true,
+          "progress": 1,
+          "harvestStock": 0
+        },
+        {
+          "id": 4,
+          "team": 1,
+          "complete": true,
+          "progress": 1,
+          "harvestStock": 0
+        }
+      ],
+      "cargo": [
+        0,
+        0
+      ],
+      "suppliedFood": [
+        200,
+        200
+      ],
+      "spentWood": [
+        135,
+        135
+      ],
+      "lostCrop": [
+        0,
+        0
+      ]
+    },
+    {
+      "stage": "cleared-no-refund",
+      "tick": 2190,
+      "food": [
+        500.0000000000082,
+        500.00000000000824
+      ],
+      "wood": [
+        465,
+        465
+      ],
+      "farms": [],
+      "cargo": [
+        0,
+        0
+      ],
+      "suppliedFood": [
+        200,
+        200
+      ],
+      "spentWood": [
+        135,
+        135
+      ],
+      "lostCrop": [
+        0,
+        0
+      ]
+    },
+    {
+      "stage": "cancelled-partial-no-yield",
+      "tick": 2490,
+      "food": [
+        500,
+        500
+      ],
+      "wood": [
+        450.466667,
+        450.466667
+      ],
+      "farms": [],
+      "cargo": [
+        0,
+        0
+      ],
+      "suppliedFood": [
+        200,
+        200
+      ],
+      "spentWood": [
+        149.533333,
+        149.533333
+      ],
+      "lostCrop": [
+        0,
+        0
+      ]
+    },
+    {
+      "stage": "paid-fresh-planting",
+      "tick": 2640,
+      "food": [
+        500,
+        500
+      ],
+      "wood": [
+        390.466667,
+        390.466667
+      ],
+      "farms": [
+        {
+          "id": 7,
+          "team": 0,
+          "complete": true,
+          "progress": 1,
+          "harvestStock": 200
+        },
+        {
+          "id": 8,
+          "team": 1,
+          "complete": true,
+          "progress": 1,
+          "harvestStock": 200
+        }
+      ],
+      "cargo": [
+        0,
+        0
+      ],
+      "suppliedFood": [
+        400,
+        400
+      ],
+      "spentWood": [
+        209.533333,
+        209.533333
+      ],
+      "lostCrop": [
+        0,
+        0
+      ]
+    },
+    {
+      "stage": "real-cargo-before-destruction",
+      "tick": 2670,
+      "food": [
+        500,
+        500
+      ],
+      "wood": [
+        390.466667,
+        390.466667
+      ],
+      "farms": [
+        {
+          "id": 7,
+          "team": 0,
+          "complete": true,
+          "progress": 1,
+          "harvestStock": 199.0333333333334
+        },
+        {
+          "id": 8,
+          "team": 1,
+          "complete": true,
+          "progress": 1,
+          "harvestStock": 199.0333333333334
+        }
+      ],
+      "cargo": [
+        0.9666666666666666,
+        0.9666666666666666
+      ],
+      "suppliedFood": [
+        400,
+        400
+      ],
+      "spentWood": [
+        209.533333,
+        209.533333
+      ],
+      "lostCrop": [
+        0,
+        0
+      ]
+    },
+    {
+      "stage": "destroyed-crop-cargo-retained",
+      "tick": 2700,
+      "food": [
+        500,
+        500
+      ],
+      "wood": [
+        390.466667,
+        390.466667
+      ],
+      "farms": [],
+      "cargo": [
+        1.9000000000000026,
+        1.933333333333336
+      ],
+      "suppliedFood": [
+        400,
+        400
+      ],
+      "spentWood": [
+        209.533333,
+        209.533333
+      ],
+      "lostCrop": [
+        198.1,
+        198.06666666666666
+      ]
+    },
+    {
+      "stage": "destroyed-source-cargo-delivered",
+      "tick": 2730,
+      "food": [
+        501.9,
+        501.93333333333334
+      ],
+      "wood": [
+        390.466667,
+        390.466667
+      ],
+      "farms": [],
+      "cargo": [
+        0,
+        0
+      ],
+      "suppliedFood": [
+        400,
+        400
+      ],
+      "spentWood": [
+        209.533333,
+        209.533333
+      ],
+      "lostCrop": [
+        198.1,
+        198.06666666666666
+      ]
+    },
+    {
+      "stage": "no-duplicate-credit-after-recovery",
+      "tick": 2760,
+      "food": [
+        501.9,
+        501.93333333333334
+      ],
+      "wood": [
+        390.466667,
+        390.466667
+      ],
+      "farms": [],
+      "cargo": [
+        0,
+        0
+      ],
+      "suppliedFood": [
+        400,
+        400
+      ],
+      "spentWood": [
+        209.533333,
+        209.533333
+      ],
+      "lostCrop": [
+        198.1,
+        198.06666666666666
+      ]
+    }
+  ],
+  "paidConstruction": true,
+  "ownerOnlyHarvest": true,
+  "unfinishedAndStockRecovery": true,
+  "priorContentPinPreserved": true,
+  "retainedCargoToMill": true,
+  "exactFiniteDepletion": true,
+  "paidReplanting": true,
+  "foggedOwnedFarmPolicy": true,
+  "cancelledPlantingCreatesNoStock": true,
+  "destroyedStockLostAndCargoRetained": true,
+  "noDuplicateCreditAfterRecovery": true,
+  "hostReset": true,
+  "banksCargoStockInjected": false,
+  "declaredFixtures": [
+    "Farm HP lowered and two existing initial Infantry positioned for a real destruction order."
+  ],
+  "visualQA": "not captured"
+}

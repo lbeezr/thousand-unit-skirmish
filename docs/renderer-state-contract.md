@@ -54,10 +54,10 @@ reads well; use the appearance matrix below.
 
 | State | Source and rule |
 | --- | --- |
-| Idle | Living, stationary, no active task/event; restrained bounded idle motion. |
+| Idle | Living, stationary, no fresh attack or confirmed work; includes assigned work waiting for progress. |
 | Walk / turn | Position/facing changes. Movement suppresses a retained work swing. |
-| Gather | Worker gathering task; generic while cargo type is unknown, wood/food pose once known. |
-| Build | Worker building task, while stationary at work. |
+| Gather | Compatible version-1 `performingAction` confirms positive food/wood/Stone progress; art selection follows the confirmed resource, not previous cargo. Dedicated Stone clips use their exact heading; missing Stone views retain that heading's idle and the existing neutral procedural cue. |
+| Build / Repair | Compatible version-1 `performingAction` confirms positive construction progress or repaired HP; stationary presentation uses the corresponding existing action. |
 | Attack | Fresh `lastAttackTick`; deduplicate and use target coordinates only if present. This is not proof of damage. |
 | Hit | Positive HP decreases. |
 | Defeat | HP reaches zero; terminal for that generation. |
@@ -69,9 +69,69 @@ buffers once per team after reconciliation. Authored material stays neutral.
 The actual server task strings are documented in the
 [command contract](gameplay-command-observation-contract.md#state-consumed-by-rendering).
 
+The [Worker performing-action contract](worker-performing-action-contract.md)
+defines state `workerPerformingActionVersion: 1` and unit row 17. Null, absent or
+unknown protocol/action, incompatible task, death and generation reuse clear
+work; task intent remains available to the HUD. A receipt-only clear immediately
+refreshes the active pose and dirties buffers, clearing fishing contact. A
+stationary living Worker without a fresh attack returns to idle. Continuous positive
+work keeps its clock; action/resource changes and clear/resume start a new clip.
+No art key awards resources or damage. Build/repair target bearing is still a
+separate producer dependency; row 15 currently describes gathering only.
+
+New unit art should follow the [current unit-loader subset](sprite-atlas-contract-v1.md#current-unit-loader-binding-subset)
+as well as the general schema. Animation integration task `01a103d4` owns any
+required selector/role/timing extension; unit-art owners retain supplied pixels
+and registration. Rough usable action/headings can ship before cosmetic polish.
+
 A reused generation starts its first sprite frame at elapsed zero, including
 when death and replacement are coalesced between snapshots or atlas loading is
 still pending. The prior generation's clock cannot advance the new role's clip.
+
+Sprite event lifetimes prefer authored action clips over idle placeholders for
+missing headings. An 850 ms attack must not inherit a 1,000 ms idle hold and
+replay its opening keys. Static action poses and entirely idle-backed legacy
+states retain their existing duration. The [unit animation audit](qa-unit-animation-audit-2026-10-03.md)
+records actual coverage, frame/transition checks and pending native acceptance.
+
+Movement heading uses `atan2(serverX - renderX, serverZ - renderZ)` through the
+existing interpolation and turn-rate limits. Stationary gathering uses the
+optional authoritative unit-row `workHeading` at index 15. A fresh attack retains
+its target heading; walking still suppresses work. Idle and near-zero displacement
+retain the last heading. Zero yaw is +Z, increasing toward +X. With the fixed
+`[0.78, 1.12, 0.78]` camera, screen-left/right/up/down correspond to
+`north-west`/`south-east`/`south-west`/`north-east`; atlas labels are world yaw,
+not screen compass directions. Billboard rotation does not require a second yaw
+offset.
+
+Shore-fish work turns toward the canonical derived water visual while Worker
+movement/gather authority remains at its land marker. Optional row index 16
+identifies that active work variant; the default renderer selects `gather-fish`
+with exact-heading food/gather/idle fallback and a separate cosmetic clock.
+Legacy rows clear the variant. The [approved SE pilot](worker-fishing-animation.md)
+records the four original poses and remaining directional coverage. Its measured
+reach key uses shared instanced neutral contact cues to the canonical water cell;
+other phases stay on the bank. Matching the current server bearing fails closed
+on ambiguity. The actor root/scale, gather distance, cargo and economy remain
+unchanged. Small bank/water resource cues pick the same existing land node.
+
+The default Human Worker keeps exact walk/gather facings. Its v3 pack has only
+three animated walk directions and one animated food-gather direction; other
+directions hold their authored idle facing. Boughward's first-pass Worker still
+reuses one static pose per action across all headings. This is missing art
+coverage, not eight-direction animation. The [facing regression evidence](qa-evidence/villager-facing-2026-10-03/README.md)
+records decoded pixels, clip selection, camera projection and the browser-capture limit.
+
+## Neutral wildlife resources
+
+The [Bellweather Sheep renderer](../src/neutral-wildlife-renderer.mjs) consumes
+validated authored food-node identity and authoritative `alive`/`carcass`/`depleted`
+snapshots with current visibility. Alive uses a fixed public one-view illustration
+or an explicit geometric proxy; carcass uses a separate food-cache marker;
+depleted, omitted, fogged and inconsistent nodes are hidden. This stationary
+resource has no movement heading or walking animation. See the
+[live binding evidence and importable map](qa-neutral-wildlife-render-binding-2026-10-03.md)
+for provisional scale, art and browser limits.
 
 ## Building parts and state
 
@@ -98,11 +158,26 @@ one matching variant. Production signal geometry remains renderer-owned.
 Keep footprint, selection, health, and rally readable. Barracks/Range direct
 sprites use construction thresholds 20%/90% and completed-health thresholds
 66%/33% in `src/building-sprites.mjs`; procedural geometry is their fallback.
+Their selected texture is also shared by a color-disabled opaque body-depth
+pass (alpha test 0.9), before transparent actors. The original blended color
+pass (alpha test 0.08, no depth writes) retains soft edges and painted shadows.
+Both use the same ground anchor and depth correction, inherit the outer group's
+fog visibility, and hide together while a frame is unavailable or disposed.
+This adds one draw per visible loaded direct-sprite building, at most 128 under
+the current match building limit, with no extra texture or geometry buffer.
+See [source and depth-contract evidence](qa-building-sprite-occlusion-2026-10-03.md)
+and the [crowded native comparison recipe](qa-building-occlusion-native-plan-2026-10-03.md)
+for the native GPU observation still pending. The server admission limit bounds
+ordinary matches; the renderer does not skip later passes at 128. A separate
+renderer-only 129-item regression protects that distinction.
 The captured Town Center loader is a separate path: starting landmarks use
 Complete, while constructed Town Centers pass live progress and health. The
 loader exposes existing fallback art if the current state/view load fails.
-Complete-only Frontier preview families also yield to fallback for
-unavailable construction/damage states. Collision remains server-owned.
+The [normal six-family Frontier binding](frontier-building-runtime.md)
+selects the existing Complete captures without a preview flag and yields to
+fallback per unavailable construction/damage state. Captured color/depth sprites
+share their image, transform, pivot and immutable frame texture; the depth child
+adds no picking target. Collision remains server-owned.
 
 Captured-building manifest attempts are shared by URL. A manifest HTTP 404 keeps
 fallback until `invalidateCapturedBuildingManifest(url)` is explicitly called;

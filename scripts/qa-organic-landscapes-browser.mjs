@@ -1,5 +1,6 @@
+import {startQaBrowser} from './temporary-resources.mjs';
 import {spawn,execFileSync} from 'node:child_process';
-import {readFile,writeFile,mkdtemp,mkdir} from 'node:fs/promises';
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const ROOT=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -65,11 +66,12 @@ class Cdp {
 }
 
 
-const profile=await mkdtemp('/tmp/organic-landscape-chrome-');
-const chrome=spawn('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',['--headless=new','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--window-size=1280,900','--user-data-dir='+profile,'about:blank'],{stdio:'ignore'});
+let browser;
 const out='docs/qa-evidence/organic-landscapes-2026-09-30';
 let cdp;
 try {
+ browser=await startQaBrowser('organic-landscape-chrome-','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',['--headless=new','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--window-size=1280,900']);
+ const {profile}=browser;
  let port;for(let i=0;i<100;i++){try{port=Number((await readFile(profile+'/DevToolsActivePort','utf8')).split('\n')[0]);if(port)break}catch{}await sleep(100)}
  const targets=await(await fetch('http://127.0.0.1:'+port+'/json/list')).json();cdp=new Cdp(targets.find(t=>t.type==='page').webSocketDebuggerUrl);
  await cdp.call('Page.enable');await cdp.call('Runtime.enable');await cdp.call('DOM.enable');await mkdir(out,{recursive:true});
@@ -98,4 +100,4 @@ try {
  }
  await writeFile(out+'/capture-report.json',JSON.stringify({source:'d9bea57b + organic landscape working changes',fog:'disabled only in disposable capture copies',errors},null,2)+'\n');
  if(errors.length)throw new Error(errors.join('\n'));
-}finally{cdp?.close();chrome.kill('SIGTERM');}
+} finally {try {cdp?.close();} finally {await browser?.dispose();}}

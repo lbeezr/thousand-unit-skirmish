@@ -1,0 +1,54 @@
+{
+  "encoding": "gzip compressed JSON",
+  "sourceRevision": "4dd8c267c42fcc374251519d9aabd1c8789ec4ac",
+  "files": [
+    {
+      "path": "one-worker-farm-0-observer-0.json.gz",
+      "rawSha256": "c9ecf4601c1083a5883c9435e1dd27dfc932f022a5549239ebd8e59c640a62c8",
+      "rawBytes": 77160,
+      "samples": 632
+    },
+    {
+      "path": "one-worker-farm-0-observer-1.json.gz",
+      "rawSha256": "d62001e6db1266737713dae6660706c9d95abc538718a4438dba9c0108b8f4fe",
+      "rawBytes": 77634,
+      "samples": 632
+    },
+    {
+      "path": "one-worker-farm-1-observer-0.json.gz",
+      "rawSha256": "02359e2feca475447f3df5b328240797abb8c9dc43f96468f0f4ab62f1b194d9",
+      "rawBytes": 78755,
+      "samples": 642
+    },
+    {
+      "path": "one-worker-farm-1-observer-1.json.gz",
+      "rawSha256": "8785f52dd3eaffc84385bc9fce68cdcdfe8353e48518bca211f6e018177f37dc",
+      "rawBytes": 78407,
+      "samples": 642
+    },
+    {
+      "path": "three-workers-farm-0-observer-0.json.gz",
+      "rawSha256": "1ceaf9e76641623fb132999d737a5cb5655235199b275e7a16f814cc1c54ada6",
+      "rawBytes": 161340,
+      "samples": 642
+    },
+    {
+      "path": "three-workers-farm-0-observer-1.json.gz",
+      "rawSha256": "408bd70e4529b79b99cd01ca7e9e9fc0108cd3fd8cfe5c8170ee11655aad6fef",
+      "rawBytes": 160114,
+      "samples": 642
+    },
+    {
+      "path": "three-workers-farm-1-observer-0.json.gz",
+      "rawSha256": "79025b413906aa54e67a5ad51f2689b01c97c964b9b476a35dff0ec5be3f67f7",
+      "rawBytes": 163136,
+      "samples": 652
+    },
+    {
+      "path": "three-workers-farm-1-observer-1.json.gz",
+      "rawSha256": "2cd76421f1a3496e19ea6b1f29f2a9b3a668a1e7373903012bdfc56d43d8d003",
+      "rawBytes": 162460,
+      "samples": 652
+    }
+  ]
+}

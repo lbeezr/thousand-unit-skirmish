@@ -23,14 +23,25 @@ function openDatabase(indexedDB) {
   if (!indexedDB) throw new Error('IndexedDB is unavailable. Open Audio Studio in a supported browser.');
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, 1);
+    let abandoned = false;
     request.onupgradeneeded = () => {
       const db = request.result;
       db.createObjectStore('packs', { keyPath: 'id' });
       db.createObjectStore('sources', { keyPath: ['packId', 'sourceId'] }).createIndex('packId', 'packId');
     };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(new Error(`Cannot open audio library: ${request.error?.message || 'unknown error'}`));
-    request.onblocked = () => reject(new Error('Audio library upgrade is blocked by another open tab. Close it and retry.'));
+    request.onsuccess = () => {
+      // A blocked open remains pending after our caller has received its error.
+      if (abandoned) request.result.close();
+      else resolve(request.result);
+    };
+    request.onerror = () => {
+      abandoned = true;
+      reject(new Error('Cannot open audio library. Check browser storage access and retry.', {cause: request.error}));
+    };
+    request.onblocked = () => {
+      abandoned = true;
+      reject(new Error('Audio library upgrade is blocked by another open tab. Close it and retry.'));
+    };
   });
 }
 
@@ -91,8 +102,15 @@ export async function exportAudioPack(value, sourceBlobs) {
 export async function parseAudioPackArchive(file) {
   if (!(file instanceof Blob)) throw new Error('Choose an audio pack file');
   if (file.size > MAX_ARCHIVE_BYTES) throw new Error('Archive exceeds the 90 MiB import limit');
+  let text;
+  try { text = await file.text(); }
+  catch (error) { throw new Error('Audio pack file could not be read. Choose the file again and retry.', {cause: error}); }
   let archive;
-  try { archive = JSON.parse(await file.text()); } catch { throw new Error('Audio pack is not valid JSON'); }
+  try { archive = JSON.parse(text); }
+  catch (error) {
+    if (!(error instanceof SyntaxError)) throw error;
+    throw new Error('Audio pack is not valid JSON', {cause: error});
+  }
   if (archive?.format !== ARCHIVE_FORMAT) throw new Error('Unsupported audio archive format; expected tus-audio-pack-v1');
   const pack = validateAudioPack(archive.pack);
   if (!archive.sources || typeof archive.sources !== 'object' || Array.isArray(archive.sources)) throw new Error('Archive is missing source bytes');
@@ -113,7 +131,10 @@ export async function parseAudioPackArchive(file) {
 
 export function createAudioLibraryStore({ indexedDB = globalThis.indexedDB, IDBKeyRange = globalThis.IDBKeyRange } = {}) {
   let databasePromise;
-  const database = () => databasePromise ||= openDatabase(indexedDB);
+  const database = () => databasePromise ||= openDatabase(indexedDB).catch(error => {
+    databasePromise = undefined;
+    throw error;
+  });
 
   async function listPacks() {
     const db = await database();

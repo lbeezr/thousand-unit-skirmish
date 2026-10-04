@@ -276,7 +276,11 @@ try {
     [5, 0, 20, 'infantry', 100, true], [130, 1, 20, 'infantry', 100, false],
   ]) {
     const unit = checkpoint.state.units[id];
-    Object.assign(unit, { x, z, kind, hp, holdingPosition, attackCooldown: 0 });
+    Object.assign(unit, { x, z, kind, hp, holdingPosition, attackCooldown: 0,
+      combatStance: holdingPosition ? 'standGround' : 'noAttack',
+      stanceAnchorX: x, stanceAnchorZ: z, stanceCombat: false, stanceReturning: false,
+      attackMove: false, attackMoveRouteReady: false, attackMoveResumePath: null,
+      attackMoveResumePathIndex: 0, attackTargetId: -1, attackBuildingTargetId: -1 });
   }
   await writeFile(checkpointPath, JSON.stringify(checkpoint));
   child = await startServer(port, checkpointPath, customMapDirectory);

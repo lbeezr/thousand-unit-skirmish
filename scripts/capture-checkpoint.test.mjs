@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {test} from 'node:test';
 import vm from 'node:vm';
-import {captureCheckpoint} from './capture-checkpoint.mjs';
+import {captureCheckpoint, CaptureCheckpointError} from './capture-checkpoint.mjs';
 
 // Tiny test image and injected CDP replies; this suite performs no browser rendering.
 const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jA2kAAAAASUVORK5CYII=';
@@ -142,14 +142,100 @@ test('bad PNG, truncated framing, noncanonical base64 and viewport mismatch leav
 }));
 
 test('CDP failure has a stable runtime error and removes its new directory', () => withOutput(async output => {
-  for (const method of ['evaluate', 'call']) {
-    const probe = page(); probe.cdp[method] = async () => { throw new Error('private runtime detail'); };
+  for (const stage of ['readiness', 'screenshot', 'recheck']) {
+    const original = new TypeError('private runtime detail: token=secret');
+    const probe = page(); let observations = 0;
+    probe.cdp.evaluate = async () => {
+      if (stage === 'readiness' || stage === 'recheck' && ++observations === 2) throw original;
+      return view;
+    };
+    if (stage === 'screenshot') probe.cdp.call = async () => { throw original; };
     await assert.rejects(captureCheckpoint({...context, page: probe, outputDirectory: output}), error => {
+      assert.ok(error instanceof CaptureCheckpointError);
       assert.equal(error.code, 'capture-runtime-unavailable');
-      assert.doesNotMatch(error.message, /private runtime detail/); return true;
+      assert.equal(error.cause, original, 'retain adapter faults for diagnosis');
+      assert.match(error.message, /readiness|screenshot|rechecked/);
+      assert.doesNotMatch(error.message + JSON.stringify(error), /private|secret/); return true;
     });
     assert.deepEqual(await readdir(output), []);
+    const retry = await captureCheckpoint({...context, page: page(), outputDirectory: output});
+    assert.deepEqual(await readFile(path.join(retry.directory, 'color.png')), Buffer.from(png, 'base64'));
+    await rm(retry.directory, {recursive: true});
   }
+}));
+
+test('invalid capture input remains a validation error without an underlying fault', () => withOutput(async output => {
+  await assert.rejects(captureCheckpoint({...context, page: page(), revision: 'invalid', outputDirectory: output}), error => {
+    assert.ok(error instanceof CaptureCheckpointError);
+    assert.equal(error.code, 'capture-invalid-context');
+    assert.equal(Object.hasOwn(error, 'cause'), false);
+    assert.match(error.message, /revision/); return true;
+  });
+  assert.deepEqual(await readdir(output), []);
+}));
+
+test('directory creation failure retains its filesystem cause without exposing the path', () => withOutput(async output => {
+  const probe = page(); probe.cdp.evaluate = () => assert.fail('failed allocation queried CDP');
+  await assert.rejects(captureCheckpoint({...context, page: probe, outputDirectory: path.join(output, 'private-missing')}), error => {
+    assert.equal(error.code, 'capture-storage-unavailable');
+    assert.equal(error.cause.code, 'ENOENT');
+    assert.match(error.message, /writable existing output directory/);
+    assert.doesNotMatch(error.message + JSON.stringify(error), /private-missing/); return true;
+  });
+  assert.deepEqual(await readdir(output), []);
+}));
+
+test('partial bundle write failure preserves its cause, removes the bundle and permits retry', () => withOutput(async output => {
+  const probe = page();
+  probe.cdp.call = async () => {
+    await mkdir(path.join(output, context.checkpoint, 'manifest.json'));
+    return {data: png};
+  };
+  await assert.rejects(captureCheckpoint({...context, page: probe, outputDirectory: output}), error => {
+    assert.equal(error.code, 'capture-storage-unavailable');
+    assert.ok(error.cause.code, 'retain the platform filesystem error');
+    assert.match(error.message, /bundle files could not be written/);
+    assert.doesNotMatch(error.message + JSON.stringify(error), new RegExp(output)); return true;
+  });
+  assert.deepEqual(await readdir(output), []);
+  const retry = await captureCheckpoint({...context, page: page(), outputDirectory: output});
+  assert.deepEqual((await readdir(retry.directory)).sort(), ['color.png', 'manifest.json']);
+}));
+
+test('cleanup failure retains both failures and refuses to overwrite the unremoved checkpoint', () => withOutput(async output => {
+  const original = new Error('private capture detail: token=secret');
+  const cleanup = new Error('private cleanup path: token=secret');
+  const probe = page(); probe.cdp.call = async () => { throw original; };
+  let removals = 0;
+  await assert.rejects(captureCheckpoint({...context, page: probe, outputDirectory: output}, {fileSystem: {
+    mkdir, writeFile, rm: async (directory, options) => {
+      removals++;
+      assert.equal(directory, path.join(output, context.checkpoint));
+      assert.deepEqual(options, {recursive: true, force: true});
+      throw cleanup;
+    },
+  }}), error => {
+    assert.equal(error.code, 'capture-cleanup-failed');
+    assert.ok(error.cause instanceof AggregateError);
+    assert.equal(error.cause.errors.length, 2);
+    assert.equal(error.cause.errors[0].code, 'capture-runtime-unavailable');
+    assert.equal(error.cause.errors[0].cause, original);
+    assert.equal(error.cause.errors[1], cleanup);
+    assert.match(error.message, /cleanup needs attention before another capture/);
+    assert.doesNotMatch(error.message + JSON.stringify(error), /private|secret/); return true;
+  });
+  assert.equal(removals, 1);
+  assert.deepEqual(await readdir(output), [context.checkpoint]);
+  await assert.rejects(captureCheckpoint({...context, page: page(), outputDirectory: output}), hasCode('capture-output-exists'));
+  await rm(path.join(output, context.checkpoint), {recursive: true});
+  await captureCheckpoint({...context, page: page(), outputDirectory: output});
+}));
+
+test('an internal processing fault is rethrown unchanged after removing the new directory', () => withOutput(async output => {
+  const original = new TypeError('unexpected image accessor fault');
+  const probe = page(); probe.cdp.call = async () => ({get data() { throw original; }});
+  await assert.rejects(captureCheckpoint({...context, page: probe, outputDirectory: output}), error => error === original);
+  assert.deepEqual(await readdir(output), []);
 }));
 
 test('existing checkpoint belongs to its caller and is never overwritten or removed', () => withOutput(async output => {

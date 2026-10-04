@@ -1,0 +1,55 @@
+{
+  "sourceSha256": "62b59d13c9c56dfc13aa34261e71bf28b4d24287769487b7661c98d636dcf75c",
+  "mapId": "pathing-large-single-choke-996-seat-1",
+  "roster": 2000,
+  "selected": 996,
+  "initialRouteCompleted": true,
+  "observedTick": 5640,
+  "secondaryCommand": {
+    "older": {
+      "ids": "1004 through1027",
+      "x": -24.5,
+      "z": 0.5
+    },
+    "stop": {
+      "ids": "1004 through1011"
+    },
+    "replacement": {
+      "ids": "1012 through1019",
+      "x": -28.5,
+      "z": 8.5
+    }
+  },
+  "activePathUnits": [
+    1018,
+    1019
+  ],
+  "observedUnits": [
+    {
+      "id": 1018,
+      "x": -29.5,
+      "z": 8.320984901902865,
+      "goal": 9378,
+      "pathIndex": 34,
+      "pathLength": 36,
+      "orderRevision": 3,
+      "pending": false
+    },
+    {
+      "id": 1019,
+      "x": -28.5,
+      "z": 8.320984901902865,
+      "goal": 9379,
+      "pathIndex": 34,
+      "pathLength": 36,
+      "orderRevision": 3,
+      "pending": false
+    }
+  ],
+  "outcome": "120-second secondary-command checkpoint timeout",
+  "limits": [
+    "Values transcribed from read-only checkpoint inspection; disposable fixture was removed on timeout, raw checkpoint unavailable",
+    "Secondary command enters a parked 996-unit formation; not a stranded initial route or scheduler failure",
+    "No full-match or deployment proof"
+  ]
+}

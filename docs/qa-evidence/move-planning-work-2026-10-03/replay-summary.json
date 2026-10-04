@@ -1,0 +1,587 @@
+{
+  "baselineHead": "4467986",
+  "baselineServerSha256": "32812ad0d9ab3d0e4aaf2254b39e305168e7b0602e1963cba226837d4e754e04",
+  "candidateHead": "2be3cf03b605d194feda0f07efd50145e36a0977",
+  "candidateServerSha256": "8da27f1aa21612266acac78e602a0736ba26639f2ece3b1d3a630a88da018a15",
+  "node": "v24.19.0",
+  "mapFactory": "scripts/pathing-baseline-cases.mjs",
+  "mapFactorySha256": "9c505ff3fdaf1bf11a3feb58f8c7cb3840fe4403a266c4bee6c354de2d83eb3a",
+  "records": [
+    {
+      "case": {
+        "kind": "single-choke",
+        "group": 16
+      },
+      "repeats": 2,
+      "routeAndTraceUnchanged": true,
+      "ticks": 606,
+      "arrived": 16,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "traceSha256": "cc81ddee3945f912c81ecb9f7d526b1edb05ef38f02fca46420e86209b2f3988",
+      "initialRouteSha256": "2af80ac5c20cfc29e3908f5a0f8a11f5443d01d3a6e2b80f52643ad65438acae",
+      "initialPlanningBefore": {
+        "unitCount": 16,
+        "searchCount": 11,
+        "expandedCells": 753,
+        "planningSliceCount": null,
+        "maxPlanningSliceWorkItems": null,
+        "maxPlanningSliceExpandedCells": null
+      },
+      "initialPlanningAfter": {
+        "unitCount": 16,
+        "searchCount": 11,
+        "expandedCells": 753,
+        "planningSliceCount": 4,
+        "maxPlanningSliceWorkItems": 8,
+        "maxPlanningSliceExpandedCells": 555
+      },
+      "maxNoProgressTicks": 32,
+      "noProgressEpisodes": 0,
+      "recoveredEpisodes": 0,
+      "last300TickSeparationWindow": {
+        "enabled": true,
+        "sampleCount": 300,
+        "windowSeconds": 10,
+        "candidateVisitsPerTick": {
+          "p50": 31,
+          "p95": 74,
+          "max": 90
+        },
+        "distanceChecksPerTick": {
+          "p50": 31,
+          "p95": 74,
+          "max": 90
+        },
+        "closeNeighborContributionsPerTick": {
+          "p50": 9,
+          "p95": 31,
+          "max": 36
+        },
+        "moveVectorCallsPerTick": {
+          "p50": 16,
+          "p95": 19,
+          "max": 22
+        },
+        "maxCandidatesPerCall": {
+          "p50": 6,
+          "p95": 9,
+          "max": 10
+        }
+      }
+    },
+    {
+      "case": {
+        "kind": "single-choke",
+        "group": 64
+      },
+      "repeats": 2,
+      "routeAndTraceUnchanged": true,
+      "ticks": 682,
+      "arrived": 64,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "traceSha256": "81769cdfc8ebfe2738c742a60fa6092d2cf4c88780ed5339957a787c74365fcb",
+      "initialRouteSha256": "da2f0b4b1d278957145a52c7d673b489859172888b16f8325b52c41d27c36b62",
+      "initialPlanningBefore": {
+        "unitCount": 64,
+        "searchCount": 51,
+        "expandedCells": 6028,
+        "planningSliceCount": null,
+        "maxPlanningSliceWorkItems": null,
+        "maxPlanningSliceExpandedCells": null
+      },
+      "initialPlanningAfter": {
+        "unitCount": 64,
+        "searchCount": 51,
+        "expandedCells": 6028,
+        "planningSliceCount": 10,
+        "maxPlanningSliceWorkItems": 8,
+        "maxPlanningSliceExpandedCells": 1766
+      },
+      "maxNoProgressTicks": 88,
+      "noProgressEpisodes": 0,
+      "recoveredEpisodes": 0,
+      "last300TickSeparationWindow": {
+        "enabled": true,
+        "sampleCount": 300,
+        "windowSeconds": 10,
+        "candidateVisitsPerTick": {
+          "p50": 329,
+          "p95": 637,
+          "max": 728
+        },
+        "distanceChecksPerTick": {
+          "p50": 329,
+          "p95": 637,
+          "max": 728
+        },
+        "closeNeighborContributionsPerTick": {
+          "p50": 126,
+          "p95": 244,
+          "max": 276
+        },
+        "moveVectorCallsPerTick": {
+          "p50": 64,
+          "p95": 71,
+          "max": 75
+        },
+        "maxCandidatesPerCall": {
+          "p50": 13,
+          "p95": 20,
+          "max": 22
+        }
+      }
+    },
+    {
+      "case": {
+        "kind": "single-choke",
+        "group": 256
+      },
+      "repeats": 2,
+      "routeAndTraceUnchanged": true,
+      "ticks": 1031,
+      "arrived": 256,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "traceSha256": "128ef0bbe0d1dcbf5826dee155732c806fd7dd1b8d629ec3e14f11808273872d",
+      "initialRouteSha256": "6a519dd9ed83407b3cbcdafeb74763ef12ca93aa0c22dadae1142f0e3ca69515",
+      "initialPlanningBefore": {
+        "unitCount": 256,
+        "searchCount": 244,
+        "expandedCells": 53261,
+        "planningSliceCount": null,
+        "maxPlanningSliceWorkItems": null,
+        "maxPlanningSliceExpandedCells": null
+      },
+      "initialPlanningAfter": {
+        "unitCount": 256,
+        "searchCount": 244,
+        "expandedCells": 53261,
+        "planningSliceCount": 34,
+        "maxPlanningSliceWorkItems": 8,
+        "maxPlanningSliceExpandedCells": 3527
+      },
+      "maxNoProgressTicks": 289,
+      "noProgressEpisodes": 21,
+      "recoveredEpisodes": 21,
+      "last300TickSeparationWindow": {
+        "enabled": true,
+        "sampleCount": 300,
+        "windowSeconds": 10,
+        "candidateVisitsPerTick": {
+          "p50": 161,
+          "p95": 1119,
+          "max": 1262
+        },
+        "distanceChecksPerTick": {
+          "p50": 161,
+          "p95": 1119,
+          "max": 1262
+        },
+        "closeNeighborContributionsPerTick": {
+          "p50": 30,
+          "p95": 294,
+          "max": 327
+        },
+        "moveVectorCallsPerTick": {
+          "p50": 25,
+          "p95": 121,
+          "max": 142
+        },
+        "maxCandidatesPerCall": {
+          "p50": 11,
+          "p95": 24,
+          "max": 27
+        }
+      }
+    },
+    {
+      "case": {
+        "kind": "s-bend",
+        "group": 64
+      },
+      "repeats": 2,
+      "routeAndTraceUnchanged": true,
+      "ticks": 769,
+      "arrived": 64,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "traceSha256": "f4458ceb56abbb10538a5c63f843e85edba6dba67df5b1684266be6fac105fce",
+      "initialRouteSha256": "9928df51a1d63b7398715d26f7cb565f70d93df961aa141aa0585d2e9a3a536b",
+      "initialPlanningBefore": {
+        "unitCount": 64,
+        "searchCount": 64,
+        "expandedCells": 14491,
+        "planningSliceCount": null,
+        "maxPlanningSliceWorkItems": null,
+        "maxPlanningSliceExpandedCells": null
+      },
+      "initialPlanningAfter": {
+        "unitCount": 64,
+        "searchCount": 64,
+        "expandedCells": 14491,
+        "planningSliceCount": 10,
+        "maxPlanningSliceWorkItems": 8,
+        "maxPlanningSliceExpandedCells": 3001
+      },
+      "maxNoProgressTicks": 123,
+      "noProgressEpisodes": 0,
+      "recoveredEpisodes": 0,
+      "last300TickSeparationWindow": {
+        "enabled": true,
+        "sampleCount": 300,
+        "windowSeconds": 10,
+        "candidateVisitsPerTick": {
+          "p50": 520,
+          "p95": 754,
+          "max": 788
+        },
+        "distanceChecksPerTick": {
+          "p50": 520,
+          "p95": 754,
+          "max": 788
+        },
+        "closeNeighborContributionsPerTick": {
+          "p50": 140,
+          "p95": 255,
+          "max": 267
+        },
+        "moveVectorCallsPerTick": {
+          "p50": 47,
+          "p95": 71,
+          "max": 75
+        },
+        "maxCandidatesPerCall": {
+          "p50": 16,
+          "p95": 26,
+          "max": 28
+        }
+      }
+    },
+    {
+      "case": {
+        "kind": "dynamic-route",
+        "group": 64
+      },
+      "repeats": 2,
+      "routeAndTraceUnchanged": true,
+      "ticks": 700,
+      "arrived": 64,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "traceSha256": "551d1871002eb3af122866216ef3e9a93ae5970f8e423b9e548ae4c2a1f4a7a6",
+      "initialRouteSha256": "da2f0b4b1d278957145a52c7d673b489859172888b16f8325b52c41d27c36b62",
+      "initialPlanningBefore": {
+        "unitCount": 64,
+        "searchCount": 51,
+        "expandedCells": 6028,
+        "planningSliceCount": null,
+        "maxPlanningSliceWorkItems": null,
+        "maxPlanningSliceExpandedCells": null
+      },
+      "initialPlanningAfter": {
+        "unitCount": 64,
+        "searchCount": 51,
+        "expandedCells": 6028,
+        "planningSliceCount": 10,
+        "maxPlanningSliceWorkItems": 8,
+        "maxPlanningSliceExpandedCells": 1766
+      },
+      "maxNoProgressTicks": 65,
+      "noProgressEpisodes": 0,
+      "recoveredEpisodes": 0,
+      "last300TickSeparationWindow": {
+        "enabled": true,
+        "sampleCount": 300,
+        "windowSeconds": 10,
+        "candidateVisitsPerTick": {
+          "p50": 320,
+          "p95": 707,
+          "max": 793
+        },
+        "distanceChecksPerTick": {
+          "p50": 320,
+          "p95": 707,
+          "max": 793
+        },
+        "closeNeighborContributionsPerTick": {
+          "p50": 95,
+          "p95": 239,
+          "max": 290
+        },
+        "moveVectorCallsPerTick": {
+          "p50": 65,
+          "p95": 71,
+          "max": 76
+        },
+        "maxCandidatesPerCall": {
+          "p50": 11,
+          "p95": 23,
+          "max": 25
+        }
+      }
+    },
+    {
+      "case": {
+        "kind": "dynamic-goal",
+        "group": 64
+      },
+      "repeats": 2,
+      "routeAndTraceUnchanged": true,
+      "ticks": 692,
+      "arrived": 64,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "traceSha256": "233c93a7518f5dad7d8baf04644ee13412e2e429c5bf45812e0fbbd8cd62dd72",
+      "initialRouteSha256": "da2f0b4b1d278957145a52c7d673b489859172888b16f8325b52c41d27c36b62",
+      "initialPlanningBefore": {
+        "unitCount": 64,
+        "searchCount": 51,
+        "expandedCells": 6028,
+        "planningSliceCount": null,
+        "maxPlanningSliceWorkItems": null,
+        "maxPlanningSliceExpandedCells": null
+      },
+      "initialPlanningAfter": {
+        "unitCount": 64,
+        "searchCount": 51,
+        "expandedCells": 6028,
+        "planningSliceCount": 10,
+        "maxPlanningSliceWorkItems": 8,
+        "maxPlanningSliceExpandedCells": 1766
+      },
+      "maxNoProgressTicks": 69,
+      "noProgressEpisodes": 0,
+      "recoveredEpisodes": 0,
+      "last300TickSeparationWindow": {
+        "enabled": true,
+        "sampleCount": 300,
+        "windowSeconds": 10,
+        "candidateVisitsPerTick": {
+          "p50": 286,
+          "p95": 551,
+          "max": 693
+        },
+        "distanceChecksPerTick": {
+          "p50": 286,
+          "p95": 551,
+          "max": 693
+        },
+        "closeNeighborContributionsPerTick": {
+          "p50": 88,
+          "p95": 194,
+          "max": 245
+        },
+        "moveVectorCallsPerTick": {
+          "p50": 61,
+          "p95": 73,
+          "max": 78
+        },
+        "maxCandidatesPerCall": {
+          "p50": 10,
+          "p95": 20,
+          "max": 23
+        }
+      }
+    },
+    {
+      "case": {
+        "kind": "disconnect-rejection",
+        "group": 16
+      },
+      "repeats": 2,
+      "routeAndTraceUnchanged": true,
+      "ticks": 606,
+      "arrived": 16,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "traceSha256": "cc81ddee3945f912c81ecb9f7d526b1edb05ef38f02fca46420e86209b2f3988",
+      "initialRouteSha256": "2af80ac5c20cfc29e3908f5a0f8a11f5443d01d3a6e2b80f52643ad65438acae",
+      "initialPlanningBefore": {
+        "unitCount": 16,
+        "searchCount": 11,
+        "expandedCells": 753,
+        "planningSliceCount": null,
+        "maxPlanningSliceWorkItems": null,
+        "maxPlanningSliceExpandedCells": null
+      },
+      "initialPlanningAfter": {
+        "unitCount": 16,
+        "searchCount": 11,
+        "expandedCells": 753,
+        "planningSliceCount": 4,
+        "maxPlanningSliceWorkItems": 8,
+        "maxPlanningSliceExpandedCells": 555
+      },
+      "maxNoProgressTicks": 32,
+      "noProgressEpisodes": 0,
+      "recoveredEpisodes": 0,
+      "last300TickSeparationWindow": {
+        "enabled": true,
+        "sampleCount": 300,
+        "windowSeconds": 10,
+        "candidateVisitsPerTick": {
+          "p50": 31,
+          "p95": 74,
+          "max": 90
+        },
+        "distanceChecksPerTick": {
+          "p50": 31,
+          "p95": 74,
+          "max": 90
+        },
+        "closeNeighborContributionsPerTick": {
+          "p50": 9,
+          "p95": 31,
+          "max": 36
+        },
+        "moveVectorCallsPerTick": {
+          "p50": 16,
+          "p95": 19,
+          "max": 22
+        },
+        "maxCandidatesPerCall": {
+          "p50": 6,
+          "p95": 9,
+          "max": 10
+        }
+      }
+    },
+    {
+      "case": {
+        "kind": "large-single-choke",
+        "group": 996,
+        "team": 0
+      },
+      "repeats": 2,
+      "routeAndTraceUnchanged": true,
+      "ticks": 1990,
+      "arrived": 996,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "traceSha256": "e02b283909c13bd97fdd16c7dd78c0e9c31a3b37663adee5b23cd0a634122165",
+      "initialRouteSha256": "a214439a2bc2293d06afd4b8b907fc840b671e70c2fad20c45140193dc1348ce",
+      "initialPlanningBefore": {
+        "unitCount": 996,
+        "searchCount": 917,
+        "expandedCells": 467516,
+        "planningSliceCount": 26,
+        "maxPlanningSliceWorkItems": null,
+        "maxPlanningSliceExpandedCells": null
+      },
+      "initialPlanningAfter": {
+        "unitCount": 996,
+        "searchCount": 917,
+        "expandedCells": 467516,
+        "planningSliceCount": 146,
+        "maxPlanningSliceWorkItems": 8,
+        "maxPlanningSliceExpandedCells": 5059
+      },
+      "maxNoProgressTicks": 939,
+      "noProgressEpisodes": 638,
+      "recoveredEpisodes": 638,
+      "last300TickSeparationWindow": {
+        "enabled": true,
+        "sampleCount": 300,
+        "windowSeconds": 10,
+        "candidateVisitsPerTick": {
+          "p50": 85,
+          "p95": 367,
+          "max": 427
+        },
+        "distanceChecksPerTick": {
+          "p50": 85,
+          "p95": 367,
+          "max": 427
+        },
+        "closeNeighborContributionsPerTick": {
+          "p50": 17,
+          "p95": 63,
+          "max": 77
+        },
+        "moveVectorCallsPerTick": {
+          "p50": 17,
+          "p95": 69,
+          "max": 82
+        },
+        "maxCandidatesPerCall": {
+          "p50": 9,
+          "p95": 12,
+          "max": 13
+        }
+      }
+    },
+    {
+      "case": {
+        "kind": "large-single-choke",
+        "group": 996,
+        "team": 1
+      },
+      "repeats": 2,
+      "routeAndTraceUnchanged": true,
+      "ticks": 1936,
+      "arrived": 996,
+      "invalidSteps": 0,
+      "unreachableGoals": 0,
+      "traceSha256": "9ac164a260bf30430b59382d12e8253380361fe2e39380f9584dc37b1a53dd10",
+      "initialRouteSha256": "cdfe519fb258d9da9000bbbcfefad183117b3fbfdeac4ccce9903859b3af6da6",
+      "initialPlanningBefore": {
+        "unitCount": 996,
+        "searchCount": 976,
+        "expandedCells": 481703,
+        "planningSliceCount": 27,
+        "maxPlanningSliceWorkItems": null,
+        "maxPlanningSliceExpandedCells": null
+      },
+      "initialPlanningAfter": {
+        "unitCount": 996,
+        "searchCount": 976,
+        "expandedCells": 481703,
+        "planningSliceCount": 147,
+        "maxPlanningSliceWorkItems": 8,
+        "maxPlanningSliceExpandedCells": 5146
+      },
+      "maxNoProgressTicks": 837,
+      "noProgressEpisodes": 583,
+      "recoveredEpisodes": 583,
+      "last300TickSeparationWindow": {
+        "enabled": true,
+        "sampleCount": 300,
+        "windowSeconds": 10,
+        "candidateVisitsPerTick": {
+          "p50": 89,
+          "p95": 471,
+          "max": 570
+        },
+        "distanceChecksPerTick": {
+          "p50": 89,
+          "p95": 471,
+          "max": 570
+        },
+        "closeNeighborContributionsPerTick": {
+          "p50": 19,
+          "p95": 118,
+          "max": 147
+        },
+        "moveVectorCallsPerTick": {
+          "p50": 18,
+          "p95": 81,
+          "max": 90
+        },
+        "maxCandidatesPerCall": {
+          "p50": 9,
+          "p95": 13,
+          "max": 16
+        }
+      }
+    }
+  ],
+  "limits": [
+    "canonical replay drains real planning callbacks between ticks; excludes asynchronous planning/movement interleaving",
+    "real server tick bodies, no peers or checkpoint writes; transport/rendering and wall-clock scheduler capacity excluded",
+    "cloud host not isolated; timings observational, no comparable hardware speedup or supported-capacity claim",
+    "initial job retained before the 32-sample repair window could evict it; older mirrored baseline rerun once to recover that diagnostic",
+    "separation counters cover the final 300 ticks, not peak whole-route work"
+  ]
+}

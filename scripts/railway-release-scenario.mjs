@@ -1,4 +1,7 @@
+import { stopChild } from './temporary-resources.mjs';
 import { checkClientImports } from './check-client-imports.mjs';
+import { BROWSER_ENTRYPOINTS } from './check-runtime-imports.mjs';
+import { CLIENT_ASSET_PATHS, ENVIRONMENT_MODULE_PATH } from '../src/server/client-asset-paths.mjs';
 import assert from 'node:assert/strict';
 import { createHash, randomBytes } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
@@ -10,31 +13,35 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const sourceRoot = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-// Exercise Docker COPY output so a source-only asset cannot hide a broken release.
-const packed = spawnSync(process.execPath, ['scripts/pack-railway-release.mjs', '--allow-dirty'], {
-  cwd: sourceRoot, encoding: 'utf8',
-});
-assert.equal(packed.status, 0, packed.stderr);
-const root = JSON.parse(packed.stdout).directory;
-await symlink(path.join(sourceRoot, 'node_modules'), path.join(root, 'node_modules'), 'dir');
-const entry = path.join(root, 'room-supervisor.mjs');
-const dockerfile = await readFile(path.join(root, 'Dockerfile'), 'utf8');
-assert.match(dockerfile, /^\s*COPY\b[^\n]*\borigin-policy\.mjs\b/m,
-  'the shared origin policy must be included in the Railway image');
+let root, volume, child, entry, environment;
 const secret = 'test-release-password-please-change';
-const volume = await mkdtemp(path.join(os.tmpdir(), 'rts-railway-release-'));
-const environment = {
-  ...process.env,
-  RAILWAY_ENVIRONMENT: 'production',
-  RAILWAY_PUBLIC_DOMAIN: 'game-production.up.railway.app',
-  RAILWAY_VOLUME_MOUNT_PATH: volume,
-  RTS_ACCESS_USER: 'players',
-  RTS_ACCESS_PASSWORD: secret,
-  RTS_PUBLIC_ORIGINS: '',
-  RTS_HOST: '127.0.0.1',
-};
-delete environment.RTS_ROOM_DATA_DIRECTORY;
-delete environment.RTS_CUSTOM_MAP_DIRECTORY;
+
+async function setupRelease() {
+  // Exercise Docker COPY output so a source-only asset cannot hide a broken release.
+  const packed = spawnSync(process.execPath, ['scripts/pack-railway-release.mjs', '--allow-dirty'], {
+    cwd: sourceRoot, encoding: 'utf8',
+  });
+  assert.equal(packed.status, 0, packed.stderr);
+  root = JSON.parse(packed.stdout).directory;
+  await symlink(path.join(sourceRoot, 'node_modules'), path.join(root, 'node_modules'), 'dir');
+  entry = path.join(root, 'room-supervisor.mjs');
+  const dockerfile = await readFile(path.join(root, 'Dockerfile'), 'utf8');
+  assert.match(dockerfile, /^\s*COPY\b[^\n]*\borigin-policy\.mjs\b/m,
+    'the shared origin policy must be included in the Railway image');
+  volume = await mkdtemp(path.join(os.tmpdir(), 'rts-railway-release-'));
+  environment = {
+    ...process.env,
+    RAILWAY_ENVIRONMENT: 'production',
+    RAILWAY_PUBLIC_DOMAIN: 'game-production.up.railway.app',
+    RAILWAY_VOLUME_MOUNT_PATH: volume,
+    RTS_ACCESS_USER: 'players',
+    RTS_ACCESS_PASSWORD: secret,
+    RTS_PUBLIC_ORIGINS: '',
+    RTS_HOST: '127.0.0.1',
+  };
+  delete environment.RTS_ROOM_DATA_DIRECTORY;
+  delete environment.RTS_CUSTOM_MAP_DIRECTORY;
+}
 
 function rejectsMissingConfiguration(override, expected) {
   const result = spawnSync(process.execPath, [entry], {
@@ -73,8 +80,8 @@ function upgrade(port, authorization) {
   });
 }
 
-let child;
 try {
+  await setupRelease();
   rejectsMissingConfiguration({ RAILWAY_VOLUME_MOUNT_PATH: '' }, /Attach a Railway volume/);
   rejectsMissingConfiguration({ RTS_ACCESS_PASSWORD: '' }, /RTS_ACCESS_PASSWORD/);
   rejectsMissingConfiguration({ RAILWAY_PUBLIC_DOMAIN: '' }, /RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS/);
@@ -106,6 +113,30 @@ try {
   assert.equal((await fetch(`${base}/`, { headers: { authorization: 'Basic bad' } })).status, 401);
   assert.equal((await fetch(`${base}/`, { headers: { authorization } })).status, 200);
   assert.equal((await fetch(`${base}/health`, { headers: { authorization } })).status, 200);
+  // Exercise the actual packed HTTP host, independently of source declaration
+  // shape. A manifest entry omitted from server membership must fail here.
+  for (const filename of new Set([...CLIENT_ASSET_PATHS, ENVIRONMENT_MODULE_PATH])) {
+    const response = await fetch(`${base}/${filename}`, { method: 'HEAD', headers: { authorization } });
+    assert.equal(response.status, 200, `client admission path must be served: ${filename}`);
+    assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
+    assert.equal(response.headers.get('cache-control'), 'no-store', filename);
+    assert.match(response.headers.get('content-type') || '', filename.endsWith('.html') ? /text\/html/
+      : filename.endsWith('.css') ? /text\/css/ : /(?:java|ecma)script/, filename);
+    assert.equal((await response.arrayBuffer()).byteLength, 0, `HEAD must omit the body: ${filename}`);
+  }
+  for (const filename of ['server.mjs', 'scripts/check-runtime-imports.mjs', 'src/server/client-asset-paths.mjs',
+    'src/room-launch-options.mjs', 'src/main.js.map', 'src/main.js/extra', 'SRC/main.js', 'src//main.js']) {
+    assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 404,
+      `exact client admission must deny: ${filename}`);
+  }
+  for (const filename of ['%73rc/main.js', 'src%2Fmain.js']) {
+    assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 200,
+      `existing decoded-path admission: ${filename}`);
+  }
+  assert.equal((await fetch(`${base}/%E0%A4%A`, { headers: { authorization } })).status, 400);
+  assert.equal((await fetch(`${base}/%2e%2e%2fserver.mjs`, { headers: { authorization } })).status, 403);
+  assert.equal((await fetch(`${base}/src/main.js`, { method: 'POST', headers: { authorization } })).status, 405);
+  assert.equal((await fetch(`${base}/src/server/client-asset-paths.mjs`)).status, 401);
   const three = await fetch(`${base}/vendor/three.module.js`, { headers: { authorization } });
   assert.equal(three.status, 200);
   assert.match(three.headers.get('content-type'), /javascript/);
@@ -113,6 +144,29 @@ try {
   const threeCore = await fetch(`${base}/vendor/three.core.js`, { headers: { authorization } });
   assert.equal(threeCore.status, 200);
   assert.match(threeCore.headers.get('content-type'), /javascript/);
+  const sheepDirectory = `${base}/assets/wildlife/bellweather-sheep-static-v1/`;
+  const sheepBindingResponse = await fetch(`${sheepDirectory}static-preview-binding.json`, { headers: { authorization } });
+  assert.equal(sheepBindingResponse.status, 200, 'packed runtime preserves the admitted eight-view Sheep binding');
+  const sheepBinding = await sheepBindingResponse.json();
+  const sheepManifestResponse = await fetch(new URL(sheepBinding.manifest, sheepDirectory), { headers: { authorization } });
+  assert.equal(sheepManifestResponse.status, 200);
+  const sheepManifestBytes = Buffer.from(await sheepManifestResponse.arrayBuffer());
+  assert.equal(createHash('sha256').update(sheepManifestBytes).digest('hex'), sheepBinding.manifestSha256);
+  const sheepManifest = JSON.parse(sheepManifestBytes);
+  assert.equal(sheepBinding.packId, 'bellweather-sheep-static-v1');
+  assert.equal(sheepBinding.directions.length, 8);
+  assert.deepEqual(sheepBinding.animations, []);
+  const sheepPage = sheepManifest.pages[0];
+  assert.deepEqual(sheepPage.dimensionsPx, { width: 2048, height: 1024 });
+  const sheepFile = sheepManifest.files.find(file => file.id === sheepPage.runtimeFileId);
+  const sheepImageResponse = await fetch(new URL(sheepFile.path, sheepDirectory), { headers: { authorization } });
+  assert.equal(sheepImageResponse.status, 200);
+  assert.equal(createHash('sha256').update(Buffer.from(await sheepImageResponse.arrayBuffer())).digest('hex'), sheepFile.sha256);
+  const packedManifest = JSON.parse(await readFile(path.join(root, 'release-manifest.json'), 'utf8'));
+  assert.deepEqual(packedManifest.files.filter(file => file.startsWith('assets/wildlife/')).sort(),
+    ['sheep-atlas-runtime.png', 'sprite-atlas-pack-v1.json', 'static-preview-binding.json']
+      .map(file => `assets/wildlife/bellweather-sheep-static-v1/${file}`).sort(),
+    'only three runtime Sheep files enter the package, with no originals or GLB');
   for (const clientFile of ['audio-zones.html', 'src/audio-zones.mjs', 'src/audio-zones.css']) {
     assert.equal((await fetch(`${base}/${clientFile}`, { headers: { authorization } })).status, 200,
       `zone audition release must serve ${clientFile}`);
@@ -158,6 +212,42 @@ try {
   assert.equal(environmentTexture.status, 200);
   assert.match(environmentTexture.headers.get('content-type'), /image\/webp/);
   assert.ok((await environmentTexture.arrayBuffer()).byteLength > 0);
+  const paintedRoot = 'assets/environment/frontier-painted-material-atlas-v1';
+  const paintedResponse = await fetch(`${base}/${paintedRoot}/manifest.json`, { headers: { authorization } });
+  assert.equal(paintedResponse.status, 200);
+  const paintedManifest = await paintedResponse.json();
+  const paintedFiles = paintedManifest.files.filter(file => file.usage === 'runtime');
+  assert.equal(paintedFiles.length, 6);
+  assert.deepEqual(packedManifest.files.filter(file => file.startsWith(paintedRoot + '/')).sort(),
+    [`${paintedRoot}/manifest.json`, ...paintedFiles.map(file => file.path)].sort(),
+    'only the painted ground manifest and six authored mips enter the release');
+  for (const file of paintedFiles) {
+    const response = await fetch(`${base}/${file.path}`, { headers: { authorization } });
+    assert.equal(response.status, 200, file.path);
+    assert.match(response.headers.get('content-type'), /image\/webp/);
+    assert.equal(createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'), file.sha256);
+  }
+  for (const source of ['frontier-painted-material-atlas.png', 'preview.png', 'PROVENANCE.md']) {
+    assert.equal((await fetch(`${base}/${paintedRoot}/${source}`, { headers: { authorization } })).status, 404);
+  }
+  const oakRoot = 'assets/environment/frontier-oak-depletion-atlas-v1';
+  const oakResponse = await fetch(`${base}/${oakRoot}/manifest.json`, { headers: { authorization } });
+  assert.equal(oakResponse.status, 200);
+  const oakManifest = await oakResponse.json();
+  assert.deepEqual(packedManifest.files.filter(file => file.startsWith(oakRoot + '/')).sort(),
+    [`${oakRoot}/manifest.json`, ...oakManifest.files.map(file => `${oakRoot}/${file.path}`)].sort());
+  for (const file of oakManifest.files) {
+    const url = `${base}/${oakRoot}/${file.path}`;
+    const response = await fetch(url, { headers: { authorization } });
+    assert.equal(response.status, 200); assert.match(response.headers.get('content-type'), /image\/webp/);
+    assert.equal(createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'), file.sha256);
+    const head = await fetch(url, { method: 'HEAD', headers: { authorization } });
+    assert.equal(head.status, 200); assert.equal(Number(head.headers.get('content-length')), file.bytes);
+  }
+  for (const path of [`${oakRoot}/README.md`, `${oakRoot}/oak-depletion-mip-6.webp`,
+    'assets/environment/frontier-resource-atlas-v1-candidate/oak-fallback-runtime.json']) {
+    assert.equal((await fetch(`${base}/${path}`, { headers: { authorization } })).status, 404);
+  }
   const interactiveManifestResponse = await fetch(
     `${base}/assets/environment/frontier-interactive-v1/manifest.json`, {
       headers: { authorization },
@@ -206,7 +296,52 @@ try {
         `${entry.path} must match its manifest hash`);
     }
   }
-  await checkClientImports(base, { authorization });
+  // Nested Node adapters must be packaged for offline consumers without becoming
+  // HTTP client modules. Keep the original compatibility path equally private.
+  for (const filename of ['src/pve-model-proposal.mjs', 'src/server/pve-model-proposal.mjs']) {
+    assert.ok((await stat(path.join(root, filename))).isFile(), `packed offline adapter: ${filename}`);
+    assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 404,
+      `offline Node adapter must not be served: ${filename}`);
+  }
+  await checkClientImports(base, { authorization, entrypoints: BROWSER_ENTRYPOINTS.map(filename => `/${filename}`) });
+  for (const file of ['water-study.html', 'src/water-study-preview.mjs', 'src/water-surface-study.mjs', 'src/water-study-state.mjs', 'src/water-study-fish-binding.mjs', 'src/shore-bank-shade.mjs']) {
+    assert.ok(packedManifest.files.includes(file), `water study release must contain ${file}`);
+    const response = await fetch(`${base}/${file}`, { headers: { authorization } });
+    assert.equal(response.status, 200, `packed water study must serve ${file}`);
+    assert.match(response.headers.get('content-type'), file.endsWith('.html') ? /text\/html/ : /javascript/);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    assert.equal(createHash('sha256').update(bytes).digest('hex'),
+      createHash('sha256').update(await readFile(path.join(sourceRoot, file))).digest('hex'),
+      `packed water study bytes must match ${file}`);
+  }
+  // Default finished families retain exact source PNGs; no GLB/gallery/source upload.
+  const frontierRoots = ['frontier-civilization-scale-pilot-v1', 'frontier-civilization-models-v1', 'frontier-civilization-military-models-v1']
+    .map(pack => `assets/buildings/${pack}/`);
+  const frontierPaths = [];
+  for (const family of ['town-center', 'house', 'storehouse', 'stable', 'workshop', 'watchtower', 'barracks', 'archery-range']) {
+    const frontierRoot = frontierRoots[['town-center', 'house'].includes(family) ? 0 : ['barracks', 'archery-range'].includes(family) ? 2 : 1];
+    const manifestPath = frontierRoot + family + '-complete-renderer.json';
+    const response = await fetch(`${base}/${manifestPath}`, { headers: { authorization } });
+    assert.equal(response.status, 200); assert.match(response.headers.get('content-type'), /application\/json/);
+    const frontier = await response.json();
+    assert.equal(frontier.asset, family); assert.deepEqual(frontier.stateOrder, ['complete']);
+    assert.equal(frontier.completeState.views.length, 8); frontierPaths.push(manifestPath);
+    for (const view of frontier.completeState.views) {
+      const assetPath = frontierRoot + view.path; frontierPaths.push(assetPath);
+      assert.ok(contextRules.includes('!' + assetPath), `${assetPath} must be explicitly admitted`);
+      const frame = await fetch(`${base}/${assetPath}`, { headers: { authorization } });
+      assert.equal(frame.status, 200, assetPath); assert.match(frame.headers.get('content-type'), /image\/png/);
+      const bytes = Buffer.from(await frame.arrayBuffer()); assert.equal(bytes.length, view.bytes);
+      assert.equal(createHash('sha256').update(bytes).digest('hex'), view.sha256, assetPath);
+    }
+  }
+  const releaseManifest = JSON.parse(await readFile(path.join(root, 'release-manifest.json'), 'utf8'));
+  assert.deepEqual(releaseManifest.files.filter(file => frontierRoots.some(root => file.startsWith(root))).sort(), frontierPaths.sort(),
+    'package exactly the selected registered sprites, without source models or galleries');
+  assert.equal(frontierPaths.length, 72, 'eight manifests and 64 original frames');
+  for (const frontierRoot of frontierRoots) for (const absent of ['model-provenance.json', 'meshy_output/house.glb', 'preview.html', 'source/build_military.py', 'models/barracks-complete.glb']) {
+    assert.equal((await fetch(`${base}/${frontierRoot}${absent}`, { headers: { authorization } })).status, 404);
+  }
   const resourceStateModule = await fetch(`${base}/src/resource-visual-state.mjs`, { headers: { authorization } });
   assert.equal(resourceStateModule.status, 200);
   assert.match(await resourceStateModule.text(), /resourceVisualStage/);
@@ -265,7 +400,7 @@ try {
   }
   for (const [role, version, atlasName = role] of [
     ['worker', 'v1'], ['worker', 'v2'], ['worker', 'v3'],
-    ['infantry', 'v1'], ['infantry', 'v2'], ['archer', 'v1'],
+    ['infantry', 'v1'], ['infantry', 'v2'], ['infantry', 'v4'], ['archer', 'v1'],
     ['human', 'v1', 'cast'], ['elf', 'v1', 'cast'], ['troll', 'v1', 'cast'], ['orc', 'v1', 'cast'],
   ]) {
     const directory = `assets/units/${atlasName === "cast" ? "cast-" : ""}${role}-sprite-${version}`;
@@ -295,14 +430,9 @@ try {
   assert.ok((await stat(path.join(volume, 'custom-maps'))).isDirectory());
   console.log('Railway release scenario passed: guarded startup, Basic Auth HTTP/WebSocket, local Three.js, packaged environment and unit sprites, verified atlas hashes, environment states, and volume paths.');
 } finally {
-  if (child && child.exitCode === null) {
-    child.kill('SIGTERM');
-    await Promise.race([
-      new Promise((resolve) => child.once('exit', resolve)),
-      new Promise((resolve) => setTimeout(resolve, 8000)),
-    ]);
-    if (child.exitCode === null) child.kill('SIGKILL');
-  }
-  await rm(volume, { recursive: true, force: true });
-  await rm(root, { recursive: true, force: true });
+  await stopChild(child);
+  const cleanup = await Promise.allSettled([volume, root].filter(Boolean)
+    .map(directory => rm(directory, { recursive: true, force: true })));
+  const errors = cleanup.filter(result => result.status === 'rejected').map(result => result.reason);
+  if (errors.length) throw new AggregateError(errors, 'Release scenario temporary cleanup failed');
 }

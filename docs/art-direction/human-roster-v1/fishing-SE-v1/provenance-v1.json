@@ -1,0 +1,9 @@
+{
+  "source": "assets/units/cast-human-sprite-v3/cast-atlas-runtime.png",
+  "sourceFrame": "idle-south-east-0",
+  "referenceSHA256": "e2b7d22035ebd634783e4f9498d0cf32d98c577076d4c2d35e57ac0577d741c5",
+  "workflow": "approved seed; one whole strip edit; fixed anatomical scale and projected ground root; no first-frame lock for crouch",
+  "heading": "south-east",
+  "frames": 4,
+  "approval": "private pose study; visual acceptance pending"
+}

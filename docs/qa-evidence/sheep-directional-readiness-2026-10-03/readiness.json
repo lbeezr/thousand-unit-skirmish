@@ -1,0 +1,28 @@
+{
+  "packId": "bellweather-sheep-public-reference-v1",
+  "status": "public-static-fallback-validated",
+  "errors": [],
+  "sourceViewsVerified": 1,
+  "declaredDirections": [
+    "north"
+  ],
+  "unavailableDirections": [
+    "north-east",
+    "east",
+    "south-east",
+    "south",
+    "south-west",
+    "west",
+    "north-west"
+  ],
+  "animations": [],
+  "anchorReview": [
+    {
+      "id": "idle-north",
+      "status": "unreviewed-estimate"
+    }
+  ],
+  "publicationApproval": "not established by this check",
+  "visualAcceptance": "separate owner-run review",
+  "liveDirectionalIntegration": false
+}

@@ -5,7 +5,7 @@ import vm from 'node:vm';
 import { activeState, spriteAnimationTime, spriteClipDuration } from '../src/unit-sprite-runtime.mjs';
 
 const main = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
-const generationReset = main.slice(main.indexOf('    if (existingUnit && unit.generation !== generation)'),
+const generationReset = main.slice(main.indexOf('    if (generationChanged)'),
   main.indexOf('    unit.serverX = x;', main.indexOf('function applyState(')));
 
 for (const previousState of ['walk', 'defeat']) for (const loaded of [true, false]) {
@@ -18,7 +18,7 @@ for (const previousState of ['walk', 'defeat']) for (const loaded of [true, fals
         lastPlayedAttackTick: 8, spriteClockState: previousState, spriteClockStartedAt: 1100};
       const selected = new Set([unit.id]), group = new Set([unit.id]), ages = [];
       const draw = () => ages.push(spriteAnimationTime(unit, activeState(unit, now), now));
-      const context = vm.createContext({unit, existingUnit: unit, id: unit.id, generation: 2, team,
+      const context = vm.createContext({unit, existingUnit: unit, generationChanged: true, id: unit.id, generation: 2, team,
         x: 4, z: 3, kind: 'infantry', hp: 100, targetedBy: 0, initial: false,
         selected, controlGroups: [group], controlGroupsChanged: false, changed: false,
         cargoVisualMayChange: false, performance: {now: () => now}, setUnitTint() {},
@@ -78,7 +78,7 @@ test('ground depth correction preserves screen position and clears dipping feet'
 
 test('worker combat uses attack sprites and then returns to its task', async () => {
   const { activeState } = await import('../src/unit-sprite-runtime.mjs');
-  const worker = { kind: 'worker', hp: 100, task: 'gathering', attackStartedAt: 1000 };
+  const worker = { kind: 'worker', hp: 100, task: 'gathering', performingAction: 'gather-food', attackStartedAt: 1000 };
   assert.equal(activeState(worker, 1200, 850), 'attack');
   assert.equal(activeState(worker, 1900, 850), 'gather');
   assert.equal(activeState({ ...worker, walking: true }, 1200, 850), 'walk');
@@ -88,8 +88,8 @@ test('worker combat uses attack sprites and then returns to its task', async () 
 
 test('worker repair has a distinct action state', async () => {
   const { activeState } = await import('../src/unit-sprite-runtime.mjs');
-  assert.equal(activeState({kind:'worker', hp:100, task:'repairing'}, 2000), 'repair');
-  assert.equal(activeState({kind:'worker', hp:100, task:'building'}, 2000), 'build');
+  assert.equal(activeState({kind:'worker', hp:100, task:'repairing', performingAction:'repair'}, 2000), 'repair');
+  assert.equal(activeState({kind:'worker', hp:100, task:'building', performingAction:'build'}, 2000), 'build');
 });
 
 
@@ -109,6 +109,20 @@ test('gathering chooses resource-specific clips and repair falls back to constru
   assert.equal(spriteActionClip(clips, 'gather', 'north', 'wood', 'human'), idle);
 });
 
+test('Stone chooses only dedicated exact headings even with approximate action previews', async () => {
+  const { spriteActionClip } = await import('../src/unit-sprite-runtime.mjs');
+  for (const role of ['human', 'boughward-worker']) for (const approximate of [false, true]) {
+    const pack = JSON.parse(readFileSync(new URL(`../assets/units/${role === 'human'
+      ? 'cast-human-sprite-v3' : 'boughward-worker-sprite-v1'}/sprite-atlas-pack-v1.json`, import.meta.url)));
+    const clips = new Map(pack.assets[0].clips.map(c => [`${c.stateId}|${c.directionId}`, c]));
+    for (const direction of ['north', 'north-east', 'east', 'south-east', 'south', 'south-west', 'west', 'north-west']) {
+      const clip = spriteActionClip(clips, 'gather-stone', direction, 'stone', role, approximate);
+      assert.equal(clip, clips.get(`gather-stone|${direction}`) || clips.get(`idle|${direction}`));
+      assert.equal(clip.directionId, direction);
+    }
+  }
+});
+
 
 test('approximate roster reuses nearest authored action while exact lanes keep idle holds', async () => {
   const { spriteActionClip } = await import('../src/unit-sprite-runtime.mjs');
@@ -119,20 +133,21 @@ test('approximate roster reuses nearest authored action while exact lanes keep i
   const clips = new Map([['walk|north', hold], ['idle|north', hold],
     ['walk|north-east', front], ['walk|south-west', rear], ['gather-wood|south-east', wood]]);
   assert.equal(spriteActionClip(clips, 'walk', 'north', null, 'human'), hold);
-  assert.equal(spriteActionClip(clips, 'walk', 'north', null, 'human', true), front);
-  assert.equal(spriteActionClip(clips, 'walk', 'west', null, 'human', true), rear);
-  assert.equal(spriteActionClip(clips, 'gather', 'north', 'wood', 'human', true), wood);
+  assert.equal(spriteActionClip(clips, 'walk', 'north', null, 'human', true), hold);
+  assert.equal(spriteActionClip(clips, 'walk', 'north', null, 'infantry', true), front);
+  assert.equal(spriteActionClip(clips, 'walk', 'west', null, 'infantry', true), rear);
+  assert.equal(spriteActionClip(clips, 'gather', 'north', 'wood', 'infantry', true), wood);
 });
 
 
-test('every available Human unit action and heading has first-pass graphics', async () => {
+test('every available Human land unit action and heading has first-pass graphics', async () => {
   const { readFile } = await import('node:fs/promises');
   const { UNIT_DEFINITIONS } = await import('../src/gameplay-definitions.mjs');
   const { spriteActionClip } = await import('../src/unit-sprite-runtime.mjs');
   const packs = { worker: 'cast-human-sprite-v3', infantry: 'infantry-sprite-v3',
     archer: 'archer-sprite-v2', spearman: 'spearman-sprite-v1', scout: 'scout-sprite-v1',
     rider: 'rider-sprite-v1', 'siege-engine': 'siege-engine-sprite-v1' };
-  assert.deepEqual(Object.keys(packs).sort(), Object.keys(UNIT_DEFINITIONS).sort());
+  assert.deepEqual(Object.keys(packs).sort(), Object.keys(UNIT_DEFINITIONS).filter(kind => UNIT_DEFINITIONS[kind].movementDomain !== 'water').sort());
   for (const [role, directory] of Object.entries(packs)) {
     const pack = JSON.parse(await readFile(new URL(`../assets/units/${directory}/sprite-atlas-pack-v1.json`, import.meta.url), 'utf8'));
     const asset = pack.assets[0];
@@ -143,18 +158,21 @@ test('every available Human unit action and heading has first-pass graphics', as
         for (const resource of state === 'gather' ? ['food', 'wood'] : [null]) {
           const clip = spriteActionClip(clips, state, direction, resource, role === 'worker' ? 'human' : role, true);
           assert.ok(clip?.sequence?.length, `${role}/${state}/${direction}`);
-          if (state !== 'idle') assert.ok(clip.sequence.some(f => !f.frameId.startsWith('idle-')), `${role}/${state}/${direction} must have action graphics`);
+          if (role === 'worker' && ['walk', 'gather'].includes(state)) {
+            assert.equal(clip.directionId, direction, `${role}/${state}/${direction} keeps its facing`);
+          } else if (state !== 'idle') assert.ok(clip.sequence.some(f => !f.frameId.startsWith('idle-')), `${role}/${state}/${direction} must have action graphics`);
         }
       }
     }
   }
 });
 
-test('default rival routes every unit role to Boughward with required action coverage', async () => {
+test('default rival routes every land unit role to Boughward with required action coverage', async () => {
   const {readFile} = await import('node:fs/promises');
   const {UNIT_DEFINITIONS} = await import('../src/gameplay-definitions.mjs');
   const {civilizationSpriteRole,spriteDirectory,spriteActionClip} = await import('../src/unit-sprite-runtime.mjs');
   for(const kind of Object.keys(UNIT_DEFINITIONS)) {
+    if (UNIT_DEFINITIONS[kind].movementDomain === 'water') continue; // Explicit procedural Skiff placeholder, no shipped sprite pack.
     assert.equal(civilizationSpriteRole(kind,'human'),kind==='worker'?'human':kind);
     const role=civilizationSpriteRole(kind,'boughward');
     assert.equal(role,`boughward-${kind}`);

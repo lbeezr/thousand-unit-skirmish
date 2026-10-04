@@ -1,3 +1,4 @@
+import { economyServerBindings, economyServerFunctions } from './economy-server-fixture.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
@@ -21,12 +22,12 @@ for (const team of [0, 1]) test(`cancellations release exactly one reservation a
   const building = { id: 1, team, type: 'barracks', complete: true, queue: 3, productionQueue: ['spearman', 'infantry', 'spearman'], trainingRemaining: 6 };
   const house = { id: 2, team, type: 'house', complete: false, progress: 0.5 };
   const messages = [];
-  const context = vm.createContext({ UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, unfinishedRefund,
+  const context = vm.createContext({ ...economyServerBindings(), UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, unfinishedRefund,
     buildingsById: new Map([[1, building], [2, house]]), teamFood: [100, 100], teamWood: [100, 100], dirty: false,
     teamResearch: [null, null], workerProduction: [{ queue: 2, trainingRemaining: 12.5 }, { queue: 2, trainingRemaining: 12.5 }],
     sendOrderNotice: (_, __, message) => messages.push(message), destroyBuilding: (row) => context.buildingsById.delete(row.id),
   });
-  vm.runInContext(functions, context);
+  vm.runInContext(economyServerFunctions + functions, context);
   context.cancelTraining({ team: 1 - team }, { buildingId: 1 }); assert.equal(building.queue, 3);
   context.cancelTraining({ team }, { buildingId: 1 });
   assert.deepEqual([...building.productionQueue], ['spearman', 'infantry']); assert.equal(context.teamFood[team], 160); assert.equal(context.teamWood[team], 120);

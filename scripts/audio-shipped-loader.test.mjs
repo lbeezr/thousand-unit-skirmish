@@ -70,6 +70,29 @@ test('cache remains capped and legacy references stay compatible', async () => {
   assert.throws(() => validateMapAudioReference({ ...ref, sha256: undefined }), /version.*hash/);
 });
 
+test('stream cleanup failure retains the download failure and leaves cache empty for a retry', async () => {
+  const { loadShippedAudio: load, shippedAudioCacheState: state } = await freshLoader('stream-cleanup');
+  const cleanupError = new Error('cancel failed');
+  let rejectStream = true;
+  const failed = fixture(() => {}, response => rejectStream ? new Response(new ReadableStream({
+    start(controller) { controller.enqueue(new Uint8Array(2 * 1024 * 1024 + 1)); },
+    cancel() { throw cleanupError; },
+  }), { headers: { 'content-type': 'application/json' } }) : response);
+  await assert.rejects(load(failed.reference, { fetch: failed.fetch, crypto: webcrypto }), error => {
+    assert.ok(error instanceof AggregateError);
+    assert.match(error.cause.message, /exceeds size limit/);
+    assert.equal(error.errors[1], cleanupError);
+    return true;
+  });
+  assert.equal(failed.calls(), 1, 'rejected metadata prevents all source transfers');
+  assert.deepEqual(state(), { packs: 0, bytes: 0 });
+  rejectStream = false;
+  const loaded = await load(failed.reference, { fetch: failed.fetch, crypto: webcrypto });
+  assert.equal(Object.keys(loaded.sourceBlobs).length, 4);
+  assert.equal(failed.calls(), 6);
+  assert.deepEqual(state(), { packs: 1, bytes: failed.retainedBytes });
+});
+
 test('concurrent successful loads charge a retained same-key pack once', async () => {
   const { loadShippedAudio: load, shippedAudioCacheState: state } = await freshLoader('success');
   const f = fixture(), options = { fetch: f.fetch, crypto: webcrypto };

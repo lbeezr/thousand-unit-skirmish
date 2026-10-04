@@ -1,0 +1,39 @@
+#room-lobby {
+  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100vh - 40px);
+  box-sizing: border-box;
+  overflow: auto;
+  padding: 24px;
+  color: #e5eadf;
+  background: #19211c;
+  border: 1px solid #65715d;
+  border-radius: 10px;
+  font: 14px/1.5 system-ui, sans-serif;
+}
+#room-lobby::backdrop { background: rgb(8 13 10 / 72%); }
+#room-lobby h2 { margin: 0; font-size: 22px; }
+#room-lobby ul { padding: 0; list-style: none; }
+#room-lobby li { padding: 8px 0; border-bottom: 1px solid #394437; }
+#room-lobby label { display: block; margin: 14px 0; }
+#room-lobby select { display: block; width: 100%; margin-top: 4px; padding: 8px; }
+#room-lobby .room-lobby-help { color: #b5c2ad; font-size: 12px; }
+#lobby-status { min-height: 42px; }
+.room-lobby-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+#room-lobby button { padding: 9px 12px; cursor: pointer; }
+#room-lobby button:disabled { cursor: default; opacity: .55; }
+#room-lobby a { color: #d5ef78; margin-left: auto; }
+#room-lobby [hidden] { display: none; }
+.room-lobby-chat { margin-top: 18px; border-top: 1px solid #65715d; }
+.room-lobby-chat h3 { margin-bottom: 8px; font-size: 16px; }
+#lobby-chat-log { max-height: 150px; overflow: auto; padding: 0; list-style: none; overflow-wrap: anywhere; }
+#room-lobby .room-lobby-chat li { padding: 5px 0; }
+.room-lobby-chat form { display: flex; gap: 8px; align-items: end; }
+#room-lobby .room-lobby-chat label { flex: 1; min-width: 0; margin: 0; }
+#lobby-chat-text { width: 100%; box-sizing: border-box; margin-top: 4px; padding: 8px; }
+#lobby-chat-status { color: #b5c2ad; font-size: 12px; }
+.match-mode-summary, .match-mode-controls details, .match-mode-controls [role="status"] { font-size: 12px; color: var(--muted, #b5c2ad); }
+.match-mode-controls details p { margin: 8px 0; }
+.match-mode-controls [role="status"]:empty { display: none; }
+.match-mode-controls label { display: block; margin-top: 12px; }
+.match-mode-controls select { display: block; box-sizing: border-box; width: 100%; min-height: 36px; margin-top: 4px; padding: 8px; border: 1px solid var(--line, #65715d); border-radius: 4px; background: var(--panel-soft, #19231c); color: var(--ink, #e5eadf); font: inherit; }
+.match-mode-controls select:focus-visible { outline: 2px solid var(--lime, #d5ef78); outline-offset: 2px; }

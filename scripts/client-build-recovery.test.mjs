@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
+import { WallPlacementGesture } from '../src/wall-placement.mjs';
+import { classifyOrderNotice } from '../src/order-feedback.mjs';
 
 // Execute the actual socket lifecycle and placement cleanup without mounting
 // Three.js. Events and local UI state are controlled; no server outcome is assumed.
@@ -18,13 +20,21 @@ function fixture({ pending = true, state = 'pending' } = {}) {
   let reconnects = 0;
   let workStops = 0;
   let orderResets = 0;
+  let fishClears = 0;
   class WebSocket {
     constructor() { this.events = new Map(); connections.push(this); }
     addEventListener(type, listener) { this.events.set(type, listener); }
     emit(type, data) { this.events.get(type)?.(data); }
   }
   const context = vm.createContext({
-    audio: { stopWork() { workStops++; } }, orderAudioGate: { reset() { orderResets++; } },
+    wallPlacementGesture: new WallPlacementGesture(), wallKeyboardCell: { column: 1, row: 1 },
+    pendingWallPreview: [{ column: 1, row: 1 }],
+    wallPlacementGhost: { group: { visible: true } },
+    renderer: { domElement: { hasPointerCapture() { return false; } } },
+    applyLobby() {}, roomLobby: { disconnect() {}, updateChat() {} },
+    waterStudyFishBinding: { clear() { fishClears++; } },
+    audio: { stopWork() { workStops++; } }, orderAudioGate: { reset() { orderResets++; }, observe() {} },
+    classifyOrderNotice, applyOrderNotice() {}, cueForNotice() {},
     WebSocket, URL, location: { protocol: 'http:', host: 'localhost' },
     sessionStorage: { getItem: () => null }, window: { clearTimeout() {} },
     pageLeaving: false, localTeam: 0, HAS_ROOM_PARAMETER: false,
@@ -43,8 +53,9 @@ function fixture({ pending = true, state = 'pending' } = {}) {
     },
     scheduleReconnect() { reconnects++; },
   });
-  vm.runInContext(`${declaration('cancelBuildPlacement', 'beginBuildPlacement')}\n${socketSource}\nconnectSocket();`, context);
-  return { context, connections, toasts, economyUpdates: () => economyUpdates, reconnects: () => reconnects, workStops: () => workStops, orderResets: () => orderResets };
+  context.wallPlacementGesture.begin(3, { column: 1, row: 1 });
+  vm.runInContext(`${declaration('resetWallPlacement', 'updateBuildPlacementGhost')}\n${declaration('cancelBuildPlacement', 'beginBuildPlacement')}\n${socketSource}\nconnectSocket();`, context);
+  return { context, connections, toasts, economyUpdates: () => economyUpdates, reconnects: () => reconnects, workStops: () => workStops, orderResets: () => orderResets, fishClears: () => fishClears };
 }
 
 for (const state of ['pending', 'planning', 'applied']) {
@@ -56,11 +67,16 @@ for (const state of ['pending', 'planning', 'applied']) {
     assert.equal(f.context.pendingBuildOrderToken, null);
     assert.equal(f.context.pendingBuildBaseline.size, 0);
     assert.equal(f.context.placementGhost.visible, false);
+    assert.equal(f.context.wallPlacementGhost.group.visible, false);
+    assert.equal(f.context.wallPlacementGesture.anchor, null);
+    assert.equal(f.context.wallKeyboardCell, null);
+    assert.equal(f.context.pendingWallPreview, null);
     assert.equal(f.context.currentOrderToken, null);
     assert.equal(f.economyUpdates(), 1);
     assert.equal(f.reconnects(), 1);
     assert.equal(f.workStops(), 1, 'disconnect stops work playback');
     assert.equal(f.orderResets(), 1, 'disconnect discards pending success audio');
+    assert.equal(f.fishClears(), 1, 'disconnect clears fish activity until a fresh snapshot');
     assert.deepEqual(f.toasts, [], 'do not claim the authoritative build was cancelled');
     if (state !== 'applied') assert.match(f.context.ui.orderStatus.textContent, /STATUS UNKNOWN/);
   });
@@ -79,8 +95,28 @@ test('a stale connection close cannot cancel a placement on the current connecti
   vm.runInContext('connectSocket()', f.context);
   f.connections[0].emit('close');
   assert.equal(f.context.buildPlacementPending, true);
+  assert.equal(f.fishClears(), 0, 'stale socket close cannot hide current activity');
   assert.equal(f.reconnects(), 0);
   f.connections[1].emit('close');
+  assert.equal(f.fishClears(), 1);
   assert.equal(f.context.buildPlacementPending, false);
   assert.equal(f.reconnects(), 1);
+});
+
+for (const notice of ['PALISADE LINE PLACED · 3 SEGMENTS · 45 WOOD', 'WALL ALREADY PLACED · NO CHARGE']) {
+  test(`actual socket releases only the matching pending wall: ${notice}`, () => {
+    const f = fixture();
+    const reply = clientOrderToken => f.connections[0].emit('message', { data: JSON.stringify({ type: 'notice', message: notice, clientOrderToken }) });
+    reply(6); assert.equal(f.context.buildPlacementPending, true);
+    reply(7); assert.equal(f.context.buildPlacementPending, false); assert.equal(f.context.buildPlacementActive, false);
+    assert.equal(f.context.pendingWallPreview, null); assert.deepEqual(f.toasts, [notice]);
+  });
+}
+
+test('actual connectivity rejection releases pending wall for a fresh retry without closing placement', () => {
+  const f = fixture();
+  f.connections[0].emit('message', { data: JSON.stringify({ type: 'notice', message: 'BUILD REJECTED · WOULD BLOCK A ROUTE', clientOrderToken: 7 }) });
+  assert.equal(f.context.buildPlacementPending, false); assert.equal(f.context.buildPlacementActive, true);
+  assert.equal(f.context.pendingWallPreview, null); assert.equal(f.context.pendingBuildOrderToken, null);
+  assert.deepEqual(f.toasts, ['BUILD REJECTED · WOULD BLOCK A ROUTE']);
 });

@@ -1,13 +1,18 @@
 # Vaelora HUD, icon and cursor study — 2 October 2026
 
-**Status:** source audit and three visual proposals at fork main
-`68f859f903ad09119594dcafca83f6de8362a9ed`. No runtime UI changes or new
-Meshy jobs. [Study gallery and evidence](art-direction/vaelora-hud-study-v1/README.md).
+**Historical status, 2 October 2026:** source audit and three rejected visual
+explorations at fork main `68f859f903ad09119594dcafca83f6de8362a9ed`.
+The user requested a compact, dense, subtle and dismissible UI and accepted none
+of these concepts. Publication and implementation of the old direction remain
+paused. The findings below describe that dated baseline; they do not certify the
+current runtime. No runtime UI change or new Meshy job is delivered here.
+[Historical gallery, evidence and missing-receipt record](art-direction/vaelora-hud-study-v1/README.md).
 
-The current kit already covers most immediate orders. The first useful change
-is clearer state feedback, especially a known-empty resource before clicking,
-and more distinctive small badges. A complete icon replacement is unnecessary
-for this experiment. The three skins are choices for review, not selected art.
+At that audited baseline, the kit covered most immediate orders. The findings
+suggested clearer state feedback, especially a known-empty resource before
+clicking, and more distinctive small badges. A complete icon replacement was
+unnecessary for that experiment. All three skins are rejected historical artwork;
+the next outcome is compact structural research and a wireframe.
 
 ## Verified inventory and bindings
 
@@ -81,14 +86,17 @@ attack move, clear building preview and blocked building preview. The blocked
 capture says `MOVE UNITS OUT OF THIS SITE`. The script selected four Workers and
 House through the game's existing controls. No order acceptance or economic
 outcome is inferred from these hover captures. No JavaScript exceptions were
-reported. The first screenshot route timed out; its six completed images are
-preserved separately with the failed-attempt record.
+reported in that saved receipt. The first screenshot route timed out; its six
+completed images are preserved separately with the failed-attempt record.
 
 Three additional direct gameplay backgrounds at 1024 × 640 retain Bellweather
 meadow, Pale Meridian snow and Underbough woodland. DOM HUD was hidden only for
 these background captures; fog, terrain, buildings and units are actual game
-pixels. These are direct owned Chromium/CDP captures, not sealed `game-dev`
-captures. The unavailable `game-dev` executable and the initial capture failure
+pixels according to the retained source description. Their original background
+capture receipt is absent from the committed archive; its expected hash and
+recovery limit are preserved in the gallery/manifest. These are direct owned
+Chromium/CDP captures, not sealed `game-dev` captures. The unavailable `game-dev`
+executable and the initial capture failure
 are recorded in the pack. Requested software-rendering flags are recorded, not
 treated as a hardware performance measurement.
 

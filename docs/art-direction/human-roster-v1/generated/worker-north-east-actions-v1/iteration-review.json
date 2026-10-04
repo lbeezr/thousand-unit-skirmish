@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "rawSha256": "24c7795eeb843a4638ec9c15beaf0b414dac1631d308d1e1bd5c53d4d1de3e54",
+  "acceptedSourceIndexes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
+  "sourceReview": "Fifteen complete same-character exact frontal NE poses; axe, bare hands, square hammer and pick are distinct. All three hammer heads usable; defeat terminal prone head toward screen-down/boots up, naturally foreshortened (no profile-aspect heuristic).",
+  "scale": "one232/278 across all15; standing anatomy roughly227\u2013232px matching232px walk; max silhouette245 remains below old272",
+  "root": "fixed reviewed columns210/514/824; work322/613/923/1235; fallen1464/1468/1481",
+  "polish": "simple motion and minor contact/loop drift; native game acceptance open",
+  "nativeStatus": "offline previews/CPU only"
+}

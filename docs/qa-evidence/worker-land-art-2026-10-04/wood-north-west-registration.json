@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "action": "gather-wood",
+  "worldDirection": "north-west",
+  "screenDirection": "left",
+  "source": "docs/art-direction/human-roster-v1/generated/worker-wood-north-west-v2/raw.png",
+  "sourceSha256": "a0a7d2cd0a7640e221534eda724b9ba777cd80b4e448c352e78e84db17725cd9",
+  "extractionSha256": "7e5c2f8529e4a373b4c08d8826ef7cd9d0c2d44490a33dc3ecab9417602445f9",
+  "sharedScale": 0.3383270911360799,
+  "columnRootsX": [
+    256,
+    816,
+    1344
+  ],
+  "rowBaselinesY": [
+    900
+  ],
+  "groundPivotPx": {
+    "x": 160,
+    "y": 308
+  },
+  "durationMs": 720,
+  "registrationStatus": "source-pixel reviewed; native ground/turn acceptance open",
+  "frames": [
+    {
+      "id": "gather-wood-north-west-0",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-wood-north-west-v2/extracted/00.png",
+      "sourceSha256": "6c446ee8e6b586e62b4a6d975db6ba9d031cb3d14c1607a8e55ba1c048af04a2",
+      "sourceBounds": [
+        63,
+        99,
+        443,
+        900
+      ],
+      "offsetPx": [
+        95,
+        37
+      ],
+      "alphaBoundsPx": {
+        "x": 95,
+        "y": 37,
+        "width": 129,
+        "height": 271
+      },
+      "rgbaSha256": "934930ec3cd154c05a4c412fb490e707163cad09eb4f80a5b75ee7d4a934b1a2"
+    },
+    {
+      "id": "gather-wood-north-west-1",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-wood-north-west-v2/extracted/01.png",
+      "sourceSha256": "d33ba0488391d04fb347a3b02ba6a1c28df94dfe345a97df31cb8f53b6d6aa5f",
+      "sourceBounds": [
+        419,
+        220,
+        1017,
+        900
+      ],
+      "offsetPx": [
+        26,
+        78
+      ],
+      "alphaBoundsPx": {
+        "x": 26,
+        "y": 78,
+        "width": 202,
+        "height": 230
+      },
+      "rgbaSha256": "b4b4ec8d159b586d03f411ac61c67e086d09ed3f1270d2120d4e00e19639fae2"
+    },
+    {
+      "id": "gather-wood-north-west-2",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-wood-north-west-v2/extracted/02.png",
+      "sourceSha256": "c0c2c3b91fa442a4f0dca50fb8a00876b6d7195481921b058f1b3d64ac1c65b0",
+      "sourceBounds": [
+        1054,
+        230,
+        1530,
+        900
+      ],
+      "offsetPx": [
+        62,
+        81
+      ],
+      "alphaBoundsPx": {
+        "x": 62,
+        "y": 81,
+        "width": 161,
+        "height": 227
+      },
+      "rgbaSha256": "05cbd2c52f5de13dbff12d4beba3fa6bb2ca358fd4094ad7abc365c835608d3f"
+    }
+  ]
+}

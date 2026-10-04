@@ -1,5 +1,12 @@
 import { createReconnaissancePolicy } from './pve-reconnaissance.mjs';
+import { createHomeDefensePolicy } from './pve-home-defense.mjs';
+import { createRegroupPolicy } from './pve-regroup.mjs';
+import { createSkirmishTargetPolicy } from './pve-skirmish-targets.mjs';
+import { matchModeDefinition, normalizeMatchMode } from './match-modes.mjs';
+import { createObjectiveRotationPolicy } from './pve-objective-rotation.mjs';
 import { TECHNOLOGY_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
+import { farmHarvestNodeId } from './farm-harvest.mjs';
+import { readDisclosedWildlife } from './wildlife-client-state.mjs';
 /**
  * Team-visible adapter and deterministic opening policy for an ordinary RTS
  * WebSocket player. The server assigns the seat and remains authoritative for
@@ -186,18 +193,26 @@ function normalizeResearch(record) {
   };
 }
 
-function visibleResources(state, map, visibility) {
+function visibleResources(state, map, visibility, team) {
   const stateNodes = Array.isArray(state.resourceNodes) ? state.resourceNodes : [];
   const mapNodes = new Map((Array.isArray(map?.resourceNodes) ? map.resourceNodes : [])
     .filter((node) => typeof node?.id === 'string')
     .map((node) => [node.id, node]));
   const visible = [];
+  const wildlife = readDisclosedWildlife(map, state, team, point =>
+    !visibility || visibility.cellStateAtWorld(point.x, point.z) === 2)?.rows;
   for (const record of stateNodes) {
     if (typeof record?.id !== 'string' || typeof record.type !== 'string'
       || !Number.isFinite(record.stock)) continue;
-    const location = mapNodes.get(record.id);
+    const farm = record.sourceBuildingId === undefined ? null : state.buildings?.find(building =>
+      building.id === record.sourceBuildingId && building.team === team && building.type === 'farm'
+      && building.complete && building.hp > 0 && record.type === 'food' && record.id === farmHarvestNodeId(building.id));
+    const authored = mapNodes.get(record.id);
+    const location = authored?.wildlifeSpecies === undefined ? authored ?? farm : wildlife?.get(record.id);
     if (!location || !Number.isFinite(location.x) || !Number.isFinite(location.z)) continue;
-    if (visibility && visibility.cellStateAtWorld(location.x, location.z) !== 2) continue;
+    // The server always publishes owned structures, including occupied centers
+    // outside the cell visibility mask. Neutral authored nodes still need sight.
+    if (visibility && !farm && visibility.cellStateAtWorld(location.x, location.z) !== 2) continue;
     visible.push({ id: record.id, type: record.type, stock: record.stock, x: location.x, z: location.z });
   }
   return visible.sort((left, right) => left.id.localeCompare(right.id));
@@ -323,7 +338,7 @@ export function toOpponentObservation(state, team, map = null) {
       team,
     ),
     research,
-    resourceNodes: visibleResources(state, map, visibility),
+    resourceNodes: visibleResources(state, map, visibility, team),
     objectives: projectObjectives(state, map, visibility, units),
   };
 }
@@ -413,8 +428,8 @@ function objectivePrerequisitesMet(objective, team) {
   return owners.length === ids.length && owners.every((owner) => owner === team);
 }
 
-function nearestObjective(objectives, team, soldiers, map, lostObjectiveIds) {
-  if (soldiers.length === 0) return null;
+function rankedObjectives(objectives, team, soldiers, map, lostObjectiveIds) {
+  if (soldiers.length === 0) return [];
   const armyCenter = soldiers.reduce((center, unit) => ({
     x: center.x + unit.x / soldiers.length,
     z: center.z + unit.z / soldiers.length,
@@ -443,15 +458,20 @@ function nearestObjective(objectives, team, soldiers, map, lostObjectiveIds) {
     left.priority - right.priority
       || left.distance - right.distance
       || left.id.localeCompare(right.id)
-  ))[0] || null;
+  ));
 }
 
 /** Create a deterministic economy-and-tactics policy for an ordinary player seat. */
-export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
+export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED, matchMode = {}) {
   if (!Number.isSafeInteger(seed)) throw new TypeError('Opponent seed must be a safe integer.');
+  const strategy = matchModeDefinition(matchMode).aiStrategyId;
   const normalizedSeed = seed >>> 0;
   const productionPolicy = createProductionPolicy(normalizedSeed);
   const reconnaissancePolicy = createReconnaissancePolicy(normalizedSeed);
+  const homeDefensePolicy = createHomeDefensePolicy();
+  const regroupPolicy = createRegroupPolicy();
+  const skirmishPolicy = strategy === 'base-elimination' ? createSkirmishTargetPolicy(normalizedSeed) : null;
+  const objectiveRotationPolicy = createObjectiveRotationPolicy();
   const gatherAssignments = new Map();
   const objectiveOwners = new Map();
   const lostObjectiveIds = new Set();
@@ -459,6 +479,7 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
   let fallbackTacticsStarted = false;
   let previousDecisionGatherOnly = false;
   let tacticalWatch = null;
+  let defenseRegroupId = null;
   const orderedSoldiers = new Set();
   const soldierKey = (unit) => `${unit.id}:${unit.generation}`;
   const recordOrderedSoldiers = (soldiers) => soldiers.forEach((unit) => orderedSoldiers.add(soldierKey(unit)));
@@ -644,9 +665,13 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
 
     recordObjectiveOwnership(observation);
     const gathering = nextGatherCommands(observation);
+    const allSoldiers = observation.units.friendly
+      .filter(unit => unit.kind !== 'worker' && unit.hp > 0 && !reconnaissanceIds.has(unit.id)).sort((a, b) => a.id - b.id);
+    const homeDefense = homeDefensePolicy.next(observation, allSoldiers);
+    const regroup = regroupPolicy.next(observation, allSoldiers, homeDefense.units);
     // Keep the opening economy first, but do not let rejected gather orders
     // consume every decision (the retry window is shorter than a normal turn).
-    if (gathering.length > 0 && !previousDecisionGatherOnly) {
+    if (gathering.length > 0 && !previousDecisionGatherOnly && homeDefense.units.length === 0 && homeDefense.released.length === 0 && regroup.units.length === 0) {
       previousDecisionGatherOnly = true;
       return gathering;
     }
@@ -674,17 +699,23 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
       unitGenerations: unassigned.map(unit => unit.generation), buildingId: defense.id }] : [];
     for (const unit of unassigned) siegeBuildingOrders.set(soldierKey(unit), { buildingId: defense.id, x: unit.x, z: unit.z,
       attackTick: unit.lastAttack?.tick ?? -1, progressTick: observation.tick });
-    const soldiers = observation.units.friendly
-      .filter((unit) => unit.kind !== 'worker' && unit.hp > 0 && !activeKeys.has(soldierKey(unit)) && !reconnaissanceIds.has(unit.id))
-      .sort((left, right) => left.id - right.id);
+    const availableSoldiers = allSoldiers.filter(unit => !activeKeys.has(soldierKey(unit)));
+    const defending = new Set(homeDefense.units.map(soldierKey));
+    const rallying = new Set(regroup.units.map(soldierKey));
+    for (const identity of defending) orderedSoldiers.delete(identity);
+    for (const identity of rallying) orderedSoldiers.delete(identity);
+    const soldiers = availableSoldiers.filter(unit => !defending.has(soldierKey(unit)) && !rallying.has(soldierKey(unit)));
+    const supportOrders = [...gathering, ...siegeOrders, ...homeDefense.commands, ...regroup.commands];
+    if (skirmishPolicy) return [...supportOrders, ...skirmishPolicy.next(observation, soldiers)];
     const liveSoldiers = new Set(soldiers.map(soldierKey));
     for (const key of orderedSoldiers) if (!liveSoldiers.has(key)) orderedSoldiers.delete(key);
     const reinforcements = soldiers.filter((unit) => !orderedSoldiers.has(soldierKey(unit)));
     const objectives = Array.isArray(observation.objectives) ? observation.objectives : [];
-    const target = nearestObjective(
+    const target = objectiveRotationPolicy.next(observation, soldiers, rankedObjectives(
       objectives, observation.team, soldiers, observation.map, lostObjectiveIds,
-    );
+    ));
     if (target) {
+      defenseRegroupId = null;
       const mustReissue = target.id !== tacticalObjectiveId || lostObjectiveIds.has(target.id);
       tacticalObjectiveId = target.id;
       const stalled = mustReissue ? [] : stalledTacticalSoldiers(
@@ -697,40 +728,58 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED) {
         watchTacticalOrder(ordered, target.point, observation.tick, stalled.length > 0);
         recordOrderedSoldiers(ordered);
         lostObjectiveIds.delete(target.id);
-        return [...gathering, ...siegeOrders, {
+        return [...supportOrders, {
           type: 'attackMove',
           ids: ordered.map((unit) => unit.id),
           x: target.point.x,
           z: target.point.z,
         }];
       }
-      return [...gathering, ...siegeOrders];
+      return supportOrders;
     }
 
     tacticalObjectiveId = null;
     if (objectives.length > 0 || soldiers.length === 0) {
-      tacticalWatch = null;
       if (soldiers.length === 0) fallbackTacticsStarted = false;
-      return [...gathering, ...siegeOrders];
+      // When every objective is owned, released defenders regroup at the
+      // nearest public owned watch instead of remaining idle beside the raid.
+      const released = homeDefense.released;
+      const owned = objectives.filter(objective => objective.owner === observation.team && (released.length || objective.id === defenseRegroupId))
+        .map(objective => ({ id: objective.id, point: objectiveWorldPoint(objective, observation.map) })).filter(goal => goal.point)
+        .sort((a, b) => released.reduce((sum, unit) => sum + Math.hypot(unit.x - a.point.x, unit.z - a.point.z)
+          - Math.hypot(unit.x - b.point.x, unit.z - b.point.z), 0) || a.id.localeCompare(b.id))[0];
+      if (owned) {
+        defenseRegroupId = owned.id;
+        const stalled = stalledTacticalSoldiers(observation, soldiers, objectives.find(objective => objective.id === owned.id)?.zone);
+        const returning = new Set([...released, ...stalled].map(soldierKey));
+        const regroup = soldiers.filter(unit => returning.has(soldierKey(unit)));
+        if (regroup.length) {
+          watchTacticalOrder(regroup, owned.point, observation.tick, stalled.length > 0);
+          recordOrderedSoldiers(regroup);
+          return [...supportOrders, { type: 'attackMove', ids: regroup.map(unit => unit.id),
+            unitGenerations: regroup.map(unit => unit.generation), ...owned.point }];
+        }
+      } else { tacticalWatch = null; defenseRegroupId = null; }
+      return supportOrders;
     }
     if (fallbackTacticsStarted) {
       const stalled = stalledTacticalSoldiers(observation, soldiers);
-      if (stalled.length === 0 && reinforcements.length === 0) return [...gathering, ...siegeOrders];
+      if (stalled.length === 0 && reinforcements.length === 0) return supportOrders;
       const point = tacticalWatch.point;
       const retryKeys = new Set(stalled.map(soldierKey));
       const ordered = soldiers.filter((unit) => retryKeys.has(soldierKey(unit)) || !orderedSoldiers.has(soldierKey(unit)));
       watchTacticalOrder(ordered, point, observation.tick, stalled.length > 0);
       recordOrderedSoldiers(ordered);
-      return [...gathering, ...siegeOrders, { type: 'attackMove', ids: ordered.map((unit) => unit.id), ...point }];
+      return [...supportOrders, { type: 'attackMove', ids: ordered.map((unit) => unit.id), ...point }];
     }
 
-    const visibleTarget = observation.units.visibleEnemies
+    const visibleTarget = homeDefense.units.length ? null : observation.units.visibleEnemies
       .filter((unit) => unit.hp > 0)
       .sort((left, right) => left.id - right.id)[0];
     fallbackTacticsStarted = true;
     recordOrderedSoldiers(soldiers);
     watchTacticalOrder(soldiers, { x: visibleTarget?.x ?? 0, z: visibleTarget?.z ?? 0 }, observation.tick);
-    return [...gathering, ...siegeOrders, {
+    return [...supportOrders, {
       type: 'attackMove',
       ids: soldiers.map((unit) => unit.id),
       x: visibleTarget?.x ?? 0,
@@ -780,12 +829,16 @@ export function attachDeterministicOpponent(socket, {
   let nextClientOrderToken = 1;
   let reportedNoSeat = false;
   let timer = null;
-  let policy = createDeterministicPolicy(seed);
+  let matchMode = normalizeMatchMode();
+  let policy = createDeterministicPolicy(seed, matchMode);
+  let invalidMatchMode = false;
   let previousWinner = null;
   let hostResetPending = false;
 
-  const resetForNewMatch = () => {
-    policy = createDeterministicPolicy(seed);
+  const resetForNewMatch = (identity = matchMode) => {
+    matchMode = identity;
+    policy = createDeterministicPolicy(seed, matchMode);
+    invalidMatchMode = false;
     finished = false;
     hostResetPending = false;
   };
@@ -801,6 +854,25 @@ export function attachDeterministicOpponent(socket, {
       return;
     }
 
+    // Welcome/map-change identify a fresh setup. State identity is authoritative
+    // after recovery, but unchanged snapshots must preserve private policy watches.
+    if (message.type === 'welcome' || message.type === 'mapChange' || message.type === 'state') {
+      const carriesIdentity = value => value && (Object.hasOwn(value, 'matchModeId')
+        || Object.hasOwn(value, 'matchModeVersion'));
+      const freshSetup = message.type !== 'state';
+      if (freshSetup || carriesIdentity(message)) {
+        try {
+          const identity = normalizeMatchMode(carriesIdentity(message) ? message : message.state ?? {});
+          if (freshSetup || identity.matchModeId !== matchMode.matchModeId
+            || identity.matchModeVersion !== matchMode.matchModeVersion) resetForNewMatch(identity);
+        } catch (error) {
+          invalidMatchMode = true;
+          onError(error instanceof Error ? error : new Error(String(error)));
+          return;
+        }
+      }
+    }
+
     if (message.type === 'welcome') {
       team = validTeam(message.player?.team) ? message.player.team : null;
       map = message.map && typeof message.map === 'object' ? message.map : null;
@@ -814,7 +886,6 @@ export function attachDeterministicOpponent(socket, {
       map = message.map && typeof message.map === 'object' ? message.map : map;
       latestState = message.state?.type === 'state' ? message.state : latestState;
       previousWinner = Number.isInteger(latestState?.winner) ? latestState.winner : null;
-      resetForNewMatch();
     } else if (message.type === 'notice'
       && typeof message.message === 'string' && message.message.startsWith('BATTLEFIELD RESET')) {
       hostResetPending = true;
@@ -826,7 +897,7 @@ export function attachDeterministicOpponent(socket, {
         && isPristineMatchState(message, team, map);
       hostResetPending = false;
       previousWinner = winner;
-      if (winnerCleared || hostResetConfirmed) resetForNewMatch();
+      if (!invalidMatchMode && (winnerCleared || hostResetConfirmed)) resetForNewMatch();
     } else if (message.type === 'victory') {
       finished = true;
     }
@@ -839,7 +910,7 @@ export function attachDeterministicOpponent(socket, {
   socket.addEventListener('message', handleMessage);
   socket.addEventListener('close', handleClose);
   timer = setInterval(() => {
-    if (socketClosed || disposed || finished || team === null || !latestState || socket.readyState !== 1) return;
+    if (socketClosed || disposed || finished || invalidMatchMode || team === null || !latestState || socket.readyState !== 1) return;
     let observation;
     try {
       observation = toOpponentObservation(latestState, team, map);

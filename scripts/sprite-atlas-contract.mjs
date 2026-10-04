@@ -189,6 +189,12 @@ function insidePack(root, actual) {
   return relative === '' || (!relative.startsWith('..' + path.sep) && relative !== '..' && !path.isAbsolute(relative));
 }
 
+function inputFailure(code, message, cause) {
+  // Existing callers print errors; explicit local diagnosis can inspect the cause.
+  const diagnostic = Object.assign(new Error(message, {cause}), {code});
+  return {manifest: null, packRoot: null, errors: [message], diagnostic};
+}
+
 export async function validateSpriteAtlas(manifestPath) {
   const errors = [];
   const absoluteManifest = path.resolve(manifestPath);
@@ -197,14 +203,24 @@ export async function validateSpriteAtlas(manifestPath) {
   let schema;
   let captureSchema;
   try {
-    [manifest, schema, captureSchema] = await Promise.all([
-      readFile(absoluteManifest, 'utf8').then(JSON.parse),
+    [schema, captureSchema] = await Promise.all([
       readFile(schemaPath, 'utf8').then(JSON.parse),
       readFile(captureSchemaPath, 'utf8').then(JSON.parse),
     ]);
+  } catch (error) {
+    return inputFailure('schema-unavailable', 'Bundled sprite-atlas schemas are unavailable or invalid. Repair the checkout and retry.', error);
+  }
+  let text;
+  try {
+    text = await readFile(absoluteManifest, 'utf8');
     packRoot = await realpath(path.dirname(absoluteManifest));
   } catch (error) {
-    return { manifest: null, packRoot: null, errors: ['cannot read sprite-atlas manifest or schema: ' + error.message] };
+    return inputFailure('manifest-unreadable', 'Cannot read sprite-atlas manifest. Check the file path and permissions, then retry.', error);
+  }
+  try { manifest = JSON.parse(text); }
+  catch (error) {
+    if (!(error instanceof SyntaxError)) throw error;
+    return inputFailure('manifest-invalid-json', 'Sprite-atlas manifest must be valid JSON. Check its syntax and retry.', error);
   }
 
   const schemaResources = new Map([

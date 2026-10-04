@@ -21,7 +21,7 @@ import {
   MODEL_PROPOSAL_LIMITS,
   MODEL_PROPOSAL_SCHEMA_VERSION,
   parseModelProposal,
-} from '../src/pve-model-proposal.mjs';
+} from '../src/server/pve-model-proposal.mjs';
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const SERVER_PATH = path.join(ROOT, 'server.mjs');

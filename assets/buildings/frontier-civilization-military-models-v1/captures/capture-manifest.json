@@ -1,0 +1,1391 @@
+{
+  "schema": "thousand-unit-skirmish.building-calibrated-capture-batch.v1",
+  "status": "Complete-only sources; native gameplay and matched lifecycle acceptance open",
+  "registration": {
+    "definition": "Analytical ground projection using orthographic 8-unit canvas, aim y=1.52 and elevation=46 degrees. Original measured Blender float projections retained per row.",
+    "anchorPixelFromTopLeft": [
+      512,
+      647.1527325565025
+    ],
+    "maxMeasuredRoundoffPixels": 0.00046568568495786167,
+    "tolerancePixels": 0.001
+  },
+  "records": [
+    {
+      "asset": "barracks",
+      "state": "complete",
+      "viewIndex": 0,
+      "file": "barracks-complete-view-00.png",
+      "sha256": "40f9e1cf8c516fbaa237dde66a6bb3b686a71c947a72acaab7661d8c78087439",
+      "bytes": 765449,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 0,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512,
+          647.1527325565025
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 48,
+      "lighting": {
+        "renderer": "Blender Cycles CPU",
+        "samples": 48,
+        "worldColor": [
+          0.78,
+          0.81,
+          0.73
+        ],
+        "worldStrength": 0.65,
+        "keyPositionGame": [
+          -4,
+          8,
+          5
+        ],
+        "keyWatts": 650,
+        "keySize": 5,
+        "keyColor": [
+          1,
+          0.92,
+          0.79
+        ],
+        "fillPositionGame": [
+          5,
+          6,
+          -4
+        ],
+        "fillWatts": 100,
+        "fillSize": 6,
+        "fillColor": [
+          0.76,
+          0.85,
+          1
+        ],
+        "colorManagement": "Standard; Medium High Contrast; exposure 0; gamma 1",
+        "note": "Physical Blender lighting; no Three intensity equivalence claimed"
+      },
+      "source": "barracks",
+      "measuredGroundOriginPixelFromTopLeft": [
+        512.0,
+        647.1531982421875
+      ],
+      "anchorRoundoffPixels": 0.00046568568495786167,
+      "alphaBounds": [
+        331,
+        264,
+        693,
+        778
+      ],
+      "measuredNativeBaseWidth": 2.8,
+      "targetBaseWidthWorldUnits": 2.8,
+      "uniformScale": 1,
+      "groundingTranslationNative": [
+        0,
+        0,
+        0
+      ],
+      "measuredBaseCenterNativeXZ": [
+        0,
+        0
+      ],
+      "occupancyCells": 3
+    },
+    {
+      "asset": "barracks",
+      "state": "complete",
+      "viewIndex": 1,
+      "file": "barracks-complete-view-01.png",
+      "sha256": "c5c91aeb3e420218163bfe5f4793bb58dca31a0d95f26e4c20f6f7845886721d",
+      "bytes": 794619,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 45,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512,
+          647.1527325565025
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 48,
+      "lighting": {
+        "renderer": "Blender Cycles CPU",
+        "samples": 48,
+        "worldColor": [
+          0.78,
+          0.81,
+          0.73
+        ],
+        "worldStrength": 0.65,
+        "keyPositionGame": [
+          -4,
+          8,
+          5
+        ],
+        "keyWatts": 650,
+        "keySize": 5,
+        "keyColor": [
+          1,
+          0.92,
+          0.79
+        ],
+        "fillPositionGame": [
+          5,
+          6,
+          -4
+        ],
+        "fillWatts": 100,
+        "fillSize": 6,
+        "fillColor": [
+          0.76,
+          0.85,
+          1
+        ],
+        "colorManagement": "Standard; Medium High Contrast; exposure 0; gamma 1",
+        "note": "Physical Blender lighting; no Three intensity equivalence claimed"
+      },
+      "source": "barracks",
+      "measuredGroundOriginPixelFromTopLeft": [
+        512.0001220703125,
+        647.1530151367188
+      ],
+      "anchorRoundoffPixels": 0.00028258021620786167,
+      "alphaBounds": [
+        257,
+        262,
+        767,
+        830
+      ],
+      "measuredNativeBaseWidth": 2.8,
+      "targetBaseWidthWorldUnits": 2.8,
+      "uniformScale": 1,
+      "groundingTranslationNative": [
+        0,
+        0,
+        0
+      ],
+      "measuredBaseCenterNativeXZ": [
+        0,
+        0
+      ],
+      "occupancyCells": 3
+    },
+    {
+      "asset": "barracks",
+      "state": "complete",
+      "viewIndex": 2,
+      "file": "barracks-complete-view-02.png",
+      "sha256": "dc91434fcdcf6eb12c21edb8d8e04fa178526a2bb064e18da954a0b6ddade734",
+      "bytes": 734887,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 90,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512,
+          647.1527325565025
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 48,
+      "lighting": {
+        "renderer": "Blender Cycles CPU",
+        "samples": 48,
+        "worldColor": [
+          0.78,
+          0.81,
+          0.73
+        ],
+        "worldStrength": 0.65,
+        "keyPositionGame": [
+          -4,
+          8,
+          5
+        ],
+        "keyWatts": 650,
+        "keySize": 5,
+        "keyColor": [
+          1,
+          0.92,
+          0.79
+        ],
+        "fillPositionGame": [
+          5,
+          6,
+          -4
+        ],
+        "fillWatts": 100,
+        "fillSize": 6,
+        "fillColor": [
+          0.76,
+          0.85,
+          1
+        ],
+        "colorManagement": "Standard; Medium High Contrast; exposure 0; gamma 1",
+        "note": "Physical Blender lighting; no Three intensity equivalence claimed"
+      },
+      "source": "barracks",
+      "measuredGroundOriginPixelFromTopLeft": [
+        512.0,
+        647.15283203125
+      ],
+      "anchorRoundoffPixels": 9.947474745786167e-05,
+      "alphaBounds": [
+        331,
+        299,
+        693,
+        778
+      ],
+      "measuredNativeBaseWidth": 2.8,
+      "targetBaseWidthWorldUnits": 2.8,
+      "uniformScale": 1,
+      "groundingTranslationNative": [
+        0,
+        0,
+        0
+      ],
+      "measuredBaseCenterNativeXZ": [
+        0,
+        0
+      ],
+      "occupancyCells": 3
+    },
+    {
+      "asset": "barracks",
+      "state": "complete",
+      "viewIndex": 3,
+      "file": "barracks-complete-view-03.png",
+      "sha256": "76cb00ca490e25a651e5ea4d69c05c38654bb9a15d35efd198f8a16bf7cdb4b6",
+      "bytes": 760562,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 135,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512,
+          647.1527325565025
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 48,
+      "lighting": {
+        "renderer": "Blender Cycles CPU",
+        "samples": 48,
+        "worldColor": [
+          0.78,
+          0.81,
+          0.73
+        ],
+        "worldStrength": 0.65,
+        "keyPositionGame": [
+          -4,
+          8,
+          5
+        ],
+        "keyWatts": 650,
+        "keySize": 5,
+        "keyColor": [
+          1,
+          0.92,
+          0.79
+        ],
+        "fillPositionGame": [
+          5,
+          6,
+          -4
+        ],
+        "fillWatts": 100,
+        "fillSize": 6,
+        "fillColor": [
+          0.76,
+          0.85,
+          1
+        ],
+        "colorManagement": "Standard; Medium High Contrast; exposure 0; gamma 1",
+        "note": "Physical Blender lighting; no Three intensity equivalence claimed"
+      },
+      "source": "barracks",
+      "measuredGroundOriginPixelFromTopLeft": [
+        511.9998779296875,
+        647.1530456542969
+      ],
+      "anchorRoundoffPixels": 0.00031309779433286167,
+      "alphaBounds": [
+        257,
+        310,
+        767,
+        830
+      ],
+      "measuredNativeBaseWidth": 2.8,
+      "targetBaseWidthWorldUnits": 2.8,
+      "uniformScale": 1,
+      "groundingTranslationNative": [
+        0,
+        0,
+        0
+      ],
+      "measuredBaseCenterNativeXZ": [
+        0,
+        0
+      ],
+      "occupancyCells": 3
+    },
+    {
+      "asset": "barracks",
+      "state": "complete",
+      "viewIndex": 4,
+      "file": "barracks-complete-view-04.png",
+      "sha256": "54958ea0f5d981dd1bde60bf7ba5399e56360662a929580c8f61724beeffb93f",
+      "bytes": 738029,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 180,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512,
+          647.1527325565025
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 48,
+      "lighting": {
+        "renderer": "Blender Cycles CPU",
+        "samples": 48,
+        "worldColor": [
+          0.78,
+          0.81,
+          0.73
+        ],
+        "worldStrength": 0.65,
+        "keyPositionGame": [
+          -4,
+          8,
+          5
+        ],
+        "keyWatts": 650,
+        "keySize": 5,
+        "keyColor": [
+          1,
+          0.92,
+          0.79
+        ],
+        "fillPositionGame": [
+          5,
+          6,
+          -4
+        ],
+        "fillWatts": 100,
+        "fillSize": 6,
+        "fillColor": [
+          0.76,
+          0.85,
+          1
+        ],
+        "colorManagement": "Standard; Medium High Contrast; exposure 0; gamma 1",
+        "note": "Physical Blender lighting; no Three intensity equivalence claimed"
+      },
+      "source": "barracks",
+      "measuredGroundOriginPixelFromTopLeft": [
+        512.0001220703125,
+        647.15283203125
+      ],
+      "anchorRoundoffPixels": 0.0001220703125,
+      "alphaBounds": [
+        331,
+        289,
+        693,
+        778
+      ],
+      "measuredNativeBaseWidth": 2.8,
+      "targetBaseWidthWorldUnits": 2.8,
+      "uniformScale": 1,
+      "groundingTranslationNative": [
+        0,
+        0,
+        0
+      ],
+      "measuredBaseCenterNativeXZ": [
+        0,
+        0
+      ],
+      "occupancyCells": 3
+    },
+    {
+      "asset": "barracks",
+      "state": "complete",
+      "viewIndex": 5,
+      "file": "barracks-complete-view-05.png",
+      "sha256": "43be32b02eddaae8028441b0197c5d0446042de361fd041919eba6650df2afb0",
+      "bytes": 767122,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 225,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512,
+          647.1527325565025
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 48,
+      "lighting": {
+        "renderer": "Blender Cycles CPU",
+        "samples": 48,
+        "worldColor": [
+          0.78,
+          0.81,
+          0.73
+        ],
+        "worldStrength": 0.65,
+        "keyPositionGame": [
+          -4,
+          8,
+          5
+        ],
+        "keyWatts": 650,
+        "keySize": 5,
+        "keyColor": [
+          1,
+          0.92,
+          0.79
+        ],
+        "fillPositionGame": [
+          5,
+          6,
+          -4
+        ],
+        "fillWatts": 100,
+        "fillSize": 6,
+        "fillColor": [
+          0.76,
+          0.85,
+          1
+        ],
+        "colorManagement": "Standard; Medium High Contrast; exposure 0; gamma 1",
+        "note": "Physical Blender lighting; no Three intensity equivalence claimed"
+      },
+      "source": "barracks",
+      "measuredGroundOriginPixelFromTopLeft": [
+        512.0001220703125,
+        647.1530456542969
+      ],
+      "anchorRoundoffPixels": 0.00031309779433286167,
+      "alphaBounds": [
+        257,
+        309,
+        767,
+        830
+      ],
+      "measuredNativeBaseWidth": 2.8,
+      "targetBaseWidthWorldUnits": 2.8,
+      "uniformScale": 1,
+      "groundingTranslationNative": [
+        0,
+        0,
+        0
+      ],
+      "measuredBaseCenterNativeXZ": [
+        0,
+        0
+      ],
+      "occupancyCells": 3
+    },
+    {
+      "asset": "barracks",
+      "state": "complete",
+      "viewIndex": 6,
+      "file": "barracks-complete-view-06.png",
+      "sha256": "da4312833c2ac6b3744d5bd1c7f812ca69a1063e66c3ddb60c407e9f9c4aae1d",
+      "bytes": 732375,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 270,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512,
+          647.1527325565025
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 48,
+      "lighting": {
+        "renderer": "Blender Cycles CPU",
+        "samples": 48,
+        "worldColor": [
+          0.78,
+          0.81,
+          0.73
+        ],
+        "worldStrength": 0.65,
+        "keyPositionGame": [
+          -4,
+          8,
+          5
+        ],
+        "keyWatts": 650,
+        "keySize": 5,
+        "keyColor": [
+          1,
+          0.92,
+          0.79
+        ],
+        "fillPositionGame": [
+          5,
+          6,
+          -4
+        ],
+        "fillWatts": 100,
+        "fillSize": 6,
+        "fillColor": [
+          0.76,
+          0.85,
+          1
+        ],
+        "colorManagement": "Standard; Medium High Contrast; exposure 0; gamma 1",
+        "note": "Physical Blender lighting; no Three intensity equivalence claimed"
+      },
+      "source": "barracks",
+      "measuredGroundOriginPixelFromTopLeft": [
+        512.0,
+        647.15283203125
+      ],
+      "anchorRoundoffPixels": 9.947474745786167e-05,
+      "alphaBounds": [
+        331,
+        318,
+        693,
+        778
+      ],
+      "measuredNativeBaseWidth": 2.8,
+      "targetBaseWidthWorldUnits": 2.8,
+      "uniformScale": 1,
+      "groundingTranslationNative": [
+        0,
+        0,
+        0
+      ],
+      "measuredBaseCenterNativeXZ": [
+        0,
+        0
+      ],
+      "occupancyCells": 3
+    },
+    {
+      "asset": "barracks",
+      "state": "complete",
+      "viewIndex": 7,
+      "file": "barracks-complete-view-07.png",
+      "sha256": "7366e033fe27265283b6933790c7fad99c985f0c4d7fd5ac63547b5524a80264",
+      "bytes": 780157,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 315,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512,
+          647.1527325565025
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 48,
+      "lighting": {
+        "renderer": "Blender Cycles CPU",
+        "samples": 48,
+        "worldColor": [
+          0.78,
+          0.81,
+          0.73
+        ],
+        "worldStrength": 0.65,
+        "keyPositionGame": [
+          -4,
+          8,
+          5
+        ],
+        "keyWatts": 650,
+        "keySize": 5,
+        "keyColor": [
+          1,
+          0.92,
+          0.79
+        ],
+        "fillPositionGame": [
+          5,
+          6,
+          -4
+        ],
+        "fillWatts": 100,
+        "fillSize": 6,
+        "fillColor": [
+          0.76,
+          0.85,
+          1
+        ],
+        "colorManagement": "Standard; Medium High Contrast; exposure 0; gamma 1",
+        "note": "Physical Blender lighting; no Three intensity equivalence claimed"
+      },
+      "source": "barracks",
+      "measuredGroundOriginPixelFromTopLeft": [
+        511.9998474121094,
+        647.1530151367188
+      ],
+      "anchorRoundoffPixels": 0.00028258021620786167,
+      "alphaBounds": [
+        257,
+        300,
+        767,
+        830
+      ],
+      "measuredNativeBaseWidth": 2.8,
+      "targetBaseWidthWorldUnits": 2.8,
+      "uniformScale": 1,
+      "groundingTranslationNative": [
+        0,
+        0,
+        0
+      ],
+      "measuredBaseCenterNativeXZ": [
+        0,
+        0
+      ],
+      "occupancyCells": 3
+    },
+    {
+      "asset": "archery-range",
+      "state": "complete",
+      "viewIndex": 0,
+      "file": "archery-range-complete-view-00.png",
+      "sha256": "f33193369ee91473728429dbb1d42646cc15064e1d9c290d06372e48a588a7a5",
+      "bytes": 754660,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 0,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512,
+          647.1527325565025
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 48,
+      "source": "archery-range",
+      "measuredGroundOriginPixelFromTopLeft": [
+        512.0,
+        647.1531982421875
+      ],
+      "anchorRoundoffPixels": 0.00046568568495786167,
+      "alphaBounds": [
+        321,
+        298,
+        693,
+        778
+      ],
+      "measuredNativeBaseWidth": 2.8,
+      "targetBaseWidthWorldUnits": 2.8,
+      "uniformScale": 1,
+      "groundingTranslationNative": [
+        0,
+        0,
+        0
+      ],
+      "measuredBaseCenterNativeXZ": [
+        0,
+        0
+      ],
+      "occupancyCells": 3,
+      "lighting": {
+        "renderer": "Blender Cycles CPU",
+        "samples": 48,
+        "worldColor": [
+          0.78,
+          0.81,
+          0.73
+        ],
+        "worldStrength": 0.65,
+        "keyPositionGame": [
+          -4,
+          8,
+          5
+        ],
+        "keyWatts": 650,
+        "keySize": 5,
+        "keyColor": [
+          1,
+          0.92,
+          0.79
+        ],
+        "fillPositionGame": [
+          5,
+          6,
+          -4
+        ],
+        "fillWatts": 100,
+        "fillSize": 6,
+        "fillColor": [
+          0.76,
+          0.85,
+          1
+        ],
+        "colorManagement": "Standard; Medium High Contrast; exposure 0; gamma 1",
+        "note": "Physical Blender lighting; no Three intensity equivalence claimed"
+      }
+    },
+    {
+      "asset": "archery-range",
+      "state": "complete",
+      "viewIndex": 1,
+      "file": "archery-range-complete-view-01.png",
+      "sha256": "a09351ec92be0fd340aad0fe680b02279964cc2ccc5ff5bd4028f08afa60bda4",
+      "bytes": 797159,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 45,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512,
+          647.1527325565025
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 48,
+      "source": "archery-range",
+      "measuredGroundOriginPixelFromTopLeft": [
+        512.0001220703125,
+        647.1530151367188
+      ],
+      "anchorRoundoffPixels": 0.00028258021620786167,
+      "alphaBounds": [
+        257,
+        283,
+        767,
+        830
+      ],
+      "measuredNativeBaseWidth": 2.8,
+      "targetBaseWidthWorldUnits": 2.8,
+      "uniformScale": 1,
+      "groundingTranslationNative": [
+        0,
+        0,
+        0
+      ],
+      "measuredBaseCenterNativeXZ": [
+        0,
+        0
+      ],
+      "occupancyCells": 3,
+      "lighting": {
+        "renderer": "Blender Cycles CPU",
+        "samples": 48,
+        "worldColor": [
+          0.78,
+          0.81,
+          0.73
+        ],
+        "worldStrength": 0.65,
+        "keyPositionGame": [
+          -4,
+          8,
+          5
+        ],
+        "keyWatts": 650,
+        "keySize": 5,
+        "keyColor": [
+          1,
+          0.92,
+          0.79
+        ],
+        "fillPositionGame": [
+          5,
+          6,
+          -4
+        ],
+        "fillWatts": 100,
+        "fillSize": 6,
+        "fillColor": [
+          0.76,
+          0.85,
+          1
+        ],
+        "colorManagement": "Standard; Medium High Contrast; exposure 0; gamma 1",
+        "note": "Physical Blender lighting; no Three intensity equivalence claimed"
+      }
+    },
+    {
+      "asset": "archery-range",
+      "state": "complete",
+      "viewIndex": 2,
+      "file": "archery-range-complete-view-02.png",
+      "sha256": "3a599a5bbd99a00023b5e8cddece4e10f52b19e82af53c4c9d705db8d45d41bd",
+      "bytes": 748236,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 90,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512,
+          647.1527325565025
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 48,
+      "source": "archery-range",
+      "measuredGroundOriginPixelFromTopLeft": [
+        512.0,
+        647.15283203125
+      ],
+      "anchorRoundoffPixels": 9.947474745786167e-05,
+      "alphaBounds": [
+        331,
+        275,
+        693,
+        778
+      ],
+      "measuredNativeBaseWidth": 2.8,
+      "targetBaseWidthWorldUnits": 2.8,
+      "uniformScale": 1,
+      "groundingTranslationNative": [
+        0,
+        0,
+        0
+      ],
+      "measuredBaseCenterNativeXZ": [
+        0,
+        0
+      ],
+      "occupancyCells": 3,
+      "lighting": {
+        "renderer": "Blender Cycles CPU",
+        "samples": 48,
+        "worldColor": [
+          0.78,
+          0.81,
+          0.73
+        ],
+        "worldStrength": 0.65,
+        "keyPositionGame": [
+          -4,
+          8,
+          5
+        ],
+        "keyWatts": 650,
+        "keySize": 5,
+        "keyColor": [
+          1,
+          0.92,
+          0.79
+        ],
+        "fillPositionGame": [
+          5,
+          6,
+          -4
+        ],
+        "fillWatts": 100,
+        "fillSize": 6,
+        "fillColor": [
+          0.76,
+          0.85,
+          1
+        ],
+        "colorManagement": "Standard; Medium High Contrast; exposure 0; gamma 1",
+        "note": "Physical Blender lighting; no Three intensity equivalence claimed"
+      }
+    },
+    {
+      "asset": "archery-range",
+      "state": "complete",
+      "viewIndex": 3,
+      "file": "archery-range-complete-view-03.png",
+      "sha256": "eeab6c21aa02dcdb372e490564033104d9957358a3cb7bb7f7e64049879bcda2",
+      "bytes": 769127,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 135,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512,
+          647.1527325565025
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 48,
+      "source": "archery-range",
+      "measuredGroundOriginPixelFromTopLeft": [
+        511.9998779296875,
+        647.1530456542969
+      ],
+      "anchorRoundoffPixels": 0.00031309779433286167,
+      "alphaBounds": [
+        257,
+        286,
+        767,
+        830
+      ],
+      "measuredNativeBaseWidth": 2.8,
+      "targetBaseWidthWorldUnits": 2.8,
+      "uniformScale": 1,
+      "groundingTranslationNative": [
+        0,
+        0,
+        0
+      ],
+      "measuredBaseCenterNativeXZ": [
+        0,
+        0
+      ],
+      "occupancyCells": 3,
+      "lighting": {
+        "renderer": "Blender Cycles CPU",
+        "samples": 48,
+        "worldColor": [
+          0.78,
+          0.81,
+          0.73
+        ],
+        "worldStrength": 0.65,
+        "keyPositionGame": [
+          -4,
+          8,
+          5
+        ],
+        "keyWatts": 650,
+        "keySize": 5,
+        "keyColor": [
+          1,
+          0.92,
+          0.79
+        ],
+        "fillPositionGame": [
+          5,
+          6,
+          -4
+        ],
+        "fillWatts": 100,
+        "fillSize": 6,
+        "fillColor": [
+          0.76,
+          0.85,
+          1
+        ],
+        "colorManagement": "Standard; Medium High Contrast; exposure 0; gamma 1",
+        "note": "Physical Blender lighting; no Three intensity equivalence claimed"
+      }
+    },
+    {
+      "asset": "archery-range",
+      "state": "complete",
+      "viewIndex": 4,
+      "file": "archery-range-complete-view-04.png",
+      "sha256": "ed909ca74e6c4843c2321a7bedb218f8e22ff5a668106aad19896172ce2ca30e",
+      "bytes": 727010,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 180,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512,
+          647.1527325565025
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 48,
+      "source": "archery-range",
+      "measuredGroundOriginPixelFromTopLeft": [
+        512.0001220703125,
+        647.15283203125
+      ],
+      "anchorRoundoffPixels": 0.0001220703125,
+      "alphaBounds": [
+        331,
+        314,
+        703,
+        778
+      ],
+      "measuredNativeBaseWidth": 2.8,
+      "targetBaseWidthWorldUnits": 2.8,
+      "uniformScale": 1,
+      "groundingTranslationNative": [
+        0,
+        0,
+        0
+      ],
+      "measuredBaseCenterNativeXZ": [
+        0,
+        0
+      ],
+      "occupancyCells": 3,
+      "lighting": {
+        "renderer": "Blender Cycles CPU",
+        "samples": 48,
+        "worldColor": [
+          0.78,
+          0.81,
+          0.73
+        ],
+        "worldStrength": 0.65,
+        "keyPositionGame": [
+          -4,
+          8,
+          5
+        ],
+        "keyWatts": 650,
+        "keySize": 5,
+        "keyColor": [
+          1,
+          0.92,
+          0.79
+        ],
+        "fillPositionGame": [
+          5,
+          6,
+          -4
+        ],
+        "fillWatts": 100,
+        "fillSize": 6,
+        "fillColor": [
+          0.76,
+          0.85,
+          1
+        ],
+        "colorManagement": "Standard; Medium High Contrast; exposure 0; gamma 1",
+        "note": "Physical Blender lighting; no Three intensity equivalence claimed"
+      }
+    },
+    {
+      "asset": "archery-range",
+      "state": "complete",
+      "viewIndex": 5,
+      "file": "archery-range-complete-view-05.png",
+      "sha256": "08b08c74ff67bfad25b04ac5abc709eef14548c63ec79b47a92849741afdba25",
+      "bytes": 783849,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 225,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512,
+          647.1527325565025
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 48,
+      "source": "archery-range",
+      "measuredGroundOriginPixelFromTopLeft": [
+        512.0001220703125,
+        647.1530456542969
+      ],
+      "anchorRoundoffPixels": 0.00031309779433286167,
+      "alphaBounds": [
+        257,
+        286,
+        767,
+        830
+      ],
+      "measuredNativeBaseWidth": 2.8,
+      "targetBaseWidthWorldUnits": 2.8,
+      "uniformScale": 1,
+      "groundingTranslationNative": [
+        0,
+        0,
+        0
+      ],
+      "measuredBaseCenterNativeXZ": [
+        0,
+        0
+      ],
+      "occupancyCells": 3,
+      "lighting": {
+        "renderer": "Blender Cycles CPU",
+        "samples": 48,
+        "worldColor": [
+          0.78,
+          0.81,
+          0.73
+        ],
+        "worldStrength": 0.65,
+        "keyPositionGame": [
+          -4,
+          8,
+          5
+        ],
+        "keyWatts": 650,
+        "keySize": 5,
+        "keyColor": [
+          1,
+          0.92,
+          0.79
+        ],
+        "fillPositionGame": [
+          5,
+          6,
+          -4
+        ],
+        "fillWatts": 100,
+        "fillSize": 6,
+        "fillColor": [
+          0.76,
+          0.85,
+          1
+        ],
+        "colorManagement": "Standard; Medium High Contrast; exposure 0; gamma 1",
+        "note": "Physical Blender lighting; no Three intensity equivalence claimed"
+      }
+    },
+    {
+      "asset": "archery-range",
+      "state": "complete",
+      "viewIndex": 6,
+      "file": "archery-range-complete-view-06.png",
+      "sha256": "3f9676acef3987dfd7d561ab4406500e0954be063e9d42ddd87bd87edec56327",
+      "bytes": 773670,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 270,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512,
+          647.1527325565025
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 48,
+      "source": "archery-range",
+      "measuredGroundOriginPixelFromTopLeft": [
+        512.0,
+        647.15283203125
+      ],
+      "anchorRoundoffPixels": 9.947474745786167e-05,
+      "alphaBounds": [
+        331,
+        261,
+        693,
+        778
+      ],
+      "measuredNativeBaseWidth": 2.8,
+      "targetBaseWidthWorldUnits": 2.8,
+      "uniformScale": 1,
+      "groundingTranslationNative": [
+        0,
+        0,
+        0
+      ],
+      "measuredBaseCenterNativeXZ": [
+        0,
+        0
+      ],
+      "occupancyCells": 3,
+      "lighting": {
+        "renderer": "Blender Cycles CPU",
+        "samples": 48,
+        "worldColor": [
+          0.78,
+          0.81,
+          0.73
+        ],
+        "worldStrength": 0.65,
+        "keyPositionGame": [
+          -4,
+          8,
+          5
+        ],
+        "keyWatts": 650,
+        "keySize": 5,
+        "keyColor": [
+          1,
+          0.92,
+          0.79
+        ],
+        "fillPositionGame": [
+          5,
+          6,
+          -4
+        ],
+        "fillWatts": 100,
+        "fillSize": 6,
+        "fillColor": [
+          0.76,
+          0.85,
+          1
+        ],
+        "colorManagement": "Standard; Medium High Contrast; exposure 0; gamma 1",
+        "note": "Physical Blender lighting; no Three intensity equivalence claimed"
+      }
+    },
+    {
+      "asset": "archery-range",
+      "state": "complete",
+      "viewIndex": 7,
+      "file": "archery-range-complete-view-07.png",
+      "sha256": "6b0f2d544ce1455a123169ea3776476d0683b32e8b5de41a81348956c5a2460d",
+      "bytes": 798407,
+      "camera": {
+        "projection": "orthographic",
+        "elevationDegrees": 46,
+        "azimuthDegrees": 315,
+        "canvasPixels": [
+          1024,
+          1024
+        ],
+        "canvasWorldUnits": 8,
+        "pixelsPerWorldUnit": 128,
+        "groundOriginPixelFromTopLeft": [
+          512,
+          647.1527325565025
+        ]
+      },
+      "renderer": "Blender Cycles CPU",
+      "samples": 48,
+      "source": "archery-range",
+      "measuredGroundOriginPixelFromTopLeft": [
+        511.9998474121094,
+        647.1530151367188
+      ],
+      "anchorRoundoffPixels": 0.00028258021620786167,
+      "alphaBounds": [
+        257,
+        251,
+        767,
+        830
+      ],
+      "measuredNativeBaseWidth": 2.8,
+      "targetBaseWidthWorldUnits": 2.8,
+      "uniformScale": 1,
+      "groundingTranslationNative": [
+        0,
+        0,
+        0
+      ],
+      "measuredBaseCenterNativeXZ": [
+        0,
+        0
+      ],
+      "occupancyCells": 3,
+      "lighting": {
+        "renderer": "Blender Cycles CPU",
+        "samples": 48,
+        "worldColor": [
+          0.78,
+          0.81,
+          0.73
+        ],
+        "worldStrength": 0.65,
+        "keyPositionGame": [
+          -4,
+          8,
+          5
+        ],
+        "keyWatts": 650,
+        "keySize": 5,
+        "keyColor": [
+          1,
+          0.92,
+          0.79
+        ],
+        "fillPositionGame": [
+          5,
+          6,
+          -4
+        ],
+        "fillWatts": 100,
+        "fillSize": 6,
+        "fillColor": [
+          0.76,
+          0.85,
+          1
+        ],
+        "colorManagement": "Standard; Medium High Contrast; exposure 0; gamma 1",
+        "note": "Physical Blender lighting; no Three intensity equivalence claimed"
+      }
+    }
+  ]
+}

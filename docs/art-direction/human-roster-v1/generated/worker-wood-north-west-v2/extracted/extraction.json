@@ -1,0 +1,38 @@
+{
+  "source": "docs/art-direction/human-roster-v1/generated/worker-wood-north-west-v2/raw.png",
+  "frames": [
+    {
+      "frame": 0,
+      "sourceBounds": [
+        63,
+        99,
+        443,
+        900
+      ],
+      "opaquePixels": 172868,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 1,
+      "sourceBounds": [
+        419,
+        220,
+        1017,
+        900
+      ],
+      "opaquePixels": 187510,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 2,
+      "sourceBounds": [
+        1054,
+        230,
+        1530,
+        900
+      ],
+      "opaquePixels": 165739,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    }
+  ]
+}

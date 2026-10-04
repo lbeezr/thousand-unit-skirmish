@@ -1,0 +1,48 @@
+{
+  "baseRevision": "966dc0a597eb15162b751522d111c7ae854de22f",
+  "serverSha256": "9ea53ffe41962d906995ac45e3e10257ae0a2924c7cfcd9d1662e2f8b3974f44",
+  "status": "passed",
+  "baselineReproduction": {
+    "status": "strict equality failed",
+    "map": "veyrholds-terraced-vale",
+    "mode": "skirmish",
+    "tick": 1229,
+    "tickMod3": 2,
+    "differences": 38,
+    "counts": {
+      "1->2": 19,
+      "2->1": 19
+    },
+    "worker": {
+      "id": 0,
+      "x": -57.5,
+      "z": 23.986666666666686
+    },
+    "sourceHash": "575ebe75f3572ea1d452b9026afec776562565014e06a8eb6bbb05dda6aab763",
+    "evidence": "/tmp/tus-vision-checkpoint-review-skirmish.json"
+  },
+  "newRegressionTests": 9,
+  "untouchedBaselineFailures": 6,
+  "fullOffCadenceMovingComparisons": 224,
+  "existingFocusedChecks": 54,
+  "ordinaryNativeCases": 7,
+  "eliminationNativeCases": 12,
+  "forestInvalidationControl": {
+    "status": "mutation caught",
+    "mutation": "remove only post-simulateTick visionMasksUpdatedTick invalidation",
+    "runtimeEdited": false,
+    "sourceHash": "9ea53ffe41962d906995ac45e3e10257ae0a2924c7cfcd9d1662e2f8b3974f44",
+    "mutantHash": "bfaf037d7e9fe23ff85494df39ad323ae9d7a284f91c8e9d4db75ea989280766",
+    "exitCode": 1,
+    "failedTests": 2,
+    "log": "/tmp/tus-fog-forest-mutation-review.log"
+  },
+  "scenarioBirthInvalidationControl": "independent private control fails strict visibility equality",
+  "limits": [
+    "Full observations except documented transient Worker activity clear; no fog or authority exclusions.",
+    "Native source proof; actual configured Tiny Skirmish AI acceptance and identified staging/browser play remain owned and incomplete.",
+    "No change to fresh PvE unavailable status, schema28/rules6, canonical maps, timers or defeat."
+  ],
+  "integratedMain": "54b36e0c92776016e3fe41ece11a9fb46e8886ac",
+  "integratedServerSha256": "a5007bd9b788a62ea9fa7a5631b0ee8a80446136fb423b6492fce365e856b6db"
+}

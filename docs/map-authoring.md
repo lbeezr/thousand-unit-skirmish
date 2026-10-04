@@ -167,9 +167,56 @@ checks do not replace a played opening with the Town Center present.
 
 ## Resources and forests
 
+Only food/wood are banked currencies. Stone obstacles are blocking terrain;
+stone/gold/copper nodes remain unsupported. The
+[mineral readiness audit](mineral-economy-readiness.md) names the shared economy,
+save and content work needed before authoring a harvestable mineral.
+
 `resourceNodes` contains up to 128 finite food or wood sites, each with an `id`,
 `type`, world `x`/`z`, and positive finite `stock`. Map Studio can add, select, change stock, or remove
 nodes. Obstacle painting over a node removes it.
+
+Optional `resourceVariant: "shore-fish"` on a `food` node represents a finite
+[shore-fishing site](shore-fishing-foundation.md). Its land-side access marker
+must occupy open level 0 land beside cardinally adjacent level 0 water, reachable
+from both seats. Import/export and stock editing preserve the identity. Workers
+carry and deposit existing food; there is no regrowth or naval movement. The
+fish marker is a primitive placeholder, with dedicated art and brushes pending.
+The selectable **Lab · SHORE FISHING** map and
+[seeded conversion command](shore-fishing-foundation.md#seeded-authoring-and-pilot)
+provide a usable stock-preserving pilot. The shared position helper keeps land
+approaches separate from one-cell water visual centers without new saved fields.
+
+An optional `wildlifeSpecies: "bellweather-sheep"` on a `food` node opts into the
+[neutral sheep foundation](wildlife-bellweather-sheep.md#implemented-neutral-food-foundation--3-october-2026).
+The same node ID and authored stock represent the living animal and its carcass;
+there is no second resource pool. Other species, wood wildlife and authored
+`wildlifeState` are rejected. Runtime lifecycle is `alive`, `carcass`, then
+`depleted`, visible only in the room's filtered state. Sheep may also specify
+`wildlifeNoseYawDegrees`, finite in `[0,360)` with an omitted default of 0: nose
+yaw 0 faces +Z and positive yaw turns toward +X. This static presentation pose
+stays in map data through import/export and checkpoint recovery; it adds no
+simulation heading or movement.
+
+Client import and native publication both consume the existing
+[`validWildlifeNodeDefinition`](../src/wildlife-state.mjs) contract. Authored
+nodes reject room-only ownership, lifecycle, motion, activity, heading, Herd and
+grazing-anchor fields; legal legacy nodes and optional Sheep nose poses retain
+their exact resource bytes. [Importer/publication evidence](qa-wildlife-import-parity-2026-10-04.md)
+records actual rejection and retained authoritative state.
+
+The normal renderer selects an available exact
+static direction, otherwise its rotated geometric Sheep proxy. The current
+public pack contains all eight static nose views; [current evidence](qa-sheep-eight-view-default-2026-10-03.md)
+records source, runtime and pending native appearance checks. Dedicated wildlife
+brushes remain future work; existing [proximity claims](qa-sheep-claims-2026-10-03.md)
+and [Herd orders](qa-sheep-herding-2026-10-03.md) have source/native evidence and
+retain their separate deployed appearance acceptance. The default
+**Bellweather · Millrace** opts in at existing opening satellites
+`s0/s1-0-{1,3,4}`: three 130-food Sheep per side, including one visible on opening.
+This changes identity only; IDs, stock, coordinates, seed and build clearings remain
+the existing cluster layout. [Default Sheep evidence](qa-millrace-sheep-2026-10-03.md)
+records both-seat access, food conservation and the exact prior-map save migration.
 
 Millrace expands its eight resource anchors into five-node seeded patches (40
 nodes), mirrored between seats. Each original anchor stays in place. Added nodes
@@ -207,10 +254,81 @@ match/camera observation.
 
 Regenerate only this pilot with `node scripts/seed-millrace-resources.mjs`.
 It changes only Millrace's `resourceNodes` and is idempotent. The regional builder
-applies the same profile after settlement paint. To customize an individual map,
+applies the same profile after settlement paint. Both entry points retain the six
+Sheep identities after cluster placement. To customize an individual map,
 select/edit/remove the materialized nodes in Map Studio; regeneration replaces
-those edits. The editor still places individual food/wood sites; a cluster brush
-and new currencies are separate future work.
+those edits. Map Studio can place individual food/wood sites or additive resource
+patches; new currencies remain separate future work.
+
+The pure `appendSeededResourceCluster(map, settings)` helper prepares one additive
+food/wood patch on a validated map. Supply `seed`, anchor `x`/`z`, `type` and an
+explicit safe-integer `totalStock`; that budget is divided across `nodesPerPatch`
+(default five), never multiplied per marker. Radius defaults to four cells and
+spawn clearance to six. Existing nodes count toward the 128-node limit and retain
+their stock/IDs. Placement checks occupied cells, two-cell spacing, terrain,
+elevation, home footprints and both-seat reachability, then returns a complete
+node array with collision-free IDs. Failure changes neither input. This helper
+does not mirror the new patch or add editor controls; Millrace's mirrored
+replacement generator and materialized map remain unchanged.
+
+Optional `distribution: "core-falloff"` favors candidates near the anchor through
+seeded weighted ordering, creating a denser core and thinner edge. All safe cells
+within the radius remain candidates; spacing or obstructions can push markers
+outward or make the requested count impossible. The default `"uniform"` retains
+the original ordering and exact seeded results. Both additive and mirrored
+helpers use this option without changing stock division or accessibility checks.
+It compiles to ordinary nodes, adding no saved-map field or runtime rule.
+
+[`src/resource-brush-authoring.mjs`](../src/resource-brush-authoring.mjs) adds a
+reusable operation and thin editor adapter on that helper. `previewResourceBrush`
+returns immutable seeded marker positions and the explicit patch-total settings;
+`applyResourceBrush` returns exactly those admitted nodes plus the originals.
+Changing map identity, terrain, elevation, spawns or existing nodes invalidates
+the preview. JSON-copied previews must be regenerated. No input is mutated and
+rejected admission commits nothing.
+
+`createResourceBrushEditor({readMap, readSelectedId, commit, limit})` provides
+preview/cancel/apply and bounded resource-only undo/redo (default 64 operations).
+`readMap` supplies the current validated editor definition, including compressed
+ground/obstacles/elevation and `editorResourceNodes`, rather than stale source
+terrain. `commit` must synchronously replace `{resourceNodes, selectedResourceId}`
+atomically or throw before writing. Redraw, control synchronization and draft
+saving run after a successful operation. Each patch is one history entry; undo
+restores the prior node selection. Unrelated editor fields are never replaced.
+External resource/terrain edits stop history navigation until `reset()`; reset
+also belongs after populate, draft restore or resize. Save ordinary map nodes and
+selection through the existing draft/JSON format; reload starts fresh history.
+
+In Map Studio, **Resource patches** is open by default under **Resource nodes**. Choose food
+or wood, a whole-number seed, **markers** (1–16), **radius** (1–8 cells),
+**distribution** (**Even spread** or **Core falloff**) and **total patch stock**
+(at least one stock per marker). Defaults remain Even spread with five
+markers within four cells. Changing count or radius keeps the entered total;
+it does not multiply stock or change existing nodes. For example, 101 stock
+with three markers and radius 2 creates a tight pocket with stocks 34/34/33;
+five markers and radius 8 can spread the same budget farther from the anchor.
+Choose Core falloff for a denser center and loose edge at the same count, seed,
+radius and budget. Changing distribution cancels the pending preview. Radius
+is a maximum distance, with two-cell minimum spacing. A crowded patch
+may not fit: reduce the count, widen the radius or choose another anchor.
+Enter a one-based anchor column/row and press **Preview**, or **Pick anchor**
+and click a map cell. Dashed preview markers show individual stocks; the status
+reports count, shared total, radius and seed. Spawn clearance stays six cells.
+**Apply patch** adds exactly the previewed markers in one
+operation. **Cancel preview** or Escape clears it without adding resources.
+Enter in a patch field previews; Escape cancels a pending preview before closing
+Map Studio. The existing single-node tools retain their 300 food / 500 wood defaults.
+
+**Undo patch** and **Redo patch** restore nodes and selection independently of
+scenario history. Changing brush settings cancels the preview; changing resource
+stock, terrain, elevation, spawns or dimensions clears brush history. Loading or
+restoring a map starts a fresh session. Count, radius and distribution use ordinary draft form
+fields. Applied nodes use the existing draft,
+publish and JSON paths. No preview receipt or history is persisted. The controls
+are isolated in [`src/resource-brush-controls.mjs`](../src/resource-brush-controls.mjs).
+Run `node --test scripts/resource-brush-authoring.test.mjs scripts/resource-brush-controls.test.mjs`
+for operation, actual client-hook and DOM checks. These checks do not establish
+canvas appearance or unassisted human usability; those remain visual acceptance work.
 
 CI runs `node scripts/vaelora-map-layout-scenario.mjs --check-only` to validate
 all regional layouts without rewriting the SVG or dirtying the clean release

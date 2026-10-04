@@ -1,0 +1,243 @@
+# Unit action and heading audit — 3 October 2026
+
+User observation: “it still seems like the units arent really using their
+animations for all their scenarios properly”. Animation integration owner retains
+the timing correction and this audit through identified delivery and ordinary-game
+acceptance. Combat targeting/reacquisition, building rendering and Coastal Skiff
+adoption belong to their existing owners and are outside this change.
+
+## First reproduced defect and scoped correction
+
+The real default Human and foot-unit atlases contain 1,000 ms idle placeholders
+for missing attack/death headings. `loadRolePack` counted those placeholders
+when computing the longest state duration. The default approximate action path
+instead selects the actually authored SE clip. Thus Infantry's 850 ms looping
+attack remained active until 1,000 ms and replayed its opening keys without a
+new server attack. Human Worker attack held its final key for 160 extra ms;
+Spearman attack repeated its start for 120 ms. Shorter defeat clips similarly
+inherited extra time before the existing fade. Archer's 1,000 ms attack and
+Spearman's longer 1,080 ms defeat were already correct.
+
+The narrow runtime fix gives authored non-idle action clips priority when
+computing state duration. A state with only idle placeholders keeps its fallback
+duration; single-frame authored action poses keep their 1,000 ms duration.
+No frame, atlas, direction binding, order, simulation, targeting or server field
+changes. This remains a role/state duration API; future multiple authored action
+headings of different lengths will need selected-clip lifetime support.
+
+The baseline reproduction used actual manifests and Three instanced UV buffers:
+Infantry still selected attack after its authored end and sampled the opening
+keys again. Two new tests failed before the correction, and the complete focused
+suite passes afterward. This is CPU/scene evidence, not a WebGL screenshot.
+
+## Deployed source versus main and actual coverage
+
+Staging deployment `cf9bea37-1681-4b1c-8764-23eb260bedde` was read back as
+`SUCCESS`, source `00ff45d9702dfbcf9da6f6ac88e0ca4381e374dc`. Initial audited
+main was `94fb8033af24ac4ea27e6915ae8427be963100fd`. Animation helpers, all unit
+manifests and heading bindings are identical between these two revisions.
+Main's later combat continuation fixes are separate simulation changes.
+
+The [complete inventory](qa-evidence/unit-animation-audit-2026-10-03/manifest-inventory.json)
+records all 25 shipped unit packs: 14 ordinary defaults and 11 explicit legacy
+comparisons. It preserves manifest hashes, every action/heading's frame IDs,
+unique atlas rectangles, loop flags, durations and idle holds. No unbound unit
+frames were found. A listed clip/heading does not imply distinct motion artwork.
+
+| Ordinary runtime pack | Real motion / authored poses | Missing coverage and current binding |
+| --- | --- | --- |
+| Human Worker `cast-human-sprite-v3` 0.14.0, 84 frames | Walk NE/SE/SW: eight keys, 800 ms. Wood/food gather, build, repair, attack, defeat SE: eight keys, 840 ms. Fishing SE: four keys, 1,300 ms. Eight distinct idle headings. | Walk and land/fish gather keep exact heading, holding idle where motion is missing. Build/repair/attack/defeat default approximation reuses authored SE. Generic gather clips are idle holds. No Stone-gather, carry or return clips. |
+| Infantry `infantry-sprite-v3` 0.5.0, 32 frames | SE walk eight/800 ms; attack and defeat eight/850 ms. Eight idle headings. | Ordinary approximation reuses SE action for the other seven headings. |
+| Spearman `spearman-sprite-v1` 0.3.0, 32 frames | SE walk eight/800 ms; attack eight/880 ms; defeat eight/1,080 ms. Eight idle headings. | Ordinary approximation reuses SE action for the other seven headings. |
+| Archer `archer-sprite-v2` 0.5.0, 32 frames | SE walk eight/800 ms; attack eight/1,000 ms; defeat eight/850 ms. Eight idle headings. | Ordinary approximation reuses SE action for the other seven headings. |
+| Human Scout, Rider, Siege Engine v1 | Four static SE action images each: idle/walk/attack/defeat. | Every heading points to that same action image. There is no multi-key movement or directional motion. |
+| Boughward Worker v1 | Eight static SE images: idle/walk/wood/food/build/repair/attack/defeat. Generic gather reuses wood. | All eight heading labels reuse each action's same SE image. Fish uses food fallback. No multi-key motion, carry/return or Stone action. |
+| Other six Boughward land roles v1 | Four static SE images per role: idle/walk/attack/defeat. | Eight heading labels reuse each action's same image. No multi-key motion. |
+| Bellweather Sheep static v1 | Eight distinct idle views, default wildlife registry. | No walk/graze/carcass animation. Resource carcass marker and depleted hiding remain correct existing fallbacks. |
+| Skiff | Existing procedural placeholder path. | Authored export/hooks are Coastal-owned and excluded from this audit fix. |
+
+## Functional coverage priority — 4 October 2026
+
+User priority is **breadth before polish**: usable coverage for every required
+action and direction, then aesthetic improvement. The 25 manifest hashes above
+were rechecked unchanged at main `67b2a6946ecca9e22e88a50545ad4888f167c3cb`.
+This matrix counts distinct supplied motion, not eight labels that share one SE
+image. Rough short loops and the existing four fishing keys are sufficient to
+advance coverage when facing, playback, root and contact work. Colour, costume,
+fine anatomy, smoother SE interpolation and loop refinement are later polish.
+Wrong facing, frozen playback, clipped/unusable action or broken root/contact
+remain functional blockers. Temporary static/neutral fallbacks stay labelled
+as placeholders and do not close the missing animation cells.
+
+| Priority / receiving owner | Actual default coverage | Smallest next functional delivery | Existing reuse or tolerable placeholder |
+| --- | --- | --- | --- |
+| P0 — animation integration `01a103d4`; Railway / Mac QA support | PR161 fixes attack/defeat lifetime; PR216 consumes actual Worker work and immediate clears. CPU/native packet/release checks pass; containing consumer deployment and functional game observation remain open. | Deploy a revision containing PR216; run its [normal-game recipe](qa-worker-performing-action-consumer-2026-10-04.md#ordinary-game-capture-recipe). Check state, heading, advancing keys, Stop/resume, death and root/contact on both seats. Cosmetic finish is not a gate. | Keep current working keys. Reject a claimed eight-heading pass if a non-SE order displays an SE-only pose. Do not replace supported SE keys merely to improve finish. |
+| P1 — Human Worker unit-art owner | Idle: 8 distinct headings. Walk: NE/SE/SW, 8 keys each. Wood/food/build/repair/attack/defeat: SE, 8 keys each. | Fill walk N/E/S/W/NW, then the seven missing headings of wood/food/build/repair/attack/defeat; ship each usable action/heading incrementally. | Current exact-heading idle holds are honest movement/gather placeholders. Preflight public `worker-sprite-v3` / `cast-human-sprite-v1` directional candidates before authoring replacement keys; preserve current identity/camera/root rather than silently switch rosters. |
+| P1 — Worker fishing art owner, parallel heading lane | Human SE: 4 working keys; other 7 headings lack fishing keys. Boughward uses its food pose. | Add missing headings ahead of smoothing SE. The separately approved private East six-key candidate must pass its existing game-scale/facing/timing publication condition, then can fill E; six other headings remain. | Preserve working SE and contact. Other headings keep exact food/idle fallback. Private East/source publication conditions remain unchanged; this priority grants no new generation/publication authority. |
+| P1 — Worker resource/action art owner | Stone has no dedicated action in either default roster. Carry/Return use walk/idle with existing cargo cue; no dedicated clips. | Supply readable Stone work for 8 headings. Verify load → walk → banked deposit; reuse completed walk with cargo before considering a separate carry cycle. | Stone idle plus the existing neutral procedural/cargo cue is a labelled temporary fallback. Carry/Return do not need an invented server action or extra clip to function. |
+| P2 — Human foot-unit art owner | Infantry/Spearman/Archer have 8 idle headings; walk/attack/defeat motion exists only at SE. | Fill the 7 missing headings of those 3 actions for each role: **63 action/heading cells**. Prioritize walk/attack recognition, then terminal defeat; a short readable sequence is enough. | Preflight public `infantry-sprite-v2` walk/attack/defeat and `archer-sprite-v1` 2-key walk/attack plus directional terminal poses. No equivalent legacy Spearman motion pack was found. Current SE reuse is approximate and cannot establish correct facing elsewhere. |
+| P2 — Boughward Worker unit-art owner | 8 distinct action poses, all physically SE: idle/walk/wood/food/build/repair/attack/defeat. No multi-key motion, Stone or fishing art. | Establish 8 real idle/walk headings, then short food/wood/build/repair/attack/death sequences in every heading; add Stone and fishing coverage. | Current static action poses are tolerable interim state feedback. Eight repeated heading labels are one view. Legacy elf/orc/troll casts are different designs, not automatic Boughward replacements. |
+| P3 — remaining land-role art owners | Human Scout/Rider/Siege and six Boughward military roles each have four static SE idle/walk/attack/defeat poses. | Per role: real directional idle views, short walk/attack and readable defeat for all 8 headings. Deliver one role/action slice at a time rather than refine one SE image indefinitely. | Keep existing readable poses while admitting supplied keys. No default directional motion for these roles exists in the 25-pack inventory. |
+| P3 — Sheep owner `01a101a8`; separate wildlife consumer | 8 real static idle headings; authoritative movement uses them. No public walk/graze/carcass animation. | Admit usable supplied walk/graze/carcass keys through the [Sheep action contract](wildlife-bellweather-sheep.md), retaining public/private boundaries and real ownership inputs. | Static heading motion and the carcass marker remain explicit interim feedback; they do not prove an articulated walk or grazing loop. |
+| Separate Coastal owner | Skiff uses the procedural water placeholder; private export/default-hook packet belongs to Coastal. | Complete the existing [Skiff functional game check/publication path](coastal-barrier-art-workstream.md), then admit only authorized runtime files. | Preserve the water placeholder and real fish/cargo/return behavior. Do not request combat/passenger animations for an unarmed cargo Skiff or overlap its hooks. |
+
+Build/repair target bearing remains a producer dependency in backlog rank 3:
+row 15 currently describes gathering only. The gameplay producer and animation
+consumer must agree the work-facing extension before changing that meaning;
+neither target distance nor an SE art substitute can supply the missing bearing.
+
+The 11 shipped legacy comparisons offer **reuse candidates**, not verified
+current-roster replacements. Manifest records include 8-heading motion for
+`worker-sprite-v3` (walk/gather/build/defeat), `infantry-sprite-v2`
+(walk/attack/defeat), `cast-human-sprite-v1` (walk/gather/defeat), and two-key
+8-heading walk/attack in `infantry-sprite-v1` / `archer-sprite-v1`.
+`worker-sprite-v1/v2` also contain two-key directional walk. First compare
+actual pixels, role identity, camera, fixed pivot/scale and action meaning with
+the current pack, then test playback at ordinary game scale. Generic old gather
+is not proof of food/wood/Stone or fishing coverage. No automatic default switch,
+new paid generation, mirrored/copy-labelled headings or private publication is
+authorized by this reuse shortlist.
+
+Functional acceptance uses the existing manifest/renderer boundary: 8 actual
+headings per required action; ordered keys that advance and clamp/loop correctly;
+fresh attacks deduplicated; positive work/clear, interruption/resume and generation
+reset; readable terminal death; usable fixed root/contact and no action-breaking
+crop; correct both-seat selected/unselected and strategic-LOD behavior. Idle can
+remain static. Hold/Patrol/Follow reuse existing idle/walk/attack; Carry/Return
+reuse walk/idle plus cargo. They do not each require a new action enum. Source,
+HTTP/release, containing deployment and observed ordinary-game function are
+separate milestones. A rough but functional admitted slice should ship without
+waiting for cosmetic perfection or a complete roster matrix.
+
+## Authority → presentation → frame trace
+
+`snapshotUnits` sends ID/team/position/HP/kind/cargo/type/generation at indices
+0–8, Worker task at 9, focused count at 10, fresh attack tick/target at 11–13,
+work execution at 14, gather heading at 15, and shore-fish variant at 16.
+`applyState` clears absent heading/variant fields, deduplicates attack ticks and
+resets transient clocks on generation reuse. Positive HP loss supplies hit
+feedback; HP reaching zero supplies the terminal defeat timestamp.
+
+The main frame loop interpolates the authoritative position, derives walking
+from remaining displacement, and turns with `atan2(dx,dz)`. Stationary gathering
+uses row 15 unless an attack is active. Zero yaw is +Z, increasing toward +X;
+`normalizedDirection` rounds to N/NE/E/SE/S/SW/W/NW. No second camera offset or
+mirroring is applied. Existing eight-angle projection and wrap-boundary checks pass.
+
+`activeState` precedence is defeat → walk → fresh attack → Worker repair/build/
+gather-fish/gather → idle. Carry/return use walk while moving and idle when
+stopped; the existing neutral cargo cue is separate. `spriteActionClip` chooses
+resource-specific gather, exact-heading fishing fallback, repair/build fallback
+and the documented approximate action directions. `spriteAnimationTime` advances
+elapsed milliseconds; state changes restart work/walk, event timestamps own
+attack/defeat, and continuous heading changes do not restart the action clock.
+`clipFrame` loops work/walk and clamps terminal defeat. The chosen manifest
+rectangle writes the instanced UV buffer, with shared ground pivot/scale.
+Selection is not an input to this sprite path.
+
+Focused checks use actual default packs/Three scene batches for both civilizations
+and selected/unselected inputs: idle, walk, attack start/end/new event, wood/food
+gather, build, repair, supported fishing/fallback, carry/return/deposit, death,
+Stop/resume, work interrupted by movement, continuous eight-heading turning,
+fog/LOD hiding and elapsed-clock recovery. Existing generation-reuse and fishing
+contact checks supplement them. No frozen or repeatedly reset walk/work clock
+was reproduced in those cases. Native UI selection/cargo visibility remains
+part of the visual recipe below.
+
+## Separate protocol gaps for the gameplay owner
+
+Task row 9 is intent, not proof of active execution: `workerTaskStatus` returns
+gathering whenever a gather target exists, including `to-node`, and build/repair
+whenever a building target exists. The client infers active work from that task
+plus interpolated walking. A Worker waiting on a route/site can therefore show
+a work pose prematurely. Row 14 already carries active gather/repair execution
+but is consumed for audio rather than sprite state; active construction execution
+and construction/repair facing are not supplied by the current wire contract.
+Only active gathering has row 15's target heading. No such protocol was changed
+here. Receiving owner: gameplay/stance owner identified by the parent; next action
+is to agree on an execution/facing presentation contract before any binding change.
+Attack tick/target fields remain compatible with the combat owner's continuation
+fix; that fix is not duplicated.
+
+The follow-up [performing-action proposal](worker-performing-action-contract-proposal.md)
+reproduces 13 actual-progress/wait cases and proves construction's per-Worker
+wire ambiguity. It proposes positive-mutation receipts at new row 17, with
+generation/order/tick guards, for parent routing to the unit gameplay producer
+owner. It is not a default binding or an implemented protocol extension.
+
+## Ranked continuation backlog
+
+The 4 October [agreed v1 consumer follow-up](qa-worker-performing-action-consumer-2026-10-04.md)
+supersedes the dated protocol gap above: PR187/204 supplies row 17/version 1;
+default work now requires positive mutation receipts. The original inventory and
+timing reproduction remain dated evidence. Missing frames are unchanged.
+
+The animation integration owner retains this workstream. Read current main and
+the relevant manifest before each slice. Select a concrete existing-asset defect
+when supported by reproduction; missing motion alone is not a binding defect.
+Small reviewed PRs and tooling milestones do not close ordinary-game acceptance.
+
+| Rank / status | Next action and bounded writes | Dependency / acceptance |
+| --- | --- | --- |
+| 1 — agreed producer and default consumer; delivery/appearance open | Retain the [Worker performing-action consumer](qa-worker-performing-action-consumer-2026-10-04.md) through an identified staging build and ordinary-game clips. Animation owner owns ingestion, sprite/procedural/scheduling/fishing clear gates and focused tests. No economy rates, orders, targeting or stance edits. | [Agreed row 17/version 1](worker-performing-action-contract.md), real both-seat commands/WebSocket receipts, held-packet client buffers and default release HTTP checks establish local integration. Railway delivery and parent-owned Mac QA support the exact normal-game recipe; missing GPU clips and a containing deployed revision cannot be closed by these tests. |
+| 2 — source/release/staging source delivered; appearance open | Retain PR161's attack/death lifetime correction through Mac QA on the identified staging build and recipe below. Animation helper/tests remain owned here; Railway and Mac QA owners support delivery/capture. | Merged source `5f35c68f7c667bfd6eb977e0abcb551010fbcfd1`; clean release includes it. The 4 October read-back staging deployment `e541d903-178b-47cb-8d1b-4358c93c5a8a` is `SUCCESS` at source `64cc391e6d9c4164dca7bd45696cf3862fe19729`; ancestry confirms PR161 is included. Capture Infantry/Spearman/Worker event end and defeat; source delivery does not establish actual GPU appearance or production delivery. |
+| 3 — exact work facing dependency | After productive action is authoritative, inspect whether the actual build/repair target heading can be disclosed using the existing heading contract without overlap. Agree the producer boundary before changing row 15 semantics. Consumer/tests remain narrow to unit facing helpers. | Build/repair headings are absent; no target-distance guess. Existing Human SE actions may still require documented approximation. Human gather/walk exact-heading fallback remains intentional. Verify selected/unselected approach, work and Stop/resume with an identified game build. |
+| 4 — breadth-first art/reuse dependency; no generation authorized | Follow the [functional coverage matrix](#functional-coverage-priority--4-october-2026): assess existing public directional candidates, then admit supplied missing action/headings incrementally. Preserve working keys; smoother animation, costume and finish follow usable breadth. Re-run actual-frame and release admission checks. | Unit/fishing art owners supply genuine keys or qualified existing reuse, with explicit placeholders meanwhile. Wrong-facing, frozen, clipped/unusable or broken root/contact remains a functional blocker. Never call repeated SE labels eight views or claim static holds complete motion. Carry/Return can reuse walk plus cargo. |
+| 5 — separate wildlife/Coastal owners | Preserve accurate fallback and audit newly admitted contracts only when supplied by their owners; avoid their renderer/hooks. | Sheep has eight static idle views and no walking rig; Skiff adoption belongs to Coastal. Neither is an animation-helper fix currently justified by existing frames. |
+
+PR216 at `67b2a694` completes the agreed consumer source/default/release milestone;
+the historical producer-alignment wait is resolved. The next integration action
+is its containing deployment and functional game check. Existing directional
+reuse preflight and missing action/headings are independent art outcomes above.
+Native capture remains unavailable in this executor; receiving Railway/Mac owners
+support delivery/capture while animation integration retains acceptance. Cosmetic
+polish does not hold an otherwise usable bounded slice.
+
+## Visual gap and exact ordinary-game recipe
+
+The [browser preflight](qa-evidence/unit-animation-audit-2026-10-03/browser-preflight.json)
+fails with `sandbox-unavailable` after writable XDG directories resolved profile
+storage. Zero screenshots/clips were obtained. No sandbox flag bypass was used.
+Receiving visual owner: parent-owned Mac QA route. It needs an identified served
+revision containing this correction, normal browser capture and the steps below.
+Animation integration owner retains acceptance until that evidence exists.
+
+1. Open the ordinary staging URL, **Create Room**, choose **Bellweather · Millrace**,
+   join the invite in a second browser profile, ready both players and launch.
+   Use the default Human Azure/Boughward Ember art, without preview query flags.
+2. At ordinary zoom select one Azure Worker. Walk it screen-down (NE), right
+   (SE), and up (SW), then through the five remaining bearings. Capture one
+   second of each; only those three headings currently have walking keys.
+   Repeat after Escape clears selection. Stop mid-walk, then order the same
+   direction again: walking resumes, stationary idle retains its last heading.
+3. Gather berries and wood. Approach so the Worker stands screen-left of the
+   resource and faces screen-right/SE to observe the eight real work keys.
+   Repeat at a non-SE bearing to observe the exact idle-facing fallback. Use
+   **Stop**, then right-click the resource again. Carry at least one load,
+   choose **Return cargo**, and observe walk → stopped idle → banked resource.
+4. Place a House using that Worker, stop during construction, and use **Resume
+   construction**. After completion let the second seat damage it with military,
+   then use the normal repair control. Capture work arrival, interruption and
+   completion; build and repair currently reuse the SE action in ordinary mode.
+5. Train Infantry/Spearman/Archer from the appropriate paid buildings. Order a
+   focused attack through the ordinary enemy right-click path, with Attack move
+   armed for the combat-owner continuation case. Capture the first attack,
+   target death and next engagement. Per fresh Infantry attack event the 850 ms
+   clip must finish without a repeated opening at 850–999 ms. Repeat for
+   Spearman (880 ms) and Worker defense (840 ms). Capture a unit's death through
+   the final key and fade. Do not infer damage from animation timing.
+6. On Ember repeat gather/build/repair and combat. Each action changes to its
+   actual static pose; it cannot animate between keys or face eight directions.
+   Train mounted/siege roles and verify their same documented static limitation.
+7. Start **Lab · SHORE FISHING** through ordinary map selection. Central bank
+   approaches face E/W and retain fallback. Approach from the real SE diagonal
+   to observe crouch/reach/retrieve/collect, including the existing reach contact.
+   Stop, return cargo and resume; the contact must clear outside reach/work.
+   Repeat on Ember for food fallback. Four stepped poses and seven missing
+   fishing headings remain production work. Observe Millrace Sheep separately:
+   eight static views are not a walking rig.
+
+Save short chronological clips with build SHA, map, seat, unit role/action,
+heading and selected/unselected status. Include ordinary and strategic zoom,
+especially ground/root contact, cargo and attack/defeat transitions. CPU UV tests,
+merge and release inclusion do not close delivered/in-game acceptance.

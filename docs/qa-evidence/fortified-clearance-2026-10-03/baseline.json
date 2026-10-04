@@ -1,0 +1,397 @@
+{
+  "head": "7f9c8fd8fbe4e667735db08346d1b690ace12fc6",
+  "size": 2000,
+  "node": "v24.19.0",
+  "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+  "platform": "linux",
+  "map": "clearance-baseline-2000",
+  "instrumentation": "native two-seat WebSockets; diagnostics; 1Hz health; checkpoint at milestones",
+  "limitations": [
+    "No browser/frame measurement",
+    "Cloud background load is not isolated; timings are observations, not comparable hardware proof"
+  ],
+  "orders": [
+    {
+      "team": 0,
+      "count": 994,
+      "goal": {
+        "x": -12.5,
+        "z": 10.5
+      },
+      "tick": 5,
+      "appliedMs": 60.550005000000056,
+      "message": "MOVE ORDER \u00b7 994 UNITS"
+    },
+    {
+      "team": 1,
+      "count": 994,
+      "goal": {
+        "x": 12.5,
+        "z": 10.5
+      },
+      "tick": 5,
+      "appliedMs": 64.44023300000003,
+      "message": "MOVE ORDER \u00b7 994 UNITS"
+    },
+    {
+      "team": 0,
+      "count": 24,
+      "goal": {
+        "x": -30.5,
+        "z": -10.5
+      },
+      "tick": 93,
+      "appliedMs": 2.457108000000062,
+      "message": "MOVE ORDER \u00b7 24 UNITS"
+    },
+    {
+      "team": 1,
+      "count": 21,
+      "goal": {
+        "x": 30.5,
+        "z": -10.5
+      },
+      "tick": 93,
+      "appliedMs": 1.6914270000002034,
+      "message": "MOVE ORDER \u00b7 21 UNITS"
+    }
+  ],
+  "result": {
+    "cleared": false,
+    "wallSeconds": 120.82227484999999,
+    "simulationTicks": 3601,
+    "finalOccupants": [
+      7,
+      4
+    ]
+  },
+  "finalCheckpointUnits": [
+    {
+      "id": 45,
+      "team": 0,
+      "x": -19.5,
+      "z": -4.5,
+      "goal": 2180,
+      "pathIndex": 17,
+      "pathLength": 17,
+      "pending": false,
+      "lastMoveTick": 200
+    },
+    {
+      "id": 46,
+      "team": 0,
+      "x": -18.5,
+      "z": -4.5,
+      "goal": 2181,
+      "pathIndex": 17,
+      "pathLength": 17,
+      "pending": false,
+      "lastMoveTick": 204
+    },
+    {
+      "id": 47,
+      "team": 0,
+      "x": -17.5,
+      "z": -4.5,
+      "goal": 2182,
+      "pathIndex": 17,
+      "pathLength": 17,
+      "pending": false,
+      "lastMoveTick": 210
+    },
+    {
+      "id": 77,
+      "team": 0,
+      "x": -19.5,
+      "z": -3.5,
+      "goal": 2260,
+      "pathIndex": 20,
+      "pathLength": 20,
+      "pending": false,
+      "lastMoveTick": 255
+    },
+    {
+      "id": 78,
+      "team": 0,
+      "x": -18.5,
+      "z": -3.5,
+      "goal": 2261,
+      "pathIndex": 21,
+      "pathLength": 21,
+      "pending": false,
+      "lastMoveTick": 262
+    },
+    {
+      "id": 79,
+      "team": 0,
+      "x": -17.5,
+      "z": -3.5,
+      "goal": 2262,
+      "pathIndex": 21,
+      "pathLength": 21,
+      "pending": false,
+      "lastMoveTick": 267
+    },
+    {
+      "id": 111,
+      "team": 0,
+      "x": -17.5,
+      "z": -2.5,
+      "goal": 2342,
+      "pathIndex": 25,
+      "pathLength": 25,
+      "pending": false,
+      "lastMoveTick": 311
+    },
+    {
+      "id": 1054,
+      "team": 1,
+      "x": 17.5,
+      "z": -4.5,
+      "goal": 2217,
+      "pathIndex": 13,
+      "pathLength": 13,
+      "pending": false,
+      "lastMoveTick": 151
+    },
+    {
+      "id": 1055,
+      "team": 1,
+      "x": 18.5,
+      "z": -4.5,
+      "goal": 2218,
+      "pathIndex": 12,
+      "pathLength": 12,
+      "pending": false,
+      "lastMoveTick": 148
+    },
+    {
+      "id": 1056,
+      "team": 1,
+      "x": 19.5,
+      "z": -4.5,
+      "goal": 2219,
+      "pathIndex": 12,
+      "pathLength": 12,
+      "pending": false,
+      "lastMoveTick": 145
+    },
+    {
+      "id": 1086,
+      "team": 1,
+      "x": 17.5,
+      "z": -3.5,
+      "goal": 2297,
+      "pathIndex": 9,
+      "pathLength": 9,
+      "pending": false,
+      "lastMoveTick": 113
+    }
+  ],
+  "serverSha256": "0ac32f7b7e12948bedaeede9f4e3a6b4a0832b81bc710b58723141b89b73915b",
+  "milestones": [
+    {
+      "seconds": 3.003394085,
+      "tick": 93,
+      "siteOccupants": [
+        24,
+        21
+      ],
+      "completedRoutes": [
+        0,
+        3
+      ],
+      "assignedGoalsInsideSite": [
+        2,
+        5
+      ]
+    },
+    {
+      "seconds": 18.103380422,
+      "tick": 546,
+      "siteOccupants": [
+        7,
+        4
+      ],
+      "completedRoutes": [
+        7,
+        4
+      ],
+      "assignedGoalsInsideSite": [
+        7,
+        4
+      ]
+    },
+    {
+      "seconds": 33.198251615000004,
+      "tick": 999,
+      "siteOccupants": [
+        7,
+        4
+      ],
+      "completedRoutes": [
+        7,
+        4
+      ],
+      "assignedGoalsInsideSite": [
+        7,
+        4
+      ]
+    },
+    {
+      "seconds": 48.287103542,
+      "tick": 1446,
+      "siteOccupants": [
+        7,
+        4
+      ],
+      "completedRoutes": [
+        7,
+        4
+      ],
+      "assignedGoalsInsideSite": [
+        7,
+        4
+      ]
+    },
+    {
+      "seconds": 63.506036497000004,
+      "tick": 1893,
+      "siteOccupants": [
+        7,
+        4
+      ],
+      "completedRoutes": [
+        7,
+        4
+      ],
+      "assignedGoalsInsideSite": [
+        7,
+        4
+      ]
+    },
+    {
+      "seconds": 78.59739314,
+      "tick": 2346,
+      "siteOccupants": [
+        7,
+        4
+      ],
+      "completedRoutes": [
+        7,
+        4
+      ],
+      "assignedGoalsInsideSite": [
+        7,
+        4
+      ]
+    },
+    {
+      "seconds": 93.67315077299999,
+      "tick": 2799,
+      "siteOccupants": [
+        7,
+        4
+      ],
+      "completedRoutes": [
+        7,
+        4
+      ],
+      "assignedGoalsInsideSite": [
+        7,
+        4
+      ]
+    },
+    {
+      "seconds": 108.75112423499999,
+      "tick": 3246,
+      "siteOccupants": [
+        7,
+        4
+      ],
+      "completedRoutes": [
+        7,
+        4
+      ],
+      "assignedGoalsInsideSite": [
+        7,
+        4
+      ]
+    }
+  ],
+  "finalTickTiming": {
+    "sampleCount": 300,
+    "windowSeconds": 10,
+    "budgetMs": 33.333,
+    "p50Ms": 0.43,
+    "p95Ms": 9.078,
+    "maxMs": 38.822,
+    "startLagP95Ms": 1.174,
+    "startLagMaxMs": 32.657,
+    "scheduler": {
+      "policy": "drop-elapsed-slots",
+      "skippedTickSlotsTotal": 26,
+      "lastOverloadSkippedSlots": 1,
+      "lastOverloadTick": 3441
+    },
+    "slowestTick": {
+      "tickNumber": 3441,
+      "durationMs": 38.822,
+      "cpuMs": 7.528,
+      "simulationMs": 0.561,
+      "visionMs": 1.809,
+      "scenarioMs": 0.13,
+      "scenarioEvaluated": true,
+      "broadcastMs": 36.321,
+      "checkpointMs": 0.001
+    },
+    "scenarioTiming": {
+      "sampleCount": 100,
+      "p50Ms": 0.094,
+      "p95Ms": 0.231,
+      "maxMs": 0.696
+    }
+  },
+  "finalSeparationWork": {
+    "enabled": true,
+    "sampleCount": 300,
+    "windowSeconds": 10,
+    "candidateVisitsPerTick": {
+      "p50": 1707,
+      "p95": 1734,
+      "max": 1763
+    },
+    "distanceChecksPerTick": {
+      "p50": 1707,
+      "p95": 1734,
+      "max": 1763
+    },
+    "closeNeighborContributionsPerTick": {
+      "p50": 653,
+      "p95": 665,
+      "max": 670
+    },
+    "moveVectorCallsPerTick": {
+      "p50": 120,
+      "p95": 120,
+      "max": 121
+    },
+    "maxCandidatesPerCall": {
+      "p50": 22,
+      "p95": 28,
+      "max": 29
+    }
+  },
+  "control1000": {
+    "head": "7f9c8fd8fbe4e667735db08346d1b690ace12fc6",
+    "result": {
+      "cleared": true,
+      "wallSeconds": 9.054733671,
+      "simulationTicks": 266,
+      "finalOccupants": [
+        0,
+        0
+      ]
+    }
+  }
+}

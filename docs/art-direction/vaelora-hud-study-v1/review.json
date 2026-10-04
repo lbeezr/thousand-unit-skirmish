@@ -1,6 +1,6 @@
 {
   "date": "2026-10-02",
-  "status": "three unselected design proposals; no runtime adoption",
+  "status": "rejected historical HUD exploration; archive publication and old-direction implementation paused",
   "sourceRevision": "68f859f903ad09119594dcafca83f6de8362a9ed",
   "methods": [
     "inspect source resolver, bindings, manifest and asset pixels",
@@ -53,5 +53,19 @@
     "Values/objective prose/mini-map are illustrative; background gameplay is actual.",
     "No live harvest/depletion/repair/patrol/follow or production outcome capture.",
     "No new imagegen output, Meshy task, credits or runtime UI change."
-  ]
+  ],
+  "originalReviewStatus": "three unselected design proposals; no runtime adoption",
+  "subsequentDecision": {
+    "date": "2026-10-02",
+    "source": "https://github.com/lbeezr/thousand-unit-skirmish/pull/25",
+    "decision": "All three concepts rejected; compact, dense, subtle and dismissible UI requested. Brown is a relative material preference only.",
+    "publication": "paused; draft repair does not release the pause"
+  },
+  "preservationGap": {
+    "path": "captures/backgrounds/capture.json",
+    "status": "absent from inspected committed source-branch history",
+    "expectedBytes": 1052,
+    "expectedSha256": "d65f785b9a47a6220dfc3e872e1b78a2541f23b18f7ae656957bbf87e6a6ccdf",
+    "originalReconstructed": false
+  }
 }

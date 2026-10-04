@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 1,
+  "action": "walk",
+  "worldDirection": "east",
+  "screenDirection": "down-right",
+  "source": "docs/art-direction/human-roster-v1/source/worker-walk-east-v1.png",
+  "sourceSha256": "d222b1bfaca7f55c3c0ce3c593197ddcae7f4670b347ab5e6c9aa0335ea1eb37",
+  "extractionSha256": "b042c618998585817d5658718be5c04635edb251e150669b46067533cd82ea8f",
+  "sharedScale": 0.5948717948717949,
+  "columnRootsX": [
+    196,
+    600,
+    976,
+    1360
+  ],
+  "rowBaselinesY": [
+    472,
+    944
+  ],
+  "groundPivotPx": {
+    "x": 128,
+    "y": 244
+  },
+  "durationMs": 800,
+  "registrationStatus": "source-pixel reviewed; native ground/turn acceptance open",
+  "frames": [
+    {
+      "id": "walk-east-0",
+      "source": "docs/art-direction/human-roster-v1/extracted/worker/walk/east/00.png",
+      "sourceSha256": "b942bfecfbf1eb4e9065649402a8bb07ff6e520d1dd410f5b0970801d4706528",
+      "sourceBounds": [
+        105,
+        80,
+        284,
+        464
+      ],
+      "offsetPx": [
+        74,
+        11
+      ],
+      "alphaBoundsPx": {
+        "x": 74,
+        "y": 11,
+        "width": 106,
+        "height": 228
+      },
+      "rgbaSha256": "62f5083aab02bb9c9905734b70066a62f1e47ccd570bd05d22038ff21b9f35b5"
+    },
+    {
+      "id": "walk-east-1",
+      "source": "docs/art-direction/human-roster-v1/extracted/worker/walk/east/01.png",
+      "sourceSha256": "011653306675a1b985c78ce650b3faebf5804c0c249296e9d47994fab94c5b50",
+      "sourceBounds": [
+        506,
+        81,
+        695,
+        470
+      ],
+      "offsetPx": [
+        72,
+        11
+      ],
+      "alphaBoundsPx": {
+        "x": 72,
+        "y": 11,
+        "width": 112,
+        "height": 231
+      },
+      "rgbaSha256": "2db3954e91c40e9a207e74848d47cc59fecac6f188a4872e1b36837613d689e0"
+    },
+    {
+      "id": "walk-east-2",
+      "source": "docs/art-direction/human-roster-v1/extracted/worker/walk/east/02.png",
+      "sourceSha256": "b18baebe7133e9d42443d91087e9616e596f079a971c3eb3bd8096f175d9a295",
+      "sourceBounds": [
+        875,
+        85,
+        1068,
+        472
+      ],
+      "offsetPx": [
+        68,
+        14
+      ],
+      "alphaBoundsPx": {
+        "x": 68,
+        "y": 14,
+        "width": 115,
+        "height": 230
+      },
+      "rgbaSha256": "7bbc9915bcbc177e432ba0b74cec142685b82afad16568d9f69cc8f1b746b7af"
+    },
+    {
+      "id": "walk-east-3",
+      "source": "docs/art-direction/human-roster-v1/extracted/worker/walk/east/03.png",
+      "sourceSha256": "3ae0a4174a44705522664106266b51b3fa6a1f0781350850ad676a9b24abc552",
+      "sourceBounds": [
+        1252,
+        88,
+        1483,
+        465
+      ],
+      "offsetPx": [
+        64,
+        16
+      ],
+      "alphaBoundsPx": {
+        "x": 64,
+        "y": 16,
+        "width": 137,
+        "height": 224
+      },
+      "rgbaSha256": "a1baf4c304fcb9895f50e3c85fb6834fe76b859244a2dd93342934ec10bcea26"
+    },
+    {
+      "id": "walk-east-4",
+      "source": "docs/art-direction/human-roster-v1/extracted/worker/walk/east/04.png",
+      "sourceSha256": "8ab2e0d4087ffe73b549ef5664557aaaae4660553c3b8e193d5b76ebc47204bd",
+      "sourceBounds": [
+        99,
+        556,
+        304,
+        943
+      ],
+      "offsetPx": [
+        70,
+        13
+      ],
+      "alphaBoundsPx": {
+        "x": 70,
+        "y": 13,
+        "width": 122,
+        "height": 230
+      },
+      "rgbaSha256": "91439b87d23eace13ad175007c868a345b5c75c0d69ccea31daea2f649a5eba6"
+    },
+    {
+      "id": "walk-east-5",
+      "source": "docs/art-direction/human-roster-v1/extracted/worker/walk/east/05.png",
+      "sourceSha256": "73487e48f80da679553938abeadd225ad188eacb977421152dbebed8ad22790c",
+      "sourceBounds": [
+        508,
+        557,
+        723,
+        941
+      ],
+      "offsetPx": [
+        73,
+        14
+      ],
+      "alphaBoundsPx": {
+        "x": 73,
+        "y": 14,
+        "width": 128,
+        "height": 228
+      },
+      "rgbaSha256": "54ed38334a7834293d323f1e16025abf5097475241fa7e773a4ad0bd33298704"
+    },
+    {
+      "id": "walk-east-6",
+      "source": "docs/art-direction/human-roster-v1/extracted/worker/walk/east/06.png",
+      "sourceSha256": "a9bfd7575a4d65eef66b31902ce60c2c289df9f122278c488dedc7c9cc49609b",
+      "sourceBounds": [
+        873,
+        555,
+        1091,
+        943
+      ],
+      "offsetPx": [
+        67,
+        13
+      ],
+      "alphaBoundsPx": {
+        "x": 67,
+        "y": 13,
+        "width": 130,
+        "height": 231
+      },
+      "rgbaSha256": "f30376ffa134267f3ba9e9c9233e2b392f9cd8b78e9c2c014211df8e8023bbee"
+    },
+    {
+      "id": "walk-east-7",
+      "source": "docs/art-direction/human-roster-v1/extracted/worker/walk/east/07.png",
+      "sourceSha256": "b3fe2a63f8ba2bb22239351e172856789f33b94c49d6be6d61564286ff3e011c",
+      "sourceBounds": [
+        1254,
+        551,
+        1481,
+        944
+      ],
+      "offsetPx": [
+        65,
+        10
+      ],
+      "alphaBoundsPx": {
+        "x": 65,
+        "y": 10,
+        "width": 135,
+        "height": 234
+      },
+      "rgbaSha256": "0bb51e75847c4bf51b5d7c37adaa06abf611f4725d4cdd9f00c7bd4639dd4bcb"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "id": "queued-food-cargo",
+  "name": "OPEN FIELD",
+  "summary": "64 × 64 · ELIMINATION · FOG OF WAR",
+  "width": 64,
+  "height": 64,
+  "terrainSeed": 881,
+  "fogOfWar": true,
+  "spawnPoints": [
+    {
+      "team": 0,
+      "x": -20,
+      "z": 0
+    },
+    {
+      "team": 1,
+      "x": 20,
+      "z": 0
+    }
+  ],
+  "resourceNodes": [
+    {
+      "id": "last-food-0",
+      "type": "food",
+      "x": -12.5,
+      "z": 6.5,
+      "stock": 0.5
+    },
+    {
+      "id": "last-food-1",
+      "type": "food",
+      "x": 12.5,
+      "z": 6.5,
+      "stock": 0.5
+    }
+  ],
+  "obstacles": [],
+  "triggers": [],
+  "startingArmySize": 8,
+  "startingResources": {
+    "food": 0,
+    "wood": 0
+  },
+  "scenarioEvents": []
+}

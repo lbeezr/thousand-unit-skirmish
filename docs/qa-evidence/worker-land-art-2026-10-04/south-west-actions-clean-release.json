@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "ced06b35d520afffba05fd12d77af636dd8c31b8",
+  "sourceDirty": false,
+  "digest": "sha256:ab66b158a4ab736e69eb23a9eb73a1cdee71b6e0b1618b9cb671981cd0fb96c8",
+  "fileCount": 1179,
+  "runtimeFiles": [
+    {
+      "path": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json",
+      "included": true,
+      "sha256": "3820cf4f581265f462167ceb797dd5e073e8b12af89bfb23c4fafd7b41dffc7b"
+    },
+    {
+      "path": "assets/units/cast-human-sprite-v3/cast-atlas-runtime.png",
+      "included": true,
+      "sha256": "bce6a838e2df9983969ec9071ffc8e06176addc8bd3ffdc055f4c2b687b6b1b3"
+    },
+    {
+      "path": "assets/units/cast-human-sprite-v3/team-accent-mask.png",
+      "included": true,
+      "sha256": "1b7068d37ab6af82bcb3c08325f28f4c5f9dc9e3e2ff1fbb75f6b315766b278b"
+    }
+  ],
+  "focusedTests": 189,
+  "admissionByteIdempotence": "passed",
+  "packedHttpScenario": "passed; guarded BasicAuthHTTP/WebSocket and default atlas hashes",
+  "nativeGpuAcceptance": "open; local sandbox-unavailable; parent Railway/Mac receiving route"
+}

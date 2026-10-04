@@ -66,6 +66,18 @@
         "candidateDirections": [
           "south-east"
         ]
+      },
+      "gather-fish": {
+        "status": "four-key-pilot",
+        "acceptedDirections": [],
+        "candidateDirections": [
+          "south-east"
+        ],
+        "publicationApproved": true,
+        "defaultIntegratedDirections": [
+          "south-east"
+        ],
+        "notes": "Original approved hand-net poses; fresh marker-fix Mac review and root/seam acceptance remain separate. Other headings use exact food/gather/idle fallback."
       }
     },
     "infantry": {

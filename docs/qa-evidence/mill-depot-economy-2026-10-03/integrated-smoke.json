@@ -1,0 +1,522 @@
+{
+  "evidenceType": "authoritative-server-simulation",
+  "humanMatches": 0,
+  "sourceRevision": "b550c690650f1959165d95175baf51eb4dc89045",
+  "sourceDirty": false,
+  "rulesetRevision": "v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6",
+  "nodeVersion": "v24.19.0",
+  "sourceContentSha256": "d9c4512cd1f8c6c382e7d918522d0a5aa6340cb16d086888eb2fb6fa21d015af",
+  "sourceFileCount": 487,
+  "cases": [
+    {
+      "sourceRevision": "b550c690650f1959165d95175baf51eb4dc89045",
+      "sourceDirty": false,
+      "sourceContentSha256": "d9c4512cd1f8c6c382e7d918522d0a5aa6340cb16d086888eb2fb6fa21d015af",
+      "rulesetRevision": "v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6",
+      "evidenceType": "authoritative-server-simulation",
+      "layout": "remote-food",
+      "strategy": "mill",
+      "foodWorkers": 3,
+      "caseId": "remote-food_mill_3",
+      "cost": {
+        "food": 0,
+        "wood": 75
+      },
+      "setup": [
+        {
+          "team": 0,
+          "builders": 4,
+          "commandTick": 2,
+          "completedTick": 414,
+          "elapsedSeconds": 13.733333333333333,
+          "reservedBuilderWorkerSeconds": 54.93333333333333
+        },
+        {
+          "team": 1,
+          "builders": 4,
+          "commandTick": 2,
+          "completedTick": 414,
+          "elapsedSeconds": 13.733333333333333,
+          "reservedBuilderWorkerSeconds": 54.93333333333333
+        }
+      ],
+      "definition": {
+        "id": "mill",
+        "label": "Mill",
+        "tags": [
+          "structure"
+        ],
+        "armor": {
+          "melee": 0,
+          "pierce": 0,
+          "siege": 0
+        },
+        "cost": {
+          "food": 0,
+          "wood": 75
+        },
+        "buildSeconds": 15,
+        "footprint": 3,
+        "maxHp": 1000,
+        "products": [],
+        "dropoff": [
+          "food"
+        ],
+        "presentation": "building.mill"
+      },
+      "map": {
+        "id": "depot-economy-remote-food",
+        "name": "Depot economy: remote-food",
+        "width": 64,
+        "height": 64,
+        "terrainSeed": 19,
+        "fogOfWar": false,
+        "startingArmySize": 8,
+        "startingResources": {
+          "food": 500,
+          "wood": 1000
+        },
+        "spawnPoints": [
+          {
+            "team": 0,
+            "x": -24.5,
+            "z": 0.5
+          },
+          {
+            "team": 1,
+            "x": 24.5,
+            "z": 0.5
+          }
+        ],
+        "obstacles": [],
+        "triggers": [],
+        "scenarioEvents": [],
+        "resourceNodes": [
+          {
+            "id": "food-0",
+            "type": "food",
+            "stock": 10000,
+            "x": -8.5,
+            "z": 16.5
+          },
+          {
+            "id": "wood-0",
+            "type": "wood",
+            "stock": 10000,
+            "x": -24.5,
+            "z": 5.5
+          },
+          {
+            "id": "food-1",
+            "type": "food",
+            "stock": 10000,
+            "x": 8.5,
+            "z": 16.5
+          },
+          {
+            "id": "wood-1",
+            "type": "wood",
+            "stock": 10000,
+            "x": 24.5,
+            "z": 5.5
+          }
+        ]
+      },
+      "mapSha256": "c7880fa10c6423e1bb058e94a98eb56141b346900b149f1266dfed5380f9a035",
+      "contract": {
+        "tickRate": 30,
+        "gatherRate": 1,
+        "carryCapacity": 10,
+        "interactionRange": 1.5
+      },
+      "windowSeconds": 20,
+      "sampleCount": 321,
+      "seats": [
+        {
+          "team": 0,
+          "seconds": 20,
+          "startTick": 1038,
+          "endTick": 1638,
+          "deposited": {
+            "food": 60,
+            "wood": 10
+          },
+          "depositedPerMinute": {
+            "food": 180,
+            "wood": 30
+          },
+          "fullCycleEquivalentDepositedPerMinute": {
+            "food": 178.80892566868624,
+            "wood": 53.57142857142858
+          },
+          "workers": [
+            {
+              "id": 0,
+              "type": "food",
+              "deposits": [
+                1005,
+                1305,
+                1608
+              ],
+              "cycles": [
+                {
+                  "endTick": 1305,
+                  "seconds": 10
+                },
+                {
+                  "endTick": 1608,
+                  "seconds": 10.1
+                }
+              ],
+              "meanCycleSeconds": 10.05,
+              "walkedWorldUnits": 0.34769320933777154,
+              "sampledMovingSeconds": 0.30000000000000004,
+              "sampledHarvestSeconds": 19.80000000000001,
+              "sampledReturningSeconds": 0,
+              "sampledStationaryNoCargoIncreaseSeconds": 0
+            },
+            {
+              "id": 1,
+              "type": "food",
+              "deposits": [
+                1017,
+                1320,
+                1623
+              ],
+              "cycles": [
+                {
+                  "endTick": 1320,
+                  "seconds": 10.1
+                },
+                {
+                  "endTick": 1623,
+                  "seconds": 10.1
+                }
+              ],
+              "meanCycleSeconds": 10.1,
+              "walkedWorldUnits": 0.44478708664619093,
+              "sampledMovingSeconds": 0.4,
+              "sampledHarvestSeconds": 19.80000000000001,
+              "sampledReturningSeconds": 0.2,
+              "sampledStationaryNoCargoIncreaseSeconds": 0.1
+            },
+            {
+              "id": 2,
+              "type": "food",
+              "deposits": [
+                993,
+                1296,
+                1596
+              ],
+              "cycles": [
+                {
+                  "endTick": 1296,
+                  "seconds": 10.1
+                },
+                {
+                  "endTick": 1596,
+                  "seconds": 10
+                }
+              ],
+              "meanCycleSeconds": 10.05,
+              "walkedWorldUnits": 0.3518033988749903,
+              "sampledMovingSeconds": 0.30000000000000004,
+              "sampledHarvestSeconds": 19.80000000000001,
+              "sampledReturningSeconds": 0.1,
+              "sampledStationaryNoCargoIncreaseSeconds": 0
+            },
+            {
+              "id": 3,
+              "type": "wood",
+              "deposits": [
+                1035,
+                1371
+              ],
+              "cycles": [
+                {
+                  "endTick": 1371,
+                  "seconds": 11.2
+                }
+              ],
+              "meanCycleSeconds": 11.2,
+              "walkedWorldUnits": 4.160789643158376,
+              "sampledMovingSeconds": 1.7000000000000004,
+              "sampledHarvestSeconds": 18.39999999999999,
+              "sampledReturningSeconds": 0.6,
+              "sampledStationaryNoCargoIncreaseSeconds": 0
+            }
+          ],
+          "dropoffTargets": [
+            {
+              "id": 0,
+              "type": "food",
+              "buildingId": 1,
+              "buildingType": "mill"
+            },
+            {
+              "id": 1,
+              "type": "food",
+              "buildingId": 1,
+              "buildingType": "mill"
+            },
+            {
+              "id": 2,
+              "type": "food",
+              "buildingId": 1,
+              "buildingType": "mill"
+            },
+            {
+              "id": 3,
+              "type": "wood",
+              "buildingId": 1000000000,
+              "buildingType": "home-town-center"
+            }
+          ]
+        },
+        {
+          "team": 1,
+          "seconds": 20,
+          "startTick": 1038,
+          "endTick": 1638,
+          "deposited": {
+            "food": 60,
+            "wood": 10
+          },
+          "depositedPerMinute": {
+            "food": 180,
+            "wood": 30
+          },
+          "fullCycleEquivalentDepositedPerMinute": {
+            "food": 178.22073362398368,
+            "wood": 57.142857142857146
+          },
+          "workers": [
+            {
+              "id": 4,
+              "type": "food",
+              "deposits": [
+                1017,
+                1320,
+                1620
+              ],
+              "cycles": [
+                {
+                  "endTick": 1320,
+                  "seconds": 10.1
+                },
+                {
+                  "endTick": 1620,
+                  "seconds": 10
+                }
+              ],
+              "meanCycleSeconds": 10.05,
+              "walkedWorldUnits": 0.38346917492045135,
+              "sampledMovingSeconds": 0.6,
+              "sampledHarvestSeconds": 19.80000000000001,
+              "sampledReturningSeconds": 0,
+              "sampledStationaryNoCargoIncreaseSeconds": 0
+            },
+            {
+              "id": 5,
+              "type": "food",
+              "deposits": [
+                1029,
+                1332,
+                1638
+              ],
+              "cycles": [
+                {
+                  "endTick": 1332,
+                  "seconds": 10.1
+                },
+                {
+                  "endTick": 1638,
+                  "seconds": 10.2
+                }
+              ],
+              "meanCycleSeconds": 10.149999999999999,
+              "walkedWorldUnits": 0.9260151736377029,
+              "sampledMovingSeconds": 0.7,
+              "sampledHarvestSeconds": 19.70000000000001,
+              "sampledReturningSeconds": 0.2,
+              "sampledStationaryNoCargoIncreaseSeconds": 0.1
+            },
+            {
+              "id": 6,
+              "type": "food",
+              "deposits": [
+                1017,
+                1320,
+                1623
+              ],
+              "cycles": [
+                {
+                  "endTick": 1320,
+                  "seconds": 10.1
+                },
+                {
+                  "endTick": 1623,
+                  "seconds": 10.1
+                }
+              ],
+              "meanCycleSeconds": 10.1,
+              "walkedWorldUnits": 0.38460438360698773,
+              "sampledMovingSeconds": 0.4,
+              "sampledHarvestSeconds": 19.80000000000001,
+              "sampledReturningSeconds": 0.2,
+              "sampledStationaryNoCargoIncreaseSeconds": 0
+            },
+            {
+              "id": 7,
+              "type": "wood",
+              "deposits": [
+                1011,
+                1326
+              ],
+              "cycles": [
+                {
+                  "endTick": 1326,
+                  "seconds": 10.5
+                }
+              ],
+              "meanCycleSeconds": 10.5,
+              "walkedWorldUnits": 1.6500000000000008,
+              "sampledMovingSeconds": 0.7999999999999999,
+              "sampledHarvestSeconds": 19.400000000000006,
+              "sampledReturningSeconds": 0.30000000000000004,
+              "sampledStationaryNoCargoIncreaseSeconds": 0
+            }
+          ],
+          "dropoffTargets": [
+            {
+              "id": 4,
+              "type": "food",
+              "buildingId": 2,
+              "buildingType": "mill"
+            },
+            {
+              "id": 5,
+              "type": "food",
+              "buildingId": 2,
+              "buildingType": "mill"
+            },
+            {
+              "id": 6,
+              "type": "food",
+              "buildingId": 2,
+              "buildingType": "mill"
+            },
+            {
+              "id": 7,
+              "type": "wood",
+              "buildingId": 1000000001,
+              "buildingType": "home-town-center"
+            }
+          ]
+        }
+      ],
+      "accounting": {
+        "paidBank": {
+          "food": [
+            500,
+            500
+          ],
+          "wood": [
+            925,
+            925
+          ]
+        },
+        "stoppedBank": {
+          "food": [
+            590,
+            590
+          ],
+          "wood": [
+            945,
+            955
+          ]
+        },
+        "stoppedNodes": [
+          {
+            "id": "food-0",
+            "type": "food",
+            "stock": 9905.733333334705
+          },
+          {
+            "id": "wood-0",
+            "type": "wood",
+            "stock": 9971.233333333752
+          },
+          {
+            "id": "food-1",
+            "type": "food",
+            "stock": 9907.566666668012
+          },
+          {
+            "id": "wood-1",
+            "type": "wood",
+            "stock": 9969.966666667104
+          }
+        ],
+        "stoppedCargo": [
+          {
+            "id": 0,
+            "team": 0,
+            "cargo": 1.466666666666668,
+            "cargoType": "food"
+          },
+          {
+            "id": 1,
+            "team": 0,
+            "cargo": 0.9666666666666666,
+            "cargoType": "food"
+          },
+          {
+            "id": 2,
+            "team": 0,
+            "cargo": 1.8333333333333357,
+            "cargoType": "food"
+          },
+          {
+            "id": 3,
+            "team": 0,
+            "cargo": 8.766666666666646,
+            "cargoType": "wood"
+          },
+          {
+            "id": 4,
+            "team": 1,
+            "cargo": 1.0333333333333332,
+            "cargoType": "food"
+          },
+          {
+            "id": 5,
+            "team": 1,
+            "cargo": 0.4333333333333333,
+            "cargoType": "food"
+          },
+          {
+            "id": 6,
+            "team": 1,
+            "cargo": 0.9666666666666666,
+            "cargoType": "food"
+          },
+          {
+            "id": 7,
+            "team": 1,
+            "cargo": 0.03333333333333333,
+            "cargoType": "wood"
+          }
+        ],
+        "stockCargoBankConserved": true,
+        "injectedBanksOrCargo": false
+      }
+    }
+  ],
+  "limits": [
+    "Uncontested flat maps; no raids, depletion, player decisions or native rendering.",
+    "Positions/cargo are wire samples at 0.1-second resolution; final conservation uses authoritative checkpoint values.",
+    "Deposited rates use each case's declared finite window; cycle means describe sampled repeated trips.",
+    "Wood premium repayment excludes construction opportunity and does not convert food to wood."
+  ]
+}

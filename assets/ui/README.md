@@ -1,6 +1,8 @@
 # Frontier command UI assets
 
-**Status:** 40 px Meshy cursor PNGs and 24 px HUD icons are integrated.
+**Status:** 40 px Meshy cursor PNGs, the original six 24 px HUD icons and six
+labelled action glyphs are integrated by default. Current-build native
+recognition and deployed delivery of the action glyphs remain unverified.
 [Cursor contract](../../docs/ui-cursor-icon-contract.md) · [Provenance](PROVENANCE.md)
 
 ## Files
@@ -10,6 +12,7 @@
 | `cursors/*.png` | Sixteen native cursor images. |
 | `cursors/manifest.json` | Current paths, 40 × 40 dimensions, hotspots, fallbacks. |
 | `icons/*.svg` | Food, wood, move, attack, gather, and build icons. |
+| `icons/actions/` | Six [action glyphs](icons/actions/README.md), served in existing labelled controls at 20 px. |
 | `cursors/*.svg`, `export-cursors.swift` | Earlier 32 px cursor sources/export path, retained as history. |
 | `preview.html` | Static review composition, not gameplay evidence. |
 

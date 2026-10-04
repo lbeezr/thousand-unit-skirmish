@@ -1,24 +1,8 @@
 import { validateAudioPack, MAX_PACK_BYTES, MAX_SOURCE_BYTES } from './audio-assets.mjs';
 import { validateMapAudioReference } from './audio-event-profile.mjs';
+import { readBoundedAudioResponse as readBounded } from './audio-shipped-response.mjs';
 const cache = new Map();
 let cacheBytes = 0;
-async function readBounded(response, limit, mime) {
-  if (!response.ok || response.headers.get('content-type')?.split(';')[0].trim() !== mime) throw new Error('Audio response status/MIME mismatch');
-  if (Number(response.headers.get('content-length')) > limit) throw new Error('Audio response exceeds size limit');
-  const chunks = []; let bytes = 0;
-  const reader = response.body.getReader();
-  try {
-    while (true) {
-      const { done, value } = await reader.read(); if (done) break;
-      bytes += value.byteLength;
-      if (bytes > limit) throw new Error('Audio response exceeds size limit');
-      chunks.push(value);
-    }
-  } catch (error) { await reader.cancel(); throw error; }
-  const result = new Uint8Array(bytes); let offset = 0;
-  for (const chunk of chunks) { result.set(chunk, offset); offset += chunk.byteLength; }
-  return result;
-}
 async function verify(bytes, expected, crypto) {
   const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
   const hash = [...digest].map((byte) => byte.toString(16).padStart(2, '0')).join('');

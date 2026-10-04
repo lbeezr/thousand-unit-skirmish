@@ -21,6 +21,12 @@ directory and reports the source revision and content digest. It rejects dirty
 checkouts. `--allow-dirty` is for disposable package tests and does not identify a
 reproducible committed release.
 
+If copying, verification or manifest creation fails, the packer removes only its
+new incomplete directory. A successful package stays available to its caller;
+keep it through staging and any approved promotion, then remove it when finished.
+The local release scenario stops its child before removing its own package and
+test volume, including when setup fails before server startup.
+
 On macOS the packer requests native copy-on-write cloning (`cp -c`) for regular
 files and falls back to ordinary copying when that command fails. Other platforms
 retain ordinary copying. The resulting files remain isolated snapshots; source
@@ -34,12 +40,58 @@ The Building Variant Atlas remains a separate local preview; its HTML/CSS/JS
 are outside the game server allowlist and Docker inputs. See
 [local asset review](assets.md#review-locally).
 
-Keep the same packed directory for staging and any subsequent production
-promotion. Staging can follow merges to main through the service's configured
-deployment integration; production promotion is a separate release decision.
-This guide does not assert which build is deployed now.
+For a manual release, keep the same packed directory for staging and any
+subsequent production promotion. GitHub source deployments instead build the
+connected commit; the local package check validates Docker inputs but does not
+publish an artifact to Railway. Inspect the source integration and auto-deploy
+settings below before merging. This guide does not assert which build is
+deployed now.
 
 ## Railway
+
+### GitHub source and deployment triggers
+
+The approved source for the existing `game` service is
+[`lbeezr/thousand-unit-skirmish`, branch `main`](https://github.com/lbeezr/thousand-unit-skirmish/tree/main),
+replacing `lbliii/thousand-unit-skirmish` in both environments. Apply and verify
+the platform source change separately in these existing resources:
+
+| Resource | ID |
+| --- | --- |
+| Project | `32da8e2c-3377-49ed-8df0-45f72ecdc562` |
+| Service (`game`) | `408356ca-c8cd-4932-abca-d5ebef430dd5` |
+| Staging environment | `93f80e39-efd0-420a-9282-86886d3e88bd` |
+| Production environment | `b6e4036d-5592-4b7f-8f21-ca5d6d1f4529` |
+
+Repository files cannot change Railway's connected repository, trigger branch,
+auto-deploy switch, or **Wait for CI** setting. Verify each environment's actual
+settings and deployment SHA in Railway. Preserve volumes, variables, domains,
+replica counts, and readiness checks during the source switch.
+
+When auto-deploy is enabled, a push or merge to the connected `main` branch
+triggers Railway. If both environments auto-deploy from `main`, the same merge
+can deploy to both; a separate production promotion requires production
+auto-deploy to be disabled. Make that release decision explicitly in Railway.
+The [existing GitHub workflow](../.github/workflows/ci.yml) checks code and release
+inputs only. Keep Railway's integration as the single automatic deploy trigger;
+do not also add a Railway CLI deploy job to Actions.
+
+Enable and verify [fork CI](testing.md#enable-and-verify-fork-ci) independently.
+Railway's [Wait for CI](https://docs.railway.com/deployments/github-autodeploys#wait-for-ci)
+requires a workflow triggered by pushes to the deployment branch; this workflow
+retains `push: branches: [main]`. Running CI does not itself enable that gate.
+With the gate enabled, verify all workflow conclusions for the deployment
+commit and Railway's terminal deployment result. Preserve an existing gate
+during the switch; absent CI is not a reason to disable it. Any required new
+GitHub app permissions or credentials need a separate approval.
+
+Before the first release from the fork, identify each environment's running
+commit and audit its saved checkpoints against the target build, including room
+and pregame state. Preserve the prior release and volume backup before replacing
+an older build. CI's disposable recovery fixtures do not establish compatibility
+with the actual hosted data; see [recovery and backups](#recovery-and-backups).
+
+### Manual release
 
 Configure each environment independently:
 

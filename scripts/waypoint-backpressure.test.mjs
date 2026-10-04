@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
+import { websocketFrameBytes } from '../src/networking/websocket-frame.mjs';
 
 const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 function between(start, end) {
@@ -15,16 +16,17 @@ function transport() {
   const frames = [];
   let rows = [[7, 1]];
   const context = vm.createContext({
-    Buffer, MAX_PEER_QUEUED_BYTES: 1024, outboundQueueLimitDisconnects: 0,
+    Buffer, websocketFrameBytes, MAX_PEER_QUEUED_BYTES: 1024, outboundQueueLimitDisconnects: 0,
     peakOutboundQueuedBytes: 0, lastWaypointQueueCountsByTeam: [[], []],
     snapshotQueuedWaypointCounts: (team) => team === 0 ? rows : [],
     prepareJsonFrame: (message) => Buffer.from(JSON.stringify(message)),
-    peers: [], shuttingDown: false,
-    mapDefinition: { id: 'new-map' }, mapCatalogPayload: () => [],
+    peers: [], shuttingDown: false, process: { env: {}, connected: false },
+    mapDefinition: { id: 'new-map' }, matchMode: { matchModeId: 'authored', matchModeVersion: 1 }, mapCatalogPayload: () => [],
     roomPayload: () => ({ type: 'state', mapId: 'new-map', queuedWaypointCounts: [] }),
   });
   vm.runInContext([
-    between('function websocketFrameBytes(', 'function sendPeerControlFrame('),
+    between('function sendRoomMetadata()', 'function returnToPregame()'),
+    between('function canQueuePeerFrame(', 'function sendPeerControlFrame('),
     between('function broadcastWaypointQueueCounts()', 'function clientOrderToken('),
     `globalThis.peer = {
       team: 0, closed: false, backpressured: true, pendingState: null, pendingWaypointCounts: null,

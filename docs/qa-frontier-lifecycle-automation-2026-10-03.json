@@ -1,0 +1,97 @@
+{
+  "schema": "thousand-unit-skirmish.frontier-lifecycle-automation-qa.v1",
+  "date": "2026-10-03",
+  "scope": "Synthetic fixture checks for reusable offline authoring scripts; no real Frontier source/art admission",
+  "environment": {
+    "Blender": "4.3.2",
+    "Node": "24.19.0",
+    "Python": "3.12.14",
+    "Pillow": "12.3.0",
+    "NumPy": "2.3.5",
+    "device": "CPU",
+    "threads": 8,
+    "samples": 8,
+    "denoising": false
+  },
+  "scaffold": {
+    "originPR": 40,
+    "script": "scripts/prepare-frontier-town-center-blender.py",
+    "sha256": "528402734af46f2041959ea91e9e966cf38b0e9cf2f270bef0c0473763d380e2"
+  },
+  "codeSha256": {
+    "scripts/author-frontier-town-center-lifecycle.py": "2f3d46dd6646bc9f77fd808565c22939f30b3e798459be1b2cd7f08aed123bd0",
+    "scripts/verify-building-lifecycle-pixels.py": "096c8f30739bc2a41fae3ab9a0ce2ccc896c005890a87992425580ab47cd72a1",
+    "scripts/frontier-lifecycle-authoring.test.py": "14fad7eef8d205731e9f0bde0ae67ea8bd26b8bbaffcc0d3cff97611bc63c18e",
+    "scripts/building-lifecycle-pixels.test.py": "9bb6b8ed96b4ad6d9d2bba9cdfe5de46188f63b90370b27079732ec3a2f693e1"
+  },
+  "behavioralChecks": {
+    "BlenderAuthoring": {
+      "passed": 8,
+      "failed": 0
+    },
+    "PythonPixelFailureInjection": {
+      "passed": 4,
+      "failed": 0
+    },
+    "ExistingNodeLifecycleMetadataValidator": {
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  "capture": {
+    "syntheticFixture": true,
+    "states": [
+      "foundation",
+      "frame",
+      "complete",
+      "damaged",
+      "critical"
+    ],
+    "viewsPerState": 8,
+    "colorFrames": 40,
+    "maskFrames": 40,
+    "decodedPairs": 40,
+    "maximumColorMaskAlphaError": 0,
+    "fullyOccludedMaskViews": 4,
+    "maximumGroundAnchorErrorPixels": 0.00046568568495786167,
+    "masterMeshUnchangedDuringDerivation": true,
+    "derivedPartCounts": {
+      "foundation": 5,
+      "frame": 13,
+      "complete": 25,
+      "damaged": 23,
+      "critical": 16
+    },
+    "allFiveStatesIsolatedAfterReopen": true,
+    "calibratedCamerasAfterReopen": 8,
+    "privateBlendSha256": "d7593c6411568baa38e853cd98af8394f0ba73a3640fc33a770c94676bdb57a6",
+    "privateManifestSha256": "79828db418f78ca86a95fd3f2a1a8957da4a0a4f5eb7f3bd08fea9709662c4a7",
+    "privatePixelReceiptSha256": "a7f8971e39166ffff8037e2ca2dca58a1a6ce6b67cd0a357d766c1cf98a729d4"
+  },
+  "boundaries": {
+    "realTownCenterSourceImported": false,
+    "lifecycleArtworkAccepted": false,
+    "approvedOwnerStandardsEstablished": false,
+    "completeRenderParityEstablished": false,
+    "runtimeAdoption": false,
+    "privateOutputsPublished": false,
+    "additionalMeshyCredits": 0,
+    "fullNpmSuiteRun": false
+  },
+  "limits": [
+    "The geometric fixture is a pipeline test and is not derived from the approved Town Center.",
+    "Synthetic GLB export/import behavior was tested separately; actual approved source bytes remain unavailable.",
+    "Pixel coverage and metadata checks cannot establish art quality or in-game readability.",
+    "The full Node suite was not run: this code-only offline slice has targeted checks and no gameplay changes; project npm dependencies are not installed here."
+  ],
+  "documentationCheck": {
+    "passed": true,
+    "markdownFiles": 411,
+    "localLinks": 2696
+  },
+  "historicalMaskCompatibility": {
+    "runtimeCompatible": false,
+    "reason": "RGB selected owner cues, but full-building alpha would recolor neutral geometry with the runtime Canvas destination-in consumer.",
+    "supersededForMaskAdmissionBy": "qa-frontier-lifecycle-alpha-masks-2026-10-03.json"
+  }
+}

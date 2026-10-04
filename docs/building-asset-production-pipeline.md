@@ -61,6 +61,9 @@ compares these captures with direct sprites and concepts.
 The newer [Frontier scale pilot](../assets/buildings/frontier-civilization-scale-pilot-v1/README.md)
 is a different architectural family from the default lifecycle pack above.
 Its approved Complete source is ready for further authoring, not default adoption.
+The [private-source authoring preparation](frontier-town-center-authoring.md)
+provides an empty Blender master/state/camera scaffold while source materialization
+remains blocked; it does not supply lifecycle geometry or captures.
 
 | Input or review | Exact contract and present evidence | Still needed |
 | --- | --- | --- |
@@ -69,7 +72,7 @@ Its approved Complete source is ready for further authoring, not default adoptio
 | Registration | Shared orthographic 46° elevation; azimuths 0–315° in 45° steps; 1024×1024 canvas, 128 pixels/world unit, ground pivot `[512,647.1527325565025]` from top left. Each state uses the same frame, scale, lighting and grounded pivot. | Registered new state captures and actual image/mask alignment checks. Declared metadata alone cannot establish pixel alignment. |
 | Ownership | Small owner standards: straight-cut Azure/bar/square; forked Ember/split/diamond. Cultural ochre stays neutral. Color and aligned mask references are separate, with recorded SHA-256. | Correct standard shapes and masks for every supported state/view; current eight views have none. Generated grain emblems/forked blue pennants are illustrative, not approved faction insignia. |
 | Physical scale | Measured Complete lower base 4.40×4.24 units inside registry 5×5 occupancy; about 1.913× the pilot House width. Human Worker `cast-human-sprite-v3` declares height 1.4258738550646552; its loader uses `heightWorld / maxAlphaHeight`, visibility scale and the selected frame pivot. Alpha bounds do not define collision or doorway size. | Door/exit review beside that actual selected Worker, including equipment and accessible neighboring cells. A 0.8-unit ruler and older Worker manifests do not establish this role's clearance. |
-| Runtime acceptance | Opt-in full-checkout preview; Complete-only state fallback is implemented. Pilot files are absent from the hosted release. Historical preview screenshots remain dated evidence. | Both teams at ordinary 0.91/strategic 0.48 zoom; construction, damage/repair, view transitions, fog, nearby units, exits and terrain contact on a named build/map. Packaging/default adoption is a separate future slice. |
+| Runtime acceptance | PR #34 packages the Town Center's eight Complete views and manifest for the named opt-in preview; Complete-only state fallback is implemented. Historical preview screenshots remain dated evidence. | Both teams at ordinary 0.91/strategic 0.48 zoom; construction, damage/repair, view transitions, fog, nearby units, exits and terrain contact on a named build/map. Default adoption is a separate future slice. |
 
 Resolve the missing state designs, standard treatment and doorway/terrain
 readability through art review; none is supplied by a metadata pass. See the

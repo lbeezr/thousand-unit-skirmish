@@ -1,0 +1,501 @@
+{
+  "schemaVersion": 1,
+  "worldDirection": "west",
+  "screenDirection": "up-left back-three-quarter",
+  "sharedScale": 0.8741935483870967,
+  "columnRootsX": [
+    178,
+    536,
+    852
+  ],
+  "source": "docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/raw.png",
+  "sourceSha256": "8eeb034f41b2f8f6214d3c5c02c7365a3c97c01b3e720de2affb585ac8ec4b2e",
+  "contactNote": "Live work uses row ground baselines; fallen poses use reviewed source contact lines, not bounding-box recentering. Runtime pivots remain fixed per clip; native contact/relative body scale open.",
+  "groups": [
+    {
+      "state": "gather-wood",
+      "alias": "attack",
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 320,
+        "height": 296
+      },
+      "groundPivotPx": {
+        "x": 180,
+        "y": 284
+      },
+      "frames": [
+        {
+          "id": "gather-wood-west-0",
+          "sourceIndex": 0,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/extracted/00.png",
+          "sourceSha256": "a8592dd1973f6f6efcd193c05baaefe713c616cccfc5b0cccfa555aebe3c85dd",
+          "sourceBounds": [
+            88,
+            4,
+            273,
+            300
+          ],
+          "sourceGroundRootPx": [
+            178,
+            305
+          ],
+          "offsetPx": [
+            101,
+            21
+          ],
+          "alphaBoundsPx": {
+            "x": 101,
+            "y": 21,
+            "width": 162,
+            "height": 259
+          },
+          "rgbaSha256": "6493bfaad651b1fdde5475577497ceab210d94b8ecb7fdc26f9042105a0772ae"
+        },
+        {
+          "id": "gather-wood-west-1",
+          "sourceIndex": 1,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/extracted/01.png",
+          "sourceSha256": "cb91f7c3e3b8b06d1f7a9ca3ef9766f9e7dac477e3655a2a09ecf0052b10bd4e",
+          "sourceBounds": [
+            346,
+            55,
+            625,
+            294
+          ],
+          "sourceGroundRootPx": [
+            536,
+            305
+          ],
+          "offsetPx": [
+            14,
+            65
+          ],
+          "alphaBoundsPx": {
+            "x": 14,
+            "y": 65,
+            "width": 244,
+            "height": 209
+          },
+          "rgbaSha256": "ded2e7ab0dfcfcd10ec371b5cc533c044d98e70c99250dfaadaa3a31921194bf"
+        },
+        {
+          "id": "gather-wood-west-2",
+          "sourceIndex": 2,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/extracted/02.png",
+          "sourceSha256": "7f3297f8c5cc8a6146247f20e75b02462393de578df783ecf06cfa509362bd57",
+          "sourceBounds": [
+            713,
+            47,
+            927,
+            305
+          ],
+          "sourceGroundRootPx": [
+            852,
+            305
+          ],
+          "offsetPx": [
+            58,
+            58
+          ],
+          "alphaBoundsPx": {
+            "x": 58,
+            "y": 58,
+            "width": 187,
+            "height": 226
+          },
+          "rgbaSha256": "cbfa39c4616ac656c9a0bf13371bd3d1bd1992592e179792a7d964f39c510fbb"
+        }
+      ]
+    },
+    {
+      "state": "gather-food",
+      "alias": null,
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 256,
+        "height": 256
+      },
+      "groundPivotPx": {
+        "x": 128,
+        "y": 244
+      },
+      "frames": [
+        {
+          "id": "gather-food-west-0",
+          "sourceIndex": 3,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/extracted/03.png",
+          "sourceSha256": "cf05d6b9a9111e8555198f245f6b82045e1fa2cac537f05db59e466b16f91dbc",
+          "sourceBounds": [
+            78,
+            331,
+            302,
+            585
+          ],
+          "sourceGroundRootPx": [
+            178,
+            593
+          ],
+          "offsetPx": [
+            41,
+            15
+          ],
+          "alphaBoundsPx": {
+            "x": 41,
+            "y": 15,
+            "width": 196,
+            "height": 222
+          },
+          "rgbaSha256": "1137498eb359026c2b1f986b1669b6dd28e60bcca7c1b5522d5f0d61d22d1010"
+        },
+        {
+          "id": "gather-food-west-1",
+          "sourceIndex": 4,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/extracted/04.png",
+          "sourceSha256": "ac0308a1174dee10056f9c351e22db37479514c3406fe14e0cad8e234e969bcd",
+          "sourceBounds": [
+            395,
+            398,
+            624,
+            586
+          ],
+          "sourceGroundRootPx": [
+            536,
+            593
+          ],
+          "offsetPx": [
+            5,
+            74
+          ],
+          "alphaBoundsPx": {
+            "x": 5,
+            "y": 74,
+            "width": 200,
+            "height": 164
+          },
+          "rgbaSha256": "646b6b199f313d4f99d87fc0564ef1aa331dae62fc9acdd80e990074f1555a4e"
+        },
+        {
+          "id": "gather-food-west-2",
+          "sourceIndex": 5,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/extracted/05.png",
+          "sourceSha256": "132d5df1ae8fb6f6a865ffcccc50f87c0418b42f97bbdbf4383a989421e74704",
+          "sourceBounds": [
+            764,
+            331,
+            922,
+            593
+          ],
+          "sourceGroundRootPx": [
+            852,
+            593
+          ],
+          "offsetPx": [
+            51,
+            15
+          ],
+          "alphaBoundsPx": {
+            "x": 51,
+            "y": 15,
+            "width": 138,
+            "height": 229
+          },
+          "rgbaSha256": "4c991b26eec9afb422ebfc46eb464733ba581241c4082e8804ff667baeda58e0"
+        }
+      ]
+    },
+    {
+      "state": "build",
+      "alias": "repair",
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 320,
+        "height": 296
+      },
+      "groundPivotPx": {
+        "x": 180,
+        "y": 284
+      },
+      "frames": [
+        {
+          "id": "build-west-0",
+          "sourceIndex": 6,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/extracted/06.png",
+          "sourceSha256": "8c9bc3301f8155b028e077ddab7c477040d5aed107835dbac6be366b152bb442",
+          "sourceBounds": [
+            95,
+            588,
+            271,
+            884
+          ],
+          "sourceGroundRootPx": [
+            178,
+            890
+          ],
+          "offsetPx": [
+            107,
+            20
+          ],
+          "alphaBoundsPx": {
+            "x": 107,
+            "y": 20,
+            "width": 154,
+            "height": 259
+          },
+          "rgbaSha256": "723d9cca45d200ea88e60ac64a9e8b78a0a46b8fb91d04db93a06a82775eed6d"
+        },
+        {
+          "id": "build-west-1",
+          "sourceIndex": 7,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/extracted/07.png",
+          "sourceSha256": "3a08e7d2f4b317ce13cb378d62608771bd772c8096977994f5db10568eb64ae7",
+          "sourceBounds": [
+            351,
+            656,
+            631,
+            878
+          ],
+          "sourceGroundRootPx": [
+            536,
+            890
+          ],
+          "offsetPx": [
+            18,
+            79
+          ],
+          "alphaBoundsPx": {
+            "x": 18,
+            "y": 79,
+            "width": 245,
+            "height": 194
+          },
+          "rgbaSha256": "f447c8a859e5c756205881b07a4b308f6786c6944ff675f298bb972d13907866"
+        },
+        {
+          "id": "build-west-2",
+          "sourceIndex": 8,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/extracted/08.png",
+          "sourceSha256": "3d71b181153a79a6e90529641f2389d671b1abb01d49923ce3ecc628fa4fc0fb",
+          "sourceBounds": [
+            717,
+            621,
+            931,
+            890
+          ],
+          "sourceGroundRootPx": [
+            852,
+            890
+          ],
+          "offsetPx": [
+            62,
+            49
+          ],
+          "alphaBoundsPx": {
+            "x": 62,
+            "y": 49,
+            "width": 187,
+            "height": 235
+          },
+          "rgbaSha256": "57dc6d2aca00693d11fc80199eac1591155ea41f7529b3b654f80a630d903e5b"
+        }
+      ]
+    },
+    {
+      "state": "gather-stone",
+      "alias": null,
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 320,
+        "height": 296
+      },
+      "groundPivotPx": {
+        "x": 180,
+        "y": 284
+      },
+      "frames": [
+        {
+          "id": "gather-stone-west-0",
+          "sourceIndex": 9,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/extracted/09.png",
+          "sourceSha256": "e5377dee9a2a85d41d2e35bf5f153e44e384a0dc89aba4851d074306a1458f02",
+          "sourceBounds": [
+            87,
+            906,
+            283,
+            1216
+          ],
+          "sourceGroundRootPx": [
+            178,
+            1216
+          ],
+          "offsetPx": [
+            100,
+            13
+          ],
+          "alphaBoundsPx": {
+            "x": 100,
+            "y": 13,
+            "width": 171,
+            "height": 271
+          },
+          "rgbaSha256": "b033b02bea41569559f4668167785e9bbf815c6dd7c2bdbd2f85149f2aec701e"
+        },
+        {
+          "id": "gather-stone-west-1",
+          "sourceIndex": 10,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/extracted/10.png",
+          "sourceSha256": "9ecf67d25735754315dbd4ca3818345c1cf31a781f747b6e9710b23a6e45ab9a",
+          "sourceBounds": [
+            357,
+            991,
+            645,
+            1216
+          ],
+          "sourceGroundRootPx": [
+            536,
+            1216
+          ],
+          "offsetPx": [
+            24,
+            87
+          ],
+          "alphaBoundsPx": {
+            "x": 24,
+            "y": 87,
+            "width": 252,
+            "height": 197
+          },
+          "rgbaSha256": "f9db7c1b6acc6f601a421d69933c71dc232c111182354da94c0a5e2179f1aaef"
+        },
+        {
+          "id": "gather-stone-west-2",
+          "sourceIndex": 11,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/extracted/11.png",
+          "sourceSha256": "83fe95e8fe7b6b0808d8d10ccd624c59d852617ac9ab3058ec061f4df49ca39d",
+          "sourceBounds": [
+            728,
+            947,
+            931,
+            1216
+          ],
+          "sourceGroundRootPx": [
+            852,
+            1216
+          ],
+          "offsetPx": [
+            72,
+            49
+          ],
+          "alphaBoundsPx": {
+            "x": 72,
+            "y": 49,
+            "width": 177,
+            "height": 235
+          },
+          "rgbaSha256": "c6575a81f38dd6579b403f81721cd524ec4e4c469112a58cf1d2fdf8859b027d"
+        }
+      ]
+    },
+    {
+      "state": "defeat",
+      "alias": null,
+      "loop": false,
+      "durationMs": 840,
+      "canvasPx": {
+        "width": 512,
+        "height": 256
+      },
+      "groundPivotPx": {
+        "x": 256,
+        "y": 244
+      },
+      "frames": [
+        {
+          "id": "defeat-west-0",
+          "sourceIndex": 12,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/extracted/12.png",
+          "sourceSha256": "5195918e895ff0b39801a63d10ca8c99bd1304193c2608bd1e399ab5526ae458",
+          "sourceBounds": [
+            50,
+            1251,
+            293,
+            1493
+          ],
+          "sourceGroundRootPx": [
+            178,
+            1493
+          ],
+          "offsetPx": [
+            144,
+            32
+          ],
+          "alphaBoundsPx": {
+            "x": 144,
+            "y": 33,
+            "width": 212,
+            "height": 211
+          },
+          "rgbaSha256": "8e47cfb5d44616135af3698ffdaff28c238b0e7b19de7905dee1b7cef98b093e"
+        },
+        {
+          "id": "defeat-west-1",
+          "sourceIndex": 13,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/extracted/13.png",
+          "sourceSha256": "f7080598f495521e4b496791e9604abd3bbb045b67d20742841c8133f4ecf3a1",
+          "sourceBounds": [
+            348,
+            1293,
+            662,
+            1501
+          ],
+          "sourceGroundRootPx": [
+            536,
+            1501
+          ],
+          "offsetPx": [
+            92,
+            62
+          ],
+          "alphaBoundsPx": {
+            "x": 92,
+            "y": 62,
+            "width": 274,
+            "height": 182
+          },
+          "rgbaSha256": "719618ae0038cd9a561a2b4131d2b75c66e648109e34d54b71e8eaff396d7314"
+        },
+        {
+          "id": "defeat-west-2",
+          "sourceIndex": 14,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/extracted/14.png",
+          "sourceSha256": "04c97ccf7dc776fc0367c9a6db2ab3fe709d541a77d8dc15cf033299e73f9d59",
+          "sourceBounds": [
+            687,
+            1297,
+            1003,
+            1484
+          ],
+          "sourceGroundRootPx": [
+            852,
+            1484
+          ],
+          "offsetPx": [
+            112,
+            81
+          ],
+          "alphaBoundsPx": {
+            "x": 112,
+            "y": 81,
+            "width": 276,
+            "height": 163
+          },
+          "rgbaSha256": "5d4d86f8671beed18b942156730c9fca867583dda34f8165ccdac1c3b0f980a8"
+        }
+      ]
+    }
+  ]
+}

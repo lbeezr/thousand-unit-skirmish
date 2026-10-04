@@ -28,10 +28,176 @@ visibility, and match results. The browser owns selection, camera, HUD, audio,
 and visual interpolation. A renderer fallback cannot change gameplay occupancy
 or reveal hidden state.
 
+## Module dependencies and gradual organization
+
+`npm run architecture:check` parses imports, re-exports and literal lazy imports
+with Acorn; it does not execute game modules. At source revision `32f11d5`
+(3 October 2026), the graph contains 141 `src` modules plus five root JavaScript
+modules, 253 distinct local dependency edges, 105 modules reachable from the
+five shipped browser entrypoints and 53 reachable from the two Node hosts.
+Twenty-four modules are shared by those closures. The command prints the exact
+shared set so a refactor can check its actual consumers.
+
+There are **no cyclic edges** at that revision, including lazy imports.
+[`runtime-import-baseline.json`](../scripts/fixtures/runtime-import-baseline.json)
+records this explicit empty baseline. The checker compares every cyclic edge,
+including self-imports and new edges within an existing cyclic component.
+New edges fail; resolved entries must be removed from the baseline. Do not
+regenerate the ledger to admit a new cycle or add wildcard/module exemptions.
+
+The useful target domains are responsibilities first; these directory names
+are destinations for future small, cohesive moves, not a rename plan:
+
+| Domain | Existing evidence | Dependency direction |
+| --- | --- | --- |
+| `src/rules/` | `gameplay-definitions`, `gameplay-action-rules`, `production-actions`, `research-actions`, `economy-profile`, `palisade-profile`, `farm-harvest` | Browser, simulation and AI consume rules and validated definitions. Rules do not import their hosts, UI or rendering. Keep shared business-rule extractions with their existing quality owner. |
+| `src/world/` | `map-utils` → `elevation`; `shore-fishing-placement` → `map-utils`, `town-center-spawn`, `shore-fishing` | Simulation and browser authoring consume portable topology/placement helpers. Authoring may consume rules; shared topology must not depend on editor controls. |
+| `src/presentation/` | `environment-art` → Three, terrain/world helpers and plant packs; `selection-portrait` → definitions, building sprites and resource formatting | Rendering/audio/HUD consume disclosed snapshots, rules and world data. Authoritative simulation does not consume renderers or mutate gameplay through presentation. |
+| `src/client/` | `game-entry` lazily imports `main`; `main` composes lobby, input, HUD, world authoring and presentation | Browser entry/UI code composes lower domains and owns DOM, storage, audio and WebSocket interaction. Lower domains do not import browser boot code. |
+| `src/server/` and root Node hosts | `room-supervisor` → `room-launch-options`; `server` → shared rules, topology and deterministic PvE; `pve-model-proposal` is an offline Node adapter | Node adapters depend on portable rules/world helpers. Supervisor, transport, persistence and scheduling stay outside browser closures. |
+| `scripts/` | Scenario runners and asset/release tools import runtime helpers | Tools/tests may consume runtime modules; runtime modules must not consume tools/tests. |
+
+These directions guide extraction. The first executable safeguard is narrower:
+runtime imports must resolve to exact relative runtime modules, Node builtins
+or the mapped `three` package. All `src` modules stay within `src`; only the
+declared Node adapters may import Node builtins. The existing server-only
+`networking/websocket-frame` seam owns Node Buffer encoding, so its owner can
+test wire bytes independently of HTTP/gameplay orchestration. Browser closures cannot reach a
+Node adapter or unmapped package, and server closures cannot reach Three or a
+browser entrypoint. Package imports must match every consuming page's import
+map; the audio pages have no Three mapping. A contract test checks the five
+registered entrypoints against their shipped HTML. Register a new entrypoint
+and its document's package policy together. This checks import edges, not browser globals, injected
+callbacks, runtime asset fetches or gameplay semantics. It also scans unreferenced
+`src` modules and nested folders, so new files cannot evade the cycle check.
+
+Acceptance is safer parallel ownership, not folder count or reduced line count.
+A shared-rule owner can change a helper's internals and focused contracts while
+the world owner changes topology and the presentation owner consumes disclosed
+state, provided their exported signatures and value semantics remain stable.
+Those changes need no edits to `main.js` or `server.mjs`; host edits belong to
+actual orchestration/interface changes. The source graph protects this first
+boundary by refusing imports back into hosts, tools, browser boot or Three from
+authoritative rule closures. Check consumer regressions before claiming a stable
+interface. This slice itself edits no runtime files and touches the shared CI
+registry only to register its two checks.
+
+For future combat extractions, keep durable player orders/queues, stance policy,
+transient engagement, movement execution and disclosed visual events as distinct
+contracts. The pinned [OpenRA attack-move activity](https://github.com/OpenRA/OpenRA/blob/b6fc03fcfaef1277592bbd4cbc7d44dd85219902/OpenRA.Mods.Common/Activities/Move/AttackMoveActivity.cs)
+retains a movement factory while a temporary attack runs, then resumes movement.
+This supports a review question: does target invalidation preserve the parent
+goal and queue, while Stop still cancels authoritative work? These are future
+extraction criteria; the import check proves dependency edges only.
+
+Simulation acceptance should use accepted-tick commands and recorded seeds/map
+content, independently of render callbacks or network arrival timing. The pinned
+[Recoil synchronization test guidance](https://github.com/beyond-all-reason/RecoilEngine/blob/cce3f7cba839217ae2edebf94cc07a44497d1a13/test/synctest/README.md)
+uses fixed seeds/content and explains how wall-clock-derived UI order timing can
+break reproducibility. Preserve the repository's
+[`stationary-command`](../scripts/stationary-command.test.mjs),
+[`attack-target-geometry`](../scripts/attack-target-geometry.test.mjs) and
+[`pathing-replay`](../scripts/pathing-replay.test.mjs) contracts when their owners
+extract those responsibilities. Presentation consumes authoritative state/events;
+clip completion cannot create damage or cancel gameplay. These criteria use
+source studies to define testable boundaries; no upstream implementation is copied.
+
+The browser uses native ESM without a bundler. `index.html`, the environment
+review and water study map `three` to `/vendor/three.module.js`; the server serves
+that module and `three.core.js` from the installed package. `server.mjs` admits
+client module paths explicitly. Docker copies `src/` recursively, while the
+release packer audits Docker COPY inputs and `.dockerignore`. Passing the source
+graph check therefore does not prove HTTP admission or release inclusion:
+retain the [served and packed import checks](testing.md#repository-checks).
+Acorn is a pinned development dependency; production installs omit it.
+`src/server/client-asset-paths.mjs` owns the immutable exact client-path list and
+separate renderer-module path. A client-module owner updates that small manifest
+instead of the HTTP host. The host retains membership/equality checks and all
+authorization, decoding, normalization, MIME and non-client asset rules. The
+source allowlist and packed import audit cover all five registered browser
+entrypoints; real packed HTTP tests check every declared path and denied paths,
+including the manifest itself and offline Node adapters.
+The source and served audits share [`module-imports.mjs`](../scripts/module-imports.mjs)
+for static imports, re-exports and literal lazy imports. Comments/string/regular
+expression text cannot create edges; compact syntax and escaped specifiers must
+still expose dependencies. Computed imports fail with the owning path. Filesystem
+and served-URL resolution remain separate policies, including origin, credentials,
+MIME and the served Three alias. Runtime asset requests remain outside this audit.
+Lazy imports must use the mapped `three` alias, a relative/rooted path or an
+absolute same-origin URL; an unmapped bare package cannot masquerade as a served
+relative file. The source HTTP-allowlist scenario uses the same parser, including
+its comment/escape/computed-import handling.
+
+The first runtime folder move places the offline model-proposal adapter in
+`src/server/pve-model-proposal.mjs`, depending on the portable `pve-opponent`
+policy/observation helper. Its sole scenario consumer uses that canonical path.
+The old `src/pve-model-proposal.mjs` forwards only the four existing named
+exports with identical bindings; its removal owner/criteria live in the
+[research guide](model-controlled-opponent-research.md#boundary). This allocated
+scope changes no browser or HTTP-host code. Both paths are declared Node adapters,
+rejected by every browser entrypoint and remain HTTP 404 even though Docker's
+recursive `src` copy includes them for offline use. Fake-provider policy and
+ordinary WebSocket command-path regressions retain the adapter's behavior.
+Keep active room-launch/game-mode and gameplay hot spots out of this migration.
+For a served module, update
+HTTP admission, imports and release tests together; preserve an existing public
+path only with a deliberate compatibility module forwarding the required named
+exports, a named removal owner and a removal condition. Avoid broad barrels.
+This offline source/API milestone changes no hosted runtime binding. Producer
+release/deployment ownership remains explicit; source and packed-release checks
+do not claim a gameplay or visual change.
+
+### Continuing boundary workstream
+
+Goal: preserve stable exported contracts and reduce shared-host edits so rules,
+world, UI/presentation and tooling owners can work safely in parallel. The
+boundary owner retains each slice through reviewed integration and its actual
+source/tool acceptance. Use the [continuing-work guidance](contributor-planning.md#continuing-workstream-bounded-pr)
+for checkpoints and real stop conditions.
+
+Completed tooling outcomes: the source boundary/cycle ratchet and shared
+source/served parser. The served audit now ignores commented imports and detects
+compact missing dependencies. Its arguments/results and the source checker's
+`moduleImports` import path remain stable; regression fixtures, source graph and
+real served/packed release checks cover the change.
+The review follow-up rejects unmapped bare lazy packages before dependency fetch
+and removes duplicated import-regex parsing from the source allowlist scenario.
+The first allocated folder move gives the offline Node adapter a canonical
+`src/server` home while preserving its original API and client-serving boundary.
+The allocated client-admission extraction moves its exact path data into the
+server-domain manifest and removes source tests' dependence on the host's literal
+array shape. No admission entry or other serving rule changes. All five browser
+closures now receive source and served-package admission checks.
+
+There is currently no justified remaining migration in this bounded backlog.
+The active room-launch/mode, gameplay and rendering domains retain their owners;
+moving their files merely to reduce the flat-file count has no demonstrated
+parallel-ownership benefit. Rank a new item when an actual shared-host edit,
+dependency violation or consumer contract motivates it, with its exact write
+scope and acceptance. For preserved contracts, announce that scope and proceed
+unless an actual conflicting owner/edit appears; changed shared interfaces still
+need agreement with the affected owner.
+
+Select the next useful ready item after each small merge. Coordinate real
+overlap rather than moving gameplay hot spots speculatively. A paused dependency
+does not block another ready independent item or another owner's gameplay work.
+
+Neutral stationary Sheep use optional wildlife identity on an existing food node
+and one conserved stock pool. Worker arrival activates its carcass once; both
+seats reuse normal cargo/drop-offs. Species/lifecycle are fog-filtered with the
+resource snapshot and saved in checkpoint schema 22, which rejects inconsistent
+lifecycle/stock and migrates schema 19 ordinary maps. This is the
+[neutral food foundation](wildlife-bellweather-sheep.md#implemented-neutral-food-foundation--3-october-2026),
+with claim/herding and client art integration left as separate work.
+
 Building placement compares connectivity before and after its proposed footprint.
 It preserves existing connections among bases, units, resources, and building
 access, including Town Centers, without requiring separate authored islands to
-connect. Footprint occupancy and active move-route checks apply independently;
+connect. Exact-zero resource stock releases the node's footprint exclusion and
+resource access point; positive or unknown stock retains both. The browser uses
+disclosed stock and restores the authored exclusion on reset epochs and welcome
+receipts before applying current disclosed rows, including fog-hidden same-map resets.
+Footprint occupancy and active move-route checks apply independently;
 see [construction evidence](qa-construction-connectivity-2026-09-27.md).
 
 Archer building attacks use reachable cells within weapon range as approach
@@ -70,6 +236,7 @@ A presentation ID is a binding identifier; it does not yet load an animation.
 | `src/main.js` | Browser integration, rendering, input, Map Studio, and snapshot reconciliation. |
 | `src/map-utils.mjs`, `src/elevation.mjs`, `src/map-resize.mjs` | Shared map validation, connectivity, elevation costs, and editor resizing. |
 | `src/formation-assignment.mjs`, `src/unit-selection.mjs` | Formation and selection logic used by focused scenarios. |
+| `src/wall-line-planner.mjs`, `src/wall-placement.mjs`, `src/wall-placement-ghost.mjs` | Shared atomic wall geometry, disclosed-cell placement/input state, and bounded connected preview instances. |
 | `src/pve-*.mjs` | Seeded solo launch, filtered opponent observation, deterministic policy, optional fake-provider research helper. |
 | `src/hud-layout.mjs`, `src/selection-context.mjs`, `src/objective-summary.mjs` | HUD geometry, selection actions, objectives, and notice history. |
 | `src/*visual-state.mjs`, `src/environment-art.mjs`, `src/captured-building-art.mjs`, `src/building-sprites.mjs` | Snapshot-to-art mapping, environment batches, directional Town Center views, and Barracks/Range sprites. |
@@ -97,6 +264,12 @@ The supervisor persists invite metadata and gives workers separate map and
 checkpoint paths. Workers capture authoritative state every 30 simulation ticks
 and write atomically. Schema/rules validation decides whether a checkpoint can
 be migrated, restored, or rejected.
+
+[Pregame invite rooms](room-lobby.md) use the existing seat sessions and isolated
+workers. `src/room-pregame.mjs` owns revisions, readiness and the launch gate;
+the client panel is in `src/room-lobby-ui.mjs`. Schema 22 adds the optional
+pregame phase and migrates schema 21 matches without resetting their running
+state. Both unit simulation and scenario execution wait for explicit launch.
 
 Outbound state coalesces for slow readers; per-peer queues and inbound messages
 are bounded. Resume tokens are room-scoped and persisted as hashes. The detailed
@@ -143,6 +316,14 @@ ordered product lists participate. Snapshots carry the revision, default faction
 and unit wire mapping. A browser with a different revision asks for a reload
 before applying the state.
 
+Each unit in a faction roster must be trainable by at least one building in that
+faction's building roster. A globally registered producer outside the faction
+does not satisfy this check. Producers may share products, and a unit may move
+between producers; every product must still belong to the faction's unit roster.
+Validation names the faction and unit when a roster loses its last producer.
+Frontier is the only registered gameplay faction; Vaelora's regional art and lore
+do not register additional playable civilizations.
+
 Checkpoint schema 13 pins this identity. Schema 11 saves migrate to the current
 compatible opening roster; an unknown pinned revision is rejected and the exact
 save is renamed to a `.rejected-*` file before a fresh match starts. Future roster
@@ -157,6 +338,15 @@ product names and population. Building construction and persisted geometry use
 registered odd footprints (one to nine cells wide). Unit and building presentation
 profiles bind supported procedural roles independently of gameplay identity;
 they do not claim a skeletal animation backend.
+
+Mill is additive Frontier content using `dropoff: ['food']` and the existing
+construction, route selection, cancellation, repair and destruction handlers.
+The HUD derives accepted resources from that list. Its `building.mill` profile
+explicitly reuses the procedural House; no captured Mill asset is registered.
+Schema 22's exact pre-Mill ruleset `v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801`
+migrates to the new revision without changing the persisted shape, existing
+stats, resources, identities or paid queues. Unknown revisions remain rejected.
+The earlier pre-palisade revision retains its existing guarded migration.
 
 ### Base lifecycle commands
 
@@ -212,6 +402,23 @@ state determines effects for both existing and newly produced entities. Cached
 resolved effects invalidate when that state changes, including rematch, and use a
 stable content-ID order. Numeric ranges are bounded at 16 cells. Schema 16
 explicitly migrates the known defense revision without rewriting entity HP/queues.
+
+The validator rejects unsupported combat fields and capability names, even when
+a content edit adds that name to `combatRules.capabilities`. A new behavior needs
+a runtime handler and an explicit contract change before content can declare it.
+
+| Contract | Supported content |
+| --- | --- |
+| Unit combat | Required object: `mode`, `attackClass`, `targetTags`, `tagMultipliers`, `maxHp`, `moveSpeed`, `range`, `damage`, `period`, `structureDamage`. Numeric stats are finite and positive; range is at most 16 cells. |
+| Unit capabilities | `move`, `attack`, `attack-structures`, `gather`, `build`, `repair`. Every unit requires `move`: the runtime does not support immobile unit definitions. |
+| Damage classification | Buildings require the `structure` tag; units cannot have it. This tag selects the structure damage stat instead of ordinary damage. |
+| Structure attacks | A unit with `attack-structures` needs at least one eligible building target using tag intersection, including specialized targets such as `defense`. An explicit `structure` target tag requires that permission. `attack` controls unit targets independently, so a structure-only attacker is permitted. The Worker's existing positive `structureDamage` remains dormant without the permission and eligible targets. |
+| Building combat | Optional object: `mode`, `attackClass`, `targetTags`, `tagMultipliers`, `range`, `damage`, `period`. Defenses scan unit targets only, so `structure` targets and unit-only combat fields are rejected. Building HP remains the top-level `maxHp`; building capabilities are unsupported. |
+
+Both combat modes are `melee` or `ranged`; attack classes, target tags and
+multipliers must reference the declared vocabularies. Armor is nonnegative by
+declared class. Declaring projectile speed or splash radius does not add a
+projectile or area-damage behavior and fails validation.
 
 Technology availability is derived by `src/research-actions.mjs` for authoritative
 commands, building option snapshots, HUD and the filtered opponent adapter. Stable

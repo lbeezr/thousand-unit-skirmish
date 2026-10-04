@@ -1,0 +1,49 @@
+{
+  "source": "fishing-SE-source-v1.png",
+  "frames": [
+    {
+      "frame": 0,
+      "sourceBounds": [
+        134,
+        249,
+        414,
+        615
+      ],
+      "opaquePixels": 68145,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 1,
+      "sourceBounds": [
+        638,
+        256,
+        1101,
+        627
+      ],
+      "opaquePixels": 89989,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 2,
+      "sourceBounds": [
+        1215,
+        252,
+        1585,
+        615
+      ],
+      "opaquePixels": 83023,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    },
+    {
+      "frame": 3,
+      "sourceBounds": [
+        1733,
+        247,
+        2069,
+        615
+      ],
+      "opaquePixels": 75684,
+      "note": "alpha<9 discarded consistent with game alpha test; isolated connected silhouette, no invented pixels"
+    }
+  ]
+}

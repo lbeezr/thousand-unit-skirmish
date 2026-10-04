@@ -10,6 +10,20 @@ sequence and acceptance criteria. Existing solo/two-seat checks are the regressi
 floor; expansion of gameplay functionality is the next development outcome.
 Art proceeds separately against stable presentation interfaces.
 
+The [victory audit](victory-modes-audit-2026-10-03.md) led to separate economy
+Skirmish and fast Objective Control. Ordinary human entry now starts Tiny
+Skirmish, with reviewed Small, Medium and Large choices; fresh PvE supports only Tiny.
+Identified served and rendered acceptance remain owned. Quick original
+reinforcement/evolution modes and a regional territorial slice are testing
+grounds developed alongside the longer RTS. [Bannerfall](bannerfall-mode.md)
+is the first bounded human/Practice reinforcement prototype; a larger regional
+territorial contract remains later work.
+
+The [playable-modes backlog](playable-modes-backlog.md) owns the ranked small
+deliveries; [the versioned mode contract](match-mode-contract.md) is the shared
+registry, map, lobby and AI boundary. Larger human maps do not inherit Tiny's AI
+admission or establish full battle pacing/capacity acceptance.
+
 Use the [RTS capability inventory](references/feature-coverage-inventory.md) as
 a loose roadmap for further maturity. AoE, openage and Warcraft identify systems
 we may match, adapt or improve; prioritize dependable player control, useful
@@ -30,12 +44,25 @@ mute/Stop/reset checks. [Combined QA](qa-custom-skirmish.md) owns exact builds,
 deployments, acceptance and limits.
 
 The rendered combined workload passes at 250/500/1,000 units. The diagnostic
-2,000 case cannot clear its construction site within the bounded attempt and
-never reaches the full workload; crowded movement/placement is a concrete core
-follow-up, not a supported capacity claim. Unassisted author and human-pair
+2,000 case stopped before the full workload. A [current investigation](qa-fortified-clearance-2026-10-03.md)
+traces that stopping condition to formation destinations refilling the construction
+site after a single evacuation. The corrected native 2,000-unit opening completes
+paid Barracks on both seats. The complete rendered workload and broader crowded
+movement remain follow-ups, not a supported capacity claim. Unassisted author and human-pair
 observations are still needed for discoverability and listening. Art remains
 independent. Authored entity placement/identity and death triggers remain later
 candidates from the loose capability inventory.
+
+The [paid palisade runtime](palisade-runtime.md) adds atomic connected-line
+construction and persisted Worker sequencing with provisional wood-only test
+tuning. The normal drag-line UI adds connected previews, whole-line cost,
+keyboard endpoints and cancellation; [checks and a Mac recipe](qa-palisade-drag-ui-2026-10-03.md)
+distinguish DOM/runtime evidence from pending native usability. Next wall
+outcomes are the independent modular art kit and player observations. The
+[manual gate foundation](palisade-gates.md) now uses explicit owner operation
+and shared open/closed traversal, with conservative occupied/route-cut refusal
+and checkpoint recovery. Automatic/team-specific access and final balance remain
+future decisions; [native gate usability](qa-palisade-gates-2026-10-03.md) is unverified.
 
 ### Integrated core workstreams — 1 October 2026
 
@@ -142,9 +169,9 @@ conditions of any new observation.
 
 | Stream | Next testable outcome | Evidence gap or dependency |
 | --- | --- | --- |
-| Gameplay | Reproduce the diagnostic 2,000-unit construction-site blockage on a named current build; fix the first observed movement/placement failure and replay that workload. | [Combined scale audit](qa-custom-skirmish.md#current-acceptance-audit) stops before the full workload. Intended device/network budgets are still needed before claiming supported capacity. |
+| Gameplay | Run the corrected rendered 2,000-unit fixture through paid economy, combat and recovery; trace any remaining movement failure against assigned goals and actual positions. | [Clearance diagnosis](qa-fortified-clearance-2026-10-03.md) passes the native construction opening. Full rendered workload and intended device/network budgets remain needed before claiming supported capacity. |
 | Maps | Observe contested economy-to-watch matches on Millrace and Rootways, then compare one channel, basin or ridge layout for congestion and expansion choices. | [Regional rules](maps.md), [paid 250-unit recovery/rematch proof](qa-underbough-gameplay-proof-2026-10-01.md) and [harvested-shortcut traversal](qa-rootways-woodland-shortcut-2026-10-01.md) supply automated regressions; human route decisions and balance remain unobserved. |
-| Art | Bound retries for an unavailable opt-in building preview manifest and verify existing-art fallback. Scope any hosted preview packaging separately to one family. | The [bounded asset audit](https://github.com/lbeezr/thousand-unit-skirmish/pull/14) identifies six local Complete-only preview families absent from Docker, with missing lifecycle art/team masks and no separate Boughward building family. Default unit bindings still need directional motion and fresh-player readability acceptance; see [art lanes](art-production-lanes.md). |
+| Art | Complete the new Frontier Town Center's existing five-state/mask contract using its recovered model, then verify build/damage/repair beside Workers in one Rootways scene. | The [current runtime audit](art-runtime-audit-2026-10-03.md) records six produced Complete-only families, the bounded Town Center release preview, four missing states and team masks, and the authorized Mac-source transfer still needed in cloud. Default adoption, collapse presentation and the other families remain separate outcomes; see [art lanes](art-production-lanes.md). |
 | Audio | Audition the eleven regional music/ambience palettes at comparable perceived loudness; run ten-trial cue recognition with captions off and on, recording mix settings and confusions. | [Source evidence](qa-zone-audio-2026-09-30.md) and [recognition protocol](audio-design.md#recognition-check) do not yet supply creative listening or fresh-player results. |
 | Player experience | Observe an unassisted author and a human pair completing author/join/play/result/rematch; replay a fix for the first repeated confusion. | [External playtest protocol](qa-vertical-slice.md#lightweight-external-playtest-protocol) requires actual participants and an identified build/device/browser; scripted matches do not supply this observation. |
 | Tooling | Produce one real-game PNG with source revision, browser, viewport, applied map, connection state and image hash, then inspect the pixels. | [Browser/capture contract](testing.md#browser-and-art-checks) is implemented. A working Chrome sandbox and WebGL2 runtime are prerequisites; startup and injected-CDP tests do not prove rendering. |
@@ -159,12 +186,13 @@ They establish bounded automated behavior, with contested play still to observe.
 | --- | --- | --- |
 | Gameplay | Fix a reproduced command, combat, economy, pathing, or recovery failure. | Build, reproduction, both-seat regression. |
 | Balance | Observe contested openings without changing established baselines prematurely. | [Opening and combat evidence](first-skirmish-balance.md), timings, losses, stocks, player explanations. |
+| Content | Observe finite Farm versus neutral food supply in paired contested matches; keep planting values provisional. Next, complete one Stone defense contract before widening any economic admission. | [Paid finite Farm](farm-finite-planting.md) implements ownership, stock, cancellation/replanting and recovery with a declared placeholder. [Farm QA](qa-finite-farm-2026-10-03.md) is automated evidence; automatic AI planting and distinct crop art remain follow-ups. The [mineral audit](mineral-economy-readiness.md) preserves fail-closed costs; no three-ledger expansion. |
 | Maps | Test Frontier Reach and Highland Grove routes, resources, elevation, and forest access in a match. | Layout/round-trip checks and actual route choices. |
 | Interface | Make selection, production, objectives, and rematches discoverable in the compact HUD. | Viewport, interaction capture, novice observation. |
 | Audio | All-zone source milestone is implemented: 44 originals across ten zones and eleven palettes, a comparison player, and Audio Studio import. Next: creative audition, loop edits, discovery/conflict arrangements and in-match cue recognition. | [All-zone evidence](qa-zone-audio-2026-09-30.md), [source pack](../assets/audio/vaelora-zones-v1/README.md), and later ten-trial results with mix/caption settings. |
 | Renderer | Integrate useful asset states while preserving fog, batching, and camera readability. | Exact pack/revision, representative runtime frame, focused checks. |
 | Art | Finish small independent unit, building, environment, vegetation, or material samples. | Source/runtime status, manifests, provenance, known limits. See [art lanes](art-production-lanes.md). |
-| Unit characters | The [default runtime binding](../src/main.js) selects Human/Boughward packs for Worker, Infantry, Spearman, Archer, Scout, Rider and Siege Engine, with nearest-authored action reuse. Verify the opposing rosters in a live match; refine directional animation and team accents. | [Sprite role mapping](../src/unit-sprite-runtime.mjs), [Human production history](art-direction/human-roster-v1/README.md) and [unit sprite exploration](unit-sprite-exploration.md) distinguish implementation from acceptance. Record runtime visibility, rights/provenance and player readability separately. Meshy remains deferred for this pass. |
+| Unit characters | Complete usable action/direction breadth before aesthetic polish, following the [functional coverage matrix](qa-unit-animation-audit-2026-10-03.md#functional-coverage-priority--4-october-2026). Deliver and functionally verify PR216's authoritative Worker performing-action consumer; preserve working frames and explicit temporary fallbacks while missing headings are supplied. | [Agreed v1](worker-performing-action-contract.md) and [consumer evidence/recipe](qa-worker-performing-action-consumer-2026-10-04.md) cover positive work/immediate clears through actual client buffers; containing deployment and ordinary-game function remain owned by animation integration with Railway/Mac support. Art owners assess public directional reuse before new production. Wrong-facing/frozen/broken root-contact is a blocker; smoother SE poses, costumes and finish are later work. No new paid generation or private publication is implied. |
 | Infrastructure | Keep staging healthy and measure hosted match/recovery behavior. | Deployment identity, ready/assets/WSS smoke, recovery and capacity evidence. |
 | QA | Convert player failures into repeatable defects and current-build observations. | [QA protocol](qa-vertical-slice.md) and dated evidence. |
 | PvE | Observe and improve the seeded opponent's opening, objective contest, and retake behavior. | Seeds, assigned seats, trace, solo-match observation. |
@@ -178,6 +206,12 @@ They establish bounded automated behavior, with contested play still to observe.
   Expanse provide larger layouts; another size needs observed gameplay reasons.
 - [Harvestable woodland](harvestable-woodland-pilot.md): forest-cell gathering and
   clearing are implemented; berry brushwood and organic forest-opening work remain follow-ups.
+- Voice commands (deferred experiment, 2 October 2026): consider push-to-talk
+  orders such as “build three houses,” “send five workers to the nearest wood
+  pile,” “queue as many scouts as capacity allows,” and short action series.
+  Future questions include typed intents with authoritative server validation,
+  visible cancelable previews, placement/target ambiguity, batch/cancel behavior,
+  and voice latency, cost and privacy. No active spike or implementation is scheduled.
 
 ## How to choose and finish a slice
 

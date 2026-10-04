@@ -1,8 +1,17 @@
 # Vaelora HUD direction study v1
 
-**2 October 2026 — proposals for review.** Three code-authored 2D overlays use
-existing cursor/icon files on actual captured game backgrounds. The proposed
-HUD is not integrated. No ImageGen or new Meshy jobs were used for this pack.
+**Historical rejected exploration, 2 October 2026.** The user rejected all three
+directions: the HUD needs to be much more compact, dense, subtle and dismissible.
+Brown was only the strongest relative material preference; no concept is approved.
+Publication of this archive and implementation of the old direction remain paused.
+The next UI outcome is source-based game HUD/RTS UX research, measured battlefield
+occupancy, persistent/contextual/dismissible control and keyboard/focus audit, and
+one compact structural wireframe.
+
+These code-authored 2D overlays reuse existing cursor/icon files on captured game
+backgrounds. The original images, HTML and source scripts retain their creation-time
+labels and pixels as historical artifacts. No runtime HUD, new ImageGen output or
+Meshy job is delivered by this archive.
 
 ## The field journal
 
@@ -43,9 +52,24 @@ surface; ornament must remain distinct from real gameplay markers.
   [original comparison](iterations/initial/previews/three-directions-comparison.png)
   retain unsupported Objectives/Hold glyphs and the original disabled-button
   treatment. The clipped first asset-board capture is also retained there.
-- [Completed gameplay receipt](captures/attempt-2/live-capture.json),
-  [failed first capture receipt](captures/attempt-1/failure.json), and
-  [three terrain background receipts](captures/backgrounds/capture.json).
+- [Completed gameplay receipt](captures/attempt-2/live-capture.json) and
+  [failed first capture receipt](captures/attempt-1/failure.json). The three
+  background PNGs survive; their original `captures/backgrounds/capture.json`
+  receipt is missing from the inspected committed source-branch history.
+
+### Missing background receipt
+
+The original manifest lists `captures/backgrounds/capture.json` as 1,052 bytes,
+SHA-256 `d65f785b9a47a6220dfc3e872e1b78a2541f23b18f7ae656957bbf87e6a6ccdf`.
+The path is absent at original draft head
+`732c40c0d12d89aab9358e795a672f2c738c4d8c` and from its inspected public history;
+root ignore rules exclude `capture.json`. The saved capture script describes the
+intended receipt fields, but does not supply the original executed receipt bytes.
+No receipt was reconstructed or fabricated. Recover the original from its source
+session, verify this exact identity, and obtain any needed publication permission
+before adding it. The manifest retains the expected entry marked missing, alongside
+99 available entries. Surviving PNGs, completed/failed gameplay receipts and source
+scripts remain unchanged; this gap limits the background-capture metadata claim.
 
 Open [preview.html](preview.html) through a local static server rooted at the
 repository. Queries `?theme=journal|wood|map&terrain=snow|meadow|woodland&state=blocked|queued`

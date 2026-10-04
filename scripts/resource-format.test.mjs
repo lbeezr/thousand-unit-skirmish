@@ -1,3 +1,4 @@
+import { economyClientBindings } from './economy-client-fixture.mjs';
 import { researchAction, researchOptions } from '../src/research-actions.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import assert from 'node:assert/strict';
@@ -5,15 +6,17 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import { formatResourceStock, formatResourceRequirement } from '../src/resource-format.mjs';
+import { ownedPopulationReadout } from '../src/population-readout.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const declaration = (name, next) => source.slice(source.indexOf(`function ${name}(`), source.indexOf(`\nfunction ${next}(`));
 function fixture(team) {
-  const element = () => ({ textContent: '', disabled: false, dataset: {},
-    classList: { toggle() {} }, setAttribute() {}, querySelector: () => ({ textContent: '' }) });
+  const element = () => ({ textContent: '', disabled: false, dataset: {}, attributes: {},
+    classList: { toggle() {} }, setAttribute(name, value) { this.attributes[name] = value; },
+    getAttribute(name) { return this.attributes[name] ?? null; }, querySelector: () => ({ textContent: '' }) });
   const ui = new Proxy({}, { get(target, key) { return target[key] ||= element(); } });
-  const context = vm.createContext({ ui, localTeam: team, matchWinner: -1,
-    formatResourceStock, formatResourceRequirement,
+  const context = vm.createContext({ ...economyClientBindings(), ui, localTeam: team, matchWinner: -1,
+    formatResourceStock, formatResourceRequirement, ownedPopulationReadout,
     UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, researchAction, researchOptions,
     latestFood: [0, 0], latestWood: [0, 0], latestWorkerProduction: [null, null], latestPopulation: [null, null],
     latestTeamResearch: [{}, {}], latestRosterSize: 4,
@@ -21,6 +24,7 @@ function fixture(team) {
       { id: 2, team, type: 'archery-range', complete: true, queue: [] },
       { id: 1_000_000_000 + team, team, type: 'town-center', home: true, complete: true, queue: [] }],
     selectedBuildingId: 1, teamUnits: [0, 1].map(t => [{ hp: 100, team: t, kind: 'worker', cargoType: 'food', cargo: 9.999 }]),
+    selected: new Set([0]), units: [{ id: 0, team, hp: 100, kind: 'worker', serverX: 0, serverZ: 0 }],
     MAX_PER_TEAM: 1000, MAX_UNITS: 2000, buildPlacementPending: false, buildPlacementActive: false,
     buildPlacementType: 'barracks', livingIdleWorkerIds: () => [],
     document: { querySelector: element }, mapDefinition: { resourceNodes: [{}] },
@@ -33,6 +37,7 @@ function fixture(team) {
     + declaration('findTrainableBarracks', 'buildingLabel')
     + declaration('buildingLabel', 'updateBuildingResearchControls')
     + declaration('updateBuildingResearchControls', 'buildingWoodCost')
+    + declaration('selectedIds', 'issueStationaryOrder')
     + declaration('updateEconomyUI', 'updateRoomUI'), context);
   return { context, ui, stocks(food, wood) {
     const foods = [0, 0]; const woods = [0, 0]; foods[team] = food; woods[team] = wood;
@@ -46,6 +51,20 @@ test('whole resource display preserves conservative stock and requirement bounda
   assert.equal(formatResourceRequirement(100 - 90.033333), '10');
   assert.equal(formatResourceStock(1234.99), (1234).toLocaleString());
   assert.equal(formatResourceRequirement(0), '0');
+});
+
+for (const team of [0, 1]) test(`seat ${team}: House, Barracks and Range require selected eligible workers`, () => {
+  const f = fixture(team);
+  f.context.units.push({ id: 1, team, hp: 100, kind: 'infantry' },
+    { id: 2, team, hp: 0, kind: 'worker' }, { id: 3, team: 1 - team, hp: 100, kind: 'worker' });
+  for (const selection of [[], [1], [2], [3], [0]]) {
+    f.context.selected.clear();
+    for (const id of selection) f.context.selected.add(id);
+    f.stocks(1000, 1000);
+    for (const name of ['buildHouse', 'buildBarracks', 'buildRange']) {
+      assert.equal(f.ui[name].disabled, !selection.includes(0), `${name} with selection ${selection}`);
+    }
+  }
 });
 
 for (const team of [0, 1]) test(`actual economy and research controls keep exact affordability for team ${team}`, () => {
@@ -87,4 +106,49 @@ for (const team of [0, 1]) test(`actual economy and research controls keep exact
   assert.equal(f.ui.woodStock.textContent, '174');
   f.stocks(150, 175);
   assert.equal(f.ui.buildBarracks.disabled, false);
+});
+
+for (const team of [0, 1]) test(`actual economy UI keeps both population readouts synchronized for seat ${team}`, () => {
+  const { context, ui } = fixture(team);
+  for (const record of [
+    { used: 12, reserved: 0, capacity: 15, available: 3 },
+    { used: 12, reserved: 3, capacity: 15, available: 0 },
+    { used: 12, reserved: 3, capacity: 23, available: 8 },
+    { used: 14, reserved: 1, capacity: 23, available: 8 },
+    { used: 14, reserved: 0, capacity: 15, available: 1 },
+    null,
+  ]) {
+    const population = [{ used: 99, reserved: 9, capacity: 100, available: 0 },
+      { used: 99, reserved: 9, capacity: 100, available: 0 }];
+    population[team] = record;
+    context.updateEconomyUI({ population });
+    const expected = ownedPopulationReadout(population, team);
+    assert.equal(ui.populationStock.textContent, expected.compact);
+    assert.equal(ui.populationStatus.textContent, expected.detail);
+    assert.equal(ui.populationReadout.getAttribute('aria-label'), expected.description);
+    assert.equal(ui.populationReadout.title, expected.description);
+  }
+  context.localTeam = null;
+  context.updateEconomyUI({ population: [{ used: 12, reserved: 0, capacity: 15, available: 3 },
+    { used: 22, reserved: 0, capacity: 23, available: 1 }] });
+  assert.equal(ui.populationStock.textContent, '—');
+  assert.equal(ui.populationStatus.textContent, 'POPULATION · JOIN A TEAM');
+  assert.equal(ui.populationReadout.getAttribute('aria-label'), 'Population: join a team.');
+});
+
+for (const team of [0, 1]) test(`seat ${team}: typed Stone bank and cargo survive UI updates without food credit or opponent disclosure`, () => {
+  const { context, ui } = fixture(team);
+  context.mapDefinition.economyProfileId = 'stone-defense-v1';
+  context.teamUnits[team] = [{ hp: 35, team, kind: 'worker', cargoType: 'stone', cargo: 3.125 }];
+  const stone = [null, null]; stone[team] = 7.25;
+  context.updateEconomyUI({ stone });
+  assert.equal(ui.stoneStock.textContent, '7'); assert.equal(ui.stoneStockGroup.hidden, false);
+  assert.equal(context.latestStone[team], 7.25); assert.equal(context.latestStone[1 - team], null);
+  assert.equal(context.latestFood[team], 0);
+  assert.equal(ui.workerLoad.textContent, 'WORKER CARGO · 0 FOOD · 0 WOOD · 3 STONE');
+  context.updateEconomyUI(); assert.equal(context.latestStone[team], 7.25);
+  context.localTeam = null; context.updateEconomyUI(); assert.equal(ui.stoneStock.textContent, '—');
+  context.localTeam = team; delete context.mapDefinition.economyProfileId; context.updateEconomyUI();
+  assert.equal(ui.stoneStockGroup.hidden, true); assert.deepEqual([...context.latestStone], [0, 0]);
+  assert.equal(ui.workerLoad.textContent, 'WORKER CARGO · 0 FOOD · 0 WOOD');
 });

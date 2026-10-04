@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "qualifiedHeads": [
+    "7094b81b428d620250c4d24da976432109eb4b68",
+    "2aba1ccfe3bfa075dd3000301a47b8e2d4b4d29f"
+  ],
+  "srcTrees": [
+    "22f2d0a3a53377084312bd54b4b099d7d7e6e9cf",
+    "22f2d0a3a53377084312bd54b4b099d7d7e6e9cf"
+  ],
+  "headDifference": "scripts/tick-attribution-observer.mjs\nscripts/tick-attribution.test.mjs",
+  "files": {
+    "server.mjs": "bba377a6af627f30cc2acd88fb52e2cbec3c7491add5ebb56394975c39e0bdc0",
+    "scripts/paid-battle-tick-budget.mjs": "2995050e062a9b593d65b8943c95c4f2c982269a79c16df98562086866d99aed",
+    "scripts/fortified-crossing-fixture.mjs": "d3f5873cdc5fabd603e1833470edd166b18836240168daae3d8ae64d7193dbbf",
+    "scripts/fortified-site-clearance.mjs": "d36a464b8cc6d7b03672a3d705500cc86f5809f3308270d9d232358b3bf63c71",
+    "scripts/tick-attribution-adapter.mjs": "6099023f28885ac3fcaeffccd5f33ebb9d76ee5bfd406b3be13c917e1e609b81",
+    "scripts/tick-attribution-observer.mjs": "06a8efc6ab7b6880eda0a22effa1ae25e172f27890319dd6263923694e2c525b",
+    "maps/fortified-crossing.json": "11f3f8f5a054d6bed5b3ff4577dc548b1a63626f19effe035e6f53c1989b3d11",
+    "package-lock.json": "bb3e172250ea0d91981e270371e9ac293f7b4f378370ae05e86b74ab81fc3499"
+  }
+}
