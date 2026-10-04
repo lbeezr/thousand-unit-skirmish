@@ -3,6 +3,15 @@ import test from 'node:test';
 import { GAMEPLAY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { productionAction } from '../src/production-actions.mjs';
 import { researchAction } from '../src/research-actions.mjs';
+import * as actionRules from '../src/rules/gameplay-action-rules.mjs';
+import * as legacyActionRules from '../src/gameplay-action-rules.mjs';
+
+test('canonical action rules retain exactly the three legacy export bindings', () => {
+  const names = ['foodWoodShortfallReason', 'missingTechnologyPrerequisites', 'technologyRequirementReason'];
+  assert.deepEqual(Object.keys(actionRules), names);
+  assert.deepEqual(Object.keys(legacyActionRules), names);
+  for (const name of names) assert.equal(actionRules[name], legacyActionRules[name], name);
+});
 
 function fixture(team, actionType) {
   const definitions = structuredClone(GAMEPLAY_DEFINITIONS);

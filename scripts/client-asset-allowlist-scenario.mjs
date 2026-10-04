@@ -15,8 +15,9 @@ const server = readFileSync(path.join(root, 'server.mjs'), 'utf8');
 const environmentArt = readFileSync(path.join(root, 'src/environment-art.mjs'), 'utf8');
 assert.ok(Object.isFrozen(CLIENT_ASSET_PATHS), 'client admission paths must remain immutable');
 const allowed = new Set(CLIENT_ASSET_PATHS);
-for (const privateModule of ['src/formation-assignment.mjs', 'src/simulation/movement/formation-assignment.mjs']) {
-  assert.ok(!allowed.has(privateModule), `authoritative formation module must remain private: ${privateModule}`);
+for (const privateModule of ['src/formation-assignment.mjs', 'src/simulation/movement/formation-assignment.mjs',
+  'src/base-lifecycle.mjs', 'src/rules/base-lifecycle.mjs']) {
+  assert.ok(!allowed.has(privateModule), `server-consumed helper must remain HTTP-private: ${privateModule}`);
 }
 const uiAllowlist = server.match(/const publicUiAsset = \[([\s\S]*?)\]\.includes\(relative\);/);
 assert.ok(uiAllowlist, 'server UI asset allowlist should be declared');

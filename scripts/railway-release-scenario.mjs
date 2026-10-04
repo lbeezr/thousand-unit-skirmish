@@ -151,6 +151,15 @@ try {
     assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 404,
       `exact client admission must deny: ${filename}`);
   }
+  for (const filename of ['src/gameplay-action-rules.mjs', 'src/rules/gameplay-action-rules.mjs']) {
+    const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
+    assert.equal(response.status, 200, filename);
+    assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
+    assert.equal(response.headers.get('cache-control'), 'no-store', filename);
+    assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
+    assert.equal(createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'),
+      createHash('sha256').update(await readFile(path.join(sourceRoot, filename))).digest('hex'), filename);
+  }
   // Both old browser imports and canonical authoring paths must survive packing
   // with the source bytes and the same exact-path GET/HEAD policy.
   for (const filename of ['src/scenario-authoring.mjs', 'src/map-resize.mjs',
@@ -347,10 +356,11 @@ try {
         `${entry.path} must match its manifest hash`);
     }
   }
-  // Private host/transport and formation files must be packaged for Node consumers while exact
+  // Private host/transport and server-consumed helpers must be packaged while exact
   // HTTP admission denies both methods, including pure negotiation and shims.
   const privateModules = [...RUNTIME_DOMAINS.server,
     'src/formation-assignment.mjs', 'src/simulation/movement/formation-assignment.mjs',
+    'src/base-lifecycle.mjs', 'src/rules/base-lifecycle.mjs',
     ...Object.entries(RUNTIME_DOMAIN_HOSTS).filter(([, domain]) => domain === 'server').map(([filename]) => filename)];
   for (const filename of privateModules) {
     assert.ok((await stat(path.join(root, filename))).isFile(), `packed private runtime module: ${filename}`);
