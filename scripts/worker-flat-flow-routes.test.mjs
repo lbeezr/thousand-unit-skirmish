@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
-import { canTraverseUnitStep } from '../src/unit-movement.mjs';
+import { canTraverseUnitStep, canTraverseStaticBodySegment, workerEconomyBodyRadius, activeLandMovementBodyRadius } from '../src/unit-movement.mjs';
+import { STONE_ECONOMY_PROFILE_ID } from '../src/economy-profile.mjs';
 import { canTraverseFlatUnitSegment, shortcutFlatUnitPath } from '../src/unit-path-line.mjs';
 
 process.env.RTS_MAP='maps/open-field.json';process.env.RTS_GAME_MODE='pvp';process.env.RTS_PREGAME='0';
@@ -14,17 +15,29 @@ const map = { id:'worker-flat-flow', name:'WORKER FLAT FLOW', width:160, height:
   obstacles:[],triggers:[],scenarioEvents:[] };
 function command(r,u,extra) {
   const notices = r.order(u.team,{ids:[u.id],unitGenerations:[u.generation],...extra});
-  r.drain(); assert.ok(notices.some(n=>/ORDER/.test(n.message)),JSON.stringify(notices));
+  r.drain(); assert.ok(notices.some(n=>/ORDER|WAYPOINT QUEUED/.test(n.message)),JSON.stringify(notices));
 }
 function until(r,predicate,label,limit=5000) {
-  for(let tick=0;tick<limit;tick++){if(predicate())return;r.step();}
+  for(let tick=0;tick<limit;tick++){if(predicate())return;stepWorkers(r);}
   assert.fail(`Timeout: ${label}`);
+}
+function checkWorkerSteps(r,id) {
+  for(const s of r.landSteps.filter(s=>s.id===id))
+    assert.ok(canTraverseStaticBodySegment(s.from,s.to,.18,160,160,r.isWalkable,{allowEscape:true}),
+      `actual ${s.reason} step has compatible Worker clearance`);
+}
+function stepWorkers(r) {
+  const active=new Set(r.units.filter(u=>u.kind==='worker'&&activeLandMovementBodyRadius(u)).map(u=>u.id));
+  r.step();
+  for(const u of r.units)if(u.kind==='worker'&&activeLandMovementBodyRadius(u))active.add(u.id);
+  for(const s of r.landSteps.filter(s=>active.has(s.id)))
+    assert.ok(canTraverseStaticBodySegment(s.from,s.to,.18,160,160,r.isWalkable,{allowEscape:true}));
 }
 function trackLeg(r,u,finish) {
   const start={x:u.x,z:u.z},goal=r.point(u.path.at(-1)); let samples=0;
   const dx=goal.x-start.x,dz=goal.z-start.z,length=Math.hypot(dx,dz);
   for(let tick=0;tick<5000&&!finish();tick++) {
-    const before={x:u.x,z:u.z,cell:r.cell(u.x,u.z)};r.step();samples++;
+    const before={x:u.x,z:u.z,cell:r.cell(u.x,u.z)};r.step();checkWorkerSteps(r,u.id);samples++;
     assert.ok(canTraverseUnitStep(before.cell,r.cell(u.x,u.z),map.width,r.levels,r.isWalkable),'legal authoritative step');
     // Deposit/resumption may switch targets and move in the same authoritative tick.
     if(!finish())assert.ok(Math.abs((u.x-start.x)*dz-(u.z-start.z)*dx)/length<1e-7,JSON.stringify({ label:'work trajectory follows its direct selected leg', start,goal,before,after:{x:u.x,z:u.z,phase:u.gatherPhase,cargo:u.cargo,path:u.path},bank:r.food[u.team],tick,cross:Math.abs((u.x-start.x)*dz-(u.z-start.z)*dx)/length }));
@@ -33,7 +46,7 @@ function trackLeg(r,u,finish) {
   assert.ok(samples>3);
 }
 for(const team of [0,1])test(`seat ${team}: manual, gather, drop-off, Return and resumed work use direct flat legs with recovery`,async()=>{
-  const f=await createPathingReplayFixture(map),r=f.replay;
+  const f=await createPathingReplayFixture(map,{traceLandSteps:true}),r=f.replay;
   try {
     let u=r.units.find(u=>u.team===team&&u.kind==='worker');
     // Explicit initial-position geometry fixture; stock/cargo/banks are never injected.
@@ -119,14 +132,14 @@ test(`${terrain}: a Worker keeps its flow detour and all authoritative steps leg
     ...(['slope','cliff'].includes(terrain)
       ?{elevationPatches:[{column:80,row:79,width:1,height:1,level:terrain==='slope'?1:2}]}
       :{obstacles:[{column:80,row:79,width:1,height:1,material:terrain==='forest'?'forest':'stone'}]})};
-  const f=await createPathingReplayFixture(scene),r=f.replay;
+  const f=await createPathingReplayFixture(scene,{traceLandSteps:true}),r=f.replay;
   try {
     const u=r.units.find(u=>u.team===0&&u.kind==='worker');
     Object.assign(u,{x:fractional?-.05:-.5,z:fractional?-.95:-.5});r.step();
     command(r,u,{type:'gather',nodeId:'food'});assert.ok(u.path.length>1,'unsafe direct segment retains the original flow path');
     const revision=u.orderRevision;
     for(let tick=0;tick<1000&&u.gatherPhase!=='gathering';tick++) {
-      const before=r.cell(u.x,u.z);r.step();
+      const before=r.cell(u.x,u.z);r.step();checkWorkerSteps(r,u.id);
       assert.ok(canTraverseUnitStep(before,r.cell(u.x,u.z),scene.width,r.levels,r.isWalkable));
     }
     assert.equal(u.gatherPhase,'gathering');assert.equal(u.orderRevision,revision+1,'only the existing arrival transition advances the revision');
@@ -134,7 +147,7 @@ test(`${terrain}: a Worker keeps its flow detour and all authoritative steps leg
 });
 
 test('paid wall admission repairs an active Worker shortcut while keeping its resource job',async()=>{
-  const f=await createPathingReplayFixture(map),r=f.replay;
+  const f=await createPathingReplayFixture(map,{traceLandSteps:true}),r=f.replay;
   try {
     const [u,builder]=r.units.filter(u=>u.team===0&&u.kind==='worker');
     Object.assign(u,{x:-8.27,z:-9.19});r.step();command(r,u,{type:'gather',nodeId:'food'});
@@ -143,7 +156,7 @@ test('paid wall admission repairs an active Worker shortcut while keeping its re
     assert.ok(u.path.length>1,'new paid footprint across the segment reroutes the Worker');
     assert.deepEqual(u.workIntent,intent);assert.equal(u.gatherNodeId,'food');
     for(let tick=0;tick<1500&&u.gatherPhase!=='gathering';tick++) {
-      const before=r.cell(u.x,u.z);r.step();
+      const before=r.cell(u.x,u.z);r.step();checkWorkerSteps(r,u.id);
       assert.ok(canTraverseUnitStep(before,r.cell(u.x,u.z),map.width,r.levels,r.isWalkable));
     }
     assert.equal(u.gatherPhase,'gathering');until(r,()=>u.cargo>0,'productive harvest after reroute');
@@ -153,7 +166,7 @@ test('paid wall admission repairs an active Worker shortcut while keeping its re
 
 for(const team of [0,1])test(`seat ${team}: forest access keeps the actual selected endpoint rather than the first field goal`,async()=>{
   const scene={...map,resourceNodes:[],obstacles:[{column:93,row:91,width:2,height:1,material:'forest'}]};
-  const f=await createPathingReplayFixture(scene),r=f.replay;
+  const f=await createPathingReplayFixture(scene,{traceLandSteps:true}),r=f.replay;
   try {
     const u=r.units.find(u=>u.team===team&&u.kind==='worker');
     Object.assign(u,{x:25.27,z:24.19});r.step();const cell=91*160+93,target=cell+1;
@@ -178,7 +191,7 @@ for(const team of [0,1])test(`seat ${team}: forest access keeps the actual selec
 });
 
 for(const team of [0,1])test(`seat ${team}: paid Farm perimeter routing preserves building interaction and food`,async()=>{
-  const scene={...map,resourceNodes:[]},f=await createPathingReplayFixture(scene),r=f.replay;
+  const scene={...map,resourceNodes:[]},f=await createPathingReplayFixture(scene,{traceLandSteps:true}),r=f.replay;
   try {
     const u=r.units.find(u=>u.team===team&&u.kind==='worker');
     command(r,u,{type:'build',buildingType:'farm',x:13.5,z:11.5});
@@ -191,5 +204,160 @@ for(const team of [0,1])test(`seat ${team}: paid Farm perimeter routing preserve
     until(r,()=>r.food[team]===110,'real paid Farm harvest and deposit');
     assert.equal(r.wood[team],wood,'routing never changes the paid build cost');
     assert.equal(u.gatherNodeId,`farm:${farm.id}`);assert.equal(u.gatherPhase,'to-node');
+  } finally {await f.dispose();}
+});
+
+const clearanceMap = { id:'worker-economy-clearance',name:'WORKER ECONOMY CLEARANCE',width:64,height:48,
+  terrainSeed:881,fogOfWar:false,startingArmySize:16,startingResources:{food:500,wood:500},
+  spawnPoints:[{team:0,x:-20,z:-16},{team:1,x:20,z:16}],
+  resourceNodes:[{id:'food',type:'food',x:4.5,z:.5,stock:24}],
+  obstacles:[{column:33,row:25,width:1,height:1,material:'stone'}],triggers:[],scenarioEvents:[] };
+function quietEconomy(r) {
+  for(const team of [0,1]) {
+    const actors=r.units.filter(u=>u.team===team);
+    r.order(team,{type:'stop',ids:actors.map(u=>u.id)});
+    r.order(team,{type:'setStance',stance:'noAttack',ids:actors.filter(u=>u.kind!=='worker').map(u=>u.id)});
+  }
+}
+function physicalEconomyJourney(r,scene,id) {
+  const initial=r.units[id],generation=initial.generation,hp=initial.hp;
+  const parked=r.units.filter(u=>u.kind==='worker'&&u.id!==id).map(u=>({id:u.id,x:u.x,z:u.z,cargo:u.cargo}));
+  let observed=0;
+  const step=()=>{
+    r.step();
+    for(const s of r.landSteps.filter(s=>s.id===id)) {
+      observed++;
+      assert.ok(canTraverseUnitStep(r.cell(s.from.x,s.from.z),r.cell(s.to.x,s.to.z),scene.width,r.levels,r.isWalkable));
+      assert.ok(canTraverseStaticBodySegment(s.from,s.to,.18,scene.width,scene.height,r.isWalkable),
+        `Worker ${s.reason} footprint: ${JSON.stringify(s.from)} -> ${JSON.stringify(s.to)}`);
+    }
+    assert.equal(r.units[id].generation,generation);assert.equal(r.units[id].hp,hp);
+    for(const saved of parked) {
+      const u=r.units[saved.id];assert.deepEqual({id:u.id,x:u.x,z:u.z,cargo:u.cargo},saved,'unselected Workers remain unchanged');
+    }
+  };
+  const until=(predicate,label,limit=1800)=>{
+    for(let tick=0;tick<=limit;tick++) {
+      if(predicate(r.units[id]))return tick;
+      if(tick<limit)step();
+    }
+    assert.fail(`${label}: ${JSON.stringify({x:r.units[id].x,z:r.units[id].z,phase:r.units[id].gatherPhase,revision:r.units[id].orderRevision})}`);
+  };
+  return {step,until,get observed(){return observed;}};
+}
+for(const team of [0,1])for(const recovery of ['live','approaching','carrying'])
+test(`seat ${team}: actual economy footprint survives ${recovery} Gather, full drop-off and resumption`,async(t)=>{
+  const f=await createPathingReplayFixture(clearanceMap,{traceLandSteps:true}),r=f.replay;
+  try {
+    quietEconomy(r);let u=r.units.find(u=>u.team===team&&u.kind==='worker');const id=u.id;
+    const journey=physicalEconomyJourney(r,clearanceMap,id);
+    command(r,u,{type:'move',x:.79,z:.95});journey.until(u=>u.x===.79&&u.z===.95,'command-only fractional setup');
+    command(r,u,{type:'gather',nodeId:'food'});const revision=u.orderRevision,selected=u.moveGoalCell;
+    assert.equal(selected,r.cell(4.5,.5));assert.equal(u.path.at(-1),selected);
+    const recover=()=>{
+      const saved=r.checkpoint(),bytes=JSON.stringify(saved),record=structuredClone(saved.state.units[id]);
+      assert.ok(r.validate(structuredClone(saved)));r.restore(saved);u=r.units[id];
+      assert.equal(JSON.stringify(saved),bytes,'recovery does not edit its supplied checkpoint');
+      assert.deepEqual(u,record,'durable Worker fields recover exactly');
+    };
+    if(recovery==='approaching'){for(let tick=0;tick<4;tick++)journey.step();recover();}
+    const approachTicks=journey.until(u=>u.gatherPhase==='gathering','safe Gather approach',90);
+    assert.equal(u.orderRevision,revision+1,'the approach has only its normal productive-arrival transition');
+    journey.until(u=>u.cargo===10&&u.gatherPhase==='to-base','real full cargo',600);
+    if(recovery==='carrying')recover();
+    const returnTicks=journey.until(()=>r.food[team]===510,'one full-load credit');
+    assert.equal(u.cargo,0);assert.equal(u.gatherPhase,'to-node');assert.equal(u.gatherNodeId,'food');
+    journey.until(u=>u.gatherPhase==='gathering'&&u.cargo>0,'fresh productive resumption');
+    assert.equal(r.food[team],510,'the first deposit is credited once');
+    assert.ok(Math.abs(r.resources.get('food').stock+r.food.reduce((sum,bank)=>sum+bank-500,0)
+      +r.units.reduce((sum,u)=>sum+(u.cargoType==='food'?u.cargo:0),0)-24)<1e-7);
+    assert.ok(journey.observed>20);t.diagnostic(`safe approach ${approachTicks} ticks; full return ${returnTicks} ticks; observed substeps ${journey.observed}`);
+  } finally {await f.dispose();}
+});
+
+for(const team of [0,1])for(const type of ['food','wood','stone'])
+test(`seat ${team} ${type}: real typed cargo survives Stop/replacement and node-free Return with queued recovery`,async()=>{
+  const scene={...clearanceMap,id:`typed-worker-clearance-${type}`,
+    ...(type==='stone'?{economyProfileId:STONE_ECONOMY_PROFILE_ID}:{}),
+    resourceNodes:[{id:type,type,x:4.5,z:.5,stock:24}]};
+  const f=await createPathingReplayFixture(scene,{traceLandSteps:true}),r=f.replay;
+  try {
+    quietEconomy(r);let u=r.units.find(u=>u.team===team&&u.kind==='worker');const id=u.id;
+    const journey=physicalEconomyJourney(r,scene,id);
+    const bank=()=>type==='food'?r.food[team]:type==='wood'?r.wood[team]:r.checkpoint().state.teamStone[team];
+    const initialBank=bank();
+    command(r,u,{type:'move',x:.79,z:.95});journey.until(u=>u.x===.79&&u.z===.95,'fractional command setup');
+    command(r,u,{type:'gather',nodeId:type});journey.until(u=>u.cargo>=1.2,'real typed harvest',120);
+    const cargo=u.cargo;assert.equal(u.cargoType,type);assert.equal(workerEconomyBodyRadius(u),.18);
+    command(r,u,{type:'stop'});assert.equal(workerEconomyBodyRadius(u),0);assert.equal(u.cargo,cargo);
+    command(r,u,{type:'move',x:6.31,z:-.77});command(r,u,{type:'move',x:7.31,z:-.77,queue:true});
+    assert.equal(workerEconomyBodyRadius(u),0);for(let tick=0;tick<4;tick++)journey.step();
+    assert.equal(u.gatherPhase,'');assert.equal(u.gatherNodeId,null);assert.equal(u.cargo,cargo);
+    const before=structuredClone(u);
+    r.order(1-team,{type:'returnCargo',ids:[id],unitGenerations:[u.generation]});
+    r.order(team,{type:'gather',ids:[id],unitGenerations:[u.generation+1],nodeId:type});
+    assert.deepEqual(u,before,'foreign/stale commands preserve the current movement and cargo');
+    command(r,u,{type:'returnCargo'});
+    assert.equal(workerEconomyBodyRadius(u),.18);assert.equal(u.gatherNodeId,null);assert.equal(u.workIntent,null);
+    assert.equal(u.queuedWaypoints.length,0,'Return supersedes the replaced manual queue');
+    const selected=u.moveGoalCell;assert.equal(u.path.at(-1),selected);
+    command(r,u,{type:'move',x:7.31,z:-.77,queue:true});
+    const saved=r.checkpoint(),bytes=JSON.stringify(saved),record=structuredClone(saved.state.units[id]);
+    assert.ok(r.validate(structuredClone(saved)));r.restore(saved);u=r.units[id];
+    assert.equal(JSON.stringify(saved),bytes);assert.deepEqual(u,record);
+    journey.until(()=>Math.abs(bank()-initialBank-cargo)<1e-9,'explicit Return credit');
+    assert.equal(u.cargo,0);assert.equal(u.gatherPhase,'');assert.equal(workerEconomyBodyRadius(u),0);
+    journey.until(u=>u.x===7.31&&u.z===-.77&&!u.queuedWaypoints.length,'queued Move after deposit');
+    for(let tick=0;tick<60;tick++)journey.step();
+    assert.equal(bank(),initialBank+cargo);assert.equal(u.gatherPhase,'');assert.equal(u.gatherNodeId,null);
+    assert.ok(Math.abs(r.resources.get(type).stock+bank()-initialBank
+      +r.units.reduce((sum,u)=>sum+(u.cargoType===type?u.cargo:0),0)-24)<1e-7,'typed stock, bank and cargo conserve');
+  } finally {await f.dispose();}
+});
+
+for(const team of [0,1])test(`seat ${team}: productive gathering separation beside stone keeps every Worker footprint clear`,async()=>{
+  const scene={...clearanceMap,id:'productive-worker-separation',resourceNodes:[{id:'food',type:'food',x:.5,z:1.5,stock:96}]};
+  const f=await createPathingReplayFixture(scene,{traceLandSteps:true}),r=f.replay;
+  try {
+    quietEconomy(r);const actors=r.units.filter(u=>u.team===team&&u.kind==='worker'),ids=new Set(actors.map(u=>u.id));
+    const points=[[.65,1.5],[.25,1.5],[.35,1.4],[.4,1.6]];
+    const step=()=>{
+      r.step();for(const s of r.landSteps.filter(s=>ids.has(s.id)))
+        assert.ok(canTraverseStaticBodySegment(s.from,s.to,.18,scene.width,scene.height,r.isWalkable),
+          `${s.reason}: ${JSON.stringify(s.from)} -> ${JSON.stringify(s.to)}`);
+    };
+    for(const [i,u] of actors.entries())command(r,u,{type:'move',x:points[i][0],z:points[i][1]});
+    for(let tick=0;tick<1800&&!actors.every((u,i)=>u.x===points[i][0]&&u.z===points[i][1]);tick++)step();
+    assert.ok(actors.every((u,i)=>u.x===points[i][0]&&u.z===points[i][1]),'actual setup commands finish');
+    for(const u of actors)command(r,u,{type:'gather',nodeId:'food'});
+    let separations=0;
+    for(let tick=0;tick<60;tick++) {
+      step();separations+=r.landSteps.filter(s=>ids.has(s.id)&&s.reason==='interaction-separation').length;
+    }
+    assert.ok(separations>0,'stationary productive separation is actually observed');
+    assert.ok(actors.every(u=>u.gatherPhase==='gathering'&&u.cargo>0&&workerEconomyBodyRadius(u)===.18));
+    assert.ok(r.snapshot(team).units.filter(row=>ids.has(row[0])).every(row=>row[17]==='gather-food'),
+      'only real positive productive receipts remain visible');
+    assert.ok(Math.abs(r.resources.get('food').stock+actors.reduce((sum,u)=>sum+u.cargo,0)-96)<1e-7);
+  } finally {await f.dispose();}
+});
+
+for(const team of [0,1])test(`seat ${team}: inherited Worker overlap escapes monotonically without replacing the resource intent`,async()=>{
+  const f=await createPathingReplayFixture(clearanceMap,{traceLandSteps:true}),r=f.replay;
+  try {
+    quietEconomy(r);let u=r.units.find(u=>u.team===team&&u.kind==='worker');const id=u.id;
+    // Explicit legacy-pose fixture, not a command-only placement witness.
+    const saved=r.checkpoint();Object.assign(saved.state.units[id],{x:.9,z:1.5});
+    assert.ok(r.validate(saved));r.restore(saved);u=r.units[id];
+    command(r,u,{type:'gather',nodeId:'food'});const revision=u.orderRevision;let escapes=0;
+    for(let tick=0;tick<90&&u.gatherPhase!=='gathering';tick++) {
+      r.step();for(const s of r.landSteps.filter(s=>s.id===id)) {
+        assert.ok(canTraverseStaticBodySegment(s.from,s.to,.18,64,48,r.isWalkable,{allowEscape:true}));
+        if(!canTraverseStaticBodySegment(s.from,s.to,.18,64,48,r.isWalkable))escapes++;
+      }
+    }
+    assert.ok(escapes>0);assert.equal(u.gatherPhase,'gathering');assert.equal(u.gatherNodeId,'food');
+    assert.equal(u.orderRevision,revision+1,'only the productive-arrival transition changes the revision');
+    assert.ok(canTraverseStaticBodySegment(u,u,.18,64,48,r.isWalkable));
   } finally {await f.dispose();}
 });

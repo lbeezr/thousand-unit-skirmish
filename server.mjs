@@ -75,7 +75,7 @@ import { constructionWorkArea, constructionAssignment, unfinishedConstructionSit
 import { isPalisade, validGateState, buildingBlocksMovement, planGateTransition } from './src/palisade-gate.mjs';
 import { palisadeConnections } from './src/palisade-profile.mjs';
 import { canTraverseUnitStep, createUnitRouteResult, createClearanceMoveGoalPoint, activeMoveGoalPoint, validMoveGoalPoint, unitRoutePathCost,
-  ordinaryMoveBodyRadius, canTraverseStaticBodySegment,
+  activeLandMovementBodyRadius, workerEconomyBodyRadius, LAND_CLEARANCE_PROFILE, canTraverseStaticBodySegment,
   unitRouteResultIsCurrent } from './src/unit-movement.mjs';
 import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
@@ -4105,7 +4105,7 @@ function applyPlannedMoveAssignment(job, assignment) {
     unit.moveGoalPoint = point;
     unit.moveGoalCell = destination;
   }
-  const radius = ordinaryMoveBodyRadius(unit);
+  const radius = activeLandMovementBodyRadius(unit);
   const goal = point || cellToWorld(destination);
   if (point && path.length > 0) {
     const center = cellToWorld(destination);
@@ -4357,7 +4357,7 @@ function processMovePlanningSlice(job) {
       ));
       if (activeAssignments.length > 0) {
         const startCell = nearestOpenCell(currentGroup.startCell);
-        const clearanceRadius = Math.max(...activeAssignments.map(({ unit }) => ordinaryMoveBodyRadius(unit)));
+        const clearanceRadius = Math.max(...activeAssignments.map(({ unit }) => activeLandMovementBodyRadius(unit)));
         const path = findPathAStar(startCell, destination, job.diagnostics, clearanceRadius);
         if (path == null) { currentGroup.nextGoal--; break; }
         const centerGoal = cellToWorld(destination);
@@ -4459,8 +4459,19 @@ function workerDropoffCandidates(unit) {
 }
 
 function workerFlowPath(unit, path) {
-  return shortcutFlatUnitPath(path, unit.x + MAP_HALF_X, unit.z + MAP_HALF_Z,
+  const reduced = shortcutFlatUnitPath(path, unit.x + MAP_HALF_X, unit.z + MAP_HALF_Z,
     MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS);
+  if (path.length === 0) return reduced;
+  // Route selection can run on a stopped clone before explicit Return is
+  // accepted. Planning uses its future economy footprint, not live activation.
+  const radius = LAND_CLEARANCE_PROFILE.radiusByKind.worker;
+  const goal = cellToWorld(path.at(-1));
+  const route = reduced.length === 1
+    && !canTraverseStaticBodySegment(unit, goal, radius, MAP_WIDTH, MAP_HEIGHT, isWalkable) ? path : reduced;
+  // A legal cardinal route still needs a safe fractional first approach, even
+  // when its first waypoint is adjacent. Original length/cost stay upstream.
+  return canTraverseStaticBodySegment(unit, cellToWorld(route[0]), radius, MAP_WIDTH, MAP_HEIGHT, isWalkable)
+    ? route : [worldToCell(unit.x, unit.z), ...route];
 }
 
 function applyWorkerFlowRoute(unit, startCell, field, path, arrived) {
@@ -7927,11 +7938,14 @@ function spreadInteractingUnits() {
     } else if (distanceToBuildingEdge({ x, z }, building) > range - 0.02) {
       continue;
     }
+    const clearanceRadius = workerEconomyBodyRadius(unit);
     if (x <= -MAP_HALF_X + 0.5 || x >= MAP_HALF_X - 0.5
       || z <= -MAP_HALF_Z + 0.5 || z >= MAP_HALF_Z - 0.5
       || !automaticPositionAllowed(unit, x, z)
       || !canTraverseUnitStep(worldToCell(unit.x, unit.z), worldToCell(x, z),
-        MAP_WIDTH, elevationLevelByCell, isWalkable)) continue;
+        MAP_WIDTH, elevationLevelByCell, isWalkable)
+      || (clearanceRadius && !canTraverseStaticBodySegment(unit, { x, z },
+        clearanceRadius, MAP_WIDTH, MAP_HEIGHT, isWalkable, { allowEscape: true }))) continue;
     unit.x = x;
     unit.z = z;
     unit.lastMoveTick = tickNumber;
@@ -8332,7 +8346,7 @@ function simulateTick() {
     }
     if (unit.holdingPosition || unit.pathIndex >= unit.path.length) continue;
     let remainingStep = UNIT_DEFINITIONS[unit.kind].combat.moveSpeed * STEP_SECONDS;
-    const clearanceRadius = ordinaryMoveBodyRadius(unit);
+    const clearanceRadius = activeLandMovementBodyRadius(unit);
     let allowLocalDetour = true;
     while (remainingStep > 0 && unit.pathIndex < unit.path.length) {
       const move = getMoveVector(unit, remainingStep, allowLocalDetour);
