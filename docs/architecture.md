@@ -436,6 +436,80 @@ a browser path. Historical QA receipts remain historical, not migration inputs.
 This source/tooling work launches no browser, Mac workload, remote deployment,
 provider request or security-setting change.
 
+### Remaining callers and compatibility retirement
+
+The eight initial slices establish enforced homes for existing leaves; they do
+not complete the organization workstream. A tracked-source audit at `f73c6702`
+on 4 October 2026 finds **17 runtime import edges through the ten forwarding
+modules and the validator compatibility export, across nine consumer files**.
+Every one of those eleven compatibility paths still has a runtime consumer.
+None is ready for deletion merely because its canonical implementation exists.
+The offline opponent adapter keeps its separately documented retirement policy.
+
+The audit parses imports/re-exports/literal dynamic imports, then inspects
+fixture/file-path references separately. Intentional export-identity tests,
+guard fixtures and exact HTTP admissions are retained compatibility obligations;
+they are not evidence that a production consumer has migrated. Historical QA
+source inventories remain historical. The public `environment-art.mjs` host is
+not a shim: its status/readiness, mesh/material and batch APIs remain needed
+after the image-loading extraction.
+
+| Retained compatibility surface / owner | Actual runtime callers | Tool/fixture work before retirement |
+| --- | --- | --- |
+| `audio-event-profile.mjs`'s **validator export only** / audio-world boundary owner | `server.mjs`, `src/main.js`, `src/audio-shipped-loader.mjs` | Validator imports in `audio-runtime-scenario`, `audio-shipped-loader.test`, `stone-map-profile.test` and `wildlife-import-parity.test`; retain canonical/legacy parity while the alias is supported. Playback/profile consumers still need this module, so retirement removes only `validateMapAudioReference`'s forwarding export. |
+| `gameplay-action-rules.mjs` / rules owner | `src/production-actions.mjs`, `src/research-actions.mjs` | The action contract already exercises canonical values and deliberately checks the legacy namespace. Preserve its two JSDoc type names while supported. Rejection order, affordability, production/research UI and native payment/recovery checks remain required. |
+| `base-lifecycle.mjs` / rules owner with server/Worker/naval receivers | `server.mjs` | `base-lifecycle.test`, Worker performing-action test/scenario/probe, `skiff-contracts.test` and `wall-construction-draft.test`. Retarget injected fixture bindings with their owners; preserve real refunds/repair/reservation scenarios and both old/canonical HTTP denials. |
+| `formation-assignment.mjs` / movement owner | `server.mjs` | `formation-assignment-scenario` still exercises the legacy import plus explicit canonical binding identity. Keep formation pairing/ties and real pathing/native command consumers; both helper paths remain HTTP-private. |
+| HUD aliases `resource-format`, `population-readout`, `objective-summary` / HUD integration owner | `src/main.js` uses all three; `selection-portrait` and `wall-placement` use resource formatting; `match-mode-controls` uses objective rules | Matching canonical/legacy contracts; contextual HUD, construction/wildlife client fixtures, roster/shore-fishing checks, population browser runner and Practice/Bannerfall entry checks. `contextual-hud.test` already imports canonical objective summary while still using legacy resource/population helpers; do not revert or rename it. |
+| Authoring aliases `scenario-authoring`, `map-resize` / authoring owner | `src/main.js` uses both | `scenario-authoring.test` retains both binding identities; server-hardening and packed-release checks intentionally exercise exact compatibility HTTP paths. Map persistence already imports canonical resize. Reconcile the owning authoring/saga links with their owners rather than changing unrelated historical receipts. |
+| Audio aliases `audio-decoded-cache`, `audio-shipped-response` / audio boundary owner | `src/audio.mjs` and `src/audio-shipped-loader.mjs`, respectively | Matching contracts already use canonical implementations plus legacy identity; shared-decode/loader/lifecycle consumers reach those aliases through the real runtime. Canonical reader coverage is registered. Preserve both-path HTTP bytes and playback/cache/error/cancellation checks until alias deletion is justified. |
+
+The next caller work is a bounded integration queue, not another batch of leaf
+copies. Each row retains its owning review and the common source/served/packed
+checks above; no source or test is renamed solely to make a path look tidy.
+
+1. The rules owner can propose just the two imports in `production-actions.mjs`
+   and `research-actions.mjs` pointing to `rules/gameplay-action-rules.mjs`.
+   Keep the legacy API/type contract and public entry while checking existing
+   production/research reason, UI and paid lifecycle scenarios. This needs no
+   change to either host.
+2. The audio owner can propose the cache import in `audio.mjs` and bounded reader
+   import in `audio-shipped-loader.mjs`. The loader's validator import is a
+   separate shared world contract; coordinate it with the validator's other
+   receivers. Keep every cache/scheduling/reader test and all coverage floors.
+3. The HUD owner can propose only resource imports in `selection-portrait.mjs`
+   and `wall-placement.mjs`, then the objective import in `match-mode-controls.mjs`,
+   with the actual contextual/construction/selection consumers. This clears
+   three edge consumers without touching the main composition host.
+4. Main/client, authoring and validator owners then agree the six retained
+   compatibility imports in `src/main.js`; server, movement, rules and validator
+   owners agree its three counterparts in `server.mjs`. Use exact import hunks
+   in their owned integration windows and retain feature work in those hosts.
+   Do not mix order, path, editor, renderer or economy implementation changes.
+5. Retarget remaining behavioral fixture bindings, source/HTTP helpers and
+   current owning-guide links per domain. A legacy export-identity assertion
+   stays while the alias is supported; retire that assertion only with the
+   justified alias deletion, preserving every behavioral case and canonical
+   implementation floor. Test names, workload inputs and historical receipts
+   remain stable.
+6. Remove aliases one boundary at a time only after the tracked inventory is
+   clear, receivers confirm supported external imports/commands, and an
+   identified containing served release establishes browser reload safety.
+   Retire the corresponding exact manifest/domain entries and compatibility
+   HTTP checks atomically. Keep private lifecycle/formation denial and the
+   canonical implementations' checks. No alias removal is authorized by this
+   audit alone.
+
+The same `f73c6702` snapshot has 185 source JavaScript modules: 169 flat and
+16 nested, plus five root hosts/adapters, with 342 local edges and zero cycles.
+The largest mixed owners still dominate coupling: `server.mjs` has 9,077 lines /
+62 local dependencies, `main.js` 10,625 / 61, `environment-art.mjs` 1,258 / 24,
+and `pve-opponent.mjs` 940 / 10. `gameplay-definitions.mjs` has 24 runtime
+importers. These are dated review ratchets for responsibility/growth, not
+absolute size scores or reasons to split definitions arbitrarily. The existing
+host-responsibility stage above and purpose-based fixture/scenario/performance
+organization remain open; forwarding-path admission does not resolve them.
+
 Parent allocation selected candidate 7's two editor leaves for PR300; their
 canonical homes and retained aliases are recorded above and in
 [map authoring](map-authoring.md#authoring-module-paths). Both implementation

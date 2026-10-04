@@ -137,6 +137,22 @@ test('canonical audio implementations remain dependency-free behind explicit leg
   }
 });
 
+test('the image-loading leaf stays outside authority and server hosts with no module dependencies', async () => {
+  const target = 'src/presentation/assets/interactive-runtime-image.mjs';
+  for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/rules/base-lifecycle.mjs',
+    'src/map-utils.mjs', 'src/simulation/movement/formation-assignment.mjs', 'src/pve-regroup.mjs']) {
+    const relative = path.posix.relative(path.posix.dirname(root), target);
+    assert.throws(() => check({ [target]: '',
+      [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';` }),
+      /(?:rules|world|simulation|ai) domain cannot reach presentation domain/, `${root} -> ${target}`);
+  }
+  for (const host of ['server.mjs', 'room-supervisor.mjs']) {
+    assert.throws(() => check({ [target]: '', [host]: `import './${target}';` },
+      { serverEntrypoints: [host] }), /server host reaches presentation domain/, `${host} -> ${target}`);
+  }
+  assert.deepEqual(moduleImports(await readFile(new URL(`../${target}`, import.meta.url), 'utf8'), target), []);
+});
+
 test('rules and world cannot reach higher policy domains, including through unknown modules', () => {
   assert.throws(() => check({
     'src/gameplay-action-rules.mjs': "import './bridge.mjs';",
