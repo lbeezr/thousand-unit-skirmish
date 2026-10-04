@@ -1,10 +1,11 @@
 // Versioned boundary shared by independently owned ordinary capture adapters.
 import assert from 'node:assert/strict';
+import path from 'node:path';
 
 /** @typedef {{cdp: {call: (method: string, params?: object) => Promise<unknown>,
  * evaluate: (expression: string) => Promise<unknown>},
  * wait: (expression: string, description?: string, timeoutMs?: number) => Promise<unknown>}} CapturePage */
-/** @typedef {{version: 1, page: CapturePage, openPage: () => Promise<CapturePage>, origin: string,
+/** @typedef {{version: 1, page: CapturePage, openPage: () => Promise<CapturePage>, origin: string, evidenceDirectory: string,
  * source: Readonly<{revision: string, digest: string}>,
  * capture: (options: {page?: CapturePage, mapId: string, checkpoint: string}) => Promise<unknown>}} CaptureContext */
 /** @typedef {{id: string, contextVersion: 1, run: (context: CaptureContext) =>
@@ -35,6 +36,8 @@ export function validateCaptureContext(value) {
   assert.equal(typeof page.wait, 'function', 'capture context requires page.wait');
   assert.equal(typeof context.openPage, 'function', 'capture context requires owned page acquisition');
   assert.equal(typeof context.capture, 'function', 'capture context requires checkpoint capture');
+  assert.ok(typeof context.evidenceDirectory === 'string' && path.isAbsolute(context.evidenceDirectory),
+    'capture context requires its owned case artifact directory');
   assert.ok(typeof context.origin === 'string', 'capture context requires a loopback origin');
   const origin = new URL(context.origin);
   assert.ok(origin.protocol === 'http:' && ['127.0.0.1', 'localhost', '[::1]'].includes(origin.hostname)
