@@ -157,14 +157,18 @@ review. It proposes 32-bit indices, an 8 MiB live payload / 8,192-entry cache,
 deterministic eviction and explicit same-tick geometry invalidation. It changes
 no runtime index, cache or validator; implementation/budgets remain future work.
 
-Broader focused checks passed 20 of 21 cases. The remaining pre-existing Stone
-lobby regression still expects compact `stone-defense-field` in a normal managed
-room. That expectation conflicts with the already-applied ordinary human floor;
-the mode/floor owner needs an explicit internal-fixture regression path. The
-exact source/test boundary and receiving action are recorded on
-[PR251](https://github.com/lbeezr/thousand-unit-skirmish/pull/251#issuecomment-5975904210)
-and [PR250](https://github.com/lbeezr/thousand-unit-skirmish/pull/250#issuecomment-5975956800).
-Do not reopen compact ordinary eligibility to satisfy the old assertion.
+The historical broader batch recorded on
+[PR251 at 02:47 UTC](https://github.com/lbeezr/thousand-unit-skirmish/pull/251#issuecomment-5975904210)
+passed 20 of 21 cases before integrating main `a510ea78`. Its compact Stone
+lobby expectation conflicted with the ordinary human floor. The comment did not
+retain an exact test-run revision, so that batch is not current-head acceptance.
+The rebased source already contains the receiving owner's ordinary Tiny
+rejection test and a separate internal Practice Stone test. At clean source
+`0d8d909100e106245adeadec21b0b1d4b6332e67`, the targeted `ordinary Tiny lobby`
+case passes (1/1); the separate paid Stone test was not rerun here. Preserve that
+fixture coverage without reopening compact ordinary eligibility. The receiving
+interface remains recorded on
+[PR250](https://github.com/lbeezr/thousand-unit-skirmish/pull/250#issuecomment-5975956800).
 
 The latest read-only staging deployment listing still reports SUCCESS
 deployment `e541d903-178b-47cb-8d1b-4358c93c5a8a` with source
