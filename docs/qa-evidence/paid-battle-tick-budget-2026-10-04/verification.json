@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "head": "61156a1c21d56380445c756fdee826db122ae498",
+  "sourceSha256": "21ab61c572395ce8730c98ea115fce853de0276d1322ce109d42704432ab03d8",
+  "checks": {
+    "focusedTests": 38,
+    "failed": 0,
+    "schedulerInjectedStall": true,
+    "syntax": true,
+    "browserCheckedBoundary": true,
+    "nodeCheckedBoundary": true,
+    "docs": true,
+    "whitespace": true
+  },
+  "replay": {
+    "artifact": "replay.json.gz",
+    "cases": 6,
+    "repeats": 2,
+    "allHistoricalMovementTracesAndArrivalPublicationTicksMatch": true
+  },
+  "defaultPhase": {
+    "artifact": "default-phase.json.gz",
+    "cases": 3,
+    "repeats": 2,
+    "allPairsIdentical": true,
+    "cancellation": {
+      "acceptedAtTick": 0,
+      "callbacksAppliedAtTick": 0,
+      "units": 16,
+      "stoppedStatePreserved": true,
+      "notice": "ORDER SUPERSEDED · 0 UNITS"
+    },
+    "records": [
+      {
+        "schedule": "before-first-tick",
+        "repeat": 0,
+        "firstMovedTick": 1,
+        "acceptedStateHash": "8ccb8e81bcf02e8304cabb19f20bb0454d01f4c7e6410651e46b6a8eeb03266e",
+        "finalStateHash": "0ac8eaa61c09629c9d686c6f9b0a08c223701b5bfe0c3bb4deb85c1ab0b6f117",
+        "operationCounts": {
+          "searches": 11,
+          "expandedCells": 753
+        }
+      },
+      {
+        "schedule": "before-first-tick",
+        "repeat": 1,
+        "firstMovedTick": 1,
+        "acceptedStateHash": "8ccb8e81bcf02e8304cabb19f20bb0454d01f4c7e6410651e46b6a8eeb03266e",
+        "finalStateHash": "0ac8eaa61c09629c9d686c6f9b0a08c223701b5bfe0c3bb4deb85c1ab0b6f117",
+        "operationCounts": {
+          "searches": 11,
+          "expandedCells": 753
+        }
+      },
+      {
+        "schedule": "after-third-tick",
+        "repeat": 0,
+        "firstMovedTick": 4,
+        "acceptedStateHash": "8ccb8e81bcf02e8304cabb19f20bb0454d01f4c7e6410651e46b6a8eeb03266e",
+        "finalStateHash": "fb8d3e6df23e8da12e10db2e41ed54b0ba1cfcfbb4787450510b6e7306fd68a8",
+        "operationCounts": {
+          "searches": 11,
+          "expandedCells": 753
+        }
+      },
+      {
+        "schedule": "after-third-tick",
+        "repeat": 1,
+        "firstMovedTick": 4,
+        "acceptedStateHash": "8ccb8e81bcf02e8304cabb19f20bb0454d01f4c7e6410651e46b6a8eeb03266e",
+        "finalStateHash": "fb8d3e6df23e8da12e10db2e41ed54b0ba1cfcfbb4787450510b6e7306fd68a8",
+        "operationCounts": {
+          "searches": 11,
+          "expandedCells": 753
+        }
+      },
+      {
+        "schedule": "one-turn-per-tick",
+        "repeat": 0,
+        "firstMovedTick": 1,
+        "acceptedStateHash": "8ccb8e81bcf02e8304cabb19f20bb0454d01f4c7e6410651e46b6a8eeb03266e",
+        "finalStateHash": "26de74de0486964b31dda1c2afb682f2cb7dacb911952666b6aa0bf61a2adf66",
+        "operationCounts": {
+          "searches": 11,
+          "expandedCells": 753
+        }
+      },
+      {
+        "schedule": "one-turn-per-tick",
+        "repeat": 1,
+        "firstMovedTick": 1,
+        "acceptedStateHash": "8ccb8e81bcf02e8304cabb19f20bb0454d01f4c7e6410651e46b6a8eeb03266e",
+        "finalStateHash": "26de74de0486964b31dda1c2afb682f2cb7dacb911952666b6aa0bf61a2adf66",
+        "operationCounts": {
+          "searches": 11,
+          "expandedCells": 753
+        }
+      }
+    ]
+  },
+  "artifactHashes": [
+    {
+      "artifact": "replay.json.gz",
+      "sha256": "e6eb73f27d014e638c56fd654d360f17625149ad350f00acde859dc2fe1559f7"
+    },
+    {
+      "artifact": "default-phase.json.gz",
+      "sha256": "45f1701f6f213960e985f115d0bc6d1da01095950d1958db59d660be43a9cac2"
+    }
+  ]
+}
