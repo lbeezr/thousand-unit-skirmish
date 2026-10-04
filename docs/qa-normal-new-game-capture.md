@@ -20,9 +20,10 @@ source, release manifest and digest, locked runtime dependencies and served
 bytes. Call once inside that browser/server lifetime through `novice-flow`:
 
 ```js
-import { id, run } from './renderer-novice-flow-scenario.mjs';
-const result = await run({ page, origin, source, capture, evidenceDirectory });
+import { id, contextVersion, run } from './renderer-novice-flow-scenario.mjs';
+const result = await run({ version: 1, page, origin, source, capture, evidenceDirectory });
 // id = 'novice-flow'
+// contextVersion = 1
 // source = immutable { revision: fullCleanSourceSHA, digest: cleanPackDigest }
 // capture = the shared source-bound applied-map checkpoint hook
 // evidenceDirectory = the existing runner's owned per-case artifact directory

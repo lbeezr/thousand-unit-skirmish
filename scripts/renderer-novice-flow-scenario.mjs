@@ -4,8 +4,10 @@ import path from 'node:path';
 import { runNoviceScenario } from './renderer-qualification-novice.mjs';
 
 export const id = 'novice-flow';
+export const contextVersion = 1;
 
-export async function run({ page, origin, source, capture, evidenceDirectory }, { execute = runNoviceScenario } = {}) {
+export async function run({ version, page, origin, source, capture, evidenceDirectory }, { execute = runNoviceScenario } = {}) {
+  assert.equal(version, contextVersion, 'novice case requires the shared version 1 context');
   assert.ok(typeof capture === 'function', 'novice case requires the shared capture hook');
   assert.ok(typeof evidenceDirectory === 'string' && path.isAbsolute(evidenceDirectory),
     'novice case requires the owned case artifact directory');

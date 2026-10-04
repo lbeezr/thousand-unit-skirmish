@@ -7,7 +7,7 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { clickNovicePoint, noviceBeforeScript, readNoviceUi, reduceNoviceCommand,
   reduceNoviceMessage, runNoviceScenario, validateNoviceFrames, validateNoviceOrder } from './renderer-qualification-novice.mjs';
-import { id, run } from './renderer-novice-flow-scenario.mjs';
+import { contextVersion, id, run } from './renderer-novice-flow-scenario.mjs';
 
 const revision = 'a'.repeat(40), digest = `sha256:${'b'.repeat(64)}`;
 const worker = { id: 4, team: 0, x: -57.5, z: .5, hp: 35, generation: 2, task: 'moving' };
@@ -254,7 +254,8 @@ test('actual positive orchestration rejects final-read network/probe faults and 
 
 test('registered case binds source and real selection checkpoint, rejecting missing evidence or hidden capture failure', async () => {
   assert.equal(id, 'novice-flow');
-  const page = {}, captures = [], context = { page, origin: 'http://127.0.0.1:4321',
+  assert.equal(contextVersion, 1);
+  const page = {}, captures = [], context = { version: 1, page, origin: 'http://127.0.0.1:4321',
     source: Object.freeze({ revision, digest }), evidenceDirectory: '/owned/novice-flow',
     capture: async options => captures.push(options) };
   let executions = 0;
@@ -266,7 +267,7 @@ test('registered case binds source and real selection checkpoint, rejecting miss
   const result = await run(context, { execute });
   assert.equal(result.status, 'passed'); assert.ok(result.checks.every(check => check.passed));
   assert.deepEqual(captures, [{ page, mapId: state.mapId, checkpoint: 'selected-worker' }]);
-  for (const change of [{ evidenceDirectory: undefined }, { evidenceDirectory: 'relative' }, { capture: null }]) {
+  for (const change of [{ version: undefined }, { version: 2 }, { evidenceDirectory: undefined }, { evidenceDirectory: 'relative' }, { capture: null }]) {
     await assert.rejects(run({ ...context, ...change }, { execute }));
   }
   assert.equal(executions, 1, 'invalid context must stop before adapter execution');
