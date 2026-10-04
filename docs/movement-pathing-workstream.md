@@ -78,10 +78,13 @@ Construction caller adoption owner `01a10933-e913-766b-b5de-3aa5a17c7038`
 reserves `constructionMovementActive` in `src/construction-work-intent.mjs`
 and the construction journey regressions in the existing registered
 `scripts/construction-work-intent.test.mjs`. Its exact shared consumer request is
-[PR395 comment 5985517851](https://github.com/lbeezr/thousand-unit-skirmish/pull/395#issuecomment-5985517851):
+[PR395 comment 5985577813](https://github.com/lbeezr/thousand-unit-skirmish/pull/395#issuecomment-5985577813):
 core retains the shared planner/executor and `src/unit-movement.mjs`; construction
 requests only the predicate import/fallback inside `activeLandMovementBodyRadius`
-after the Worker adopter integrates. **Consumption ownership is pending; no
+after the Worker adopter integrates. The concrete implementation and request
+are in [draft PR399](https://github.com/lbeezr/thousand-unit-skirmish/pull/399).
+Worker adopter PR395 is merged at `452d043f` and incorporated conflict-free;
+**consumption ownership is pending; no
 agreement or default runtime adoption is claimed.** Crowd steering/body pairs
 and XL save validation remain disjoint active owners.
 
@@ -93,6 +96,14 @@ costs exactly 75 Wood. The [retained baseline](qa-evidence/construction-travel-2
 separates paid/productive correctness from the reproduced clearance failure.
 Eight both-seat live/pending/active/working-recovery journey regressions fail
 at that physical admission; the thirteen existing construction tests pass.
+The selector and six both-seat Stop/cancel/queued-replacement controls also pass
+(20 construction controls total); 49 adjacent construction/client/wall checks
+pass. The [native both-seat command/restart witness](qa-evidence/construction-travel-2026-10-04/native-selection.json)
+at `44c3cc83` retains sole selected builders, cooperative/nearest resume,
+unselected Gather/queued orders, foreign/stale rejection and cold recovery to
+completion. The existing native base-lifecycle scenario also passes repair
+costs, interruption/restart, cancellation/refunds and reservations. These
+historical process receipts do not claim a construction clearance fix.
 No shared planner, flow algorithm, attack/Sheep path, production receipt or
 checkpoint schema is rewritten. The intent predicate uses existing live
 Worker build/repair fields, excludes interrupted/economy/combat/water states
