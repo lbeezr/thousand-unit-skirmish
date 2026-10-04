@@ -95,6 +95,13 @@ The economic clock receipt is 436.033 game-seconds across 436.086 wall receipt
 seconds (ratio 0.999879), excluding startup/restart/reset. It is a functional
 economy run with 24 opening units and two paid Skiffs, not a tick, browser or
 capacity benchmark.
+A fresh [current-source smoke](qa-evidence/confluence-grounds-2026-10-04/current-source-smoke.json)
+at `e14fbd4d` confirms public Practice creation, canonical arena selection, both
+6,400-byte packed fog payloads, real cold recovery with exact stock/bank retention
+and one-human movement after rebasing onto current main. The arena/native harness,
+economy, water movement and paid definitions are unchanged from the full accepted
+run; the intervening server delta adds only Terraced Vale's separate Sheep-save
+migration. Source, packed release and deployed/browser revisions remain separate.
 
 ## Counterflow collision diagnostic
 

@@ -11,8 +11,11 @@
 - `retained-economy.json.gz`: economic fields extracted from the cold save, without
   recovery/session state. The original durable checkpoint is not published.
 - `static-audit.json`: repeatable source-bound map geometry/nominal timing/stock.
+- `current-source-smoke.json`: fresh post-rebase public Practice selection, both
+  fog payloads, stock/bank cold recovery and one-human movement. Full paid economy
+  remains the separate exact-source native report.
 - `diagnostic-counterflow-timeout.json.gz`: failed simultaneous opposing Skiff run
-  at source61ebee31. `counterflow-observation.json` retains exact extracted
+  at source `61ebee31`. `counterflow-observation.json` retains exact extracted
   authoritative checkpoint fields from the read-only tool, not a whole snapshot.
 - `diagnostic-dock-target-cleanup.json.gz`: earlier harness assertion expected a
   completed return target to persist; runtime correctly clears it. Final proof

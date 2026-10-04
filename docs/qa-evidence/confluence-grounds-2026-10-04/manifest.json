@@ -7,6 +7,11 @@
       "sha256": "548347ddb634e4af5fa552155634f296e9e9211090a14c11de00181adbe5fe74"
     },
     {
+      "path": "current-source-smoke.json",
+      "bytes": 698,
+      "sha256": "6a72c4bb87781b5e880ecde70959d3de5cf7bb71994c2c8a3d49473d25a78c35"
+    },
+    {
       "path": "diagnostic-counterflow-timeout.json.gz",
       "bytes": 2880,
       "sha256": "d48b73da2baf6d43e73e6f2dac3b54a1715fe83a369527ff4cc0b21070961770",
