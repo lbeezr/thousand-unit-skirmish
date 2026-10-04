@@ -53,6 +53,12 @@ typed cargo/deposit/spend/refund/checkpoint dispatch. Map ownership supplies
 profile/node/bank admission and placement; opponent ownership supplies Stone
 gather/spend policy. Farm AI planting remains with the opponent owner.
 
+The [natural Farm/Stone handoff proof](qa-farm-stone-paid-2026-10-04.md) verifies
+paid planting and defense together on the shipped laboratory, typed Stone
+delivery before Farm food gathering, Mill food-only routing, proportional Farm
+refunds and cold recovery. The same tool checks baseline Millrace prices; it
+does not change the developing 160 × 160 gameplay floor or provisional tuning.
+
 The client loads prices from `constructionCostForProfile`, keeps fractional balances
 for affordability and displays conservative whole stocks. Stone bank/card, selected
 cargo, Worker cargo and Town Center/Storehouse labels appear only in the Stone
