@@ -225,6 +225,13 @@ revisions, commands and input hashes must match. The 1,800-tick deadline retains
 unfinished actors, and production center legality, complete observation and
 unchanged health are mandatory. Existing forest cell-gap evidence is preserved.
 
+The [summary](qa-evidence/land-body-clearance-2026-10-04/summary.json) and
+[compressed raw observations](qa-evidence/land-body-clearance-2026-10-04/substeps.json.gz)
+are measured at clean source `27095de9d81a92d3da2fcce5effc5275022f8cce`.
+Both copies of all six cases match exactly; the record retains input checkpoints,
+source hashes and unnormalized actor identities. This establishes bounded
+geometry/replay integrity, not asynchronous-server determinism.
+
 | Case | Arrived / ticks | Candidate static-contact substeps | Candidate body-contact substeps | Worst measured margin |
 | --- | --- | --- | --- | --- |
 | Fractional stone corner, each seat | 1 / 234 | 79 | 92 | Static −0.2190; pair −0.1997 |

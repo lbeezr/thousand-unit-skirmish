@@ -1,0 +1,3596 @@
+{
+  "head": "27095de9d81a92d3da2fcce5effc5275022f8cce",
+  "sourceDirty": false,
+  "files": {
+    "server.mjs": "52db2713f2223200571d29099fe80dc24cbad160fa1711a6d73785f2aebe4151",
+    "src/unit-movement.mjs": "8783f13c4e35a5cd004ae3e31c808e789d457f4b3771eb598938a1f868e242f6",
+    "scripts/pathing-replay-fixture.mjs": "832914bb5d09c675f698e1380aaf5f0feaf48d9de4b200b21406a7b9af4bcadf",
+    "scripts/forest-gap-fixture.mjs": "7f81e051a89746dff3caa55319f45d968110c11cbc0861301227fae8817240ed",
+    "scripts/land-body-clearance.mjs": "193f4d957c9ab13af1ebf7682021f67a627e7abd9b124f7c34874a117379892d",
+    "scripts/land-body-clearance-fixture.mjs": "e1f7c4c94029c08dce9d7774d60e5df0b101392116511ac90e2a0e6d54f09fc7",
+    "scripts/land-body-clearance-study.mjs": "d9f36bd65efc208ce923c90a5c31402b6fb34d149d558fe17f7c0836b3bc042a"
+  },
+  "node": "v24.19.0",
+  "platform": "linux",
+  "selection": "all",
+  "maxTicks": 1800,
+  "profile": {
+    "id": "candidate-land-circles-v1",
+    "radiusByKind": {
+      "worker": 0.18,
+      "infantry": 0.22,
+      "spearman": 0.22,
+      "archer": 0.22,
+      "scout": 0.28,
+      "rider": 0.28,
+      "siege-engine": 0.35
+    }
+  },
+  "records": [
+    {
+      "id": "fractional-corner-seat-0",
+      "scene": "corner",
+      "team": 0,
+      "deterministicReplay": true,
+      "runs": [
+        {
+          "sourceSha256": "52db2713f2223200571d29099fe80dc24cbad160fa1711a6d73785f2aebe4151",
+          "initialCheckpointSha256": "94443e0c40b7a365c87a5c6c5c82efb3bb5ce942bf845e8f8fc786ebe49bc8e5",
+          "navigationMaskSha256": "6867ac605ba7c2054611cea02d2513016bb23425ee153353d2e8c7c4d9e02a53",
+          "navigationRevision": 0,
+          "commands": [
+            {
+              "team": 0,
+              "command": {
+                "type": "move",
+                "ids": [
+                  4
+                ],
+                "unitGenerations": [
+                  1401215335
+                ],
+                "x": 0.001,
+                "z": 0.001,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 1 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 1 UNITS"
+                }
+              ]
+            }
+          ],
+          "initialContacts": [
+            {
+              "id": 4,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.07165181182026589
+            }
+          ],
+          "ticks": 234,
+          "observedSubsteps": 234,
+          "selectedSubsteps": 234,
+          "traceSha256": "0a5c0821e76e7bdef0ede74d09c7b58e0cc8dc58f633dde0b4d940d494f30bb0",
+          "staticContactSteps": 79,
+          "pairContactSteps": 92,
+          "minimumStaticContactMargin": -0.2190046702618344,
+          "minimumPairMargin": -0.19971072724906827,
+          "maxStaticQueries": 16,
+          "arrived": 1,
+          "actors": [
+            {
+              "id": 4,
+              "generation": 1401215335,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "version": 1,
+                "generation": 1401215335,
+                "revision": 2,
+                "requestedX": 0.001,
+                "requestedZ": 0.001,
+                "cell": 1568,
+                "x": 0.001,
+                "z": 0.001
+              },
+              "goalCell": 1568,
+              "arrivalTick": 234,
+              "crossedTick": null,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 1,
+              "distance": 19.13094859546585,
+              "initialRevision": 2,
+              "x": 0.001,
+              "z": 0.001,
+              "finalRevision": 15,
+              "finalGoalCell": 1568,
+              "pending": false,
+              "pathIndex": 2,
+              "pathLength": 2
+            }
+          ],
+          "invalidCenterSubsteps": 0,
+          "unobservedPositionMutations": 0,
+          "healthLoss": 0
+        },
+        {
+          "sourceSha256": "52db2713f2223200571d29099fe80dc24cbad160fa1711a6d73785f2aebe4151",
+          "initialCheckpointSha256": "94443e0c40b7a365c87a5c6c5c82efb3bb5ce942bf845e8f8fc786ebe49bc8e5",
+          "navigationMaskSha256": "6867ac605ba7c2054611cea02d2513016bb23425ee153353d2e8c7c4d9e02a53",
+          "navigationRevision": 0,
+          "commands": [
+            {
+              "team": 0,
+              "command": {
+                "type": "move",
+                "ids": [
+                  4
+                ],
+                "unitGenerations": [
+                  1401215335
+                ],
+                "x": 0.001,
+                "z": 0.001,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 1 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 1 UNITS"
+                }
+              ]
+            }
+          ],
+          "initialContacts": [
+            {
+              "id": 4,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.07165181182026589
+            }
+          ],
+          "ticks": 234,
+          "observedSubsteps": 234,
+          "selectedSubsteps": 234,
+          "traceSha256": "0a5c0821e76e7bdef0ede74d09c7b58e0cc8dc58f633dde0b4d940d494f30bb0",
+          "staticContactSteps": 79,
+          "pairContactSteps": 92,
+          "minimumStaticContactMargin": -0.2190046702618344,
+          "minimumPairMargin": -0.19971072724906827,
+          "maxStaticQueries": 16,
+          "arrived": 1,
+          "actors": [
+            {
+              "id": 4,
+              "generation": 1401215335,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "version": 1,
+                "generation": 1401215335,
+                "revision": 2,
+                "requestedX": 0.001,
+                "requestedZ": 0.001,
+                "cell": 1568,
+                "x": 0.001,
+                "z": 0.001
+              },
+              "goalCell": 1568,
+              "arrivalTick": 234,
+              "crossedTick": null,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 1,
+              "distance": 19.13094859546585,
+              "initialRevision": 2,
+              "x": 0.001,
+              "z": 0.001,
+              "finalRevision": 15,
+              "finalGoalCell": 1568,
+              "pending": false,
+              "pathIndex": 2,
+              "pathLength": 2
+            }
+          ],
+          "invalidCenterSubsteps": 0,
+          "unobservedPositionMutations": 0,
+          "healthLoss": 0
+        }
+      ]
+    },
+    {
+      "id": "fractional-corner-seat-1",
+      "scene": "corner",
+      "team": 1,
+      "deterministicReplay": true,
+      "runs": [
+        {
+          "sourceSha256": "52db2713f2223200571d29099fe80dc24cbad160fa1711a6d73785f2aebe4151",
+          "initialCheckpointSha256": "6b0453538c14ab4aeb741d7ffe55e2ad5e29f69c711bd9919da5921076ef8930",
+          "navigationMaskSha256": "6867ac605ba7c2054611cea02d2513016bb23425ee153353d2e8c7c4d9e02a53",
+          "navigationRevision": 0,
+          "commands": [
+            {
+              "team": 1,
+              "command": {
+                "type": "move",
+                "ids": [
+                  12
+                ],
+                "unitGenerations": [
+                  2365399648
+                ],
+                "x": 0.001,
+                "z": 0.001,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 1 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 1 UNITS"
+                }
+              ]
+            }
+          ],
+          "initialContacts": [
+            {
+              "id": 12,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.07165181182026589
+            }
+          ],
+          "ticks": 234,
+          "observedSubsteps": 234,
+          "selectedSubsteps": 234,
+          "traceSha256": "1f1d59b22a86a6ed4ae836a6bd1a528688a01ce9ea21fc4a4f01d21e38d2bb27",
+          "staticContactSteps": 79,
+          "pairContactSteps": 92,
+          "minimumStaticContactMargin": -0.2190046702618344,
+          "minimumPairMargin": -0.19971072724906827,
+          "maxStaticQueries": 16,
+          "arrived": 1,
+          "actors": [
+            {
+              "id": 12,
+              "generation": 2365399648,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "version": 1,
+                "generation": 2365399648,
+                "revision": 2,
+                "requestedX": 0.001,
+                "requestedZ": 0.001,
+                "cell": 1568,
+                "x": 0.001,
+                "z": 0.001
+              },
+              "goalCell": 1568,
+              "arrivalTick": 234,
+              "crossedTick": null,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 1,
+              "distance": 19.13094859546585,
+              "initialRevision": 2,
+              "x": 0.001,
+              "z": 0.001,
+              "finalRevision": 15,
+              "finalGoalCell": 1568,
+              "pending": false,
+              "pathIndex": 2,
+              "pathLength": 2
+            }
+          ],
+          "invalidCenterSubsteps": 0,
+          "unobservedPositionMutations": 0,
+          "healthLoss": 0
+        },
+        {
+          "sourceSha256": "52db2713f2223200571d29099fe80dc24cbad160fa1711a6d73785f2aebe4151",
+          "initialCheckpointSha256": "6b0453538c14ab4aeb741d7ffe55e2ad5e29f69c711bd9919da5921076ef8930",
+          "navigationMaskSha256": "6867ac605ba7c2054611cea02d2513016bb23425ee153353d2e8c7c4d9e02a53",
+          "navigationRevision": 0,
+          "commands": [
+            {
+              "team": 1,
+              "command": {
+                "type": "move",
+                "ids": [
+                  12
+                ],
+                "unitGenerations": [
+                  2365399648
+                ],
+                "x": 0.001,
+                "z": 0.001,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 1 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 1 UNITS"
+                }
+              ]
+            }
+          ],
+          "initialContacts": [
+            {
+              "id": 12,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.07165181182026589
+            }
+          ],
+          "ticks": 234,
+          "observedSubsteps": 234,
+          "selectedSubsteps": 234,
+          "traceSha256": "1f1d59b22a86a6ed4ae836a6bd1a528688a01ce9ea21fc4a4f01d21e38d2bb27",
+          "staticContactSteps": 79,
+          "pairContactSteps": 92,
+          "minimumStaticContactMargin": -0.2190046702618344,
+          "minimumPairMargin": -0.19971072724906827,
+          "maxStaticQueries": 16,
+          "arrived": 1,
+          "actors": [
+            {
+              "id": 12,
+              "generation": 2365399648,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "version": 1,
+                "generation": 2365399648,
+                "revision": 2,
+                "requestedX": 0.001,
+                "requestedZ": 0.001,
+                "cell": 1568,
+                "x": 0.001,
+                "z": 0.001
+              },
+              "goalCell": 1568,
+              "arrivalTick": 234,
+              "crossedTick": null,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 1,
+              "distance": 19.13094859546585,
+              "initialRevision": 2,
+              "x": 0.001,
+              "z": 0.001,
+              "finalRevision": 15,
+              "finalGoalCell": 1568,
+              "pending": false,
+              "pathIndex": 2,
+              "pathLength": 2
+            }
+          ],
+          "invalidCenterSubsteps": 0,
+          "unobservedPositionMutations": 0,
+          "healthLoss": 0
+        }
+      ]
+    },
+    {
+      "id": "forest-opposing-infantry",
+      "scene": "forest",
+      "group": 1,
+      "deterministicReplay": true,
+      "runs": [
+        {
+          "sourceSha256": "52db2713f2223200571d29099fe80dc24cbad160fa1711a6d73785f2aebe4151",
+          "initialCheckpointSha256": "011e5beaf430d558c2546c0d926c4828439dfce68e93a3ce237529b669bd04a9",
+          "navigationMaskSha256": "39db278dc36a201c2a5c73fde5d3aca5746d7a6089be783570d682604f40f751",
+          "navigationRevision": 0,
+          "commands": [
+            {
+              "team": 0,
+              "command": {
+                "type": "move",
+                "ids": [
+                  4
+                ],
+                "unitGenerations": [
+                  2522151098
+                ],
+                "x": 12.5,
+                "z": 0.5,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 1 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 1 UNITS"
+                }
+              ]
+            },
+            {
+              "team": 1,
+              "command": {
+                "type": "move",
+                "ids": [
+                  9
+                ],
+                "unitGenerations": [
+                  2522151098
+                ],
+                "x": -12.5,
+                "z": 0.5,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 1 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 1 UNITS"
+                }
+              ]
+            }
+          ],
+          "initialContacts": [
+            {
+              "id": 4,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 17.32343081911626
+            },
+            {
+              "id": 9,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 16.685666507338833
+            }
+          ],
+          "ticks": 277,
+          "observedSubsteps": 554,
+          "selectedSubsteps": 554,
+          "traceSha256": "6ddf962d5c8f6f9c80c3ace6a0c646fa8056865aca71112e5bacf0480966a0e2",
+          "staticContactSteps": 0,
+          "pairContactSteps": 11,
+          "minimumStaticContactMargin": null,
+          "minimumPairMargin": -0.44,
+          "maxStaticQueries": 12,
+          "arrived": 2,
+          "actors": [
+            {
+              "id": 4,
+              "generation": 2522151098,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "version": 1,
+                "generation": 2522151098,
+                "revision": 2,
+                "requestedX": 12.5,
+                "requestedZ": 0.5,
+                "cell": 1580,
+                "x": 12.5,
+                "z": 0.5
+              },
+              "goalCell": 1580,
+              "arrivalTick": 277,
+              "crossedTick": 179,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 23.999999999999893,
+              "initialRevision": 2,
+              "x": 12.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1580,
+              "pending": false,
+              "pathIndex": 1,
+              "pathLength": 1
+            },
+            {
+              "id": 9,
+              "generation": 2522151098,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "version": 1,
+                "generation": 2522151098,
+                "revision": 2,
+                "requestedX": -12.5,
+                "requestedZ": 0.5,
+                "cell": 1555,
+                "x": -12.5,
+                "z": 0.5
+              },
+              "goalCell": 1555,
+              "arrivalTick": 277,
+              "crossedTick": 179,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 23.999999999999893,
+              "initialRevision": 2,
+              "x": -12.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1555,
+              "pending": false,
+              "pathIndex": 1,
+              "pathLength": 1
+            }
+          ],
+          "invalidCenterSubsteps": 0,
+          "unobservedPositionMutations": 0,
+          "healthLoss": 0
+        },
+        {
+          "sourceSha256": "52db2713f2223200571d29099fe80dc24cbad160fa1711a6d73785f2aebe4151",
+          "initialCheckpointSha256": "011e5beaf430d558c2546c0d926c4828439dfce68e93a3ce237529b669bd04a9",
+          "navigationMaskSha256": "39db278dc36a201c2a5c73fde5d3aca5746d7a6089be783570d682604f40f751",
+          "navigationRevision": 0,
+          "commands": [
+            {
+              "team": 0,
+              "command": {
+                "type": "move",
+                "ids": [
+                  4
+                ],
+                "unitGenerations": [
+                  2522151098
+                ],
+                "x": 12.5,
+                "z": 0.5,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 1 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 1 UNITS"
+                }
+              ]
+            },
+            {
+              "team": 1,
+              "command": {
+                "type": "move",
+                "ids": [
+                  9
+                ],
+                "unitGenerations": [
+                  2522151098
+                ],
+                "x": -12.5,
+                "z": 0.5,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 1 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 1 UNITS"
+                }
+              ]
+            }
+          ],
+          "initialContacts": [
+            {
+              "id": 4,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 17.32343081911626
+            },
+            {
+              "id": 9,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 16.685666507338833
+            }
+          ],
+          "ticks": 277,
+          "observedSubsteps": 554,
+          "selectedSubsteps": 554,
+          "traceSha256": "6ddf962d5c8f6f9c80c3ace6a0c646fa8056865aca71112e5bacf0480966a0e2",
+          "staticContactSteps": 0,
+          "pairContactSteps": 11,
+          "minimumStaticContactMargin": null,
+          "minimumPairMargin": -0.44,
+          "maxStaticQueries": 12,
+          "arrived": 2,
+          "actors": [
+            {
+              "id": 4,
+              "generation": 2522151098,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "version": 1,
+                "generation": 2522151098,
+                "revision": 2,
+                "requestedX": 12.5,
+                "requestedZ": 0.5,
+                "cell": 1580,
+                "x": 12.5,
+                "z": 0.5
+              },
+              "goalCell": 1580,
+              "arrivalTick": 277,
+              "crossedTick": 179,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 23.999999999999893,
+              "initialRevision": 2,
+              "x": 12.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1580,
+              "pending": false,
+              "pathIndex": 1,
+              "pathLength": 1
+            },
+            {
+              "id": 9,
+              "generation": 2522151098,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "version": 1,
+                "generation": 2522151098,
+                "revision": 2,
+                "requestedX": -12.5,
+                "requestedZ": 0.5,
+                "cell": 1555,
+                "x": -12.5,
+                "z": 0.5
+              },
+              "goalCell": 1555,
+              "arrivalTick": 277,
+              "crossedTick": 179,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 23.999999999999893,
+              "initialRevision": 2,
+              "x": -12.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1555,
+              "pending": false,
+              "pathIndex": 1,
+              "pathLength": 1
+            }
+          ],
+          "invalidCenterSubsteps": 0,
+          "unobservedPositionMutations": 0,
+          "healthLoss": 0
+        }
+      ]
+    },
+    {
+      "id": "forest-opposing-scout-seat-0",
+      "scene": "forest",
+      "group": 1,
+      "scoutTeam": 0,
+      "deterministicReplay": true,
+      "runs": [
+        {
+          "sourceSha256": "52db2713f2223200571d29099fe80dc24cbad160fa1711a6d73785f2aebe4151",
+          "initialCheckpointSha256": "820fc4b0b22d9fd65b7a38816fe6a5f7b0830161e3f07816e009f79c21b587f3",
+          "navigationMaskSha256": "39db278dc36a201c2a5c73fde5d3aca5746d7a6089be783570d682604f40f751",
+          "navigationRevision": 0,
+          "commands": [
+            {
+              "team": 0,
+              "command": {
+                "type": "move",
+                "ids": [
+                  4
+                ],
+                "unitGenerations": [
+                  322581468
+                ],
+                "x": 12.5,
+                "z": 0.5,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 1 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 1 UNITS"
+                }
+              ]
+            },
+            {
+              "team": 1,
+              "command": {
+                "type": "move",
+                "ids": [
+                  9
+                ],
+                "unitGenerations": [
+                  322581468
+                ],
+                "x": -12.5,
+                "z": 0.5,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 1 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 1 UNITS"
+                }
+              ]
+            }
+          ],
+          "initialContacts": [
+            {
+              "id": 4,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 17.26343081911626
+            },
+            {
+              "id": 9,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 16.685666507338833
+            }
+          ],
+          "ticks": 277,
+          "observedSubsteps": 437,
+          "selectedSubsteps": 437,
+          "traceSha256": "4550432fc3e30cda83564c901d714a6c8b960c2557fab15faab4c4aa4cad3bbc",
+          "staticContactSteps": 0,
+          "pairContactSteps": 9,
+          "minimumStaticContactMargin": null,
+          "minimumPairMargin": -0.5,
+          "maxStaticQueries": 12,
+          "arrived": 2,
+          "actors": [
+            {
+              "id": 4,
+              "generation": 322581468,
+              "team": 0,
+              "kind": "scout",
+              "goal": {
+                "version": 1,
+                "generation": 322581468,
+                "revision": 2,
+                "requestedX": 12.5,
+                "requestedZ": 0.5,
+                "cell": 1580,
+                "x": 12.5,
+                "z": 0.5
+              },
+              "goalCell": 1580,
+              "arrivalTick": 160,
+              "crossedTick": 104,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 23.999999999999932,
+              "initialRevision": 2,
+              "x": 12.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1580,
+              "pending": false,
+              "pathIndex": 1,
+              "pathLength": 1
+            },
+            {
+              "id": 9,
+              "generation": 322581468,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "version": 1,
+                "generation": 322581468,
+                "revision": 2,
+                "requestedX": -12.5,
+                "requestedZ": 0.5,
+                "cell": 1555,
+                "x": -12.5,
+                "z": 0.5
+              },
+              "goalCell": 1555,
+              "arrivalTick": 277,
+              "crossedTick": 179,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 23.999999999999893,
+              "initialRevision": 2,
+              "x": -12.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1555,
+              "pending": false,
+              "pathIndex": 1,
+              "pathLength": 1
+            }
+          ],
+          "invalidCenterSubsteps": 0,
+          "unobservedPositionMutations": 0,
+          "healthLoss": 0
+        },
+        {
+          "sourceSha256": "52db2713f2223200571d29099fe80dc24cbad160fa1711a6d73785f2aebe4151",
+          "initialCheckpointSha256": "820fc4b0b22d9fd65b7a38816fe6a5f7b0830161e3f07816e009f79c21b587f3",
+          "navigationMaskSha256": "39db278dc36a201c2a5c73fde5d3aca5746d7a6089be783570d682604f40f751",
+          "navigationRevision": 0,
+          "commands": [
+            {
+              "team": 0,
+              "command": {
+                "type": "move",
+                "ids": [
+                  4
+                ],
+                "unitGenerations": [
+                  322581468
+                ],
+                "x": 12.5,
+                "z": 0.5,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 1 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 1 UNITS"
+                }
+              ]
+            },
+            {
+              "team": 1,
+              "command": {
+                "type": "move",
+                "ids": [
+                  9
+                ],
+                "unitGenerations": [
+                  322581468
+                ],
+                "x": -12.5,
+                "z": 0.5,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 1 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 1 UNITS"
+                }
+              ]
+            }
+          ],
+          "initialContacts": [
+            {
+              "id": 4,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 17.26343081911626
+            },
+            {
+              "id": 9,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 16.685666507338833
+            }
+          ],
+          "ticks": 277,
+          "observedSubsteps": 437,
+          "selectedSubsteps": 437,
+          "traceSha256": "4550432fc3e30cda83564c901d714a6c8b960c2557fab15faab4c4aa4cad3bbc",
+          "staticContactSteps": 0,
+          "pairContactSteps": 9,
+          "minimumStaticContactMargin": null,
+          "minimumPairMargin": -0.5,
+          "maxStaticQueries": 12,
+          "arrived": 2,
+          "actors": [
+            {
+              "id": 4,
+              "generation": 322581468,
+              "team": 0,
+              "kind": "scout",
+              "goal": {
+                "version": 1,
+                "generation": 322581468,
+                "revision": 2,
+                "requestedX": 12.5,
+                "requestedZ": 0.5,
+                "cell": 1580,
+                "x": 12.5,
+                "z": 0.5
+              },
+              "goalCell": 1580,
+              "arrivalTick": 160,
+              "crossedTick": 104,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 23.999999999999932,
+              "initialRevision": 2,
+              "x": 12.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1580,
+              "pending": false,
+              "pathIndex": 1,
+              "pathLength": 1
+            },
+            {
+              "id": 9,
+              "generation": 322581468,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "version": 1,
+                "generation": 322581468,
+                "revision": 2,
+                "requestedX": -12.5,
+                "requestedZ": 0.5,
+                "cell": 1555,
+                "x": -12.5,
+                "z": 0.5
+              },
+              "goalCell": 1555,
+              "arrivalTick": 277,
+              "crossedTick": 179,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 23.999999999999893,
+              "initialRevision": 2,
+              "x": -12.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1555,
+              "pending": false,
+              "pathIndex": 1,
+              "pathLength": 1
+            }
+          ],
+          "invalidCenterSubsteps": 0,
+          "unobservedPositionMutations": 0,
+          "healthLoss": 0
+        }
+      ]
+    },
+    {
+      "id": "forest-opposing-scout-seat-1",
+      "scene": "forest",
+      "group": 1,
+      "scoutTeam": 1,
+      "deterministicReplay": true,
+      "runs": [
+        {
+          "sourceSha256": "52db2713f2223200571d29099fe80dc24cbad160fa1711a6d73785f2aebe4151",
+          "initialCheckpointSha256": "8da7a6fe92030b950f296f420389dafb7c9047a40eaa8d135c44a3443a420935",
+          "navigationMaskSha256": "39db278dc36a201c2a5c73fde5d3aca5746d7a6089be783570d682604f40f751",
+          "navigationRevision": 0,
+          "commands": [
+            {
+              "team": 0,
+              "command": {
+                "type": "move",
+                "ids": [
+                  4
+                ],
+                "unitGenerations": [
+                  39968343
+                ],
+                "x": 12.5,
+                "z": 0.5,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 1 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 1 UNITS"
+                }
+              ]
+            },
+            {
+              "team": 1,
+              "command": {
+                "type": "move",
+                "ids": [
+                  9
+                ],
+                "unitGenerations": [
+                  39968343
+                ],
+                "x": -12.5,
+                "z": 0.5,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 1 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 1 UNITS"
+                }
+              ]
+            }
+          ],
+          "initialContacts": [
+            {
+              "id": 4,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 17.32343081911626
+            },
+            {
+              "id": 9,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 16.62566650733883
+            }
+          ],
+          "ticks": 277,
+          "observedSubsteps": 437,
+          "selectedSubsteps": 437,
+          "traceSha256": "ccd9ddf502b0487f46e24ddf8f446f9cfa9a8f134507266933505c0faf8d2fa2",
+          "staticContactSteps": 0,
+          "pairContactSteps": 9,
+          "minimumStaticContactMargin": null,
+          "minimumPairMargin": -0.5,
+          "maxStaticQueries": 12,
+          "arrived": 2,
+          "actors": [
+            {
+              "id": 4,
+              "generation": 39968343,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "version": 1,
+                "generation": 39968343,
+                "revision": 2,
+                "requestedX": 12.5,
+                "requestedZ": 0.5,
+                "cell": 1580,
+                "x": 12.5,
+                "z": 0.5
+              },
+              "goalCell": 1580,
+              "arrivalTick": 277,
+              "crossedTick": 179,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 23.999999999999893,
+              "initialRevision": 2,
+              "x": 12.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1580,
+              "pending": false,
+              "pathIndex": 1,
+              "pathLength": 1
+            },
+            {
+              "id": 9,
+              "generation": 39968343,
+              "team": 1,
+              "kind": "scout",
+              "goal": {
+                "version": 1,
+                "generation": 39968343,
+                "revision": 2,
+                "requestedX": -12.5,
+                "requestedZ": 0.5,
+                "cell": 1555,
+                "x": -12.5,
+                "z": 0.5
+              },
+              "goalCell": 1555,
+              "arrivalTick": 160,
+              "crossedTick": 104,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 23.999999999999932,
+              "initialRevision": 2,
+              "x": -12.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1555,
+              "pending": false,
+              "pathIndex": 1,
+              "pathLength": 1
+            }
+          ],
+          "invalidCenterSubsteps": 0,
+          "unobservedPositionMutations": 0,
+          "healthLoss": 0
+        },
+        {
+          "sourceSha256": "52db2713f2223200571d29099fe80dc24cbad160fa1711a6d73785f2aebe4151",
+          "initialCheckpointSha256": "8da7a6fe92030b950f296f420389dafb7c9047a40eaa8d135c44a3443a420935",
+          "navigationMaskSha256": "39db278dc36a201c2a5c73fde5d3aca5746d7a6089be783570d682604f40f751",
+          "navigationRevision": 0,
+          "commands": [
+            {
+              "team": 0,
+              "command": {
+                "type": "move",
+                "ids": [
+                  4
+                ],
+                "unitGenerations": [
+                  39968343
+                ],
+                "x": 12.5,
+                "z": 0.5,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 1 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 1 UNITS"
+                }
+              ]
+            },
+            {
+              "team": 1,
+              "command": {
+                "type": "move",
+                "ids": [
+                  9
+                ],
+                "unitGenerations": [
+                  39968343
+                ],
+                "x": -12.5,
+                "z": 0.5,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 1 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 1 UNITS"
+                }
+              ]
+            }
+          ],
+          "initialContacts": [
+            {
+              "id": 4,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 17.32343081911626
+            },
+            {
+              "id": 9,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 16.62566650733883
+            }
+          ],
+          "ticks": 277,
+          "observedSubsteps": 437,
+          "selectedSubsteps": 437,
+          "traceSha256": "ccd9ddf502b0487f46e24ddf8f446f9cfa9a8f134507266933505c0faf8d2fa2",
+          "staticContactSteps": 0,
+          "pairContactSteps": 9,
+          "minimumStaticContactMargin": null,
+          "minimumPairMargin": -0.5,
+          "maxStaticQueries": 12,
+          "arrived": 2,
+          "actors": [
+            {
+              "id": 4,
+              "generation": 39968343,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "version": 1,
+                "generation": 39968343,
+                "revision": 2,
+                "requestedX": 12.5,
+                "requestedZ": 0.5,
+                "cell": 1580,
+                "x": 12.5,
+                "z": 0.5
+              },
+              "goalCell": 1580,
+              "arrivalTick": 277,
+              "crossedTick": 179,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 23.999999999999893,
+              "initialRevision": 2,
+              "x": 12.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1580,
+              "pending": false,
+              "pathIndex": 1,
+              "pathLength": 1
+            },
+            {
+              "id": 9,
+              "generation": 39968343,
+              "team": 1,
+              "kind": "scout",
+              "goal": {
+                "version": 1,
+                "generation": 39968343,
+                "revision": 2,
+                "requestedX": -12.5,
+                "requestedZ": 0.5,
+                "cell": 1555,
+                "x": -12.5,
+                "z": 0.5
+              },
+              "goalCell": 1555,
+              "arrivalTick": 160,
+              "crossedTick": 104,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 23.999999999999932,
+              "initialRevision": 2,
+              "x": -12.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1555,
+              "pending": false,
+              "pathIndex": 1,
+              "pathLength": 1
+            }
+          ],
+          "invalidCenterSubsteps": 0,
+          "unobservedPositionMutations": 0,
+          "healthLoss": 0
+        }
+      ]
+    },
+    {
+      "id": "forest-opposing-box-16",
+      "scene": "forest",
+      "group": 16,
+      "deterministicReplay": true,
+      "runs": [
+        {
+          "sourceSha256": "52db2713f2223200571d29099fe80dc24cbad160fa1711a6d73785f2aebe4151",
+          "initialCheckpointSha256": "7d7830c3b1a7804777a24b81d8e758ca64245954a95fee93bb3d910aa99bc665",
+          "navigationMaskSha256": "39db278dc36a201c2a5c73fde5d3aca5746d7a6089be783570d682604f40f751",
+          "navigationRevision": 0,
+          "commands": [
+            {
+              "team": 0,
+              "command": {
+                "type": "move",
+                "ids": [
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11,
+                  12,
+                  13,
+                  14,
+                  15,
+                  16,
+                  17,
+                  18,
+                  19
+                ],
+                "unitGenerations": [
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470
+                ],
+                "x": 12.5,
+                "z": 0.5,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 16 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 16 UNITS"
+                }
+              ]
+            },
+            {
+              "team": 1,
+              "command": {
+                "type": "move",
+                "ids": [
+                  24,
+                  25,
+                  26,
+                  27,
+                  28,
+                  29,
+                  30,
+                  31,
+                  32,
+                  33,
+                  34,
+                  35,
+                  36,
+                  37,
+                  38,
+                  39
+                ],
+                "unitGenerations": [
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470
+                ],
+                "x": -12.5,
+                "z": 0.5,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 16 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 16 UNITS"
+                }
+              ]
+            }
+          ],
+          "initialContacts": [
+            {
+              "id": 4,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 5,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 6,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 7,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 8,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 9,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 10,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 11,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 12,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 13,
+              "contacts": [],
+              "queries": 16,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 14,
+              "contacts": [],
+              "queries": 16,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 15,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 16,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 17,
+              "contacts": [],
+              "queries": 16,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 18,
+              "contacts": [],
+              "queries": 16,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 19,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 24,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 25,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 26,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 27,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 28,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 29,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 30,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 31,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 32,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 33,
+              "contacts": [],
+              "queries": 16,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 34,
+              "contacts": [],
+              "queries": 16,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 35,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 36,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 37,
+              "contacts": [],
+              "queries": 16,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 38,
+              "contacts": [],
+              "queries": 16,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 39,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            }
+          ],
+          "ticks": 365,
+          "observedSubsteps": 11572,
+          "selectedSubsteps": 11572,
+          "traceSha256": "d8c070c6ea9e277475c0a560050df18bca7385d8dd8a7f0da6d644d97d086c31",
+          "staticContactSteps": 0,
+          "pairContactSteps": 5183,
+          "minimumStaticContactMargin": null,
+          "minimumPairMargin": -0.44,
+          "maxStaticQueries": 16,
+          "arrived": 32,
+          "actors": [
+            {
+              "id": 4,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 13.5,
+                "z": -1.5
+              },
+              "goalCell": 1453,
+              "arrivalTick": 349,
+              "crossedTick": 216,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 30.18267758213385,
+              "initialRevision": 2,
+              "x": 13.5,
+              "z": -1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1453,
+              "pending": false,
+              "pathIndex": 29,
+              "pathLength": 29
+            },
+            {
+              "id": 5,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 13.5,
+                "z": -0.5
+              },
+              "goalCell": 1517,
+              "arrivalTick": 316,
+              "crossedTick": 194,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 27.30805912148229,
+              "initialRevision": 2,
+              "x": 13.5,
+              "z": -0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1517,
+              "pending": false,
+              "pathIndex": 27,
+              "pathLength": 27
+            },
+            {
+              "id": 6,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 13.5,
+                "z": 0.5
+              },
+              "goalCell": 1581,
+              "arrivalTick": 297,
+              "crossedTick": 187,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 25.691219979381273,
+              "initialRevision": 2,
+              "x": 13.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1581,
+              "pending": false,
+              "pathIndex": 26,
+              "pathLength": 26
+            },
+            {
+              "id": 7,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 13.5,
+                "z": 1.5
+              },
+              "goalCell": 1645,
+              "arrivalTick": 331,
+              "crossedTick": 209,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 28.612227597168815,
+              "initialRevision": 2,
+              "x": 13.5,
+              "z": 1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1645,
+              "pending": false,
+              "pathIndex": 28,
+              "pathLength": 28
+            },
+            {
+              "id": 8,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 12.5,
+                "z": -1.5
+              },
+              "goalCell": 1452,
+              "arrivalTick": 359,
+              "crossedTick": 230,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 31.101817239455468,
+              "initialRevision": 2,
+              "x": 12.5,
+              "z": -1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1452,
+              "pending": false,
+              "pathIndex": 29,
+              "pathLength": 29
+            },
+            {
+              "id": 9,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 12.5,
+                "z": -0.5
+              },
+              "goalCell": 1516,
+              "arrivalTick": 323,
+              "crossedTick": 213,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 27.92863290173958,
+              "initialRevision": 2,
+              "x": 12.5,
+              "z": -0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1516,
+              "pending": false,
+              "pathIndex": 27,
+              "pathLength": 27
+            },
+            {
+              "id": 10,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 12.5,
+                "z": 0.5
+              },
+              "goalCell": 1580,
+              "arrivalTick": 299,
+              "crossedTick": 201,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 25.8346146236521,
+              "initialRevision": 2,
+              "x": 12.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1580,
+              "pending": false,
+              "pathIndex": 26,
+              "pathLength": 26
+            },
+            {
+              "id": 11,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 12.5,
+                "z": 1.5
+              },
+              "goalCell": 1644,
+              "arrivalTick": 331,
+              "crossedTick": 222,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 28.664117275735205,
+              "initialRevision": 2,
+              "x": 12.5,
+              "z": 1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1644,
+              "pending": false,
+              "pathIndex": 28,
+              "pathLength": 28
+            },
+            {
+              "id": 12,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 11.5,
+                "z": -1.5
+              },
+              "goalCell": 1451,
+              "arrivalTick": 347,
+              "crossedTick": 233,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 30.05279818639578,
+              "initialRevision": 2,
+              "x": 11.5,
+              "z": -1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1451,
+              "pending": false,
+              "pathIndex": 29,
+              "pathLength": 29
+            },
+            {
+              "id": 13,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 11.5,
+                "z": -0.5
+              },
+              "goalCell": 1515,
+              "arrivalTick": 325,
+              "crossedTick": 227,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 28.151421355606537,
+              "initialRevision": 2,
+              "x": 11.5,
+              "z": -0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1515,
+              "pending": false,
+              "pathIndex": 27,
+              "pathLength": 27
+            },
+            {
+              "id": 14,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 11.5,
+                "z": 0.5
+              },
+              "goalCell": 1579,
+              "arrivalTick": 305,
+              "crossedTick": 218,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 26.398228502738206,
+              "initialRevision": 2,
+              "x": 11.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1579,
+              "pending": false,
+              "pathIndex": 26,
+              "pathLength": 26
+            },
+            {
+              "id": 15,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 11.5,
+                "z": 1.5
+              },
+              "goalCell": 1643,
+              "arrivalTick": 328,
+              "crossedTick": 229,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 28.41123747635929,
+              "initialRevision": 2,
+              "x": 11.5,
+              "z": 1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1643,
+              "pending": false,
+              "pathIndex": 28,
+              "pathLength": 28
+            },
+            {
+              "id": 16,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 10.5,
+                "z": -1.5
+              },
+              "goalCell": 1450,
+              "arrivalTick": 351,
+              "crossedTick": 251,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 30.37158752404489,
+              "initialRevision": 2,
+              "x": 10.5,
+              "z": -1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1450,
+              "pending": false,
+              "pathIndex": 30,
+              "pathLength": 30
+            },
+            {
+              "id": 17,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 10.5,
+                "z": -0.5
+              },
+              "goalCell": 1514,
+              "arrivalTick": 336,
+              "crossedTick": 249,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 29.116473514779884,
+              "initialRevision": 2,
+              "x": 10.5,
+              "z": -0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1514,
+              "pending": false,
+              "pathIndex": 28,
+              "pathLength": 28
+            },
+            {
+              "id": 18,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 10.5,
+                "z": 0.5
+              },
+              "goalCell": 1578,
+              "arrivalTick": 318,
+              "crossedTick": 243,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 27.555316961571535,
+              "initialRevision": 2,
+              "x": 10.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1578,
+              "pending": false,
+              "pathIndex": 27,
+              "pathLength": 27
+            },
+            {
+              "id": 19,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 10.5,
+                "z": 1.5
+              },
+              "goalCell": 1642,
+              "arrivalTick": 338,
+              "crossedTick": 251,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 29.260313388534783,
+              "initialRevision": 2,
+              "x": 10.5,
+              "z": 1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1642,
+              "pending": false,
+              "pathIndex": 29,
+              "pathLength": 29
+            },
+            {
+              "id": 24,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -14.5,
+                "z": -1.5
+              },
+              "goalCell": 1425,
+              "arrivalTick": 363,
+              "crossedTick": 217,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 31.434010443025755,
+              "initialRevision": 2,
+              "x": -14.5,
+              "z": -1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1425,
+              "pending": false,
+              "pathIndex": 30,
+              "pathLength": 30
+            },
+            {
+              "id": 25,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -14.5,
+                "z": -0.5
+              },
+              "goalCell": 1489,
+              "arrivalTick": 327,
+              "crossedTick": 194,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 28.285765029375384,
+              "initialRevision": 2,
+              "x": -14.5,
+              "z": -0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1489,
+              "pending": false,
+              "pathIndex": 28,
+              "pathLength": 28
+            },
+            {
+              "id": 26,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -14.5,
+                "z": 0.5
+              },
+              "goalCell": 1553,
+              "arrivalTick": 308,
+              "crossedTick": 187,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 26.678871757524952,
+              "initialRevision": 2,
+              "x": -14.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1553,
+              "pending": false,
+              "pathIndex": 27,
+              "pathLength": 27
+            },
+            {
+              "id": 27,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -14.5,
+                "z": 1.5
+              },
+              "goalCell": 1617,
+              "arrivalTick": 341,
+              "crossedTick": 209,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 29.552535557444042,
+              "initialRevision": 2,
+              "x": -14.5,
+              "z": 1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1617,
+              "pending": false,
+              "pathIndex": 29,
+              "pathLength": 29
+            },
+            {
+              "id": 28,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -13.5,
+                "z": -1.5
+              },
+              "goalCell": 1426,
+              "arrivalTick": 365,
+              "crossedTick": 229,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 31.599743892384854,
+              "initialRevision": 2,
+              "x": -13.5,
+              "z": -1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1426,
+              "pending": false,
+              "pathIndex": 30,
+              "pathLength": 30
+            },
+            {
+              "id": 29,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -13.5,
+                "z": -0.5
+              },
+              "goalCell": 1490,
+              "arrivalTick": 339,
+              "crossedTick": 215,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 29.325925611864264,
+              "initialRevision": 2,
+              "x": -13.5,
+              "z": -0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1490,
+              "pending": false,
+              "pathIndex": 28,
+              "pathLength": 28
+            },
+            {
+              "id": 30,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -13.5,
+                "z": 0.5
+              },
+              "goalCell": 1554,
+              "arrivalTick": 310,
+              "crossedTick": 200,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 26.8265466385925,
+              "initialRevision": 2,
+              "x": -13.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1554,
+              "pending": false,
+              "pathIndex": 27,
+              "pathLength": 27
+            },
+            {
+              "id": 31,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -13.5,
+                "z": 1.5
+              },
+              "goalCell": 1618,
+              "arrivalTick": 344,
+              "crossedTick": 223,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 29.777734568291276,
+              "initialRevision": 2,
+              "x": -13.5,
+              "z": 1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1618,
+              "pending": false,
+              "pathIndex": 29,
+              "pathLength": 29
+            },
+            {
+              "id": 32,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -12.5,
+                "z": -1.5
+              },
+              "goalCell": 1427,
+              "arrivalTick": 356,
+              "crossedTick": 234,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 30.784235749163678,
+              "initialRevision": 2,
+              "x": -12.5,
+              "z": -1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1427,
+              "pending": false,
+              "pathIndex": 30,
+              "pathLength": 30
+            },
+            {
+              "id": 33,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -12.5,
+                "z": -0.5
+              },
+              "goalCell": 1491,
+              "arrivalTick": 339,
+              "crossedTick": 228,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 29.317694124087687,
+              "initialRevision": 2,
+              "x": -12.5,
+              "z": -0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1491,
+              "pending": false,
+              "pathIndex": 28,
+              "pathLength": 28
+            },
+            {
+              "id": 34,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -12.5,
+                "z": 0.5
+              },
+              "goalCell": 1555,
+              "arrivalTick": 318,
+              "crossedTick": 218,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 27.48078262591871,
+              "initialRevision": 2,
+              "x": -12.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1555,
+              "pending": false,
+              "pathIndex": 27,
+              "pathLength": 27
+            },
+            {
+              "id": 35,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -12.5,
+                "z": 1.5
+              },
+              "goalCell": 1619,
+              "arrivalTick": 340,
+              "crossedTick": 229,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 29.435471401814905,
+              "initialRevision": 2,
+              "x": -12.5,
+              "z": 1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1619,
+              "pending": false,
+              "pathIndex": 29,
+              "pathLength": 29
+            },
+            {
+              "id": 36,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -11.5,
+                "z": -1.5
+              },
+              "goalCell": 1428,
+              "arrivalTick": 362,
+              "crossedTick": 252,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 31.304389491677366,
+              "initialRevision": 2,
+              "x": -11.5,
+              "z": -1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1428,
+              "pending": false,
+              "pathIndex": 31,
+              "pathLength": 31
+            },
+            {
+              "id": 37,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -11.5,
+                "z": -0.5
+              },
+              "goalCell": 1492,
+              "arrivalTick": 352,
+              "crossedTick": 251,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 30.422511180380972,
+              "initialRevision": 2,
+              "x": -11.5,
+              "z": -0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1492,
+              "pending": false,
+              "pathIndex": 29,
+              "pathLength": 29
+            },
+            {
+              "id": 38,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -11.5,
+                "z": 0.5
+              },
+              "goalCell": 1556,
+              "arrivalTick": 332,
+              "crossedTick": 245,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 28.697913256043933,
+              "initialRevision": 2,
+              "x": -11.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1556,
+              "pending": false,
+              "pathIndex": 28,
+              "pathLength": 28
+            },
+            {
+              "id": 39,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -11.5,
+                "z": 1.5
+              },
+              "goalCell": 1620,
+              "arrivalTick": 351,
+              "crossedTick": 251,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 30.364340014133163,
+              "initialRevision": 2,
+              "x": -11.5,
+              "z": 1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1620,
+              "pending": false,
+              "pathIndex": 30,
+              "pathLength": 30
+            }
+          ],
+          "invalidCenterSubsteps": 0,
+          "unobservedPositionMutations": 0,
+          "healthLoss": 0
+        },
+        {
+          "sourceSha256": "52db2713f2223200571d29099fe80dc24cbad160fa1711a6d73785f2aebe4151",
+          "initialCheckpointSha256": "7d7830c3b1a7804777a24b81d8e758ca64245954a95fee93bb3d910aa99bc665",
+          "navigationMaskSha256": "39db278dc36a201c2a5c73fde5d3aca5746d7a6089be783570d682604f40f751",
+          "navigationRevision": 0,
+          "commands": [
+            {
+              "team": 0,
+              "command": {
+                "type": "move",
+                "ids": [
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11,
+                  12,
+                  13,
+                  14,
+                  15,
+                  16,
+                  17,
+                  18,
+                  19
+                ],
+                "unitGenerations": [
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470
+                ],
+                "x": 12.5,
+                "z": 0.5,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 16 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 16 UNITS"
+                }
+              ]
+            },
+            {
+              "team": 1,
+              "command": {
+                "type": "move",
+                "ids": [
+                  24,
+                  25,
+                  26,
+                  27,
+                  28,
+                  29,
+                  30,
+                  31,
+                  32,
+                  33,
+                  34,
+                  35,
+                  36,
+                  37,
+                  38,
+                  39
+                ],
+                "unitGenerations": [
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470,
+                  1597862470
+                ],
+                "x": -12.5,
+                "z": 0.5,
+                "formation": "box"
+              },
+              "notices": [
+                {
+                  "type": "notice",
+                  "message": "PLANNING MOVE · 16 UNITS"
+                },
+                {
+                  "type": "notice",
+                  "message": "MOVE ORDER · 16 UNITS"
+                }
+              ]
+            }
+          ],
+          "initialContacts": [
+            {
+              "id": 4,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 5,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 6,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 7,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 8,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 9,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 10,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 11,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 12,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 13,
+              "contacts": [],
+              "queries": 16,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 14,
+              "contacts": [],
+              "queries": 16,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 15,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 16,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 17,
+              "contacts": [],
+              "queries": 16,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 18,
+              "contacts": [],
+              "queries": 16,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 19,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 24,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 25,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 26,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 27,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 28,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 29,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 30,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 31,
+              "contacts": [],
+              "queries": 9,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 32,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 33,
+              "contacts": [],
+              "queries": 16,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 34,
+              "contacts": [],
+              "queries": 16,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 35,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 36,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 37,
+              "contacts": [],
+              "queries": 16,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 38,
+              "contacts": [],
+              "queries": 16,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            },
+            {
+              "id": 39,
+              "contacts": [],
+              "queries": 12,
+              "pairContacts": [],
+              "pairMinimum": 0.7599999999999993
+            }
+          ],
+          "ticks": 365,
+          "observedSubsteps": 11572,
+          "selectedSubsteps": 11572,
+          "traceSha256": "d8c070c6ea9e277475c0a560050df18bca7385d8dd8a7f0da6d644d97d086c31",
+          "staticContactSteps": 0,
+          "pairContactSteps": 5183,
+          "minimumStaticContactMargin": null,
+          "minimumPairMargin": -0.44,
+          "maxStaticQueries": 16,
+          "arrived": 32,
+          "actors": [
+            {
+              "id": 4,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 13.5,
+                "z": -1.5
+              },
+              "goalCell": 1453,
+              "arrivalTick": 349,
+              "crossedTick": 216,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 30.18267758213385,
+              "initialRevision": 2,
+              "x": 13.5,
+              "z": -1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1453,
+              "pending": false,
+              "pathIndex": 29,
+              "pathLength": 29
+            },
+            {
+              "id": 5,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 13.5,
+                "z": -0.5
+              },
+              "goalCell": 1517,
+              "arrivalTick": 316,
+              "crossedTick": 194,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 27.30805912148229,
+              "initialRevision": 2,
+              "x": 13.5,
+              "z": -0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1517,
+              "pending": false,
+              "pathIndex": 27,
+              "pathLength": 27
+            },
+            {
+              "id": 6,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 13.5,
+                "z": 0.5
+              },
+              "goalCell": 1581,
+              "arrivalTick": 297,
+              "crossedTick": 187,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 25.691219979381273,
+              "initialRevision": 2,
+              "x": 13.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1581,
+              "pending": false,
+              "pathIndex": 26,
+              "pathLength": 26
+            },
+            {
+              "id": 7,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 13.5,
+                "z": 1.5
+              },
+              "goalCell": 1645,
+              "arrivalTick": 331,
+              "crossedTick": 209,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 28.612227597168815,
+              "initialRevision": 2,
+              "x": 13.5,
+              "z": 1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1645,
+              "pending": false,
+              "pathIndex": 28,
+              "pathLength": 28
+            },
+            {
+              "id": 8,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 12.5,
+                "z": -1.5
+              },
+              "goalCell": 1452,
+              "arrivalTick": 359,
+              "crossedTick": 230,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 31.101817239455468,
+              "initialRevision": 2,
+              "x": 12.5,
+              "z": -1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1452,
+              "pending": false,
+              "pathIndex": 29,
+              "pathLength": 29
+            },
+            {
+              "id": 9,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 12.5,
+                "z": -0.5
+              },
+              "goalCell": 1516,
+              "arrivalTick": 323,
+              "crossedTick": 213,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 27.92863290173958,
+              "initialRevision": 2,
+              "x": 12.5,
+              "z": -0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1516,
+              "pending": false,
+              "pathIndex": 27,
+              "pathLength": 27
+            },
+            {
+              "id": 10,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 12.5,
+                "z": 0.5
+              },
+              "goalCell": 1580,
+              "arrivalTick": 299,
+              "crossedTick": 201,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 25.8346146236521,
+              "initialRevision": 2,
+              "x": 12.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1580,
+              "pending": false,
+              "pathIndex": 26,
+              "pathLength": 26
+            },
+            {
+              "id": 11,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 12.5,
+                "z": 1.5
+              },
+              "goalCell": 1644,
+              "arrivalTick": 331,
+              "crossedTick": 222,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 28.664117275735205,
+              "initialRevision": 2,
+              "x": 12.5,
+              "z": 1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1644,
+              "pending": false,
+              "pathIndex": 28,
+              "pathLength": 28
+            },
+            {
+              "id": 12,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 11.5,
+                "z": -1.5
+              },
+              "goalCell": 1451,
+              "arrivalTick": 347,
+              "crossedTick": 233,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 30.05279818639578,
+              "initialRevision": 2,
+              "x": 11.5,
+              "z": -1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1451,
+              "pending": false,
+              "pathIndex": 29,
+              "pathLength": 29
+            },
+            {
+              "id": 13,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 11.5,
+                "z": -0.5
+              },
+              "goalCell": 1515,
+              "arrivalTick": 325,
+              "crossedTick": 227,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 28.151421355606537,
+              "initialRevision": 2,
+              "x": 11.5,
+              "z": -0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1515,
+              "pending": false,
+              "pathIndex": 27,
+              "pathLength": 27
+            },
+            {
+              "id": 14,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 11.5,
+                "z": 0.5
+              },
+              "goalCell": 1579,
+              "arrivalTick": 305,
+              "crossedTick": 218,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 26.398228502738206,
+              "initialRevision": 2,
+              "x": 11.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1579,
+              "pending": false,
+              "pathIndex": 26,
+              "pathLength": 26
+            },
+            {
+              "id": 15,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 11.5,
+                "z": 1.5
+              },
+              "goalCell": 1643,
+              "arrivalTick": 328,
+              "crossedTick": 229,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 28.41123747635929,
+              "initialRevision": 2,
+              "x": 11.5,
+              "z": 1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1643,
+              "pending": false,
+              "pathIndex": 28,
+              "pathLength": 28
+            },
+            {
+              "id": 16,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 10.5,
+                "z": -1.5
+              },
+              "goalCell": 1450,
+              "arrivalTick": 351,
+              "crossedTick": 251,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 30.37158752404489,
+              "initialRevision": 2,
+              "x": 10.5,
+              "z": -1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1450,
+              "pending": false,
+              "pathIndex": 30,
+              "pathLength": 30
+            },
+            {
+              "id": 17,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 10.5,
+                "z": -0.5
+              },
+              "goalCell": 1514,
+              "arrivalTick": 336,
+              "crossedTick": 249,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 29.116473514779884,
+              "initialRevision": 2,
+              "x": 10.5,
+              "z": -0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1514,
+              "pending": false,
+              "pathIndex": 28,
+              "pathLength": 28
+            },
+            {
+              "id": 18,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 10.5,
+                "z": 0.5
+              },
+              "goalCell": 1578,
+              "arrivalTick": 318,
+              "crossedTick": 243,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 27.555316961571535,
+              "initialRevision": 2,
+              "x": 10.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1578,
+              "pending": false,
+              "pathIndex": 27,
+              "pathLength": 27
+            },
+            {
+              "id": 19,
+              "generation": 1597862470,
+              "team": 0,
+              "kind": "infantry",
+              "goal": {
+                "x": 10.5,
+                "z": 1.5
+              },
+              "goalCell": 1642,
+              "arrivalTick": 338,
+              "crossedTick": 251,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 29.260313388534783,
+              "initialRevision": 2,
+              "x": 10.5,
+              "z": 1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1642,
+              "pending": false,
+              "pathIndex": 29,
+              "pathLength": 29
+            },
+            {
+              "id": 24,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -14.5,
+                "z": -1.5
+              },
+              "goalCell": 1425,
+              "arrivalTick": 363,
+              "crossedTick": 217,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 31.434010443025755,
+              "initialRevision": 2,
+              "x": -14.5,
+              "z": -1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1425,
+              "pending": false,
+              "pathIndex": 30,
+              "pathLength": 30
+            },
+            {
+              "id": 25,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -14.5,
+                "z": -0.5
+              },
+              "goalCell": 1489,
+              "arrivalTick": 327,
+              "crossedTick": 194,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 28.285765029375384,
+              "initialRevision": 2,
+              "x": -14.5,
+              "z": -0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1489,
+              "pending": false,
+              "pathIndex": 28,
+              "pathLength": 28
+            },
+            {
+              "id": 26,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -14.5,
+                "z": 0.5
+              },
+              "goalCell": 1553,
+              "arrivalTick": 308,
+              "crossedTick": 187,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 26.678871757524952,
+              "initialRevision": 2,
+              "x": -14.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1553,
+              "pending": false,
+              "pathIndex": 27,
+              "pathLength": 27
+            },
+            {
+              "id": 27,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -14.5,
+                "z": 1.5
+              },
+              "goalCell": 1617,
+              "arrivalTick": 341,
+              "crossedTick": 209,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 29.552535557444042,
+              "initialRevision": 2,
+              "x": -14.5,
+              "z": 1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1617,
+              "pending": false,
+              "pathIndex": 29,
+              "pathLength": 29
+            },
+            {
+              "id": 28,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -13.5,
+                "z": -1.5
+              },
+              "goalCell": 1426,
+              "arrivalTick": 365,
+              "crossedTick": 229,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 31.599743892384854,
+              "initialRevision": 2,
+              "x": -13.5,
+              "z": -1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1426,
+              "pending": false,
+              "pathIndex": 30,
+              "pathLength": 30
+            },
+            {
+              "id": 29,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -13.5,
+                "z": -0.5
+              },
+              "goalCell": 1490,
+              "arrivalTick": 339,
+              "crossedTick": 215,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 29.325925611864264,
+              "initialRevision": 2,
+              "x": -13.5,
+              "z": -0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1490,
+              "pending": false,
+              "pathIndex": 28,
+              "pathLength": 28
+            },
+            {
+              "id": 30,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -13.5,
+                "z": 0.5
+              },
+              "goalCell": 1554,
+              "arrivalTick": 310,
+              "crossedTick": 200,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 26.8265466385925,
+              "initialRevision": 2,
+              "x": -13.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1554,
+              "pending": false,
+              "pathIndex": 27,
+              "pathLength": 27
+            },
+            {
+              "id": 31,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -13.5,
+                "z": 1.5
+              },
+              "goalCell": 1618,
+              "arrivalTick": 344,
+              "crossedTick": 223,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 29.777734568291276,
+              "initialRevision": 2,
+              "x": -13.5,
+              "z": 1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1618,
+              "pending": false,
+              "pathIndex": 29,
+              "pathLength": 29
+            },
+            {
+              "id": 32,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -12.5,
+                "z": -1.5
+              },
+              "goalCell": 1427,
+              "arrivalTick": 356,
+              "crossedTick": 234,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 30.784235749163678,
+              "initialRevision": 2,
+              "x": -12.5,
+              "z": -1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1427,
+              "pending": false,
+              "pathIndex": 30,
+              "pathLength": 30
+            },
+            {
+              "id": 33,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -12.5,
+                "z": -0.5
+              },
+              "goalCell": 1491,
+              "arrivalTick": 339,
+              "crossedTick": 228,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 29.317694124087687,
+              "initialRevision": 2,
+              "x": -12.5,
+              "z": -0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1491,
+              "pending": false,
+              "pathIndex": 28,
+              "pathLength": 28
+            },
+            {
+              "id": 34,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -12.5,
+                "z": 0.5
+              },
+              "goalCell": 1555,
+              "arrivalTick": 318,
+              "crossedTick": 218,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 27.48078262591871,
+              "initialRevision": 2,
+              "x": -12.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1555,
+              "pending": false,
+              "pathIndex": 27,
+              "pathLength": 27
+            },
+            {
+              "id": 35,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -12.5,
+                "z": 1.5
+              },
+              "goalCell": 1619,
+              "arrivalTick": 340,
+              "crossedTick": 229,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 29.435471401814905,
+              "initialRevision": 2,
+              "x": -12.5,
+              "z": 1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1619,
+              "pending": false,
+              "pathIndex": 29,
+              "pathLength": 29
+            },
+            {
+              "id": 36,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -11.5,
+                "z": -1.5
+              },
+              "goalCell": 1428,
+              "arrivalTick": 362,
+              "crossedTick": 252,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 31.304389491677366,
+              "initialRevision": 2,
+              "x": -11.5,
+              "z": -1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1428,
+              "pending": false,
+              "pathIndex": 31,
+              "pathLength": 31
+            },
+            {
+              "id": 37,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -11.5,
+                "z": -0.5
+              },
+              "goalCell": 1492,
+              "arrivalTick": 352,
+              "crossedTick": 251,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 30.422511180380972,
+              "initialRevision": 2,
+              "x": -11.5,
+              "z": -0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1492,
+              "pending": false,
+              "pathIndex": 29,
+              "pathLength": 29
+            },
+            {
+              "id": 38,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -11.5,
+                "z": 0.5
+              },
+              "goalCell": 1556,
+              "arrivalTick": 332,
+              "crossedTick": 245,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 28.697913256043933,
+              "initialRevision": 2,
+              "x": -11.5,
+              "z": 0.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1556,
+              "pending": false,
+              "pathIndex": 28,
+              "pathLength": 28
+            },
+            {
+              "id": 39,
+              "generation": 1597862470,
+              "team": 1,
+              "kind": "infantry",
+              "goal": {
+                "x": -11.5,
+                "z": 1.5
+              },
+              "goalCell": 1620,
+              "arrivalTick": 351,
+              "crossedTick": 251,
+              "noDisplacementTicks": 0,
+              "maxNoDisplacementTicks": 0,
+              "distance": 30.364340014133163,
+              "initialRevision": 2,
+              "x": -11.5,
+              "z": 1.5,
+              "finalRevision": 2,
+              "finalGoalCell": 1620,
+              "pending": false,
+              "pathIndex": 30,
+              "pathLength": 30
+            }
+          ],
+          "invalidCenterSubsteps": 0,
+          "unobservedPositionMutations": 0,
+          "healthLoss": 0
+        }
+      ]
+    }
+  ],
+  "scope": "Candidate circles swept along admitted authoritative land substeps; diagnostic hypotheses, not production radii.",
+  "controls": {
+    "units": "one world unit equals one tile; circles centered on authoritative x/z",
+    "pairs": "directed moving capsule against each living land body at its current serial-executor position",
+    "penetration": "margin below -1e-9; tangency is allowed; counts are contact substeps, not unique impacts",
+    "input": "trusted diagnostic placements/Scout kind, production-validated checkpoint; real Move commands; both seats/noAttack",
+    "replay": "two fresh adapters from the same complete checkpoint; actual actor identity, no normalization",
+    "navigation": "constant revision and occupancy hash; no harvest, construction or cliff patches",
+    "progress": "longest consecutive ticks with no admitted displacement before first arrival; this is not route-progress fairness"
+  },
+  "limits": [
+    "No production body, avoidance, planner, checkpoint, wire or presentation change.",
+    "No dynamic occupancy/elevation-volume clearance, gate/bridge policy, naval hull, Sheep or all-caller acceptance.",
+    "Fixed ticks with planning callbacks drained; no asynchronous intake/process restart guarantee.",
+    "No hardware timing/capacity, clean release digest, deployed identity or ordinary-game pixels."
+  ],
+  "outcome": "measured",
+  "integrityOutcome": "passed",
+  "travelOutcome": "complete"
+}
