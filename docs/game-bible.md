@@ -121,8 +121,8 @@ custom skirmish with construction, research and crossing rewards.
 Larger maps test travel, resource regions, forest clearing, and elevation.
 Match length and economy pacing must come from observed play.
 
-The objective strip names the active **Skirmish**, **Objective Control** or
-authored **Elimination** rules explicitly. Skirmish uses recovery-aware defeat;
+The objective strip names **Elimination** for Skirmish and **Objective Control**
+for marked victory-post maps. Skirmish uses recovery-aware defeat;
 workers and paid land queues preserve survival, so Town Center destruction
 alone is insufficient. Distinct Objective Control maps retain their fast authored
 capture/hold/deadline rules. The [mode contract](match-mode-contract.md) and

@@ -36,7 +36,7 @@ including actual Medium dimensions; Medium is human Skirmish-compatible and
 `pveSupported:false`. Fresh AI remains Tiny-only, and legacy Authored AI seeds,
 saved map identity and cold recovery remain unchanged. XL is still unavailable.
 The [focused transcript](qa-evidence/medium-skirmish-admission-2026-10-04/focused.txt)
-passes33 registry, mode-control, pregame, Medium-map and size-policy tests.
+passes33 registry, mode-control and size-policy tests.
 Types and runtime import checks pass. Independent review approved the admission
 and corrected reset predicate;74 additional focused review checks passed.
 
