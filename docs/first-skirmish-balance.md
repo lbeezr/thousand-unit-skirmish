@@ -192,13 +192,16 @@ and [game B](balance-evidence/tiny-pacing-2026-10-04/seeds-0-20260925.json.gz) p
 complete initial/final authority and timelines; the summary hashes refer to their
 **decompressed JSON**. The original
 [superseded measurement receipt](balance-evidence/tiny-pacing-2026-10-04/superseded-summary.json)
-and [initial focused failure](balance-evidence/tiny-pacing-2026-10-04/initial-focused-failure.txt)
+and [superseded focused pass](balance-evidence/tiny-pacing-2026-10-04/superseded-focused-pass.txt)
 remain historical. Independent review found its `firstAttackTick` sampled a
 three-tick peer receipt every thirty ticks and missed early attacks; those
 first-attack values are invalid. The repaired field is observer-only durable
 `firstNativeAttackObservedTick`, labeled at the one-second sample boundary.
-The initial 45-second focused test also ended before both real recruits spawned;
-the corrected 225-second test covers paid recruits and early durable attacks
+The initial 45-second focused test also ended before both real recruits spawned.
+Its original log was overwritten by the subsequent 90-second three-test pass;
+the preserved file is that pass, not the original failure. Original failure bytes
+are unavailable and have not been reconstructed. The corrected 225-second test
+covers paid recruits and early durable attacks
 without increasing a gameplay deadline. Final review and exact-head checks are
 recorded in the PR, separately from the dated measurement source above.
 Original full-game bytes are retained under
