@@ -38,7 +38,7 @@ five shipped browser entrypoints and 53 reachable from the two Node hosts.
 Twenty-four modules are shared by those closures. The command prints the exact
 shared set so a refactor can check its actual consumers.
 
-The current audit at `53a47ee379660f30b65776ea813f3a986d29aa37`
+The pinned audit at `53a47ee379660f30b65776ea813f3a986d29aa37`
 (4 October 2026) contains **168 `src` JavaScript modules**, of which **164 are
 flat and four are nested**, plus the same five root JavaScript modules.
 There are **317 distinct local edges, 118 browser-reachable modules,
@@ -47,6 +47,14 @@ and literal lazy imports are included; tests/tools are outside this runtime
 graph. The nested modules are the two WebSocket leaves under `networking/` and
 the offline proposal adapter/client-path manifest under `server/`. These are
 the first boundaries, not the completed organization.
+
+Refresh against main `8200ec6c` after the wood-job continuation merge
+[PR283](https://github.com/lbeezr/thousand-unit-skirmish/pull/283): two more flat
+modules, `gather-work-area` and `work-intent`, belong to authoritative economy/work
+state. That graph contains 175 runtime modules (170 `src`, 166 flat), 319 local
+edges, 118 browser-reachable, 75 server-reachable and 31 shared modules; zero
+cycles remains the baseline. Historical size/coupling measurements below stay
+pinned to their stated revision.
 
 There are **no cyclic edges** at either audited revision, including lazy imports.
 [`runtime-import-baseline.json`](../scripts/fixtures/runtime-import-baseline.json)
