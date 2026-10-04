@@ -140,14 +140,15 @@ async function preserved(before, after) {
     assert.equal(predicted.state.nextMoveOrderId, before.state.nextMoveOrderId);
     assert.ok(after.state.units.every(u => !u.movePlanningPending));
     for (const field of fields) assert.deepEqual(after.state[field], predicted.state[field], `native continued ${field}`);
-    assert.deepEqual(before, unchanged, 'witness does not edit the source checkpoint');
+    assert.ok(JSON.stringify(before) === JSON.stringify(unchanged), 'witness does not edit the source checkpoint');
     return { continuedTicks, immediateExactRestore: true, boundedFixedTickWitness: true };
   } finally { await witness.dispose(); }
 }
 async function connect(room) {
   room.clients = [await room.f.connect(0, room.tokens[0], room.roomId), await room.f.connect(1, room.tokens[1], room.roomId)];
   assert.ok(room.clients.every(c => c.welcome.recoveredFromCheckpoint));
-  assert.deepEqual(room.clients.map(c => c.welcome.player.sessionToken), room.tokens);
+  assert.ok(room.clients.every((c, team) => c.welcome.player.sessionToken === room.tokens[team]),
+    'both seats retain their recovery tokens');
 }
 async function resetProof(room, before, lobby) {
   const changes = room.clients.map(c => c.wait(m => m.type === 'mapChange' && m.map.id === map.id,
