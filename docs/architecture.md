@@ -470,7 +470,12 @@ entry remain, and supported external imports/identified-release reload safety
 have not been cleared for retirement. Production/research semantic wiring stays
 with building-functionality audit owner `01a107c9`; this boundary slice owns only
 the two import literals, as recorded in the PR's exact-hunk coordination note.
-No shim, fixture, public entry or registration is removed.
+No shim, fixture, public entry or registration is removed. The PR records the
+same full native research scenario timeout on preceding main and the caller
+head, before any research command at its initial Infantry Move; that unchanged
+check's research/recovery acceptance remains open with the building/movement
+owners. Native both-seat production/research cancellation and paid reservation
+lifecycle pass separately.
 
 The audit parses imports/re-exports/literal dynamic imports, then inspects
 fixture/file-path references separately. Intentional export-identity tests,
@@ -498,7 +503,8 @@ checks above; no source or test is renamed solely to make a path look tidy.
    `production-actions.mjs` and `research-actions.mjs` to
    `rules/gameplay-action-rules.mjs`, without either host changing. The legacy
    API/type contract and public entry remain; existing binding/reason, UI and
-   paid lifecycle/research recovery checks establish the scoped migration.
+   paid lifecycle checks establish the scoped migration. Full research recovery
+   retains the baseline scenario limitation recorded above and in the PR.
    Its shim-retirement decision stays in steps 5–6 below.
 2. The audio owner can propose the cache import in `audio.mjs` and bounded reader
    import in `audio-shipped-loader.mjs`. The loader's validator import is a
