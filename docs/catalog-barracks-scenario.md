@@ -47,9 +47,10 @@ On the fresh page, the wrapper installs the room-only
 navigation. It opens the ordinary root menu, clicks **Map Studio**, uploads
 [the existing flat fixture](qa-evidence/default-frontier-buildings-2026-10-03/acceptance-map-flat.json)
 through the actual `#studio-import-file` input with `DOM.setFileInputFiles`,
-and clicks **Save & Play Map**. The capture-phase observer hashes the actual
-chosen file before the normal handler clears its input; it retains only size
-and SHA256. The real editor ID, applied map, owned Azure seat and starting banks
+and clicks **Save & Play Map**. The capture-phase observer retains the actual
+chosen File before the normal handler clears its input, then asynchronously
+hashes its retained bytes; its receipt contains only size and SHA256.
+The real editor ID, applied map, owned Azure seat and starting banks
 must settle before the sequence starts. This is an authored paid-acceptance
 fixture entered through ordinary authoring controls; it does not establish a
 normal New Game match or unassisted first play. No direct publish command,
