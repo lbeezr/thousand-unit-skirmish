@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
+import { VisionCoverageCache } from '../src/server/vision-coverage-cache.mjs';
 import { economyServerBindings, economyServerFunctions } from './economy-server-fixture.mjs';
 import { BUILDING_DEFINITIONS, missingGameplayPrerequisites } from '../src/gameplay-definitions.mjs';
 import { STONE_ECONOMY_PROFILE_ID as STONE, DEFAULT_ECONOMY_PROFILE_ID as BASE } from '../src/economy-profile.mjs';
@@ -19,10 +20,11 @@ function fixture(team, profile = STONE, { acceptAssignment = true } = {}) {
     generation: 1, orderRevision: 0, buildingTargetId: null, workIntent: null, wallBuildOrder: null,
     cargo: 0, cargoType: null, gatherNodeId: null, gatherForestCell: -1, gatherPhase: '' };
   const context = vm.createContext({ ...economyServerBindings(profile), BUILDING_DEFINITIONS,
+    VisionCoverageCache, visionCoverageGeneration: 0,
     constructionAssignment, constructionWorkArea, isPalisade, palisadeConstructionRetries: new WeakMap(),
     teamFood: [300.25, 300.25], teamWood: [600.125, 600.125], teamStone: [50, 50],
     teamUpgrades: [{}, {}], units: [worker], buildings: [], buildingsById: new Map(),
-    MAX_BUILDINGS: 128, MAP_WIDTH: 16, MAP_HALF_X: 8, MAP_HALF_Z: 8, CELL_COUNT: 256,
+    MAX_BUILDINGS: 128, MAP_WIDTH: 16, MAP_HEIGHT: 16, MAP_HALF_X: 8, MAP_HALF_Z: 8, CELL_COUNT: 256,
     blocked: new Uint8Array(256), buildingBlocked: new Uint8Array(256), townCenterBlocked: new Uint8Array(256),
     walkableComponents: new Int32Array(256), spawnByTeam: [{ x: -6.5, z: 0.5 }, { x: 6.5, z: 0.5 }],
     worldToCell: (x, z) => Math.floor(z + 8) * 16 + Math.floor(x + 8),
@@ -32,7 +34,7 @@ function fixture(team, profile = STONE, { acceptAssignment = true } = {}) {
     missingGameplayPrerequisites, buildingRulesFor: type => BUILDING_DEFINITIONS[type],
     rebuildWalkableComponents() {}, captureBuildingConnectivity() {},
     canPlaceBuildingWithoutDisconnectingEntities: () => true, activeMoveRoutesRemainConnected: () => true,
-    nextBuildingId: 1, navigationRevision: 0, visionCoverageBySourceCell: [], attackFlowFields: new Map(),
+    nextBuildingId: 1, navigationRevision: 0, visionCoverageBySourceCell: null, attackFlowFields: new Map(),
     replanPathsBlockedBy() {}, dirty: false,
     // Model only synchronous route admission; construction helpers use real server bodies.
     assignFormationMove(_, __, targetId) {
@@ -43,7 +45,7 @@ function fixture(team, profile = STONE, { acceptAssignment = true } = {}) {
     mapDefinition: { width: 16, height: 16, economyProfileId: profile, triggers: [] },
     destroyBuilding(building) { context.buildingsById.delete(building.id); context.buildings.splice(context.buildings.indexOf(building), 1); },
   });
-  vm.runInContext(economyServerFunctions + ['palisadeConstructionIntent', 'preparePalisadeBuilderAssignments',
+  vm.runInContext(economyServerFunctions + ['invalidateVisionCoverage', 'palisadeConstructionIntent', 'preparePalisadeBuilderAssignments',
     'finishPalisadeBuilderAssignments', 'buildBuilding', 'cancelConstruction'].map(fn).join('\n'), context);
   const build = type => context.buildBuilding({ team }, { ids: [0], buildingType: type, x: 0.5, z: 3.5 });
   return { context, notices, worker, build };

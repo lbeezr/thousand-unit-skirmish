@@ -32,7 +32,7 @@ const { createTickAttribution } = await import(${JSON.stringify(observer)});
 const attribution = createTickAttribution({
   functions: { ${bindingNames.join(',')}, deflateRawSync: attributionNativeDeflate, encodeWebSocketFrame: attributionNativeEncode },
   context: () => ({ tickNumber, visionTick: visionMasksUpdatedTick,
-    visionCoverage: visionMasksUpdatedCoverage, coverage: visionCoverageBySourceCell }),
+    visionCoverage: visionMasksUpdatedCoverage, coverage: visionCoverageBySourceCell, cacheMetrics: visionCoverageBySourceCell.metrics() }),
   visionContext: () => ({ coverage: visionCoverageBySourceCell, processed: processedVisionSourcesByTeam,
     halfX: MAP_HALF_X, halfZ: MAP_HALF_Z, width: MAP_WIDTH, defaultSight: VISION_RADIUS_CELLS }),
 });

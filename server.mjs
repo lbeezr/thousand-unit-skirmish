@@ -17,6 +17,7 @@ import { validateMapRegion } from './src/regions.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, regionEntryTeam, validCompletionTrigger, completionTeam } from './src/scenario-regions.mjs';
 import { TERRAIN_MATERIALS } from './src/terrain-materials.mjs';
 import { exploredForestFringe } from './src/forest-fringe.mjs';
+import { VisionCoverageCache } from './src/server/vision-coverage-cache.mjs';
 import { researchAction, researchOptions, emptyTechnologyCompletions } from './src/research-actions.mjs';
 import { combatDamage, canCombatTarget, hasGameplayCapability } from './src/combat-rules.mjs';
 import { creditResourceBalance } from './src/economy-ledger.mjs';
@@ -722,7 +723,8 @@ let visionBlockHeights = new Float32Array(0);
 let visibleCellsByTeam = [new Uint8Array(0), new Uint8Array(0)];
 let exploredCellsByTeam = [new Uint8Array(0), new Uint8Array(0)];
 let processedVisionSourcesByTeam = [new Uint8Array(0), new Uint8Array(0)];
-let visionCoverageBySourceCell = [];
+let visionCoverageBySourceCell = null;
+let visionCoverageGeneration = 0;
 let visionMasksUpdatedTick = -1;
 let visionMasksUpdatedCoverage = null;
 let pathVisited = new Uint32Array(0);
@@ -850,6 +852,11 @@ function resetVictoryHoldState() {
   victoryHoldState = { activeTeams: [false, false], progressSeconds: [0, 0], triggerIds: [null, null] };
 }
 
+function invalidateVisionCoverage(reason) {
+  visionCoverageBySourceCell = new VisionCoverageCache({ width: MAP_WIDTH, height: MAP_HEIGHT,
+    generation: ++visionCoverageGeneration, reason });
+}
+
 function activateMap(definition) {
   assertMatchModeCompatibility(matchMode, definition, { mode: pveLaunchOptions ? 'pve' : 'pvp', practice: soloPractice });
   authoredMapDefinition = definition;
@@ -886,7 +893,7 @@ function activateMap(definition) {
   visibleCellsByTeam = [new Uint8Array(CELL_COUNT), new Uint8Array(CELL_COUNT)];
   exploredCellsByTeam = [new Uint8Array(CELL_COUNT), new Uint8Array(CELL_COUNT)];
   processedVisionSourcesByTeam = [new Uint8Array(CELL_COUNT), new Uint8Array(CELL_COUNT)];
-  visionCoverageBySourceCell = new Array(CELL_COUNT);
+  invalidateVisionCoverage('map-activation');
   pathVisited = new Uint32Array(CELL_COUNT);
   pathPrevious = new Int32Array(CELL_COUNT);
   pathQueue = new Int32Array(CELL_COUNT);
@@ -1073,7 +1080,7 @@ function resetForestStocks() {
   }
   forestEpoch++;
   if (changed) navigationRevision++;
-  visionCoverageBySourceCell = new Array(CELL_COUNT);
+  invalidateVisionCoverage('forest-reset');
   attackFlowFields.clear();
 }
 
@@ -2042,8 +2049,7 @@ function markVisionFrom(team, x, z, sight = VISION_RADIUS_CELLS) {
   processedSources[sourceCell] = sight;
   const visible = visibleCellsByTeam[team];
   const explored = exploredCellsByTeam[team];
-  const sourceCoverages = visionCoverageBySourceCell[sourceCell] ||= new Map();
-  let coverage = sourceCoverages.get(sight);
+  let coverage = visionCoverageBySourceCell.get(sourceCell, sight);
   if (!coverage) {
     const cells = [];
     const forestCandidates = [];
@@ -2072,9 +2078,8 @@ function markVisionFrom(team, x, z, sight = VISION_RADIUS_CELLS) {
         forestCandidates.push(row * MAP_WIDTH + column);
       }
     }
-    coverage = { visible: Uint16Array.from(cells),
-      fringe: exploredForestFringe(cells, forestCandidates, forestCellMask, MAP_WIDTH) };
-    sourceCoverages.set(sight, coverage);
+    coverage = visionCoverageBySourceCell.set(sourceCell, sight, { visible: cells,
+      fringe: exploredForestFringe(cells, forestCandidates, forestCellMask, MAP_WIDTH) });
   }
   for (let index = 0; index < coverage.visible.length; index++) {
     const cell = coverage.visible[index];
@@ -4799,7 +4804,7 @@ function flushPendingForestClears() {
   pendingForestClears.clear();
   if (!changed) return;
   navigationRevision++;
-  visionCoverageBySourceCell = new Array(CELL_COUNT);
+  invalidateVisionCoverage('forest-clear');
   attackFlowFields.clear();
   rebuildWalkableComponents();
   updateVisionMasks();
@@ -5277,7 +5282,7 @@ function destroyBuilding(building) {
     unit.moveGoalCell = nearestOpenCell(worldToCell(unit.x, unit.z));
   }
   navigationRevision++;
-  visionCoverageBySourceCell = new Array(CELL_COUNT);
+  invalidateVisionCoverage('building-removal');
   attackFlowFields.clear();
   rebuildWalkableComponents();
   updateWallBuildOrders();
@@ -5766,7 +5771,7 @@ function buildWallLine(player, command) {
   teamWood[player.team] -= plan.cost.wood; teamFood[player.team] -= plan.cost.food;
   nextBuildingId = plan.nextBuildingId;
   navigationRevision++;
-  visionCoverageBySourceCell = new Array(CELL_COUNT);
+  invalidateVisionCoverage('wall-addition');
   attackFlowFields.clear(); rebuildWalkableComponents();
   replanPathsBlockedBy(plan.buildings.map(building => building.footprint[0]));
   const first = plan.buildings[0], access = cellToWorld(plan.access[0].accessCell);
@@ -5937,7 +5942,7 @@ function buildBuilding(player, command) {
   buildings.push(building);
   buildingsById.set(id, building);
   navigationRevision++;
-  visionCoverageBySourceCell = new Array(CELL_COUNT);
+  invalidateVisionCoverage('building-addition');
   setTeamEconomyBalance(player.team, paidBalance);
   attackFlowFields.clear();
   replanPathsBlockedBy(building.footprint);
@@ -5982,7 +5987,7 @@ function setGateOpen(player, command) {
   building.gateOpen = plan.open;
   for (const cell of building.footprint) buildingBlocked[cell] = plan.open ? 0 : 1;
   navigationRevision++;
-  visionCoverageBySourceCell = new Array(CELL_COUNT);
+  invalidateVisionCoverage('gate-transition');
   attackFlowFields.clear();
   rebuildWalkableComponents();
   if (!plan.open) replanPathsBlockedBy(building.footprint);

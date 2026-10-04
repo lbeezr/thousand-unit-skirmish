@@ -1,3 +1,4 @@
+import { VisionCoverageCache } from '../src/server/vision-coverage-cache.mjs';
 import { preparePaidWallLine } from '../src/wall-construction-draft.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -15,6 +16,7 @@ import { activeWorkIntent, createConstructionWorkIntent } from '../src/work-inte
 
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const client = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
+const invalidation = server.slice(server.indexOf('function invalidateVisionCoverage('), server.indexOf('function activateMap('));
 const handler = server.slice(server.indexOf('function setGateOpen('), server.indexOf('function findProductionSpawnCell('));
 const reservations = server.slice(server.indexOf('function reservedResourceNodes('), server.indexOf('// Record the routes'));
 const lifecycle = client.slice(client.indexOf('function updateBuildingLifecycleActions('), client.indexOf('function updateRosterBuildingOptions('));
@@ -53,7 +55,8 @@ test('manual owner operation, global movement and strict recovered gate state', 
 
 function runtime(building = gateRow({ gateOpen: true })) {
   const notices = [], mask = new Uint8Array(9); mask[4] = buildingBlocksMovement(building) ? 1 : 0;
-  const context = vm.createContext({ planGateTransition, buildingsById: new Map([[1, building]]), units: [],
+  const context = vm.createContext({ VisionCoverageCache, MAP_WIDTH: 3, MAP_HEIGHT: 3, visionCoverageGeneration: 0,
+    visionCoverageBySourceCell: new VisionCoverageCache({ width: 3, height: 3 }), planGateTransition, buildingsById: new Map([[1, building]]), units: [],
     resourceNodeStates: new Map(), mapDefinition: { resourceNodes: [] },
     buildingBlocked: mask, CELL_COUNT: 9, walkableComponents: new Int32Array(9), navigationRevision: 10,
     dirty: false, attackFlowFields: { clear() { context.cacheClears++; } }, cacheClears: 0, replans: 0,
@@ -64,7 +67,7 @@ function runtime(building = gateRow({ gateOpen: true })) {
     replanPathsBlockedBy(cells) { assert.deepEqual(cells, [4]); context.replans++; },
     sendOrderNotice: (_, command, notice) => notices.push({ token: command.clientOrderToken, notice }),
   });
-  vm.runInContext(handler, context);
+  vm.runInContext(invalidation + handler, context);
   return { context, building, mask, notices, command(open, team = 0) { context.setGateOpen({ team }, { buildingId: 1, open, clientOrderToken: 77 }); } };
 }
 
@@ -81,6 +84,8 @@ test('actual handler commits once, rejects occupied or disconnected closing, and
     assert.equal(r.context.navigationRevision, 10); assert.equal(r.context.cacheClears, 0);
   }
   r.command(false); assert.equal(r.mask[4], 1); assert.equal(r.building.gateOpen, false);
+  assert.equal(r.context.visionCoverageBySourceCell.metrics().reason, 'gate-transition');
+  assert.equal(r.context.visionCoverageBySourceCell.metrics().generation, 1);
   assert.equal(r.context.navigationRevision, 11); assert.equal(r.context.cacheClears, 1); assert.equal(r.context.replans, 1);
   r.command(false); assert.match(r.notices.at(-1).notice, /ALREADY CLOSED/); assert.equal(r.context.navigationRevision, 11);
   r.command(true, 1); assert.match(r.notices.at(-1).notice, /SELECT YOUR GATE/); assert.equal(r.mask[4], 1);
@@ -232,7 +237,7 @@ test('actual wall admission permits approaches through open gate topology while 
  const fn = name => { const start=source.indexOf('function '+name+'('), end=source.indexOf('\nfunction ',start+1); assert.ok(start>=0 && end>start); return source.slice(start,end); };
  for (const gateOpen of [true, false]) {
  const notices=[],gate={id:1,type:'palisade-gate',team:0,complete:true,gateOpen,hp:300,footprint:[30]},worker={id:0,team:0,kind:'worker',hp:100,x:-3,z:-3,generation:1,orderRevision:1,path:[],queuedWaypoints:[]};
- const c=vm.createContext({Set,Map,TypeError,isPalisade,buildingBlocksMovement,preparePaidWallLine,buildings:[gate],buildingsById:new Map([[1,gate]]),units:[worker],
+ const c=vm.createContext({VisionCoverageCache,visionCoverageGeneration:0,Set,Map,TypeError,isPalisade,buildingBlocksMovement,preparePaidWallLine,buildings:[gate],buildingsById:new Map([[1,gate]]),units:[worker],
   MAP_WIDTH:9,MAP_HEIGHT:9,CELL_COUNT:81,MAX_BUILDINGS:128,HOME_TOWN_CENTER_ID_BASE:1000000,nextBuildingId:2,
   blocked:new Uint8Array(81),buildingBlocked:new Uint8Array(81),townCenterBlocked:new Uint8Array(81),elevationLevelByCell:new Uint8Array(81),
   mapDefinition:{width:9,height:9,resourceNodes:[],triggers:[]},resourceNodeStates:new Map(),homeTownCenters:[],spawnByTeam:[{x:-3,z:-3},{x:3,z:3}],
@@ -245,7 +250,7 @@ test('actual wall admission permits approaches through open gate topology while 
   sendOrderNotice:(_,__,notice)=>notices.push(notice),rejectBuild:(_,reason)=>notices.push('BUILD REJECTED · '+reason),
  });
  c.buildingBlocked[30]=gateOpen?0:1;
- vm.runInContext(reservations + ['isWalkable','rebuildWalkableComponents','buildingAccessCells','captureBuildingConnectivity','canPlaceBuildingWithoutDisconnectingEntities','palisadeConstructionIntent','preparePalisadeBuilderAssignments','finishPalisadeBuilderAssignments','buildWallLine'].map(fn).join('\n'),c);
+ vm.runInContext(invalidation + reservations + ['isWalkable','rebuildWalkableComponents','buildingAccessCells','captureBuildingConnectivity','canPlaceBuildingWithoutDisconnectingEntities','palisadeConstructionIntent','preparePalisadeBuilderAssignments','finishPalisadeBuilderAssignments','buildWallLine'].map(fn).join('\n'),c);
  c.rebuildWalkableComponents();
  c.buildWallLine({team:0},{ids:[0],points:[{column:4,row:4}]});
  assert.equal(notices[0], 'PALISADE LINE PLACED · 1 SEGMENTS · 15 WOOD');
