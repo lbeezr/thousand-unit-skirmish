@@ -1,0 +1,122 @@
+{
+  "source": "3c7fb668525a4a7311f497b5b99a58845686f3b2",
+  "opponentSource": "41e30deb3aac6b4533231514943a6b65ad3068ab",
+  "seeds": [
+    20260925,
+    0
+  ],
+  "rawSHA256": "f2dd8deae27b54fb7fa6febfcb5851b80ac7020d59caa88bb0ff44f043d7d39b",
+  "scope": "Read-only cold policy/selector probes. Counterfactual changes affect copied filtered DTO fixtures only, never the retained match; no claim to reconstruct unrecorded private policy watches.",
+  "controls": {
+    "freshScoutReconIdle": {
+      "ids": [
+        50
+      ],
+      "commands": []
+    },
+    "freshFullSubjectPolicy": [],
+    "nearbyUnknownFixture": {
+      "changedCell": 12282,
+      "fromFog": 1,
+      "toFog": 0,
+      "command": {
+        "type": "move",
+        "ids": [
+          50
+        ],
+        "unitGenerations": [
+          1942171717
+        ],
+        "x": 42.5,
+        "z": -3.5
+      }
+    },
+    "observedThreatRetreat": {
+      "type": "move",
+      "ids": [
+        50
+      ],
+      "unitGenerations": [
+        1942171717
+      ],
+      "x": 25.5,
+      "z": -3.5
+    },
+    "hiddenEnemyAndBanksEquivalent": true,
+    "disclosedScoutTarget": {
+      "key": "unit:50:1942171717",
+      "priority": 1,
+      "type": "attack",
+      "targetId": 50,
+      "targetGeneration": 1942171717,
+      "x": 27.5,
+      "z": -3.5
+    },
+    "seenAttackThenFogLossSearch": {
+      "seen": {
+        "type": "attack",
+        "ids": [
+          17,
+          19,
+          20,
+          23,
+          24,
+          30,
+          46,
+          55,
+          67,
+          69,
+          70
+        ],
+        "unitGenerations": [
+          1942171718,
+          1942171718,
+          1942171718,
+          1942171718,
+          1942171717,
+          1942171717,
+          1942171717,
+          1942171717,
+          1942171717,
+          1942171717,
+          1942171717
+        ],
+        "targetId": 50,
+        "targetGeneration": 1942171717
+      },
+      "afterFogLoss": {
+        "type": "attackMove",
+        "ids": [
+          17,
+          19,
+          20,
+          23,
+          24,
+          30,
+          46,
+          55,
+          67,
+          69,
+          70
+        ],
+        "unitGenerations": [
+          1942171718,
+          1942171718,
+          1942171718,
+          1942171718,
+          1942171717,
+          1942171717,
+          1942171717,
+          1942171717,
+          1942171717,
+          1942171717,
+          1942171717
+        ],
+        "x": -75.5,
+        "z": -75.5
+      }
+    },
+    "actual83970SelectorAcquiresScout": true
+  },
+  "conclusion": "Local-ring exhaustion plus intentional Tiny scout reservation explains subject idle without stale private state. Qualified target selector acquires currently disclosed Scout and drops hidden identity after fog loss. No concrete bug established; do not force Scout suicide or omniscient pursuit to close completion."
+}
