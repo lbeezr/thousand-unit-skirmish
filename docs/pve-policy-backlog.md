@@ -7,12 +7,19 @@ and owned through allowed merge, integration and appropriate acceptance. No
 omniscience, resource grants, external gameplay API costs or independent deploy.
 This backlog is a working queue, not a combined PR or a claim of game quality.
 
+Current availability decision: the parent authorized ordinary development PvE
+for verified Terraced Vale Tiny Skirmish only. The mode owner retains that
+small admission/capability slice; browser/served acceptance is required for
+completion but must not block exposing the normal option used to obtain it.
+Other maps and ordinary human defaults remain outside this availability change.
+The AI lane owns [real process/reconnect/rematch acceptance](qa-pve-tiny-process-recovery-2026-10-04.md).
+
 ## Ranked backlog
 
 | Rank / state | Next outcome and concrete action | Write boundary | Dependency / acceptance |
 | --- | --- | --- | --- |
 | 1 — bounded source fix / Tiny acceptance retained | Close ordinary readiness on unchanged Terraced Vale Tiny160; preserve measured pacing and both-seat recovery. | AI search helper, deterministic tests and [Tiny evidence](qa-pve-tiny-search-2026-10-04.md); registry/server/fog remain with mode owner `01a103cc`, map with `01a103e8`. | Same-checkpoint baseline times out twice at 3,600s; bounded search completes at 495/2,676s with exact replay and zero rejected orders. PR229 now admits actual native Tiny Skirmish; the prior authored-identity receipts remain historical. [Foundation follow-up](qa-pve-fog-restart-phase-2026-10-04.md) distinguishes publication parity from immediate off-phase reads. After runtime PR233, strict both-seat Tiny fresh-fixture recovery passes at the original foundation ticks without time advance. No capacity, balanced-pacing, fairness or served-game claim. |
-| 2 — source merged / ordinary acceptance retained | Explicit Skirmish policy pursues observed enemy recovery sources using the saved authoritative identity. Finish identified ordinary entry/fog/recovery/rematch/reconnect play before capability enablement. | AI policy/adapter/tests; runtime [PR200](https://github.com/lbeezr/thousand-unit-skirmish/pull/200) supplies schema-27 identity. Server/default/capabilities remain with mode owner `01a103cc`; existing staging/QA owners coordinate delivery. | [PR195](https://github.com/lbeezr/thousand-unit-skirmish/pull/195) and [PR212](https://github.com/lbeezr/thousand-unit-skirmish/pull/212) merged. [Canonical receipt](qa-pve-mode-adapter-2026-10-04.md): four map/seed cases reach elimination and exactly replay through native checkpoint restore at 600 seconds with fresh policies. Both-seat/map legal army and producer losses recover through a paid replacement, native foundation restore with fresh policy and five-unit advance. Ordinary served observations remain open; keep `pveSupported: false`. |
+| 2 — source merged / ordinary acceptance retained | Explicit Skirmish policy pursues observed enemy recovery sources using the saved authoritative identity. Finish identified ordinary entry/fog/recovery/rematch/reconnect play through the authorized Tiny development option. | AI policy/adapter/tests; runtime [PR200](https://github.com/lbeezr/thousand-unit-skirmish/pull/200) supplies schema-27 identity. Server/default/capabilities remain with mode owner `01a103cc`; existing staging/QA owners coordinate delivery. | [PR195](https://github.com/lbeezr/thousand-unit-skirmish/pull/195) and [PR212](https://github.com/lbeezr/thousand-unit-skirmish/pull/212) merged. [Canonical receipt](qa-pve-mode-adapter-2026-10-04.md): four map/seed cases reach elimination and exactly replay through native checkpoint restore at 600 seconds with fresh policies. Both-seat/map legal army and producer losses recover through a paid replacement, native foundation restore with fresh policy and five-unit advance. Ordinary served observations remain open; development availability is restricted by the receiving mode owner to verified Terraced Vale. |
 | 3 — acceptance retained | Close ordinary-game acceptance for regroup #137 using the existing New Game recipe; verify source bytes, actual wipeout, paid regroup/advance, screenshots and room telemetry. | Existing PvE QA/PR137 and PR148 acceptance records; no policy expansion. | Coordinated QA supplies the identified browser session and room-scoped evidence. Implementation owner retains interpretation and fixes. Latest supplied staging is `32f11d5`; prior local checks/matrix do not establish ordinary browser acceptance. |
 | 4 — source merged / acceptance retained | Rotate an obstructed public capture goal after 60 seconds without approach, occupancy, capture or combat; retry it after a temporary 120-second cooldown. Verify ordinary served-build obstruction/rematch behavior after coordinated delivery. | `src/pve-objective-rotation.mjs`, minimal ranked-target hook and paid tests/evidence; navigation remains with its owner. | [PR203](https://github.com/lbeezr/thousand-unit-skirmish/pull/203) merged in `89772d6f`; [matched evidence](qa-pve-objective-rotation-2026-10-03.md) proves a paid intact wall ring, same-checkpoint baseline timeout at 360 seconds and candidate wins at 107.6/109.7 seconds across cold restart. 112 focused checks, independent eight-check review and 38 postmerge checks pass. Ordinary browser acceptance remains open. |
 | 5 — physical proof / ordinary recovery retained | Verify Worker/Farm depletion, paid recruitment and defense/reform during the identified ordinary Skirmish session; fix only a reproduced policy failure. | AI production/recovery modules/tests; shared economy/price/server code excluded. | [Canonical paid loss proof](qa-pve-mode-adapter-2026-10-04.md#paid-loss-recovery) completes both seats/maps with intact Workers, paid rebuilt producer/recruits, cold restore and exact replay. Stock+cargo+bank+spending reconcile. Ordinary recovery observation remains open; existing Worker/Farm/defense checks remain the floor. |
@@ -110,13 +117,15 @@ that small adapter edit with the mode owner; no new observation schema is needed
 
 ## Remaining runtime acceptance
 
-The source configuration and paid producer regression are independent of the
-pending runtime bridge. The shipped-map restart proof is dependency-stopped at
-the mode owner's canonical identity/checkpoint integration: the current server
-correctly rejects a changed shipped map hash. Do not work around that guard.
-Full-map Skirmish readiness still needs exact restarted replays, army/producer
-loss recovery, ordinary two-seat launch/reset, coordinated deployment and actual
-in-game verification. Default choice stays with the mode owner.
+The canonical identity/checkpoint bridge, actual Tiny full-match repeats and
+both-seat cold army/producer recovery are integrated and source-qualified.
+Canonical map/hash guards remain intact. The next receiving case uses normal
+HTTP/WebSocket room creation and real supervisor processes, with unchanged
+saved checkpoints. Its human control passes; actual Tiny PvE admission and that
+profile's execution remain with the receiving owners. Coordinated delivery and
+actual served/browser verification still determine completion. The development
+option needed to obtain those observations is authorized now. Default choice
+and map-limited capability stay with the mode owner.
 
 Regroup's original match remained a loss;
 one Woodland comparison changed a baseline 504.1-second win to a 900.1-second
