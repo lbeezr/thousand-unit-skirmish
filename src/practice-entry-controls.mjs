@@ -1,4 +1,4 @@
-import { matchModePresentation } from './match-mode-controls.mjs';
+import { matchModePresentation, mapChoiceLabel } from './match-mode-controls.mjs';
 
 // This is a local launch choice. It changes no room until Practice is selected.
 export function createPracticeEntryControls({ root, onChange = () => {} }) {
@@ -41,7 +41,7 @@ export function createPracticeEntryControls({ root, onChange = () => {} }) {
       }
       select.value = chosen ? key(chosen) : '';
       select.disabled = !available || !online || pending || (allowed && choices.length < 2);
-      mapName.textContent = available ? `Starts on ${setup.map.name}.` : 'Practice settings are unavailable. Reload to reconnect.';
+      mapName.textContent = available ? `Starts on ${mapChoiceLabel(setup.map)}.` : 'Practice settings are unavailable. Reload to reconnect.';
       if (allowed) describe();
       else summary.textContent = view?.error || (available
         ? 'Your chosen mode is unavailable. Choose an available mode before starting Practice.'
@@ -49,6 +49,7 @@ export function createPracticeEntryControls({ root, onChange = () => {} }) {
     },
     get supported() { return supported; },
     get selectedLabel() { return chosen && chosen.id !== 'authored' ? chosen.label : ''; },
-    get launchOptions() { return chosen && chosen.id !== 'authored' ? identity(chosen) : {}; },
+    // Send the reviewed rules even if a fresh-room default changes after lookup.
+    get launchOptions() { return chosen ? identity(chosen) : {}; },
   };
 }

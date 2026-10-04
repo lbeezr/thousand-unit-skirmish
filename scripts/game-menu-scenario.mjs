@@ -156,7 +156,8 @@ try {
   await until(() => deliveredCreation, 'completed creation after menu exit');
   assert.equal(delayedMenu.navigations.length, 0, 'late real HTTP creation cannot navigate a departed menu');
   assert.equal((await (await api('/health')).json()).connectedInvitePeers, peersBeforeExit);
-  assert.deepEqual((await (await api(`/api/rooms/${createdWhileAway}`)).json()).launchOptions, { mode: 'pvp', practice: true },
+  assert.deepEqual((await (await api(`/api/rooms/${createdWhileAway}`)).json()).launchOptions,
+    { mode: 'pvp', practice: true, matchModeId: 'authored', matchModeVersion: 1 },
     'an already accepted room creation remains governed by ordinary room expiry');
   delayedMenu.dom.window.close();
   profile.click('menu-create-room'); profile.click('menu-create-room');
@@ -206,7 +207,7 @@ try {
   assert.equal(practice.welcome.state.connected, 1, 'practice needs no second human or AI seat');
   assert.notEqual(practice.welcome.matchId, oldMatch);
   const practiceOptions = (await (await api(`/api/rooms/${practiceId}`)).json()).launchOptions;
-  assert.deepEqual(practiceOptions, { mode: 'pvp', practice: true });
+  assert.deepEqual(practiceOptions, { mode: 'pvp', practice: true, matchModeId: 'authored', matchModeVersion: 1 });
   const practiceCheckpoint = path.join(data, 'rooms', practiceId, 'match-state.json');
   async function savedPractice(predicate) {
     let saved;
