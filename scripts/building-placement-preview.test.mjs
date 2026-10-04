@@ -22,7 +22,11 @@ test('all approved final images share exact facing/scale/anchor/texture with the
     assert.fail('verified final image did not settle');
   };
   try {
-    for (const teamColor of [0x5aa7d7, 0xdb8664]) for (const type of ROTATABLE_BUILDINGS) for (let orientation = 0; orientation < 4; orientation++) {
+    const approvedFamilies = [
+      ...ROTATABLE_BUILDINGS.map(type => ({ type, orientations: [0, 1, 2, 3] })),
+      ...['mill', 'farm', 'dock'].map(type => ({ type, orientations: [0] })),
+    ];
+    for (const teamColor of [0x5aa7d7, 0xdb8664]) for (const { type, orientations } of approvedFamilies) for (const orientation of orientations) {
       const placement = { x: -10.5, z: 10.5, valid: true };
       preview.update({ type, size: type === 'town-center' ? 5 : 3, orientation, teamColor, camera, placement, height: 1.6 });
       const final = createCapturedBuildingSprite({ manifestUrl: frontierBuildingManifestUrl(type), teamColor });
@@ -52,7 +56,8 @@ test('all approved final images share exact facing/scale/anchor/texture with the
     const canceled = preview.sprite; preview.reset(); await new Promise(setImmediate);
     assert.equal(canceled.visible, false); assert.equal(canceled.userData.capturedBuildingArt.disposed, true);
     assert.equal(preview.group.visible, false);
-    preview.update({ type: 'farm', size: 3, orientation: 0, camera, placement: { x: 0.5, z: 0.5, valid: true }, height: 0 });
+    assert.equal(frontierBuildingManifestUrl('palisade-gate'), null, 'Gate has no approved captured-image pack');
+    preview.update({ type: 'palisade-gate', size: 3, orientation: 0, camera, placement: { x: 0.5, z: 0.5, valid: true }, height: 0 });
     assert.equal(preview.sprite, null, 'no invented final art for a family without an approved pack');
     assert.equal(preview.entrance.visible, false);
     for (const type of ['barracks', 'archery-range']) {
