@@ -44,6 +44,9 @@ commands remain gated until the fresh projection is actually presented. The
 server's `stateRefresh` reply uses its existing seat privacy and queue limits and
 clears older replaceable projections before writing the reply. Match simulation,
 pause, victory, multiplayer and audio preference policy are unchanged.
+Visual development backing: N/A for the internal scheduling/protocol change;
+recovery text uses the existing connection status and order status surfaces
+described in [the playing guide](playing.md), without new visual treatment.
 
 Focused CPU checks cover short/long synthetic absence, repeated switches, stale
 epochs/ticks/replies, waypoint ordering, slow first frames, missing responses,

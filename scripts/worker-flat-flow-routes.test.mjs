@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createPathingReplayFixture } from './pathing-replay-fixture.mjs';
 import { canTraverseUnitStep } from '../src/unit-movement.mjs';
-import { shortcutFlatUnitPath } from '../src/unit-path-line.mjs';
+import { canTraverseFlatUnitSegment, shortcutFlatUnitPath } from '../src/unit-path-line.mjs';
 
 process.env.RTS_MAP='maps/open-field.json';process.env.RTS_GAME_MODE='pvp';process.env.RTS_PREGAME='0';
 delete process.env.RTS_MATCH_STATE_PATH;
@@ -156,17 +156,22 @@ for(const team of [0,1])test(`seat ${team}: forest access keeps the actual selec
   const f=await createPathingReplayFixture(scene),r=f.replay;
   try {
     const u=r.units.find(u=>u.team===team&&u.kind==='worker');
-    Object.assign(u,{x:25.27,z:24.19});r.step();const cell=91*160+93;
+    Object.assign(u,{x:25.27,z:24.19});r.step();const cell=91*160+93,target=cell+1;
     command(r,u,{type:'gather',forestCell:cell});
     assert.equal(u.path.length,1);assert.notEqual(u.path.at(-1),u.moveGoalCell,'flow reaches a different member of the goal set');
     const endpoint=u.path.at(-1),intent=structuredClone(u.workIntent);
     trackLeg(r,u,()=>u.gatherPhase==='gathering');
-    assert.equal(u.gatherForestCell,cell);assert.deepEqual(u.workIntent,intent);
-    assert.ok(Math.abs(endpoint%160-93)<=1&&Math.abs(Math.floor(endpoint/160)-91)<=1);
+    assert.equal(u.gatherForestCell,target,'closest reachable group tree is the execution target');assert.deepEqual(u.workIntent,intent);
+    assert.ok(Math.abs(endpoint%160-94)<=1&&Math.abs(Math.floor(endpoint/160)-91)<=1);
     until(r,()=>u.cargo>=10&&u.gatherPhase==='to-base','actual forest cargo starts return');
-    assert.equal(u.cargoType,'wood');assert.equal(u.path.length,1);
+    assert.equal(u.cargoType,'wood');
+    const homeGoal=r.point(u.path.at(-1));
+    const straightHome=canTraverseFlatUnitSegment(u.x+80,u.z+80,homeGoal.x+80,homeGoal.z+80,
+      160,r.levels,r.isWalkable,2.6/30);
+    if(straightHome)assert.equal(u.path.length,1);
+    else assert.ok(u.path.length>1,'remaining tree blocks a straight home leg; retain safe cardinal route');
     until(r,()=>r.wood[team]===110,'actual forest cargo deposits');
-    assert.equal(u.gatherForestCell,cell+1,'the existing finite-stock continuation selects the remaining tree');assert.equal(u.gatherPhase,'to-node');
+    assert.equal(u.gatherForestCell,cell,'group continuation returns to the remaining tree');assert.equal(u.gatherPhase,'to-node');
     assert.equal(u.path.length,1);assert.deepEqual(u.workIntent,intent);
   } finally {await f.dispose();}
 });

@@ -10,6 +10,11 @@ sequence and acceptance criteria. Existing solo/two-seat checks are the regressi
 floor; expansion of gameplay functionality is the next development outcome.
 Art proceeds separately against stable presentation interfaces.
 
+The [canonical building action matrix](gameplay-foundation-plan.md#canonical-building-action-coverage--4-october-2026)
+owns all thirteen roles, six technologies, finite Farm diagnosis and small B0–B4
+action/production/ordinary-acceptance slices in the existing Interface/Content
+streams. The proposed starter teaching sequence adds no ruleset gates.
+
 The [victory audit](victory-modes-audit-2026-10-03.md) led to separate economy
 Skirmish and fast Objective Control. Ordinary human entry now starts Tiny
 Skirmish, with reviewed Small, Medium and Large choices; fresh PvE supports only Tiny.
@@ -99,7 +104,33 @@ variant and scale proofs. The evidence and its limits are recorded in
 [QA](qa-vertical-slice.md).
 
 
+## Art development backing
+
+Every player-facing creative or visual outcome carries linked art, storyboards
+or explorations under the [visual development contract](art-direction-contract-v1.md#visual-development-backing).
+The [4 October stocktake](art-direction-gaps-2026-10-04.md) identifies existing
+backing and the next missing inputs. First compose a shared game-scale scene and
+scale/finish board from preserved sources; use it to guide the already owned
+building lifecycle, economy-placeholder, animation and compact HUD/cue work.
+Give unassigned art recipients a named owner before starting their production.
+Continue useful core implementation and incremental art integration; this
+direction creates no additional approval queue or paid production authorization.
+
+The [new civilization/settlement library](art-direction/civilization-settlements-v1/README.md)
+supplies initial exploratory family and village/town/city boards for Frontier/Human
+and Boughward. Next, select useful composition/silhouette inputs and resolve their
+recorded scale, density and team-mark questions in the existing production slices;
+reference generation alone does not select those designs or close in-game delivery.
+
 ## First-civilization building art
+
+The [Frontier economy source slice](art-direction/frontier-economy-meshy-v1/README.md)
+identifies Mill, Farm and Dock as missing authored base families and records
+three user-authorized Meshy tasks backed by isolated reference art. The
+art-direction/economy source owner retains model delivery and the next measured
+export; existing eight-model lifecycle work and private wall/gate/Skiff outcomes
+continue independently. Default adoption, packaging, deployment and game review
+remain separate acceptance steps in the [adoption ledger](asset-adoption-checklist.md).
 
 The [Frontier style kit](frontier-civilization-art-style.md) defines eight coherent Complete building concepts for the [architecture wiki](lore/frontier-architecture.md). Next: calibrate House/Town Center beside Workers, derive registered directions and lifecycle states, and integrate useful building packs progressively. Use the [atlas production plan](building-atlas-production-plan.md) for role coverage and scale targets. Source concepts do not claim runtime replacement.
 

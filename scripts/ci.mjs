@@ -75,6 +75,7 @@ run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush edit
 run(['scripts/check-docs.mjs'], 'Documentation links');
 run(['--test', 'scripts/audit-asset-adoption.test.mjs'], 'Approved asset default bindings and release dependencies');
 run(['--test', 'scripts/asset-readability.test.mjs'], 'Read-only asset catalog consuming the existing production sidecar');
+run(['--test', 'scripts/catalog-barracks-scenario.test.mjs'], 'Catalog and paid Barracks adapter contracts (CPU observations)');
 run(['--test', 'scripts/oak-depletion-atlas-runtime.test.mjs'], 'Generic oak depletion atlas loading, fallback and registration');
 run(['--test', 'scripts/interactive-runtime-image.test.mjs'], 'Verified interactive image hash, dimensions and disposal');
 run(['--test', 'scripts/terrain-cliff-faces.test.mjs'], 'Painted scree cliff faces preserve terrain, UV joins and fallback');
@@ -154,7 +155,7 @@ run(['--test', 'scripts/unit-displacement-animation.test.mjs'], 'Temporal sprite
 run(['--test', 'scripts/renderer-capability.test.mjs'], 'WebGL2 capability report contracts (CPU mocks)');
 run(['--test', 'scripts/browser-state-recovery.test.mjs', 'scripts/browser-resume-client.test.mjs', 'scripts/renderer-browser-resume-scenario.test.mjs'], 'Browser resume freshness, bounded presentation and input cleanup');
 run(['scripts/browser-state-refresh-scenario.mjs'], 'Native privacy-preserving full state refresh and reconnect');
-run(['--test', 'scripts/worker-work-cycle-capture.test.mjs'], 'Packed Worker work-cycle adapter contracts (CPU mocks)');
+run(['--test', 'scripts/worker-work-cycle-capture.test.mjs', 'scripts/renderer-worker-route-scenario.test.mjs', 'scripts/renderer-worker-route-joint.test.mjs'], 'Packed and ordinary Worker route adapter contracts (CPU mocks)');
 run(['--test', 'scripts/renderer-qualification.test.mjs', 'scripts/renderer-feature-capture.test.mjs', 'scripts/renderer-capture-context.test.mjs'], 'Packed-game renderer qualification contracts (CPU mocks)');
 run(['--test', 'scripts/temporary-resources.test.mjs'], 'Owned temporary resource cleanup');
 run(['--test', 'scripts/mature-settlement-scenario.test.mjs'], 'Paid settlement fixture ledger and layout');

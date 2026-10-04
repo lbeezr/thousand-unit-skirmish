@@ -90,7 +90,11 @@ strictly checked with the existing Node checkJs configuration. The immutable
 context provides `version = 1`, `page`
 (initially `about:blank`), `openPage()` for another instrumented isolated page,
 loopback `origin`, immutable `source.revision`/`source.digest`, and
-`capture({page, mapId, checkpoint})`. Navigate with normal menu/room input. The
+`capture({page, mapId, checkpoint})`. The immutable `evidenceDirectory` points
+to this case's owned artifact folder for safe numeric receipts and extra frame
+files. The shared runner owns its lifetime; retain only reduced, nonprivate facts
+and keep the runner's `qualification.json` separate from owner sidecars.
+Navigate with normal menu/room input. The
 runner enables the existing read-only snapshots before each document through
 `window.__rtsCaptureDiagnostics`; this preserves ordinary entry URLs and assets.
 Do not add `rendererCapture=environment-state` to the initial menu URL: that
@@ -150,8 +154,8 @@ actually shares that behavior. The existing
 live CDP page and checks applied map/viewport identity; it does not launch a
 browser, verify a pack or validate a gameplay route by itself.
 
-Older standalone owner helpers with `run({browser, pack, evidenceDirectory})`
-or `runNoviceScenario({release, evidenceDirectory})` do not implement version1.
+Older standalone owner helpers with `run({browser, pack})`
+or `runNoviceScenario({release})` do not implement version1.
 Their owners may reuse pure observations/assertions in the registered adapters;
 the loader rejects old identities, missing exports and incompatible versions
 before qualification. The registered adapter receives no browser/pack ownership

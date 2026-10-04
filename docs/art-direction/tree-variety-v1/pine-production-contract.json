@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "assetId": "pine",
+  "manifest": "assets/environment/frontier-meshy-fixed-camera-v3/pine/manifest.json",
+  "identity": {
+    "status": "existing-public-runtime-reuse",
+    "style": "frontier-meshy-pine-v3",
+    "version": 1,
+    "manifestSha256": "ff85258c0f4ac1ca427f423e57e4296e98833f061f1aebebdaf1ef09196dc419",
+    "sources": [
+      {
+        "path": "assets/environment/frontier-meshy-fixed-camera-v3/pine/references/frames/color/view-00.png",
+        "sha256": "a241c7f91db71d5eb4a1b8b268ff8ac50cc463105051b4d3cb4926fc8a4dce75"
+      },
+      {
+        "path": "assets/environment/frontier-meshy-fixed-camera-v3/pine/references/frames/color/view-01.png",
+        "sha256": "42237bb0315583704091f7987681ac1ba224814a9a7ffb86a57ff01a7ccc8640"
+      },
+      {
+        "path": "assets/environment/frontier-meshy-fixed-camera-v3/pine/references/frames/color/view-02.png",
+        "sha256": "8d3dca93036d68f95d551505b5bb948fd4acf62116a0fa69b19fb38d43f98800"
+      },
+      {
+        "path": "assets/environment/frontier-meshy-fixed-camera-v3/pine/references/frames/color/view-03.png",
+        "sha256": "b8cb8365d34e3ee18c7c4e024e48ac191c4b81c85a47c77b24080e24d11700e8"
+      },
+      {
+        "path": "assets/environment/frontier-meshy-fixed-camera-v3/pine/references/frames/color/view-04.png",
+        "sha256": "aaf3f3f6d2ce1dffacd7281d75f85f135c33ece4cdb7e71842e396ec1250fbef"
+      },
+      {
+        "path": "assets/environment/frontier-meshy-fixed-camera-v3/pine/references/frames/color/view-05.png",
+        "sha256": "1cdaec222971aff40dd00529af3fe3d16b84e6a89adbb7b24108511a560bd8dc"
+      },
+      {
+        "path": "assets/environment/frontier-meshy-fixed-camera-v3/pine/references/frames/color/view-06.png",
+        "sha256": "398aeb8283e247e196b711590d6435e422f893f5434ef71d9584ca34e804eb41"
+      },
+      {
+        "path": "assets/environment/frontier-meshy-fixed-camera-v3/pine/references/frames/color/view-07.png",
+        "sha256": "f484c761e2812dbd07c541c2e2ea0ba90ff57a6dd6be21a8729c1bb82202cbdd"
+      }
+    ],
+    "approvedRuntimeFiles": [
+      {
+        "path": "assets/environment/frontier-meshy-fixed-camera-v3/pine/runtime/pine-00.webp",
+        "sha256": "b00664dbb4bd46d470e084eed6eee2b1a9c8f83c62e0f5cc1784928de1ae13f0"
+      },
+      {
+        "path": "assets/environment/frontier-meshy-fixed-camera-v3/pine/runtime/pine-01.webp",
+        "sha256": "345cbb451545a26c674aaf860381e3d6bfd13d308eb7b1386f46e55079dc056d"
+      },
+      {
+        "path": "assets/environment/frontier-meshy-fixed-camera-v3/pine/runtime/pine-02.webp",
+        "sha256": "238bec8a331e72738a327d6b1dc78f9c75cc2da02fefb01157313f7ee5022a9a"
+      },
+      {
+        "path": "assets/environment/frontier-meshy-fixed-camera-v3/pine/runtime/pine-03.webp",
+        "sha256": "1c2a44c761fabef4c66db647496fb75fbbf749389f16ed4d39f43ba03d1c3137"
+      },
+      {
+        "path": "assets/environment/frontier-meshy-fixed-camera-v3/pine/runtime/pine-04.webp",
+        "sha256": "ea583db4f03492064cb29064cffcc66a6eda59ed8e99cde3688398be0f53016a"
+      },
+      {
+        "path": "assets/environment/frontier-meshy-fixed-camera-v3/pine/runtime/pine-05.webp",
+        "sha256": "0cc54946b5d369500b7a9c3571adee6171f5a396bba2b09d6be490859cdc5df9"
+      },
+      {
+        "path": "assets/environment/frontier-meshy-fixed-camera-v3/pine/runtime/pine-06.webp",
+        "sha256": "1ef01c7af2795c9e6740c34bb4ed5877848b11fc56060258890cf7271f6b3efc"
+      },
+      {
+        "path": "assets/environment/frontier-meshy-fixed-camera-v3/pine/runtime/pine-07.webp",
+        "sha256": "e4d8da6337e6798b02873c9c1d14c6aefcd22b80b023e1b70890daed87f0dd12"
+      }
+    ]
+  },
+  "provenance": {
+    "version": 1,
+    "meshTask": "01a0e074-dcd7-74dd-a8b1-3a7b20ed3268",
+    "remeshTask": "01a0e079-d166-76cc-b3a7-42ab091febf7",
+    "privateSource": {
+      "manifestFields": [
+        "sourceModel",
+        "sourceModelSha256"
+      ],
+      "available": false,
+      "publication": "private"
+    },
+    "providerVisibility": "unknown",
+    "trainingPermission": "unknown",
+    "retainedLicenseEvidence": "Existing public runtime reuse is authorized by this task. Meshy job IDs and source hashes are retained; account-plan/terms/task receipt bytes are absent here. No new rights or source publication inferred."
+  },
+  "publication": {
+    "state": "existing-public-runtime-only",
+    "newUploadsAllowed": false,
+    "additionalCredits": 0
+  },
+  "calibration": {
+    "captureMode": "model-rotation",
+    "projection": "orthographic",
+    "cameraAzimuthDegrees": 45,
+    "cameraElevationDegrees": 45.43590248481586,
+    "canvasPx": [
+      640,
+      640
+    ],
+    "groundPivotPx": [
+      320,
+      480
+    ],
+    "pixelsPerWorldUnit": 128,
+    "lighting": "Building pilot: hemisphere 1.6; warm key 2.5; cool fill 1.0; rim 0.7; ACES exposure 1.",
+    "fitMethod": "projected-mesh-vertices",
+    "normalizedSizeWorld": [
+      1.8435182406690358,
+      5.085489093343843,
+      1.8250721113834236
+    ],
+    "perViewRescale": false,
+    "symmetryReuse": false
+  },
+  "requiredStates": [
+    "full",
+    "worked",
+    "low",
+    "depleted"
+  ],
+  "requiredYawDegrees": [
+    0,
+    45,
+    90,
+    135,
+    180,
+    225,
+    270,
+    315
+  ],
+  "missingSourceCells": [
+    "worked|0",
+    "worked|45",
+    "worked|90",
+    "worked|135",
+    "worked|180",
+    "worked|225",
+    "worked|270",
+    "worked|315",
+    "low|0",
+    "low|45",
+    "low|90",
+    "low|135",
+    "low|180",
+    "low|225",
+    "low|270",
+    "low|315",
+    "depleted|0",
+    "depleted|45",
+    "depleted|90",
+    "depleted|135",
+    "depleted|180",
+    "depleted|225",
+    "depleted|270",
+    "depleted|315"
+  ],
+  "sourceComplete": false,
+  "variation": {
+    "version": 1,
+    "selector": "src/forest-age-composition.mjs#pineViewVariation",
+    "key": [
+      "terrainSeed",
+      "forestCell"
+    ],
+    "scaleRange": [
+      0.7,
+      1.0
+    ],
+    "scalePolicy": "Uniform card/root scale only, never multiply wood, cell dimensions, collision or clearance. Do not multiply by age/habitat factors in the pine pilot.",
+    "collisionPolicy": "Every authored forest cell remains blocked until authority clears it. Smaller crowns imply no walkable gaps; stock remains six wood per forest cell.",
+    "rotationPolicy": "Select one original 3D-rendered yaw view; flip=false and card yaw=0."
+  },
+  "integration": {
+    "status": "prepared-unbound",
+    "normalBinding": "Existing pine uses eight v3 views selected by cell-only sine; pilot selector is not yet called.",
+    "stockPolicy": "Retain standing pine at all positive stock. Existing main.js substitutes generic oak-depleted stump at zero, scale slot.scale*0.48; same-design lifecycle art remains missing.",
+    "runtimeFiles": "All eight existing pine WebPs are already served/packed; no extra registry, atlas, images or source archives.",
+    "coordination": "https://github.com/lbeezr/thousand-unit-skirmish/pull/327#issuecomment-5982212219"
+  },
+  "renderAcceptance": {
+    "status": "blocked",
+    "evidence": [],
+    "blockers": [
+      "local sandbox/storage preflight failed",
+      "shared tree slot/picking seam awaits owner agreement",
+      "hosted tree adapter registry/command awaits CI owner agreement"
+    ],
+    "qualifiedBackend": "https://github.com/lbeezr/thousand-unit-skirmish/pull/323",
+    "contactSheet": "assets/environment/frontier-meshy-fixed-camera-v3/pine/contact-sheet.png",
+    "scope": "Contact sheet is an existing model capture inspected visually; no new normal-game or deployed pixel acceptance."
+  }
+}

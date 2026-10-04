@@ -1,10 +1,22 @@
 # First civilization: Frontier architectural style
 
+The [4 October economy model batch](art-direction/frontier-economy-meshy-v1/README.md)
+adds user-authorized Mill/Farm/Dock source candidates using isolated reference
+art. Existing eight-building identities remain the reuse baseline. Generation
+is separate from measured capture, lifecycle coverage and ordinary-game adoption.
+
 [Illustrated wiki](lore/frontier-architecture.md) · [Concept pack](../assets/buildings/frontier-civilization-concepts-v1/README.md) · [Building atlas plan](building-atlas-production-plan.md)
 
 Working art kit, 30 September 2026, informed by main `f896d09`. The current gameplay faction ID remains `frontier`. Bellweather supplies this kit's regional vocabulary; it does not restrict human settlement to Bellweather or resolve a political faction name. Common Hearth and the other proposed institutions remain separate lore decisions.
 
 ## Architectural grammar
+
+The [civilization and settlement reference library](art-direction/civilization-settlements-v1/README.md)
+now places all thirteen current building roles together and explores village,
+town and city compositions. Its Frontier boards reuse this craft direction;
+its Boughward boards propose a separate architectural treatment of the same
+gameplay roles. These are unselected reference sources, not replacements for
+the eight selected concepts, additional gameplay tiers or runtime production.
 
 Welcoming, cultivated human craft: pale river-limestone foundations, cream limewashed walls, dark honey-oak posts and visible joinery, muted sage shingles, restrained butter-yellow/ochre details and sparing aged copper. Stone is heavy and grounded; timber brackets support actual loads. Broad roof planes and clear openings carry identity before small props. Avoid black gothic spires, oversized crystals, elaborate royal ornament and noisy wall patterns.
 

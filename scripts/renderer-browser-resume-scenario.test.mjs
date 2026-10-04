@@ -5,6 +5,7 @@ import { id, contextVersion, run, validateResume } from './renderer-browser-resu
 import { validateCaptureAdapter } from './renderer-capture-context.mjs';
 const page = { cdp: { call: async () => assert.fail('no acquisition without normal background policy'), evaluate: async () => ({}) }, wait: async () => ({}) };
 const context = { version: 1, page, openPage: async () => page, origin: 'http://127.0.0.1:1234',
+  evidenceDirectory: '/tmp/browser-resume-cpu-contract',
   source: Object.freeze({ revision: 'a'.repeat(40), digest: `sha256:${'b'.repeat(64)}` }), capture: async () => ({}) };
 test('version1 adapter refuses inherited throttling bypass or absent policy before navigation', async () => {
   validateCaptureAdapter({ id, contextVersion, run }, 'browser-resume');

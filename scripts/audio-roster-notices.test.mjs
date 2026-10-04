@@ -17,7 +17,7 @@ test('all registered unit queue acknowledgements reuse the queue cue', () => {
 test('every registered technology completes with local research feedback, never the production cue', () => {
   for (const technology of Object.values(TECHNOLOGY_DEFINITIONS)) {
     for (const team of [0, 1]) {
-      const message = `${team === 0 ? 'AZURE' : 'EMBER'} ${technology.label.toUpperCase()} COMPLETE · +20% ATTACK`;
+      const message = `${team === 0 ? 'AZURE' : 'EMBER'} ${technology.label.toUpperCase()} COMPLETE · UPGRADE ACTIVE`;
       assert.equal(cueForNotice(message, { localTeam: team }), 'research-complete', technology.id);
       assert.equal(cueForNotice(message, { localTeam: 1 - team }), null, 'opponent research stays silent');
       assert.equal(cueForNotice(message, { localTeam: null }), null, 'spectators do not hear local research');
