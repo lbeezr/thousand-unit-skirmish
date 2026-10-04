@@ -51,6 +51,11 @@ or browser sandbox bypass is authorized by this checkpoint.
 
 ## Interfaces and boundaries
 
+- Wildlife owner retains the agreed narrow string-ID Sheep selection and
+  Herd/Stop binding in the existing contextual strip. The HUD lane retains
+  layout; new Sheep action/collar frames remain with the art owner. No army
+  group, stance or generation includes a Sheep ID. Source/native acceptance is
+  recorded in [Sheep controls evidence](qa-sheep-owned-controls-2026-10-04.md).
 - Lobby/Practice/mode owner retains room/pregame/network entry sections. HUD
   changes use existing selection and snapshot application; coordinate a concrete
   overlap before editing those sections.

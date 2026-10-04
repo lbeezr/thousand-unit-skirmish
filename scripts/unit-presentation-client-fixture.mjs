@@ -7,7 +7,9 @@ import * as THREE from 'three';
 import { applyUnitStances } from '../src/combat-stance-ui.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { economyClientBindings } from './economy-client-fixture.mjs';
+import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 import { createUnitSpriteRuntime } from '../src/unit-sprite-runtime.mjs';
+import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.mjs';
 import { shouldUpdateUnitTransformForFrame } from '../src/unit-lod-state.mjs';
 import { readWorkerPerformingAction, workerWorkAction } from '../src/worker-work-presentation.mjs';
 
@@ -64,10 +66,11 @@ export async function createUnitPresentationClientFixture({ localTeam = 0, maxUn
   assert.equal(await runtime.ready, true);
 
   let clock = 1000;
+  const wildlifeRenderer = createNeutralWildlifeRenderer({ THREE, scene, groundHeight: () => 0 });
   const transformCalls = [], dirtyTeams = [];
   const noop = () => {};
   const elements = new Map();
-  const context = vm.createContext({ ...economyClientBindings(), THREE, applyUnitStances, UNIT_DEFINITIONS,
+  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), THREE, applyUnitStances, UNIT_DEFINITIONS,
     readWorkerPerformingAction, workerWorkAction,
     mapDefinition: { id: 'unit-presentation-fixture' }, localTeam, isHost: false,
     activeMatchMode: {}, knownMaps: [], matchModeView: { update: noop }, setMapCatalog: noop,
@@ -87,7 +90,7 @@ export async function createUnitPresentationClientFixture({ localTeam = 0, maxUn
     audio: { updateWork: noop, stopWork: noop, playEvent: noop },
     orderAudioGate: { reset: noop }, unitLifecycleAudioGate: { observe: () => [] },
     combatAudioGate: { reset: noop, observe: noop }, workAudioEvents: () => [],
-    waterStudyFishBinding: null, addArrowTrace: noop,
+    waterStudyFishBinding: null, wildlifeRenderer, resourceNodeVisuals: new Map(), addArrowTrace: noop,
     setUnitInstanceCount: (team, count) => runtime.setCount(team, count), setUnitTint: noop,
     updateUnitTransform(unit, now = clock) {
       // Delegate to the real default sprite runtime. Other presentation paths,
@@ -107,7 +110,7 @@ export async function createUnitPresentationClientFixture({ localTeam = 0, maxUn
     lastIdlePoseStep: -1,
     shouldUpdateUnitTransformForFrame,
   });
-  vm.runInContext(`${poseConstants}\n${snapshotSource}\nfunction animateUnitPresentation(now, frameDelta) {\n${frameSource}\n}`, context);
+  vm.runInContext(`${wildlifeClientFunctionSource(source)}\n${poseConstants}\n${snapshotSource}\nfunction animateUnitPresentation(now, frameDelta) {\n${frameSource}\n}`, context);
 
   const meshFor = unit => scene.children[roles.indexOf(runtime.roleForUnit(unit)) * 2 + unit.team];
   return { context, runtime, scene, transformCalls, dirtyTeams,
@@ -144,6 +147,7 @@ export async function createUnitPresentationClientFixture({ localTeam = 0, maxUn
     },
     clearObservations() { transformCalls.length = 0; dirtyTeams.length = 0; },
     dispose() {
+      wildlifeRenderer.dispose();
       for (const mesh of scene.children) { mesh.geometry.dispose(); mesh.material.dispose(); }
     },
   };
