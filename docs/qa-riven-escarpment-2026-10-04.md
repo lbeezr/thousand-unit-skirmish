@@ -46,6 +46,7 @@ node scripts/generate-riven-escarpment.mjs
 node --test scripts/riven-escarpment.test.mjs scripts/map-scale-audit.test.mjs scripts/map-size-policy.test.mjs scripts/map-grid-cost-audit.test.mjs scripts/threefold-basin.test.mjs
 node scripts/map-scale-audit.mjs --summary-jsonl
 node scripts/map-grid-cost-audit.mjs
+node scripts/riven-escarpment-practice-scenario.mjs --output /tmp/medium-practice-NEW.json
 node scripts/map-capacity-scenario.mjs --map veyrholds-riven-escarpment --loads 24 --seconds 10 --output /tmp/medium-NEW-evidence
 ```
 
