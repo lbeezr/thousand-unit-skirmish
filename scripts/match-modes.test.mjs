@@ -8,8 +8,23 @@ import { normalizeMatchMode, matchModeDefinition, assertMatchModeCompatibility,
 const authored = { matchModeId: 'authored', matchModeVersion: 1 };
 const objective = { matchModeId: 'objective-control', matchModeVersion: 1 };
 const skirmish = { matchModeId: 'skirmish', matchModeVersion: 1 };
+const bannerfall = { matchModeId: 'bannerfall', matchModeVersion: 1 };
+const arena = JSON.parse(readFileSync(new URL('../maps/bannerfall-arena.json', import.meta.url)));
 const maps = ['bellweather-millrace', 'underbough-rootways'].map(id =>
   JSON.parse(readFileSync(new URL(`../maps/${id}.json`, import.meta.url))));
+
+test('canonical metadata cannot opt another mode into Bannerfall UI rules', () => {
+  const canonical = structuredClone(maps[0]); canonical.bannerfall = { version: 1 };
+  for (const mode of [authored, objective, skirmish]) {
+    const effective = effectiveMapForMatchMode(canonical, mode);
+    assert.equal(Object.hasOwn(effective, 'bannerfall'), false);
+    assert.equal(canonical.bannerfall.version, 1);
+    if (mode !== skirmish) {
+      assert.equal(effective.timedVictory.afterSeconds, 900);
+      assert.ok(effective.triggers.some(trigger => trigger.victory === true));
+    }
+  }
+});
 function deepFreeze(value) {
   if (value && typeof value === 'object') {
     for (const child of Object.values(value)) deepFreeze(child);
@@ -64,6 +79,64 @@ test('registry exposes the agreed policy and honest AI support as immutable desc
     victoryPolicy: 'recovery-elimination', aiStrategyId: 'base-elimination', pveSupported: false, selectable: true,
     defaultMapId: 'veyrholds-terraced-vale' });
   assert.throws(() => { matchModeDefinition(skirmish).pveSupported = true; }, TypeError);
+});
+
+test('Bannerfall advertises its fixed human arena without changing implicit authored defaults', () => {
+  assert.deepEqual(normalizeMatchMode(bannerfall), bannerfall);
+  assert.deepEqual(matchModeDefinition(bannerfall), { id: 'bannerfall', version: 1, label: 'Bannerfall',
+    victoryPolicy: 'designated-stronghold', aiStrategyId: 'unsupported', pveSupported: false,
+    selectable: true, defaultMapId: 'bannerfall-arena', fixedArmySize: 16 });
+  assert.throws(() => { matchModeDefinition(bannerfall).fixedArmySize = 250; }, TypeError);
+  assert.deepEqual(normalizeMatchMode(), authored);
+  assert.deepEqual(effectiveMapForMatchMode(arena), arena);
+  assert.equal(Object.hasOwn(effectiveMapForMatchMode(arena), 'bannerfall'), false,
+    'arena identity alone does not select Bannerfall');
+  assert.deepEqual(matchModeCatalog(arena).map(mode => mode.id), ['authored', 'bannerfall']);
+  assert.deepEqual(matchModeCatalog(arena, { mode: 'pvp', practice: true }).map(mode => mode.id), ['authored', 'bannerfall']);
+  assert.deepEqual(matchModeCatalog(arena, { mode: 'pve' }).map(mode => mode.id), ['authored']);
+});
+
+test('Bannerfall rejects other maps and unsupported AI instead of substituting a selection', () => {
+  for (const map of [...maps, { ...arena, id: 'another-arena' }]) {
+    assert.throws(() => assertMatchModeCompatibility(bannerfall, map), /Bannerfall.*not compatible/);
+    assert.throws(() => effectiveMapForMatchMode(map, bannerfall), /Bannerfall.*not compatible/);
+    assert.equal(matchModeCatalog(map).some(mode => mode.id === 'bannerfall'), false);
+  }
+  assert.equal(assertMatchModeCompatibility(bannerfall, arena).id, 'bannerfall');
+  assert.equal(assertMatchModeCompatibility(bannerfall, arena, { mode: 'pvp', practice: true }).id, 'bannerfall');
+  assert.throws(() => assertMatchModeCompatibility(bannerfall, arena, { mode: 'pve' }),
+    /Bannerfall supports human matches and Practice; its AI is not implemented/);
+  assert.throws(() => assertMatchModeCompatibility(skirmish, arena), /not compatible/);
+  assert.throws(() => assertMatchModeCompatibility(objective, arena), /not compatible/);
+});
+
+test('Bannerfall projection fixes the opening and removes economy/objectives without mutating canonical metadata', () => {
+  const canonical = deepFreeze({ ...structuredClone(arena), startingArmySize: 250,
+    startingResources: { food: 150, wood: 250 },
+    resourceNodes: [{ id: 'supply', type: 'food', x: 0, z: 10, stock: 100 }],
+    triggers: [{ id: 'post', name: 'Post', type: 'capture-zone',
+      zone: { column: 20, row: 20, width: 4, height: 4 }, requiredUnits: 1, captureSeconds: 5, victory: true }],
+    scenarioEvents: [{ id: 'relief', type: 'timed-supply', afterSeconds: 120, team: 'both', foodReward: 100 }],
+    victoryHoldSeconds: 20, timedVictory: { afterSeconds: 900, objectiveId: 'post' } });
+  const before = structuredClone(canonical);
+  const effective = effectiveMapForMatchMode(canonical, bannerfall);
+  assert.equal(effective.startingArmySize, 16);
+  assert.deepEqual(effective.startingResources, { food: 0, wood: 0 });
+  assert.deepEqual(effective.resourceNodes, []);
+  assert.deepEqual(effective.triggers, []);
+  assert.deepEqual(effective.scenarioEvents, []);
+  assert.equal(Object.hasOwn(effective, 'victoryHoldSeconds'), false);
+  assert.equal(Object.hasOwn(effective, 'timedVictory'), false);
+  assert.deepEqual(effective.bannerfall, { version: 1, waveSeconds: 15, waveSize: 2, populationCap: 12,
+    evolutionKills: 6, openingArmySize: 16, initialKind: 'infantry', evolvedKind: 'rider', mapId: 'bannerfall-arena' });
+  for (const key of ['id', 'name', 'summary', 'width', 'height', 'terrainSeed', 'terrainBase', 'fogOfWar', 'spawnPoints', 'obstacles']) {
+    assert.deepEqual(effective[key], canonical[key], key);
+  }
+  assert.deepEqual(canonical, before);
+  effective.spawnPoints[0].x = 0;
+  effective.bannerfall.waveSeconds = 1;
+  assert.deepEqual(canonical, before);
+  assert.equal(effectiveMapForMatchMode(canonical, bannerfall).bannerfall.waveSeconds, 15);
 });
 
 test('Tiny normal map supports human Skirmish without inventing objective or AI capability', () => {

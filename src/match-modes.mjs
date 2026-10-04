@@ -1,7 +1,9 @@
 // Match victory policy is independent of the pvp/pve opponent setup.
 // Callers supply validated canonical maps; this module does not validate terrain.
+import { BANNERFALL_RULES } from './bannerfall-rules.mjs';
 export const NORMAL_MATCH_MAP_ID = 'veyrholds-terraced-vale';
 export const NORMAL_HUMAN_MATCH_MODE = Object.freeze({ matchModeId: 'skirmish', matchModeVersion: 1 });
+/** @type {ReadonlyArray<Readonly<{id:string, version:number, label:string, victoryPolicy:string, aiStrategyId:string, pveSupported:boolean, selectable:boolean, defaultMapId?:string, fixedArmySize?:number}>>} */
 const definitions = Object.freeze([
   Object.freeze({ id: 'authored', version: 1, label: 'Authored Rules',
     victoryPolicy: 'authored', aiStrategyId: 'capture-posts',
@@ -12,6 +14,10 @@ const definitions = Object.freeze([
   Object.freeze({ id: 'skirmish', version: 1, label: 'Skirmish',
     victoryPolicy: 'recovery-elimination', aiStrategyId: 'base-elimination',
     pveSupported: false, selectable: true, defaultMapId: NORMAL_MATCH_MAP_ID }),
+  Object.freeze({ id: 'bannerfall', version: 1, label: 'Bannerfall',
+    victoryPolicy: 'designated-stronghold', aiStrategyId: 'unsupported',
+    defaultMapId: BANNERFALL_RULES.mapId, fixedArmySize: BANNERFALL_RULES.openingArmySize,
+    pveSupported: false, selectable: true }),
 ]);
 const skirmishMapIds = new Set(['bellweather-millrace', 'underbough-rootways', NORMAL_MATCH_MAP_ID,
   'veyrholds-threefold-basin']);
@@ -57,6 +63,7 @@ function assertMap(map) {
 }
 
 function mapCompatible(definition, map) {
+  if (definition.id === 'bannerfall') return map.id === BANNERFALL_RULES.mapId;
   if (definition.id === 'objective-control') {
     return Array.isArray(map.triggers) && map.triggers.some(trigger => trigger.victory === true);
   }
@@ -72,6 +79,7 @@ export function assertMatchModeCompatibility(value, map, options) {
     throw new Error(`${definition.label} is not compatible with map ${map.id || '(unnamed)'}.`);
   }
   if (mode === 'pve' && !definition.pveSupported) {
+    if (definition.id === 'bannerfall') throw new Error('Bannerfall supports human matches and Practice; its AI is not implemented.');
     throw new Error(`${definition.label} does not support PvE until its base-elimination AI is accepted.`);
   }
   return definition;
@@ -81,6 +89,18 @@ export function assertMatchModeCompatibility(value, map, options) {
 export function effectiveMapForMatchMode(map, value) {
   const definition = assertMatchModeCompatibility(value, map);
   const effective = structuredClone(map);
+  // Reserved effective-only metadata cannot opt an authored map into this mode.
+  delete effective.bannerfall;
+  if (definition.id === 'bannerfall') {
+    effective.startingArmySize = BANNERFALL_RULES.openingArmySize;
+    effective.startingResources = { food: 0, wood: 0 };
+    effective.resourceNodes = [];
+    effective.triggers = [];
+    effective.scenarioEvents = [];
+    effective.bannerfall = { ...BANNERFALL_RULES };
+    delete effective.victoryHoldSeconds;
+    delete effective.timedVictory;
+  }
   if (definition.victoryPolicy === 'recovery-elimination') {
     for (const trigger of effective.triggers || []) {
       if (trigger.victory === true) trigger.victory = false;
