@@ -184,11 +184,15 @@ try {
   }
   record('finite-fish-food-delivered-to-owned-dock-once', fishDelivered,
     { deliveries: deliveries.map(d => ({ ...d, bankAfter: fishDelivered.state.teamFood[d.team] })) });
-  // Traverse the actual connected bays in both directions, away from Dock berths.
-  for (const team of [0, 1]) await command(team, { type: 'move', ids: [boats[team]], ...position(1 - team, [37, 128]) }, /SKIFF WATER ROUTE|PLANNING MOVE|MOVE ORDER/);
-  const crossed = await checkpoint(s => boats.every((id, team) => {
-    const u = s.state.units[id], p = position(1 - team, [37, 128]); return u.pathIndex >= u.path.length && Math.hypot(u.x - p.x, u.z - p.z) < 1;
-  })); record('both-skiffs-cross-connected-bays', crossed);
+  // Isolate topology from the separately retained opposing-Skiff collision failure.
+  // These are sequential water crossings, with no general traffic-capacity claim.
+  for (const team of [0, 1]) {
+    await command(team, { type: 'move', ids: [boats[team]], ...position(1 - team, [37, 128]) }, /SKIFF WATER ROUTE|PLANNING MOVE|MOVE ORDER/);
+    const crossed = await checkpoint(s => {
+      const u = s.state.units[boats[team]], p = position(1 - team, [37, 128]);
+      return u.pathIndex >= u.path.length && Math.hypot(u.x - p.x, u.z - p.z) < 1;
+    }); record(`skiff-${team}-sequential-cross-bay-arrival`, crossed);
+  }
   await fixture.stop(); const retained = JSON.parse(await readFile(checkpointPath)); record('cold-checkpoint-before', retained);
   // Preserve economic recovery evidence without publishing recovery session state.
   await writeFile(path.join(output, 'retained-economy.json'), JSON.stringify({ schemaVersion: retained.schemaVersion,
