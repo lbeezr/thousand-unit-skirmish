@@ -18,7 +18,8 @@ const map = structuredClone(base);
 for (const obstacle of map.obstacles) { obstacle.column += (160 - map.width) / 2; obstacle.row += (160 - map.height) / 2; }
 Object.assign(map, { id: `paid-battle-tick-budget-${size}`, name: 'Paid Battle Tick Budget',
   width: 160, height: 160, startingArmySize: size - 2, triggers: [], regions: [],
-  scenarioEvents: [], timedVictory: null, victoryHoldSeconds: 0 });
+  scenarioEvents: [], victoryHoldSeconds: 0 });
+delete map.timedVictory;
 const sha = value => createHash('sha256').update(value).digest('hex');
 const sourceSha256 = sha(await readFile(new URL('../server.mjs', import.meta.url)));
 const head = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
@@ -32,6 +33,7 @@ const fixture = await createFortifiedFixture({ diagnostics: true, timeoutMs: 120
 const spent = [{ food: 0, wood: 0 }, { food: 0, wood: 0 }], orders = [], ticks = new Map();
 let clients, token = 1, stage = 'startup', report;
 const own = (team, kind) => clients[team].latest.units.filter(u => u[1] === team && u[4] > 0 && u[5] === kind);
+const economyNode = (team, type) => map.resourceNodes.find(n => n.type === type && (team ? n.x > 20 : n.x < -20));
 async function order(team, command, expected) {
   const issuedTick = clients[team].latest.tick;
   const notice = await sendFortifiedCommand(clients[team], { ...command, clientOrderToken: token++ }, expected);
@@ -65,7 +67,10 @@ try {
   await fixture.start(); clients = [await fixture.connect(0), await fixture.connect(1)];
   const sessions = clients.map(c => c.welcome.player.sessionToken);
   clients[0].send({ type: 'publishMap', map });
-  await Promise.all(clients.map(c => c.wait(m => m.type === 'mapChange' && m.map.id === map.id, 'paid map')));
+  await Promise.all(clients.map(async c => {
+    const message = await c.wait(m => m.type === 'mapRejected' || (m.type === 'mapChange' && m.map.id === map.id), 'paid map');
+    assert.notEqual(message.type, 'mapRejected', message.message);
+  }));
   stage = 'paid construction, research, training and harvesting';
   await Promise.all([0, 1].map(async team => {
     const army = own(team, 'infantry'), workers = own(team, 'worker'), sign = team ? 1 : -1;
@@ -73,6 +78,7 @@ try {
     await pay(team, { type: 'build', ids: workers.slice(0, 2).map(u => u[0]),
       buildingType: 'house', x: sign * 30.5, z: -20.5 }, B.house, /BUILD ORDER/);
     await clients[team].state(s => s.buildings.some(b => b.team === team && b.type === 'house' && b.complete), 'paid House complete');
+    console.error(JSON.stringify({ policy, size, stage: 'paid House complete', team }));
     await clearAndBuildFortifiedSite({ team, state: async () => clients[team].latest,
       move: (units, goal) => order(team, { type: 'move', ids: units.map(u => u[0]), unitGenerations: units.map(u => u[8]), ...goal }, /MOVE ORDER/),
       build: async () => {
@@ -86,15 +92,19 @@ try {
     await pay(team, { type: 'trainUnit', buildingId: barracks.id, kind: 'infantry' }, U.infantry, /QUEUED/);
     await pay(team, { type: 'researchUpgrade', buildingId: barracks.id, upgrade: 'infantry-attack' }, T['infantry-attack'], /STARTED/);
     for (const [i, type] of ['food', 'wood'].entries()) {
-      const node = map.resourceNodes.find(n => n.type === type && (team ? n.x > 20 : n.x < -20));
+      const node = economyNode(team, type);
       await order(team, { type: 'gather', ids: [workers[i + 2][0]], nodeId: node.id }, /GATHER ORDER/);
     }
   }));
   const ready = await fixture.checkpoint(s => s.mapDefinition.id === map.id && s.state.teamUpgrades.every(u => u.infantryAttack)
     && s.state.buildings.every(b => b.complete && b.queue === 0));
   ledger(ready); assert.equal(ready.state.units.filter(u => u.hp > 0).length, size);
-  assert.ok([0, 1].every(team => ready.state.units.some(u => u.team === team && u.cargo > 0)
-    || ready.state.resourceNodes.some(n => n.stock < map.resourceNodes.find(m => m.id === n.id).stock)));
+  for (const team of [0, 1]) for (const resource of ['food', 'wood']) {
+    const node = economyNode(team, resource);
+    assert.ok(ready.state.resourceNodes.find(n => n.id === node.id).stock < node.stock,
+      `team ${team} ${resource} harvesting participated in warmup`);
+  }
+  console.error(JSON.stringify({ policy, size, stage: 'paid research/training and both-resource economy ready', tick: ready.state.tickNumber }));
   stage = 'measured movement, combat, fog and ongoing economy';
   await collect(); const startTick = Math.max(...ticks.keys()), phases = [];
   for (let phase = 0; phase < 3; phase++) {
@@ -111,11 +121,19 @@ try {
       await sleep(200); await collect();
     }
     phases.push({ phase, firstTick, lastTick: Math.max(...ticks.keys()) });
+    console.error(JSON.stringify({ policy, size, stage: 'measured phase complete', phase, tick: Math.max(...ticks.keys()) }));
   }
   const endTick = Math.max(...ticks.keys()), measured = [...ticks.values()].filter(t => t.tickNumber > startTick && t.tickNumber <= endTick)
     .toSorted((a, b) => a.tickNumber - b.tickNumber);
   assert.equal(measured.length, endTick - startTick, 'every measured tick captured once across rolling windows');
   const complete = await fixture.checkpoint(s => s.state.tickNumber >= endTick); ledger(complete);
+  const economyProgress = [0, 1].flatMap(team => ['food', 'wood'].map(resource => {
+    const node = economyNode(team, resource), stock = saved => saved.state.resourceNodes.find(n => n.id === node.id).stock;
+    const bank = saved => saved.state[resource === 'food' ? 'teamFood' : 'teamWood'][team];
+    const harvested = stock(ready) - stock(complete), deposited = bank(complete) - bank(ready);
+    assert.ok(harvested > 0 && deposited > 0, `team ${team} ${resource} harvesting and deposits continued during battle`);
+    return { team, resource, nodeId: node.id, harvested, deposited };
+  }));
   const casualties = size - complete.state.units.filter(u => u.hp > 0).length;
   assert.ok(casualties > 0, 'measured battle includes actual combat casualties');
   const slowest = measured.toSorted((a, b) => b.durationMs - a.durationMs).slice(0, 10);
@@ -131,7 +149,7 @@ try {
   const restored = await fixture.checkpoint(s => s.state.tickNumber >= complete.state.tickNumber); ledger(restored);
   assert.ok(restored.state.teamUpgrades.every(u => u.infantryAttack));
   report = { schemaVersion: 1, head, sourceSha256, policy, size, node: process.version, platform: process.platform,
-    cpu: os.cpus()[0]?.model, map, spent, orders, startTick, endTick, phases, casualties, paidLedger: true,
+    cpu: os.cpus()[0]?.model, map, spent, economyProgress, orders, startTick, endTick, phases, casualties, paidLedger: true,
     checkpointRecovery: true, summary, ticks: measured,
     limits: ['native two-seat loopback, 160x160 fog map padded from Fortified Crossing; no scripted rewards or actor injection',
       'whole outer tick includes planning, movement/combat/economy, vision, scenario, broadcast and synchronous checkpoint work',
