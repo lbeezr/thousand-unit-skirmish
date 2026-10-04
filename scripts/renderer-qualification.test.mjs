@@ -105,7 +105,7 @@ test('existing snapshot and asset diagnostics opt in without changing normal men
     const context = vm.createContext({ window, roomPageUrl: new URL(`http://localhost/${query}`),
       resourceStateAssetsReady: { then(fn) { callback = fn; } },
       localTeam: 0, mapDefinition: {}, resourceNodeVisuals: new Map(), mapObjects: [],
-      constructionGroundMeshes: new Map(), RESOURCE_STATE_ASSET_STATUS: 'fixture',
+      constructionGroundMeshes: new Map(), palisadeGroundMeshes: new Map(), RESOURCE_STATE_ASSET_STATUS: 'fixture',
       sendCommand: () => true,
       buildingPlacementPreview: { sprite: null }, buildPlacementActive: false, buildPlacementPending: false,
       buildPlacementType: 'house', buildPlacementOrientation: 0,
