@@ -54,6 +54,7 @@ run(['node_modules/typescript/bin/tsc', '--project', 'tsconfig.check-node.json',
 run(['--test', 'scripts/check-node-types.test.mjs'], 'Node framing contract negative cases and ambient isolation');
 run(['--test', 'scripts/resource-visual-state.test.mjs'], 'Resource stage membership and legacy transitions');
 run(['--test', 'scripts/construction-ground-composition.test.mjs'], 'Construction ground painter order and terrain contact');
+run(['--test', 'scripts/palisade-construction-ground.test.mjs'], 'Connected owned palisade construction ground and lifecycle');
 
 run(['--test', 'scripts/scenario-regions.test.mjs'], 'Named scenario regions');
 run(['--test', 'scripts/scenario-authoring.test.mjs'], 'Visual scenario authoring contracts');

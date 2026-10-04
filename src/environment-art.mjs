@@ -8,6 +8,7 @@ import { RESOURCE_VISUAL_STAGES, resourceVisualStage } from './resource-visual-s
 import { createGroundMistStudy, groundMistEnabled } from './terrain-atmosphere.mjs';
 import { applyTerrainTextureSampling } from './terrain-texture-sampling.mjs';
 import { createTerrainCliffFaces } from './terrain-cliff-faces.mjs';
+import { createPalisadeConstructionGroundMesh } from './palisade-construction-ground.mjs';
 import { groundTextureName, loadPaintedMaterialAtlas } from './painted-material-atlas-runtime.mjs';
 import { loadOakDepletionAtlas, oakDepletionStage, applyOakDepletionSampling } from './oak-depletion-atlas-runtime.mjs';
 import { buildTerrainBlendMasks, buildForestGroundMask } from './terrain-blend.mjs';
@@ -544,6 +545,17 @@ export function updateConstructionGroundInstances(mesh, positions) {
   mesh.visible = positions.length > 0;
   mesh.instanceMatrix.needsUpdate = true;
   return true;
+}
+
+export function createConnectedPalisadeGround(stage, capacity) {
+  if (!['earthwork', 'foundation'].includes(stage)) return null;
+  const texture = constructionTextures.get(stage) || null;
+  const material = new THREE.MeshBasicMaterial({ map: texture,
+    color: texture ? 0xffffff : 0x72583b, transparent: true, alphaTest: 0.04,
+    opacity: texture ? 1 : 0.52, depthTest: true, depthWrite: false,
+    side: THREE.DoubleSide, toneMapped: false });
+  registerTextureMaterial(constructionMaterials, stage, material);
+  return createPalisadeConstructionGroundMesh(material, capacity);
 }
 
 function registerLandVegetation(mesh) {

@@ -72,3 +72,31 @@ construction contact, mixed-stage palisades, gate/gap/corner, completion,
 cancel/removal and elevated terrain occlusion. Inspect actual PNGs and retain
 simulation state and source/release identities; screenshot manifests alone
 cannot pass visual acceptance. Identified staging delivery remains separate.
+
+## Second bounded increment: connected palisade ground
+
+The original ground pipeline places the same 3×3 square on every 1×1 wall or
+gate. Adjacent sites therefore overlap across two cells in each direction.
+The candidate removes walls/gates from that pipeline and draws two preallocated
+union meshes (earthwork/foundation), each at most 128 one-cell quads. No positive
+area overlaps between cells or stages. Authoritative reciprocal connections,
+same owner, surviving unfinished membership and equal sampled center height
+determine joined edges. Diagonals, gaps, completed/open gates and removed sites
+do not bridge. A gate under construction joins just like its owned segment;
+its operation rules are untouched.
+
+Both existing textures were visually inspected. A shared mirrored soil-core
+sample (central 30–70%) avoids repeating their square grass/stone curb inside
+the strip. World coordinates keep this placement stable across stage changes,
+snapshot ordering and reconstruction. Only exposed union edges feather; there
+are no stacked alpha squares. Vertices sample the real terrain just inside each
+cell corner and retain +0.002 lift and depth testing. Two fixed buffers update
+only when signatures change; progress within one stage causes no upload. Other
+building site art and every map, ledger, navigation and picking rule remain.
+
+CPU controls cover reciprocal versus stale/missing connections, mixed stages,
+straight/corner/junction, gap/diagonal/opponent, gate completion/open state,
+duplicates, terrain step, exact triangle coverage, overflow, stable buffers,
+real renderer reconciliation and completion/removal. These are topology and
+composition contracts, not a GPU visual pass. The adapter still needs the
+CI-owned registration and exact baseline/candidate captures described above.

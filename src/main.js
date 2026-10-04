@@ -37,6 +37,7 @@ import * as THREE from 'three';
 import { mountAssetReadability } from './asset-readability.mjs';
 import { catalogBarracksObservation } from './catalog-barracks-observation.mjs';
 import { farmHarvestNode } from './farm-harvest.mjs';
+import { isPalisade } from './palisade-gate.mjs';
 import { attachBuildingSprite } from './building-sprites.mjs';
 import { frontierBuildingManifestUrl } from './frontier-building-preview.mjs';
 import {
@@ -44,12 +45,13 @@ import {
   updateCapturedBuildingSprite,
 } from './captured-building-art.mjs';
 import {
-  addObstacleEnvironmentSprites, groundBaseMaterial, createConstructionGroundInstances,
+  addObstacleEnvironmentSprites, groundBaseMaterial, createConstructionGroundInstances, createConnectedPalisadeGround,
   createEnvironmentSprite, createEnvironmentSpriteInstances, createWoodResourceInstances, regionalWoodResourceProfile, createFoodResourceInstances, regionalFoodResourceProfile,
   createGroundSurfaces, setEnvironmentSpriteInstance, setForestSpriteStock,
   TERRAIN_MATERIALS, updateConstructionGroundInstances, updateLandVegetationOccupation,
   RESOURCE_STATE_ASSETS_AVAILABLE, RESOURCE_STATE_ASSET_STATUS, resourceStateAssetsReady,
 } from './environment-art.mjs';
+import { planPalisadeConstructionGround, updatePalisadeConstructionGroundMesh } from './palisade-construction-ground.mjs';
 import { createEnvironmentInstancePicker } from './environment-instance-picking.mjs';
 import {
   RESOURCE_VISUAL_STAGES, resourceVisualScale, resourceVisualStage, resourceVisualTransitionStages,
@@ -595,6 +597,7 @@ const berryNodeSlots = new Map();
 const berryNodeStages = new Map();
 const berryStageCounts = new Map();
 const constructionGroundMeshes = new Map();
+const palisadeGroundMeshes = new Map();
 const constructionGroundSignatures = new Map();
 const buildingVisuals = new Map();
 let woodTreeMeshes = new Map();
@@ -1868,6 +1871,7 @@ function resizeResourceCallouts() {
 
 function buildConstructionGroundBatches() {
   constructionGroundMeshes.clear();
+  palisadeGroundMeshes.clear();
   constructionGroundSignatures.clear();
   for (const stage of ['earthwork', 'foundation']) {
     const mesh = createConstructionGroundInstances(stage, MAX_MAP_BUILDINGS);
@@ -1875,12 +1879,15 @@ function buildConstructionGroundBatches() {
     addMapObject(mesh);
     constructionGroundMeshes.set(stage, mesh);
     constructionGroundSignatures.set(stage, '');
+    const wallGround = createConnectedPalisadeGround(stage, MAX_MAP_BUILDINGS);
+    if (wallGround) { addMapObject(wallGround); palisadeGroundMeshes.set(stage, wallGround); }
   }
 }
 
 function updateConstructionGroundBatches(buildings) {
   for (const stage of ['earthwork', 'foundation']) {
     const stageBuildings = buildings
+      .filter(building => !isPalisade(building.type))
       .filter((building) => constructionGroundStage(building.progress, building.complete) === stage)
       .sort((left, right) => left.id - right.id);
     const signature = stageBuildings.map((building) => `${building.id}:${building.x}:${building.z}`).join('|');
@@ -1889,6 +1896,8 @@ function updateConstructionGroundBatches(buildings) {
     if (!updateConstructionGroundInstances(mesh, stageBuildings)) continue;
     constructionGroundSignatures.set(stage, signature);
   }
+  const connected = planPalisadeConstructionGround(buildings, groundHeight);
+  for (const [stage, mesh] of palisadeGroundMeshes) updatePalisadeConstructionGroundMesh(mesh, connected[stage]);
 }
 
 function addResourceNodeVisual(node) {
@@ -2323,6 +2332,7 @@ function buildMap(definition) {
   fogTexture?.dispose();
   clearMapObjects();
   constructionGroundMeshes.clear();
+  palisadeGroundMeshes.clear();
   constructionGroundSignatures.clear();
   objectiveVisuals.clear();
   scenarioEventVisuals.clear();
@@ -4820,7 +4830,11 @@ function updateEnvironmentStateCaptureSnapshot(state) {
     })),
     constructionDraws: [...constructionGroundMeshes].map(([stage, mesh]) => ({
       stage, count: mesh.count, visible: mesh.visible,
-      buildingIds: buildings.filter((building) => building.groundStage === stage).map((building) => building.id),
+      buildingIds: buildings.filter((building) => building.groundStage === stage && !isPalisade(building.type)).map((building) => building.id),
+    })),
+    palisadeGroundDraws: [...palisadeGroundMeshes].map(([stage, mesh]) => ({
+      stage, count: mesh.userData.palisadeGround.count, visible: mesh.visible,
+      buildingIds: buildings.filter(building => building.groundStage === stage && isPalisade(building.type)).map(building => building.id),
     })),
   };
 }
