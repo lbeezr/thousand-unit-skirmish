@@ -68,6 +68,7 @@ import { activeWallBuildOrder } from './src/wall-build-order.mjs';
 import { isPalisade, validGateState, buildingBlocksMovement, planGateTransition } from './src/palisade-gate.mjs';
 import { palisadeConnections } from './src/palisade-profile.mjs';
 import { canTraverseUnitStep } from './src/unit-movement.mjs';
+import { canTraverseFlatUnitSegment, visitGridSegmentCells } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
 
@@ -1478,6 +1479,9 @@ function findDirectManhattanPath(start, goal) {
 
 function findPathAStar(start, goal, diagnostics = null) {
   if (start === goal) return [];
+  if (canTraverseFlatUnitSegment(start % MAP_WIDTH + 0.5, Math.floor(start / MAP_WIDTH) + 0.5,
+    goal % MAP_WIDTH + 0.5, Math.floor(goal / MAP_WIDTH) + 0.5,
+    MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS)) return [goal];
   const directPath = findDirectManhattanPath(start, goal);
   if (directPath !== null) return directPath;
   const searchId = beginPathSearch();
@@ -4025,7 +4029,16 @@ function applyPlannedMoveAssignment(job, assignment) {
   const path = assignment.path || [];
   const alreadyInDestinationCell = path.length === 0
     && nearestOpenCell(worldToCell(unit.x, unit.z)) === destination;
-  unit.path = path;
+  const start = worldToCell(unit.x, unit.z);
+  const goal = cellToWorld(destination);
+  const distantSingleWaypoint = path.length === 1
+    && Math.abs(start % MAP_WIDTH - destination % MAP_WIDTH)
+      + Math.abs(Math.floor(start / MAP_WIDTH) - Math.floor(destination / MAP_WIDTH)) > 1;
+  // A shared cell-center route can graze an obstacle from one assignee's
+  // fractional position. Rejoin its start center before taking the shortcut.
+  unit.path = distantSingleWaypoint && !canTraverseFlatUnitSegment(
+    unit.x + MAP_HALF_X, unit.z + MAP_HALF_Z, goal.x + MAP_HALF_X, goal.z + MAP_HALF_Z,
+    MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS) ? [start, ...path] : path;
   unit.pathIndex = 0;
   unit.movePlanningPending = false;
   unit.buildingTargetId = job.preserveAssignmentBuildingTarget
@@ -5309,10 +5322,19 @@ function activeMoveRoutesRemainConnected(previousComponents) {
   return true;
 }
 
-function pathIntersectsCells(path, startIndex, cells) {
+function pathIntersectsCells(path, startIndex, cells, startX, startZ) {
   if (!Array.isArray(path)) return false;
+  let fromX = startX + MAP_HALF_X, fromZ = startZ + MAP_HALF_Z;
   for (let index = Math.max(0, startIndex); index < path.length; index++) {
     if (cells.has(path[index])) return true;
+    const toX = path[index] % MAP_WIDTH + 0.5, toZ = Math.floor(path[index] / MAP_WIDTH) + 0.5;
+    let intersects = false;
+    visitGridSegmentCells(fromX, fromZ, toX, toZ, MAP_WIDTH, CELL_COUNT, cell => {
+      if (cells.has(cell)) intersects = true;
+      return !intersects;
+    }, WALK_SPEED * STEP_SECONDS);
+    if (intersects) return true;
+    fromX = toX; fromZ = toZ;
   }
   return false;
 }
@@ -5354,7 +5376,7 @@ function replanPathsBlockedBy(footprint) {
         unit.moveGoalCell = nearestOpenCell(unit.moveGoalCell);
       }
       if (unit.attackMove && (pendingPathStale || attackMoveGoalBlocked
-        || pathIntersectsCells(unit.attackMoveResumePath, unit.attackMoveResumePathIndex, footprintSet))) {
+        || pathIntersectsCells(unit.attackMoveResumePath, unit.attackMoveResumePathIndex, footprintSet, unit.x, unit.z))) {
         // The combat detour can outlive the route saved underneath it. Keep
         // pursuing the current target, then rebuild the original move route.
         unit.attackMoveResumePath = null;
@@ -5384,9 +5406,9 @@ function replanPathsBlockedBy(footprint) {
       && footprintSet.has(pendingAssignment.destination);
     const activeDestinationBlocked = unit.pathIndex < unit.path.length
       && footprintSet.has(unit.moveGoalCell);
-    const activePathBlocked = pathIntersectsCells(unit.path, unit.pathIndex, footprintSet);
+    const activePathBlocked = pathIntersectsCells(unit.path, unit.pathIndex, footprintSet, unit.x, unit.z);
     const attackMoveResumePathBlocked = unit.attackMove
-      && pathIntersectsCells(unit.attackMoveResumePath, unit.attackMoveResumePathIndex, footprintSet);
+      && pathIntersectsCells(unit.attackMoveResumePath, unit.attackMoveResumePathIndex, footprintSet, unit.x, unit.z);
     if (!pendingPathStale && !pendingDestinationBlocked && !activeDestinationBlocked
       && !activePathBlocked && !attackMoveResumePathBlocked) continue;
     if (unit.gatherForestCell >= 0 && unit.gatherPhase === 'to-node') {

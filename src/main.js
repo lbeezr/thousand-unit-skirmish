@@ -234,7 +234,7 @@ const unitSpritePreviewRoles = castPreview
   ? ['worker', 'infantry', 'archer']
   : ['worker'];
 const unitSpritePreviewVersions = castPreview
-  ? humanRosterPreview ? { human: 'v3', infantry: 'v4', spearman: 'v1', archer: 'v2', scout: 'v1', rider: 'v1', 'siege-engine': 'v1' } : { human: roomPageUrl.searchParams.get('humanVaeloraPreview') === '1' ? (roomPageUrl.searchParams.get('humanAnimationPreview') === '1' ? 'v3' : 'v2') : 'v1', orc: 'v1', elf: 'v1', troll: 'v1' }
+  ? humanRosterPreview ? { human: 'v3', infantry: 'v3', spearman: 'v1', archer: 'v2', scout: 'v1', rider: 'v1', 'siege-engine': 'v1' } : { human: roomPageUrl.searchParams.get('humanVaeloraPreview') === '1' ? (roomPageUrl.searchParams.get('humanAnimationPreview') === '1' ? 'v3' : 'v2') : 'v1', orc: 'v1', elf: 'v1', troll: 'v1' }
   : meshyInfantrySpritePreview
   ? { infantry: 'v2' }
   : workerSpritePreview && !unitSpritePreview ? { worker: 'v2' }

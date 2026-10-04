@@ -124,7 +124,7 @@ test('Stone chooses only dedicated exact headings even with approximate action p
 });
 
 
-test('approximate roster reuses nearest authored action while exact lanes keep idle holds', async () => {
+test('walking keeps its heading while other approximate actions retain their fallback', async () => {
   const { spriteActionClip } = await import('../src/unit-sprite-runtime.mjs');
   const hold = { sequence: [{ frameId: 'idle-north-0' }] };
   const front = { sequence: [{ frameId: 'walk-north-east-0' }] };
@@ -134,8 +134,14 @@ test('approximate roster reuses nearest authored action while exact lanes keep i
     ['walk|north-east', front], ['walk|south-west', rear], ['gather-wood|south-east', wood]]);
   assert.equal(spriteActionClip(clips, 'walk', 'north', null, 'human'), hold);
   assert.equal(spriteActionClip(clips, 'walk', 'north', null, 'human', true), hold);
-  assert.equal(spriteActionClip(clips, 'walk', 'north', null, 'infantry', true), front);
-  assert.equal(spriteActionClip(clips, 'walk', 'west', null, 'infantry', true), rear);
+  for (const role of ['infantry', 'spearman', 'archer', 'scout', 'rider', 'siege-engine', 'boughward-worker']) {
+    assert.equal(spriteActionClip(clips, 'walk', 'north', null, role, true), hold);
+    // A missing walk uses its own idle view, never an unrelated walking view.
+    assert.equal(spriteActionClip(new Map([['idle|north', hold], ['walk|north-east', front]]),
+      'walk', 'north', null, role, true), hold);
+    assert.equal(spriteActionClip(clips, 'walk', 'north-east', null, role, true), front);
+    assert.equal(spriteActionClip(clips, 'walk', 'south-west', null, role, true), rear);
+  }
   assert.equal(spriteActionClip(clips, 'gather', 'north', 'wood', 'infantry', true), wood);
 });
 
@@ -158,13 +164,35 @@ test('every available Human land unit action and heading has first-pass graphics
         for (const resource of state === 'gather' ? ['food', 'wood'] : [null]) {
           const clip = spriteActionClip(clips, state, direction, resource, role === 'worker' ? 'human' : role, true);
           assert.ok(clip?.sequence?.length, `${role}/${state}/${direction}`);
-          if (role === 'worker' && ['walk', 'gather'].includes(state)) {
+          if (state === 'walk' || (role === 'worker' && state === 'gather')) {
             assert.equal(clip.directionId, direction, `${role}/${state}/${direction} keeps its facing`);
           } else if (state !== 'idle') assert.ok(clip.sequence.some(f => !f.frameId.startsWith('idle-')), `${role}/${state}/${direction} must have action graphics`);
         }
       }
     }
   }
+});
+
+test('shipped Spearman walk follows all eight world bearings without resetting its clock', async () => {
+  const { normalizedDirection, spriteActionClip } = await import('../src/unit-sprite-runtime.mjs');
+  const pack = JSON.parse(readFileSync(new URL('../assets/units/spearman-sprite-v1/sprite-atlas-pack-v1.json', import.meta.url)));
+  const clips = new Map(pack.assets[0].clips.map(c => [`${c.stateId}|${c.directionId}`, c]));
+  const directions = ['north', 'north-east', 'east', 'south-east', 'south', 'south-west', 'west', 'north-west'];
+  const unit = { kind: 'spearman', hp: 100, walking: true };
+  assert.equal(spriteAnimationTime(unit, activeState(unit, 1000), 1000), 0);
+  directions.forEach((direction, index) => {
+    const angle = Math.atan2(Math.sin(index * Math.PI / 4), Math.cos(index * Math.PI / 4));
+    assert.equal(normalizedDirection(angle), direction);
+    const clip = spriteActionClip(clips, 'walk', direction, null, 'spearman', true);
+    assert.equal(clip, clips.get(`walk|${direction}`) || clips.get(`idle|${direction}`));
+    assert.equal(clip.directionId, direction);
+    assert.equal(spriteAnimationTime(unit, 'walk', 1100 + index * 100), 100 + index * 100);
+  });
+  unit.walking = false;
+  assert.equal(activeState(unit, 2000), 'idle');
+  assert.equal(spriteAnimationTime(unit, 'idle', 2000), 0);
+  unit.walking = true;
+  assert.equal(spriteAnimationTime(unit, activeState(unit, 2100), 2100), 0);
 });
 
 test('default rival routes every land unit role to Boughward with required action coverage', async () => {

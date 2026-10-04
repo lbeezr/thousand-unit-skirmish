@@ -26,11 +26,11 @@ export function spriteActionClip(clipByKey, state, direction, cargoType, role, a
   }
   const gatherState = state === 'gather' && ['food', 'wood'].includes(cargoType)
       ? `gather-${cargoType}` : state;
-  // Human walking/gathering has incomplete direction coverage. Keep its exact
-  // facing (including authored idle holds) rather than turn away from the order.
-  // Other first-pass roster actions retain their opt-in approximation.
-  const exactWorkerFacing = role === 'human' && ['walk', 'gather'].includes(state);
-  if (approximateDirections && state !== 'idle' && !exactWorkerFacing) {
+  // Locomotion must keep the movement bearing for every role. An incomplete
+  // pack may hold its same-heading idle, but must not walk facing another way.
+  // Human gathering likewise preserves its confirmed resource bearing.
+  const exactFacing = state === 'walk' || (role === 'human' && state === 'gather');
+  if (approximateDirections && state !== 'idle' && !exactFacing) {
     const states = [gatherState, state, ...(state === 'repair' ? ['build'] : [])];
     for (const action of new Set(states)) {
       const authored = DIRECTIONS.map((heading, index) => ({

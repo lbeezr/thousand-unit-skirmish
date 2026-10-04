@@ -1,0 +1,103 @@
+{
+  "head": "723bd381bb2e813dd7758c6f5c002985b25f294a",
+  "serverSha256": "5fe92df439782e3f0b5cf81a5d142f78ff30ce0b9184c765316fb72e225e56f6",
+  "pathLineSha256": "9e1d246a57b452c96e7a916665cde63ea3ac9058aca986db04d35f58fce99889",
+  "node": "v24.19.0",
+  "orders": [
+    {
+      "team": 0,
+      "command": {
+        "type": "move",
+        "ids": [
+          4
+        ],
+        "unitGenerations": [
+          473503581
+        ],
+        "x": -24.3,
+        "z": -9.6,
+        "clientOrderToken": 400
+      },
+      "notice": "MOVE ORDER · 1 UNITS"
+    },
+    {
+      "team": 0,
+      "command": {
+        "type": "move",
+        "ids": [
+          4
+        ],
+        "unitGenerations": [
+          473503581
+        ],
+        "x": -16.2,
+        "z": -3.8,
+        "queue": true,
+        "clientOrderToken": 401
+      },
+      "notice": "WAYPOINT QUEUED · 1 UNITS"
+    },
+    {
+      "team": 1,
+      "command": {
+        "type": "move",
+        "ids": [
+          12
+        ],
+        "unitGenerations": [
+          473503581
+        ],
+        "x": 24.3,
+        "z": 9.6,
+        "clientOrderToken": 402
+      },
+      "notice": "MOVE ORDER · 1 UNITS"
+    },
+    {
+      "team": 1,
+      "command": {
+        "type": "move",
+        "ids": [
+          12
+        ],
+        "unitGenerations": [
+          473503581
+        ],
+        "x": 16.2,
+        "z": 3.8,
+        "queue": true,
+        "clientOrderToken": 403
+      },
+      "notice": "WAYPOINT QUEUED · 1 UNITS"
+    }
+  ],
+  "beforeTick": 30,
+  "restoredTick": 60,
+  "completedTick": 330,
+  "units": [
+    {
+      "id": 4,
+      "team": 0,
+      "generation": 473503581,
+      "revision": 2,
+      "goal": 4255,
+      "x": -16.5,
+      "z": -3.5,
+      "arrived": true
+    },
+    {
+      "id": 12,
+      "team": 1,
+      "generation": 473503581,
+      "revision": 2,
+      "goal": 4960,
+      "x": 16.5,
+      "z": 3.5,
+      "arrived": true
+    }
+  ],
+  "coldRestart": true,
+  "limits": [
+    "actual two-seat WebSocket commands and checkpoint-driven process restart; no renderer or hosted deployment claim"
+  ]
+}
