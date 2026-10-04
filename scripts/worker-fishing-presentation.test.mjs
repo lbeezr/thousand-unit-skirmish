@@ -61,9 +61,16 @@ test('published atlas preserves prior action pixels/metadata and all four approv
     ({ frameId: `gather-wood-north-west-${i}`, durationMs: 280 })));
   attack.loop = true;
   attack.sequence = [{ frameId: 'idle-north-west-0', durationMs: 1000 }];
+  for (const state of ['build', 'defeat']) {
+    const clip = originalClips.find(c => c.stateId === state && c.directionId === 'north-west');
+    assert.equal(clip.loop, state === 'build');
+    assert.deepEqual(clip.sequence, [0, 1, 2].map(i =>
+      ({ frameId: `${state}-north-west-${i}`, durationMs: state === 'build' ? 240 : 280 })));
+    clip.sequence = [{ frameId: 'idle-north-west-0', durationMs: 1000 }];
+  }
   assert.equal(sha256(JSON.stringify(originalClips)), preservation.originalClipMetadataSha256);
-  assert.equal(asset.frames.length, preservation.originalFrames + 4 + 40 + 4 + 3 + 3);
-  assert.equal(asset.clips.length, preservation.originalClips + 4);
+  assert.equal(asset.frames.length, preservation.originalFrames + 4 + 40 + 4 + 3 + 3 + 9);
+  assert.equal(asset.clips.length, preservation.originalClips + 6);
   assert.equal(asset.heightWorld / Math.max(...asset.frames.map(f => f.alphaBoundsPx.height)), preservation.worldUnitsPerPixel);
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', manifest)));
   assert.deepEqual([image.width, image.height], [2560, 4096]);

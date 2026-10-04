@@ -93,3 +93,16 @@ is preserved except this explicit idle-placeholder replacement. Existing
 Human attack lifetime, terminal clamp and event restart are checked on both
 seats. Six other attack headings remain approximate/missing. Exact native/
 deployed game acceptance and46 remaining art cells stay in the land checkpoint.
+
+
+Version0.24.0 adds **NW hammer build/repair, dedicated pick and terminal defeat**:
+nine actual left-profile keys,143 total frames. Build/repair share a720ms hammer
+loop; dedicated Stone art loops720ms; defeat ends prone after840ms and holds.
+[Source/provenance](../../../docs/art-direction/human-roster-v1/generated/worker-north-west-actions-v1/README.md)
+and all nine original extractions remain. Rebuild with
+`python3 scripts/admit-worker-north-west-actions.py`. It fills existing strip
+space: no dimension/mask/allocation/world-scale change.134 prior frames and
+all clips except explicit NW build/defeat idle replacements remain exact.
+Default build/repair/defeat CPU playback is checked; Stone default state still
+needs animation-owner adoption. All seven land actions now have SE+NW art;
+42 direction/action cells and identified native/deployed acceptance remain.
