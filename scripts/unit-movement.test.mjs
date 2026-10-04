@@ -10,8 +10,30 @@ import { canTraverseFlatUnitSegment, shortcutFlatUnitPath } from '../src/unit-pa
 import { findStationaryWorkerDetour } from '../src/unit-obstacle-detour.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { farmHarvestNode, farmBuildingId } from '../src/farm-harvest.mjs';
+import { workerFlowRouteBindings } from './economy-server-fixture.mjs';
 
 const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
+
+test('shared economy route fixture binds real clearance with centered geometry and rejects a body-unsafe shortcut',()=>{
+  const bindings=workerFlowRouteBindings();
+  assert.equal(bindings.LAND_CLEARANCE_PROFILE,LAND_CLEARANCE_PROFILE);
+  assert.equal(bindings.canTraverseStaticBodySegment,canTraverseStaticBodySegment);
+  assert.equal(bindings.activeLandMovementBodyRadius,activeLandMovementBodyRadius);
+  assert.equal(bindings.MAP_HALF_X,bindings.MAP_WIDTH/2);
+  assert.equal(bindings.MAP_HALF_Z,bindings.MAP_HEIGHT/2);
+  for(let cell=0;cell<bindings.elevationLevelByCell.length;cell++){
+    const point=bindings.cellToWorld(cell);
+    assert.equal(bindings.worldToCell(point.x,point.z),cell);
+    assert.ok(bindings.canTraverseStaticBodySegment(point,point,.18,bindings.MAP_WIDTH,bindings.MAP_HEIGHT,bindings.isWalkable));
+  }
+  const start=136,raw=[137,138,139,140],unit={x:.79,z:.95};
+  const context=vm.createContext({...bindings,isWalkable:c=>bindings.isWalkable(c)&&c!==153});
+  vm.runInContext(server.slice(server.indexOf('function workerFlowPath('),server.indexOf('function applyWorkerFlowRoute(')),context);
+  assert.equal(bindings.canTraverseStaticBodySegment(unit,bindings.cellToWorld(raw.at(-1)),.18,16,16,context.isWalkable),false);
+  assert.deepEqual([...context.workerFlowPath(unit,raw)],[start,...raw]);
+  assert.deepEqual([...context.workerFlowPath({...unit,z:.5},raw)],[raw.at(-1)],'the open control still reduces the chosen route');
+  assert.deepEqual(raw,[137,138,139,140]);
+});
 
 test('Worker economy clearance follows the live job, including node-free Return, and retires on interruption',()=>{
   const base={kind:'worker',hp:40,generation:9,orderRevision:2,gatherNodeId:'food',gatherForestCell:-1,

@@ -578,6 +578,18 @@ velocity treatment changes. Identified release/deployment and actual ordinary-ga
 pixels retain movement ownership through the existing capture interface. The
 blocked browser capability and denied hosted dispatch stay paused.
 
+Independent review of PR395 at `72ac6397` also exercises the registered extracted
+Return/Storehouse/Mill policy fixtures. Fourteen tests fail because their shared
+`workerFlowRouteBindings` omitted the new production clearance dependencies;
+its positive cell centers also disagree with the centered physical grid. Reuse
+the real movement exports supplied by the separately merged construction-fixture
+[PR397](https://github.com/lbeezr/thousand-unit-skirmish/pull/397), then center the
+shared 16×16 geometry and retain every existing economy assertion. An additional
+real-helper control checks all cell centers, rejects the stone-grazing shortcut,
+preserves its raw path and still reduces the open route. No runtime predicate is
+weakened to satisfy a fixture. Re-review and exact-head checks include all three
+affected registered paths and the construction consumer before normal merge.
+
 ## Ranked backlog
 
 | Rank / status | Outcome and next action | Write boundary / dependency | Acceptance |
