@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 from statistics import median
 from PIL import Image, ImageDraw
+from foot_sprite_world_bounds import placed_sprite_bounds
 
 ROOT = Path(__file__).resolve().parent.parent
 DIRECTIONS = ['north', 'north-east', 'east', 'south-east', 'south', 'south-west', 'west', 'north-west']
@@ -145,8 +146,7 @@ def register(role):
     body_px = 166 if role == 'infantry' else 175
     world_per_pixel = 1.2161865234375 / body_px
     asset['heightWorld'] = max(f['alphaBoundsPx']['height'] for f in frames)*world_per_pixel
-    half_width = max(f['alphaBoundsPx']['width'] for f in frames)*world_per_pixel/2
-    asset['artBoundsWorld'] = {'min':[-half_width,0,-half_width],'max':[half_width,asset['heightWorld'],half_width]}
+    asset['artBoundsWorld'] = placed_sprite_bounds(frames, world_per_pixel)
     asset['cullingBoundsWorld'] = copy.deepcopy(asset['artBoundsWorld'])
     manifest['packId'] = f'{role}-registered-legacy'; manifest['packVersion'] = '0.1.0'
     manifest['provenance']['authoringTool'] = 'Retained public ImageGen sheet; deterministic connected-actor registration with Pillow'
