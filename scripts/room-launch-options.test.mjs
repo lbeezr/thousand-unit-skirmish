@@ -3,12 +3,16 @@ import test from 'node:test';
 import {
   buildRoomWorkerEnvironment,
   completeRoomLaunchOptions,
+  freshRoomLaunchOptions,
+  FRESH_PVE_UNAVAILABLE_REASON,
   normalizeRoomIndex,
   normalizeRoomLaunchOptions,
   normalizeRoomMetadata,
   roomIndexDocument,
   roomResponseMetadata,
 } from '../src/room-launch-options.mjs';
+import { normalizeMatchMode } from '../src/match-modes.mjs';
+import { PVE_MAP_IDS, readPveLaunchOptions, selectPveMapId } from '../src/pve-match.mjs';
 
 const roomId = 'a'.repeat(32);
 
@@ -33,7 +37,7 @@ test('worker environment carries explicit launch mode and clears inherited PvE s
     KEEP_ME: 'value', RTS_GAME_MODE: 'pve', RTS_PVE_MAP_SEED: '2', RTS_PVE_POLICY_SEED: '3',
   };
   assert.deepEqual(buildRoomWorkerEnvironment(inherited, { mode: 'pvp' }), {
-    KEEP_ME: 'value', RTS_GAME_MODE: 'pvp',
+    KEEP_ME: 'value', RTS_GAME_MODE: 'pvp', RTS_MAP: 'maps/bellweather-millrace.json',
   });
   assert.deepEqual(buildRoomWorkerEnvironment(inherited, {
     mode: 'pve', mapSeed: 2, policySeed: 3,
@@ -99,11 +103,12 @@ test('worker environment clears inherited mode identity and writes only explicit
   const inherited = { KEEP_ME: 'yes', RTS_GAME_MODE: 'pve', RTS_MATCH_MODE_ID: 'skirmish',
     RTS_MATCH_MODE_VERSION: '88', RTS_SOLO_PRACTICE: '1', RTS_PREGAME: '1' };
   assert.deepEqual(buildRoomWorkerEnvironment(inherited, { mode: 'pvp' }), {
-    KEEP_ME: 'yes', RTS_GAME_MODE: 'pvp',
+    KEEP_ME: 'yes', RTS_GAME_MODE: 'pvp', RTS_MAP: 'maps/bellweather-millrace.json',
   });
   assert.deepEqual(buildRoomWorkerEnvironment(inherited, { mode: 'pvp', practice: true, ...skirmish }), {
     KEEP_ME: 'yes', RTS_GAME_MODE: 'pvp', RTS_SOLO_PRACTICE: '1',
     RTS_MATCH_MODE_ID: 'skirmish', RTS_MATCH_MODE_VERSION: '1',
+    RTS_MAP: 'maps/veyrholds-terraced-vale.json',
   });
   assert.deepEqual(buildRoomWorkerEnvironment(inherited, { mode: 'pve', mapSeed: 3, policySeed: 4, ...objective }), {
     KEEP_ME: 'yes', RTS_GAME_MODE: 'pve', RTS_PVE_MAP_SEED: '3', RTS_PVE_POLICY_SEED: '4',
@@ -208,7 +213,9 @@ test('practice is explicit, isolated from AI/pregame and survives room recovery'
     assert.throws(() => normalizeRoomLaunchOptions(invalid), /Practice|Practice starts/);
   }
   const inherited = { RTS_SOLO_PRACTICE: '1', RTS_PREGAME: '1' };
-  assert.deepEqual(buildRoomWorkerEnvironment(inherited, options), { RTS_GAME_MODE: 'pvp', RTS_SOLO_PRACTICE: '1' });
+  assert.deepEqual(buildRoomWorkerEnvironment(inherited, options), {
+    RTS_GAME_MODE: 'pvp', RTS_SOLO_PRACTICE: '1', RTS_MAP: 'maps/bellweather-millrace.json',
+  });
   assert.equal(buildRoomWorkerEnvironment(inherited, { mode: 'pvp' }).RTS_SOLO_PRACTICE, undefined);
   assert.equal(buildRoomWorkerEnvironment(inherited, { mode: 'pvp', pregame: true }).RTS_SOLO_PRACTICE, undefined);
   assert.equal(buildRoomWorkerEnvironment(inherited, { mode: 'pve', mapSeed: 1, policySeed: 2 }).RTS_SOLO_PRACTICE, undefined);
@@ -216,4 +223,136 @@ test('practice is explicit, isolated from AI/pregame and survives room recovery'
   const document = roomIndexDocument([{ id: roomId, createdAt: 1, lastActiveAt: 2, launchOptions: options }]);
   assert.deepEqual(normalizeRoomIndex(document), document);
   assert.deepEqual(roomResponseMetadata({ launchOptions: options }), { launchOptions: options });
+});
+
+test('fresh pregame selects Skirmish while Practice and plain authoring select explicit Authored', () => {
+  for (const [options, identity] of [[{ pregame: true }, skirmish], [{ mode: 'pvp', pregame: true }, skirmish],
+    [{ practice: true }, authored], [{ mode: 'pvp', practice: true }, authored]]) {
+    const before = structuredClone(options);
+    assert.deepEqual(freshRoomLaunchOptions(options), { mode: 'pvp', ...options, ...identity });
+    assert.deepEqual(options, before);
+  }
+  for (const options of [undefined, null, {}, { mode: 'pvp' }, { pregame: false }, { practice: false }]) {
+    assert.deepEqual(freshRoomLaunchOptions(options), { mode: 'pvp', ...authored });
+  }
+  for (const identity of [authored, objective, skirmish]) {
+    for (const options of [{ mode: 'pvp', ...identity }, { mode: 'pvp', pregame: true, ...identity },
+      { mode: 'pvp', practice: true, ...identity }]) {
+      assert.deepEqual(freshRoomLaunchOptions(options), options, 'explicit selections are retained');
+    }
+  }
+  for (const options of [{ matchModeId: 'skirmish' }, { matchModeVersion: 1 },
+    { ...skirmish, matchModeVersion: 2 }, { practice: true, pregame: true }]) {
+    assert.throws(() => freshRoomLaunchOptions(options));
+  }
+});
+
+test('fresh PvE admission rejects before seed completion while saved AI options stay usable', () => {
+  let generated = 0;
+  for (const options of [{ mode: 'pve' }, { mode: 'pve', ...authored }, { mode: 'pve', ...objective },
+    { mode: 'pve', mapSeed: 0, policySeed: 0xffffffff }]) {
+    const before = structuredClone(options);
+    assert.throws(() => completeRoomLaunchOptions(freshRoomLaunchOptions(options), () => generated++),
+      error => error instanceof TypeError && error.message === FRESH_PVE_UNAVAILABLE_REASON);
+    assert.deepEqual(options, before);
+  }
+  assert.throws(() => completeRoomLaunchOptions(freshRoomLaunchOptions({ mode: 'pve', ...skirmish }),
+    () => generated++), /does not support PvE/);
+  assert.equal(generated, 0);
+  assert.match(FRESH_PVE_UNAVAILABLE_REASON, /160 × 160.*acceptance is pending/);
+  assert.match(FRESH_PVE_UNAVAILABLE_REASON, /Existing AI rooms can still be resumed/);
+  const saved = { mode: 'pve', mapSeed: 0, policySeed: 0xffffffff };
+  assert.deepEqual(completeRoomLaunchOptions(saved, () => generated++), saved);
+  assert.equal(generated, 0, 'restoration keeps existing seeds');
+});
+
+test('legacy omitted identities stay Authored through normalization and all accepted index versions', () => {
+  for (const options of [undefined, { mode: 'pvp' }, { mode: 'pvp', pregame: true },
+    { mode: 'pvp', practice: true }, { mode: 'pve', mapSeed: 17, policySeed: 23 }]) {
+    const normalized = normalizeRoomLaunchOptions(options);
+    assert.deepEqual(normalizeMatchMode(normalized), authored);
+    assert.equal(Object.hasOwn(normalized, 'matchModeId'), false);
+    assert.equal(Object.hasOwn(normalized, 'matchModeVersion'), false);
+  }
+  const entry = { id: roomId, createdAt: 10, lastActiveAt: 20 };
+  for (const version of [1, 2, 3]) {
+    const room = version === 1 ? entry : { ...entry, launchOptions: { mode: 'pvp', pregame: true } };
+    const normalized = normalizeRoomIndex({ version, rooms: [room] });
+    assert.deepEqual(normalizeMatchMode(normalized.rooms[0].launchOptions), authored);
+    assert.deepEqual(normalized.rooms[0].launchOptions,
+      version === 1 ? { mode: 'pvp' } : { mode: 'pvp', pregame: true });
+    assert.equal(Object.hasOwn(normalized.rooms[0], 'matchModeId'), false);
+    assert.equal(Object.hasOwn(normalized.rooms[0], 'matchModeVersion'), false);
+  }
+});
+
+test('fresh mode identity overrides inherited maps; omitted legacy identity preserves its historical map', () => {
+  const parent = Object.freeze({ KEEP_ME: 'yes', RTS_MAP: 'maps/underbough-rootways.json',
+    RTS_MATCH_MODE_ID: 'skirmish', RTS_MATCH_MODE_VERSION: '88' });
+  for (const legacy of [{ mode: 'pvp' }, { mode: 'pvp', pregame: true }, { mode: 'pvp', practice: true }]) {
+    const environment = buildRoomWorkerEnvironment(parent, legacy);
+    assert.equal(environment.RTS_MAP, parent.RTS_MAP);
+    assert.equal(environment.RTS_MATCH_MODE_ID, undefined);
+    assert.equal(environment.RTS_MATCH_MODE_VERSION, undefined);
+  }
+  for (const [options, map] of [
+    [{ pregame: true }, 'veyrholds-terraced-vale'],
+    [{ practice: true }, 'veyrholds-terraced-vale'],
+    [{}, 'veyrholds-terraced-vale'],
+    [{ pregame: true, ...objective }, 'woodland-expanse'],
+  ]) {
+    const fresh = freshRoomLaunchOptions(options);
+    const environment = buildRoomWorkerEnvironment(parent, fresh);
+    assert.equal(environment.RTS_MAP, `maps/${map}.json`);
+    assert.equal(environment.RTS_MATCH_MODE_ID, fresh.matchModeId);
+    assert.equal(environment.RTS_MATCH_MODE_VERSION, '1');
+    assert.equal(environment.KEEP_ME, 'yes');
+  }
+  const legacyAi = buildRoomWorkerEnvironment(parent, { mode: 'pve', mapSeed: 3, policySeed: 5, ...objective });
+  assert.equal(legacyAi.RTS_MAP, parent.RTS_MAP, 'PvE restoration keeps its seed-owned map selection');
+  assert.equal(readPveLaunchOptions(legacyAi).mapId, 'underbough-rootways');
+  assert.equal(parent.RTS_MAP, 'maps/underbough-rootways.json');
+});
+
+test('legacy PvE seeds keep the exact curated map pool independently of fresh admission', () => {
+  assert.deepEqual(PVE_MAP_IDS, ['bellweather-millrace', 'underbough-rootways']);
+  for (const [seed, mapId] of [[0, 'bellweather-millrace'], [1, 'underbough-rootways'],
+    [2, 'bellweather-millrace'], [0xfffffffe, 'bellweather-millrace'], [0xffffffff, 'underbough-rootways']]) {
+    assert.equal(selectPveMapId(seed), mapId);
+    const options = completeRoomLaunchOptions({ mode: 'pve', mapSeed: seed, policySeed: 17 });
+    const entry = { id: roomId, createdAt: 10, lastActiveAt: 20, launchOptions: options, mapId };
+    const restored = normalizeRoomIndex({ version: 2, rooms: [entry] }).rooms[0];
+    assert.deepEqual(restored, entry);
+    assert.deepEqual(normalizeMatchMode(restored.launchOptions), authored);
+    const environment = buildRoomWorkerEnvironment({}, restored.launchOptions);
+    assert.deepEqual(readPveLaunchOptions(environment), { mode: 'pve', mapSeed: seed, policySeed: 17, mapId });
+  }
+});
+
+test('verified saved map and effective identity override fresh defaults without mutating launch options', () => {
+  const parent = Object.freeze({ RTS_MAP: 'maps/veyrholds-terraced-vale.json', KEEP_ME: 'yes' });
+  const launch = Object.freeze({ mode: 'pvp', pregame: true, ...authored });
+  const metadata = Object.freeze({ mapId: 'underbough-rootways', ...skirmish });
+  assert.deepEqual(buildRoomWorkerEnvironment(parent, launch, metadata), {
+    RTS_MAP: 'maps/underbough-rootways.json', KEEP_ME: 'yes', RTS_GAME_MODE: 'pvp', RTS_PREGAME: '1',
+    RTS_MATCH_MODE_ID: 'skirmish', RTS_MATCH_MODE_VERSION: '1',
+  });
+  assert.deepEqual(launch, { mode: 'pvp', pregame: true, ...authored });
+  assert.deepEqual(metadata, { mapId: 'underbough-rootways', ...skirmish });
+  assert.deepEqual(parent, { RTS_MAP: 'maps/veyrholds-terraced-vale.json', KEEP_ME: 'yes' });
+  assert.deepEqual(buildRoomWorkerEnvironment(parent, { mode: 'pvp' }, { mapId: 'stonepass-crossing' }), {
+    RTS_MAP: 'maps/stonepass-crossing.json', KEEP_ME: 'yes', RTS_GAME_MODE: 'pvp',
+  }, 'historical omitted identity remains omitted and therefore Authored');
+  const legacyAi = buildRoomWorkerEnvironment(parent, { mode: 'pve', mapSeed: 0, policySeed: 17 }, metadata);
+  assert.equal(legacyAi.RTS_MAP, parent.RTS_MAP);
+  assert.equal(legacyAi.RTS_MATCH_MODE_ID, undefined);
+  assert.deepEqual(readPveLaunchOptions(legacyAi), {
+    mode: 'pve', mapSeed: 0, policySeed: 17, mapId: 'bellweather-millrace',
+  }, 'saved metadata cannot replace seed-owned PvE launch semantics');
+  for (const invalid of [{ mapId: '../bad', ...skirmish },
+    { mapId: 'underbough-rootways', matchModeId: 'skirmish' },
+    { mapId: 'underbough-rootways', ...skirmish, matchModeVersion: 2 }]) {
+    assert.deepEqual(buildRoomWorkerEnvironment(parent, launch, invalid), buildRoomWorkerEnvironment(parent, launch),
+      'invalid metadata does not partially apply a map or identity');
+  }
 });

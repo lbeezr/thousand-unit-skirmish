@@ -50,7 +50,8 @@ import { privateProductionView } from './src/snapshot-private-production.mjs';
 import { RoomPregame, validatePregameCheckpoint } from './src/room-pregame.mjs';
 import { RoomLobbyChat } from './src/room-lobby-chat.mjs';
 import { normalizeMatchMode, matchModeDefinition, assertMatchModeCompatibility,
-  effectiveMapForMatchMode, matchModeCatalog } from './src/match-modes.mjs';
+  effectiveMapForMatchMode, matchModeCatalog, NORMAL_MATCH_MAP_ID, NORMAL_HUMAN_MATCH_MODE } from './src/match-modes.mjs';
+import { mapSizeIdentity, ordinaryMapCatalog } from './src/map-size-policy.mjs';
 import { migrateMatchModeCheckpoint, validateMatchModeCheckpoint } from './src/match-mode-checkpoint.mjs';
 import { headingToTarget } from './src/unit-heading.mjs';
 import { workerFishingPresentation } from './src/worker-fishing-presentation.mjs';
@@ -117,6 +118,8 @@ const SERVER_INSTANCE_ID = randomBytes(16).toString('base64url');
 const pveLaunchOptions = readPveLaunchOptions();
 const soloPractice = !pveLaunchOptions && process.env.RTS_PREGAME !== '1' && process.env.RTS_SOLO_PRACTICE === '1';
 const configuredMatchMode = normalizeMatchMode({
+  ...(!pveLaunchOptions && !soloPractice && !process.env.RTS_MAP && process.env.RTS_MATCH_MODE_ID === undefined
+    && process.env.RTS_MATCH_MODE_VERSION === undefined ? NORMAL_HUMAN_MATCH_MODE : {}),
   ...(process.env.RTS_MATCH_MODE_ID === undefined ? {} : { matchModeId: process.env.RTS_MATCH_MODE_ID }),
   ...(process.env.RTS_MATCH_MODE_VERSION === undefined ? {} : {
     matchModeVersion: /^\d+$/.test(process.env.RTS_MATCH_MODE_VERSION)
@@ -139,7 +142,11 @@ let lastCheckpointBytes = 0;
 let lastCheckpointWriteMs = 0;
 let lastCheckpointCaptureMs = 0;
 let lastCheckpointSerializeMs = 0;
-const configuredMapPath = path.resolve(ROOT, process.env.RTS_MAP || 'maps/bellweather-millrace.json');
+const configuredMapPath = path.resolve(ROOT, process.env.RTS_MAP
+  || `maps/${matchModeDefinition(configuredMatchMode).defaultMapId ?? NORMAL_MATCH_MAP_ID}.json`);
+// Explicit compact launches are internal fixtures. Ordinary managed rooms use
+// preset maps; restored canonical maps stay available independently of selection.
+const internalFixture = Boolean(process.env.RTS_MAP) && process.env.RTS_MANAGED_WORKER !== '1';
 if (!Number.isInteger(MAX_PEERS) || MAX_PEERS < 2 || MAX_PEERS > 256) {
   throw new Error('RTS_MAX_PEERS must be an integer between 2 and 256.');
 }
@@ -919,8 +926,15 @@ function activateMap(definition) {
 
 function mapCatalogPayload() {
   const regional = (map) => Boolean(map.region || map.audio?.packId?.startsWith('vaelora-'));
-  return [...mapCatalog.values()].sort((a, b) => Number(regional(b)) - Number(regional(a)) || a.name.localeCompare(b.name)).map((map) => ({
+  const maps = [...mapCatalog.values()].sort((a, b) => Number(regional(b)) - Number(regional(a)) || a.name.localeCompare(b.name));
+  const choices = soloPractice || internalFixture
+    ? maps.map(map => ({ ...map, ...mapSizeIdentity(map), selectable: true, legacyCurrent: false,
+      internalFixture: !mapSizeIdentity(map).ordinarySelectable }))
+    : ordinaryMapCatalog(maps, authoredMapDefinition.id);
+  return choices.map((map) => ({
     id: map.id, name: shippedMapIds.has(map.id) && !regional(map) ? `Lab · ${map.name}` : map.name, summary: map.summary || `${map.width} × ${map.height}`,
+    ...mapSizeIdentity(map), selectable: map.selectable, legacyCurrent: map.legacyCurrent,
+    internalFixture: map.internalFixture === true,
     matchModes: matchModeCatalog(map, { mode: pveLaunchOptions ? 'pve' : 'pvp', practice: soloPractice }),
   }));
 }
@@ -6726,6 +6740,10 @@ function selectMap(player, mapId) {
   }
   const nextMap = mapCatalog.get(String(mapId));
   if (!nextMap || nextMap.id === mapDefinition.id) return;
+  if (!soloPractice && !internalFixture && !mapSizeIdentity(nextMap).ordinarySelectable) {
+    sendOrderNotice(player, 0, 'ORDINARY MAPS REQUIRE AT LEAST 160 × 160 · USE PRACTICE FOR INTERNAL LABS');
+    return;
+  }
   try { assertMatchModeCompatibility(matchMode, nextMap); }
   catch (error) { sendOrderNotice(player, 0, String(error.message)); return; }
   activateMap(nextMap);
@@ -6759,6 +6777,9 @@ async function publishMap(player, rawDefinition, persist = false) {
   }
   try {
     const definition = validateMapDefinition(rawDefinition, 'custom map');
+    if (!soloPractice && !internalFixture && !mapSizeIdentity(definition).ordinarySelectable) {
+      throw new Error('Ordinary maps require at least 160 × 160. Use Practice for internal lab maps.');
+    }
     assertMatchModeCompatibility(matchMode, definition);
     if (shippedMapIds.has(definition.id)
       || (mapCatalog.has(definition.id) && !runtimeMapIds.has(definition.id))) {
@@ -6809,7 +6830,10 @@ async function handleCommand(player, command) {
       try {
         if (pregameMapPublicationPending) throw new Error('Wait for the host’s map publication to finish.');
         if (command.type === 'configureLobby') {
-          if (pregame.configure(player, command, mapCatalog)) {
+          const choices = !soloPractice && !internalFixture
+            ? new Map([...mapCatalog].filter(([id, map]) => id === pregame.mapId || mapSizeIdentity(map).ordinarySelectable))
+            : mapCatalog;
+          if (pregame.configure(player, command, choices)) {
             matchMode = normalizeMatchMode(pregame);
             activateMap(mapCatalog.get(pregame.mapId));
             resetArmy(pregame.armySize);

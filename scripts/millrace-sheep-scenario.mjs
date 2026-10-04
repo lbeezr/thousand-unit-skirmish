@@ -8,8 +8,8 @@ import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.
 import { createStaticSheepRuntime } from '../src/sheep-static-preview.mjs';
 import { MILLRACE_SHEEP_IDS, MILLRACE_PRE_SHEEP_MAP_HASH } from '../src/millrace-sheep.mjs';
 
-// No map publication, stock injection or preview option: use the worker's default.
-const fixture = await createFortifiedFixture({ mapPath: null, timeoutMs: 45_000 });
+// Preserve the authored Sheep regression as an explicit historical map fixture.
+const fixture = await createFortifiedFixture({ mapPath: 'maps/bellweather-millrace.json', timeoutMs: 45_000 });
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('base64url');
 const stripIdentity = nodes => nodes.map(({ wildlifeSpecies, wildlifeState, wildlifeMotion, wildlifeTeam, wildlifeHerd, wildlifeGrazeAnchor, ...node }) => node);
 const savedNode = (saved, id) => saved.state.resourceNodes.find(node => node.id === id);
