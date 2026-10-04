@@ -8,6 +8,7 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'assets/ui/portraits/human-infantry-source.png', 'assets/ui/portraits/boughward-infantry-source.png',
   'src/client/hud/resource-format.mjs', 'src/client/hud/population-readout.mjs',
   'src/client/hud/objective-summary.mjs',
+  'src/client/hud/match-recap.mjs',
   'src/frontier-building-preview.mjs',
   'src/building-orientation.mjs', 'src/building-placement-preview.mjs', 'src/building-rotation-controls.mjs',
   'src/palisade-construction-ground.mjs',
