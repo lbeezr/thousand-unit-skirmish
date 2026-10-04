@@ -1,0 +1,322 @@
+{
+  "schemaVersion": 1,
+  "mapId": "veyrholds-crownroads",
+  "mapSHA256": "0b62a9f967ef42c967eb9121e07395b75549d52d4a73dd16eaf29aebf19e3727",
+  "sourceRevision": "36f6f9a949de208aeb77612f59600acaa1f33fd3",
+  "sourceDirty": false,
+  "paid": {
+    "actualRootPracticeEntry": true,
+    "matchMode": "authored@1",
+    "ordinaryCatalogSelection": true,
+    "injectedState": false,
+    "sourceContentSha256": "be63b1d7d80bed3aca686a1128a197e7a2e14248060a7040df87af8c3c542822",
+    "frozenSourceFiles": 754,
+    "conservedStages": 12,
+    "arrivals": [
+      {
+        "team": 1,
+        "id": 25,
+        "kind": "scout",
+        "start": {
+          "x": 98.5,
+          "z": 8.5
+        },
+        "target": {
+          "x": -100.5,
+          "z": 3.5
+        },
+        "criterion": "within 0.8 world units of the commanded point in a later public snapshot",
+        "gameSeconds": 52.8,
+        "wallSeconds": 52.751220630999995,
+        "final": {
+          "x": -99.95,
+          "z": 3.5
+        },
+        "message": "MOVE ORDER \u00b7 1 UNITS",
+        "finalNoticeMs": 9.394308000002638,
+        "gameToWallRatio": 1.0009247059767814
+      },
+      {
+        "team": 0,
+        "id": 24,
+        "kind": "scout",
+        "start": {
+          "x": -102.5,
+          "z": 8.5
+        },
+        "target": {
+          "x": 100.5,
+          "z": 3.5
+        },
+        "criterion": "within 0.8 world units of the commanded point in a later public snapshot",
+        "gameSeconds": 53.7,
+        "wallSeconds": 53.660328276,
+        "final": {
+          "x": 100,
+          "z": 3.5
+        },
+        "message": "MOVE ORDER \u00b7 1 UNITS",
+        "finalNoticeMs": 8.768809000001056,
+        "gameToWallRatio": 1.000739311988476
+      },
+      {
+        "team": 1,
+        "id": 16,
+        "kind": "infantry",
+        "start": {
+          "x": 99.18,
+          "z": 0.5
+        },
+        "target": {
+          "x": -100.5,
+          "z": -2.5
+        },
+        "criterion": "within 0.8 world units of the commanded point in a later public snapshot",
+        "gameSeconds": 95.76666666666667,
+        "wallSeconds": 94.787479568,
+        "final": {
+          "x": -100.5,
+          "z": -3.16
+        },
+        "message": "MOVE ORDER \u00b7 1 UNITS",
+        "finalNoticeMs": 43.17624599999999,
+        "gameToWallRatio": 1.010330342183687
+      },
+      {
+        "team": 0,
+        "id": 4,
+        "kind": "infantry",
+        "start": {
+          "x": -101.82,
+          "z": 0.5
+        },
+        "target": {
+          "x": 100.5,
+          "z": -2.5
+        },
+        "criterion": "within 0.8 world units of the commanded point in a later public snapshot",
+        "gameSeconds": 96.46666666666667,
+        "wallSeconds": 95.48660453400001,
+        "final": {
+          "x": 100.5,
+          "z": -3.25
+        },
+        "message": "MOVE ORDER \u00b7 1 UNITS",
+        "finalNoticeMs": 5.704113000000234,
+        "gameToWallRatio": 1.010263870387366
+      },
+      {
+        "team": 1,
+        "id": 12,
+        "kind": "worker",
+        "start": {
+          "x": 99.4,
+          "z": -0.4
+        },
+        "target": {
+          "x": -100.5,
+          "z": 0.5
+        },
+        "criterion": "within 0.8 world units of the commanded point in a later public snapshot",
+        "gameSeconds": 96.46666666666667,
+        "wallSeconds": 95.486506901,
+        "final": {
+          "x": -100.5,
+          "z": -0.19
+        },
+        "message": "MOVE ORDER \u00b7 1 UNITS",
+        "finalNoticeMs": 50.78883999999971,
+        "gameToWallRatio": 1.0102649033615074
+      },
+      {
+        "team": 0,
+        "id": 0,
+        "kind": "worker",
+        "start": {
+          "x": -101.6,
+          "z": -0.4
+        },
+        "target": {
+          "x": 100.5,
+          "z": 0.5
+        },
+        "criterion": "within 0.8 world units of the commanded point in a later public snapshot",
+        "gameSeconds": 97.26666666666667,
+        "wallSeconds": 96.28636311,
+        "final": {
+          "x": 100.5,
+          "z": -0.25
+        },
+        "message": "MOVE ORDER \u00b7 1 UNITS",
+        "finalNoticeMs": 27.531371000000036,
+        "gameToWallRatio": 1.010181125602872
+      },
+      {
+        "team": 1,
+        "id": 12,
+        "kind": "worker-return",
+        "start": {
+          "x": -100.5,
+          "z": -0.19
+        },
+        "target": {
+          "x": 100.5,
+          "z": 0.5
+        },
+        "criterion": "within 0.8 world units of the commanded point in a later public snapshot",
+        "gameSeconds": 95.9,
+        "wallSeconds": 95.899309953,
+        "final": {
+          "x": 100.5,
+          "z": -0.21
+        },
+        "message": "MOVE ORDER \u00b7 1 UNITS",
+        "finalNoticeMs": 7.862722999998368,
+        "gameToWallRatio": 1.0000071955366556
+      },
+      {
+        "team": 0,
+        "id": 0,
+        "kind": "worker-return",
+        "start": {
+          "x": 100.5,
+          "z": -0.25
+        },
+        "target": {
+          "x": -100.5,
+          "z": 0.5
+        },
+        "criterion": "within 0.8 world units of the commanded point in a later public snapshot",
+        "gameSeconds": 95.9,
+        "wallSeconds": 95.89910229599998,
+        "final": {
+          "x": -100.5,
+          "z": -0.19
+        },
+        "message": "MOVE ORDER \u00b7 1 UNITS",
+        "finalNoticeMs": 2.2832150000031106,
+        "gameToWallRatio": 1.0000093609218286
+      },
+      {
+        "team": 0,
+        "id": 0,
+        "kind": "one-human-practice-worker",
+        "start": {
+          "x": -101.6,
+          "z": -0.4
+        },
+        "target": {
+          "x": -90.5,
+          "z": 7.5
+        },
+        "criterion": "within 0.8 world units of the commanded point in a later public snapshot",
+        "gameSeconds": 7.1,
+        "wallSeconds": 7.099534346,
+        "final": {
+          "x": -90.5,
+          "z": 6.86
+        },
+        "message": "MOVE ORDER \u00b7 1 UNITS",
+        "finalNoticeMs": 3.164063999953214,
+        "gameToWallRatio": 1.000065589372106
+      }
+    ],
+    "totalPaidPerSeat": {
+      "food": 140,
+      "wood": 705,
+      "stone": 0
+    },
+    "nativePaidUnits": 26,
+    "expansionCompleteGameSeconds": 305.96666666669444,
+    "checkpointObservationGameToWallRatio": 0.9999029135089699,
+    "coldRecoveryExact": [
+      "mapHash",
+      "matchId",
+      "teamFood",
+      "teamWood",
+      "teamStone",
+      "resourceNodes",
+      "buildings",
+      "unit cargo"
+    ],
+    "openingReset": true,
+    "oneHumanPractice": true
+  },
+  "diagnostic": {
+    "armySize": 24,
+    "capacityClaim": false,
+    "sharedHost": true,
+    "fullArmyArrival": false,
+    "storedEnvelope": {
+      "sampledWindows": 66,
+      "tickP95PeakMs": 4.231,
+      "tickMaxMs": 4.739,
+      "startLagP95PeakMs": 2.768,
+      "startLagMaxMs": 23.12,
+      "maximumPlanningSliceMs": 4.174,
+      "initialTickWindowsWithoutLag": 0,
+      "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+      "passed": true
+    },
+    "independentlyDerivedEnvelope": {
+      "sampledWindows": 66,
+      "tickP95PeakMs": 4.231,
+      "tickMaxMs": 4.739,
+      "startLagP95PeakMs": 2.768,
+      "startLagMaxMs": 23.12,
+      "maximumPlanningSliceMs": 4.174,
+      "initialTickWindowsWithoutLag": 0,
+      "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+      "passed": true
+    },
+    "waves": [
+      {
+        "target": "north-pass",
+        "movedBySeat": [
+          12,
+          12
+        ],
+        "observedGameTicksAfterAcceptance": 300,
+        "clockFactor": 0.9999090991727996,
+        "skippedSlotDelta": 0
+      },
+      {
+        "target": "high-flank",
+        "movedBySeat": [
+          12,
+          12
+        ],
+        "observedGameTicksAfterAcceptance": 300,
+        "clockFactor": 0.9998182148700582,
+        "skippedSlotDelta": 0
+      },
+      {
+        "target": "causeway",
+        "movedBySeat": [
+          12,
+          12
+        ],
+        "observedGameTicksAfterAcceptance": 303,
+        "clockFactor": 0.9998182148700355,
+        "skippedSlotDelta": 0
+      }
+    ],
+    "peakCapturedRssMiB": 119.02734375
+  },
+  "stagingMetadata": {
+    "deploymentId": "e541d903-178b-47cb-8d1b-4358c93c5a8a",
+    "status": "SUCCESS",
+    "sourceRevision": "64cc391e6d9c4164dca7bd45696cf3862fe19729",
+    "scope": "read-only deployment metadata; no served-build inference",
+    "containsLarge": false,
+    "recordedAtUtc": "2026-10-04T04:22:09Z"
+  },
+  "limits": [
+    "Skirmish/PvE registry admission separate",
+    "No rendered/browser/pointer/deployed/human-balance acceptance",
+    "No large-army capacity claim",
+    "256 limit unchanged; XL implementation separate",
+    "Static 30-building city template is not a maximum or paid complete-city proof",
+    "Public-snapshot travel intervals are not exact server application timing"
+  ]
+}
