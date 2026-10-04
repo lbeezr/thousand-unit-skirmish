@@ -216,7 +216,7 @@ for (const team of [0,1]) {
 test('production input → HTTP/WS authoritative two-seat natural claim, Herd movement and Stop', {timeout:45_000},async t=>{
   const server=await createFortifiedFixture({mapPath:null,timeoutMs:18_000});t.after(()=>server.dispose());await server.start();
   const clients=[await server.connect(0),await server.connect(1)];
-  const authored={id:'sheep-client-input-native',name:'Sheep Client Input Native',width:48,height:32,
+  const authored={id:'sheep-client-input-native',name:'Sheep Client Input Native',width:160,height:160,
     terrainSeed:17,terrainBase:'meadow',fogOfWar:true,startingArmySize:8,
     startingResources:{food:0,wood:250},spawnPoints:[{team:0,x:-14.5,z:-5.5},{team:1,x:14.5,z:-5.5}],
     obstacles:[],triggers:[],scenarioEvents:[],resourceNodes:[
@@ -225,7 +225,7 @@ test('production input → HTTP/WS authoritative two-seat natural claim, Herd mo
     ]};
   const afterPublish=clients.map(client=>client.messages.length);clients[0].send({type:'publishMap',map:authored});
   const applied=await Promise.all(clients.map((client,team)=>client.wait(message=>message.type==='mapChange'
-    &&message.state.mapId===authored.id,'compact normal map publication',afterPublish[team])));
+    &&message.state.mapId===authored.id,'ordinary normal map publication',afterPublish[team])));
   const map=applied[0].map;
   const helper=await fetch(`http://127.0.0.1:${server.port}/src/wildlife-client-state.mjs`);
   assert.equal(helper.status,200);assert.match(await helper.text(),/export function createWildlifeCommand/);
