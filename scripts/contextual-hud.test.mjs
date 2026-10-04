@@ -6,7 +6,7 @@ import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { selectionContext } from '../src/selection-context.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from '../src/combat-stance-ui.mjs';
-import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts, farmSelectionPortrait, FARM_PORTRAITS, workerRoleFacts, WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, SPEARMAN_PORTRAITS } from '../src/selection-portrait.mjs';
+import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts, farmSelectionPortrait, FARM_PORTRAITS, workerRoleFacts, WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, SCOUT_PORTRAITS, SPEARMAN_PORTRAITS } from '../src/selection-portrait.mjs';
 import { civilizationSpriteRole } from '../src/unit-sprite-runtime.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { researchAction, researchOptions } from '../src/research-actions.mjs';
@@ -500,6 +500,81 @@ test('Spearman artwork requires matching effective identity without borrowing an
   }
   f.w.unitSpriteRuntime.roleForUnit = () => 'spearman'; f.select([1]); assert.equal(button.hidden, false);
   f.w.units[1].kind = 'rider'; f.select([1]); assert.equal(button.hidden, true);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: Scout preserves whole equipment, mounted identity and movement facts and cropped-role focus transitions`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const own = team * 2 + 1, role = team === 0 ? 'scout' : 'boughward-scout';
+  const button = f.bar.querySelector('[data-selection-portrait]'), image = button.querySelector('img');
+  const health = f.bar.querySelector('[data-worker-health]'), notes = f.d.querySelector('#selected-worker-notes');
+  f.w.units[own].kind = 'spearman'; f.select([own]);
+  f.w.units[own].kind = 'scout'; f.w.units[own].hp = 60; f.select([own]);
+  assert.equal(image.getAttribute('src'), SCOUT_PORTRAITS[role].asset);
+  assert.equal(image.style.objectFit, 'contain'); assert.equal(image.style.width, '100%'); assert.equal(image.style.height, '100%');
+  assert.equal(image.alt, ''); assert.equal(button.dataset.codexEntry, 'unit.scout');
+  assert.equal(button.getAttribute('aria-label'), `Scout · ${SCOUT_PORTRAITS[role].appearanceFamily} — open role notes`);
+  assert.equal(notes.getAttribute('aria-label'), 'Scout role notes'); assert.equal(health.textContent, 'Scout · 60 / 60 HP');
+  f.click(button);
+  assert.equal(notes.querySelector('[data-worker-abilities]').textContent, 'Move · Attack · Attack structures');
+  assert.equal(notes.querySelector('[data-worker-movement]').textContent, 'Base move: 4.5 cells/s');
+  assert.equal(notes.querySelector('[data-worker-training]').textContent, 'Stable · 40 food + 30 wood · 16s · 1 population');
+  assert.equal(notes.querySelector('[data-worker-attack]').textContent, 'Base attack: 4 melee vs ground · 1s interval · 1.3 cells range · 1 damage vs structures');
+  const details = notes.querySelector('details'), link = notes.querySelector('a');
+  details.open = true; link.focus(); f.w.units[own].hp = 29; f.w.updateSelectionUI();
+  assert.equal(health.textContent, 'Scout · 29 / 60 HP'); assert.equal(button.querySelector('img'), image);
+  assert.equal(details.open, true); assert.equal(f.d.activeElement, link);
+  f.escape(); assert.equal(f.w.commandDock.hidden, true); assert.equal(f.d.activeElement, button);
+  image.dispatchEvent(new f.w.Event('error')); f.w.updateSelectionUI();
+  assert.equal(image.parentElement.hidden, true); assert.equal(button.hidden, false);
+  f.click(button); link.focus(); f.select([own, team * 2]);
+  assert.equal(notes.hidden, true); assert.equal(details.open, false); assert.equal(f.d.activeElement, f.d.querySelector('#dock-tab-selection'));
+  f.select([team * 2]);
+  assert.equal(image.parentElement.hidden, false); assert.equal(image.style.objectFit, ''); assert.equal(image.style.height, 'auto');
+  assert.notEqual(image.style.width, '100%'); assert.equal(notes.getAttribute('aria-label'), 'Worker role notes');
+  f.select([], { id: 88, team, type: 'farm', complete: true, progress: 1, hp: 900, maxHp: 900, harvestStock: 100 });
+  assert.equal(image.style.objectFit, ''); assert.equal(image.style.height, 'auto'); assert.equal(image.style.width, '204.8%');
+  f.select([own]); f.w.units[own].hp = 0; f.w.updateSelectionUI(); assert.equal(button.hidden, true);
+  f.w.units[own].hp = 60;
+  const enemy = (1 - team) * 2 + 1; f.w.units[enemy].kind = 'scout'; f.select([enemy]); assert.equal(button.hidden, true);
+  f.select([own]); f.w.localTeam = null; f.w.updateSelectionUI(); assert.equal(button.hidden, true);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: Scout art retains both dynamic product surfaces, costs and guarded Stable command`, t => {
+  const f = economyFixture(team); t.after(() => f.dom.window.close());
+  const role = team === 0 ? 'scout' : 'boughward-scout';
+  const building = { id: 81, team, type: 'stable', complete: true, hp: 1800, maxHp: 1800, productionQueue: [] };
+  f.select([], building);
+  const button = f.bar.querySelector('[data-product="scout"]'), image = button.querySelector('img');
+  const label = button.querySelector('[data-production-label]'), drawer = f.w.ui.rosterProductionOptions.querySelector('[data-product="scout"]');
+  for (const control of [button, drawer]) {
+    const art = control.querySelector('img');
+    assert.equal(art.getAttribute('src'), SCOUT_PORTRAITS[role].asset); assert.equal(art.alt, '');
+    assert.equal(art.style.objectFit, 'contain'); assert.equal(art.style.width, '100%'); assert.equal(art.style.height, '100%');
+    assert.equal(art.parentElement.getAttribute('aria-hidden'), 'true'); assert.match(control.textContent, /Train Scout.*40 food.*30 wood/);
+  }
+  button.focus(); f.w.latestWood[team] = 0; f.w.updateEconomyUI();
+  assert.equal(button.getAttribute('aria-disabled'), 'true'); assert.match(label.textContent, /Need 0 food \/ 30 wood/);
+  assert.equal(button.querySelector('img'), image); assert.equal(button.querySelector('[data-production-label]'), label); assert.equal(f.d.activeElement, button);
+  f.click(button); f.w.selectDockTab('economy', true); f.click(drawer); assert.equal(f.w.sentCommands.length, 0);
+  image.dispatchEvent(new f.w.Event('error')); f.w.latestWood[team] = 500; f.w.updateEconomyUI();
+  assert.equal(image.parentElement.hidden, true); assert.equal(button.getAttribute('aria-disabled'), 'false');
+  f.click(button); f.click(drawer);
+  assert.deepEqual(JSON.parse(JSON.stringify(f.w.sentCommands)), Array.from({ length: 2 }, () => ({ type: 'trainUnit', kind: 'scout', buildingId: building.id })));
+  f.w.humanRosterPreview = false; f.w.castPreview = false; f.w.updateContextualCommands(); f.w.updateEconomyUI();
+  assert.equal(image.parentElement.hidden, true); assert.equal(drawer.querySelector('.unit-action-art').hidden, true); assert.match(label.textContent, /Train Scout/);
+  updateProductionPortrait(button, 'worker', team === 0 ? 'human' : 'boughward-worker', 'Train Worker');
+  assert.equal(button.querySelector('img'), image); assert.equal(image.style.objectFit, ''); assert.equal(image.style.height, 'auto');
+});
+
+test('Scout artwork requires matching effective identity without borrowing another role', t => {
+  const f = fixture(); t.after(() => f.dom.window.close());
+  f.w.units[1].kind = 'scout';
+  const button = f.bar.querySelector('[data-selection-portrait]');
+  for (const role of ['spearman', 'archer', 'infantry', 'human', 'elf', null]) {
+    f.w.unitSpriteRuntime.roleForUnit = () => role; f.select([1]); assert.equal(button.hidden, true);
+  }
+  f.w.unitSpriteRuntime.roleForUnit = () => 'scout'; f.select([1]); assert.equal(button.hidden, false);
+  f.w.units[1].kind = 'skiff'; f.select([1]); assert.equal(button.hidden, true);
 });
 
 test('Archer artwork requires its effective role and preserves unsupported appearance fallbacks', t => {
