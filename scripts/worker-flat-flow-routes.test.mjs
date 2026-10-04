@@ -84,7 +84,7 @@ test('flat reduction keeps the selected multi-goal endpoint, fractional safety, 
   for(const short of [[],[60]])assert.equal(shortcutFlatUnitPath(short,1,1,width,levels,()=>true),short);
 });
 
-test('1,000 assignees add only bounded segment checks without changing the shared flow path',()=>{
+test('1,000 assignees add only bounded segment checks without changing the shared flow path',t=>{
   const width=128,levels=new Uint8Array(width*width),goal=90*width+100;
   const path=[...Array.from({length:80},(_,i)=>(11+i)*width+20),
     ...Array.from({length:80},(_,i)=>90*width+21+i)];
@@ -95,6 +95,7 @@ test('1,000 assignees add only bounded segment checks without changing the share
   }
   assert.deepEqual(path,before);
   assert.ok(visits<1000*3*(width+width),'bounded supercover work rather than a per-assignee map search');
+  t.diagnostic(JSON.stringify({assignees:1000,supercoverVisits:visits,originalWaypoints:path.length,reducedWaypoints:1}));
 });
 
 for(const team of [0,1])test(`seat ${team}: Gather follows eight direct headings from a fractional position`,async()=>{
@@ -129,6 +130,24 @@ test(`${terrain}: a Worker keeps its flow detour and all authoritative steps leg
       assert.ok(canTraverseUnitStep(before,r.cell(u.x,u.z),scene.width,r.levels,r.isWalkable));
     }
     assert.equal(u.gatherPhase,'gathering');assert.equal(u.orderRevision,revision+1,'only the existing arrival transition advances the revision');
+  } finally {await f.dispose();}
+});
+
+test('paid wall admission repairs an active Worker shortcut while keeping its resource job',async()=>{
+  const f=await createPathingReplayFixture(map),r=f.replay;
+  try {
+    const [u,builder]=r.units.filter(u=>u.team===0&&u.kind==='worker');
+    Object.assign(u,{x:-8.27,z:-9.19});r.step();command(r,u,{type:'gather',nodeId:'food'});
+    assert.equal(u.path.length,1);const intent=structuredClone(u.workIntent);
+    command(r,builder,{type:'build',buildingType:'palisade-wall',x:.5,z:-.5});
+    assert.ok(u.path.length>1,'new paid footprint across the segment reroutes the Worker');
+    assert.deepEqual(u.workIntent,intent);assert.equal(u.gatherNodeId,'food');
+    for(let tick=0;tick<1500&&u.gatherPhase!=='gathering';tick++) {
+      const before=r.cell(u.x,u.z);r.step();
+      assert.ok(canTraverseUnitStep(before,r.cell(u.x,u.z),map.width,r.levels,r.isWalkable));
+    }
+    assert.equal(u.gatherPhase,'gathering');until(r,()=>u.cargo>0,'productive harvest after reroute');
+    assert.deepEqual(u.workIntent,intent);
   } finally {await f.dispose();}
 });
 

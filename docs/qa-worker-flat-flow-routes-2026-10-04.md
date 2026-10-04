@@ -45,6 +45,14 @@ resource jobs, Sheep Herd, productive receipts and checkpoint regressions are
 part of the selected check run, alongside both type boundaries, imports and
 documentation links. This is a focused run, not the full CPU suite.
 
+An independent review at `4d1934ad5ee01555eb410624821e34209b87ed70` found no
+actionable issue: 66 selected tests pass, plus 12,000 seeded fractional-route
+cases with 340,060 legal accepted-route steps. Runtime/test blobs remain the same
+after refreshing onto current main `6e34978c`. The later paid-wall regression
+proves admission of a footprint across an active Worker segment repairs its
+path and preserves its resource job. The 1,000-assignee check records 263,676
+supercover visits and preserves the original 160-waypoint route.
+
 ## Delivery and ordinary-game acceptance
 
 Independent review, exact-head native work/recovery, clean package, normal merge
@@ -56,6 +64,9 @@ The cloud renderer lane qualified packed actual-game rendering in
 [PR #323](https://github.com/lbeezr/thousand-unit-skirmish/pull/323). The Worker
 implementation owner retains a small actual-game Move/Gather/harvest/carry/
 return/deposit/resume capture at an identified clean release; the cloud testing
-and HUD owners retain the qualified hosted execution and frame review. Local
+and HUD owners retain the qualified hosted execution and frame review. The
+[capture recipe](qa-worker-work-cycle-capture.md) exposes a disjoint adapter;
+the [shared hookup request](https://github.com/lbeezr/thousand-unit-skirmish/pull/323#issuecomment-5982152778)
+leaves the shared transport/workflow with the cloud testing owner. Local
 browser capability remains blocked and must not be bypassed. The capture helper
 and its recipe are a separate bounded deliverable in this slice.

@@ -4,8 +4,9 @@ Economy/content owns the shared checkpoint union and external cancellation,
 plus bounded Wood, Stone and plain neutral land Food continuation. The construction implementation owner consumes the
 construction variant and owns site targeting, adjacent-Gate priority and natural
 reacquisition. Architecture edits no runtime. Ordinary deployed gameplay belongs
-to the cloud testing owner. This source slice starts no browser; staged release
-delivery and actual rendered gameplay acceptance remain separate cloud outcomes.
+to the cloud testing owner. Staged release delivery and actual rendered gameplay
+acceptance remain separately identified cloud outcomes; source/native checks
+alone do not establish either.
 
 The 12:24 user report reproduces locally at current runtime `278d133d` (harness
 head `0ccce3cb`) and identified staging source `64cc391e`: a forest cell or ordinary
