@@ -56,6 +56,17 @@ revision and runtime/fixture hashes remain frozen throughout the report. Exact
 clean-source results are retained with the PR; no live staging observation is
 claimed. These new regression tools need source/tool acceptance, not deployment.
 
+Clean native source `2617b9347f3a5c82663c1fe85deef1262f9e0e6e` passes both
+resources/seats. The [raw native report](qa-evidence/food-stone-continuation-audit-2026-10-04/native.json)
+retains frozen input hashes and fresh recovery sequence pairs. Food ends at
+106/106 from 100/100; Stone ends at 6/6 from zero. Each resource draws 12 total,
+leaves zero cargo, and preserves each adjacent successor at six. Sixty focused
+authority/queue/intent/CI checks, both type boundaries, import audit and document
+checks pass. Independent read-only review found no remaining findings at that
+source. The first native attempt exposed an idle map-publication waiter race;
+the corrected runner waits for both actual map-change messages and does not
+claim the failed attempt as gameplay evidence.
+
 ## Next bounded decision
 
 No automatic Food/Stone extension is implemented by this audit. A useful next
