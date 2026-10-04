@@ -94,11 +94,13 @@ test('a footprint across the only choke is rejected without changing movement go
 // full command handler and the unchanged checkpoint validator through the PvE
 // fixture, with AI/listening/timers disabled and an explicit authored mode.
 const replayIdentity = { matchModeId: 'authored', matchModeVersion: 1 };
-async function recordedMovement(primaryTeam) {
-  const map = { ...pathingBaselineMap({ group: 4 }), id: 'accepted-command-replay',
+function commandReplayMap() {
+  return { ...pathingBaselineMap({ group: 4 }), id: 'accepted-command-replay',
     fogOfWar: true, obstacles: [],
     spawnPoints: [{ team: 0, x: -28, z: 0 }, { team: 1, x: 28, z: 0 }] };
-  const fixture = await createPveHeadlessFixture(map, replayIdentity), r = fixture.replay;
+}
+async function recordedMovement(primaryTeam) {
+  const fixture = await createPveHeadlessFixture(commandReplayMap(), replayIdentity), r = fixture.replay;
   try {
     const initial = r.checkpoint(), commands = [], boundaries = [], otherTeam = 1 - primaryTeam;
     const actors = [0, 1].map(team => initial.state.units.find(u => u.team === team && u.kind === 'infantry'));
@@ -164,4 +166,56 @@ for (const team of [0, 1]) test(`seat ${team}: immutable accepted-command trace 
   assert.equal(queued(duplicate[0]), 2, 'control genuinely repeats an authority-accepted queued order');
   assert.deepEqual(duplicate.at(-1), suffix.at(-1), 'later Stop hides the duplication from terminal checkpoint/view equality');
   assert.throws(() => assert.deepEqual(duplicate, suffix, 'replay boundary mismatch'), /replay boundary mismatch/);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: checkpoint recovery rejects a saved command for a reused rematch slot`, async () => {
+  const source = await createPveHeadlessFixture(commandReplayMap(), replayIdentity), original = source.replay;
+  let trace, rematch, actor;
+  try {
+    const initial = original.checkpoint();
+    actor = initial.state.units.find(unit => unit.team === team && unit.kind === 'infantry');
+    const command = { type: 'move', ids: [actor.id], unitGenerations: [actor.generation],
+      x: team ? 18.5 : -18.5, z: .5, clientOrderToken: 51 + team };
+    const accepted = await recordAcceptedCommand(original, team, command, 'MOVE ORDER · 1 UNITS');
+    trace = JSON.parse(JSON.stringify(sealCommandReplay(initial, [accepted], initial.state.tickNumber + 20)));
+    await original.order(0, { type: 'reset' }); // Ordinary host reset, not an edited checkpoint.
+    original.drain();
+    rematch = original.checkpoint();
+    const replacement = rematch.state.units.find(unit => unit.id === actor.id);
+    assert.equal(replacement.team, team);
+    assert.equal(replacement.kind, actor.kind);
+    assert.notEqual(replacement.generation, actor.generation, 'real reset reuses the ID with a fresh generation');
+    assert.deepEqual([replacement.path, replacement.queuedWaypoints], [[], []]);
+    assert.equal(rematch.state.unitGenerationCounters[actor.id], replacement.generation);
+  } finally { await source.dispose(); }
+
+  const recovered = await createPveHeadlessFixture(rematch.mapDefinition, replayIdentity), r = recovered.replay;
+  try {
+    r.restore(structuredClone(rematch));
+    const before = captureReplayBoundary(r, 0);
+    assert.deepEqual(before.checkpoint, rematch, 'cold fixture restores the actual rematch generation table exactly');
+    const notices = await r.order(team, trace.commands[0].command);
+    r.drain();
+    assert.deepEqual(notices, [{ type: 'notice', clientOrderToken: 51 + team,
+      message: 'MOVE REJECTED · NO VALID UNITS' }]);
+    assert.deepEqual(captureReplayBoundary(r, 0), before, 'stale packet changes neither authority nor either fog view');
+    await assert.rejects(replayCommandTrace(r, trace, { checkpoint: rematch }),
+      /command must receive its acceptance notice/, 'old accepted trace cannot silently bind the replacement');
+    assert.deepEqual(captureReplayBoundary(r, 0), before, 'failed replay preserves every checkpoint field and both views');
+
+    // Negative control: the optional-generation compatibility path still accepts
+    // IDs alone. Dropping the trace stamp must visibly break the no-change oracle.
+    const unstamped = structuredClone(trace.commands[0].command);
+    delete unstamped.unitGenerations;
+    await recordAcceptedCommand(r, team, unstamped, 'MOVE ORDER · 1 UNITS');
+    const moved = captureReplayBoundary(r, 0);
+    assert.ok(moved.checkpoint.state.units.find(unit => unit.id === actor.id).path.length > 0);
+    assert.throws(() => assert.deepEqual(moved, before, 'generation replay boundary mismatch'),
+      /generation replay boundary mismatch/);
+    for (let tick = 0; tick < 20; tick++) r.step();
+    const replacement = r.checkpoint().state.units.find(unit => unit.id === actor.id);
+    assert.equal(replacement.generation, rematch.state.unitGenerationCounters[actor.id]);
+    assert.ok(Math.hypot(replacement.x - actor.x, replacement.z - actor.z) > .1,
+      'control genuinely moves the replacement instead of merely changing feedback');
+  } finally { await recovered.dispose(); }
 });
