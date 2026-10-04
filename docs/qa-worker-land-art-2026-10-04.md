@@ -689,3 +689,11 @@ Authored25/64; **39 art cells remain**: E4 plus N/NE/S/SW/W each7.
 Ranked next: admit the three complete retained East hammer keys for build/repair;
 supply East pick/defeat; continue other five actual headings. Keep exact delivered/
 native acceptance separate and preserve all iterations.
+
+
+All127 focused tests pass after the new actual food heading is included in the
+facing fixture. Byte-idempotent registration, atlas/docs/whitespace and real
+packaged HTTP/WebSocket/hash checks pass. [Clean East food release](qa-evidence/worker-land-art-2026-10-04/food-east-clean-release.json)
+measures `c76074d8ca0725a99cf2faecd262ddd5f61dcc6c`, `sourceDirty:false`, 1178 files,
+`sha256:e008e476d4a79beb277150f5124188dfef935ce3574c3c1c1cd1c64c09fdc837`. Later receipt commits are separate from measured code.
+Exact containing deployment/native acceptance remains open.
