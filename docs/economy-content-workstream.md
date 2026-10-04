@@ -7,6 +7,32 @@ ordinary authorized merge and proportionate integration checks. Frontier is the
 implemented gameplay civilization. Copper, gold and asymmetric civilizations
 remain planned decisions; artwork does not establish their rules.
 
+## Current source and acceptance queue — 4 October 2026
+
+Wood continuation [PR #283](https://github.com/lbeezr/thousand-unit-skirmish/pull/283)
+is merged at `8200ec6c`: visible reachable Wood within eight world units of the
+original assignment, typed cargo conservation and accepted external-order
+priority. Independent review and 102 exact postmerge checks pass; actual native
+process restarts retain the job and bank 18/12 harvested Wood exactly. The clean
+packed runtime digest is
+`sha256:1ba6fb2ae93aecccdb643ccf092aa5b10350f014c53dd96d94904c6f6cf6915d`.
+[Source evidence](qa-evidence/wood-job-continuation-2026-10-04/README.md) and the
+[shared intent contract](worker-resource-job-contract.md) are the implementation
+boundary.
+
+Parent's currently identified staging source is `53a47ee`, which does **not**
+contain `8200ec6c`. Wood continuation is therefore **not marked deployed or
+verified in ordinary staging gameplay**. Railway/economy-content must identify a
+containing served release; existing cloud testing owns ordinary Worker selection,
+depletion, continuation, Stop/Move/Return and reconnect observation. Stopped Mac
+testing is not a dependency. Construction-specific Gate/wall continuation remains
+with its separate owner and consumes the merged intent boundary.
+
+Next owned slice: reproduce and audit Food/Stone exhaustion, typed manual
+replacement, cargo, recovery and reachability. Current automatic area policy is
+Wood-only. No Food/Stone balance, radius, source-mixing or construction change is
+implied by that audit.
+
 ## Ranked next actions
 
 | Rank | Outcome and next action | Write boundary | Dependencies | Acceptance and state |

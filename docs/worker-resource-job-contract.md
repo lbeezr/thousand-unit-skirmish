@@ -17,6 +17,11 @@ validation, restore, external cancellation and Wood continuation. Construction
 reacquisition remains with its named owner; the shared field alone does not fix it.
 Source merge and a containing deployed build are recorded separately in QA evidence.
 
+Wood source merge is `8200ec6c`; parent identifies current staging as `53a47ee`,
+which does not contain it. Local source/release proof does not establish deployed
+continuation. The [economy/content queue](economy-content-workstream.md) retains
+identified delivery and ordinary gameplay acceptance.
+
 ## Exact durable field
 
 `src/work-intent.mjs` is the single shape/helper authority:
