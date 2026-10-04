@@ -237,6 +237,8 @@ async function runLoad(count) {
     assert.equal(recovery.checkpoint.recovered, true); assert.equal(recovery.map, map.id); assert.equal(recovery.armySize, count);
     for (const c of clients) { assert.equal(c.welcome.player.resumed, true); assert.equal(c.current.matchId, matchId); }
     await capture(); record.coldRecovery = true;
+    record.capturedBudgetEnvelope = capturedBudgetEnvelope(record.samples, record.waves.flatMap(w => w.planning));
+    assert.ok(record.capturedBudgetEnvelope.passed, 'All captured windows, including cold recovery, must meet the diagnostic budgets');
     record.peakServerRssBytes = Math.max(...record.samples.map(s => s.serverRssBytes ?? 0)); record.passed = true;
   } finally {
     await Promise.all(clients.map(c => c.close())); await stop(child);

@@ -8,10 +8,10 @@
   "coldRecovery": true,
   "peakServerRssBytes": 111190016,
   "capturedBudgetEnvelope": {
-    "sampledWindows": 65,
-    "tickP95PeakMs": 2.31,
+    "sampledWindows": 66,
+    "tickP95PeakMs": 4.232,
     "tickMaxMs": 4.494,
-    "startLagP95PeakMs": 1.573,
+    "startLagP95PeakMs": 2.548,
     "startLagMaxMs": 8.292,
     "maximumPlanningSliceMs": 2.754,
     "initialTickWindowsWithoutLag": 0,
@@ -154,5 +154,22 @@
     "Three short 24-unit order windows on a shared host; no hardware comparison.",
     "No full-army arrival, actual crossing-use, paid city/combat, browser, deployed or supported-capacity claim.",
     "Static and public protocol source identities remain separate from the native diagnostic."
-  ]
+  ],
+  "nativeStoredEnvelope": {
+    "sampledWindows": 65,
+    "tickP95PeakMs": 2.31,
+    "tickMaxMs": 4.494,
+    "startLagP95PeakMs": 1.573,
+    "startLagMaxMs": 8.292,
+    "maximumPlanningSliceMs": 2.754,
+    "initialTickWindowsWithoutLag": 0,
+    "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+    "passed": true
+  },
+  "envelopeDerivation": {
+    "method": "capturedBudgetEnvelope(all retained samples, every wave plan)",
+    "source": "scripts/map-capacity-report-check.mjs",
+    "sourceSHA256": "d1df685f4e0f3f7a5a11d7bb977a8499c1a9ac1db7a7a1d173758fda9e968cd2",
+    "note": "Raw native report preserved; its stored65-window envelope preceded the cold sample. This summary includes all66 windows."
+  }
 }

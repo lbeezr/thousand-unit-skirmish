@@ -75,12 +75,18 @@ Clean native source `3750ef0911e751f8148f3bb4aa49b422fc7a86a4` passes all three
 per seat moved in each window; six plans had zero route failures, all captured
 budget windows passed, all skipped-slot deltas were zero and cold recovery passed.
 Window clocks are 0.999818–0.999909 game seconds per wall second. Across every
-captured rolling window, peak tick p95 was 2.310 ms, maximum 4.494 ms; peak
-start-lag p95 1.573 ms, maximum 8.292 ms; maximum planning slice 2.754 ms.
+captured rolling window, peak tick p95 was 4.232 ms, maximum 4.494 ms; peak
+start-lag p95 2.548 ms, maximum 8.292 ms; maximum planning slice 2.754 ms.
 Peak server RSS was 106.039 MiB. These values describe a shared-host 24-unit
 diagnostic, not a comparative benchmark or supported capacity. Final notice
 receipt is 3.645–40.333 ms; first observed movement receipt 56.606–129.913 ms.
 Neither is exact server application or full route arrival.
+
+Independent review recalculated the envelope from all 66 retained windows,
+including recovery. The original report stores a 65-window envelope calculated
+before the final cold sample; raw bytes are preserved, while the summary and
+figures above use the full offline checker result. The collector now recomputes
+and asserts the envelope after recovery before marking a run passed.
 
 The separately repeatable public Practice smoke passes at clean source
 `046d9f07ab870a69712ece1e229b0ca61347fec6`: canonical 224 map selection, 12,544-byte
