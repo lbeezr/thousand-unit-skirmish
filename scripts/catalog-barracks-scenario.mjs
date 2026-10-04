@@ -301,7 +301,7 @@ export async function runCatalogBarracksScenario({ page, source, runtime, output
     Object.defineProperty(report, 'cause', { value: error });
     report.issues.push({ stage, code: error instanceof assert.AssertionError ? 'contract-failed' : 'execution-failed',
       // Retain causes locally through the caller; artifact messages never echo CDP/session payloads.
-      message: error instanceof assert.AssertionError ? error.message.split('\n')[0] : `Scenario failed during ${stage}` });
+      message: `Scenario failed during ${stage}` });
   }
   if (typeof outputDirectory === 'string' && path.isAbsolute(outputDirectory)) {
     await mkdir(outputDirectory, { recursive: true });
