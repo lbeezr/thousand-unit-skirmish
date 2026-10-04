@@ -42,6 +42,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   ],
   world: [
     'dock-placement', 'elevation', 'map-size-policy', 'map-utils', 'regions',
+    'world/map-audio-reference',
     'practice-entry-catalog', 'scenario-regions', 'shore-fishing', 'shore-fishing-placement', 'terrain-materials',
     'town-center-spawn', 'unit-heading', 'water-contours', 'water-route-graph',
   ],
@@ -104,8 +105,8 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'pve-model-proposal', 'room-launch-options', 'room-lobby-chat', 'room-pregame',
     'server/client-asset-paths', 'server/pve-model-proposal',
   ],
-  // Explicit mixed responsibility, not an open exception list. The server uses
-  // only its map validator; lower domains must wait for candidate PR2's split.
+  // Legacy map-validation entry also exports playback policy. Preserve existing
+  // host consumers while new lower-domain consumers use the world validator.
   audioProfile: ['audio-event-profile'],
 }).map(([domain, names]) => [domain, Object.freeze(names.map(name => `src/${name}.mjs`))])));
 
