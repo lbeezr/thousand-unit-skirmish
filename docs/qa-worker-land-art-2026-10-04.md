@@ -992,3 +992,11 @@ On an identified containing default build in Bellweather · Millrace, observe al
 five South loops for both Human seats at ordinary/strategic zoom, S↔SW↔S turns,
 Stop/resume, target contact/root, attack completion, terminal corpse and cargo
 Return→deposit/idle. Those real game observations remain open.
+
+South all176 focused checks, atlas/docs/whitespace, byte-idempotent admission and
+actual packed guarded HTTP/WebSocket/hash scenario pass. [Clean South release](qa-evidence/worker-land-art-2026-10-04/south-actions-clean-release.json)
+measures `d9114ee4bed50f54e3a7c50acff910c448850ac1`, `sourceDirty:false`,1179 files,
+`sha256:97577008f3172892e1ac0ba739a9cd215e845fa5a4b82bb6c6e866cad0b38fd6`. Fresh read-only Railway remains
+SUCCESS `e541d903-178b-47cb-8d1b-4358c93c5a8a` source
+`64cc391e6d9c4164dca7bd45696cf3862fe19729`, predating these slices.
+Containing deployment/native acceptance remains open, independent of source merge.
