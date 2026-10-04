@@ -10,6 +10,7 @@ import { bootGameEntry } from '../src/game-entry.mjs';
 import { BUILDING_DEFINITIONS, UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { constructionCostForProfile } from '../src/economy-profile.mjs';
 import { farmHarvestNodeId } from '../src/farm-harvest.mjs';
+import { createDockPlacementContext } from '../src/dock-placement.mjs';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
 import { captureDepotSources, assertDepotSourcesUnchanged } from './depot-source-snapshot.mjs';
 import { CONFLUENCE_LAYOUT as layout } from './generate-confluence-grounds.mjs';
@@ -166,12 +167,19 @@ try {
   assert.ok(fishCargo.state.units.every(u => u.kind === 'skiff' || u.cargo === 0));
   const deliveries = boats.map((id, team) => ({ team, skiffId: id, dockId: own(fishCargo, team, 'dock').id,
     cargo: fishCargo.state.units[id].cargo, bankBefore: fishCargo.state.teamFood[team] }));
+  for (const d of deliveries) assert.equal(fishCargo.state.units[d.skiffId].dropoffBuildingId, d.dockId);
   record('stopped-fish-cargo-before-owned-dock-delivery', fishCargo, { deliveries });
   for (const team of [0, 1]) await command(team, { type: 'returnCargo', ids: [boats[team]] }, /RETURN CARGO ORDER/);
   const fishDelivered = await checkpoint(s => deliveries.every(d => s.state.units[d.skiffId].cargo === 0
     && Math.abs(s.state.teamFood[d.team] - d.bankBefore - d.cargo) < 1e-5));
+  const dockContext = createDockPlacementContext(map, BUILDING_DEFINITIONS.dock);
   for (const d of deliveries) {
-    assert.equal(fishDelivered.state.units[d.skiffId].dropoffBuildingId, d.dockId);
+    const boat = fishDelivered.state.units[d.skiffId], dock = own(fishDelivered, d.team, 'dock');
+    const access = dockContext.accessAt(Math.floor(dock.z + 80) * 160 + Math.floor(dock.x + 80));
+    assert.ok(access.spawnFootprint.some(cell => Math.hypot(boat.x - (cell % 160 - 79.5),
+      boat.z - (Math.floor(cell / 160) - 79.5)) < 1e-7), 'the load arrives at its own admitted Dock berth');
+    assert.equal(boat.gatherPhase, ''); assert.equal(boat.dropoffBuildingId, null, 'completed Skiff return clears the finished target');
+    d.deliveredAt = { x: boat.x, z: boat.z };
     await command(d.team, { type: 'returnCargo', ids: [d.skiffId] }, /RETURN CARGO REJECTED/);
   }
   record('finite-fish-food-delivered-to-owned-dock-once', fishDelivered,

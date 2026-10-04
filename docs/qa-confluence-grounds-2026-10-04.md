@@ -65,6 +65,10 @@ position, resource or checkpoint fixture. Native paid economy, firing, fishing,
 water traversal and recovery/reset results are pending until retained receipts
 are recorded here. The repeatable audit identifies this row as
 `admitted-test-arena`, separately from regional Skirmish candidates and micro Labs.
+The refreshed 30-map checkout also identifies Bannerfall as `quick-custom-mode`;
+`seededPve` retains the historical two-map pool, while `ordinaryPve` identifies
+the separately accepted Tiny/Skirmish AI map. Those identities are distinct from
+the new testing arena.
 The [static receipt](qa-evidence/confluence-grounds-2026-10-04/static-audit.json)
 retains methods, timing assumptions, source hashes and the measured arena row.
 
@@ -87,3 +91,10 @@ follow-up. A source layout schematic, local native receipt or release pack canno
 substitute for those checks. Human balance, representative large-city/unit loads
 and supported capacity remain open. Medium/Large continue as separate authored
 slices; XL still requires a widened visibility index and bounded cache design.
+
+The latest read-only staging deployment listing still reports SUCCESS
+deployment `e541d903-178b-47cb-8d1b-4358c93c5a8a` with source
+`64cc391e6d9c4164dca7bd45696cf3862fe19729`, which predates this arena and the
+Tiny/Small migrations. This is metadata only; no source merge or local release
+pack is treated as deployed acceptance, and no staging configuration is changed
+by this slice.
