@@ -24,6 +24,12 @@ test('NW attack faithfully reuses the actual public NW axe pixels with its own o
   const originalClips = structuredClone(asset.clips.slice(0, receipt.originalClips));
   const index = originalClips.findIndex(c => c.stateId === 'attack' && c.directionId === 'north-west');
   originalClips[index] = receipt.originalAttackClip;
+  const family = JSON.parse(readFileSync(new URL(
+    '../docs/qa-evidence/worker-land-art-2026-10-04/north-west-actions-preservation.json', import.meta.url)));
+  for (const clip of family.originalReplacedClips) {
+    const replaced = originalClips.findIndex(c => c.stateId === clip.stateId && c.directionId === clip.directionId);
+    originalClips[replaced] = clip;
+  }
   assert.equal(hash(JSON.stringify(originalClips)), receipt.originalClipMetadataSha256);
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', directory)));
   const pixelHash = createHash('sha256');

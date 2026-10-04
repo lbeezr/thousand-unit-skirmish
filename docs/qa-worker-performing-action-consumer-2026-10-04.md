@@ -123,6 +123,9 @@ failed before the change. Animation `01a103d4` now selects `gather-stone` only
 from compatible positive receipts and resolves dedicated clips by exact heading,
 otherwise that heading's idle. Boughward has no Stone pixels and keeps idle.
 No manifests, pixels, simulation rules, default directories or HTTP paths change.
+During integration PR261 merged at `ec1a8669`, supplying three240ms NW Stone keys
+in packv0.24.0. This same binding consumes both SE and NW; six headings remain
+absent. The old NW idle-expectation test now verifies actual mining playback.
 The [art-owner scope agreement](https://github.com/lbeezr/thousand-unit-skirmish/pull/248#issuecomment-5976239058)
 leaves northwest production and registration with that owner; later admitted
 Stone headings bind automatically through the same exact lookup.
@@ -154,5 +157,7 @@ resume; interrupt with movement/attack; switch to food/wood; capture Return/depo
 and death. Assigned approach/no-progress must not mine. Approach from a different
 bearing and confirm the exact idle fallback where that Stone view is absent;
 Boughward keeps its exact idle. Record buildSHA/map/seat/unit/action/heading beside
-short clips. Rough functional keys pass; missing coverage, wrong facing, frozen
+short clips. For NW mining approach from southeast of the node (higher worldX,
+lower worldZ, actual −X/+Z bearing); verify its three keys and720ms loop with the
+same interruptions. Rough functional keys pass; missing coverage, wrong facing, frozen
 playback or broken root/contact remain explicit. No GPU clips are claimed here.
