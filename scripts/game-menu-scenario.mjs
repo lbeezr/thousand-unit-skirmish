@@ -95,11 +95,11 @@ async function peek(room, token) {
   return { status: response.status, value: await response.json() };
 }
 
-async function startSupervisor() {
+async function startSupervisor(overrides = {}) {
   child = spawn(process.execPath, ['room-supervisor.mjs'], { cwd: root,
     env: { ...process.env, PORT: String(port), RTS_HOST: '127.0.0.1', RTS_ROOM_DATA_DIRECTORY: data,
       RTS_CUSTOM_MAP_DIRECTORY: path.join(data, 'default-maps'), RTS_MAX_ROOMS: '6',
-      RTS_ACCESS_USER: 'menu-test', RTS_ACCESS_PASSWORD: 'local-test-password-for-entry' }, stdio: ['ignore', 'pipe', 'pipe'] });
+      RTS_ACCESS_USER: 'menu-test', RTS_ACCESS_PASSWORD: 'local-test-password-for-entry', ...overrides }, stdio: ['ignore', 'pipe', 'pipe'] });
   child.stdout.on('data', chunk => { output += chunk; }); child.stderr.on('data', chunk => { output += chunk; });
   await until(async () => { try { return (await api('/ready')).ok; } catch { return false; } }, 'ready');
 }
@@ -156,7 +156,8 @@ try {
   await until(() => deliveredCreation, 'completed creation after menu exit');
   assert.equal(delayedMenu.navigations.length, 0, 'late real HTTP creation cannot navigate a departed menu');
   assert.equal((await (await api('/health')).json()).connectedInvitePeers, peersBeforeExit);
-  assert.deepEqual((await (await api(`/api/rooms/${createdWhileAway}`)).json()).launchOptions, { mode: 'pvp', practice: true },
+  assert.deepEqual((await (await api(`/api/rooms/${createdWhileAway}`)).json()).launchOptions,
+    { mode: 'pvp', practice: true, matchModeId: 'authored', matchModeVersion: 1 },
     'an already accepted room creation remains governed by ordinary room expiry');
   delayedMenu.dom.window.close();
   profile.click('menu-create-room'); profile.click('menu-create-room');
@@ -206,7 +207,7 @@ try {
   assert.equal(practice.welcome.state.connected, 1, 'practice needs no second human or AI seat');
   assert.notEqual(practice.welcome.matchId, oldMatch);
   const practiceOptions = (await (await api(`/api/rooms/${practiceId}`)).json()).launchOptions;
-  assert.deepEqual(practiceOptions, { mode: 'pvp', practice: true });
+  assert.deepEqual(practiceOptions, { mode: 'pvp', practice: true, matchModeId: 'authored', matchModeVersion: 1 });
   const practiceCheckpoint = path.join(data, 'rooms', practiceId, 'match-state.json');
   async function savedPractice(predicate) {
     let saved;
@@ -273,10 +274,41 @@ try {
   await until(() => recoveredPractice.messages.some(row => row.type === 'mapChange' && row.map.id === 'frontier-materials'), 'unlocked map after recovery');
   recoveredPractice.send({ type: 'gather', ids: [0], nodeId: 'azure-berries' });
   await savedPractice(saved => saved.mapDefinition.id === 'frontier-materials' && saved.state.teamFood[0] > 0);
+
+  // A configured Tiny default must be usable through the same root menu. This
+  // does not assert that the ordinary runtime/default migration has shipped.
+  for (const client of clients) client.close();
+  await stopChild(child);
+  const tinyConfiguration = { RTS_MAP: 'maps/veyrholds-terraced-vale.json', RTS_MAX_ROOMS: '7' };
+  await startSupervisor(tinyConfiguration);
+  const setup = (await (await api('/api/rooms/status')).json()).practiceSetup;
+  assert.equal(setup.map.id, 'veyrholds-terraced-vale');
+  assert.deepEqual([setup.map.width, setup.map.height], [160, 160]);
+  const tinyMenu = await menu(); tinyMenu.click('menu-practice');
+  await until(() => tinyMenu.navigations.length, 'configured Tiny normal-menu Practice creation');
+  const tinyRoomId = tinyMenu.navigations[0].searchParams.get('room'), tinyPractice = await connect(tinyRoomId);
+  assert.equal(tinyPractice.welcome.map.id, setup.map.id);
+  assert.equal(tinyPractice.welcome.matchModeId, setup.matchModeId);
+  assert.equal(tinyPractice.welcome.matchModeVersion, setup.matchModeVersion);
+  assert.equal(tinyPractice.welcome.state.practice, true); assert.equal(tinyPractice.welcome.state.connected, 1);
+  await until(() => tinyPractice.messages.some(row => row.type === 'state' && row.scenarioClockStarted
+    && row.matchElapsedSeconds > 0), 'configured Tiny one-player clock');
+  const tinyIdentity = tinyPractice.welcome.player, tinyMatch = tinyPractice.welcome.matchId;
+  tinyPractice.close(); await stopChild(child); await startSupervisor(tinyConfiguration);
+  const tinyResume = await menu({ [LAST_ROOM_STORAGE_KEY]: tinyRoomId,
+    [`${SESSION_STORAGE_PREFIX}${tinyRoomId}`]: tinyIdentity.sessionToken });
+  tinyResume.click('menu-resume'); await until(() => tinyResume.navigations.length, 'configured Tiny Resume');
+  const tinyRecovered = await connect(tinyRoomId, tinyIdentity.sessionToken, true);
+  assert.equal(tinyRecovered.welcome.player.id, tinyIdentity.id); assert.equal(tinyRecovered.welcome.matchId, tinyMatch);
+  assert.equal(tinyRecovered.welcome.map.id, setup.map.id);
+  assert.equal(tinyRecovered.welcome.matchModeId, setup.matchModeId);
+  assert.equal(tinyRecovered.welcome.matchModeVersion, setup.matchModeVersion);
+  tinyMenu.dom.window.close(); tinyResume.dom.window.close();
   console.log(JSON.stringify({ passed: ['authenticated menu without automatic default admission', 'read-only active/stale session inspection',
     'interrupted authentication retains saved Resume without admission', 'strict Resume cannot allocate a new seat', 'departed menu ignores completed real Practice creation', 'fresh PvP lobby and both-seat launch', 'explicit saved-room Resume',
     'fresh AI and Map Studio rooms', 'one-player practice across all current lab maps and rematch',
-    'practice checkpoint/seat recovery and real Worker food deposit', 'normal-menu Skirmish Practice selection and same-mode recovery', 'actionable seeded AI map and army protection', 'old default identity/checkpoint retained', 'entry and lazy client import delivery'],
+    'practice checkpoint/seat recovery and real Worker food deposit', 'normal-menu Skirmish Practice selection and same-mode recovery', 'actionable seeded AI map and army protection', 'old default identity/checkpoint retained', 'entry and lazy client import delivery',
+    'configured Tiny normal-menu one-seat Practice and strict Resume after restart'],
     modules: imports.length, modeUiModules: modeImports.length, practiceLabMaps: labMaps.map(map => map.id) }));
 } finally {
   for (const client of clients) client.socket.destroy();

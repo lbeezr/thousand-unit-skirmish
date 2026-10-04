@@ -4,6 +4,7 @@ import { JSDOM } from 'jsdom';
 import { createRoomLobby, lobbyRejoinUrl } from '../src/room-lobby-ui.mjs';
 import { matchModeCatalog, effectiveMapForMatchMode } from '../src/match-modes.mjs';
 import { readFileSync } from 'node:fs';
+import { mapSizeIdentity } from '../src/map-size-policy.mjs';
 
 const host = { id: 'player-1', team: 0 };
 const guest = { id: 'player-2', team: 1 };
@@ -66,6 +67,34 @@ function modeSettings(identity = {}) {
   return { ...identity, mapId: millrace.id, matchModes: matchModeCatalog(millrace),
     maps: [millrace, lab].map(map => ({ id: map.id, name: map.name, matchModes: matchModeCatalog(map) })) };
 }
+
+test('a projected Tiny choice submits one map/mode tuple and retains legacy visibility without extra tiers', () => {
+  const tiny = JSON.parse(readFileSync(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+  const current = { ...millrace, ...mapSizeIdentity(millrace), selectable: false, legacyCurrent: true,
+    matchModes: matchModeCatalog(millrace) };
+  const offered = { ...tiny, ...mapSizeIdentity(tiny), selectable: true, legacyCurrent: false,
+    matchModes: matchModeCatalog(tiny) };
+  const objective = { matchModeId: 'objective-control', matchModeVersion: 1 };
+  const f = fixture(host, { ...modeSettings(objective), maps: [current, offered], canLaunch: true,
+    seats: [{ ...host, connected: true, ready: true }, { ...guest, connected: true, ready: true }] }, millrace);
+  const picker = f.node('lobby-map'), options = [...picker.options];
+  assert.deepEqual(options.map(option => option.value), [millrace.id, tiny.id]);
+  assert.equal(options[0].disabled, true); assert.match(options[0].textContent, /Current legacy map/);
+  assert.match(options[1].textContent, /Tiny · 160 × 160.*Authored Rules/);
+  assert.doesNotMatch(picker.textContent, /Small|Medium|Large|XL/);
+  picker.value = tiny.id; picker.dispatchEvent(new f.dom.window.Event('change'));
+  picker.dispatchEvent(new f.dom.window.Event('change'));
+  assert.deepEqual(f.sent, [{ type: 'configureLobby', revision: 4, mapId: tiny.id,
+    matchModeId: 'authored', matchModeVersion: 1 }]);
+  assert.equal(f.node('lobby-ready').disabled, true); assert.equal(f.node('lobby-launch').disabled, true);
+  const accepted = { ...f.state, revision: 5, mapId: tiny.id, matchModeId: 'authored', matchModeVersion: 1,
+    matchModes: matchModeCatalog(tiny), maps: [offered], canLaunch: false,
+    seats: f.state.seats.map(seat => ({ ...seat, ready: false })) };
+  f.ui.update(accepted, host, true, tiny);
+  assert.equal(picker.value, tiny.id); assert.equal(f.node('lobby-ready').disabled, false);
+  assert.equal(f.node('lobby-launch').disabled, true); assert.equal(f.node('lobby-match-mode').value, 'authored@1');
+  f.dom.window.close();
+});
 
 test('host mode binding waits through unrelated projections and uses authoritative ready resets', () => {
   const f = fixture(host, modeSettings(), millrace), select = f.node('lobby-match-mode');
