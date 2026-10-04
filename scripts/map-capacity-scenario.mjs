@@ -7,6 +7,7 @@ import { createServer } from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { capturedBudgetEnvelope } from './map-capacity-report-check.mjs';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const options = { map: 'veyrholds-threefold-basin', loads: '24,250,500,1000', seconds: '10', 'rss-stop-mib': '512' };
@@ -165,8 +166,14 @@ async function runLoad(count) {
         const p = c.wait(row => row.type === 'state' && row.tick > starts[i].tick && moved(starts[i], row, c.team) > 0)
           .then(() => round(performance.now() - began)); p.catch(() => {}); return p;
       });
-      const noticeMs = await Promise.all(clients.map(c => order(c, { type: 'move', ids: own(c.current, c.team).map(u => u[0]),
-        x: c.team === 0 ? offset : -offset, z, formation: 'box' }, 'MOVE ORDER')));
+      let noticesFinished = false;
+      const notices = Promise.all(clients.map(c => order(c, { type: 'move', ids: own(c.current, c.team).map(u => u[0]),
+        x: c.team === 0 ? offset : -offset, z, formation: 'box' }, 'MOVE ORDER'))).finally(() => { noticesFinished = true; });
+      notices.catch(() => {});
+      while (!noticesFinished) {
+        await Promise.race([notices.catch(() => {}), sleep(1000)]); await capture();
+      }
+      const noticeMs = await notices;
       // Final notices have no tick. A later captured checkpoint supplies a
       // conservative post-acceptance tick, excluding all preparation ticks.
       const acceptedAt = Date.now(), acceptanceDeadline = performance.now() + 5000;
@@ -213,6 +220,8 @@ async function runLoad(count) {
       assert.ok(counts.every(n => n >= count / 2 * .95), 'At least 95% of both seats must move in each wave window');
       assert.ok(after.health.tickTiming.p95Ms <= 1000 / 30 && after.health.tickTiming.maxMs <= 100);
       assert.ok(after.health.tickTiming.startLagP95Ms <= 1000 / 30 && after.health.tickTiming.startLagMaxMs <= 100);
+      record.capturedBudgetEnvelope = capturedBudgetEnvelope(record.samples, record.waves.flatMap(w => w.planning));
+      assert.ok(record.capturedBudgetEnvelope.passed, 'All captured windows and planning slices must meet the diagnostic budgets');
       console.log(JSON.stringify({ armySize: count, targetRegion: name, movedBySeat: counts, tickP95Ms: after.health.tickTiming.p95Ms, skippedSlotDelta: wave.skippedSlotDelta }));
     }
     const tokens = clients.map(c => c.welcome.player.sessionToken), matchId = clients[0].current.matchId;
