@@ -77,8 +77,9 @@ for (const team of [0, 1]) test(`seat${team}: normal plug harvesting opens navig
   assert.equal(result.before.gapRoutes, 0); assert.equal(result.before.northBypass + result.before.southBypass, 16);
   complete(result.after, 16); assert.equal(result.after.planned.gapRoutes, 16);
   assert.ok(result.after.planned.meanLength < result.before.meanLength);
-  assert.equal(result.harvest.bankedWood, 6); assert.equal(result.harvest.revisionBefore, 0); assert.equal(result.harvest.revisionAfter, 1);
-  assert.equal(result.harvest.restoredBankedWood, 6); assert.equal(result.harvest.restoredZeroCargo, true);
+  assert.equal(result.harvest.bankedWood, 12); assert.equal(result.harvest.revisionBefore, 0); assert.equal(result.harvest.revisionAfter, 2);
+  assert.equal(result.harvest.restoredBankedWood, 12); assert.equal(result.harvest.restoredZeroCargo, true);
   assert.equal(result.harvest.exactLoadedContinuation, true); assert.ok(result.harvest.loadedCargo > 0);
-  assert.deepEqual(result.harvest.clearedCells, [1567]);
+  assert.equal(result.harvest.initialTarget, 23 * 64 + (team ? 32 : 30));
+  assert.deepEqual(result.harvest.clearedCells, [result.harvest.initialTarget, 1567]);
 });

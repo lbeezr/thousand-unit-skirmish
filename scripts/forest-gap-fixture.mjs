@@ -198,6 +198,11 @@ export async function runForestPlug(team, { maxTicks = 1800, initialCheckpoint =
     assert.ok(done(r, worker));
     const woodBefore = r.wood[team], revisionBefore = r.navigationRevision;
     const gatherCommand = order(r, team, [worker], 'gather', { forestCell: plugCell });
+    // A normal Gather now anchors the authored forest group. At these cell
+    // centers the nearer/tied north frontier is selected before the plug.
+    const initialTarget = worker.gatherForestCell;
+    assert.equal(initialTarget, 23 * 64 + (team ? 32 : 30));
+    const expectedCuts = [initialTarget, plugCell].sort((a, b) => a - b);
     for (let tick = 0; tick < maxTicks && worker.cargo < 2; tick++) r.step();
     assert.ok(worker.cargo >= 2 && worker.cargo < 6, 'a genuinely loaded Worker checkpoint precedes depletion');
     const loaded = r.checkpoint(); r.validate(loaded);
@@ -225,19 +230,21 @@ export async function runForestPlug(team, { maxTicks = 1800, initialCheckpoint =
       assert.deepEqual(rr.wood, r.wood, 'both restored and original deliveries bank the same Wood');
     }
     assert.equal(worker.cargo, 0); assert.equal(restoredWorker.cargo, 0);
-    for (const replay of [r, rr]) assert.ok(Math.abs(replay.wood[team] - woodBefore - 6) < .0001);
+    for (const replay of [r, rr]) assert.ok(Math.abs(replay.wood[team] - woodBefore - expectedCuts.length * 6) < .0001);
     const stock = r.checkpoint().state.forestStocks;
-    assert.deepEqual(stock.filter(([, value]) => value < 6).map(([cell]) => cell), [plugCell], 'no other tree finances the deposit');
+    assert.deepEqual(stock.filter(([, value]) => value < 6).map(([cell]) => cell), expectedCuts,
+      'only the selected frontier and plug finance the deposit');
+    assert.ok(expectedCuts.every(cell => new Map(stock).get(cell) === 0), 'both cells are fully depleted');
     order(r, team, actors, 'move', { x: team ? -12.5 : 12.5, z: .5, formation: 'box' });
     const crossing = measureCrossing(r, actors, spec, map, maxTicks);
     assert.deepEqual(r.units.map(u => u.hp), health, 'combat cannot confound plug harvesting or crossing');
     assert.deepEqual(rr.units.map(u => u.hp), health, 'loaded recovery also retains unit health');
     return { ...spec, plug: true, mapSha256: hash(map), sourceSha256: fixture.sourceSha256, inventory: forestInventory(map),
       beforeRoutes, before: summarizeRoutes(beforeRoutes), after: crossing,
-      harvest: { gatherCommand, plugCell, loadedTick, loadedCargo: rounded(loadedCargo), restart: 'fresh fixed-tick adapter; checkpoint validator/restore',
+      harvest: { gatherCommand, plugCell, initialTarget, loadedTick, loadedCargo: rounded(loadedCargo), restart: 'fresh fixed-tick adapter; checkpoint validator/restore',
         exactLoadedContinuation: true, continuationTraceSha256: trace.digest('hex'), revisionBefore, revisionAfter: r.navigationRevision,
         woodBefore, woodAfter: r.wood[team], bankedWood: rounded(r.wood[team] - woodBefore),
         restoredWoodAfter: rr.wood[team], restoredBankedWood: rounded(rr.wood[team] - woodBefore),
-        restoredZeroCargo: restoredWorker.cargo === 0, clearedCells: [plugCell] } };
+        restoredZeroCargo: restoredWorker.cargo === 0, clearedCells: expectedCuts } };
   } finally { if (restored) await restored.dispose(); await fixture.dispose(); }
 }
