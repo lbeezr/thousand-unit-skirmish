@@ -628,6 +628,37 @@ sources in their existing authorized lanes and dated outputs in `docs/qa-evidenc
 or the runner's existing ignored output directory. No measurement is rerun or
 rewritten merely to improve an organization metric.
 
+### Release packer tooling boundary
+
+[PR373](https://github.com/lbeezr/thousand-unit-skirmish/pull/373) begins the
+planned purpose-based tooling stage with one complete release responsibility:
+`scripts/release/pack-railway-release.mjs` owns Docker-source discovery,
+isolated copying, clean-source checks, digest/identity declarations and failure
+cleanup. Its implementation is byte-identical to the 153-line packer at
+`c3fec9ea` except the one `import.meta.url` root-depth expression required by its
+nested location. It reads the same repository root regardless of the caller's
+working directory; no COPY/ignore, error, argument, manifest or cleanup rule
+changes.
+
+The actual `railway-release-scenario.mjs` subprocess uses the canonical CLI. Its
+existing failure fixture copies that nested dependency and mocks the dependency
+the scenario now calls, retaining all behavioral cases and assertions. The
+supported root `scripts/pack-railway-release.mjs` is a three-line import launcher;
+it preserves `process.argv`, cwd, stdout JSON, errors and exit behavior without
+duplicating the implementation. Package/workflow commands, asset-adoption tools
+and documented external commands still use that root entry. They are deliberate
+compatibility consumers, not evidence that every tool has migrated.
+
+The architecture/tooling owner retains both paths. Retire the root command only
+after package/CI/workflow/docs/tool receivers agree their supported command
+migration, tracked and supported external callers are inventoried, and root and
+canonical CLI behavior, clean source-identified packs and actual packed HTTP
+pass through those consumers. This slice does not change those registries or
+release/deployment policy. Further smoke, browser, authoring, asset, scenario
+and performance-tool responsibilities remain in the purpose-based queue above;
+no bulk test rename, measurement rerun or workload change is implied. The three
+server compatibility imports remain outside the movement owner's active window.
+
 ### Coupling and size ratchets
 
 Use the audited values above as a starting comparison and record each scoped
