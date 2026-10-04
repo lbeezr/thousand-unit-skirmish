@@ -13,13 +13,16 @@ const json = (value, status = 200) => new Response(JSON.stringify(value), { stat
 const turn = () => new Promise(resolve => setImmediate(resolve));
 async function menu(setup = catalog, create = () => json({ roomId })) {
   const dom = new JSDOM(html, { url: 'http://game.test/' }), posts = [], navigations = [];
-  await bootGameEntry({ win: dom.window, loadGame: () => { throw new Error('Menu cannot load the renderer'); },
+  const controller = await bootGameEntry({ win: dom.window, loadGame: () => { throw new Error('Menu cannot load the renderer'); },
     navigate: url => navigations.push(url), fetchImpl: async (url, options) => {
-      if (url === '/api/rooms/status') return json({ enabled: true, ...(setup === undefined ? {} : { practiceSetup: setup }) });
+      if (url === '/api/rooms/status') {
+        const current = typeof setup === 'function' ? setup() : setup;
+        return current instanceof Response ? current : json({ enabled: true, ...(current === undefined ? {} : { practiceSetup: current }) });
+      }
       assert.equal(url, '/api/rooms'); posts.push(JSON.parse(options.body)); return create();
     } });
   const select = dom.window.document.querySelector('#practice-match-mode');
-  return { dom, posts, navigations, select, button: dom.window.document.querySelector('#menu-practice'),
+  return { dom, controller, posts, navigations, select, button: dom.window.document.querySelector('#menu-practice'),
     choose(value) { select.value = value; select.dispatchEvent(new dom.window.Event('change')); } };
 }
 
@@ -30,6 +33,32 @@ test('fresh Practice capability projection preserves exact authored victory rule
   assert.equal(catalog.map.id, millrace.id); assert.equal(catalog.matchModeId, 'authored');
   assert.equal(Object.hasOwn(catalog.map, 'obstacles'), false); assert.equal(Object.hasOwn(catalog.map, 'resourceNodes'), false);
   assert.equal(Object.hasOwn(catalog, 'player'), false); assert.equal(JSON.stringify(millrace), original);
+});
+
+test('interrupted availability preserves an explicit Practice mode through recovery', async () => {
+  let current = catalog;
+  const f = await menu(() => current); f.choose('skirmish@1');
+  current = json({ error: 'Offline' }, 503); await f.controller.refresh();
+  assert.equal(f.select.value, 'skirmish@1'); assert.equal(f.button.disabled, true);
+  current = catalog; await f.controller.refresh();
+  assert.equal(f.select.value, 'skirmish@1'); assert.equal(f.button.disabled, false);
+  f.button.click(); await turn();
+  assert.deepEqual(f.posts, [{ mode: 'pvp', practice: true, matchModeId: 'skirmish', matchModeVersion: 1 }]);
+  f.dom.window.close();
+});
+
+test('removed Practice capability blocks creation until a deliberate supported replacement', async () => {
+  let current = catalog;
+  const f = await menu(() => current); f.choose('skirmish@1');
+  current = { ...catalog, matchModes: catalog.matchModes.filter(mode => mode.id !== 'skirmish') };
+  await f.controller.refresh();
+  assert.equal(f.select.value, 'skirmish@1'); assert.equal(f.button.disabled, true);
+  assert.equal(f.select.disabled, false, 'a deliberate available replacement remains reachable');
+  assert.match(f.dom.window.document.querySelector('[data-rule]').textContent, /chosen mode is unavailable/);
+  f.button.click(); await turn(); assert.deepEqual(f.posts, []);
+  f.choose('authored@1'); assert.equal(f.button.disabled, false);
+  f.button.click(); await turn(); assert.deepEqual(f.posts, [{ mode: 'pvp', practice: true }]);
+  f.dom.window.close();
 });
 
 test('normal Practice sends the chosen complete mode pair once while creation is pending', async () => {

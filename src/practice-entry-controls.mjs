@@ -20,23 +20,32 @@ export function createPracticeEntryControls({ root, onChange = () => {} }) {
   return {
     update(next, online, pending) {
       setup = next;
-      root.hidden = !setup;
-      if (!setup) { choices = []; chosen = null; supported = true; return; }
-      const view = matchModePresentation({ identity: setup, catalog: setup.matchModes, map: setup.map });
-      supported = Boolean(view.active && !view.error && Array.isArray(setup.matchModes) && setup.map?.id);
-      choices = supported ? view.choices : [];
-      chosen = choices.find(choice => chosen && key(choice) === key(chosen)) || view.active;
-      const options = choices.length ? choices : [{ id: '', version: '', label: 'Mode unavailable' }];
+      const explicit = chosen && chosen.id !== 'authored';
+      root.hidden = !setup && !explicit;
+      const view = setup ? matchModePresentation({ identity: setup, catalog: setup.matchModes, map: setup.map }) : null;
+      const available = Boolean(view?.active && !view.error && Array.isArray(setup.matchModes) && setup.map?.id);
+      choices = available ? view.choices : [];
+      // An interrupted/withheld catalog cannot replace the player's intent.
+      chosen = choices.find(choice => chosen && key(choice) === key(chosen)) || chosen || view?.active;
+      const allowed = chosen && choices.some(choice => key(choice) === key(chosen));
+      supported = Boolean(allowed) || (!setup && !explicit);
+      const options = [...choices];
+      if (chosen && !allowed) options.push({ ...chosen, label: `${chosen.label} · unavailable` });
+      if (!options.length) options.push({ id: '', version: '', label: 'Mode unavailable' });
       const values = options.map(choice => [key(choice), choice.label]);
       if (JSON.stringify([...select.options].map(option => [option.value, option.textContent])) !== JSON.stringify(values)) {
         select.replaceChildren(...values.map(([value, text]) => {
-          const option = root.ownerDocument.createElement('option'); option.value = value; option.textContent = text; return option;
+          const option = root.ownerDocument.createElement('option'); option.value = value; option.textContent = text;
+          option.disabled = !choices.some(choice => key(choice) === value); return option;
         }));
       }
       select.value = chosen ? key(chosen) : '';
-      select.disabled = !supported || !online || pending || choices.length < 2;
-      mapName.textContent = supported ? `Starts on ${setup.map.name}.` : 'Practice rules changed. Reload to reconnect.';
-      if (supported) describe(); else summary.textContent = view.error || 'Practice setup is unavailable.';
+      select.disabled = !available || !online || pending || (allowed && choices.length < 2);
+      mapName.textContent = available ? `Starts on ${setup.map.name}.` : 'Practice settings are unavailable. Reload to reconnect.';
+      if (allowed) describe();
+      else summary.textContent = view?.error || (available
+        ? 'Your chosen mode is unavailable. Choose an available mode before starting Practice.'
+        : 'Your chosen rules are kept. Reconnect before starting Practice.');
     },
     get supported() { return supported; },
     get selectedLabel() { return chosen && chosen.id !== 'authored' ? chosen.label : ''; },
