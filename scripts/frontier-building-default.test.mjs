@@ -11,6 +11,7 @@ import { attachBuildingSprite, buildingSpriteUrl } from '../src/building-sprites
 import { barracksModelVisualState, buildingFinishedDetailsVisible } from '../src/building-visual-state.mjs';
 import { frontierBuildingManifestUrl } from '../src/frontier-building-preview.mjs';
 import { createCapturedBuildingSprite, updateCapturedBuildingSprite, disposeCapturedBuildingSprite } from '../src/captured-building-art.mjs';
+import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 
 // Real renderer factories and verified public file bytes, with DOM decode mocked.
 // This is a source/binding/lifecycle test; it does not execute WebGL or certify pixels.
@@ -54,7 +55,7 @@ test('normal factories use all eight Complete families and truthful per-state fa
   const renderer = { domElement: { dataset: {}, getBoundingClientRect: () => ({ left: 0, top: 0, width: 1280, height: 720 }) } };
   let selectedIds = [];
   const camera = new THREE.OrthographicCamera(-20, 20, 20, -20, .1, 300);
-  const context = vm.createContext({ THREE, scene, capturedBuildingVisuals, TEAM_HEX, BUILDING_DEFINITIONS, buildingPresentation,
+  const context = vm.createContext({ ...wildlifeClientBindings(), THREE, scene, capturedBuildingVisuals, TEAM_HEX, BUILDING_DEFINITIONS, buildingPresentation,
     camera, renderer, raycaster: new THREE.Raycaster(), pointerNdc: new THREE.Vector2(),
     latestBuildings: [], buildingVisuals: new Map(), localTeam: 0, selectedBuildingId: null,
     selectedIds: () => selectedIds, units: { worker: { kind: 'worker' }, military: { kind: 'infantry' } },
@@ -70,6 +71,7 @@ test('normal factories use all eight Complete families and truthful per-state fa
     createBuildingCombatFeedback: () => ({ targetRing: new THREE.Group(), impactFlash: new THREE.Group() }),
     createBuildingRallyMarker: () => new THREE.Group(),
   });
+  vm.runInContext(wildlifeClientFunctionSource(main), context);
   for (const name of ['addBuildingStandard', 'createBuildingProductionLamp', 'createTownCenterVisual', 'updateTownCenterVisual',
     'createHouseVisual', 'updateHouseVisual', 'createWatchtowerVisual', 'updateWatchtowerVisual',
     'createBarracksVisual', 'updateBarracksVisual', 'createArcheryRangeVisual', 'updateArcheryRangeVisual',

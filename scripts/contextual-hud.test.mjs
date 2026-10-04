@@ -1,4 +1,5 @@
 import { economyClientBindings } from './economy-client-fixture.mjs';
+import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -43,7 +44,7 @@ function fixture(team = 0) {
   };
   w.ui = {};
   for (const [, name, selector] of source.matchAll(/^\s*(\w+): document\.querySelector\('([^']+)'\)/gm)) w.ui[name] = d.querySelector(selector);
-  Object.assign(w, { ...economyClientBindings(),
+  Object.assign(w, { ...economyClientBindings(), ...wildlifeClientBindings(),
     selectionContext, updateSelectionPortrait, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
     applyUnitStances, updateCombatStanceControls, bindCombatStanceControls, socket: { readyState: 1 },
     castPreview: true, humanRosterPreview: true, roomPageUrl: new URL('http://localhost/'),
@@ -87,6 +88,7 @@ function fixture(team = 0) {
   });
   w.teamUnits = [w.units.filter(u => u.team === 0), w.units.filter(u => u.team === 1)];
   w.eval([
+    wildlifeClientFunctionSource(source),
     fn('updateStationaryOrderControls', 'updateSelectionUI'),
     fn('updateSelectionUI', 'updateContextualCommands'), fn('updateContextualCommands', 'updateControlGroupUI'),
     fn('updateRosterProductionOptions', 'updateBuildingLifecycleActions'),

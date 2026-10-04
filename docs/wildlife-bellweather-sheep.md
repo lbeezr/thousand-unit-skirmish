@@ -92,17 +92,18 @@ with exact distance ties settled by lower stable unit ID. Without a contender,
 the last owner remains. Claim changes apply only while alive: carcass/depleted
 labels stay frozen and shared Gather rights remain unchanged.
 
-Visible rows and checkpoint schema **27** carry `wildlifeTeam: null | 0 | 1`
+Visible rows and checkpoint schema **28** carry `wildlifeTeam: null | 0 | 1`
 (neutral, Azure, Ember). Claims grant no sight or population. Only the owner
 may issue the separate Herd/Stop authority commands below. Exact schema25 saves initialize neutral labels without altering
 position, private motion, stock, cargo or banks; older compatible migrations
 chain through motion24 and stance25. Current saves validate/restore actual ownership. Authoring
 rejects runtime team labels; rematch resets them to neutral. The public field
 is the actual collar input for art task `01a101a8-fba6-7323-a40c-27efd0112007`;
-collar art and ordinary Herd selection/order binding remain dependent work.
+collar artwork remains dependent work; ordinary Herd selection/order binding
+uses the real team field below.
 [Claim/recovery evidence](qa-sheep-claims-2026-10-03.md) records the owned follow-ups.
 
-### Owner-only Herd authority — client entry pending
+### Owner-only Herd authority and ordinary client entry
 
 The server accepts `herd {nodeId,x,z,resourceEpoch,clientOrderToken}` and
 `stopWildlife {nodeId,resourceEpoch,clientOrderToken}`. Resource epoch is the
@@ -124,16 +125,32 @@ exact schema 27 saves gain no travel intent and preserve claims/food/motion.
 Live old saves retain their authored grazing anchor; frozen saves use their
 actual pose. Invalid current shapes, land cells, routes or lifecycle reject.
 
-**Ordinary game entry is incomplete.** Wildlife worker now owns the separate
-string-ID selection/order binding through the agreed HUD interface; see the
-[HUD controls backlog](hud-controls-backlog.md). The default renderer admits
+The default client keeps `selectedWildlifeId: null|string` separate from army
+IDs and control groups. Left-click a currently visible owned live Sheep after
+unit/building picking priority. Its existing compact command strip shows true
+owner and remaining food, **Herd** and **Stop**. Right-click visible clear land,
+use Herd then tap/click, or right-click the minimap to send the exact destination;
+**S** stops it. Shift queues are unavailable. Army orders and group assignment
+do not apply to Sheep; selecting units/buildings or box/group/army selection
+clears the Sheep context. Fog/omission, recapture, harvest, depletion, epoch/map
+change, seat change and a fresh welcome immediately clear selection and targeting.
+Normal tracked notices finish Herd/Stop status. Shared Worker Gather remains
+available for neutral, foreign and carcass food.
+
+Wildlife worker owns this narrow binding through the agreed HUD interface; see
+the [HUD controls backlog](hud-controls-backlog.md). The default renderer admits
 actual disclosed poses throughout map bounds, and minimap fog checks that same
 current cell. Picking, rings and callouts follow the admitted pose. Hidden,
 omitted and depleted rows disappear regardless of ownership. The existing
 static artwork and carcass marker remain; this does not bind new animation.
 [Relocated-client evidence](qa-sheep-relocated-client-2026-10-04.md) records CPU
-and live-server checks. Herd selection/orders, build/wall previews and
-disclosed-resource AI positions remain the next owned client slice.
+and live-server checks. Building/wall previews use current food positions,
+retaining only the last disclosed positive-stock position through fog; never
+seen food stays conservatively authored. Position memory cannot authorize
+selection or orders. Opponent resource disclosure also uses actual current
+positions and current-cell sight without changing strategy.
+[Controls evidence](qa-sheep-owned-controls-2026-10-04.md) records source checks
+and the remaining ordinary native game acceptance.
 Deployment/native appearance also remain owned follow-ups; see
 [Herd evidence](qa-sheep-herding-2026-10-03.md).
 
@@ -207,12 +224,13 @@ verified delivery; useful small PRs ship independently.
    `01a101a8-fba6-7323-a40c-27efd0112007` consumes the real team field for collars.
 3. **Controllable herding**. Server commands, bounded owner-only existing land
    navigation, live food reservations and schema 28 recovery are implemented in
-   [PR205](https://github.com/lbeezr/thousand-unit-skirmish/pull/205). Next: independent authority review/merge,
-   agree ordinary string-ID selection/order binding with the UI owner, then
-   finish cross-cell renderer/minimap/build-preview and AI disclosure. Preserve
+   [PR205](https://github.com/lbeezr/thousand-unit-skirmish/pull/205), merged at
+   `c2411778c280acc660d5199e7ba50241c296e803`. The agreed separate string-ID
+   controls now consume the real claim/disclosure contract, with relocated
+   renderer/minimap/build-preview and opponent resource positions. Preserve
    the same food node ID/stock through motion, Gather, depletion and recovery.
-   Authority checks use actual moving positions; ordinary client entry remains
-   incomplete until that interface agreement and binding are complete.
+   Authority and client checks use actual moving positions. Next: identified
+   staging delivery and ordinary native Herd/Stop/Gather/reclaim acceptance.
    Acceptance: both seats issue real herd orders, blocked/foreign/fog-invalid
    orders reject, interruption/restart does not teleport food or revive carcasses.
 4. **Art acceptance of activity/carcass/collar**. Consume verified admitted art

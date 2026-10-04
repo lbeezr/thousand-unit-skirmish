@@ -26,7 +26,8 @@ try {
   const main = await (await fetch(new URL('src/main.js', base))).text();
   assert.match(main, /import \{ createNeutralWildlifeRenderer \} from '\.\/neutral-wildlife-renderer\.mjs'/);
   assert.match(main, /wildlifeRenderer\.reset\(definition\.resourceNodes/);
-  assert.match(main, /wildlifeRenderer\.reconcile\(state\.resourceNodes/);
+  assert.match(main, /applyWildlifeState\(state, initial\)/);
+  assert.match(main, /wildlifeRenderer\.reconcile\(view \? \[\.\.\.view\.rows\.values\(\)\] : \[\]/);
   assert.match(main, /wildlifeRenderer\.update\(camera\)/);
   globalThis.Image = class {
     async decode() {
@@ -55,7 +56,7 @@ try {
   client.send({ type: 'publishMap', map, persist: true });
   await client.wait(message => message.type === 'mapPublished', 'typed sheep map accepted', after);
   const changed = await client.wait(message => message.type === 'mapChange' && message.map.id === map.id, 'typed sheep map loaded', after);
-  renderer.reset(changed.map.resourceNodes); await renderer.ready();
+  renderer.reset(changed.map.resourceNodes, changed.map); await renderer.ready();
   const represent = state => {
     // The server omits wildlife outside current seat visibility, independently
     // exercised below; the production client also checks its current fog cells.

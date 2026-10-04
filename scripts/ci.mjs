@@ -112,6 +112,7 @@ run(['--test', 'scripts/sheep-eight-view-runtime.test.mjs'], 'Admitted eight-vie
 run(['--test', 'scripts/sheep-directional-readiness.test.mjs'], 'Sheep directional source and anchor acceptance');
 run(['--test', 'scripts/neutral-wildlife-renderer.test.mjs'], 'Neutral wildlife render lifecycle and fallback');
 run(['--test', 'scripts/sheep-relocated-client.test.mjs'], 'Relocated Sheep actual-cell rendering, picking and minimap fog');
+run(['--test', 'scripts/wildlife-client-state.test.mjs', 'scripts/wildlife-client-controls.test.mjs', 'scripts/sheep-placement-client.test.mjs'], 'Owned Sheep selection, normal Herd/Stop input and actual food placement');
 run(['scripts/wildlife-render-scenario.mjs'], 'Live wildlife snapshots and production art paths');
 run(['--test', 'scripts/millrace-sheep.test.mjs'], 'Default Millrace Sheep budget and exact legacy map compatibility');
 run(['scripts/millrace-sheep-scenario.mjs'], 'Normal default Sheep visibility, harvest, art and recovery');
@@ -185,6 +186,7 @@ run(['--test', 'scripts/pve-home-defense.test.mjs'], 'PvE visible economic raids
 run(['--test', 'scripts/pve-regroup.test.mjs'], 'PvE bounded regroup after wipeout, paid recovery and restart replay');
 run(['--test', 'scripts/pve-skirmish-targets.test.mjs', 'scripts/pve-skirmish-replay.test.mjs'], 'Explicit Skirmish AI targets, fog fairness and paid producer restart replay');
 run(['--test', 'scripts/pve-mode-adapter.test.mjs', 'scripts/pve-skirmish-checkpoint.test.mjs'], 'Authoritative AI mode activation and canonical Skirmish recovery');
+run(['--test', 'scripts/pve-wildlife-disclosure.test.mjs'], 'Opponent actual-cell wildlife resource disclosure');
 run(['--test', 'scripts/pve-objective-rotation.test.mjs'], 'PvE public objective rotation after paid obstruction and checkpoint replay');
 run(['--test', 'scripts/production-queue.test.mjs'], 'Mixed production queue authority');
 run(['--test', 'scripts/wildlife-state.test.mjs'], 'Neutral wildlife lifecycle');

@@ -62,6 +62,8 @@ import {
 } from './unit-visual-state.mjs';
 import { createUnitSpriteRuntime } from './unit-sprite-runtime.mjs';
 import { createNeutralWildlifeRenderer } from './neutral-wildlife-renderer.mjs';
+import { readDisclosedWildlife, selectOwnedWildlife, reconcileWildlifeSelection,
+  createWildlifeCommand, updateWildlifePositionMemory } from './wildlife-client-state.mjs';
 import {
   MAX_ELEVATION_PATCHES, buildElevationGrid, capturePrerequisiteIds,
   findInvalidCapturePrerequisite, findInvalidScenarioEventChain,
@@ -666,6 +668,10 @@ let latestWood = [0, 0];
 let latestStone = [0, 0];
 let latestBuildings = [];
 let selectedBuildingId = null;
+let selectedWildlifeId = null;
+let selectedWildlifeView = null;
+let latestWildlifeView = null;
+let wildlifePositionMemory = null;
 let latestWorkerProduction = [null, null];
 let latestPopulation = [null, null];
 let latestTeamResearch = [null, null];
@@ -2275,6 +2281,8 @@ function applyForestState(state, initial = false) {
 let terrainSurface = null;
 let waterStudyFishBinding = null;
 function buildMap(definition) {
+  clearWildlifeSelection();
+  latestWildlifeView = wildlifePositionMemory = null;
   dockPlacementContext = createDockPlacementContext(definition, BUILDING_DEFINITIONS.dock);
   waterStudyFishBinding?.clear();
   waterStudyFishBinding = null;
@@ -2889,7 +2897,7 @@ function drawMinimap(now = performance.now(), force = false) {
   }
 }
 
-function worldFromMinimap(event) {
+function worldFromMinimap(event, clampPoint = true) {
   const rect = minimapCanvas.getBoundingClientRect();
   if (!mapDefinition || rect.width <= 0 || rect.height <= 0) return null;
   const style = getComputedStyle(minimapCanvas);
@@ -2902,10 +2910,11 @@ function worldFromMinimap(event) {
   const mapRect = minimapMapRect(minimapCanvas.width, minimapCanvas.height);
   const pixelX = (event.clientX - rect.left - left) * minimapCanvas.width / width;
   const pixelY = (event.clientY - rect.top - top) * minimapCanvas.height / height;
-  return {
-    x: THREE.MathUtils.clamp((pixelX - mapRect.left) / mapRect.scale - MAP_HALF_X, -MAP_HALF_X, MAP_HALF_X),
-    z: THREE.MathUtils.clamp((pixelY - mapRect.top) / mapRect.scale - MAP_HALF_Z, -MAP_HALF_Z, MAP_HALF_Z),
-  };
+  const point = { x: (pixelX - mapRect.left) / mapRect.scale - MAP_HALF_X,
+    z: (pixelY - mapRect.top) / mapRect.scale - MAP_HALF_Z };
+  if (!clampPoint) return point;
+  return { x: THREE.MathUtils.clamp(point.x, -MAP_HALF_X, MAP_HALF_X),
+    z: THREE.MathUtils.clamp(point.z, -MAP_HALF_Z, MAP_HALF_Z) };
 }
 
 function focusCameraFromMinimap(event) {
@@ -3635,6 +3644,7 @@ function updateUnitTransform(unit, now = performance.now()) {
 }
 
 function setArmySize(count, showMessage = false) {
+  clearWildlifeSelection();
   if (buildPlacementActive) cancelBuildPlacement(false);
   lastFriendlyUnitClick = null;
   lastUnitPickState = null;
@@ -3711,8 +3721,12 @@ function setArmySize(count, showMessage = false) {
 }
 
 function updateStationaryOrderControls(selectedBuilding) {
+  const wildlife = selectedWildlife();
   const disabled = localTeam === null || matchWinner >= 0 || selectedIds().length === 0 || Boolean(selectedBuilding);
-  for (const button of document.querySelectorAll('[data-stationary-order], [data-persistent-order]')) button.disabled = disabled;
+  for (const button of document.querySelectorAll('[data-stationary-order], [data-persistent-order]')) {
+    button.disabled = wildlife ? matchWinner >= 0 || button.dataset.stationaryOrder !== 'stop' : disabled;
+    button.hidden = Boolean(wildlife) && button.dataset.stationaryOrder !== 'stop';
+  }
 }
 
 function updateSelectionUI() {
@@ -3769,7 +3783,7 @@ function updateSelectionUI() {
       queuedWaypointTotal += queuedWaypoints;
     }
   }
-  ui.selected.textContent = selected.size.toLocaleString();
+  ui.selected.textContent = selectedWildlife() ? '1 SHEEP' : selected.size.toLocaleString();
   ui.selectedBlue.textContent = blue.toLocaleString();
   ui.selectedRed.textContent = red.toLocaleString();
   ui.selectedWorkers.textContent = workers.toLocaleString();
@@ -3807,6 +3821,8 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   if (!bar) return;
   const building = latestBuildings.find((row) => row.id === selectedBuildingId && row.team === localTeam);
   const context = selectionContext(units, selected, localTeam, building, mapDefinition?.economyProfileId);
+  const wildlife = selectedWildlife();
+  if (wildlife) context.kind = 'wildlife';
   const portraitUnit = context.total === 1 && !building ? units[selectedIds()[0]] : null;
   const portraitRole = portraitUnit && castPreview
     && (humanRosterPreview || roomPageUrl.searchParams.get('humanVaeloraPreview') === '1')
@@ -3817,11 +3833,17 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   if (quickAccess.hidden !== !bar.hidden) quickAccess.hidden = !bar.hidden;
   updateCombatStanceUI();
   document.querySelector('#assign-selected-group').disabled = !context.total;
-  bar.querySelector('[data-context-summary]').textContent = building
+  bar.querySelector('[data-context-summary]').textContent = wildlife
+    ? `Bellweather Sheep · ${TEAM_NAMES[wildlife.wildlifeTeam]} · ${formatResourceStock(wildlife.stock)} food · Herd / Stop`
+    : building
     ? `${buildingLabel(building.type)} · ${ui.selectedBuildingHealth.textContent} · ${ui.selectedBuildingProduction.textContent}`
     : context.total ? `${context.total} selected${context.kind === 'military' || context.kind === 'mixed' ? ` · ${ui.formationSelect.value} formation` : ''} · ${Object.entries(context.counts).filter(([, n]) => n).map(([role, n]) => `${n} ${role}`).join(' · ')}${context.counts.worker || context.counts.skiff ? ` · Cargo ${Object.entries(context.cargo).map(([resource, stock]) => `${formatResourceStock(stock)} ${resource}`).join(' / ')}` : ''}` : '';
   for (const button of bar.querySelectorAll('[data-stationary-order], [data-persistent-order]')) {
-    button.hidden = !['workers', 'military', 'mixed', 'boats'].includes(context.kind);
+    button.hidden = wildlife ? button.dataset.stationaryOrder !== 'stop'
+      : !['workers', 'military', 'mixed', 'boats'].includes(context.kind);
+    if (button.dataset.stationaryOrder === 'stop') button.title = wildlife
+      ? 'Stop this Sheep at its current position · S'
+      : 'Clear current tasks and queued routes; military sets No attack. Explicit Attack remains available.';
   }
   for (const button of bar.querySelectorAll('[data-return-cargo]')) {
     button.hidden = Boolean(building) || Object.values(context.cargo).every(stock => stock <= 0);
@@ -3832,7 +3854,8 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   for (const button of bar.querySelectorAll('[data-context-proxy]')) {
     const source = document.getElementById(button.dataset.contextProxy);
     const action = button.dataset.contextProxy;
-    button.hidden = action === 'order-target-toggle' && building && !BUILDING_DEFINITIONS[building.type]?.products.length ? true : action.startsWith('train-') ? true : action === 'order-target-toggle' ? context.kind === 'none'
+    button.hidden = wildlife ? action !== 'order-target-toggle'
+      : action === 'order-target-toggle' && building && !BUILDING_DEFINITIONS[building.type]?.products.length ? true : action.startsWith('train-') ? true : action === 'order-target-toggle' ? context.kind === 'none'
       : action === 'attack-move-toggle' ? !['military', 'mixed'].includes(context.kind)
       : action === 'train-infantry' ? building?.type !== 'barracks'
       : action === 'train-archer' ? building?.type !== 'archery-range'
@@ -3841,9 +3864,10 @@ function updateContextualCommands(priorFocus = document.activeElement) {
     button.disabled = source.disabled || (action.startsWith('train-') && building && (!building.complete || building.productionBlocked));
     if (source.hasAttribute('aria-pressed')) button.setAttribute('aria-pressed', source.getAttribute('aria-pressed'));
     if (action === 'order-target-toggle') {
-      const label = tapOrderArmed ? 'Cancel target' : building ? 'Set rally' : context.kind === 'workers' ? 'Gather / move' : 'Target battlefield';
+      const label = tapOrderArmed ? 'Cancel target' : wildlife ? 'Herd' : building ? 'Set rally' : context.kind === 'workers' ? 'Gather / move' : 'Target battlefield';
       button.querySelector('[data-command-label]').textContent = label;
-      button.title = tapOrderArmed ? 'Cancel battlefield targeting' : building ? 'Choose a rally destination on the battlefield' : 'Choose a destination, resource or enemy on the battlefield';
+      button.title = tapOrderArmed ? 'Cancel battlefield targeting' : wildlife ? 'Choose currently visible clear land for this Sheep'
+        : building ? 'Choose a rally destination on the battlefield' : 'Choose a destination, resource or enemy on the battlefield';
     }
     if (action.startsWith('train-')) {
       button.setAttribute('aria-describedby', 'context-action-reason');
@@ -3855,13 +3879,18 @@ function updateContextualCommands(priorFocus = document.activeElement) {
   if (!building) bar.querySelector('[data-context-reason]').textContent = '';
   bar.querySelector('[data-context-build]').hidden = context.kind !== 'workers';
   const details = bar.querySelector('[data-context-details]');
-  details.hidden = context.kind === 'none' || Boolean(building && !BUILDING_DEFINITIONS[building.type]?.products.length);
+  details.hidden = Boolean(wildlife) || context.kind === 'none' || Boolean(building && !BUILDING_DEFINITIONS[building.type]?.products.length);
   details.querySelector('[data-context-details-label]').textContent = building ? 'Rally / upgrade details' : 'Formation / route';
   details.querySelector('[data-context-formation-icon]').hidden = !['workers', 'military', 'mixed', 'boats'].includes(context.kind);
   const research = bar.querySelector('[data-context-research]');
   research.hidden = !building || !BUILDING_DEFINITIONS[building.type]?.products.length;
   research.textContent = building ? `${ui.buildingRallyReadout.textContent} · ${ui.buildingResearchReadout.textContent}` : '';
   const groups = bar.querySelector('[data-context-groups]');
+  groups.hidden = Boolean(wildlife);
+  for (const button of bar.querySelectorAll('[data-context-panel]')) {
+    if (!button.hasAttribute('data-context-build') && !button.hasAttribute('data-context-details')
+      && !button.hasAttribute('data-selection-portrait')) button.hidden = Boolean(wildlife);
+  }
   for (let index = 0; index < 10; index++) {
     const button = groups.children[index];
     if (!button) continue;
@@ -3950,6 +3979,7 @@ function clearActiveControlGroup() {
 }
 
 function assignControlGroup(index, append = false) {
+  clearWildlifeSelection();
   if (localTeam === null) {
     showToast('SPECTATORS CANNOT ASSIGN CONTROL GROUPS');
     return;
@@ -3988,6 +4018,7 @@ function centerCameraOnControlGroup(groupUnits) {
 }
 
 function recallControlGroup(index) {
+  clearWildlifeSelection();
   if (localTeam === null) {
     showToast('SPECTATORS CANNOT RECALL CONTROL GROUPS');
     return;
@@ -4039,6 +4070,14 @@ function syncSelectionMesh() {
     dummy.position.set(unit.renderX, groundHeight(unit.renderX,unit.renderZ)+0.022, unit.renderZ);
     dummy.quaternion.copy(ringRotation);
     dummy.scale.setScalar(unit.scale * ringScale);
+    dummy.updateMatrix();
+    selectionMesh.setMatrixAt(slot++, dummy.matrix);
+  }
+  const wildlife = selectedWildlife();
+  if (wildlife) {
+    dummy.position.set(wildlife.x, groundHeight(wildlife.x, wildlife.z) + .022, wildlife.z);
+    dummy.quaternion.copy(ringRotation);
+    dummy.scale.setScalar(.95);
     dummy.updateMatrix();
     selectionMesh.setMatrixAt(slot++, dummy.matrix);
   }
@@ -4336,7 +4375,8 @@ function updateCommandUI() {
   if (!selectedBuilding && selectedWaterUnits()) { attackMoveMode = false; persistentTargetMode = null; }
   updateStationaryOrderControls(selectedBuilding);
   const rallyCell = Number.isInteger(selectedBuilding?.rallyCell) ? selectedBuilding.rallyCell : -1;
-  const mode = selectedBuilding ? buildingSupportsRally(selectedBuilding.type) ? 'RALLY' : 'BUILDING' : persistentTargetMode ? persistentTargetMode.toUpperCase() : attackMoveMode ? 'ATTACK MOVE' : 'MOVE';
+  const wildlife = selectedWildlife();
+  const mode = wildlife ? 'HERD' : selectedBuilding ? buildingSupportsRally(selectedBuilding.type) ? 'RALLY' : 'BUILDING' : persistentTargetMode ? persistentTargetMode.toUpperCase() : attackMoveMode ? 'ATTACK MOVE' : 'MOVE';
   if (ui.commandMode) {
     ui.commandMode.textContent = mode;
     ui.commandMode.dataset.mode = selectedBuilding ? 'rally' : attackMoveMode ? 'attack-move' : 'move';
@@ -4359,7 +4399,7 @@ function updateCommandUI() {
     }
     ui.commandIcon.classList.toggle('attack-move', !selectedBuilding && attackMoveMode);
   }
-  if (ui.commandTitle) ui.commandTitle.textContent = selectedBuilding
+  if (ui.commandTitle) ui.commandTitle.textContent = wildlife ? 'Herd your Sheep' : selectedBuilding
     ? selectedBuilding.home ? 'TOWN CENTER · HOME' : `${buildingLabel(selectedBuilding.type)} #${selectedBuilding.id}`
     : persistentTargetMode === 'patrol' ? 'Patrol there and back' : persistentTargetMode === 'follow' ? 'Follow a friendly leader' : attackMoveMode ? 'Advance and engage' : 'Move or attack';
   const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
@@ -4380,10 +4420,14 @@ function updateCommandUI() {
   if (selectedBuilding?.type === 'dock' && ui.commandHint) ui.commandHint.textContent = 'Train a Skiff (placeholder) · owned boats deliver food at this Dock · no rally.';
   if (!selectedBuilding && selectedWaterUnits() && ui.commandHint) ui.commandHint.textContent = 'Select Skiffs · target fish or water · Shift water queues up to 8 waypoints · fishing boats deliver one load before leaving · Stop clears the queue and keeps cargo.';
   if (persistentTargetMode && ui.commandHint) ui.commandHint.textContent = `${tapOrderArmed ? 'Tap or click' : coarsePointer ? 'Use Target battlefield, then tap' : 'Right-click'} ${persistentTargetMode === 'follow' ? 'a friendly unit' : 'ground to set the second patrol endpoint'}`;
+  if (wildlife && ui.commandHint) ui.commandHint.textContent = tapOrderArmed
+    ? 'Tap or click currently visible clear land · Stop keeps the Sheep here'
+    : coarsePointer ? 'Use Herd, then tap visible clear land · Stop · S'
+      : 'Right-click currently visible clear land · Stop · S · Shift queues are unavailable';
   for (const button of document.querySelectorAll('[data-persistent-order]')) {
     button.classList.toggle('active', button.dataset.persistentOrder === persistentTargetMode);
     button.setAttribute('aria-pressed', String(button.dataset.persistentOrder === persistentTargetMode));
-    button.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding) || selectedWaterUnits();
+    button.disabled = localTeam === null || matchWinner >= 0 || Boolean(wildlife) || Boolean(selectedBuilding) || selectedWaterUnits();
   }
   if (ui.buildingCommandDetails) ui.buildingCommandDetails.hidden = !selectedBuilding || !buildingSupportsRally(selectedBuilding.type);
   if (ui.buildingRallyReadout) {
@@ -4398,11 +4442,13 @@ function updateCommandUI() {
   }
   updateBuildingResearchControls(selectedBuilding);
   if (ui.attackMoveToggle) {
+    ui.attackMoveToggle.hidden = Boolean(wildlife);
     ui.attackMoveToggle.classList.toggle('active', attackMoveMode);
     ui.attackMoveToggle.setAttribute('aria-pressed', String(attackMoveMode));
-    ui.attackMoveToggle.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding) || selectedWaterUnits();
+    ui.attackMoveToggle.disabled = localTeam === null || matchWinner >= 0 || Boolean(wildlife) || Boolean(selectedBuilding) || selectedWaterUnits();
   }
-  if (ui.formationSelect) ui.formationSelect.disabled = localTeam === null || matchWinner >= 0 || Boolean(selectedBuilding) || selectedWaterUnits();
+  if (ui.formationSelect) ui.formationSelect.disabled = localTeam === null || matchWinner >= 0 || Boolean(wildlife) || Boolean(selectedBuilding) || selectedWaterUnits();
+  if (ui.formationSelect?.parentElement) ui.formationSelect.parentElement.hidden = Boolean(wildlife);
   syncTargetOrderUI();
   syncBattlefieldCursor();
   updateContextualCommands();
@@ -4417,7 +4463,7 @@ function syncTargetOrderUI() {
   ui.orderTargetToggle.classList.toggle('active', tapOrderArmed);
   ui.orderTargetToggle.setAttribute('aria-pressed', String(tapOrderArmed));
   ui.orderTargetToggle.querySelector('span').textContent = tapOrderArmed ? 'Cancel target'
-    : selectedBuilding ? 'Set rally point' : 'Target battlefield';
+    : selectedWildlife() ? 'Herd' : selectedBuilding ? 'Set rally point' : 'Target battlefield';
   ui.orderTargetToggle.querySelector('small').textContent = tapOrderArmed
     ? 'Tap or click a battlefield target' : selectedBuilding ? 'Tap or click ground once' : 'Tap or click once to issue';
 }
@@ -4632,6 +4678,7 @@ function applyState(state, initial = false) {
   waterStudyFishBinding?.update(state, { spectator: localTeam === null });
   updateFogFromState(state);
   applyForestState(state, initial);
+  applyWildlifeState(state, initial || matchRestarted);
   if (Array.isArray(state.objectives)) updateObjectives(state.objectives);
   updateVictoryHoldCard(state.victoryHold, state.winner, state.winnerReason, state.scenarioClockStarted);
   updateScenarioEventCards(state.scenarioEvents || [], state.matchElapsedSeconds, state.scenarioClockStarted);
@@ -4863,28 +4910,10 @@ function updateEconomyUI(state = {}, initial = false) {
     latestTeamResearch = [state.teamResearch[0] || null, state.teamResearch[1] || null];
   }
   if (Array.isArray(state.resourceNodes)) {
-    wildlifeRenderer.reconcile(state.resourceNodes, node => {
-      if (!mapDefinition?.fogOfWar || localTeam === null) return true;
-      const column = Math.floor(node.x + MAP_HALF_X);
-      const row = Math.floor(node.z + MAP_HALF_Z);
-      return latestFogCells?.[row * MAP_WIDTH + column] === 2;
-    });
-    for (const node of mapDefinition?.resourceNodes || []) {
-      if (node.wildlifeSpecies === undefined) continue;
-      const visual = resourceNodeVisuals.get(node.id);
-      if (visual) {
-        const available = wildlifeRenderer.isAvailable(node.id);
-        visual.ring.visible = available;
-        const position = wildlifeRenderer.positionFor?.(node.id);
-        if (position) {
-          visual.x = position.x; visual.z = position.z;
-          visual.ring.position.set(position.x, groundHeight(position.x, position.z) + .035, position.z);
-        }
-        if (!available) visual.callout.visible = false;
-      }
-    }
     for (const node of state.resourceNodes) {
       if (node && typeof node.id === 'string' && Number.isFinite(node.stock)) {
+        const definition = mapDefinition?.resourceNodes?.find(row => row.id === node.id);
+        if (definition?.wildlifeSpecies !== undefined && !latestWildlifeView?.rows.has(node.id)) continue;
         updateResourceNodeVisual(node.id, Math.max(0, node.stock));
       }
     }
@@ -5121,6 +5150,8 @@ function setPlayer(player) {
   const previousTeam = localTeam;
   localTeam = Number.isInteger(player.team) ? player.team : null;
   if (previousTeam !== localTeam) {
+    clearWildlifeSelection();
+    latestWildlifeView = wildlifePositionMemory = null;
     lastFriendlyUnitClick = null;
     lastUnitPickState = null;
     if (buildPlacementActive) cancelBuildPlacement(false);
@@ -7256,7 +7287,8 @@ function applyOrderNotice(token, message) {
     finishOrderStatus(token, message, 'failed');
     return true;
   }
-  if (/^(STOP ORDER|HOLD POSITION ORDER|PATROL ORDER|FOLLOW ORDER|REPAIR ORDER|MOVE ORDER|ATTACK MOVE ORDER|WAYPOINT ORDER|ATTACK ORDER|ATTACK BUILDING ORDER|GATHER ORDER|RETURN CARGO ORDER|BUILD ORDER|BUILD RESUME ORDER) · /.test(message)
+  if (/^(SHEEP STOP ORDER|HERD ORDER|STOP ORDER|HOLD POSITION ORDER|PATROL ORDER|FOLLOW ORDER|REPAIR ORDER|MOVE ORDER|ATTACK MOVE ORDER|WAYPOINT ORDER|ATTACK ORDER|ATTACK BUILDING ORDER|GATHER ORDER|RETURN CARGO ORDER|BUILD ORDER|BUILD RESUME ORDER) · /.test(message)
+    || message === 'SHEEP STOP ORDER'
     || message.startsWith('WAYPOINT QUEUED · ') || message.startsWith('PALISADE LINE PLACED ·')
     || message === 'WALL ALREADY PLACED · NO CHARGE') {
     finishOrderStatus(token, message, 'applied');
@@ -7268,7 +7300,7 @@ function applyOrderNotice(token, message) {
 function sendTrackedOrder(command, label, count, unitName = 'UNITS') {
   const token = beginOrderStatus(label, count, unitName);
   if (sendCommand({ ...command, clientOrderToken: token })) {
-    orderAudioGate.sent(token, { cue: command.type === 'stop' ? 'stop' : command.type === 'holdPosition' ? 'hold' : command.type === 'patrol' ? 'patrol' : command.type === 'follow' ? 'follow' : command.type === 'repairBuilding' ? 'repair' : command.type === 'build' || command.type === 'buildWall' ? 'build'
+    orderAudioGate.sent(token, { cue: command.type === 'stop' || command.type === 'stopWildlife' ? 'stop' : command.type === 'holdPosition' ? 'hold' : command.type === 'patrol' ? 'patrol' : command.type === 'follow' ? 'follow' : command.type === 'repairBuilding' ? 'repair' : command.type === 'build' || command.type === 'buildWall' ? 'build'
       : command.type === 'gather' ? 'gather'
         : command.type === 'attack' || command.type === 'attackBuilding' || command.type === 'attackMove'
           ? 'attack' : 'move', kind: units[command.ids?.[0]]?.kind,
@@ -7337,16 +7369,18 @@ function pickAt(x, y, predicate, { advance = true } = {}) {
   };
 }
 
-function pickResourceNodeAt(x, y, { visibleOnly = false } = {}) {
+function pickResourceNodeAt(x, y, { visibleOnly = false, ownedWildlifeOnly = false } = {}) {
   if (localTeam === null || !Array.isArray(mapDefinition?.resourceNodes)) return null;
   const rect = renderer.domElement.getBoundingClientRect();
   let nearest = null;
   let nearestDistance = 26 * 26;
   for (const authored of [...mapDefinition.resourceNodes,
     ...latestBuildings.filter(building => building.team === localTeam).map(farmHarvestNode).filter(Boolean)]) {
-    const position = authored.wildlifeSpecies === undefined ? null : wildlifeRenderer.positionFor?.(authored.id);
-    const node = position ? { ...authored, ...position } : authored;
-    if (node.wildlifeSpecies !== undefined && !wildlifeRenderer.isAvailable(node.id)) continue;
+    const disclosed = authored.wildlifeSpecies === undefined ? null : latestWildlifeView?.rows.get(authored.id);
+    const node = disclosed ? { ...authored, ...disclosed } : authored;
+    if (ownedWildlifeOnly && selectOwnedWildlife(latestWildlifeView, node.id) === null) continue;
+    if (node.wildlifeSpecies !== undefined && (!disclosed || disclosed.stock <= 0
+      || !wildlifePointVisible(disclosed) || !wildlifeRenderer.isAvailable(node.id))) continue;
     if (visibleOnly && mapDefinition.fogOfWar) {
       const column = Math.floor(node.x + MAP_WIDTH / 2);
       const row = Math.floor(node.z + MAP_HEIGHT / 2);
@@ -7416,6 +7450,7 @@ function pickBuildingAt(x, y, predicate = (building) => building.team === localT
 }
 
 function selectBuilding(building) {
+  clearWildlifeSelection();
   selected.clear();
   clearActiveControlGroup();
   selectedBuildingId = building.id;
@@ -7441,7 +7476,13 @@ function pickFriendly(x, y, additive = false) {
       selectBuilding(building);
       return;
     }
+    const wildlife = pickResourceNodeAt(x, y, { visibleOnly: true, ownedWildlifeOnly: true });
+    if (wildlife && selectOwnedWildlife(latestWildlifeView, wildlife.id)) {
+      selectWildlife(wildlife);
+      return;
+    }
   }
+  clearWildlifeSelection();
   const now = performance.now();
   const doubleClick = found && isSameUnitDoubleClick(lastFriendlyUnitClick, found.id, x, y, now);
   if (!additive) selected.clear();
@@ -7474,6 +7515,7 @@ function pickFriendly(x, y, additive = false) {
 }
 
 function selectInRect(left, top, right, bottom, additive = false) {
+  clearWildlifeSelection();
   lastFriendlyUnitClick = null;
   lastUnitPickState = null;
   const rect = renderer.domElement.getBoundingClientRect();
@@ -7510,6 +7552,137 @@ function mapCellToWorld(cell) {
   };
 }
 
+function selectedWildlife() {
+  return selectOwnedWildlife(latestWildlifeView, selectedWildlifeId) === null
+    ? null : latestWildlifeView.rows.get(selectedWildlifeId);
+}
+
+function clearWildlifeSelection() {
+  const changed = selectedWildlifeId !== null;
+  selectedWildlifeId = selectedWildlifeView = null;
+  if (changed) {
+    attackMoveMode = false;
+    persistentTargetMode = null;
+    tapOrderArmed = false;
+    tapOrderPointer = null;
+    selectionDirty = true;
+    syncSelectionMesh();
+    updateSelectionUI();
+    updateCommandUI();
+    updateBuildPlacementHint();
+  }
+  return changed;
+}
+
+function wildlifePointVisible(point) {
+  if (!mapDefinition || !Number.isFinite(point?.x) || !Number.isFinite(point.z)
+    || point.x < -MAP_HALF_X || point.x >= MAP_HALF_X || point.z < -MAP_HALF_Z || point.z >= MAP_HALF_Z) return false;
+  if (!mapDefinition.fogOfWar || localTeam === null) return true;
+  const cell = Math.floor(point.z + MAP_HALF_Z) * MAP_WIDTH + Math.floor(point.x + MAP_HALF_X);
+  return latestFogCells?.[cell] === 2;
+}
+
+function wildlifeEndpointLegal(point) {
+  if (!wildlifePointVisible(point)) return false;
+  const column = Math.floor(point.x + MAP_HALF_X), row = Math.floor(point.z + MAP_HALF_Z);
+  for (const obstacle of mapDefinition.obstacles || []) {
+    if (column < obstacle.column || column >= obstacle.column + obstacle.width
+      || row < obstacle.row || row >= obstacle.row + obstacle.height) continue;
+    if (obstacle.material !== 'forest' || latestForestStocks.get(row * MAP_WIDTH + column) !== 0) return false;
+  }
+  for (const building of latestBuildings) {
+    if (building.type === 'palisade-gate' && building.complete === true && building.gateOpen === true) continue;
+    if (building.home && Array.isArray(building.footprint)) {
+      if (building.footprint.includes(row * MAP_WIDTH + column)) return false;
+      continue;
+    }
+    const size = buildingFootprint(building.type);
+    const startColumn = Math.floor(building.x + MAP_HALF_X) - Math.floor(size / 2);
+    const startRow = Math.floor(building.z + MAP_HALF_Z) - Math.floor(size / 2);
+    if (column >= startColumn && column < startColumn + size
+      && row >= startRow && row < startRow + size) return false;
+  }
+  return true;
+}
+
+function applyWildlifeState(state, initial = false) {
+  if (initial) {
+    clearWildlifeSelection();
+    latestWildlifeView = wildlifePositionMemory = null;
+  }
+  const view = readDisclosedWildlife(mapDefinition, state, localTeam, wildlifePointVisible);
+  if (selectedWildlifeId !== null
+    && reconcileWildlifeSelection(selectedWildlifeId, selectedWildlifeView, view) === null) clearWildlifeSelection();
+  latestWildlifeView = view;
+  wildlifePositionMemory = updateWildlifePositionMemory(wildlifePositionMemory, view);
+  wildlifeRenderer.reconcile(view ? [...view.rows.values()] : [], wildlifePointVisible);
+  for (const node of mapDefinition?.resourceNodes || []) {
+    if (node.wildlifeSpecies === undefined) continue;
+    const visual = resourceNodeVisuals.get(node.id);
+    if (!visual) continue;
+    const available = wildlifeRenderer.isAvailable(node.id), row = view?.rows.get(node.id);
+    visual.ring.visible = available;
+    if (available && row) {
+      visual.x = row.x; visual.z = row.z;
+      visual.ring.position.set(row.x, groundHeight(row.x, row.z) + .035, row.z);
+    }
+    if (!available) visual.callout.visible = false;
+  }
+}
+
+function selectWildlife(node) {
+  const id = selectOwnedWildlife(latestWildlifeView, node?.id);
+  if (id === null) return;
+  if (buildPlacementActive) cancelBuildPlacement(false);
+  clearWildlifeSelection();
+  selected.clear();
+  clearActiveControlGroup();
+  selectedWildlifeId = id;
+  selectedWildlifeView = latestWildlifeView;
+  attackMoveMode = false;
+  persistentTargetMode = null;
+  tapOrderArmed = false;
+  tapOrderPointer = null;
+  lastFriendlyUnitClick = lastUnitPickState = null;
+  selectionDirty = true;
+  syncSelectionMesh();
+  updateSelectionUI();
+  updateCommandUI();
+  updateEconomyUI();
+  showToast('SHEEP SELECTED · HERD TO VISIBLE CLEAR LAND · STOP · S');
+  updateBuildPlacementHint();
+  audio.playEvent({ cue: 'select' });
+}
+
+function issueWildlifeOrder(type, point, queueWaypoint = false) {
+  if (localTeam === null || matchWinner >= 0) return false;
+  if (queueWaypoint) { showToast('QUEUED HERDING IS UNAVAILABLE'); return false; }
+  const wildlife = selectedWildlife();
+  if (!wildlife || !wildlifePointVisible(wildlife)) { showToast('SELECT YOUR VISIBLE LIVE SHEEP'); return false; }
+  const command = createWildlifeCommand(type, selectedWildlifeId, selectedWildlifeView, latestWildlifeView,
+    point, { isVisible: wildlifePointVisible, isLegalEndpoint: wildlifeEndpointLegal });
+  if (!command) { showToast('HERD NEEDS CURRENTLY VISIBLE CLEAR LAND'); return false; }
+  if (!sendTrackedOrder(command, type === 'stopWildlife' ? 'SHEEP STOP' : 'HERD', 1, 'SHEEP')) return false;
+  if (type === 'herd') {
+    moveMarker.position.set(point.x, groundHeight(point.x, point.z) + .045, point.z);
+    moveMarker.material.color.setHex(0xe5f79a);
+    moveMarker.scale.setScalar(1);
+    moveMarker.material.opacity = .95;
+    moveMarker.visible = true;
+    moveMarkerAge = 0;
+  }
+  setTapOrderArmed(false, false);
+  return true;
+}
+
+function constructionResourceNodes() {
+  return (mapDefinition?.resourceNodes || []).map(node => {
+    const point = node.wildlifeSpecies === undefined ? null
+      : latestWildlifeView?.rows.get(node.id) || wildlifePositionMemory?.positions.get(node.id);
+    return point ? { ...node, x: point.x, z: point.z } : node;
+  });
+}
+
 function selectedIds() {
   return [...selected].filter((id) => units[id]?.hp > 0 && units[id]?.team === localTeam);
 }
@@ -7530,6 +7703,11 @@ function constructionForSelectedWorkers() {
 }
 
 function issueStationaryOrder(type) {
+  if (selectedWildlifeId !== null) {
+    if (type === 'stop') issueWildlifeOrder('stopWildlife');
+    else showToast('SHEEP SUPPORTS HERD AND STOP');
+    return;
+  }
   persistentTargetMode = null;
   if (localTeam === null || matchWinner >= 0) return;
   const ids = selectedIds();
@@ -7560,6 +7738,7 @@ for (const button of document.querySelectorAll('[data-stationary-order]')) {
 }
 
 function setPersistentTargetMode(type) {
+  if (selectedWildlifeId !== null) { showToast('SHEEP SUPPORTS HERD AND STOP'); return; }
   if (selectedWaterUnits()) { showToast('SKIFF SUPPORTS MOVE AND STOP'); return; }
   if (localTeam === null || matchWinner >= 0 || !selectedIds().length) return;
   attackMoveMode = false;
@@ -7574,6 +7753,7 @@ for (const button of document.querySelectorAll('[data-persistent-order]')) {
 }
 
 function setAttackMoveMode(enabled, announce = true) {
+  if (enabled && selectedWildlifeId !== null) { showToast('SHEEP SUPPORTS HERD AND STOP'); return; }
   if (enabled && selectedWaterUnits()) { showToast('SKIFF SUPPORTS MOVE AND STOP'); return; }
   if (enabled && (localTeam === null || matchWinner >= 0)) return;
   if (enabled) persistentTargetMode = null;
@@ -7589,7 +7769,7 @@ function setTapOrderArmed(enabled, announce = true) {
     if (localTeam === null || matchWinner >= 0) return;
     if (latestBuildings.find(row => row.id === selectedBuildingId)?.type === 'dock') { showToast('MOVE THE SKIFF AFTER SPAWN'); return; }
     if (buildPlacementActive) { showToast('FINISH OR CANCEL BUILD PLACEMENT FIRST'); return; }
-    if (selectedBuildingId === null && selectedIds().length === 0) {
+    if (selectedBuildingId === null && !selectedWildlife() && selectedIds().length === 0) {
       showToast('SELECT YOUR UNITS BEFORE ISSUING AN ORDER');
       return;
     }
@@ -7599,11 +7779,12 @@ function setTapOrderArmed(enabled, announce = true) {
   updateCommandUI();
   updateBuildPlacementHint();
   if (announce) showToast(tapOrderArmed
-    ? selectedBuildingId !== null ? 'TAP OR CLICK GROUND TO SET RALLY' : 'TAP OR CLICK A BATTLEFIELD TARGET'
+    ? selectedWildlife() ? 'TAP OR CLICK VISIBLE CLEAR LAND TO HERD' : selectedBuildingId !== null ? 'TAP OR CLICK GROUND TO SET RALLY' : 'TAP OR CLICK A BATTLEFIELD TARGET'
     : 'TARGETING CANCELLED');
 }
 
 function issueMove(point, queueWaypoint = false, moveOnly = false) {
+  if (selectedWildlifeId !== null) { issueWildlifeOrder('herd', point, queueWaypoint); return; }
   if (localTeam === null) { showToast('SPECTATORS CANNOT ISSUE COMMANDS'); return; }
   const ids = selectedIds();
   if (ids.length === 0) { showToast('SELECT YOUR UNITS BEFORE ISSUING AN ORDER'); return; }
@@ -7699,6 +7880,10 @@ function issueForestGather(cell) {
 }
 
 function issueContextOrder(clientX, clientY, queueWaypoint = false) {
+  if (selectedWildlifeId !== null) {
+    issueWildlifeOrder('herd', worldAt(clientX, clientY), queueWaypoint);
+    return;
+  }
   if (selectedBuildingId !== null) {
     issueBuildingRallyPoint(clientX, clientY);
     return;
@@ -7798,8 +7983,8 @@ function buildPlacementAt(clientX, clientY) {
       }
       if (blocksSite) { blockedReason ||= 'TERRAIN BLOCKS THIS SITE'; break; }
     }
-    for (const node of mapDefinition.resourceNodes || []) {
-      // Unknown or positive stock keeps the authored exclusion, as with forest.
+    for (const node of constructionResourceNodes()) {
+      // Unknown stock keeps the last disclosed pose (authored before first sight).
       if (latestResourceStocks.get(node.id) === 0) continue;
       const nodeColumn = Math.floor(node.x + MAP_HALF_X);
       const nodeRow = Math.floor(node.z + MAP_HALF_Z);
@@ -7840,7 +8025,7 @@ function wallPlacementAt(points) {
     balance: { food: latestFood[localTeam] || 0, wood: latestWood[localTeam] || 0 }, team: localTeam,
     workers: selectedIds().filter(id => units[id]?.kind === 'worker').length,
     obstacles: mapDefinition?.obstacles, forestStocks: latestForestStocks,
-    resourceNodes: mapDefinition?.resourceNodes, resourceStocks: latestResourceStocks, triggers: mapDefinition?.triggers,
+    resourceNodes: constructionResourceNodes(), resourceStocks: latestResourceStocks, triggers: mapDefinition?.triggers,
     units: teamUnits.flatMap(team => team.map(unit => ({ x: unit.serverX, z: unit.serverZ, hp: unit.hp, visible: unit.visible }))),
     buildings: latestBuildings.map(building => ({ ...building, footprint: buildingFootprint(building.type) })),
   });
@@ -7922,7 +8107,7 @@ function updateBuildPlacementHint() {
     ? coarsePointer ? 'BUILD' : 'RMB / ESC' : tapOrderArmed ? 'ESC' : coarsePointer ? 'ORDERS' : 'RMB';
   if (ui.fieldHintSecondary) ui.fieldHintSecondary.textContent = buildPlacementActive
     ? coarsePointer ? 'TAP BUTTON TO CANCEL' : 'CANCEL'
-    : tapOrderArmed ? 'CANCEL TARGET' : coarsePointer ? 'TAP TARGET' : 'MOVE / ATTACK';
+    : tapOrderArmed ? 'CANCEL TARGET' : selectedWildlife() ? 'HERD / STOP · S' : coarsePointer ? 'TAP TARGET' : 'MOVE / ATTACK';
   if (ui.placementStatus) {
     ui.placementStatus.hidden = !buildPlacementActive;
     ui.placementStatus.textContent = wall ? 'DRAG A LINE · SHIFT: OTHER BEND · ARROWS / ENTER: KEYBOARD'
@@ -7955,10 +8140,15 @@ function syncBattlefieldCursor() {
     building: buildPlacementActive, buildValid: ui.placementStatus?.dataset.state === 'clear',
     selectedBuilding: selectedBuildingId !== null,
     rallySupported: Boolean(ownedBuilding && buildingSupportsRally(ownedBuilding.type)),
-    count: ids.length, workers: ids.some((id) => units[id].kind === 'worker'),
+    count: ids.length + (selectedWildlife() ? 1 : 0), workers: ids.some((id) => units[id].kind === 'worker'),
     military: ids.some((id) => units[id].kind !== 'worker'),
     attackMove: attackMoveMode, armed: tapOrderArmed, shift: cursorShift,
   };
+  if (selectedWildlife() && state.canOrder && !state.panning && !state.panReady && !state.dragging) {
+    const point = cursorPointer ? worldAt(cursorPointer.x, cursorPointer.y) : null;
+    setBattlefieldCursor(cursorShift || (point && !wildlifeEndpointLegal(point)) ? 'unavailable' : 'move');
+    return;
+  }
   // Picking is read-only here: hovering must never cycle an overlapping target stack.
   if (cursorPointer && state.canOrder && !state.panning && !state.panReady && !state.dragging
       && !state.building && !state.selectedBuilding) {
@@ -8242,7 +8432,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
       return;
     }
     issueContextOrder(event.clientX, event.clientY, event.shiftKey);
-    if (tapOrderArmed) setTapOrderArmed(false, false);
+    if (tapOrderArmed && selectedWildlifeId === null) setTapOrderArmed(false, false);
     return;
   }
   if (event.button === 1 || (event.button === 0 && spaceDown)) {
@@ -8357,8 +8547,9 @@ function finishPointer(event) {
       && Math.hypot(event.clientX - tapOrderPointer.x, event.clientY - tapOrderPointer.y) <= 12;
     tapOrderPointer = null;
     if (wasTap) {
-      issueContextOrder(event.clientX, event.clientY);
-      setTapOrderArmed(false, false);
+      const wildlifeTarget = selectedWildlifeId !== null;
+      issueContextOrder(event.clientX, event.clientY, wildlifeTarget && event.shiftKey);
+      if (!wildlifeTarget) setTapOrderArmed(false, false);
     }
     return;
   }
@@ -8385,7 +8576,7 @@ renderer.domElement.addEventListener('lostpointercapture', (event) => {
 
 function canIssueMinimapMove() {
   return Boolean(mapDefinition) && localTeam !== null && matchWinner < 0
-    && !buildPlacementActive && selectedBuildingId === null && selectedIds().length > 0;
+    && !buildPlacementActive && selectedBuildingId === null && (selectedIds().length > 0 || Boolean(selectedWildlife()));
 }
 
 minimapCanvas.addEventListener('contextmenu', (event) => {
@@ -8394,15 +8585,21 @@ minimapCanvas.addEventListener('contextmenu', (event) => {
 minimapCanvas.addEventListener('pointerdown', (event) => {
   if (event.button === 2) {
     if (!canIssueMinimapMove() || minimapPointerId !== null) return;
-    const point = worldFromMinimap(event);
+    const point = worldFromMinimap(event, selectedWildlifeId === null);
     if (!point) return;
     event.preventDefault();
     event.stopPropagation();
     issueMove(point, event.shiftKey, true);
-    if (tapOrderArmed) setTapOrderArmed(false, false);
+    if (tapOrderArmed && selectedWildlifeId === null) setTapOrderArmed(false, false);
     return;
   }
   if (event.button !== 0) return;
+  if (tapOrderArmed && selectedWildlife() && canIssueMinimapMove()) {
+    event.preventDefault();
+    event.stopPropagation();
+    issueWildlifeOrder('herd', worldFromMinimap(event, false), event.shiftKey);
+    return;
+  }
   event.preventDefault();
   event.stopPropagation();
   minimapPointerId = event.pointerId;
@@ -8434,6 +8631,7 @@ minimapCanvas.addEventListener('keydown', (event) => {
 });
 
 function selectWholeTeam() {
+  clearWildlifeSelection();
   if (localTeam === null) return;
   selected.clear();
   for (const unit of units) if (unit && unit.team === localTeam && unit.hp > 0) selected.add(unit.id);
@@ -8446,6 +8644,7 @@ function selectWholeTeam() {
 }
 
 function selectFriendlyUnitKinds(kinds, label) {
+  clearWildlifeSelection();
   if (localTeam === null) { showToast('SPECTATORS CANNOT ISSUE COMMANDS'); return; }
   selected.clear();
   for (const id of livingUnitIdsOfKinds(teamUnits[localTeam], localTeam, kinds)) selected.add(id);
@@ -8463,6 +8662,7 @@ function selectFriendlyUnitKind(kind, label) {
 
 function selectWorkers() { selectFriendlyUnitKind('worker', 'WORKERS'); }
 function selectIdleWorkers() {
+  clearWildlifeSelection();
   if (localTeam === null) { showToast('SPECTATORS CANNOT ISSUE COMMANDS'); return; }
   selected.clear();
   for (const id of livingIdleWorkerIds(teamUnits[localTeam], localTeam)) selected.add(id);
@@ -8594,6 +8794,13 @@ edgeScrollInput.addEventListener('change', () => {
 
 function centerCameraOnSelection() {
   if (!mapDefinition) return;
+  const wildlife = selectedWildlife();
+  if (wildlife) {
+    const safe = cameraSafeRect();
+    focusGroundPointAtScreen(wildlife, safe.left + safe.width / 2, safe.top + safe.height / 2);
+    drawMinimap(performance.now(), true);
+    return;
+  }
   const building = latestBuildings.find((item) => item.id === selectedBuildingId && item.team === localTeam);
   if (building) {
     const safe = cameraSafeRect();
@@ -9135,6 +9342,7 @@ window.addEventListener('keydown', (event) => {
       return;
     }
     selected.clear();
+    clearWildlifeSelection();
     clearActiveControlGroup();
     selectionDirty = true;
     syncSelectionMesh();
@@ -9155,7 +9363,7 @@ window.addEventListener('keyup', (event) => {
   syncBattlefieldCursor();
   if (center) {
     event.preventDefault();
-    if (selectedIds().length || latestBuildings.some(building => building.id === selectedBuildingId && building.team === localTeam)) {
+    if (selectedWildlife() || selectedIds().length || latestBuildings.some(building => building.id === selectedBuildingId && building.team === localTeam)) {
       centerCameraOnSelection();
     }
   }
