@@ -683,6 +683,51 @@ policy is silently retired. Bounded health reads, failure sanitization and
 early source-mismatch rejection retain their existing contracts; this slice
 does not strengthen, weaken or otherwise change access/deployment policy.
 
+### Served-browser audit tooling boundary
+
+[PR382](https://github.com/lbeezr/thousand-unit-skirmish/pull/382) establishes
+`scripts/browser/check-client-imports.mjs` for the existing served-module audit.
+Its 46-line implementation is unchanged except the relative import of the
+shared `scripts/module-imports.mjs` parser. Source guards and source admission
+keep that parser and their current paths; the parser is intentionally shared
+source/served grammar, not a new browser dependency or generic utility drawer.
+The actual release smoke and packed-HTTP scenario use the canonical auditor.
+Its existing regressions follow the implementation, preserving every case and
+assertion; the cleanup fixture copies the nested dependency it now executes.
+
+The supported root helper explicitly forwards the same sole named function.
+`audit-asset-adoption.mjs`, `economy-client-browser.mjs` and
+`game-menu-scenario.mjs` retain that entry and exact function identity. The
+architecture/tooling owner retains both paths until those workload owners and
+supported external API consumers agree migration, canonical fixture/served/pack
+checks pass without the root entry, and current command/API documentation is
+reconciled. Test names, workloads, CI registration policy, parser grammar,
+HTTP access and runtime paths do not change. This tool move does not establish
+rendered-game acceptance or a remote deployment.
+
+### Next responsibility checkpoints
+
+At main `0e46e736` (after the reviewed PR378 release tooling and PR380 packed
+PNG MIME assertion fix), the graph contains **196 source modules: 178 flat and
+18 nested**, plus five root hosts; **365 edges, 129 browser / 84 server / 33
+shared modules and zero cycles**. Main remains 11,014 physical lines with 70
+local dependencies; server 9,262 / 65; environment art 1,239 / 26; PvE opponent
+968 / 10. Gameplay definitions has 24 runtime importers. The tooling moves
+leave this runtime graph unchanged. These dated values show why the broad
+workstream remains open; they do not turn growth into an arbitrary failure.
+
+The boundary owner retains the following next proposals and integration checks.
+The completed leaf/caller/tool slices do not authorize overlapping host edits,
+retirement or a bulk tool/test rename. Resolve the named input for a row, then
+choose its smallest meaningful implementation; keep unrelated feature work moving.
+
+| Next slice / exact candidate scope | Input and owning boundary | Semantic acceptance and retirement limit |
+| --- | --- | --- |
+| Three server caller imports in `server.mjs`: base lifecycle, map-audio validator and formation assignment | Movement owner `01a107ba` and server/rules receivers agree the reserved three import hunks. Use `src/rules/base-lifecycle.mjs`, `src/world/map-audio-reference.mjs` and `src/simulation/movement/formation-assignment.mjs`; do not touch accepted orders, tick/pathing or economy bodies. | Same four imported bindings and every other host byte; existing lifecycle/formation/validator, paid native command/recovery, strict types, source/served/packed guards and private-path denial. All eleven compatibility surfaces remain until their separate criteria are met. This is the next concrete integration proposal, pending that owner window. |
+| Checkpoint validation seam in `server.mjs`; affected `economy-server-fixture.mjs` binding only if extraction replaces its existing slice | Server/simulation and building-action owner `01a107c9` agree `validateMatchCheckpoint`'s actual state inputs, validation/error order and return contract before code moves. Validation, version migration and atomic storage remain separate responsibilities. | Existing `economy-checkpoint.test.mjs`, `fog-checkpoint-boundary.test.mjs`, `match-mode-checkpoint.test.mjs` and `checkpoint-storage-recovery-scenario.mjs`, preserving malformed-input rejection, resources, visibility, version handling and cold recovery. No host-state catch-all parameter or behavior rewrite. |
+| Map Studio draft/form state in `src/main.js`; actual `map-studio-draft-scenario.mjs` consumer | Authoring/client owner agrees the draft/history/form-storage API and publish boundary to the running match. Use the already canonical authoring leaves; preserve existing gesture, menu and persistence entrypoints. | Real draft edit/save/reopen/publish checks plus current authoring contracts. Source/CPU results do not close the retained normal-sandbox browser-startup gap; that rendered acceptance stays with its owner. |
+| Root tool commands and test/fixture homes: current `package.json`, workflows and `docs/testing.md` consumers | Testing-strategy/command owners own registration migration, discovery and supported commands. Authoring/assets/scenario/performance owners first select an actual workload/API boundary from the purpose-based stage above. | Preserve every existing case, fixed input/seed, coverage floor, command and release consumer; root entries retire only after external/fixture/identified-release obligations clear. Those registries and broad tool/test moves are outside this lane's current write scope. |
+
 ### Coupling and size ratchets
 
 Use the audited values above as a starting comparison and record each scoped

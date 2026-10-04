@@ -7694,7 +7694,10 @@ function pickBuildingAt(x, y, predicate = (building) => building.team === localT
     const visual = buildingVisuals.get(building.id);
     if (!visual?.group.visible) continue;
     visual.group.updateWorldMatrix(true, true);
-    let hit = raycaster.intersectObject(visual.group, true)[0];
+    let hit = raycaster.intersectObject(visual.group, true).find(candidate => {
+      for (let object = candidate.object; object; object = object.parent) if (!object.visible) return false;
+      return true;
+    });
     if (!hit && ['palisade-wall', 'palisade-gate'].includes(building.type)) {
       groundPoint ??= worldAt(x + rect.left, y + rect.top);
       if (groundPoint && groundPoint.x >= building.x - .5 && groundPoint.x < building.x + .5

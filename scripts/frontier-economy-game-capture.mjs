@@ -62,6 +62,7 @@ async function liveProof({browser,origin,headers={},evidenceDirectory,sourceRevi
   const capture=async(team,name)=>{
    report.checkpoint=name;
    const page=pages[team];
+   await page.cdp.call('Page.bringToFront');
    const frame=await page.cdp.evaluate('window.__frontierProof.request()');
    assert.match(frame.version,/^WebGL 2\.0/);assert.equal(frame.contextLost,false);assert.equal(frame.glError,0);
    assert.equal(frame.pixels.length,192);assert.ok(new Set(Array.from({length:48},(_,i)=>frame.pixels.slice(i*4,i*4+4).join(','))).size>1);
@@ -83,11 +84,6 @@ async function liveProof({browser,origin,headers={},evidenceDirectory,sourceRevi
   for(let team=0;team<2;team++){
    await pages[team].wait(`${snapshot}.buildings.filter(b=>b.team===${team}&&['mill','farm','dock'].includes(b.type)).every(b=>b.complete && b.capture?.visible && b.capture.state==='complete')`,'real paid completion',60000);
    await capture(team,`team-${team}-complete`);
-   await pages[team].cdp.call('Input.dispatchMouseEvent',{type:'mouseWheel',x:600,y:330,deltaX:0,deltaY:420});
-   await new Promise(resolve=>setTimeout(resolve,500));
-   await capture(team,`team-${team}-strategic`);
-   await pages[team].cdp.evaluate("document.querySelector('#camera-home-base').click()");
-   await new Promise(resolve=>setTimeout(resolve,200));
    const state=await pages[team].cdp.evaluate(snapshot);
    assert.equal(state.bank.wood,765,'all three builds debit their exact ordinary cost');
    for(const building of state.buildings.filter(b=>b.team===team&&types.includes(b.type))){
@@ -98,6 +94,7 @@ async function liveProof({browser,origin,headers={},evidenceDirectory,sourceRevi
   }
   // One actual click on the Farm body exercises the existing player picker/HUD.
   const farm=(await pages[0].cdp.evaluate(snapshot)).buildings.find(b=>b.team===0&&b.type==='farm');
+  await pages[0].cdp.call('Page.bringToFront');
   await pages[0].cdp.call('Input.dispatchMouseEvent',{type:'mousePressed',x:farm.screen.x,y:farm.screen.y,button:'left',clickCount:1});
   await pages[0].cdp.call('Input.dispatchMouseEvent',{type:'mouseReleased',x:farm.screen.x,y:farm.screen.y,button:'left',clickCount:1});
   await pages[0].wait("/Farm/i.test(document.querySelector('#selected-building-name')?.textContent || '')",'ordinary Farm body selection');
@@ -112,6 +109,12 @@ async function liveProof({browser,origin,headers={},evidenceDirectory,sourceRevi
   await pages[0].wait(`${snapshot}.buildings.some(b=>b.team===0&&b.type==='farm'&&b.id!==${JSON.stringify(farm.id)}&&b.complete&&b.harvestStock===200&&b.capture?.state==='complete'&&b.capture.decoded)`,'real paid replant',40000);
   assert.equal((await pages[0].cdp.evaluate(snapshot)).bank.wood,705,'replant pays another 60 wood without an exhausted refund');
   await capture(0,'farm-replanted');
+  for(let team=0;team<2;team++){
+   await pages[team].cdp.call('Page.bringToFront');
+   await pages[team].cdp.call('Input.dispatchMouseEvent',{type:'mouseWheel',x:600,y:330,deltaX:0,deltaY:420});
+   await new Promise(resolve=>setTimeout(resolve,500));
+   await capture(team,`team-${team}-strategic`);
+  }
 
   const seen=new Map();
   for(const state of report.states)for(const building of state.buildings){

@@ -1,4 +1,4 @@
-import { checkClientImports } from '../check-client-imports.mjs';
+import { checkClientImports } from '../browser/check-client-imports.mjs';
 import { checkServedBuildIdentity, validateExpectedIdentity } from './check-served-build-identity.mjs';
 import { spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
