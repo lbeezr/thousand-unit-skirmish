@@ -148,7 +148,7 @@ test('preflight retries only owned-profile ENOTEMPTY cleanup, with one browser l
 });
 
 test('actual orchestration retains early network/exception flags, safe OS codes and cleanup on failure', async () => {
-  const files = [...pack.files, 'index.html'], bytes = Buffer.from('packed test bytes');
+  const files = [...pack.files, 'index.html', 'assets/mock.png'], bytes = Buffer.from('packed test bytes');
   const lockBytes = Buffer.from(JSON.stringify({ packages: { 'node_modules/three': { version: '0.180.0' } } }));
   const digest = createHash('sha256');
   for (const file of [...files].sort()) digest.update(file).update('\0').update(file === 'package-lock.json' ? lockBytes : bytes).update('\0');
@@ -162,16 +162,25 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
   code = code.replace('const port = await reservePort()', 'const port = 4321');
   for (const mode of ['browser-fault', 'asset-timeout', 'spawn-fault', 'evidence-fault', 'missing-dependency',
     'wrong-version', 'vendor-404', 'vendor-hash', 'room-404', 'optional-icon', 'icon-forbidden', 'saturated-icons',
-    'feature-pass', 'feature-blocked', 'feature-timeout', 'feature-private-assertion', 'feature-page-limit', 'second-page-fault']) {
+    'building-fault-after-movement', 'feature-pass', 'feature-blocked', 'feature-timeout', 'feature-private-assertion', 'feature-page-limit', 'second-page-fault']) {
     let written, probeReads = 0, launches = 0, pageCount = 0, savedRuntime; const cleanup = [], listeners = new Map();
     const featureMode = mode.startsWith('feature-') || mode === 'second-page-fault';
+    const buildingMode = mode === 'building-fault-after-movement'; let frameNumber = 10;
+    const variedPng = number => { const p = png(); p[p.length - 1] = number; return p; };
     const fault = Object.assign(new Error('private-token-in-error'), { code: mode === 'spawn-fault' ? 'ENOENT' : 'EPERM' });
     const server = { pid: 123, exitCode: null, stdout: { on() {} }, stderr: { on() {} },
       on(event, callback) { if (mode === 'spawn-fault' && event === 'error') callback(fault); } };
     const iconMode = ['optional-icon', 'icon-forbidden'].includes(mode);
-    const page = { errors: iconMode || featureMode ? [] : ['private-browser-token'], wait: async () => { throw new Error('asset timeout: private-token'); }, cdp: {
+    const page = { errors: iconMode || featureMode || buildingMode ? [] : ['private-browser-token'], wait: async expression => {
+      if (!buildingMode) throw new Error('asset timeout: private-token');
+      if (expression.includes('AssetStatus')) return { ready: true, oakDepletionAtlas: true, loadedFiles: [
+        { path: 'assets/mock.png', sha256: createHash('sha256').update(bytes).digest('hex'), dimensionsPx: { width: 1, height: 1 } }] };
+      return { mapId: 'open-field', team: 0, workers: [worker] };
+    }, cdp: {
       on: (event, callback) => listeners.set(event, callback),
-      call: async method => { assert.equal(method, 'Page.navigate');
+      call: async method => {
+        if (buildingMode && method === 'Page.captureScreenshot') return { data: variedPng(frameNumber).toString('base64') };
+        assert.equal(method, 'Page.navigate'); if (buildingMode) return;
         if (mode === 'saturated-icons') for (let i = 0; i < 100; i++) {
           listeners.get('Network.responseReceived')({ response: { status: 404, url: 'http://127.0.0.1:4321/favicon.ico' } });
         }
@@ -183,13 +192,19 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
         }
       },
       evaluate: async expression => {
+        if (buildingMode) {
+          if (expression.startsWith('({worker:')) return start;
+          if (expression.startsWith('window.__rtsEnvironmentCaptureCommand(')) return true;
+          if (expression.startsWith('window.__rtsQualification.request(')) return { ...frame(++frameNumber), canvasPng: variedPng(frameNumber).toString('base64') };
+        }
         if (expression !== 'window.__rtsQualification.errors') return { entry: 'game', boot: 'ready', canvas: true,
           assets: { ready: false, state: 'load-failed', loaded: 0, reason: 'private-token' }, private: 'private-token' };
         probeReads++; cleanup.push('read-flags'); if (mode === 'evidence-fault') throw fault;
-        if (iconMode || featureMode) return [];
+        if (iconMode || featureMode || buildingMode) return [];
         return [{ kind: 'console-error', payload: 'private-token' }, { kind: 'resource-error' }]; },
     } };
     const context = vm.createContext({ assert, createHash, Buffer, path, os, Date, setTimeout, AbortSignal, URL,
+      captureBuildingOrientation: async () => { assert.equal(frameNumber, 12, 'failure follows two successful movement frames'); throw new Error('placement timeout'); },
       process: { getuid: () => 1000, execPath: 'node', env: { PATH: 'safe' } },
       execFileSync: (_, args) => args[0] === 'rev-parse' ? source.revision : '',
       mkdir: async () => {}, mkdtemp: async () => '/owned-temp', rm: async () => { cleanup.push('temp'); },
@@ -199,7 +214,7 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
         : file.endsWith('node_modules/three/package.json') ? mode === 'missing-dependency'
           ? Promise.reject(Object.assign(new Error('private-token'), { code: 'ENOENT' }))
           : JSON.stringify({ name: 'three', version: mode === 'wrong-version' ? '0.179.0' : '0.180.0' }) : bytes,
-      writeFile: async (_, text) => { written = JSON.parse(text); }, spawn: (_, args, options) => {
+      writeFile: async (file, text) => { if (file.endsWith('qualification.json')) written = JSON.parse(text); }, spawn: (_, args, options) => {
         assert.equal(args[0], '/pack/room-supervisor.mjs');
         assert.equal(options.env.RTS_ROOM_DATA_DIRECTORY, '/owned-temp/rooms');
         assert.equal(options.env.RTS_MAP, featureMode ? undefined : 'maps/open-field.json');
@@ -225,13 +240,18 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
       if (mode === 'feature-page-limit') for (let i = 0; i < 5; i++) await runtime.openPage();
       return mode === 'feature-blocked' ? 'blocked' : 'passed';
     } } : undefined;
-    const report = JSON.parse(JSON.stringify(await context.qualifyPackedGame('/pack.json', '/evidence', { captureCase })));
+    const report = JSON.parse(JSON.stringify(await context.qualifyPackedGame('/pack.json', '/evidence', { captureCase, buildingPlacement: buildingMode })));
     const expectedStatus = mode === 'feature-pass' ? 'passed' : mode === 'feature-blocked' ? 'blocked' : 'failed';
     assert.equal(report.status, expectedStatus); assert.equal(written.status, expectedStatus);
     assert.ok(cleanup.includes('server'));
     if (!['missing-dependency', 'wrong-version'].includes(mode)) assert.ok(cleanup.includes('temp'));
     if (cleanup.includes('temp')) assert.ok(cleanup.indexOf('server') < cleanup.indexOf('temp'));
     assert.doesNotMatch(JSON.stringify(report), /private-.*token/);
+    if (buildingMode) {
+      assert.equal(report.frames.length, 2); assert.equal(report.issues[0].stage, 'building-placement');
+      assert.equal(report.issues[0].code, 'execution-failed'); assert.equal(report.unexpectedBrowserEvent, false);
+      continue;
+    }
     if (featureMode) {
       assert.equal(report.scope, 'ordinary-feature-novice-flow'); assert.equal(report.server.map, null);
       assert.equal(report.pageBoots.length, mode === 'second-page-fault' ? 2 : mode === 'feature-page-limit' ? 5 : 1);

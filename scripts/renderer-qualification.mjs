@@ -309,6 +309,7 @@ export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCa
       report.buildingPlacement = await captureBuildingOrientation(page, evidenceDirectory);
     }
   } catch (error) {
+    report.status = 'failed';
     report.issues.push({ stage, code: error instanceof CaptureCaseTimeoutError ? 'scenario-timeout'
       : error instanceof assert.AssertionError ? 'contract-failed' : 'execution-failed',
       systemCode: ['ENOENT', 'EACCES', 'EPERM', 'ENOSPC', 'ECONNREFUSED', 'EADDRINUSE', 'ETIMEDOUT'].includes(error.code) ? error.code : null,
