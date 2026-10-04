@@ -7568,14 +7568,18 @@ function treeTargetCaptureSnapshot() {
       family: candidate.family || null, bounds: { left, top, right, bottom },
       root: screen(candidate.x, groundHeight(candidate.x, candidate.z) + 1.25, candidate.z) };
   };
-  const targets = [...harvestableTreeCandidates()].map(describe).filter(Boolean)
+  // Captures of current stock use currently disclosed art. The ordinary
+  // picker can separately name remembered authored forest groups.
+  const targets = [...harvestableTreeCandidates()].filter(candidate => candidate.node
+    || !mapDefinition?.fogOfWar || latestFogCells?.[candidate.forestCell] === 2).map(describe).filter(Boolean)
     .sort((a, b) => Math.hypot(a.root.x - rect.left - rect.width / 2, a.root.y - rect.top - rect.height / 2)
       - Math.hypot(b.root.x - rect.left - rect.width / 2, b.root.y - rect.top - rect.height / 2)).slice(0, 24);
   const rejected = [];
   const rejectionCounts = { hidden: 0, depleted: 0 };
   for (const [cell, slot] of forestTreeSlots) {
     const stock = latestForestStocks.get(cell) ?? 6;
-    const reason = mapDefinition?.fogOfWar && latestFogCells?.[cell] !== 2 ? 'hidden' : stock <= 0 ? 'depleted' : null;
+    const reason = mapDefinition?.fogOfWar && ![1, 2].includes(latestFogCells?.[cell]) ? 'hidden'
+      : (!mapDefinition?.fogOfWar || latestFogCells?.[cell] === 2) && stock <= 0 ? 'depleted' : null;
     if (!reason || rejectionCounts[reason] >= 12) continue;
     let target = describe({ forestCell: cell, mesh: slot.stateMeshes?.[resourceVisualStage(stock, 6)] || slot.mesh,
       index: slot.index, x: slot.x, z: slot.z, ...(reason === 'depleted' ? { stock } : {}) });
@@ -7588,7 +7592,8 @@ function treeTargetCaptureSnapshot() {
   return { mapId: mapDefinition?.id, epoch: latestForestEpoch, forestSlots: forestTreeSlots.size, zoom: camera.zoom,
     viewport: { left: rect.left, top: rect.top, width: rect.width, height: rect.height }, targets, rejected,
     workers: units.filter(unit => unit?.team === localTeam && unit.kind === 'worker' && unit.hp > 0).slice(0, 4)
-      .map(unit => ({ id: unit.id, ...screen(unit.renderX, groundHeight(unit.renderX, unit.renderZ) + .5, unit.renderZ) })) };
+      .map(unit => ({ id: unit.id, worldX: unit.renderX, worldZ: unit.renderZ, selected: selected.has(unit.id),
+        ...screen(unit.renderX, groundHeight(unit.renderX, unit.renderZ) + .65, unit.renderZ) })) };
 }
 
 function pickBuildingAt(x, y, predicate = (building) => building.team === localTeam) {

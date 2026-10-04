@@ -1,6 +1,6 @@
 // Owned adapter for the shared qualified ordinary-game runner; no launcher or CLI.
 import assert from 'node:assert/strict';
-import { writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { CAPTURE_CONTEXT_VERSION, validateCaptureContext } from './renderer-capture-context.mjs';
 
@@ -57,6 +57,32 @@ const identity = target => target?.nodeId !== undefined ? { nodeId: target.nodeI
   : target?.forestCell !== undefined ? { forestCell: target.forestCell } : null;
 const sameIdentity = (a, b) => JSON.stringify(identity(a)) === JSON.stringify(identity(b));
 
+// Authored geometry chooses an ordinary approach order, never a stock value.
+// The actual server path and received fog determine whether the approach works.
+export function treeApproachPoint(map, worker, preferredCell = null) {
+  const blocked = new Set(), forest = new Set();
+  for (const obstacle of map.obstacles) for (let row = obstacle.row; row < obstacle.row + obstacle.height; row++) {
+    for (let col = obstacle.column; col < obstacle.column + obstacle.width; col++) {
+      const cell = row * map.width + col; blocked.add(cell);
+      if (obstacle.material === 'forest') forest.add(cell);
+    }
+  }
+  const approaches = [];
+  for (const cell of preferredCell === null ? forest : [preferredCell]) {
+    if (!forest.has(cell)) continue;
+    const row = Math.floor(cell / map.width), col = cell % map.width;
+    for (const [dx, dz] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+      const column = col + dx, line = row + dz, adjacent = line * map.width + column;
+      if (column < 0 || column >= map.width || line < 0 || line >= map.height || blocked.has(adjacent)) continue;
+      const x = column + .5 - map.width / 2, z = line + .5 - map.height / 2;
+      approaches.push({ x, z, forestCell: cell, distance: Math.hypot(x - worker.worldX, z - worker.worldZ) });
+    }
+  }
+  approaches.sort((a, b) => a.distance - b.distance);
+  assert.ok(approaches.length, 'authored forest front needs an ordinary ground approach');
+  return approaches[0];
+}
+
 // Scan the registered quad bounds; the real current picker supplies alpha
 // coverage. Expected IDs come separately from the actual instance registry.
 export async function findTreePixel(page, snapshot, kind, outsideRoot = false) {
@@ -75,40 +101,68 @@ export async function findTreePixel(page, snapshot, kind, outsideRoot = false) {
 }
 
 export async function run(value) {
-  const { page, origin, source, capture } = validateCaptureContext(value);
+  const { page, openPage, origin, source, capture } = validateCaptureContext(value);
   const checks = [];
   const check = (id, passed) => checks.push({ id, passed: Boolean(passed) });
   await page.cdp.call('Page.addScriptToEvaluateOnNewDocument', {
     source: `(${installTreeOrderProbe.toString()})(${projectTreeOrder.toString()})`,
   });
   await page.cdp.call('Page.navigate', { url: origin + '/' });
-  await page.wait('document.querySelector("#menu-new-game")?.disabled === false', 'normal New Game menu');
-  await button(page, '#menu-new-game');
-  await page.wait('window.__rtsTreeTargetCapture && document.querySelector("#map-select")?.options.length > 1', 'normal game map picker');
-  await button(page, '#match-menu-toggle');
-  // Invoke the ordinary map selector's change handler, which issues the normal
-  // host map command. Never alter mapDefinition, stock, units or sprite clips.
-  assert.equal(await page.cdp.evaluate(`(() => { const select = document.querySelector('#map-select');
+  await page.wait('document.querySelector("#menu-create-room")?.disabled === false', 'normal Create Room menu');
+  await button(page, '#menu-create-room');
+  await page.wait('document.querySelector("#lobby-map")?.disabled === false', 'ordinary pregame map picker');
+  // Use the visible host lobby control and real acknowledgement. Live match
+  // selectors are intentionally locked; never edit mapDefinition or stocks.
+  assert.equal(await page.cdp.evaluate(`(() => { const select = document.querySelector('#lobby-map');
     if (select.disabled || ![...select.options].some(o => o.value === ${JSON.stringify(mapId)})) return false;
     select.value = ${JSON.stringify(mapId)}; select.dispatchEvent(new Event('change',{bubbles:true})); return true; })()`), true);
+  await page.wait(`document.querySelector('#lobby-map')?.value === ${JSON.stringify(mapId)} && document.querySelector('#lobby-ready')?.disabled === false`, 'canonical host settings accepted');
+  assert.equal(await page.cdp.evaluate("document.querySelector('#lobby-match-mode').value"), 'skirmish@1');
+  const roomUrl = await page.cdp.evaluate('location.href');
+  const peer = await openPage();
+  await peer.cdp.call('Page.navigate', { url: roomUrl });
+  const launch = async () => {
+    await peer.wait('document.querySelector("#lobby-ready")?.disabled === false', 'second ordinary seat');
+    await page.wait("[...document.querySelectorAll('#room-lobby ul[aria-label=\"Player seats\"] li')].length === 2 && [...document.querySelectorAll('#room-lobby ul[aria-label=\"Player seats\"] li')].every(row => !row.textContent.includes('Waiting') && !row.textContent.includes('Disconnected'))", 'both connected seats');
+    await button(page, '#lobby-ready');
+    await page.wait("document.querySelector('#lobby-ready').textContent === 'Not ready'", 'host ready accepted');
+    await peer.wait("document.querySelector('#room-lobby ul[aria-label=\"Player seats\"] li').textContent.includes(': Ready')", 'peer sees host readiness');
+    await button(peer, '#lobby-ready');
+    await page.wait('document.querySelector("#lobby-launch")?.disabled === false', 'both ready to launch');
+    await button(page, '#lobby-launch');
+    await page.wait('document.querySelector("#room-lobby")?.open === false', 'ordinary match launched');
+  };
+  await launch();
   await page.wait(`window.__rtsEnvironmentStateSnapshot?.mapId === ${JSON.stringify(mapId)} && window.__rtsTreeTargetCapture.snapshot().workers.length > 0`, 'canonical applied map and own Worker');
-  await button(page, '#match-menu-close');
   const snapshot = () => page.cdp.evaluate('window.__rtsTreeTargetCapture.snapshot()');
   let state = await snapshot();
   assert.equal(state.mapId, mapId); assert.equal(state.forestSlots, 3162);
   check('normal-menu-canonical-forest-registration', true);
-  const worker = state.workers.find(w => Math.abs(w.depth) <= 1);
+  let worker = state.workers.find(w => Math.abs(w.depth) <= 1);
   assert.ok(worker, 'own visible Worker required');
   await pointer(page, worker.x, worker.y); await key(page, ' ', 'Space');
+  await page.wait(`window.__rtsTreeTargetCapture.snapshot().workers.some(w => w.id === ${worker.id} && w.selected)`, 'ordinary Worker selection');
+  const map = JSON.parse(await readFile(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+  const approach = async (preferredCell = null) => {
+    const live = await snapshot(), current = live.workers.find(w => w.id === worker.id);
+    assert.ok(current, 'existing own Worker must remain live');
+    const goal = treeApproachPoint(map, current, preferredCell);
+    assert.equal(await page.cdp.evaluate(`window.__rtsEnvironmentCaptureCommand(${JSON.stringify({ type: 'move', ids: [worker.id], x: goal.x, z: goal.z })})`), true, 'ordinary live Move must reach the server');
+    await page.wait(`window.__rtsTreeTargetCapture.snapshot().workers.some(w => w.id === ${worker.id} && Math.hypot(w.worldX - ${goal.x}, w.worldZ - ${goal.z}) < 2)`, 'legitimate Worker forest approach', 40000);
+    await key(page, ' ', 'Space');
+    await page.wait('window.__rtsTreeTargetCapture.snapshot().targets.some(t => t.forestCell !== undefined)', 'received forest visibility');
+    return goal;
+  };
   const record = async (checkpoint, details) => {
     const result = await capture({ page, mapId, checkpoint });
     assert.ok(result && path.isAbsolute(result.directory), 'owned checkpoint directory required');
     await writeFile(path.join(result.directory, 'tree-target.json'), JSON.stringify({ schemaVersion: 1,
       source, mapId, workerId: worker.id, ...details }, null, 2) + '\n');
   };
-  const clickTarget = async (kind, checkpoint, outsideRoot = false) => {
+  const clickTarget = async (kind, checkpoint, outsideRoot = false, expected = null) => {
     state = await snapshot();
-    const target = await findTreePixel(page, state, kind, outsideRoot);
+    const candidates = expected ? { ...state, targets: state.targets.filter(target => sameIdentity(target, expected)) } : state;
+    const target = await findTreePixel(page, candidates, kind, outsideRoot);
     assert.ok(target, 'actual opaque registered tree pixel must be found');
     assert.ok(Number.isFinite(target.stock) && target.stock > 0, 'target must have current finite positive stock');
     const before = await page.cdp.evaluate('window.__rtsTreeIssuedOrders.length');
@@ -121,12 +175,15 @@ export async function run(value) {
     check(checkpoint + '-native-existing-id', true);
     return target;
   };
-  await clickTarget('forest', 'forest-ordinary');
-  await key(page, 's', 'KeyS');
   await clickTarget('node', 'wood-node');
   await key(page, 's', 'KeyS');
+  const goal = await approach();
+  await record('forest-approach', { goal });
+  await clickTarget('forest', 'forest-ordinary');
+  await key(page, 's', 'KeyS');
   state = await snapshot();
-  await page.cdp.call('Input.dispatchMouseEvent', { type: 'mouseWheel', x: worker.x, y: worker.y, deltaX: 0, deltaY: -1200 });
+  const current = state.workers.find(w => w.id === worker.id);
+  await page.cdp.call('Input.dispatchMouseEvent', { type: 'mouseWheel', x: current.x, y: current.y, deltaX: 0, deltaY: -1200 });
   await page.wait('window.__rtsTreeTargetCapture.snapshot().zoom > 2', 'ordinary pointer zoom');
   await clickTarget('forest', 'forest-crown', true);
   const depleted = await page.wait(`window.__rtsTreeTargetCapture.snapshot().rejected.some(t => t.reason === 'depleted') && window.__rtsTreeTargetCapture.snapshot()`, 'legitimate harvested forest depletion', 45000);
@@ -141,10 +198,21 @@ export async function run(value) {
   const epoch = (await snapshot()).epoch;
   await button(page, '#match-menu-toggle');
   await button(page, '#reset-army');
-  await page.wait(`window.__rtsTreeTargetCapture.snapshot().epoch > ${epoch}`, 'normal reset forest lifetime');
-  await button(page, '#match-menu-close');
+  await page.wait('document.querySelector("#room-lobby")?.open === true', 'normal reset returns to pregame');
+  await launch();
+  await page.wait(`window.__rtsTreeTargetCapture.snapshot().epoch > ${epoch} && window.__rtsTreeTargetCapture.snapshot().workers.length > 0`, 'normal reset forest lifetime');
+  if (await page.cdp.evaluate('document.querySelector("#match-menu")?.hidden === false')) await button(page, '#match-menu-close');
+  await button(page, '#camera-home-base');
+  state = await snapshot(); worker = state.workers.find(w => Math.abs(w.depth) <= 1);
+  assert.ok(worker, 'new match own Worker must be visible');
+  await pointer(page, worker.x, worker.y); await key(page, ' ', 'Space');
+  await page.wait(`window.__rtsTreeTargetCapture.snapshot().workers.some(w => w.id === ${worker.id} && w.selected)`, 'post-reset ordinary selection');
+  await approach(rejected.forestCell);
   const reset = await snapshot();
-  check('normal-reset-preserves-registered-forest', reset.forestSlots === 3162 && reset.targets.every(t => t.stock > 0));
-  await record('reset-forest', { epoch: reset.epoch, forestSlots: reset.forestSlots });
+  const restored = reset.targets.find(t => t.forestCell === rejected.forestCell);
+  assert.ok(restored, 'previously depleted identity must be disclosed after real reset/approach');
+  check('normal-reset-restores-depleted-forest-stock', reset.forestSlots === 3162 && restored.stock === 6);
+  await record('reset-forest', { epoch: reset.epoch, forestSlots: reset.forestSlots, restored });
+  await clickTarget('forest', 'forest-after-reset', false, rejected);
   return { status: checks.every(c => c.passed) ? 'passed' : 'blocked', checks };
 }

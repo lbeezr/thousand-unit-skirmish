@@ -129,12 +129,12 @@ test('read-only ordinary capture describes current instance IDs, excludes hidden
     [4, { mesh, index: 0, x: 0, z: 0, family: 'hidden-canopy' }],
     [5, { mesh: cleared, index: 0, x: 0, z: 0, family: 'depleted-canopy' }]]);
   const stocks = new Map([[3, 6], [4, 2], [5, 0]]), fog = new Uint8Array(160 * 160);
-  fog[3] = 2; fog[4] = 1; fog[5] = 2;
+  fog[3] = 2; fog[4] = 0; fog[5] = 2;
   const context = vm.createContext({ THREE, camera, renderer: { domElement: { getBoundingClientRect: () => ({ left: 11, top: 23, width: 1280, height: 720 }) } },
     groundHeight: () => 0, forestTreeSlots: slots, latestForestStocks: stocks, latestFogCells: fog,
     mapDefinition: { id: 'veyrholds-terraced-vale', fogOfWar: true, resourceNodes: [] },
     latestResourceStocks: new Map(), woodTreeMeshes: new Map(), woodTreeNodeStages: new Map(), woodTreeNodeSlots: new Map(),
-    MAP_WIDTH: 160, MAP_HEIGHT: 160, resourceVisualStage, latestForestEpoch: 7, localTeam: 0,
+    MAP_WIDTH: 160, MAP_HEIGHT: 160, resourceVisualStage, latestForestEpoch: 7, localTeam: 0, selected: new Set([9]),
     forestStumpMesh: mesh, forestStumpSlots: new Map([[5, { index: 0, x: 0, z: 0, visible: true }]]),
     units: [{ id: 9, team: 0, kind: 'worker', hp: 1, renderX: 0, renderZ: 0 }, { id: 10, team: 1, kind: 'worker', hp: 1 }],
   });
@@ -146,6 +146,11 @@ test('read-only ordinary capture describes current instance IDs, excludes hidden
   assert.equal('stock' in snapshot.rejected[0], false, 'hidden current stock must not be exposed by diagnostics');
   assert.equal(snapshot.rejected[1].stock, 0);
   assert.deepEqual(snapshot.workers.map(w => w.id), [9]); assert.deepEqual([...stocks], before);
+  fog[4] = 1;
+  assert.ok([...context.harvestableTreeCandidates()].some(target => target.forestCell === 4), 'remembered art still selects its authored forest group');
+  const remembered = context.treeTargetCaptureSnapshot();
+  assert.equal(remembered.targets.some(target => target.forestCell === 4), false, 'last-known stock is not current capture stock');
+  assert.equal(remembered.rejected.some(target => target.forestCell === 4), false, 'remembered authored group is not an unknown/depleted negative');
   context.forestTreeSlots = new Map([[8, slots.get(3)]]); context.latestForestEpoch = 8; fog[8] = 2;
   assert.equal(context.treeTargetCaptureSnapshot().targets[0].forestCell, 8);
 });
