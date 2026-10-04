@@ -139,6 +139,8 @@ try {
   const seats = [await connectClient(0), await connectClient(1)];
   const entry = seats[0].welcome.maps.find(row => row.id === map.id);
   assert.ok(entry && !entry.name.startsWith('Lab'), 'candidate must appear as a normal regional choice');
+  assert.ok(entry.matchModes.some(mode => mode.id === 'skirmish'),
+    `Skirmish registry binding for ${map.id} is pending; do not substitute a fixture for ordinary acceptance.`);
   if (seats[0].current.mapId !== map.id) {
     const changes = seats.map(client => client.wait(row => row.type === 'mapChange' && row.map.id === map.id));
     seats[0].send({ type: 'selectMap', mapId: map.id }); await Promise.all(changes);

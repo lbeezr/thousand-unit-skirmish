@@ -33,6 +33,9 @@ connectivity, forest-clear pacing, four forced routes, mirrored resource access,
 developed-city geometry and six expansion rings. The existing paid driver now
 accepts a Tiny/Small map ID; its default preserves Tiny's established reproduction.
 Small uses its actual base/campus/resource locations without economy injection.
+The 29 focused audit/map/policy/grid/checker tests and 14 regional reachability
+cases passed before the later ordinary-floor integration; final integration
+checks are recorded with the reviewed PR head.
 
 The separate capacity harness starts a fresh disposable two-seat server per
 load, uses existing army-size diagnostics above 24, and sends three target-region
@@ -129,8 +132,13 @@ planar, with no height damage bonus or physical terrain-intersection projectiles
 Runtime building placement does not require one level across its footprint, so
 the candidate deliberately authors flat home and expansion campuses.
 
-Mode owner `01a103cc` receives Tiny/Small tier-floor, default and ordinary
-Skirmish allowlist bindings; this PR does not overlap those edits. The exact
+Mode owner `01a103cc` merged the ordinary 160 floor and Tiny default in
+[PR 229](https://github.com/lbeezr/thousand-unit-skirmish/pull/229). This candidate
+is integrated with that source while preserving historical receipt identities.
+Small's ordinary Skirmish allowlist entry remains a receiving-owner change;
+the current paid CLI reports that missing binding immediately rather than
+timing out or substituting fixture acceptance. This PR does not edit the
+registry or defaults. The exact
 Small ID and descriptor contract are recorded on
 [PR 200](https://github.com/lbeezr/thousand-unit-skirmish/pull/200#issuecomment-5975173880).
 Entry PR 198 retains all 13 authored Practice Labs, so the condition requiring

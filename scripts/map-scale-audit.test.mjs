@@ -110,7 +110,7 @@ test('roster report covers all shipped files, records source hashes and separate
   assert.equal(report.maps.filter(m => m.purpose === 'regional-skirmish').length, 14);
   assert.equal(report.maps.find(m => m.id === 'shore-fishing').purpose, 'micro-fixture');
   assert.deepEqual(report.maps.filter(m => m.seededPve).map(m => m.id), ['bellweather-millrace', 'underbough-rootways']);
-  assert.deepEqual(report.maps.filter(m => m.defaultPvp).map(m => m.id), ['bellweather-millrace']);
+  assert.deepEqual(report.maps.filter(m => m.defaultPvp).map(m => m.id), ['veyrholds-terraced-vale']);
   assert.equal(report.maps.find(m => m.id === 'frontier-160').pool, 'lab');
   assert.equal(report.constants.ticksPerSecond, 30);
   assert.equal(report.timing.nominalGameSecondsPerWallSecond, 1);

@@ -36,6 +36,12 @@ dimensions, static city fits and probe stop limits are not supported capacity.
 
 Repeat from repository root:
 
+The current ordinary floor source requires the mode owner's Small Skirmish
+allowlist entry before the paid command below can be accepted. Until that binding
+lands it fails immediately with that reason. Reproduce the retained paid run at
+its exact historical source; the explicit capacity fixture and Authored Practice
+packed-entry check remain usable separately.
+
 ```sh
 node scripts/terraced-vale-native-scenario.mjs veyrholds-threefold-basin
 node scripts/map-capacity-scenario.mjs --map veyrholds-threefold-basin --loads 24,250,500,1000,2000 --output /tmp/small-capacity
