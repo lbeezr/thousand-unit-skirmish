@@ -71,11 +71,31 @@ async function constructionJourney(team, action) {
         LAND_CLEARANCE_PROFILE.radiusByKind.worker, definition.width, definition.height, r.isWalkable),
       `unsafe construction ${s.reason}: ${JSON.stringify({ from: s.from, to: s.to })}`);
     };
-    await action({ r, id, siteId: site.id, command, step, durableIntent, paidWood });
-    assert.deepEqual(r.units.filter(u => u.id !== id).map(u => [u.id, u.orderRevision, u.buildingTargetId]), untouched,
+    const explicitlyCommanded = await action({ r, id, siteId: site.id, command, step, durableIntent, paidWood }) ?? [];
+    assert.deepEqual(r.units.filter(u => u.id !== id && !explicitlyCommanded.includes(u.id))
+      .map(u => [u.id, u.orderRevision, u.buildingTargetId]), untouched.filter(([other]) => !explicitlyCommanded.includes(other)),
       'construction never recruits an unselected Worker or changes another order');
   } finally { await fixture.dispose(); }
 }
+
+for (const team of [0, 1]) test(`seat ${team}: a new paid footprint repairs the construction route without replacing remembered work`, async () => {
+  await constructionJourney(team, async ({ r, id, siteId, step, durableIntent, paidWood }) => {
+    r.drain(); step(); step();
+    const other = r.units.find(u => u.team === 1 - team && u.kind === 'worker');
+    const beforeNavigation = r.navigationRevision;
+    const notices = r.order(other.team, { type: 'build', ids: [other.id], unitGenerations: [other.generation],
+      buildingType: 'palisade-wall', x: 2.5, z: .5 });
+    assert.ok(notices.some(n => /PLANNING BUILD|PLANNING WALL BUILD/.test(n.message)), JSON.stringify(notices));
+    assert.ok(r.navigationRevision > beforeNavigation);
+    const saved = r.checkpoint(); assert.ok(r.validate(structuredClone(saved))); r.restore(structuredClone(saved));
+    assert.deepEqual(r.units[id].workIntent, durableIntent);
+    assert.equal(r.units[id].buildingTargetId, siteId);
+    for (let tick = 0; tick < 650 && !r.buildings.find(b => b.id === siteId).complete; tick++) step();
+    assert.ok(r.buildings.find(b => b.id === siteId).complete);
+    assert.equal(r.wood[team], paidWood, 'repair/recovery never repays the original site');
+    return [other.id];
+  });
+});
 
 for (const team of [0, 1]) for (const recoverAt of ['none', 'pending', 'active', 'working']) {
   test(`seat ${team}: paid construction safely approaches and works through ${recoverAt} recovery`, async () => {
