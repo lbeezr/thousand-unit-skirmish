@@ -81,9 +81,9 @@ export async function replayPaidSkirmishLoss(id, team, initial = null, options =
    if(i%30===0) {
     const observation=view(team),foundation=observation.buildings.friendly.find(b=>b.type==='barracks'&&!b.complete);
     if(foundation&&!restarted) {
-     // Current sight is derived every native state interval. Compare restart
-     // at that phase rather than current positions with an older cached mask.
-     stages.checkpointBoundarySteps=r.advanceToStateBoundary();
+     // Welcome/checkpoint reads now derive current sight between broadcasts.
+     // Keep this paid foundation at its actual observation tick on cold restore.
+     stages.foundationObservation=observation.tick;
      r.drain();const before=[r.observe(0),r.observe(1)],checkpoint=r.checkpoint();
      const recovered=await createPveHeadlessFixture(map,nativeIdentity);
      try {
@@ -92,6 +92,7 @@ export async function replayPaidSkirmishLoss(id, team, initial = null, options =
      } catch(error) { await recovered.dispose();throw error; }
      await fixture.dispose();fixture=recovered;r=fixture.replay;
      policy=createDeterministicPolicy(20260925,identity);restarted=true;stages.restart=r.observe(team).tick;
+     assert.equal(stages.restart,stages.foundationObservation,'cold foundation restore does not advance the observation tick');
      trace.push({tick:stages.restart,restart:true});
     }
     for(const command of policy.next(view(team))) {

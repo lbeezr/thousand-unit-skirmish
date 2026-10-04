@@ -1,4 +1,4 @@
-# Foundation fog restart: native observation phase
+# Foundation fog restart: publication and immediate reads
 
 [Tiny AI evidence](qa-pve-tiny-search-2026-10-04.md) · [AI backlog](pve-policy-backlog.md) · [Testing](testing.md)
 
@@ -55,11 +55,12 @@ be off-phase; its derived current-sight rebuild is retained.
 
 ## Small correction and strict recovery proof
 
-`replay.advanceToStateBoundary()` runs zero to two ordinary simulation ticks
+The publication control `replay.advanceToStateBoundary()` runs zero to two ordinary simulation ticks
 using the native cadence constant. It does not alter any authoritative function
 body, force a special vision update, persist a cached mask or remove fields from
-the equality assertion. The paid loss case invokes it at the replacement
-foundation before taking its snapshot/checkpoint.
+the equality assertion. The initial candidate invoked it at the replacement
+foundation before taking its snapshot/checkpoint. That earlier aligned proof is
+retained in the raw evidence; the final loss case does **not** advance time.
 
 The case now restores in a **fresh server fixture**, compares both seats with
 the unchanged full-observation helper, then continues with a fresh configured
@@ -84,10 +85,14 @@ Workers, buy/complete replacement production, recruit and issue an accepted
 five-unit advance. Finite stock+cargo+both banks+spending reconcile; no capture
 grant funds this recovery. The new regression is registered in CI.
 
-Actual native Tiny checkpoints are Azure 14,130 and Ember 13,419, each one
-ordinary tick after the detected foundation. Replacement purchase/completion/
-accepted advance occur at 118/142.03/227.03 seconds for Azure and
-113/138.03/223.03 seconds for Ember after recovery starts. Each spends
+The initial aligned native Tiny checkpoints were Azure 14,130 and Ember 13,419,
+each one ordinary tick after the detected foundation. After integrating runtime
+PR233 at `cbf67d19`, the final fresh-fixture comparison uses the actual off-phase
+foundation observations: **Azure 14,129 and Ember 13,418**, with no time advance.
+Both full seat views remain strictly equal immediately after restore; both
+legal cases exactly repeat and continue paid recovery. Replacement purchase/
+completion/accepted advance occur at **118/142/227 seconds** for Azure and
+**113/138/223 seconds** for Ember after recovery starts. Each spends
 260 food/370 wood, with conservation residual below 3e-10.
 
 After PR229 integration, all four full-match cases pass: both seed assignments
@@ -120,15 +125,18 @@ off-phase welcome/checkpoint parity. Those reads can deliver the differing
 current-sight labels before the next tick, even though this exact scene adds no
 unknown terrain or enemy entities.
 
-The runtime owner retains that separate immediate-read contract in
+The runtime owner implemented that separate immediate-read contract in merged
 [PR233](https://github.com/lbeezr/thousand-unit-skirmish/pull/233), after
 [coordination on both proofs](https://github.com/lbeezr/thousand-unit-skirmish/pull/200#issuecomment-5975378551).
 Its legal moving-Worker case differs by 38 cells at tick 1,229 on `966dc0a5`;
 this foundation case differs by 15 cells at tick 14,129 on `5200ffdf`. They use
 the same observation/checkpoint/restore boundary but different scenes. That
 runtime work derives current masks at authoritative reads rather than storing
-stale sight. This fixture correction neither replaces nor claims acceptance of
-that change. Strict full-observation equality remains intact in both lanes.
+stale sight. This fixture correction does not duplicate the runtime change.
+Integrating it lets the final actual Tiny paid foundation cases retain the
+original off-phase tick and prove full immediate equality, separately from the
+publication control. Strict full-observation equality remains intact in both
+lanes; this headless proof does not establish rendered reconnect acceptance.
 
 Tiny native admission is now
 integrated through PR229; ordinary served/Mac New Game,
