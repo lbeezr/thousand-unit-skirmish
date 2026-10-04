@@ -1,6 +1,6 @@
 # Map scale and playability backlog
 
-[Historical compact-map measurements](qa-map-scale-2026-10-03.md) · [Size tiers and migration](map-size-tiers.md) · [Scale guide](map-scale-density.md)
+[Historical compact-map measurements](qa-map-scale-2026-10-03.md) · [Current four-tier inventory](map-tier-inventory-2026-10-04.md) · [Size tiers and migration](map-size-tiers.md) · [Scale guide](map-scale-density.md)
 
 Owner: Map scale/playability workstream. Scope: measured ordinary skirmish scale,
 terrain readability and representative acceptance. The user now requires both
@@ -20,6 +20,15 @@ unless explicitly marked shipped.
 | 5 | Required ordinary floor/default migration and acceptance | Consume the shared tier policy in normal selectors, selection validation and fresh defaults; retain old canonical loading/current saves and Practice. Mode runtime owner task `01a103cc` and entry owner branch `codex/match-mode-entry-ui-v1` own the receiving integration, tracked on [PR176](https://github.com/lbeezr/thousand-unit-skirmish/pull/176). Benchmark legacy compact controls, Woodland and Tiny under identical workloads; collect a human-pair match. | [Candidate PR202](https://github.com/lbeezr/thousand-unit-skirmish/pull/202); seeded PvE pools are undersized and need honest capability behavior; named browser/hosting/network budgets. | Start with 24 total units, grow to 250/500/1,000; 2,000 diagnostic ceiling. Mixed units, paid city/expansion, long orders through every pass, combat and forest cutting, reconnect/checkpoint/rematch. Record first contact/expansion, region use, player explanation, 3+ route waves per load, server/browser/network costs separately. |
 | 5a | Admitted ordinary Practice arena **160²** | Author [Confluence Grounds](qa-confluence-grounds-2026-10-04.md): useful connected bays/banks, two fords, flat home/expansion campuses, paid Dock/Skiff/Stone/Farm/Watchtower and nearby neutral Sheep. New map/generator/scenario; no default or Tiny resource edits. Mode/entry owners hide compact Labs from ordinary Practice while retaining explicit internal launches/saves. | Exact catalog boundary recorded on [PR242](https://github.com/lbeezr/thousand-unit-skirmish/pull/242#issuecomment-5975590890) and [PR198](https://github.com/lbeezr/thousand-unit-skirmish/pull/198#issuecomment-5975591347). | Focused land/water/buildability/finite-economy checks, real ordinary Practice entry/selection, paid commands and cold recovery/reset. Source/release/deployed/rendered evidence remain separate. |
 | 6 | Progressive Small **192²**, Medium **224²**, Large **256²**, future XL **320²** | [Small Threefold Basin](qa-threefold-basin-2026-10-04.md) adds a third expansion pocket. [Medium Riven Escarpment](qa-riven-escarpment-2026-10-04.md) authors twin ridges, a low rift and flat sites on three levels; 207-unit route. [Bounded harness](../scripts/map-capacity-scenario.mjs) and [XL source/cost audit](map-grid-limit-audit-2026-10-04.md) retain exact evidence. [Large Crownroads](qa-crownroads-2026-10-04.md) adds four separated sites per seat and a 251-unit route; paid acceptance is recorded at its exact source. | Named browser/hosting budgets and human play remain open. XL needs the [visibility index/cache design](map-xl-visibility-design.md) implemented and verified before a limit change. | Small/Medium/Large are candidates; capacities remain unverified. [Elevation capabilities](map-elevation-capabilities.md) distinguish logical paths from rendered terrain. No stretching/empty borders, blanket resizing or speed changes; schema acceptance at 256 is not performance support. |
+
+Tiny/Small/Medium/Large are now authored and human-Skirmish admitted; Tiny is
+the ordinary default and only fresh AI choice. Dated candidate receipts in the
+table retain their original scope. No additional maps beyond Large are being
+authored in this pass. The inventory owns the current aggregate status and
+representative play/capacity next steps; XL remains the separate runtime proposal.
+Confluence's food/wood opening invariant correction is pending its exact
+legacy-save contract and current-owner coordination; do not waive the existing
+nine-unit check or relocate resources in old saves.
 
 The first benchmark must report game/wall-time ratio, command acknowledgment and
 final application separately, actual arrival/formation spread, path expansions,
