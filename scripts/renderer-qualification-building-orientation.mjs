@@ -6,6 +6,11 @@ import { createHash } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+export const BUILDING_ORIENTATION_CAPTURE_MAP = Object.freeze({
+  id: 'rendered-building-orientation', name: 'Rendered building orientation', width: 160, height: 160,
+  terrainSeed: 19, fogOfWar: false, startingArmySize: 24, startingResources: { food: 1000, wood: 1000 },
+  spawnPoints: [{ team: 0, x: -20, z: 0 }, { team: 1, x: 20, z: 0 }], obstacles: [], resourceNodes: [], triggers: [], scenarioEvents: [],
+});
 
 export function validatePlacementMatch(ghost, rotated, placed) {
   assert.equal(ghost.active, true); assert.equal(ghost.valid, true); assert.equal(ghost.visible, true);
@@ -30,9 +35,7 @@ export async function captureBuildingOrientation(page, evidenceDirectory, { onSt
     for (const type of ['mousePressed', 'mouseReleased']) await page.cdp.call('Input.dispatchMouseEvent', { type, ...point, button: 'left', clickCount: 1 });
   };
   onStage('building-map');
-  const map = { id: 'rendered-building-orientation', name: 'Rendered building orientation', width: 64, height: 64,
-    terrainSeed: 19, fogOfWar: false, startingArmySize: 24, startingResources: { food: 1000, wood: 1000 },
-    spawnPoints: [{ team: 0, x: -20, z: 0 }, { team: 1, x: 20, z: 0 }], obstacles: [], resourceNodes: [], triggers: [], scenarioEvents: [] };
+  const map = BUILDING_ORIENTATION_CAPTURE_MAP;
   assert.equal(await page.cdp.evaluate(`window.__rtsEnvironmentCaptureCommand(${JSON.stringify({ type: 'publishMap', map })})`), true);
   await page.wait(`window.__rtsEnvironmentStateSnapshot?.mapId === '${map.id}'`, 'applied building audit map');
   onStage('building-hud');

@@ -39,6 +39,24 @@ for (const team of [0, 1]) for (const seed of [0, 20260925, 0xffff_ffff]) {
   assert.equal(attempt[0].buildingType, 'barracks');
   assert.equal(attempt[0].ids.length, 1, 'leave other workers gathering');
   assert.deepEqual(attempt[0].unitGenerations, [1]);
+
+  const housingState = fixture(team);
+  housingState.population = { available: 0, capacity: 12 };
+  const housing = createProductionPolicy(seed);
+  next(housing, housingState, 0);
+  for (const worker of housingState.units.friendly.filter(unit => unit.kind === 'worker')) {
+    worker.task = 'returning'; worker.cargo = 6;
+  }
+  housingState.units.friendly[0].task = 'gathering';
+  housingState.units.friendly[0].cargo = 0;
+  housingState.units.friendly[0].x += team === 0 ? 24 : -24;
+  assert.deepEqual(next(housing, housingState, 300), [], 'home housing preserves a distant zero-cargo harvest journey');
+  housingState.units.friendly[1].task = 'gathering';
+  housingState.units.friendly[1].cargo = 0;
+  const housingOrder = next(housing, housingState, 301);
+  assert.equal(housingOrder[0].buildingType, 'house');
+  assert.deepEqual(housingOrder[0].ids, [1], 'a nearby free gatherer can build instead');
+
   assert.deepEqual(next(policy, state, 301), [], 'same snapshot never spends twice');
   assert.deepEqual(next(policy, state, 450), [], 'wait before unconfirmed build retry');
   const retry = next(policy, state, 451);
