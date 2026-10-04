@@ -1,0 +1,16 @@
+{
+  "toolOutput": "/workspace/generated_images/exec-a509f5fa-a4e4-4af2-8490-56cb65cf1795.png",
+  "iteration": 1,
+  "alphaRange": [
+    0,
+    254
+  ],
+  "status": "admitted functional first pass; native acceptance open",
+  "worldDirection": "north",
+  "screenDirection": "down-left",
+  "identity": "Approved default idle-north-0 reference: green vest, cream sleeves/sash, dark hair, backpack/bedroll and axe retained.",
+  "motion": "Eight actual leg/arm/axe poses; rough gait, planted forward leg and loop seam remain polish items.",
+  "registration": "One shared 232/438 scale, column roots [192,576,960,1344], layout-row baselines [478,960], local pivot [128,244]. No per-frame centering, scale or heading copies.",
+  "sourceReview": "All eight complete silhouettes, transparent alpha, no connected foreign pixels or source-edge clipping. Key sheet inspected at 128 and 48 px. Existing world scale/max-alpha-height preserved.",
+  "publication": "User approved bounded first-pass image tools based on already-public default Worker. No private source, paid rigging or external provider job. Every raw/edit/seed/extracted iteration retained."
+}

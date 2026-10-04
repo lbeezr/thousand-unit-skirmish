@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "f03da8b6e3529da4fbfd53c14b62ffd8974dc739",
+  "mapId": "veyrholds-threefold-basin",
+  "mapSHA256": "6d9769ce30a1da374ffa41660dd99a804fd078a6f706113ddce40e1785e3ba0b",
+  "measuredScriptSHA256": "dbca2d7c1caa9d26ba6630e9073051f9cb32e1814e8a475446accc3ac199670a",
+  "loads": [
+    {
+      "armySize": 24,
+      "envelope": {
+        "sampledWindows": 66,
+        "tickP95PeakMs": 3.961,
+        "tickMaxMs": 4.139,
+        "startLagP95PeakMs": 13.98,
+        "startLagMaxMs": 20.915,
+        "maximumPlanningSliceMs": 3.495,
+        "initialTickWindowsWithoutLag": 0,
+        "scope": "peaks across every retained rolling health window, including preparation/planning; not per-tick raw telemetry",
+        "passed": true
+      },
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "capacityClaim": false
+}

@@ -1,3 +1,5 @@
+import { authoredWildlifeBodyHeading, authoredWildlifeNoseHeading } from './wildlife-heading.mjs';
+
 // Neutral Sheep take continuous, bounded steps; this owns no food or team state.
 export const SHEEP_WANDER_RADIUS = 0.35;
 export const SHEEP_WANDER_SPEED = 0.18;
@@ -17,7 +19,7 @@ function nearAnchor(x, z, definition) {
 export function createWildlifeMotion(definition) {
   const waitTicks = 60 + seed(definition.id) % 120;
   return { sequence: 0, targetX: definition.x, targetZ: definition.z, waitTicks,
-    activity: 'grazing', heading: (definition.wildlifeNoseYawDegrees ?? 0) * Math.PI / 180 };
+    activity: 'grazing', heading: authoredWildlifeBodyHeading(definition) };
 }
 export function validWildlifePosition(node, definition) {
   return nearAnchor(node.x, node.z, definition);
@@ -114,7 +116,9 @@ export function migrateWildlifeMotionCheckpoint(snapshot) {
     const definition = definitions.get(node.id);
     node.x = definition.x; node.z = definition.z;
     if (node.wildlifeSpecies === 'bellweather-sheep') {
-      node.wildlifeMotion = createWildlifeMotion(definition);
+      // This intermediate schema24 still uses nose yaw. The later exact
+      // schema28→29 migration converts it once after claims/mode/Herd migrate.
+      node.wildlifeMotion = { ...createWildlifeMotion(definition), heading: authoredWildlifeNoseHeading(definition) };
       if (node.wildlifeState !== 'alive') freezeWildlifeMotion(node);
     }
   }

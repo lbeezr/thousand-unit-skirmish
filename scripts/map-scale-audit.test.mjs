@@ -105,9 +105,9 @@ test('reported city placements provide non-overlapping free circulation rings an
 
 test('roster report covers shipped files, hashes the ordinary Tiny policy and preserves the legacy solo pool', async () => {
   const report = await runAudit();
-  assert.equal(report.maps.length, 27);
-  assert.equal(report.maps.filter(m => m.pool === 'regional').length, 14);
-  assert.equal(report.maps.filter(m => m.purpose === 'regional-skirmish').length, 13);
+  assert.equal(report.maps.length, 28);
+  assert.equal(report.maps.filter(m => m.pool === 'regional').length, 15);
+  assert.equal(report.maps.filter(m => m.purpose === 'regional-skirmish').length, 14);
   assert.equal(report.maps.find(m => m.id === 'shore-fishing').purpose, 'micro-fixture');
   assert.deepEqual(report.maps.filter(m => m.seededPve).map(m => m.id), ['bellweather-millrace', 'underbough-rootways']);
   assert.deepEqual(report.maps.filter(m => m.defaultPvp).map(m => m.id), ['veyrholds-terraced-vale']);
@@ -120,7 +120,7 @@ test('roster report covers shipped files, hashes the ordinary Tiny policy and pr
   assert.match(report.sourceInputSha256['maps/bellweather-millrace.json'], /^[0-9a-f]{64}$/);
   assert.match(report.sourceInputSha256['src/match-modes.mjs'], /^[0-9a-f]{64}$/);
   const records = summaryRecords(report);
-  assert.equal(records.length, 28);
+  assert.equal(records.length, 29);
   assert.equal(records[0].record, 'methods');
   assert.equal(records[1].economy.resources, undefined);
   assert.equal(records[1].economy.geometricResourceClusterCount, report.maps[0].economy.geometricResourceClusters.length);
