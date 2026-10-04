@@ -18,6 +18,7 @@ on:
           - forest-jobs
           - site-composition
           - tree-targeting
+          - browser-resume
 
 permissions:
   contents: read

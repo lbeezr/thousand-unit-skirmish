@@ -170,7 +170,8 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
   code = code.replace('const port = await reservePort()', 'const port = 4321');
   for (const mode of ['browser-fault', 'asset-timeout', 'spawn-fault', 'evidence-fault', 'missing-dependency',
     'wrong-version', 'vendor-404', 'vendor-hash', 'room-404', 'optional-icon', 'icon-forbidden', 'saturated-icons',
-    'building-fault-after-movement', 'feature-pass', 'feature-blocked', 'feature-timeout', 'feature-private-assertion', 'feature-page-limit', 'second-page-fault']) {
+    'building-fault-after-movement', 'feature-pass', 'feature-blocked', 'feature-timeout', 'feature-private-assertion', 'feature-page-limit', 'second-page-fault',
+    'feature-resume-default', 'feature-policy-mismatch']) {
     let written, probeReads = 0, launches = 0, pageCount = 0, savedRuntime; const cleanup = [], listeners = new Map();
     const featureMode = mode.startsWith('feature-') || mode === 'second-page-fault';
     const buildingMode = mode === 'building-fault-after-movement'; let frameNumber = 10;
@@ -233,15 +234,19 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
         || (mode === 'room-404' && url.endsWith('/api/rooms/status')) ? 404 : 200,
         json: async () => ({ ok: true, enabled: true }),
         arrayBuffer: async () => mode === 'vendor-hash' && url.endsWith('/vendor/three.module.js') ? Buffer.from('different') : bytes }),
-      createFortifiedBrowser: async () => { launches++; if (mode === 'browser-fault') throw fault;
-        return { version: { product: 'CPU mock' }, page: async url => { assert.equal(url, 'about:blank'); pageCount++;
+      createFortifiedBrowser: async ({ backgroundPolicy }) => { launches++; if (mode === 'browser-fault') throw fault;
+        assert.equal(backgroundPolicy, ['feature-resume-default', 'feature-policy-mismatch'].includes(mode) ? 'default' : 'unthrottled');
+        return { version: { product: 'CPU mock' }, backgroundPolicy: mode === 'feature-policy-mismatch' ? 'unthrottled' : backgroundPolicy,
+          page: async url => { assert.equal(url, 'about:blank'); pageCount++;
           return mode === 'second-page-fault' && pageCount === 2 ? { ...page, errors: ['private-second-page-token'] } : page; },
           dispose: async () => { cleanup.push('browser'); } }; },
     });
     vm.runInContext(code, context);
-    const captureCase = featureMode ? { id: 'novice-flow', run: async runtime => {
+    const captureId = ['feature-resume-default', 'feature-policy-mismatch'].includes(mode) ? 'browser-resume' : 'novice-flow';
+    const captureCase = featureMode ? { id: captureId, run: async runtime => {
       savedRuntime = runtime;
       assert.equal(runtime.origin, 'http://127.0.0.1:4321'); assert.equal(runtime.pack.sourceRevision, source.revision);
+      assert.equal(runtime.backgroundPolicy, captureId === 'browser-resume' ? 'default' : 'unthrottled');
       if (mode === 'second-page-fault') await runtime.openPage();
       if (mode === 'feature-timeout') throw vm.runInContext('new CaptureCaseTimeoutError()', context);
       if (mode === 'feature-private-assertion') assert.fail('private-session-token');
@@ -249,19 +254,25 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
       return mode === 'feature-blocked' ? 'blocked' : 'passed';
     } } : undefined;
     const report = JSON.parse(JSON.stringify(await context.qualifyPackedGame('/pack.json', '/evidence', { captureCase, buildingPlacement: buildingMode })));
-    const expectedStatus = mode === 'feature-pass' ? 'passed' : mode === 'feature-blocked' ? 'blocked' : 'failed';
+    const expectedStatus = ['feature-pass', 'feature-resume-default'].includes(mode) ? 'passed' : mode === 'feature-blocked' ? 'blocked' : 'failed';
     assert.equal(report.status, expectedStatus); assert.equal(written.status, expectedStatus);
     assert.ok(cleanup.includes('server'));
     if (!['missing-dependency', 'wrong-version'].includes(mode)) assert.ok(cleanup.includes('temp'));
     if (cleanup.includes('temp')) assert.ok(cleanup.indexOf('server') < cleanup.indexOf('temp'));
     assert.doesNotMatch(JSON.stringify(report), /private-.*token/);
+    if (mode === 'feature-policy-mismatch') {
+      assert.equal(pageCount, 0); assert.equal(savedRuntime, undefined);
+      assert.equal(report.issues[0].stage, 'browser'); assert.equal(report.issues[0].code, 'contract-failed');
+      assert.ok(cleanup.includes('browser')); continue;
+    }
     if (buildingMode) {
       assert.equal(report.frames.length, 2); assert.equal(report.issues[0].stage, 'building-placement');
       assert.equal(report.issues[0].code, 'execution-failed'); assert.equal(report.unexpectedBrowserEvent, false);
       continue;
     }
     if (featureMode) {
-      assert.equal(report.scope, 'ordinary-feature-novice-flow'); assert.equal(report.server.map, null);
+      assert.equal(report.scope, `ordinary-feature-${captureId}`); assert.equal(report.server.map, null);
+      assert.equal(report.backgroundPolicy, captureId === 'browser-resume' ? 'default' : 'unthrottled');
       assert.equal(report.pageBoots.length, mode === 'second-page-fault' ? 2 : mode === 'feature-page-limit' ? 5 : 1);
       const previousPages = pageCount;
       await assert.rejects(savedRuntime.openPage()); assert.equal(pageCount, previousPages);

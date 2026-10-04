@@ -25,3 +25,12 @@ test('legacy owner shapes and absent context fields fail before gameplay executi
     { origin: 'https://private.invalid' }, { origin: 'http://127.0.0.1:4321/?private-token' },
     { origin: 'http://secret@127.0.0.1:4321' }]) assert.throws(() => validateCaptureContext({ ...context, ...change }));
 });
+test('version1 optionally reports the actual known background policy without upgrading legacy contexts', () => {
+  for (const backgroundPolicy of ['default', 'unthrottled']) {
+    assert.equal(validateCaptureContext({ ...context, backgroundPolicy }).backgroundPolicy, backgroundPolicy);
+  }
+  assert.equal(validateCaptureContext(context).backgroundPolicy, undefined);
+  for (const backgroundPolicy of [null, 'bypass', '--disable-background-timer-throttling', { toString: () => 'default' }]) {
+    assert.throws(() => validateCaptureContext({ ...context, backgroundPolicy }));
+  }
+});
