@@ -473,3 +473,9 @@ CPU checks do not close target contact or deployment/native acceptance.
 Next useful art: actual NW build/repair hammer keys (share a recognizable work
 loop), NW defeat and NW Stone; then fill the remaining true world headings.
 The ranked breadth goal continues; cosmetic smoothing remains later work.
+
+
+[Clean NW attack release](qa-evidence/worker-land-art-2026-10-04/attack-north-west-clean-release.json)
+records exact code `c879b67c17b4909524f8eb8d8be442bacf16cb2f`,1176files,
+`sha256:96e54d2d1658f97d4696b1edc293bdf1500c48404db66d775342211f10041254`. PackedHTTP/docs/whitespace pass, no new pixel files.
+The later receipt checkpoint is distinct from this measured clean source.
