@@ -26,7 +26,7 @@ Skiff owner; art, rendering and map rules remain with their respective lanes.
 | 3 · pending dependency | Move completed path results into an agreed authoritative tick phase if the current asynchronous application contract needs correction. Inspect accepted-tick/result generations before proposing changes. | Shared command/tick pipeline with combat owner. | Same accepted command log gives the same committed outcomes; replacement/Stop cancels old results; FIFO/fair queue service and recovery remain correct. Do not equate fixed slice budgets with a completed tick-pipeline redesign. |
 | 4 · pending capture | Complete the corrected rendered 2,000-unit workload through paid economy, combat and restart. | Existing browser workload; identified sandboxed WebGL2/runtime and device/network profile. | Actual rendered run, authoritative goals/positions, paid work and recovery. Native/tool-only checks cannot close the render/deployed acceptance gap. |
 
-## Current inspection
+## Baseline inspection and resolved findings
 
 At `4467986`, 42 focused movement checks pass. All seven existing fixed-tick
 route cases repeat twice and complete, including the 256-unit one-cell choke
@@ -36,8 +36,8 @@ completed crowded route, not a stranded-order reproduction.
 An initial 128×96, 2,000-roster probe sends 996 Infantry through a one-cell choke.
 All reach their assigned goals by tick 2,018 with zero illegal or disconnected
 steps. Its initial planning job reports 943 searches and 472,109 expanded cells.
-Host timings are observational. A durable mirrored probe is the next baseline;
-the initial scene is retained separately rather than silently substituted.
+Host timings are observational. The durable mirrored probe uses a 128×128 scene;
+the initial 128×96 scene is retained separately rather than silently substituted.
 
 The [planning QA](qa-move-planning-work-2026-10-03.md) now retains the durable
 mirrored 128×128 baseline, unchanged candidate traces and native recovery.
@@ -46,10 +46,10 @@ formation leaves two seat-1 Infantry stalled. The [crowd QA](qa-crowd-forward-pr
 preserves its baseline and candidate separately: stacked parked Infantry reverse
 the movement vector; a bounded separation force resolves that reproduction.
 
-`processMovePlanningSlice` currently stops work by elapsed milliseconds. A
-clock-independent service budget is the first concrete contract correction;
-native interleaving remains separately tested and broader tick-pipeline work
-is explicitly deferred to the shared boundary above.
+At baseline `4467986`, `processMovePlanningSlice` stops work by elapsed milliseconds.
+Merged PR #193 replaces that policy with eight work items and a 4,096-expanded-cell
+threshold, preserving whole-search overshoot. Native interleaving is separately
+tested; broader tick-pipeline work remains deferred to the shared boundary above.
 
 ## Research invariants
 
