@@ -34,7 +34,7 @@ export async function measureTinyMatch(seeds, { limitSeconds = ceilingSeconds, i
   const fixture = await createPveHeadlessFixture(map, NORMAL_HUMAN_MATCH_MODE), r = fixture.replay;
   const trace = [], samples = [], depletions = [], restores = [];
   const metrics = seeds.map((seed, team) => ({ team, seed, firstVisibleEnemyTick: null,
-    firstAttackTick: null, firstDamageObservedTick: null, firstPaidRecruitTick: null,
+    firstNativeAttackObservedTick: null, firstDamageObservedTick: null, firstPaidRecruitTick: null,
     firstBarracksCompleteTick: null, firstDepotCompleteTick: null,
     firstExpansionCompleteTick: null, maxMilitary: 8, maxWorkers: 4,
     purchasedBuildings: [], belowInfantryFoodSeconds: 0, firstBelowInfantryFoodTick: null,
@@ -67,9 +67,10 @@ export async function measureTinyMatch(seeds, { limitSeconds = ceilingSeconds, i
           const observation = view(team), metric = metrics[team];
           const living = observation.units.friendly.filter(unit => unit.hp > 0);
           if (observation.units.visibleEnemies.length || observation.buildings.visibleEnemies.length) metric.firstVisibleEnemyTick ??= step;
-          for (const unit of living) if (unit.lastAttack?.tick >= 0) {
-            metric.firstAttackTick = Math.min(metric.firstAttackTick ?? Infinity, unit.lastAttack.tick);
-          }
+          // Peer attack receipts expire after three ticks and alias badly at
+          // one-second sampling. Read durable authority only as an observer;
+          // report the sample boundary rather than claiming the exact attack tick.
+          if (state.units.some(unit => unit.team === team && unit.lastAttackTick >= 0)) metric.firstNativeAttackObservedTick ??= step;
           if (living.some(unit => unit.hp < UNIT_DEFINITIONS[unit.kind].combat.maxHp)) metric.firstDamageObservedTick ??= step;
           if (living.some(unit => unit.kind !== 'worker' && !openingIds.has(key(unit)))) metric.firstPaidRecruitTick ??= step;
           metric.maxMilitary = Math.max(metric.maxMilitary, living.filter(unit => unit.kind !== 'worker').length);
