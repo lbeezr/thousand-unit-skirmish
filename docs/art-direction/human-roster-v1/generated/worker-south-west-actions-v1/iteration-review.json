@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "rawSha256": "0ae1b65e7cb9b3afe0af42b3cdbf1f19bdba135153277916c9aa0b1f4294e208",
+  "acceptedSourceIndexes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
+  "sourceReview": "Fifteen complete exact directly-away/up poses: axe3, empty hands food3, rectangular blunt hammer3, pointed pick3, buckling/bracing/prone defeat3. Back/backpack remain visible; leaning strike keeps back view. Prone back-camera terminal is foreshortened with head top, boots bottom; no artificial wide-profile heuristic.",
+  "scale": "one271/301 throughout; standing body roughly222\u2013225px versus224px legacy SW walk; maximum271 remains below old272",
+  "root": "fixed columns174/518/846; row contacts300/584/883/1201; fallen1484/1473/1484; live work128,308, food/death128,244",
+  "polish": "simple motion and minor loop/contact differences; native game acceptance open",
+  "nativeStatus": "offline previews/CPU only"
+}

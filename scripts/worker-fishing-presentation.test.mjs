@@ -86,12 +86,13 @@ test('published atlas preserves prior action pixels/metadata and all four approv
   for (const clip of northHistory.originalReplacedClips) originalClips[originalClips.findIndex(c => c.stateId === clip.stateId && c.directionId === clip.directionId)] = clip;
   for (const c of JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/north-east-actions-preservation.json', import.meta.url))).originalReplacedClips) originalClips[originalClips.findIndex(v => v.stateId === c.stateId && v.directionId === c.directionId)] = c;
   for (const c of JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/south-actions-preservation.json', import.meta.url))).originalReplacedClips) originalClips[originalClips.findIndex(v => v.stateId === c.stateId && v.directionId === c.directionId)] = c;
+  for (const c of JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/south-west-actions-preservation.json', import.meta.url))).originalReplacedClips) originalClips[originalClips.findIndex(v => v.stateId === c.stateId && v.directionId === c.directionId)] = c;
   assert.equal(sha256(JSON.stringify(originalClips)), preservation.originalClipMetadataSha256);
-  assert.equal(asset.frames.length, preservation.originalFrames + 4 + 40 + 4 + 3 + 3 + 9 + 3 + 3 + 3 + 6 + 14 + 15 + 15);
-  assert.equal(asset.clips.length, preservation.originalClips + 22);
+  assert.equal(asset.frames.length, preservation.originalFrames + 4 + 40 + 4 + 3 + 3 + 9 + 3 + 3 + 3 + 6 + 14 + 15 + 15 + 15);
+  assert.equal(asset.clips.length, preservation.originalClips + 26);
   assert.equal(asset.heightWorld / Math.max(...asset.frames.map(f => f.alphaBoundsPx.height)), preservation.worldUnitsPerPixel);
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', manifest)));
-  assert.deepEqual([image.width, image.height], [4608, 4096]);
+  assert.deepEqual([image.width, image.height], [5120, 4096]);
   // The land pack appends a side strip; hash the historical ROI row by row.
   const originalPixels = createHash('sha256');
   for (let y = 0; y < preservation.originalDimensionsPx.height; y++) originalPixels.update(
