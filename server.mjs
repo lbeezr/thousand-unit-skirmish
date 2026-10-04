@@ -1922,9 +1922,8 @@ function snapshotUnits(viewTeam = null) {
     const row = [
       unit.id, unit.team, Math.round(unit.x * 100) / 100,
       Math.round(unit.z * 100) / 100, unit.hp, unit.kind, cargo,
-      unit.cargoType, unit.generation,
+      unit.cargoType, unit.generation, task, focusedByUnit[unit.id] || 0,
     ];
-    row.push(task, focusedByUnit[unit.id] || 0);
     if (Number.isInteger(unit.lastAttackTick)
       && unit.lastAttackTick >= 0 && tickNumber - unit.lastAttackTick <= STATE_EVERY_TICKS) {
       const targetVisible = !mapDefinition.fogOfWar || viewTeam === null || unit.team === viewTeam;

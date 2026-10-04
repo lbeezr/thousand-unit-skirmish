@@ -153,6 +153,7 @@ run(['--experimental-test-coverage', '--test-coverage-include=src/networking/web
 run(['--test', 'scripts/worker-shutdown.test.mjs'], 'Signal-aware room worker shutdown');
 run(['--test', 'scripts/check-client-imports.test.mjs'], 'Served client import graph');
 run(['--test', 'scripts/snapshot-private-production.test.mjs'], 'Seat-private production snapshots');
+run(['--test', 'scripts/snapshot-row-allocation.test.mjs'], 'Base-row allocation preserves exact snapshot fields and wire bytes');
 
 run(['--test', 'scripts/battlefield-cursor.test.mjs'], 'Battlefield cursor states');
 run(['--test', 'scripts/hud-action-icons.test.mjs'], 'Default HUD action glyphs and semantics');
