@@ -1,0 +1,10 @@
+{
+  "tool": "built-in image_gen.imagegen",
+  "sourceImages": [
+    "edit-reference.png",
+    "approved-idle-seed.png"
+  ],
+  "prompt": "Edit this three-key wood chopping sprite sheet while preserving the SAME Human Worker identity, same left-facing NW profile, exact palette, costume, backpack, ground roots and torso/leg scale. Critical correction: make the FIRST pose a COMPACT shoulder-level axe windup, not a very high overhead pose. In the first column lower the hands/tool so the axe is cocked close behind the left-pointing head at shoulder height, blade immediately above/behind hair, with the uppermost axe pixel NO HIGHER THAN about y=185. Keep first head hair near y=245, boot baseline around y=888, body scale matching the second/third characters. The whole first silhouette must be about the same height as the second and third; the weapon must extend at most 60 source pixels above his head, not 230. Keep both hands gripping the handle naturally with bent elbows and a clear compact preparation for the chop toward screen-LEFT. Preserve the second forceful arms-left downstrike pose and third low follow-through pose, same feet/root. All three face straight SCREEN-LEFT, exact left side profile throughout, backpack behind at RIGHT; never turn or mirror. Keep body height around640px from hair to boot and same camera/perspective. One1536x1024 transparentRGBA canvas, exactlythree complete connected silhouettes left-to-right. Preserve empty clearance around all boots, axe and backpack. Do not crop any silhouette. No floor/shadow/backdrop/text/guides. All background fully transparent. Existing shoulder scale/facing/root matter, cosmetic polish can follow.",
+  "transparent_background": true,
+  "authorization": "Standing user authority for bounded built-in edits from public Worker assets; no external paid generation or private-source pixels."
+}
