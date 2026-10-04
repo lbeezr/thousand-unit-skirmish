@@ -5,8 +5,9 @@
 Owner: painted ground atlas adoption worker. Write scope: ground texture selection,
 painted-atlas loader and ground sampling shader; narrow server/Docker admission,
 existing adoption guard, tests and this evidence. No building sprite paths or
-resource/cliff candidate integration. Parent staging/deployment owner in the
-delegating task coordinates the next staging release and Mac QA; implementation
+resource/cliff candidate integration. The current cloud testing/CI owner receives
+renderer qualification and capture execution under the [testing strategy](testing-strategy.md#start-here);
+Mac testing was stopped by the user and is not a dependency. Implementation
 ownership remains here until the exact deployment and ordinary-game evidence exist.
 
 ## Default binding and release
@@ -55,7 +56,7 @@ Sandboxed Chromium preflight in this Linux execution environment failed with
 storage issue; sandbox startup still failed. No sandbox-disabling flags were
 used. Screenshots captured here: **0**. Game-zoom visual acceptance is incomplete.
 
-## Receiving staging/Mac QA action
+## Receiving cloud render acceptance action
 
 Run from an identified staging release containing this PR (record source SHA,
 release digest, successful active deployment id and platform source revision
@@ -76,5 +77,6 @@ the ordinary stochastic screenshots as the default-path evidence.
 Save map/action/zoom, source/deployed SHA and screenshots with observations in
 this note or the implementation PR. A preview or older revision does not close
 the default gameplay outcome. Until that evidence exists, deployment and
-appearance remain **incomplete**, owned by this adoption worker with the parent
-staging/Mac QA coordinator as the explicitly assigned downstream recipient.
+appearance remain **incomplete**, owned by this adoption worker with the current
+cloud testing/CI owner as the explicitly assigned renderer qualification and
+capture recipient.

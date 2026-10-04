@@ -5,8 +5,10 @@
 [Terraced Vale Tiny](../maps/veyrholds-terraced-vale.json)
 
 Owner: terrain integration, through default binding, served release, identified
-staging deployment and ordinary-game appearance. Parent staging/Mac coordinator
-is the assigned downstream execution owner. Independent forest-fog/exploration
+staging deployment and ordinary-game appearance. The current cloud testing/CI
+owner receives renderer qualification and capture execution under the
+[testing strategy](testing-strategy.md#start-here). Mac testing was stopped by
+the user and is not a dependency. Independent forest-fog/exploration
 work remains with its own worker; this slice does not edit `main.js` or fog rules.
 
 ## Report and bounded fix
@@ -68,11 +70,24 @@ Meshy job, new material pack or private publication is involved.
 
 ## Ordinary-game acceptance remains open
 
-The implementation PR records independent review, exact tested head/merge,
-clean release digest, package checks, active staging revision and actual browser
-attempt. This executor previously reports `sandbox-unavailable`; no sandbox
-disabling is permitted. Preserve zero screenshots as a real execution limit,
-not visual acceptance.
+[PR295](https://github.com/lbeezr/thousand-unit-skirmish/pull/295) merged at
+`db4648120be92db0a3d372b457e0b78fff22cbf2`. That exact merge passed the 18
+face/atlas/adoption tests and packaged HTTP/client admission checks. Its clean
+release digest is
+`sha256:c6d2c4f705a2ae8597dfdd8cca857ae678f24126e67c430bb05ca884f1adee19`;
+the helper and existing manifest/six mip files are packed and byte-match source.
+The post-merge platform read still identified deployment
+`e104638c-2c8b-433b-8928-7b53a8f3494e` at source
+`53a47ee379660f30b65776ea813f3a986d29aa37`, which does not contain PR295.
+Refresh the deployed identity before capture; merge and packaging do not prove
+staging delivery.
+
+The retained startup attempt reports `sandbox-unavailable`, zero screenshots.
+The current cloud testing/CI owner must qualify WebGL2 and production packed-game
+rendering under the linked strategy before the ordinary-game capture below.
+Do not repeat unchanged blocked startup or disable its sandbox. Terrain integration
+retains acceptance. Containing staging delivery, rendered seam/mip/stretch/contact
+and depth/fog checks, and actual GPU rendering cost all remain **pending**.
 
 On an identified containing staging build, enter ordinary Practice → Veyrholds
 Terraced Vale Tiny with no art flags. Inspect the central high scree strip from
