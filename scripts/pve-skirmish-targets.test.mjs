@@ -51,6 +51,39 @@ for (const team of [0, 1]) for (const seed of [0, 20260925, 0xffffffff]) {
 }
 
 for (const team of [0, 1]) {
+  test(`seat ${team}: revealing an exploration goal preserves the approach until arrival`, () => {
+    const state = observation(team), policy = createSkirmishTargetPolicy(0), soldiers = state.units.friendly;
+    state.buildings.visibleEnemies = [];
+    const first = policy.next(state, soldiers)[0];
+    const mask = Buffer.alloc(1280), cell = Math.floor(first.z + 32) * 80 + Math.floor(first.x + 40);
+    mask[cell >> 2] |= 2 << ((cell & 3) * 2);
+    state.visibility.data = mask.toString('base64'); state.tick = 30;
+    for (const soldier of soldiers) soldier.x += team ? -1 : 1;
+    assert.deepEqual(policy.next(state, soldiers), [], 'forward sight cannot interrupt moving soldiers');
+    state.tick += limits.retryTicks;
+    const retry = policy.next(state, soldiers)[0];
+    assert.deepEqual([retry.x, retry.z], [first.x, first.z], 'stationary retries retain the revealed goal');
+    for (const soldier of soldiers) { soldier.x = first.x; soldier.z = first.z; }
+    state.tick++;
+    const arrived = policy.next(state, soldiers)[0];
+    assert.notDeepEqual([arrived.x, arrived.z], [first.x, first.z], 'arrival permits a new frontier');
+    state.buildings.visibleEnemies = [building(1 - team, 100)]; state.tick++;
+    assert.equal(policy.next(state, soldiers)[0].buildingId, 100, 'current enemy sight takes priority');
+  });
+
+  test(`seat ${team}: an unreached frontier gives the global cursor a turn at its deadline`, () => {
+    const state = observation(team), policy = createSkirmishTargetPolicy(0), soldiers = state.units.friendly;
+    state.buildings.visibleEnemies = [];
+    const first = policy.next(state, soldiers)[0];
+    state.tick = limits.searchTicks;
+    const next = policy.next(state, soldiers)[0];
+    assert.deepEqual([next.x, next.z], [-35.5, -27.5], 'unknown local probes cannot starve bounded global search');
+    assert.notDeepEqual([next.x, next.z], [first.x, first.z]);
+    state.tick += limits.searchTicks;
+    const third = policy.next(state, soldiers)[0];
+    assert.deepEqual([third.x, third.z], [-27.5, -27.5], 'subsequent expired goals advance the cursor');
+  });
+
   test(`seat ${team}: recovery priorities exclude dead, friendly and water-only targets`, () => {
     const state = observation(team), enemy = 1 - team;
     state.buildings.visibleEnemies = [building(enemy, 120, { type: 'dock', x: -20 }),
