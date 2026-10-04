@@ -10,6 +10,7 @@ export const CAPTURE_CASES = Object.freeze({
   'worker-animations': './renderer-worker-animation-scenario.mjs',
   'novice-flow': './renderer-novice-flow-scenario.mjs',
   'worker-routes': './renderer-worker-route-scenario.mjs',
+  'building-catalog': './renderer-building-catalog-scenario.mjs',
 });
 export function selectedCases(selection) {
   assert.ok(selection === 'all' || Object.hasOwn(CAPTURE_CASES, selection), 'select a registered capture case or all');
@@ -39,7 +40,7 @@ export function validateCaseResult(result, captures) {
   assert.ok(Array.isArray(result.checks) && result.checks.length > 0 && result.checks.length <= 128, 'bounded case checks are required');
   const ids = new Set();
   const checks = result.checks.map(check => {
-    assert.ok(check && /^[a-z0-9][a-z0-9-]{0,63}$/.test(check.id) && !ids.has(check.id)
+    assert.ok(check && typeof check.id === 'string' && /^[a-z0-9][a-z0-9-]{0,63}$/.test(check.id) && !ids.has(check.id)
       && typeof check.passed === 'boolean', 'case checks need unique safe identities and boolean results');
     ids.add(check.id); return { id: check.id, passed: check.passed };
   });
@@ -64,26 +65,59 @@ export async function runFeatureBatch(packFile, outputDirectory, selection = 'al
     assert.deepEqual(loaded.adapters.map(adapter => adapter.id), batch.requestedCases, 'requested case order must be complete and unique');
     for (const adapter of loaded.adapters) {
       const directory = path.join(outputDirectory, adapter.id), captures = [];
-      let result, timer, captureCount = 0, captureFailed = false;
+      let result, timer, captureCount = 0, operationFailed = false;
       const qualification = await qualify(packFile, directory, { captureCase: { id: adapter.id,
         run: async context => {
+          const ownedPages = new Set([context.page]), operations = new Set();
+          let accepting = true, retaining = true;
+          const track = operation => {
+            const promise = Promise.resolve().then(operation).catch(error => { operationFailed = true; throw error; });
+            operations.add(promise);
+            // Preserve rejection for callers and the drain even if an adapter
+            // forgets to await it; never emit an unhandled private payload.
+            promise.catch(() => {});
+            return promise;
+          };
+          const openPage = () => {
+            const allowed = accepting;
+            return track(async () => {
+              assert.equal(allowed, true, 'capture context is closed');
+              const page = await context.openPage();
+              assert.equal(retaining, true, 'capture context is closed');
+              ownedPages.add(page); return page;
+            });
+          };
+          const capture = options => {
+            // Reserve and validate synchronously before the adapter can finish.
+            const allowed = accepting;
+            const count = ++captureCount;
+            return track(async () => {
+              assert.equal(allowed, true, 'capture context is closed');
+              assert.ok(count <= 64, 'case screenshot count exceeded');
+              const { page = context.page, mapId, checkpoint: name } = options;
+              assert.ok(ownedPages.has(page), 'screenshots require an owned instrumented page');
+              const capture = await checkpoint({ page, revision: context.pack.sourceRevision,
+                browserVersion: context.browserVersion, mapId, checkpoint: name, outputDirectory: directory });
+              const manifest = capture.manifest;
+              if (retaining) captures.push({ checkpoint: name, mapId: manifest.scene.mapId, source: manifest.source,
+                viewport: manifest.viewport, image: { ...manifest.image, file: `${name}/${manifest.image.file}` } });
+              return capture;
+            });
+          };
           try {
-            const outcome = await Promise.race([adapter.run({ page: context.page, openPage: context.openPage,
-              origin: context.origin, source: Object.freeze({ revision: context.pack.sourceRevision, digest: context.pack.digest }),
-              capture: async ({ page = context.page, mapId, checkpoint: name }) => {
-                try {
-                  assert.ok(++captureCount <= 64, 'case screenshot count exceeded');
-                  const capture = await checkpoint({ page, revision: context.pack.sourceRevision,
-                    browserVersion: context.browserVersion, mapId, checkpoint: name, outputDirectory: directory });
-                  const manifest = capture.manifest;
-                  captures.push({ checkpoint: name, mapId: manifest.scene.mapId, source: manifest.source,
-                    viewport: manifest.viewport, image: { ...manifest.image, file: `${name}/${manifest.image.file}` } });
-                  return capture;
-                } catch (error) { captureFailed = true; throw error; }
-              } }), new Promise((_, reject) => { timer = setTimeout(() => reject(new CaptureCaseTimeoutError()), timeoutMs); })]);
-            assert.equal(captureFailed, false, 'failed screenshots cannot be hidden by a passing adapter');
+            const runAndDrain = async () => {
+              let outcome;
+              try { outcome = await adapter.run({ page: context.page, openPage, capture, origin: context.origin,
+                source: Object.freeze({ revision: context.pack.sourceRevision, digest: context.pack.digest }) }); }
+              finally { accepting = false; }
+              await Promise.allSettled([...operations]);
+              assert.equal(operationFailed, false, 'failed capture operations cannot be hidden by a passing adapter');
+              return outcome;
+            };
+            const outcome = await Promise.race([runAndDrain(),
+              new Promise((_, reject) => { timer = setTimeout(() => reject(new CaptureCaseTimeoutError()), timeoutMs); })]);
             result = validateCaseResult(outcome, captures); return result.status;
-          } finally { clearTimeout(timer); }
+          } finally { accepting = false; retaining = false; clearTimeout(timer); }
         } } });
       batch.cases.push({ id: adapter.id, status: qualification.status, source: qualification.source,
         release: qualification.release, result: result ?? { status: qualification.status, checks: [], captures },

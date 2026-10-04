@@ -135,9 +135,13 @@ fixture, and Forked Vale sight-fixture state. [Sight fixture correction #304](ht
 restores valid combat stances and asserts checkpoint recovery before testing the
 authored 24-unit match; the complete native scenario passes both seats at its
 reviewed final head `7668c7196b934f4548431e6634c22be4ab1aa466`. It changes no
-runtime sight ranges or forest rules. Millrace's production timeout remains owned
-by the AI workstream (`01a10297`). Full-suite success remains unverified; the
-original fail-fast runs leave those 72 checks unexecuted. Bounded packed pixels
+runtime sight ranges or forest rules. The unchanged-order shard1/3 rerun at clean
+`b96847b911a78ff09455e0090c90517c57b37172` (original source plus #309's diagnostics)
+passed all368 checks, including both Millrace seats. Team0 first trained/advanced
+at58s; team1 first trained at54.1s and advanced at174.1s. The historical timeout
+did not reproduce; the AI owner retains its cause analysis. This one-shard
+receipt does not establish full-suite success or retroactively execute the other
+original shards' unrun checks. Bounded packed pixels
 are now qualified as described below; ordinary feature acceptance remains open.
 
 The delivery owner reports staging deployment `c487990a-70c0-4f71-a125-8786681e87ee`

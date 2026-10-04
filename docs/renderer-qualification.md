@@ -60,7 +60,8 @@ generic capability probe when this verified backend already answers that questio
 ## Ordinary-build feature adapter and dispatch
 
 The separate [Ordinary game capture workflow](../.github/workflows/ordinary-game-capture.yml)
-is manual and supports `all`, `worker-animations`, `novice-flow` or `worker-routes`.
+is manual and supports `all`, `worker-animations`, `novice-flow`, `worker-routes`
+or `building-catalog`.
 It pins the selected ref's event SHA, checks all requested adapters before any
 browser launch, runs one WebGL2 prerequisite and clean pack, then executes cases
 sequentially. Each case receives a fresh normal supervisor and isolated browser;
@@ -69,7 +70,7 @@ The workflow is globally serialized across refs, with no cancellation of a
 running batch. This does not coalesce repeated manual requests: one dispatch
 owner records the requested cases, source SHA and run link in the feature PRs,
 and checks existing runs before dispatch. Prefer `all` at a common reviewed
-source containing the three adapters and candidate fixes. A ready, urgent
+source containing the four adapters and candidate fixes. A ready, urgent
 individual case can run without waiting for other owners' implementation.
 
 [`renderer-feature-capture.mjs`](../scripts/renderer-feature-capture.mjs) owns the
@@ -77,28 +78,40 @@ explicit registry and batch report. Feature owners own only these adapter files:
 
 | Case | Owner | File |
 | --- | --- | --- |
-| `worker-animations` | Foot `01a10469` | `scripts/renderer-worker-animation-scenario.mjs` |
-| `novice-flow` | HUD `01a101f7-35be` | `scripts/renderer-novice-flow-scenario.mjs` |
-| `worker-routes` | Resource `01a101f7-5683` | `scripts/renderer-worker-route-scenario.mjs` |
+| `worker-animations` | Foot animation owner | `scripts/renderer-worker-animation-scenario.mjs` |
+| `novice-flow` | HUD owner | `scripts/renderer-novice-flow-scenario.mjs` |
+| `worker-routes` | Resource owner | `scripts/renderer-worker-route-scenario.mjs` |
+| `building-catalog` | Building owner | `scripts/renderer-building-catalog-scenario.mjs` |
 
 Each file exports its exact registered `id` and `async run(context)`. Importing
 it must not start a server, browser or workload. The context provides `page`
 (initially `about:blank`), `openPage()` for another instrumented isolated page,
 loopback `origin`, immutable `source.revision`/`source.digest`, and
-`capture({page, mapId, checkpoint})`. Navigate with normal menu/room input; the
-read-only `rendererCapture=environment-state` diagnostics enable applied-map
-identity without selecting preview assets or overriding gameplay.
+`capture({page, mapId, checkpoint})`. Navigate with normal menu/room input. The
+runner enables the existing read-only snapshots before each document through
+`window.__rtsCaptureDiagnostics`; this preserves ordinary entry URLs and assets.
+Do not add `rendererCapture=environment-state` to the initial menu URL: that
+historical authored link deliberately enters the game directly. The HUD case
+starts at `/`, uses New Game and Tiny Terraced Vale (`veyrholds-terraced-vale`),
+then selects one Worker and issues Move through actual pointer input. A reload
+to insert a diagnostic query does not prove that uninterrupted novice flow.
 
 `capture()` uses the existing checkpoint helper, verifies live applied map and
 viewport, and writes a source-bound PNG/hash manifest under a unique safe
-checkpoint name. At most64 screenshots per case are allowed. A case returns
+checkpoint name. Captures accept only this case's instrumented pages; one
+primary page and at most four additional pages are allowed. At most64 screenshots
+per case are allowed. A case returns
 `{status, checks}`, where status is `passed`, `failed` or `blocked`, and checks
 is a nonempty list of unique `{id, passed: boolean}` assertions. A passing case
 needs actual screenshot receipts and all checks true; missing heading/clip art
 must return blocked/failed checks. The shared runner validates these results,
 records safe check identities and receipts, and retains browser failures even
 if the evidence buffer fills. It also rejects swallowed screenshot failures.
-Three-minute case deadlines and a15-minute workflow limit bound the batch.
+Started capture/page operations are drained within the same three-minute case
+deadline; new operations are rejected after completion or timeout. Adapter error
+messages are redacted in public evidence; safe check IDs identify the failed
+feature contract. Three-minute case deadlines and a20-minute workflow limit
+bound the four-case batch.
 Other cases continue after a feature blocks/fails so their evidence is retained.
 
 Before integration, owners can check preparation without a browser:
@@ -114,7 +127,7 @@ the workflow retains `adapters.json`. Prepared cases run in the hosted job with
 after clean packing and the existing production dependency install. The job
 retains `batch.json`, per-case `qualification.json`, checkpoint manifests and
 PNGs for one day. No ordinary adapter is supplied by the infrastructure pilot;
-the three owners must integrate and review their actual assertions first.
+the four owners must integrate and review their actual assertions first.
 
 The feature owner prepares a small scenario in a separately owned script and
 records the exact candidate SHA, map, match mode, seat, ordinary input sequence,

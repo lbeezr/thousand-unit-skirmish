@@ -111,6 +111,9 @@ export function validateMotion(start, frames) {
 // Read immediately after the real animation callback renders: the game's default
 // preserveDrawingBuffer=false makes a later arbitrary CDP readback unreliable.
 export function installReadbackProbe() {
+  // Enable existing diagnostics across normal menu/room navigation without
+  // changing the entry URL, gameplay defaults or selecting preview assets.
+  window.__rtsCaptureDiagnostics = true;
   const nativeRaf = window.requestAnimationFrame.bind(window);
   let number = 0, pending = null;
   window.__rtsQualification = { number: 0, errors: [], request: workerId => new Promise(resolve => { pending = { workerId, resolve }; }) };
@@ -159,14 +162,15 @@ export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCa
     browserEvents: [], droppedBrowserEvents: 0, unexpectedBrowserEvent: false, issues: [],
     cleanup: { maxAttempts: 3, attempts: 0, errors: [] } };
   let stage = 'release', browser, page, server, temporary;
-  const pages = [];
+  const pages = [], acquiringPages = new Set();
+  let pagesOpen = true, pageCount = 0;
   const recordBrowserEvent = event => {
     if (event.expected !== true) report.unexpectedBrowserEvent = true;
     if (report.browserEvents.length < 100) report.browserEvents.push(event);
     else report.droppedBrowserEvents++;
   };
   try {
-    if (captureCase) assert.ok(/^[a-z][a-z-]{0,63}$/.test(captureCase.id) && typeof captureCase.run === 'function',
+    if (captureCase) assert.ok(typeof captureCase.id === 'string' && /^[a-z][a-z-]{0,63}$/.test(captureCase.id) && typeof captureCase.run === 'function',
       'capture adapter identity and executable are required');
     if (captureCase) report.scope = `ordinary-feature-${captureCase.id}`;
     assert.ok(Number.isInteger(report.uid) && report.uid > 0, 'qualification must run as a non-root user');
@@ -222,9 +226,14 @@ export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCa
       (vendor ? report.runtimeDependencies[0].files : report.assets).push({ path: file, sha256: hash });
     }
     stage = 'browser'; browser = withProfileCleanup(await createFortifiedBrowser(), report.cleanup); report.browser = browser.version;
-    const openPage = async () => {
+    const openPage = () => {
+      const allowed = pagesOpen, count = ++pageCount;
+      const acquisition = (async () => {
+      assert.equal(allowed, true, 'capture context is closed');
+      assert.ok(count <= 5, 'capture supports one primary and four additional pages');
       const page = await browser.page('about:blank', { beforeScript: `(${installReadbackProbe.toString()})()` });
       pages.push(page);
+      assert.equal(pagesOpen, true, 'capture context closed during page acquisition');
       page.cdp.on('Runtime.consoleAPICalled', event => {
         if (event.type === 'error') recordBrowserEvent({ kind: 'console-error' });
       });
@@ -246,6 +255,10 @@ export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCa
         requests.delete(event.requestId);
       });
       return page;
+      })();
+      acquiringPages.add(acquisition);
+      acquisition.then(() => acquiringPages.delete(acquisition), () => acquiringPages.delete(acquisition));
+      return acquisition;
     };
     page = await openPage();
     if (captureCase) {
@@ -294,8 +307,15 @@ export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCa
       : error instanceof assert.AssertionError ? 'contract-failed' : 'execution-failed',
       systemCode: ['ENOENT', 'EACCES', 'EPERM', 'ENOSPC', 'ECONNREFUSED', 'EADDRINUSE', 'ETIMEDOUT'].includes(error.code) ? error.code : null,
       errorType: ['Error', 'TypeError', 'RangeError', 'AssertionError'].includes(error.name) ? error.name : 'Error',
-      message: error instanceof assert.AssertionError ? error.message.split('\n')[0] : `Qualification failed during ${stage}` });
+      // Adapter assertions may contain session values. Retain their fault type
+      // and stage, but only our fixed message in public scenario evidence.
+      message: stage !== 'scenario' && error instanceof assert.AssertionError
+        ? error.message.split('\n')[0] : `Qualification failed during ${stage}` });
   } finally {
+    pagesOpen = false;
+    if (acquiringPages.size) {
+      report.status = 'failed'; report.issues.push({ stage: 'scenario', code: 'page-acquisition-unfinished' });
+    }
     for (const page of pages) {
       if (page.errors.length) recordBrowserEvent({ kind: 'exception', count: page.errors.length });
       try {

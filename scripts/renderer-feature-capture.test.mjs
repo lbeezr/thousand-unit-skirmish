@@ -12,7 +12,7 @@ test('explicit selections cannot dispatch paths, commands, unknown or duplicate 
 });
 test('absent owned files block; broken imports and malformed exports fail safely', async () => {
   const missing = await loadCaptureCases('all', { exists: async () => { throw Object.assign(new Error('private-token'), { code: 'ENOENT' }); } });
-  assert.equal(missing.adapters.length, 0); assert.equal(missing.issues.length, 3);
+  assert.equal(missing.adapters.length, 0); assert.equal(missing.issues.length, 4);
   assert.ok(missing.issues.every(issue => issue.code === 'case-unavailable'));
   for (const load of [async () => { throw Object.assign(new Error('private-token'), { code: 'ERR_MODULE_NOT_FOUND' }); },
     async () => ({ id: 'wrong', run() {} }), async () => ({ id: 'worker-routes' })]) {
@@ -27,6 +27,7 @@ test('unresolved feature checks and absent screenshots cannot claim passed', () 
   assert.throws(() => validateCaseResult(good, []));
   for (const result of [{ ...good, status: 'unknown' }, { ...good, checks: [] }, { ...good, checks: [{ id: 'bad path', passed: true }] },
     { ...good, checks: [{ id: 'heading-0', passed: false }] }, { ...good, checks: [{ id: 'heading-0', passed: 'true' }] },
+    { ...good, checks: [{ id: 1, passed: true }] },
     { ...good, checks: [good.checks[0], good.checks[0]] }]) assert.throws(() => validateCaseResult(result, [{}]));
   assert.equal(validateCaseResult({ status: 'blocked', checks: [{ id: 'missing-spearman-heading-7', passed: false }] }, []).status, 'blocked');
 });
@@ -62,22 +63,31 @@ test('sequential batch binds screenshots to one pack and preserves blocked cases
         return { manifest: { source: { revision }, scene: { mapId: context.mapId }, viewport: { width: 1280, height: 720 }, image: { file: 'color.png', sha256: 'c'.repeat(64) } } };
       } });
     assert.deepEqual(sequence, Object.keys(CAPTURE_CASES)); assert.equal(report.status, 'blocked');
-    assert.deepEqual(report.cases.map(entry => entry.status), ['blocked', 'passed', 'passed']);
+    assert.deepEqual(report.cases.map(entry => entry.status), ['blocked', 'passed', 'passed', 'passed']);
     assert.ok(report.cases.every(entry => entry.result.captures[0].source.revision === revision));
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
-test('deadline and swallowed screenshot failures remain failures with cleanup delegated to the qualified owner', async () => {
+test('deadline and swallowed or unawaited screenshot failures remain failures', async () => {
   const directory = await mkdtemp(path.join(os.tmpdir(), 'tus-batch-test-'));
   try {
-    for (const mode of ['deadline', 'swallowed']) {
+    for (const mode of ['deadline', 'swallowed', 'unawaited', 'unfinished', 'foreign-page']) {
       let outcome;
+      let count = 0;
       const report = await runFeatureBatch('/pack', directory, 'worker-routes', {
-        timeoutMs: 5, load: async () => ({ issues: [], adapters: [{ id: 'worker-routes', run: async context => {
+        timeoutMs: 20, load: async () => ({ issues: [], adapters: [{ id: 'worker-routes', run: async context => {
           if (mode === 'deadline') return new Promise(() => {});
           await context.capture({ mapId: 'ordinary-map', checkpoint: 'departure' }).catch(() => {});
+          if (mode === 'unawaited' || mode === 'unfinished') void context.capture({ mapId: 'ordinary-map', checkpoint: 'contact' }).catch(() => {});
+          if (mode === 'foreign-page') await context.capture({ page: {}, mapId: 'ordinary-map', checkpoint: 'foreign' }).catch(() => {});
           return { status: 'passed', checks: [{ id: 'route', passed: true }] };
         } }] }),
-        checkpoint: async () => { throw new Error('private-token'); },
+        checkpoint: async context => {
+          count++;
+          if (mode === 'swallowed') throw new Error('private-token');
+          if (count === 2) { if (mode === 'unfinished') return new Promise(() => {});
+            await new Promise(resolve => setTimeout(resolve, 2)); throw new Error('private-token'); }
+          return { manifest: { source: {}, scene: { mapId: context.mapId }, viewport: {}, image: { file: 'color.png' } } };
+        },
         qualify: async (_, __, { captureCase }) => {
           try { await captureCase.run({ page: {}, pack: { sourceRevision: 'a'.repeat(40), digest: 'digest' } }); }
           catch (error) { outcome = error; }
@@ -85,8 +95,36 @@ test('deadline and swallowed screenshot failures remain failures with cleanup de
         },
       });
       assert.equal(report.status, 'failed'); assert.ok(outcome);
-      assert.equal(mode === 'deadline' ? outcome.name : outcome.code, mode === 'deadline' ? 'CaptureCaseTimeoutError' : 'ERR_ASSERTION');
+      assert.equal(['deadline', 'unfinished'].includes(mode) ? outcome.name : outcome.code,
+        ['deadline', 'unfinished'].includes(mode) ? 'CaptureCaseTimeoutError' : 'ERR_ASSERTION');
+      if (mode === 'foreign-page') assert.equal(count, 1);
       assert.doesNotMatch(JSON.stringify(report), /private-token/);
+    }
+  } finally { await rm(directory, { recursive: true, force: true }); }
+});
+test('completed and timed-out adapters cannot acquire pages or publish later captures', async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), 'tus-batch-test-'));
+  try {
+    for (const timeout of [false, true]) {
+      let saved, acquisitions = 0, captures = 0;
+      const report = await runFeatureBatch('/pack', directory, 'worker-routes', {
+        timeoutMs: 5, load: async () => ({ issues: [], adapters: [{ id: 'worker-routes', run: async context => {
+          saved = context;
+          if (timeout) return new Promise(() => {});
+          await context.capture({ mapId: 'ordinary-map', checkpoint: 'departure' });
+          return { status: 'passed', checks: [{ id: 'route', passed: true }] };
+        } }] }), qualify: async (_, __, { captureCase }) => {
+          try { return { status: await captureCase.run({ page: {}, openPage: async () => { acquisitions++; return {}; },
+            pack: { sourceRevision: 'a'.repeat(40), digest: 'digest' } }) }; }
+          catch { return { status: 'failed' }; }
+        }, checkpoint: async context => {
+          captures++; return { manifest: { source: {}, scene: { mapId: context.mapId }, viewport: {}, image: { file: 'color.png' } } };
+        },
+      });
+      await assert.rejects(saved.openPage());
+      await assert.rejects(saved.capture({ mapId: 'ordinary-map', checkpoint: 'late' }));
+      assert.equal(acquisitions, 0); assert.equal(captures, timeout ? 0 : 1);
+      assert.equal(report.status, timeout ? 'failed' : 'passed');
     }
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
@@ -95,7 +133,8 @@ test('ordinary workflow is manual, source-pinned, globally serialized, read-only
   assert.match(workflow, /workflow_dispatch:/); assert.doesNotMatch(workflow, /pull_request:|push:/);
   assert.match(workflow, /ref: \$\{\{ github.sha \}\}/); assert.match(workflow, /contents: read/);
   assert.match(workflow, /group: ordinary-game-capture\n  cancel-in-progress: false/);
-  assert.match(workflow, /timeout-minutes: 15/); assert.match(workflow, /retention-days: 1/);
+  assert.match(workflow, /timeout-minutes: 20/); assert.match(workflow, /retention-days: 1/);
+  for (const id of Object.keys(CAPTURE_CASES)) assert.ok(workflow.includes(`- ${id}`));
   assert.ok(workflow.indexOf('--check "$CASES"') < workflow.indexOf('renderer-qualification.mjs --preflight'));
   assert.doesNotMatch(workflow, /no-sandbox|sudo|secrets\.|continue-on-error/);
 });

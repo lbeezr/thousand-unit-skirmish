@@ -2145,7 +2145,7 @@ resourceStateAssetsReady.then((status) => {
     refreshResourceStateFallbackTransforms();
     refreshForestStumpTransforms();
   }
-  if (roomPageUrl.searchParams.get('rendererCapture') === 'environment-state') {
+  if (roomPageUrl.searchParams.get('rendererCapture') === 'environment-state' || window.__rtsCaptureDiagnostics === true) {
     window.__rtsEnvironmentAssetStatus = status;
     window.__rtsEnvironmentCaptureCommand = (command) => sendCommand(command);
   }
@@ -4747,7 +4747,7 @@ function applyState(state, initial = false) {
 }
 
 function updateEnvironmentStateCaptureSnapshot(state) {
-  if (roomPageUrl.searchParams.get('rendererCapture') !== 'environment-state') return;
+  if (roomPageUrl.searchParams.get('rendererCapture') !== 'environment-state' && window.__rtsCaptureDiagnostics !== true) return;
   const resourceNodes = (Array.isArray(state.resourceNodes) ? state.resourceNodes : []).map((node) => {
     const definitionNode = mapDefinition?.resourceNodes?.find((row) => row.id === node.id);
     const visual = resourceNodeVisuals.get(node.id);
