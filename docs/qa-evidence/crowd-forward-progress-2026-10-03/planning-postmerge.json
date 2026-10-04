@@ -1,0 +1,14 @@
+{
+  "pr": 193,
+  "merge": "331df727201c091741f55431d4b83021f479a7b5",
+  "serverSha256": "35d6cde1208464dc8718941a24b4b12159aad023d2b65bb0ccf84aab52305b66",
+  "tests": 209,
+  "passed": 209,
+  "replayCases": 9,
+  "repeats": 2,
+  "tracesEqualPremerge": true,
+  "nativeRuntimeDifference": "only the HTTP building-asset allowlist changed in server.mjs versus the qualified native source; PvP planning, movement and recovery functions unchanged",
+  "limits": [
+    "postmerge native scenario source qualification; no renderer or deployed verification"
+  ]
+}

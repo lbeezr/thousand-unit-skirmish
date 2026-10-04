@@ -52,6 +52,7 @@ the build they name.
 | Understand overload behavior | [Simulation timing](simulation-timing.md) |
 | Follow the ranked movement/pathing backlog and shared write boundaries | [Movement workstream](movement-pathing-workstream.md) |
 | Verify deterministic planning turns, large routes and native recovery | [Planning work QA](qa-move-planning-work-2026-10-03.md) |
+| Verify route progress through a parked army and preserved Stop intent | [Crowd forward-progress QA](qa-crowd-forward-progress-2026-10-03.md) |
 | Author and validate scenario JSON | [Map authoring](map-authoring.md) |
 | Work on connected walls and explicit manual gates | [Palisade runtime](palisade-runtime.md), [gates](palisade-gates.md) |
 | Inspect isolated water routes before dock/boat integration | [Water navigation foundation](water-navigation-foundation.md) |
@@ -124,6 +125,7 @@ from source/candidate packs. Then use the relevant contract:
 - [Unit/building kit](unit-building-art.md) and [GLB finish proposal](unit-building-art-output-proposal.md).
 - [Environment library](environment-pack-v1.md), [regional kit production](regional-environment-kits.md), and [interactive states](environment-state-pack-v1.md).
 - [Terrain candidate readiness](terrain-candidate-readiness.md): read-only resource pixel checks, inspected cliff limits and the [ranked terrain backlog](asset-adoption-checklist.md#terrain-workstream-backlog).
+- [Generic oak depletion adoption](qa-oak-depletion-atlas-adoption.md): default state atlas, payload/runtime cost and retained deployment/game acceptance.
 - [Cursor/icon contract](ui-cursor-icon-contract.md).
 - [Asset directory index](../assets/README.md) for individual pack READMEs and provenance.
 

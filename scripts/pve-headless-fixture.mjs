@@ -26,7 +26,7 @@ function replaceExactly(source, before, after, count = 1) {
   return source.split(before).join(after);
 }
 
-export async function createPveHeadlessFixture(map) {
+export async function createPveHeadlessFixture(map, identity = {}) {
   const directory = await mkdtemp(path.join(tmpdir(), 'rts-pve-headless-'));
   let replay;
   try {
@@ -43,7 +43,10 @@ export async function createPveHeadlessFixture(map) {
     source = source.slice(0, listen) + `
 const replayPlanningCallbacks = [];
 export const replay = {
-  prepare(map) { activateMap(validateMapDefinition(map, 'PvE replay')); resetArmy(map.startingArmySize); },
+  prepare(map, identity) {
+    matchMode = normalizeMatchMode(identity);
+    activateMap(validateMapDefinition(map, 'PvE replay')); resetArmy(map.startingArmySize);
+  },
   async order(team, command) {
     const notices = [];
     await handleCommand({ team, sendJson: notice => notices.push(notice) }, command);
@@ -66,7 +69,7 @@ export const replay = {
     const filename = path.join(directory, 'server-replay.mjs');
     await writeFile(filename, source);
     ({ replay } = await import(pathToFileURL(filename).href));
-    replay.prepare(map);
+    replay.prepare(map, identity);
     return { replay, async dispose() { replay.dispose(); await rm(directory, { recursive: true, force: true }); } };
   } catch (error) {
     replay?.dispose();
