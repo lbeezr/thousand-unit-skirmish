@@ -83,7 +83,8 @@ async function order(c, command, prefix) {
   c.send({ ...command, clientOrderToken: token }); const row = await receipt;
   assert.ok(row.message.startsWith(prefix), row.message); return round(performance.now() - began);
 }
-async function checkGridBoundaries(c, health) {
+async function checkGridBoundaries(clients, health) {
+  const c = clients[0];
   const results = [];
   for (const [width, height] of [[257, 256], [256, 257], [320, 320], [256, 256]]) {
     const definition = { id: 'lab-grid-limit-boundary', name: 'Grid limit probe', width, height,
@@ -96,7 +97,10 @@ async function checkGridBoundaries(c, health) {
     if (!accepted) { assert.match(row.message, /between 16 and 256/); assert.equal((await health()).map, before.map); }
     results.push({ width, height, accepted, message: row.message ?? null });
   }
-  const changed = c.wait(row => row.type === 'mapChange' && row.map.id === map.id); c.send({ type: 'selectMap', mapId: map.id }); await changed;
+  // Both peers must receive the selected map's authoritative mapChange state.
+  // Pregame need not broadcast a later periodic state before an order.
+  const changed = clients.map(peer => peer.wait(row => row.type === 'mapChange' && row.map.id === map.id));
+  c.send({ type: 'selectMap', mapId: map.id }); await Promise.all(changed);
   return results;
 }
 async function runLoad(count) {
@@ -134,17 +138,13 @@ async function runLoad(count) {
   try {
     await launch(); clients.push(await client(portNumber, 0)); clients.push(await client(portNumber, 1));
     assert.ok(clients[0].welcome.maps.some(m => m.id === map.id && !m.name.startsWith('Lab')));
-    if (!report.gridBoundaryProtocol) report.gridBoundaryProtocol = await checkGridBoundaries(clients[0], health);
+    if (!report.gridBoundaryProtocol) report.gridBoundaryProtocol = await checkGridBoundaries(clients, health);
     if (count !== 24) {
       const waits = clients.map(c => c.wait(row => row.type === 'state' && row.armySize === count));
       clients[0].send({ type: 'selectArmySize', count }); await Promise.all(waits);
     }
-    // mapChange reaches each peer independently, and a coalesced prior-map
-    // snapshot can still be in transit after the boundary probe. Establish a
-    // fresh selected-map state for both peers before validating fog or units.
-    await Promise.all(clients.map(c => c.wait(row => row.type === 'state'
-      && row.mapId === map.id && row.armySize === count)));
     for (const c of clients) {
+      assert.equal(c.current.mapId, map.id);
       assert.equal(c.current.armySize, count); assert.equal(own(c.current, c.team).length, count / 2);
       assert.equal(Buffer.from(c.current.visibility.data, 'base64').length, Math.ceil(map.width * map.height / 4));
       await order(c, { type: 'setStance', ids: own(c.current, c.team).map(u => u[0]), stance: 'noAttack' }, 'STANCE ORDER');
