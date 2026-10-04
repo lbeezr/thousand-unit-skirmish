@@ -62,8 +62,10 @@ the supported hosted runner was qualified in
 [run 37215311854](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37215311854).
 That Open Field pilot's diagnostic Move remains a distinct evidence scope.
 
-The cloud testing owner's [registered runner PR331](https://github.com/lbeezr/thousand-unit-skirmish/pull/331)
-and the adapter's normal-entry hosted invocation/PNG inspection are **pending**.
+The [registered runner PR331](https://github.com/lbeezr/thousand-unit-skirmish/pull/331)
+is integrated. Its additive per-case artifact-directory context and CPU test
+registration follow-up, and the normal-entry hosted invocation/PNG inspection,
+are **pending** with the cloud testing owner.
 Inspect every retained PNG at the exact reviewed source/release before claiming
 this interaction passed. Record admitted seeds/map/mode, served identity and
 Worker/command/feedback/displacement evidence. A supplied player-pathing
