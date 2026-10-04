@@ -135,13 +135,15 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
   assert.match(code, /const port = await reservePort\(\)/);
   code = code.replace('const port = await reservePort()', 'const port = 4321');
   for (const mode of ['browser-fault', 'asset-timeout', 'spawn-fault', 'evidence-fault', 'missing-dependency',
-    'wrong-version', 'vendor-404', 'vendor-hash', 'room-404', 'optional-icon', 'icon-forbidden', 'saturated-icons']) {
-    let written, probeReads = 0, launches = 0; const cleanup = [], listeners = new Map();
+    'wrong-version', 'vendor-404', 'vendor-hash', 'room-404', 'optional-icon', 'icon-forbidden', 'saturated-icons',
+    'feature-pass', 'feature-blocked', 'feature-timeout', 'second-page-fault']) {
+    let written, probeReads = 0, launches = 0, pageCount = 0; const cleanup = [], listeners = new Map();
+    const featureMode = mode.startsWith('feature-') || mode === 'second-page-fault';
     const fault = Object.assign(new Error('private-token-in-error'), { code: mode === 'spawn-fault' ? 'ENOENT' : 'EPERM' });
     const server = { pid: 123, exitCode: null, stdout: { on() {} }, stderr: { on() {} },
       on(event, callback) { if (mode === 'spawn-fault' && event === 'error') callback(fault); } };
     const iconMode = ['optional-icon', 'icon-forbidden'].includes(mode);
-    const page = { errors: iconMode ? [] : ['private-browser-token'], wait: async () => { throw new Error('asset timeout: private-token'); }, cdp: {
+    const page = { errors: iconMode || featureMode ? [] : ['private-browser-token'], wait: async () => { throw new Error('asset timeout: private-token'); }, cdp: {
       on: (event, callback) => listeners.set(event, callback),
       call: async method => { assert.equal(method, 'Page.navigate');
         if (mode === 'saturated-icons') for (let i = 0; i < 100; i++) {
@@ -158,7 +160,7 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
         if (expression !== 'window.__rtsQualification.errors') return { entry: 'game', boot: 'ready', canvas: true,
           assets: { ready: false, state: 'load-failed', loaded: 0, reason: 'private-token' }, private: 'private-token' };
         probeReads++; cleanup.push('read-flags'); if (mode === 'evidence-fault') throw fault;
-        if (iconMode) return [];
+        if (iconMode || featureMode) return [];
         return [{ kind: 'console-error', payload: 'private-token' }, { kind: 'resource-error' }]; },
     } };
     const context = vm.createContext({ assert, createHash, Buffer, path, os, Date, setTimeout, AbortSignal, URL,
@@ -174,6 +176,7 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
       writeFile: async (_, text) => { written = JSON.parse(text); }, spawn: (_, args, options) => {
         assert.equal(args[0], '/pack/room-supervisor.mjs');
         assert.equal(options.env.RTS_ROOM_DATA_DIRECTORY, '/owned-temp/rooms');
+        assert.equal(options.env.RTS_MAP, featureMode ? undefined : 'maps/open-field.json');
         assert.equal(options.env.RTS_ACCESS_PASSWORD, undefined); return server;
       },
       stopChild: async (_, options) => { assert.equal(options.graceMs, 9000); cleanup.push('server'); },
@@ -182,16 +185,31 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
         json: async () => ({ ok: true, enabled: true }),
         arrayBuffer: async () => mode === 'vendor-hash' && url.endsWith('/vendor/three.module.js') ? Buffer.from('different') : bytes }),
       createFortifiedBrowser: async () => { launches++; if (mode === 'browser-fault') throw fault;
-        return { version: { product: 'CPU mock' }, page: async url => { assert.equal(url, 'about:blank'); return page; },
+        return { version: { product: 'CPU mock' }, page: async url => { assert.equal(url, 'about:blank'); pageCount++;
+          return mode === 'second-page-fault' && pageCount === 2 ? { ...page, errors: ['private-second-page-token'] } : page; },
           dispose: async () => { cleanup.push('browser'); } }; },
     });
     vm.runInContext(code, context);
-    const report = JSON.parse(JSON.stringify(await context.qualifyPackedGame('/pack.json', '/evidence')));
-    assert.equal(report.status, 'failed'); assert.equal(written.status, 'failed');
+    const captureCase = featureMode ? { id: 'novice-flow', run: async runtime => {
+      assert.equal(runtime.origin, 'http://127.0.0.1:4321'); assert.equal(runtime.pack.sourceRevision, source.revision);
+      if (mode === 'second-page-fault') await runtime.openPage();
+      if (mode === 'feature-timeout') throw vm.runInContext('new CaptureCaseTimeoutError()', context);
+      return mode === 'feature-blocked' ? 'blocked' : 'passed';
+    } } : undefined;
+    const report = JSON.parse(JSON.stringify(await context.qualifyPackedGame('/pack.json', '/evidence', { captureCase })));
+    const expectedStatus = mode === 'feature-pass' ? 'passed' : mode === 'feature-blocked' ? 'blocked' : 'failed';
+    assert.equal(report.status, expectedStatus); assert.equal(written.status, expectedStatus);
     assert.ok(cleanup.includes('server'));
     if (!['missing-dependency', 'wrong-version'].includes(mode)) assert.ok(cleanup.includes('temp'));
     if (cleanup.includes('temp')) assert.ok(cleanup.indexOf('server') < cleanup.indexOf('temp'));
     assert.doesNotMatch(JSON.stringify(report), /private-.*token/);
+    if (featureMode) {
+      assert.equal(report.scope, 'ordinary-feature-novice-flow'); assert.equal(report.server.map, null);
+      assert.equal(report.pageBoots.length, mode === 'second-page-fault' ? 2 : 1);
+      if (mode === 'feature-timeout') assert.equal(report.issues[0].code, 'scenario-timeout');
+      if (mode === 'second-page-fault') assert.ok(report.issues.some(issue => issue.code === 'browser-errors'));
+      continue;
+    }
     if (['missing-dependency', 'wrong-version', 'vendor-404', 'vendor-hash', 'room-404'].includes(mode)) {
       assert.equal(launches, 0);
       assert.equal(report.issues[0].stage, ['missing-dependency', 'wrong-version'].includes(mode) ? 'dependencies' : 'server');

@@ -136,8 +136,9 @@ restores valid combat stances and asserts checkpoint recovery before testing the
 authored 24-unit match; the complete native scenario passes both seats at its
 reviewed final head `7668c7196b934f4548431e6634c22be4ab1aa466`. It changes no
 runtime sight ranges or forest rules. Millrace's production timeout remains owned
-by the AI workstream (`01a10297`). Full-suite success and rendered acceptance remain
-unverified; the original fail-fast runs leave those 72 checks unexecuted.
+by the AI workstream (`01a10297`). Full-suite success remains unverified; the
+original fail-fast runs leave those 72 checks unexecuted. Bounded packed pixels
+are now qualified as described below; ordinary feature acceptance remains open.
 
 The delivery owner reports staging deployment `c487990a-70c0-4f71-a125-8786681e87ee`
 SUCCESS at 14:50:50 UTC on 4 October 2026, source
@@ -147,9 +148,18 @@ separate from render evidence. [Hosted qualification #306](https://github.com/lb
 adds a bounded normal-sandbox, non-root attempt on standard GitHub-hosted Actions:
 WebGL2 preflight, clean locally served pack, live worker movement, two advancing
 canvas captures/readbacks, full-page PNGs and retained diagnostics. The CI owner
-retains actual hosted execution/artifact inspection; staging pixels, the full
-environment pilot and ordinary roster/art acceptance remain with the cloud testing
-and implementation owners. A queued run does not establish renderer support.
+completed that bounded proof through [fix-forward #323](https://github.com/lbeezr/thousand-unit-skirmish/pull/323):
+[run37215311854](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37215311854)
+passed at clean `52e19ec0180dd1c6f8002984fea6e43af0b6d69c`, release
+`sha256:ebdbd76649c04708024b96d288611ce43d9a752d86229e9f6564194751a0b32a`.
+The four actual PNGs were inspected; frames44→50 track worker0/team0 moving3.9032
+units with214 changed canvas pixels,13 decoded image receipts and no unexpected
+browser/cleanup errors. This Open Field500-unit pilot qualifies infrastructure,
+not normal paid-unit animation, novice flow, gather/drop-off routing, staging,
+art or performance acceptance. Those remain with their implementation owners.
+The [shared adapter/dispatch guide](renderer-qualification.md) defines one bounded
+ordinary-feature batch and separate feature script ownership; missing cases and
+unresolved art checks cannot borrow the pilot's pass.
 
 ## Critical regression contracts
 
@@ -291,7 +301,7 @@ PRs rather than folding them into this documentation change.
 
 | Rank / status | Owner and write boundary | Completion evidence |
 | --- | --- | --- |
-| 1 — probe implemented; game pixels blocked | Cloud testing owner; preflight/render harness | WebGL2 readback probe and CPU failure contracts merged in #287. Still needs supported isolated sandbox, packed production draw/atlas decode/temporal PNG proof and separate staging access result. Replace the dated blocker record. |
+| 1 — bounded packed pilot qualified; ordinary/staging acceptance open | CI/capture owner; shared runner/workflow; feature owners retain their scripts and acceptance | #323/run37215311854 establishes sandboxed WebGL2, identified packed draw,13 decoded image receipts and advancing canvas PNGs at52e19ec. The [adapter guide](renderer-qualification.md) supports one explicit ordinary batch; foot owns paid Worker/Spearman heading/time evidence, HUD owns novice flow, and resource owns native work routes. Seven Spearman art gaps cannot pass. No normal-feature or staging claim follows from the500-unit Open Field pilot. |
 | 2 — CPU temporal regression implemented; browser pending | Cloud testing owner; existing browser/CPU presentation harnesses | #287 checks 64 supplied-position cases and rejects frozen clocks/duplicate moving cells. Normal Worker/Spearman Move/Stop, real packet cadence and jitter/reconnect render checks above remain pending. |
 | 3 — CPU heading faults implemented; reviewed art pending | Cloud testing owner with art owner; directional fixture/reference evidence | #287 rejects forced southeast UV selection. Still needs eight reviewed rendered bearings linked to admitted source identity; seven Spearman gait directions remain idle fallbacks. No unreviewed golden/style change. |
 | 4 — lane wiring implemented; workload acceptance separate | CI wiring owner; `package.json`, `scripts/ci.mjs`, `.github/` | #289 adds fast/simulation/visual/performance selection, exact registry/shard regressions and scoped JSON evidence while retaining the full CPU suite. Earlier executions retain renderer/performance diagnostics with their source provenance. Scheduled depth and qualified game visuals remain pending. |

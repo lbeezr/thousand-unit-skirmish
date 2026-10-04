@@ -1,0 +1,74 @@
+name: Ordinary game capture
+
+on:
+  workflow_dispatch:
+    inputs:
+      cases:
+        description: Reviewed ordinary feature cases on the selected ref
+        type: choice
+        required: true
+        default: all
+        options:
+          - all
+          - worker-animations
+          - novice-flow
+          - worker-routes
+
+permissions:
+  contents: read
+
+# Serialize the ordinary batch across refs; one owner records its exact source.
+concurrency:
+  group: ordinary-game-capture
+  cancel-in-progress: false
+
+jobs:
+  ordinary-features:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Check adapters before any browser launch
+        env:
+          CASES: ${{ inputs.cases }}
+          EVIDENCE: ${{ runner.temp }}/ordinary-game-capture
+        run: |
+          mkdir -p "$EVIDENCE"
+          node scripts/renderer-feature-capture.mjs --check "$CASES" > "$EVIDENCE/adapters.json"
+      - name: Establish sandboxed WebGL2 capability once
+        env:
+          EVIDENCE: ${{ runner.temp }}/ordinary-game-capture
+        run: |
+          mkdir -p "$EVIDENCE"
+          test "$(id -u)" -gt 0
+          node scripts/renderer-qualification.mjs --preflight "$EVIDENCE" > "$EVIDENCE/preflight.log"
+      - name: Pack identified source and install locked runtime
+        run: |
+          node scripts/pack-railway-release.mjs > "${{ runner.temp }}/ordinary-pack.json"
+          node --input-type=module - "${{ runner.temp }}/ordinary-pack.json" <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+          const pack = JSON.parse(readFileSync(process.argv[2], 'utf8'));
+          execFileSync('npm', ['ci', '--omit=dev', '--no-audit', '--no-fund'], { cwd: pack.directory, stdio: 'inherit' });
+          NODE
+      - name: Run one bounded ordinary batch
+        env:
+          CASES: ${{ inputs.cases }}
+          EVIDENCE: ${{ runner.temp }}/ordinary-game-capture
+        run: node scripts/renderer-feature-capture.mjs "${{ runner.temp }}/ordinary-pack.json" "$EVIDENCE" "$CASES" > "$EVIDENCE/batch.log"
+      - name: Retain source-bound case receipts and images
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ordinary-game-capture-${{ github.sha }}
+          path: ${{ runner.temp }}/ordinary-game-capture/
+          retention-days: 1
+          if-no-files-found: warn

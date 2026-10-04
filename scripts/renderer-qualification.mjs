@@ -14,6 +14,9 @@ import { stopChild } from './temporary-resources.mjs';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+export class CaptureCaseTimeoutError extends Error {
+  constructor() { super('Capture case exceeded its time bound'); this.name = 'CaptureCaseTimeoutError'; }
+}
 
 // Chrome descendants can finish writing an owned profile after Browser.close.
 // Retry only its idempotent disposal on ENOTEMPTY, never browser launch, sandbox
@@ -147,19 +150,25 @@ async function reservePort() {
   return port;
 }
 
-export async function qualifyPackedGame(packFile, evidenceDirectory) {
+// Ordinary feature adapters share the qualified pack/server/browser ownership.
+// The default movement contract below remains independently available.
+export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCase } = {}) {
   await mkdir(evidenceDirectory, { recursive: true });
   const report = { schemaVersion: 1, scope: 'local-packed-game-movement', status: 'failed', sandbox: 'enabled',
     uid: process.getuid?.() ?? null, source: null, release: null, runtimeDependencies: [], frames: [], assets: [],
     browserEvents: [], droppedBrowserEvents: 0, unexpectedBrowserEvent: false, issues: [],
     cleanup: { maxAttempts: 3, attempts: 0, errors: [] } };
   let stage = 'release', browser, page, server, temporary;
+  const pages = [];
   const recordBrowserEvent = event => {
     if (event.expected !== true) report.unexpectedBrowserEvent = true;
     if (report.browserEvents.length < 100) report.browserEvents.push(event);
     else report.droppedBrowserEvents++;
   };
   try {
+    if (captureCase) assert.ok(/^[a-z][a-z-]{0,63}$/.test(captureCase.id) && typeof captureCase.run === 'function',
+      'capture adapter identity and executable are required');
+    if (captureCase) report.scope = `ordinary-feature-${captureCase.id}`;
     assert.ok(Number.isInteger(report.uid) && report.uid > 0, 'qualification must run as a non-root user');
     report.source = { revision: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
       dirty: execFileSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' }).trim() !== '' };
@@ -184,7 +193,8 @@ export async function qualifyPackedGame(packFile, evidenceDirectory) {
     const port = await reservePort(), origin = `http://127.0.0.1:${port}`;
     let serverLog = '', serverError;
     server = spawn(process.execPath, [path.join(pack.directory, 'room-supervisor.mjs')], { cwd: pack.directory,
-      env: { PATH: process.env.PATH, PORT: String(port), RTS_HOST: '127.0.0.1', RTS_MAP: 'maps/open-field.json',
+      env: { PATH: process.env.PATH, PORT: String(port), RTS_HOST: '127.0.0.1',
+        ...(captureCase ? {} : { RTS_MAP: 'maps/open-field.json' }),
         RTS_CUSTOM_MAP_DIRECTORY: path.join(temporary, 'maps'), RTS_ROOM_DATA_DIRECTORY: path.join(temporary, 'rooms') },
       stdio: ['ignore', 'pipe', 'pipe'] });
     server.on('error', error => { serverError = error; });
@@ -198,7 +208,7 @@ export async function qualifyPackedGame(packFile, evidenceDirectory) {
       assert.ok(Date.now() < deadline, 'packed server startup timed out'); await sleep(100);
     }
     // Retain only known safe startup facts, never protocol frames or session tokens.
-    report.server = { entry: 'room-supervisor.mjs', map: 'open-field', logBytes: Buffer.byteLength(serverLog), listening: true };
+    report.server = { entry: 'room-supervisor.mjs', map: captureCase ? null : 'open-field', logBytes: Buffer.byteLength(serverLog), listening: true };
     const roomStatus = await fetch(`${origin}/api/rooms/status`, { signal: AbortSignal.timeout(5000) });
     assert.equal(roomStatus.status, 200, 'packed supervisor must serve the room-status API');
     assert.equal((await roomStatus.json()).enabled, true, 'packed room service must be enabled');
@@ -212,68 +222,81 @@ export async function qualifyPackedGame(packFile, evidenceDirectory) {
       (vendor ? report.runtimeDependencies[0].files : report.assets).push({ path: file, sha256: hash });
     }
     stage = 'browser'; browser = withProfileCleanup(await createFortifiedBrowser(), report.cleanup); report.browser = browser.version;
-    page = await browser.page('about:blank', { beforeScript: `(${installReadbackProbe.toString()})()` });
-    page.cdp.on('Runtime.consoleAPICalled', event => {
-      if (event.type === 'error') recordBrowserEvent({ kind: 'console-error' });
-    });
-    const requests = new Map();
-    page.cdp.on('Network.requestWillBeSent', event => {
-      if (requests.size < 2000) requests.set(event.requestId, safeRequestPath(event.request.url, origin, pack.files));
-    });
-    page.cdp.on('Network.responseReceived', event => {
-      if (event.response.status >= 400) {
-        const pathname = safeRequestPath(event.response.url, origin, pack.files);
-        recordBrowserEvent({ kind: 'http-error', status: event.response.status, path: pathname,
-          // Chrome's implicit optional icon request is not a game resource.
-          expected: event.response.status === 404 && pathname === '/favicon.ico' });
+    const openPage = async () => {
+      const page = await browser.page('about:blank', { beforeScript: `(${installReadbackProbe.toString()})()` });
+      pages.push(page);
+      page.cdp.on('Runtime.consoleAPICalled', event => {
+        if (event.type === 'error') recordBrowserEvent({ kind: 'console-error' });
+      });
+      const requests = new Map();
+      page.cdp.on('Network.requestWillBeSent', event => {
+        if (requests.size < 2000) requests.set(event.requestId, safeRequestPath(event.request.url, origin, pack.files));
+      });
+      page.cdp.on('Network.responseReceived', event => {
+        if (event.response.status >= 400) {
+          const pathname = safeRequestPath(event.response.url, origin, pack.files);
+          recordBrowserEvent({ kind: 'http-error', status: event.response.status, path: pathname,
+            // Chrome's implicit optional icon request is not a game resource.
+            expected: event.response.status === 404 && pathname === '/favicon.ico' });
+        }
+      });
+      page.cdp.on('Network.loadingFinished', event => requests.delete(event.requestId));
+      page.cdp.on('Network.loadingFailed', event => {
+        recordBrowserEvent({ kind: 'request-failed', path: requests.get(event.requestId) ?? null, canceled: event.canceled === true });
+        requests.delete(event.requestId);
+      });
+      return page;
+    };
+    page = await openPage();
+    if (captureCase) {
+      stage = 'scenario';
+      const status = await captureCase.run({ page, openPage, origin, pack, browserVersion: browser.version });
+      assert.ok(['passed', 'failed', 'blocked'].includes(status), 'capture adapter must report a known status');
+      report.status = status;
+    } else {
+      await page.cdp.call('Page.navigate', { url: `${origin}/?rendererCapture=environment-state` });
+      stage = 'assets';
+      const status = await page.wait('window.__rtsEnvironmentAssetStatus?.ready && window.__rtsEnvironmentAssetStatus', 'pilot runtime assets', 30000);
+      assert.equal(status.oakDepletionAtlas, true, 'default oak atlas must decode');
+      assert.ok(status.loadedFiles.length > 0, 'decoded runtime asset evidence is required');
+      for (const file of status.loadedFiles) {
+        const relative = file.path.startsWith('assets/') ? file.path : `assets/environment/frontier-interactive-v1/${file.path}`;
+        assert.ok(pack.files.includes(relative), 'browser-decoded asset must be in the pack');
+        assert.equal(file.sha256, sha256(await readFile(path.join(pack.directory, relative))), 'decoded asset must match packed bytes');
+        assert.ok(file.dimensionsPx.width > 0 && file.dimensionsPx.height > 0, 'runtime image must decode dimensions');
+        report.assets.push({ path: relative, sha256: file.sha256, dimensionsPx: file.dimensionsPx });
       }
-    });
-    page.cdp.on('Network.loadingFinished', event => requests.delete(event.requestId));
-    page.cdp.on('Network.loadingFailed', event => {
-      recordBrowserEvent({ kind: 'request-failed', path: requests.get(event.requestId) ?? null, canceled: event.canceled === true });
-      requests.delete(event.requestId);
-    });
-    await page.cdp.call('Page.navigate', { url: `${origin}/?rendererCapture=environment-state` });
-    stage = 'assets';
-    const status = await page.wait('window.__rtsEnvironmentAssetStatus?.ready && window.__rtsEnvironmentAssetStatus', 'pilot runtime assets', 30000);
-    assert.equal(status.oakDepletionAtlas, true, 'default oak atlas must decode');
-    assert.ok(status.loadedFiles.length > 0, 'decoded runtime asset evidence is required');
-    for (const file of status.loadedFiles) {
-      const relative = file.path.startsWith('assets/') ? file.path : `assets/environment/frontier-interactive-v1/${file.path}`;
-      assert.ok(pack.files.includes(relative), 'browser-decoded asset must be in the pack');
-      assert.equal(file.sha256, sha256(await readFile(path.join(pack.directory, relative))), 'decoded asset must match packed bytes');
-      assert.ok(file.dimensionsPx.width > 0 && file.dimensionsPx.height > 0, 'runtime image must decode dimensions');
-      report.assets.push({ path: relative, sha256: file.sha256, dimensionsPx: file.dimensionsPx });
+      const state = await page.wait('window.__rtsEnvironmentStateSnapshot?.workers.some(w => w.team === window.__rtsEnvironmentStateSnapshot.team) && window.__rtsEnvironmentStateSnapshot', 'live worker snapshot');
+      assert.equal(state.mapId, 'open-field', 'capture must use the packed Open Field map');
+      const worker = state.workers.find(w => w.team === state.team);
+      const start = await page.cdp.evaluate(`({worker:${JSON.stringify(worker)}, number:window.__rtsQualification.number,time:performance.now()})`);
+      const command = { type: 'move', ids: [worker.id], x: worker.x + 8, z: worker.z + 8 };
+      stage = 'movement';
+      assert.equal(await page.cdp.evaluate(`window.__rtsEnvironmentCaptureCommand(${JSON.stringify(command)})`), true, 'move must use the live game socket');
+      let previous = start;
+      for (let i = 1; i <= 2; i++) {
+        await page.wait(`window.__rtsEnvironmentStateSnapshot.workers.some(w => w.id === ${worker.id} && w.task === 'moving' && Math.hypot(w.x - ${previous.worker.x},w.z - ${previous.worker.z}) >= 0.3)`, 'live worker displacement');
+        const frame = await page.cdp.evaluate(`window.__rtsQualification.request(${worker.id})`);
+        const png = Buffer.from((await page.cdp.call('Page.captureScreenshot', { format: 'png', fromSurface: true })).data, 'base64');
+        const canvasPng = Buffer.from(frame.canvasPng, 'base64'); delete frame.canvasPng;
+        validateFrame(frame, png, canvasPng);
+        const name = `movement-${i}.png`; await writeFile(path.join(evidenceDirectory, name), png);
+        frame.canvas = `canvas-${i}.png`; await writeFile(path.join(evidenceDirectory, frame.canvas), canvasPng);
+        frame.canvasSha256 = sha256(canvasPng);
+        frame.png = name; frame.pngSha256 = sha256(png); frame.readbackSha256 = sha256(Buffer.from(frame.pixels));
+        report.frames.push(frame); previous = frame;
+      }
+      validateMotion(start, report.frames); report.start = start; report.command = command;
+      report.status = 'passed';
     }
-    const state = await page.wait('window.__rtsEnvironmentStateSnapshot?.workers.some(w => w.team === window.__rtsEnvironmentStateSnapshot.team) && window.__rtsEnvironmentStateSnapshot', 'live worker snapshot');
-    assert.equal(state.mapId, 'open-field', 'capture must use the packed Open Field map');
-    const worker = state.workers.find(w => w.team === state.team);
-    const start = await page.cdp.evaluate(`({worker:${JSON.stringify(worker)}, number:window.__rtsQualification.number,time:performance.now()})`);
-    const command = { type: 'move', ids: [worker.id], x: worker.x + 8, z: worker.z + 8 };
-    stage = 'movement';
-    assert.equal(await page.cdp.evaluate(`window.__rtsEnvironmentCaptureCommand(${JSON.stringify(command)})`), true, 'move must use the live game socket');
-    let previous = start;
-    for (let i = 1; i <= 2; i++) {
-      await page.wait(`window.__rtsEnvironmentStateSnapshot.workers.some(w => w.id === ${worker.id} && w.task === 'moving' && Math.hypot(w.x - ${previous.worker.x},w.z - ${previous.worker.z}) >= 0.3)`, 'live worker displacement');
-      const frame = await page.cdp.evaluate(`window.__rtsQualification.request(${worker.id})`);
-      const png = Buffer.from((await page.cdp.call('Page.captureScreenshot', { format: 'png', fromSurface: true })).data, 'base64');
-      const canvasPng = Buffer.from(frame.canvasPng, 'base64'); delete frame.canvasPng;
-      validateFrame(frame, png, canvasPng);
-      const name = `movement-${i}.png`; await writeFile(path.join(evidenceDirectory, name), png);
-      frame.canvas = `canvas-${i}.png`; await writeFile(path.join(evidenceDirectory, frame.canvas), canvasPng);
-      frame.canvasSha256 = sha256(canvasPng);
-      frame.png = name; frame.pngSha256 = sha256(png); frame.readbackSha256 = sha256(Buffer.from(frame.pixels));
-      report.frames.push(frame); previous = frame;
-    }
-    validateMotion(start, report.frames); report.start = start; report.command = command;
-    report.status = 'passed';
   } catch (error) {
-    report.issues.push({ stage, code: error instanceof assert.AssertionError ? 'contract-failed' : 'execution-failed',
+    report.issues.push({ stage, code: error instanceof CaptureCaseTimeoutError ? 'scenario-timeout'
+      : error instanceof assert.AssertionError ? 'contract-failed' : 'execution-failed',
       systemCode: ['ENOENT', 'EACCES', 'EPERM', 'ENOSPC', 'ECONNREFUSED', 'EADDRINUSE', 'ETIMEDOUT'].includes(error.code) ? error.code : null,
       errorType: ['Error', 'TypeError', 'RangeError', 'AssertionError'].includes(error.name) ? error.name : 'Error',
       message: error instanceof assert.AssertionError ? error.message.split('\n')[0] : `Qualification failed during ${stage}` });
   } finally {
-    if (page) {
+    for (const page of pages) {
       if (page.errors.length) recordBrowserEvent({ kind: 'exception', count: page.errors.length });
       try {
         const flags = await page.cdp.evaluate('window.__rtsQualification.errors');
@@ -292,6 +315,7 @@ export async function qualifyPackedGame(packFile, evidenceDirectory) {
           assets: state?.assets ? { state: ['loading', 'unavailable', 'load-failed', 'ready'].includes(state.assets.state) ? state.assets.state : null,
             ready: state.assets.ready === true, oakDepletionAtlas: state.assets.oak === true,
             loaded: Number.isInteger(state.assets.loaded) && state.assets.loaded >= 0 ? state.assets.loaded : null } : null };
+        (report.pageBoots ??= []).push(report.boot);
       } catch { report.status = 'failed'; report.issues.push({ stage: 'evidence', code: 'boot-evidence-unavailable' }); }
       if (report.unexpectedBrowserEvent) { report.status = 'failed'; report.issues.push({ stage: 'browser', code: 'browser-errors' }); }
     }
