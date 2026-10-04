@@ -54,19 +54,23 @@ accumulate a large disconnected PR or turn the producer into an approval queue.
 
 Use the [testing strategy](docs/testing-strategy.md) and existing
 [command guide](docs/testing.md). Inspect `node scripts/ci.mjs --list`, then run
-focused checks for the changed contract and required repository checks. Prefer
+focused checks for the changed contract and required repository checks. Named
+`test:fast` and `test:simulation` lanes partition the full CPU suite; visual and
+performance lanes establish only their selected workloads. Prefer
 seeded scenarios through existing harnesses over repeated manual clicks. For
-browser/render work, first run `node scripts/browser-preflight.mjs --launch` in
-the intended cloud environment; startup readiness alone is not WebGL2/game-render
-acceptance. Record unsupported capability once, retain its owner/next action and
+browser/render work, first run `node scripts/renderer-capability.mjs --launch` in
+the intended cloud environment. Its WebGL2 readbacks establish graphics capability;
+packed-game frames and ordinary-game acceptance require separate evidence.
+Record blocked capability once, retain its owner/next action and
 continue independent work. Do not bypass security or depend on stopped Mac testing.
 
 Record source SHA, clean release digest and exact served/deployed identity
 separately. CPU/process/asset checks and preview screenshots do not close an
 ordinary-game visual outcome. The implementation owner retains that verification
 at the identified release; mark missing evidence incomplete. Review visual
-reference changes against approved art before replacing baselines. Proposed
-test lanes stay proposed until their wiring and regressions are merged.
+reference changes against approved art before replacing baselines. Use `--list`
+for plans and `--report=PATH` for scoped execution evidence; a plan, focused lane
+or shard does not claim the full suite.
 
 ## Shared work
 
