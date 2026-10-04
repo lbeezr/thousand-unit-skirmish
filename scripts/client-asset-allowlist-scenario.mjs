@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { WORKER_PORTRAITS, INFANTRY_PORTRAITS, BARRACKS_PORTRAIT } from '../src/selection-portrait.mjs';
+import { WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, BARRACKS_PORTRAIT } from '../src/selection-portrait.mjs';
 import { buildingSpriteUrl } from '../src/building-sprites.mjs';
 import { moduleImports } from './module-imports.mjs';
 import { BROWSER_ENTRYPOINTS } from './check-runtime-imports.mjs';
@@ -86,8 +86,10 @@ for (const [role, source, sha256] of [
   ['boughward-worker', 'docs/art-direction/boughward-roster-v1/extracted/worker/00.png', '7296c0b24ad61c02b65bfc9d6d88c8f46391bfa1efbaeba2e4c2615de07f9aa6'],
   ['infantry', 'docs/art-direction/human-roster-v1/source/infantry-idle-facings.png', '0a94a11f2dffd4b722d3a732aa4d3117283d3fa41c89aac6f03487d7a7930b38'],
   ['boughward-infantry', 'docs/art-direction/boughward-roster-v1/extracted/infantry/00.png', '17f6ff8f66274a00c1206301b00a8e298ffc7692ec307975c77300e2a62cb33c'],
+  ['archer', 'docs/art-direction/human-roster-v1/source/archer-idle-facings.png', '29c3b3a59b3391797f34c6c29c05dc664c9bc9551e94abf56c0b132e9a159520'],
+  ['boughward-archer', 'docs/art-direction/boughward-roster-v1/extracted/archer/00.png', 'acac85ca7b45351663820ca69e8994aca8c74910915aa7d0fb164c7f9c6ce635'],
 ]) {
-  const portrait = WORKER_PORTRAITS[role] || INFANTRY_PORTRAITS[role], resource = portrait.asset.slice(1);
+  const portrait = WORKER_PORTRAITS[role] || INFANTRY_PORTRAITS[role] || ARCHER_PORTRAITS[role], resource = portrait.asset.slice(1);
   assert.ok(allowedUi.has(resource), `portrait must be served: ${resource}`);
   const image = readFileSync(path.join(root, resource));
   assert.equal(createHash('sha256').update(image).digest('hex'), sha256, 'portrait reuses inspected source bytes');

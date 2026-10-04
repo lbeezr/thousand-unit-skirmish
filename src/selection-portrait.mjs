@@ -29,7 +29,20 @@ export const INFANTRY_PORTRAITS = Object.freeze({
   }),
 });
 
-const UNIT_PORTRAITS = Object.freeze({ ...WORKER_PORTRAITS, ...INFANTRY_PORTRAITS });
+export const ARCHER_PORTRAITS = Object.freeze({
+  archer: Object.freeze({
+    entryId: 'unit.archer', appearanceFamily: 'Human',
+    asset: '/assets/ui/portraits/human-archer-source.png',
+    sourceWidth: 1774, cropX: 970, cropY: 0, cropSize: 310,
+  }),
+  'boughward-archer': Object.freeze({
+    entryId: 'unit.archer', appearanceFamily: 'Boughward',
+    asset: '/assets/ui/portraits/boughward-archer-source.png',
+    sourceWidth: 768, cropX: 250, cropY: 0, cropSize: 400,
+  }),
+});
+
+const UNIT_PORTRAITS = Object.freeze({ ...WORKER_PORTRAITS, ...INFANTRY_PORTRAITS, ...ARCHER_PORTRAITS });
 
 function unitPortrait(kind, appearanceRole) {
   const portrait = UNIT_PORTRAITS[appearanceRole];

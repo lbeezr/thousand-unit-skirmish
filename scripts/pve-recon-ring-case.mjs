@@ -3,12 +3,14 @@ import { readFile } from 'node:fs/promises';
 import { gunzipSync } from 'node:zlib';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
+import { economyRulesetRevision } from '../src/economy-profile.mjs';
+import { migrateFoodToolsCheckpoint, PRE_FOOD_TOOLS_RULESETS } from '../src/server/worker-food-tools.mjs';
 
 const seeds = [20260925, 0], identity = { matchModeId: 'skirmish', matchModeVersion: 1 };
 const bytes = mask => atob(mask.data);
 const seen = (mask, cell) => (mask.charCodeAt(cell >> 2) >> ((cell & 3) * 2)) & 3;
 
-/** Unedited actual Medium endpoint; one minute of full policy, not a new match. */
+/** Retained actual Medium endpoint, migrated as at server startup; one minute of full policy. */
 export async function replayRememberedScoutRing({ cold = false, disableScout = false } = {}) {
   process.env.RTS_MAP = 'maps/open-field.json'; process.env.RTS_GAME_MODE = 'pvp'; process.env.RTS_PREGAME = '0';
   delete process.env.RTS_MATCH_STATE_PATH;
@@ -20,7 +22,15 @@ export async function replayRememberedScoutRing({ cold = false, disableScout = f
   const view = team => toOpponentObservation(r.observe(team), team, map);
   const trace = [], samples = [];
   try {
-    r.restore(initial); assert.equal(r.observe(0).tick, 108000);
+    assert.equal(initial.rulesetRevision, PRE_FOOD_TOOLS_RULESETS[initial.economyProfileId]);
+    assert.throws(() => r.restore(initial), /economy profile or gameplay ruleset revision mismatch/,
+      'strict restore still rejects the historical content pin before startup migration');
+    const migrated = migrateFoodToolsCheckpoint(structuredClone(initial));
+    const expected = structuredClone(initial);
+    expected.rulesetRevision = economyRulesetRevision(initial.economyProfileId);
+    expected.state.teamUpgrades = initial.state.teamUpgrades.map(upgrades => ({ ...upgrades, foodTools: false }));
+    assert.deepEqual(migrated, expected, 'production migration changes only the content pin and unpurchased Food Tools flags');
+    r.restore(migrated); assert.equal(r.observe(0).tick, 108000);
     assert.equal(r.checkpoint().matchModeId, nativeIdentity.matchModeId);
     assert.equal(r.checkpoint().matchModeVersion, nativeIdentity.matchModeVersion);
     const starts = [view(0), view(1)], scouts = starts.map(v => v.units.friendly.find(u => u.kind === 'scout'));
