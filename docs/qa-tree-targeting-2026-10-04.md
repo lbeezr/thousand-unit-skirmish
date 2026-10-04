@@ -43,7 +43,7 @@ miss the old circle. The shorter thicket can remain inside it. This is source
 pixel/geometry evidence, not a rendered screenshot or a missing registration.
 The highpine source page's alpha equals its runtime WebP alpha exactly.
 
-The default context-order path now raycasts the current canopy/wood-node
+The default context-order and hover paths now raycast the current canopy/wood-node
 instance and tests its actual image alpha. It follows the material map matrix,
 per-instance atlas rectangle, flips, world/parent transforms, active stock
 stage, camera clipping and alpha threshold. Transparent foreground pixels let
@@ -57,11 +57,11 @@ decoded images are read on each click. Alpha bytes are cached by image identity,
 without adding image requests or GPU textures. Level-zero alpha models ordinary
 magnified art; distant mip coverage still requires visual acceptance.
 
-Seven focused picker tests cover all five canonical families and normal
+Eight focused picker tests cover all five canonical families and normal
 context-click→Gather serialization, alpha overlaps/gaps, all current atlas
 attribute forms, generic stock-atlas map transforms, parent/mirror transforms,
-inactive/hidden/clipped instances, stock/fog negatives, image replacement and
-map identity lifetime. Real image decode is mocked only for factory loading;
+inactive/hidden/clipped instances, stock/fog negatives, image replacement,
+map identity lifetime and bounded browser alpha caching/failure fallback. Real image decode is mocked only for factory loading;
 the relevant actual PNGs are decoded by the existing Node RGBA decoder.
 Architecture, both checked-JavaScript projects and the53-test focused client
 suite pass at the source recorded in the owning PR.
