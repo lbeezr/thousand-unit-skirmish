@@ -54,10 +54,10 @@ reads well; use the appearance matrix below.
 
 | State | Source and rule |
 | --- | --- |
-| Idle | Living, stationary, no active task/event; restrained bounded idle motion. |
+| Idle | Living, stationary, no fresh attack or confirmed work; includes assigned work waiting for progress. |
 | Walk / turn | Position/facing changes. Movement suppresses a retained work swing. |
-| Gather | Worker gathering task; generic while cargo type is unknown, wood/food pose once known. |
-| Build | Worker building task, while stationary at work. |
+| Gather | Compatible version-1 `performingAction` confirms positive food/wood/Stone progress; art selection follows the confirmed resource, not previous cargo. Missing Stone sprites retain idle and the existing neutral procedural cue. |
+| Build / Repair | Compatible version-1 `performingAction` confirms positive construction progress or repaired HP; stationary presentation uses the corresponding existing action. |
 | Attack | Fresh `lastAttackTick`; deduplicate and use target coordinates only if present. This is not proof of damage. |
 | Hit | Positive HP decreases. |
 | Defeat | HP reaches zero; terminal for that generation. |
@@ -68,6 +68,20 @@ existing backpack leaf green for wood or amber for food. Flush changed color
 buffers once per team after reconciliation. Authored material stays neutral.
 The actual server task strings are documented in the
 [command contract](gameplay-command-observation-contract.md#state-consumed-by-rendering).
+
+The [Worker performing-action contract](worker-performing-action-contract.md)
+defines state `workerPerformingActionVersion: 1` and unit row 17. Null, absent or
+unknown protocol/action, incompatible task, death and generation reuse clear
+work; task intent remains available to the HUD. A receipt-only clear immediately
+writes idle and dirties buffers, including fishing contact. Continuous positive
+work keeps its clock; action/resource changes and clear/resume start a new clip.
+No art key awards resources or damage. Build/repair target bearing is still a
+separate producer dependency; row 15 currently describes gathering only.
+
+New unit art should follow the [current unit-loader subset](sprite-atlas-contract-v1.md#current-unit-loader-binding-subset)
+as well as the general schema. Animation integration task `01a103d4` owns any
+required selector/role/timing extension; unit-art owners retain supplied pixels
+and registration. Rough usable action/headings can ship before cosmetic polish.
 
 A reused generation starts its first sprite frame at elapsed zero, including
 when death and replacement are coalesced between snapshots or atlas loading is
