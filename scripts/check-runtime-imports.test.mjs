@@ -76,9 +76,11 @@ test('HUD canonical helpers and compatibility entries stay outside authoritative
       [canonical]: 'export const label = 1;',
       [legacy]: `export { label } from './client/hud/${helper}.mjs';`,
     };
-    for (const root of ['src/gameplay-action-rules.mjs', 'src/map-utils.mjs', 'src/formation-assignment.mjs']) {
+    for (const root of ['src/gameplay-action-rules.mjs', 'src/rules/gameplay-action-rules.mjs',
+      'src/base-lifecycle.mjs', 'src/rules/base-lifecycle.mjs', 'src/map-utils.mjs', 'src/formation-assignment.mjs']) {
       for (const target of [canonical, legacy]) {
-        assert.throws(() => check({ ...helpers, [root]: `import './${target.slice(4)}';` }),
+        const relative = path.posix.relative(path.posix.dirname(root), target);
+        assert.throws(() => check({ ...helpers, [root]: `import '${relative.startsWith('.') ? relative : `./${relative}`}';` }),
           /(?:rules|world|simulation) domain cannot reach client domain/, `${root} -> ${target}`);
       }
     }
