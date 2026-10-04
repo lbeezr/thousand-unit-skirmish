@@ -6,7 +6,7 @@ import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { selectionContext } from '../src/selection-context.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from '../src/combat-stance-ui.mjs';
-import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts, farmSelectionPortrait, FARM_PORTRAITS, workerRoleFacts, WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, SCOUT_PORTRAITS, RIDER_PORTRAITS, SPEARMAN_PORTRAITS } from '../src/selection-portrait.mjs';
+import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts, farmSelectionPortrait, FARM_PORTRAITS, workerRoleFacts, WORKER_PORTRAITS, INFANTRY_PORTRAITS, ARCHER_PORTRAITS, SCOUT_PORTRAITS, RIDER_PORTRAITS, SIEGE_ENGINE_PORTRAITS, SPEARMAN_PORTRAITS } from '../src/selection-portrait.mjs';
 import { civilizationSpriteRole } from '../src/unit-sprite-runtime.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { researchAction, researchOptions } from '../src/research-actions.mjs';
@@ -500,6 +500,111 @@ test('Spearman artwork requires matching effective identity without borrowing an
   }
   f.w.unitSpriteRuntime.roleForUnit = () => 'spearman'; f.select([1]); assert.equal(button.hidden, false);
   f.w.units[1].kind = 'rider'; f.select([1]); assert.equal(button.hidden, true);
+});
+
+function assertEquipmentViewport(image, role) {
+  const expected = role === 'siege-engine' ? [80, 28, 678, 470] : [51, 14, 734, 460];
+  const insets = [...image.style.clipPath.matchAll(/([\d.]+)%/g)].map(match => Number(match[1]));
+  assert.equal(insets.length, 4, 'equipment needs explicit four-edge source clipping');
+  const [top, right, bottom, left] = insets;
+  const actual = [left / 100 * 768, top / 100 * 512, (1 - right / 100) * 768, (1 - bottom / 100) * 512];
+  actual.forEach((value, index) => assert.ok(Math.abs(value - expected[index]) < 1e-8));
+  assert.equal(image.style.objectFit, ''); assert.equal(image.style.height, 'auto');
+  const scale = parseFloat(image.style.width) / 100 / 768;
+  const x = parseFloat(image.style.left) / 100, y = parseFloat(image.style.top) / 100;
+  const frame = [x + actual[0] * scale, y + actual[1] * scale, x + actual[2] * scale, y + actual[3] * scale];
+  assert.ok(Math.abs(frame[0]) < 1e-8 && Math.abs(frame[2] - 1) < 1e-8, 'complete equipment fits the unchanged frame width');
+  assert.ok(frame[1] > 0 && frame[3] < 1 && Math.abs(frame[1] + frame[3] - 1) < 1e-8, 'equipment rectangle is vertically centered');
+  if (role === 'boughward-siege-engine') assert.ok(actual[3] < 505, 'foreign next-action fragment stays outside clipping');
+}
+
+for (const team of [0, 1]) test(`seat ${team}: Siege Engine preserves complete equipment, defense and prerequisite facts and cropped-role focus transitions`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const own = team * 2 + 1, role = team === 0 ? 'siege-engine' : 'boughward-siege-engine';
+  const button = f.bar.querySelector('[data-selection-portrait]'), image = button.querySelector('img');
+  const health = f.bar.querySelector('[data-worker-health]'), notes = f.d.querySelector('#selected-worker-notes');
+  f.w.units[own].kind = 'rider'; f.select([own]);
+  f.w.units[own].kind = 'siege-engine'; f.w.units[own].hp = 90; f.select([own]);
+  assert.equal(image.getAttribute('src'), SIEGE_ENGINE_PORTRAITS[role].asset);
+  assertEquipmentViewport(image, role);
+  assert.equal(image.alt, ''); assert.equal(button.dataset.codexEntry, 'unit.siege-engine');
+  assert.equal(button.getAttribute('aria-label'), `Siege Engine · ${SIEGE_ENGINE_PORTRAITS[role].appearanceFamily} — open role notes`);
+  assert.equal(notes.getAttribute('aria-label'), 'Siege Engine role notes'); assert.equal(health.textContent, 'Siege Engine · 90 / 90 HP');
+  f.click(button);
+  assert.equal(notes.querySelector('[data-worker-abilities]').textContent, 'Move · Attack · Attack structures');
+  assert.equal(notes.querySelector('[data-worker-movement]').textContent, 'Base move: 1.8 cells/s');
+  assert.equal(notes.querySelector('[data-worker-training]').textContent, 'Workshop · 80 food + 160 wood · 30s · 3 population · Requires SIEGE ENGINEERING');
+  assert.equal(notes.querySelector('[data-worker-attack]').textContent, 'Base attack: 6 siege vs ground · 2.5s interval · 8 cells range · 24 damage vs structures · 2× damage vs defense');
+  const details = notes.querySelector('details'), link = notes.querySelector('a');
+  details.open = true; link.focus(); f.w.units[own].hp = 31; f.w.updateSelectionUI();
+  assert.equal(health.textContent, 'Siege Engine · 31 / 90 HP'); assert.equal(button.querySelector('img'), image);
+  assert.equal(details.open, true); assert.equal(f.d.activeElement, link);
+  f.escape(); assert.equal(f.w.commandDock.hidden, true); assert.equal(f.d.activeElement, button);
+  image.dispatchEvent(new f.w.Event('error')); f.w.updateSelectionUI();
+  assert.equal(image.parentElement.hidden, true); assert.equal(button.hidden, false);
+  f.click(button); link.focus(); f.select([own, team * 2]);
+  assert.equal(notes.hidden, true); assert.equal(details.open, false); assert.equal(f.d.activeElement, f.d.querySelector('#dock-tab-selection'));
+  f.w.units[own].kind = 'rider'; f.select([own]);
+  assert.equal(image.style.clipPath, ''); assert.equal(image.style.objectFit, 'contain'); assert.equal(image.style.height, '100%');
+  f.w.units[own].kind = 'siege-engine'; f.select([own]); assertEquipmentViewport(image, role);
+  f.select([team * 2]);
+  assert.equal(image.parentElement.hidden, false); assert.equal(image.style.objectFit, ''); assert.equal(image.style.height, 'auto'); assert.equal(image.style.clipPath, '');
+  assert.notEqual(image.style.width, '100%'); assert.equal(notes.getAttribute('aria-label'), 'Worker role notes');
+  f.select([], { id: 88, team, type: 'farm', complete: true, progress: 1, hp: 900, maxHp: 900, harvestStock: 100 });
+  assert.equal(image.style.objectFit, ''); assert.equal(image.style.height, 'auto'); assert.equal(image.style.clipPath, ''); assert.equal(image.style.width, '204.8%');
+  f.select([own]); f.w.units[own].hp = 0; f.w.updateSelectionUI(); assert.equal(button.hidden, true);
+  f.w.units[own].hp = 90;
+  const enemy = (1 - team) * 2 + 1; f.w.units[enemy].kind = 'siege-engine'; f.select([enemy]); assert.equal(button.hidden, true);
+  f.select([own]); f.w.localTeam = null; f.w.updateSelectionUI(); assert.equal(button.hidden, true);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: Siege Engine art retains both dynamic product surfaces, costs and guarded Workshop command`, t => {
+  const f = economyFixture(team); t.after(() => f.dom.window.close());
+  const role = team === 0 ? 'siege-engine' : 'boughward-siege-engine';
+  const building = { id: 81, team, type: 'workshop', complete: true, hp: 1800, maxHp: 1800, productionQueue: [] };
+  f.select([], building);
+  const button = f.bar.querySelector('[data-product="siege-engine"]'), image = button.querySelector('img');
+  const label = button.querySelector('[data-production-label]'), drawer = f.w.ui.rosterProductionOptions.querySelector('[data-product="siege-engine"]');
+  for (const control of [button, drawer]) {
+    const art = control.querySelector('img');
+    assert.equal(art.getAttribute('src'), SIEGE_ENGINE_PORTRAITS[role].asset); assert.equal(art.alt, '');
+    assertEquipmentViewport(art, role);
+    assert.equal(art.parentElement.getAttribute('aria-hidden'), 'true'); assert.match(control.textContent, /Train Siege Engine.*80 food.*160 wood/);
+  }
+  building.productionOptions = [{ kind: 'siege-engine', available: false, reason: 'Research SIEGE ENGINEERING' }];
+  f.w.updateEconomyUI(); assert.equal(button.getAttribute('aria-disabled'), 'true'); assert.match(label.textContent, /Research SIEGE ENGINEERING/);
+  f.click(button); f.w.selectDockTab('economy', true); f.click(drawer); assert.equal(f.w.sentCommands.length, 0);
+  building.productionOptions[0].available = true;
+  f.w.latestPopulation[team] = { available: 2 }; f.w.updateEconomyUI();
+  assert.equal(button.getAttribute('aria-disabled'), 'true'); assert.match(label.textContent, /Population full/);
+  f.click(button); f.click(drawer); assert.equal(f.w.sentCommands.length, 0);
+  f.w.latestPopulation[team] = { available: 3 }; f.w.updateEconomyUI();
+  assert.equal(button.getAttribute('aria-disabled'), 'false');
+  button.focus(); f.w.latestWood[team] = 0; f.w.updateEconomyUI();
+  assert.equal(button.getAttribute('aria-disabled'), 'true'); assert.match(label.textContent, /Need 0 food \/ 160 wood/);
+  assert.equal(button.querySelector('img'), image); assert.equal(button.querySelector('[data-production-label]'), label); assert.equal(f.d.activeElement, button);
+  f.click(button); f.w.selectDockTab('economy', true); f.click(drawer); assert.equal(f.w.sentCommands.length, 0);
+  image.dispatchEvent(new f.w.Event('error')); f.w.latestWood[team] = 500; f.w.updateEconomyUI();
+  assert.equal(image.parentElement.hidden, true); assert.equal(button.getAttribute('aria-disabled'), 'false');
+  f.click(button); f.click(drawer);
+  assert.deepEqual(JSON.parse(JSON.stringify(f.w.sentCommands)), Array.from({ length: 2 }, () => ({ type: 'trainUnit', kind: 'siege-engine', buildingId: building.id })));
+  f.w.humanRosterPreview = false; f.w.castPreview = false; f.w.updateContextualCommands(); f.w.updateEconomyUI();
+  assert.equal(image.parentElement.hidden, true); assert.equal(drawer.querySelector('.unit-action-art').hidden, true); assert.match(label.textContent, /Train Siege Engine/);
+  updateProductionPortrait(button, 'rider', team === 0 ? 'rider' : 'boughward-rider', 'Train Rider');
+  assert.equal(image.style.clipPath, ''); assert.equal(image.style.objectFit, 'contain'); assert.equal(image.style.height, '100%');
+  updateProductionPortrait(button, 'worker', team === 0 ? 'human' : 'boughward-worker', 'Train Worker');
+  assert.equal(button.querySelector('img'), image); assert.equal(image.style.objectFit, ''); assert.equal(image.style.height, 'auto'); assert.equal(image.style.clipPath, '');
+});
+
+test('Siege Engine artwork requires matching effective identity without borrowing another role', t => {
+  const f = fixture(); t.after(() => f.dom.window.close());
+  f.w.units[1].kind = 'siege-engine';
+  const button = f.bar.querySelector('[data-selection-portrait]');
+  for (const role of ['rider', 'scout', 'spearman', 'archer', 'infantry', 'human', 'elf', null]) {
+    f.w.unitSpriteRuntime.roleForUnit = () => role; f.select([1]); assert.equal(button.hidden, true);
+  }
+  f.w.unitSpriteRuntime.roleForUnit = () => 'siege-engine'; f.select([1]); assert.equal(button.hidden, false);
+  f.w.units[1].kind = 'skiff'; f.select([1]); assert.equal(button.hidden, true);
 });
 
 for (const team of [0, 1]) test(`seat ${team}: Rider preserves whole equipment, mounted equipment and two-population facts and cropped-role focus transitions`, t => {

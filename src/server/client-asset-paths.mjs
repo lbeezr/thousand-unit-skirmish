@@ -3,6 +3,7 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'assets/ui/portraits/human-archer-source.png', 'assets/ui/portraits/boughward-archer-source.png',
   'assets/ui/portraits/human-scout-source.png', 'assets/ui/portraits/boughward-scout-source.png',
   'assets/ui/portraits/human-rider-source.png', 'assets/ui/portraits/boughward-rider-source.png',
+  'assets/ui/portraits/human-siege-engine-source.png', 'assets/ui/portraits/boughward-siege-engine-source.png',
   'assets/ui/portraits/human-spearman-source.png', 'assets/ui/portraits/boughward-spearman-source.png',
   'assets/ui/portraits/human-infantry-source.png', 'assets/ui/portraits/boughward-infantry-source.png',
   'src/client/hud/resource-format.mjs', 'src/client/hud/population-readout.mjs',

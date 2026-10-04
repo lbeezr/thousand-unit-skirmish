@@ -1,4 +1,4 @@
-import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
+import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from './gameplay-definitions.mjs';
 import { buildingSpriteUrl } from './building-sprites.mjs';
 import { formatResourceRequirement, formatResourceStock } from './client/hud/resource-format.mjs';
 
@@ -77,7 +77,20 @@ export const RIDER_PORTRAITS = Object.freeze({
   }),
 });
 
-const UNIT_PORTRAITS = Object.freeze({ ...WORKER_PORTRAITS, ...INFANTRY_PORTRAITS, ...ARCHER_PORTRAITS, ...SCOUT_PORTRAITS, ...RIDER_PORTRAITS, ...SPEARMAN_PORTRAITS });
+export const SIEGE_ENGINE_PORTRAITS = Object.freeze({
+  'siege-engine': Object.freeze({
+    entryId: 'unit.siege-engine', appearanceFamily: 'Human',
+    asset: '/assets/ui/portraits/human-siege-engine-source.png', sourceWidth: 768, sourceHeight: 512,
+    cropX: 80, cropY: 28, cropWidth: 598, cropHeight: 442,
+  }),
+  'boughward-siege-engine': Object.freeze({
+    entryId: 'unit.siege-engine', appearanceFamily: 'Boughward',
+    asset: '/assets/ui/portraits/boughward-siege-engine-source.png', sourceWidth: 768, sourceHeight: 512,
+    cropX: 51, cropY: 14, cropWidth: 683, cropHeight: 446,
+  }),
+});
+
+const UNIT_PORTRAITS = Object.freeze({ ...WORKER_PORTRAITS, ...INFANTRY_PORTRAITS, ...ARCHER_PORTRAITS, ...SCOUT_PORTRAITS, ...RIDER_PORTRAITS, ...SIEGE_ENGINE_PORTRAITS, ...SPEARMAN_PORTRAITS });
 
 function unitPortrait(kind, appearanceRole) {
   const portrait = UNIT_PORTRAITS[appearanceRole];
@@ -99,11 +112,18 @@ function updatePortraitFrame(frame, portrait) {
   }
   // Long equipment stays intact inside the same slot; other portraits retain
   // their inspected viewport. Clear each mode when stable nodes change roles.
-  image.style.width = portrait.contain ? '100%' : `${portrait.sourceWidth / portrait.cropSize * 100}%`;
+  const rectangular = Number.isFinite(portrait.cropWidth) && Number.isFinite(portrait.cropHeight);
+  const size = rectangular ? Math.max(portrait.cropWidth, portrait.cropHeight) : portrait.cropSize;
+  const insetX = rectangular ? (size - portrait.cropWidth) / 2 : 0;
+  const insetY = rectangular ? (size - portrait.cropHeight) / 2 : 0;
+  image.style.width = portrait.contain ? '100%' : `${portrait.sourceWidth / size * 100}%`;
   image.style.height = portrait.contain ? '100%' : 'auto';
   image.style.objectFit = portrait.contain ? 'contain' : '';
-  image.style.left = portrait.contain ? '0px' : `${-portrait.cropX / portrait.cropSize * 100}%`;
-  image.style.top = portrait.contain ? '0px' : `${-portrait.cropY / portrait.cropSize * 100}%`;
+  image.style.left = portrait.contain ? '0px' : `${(insetX - portrait.cropX) / size * 100}%`;
+  image.style.top = portrait.contain ? '0px' : `${(insetY - portrait.cropY) / size * 100}%`;
+  // Contain the equipment rectangle and omit foreign source-cell fragments.
+  // Clear clipping on stable nodes when returning to every existing framing mode.
+  image.style.clipPath = rectangular ? `inset(${portrait.cropY / portrait.sourceHeight * 100}% ${(portrait.sourceWidth - portrait.cropX - portrait.cropWidth) / portrait.sourceWidth * 100}% ${(portrait.sourceHeight - portrait.cropY - portrait.cropHeight) / portrait.sourceHeight * 100}% ${portrait.cropX / portrait.sourceWidth * 100}%)` : '';
   frame.hidden = frame.dataset.failedAsset === portrait.asset;
 }
 
@@ -233,7 +253,7 @@ export function workerRoleFacts(unit, definition = UNIT_DEFINITIONS.worker, buil
     }).join(' · '),
     movement: `Base move: ${combat.moveSpeed} cells/s`,
     attack: `Base attack: ${combat.damage} ${combat.attackClass} vs ${targets.join(' / ')} · ${combat.period}s interval · ${combat.range} cells range${separateStructureDamage ? ` · ${combat.structureDamage} damage vs structures` : ''}${Object.entries(combat.tagMultipliers || {}).map(([tag, multiplier]) => ` · ${multiplier}× damage vs ${tag}`).join('')}`,
-    training: `${producers.map(building => building.label).join(' / ') || 'No producer'} · ${cost} · ${definition.trainSeconds}s · ${definition.population} population`,
+    training: `${producers.map(building => building.label).join(' / ') || 'No producer'} · ${cost} · ${definition.trainSeconds}s · ${definition.population} population${definition.requires?.length ? ` · Requires ${definition.requires.map(id => TECHNOLOGY_DEFINITIONS[id]?.label || id).join(' + ')}` : ''}`,
   };
 }
 
