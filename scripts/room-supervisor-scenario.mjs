@@ -318,7 +318,9 @@ function createClient(port, pathAndQuery = '/ws', protocols = ['rts-v1']) {
     return new Promise((resolve, reject) => {
       const waiter = { predicate, resolve, reject, timeout: setTimeout(() => {
         waiters.splice(waiters.indexOf(waiter), 1);
-        reject(new Error(`Timed out waiting for a room message after ${timeoutMs} ms.`));
+        const last = messages.slice(-2).map(message => message.type === 'state'
+          ? { type: message.type, tick: message.tick, mapId: message.mapId, buildings: message.buildings } : message);
+        reject(new Error(`Timed out waiting for a room message after ${timeoutMs} ms: ${predicate.toString()}; last ${JSON.stringify(last)}`));
       }, timeoutMs) };
       waiters.push(waiter);
     });
@@ -357,7 +359,7 @@ try {
   clients.push(rootAzure);
   const rootWelcome = await welcome(rootAzure);
   assert.equal(rootWelcome.player.team, 0, 'the default match should assign its first player to Azure');
-  assert.equal(rootWelcome.state.mapId, 'bellweather-millrace');
+  assert.equal(rootWelcome.state.mapId, 'veyrholds-terraced-vale');
   assert.equal(rootWelcome.state.armySize, 24);
   assert.deepEqual(rootWelcome.state.food, [150, null]);
   assert.deepEqual(rootWelcome.state.wood, [250, null]);
@@ -399,7 +401,7 @@ try {
   clients.push(roomAzure);
   const roomWelcome = await welcome(roomAzure);
   assert.equal(roomWelcome.player.team, 0, 'the invite room should have an independent Azure seat');
-  assert.equal(roomWelcome.state.mapId, 'bellweather-millrace');
+  assert.equal(roomWelcome.state.mapId, 'veyrholds-terraced-vale');
   assert.equal(roomWelcome.state.armySize, 24);
   assert.notEqual(roomWelcome.player.sessionToken, rootWelcome.player.sessionToken,
     'seat tokens should be scoped to the match process');
@@ -477,7 +479,7 @@ try {
   assert.equal(restartedEmberWelcome.player.team, 1);
   assert.equal(restartedEmberWelcome.matchId, restartedWelcome.matchId);
   const recoveryMap = {
-    id: 'checkpoint-recovery-arena', name: 'Checkpoint Recovery Arena', width: 32, height: 32,
+    id: 'checkpoint-recovery-arena', name: 'Checkpoint Recovery Arena', width: 160, height: 160,
     obstacles: [], spawnPoints: [{ team: 0, x: -10, z: 0 }, { team: 1, x: 10, z: 0 }],
     resourceNodes: [
       { id: 'recovery-food', type: 'food', x: -5, z: -8, stock: 500 },
@@ -485,7 +487,7 @@ try {
     ],
     triggers: [{
       id: 'recovery-control-zone', name: 'Recovery Control Zone', type: 'capture-zone',
-      zone: { column: 4, row: 14, width: 5, height: 5 }, requiredUnits: 1,
+      zone: { column: 68, row: 78, width: 5, height: 5 }, requiredUnits: 1,
       unitCount: 2, unitKind: 'worker',
       captureSeconds: 0.5, foodReward: 0, woodReward: 30, victory: false, message: 'ZONE RECOVERED',
     }],
@@ -506,7 +508,13 @@ try {
   const nonDefaultArmyState = restartedRoom.waitForMessage((message) => message.type === 'state'
     && message.armySize === 250 && message.mapId === recoveryMap.id);
   restartedRoom.socket.send(JSON.stringify({ type: 'selectArmySize', count: 250 }));
-  await nonDefaultArmyState;
+  const productionOpening = await nonDefaultArmyState;
+  // This checkpoint/production fixture is peaceful; use real stance commands so
+  // incidental combat cannot kill builders or occupy the funded House site.
+  for (const [team, client] of [[0, restartedRoom], [1, restartedRoomEmber]]) {
+    client.socket.send(JSON.stringify({ type: 'setStance', stance: 'noAttack',
+      ids: productionOpening.units.filter(unit => unit[1] === team && unit[5] !== 'worker').map(unit => unit[0]) }));
+  }
 
   const emberUnitBeforeMove = unitRow(restartedRoom.messages.filter((message) => message.type === 'state').at(-1), 20);
   assert.ok(emberUnitBeforeMove);
@@ -807,7 +815,7 @@ try {
     'rejected snapshots should start an explicitly new match');
   assert.equal(fallbackWelcome.player.team, 0);
   assert.equal(fallbackWelcome.player.resumed, false);
-  assert.equal(fallbackWelcome.state.mapId, 'bellweather-millrace');
+  assert.equal(fallbackWelcome.state.mapId, 'veyrholds-terraced-vale');
   assert.equal(fallbackWelcome.state.armySize, 24);
   assert.ok(!await readFile(secondRoomCheckpointPath, 'utf8').then(() => true, () => false),
     'rejected checkpoint should be removed so subsequent restarts do not loop on it');
