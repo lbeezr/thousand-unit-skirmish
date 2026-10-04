@@ -67,7 +67,7 @@ position, resource or checkpoint fixture. The accepted native run at clean sourc
 firing arcs, shared finite fishing, sequential water traversal, cold recovery,
 authored reset and one-human clock/movement. Retained
 [summary](qa-evidence/confluence-grounds-2026-10-04/summary.json),
-[full receipt](qa-evidence/confluence-grounds-2026-10-04/report.json) and
+[full receipt](qa-evidence/confluence-grounds-2026-10-04/report.json.gz) and
 [source hashes](qa-evidence/confluence-grounds-2026-10-04/source-inputs.json)
 separate that result from the failed counterflow case. The repeatable audit identifies this row as
 `admitted-test-arena`, separately from regional Skirmish candidates and micro Labs.
@@ -87,7 +87,7 @@ completed Farms adding only their explicit 200-food stock. Cold restart retains
 map/match identity, paid buildings, crops, stocks and banks; reset restores the
 24-unit authored opening. The guest leaves and the remaining human still moves
 a Worker and advances the Practice clock. Full recovery/session checkpoints stay
-private; [retained economic state](qa-evidence/confluence-grounds-2026-10-04/retained-economy.json)
+private; [retained economic state](qa-evidence/confluence-grounds-2026-10-04/retained-economy.json.gz)
 contains only the measured economic fields. No AI or human-match acceptance is inferred.
 
 ## Counterflow collision diagnostic
@@ -100,7 +100,7 @@ check ultimately timed out. The static graph is connected and the channel has
 room for alternate routes. `water-unit-runtime.advance` waits when the next swept
 hull cells are occupied; ordinary Move has no general reciprocal traffic solver.
 
-Retained [failure receipt](qa-evidence/confluence-grounds-2026-10-04/diagnostic-counterflow-timeout.json)
+Retained [failure receipt](qa-evidence/confluence-grounds-2026-10-04/diagnostic-counterflow-timeout.json.gz)
 and [extracted checkpoint observation](qa-evidence/confluence-grounds-2026-10-04/counterflow-observation.json)
 contain no recovery session state. Reproduce the historical simultaneous case at
 the exact committed `61ebee31` scenario, then send the two documented cross-bay
@@ -113,7 +113,7 @@ The Skiff runtime owner retains resolution; the existing
 traffic solver. A future ordinary naval usability slice should cover reciprocal
 passing and unblocking, with the authored arena as a representative fixture.
 
-An earlier [failed harness assertion](qa-evidence/confluence-grounds-2026-10-04/diagnostic-dock-target-cleanup.json)
+An earlier [failed harness assertion](qa-evidence/confluence-grounds-2026-10-04/diagnostic-dock-target-cleanup.json.gz)
 expected Skiff `dropoffBuildingId` to survive a completed return. Runtime correctly
 clears that completed target. The corrected proof verifies the prior owned Dock,
 actual admitted berth arrival, exact bank delta and repeat-return rejection.
