@@ -25,7 +25,10 @@ until a separately reviewed grid-limit, memory/path/visibility/transport/browser
 capacity slice passes. [The source-bound XL audit](map-grid-limit-audit-2026-10-04.md)
 also demonstrates wrapped 16-bit vision indices and projects cache/path/render
 costs. Small now has an authored [Threefold Basin candidate](qa-threefold-basin-2026-10-04.md).
-Medium/Large remain unauthored; no tier has a supported-capacity claim.
+Medium now has an authored [Riven Escarpment candidate](qa-riven-escarpment-2026-10-04.md)
+with a 207-unit / 79.615-second Worker route. Large remains unauthored; no tier
+has a supported-capacity claim. [Existing elevation](map-elevation-capabilities.md)
+supports these layouts within its current three-level, single-surface contract.
 The first Tiny candidate is Terraced Vale; its static base route is 133 units,
 51.154 s Worker/Infantry, 29.556 s Scout. Native acceptance is recorded separately.
 
