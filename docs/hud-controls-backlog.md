@@ -10,6 +10,7 @@ remain the direction. No final visual redesign has been approved.
 
 | Rank | Outcome and current evidence | Next action and write boundary | Dependencies and acceptance |
 | --- | --- | --- | --- |
+| 0 | Native QA reported stale Worker construction at deployed `64cc391e6d9c4164dca7bd45696cf3862fe19729`. Both-seat source/DOM regressions reproduce disabled Build after Worker selection and a recreated training button after producer reselection. | Refresh economy availability with user selection; retain the selected producer while clearing its control group. Snapshot/waypoint-only renders avoid another economy pass. HUD owner retains the native follow-up below. | Source tests establish these two defects. The separately reported completed-Range unavailability remains unexplained; completion, shortages, queues, population and authoritative denial/recovery pass modeled checks. |
 | 1 | Six default glyphs and reachable keyboard strip: [PR134](https://github.com/lbeezr/thousand-unit-skirmish/pull/134), [PR150](https://github.com/lbeezr/thousand-unit-skirmish/pull/150). Source/release checks pass; native acceptance remains open. | Parent-owned Mac QA retains the [normal Millrace recipe](contextual-hud-validation.md#six-default-action-glyphs--3-october-2026). Verify small-size glyphs, full Tab/Shift-Tab rings, cargo/unit/building states, Shift-wheel and Escape/Close recovery; record an exact native result before choosing a defect fix. | Identify a relevant user build containing `68e46aa` or a descendant, not the removed `32f11d5` deployment. Parent owns build acceptance and staging coordination; Railway delivery owner supplies the identified build. See the dated delivery checkpoint below. |
 | 2 | [PR185 stance controls](https://github.com/lbeezr/thousand-unit-skirmish/pull/185) merged at `68e46aa43cf6712edeed8ecab15d342bcbc9499d`: four labelled choices, confirmed/mixed state and snapshot eligibility in the existing strip. 235 postmerge HUD/stance/order checks pass. The shipped-HTML/real-binding two-seat command/snapshot probe confirms all eight choices for paid Infantry/Archers, Mixed, Worker exclusion and visible Stop/Hold checkmarks. | Parent-owned Mac QA retains the [stance native recipe](military-stance-hud.md#acceptance-and-remaining-delivery): normal military choices, reconnect/rematch, status growth, full keyboard visibility and VoiceOver states. HUD owner fixes only a reproduced control defect in a bounded PR. | Source/provider and packed-release integration are established. [PR159](https://github.com/lbeezr/thousand-unit-skirmish/pull/159) at `913afa2b` retains combat policy/recovery; schema 25 follows wildlife schema 24, with [simulation evidence](qa-military-stances-2026-10-03.md). Identified relevant-user delivery and native acceptance remain open. |
 | 3 | [PR180 live-layout strip fix](https://github.com/lbeezr/thousand-unit-skirmish/pull/180) merged at `57a762f`: focus follows cargo/label growth, viewport changes and added/removed buttons. Independent exact-head review and 99 postmerge tests, docs/client/release guards pass. PR185 also fixes reproduced status-only growth through bounded observation of the marked stance group. | Parent-owned Mac QA retains the [dated cargo/resize recipe](contextual-hud-validation.md#focused-command-after-live-layout-changes--3-october-2026). Verify retained Formation focus during cargo/label growth, offline/finished stance reasons, viewport/minimap resize and manual scrolling. | Run on the identified build containing `68e46aa` or a descendant. Source/model geometry does not establish deployed/native usability; the HUD owner retains any resulting bounded fix. |
@@ -68,8 +69,39 @@ or browser sandbox bypass is authorized by this checkpoint.
   sensitive permission expansion, paid assets or private-image publication is
   authorized by this backlog.
 
+## Selection availability follow-up — 4 October 2026
+
+The parent-owned native QA run identified deployed source
+`64cc391e6d9c4164dca7bd45696cf3862fe19729`, superseding the 3 October staging
+observation above. It reported an idle Worker whose construction stayed disabled
+until a later Move, and a completed Archery Range whose contextual production
+was unavailable. HUD owner reproduced the Worker selection refresh gap in both
+seats at that revision and current main `966dc0a`; Move itself does not refresh
+the controls, while the next economy snapshot can. Integrated selection/economy
+tests also exposed producer reselection recreating the training control and
+losing focus. These are bounded source fixes, with native acceptance still open.
+
+On an identified user build containing the fix, use normal Millrace gameplay
+with enough wood: clear selection, select an idle Worker using pick, rectangle,
+Idle and group recall, then inspect `#build-barracks`, `#build-archery-range`,
+`#build-house` and a catalog construction option immediately, before a Move or
+new snapshot. They should enable for living owned Workers and disable on empty
+or military selection; shortages and pending construction should still disable
+them. Repeat selection and replenish resources. Select a paid, completed Range,
+focus the visible `[data-context-products] [data-product="archer"]`, reselect the
+same Range and verify the same control remains focused and targets its ID.
+Verify incomplete-to-complete recovery, resource recovery and one accepted paid
+Archer queue through normal gameplay. These modeled tests do not prove native
+layout, renderer picking or server acceptance.
+
+If Range production remains unavailable, record the visible button text,
+`aria-disabled`, `disabled`, `data-producer`, selected building ID, and the matching
+snapshot's `complete`, `productionBlocked`, `productionQueue`, `productionOptions`,
+food/wood and population. The hidden legacy `[data-context-proxy="train-archer"]`
+is not the visible production choice. Mac-local receipts remain with parent QA;
+HUD owner retains diagnosis and any resulting fix rather than closing that
+report from passing source models. No browser sandbox bypass or manual
+deployment is authorized.
+
 Review current main and new native/command evidence before choosing another
-slice. No further independently reproduced HUD defect is recorded here; stop
-source-only iteration at this checkpoint while identified delivery and native
-acceptance remain pending. Resume a bounded fix when evidence justifies it.
-Do not add speculative work to keep a worker busy.
+slice. Do not add speculative work to keep a worker busy.
