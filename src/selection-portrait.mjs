@@ -1,6 +1,6 @@
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
 import { buildingSpriteUrl } from './building-sprites.mjs';
-import { formatResourceRequirement, formatResourceStock } from './resource-format.mjs';
+import { formatResourceRequirement, formatResourceStock } from './client/hud/resource-format.mjs';
 
 // Byte-identical approved illustrations; framing is a CSS viewport, not an atlas face crop.
 export const WORKER_PORTRAITS = Object.freeze({

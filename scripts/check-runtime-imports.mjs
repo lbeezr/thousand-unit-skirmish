@@ -92,7 +92,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'audio-composition-player', 'audio-decoded-cache', 'audio-library-store',
     'audio-library-ui', 'audio-policy', 'audio-recognition-check',
     'audio-shipped-catalog', 'audio-shipped-loader', 'audio-shipped-response',
-    'audio-studio', 'audio-zones', 'battlefield-cursor', 'combat-stance-ui',
+    'audio-studio', 'audio-zones', 'battlefield-cursor', 'browser-state-recovery', 'combat-stance-ui',
     'economy-client', 'environment-pilot', 'environment-review',
     'frontier-building-preview', 'game-entry', 'game-entry-session', 'hud-layout',
     'match-mode-controls', 'navigation-settings', 'objective-summary',
