@@ -324,6 +324,16 @@ approach; this slice does not claim safe body-pair avoidance or all-natural
 movement. U5 retains deterministic yield/side selection, bounded neighbors,
 formation compression/reform and fairness.
 
+The [adopter summary](qa-evidence/ordinary-move-static-clearance-2026-10-04/summary.json)
+and [raw paired substeps](qa-evidence/ordinary-move-static-clearance-2026-10-04/substeps.json.gz)
+are measured at clean `0a320fa55989aeafce5a05cc7cd5d9441031dd4a`; all six complete
+records repeat exactly from retained checkpoints. The predecessor's original
+records above remain unchanged. Two additional actual-process/socket tests
+accept v2 ordinary Move/queued Move on both seats, save a pending projected
+waypoint, restart the real server, reclaim seats and observe the exact legal
+arrival with its original generation and requested coordinates. Their initial
+placement is trusted diagnostic setup, not paid unit-production acceptance.
+
 Existing registered movement/fractional/planner/palisade tests cover analytic
 sweeps, monotone recovery, bounded long queries, all seven kinds on both seats,
 pending queue checkpoint restore, exact safe points, projected unsafe points,
@@ -342,6 +352,12 @@ then queue handoff. No art, heading, gait or velocity curve changes. These
 sources and CPU trajectories are design backing, not actual gameplay frames.
 Movement owner `01a107ba` retains independent review, normal merge, clean
 packaging, identified deployment and ordinary-game rendered acceptance.
+The [cloud capability attempt](qa-evidence/ordinary-move-static-clearance-2026-10-04/renderer-capability.json)
+at that clean source is blocked: the Linux browser sandbox/profile storage
+cannot start, so it produced no WebGL readback, game frame or screenshot.
+No sandbox weakening, new provider service, auth retry or hosted dispatch is
+attempted. CI `01a10378` retains the provisioned capture interface; movement
+retains ordinary-game acceptance through it when available.
 Construction/combat/resource-owned access and productive range, interaction
 separation, group formation movement, naval/wildlife adapters, dynamic forest
 cuts, gates/bridges and native all-caller recovery still need their own adoption.
