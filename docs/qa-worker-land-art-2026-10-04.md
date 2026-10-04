@@ -41,6 +41,41 @@ are source-pixel previews at ordinary/strategic sizes, not game/GPU captures.
 Root estimates and slight source pose/size differences still need native review;
 they do not create a cosmetic production hold.
 
+## Second usable slice: North walk first pass
+
+Following actual retained-source inspection, the user authorized a bounded
+approved-image-tool candidate. [North v1 sources and review](art-direction/human-roster-v1/generated/worker-walk-north-v1/README.md)
+retain the public default North idle seed, exact tool prompt/layout, raw iteration
+and eight complete extracted silhouettes. No private source, paid rigging or
+external provider job was used. North's actual facing is screen-down-left,
+distinct from East/SE; no mirror or repeated facing is relabelled.
+
+Default v0.16.0 adds `walk|north`: eight 100 ms keys, loop 800 ms, spare row
+at y=2816. [Admission](../scripts/admit-worker-north-walk.py) uses shared scale
+232/438, fixed column roots [192,576,960,1344], layout-row baselines [478,960]
+and ground pivot [128,244]. All 92 pre-North frames/decoded pixels, every other
+clip, mask, 2048×4096 dimensions and max-alpha-height 272/world scale remain
+intact. Existing Carry/Return consumes North with its cargo cue and no new enum.
+
+[Registration](qa-evidence/worker-land-art-2026-10-04/north-walk-registration.json),
+[key sheet](qa-evidence/worker-land-art-2026-10-04/north-walk-keys.png) and
+[800 ms loop](qa-evidence/worker-land-art-2026-10-04/north-walk-loop.webp)
+retain source/cell hashes and ordinary/strategic pixel review. The same costume,
+axe and backpack remain recognizable. The gait, planted forward leg, slight
+registration drift and loop seam are rough and retained for later polish.
+Functional breadth takes priority; no cosmetic perfection hold is imposed.
+
+Exact default Three UV checks prove advancement, looping, N→NE→N continuous
+phase, Stop/resume and cargo Return→idle on both Human seats, selected/unselected.
+Fishing preservation permits only explicitly verified admitted East/North walk
+sequences before reconstructing its original metadata hash; all fishing keys and
+other clip/pixel guarantees remain unchanged. [Preservation receipt](qa-evidence/worker-land-art-2026-10-04/north-walk-preservation.json)
+records the preceding 92 frames, all other clips, mask and byte-idempotent rebuild.
+All 82 focused pixel/default-runtime/receipt/clock/heading/fishing/sharding checks,
+atlas validation and documentation links pass. Native appearance remains open.
+For North's native recipe, order world +Z (screen-down-left), then turn to NE
+(screen-down) and back; repeat the remaining East slice's Stop/cargo/zoom recipe.
+
 ## Inspect existing art before the next slice
 
 Both nominated legacy candidates were decoded and their actual first-frame
@@ -55,25 +90,26 @@ headings and motion/action cells reviewed, rather than trusting manifest labels:
 | Current-roster retained land-work/combat sources | Wood/food/build/repair/attack/defeat eight-key SE strips. | Already used. No matching N/NE/E/S/SW/W/NW action strip, or Stone strip, is present in this checkout. |
 | Earlier [Vaelora Worker study](art-direction/human-vaelora-sprites-v1/README.md) | Matching-character Walk/Chop/Defeat labelled SE. | Follow-up connected-silhouette extraction recovers all eight complete Chop keys (whole-sheet margins intact); the actual pose comparison still reads SE and does not prove another heading. Defeat's final source view touches the sheet's right edge. Preserve studies; do not crop missing terminal pixels or relabel this SE strip as East to inflate coverage. |
 
-That is an **art-input gap**, not an animation-binding defect. Rough short keys
+That initial source inventory was an **art-input gap**, not an animation-binding defect. Rough short keys
 are acceptable, but moving a whole idle image, copying SE into seven labels,
 or swapping to a different legacy body does not provide the required motion,
-identity and facing. This task does not authorize new provider charges or
-publication of private pixels. Ready supplied current-roster keys can be admitted
-immediately with the same manifest contract.
+identity and facing. No new paid provider charges or publication of private pixels are authorized.
+The user subsequently authorized bounded approved image/Blender tools for first-pass
+current-roster candidates; North is the first such continuation. Ready supplied
+current-roster keys can also be admitted with the same manifest contract.
 
 ## Ranked retained backlog
 
 | Rank | Next useful slice and bounded writes | Concrete dependency / acceptance |
 | --- | --- | --- |
-| 1 | Retain East walk through reviewed merge, release, containing staging/native build and game check. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
-| 2 | Fill remaining walk **N/S/W/NW** one actual heading at a time. Source, atlas/manifests, one registration record per slice. | Missing same-character, correct-camera articulated source keys. Assessed public legacy bodies do not preserve the current identity. Carry/Return reuse each completed walk with the existing cargo cue. |
+| 1 | Retain East/North/South walk through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
+| 2 | Fill remaining walk **W/NW** one actual heading at a time. Source, atlas/manifests, one registration record per slice. | Use public approved idle seeds and bounded first-pass approved image/Blender tools where retained articulated keys are absent. Assessed public legacy bodies do not preserve the current identity. Carry/Return reuse each completed walk with the existing cargo cue. |
 | 3 | Fill wood/food/build/repair/attack/defeat's seven absent headings: **42 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
 | 4 | Eight readable dedicated Stone-work headings. | Current assets contain no pick/mining sequence. Animation owner also needs the actual Stone state/resource selector enabled after artwork exists; current default intentionally returns idle. No economy edits. |
 | 5 | Improve costume consistency, registration refinement and loop smoothing after usable breadth. | Functional native observations identify the needed refinements. Cosmetic perfection is not a gate for supplied usable keys. |
 
-There are now 4 of 8 walk headings, eight distinct idle headings, SE land-action
-motion and no Stone motion. **54 land-action/heading cells remain** (4+42+8).
+There are now 6 of 8 walk headings, eight distinct idle headings, SE land-action
+motion and no Stone motion. **52 land-action/heading cells remain** (2+42+8).
 Fishing's seven missing headings are excluded and retained by its separate owner.
 The animation-owner ID is outside this executor's live collaboration tree; the
 manifest contract and retained dependencies are recorded here for parent routing.
@@ -112,9 +148,11 @@ has 1,170 files and digest
 `sha256:99a2a103d524f14d4ee2213e8de614cf71c2ac3319d3b7733ae87b4c021c0b47`
 at that exact source head. Subsequent checkpoint-only commits are separate from
 this measured release. [Browser preflight](qa-evidence/worker-land-art-2026-10-04/browser-preflight.json)
-records the actual sandbox failure. Independent review is pending: this executor
-has no live peer/parent reviewer route; no self-review is claimed as an independent
-review. Main merge, containing deployment and native acceptance stay open.
+records the actual sandbox failure. Subsequent independent agent review at
+`0fec667bb52a21416a93c144187c17861f8bcc67` passed all 60 focused checks and found
+no blockers; [review receipt](https://github.com/lbeezr/thousand-unit-skirmish/pull/226#pullrequestreview-5403763778)
+identifies shared-account agent review. PR226 merged at `f08a32ae5921933170140fad6cf3b3dd3d1e4368`.
+Containing deployment and native acceptance remain open; merge does not claim either.
 
 After the parent supplied [PR225's merged unit-loader binding subset](sprite-atlas-contract-v1.md#current-unit-loader-binding-subset)
 at main `26ac28db`, it was read in full and included at refreshed code head
@@ -126,3 +164,57 @@ the refresh. No new selector, state or shared timing extension is required;
 Stone still requires the animation owner's bounded extension when supplied art
 exists. The earlier clean release remains a receipt for its stated source, not
 the later documentation-only contract merge.
+
+North measured code head `ce5f797f49b5d940f6a1ff4d29ea28636da08796`
+passes the packed Railway HTTP/hash scenario and live WebSocket→CPU client
+productive-receipt scenario. [Clean North release](qa-evidence/worker-land-art-2026-10-04/north-clean-release.json)
+retains exact source, three runtime file hashes and digest
+`sha256:ef838b9190777ada66a48a00434154c97b12992da8aa967b0ee36e5b4ddbae03`.
+A read-only Railway observation at 01:35 UTC found staging SUCCESS deployment
+`e541d903-178b-47cb-8d1b-4358c93c5a8a`, source `64cc391e6d9c4164dca7bd45696cf3862fe19729`.
+That revision predates East/North; neither slice is claimed delivered. The parent
+delivery route must supply a containing build; its Mac capture route retains
+native root/turn/cargo acceptance. This is an actual identified delivery gap,
+separate from the sandbox-unavailable browser capture gap.
+
+## Third usable slice: South walk first pass
+
+[South v1](art-direction/human-roster-v1/generated/worker-walk-south-v1/README.md)
+retains the public default `idle-south-0` seed, exact prompt/reference, raw and
+eight whole extracted silhouettes. Correct South facing is world -Z,
+screen-up-right/back view; backpack/bedroll and right-hand axe match the seed.
+Eight actual leg/arm/tool poses are a usable rough gait; loop seam and source
+drift stay polish items. No private pixels or paid external provider/rigging job.
+
+Default v0.17.0 supplies `walk|south`, eight 100 ms looping keys, spare row y=3072.
+[Admission](../scripts/admit-worker-south-walk.py) uses one scale 232/455, fixed
+source column roots [224,608,992,1376], row baselines [489,979] and local pivot
+[128,244]. All 100 pre-South frame records/pixels and every other clip, team mask,
+2048×4096 dimensions and whole-pack pixel-to-world scale remain intact. Carry/Return
+uses the existing moving walk/cargo path. No state/economy/shared-clock changes.
+
+[Registration](qa-evidence/worker-land-art-2026-10-04/south-walk-registration.json),
+[ordinary/strategic keys](qa-evidence/worker-land-art-2026-10-04/south-walk-keys.png)
+and [800 ms loop](qa-evidence/worker-land-art-2026-10-04/south-walk-loop.webp)
+are source-pixel evidence. Native recipe: world -Z/South → SW (screen-up) → South,
+Stop/resume and cargo Return→idle, both Human seats selected/unselected at ordinary
+and strategic zoom. Parent delivery/Mac route must identify a containing build and
+record actual root/action acceptance. The sandbox capture gap remains unchanged.
+
+North [PR236](https://github.com/lbeezr/thousand-unit-skirmish/pull/236) merged at
+`ddf7b55fdb1020e9de291124161f6b5e4326eec6` after [independent agent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/236#pullrequestreview-5403793245)
+of exact head `11c974961d138c9db92c3678a225b65473599b4b`. All 63 reviewer-focused
+checks and packed HTTP/hash scenario passed; native/deployed acceptance stays open.
+
+[South preservation](qa-evidence/worker-land-art-2026-10-04/south-walk-preservation.json)
+records all 100 preceding frame records/pixels, other clips, mask and idempotent
+admission against that merged North baseline. Actual Three checks cover all three
+admitted walks, including S→NE→S continuous phase, loops, Stop/resume and cargo
+Return on either Human seat selected/unselected. Fishing metadata permits only
+verified admitted East/North/South sequences while freezing its original keys.
+
+South all 85 focused pixel/runtime/receipt/clock/heading/fishing/sharding checks,
+atlas/docs/whitespace and packed HTTP/hash scenario pass.
+[Clean South release](qa-evidence/worker-land-art-2026-10-04/south-clean-release.json)
+records source `186fdec778832bd79fa299c5879b7d51aabeaaf6`, 1173 files and
+`sha256:707ad98940dfede9163ef9ccc918ee6a90064fd84521ef46300926352e18952d`. Deployment/native acceptance remains open.

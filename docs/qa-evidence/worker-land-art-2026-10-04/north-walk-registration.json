@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 1,
+  "action": "walk",
+  "worldDirection": "north",
+  "screenDirection": "down-left",
+  "source": "docs/art-direction/human-roster-v1/generated/worker-walk-north-v1/raw.png",
+  "sourceSha256": "670351ffedb8e68bccac910ec24c134a4744c90a815b6fec82702d56d741c6b9",
+  "extractionSha256": "c8bbc972d5c62da9221378e4f7e718605da5eb64f1e4c4786d444107b6e26c35",
+  "sharedScale": 0.5296803652968036,
+  "columnRootsX": [
+    192,
+    576,
+    960,
+    1344
+  ],
+  "rowBaselinesY": [
+    478,
+    960
+  ],
+  "groundPivotPx": {
+    "x": 128,
+    "y": 244
+  },
+  "durationMs": 800,
+  "registrationStatus": "source-pixel reviewed; native ground/turn acceptance open",
+  "frames": [
+    {
+      "id": "walk-north-0",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-walk-north-v1/extracted/00.png",
+      "sourceSha256": "c1d302633d3609933b0019ed116ddea15ef99e8c33ef8f40d09f7e4dbb61d6de",
+      "sourceBounds": [
+        56,
+        51,
+        322,
+        470
+      ],
+      "offsetPx": [
+        56,
+        18
+      ],
+      "alphaBoundsPx": {
+        "x": 56,
+        "y": 18,
+        "width": 141,
+        "height": 222
+      },
+      "rgbaSha256": "b699d6dee3523e6cb1453fa3c163bbbd4d18295e5633fd673f2be8e94ebb7270"
+    },
+    {
+      "id": "walk-north-1",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-walk-north-v1/extracted/01.png",
+      "sourceSha256": "e9b03b6125bfaf378e8dcc9014cdd520c3b0b23b1678b44e47ca569b0ffeec43",
+      "sourceBounds": [
+        445,
+        50,
+        705,
+        464
+      ],
+      "offsetPx": [
+        59,
+        17
+      ],
+      "alphaBoundsPx": {
+        "x": 59,
+        "y": 17,
+        "width": 138,
+        "height": 219
+      },
+      "rgbaSha256": "2395aacf0131d5e6849e6b2b342b9a60427df56d2a37ce0d279112347ed91076"
+    },
+    {
+      "id": "walk-north-2",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-walk-north-v1/extracted/02.png",
+      "sourceSha256": "2c7b142136be22868d285468240566751fc4b054ca5a45d4bade2bfdccbd0a00",
+      "sourceBounds": [
+        805,
+        40,
+        1064,
+        465
+      ],
+      "offsetPx": [
+        46,
+        12
+      ],
+      "alphaBoundsPx": {
+        "x": 46,
+        "y": 12,
+        "width": 137,
+        "height": 225
+      },
+      "rgbaSha256": "4ea2aeeaa7224cc58870a54bd028e4b46adfec2abc10525ea97ee41e5d425f6a"
+    },
+    {
+      "id": "walk-north-3",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-walk-north-v1/extracted/03.png",
+      "sourceSha256": "8d99a432e295da2cfb9213c2787acb582780a0af9a70afbb34ee7328dc875514",
+      "sourceBounds": [
+        1169,
+        40,
+        1461,
+        478
+      ],
+      "offsetPx": [
+        35,
+        12
+      ],
+      "alphaBoundsPx": {
+        "x": 35,
+        "y": 12,
+        "width": 155,
+        "height": 232
+      },
+      "rgbaSha256": "3a175f9cd710baed4a65b0c4293bf2267d8a0bd245f91bd0734030c4667a3a6f"
+    },
+    {
+      "id": "walk-north-4",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-walk-north-v1/extracted/04.png",
+      "sourceSha256": "bb299df845a38c2681ab692f945a5e2697b8b8528d5e5fc7693d2723efa780e5",
+      "sourceBounds": [
+        55,
+        539,
+        338,
+        951
+      ],
+      "offsetPx": [
+        55,
+        21
+      ],
+      "alphaBoundsPx": {
+        "x": 55,
+        "y": 21,
+        "width": 150,
+        "height": 218
+      },
+      "rgbaSha256": "0cb933d13e69f022dafb252a76b2073ba41fde86d37c8d5f76cdbd5e96515b9d"
+    },
+    {
+      "id": "walk-north-5",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-walk-north-v1/extracted/05.png",
+      "sourceSha256": "ecfb7649db0983e51c72030df094d4f506083a1741f1671bcca6cc18b660686e",
+      "sourceBounds": [
+        444,
+        536,
+        709,
+        949
+      ],
+      "offsetPx": [
+        58,
+        19
+      ],
+      "alphaBoundsPx": {
+        "x": 58,
+        "y": 19,
+        "width": 140,
+        "height": 219
+      },
+      "rgbaSha256": "4e7272a4fe2978a1b7eb9c9cae2d40117aacf8328c8d4a7b503c0e68588393f2"
+    },
+    {
+      "id": "walk-north-6",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-walk-north-v1/extracted/06.png",
+      "sourceSha256": "41635f90559454508ca2f1b14daf34be7d95c3a17fc605b0bc9159de429058cb",
+      "sourceBounds": [
+        828,
+        532,
+        1081,
+        959
+      ],
+      "offsetPx": [
+        58,
+        17
+      ],
+      "alphaBoundsPx": {
+        "x": 58,
+        "y": 17,
+        "width": 134,
+        "height": 226
+      },
+      "rgbaSha256": "934dad952977536aa181f30a0dbe10f6c471a9abdb32bf5f9b75182421b2bb84"
+    },
+    {
+      "id": "walk-north-7",
+      "source": "docs/art-direction/human-roster-v1/generated/worker-walk-north-v1/extracted/07.png",
+      "sourceSha256": "edb7f733916d2945a7830a4b183849c59ea38b03a46a0a9334b3287bc86b1f93",
+      "sourceBounds": [
+        1196,
+        536,
+        1453,
+        946
+      ],
+      "offsetPx": [
+        50,
+        19
+      ],
+      "alphaBoundsPx": {
+        "x": 50,
+        "y": 19,
+        "width": 136,
+        "height": 217
+      },
+      "rgbaSha256": "80643933b2ffc323bca29eb4e4160d7decd29bd7dbdc6fdbc34cb250abce445b"
+    }
+  ]
+}

@@ -45,7 +45,8 @@ test('optional authored nose yaw is finite Sheep presentation data, separate fro
     const definition = { ...sheep, wildlifeNoseYawDegrees };
     assert.equal(validWildlifeNodeDefinition(definition), true);
     const state = createResourceNodeState(definition), baseline = createResourceNodeState(sheep);
-    assert.equal(state.wildlifeMotion.heading, wildlifeNoseYawDegrees * Math.PI / 180);
+    const expectedBody = ((wildlifeNoseYawDegrees - 42.03499984741211 + 360) % 360) * Math.PI / 180;
+    assert.ok(Math.abs(state.wildlifeMotion.heading - expectedBody) < 1e-12, 'legacy nose input initializes canonical body yaw');
     state.wildlifeMotion.heading = baseline.wildlifeMotion.heading;
     assert.deepEqual(state, baseline, 'authored initial pose changes no food or lifecycle state');
   }

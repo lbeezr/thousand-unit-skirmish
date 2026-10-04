@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "baseline": "f08a32ae5921933170140fad6cf3b3dd3d1e4368",
+  "originalFrames": 92,
+  "originalFrameMetadataSha256": "5e0070580be2969ff3cdf4e5cb31e52303b770393d5dd08bfc109f06161e6a76",
+  "originalFrameRgbaSha256": "a5dd91d0beaf8acbb0be907514e4f33a233b0d7c66099d7e51373f2d71511823",
+  "originalTeamMaskSha256": "074b247161d7a4a1839f7d6dad87816a9ccf73b24acf29d75a7cd4629815cfb3",
+  "allPriorFrameMetadataAndPixelsPreserved": true,
+  "allOtherClipsPreserved": true,
+  "worldScaleAndDimensionsPreserved": true,
+  "byteIdempotentAdmission": true
+}
