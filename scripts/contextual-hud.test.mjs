@@ -6,7 +6,8 @@ import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import { selectionContext } from '../src/selection-context.mjs';
 import { applyUnitStances, updateCombatStanceControls, bindCombatStanceControls } from '../src/combat-stance-ui.mjs';
-import { updateSelectionPortrait, farmSelectionFacts, workerRoleFacts, WORKER_PORTRAITS } from '../src/selection-portrait.mjs';
+import { updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts, workerRoleFacts, WORKER_PORTRAITS, INFANTRY_PORTRAITS } from '../src/selection-portrait.mjs';
+import { civilizationSpriteRole } from '../src/unit-sprite-runtime.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { researchAction, researchOptions } from '../src/research-actions.mjs';
 import { setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip } from '../src/hud-layout.mjs';
@@ -47,11 +48,11 @@ function fixture(team = 0) {
   w.ui = {};
   for (const [, name, selector] of source.matchAll(/^\s*(\w+): document\.querySelector\('([^']+)'\)/gm)) w.ui[name] = d.querySelector(selector);
   Object.assign(w, { ...economyClientBindings(), ...wildlifeClientBindings(),
-    selectionContext, updateSelectionPortrait, farmSelectionFacts, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
+    selectionContext, updateSelectionPortrait, updateProductionPortrait, farmSelectionFacts, UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
     applyUnitStances, updateCombatStanceControls, bindCombatStanceControls, socket: { readyState: 1 },
     castPreview: true, humanRosterPreview: true, roomPageUrl: new URL('http://localhost/'),
     matchMedia: () => ({ matches: false }),
-    unitSpriteRuntime: { roleForUnit: unit => unit.team === 0 ? 'human' : 'boughward-worker' },
+    unitSpriteRuntime: { roleForUnit: unit => civilizationSpriteRole(unit.kind, unit.team === 0 ? 'human' : 'boughward') },
     researchAction, researchOptions, setHudActionAvailability, isHudActionUnavailable, bindContextualCommandStrip,
     formatResourceStock, formatResourceRequirement,
     livingIdleWorkerIds, livingUnitIdsOfKinds, localTeam: team, matchWinner: -1,
@@ -341,6 +342,72 @@ for (const team of [0, 1]) test(`seat ${team}: single Worker portrait opens dism
   assert.equal(f.d.activeElement, portrait);
 });
 
+for (const team of [0, 1]) test(`seat ${team}: Infantry reuses the compact identity and dismissible definition-derived notes`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const own = team * 2 + 1, role = team === 0 ? 'infantry' : 'boughward-infantry';
+  const button = f.bar.querySelector('[data-selection-portrait]'), image = button.querySelector('img');
+  const health = f.bar.querySelector('[data-worker-health]'), notes = f.d.querySelector('#selected-worker-notes');
+  f.select([team * 2]); f.select([own]);
+  assert.equal(button.hidden, false); assert.equal(image.getAttribute('src'), INFANTRY_PORTRAITS[role].asset);
+  assert.equal(button.dataset.codexEntry, 'unit.infantry');
+  assert.equal(button.getAttribute('aria-label'), `Infantry · ${INFANTRY_PORTRAITS[role].appearanceFamily} — open role notes`);
+  assert.equal(notes.getAttribute('aria-label'), 'Infantry role notes');
+  assert.equal(health.textContent, 'Infantry · 100 / 100 HP');
+  f.click(button); assert.equal(f.w.commandDock.dataset.activePanel, 'selection');
+  assert.equal(notes.querySelector('[data-worker-abilities]').textContent, 'Move · Attack · Attack structures');
+  assert.equal(notes.querySelector('[data-worker-training]').textContent, 'Barracks · 50 food · 12s · 1 population');
+  assert.equal(notes.querySelector('[data-worker-attack]').textContent, 'Base attack: 10 melee vs ground · 0.85s interval · 1.28 cells range · 1.5 damage vs structures');
+  f.escape(); assert.equal(f.d.activeElement, button); assert.deepEqual([...f.w.selected], [own]);
+  f.w.units[own].hp = 37; f.w.updateSelectionUI();
+  assert.equal(health.textContent, 'Infantry · 37 / 100 HP'); assert.equal(button.querySelector('img'), image);
+  image.dispatchEvent(new f.w.Event('error')); assert.equal(image.parentElement.hidden, true);
+  f.w.updateSelectionUI(); assert.equal(image.parentElement.hidden, true, 'snapshots do not expose a known failed image');
+  assert.equal(button.hidden, false); f.click(button); assert.equal(notes.hidden, false);
+  notes.querySelector('details').open = true; notes.querySelector('a').focus();
+  f.select([own, team * 2]); assert.equal(notes.hidden, true); assert.equal(notes.querySelector('details').open, false);
+  assert.equal(f.d.activeElement, f.d.querySelector('#dock-tab-selection'));
+  f.select([team * 2]); assert.equal(image.parentElement.hidden, false, 'supported source change restores artwork');
+  assert.equal(notes.getAttribute('aria-label'), 'Worker role notes');
+  f.select([own]); f.w.units[own].hp = 0; f.w.updateSelectionUI(); assert.equal(button.hidden, true);
+  f.w.units[own].hp = 100; f.select([own]); f.w.localTeam = null; f.w.updateSelectionUI(); assert.equal(button.hidden, true);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: product portraits retain text, focus, availability and native training commands`, t => {
+  const f = fixture(team); t.after(() => f.dom.window.close());
+  const role = team === 0 ? 'infantry' : 'boughward-infantry';
+  const building = { id: 8, team, type: 'barracks', complete: true, hp: 1800, maxHp: 1800, productionQueue: [] };
+  f.select([], building);
+  const button = f.bar.querySelector('[data-product="infantry"]'), image = button.querySelector('img');
+  const label = button.querySelector('[data-production-label]'), source = f.w.ui.trainInfantry;
+  assert.equal(image.getAttribute('src'), INFANTRY_PORTRAITS[role].asset); assert.equal(image.alt, '');
+  assert.equal(image.parentElement.getAttribute('aria-hidden'), 'true');
+  assert.equal(source.querySelector('img').getAttribute('src'), image.getAttribute('src'));
+  assert.match(source.textContent, /Queue infantry.*50 FOOD/); assert.match(label.textContent, /Train Infantry.*50 food/);
+  button.focus(); f.w.latestFood[team] = 0; f.w.updateContextualCommands();
+  assert.equal(button.getAttribute('aria-disabled'), 'true'); assert.match(label.textContent, /Need 50 food/);
+  assert.equal(f.d.activeElement, button); assert.equal(button.querySelector('img'), image);
+  assert.equal(button.querySelector('[data-production-label]'), label);
+  f.click(button); assert.equal(f.w.sentCommands.length, 0);
+  image.dispatchEvent(new f.w.Event('error')); f.w.latestFood[team] = 500; f.w.updateContextualCommands();
+  assert.equal(image.parentElement.hidden, true); assert.match(label.textContent, /Train Infantry/);
+  f.click(button); assert.deepEqual(JSON.parse(JSON.stringify(f.w.sentCommands)), [{ type: 'trainUnit', kind: 'infantry', buildingId: building.id }]);
+  const workerRole = team === 0 ? 'human' : 'boughward-worker';
+  assert.equal(f.w.ui.trainWorker.querySelector('img').getAttribute('src'), WORKER_PORTRAITS[workerRole].asset);
+  f.w.castPreview = false; f.w.updateContextualCommands();
+  assert.equal(button.querySelector('.unit-action-art').hidden, true); assert.match(button.textContent, /Train Infantry/);
+  assert.equal(source.querySelector('.unit-action-art').hidden, true);
+});
+
+test('unsupported Infantry appearance and mismatched Worker role retain text-only selection', t => {
+  const f = fixture(); t.after(() => f.dom.window.close());
+  const button = f.bar.querySelector('[data-selection-portrait]');
+  for (const role of ['orc', 'human', null]) {
+    f.w.unitSpriteRuntime.roleForUnit = () => role; f.select([1]); assert.equal(button.hidden, true);
+  }
+  f.w.unitSpriteRuntime.roleForUnit = () => 'infantry'; f.w.humanRosterPreview = false;
+  f.w.castPreview = false; f.select([1]); assert.equal(button.hidden, true);
+});
+
 test('Worker entry follows changed registry capabilities, stats, cost and producer rather than duplicating gameplay facts', () => {
   const definition = {
     ...UNIT_DEFINITIONS.worker, capabilities: ['move', 'attack', 'repair'],
@@ -464,11 +531,12 @@ for (const [name, change] of [
   assert.equal(f.d.activeElement.closest('[hidden]'), null);
 });
 
-test('Worker identity is hidden for groups, unsupported buildings, enemy, dead or spectator selections', t => {
+test('Unit identity is hidden for groups, unsupported roles/buildings, enemy, dead or spectator selections', t => {
   const f = fixture(); t.after(() => f.dom.window.close());
   const portrait = f.bar.querySelector('[data-selection-portrait]'), notes = f.d.querySelector('#selected-worker-notes');
   f.w.units[4] = { id: 4, team: 0, kind: 'worker', hp: 100 };
-  for (const ids of [[0, 4], [0, 1], [1], [2], [99], []]) {
+  f.w.units[5] = { id: 5, team: 0, kind: 'archer', hp: 100 };
+  for (const ids of [[0, 4], [0, 1], [5], [2], [99], []]) {
     f.select([0]); f.select(ids);
     assert.equal(portrait.hidden, true, `selection ${ids}`);
     assert.equal(notes.hidden, true);

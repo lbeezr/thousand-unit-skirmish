@@ -12,6 +12,7 @@ import { economyClientBindings } from './economy-client-fixture.mjs';
 import { BUILDING_DEFINITIONS, UNIT_DEFINITIONS, TECHNOLOGY_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { formatResourceRequirement } from '../src/resource-format.mjs';
 import { setHudActionAvailability, isHudActionUnavailable } from '../src/hud-layout.mjs';
+import { updateProductionPortrait } from '../src/selection-portrait.mjs';
 
 const map = JSON.parse(await readFile(new URL('../maps/shore-fishing.json', import.meta.url)));
 const source = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
@@ -50,6 +51,7 @@ function menu(team, workers) {
   const context = vm.createContext({ ...economyClientBindings(), mapDefinition: map,
     document: page.window.document, BUILDING_DEFINITIONS, UNIT_DEFINITIONS, TECHNOLOGY_DEFINITIONS,
     formatResourceRequirement, setHudActionAvailability, isHudActionUnavailable,
+    castPreview: false, humanRosterPreview: false, updateProductionPortrait,
     localTeam: team, latestBuildings: [], latestFood: clients[team].latest.food, latestWood: clients[team].latest.wood,
     latestTeamResearch: [{}, {}], teamUnits: [0, 1].map(seat => clients[team].latest.units.filter(row => row[1] === seat)
       .map(row => ({ id: row[0], hp: row[4], kind: row[5] }))), latestWorkerProduction: [null, null],

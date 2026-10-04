@@ -1,11 +1,13 @@
 # Selection identity and future field notes
 
-One selected living friendly Worker now has a compact portrait, name and live HP.
+One selected living friendly Worker or Infantry has a compact portrait, name and live HP.
 The portrait opens the existing dismissible Selection drawer with practical role
 notes: registered abilities, live HP, base movement/attack stats and training
-producer, cost, duration and population. The same 52px slot shows a selected owned Barracks's current lifecycle
-frame and opens its existing structure details; health/production are not repeated
-in a new panel. Multiple units retain their composition summary. Unsupported
+producer, cost, duration and population. Infantry notes retain the separate
+structure-damage value. The same 52px slot retains the legacy Barracks lifecycle
+thumbnail and the Farm's explicitly labelled Food symbol; both open existing
+structure details. Matching the newer default captured Barracks identity remains
+incomplete. Multiple units retain their composition summary. Unsupported
 buildings, enemy, dead, stale and spectator selections have no portrait.
 The existing Build, battlefield target and Attack move commands use the original
 [purpose-drawn icons](../assets/ui/PROVENANCE.md), retaining visible labels and
@@ -14,6 +16,11 @@ Formation now use [action glyphs](../assets/ui/icons/actions/README.md) by defau
 in existing labelled controls at 20 px. The Command drawer's duplicate tactical
 controls use the same files. Formation remains hidden for building details;
 Return cargo retains its distinct text, tooltip and carrying-Worker/Skiff behavior.
+
+Worker/Infantry training controls reuse the same sources as decorative 20px
+thumbnails. Product names, costs, availability reasons and commands remain on
+the existing buttons. The source image/label nodes survive live updates; an
+image error hides only the decorative frame. Legacy/model previews retain text.
 
 The portrait resolves the effective sprite appearance, rather than inferring
 ancestry from seat number. Normal Human/Boughward rendering and the explicit
@@ -49,6 +56,58 @@ uses Bellweather/Common Hearth inspiration without binding faction membership.
 Boughward [institutions](lore/institutions.md) explore woodland stewardship;
 jurisdiction and history remain proposals. An appearance association alone
 must not promote these working notes into settled individual lore.
+
+## Approved Infantry reuse — 4 October 2026
+
+The restored Human Infantry v3 idle sheet and existing Boughward isolated idle
+now supply the single-friendly-Infantry portrait and labelled training thumbnail
+by default. [Exact source hashes, framing and provenance](../assets/ui/portraits/PROVENANCE.md#infantry-reuse--4-october-2026)
+retain helmet, face, cream/sage or burgundy clothing, short spear and upper shield.
+The existing 52px portrait, 20px action size, 44px command target, dismissible
+drawer and restrained panel treatment remain. Worker → Infantry replaces every
+role fact and the notes group's accessible name; no Worker abilities or Town
+Center training persist. The general sourced world note remains optional.
+
+Existing public Archer/Spearman and mounted/siege illustrations are inventoried
+below; dedicated portrait/training icon deliveries and their deliberate framing
+are still missing. Skiff, Farm, Mill, Dock and barriers have no matching approved
+HUD illustration. Keep their existing text/symbol disclosure, with no borrowed
+role image or newly generated/rejected placeholder.
+
+The building-action owner retains two observed follow-ups: a rotated Barracks
+returns no legacy image URL and the old portrait helper throws on `.replace()`;
+the nonrotated Complete thumbnail also uses the legacy family beneath the newer
+default battlefield captures. These are source-contract gaps recorded on
+[building selection PR352](https://github.com/lbeezr/thousand-unit-skirmish/pull/352),
+not acceptance of a substitute building identity.
+
+### Ordinary-game capture recipe and remaining evidence
+
+Use an identified clean release containing this integration in the already
+qualified runner after CI resolves its existing access clarification. Record
+source SHA, pack digest, served identity, browser, viewport/DPR, map and team.
+Do not retry the blocked cloud sandbox, start a new dispatch or resume cancelled
+login. The HUD owner retains pixel inspection and the unfinished outcome.
+
+1. Enter through root → New Game → Tiny Terraced Vale. Select a Worker, use
+   Build to pay for/place a Barracks, finish it, then select its Infantry training
+   control and pay 50 food. Capture the ordinary labelled Worker/Infantry
+   product controls at 20px and the Build & train drawer's matching thumbnails.
+2. Select one living Infantry in the battlefield. Capture its 52px portrait and
+   live HP, open role notes, inspect the registered abilities/training and
+   separate structure damage, then dismiss with Escape and confirm visible focus.
+3. Repeat for the other viewing team, low resources/full queue, Worker → Infantry
+   → group/empty, and narrow horizontal scrolling. Inspect every retained PNG
+   for framing, contrast, clipping, alpha edges and unchanged readable labels.
+   Retain color/grayscale comparisons; exact native screenshots establish the
+   represented states only, without claiming unassisted role recognition.
+
+Static original/52px/20px CPU source pixels were inspected in color and grayscale.
+DOM tests cover effective appearance, both seats, stable nodes, truthful facts,
+focus/dismissal, unavailable activation, image errors and unchanged training
+commands. HTTP checks verify exact GET/HEAD PNG MIME/hash and source-only denial;
+clean pack evidence is recorded in the implementation PR. Rendered native HUD
+appearance, identified deployed delivery and human recognition remain incomplete.
 
 ## Existing-art mapping audit — 3 October 2026
 
