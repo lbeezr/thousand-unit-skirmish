@@ -1,0 +1,11 @@
+{
+  "observedAt": "2026-10-04 02:57:36 UTC",
+  "environment": "staging",
+  "service": "web",
+  "deploymentId": "e541d903-178b-47cb-8d1b-4358c93c5a8a",
+  "status": "SUCCESS",
+  "sourceRevision": "64cc391e6d9c4164dca7bd45696cf3862fe19729",
+  "createdAt": "2026-10-04T00:04:25.347Z",
+  "containsWorkerLandArt": false,
+  "acceptance": "No containing deployment/native game claim; existing parent Railway/Mac route owns exact delivery/capture."
+}

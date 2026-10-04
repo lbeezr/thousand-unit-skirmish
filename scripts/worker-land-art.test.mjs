@@ -44,14 +44,15 @@ function assertExtendedZeroMask() {
     extension.originalTeamMaskPixelsSha256);
 }
 
-for (const preservationHeading of ['north-walk', 'south-walk', 'west-walks', 'stone-se', 'wood-north-west']) {
+for (const preservationHeading of ['north-walk', 'south-walk', 'west-walks', 'stone-se', 'wood-north-west', 'food-north-west']) {
 test(`${preservationHeading} admission preserves preceding frame records/pixels and team mask`, () => {
   const preservation = JSON.parse(readFileSync(new URL(
     `../docs/qa-evidence/worker-land-art-2026-10-04/${preservationHeading}-preservation.json`, import.meta.url)));
   const originals = asset.frames.slice(0, preservation.originalFrames);
   const hash = bytes => createHash('sha256').update(bytes).digest('hex');
   assert.equal(hash(JSON.stringify(originals)), preservation.originalFrameMetadataSha256);
-  assert.equal(hash(originalMask),
+  assert.equal(hash(preservationHeading === 'food-north-west'
+    ? readFileSync(new URL('team-accent-mask.png', directory)) : originalMask),
     preservation.originalTeamMaskSha256);
   assertExtendedZeroMask();
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', directory)));
@@ -194,22 +195,23 @@ test('Stone SE is a complete four-pose dedicated pick clip with its own shared r
   }
 });
 
-test('NW wood adds three distinct complete axe poses with unchanged world units per pixel', () => {
+for (const resource of ['wood', 'food']) {
+test(`NW ${resource} adds three distinct complete work poses with unchanged world units per pixel`, () => {
   const registration = JSON.parse(readFileSync(new URL(
-    '../docs/qa-evidence/worker-land-art-2026-10-04/wood-north-west-registration.json', import.meta.url)));
+    `../docs/qa-evidence/worker-land-art-2026-10-04/${resource}-north-west-registration.json`, import.meta.url)));
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', directory)));
   assert.deepEqual([image.width, image.height], [2560, 4096]);
-  const clip = spriteActionClip(clipMap, 'gather', 'north-west', 'wood', 'human', true);
-  assert.equal(clip.stateId, 'gather-wood');
+  const clip = spriteActionClip(clipMap, 'gather', 'north-west', resource, 'human', true);
+  assert.equal(clip.stateId, `gather-${resource}`);
   assert.equal(clip.directionId, 'north-west');
   assert.equal(clip.loop, true);
   assert.equal(spriteClipDuration(clip), 720);
   const hashes = new Set();
   for (const [index, key] of clip.sequence.entries()) {
-    assert.deepEqual(key, { frameId: `gather-wood-north-west-${index}`, durationMs: 240 });
+    assert.deepEqual(key, { frameId: `gather-${resource}-north-west-${index}`, durationMs: 240 });
     const frame = asset.frames.find(f => f.id === key.frameId);
-    assert.deepEqual(frame.canvasPx, { width: 320, height: 320 });
-    assert.deepEqual(frame.groundPivotPx, { x: 160, y: 308 });
+    assert.deepEqual(frame.canvasPx, resource === 'wood' ? { width: 320, height: 320 } : { width: 256, height: 256 });
+    assert.deepEqual(frame.groundPivotPx, resource === 'wood' ? { x: 160, y: 308 } : { x: 128, y: 244 });
     assertFrameUnclipped(image, frame);
     const r = frame.fallbackRectPx.rectPx, hash = createHash('sha256');
     for (let y = 0; y < r.height; y++) hash.update(image.pixels.subarray(
@@ -222,14 +224,14 @@ test('NW wood adds three distinct complete axe poses with unchanged world units 
   assert.equal(asset.heightWorld / Math.max(...asset.frames.map(f => f.alphaBoundsPx.height)),
     extension.worldUnitsPerPixel);
   for (const heading of ['north', 'north-east', 'east', 'south', 'south-west', 'west']) {
-    assert.equal(spriteActionClip(clipMap, 'gather', heading, 'wood', 'human', true)
+    assert.equal(spriteActionClip(clipMap, 'gather', heading, resource, 'human', true)
       .sequence[0].frameId, `idle-${heading}-0`, 'One new heading must not turn missing headings');
   }
-  assert.equal(spriteActionClip(clipMap, 'gather', 'north-west', 'food', 'human', true)
-    .sequence[0].frameId, 'idle-north-west-0', 'Wood keys cannot masquerade as food work');
+  assert.equal(spriteActionClip(clipMap, 'gather', 'north-west', resource === 'food' ? 'wood' : 'food', 'human', true)
+    .sequence[0].frameId, `gather-${resource === 'food' ? 'wood' : 'food'}-north-west-0`, 'Resource selectors use their own artwork');
 });
 
-test('default NW wood advances and stops/resumes on productive activity, with movement/attack interruptions', async () => {
+test(`default NW ${resource} advances and stops/resumes on productive activity, with movement/attack interruptions`, async () => {
   const savedFetch = globalThis.fetch;
   globalThis.fetch = async () => ({ ok: true, json: async () => pack });
   class TextureLoader {
@@ -261,26 +263,32 @@ test('default NW wood advances and stops/resumes on productive activity, with mo
       task: 'gathering', walking: false, angle: -Math.PI / 4, renderX: 0, renderZ: 0,
       attackStartedAt: 0, defeatStartedAt: 0, cargo: 0, cargoType: null, performingAction: null };
     expect(unit, 900, 'idle-north-west-0'); // Travel/intent does not invent productive work.
-    unit.performingAction = 'gather-wood';
+    unit.performingAction = `gather-${resource}`;
     assert.equal(activeState(unit, 1000), 'gather');
-    for (let i = 0; i <= 3; i++) expect(unit, 1000 + i * 240, `gather-wood-north-west-${i % 3}`);
+    for (let i = 0; i <= 3; i++) expect(unit, 1000 + i * 240, `gather-${resource}-north-west-${i % 3}`);
+    unit.angle = 0;
+    expect(unit, 1740, 'idle-north-0');
+    assert.equal(unit.spriteClockStartedAt, 1000);
+    unit.angle = -Math.PI / 4;
+    expect(unit, 1750, `gather-${resource}-north-west-0`);
     unit.performingAction = null;
     expect(unit, 1800, 'idle-north-west-0');
-    unit.performingAction = 'gather-wood';
-    expect(unit, 1900, 'gather-wood-north-west-0');
-    expect(unit, 2140, 'gather-wood-north-west-1');
+    unit.performingAction = `gather-${resource}`;
+    expect(unit, 1900, `gather-${resource}-north-west-0`);
+    expect(unit, 2140, `gather-${resource}-north-west-1`);
     unit.walking = true; unit.task = 'moving'; unit.performingAction = null;
     expect(unit, 2200, 'walk-north-west-0');
-    unit.walking = false; unit.task = 'gathering'; unit.performingAction = 'gather-wood';
-    expect(unit, 2300, 'gather-wood-north-west-0');
+    unit.walking = false; unit.task = 'gathering'; unit.performingAction = `gather-${resource}`;
+    expect(unit, 2300, `gather-${resource}-north-west-0`);
     unit.attackStartedAt = 2400;
     expect(unit, 2400, 'attack-south-east-0'); // Existing combat approximation unchanged.
     unit.attackStartedAt = 0;
-    expect(unit, 2500, 'gather-wood-north-west-0');
+    expect(unit, 2500, `gather-${resource}-north-west-0`);
     unit.task = 'returning'; unit.performingAction = null; unit.walking = true;
-    unit.cargo = 10; unit.cargoType = 'wood';
+    unit.cargo = 10; unit.cargoType = resource;
     expect(unit, 2600, 'walk-north-west-0');
     unit.walking = false;
     expect(unit, 2700, 'idle-north-west-0');
   }
 });
+}
