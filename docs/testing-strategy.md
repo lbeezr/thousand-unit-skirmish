@@ -23,19 +23,22 @@ node scripts/ci.mjs --list
 For browser/render work, the first executable capability check is:
 
 ```sh
-node scripts/browser-preflight.mjs --launch
+node scripts/renderer-capability.mjs --launch
 ```
 
 Run it once in the intended cloud environment. Record its JSON and exit status:
-`ready` means browser/CDP startup only; `unsupported` is an explicit blocker,
-not a visual pass. `--diagnose=STARTUP_LOG` classifies an existing startup log
-without launching another browser. Do not repeat the same failed startup or
-download unchanged. Continue independent CPU/native work while the cloud testing
-owner resolves the recorded capability failure.
+`ready` (exit 0) requires a WebGL2 context and two distinct exact pixel readbacks
+in `about:blank`, source/backend metadata and cleanup; `blocked` (exit 1) retains
+the capability failure. It makes one normal-sandbox launch attempt. This probe
+records zero game frames and screenshots; readiness is not game-render acceptance.
+`--diagnose=STARTUP_LOG` classifies an existing startup log without another launch.
+The older `browser-preflight.mjs` remains a startup diagnostic. Do not repeat the
+same failed startup or download unchanged. Continue independent CPU/native work
+while the cloud testing owner resolves the recorded capability failure.
 
-**The stronger render gate is pending implementation.** Before accepting pixels,
-it must prove a sandboxed isolated browser can load the clean packed game, create
-WebGL2, compile/draw the production renderer, decode the actual atlas, receive
+**Packed-game and staging pixel acceptance remain pending.** Before accepting
+game pixels, prove the isolated browser can load the clean packed game,
+compile/draw the production renderer, decode the actual atlas, receive
 ordinary game state, advance multiple rendered frames, and save a nonempty PNG
 with no relevant console/shader/asset failures. Check local packed-game capability
 and staging navigation separately. The project's Three.js r180 renderer requires
@@ -54,18 +57,22 @@ hosted-runner purchase or weakened checks is authorized by this document.
 
 ## Existing checks and lanes
 
-Inventory verified at `53a47ee3` on 4 October 2026. The [CI registry](../scripts/ci.mjs)
+Inventory verified at `dea845b3` on 4 October 2026: 1,120 registered checks =
+939 fast + 181 simulation, preserving all 1,115 preceding-main checks. These
+registration counts do not claim a successful execution. The [CI registry](../scripts/ci.mjs)
 and [workflow](../.github/workflows/ci.yml) are authoritative for current execution.
 `npm test` runs the registered CPU contracts and native scenarios. GitHub uses
 Node 24, three shards (`npm test -- --shard=1/3`, `2/3`, `3/3`) and packs the release
-on shard 1. New lane entrypoints are **proposed until their wiring PR merges**;
-use the commands below now. See [the command guide](testing.md) for parameters,
+on shard 1. Named lanes select existing checks and retain the full default suite.
+See [the command guide](testing.md) for parameters,
 dependencies and disposable-room setup.
 
 | Lane / existing command | What it establishes | Remaining boundary |
 | --- | --- | --- |
 | Source: `npm run architecture:check`, `npm run check:types`, `npm run docs:check` | Runtime dependency/cycle policy, explicitly checked types and documentation links | Static checks do not establish gameplay or pixels. |
 | Focused CPU: `node --test scripts/unit-sprite-clock.test.mjs scripts/unit-animation-runtime.test.mjs scripts/villager-facing.test.mjs scripts/unit-presentation-client.test.mjs` | Clocks, headings, shipped manifests, interpolation and Three UV/matrix buffers | Presentation uses VM-extracted client code and stub textures, without a browser/GPU. |
+| Temporal CPU: `node --test scripts/unit-displacement-animation.test.mjs` | 64 Worker/Spearman × bearing/team/detail cases through committed interpolation, sprite clocks, UV buffers and decoded PNG cells; frozen-clock, wrong-heading and duplicate-cell controls fail as intended | Injected server-position samples, fixture-selected approved packs via preview flags and CPU textures; no snapshot receipt, live commands, browser frames or gait judgment. Seven Spearman headings remain idle-art gaps. |
+| Capability contracts: `node --test scripts/renderer-capability.test.mjs` | Injected readback, startup, deadline, cleanup and CLI failure contracts | CPU mocks do not prove an available GPU; execute the opt-in probe above separately. |
 | Replay: `node --test scripts/pathing-replay.test.mjs scripts/pve-skirmish-replay.test.mjs` | Fixed-tick source-copy simulation, paid rules and exact scenario recovery | Listening/timers are disabled; real network admission and the render loop need separate proof. |
 | Native: `node scripts/impaired-connection-scenario.mjs` and registered room/checkpoint scenarios | Real processes, two seats, delayed transport, interrupted orders and recovery | Process/snapshot assertions do not prove appearance. |
 | Snapshot: `node --test scripts/snapshot-private-production.test.mjs scripts/snapshot-row-allocation.test.mjs` | Seat privacy, exact fields and wire equivalence | Snapshot receipt must still reach the intended visible state. |
@@ -78,9 +85,49 @@ dependencies and disposable-room setup.
 
 Run focused checks appropriate to the changed contract, then complete required
 repository checks. Preserve the existing suite while adding faster lane selection;
-do not replace it with a green subset. The CI wiring owner must prove each selected
-lane's registration, exclusions and shard coverage. A missing/queued hosted run is
+do not replace it with a green subset. A missing/queued hosted run is
 unavailable evidence, not a pass or an invented merge restriction.
+
+### Executable lane selection
+
+[Lane wiring PR #289](https://github.com/lbeezr/thousand-unit-skirmish/pull/289)
+registers both new CPU tests and adds these commands:
+
+| Command | Execution scope and limit |
+| --- | --- |
+| `npm run test:fast` | Registered `.test.mjs` contracts, recursive syntax, both type gates and import/docs guards. CPU only; fixtures may start native processes. “Fast” is relative to scenario work, not a fixed time promise. |
+| `npm run test:simulation` | Remaining CPU scenario registrations, preserving their order. Together with `test:fast`, partitions every full-suite registration exactly once. |
+| `npm run test:visual` | WebGL2 readback prerequisite, then actual `game-dev` four-frame environment pilot capture. Requires an existing authorized renderer executor/launcher. This preview does not prove Worker/Spearman motion, a clean packed game or staging acceptance. |
+| `npm run test:performance` | Existing `checkpoint-performance-scenario.mjs 10 move 1`: one CPU timing/recovery sample. No GPU, soak or before/after performance claim. |
+
+Append `-- --list` to inspect a lane without executing it. Full/fast/simulation
+support `--shard=INDEX/COUNT`; visual/performance reject shards. Append
+`-- --report=/tmp/test-lane.json` to retain schema-version-1 JSON with lane/shard,
+full source revision/dirty flag, selected/lane/passed/unrun counts and per-check
+outcomes. Plans have status `planned` and zero executed checks. Execution is
+fail-fast: `passed` exits 0, `failed` exits 1, invalid options exit 2 and recognized
+unavailable renderer capability/launcher yields `blocked` with exit 3. Malformed
+preflight evidence and report-write failures fail. `fullCpuSuitePassed` is true
+only for a successful unsharded full CPU suite; no lane or shard implies rendered
+or comparative performance acceptance. Default CI retains three CPU shards with
+JSON artifacts; manual workflow lane selection uses the existing runner type.
+
+The wiring owner's [PR evidence](https://github.com/lbeezr/thousand-unit-skirmish/pull/289)
+retains earlier executions from a dirty `53a47ee` tree: startup blocked the visual
+lane before capture, and the existing 2,000-unit move performance workload failed
+its planning-count assertion (six completed jobs versus two expected). The visual
+attempt predates the new WebGL2 prerequisite; neither record is execution evidence
+for the merged wiring revision. Renderer availability remains with the cloud
+testing owner; the code-quality owner retains the route-completion diagnostic.
+Lane wiring does not make either workload pass or change its assertions.
+
+Full-suite success is also unverified. The recorded CPU shard 2 at `d8f10423`
+failed the stale Practice launch-identity expectation in
+[`shore-fishing-adoption-scenario.mjs`](../scripts/shore-fishing-adoption-scenario.mjs);
+the other shard results were incomplete in that record. The code-quality owner
+retains result collection and that fixture repair. Focused contracts, type/guard
+checks and release packing pass in the wiring evidence; they are separate from
+full-suite or rendered acceptance.
 
 ## Critical regression contracts
 
@@ -93,6 +140,15 @@ rendered acceptance remains separate. At the inventory revision, Spearman v1 has
 an eight-frame southeast walk clip and seven one-frame walk placeholders. Expose
 direction borrowing and missing temporal coverage; available clip keys alone
 cannot establish complete motion.
+
+[Temporal regression PR #287](https://github.com/lbeezr/thousand-unit-skirmish/pull/287)
+adds the displacement-to-clock/UV/decoded-cell tests and WebGL2 capability probe.
+The [dated evidence](qa-unit-displacement-animation-2026-10-04.md) records all
+64 positive cases and intended failure counts: frozen clock 64, forced southeast
+selection 56, duplicate authored moving cells 36. Worker has eight distinct walk
+cells in each direction; Spearman has eight southeast cells and seven exact-facing
+idle fallbacks. This completes the named CPU regression scope, with those art gaps
+explicit, while normal packed-game and staging pixels remain unverified.
 
 | Contract / owner | Required assertions and scenarios |
 | --- | --- |
@@ -131,7 +187,14 @@ complete normal loop under real packet cadence, asset loading, selection and LOD
 One still screenshot also cannot distinguish an advancing walk from a held pose.
 Direction metadata and projection math can agree with mislabelled artwork.
 
-The cloud testing owner must add a bounded ordinary Move → continuing walk → Stop
+The merged CPU temporal regression covers actual client interpolation/update
+scheduling, turns, a Stop-equivalent held position and resume using supplied
+server-position samples and fixture-selected approved packs through preview flags.
+Its negative controls check frozen clocks, wrong UV headings and
+duplicate moving cells. It does not execute real server Move/Stop admission,
+packet cadence or the browser render loop.
+
+The cloud testing owner retains a bounded ordinary Move → continuing walk → Stop
 scenario, using the normal shipped roster and real snapshots. Check both seats,
 selected/unselected actors and ordinary/strategic zoom. Correlate displacement,
 continuous clock, frame/UV progression and at least two visibly distinct authored
@@ -200,16 +263,16 @@ omit an unavailable visual lane.
 ## Ranked implementation backlog
 
 Ownership is assigned by stream; each receiving owner records its concrete PR,
-command and acceptance result here when implemented. These rows are pending,
-not checked-off infrastructure. Keep runtime/test/CI changes in the owners' small
+command and acceptance result here when implemented. Statuses distinguish merged
+checks from remaining acceptance. Keep runtime/test/CI changes in the owners' small
 PRs rather than folding them into this documentation change.
 
 | Rank / status | Owner and write boundary | Completion evidence |
 | --- | --- | --- |
-| 1 — blocked capability | Cloud testing owner; preflight/render harness | Supported isolated sandbox, packed WebGL2 production draw/atlas decode/temporal PNG proof, cleanup and separate staging access result. Replace the dated blocker record. |
-| 2 — pending temporal regression | Cloud testing owner; existing browser/CPU presentation harnesses | Normal Worker/Spearman Move/Stop and jitter/reconnect checks above; deliberate freeze mutation fails. Publish the merged command and artifacts. |
-| 3 — pending facing regression | Cloud testing owner with art owner; directional fixture/reference evidence | Eight reviewed bearings linked to admitted source identity; swapped-heading mutation fails; no unreviewed golden/style change. |
-| 4 — pending lane wiring | CI wiring owner; `package.json`, `scripts/ci.mjs`, `.github/` | Fast CPU, native, qualified render and scheduled depth lane entrypoints; exact registry/shard proof, explicit unavailable capability, retained existing coverage and failure artifacts. |
+| 1 — probe implemented; game pixels blocked | Cloud testing owner; preflight/render harness | WebGL2 readback probe and CPU failure contracts merged in #287. Still needs supported isolated sandbox, packed production draw/atlas decode/temporal PNG proof and separate staging access result. Replace the dated blocker record. |
+| 2 — CPU temporal regression implemented; browser pending | Cloud testing owner; existing browser/CPU presentation harnesses | #287 checks 64 supplied-position cases and rejects frozen clocks/duplicate moving cells. Normal Worker/Spearman Move/Stop, real packet cadence and jitter/reconnect render checks above remain pending. |
+| 3 — CPU heading faults implemented; reviewed art pending | Cloud testing owner with art owner; directional fixture/reference evidence | #287 rejects forced southeast UV selection. Still needs eight reviewed rendered bearings linked to admitted source identity; seven Spearman gait directions remain idle fallbacks. No unreviewed golden/style change. |
+| 4 — lane wiring implemented; workload acceptance separate | CI wiring owner; `package.json`, `scripts/ci.mjs`, `.github/` | #289 adds fast/simulation/visual/performance selection, exact registry/shard regressions and scoped JSON evidence while retaining the full CPU suite. Earlier executions retain renderer/performance diagnostics with their source provenance. Scheduled depth and qualified game visuals remain pending. |
 | 5 — pending replay contract | Gameplay test owner; fixed-tick/native fixtures | Immutable seed/map/ruleset/accepted-command trace and meaningful checkpoint comparisons across restore/mirrored seats; normalize only declared volatile fields. |
 | 6 — pending served identity | Release owner with cloud testing owner; existing package/hosted smoke | Expected source/build/served SHA and asset digest checks, then normal two-seat capture at that hosted release; unknown identity/access stays incomplete. |
 | 7 — pending controlled performance | Performance owner; existing load/measurement runners | Repeated comparable baseline/candidate metrics on a named cloud backend; meaningful regressions fail the declared budget. |
@@ -235,8 +298,9 @@ Mark unavailable metrics explicitly; function timing is not whole-tick timing.
 Use one sustained comparison per runner, bounded load and cleanup. Stop at an
 actual capability/resource/budget failure; no service upgrade is assumed approved.
 
-Proposed execution gates, once their pending implementations are merged: relevant
-PR CPU/native/package checks and short qualified temporal visuals; scheduled
+Execution entrypoints above are implemented. Further acceptance gates remain
+proposed: short qualified temporal visuals alongside relevant PR CPU/native/package
+checks; scheduled
 seeded recovery, broader role/direction/LOD coverage and multiplayer soak; release
 identity plus ordinary hosted gameplay; controlled performance comparisons.
 The owners must update this guide with actual commands rather than advertise

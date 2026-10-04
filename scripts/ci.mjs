@@ -1,19 +1,10 @@
-import { readdirSync } from 'node:fs';
+import { mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { CI_USAGE, parseCiOptions, runCiSelection, selectCiChecks } from './ci-lanes.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const options = process.argv.slice(2);
-const shardOption = options.find((arg) => arg.startsWith('--shard='));
-const shard = shardOption?.match(/^--shard=(\d+)\/(\d+)$/);
-if (options.some((arg) => arg !== '--list' && arg !== shardOption)
-  || (shardOption && (!shard || Number(shard[1]) < 1 || Number(shard[1]) > Number(shard[2])
-    || Number(shard[2]) > 16))) {
-  throw new Error('Usage: node scripts/ci.mjs [--shard=INDEX/COUNT] [--list] (1 <= INDEX <= COUNT <= 16)');
-}
-const shardIndex = shard ? Number(shard[1]) - 1 : 0;
-const shardCount = shard ? Number(shard[2]) : 1;
 const checks = [];
 
 function filesUnder(directory, extensions) {
@@ -29,16 +20,18 @@ function run(args, label) {
   checks.push({ args, label });
 }
 
-function execute({ args, label }) {
+function execute({ args, label, command, prerequisite }) {
   process.stdout.write(`\n== ${label} ==\n`);
-  const result = spawnSync(process.execPath, args, {
+  const result = spawnSync(command ?? process.execPath, args, {
     cwd: root,
-    stdio: 'inherit',
+    stdio: prerequisite ? ['ignore', 'pipe', 'pipe'] : 'inherit',
+    encoding: 'utf8',
   });
-  if (result.error) throw result.error;
-  if (result.status !== 0) {
-    throw new Error(`${label} failed with exit code ${result.status ?? 'unknown'}.`);
+  if (prerequisite) {
+    if (result.stdout) process.stdout.write(result.stdout);
+    if (result.stderr) process.stderr.write(result.stderr);
   }
+  return result;
 }
 
 const syntaxFiles = [
@@ -109,6 +102,8 @@ run(['--test', 'scripts/worker-west-actions-art.test.mjs'], 'west full land-acti
 run(['--test', 'scripts/worker-south-west-actions-art.test.mjs'], 'south-west full land-action art/default playback');
 run(['--test', 'scripts/worker-south-actions-art.test.mjs'], 'south full land-action art/default playback');
 run(['--test', 'scripts/worker-performing-action.test.mjs'], 'Authoritative Worker positive-progress receipts');
+run(['--test', 'scripts/gather-work-area.test.mjs', 'scripts/work-intent.test.mjs', 'scripts/resource-job.test.mjs'],
+  'Bounded wood work, accepted replacement orders and checkpoint resource conservation');
 run(['scripts/worker-performing-action-scenario.mjs', '--client-presentation'], 'Worker work receipt commands, client frames, exhausted repair delivery and recovery');
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
 run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach contact and bank/water picking');
@@ -144,9 +139,12 @@ run(['scripts/frontier-building-acceptance-map-scenario.mjs'], 'Ordinary buildin
 run(['--test', 'scripts/building-occlusion-fixture.test.mjs'], 'Building occlusion QA controls, HTTP assets and timing evidence');
 run(['--test', 'scripts/captured-building-state-race.test.mjs', 'scripts/captured-building-manifest-retry.test.mjs', 'scripts/frontier-building-renderer.test.mjs', 'scripts/frontier-building-preview.test.mjs', 'scripts/building-lifecycle-validation.test.mjs'], 'Captured building lifecycle and source contracts');
 run(['--test', 'scripts/ci-sharding.test.mjs'], 'CI shard coverage');
+run(['--test', 'scripts/ci-lanes.test.mjs'], 'Test lane selection and evidence status');
 run(['--test', 'scripts/pve-reconnaissance.test.mjs'], 'Bounded Scout reconnaissance');
 run(['--test', 'scripts/browser-performance-instrumentation.test.mjs'], 'Browser timing attribution');
 run(['--test', 'scripts/browser-preflight.test.mjs'], 'Browser preflight diagnostics');
+run(['--test', 'scripts/unit-displacement-animation.test.mjs'], 'Temporal sprite cells from actual displacement and heading');
+run(['--test', 'scripts/renderer-capability.test.mjs'], 'WebGL2 capability report contracts (CPU mocks)');
 run(['--test', 'scripts/temporary-resources.test.mjs'], 'Owned temporary resource cleanup');
 run(['--test', 'scripts/mature-settlement-scenario.test.mjs'], 'Paid settlement fixture ledger and layout');
 run(['scripts/mature-settlement-scenario.mjs'], 'Paid settlement construction, composition and recovery');
@@ -412,6 +410,7 @@ const scenarios = [
   ['scripts/validate-environment-plants.mjs', 'Regional plant source/runtime file contracts'],
   ['scripts/environment-plant-pack-scenario.mjs', 'Regional plant contract rejection cases'],
   ['scripts/harvestable-woodland-scenario.mjs', 'Harvestable woodland gameplay'],
+  ['scripts/resource-job-continuation-scenario.mjs', 'Native wood depletion, continuation and cold recovery'],
   ['scripts/worker-cargo-return-scenario.mjs', 'Highland Grove forest route repair and deposits'],
   ['scripts/worker-cargo-return-scenario.mjs', 'Frontier Reach forest route repair and deposits', 'frontier-160'],
   ['scripts/room-supervisor-scenario.mjs', 'Room supervisor integration'],
@@ -431,9 +430,46 @@ const scenarios = [
 
 for (const [file, label, ...args] of scenarios) run([file, ...args], label);
 
-const selected = checks.filter((_, index) => index % shardCount === shardIndex);
-if (options.includes('--list')) process.stdout.write(`${JSON.stringify(selected)}\n`);
-else {
-  for (const check of selected) execute(check);
-  process.stdout.write(`\nCI checks passed${shard ? ` (shard ${shardIndex + 1}/${shardCount})` : ''}.\n`);
+export function ciChecks() { return checks; }
+
+function sourceInfo() {
+  const revision = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' });
+  const dirty = spawnSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' });
+  return { revision: revision.status === 0 ? revision.stdout.trim() : null,
+    dirty: dirty.status === 0 ? Boolean(dirty.stdout.trim()) : null };
+}
+
+export function runCi(args) {
+  let options, selection;
+  try { options = parseCiOptions(args); selection = selectCiChecks(checks, options); }
+  catch (error) {
+    process.stderr.write(`${error.message}\n`);
+    process.stdout.write(`CI_RESULT ${JSON.stringify({ schemaVersion: 1, status: 'invalid',
+      fullCpuSuitePassed: false, reason: CI_USAGE })}\n`);
+    return 2;
+  }
+  const result = runCiSelection(selection, options, { execute, source: sourceInfo() });
+  if (options.report) {
+    try {
+      const filename = path.resolve(root, options.report);
+      mkdirSync(path.dirname(filename), { recursive: true });
+      writeFileSync(filename, `${JSON.stringify(result.report, null, 2)}\n`);
+    } catch (error) {
+      process.stderr.write(`CI evidence could not be written (${error.code ?? 'unknown'}).\n`);
+      result.report.status = 'failed';
+      result.report.fullCpuSuitePassed = false;
+      result.report.evidenceError = `Evidence could not be written (${error.code ?? 'unknown'}).`;
+      result.exitCode = 1;
+    }
+  }
+  if (options.list) process.stdout.write(`${JSON.stringify(selection.selected)}\n`);
+  else {
+    process.stdout.write(`\nCI_RESULT ${JSON.stringify(result.report)}\n`);
+    process.stdout.write(`CI selection ${result.report.status}: ${options.lane} ${options.shardIndex + 1}/${options.shardCount}, ${result.report.passedCount}/${result.report.selectedCount} checks.\n`);
+  }
+  return result.exitCode;
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  process.exitCode = runCi(process.argv.slice(2));
 }

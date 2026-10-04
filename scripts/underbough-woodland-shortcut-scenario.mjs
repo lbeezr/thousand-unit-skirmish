@@ -19,6 +19,8 @@ const own = (client, team, kind) => client.latest.units.filter(u => u[1] === tea
 const cellOf = unit => Math.floor(unit[3] + map.height / 2) * map.width + Math.floor(unit[2] + map.width / 2);
 const pointOf = cell => ({ x: cell % map.width - map.width / 2 + .5, z: Math.floor(cell / map.width) - map.height / 2 + .5 });
 const stockAt = (state, cell) => state.forestStocks.find(([id]) => id === cell)?.[1] ?? woodPerCell;
+const seatDraw = (state, team) => state.forestStocks.filter(([cell]) =>
+  (cell % map.width < map.width / 2 ? 0 : 1) === team).reduce((sum, [, stock]) => sum + woodPerCell - stock, 0);
 function visible(state, cell) {
   const bytes = Buffer.from(state.visibility.data, 'base64');
   return ((bytes[cell >> 2] >> ((cell & 3) * 2)) & 3) === 2;
@@ -99,27 +101,41 @@ try {
 
   stage = 'both-seat forest harvesting and deposits';
   await Promise.all(clients.map(async (client, team) => {
-    for (const [index, cell] of belts[team].entries()) {
+    for (const cell of belts[team]) {
       await client.state(s => visible(s, cell), 'next forest cell becomes currently visible');
-      assert.equal(stockAt(client.latest, cell), woodPerCell, 'the next tree has not been cut');
+      if (stockAt(client.latest, cell) === 0) continue;
       await order(client, 'gather', [paidWorkers[team].id], { forestCell: cell }, /GATHER ORDER/);
-      const expectedWood = baseline.teamWood[team] + (index + 1) * woodPerCell;
+      await fixture.checkpoint(s => stockAt(s.state, cell) === 0);
+      // This geometry proof explicitly controls each cut. Natural Wood jobs now
+      // continue; Stop freezes any small draw on the next tree, Return banks it.
+      await order(client, 'stop', [paidWorkers[team].id], {}, /STOP ORDER/);
+      const stopped = (await fixture.checkpoint(s => {
+        const worker = s.state.units.find(u => u.id === paidWorkers[team].id);
+        return worker?.gatherPhase === '' && worker.workIntent === null;
+      })).state;
+      if (stopped.units.find(u => u.id === paidWorkers[team].id).cargo > 0) {
+        await order(client, 'returnCargo', [paidWorkers[team].id], {}, /RETURN CARGO ORDER/);
+      }
       const receipt = (await fixture.checkpoint(s => {
         const worker = s.state.units.find(u => u.id === paidWorkers[team].id);
         return s.state.matchElapsedSeconds >= firstSupply || stockAt(s.state, cell) === 0
-          && s.state.teamWood[team] === expectedWood && worker?.cargo === 0 && worker.gatherPhase === '';
+          && worker?.cargo === 0 && worker.gatherPhase === '';
       })).state;
       assertNoRewards(receipt);
-      assert.equal(receipt.teamWood[team], expectedWood);
+      assert.ok(Math.abs(receipt.teamWood[team] - baseline.teamWood[team] - seatDraw(receipt, team)) < 1e-4,
+        'all Wood drawn, including partial continuation, is banked exactly once');
       assert.equal(receipt.teamFood[team], baseline.teamFood[team]);
       assert.equal(stockAt(receipt, cell), 0);
-      const tick = receipt.tickNumber;
-      await client.state(s => s.tick >= tick, 'fresh post-deposit view');
+      // Idle rooms need not broadcast another tick after their final dirty
+      // state. Wait for the actual deposit/clearing, not a later checkpoint tick.
+      await client.state(s => stockAt(s, cell) === 0
+        && Math.abs(s.wood[team] - receipt.teamWood[team]) < 1e-4, 'post-deposit bank and clearing');
     }
   }));
   const harvested = (await fixture.checkpoint()).state;
   assertNoRewards(harvested);
-  assert.equal(harvested.forestStocks.length, 8, 'only the intended belts were harvested');
+  assert.deepEqual(harvested.forestStocks.filter(([, stock]) => stock === 0).map(([cell]) => cell).sort((a, b) => a - b),
+    belts.flat().sort((a, b) => a - b), 'only the intended belts are fully cleared');
   for (const team of [0, 1]) assert.equal(distanceToGrove(team, harvested), 30);
 
   stage = 'observed traversal through every harvested cell';
@@ -145,7 +161,8 @@ try {
       const arrived = await client.state(s => s.units.some(u => u[0] === id && u[4] > 0 && u[8] === generation && cellOf(u) === target), 'same paid Worker reaches Supply Grove');
       assert.deepEqual(visited.filter(cell => belts[team].includes(cell)), belts[team], 'fresh unit positions cross the whole belt in order');
       results.push({ team, workerId: id, generation, workerFood: UNIT_DEFINITIONS.worker.cost.food,
-        storehouseWood: BUILDING_DEFINITIONS.storehouse.cost.wood, harvestedWood: 4 * woodPerCell,
+        storehouseWood: BUILDING_DEFINITIONS.storehouse.cost.wood, harvestedWood: seatDraw(harvested, team),
+        clearedBeltWood: 4 * woodPerCell,
         shortestGeometryMoves: { before: 41, after: 30 },
         observedBeltColumns: visited.filter(cell => belts[team].includes(cell)).map(cell => cell % map.width), arrivalTick: arrived.tick });
     } finally { client.socket.removeEventListener('message', observe); }

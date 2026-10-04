@@ -29,6 +29,111 @@ export const NODE_ONLY_MODULES = [
   'src/networking/websocket-frame.mjs', // Server-only Node Buffer wire encoding.
 ];
 
+// Responsibilities of existing modules, independent of their current flat paths.
+// Update exact memberships with each reviewed migration (including its shim).
+// Repository audits require membership for every module; partial fixture graphs
+// may disable coverage but still traverse every edge. This is not a DOM/global audit.
+export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
+  rules: [
+    'bannerfall-rules', 'base-lifecycle', 'combat-rules', 'economy-ledger',
+    'economy-profile', 'farm-harvest', 'gameplay-action-rules', 'gameplay-definitions',
+    'match-modes', 'palisade-gate', 'palisade-profile', 'population',
+    'production-actions', 'pve-match', 'research-actions',
+  ],
+  world: [
+    'dock-placement', 'elevation', 'map-size-policy', 'map-utils', 'regions',
+    'practice-entry-catalog', 'scenario-regions', 'shore-fishing', 'shore-fishing-placement', 'terrain-materials',
+    'town-center-spawn', 'unit-heading', 'water-contours', 'water-route-graph',
+  ],
+  simulation: [
+    'combat-stance', 'confluence-opening-compat', 'economy-checkpoint',
+    'formation-assignment', 'gather-work-area', 'match-mode-checkpoint',
+    'millrace-sheep', 'skiff-fishing', 'skiff-group-orders', 'skiff-waypoints',
+    'snapshot-private-production', 'terraced-vale-sheep', 'unit-movement',
+    'unit-obstacle-detour', 'unit-path-line', 'wall-build-order',
+    'wall-construction-draft', 'wall-line-planner', 'water-unit-runtime',
+    'wildlife-claims', 'wildlife-heading', 'wildlife-herding', 'wildlife-motion',
+    'wildlife-state', 'work-intent', 'worker-performing-action',
+  ],
+  ai: [
+    'pve-home-defense', 'pve-objective-rotation', 'pve-opponent', 'pve-production',
+    'pve-reconnaissance', 'pve-regroup', 'pve-skirmish-targets',
+  ],
+  // Portable disclosed-row/action projections, despite misleading file names.
+  // The authoritative Worker receipt journal itself belongs to simulation.
+  disclosed: ['wildlife-client-state', 'worker-fishing-presentation', 'worker-work-presentation'],
+  presentation: [
+    'building-production-cue', 'building-sprites', 'building-visual-state',
+    'camera-controls', 'captured-building-art', 'environment-art',
+    'environment-plant-assets', 'forest-age-composition', 'forest-composition',
+    'forest-habitat', 'gameplay-presentation', 'garden-vegetation', 'meadow-vegetation',
+    'neutral-wildlife-renderer', 'oak-depletion-atlas-runtime',
+    'painted-material-atlas', 'painted-material-atlas-runtime', 'palisade-gate-visual',
+    'podvine-low-pack', 'podvine-view-pack', 'podvine-worked-pack',
+    'regional-ground-kits', 'resource-visual-state', 'sheep-static-preview',
+    'shore-bank-shade', 'shore-fishing-placeholder', 'shore-vegetation',
+    'sunbloom-crown-pack', 'sunbloom-low-pack', 'sunbloom-view-pack', 'sunbloom-worked-pack',
+    'terrain-atmosphere', 'terrain-blend', 'terrain-height', 'terrain-texture-sampling',
+    'unit-lod-state', 'unit-sprite-runtime', 'unit-visual-state', 'veilcap-view-pack',
+    'veilcap-worked-pack', 'wall-placement-ghost', 'water-study-fish-binding',
+    'water-study-state', 'water-surface-geometry', 'water-surface-study',
+    'worker-fishing-contact',
+  ],
+  client: [
+    'audio', 'audio-assets', 'audio-composer', 'audio-composition',
+    'audio-composition-player', 'audio-decoded-cache', 'audio-library-store',
+    'audio-library-ui', 'audio-policy', 'audio-recognition-check',
+    'audio-shipped-catalog', 'audio-shipped-loader', 'audio-shipped-response',
+    'audio-studio', 'audio-zones', 'battlefield-cursor', 'combat-stance-ui',
+    'economy-client', 'environment-pilot', 'environment-review',
+    'frontier-building-preview', 'game-entry', 'game-entry-session', 'hud-layout',
+    'match-mode-controls', 'navigation-settings', 'objective-summary',
+    'order-feedback', 'population-readout', 'practice-entry-controls', 'pve-entry',
+    'resource-format', 'room-lobby-chat-ui', 'room-lobby-ui', 'room-presence',
+    'selection-context', 'selection-portrait', 'unit-selection', 'wall-placement',
+    'water-study-preview',
+  ],
+  authoring: [
+    'landscape-authoring', 'map-resize', 'map-studio-viewport',
+    'resource-brush-authoring', 'resource-brush-controls', 'resource-cluster-authoring',
+    'scenario-authoring', 'settlement-authoring', 'terrain-authoring',
+  ],
+  server: [
+    'networking/websocket-deflate-offer', 'networking/websocket-frame',
+    'pve-model-proposal', 'room-launch-options', 'room-lobby-chat', 'room-pregame',
+    'server/client-asset-paths', 'server/pve-model-proposal',
+  ],
+  // Explicit mixed responsibility, not an open exception list. The server uses
+  // only its map validator; lower domains must wait for candidate PR2's split.
+  audioProfile: ['audio-event-profile'],
+}).map(([domain, names]) => [domain, Object.freeze(names.map(name => `src/${name}.mjs`))])));
+
+// main is the mixed browser composition root, not a lower-domain dependency.
+export const RUNTIME_DOMAIN_HOSTS = Object.freeze({
+  'src/main.js': 'client', 'building-map.js': 'authoring',
+  'origin-policy.mjs': 'server', 'simulation-scheduler.mjs': 'server',
+  'room-supervisor.mjs': 'server', 'server.mjs': 'server',
+});
+
+const DOMAIN_DEPENDENCIES = {
+  rules: ['rules'],
+  world: ['rules', 'world'],
+  simulation: ['rules', 'world', 'simulation', 'disclosed'],
+  ai: ['rules', 'world', 'simulation', 'disclosed', 'ai'],
+  disclosed: ['rules', 'world', 'simulation', 'disclosed'],
+};
+
+function runtimeDomainMembership(domains, hosts) {
+  const membership = new Map(Object.entries(hosts));
+  for (const [domain, filenames] of Object.entries(domains)) {
+    for (const filename of filenames) {
+      if (membership.has(filename)) throw new Error(`duplicate runtime domain membership: ${filename}`);
+      membership.set(filename, domain);
+    }
+  }
+  return membership;
+}
+
 export async function readRuntimeSources(root) {
   const sources = new Map();
   async function collect(directory, recursive) {
@@ -115,13 +220,20 @@ export function checkRuntimeImports(sources, {
   browserPackageImports = BROWSER_PACKAGE_IMPORTS,
   serverEntrypoints = SERVER_ENTRYPOINTS,
   nodeOnlyModules = NODE_ONLY_MODULES,
+  runtimeDomains = RUNTIME_DOMAINS,
+  runtimeDomainHosts = RUNTIME_DOMAIN_HOSTS,
+  requireDomainCoverage = true,
   cycleBaseline = [],
 } = {}) {
   const graph = runtimeImportGraph(sources);
   const browser = dependencyPaths(graph, browserEntrypoints);
   const server = dependencyPaths(graph, serverEntrypoints);
+  const domains = runtimeDomainMembership(runtimeDomains, runtimeDomainHosts);
   const errors = [];
   for (const [filename, { external }] of graph) {
+    if (requireDomainCoverage && !domains.has(filename)) {
+      errors.push(`${filename}: unclassified runtime module; declare its reviewed responsibility`);
+    }
     for (const specifier of external) {
       if (!isBuiltin(specifier) && specifier !== 'three') {
         errors.push(`${filename} -> ${specifier}: unresolved runtime import (use a relative module, Node builtin or mapped three)`);
@@ -133,6 +245,7 @@ export function checkRuntimeImports(sources, {
     if (browser.has(filename)) {
       const chain = browser.get(filename).join(' -> ');
       if (nodeOnlyModules.includes(filename)) errors.push(`${chain}: browser reaches a Node-only adapter`);
+      if (domains.get(filename) === 'server') errors.push(`${chain}: browser reaches a server-private module`);
     }
     if (server.has(filename)) {
       const chain = server.get(filename).join(' -> ');
@@ -140,6 +253,26 @@ export function checkRuntimeImports(sources, {
         errors.push(`${chain}: server reaches a browser entrypoint`);
       }
       if (external.includes('three')) errors.push(`${chain} -> three: server rules cannot depend on rendering`);
+      if (['client', 'presentation', 'authoring'].includes(domains.get(filename))) {
+        errors.push(`${chain}: server host reaches ${domains.get(filename)} domain`);
+      }
+    }
+  }
+  // Check every classified lower-domain module, even outside host closures.
+  // Traverse unknown intermediates, re-exports and lazy imports as real edges.
+  for (const [entrypoint, domain] of domains) {
+    const allowed = DOMAIN_DEPENDENCIES[domain];
+    if (!allowed || !graph.has(entrypoint)) continue;
+    for (const [filename, chain] of dependencyPaths(graph, [entrypoint])) {
+      const dependencyDomain = domains.get(filename);
+      if (dependencyDomain && !allowed.includes(dependencyDomain)) {
+        errors.push(`${chain.join(' -> ')}: ${domain} domain cannot reach ${dependencyDomain} domain`);
+      }
+      for (const specifier of graph.get(filename).external) {
+        if (isBuiltin(specifier) || specifier === 'three') {
+          errors.push(`${chain.join(' -> ')} -> ${specifier}: ${domain} domain cannot reach a host or rendering package`);
+        }
+      }
     }
   }
   // A module shared by two pages must satisfy both import maps, even if the
