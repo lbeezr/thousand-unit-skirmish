@@ -1,6 +1,6 @@
 # Selection identity and future field notes
 
-One selected living friendly Worker, Infantry, Archer or Spearman has a compact portrait, name and live HP.
+One selected living friendly Worker, Infantry, Archer, Spearman or Scout has a compact portrait, name and live HP.
 The portrait opens the existing dismissible Selection drawer with practical role
 notes: registered abilities, live HP, base movement/attack stats and training
 producer, cost, duration and population. Military notes retain separate
@@ -17,7 +17,7 @@ in existing labelled controls at 20 px. The Command drawer's duplicate tactical
 controls use the same files. Formation remains hidden for building details;
 Return cargo retains its distinct text, tooltip and carrying-Worker/Skiff behavior.
 
-Worker/Infantry/Archer/Spearman training controls reuse the same sources as decorative 20px
+Worker/Infantry/Archer/Spearman/Scout training controls reuse the same sources as decorative 20px
 thumbnails. Product names, costs, availability reasons and commands remain on
 the existing buttons. The source image/label nodes survive live updates; an
 image error hides only the decorative frame. Legacy/model previews retain text.
@@ -120,6 +120,18 @@ registered 3× mounted-damage multiplier, separate structure damage and Barracks
 training. Failed/unsupported art retains written controls and notes. Returning
 to Worker or Farm clears contain styles on stable image nodes.
 
+## Approved Scout reuse — 4 October 2026
+
+The established Human chestnut-horse and Boughward grey-wolf idle figures now
+supply selected Scout identity and both dynamic Stable training controls.
+[Pinned originals and provenance](../assets/ui/portraits/PROVENANCE.md#scout-reuse--4-october-2026)
+retain rider, mount and sword through whole-image containment in the unchanged
+52px/20px slots. The written Scout name, HP, fast movement, melee/structure
+damage and Stable training facts replace the previous role. Full costs,
+availability guards, commands, optional notes, focus and image-error fallback
+remain; the 20px identity image is decorative. Source/CPU inspection does not
+close native compact acceptance or motion.
+
 ### Current selection and training bindings — 4 October 2026
 
 This is the current inventory; the 3 October audit below is dated source history.
@@ -130,8 +142,9 @@ This is the current inventory; the 3 October audit below is dated source history
 | Infantry | Restored Human v3/Boughward illustrations; default integration [PR375](https://github.com/lbeezr/thousand-unit-skirmish/pull/375) | Containing staging `b07df557` reported successful by parent; ordinary-game acceptance open |
 | Archer | Established Human v2/Boughward idle copies in the same compact surfaces; [PR387](https://github.com/lbeezr/thousand-unit-skirmish/pull/387) | Included in containing staging `34e22bed`; native framing/recognition open |
 | Farm | Existing Frontier lifecycle view-01 in 52px Selection and 40px inline figure; explicit Food symbol on failure/unknown state; [PR391](https://github.com/lbeezr/thousand-unit-skirmish/pull/391) | Parent independently confirmed Railway `e50337e8` SUCCESS at 22:31, exact `34e22bed`; actual compact visual/keyboard acceptance open |
-| Spearman | Established Human v1/Boughward idle figures contained in existing Selection and both training slots | Clean package/containing identified delivery and native framing/recognition remain separate evidence |
-| Scout / Rider | Text; approved mounted sources available | Portrait framing/delivery must preserve wolf/boar or horse identity |
+| Spearman | Established Human v1/Boughward idle figures; default [PR394](https://github.com/lbeezr/thousand-unit-skirmish/pull/394) in clean merged `ee0bae0d`, package/HTTP checked | Containing identified hosted delivery and native framing/recognition open |
+| Scout | Established horse/wolf idle figures contained in existing Selection and both Stable training slots | Clean package/containing identified delivery and native framing/recognition remain separate evidence |
+| Rider | Text; approved mounted sources available | Portrait framing/delivery must preserve boar or horse identity |
 | Siege Engine | Text; approved equipment sources available | Deliberate equipment framing/delivery missing |
 | Skiff | Text | Matching approved HUD illustration missing |
 
@@ -189,6 +202,14 @@ login. The HUD owner retains pixel inspection and the unfinished outcome.
    separate structure damage, low-wood guarded activation, optional notes/link
    focus and Escape. Repeat Archer → Spearman → Worker/Farm → group/empty to
    verify framing resets and focus recovery at wide and narrow viewports.
+7. Pay for/build/complete a Stable with Workers, train a Scout for 40 food /
+   30 wood, and capture both labelled 20px controls plus one selected living
+   Scout at 52px for each effective family. Inspect rider, sword and full
+   horse/wolf silhouette beside the complete Scout name. Check live HP,
+   4.5 cells/s movement, melee/structure damage and Stable facts, low-wood
+   guarded activation, optional notes/link focus and Escape. Repeat previous
+   role → Scout → Worker/Farm → group/empty, wide/narrow viewports, retaining
+   exact served identity and original PNG captures without economy injection.
 
 Static original/52px/20px CPU source pixels were inspected in color and grayscale.
 DOM tests cover effective appearance, both seats, stable nodes, truthful facts,
