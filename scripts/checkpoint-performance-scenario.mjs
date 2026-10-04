@@ -2,11 +2,13 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
+import { randomUUID } from 'node:crypto';
 import { createServer as createNetServer } from 'node:net';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, open, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { checkpointAttackMap, observePerformanceResources, performanceEnvironment, performanceIdentity } from './performance-run-evidence.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SERVER_ENTRY = path.join(ROOT, 'server.mjs');
@@ -101,40 +103,64 @@ async function exitChild(child, timeoutMs = 5000) {
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), 'rts-checkpoint-performance-'));
 let mapRelativePath = 'maps/open-field.json';
 let tempMapPath = null;
-if (workloadMode === 'attack-move') {
-  const mapFilename = `.perf-checkpoint-${process.pid}.json`;
-  tempMapPath = path.join(ROOT, 'maps', mapFilename);
-  const openField = JSON.parse(await readFile(path.join(ROOT, 'maps/open-field.json'), 'utf8'));
-  await writeFile(tempMapPath, JSON.stringify({
-    ...openField,
-    id: `perf-checkpoint-${process.pid}`,
-    name: 'PERF CHECKPOINT BATTLE',
-    summary: '64 × 64 · OPEN COMBAT TEST · NO FOG',
-    spawnPoints: [{ team: 0, x: -16, z: 0 }, { team: 1, x: 16, z: 0 }],
-    fogOfWar: false,
-    resourceNodes: [],
-    obstacles: [],
-    triggers: [],
-    scenarioEvents: [],
-  }, null, 2));
-  mapRelativePath = `maps/${mapFilename}`;
-}
-const port = await reservePort();
+let port, identity, environment, server;
 const checkpointPath = path.join(tempRoot, 'match-state.json');
-const server = startChild('checkpointed server', [SERVER_ENTRY], {
-  ...process.env,
-  PORT: String(port),
-  RTS_HOST: '127.0.0.1',
-  RTS_MAP: mapRelativePath,
-  RTS_CUSTOM_MAP_DIRECTORY: path.join(tempRoot, 'custom-maps'),
-  RTS_MATCH_STATE_PATH: checkpointPath,
-  RTS_TICK_DIAGNOSTICS: '1',
-});
+const identityOptions = () => ({ ownedTemporaryMapPath: tempMapPath ? mapRelativePath : null });
 let load = null;
 const clients = [];
+let stopResources = null;
+let measurementEvidence = null;
+let report = null;
+let failure = null;
+let initialHealth = null;
+let verifiedRepeatCount = null;
+const runId = randomUUID();
+async function finishEvidence(outcome) {
+  if (measurementEvidence) return measurementEvidence;
+  const resources = stopResources ? await stopResources() : { samples: [], validity: { status: 'unknown', reasons: ['measurement-not-started'] } };
+  const finalIdentity = await performanceIdentity(ROOT, mapRelativePath, identityOptions());
+  measurementEvidence = { schemaVersion: 1, runId, identity, environment,
+    identityUnchanged: JSON.stringify(identity) === JSON.stringify(finalIdentity),
+    configuration: { scope: 'native-cpu', workloadMode, durationSeconds,
+      requestedRepeatCount: repeatCount, repeatCount: verifiedRepeatCount,
+      durationKind: 'requested workload duration; server timing is a rolling 300-tick window',
+      requestedUnitCount: 2000, verifiedUnitCount: outcome === 'passed' ? 2000 : null,
+      formation: 'box', connectedTeams: 2, diagnostics: 'RTS_TICK_DIAGNOSTICS=1',
+      planningTurnsPerTick: Number(process.env.RTS_MOVE_PLANNING_TURNS_PER_TICK ?? 0),
+      matchModeId: initialHealth?.matchModeId ?? null, matchModeVersion: initialHealth?.matchModeVersion ?? null,
+      checkpointIntervalMs: initialHealth?.checkpoint?.intervalMs ?? null, tickRate: initialHealth?.tickRate ?? null,
+      window: 'rolling 300 server ticks after orders', warmup: 'no dedicated warmup; first full window',
+      acceptedCommandReplay: 'not-recorded; map seed and authored workload are controls' },
+    servedBuildIdentity: initialHealth?.buildIdentity ?? null, resources, outcome, failure };
+  return measurementEvidence;
+}
 try {
-  const initialHealth = await waitForHealth(port, server);
+  if (workloadMode === 'attack-move') {
+    const mapFilename = `.perf-checkpoint-${process.pid}.json`;
+    const ownedMapPath = path.join(ROOT, 'maps', mapFilename);
+    const openField = JSON.parse(await readFile(path.join(ROOT, 'maps/open-field.json'), 'utf8'));
+    const mapFile = await open(ownedMapPath, 'wx');
+    tempMapPath = ownedMapPath;
+    mapRelativePath = `maps/${mapFilename}`;
+    let writeError = null;
+    try { await mapFile.writeFile(JSON.stringify(checkpointAttackMap(openField), null, 2)); }
+    catch (error) { writeError = error; throw error; }
+    finally {
+      try { await mapFile.close(); }
+      catch (error) { if (!writeError) throw error; }
+    }
+  }
+  port = await reservePort();
+  identity = await performanceIdentity(ROOT, mapRelativePath, identityOptions());
+  environment = await performanceEnvironment();
+  server = startChild('checkpointed server', [SERVER_ENTRY], {
+    ...process.env, PORT: String(port), RTS_HOST: '127.0.0.1', RTS_MAP: mapRelativePath,
+    RTS_CUSTOM_MAP_DIRECTORY: path.join(tempRoot, 'custom-maps'), RTS_MATCH_STATE_PATH: checkpointPath,
+    RTS_TICK_DIAGNOSTICS: '1',
+  });
+  initialHealth = await waitForHealth(port, server);
   assert.equal(initialHealth.checkpoint?.enabled, true, 'worker should have checkpointing enabled');
+  stopResources = await observePerformanceResources(server.pid);
   let measuredSamples;
   if (workloadMode !== 'idle') {
     load = startChild(`2,000-unit ${workloadMode} scenario`, [LOAD_SCENARIO, String(port), String(durationSeconds), String(repeatCount), workloadMode, 'box'], process.env);
@@ -205,6 +231,18 @@ try {
     },
     tickTiming: measured.tickTiming,
   }));
+  verifiedRepeatCount = workloadSamples.length;
+  const evidence = await finishEvidence('passed');
+  const lastSample = workloadSamples.at(-1);
+  report = {
+    workload: workloadMode === 'idle'
+      ? '2,000 stationary units in two connected teams'
+      : `2,000 units in two connected teams (${workloadMode}, box formation)`,
+    repeats: measuredSamples.length,
+    samples: workloadSamples,
+    tickTimingWithSnapshotsEnabled: lastSample.tickTiming,
+    measurementEvidence: evidence,
+  };
   const runDir = process.env.GAME_DEV_RUN_DIR;
   const runId = process.env.GAME_DEV_RUN_ID;
   const adapterId = process.env.GAME_DEV_ADAPTER_ID;
@@ -236,11 +274,13 @@ try {
       adapterEvidence: {
         hardware: { platform: process.platform, architecture: process.arch, nodeVersion: process.version },
         build: {
-          revision: `checkpoint-enabled-box-${workloadMode}`,
+          ...identity.build, revision: identity.build.sourceRevision,
+          workloadProfile: `checkpoint-enabled-box-${workloadMode}`,
           map: workloadMode === 'attack-move' ? 'open-field-no-fog-close-spawns' : 'open-field',
           width: 64, height: 64, units: 2000, unitsPerTeam: 1000,
           repeats: measuredSamples.length, durationSeconds,
         },
+        measurementEvidence: evidence,
         notes: [
           'CPU-only local diagnostic on the current machine; not a target-hardware guarantee.',
           'Checkpointing is enabled with a one-second interval during every measured action window.',
@@ -253,23 +293,24 @@ try {
       },
     }, null, 2));
   }
-
-  const lastSample = workloadSamples.at(-1);
-  console.log(JSON.stringify({
-    workload: workloadMode === 'idle'
-      ? '2,000 stationary units in two connected teams'
-      : `2,000 units in two connected teams (${workloadMode}, box formation)`,
-    repeats: measuredSamples.length,
-    samples: workloadSamples,
-    tickTimingWithSnapshotsEnabled: lastSample.tickTiming,
-  }, null, 2));
+} catch (error) {
+  failure = error.message;
+  if (measurementEvidence) { measurementEvidence.outcome = 'failed'; measurementEvidence.failure = failure; }
+  throw error;
 } finally {
+  try {
+    const evidence = await finishEvidence(failure ? 'failed' : 'passed');
+    console.log(JSON.stringify(report ?? { workload: workloadMode, samples: [], measurementEvidence: evidence }, null, 2));
+  } catch (evidenceError) {
+    console.error(`Performance evidence unavailable: ${evidenceError.message}`);
+    if (!failure) process.exitCode = 1;
+  }
   if (load && load.exitCode === null) {
     load.kill('SIGKILL');
     await once(load, 'exit');
   }
   await Promise.all(clients.map(closeSocket));
-  await exitChild(server);
+  if (server) await exitChild(server);
   if (tempMapPath) await rm(tempMapPath, { force: true });
   await rm(tempRoot, { recursive: true, force: true });
 }
