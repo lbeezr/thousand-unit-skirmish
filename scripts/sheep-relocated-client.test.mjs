@@ -32,7 +32,7 @@ function fixture(t, team) {
   const context = vm.createContext({ ...wildlifeClientBindings(), localTeam: team, mapDefinition: map, MAP_WIDTH: 16, MAP_HEIGHT: 16,
     MAP_HALF_X: 8, MAP_HALF_Z: 8, latestFogCells: fog, wildlifeRenderer: renderer,
     latestResourceStocks: new Map([[authored.id, 100]]), latestBuildings: [], farmHarvestNode: () => null,
-    isShoreFish: () => false, resourceNodeVisuals: new Map(), camera, screenPoint: new THREE.Vector3(), groundHeight: () => .15,
+    pickBuildingAt: () => null, isShoreFish: () => false, resourceNodeVisuals: new Map(), camera, screenPoint: new THREE.Vector3(), groundHeight: () => .15,
     renderer: { domElement: { getBoundingClientRect: () => ({ width: 200, height: 160 }) } },
     minimapPoint: (x, z) => ({ x: (x + 8) * 10, y: (z + 8) * 10 }),
   });
