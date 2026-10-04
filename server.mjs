@@ -8702,7 +8702,7 @@ const server = createServer(async (request, response) => {
   const publicUnitSpriteAsset = [
     ...['worker', 'infantry', 'spearman', 'archer', 'scout', 'rider', 'siege-engine'].map(role => [`boughward-${role}`, 'v1']),
     ['worker', 'v1'], ['worker', 'v2'], ['worker', 'v3'],
-    ['infantry', 'v1'], ['infantry', 'v2'], ['infantry', 'v3'], ['spearman', 'v1'], ['scout', 'v1'], ['rider', 'v1'], ['siege-engine', 'v1'], ['archer', 'v1'], ['archer', 'v2'],
+    ['infantry', 'v1'], ['infantry', 'v2'], ['infantry', 'v3'], ['infantry', 'v4'], ['spearman', 'v1'], ['scout', 'v1'], ['rider', 'v1'], ['siege-engine', 'v1'], ['archer', 'v1'], ['archer', 'v2'],
     ...['human', 'orc', 'elf', 'troll'].map(role => [role, 'v1', 'cast']),
     ['human', 'v2', 'cast'], ['human', 'v3', 'cast'],
   ].some(([role, version, prefix]) => {

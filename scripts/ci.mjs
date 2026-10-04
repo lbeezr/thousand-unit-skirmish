@@ -92,6 +92,7 @@ run(['scripts/audio-wall-order-scenario.mjs'], 'Applied wall-line audio acknowle
 run(['--test', 'scripts/hosted-scale-profile.test.mjs'], 'Hosted scale measurement integrity');
 run(['--test', 'scripts/unit-sprite-clock.test.mjs'], 'Sprite animation clock');
 run(['--test', 'scripts/unit-animation-runtime.test.mjs'], 'Default unit action frames and lifetimes');
+run(['--test', 'scripts/registered-foot-sprites.test.mjs'], 'Registered public foot-unit directions and playback');
 run(['--test', 'scripts/unit-presentation-client.test.mjs'], 'Client snapshot and unit presentation buffers');
 run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work facing');
 run(['--test', 'scripts/worker-land-art.test.mjs'], 'Retained Worker land-action artwork and playback');
@@ -284,6 +285,8 @@ run(['--test', 'scripts/ruleset-revision.test.mjs'], 'Resolved ruleset identity 
 run(['--test', 'scripts/gameplay-definitions.test.mjs'], 'Gameplay definition validation');
 run(['--test', 'scripts/client-build-recovery.test.mjs'], 'Build placement connection recovery');
 run(['--test', 'scripts/construction-selection.test.mjs'], 'Selected-only construction client commands');
+run(['--test', 'scripts/construction-targeting.test.mjs'], 'Owned unfinished construction picking and contextual orders');
+run(['scripts/construction-targeting-scenario.mjs'], 'Both-seat paid Palisade right-click construction and cold recovery');
 run(['scripts/construction-selection-scenario.mjs'], 'Both-seat selected builders and unselected work recovery');
 run(['--test', 'scripts/client-rematch-recovery.test.mjs'], 'Client roster and ownership after rematch');
 run(['--test', 'scripts/client-camera-recovery.test.mjs'], 'Camera ownership through seat recovery');

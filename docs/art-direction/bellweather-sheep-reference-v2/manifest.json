@@ -1,0 +1,83 @@
+{
+  "schema": "thousand-unit-skirmish.art-source-candidate.v1",
+  "date": "2026-10-02",
+  "packId": "art.bellweather-sheep-reference",
+  "version": "2.0.0",
+  "status": "historical descriptive-label correction; superseded by approximate-angle v3",
+  "baseline": "9990ed3bb441fb0120a5aaad53d69798c18a66cc",
+  "generator": "OpenAI host-native image_gen edit",
+  "generatorModel": "not returned",
+  "sourceOutputId": "exec-d0f251e8-498e-4a16-861f-6249cbf217f4",
+  "sourceOutputFilename": "exec-d0f251e8-498e-4a16-861f-6249cbf217f4.png",
+  "originalOutputPreserved": true,
+  "source": {
+    "file": "bellweather-sheep-reference-v2.png",
+    "sha256": "483cc54246c1070c5687ba50546a2ed7bf5640c27a48da9bb69ad3afbb5c56e9",
+    "bytes": 2014155,
+    "dimensionsPx": {
+      "width": 1536,
+      "height": 1024
+    },
+    "mode": "RGB"
+  },
+  "reference": {
+    "file": "docs/art-direction/bellweather-sheep-reference-v1/bellweather-sheep-reference-v1.png",
+    "sha256": "a644b19a449e52c5d0a61ea0b87eddbf158cb295fbeddeeca36dda5f7007a4a2",
+    "role": "annotation edit; preserve existing Sheep appearance and poses",
+    "provenanceRoot": "docs/art-direction/vaelora-v1/bellweather-ecology.png"
+  },
+  "runtimeConvention": {
+    "verifiedAt": "9990ed3bb441fb0120a5aaad53d69798c18a66cc",
+    "sourceFiles": [
+      "src/camera-controls.mjs",
+      "src/main.js",
+      "src/unit-sprite-runtime.mjs"
+    ],
+    "worldUp": "+Y",
+    "yawZeroFacing": "+Z",
+    "positiveYaw": "+Z toward +X about +Y",
+    "yaw90Facing": "+X",
+    "camera": {
+      "direction": [
+        0.78,
+        1.12,
+        0.78
+      ],
+      "azimuthDegrees": 45,
+      "elevationDegrees": 45.43590248481586,
+      "projection": "orthographic"
+    },
+    "note": "Runtime clip names encode world headings; screen-compass words differ. The artwork is not measured against this camera."
+  },
+  "designTargets": {
+    "shoulderHeightWorld": 0.6,
+    "noseToRumpWorld": 0.9,
+    "root": "hoof-plane center between planted feet",
+    "status": "proposed dimensions, not measured from drawings"
+  },
+  "validation": {
+    "decodedPng": true,
+    "hashAndByteCopy": true,
+    "sourcePixelInspection": true,
+    "visuallyRetainedAppearance": true,
+    "identicalAnimalPixelsClaimed": false,
+    "multiViewGeometricConsistency": false,
+    "mechanicalCameraValidation": false,
+    "registeredRuntimePivots": false,
+    "animationClips": false,
+    "engineIntegration": false
+  },
+  "jobsThisRevision": {
+    "builtinImagegen": 1,
+    "meshy": 0,
+    "paidExternalProvider": 0
+  },
+  "files": {
+    "prompt": "PROMPT.json",
+    "review": "review.json",
+    "readme": "README.md"
+  },
+  "license": {
+    "status": "project-generated reference candidate; no new SPDX license asserted"
+  }
+}

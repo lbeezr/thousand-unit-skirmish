@@ -54,6 +54,13 @@ Mac QA machine was reported offline at the latest routing check.
 
 ## Buildings, wildlife, fishing and HUD
 
+Human foot-unit coverage is retained in the [owned workstream](human-foot-unit-coverage.md).
+The Infantry v4 default candidate reuses 48 complete public poses for all eight
+idle/walk/attack/defeat headings, with zero new poses. Default binding/HTTP/release
+are author-owned checks; independent review, containing deployment and ordinary
+in-game observation remain incomplete. Parent Railway/Mac routes support those
+steps, and the art owner retains acceptance. No paid or private-source work.
+
 Package paths are under `assets/` unless linked otherwise. Release inclusion
 comes from an actual clean `release:pack` at follow-up `1757064`: 1,113 files,
 digest `sha256:8fe4de1ee7c932004572d35990b484c75a1e9f78c4735451e83595f09d638642`.

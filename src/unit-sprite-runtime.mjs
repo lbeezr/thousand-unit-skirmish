@@ -60,7 +60,7 @@ export function spriteDirectory(role, version) {
   if (/^boughward-(worker|infantry|spearman|archer|scout|rider|siege-engine)$/.test(role) && version === 'v1') return `${role}-sprite-v1`;
   const supportedVersions = {
     worker: ['v1', 'v2', 'v3'],
-    infantry: ['v1', 'v2', 'v3'],
+    infantry: ['v1', 'v2', 'v3', 'v4'],
     archer: ['v1', 'v2'],
     spearman: ['v1'],
     scout: ['v1'],

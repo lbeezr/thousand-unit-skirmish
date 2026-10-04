@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-02",
+  "sourceOutputId": "exec-897bf821-78ff-4676-9cf6-fe86ca88dfdc",
+  "prompt": "EDIT the provided Bellweather Sheep v3 sheet into ONE clean single-subject reference image for a 3D model pilot. Select ONLY the sheep in the BOTTOM-LEFT panel, the front three-quarter animal with approximate yaw 0 that faces toward the lower-left of the image. Preserve that chosen individual's approved design and planted standing pose: cream overlapping fleece locks, same pale longish sheep face, lateral brown-pink ears, broad stocky body, four attached bare lower legs, dark cloven hooves and small tail. Preserve its apparent front-three-quarter viewing direction and proportions. Do not combine drawings, rotate to a profile, redesign the face, add horns or harness, change the pose or introduce extra limbs. Some far legs may be correctly occluded. Keep complete ears, tail, muzzle and every hoof visible within the frame.\n\nIsolate that ONE Sheep on a plain near-white background, centered with generous breathing room in a square image. Make the animal large enough for useful modeling reference, with no crop of the silhouette. REMOVE every other animal, all headings/labels/text/numbers, all axes/arrows/grids/pivot markers/guides, ground tiles and all scenery. Remove the drawn ground-grid marks under its feet. Use only a subtle neutral contact shadow that does not resemble a physical platform or floor slab. Do not add a cast-shadow object or dramatic scene lighting. Retain calm painterly cream/ochre colors, anatomically credible quadruped, strong readable wool masses. No watermark, no collage, no cut-off feet, no circular pedestal, no photorealistic replacement, no extra content. This is a single-subject modeling INPUT reference, not a calibrated turnaround or game-ready sprite.",
+  "referenced_image_paths": [
+    "/workspace/thousand-unit-skirmish-pr22-review/docs/art-direction/bellweather-sheep-reference-v3/bellweather-sheep-reference-v3.png"
+  ],
+  "transparent_background": false,
+  "inputRole": "isolate visually approved lower-left Sheep; remove all other specimens and guides"
+}

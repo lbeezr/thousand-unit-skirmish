@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-02",
+  "reviewer": "author full-resolution source-pixel review",
+  "result": "Use as approximate-angle concept reference; runtime sprite acceptance remains pending.",
+  "observations": [
+    "All eight approximate yaw labels are readable: top 45/315/135/225, bottom 0/270/180/90.",
+    "The bottom-left Sheep faces down-left, consistent with the intended +Z/yaw 0 projection; bottom-right faces down-right, consistent with +X/yaw 90.",
+    "Top anatomy views use lower apparent viewing elevation than the runtime camera; labels describe approximate intended azimuth only.",
+    "Visual design and poses are retained in review: cream fleece, pale faces, lateral ears, bare lower legs and dark hooves; no horns or harness.",
+    "No misleading geometric axes or measured dimension bars are present."
+  ],
+  "limitations": [
+    "No measured per-view geometry, fixed camera/elevation, scale, footprint, groundline or pivot registration.",
+    "Opaque background with baked labels/contact shadows; not a transparent sprite atlas.",
+    "No extracted sprites, animation, carcass/resource state, engine loader or runtime acceptance."
+  ],
+  "nextProof": "Produce or render a calibrated eight-yaw standing reference at the verified runtime camera; extract per-angle source images with stable scale/root and validate against the asset acceptance standard."
+}
