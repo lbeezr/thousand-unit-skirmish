@@ -170,6 +170,6 @@
     "method": "capturedBudgetEnvelope(all retained samples, every wave plan)",
     "source": "scripts/map-capacity-report-check.mjs",
     "sourceSHA256": "d1df685f4e0f3f7a5a11d7bb977a8499c1a9ac1db7a7a1d173758fda9e968cd2",
-    "note": "Raw native report preserved; its stored65-window envelope preceded the cold sample. This summary includes all66 windows."
+    "note": "Raw native report preserved; its stored 65-window envelope preceded the cold sample. This summary includes all 66 windows."
   }
 }

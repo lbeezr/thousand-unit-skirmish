@@ -2,6 +2,13 @@
   "schemaVersion": 1,
   "files": [
     {
+      "path": "collector-cold-inclusive-check.json.gz",
+      "bytes": 16348,
+      "sha256": "680708b0b995fafd1e734bfc1f30c3286639596f9e7fa06a9d43f450551d4dc9",
+      "compression": "gzip",
+      "uncompressedSha256": "b95008960b13dd5f7e124fdac978d2bc8a96710ae3e420601e13ad88045e733e"
+    },
+    {
       "path": "diagnostic-brief-schema.json.gz",
       "bytes": 1114,
       "sha256": "8866ab2d6487049ff763b4a1c00b451478d9e1c3ddb0987c961b4b4f67b1e37d",
@@ -48,8 +55,8 @@
     },
     {
       "path": "summary.json",
-      "bytes": 4983,
-      "sha256": "1209e7adf56025f8d847d5c38782dc36837e9427e88c2524129c3500beadef86"
+      "bytes": 4985,
+      "sha256": "94ecfbd96e8511cf81e6e1743d0d56013b106766b039b961072968546806a8eb"
     }
   ]
 }

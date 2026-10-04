@@ -8,6 +8,9 @@
   projections exclude JS overhead and are not measured RSS/GPU/network costs.
 - `native-24.json.gz`: complete clean-source `3750ef09` three-wave 24-unit report,
   every retained health sample, diagnostic budget checks and cold recovery.
+- `collector-cold-inclusive-check.json.gz`: fresh clean-source `08356429`
+  three-wave/cold rerun after the collector fix. Its stored envelope includes
+  all 66 captured windows and passes; no historical raw receipt is rewritten.
 - `practice-protocol.json`: repeatable public Practice/canonical selection,
   initial stock/bank cold persistence and one-human movement at clean `046d9f07`.
   It invokes REST/WebSocket protocol, not the root DOM or a rendered browser.
@@ -26,6 +29,9 @@ README are intentionally excluded from self-hashing. Reports contain no raw
 checkpoint, session/recovery tokens or injected game state. Source commits remain
 reachable through the PR branch/history; map hashes distinguish authored bytes.
 
+The historical native report's stored envelope precedes its cold sample. The
+summary keeps that stored value separately and derives all 66 windows through
+the pure checker; QA explicitly identifies these source-qualified figures.
 Short order windows establish planning/movement/clock observations, not complete
 arrival or actual route choice. Only 24 units were run here. No capacity, paid
 city/combat, deployed or rendered acceptance is inferred. The host is shared.

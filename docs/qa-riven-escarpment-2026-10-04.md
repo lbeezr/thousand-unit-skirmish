@@ -87,6 +87,10 @@ including recovery. The original report stores a 65-window envelope calculated
 before the final cold sample; raw bytes are preserved, while the summary and
 figures above use the full offline checker result. The collector now recomputes
 and asserts the envelope after recovery before marking a run passed.
+The fresh clean-source `083564290af3855c5e23ef77ce622dc3ada469dd` collector check
+repeats all three waves and cold recovery successfully, with all 66 retained
+windows represented in the stored passing envelope. Its separate full receipt
+is retained; the older source-qualified measurements above are not relabeled.
 
 The separately repeatable public Practice smoke passes at clean source
 `046d9f07ab870a69712ece1e229b0ca61347fec6`: canonical 224 map selection, 12,544-byte
