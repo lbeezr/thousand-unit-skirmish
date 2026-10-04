@@ -17,6 +17,8 @@ local supply, not an adopted food/wood exchange rate or a claim of final balance
 The lower 600 HP leaves durability to observe in contested matches. No player
 matches were measured to choose this initial prototype tuning.
 
+The default [authored Farm family](../assets/buildings/frontier-economy-models-v1/README.md) follows construction, damage and finite depletion; exhausted stock uses harvested-field captures, and new planting restores productive art. [QA](qa-frontier-economy-art-2026-10-04.md) retains identified staging verification.
+
 ## Harvesting and ownership
 
 Select Workers, then right-click the completed owned Farm (or use the ordinary

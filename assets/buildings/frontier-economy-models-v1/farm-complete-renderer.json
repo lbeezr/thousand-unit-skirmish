@@ -1,0 +1,557 @@
+{
+  "schema": "thousand-unit-skirmish.building-lifecycle-reference.v1",
+  "asset": "farm",
+  "status": "default registered lifecycle captures; live team standards",
+  "camera": {
+    "projection": "orthographic",
+    "framePixels": [
+      1024,
+      1024
+    ],
+    "pixelsPerWorldUnit": 128,
+    "elevationDegrees": 46,
+    "azimuthDegrees": [
+      0,
+      45,
+      90,
+      135,
+      180,
+      225,
+      270,
+      315
+    ],
+    "anchorPixelFromTopLeft": [
+      512,
+      647.1527325565025
+    ],
+    "background": "transparent"
+  },
+  "stateOrder": [
+    "foundation",
+    "frame",
+    "complete",
+    "damaged",
+    "critical",
+    "exhausted",
+    "exhausted-damaged",
+    "exhausted-critical"
+  ],
+  "completeState": {
+    "state": "complete",
+    "views": [
+      {
+        "index": 0,
+        "azimuthDegrees": 0,
+        "path": "runtime/farm-complete-view-00.png",
+        "sha256": "dcfe6d8768f82c584c2103b306008e3c2508ba9225119b7a4a5fab3fa2f18a59",
+        "bytes": 741052
+      },
+      {
+        "index": 1,
+        "azimuthDegrees": 45,
+        "path": "runtime/farm-complete-view-01.png",
+        "sha256": "f0da663928ba4966af97acd4ee7789f9cd6aa0dea0914bb4ded94e2fd27ce90d",
+        "bytes": 760064
+      },
+      {
+        "index": 2,
+        "azimuthDegrees": 90,
+        "path": "runtime/farm-complete-view-02.png",
+        "sha256": "888e6f1ab41873ae84021bc1a5521a98810013af55fb4b046b03ba41c0f1c808",
+        "bytes": 727892
+      },
+      {
+        "index": 3,
+        "azimuthDegrees": 135,
+        "path": "runtime/farm-complete-view-03.png",
+        "sha256": "ef17bf68d6d97299f97bc0bd9d9affddf44b38ef8f71d6882a4cc8c484f90bae",
+        "bytes": 745911
+      },
+      {
+        "index": 4,
+        "azimuthDegrees": 180,
+        "path": "runtime/farm-complete-view-04.png",
+        "sha256": "45a8690351b8b8266b932a3d3e14837034bc24f9c0e5938e1bf1c8dd1379dbd1",
+        "bytes": 721317
+      },
+      {
+        "index": 5,
+        "azimuthDegrees": 225,
+        "path": "runtime/farm-complete-view-05.png",
+        "sha256": "777e7156154974e9d43c64cd15a6589c72cfde746d272056bf807b25f5b3ac9b",
+        "bytes": 753038
+      },
+      {
+        "index": 6,
+        "azimuthDegrees": 270,
+        "path": "runtime/farm-complete-view-06.png",
+        "sha256": "399301df60ae3ad19e4a7f839e5459c7a6a6fd6953646d02bfc88d117949e3a5",
+        "bytes": 744755
+      },
+      {
+        "index": 7,
+        "azimuthDegrees": 315,
+        "path": "runtime/farm-complete-view-07.png",
+        "sha256": "e04e3786e9bf08b57c8e969945f2892cc39bd294c98e9b20fc1c221982d6de74",
+        "bytes": 769111
+      }
+    ]
+  },
+  "states": [
+    {
+      "state": "foundation",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/farm-foundation-view-00.png",
+          "sha256": "e99790ace2537e4c7ce7a97366d7dcc28d68041ffd476ba5057c5c65e5653566",
+          "bytes": 713974
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/farm-foundation-view-01.png",
+          "sha256": "9b8967590e5e69922d255ed497708182b3071fa7b722c8e778e566e8a1e34f56",
+          "bytes": 725240
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/farm-foundation-view-02.png",
+          "sha256": "7fbbaf85fac5e06bd16f134a41b96fc90d96f73d51da99e6fec5963f0a84500e",
+          "bytes": 710909
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/farm-foundation-view-03.png",
+          "sha256": "4d4ae56440eb71aedaa56db14291e3972ae65bcd8d343a78bfef6c7f2a78a0a7",
+          "bytes": 724925
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/farm-foundation-view-04.png",
+          "sha256": "9f51a6ceda4369362ed3d9289927169df962e405508fa0d176ed252269493d5d",
+          "bytes": 709985
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/farm-foundation-view-05.png",
+          "sha256": "f3c9f3dd186a736b9a93459cdb6754adb83791f4c582da63457112cca139416b",
+          "bytes": 726061
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/farm-foundation-view-06.png",
+          "sha256": "56cb1d0a12a79eb4255cc846cd1a0e6132f714b73f1b21cc7bb2fb941f78db04",
+          "bytes": 712613
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/farm-foundation-view-07.png",
+          "sha256": "1b0f425a89b2af14f5276efb5ad55096220c01c8fc0d9b1e6b0a706cd701254c",
+          "bytes": 720408
+        }
+      ]
+    },
+    {
+      "state": "frame",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/farm-frame-view-00.png",
+          "sha256": "e598a0be77ce41ea6158e82388e21ab8c34ead85104a00e6c147419acab3d72a",
+          "bytes": 720348
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/farm-frame-view-01.png",
+          "sha256": "4706bd3dbb074d0920da0ae0b9e894f0f7c7cde7a8815bb89b489367ef7103ea",
+          "bytes": 741689
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/farm-frame-view-02.png",
+          "sha256": "59d7ebdbb56a751540ce3eb59c823bb51ab405b0291306e61d3623be8066506c",
+          "bytes": 712098
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/farm-frame-view-03.png",
+          "sha256": "a199114930f2f65766ff215f4a320b020dc3353194d772a7cfb2b2224a7d0b0c",
+          "bytes": 724503
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/farm-frame-view-04.png",
+          "sha256": "1e16d71d8050899b33a7d7dff9408122a7c6d7108e347ea29c79873de698e867",
+          "bytes": 697990
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/farm-frame-view-05.png",
+          "sha256": "7cc553bf97742ea7f3db5eb319362dd319e2e7dcca8206df209574ca05fbf4c4",
+          "bytes": 722747
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/farm-frame-view-06.png",
+          "sha256": "bb8551024610898d3d14214a44b5304a32f316a08e56ffcbc418d79648ea3f99",
+          "bytes": 714049
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/farm-frame-view-07.png",
+          "sha256": "22e4fd7890d6f661d92ab79ae09cf09e9161c1172dbcc77aac3238717760cc7f",
+          "bytes": 736159
+        }
+      ]
+    },
+    {
+      "state": "damaged",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/farm-damaged-view-00.png",
+          "sha256": "dbd6ea394087fd895d96aacb20c6a38a7ff3f48288fb6c422233db6835c0269b",
+          "bytes": 735092
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/farm-damaged-view-01.png",
+          "sha256": "abb6dca80af2f9570924d91fbb7be000b986529b3c7643bca75a379d75e919ad",
+          "bytes": 753355
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/farm-damaged-view-02.png",
+          "sha256": "df5c2a8c931cf9b6845b1bd751f1efec6ca8e6bc010020db9943d76e6d11fb6c",
+          "bytes": 727644
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/farm-damaged-view-03.png",
+          "sha256": "f82c02f3669ed5d8d23b1cecc0bef20512dcbfdb8abd4b996a83b8fdba7f4000",
+          "bytes": 747180
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/farm-damaged-view-04.png",
+          "sha256": "8f364e68a1ef8b9c1299aed357287ed976d06cccae825f7aeb7b81c419fe8e30",
+          "bytes": 724976
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/farm-damaged-view-05.png",
+          "sha256": "c9c336d3e77b1c701e85adf85b969bb213c014bf67486014bc6299a5eeee3ce3",
+          "bytes": 751959
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/farm-damaged-view-06.png",
+          "sha256": "83723f445638ebd52d85047278b4793ff9939503edcd4430d331c903c487ead8",
+          "bytes": 738194
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/farm-damaged-view-07.png",
+          "sha256": "c0cd46edf105a519af73777f63b0c13d4155692d2aa7fe98bdbad438507e43af",
+          "bytes": 756395
+        }
+      ]
+    },
+    {
+      "state": "critical",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/farm-critical-view-00.png",
+          "sha256": "befeea1b6a7f6526040642add0793e2c80ccca75bdffac2fa70cf3394e6ae674",
+          "bytes": 728762
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/farm-critical-view-01.png",
+          "sha256": "473fa8907174defa518b585851ddbc9848b48465148c45d11aeeea6abcaa6875",
+          "bytes": 749810
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/farm-critical-view-02.png",
+          "sha256": "50a7638e0ab4a4f8f82ba0f5411bcc604566d1b2e241e00d55c158dcdaeb159e",
+          "bytes": 727765
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/farm-critical-view-03.png",
+          "sha256": "cd201f1effdf14d19ca8d7113c1d11360fa6d1a3d8eff7f2e454338e6c5fe1aa",
+          "bytes": 747628
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/farm-critical-view-04.png",
+          "sha256": "c8ecc8270f026ab1362d7f1e2ac96a2fa6ccccf762d0725ea47a9fc14caa63de",
+          "bytes": 727398
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/farm-critical-view-05.png",
+          "sha256": "d9a66b380ce5d4a6516013818e17556a589a4d94aacac695b5f65ab9ad14fb2e",
+          "bytes": 750838
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/farm-critical-view-06.png",
+          "sha256": "d9c8a25bb15d47eda39158946d2c893ff4b2f0a31d68745cbc86110f9c84d2e9",
+          "bytes": 735971
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/farm-critical-view-07.png",
+          "sha256": "c7cad26b84224bea791ff202516140e74312d1845d2f93267f90d510ea0bb24d",
+          "bytes": 750140
+        }
+      ]
+    },
+    {
+      "state": "exhausted",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/farm-exhausted-view-00.png",
+          "sha256": "78ff0447260406e7bc5572e1348b68218efb268172bb0c2f7b55392a4ea77b13",
+          "bytes": 685126
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/farm-exhausted-view-01.png",
+          "sha256": "b42f0b6d27b29cf75d3ee08a36b7cb6611b30d415725d6dc2431d318c108d66c",
+          "bytes": 707362
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/farm-exhausted-view-02.png",
+          "sha256": "0c44420358da1b6a92df293afdb9036d8e1b63e26888468f8403ecb02c7963fd",
+          "bytes": 671605
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/farm-exhausted-view-03.png",
+          "sha256": "2e85b5bea38622076658b735c6cbd96f87dcb7ce329287d67f46b75a55317479",
+          "bytes": 697453
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/farm-exhausted-view-04.png",
+          "sha256": "69296e252a7f0de7bd0c1ebc6ffb16116da4d2cfcf4467d9d920a63a56ca73bf",
+          "bytes": 673817
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/farm-exhausted-view-05.png",
+          "sha256": "53b07cb5e6123145cce554b073bf245c02ab86904dad60a86670d035ffb32391",
+          "bytes": 701081
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/farm-exhausted-view-06.png",
+          "sha256": "173d5bdc425a8c32f507a491af2797ddf97b6200cf681e5923364f2aebbfbe8a",
+          "bytes": 681071
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/farm-exhausted-view-07.png",
+          "sha256": "d39ce6aab01157d10694cade2351d4a4304eadb4ad717c8bb0c75420018df242",
+          "bytes": 715589
+        }
+      ]
+    },
+    {
+      "state": "exhausted-damaged",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/farm-exhausted-damaged-view-00.png",
+          "sha256": "454e1867fc1b739d84727dea2f5d4fc13934070b979012519491af6d9fc46f91",
+          "bytes": 679095
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/farm-exhausted-damaged-view-01.png",
+          "sha256": "c64285adf8e3aebe968208ce4e882f5f3998bb9783737c6ede1366bc49dc4a2c",
+          "bytes": 701313
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/farm-exhausted-damaged-view-02.png",
+          "sha256": "75697ee3703e2150f8ac1b6c416b9834540d0679f966c1a692942d8cd2a50c3e",
+          "bytes": 671025
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/farm-exhausted-damaged-view-03.png",
+          "sha256": "f17ee61e57e87886a0c00bc11feb5a7390d533610f84866ec636d1887bad9f60",
+          "bytes": 697281
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/farm-exhausted-damaged-view-04.png",
+          "sha256": "8a518ea985dd57731ea9cb7581cb4a06f2449364f4e2b3866daaacf94372fcdd",
+          "bytes": 674559
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/farm-exhausted-damaged-view-05.png",
+          "sha256": "26e635c8be87cdf1b3ac05b3f76f1f7cae899cf600ff95183794c58e0416c117",
+          "bytes": 697725
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/farm-exhausted-damaged-view-06.png",
+          "sha256": "f5f1c7cab35d0f7a6206acd4808399505f4e55cc0b760e531b0f00c665b7eed4",
+          "bytes": 674158
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/farm-exhausted-damaged-view-07.png",
+          "sha256": "987274fbb0d5cebae5406b65948b24f0702b1857227b77b6a282b2420cacf146",
+          "bytes": 703064
+        }
+      ]
+    },
+    {
+      "state": "exhausted-critical",
+      "views": [
+        {
+          "index": 0,
+          "azimuthDegrees": 0,
+          "path": "runtime/farm-exhausted-critical-view-00.png",
+          "sha256": "bd3aa137ce91f08603bd4344e35df6d391f76c3d6ca5fd2330c3bc76d118193b",
+          "bytes": 673033
+        },
+        {
+          "index": 1,
+          "azimuthDegrees": 45,
+          "path": "runtime/farm-exhausted-critical-view-01.png",
+          "sha256": "e2ffa644e3d23d6ef3d6f0dbc1c77ac7a809afb25bb4da073c81c1a375dd0dd9",
+          "bytes": 695763
+        },
+        {
+          "index": 2,
+          "azimuthDegrees": 90,
+          "path": "runtime/farm-exhausted-critical-view-02.png",
+          "sha256": "5cd1ab58090033d3167ada30271936772ff37531c12048f0ebb439e597e3ef92",
+          "bytes": 670362
+        },
+        {
+          "index": 3,
+          "azimuthDegrees": 135,
+          "path": "runtime/farm-exhausted-critical-view-03.png",
+          "sha256": "e526aceb8612201c7d2c8d7a5b88eb7d6cd54afa4af912f2742e911fc137ccb5",
+          "bytes": 697228
+        },
+        {
+          "index": 4,
+          "azimuthDegrees": 180,
+          "path": "runtime/farm-exhausted-critical-view-04.png",
+          "sha256": "6b60dcf1e88ea97f7b97d730ec49ca04bd9125f21ce64582d441c45427e87e17",
+          "bytes": 673542
+        },
+        {
+          "index": 5,
+          "azimuthDegrees": 225,
+          "path": "runtime/farm-exhausted-critical-view-05.png",
+          "sha256": "f546e4e52536b2297320aa4d3a1932de65cf3eb1bd9240136a7907c8b4d867f0",
+          "bytes": 695394
+        },
+        {
+          "index": 6,
+          "azimuthDegrees": 270,
+          "path": "runtime/farm-exhausted-critical-view-06.png",
+          "sha256": "d41866480765035cdf53e53c11eb9adb67d0fdbdb9e73009fb6a3b115883ccb5",
+          "bytes": 672179
+        },
+        {
+          "index": 7,
+          "azimuthDegrees": 315,
+          "path": "runtime/farm-exhausted-critical-view-07.png",
+          "sha256": "25d34618de14fb2dae9ed18b1c64a67636894faae23c628bdcd3cc6a8a45fe10",
+          "bytes": 696663
+        }
+      ]
+    }
+  ],
+  "stateMapping": {
+    "construction": {
+      "foundationAtOrBelow": 0.275
+    },
+    "health": {
+      "damagedAtOrBelow": 0.6,
+      "criticalAtOrBelow": 0.3
+    },
+    "harvest": {
+      "exhaustedStates": {
+        "complete": "exhausted",
+        "damaged": "exhausted-damaged",
+        "critical": "exhausted-critical"
+      }
+    }
+  },
+  "source": {
+    "taskId": "01a107cb-53fe-7134-b790-640f71952e1c",
+    "sha256": "6cc2a5552138f9f9fe2730318a392d2ede7b291b79051ca9442f468704ab26e6",
+    "recipeSHA256": "0826513df673ea9095328a3ea6ceed2a0adbffbf309bddaf8b8a89af93425176",
+    "recipePath": "source/capture_economy.py",
+    "reference": "../../../docs/art-direction/frontier-economy-meshy-v1/README.md"
+  },
+  "limitations": [
+    "Static captures; Mill sails do not animate",
+    "Damage geometry is an initial cut-based treatment",
+    "Ownership uses live team-colored and shaped standards outside the captured artwork"
+  ]
+}
