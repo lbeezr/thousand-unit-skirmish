@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "mapId": "veyrholds-threefold-basin",
+  "mapSHA256": "6d9769ce30a1da374ffa41660dd99a804fd078a6f706113ddce40e1785e3ba0b",
+  "analysisSourceCommit": "536f3e2e70d98efff40bd997db0c4594d37a3124",
+  "analysisScriptSHA256": "d1df685f4e0f3f7a5a11d7bb977a8499c1a9ac1db7a7a1d173758fda9e968cd2",
+  "files": {
+    "README.md": {
+      "bytes": 4310,
+      "sha256": "813abd5899082c2f34dd72052f6d80144e8fb1e1cdfb12199f13fe157780c6c7"
+    },
+    "capacity-envelope.json": {
+      "bytes": 2775,
+      "sha256": "ccd816f924d81dd97ede02c2af28eb7bfc92e99ed8a35f7e6329c76cc406c70d"
+    },
+    "capacity-report.json.gz": {
+      "bytes": 70254,
+      "sha256": "fdf536142d8dcdc6812c50577bb1cd66cadbfdbcc2ccdcc3a1e18e2f9a20b7bc"
+    },
+    "capacity-summary.json": {
+      "bytes": 8903,
+      "sha256": "5a3dee11d9be228afdc0e673c8dcd4517152a6c7e2d2f138a11543d38fb08aaf"
+    },
+    "final-24-envelope.json": {
+      "bytes": 846,
+      "sha256": "388ded733e7f7d5496a37e71154af6af7dcef927667af657bd62d50313141db9"
+    },
+    "final-24-report.json.gz": {
+      "bytes": 15241,
+      "sha256": "c2335650de14b49935d6a97d987c0ba29c49591d9392d098f6958b8cc374ff1b"
+    },
+    "final-24-server.log": {
+      "bytes": 379,
+      "sha256": "1d2484a21da5c828beb999eb4a6681a2fb655be1e63b395263d1af163f14258b"
+    },
+    "grid-cost.json": {
+      "bytes": 10166,
+      "sha256": "7e8c0fa3c3f3e991b69878a619fff89275e4fff5ea22b9193ccb082c6fbcf2f7"
+    },
+    "ladder-1000-server.log": {
+      "bytes": 379,
+      "sha256": "e44a95ae04f07de8644e597caf6b50d37a08f67688eec2c2d00b31af54ad9766"
+    },
+    "ladder-2000-server.log": {
+      "bytes": 379,
+      "sha256": "c2694daaf0436eb92f1d0d4ee2e37f3bf5e57dcef133a64f852e94f91d896887"
+    },
+    "ladder-24-server.log": {
+      "bytes": 379,
+      "sha256": "048ea90a72b8dc3626cbc00757f8cb4a1da1286cedb520bb52f2b31f38d28a29"
+    },
+    "ladder-250-server.log": {
+      "bytes": 379,
+      "sha256": "076ab805bfef1ed9cae70d9ae923e84b95334e3d7b4dfa91a33607da0ba1fbe5"
+    },
+    "ladder-500-server.log": {
+      "bytes": 379,
+      "sha256": "0cf1705238249b7937ff370ff08e860c62b437e500c840c9c180ee56bcf2c478"
+    },
+    "native-paid.jsonl": {
+      "bytes": 9210,
+      "sha256": "ee996ea2cc01ab80eb183a7afb5daa3c86e2cfb60f3f6c9deb5e9074bd7abe6e"
+    },
+    "packed-entry-reproduction.mjs": {
+      "bytes": 4270,
+      "sha256": "1fe0d9c1f9ac8d13953965380d8275a49c26f592a2a1e76da0dcd4d2be51ed05"
+    },
+    "packed-entry.json": {
+      "bytes": 531,
+      "sha256": "27a6b3e0856af5984155d98e9aadb24f9b2325ef83aff8e33f7b00bd8ed7ba92"
+    },
+    "paused-clock-wait-report.json.gz": {
+      "bytes": 1129,
+      "sha256": "a6aa48bbd18b86698800d991e328d6b36dd63b344debae833fa4209177c70902"
+    },
+    "release-identity.json": {
+      "bytes": 353,
+      "sha256": "7458cd92a8cc538f71198558fdc487a6c14407594a1c77e89c7b5e5bd1350dd2"
+    },
+    "snapshot-race-report.json.gz": {
+      "bytes": 1189,
+      "sha256": "7b2b430fa5be38e606f948ca298284ab9f59f73328df14eca5838231f43056b3"
+    },
+    "source-input-parity.json": {
+      "bytes": 2413,
+      "sha256": "30ebbf75ae0c58479894cedb1fe5283ac3c0149b5ec445eb8ff05db24c3b3e4d"
+    },
+    "static-map.json": {
+      "bytes": 29803,
+      "sha256": "94a1ab5aa289fd533ba850317731af1776d2b42e09c5036f9c1c959dabb3892f"
+    }
+  }
+}
