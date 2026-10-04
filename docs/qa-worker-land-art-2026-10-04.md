@@ -1045,3 +1045,11 @@ receipts/target bearing. Local browser sandbox remains unavailable. At a contain
 default build, observe SW↔S↔SW turns, all five work loops, Stop/resume, root/tool
 contact, attack completion, prone corpse and cargo Return→deposit/idle, both Human
 seats selected/unselected, ordinary/strategic zoom, Bellweather · Millrace.
+
+South [PR276](https://github.com/lbeezr/thousand-unit-skirmish/pull/276) merged at
+`c592d6fa716b577fb81acf44e65abd1ad3563b21` after [independent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/276#pullrequestreview-5404502197)
+of `5f8fd2c4761d55db174a50484e2408d6c720bc35` (172 reviewer checks and HTTP passed).
+SW all189 focused checks, atlas/docs/whitespace, byte-idempotent admission and
+actual packed guarded HTTP/WebSocket/hash scenario pass. [Clean SW release](qa-evidence/worker-land-art-2026-10-04/south-west-actions-clean-release.json)
+measures `ced06b35d520afffba05fd12d77af636dd8c31b8`, `sourceDirty:false`,1179 files,
+`sha256:ab66b158a4ab736e69eb23a9eb73a1cdee71b6e0b1618b9cb671981cd0fb96c8`. Containing delivered/native acceptance stays open.
