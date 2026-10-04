@@ -4436,7 +4436,8 @@ function updateCommandUI() {
   for (const button of document.querySelectorAll('[data-persistent-order]')) {
     button.classList.toggle('active', button.dataset.persistentOrder === persistentTargetMode);
     button.setAttribute('aria-pressed', String(button.dataset.persistentOrder === persistentTargetMode));
-    button.disabled = localTeam === null || matchWinner >= 0 || Boolean(wildlife) || Boolean(selectedBuilding) || selectedWaterUnits();
+    button.disabled = localTeam === null || matchWinner >= 0 || selectedIds().length === 0
+      || Boolean(wildlife) || Boolean(selectedBuilding) || selectedWaterUnits();
   }
   if (ui.buildingCommandDetails) ui.buildingCommandDetails.hidden = !selectedBuilding || !buildingSupportsRally(selectedBuilding.type);
   if (ui.buildingRallyReadout) {
