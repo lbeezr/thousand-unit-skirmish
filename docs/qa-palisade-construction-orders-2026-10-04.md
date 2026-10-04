@@ -211,12 +211,22 @@ Final integration review, clean integrated release and fresh-main verification
 are tracked in [PR #290](https://github.com/lbeezr/thousand-unit-skirmish/pull/290).
 
 Walls/gates owner retains source/release integration and any observed follow-up.
-Parent schedules native wall/gate acceptance after a containing identified
-deployment. The animation Mac task `01a106da-40ec` currently owns its browser;
-this investigation does not operate it. No deployment, new artwork, Chromium
-sandbox bypass or GPU/user acceptance is claimed.
+The current acceptance route is cloud testing and CI qualification; the user
+stopped the Mac dependency. Parent staging coordination identifies the containing
+deployment. A normal-sandbox cloud run first needs
+`node scripts/renderer-capability.mjs --launch` to pass, followed by the visual
+CI lane and actual normal-game wall/gate captures below. The environment pilot
+alone does not establish those gameplay observations.
 
-Native recipe: select one Worker, draw a paid line, place an adjoining gate with
+The [cloud qualification record](qa-evidence/palisade-continuation-2026-10-04/cloud-renderer.json)
+at clean integrated source `e14940f7` records one normal-sandbox launch, blocked
+by `sandbox-unavailable` and `storage-unavailable`, with no browser, WebGL
+readback, frames or screenshots. The next rendered step needs a provisioned
+cloud runtime with a working browser sandbox and writable per-job profile/config
+storage. No deployment, new artwork, sandbox bypass or GPU/player acceptance
+is claimed by this record or the passing native cases.
+
+Normal cloud-game recipe after qualification: select one Worker, draw a paid line, place an adjoining gate with
 that same Worker, and observe gate completion/continuation. Explicitly select
 the Worker and right-click a visibly unfinished wall and gate cell, including
 space beside a thin post. Confirm the chosen site begins progressing, selection

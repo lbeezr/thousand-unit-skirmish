@@ -127,9 +127,9 @@ recovery. Existing draft tests still execute the real cancellation/destruction,
 damaged construction and checkpoint-building fragments.
 
 These prove bounded runtime behavior; contested-match balance and finished art
-are unclaimed. [Drag UI checks and the native Mac recipe](qa-palisade-drag-ui-2026-10-03.md)
-cover the next client slice; cloud native-browser startup is unavailable, so
-DOM checks do not establish rendered/native usability. Hosted large-match
+are unclaimed. [Drag UI checks and the cloud-game recipe](qa-palisade-drag-ui-2026-10-03.md)
+cover the next client slice. Cloud renderer qualification and ordinary-game
+captures remain required; DOM checks do not establish rendered usability. Hosted large-match
 capacity is not established by these checks.
 
 ## Manual gate extension
