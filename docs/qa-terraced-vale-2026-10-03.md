@@ -76,6 +76,12 @@ opening banks and 24 units. A separate fresh one-human Practice case starts its
 clock and moves a Worker. Both opening views contain 6,400 packed fog bytes and
 zero disclosed enemy units. This is protocol/native gameplay, not browser appearance.
 
+Accepted full native source `2efb46ef903d80e1afbce410839f574a42e3b69a` measured
+Worker 50.1/51.0 game-seconds, Infantry 49.4/50.133 and producer-exit Scout
+26.5/27.4. Both home TCs took damage from 2,400 to 2,398.5 HP in 1.9 seconds
+after explicit attack orders. Full recovery/reset/Practice passed. This receipt
+predates the later mode/crowd integrations; those have the separate checks below.
+
 Final receipts in the [evidence directory](qa-evidence/terraced-vale-2026-10-03/README.md)
 identify their own exact source. Earlier probe failures are retained there: wrong
 notice-prefix assumptions and reading footprint data from the public rather than
@@ -83,7 +89,7 @@ authoritative checkpoint shape. A subsequent historical-state waiter bug was
 fixed before the corrected replay; state waits now use the current snapshot or future
 messages and cancel timers when a client closes.
 
-A separate latest-core, fog-enabled 2,000-unit **diagnostic** used the existing
+A separate identified-core, fog-enabled 2,000-unit **diagnostic** used the existing
 performance collector, one 10-second/300-tick movement window, two compressed
 peers and 1 Hz health/checkpoint capture. Both 1,000-unit orders had 1,000 nonempty
 paths, zero route failures and all 1,000 own units moving in the first movement
@@ -126,6 +132,32 @@ no sandbox or authentication settings were changed. Deployed selection and
 rendered terrain/minimap remain incomplete. Native-Mac/browser follow-up must
 verify the identified staging revision, both-seat routes/terrain readability,
 normal entry/Practice, paid expansion, combat, fog and recovery/rematch.
+
+## Post-mode/crowd integration check
+
+After rebasing onto main `c27c34a4`, source
+`1784387cb300597ff12102f331aea775834a0541` passed all 18 focused tests, all 13
+regional reachability cases and docs. Its second independent diagnostic window
+passed: both 1,000-unit armies moved, paths had zero failures, final notice
+146.729 ms, tick p95/max **7.193/14.369 ms**, start-lag p95/max 0.870/10.028 ms,
+and **one skipped slot**. Its checkpoint was 2,870,348 bytes; compressed wire
+2,644,707 bytes cumulative. Opening/loaded clock ratios were 1.00000/1.00013.
+The two windows are source-identifying diagnostics, not controlled comparisons.
+Local release packing overlapped the second opening-clock phase; the host was
+not isolated. No relative hardware or optimization conclusion is admitted.
+
+The new clean 1,164-file package has digest
+`sha256:813c629c18683f5d58cfa8d660820c95fa93d4fdab0154555ebc59cf50a29436`.
+Identical map bytes, normal selection, 6,400-byte fog and one-human Worker arrival
+passed again on the packed mode-enabled server. [Post-integration records](qa-evidence/terraced-vale-2026-10-03/post-mode-core/diagnostic.json)
+pin this separate source. Full paid/native receipt remains at its earlier exact
+source; the compact packed-entry check does not repeat that whole sequence.
+
+Current `skirmish@1` registry still allows only Millrace/Rootways. The candidate's
+canonical elimination works under `authored@1`; selectable Skirmish compatibility
+and fresh floor/default binding are still receiving-owner work, now concretely
+recorded on [runtime PR200](https://github.com/lbeezr/thousand-unit-skirmish/pull/200#issuecomment-5974899777).
+Do not claim full Skirmish selector adoption from this map-only merge.
 
 ## Repeat
 
