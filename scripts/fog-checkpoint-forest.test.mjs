@@ -1,3 +1,5 @@
+import './vision-coverage-cache.test.mjs';
+import './map-grid-cost-audit.test.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
@@ -94,7 +96,7 @@ test('fringe preserves deployed LOS on seeded Terraced Vale sources, sight roles
         changed.mark(index % 2, col, row, sight); original.mark(index % 2, col, row, sight);
         assert.deepEqual(changed.context.visibleCellsByTeam, original.context.visibleCellsByTeam);
         const team = index % 2, radius = sight + Number(changed.context.elevationLevelByCell[row * terrain.width + col] > 0);
-        const covered = changed.context.visionCoverageBySourceCell[row * terrain.width + col].get(sight);
+        const covered = changed.context.visionCoverageBySourceCell.get(row * terrain.width + col, sight);
         for (const cell of covered.fringe) {
           assert.equal(changed.context.forestCellMask[cell], 1);
           assert.equal(changed.context.visibleCellsByTeam[team][cell], 0);
@@ -114,7 +116,7 @@ test('map bounds never wrap a fringe between rows; rock and building occlusion d
     const changed = visionFixture(terrain), original = visionFixture(terrain, { original: true });
     changed.mark(0, col, row); original.mark(0, col, row);
     assert.deepEqual(changed.context.visibleCellsByTeam, original.context.visibleCellsByTeam);
-    for (const cell of changed.context.visionCoverageBySourceCell[row * 16 + col].get(8).fringe) {
+    for (const cell of changed.context.visionCoverageBySourceCell.get(row * 16 + col, 8).fringe) {
       assert.ok(cell >= 0 && cell < 256);
       assert.ok([...original.context.visibleCellsByTeam[0].keys()].some(other =>
         original.context.visibleCellsByTeam[0][other] && changed.context.forestCellMask[other]

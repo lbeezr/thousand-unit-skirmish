@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { BASE_ELEVATION_PATH_COST } from '../src/elevation.mjs';
+import { VisionCoverageCache } from '../src/server/vision-coverage-cache.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
@@ -28,7 +29,9 @@ export function gridCosts(side, model) {
     // All source cells visited at all current sight radii on raised, unoccluded land.
     visionCoverageIndexBytesAtAllSources: cells * sightCoverageBound * model.visionIndexBits / 8,
     proposedUint32VisionCoverageIndexBytesAtAllSources: cells * sightCoverageBound * 4,
-    visionCoverageBoundExcludes: 'JS Array slots, Maps/keys/objects, allocator overhead, rays and terrain-specific occlusion; not an RSS prediction',
+    visionCoverageRetainedPayloadBytesLimit: model.visionCache?.maxBytes ?? null,
+    visionCoverageRetainedEntriesLimit: model.visionCache?.maxEntries ?? null,
+    visionCoverageBoundExcludes: 'All-source figure is a hypothetical uncapped index sum, not retained cache memory; visible/fringe partition the target disk. JS Maps/keys/objects, allocator overhead, rays and temporary/GC payload are excluded; not an RSS prediction',
     maxManhattanHeuristic: 2 * (side - 1) * BASE_ELEVATION_PATH_COST,
     heuristicFitsUint16: 2 * (side - 1) * BASE_ELEVATION_PATH_COST <= 65535,
     fogPerSeat: { packedBytes: fogBytes, base64Characters: base64Bytes(fogBytes) },
@@ -46,7 +49,8 @@ export function gridCosts(side, model) {
 export async function runGridCostAudit() {
   const files = ['server.mjs', 'src/main.js', 'src/wall-line-planner.mjs', 'src/water-route-graph.mjs',
     'src/environment-art.mjs', 'src/terrain-height.mjs', 'src/terrain-blend.mjs', 'src/gameplay-definitions.mjs',
-    'src/elevation.mjs', 'src/map-size-policy.mjs', 'scripts/map-grid-cost-audit.mjs', 'index.html'];
+    'src/elevation.mjs', 'src/map-size-policy.mjs', 'src/forest-fringe.mjs',
+    'src/server/vision-coverage-cache.mjs', 'scripts/map-grid-cost-audit.mjs', 'index.html'];
   const inputs = Object.fromEntries(await Promise.all(files.map(async name => [name, await readFile(new URL(`../${name}`, import.meta.url), 'utf8')])));
   const server = inputs['server.mjs'];
   const start = server.indexOf('\nfunction activateMap(definition) {');
@@ -60,15 +64,20 @@ export async function runGridCostAudit() {
   }
   const byteCount = group => Object.entries(group).reduce((sum, [type, count]) => sum + bytesByType[type] * count, 0);
   const number = pattern => { const match = server.match(pattern); if (!match) throw new Error(`Source contract moved: ${pattern}`); return Number(match[1]); };
-  const coverageType = server.match(/coverage = (Uint(?:16|32)Array)\.from\(cells\)/)?.[1];
-  if (!coverageType || !server.includes('walkableComponents = new Int32Array(CELL_COUNT)')
+  const probe = new VisionCoverageCache({ width: 1, height: 1 });
+  const visionIndexBits = probe.set(0, 8, { visible: [0], fringe: [0] }).visible.BYTES_PER_ELEMENT * 8;
+  if (!server.includes('coverage = visionCoverageBySourceCell.set(sourceCell, sight, { visible: cells,')
+    || !server.includes('visionCoverageBySourceCell = new VisionCoverageCache(')
+    || !inputs['src/forest-fringe.mjs'].includes('return Uint32Array.from(fringe);') || !server.includes('walkableComponents = new Int32Array(CELL_COUNT)')
     || !server.includes('elevationLevelByCell = buildElevationGrid(') || !server.includes('forestCellMask = forestCellsForDefinition('))
     throw new Error('Resident/vision model moved; update the source-bound audit.');
   const model = {
     activationAllocations: allocations, residentBytesPerCell: byteCount(allocations.CELL_COUNT) + 6,
     residentExtraBytesPerCell: { elevationGrid: 1, forestMask: 1, walkableComponents: 4 },
     bucketBytes: byteCount(allocations.bucketCount), bucketSide: number(/const SPATIAL_BUCKET_SIZE = ([\d.]+);/),
-    attackFlowLimit: number(/const MAX_ATTACK_FLOW_FIELDS = (\d+);/), visionIndexBits: coverageType === 'Uint16Array' ? 16 : 32,
+    attackFlowLimit: number(/const MAX_ATTACK_FLOW_FIELDS = (\d+);/), visionIndexBits,
+    visionCache: { maxBytes: probe.metrics().maxBytes, maxEntries: probe.metrics().maxEntries,
+      coverageArrays: ['visible', 'fringe'], scope: 'live exact owned typed payload; excludes temporary/GC buffers and JS overhead' },
     validatorMaxSide: number(/definition\.width > (\d+) \|\| definition\.height >/),
     highGroundBonus: number(/const HIGH_GROUND_VISION_BONUS_CELLS = (\d+);/),
     snapshotHz: number(/const TICK_RATE = (\d+);/) / number(/const STATE_EVERY_TICKS = (\d+);/),
@@ -76,7 +85,7 @@ export async function runGridCostAudit() {
       ...Object.values(BUILDING_DEFINITIONS).map(v => v.sight || 8)])].sort((a, b) => a - b),
     exclusions: 'JS caches/objects, unit routes/state, temporary validation/components queue, catalog, water grids, render/GPU allocations, allocator/runtime overhead',
   };
-  return { schemaVersion: 1, sourceCommit: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).trim(),
+  return { schemaVersion: 2, sourceCommit: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).trim(),
     sourceDirty: Boolean(execFileSync('git', ['status', '--porcelain'], { cwd: ROOT, encoding: 'utf8' }).trim()),
     sourceInputSha256: Object.fromEntries(files.map(name => [name, createHash('sha256').update(inputs[name]).digest('hex')])),
     model, grids: [160, 192, 224, 256, 320].map(side => gridCosts(side, model)),
