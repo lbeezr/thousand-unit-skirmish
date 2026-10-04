@@ -31,6 +31,56 @@ function arrive(r, u, limit = 1800) {
   assert.fail('fractional endpoint did not arrive');
 }
 
+for (const team of [0, 1]) for (const queued of [false, true]) for (const restore of [false, true])
+test(`seat ${team}: crowded fractional corner ${queued ? 'queued' : 'ordinary'} arrival stays legal ${restore ? 'with pending repair recovery' : 'through repair'}`, async () => {
+  const scene = { ...map, obstacles: [{ column: 31, row: 24, width: 1, height: 1, material: 'stone' }] };
+  const f = await createPathingReplayFixture(scene), r = f.replay;
+  try {
+    quiet(r);
+    let [u, ...parked] = r.units.filter(u => u.team === team && u.kind === 'infantry');
+    const id = u.id, parkedIds = parked.map(u => u.id);
+    const positions = [[.8575186714436859, .39964494945621115],
+      [.06577922105789186, .24368512597866354], [.18835976794362064, .23038947279565025],
+      [.47737181931734085, .742100709164515]];
+    for (const [i, actor] of [u, ...parked].entries()) {
+      r.order(team, { type: 'stop', ids: [actor.id], unitGenerations: [actor.generation] });
+      Object.assign(actor, { x: positions[i][0], z: positions[i][1] });
+    }
+    r.step(); move(r, u, .001, .001);
+    assert.deepEqual(u.path, [1568]);
+    if (queued) move(r, u, 5.23, 4.71, true);
+    const initialRevision = u.orderRevision;
+    let sawRepair = false, finished = false, recovered = false;
+    for (let tick = 0; tick < 1800 && !finished; tick++) {
+      const before = { x: u.x, z: u.z, cell: r.cell(u.x, u.z) }, hp = u.hp;
+      r.step();
+      assert.ok(canTraverseUnitStep(before.cell, r.cell(u.x, u.z), map.width, r.levels, r.isWalkable),
+        `actual terminal step ${JSON.stringify(before)} -> (${u.x},${u.z})`);
+      assert.equal(u.hp, hp);
+      if (u.orderRevision > initialRevision && u.moveGoalPoint.requestedX === .001) {
+        sawRepair = true;
+        assert.deepEqual([u.moveGoalPoint.requestedX, u.moveGoalPoint.requestedZ], [.001, .001]);
+        if (queued) assert.deepEqual([u.queuedWaypoints[0].point.requestedX, u.queuedWaypoints[0].point.requestedZ], [5.23, 4.71]);
+        if (restore && !recovered && u.movePlanningPending) {
+          const saved = r.checkpoint(); assert.ok(r.validate(saved)); r.restore(saved);
+          u = r.units[id]; parked = parkedIds.map(id => r.units[id]); recovered = true;
+          assert.deepEqual([u.moveGoalPoint.requestedX, u.moveGoalPoint.requestedZ], [.001, .001]);
+        }
+      }
+      if (queued ? !u.queuedWaypoints.length : !u.movePlanningPending && u.pathIndex === u.path.length) {
+        finished = true;
+        assert.deepEqual([u.x, u.z], [.001, .001], 'repair must finish the point before completion or queue handoff');
+      }
+    }
+    assert.ok(sawRepair, 'the unsafe terminal step enters the existing route repair');
+    assert.ok(finished, 'refusing the snap cannot strand the order');
+    if (restore) assert.ok(recovered, 'capture witnesses the pending repair');
+    if (queued) { arrive(r, u); assert.deepEqual([u.x, u.z], [5.23, 4.71]); }
+    for (const [i, actor] of parked.entries())
+      assert.deepEqual([actor.x, actor.z], positions[i + 1], 'parked Infantry remain fixed');
+  } finally { await f.dispose(); }
+});
+
 for (const team of [0, 1]) for (const kind of ['worker', 'infantry'])
   test(`seat ${team} ${kind}: exact fractional Move and same-cell approach execute real commands`, async () => {
     const f = await createPathingReplayFixture(map), r = f.replay;

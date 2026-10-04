@@ -8308,7 +8308,11 @@ function simulateTick() {
         dirty = true;
         continue;
       }
-      if (!isWalkable(worldToCell(move.target.x, move.target.z))) {
+      // Crowd deflection can change the final approach cell. A short terminal
+      // snap must obey the same corner/elevation guard as every other step.
+      if (!isWalkable(worldToCell(move.target.x, move.target.z))
+        || (move.reachedWaypoint && !canTraverseUnitStep(worldToCell(unit.x, unit.z),
+          worldToCell(move.target.x, move.target.z), MAP_WIDTH, elevationLevelByCell, isWalkable))) {
         if (unit.attackTargetId >= 0 || unit.attackBuildingTargetId >= 0) {
           unit.path = [];
           unit.pathIndex = 0;

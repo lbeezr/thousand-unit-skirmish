@@ -18,6 +18,9 @@ pre-`simulateTick` call in `runSimulationTick` for the bounded tick-budget
 experiment. Broader command-intake integration still needs its shared contract.
 Water commands remain with the Skiff owner; art, rendering and map rules remain
 with their respective lanes.
+U3's corrective review owns only the terminal-step guard before
+`simulateTick`'s `reachedWaypoint` assignment; it reuses existing route repair
+and combat invalidation without changing acquisition, range or damage policy.
 The parent allocated only `snapshotUnits`' base-row literal for the measured
 allocation experiment; its private fields, filters and visibility contract stay
 unchanged.
@@ -142,6 +145,17 @@ inside that cell; original route cost/length and shared arrays remain intact.
 Entering the destination cell alone cannot dequeue the next ordinary point.
 The existing land step guard still checks actual terrain/corner crossings;
 this slice does not establish swept physical clearance.
+
+Independent U3 review exposed a terminal branch that snapped to a nearby point
+without that guard after crowd deflection. On both seats, three parked Infantry
+beside a stone corner let the mover legally reach cell1503, then illegally snap
+to fractional point `(0.001,0.001)` in cell1568 past blocked side1567. The
+retained regression fails at the exact reviewed coordinates before correction.
+Terminal snaps now use the shared step guard and existing blocked-route repair;
+the point/queue remains pending until a legal final approach completes. Both-seat
+ordinary/queued cases also restore during the pending repair, reach exact points
+within the finite deadline and leave parked actors fixed. Re-review of this
+correction remains required before merging U3.
 
 The [endpoint correction storyboard](qa-evidence/fractional-move-endpoints-2026-10-04/endpoint-storyboard.svg)
 shows click, safe approach, exact arrival and queue handoff. It reuses the current
