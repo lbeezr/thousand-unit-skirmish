@@ -51,6 +51,21 @@ with 12 drawn total. Out-of-area and other-type stocks stay six. Source hashes
 remain frozen; native/package results and exact review/merge evidence are retained
 in the incremental PR after execution, without implying staged observations.
 
+Clean source `4fda0775721eded0645a081bed18116943ba7f5f` passes 104 focused
+authority/intent/cargo/receipt/profile/CI checks, both type boundaries, import
+audit and documentation checks (607 files, 4,338 links). Real native recovery
+freezes 187 inputs: Food uses fresh checkpoint 6→7 and stays at 106/106,
+12 drawn total, successor stock six; Stone uses 5→6 and finishes at 12/12,
+24 drawn total, successor stock zero. Cargo and final intent are empty. Other-type
+and distant stocks remain six. These are local source observations.
+
+The clean runtime package contains the changed server and both gather/intent
+modules with exact source bytes; its digest is
+`sha256:270aa04ba2ce57094b175bca85e57d53ffb52ad3d5b9092f8df3dd288647d28b`.
+Raw reports, logs and hashes are retained in the implementation owner's local
+evidence record and [PR #305](https://github.com/lbeezr/thousand-unit-skirmish/pull/305).
+This source/package identity is separate from a served release.
+
 ## Source, release and gameplay acceptance
 
 The economy/content implementation owner retains review, normal merge and exact

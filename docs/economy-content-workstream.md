@@ -31,7 +31,8 @@ with its separate owner and consumes the merged intent boundary.
 
 The merged [Food/Stone audit](qa-food-stone-continuation-audit-2026-10-04.md)
 records the source-only baseline separately from healthy manual/cargo behavior.
-The next bounded Stone slice explicitly extends the existing intent to finite
+Stone continuation [PR #305](https://github.com/lbeezr/thousand-unit-skirmish/pull/305)
+explicitly extends the existing intent to finite
 Stone nodes within the original eight-unit circle, with visibility, reachability,
 typed cargo, manual/queued priority and cold recovery. [Stone continuation QA](qa-stone-job-continuation-2026-10-04.md)
 retains source evidence and acceptance. Staging `53a47ee` lacks both the merged
