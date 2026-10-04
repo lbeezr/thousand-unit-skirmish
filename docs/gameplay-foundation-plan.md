@@ -537,7 +537,7 @@ second queue. Owner IDs retain existing task lanes.
 | --- | --- | --- | --- |
 | B0 — narrow correction implemented here | Visible-body Farm Gather; truthful utility selection and six-tech completion. `src/main.js`, one server notice, existing Farm/HUD/research/audio tests and owning guides only. | Action/production owner (this task); preserves Resource routes, Forest work, Universal movement. Retains exact-head independent review, clean pack and authorized integration. | Both-seat pre-fix controls fail with Move/+0. Corrected actual Three picking/serialization and DOM role checks pass. All six actual completion handlers set flags/preserve audio without false damage promises. Exact-head/native/package results belong in the PR; no pixels inferred. |
 | B1 — next ordinary acceptance | Paid Farm build/gather/clear/replant from normal Tiny entry; execute each producer's real queue/research choice through proposed progression. Existing native scenarios plus one separately owned ordinary-capture adapter; no shared renderer rewrite. | Action/production retains completion; HUD01a101f7-35be owns novice capture. [PR323](https://github.com/lbeezr/thousand-unit-skirmish/pull/323) supplies qualified packed renderer; [ordinary adapter PR331](https://github.com/lbeezr/thousand-unit-skirmish/pull/331) supplies execution after integration. Resource01a101f7-5683 retains route acceptance. | Frozen reviewed source/clean digest, actual normal entry, screenshot plus button/target/state and bank/crop/cargo assertions, no injected bank/stock. Both seats for ownership; cold recovery; fresh-player Farm/Mill explanation. Qualification alone cannot close this feature. |
-| B2 — compact role/effect explanations, proposed | Existing producer summaries explain secondary capacity/depot and each research effect/unlock; exact Workshop prerequisite; no queue-loss text for queue-less utility destruction. Existing text/buttons/notices only. | Action/production + HUD; B0/B1 observations justify confusion fixes; no new tech/assets/architecture. | Correct descriptions for thirteen roles/six technologies; inspectable locks, shortages, active project/exhaustion; focus retained; normal narrow HUD acceptance via qualified workflow. |
+| B2 — compact role/effect explanations, partly implemented | Food Tools prices/effect are explained; the research-only Mill's existing progress and Details controls are now exposed independently of rally/unit production. Remaining: secondary producer capacity/depot summaries, exact Workshop prerequisite, and no queue-loss text for queue-less utility destruction. Existing text/buttons/notices only. | Action/production + HUD; reproduced both-seat hidden Mill progress at `968c7bdd` justifies the bounded correction below; further confusion fixes follow B0/B1 observations. No new tech/assets/architecture. | Thirteen-building capability checks, inspectable locks, shortages, active project/completion/cancellation and retained focus. Exact review/default evidence belongs in the correction PR; normal narrow HUD acceptance remains B1. |
 | B3 — progression/balance observation, proposed | Paired Tiny openings compare neutral food versus Farm, Mill/Storehouse trips and one Tier II siege decision; record spend/deposits/labor/travel/exhaustion/losses/player alternatives. Retain tuning absent evidence. | Action/production + Maps; B1, [paired Farm measurement](qa-paired-farm-food-2026-10-04.md) and paid AI Farm tests. | Contested/recovery records distinguish conservation/usefulness from timing/balance. Current AI already plants/replants one bounded starvation Farm; no broad farm optimization is silently added. |
 | B4 — farmhouse/regrowth decision, deferred proposal | Decide only if B1/B3 expose need; settle plot lifecycle/parent-child contract before any new registered action. One paid recoverable plot cycle first. | Product decision + Action/production; Building owns any resulting brief; depends on observed use. | Small written contract and executable paid acceptance precede a button. No automatic economic tier, giant tech tree, paid generation, gold/copper ledger or new service follows. |
 
@@ -606,3 +606,42 @@ Implementation and scoped evidence are retained in
 review, default release and deployment status are recorded separately there;
 the proposed HUD/movement boundaries above are not a claim of direct owner
 agreement or ordinary-game rendered acceptance.
+
+### Research-only Mill details correction — 4 October 2026
+
+After Food Tools, the registry audit found no missing implemented product or
+technology consumer. A real selection/actual-DOM check at main `968c7bdd`
+instead reproduced an existing-action wiring gap in both seats: Mill exposes
+the paid research button, but the compact research readout and Details opener
+are hidden because the building has no unit products. Orders also hides its
+research details behind rally capability. The existing cancellation button is
+reachable; research purchasing and its persistent effect already work.
+
+The correction derives research capability from the technology registry
+independently of production/rally. Selecting Mill exposes the existing research
+progress/completion readout and a “Research details” opener, with the rally row
+hidden. Other buildings expose only their actual rally/research capabilities;
+Dock retains Skiff production without a dead details entry. Existing actions,
+prices, ownership, queues, refunds, worker grants, content pins and checkpoints
+are unchanged. Action/production owns `src/main.js`, the existing DOM/consumer
+regressions and this canonical plan. The exact HUD boundary is recorded on
+[active HUD PR387](https://github.com/lbeezr/thousand-unit-skirmish/pull/387#issuecomment-5984725249);
+owner confirmation and independent review are separate from the proposal.
+Current movement PR385 changes no part of this client-only contract.
+
+Backing reuses the existing compact HUD contract, Food symbol, Food Tools
+description and Orders/Details controls. State storyboard: select completed
+Mill → inspect price/time/effect → purchase → see progress/remaining time →
+cancel with existing proportional refund or observe completion. Escape/Close
+returns to the same Details control. This corrects discoverability of an
+existing economic choice; it introduces no new research or visual assets.
+
+Both-seat real selection/snapshot tests cover visible compact/drawer progress,
+available/active/cancelled/completed/unfinished/opponent states, exact command
+target and focus. Fixed expectations for all thirteen buildings protect producer
+and utility boundaries. Source checks are separate from normal Tiny screenshots
+and narrow-layout acceptance, still owned under B1 with HUD novice capture and
+the existing qualified workflow. Exact-head review, clean package, default
+integration and identified deployment remain recorded in the slice PR. Further
+progression design depends on B1/B3 observations; no additional economy
+technology or farmhouse action is justified by this source audit alone.
