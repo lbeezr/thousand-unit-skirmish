@@ -12,6 +12,7 @@ import { applyUnitStances } from '../src/combat-stance-ui.mjs';
 import * as THREE from 'three';
 import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.mjs';
 import { readWorkerPerformingAction } from '../src/worker-work-presentation.mjs';
+import { fixedMatchArmySize } from '../src/match-mode-controls.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const declaration = (name, next) => source.slice(source.indexOf(`function ${name}(`), source.indexOf(`\nfunction ${next}(`));
@@ -43,7 +44,7 @@ function fixture(team) {
     close() {}
   }
   const noop = () => {};
-  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), readWorkerPerformingAction, applyUnitStances, UNIT_DEFINITIONS,
+  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), readWorkerPerformingAction, applyUnitStances, UNIT_DEFINITIONS, fixedMatchArmySize,
     applyLobby() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {}, updateChat() {} },
     waterStudyFishBinding: { update(state, options) { fishUpdates.push({ state, options }); }, clear() {} },
     WebSocket, URL, performance: {now: () => 1000}, location: {protocol:'http:',host:'localhost'},
@@ -78,6 +79,7 @@ function fixture(team) {
     zoom:1.7,defaultCameraZoom:0.91,cameraMinZoom:0.1,mapFitActive:false,resize:noop,centerCameraOnHomeBase:noop,
   });
   vm.runInContext([
+    declaration('updateMatchArmySizeControls','applyLobby'),
     wildlifeClientFunctionSource(source), declaration('clearActiveControlGroup','assignControlGroup'),
     declaration('syncMatchResultActions','updateMatchResult'),declaration('updateMatchResult','updateCommandUI'),
     declaration('setArmySize','updateSelectionUI'),declaration('appendUnitFromState','applyState'),

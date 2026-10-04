@@ -1,4 +1,4 @@
-import { createPveRoomUrl, mountPveEntry } from './pve-entry.mjs';
+import { createPveRoomUrl, mountPveEntry, pveEntryCapability } from './pve-entry.mjs';
 import { createNavigationSettings } from './navigation-settings.mjs';
 import { readAudioSettings } from './audio.mjs';
 import { createPracticeEntryControls } from './practice-entry-controls.mjs';
@@ -22,6 +22,7 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
   const creationButtons = [...root.querySelectorAll('[data-create-game]')];
   const practiceControls = createPracticeEntryControls({ root: root.querySelector('#practice-mode-setup'), onChange: controls });
   let practiceSetup = null;
+  let pve = pveEntryCapability(null);
   const join = root.querySelector('#menu-join');
   const joinDialog = doc.querySelector('#menu-join-dialog');
   const settingsDialog = doc.querySelector('#menu-settings-dialog');
@@ -32,6 +33,10 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
   let navigation = createNavigationSettings(localStorage);
   function controls() {
     for (const button of [...creationButtons, join]) button.disabled = busy || !enabled;
+    const newGame = root.querySelector('#menu-new-game');
+    newGame.disabled ||= !pve.available;
+    newGame.querySelector('span').textContent = pve.reason || pve.description;
+    newGame.title = pve.reason || pve.description;
     practiceControls.update(practiceSetup, enabled, busy);
     root.querySelector('#menu-practice').disabled ||= !practiceControls.supported;
     root.querySelector('#menu-practice span').textContent = practiceControls.selectedLabel
@@ -63,7 +68,10 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
       requireEntryAuthentication(response);
       const service = response.ok ? await response.json() : null;
       nextEnabled = service?.enabled === true;
-      if (revision === checkRevision) practiceSetup = service?.practiceSetup || null;
+      if (revision === checkRevision) {
+        practiceSetup = service?.practiceSetup || null;
+        pve = pveEntryCapability(service?.ordinarySetup?.pve, practiceSetup);
+      }
     } catch (error) {
       if (error.status === 401) { authenticationRequired = true; failure = error.message; }
     }
@@ -81,7 +89,8 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
     }
   }
   async function create(mode) {
-    if (busy || !enabled || (mode === 'practice' && !practiceControls.supported)) return;
+    if (busy || !enabled || (mode === 'pve' && !pve.available)
+      || (mode === 'practice' && !practiceControls.supported)) return;
     const intent = ++intentRevision;
     const focused = root.contains(doc.activeElement) ? doc.activeElement : null;
     busy = true; controls(); message('Creating a fresh room…');
@@ -166,7 +175,8 @@ export async function bootGameEntry({ win = window, fetchImpl = (...args) => win
   win.addEventListener('pageshow', event => { if (event.persisted) void refresh(); });
   win.markPrototypeReady?.();
   await refresh();
-  if (doc.activeElement === doc.body) root.querySelector(enabled ? '#menu-new-game' : '#menu-settings').focus();
+  if (doc.activeElement === doc.body) (creationButtons.find(button => !button.disabled)
+    || root.querySelector('#menu-settings')).focus();
   return { refresh };
 }
 

@@ -48,6 +48,7 @@ try {
   assert.deepEqual(root.welcome.maps.map(map => [map.id, map.width, map.height, map.sizeTierId]).sort(), [
     ['bannerfall-arena', 160, 160, 'tiny'],
     ['frontier-160', 160, 160, 'tiny'],
+    ['siltmouths-confluence-grounds', 160, 160, 'tiny'],
     ['veyrholds-terraced-vale', 160, 160, 'tiny'],
     ['veyrholds-threefold-basin', 192, 192, 'small'],
     ['woodland-expanse', 160, 160, 'tiny'],
@@ -58,7 +59,12 @@ try {
   assert.deepEqual(small.matchModes.map(mode => [mode.id, mode.version]), [['authored', 1], ['skirmish', 1]],
     'Small exposes only its actual authored and registered human Skirmish rules');
   assert.equal(root.latest.scenarioClockStarted, false);
-  records.push({ name: 'Unconfigured root and fresh status use Tiny Skirmish; only actual Tiny/Bannerfall/Small maps are ordinary choices; XL remains unavailable' });
+  const confluence = root.welcome.maps.find(map => map.id === 'siltmouths-confluence-grounds');
+  assert.equal(confluence.ordinarySelectable, true);
+  assert.equal(confluence.supportedUnitCapacity, null);
+  assert.deepEqual(confluence.matchModes.map(mode => [mode.id, mode.version]), [['authored', 1]],
+    'Confluence offers its admitted authored rules without inventing Skirmish or AI support');
+  records.push({ name: 'Unconfigured root and fresh status use Tiny Skirmish; all six admitted maps meet the ordinary floor; XL remains unavailable' });
 
   const created = await create({ mode: 'pvp', pregame: true });
   assert.deepEqual(created.launchOptions, { mode: 'pvp', pregame: true, ...NORMAL_HUMAN_MATCH_MODE });
@@ -98,6 +104,13 @@ try {
   assert.equal(practice.welcome.map.id, NORMAL_MATCH_MAP_ID);
   assert.deepEqual(mode(practice.welcome), authored);
   assert.ok(ordinary(practice.welcome.maps).every(row => row.width >= 160 && row.height >= 160));
+  const confluenceChange = await exchange(practice, { type: 'selectMap', mapId: confluence.id },
+    row => row.type === 'mapChange' && row.map.id === confluence.id);
+  assert.deepEqual(mode(confluenceChange), authored);
+  assert.deepEqual([confluenceChange.map.width, confluenceChange.map.height, confluenceChange.state.armySize], [160, 160, 24]);
+  assert.equal(confluenceChange.state.practice, true);
+  assert.equal(confluenceChange.state.connected, 1);
+  records.push({ name: 'Ordinary Authored Practice selects admitted Confluence Grounds with its exact Tiny dimensions and 24-unit opening' });
   for (const id of ['shore-fishing', 'stone-defense-field']) {
     const row = practice.welcome.maps.find(row => row.id === id);
     assert.ok(row && row.internalFixture && row.selectable && !row.ordinarySelectable);
