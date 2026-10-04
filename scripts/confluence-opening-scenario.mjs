@@ -41,6 +41,7 @@ const checkpoint = (room, pred = () => true) => room.f.checkpoint(pred, room.che
 const stock = (s, id) => s.state.resourceNodes.find(n => n.id === id);
 function record(stage, s, extra = {}) {
   records.push({ stage, tick: s.state.tickNumber, matchId: s.matchId, mapHash: s.mapHash,
+    exploredSha256: s.state.explored.map(cells => sha(Buffer.from(cells, 'base64'))),
     banks: { food: s.state.teamFood, wood: s.state.teamWood, stone: s.state.teamStone },
     resources: s.state.resourceNodes.map(({ id, type, stock, x, z }) => ({ id, type, stock, x, z })),
     buildings: s.state.buildings.map(({ id, team, type, complete, x, z, footprint }) => ({ id, team, type, complete, x, z, footprint })),
@@ -91,14 +92,23 @@ async function recover(room) {
   const f = await make(createFortifiedFixture);
   await cp(path.join(room.f.directory, 'rooms'), path.join(f.directory, 'rooms'), { recursive: true });
   const next = { ...room, f, origin: `http://127.0.0.1:${f.port}`, clients: [], checkpointPath: path.join(f.directory, 'rooms', 'rooms', room.roomId, 'match-state.json') };
-  await f.start(); const response = await fetch(`${next.origin}/health?room=${room.roomId}`); assert.equal(response.status, 200);
+  await f.start();
+  // Supervisor health always starts its default room. The public session probe
+  // starts this saved invite worker without connecting a peer or advancing play.
+  const response = await fetch(`${next.origin}/api/session?room=${room.roomId}`,
+    { headers: { 'x-rts-resume-token': room.tokens[0] } });
+  assert.equal(response.status, 200); assert.equal((await response.json()).valid, true);
   return next;
 }
 function preserved(before, after) {
   assert.equal(after.matchId, before.matchId); assert.equal(after.mapHash, before.mapHash);
   assert.deepEqual(after.mapDefinition, before.mapDefinition);
-  for (const field of ['teamFood', 'teamWood', 'teamStone', 'resourceNodes', 'buildings', 'units', 'exploredCells'])
-    if (Object.hasOwn(before.state, field)) assert.deepEqual(after.state[field], before.state[field], `paused cold ${field}`);
+  const sessions = snapshot => snapshot.sessions.map(({ id, team, tokenHash }) => ({ id, team, tokenHash }));
+  assert.deepEqual(sessions(after), sessions(before), 'paused cold session identities');
+  for (const field of ['teamFood', 'teamWood', 'teamStone', 'resourceNodes', 'buildings', 'units', 'explored']) {
+    assert.ok(Object.hasOwn(before.state, field), `saved ${field} exists`);
+    assert.deepEqual(after.state[field], before.state[field], `paused cold ${field}`);
+  }
 }
 async function connect(room) {
   room.clients = [await room.f.connect(0, room.tokens[0], room.roomId), await room.f.connect(1, room.tokens[1], room.roomId)];
@@ -106,12 +116,14 @@ async function connect(room) {
   assert.deepEqual(room.clients.map(c => c.welcome.player.sessionToken), room.tokens);
 }
 async function resetProof(room, before, lobby) {
-  const after = room.clients[0].messages.length;
-  const change = room.clients[0].wait(m => m.type === 'mapChange' && m.map.id === map.id, 'explicit reset adopts corrected canonical geometry', after);
-  room.clients[0].send({ type: 'reset' }); const message = await change;
-  assert.equal(mapHash(message.map), correctedHash);
+  const changes = room.clients.map(c => c.wait(m => m.type === 'mapChange' && m.map.id === map.id,
+    'explicit reset adopts corrected canonical geometry on each peer', c.messages.length));
+  room.clients[0].send({ type: 'reset' }); const messages = await Promise.all(changes);
+  for (const message of messages) assert.equal(mapHash(message.map), correctedHash);
   const reset = await checkpoint(room, s => s.mapHash === correctedHash && s.state.buildings.length === 0 && s.state.units.length === before.state.currentArmySize);
   assert.equal(reset.matchId, before.matchId); assert.equal(reset.matchModeId, 'authored'); assert.equal(reset.matchModeVersion, 1);
+  const sessions = snapshot => snapshot.sessions.map(({ id, team, tokenHash }) => ({ id, team, tokenHash }));
+  assert.deepEqual(sessions(reset), sessions(before), 'explicit reset retains session identities');
   assert.deepEqual(reset.state.teamFood, [150, 150]); assert.deepEqual(reset.state.teamWood, [250, 250]); assert.deepEqual(reset.state.teamStone, [0, 0]);
   for (const n of map.resourceNodes) assert.equal(stock(reset, n.id).stock, n.stock);
   for (const n of map.resourceNodes.filter(n => /^s[01]-(berries|timber)$/.test(n.id))) {
@@ -119,7 +131,8 @@ async function resetProof(room, before, lobby) {
   }
   assert.ok(room.clients.every((c, team) => c.latest.resourceNodes.some(n => n.id === `s${team}-timber` && n.stock === 500)));
   if (lobby) assert.equal(reset.state.pregame.phase, 'lobby');
-  record(lobby ? 'human-lobby-explicit-reset' : 'practice-explicit-reset', reset, { sameSessionTokens: true, mapChangeReceived: true });
+  record(lobby ? 'human-lobby-explicit-reset' : 'practice-explicit-reset', reset,
+    { sameSessionTokens: true, mapChangeReceivedByTeams: [0, 1] });
   return reset;
 }
 try {

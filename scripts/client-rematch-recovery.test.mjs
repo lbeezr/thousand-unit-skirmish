@@ -317,6 +317,28 @@ for (const team of [0, 1]) {
 }
 
 for (const team of [0, 1]) {
+  test(`seat ${team}: same-ID map-change moves static resource construction exclusion`, () => {
+    const f = resourceFixture(team), connection = f.connections[0];
+    const timber = { id: 'relocated-timber', type: 'wood', stock: 100, x: -.5, z: -.5 };
+    const definition = { ...f.definition, resourceNodes: [timber] };
+    let point = timber, rebuilt;
+    Object.assign(f.context, { mapDefinition: definition, worldAt: () => point,
+      cameraTarget: { set() {} }, buildMap(next) { rebuilt = next; } });
+    connection.message(f.packet({ resourceNodes: [{ id: timber.id, type: timber.type, stock: 100 }] }));
+    assert.equal(f.context.buildPlacementAt(0, 0).blockedReason, 'RESOURCE IN THIS SITE');
+    point = { x: 4.5, z: 4.5 };
+    assert.equal(f.context.buildPlacementAt(0, 0).valid, true);
+    const corrected = { ...definition, resourceNodes: [{ ...timber, ...point }] };
+    // Static resource coordinates are absent from ordinary authoritative rows.
+    connection.message({ type: 'mapChange', map: corrected, maps: [],
+      state: f.packet({ matchElapsedSeconds: 0, tick: 0,
+        resourceNodes: [{ id: timber.id, type: timber.type, stock: 100 }] }) });
+    assert.equal(rebuilt.id, definition.id, 'same ID still reaches the map rebuild hook');
+    assert.equal(f.context.buildPlacementAt(0, 0).blockedReason, 'RESOURCE IN THIS SITE');
+    point = timber;
+    assert.equal(f.context.buildPlacementAt(0, 0).valid, true, 'old static coordinate no longer reserves the site');
+  });
+
   test(`seat ${team} hidden rematch resource restores construction exclusion on its reset epoch`, () => {
     const f = resourceFixture(team), connection = f.connections[0];
     connection.message(f.packet({ resourceNodes: [] }));
