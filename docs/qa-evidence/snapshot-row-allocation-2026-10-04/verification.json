@@ -57,21 +57,36 @@
       "markdownFiles": 564,
       "localLinks": 3871
     },
-    "syntaxAndWhitespace": true
+    "syntaxAndWhitespace": {
+      "syntax": true,
+      "whitespace": true,
+      "command": "git diff --check origin/main...HEAD -- . :!scripts/fixtures/snapshot-units-b4641998.txt",
+      "exception": "Full PR diff warns of one new blank line at EOF in scripts/fixtures/snapshot-units-b4641998.txt:47. Its exact frozen separator newline and SHA256 are intentionally preserved."
+    }
   },
   "independentReview": {
     "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
     "sourceFindings": 0,
     "analysisDraftFindings": 0,
     "analysisHardening": "Bind baseline/candidate function hashes, 50 warmups, three views and 65536 sampling settings.",
-    "finalArchivedEvidence": "Pending final independent arithmetic/hash review; exact review head will be recorded in PR #259."
+    "finalArchivedEvidence": {
+      "head": "6a32ecbcb10af3e7e258372bc25e58ec65582c3b",
+      "findings": 0,
+      "summaryReproducedExactly": true,
+      "all18RawAndProbeHashes": true,
+      "completeWholeTicks": 11160,
+      "focusedTests": 89,
+      "docsImportsSyntax": true,
+      "qualification": "Nonblocking whitespace exception documented without changing the oracle bytes."
+    }
   },
   "integration": {
     "pr": "https://github.com/lbeezr/thousand-unit-skirmish/pull/259",
     "currentMainMerge": "clean",
     "release": "Pending source-qualified local packaging after commit",
     "normalMerge": "Pending",
-    "postmerge": "Pending"
+    "postmerge": "Pending",
+    "receiptScope": "Premerge verification at the recorded source. PR #259 records the later exact normal merge, local release and postmerge smoke receipts."
   },
   "remaining": {
     "deployedRevision": "Unverified",

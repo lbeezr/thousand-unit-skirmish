@@ -165,6 +165,13 @@ main `c347a774` merges cleanly at `aff7b161`; its production server is identical
 to the frozen baseline, so the only server difference remains this literal.
 Integrated checks and final measurement review are recorded in
 [verification](qa-evidence/snapshot-row-allocation-2026-10-04/verification.json).
+Final independent review at `6a32ecbc` reproduces the summary exactly and verifies
+all eighteen raw/probe hashes, source identities, tick sequences, allocation
+and timing/window arithmetic. Its 89 focused tests, docs/imports/syntax checks
+pass. The full PR whitespace check reports one intentional trailing blank line
+in the frozen oracle; excluding that exact-byte fixture passes. Preserve its
+separator newline and hash. [PR #259](https://github.com/lbeezr/thousand-unit-skirmish/pull/259)
+records the subsequent exact merge, release and postmerge receipts.
 
 Source merge does not identify the revision serving the user's environment.
 Actual deployed revision and rendered workload acceptance remain open, owned
