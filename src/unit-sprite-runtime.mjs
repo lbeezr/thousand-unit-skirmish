@@ -57,7 +57,7 @@ export function spriteDirectory(role, version) {
     worker: ['v1', 'v2', 'v3'],
     infantry: ['v1', 'v2', 'v3', 'v4'],
     archer: ['v1', 'v2', 'v3'],
-    spearman: ['v1'],
+    spearman: ['v1', 'v2'],
     scout: ['v1'],
     rider: ['v1'],
     'siege-engine': ['v1'],

@@ -49,7 +49,7 @@ Current runtime defaults:
 - Normal matches bind team zero to the seven-role Human roster and team one to
   the seven-role Boughward roster through `src/unit-sprite-runtime.mjs`.
   Human Worker uses `cast-human-sprite-v3`, Infantry `infantry-sprite-v4`,
-  Spearman `spearman-sprite-v1`, Archer `archer-sprite-v3`, and Scout/Rider/Siege
+  Spearman `spearman-sprite-v2`, Archer `archer-sprite-v3`, and Scout/Rider/Siege
   Engine their v1 packs. Boughward uses `boughward-<role>-sprite-v1` throughout.
   Required actions resolve at all eight headings with approximate authored-action
   reuse. This is first-pass coverage; directional motion, ground/scale review and
@@ -57,6 +57,9 @@ Current runtime defaults:
   Infantry/Archer's [registered public legacy slices](human-foot-unit-coverage.md) supply
   eight actual views, two-key walk/attack and an idle-to-terminal defeat transition;
   its containing deployment and ordinary-game acceptance remain open.
+  Spearman's no-charge public-model bake supplies four stride, three thrust and
+  four fall keys per heading; its coarse appearance and native acceptance remain
+  qualified in the same workstream. No paid rigging or private source is used.
 - `?humanRosterPreview=0` restores the older mixed-cast Worker lane; explicit
   legacy preview flags retain their comparison paths. See the
   [Human](art-direction/human-roster-v1/README.md) and

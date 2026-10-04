@@ -400,7 +400,7 @@ try {
   }
   for (const [role, version, atlasName = role] of [
     ['worker', 'v1'], ['worker', 'v2'], ['worker', 'v3'],
-    ['infantry', 'v1'], ['infantry', 'v2'], ['infantry', 'v4'], ['archer', 'v1'], ['archer', 'v3'],
+    ['infantry', 'v1'], ['infantry', 'v2'], ['infantry', 'v4'], ['archer', 'v1'], ['archer', 'v3'], ['spearman', 'v2'],
     ['human', 'v1', 'cast'], ['elf', 'v1', 'cast'], ['troll', 'v1', 'cast'], ['orc', 'v1', 'cast'],
   ]) {
     const directory = `assets/units/${atlasName === "cast" ? "cast-" : ""}${role}-sprite-${version}`;

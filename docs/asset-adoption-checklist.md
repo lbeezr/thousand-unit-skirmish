@@ -61,6 +61,13 @@ are author-owned checks; independent review, containing deployment and ordinary
 in-game observation remain incomplete. Parent Railway/Mac routes support those
 steps, and the art owner retains acceptance. No paid or private-source work.
 
+Spearman v2 adds 96 local CPU renders from 12 newly authored rigid poses using the
+public Frontier humanoid/spear geometry and palette. It supplies genuine eight-view
+idle/stride/thrust/fall clips with zero provider charges; prior art and rejected
+captures remain. Exact default/server/Docker admission is included. Its coarse
+appearance, review, containing deployment and actual gameplay verification remain
+incomplete under the same owner and supporting Railway/Mac routes.
+
 Package paths are under `assets/` unless linked otherwise. Release inclusion
 comes from an actual clean `release:pack` at follow-up `1757064`: 1,113 files,
 digest `sha256:8fe4de1ee7c932004572d35990b484c75a1e9f78c4735451e83595f09d638642`.

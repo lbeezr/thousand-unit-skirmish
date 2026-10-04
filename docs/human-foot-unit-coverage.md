@@ -40,15 +40,70 @@ Across both slices: **96 unique reused poses, 0 newly authored poses**. The rema
 
 Read [PR225's shared loader contract](sprite-atlas-contract-v1.md#current-unit-loader-binding-subset) before further exports: role identity, one page/mask, canvas-local pivots/crop offsets, shared world scale and existing clip/state/event timing apply. These exports stay within that subset. The one-line Archer version addition is the only further helper edit for animation owner `01a103d4` to review. No new enum or multiple-heading lifetime ambiguity.
 
-## Ranked retained backlog after both source slices
+## Spearman slice — 4 October 2026
 
-1. **Infantry delivery/acceptance:** obtain independent review of PR228's exact refreshed candidate head, merge through repository rules, pack a clean source release, identify the containing staging revision, then run the ordinary recipe below. Art owner retains this outcome; parent-owned Railway/Mac routes support identified delivery/capture.
-2. **Archer integration/acceptance:** independent exact-head review of the stacked Archer slice, retarget onto refreshed main after PR228 merges, resolve conflicts, rerun proportionate checks, then own the same release/deployed/native steps through paid Range production. It is wired into default candidates and packaging, not an export-only packet. Native browser sandbox remains unavailable here.
-3. **Spearman source gap:** current public pack has only eight idle views and SE walk/attack/defeat. No equivalent directional legacy action source exists. Retain those real keys and 21 missing cells. Next useful input is seven headings of readable short walk/thrust/defeat sequences, supplied with public rights or explicitly authorized local authoring. Do not relabel its SE clip or borrow Infantry's round-shield costume as Spearman coverage. No paid rigging/new-generation charges or private-source pixels are authorized.
+There is no directional legacy Spearman sprite action pack, so the next ready
+no-charge path uses the already-public Frontier humanoid/spear geometry and its
+authored neutral palette. The Blender source is compressed in a newer format
+that installed Blender 4.3.2 cannot open; the portable GLB imports correctly and
+contains no skeleton/animation. The local bake authors separate rigid leg/arm
+stride poses, independent spear wind-up/thrust/recovery, and four backward-fall
+poses. A source-material COLOR_0/root-matrix probe and a clipped narrow-camera
+capture were rejected and retained before the full shared-envelope bake passed.
+The [Spearman v2 pack](../assets/units/spearman-sprite-v2/README.md) is deliberately
+coarse, with blocky anatomy and a different costume; functional motion and real
+directions are the goal. No original source was overwritten, no private pixels
+were used, and no provider/rigging/generation charges were incurred.
+
+Checks: 25 combined decoded-pixel/CPU scene/animation/clock tests, canonical
+manifest/file hashes, actual fixed-camera root projection and all-frame terrain
+depth clearance; every authored sequence has distinct image keys, all headings
+select their own clips, and every captured frame has a nonempty sash mask. The
+packed authenticated HTTP/WebSocket/MIME/atlas-hash/source-denial scenario, import
+boundaries, both strict type projects, docs and whitespace pass. Rejected-capture
+archives were verified byte-for-byte against per-file SHA256 records. These are
+local source/release checks; browser preflight remains sandbox-unavailable.
+
+Exactly **0 sprite frames reused, 12 pose samples newly authored, 96 directional
+frames newly rendered locally**. Public geometry/palette is reused. One fixed
+camera and geometric origin, shared scale and crop offsets serve all eight real
+rotations. Mask derives the source team sash; torso/helmet/weapon remain neutral.
+Walk 800, attack 880 and defeat 1,080 ms preserve the old Spearman lifetimes in
+every heading. The new default path and the exact three HTTP/Docker runtime files
+are included; no selector/state/stance/combat/Worker semantics change.
+
+| Coverage after each source/CPU slice | Infantry missing | Spearman missing | Archer missing | Total missing |
+| --- | ---: | ---: | ---: | ---: |
+| PR222 baseline | 21 | 21 | 21 | **63** |
+| Infantry PR228 | 0 | 21 | 21 | **42** |
+| Archer PR230 | 0 | 21 | 0 | **21** |
+| Spearman local-bake candidate | 0 | 0 | 0 | **0 source cells missing** |
+
+The final source candidate supplies every role's idle/walk/attack/defeat ×
+N/NE/E/SE/S/SW/W/NW. Across all three slices: **96 retained painted poses reused**
+plus **96 new local Spearman render frames**, from 12 authored pose samples.
+Rejected captures are not included in accepted-frame totals. The original 63
+deployed/native gaps remain **unverified** until a containing revision and actual
+game observations are recorded; decoded pixels/CPU playback do not establish GPU
+appearance. Shared contract PR225 remains unchanged except its current-default
+directory row, which now names these three default candidates.
+
+## Ranked retained backlog after all source slices
+
+1. **Infantry delivery/acceptance:** review PR228's exact refreshed diff, merge through repository rules, pack a clean source release, identify the containing staging revision, then run the ordinary recipe below. Art owner retains this outcome; parent-owned Railway/Mac routes support identified delivery/capture.
+2. **Archer integration/acceptance:** review the stacked Archer diff, retarget onto refreshed main after PR228 merges, resolve conflicts, rerun proportionate checks, then own the same release/deployed/native steps through paid Range production. It is wired into default candidates and packaging, not an export-only packet. Native browser sandbox remains unavailable here.
+3. **Spearman integration/acceptance:** review the local rigid poses, fixed camera/root and per-heading timing at the exact candidate head; retarget after the preceding PRs merge and verify clean release/containing staging/native use. Both-seat paid Barracks Spearman production and ordinary zoom must prove the coarse helmet/long-spear role, planted stride, thrust/recovery and terminal fall. Four real keys are a functional minimum; blocky finish is later work. Art owner retains this outcome with parent Railway/Mac support. No missing source cells remain after this candidate; no deployed/native closure is claimed.
 4. **Polish after function:** smoother loops, more defeat intermediates, costume/finish and team-mask refinement. Do not delay usable direction coverage for this work.
 
 ## Ordinary-game acceptance
 
-At a named served source/release SHA, enter Millrace or Terraced Vale through Create Room and normal map selection, without art query flags. Use both seats and normal paid Barracks Infantry production. For Human Infantry capture idle, move/Stop/resume, attack/fresh attack and lethal defeat along N/NE/E/SE/S/SW/W/NW. Verify the actual direction's keys advance, wind-up/strike ends at 850 ms, a new event restarts, terminal corpse clamps and fades, and selection clearing/fog/strategic LOD do not freeze state. Inspect planted roots and spear/shield readability at ordinary zoom; verify the gold-tunic costume and sash tint on the containing build. Include enemy views through disclosed fog. Save chronological clips with SHA, map, seat, action, heading and selected/unselected status.
+At a named served source/release SHA, enter Millrace or Terraced Vale through Create Room and normal map selection, without art query flags. Use both seats and normal paid Barracks Infantry/Spearman and Range Archer production. For each Human foot role capture idle, move/Stop/resume, attack/fresh attack and lethal defeat along N/NE/E/SE/S/SW/W/NW. Verify the actual direction's keys advance, Infantry's wind-up/strike ends at 850 ms, Spearman's thrust at 880 ms and Archer's draw/release at 1,000 ms; a new event restarts. Terminal corpse/fall clamps and fades; selection clearing/fog/strategic LOD must not freeze state. Inspect planted roots, weapon/role recognition and team sash at ordinary zoom, especially Spearman's coarse local geometry and ground-depth correction. Include enemy views through disclosed fog. Save chronological clips with SHA, map, seat, action, heading and selected/unselected status.
 
 A release/hash/CPU pass is a milestone. Review, deployed identity and actual in-game function remain incomplete until recorded here; there is no cosmetic approval gate.
+
+Current [repository integration rules](../AGENTS.md#integration) assign
+proportionate checks and merges to the implementation owner under standing
+staging authorization. No independent review has been recorded; it is not
+invented as a repository merge hold. Author diff/source review and exact-head
+release checks are recorded in each PR. Ordinary native acceptance remains open
+because this executor's browser preflight cannot start its sandbox.
