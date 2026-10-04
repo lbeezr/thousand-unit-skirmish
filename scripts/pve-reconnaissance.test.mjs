@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 import { createReconnaissancePolicy } from '../src/pve-reconnaissance.mjs';
 import { createDeterministicPolicy } from '../src/pve-opponent.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
+import { replayRememberedScoutRing } from './pve-recon-ring-case.mjs';
 
 function fixture(team = 0) {
   const x = team ? 20 : -20;
@@ -101,4 +103,75 @@ test('a lost home preserves the active retreat destination; replacement Scouts h
   const replacement = policy.next(state).commands[0];
   assert.deepEqual(replacement.unitGenerations, [scout.generation]);
   assert.notDeepEqual([replacement.x, replacement.z], [retreat.x, retreat.z], 'replacement cannot inherit the old retreat');
+});
+
+function rememberedRing(side) {
+  const state = fixture(); state.map = { width: side, height: side };
+  const mask = Buffer.alloc(side * side / 4, 0x55); // remembered, not currently visible
+  const revealUnknown = (x, z) => {
+    const cell = Math.floor(z + side / 2) * side + Math.floor(x + side / 2);
+    mask[cell >> 2] &= ~(3 << ((cell & 3) * 2));
+    state.visibility.data = mask.toString('base64');
+  };
+  state.visibility = { columns: side, rows: side, data: mask.toString('base64') };
+  state.objectives = [];
+  return { state, revealUnknown };
+}
+
+for (const side of [80, 160]) test(`${side}-cell internal/Tiny map preserves the qualified local-only Scout policy`, () => {
+  const { state, revealUnknown } = rememberedRing(side); revealUnknown(side / 2 - 3.5, side / 2 - 3.5);
+  const policy = createReconnaissancePolicy(42);
+  for (let tick = 0; tick <= 600; tick += 30) assert.deepEqual(policy.next({ ...state, tick }), { ids: [4], commands: [] });
+});
+
+test('larger-map Scout covers a distant unknown coarse cell after remembered-ring exhaustion', () => {
+  const { state, revealUnknown } = rememberedRing(224); revealUnknown(108.5, 108.5);
+  const policy = createReconnaissancePolicy(42), shadow = createReconnaissancePolicy(42);
+  let acquired = null;
+  for (let tick = 0; tick <= 390 && !acquired; tick += 30) {
+    const view = { ...state, tick }, result = policy.next(view);
+    assert.deepEqual(result, shadow.next(structuredClone(view)));
+    acquired = result.commands[0];
+  }
+  assert.ok(acquired, 'bounded cursor rotation cannot permanently idle beside remembered ground');
+  assert.deepEqual([acquired.x, acquired.z], [108.5, 108.5]);
+  assert.deepEqual(acquired.ids, [4]); assert.deepEqual(acquired.unitGenerations, [7]);
+});
+
+test('larger-map distant fallback avoids disclosed threats and leaves fully explored ground idle', () => {
+  const { state, revealUnknown } = rememberedRing(224);
+  assert.deepEqual(createReconnaissancePolicy(42).next(state), { ids: [4], commands: [] });
+  revealUnknown(108.5, 108.5);
+  state.units.visibleEnemies = [{ id: 20, team: 1, kind: 'infantry', hp: 100, x: 108.5, z: 108.5 }];
+  const policy = createReconnaissancePolicy(42);
+  for (let tick = 0; tick <= 390; tick += 30) assert.deepEqual(policy.next({ ...state, tick }), { ids: [4], commands: [] },
+    'the only unknown goal is within the disclosed threat exclusion');
+  state.units.visibleEnemies[0].x = state.units.friendly[0].x + 2;
+  state.units.visibleEnemies[0].z = state.units.friendly[0].z;
+  const retreat = policy.next({ ...state, tick: 420 }).commands[0];
+  assert.ok(retreat); assert.notDeepEqual([retreat.x, retreat.z], [108.5, 108.5], 'nearby danger keeps retreat priority');
+});
+
+test('native Medium remembered ring: both seats discover new ground warm/cold versus idle-Scout control', async () => {
+  const warm = await replayRememberedScoutRing(), repeat = await replayRememberedScoutRing();
+  const cold = await replayRememberedScoutRing({ cold: true }), coldRepeat = await replayRememberedScoutRing({ cold: true });
+  const disabled = await replayRememberedScoutRing({ disableScout: true });
+  assert.deepEqual(repeat, warm, 'every command/notice, full sampled peer view and final checkpoint repeats');
+  assert.deepEqual(coldRepeat, cold, 'fresh-policy/fresh-fixture replay repeats without editing the checkpoint');
+  assert.equal(cold.restartedAt, 108900);
+  for (const team of [0, 1]) {
+    const control = disabled.seats[team];
+    assert.equal(control.scoutDisplacement, 0); assert.equal(control.scoutOrders.length, 0);
+    for (const branch of [warm, cold]) {
+      const result = branch.seats[team];
+      assert.ok(result.scoutDisplacement > 5 && result.scoutOrders.length > 0, 'the same living native Scout resumes exploration');
+      assert.ok(result.newCells > control.newCells, 'native fog disclosure exceeds the control; planned goals alone cannot pass');
+    }
+  }
+  if (process.env.RTS_PVE_RECON_RING_EVIDENCE_DIR) await writeFile(path.join(process.env.RTS_PVE_RECON_RING_EVIDENCE_DIR,
+    'native-recon-ring.json'), JSON.stringify({ warm, cold, disabled }));
+  console.log(JSON.stringify({ windowSeconds: 60, seats: warm.seats.map((seat, team) => ({ team,
+    warmNewCells: seat.newCells, coldNewCells: cold.seats[team].newCells, disabledNewCells: disabled.seats[team].newCells,
+    warmScoutDisplacement: seat.scoutDisplacement, coldScoutDisplacement: cold.seats[team].scoutDisplacement,
+    finalWood: seat.resources.wood })), winner: warm.final.state.matchWinner }));
 });
