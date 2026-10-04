@@ -937,3 +937,10 @@ Walk8/8; Wood/Food/Build/Repair/Attack/Defeat/Stone5/8(N/NE/E/SE/NW).
 Authored43/64; **21 art cells remain**, S/SW/W each7. Ranked next: actual S back
 three-quarter family, then SW back and W back-three-quarter. Keep faithful public
 heading seeds, whole pose playback and all iterations; polish follows breadth.
+
+
+All163 focused tests pass; byte-idempotent admission, atlas/docs/whitespace and
+actual packaged guarded HTTP/WebSocket/hash checks pass. [Clean NE release](qa-evidence/worker-land-art-2026-10-04/north-east-actions-clean-release.json)
+measures `9611f0445d04ac2c69dc6744d95d898692ed261f`, `sourceDirty:false`, 1179 files,
+`sha256:84d94c77fee3d0fd184b995c70f0123cd149af0528ce1cb5b6b7aa088816036f`. Measured code and later receipt commits stay separate.
+Identified containing delivered/native acceptance remains open.
