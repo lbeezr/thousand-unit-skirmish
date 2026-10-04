@@ -8,6 +8,7 @@ import vm from 'node:vm';
 import { clickNovicePoint, noviceBeforeScript, readNoviceUi, reduceNoviceCommand,
   reduceNoviceMessage, runNoviceScenario, validateNoviceFrames, validateNoviceOrder } from './renderer-qualification-novice.mjs';
 import { contextVersion, id, run } from './renderer-novice-flow-scenario.mjs';
+import { loadCaptureCases, runFeatureBatch } from './renderer-feature-capture.mjs';
 
 const revision = 'a'.repeat(40), digest = `sha256:${'b'.repeat(64)}`;
 const worker = { id: 4, team: 0, x: -57.5, z: .5, hp: 35, generation: 2, task: 'moving' };
@@ -274,4 +275,60 @@ test('registered case binds source and real selection checkpoint, rejecting miss
   const noCapture = await run(context, { execute: async () => ({ status: 'passed', frames: [{}, {}] }) });
   assert.equal(noCapture.status, 'failed'); assert.equal(noCapture.checks[1].passed, false);
   await assert.rejects(run({ ...context, capture: async () => { throw Error('private-capture-token'); } }, { execute }));
+});
+
+test('actual shared batch forwards the owned directory into the registered novice wrapper and preserves capture failure', async () => {
+  const loaded = await loadCaptureCases('novice-flow');
+  assert.deepEqual(loaded.issues, []); assert.equal(loaded.adapters[0].contextVersion, 1);
+  for (const captureFails of [false, true]) {
+    const directory = await mkdtemp(path.join(os.tmpdir(), 'rts-novice-shared-'));
+    const page = orchestrationPage(), checkpoints = [], rightPointerEvents = [];
+    const call = page.cdp.call;
+    page.cdp.call = async (method, params) => {
+      if (method === 'Input.dispatchMouseEvent' && params.button === 'right') rightPointerEvents.push(params.type);
+      return call(method, params);
+    };
+    try {
+      const adapter = loaded.adapters[0];
+      const batch = await runFeatureBatch('/cpu-pack-fixture', directory, 'novice-flow', {
+        // Use the real loaded wrapper/native scenario. Only browser/server,
+        // health and screenshot boundaries are CPU fixtures: zero GPU frames.
+        load: async () => ({ issues: [], adapters: [{ ...adapter, run: context => {
+          assert.equal(Object.isFrozen(context), true); assert.equal(Object.isFrozen(context.source), true);
+          assert.equal(context.evidenceDirectory, path.join(directory, 'novice-flow'));
+          return adapter.run(context, { execute: options => runNoviceScenario({ ...options,
+            fetchImpl: async () => Response.json({ ok: true, buildIdentity: {
+              status: 'identified', origin: 'packed-manifest', sourceRevision: revision, sourceDirty: false, digest } }) }) });
+        } }] }),
+        qualify: async (_pack, output, { captureCase }) => {
+          assert.equal(output, path.join(directory, 'novice-flow'));
+          let status = 'failed';
+          try { status = await captureCase.run({ page, origin: 'http://127.0.0.1:4321',
+            pack: { sourceRevision: revision, digest }, browserVersion: { product: 'CPU fixture' } }); }
+          catch { /* Shared qualification retains operation failure as failed. */ }
+          return { status, source: { revision, dirty: false }, release: { sourceRevision: revision, digest } };
+        },
+        checkpoint: async options => {
+          checkpoints.push(options); assert.equal(options.page, page); assert.equal(options.revision, revision);
+          assert.equal(options.outputDirectory, path.join(directory, 'novice-flow'));
+          assert.deepEqual(rightPointerEvents, [], 'selection checkpoint must precede Move pointer input');
+          if (captureFails) throw Error('private-checkpoint-token');
+          return { manifest: { scene: { mapId: state.mapId }, source: { revision },
+            viewport: { width: 1280, height: 720 }, image: { file: 'color.png', sha256: 'c'.repeat(64) } } };
+        },
+      });
+      assert.equal(batch.status, captureFails ? 'failed' : 'passed'); assert.equal(checkpoints.length, 1);
+      assert.equal(checkpoints[0].checkpoint, 'selected-worker');
+      const report = JSON.parse(await readFile(path.join(directory, 'novice-flow/novice.json'), 'utf8'));
+      assert.equal(report.status, batch.status); assert.doesNotMatch(JSON.stringify(report), /private-checkpoint/);
+      if (captureFails) {
+        assert.equal(report.issues[0].stage, 'selection'); assert.equal(report.final.sent.length, 0);
+        assert.deepEqual(rightPointerEvents, [], 'failed checkpoint must prevent Move pointer input');
+      } else {
+        assert.deepEqual(rightPointerEvents, ['mousePressed', 'mouseReleased']);
+        assert.ok(batch.cases[0].result.checks.every(check => check.passed));
+        assert.equal(batch.cases[0].result.captures[0].checkpoint, 'selected-worker');
+      }
+    } finally { await rm(directory, { recursive: true, force: true }); }
+  }
 });

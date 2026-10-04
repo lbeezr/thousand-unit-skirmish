@@ -21,7 +21,10 @@ test('fog packing, checkpoint base64 and geometry grow with area without a capac
 });
 test('source-bound allocation accounting records provenance and retains XL rejection', async () => {
   const report = await runGridCostAudit();
-  assert.equal(report.model.residentBytesPerCell, 66); assert.equal(report.model.bucketBytes, 32);
+  assert.equal(report.model.residentBytesPerCell, 70); assert.equal(report.model.bucketBytes, 32);
+  assert.equal(report.model.residentExtraBytesPerCell.forestWorkGroupMembership, 4);
+  assert.equal(report.grids.at(-1).checkpointValidationForestGroupMembershipBytes, 409600);
+  assert.match(report.sourceInputSha256['src/forest-gather-group.mjs'], /^[a-f0-9]{64}$/);
   assert.equal(report.model.visionIndexBits, 32);
   assert.equal(report.model.visionCache.maxBytes, 8388608);
   assert.equal(report.model.visionCache.maxEntries, 8192);

@@ -78,13 +78,19 @@ uses their current interfaces without changing their implementation.
 ## Delivery ledger
 
 - The reported Worker work-loop right-angle travel is corrected in bounded
-  [PR #330](https://github.com/lbeezr/thousand-unit-skirmish/pull/330), with
+  [PR #330](https://github.com/lbeezr/thousand-unit-skirmish/pull/330), merged at
+  `6183693c`, with
   [route/recovery evidence](qa-worker-flat-flow-routes-2026-10-04.md) and a
   [packed actual-game capture recipe](qa-worker-work-cycle-capture.md).
   Economy owns only Worker resource route reduction; the forest owner retains
   deep-forest/job selection and the shared movement owner retains other callers.
-  Cloud testing owns the qualified hosted adapter hookup and HUD frame review;
-  release delivery owns a separately identified containing staging build.
+  Economy's [ordinary room adapter](qa-worker-ordinary-route-capture.md) now uses
+  the versioned shared capture context from
+  [PR #331](https://github.com/lbeezr/thousand-unit-skirmish/pull/331). Its CPU
+  test imports and invokes the actual shared loader and runner; these synthetic
+  receipts do not establish rendered gameplay. Cloud testing owns one qualified
+  hosted batch; economy and HUD retain actual frame/trajectory review.
+  Release delivery owns a separately identified containing staging build.
   Source integration and actual rendered acceptance remain separate outcomes.
 
 - Worker receipt producer [#187](https://github.com/lbeezr/thousand-unit-skirmish/pull/187) implements [v1](worker-performing-action-contract.md) with [exact-source checks](qa-worker-performing-action-producer-2026-10-03.md). [Consumer contract checkpoint](https://github.com/lbeezr/thousand-unit-skirmish/pull/186#issuecomment-5974508410) is published independently of producer merge. The animation integration owner retains default client binding and producer+consumer delivery; the cloud testing owner retains rendered appearance acceptance.
