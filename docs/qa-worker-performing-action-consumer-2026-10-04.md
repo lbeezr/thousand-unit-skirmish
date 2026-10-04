@@ -95,5 +95,11 @@ Worker ID, task/action, heading, selection and zoom beside each short clip.
    Infantry 850 ms, Spearman 880 ms and Worker 840 ms attack endings without an
    extra opening replay. See the [full audit recipe](qa-unit-animation-audit-2026-10-03.md#visual-gap-and-exact-ordinary-game-recipe).
 
+Railway read-back on 4 October reports staging deployment
+`e541d903-178b-47cb-8d1b-4358c93c5a8a` as `SUCCESS`, source
+`64cc391e6d9c4164dca7bd45696cf3862fe19729`. Git ancestry confirms it contains
+PR161 and the agreed producer, but it precedes this consumer. This establishes
+their source delivery, not the new consumer or any ordinary-game appearance.
+
 The precise remaining visual gap is these ordinary-game clips/screenshots at an
 identified producer+consumer revision in a browser with a working sandbox/GPU.
