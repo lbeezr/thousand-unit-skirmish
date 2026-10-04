@@ -9,7 +9,7 @@
 | Environment | Ground materials, water, shorelines, regional terrain, landmarks. |
 | Vegetation and props | Trees, shrubs, rocks, resources, and depletion variants. |
 | Unit characters | Worker/Infantry/Archer silhouettes, equipment, team cues, action samples. |
-| Building architecture | Eight-building roster identity, scale, construction, damage, and ownership cues; see the [building atlas plan](building-atlas-production-plan.md) and [first-civilization style](frontier-civilization-art-style.md). |
+| Building architecture | Current thirteen-role roster identity, scale, construction, damage, and ownership cues; eight default Complete families plus the [economy source batch](art-direction/frontier-economy-meshy-v1/README.md) and separate Coastal barriers. See the [building atlas plan](building-atlas-production-plan.md) and [first-civilization style](frontier-civilization-art-style.md). |
 | Technical art | Materials/atlases, UV/export conventions, manifests, validation, repeatable previews. |
 | Art direction | Shared palette, finish, silhouette, and gameplay readability feedback. |
 | Maps | Placement, routes, density, regional composition, and playable scenarios. |
@@ -40,6 +40,13 @@ frozen playback and unusable root/contact remain functional blockers. Do not
 spend a perfection loop on working SE art while the other headings lack coverage.
 
 ## Small useful deliveries
+
+The [civilization/settlement reference library](art-direction/civilization-settlements-v1/README.md)
+provides full thirteen-role Frontier/Human and proposed Boughward building sheets,
+plus village/town/city compositions. Select and link a bounded aspect in the
+owning task before production; these exploratory boards do not replace selected
+sources or close runtime/game acceptance. Continue lifecycle and scene work
+through the existing lane owners rather than a disconnected full-civilization PR.
 
 A few compatible tree silhouettes, one shoreline treatment, one unit role,
 one building lifecycle, or a material/export sample can each be a complete slice.

@@ -1,0 +1,64 @@
+{
+  "scope": "native-normal-paid-adapter-preparation",
+  "status": "passed",
+  "browser": false,
+  "renderAcceptance": false,
+  "sourceRevision": "062c3603a530821c7e6e389b00ee09b1fc2d483d",
+  "steps": [
+    {
+      "phase": "paid-worker",
+      "workerId": 24,
+      "food": 100,
+      "tick": 753
+    },
+    {
+      "phase": "paid-barracks",
+      "buildingId": 1,
+      "x": -53.5,
+      "z": -5.5,
+      "wood": 75,
+      "tick": 1389
+    },
+    {
+      "phase": "paid-spearman",
+      "unitId": 25,
+      "food": 40,
+      "wood": 55,
+      "tick": 1752
+    }
+  ],
+  "sourceDirty": true,
+  "releaseDigest": null,
+  "deployedRevision": null,
+  "mapId": "veyrholds-terraced-vale",
+  "matchMode": "skirmish@1",
+  "paidSeat": 0,
+  "bothSeatsConnected": true,
+  "inputs": [
+    {
+      "path": "server.mjs",
+      "sha256": "f3a2868f71e3d102214d194c8b81121cd3620744bd4603042bf15ba5cbaf7aff"
+    },
+    {
+      "path": "room-supervisor.mjs",
+      "sha256": "3f3f002f18d91685ea98996454dd67e625c572070b670be790b859dbb378add8"
+    },
+    {
+      "path": "src/gameplay-definitions.mjs",
+      "sha256": "61e1fc9aa85ad3d8672a3f3971f6692e136513b91e8bf0741f70882c9717d1ca"
+    },
+    {
+      "path": "maps/veyrholds-terraced-vale.json",
+      "sha256": "2e352328e0b6795c04a11505672d17971231cc2e7ad34a858ff6418423d5d1f6"
+    },
+    {
+      "path": "scripts/fortified-crossing-fixture.mjs",
+      "sha256": "d3f5873cdc5fabd603e1833470edd166b18836240168daae3d8ae64d7193dbbf"
+    }
+  ],
+  "limits": [
+    "Production runtime inputs from main062c3603; adapter preparation was uncommitted.",
+    "Ordinary supervisor/native commands with no grants or checkpoint edits.",
+    "No source-clean packed build, GPU pixels, gait, Stop, staging or deployed acceptance."
+  ]
+}

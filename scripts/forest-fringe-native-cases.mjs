@@ -81,7 +81,15 @@ for (const viewer of [0, 1]) test(`native seat ${viewer}: forest scenery, hidden
     await command(viewer, { type: 'attack', ids: [workers[viewer]], targetId: workers[other] }, /^ATTACK REJECTED · TARGET UNAVAILABLE$/);
     const hiddenLiveTree = fringe + 64;
     assert.equal(fogCode(clients[viewer].latest, hiddenLiveTree), 1);
-    await command(viewer, { type: 'gather', ids: [workers[viewer]], forestCell: hiddenLiveTree }, /GATHER REJECTED/);
+    // A deep cell now identifies its public authored forest group. The
+    // execution target must still be live-visible; the hidden tree is untouched.
+    const forestView = clients[viewer].latest;
+    await command(viewer, { type: 'gather', ids: [workers[viewer]], forestCell: hiddenLiveTree }, /GATHER ORDER/);
+    const assigned = await fixture.checkpoint(saved => saved.state.units[workers[viewer]].workIntent?.sourceKind === 'forest-group');
+    const target = assigned.state.units[workers[viewer]].gatherForestCell;
+    assert.notEqual(target, hiddenLiveTree);
+    assert.equal(fogCode(forestView, target), 2);
+    await command(viewer, { type: 'stop', ids: [workers[viewer]] }, /STOP ORDER/);
     const health = row(clients[other].latest, workers[other])[4];
     const beforeTick = clients[viewer].latest.tick;
     // Idle authority need not broadcast another state. Check an actual later

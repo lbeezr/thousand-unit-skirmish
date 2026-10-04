@@ -3,6 +3,7 @@ import { validateCaptureContext } from '../renderer-capture-context.mjs';
 /** @param {unknown} candidate */
 export async function checkedCapture(candidate) {
   const context = validateCaptureContext(candidate);
+  context.evidenceDirectory.toUpperCase();
   await context.capture({ mapId: 'veyrholds-terraced-vale', checkpoint: 'move-feedback' });
   // @ts-expect-error browser lifecycle belongs to the shared runner
   context.browser;
