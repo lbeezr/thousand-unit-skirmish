@@ -97,6 +97,7 @@ run(['--test', 'scripts/villager-facing.test.mjs'], 'Villager movement and work 
 run(['--test', 'scripts/worker-land-art.test.mjs'], 'Retained Worker land-action artwork and playback');
 run(['--test', 'scripts/worker-nw-attack-art.test.mjs'], 'Public NW axe attack reuse and one-shot playback');
 run(['--test', 'scripts/worker-north-west-actions-art.test.mjs'], 'NW hammer/pick/defeat artwork and default playback');
+run(['--test', 'scripts/worker-east-axe-art.test.mjs'], 'East axe work/attack artwork and default playback');
 run(['--test', 'scripts/worker-performing-action.test.mjs'], 'Authoritative Worker positive-progress receipts');
 run(['scripts/worker-performing-action-scenario.mjs', '--client-presentation'], 'Worker work receipt commands, client frames, exhausted repair delivery and recovery');
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
@@ -223,6 +224,8 @@ run(['--test', 'scripts/water-route-graph.test.mjs'], 'Isolated water route topo
 run(['--test', 'scripts/dock-placement.test.mjs'], 'Dock shoreline and water berth placement');
 run(['scripts/dock-scenario.mjs'], 'Both-seat paid Dock construction and recovery');
 run(['--test', 'scripts/water-unit-runtime.test.mjs', 'scripts/skiff-contracts.test.mjs'], 'Skiff water movement, paid queue and placeholder controls');
+run(['--test', 'scripts/skiff-counterflow.test.mjs'], 'Reciprocal Skiff passing, interruption and recovery on Confluence');
+run(['scripts/skiff-counterflow-scenario.mjs'], 'Paid Practice Skiff counterflow, Stop/replacement, cold recovery and owned Dock deposits');
 run(['scripts/skiff-scenario.mjs'], 'Both-seat paid Skiff production, berth occupancy and recovery');
 run(['--test', 'scripts/skiff-fishing.test.mjs'], 'Finite Skiff food, owned Dock delivery and conservation');
 run(['scripts/skiff-fishing-scenario.mjs'], 'Both-seat Skiff/Worker shared fish stock and cargo recovery');
