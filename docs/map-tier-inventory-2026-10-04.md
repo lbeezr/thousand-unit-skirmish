@@ -61,7 +61,8 @@ have two separated ridge bottlenecks; their open center column misses those
 bottlenecks. Each expansion has authored resource access and a reachable flat
 TC pad. Home food/wood marker paths are 12/12 on all four. Expansion food/wood
 paths per seat are Tiny 36/44 and 69/77; Small 55/67,80/92,114/126;
-Medium 71/87,81/97,113/129; Large 75/91,97/113,117/133,145/157.
+Medium 71/87,81/97,113/129; Large shelf 72/88, crown 140/156,
+basin 99/115 and causeway 134/144, mirrored for both seats.
 Stocks are finite node totals; forest wood is potential after cutting, not an
 opening bank or immediate income. Bonus-post income is separate.
 
@@ -90,7 +91,7 @@ anchors or rendered observations.
 | Large |97.267/96.467;96.467/95.767;53.7/52.8|`36f6f9a949de208aeb77612f59600acaa1f33fd3`; [paid native routes](qa-crownroads-2026-10-04.md), Authored Practice before Skirmish admission|
 
 Small Worker wall times were 59.383/60.184 seconds. Large Worker wall times were
-96.286/95.487; its interval begins at a game checkpoint earlier than the wall
+96.286/95.487; its interval begins at a public snapshot earlier than the wall
 stopwatch, so their quotient is not an exact applied-clock measurement. Retained
 Large rolling clock windows measured 0.999818–0.999909; the separate longer paid
 checkpoint interval measured 0.999903. Tiny's single 2,000-unit diagnostic observed
