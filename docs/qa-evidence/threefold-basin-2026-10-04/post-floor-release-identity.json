@@ -1,0 +1,9 @@
+{
+  "directory": "/tmp/rts-release-xeJcGv",
+  "sourceRevision": "4c0a6d0f0cba1c1d6545359a73c14af18c2499b4",
+  "sourceDirty": false,
+  "digest": "sha256:a30d0c18ec06e9ed3cb6ead51260b62f52cc3975852d88ea9df23ea6d8a3e660",
+  "fileCount": 1171,
+  "mapIncluded": true,
+  "packedMapSHA256": "6d9769ce30a1da374ffa41660dd99a804fd078a6f706113ddce40e1785e3ba0b"
+}

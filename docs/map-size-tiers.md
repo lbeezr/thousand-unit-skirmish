@@ -22,8 +22,10 @@ AoE/WC3 tiles. Actual arrival requires native route/collision/clock measurement.
 
 The current validator accepts at most 256 on either axis: **XL 320 is blocked**
 until a separately reviewed grid-limit, memory/path/visibility/transport/browser
-capacity slice passes. Small–Large fit the schema but have no authored ordinary
-map or performance acceptance yet. Do not offer them as working map choices.
+capacity slice passes. [The source-bound XL audit](map-grid-limit-audit-2026-10-04.md)
+also demonstrates wrapped 16-bit vision indices and projects cache/path/render
+costs. Small now has an authored [Threefold Basin candidate](qa-threefold-basin-2026-10-04.md).
+Medium/Large remain unauthored; no tier has a supported-capacity claim.
 The first Tiny candidate is Terraced Vale; its static base route is 133 units,
 51.154 s Worker/Infantry, 29.556 s Scout. Native acceptance is recorded separately.
 
@@ -31,8 +33,10 @@ The first Tiny candidate is Terraced Vale; its static base route is 133 units,
 
 [Pure policy](../src/map-size-policy.mjs) exports `MAP_SIZE_TIERS`,
 `mapSizeIdentity(map)` and `ordinaryMapCatalog(maps, currentMapId)`.
-The helper receives the existing regional ordinary descriptors, not the entire
-canonical fixture store; large Lab maps still require their explicit Practice path.
+The runtime supplies canonical descriptors for ordinary selection. Eligible
+160-side Labs retain their authored Objective Control identity; compact Labs
+remain available through explicit Authored Practice. Size eligibility does not
+admit a map to Skirmish without its registry binding.
 Each descriptor adds exact `width`, `height`, `sizeTierId`, `sizeTierLabel`,
 `ordinarySelectable`, `supportedUnitCapacity: null`; the catalog helper also
 adds `selectable` and `legacyCurrent`. Rectangles use the shorter side's tier;

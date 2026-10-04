@@ -1,0 +1,18 @@
+{
+  "sourceRevision": "fafbd7d7206885ed8f7a86cf1d5de27c552d0bee",
+  "releaseDigest": "sha256:3f2cbc1780b370229deac597e429cefe12706b7ecff9acce3bab6d98370082e0",
+  "startedAt": "2026-10-04T01:14:58.397Z",
+  "browserVerified": false,
+  "hostedVerified": false,
+  "passed": true,
+  "normalCatalog": true,
+  "selectedMapId": "veyrholds-threefold-basin",
+  "dimensions": [
+    192,
+    192
+  ],
+  "fogBytes": 9216,
+  "oneHumanPractice": true,
+  "workerArrivalGameSeconds": 4.033333333333333,
+  "finishedAt": "2026-10-04T01:15:02.707Z"
+}
