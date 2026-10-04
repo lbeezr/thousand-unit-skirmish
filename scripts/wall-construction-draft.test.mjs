@@ -12,6 +12,7 @@ import { GAMEPLAY_DEFINITIONS, BUILDING_DEFINITIONS, UNIT_DEFINITIONS,
   validateGameplayDefinitions } from '../src/gameplay-definitions.mjs';
 import { unfinishedRefund, buildingRepairStep } from '../src/base-lifecycle.mjs';
 import { canTraverseElevation } from '../src/elevation.mjs';
+import { buildElevationGrid } from '../src/map-utils.mjs';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { planWallLine } from '../src/wall-line-planner.mjs';
 
@@ -33,7 +34,7 @@ const extract = (name, next) => {
 const functions = [
   ['cellIndex', 'nearestOpenCellInComponent'], ['rebuildWalkableComponents', 'findAvailableCellNear'],
   ['buildingAccessCells', 'findBuildingAttackApproachCell'],
-  ['captureBuildingConnectivity', 'rejectBuild'], ['pendingMoveAssignmentsByUnit', 'pathIntersectsCells'],
+  ['reservedResourceNodes', 'rejectBuild'], ['pendingMoveAssignmentsByUnit', 'pathIntersectsCells'],
   ['creditRefund', 'cancelTraining'], ['destroyBuilding', 'pendingMoveAssignmentsByUnit'],
   ['updateWallBuildOrders', 'updateTeamResearch'],
 ].map(([a, b]) => extract(a, b)).join('\n');
@@ -49,7 +50,7 @@ function fixture(team = 0) {
     elevationLevelByCell: new Uint8Array(256), canTraverseElevation,
     units: [worker], buildings: [], buildingsById: new Map(),
     homeTownCenters: [], spawnByTeam: [{ x: -6.5, z: 0.5 }, { x: 6.5, z: 0.5 }],
-    mapDefinition: { resourceNodes: [] }, teamFood: [0, 0], teamWood: [100, 100], teamResearch: [null, null],
+    mapDefinition: { resourceNodes: [] }, resourceNodeStates: new Map(), teamFood: [0, 0], teamWood: [100, 100], teamResearch: [null, null],
     workerProduction: [], activeMovePlanningJob: null, movePlanningQueue: [],
     STEP_SECONDS: 1, BUILDER_INTERACTION_RANGE: 1.6, buildingRulesFor: rules,
     unfinishedRefund, buildingRepairStep: (b, wood, seconds) => buildingRepairStep(b, wood, seconds,
@@ -216,13 +217,13 @@ test('existing checkpoint building checks accept one-cell records and reject cor
   assert.ok(start >= 0 && end > start);
   const records = prepare().plan.buildings;
   records[0].progress = 0.4; records[0].hp = 120;
-  const context = vm.createContext({ validFarmStock, ...economyServerBindings(), validGateState, buildingBlocksMovement, definition: { width: 16, height: 16, obstacles: [], resourceNodes: [] },
+  const context = vm.createContext({ validFarmStock, buildElevationGrid, ...economyServerBindings(), validGateState, buildingBlocksMovement, definition: { width: 16, height: 16, obstacles: [], resourceNodes: [] },
     cellCount: 256, MAX_BUILDINGS: 128, MAX_BUILDING_QUEUE: 12, BUILDING_DEFINITIONS: definitions,
     UNIT_DEFINITIONS, checkpointForestMask: new Uint8Array(256), savedForestStocks: new Map(),
     FOREST_WOOD_PER_CELL: 100, buildingRulesFor: rules,
     finite: Number.isFinite, integerIn: (n, low, high) => Number.isInteger(n) && n >= low && n <= high,
     assertSnapshot: (ok, message) => { if (!ok) throw new Error(message); } });
-  const validate = rows => { context.state = { buildings: rows, resourceNodes: [] }; vm.runInContext(`{${source.slice(start, end)}}`, context); };
+  const validate = rows => { context.state = { buildings: rows, resourceNodes: [], homeTownCenters: [{ hp: 0 }, { hp: 0 }] }; vm.runInContext(`{${source.slice(start, end)}}`, context); };
   const recovered = JSON.parse(JSON.stringify(records));
   validate(recovered);
   assert.deepEqual(recovered, records, 'partial construction, damaged HP, identity and queues survive JSON');

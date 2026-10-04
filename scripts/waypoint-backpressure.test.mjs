@@ -20,11 +20,12 @@ function transport() {
     peakOutboundQueuedBytes: 0, lastWaypointQueueCountsByTeam: [[], []],
     snapshotQueuedWaypointCounts: (team) => team === 0 ? rows : [],
     prepareJsonFrame: (message) => Buffer.from(JSON.stringify(message)),
-    peers: [], shuttingDown: false,
-    mapDefinition: { id: 'new-map' }, mapCatalogPayload: () => [],
+    peers: [], shuttingDown: false, process: { env: {}, connected: false },
+    mapDefinition: { id: 'new-map' }, matchMode: { matchModeId: 'authored', matchModeVersion: 1 }, mapCatalogPayload: () => [],
     roomPayload: () => ({ type: 'state', mapId: 'new-map', queuedWaypointCounts: [] }),
   });
   vm.runInContext([
+    between('function sendRoomMetadata()', 'function returnToPregame()'),
     between('function canQueuePeerFrame(', 'function sendPeerControlFrame('),
     between('function broadcastWaypointQueueCounts()', 'function clientOrderToken('),
     `globalThis.peer = {

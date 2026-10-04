@@ -122,7 +122,7 @@ test('validation rejects non-objects and unsupported schema or rules versions', 
   for (const value of [undefined, null, [], 'snapshot', 27]) {
     assert.throws(() => validateMatchModeCheckpoint(value), /Invalid match checkpoint: expected an object/);
   }
-  for (const schemaVersion of [undefined, null, 26, 28, '27']) {
+  for (const schemaVersion of [undefined, null, 26, 29, '27']) {
     assert.throws(() => validateMatchModeCheckpoint({ ...legacy(), schemaVersion,
       matchModeId: 'authored', matchModeVersion: 1 }), /Invalid match checkpoint:.*schema version/);
   }
@@ -130,4 +130,15 @@ test('validation rejects non-objects and unsupported schema or rules versions', 
     assert.throws(() => validateMatchModeCheckpoint({ ...legacy(), schemaVersion: 27, rulesVersion,
       matchModeId: 'authored', matchModeVersion: 1 }), /Invalid match checkpoint: unsupported game rules version/);
   }
+});
+
+test('Herd schema 28 retains strict explicit match mode validation', () => {
+  for (const matchModeId of ['authored', 'objective-control', 'skirmish']) {
+    const snapshot = { ...legacy(), schemaVersion: 28, matchModeId, matchModeVersion: 1 };
+    const before = structuredClone(snapshot);
+    assert.deepEqual(validateMatchModeCheckpoint(snapshot), { matchModeId, matchModeVersion: 1 });
+    assert.equal(migrateMatchModeCheckpoint(snapshot), snapshot);
+    assert.deepEqual(snapshot, before);
+  }
+  assert.throws(() => validateMatchModeCheckpoint({ ...legacy(), schemaVersion: 28 }), /requires both/);
 });

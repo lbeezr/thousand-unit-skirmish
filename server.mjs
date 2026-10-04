@@ -7,6 +7,7 @@ import { SKIFF_GROUP_ORDER_LIMIT, planSkiffGroupMove, planSkiffGroupFishing, pla
 import { planSkiffWaypoints, validSkiffWaypoints, advanceSkiffWaypoints } from './src/skiff-waypoints.mjs';
 import { activateWildlifeHarvest, createResourceNodeState, markWildlifeDepleted, validWildlifeNodeDefinition, validWildlifeNodeState, validWildlifeTeam } from './src/wildlife-state.mjs';
 import { migrateWildlifeClaimsCheckpoint, clearWildlifeClaimSegment, stepWildlifeClaims } from './src/wildlife-claims.mjs';
+import { cancelWildlifeHerd, startWildlifeHerd, stepWildlifeHerd, validWildlifeHerdState, migrateWildlifeHerdCheckpoint } from './src/wildlife-herding.mjs';
 import { migrateWildlifeMotionCheckpoint, sameWildlifeCell, wildlifeCell, wildlifeStepUnoccupied, stepWildlifeMotion, validWildlifeMotion } from './src/wildlife-motion.mjs';
 import { migrateMillraceSheepCheckpoint } from './src/millrace-sheep.mjs';
 import { validateMapRegion } from './src/regions.mjs';
@@ -74,7 +75,7 @@ if (RAILWAY_DEPLOYMENT && PUBLIC_ORIGINS.size === 0) {
   throw new Error('Set RAILWAY_PUBLIC_DOMAIN or RTS_PUBLIC_ORIGINS before exposing the match server.');
 }
 // Bump schema for persisted-shape changes and rules for incompatible simulation semantics.
-const MATCH_CHECKPOINT_SCHEMA_VERSION = 27;
+const MATCH_CHECKPOINT_SCHEMA_VERSION = 28;
 // Older compatible checkpoints remain resumable after their persisted shape is migrated.
 const MATCH_RULES_VERSION = 6;
 const MATCH_CHECKPOINT_INTERVAL_TICKS = 30;
@@ -1277,7 +1278,7 @@ function findTownCenterProductionSpawnCell(team) {
   if (componentId < 0) return -1;
   const reserved = new Set([townCenterCell]);
   for (const unit of units) if (unit.hp > 0) reserved.add(worldToCell(unit.x, unit.z));
-  for (const node of mapDefinition.resourceNodes) reserved.add(worldToCell(node.x, node.z));
+  for (const node of reservedResourceNodes()) reserved.add(worldToCell(node.x, node.z));
   return findAvailableCellNear(townCenterCell, componentId, reserved, TOWN_CENTER_SPAWN_SEARCH_RADIUS);
 }
 
@@ -2122,7 +2123,7 @@ function reservedScenarioSpawnCells() {
   for (const unit of units) {
     if (unit.hp > 0) reservedCells.add(worldToCell(unit.x, unit.z));
   }
-  for (const node of mapDefinition.resourceNodes) reservedCells.add(worldToCell(node.x, node.z));
+  for (const node of reservedResourceNodes()) reservedCells.add(worldToCell(node.x, node.z));
   return reservedCells;
 }
 
@@ -2737,7 +2738,9 @@ function captureMatchCheckpoint(sequence, savedAt = Date.now()) {
       nextBuildingId,
       homeTownCenters: homeTownCenters.map((center) => ({ hp: center.hp, rallyCell: center.rallyCell })),
       resourceNodes: [...resourceNodeStates.values()].map((node) => ({ ...node,
-        ...(node.wildlifeMotion ? { wildlifeMotion: { ...node.wildlifeMotion } } : {}),
+        ...(node.wildlifeMotion ? { wildlifeMotion: { ...node.wildlifeMotion },
+          wildlifeGrazeAnchor: { ...node.wildlifeGrazeAnchor },
+          wildlifeHerd: node.wildlifeHerd ? { ...node.wildlifeHerd, path: [...node.wildlifeHerd.path] } : null } : {}),
       })),
       forestStocks: forestStockEntries(),
       forestEpoch,
@@ -2958,6 +2961,18 @@ function validateMatchCheckpoint(snapshot) {
       }
     }
   }
+  const checkpointWildlifeLevels = buildElevationGrid(definition.width, definition.height, definition.elevationPatches);
+  const checkpointWildlifeBlocked = new Set(state.buildings.filter(building => building
+    && Array.isArray(building.footprint) && buildingBlocksMovement(building)).flatMap(building => building.footprint));
+  for (const team of [0, 1]) if (state.homeTownCenters[team].hp > 0) {
+    for (const cell of townCenterFootprintCells(definition.spawnPoints, team, definition.width, definition.height)) {
+      checkpointWildlifeBlocked.add(cell);
+    }
+  }
+  const checkpointWildlifeWalkable = cell => Number.isInteger(cell) && cell >= 0 && cell < cellCount
+    && !staticBlocked[cell] && !checkpointWildlifeBlocked.has(cell);
+  const checkpointWildlifeTraverse = (from, to) => canTraverseUnitStep(from, to,
+    definition.width, checkpointWildlifeLevels, checkpointWildlifeWalkable);
   assertSnapshot(Array.isArray(state.resourceNodes) && state.resourceNodes.length === definition.resourceNodes.length,
     'invalid resource nodes');
   const resourceIds = new Set();
@@ -2969,16 +2984,20 @@ function validateMatchCheckpoint(snapshot) {
       && validResourceVariantState(node, definitionNode)
       && (definitionNode.wildlifeSpecies === undefined
         ? node.x === definitionNode.x && node.z === definitionNode.z
-        : validWildlifeTeam(node.wildlifeTeam) && validWildlifeMotion(node, definitionNode) && sameWildlifeCell(node, definitionNode, definition)
-          && sameWildlifeCell({ x: node.wildlifeMotion.targetX, z: node.wildlifeMotion.targetZ }, definitionNode, definition)),
+        : validWildlifeTeam(node.wildlifeTeam)
+          && validWildlifeHerdState(node, { map: definition, isWalkable: checkpointWildlifeWalkable, canTraverse: checkpointWildlifeTraverse })
+          && validWildlifeMotion(node, node.wildlifeHerd ? node : { ...definitionNode, ...node.wildlifeGrazeAnchor })
+          && (node.wildlifeHerd || sameWildlifeCell({ x: node.wildlifeMotion.targetX, z: node.wildlifeMotion.targetZ }, node.wildlifeGrazeAnchor, definition))),
     'invalid resource node state');
     resourceIds.add(node.id);
   }
   const resourceCells = new Set(state.resourceNodes.filter(node => node.stock > 0).map((node) => {
-    const authored = definition.resourceNodes.find(item => item.id === node.id);
-    return Math.floor(authored.z + definition.height / 2) * definition.width
-      + Math.floor(authored.x + definition.width / 2);
+    return wildlifeCell(node, definition);
   }));
+  const checkpointSheepCells = new Set(state.resourceNodes.filter(node => node.stock > 0
+    && node.wildlifeSpecies !== undefined).map(node => wildlifeCell(node, definition)));
+  const checkpointFixedResourceCells = new Set(state.resourceNodes.filter(node => node.stock > 0
+    && node.wildlifeSpecies === undefined).map(node => wildlifeCell(node, definition)));
   for (const building of state.buildings) {
     const rules = buildingRulesFor(building?.type);
     assertSnapshot(building && integerIn(building.id, 1, Number.MAX_SAFE_INTEGER)
@@ -3018,7 +3037,9 @@ function validateMatchCheckpoint(snapshot) {
       assertSnapshot(checkpointDockPlacement.accessAt(centerRow * definition.width + centerColumn).valid, 'invalid Dock shoreline placement');
     }
     for (const cell of building.footprint) {
-      assertSnapshot(!occupiedFootprintCells.has(cell) && !staticBlocked[cell] && !resourceCells.has(cell),
+      assertSnapshot(!occupiedFootprintCells.has(cell) && !staticBlocked[cell]
+        && (!resourceCells.has(cell) || (!buildingBlocksMovement(building)
+          && checkpointSheepCells.has(cell) && !checkpointFixedResourceCells.has(cell))),
         'building overlaps a building, terrain, or resource');
       occupiedFootprintCells.add(cell);
     }
@@ -3287,6 +3308,8 @@ function restoreMatchCheckpoint(snapshot) {
     if (restored.wildlifeSpecies !== undefined) {
       restored.wildlifeState = node.wildlifeState; restored.wildlifeTeam = node.wildlifeTeam; restored.x = node.x; restored.z = node.z;
       restored.wildlifeMotion = { ...node.wildlifeMotion };
+      restored.wildlifeGrazeAnchor = { ...node.wildlifeGrazeAnchor };
+      restored.wildlifeHerd = node.wildlifeHerd ? { ...node.wildlifeHerd, path: [...node.wildlifeHerd.path] } : null;
     }
   }
   triggerStates = new Map(state.triggerStates.map((trigger) => [trigger.id, {
@@ -3395,7 +3418,7 @@ function migrateMatchCheckpoint(snapshot) {
   // A pin predating Farm still cannot claim a paid planting or harvest state.
   if (![GAMEPLAY_RULESET_REVISION, previousMovementPins[0]].includes(snapshot?.rulesetRevision)
     && snapshot?.state?.buildings?.some(building => building.type === 'farm' || building.harvestStock !== undefined)) return snapshot;
-  if ([22, 23, 24, 25, 26, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, 26, 27, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && previousMovementPins.includes(snapshot.rulesetRevision)
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
@@ -3536,7 +3559,7 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // Mill only adds a food depot; retain existing palisades and paid work unchanged.
-  if ([22, 23, 24, 25, 26, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, 26, 27, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:fe00d0541953e6ed6d2c4e121789dd26fa6a962abce9ab8b4de1f067064ad801'
     && Array.isArray(snapshot.state?.buildings)
     && !snapshot.state.buildings.some(building => building.type === 'mill')
@@ -3544,23 +3567,23 @@ function migrateMatchCheckpoint(snapshot) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // The gate is additive; accept only the exact preceding definition set, without invented gate state.
-  if ([22, 23, 24, 25, 26, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, 26, 27, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:561c62ccc67ac78cc067e8e639942a83fc6d6b1f89633e5b1c73aedc20f4a3a6'
     && Array.isArray(snapshot.state?.buildings)
     && !snapshot.state.buildings.some(building => building.type === 'palisade-gate' || Object.hasOwn(building, 'gateOpen'))) {
     snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   }
   // Additive Dock content preserves the exact previous Mill roster and paid work.
-  if ([22, 23, 24, 25, 26, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, 26, 27, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:c8a30de45cf9bfa527046662d022a0dc2cb28efc3ddd8b24521c5992eae328c2'
     && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   // Exact pre-Skiff Gate/Dock content retains its existing buildings, banks and work.
-  if ([22, 23, 24, 25, 26, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, 26, 27, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:525ab43cd600206d5c6cfab131c9d1fe193a59d9160ab219dc96a0dfb181605b'
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
 
   // Farm adds only new paid crop state; retain exact pre-Farm Skiff work unchanged.
-  if ([22, 23, 24, 25, 26, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
+  if ([22, 23, 24, 25, 26, 27, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion)
     && snapshot.rulesetRevision === 'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'
     && Array.isArray(snapshot.state?.units) && Array.isArray(snapshot.state?.buildings)) snapshot.rulesetRevision = GAMEPLAY_RULESET_REVISION;
   if ([4, 5].includes(snapshot?.rulesVersion)) snapshot.rulesVersion = MATCH_RULES_VERSION;
@@ -3568,7 +3591,7 @@ function migrateMatchCheckpoint(snapshot) {
     && !snapshot?.mapDefinition?.elevationPatches?.some((patch) => patch.level > 0)) {
     snapshot.rulesVersion = MATCH_RULES_VERSION;
   }
-  if ([22, 23, 24, 25, 26, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion) && Array.isArray(snapshot.state?.units)) {
+  if ([22, 23, 24, 25, 26, 27, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion) && Array.isArray(snapshot.state?.units)) {
     for (const unit of snapshot.state.units) if (unit && typeof unit === 'object') unit.persistentOrder ??= null;
   }
   return snapshot;
@@ -3680,6 +3703,7 @@ async function initializeMatchFromCheckpoint() {
     migrateCombatStanceCheckpoint(snapshot, UNIT_DEFINITIONS);
     migrateWildlifeClaimsCheckpoint(snapshot);
     migrateMatchModeCheckpoint(snapshot);
+    migrateWildlifeHerdCheckpoint(snapshot);
     restoreMatchCheckpoint(snapshot);
     console.log(`Restored match ${matchId} from checkpoint ${checkpointSequence} at tick ${tickNumber}.`);
   } catch (error) {
@@ -4404,6 +4428,7 @@ function assignGather(player, command) {
     return;
   }
 
+  if (node.wildlifeSpecies !== undefined) cancelWildlifeHerd(node);
   for (const unit of selectedUnits) {
     unit.orderRevision++;
     unit.queuedWaypoints.length = 0;
@@ -5065,7 +5090,7 @@ function pathIntersectsCells(path, startIndex, cells) {
 }
 
 function revalidateBuildingRallyPoints() {
-  const resourceCells = new Set(mapDefinition.resourceNodes.map((node) => worldToCell(node.x, node.z)));
+  const resourceCells = new Set(reservedResourceNodes().map(node => worldToCell(node.x, node.z)));
   for (const building of allMatchBuildings()) {
     if (!Number.isInteger(building.rallyCell) || building.rallyCell < 0) continue;
     const access = buildingAccessCells(building.footprint);
@@ -5078,6 +5103,7 @@ function revalidateBuildingRallyPoints() {
 }
 
 function replanPathsBlockedBy(footprint) {
+  stopBlockedWildlifeHerds();
   const footprintSet = new Set(footprint);
   revalidateBuildingRallyPoints();
   const pending = pendingMoveAssignmentsByUnit();
@@ -5218,10 +5244,12 @@ function enqueueRouteRepairs(repairs, { mode = 'blocked-route-repair', orderLabe
 }
 
 function isResourceCell(cell) {
-  for (const node of mapDefinition.resourceNodes) {
-    if (resourceNodeStates.get(node.id)?.stock !== 0 && worldToCell(node.x, node.z) === cell) return true;
-  }
-  return false;
+  return reservedResourceNodes().some(node => worldToCell(node.x, node.z) === cell);
+}
+function reservedResourceNodes() {
+  // Current poses reserve live food; unknown runtime stock stays conservative.
+  return mapDefinition.resourceNodes.map(authored => resourceNodeStates.get(authored.id) ?? authored)
+    .filter(node => node.stock !== 0);
 }
 
 // Record the routes that exist before a proposed footprint blocks any cells.
@@ -5242,9 +5270,7 @@ function captureBuildingConnectivity() {
     }
   };
   for (const spawn of spawnByTeam) addAccess([nearestOpenCell(worldToCell(spawn.x, spawn.z))]);
-  for (const node of mapDefinition.resourceNodes) {
-    if (resourceNodeStates.get(node.id)?.stock !== 0) addAccess([worldToCell(node.x, node.z)]);
-  }
+  for (const node of reservedResourceNodes()) addAccess([worldToCell(node.x, node.z)]);
   for (const unit of units) {
     if (unit.hp > 0 && unit.movementDomain !== 'water') addAccess([nearestOpenCell(worldToCell(unit.x, unit.z))]);
   }
@@ -5352,8 +5378,7 @@ function buildWallLine(player, command) {
   const passableExistingWallCells = new Set(buildings.filter(building =>
     building.team === player.team && !buildingBlocksMovement(building)).flatMap(building => building.footprint));
   const blockedCells = [], occupiedCells = new Set();
-  const resourceCells = new Set(mapDefinition.resourceNodes
-    .filter(node => resourceNodeStates.get(node.id)?.stock !== 0).map(node => worldToCell(node.x, node.z)));
+  const resourceCells = new Set(reservedResourceNodes().map(node => worldToCell(node.x, node.z)));
   for (let cell = 0; cell < CELL_COUNT; cell++) {
     if (blocked[cell] || townCenterBlocked[cell] || resourceCells.has(cell)) blockedCells.push(cell);
     if (buildingBlocked[cell] && !existingWallCells.has(cell)) occupiedCells.add(cell);
@@ -5620,8 +5645,10 @@ function buildBuilding(player, command) {
 
 function setGateOpen(player, command) {
   const building = buildingsById.get(command.buildingId);
-  const occupied = building && units.some(unit => unit.hp > 0
-    && building.footprint.includes(worldToCell(unit.x, unit.z)));
+  const occupied = building && (units.some(unit => unit.hp > 0
+    && building.footprint.includes(worldToCell(unit.x, unit.z)))
+    || [...resourceNodeStates.values()].some(node => node.wildlifeSpecies !== undefined && node.stock > 0
+      && building.footprint.includes(worldToCell(node.x, node.z))));
   const canClose = () => {
     const previousConnectivity = captureBuildingConnectivity();
     const previousComponents = walkableComponents.slice();
@@ -5668,7 +5695,7 @@ function findProductionSpawnCell(building) {
   if (componentId < 0) return -1;
   const occupied = new Set();
   for (const unit of units) if (unit.hp > 0) occupied.add(worldToCell(unit.x, unit.z));
-  for (const node of mapDefinition.resourceNodes) occupied.add(worldToCell(node.x, node.z));
+  for (const node of reservedResourceNodes()) occupied.add(worldToCell(node.x, node.z));
   for (const cell of accessCells) {
     const spawnCell = findAvailableCellNear(cell, componentId, occupied, 4);
     if (spawnCell >= 0) return spawnCell;
@@ -5744,7 +5771,7 @@ function setBuildingRallyPoint(player, command) {
     return;
   }
   const teamComponent = walkableComponents[buildingAccessCells(building.footprint)[0]] ?? -1;
-  const resourceCells = new Set(mapDefinition.resourceNodes.map((node) => worldToCell(node.x, node.z)));
+  const resourceCells = new Set(reservedResourceNodes().map(node => worldToCell(node.x, node.z)));
   const destination = findAvailableCellNear(worldToCell(x, z), teamComponent, resourceCells, 8);
   if (destination < 0) {
     sendOrderNotice(player, command, 'RALLY POINT REJECTED · NO REACHABLE OPEN GROUND NEARBY');
@@ -5759,7 +5786,7 @@ function routeProducedUnitToBuildingRally(unit, building) {
   if (unit?.movementDomain === 'water') return;
   if (!unit || !Number.isInteger(building.rallyCell) || building.rallyCell < 0) return;
   const teamComponent = walkableComponents[nearestOpenCell(worldToCell(unit.x, unit.z))];
-  const resourceCells = new Set(mapDefinition.resourceNodes.map((node) => worldToCell(node.x, node.z)));
+  const resourceCells = new Set(reservedResourceNodes().map(node => worldToCell(node.x, node.z)));
   const requested = building.rallyCell;
   const destination = teamComponent >= 0 && walkableComponents[requested] === teamComponent
     && !resourceCells.has(requested)
@@ -6835,12 +6862,14 @@ async function handleCommand(player, command) {
       return;
     }
   }
-  if (matchWinner >= 0 && ['setStance', 'stop', 'holdPosition', 'patrol', 'follow', 'move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'returnCargo', 'train', 'build', 'buildWall', 'setGateOpen', 'trainArcher', 'trainUnit', 'trainWorker', 'setRallyPoint', 'researchUpgrade', 'cancelConstruction', 'cancelTraining', 'cancelResearch', 'repairBuilding'].includes(command.type)) {
+  if (matchWinner >= 0 && ['herd', 'stopWildlife', 'setStance', 'stop', 'holdPosition', 'patrol', 'follow', 'move', 'attackMove', 'attack', 'attackBuilding', 'gather', 'returnCargo', 'train', 'build', 'buildWall', 'setGateOpen', 'trainArcher', 'trainUnit', 'trainWorker', 'setRallyPoint', 'researchUpgrade', 'cancelConstruction', 'cancelTraining', 'cancelResearch', 'repairBuilding'].includes(command.type)) {
     sendOrderNotice(player, command, player.team === 0
       ? 'MATCH OVER · RESET BATTLEFIELD TO PLAY AGAIN'
       : 'MATCH OVER · WAIT FOR HOST TO RESET');
     return;
   }
+  if (command.type === 'herd') assignWildlifeHerd(player, command);
+  if (command.type === 'stopWildlife') stopWildlifeHerd(player, command);
   if (command.type === 'setStance') assignCombatStance(player, command);
   if (command.type === 'stop' || command.type === 'holdPosition') assignStationaryOrder(player, command);
   if (command.type === 'patrol') assignPatrolOrder(player, command);
@@ -7385,14 +7414,59 @@ function accumulateBuildingAttacks() {
   }
 }
 
+function wildlifeGatherPending(nodeId) {
+  return units.some(unit => unit.hp > 0 && unit.kind === 'worker' && unitHasCapability(unit, 'gather')
+    && ['to-node', 'gathering'].includes(unit.gatherPhase) && unit.gatherNodeId === nodeId);
+}
+function wildlifeLandContext() {
+  return { map: mapDefinition, isWalkable,
+    canTraverse: (from, to) => canTraverseUnitStep(from, to, MAP_WIDTH, elevationLevelByCell, isWalkable) };
+}
+function wildlifeHerdNotice(node, message) {
+  if (!cellVisibleToTeam(node.wildlifeTeam, wildlifeCell(node, mapDefinition))) return;
+  for (const peer of peers) if (peer.team === node.wildlifeTeam) peer.sendJson({ type: 'notice', message });
+}
+function assignWildlifeHerd(player, command) {
+  if (!Number.isSafeInteger(command.resourceEpoch) || command.resourceEpoch !== forestEpoch) {
+    sendOrderNotice(player, command, 'HERD REJECTED · RESOURCE STATE CHANGED'); return;
+  }
+  const node = resourceNodeStates.get(command.nodeId);
+  const result = startWildlifeHerd(node, command, { ...wildlifeLandContext(), team: player.team,
+    isVisible: cellVisibleToTeam, gatherPending: wildlifeGatherPending(node?.id),
+    findPath: (start, goal) => { const field = getAttackFlowField(goal); return field ? pathFromAttackFlow(start, field) : []; },
+  });
+  if (result.status !== 'accepted') {
+    sendOrderNotice(player, command, `HERD REJECTED · ${result.reason.toUpperCase().replaceAll('-', ' ')}`); return;
+  }
+  dirty = true; sendOrderNotice(player, command, 'HERD ORDER · SHEEP');
+}
+function stopWildlifeHerd(player, command) {
+  const node = resourceNodeStates.get(command.nodeId);
+  if (!Number.isSafeInteger(command.resourceEpoch) || command.resourceEpoch !== forestEpoch
+    || (player.team !== 0 && player.team !== 1) || node?.wildlifeTeam !== player.team
+    || node?.wildlifeState !== 'alive' || !(node.stock > 0)
+    || !cellVisibleToTeam(player.team, wildlifeCell(node, mapDefinition))) {
+    sendOrderNotice(player, command, 'SHEEP STOP REJECTED · SELECT YOUR VISIBLE ALIVE SHEEP'); return;
+  }
+  cancelWildlifeHerd(node); dirty = true;
+  sendOrderNotice(player, command, 'SHEEP STOP ORDER');
+}
+function stopBlockedWildlifeHerds() {
+  for (const node of resourceNodeStates.values()) if (node.wildlifeHerd
+    && !validWildlifeHerdState(node, wildlifeLandContext())) {
+    cancelWildlifeHerd(node); dirty = true; wildlifeHerdNotice(node, 'HERD STOPPED · ROUTE BLOCKED');
+  }
+}
 function updateWildlifeClaims() {
   if (stepWildlifeClaims(resourceNodeStates.values(), units, { canClaim: (unit, node) =>
     UNIT_DEFINITIONS[unit.kind]?.movementDomain !== 'water' && Object.hasOwn(UNIT_DEFINITIONS, unit.kind)
     && cellVisibleToTeam(unit.team, wildlifeCell(node, mapDefinition))
     && clearWildlifeClaimSegment(unit, node, { map: mapDefinition, levels: elevationLevelByCell, isWalkable }),
-  })) dirty = true;
+  })) {
+    for (const node of resourceNodeStates.values()) if (node.wildlifeHerd && node.wildlifeHerd.team !== node.wildlifeTeam) cancelWildlifeHerd(node);
+    dirty = true;
+  }
 }
-
 function updateWildlifeMotion() {
   const gatherTargets = new Set(units.filter(unit => unit.hp > 0 && unit.kind === 'worker'
     && unitHasCapability(unit, 'gather') && ['to-node', 'gathering'].includes(unit.gatherPhase))
@@ -7401,15 +7475,21 @@ function updateWildlifeMotion() {
   for (const definition of mapDefinition.resourceNodes) {
     if (definition.wildlifeSpecies === undefined) continue;
     const node = resourceNodeStates.get(definition.id);
-    const otherSheep = [...resourceNodeStates.values()].filter(other => other.id !== node.id
-      && other.wildlifeState === 'alive');
-    if (stepWildlifeMotion(node, definition, {
+    if (node.wildlifeState !== 'alive') continue;
+    const others = [...resourceNodeStates.values()].filter(other => other.id !== node.id
+      && other.wildlifeSpecies !== undefined && other.stock > 0);
+    const canStep = (from, to) => clearWildlifeClaimSegment(from, to,
+      { map: mapDefinition, levels: elevationLevelByCell, isWalkable })
+      && wildlifeStepUnoccupied(from, to, occupied) && wildlifeStepUnoccupied(from, to, others);
+    if (node.wildlifeHerd) {
+      const result = stepWildlifeHerd(node, { map: mapDefinition, canStep, gatherPending: gatherTargets.has(node.id) });
+      if (result.changed) dirty = true;
+      if (result.status === 'blocked') wildlifeHerdNotice(node, 'HERD STOPPED · ROUTE BLOCKED');
+      continue;
+    }
+    if (stepWildlifeMotion(node, { ...definition, ...node.wildlifeGrazeAnchor }, {
       paused: gatherTargets.has(node.id),
-      canStep: (from, to) => sameWildlifeCell(to, definition, mapDefinition)
-        && canTraverseUnitStep(wildlifeCell(from, mapDefinition), wildlifeCell(to, mapDefinition),
-          MAP_WIDTH, elevationLevelByCell, isWalkable)
-        && wildlifeStepUnoccupied(from, to, occupied)
-        && wildlifeStepUnoccupied(from, to, otherSheep),
+      canStep: (from, to) => sameWildlifeCell(to, node.wildlifeGrazeAnchor, mapDefinition) && canStep(from, to),
     })) dirty = true;
   }
 }

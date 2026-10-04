@@ -89,6 +89,7 @@ test('actual checkpoint capture copies private motion before deferred serializat
     teamUpgrades: [{}, {}], teamResearch: [null, null], workerProduction: [{}, {}], homeTownCenters: [{}, {}],
     triggerStates: new Map(), scenarioEventStates: new Map(), victoryHoldState: { activeTeams: [], progressSeconds: [], triggerIds: [] },
     visibleCellsByTeam: [[], []], exploredCellsByTeam: [[], []], forestStockEntries: () => [], mapDefinition: map,
+    authoredMapDefinition: map, matchMode: { matchModeId: 'authored', matchModeVersion: 1 },
     matchMapHash: () => 'map', matchEconomyProfileId: () => 'profile', economyRulesetRevision: () => 'rules',
     privateProductionView: () => ({}), pregame: null };
   Object.assign(defaults, { Buffer, unitGenerationCounters: [], teamFood: [0, 0], teamWood: [0, 0], teamStone: [0, 0],
