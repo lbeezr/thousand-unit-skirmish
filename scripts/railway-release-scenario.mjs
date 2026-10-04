@@ -143,7 +143,7 @@ try {
     assert.equal(response.headers.get('cache-control'), 'no-store', filename);
     assert.match(response.headers.get('content-type') || '', filename.endsWith('.html') ? /text\/html/
       : filename.endsWith('.css') ? /text\/css/ : filename.endsWith('.json') ? /application\/json/
-        : /(?:java|ecma)script/, filename);
+        : filename.endsWith('.png') ? /image\/png/ : /(?:java|ecma)script/, filename);
     assert.equal((await response.arrayBuffer()).byteLength, 0, `HEAD must omit the body: ${filename}`);
   }
   for (const filename of ['server.mjs', 'scripts/check-runtime-imports.mjs', 'src/server/client-asset-paths.mjs',
