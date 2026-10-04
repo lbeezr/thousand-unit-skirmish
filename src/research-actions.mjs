@@ -1,5 +1,5 @@
 import { GAMEPLAY_DEFINITIONS } from './gameplay-definitions.mjs';
-import { missingTechnologyPrerequisites, technologyRequirementReason, foodWoodShortfallReason } from './gameplay-action-rules.mjs';
+import { missingTechnologyPrerequisites, technologyRequirementReason, foodWoodShortfallReason } from './rules/gameplay-action-rules.mjs';
 
 /** Shared research availability; caller supplies only its own economy and progress. */
 export function researchAction(building, technologyId, state, definitions = GAMEPLAY_DEFINITIONS) {
