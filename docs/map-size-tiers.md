@@ -27,7 +27,8 @@ also demonstrates wrapped 16-bit vision indices and projects cache/path/render
 costs. Small now has an authored [Threefold Basin candidate](qa-threefold-basin-2026-10-04.md).
 Medium now has authored [Riven Escarpment](qa-riven-escarpment-2026-10-04.md),
 admitted for [ordinary human Skirmish](qa-medium-skirmish-admission-2026-10-04.md)
-with a static 207-unit / 79.615-second Worker route. Large remains unauthored; no tier
+with a static 207-unit / 79.615-second Worker route. [Large Crownroads](qa-crownroads-2026-10-04.md)
+adds four expansion sites and a 251-unit / 96.538-second Worker route. No tier
 has a supported-capacity claim. [Existing elevation](map-elevation-capabilities.md)
 supports these layouts within its current three-level, single-surface contract.
 The first Tiny candidate is Terraced Vale; its static base route is 133 units,
