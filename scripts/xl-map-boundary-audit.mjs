@@ -13,6 +13,9 @@ import { planWallLine } from '../src/wall-line-planner.mjs';
 import { createWaterRouteGraph } from '../src/water-route-graph.mjs';
 import { buildElevationGrid } from '../src/map-utils.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
+import { preflightXlCheckpointRoutes, XL_CHECKPOINT_ROUTE_MAX_ENTRIES,
+  XL_CHECKPOINT_ROUTE_MAX_SIDE, XL_CHECKPOINT_ROUTE_LEGACY_SIDE,
+  XL_CHECKPOINT_ROUTE_SLOT_BYTES } from '../src/server/checkpoint-route-budget.mjs';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -32,6 +35,46 @@ function sourceNumber(source, pattern) {
 }
 function accepts(call) {
   try { call(); return true; } catch { return false; }
+}
+
+// Bounded payload/operation witness, not a match or comparable performance run.
+// The real authority remains gated at256; do not widen it for this probe.
+export function xlCheckpointRouteProbe({ width, height }, { maxUnits, maxResourceNodes }) {
+  const cells = width * height, limits = { maxUnits, maxResourceNodes };
+  const before = process.memoryUsage(), paths = [];
+  let remaining = XL_CHECKPOINT_ROUTE_MAX_ENTRIES;
+  while (remaining > 0) {
+    const length = Math.min(cells, remaining);
+    paths.push(Array(length).fill(cells - 1)); remaining -= length;
+  }
+  const units = paths.map(path => ({ path, attackMoveResumePath: null }));
+  const allocated = process.memoryUsage(), started = performance.now();
+  const accepted = preflightXlCheckpointRoutes({ width, height }, { units, resourceNodes: [] }, limits);
+  const preflightMilliseconds = performance.now() - started, validated = process.memoryUsage();
+  const copies = paths.map(path => [...path]), copied = process.memoryUsage();
+  if (copies.reduce((sum, path) => sum + path.length, 0) !== XL_CHECKPOINT_ROUTE_MAX_ENTRIES)
+    throw new Error('Bounded route-copy witness changed.');
+  let indexReads = 0;
+  const unread = Array(cells);
+  Object.defineProperty(unread, 0, { get() { indexReads++; throw new Error('Unexpected oversized payload read'); } });
+  const oversized = Array.from({ length: Math.ceil((XL_CHECKPOINT_ROUTE_MAX_ENTRIES + 1) / cells) },
+    () => ({ path: unread, attackMoveResumePath: null }));
+  let rejection;
+  try { preflightXlCheckpointRoutes({ width, height }, { units: oversized, resourceNodes: [] }, limits); }
+  catch (error) { rejection = String(error.message); }
+  if (!/exceeds aggregate cell entries/.test(rejection ?? '') || indexReads !== 0)
+    throw new Error('XL over-budget rejection did not precede payload scanning.');
+  return { legacyMaxSide: XL_CHECKPOINT_ROUTE_LEGACY_SIDE, maxSide: XL_CHECKPOINT_ROUTE_MAX_SIDE,
+    maxRouteEntries: XL_CHECKPOINT_ROUTE_MAX_ENTRIES, maxUnits, maxResourceNodes,
+    maxAuxiliaryPathReferences: 2 * maxUnits + maxResourceNodes,
+    slotBytesModel: XL_CHECKPOINT_ROUTE_SLOT_BYTES,
+    oneCopySlotPayloadBytesUpper: XL_CHECKPOINT_ROUTE_MAX_ENTRIES * XL_CHECKPOINT_ROUTE_SLOT_BYTES,
+    acceptedBoundary: accepted, oversizedRejectedBeforeIndexReads: { rejection, indexReads },
+    diagnostics: { preflightMilliseconds, memoryBytes: { before, allocated, validated, copied },
+      scope: 'single-process bounded array witness; no GC normalization, quiet-host comparison, RSS guarantee or supported match capacity' },
+    hooks: { beforeCaptureRouteCloning: true, beforeFullCheckpointValidationAllocations: true },
+    remaining: { liveRoutePublicationBudget: 'pending', fileReadAndJsonParseByteEnvelope: 'pending',
+      wholeCheckpointStateAndAllocationBudget: 'pending', ordinary320Admission: 'closed' } };
 }
 
 export function crossingTopology(map) {
@@ -103,6 +146,7 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
   const files = ['server.mjs', 'room-supervisor.mjs', 'index.html', 'src/main.js',
     'src/wall-line-planner.mjs', 'src/water-route-graph.mjs', 'src/map-size-policy.mjs',
     'src/match-modes.mjs', 'src/server/vision-coverage-cache.mjs',
+    'src/server/checkpoint-route-budget.mjs',
     'src/gameplay-definitions.mjs', 'src/elevation.mjs', 'src/map-utils.mjs',
     'src/town-center-spawn.mjs', 'src/terrain-authoring.mjs', 'src/forest-fringe.mjs',
     'maps/veyrholds-slate-saddle.json', 'scripts/performance-run-evidence.mjs',
@@ -138,6 +182,17 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
   const mapBytes = Buffer.byteLength(JSON.stringify(map));
   const publishCommandBytes = Buffer.byteLength(JSON.stringify({ type: 'publishMap', map, persist: true }));
   const maxUnits = sourceNumber(source, /const MAX_UNITS = (\d+);/);
+  const maxResourceNodes = sourceNumber(source, /const MAX_RESOURCE_NODES = (\d+);/);
+  const captureBody = extractFunction(source, 'captureMatchCheckpoint');
+  const validationBody = extractFunction(source, 'validateMatchCheckpoint');
+  if (!captureBody.includes('preflightXlCheckpointRoutes(authoredMapDefinition, { units, resourceNodes: resourceNodeStates },')
+    || captureBody.indexOf('preflightXlCheckpointRoutes(') > captureBody.indexOf('ensureVisionMasks();')
+    || !validationBody.includes('preflightXlCheckpointRoutes(snapshot.mapDefinition, snapshot.state,')
+    || validationBody.indexOf('preflightXlCheckpointRoutes(') > validationBody.indexOf('validateMapDefinition(')
+    || !captureBody.includes('{ maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES }')
+    || !validationBody.includes('{ maxUnits: MAX_UNITS, maxResourceNodes: MAX_RESOURCE_NODES }'))
+    throw new Error('XL checkpoint preflight consumer/ordering changed; update its evidence.');
+  const xlRoutePreflight = xlCheckpointRouteProbe(map, { maxUnits, maxResourceNodes });
   // The literal may use separators; parse separately without evaluating code.
   const inboundLiteral = source.match(/const MAX_INBOUND_FRAME_BYTES = ([\d_]+);/);
   if (!inboundLiteral) throw new Error('Inbound frame envelope moved.');
@@ -186,7 +241,7 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
       patchCounts: { terrain: map.terrainPatches.length, elevation: map.elevationPatches.length, obstacles: map.obstacles.length } },
     dimensions: { limits, boundaryMatrix },
     routes: { indexRepresentation: 'absolute integer cells in JS arrays',
-      scope: 'prospective320 path-leaf envelope if dimension admission alone were widened; current complete checkpoints reject320 maps',
+      scope: 'legacy path-leaf envelope without the XL preflight; current complete checkpoints reject320 maps',
       currentMaxAdmittedSquareCells: limits.server ** 2,
       activeAndResumeCheckpointPathsPerActor: 2, maxUnits,
       validatedEntriesPerPath: cells, simpleRuntimePathEntriesUpper: cells - 1,
@@ -199,11 +254,12 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
       maxManhattanHeuristic: grid.grids.at(-1).maxManhattanHeuristic,
       heuristicFitsUint16: grid.grids.at(-1).heuristicFitsUint16,
       aggregateRouteRetentionBudget: null,
-      note: 'Executed path-leaf upper bound at the proposed cellCount, not an admitted320 checkpoint or observed legitimate save. No giant aggregate array is allocated. A* can exhaust the finite grid within one atomic search; the callback threshold is not a per-search cap.' },
+      note: 'Legacy leaf-only upper bound excludes the new XL checkpoint aggregate preflight. Live route retention remains unbounded by an aggregate quota. A* can exhaust the finite grid within one atomic search; the callback threshold is not a per-search cap.' },
     checkpoint: { captureClonesActiveAndResumePaths: true, serialization: 'JSON.stringify whole captured snapshot',
       write: 'atomic temporary write, fsync, rename', read: 'whole UTF-8 readFile then JSON.parse',
-      explicitByteEnvelope: null, exploredBase64CharactersTwoSeats: grid.grids.at(-1).checkpointExploredBase64CharactersTwoSeats,
-      note: 'No route aggregate or checkpoint byte envelope in the audited source. Preserve prior <=256 checkpoint behavior when designing XL bounds.' },
+      explicitByteEnvelope: null, xlRoutePreflight,
+      exploredBase64CharactersTwoSeats: grid.grids.at(-1).checkpointExploredBase64CharactersTwoSeats,
+      note: 'XL-only aggregate preflight bounds route cell visits and route cloning payload before capture/restore allocations. Whole-file read/JSON parsing and non-route checkpoint state remain separate, unbounded here. <=256 checkpoints retain the existing validator.' },
     transport: { inboundFrameBytes: inbound, outboundQueuedAndFrameBytes: Number(outgoing[1]) * 1024 * 1024,
       routeArraysInOrdinarySnapshots: false, packedFogBytesPerSeat: grid.grids.at(-1).fogPerSeat.packedBytes,
       fogBase64CharactersPerSeat: grid.grids.at(-1).fogPerSeat.base64Characters,
@@ -213,7 +269,7 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
     nativeProbeMatchesDimensionPolicy,
     nativeProbeScope: 'actual fixed-tick authority validation/activation and both-seat in-memory checkpoint restore; no process restart, wall clock or ordinary menu entry',
     gates: { visibilityIndexAndCache: 'integrated under256 admission in PR328',
-      routeAndSaveEnvelope: 'shared movement contract decision pending', allSiteAdmission: 'closed',
+      routeAndSaveEnvelope: 'XL checkpoint route preflight integrated; live publication and whole-save/read envelope pending', allSiteAdmission: 'closed',
       ordinaryCreateJoinReadyLaunchRecovery: 'not-run; runtime rejects320',
       actualWorkerInfantryScoutJourneys: 'not-run', comparablePerformance: 'not-run; use PR325 validity contract',
       qualifiedRenderedAcceptance: 'not-run; reuse PR331 normal-entry capture interface',
