@@ -2,9 +2,10 @@
 
 The wildlife worker owns this technical conversion and recovery slice. Original
 candidate `60c928066faca119e40d9353536f5a87bcb962da` used fork main `9351320d`.
-The refreshed candidate incorporates owned controls
-`bc4101fc06d47a7af8d19ba32f0759ee8385a54f` and ordinary-map-floor main
-`966dc0a597eb15162b751522d111c7ae854de22f`; its exact reviewed head belongs in
+The refreshed candidate incorporates merged controls and main
+`c5224de7397e2d53f37fba3a045405543d211d74`, including owned controls
+`bc4101fc06d47a7af8d19ba32f0759ee8385a54f`, the ordinary map floor, movement
+tick-budget integration and Worker art. Its exact reviewed head belongs in
 the PR receipt. No new animal frames, private source or action loader are admitted.
 
 The [owning contract](wildlife-bellweather-sheep.md#canonical-body-heading--4-october-2026)
@@ -55,6 +56,20 @@ defaults changed to Skirmish; no production mode rule changes and no custom-map
 Skirmish capability is claimed. The final normal-input fixture also moves the
 claimant away and uses local zoom 3 before clicking Sheep, preserving legitimate
 friendly-unit screen-pick priority at the 160-map overview scale.
+
+At refreshed main, **204/204 focused checks** pass: heading/checkpoint/still
+compatibility, stance/pathing/attack continuation, owned state and placement,
+all 17 normal-input controls cases, all nine asset-adoption cases and the new
+movement-budget/error regressions. The standalone whole adoption audit,
+runtime imports, strict JS/Node types, docs links and whitespace checks pass.
+Actual HTTP/WebSocket art and explicitly selected historical Millrace recovery
+also pass at server SHA256
+`062b796c1a212b82bb960faa227dfedc6178d20ff9145a25b1905aeddd51da79`.
+The refreshed long Herd proof is still running at source freeze; its final
+receipt belongs in the owning PR. Prior 186-check and Herd measurements above
+remain evidence for their stated earlier source, not a full-suite or refreshed
+server claim. The integrator retains final review, broad checks, release and
+postmerge verification.
 
 Schema28→29 changes every saved Sheep heading and the schema only. Exact
 comparisons retain actual positions, sequence, goals, waits, activities, Herd
