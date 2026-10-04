@@ -64,6 +64,8 @@ try {
   assert.deepEqual(created.launchOptions, { mode: 'pvp', pregame: true, ...NORMAL_HUMAN_MATCH_MODE });
   const host = await fixture.connect(0, null, created.roomId), guest = await fixture.connect(1, null, created.roomId);
   assert.equal(host.welcome.map.id, NORMAL_MATCH_MAP_ID);
+  await host.wait(row => row.type === 'lobby' && row.lobby.seats.filter(seat => seat.connected).length === 2,
+    'host sees guest admission before choosing the Ready revision');
   await ready(host); await ready(guest);
   await host.wait(row => row.type === 'lobby' && row.lobby.canLaunch
     && row.lobby.seats.filter(seat => seat.connected).every(seat => seat.ready), 'host sees both ready seats');
