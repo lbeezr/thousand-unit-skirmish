@@ -191,3 +191,18 @@ units/pixel; entire earlier4608x4096 RGBA/202records protected, only declared SW
 idle clips replaced. Page/mask5120x4096,217frames/77clips; decoded80+20MiB.
 Walk8/8, seven other land actions7/8; W has seven art cells left. Identified
 parent Railway/Mac native/deployed acceptance and motion/contact polish remain open.
+
+
+v0.33.0 closes Human Worker land-art breadth with fifteen true West/up-left-back
+poses from the [retained public seed iteration](../../../docs/art-direction/human-roster-v1/generated/worker-west-actions-v1/README.md).
+Every Walk/Wood/Food/Build/Repair/Attack/Defeat/Stone heading now uses genuine
+multi-pose exact clips:64/64, no missing land art. Carry/Return reuses all8 walks
+with cargo cue. West work loops720ms, attack/defeat840ms one-shots; attack reuses
+axe, repair hammer. One271/310 scale, fixed source roots, whole tool envelope
+320x296/root180,284 honored by loader; unchanged world units/pixel. Aligned
+5632x4096 page/mask preserves entire old5120x4096 RGBA/217records and77clips
+except declared West placeholders.232frames/81clips; decoded88+22MiB.
+[Coverage/default/release evidence and native recipe](../../../docs/qa-worker-land-art-2026-10-04.md)
+keep identified containing parent Railway/Mac delivered/native acceptance open;
+source breadth and motion/contact polish are separate milestones. Fishing and
+economy/receipt/heading producer/shared clocks remain separate-owner scope.

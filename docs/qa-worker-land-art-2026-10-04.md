@@ -104,12 +104,14 @@ current-roster keys can also be admitted with the same manifest contract.
 | --- | --- | --- |
 | 1 | Retain all eight walk headings through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
 | 2 | Keep all eight authored walk headings functional; Carry/Return uses their existing cargo cue. | Default Three playback/registration is checked. Native root/turn/cargo observations identify further refinements; no walk heading input remains missing. |
-| 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **6 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
-| 4 | One remaining readable dedicated Stone-work heading; retain PR263 default selector adoption. | SE, NW, E, N, NE, S and SW now have dedicated pick poses; the earlier broad eight-view attempt failed strike facing in the other rows. PR263 now enables exact authored Stone state/resource selection from productive receipts; missing headings retain their own idle. No economy edits. |
+| 3 | Retain all48 authored wood/food/build/repair/attack/defeat cells through identified default-game acceptance. Preserve all iterations. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
+| 4 | Retain all8 readable dedicated Stone headings and PR263 exact positive-work binding. | All8 now have dedicated pick poses; the earlier broad eight-view attempt failed strike facing in the other rows. PR263 now enables exact authored Stone state/resource selection from productive receipts; all8 exact clips are authored. No economy edits. |
 | 5 | Improve costume consistency, registration refinement and loop smoothing after usable breadth. | Functional native observations identify the needed refinements. Cosmetic perfection is not a gate for supplied usable keys. |
 
-There are now 8 of 8 walk headings, eight distinct idle headings, SE+NW land-action
-motion and default SE+NW Stone binding from PR263, with exact native/deployment acceptance open. **37 land-action/heading cells remain** (31+6).
+There are now all64 authored/default land action-heading cells: each of Walk,
+Wood, Food, Build, Repair, Attack, Defeat and Stone8/8. **Zero art cells remain**;
+exact containing deployment/native acceptance is open. Carry/Return uses all8
+authored walks with the existing cargo cue.
 Fishing's seven missing headings are excluded and retained by its separate owner.
 The animation-owner ID is outside this executor's live collaboration tree; the
 manifest contract and retained dependencies are recorded here for parent routing.
@@ -1053,3 +1055,80 @@ SW all189 focused checks, atlas/docs/whitespace, byte-idempotent admission and
 actual packed guarded HTTP/WebSocket/hash scenario pass. [Clean SW release](qa-evidence/worker-land-art-2026-10-04/south-west-actions-clean-release.json)
 measures `ced06b35d520afffba05fd12d77af636dd8c31b8`, `sourceDirty:false`,1179 files,
 `sha256:ab66b158a4ab736e69eb23a9eb73a1cdee71b6e0b1618b9cb671981cd0fb96c8`. Containing delivered/native acceptance stays open.
+
+
+## West closes complete usable land-art breadth — 4 October 2026
+
+SW [PR278](https://github.com/lbeezr/thousand-unit-skirmish/pull/278) merged at
+`65ed40a12323d53cf9dfbd1d60c3a673bb045fd3` after [independent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/278#pullrequestreview-5404520042)
+of `1ff55bb2b6ba9b56090579d658c8b9ed1f2fbe29` (185 reviewer checks and HTTP passed).
+[West public-seed iteration](art-direction/human-roster-v1/generated/worker-west-actions-v1/README.md)
+retains actual `walk-west-0`, prompt/reference/raw and all15 whole extracted poses.
+All retain up-left/back-three-quarter bearing and backpack identity, readable
+axe/empty-hand food/rectangular hammer/pointed pick. Defeat buckles, braces and
+ends prone head up-left/boots down-right. No mirror/facing relabel, private pixels,
+paid external job/rigging or discarded art iteration.
+
+[Registration](qa-evidence/worker-land-art-2026-10-04/west-actions-registration.json)
+uses one271/310 scale, fixed roots178/536/852, work row contacts305/593/890/1216,
+reviewed fallen contacts. Tool-work tiles320x296/root180,284 retain complete long
+strokes; food256/root128,244 and corpse512x256/root256,244. Actual loader matrix
+honors the asymmetric root. Body roughly225–232px against232px walk; max271
+preserves old272px/world scale. [Preservation](qa-evidence/worker-land-art-2026-10-04/west-actions-preservation.json)
+protects every old5120x4096 RGBA pixel,217frame records and77clips except three
+declared West idle placeholders. New512 strip makes5632x4096 aligned zero mask,
+232frames/81clips. Decoded color88MiB+mask22MiB=110MiB, up10MiB from SW. Entire
+prior art, fishing ROI, encoded mask sources, sampling/world scale stay intact.
+Simple motion, minor loop/foot-contact/settle differences remain polish.
+
+[Default tests](../scripts/worker-west-actions-art.test.mjs) inspect actual Three
+UV/matrix/root/scale for both seats selected/unselected, all confirmed720ms work
+loops, Stop/resume, movement/attack interruptions, all8walk cargo Return→idle,
+attack840ms one-shot and defeat priority/clamp. Additional full64-cell check
+requires every action/heading exact clip with timed non-idle multi-pose motion,
+correct loop/one-shot semantics under both approximation settings, and exact
+agreement with the current [coverage receipt](qa-evidence/worker-land-art-2026-10-04/land-action-coverage.json).
+PR263 automatically consumes all8 authored Stone headings. Axe attack reuses
+wood and repair reuses hammer explicitly. No economy/receipt/heading producer
+or shared-clock edits; fishing remains separate-owner scope.
+
+[Wood](qa-evidence/worker-land-art-2026-10-04/gather-wood-west-keys.png),
+[food](qa-evidence/worker-land-art-2026-10-04/gather-food-west-keys.png),
+[hammer](qa-evidence/worker-land-art-2026-10-04/build-west-keys.png),
+[pick](qa-evidence/worker-land-art-2026-10-04/gather-stone-west-keys.png),
+[defeat](qa-evidence/worker-land-art-2026-10-04/defeat-west-keys.png), and
+[all64 actual default source-cell overview](qa-evidence/worker-land-art-2026-10-04/land64-source-overview.png)
+are preserved source-pixel evidence, not actual GPU/native game acceptance.
+The overview holds each real clip's midpoint (defeat: terminal) at one pixel scale and ground root;
+repair/attack alias artwork is intentional. No facing is duplicated by relabel.
+
+| Action | Authored true headings | Missing art cells |
+| --- | --- | --- |
+| Walk | 8/8 | 0 |
+| Wood | 8/8 | 0 |
+| Food | 8/8 | 0 |
+| Build | 8/8 | 0 |
+| Repair | 8/8 | 0 |
+| Attack | 8/8 | 0 |
+| Defeat | 8/8 | 0 |
+| Stone | 8/8 | 0 |
+
+**64/64 authored/default source cells, zero land art gaps**. Every heading has
+all8 actions; Carry/Return uses all8walks+existing cargo cue. Ranked ongoing:
+
+1. Parent thread `01a0f784-c5d7-72e0-82e8-1747b4c840c1` Railway/Mac receiving route
+   identifies a delivered revision containing this final pack and verifies actual
+   normal-game action/root/contact/transitions. Source merge/package is distinct.
+2. Animation `01a103d4` retains productive receipts and ordinary-game target bearing;
+   observe Wood/Food/Build/Repair/Stone activity, waiting/Stop/move/attack/death/cargo
+   transitions using its existing positive-work contract, without economy edits.
+3. Use actual game observations to rank contact/loop/costume refinements and atlas
+   memory/layout optimization; preserve every current source/iteration/registration.
+
+Local browser remains `sandbox-unavailable`; CPU and packed HTTP evidence cannot
+close native acceptance. On a containing default Bellweather · Millrace build,
+record both Human seats selected/unselected at ordinary/strategic zoom: all8
+headings of five productive work actions for one full loop, heading turns,
+Stop/resume, waiting and movement interruptions, axe attack completion, prone
+corpse clamp, and each heading's cargo Return→deposit/idle. Keep exact deployment
+and release revision/hash with those observations. No preview flag is required.

@@ -16,7 +16,7 @@ const registration = JSON.parse(readFileSync(new URL('hammer-east-registration.j
 
 test('East build/repair faithfully share three complete distinct hammer poses at the retained common scale', () => {
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', directory)));
-  assert.deepEqual([image.width, image.height], [5120, 4096]);
+  assert.deepEqual([image.width, image.height], [5632, 4096]);
   assert.equal(registration.sharedScale, 232 / 307);
   const build = spriteActionClip(clips, 'build', 'east', null, 'human', true);
   const repair = spriteActionClip(clips, 'repair', 'east', null, 'human', true);
@@ -42,7 +42,7 @@ test('East build/repair faithfully share three complete distinct hammer poses at
   assert.equal(asset.heightWorld / Math.max(...asset.frames.map(f => f.alphaBoundsPx.height)), preservation.worldUnitsPerPixel);
   for (const state of ['build', 'repair']) {
     assert.deepEqual(asset.clips.filter(c => c.stateId === state && c.sequence.some(k => !k.frameId.startsWith('idle-')))
-      .map(c => c.directionId).sort(), ['east', 'north', 'north-east', 'north-west', 'south', 'south-east', 'south-west']);
+      .map(c => c.directionId).sort(), ['east', 'north', 'north-east', 'north-west', 'south', 'south-east', 'south-west', 'west']);
   }
 });
 
