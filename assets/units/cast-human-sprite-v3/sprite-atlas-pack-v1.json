@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "packId": "cast-human-sprite",
-  "packVersion": "0.14.0",
+  "packVersion": "0.15.0",
   "maturity": "runtime-candidate",
   "provenance": {
     "license": "LicenseRef-Thousand-Unit-Skirmish-Internal-Review",
     "source": "Vaelora Human roster role and action sheets",
     "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging",
-    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four-key hand-net fishing pilot for the actual south-east heading, approved for public/default integration. Original four pose pixels preserved. Seven fishing headings remain unproduced; root/loop polish remains tracked in docs/worker-fishing-animation.md."
+    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four-key hand-net fishing pilot for the actual south-east heading, approved for public/default integration. Original four pose pixels preserved. Seven fishing headings remain unproduced; root/loop polish remains tracked in docs/worker-fishing-animation.md. East walk reuses eight retained current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage."
   },
   "files": [
     {
@@ -19,7 +19,7 @@
         "width": 2048,
         "height": 4096
       },
-      "sha256": "f652e0439273ffbb2f69fd7df66c62e45f3dcf7256e153849df667ab71600356"
+      "sha256": "2ed87772aaa1d882e2f93a12cfa1d561177292257261d18fee34849c27571413"
     },
     {
       "id": "cast-human-atlas-runtime",
@@ -30,7 +30,7 @@
         "width": 2048,
         "height": 4096
       },
-      "sha256": "f652e0439273ffbb2f69fd7df66c62e45f3dcf7256e153849df667ab71600356"
+      "sha256": "2ed87772aaa1d882e2f93a12cfa1d561177292257261d18fee34849c27571413"
     },
     {
       "id": "cast-human-team-mask",
@@ -3735,6 +3735,350 @@
             }
           ],
           "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-east-0",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 74,
+            "y": 11,
+            "width": 106,
+            "height": 228
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 0,
+              "y": 2560,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 0,
+                "y": 2560,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-east-1",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 72,
+            "y": 11,
+            "width": 112,
+            "height": 231
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 256,
+              "y": 2560,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 256,
+                "y": 2560,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-east-2",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 68,
+            "y": 14,
+            "width": 115,
+            "height": 230
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 512,
+              "y": 2560,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 512,
+                "y": 2560,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-east-3",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 64,
+            "y": 16,
+            "width": 137,
+            "height": 224
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 768,
+              "y": 2560,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 768,
+                "y": 2560,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-east-4",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 70,
+            "y": 13,
+            "width": 122,
+            "height": 230
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 1024,
+              "y": 2560,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 1024,
+                "y": 2560,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-east-5",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 73,
+            "y": 14,
+            "width": 128,
+            "height": 228
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 1280,
+              "y": 2560,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 1280,
+                "y": 2560,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-east-6",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 67,
+            "y": 13,
+            "width": 130,
+            "height": 231
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 1536,
+              "y": 2560,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 1536,
+                "y": 2560,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "walk-east-7",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 65,
+            "y": 10,
+            "width": 135,
+            "height": 234
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 1792,
+              "y": 2560,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 1792,
+                "y": 2560,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
         }
       ],
       "clips": [
@@ -3832,8 +4176,36 @@
           "loop": true,
           "sequence": [
             {
-              "frameId": "idle-east-0",
-              "durationMs": 1000
+              "frameId": "walk-east-0",
+              "durationMs": 100
+            },
+            {
+              "frameId": "walk-east-1",
+              "durationMs": 100
+            },
+            {
+              "frameId": "walk-east-2",
+              "durationMs": 100
+            },
+            {
+              "frameId": "walk-east-3",
+              "durationMs": 100
+            },
+            {
+              "frameId": "walk-east-4",
+              "durationMs": 100
+            },
+            {
+              "frameId": "walk-east-5",
+              "durationMs": 100
+            },
+            {
+              "frameId": "walk-east-6",
+              "durationMs": 100
+            },
+            {
+              "frameId": "walk-east-7",
+              "durationMs": 100
             }
           ]
         },
