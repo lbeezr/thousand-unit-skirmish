@@ -10,6 +10,16 @@ refresh. No map, cell size, speed, planner/scheduler budget, checkpoint schema, 
 field, ordinary default or admission limit changes. Tiny 160, Small 192, Medium 224 and Large 256
 retain their current behavior; **XL 320 remains unavailable**.
 
+Owning implementation: [PR328](https://github.com/lbeezr/thousand-unit-skirmish/pull/328).
+Independent [exact-head review](https://github.com/lbeezr/thousand-unit-skirmish/pull/328#pullrequestreview-5407187128)
+at `32146dd802f6eaec079ee5927a430c1b292be216` reran all 133 focused checks and required source
+checks with no blockers. The clean 1,202-file package digest was independently recomputed as
+`sha256:5638903d80f8e3a9efca55f49aa790c99e9274c77583e626752d25b1c4d2735c`.
+That revision's actual packed privacy, native Large three-wave/cold/admission controls and paid
+gate results are recorded in the [delivery checkpoint](https://github.com/lbeezr/thousand-unit-skirmish/pull/328#issuecomment-5982123948).
+Incoming-main integration and final merge/release receipts remain in the same owning PR;
+the first package digest identifies its specific reviewed source, not later main or staging.
+
 The cache retains at most **8,388,608 exact owned typed-array bytes and 8,192 entries**. Both visible
 and fringe buffers count; all retained buffers have exact size and zero offset. Temporary miss
 arrays, garbage pending collection, JS metadata and ray geometry are excluded. This is a retained
