@@ -18,6 +18,46 @@ test('the actual Practice provider projects exact size identity without consumer
   assert.equal(catalog.map.sizeTierLabel, 'Internal fixture');
   assert.equal(catalog.map.ordinarySelectable, false);
 });
+
+test('normal Practice offers exact registry presets and sends Bannerfall once with its actual starting map and rules', async () => {
+  const tiny = JSON.parse(readFileSync(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+  const arena = JSON.parse(readFileSync(new URL('../maps/bannerfall-arena.json', import.meta.url)));
+  const woodland = JSON.parse(readFileSync(new URL('../maps/woodland-expanse.json', import.meta.url)));
+  const original = JSON.stringify([tiny, arena, woodland]);
+  const setup = practiceEntryCatalog(tiny, [tiny, arena, woodland]);
+  assert.deepEqual(setup.presets.map(preset => [preset.matchModeId, preset.map.id]),
+    [['bannerfall', arena.id], ['objective-control', woodland.id]]);
+  assert.ok(setup.presets.every(preset => !Object.hasOwn(preset.map, 'obstacles')));
+  assert.equal(JSON.stringify([tiny, arena, woodland]), original);
+  let finish;
+  const f = await menu(setup, () => new Promise(resolve => { finish = resolve; }));
+  assert.deepEqual([...f.select.options].map(option => option.value),
+    ['authored@1', 'skirmish@1', 'bannerfall@1', 'objective-control@1']);
+  f.choose('bannerfall@1');
+  assert.match(f.dom.window.document.querySelector('[data-map]').textContent, /Tiny · 160 × 160 · BANNERFALL ARENA/);
+  const rule = f.dom.window.document.querySelector('[data-rule]').textContent;
+  assert.match(rule, /waves.*15 seconds/); assert.match(rule, /6 enemy troop kills/);
+  assert.match(rule, /original Town Center/); assert.doesNotMatch(rule, /capture|authored victory|land force/i);
+  f.button.click(); f.button.click(); await turn();
+  assert.deepEqual(f.posts, [{ mode: 'pvp', practice: true, matchModeId: 'bannerfall', matchModeVersion: 1 }]);
+  finish(json({ roomId })); await turn(); assert.equal(f.navigations.length, 1);
+  f.dom.window.close();
+});
+
+test('Practice rejects a withheld or incompatible preset and preserves an explicit removed preset', async () => {
+  const tiny = JSON.parse(readFileSync(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+  const arena = JSON.parse(readFileSync(new URL('../maps/bannerfall-arena.json', import.meta.url)));
+  let setup = practiceEntryCatalog(tiny, [arena]);
+  const f = await menu(() => setup); f.choose('bannerfall@1');
+  setup = practiceEntryCatalog(tiny); await f.controller.refresh();
+  assert.equal(f.button.disabled, true); assert.equal(f.select.value, 'bannerfall@1');
+  f.button.dispatchEvent(new f.dom.window.Event('click')); await turn(); assert.deepEqual(f.posts, []);
+  setup = practiceEntryCatalog(tiny, [arena]); setup.presets[0].map = practiceEntryCatalog(tiny).map;
+  await f.controller.refresh(); assert.equal(f.button.disabled, true);
+  setup = practiceEntryCatalog(tiny, [arena]); setup.presets[0].matchMode = { ...setup.presets[0].matchMode, selectable: false };
+  await f.controller.refresh(); assert.equal(f.button.disabled, true);
+  f.choose('authored@1'); assert.equal(f.button.disabled, false); f.dom.window.close();
+});
 const json = (value, status = 200) => new Response(JSON.stringify(value), { status });
 const turn = () => new Promise(resolve => setImmediate(resolve));
 async function menu(setup = catalog, create = () => json({ roomId })) {
@@ -26,7 +66,7 @@ async function menu(setup = catalog, create = () => json({ roomId })) {
     navigate: url => navigations.push(url), fetchImpl: async (url, options) => {
       if (url === '/api/rooms/status') {
         const current = typeof setup === 'function' ? setup() : setup;
-        return current instanceof Response ? current : json({ enabled: true, ...(current === undefined ? {} : { practiceSetup: current }) });
+        return current instanceof Response ? current : json({ enabled: true, ordinarySetup: { pve: { available: true } }, ...(current === undefined ? {} : { practiceSetup: current }) });
       }
       assert.equal(url, '/api/rooms'); posts.push(JSON.parse(options.body)); return create();
     } });

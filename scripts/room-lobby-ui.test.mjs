@@ -63,10 +63,60 @@ test('host controls send supported configuration and suppress pending duplicate 
 const millrace = JSON.parse(readFileSync(new URL('../maps/bellweather-millrace.json', import.meta.url)));
 const lab = JSON.parse(readFileSync(new URL('../maps/stone-defense-field.json', import.meta.url)));
 const skirmish = { matchModeId: 'skirmish', matchModeVersion: 1 };
+
+test('Bannerfall host and guest see only the fixed opening size and stronghold rules while ready remains usable', () => {
+  const canonical = JSON.parse(readFileSync(new URL('../maps/bannerfall-arena.json', import.meta.url)));
+  const identity = { matchModeId: 'bannerfall', matchModeVersion: 1 };
+  for (const player of [host, guest]) {
+    const f = fixture(player, { ...identity, mapId: canonical.id, armySize: 16,
+      matchModes: matchModeCatalog(canonical), maps: [{ ...canonical, matchModes: matchModeCatalog(canonical) }] },
+      effectiveMapForMatchMode(canonical, identity));
+    const size = f.node('lobby-army-size');
+    assert.equal(size.disabled, true); assert.deepEqual([...size.options].map(option => option.value), ['16']);
+    assert.match(size.title, /16 total units/); size.dispatchEvent(new f.dom.window.Event('change'));
+    assert.deepEqual(f.sent, []); assert.equal(f.node('lobby-ready').disabled, false);
+    assert.match(f.node('lobby-match-mode-summary').textContent, /waves.*15 seconds.*6 enemy troop kills.*original Town Center/);
+    f.node('lobby-ready').click(); assert.equal(f.sent.at(-1).type, 'setReady');
+    f.dom.window.close();
+  }
+});
 function modeSettings(identity = {}) {
   return { ...identity, mapId: millrace.id, matchModes: matchModeCatalog(millrace),
     maps: [millrace, lab].map(map => ({ id: map.id, name: map.name, matchModes: matchModeCatalog(map) })) };
 }
+
+test('ordinary Confluence choice shows its admitted Authored Rules and uses one authoritative map/mode change', () => {
+  const tiny = JSON.parse(readFileSync(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+  const confluence = JSON.parse(readFileSync(new URL('../maps/siltmouths-confluence-grounds.json', import.meta.url)));
+  const maps = [tiny, confluence].map(map => ({ ...map, ...mapSizeIdentity(map), selectable: true,
+    matchModes: matchModeCatalog(map) }));
+  for (const player of [host, guest]) {
+    const f = fixture(player, { ...skirmish, mapId: tiny.id, matchModes: matchModeCatalog(tiny), maps,
+      canLaunch: true, seats: [{ ...host, connected: true, ready: true }, { ...guest, connected: true, ready: true }] },
+      effectiveMapForMatchMode(tiny, skirmish));
+    const picker = f.node('lobby-map'), option = [...picker.options].find(value => value.value === confluence.id);
+    assert.equal(option.disabled, false);
+    assert.match(option.textContent, /Tiny · 160 × 160.*Confluence Grounds.*Authored Rules/);
+    assert.deepEqual(maps[1].matchModes.map(mode => [mode.id, mode.version]), [['authored', 1]]);
+    assert.equal(maps[1].supportedUnitCapacity, null);
+    picker.value = confluence.id; picker.dispatchEvent(new f.dom.window.Event('change'));
+    picker.dispatchEvent(new f.dom.window.Event('change'));
+    if (player === guest) assert.deepEqual(f.sent, []);
+    else {
+      assert.deepEqual(f.sent, [{ type: 'configureLobby', mapId: confluence.id,
+        matchModeId: 'authored', matchModeVersion: 1, revision: 4 }]);
+      assert.equal(f.node('lobby-ready').disabled, true);
+      assert.equal(f.node('lobby-launch').disabled, true);
+      f.ui.update({ ...f.state, revision: 5, mapId: confluence.id, armySize: 24,
+        matchModeId: 'authored', matchModeVersion: 1, matchModes: maps[1].matchModes, canLaunch: false,
+        seats: f.state.seats.map(seat => ({ ...seat, ready: false })) }, player, true, confluence);
+      assert.equal(f.node('lobby-match-mode').value, 'authored@1');
+      assert.equal(f.node('lobby-army-size').value, '24');
+      assert.equal(f.node('lobby-launch').disabled, true);
+    }
+    f.dom.window.close();
+  }
+});
 
 test('a projected Tiny choice submits one map/mode tuple and retains legacy visibility without extra tiers', () => {
   const tiny = JSON.parse(readFileSync(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
