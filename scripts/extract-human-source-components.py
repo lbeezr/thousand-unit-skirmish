@@ -24,7 +24,8 @@ if len(components)!=count:raise ValueError(f'Expected {count} silhouettes, found
 items=[]
 for pixels in components:
  xs=[p%w for p in pixels];ys=[p//w for p in pixels];bbox=(min(xs),min(ys),max(xs)+1,max(ys)+1);items.append((bbox,pixels))
-items.sort(key=lambda item:(round((item[0][1]+item[0][3])/2/h),item[0][0]))
+rows=int(sys.argv[4]) if len(sys.argv)>4 else 2
+items.sort(key=lambda item:(int((item[0][1]+item[0][3])/2/h*rows),item[0][0]))
 review=[]
 for i,(box,pixels) in enumerate(items):
  if box[0]==0 or box[1]==0 or box[2]==w or box[3]==h:raise ValueError(f'Frame {i} touches whole sheet edge: {box}')

@@ -1,0 +1,74 @@
+{
+  "sourcePackVersion": "0.20.0",
+  "unit": {
+    "kind": "worker",
+    "hp": 100,
+    "walking": false,
+    "task": "gathering",
+    "performingAction": "gather-stone",
+    "cargoType": "stone",
+    "angle": 2.356194490192345,
+    "attackStartedAt": 0,
+    "defeatStartedAt": 0
+  },
+  "expectedState": "gather-stone",
+  "observedState": "idle",
+  "heading": "south-east",
+  "observedFrame": "idle-south-east-0",
+  "availableExactClip": {
+    "stateId": "gather-stone",
+    "directionId": "south-east",
+    "loop": true,
+    "sequence": [
+      {
+        "frameId": "gather-stone-south-east-0",
+        "durationMs": 210
+      },
+      {
+        "frameId": "gather-stone-south-east-1",
+        "durationMs": 210
+      },
+      {
+        "frameId": "gather-stone-south-east-2",
+        "durationMs": 210
+      },
+      {
+        "frameId": "gather-stone-south-east-3",
+        "durationMs": 210
+      }
+    ]
+  },
+  "otherHeadingsWhenApproximate": [
+    {
+      "direction": "north",
+      "observedClipHeading": "south-east"
+    },
+    {
+      "direction": "north-east",
+      "observedClipHeading": "south-east"
+    },
+    {
+      "direction": "east",
+      "observedClipHeading": "south-east"
+    },
+    {
+      "direction": "south",
+      "observedClipHeading": "south-east"
+    },
+    {
+      "direction": "south-west",
+      "observedClipHeading": "south-east"
+    },
+    {
+      "direction": "west",
+      "observedClipHeading": "south-east"
+    },
+    {
+      "direction": "north-west",
+      "observedClipHeading": "south-east"
+    }
+  ],
+  "status": "default-adoption-blocked: enable confirmed Stone state and exact-heading idle policy",
+  "owner": "animation01a103d4 / PR216",
+  "scope": "Actual CPU selector observation, no default-playback/deployment/native acceptance claim"
+}
