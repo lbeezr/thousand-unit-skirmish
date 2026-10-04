@@ -12,17 +12,23 @@ Use `Uint32Array` for covered absolute cell indices on every map. Validate each 
 integer in `[0, width*height)`. Path/visibility consumers remain absolute grid indices. The proposal
 supports at most 320 per axis; do not infer unbounded larger grids. Boundary tests cover 65535,
 65536, 102399 and an invalid 102400, including 320 × 160 rectangles and the final row/column. The
-current 16-bit Manhattan heuristic still fits 320 (max63,800); 384 would need separate treatment.
+current 16-bit Manhattan heuristic still fits 320 (max 63,800); 384 would need separate treatment.
 
 Replace the per-cell unbounded Maps with one room-owned cache keyed by numeric `sourceCell*16 +
 sight` (current requested sights 8/10/11; effective raised radius 9/11/12). Key validation rejects
 unsupported sight and invalid source cells. Geometry and rules identity belong to a cache generation
 rather than being silently omitted from the key. A rebuild/reset creates a fresh cache object,
 preserving the existing `ensureVisionMasks` identity check, and increments an explicit geometry
-generation. No cache state is serialized into durable checkpoints.
+generation. Every geometry invalidation must replace that cache object; clearing
+the same object alone is forbidden because a same-tick snapshot would otherwise
+reuse stale visible masks. LRU hits and evictions leave geometry generation
+unchanged. No cache state is serialized into durable checkpoints.
 
 Cache limits: **8MiB live typed-array payload and 8,192 entries per room**, both enforced before
-insertion. Count exact `coverage.byteLength`, not index count or an average. A cache hit moves its
+insertion. Cache entries own exact-length Uint32 backing buffers, with zero byte
+offset and `coverage.byteLength === coverage.buffer.byteLength`; copy a foreign
+subarray before retention so a short view cannot hide a larger retained buffer.
+Count exact `coverage.byteLength`, not index count or an average. A cache hit moves its
 entry to the end of insertion order. On insertion, evict oldest entries until both prospective
 bounds fit; add/replace/remove/clear maintain exact accounting. Eviction ordering uses access
 sequence, not wall-clock time. A single entry larger than the payload cap is returned for that
@@ -42,7 +48,7 @@ acceptance.
 
 Preserve each current whole-cache invalidation site for map activation, resetForestStocks,
 progressive forest depletion, building footprint addition/removal, destruction/cancellation and
-wall/gate changes. The replacement must clear on every visibility blocker/height mutation, including
+wall/gate changes. Replace the cache object on every visibility blocker/height mutation, including
 geometry changes between ticks. Add tests around the existing
 `visionMasksUpdatedTick`/cache-identity condition so a same-tick build/forest change cannot reuse a
 stale mask. Requested sight, source ground elevation, map dimensions and vision rules are covered by
