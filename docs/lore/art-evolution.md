@@ -197,6 +197,22 @@ checks cannot prove that an image never existed outside Git.
 
 ## Preservation practice
 
+The [4 October civilization and settlement library](../art-direction/civilization-settlements-v1/README.md)
+adds eight further user-requested source boards: complete thirteen-role building
+families and village/town/city compositions for Frontier/Human and Boughward.
+The unmodified outputs, exact prompts and selected-versus-exploratory reference
+chain are preserved with hashes. Boughward's architecture is a proposed family;
+both current appearances still share Frontier gameplay/building rules. All eight
+boards remain unselected and supply no runtime lifecycle or game-capture evidence.
+
+The [4 October visual-development examples](../art-direction/visual-development-studies-v1/README.md)
+retain three user-requested built-in ImageGen outputs: a Bellweather match
+composition, House lifecycle storyboard and Mill/Farm/Dock silhouette alternatives.
+Exact prompts, public reference roles/hashes and original output hashes are saved.
+All remain exploratory and unselected; source review records scale/registration
+and team-mark deviations. These are new studies, not recovered earlier iterations,
+ordinary-game captures or produced runtime states.
+
 The [3 October low-bank shade study](../qa-shore-bank-shade-2026-10-03.md) retains
 original and candidate renders at ordinary/strategic zoom, exact exported game
 geometry/materials, camera checks, settings and hashes. Its inputs are the existing

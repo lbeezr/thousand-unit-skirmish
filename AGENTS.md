@@ -26,6 +26,15 @@ priority guides next-work choices, not PR approval or merge timing.
 
 ## Art outcomes
 
+Every player-facing creative or visual outcome must have linked art, storyboards
+or explorations supporting its intended treatment. Follow the
+[visual development contract](docs/art-direction-contract-v1.md#visual-development-backing):
+reuse relevant preserved sources, storyboard motion/state changes, and retain
+selection reasons and provenance. This applies to procedural presentation, map
+composition, effects and UI as well as asset production; keep backing separate
+from ordinary-game acceptance. Small corrections can cite existing art and a
+bounded comparison; internal changes without presentation impact can record N/A.
+
 Unit characters and buildings are separate art outcomes. Merge useful source samples and runtime
 slices progressively, stating what is unfinished or not yet visible in game. Unfinished polish, a
 pending preview, a future loader, or milestone evidence does not create a publication hold. The
