@@ -164,3 +164,15 @@ the refresh. No new selector, state or shared timing extension is required;
 Stone still requires the animation owner's bounded extension when supplied art
 exists. The earlier clean release remains a receipt for its stated source, not
 the later documentation-only contract merge.
+
+North measured code head `ce5f797f49b5d940f6a1ff4d29ea28636da08796`
+passes the packed Railway HTTP/hash scenario and live WebSocket→CPU client
+productive-receipt scenario. [Clean North release](qa-evidence/worker-land-art-2026-10-04/north-clean-release.json)
+retains exact source, three runtime file hashes and digest
+`sha256:ef838b9190777ada66a48a00434154c97b12992da8aa967b0ee36e5b4ddbae03`.
+A read-only Railway observation at 01:35 UTC found staging SUCCESS deployment
+`e541d903-178b-47cb-8d1b-4358c93c5a8a`, source `64cc391e6d9c4164dca7bd45696cf3862fe19729`.
+That revision predates East/North; neither slice is claimed delivered. The parent
+delivery route must supply a containing build; its Mac capture route retains
+native root/turn/cargo acceptance. This is an actual identified delivery gap,
+separate from the sandbox-unavailable browser capture gap.
