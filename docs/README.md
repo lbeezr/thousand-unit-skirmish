@@ -114,7 +114,9 @@ Runtime/source evidence is pinned to `53a47ee379660f30b65776ea813f3a986d29aa37`;
 the testing-strategy documentation [PR288](https://github.com/lbeezr/thousand-unit-skirmish/pull/288)
 and CPU animation/capability [PR287](https://github.com/lbeezr/thousand-unit-skirmish/pull/287)
 merged during this audit (documentation/tooling refresh `0fc2e9b8`) and are
-included below. This bounded inventory has
+included below. The subsequent main refresh `8200ec6c` includes integrated
+wood-job continuation [PR283](https://github.com/lbeezr/thousand-unit-skirmish/pull/283).
+This bounded inventory has
 **23 canonical planning surfaces: one product roadmap, 16 execution/acceptance
 queues, and six umbrella or production plans**. Count one owning guide per
 continuing workstream or major multi-slice outcome with remaining work, including
