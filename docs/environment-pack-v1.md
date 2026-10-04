@@ -112,7 +112,8 @@ and all top geometry/terrain rules remain; painted faces align with the existing
 base-surface offset. Other bases retain the plain face material. This is distinct
 from camera-facing cliff sprites and the low-ridge pilot. [Cost, checks and open
 ordinary-game appearance acceptance](qa-painted-terrace-faces.md) are owned by
-terrain integration with the parent staging/Mac coordinator.
+terrain integration; the current cloud testing/CI owner receives renderer
+qualification and capture execution under the [testing strategy](testing-strategy.md#start-here).
 
 | Family | Files / role |
 | --- | --- |
