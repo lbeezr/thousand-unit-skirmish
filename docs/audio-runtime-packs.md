@@ -51,7 +51,8 @@ Focused checks: `node scripts/audio-runtime-scenario.mjs`, `node scripts/audio-r
 
 ## Client audio helper paths
 
-The decoded-source cache implementation lives in
+[PR322](https://github.com/lbeezr/thousand-unit-skirmish/pull/322) establishes the
+decoded-source cache implementation in
 `src/client/audio/audio-decoded-cache.mjs`; the bounded shipped-byte reader lives
 in `src/client/audio/audio-shipped-response.mjs`. Both preserve their earlier
 implementation bytes and remain dependency-free client leaves. The old flat
