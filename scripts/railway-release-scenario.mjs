@@ -230,6 +230,24 @@ try {
   for (const source of ['frontier-painted-material-atlas.png', 'preview.png', 'PROVENANCE.md']) {
     assert.equal((await fetch(`${base}/${paintedRoot}/${source}`, { headers: { authorization } })).status, 404);
   }
+  const oakRoot = 'assets/environment/frontier-oak-depletion-atlas-v1';
+  const oakResponse = await fetch(`${base}/${oakRoot}/manifest.json`, { headers: { authorization } });
+  assert.equal(oakResponse.status, 200);
+  const oakManifest = await oakResponse.json();
+  assert.deepEqual(packedManifest.files.filter(file => file.startsWith(oakRoot + '/')).sort(),
+    [`${oakRoot}/manifest.json`, ...oakManifest.files.map(file => `${oakRoot}/${file.path}`)].sort());
+  for (const file of oakManifest.files) {
+    const url = `${base}/${oakRoot}/${file.path}`;
+    const response = await fetch(url, { headers: { authorization } });
+    assert.equal(response.status, 200); assert.match(response.headers.get('content-type'), /image\/webp/);
+    assert.equal(createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'), file.sha256);
+    const head = await fetch(url, { method: 'HEAD', headers: { authorization } });
+    assert.equal(head.status, 200); assert.equal(Number(head.headers.get('content-length')), file.bytes);
+  }
+  for (const path of [`${oakRoot}/README.md`, `${oakRoot}/oak-depletion-mip-6.webp`,
+    'assets/environment/frontier-resource-atlas-v1-candidate/oak-fallback-runtime.json']) {
+    assert.equal((await fetch(`${base}/${path}`, { headers: { authorization } })).status, 404);
+  }
   const interactiveManifestResponse = await fetch(
     `${base}/assets/environment/frontier-interactive-v1/manifest.json`, {
       headers: { authorization },
