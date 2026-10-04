@@ -1791,6 +1791,7 @@ function updateBuildingResearchControls(selectedBuilding) {
       const reason = short.length && !option?.missingPrerequisites.length && !active ? `NEED ${short.join(' + ')}` : option?.reason;
       ui.buildingResearchReadout.textContent = `${rules.label} · ${rules.foodCost} FOOD / ${rules.woodCost} WOOD · ${rules.durationSeconds}S${reason ? ` · ${reason}` : ''}`;
     }
+    if (definition?.description) ui.buildingResearchReadout.textContent += ` · ${definition.description}`;
   }
   if (ui.researchAttackUpgrade) {
     ui.researchAttackUpgrade.disabled = !option?.available;
@@ -1827,6 +1828,7 @@ function updateResearchOptions(container, building) {
     const reason = authoritative?.available === false ? authoritative.reason : option.reason;
     setHudActionAvailability(button, !option.available || authoritative?.available === false, contextual);
     button.textContent = `${definition.label} · ${definition.cost.food} food / ${definition.cost.wood} wood${reason ? ` · ${reason}` : ''}`;
+    if (definition.description) button.textContent += ` · ${definition.durationSeconds}s · ${definition.description}`;
   }
 }
 

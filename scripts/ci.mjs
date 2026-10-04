@@ -273,6 +273,9 @@ run(['--test', 'scripts/resource-format.test.mjs'], 'Resource display and afford
 run(['--test', 'scripts/gameplay-presentation.test.mjs'], 'Gameplay presentation bindings');
 run(['--test', 'scripts/base-lifecycle-ui.test.mjs'], 'Contextual cancellation and repair controls');
 run(['--test', 'scripts/research-ui.test.mjs'], 'Registered research choices');
+run(['--test', 'scripts/food-tools.test.mjs'], 'Paid Mill food research, labor scope and exact prior-content migration');
+run(['scripts/food-tools-scenario.mjs'], 'Native paid Mill food progression, harvest and cold recovery');
+run(['scripts/food-tools-scenario.mjs', '--stone'], 'Native Stone-profile Mill food progression and exact prior-content recovery');
 run(['--test', 'scripts/research-actions.test.mjs'], 'Shared technology availability');
 run(['--experimental-test-coverage', '--test-coverage-include=src/rules/gameplay-action-rules.mjs',
   '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',

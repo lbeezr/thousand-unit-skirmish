@@ -427,6 +427,19 @@ and Worker at 52 after defeating Scout. Scout should use mobility and sight
 rather than fight a stationary economy head-on. Match-level scouting and raid
 balance still need evidence; these initial numbers are not a final balance claim.
 
+### Food Tools economy research (2026-10-04)
+
+Food Tools is the first bounded economy technology (4 October 2026): a completed
+owned Mill researches it for 100 food / 75 wood in 25 seconds, without a military
+tier prerequisite. It makes current and future land Workers gather food 20%
+faster. Neutral food, Sheep, shore fishing and the existing finite Farm share
+that productive-food rate. Crop stock, 10-unit carrying, travel, Wood/Stone and
+Skiff fishing retain their rules. It uses the same one-project team research,
+proportional cancellation, destruction loss, completion, recovery and rematch
+contracts as military research. Costs and the 1.2 multiplier are provisional.
+The [owning progression plan](gameplay-foundation-plan.md#food-tools-progression-slice--4-october-2026)
+records delivery and evidence separately from ordinary rendered acceptance.
+
 ### Military progression (2026-09-29)
 
 Town Centers offer Military Tier II, opening armor research at Barracks and

@@ -21,7 +21,7 @@ const products = [
   ['barracks', 'spearman'], ['archery-range', 'archer'], ['stable', 'scout'],
   ['stable', 'rider'], ['workshop', 'siege-engine'],
 ];
-const upgrades = ['military-tier-2', 'infantry-attack', 'archer-attack', 'military-armor', 'siege-engineering', 'mounted-attack'];
+const upgrades = ['military-tier-2', 'infantry-attack', 'archer-attack', 'military-armor', 'siege-engineering', 'mounted-attack', 'food-tools'];
 const map = { id: 'mature-settlement-audit', name: 'Mature Settlement Audit', width: 64, height: 64,
   terrainSeed: 19, fogOfWar: false, startingArmySize: 24, startingResources: { food: 2000, wood: 3000 },
   spawnPoints: [{ team: 0, x: -20.5, z: 0 }, { team: 1, x: 20.5, z: 0 }],
@@ -143,7 +143,7 @@ async function main() {
       for (const kind of Object.keys(U).filter(kind => U[kind].movementDomain !== 'water')) assert.ok(saved.state.units.some(u => u.team === team && u.kind === kind && u.hp > 0));
       assert.ok(buildings.every(b => !b.queue && !b.productionBlocked));
       assert.equal(saved.state.workerProduction[team].queue, 0);
-      assert.deepEqual(spent[team], { food: 1385, wood: 2795 });
+      assert.deepEqual(spent[team], { food: 1485, wood: 2870 });
       assert.equal(buildings.find(building => building.type === 'farm').harvestStock, B.farm.harvest.stock,
         'unharvested paid planting retains its finite stock');
 

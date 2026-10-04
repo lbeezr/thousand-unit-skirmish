@@ -24,6 +24,7 @@ import { combatDamage, canCombatTarget, hasGameplayCapability } from './src/comb
 import { creditResourceBalance } from './src/economy-ledger.mjs';
 import { STONE_ECONOMY_PROFILE_ID, resolveEconomyProfileId, economyResources, economyRulesetRevision, constructionCostForProfile, acceptsProfileDropoff, debitEconomyCost, proportionalEconomyRefund, creditEconomyRefund } from './src/economy-profile.mjs';
 import { migrateEconomyCheckpoint, validateEconomyCheckpoint } from './src/economy-checkpoint.mjs';
+import { workerFoodGatherMultiplier, migrateFoodToolsCheckpoint } from './src/server/worker-food-tools.mjs';
 import { unfinishedRefund, buildingRepairStep } from './src/base-lifecycle.mjs';
 import { productionAction } from './src/production-actions.mjs';
 import { teamPopulation } from './src/population.mjs';
@@ -3596,6 +3597,13 @@ async function writeMatchCheckpointAtomically(serialized, sequence) {
 }
 
 function migrateMatchCheckpoint(snapshot) {
+  const initialRulesetRevision = snapshot?.rulesetRevision;
+  // Content that predates Food Tools cannot claim a paid effect or project.
+  if (initialRulesetRevision !== GAMEPLAY_RULESET_REVISION
+    && ((Array.isArray(snapshot?.state?.teamUpgrades)
+      && snapshot.state.teamUpgrades.some(upgrades => upgrades?.foodTools === true))
+      || (Array.isArray(snapshot?.state?.teamResearch)
+        && snapshot.state.teamResearch.some(research => research?.type === 'food-tools')))) return snapshot;
   // Prior movement-only definitions cannot claim fish cargo or fishing intent.
   const previousMovementPins = ['v1:496509c24775ddfbd289faf9fbcc85dfef7d054d710c665caa9fe192c610ddcd',
     'v1:b82d5b9fdd687e98dd47b8390aaaa04f7bc00df9dc6ac16273f8c04235cbeb54'];
@@ -3782,6 +3790,13 @@ function migrateMatchCheckpoint(snapshot) {
   if ([22, 23, 24, 25, 26, 27, 28, MATCH_CHECKPOINT_SCHEMA_VERSION].includes(snapshot?.schemaVersion) && Array.isArray(snapshot.state?.units)) {
     for (const unit of snapshot.state.units) if (unit && typeof unit === 'object') unit.persistentOrder ??= null;
   }
+  // Earlier exact legacy migrations above predate this additive technology.
+  // Current-pin saves remain strict; an unknown pin never gains a completion.
+  if (initialRulesetRevision !== snapshot?.rulesetRevision
+    && snapshot?.rulesetRevision === GAMEPLAY_RULESET_REVISION
+    && Array.isArray(snapshot.state?.teamUpgrades)) {
+    snapshot.state.teamUpgrades = snapshot.state.teamUpgrades.map(upgrades => ({ ...emptyTechnologyCompletions(), ...upgrades }));
+  }
   return snapshot;
 }
 
@@ -3886,7 +3901,7 @@ async function initializeMatchFromCheckpoint() {
     return;
   }
   try {
-    const snapshot = migrateEconomyCheckpoint(migrateMatchCheckpoint(JSON.parse(serialized)));
+    const snapshot = migrateEconomyCheckpoint(migrateMatchCheckpoint(migrateFoodToolsCheckpoint(JSON.parse(serialized))));
     migrateWildlifeMotionCheckpoint(snapshot);
     migrateCombatStanceCheckpoint(snapshot, UNIT_DEFINITIONS);
     migrateWildlifeClaimsCheckpoint(snapshot);
@@ -4992,7 +5007,7 @@ function updateWorkerEconomy() {
         routeWorker(unit, 'to-base', node);
       } else if (nodeDistance <= WORKER_INTERACTION_RANGE) {
         const amount = Math.min(
-          GATHER_RATE * STEP_SECONDS,
+          GATHER_RATE * workerFoodGatherMultiplier(unit, node.type, teamUpgrades[unit.team]) * STEP_SECONDS,
           WORKER_CARRY_CAPACITY - unit.cargo,
           node.stock,
         );

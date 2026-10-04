@@ -1028,6 +1028,29 @@ for (const team of [0, 1]) test(`seat ${team}: unavailable contextual research r
   f.select([]); assert.equal(f.d.activeElement, f.w.dockToggle);
 });
 
+for (const team of [0, 1]) test(`seat ${team}: selected Mill exposes paid Food Tools effect and retains lifecycle focus`, t => {
+  const f = economyFixture(team); t.after(() => f.dom.window.close());
+  const mill = { id: 41, team, type: 'mill', complete: true, hp: 600, maxHp: 600 };
+  f.w.latestFood[team] = 100; f.w.latestWood[team] = 75; f.select([], mill);
+  const button = f.bar.querySelector('[data-technology="food-tools"]');
+  assert.ok(button); button.focus();
+  assert.match(button.textContent, /100 food \/ 75 wood.*25s.*20% faster.*Carry 10.*200 food/);
+  assert.equal(button.getAttribute('aria-disabled'), 'false');
+  assert.equal(f.bar.querySelector('[data-context-products]').children.length, 0, 'Mill gains no unit/plot producer');
+  button.click(); assert.deepEqual(JSON.parse(JSON.stringify(f.w.sentCommands)), [{ type: 'researchUpgrade', buildingId: mill.id, upgrade: 'food-tools' }]);
+  f.w.latestTeamResearch[team].active = { type: 'food-tools', buildingId: mill.id, progress: .6, remaining: 10 };
+  f.w.updateContextualCommands(); f.w.updateBuildingResearchControls(mill);
+  assert.equal(f.d.activeElement, button); assert.equal(button.getAttribute('aria-disabled'), 'true');
+  assert.match(f.w.ui.buildingResearchReadout.textContent, /FOOD TOOLS.*RESEARCHING 60%.*10S.*20% faster/);
+  button.click(); assert.equal(f.w.sentCommands.length, 1);
+  f.w.latestTeamResearch[team].active = null; f.w.latestTeamResearch[team].foodTools = true;
+  f.w.updateContextualCommands(); f.w.updateBuildingResearchControls(mill);
+  assert.match(button.textContent, /ALREADY COMPLETED/); assert.match(f.w.ui.buildingResearchReadout.textContent, /COMPLETED.*20% faster/);
+  assert.equal(f.d.activeElement, button); button.click(); assert.equal(f.w.sentCommands.length, 1);
+  mill.team = 1 - team; f.select([], mill);
+  assert.equal(f.bar.querySelector('[data-technology="food-tools"]'), null, 'opponent Mill cannot expose own research');
+});
+
 test('unavailable research prerequisites remain focusable for their explanation', t => {
   const f = fixture(); t.after(() => f.dom.window.close());
   f.select([], { id: 8, team: 0, type: 'barracks', complete: true, hp: 1800, maxHp: 1800 });
