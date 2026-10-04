@@ -39,6 +39,15 @@ the exact explicit profile required for Stone nodes.
 Town Center/Storehouse accept Stone; Mill remains food-only. Terrain stones stay
 blocking terrain. Existing uneven 101-stock rejection fixtures remain separate.
 
+An accepted Stone Gather on this explicit profile now records a typed durable
+intent. After finite-node depletion it chooses visible reachable Stone within
+eight world units of that original source, retaining compatible partial cargo.
+It never scans Wood/forest/Food/Farm/wildlife/fishing, expands the original circle,
+or overrides an accepted manual/queued order. Exhaustion delivers cargo once and
+ends without retries. [Shared intent contract](worker-resource-job-contract.md)
+and [Stone continuation QA](qa-stone-job-continuation-2026-10-04.md) own the
+checkpoint, source proof and open staged/rendered cloud acceptance boundaries.
+
 The baseline profile retains the exact `GAMEPLAY_RULESET_REVISION` pin. The
 Stone profile has a distinct canonical pin incorporating the base revision,
 profile ID, Watchtower price and Stone drop-offs. Checkpoint23 records

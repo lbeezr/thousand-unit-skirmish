@@ -105,7 +105,8 @@ run(['--test', 'scripts/worker-performing-action.test.mjs'], 'Authoritative Work
 run(['--test', 'scripts/gather-work-area.test.mjs', 'scripts/work-intent.test.mjs', 'scripts/resource-job.test.mjs'],
   'Bounded wood work, accepted replacement orders and checkpoint resource conservation');
 run(['--test', 'scripts/food-stone-continuation.test.mjs'],
-  'Source-only Food/Stone audit, typed replacement, recovery and rejected reachability');
+  'Typed Food/Stone finite jobs, replacement, recovery and rejected reachability');
+run(['--test', 'scripts/stone-job-continuation.test.mjs'], 'Fixed-area Stone continuation, manual/queued priority and finite conservation');
 run(['scripts/worker-performing-action-scenario.mjs', '--client-presentation'], 'Worker work receipt commands, client frames, exhausted repair delivery and recovery');
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');
 run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach contact and bank/water picking');
@@ -415,7 +416,7 @@ const scenarios = [
   ['scripts/environment-plant-pack-scenario.mjs', 'Regional plant contract rejection cases'],
   ['scripts/harvestable-woodland-scenario.mjs', 'Harvestable woodland gameplay'],
   ['scripts/resource-job-continuation-scenario.mjs', 'Native wood depletion, continuation and cold recovery'],
-  ['scripts/food-stone-continuation-scenario.mjs', 'Native both-seat Food/Stone depletion and typed cold recovery audit'],
+  ['scripts/food-stone-continuation-scenario.mjs', 'Native both-seat Stone continuation, source-only Food and typed cold recovery'],
   ['scripts/worker-cargo-return-scenario.mjs', 'Highland Grove forest route repair and deposits'],
   ['scripts/worker-cargo-return-scenario.mjs', 'Frontier Reach forest route repair and deposits', 'frontier-160'],
   ['scripts/room-supervisor-scenario.mjs', 'Room supervisor integration'],
