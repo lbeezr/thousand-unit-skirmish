@@ -6,6 +6,7 @@ import { runInNewContext } from 'node:vm';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { auditMap, searchGrid } from './map-scale-audit.mjs';
 import { runGridCostAudit } from './map-grid-cost-audit.mjs';
+import { performanceIdentity } from './performance-run-evidence.mjs';
 import { XL_LAYOUT } from './generate-far-marches.mjs';
 import { mapSizeIdentity, ordinaryMapCatalog } from '../src/map-size-policy.mjs';
 import { planWallLine } from '../src/wall-line-planner.mjs';
@@ -90,12 +91,16 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
   const files = ['server.mjs', 'room-supervisor.mjs', 'index.html', 'src/main.js',
     'src/wall-line-planner.mjs', 'src/water-route-graph.mjs', 'src/map-size-policy.mjs',
     'src/match-modes.mjs', 'src/server/vision-coverage-cache.mjs',
+    'src/gameplay-definitions.mjs', 'src/elevation.mjs', 'src/map-utils.mjs',
+    'src/town-center-spawn.mjs', 'src/terrain-authoring.mjs', 'src/forest-fringe.mjs',
+    'maps/veyrholds-slate-saddle.json', 'scripts/performance-run-evidence.mjs',
     'scripts/generate-far-marches.mjs', 'scripts/fixtures/xl-far-marches.json',
     'scripts/map-scale-audit.mjs', 'scripts/map-grid-cost-audit.mjs',
     'scripts/pve-headless-fixture.mjs', 'scripts/xl-map-boundary-audit.mjs'];
   const inputs = Object.fromEntries(await Promise.all(files.map(async file =>
     [file, await readFile(new URL(`../${file}`, import.meta.url), 'utf8')])));
   const source = inputs['server.mjs'], map = JSON.parse(inputs['scripts/fixtures/xl-far-marches.json']);
+  const identity = await performanceIdentity(ROOT, 'scripts/fixtures/xl-far-marches.json');
   const grid = await runGridCostAudit();
   const geometry = auditMap(map, { forestWoodPerCell: 6, defaultArmySize: 24, maxBuildings: 128 });
   // Execute the exact checkpoint leaf to distinguish its validation envelope
@@ -149,6 +154,11 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
     sourceCommit: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).trim(),
     sourceDirty: Boolean(execFileSync('git', ['status', '--porcelain'], { cwd: ROOT, encoding: 'utf8' }).trim()),
     sourceInputSha256: Object.fromEntries(files.map(file => [file, sha(inputs[file])])),
+    runtimeProvenance: { kind: identity.build.kind, sourceRevision: identity.build.sourceRevision,
+      sourceDirty: identity.build.sourceDirty, runtimeSha256: identity.build.runtimeSha256,
+      declaredRelease: identity.build.declaredRelease,
+      scope: 'PR325 identity helper hashes server, package-lock and all src JS modules; no performance workload is executed' },
+    gridCostProvenance: { schemaVersion: grid.schemaVersion, sourceInputSha256: grid.sourceInputSha256 },
     candidate: { file: 'scripts/fixtures/xl-far-marches.json', sha256: sha(inputs['scripts/fixtures/xl-far-marches.json']),
       canonicalRuntimeMap: false, identity: mapSizeIdentity(map), geometry,
       expansionSitesPerSeat: XL_LAYOUT.sites.length, flatHomeSide: 2 * XL_LAYOUT.homeRadius + 1,

@@ -52,7 +52,9 @@ node scripts/xl-map-boundary-audit.mjs --native > /tmp/xl320-native-boundaries.j
 node --test scripts/map-grid-cost-audit.test.mjs
 ```
 
-It records exact git/source-input/map hashes, every dimension consumer, real
+It records exact git/source-input/map hashes, PR325's observed whole-runtime
+identity (server/lockfile/all source modules), nested grid-cost input provenance,
+every dimension consumer, real
 wall/water/catalog probes, both rectangular 320 orientations, static city/routes,
 the actual publication command and the executed checkpoint path-validation leaf.
 The optional native probe uses the existing authoritative fixed-tick adapter

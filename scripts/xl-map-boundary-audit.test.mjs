@@ -102,5 +102,10 @@ test('source-bound route/save/wire envelope distinguishes finite validation from
   assert.equal(report.transport.actualCheckpointBytesMeasured, false);
   assert.equal(report.ordinaryXlComplete, false); assert.equal(report.limitsChanged, false);
   assert.match(report.sourceInputSha256['server.mjs'], /^[a-f0-9]{64}$/);
+  assert.match(report.sourceInputSha256['src/gameplay-definitions.mjs'], /^[a-f0-9]{64}$/);
+  assert.match(report.sourceInputSha256['src/terrain-authoring.mjs'], /^[a-f0-9]{64}$/);
+  assert.match(report.runtimeProvenance.runtimeSha256, /^[a-f0-9]{64}$/);
+  assert.equal(report.runtimeProvenance.sourceRevision, report.sourceCommit);
+  assert.match(report.gridCostProvenance.sourceInputSha256['src/forest-fringe.mjs'], /^[a-f0-9]{64}$/);
   assert.equal(report.gates.supportedCapacity, null);
 });
