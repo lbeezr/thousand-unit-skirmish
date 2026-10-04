@@ -2,7 +2,9 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
+import { VisionCoverageCache } from '../src/server/vision-coverage-cache.mjs';
 import { exploredForestFringe } from '../src/forest-fringe.mjs';
+import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { buildElevationGrid } from '../src/map-utils.mjs';
 
 const server = await readFile(new URL('../server.mjs', import.meta.url), 'utf8');
@@ -13,15 +15,18 @@ function slice(source, start, end) {
   assert.ok(a >= 0 && b > a, `source seam changed: ${start}`);
   return source.slice(a, b);
 }
-export function visionFixture(map, { original = false } = {}) {
+export function visionFixture(map, { original = false, cacheOptions = {} } = {}) {
   const count = map.width * map.height;
   const context = vm.createContext({
     MAP_WIDTH: map.width, MAP_HEIGHT: map.height, MAP_HALF_X: map.width / 2, MAP_HALF_Z: map.height / 2,
+    VisionCoverageCache, visionCoverageGeneration: 0, visionMasksUpdatedTick: -1, visionMasksUpdatedCoverage: null,
+    tickNumber: 1, mapDefinition: { fogOfWar: true }, units: [], UNIT_DEFINITIONS, BUILDING_DEFINITIONS,
+    allMatchBuildings: () => [],
     VISION_RADIUS_CELLS: 8, HIGH_GROUND_VISION_BONUS_CELLS: 1, VISION_EYE_HEIGHT: 1,
     visibleCellsByTeam: [new Uint8Array(count), new Uint8Array(count)],
     exploredCellsByTeam: [new Uint8Array(count), new Uint8Array(count)],
     processedVisionSourcesByTeam: [new Uint8Array(count), new Uint8Array(count)],
-    visionCoverageBySourceCell: new Array(count),
+    visionCoverageBySourceCell: original ? new Array(count) : new VisionCoverageCache({ width: map.width, height: map.height, ...cacheOptions }),
     forestCellMask: new Uint8Array(count), visionBlockers: new Uint8Array(count),
     visionBlockHeights: new Float32Array(count), buildingBlocked: new Uint8Array(count),
     elevationLevelByCell: buildElevationGrid(map.width, map.height, map.elevationPatches), exploredForestFringe,
@@ -39,6 +44,10 @@ export function visionFixture(map, { original = false } = {}) {
   vm.runInContext(slice(server, 'function buildVisionRays(', 'const WORKER_SPAWN_OFFSETS'), context);
   vm.runInContext(slice(server, 'const visionRaysByRadius =', 'function markVisionFrom('), context);
   vm.runInContext(original ? baseline : slice(server, 'function markVisionFrom(', 'function updateVisionMasks('), context);
+  if (!original) {
+    vm.runInContext(slice(server, 'function invalidateVisionCoverage(', 'function activateMap('), context);
+    vm.runInContext(slice(server, 'function updateVisionMasks(', 'function cellVisibleToTeam('), context);
+  }
   return { context, mark(team, col, row, sight = 8) {
     context.markVisionFrom(team, col - map.width / 2 + .5, row - map.height / 2 + .5, sight);
   }, clearCurrent() {

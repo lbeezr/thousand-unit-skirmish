@@ -6,6 +6,7 @@ import { deflateRawSync, constants } from 'node:zlib';
 import { encodeWebSocketFrame } from '../src/networking/websocket-frame.mjs';
 import { attributionSource } from './tick-attribution-adapter.mjs';
 import { createTickAttribution } from './tick-attribution-observer.mjs';
+import { VisionCoverageCache } from '../src/server/vision-coverage-cache.mjs';
 const source = await readFile(new URL('../server.mjs', import.meta.url), 'utf8');
 const body = (text, name) => {
   const start = text.indexOf(`function ${name}(`), end = text.indexOf('\nfunction ', start + 1);
@@ -78,4 +79,37 @@ test('stop freezes row capture before asynchronous shutdown can serve another si
   assert.deepEqual(report.rows.map(row => row.tickNumber), [1]);
   assert.ok(report.rowWindow.end.monotonicMs >= report.rowWindow.start.monotonicMs);
   assert.deepEqual(report.profileWindows, {});
+});
+
+test('vision instrumentation observes bounded cache without promoting entries or changing gameplay counters', async () => {
+  const coverage = new VisionCoverageCache({ width: 16, height: 16, maxEntries: 2 });
+  coverage.set(0, 8, { visible: [0], fringe: [1] });
+  coverage.set(1, 8, { visible: [1], fringe: [] });
+  let observer;
+  const processed = [new Uint8Array(256), new Uint8Array(256)];
+  const functions = { roomPayload() {}, deflateRawSync() {}, encodeWebSocketFrame() {}, prepareJsonFrame() {},
+    updateVisionMasks() {}, ensureVisionMasks() {}, captureMatchCheckpoint() {}, recordTickDuration() {},
+    markVisionFrom() {},
+    runSimulationTick() {
+      observer.wrapped.updateVisionMasks();
+      observer.wrapped.recordTickDuration(1, { tickNumber: 1 });
+    } };
+  functions.updateVisionMasks = () => {
+    observer.wrapped.markVisionFrom(0, .5, .5, 8); // source 0, cached
+    observer.wrapped.markVisionFrom(1, 2.5, .5, 8); // source 2, missing
+    processed[0][0] = 8;
+    observer.wrapped.markVisionFrom(0, .5, .5, 8); // processed duplicate
+  };
+  observer = createTickAttribution({ functions,
+    context: () => ({ tickNumber: 0, cacheMetrics: coverage.metrics() }),
+    visionContext: () => ({ coverage, processed, width: 16, halfX: 0, halfZ: 0, defaultSight: 8 }), profiles: false });
+  const before = coverage.metrics();
+  await observer.start(); observer.wrapped.runSimulationTick(); const report = await observer.stop();
+  const row = report.rows[0];
+  assert.equal(row.visionCoverageHits, 1); assert.equal(row.visionCoverageMisses, 1);
+  assert.equal(row.visionDuplicateSources, 1);
+  assert.deepEqual(row.visionCacheBefore, before); assert.deepEqual(row.visionCacheAfter, before);
+  assert.deepEqual(coverage.metrics(), before, 'observer changes no cache counters');
+  coverage.set(2, 8, { visible: [], fringe: [] });
+  assert.equal(coverage.has(0, 8), false, 'observer hit does not alter LRU ordering');
 });
