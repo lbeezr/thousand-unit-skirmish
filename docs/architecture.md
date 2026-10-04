@@ -129,7 +129,8 @@ boundary by refusing imports back into hosts, tools, browser boot or Three from
 authoritative rule closures. Check consumer regressions before claiming a stable
 interface. The original guard slice registered its two checks in CI. The
 4 October plan was integrated in [PR291](https://github.com/lbeezr/thousand-unit-skirmish/pull/291);
-the subsequent domain ratchet uses the existing checks, with no package/CI change.
+the subsequent domain ratchet in [PR294](https://github.com/lbeezr/thousand-unit-skirmish/pull/294)
+uses the existing checks, with no package/CI change.
 
 For future combat extractions, keep durable player orders/queues, stance policy,
 transient engagement, movement execution and disclosed visual events as distinct
@@ -340,7 +341,7 @@ PR8 waits for the asset/renderer owner's agreed lifetime interface.
 
 | PR / owner and dependency | Exact candidate source scope and resulting boundary | Focused acceptance beyond the common checks below |
 | --- | --- | --- |
-| 1 — architecture/import owner; plan reviewed in PR291 | `scripts/check-runtime-imports.mjs`, `scripts/check-runtime-imports.test.mjs` and the existing `scripts/railway-release-scenario.mjs` private-path assertions; `scripts/fixtures/runtime-import-baseline.json` stays unchanged and empty. Explicit current responsibility memberships reject backwards edges before files move. Implementation awaits its independent review/integration. | Existing parser/cycle/package/HTML contracts plus negative simulation→client/editor/presentation, rules/world direction, transitive host-package and browser→private-module cases. Pure disclosed helpers used by AI/server remain intentionally shared; new files need a classification. Existing packed HTTP checks deny GET/HEAD for the private membership set. No new package/CI pipeline, wildcard exception or cycle-baseline reset. Existing graph still passes. |
+| 1 — architecture/import owner; plan reviewed in PR291 | [PR294](https://github.com/lbeezr/thousand-unit-skirmish/pull/294): `scripts/check-runtime-imports.mjs`, `scripts/check-runtime-imports.test.mjs` and the existing `scripts/railway-release-scenario.mjs` private-path assertions; `scripts/fixtures/runtime-import-baseline.json` stays unchanged and empty. Explicit current responsibility memberships reject backwards edges before files move. The PR records exact-head review, checks and integration. | Import/served regressions: 41/41 pass; actual source allowlist: 118 modules; unchanged 175-module/319-edge/zero-cycle graph. Negative simulation→client/editor/presentation, rules/world direction, transitive host-package and browser→private-module cases pass. Pure disclosed helpers used by AI/server remain intentionally shared; new files need a classification. Clean pack and actual packed HTTP private GET/HEAD denial pass. No new package/CI pipeline, wildcard exception or cycle-baseline reset. |
 | 2 — world/metadata owner after PR1 and audio-owner agreement | Extract only `validateMapAudioReference` from `src/audio-event-profile.mjs` into proposed `src/world/map-audio-reference.mjs`; retain its named re-export at the old path. Leave random binding choice/cooldown behavior in the audio module. Its shared reference validation can no longer acquire Web Audio/storage dependencies. | Existing audio runtime/map-persistence/shipped-serving scenarios and new exact old/new validator parity for accepted/rejected references, optional version/hash pair, returned keys and error text. Existing host imports can stay stable. No source audio bytes, map reference or playback change. |
 | 3 — shared-rule/extraction owner after PR1 | `src/gameplay-action-rules.mjs` and `src/base-lifecycle.mjs` → proposed `src/rules/` counterparts; explicit named compatibility entries retain the old API. Update only relative dependencies of the canonical copies. The cohesive action/refund calculations remain portable and independent of UI/hosts. | `scripts/gameplay-action-rules.test.mjs`, `scripts/base-lifecycle.test.mjs`, production/research action tests and `scripts/base-lifecycle-scenario.mjs`. Preserve rejection reason order, epsilon, refund/repair rounding, immutable inputs, payment and cold recovery; preserve existing comparison evidence. |
 | 4 — movement owner after PR1 and current path work | `src/formation-assignment.mjs` → proposed `src/simulation/movement/formation-assignment.mjs`, named old-path forwarding entry. No changes to `unit-path-line`, planner budgets, force combination, command queues or server host imports. Establish the authoritative formation-helper home without moving active path/order implementations. | `scripts/formation-assignment-scenario.mjs`, pathing replay and fortified-site-clearance tests; compare ordered IDs/slot pairing/ties for the same inputs and retain no input mutation. Existing real terrain/paid-construction controls remain meaningful. |
@@ -376,9 +377,10 @@ Private candidates retain socket/command/recovery smoke; their helper's focused
 tests do not replace a real consumer check. Run required repository checks under
 the testing owner's current strategy; this plan does not change that registry.
 
-The reviewed plan is integrated. The first concrete action is independent review
-and integration of PR1's bounded guard slice, then audio/world-owner coordination
-for PR2's metadata validator (or the first unconflicted leaf). No runtime migration
+The reviewed plan is integrated, with PR1's guard/check milestone recorded in
+PR294. The next concrete action after that PR's reviewed integration is
+audio/world-owner coordination for PR2's metadata validator (or the first
+unconflicted leaf). No runtime migration
 has begun. This source/tooling work launches no local browser, Mac workload,
 remote deployment, provider request or security-setting change.
 
