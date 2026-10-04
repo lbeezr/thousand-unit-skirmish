@@ -92,7 +92,7 @@ test('actual checkpoint capture copies private motion before deferred serializat
     visibleCellsByTeam: [[], []], exploredCellsByTeam: [[], []], forestStockEntries: () => [], mapDefinition: map,
     authoredMapDefinition: map, matchMode: { matchModeId: 'authored', matchModeVersion: 1 },
     matchMapHash: () => 'map', matchEconomyProfileId: () => 'profile', economyRulesetRevision: () => 'rules',
-    privateProductionView: () => ({}), pregame: null,
+    privateProductionView: () => ({}), pregame: null, bannerfallState: null,
     ensureVisionMasks: () => { visionChecks++; } };
   Object.assign(defaults, { Buffer, unitGenerationCounters: [], teamFood: [0, 0], teamWood: [0, 0], teamStone: [0, 0],
     DEFAULT_FACTION_ID: 'default', matchId: 'room', tickNumber: 10, currentArmySize: 0, nextBuildingId: 1,

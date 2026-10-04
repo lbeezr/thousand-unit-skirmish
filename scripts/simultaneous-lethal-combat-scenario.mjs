@@ -121,7 +121,8 @@ try {
         const collect = state => {
           for (const row of state?.units || []) {
             if (row[0] !== 0 && row[0] !== 4) continue;
-            if (row[11] >= 0) {
+            // Worker receipt rows use null for an absent attack tick.
+            if (Number.isInteger(row[11]) && row[11] >= 0) {
               if (!hits.has(row[0])) hits.set(row[0], new Set());
               hits.get(row[0]).add(row[11]);
             }
