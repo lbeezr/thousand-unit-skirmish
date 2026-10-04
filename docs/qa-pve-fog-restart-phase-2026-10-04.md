@@ -6,7 +6,7 @@ Owner: Opponent AI. This correction changes the headless acceptance adapter and
 paid loss case only. Server simulation, visibility, checkpoint schema, mode
 registry and wildlife state are unchanged. Shared-boundary reasoning was
 [recorded with the runtime owner](https://github.com/lbeezr/thousand-unit-skirmish/pull/200#issuecomment-5975289224)
-before selecting this owned adapter boundary. No shared restore edit is needed.
+before selecting this owned adapter boundary. This PR makes no shared restore edit.
 
 ## Exact reproduction and what the player can learn
 
@@ -114,8 +114,23 @@ evidence of completion, not balanced pacing, fairness, fun or supported capacity
 ## Acceptance retained
 
 The previously reported fifteen-cell Azure discrepancy is explained and the
-corrected native-phase fresh-fixture recovery gate passes. It does not call for
-a server fog/restore/wildlife fix for this case. Tiny native admission is now
+corrected native-phase fresh-fixture recovery gate passes. Advancing to that
+phase proves routine publication parity; it does **not** prove immediate
+off-phase welcome/checkpoint parity. Those reads can deliver the differing
+current-sight labels before the next tick, even though this exact scene adds no
+unknown terrain or enemy entities.
+
+The runtime owner retains that separate immediate-read contract in
+[PR233](https://github.com/lbeezr/thousand-unit-skirmish/pull/233), after
+[coordination on both proofs](https://github.com/lbeezr/thousand-unit-skirmish/pull/200#issuecomment-5975378551).
+Its legal moving-Worker case differs by 38 cells at tick 1,229 on `966dc0a5`;
+this foundation case differs by 15 cells at tick 14,129 on `5200ffdf`. They use
+the same observation/checkpoint/restore boundary but different scenes. That
+runtime work derives current masks at authoritative reads rather than storing
+stale sight. This fixture correction neither replaces nor claims acceptance of
+that change. Strict full-observation equality remains intact in both lanes.
+
+Tiny native admission is now
 integrated through PR229; ordinary served/Mac New Game,
 recovery, fog, defense, rematch/reconnect, process restart and defeat observation
 remain open. No deployment or browser screenshot is claimed. Keep
