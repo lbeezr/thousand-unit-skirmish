@@ -206,6 +206,12 @@ They establish bounded automated behavior, with contested play still to observe.
   Expanse provide larger layouts; another size needs observed gameplay reasons.
 - [Harvestable woodland](harvestable-woodland-pilot.md): forest-cell gathering and
   clearing are implemented; berry brushwood and organic forest-opening work remain follow-ups.
+- Voice commands (deferred experiment, 2 October 2026): consider push-to-talk
+  orders such as “build three houses,” “send five workers to the nearest wood
+  pile,” “queue as many scouts as capacity allows,” and short action series.
+  Future questions include typed intents with authoritative server validation,
+  visible cancelable previews, placement/target ambiguity, batch/cancel behavior,
+  and voice latency, cost and privacy. No active spike or implementation is scheduled.
 
 ## How to choose and finish a slice
 
