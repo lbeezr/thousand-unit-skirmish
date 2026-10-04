@@ -16,7 +16,9 @@ import { isHistoricalConfluenceDefinition } from './src/confluence-opening-compa
 import { validateMapRegion } from './src/regions.mjs';
 import { validateScenarioRegions, validRegionEntryTrigger, regionEntryTeam, validCompletionTrigger, completionTeam } from './src/scenario-regions.mjs';
 import { TERRAIN_MATERIALS } from './src/terrain-materials.mjs';
+import { forestGatherGroups, visibleForestCandidates } from './src/forest-gather-group.mjs';
 import { exploredForestFringe } from './src/forest-fringe.mjs';
+import { VisionCoverageCache } from './src/server/vision-coverage-cache.mjs';
 import { researchAction, researchOptions, emptyTechnologyCompletions } from './src/research-actions.mjs';
 import { combatDamage, canCombatTarget, hasGameplayCapability } from './src/combat-rules.mjs';
 import { creditResourceBalance } from './src/economy-ledger.mjs';
@@ -63,7 +65,7 @@ import { BANNERFALL_RULES, createBannerfallState, creditBannerfallKill,
 import { headingToTarget } from './src/unit-heading.mjs';
 import { workerFishingPresentation } from './src/worker-fishing-presentation.mjs';
 import { GATHER_WORK_AREA_RADIUS, gatherWorkArea, nearbyGatherSources } from './src/gather-work-area.mjs';
-import { isAreaGatherResource, isPlainNeutralFoodSource, createGatherWorkIntent, createConstructionWorkIntent, clearWorkIntent, clearGatherWorkIntent, activeWorkIntent, validWorkIntent } from './src/work-intent.mjs';
+import { isAreaGatherResource, isPlainNeutralFoodSource, FOREST_GATHER_SOURCE_KIND, createForestGatherWorkIntent, createGatherWorkIntent, createConstructionWorkIntent, clearWorkIntent, clearGatherWorkIntent, activeWorkIntent, validWorkIntent } from './src/work-intent.mjs';
 import { WORKER_PERFORMING_ACTION_VERSION, createWorkerPerformingActions } from './src/worker-performing-action.mjs';
 import { preparePaidWallLine } from './src/wall-construction-draft.mjs';
 import { activeWallBuildOrder } from './src/wall-build-order.mjs';
@@ -71,7 +73,7 @@ import { constructionWorkArea, constructionAssignment, unfinishedConstructionSit
 import { isPalisade, validGateState, buildingBlocksMovement, planGateTransition } from './src/palisade-gate.mjs';
 import { palisadeConnections } from './src/palisade-profile.mjs';
 import { canTraverseUnitStep } from './src/unit-movement.mjs';
-import { canTraverseFlatUnitSegment, visitGridSegmentCells } from './src/unit-path-line.mjs';
+import { canTraverseFlatUnitSegment, visitGridSegmentCells, shortcutFlatUnitPath } from './src/unit-path-line.mjs';
 import { findStationaryWorkerDetour } from './src/unit-obstacle-detour.mjs';
 import { COMBAT_STANCES, militaryCombatant, combatStancePolicy, initializeCombatStance, validCombatStanceState, migrateCombatStanceCheckpoint } from './src/combat-stance.mjs';
 
@@ -710,6 +712,7 @@ let elevationLevelByCell = new Uint8Array(0);
 let mapHasElevation = false;
 let blocked = new Uint8Array(0);
 let forestCellMask = new Uint8Array(0);
+let forestWorkGroups = forestGatherGroups(forestCellMask, 1);
 let forestWoodRemaining = new Float32Array(0);
 let forestVisionBaseHeights = new Float32Array(0);
 let forestEpoch = 0;
@@ -722,7 +725,8 @@ let visionBlockHeights = new Float32Array(0);
 let visibleCellsByTeam = [new Uint8Array(0), new Uint8Array(0)];
 let exploredCellsByTeam = [new Uint8Array(0), new Uint8Array(0)];
 let processedVisionSourcesByTeam = [new Uint8Array(0), new Uint8Array(0)];
-let visionCoverageBySourceCell = [];
+let visionCoverageBySourceCell = null;
+let visionCoverageGeneration = 0;
 let visionMasksUpdatedTick = -1;
 let visionMasksUpdatedCoverage = null;
 let pathVisited = new Uint32Array(0);
@@ -850,6 +854,11 @@ function resetVictoryHoldState() {
   victoryHoldState = { activeTeams: [false, false], progressSeconds: [0, 0], triggerIds: [null, null] };
 }
 
+function invalidateVisionCoverage(reason) {
+  visionCoverageBySourceCell = new VisionCoverageCache({ width: MAP_WIDTH, height: MAP_HEIGHT,
+    generation: ++visionCoverageGeneration, reason });
+}
+
 function activateMap(definition) {
   assertMatchModeCompatibility(matchMode, definition, { mode: pveLaunchOptions ? 'pve' : 'pvp', practice: soloPractice });
   authoredMapDefinition = definition;
@@ -868,6 +877,7 @@ function activateMap(definition) {
   mapHasElevation = hasElevation(elevationLevelByCell);
   blocked = new Uint8Array(CELL_COUNT);
   forestCellMask = forestCellsForDefinition(definition);
+  forestWorkGroups = forestGatherGroups(forestCellMask, MAP_WIDTH);
   forestWoodRemaining = new Float32Array(CELL_COUNT);
   forestVisionBaseHeights = new Float32Array(CELL_COUNT);
   for (let cell = 0; cell < CELL_COUNT; cell++) {
@@ -886,7 +896,7 @@ function activateMap(definition) {
   visibleCellsByTeam = [new Uint8Array(CELL_COUNT), new Uint8Array(CELL_COUNT)];
   exploredCellsByTeam = [new Uint8Array(CELL_COUNT), new Uint8Array(CELL_COUNT)];
   processedVisionSourcesByTeam = [new Uint8Array(CELL_COUNT), new Uint8Array(CELL_COUNT)];
-  visionCoverageBySourceCell = new Array(CELL_COUNT);
+  invalidateVisionCoverage('map-activation');
   pathVisited = new Uint32Array(CELL_COUNT);
   pathPrevious = new Int32Array(CELL_COUNT);
   pathQueue = new Int32Array(CELL_COUNT);
@@ -1073,7 +1083,7 @@ function resetForestStocks() {
   }
   forestEpoch++;
   if (changed) navigationRevision++;
-  visionCoverageBySourceCell = new Array(CELL_COUNT);
+  invalidateVisionCoverage('forest-reset');
   attackFlowFields.clear();
 }
 
@@ -2042,8 +2052,7 @@ function markVisionFrom(team, x, z, sight = VISION_RADIUS_CELLS) {
   processedSources[sourceCell] = sight;
   const visible = visibleCellsByTeam[team];
   const explored = exploredCellsByTeam[team];
-  const sourceCoverages = visionCoverageBySourceCell[sourceCell] ||= new Map();
-  let coverage = sourceCoverages.get(sight);
+  let coverage = visionCoverageBySourceCell.get(sourceCell, sight);
   if (!coverage) {
     const cells = [];
     const forestCandidates = [];
@@ -2072,9 +2081,8 @@ function markVisionFrom(team, x, z, sight = VISION_RADIUS_CELLS) {
         forestCandidates.push(row * MAP_WIDTH + column);
       }
     }
-    coverage = { visible: Uint16Array.from(cells),
-      fringe: exploredForestFringe(cells, forestCandidates, forestCellMask, MAP_WIDTH) };
-    sourceCoverages.set(sight, coverage);
+    coverage = visionCoverageBySourceCell.set(sourceCell, sight, { visible: cells,
+      fringe: exploredForestFringe(cells, forestCandidates, forestCellMask, MAP_WIDTH) });
   }
   for (let index = 0; index < coverage.visible.length; index++) {
     const cell = coverage.visible[index];
@@ -2898,6 +2906,7 @@ function validateMatchCheckpoint(snapshot) {
   const finite = (value) => Number.isFinite(value);
   const integerIn = (value, min, max) => Number.isInteger(value) && value >= min && value <= max;
   const checkpointForestMask = forestCellsForDefinition(definition);
+  const checkpointForestGroups = forestGatherGroups(checkpointForestMask, definition.width);
   assertSnapshot(Array.isArray(state.forestStocks), 'invalid forest stock table');
   assertSnapshot(integerIn(state.forestEpoch, 0, Number.MAX_SAFE_INTEGER), 'invalid forest epoch');
   const savedForestStocks = new Map();
@@ -3287,6 +3296,7 @@ function validateMatchCheckpoint(snapshot) {
       if (unit.workIntent?.kind === 'gather') {
         const source = state.resourceNodes.find(node => node.id === unit.gatherNodeId);
         const resource = source?.type ?? 'food';
+        assertSnapshot(unit.workIntent.sourceKind !== FOREST_GATHER_SOURCE_KIND, 'forest intent conflicts with node target');
         assertSnapshot(unit.workIntent.resource === resource, 'gather intent conflicts with resource target');
         assertSnapshot(resource !== 'food' || isPlainNeutralFoodSource(source), 'Food intent conflicts with source class');
       }
@@ -3296,6 +3306,12 @@ function validateMatchCheckpoint(snapshot) {
         && checkpointForestMask[forestCell] === 1
         && (unit.workIntent?.kind !== 'gather' || unit.workIntent.resource === 'wood'),
       'unit references an invalid forest target');
+      if (unit.workIntent?.sourceKind === FOREST_GATHER_SOURCE_KIND) {
+        const anchor = unit.workIntent.anchor;
+        const anchorCell = Math.floor(anchor.z + definition.height / 2) * definition.width + Math.floor(anchor.x + definition.width / 2);
+        assertSnapshot(checkpointForestGroups.byCell[forestCell] === checkpointForestGroups.byCell[anchorCell],
+          'forest target leaves its authored group');
+      }
     }
     if (unit.workIntent?.kind === 'construction') {
       assertSnapshot(validConstructionWorkArea(unit.workIntent.area, definition,
@@ -4360,6 +4376,11 @@ function workerDropoffCandidates(unit) {
       .map((building) => ({ ...building, goals: buildingAccessCells(building.footprint) }));
 }
 
+function workerFlowPath(unit, path) {
+  return shortcutFlatUnitPath(path, unit.x + MAP_HALF_X, unit.z + MAP_HALF_Z,
+    MAP_WIDTH, elevationLevelByCell, isWalkable, WALK_SPEED * STEP_SECONDS);
+}
+
 function routeWorkerToDropoff(unit) {
   const start = nearestOpenCell(worldToCell(unit.x, unit.z));
   const component = walkableComponents[start];
@@ -4375,7 +4396,8 @@ function routeWorkerToDropoff(unit) {
   unit.dropoffBuildingId = best?.candidate.id ?? null;
   unit.dropoffNavigationRevision = navigationRevision;
   unit.moveGoalCell = best?.field.goal ?? -1;
-  unit.path = best?.path ?? [];
+  // Score the original flow routes above; shorten only the selected leg.
+  unit.path = best ? workerFlowPath(unit, best.path) : [];
   unit.pathIndex = 0;
 }
 
@@ -4411,14 +4433,14 @@ function routeWorker(unit, phase, node) {
     const goals = buildingAccessCells(building.footprint).filter(cell => walkableComponents[cell] === component);
     const field = goals.length ? getAttackFlowFieldForGoals(goals, `farm:${building.id}:${component}`) : null;
     unit.moveGoalCell = field?.goal ?? -1;
-    unit.path = field ? pathFromAttackFlow(start, field) : [];
+    unit.path = field ? workerFlowPath(unit, pathFromAttackFlow(start, field)) : [];
     unit.pathIndex = 0;
     return;
   }
   const target = node;
   unit.moveGoalCell = worldToCell(target.x, target.z);
   const field = getAttackFlowField(worldToCell(target.x, target.z));
-  unit.path = field ? pathFromAttackFlow(worldToCell(unit.x, unit.z), field) : [];
+  unit.path = field ? workerFlowPath(unit, pathFromAttackFlow(worldToCell(unit.x, unit.z), field)) : [];
   unit.pathIndex = 0;
 }
 
@@ -4455,7 +4477,7 @@ function routeForestWorker(unit, phase, cell) {
     routeWorkerToDropoff(unit); return;
   }
   unit.moveGoalCell = field?.goal ?? -1;
-  unit.path = field ? pathFromAttackFlow(worldToCell(unit.x, unit.z), field) : [];
+  unit.path = field ? workerFlowPath(unit, pathFromAttackFlow(worldToCell(unit.x, unit.z), field)) : [];
   unit.pathIndex = 0;
 }
 
@@ -4465,22 +4487,10 @@ function assignForestGather(player, command) {
     sendOrderNotice(player, command, 'GATHER REJECTED · FOREST CELL NOT FOUND');
     return;
   }
-  if (mapDefinition.fogOfWar && !cellVisibleToTeam(player.team, cell)) {
-    sendOrderNotice(player, command, 'GATHER REJECTED · FOREST CELL NOT VISIBLE');
-    return;
-  }
-  if (forestWoodRemaining[cell] <= 0) {
-    sendOrderNotice(player, command, 'FOREST CELL CLEARED');
-    return;
-  }
-
-  const accessCells = forestOpenAccessCells(cell);
+  // The public authored cell identifies a group, never the live tree to cut.
+  // Even a deep click needs a currently visible, reachable frontier below.
   const baseCell = nearestOpenCell(worldToCell(spawnByTeam[player.team].x, spawnByTeam[player.team].z));
   const componentId = walkableComponents[baseCell];
-  if (componentId < 0 || !accessCells.some((candidate) => walkableComponents[candidate] === componentId)) {
-    sendOrderNotice(player, command, 'FOREST CELL UNREACHABLE');
-    return;
-  }
   const selectedUnits = commandUnits(command)
     .filter((unit) => unit.hp > 0 && unit.team === player.team && unitHasCapability(unit, 'gather')
       && walkableComponents[nearestOpenCell(worldToCell(unit.x, unit.z))] === componentId);
@@ -4489,7 +4499,18 @@ function assignForestGather(player, command) {
     return;
   }
 
+  const assignments = [], planned = new Map();
   for (const unit of selectedUnits) {
+    const target = forestGroupTarget(unit, cell, planned);
+    if (target === null) continue;
+    assignments.push({ unit, target });
+    planned.set(target, (planned.get(target) ?? 0) + 1);
+  }
+  if (assignments.length === 0) {
+    sendOrderNotice(player, command, 'GATHER REJECTED · NO REACHABLE VISIBLE FOREST TREES');
+    return;
+  }
+  for (const { unit, target } of assignments) {
     unit.orderRevision++;
     unit.queuedWaypoints.length = 0;
     clearAttackMoveOrder(unit);
@@ -4500,13 +4521,13 @@ function assignForestGather(player, command) {
     unit.repathTimer = 0;
     unit.lastAttackCell = -1;
     unit.gatherNodeId = null;
-    unit.gatherForestCell = cell;
-    unit.workIntent = createGatherWorkIntent(unit.generation, cellToWorld(cell));
+    unit.gatherForestCell = target;
+    unit.workIntent = createForestGatherWorkIntent(unit.generation, cellToWorld(cell));
     routeForestWorker(unit, unit.cargo > 0 && unit.cargoType !== 'wood'
-      || unit.cargo >= WORKER_CARRY_CAPACITY ? 'to-base' : 'to-node', cell);
+      || unit.cargo >= WORKER_CARRY_CAPACITY ? 'to-base' : 'to-node', target);
   }
   dirty = true;
-  sendOrderNotice(player, command, `GATHER ORDER · ${selectedUnits.length} WORKERS`);
+  sendOrderNotice(player, command, `GATHER ORDER · ${assignments.length} WORKERS`);
 }
 
 function assignReturnCargo(player, command) {
@@ -4685,8 +4706,44 @@ function ensureGatherWorkIntent(unit) {
   }
 }
 
+function forestGroupTarget(unit, anchorCell, planned = new Map()) {
+  const group = forestWorkGroups.groups[forestWorkGroups.byCell[anchorCell]];
+  if (!group) return null;
+  const start = nearestOpenCell(worldToCell(unit.x, unit.z)), component = walkableComponents[start];
+  if (component < 0) return null;
+  const reservations = new Map(planned);
+  for (const other of units) if (other !== unit && other.hp > 0 && other.team === unit.team
+    && other.gatherForestCell >= 0 && ['to-node', 'gathering'].includes(other.gatherPhase)) {
+    reservations.set(other.gatherForestCell, (reservations.get(other.gatherForestCell) ?? 0) + 1);
+  }
+  const candidates = visibleForestCandidates(group, unit, {
+    visible: cell => cellVisibleToTeam(unit.team, cell), remaining: cell => forestWoodRemaining[cell],
+    point: cellToWorld, reservations,
+  });
+  for (const cell of candidates) {
+    const goals = forestOpenAccessCells(cell).filter(goal => walkableComponents[goal] === component);
+    if (!goals.length) continue;
+    const field = getAttackFlowFieldForGoals(goals, `forest:${cell}:${component}`);
+    if (field && (field.goals.has(start) || pathFromAttackFlow(start, field).length > 0)) return cell;
+  }
+  return null;
+}
+
+function continueForestGroupGathering(unit, intent) {
+  if (unit.queuedWaypoints.length || unit.cargo >= WORKER_CARRY_CAPACITY
+    || (unit.cargo > 0 && unit.cargoType !== 'wood')) return false;
+  const target = forestGroupTarget(unit, worldToCell(intent.anchor.x, intent.anchor.z));
+  if (target === null) return false;
+  unit.gatherNodeId = null;
+  unit.gatherForestCell = target;
+  routeForestWorker(unit, 'to-node', target);
+  dirty = true;
+  return true;
+}
+
 function continueAreaGathering(unit) {
   const intent = activeWorkIntent(unit);
+  if (intent?.sourceKind === FOREST_GATHER_SOURCE_KIND) return continueForestGroupGathering(unit, intent);
   const area = intent?.kind === 'gather' ? gatherWorkArea(intent.anchor, intent.resource) : null;
   if (!area || unit.queuedWaypoints.length > 0 || unit.cargo >= WORKER_CARRY_CAPACITY
     || (unit.cargo > 0 && unit.cargoType !== area.type)) return false;
@@ -4724,12 +4781,22 @@ function continueAreaGathering(unit) {
   return false;
 }
 
-function updateForestWorkerEconomy(unit) {
+function updateForestWorkerEconomy(unit, continuations) {
   const cell = unit.gatherForestCell;
   const point = cellToWorld(cell);
   const targetDistance = Math.hypot(point.x - unit.x, point.z - unit.z);
 
-  const stock = forestWoodRemaining[cell];
+  const groupJob = activeWorkIntent(unit)?.sourceKind === FOREST_GATHER_SOURCE_KIND;
+  const canInspect = !groupJob || cellVisibleToTeam(unit.team, cell);
+  // An empty remembered target is still a return destination, not a remote
+  // query. Reacquire sight at the worksite before selecting its successor.
+  const atWorksite = unit.gatherPhase !== 'to-node' || targetDistance <= WORKER_INTERACTION_RANGE;
+  const stock = canInspect && (!groupJob || atWorksite) ? forestWoodRemaining[cell] : Infinity;
+  if (groupJob && stock <= 0 && ['to-node', 'gathering'].includes(unit.gatherPhase)) {
+    if (unit.cargo >= WORKER_CARRY_CAPACITY || (unit.cargo > 0 && unit.cargoType !== 'wood')) routeForestWorker(unit, 'to-base', cell);
+    else continuations.add(unit);
+    return;
+  }
   if (stock <= 0 && ['to-node', 'gathering'].includes(unit.gatherPhase) && continueAreaGathering(unit)) return;
   if (unit.gatherPhase === 'to-node') {
     if ((unit.cargo > 0 && unit.cargoType !== 'wood')
@@ -4742,10 +4809,21 @@ function updateForestWorkerEconomy(unit) {
       unit.pathIndex = 0;
       unit.movePlanningPending = false;
       unit.moveGoalCell = -1;
+    } else if (unit.pathIndex >= unit.path.length) {
+      // A flow goal is a cell, while harvesting checks the actual position.
+      // Retargeting can start inside an access cell but outside harvest range;
+      // finish at that cell's legal center through ordinary movement.
+      const current = worldToCell(unit.x, unit.z);
+      if (forestOpenAccessCells(cell).includes(current)) {
+        unit.path = [current];
+        unit.pathIndex = 0;
+        unit.moveGoalCell = current;
+      } else if (groupJob) continuations.add(unit);
     }
   }
 
   if (unit.gatherPhase === 'gathering') {
+    if (!canInspect) { routeForestWorker(unit, 'to-node', cell); return; }
     const remaining = forestWoodRemaining[cell];
     if ((unit.cargo > 0 && unit.cargoType !== 'wood')
       || unit.cargo >= WORKER_CARRY_CAPACITY || remaining <= 0) {
@@ -4765,7 +4843,8 @@ function updateForestWorkerEconomy(unit) {
       if (forestWoodRemaining[cell] === 0) pendingForestClears.add(cell);
       dirty = true;
       if (unit.cargo >= WORKER_CARRY_CAPACITY || forestWoodRemaining[cell] === 0) {
-        if (!(forestWoodRemaining[cell] === 0 && continueAreaGathering(unit))) routeForestWorker(unit, 'to-base', cell);
+        if (groupJob && forestWoodRemaining[cell] === 0 && unit.cargo < WORKER_CARRY_CAPACITY) continuations.add(unit);
+        else if (!(forestWoodRemaining[cell] === 0 && continueAreaGathering(unit))) routeForestWorker(unit, 'to-base', cell);
       }
     }
   }
@@ -4775,7 +4854,7 @@ function updateForestWorkerEconomy(unit) {
       depositWorkerCargo(unit);
       dirty = true;
     }
-    if (forestWoodRemaining[cell] > 0) routeForestWorker(unit, 'to-node', cell);
+    if (groupJob || forestWoodRemaining[cell] > 0) routeForestWorker(unit, 'to-node', cell);
     else if (!continueAreaGathering(unit)) stopGathering(unit);
   }
 }
@@ -4793,7 +4872,7 @@ function flushPendingForestClears() {
   pendingForestClears.clear();
   if (!changed) return;
   navigationRevision++;
-  visionCoverageBySourceCell = new Array(CELL_COUNT);
+  invalidateVisionCoverage('forest-clear');
   attackFlowFields.clear();
   rebuildWalkableComponents();
   updateVisionMasks();
@@ -4801,6 +4880,7 @@ function flushPendingForestClears() {
 }
 
 function updateWorkerEconomy() {
+  const forestContinuations = new Set();
   for (const unit of units) {
     if (unit.hp <= 0 || unit.movementDomain === 'water' || !unitHasCapability(unit, 'gather')) continue;
     ensureGatherWorkIntent(unit);
@@ -4808,7 +4888,7 @@ function updateWorkerEconomy() {
       if (!forestCellMask[unit.gatherForestCell]) {
         stopGathering(unit);
         dirty = true;
-      } else updateForestWorkerEconomy(unit);
+      } else updateForestWorkerEconomy(unit, forestContinuations);
       continue;
     }
     if (unit.gatherNodeId === null) {
@@ -4886,6 +4966,17 @@ function updateWorkerEconomy() {
     }
   }
   flushPendingForestClears();
+  // Every cut and its navigation/sight invalidation precedes frontier search.
+  for (const unit of forestContinuations) {
+    if (continueAreaGathering(unit)) continue;
+    clearGatherWorkIntent(unit);
+    if (unit.cargo > 0) {
+      routeForestWorker(unit, 'to-base', unit.gatherForestCell);
+      unit.gatherForestCell = -1; // Source-free final delivery cannot recreate a legacy job.
+    } else stopGathering(unit);
+    broadcastGameplayNotice(unit.team, unit.x, unit.z, 'FOREST WORK ENDED · NO REACHABLE VISIBLE TREES');
+    dirty = true;
+  }
 }
 
 function researchContextForTeam(team) {
@@ -5271,7 +5362,7 @@ function destroyBuilding(building) {
     unit.moveGoalCell = nearestOpenCell(worldToCell(unit.x, unit.z));
   }
   navigationRevision++;
-  visionCoverageBySourceCell = new Array(CELL_COUNT);
+  invalidateVisionCoverage('building-removal');
   attackFlowFields.clear();
   rebuildWalkableComponents();
   updateWallBuildOrders();
@@ -5760,7 +5851,7 @@ function buildWallLine(player, command) {
   teamWood[player.team] -= plan.cost.wood; teamFood[player.team] -= plan.cost.food;
   nextBuildingId = plan.nextBuildingId;
   navigationRevision++;
-  visionCoverageBySourceCell = new Array(CELL_COUNT);
+  invalidateVisionCoverage('wall-addition');
   attackFlowFields.clear(); rebuildWalkableComponents();
   replanPathsBlockedBy(plan.buildings.map(building => building.footprint[0]));
   const first = plan.buildings[0], access = cellToWorld(plan.access[0].accessCell);
@@ -5931,7 +6022,7 @@ function buildBuilding(player, command) {
   buildings.push(building);
   buildingsById.set(id, building);
   navigationRevision++;
-  visionCoverageBySourceCell = new Array(CELL_COUNT);
+  invalidateVisionCoverage('building-addition');
   setTeamEconomyBalance(player.team, paidBalance);
   attackFlowFields.clear();
   replanPathsBlockedBy(building.footprint);
@@ -5976,7 +6067,7 @@ function setGateOpen(player, command) {
   building.gateOpen = plan.open;
   for (const cell of building.footprint) buildingBlocked[cell] = plan.open ? 0 : 1;
   navigationRevision++;
-  visionCoverageBySourceCell = new Array(CELL_COUNT);
+  invalidateVisionCoverage('gate-transition');
   attackFlowFields.clear();
   rebuildWalkableComponents();
   if (!plan.open) replanPathsBlockedBy(building.footprint);
@@ -6286,7 +6377,7 @@ function updateTeamResearch() {
     teamUpgrades[team][rules.upgradeKey] = true;
     teamResearch[team] = null;
     broadcastGameplayNotice(team, building.x, building.z,
-      `${team === 0 ? 'AZURE' : 'EMBER'} ${rules.label} COMPLETE · +20% ATTACK`);
+      `${team === 0 ? 'AZURE' : 'EMBER'} ${rules.label} COMPLETE · UPGRADE ACTIVE`);
   }
 }
 

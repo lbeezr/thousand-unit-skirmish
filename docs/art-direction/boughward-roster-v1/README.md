@@ -14,6 +14,11 @@
 
 The normal game assigns Human art to team zero and Boughward art to team one. Both still use the existing Frontier gameplay definitions and balance. This is a civilization presentation association, not a civilization chooser or an asymmetric ruleset. Explicit legacy preview flags remain separate.
 
+The later [civilization/settlement library](../civilization-settlements-v1/README.md)
+develops this direction into a proposed thirteen-role architectural family and
+village/town/city boards. They remain exploratory and unselected; no separate
+Boughward building family is bound in normal gameplay by that source work.
+
 Each role has distinct static idle, walk, attack and defeat images, reused across all eight headings. Worker also has resource-specific gathering, building and repair. This follows the user's direction to prioritize initial graphics even when animation is approximate. No directional fidelity or animation completion claim is made. Foot body scale follows the approved 232-pixel/1.2161865234375-world-unit Human calibration; goblins are smaller. Mount size, siege footprint and ground anchors remain provisional until live review. Team masks remain neutral; renderer-owned selection, health and other ownership cues are preserved.
 
 `scripts/build-boughward-roster.py ROLE` reproduces extraction, scaling, manifests and compact atlases. Worker uses eight connected silhouettes; other military foot and mounted roles use four. Archer uses cells with small isolated fragments removed. Siege retains full cells to preserve disconnected wreck parts. Background cleanup uses built-in image generation; packing only crops and normalizes existing alpha. Source RGB under invisible alpha is zeroed. No Meshy pipeline was used.

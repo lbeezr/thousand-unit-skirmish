@@ -227,3 +227,75 @@ test('internal route repair preserves an active palisade sequence revision', () 
   f.mover.orderRevision++;
   assert.equal(activeWallBuildOrder(f.mover),null,'a later player revision still invalidates the sequence');
 });
+
+test('the shared land step contract rejects malformed grids before querying occupancy', () => {
+  for (const [width, count] of [[Infinity, 8], [-8, 8], [1.5, 8], [3, 8], [0, 8], [8, 0]]) {
+    assert.equal(canTraverseUnitStep(0, 0, width, new Uint8Array(count), () => {
+      assert.fail('invalid dimensions must not query occupancy');
+    }), false, `${width} columns / ${count} cells`);
+  }
+});
+
+test('rectangular and planned320 grids retain corner, slope and row-wrap legality', () => {
+  // The 320 case exercises index arithmetic only; it does not admit an XL map.
+  for (const [width, height] of [[16, 17], [160, 160], [256, 256], [320, 320]]) {
+    const levels = new Uint8Array(width * height), start = width * 2 + 2;
+    const blocked = new Set(), walkable = cell => !blocked.has(cell);
+    for (const offset of [-width-1, -width, -width+1, -1, 0, 1, width-1, width, width+1]) {
+      assert.equal(canTraverseUnitStep(start, start+offset, width, levels, walkable), true);
+      levels[start+offset] = 1;
+      assert.equal(canTraverseUnitStep(start, start+offset, width, levels, walkable), true);
+      levels[start+offset] = 0;
+    }
+    levels[start+width+1] = 2;
+    assert.equal(canTraverseUnitStep(start, start+width+1, width, levels, walkable), false);
+    levels[start+width+1] = 0; blocked.add(start+1);
+    assert.equal(canTraverseUnitStep(start, start+width+1, width, levels, walkable), false);
+    assert.equal(canTraverseUnitStep(width-1, width, width, levels, walkable), false);
+  }
+});
+
+const landExecutionPolicies = [
+  ['manual Move', 'infantry', {}],
+  ['queued Move', 'scout', { queuedWaypoints: [{ destination: 29, attackMove: false }] }],
+  ['building approach', 'worker', { buildingTargetId: 7 }],
+  ['repair approach', 'worker', { buildingTargetId: 7, repairing: true }],
+  ['gather approach', 'worker', { gatherNodeId: 'berries', gatherPhase: 'gathering' }],
+  ['drop-off approach', 'worker', { gatherNodeId: 'berries', gatherPhase: 'returning', carriedFood: 10 }],
+  ['return to resource', 'worker', { gatherNodeId: 'berries', gatherPhase: 'gathering', carriedFood: 0 }],
+  ['Patrol continuation', 'infantry', { persistentOrder: { type: 'patrol' } }],
+  ['Follow continuation', 'rider', { persistentOrder: { type: 'follow' } }],
+  ['Attack-move route', 'archer', { attackMove: true, attackMoveRouteReady: true }],
+  ['unit pursuit', 'spearman', { attackTargetId: 1, lastAttackCell: 28, repathTimer: 2 }],
+  ['building firing approach', 'siege-engine', { attackBuildingTargetId: 7, lastAttackCell: 28, repathTimer: 2 }],
+  ['stance return', 'infantry', { stanceReturning: true }],
+];
+for (const [label, kind, policy] of landExecutionPolicies) {
+  test(`${label}: the production land executor retains intent after an illegal deflected step`, () => {
+    // Inject accepted route state into the real executor. Command admission,
+    // target selection, full journeys and naval execution require other tests.
+    for (const team of [0, 1]) for (const terrain of ['cliff', 'corner']) {
+      const f = fixture({ kind, x: -.01, z: .001, cliff: false });
+      Object.assign(f.mover, { team, gatherNodeId: null, gatherPhase: '', ...structuredClone(policy) });
+      for (const other of f.units.slice(1)) other.hp = 0;
+      if (terrain === 'cliff') { f.levels[27] = 1; f.levels[35] = 2; }
+      else f.blockedCells.add(36);
+      const before = structuredClone(f.mover), queue = f.mover.queuedWaypoints;
+      f.move();
+      assert.deepEqual({ x: f.mover.x, z: f.mover.z }, { x: before.x, z: before.z });
+      assert.equal(f.mover.lastMoveTick, before.lastMoveTick);
+      assert.equal(f.mover.orderRevision, before.orderRevision);
+      assert.equal(f.mover.queuedWaypoints, queue);
+      for (const key of Object.keys(policy).filter(key => !['lastAttackCell', 'repathTimer', 'queuedWaypoints'].includes(key))) {
+        assert.deepEqual(f.mover[key], before[key], `${terrain} retains ${key}`);
+      }
+      if (before.attackTargetId >= 0 || before.attackBuildingTargetId >= 0) {
+        assert.equal(f.mover.path.length, 0);
+        assert.equal(f.mover.lastAttackCell, -1); assert.equal(f.mover.repathTimer, 0);
+        assert.equal(f.repairs.length, 0, 'pursuit retains its own replanning policy');
+      } else {
+        assert.equal(f.repairs.length, 1); assert.equal(f.repairs[0].destination, before.moveGoalCell);
+      }
+    }
+  });
+}

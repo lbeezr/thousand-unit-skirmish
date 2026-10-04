@@ -20,8 +20,15 @@ Use the already qualified [PR323 run](https://github.com/lbeezr/thousand-unit-sk
 and coordinate one reviewed hosted batch containing the three owners' scenarios.
 Do not edit or dispatch a parallel workflow for this slice.
 
-The exact missing integration hook is a **before-cleanup scenario call** on
-the existing qualified CDP page, after HUD's ordinary entry/import:
+The shared runner now has a before-cleanup case call and a version 1
+[capture context](../scripts/renderer-capture-context.mjs). Its registered
+`building-catalog` filename is `scripts/renderer-building-catalog-scenario.mjs`;
+that wrapper is not supplied here. The remaining integration gap is the bridge
+from HUD's ordinary flat-map entry/import receipt to this adapter, together with
+the qualified pack and browser version. Version 1 currently supplies only
+immutable source/digest identity, owned pages, origin, capture and evidence
+directory. CI owns any context extension or runner wiring; HUD owns the entry
+and exact import receipt. The bridge must make this call before shared cleanup:
 
 ```js
 const catalogReport = await runCatalogBarracksScenario({

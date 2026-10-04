@@ -1,4 +1,4 @@
-import { economyServerBindings, economyServerFunctions } from './economy-server-fixture.mjs';
+import { economyServerBindings, economyServerFunctions, workerFlowRouteBindings } from './economy-server-fixture.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -67,7 +67,7 @@ function authority(team, overrides = {}) {
     { id: 4, team, complete: true, type: 'barracks', footprint: [4] },
   ];
   const notices = [];
-  const context = vm.createContext({ ...economyServerBindings(), units: [unit], MAX_UNITS: 1000, dirty: false,
+  const context = vm.createContext({ ...economyServerBindings(), ...workerFlowRouteBindings(), units: [unit], MAX_UNITS: 1000, dirty: false,
     BUILDING_DEFINITIONS, navigationRevision: 4, WORKER_INTERACTION_RANGE: 1.5,
     allMatchBuildings: () => buildings, buildingsById: new Map(buildings.map(b => [b.id, b])),
     worldToCell: x => x, nearestOpenCell: cell => cell, buildingAccessCells: cells => cells,
@@ -80,7 +80,7 @@ function authority(team, overrides = {}) {
     creditResourceBalance, flushPendingForestClears() {},
   });
   const names = ['commandUnitAt', 'commandUnits', 'clearAttackMoveOrder',
-    'workerDropoffCandidates', 'routeWorkerToDropoff', 'workerAtDropoff',
+    'workerDropoffCandidates', 'workerFlowPath', 'routeWorkerToDropoff', 'workerAtDropoff',
     'assignReturnCargo', 'stopGathering', 'ensureGatherWorkIntent', 'updateWorkerEconomy', 'workerTaskStatus'];
   vm.runInContext(economyServerFunctions + names.map(name => fn(server, name)).join('\n'), context);
   const order = extra => context.assignReturnCargo({ team }, {

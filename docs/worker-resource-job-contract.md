@@ -4,8 +4,9 @@ Economy/content owns the shared checkpoint union and external cancellation,
 plus bounded Wood, Stone and plain neutral land Food continuation. The construction implementation owner consumes the
 construction variant and owns site targeting, adjacent-Gate priority and natural
 reacquisition. Architecture edits no runtime. Ordinary deployed gameplay belongs
-to the cloud testing owner. This source slice starts no browser; staged release
-delivery and actual rendered gameplay acceptance remain separate cloud outcomes.
+to the cloud testing owner. Staged release delivery and actual rendered gameplay
+acceptance remain separately identified cloud outcomes; source/native checks
+alone do not establish either.
 
 The 12:24 user report reproduces locally at current runtime `278d133d` (harness
 head `0ccce3cb`) and identified staging source `64cc391e`: a forest cell or ordinary
@@ -33,6 +34,8 @@ with the release delivery and cloud testing owners.
 ```js
 workIntent: null
   | { version: 1, kind: 'gather', generation, resource: 'wood' | 'stone', anchor: { x, z } }
+  | { version: 1, kind: 'gather', generation, resource: 'wood',
+      sourceKind: 'forest-group', anchor: { x, z } }
   | { version: 1, kind: 'gather', generation, resource: 'food',
       sourceKind: 'neutral-land-food', anchor: { x, z } }
   | { version: 1, kind: 'construction', generation, siteIds: [id, ...],
@@ -45,7 +48,7 @@ repair, cargo delivery, target change and orderRevision increments preserve the
 durable intent. Only living matching generations execute it; new/recycled units
 start with null. No intent or source stock enters the public unit-row protocol.
 
-Gather anchors the original accepted Wood, Stone or plain neutral land Food source. Stone requires the
+Ordinary-node and legacy Gather anchors the original accepted Wood, Stone or plain neutral land Food source. Stone requires the
 explicit `stone-defense-v1` map profile; a baseline Stone intent is rejected.
 The fixed rule radius is eight
 world units, never an editable checkpoint radius. Eligible replacement sources
@@ -65,6 +68,24 @@ plain-Food assignment creates its own class and original anchor.
 The [adopted Food decision](food-source-continuation-proposal.md) and
 [Food continuation QA](qa-plain-food-job-continuation-2026-10-04.md) retain the
 bounded implementation and its separate delivery/acceptance status.
+
+New forest clicks instead carry `sourceKind: 'forest-group'`: the original exact
+cell-center anchors its immutable authored four-neighbor group, including after
+clearing. A deep public anchor identifies the forest; only current-visible live
+trees with reachable access/routes can become execution targets. Nearest distance
+plus a soft two-unit penalty per friendly target reservation spreads selected
+Workers without exclusive locks. Separate groves and ordinary nodes are excluded.
+All pending cuts refresh navigation/LOS before retargeting. After deposit, return
+to the remembered worksite before inspecting successors; hidden stocks never
+choose destinations or exhaustion feedback. If no reachable visible trees remain,
+return cargo once with a source-free execution, finish and report that precise
+condition. The unchanged range1.5 is checked against actual positions; a finished
+flow goal outside range receives its legal cell-center final approach.
+The existing tagged version1/schema29 union admits this source class and validates
+its anchor/generation/target membership atomically. Legacy jobs retain radius8.
+[Forest diagnosis and acceptance](qa-forest-group-jobs-2026-10-04.md) distinguish
+source/native proof from containing-build rendered acceptance. Terrain presentation
+owns tree registration; resource movement owns flat-flow route construction.
 
 Construction remembers only explicitly assigned paid owned site IDs, in priority
 order. Area is the initial sites' footprint bounding rectangle plus two world
@@ -104,6 +125,17 @@ classifier and `PLAIN_FOOD_SOURCE_KIND` are exported with the shared helpers.
 The last two bounds come from authoritative state/MAX_BUILDINGS, not client input.
 
 ## Checkpoint boundary
+
+Worker resource travel consumes shared flow fields, then reduces only a clear,
+uniform-level leg from the Worker's actual fractional position to the original
+path's final cell. The actual endpoint may differ from the field's first goal
+for Farm, forest or drop-off access. Compare drop-off candidates using original
+flow path lengths before reducing the winning leg. Obstructed/nonflat routes,
+interaction radii, targets, work intent and cargo retain their existing rules.
+`pathFromAttackFlow` stays cardinal for other consumers, including Sheep Herd.
+The [Worker route QA](qa-worker-flat-flow-routes-2026-10-04.md) owns this bounded
+correction; forest target/job selection and universal movement are separate
+owner-led slices.
 
 The optional v1 unit field is additive to existing schema 29/rules 6. Economy
 owns capture cloning, validation, restore/migration and cancellation hooks.

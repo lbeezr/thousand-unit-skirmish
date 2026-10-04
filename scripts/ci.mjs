@@ -77,7 +77,9 @@ run(['--test', 'scripts/audit-asset-adoption.test.mjs'], 'Approved asset default
 run(['--test', 'scripts/asset-readability.test.mjs'], 'Read-only asset catalog consuming the existing production sidecar');
 run(['--test', 'scripts/catalog-barracks-scenario.test.mjs'], 'Catalog and paid Barracks adapter contracts (CPU observations)');
 run(['--test', 'scripts/oak-depletion-atlas-runtime.test.mjs'], 'Generic oak depletion atlas loading, fallback and registration');
+run(['--test', 'scripts/interactive-runtime-image.test.mjs'], 'Verified interactive image hash, dimensions and disposal');
 run(['--test', 'scripts/terrain-cliff-faces.test.mjs'], 'Painted scree cliff faces preserve terrain, UV joins and fallback');
+run(['--test', 'scripts/environment-instance-picking.test.mjs'], 'Actual tree alpha maps clicks to existing forest and wood-node Gather targets');
 run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs', 'scripts/audio-synthesis-lifecycle.test.mjs', 'scripts/audio-decoded-cache.test.mjs', 'scripts/audio-shared-decode.test.mjs', 'scripts/audio-settings.test.mjs', 'scripts/audio-roster-notices.test.mjs'], 'Verified shipped audio and execution gates');
 run(['--experimental-test-coverage', '--test-coverage-include=src/client/audio/audio-shipped-response.mjs',
   '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
@@ -116,7 +118,7 @@ run(['--test', 'scripts/worker-fishing-contact.test.mjs'], 'Worker fishing reach
 run(['--test', 'scripts/unit-movement.test.mjs'], 'Unit separation terrain boundaries');
 run(['--test', 'scripts/crowd-forward-progress.test.mjs'], 'Parked crowd route progress and preserved idle actors');
 run(['--test', 'scripts/pathing-replay.test.mjs'], 'Obstructed formation goals and team reservation');
-run(['--test', 'scripts/unit-path-line.test.mjs', 'scripts/open-ground-move.test.mjs'], 'Direct open-ground trajectories and safe long waypoint repair');
+run(['--test', 'scripts/unit-path-line.test.mjs', 'scripts/open-ground-move.test.mjs', 'scripts/worker-flat-flow-routes.test.mjs'], 'Direct open-ground trajectories and safe long waypoint repair');
 run(['--test', 'scripts/move-planning-slices.test.mjs'], 'Clock-independent route planning, stale results and fair queue turns');
 run(['--test', 'scripts/move-planning-tick.test.mjs', 'scripts/move-planning-tick-error.test.mjs', 'scripts/pathing-arrival.test.mjs'], 'Opt-in planning tick budgets, order invalidation, topology and recovery');
 run(['--test', 'scripts/tick-samples.test.mjs'], 'Opt-in whole-tick diagnostic chronology and values');
@@ -151,7 +153,8 @@ run(['--test', 'scripts/browser-performance-instrumentation.test.mjs'], 'Browser
 run(['--test', 'scripts/browser-preflight.test.mjs'], 'Browser preflight diagnostics');
 run(['--test', 'scripts/unit-displacement-animation.test.mjs'], 'Temporal sprite cells from actual displacement and heading');
 run(['--test', 'scripts/renderer-capability.test.mjs'], 'WebGL2 capability report contracts (CPU mocks)');
-run(['--test', 'scripts/renderer-qualification.test.mjs'], 'Packed-game renderer qualification contracts (CPU mocks)');
+run(['--test', 'scripts/worker-work-cycle-capture.test.mjs'], 'Packed Worker work-cycle adapter contracts (CPU mocks)');
+run(['--test', 'scripts/renderer-qualification.test.mjs', 'scripts/renderer-feature-capture.test.mjs', 'scripts/renderer-capture-context.test.mjs'], 'Packed-game renderer qualification contracts (CPU mocks)');
 run(['--test', 'scripts/temporary-resources.test.mjs'], 'Owned temporary resource cleanup');
 run(['--test', 'scripts/mature-settlement-scenario.test.mjs'], 'Paid settlement fixture ledger and layout');
 run(['scripts/mature-settlement-scenario.mjs'], 'Paid settlement construction, composition and recovery');

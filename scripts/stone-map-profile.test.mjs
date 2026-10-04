@@ -300,10 +300,28 @@ test('internal Practice selects shipped Stone and both seats naturally pay, refu
   for (const [team, client] of clients.entries()) await client.command({ type: 'returnCargo', ids: workers[team] }, /RETURN CARGO/);
   await room.checkpoint(snapshot => snapshot.state.units.every(unit => unit.cargo === 0));
   for (const [team, client] of clients.entries()) await client.command({ type: 'gather', ids: workers[team], nodeId: ownNodes(team)[0].id }, /GATHER ORDER/);
-  await room.checkpoint(snapshot => ownNodes(0).concat(ownNodes(1)).filter(node => node.id === ownNodes(0)[0].id || node.id === ownNodes(1)[0].id)
-    .every(node => snapshot.state.resourceNodes.find(saved => saved.id === node.id).stock === 0) && snapshot.state.units.every(unit => unit.cargo === 0));
+  const firstDepletion = await room.checkpoint(snapshot => [0, 1].every(team =>
+    snapshot.state.resourceNodes.find(node => node.id === ownNodes(team)[0].id).stock === 0));
+  // Stone jobs continue inside their original area. Stop explicitly at this
+  // source boundary, then account for any successor stock already drawn.
   for (const [team, client] of clients.entries()) await client.command({ type: 'stop', ids: workers[team] }, /STOP ORDER/);
-  const banked = await room.checkpoint(snapshot => snapshot.state.teamStone.every(value => Math.abs(value - 67) < 1e-7)); conserved(banked);
+  const stopped = await room.checkpoint(snapshot => snapshot.sequence > firstDepletion.sequence
+    && workers.flat().every(id => snapshot.state.units[id].gatherPhase === '' && snapshot.state.units[id].workIntent === null));
+  conserved(stopped);
+  const expectedBank = [0, 1].map(team => stopped.state.teamStone[team]
+    + stopped.state.units.filter(unit => unit.team === team && unit.cargoType === 'stone').reduce((sum, unit) => sum + unit.cargo, 0));
+  for (const [team, client] of clients.entries()) {
+    if (stopped.state.units.some(unit => unit.team === team && unit.cargo > 0)) {
+      await client.command({ type: 'returnCargo', ids: workers[team] }, /RETURN CARGO/);
+    }
+  }
+  const banked = await room.checkpoint(snapshot => snapshot.sequence > stopped.sequence
+    && snapshot.state.units.every(unit => unit.cargo === 0)); conserved(banked);
+  for (const team of [0, 1]) {
+    assert.ok(expectedBank[team] >= 67 - 1e-7 && expectedBank[team] < 200);
+    assert.ok(Math.abs(banked.state.teamStone[team] - expectedBank[team]) < 1e-7);
+    assert.deepEqual(banked.state.resourceNodes, stopped.state.resourceNodes, 'Stop/Return must not draw more Stone');
+  }
   assert.deepEqual(banked.state.teamFood, [300, 300]); assert.deepEqual(banked.state.teamWood, [600, 600]);
   for (const [team, client] of clients.entries()) {
     await client.command({ type: 'build', buildingType: 'watchtower', ids: [workers[team][0]], x: (team ? 1 : -1) * 10.5, z: -12.5 }, /WATCHTOWER/);
@@ -312,7 +330,7 @@ test('internal Practice selects shipped Stone and both seats naturally pay, refu
   }
   await room.stop(); const paid = JSON.parse(await readFile(room.checkpointPath, 'utf8')); conserved(paid);
   assert.deepEqual(paid.state.teamFood, [250, 250]); assert.deepEqual(paid.state.teamWood, [450, 450]);
-  assert.ok(paid.state.teamStone.every(value => Math.abs(value - 17) < 1e-7));
+  assert.ok(paid.state.teamStone.every((value, team) => Math.abs(value - expectedBank[team] + 50) < 1e-7));
   await room.start(); clients = [await room.connect(0, tokens[0]), await room.connect(1, tokens[1])];
   const recovered = await room.checkpoint(snapshot => snapshot.sequence > paid.sequence); conserved(recovered);
   assert.equal(recovered.matchId, paid.matchId); assert.equal(recovered.schemaVersion, 29);
@@ -324,7 +342,7 @@ test('internal Practice selects shipped Stone and both seats naturally pay, refu
     await client.command({ type: 'cancelConstruction', buildingId: tower.id }, /CONSTRUCTION CANCELLED.*STONE/);
     spent[team] = 50 - Math.round(50 * (1 - tower.progress) * 1e6) / 1e6;
     const refundBank = await client.state(state => !state.buildings.some(building => building.id === tower.id), 'Stone refund');
-    assert.ok(Math.abs(refundBank.stone[team] - (67 - spent[team])) < 1e-7);
+    assert.ok(Math.abs(refundBank.stone[team] - (expectedBank[team] - spent[team])) < 1e-7);
     await client.command({ type: 'cancelConstruction', buildingId: tower.id }, /CANCEL REJECTED/);
     assert.equal(client.latest.stone[team], refundBank.stone[team]);
   }
@@ -336,11 +354,13 @@ test('internal Practice selects shipped Stone and both seats naturally pay, refu
       assert.ok(Math.abs(canceled.state[bank][team] - paid.state[bank][team] - refund) < 1e-8);
     }
   }
-  for (const index of [1, 2]) {
-    for (const [team, client] of clients.entries()) await client.command({ type: 'gather', ids: workers[team], nodeId: ownNodes(team)[index].id }, /GATHER ORDER/);
-    await room.checkpoint(snapshot => [0, 1].every(team => snapshot.state.resourceNodes.find(node => node.id === ownNodes(team)[index].id).stock === 0)
-      && snapshot.state.units.every(unit => unit.cargo === 0));
+  for (const [team, client] of clients.entries()) {
+    const remaining = ownNodes(team).find(node => canceled.state.resourceNodes.find(saved => saved.id === node.id).stock > 0);
+    assert.ok(remaining, 'explicit Stop leaves Stone for the post-refund depletion phase');
+    await client.command({ type: 'gather', ids: workers[team], nodeId: remaining.id }, /GATHER ORDER/);
   }
+  await room.checkpoint(snapshot => snapshot.state.resourceNodes.filter(node => node.type === 'stone').every(node => node.stock === 0)
+    && snapshot.state.units.every(unit => unit.cargo === 0));
   for (const [team, client] of clients.entries()) {
     await client.command({ type: 'stop', ids: workers[team] }, /STOP ORDER/);
     await client.command({ type: 'gather', ids: workers[team], nodeId: ownNodes(team)[2].id }, /RESOURCE NODE EMPTY/);

@@ -1,0 +1,167 @@
+{
+  "date": "2026-10-04",
+  "tool": "built-in image_gen.imagegen",
+  "status": "exploratory-unselected",
+  "outputs": [
+    {
+      "file": "frontier-building-family-v1.png",
+      "prompt": "Use case: stylized-concept. Create a large landscape architectural REFERENCE PLATE for the original RTS Vaelora: ALL THIRTEEN Frontier/Human building roles. Title exactly \"FRONTIER — COMPLETE BUILDING FAMILY\". Subtitle exactly \"13 gameplay roles · exploratory reference\".\nReference inputs in order: selected Frontier Town Center, House, Barracks, Archery Range, and the new UNSELECTED Mill/Farm/Dock exploration board. Preserve the first four recognizable identities; derive all other roles with the SAME craft grammar. The last input proposes economy forms; no new design is selected by this plate.\nWarm ivory paper, dark pine type, clean FOUR-COLUMN by FOUR-ROW grid. Each role appears ONCE with its exact readable label; elevated-isometric orthographic-like 46-degree view, quiet neutral ground pads, coherent upper-left warm light, broad painterly production shapes. Same plausible doorway scale; civic hall about twice cottage base width. Neither sprite atlas nor animation strip.\nRow1: \"Town Center\" broad cream/oak civic hall, arcades and rear bell tower; \"House\" modest cottage, sage gable and chimney; \"Storehouse\" broad open loading bay, covered sacks/logs, no domestic porch; \"Mill\" land-based compact grain windmill with stationary sails and food sacks, NO waterwheel.\nRow2: \"Farm\" finite barley patch plus tiny shed; \"Dock\" small shore work shed with timber berth and unarmed skiff; \"Stable\" wide open horse stalls, tack and hay yard; \"Workshop\" wide assembly bay, wheels and timber ballista under construction.\nRow3: \"Barracks\" selected enclosed military hall with arched gate and weapon racks; \"Archery Range\" selected open canopy with highly visible targets; \"Watchtower\" narrow raised timber lookout on a cream-stone foot; \"Palisade Wall\" short connected timber stockade segment, readable joins and posts.\nRow4: \"Palisade Gate\" SMALL simple timber gate module matched to Wall, closed plus tiny open-state inset with CLEAR passage; remaining three cells become one material-and-scale strip with small Human Worker, House/Town Center silhouettes and labeled cream stone, oak, sage shingles, copper swatches. Gate is not an oversized fortress.\nShared materials: cream limewash, pale river limestone, honey-oak load-bearing joints, muted sage shingles, restrained ochre/copper. Do not silently turn this into a generic stone castle civilization. No temples, castles, black Gothic spikes, glowing machinery, extra roles, duplicate buildings or invented emblems. Where shown, team flags are STRAIGHT RECTANGULAR BLUE with ONE centered pale vertical bar, not forked blue, no grain crests. Not every building needs a flag.\nBottom note exactly \"Family study, not runtime sprites\". Make all THIRTEEN labels clear and correctly spelled. The point is one coherent civilization kit with distinct function silhouettes.",
+      "references": [
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/town-center.png",
+          "role": "selected civic hall"
+        },
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/house.png",
+          "role": "selected domestic architecture"
+        },
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/barracks.png",
+          "role": "selected enclosed military architecture"
+        },
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/archery-range.png",
+          "role": "selected open military architecture"
+        },
+        {
+          "path": "docs/art-direction/visual-development-studies-v1/economy-silhouette-explorations-v1.png",
+          "role": "unselected economy alternatives"
+        }
+      ],
+      "sourceOutput": "/Users/lb/.codex/generated_images/01a107a5-8aa1-7fd0-81b1-997b4d563e89/exec-aba46f35-9cf8-4c47-af19-dc24f7893670.png"
+    },
+    {
+      "file": "frontier-village-v1.png",
+      "prompt": "Use case: stylized-concept. Create a wide painterly SETTLEMENT REFERENCE BOARD for our original RTS Vaelora. Title exactly \"FRONTIER VILLAGE\". Subtitle exactly \"Agrarian hamlet · Bellweather study\".\nReference 1 is the exploratory complete Frontier building family, for consistent rooflines/materials/function silhouettes. Reference 2 is the selected Bellweather ecology for broad oaks, pears, barley, meadow/sage/cream/ochre. Reference 3 is the selected Human Worker identity, cream sleeves/sage vest/leather pack. Do NOT independently invent a different architectural kit.\nOne large elevated-isometric orthographic-like view, about 46 degrees above horizontal, showing the entire small VILLAGE and enough surrounding farmland/woodland to understand its livelihood. At most 8-12 cottage households arranged loosely around a single modest civic Town Center hall and a shady shared yard. Narrow footpaths connect homes; a broad wagon route and turning area stay clear. Show one Storehouse by the farm route, a compact land-based wind Mill, three finite barley patches, a small Stable, one Watchtower and short modest Palisade/Gate around only the protected store/work yard, NOT a giant enclosing fortress. A small natural stream/pond and pear/oak edges fit the terrain; a simple Dock/unarmed skiff is visible only at the reachable water edge. Village military presence is a tiny existing Barracks/Range training yard, not an army base.\nWarm everyday life with a few Human Workers carrying grain/wood, a horse, sheep in meadow. Respect scale: people fit doors; small household footprints stay far smaller than civic hall; architectural overhead imagery is readable, no enormous giant worker overlays. Broad warm upper-left light, soft grounded shadows, welcoming cream limestone/limewash, honey oak, muted sage shingles, modest ochre/copper details, quiet grass. Dense detail concentrated near doorways/work sites, open ground quiet. Only a few small straight rectangular Azure blue flags with a centered pale vertical bar; no invented insignia.\nLayout: scene takes about three-quarters of board; bottom strip has THREE detail insets derived from SAME scene: the crop-to-Storehouse approach, a cottage/shared yard, the small gate and clear wagon road. Exact inset labels \"Food to stores\", \"Homes around a shared yard\", \"Routes stay open\". No HUD, no cinematic perspective, no royal palace/church, no stone fortress walls, no magical effects, no new named settlement or tier mechanics.\nBottom note exactly \"Exploratory settlement reference\". Make it specifically a sparse AGRARIAN VILLAGE, visibly smaller and less dense than a town or city; architecture repeats with modest window/porch variation rather than every house becoming unique fantasy art.",
+      "references": [
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/frontier-building-family-v1.png",
+          "role": "unselected complete architectural family study"
+        },
+        {
+          "path": "docs/art-direction/vaelora-v1/bellweather-ecology.png",
+          "role": "selected Bellweather ecology"
+        },
+        {
+          "path": "docs/art-direction/human-vaelora-sprites-v1/source/Idle/facings.png",
+          "role": "selected Human Worker identity"
+        }
+      ],
+      "sourceOutput": "/Users/lb/.codex/generated_images/01a107a5-8aa1-7fd0-81b1-997b4d563e89/exec-7b0c31a0-626d-4df2-9fcd-428385db0903.png"
+    },
+    {
+      "file": "frontier-town-v1.png",
+      "prompt": "Use case: stylized-concept. Generate a wide painterly settlement reference board for the original RTS Vaelora. Title exactly \"FRONTIER TOWN\". Subtitle exactly \"Market crossroads · Bellweather study\".\nReferences: input1 is complete exploratory Frontier building family for architectural identities; input2 is Frontier village composition for same world/craft but INCREASE DENSITY and organization; input3 is selected Bellweather ecology. Preserve cream limestone/limewash, honey oak, muted sage roofs, ochre/copper highlights, practical timber joints, broad warm upper-left light.\nDepict a full small MARKET TOWN from elevated-isometric orthographic-like 46-degree view: about 25-35 modest cottage households, one recognizable broad civic Town Center with bell tower beside a central shaded weighing/market yard; coherent connected street network, wagon-width main crossroads, secondary household lanes and small gardens. Markets are ordinary-life set dressing, not a new gameplay building/ability. A few canopy stalls and an oak-shaded public well convey gathering life without royal spectacle.\nClearly composed DISTRICTS using the SAME current family: food quarter with Farm fields at the outskirts, wind Mill and food/wood Storehouses; workshop/Stable court for carts and equipment; modest Barracks, Archery Range and Watchtowers near the protective stockade; riverside Dock/unarmed fishing skiffs with easy-to-read shore access. ALL thirteen building ROLES from input1 should be discernible in the town even if multiple Houses/Stores/Farms repeat. Palisade Wall and simple timber Palisade Gate frame the main road; outer fields remain outside. Avoid stone curtain walls, castles, giant gatehouses, temples or entirely new building families.\nMake density purposeful: higher roof clustering than village but with wide clear working yards and entrances; show living humans doing work, horses/carts, grain deliveries. Characters scale appropriately to doors. Center civic hall stays substantially larger than houses; Watchtowers are slender, not huge mansions. Roof silhouettes and work frontage remain readable at overview size. Only a few small straight rectangular Azure BLUE standards with one pale centered vertical bar; no invented crests.\nPage layout: main scene takes 75% of landscape image, cream border and crisp dark pine editorial type. Bottom strip with THREE detail scenes of the SAME town: weighing yard by civic hall, clear workshop/Stable service court, dock/Storehouse edge. Exact inset labels \"Civic and market yard\", \"Working courts\", \"River edge\". Bottom note exactly \"Exploratory settlement reference\". No HUD, no named canon town, no cinematic horizon or night lights, no unrelated lore or new tier/economy mechanics. This must feel visibly like a TOWN, with shared services and neighborhood organization, not an enlarged scattered village.",
+      "references": [
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/frontier-building-family-v1.png",
+          "role": "unselected 13-role Frontier architectural family"
+        },
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/frontier-village-v1.png",
+          "role": "preceding unselected settlement composition for shared craft"
+        },
+        {
+          "path": "docs/art-direction/vaelora-v1/bellweather-ecology.png",
+          "role": "selected regional ecology"
+        }
+      ],
+      "sourceOutput": "/Users/lb/.codex/generated_images/01a107a5-8aa1-7fd0-81b1-997b4d563e89/exec-5675b3e8-7d5a-4d88-9d12-f6e60418626b.png"
+    },
+    {
+      "file": "frontier-city-v1.png",
+      "prompt": "Use case: stylized-concept. Create a wide painterly CIVILIZATION SETTLEMENT REFERENCE BOARD for the original RTS Vaelora. Title exactly \"FRONTIER CITY\". Subtitle exactly \"River city · Bellweather study\".\nReference1: exploratory thirteen-role Frontier building family, KEEP recognizable buildings/materials. Reference2: Frontier town, for continuous craft but make a substantially larger denser urban organization. Reference3: selected Bellweather regional ecology. This is a new unselected city-composition proposal, not a map, screenshot, tech tier or named canon settlement.\nElevated-isometric orthographic-like 46-degree wide view of a whole coherent RIVER CITY, roughly 60-90 domestic buildings in distinct neighborhoods, all at plausible shared human scale. Enlarging civic organization must not turn warm craft into an unrelated royal castle/cathedral civilization. Main landmark is recognizable broad cream/oak Town Center hall with rear bell tower/arcades, beside a large oak-shaded civic square and market canopies. Repeat core House type with limited porch/dormer/attached-courtyard variation and occasional TWO-story versions as architectural explorations, not upgrades. Roofs mostly low domestic massing; slender Watchtowers/civic hall identify districts.\nALL THIRTEEN current building roles appear naturally: civic Town Center and Houses; Storehouses and modest Mill wind sails at service routes; finite Farm fields and pear/oak edges outside town; Stable and Workshop courts off clear wagon streets; Barracks/Archery Range grouped near defensive edge; narrow Watchtowers, connected TIMBER Palisade Walls and small practical Palisade Gates; riverside Docks/unarmed fishing cargo skiffs only. Timber stockade remains the defense language; NO stone curtain wall, palace, castle keep, cathedral, temple or battleship.\nUrban difference from town: two clear broad cross-city wagon streets connect civic square to shore/service gate, three or four small neighborhood courts, an open workshop/service spine, longer connected waterfront with repeated modest sheds, denser roof blocks organized around accessible yards. Everyday work and domestic life visible, but omit decorative chaos: clear road surfaces, recognizable public space, ground detail subdued so silhouettes read. Warm upper-left daylight; cream limewash/pale river stone, honey oak, muted sage shingles, restrained ochre/copper, quiet meadow beyond. A few Azure standards, STRAIGHT rectangular blue with one pale centered vertical bar, no cultural insignia. No HUD, no distant cinematic skyline or world-map labels.\nBoard layout: large main composition across upper 75%; bottom THREE close-up insets of SAME city show residential lanes/common court, broad civic hall/square, and open waterfront workshops. Exact labels \"Neighborhood courts\", \"Civic center\", \"Working waterfront\". Footer exactly \"Exploratory settlement reference\". No extra slogans.\nWe need a usable reference of how THIS SAME civilization can support city-scale settlement diversity through layout, repetition, courtyards and lived craft, while retaining readable roles and routes.",
+      "references": [
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/frontier-building-family-v1.png",
+          "role": "unselected complete Frontier architectural family"
+        },
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/frontier-town-v1.png",
+          "role": "preceding unselected town organization and shared craft"
+        },
+        {
+          "path": "docs/art-direction/vaelora-v1/bellweather-ecology.png",
+          "role": "selected regional ecology"
+        }
+      ],
+      "sourceOutput": "/Users/lb/.codex/generated_images/01a107a5-8aa1-7fd0-81b1-997b4d563e89/exec-7b513830-1ddf-4c41-b34c-269a37eb7836.png"
+    },
+    {
+      "file": "boughward-building-family-v1.png",
+      "prompt": "Use case: stylized-concept. Make a wide architectural REFERENCE PLATE for Vaelora's BOUGHWARD civilization appearance, with ALL THIRTEEN current shared gameplay building ROLES. This is an exploratory NEW cultural building family, not an implemented faction roster. Title exactly \"BOUGHWARD — COMPLETE BUILDING FAMILY\". Subtitle exactly \"13 shared roles · proposed woodland architecture\".\nReference1: existing Boughward direction board, use its lower-town-hall/woodland-Barracks STRUCTURAL vocabulary and burgundy/copper/moss/pale-bark material palette; its extra ogre/ape/werewolf cast is only historical concept and must NOT become new roles. Reference2: Underbough ecology for moss roots, copperleaf silhouettes and restrained warm woodland identity. Reference3: Frontier thirteen-role family is ONLY a functional/coverage comparison: DO NOT copy its cream-sage cottages or re-color the same buildings. Boughward must have its own coherent craftsmanship, massing, roof pitch and work frontage while serving identical existing rules.\nWarm pale-bark paper background, charcoal/pine legible editorial type, clean four-column by four-row grid with SAME role locations as Frontier sheet. Elevated-isometric orthographic-like view around 46 degrees, consistent soft upper-left light, broad painterly shapes. Short ground pads only. All buildings grounded, doorways fit stocky Orc Workers and smaller Goblins; supported bays fit current wolf/boar mounts.\nRow1 exact labels: \"Town Center\" broad root-shaped timber assembly hall with open sheltered council/work court and slender lookout, NOT magical giant tree palace; \"House\" compact low bark/wood cottage with curved braced eaves and moss roof, not a crude tent; \"Storehouse\" broad raised-dry food/wood storage porch with woven panels and protected stacks; \"Mill\" grain handling hall with small stationary copper-bound cloth wind sails and sacks, food-depot role.\nRow2: \"Farm\" finite planted food garden/field with low woven fence and modest shed; \"Dock\" pale-bark/copper-braced low shore platform and unarmed shallow skiff; \"Stable\" distinct broad woodland beast shelter with tiny grey wolf and boar in sheltered bays, tack/hay, no extra monster mounts; \"Workshop\" root-timber/copper-bound ballista assembly, wide wheeled service opening.\nRow3: \"Barracks\" sturdy enclosed curved-beam communal military hall, six-sided shields/spears; \"Archery Range\" clearly open woodland canopy, visible ordinary round archery targets and woven quivers; \"Watchtower\" narrow timber-braced elevated observation platform, clear ladder; \"Palisade Wall\" connected timber stakes, woven braces/copper bindings, stable posts and joins.\nRow4: \"Palisade Gate\" SMALL simple matching wall module with closed gate and tiny OPEN-state inset showing clear center passage; remaining three cells material-and-scale strip with stocky Orc Worker/smaller Goblin, Town Center/House silhouettes, bark/timber/moss/copper/burgundy cloth swatches.\nPalette: dark honey-brown timber, pale bark, moss and petrol greens, copper orange, burgundy woven cloth. Warm humanized work/craft, NOT savage spiked evil fortress, not every building a mushroom or living magical tree, no glowing cores, no bone/death ornament, no temples or castles. Root-like bracing is architectural craft, NOT new tree-growth powers or special placement rules. Cultural burgundy/copper cannot substitute for owner color: a FEW straight rectangular AZURE BLUE pennants with ONE pale center bar show team identity; no new crests.\nBottom note exactly \"Exploratory family, not current game buildings\". Make all 13 role labels legible and correct, each appears ONCE. Distinct work silhouettes and family coherence matter more than tiny noise.",
+      "references": [
+        {
+          "path": "docs/art-direction/boughward-roster-v1/direction-reference.png",
+          "role": "existing Boughward culture/architecture exploration, not expanded cast"
+        },
+        {
+          "path": "docs/art-direction/vaelora-v1/underbough-ecology.png",
+          "role": "selected Underbough regional ecology"
+        },
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/frontier-building-family-v1.png",
+          "role": "functional role/coverage comparison only"
+        }
+      ],
+      "sourceOutput": "/Users/lb/.codex/generated_images/01a107a5-8aa1-7fd0-81b1-997b4d563e89/exec-63e51154-31f2-4902-ae9b-c26a3c0231b7.png"
+    },
+    {
+      "file": "boughward-village-v1.png",
+      "prompt": "Use case: stylized-concept. Create a wide painterly settlement-reference board for Vaelora's proposed BOUGHWARD woodland architecture. Title exactly \"BOUGHWARD VILLAGE\". Subtitle exactly \"Woodland clearing · Underbough study\".\nInput1 is the unselected thirteen-role Boughward building-family sheet. Use its exact family of curved/braced timber, pale bark, moss roofs, copper joints and burgundy cloth; architecture must clearly differ from Frontier cream/sage cottages. Input2 is selected Underbough ecology, exposed roots, copperleaf trees, restrained moss/copper/burgundy. Input3 is the existing actual stocky Orc Worker art: woven timber pack, axe, burgundy/copper/earth craft; keep people as ordinary working Orcs and smaller Goblins, do not invent ogre/ape/werewolf gameplay units.\nDepict a WHOLE SMALL VILLAGE of about 8-12 ground-level bark/timber cottages clustered loosely around one recognizable Boughward Town Center/work assembly hall, in a warm OPEN woodland clearing. Retain three or four large trees around and within the settlement with broad winding roots; architecture's root-shaped bracing is built craftsmanship rather than magically grown living palaces. No houses high in trees, no mandatory tree placement or new powers. Walkable broad lanes route AROUND roots and courtyards with good visibility; don't fill every inch with leaves or fungi.\nShow shared work space, low finite planted food gardens in a bright clearing, one food Mill with stationary compact wind sails at open edge, a dry Storehouse, timber cutting/log stacks, modest beast Stable with tiny grey wolf and boar; quiet small Barracks/Range practice yard and one slender Watchtower plus short timber palisade and small functional gate at protected store/work court. A small stream edge has a modest Dock and one unarmed shallow skiff. Warm welcoming everyday domestic and work life, not savage camp, not threatening evil forest fort.\nUpper-left warm daylight reaches buildings/ground; broad painterly moss/olive, warm timber and copperleaf forms, cultural burgundy/copper distinct from team color. A FEW straight rectangular Azure blue pennants with pale center bar mark owner. Scale real inhabitants to doors, repeat compact cottage motifs, civic hall wider than Houses, forest crowns don't dwarf/cover every building. Strong quiet route surfaces and open shared yard. No stone city walls, castle towers, temples, glowing magic or giant skull ornament.\nWide image: main scene top 75%; bottom three detail insets of SAME village and its grammar. Exact inset labels \"Root-aware lanes\", \"Woodland food gardens\", \"Shared work court\". Title/subtitle readable, bottom note exactly \"Exploratory settlement reference\". No HUD, no canon village name. This is deliberately SPARSE and small, unlike a town/city, with forest and household work visibly shaping settlement.",
+      "references": [
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/boughward-building-family-v1.png",
+          "role": "unselected proposed Boughward 13-role architectural family"
+        },
+        {
+          "path": "docs/art-direction/vaelora-v1/underbough-ecology.png",
+          "role": "selected regional ecology"
+        },
+        {
+          "path": "docs/art-direction/boughward-roster-v1/extracted/worker/00.png",
+          "role": "existing actual Boughward Worker identity"
+        }
+      ],
+      "sourceOutput": "/Users/lb/.codex/generated_images/01a107a5-8aa1-7fd0-81b1-997b4d563e89/exec-331e94a2-1f82-4624-bf1e-fa01c6bb6dc9.png"
+    },
+    {
+      "file": "boughward-town-v1.png",
+      "prompt": "Use case: stylized-concept. Produce a wide painterly settlement reference board for Vaelora's proposed Boughward civilization architecture. Title exactly \"BOUGHWARD TOWN\". Subtitle exactly \"Linked woodland courts · Underbough study\".\nReference1 is complete Boughward thirteen-role building family; reference2 is Boughward village, for warm domestic craftsmanship rather than primitive camp; reference3 is selected Underbough ecology. Keep curved load-bearing dark timber/pale bark, copper bindings, moss-green roofs and restrained burgundy fabrics, distinctive from cream/sage Frontier.\nMain elevated-isometric orthographic-like 46-degree whole TOWN view, about 25-35 low cottage households in THREE CONNECTED WOODLAND CLEARINGS. This is a denser civic/working center than village, still shaped by large mature retained trees and ground-level root systems. One central broad Boughward civic Town Center/assembly hall and council/market work yard; not a giant magic tree or palace. The three courts organize household life, workshop/mount work, and food/shore access; broad ground-level wagon paths link them around root/tree islands, with readable open turning/meeting space. Trees retained as meaningful clusters, not random foliage over every roof.\nAll thirteen current shared gameplay building roles appear naturally: Town Center, Houses, dry woven-front Storehouses, compact grain Mill with stationary wind sails in open edge, finite planted food Farms/gardens, modest river Dock/unarmed skiffs, broad Stable with current grey wolf/boar mounts, copper/root-timber ballista Workshop, enclosed Barracks, open targets/Archery Range, slender Watchtowers, connected timber Palisade Wall and small Gate. Some Houses/Stores/Farms repeat. All have consistent architectural vocabulary and access. No extra gameplay building roster.\nEveryday stocky Orc Workers with woven packs/axes and smaller Goblins, varied domestic/work life, woodland garden produce and cart/log handling. Roof size and density grow while door/body scale stays plausible. Same craft warmth/copperleaf context as village. Ground lanes QUIET and unblocked by roots; low root-shaped structural braces are designed timber, not magical tree construction powers. No tree-top houses, high aerial bridges, savage spikes/skulls, castles/stone curtain walls, ominous dark fog, glowing magic, temples or monster units. A few straight rectangular Azure blue owner pennants with one pale center bar; cultural burgundy is not match team identity.\nBoard main image upper 75%; lower three close-up insets drawn from same settlement showing central assembly court, linked root-aware streets, copper/timber workshop and beast shelter. Exact labels \"Assembly court\", \"Clearings linked by lanes\", \"Craft and mount yards\". Footer exactly \"Exploratory settlement reference\". Warm soft upper-left afternoon light, broad painterly silhouettes, no HUD, no canon place name, no extra slogans.\nThe design question: how can Boughward have a practical prosperous TOWN without flattening its woodland identity into Frontier streets or a forest maze?",
+      "references": [
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/boughward-building-family-v1.png",
+          "role": "unselected Boughward 13-role family"
+        },
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/boughward-village-v1.png",
+          "role": "preceding unselected woodland settlement study"
+        },
+        {
+          "path": "docs/art-direction/vaelora-v1/underbough-ecology.png",
+          "role": "selected regional ecology"
+        }
+      ],
+      "sourceOutput": "/Users/lb/.codex/generated_images/01a107a5-8aa1-7fd0-81b1-997b4d563e89/exec-6a7bd22e-0abf-40ce-a72a-36b0eee26a66.png"
+    },
+    {
+      "file": "boughward-city-v1.png",
+      "prompt": "Use case: stylized-concept. Create a wide painterly CIVILIZATION SETTLEMENT REFERENCE BOARD for Vaelora's proposed Boughward woodland city. Title exactly \"BOUGHWARD CITY\". Subtitle exactly \"Forest river city · Underbough study\".\nReferences in order: the proposed complete Boughward building family; the Boughward town, to keep its existing architectural identities; selected Underbough ecology. Keep all prior references exploratory, not canon or implemented city/roster.\nShow an ENTIRE CITY from elevated-isometric orthographic-like 46-degree angle: substantially larger/denser than town, around 60-90 low timber/bark households, organized into FOUR DISTINCT CONNECTED GROVE DISTRICTS at a forest river. Mature copperleaf/oak trees survive in intentionally placed large root/tree islands between districts, rather than hiding all architecture. Buildings ground-level; modest stepped service courts/occasional two-story household variations are architecture proposals, not new tiers. Broad ground-level winding wagon avenues around groves connect central assembly square, workshop/mount quarter, household common courts and river food/depot frontage. No tree-top metropolis, high aerial bridges, all-powerful giant tree palace or canopy mazes.\nOne unmistakable broad Boughward Town Center/council hall in warm crafted curved timber, pale-bark facings, copper-bound joints and burgundy cloth faces a generous central public court. Houses remain compact moss-roof cottages with consistent work/man-door scale. ALL THIRTEEN current shared gameplay roles appear with recognizable functions: Town Center, Houses, Storehouses, stationary-sail grain Mill on open edge, finite garden/Farm patches and bright outer clearings, Docks with unarmed shallow skiffs, Stable/sheltered mount courts with existing grey wolves and boars, copper-braced timber-ballista Workshop, enclosed Barracks, open Archery Range with visible targets, slender Watchtowers, connected timber Palisade Walls and SMALL clear Palisade Gates. Repeat roles where useful. Longer waterfront uses repeated modest depots and boat berths; no large sail merchant fleet or warships. Field and woodland livelihoods remain visible beyond denser roof blocks.\nCITY difference: grouped neighborhoods, interlocking sheltered working courtyards, larger communal assembly square, substantial service avenue and waterfront, coherent perimeter access. Not merely dozens of random huts in jungle. Keep three broad unblocked routes especially legible in overview; root islands must respect road clearances.\nBroad painterly shapes, warm upper-left light through open clearings, dark wood/pale bark, moss/petrol green, restrained copper-orange/burgundy. Everyday stocky Orc Workers and smaller Goblins, households, practical craftsmen, baskets/wood carts, welcoming prosperous craft. No cruel savage skull/spike tropes, no glowing magic, new fantasy units, new temples/castles, giant stone fortress walls or unexplained high-tech machines. A few straight rectangular Azure blue owner standards with one pale center bar distinct from burgundy cultural cloth. No invented named settlement, game mechanics, HUD or extra slogans.\nMain scene upper 75%; bottom THREE detail insets of SAME scene. Exact labels \"Neighborhood groves\", \"Assembly and service courts\", \"River depots\". Footer exactly \"Exploratory settlement reference\". Labels/title clear. We want lived civilization-scale richness and structural contrast with Frontier while keeping the same familiar gameplay jobs understandable.",
+      "references": [
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/boughward-building-family-v1.png",
+          "role": "unselected proposed complete Boughward family"
+        },
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/boughward-town-v1.png",
+          "role": "preceding unselected town composition"
+        },
+        {
+          "path": "docs/art-direction/vaelora-v1/underbough-ecology.png",
+          "role": "selected Underbough ecology"
+        }
+      ],
+      "sourceOutput": "/Users/lb/.codex/generated_images/01a107a5-8aa1-7fd0-81b1-997b4d563e89/exec-678fcae2-7fcd-4c25-b23a-f2d39540ca2b.png"
+    }
+  ]
+}
