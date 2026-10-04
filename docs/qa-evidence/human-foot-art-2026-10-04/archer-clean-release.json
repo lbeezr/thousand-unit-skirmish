@@ -1,0 +1,13 @@
+{
+  "sourceRevision": "14576bc18a4e43358626d958445fea9379e2f917",
+  "sourceDirty": false,
+  "digest": "sha256:a8a1134bda2fad8335f755aca5c8db74ed8d14a58111f0a4d964dabf12460900",
+  "fileCount": 1178,
+  "candidateRole": "archer",
+  "candidateRuntimeFiles": [
+    "assets/units/archer-sprite-v3/archer-atlas-runtime.png",
+    "assets/units/archer-sprite-v3/sprite-atlas-pack-v1.json",
+    "assets/units/archer-sprite-v3/team-accent-mask.png"
+  ],
+  "meaning": "Clean local Docker-source release receipt. Not a deployment or native visual acceptance."
+}

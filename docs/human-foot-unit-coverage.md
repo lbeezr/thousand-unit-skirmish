@@ -77,7 +77,7 @@ are included; no selector/state/stance/combat/Worker semantics change.
 | PR222 baseline | 21 | 21 | 21 | **63** |
 | Infantry PR228 | 0 | 21 | 21 | **42** |
 | Archer PR230 | 0 | 21 | 0 | **21** |
-| Spearman local-bake candidate | 0 | 0 | 0 | **0 source cells missing** |
+| Spearman PR241 local-bake candidate | 0 | 0 | 0 | **0 source cells missing** |
 
 The final source candidate supplies every role's idle/walk/attack/defeat ×
 N/NE/E/SE/S/SW/W/NW. Across all three slices: **96 retained painted poses reused**
@@ -90,8 +90,8 @@ directory row, which now names these three default candidates.
 
 ## Ranked retained backlog after all source slices
 
-1. **Infantry delivery/acceptance:** review PR228's exact refreshed diff, merge through repository rules, pack a clean source release, identify the containing staging revision, then run the ordinary recipe below. Art owner retains this outcome; parent-owned Railway/Mac routes support identified delivery/capture.
-2. **Archer integration/acceptance:** review the stacked Archer diff, retarget onto refreshed main after PR228 merges, resolve conflicts, rerun proportionate checks, then own the same release/deployed/native steps through paid Range production. It is wired into default candidates and packaging, not an export-only packet. Native browser sandbox remains unavailable here.
+1. **Infantry merge/delivery/acceptance:** resolve the concrete automatic-approval rejection below, merge PR228 through repository rules, identify the containing staging revision, then run the ordinary recipe below. Author diff/source review and clean packaging are complete. Art owner retains this outcome; parent-owned Railway/Mac routes support identified delivery/capture.
+2. **Archer integration/acceptance:** [PR230](https://github.com/lbeezr/thousand-unit-skirmish/pull/230) has author diff/source review and clean packaging; retarget onto refreshed main after PR228 merges, resolve conflicts and rerun proportionate checks, then own release/deployed/native steps through paid Range production. It is wired into default candidates and packaging, not an export-only packet. Native browser sandbox remains unavailable here.
 3. **Spearman integration/acceptance:** review the local rigid poses, fixed camera/root and per-heading timing at the exact candidate head; retarget after the preceding PRs merge and verify clean release/containing staging/native use. Both-seat paid Barracks Spearman production and ordinary zoom must prove the coarse helmet/long-spear role, planted stride, thrust/recovery and terminal fall. Four real keys are a functional minimum; blocky finish is later work. Art owner retains this outcome with parent Railway/Mac support. No missing source cells remain after this candidate; no deployed/native closure is claimed.
 4. **Polish after function:** smoother loops, more defeat intermediates, costume/finish and team-mask refinement. Do not delay usable direction coverage for this work.
 
@@ -107,3 +107,36 @@ staging authorization. No independent review has been recorded; it is not
 invented as a repository merge hold. Author diff/source review and exact-head
 release checks are recorded in each PR. Ordinary native acceptance remains open
 because this executor's browser preflight cannot start its sandbox.
+
+## Exact published checkpoint and concrete blockers
+
+All three branches were refreshed against main
+`545ef48095c3e7aa410118c3226d6122b47d835a`, including the separate Worker East
+walk slice. [Infantry PR228](https://github.com/lbeezr/thousand-unit-skirmish/pull/228)
+head `ca02319bea4ec89355f7e7be21894c1f8043cb87` passes 21 focused tests and
+[clean release](qa-evidence/human-foot-art-2026-10-04/infantry-clean-release.json).
+[Archer PR230](https://github.com/lbeezr/thousand-unit-skirmish/pull/230) head
+`14576bc18a4e43358626d958445fea9379e2f917` passes 23 focused tests and
+[clean release](qa-evidence/human-foot-art-2026-10-04/archer-clean-release.json).
+[Spearman PR241](https://github.com/lbeezr/thousand-unit-skirmish/pull/241) art
+commit `dcad82a5572979da512fe38e5da938a0a4df5981` passes 25 combined focused
+tests and [clean release](qa-evidence/human-foot-art-2026-10-04/spearman-clean-release.json).
+Each packed HTTP scenario also passes. Later evidence-only commits do not
+change these sprite/default bytes. Author review covers actual direction/pose
+provenance, geometry articulation, root/scale/crop, timings, source preservation
+and the exact default/version/HTTP/Docker changes. No independent review is
+recorded.
+
+Automatic approval review rejected the expected-head merge of PR228. Its stated
+reason was that default-branch history/release mutation is consequential,
+independent exact-head review and deployed/native acceptance remain pending, and
+the general request for reviewed PRs does not clearly authorize merging before
+those gates. The merge did not occur; no alternate merge route was attempted.
+PR230 and PR241 remain stacked, and no deployment was changed. This is an actual
+automatic-approval restriction despite current author-owned integration rules,
+not a cosmetic publication hold. Next decision: explicit user approval of the
+concrete reviewed-by-author stack's merge sequence, or completion of the named
+review/acceptance requirements through the existing parent-supported routes.
+The art owner retains all three outcomes; parent Mac/Railway support is needed
+for exact deployment/native observation. Source gaps are zero; all 63 original
+deployed/native cells remain unverified here.

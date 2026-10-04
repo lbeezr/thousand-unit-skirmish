@@ -1,0 +1,13 @@
+{
+  "sourceRevision": "ca02319bea4ec89355f7e7be21894c1f8043cb87",
+  "sourceDirty": false,
+  "digest": "sha256:d5fcc31b7b76ce88e089d11f70520a1e3994e5a11dc12ee25c33c3f5e8320266",
+  "fileCount": 1175,
+  "candidateRole": "infantry",
+  "candidateRuntimeFiles": [
+    "assets/units/infantry-sprite-v4/infantry-atlas-runtime.png",
+    "assets/units/infantry-sprite-v4/sprite-atlas-pack-v1.json",
+    "assets/units/infantry-sprite-v4/team-accent-mask.png"
+  ],
+  "meaning": "Clean local Docker-source release receipt. Not a deployment or native visual acceptance."
+}

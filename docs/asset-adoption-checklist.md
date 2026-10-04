@@ -65,8 +65,13 @@ Spearman v2 adds 96 local CPU renders from 12 newly authored rigid poses using t
 public Frontier humanoid/spear geometry and palette. It supplies genuine eight-view
 idle/stride/thrust/fall clips with zero provider charges; prior art and rejected
 captures remain. Exact default/server/Docker admission is included. Its coarse
-appearance, review, containing deployment and actual gameplay verification remain
-incomplete under the same owner and supporting Railway/Mac routes.
+appearance, independent review, containing deployment and actual gameplay
+verification remain incomplete under the same owner and supporting Railway/Mac
+routes. Author diff/source review, 25 focused combined checks and three clean
+candidate release receipts are recorded in the workstream. Automatic approval
+review rejected PR228's merge because pending review/native acceptance was not
+accepted under the general authorization; PR230/PR241 remain stacked. No merge
+or deployment is claimed. The workstream records the exact required decision.
 
 Package paths are under `assets/` unless linked otherwise. Release inclusion
 comes from an actual clean `release:pack` at follow-up `1757064`: 1,113 files,

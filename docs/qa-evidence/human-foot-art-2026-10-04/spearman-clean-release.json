@@ -1,0 +1,13 @@
+{
+  "sourceRevision": "dcad82a5572979da512fe38e5da938a0a4df5981",
+  "sourceDirty": false,
+  "digest": "sha256:809e84f3e0fc08cc6f3fa10080bad1694ff59fdbc9e6dae026e3e556b64b6467",
+  "fileCount": 1181,
+  "candidateRole": "spearman",
+  "candidateRuntimeFiles": [
+    "assets/units/spearman-sprite-v2/spearman-atlas-runtime.png",
+    "assets/units/spearman-sprite-v2/sprite-atlas-pack-v1.json",
+    "assets/units/spearman-sprite-v2/team-accent-mask.png"
+  ],
+  "meaning": "Clean local Docker-source release receipt. Not a deployment or native visual acceptance."
+}
