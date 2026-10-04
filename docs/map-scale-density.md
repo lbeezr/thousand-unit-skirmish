@@ -7,9 +7,11 @@
 Larger maps should create recognizable regions, exploration, expansion, and
 flanking choices. Extra walking distance alone is not a useful outcome.
 
-Frontier Reach and Woodland Expanse provide 160 × 160 layouts. Highland Grove
-is a separate 129 × 97 elevation experiment. A 224 × 224 probe remains a candidate
-until observed matches show what another scale should test.
+Ordinary economy Skirmish now has Tiny160, Small192, Medium224 and Large256
+source choices. The [complete inventory](map-tier-inventory-2026-10-04.md)
+separates their admission, measurements and remaining acceptance from
+160-side Objective Control/Practice/quick-mode fixtures. Highland Grove is a
+retained 129 × 97 internal elevation experiment.
 
 ## Authoring targets
 

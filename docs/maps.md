@@ -2,6 +2,10 @@
 
 [Documentation index](README.md) · [Map authoring](map-authoring.md)
 
+The [source-bound four-tier inventory](map-tier-inventory-2026-10-04.md) lists
+all eight ordinary-size choices, exact IDs, admitted modes, route times and
+remaining acceptance. Compact canonical files retain internal/legacy identity.
+
 ## Terraced Vale Tiny baseline
 
 **Veyrholds · Terraced Vale** adds a 160 × 160 ordinary regional choice and
@@ -59,8 +63,10 @@ ridges, a low basin, two broad passes and two raised alternatives. Four distinct
 expansion pockets per seat and flat home campuses use existing elevation. Its
 251-unit static route takes 96.5 nominal Worker seconds. [Large measurements
 and acceptance](qa-crownroads-2026-10-04.md) separate authored geometry, paid
-native play and incomplete rendered/deployed/capacity acceptance. Authored
-elimination applies; Skirmish/PvE admission remains separate.
+native play and incomplete rendered/deployed/capacity acceptance. Ordinary
+human Skirmish admission merged in [PR271](https://github.com/lbeezr/thousand-unit-skirmish/pull/271);
+[paid admission evidence](qa-large-skirmish-admission-2026-10-04.md) retains
+its exact source. Fresh PvE remains Tiny-only.
 
 ## Confluence Grounds admitted testing arena
 

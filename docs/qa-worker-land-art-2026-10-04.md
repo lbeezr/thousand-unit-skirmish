@@ -104,8 +104,8 @@ current-roster keys can also be admitted with the same manifest contract.
 | --- | --- | --- |
 | 1 | Retain all eight walk headings through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
 | 2 | Keep all eight authored walk headings functional; Carry/Return uses their existing cargo cue. | Default Three playback/registration is checked. Native root/turn/cargo observations identify further refinements; no walk heading input remains missing. |
-| 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **30 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
-| 4 | Five remaining readable dedicated Stone-work headings; retain PR263 default selector adoption. | SE, NW and E now have dedicated pick poses; the earlier broad eight-view attempt failed strike facing in the other rows. PR263 now enables exact authored Stone state/resource selection from productive receipts; missing headings retain their own idle. No economy edits. |
+| 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **18 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
+| 4 | Three remaining readable dedicated Stone-work headings; retain PR263 default selector adoption. | SE, NW, E, N and NE now have dedicated pick poses; the earlier broad eight-view attempt failed strike facing in the other rows. PR263 now enables exact authored Stone state/resource selection from productive receipts; missing headings retain their own idle. No economy edits. |
 | 5 | Improve costume consistency, registration refinement and loop smoothing after usable breadth. | Functional native observations identify the needed refinements. Cosmetic perfection is not a gate for supplied usable keys. |
 
 There are now 8 of 8 walk headings, eight distinct idle headings, SE+NW land-action
@@ -821,3 +821,126 @@ measures `93879c0df5cd237ec61564390d17ea97ee242ca7`, `sourceDirty:false`, 1179 f
 `sha256:af701d01519645a3fe3a716c9ae6350be49d733c26c3cd6b8a3a611934d1661d`. Measured code and later receipt commits are distinguished.
 Fresh read-only staging before this receipt still reports `64cc391e6d9c4164dca7bd45696cf3862fe19729`;
 exact containing deployed/native acceptance remains open.
+
+
+## North full land-action heading — v0.29.0
+
+[PR270](https://github.com/lbeezr/thousand-unit-skirmish/pull/270) merged at
+`b1100a20676a674777134ca73529d32ea69a8106` after [independent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/270#pullrequestreview-5404382847).
+North's [public seed/whole-sheet iteration](art-direction/human-roster-v1/generated/worker-north-actions-v1/README.md)
+keeps actual down-left/front-three-quarter walk identity, exact reference/prompt,
+raw and all15 extracted poses. Fourteen are usable: axe3, food3, hammer2,
+pick3, defeat3. Raw hammer strike7 is axe-shaped; retain it and admit two clear
+hammer poses6/8 for a simple480ms build/repair loop. Axe3 shares faithful attack
+art with its own840ms one-shot; wood/food/pick720ms loops, defeat840ms terminal.
+No private pixels, paid external job or rigging; every iteration remains intact.
+
+[Registration](qa-evidence/worker-land-art-2026-10-04/north-actions-registration.json)
+uses common271/325 scale, reviewed fixed column roots220/560/864; work contacts
+331/610/910/1229 and fallen contacts1459/1474/1491. Runtime canvas/pivots are fixed
+per action: wood/hammer/pick320x320/root160,308; food256/root128,244;
+defeat512x256/root256,244. Standing anatomy varies roughly204–225px against232px
+walk baseline; simple motion, relative scale and ground/loop polish are tracked,
+accepted for useful coverage. Whole silhouettes fit and max271 remains below
+previous272, preserving existing world units/pixel without any loader edits.
+
+[Admission](../scripts/admit-worker-north-actions.py) adds a right-side512 strip,
+3072→3584x4096, with aligned zero mask. [Preservation](qa-evidence/worker-land-art-2026-10-04/north-actions-preservation.json)
+hashes the whole previous3072x4096 RGBA,158 frame records and61clips except declared
+North attack/build/defeat idle placeholders, retained verbatim. Prior encoded
+mask is retained separately; current decoded zero mask and historical fishing
+ROI/source pixels stay protected. Pack0.29.0 has172frames/65clips. Decoded
+color56MiB + zero mask14MiB, +10MiB over0.28. No extra page, role, enum, state
+selector/shared clock/economy changes. Existing PR263 exact Stone binds North.
+
+[Default tests](../scripts/worker-north-actions-art.test.mjs) exercise every
+accepted distinct whole key, real UV/matrix world/root scale, both Human seats
+selected/unselected, productive gates/full loops/Stop-resume, move/attack
+interruptions and cargo Return/deposit completion to idle. Axe attack advances
+and exits at840ms; defeat overrides work/movement/attack, stays prone past840ms.
+Old tests now acknowledge genuine North clips; still-missing NE/S/SW/W retain
+own idle. Snapshot-buffer Stone missing-heading test uses actual missing NE,
+without changing production helpers. Offline sheets are not GPU game captures.
+
+Native recipe on an identified containing ordinary Human match: targets
+screen-down-left/North; observe axe/food/hammer/pick distinct readable actions,
+productive resource/cargo/return/deposit and paid build/repair, aim and roots;
+Stop/resume, move/attack, resource switch/turn, then same-heading defeat and
+prone hold. Compare N/E/SE/NW, both seats, selected/unselected at ordinary/
+strategic zoom. Parent Railway/Mac capture receiver records exact source/release/
+deployment/map. Local sandbox-unavailable supplies no native evidence. Animation
+01a103d4 owns target-bearing; containing delivered/native acceptance stays open.
+
+Current [inventory](qa-evidence/worker-land-art-2026-10-04/land-action-coverage.json):
+Walk8/8; Wood/Food/Build/Repair/Attack/Defeat/Stone4/8(N/E/SE/NW).
+Authored36/64; **28 art cells remain**, NE/S/SW/W each7. Ranked next: actual NE
+family, then S/SW/W public heading seeds, faithful same-heading action reuse.
+Polish follows breadth. Initial Git CLI credential loss was recovered through
+its existing authenticated gh helper; source publication is unblocked.
+
+
+All150 focused tests pass; byte-idempotent admission, atlas/docs/whitespace and
+actual packaged guarded HTTP/WebSocket/hash checks pass. [Clean North release](qa-evidence/worker-land-art-2026-10-04/north-actions-clean-release.json)
+measures `293174540ec5297d6c9c3a8b8336dd8d36cae147`, `sourceDirty:false`, 1179 files,
+`sha256:997da6d77d944112d8e8a202433c30152e3e81ab916cd31176cdac0bbf97476d`. Measured code and receipt commits are distinguished.
+Exact containing deployed/native acceptance remains open.
+
+
+## NE full land-action heading — v0.30.0
+
+[PR274](https://github.com/lbeezr/thousand-unit-skirmish/pull/274) merged at
+`5e8acee4ea8f6299d40c30c49e3fbd316d2281db` after [independent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/274#pullrequestreview-5404430550).
+NE's [public seed/whole-sheet iteration](art-direction/human-roster-v1/generated/worker-north-east-actions-v1/README.md)
+retains actual frontal/down walk identity, exact prompt/reference/raw and all15
+whole poses: axe3, food3, square hammer3, pick3 and defeat3. Every pose keeps this
+one genuine heading. Hammer heads remain short blunt rectangles in all phases;
+no rejected pose. Frontal prone terminal points head down and boots up, naturally
+foreshortened; no false profile width test. No private pixels/paid external job/
+rigging or deleted iteration. Simple motion is accepted for useful breadth.
+
+[Admission](../scripts/admit-worker-north-east-actions.py)/[registration](qa-evidence/worker-land-art-2026-10-04/north-east-actions-registration.json)
+use one232/278 scale, fixed source columns210/514/824; work contacts322/613/923/
+1235, fallen1464/1468/1481. Canvas/root: wood/hammer/pick256x320/[128,308],
+food/defeat256x256/[128,244]. Body roughly227–232px versus232px walk; max245
+stays below old272, world units/pixel exact. Minor tool/foot/loop drift awaits
+native observation. Three240ms720ms work loops; axe alias attack280ms840ms
+one-shot; hammer alias repair has its own work state; defeat840ms clamps prone.
+
+Right512 strip grows3584→4096x4096, aligned zero mask. [Preservation](qa-evidence/worker-land-art-2026-10-04/north-east-actions-preservation.json)
+hashes **every old3584x4096 RGBA pixel**,172 preceding records and65clips except
+three explicit NE attack/build/defeat idle placeholders retained verbatim. Old
+encoded mask preserved separately; decoded zero/current alignment and frozen
+fishing ROI/source remain protected. Pack0.30.0 has187frames/69clips. Decoded
+color64MiB + mask16MiB, +10MiB over0.29. No clock/state/economy code. Existing
+PR263 exact productive Stone consumer automatically binds NE.
+
+[Default checks](../scripts/worker-north-east-actions-art.test.mjs) verify all
+complete unique key hashes/root/world scale and real UV/matrix transforms; both
+Human seats selected/unselected; each productive gate/loop, Stop/resume,
+move/attack interruption, cargo Return/deposit completion to idle. Axe attack
+exits at840ms; death overrides work/travel/attack, clamps beyond840ms. Earlier
+checks now acknowledge actual NE instead of idle; S/SW/W missing directions stay
+own idle. Snapshot-buffer heading-change receipt test uses exact NE with work
+time preserved; no production helper change. Offline previews are not game/GPU.
+
+Native recipe on an identified containing ordinary Human match: target directly
+screen-down/NE. Observe actual axe/food/square hammer/pick phases, positive
+resource/cargo/Return/deposit and paid build/repair, target aim/contact/root;
+Stop/resume, change resource/heading, move/attack and terminal defeat. Compare
+N/NE/E/SE/NW, both seats selected/unselected, ordinary/strategic zoom. Record
+source/release/deployment/map. Parent Railway/Mac is the capture receiver;
+local sandbox-unavailable supplies no native proof. Animation01a103d4 owns
+bearing; exact containing delivered/native acceptance remains open.
+
+Current [inventory](qa-evidence/worker-land-art-2026-10-04/land-action-coverage.json):
+Walk8/8; Wood/Food/Build/Repair/Attack/Defeat/Stone5/8(N/NE/E/SE/NW).
+Authored43/64; **21 art cells remain**, S/SW/W each7. Ranked next: actual S back
+three-quarter family, then SW back and W back-three-quarter. Keep faithful public
+heading seeds, whole pose playback and all iterations; polish follows breadth.
+
+
+All163 focused tests pass; byte-idempotent admission, atlas/docs/whitespace and
+actual packaged guarded HTTP/WebSocket/hash checks pass. [Clean NE release](qa-evidence/worker-land-art-2026-10-04/north-east-actions-clean-release.json)
+measures `9611f0445d04ac2c69dc6744d95d898692ed261f`, `sourceDirty:false`, 1179 files,
+`sha256:84d94c77fee3d0fd184b995c70f0123cd149af0528ce1cb5b6b7aa088816036f`. Measured code and later receipt commits stay separate.
+Identified containing delivered/native acceptance remains open.

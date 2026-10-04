@@ -123,8 +123,12 @@ Independent preliminary review confirmed the geometry with its own BFS and
 checked all eight settlement pads/resource rings. 32 focused tests, types,
 imports and documentation links passed. The existing
 `node scripts/vaelora-map-layout-scenario.mjs` fails its visible-home-food rule
-on unchanged Confluence: the check ignores nearby neutral Sheep. That map and
-check have zero diff from this slice's base 5bd23914; this is retained baseline
+on unchanged Confluence. The earlier explanation that the check ignored Sheep
+was incorrect: it includes every food node, but the nearest Sheep is 9.487 units
+from spawn, outside its nine-unit rule. Home timber is 12.806 units away. The
+[later diagnosis](map-tier-inventory-2026-10-04.md#confluence-invariant-and-compatibility)
+also measures actual initial fog. That map and check have zero diff from this
+slice's base 5bd23914; this is retained baseline
 failure, not a Large validation pass. Final exact-head review/merge/package
 receipts belong in the PR ledger.
 

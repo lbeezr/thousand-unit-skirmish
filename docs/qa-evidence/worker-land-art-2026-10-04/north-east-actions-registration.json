@@ -1,0 +1,501 @@
+{
+  "schemaVersion": 1,
+  "worldDirection": "north-east",
+  "screenDirection": "down frontal",
+  "sharedScale": 0.8345323741007195,
+  "columnRootsX": [
+    210,
+    514,
+    824
+  ],
+  "source": "docs/art-direction/human-roster-v1/generated/worker-north-east-actions-v1/raw.png",
+  "sourceSha256": "24c7795eeb843a4638ec9c15beaf0b414dac1631d308d1e1bd5c53d4d1de3e54",
+  "contactNote": "Live work uses row ground baselines; fallen poses use reviewed source contact lines, not bounding-box recentering. Runtime pivots remain fixed per clip; native contact/relative body scale open.",
+  "groups": [
+    {
+      "state": "gather-wood",
+      "alias": "attack",
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 256,
+        "height": 320
+      },
+      "groundPivotPx": {
+        "x": 128,
+        "y": 308
+      },
+      "frames": [
+        {
+          "id": "gather-wood-north-east-0",
+          "sourceIndex": 0,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-east-actions-v1/extracted/00.png",
+          "sourceSha256": "266cd41963d76a920a8dffaef37e9f8f9c5728080547c076efbce72f618cdd51",
+          "sourceBounds": [
+            126,
+            29,
+            293,
+            318
+          ],
+          "sourceGroundRootPx": [
+            210,
+            322
+          ],
+          "offsetPx": [
+            58,
+            63
+          ],
+          "alphaBoundsPx": {
+            "x": 58,
+            "y": 63,
+            "width": 139,
+            "height": 241
+          },
+          "rgbaSha256": "3cfc7bff81176206a1d2c4340a29224af5b9ce6333ff1b603c090a5f9762a327"
+        },
+        {
+          "id": "gather-wood-north-east-1",
+          "sourceIndex": 1,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-east-actions-v1/extracted/01.png",
+          "sourceSha256": "1653cc67f9794fcce27d78e6d12ff3f2661bfff6188e3e80ecc57b1fed695f8e",
+          "sourceBounds": [
+            430,
+            81,
+            597,
+            322
+          ],
+          "sourceGroundRootPx": [
+            514,
+            322
+          ],
+          "offsetPx": [
+            58,
+            107
+          ],
+          "alphaBoundsPx": {
+            "x": 58,
+            "y": 107,
+            "width": 139,
+            "height": 201
+          },
+          "rgbaSha256": "7d8321f1c55d9d1f5c8c29f92fccfac76fa1e73594e914037ef0ad952a1cf8f7"
+        },
+        {
+          "id": "gather-wood-north-east-2",
+          "sourceIndex": 2,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-east-actions-v1/extracted/02.png",
+          "sourceSha256": "4955f8ef610dac0db0f340ea1d10fa70ff282eb94d6f2519aed4856e5e44a7de",
+          "sourceBounds": [
+            729,
+            45,
+            904,
+            318
+          ],
+          "sourceGroundRootPx": [
+            824,
+            322
+          ],
+          "offsetPx": [
+            49,
+            77
+          ],
+          "alphaBoundsPx": {
+            "x": 49,
+            "y": 77,
+            "width": 146,
+            "height": 228
+          },
+          "rgbaSha256": "f1968dbf2516d395c83698b0bf60c509b1d390cfa10ccdab947f5ebe084e02ea"
+        }
+      ]
+    },
+    {
+      "state": "gather-food",
+      "alias": null,
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 256,
+        "height": 256
+      },
+      "groundPivotPx": {
+        "x": 128,
+        "y": 244
+      },
+      "frames": [
+        {
+          "id": "gather-food-north-east-0",
+          "sourceIndex": 3,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-east-actions-v1/extracted/03.png",
+          "sourceSha256": "e6344c45af79e09a28b2521118aebe496a42ffbd60e90708bb2b2ae0fde11974",
+          "sourceBounds": [
+            123,
+            390,
+            298,
+            600
+          ],
+          "sourceGroundRootPx": [
+            210,
+            613
+          ],
+          "offsetPx": [
+            55,
+            58
+          ],
+          "alphaBoundsPx": {
+            "x": 55,
+            "y": 58,
+            "width": 146,
+            "height": 175
+          },
+          "rgbaSha256": "00cad15926d03eabd116cbe35489752d11dde490ee1530ac2ebae40d0244f122"
+        },
+        {
+          "id": "gather-food-north-east-1",
+          "sourceIndex": 4,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-east-actions-v1/extracted/04.png",
+          "sourceSha256": "86f10934678e71a45656548b7ce6a6eace67951ad596d50bbc942e7ef20211ff",
+          "sourceBounds": [
+            431,
+            413,
+            587,
+            605
+          ],
+          "sourceGroundRootPx": [
+            514,
+            613
+          ],
+          "offsetPx": [
+            59,
+            77
+          ],
+          "alphaBoundsPx": {
+            "x": 59,
+            "y": 77,
+            "width": 130,
+            "height": 160
+          },
+          "rgbaSha256": "33409a98aa3eeda532845086d958531a87cdf6f70039f216a9579596295655f3"
+        },
+        {
+          "id": "gather-food-north-east-2",
+          "sourceIndex": 5,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-east-actions-v1/extracted/05.png",
+          "sourceSha256": "b55e67f0e36db85f33fc7202e71d8d371a918e6b4d57a6c2e9a39d98d8e2f010",
+          "sourceBounds": [
+            743,
+            342,
+            905,
+            613
+          ],
+          "sourceGroundRootPx": [
+            824,
+            613
+          ],
+          "offsetPx": [
+            60,
+            18
+          ],
+          "alphaBoundsPx": {
+            "x": 60,
+            "y": 18,
+            "width": 135,
+            "height": 226
+          },
+          "rgbaSha256": "f2b7a2fe9744423feda7fddae6ecf39e986730798a0c5db417eefd35ed48967d"
+        }
+      ]
+    },
+    {
+      "state": "build",
+      "alias": "repair",
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 256,
+        "height": 320
+      },
+      "groundPivotPx": {
+        "x": 128,
+        "y": 308
+      },
+      "frames": [
+        {
+          "id": "build-north-east-0",
+          "sourceIndex": 6,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-east-actions-v1/extracted/06.png",
+          "sourceSha256": "6cbf87e53ff746f0cd65b0cf36c450b3d15ea3ad62c0b3d9a4c9cad30f25158e",
+          "sourceBounds": [
+            123,
+            631,
+            294,
+            920
+          ],
+          "sourceGroundRootPx": [
+            210,
+            923
+          ],
+          "offsetPx": [
+            55,
+            64
+          ],
+          "alphaBoundsPx": {
+            "x": 55,
+            "y": 64,
+            "width": 143,
+            "height": 241
+          },
+          "rgbaSha256": "7cc7a5454699eb285589cb8756682f59cb1bdd2fea13030088e78c858e82c1a7"
+        },
+        {
+          "id": "build-north-east-1",
+          "sourceIndex": 7,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-east-actions-v1/extracted/07.png",
+          "sourceSha256": "247ba94db2c3aa4d4cf559220e60c6e72a74b52465429dee43b810931de92f4c",
+          "sourceBounds": [
+            429,
+            685,
+            595,
+            923
+          ],
+          "sourceGroundRootPx": [
+            514,
+            923
+          ],
+          "offsetPx": [
+            57,
+            109
+          ],
+          "alphaBoundsPx": {
+            "x": 57,
+            "y": 109,
+            "width": 139,
+            "height": 199
+          },
+          "rgbaSha256": "a16036af7fa57c3515198a7fa9c612876afee055136f744bf70b1df573649f9a"
+        },
+        {
+          "id": "build-north-east-2",
+          "sourceIndex": 8,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-east-actions-v1/extracted/08.png",
+          "sourceSha256": "84b6848ab476cd22957933a71a5590d5dd8ffdb1ea848ee15587c964a53c20ba",
+          "sourceBounds": [
+            728,
+            640,
+            907,
+            918
+          ],
+          "sourceGroundRootPx": [
+            824,
+            923
+          ],
+          "offsetPx": [
+            48,
+            72
+          ],
+          "alphaBoundsPx": {
+            "x": 48,
+            "y": 72,
+            "width": 149,
+            "height": 232
+          },
+          "rgbaSha256": "e93ae4f34b6b66722d45962ba7ba63c62bc39af95400cb8167f7cfbbc8776136"
+        }
+      ]
+    },
+    {
+      "state": "gather-stone",
+      "alias": null,
+      "loop": true,
+      "durationMs": 720,
+      "canvasPx": {
+        "width": 256,
+        "height": 320
+      },
+      "groundPivotPx": {
+        "x": 128,
+        "y": 308
+      },
+      "frames": [
+        {
+          "id": "gather-stone-north-east-0",
+          "sourceIndex": 9,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-east-actions-v1/extracted/09.png",
+          "sourceSha256": "48790cdf4cf594fd83a4fa04e507023d3a929f765df0090d132b3fabf61f13ff",
+          "sourceBounds": [
+            106,
+            932,
+            301,
+            1226
+          ],
+          "sourceGroundRootPx": [
+            210,
+            1235
+          ],
+          "offsetPx": [
+            41,
+            55
+          ],
+          "alphaBoundsPx": {
+            "x": 41,
+            "y": 55,
+            "width": 163,
+            "height": 245
+          },
+          "rgbaSha256": "6301026cee6e0824a471ef59baadd051ad754f89f7e84fc2a44251ccacc7b1ed"
+        },
+        {
+          "id": "gather-stone-north-east-1",
+          "sourceIndex": 10,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-east-actions-v1/extracted/10.png",
+          "sourceSha256": "5fbfbfd35434c3848375a805a999ebbbf89550ab64155e7bc26c28ef3bbec522",
+          "sourceBounds": [
+            429,
+            1003,
+            598,
+            1235
+          ],
+          "sourceGroundRootPx": [
+            514,
+            1235
+          ],
+          "offsetPx": [
+            57,
+            114
+          ],
+          "alphaBoundsPx": {
+            "x": 57,
+            "y": 114,
+            "width": 141,
+            "height": 194
+          },
+          "rgbaSha256": "0d92230e894659020168bece5149d2a7d66d3c1d8e9ae5d8fa998c7e07216465"
+        },
+        {
+          "id": "gather-stone-north-east-2",
+          "sourceIndex": 11,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-east-actions-v1/extracted/11.png",
+          "sourceSha256": "21c6ef96951d1b7ee2eb950249b77bff1e5c3080b84632d16e93035f983d7740",
+          "sourceBounds": [
+            712,
+            948,
+            910,
+            1223
+          ],
+          "sourceGroundRootPx": [
+            824,
+            1235
+          ],
+          "offsetPx": [
+            35,
+            68
+          ],
+          "alphaBoundsPx": {
+            "x": 35,
+            "y": 69,
+            "width": 165,
+            "height": 228
+          },
+          "rgbaSha256": "0042249cec511b0ded499d844d280e5f9239e670ca87286a50a3d5558c961b18"
+        }
+      ]
+    },
+    {
+      "state": "defeat",
+      "alias": null,
+      "loop": false,
+      "durationMs": 840,
+      "canvasPx": {
+        "width": 256,
+        "height": 256
+      },
+      "groundPivotPx": {
+        "x": 128,
+        "y": 244
+      },
+      "frames": [
+        {
+          "id": "defeat-north-east-0",
+          "sourceIndex": 12,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-east-actions-v1/extracted/12.png",
+          "sourceSha256": "7d6230c9d58057b91ccef4c89f4362be0d5f570241165bf21c7877253b6191ef",
+          "sourceBounds": [
+            105,
+            1270,
+            307,
+            1464
+          ],
+          "sourceGroundRootPx": [
+            210,
+            1464
+          ],
+          "offsetPx": [
+            40,
+            82
+          ],
+          "alphaBoundsPx": {
+            "x": 40,
+            "y": 82,
+            "width": 169,
+            "height": 162
+          },
+          "rgbaSha256": "2d6a5f52bf4494aeeb499b7e763f47719e3d115ef5e4bc821c6825156fb56461"
+        },
+        {
+          "id": "defeat-north-east-1",
+          "sourceIndex": 13,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-east-actions-v1/extracted/13.png",
+          "sourceSha256": "333eef1057692e8a24821b39784649fe0207871a9731248e28bdd78aff37581b",
+          "sourceBounds": [
+            419,
+            1293,
+            600,
+            1468
+          ],
+          "sourceGroundRootPx": [
+            514,
+            1468
+          ],
+          "offsetPx": [
+            49,
+            98
+          ],
+          "alphaBoundsPx": {
+            "x": 49,
+            "y": 98,
+            "width": 151,
+            "height": 146
+          },
+          "rgbaSha256": "157e4f60e2d98bb199c768c7c70c99eb3ab7395c6ed8d0e5e456ea095eb42869"
+        },
+        {
+          "id": "defeat-north-east-2",
+          "sourceIndex": 14,
+          "source": "docs/art-direction/human-roster-v1/generated/worker-north-east-actions-v1/extracted/14.png",
+          "sourceSha256": "c42e3c050c5fd532c4b327bd58d9619d4ce97acfda6d428499da28d478ab2d70",
+          "sourceBounds": [
+            723,
+            1264,
+            922,
+            1481
+          ],
+          "sourceGroundRootPx": [
+            824,
+            1481
+          ],
+          "offsetPx": [
+            44,
+            63
+          ],
+          "alphaBoundsPx": {
+            "x": 44,
+            "y": 63,
+            "width": 166,
+            "height": 181
+          },
+          "rgbaSha256": "ac39b13deab9b8b0a539a1fea32b11e44f753a67a4259b36711dab7a365a80cc"
+        }
+      ]
+    }
+  ]
+}
