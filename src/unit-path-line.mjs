@@ -48,3 +48,13 @@ export function canTraverseFlatUnitSegment(x,z,targetX,targetZ,width,levels,isWa
   return visitGridSegmentCells(x,z,targetX,targetZ,width,levels.length,
     cell => isWalkable(cell) && levels[cell] === level, cornerStep);
 }
+
+// Keep a shared field's chosen endpoint and weighted/obstructed route. Only
+// reduce an unobstructed uniform-level leg from this assignee's real position;
+// cell-center visibility or the field's first goal is insufficient.
+export function shortcutFlatUnitPath(path,x,z,width,levels,isWalkable,cornerStep = 0) {
+  if (path.length < 2) return path;
+  const goal = path.at(-1);
+  return canTraverseFlatUnitSegment(x,z,goal % width + .5,Math.floor(goal / width) + .5,
+    width,levels,isWalkable,cornerStep) ? [goal] : path;
+}

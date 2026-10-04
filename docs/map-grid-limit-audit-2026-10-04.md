@@ -7,7 +7,7 @@ controls, wall-line planner and water-route graph independently cap either axis
 at 256. The ordinary size policy also excludes larger maps. Updating only the
 server comparison would leave these other paths inconsistent.
 
-There is a correctness reason for the bound: `server.mjs:markVisionFrom` stores
+The original audit found a correctness reason for the bound: `server.mjs:markVisionFrom` stored
 covered cell indices using `Uint16Array.from(cells)`. A 256² grid ends at 65535;
 a 320² grid ends at 102399, which becomes 36863 under that storage. Cells 65536+
 can mark unrelated northern cells visible/explored. The repeatable witness tests
@@ -18,9 +18,15 @@ and unchanged active-map identity after rejection.
 Path indices, predecessors and queue slots use 32-bit arrays. The separate 16-bit
 Manhattan heuristic stores 100 times distance: maximum 51000 at 256 and 63800 at 320
 still fit, but 76600 at 384 would wrap. Do not mistake this safe 320 heuristic for
-safe 320 vision or infer an unlimited larger-grid contract.
+safe overall 320 support or infer an unlimited larger-grid contract.
 
-## Bounded cost accounting
+The [bounded visibility increment](qa-xl-visibility-runtime-2026-10-04.md) now uses 32-bit
+visible/fringe coverage and caps retained payload at 8 MiB plus 8,192 entries, under unchanged
+256 admission. The CLI schema v2 hashes both helpers, probes actual coverage storage, and reports
+the hypothetical uncapped all-source sum separately from the retained limit. Original figures
+and 16-bit witness below remain historical; they are not current retained-cache memory.
+
+## Original cost accounting (before bounded 32-bit visibility)
 
 The CLI records exact source/hash provenance and derives allocation counts from
 the current map-activation source. Its fixed array model is 66 bytes/cell plus 32

@@ -28,6 +28,7 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'src/terrain-authoring.mjs', 'src/terrain-height.mjs', 'src/terrain-cliff-faces.mjs', 'src/regions.mjs', 'src/audio.mjs', 'src/audio-policy.mjs', 'src/audio-event-profile.mjs', 'src/world/map-audio-reference.mjs',
   'src/audio-shipped-loader.mjs', 'src/audio-shipped-response.mjs', 'src/audio-shipped-catalog.mjs', 'src/audio-decoded-cache.mjs',
   'src/client/audio/audio-decoded-cache.mjs', 'src/client/audio/audio-shipped-response.mjs',
+  'src/presentation/assets/interactive-runtime-image.mjs',
   'src/audio-composition-player.mjs', 'src/audio-assets.mjs', 'src/audio-library-store.mjs',
   'src/audio-library-ui.mjs', 'src/audio-studio.mjs', 'src/audio-studio.css',
   'src/audio-composition.mjs', 'src/audio-composer.mjs', 'src/audio-composer.css',
