@@ -65,19 +65,26 @@ explicit Move/Patrol/Follow/Attack Move retain their existing order paths. The
 construction help button still chooses the nearest unfinished friendly site
 to the selected Workers and focuses it; it does not recruit other Workers.
 The [reported interruption and targeted-resume checks](qa-palisade-construction-orders-2026-10-04.md)
-separate retained deployed behavior, this client correction and the pending
-server continuation slice.
+separate retained deployed behavior, the client correction and the server continuation checks.
 
 Every admitted Worker receives an independent canonical row-major list of new
-building IDs, tied to its unit generation and order revision. Workers route and
+building IDs in generation-bound `workIntent`, independent of route order revision, with fixed initial
+footprint bounds plus two world units clipped to the map. An explicitly assigned
+adjoining Gate within that area takes first priority, keeping the remaining paid
+wall IDs. Adjacency uses remembered IDs only. Completing or cancelling the Gate
+continues those walls; no unrelated site or unselected Worker joins. Workers route and
 construct through the existing formation/interaction/build-time mechanisms.
 Completion advances to the next unfinished segment; no extra payment occurs.
 Internal route repair carries the sequence to its new revision. A new player
-Move, Gather, Attack, Stop/Hold, Patrol/Follow, repair or construction order
+Move, Gather, Attack, Stop/Hold, Patrol/Follow, repair or unrelated construction order
 invalidates the previous sequence, including a queued Move accepted during a
 segment-completion window. A rejected full waypoint queue retains the work. Death and recycled unit generations cannot
 resume it. Interrupted construction stays paid and unfinished until resumed or
-cancelled through ordinary building controls.
+cancelled through ordinary building controls. An unreachable remembered site
+retains the sequence and invalidates its old route. Retry is at most once per
+second, three attempts per remembered target and navigation revision; a topology change or the next
+remembered target permits a new
+bounded attempt. Fixed area bounds never drift.
 
 Removing a current or pending segment prunes it from all active sequences;
 current removal clears the old route and routes the remaining work only after
@@ -85,9 +92,14 @@ occupancy/components have been rebuilt. Existing cancellation refunds only the
 unbuilt fraction once, combat destruction gives no refund, and construction
 completion does not heal damaged HP. Repair uses the existing policy.
 
-The optional `wallBuildOrder` lives in the unit checkpoint record, with copied
-ID arrays and full validation of bounds, unique IDs, generation/revision,
-ownership/type and current target. Older records restore no sequence. No schema
+The shared `workIntent` constructor variant copies ID arrays/area rectangles and
+validates bounds, unique historical IDs, generation, owned sites and area enclosure.
+`wallBuildOrder` remains execution/legacy compatibility: copied Palisade wall/Gate
+IDs, generation/revision and current target. A null target is legal while remembered
+construction awaits reacquisition. Records missing `workIntent` derive it from
+their valid remembered paid sequence or owned unfinished non-repair target; records
+with neither restore none. Construction bounds use footprint edges plus two world
+units, with no charge or nearby-site inference. No schema
 number change is needed for this additive field; lobby phase migrations retain
 their schema authority. Only the exact pre-palisade ruleset
 `v1:d85f5a09decc0d0ade81803ab289b52ec5a08e84ff5a1771e85401d4c3611eab`
@@ -115,9 +127,9 @@ recovery. Existing draft tests still execute the real cancellation/destruction,
 damaged construction and checkpoint-building fragments.
 
 These prove bounded runtime behavior; contested-match balance and finished art
-are unclaimed. [Drag UI checks and the native Mac recipe](qa-palisade-drag-ui-2026-10-03.md)
-cover the next client slice; cloud native-browser startup is unavailable, so
-DOM checks do not establish rendered/native usability. Hosted large-match
+are unclaimed. [Drag UI checks and the cloud-game recipe](qa-palisade-drag-ui-2026-10-03.md)
+cover the next client slice. Cloud renderer qualification and ordinary-game
+captures remain required; DOM checks do not establish rendered usability. Hosted large-match
 capacity is not established by these checks.
 
 ## Manual gate extension
