@@ -65,7 +65,7 @@ async function stopAndReturn(ids = workers) {
   return checkpoint(s => ids.flat().every(id => s.state.units[id].cargo === 0));
 }
 async function moveWorkers(plot) {
-  for (const team of [0, 1]) await command(team, { type: 'move', ids: workers[team], ...position(team, plot) }, /MOVE ORDER/);
+  for (const team of [0, 1]) await command(team, { type: 'move', ids: workers[team], ...position(team, plot) }, /PLANNING MOVE|MOVE ORDER/);
   return checkpoint(s => workers.every((ids, team) => ids.every(id => {
     const u = s.state.units[id], p = position(team, plot);
     return !u.path.length && Math.hypot(u.x - p.x, u.z - p.z) < 4;
@@ -151,17 +151,17 @@ try {
   const targets = [0, 1].map(team => initial.state.units.find(u => u.team === team && u.kind === 'infantry').id);
   for (const team of [0, 1]) {
     const tower = own(millDeposit, 1 - team, 'watchtower');
-    await command(team, { type: 'move', ids: [targets[team]], x: tower.x + (team ? 4 : -4), z: tower.z + 2 }, /MOVE ORDER/);
+    await command(team, { type: 'move', ids: [targets[team]], x: tower.x + (team ? 4 : -4), z: tower.z + 2 }, /PLANNING MOVE|MOVE ORDER/);
   }
   const damaged = await checkpoint(s => targets.every(id => s.state.units[id].hp < initial.state.units[id].hp && s.state.units[id].hp > 0));
   record('both-paid-watchtowers-fire', damaged, { targetHp: targets.map(id => damaged.state.units[id].hp) });
-  for (const team of [0, 1]) await command(team, { type: 'move', ids: [targets[team]], ...position(1 - team, [30, 84]) }, /MOVE ORDER/);
+  for (const team of [0, 1]) await command(team, { type: 'move', ids: [targets[team]], ...position(1 - team, [30, 84]) }, /PLANNING MOVE|MOVE ORDER/);
   await checkpoint(s => targets.every(id => !s.state.units[id].path.length));
   const fishDelivered = await checkpoint(s => [0, 1].every(team => node(s, `s${team}-shore-fish`).stock < 170
     && s.state.teamFood[team] > 110)); record('finite-fish-food-delivered', fishDelivered);
   await stopAndReturn(workers); await stopAndReturn(boats.map(id => [id]));
   // Traverse the actual connected bays in both directions, away from Dock berths.
-  for (const team of [0, 1]) await command(team, { type: 'move', ids: [boats[team]], ...position(1 - team, [37, 128]) }, /SKIFF WATER ROUTE|MOVE ORDER/);
+  for (const team of [0, 1]) await command(team, { type: 'move', ids: [boats[team]], ...position(1 - team, [37, 128]) }, /SKIFF WATER ROUTE|PLANNING MOVE|MOVE ORDER/);
   const crossed = await checkpoint(s => boats.every((id, team) => {
     const u = s.state.units[id], p = position(1 - team, [37, 128]); return !u.path.length && Math.hypot(u.x - p.x, u.z - p.z) < 1;
   })); record('both-skiffs-cross-connected-bays', crossed);
@@ -190,7 +190,7 @@ try {
   record('authored-reset-restores-finite-opening', reset);
   clients[1].socket.close(); await clients[0].state(s => s.connected === 1, 'single-player Practice');
   const id = reset.state.units.find(u => u.team === 0 && u.kind === 'worker').id;
-  await command(0, { type: 'move', ids: [id], ...position(0, [30, 87]) }, /MOVE ORDER/);
+  await command(0, { type: 'move', ids: [id], ...position(0, [30, 87]) }, /PLANNING MOVE|MOVE ORDER/);
   const solo = await checkpoint(s => s.state.tickNumber > reset.state.tickNumber + 30 && !s.state.units[id].path.length
     && Math.hypot(s.state.units[id].x - position(0, [30, 87]).x, s.state.units[id].z - position(0, [30, 87]).z) < 1);
   assert.equal(solo.state.scenarioClockStarted, true); record('one-human-practice-clock-and-move', solo);
