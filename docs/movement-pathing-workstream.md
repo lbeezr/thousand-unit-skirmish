@@ -227,7 +227,7 @@ unchanged health are mandatory. Existing forest cell-gap evidence is preserved.
 
 The [summary](qa-evidence/land-body-clearance-2026-10-04/summary.json) and
 [compressed raw observations](qa-evidence/land-body-clearance-2026-10-04/substeps.json.gz)
-are measured at clean source `27095de9d81a92d3da2fcce5effc5275022f8cce`.
+are measured at clean source `5e152a38558da79a29988ed47a21dfb206068a91`.
 Both copies of all six cases match exactly; the record retains input checkpoints,
 source hashes and unnormalized actor identities. This establishes bounded
 geometry/replay integrity, not asynchronous-server determinism.
