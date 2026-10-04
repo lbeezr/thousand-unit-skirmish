@@ -1,0 +1,657 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "provenance": {
+    "revision": "24144f6b70dff6a2e00dfa4bec176ededa20a3c4",
+    "dirty": false,
+    "node": "v24.19.0",
+    "scope": "fixed-tick-paid-policy-mirror",
+    "limitSeconds": 3600,
+    "restoreSeconds": 600,
+    "sampleIntervalSeconds": 1,
+    "timelineIntervalSeconds": 1,
+    "opponent": {
+      "module": "src/pve-opponent.mjs",
+      "productionLimits": {
+        "openingDelayTicks": 300,
+        "barracksWoodCost": 175,
+        "woodReserve": 25,
+        "infantryFoodCost": 50,
+        "foodReserve": 50,
+        "military": 12,
+        "roster": 24,
+        "queue": 1,
+        "retryTicks": 150,
+        "maxRetryTicks": 900
+      },
+      "qualification": "not independently qualified; same implementation in both seats"
+    },
+    "renderer": false,
+    "servedRelease": null,
+    "deployment": null
+  },
+  "activeSeeds": null,
+  "runs": [
+    {
+      "file": "seeds-20260925-0.json",
+      "sha256": "d491ca95e2a2c124def6812b7724c4b091f00e17dfc3ea2499b7dda163d7fd64",
+      "seeds": [
+        20260925,
+        0
+      ],
+      "mapId": "veyrholds-terraced-vale",
+      "mapSha256": "2e352328e0b6795c04a11505672d17971231cc2e7ad34a858ff6418423d5d1f6",
+      "terrainSeed": 93025,
+      "mode": {
+        "matchModeId": "skirmish",
+        "matchModeVersion": 1
+      },
+      "exactRepeat": true,
+      "terminal": {
+        "status": "finished",
+        "winner": 1,
+        "reason": "elimination",
+        "seconds": 2393,
+        "limitSeconds": 3600
+      },
+      "seats": [
+        {
+          "team": 0,
+          "seed": 20260925,
+          "firstVisibleEnemyTick": 6480,
+          "firstNativeAttackObservedTick": 6630,
+          "firstDamageObservedTick": 6630,
+          "firstPaidRecruitTick": 1980,
+          "firstBarracksCompleteTick": 1110,
+          "firstDepotCompleteTick": 9300,
+          "firstExpansionCompleteTick": null,
+          "maxMilitary": 12,
+          "maxWorkers": 4,
+          "purchasedBuildings": [
+            {
+              "tick": 450,
+              "id": 2,
+              "type": "barracks",
+              "x": -63.5,
+              "z": 6.5
+            },
+            {
+              "tick": 3330,
+              "id": 4,
+              "type": "house",
+              "x": -51.5,
+              "z": 0.5
+            },
+            {
+              "tick": 5700,
+              "id": 5,
+              "type": "storehouse",
+              "x": 20.5,
+              "z": 38.5
+            },
+            {
+              "tick": 18300,
+              "id": 7,
+              "type": "farm",
+              "x": -66.5,
+              "z": 6.5
+            },
+            {
+              "tick": 19830,
+              "id": 9,
+              "type": "storehouse",
+              "x": -72.5,
+              "z": 0.5
+            },
+            {
+              "tick": 23190,
+              "id": 10,
+              "type": "farm",
+              "x": -54.5,
+              "z": 0.5
+            },
+            {
+              "tick": 29790,
+              "id": 11,
+              "type": "farm",
+              "x": -54.5,
+              "z": 0.5
+            },
+            {
+              "tick": 34560,
+              "id": 12,
+              "type": "farm",
+              "x": -60.5,
+              "z": 6.5
+            },
+            {
+              "tick": 36750,
+              "id": 13,
+              "type": "stable",
+              "x": -58.5,
+              "z": -5.5
+            },
+            {
+              "tick": 38520,
+              "id": 14,
+              "type": "farm",
+              "x": -54.5,
+              "z": 6.5
+            },
+            {
+              "tick": 46860,
+              "id": 15,
+              "type": "farm",
+              "x": -54.5,
+              "z": -5.5
+            }
+          ],
+          "belowInfantryFoodSeconds": 97,
+          "firstBelowInfantryFoodTick": 38730,
+          "commandDebits": {
+            "food": 1910,
+            "wood": 1155
+          },
+          "commandCredits": {
+            "food": 0,
+            "wood": 0
+          },
+          "timesSeconds": {
+            "firstVisibleEnemy": 216,
+            "firstNativeAttackObserved": 221,
+            "firstDamageObserved": 221,
+            "firstPaidRecruit": 66,
+            "firstBarracksComplete": 37,
+            "firstDepotComplete": 310,
+            "firstExpansionComplete": null,
+            "firstBelowInfantryFood": 1291
+          }
+        },
+        {
+          "team": 1,
+          "seed": 0,
+          "firstVisibleEnemyTick": 6480,
+          "firstNativeAttackObservedTick": 6630,
+          "firstDamageObservedTick": 6630,
+          "firstPaidRecruitTick": 1740,
+          "firstBarracksCompleteTick": 1080,
+          "firstDepotCompleteTick": 7830,
+          "firstExpansionCompleteTick": 22770,
+          "maxMilitary": 12,
+          "maxWorkers": 4,
+          "purchasedBuildings": [
+            {
+              "tick": 420,
+              "id": 1,
+              "type": "barracks",
+              "x": 50.5,
+              "z": 0.5
+            },
+            {
+              "tick": 2700,
+              "id": 3,
+              "type": "house",
+              "x": 56.5,
+              "z": -5.5
+            },
+            {
+              "tick": 5850,
+              "id": 6,
+              "type": "storehouse",
+              "x": -35.5,
+              "z": -27.5
+            },
+            {
+              "tick": 19530,
+              "id": 8,
+              "type": "town-center",
+              "x": -43.5,
+              "z": -27.5
+            },
+            {
+              "tick": 52290,
+              "id": 16,
+              "type": "stable",
+              "x": 35.5,
+              "z": -0.5
+            }
+          ],
+          "belowInfantryFoodSeconds": 0,
+          "firstBelowInfantryFoodTick": null,
+          "commandDebits": {
+            "food": 1640,
+            "wood": 1575
+          },
+          "commandCredits": {
+            "food": 0,
+            "wood": 0
+          },
+          "timesSeconds": {
+            "firstVisibleEnemy": 216,
+            "firstNativeAttackObserved": 221,
+            "firstDamageObserved": 221,
+            "firstPaidRecruit": 58,
+            "firstBarracksComplete": 36,
+            "firstDepotComplete": 261,
+            "firstExpansionComplete": 759,
+            "firstBelowInfantryFood": null
+          }
+        }
+      ],
+      "depletions": [
+        {
+          "tick": 18060,
+          "id": "s0-home-food",
+          "type": "food"
+        },
+        {
+          "tick": 21180,
+          "id": "s1-home-wood",
+          "type": "wood"
+        },
+        {
+          "tick": 22920,
+          "id": "s1-home-food",
+          "type": "food"
+        },
+        {
+          "tick": 23580,
+          "id": "s0-home-wood",
+          "type": "wood"
+        },
+        {
+          "tick": 33300,
+          "id": "s0-terrace-food",
+          "type": "food"
+        },
+        {
+          "tick": 38610,
+          "id": "s0-terrace-wood",
+          "type": "wood"
+        }
+      ],
+      "farmDepletions": [
+        {
+          "tick": 23040,
+          "id": 7,
+          "team": 0
+        },
+        {
+          "tick": 28830,
+          "id": 10,
+          "team": 0
+        },
+        {
+          "tick": 33690,
+          "id": 11,
+          "team": 0
+        },
+        {
+          "tick": 36690,
+          "id": 12,
+          "team": 0
+        },
+        {
+          "tick": 45360,
+          "id": 14,
+          "team": 0
+        },
+        {
+          "tick": 49050,
+          "id": 15,
+          "team": 0
+        }
+      ],
+      "rejectedOrders": 0,
+      "restores": [
+        {
+          "tick": 18000,
+          "sameAuthority": true,
+          "freshPolicies": true
+        }
+      ]
+    },
+    {
+      "file": "seeds-0-20260925.json",
+      "sha256": "d99b1d07fb12a29edc0cbd7a1eae347d8f0e6125376039a2cf1b19432cc51ee6",
+      "seeds": [
+        0,
+        20260925
+      ],
+      "mapId": "veyrholds-terraced-vale",
+      "mapSha256": "2e352328e0b6795c04a11505672d17971231cc2e7ad34a858ff6418423d5d1f6",
+      "terrainSeed": 93025,
+      "mode": {
+        "matchModeId": "skirmish",
+        "matchModeVersion": 1
+      },
+      "exactRepeat": true,
+      "terminal": {
+        "status": "bounded-unresolved",
+        "winner": -1,
+        "reason": null,
+        "seconds": 3600,
+        "limitSeconds": 3600
+      },
+      "seats": [
+        {
+          "team": 0,
+          "seed": 0,
+          "firstVisibleEnemyTick": 12540,
+          "firstNativeAttackObservedTick": 13170,
+          "firstDamageObservedTick": 12660,
+          "firstPaidRecruitTick": 1770,
+          "firstBarracksCompleteTick": 1110,
+          "firstDepotCompleteTick": 8250,
+          "firstExpansionCompleteTick": null,
+          "maxMilitary": 12,
+          "maxWorkers": 4,
+          "purchasedBuildings": [
+            {
+              "tick": 450,
+              "id": 2,
+              "type": "barracks",
+              "x": -51.5,
+              "z": 0.5
+            },
+            {
+              "tick": 2790,
+              "id": 3,
+              "type": "house",
+              "x": -57.5,
+              "z": -5.5
+            },
+            {
+              "tick": 6450,
+              "id": 5,
+              "type": "storehouse",
+              "x": 20.5,
+              "z": 26.5
+            },
+            {
+              "tick": 15210,
+              "id": 7,
+              "type": "farm",
+              "x": -66.5,
+              "z": 0.5
+            },
+            {
+              "tick": 26610,
+              "id": 9,
+              "type": "storehouse",
+              "x": -66.5,
+              "z": 6.5
+            },
+            {
+              "tick": 28860,
+              "id": 10,
+              "type": "farm",
+              "x": -60.5,
+              "z": 6.5
+            },
+            {
+              "tick": 35640,
+              "id": 11,
+              "type": "farm",
+              "x": -60.5,
+              "z": -5.5
+            },
+            {
+              "tick": 41700,
+              "id": 12,
+              "type": "farm",
+              "x": -66.5,
+              "z": 0.5
+            },
+            {
+              "tick": 46950,
+              "id": 13,
+              "type": "farm",
+              "x": -54.5,
+              "z": 6.5
+            },
+            {
+              "tick": 50250,
+              "id": 14,
+              "type": "farm",
+              "x": -54.5,
+              "z": -5.5
+            },
+            {
+              "tick": 53340,
+              "id": 15,
+              "type": "farm",
+              "x": -66.5,
+              "z": -5.5
+            },
+            {
+              "tick": 59010,
+              "id": 17,
+              "type": "farm",
+              "x": -54.5,
+              "z": 0.5
+            }
+          ],
+          "belowInfantryFoodSeconds": 0,
+          "firstBelowInfantryFoodTick": null,
+          "commandDebits": {
+            "food": 2540,
+            "wood": 1335
+          },
+          "commandCredits": {
+            "food": 0,
+            "wood": 0
+          },
+          "timesSeconds": {
+            "firstVisibleEnemy": 418,
+            "firstNativeAttackObserved": 439,
+            "firstDamageObserved": 422,
+            "firstPaidRecruit": 59,
+            "firstBarracksComplete": 37,
+            "firstDepotComplete": 275,
+            "firstExpansionComplete": null,
+            "firstBelowInfantryFood": null
+          }
+        },
+        {
+          "team": 1,
+          "seed": 20260925,
+          "firstVisibleEnemyTick": 12540,
+          "firstNativeAttackObservedTick": 12660,
+          "firstDamageObservedTick": 13170,
+          "firstPaidRecruitTick": 1830,
+          "firstBarracksCompleteTick": 1170,
+          "firstDepotCompleteTick": 13440,
+          "firstExpansionCompleteTick": 24000,
+          "maxMilitary": 12,
+          "maxWorkers": 4,
+          "purchasedBuildings": [
+            {
+              "tick": 420,
+              "id": 1,
+              "type": "barracks",
+              "x": 62.5,
+              "z": 6.5
+            },
+            {
+              "tick": 2880,
+              "id": 4,
+              "type": "house",
+              "x": 50.5,
+              "z": 0.5
+            },
+            {
+              "tick": 11490,
+              "id": 6,
+              "type": "storehouse",
+              "x": -49.5,
+              "z": -21.5
+            },
+            {
+              "tick": 20790,
+              "id": 8,
+              "type": "town-center",
+              "x": -49.5,
+              "z": -27.5
+            },
+            {
+              "tick": 55980,
+              "id": 16,
+              "type": "farm",
+              "x": -43.5,
+              "z": -15.5
+            },
+            {
+              "tick": 65070,
+              "id": 18,
+              "type": "farm",
+              "x": -43.5,
+              "z": -27.5
+            },
+            {
+              "tick": 72600,
+              "id": 19,
+              "type": "farm",
+              "x": -55.5,
+              "z": -21.5
+            },
+            {
+              "tick": 79980,
+              "id": 20,
+              "type": "farm",
+              "x": -49.5,
+              "z": -15.5
+            }
+          ],
+          "belowInfantryFoodSeconds": 0,
+          "firstBelowInfantryFoodTick": null,
+          "commandDebits": {
+            "food": 2430,
+            "wood": 1475
+          },
+          "commandCredits": {
+            "food": 0,
+            "wood": 0
+          },
+          "timesSeconds": {
+            "firstVisibleEnemy": 418,
+            "firstNativeAttackObserved": 422,
+            "firstDamageObserved": 439,
+            "firstPaidRecruit": 61,
+            "firstBarracksComplete": 39,
+            "firstDepotComplete": 448,
+            "firstExpansionComplete": 800,
+            "firstBelowInfantryFood": null
+          }
+        }
+      ],
+      "depletions": [
+        {
+          "tick": 13560,
+          "id": "s1-home-food",
+          "type": "food"
+        },
+        {
+          "tick": 14190,
+          "id": "s0-home-food",
+          "type": "food"
+        },
+        {
+          "tick": 23400,
+          "id": "s1-home-wood",
+          "type": "wood"
+        },
+        {
+          "tick": 26430,
+          "id": "s0-home-wood",
+          "type": "wood"
+        },
+        {
+          "tick": 31980,
+          "id": "s0-terrace-food",
+          "type": "food"
+        },
+        {
+          "tick": 51480,
+          "id": "s0-terrace-wood",
+          "type": "wood"
+        },
+        {
+          "tick": 80400,
+          "id": "s1-terrace-wood",
+          "type": "wood"
+        }
+      ],
+      "farmDepletions": [
+        {
+          "tick": 28470,
+          "id": 7,
+          "team": 0
+        },
+        {
+          "tick": 35490,
+          "id": 10,
+          "team": 0
+        },
+        {
+          "tick": 41040,
+          "id": 11,
+          "team": 0
+        },
+        {
+          "tick": 46230,
+          "id": 12,
+          "team": 0
+        },
+        {
+          "tick": 49320,
+          "id": 13,
+          "team": 0
+        },
+        {
+          "tick": 52440,
+          "id": 14,
+          "team": 0
+        },
+        {
+          "tick": 58680,
+          "id": 15,
+          "team": 0
+        },
+        {
+          "tick": 63360,
+          "id": 17,
+          "team": 0
+        },
+        {
+          "tick": 64410,
+          "id": 16,
+          "team": 1
+        },
+        {
+          "tick": 72180,
+          "id": 18,
+          "team": 1
+        },
+        {
+          "tick": 79740,
+          "id": 19,
+          "team": 1
+        },
+        {
+          "tick": 83340,
+          "id": 20,
+          "team": 1
+        }
+      ],
+      "rejectedOrders": 0,
+      "restores": [
+        {
+          "tick": 18000,
+          "sameAuthority": true,
+          "freshPolicies": true
+        }
+      ]
+    }
+  ]
+}
