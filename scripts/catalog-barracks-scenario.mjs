@@ -15,14 +15,41 @@ export const CATALOG_BARRACKS_FLAGS = Object.freeze({ rendererCapture: 'environm
   assetReadability: '1', assetScenario: 'catalog-barracks' });
 const mapSource = new URL('../docs/qa-evidence/default-frontier-buildings-2026-10-03/acceptance-map-flat.json', import.meta.url);
 const manifestPath = type => `assets/${new URL(frontierBuildingManifestUrl(type)).pathname.split('/assets/').at(-1)}`;
-const observationExpression = `(${observeInPage.toString()})()`;
+const observationExpression = `(${observeCatalogPage.toString()})()`;
+
+function installRoomFlags(flags) {
+  const url = new URL(location.href);
+  if (!url.searchParams.has('room')) return false;
+  for (const [key, value] of Object.entries(flags)) url.searchParams.set(key, value);
+  history.replaceState(null, '', url.href);
+  return true;
+}
+
+export function catalogBarracksBeforeScript() {
+  // A menu document remains ordinary entry. Only the subsequently created room
+  // document gets QA flags before main reads its URL; production entry is intact.
+  return `(${installRoomFlags.toString()})(${JSON.stringify(CATALOG_BARRACKS_FLAGS)})`;
+}
 
 // Only bounded owned-seat/render/DOM facts leave the browser. No URLs or tokens.
-function observeInPage() {
+export function observeCatalogPage() {
   const root = document.querySelector('#asset-readability');
   const previewKeys = ['frontierBuildingsPreview', 'humanRosterPreview', 'castPreview',
     'workerSpritePreview', 'unitSpritePreview', 'meshyInfantrySpritePreview', 'humanVaeloraPreview', 'humanAnimationPreview'];
   const params = new URL(location.href).searchParams;
+  const visible = image => {
+    const rect = image.parentElement.getBoundingClientRect(), imageRect = image.getBoundingClientRect();
+    const clip = root.getBoundingClientRect();
+    const fullyInside = rect.width > 0 && rect.height > 0
+      && rect.left >= Math.max(0, clip.left + root.clientLeft)
+      && rect.top >= Math.max(0, clip.top + root.clientTop)
+      && rect.right <= Math.min(innerWidth, clip.left + root.clientLeft + root.clientWidth)
+      && rect.bottom <= Math.min(innerHeight, clip.top + root.clientTop + root.clientHeight);
+    const style = getComputedStyle(image);
+    return fullyInside && style.visibility === 'visible' && Number(style.opacity) > 0
+      && [[imageRect.left + 1, imageRect.top + 1], [imageRect.right - 1, imageRect.bottom - 1]]
+        .every(([x, y]) => image.parentElement.contains(document.elementFromPoint(x, y)));
+  };
   return { state: window.__rtsCatalogBarracksCapture?.snapshot,
     catalog: window.__rtsAssetReadabilitySnapshot,
     catalogVisible: Boolean(root?.isConnected),
@@ -30,7 +57,7 @@ function observeInPage() {
     samples: [...(root?.querySelectorAll('img') || [])].map(image => ({
       width: image.getBoundingClientRect().width, height: image.getBoundingClientRect().height,
       source: image.getAttribute('src'), decoded: image.complete && image.naturalWidth > 0,
-      label: image.parentElement.textContent, objectFit: image.style.objectFit })),
+      label: image.parentElement.textContent, objectFit: image.style.objectFit, visible: visible(image) })),
     grayscale: root?.querySelector('img')?.parentElement.parentElement.style.filter === 'grayscale(1)',
   };
 }
@@ -57,6 +84,7 @@ export function validateScenarioObservation(observation, { team, zoom, catalog =
     for (const sample of observation.samples) {
       assert.equal(sample.source, '/assets/ui/icons/actions/follow.svg');
       assert.equal(sample.decoded, true, 'live Follow samples must decode');
+      assert.equal(sample.visible, true, 'complete glyph and label must be visible inside the panel and viewport');
       assert.equal(sample.objectFit, 'contain'); assert.equal(sample.label, `Follow ${sample.width}`);
     }
   } else assert.equal(observation.catalogVisible, false, 'paid gameplay checkpoints close the developer panel');
@@ -95,6 +123,19 @@ export function validatePaidBarracks(before, after, { complete = false, manifest
   return building;
 }
 
+function workersClearBarracks(state, ids, site) {
+  return ids.length > 0 && ids.every(id => {
+    const worker = state?.workers?.find(worker => worker.id === id);
+    return worker && Number.isFinite(worker.x) && Number.isFinite(worker.z)
+      && Math.hypot(worker.x - site.x, worker.z - site.z) > 2.5;
+  });
+}
+
+export function workerClearanceExpression(ids, site) {
+  // JSON objects preserve negative world coordinates without forming `x--20.5`.
+  return `(${workersClearBarracks.toString()})(o.state, ${JSON.stringify(ids)}, ${JSON.stringify(site)})`;
+}
+
 async function clickPoint(page, point, button = 'left') {
   assert.ok(point && Number.isFinite(point.x) && Number.isFinite(point.y), 'a real screen projection is required');
   await page.cdp.call('Input.dispatchMouseEvent', { type: 'mouseMoved', x: point.x, y: point.y });
@@ -103,6 +144,7 @@ async function clickPoint(page, point, button = 'left') {
 }
 
 async function clickControl(page, selector, label = null) {
+  await revealCatalogTarget(page, selector, label);
   const point = await page.cdp.evaluate(`(() => {
     return [...document.querySelectorAll(${JSON.stringify(selector)})].map(node => {
       if (node.disabled || !(${label === null ? 'true' : `node.textContent.includes(${JSON.stringify(label)})`})) return null;
@@ -111,6 +153,28 @@ async function clickControl(page, selector, label = null) {
     }).find(Boolean) ?? null;
   })()`);
   await clickPoint(page, point);
+}
+
+async function revealCatalogTarget(page, selector, label = null) {
+  const scroll = await page.cdp.evaluate(`(() => {
+    const root = document.querySelector('#asset-readability');
+    const node = [...document.querySelectorAll(${JSON.stringify(selector)})]
+      .find(node => root?.contains(node) && (${label === null ? 'true' : `node.textContent.includes(${JSON.stringify(label)})`}));
+    if (!node) return null;
+    const target = (node.tagName === 'IMG' ? node.parentElement : node).getBoundingClientRect(), clip = root.getBoundingClientRect();
+    return {x:clip.left+clip.width/2, y:clip.top+clip.height/2,
+      deltaY:target.top+target.height/2-(clip.top+clip.height/2)};
+  })()`);
+  if (!scroll || Math.abs(scroll.deltaY) < 1) return;
+  await page.cdp.call('Input.dispatchMouseEvent', { type: 'mouseWheel', ...scroll, deltaX: 0 });
+  // Wait for normal overflow scrolling, without retrying a failed scenario.
+  await page.wait(`(() => {
+    const root=document.querySelector('#asset-readability');
+    const node=[...document.querySelectorAll(${JSON.stringify(selector)})]
+      .find(node=>root?.contains(node) && (${label === null ? 'true' : `node.textContent.includes(${JSON.stringify(label)})`}));
+    if(!node)return false;const rect=(node.tagName==='IMG'?node.parentElement:node).getBoundingClientRect(),clip=root.getBoundingClientRect();
+    return rect.top>=clip.top && rect.bottom<=clip.bottom;
+  })()`, 'visible catalog scroll target');
 }
 
 async function projectGround(page, site) {
@@ -163,6 +227,7 @@ export async function runCatalogBarracksScenario({ page, pack, revision, browser
       await wait(`o.state?.zoom === ${zoom} && o.catalog?.cameraZoom === ${zoom}`, 'settled ordinary camera');
       for (const grayscale of [false, true]) {
         if ((await observe()).grayscale !== grayscale) await clickControl(page, '#asset-readability button', 'Grayscale');
+        await revealCatalogTarget(page, '#asset-readability img');
         await checkpoint(`catalog-${zoom === 0.91 ? 'ordinary' : 'strategic'}-${grayscale ? 'gray' : 'color'}`,
           { zoom, catalog: true, grayscale });
       }
@@ -172,6 +237,8 @@ export async function runCatalogBarracksScenario({ page, pack, revision, browser
     await clickControl(page, '#asset-readability button', 'Close review');
     stage = 'paid-placement';
     const before = (await observe()).state; report.paymentBefore = before.bank;
+    const workerIds = before.workers.map(worker => worker.id);
+    assert.ok(workerIds.length > 0, 'the paid scenario requires living owned Workers');
     assert.ok(!before.buildings.some(row => row.type === 'barracks'), 'scenario starts without a paid Barracks');
     await clickControl(page, '[data-open-dock-tab="economy"], [data-context-panel="economy"]');
     await clickControl(page, '#select-workers');
@@ -189,7 +256,7 @@ export async function runCatalogBarracksScenario({ page, pack, revision, browser
     await clickControl(page, '#dock-close');
     const away = { x: team === 0 ? -15.5 : 15.5, z: -3.5 };
     await clickPoint(page, await projectGround(page, away), 'right');
-    await wait(`o.state?.workers.every(w=>Math.hypot(w.x-${site.x},w.z-${site.z})>2.5)`, 'Workers clear the ordinary selection point', 30000);
+    await wait(workerClearanceExpression(workerIds, site), 'Workers clear the ordinary selection point', 30000);
     const complete = (await observe()).state;
     validatePaidBarracks(before, complete, { complete: true, manifest: barracksManifest });
     await clickPoint(page, complete.buildings.find(row => row.id === building.id).screen);
@@ -209,6 +276,7 @@ export async function runCatalogBarracksScenario({ page, pack, revision, browser
     });
     assert.equal(report.frames.length, 7); report.status = 'captured-needs-review';
   } catch (error) {
+    Object.defineProperty(report, 'cause', { value: error });
     report.issues.push({ stage, code: error instanceof assert.AssertionError ? 'contract-failed' : 'execution-failed',
       // Retain causes locally through the caller; artifact messages never echo CDP/session payloads.
       message: error instanceof assert.AssertionError ? error.message.split('\n')[0] : `Scenario failed during ${stage}` });

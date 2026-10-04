@@ -82,7 +82,7 @@ establish contracts and delivery files, not contrast, recognition or pixels.
 renderer with its inspected artifacts, run this view on
 a clean containing release at fixed viewport/DPR/browser zoom. Retain original
 PNG/full-page evidence at both camera zooms, actual map/background, source SHA,
-release digest, browser/backend and the same-frame catalog snapshot. Inspect
+release digest, browser/backend and bracketed post-render catalog observations. Inspect
 Town Center edges/Workers/standard and Follow's shape/contrast at all three
 sizes, including grayscale; report a specific defect before any art change.
 Then remove the debug option and retain the separate

@@ -6,7 +6,8 @@ export function catalogBarracksObservation({ frame, time, mapId, team, zoom, vie
     frame, renderedAt: time, mapId, team, zoom, viewport, dpr,
     bank: { food, wood }, selectedIds: [...selectedIds], selectedBuildingId,
     workers: units.filter(unit => unit?.team === team && unit.kind === 'worker' && unit.hp > 0)
-      .map(unit => ({ id: unit.id, x: unit.x, z: unit.z, task: unit.task,
+      .map(unit => ({ id: unit.id, x: unit.renderX, z: unit.renderZ,
+        serverX: unit.serverX, serverZ: unit.serverZ, task: unit.task,
         screen: project({ x: unit.renderX, z: unit.renderZ, height: 0.65 }) })),
     buildings: buildings.filter(building => building.team === team).map(building => {
       const visual = buildingVisuals.get(building.id), entry = visual?.frontierCaptureEntry;

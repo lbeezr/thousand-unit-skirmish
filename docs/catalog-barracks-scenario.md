@@ -24,7 +24,7 @@ The exact missing integration hook is a **before-cleanup scenario call** on
 the existing qualified CDP page, after HUD's ordinary entry/import:
 
 ```js
-await runCatalogBarracksScenario({
+const catalogReport = await runCatalogBarracksScenario({
   page, pack, revision: pack.sourceRevision, browserVersion: browser.version,
   outputDirectory: catalogEvidenceDirectory, team: 0,
   entryEvidence: {
@@ -32,6 +32,7 @@ await runCatalogBarracksScenario({
     mapId: 'frontier-buildings-acceptance-flat', mapSha256: importedMapSha256,
   },
 });
+assert.equal(catalogReport.status, 'captured-needs-review');
 ```
 
 Import [the existing flat map](qa-evidence/default-frontier-buildings-2026-10-03/acceptance-map-flat.json)
@@ -39,19 +40,33 @@ through ordinary Map Studio and retain its actual file hash in HUD's receipt.
 The adapter requires that exact hash and checks the applied map again through
 the existing helper. Supply a clean, digest-verified containing pack with its
 existing locked dependencies installed. Establish the flags below on the
-ordinary room URL before loading main; preserve the room/session privately in
-the harness rather than artifacts:
+ordinary room document before loading main; preserve the room/session privately
+in the harness rather than artifacts:
 
 `rendererCapture=environment-state&assetReadability=1&assetScenario=catalog-barracks`
+
+Compose the adapter's `catalogBarracksBeforeScript()` with the existing qualified
+probe in the same designated page's `beforeScript`. It leaves the initial menu
+untouched, then adds QA flags only when the real room document loads. Ordinary
+`roomEntryUrl` deliberately drops old query options, so putting QA flags on the
+initial menu URL would both bypass normal entry and fail to preserve them through
+room creation. Do not alter that production URL helper. After artifacts are
+written, the caller must propagate a returned `failed` status to batch failure;
+awaiting the adapter alone cannot establish a successful batch. Its nonenumerable
+`cause` retains local diagnosis without serializing private CDP messages.
 
 `assetReadability` opens a developer QA panel. `assetScenario` enables only
 read-only observations after the normal renderer draws, including owned banks,
 loaded default view pins/pivot/density, depth, selection and screen projection.
 Neither flag gates approved art, asset defaults, gameplay or a player's access
 to building controls. Alternate-art query options are rejected by this scenario.
+The QA panel uses a distinct DOM class while sharing the existing HUD backing
+and button rules; normal command-bar queries keep their actual controls.
 
 ## Checkpoints and evidence limits
 
+The QA panel scrolls normally to expose the whole Follow glyph/label row;
+viewport/panel clipping and hit tests must pass before each catalog capture.
 The ordinary visible Production/Worker/Build controls and actual CDP mouse and
 keyboard events place one Barracks on the existing Azure pad `(-20.5,-6.5)`
 (mirrored Ember pad also supported). The live owned bank must pay exactly
