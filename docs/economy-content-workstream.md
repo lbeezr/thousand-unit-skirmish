@@ -20,10 +20,12 @@ packed runtime digest is
 [shared intent contract](worker-resource-job-contract.md) are the implementation
 boundary.
 
-Earlier identified staging `53a47ee` lacked `8200ec6c`. The latest independent
-platform inspection records staging deployment `c487990a` **SUCCESS** at
-14:50:50 UTC on 4 October, source `1acaf9a4`, with one of one instances online.
-That source contains merged Wood continuation; production was unchanged.
+Earlier identified staging `53a47ee` lacked `8200ec6c`. The release delivery
+owner's latest platform inspection records staging deployment
+`6fcca7ce-cc91-4009-bec1-59648d979d94` **SUCCESS** at 15:04:53 UTC on 4 October,
+source `839f0737`, containing merged Wood and Stone continuation. The earlier
+`c487990a` SUCCESS at 14:50:50 UTC, source `1acaf9a4`, contained Wood only;
+one of one instances was online and production was unchanged at that inspection.
 This confirms containing staged platform delivery, while served runtime bytes
 and actual rendered ordinary gameplay remain unverified. The release delivery
 owner retains served-source/release identification; the cloud testing owner
@@ -38,12 +40,17 @@ Stone continuation [PR #305](https://github.com/lbeezr/thousand-unit-skirmish/pu
 explicitly extends the existing intent to finite
 Stone nodes within the original eight-unit circle, with visibility, reachability,
 typed cargo, manual/queued priority and cold recovery. [Stone continuation QA](qa-stone-job-continuation-2026-10-04.md)
-retains source evidence and acceptance. Identified staging source `1acaf9a4`
-predates this Stone implementation; Stone containing staged delivery, served
-runtime-byte verification and actual rendered cloud gameplay remain open with
-the same owner roles. The earlier `53a47ee` observation is historical.
-Food/Farm/wildlife/fishing source-subtype policy still needs an explicit separate
-design. No stock/price/radius or construction policy is changed by this Stone slice.
+retains source evidence and acceptance. Identified staging source `839f0737`
+contains this Stone implementation; served runtime-byte verification and actual
+rendered cloud gameplay remain open with the same owner roles. The earlier
+`53a47ee` and `1acaf9a4` observations are historical.
+The [Food source continuation proposal](food-source-continuation-proposal.md)
+inventories current rules and recommends plain neutral land Food only as the
+first possible extension. It changes no gameplay policy: Farms, wildlife and
+land/Skiff fishing remain source-only. The economy/content owner retains the
+decision and future contract tests; fishing, wildlife and construction owners
+retain their existing implementations. No stock/price/radius or construction
+policy is changed by either the Stone slice or this Food design receipt.
 
 ## Ranked next actions
 

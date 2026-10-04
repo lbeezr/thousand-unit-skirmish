@@ -17,11 +17,12 @@ validation, restore, external cancellation and Wood continuation. Construction
 reacquisition remains with its named owner; the shared field alone does not fix it.
 Source merge and a containing deployed build are recorded separately in QA evidence.
 
-Wood source merge is `8200ec6c`. Earlier staging `53a47ee` lacked it; the latest
-independent platform record is staging `c487990a` SUCCESS at 14:50:50 UTC on
-4 October, source `1acaf9a4`, containing Wood with one of one instances online.
+Wood source merge is `8200ec6c`; Stone source merge is `839f0737`. The release
+delivery owner records staging deployment `6fcca7ce-cc91-4009-bec1-59648d979d94`
+SUCCESS at 15:04:53 UTC on 4 October, source `839f0737`, containing both. Earlier
+staging `53a47ee` lacked Wood; `c487990a` source `1acaf9a4` contained Wood only.
 This confirms platform delivery only. Served-byte identification and rendered
-ordinary gameplay remain open; that source predates this Stone extension.
+ordinary gameplay remain open for both extensions.
 The [economy/content queue](economy-content-workstream.md) retains these outcomes
 with the release delivery and cloud testing owners.
 
@@ -53,6 +54,8 @@ and finish without expanding the anchor or repeating failed searches.
 Food, owned Farms, wildlife and fishing retain their existing source rules. An
 automatic Stone job cannot take them, Wood or another ore. A newly accepted
 manual source assignment creates its own typed anchor.
+The separate [Food source proposal](food-source-continuation-proposal.md) is
+pending a gameplay decision and does not extend this published union.
 
 Construction remembers only explicitly assigned paid owned site IDs, in priority
 order. Area is the initial sites' footprint bounding rectangle plus two world

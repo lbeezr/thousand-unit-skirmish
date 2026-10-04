@@ -76,14 +76,16 @@ This source/package identity is separate from a served release.
 ## Source, release and gameplay acceptance
 
 The economy/content implementation owner retains review, normal merge and exact
-postmerge verification. The latest independently inspected staging platform
-deployment is `c487990a`, SUCCESS at 14:50:50 UTC on 4 October, source `1acaf9a4`,
-one of one instances online; production was unchanged. This source contains Wood
-`8200ec6c` and predates this Stone slice. Earlier staging `53a47ee` lacked Wood.
-The release delivery owner retains served-byte/release identification for Wood
-and a containing staged release for Stone. The cloud testing owner retains actual rendered
+postmerge verification. The release delivery owner's latest inspected staging
+platform deployment is `6fcca7ce-cc91-4009-bec1-59648d979d94`, SUCCESS at
+15:04:53 UTC on 4 October, source `839f0737`, containing this Stone slice and
+Wood `8200ec6c`. Earlier `c487990a` was SUCCESS at 14:50:50 UTC on source
+`1acaf9a4`, with one of one instances online and production unchanged; it
+contained Wood only. Earlier staging `53a47ee` lacked Wood.
+The release delivery owner retains served-byte/release identification for both.
+The cloud testing owner retains actual rendered
 ordinary Stone selection, depletion/continuation, Stop/Move/Return, queued priority
-and reconnect at a containing release. Stone staged delivery plus served-byte and
-rendered acceptance outcomes remain explicitly open; platform delivery of Wood
-does not close its served/rendered outcomes. Local source/native/package evidence
+and reconnect at a containing release. Containing Stone platform delivery is
+confirmed; served-byte and rendered acceptance outcomes remain explicitly open.
+Platform delivery does not close those outcomes. Local source/native/package evidence
 does not close them. [Current queue](economy-content-workstream.md).
