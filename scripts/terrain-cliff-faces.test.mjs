@@ -90,11 +90,12 @@ test('normal ground factory binds existing scree with cap5 sampling and opaque e
   console.warn = () => {};
   const surfaces = [];
   try {
-    for (const mode of ['normal', 'mirror', 'atlas-failed']) {
-      globalThis.location = { search: mode === 'mirror' ? '?terrainTiling=mirror' : '' };
+    for (const mode of ['normal', 'mirror', 'atlas-failed', 'mirror-atlas-failed']) {
+      const mirror = mode.includes('mirror'), atlasFailed = mode.includes('atlas-failed');
+      globalThis.location = { search: mirror ? '?terrainTiling=mirror' : '' };
       globalThis.fetch = async url => {
         requests.push(String(url));
-        if (mode === 'atlas-failed' && String(url).includes('frontier-painted-material-atlas-v1/manifest.json')) return new Response('', { status: 404 });
+        if (atlasFailed && String(url).includes('frontier-painted-material-atlas-v1/manifest.json')) return new Response('', { status: 404 });
         try { return new Response(await readFile(new URL(url, root))); } catch { return new Response('', { status: 404 }); }
       };
       const art = await import(`../src/environment-art.mjs?cliff-test=${mode}`);
@@ -104,7 +105,7 @@ test('normal ground factory binds existing scree with cap5 sampling and opaque e
       assert.equal(wall.userData.terrainCliffFaces.painted, true);
       assert.equal(positionHash(wall.geometry), valeBaseline);
       assert.equal(wall.material.map, current[0].material.map, 'same cached source, no extra image or clone');
-      assert.equal(wall.material.map.name, mode === 'atlas-failed' ? '' : 'painted-ground:scree');
+      assert.equal(wall.material.map.name, atlasFailed ? '' : 'painted-ground:scree');
       assert.equal(wall.material.type, 'MeshBasicMaterial');
       assert.equal(wall.material.transparent, false); assert.equal(wall.material.depthWrite, true);
       assert.equal(wall.position.y, -.025, 'painted lips align to the unchanged base surface');
@@ -123,9 +124,11 @@ test('normal ground factory binds existing scree with cap5 sampling and opaque e
       assert.match(shader.vertexShader, /vCliffEdgeDistances = cliffEdgeDistances/);
       assert.match(shader.fragmentShader, /smoothstep\(0\.0, \.12, vCliffEdgeDistances\.x\)/);
       assert.match(shader.fragmentShader, /smoothstep\(0\.0, \.16, vCliffEdgeDistances\.y\)/);
-      assert.match(shader.fragmentShader, mode === 'mirror' ? /diffuseColor \*= vaeloraMapSample/ : /diffuseColor \*= vaeloraGround/);
+      if (!mirror) assert.match(shader.fragmentShader, /diffuseColor \*= vaeloraGround/);
+      else if (!atlasFailed) assert.match(shader.fragmentShader, /diffuseColor \*= vaeloraMapSample/);
+      else assert.match(shader.fragmentShader, /#include <map_fragment>/);
       assert.match(wall.material.customProgramCacheKey(), /cliff-edge-colors-v1/);
-      if (mode !== 'atlas-failed') {
+      if (!atlasFailed) {
         assert.deepEqual(wall.material.map.userData.paintedMaterialAtlasUvRect, atlas.materials.find(m => m.id === 'scree').uvRectTopLeft);
         assert.match(shader.fragmentShader, /32\.0 \/ max\(footprint/);
       }

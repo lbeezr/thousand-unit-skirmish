@@ -96,7 +96,7 @@ float cliffLowerWeight = .30 * (1.0 - smoothstep(0.0, .16, vCliffEdgeDistances.y
 diffuseColor.rgb = mix(diffuseColor.rgb, vCliffUpperColor * diffuse, cliffUpperWeight);
 diffuseColor.rgb = mix(diffuseColor.rgb, vCliffLowerColor * diffuse, cliffLowerWeight);`);
   };
-  material.customProgramCacheKey = () => `${key()}:cliff-edge-colors-v1`;
+  material.customProgramCacheKey = () => `${key.call(material)}:cliff-edge-colors-v1`;
   return material;
 }
 
