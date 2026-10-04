@@ -60,6 +60,13 @@ case starts an unrelated food Gather job with an unselected Worker, records
 the paid ledger, and cold-restarts the actual server with the original seat
 tokens. [Retained baseline events](qa-evidence/palisade-continuation-2026-10-04/baseline.json)
 record the exact server/scenario hashes, progress, targets, refunds and schema.
+The [retained originally executed scenario](qa-evidence/palisade-continuation-2026-10-04/baseline-scenario.mjs)
+matches the recorded SHA256 `828029cafe617845e532b686580e03ac2d827a8832f67a8adddf6b3e4d9a6e0e`.
+It is a historical source artifact: to replay it, copy it into `scripts/` so
+its relative fixture import resolves, and use the recorded source revision.
+The current prepared scenario has subsequently strengthened acceptance; each
+new report computes its own scenario/server hashes and identifies an alternate
+server entrypoint separately from the checkout revision.
 
 | Case | Current-source observation after recovery |
 | --- | --- |
@@ -86,6 +93,19 @@ until the construction implementation lands. `--case=stop`, `move`, `gather`
 and `manual-replacement` require explicit replacement priority now. The script
 is prepared on the construction branch, not yet admitted to CI or claimed as a
 passing continuation implementation.
+Independent preparation review caught vacuous completion and missing builder
+attribution. The current acceptance predicates require every expected paid
+ID, type and team to survive recovery and settlement; House completion requires
+the two actually assigned House IDs. Final passing continuation must capture
+each original builder actively progressing a remembered wall. Every observed
+checkpoint also checks all unselected Workers' original Gather/idle assignments,
+rather than checking only two Gather Workers after completion. The natural
+continuation assertions remain pending the agreed runtime foundation/fix.
+The [strengthened replacement controls](qa-evidence/palisade-continuation-2026-10-04/strengthened-controls.json)
+pass all four both-seat cases with the same server bytes: expected site IDs and
+all six unselected Worker jobs survive every inspected checkpoint/recovery;
+Stop has no route/queue, Move retains its goal, Gather retains its accepted node,
+and both actually assigned distant Houses complete without resuming old work.
 
 ## Continuation boundary and unfinished acceptance
 

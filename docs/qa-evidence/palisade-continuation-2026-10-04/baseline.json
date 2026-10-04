@@ -475,5 +475,6 @@
   "limits": [
     "native authoritative server and real WebSocket commands/checkpoints; no browser/GPU or deployed acceptance",
     "observe mode records unresolved continuation and must not be counted as a passing fix"
-  ]
+  ],
+  "executedScenarioPath": "docs/qa-evidence/palisade-continuation-2026-10-04/baseline-scenario.mjs"
 }

@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-04",
+  "purpose": "Strengthened explicit replacement controls after preparation review; no natural continuation fix.",
+  "sourceRevision": "2926fff5a3854650712468153676f8d71dc10dc9",
+  "checkoutDirtyAtCapture": true,
+  "serverIsCheckoutSource": true,
+  "serverSha256": "29753b61a89c966e00349edeaf70c1cbba294bcbbc4f23be2e2a647ecba60416",
+  "scenarioSha256": "eac501e370e2fdf264b1fb79ea72d75b2cc0bc7ccdff495fe958f3a2b5c576c3",
+  "note": "Driver acceptance assertions were being amended; gameplay server bytes remain identical to the source-bound baseline.",
+  "limits": [
+    "native authoritative server and real WebSocket commands/checkpoints; no browser/GPU or deployed acceptance",
+    "observe mode records unresolved continuation and must not be counted as a passing fix"
+  ],
+  "events": [
+    {"mode":"stop","observe":false,"continued":false,"cancelled":[],"wood":[240,240],"expectedSites":[{"id":1,"type":"palisade-wall","team":0},{"id":2,"type":"palisade-wall","team":0},{"id":3,"type":"palisade-wall","team":0},{"id":4,"type":"palisade-wall","team":1},{"id":5,"type":"palisade-wall","team":1},{"id":6,"type":"palisade-wall","team":1},{"id":7,"type":"palisade-gate","team":0},{"id":8,"type":"palisade-gate","team":1}],"resumedByOriginalBuilders":null,"unselectedJobCount":6,"progressBefore":[[1,0.1666666666666666],[2,0],[3,0],[4,0.1799999999999999],[5,0],[6,0]],"progressAfter":[[1,0.1666666666666666],[2,0],[3,0],[4,0.1799999999999999],[5,0],[6,0]],"workerTargets":[null,null],"recoveredSchema":29,"sameMatch":true},
+    {"mode":"move","observe":false,"continued":false,"cancelled":[],"wood":[240,240],"expectedSites":[{"id":1,"type":"palisade-wall","team":0},{"id":2,"type":"palisade-wall","team":0},{"id":3,"type":"palisade-wall","team":0},{"id":4,"type":"palisade-wall","team":1},{"id":5,"type":"palisade-wall","team":1},{"id":6,"type":"palisade-wall","team":1},{"id":7,"type":"palisade-gate","team":0},{"id":8,"type":"palisade-gate","team":1}],"resumedByOriginalBuilders":null,"unselectedJobCount":6,"progressBefore":[[1,0.1666666666666666],[2,0],[3,0],[4,0.1799999999999999],[5,0],[6,0]],"progressAfter":[[1,0.1666666666666666],[2,0],[3,0],[4,0.1799999999999999],[5,0],[6,0]],"workerTargets":[null,null],"recoveredSchema":29,"sameMatch":true},
+    {"mode":"gather","observe":false,"continued":false,"cancelled":[],"wood":[240,240],"expectedSites":[{"id":1,"type":"palisade-wall","team":0},{"id":2,"type":"palisade-wall","team":0},{"id":3,"type":"palisade-wall","team":0},{"id":4,"type":"palisade-wall","team":1},{"id":5,"type":"palisade-wall","team":1},{"id":6,"type":"palisade-wall","team":1},{"id":7,"type":"palisade-gate","team":0},{"id":8,"type":"palisade-gate","team":1}],"resumedByOriginalBuilders":null,"unselectedJobCount":6,"progressBefore":[[1,0.1666666666666666],[2,0],[3,0],[4,0.18666666666666656],[5,0],[6,0]],"progressAfter":[[1,0.1666666666666666],[2,0],[3,0],[4,0.18666666666666656],[5,0],[6,0]],"workerTargets":[null,null],"recoveredSchema":29,"sameMatch":true},
+    {"mode":"manual-replacement","observe":false,"continued":false,"cancelled":[],"wood":[165,165],"expectedSites":[{"id":1,"type":"palisade-wall","team":0},{"id":2,"type":"palisade-wall","team":0},{"id":3,"type":"palisade-wall","team":0},{"id":4,"type":"palisade-wall","team":1},{"id":5,"type":"palisade-wall","team":1},{"id":6,"type":"palisade-wall","team":1},{"id":7,"type":"palisade-gate","team":0},{"id":8,"type":"palisade-gate","team":1},{"id":9,"type":"house","team":0},{"id":10,"type":"house","team":1}],"resumedByOriginalBuilders":null,"unselectedJobCount":6,"progressBefore":[[1,0.17333333333333326],[2,0],[3,0],[4,0.18666666666666656],[5,0],[6,0]],"progressAfter":[[1,0.17333333333333326],[2,0],[3,0],[4,0.18666666666666656],[5,0],[6,0]],"workerTargets":[null,null],"recoveredSchema":29,"sameMatch":true}
+  ]
+}
