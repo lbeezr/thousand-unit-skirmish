@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { WORKER_PORTRAITS, BARRACKS_PORTRAIT } from '../src/selection-portrait.mjs';
+import { WORKER_PORTRAITS, INFANTRY_PORTRAITS, BARRACKS_PORTRAIT } from '../src/selection-portrait.mjs';
 import { buildingSpriteUrl } from '../src/building-sprites.mjs';
 import { moduleImports } from './module-imports.mjs';
 import { BROWSER_ENTRYPOINTS } from './check-runtime-imports.mjs';
@@ -22,7 +22,8 @@ for (const privateModule of ['src/formation-assignment.mjs', 'src/simulation/mov
 }
 const uiAllowlist = server.match(/const publicUiAsset = \[([\s\S]*?)\]\.includes\(relative\);/);
 assert.ok(uiAllowlist, 'server UI asset allowlist should be declared');
-const allowedUi = new Set([...uiAllowlist[1].matchAll(/'([^']+)'/g)].map((match) => match[1]));
+const allowedUi = new Set([...CLIENT_ASSET_PATHS.filter(name => name.startsWith('assets/ui/')),
+  ...[...uiAllowlist[1].matchAll(/'([^']+)'/g)].map((match) => match[1])]);
 const environmentModule = ENVIRONMENT_MODULE_PATH;
 assert.ok(allowed.has('src/water-surface-geometry.mjs'), 'water geometry module should be statically served');
 const spriteNames = environmentArt.match(/const spriteNames = \[([\s\S]*?)\];/);
@@ -83,8 +84,10 @@ for (const resource of allowedUi) {
 for (const [role, source, sha256] of [
   ['human', 'docs/art-direction/human-vaelora-sprites-v1/source/Idle/facings.png', '323071be89e1fc6e181ec4c7b946d28048043380b4faaa285f368e6efe1c54ad'],
   ['boughward-worker', 'docs/art-direction/boughward-roster-v1/extracted/worker/00.png', '7296c0b24ad61c02b65bfc9d6d88c8f46391bfa1efbaeba2e4c2615de07f9aa6'],
+  ['infantry', 'docs/art-direction/human-roster-v1/source/infantry-idle-facings.png', '0a94a11f2dffd4b722d3a732aa4d3117283d3fa41c89aac6f03487d7a7930b38'],
+  ['boughward-infantry', 'docs/art-direction/boughward-roster-v1/extracted/infantry/00.png', '17f6ff8f66274a00c1206301b00a8e298ffc7692ec307975c77300e2a62cb33c'],
 ]) {
-  const portrait = WORKER_PORTRAITS[role], resource = portrait.asset.slice(1);
+  const portrait = WORKER_PORTRAITS[role] || INFANTRY_PORTRAITS[role], resource = portrait.asset.slice(1);
   assert.ok(allowedUi.has(resource), `portrait must be served: ${resource}`);
   const image = readFileSync(path.join(root, resource));
   assert.equal(createHash('sha256').update(image).digest('hex'), sha256, 'portrait reuses inspected source bytes');
