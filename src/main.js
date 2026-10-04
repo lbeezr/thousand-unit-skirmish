@@ -7457,7 +7457,8 @@ function pickForestCellAt(x, y) {
   let nearestDistance = 30 * 30;
   for (const [cell, slot] of forestTreeSlots) {
     if (latestForestStocks.get(cell) === 0) continue;
-    if (mapDefinition?.fogOfWar && latestFogCells?.[cell] !== 2) continue;
+    // Remembered crowns select their authored group; authority picks a live frontier.
+    if (mapDefinition?.fogOfWar && ![1, 2].includes(latestFogCells?.[cell])) continue;
     screenPoint.set(slot.x, groundHeight(slot.x,slot.z)+1.25, slot.z).project(camera);
     if (screenPoint.z < -1 || screenPoint.z > 1) continue;
     const treeX = (screenPoint.x * 0.5 + 0.5) * rect.width;

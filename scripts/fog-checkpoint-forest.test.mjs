@@ -171,6 +171,8 @@ test('legal clearing invalidates warmed positive fringe coverage for stationary 
     const gatherer = workers[0][0], stationary = workers[1];
     assert.equal(fogCode(initial, fringe), 1, 'positive fringe is warmed before geometry changes');
     assert.equal(fogCode(initial, deep), 0);
+    await order(replay, { type: 'move', ids: [gatherer], x: -55.5, z: .5 }, /PLANNING MOVE|MOVE ORDER/);
+    for (let tick = 0; tick < 100; tick++) replay.step();
     await order(replay, { type: 'gather', ids: [gatherer], forestCell }, /^GATHER ORDER/);
     let cleared = false;
     for (let tick = 0; tick < 400; tick++) {

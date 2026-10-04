@@ -50,7 +50,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   ],
   simulation: [
     'combat-stance', 'confluence-opening-compat', 'construction-work-intent', 'economy-checkpoint',
-    'forest-fringe', 'formation-assignment', 'gather-work-area', 'match-mode-checkpoint',
+    'forest-fringe', 'forest-gather-group', 'formation-assignment', 'gather-work-area', 'match-mode-checkpoint',
     'simulation/movement/formation-assignment',
     'millrace-sheep', 'skiff-fishing', 'skiff-group-orders', 'skiff-waypoints',
     'snapshot-private-production', 'terraced-vale-sheep', 'unit-movement',
