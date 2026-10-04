@@ -107,6 +107,7 @@ test('existing snapshot and asset diagnostics opt in without changing normal men
       localTeam: 0, mapDefinition: {}, resourceNodeVisuals: new Map(), mapObjects: [],
       constructionGroundMeshes: new Map(), palisadeGroundMeshes: new Map(), RESOURCE_STATE_ASSET_STATUS: 'fixture',
       sendCommand: () => true,
+      treeTargetCaptureSnapshot: () => null,
       buildingPlacementPreview: { sprite: null }, buildPlacementActive: false, buildPlacementPending: false,
       buildPlacementType: 'house', buildPlacementOrientation: 0,
       placementGhost: { visible: false, position: { toArray: () => [0, 0, 0] } },
