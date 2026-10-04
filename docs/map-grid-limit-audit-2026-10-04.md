@@ -28,11 +28,22 @@ and 16-bit witness below remain historical; they are not current retained-cache 
 
 ## Original cost accounting (before bounded 32-bit visibility)
 
-The CLI records exact source/hash provenance and derives allocation counts from
-the current map-activation source. Its fixed array model is 66 bytes/cell plus 32
+The original report derived allocation counts from its inspected map-activation
+source. Its fixed array model was 66 bytes/cell plus 32
 bytes/spatial bucket (1.2-unit bucket side). This is a **partial resident array
 count**, excluding JS state/caches, catalog, unit routes, water grids, temporary
 validation/component queues, runtime/allocator overhead and renderer/GPU memory.
+
+Current CLI accounting also includes the later forest-group membership array
+added in `3402a9c9`: the actual `forestGatherGroups()` helper retains one
+`Int32Array` entry per map cell, adding4 bytes/cell. The current partial resident
+model is therefore70 bytes/cell plus the same spatial buckets:9,449,248 bytes
+at320, versus the historical9,039,648 below. Checkpoint validation creates
+another temporary409,600-byte membership array at320; that is reported
+separately, not added to retained room memory. JS forest-group cell lists,
+other validation temporaries and allocator/GC peaks remain excluded. Neither
+number is total RSS or a supported-capacity claim. Exact current source/helper
+hashes are emitted by the CLI; preserve this historical table.
 
 | Cost | Small 192 | Current max 256 | Proposed XL 320 |
 | --- | ---: | ---: | ---: |
