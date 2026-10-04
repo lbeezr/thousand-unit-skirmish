@@ -1,0 +1,11 @@
+{
+  "sourceRevision": "ce4e1aeaa2051e5c01978b9a742c3b5e0aea01a5",
+  "frameId": "walk-north-east-0",
+  "manifest": "assets/units/cast-human-sprite-v3/sprite-atlas-pack-v1.json",
+  "seedSha256": "2f63b91231b92dd16da01556a359835b4eae6ca39272ab28c611daf943673eb6",
+  "referenceSha256": "60a2e0a28d50d70c386d413bec7f0fbc3a3c68216499d4ed2192752e6c0514e2",
+  "direction": "north-east",
+  "screenDirection": "down/frontal",
+  "tool": "built-in ImageGen under standing bounded public-seed authorization",
+  "retainedSourceAssessment": "Actual legacy public candidates were inspected first; current public NE walk supplies exact frontal bearing/identity rather than reuse of SE/diagonal action pixels."
+}

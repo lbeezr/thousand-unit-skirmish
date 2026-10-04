@@ -160,3 +160,13 @@ records, world scale and unrelated clips. All seven land-work/combat actions now
 +10MiB over v0.28; existing max silhouette272/world scale unchanged.
 See [land QA](../../../docs/qa-worker-land-art-2026-10-04.md) for evidence and
 open identified delivered/native acceptance.
+
+
+v0.30.0 admits fifteen actual NE/front-down poses for every land work/combat
+state. All work loops720ms, faithful axe attack840ms and prone-terminal defeat
+840ms. One232/278 scale, fixed reviewed contacts, unchanged max272/world scale.
+Entire prior3584x4096 RGBA,172records and unrelated clips remain protected in
+aligned4096x4096 page/mask (+10MiB decoded; color64MiB + mask16MiB).
+All seven work/combat actions now5/8(N/NE/E/SE/NW), Walk8/8;21 cells remain.
+See [land QA](../../../docs/qa-worker-land-art-2026-10-04.md) for preserved sources,
+source/default/release checks and open identified delivered/native acceptance.
