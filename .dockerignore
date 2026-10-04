@@ -8,6 +8,10 @@
 !style.css
 !src/
 !src/**
+!docs/
+!docs/art-direction/
+!docs/art-direction/human-roster-v1/
+!docs/art-direction/human-roster-v1/infantry-production-contract.json
 !maps/
 !maps/**
 !assets/

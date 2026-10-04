@@ -36,6 +36,18 @@ try {
   }
   assert.ok(ready, output);
   const html = await (await fetch(`${base}/`)).text();
+  for (const file of ['src/asset-readability.mjs', 'docs/art-direction/human-roster-v1/infantry-production-contract.json', 'assets/ui/icons/actions/manifest.json']) {
+    const bytes = await readFile(path.join(root, file));
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(`${base}/${file}`, { method });
+      assert.equal(response.status, 200, `${file} ${method}`);
+      assert.match(response.headers.get('content-type'), file.endsWith('.json') ? /application\/json/ : /javascript/);
+      if (method === 'GET') assert.equal(hash(Buffer.from(await response.arrayBuffer())), hash(bytes));
+    }
+  }
+  for (const file of ['docs/README.md', 'assets/ui/PROVENANCE.md', 'meshy_output/town-center.glb']) {
+    assert.equal((await fetch(`${base}/${file}`)).status, 404, `${file} stays outside public admission`);
+  }
   for (const action of manifest.actions) {
     assert.ok(html.includes(`src="/${action.source}"`), `${action.id} is in the default served HTML`);
     const bytes = await readFile(path.join(root, action.source));
@@ -48,7 +60,7 @@ try {
       else assert.equal(received.length, 0, 'HEAD has no response body');
     }
   }
-  for (const sourceOnly of ['manifest.json', 'README.md', 'unapproved.svg']) {
+  for (const sourceOnly of ['README.md', 'unapproved.svg']) {
     for (const method of ['GET', 'HEAD']) {
       assert.equal((await fetch(`${base}/assets/ui/icons/actions/${sourceOnly}`, { method })).status, 404);
     }

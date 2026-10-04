@@ -72,7 +72,7 @@ export function createTickAttribution({ functions, context, visionContext, memor
       if (vision.processed[team][cell] >= actualSight) add('visionDuplicateSources');
       else {
         add('visionApplications');
-        add(vision.coverage[cell]?.has(actualSight) ? 'visionCoverageHits' : 'visionCoverageMisses');
+        add(vision.coverage.has(cell, actualSight) ? 'visionCoverageHits' : 'visionCoverageMisses');
       }
     }
     return functions.markVisionFrom.call(this, team, x, z, sight);
@@ -81,12 +81,16 @@ export function createTickAttribution({ functions, context, visionContext, memor
     if (!active) return functions.runSimulationTick.apply(this, args);
     const before = memory();
     current = { tickNumber: context().tickNumber + 1, startedMs: now(), heapBeforeBytes: before.heapUsed };
+    const metrics = context().cacheMetrics;
+    if (metrics) current.visionCacheBefore = metrics;
     try { return functions.runSimulationTick.apply(this, args); }
     finally { current = null; }
   };
   wrapped.recordTickDuration = function (duration, diagnostic, ...args) {
     if (current) {
       const after = memory();
+      const metrics = context().cacheMetrics;
+      if (metrics) current.visionCacheAfter = metrics;
       Object.assign(current, { tickNumber: diagnostic.tickNumber, endedMs: now(), durationMs: duration,
         heapAfterBytes: after.heapUsed, netHeapDeltaBytes: after.heapUsed - current.heapBeforeBytes,
         rssBytes: after.rss, externalBytes: after.external, arrayBufferBytes: after.arrayBuffers });

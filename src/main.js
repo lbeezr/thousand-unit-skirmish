@@ -33,6 +33,7 @@ import { createMatchModeControls, lobbyMapConfiguration, mapChoiceLabel, fixedMa
 import { roomPresence } from './room-presence.mjs';
 import { roomEntryUrl, AUTHENTICATION_MESSAGE } from './game-entry-session.mjs';
 import * as THREE from 'three';
+import { mountAssetReadability } from './asset-readability.mjs';
 import { farmHarvestNode } from './farm-harvest.mjs';
 import { attachBuildingSprite } from './building-sprites.mjs';
 import { frontierBuildingManifestUrl } from './frontier-building-preview.mjs';
@@ -10442,6 +10443,28 @@ let fpsFrames = 0;
 let fpsTime = 0;
 let renderStatsTime = 0;
 let lastIdlePoseStep = -1;
+// Explicit review surface over the normal world, never a second art consumer.
+const assetReadability = roomPageUrl.searchParams.get('assetReadability') === '1'
+  ? mountAssetReadability({ document,
+    getObservation: () => {
+      const building = latestBuildings.find(row => row.type === 'town-center' && row.team === localTeam);
+      const sprite = buildingVisuals.get(building?.id)?.frontierCaptureEntry?.sprite;
+      const art = sprite?.userData.capturedBuildingArt;
+      return { mapId: mapDefinition?.id, zoom: camera.zoom, width: viewport.clientWidth, height: viewport.clientHeight,
+        footRuntimeVersion: unitSpritePreviewVersions.infantry,
+        dpr: renderer.getPixelRatio(), point: building ? { x: building.x, z: building.z } : null,
+        manifestPath: art ? new URL(art.manifestUrl).pathname : null, manifest: art?.manifest,
+        spriteVisible: Boolean(sprite?.visible && sprite.material.map) };
+    },
+    focus: requestedZoom => {
+      const building = latestBuildings.find(row => row.type === 'town-center' && row.team === localTeam);
+      if (!building || !mapDefinition) return;
+      mapFitActive = false; zoom = requestedZoom; camera.zoom = zoom; camera.updateProjectionMatrix();
+      cameraTarget.x = building.x; cameraTarget.z = building.z; setCamera();
+      const rect = viewport.getBoundingClientRect();
+      focusGroundPointAtScreen({ x: building.x, z: building.z }, rect.left + rect.width * 0.4, rect.top + rect.height * 0.5);
+    },
+  }) : null;
 function animate(now) {
   if ((cursorPointer || wallKeyboardCell || wallPlacementGesture.anchor || pendingWallPreview) && now - lastCursorSample >= 100) {
     lastCursorSample = now;
@@ -10588,6 +10611,10 @@ function animate(now) {
     visual.fallbackRoot.visible = !visual.sprite.visible;
   }
   renderer.render(scene, camera);
+  if (assetReadability) {
+    assetReadability.update(now);
+    window.__rtsAssetReadabilitySnapshot = assetReadability.snapshot;
+  }
   drawMinimap(now);
   fpsFrames++;
   fpsTime += frameDelta;

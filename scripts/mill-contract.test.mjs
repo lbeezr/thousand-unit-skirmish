@@ -1,6 +1,6 @@
 import { economyClientBindings } from './economy-client-fixture.mjs';
 import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
-import { economyServerBindings, economyServerFunctions } from './economy-server-fixture.mjs';
+import { economyServerBindings, economyServerFunctions, workerFlowRouteBindings } from './economy-server-fixture.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
@@ -54,7 +54,7 @@ for (const team of [0, 1]) test(`Mill routing filters resource, completion, owne
   const buildings = [building(1, team, true, 'town-center'), building(2, team, true),
     building(3, team, true, 'storehouse'), building(4, 1 - team, true),
     building(5, team, false), building(6, team, true)];
-  const context = vm.createContext({ ...economyClientBindings(), ...economyServerBindings(), BUILDING_DEFINITIONS, navigationRevision: 4, WORKER_INTERACTION_RANGE: 1.2,
+  const context = vm.createContext({ ...economyClientBindings(), ...economyServerBindings(), ...workerFlowRouteBindings(), BUILDING_DEFINITIONS, navigationRevision: 4, WORKER_INTERACTION_RANGE: 1.2,
     allMatchBuildings: () => buildings, buildingsById: new Map(buildings.map(row => [row.id, row])),
     worldToCell: x => x, nearestOpenCell: cell => cell, buildingAccessCells: cells => cells,
     walkableComponents: [0, 0, 0, 0, 0, 0, 1],
@@ -85,7 +85,7 @@ for (const team of [0, 1]) test(`Return cargo uses Mill for food and rejects woo
     gatherNodeId: null, gatherForestCell: -1, gatherPhase: '', moveGoalCell: -1 };
   const building = { id: 1, team, complete: true, type: 'mill', footprint: [1] };
   const notices = [];
-  const context = vm.createContext({ ...economyClientBindings(), ...economyServerBindings(), units: [unit], MAX_UNITS: 1000, dirty: false,
+  const context = vm.createContext({ ...economyClientBindings(), ...economyServerBindings(), ...workerFlowRouteBindings(), units: [unit], MAX_UNITS: 1000, dirty: false,
     BUILDING_DEFINITIONS, navigationRevision: 4, WORKER_INTERACTION_RANGE: 1.2,
     allMatchBuildings: () => [building], buildingsById: new Map([[1, building]]),
     worldToCell: x => x, nearestOpenCell: cell => cell, buildingAccessCells: cells => cells,
@@ -97,7 +97,7 @@ for (const team of [0, 1]) test(`Return cargo uses Mill for food and rejects woo
     creditResourceBalance, flushPendingForestClears() {},
   });
   vm.runInContext(economyServerFunctions + ['commandUnitAt', 'commandUnits', 'clearAttackMoveOrder',
-    'workerDropoffCandidates', 'routeWorkerToDropoff', 'workerAtDropoff', 'assignReturnCargo',
+    'workerDropoffCandidates', 'workerFlowPath', 'routeWorkerToDropoff', 'workerAtDropoff', 'assignReturnCargo',
     'stopGathering', 'ensureGatherWorkIntent', 'updateWorkerEconomy'].map(serverFunction).join('\n'), context);
   const order = () => context.assignReturnCargo({ team }, { type: 'returnCargo', ids: [0], unitGenerations: [3] });
   order();

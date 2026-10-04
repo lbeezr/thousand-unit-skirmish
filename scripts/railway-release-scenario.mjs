@@ -142,7 +142,8 @@ try {
     assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
     assert.equal(response.headers.get('cache-control'), 'no-store', filename);
     assert.match(response.headers.get('content-type') || '', filename.endsWith('.html') ? /text\/html/
-      : filename.endsWith('.css') ? /text\/css/ : /(?:java|ecma)script/, filename);
+      : filename.endsWith('.css') ? /text\/css/ : filename.endsWith('.json') ? /application\/json/
+        : /(?:java|ecma)script/, filename);
     assert.equal((await response.arrayBuffer()).byteLength, 0, `HEAD must omit the body: ${filename}`);
   }
   for (const filename of ['server.mjs', 'scripts/check-runtime-imports.mjs', 'src/server/client-asset-paths.mjs',
@@ -159,6 +160,23 @@ try {
     assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
     assert.equal(createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'),
       createHash('sha256').update(await readFile(path.join(sourceRoot, filename))).digest('hex'), filename);
+  }
+  for (const filename of ['src/environment-art.mjs', 'src/presentation/assets/interactive-runtime-image.mjs']) {
+    const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
+    assert.equal(response.status, 200, filename);
+    assert.match(response.headers.get('content-type') || '', /(?:java|ecma)script/, filename);
+    assert.equal(response.headers.get('cache-control'), 'no-store', filename);
+    assert.equal(response.headers.get('x-content-type-options'), 'nosniff', filename);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    assert.deepEqual(bytes, await readFile(path.join(root, filename)), filename);
+    assert.deepEqual(bytes, await readFile(path.join(sourceRoot, filename)), filename);
+  }
+  for (const filename of ['src/presentation/assets/', 'src/presentation/assets/unknown.mjs',
+    'src/presentation/assets/interactive-runtime-image.mjs/extra', 'src/presentation//assets/interactive-runtime-image.mjs']) {
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal((await fetch(`${base}/${filename}`, { method, headers: { authorization } })).status,
+        404, `image-loading admission remains exact (${method}): ${filename}`);
+    }
   }
   // Preserve exact shipped audio bytes at both the canonical and legacy paths.
   for (const helper of ['audio-decoded-cache', 'audio-shipped-response']) {
@@ -380,7 +398,7 @@ try {
   // HTTP admission denies both methods, including pure negotiation and shims.
   const privateModules = [...RUNTIME_DOMAINS.server,
     'src/formation-assignment.mjs', 'src/simulation/movement/formation-assignment.mjs',
-    'src/base-lifecycle.mjs', 'src/rules/base-lifecycle.mjs',
+    'src/base-lifecycle.mjs', 'src/rules/base-lifecycle.mjs', 'src/forest-fringe.mjs',
     ...Object.entries(RUNTIME_DOMAIN_HOSTS).filter(([, domain]) => domain === 'server').map(([filename]) => filename)];
   for (const filename of privateModules) {
     assert.ok((await stat(path.join(root, filename))).isFile(), `packed private runtime module: ${filename}`);
