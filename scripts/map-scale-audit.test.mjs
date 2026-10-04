@@ -122,6 +122,24 @@ test('roster report covers shipped files, hashes the ordinary Tiny policy and pr
   assert.equal(report.timing.observedGameSecondsPerWallSecond, null);
   assert.match(report.sourceInputSha256['maps/bellweather-millrace.json'], /^[0-9a-f]{64}$/);
   assert.match(report.sourceInputSha256['src/match-modes.mjs'], /^[0-9a-f]{64}$/);
+  assert.match(report.sourceInputSha256['src/map-size-policy.mjs'], /^[0-9a-f]{64}$/);
+  assert.match(report.sourceInputSha256['src/bannerfall-rules.mjs'], /^[0-9a-f]{64}$/);
+  assert.equal(typeof report.sourceDirty, 'boolean');
+  assert.deepEqual(report.maps.filter(m => m.admission.ordinarySelectable).map(m => m.id),
+    ['bannerfall-arena', 'frontier-160', 'siltmouths-confluence-grounds', 'veyrholds-crownroads',
+      'veyrholds-riven-escarpment', 'veyrholds-terraced-vale', 'veyrholds-threefold-basin', 'woodland-expanse']);
+  const modeIds = id => report.maps.find(m => m.id === id).admission.normalHumanModes.map(m => m.id);
+  assert.deepEqual(modeIds('veyrholds-crownroads'), ['skirmish']);
+  assert.deepEqual(modeIds('siltmouths-confluence-grounds'), []);
+  assert.equal(report.maps.find(m => m.id === 'siltmouths-confluence-grounds').admission.authoredPractice, true);
+  assert.deepEqual(modeIds('bannerfall-arena'), ['bannerfall']);
+  assert.deepEqual(modeIds('frontier-160'), ['objective-control']);
+  assert.deepEqual(modeIds('woodland-expanse'), ['objective-control']);
+  assert.deepEqual(modeIds('bellweather-millrace'), []);
+  assert.equal(report.maps.find(m => m.id === 'bellweather-millrace').admission.authoredPractice, false);
+  assert.equal(report.maps.find(m => m.id === 'veyrholds-crownroads').admission.freshOrdinaryPveMode, null);
+  assert.deepEqual(ordinary.admission.freshOrdinaryPveMode, { matchModeId: 'skirmish', matchModeVersion: 1 });
+  assert.ok(report.maps.every(m => m.admission.supportedUnitCapacity === null));
   const records = summaryRecords(report);
   assert.equal(records.length, 33);
   assert.equal(records[0].record, 'methods');
