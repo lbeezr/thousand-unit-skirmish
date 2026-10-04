@@ -813,3 +813,11 @@ Authored29/64; **35 art cells remain**, N/NE/S/SW/W each7.
 Ranked next: one actual North family, then NE/S/SW/W, using independent public
 heading seeds, faithful same-heading axe attack and hammer repair reuse.
 Polish follows useful complete breadth; retain every iteration.
+
+
+All137 focused tests pass; byte-idempotent registration, atlas/docs/whitespace
+and actual packaged guarded HTTP/WebSocket/hash checks pass. [Clean East final release](qa-evidence/worker-land-art-2026-10-04/stone-defeat-east-clean-release.json)
+measures `93879c0df5cd237ec61564390d17ea97ee242ca7`, `sourceDirty:false`, 1179 files,
+`sha256:af701d01519645a3fe3a716c9ae6350be49d733c26c3cd6b8a3a611934d1661d`. Measured code and later receipt commits are distinguished.
+Fresh read-only staging at04:43UTC still reports `64cc391e6d9c4164dca7bd45696cf3862fe19729`;
+exact containing deployed/native acceptance remains open.
