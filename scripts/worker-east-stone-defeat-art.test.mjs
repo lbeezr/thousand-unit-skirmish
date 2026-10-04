@@ -18,7 +18,7 @@ const preservation = JSON.parse(readFileSync(new URL(
 for (const group of registration.groups) {
 test(`East ${group.state} has three complete distinct poses at one scale and fixed ground pivot`, () => {
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', directory)));
-  assert.deepEqual([image.width, image.height], [3072, 4096]);
+  assert.deepEqual([image.width, image.height], [5120, 4096]);
   assert.equal(registration.sharedScale, 232 / 427);
   const clip = spriteActionClip(clips, group.state, 'east', 'stone', 'human', false);
   assert.equal(clip.stateId, group.state);
@@ -124,7 +124,7 @@ test('dedicated East Stone follows productive receipts, loops and Stops/resumes 
     unit.angle = Math.PI / 2; expect(unit, 3600, 'gather-stone-east-0');
 
   }
-  for (const approximate of [false, true]) for (const heading of ['north', 'north-east', 'south', 'south-west', 'west']) {
+  for (const approximate of [false, true]) for (const heading of ['west']) {
     assert.equal(spriteActionClip(clips, 'gather-stone', heading, 'stone', 'human', approximate)
       .sequence[0].frameId, `idle-${heading}-0`);
   }
@@ -136,7 +136,7 @@ test('East final strip preserves every preceding RGBA pixel, frame record, clip 
   const hash = b => createHash('sha256').update(b).digest('hex');
   assert.equal(hash(JSON.stringify(asset.frames.slice(0, preservation.originalFrames))), preservation.originalFrameMetadataSha256);
   const originalClips = structuredClone(asset.clips.slice(0, preservation.originalClips));
-  for (const clip of preservation.originalReplacedClips) {
+  for (const clip of [...preservation.originalReplacedClips, ...JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/north-actions-preservation.json', import.meta.url))).originalReplacedClips, ...JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/north-east-actions-preservation.json', import.meta.url))).originalReplacedClips, ...JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/south-actions-preservation.json', import.meta.url))).originalReplacedClips, ...JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/south-west-actions-preservation.json', import.meta.url))).originalReplacedClips]) {
     originalClips[originalClips.findIndex(c => c.stateId === clip.stateId && c.directionId === clip.directionId)] = clip;
   }
   assert.equal(hash(JSON.stringify(originalClips)), preservation.originalClipMetadataSha256);
@@ -144,8 +144,8 @@ test('East final strip preserves every preceding RGBA pixel, frame record, clip 
   for (let y = 0; y < old.height; y++) pixels.update(image.pixels.subarray(y * image.width * 4, (y * image.width + old.width) * 4));
   assert.equal(pixels.digest('hex'), preservation.originalRgbaSha256, 'Whole previous allocation is untouched');
   assert.equal(hash(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/hammer-era-team-mask.png', import.meta.url))), preservation.originalTeamMaskSha256);
-  assert.deepEqual(page.dimensionsPx, { width: 3072, height: 4096 });
-  assert.equal(asset.frames.length, 158); assert.equal(asset.clips.length, 61);
+  assert.deepEqual(page.dimensionsPx, { width: 5120, height: 4096 });
+  assert.equal(asset.frames.length, 217); assert.equal(asset.clips.length, 77);
   assert.equal(registration.groups[1].state, 'defeat');
   const terminal = asset.frames.find(f => f.id === 'defeat-east-2');
   assert.ok(terminal.alphaBoundsPx.width > terminal.alphaBoundsPx.height * 2, 'Actual prone terminal silhouette');

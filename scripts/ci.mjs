@@ -101,6 +101,10 @@ run(['--test', 'scripts/worker-east-axe-art.test.mjs'], 'East axe work/attack ar
 run(['--test', 'scripts/worker-east-food-art.test.mjs'], 'East food artwork and default productive playback');
 run(['--test', 'scripts/worker-east-hammer-art.test.mjs'], 'East hammer build/repair art and default productive playback');
 run(['--test', 'scripts/worker-east-stone-defeat-art.test.mjs'], 'East dedicated Stone and terminal defeat art/default playback');
+run(['--test', 'scripts/worker-north-actions-art.test.mjs'], 'North full land-action art/default playback');
+run(['--test', 'scripts/worker-north-east-actions-art.test.mjs'], 'NE full land-action art/default playback');
+run(['--test', 'scripts/worker-south-west-actions-art.test.mjs'], 'south-west full land-action art/default playback');
+run(['--test', 'scripts/worker-south-actions-art.test.mjs'], 'south full land-action art/default playback');
 run(['--test', 'scripts/worker-performing-action.test.mjs'], 'Authoritative Worker positive-progress receipts');
 run(['scripts/worker-performing-action-scenario.mjs', '--client-presentation'], 'Worker work receipt commands, client frames, exhausted repair delivery and recovery');
 run(['--test', 'scripts/worker-fishing-presentation.test.mjs'], 'Worker fishing action and water-facing presentation');

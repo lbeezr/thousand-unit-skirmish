@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createSkirmishTargetPolicy, selectSkirmishTarget, PVE_SKIRMISH_LIMITS as limits } from '../src/pve-skirmish-targets.mjs';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
+import { replayRememberedSearch } from './pve-remembered-search-case.mjs';
 
 const skirmish = { matchModeId: 'skirmish', matchModeVersion: 1 };
 const unit = (team, id, extra = {}) => ({ team, id, generation: 1, x: team ? 20 : -20,
@@ -51,6 +52,69 @@ for (const team of [0, 1]) for (const seed of [0, 20260925, 0xffffffff]) {
 }
 
 for (const team of [0, 1]) {
+  test(`Medium seat ${team}: real remembered fog yields to new ground through exact cold recovery`, async () => {
+    const first = await replayRememberedSearch(team);
+    assert.equal(first.firstMemory, 0, 'unexplored ground precedes the remembered candidate');
+    assert.equal(first.nextMemory, 0, 'fresh policy still searches new ground after cold restore');
+    assert.deepEqual(await replayRememberedSearch(team), first, 'native orders, fog, cold checkpoint and recovery replay exactly');
+    console.log(JSON.stringify({ team, seed: first.seed, first: first.first, next: first.next, stages: first.stages }));
+  });
+
+  test(`seat ${team}: unexplored candidates precede remembered ground within the existing budget`, () => {
+    const state = observation(team), soldiers = state.units.friendly;
+    state.buildings.visibleEnemies = [];
+    const mask = Buffer.alloc(1280, 0x55);
+    const set = (column, row, value) => {
+      const cell = row * 80 + column;
+      mask[cell >> 2] = (mask[cell >> 2] & ~(3 << ((cell & 3) * 2))) | value << ((cell & 3) * 2);
+    };
+    set(12, 12, 0); state.visibility.data = mask.toString('base64');
+    const command = createSkirmishTargetPolicy(0).next(state, soldiers)[0];
+    assert.deepEqual([command.x, command.z], [-27.5, -19.5],
+      'the second global candidate is unknown; the first is already explored');
+  });
+
+  test(`seat ${team}: unknown ground outside the budget preserves a useful remembered fallback`, () => {
+    const state = observation(team), soldiers = state.units.friendly, policy = createSkirmishTargetPolicy(0);
+    state.buildings.visibleEnemies = [];
+    const mask = Buffer.alloc(1280, 0x55), cell = 52 * 80 + 36;
+    mask[cell >> 2] &= ~(3 << ((cell & 3) * 2));
+    state.visibility.data = mask.toString('base64');
+    const first = policy.next(state, soldiers)[0];
+    assert.deepEqual([first.x, first.z], [-35.5, -27.5], 'the 65th candidate is outside this turn');
+    state.tick += limits.searchTicks;
+    const next = policy.next(state, soldiers)[0];
+    assert.deepEqual([next.x, next.z], [-3.5, 20.5], 'fallback advances by one candidate, so the unknown cell enters the next budget');
+  });
+
+  test(`seat ${team}: persistent unknown goals cannot starve remembered-territory coverage`, () => {
+    const state = observation(team), soldiers = state.units.friendly, policy = createSkirmishTargetPolicy(0);
+    state.buildings.visibleEnemies = [];
+    const mask = Buffer.alloc(1280, 0x55);
+    for (const [column, row] of [[12, 12], [4, 36]]) {
+      const cell = row * 80 + column;
+      mask[cell >> 2] &= ~(3 << ((cell & 3) * 2));
+    }
+    state.visibility.data = mask.toString('base64');
+    const cells = new Set();
+    let remembered = 0;
+    for (let index = 0; index <= 80; index++) {
+      const command = policy.next(state, soldiers)[0];
+      assert.ok(command, 'an expired goal permits another bounded decision');
+      const cell = Math.floor(command.z + 32) * 80 + Math.floor(command.x + 40);
+      const memory = mask[cell >> 2] >> ((cell & 3) * 2) & 3;
+      if (index === 0) assert.equal(memory, 0, 'new ground gets the first search turn');
+      if (memory === 1) remembered++;
+      cells.add(`${command.x}:${command.z}`);
+      state.tick += limits.searchTicks;
+    }
+    assert.equal(cells.size, 80, 'one complete cursor sweep follows an unreached, still-hidden goal');
+    assert.equal(remembered, 78, 'both unknown cells and every remembered cell receive a turn');
+    const preferred = policy.next(state, soldiers)[0];
+    const cell = Math.floor(preferred.z + 32) * 80 + Math.floor(preferred.x + 40);
+    assert.equal(mask[cell >> 2] >> ((cell & 3) * 2) & 3, 0, 'unknown preference resumes after coverage');
+  });
+
   test(`seat ${team}: revealing an exploration goal preserves the approach until arrival`, () => {
     const state = observation(team), policy = createSkirmishTargetPolicy(0), soldiers = state.units.friendly;
     state.buildings.visibleEnemies = [];
@@ -174,12 +238,12 @@ test('filtered observations and commands remain identical when hidden enemy stat
     createSkirmishTargetPolicy(1).next(b, b.units.friendly));
 });
 
-for (const [width, height] of [[80, 64], [80, 88], [160, 160]]) {
-  test(`global search covers every coarse cell once on ${width}×${height}`, () => {
+for (const memory of [0, 1]) for (const [width, height] of [[80, 64], [80, 88], [160, 160], [224, 224]]) {
+  test(`global search covers every coarse cell once on ${width}×${height}, memory ${memory}`, () => {
     const state = observation(0), policy = createSkirmishTargetPolicy(0), soldiers = state.units.friendly;
     state.map.width = width; state.map.height = height;
     state.visibility = { columns: width, rows: height,
-      data: Buffer.alloc(Math.ceil(width * height / 4)).toString('base64') };
+      data: Buffer.alloc(Math.ceil(width * height / 4), memory ? 0x55 : 0).toString('base64') };
     state.buildings.visibleEnemies = [];
     for (const soldier of soldiers) { soldier.x = 0; soldier.z = 0; }
     policy.next(state, soldiers);

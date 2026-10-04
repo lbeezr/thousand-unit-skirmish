@@ -52,7 +52,7 @@ test('all eight world headings project to the intended fixed-camera screen direc
 });
 
 test('actual Human walk and berry clips keep every heading, with honest idle holds', () => {
-  for (const [state, authored] of [['walk', ['north','north-east','east','south-east','south','south-west','west','north-west']], ['gather', ['south-east', 'north-west', 'east']]]) {
+  for (const [state, authored] of [['walk', ['north','north-east','east','south-east','south','south-west','west','north-west']], ['gather', ['south-east', 'north-west', 'east', 'north', 'north-east', 'south', 'south-west']]]) {
     for (const direction of directions) {
       const clip = spriteActionClip(clips, state, direction, 'food', 'human', true);
       assert.equal(clip.directionId, direction);

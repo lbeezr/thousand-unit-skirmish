@@ -17,11 +17,11 @@ const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 
 test('East axe keys preserve all preceding art and use three distinct whole same-heading poses', () => {
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', directory)));
-  assert.deepEqual([image.width, image.height], [3072, 4096]);
+  assert.deepEqual([image.width, image.height], [5120, 4096]);
   assert.equal(hash(JSON.stringify(asset.frames.slice(0, preservation.originalFrames))), preservation.originalFrameMetadataSha256);
   const originalClips = structuredClone(asset.clips.slice(0, preservation.originalClips));
   const hammer = JSON.parse(readFileSync(new URL('hammer-east-preservation.json', evidence)));
-  for (const clip of [...preservation.originalReplacedClips, ...hammer.originalReplacedClips, ...JSON.parse(readFileSync(new URL('stone-defeat-east-preservation.json', evidence))).originalReplacedClips]) {
+  for (const clip of [...preservation.originalReplacedClips, ...hammer.originalReplacedClips, ...JSON.parse(readFileSync(new URL('stone-defeat-east-preservation.json', evidence))).originalReplacedClips, ...JSON.parse(readFileSync(new URL('north-actions-preservation.json', evidence))).originalReplacedClips, ...JSON.parse(readFileSync(new URL('north-east-actions-preservation.json', evidence))).originalReplacedClips, ...JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/south-actions-preservation.json', import.meta.url))).originalReplacedClips, ...JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/south-west-actions-preservation.json', import.meta.url))).originalReplacedClips]) {
     const index = originalClips.findIndex(c => c.stateId === clip.stateId && c.directionId === clip.directionId);
     originalClips[index] = clip;
   }
@@ -59,7 +59,7 @@ test('East axe keys preserve all preceding art and use three distinct whole same
   assert.equal(hashes.size, 3);
   assert.equal(asset.heightWorld / Math.max(...asset.frames.map(f => f.alphaBoundsPx.height)), preservation.worldUnitsPerPixel);
   assert.equal(spriteActionClip(clips, 'gather', 'east', 'food', 'human', true).sequence[0].frameId, 'gather-food-east-0');
-  for (const heading of ['north', 'north-east', 'south', 'south-west', 'west']) {
+  for (const heading of ['west']) {
     assert.equal(spriteActionClip(clips, 'gather', heading, 'wood', 'human', true).sequence[0].frameId, `idle-${heading}-0`);
   }
 });
@@ -105,7 +105,7 @@ test('default East wood follows positive activity, loops, turns, Stops/resumes a
     unit.performingAction = 'gather-wood';
     for (let i = 0; i <= 3; i++) expect(unit, 1000 + i * 240, `gather-wood-east-${i % 3}`);
     unit.angle = Math.PI / 4;
-    expect(unit, 1740, 'idle-north-east-0');
+    expect(unit, 1740, 'gather-wood-north-east-0');
     assert.equal(unit.spriteClockStartedAt, 1000);
     unit.angle = Math.PI / 2;
     expect(unit, 1750, 'gather-wood-east-0');

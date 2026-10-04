@@ -148,3 +148,46 @@ world scale and unrelated clip stays exact. Existing exact Stone consumer binds
 East by default. Full land actions are now3/8(E/SE/NW), Walk8/8;35 cells remain.
 See [land QA](../../../docs/qa-worker-land-art-2026-10-04.md) for sources/registration,
 release and open identified deployed/native acceptance.
+
+
+v0.29.0 admits fourteen actual North/down-left land poses: wood/food/pick3,
+hammer2 (480ms build/repair loop), defeat3. Wood720ms shares axe art with attack
+840ms one-shot. Defeat holds prone terminal840ms. Raw malformed hammer strike
+and every iteration remain retained; simple motion is accepted for breadth.
+One aligned3584x4096 page/mask preserves every prior3072x4096 RGBA and158 frame
+records, world scale and unrelated clips. All seven land-work/combat actions now
+4/8(N/E/SE/NW), Walk8/8;28 cells remain. Decoded color56MiB + mask14MiB,
++10MiB over v0.28; existing max silhouette272/world scale unchanged.
+See [land QA](../../../docs/qa-worker-land-art-2026-10-04.md) for evidence and
+open identified delivered/native acceptance.
+
+
+v0.30.0 admits fifteen actual NE/front-down poses for every land work/combat
+state. All work loops720ms, faithful axe attack840ms and prone-terminal defeat
+840ms. One232/278 scale, fixed reviewed contacts, unchanged max272/world scale.
+Entire prior3584x4096 RGBA,172records and unrelated clips remain protected in
+aligned4096x4096 page/mask (+10MiB decoded; color64MiB + mask16MiB).
+All seven work/combat actions now5/8(N/NE/E/SE/NW), Walk8/8;21 cells remain.
+See [land QA](../../../docs/qa-worker-land-art-2026-10-04.md) for preserved sources,
+source/default/release checks and open identified delivered/native acceptance.
+
+
+v0.31.0 adds fifteen complete actual South/up-right-back land poses from the
+[retained public seed iteration](../../../docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/README.md).
+Wood/food/build/repair/Stone720ms loops, faithful axe attack and prone defeat840ms
+one-shots bind by default. One271/318 scale, stable pivots, unchanged world
+units/pixel; entire old4096x4096 RGBA/187records preserved, only three declared
+South idle clips replaced. Aligned page/mask4608x4096,202frames/73clips; decoded
+color72MiB plus mask18MiB. Walk8/8, seven land work/combat actions6/8;14 cells
+remain in SW/W. Native/deployed acceptance remains owned by the parent receiving
+Railway/Mac route; simple contact/loop polish is retained explicitly in land QA.
+
+
+v0.32.0 adds fifteen complete true SW/direct-back land poses from the
+[retained public seed iteration](../../../docs/art-direction/human-roster-v1/generated/worker-south-west-actions-v1/README.md).
+Wood/food/build/repair/Stone720ms loops, faithful axe attack and prone defeat840ms
+one-shots bind by default. One271/301 scale, fixed roots/pivots, unchanged world
+units/pixel; entire earlier4608x4096 RGBA/202records protected, only declared SW
+idle clips replaced. Page/mask5120x4096,217frames/77clips; decoded80+20MiB.
+Walk8/8, seven other land actions7/8; W has seven art cells left. Identified
+parent Railway/Mac native/deployed acceptance and motion/contact polish remain open.

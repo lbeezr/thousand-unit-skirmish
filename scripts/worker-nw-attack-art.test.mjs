@@ -30,7 +30,7 @@ test('NW attack faithfully reuses the actual public NW axe pixels with its own o
     '../docs/qa-evidence/worker-land-art-2026-10-04/wood-east-preservation.json', import.meta.url)));
   const hammer = JSON.parse(readFileSync(new URL(
     '../docs/qa-evidence/worker-land-art-2026-10-04/hammer-east-preservation.json', import.meta.url)));
-  for (const clip of [...family.originalReplacedClips, ...east.originalReplacedClips, ...hammer.originalReplacedClips, ...JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/stone-defeat-east-preservation.json', import.meta.url))).originalReplacedClips]) {
+  for (const clip of [...family.originalReplacedClips, ...east.originalReplacedClips, ...hammer.originalReplacedClips, ...JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/stone-defeat-east-preservation.json', import.meta.url))).originalReplacedClips, ...JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/north-actions-preservation.json', import.meta.url))).originalReplacedClips, ...JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/north-east-actions-preservation.json', import.meta.url))).originalReplacedClips, ...JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/south-actions-preservation.json', import.meta.url))).originalReplacedClips, ...JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/south-west-actions-preservation.json', import.meta.url))).originalReplacedClips]) {
     const replaced = originalClips.findIndex(c => c.stateId === clip.stateId && c.directionId === clip.directionId);
     originalClips[replaced] = clip;
   }
@@ -45,7 +45,7 @@ test('NW attack faithfully reuses the actual public NW axe pixels with its own o
   assert.equal(pixelHash.digest('hex'), receipt.originalFrameRgbaSha256);
   assert.equal(asset.heightWorld / Math.max(...asset.frames.map(f => f.alphaBoundsPx.height)), receipt.worldUnitsPerPixel);
   assert.deepEqual(asset.clips.filter(c => c.stateId === 'attack' &&
-    c.sequence.some(k => !k.frameId.startsWith('idle-'))).map(c => c.directionId), ['east', 'north-west', 'south-east']);
+    c.sequence.some(k => !k.frameId.startsWith('idle-'))).map(c => c.directionId).sort(), ['east', 'north', 'north-east', 'north-west', 'south', 'south-east', 'south-west'].sort());
 });
 
 test('default NW attack starts, advances, clamps and exits on the authored lifetime for either Human seat', async () => {

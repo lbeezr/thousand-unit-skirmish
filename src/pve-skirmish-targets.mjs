@@ -35,7 +35,7 @@ export function selectSkirmishTarget(observation, soldiers) {
 /** Bounded army search and generation-bound assault; caller reserves defense/scout/rally units. */
 export function createSkirmishTargetPolicy(seed = 0) {
   const orders = new Map();
-  let search = null, cursor = seed >>> 0, rotation = (seed >>> 0) % 8;
+  let search = null, cursor = seed >>> 0, rotation = (seed >>> 0) % 8, coverageRemaining = 0;
   const directions = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]];
 
   function searchTarget(observation, soldiers) {
@@ -67,7 +67,7 @@ export function createSkirmishTargetPolicy(seed = 0) {
       candidates.push({ ...point, score: visibility * 100 + index });
     }
     rotation = (rotation + 1) % 8;
-    let point;
+    let point, remembered, nextCursor = cursor;
     // Give global coverage first choice. A coprime stride
     // visits every coarse cell without spending its early turns on one map edge.
     const columns = Math.ceil(width / 8), rows = Math.ceil(height / 8), count = columns * rows;
@@ -75,16 +75,29 @@ export function createSkirmishTargetPolicy(seed = 0) {
     let stride = columns + 1;
     while (stride < count && gcd(stride, count) !== 1) stride++;
     if (stride >= count) stride = 1;
+    // Native routes can stop near blocked terrain without revealing the goal.
+    // After that deadline, give every coarse cell a turn before preferring new ground again.
+    if (expired && search.unknownPreferred && seen(search) === 0) coverageRemaining = count;
+    const covering = coverageRemaining > 0;
     for (let i = 0; !point && i < Math.min(count, PVE_SKIRMISH_LIMITS.searchCandidates); i++) {
-      const cell = cursor % count;
-      cursor = (cell + stride) % count;
+      const cell = nextCursor % count;
+      nextCursor = (cell + stride) % count;
+      if (covering) coverageRemaining = Math.max(0, coverageRemaining - 1);
       const candidate = clamp({ x: cell % columns * 8 + 4 - width / 2,
         z: Math.floor(cell / columns) * 8 + 4 - height / 2 });
-      if (seen(candidate) !== 2 && Math.hypot(candidate.x - center.x, candidate.z - center.z) > 2) point = candidate;
+      const visibility = seen(candidate);
+      if (visibility === 2 || Math.hypot(candidate.x - center.x, candidate.z - center.z) <= 2) continue;
+      if (visibility === 0 || covering) point = candidate;
+      else remembered ??= { point: candidate, cursor: nextCursor };
     }
+    // Search new ground before revisiting remembered cells. Keep the original
+    // cursor step on fallback so fully explored maps still get complete coverage.
+    cursor = point ? nextCursor : remembered?.cursor ?? nextCursor;
+    point ??= remembered?.point;
     point ??= candidates.sort((a, b) => a.score - b.score)[0];
     if (!point) { search = null; return null; }
-    search = { key: `search:${point.x}:${point.z}`, type: 'attackMove', x: point.x, z: point.z, tick };
+    search = { key: `search:${point.x}:${point.z}`, type: 'attackMove', x: point.x, z: point.z, tick,
+      unknownPreferred: !covering && seen(point) === 0 };
     return search;
   }
 
