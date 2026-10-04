@@ -8247,8 +8247,10 @@ function syncBattlefieldCursor() {
       state.enemy = Boolean(pickAt(x, y, (unit) => unit.team !== localTeam, { advance: false }).unit);
       if (!state.enemy) state.enemyBuilding = Boolean(pickBuildingAt(x, y, (building) => building.team !== localTeam));
       if (!state.enemy && !state.enemyBuilding) {
-        state.resource = pickResourceNodeAt(x, y, { visibleOnly: true })?.type;
-        if (!state.resource) state.forest = pickForestCellAt(x, y) !== null;
+        const tree = pickHarvestableTreeAt(x, y);
+        state.resource = tree?.node?.type || pickResourceNodeAt(x, y, { visibleOnly: true })?.type;
+        state.forest = tree?.forestCell !== undefined;
+        if (!state.resource && !state.forest) state.forest = pickForestCellAt(x, y) !== null;
       }
     }
     if (cursorShift) {

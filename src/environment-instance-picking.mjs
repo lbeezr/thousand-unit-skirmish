@@ -5,6 +5,7 @@ const alphaImages = new WeakMap();
 const unreadableImages = new WeakSet();
 export function imageAlphaPixels(image) {
   if (!image || image.complete === false) return null;
+  if (unreadableImages.has(image)) return null;
   const cached = alphaImages.get(image);
   if (cached) return cached;
   const width = image.naturalWidth || image.width, height = image.naturalHeight || image.height;

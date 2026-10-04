@@ -7,6 +7,7 @@ import { createEnvironmentInstancePicker, imageAlphaPixels } from '../src/enviro
 import { groundHeight, setActiveTerrain } from '../src/terrain-height.mjs';
 import { resourceVisualStage, RESOURCE_VISUAL_STAGES } from '../src/resource-visual-state.mjs';
 import { CAMERA_VIEW_DIRECTION } from '../src/camera-controls.mjs';
+import { battlefieldCursor } from '../src/battlefield-cursor.mjs';
 import { decodeRgba8 } from './sprite-pixel-bounds.mjs';
 
 const root = new URL('../', import.meta.url);
@@ -31,6 +32,32 @@ function quad(pixels, z = 0) {
   return mesh;
 }
 function rayAt(x = 0, y = 0) { return new THREE.Raycaster(new THREE.Vector3(x, y, 5), new THREE.Vector3(0, 0, -1)); }
+
+test('browser alpha readback caches one byte per pixel and frees the temporary canvas; unreadable images fall back once', () => {
+  const previous = { document: globalThis.document, warn: console.warn };
+  let draws = 0, warnings = 0, lastCanvas;
+  globalThis.document = { createElement() {
+    return lastCanvas = { width: 0, height: 0, getContext() { return {
+      drawImage(source) { draws++; if (source.unreadable) throw new Error('readback unavailable'); },
+      getImageData() { return { data: image(2, 1, x => x * 255).data }; },
+    }; } };
+  } };
+  console.warn = () => warnings++;
+  try {
+    const decoded = { naturalWidth: 2, naturalHeight: 1, complete: true };
+    const pixels = imageAlphaPixels(decoded);
+    assert.deepEqual([...pixels.alpha], [0, 255]);
+    assert.equal(imageAlphaPixels(decoded), pixels); assert.equal(draws, 1);
+    assert.equal(lastCanvas.width, 0); assert.equal(lastCanvas.height, 0);
+    const unreadable = { ...decoded, unreadable: true };
+    assert.equal(imageAlphaPixels(unreadable), null); assert.equal(imageAlphaPixels(unreadable), null);
+    assert.equal(draws, 2); assert.equal(warnings, 1);
+    assert.equal(lastCanvas.width, 0);
+  } finally {
+    if (previous.document === undefined) delete globalThis.document; else globalThis.document = previous.document;
+    console.warn = previous.warn;
+  }
+});
 
 test('visible alpha chooses the foreground tree identity, transparent pixels expose the tree behind', () => {
   const back = { forestCell: 12, mesh: quad(image(8, 8)), index: 0 };
@@ -133,13 +160,16 @@ test('canonical actual crown pixels issue existing forest/node Gather IDs and re
       MAP_WIDTH: 160, MAP_HEIGHT: 160, resourceVisualStage, pickEnvironmentInstance: picker,
       woodTreeMeshes: new Map(), woodTreeNodeStages: new Map(), woodTreeNodeSlots: new Map(),
       selectedWildlifeId: null, selectedBuildingId: null, selectedWaterUnits: () => false,
-      persistentTargetMode: null, attackMoveMode: false, pickAt: () => null, pickBuildingAt: () => null,
+      persistentTargetMode: null, attackMoveMode: false, pickAt: () => ({ unit: null }), pickBuildingAt: () => null,
       selectedWorkerIds: () => ['worker-1'], selectedIds: () => ['worker-1'], units: { 'worker-1': { kind: 'worker' } },
       BUILDING_DEFINITIONS: {}, setAttackMoveMode() {}, showToast() {},
       sendTrackedOrder: command => { commands.push(JSON.parse(JSON.stringify(command))); return true; },
       pickResourceNodeAt: () => null, worldAt: () => ({ x: 0, z: 0 }), issueMove: () => commands.push({ type: 'move' }),
+      latestBuildings: [], selectedWildlife: () => null, pan: null, spaceDown: false, drag: null, movedPointer: false,
+      matchWinner: -1, buildPlacementActive: false, ui: {}, tapOrderArmed: false, cursorShift: false,
+      cursorPointer: null, battlefieldCursor, setBattlefieldCursor: mode => { context.cursorMode = mode; },
     });
-    for (const name of ['pickForestCellAt', 'pickHarvestableTreeAt', 'issueForestGather', 'issueGather', 'issueContextOrder']) vm.runInContext(functionSource(name), context);
+    for (const name of ['pickForestCellAt', 'pickHarvestableTreeAt', 'issueForestGather', 'issueGather', 'issueContextOrder', 'syncBattlefieldCursor']) vm.runInContext(functionSource(name), context);
     const samples = [], matrix = new THREE.Matrix4();
     for (const family of families) {
       const [cell, slot] = [...slots].find(([, entry]) => entry.family === family);
@@ -176,6 +206,8 @@ test('canonical actual crown pixels issue existing forest/node Gather IDs and re
       const projected = local.clone().project(camera), x = (projected.x + 1) * 640, y = (1 - projected.y) * 360;
       const oldTarget = context.pickForestCellAt(x, y);
       assert.equal(context.pickHarvestableTreeAt(x, y)?.forestCell, cell, `${family} crown maps to its actual cell`);
+      context.cursorPointer = { x: x + 11, y: y + 23 }; context.syncBattlefieldCursor();
+      assert.equal(context.cursorMode, 'gather-wood', 'hover uses the same visible-art target as context click');
       context.issueContextOrder(x + 11, y + 23);
       assert.deepEqual(commands.at(-1), { type: 'gather', ids: ['worker-1'], forestCell: cell });
       latestForestStocks.set(cell, 0);
