@@ -3272,10 +3272,15 @@ function validateMatchCheckpoint(snapshot) {
       assertSnapshot((resourceIds.has(unit.gatherNodeId)
         || (farm?.type === 'farm' && farm.complete && farm.team === unit.team)) && forestCell === -1,
         'unit references unknown or conflicting gather targets');
+      if (unit.workIntent?.kind === 'gather') {
+        const resource = state.resourceNodes.find(node => node.id === unit.gatherNodeId)?.type ?? 'food';
+        assertSnapshot(unit.workIntent.resource === resource, 'gather intent conflicts with resource target');
+      }
     }
     if (forestCell >= 0) {
       assertSnapshot(unitHasCapability(unit, 'gather') && unit.gatherNodeId === null
-        && checkpointForestMask[forestCell] === 1,
+        && checkpointForestMask[forestCell] === 1
+        && (unit.workIntent?.kind !== 'gather' || unit.workIntent.resource === 'wood'),
       'unit references an invalid forest target');
     }
     if (unit.workIntent?.kind === 'construction') {
@@ -4669,13 +4674,15 @@ function continueAreaGathering(unit) {
   const component = walkableComponents[start];
   if (component < 0) return false;
   const sources = [...resourceNodeStates.values()].filter(node => node.type === area.type);
-  const anchorCell = worldToCell(area.x, area.z);
-  const column = anchorCell % MAP_WIDTH, row = Math.floor(anchorCell / MAP_WIDTH);
-  for (let z = Math.max(0, row - GATHER_WORK_AREA_RADIUS); area.type === 'wood' && z <= Math.min(MAP_HEIGHT - 1, row + GATHER_WORK_AREA_RADIUS); z++) {
-    for (let x = Math.max(0, column - GATHER_WORK_AREA_RADIUS); x <= Math.min(MAP_WIDTH - 1, column + GATHER_WORK_AREA_RADIUS); x++) {
-      const cell = cellIndex(x, z);
-      if (forestCellMask[cell] && forestWoodRemaining[cell] > 0) sources.push({ id: `forest:${cell}`, type: 'wood',
-        ...cellToWorld(cell), stock: forestWoodRemaining[cell], forestCell: cell });
+  if (area.type === 'wood') {
+    const anchorCell = worldToCell(area.x, area.z);
+    const column = anchorCell % MAP_WIDTH, row = Math.floor(anchorCell / MAP_WIDTH);
+    for (let z = Math.max(0, row - GATHER_WORK_AREA_RADIUS); z <= Math.min(MAP_HEIGHT - 1, row + GATHER_WORK_AREA_RADIUS); z++) {
+      for (let x = Math.max(0, column - GATHER_WORK_AREA_RADIUS); x <= Math.min(MAP_WIDTH - 1, column + GATHER_WORK_AREA_RADIUS); x++) {
+        const cell = cellIndex(x, z);
+        if (forestCellMask[cell] && forestWoodRemaining[cell] > 0) sources.push({ id: `forest:${cell}`, type: 'wood',
+          ...cellToWorld(cell), stock: forestWoodRemaining[cell], forestCell: cell });
+      }
     }
   }
   for (const source of nearbyGatherSources(area, unit, sources)) {

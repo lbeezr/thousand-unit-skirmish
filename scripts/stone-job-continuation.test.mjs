@@ -31,7 +31,9 @@ async function order(replay, team, command, expected) {
 }
 
 for (const team of [0, 1]) test(`seat ${team}: Stone continuation retains its original typed area through partial cargo and cold restore`, async () => {
-  const map = foodStoneJobMap('stone'), fixture = await createPveHeadlessFixture(map, { matchModeId: 'authored', matchModeVersion: 1 });
+  const map = foodStoneJobMap('stone');
+  map.resourceNodes.push(...[0, 1].map(seat => ({ id: `seat-${seat}-wood`, type: 'wood', x: (seat ? 1 : -1) * 12.5, z: 6.5, stock: 6 })));
+  const fixture = await createPveHeadlessFixture(map, { matchModeId: 'authored', matchModeVersion: 1 });
   const { replay } = fixture;
   try {
     await order(replay, team, { type: 'gather', nodeId: `seat-${team}-first` }, /GATHER ORDER/);
@@ -48,11 +50,25 @@ for (const team of [0, 1]) test(`seat ${team}: Stone continuation retains its or
       && state.units[auditWorkerId(team)].gatherPhase === '', 'Stone area banks once and ends');
     assert.equal(done.teamStone[team], 12);
     assert.equal(done.units[auditWorkerId(team)].workIntent, null);
-    for (const suffix of ['other', 'far']) assert.equal(done.resourceNodes.find(n => n.id === `seat-${team}-${suffix}`).stock, 6);
+    for (const suffix of ['other', 'far', 'wood']) assert.equal(done.resourceNodes.find(n => n.id === `seat-${team}-${suffix}`).stock, 6);
     const revision = done.units[auditWorkerId(team)].orderRevision;
     for (let tick = 0; tick < 300; tick++) { replay.step(); conserved(stateOf(replay), map); }
     assert.equal(workerOf(replay, team).orderRevision, revision, 'empty area does not retry');
     assert.equal(stateOf(replay).teamStone[team], 12, 'completed delivery never duplicates');
+  } finally { await fixture.dispose(); }
+});
+
+test('an explicit Stone intent cannot restore a Wood forest target', async () => {
+  const map = foodStoneJobMap('stone'); map.obstacles = [{ column: 60, row: 100, width: 1, height: 1, material: 'forest' }];
+  const fixture = await createPveHeadlessFixture(map, { matchModeId: 'authored', matchModeVersion: 1 });
+  const { replay } = fixture;
+  try {
+    await order(replay, 0, { type: 'gather', forestCell: 100 * map.width + 60 }, /GATHER ORDER/);
+    const before = stateOf(replay), bad = replay.checkpoint();
+    assert.equal(bad.state.units[0].workIntent.resource, 'wood');
+    bad.state.units[0].workIntent.resource = 'stone';
+    assert.throws(() => replay.restore(bad), /invalid forest target/);
+    assert.deepEqual(stateOf(replay), before);
   } finally { await fixture.dispose(); }
 });
 
@@ -158,16 +174,20 @@ test('legacy active Stone restores only its current source anchor; malformed int
     replay.restore(legacy);
     assert.deepEqual(workerOf(replay, 0).workIntent, { version: 1, kind: 'gather', generation: workerOf(replay, 0).generation,
       resource: 'stone', anchor: { x: -11.5, z: 5.5 } });
-    for (const change of [{ resource: 'food' }, { generation: workerOf(replay, 0).generation + 1 }, { version: 2 }, { radius: 100 }]) {
+    for (const change of [{ resource: 'food' }, { resource: 'wood' }, { generation: workerOf(replay, 0).generation + 1 }, { version: 2 }, { radius: 100 }]) {
       const bad = replay.checkpoint(), before = stateOf(replay);
       Object.assign(bad.state.units[0].workIntent, change);
-      assert.throws(() => replay.restore(bad), /invalid unit work state/);
+      assert.throws(() => replay.restore(bad), /invalid unit work state|gather intent conflicts/);
       assert.deepEqual(stateOf(replay), before);
     }
     await order(replay, 0, { type: 'gather', nodeId: 'seat-0-other' }, /GATHER ORDER/);
     const food = replay.checkpoint(); for (const unit of food.state.units) delete unit.workIntent;
     replay.restore(food);
     assert.equal(workerOf(replay, 0).workIntent, null, 'legacy Food does not acquire Stone/Wood area policy');
+    const mismatched = replay.checkpoint(), before = stateOf(replay);
+    mismatched.state.units[0].workIntent = createGatherWorkIntent(workerOf(replay, 0).generation, { x: -11.5, z: 5.5 }, 'stone');
+    assert.throws(() => replay.restore(mismatched), /gather intent conflicts/);
+    assert.deepEqual(stateOf(replay), before);
     conserved(stateOf(replay), map);
   } finally { await fixture.dispose(); }
 });

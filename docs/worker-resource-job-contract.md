@@ -92,6 +92,10 @@ The optional v1 unit field is additive to existing schema 29/rules 6. Economy
 owns capture cloning, validation, restore/migration and cancellation hooks.
 Validate exact version/kind/keys, matching generation, finite bounded anchor/area,
 distinct bounded historical IDs, and ownership of any still-existing sites.
+An explicit gather intent must match its referenced finite node/Farm resource;
+a forest execution target requires Wood. Null/missing legacy and source-free
+records remain admissible. Carried cargo may differ during a legitimate manual
+handoff and is not compared against intent type.
 Completed/missing historical site IDs below nextBuildingId remain legal so a
 normal destruction checkpoint is not rejected; construction prunes them later.
 Never resurrect a site, pay again or refund from an intent.

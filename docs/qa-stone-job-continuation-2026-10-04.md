@@ -24,6 +24,9 @@ construction behavior, public unit-row protocol or checkpoint schema is changed.
 Version-one Wood/construction records remain valid; Stone intent on a baseline
 map is rejected. Legacy active Stone anchors its current node only; legacy Food
 does not acquire automatic area work.
+Explicit checkpoint intent must match the referenced source resource (forest
+requires Wood). This rejects cross-type corruption before restore can mutate
+authority, while allowing incompatible carried cargo on a valid manual handoff.
 
 ## Proof boundaries
 
@@ -35,6 +38,10 @@ queued Return/AttackMove cold restore, incompatible Food-to-Stone manual orders,
 and an actually undisclosed inside-radius Stone successor. Conservation is checked
 through each fixed tick. Legacy field omission and malformed rejection are
 explicit checkpoint compatibility cases; they are not untouched native recovery.
+Positive cases retain nearby Wood untouched. Independent review reproduced a
+mixed Stone-target/Wood-intent corrupted checkpoint harvesting Wood after recovery;
+the corrected validator and regressions reject that record, a Food-target/Stone
+intent and a forest-target/Stone intent without authority mutation.
 
 Three separately labelled topology boundary cases execute the production
 continuation body with synthetic disconnected/no-flow/no-path facts, retaining
