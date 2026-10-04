@@ -2,12 +2,47 @@
 
 [Art lanes](art-production-lanes.md) · [Model/capture pipeline](building-asset-production-pipeline.md) · [Sprite contract](sprite-atlas-contract-v1.md)
 
-Proposal, 30 September 2026. Source inspection: local revision `d595708`.
-This plans asset production; it does not change gameplay or claim new runtime art.
+Original proposal, 30 September 2026, inspected at local revision `d595708`.
+Current building checkpoint, 4 October 2026: source
+`53a47ee379660f30b65776ea813f3a986d29aa37`, compared with fork main
+`e7b99ae726fbb5bac3d31da64913c9b630f997cc`. The eight Complete manifests,
+64 PNGs and shared selector/captured/direct helpers are unchanged between them.
+This reconciliation changes documentation only; it produces no new art.
+
+## Current outcome and next gaps
+
+All eight original Frontier **Complete-only** families are default-bound in
+[`src/frontier-building-preview.mjs`](../src/frontier-building-preview.mjs).
+The reported manual staging deployment `e104638c-2c8b-433b-8928-7b53a8f3494e`
+uses source `53a47ee379660f30b65776ea813f3a986d29aa37`. Read-only Railway
+inspection on 4 October verified terminal `SUCCESS` at 13:29:02 UTC and one
+running replica for `game` in staging. The [adoption checklist](asset-adoption-checklist.md#building-deployment-follow-up--4-october-2026)
+records the exact identity and remaining delivery/appearance boundaries.
+Deployment metadata does not prove browser asset bytes or ordinary-game pixels.
+
+The Complete production/binding queue is finished. The building workstream
+retains these distinct unfinished outcomes:
+
+| Gap | Current behavior/evidence | Next bounded action |
+| --- | --- | --- |
+| Matching construction and damage | Each new family has only Complete: no matching Foundation, Frame, Damaged or Critical views. Missing states select older Town Center lifecycle, direct military or procedural fallback. | Derive and register one family's missing states from its preserved design/source after reviewing the existing Complete at game size; retain explicit fallback until then. |
+| Destruction presentation | A removed building's visual group is disposed; no matching collapse/ruins animation or persistent ruin contract is implemented. | Select a bounded collapse presentation only when its lifecycle/removal cue is defined; verify destruction/rebuild with current behavior first. |
+| Worker clearance and scale | Source dimensions and pivots are measured; the pilot's 0.8-unit ruler is not the selected runtime Worker. Storehouse height and the taller/narrower Barracks remain review points. | Inspect actual Workers at doors, bays and production exits, front/rear and at both zoom levels; record observed defects before refitting art. |
+| Ordinary-game lifecycle and occlusion acceptance | No completed eight-family ordinary-game capture is recorded in the [owned recipe](qa-frontier-building-adoption.md). CPU depth/feedback tests and source sheets do not establish pixels. | With the cloud testing owner, qualify the supported cloud renderer, then inspect one paid Barracks on the flat acceptance map at an identified served build: both seats, construction, damage/repair, front/rear Workers, team standards, fog and removal. Repeat raised-ground contact after the flat check. |
+
+The immediate scoped step is the last row's **existing-art paid Barracks
+acceptance**, using the [ordinary-game recipe](qa-frontier-building-adoption.md)
+and [cloud capability contract](testing-strategy.md#start-here). Mac testing is
+stopped and is not a dependency. The recorded cloud renderer/staging blockers
+remain open until the cloud testing owner supplies linked capability evidence;
+a probe alone does not close game appearance. This doc slice starts no generation,
+new art publication, paid job, runtime change or deployment.
 
 ## Reference found and reviewed
 
-The downloaded references are in `/Users/lb/Downloads`:
+Historical 30 September inspection: downloaded references were in
+`/Users/lb/Downloads`. Those Mac-only files have not been re-inspected in this
+cloud reconciliation:
 
 - `City_Builder_Village_Buildings_part_1/` and `City_Builder_Village_Buildings_part_2.zip`: 25 village designs including houses, village hall, longhouse, stable, granary, lumber shed, watchtower, windmill, watermill, farmhouse barn, forge and market stall.
 - `castles_pack_part_1.zip`, `castles_pack_part_2.zip`, `castles_pack_part_3.zip`, and `castles_pack_extra.zip`: castle, palace, manor and fortress families. Inspected archive listings contain 75 named designs in parts 1–3 and 20 in extra.
@@ -18,11 +53,11 @@ The reference demonstrates reusable direction sheets and strong architecture fam
 
 A **sprite sheet** is the regular grid of views/states. A **texture atlas** is the packed runtime texture, possibly with differently sized rectangles. A **building sprite pack** includes those images, manifest, masks, pivots, source and previews. Plan one pack per building, with independently packable atlas pages; avoid one enormous sheet for the whole roster.
 
-## Current roster and production queue
+## Roster and retained design briefs
 
-`src/gameplay-definitions.mjs` defines thirteen buildings, including Palisade Wall/Gate, the food-only Mill, finite Farm and shoreline Dock. Mill, Farm and Dock use explicit procedural House placeholders; Dock produces provisional Skiffs and provides no drop-off. The original eight-building source concept family remains its own art outcome. Footprint is square occupancy in world cells, not image canvas size. Existing direct sprites cover Barracks and Archery Range. Town Center uses captured directional lifecycle artwork through `src/captured-building-art.mjs`; `src/main.js` passes the live building state. Some pack READMEs still describe older static-center behavior, so use current code and expansion/repair rules when planning coverage.
+`src/gameplay-definitions.mjs` defines thirteen buildings, including Palisade Wall/Gate, the food-only Mill, finite Farm and shoreline Dock. Mill, Farm and Dock use explicit procedural House placeholders; their owning guides below retain gameplay and distinct-art scope. The original eight-building concept family is default Complete art; lifecycle completion remains its own outcome. Footprint is square occupancy in world cells, not image canvas size. `src/main.js` passes live building state to the captured helper; older Town Center and direct Barracks/Range artwork remains fallback. Some pack READMEs describe earlier static-center behavior; current code and expansion/repair rules own coverage.
 
-| Order | Building | Current footprint | Gameplay identity | Art brief and useful reference |
+| Original proposal order | Building | Current footprint | Gameplay identity | Retained art brief and useful reference |
 | --- | --- | --- | --- | --- |
 | 1 | Town Center | 5 × 5 | Workers, resource drop-off, population, Tier II research | Civic anchor: broad main hall, secondary wing or arcade, prominent entrance/plaza and raised central feature. Village hall/longhouse plus restrained manor/keep massing. Rework scale and silhouette first; existing five-state/eight-view captures are a baseline. |
 | 1 | House | 3 × 3 | Population | Clearly smaller domestic cottage, one principal roof and chimney. Thatched cottage/timber-frame house. Produce alongside Town Center as the scale control. |
@@ -38,7 +73,10 @@ A **sprite sheet** is the regular grid of views/states. A **texture atlas** is t
 | 3 | Barracks | 3 × 3 | Infantry/Spearman and military research | Military hall, weapon racks, training frontage and banners. Retain useful existing identity; bring camera/scale/directions into the shared contract. |
 | 3 | Archery Range | 3 × 3 | Archers and fletching research | Open shooting lanes, targets and canopy. Retain current useful design; targets must survive strategic zoom. |
 
-Complete the original eight-building concept family before multiplying its states. Produce each useful pack progressively; existing Barracks/Range art and playable Mill logic need not wait for a roster-wide replacement.
+The order above is the retained 30 September design proposal, not an outstanding
+Complete queue. All eight Complete concepts and capture families now exist.
+Mill/Farm/wall/Gate/Dock remain separate outcomes; they do not enlarge the
+original eight-family lifecycle accounting.
 
 The concept family is preserved in the architecture wiki, and eight new
 Complete families have default bindings. The military pair has original local
@@ -47,13 +85,31 @@ for source limits, ordinary-game acceptance and full lifecycle
 ownership. Older construction GLBs and Range atlas candidates are retained
 comparisons, not matching production models of the new concepts.
 
-## Scale comes before state multiplication
+## Current scale evidence and remaining clearance review
 
-User observation: the current Town Center looks too small and house-like. This is a player observation, not a measured in-match size diagnosis. Its contact sheet confirms a compact single-hall design. The current capture contract is 640 × 640 at 128 pixels/world unit: a five-unit canvas, with transparent margins. A five-unit canvas does not mean a five-unit visible building. The direct Barracks/Range renderer also uses a five-unit canvas despite three-cell occupancy.
+The earlier player observation that Town Center looked small and house-like
+motivated the civic-hall scale pilot. The new eight-family Complete contract is
+1024 × 1024 at 128 pixels/world unit: an eight-unit canvas, orthographic 46°
+elevation, eight 45° azimuths and ground pivot approximately `(512, 647.153)`.
+The old 640-square/five-unit captures and five-unit direct military sprites
+describe retained fallback lineage, not the new Complete canvas. Canvas width
+does not establish visible building width or gameplay occupancy.
 
-First make a shared-scale comparison with a current Worker, House, Town Center, Barracks and Watchtower. Show occupancy outlines, ground anchors, doors and visible bases at normal and strategic game zoom, on flat ground and representative slopes. Keep camera, lighting and pixels/world unit identical; do not resize each object to independently fill the same square.
+The [pilot's measured lower bases](../assets/buildings/frontier-civilization-scale-pilot-v1/README.md#measured-registration)
+are Town Center 4.40 × 4.24 and House 2.30 × 2.95 world units; their X-width
+ratio is 1.913. The [support-family capture record](../assets/buildings/frontier-civilization-models-v1/README.md#delivered-evidence)
+retains Storehouse/Workshop 2.8-unit and Watchtower 1.8-unit width targets and
+Stable's adjusted 2.75-unit width target. Both military bases measure
+approximately 2.8 × 2.8. These are source registration facts, not doorway,
+terrain-contact or player-recognition acceptance.
 
-Proposed starting targets, subject to that review:
+Make the remaining ordinary-game comparison with the actual selected Worker,
+House, Town Center, Barracks and Watchtower. Show occupancy outlines, ground
+anchors, doors and visible bases at normal and strategic zoom on flat/raised
+ground. Keep camera, lighting and density identical; do not resize each object
+to independently fill the same square.
+
+Retained starting targets from the original proposal, subject to that review:
 
 - House visible ground base: about 2–2.5 world units across, contained within its 3-cell occupancy.
 - Ordinary production/drop-off buildings: about 2.5–3 units across; distinguish their yard/open-space allocation.
@@ -67,11 +123,32 @@ Measure visible alpha bounds and modeled ground dimensions separately. A project
 
 Use the existing preferred model-to-capture workflow: complete concept → matched lifecycle concepts/models → shared orthographic capture → manifest and runtime images. Start with eight azimuths at 45° intervals and 46° elevation, matching the Town Center convention. Review view switching before choosing 16 or the reference pack's 32 views; additional directions multiply all states and masks.
 
-For each type in the original eight-building concept family, plan Foundation, Frame, Complete, Damaged and Critical: five states × eight directions = 40 color frames per type, 320 across that family. Use aligned team masks for Azure/Ember rather than duplicating every color frame, where recoloring is visually reliable. Full-frame masks would add up to 320 mask frames. Exact atlas count follows cropping, resolution and memory measurements; 320 frames is coverage, not 320 separate required textures or generation calls.
+Current delivery is eight manifests plus 64 Complete PNGs: 72 requested runtime
+paths, with their source hashes verified at both checkpoint revisions. Full
+matched Foundation, Frame, Complete, Damaged and Critical coverage would be
+five states × eight directions = 40 color frames per type, 320 across the
+original eight. The missing four states account for 256 views. Team treatment
+needs explicit per-view review; live standards already carry ownership. Add
+aligned masks only where that method is useful and verified, rather than
+assuming 320 mask frames are mandatory. Atlas count follows measured memory;
+coverage is not a generation-call or required texture count.
 
-Record actual simulation progress/HP mapping per pack; existing direct and captured paths use different thresholds. Derive all states from the same complete design and keep camera, scale and ground pivot registered. Ruins, fire loops, smoke, production animations and opening doors are later optional layers, tied to a supported gameplay cue. Do not invent destroyed-building persistence merely to use a ruins frame. Keep selection, health, rally and queue feedback in the renderer.
+Record actual simulation progress/HP mapping per pack. The captured selector
+uses incomplete progress ≤27.5% for Foundation, later incomplete progress for
+Frame, completed HP ≤30% for Critical and ≤60% for Damaged. New Complete art
+returns above 60% HP after repair. Missing states fall back; direct military
+fallback instead uses <20% / <90% construction and ≥66% / ≥33% health bands,
+including old Complete art late in construction. Preserve these distinctions
+until matched states are supplied. Derive new states from the same design with
+registered camera, scale and pivot. Ruins, fire/smoke, doors and production
+clips are optional later layers tied to supported cues; destroyed persistence
+is not implied. Keep selection, health, rally and queue feedback in the renderer.
 
-The current runtime largely loads individual frames; packed-atlas sampling and generalized directional selection for other building types require renderer work. Do not label a generated atlas as integrated until that path loads it. Keep flattened frame compatibility exports while introducing atlas pages. Use the existing sprite contract for bounds, pages, clips, pivots and provenance; document any additional building-view binding explicitly.
+The captured helper already selects directions for all eight Complete families
+and loads individual frames. Packed-atlas sampling remains future renderer
+work. Keep individual compatibility frames if introducing atlas pages, and
+verify the actual consumer before calling an atlas integrated. Use the existing
+sprite contract for bounds, pages, clips, pivots and provenance.
 
 Keep lighting/palette alternatives as source experiments rather than multiplying the entire runtime family. Start with one coherent Frontier architectural kit and team accents; Vaelora regional architecture is a later variant outcome.
 
@@ -90,14 +167,33 @@ These are absent from the current building registry. Prepare reference boards or
 
 ## Delivery sequence and review evidence
 
-1. Build the Worker/House/Town Center scale comparison and select a civic silhouette at game size. Record measured ground bases, camera, pivots and the chosen ratios.
-2. Finish Complete concepts for the other six types and a roster contact sheet. Confirm each function is recognizable without labels.
-3. Deliver House and revised Town Center packs, then Storehouse, Stable, Workshop and Watchtower. Update renderer presentation bindings with each pack; preserve fallback behavior.
-4. Bring Barracks/Range into the same directional convention, reusing existing useful states where they hold up.
-5. For each delivery, check both teams, construction/damage/repair, view transitions, fog, nearby units, exit readability, terrain contact and both zoom levels. Record build, map and screenshots in QA; keep source-ready and runtime-observed status separate.
-6. Measure decoded texture memory and draw calls on a representative mixed-building settlement before choosing shared atlas pages or larger direction counts. Do not copy every reference resolution/lighting variant into runtime.
+1. Qualify the supported cloud renderer once under the testing strategy. If it
+   remains blocked, retain the specific failure/owner and continue source work;
+   do not substitute preview or CPU evidence for ordinary-game acceptance.
+2. Verify actual served selector/helper/manifest/image bytes against the
+   identified staging source, then run the bounded paid Barracks check above.
+   Keep existing source galleries and originals; add real game receipts when obtained.
+3. Extend the same paid acceptance to the other seven families, including
+   actual Worker clearance, both teams/zooms, view transitions, fog, raised
+   ground, production exits, selection, rally and queue feedback.
+4. For one family, produce matching Foundation/Frame/Damaged/Critical coverage
+   from available authorized sources and verify boundary transitions, repair,
+   cancellation and destruction/rebuild. The six earlier editable GLBs are
+   recorded as ignored local sources and are not in the tracked cloud checkout;
+   public military scripts/provenance are available. Source availability must
+   be resolved before promising those six lifecycle captures.
+5. Define and review collapse presentation separately from the four missing
+   states. Measure decoded texture memory and native draw cost on a mixed
+   settlement before atlas packing, extra directions or new effects. The
+   [body-depth fixture](qa-building-occlusion-native-plan-2026-10-03.md) is a
+   cost/appearance comparison, not ordinary-game acceptance.
 
-Current source evidence: the Town Center/House pilot has sixteen measured Complete views with shared density and pivots. Next concrete outcomes are actual selected-role Worker clearance review and the remaining six calibrated Complete model families, before purchasing lifecycle families. Additional model spend is separately authorized. The 0.8-unit pilot ruler is approximate: Worker v1/v2/v3 sprite manifests declare 0.9385/0.8933/1.05-unit heights. See the [style guide](frontier-civilization-art-style.md#worker-scale-evidence) for the runtime scaling distinction.
+The “remaining six Complete families” task is obsolete. No new paid model
+purchase is implied. Worker v1/v2/v3 declare 0.9385/0.8933/1.05-unit heights;
+the pilot's 0.8-unit ruler remains approximate. See the
+[style guide](frontier-civilization-art-style.md#worker-scale-evidence) for actual
+runtime scaling and the [architecture wiki](lore/frontier-architecture.md) for
+preserved concepts, original captures and their evolution.
 
 ## Reusable capture admission
 
