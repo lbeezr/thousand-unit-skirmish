@@ -36,7 +36,7 @@
     "focusedTests": 103,
     "failures": 0,
     "skipped": 0,
-    "log": "integration-tests.log",
+    "log": "integration-tests.txt",
     "command": "node --test scripts/snapshot-row-allocation.test.mjs scripts/tick-attribution.test.mjs scripts/ci-sharding.test.mjs scripts/snapshot-private-production.test.mjs scripts/worker-performing-action.test.mjs scripts/audio-worker-snapshot.test.mjs scripts/worker-fishing-presentation.test.mjs scripts/websocket-frame.test.mjs scripts/websocket-deflate-offer.test.mjs scripts/fog-checkpoint-boundary.test.mjs scripts/fog-checkpoint-forest.test.mjs scripts/fog-checkpoint-reinforcement.test.mjs",
     "checkedJs": "npm run check:types passed both browser and Node boundaries",
     "runtimeImports": {
@@ -51,7 +51,13 @@
       "checkedJs": true,
       "docs": true,
       "imports": true
-    }
+    },
+    "docs": {
+      "passed": true,
+      "markdownFiles": 564,
+      "localLinks": 3871
+    },
+    "syntaxAndWhitespace": true
   },
   "independentReview": {
     "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
