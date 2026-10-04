@@ -5,8 +5,17 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
-import { formatResourceStock, formatResourceRequirement } from '../src/resource-format.mjs';
-import { ownedPopulationReadout } from '../src/population-readout.mjs';
+import { formatResourceStock, formatResourceRequirement } from '../src/client/hud/resource-format.mjs';
+import { ownedPopulationReadout } from '../src/client/hud/population-readout.mjs';
+
+test('resource formatter compatibility preserves only the existing named bindings', async () => {
+  const legacy = await import('../src/resource-format.mjs');
+  const current = await import('../src/client/hud/resource-format.mjs');
+  const names = ['formatResourceRequirement', 'formatResourceStock'];
+  assert.deepEqual(Object.keys(legacy), names);
+  assert.deepEqual(Object.keys(current), names);
+  for (const name of names) assert.equal(legacy[name], current[name], name);
+});
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const declaration = (name, next) => source.slice(source.indexOf(`function ${name}(`), source.indexOf(`\nfunction ${next}(`));
