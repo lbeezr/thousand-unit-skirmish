@@ -34,22 +34,34 @@ function accepts(call) {
   try { call(); return true; } catch { return false; }
 }
 
-export function forcedCrossingRoutes(map) {
+export function crossingTopology(map) {
   const { width, height } = map, levels = buildElevationGrid(width, height, map.elevationPatches);
   const blocked = new Uint8Array(width * height);
   for (const o of map.obstacles) for (let row = o.row; row < o.row + o.height; row++)
     for (let column = o.column; column < o.column + o.width; column++) blocked[row * width + column] = 1;
   for (const team of [0, 1]) for (const cell of townCenterFootprintCells(map.spawnPoints, team, width, height)) blocked[cell] = 1;
   const cellAt = p => Math.floor(p.z + height / 2) * width + Math.floor(p.x + width / 2);
-  return XL_LAYOUT.crossings.map(([firstRow, lastRow]) => {
+  // Close each complete ridge band, not one representative column. Raised
+  // crossings permit a one-level corner approach from the adjacent ridge row.
+  const barrierColumns = XL_LAYOUT.ridgeColumnRanges.flatMap(([first, last]) =>
+    Array.from({ length: last - first + 1 }, (_, index) => first + index));
+  const alternatives = XL_LAYOUT.crossings.map(([firstRow, lastRow]) => {
     const mask = blocked.slice();
     for (let row = 0; row < height; row++) if (row < firstRow || row > lastRow)
-      for (const column of XL_LAYOUT.ridgeColumns) mask[row * width + column] = 1;
+      for (const column of barrierColumns) mask[row * width + column] = 1;
     const worldLength = searchGrid(width, height, mask, levels, cellAt(map.spawnPoints[0]), false)
       .distance[cellAt(map.spawnPoints[1])];
-    return { firstRow, lastRow, usableRows: lastRow - firstRow + 1,
+    return { firstRow, lastRow, declaredPassRows: lastRow - firstRow + 1,
       reachable: Number.isFinite(worldLength), worldLength: Number.isFinite(worldLength) ? worldLength : null };
   });
+  const closed = blocked.slice();
+  for (const [firstRow, lastRow] of XL_LAYOUT.crossings) for (let row = firstRow; row <= lastRow; row++)
+    for (const column of barrierColumns) closed[row * width + column] = 1;
+  const bypass = searchGrid(width, height, closed, levels, cellAt(map.spawnPoints[0]), false)
+    .distance[cellAt(map.spawnPoints[1])];
+  return { alternatives, allDeclaredCrossingsClosed: { opposingHomeReachable: Number.isFinite(bypass),
+    shortestBypassWorldLength: Number.isFinite(bypass) ? bypass : null,
+    scope: 'static initial terrain; closes complete width of both ridge bands inside every declared crossing' } };
 }
 
 // The real authoritative fixture performs validation and activation with its
@@ -162,7 +174,7 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
     candidate: { file: 'scripts/fixtures/xl-far-marches.json', sha256: sha(inputs['scripts/fixtures/xl-far-marches.json']),
       canonicalRuntimeMap: false, identity: mapSizeIdentity(map), geometry,
       expansionSitesPerSeat: XL_LAYOUT.sites.length, flatHomeSide: 2 * XL_LAYOUT.homeRadius + 1,
-      crossings: forcedCrossingRoutes(map), compactMapJsonBytes: mapBytes,
+      crossingTopology: crossingTopology(map), compactMapJsonBytes: mapBytes,
       publicationCommandJsonBytes: publishCommandBytes,
       publicationFitsCurrentInboundFrame: publishCommandBytes <= inbound,
       patchCounts: { terrain: map.terrainPatches.length, elevation: map.elevationPatches.length, obstacles: map.obstacles.length } },

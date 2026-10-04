@@ -24,7 +24,7 @@ per seat, fog and elimination remain unchanged.
 | --- | --- |
 | Initially walkable/reachable from either seat | 92,106 of 102,400 (89.9%); all reachable |
 | Base path / nominal game seconds | 287 world units / Worker 110.385, Infantry 110.385, Scout 63.778 |
-| Forests cleared | 285 units / Worker 109.615 s; still in the 105–125 s XL target |
+| Forests cleared | 287 units / Worker 110.385 s; still in the 105–125 s XL target |
 | Forced crossing alternatives | 22 rows/287 units, 22/325, 16/467, 16/467; flanks impose a real detour |
 | Home campus / city example | 57² flat cells per seat; existing 30-building template fits with one-cell circulation rings |
 | Expansion campuses |Five per seat; 19² flat ground with an 11² resource-free inner area; paired stocks/routes |
@@ -33,13 +33,19 @@ per seat, fog and elimination remain unchanged.
 | Home node routes | 12 cells, both types/seats; existing nine-unit Euclidean predicate passes |
 | Ordinary finite stock | 22,900 food / 28,350 wood; deliberately authored sites, not an area multiplier |
 | Separate cuttable forest potential | 10,262 cells × 6 wood = 61,572 |
-| Compact map / publish command JSON | 89,485 / 89,528 bytes; current 1,000,000-byte inbound frame fits the command |
-| Compressed authoring rectangles | 830 terrain, 224 elevation, 286 forest; each below 4,096 |
+| Compact map / publish command JSON | 89,516 / 89,559 bytes; current 1,000,000-byte inbound frame fits the command |
+| Compressed authoring rectangles | 826 terrain, 230 elevation, 286 forest; each below 4,096 |
 
 These are constructive static geometry and nominal speed measurements. They do
 not establish actual formation arrival, wall time, maximum city capacity,
 economic balance, forest density/physical clearance, a human-play verdict or
 rendered terrain. No raw tile equivalence with AoE2/Warcraft is claimed.
+
+Independent review exposed unintended one-row shoulder bypasses. The corrected
+shoulders retain their inner two-level cliff. Closing the full width of both
+ridge bands inside all four declared passes now disconnects the homes. A
+negative control restores the old shoulders and detects the 289-unit bypass.
+Declared pass rows measure static authored geometry, not physical crowd clearance.
 
 ## Route, checkpoint and transport findings together
 

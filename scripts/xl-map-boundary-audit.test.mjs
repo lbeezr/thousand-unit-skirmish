@@ -2,9 +2,10 @@ import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 import test from 'node:test';
 import { generateFarMarches, XL_LAYOUT as layout } from './generate-far-marches.mjs';
-import { runXlBoundaryAudit } from './xl-map-boundary-audit.mjs';
+import { runXlBoundaryAudit, crossingTopology } from './xl-map-boundary-audit.mjs';
 import { buildElevationGrid, validateElevationPatches } from '../src/map-utils.mjs';
 import { planWallLine } from '../src/wall-line-planner.mjs';
+import { compressGroundLevels } from '../src/terrain-authoring.mjs';
 
 const map = JSON.parse(await readFile(new URL('./fixtures/xl-far-marches.json', import.meta.url)));
 const report = await runXlBoundaryAudit(), audit = report.candidate.geometry;
@@ -30,11 +31,26 @@ test('connected useful land meets XL pacing before and after forest clearing', (
   assert.equal(audit.geometry.initialWalkableCells, 92106);
   assert.deepEqual(audit.geometry.reachableCellsBySeat, [92106, 92106]);
   assert.equal(audit.travel.minimumElevationCostRoute.worldLength, 287);
-  assert.equal(audit.travel.allForestClearedRoute.worldLength, 285);
+  assert.equal(audit.travel.allForestClearedRoute.worldLength, 287);
   assert.deepEqual(audit.travel.minimumElevationCostRoute.nominalTravelSeconds,
     { worker: 110.385, infantry: 110.385, scout: 63.778 });
-  assert.deepEqual(report.candidate.crossings.map(r => [r.usableRows, r.worldLength, r.reachable]),
+  assert.deepEqual(report.candidate.crossingTopology.alternatives.map(r => [r.declaredPassRows, r.worldLength, r.reachable]),
     [[22, 287, true], [22, 325, true], [16, 467, true], [16, 467, true]]);
+  assert.deepEqual(report.candidate.crossingTopology.allDeclaredCrossingsClosed,
+    { opposingHomeReachable: false, shortestBypassWorldLength: null,
+      scope: 'static initial terrain; closes complete width of both ridge bands inside every declared crossing' });
+});
+
+test('closing all four complete ridge bands detects the independently found shoulder bypass', () => {
+  const oldLevels = levels.slice();
+  for (const row of [123, 146, 193, 216]) for (let column = 0; column < side; column++) {
+    const outer = Math.min(column, side - 1 - column);
+    if (outer >= 126 && outer <= 140) oldLevels[row * side + column] = 1;
+  }
+  const oldGeometry = { ...map, elevationPatches: compressGroundLevels(oldLevels, side, side) };
+  const bypass = crossingTopology(oldGeometry).allDeclaredCrossingsClosed;
+  assert.equal(bypass.opposingHomeReachable, true);
+  assert.equal(bypass.shortestBypassWorldLength, 289);
 });
 
 test('57-square flat homes and five mirrored resource-free expansion campuses fit cities', () => {
@@ -95,8 +111,8 @@ test('source-bound route/save/wire envelope distinguishes finite validation from
   assert.equal(report.transport.inboundFrameBytes, 1000000);
   assert.equal(report.transport.outboundQueuedAndFrameBytes, 4194304);
   assert.equal(report.transport.packedFogBytesPerSeat, 25600);
-  assert.equal(report.candidate.compactMapJsonBytes, 89485);
-  assert.equal(report.candidate.publicationCommandJsonBytes, 89528);
+  assert.equal(report.candidate.compactMapJsonBytes, 89516);
+  assert.equal(report.candidate.publicationCommandJsonBytes, 89559);
   assert.equal(report.candidate.publicationFitsCurrentInboundFrame, true);
   assert.equal(report.transport.actualWelcomeStateFrameMeasured, false);
   assert.equal(report.transport.actualCheckpointBytesMeasured, false);

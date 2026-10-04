@@ -9,7 +9,7 @@ export const XL_LAYOUT = Object.freeze({
   sites: [[74, 109, 1, 'shelf'], [107, 40, 2, 'crown'], [96, 241, 0, 'basin'],
     [65, 290, 1, 'causeway'], [37, 47, 1, 'outer-march']],
   crossings: [[124, 145], [194, 215], [265, 280], [40, 55]],
-  ridgeColumns: [133, 186],
+  ridgeColumnRanges: [[126, 141], [178, 193]],
 });
 
 export async function generateFarMarches() {
@@ -32,7 +32,7 @@ export async function generateFarMarches() {
     if (crossing && outer >= 116) levels[cell] = crossing[0] < 220 && crossing[0] > 60 ? 0 : 1;
     // One-level strips connect ridge tops and shoulders without opening another
     // complete cross-basin route through a two-level inner cliff.
-    if ([123, 146, 193, 216].includes(row) && outer >= 126 && outer <= 140) levels[cell] = 1;
+    if ([123, 146, 193, 216].includes(row) && outer >= 126 && outer <= 131) levels[cell] = 1;
     const ridgeRamp = row >= 154 && row <= 167 && outer >= 111 && outer <= 127;
     if (ridgeRamp) levels[cell] = 1;
     paint[cell] = levels[cell] === 0 ? 1 : levels[cell] === 1 ? 2 : 0;
