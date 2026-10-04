@@ -48,6 +48,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
   simulation: [
     'combat-stance', 'confluence-opening-compat', 'economy-checkpoint',
     'formation-assignment', 'gather-work-area', 'match-mode-checkpoint',
+    'simulation/movement/formation-assignment',
     'millrace-sheep', 'skiff-fishing', 'skiff-group-orders', 'skiff-waypoints',
     'snapshot-private-production', 'terraced-vale-sheep', 'unit-movement',
     'unit-obstacle-detour', 'unit-path-line', 'wall-build-order',
@@ -80,6 +81,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'worker-fishing-contact',
   ],
   client: [
+    'client/hud/resource-format', 'client/hud/population-readout', 'client/hud/objective-summary',
     'audio', 'audio-assets', 'audio-composer', 'audio-composition',
     'audio-composition-player', 'audio-decoded-cache', 'audio-library-store',
     'audio-library-ui', 'audio-policy', 'audio-recognition-check',

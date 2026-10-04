@@ -84,7 +84,8 @@ try {
     assert.equal(navigations[0].searchParams.has('play'), false);
     assert.equal(navigations[0].searchParams.has('studio'), false);
     const room = await (await fetch(origin + '/api/rooms/' + roomId)).json();
-    assert.deepEqual(room.launchOptions, { mode: 'pvp', practice: true });
+    assert.deepEqual(room.launchOptions,
+      { mode: 'pvp', practice: true, matchModeId: 'authored', matchModeVersion: 1 });
     checkpointPath = path.join(fixture.directory, 'rooms', 'rooms', roomId, 'match-state.json');
   }
   await connect();

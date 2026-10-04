@@ -1,8 +1,16 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mapVictoryRule, mapScenarioSummary, objectiveSummary, rememberNotice } from '../src/objective-summary.mjs';
+import { mapVictoryRule, mapScenarioSummary, objectiveSummary, rememberNotice } from '../src/client/hud/objective-summary.mjs';
 import { readFileSync } from 'node:fs';
 import { effectiveMapForMatchMode } from '../src/match-modes.mjs';
+test('objective compatibility preserves only the existing named bindings', async () => {
+  const legacy = await import('../src/objective-summary.mjs');
+  const current = await import('../src/client/hud/objective-summary.mjs');
+  const names = ['mapScenarioSummary', 'mapVictoryRule', 'objectiveSummary', 'rememberNotice'];
+  assert.deepEqual(Object.keys(legacy), names);
+  assert.deepEqual(Object.keys(current), names);
+  for (const name of names) assert.equal(legacy[name], current[name], name);
+});
 const map = { victoryMode: 'all', victoryHoldSeconds: 30, triggers: [
   { id: 'gate', name: 'North gate', requiredUnits: 2 },
   { id: 'keep', name: 'Keep', requiredUnits: 3, requiresAll: ['gate'], victory: true },
