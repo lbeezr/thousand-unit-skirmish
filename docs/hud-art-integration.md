@@ -1,10 +1,10 @@
 # Selection identity and future field notes
 
-One selected living friendly Worker, Infantry, Archer, Spearman, Scout or Rider has a compact portrait, name and live HP.
+One selected living friendly Worker, Infantry, Archer, Spearman, Scout, Rider or Siege Engine has a compact portrait, name and live HP.
 The portrait opens the existing dismissible Selection drawer with practical role
 notes: registered abilities, live HP, base movement/attack stats and training
 producer, cost, duration and population. Military notes retain separate
-structure damage and registered target multipliers. The same 52px slot retains the legacy Barracks lifecycle
+structure damage, registered target multipliers and required training research. The same 52px slot retains the legacy Barracks lifecycle
 thumbnail and the Farm's admitted lifecycle illustration; both open existing
 structure details. Matching the newer default captured Barracks identity remains
 incomplete. Multiple units retain their composition summary. Unsupported
@@ -17,7 +17,7 @@ in existing labelled controls at 20 px. The Command drawer's duplicate tactical
 controls use the same files. Formation remains hidden for building details;
 Return cargo retains its distinct text, tooltip and carrying-Worker/Skiff behavior.
 
-Worker/Infantry/Archer/Spearman/Scout/Rider training controls reuse the same sources as decorative 20px
+Supported unit training controls reuse the same sources as decorative 20px
 thumbnails. Product names, costs, availability reasons and commands remain on
 the existing buttons. The source image/label nodes survive live updates; an
 image error hides only the decorative frame. Legacy/model previews retain text.
@@ -68,8 +68,8 @@ drawer and restrained panel treatment remain. Worker → Infantry replaces every
 role fact and the notes group's accessible name; no Worker abilities or Town
 Center training persist. The general sourced world note remains optional.
 
-Existing public mounted/siege illustrations are inventoried below;
-their portrait/training deliveries and deliberate framing remain missing.
+Existing public mounted/siege illustrations now have deliberate framing and
+default portrait/training bindings inventoried below; native acceptance remains open.
 Skiff and barriers have no matching approved HUD illustration. The newer
 Mill/Dock battlefield captures are separate from missing matching HUD
 portraits; the Farm reuse below closes its source/framing gap. Keep text/symbol disclosure where needed, with no borrowed role image or
@@ -145,6 +145,20 @@ nodes, focus and fallback. Similar Human mounted silhouettes at 20px remain
 decorative beside full role names. Native compact appearance and motion remain
 separate acceptance.
 
+## Approved Siege Engine reuse — 4 October 2026
+
+The existing Human timber and Boughward bark/copper ballista idle cells now
+supply the selected Siege Engine and both Workshop training thumbnails by
+default. [Pinned source bytes and deliberate rectangular viewports](../assets/ui/portraits/PROVENANCE.md#siege-engine-reuse--4-october-2026)
+retain the complete wheels, bow arms, rope and bolt. CSS centering/clipping
+excludes a known next-pose fragment from the Boughward cell without editing
+source pixels. The fixed 52px/20px controls retain full names and written facts:
+registered defense multiplier, separate structure damage, three population and
+required SIEGE ENGINEERING research. Both paid controls retain resource,
+weighted-population and authoritative prerequisite guards. Stable nodes clear
+clipping when returning to contained riders or cropped Worker/Farm portraits.
+Source/CPU/DOM checks do not establish native resampling, keyboard or recognition.
+
 ### Current selection and training bindings — 4 October 2026
 
 This is the current inventory; the 3 October audit below is dated source history.
@@ -157,8 +171,8 @@ This is the current inventory; the 3 October audit below is dated source history
 | Farm | Existing Frontier lifecycle view-01 in 52px Selection and 40px inline figure; explicit Food symbol on failure/unknown state; [PR391](https://github.com/lbeezr/thousand-unit-skirmish/pull/391) | Parent independently confirmed Railway `e50337e8` SUCCESS at 22:31, exact `34e22bed`; actual compact visual/keyboard acceptance open |
 | Spearman | Established Human v1/Boughward idle figures; default [PR394](https://github.com/lbeezr/thousand-unit-skirmish/pull/394) in clean merged `ee0bae0d`, package/HTTP checked | Containing identified hosted delivery and native framing/recognition open |
 | Scout | Established horse/wolf figures; default [PR396](https://github.com/lbeezr/thousand-unit-skirmish/pull/396) in clean merged `13b13e82`, package/HTTP checked | Containing identified hosted delivery and native framing/recognition open |
-| Rider | Established horse/boar, spear/shield figures contained in existing Selection and both Stable training slots | Clean package/containing identified delivery and native framing/recognition remain separate evidence |
-| Siege Engine | Text; approved equipment sources available | Deliberate equipment framing/delivery missing |
+| Rider | Established horse/boar, spear/shield figures; default [PR398](https://github.com/lbeezr/thousand-unit-skirmish/pull/398) in clean merged `0a792fe2`, package/HTTP checked | Containing identified hosted delivery and native framing/recognition open |
+| Siege Engine | Established whole-device illustrations centered/clipped in existing Selection and both Workshop training slots | Clean package/containing identified delivery and native framing/recognition remain separate evidence |
 | Skiff | Text | Matching approved HUD illustration missing |
 
 The Archer change touches the existing training-decoration list and portrait
@@ -232,6 +246,19 @@ login. The HUD owner retains pixel inspection and the unfinished outcome.
    live HP, image failure, notes/link focus, Escape and Rider → Worker/Farm →
    group/empty on both effective families at wide/narrow viewports. Retain
    exact served identity and actual original screenshots for native inspection.
+
+9. In a fresh ordinary match, gather resources and pay for MILITARY TIER II
+   at the Town Center (200 food / 150 wood, 35s). Build/complete a Workshop,
+   then pay for SIEGE ENGINEERING there (150 food / 150 wood, 30s). Train a
+   Siege Engine for 80 food / 160 wood, three population and 30s. Capture
+   both labelled 20px controls and the selected 52px equipment on each family.
+   Inspect the whole ballista, alpha edges, centered rectangle, excluded foreign
+   fragment and full name beside HP. Check notes' research requirement,
+   structure damage and defense multiplier; inspect prereq/full-population/
+   low-wood reasons before enabling, without injected economy/research state.
+   Verify Rider → Siege Engine → Rider/Worker/Farm → group/empty clears clipping,
+   preserving optional notes/link focus and Escape at wide/narrow viewports.
+   Retain exact source/digest/served identity and original normal-game PNGs.
 
 Static original/52px/20px CPU source pixels were inspected in color and grayscale.
 DOM tests cover effective appearance, both seats, stable nodes, truthful facts,

@@ -74,6 +74,8 @@ try {
     ['boughward-scout-source.png', '024fded2661ed621fc045f3882e5b646ae15ccf4af2842c4d0043c0b95e0b079'],
     ['human-rider-source.png', '1e8f9cbecbcdbbb6e918bd195822c782dcd86815aa8f7d971d4a0b6d18b85d1a'],
     ['boughward-rider-source.png', '5ee0db0d065ab004b15fb2846dd2c7a90ca2d0ed32d952a256dd58938c32a535'],
+    ['human-siege-engine-source.png', 'e0c84809f1e95b6f71d9f9f96f8e7996a16871a7a9e1222f18a9073d7d3a9d8c'],
+    ['boughward-siege-engine-source.png', '050bd12752a64b8855600845c64a0bb7bfbfe3b03ede3cf119c3d3b1a7964eb7'],
     ['human-spearman-source.png', 'a1ec9294586ed22bfad9e27d1fa1fd5432bd2d4723d5532e7d0a9b188eae010e'],
     ['boughward-spearman-source.png', 'f31d37ddc28bec1aa5dc7dfd17eaa20f9ea5a9f2abc776ba8e9c248a9559cc8d'],
   ]) {
