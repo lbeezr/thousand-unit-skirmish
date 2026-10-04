@@ -633,3 +633,14 @@ merged at `0934be78`. Its main changes are integrated: dedicated exact Stone
 selection, compatible positive receipts and both-seat NW loop/Stop/resume tests.
 All earlier gap receipts remain historical. The art-owner branch makes no new
 state/clock/economy edits; runtime changes here originate from merged main.
+
+
+After integrating current main/PR263, all123 focused checks pass, alongside
+byte-idempotent admission, atlas/docs/whitespace. [Clean East axe release](qa-evidence/worker-land-art-2026-10-04/wood-east-clean-release.json)
+measures `7238c84a1bc2a8f3b6198f68640c583b19e63c61`, `sourceDirty:false`, 1178 files and
+`sha256:7ad4039d26eafc06220e725b733707c2ec7066f52bf3eaf287d3707790be1b49`. Real guarded packaged HTTP/WebSocket and runtime hashes pass
+at that source. [Producer/client receipt scenario](qa-evidence/worker-land-art-2026-10-04/wood-east-productive-receipts.json)
+retains28 real WebSocket→actual CPU client observations including productive
+Stone, clear/Stop/resource/depletion/repair/recovery. These are packet/UV checks,
+not native GPU/game captures. Later evidence commits are distinct from measured
+code; exact delivered/native acceptance remains open.
