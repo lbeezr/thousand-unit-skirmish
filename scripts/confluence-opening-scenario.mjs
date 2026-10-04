@@ -41,6 +41,7 @@ const command = (room, team, value, pattern) => room.clients[team].command({ ...
 const checkpoint = (room, pred = () => true) => room.f.checkpoint(pred, room.checkpointPath);
 const stock = (s, id) => s.state.resourceNodes.find(n => n.id === id);
 const sessionIdentities = snapshot => snapshot.state.seatSessions.map(({ id, team, tokenHash }) => ({ id, team, tokenHash }));
+const bothConnected = lobby => [0, 1].every(team => lobby.seats.some(seat => seat.team === team && seat.connected));
 function record(stage, s, extra = {}) {
   records.push({ stage, tick: s.state.tickNumber, matchId: s.matchId, mapHash: s.mapHash,
     exploredSha256: s.state.explored.map(cells => sha(Buffer.from(cells, 'base64'))),
@@ -71,7 +72,7 @@ async function setup(factory, lobby = false) {
   const room = { f, origin, roomId, clients, checkpointPath: path.join(f.directory, 'rooms', 'rooms', roomId, 'match-state.json') };
   const changes = clients.map(c => c.wait(m => m.type === 'mapChange' && m.map.id === map.id, 'Confluence selection', c.messages.length));
   if (lobby) {
-    const joined = await clients[0].wait(m => m.type === 'lobby' && m.lobby.seats.every(s => s.connected), 'both humans admitted');
+    const joined = await clients[0].wait(m => m.type === 'lobby' && bothConnected(m.lobby), 'both humans admitted');
     clients[0].send({ type: 'configureLobby', mapId: map.id, revision: joined.lobby.revision });
   } else clients[0].send({ type: 'selectMap', mapId: map.id });
   await Promise.all(changes);
@@ -80,7 +81,7 @@ async function setup(factory, lobby = false) {
   return room;
 }
 async function launch(room) {
-  await room.clients[0].wait(m => m.type === 'lobby' && m.lobby.seats.every(s => s.connected), 'both admitted humans');
+  await room.clients[0].wait(m => m.type === 'lobby' && bothConnected(m.lobby), 'both admitted humans');
   for (const team of [0, 1]) { const c = room.clients[team];
     const revision = [...c.messages].reverse().find(m => m.type === 'lobby').lobby.revision;
     c.send({ type: 'setReady', ready: true, revision });
