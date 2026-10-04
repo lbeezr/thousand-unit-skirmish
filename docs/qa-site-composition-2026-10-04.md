@@ -147,7 +147,25 @@ TownCenter and was also rejected. Both fixture errors were corrected without
 changing admission, economy, maps or simulation rules.
 
 CI owner `01a10378` retains the explicit registry/manual selector admission;
-the shared registry currently has no `site-composition` case. Independent review
-is still required by the contributor planning guide before these author-owned
-merges. The rendering owner retains exact baseline/candidate PNG inspection,
-dark-square diagnosis, clean packaging and identified staging verification.
+the shared registry currently has no `site-composition` case and the existing
+dispatch-access denial remains unresolved. No new access or bypass is requested.
+The rendering owner retains exact baseline/candidate PNG inspection, dark-square
+diagnosis, clean packaging and identified staging verification.
+
+Independent read-only source review approved PR334 at `4f5fcde3`, PR343 at
+`9915594f` and PR359 at `fe37c699`, with no actionable findings. The reviewer ran
+all ten focused candidate tests, 512 palisade occupancy patterns/9,216 edge
+assertions and 36 raised/ramp contacts; maximum decal error was 5.6e-7. These
+source/geometry checks do not establish rendered appearance.
+
+The layer correction refreshed automatically against main `ed0caf3d`; its exact
+resolved `4d1d9ae9` passed factory checks, types, imports, docs and clean packaging,
+then merged as [PR334](https://github.com/lbeezr/thousand-unit-skirmish/pull/334)
+at `9c535f5b`. Connected ground refreshed without conflicts; exact resolved
+`06e0cfa7` passed 47 focused checks, types, imports, docs and clean packaging,
+then merged as [PR343](https://github.com/lbeezr/thousand-unit-skirmish/pull/343)
+at `5669ad8d`. PR359 retains capture preparation and its exact-head integration
+checks. No source conflict required a substantive resolution. The next actual
+appearance action remains CI-owned case admission/authorized dispatch, then
+rendering-owner inspection of real baseline/candidate PNGs. No containing
+deployment or staging appearance is inferred from these merges.
