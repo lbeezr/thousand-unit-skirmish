@@ -55,6 +55,8 @@ run(['--test', 'scripts/check-node-types.test.mjs'], 'Node framing contract nega
 run(['--test', 'scripts/resource-visual-state.test.mjs'], 'Resource stage membership and legacy transitions');
 run(['--test', 'scripts/construction-ground-composition.test.mjs'], 'Construction ground painter order and terrain contact');
 run(['--test', 'scripts/palisade-construction-ground.test.mjs'], 'Connected owned palisade construction ground and lifecycle');
+run(['--test', 'scripts/renderer-site-composition-scenario.test.mjs'], 'Owned site capture cannot pass metadata as visual acceptance');
+run(['scripts/site-composition-scene-scenario.mjs'], 'Real paid both-seat site composition scene preparation');
 
 run(['--test', 'scripts/scenario-regions.test.mjs'], 'Named scenario regions');
 run(['--test', 'scripts/scenario-authoring.test.mjs'], 'Visual scenario authoring contracts');
