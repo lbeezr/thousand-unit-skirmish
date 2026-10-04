@@ -10,7 +10,7 @@ import { canTraverseElevation, elevationPathCost } from '../src/elevation.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { PVE_MAP_IDS } from '../src/pve-match.mjs';
-import { NORMAL_MATCH_MAP_ID } from '../src/match-modes.mjs';
+import { NORMAL_HUMAN_MATCH_MODE, NORMAL_MATCH_MAP_ID, matchModeDefinition } from '../src/match-modes.mjs';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const round = n => Number(n.toFixed(3));
@@ -245,10 +245,10 @@ export async function runAudit() {
   if (!source.includes('Math.floor(x + MAP_HALF_X)') || !source.includes('matchElapsedSeconds += STEP_SECONDS')
     || !source.includes('STEP_SECONDS = 1 / TICK_RATE') || !source.includes('moveSpeed * STEP_SECONDS'))
     throw new Error('Recheck cell conversion or time/movement contract.');
-  const defaultMapId = source.match(/process\.env\.RTS_MAP \|\| 'maps\/([^']+)\.json'/)?.[1]
-    ?? (source.includes('`maps/${matchModeDefinition(configuredMatchMode).defaultMapId ?? NORMAL_MATCH_MAP_ID}.json`')
-      ? NORMAL_MATCH_MAP_ID : null);
-  if (!defaultMapId) throw new Error('Recheck default map contract.');
+  if (!source.includes('process.env.RTS_MATCH_MODE_VERSION === undefined ? NORMAL_HUMAN_MATCH_MODE : {}')
+    || !source.includes('matchModeDefinition(configuredMatchMode).defaultMapId ?? NORMAL_MATCH_MAP_ID'))
+    throw new Error('Recheck default map contract.');
+  const defaultMapId = matchModeDefinition(NORMAL_HUMAN_MATCH_MODE).defaultMapId ?? NORMAL_MATCH_MAP_ID;
   const constants = { defaultMapId, ticksPerSecond: integer('TICK_RATE'), maxBuildings: integer('MAX_BUILDINGS'),
     forestWoodPerCell: integer('FOREST_WOOD_PER_CELL'), defaultArmySize: integer('DEFAULT_STARTING_ARMY_SIZE') };
   const files = (await readdir(path.join(root, 'maps'))).filter(f => f.endsWith('.json')).sort();

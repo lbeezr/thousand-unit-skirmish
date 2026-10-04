@@ -103,21 +103,24 @@ test('reported city placements provide non-overlapping free circulation rings an
   }
 });
 
-test('roster report covers all shipped files, records source hashes and separates Lab from solo defaults', async () => {
+test('roster report covers shipped files, hashes the ordinary Tiny policy and preserves the legacy solo pool', async () => {
   const report = await runAudit();
-  assert.equal(report.maps.length, 28);
+  assert.equal(report.maps.length, 29);
   assert.equal(report.maps.filter(m => m.pool === 'regional').length, 15);
   assert.equal(report.maps.filter(m => m.purpose === 'regional-skirmish').length, 14);
   assert.equal(report.maps.find(m => m.id === 'shore-fishing').purpose, 'micro-fixture');
   assert.deepEqual(report.maps.filter(m => m.seededPve).map(m => m.id), ['bellweather-millrace', 'underbough-rootways']);
   assert.deepEqual(report.maps.filter(m => m.defaultPvp).map(m => m.id), ['veyrholds-terraced-vale']);
+  const ordinary = report.maps.find(m => m.defaultPvp);
+  assert.deepEqual([ordinary.geometry.columns, ordinary.geometry.rows], [160, 160]);
   assert.equal(report.maps.find(m => m.id === 'frontier-160').pool, 'lab');
   assert.equal(report.constants.ticksPerSecond, 30);
   assert.equal(report.timing.nominalGameSecondsPerWallSecond, 1);
   assert.equal(report.timing.observedGameSecondsPerWallSecond, null);
   assert.match(report.sourceInputSha256['maps/bellweather-millrace.json'], /^[0-9a-f]{64}$/);
+  assert.match(report.sourceInputSha256['src/match-modes.mjs'], /^[0-9a-f]{64}$/);
   const records = summaryRecords(report);
-  assert.equal(records.length, 29);
+  assert.equal(records.length, 30);
   assert.equal(records[0].record, 'methods');
   assert.equal(records[1].economy.resources, undefined);
   assert.equal(records[1].economy.geometricResourceClusterCount, report.maps[0].economy.geometricResourceClusters.length);

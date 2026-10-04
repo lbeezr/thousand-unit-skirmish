@@ -54,7 +54,7 @@ and unknown IDs reject. Pure cluster helpers now use its shared `economyResource
 registry, so the exact Stone selector can materialize typed `stone` nodes without
 a wood alias. The agreed candidate keeps the historical anchors, seed,
 geometry and stable namespace, with stocks 67/67/66 per seat. The historical
-101-stock rejection fixture remains unchanged. The ordinary map catalog now includes
+101-stock rejection fixture remains unchanged. The internal Practice catalog includes
 [Lab · STONE DEFENSE FIELD](../maps/stone-defense-field.json), using this agreed
 200-stock layout and the explicit Stone profile.
 Brush previews and undo/redo history include the resolved profile in their placement
@@ -66,8 +66,10 @@ Stone profile, with the shared profile pin and paid Watchtower price. Omitted
 selectors remain absent for legacy checksums. A mislabelled baseline checkpoint
 is rejected and retained byte-exact. No ledger or migration implementation is duplicated.
 
-To play Stone, choose **Create Room → Map → Lab · STONE DEFENSE FIELD**, then
-both players ready and the host launches. No import or debug flag is needed.
+To play Stone, choose **Practice → Battlefield → Internal fixture ·
+Lab · STONE DEFENSE FIELD**. Practice starts with one player; a friend can join
+the second seat. The compact Lab is omitted from fresh ordinary lobbies under
+the 160-minimum contract. No import or debug flag is needed.
 To author another Stone map, import a map with `"economyProfileId":"stone-defense-v1"`.
 The existing Resource Patches brush then includes Stone; a 200-stock patch with
 three markers splits 67/67/66. Preview/apply/undo/redo use the normal controls.
@@ -75,8 +77,12 @@ Food/wood-only maps keep their original choices. The map editor uses a gray
 `S` marker distinct from berries; terrain Stone remains blocking terrain.
 
 Run `node --test scripts/stone-map-profile.test.mjs scripts/stone-authoring-fixture.test.mjs`.
-The native test creates an ordinary invite room, selects the shipped map with the
-actual lobby UI, readies both seats and launches without publishing custom JSON.
+The regression first uses a real 160 × 160 Tiny lobby: compact Stone is absent
+from its selector, a rejected map/mode tuple preserves both players' readiness,
+and launch/reset retains the admitted Tiny map and rules. The natural Stone test
+then creates an explicit Practice room, checks the shipped internal catalog entry
+and selects it through the ordinary `selectMap` command with both seats connected.
+It publishes no custom JSON and leaves the map's geometry unchanged.
 It never modifies saved banks, cargo or stock. Both seats start with zero Stone,
 recover real carried Stone after a restart, return it
 to their Town Center and exhaust their first 67-stock node. A Watchtower spends

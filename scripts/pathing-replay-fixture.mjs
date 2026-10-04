@@ -128,6 +128,8 @@ export const replay = {
     await writeFile(filename, source);
     const { replay } = await import(pathToFileURL(filename).href);
     replay.prepare(map);
+    const identity = replay.checkpoint();
+    assert.deepEqual([identity.matchModeId, identity.matchModeVersion], ['authored', 1]);
     return { replay, sourceSha256: createHash('sha256').update(original).digest('hex'),
       async dispose() { replay.dispose(); await rm(directory, { recursive: true, force: true }); } };
   } catch (error) { await rm(directory, { recursive: true, force: true }); throw error; }
