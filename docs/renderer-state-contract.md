@@ -73,7 +73,8 @@ The [Worker performing-action contract](worker-performing-action-contract.md)
 defines state `workerPerformingActionVersion: 1` and unit row 17. Null, absent or
 unknown protocol/action, incompatible task, death and generation reuse clear
 work; task intent remains available to the HUD. A receipt-only clear immediately
-writes idle and dirties buffers, including fishing contact. Continuous positive
+refreshes the active pose and dirties buffers, clearing fishing contact. A
+stationary living Worker without a fresh attack returns to idle. Continuous positive
 work keeps its clock; action/resource changes and clear/resume start a new clip.
 No art key awards resources or damage. Build/repair target bearing is still a
 separate producer dependency; row 15 currently describes gathering only.
