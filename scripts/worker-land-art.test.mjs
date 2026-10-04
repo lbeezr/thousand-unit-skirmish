@@ -4,13 +4,13 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
 import { assertFrameUnclipped, decodeRgba8 } from './sprite-pixel-bounds.mjs';
-import { createUnitSpriteRuntime, spriteActionClip } from '../src/unit-sprite-runtime.mjs';
+import { createUnitSpriteRuntime, spriteActionClip, spriteClipDuration } from '../src/unit-sprite-runtime.mjs';
 
 const directory = new URL('../assets/units/cast-human-sprite-v3/', import.meta.url);
 const pack = JSON.parse(readFileSync(new URL('sprite-atlas-pack-v1.json', directory)));
 const asset = pack.assets[0], page = pack.pages[0];
 const clipMap = new Map(asset.clips.map(c => [`${c.stateId}|${c.directionId}`, c]));
-for (const preservationHeading of ['north-walk', 'south-walk', 'west-walks']) {
+for (const preservationHeading of ['north-walk', 'south-walk', 'west-walks', 'stone-se']) {
 test(`${preservationHeading} admission preserves preceding frame records/pixels and team mask`, () => {
   const preservation = JSON.parse(readFileSync(new URL(
     `../docs/qa-evidence/worker-land-art-2026-10-04/${preservationHeading}-preservation.json`, import.meta.url)));
@@ -124,3 +124,35 @@ test(`default Human ${label} walk advances, loops, turns, Stops/resumes and retu
   }
 });
 }
+
+test('Stone SE is a complete four-pose dedicated pick clip with its own shared root/scale', () => {
+  const registration = JSON.parse(readFileSync(new URL(
+    '../docs/qa-evidence/worker-land-art-2026-10-04/stone-se-registration.json', import.meta.url)));
+  const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', directory)));
+  const clip = spriteActionClip(clipMap, 'gather-stone', 'south-east', 'stone', 'human', false);
+  assert.equal(clip.stateId, 'gather-stone');
+  assert.equal(clip.directionId, 'south-east');
+  assert.equal(clip.loop, true);
+  assert.equal(spriteClipDuration(clip), 840);
+  const hashes = new Set();
+  for (const [index, key] of clip.sequence.entries()) {
+    assert.deepEqual(key, { frameId: `gather-stone-south-east-${index}`, durationMs: 210 });
+    const frame = asset.frames.find(f => f.id === key.frameId);
+    assert.deepEqual(frame.canvasPx, { width: 320, height: 256 });
+    assert.deepEqual(frame.groundPivotPx, { x: 160, y: 244 });
+    assertFrameUnclipped(image, frame);
+    const r = frame.fallbackRectPx.rectPx, hash = createHash('sha256');
+    for (let y = 0; y < r.height; y++) hash.update(image.pixels.subarray(
+      ((r.y + y) * image.width + r.x) * 4,
+      ((r.y + y) * image.width + r.x + r.width) * 4));
+    const digest = hash.digest('hex');
+    assert.equal(digest, registration.frames[index].rgbaSha256);
+    hashes.add(digest);
+  }
+  assert.equal(hashes.size, 4);
+  assert.deepEqual(asset.clips.filter(c => c.stateId === 'gather-stone').map(c => c.directionId), ['south-east']);
+  for (const heading of ['north', 'north-east', 'east', 'south', 'south-west', 'west', 'north-west']) {
+    assert.equal(spriteActionClip(clipMap, 'gather-stone', heading, 'stone', 'human', false)
+      .sequence[0].frameId, `idle-${heading}-0`);
+  }
+});

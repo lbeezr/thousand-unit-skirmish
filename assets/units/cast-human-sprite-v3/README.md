@@ -50,3 +50,13 @@ Sixteen keys occupy spare rows3328/3584; all108 prior records/pixels, mask,
 other clips, dimensions and world scale are unchanged. This completes walk
 source/default-playback coverage; identified delivery/native appearance and
 50 work/combat/Stone cells remain open.
+
+Version0.20.0 additionally packs four dedicated `gather-stone|south-east` keys.
+[Retained iteration/rejected directions](../../../docs/art-direction/human-roster-v1/generated/worker-stone-eight-v1/README.md)
+records the seven absent headings and the default selector dependency. Rebuild
+with `python3 scripts/admit-worker-stone-se.py`. Four210ms keys preserve all124
+prior records/pixels and fit existing spare row3840. The default Stone selector
+still returns idle: animation owner01a103d4 must adopt this state with exact
+missing-heading idle fallback. This is packed art, not a claim of Stone gameplay
+playback. All eight walks remain default functional; native/deployment acceptance
+is open and49 other land-action/heading cells remain.
