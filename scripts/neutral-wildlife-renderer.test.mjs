@@ -102,7 +102,7 @@ test('disclosed motion moves art, facing and click coordinates; missing/invalid 
  assert.equal(fogPoint.x,snapshot.x);
  assert.deepEqual(renderer.positionFor(definition.id),{x:snapshot.x,z:snapshot.z});
  assert.deepEqual(scene.children[0].position.toArray(),[snapshot.x,snapshot.x+snapshot.z,snapshot.z]);
- assert.equal(pose.directionId,'east');assert.equal(pose.moving,false,'directional idle art has no invented walk clip');
+ assert.equal(pose.directionId,'south-east','canonical body heading receives the admitted still nose offset once');assert.equal(pose.moving,false,'directional idle art has no invented walk clip');
  renderer.reconcile([{...snapshot,wildlifeState:'carcass',stock:40,wildlifeActivity:undefined}],()=>true);
  renderer.update(camera);assert.deepEqual(renderer.positionFor(definition.id),{x:snapshot.x,z:snapshot.z});
  for(const patch of [{x:definition.x+1},{x:Infinity},{wildlifeHeading:NaN},{wildlifeActivity:'running'}]) {
@@ -179,7 +179,7 @@ test('far static art retains admitted direction binding without new clips; lifec
  renderer.reconcile([snapshot],()=>true);renderer.update(camera);
  assert.equal(renderer.diagnostics().nodes[0].mode,'static-illustration');
  assert.deepEqual(scene.children[0].position.toArray(),[snapshot.x,.8,snapshot.z]);
- assert.equal(pose.directionId,'east');assert.equal(pose.stateId,'idle');assert.equal(pose.moving,false);
+ assert.equal(pose.directionId,'south-east','canonical body heading receives the admitted still nose offset once');assert.equal(pose.stateId,'idle');assert.equal(pose.moving,false);
  renderer.reconcile([{...relocated('carcass',1),x:-31.5,z:17.5,wildlifeHeading:Math.PI}],()=>true);renderer.update(camera);
  assert.deepEqual(renderer.positionFor(definition.id),{x:-31.5,z:17.5});
  assert.deepEqual(scene.children[0].position.toArray(),[-31.5,.8,17.5]);
