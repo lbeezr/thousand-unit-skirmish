@@ -46,15 +46,22 @@ Gate/wall reacquisition belongs to construction owner `01a103f5-cb1f`.
 checkpoint flushed by process shutdown, new process, reclaimed seats, final
 118 / 112 Wood from initial 100, no Food/distant Wood consumption. It freezes
 source revision and tracked runtime/input hashes throughout each report.
-Exact clean-source runs and postmerge results are recorded separately rather
-than inferred from the diagnostics above.
+The clean native report at `966d706dea1439a3d0cc7775009318066462c84a` includes the
+current-main open-ground movement integration and both untouched process
+restarts. Each comparison requires a checkpoint sequence newer than shutdown's
+saved sequence, avoiding a stale pre-restart file. Its frozen input hashes and
+actual receipts are retained in [native-source.json](native-source.json).
+The corresponding focused 86 checks, import/type/document checks and native
+Frontier paid-route conservation pass. Earlier source-only native `e66dc06a`
+also passed. Postmerge evidence is recorded on PR #283 rather than inferred.
 
 ## Remaining acceptance and next content
 
 Economy/content owns source review, normal merge, package inclusion and
 postmerge verification. The Railway/economy-content receiving stream must
-identify a release containing PR #283; Mac controller `01a106da-40ec` owns the
-ordinary deployed Worker observation. No native browser or deployed fix is
+identify a release containing PR #283; the existing cloud testing stream owns
+the ordinary deployed Worker observation. Stopped Mac controller `01a106da-40ec`
+is not a dependency. No native browser or deployed fix is
 claimed by these local authority checks. No new paid asset or direct deployment.
 
 Next bounded content work: construction owner's adjacent-Gate continuation;

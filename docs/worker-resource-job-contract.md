@@ -3,8 +3,9 @@
 Economy/content owns the shared checkpoint union and external cancellation,
 plus bounded Wood continuation. Construction owner `01a103f5-cb1f` consumes the
 construction variant and owns site targeting, adjacent-Gate priority and natural
-reacquisition. Architecture edits no runtime. Live browser control remains with
-Mac animation baseline `01a106da-40ec`.
+reacquisition. Architecture edits no runtime. Ordinary deployed gameplay belongs
+to the receiving testing stream. This source slice starts no browser and does not
+depend on stopped Mac testing (retained controller `01a106da-40ec`).
 
 The 12:24 user report reproduces locally at current runtime `278d133d` (harness
 head `0ccce3cb`) and identified staging source `64cc391e`: a forest cell or ordinary
