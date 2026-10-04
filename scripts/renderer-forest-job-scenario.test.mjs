@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFile } from 'node:fs/promises';
+import vm from 'node:vm';
 import * as adapter from './renderer-forest-job-scenario.mjs';
 import { validateCaptureAdapter } from './renderer-capture-context.mjs';
 
@@ -62,4 +63,23 @@ test('canonical both-seat plan uses bounded authored open edges without changing
     assert.equal(map.obstacles.some(o => col >= o.column && col < o.column + o.width && row >= o.row && row < o.row + o.height), false);
   }
   assert.equal(JSON.stringify(map), original);
+});
+test('post-render observation reads selected owned actors without changing the rendered world', async () => {
+  const actors = [{ id: 10, hp: 25, team: 0, kind: 'worker', renderX: 0, renderZ: 0 },
+    { id: 20, hp: 25, team: 1, kind: 'worker', renderX: 0, renderZ: 0 },
+    { id: 11, hp: 25, team: 0, kind: 'worker', renderX: 2, renderZ: 0 }];
+  const before = JSON.stringify(actors); actors.forEach(Object.freeze); Object.freeze(actors);
+  class Vector {
+    constructor(x, y, z) { Object.assign(this, { x, y, z }); }
+    project() { return this; }
+  }
+  const context = vm.createContext({ window: { __forestJobCapture: {} }, localTeam: 0, units: actors,
+    selected: new Set([10]), groundHeight: () => -1.25, camera: Object.freeze({}), THREE: { Vector3: Vector },
+    renderer: { info: { render: { frame: 99 } }, domElement: { getBoundingClientRect: () => ({ left: 0, top: 0, width: 1280, height: 720 }) } } });
+  assert.equal(vm.runInContext(`(${adapter.observeRenderedForestWorkers.toString()})()`, context), false, 'breakpoint must not pause');
+  const output = JSON.parse(JSON.stringify(context.window.__forestJobCapture.render));
+  assert.deepEqual(output.workers.map(worker => [worker.id, worker.selected, worker.inView]), [[10, true, true], [11, false, false]]);
+  assert.equal(JSON.stringify(actors), before);
+  const source = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
+  assert.equal(source.split('\n').filter(line => line.trim() === 'renderer.render(scene, camera);').length, 1);
 });

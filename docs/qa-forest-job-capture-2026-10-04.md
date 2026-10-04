@@ -21,7 +21,11 @@ the remembered anchor; it is not promoted to authoritative enemy detection.
 Ten checkpoint PNGs cover both seats before approach, harvesting, loaded return,
 deposit/resume and repeated cycles. Each selected Worker must make at least
 three credited deliveries, show real harvest activity, carry typed cargo within
-the existing capacity and resume harvesting after delivery. Privacy checks
+the existing capacity and resume harvesting after delivery. Workers are selected
+through actual pointer input, and the ordinary Center Selection camera control
+keeps both inside each captured frame. A non-pausing CDP observation immediately
+after the actual render reads only the module's own actor/camera projection;
+it writes diagnostic storage and never mutates game state. Privacy checks
 reject foreign Worker disclosure near these separated forests, opposite-seat
 bank disclosure or current forest-stock changes outside current vision.
 The shared runner binds all screenshots to its exact clean source SHA/release

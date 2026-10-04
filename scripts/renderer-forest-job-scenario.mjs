@@ -64,6 +64,22 @@ function installProbe(project, observe) {
   };
 }
 
+// Non-pausing post-render observation over the real module's own camera/actors.
+// Writes only diagnostic storage; never changes selection, camera or game state.
+export function observeRenderedForestWorkers() {
+  const probe = window.__forestJobCapture;
+  if (!probe) return false;
+  const rect = renderer.domElement.getBoundingClientRect();
+  probe.render = { frame: renderer.info.render.frame, team: localTeam,
+    workers: units.filter(unit => unit?.hp > 0 && unit.team === localTeam && unit.kind === 'worker').map(unit => {
+      const projected = new THREE.Vector3(unit.renderX, groundHeight(unit.renderX, unit.renderZ) + 1.25, unit.renderZ).project(camera);
+      return { id: unit.id, selected: selected.has(unit.id), inView: Math.abs(projected.x) < .9
+        && Math.abs(projected.y) < .8 && Math.abs(projected.z) < 1,
+      x: rect.left + (projected.x + 1) * rect.width / 2, y: rect.top + (1 - projected.y) * rect.height / 2 };
+    }) };
+  return false;
+}
+
 const point = (cell, map) => ({ x: cell % map.width - map.width / 2 + .5,
   z: Math.floor(cell / map.width) - map.height / 2 + .5 });
 export function planForestApproach(map, worker) {
@@ -105,6 +121,18 @@ async function command(page, value) {
     'native order must use the production client connection');
 }
 
+async function selectWorkers(page, ids) {
+  for (let index = 0; index < ids.length; index++) {
+    const worker = await page.wait(`window.__forestJobCapture.render?.workers.find(w=>w.id===${ids[index]}&&w.inView)`, 'rendered selectable Worker', 10000);
+    assert.equal(await page.cdp.evaluate(`document.elementFromPoint(${worker.x},${worker.y})===document.querySelector('#viewport canvas')`), true,
+      'actual Worker pointer must be outside blocking HUD');
+    const input = { x: worker.x, y: worker.y, button: 'left', clickCount: 1, modifiers: index ? 8 : 0 };
+    await page.cdp.call('Input.dispatchMouseEvent', { type: 'mousePressed', buttons: 1, ...input });
+    await page.cdp.call('Input.dispatchMouseEvent', { type: 'mouseReleased', buttons: 0, ...input });
+  }
+  await page.wait(`window.__forestJobCapture.render?.workers.filter(w=>w.selected).length===2 && ${JSON.stringify(ids)}.every(id=>window.__forestJobCapture.render.workers.some(w=>w.id===id&&w.selected))`, 'actual two-Worker selection', 10000);
+}
+
 /** @param {import('./renderer-capture-context.mjs').CaptureContext} context */
 export async function run(context) {
   const pages = [context.page, await context.openPage()];
@@ -127,10 +155,27 @@ export async function run(context) {
   assert.equal(map.width, 160); assert.equal(map.height, 160); assert.equal(map.fogOfWar, true);
   const plans = initial.map(state => planForestApproach(map, state.workers[0]));
   const ids = initial.map(state => state.workers.slice(0, 2).map(worker => worker.id));
+  const source = await pages[0].cdp.evaluate("fetch('/src/main.js').then(response=>response.text())");
+  const lines = source.split('\n'), renderLine = lines.findIndex(line => line.trim() === 'renderer.render(scene, camera);');
+  assert.ok(renderLine >= 0 && lines.filter(line => line.trim() === 'renderer.render(scene, camera);').length === 1);
+  const observationLine = lines.findIndex((line, index) => index > renderLine && index < renderLine + 20 && line.trim() === 'drawMinimap(now);');
+  assert.ok(observationLine > renderLine, 'post-render site must retain a non-pausing observation boundary');
+  for (const page of pages) {
+    await page.cdp.call('Debugger.enable');
+    await page.cdp.call('Debugger.setBreakpointByUrl', { url: `${context.origin}/src/main.js`, lineNumber: observationLine,
+      condition: `(${observeRenderedForestWorkers.toString()})()` });
+  }
+  const capture = async (team, checkpoint) => {
+    const page = pages[team];
+    await click(page, '#camera-center-selection');
+    await page.wait(`${JSON.stringify(ids[team])}.every(id=>window.__forestJobCapture.render?.workers.some(w=>w.id===id&&w.selected&&w.inView))`, 'selected Workers inside actual rendered frame', 10000);
+    return context.capture({ page, mapId: MAP_ID, checkpoint });
+  };
   for (let team = 0; team < 2; team++) {
     assert.equal(ids[team].length, 2);
     await click(pages[team], '#camera-home-base');
-    await context.capture({ page: pages[team], mapId: MAP_ID, checkpoint: `seat-${team}-before-forest` });
+    await selectWorkers(pages[team], ids[team]);
+    await capture(team, `seat-${team}-before-forest`);
     await command(pages[team], { type: 'move', ids: ids[team], ...plans[team].target });
   }
   for (let team = 0; team < 2; team++) {
@@ -152,18 +197,18 @@ export async function run(context) {
   }
   const checks = [];
   await Promise.all(pages.map(async (page, team) => {
-    await page.wait('window.__forestJobCapture.progress.workers.every(w=>w.harvest)', 'actual forest harvest', 25000);
-    await context.capture({ page, mapId: MAP_ID, checkpoint: `seat-${team}-forest-harvest` });
-    await page.wait('window.__forestJobCapture.progress.workers.every(w=>w.returned)', 'actual loaded return', 30000);
-    await context.capture({ page, mapId: MAP_ID, checkpoint: `seat-${team}-loaded-return` });
-    await page.wait('window.__forestJobCapture.progress.workers.every(w=>w.resumed)', 'harvest after first deposit', 35000);
-    await context.capture({ page, mapId: MAP_ID, checkpoint: `seat-${team}-deposit-resume` });
+    await page.wait(`window.__forestJobCapture.progress.workers.every(w=>w.harvest) && window.__forestJobCapture.latest.workers.some(w=>${JSON.stringify(ids[team])}.includes(w.id)&&w.action==='gather-wood'&&w.cargo>0)`, 'actual forest harvest', 25000);
+    await capture(team, `seat-${team}-forest-harvest`);
+    await page.wait(`window.__forestJobCapture.progress.workers.every(w=>w.returned) && window.__forestJobCapture.latest.workers.some(w=>${JSON.stringify(ids[team])}.includes(w.id)&&w.task==='returning'&&w.cargo>0)`, 'actual loaded return', 30000);
+    await capture(team, `seat-${team}-loaded-return`);
+    await page.wait(`window.__forestJobCapture.progress.workers.every(w=>w.resumed) && window.__forestJobCapture.latest.workers.some(w=>${JSON.stringify(ids[team])}.includes(w.id)&&w.action==='gather-wood'&&w.cargo>0)`, 'harvest after first deposit', 35000);
+    await capture(team, `seat-${team}-deposit-resume`);
     await page.wait('window.__forestJobCapture.progress.workers.every(w=>w.deposits>=3)', 'three deliveries per selected Worker', 65000);
     const result = await page.cdp.evaluate('({progress:window.__forestJobCapture.progress,overflow:window.__forestJobCapture.overflow})');
     checks.push({ id: `seat-${team}-three-deliveries-each`, passed: result.progress.valid && !result.overflow
       && result.progress.workers.every(worker => worker.deposits >= 3 && worker.resumed) },
     { id: `seat-${team}-fog-privacy`, passed: result.progress.private });
-    await context.capture({ page, mapId: MAP_ID, checkpoint: `seat-${team}-repeated-forest-cycles` });
+    await capture(team, `seat-${team}-repeated-forest-cycles`);
   }));
   checks.sort((a, b) => a.id.localeCompare(b.id));
   return { status: checks.every(check => check.passed) ? 'passed' : 'failed', checks };
