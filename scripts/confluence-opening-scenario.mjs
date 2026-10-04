@@ -7,6 +7,7 @@ import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
+import { createPveHeadlessFixture } from './pve-headless-fixture.mjs';
 import { CONFLUENCE_PRE_OPENING_MAP_HASH } from '../src/confluence-opening-compat.mjs';
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const args = process.argv.slice(2), legacyArg = args.find(a => a.startsWith('--legacy-source=')), outArg = args.find(a => a.startsWith('--output='));
@@ -30,7 +31,7 @@ const inputHashes = {};
 for (const [label, root] of [['current', ROOT], ['legacy', legacyRoot]]) for (const file of [
   'server.mjs', 'room-supervisor.mjs', 'scripts/fortified-crossing-fixture.mjs', 'maps/siltmouths-confluence-grounds.json'])
   inputHashes[`${label}:${file}`] = sha(await readFile(path.join(root, file)));
-for (const file of ['src/confluence-opening-compat.mjs', 'scripts/confluence-opening-scenario.mjs'])
+for (const file of ['src/confluence-opening-compat.mjs', 'scripts/confluence-opening-scenario.mjs', 'scripts/pve-headless-fixture.mjs'])
   inputHashes[`current:${file}`] = sha(await readFile(path.join(ROOT, file)));
 const records = [], fixtures = [];
 let order = 1;
@@ -95,20 +96,48 @@ async function recover(room) {
   const next = { ...room, f, origin: `http://127.0.0.1:${f.port}`, clients: [], checkpointPath: path.join(f.directory, 'rooms', 'rooms', room.roomId, 'match-state.json') };
   await f.start();
   // Supervisor health always starts its default room. The public session probe
-  // starts this saved invite worker without connecting a peer or advancing play.
+  // starts this saved invite worker without connecting a peer. Running matches
+  // still advance under the existing simulation contract.
   const response = await fetch(`${next.origin}/api/session?room=${room.roomId}`,
     { headers: { 'x-rts-resume-token': room.tokens[0] } });
   assert.equal(response.status, 200); assert.equal((await response.json()).valid, true);
   return next;
 }
-function preserved(before, after) {
+async function preserved(before, after) {
   assert.equal(after.matchId, before.matchId); assert.equal(after.mapHash, before.mapHash);
   assert.deepEqual(after.mapDefinition, before.mapDefinition);
-  assert.deepEqual(sessionIdentities(after), sessionIdentities(before), 'paused cold session identities');
-  for (const field of ['teamFood', 'teamWood', 'teamStone', 'resourceNodes', 'buildings', 'units', 'explored']) {
-    assert.ok(Object.hasOwn(before.state, field), `saved ${field} exists`);
-    assert.deepEqual(after.state[field], before.state[field], `paused cold ${field}`);
-  }
+  assert.equal(after.matchModeId, before.matchModeId); assert.equal(after.matchModeVersion, before.matchModeVersion);
+  assert.deepEqual(sessionIdentities(after), sessionIdentities(before), 'cold session identities');
+  const fields = ['currentArmySize', 'teamFood', 'teamWood', 'teamStone', 'resourceNodes', 'buildings', 'units', 'explored',
+    'forestStocks', 'forestEpoch', 'homeTownCenters', 'workerProduction', 'teamResearch', 'teamUpgrades',
+    'triggerStates', 'scenarioEventStates', 'matchElapsedSeconds', 'scenarioClockStarted', 'victoryHoldState',
+    'matchWinner', 'matchWinnerReason', 'matchWinnerTriggerId'];
+  const unchanged = structuredClone(before);
+  assert.ok(before.state.units.every(u => !u.movePlanningPending), 'no pending asynchronous planning at capture');
+  assert.equal(after.state.nextMoveOrderId, before.state.nextMoveOrderId, 'no new asynchronous planning in compared interval');
+  const witness = await createPveHeadlessFixture(before.mapDefinition,
+    { matchModeId: before.matchModeId, matchModeVersion: before.matchModeVersion });
+  try {
+    // The adapter retains the real authority functions and disables I/O timers.
+    // Restore the unedited private snapshot before any simulation step.
+    witness.replay.restore(before); const exact = witness.replay.checkpoint();
+    assert.equal(exact.mapHash, before.mapHash); assert.equal(exact.matchId, before.matchId);
+    assert.deepEqual(exact.mapDefinition, before.mapDefinition);
+    assert.deepEqual(sessionIdentities(exact), sessionIdentities(before));
+    for (const field of fields) {
+      assert.ok(Object.hasOwn(before.state, field), `saved ${field} exists`);
+      assert.deepEqual(exact.state[field], before.state[field], `immediate cold ${field}`);
+    }
+    const continuedTicks = after.state.tickNumber - before.state.tickNumber;
+    assert.ok(Number.isInteger(continuedTicks) && continuedTicks >= 0 && continuedTicks <= 60, 'bounded no-peer tick continuation');
+    for (let tick = 0; tick < continuedTicks; tick++) witness.replay.step();
+    const predicted = witness.replay.checkpoint();
+    assert.equal(predicted.state.nextMoveOrderId, before.state.nextMoveOrderId);
+    assert.ok(after.state.units.every(u => !u.movePlanningPending));
+    for (const field of fields) assert.deepEqual(after.state[field], predicted.state[field], `native continued ${field}`);
+    assert.deepEqual(before, unchanged, 'witness does not edit the source checkpoint');
+    return { continuedTicks, immediateExactRestore: true, boundedFixedTickWitness: true };
+  } finally { await witness.dispose(); }
 }
 async function connect(room) {
   room.clients = [await room.f.connect(0, room.tokens[0], room.roomId), await room.f.connect(1, room.tokens[1], room.roomId)];
@@ -182,8 +211,10 @@ try {
   assert.ok(room.boats.every(id => old.state.units[id].cargo > 0 && old.state.units[id].queuedWaypoints.length === 1));
   for (const team of [0, 1]) assert.ok(old.state.buildings.find(b => b.team === team && b.type === 'house').footprint.includes(76 * 160 + (team ? 130 : 29)));
   record('old-paid-docks-depleted-food-cargo-gather-and-boat-goals', old);
-  room = await recover(room); s = await checkpoint(room, s => s.sequence > old.sequence); preserved(old, s); record('first-paused-cross-revision-cold-recovery', s);
-  const again = await stopCapture(room); room = await recover(room); s = await checkpoint(room, s => s.sequence > again.sequence); preserved(again, s); record('second-paused-old-definition-resave-recovery', s);
+  room = await recover(room); s = await checkpoint(room, s => s.sequence > old.sequence);
+  record('first-cross-revision-cold-recovery', s, await preserved(old, s));
+  const again = await stopCapture(room); room = await recover(room); s = await checkpoint(room, s => s.sequence > again.sequence);
+  record('second-old-definition-resave-recovery', s, await preserved(again, s));
   await connect(room);
   const messageIndex = room.clients[0].messages.length;
   room.clients[0].send({ type: 'selectMap', mapId: map.id });
@@ -198,7 +229,8 @@ try {
 
   // A real waiting legacy human lobby exercises the second reset branch and no-ops.
   let human = await setup(oldFixture, true); const waiting = await stopCapture(human);
-  human = await recover(human); s = await checkpoint(human, s => s.sequence > waiting.sequence); preserved(waiting, s); await connect(human);
+  human = await recover(human); s = await checkpoint(human, s => s.sequence > waiting.sequence);
+  record('waiting-human-lobby-cold-recovery', s, await preserved(waiting, s)); await connect(human);
   const noOpAt = human.clients[0].messages.length; human.clients[0].send({ type: 'reset' });
   s = await checkpoint(human, s => s.sequence > waiting.sequence + 1);
   assert.equal(s.mapHash, CONFLUENCE_PRE_OPENING_MAP_HASH); assert.deepEqual(s.state.units, waiting.state.units);
