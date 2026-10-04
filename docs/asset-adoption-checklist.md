@@ -32,6 +32,8 @@ a transfer gap. These criteria do not prevent incremental scoped merges.
 
 ## Exact deployment evidence
 
+### Historical inspection — 3 October 2026
+
 Railway read-only `environment-status` + `list-deployments`, inspected about
 20:57 UTC on 3 October 2026, identified one running replica in each environment:
 
@@ -47,10 +49,41 @@ read and no deployment was changed. The public `/ready` endpoint exposes only
 readiness, so it cannot establish a running revision. Railway owner retains
 delivery and exact-build smoke; production promotion stays within its existing
 authorization boundary. Which environment the user's browser targets was not
-supplied. Sheep/fishing visual checks below remain incomplete. Neither observed deployment
-contains the later PR136/PR141 six-family Frontier default integration; its
-delivery and ordinary-game screenshots are also **incomplete**. The parent-owned
-Mac QA machine was reported offline at the latest routing check.
+supplied. Sheep/fishing visual checks remained incomplete at that inspection.
+Neither then-observed deployment contained the later PR136/PR141 six-family
+Frontier integration. The Mac QA machine was then reported offline. This is
+retained historical evidence; the building follow-up below supersedes its
+staging delivery gap without closing ordinary-game appearance.
+
+## Building deployment follow-up — 4 October 2026
+
+Read-only Railway `list-deployments` and `environment-status` inspection at
+about 14:40 UTC confirmed the reported manual deployment below. Exact source
+inspection compared its eight Complete manifests/64 original PNGs, selector,
+captured helper and direct fallback helper with fork main
+`e7b99ae726fbb5bac3d31da64913c9b630f997cc`; those files are identical.
+Git ancestry confirms [PR191](https://github.com/lbeezr/thousand-unit-skirmish/pull/191)
+merge `3042d15920f8529803b5fe5c34c95b6cbe3911d4` is included.
+
+| Environment | Successful active deployment | Platform-reported source revision | Building evidence boundary |
+| --- | --- | --- | --- |
+| staging | `e104638c-2c8b-433b-8928-7b53a8f3494e` (created 13:25:08 UTC, success 13:29:02 UTC), `game` online, 1/1 replica running | `53a47ee379660f30b65776ea813f3a986d29aa37` | Contains all eight default Complete families and their 72 manifest/PNG paths. Platform/source delivery identified; authenticated asset bytes, exact served release digest and ordinary-game visual acceptance were not verified by this docs check. |
+
+Project/service are the same IDs above; staging environment is
+`93f80e39-efd0-420a-9282-86886d3e88bd`. The old production entry is retained
+as dated evidence and is not updated by the staging observation. An older
+staged environment patch remains pending and is not part of this live-deployment
+claim. No credentials, deployment mutation or new release are involved.
+
+The building workstream retains [the revised production queue](building-atlas-production-plan.md#current-outcome-and-next-gaps)
+and [ordinary-game acceptance](qa-frontier-building-adoption.md). Its immediate
+step is existing-art paid Barracks lifecycle/clearance/occlusion review on the
+flat acceptance map, both seats, at an identified served source, followed by
+raised-ground contact and fog reveal/hide on the raised/fog map. The cloud
+testing owner supplies supported renderer/staging capability under the
+[testing strategy](testing-strategy.md#start-here); its recorded blockers remain
+open. Mac testing is stopped and is not a dependency. Deployment metadata,
+source hashes and prior clean-release receipts do not close game appearance.
 
 ## Buildings, wildlife, fishing and HUD
 
@@ -73,11 +106,11 @@ It proves local package contents, not delivery of those bytes to a browser.
 
 | Package/family | Production and normal-game binding | Preview / release | Incomplete work → owner / next action |
 | --- | --- | --- | --- |
-| Frontier Town Center, House: `buildings/frontier-civilization-scale-pilot-v1`; Storehouse, Stable, Workshop, Watchtower: `buildings/frontier-civilization-models-v1` | Six **Complete-only** families now selected without preview flags; [runtime guide](frontier-building-runtime.md) records exact state fallback, shared texture/depth and retained team feedback. Source frames and authoritative occupancy are unchanged. | Six manifests + 48 original PNGs explicitly admitted; packed HTTP/hash checks pass. Named/`1` previews and `0` comparison remain available. | **Deployment and in-game adoption incomplete** → building workstream retains [PR #141](https://github.com/lbeezr/thousand-unit-skirmish/pull/141) through explicit acceptance closure. Railway delivery and offline Mac QA are supporting owners using the [exact ordinary-game recipe](qa-frontier-building-adoption.md). Source/CPU/release checks and handoff cannot close those steps. Building production owner derives missing lifecycle/masks separately. |
-| `buildings/frontier-civilization-concepts-v1` | Eight preserved wiki concepts; the military pair now has original local Complete models and registered views in the new pack below. Older construction samples remain distinct designs. [Inventory and production slices](frontier-barracks-range-authoring.md). | Concepts are reference only; omitted. | **Full replacement incomplete** → building workstream retains matched lifecycle production, identified delivery and gameplay verification; concepts are not production-state coverage. |
-| [`buildings/frontier-civilization-military-models-v1`](../assets/buildings/frontier-civilization-military-models-v1/README.md) | New Barracks and Range: sixteen original local Complete renders, two default manifests, public authoring scripts/provenance; editable models and rejected iterations retained privately. Missing states use older direct art; live team/selection/health/rally/depth feedback retained. | Eighteen exact manifest/PNG paths admitted to HTTP/Docker/release; packed MIME/hash check passes. No models, scripts or galleries ship. | **Deployment/native acceptance and matched lifecycle incomplete** → building workstream: verify normal entry, both teams, Worker front/rear, ground/flag legibility, paid construction/damage/repair/production, then author matched missing states. No native screenshot or delivery claimed; [source/replacement guide](frontier-barracks-range-authoring.md). |
-| `buildings/town-center-lifecycle-meshy-v1` | Older [captured loader](../src/captured-building-art.mjs): five states × eight views, team masks; now supplies missing-state/loading fallback beneath the new Complete Town Center. | 81 files packed. | **Current combined appearance unverified here** → renderer owner: recorded-build construction/damage/repair, team/zoom/occlusion check. |
-| `buildings/barracks-sprite-test-v1`, `buildings/archery-range-sprite-v1` | Retained [direct sprites](../src/building-sprites.mjs): five states × two teams; missing-state/loading fallback for the new Complete families. | Ten WebPs each packed. | **Full current-build appearance unverified** → building workstream: both-team lifecycle/occlusion proof; [prior checks](qa-barracks-lifecycle-2026-09-27.md) are dated evidence. |
+| Frontier Town Center, House: `buildings/frontier-civilization-scale-pilot-v1`; Storehouse, Stable, Workshop, Watchtower: `buildings/frontier-civilization-models-v1` | Six **Complete-only** families selected without preview flags at deployed `53a47ee`; [runtime guide](frontier-building-runtime.md) records exact state fallback, shared texture/depth and retained team feedback. Source frames and authoritative occupancy are unchanged. | Six manifests + 48 original PNGs explicitly admitted; prior packed HTTP/hash receipts remain evidence of local release inclusion. Named/`1` previews and `0` comparison remain. [Identified staging delivery](#building-deployment-follow-up--4-october-2026) is separate from served-byte verification. | **Exact served bytes, ordinary-game adoption and matching lifecycle incomplete** → building workstream retains [PR #141](https://github.com/lbeezr/thousand-unit-skirmish/pull/141) acceptance using the [ordinary-game recipe](qa-frontier-building-adoption.md), with cloud testing support. Review actual Worker clearance, both-team lifecycle/repair, ground/flag/fog/occlusion before closure; derive missing states/team treatment separately. |
+| `buildings/frontier-civilization-concepts-v1` | Eight preserved wiki concepts; all eight now have registered default Complete captures. Military models/captures are in the new pack below; older construction samples remain distinct designs. [Inventory and production slices](frontier-barracks-range-authoring.md). | Concepts are reference only; omitted. | **Matching lifecycle and gameplay acceptance incomplete** → building workstream retains the [current gaps/queue](building-atlas-production-plan.md#current-outcome-and-next-gaps). The remaining-six Complete queue is obsolete; concepts are not production-state coverage. |
+| [`buildings/frontier-civilization-military-models-v1`](../assets/buildings/frontier-civilization-military-models-v1/README.md) | Barracks and Range: sixteen original local Complete renders, two default manifests at deployed `53a47ee`, public authoring scripts/provenance; editable models and rejected iterations retained privately. Missing states use older direct art; live team/selection/health/rally/depth feedback retained. | Eighteen exact manifest/PNG paths admitted to HTTP/Docker/release; prior packed MIME/hash receipt proves local inclusion. No models, scripts or galleries ship. [Staging source identified](#building-deployment-follow-up--4-october-2026); served-byte/native verification open. | **Native acceptance and matching lifecycle incomplete** → building workstream starts paid Barracks at the identified served build: both teams, construction/damage/repair/production/removal, Worker front/rear and ground/flag legibility on the flat map; fog/raised contact on the raised/fog map; then extends to Range and authors matched states. No native screenshot claimed; [source/replacement guide](frontier-barracks-range-authoring.md). |
+| `buildings/town-center-lifecycle-meshy-v1` | Older [captured loader](../src/captured-building-art.mjs): five states × eight views, team masks; supplies missing-state/loading fallback beneath new Complete Town Center at `53a47ee`. | 81 files in the prior clean release; current staging byte/decode checks still open. | **Combined ordinary-game appearance unverified** → building workstream with renderer support: recorded-build construction/damage/repair, team/zoom/occlusion check. Older states do not close matching new-design production. |
+| `buildings/barracks-sprite-test-v1`, `buildings/archery-range-sprite-v1` | Retained [direct sprites](../src/building-sprites.mjs): five states × two teams; missing-state/loading fallback for new military Complete families at `53a47ee`. Direct progress <20% / <90% and HP ≥66% / ≥33% bands differ from captured 27.5% / 30% / 60% bands; old Complete can appear late in construction. | Ten WebPs each in the prior clean release; current staging byte/decode checks still open. | **Full current-build appearance unverified** → building workstream: both-team lifecycle/repair/removal/occlusion proof at the identified served build; [prior checks](qa-barracks-lifecycle-2026-09-27.md) remain dated evidence. |
 | `buildings/archery-range-construction-v1` | Exported five-stage atlas with masks; pivot/game placement unverified; normal game uses the other Range pack. | Candidate/review only; omitted. | **Incomplete admission**, not a drop-in final replacement → building + renderer owners: resolve five-stage mapping/pivot and choose explicit adoption or retained comparison. |
 | `units-buildings/frontier-glb-sample-v2`, `frontier-barracks-construction-v1`, `frontier-archery-range-construction-v1` | GLB/source-review samples. Authoring manifests do not match runtime renderer schema; no gameplay GLB consumer. | Static reviews; omitted. | **Incomplete runtime production** → technical art owner: compatible export/capture and state mapping if these designs are chosen; no need to ship unused GLBs. |
 | `buildings/town-center-sprite-v1`, `town-center-meshy-review-v1`, `town-center-state-concepts-v1` | Legacy direct Complete, earlier captured Complete and lifecycle source concepts. Default lifecycle pack supersedes them. | Direct/concepts omitted; eight earlier captured WebPs still packed. | Retained lineage, **not new adoption targets** → building owner preserves provenance; renderer owner can audit redundant release copies separately. |
@@ -112,10 +145,16 @@ against fork files with `git hash-object`: scale-pilot 44/45 identical (only
 README changed), models 81/81 identical, concepts 13/13 identical, no missing
 files. All 48 PNG captures, renderer manifests and model provenance match.
 Recorded ignored GLB paths are not present here; that does not prove source
-models are lost elsewhere. Each new Complete-only family still lacks four
-lifecycle states and aligned team masks; destruction/ruins also needs an engine
-presentation contract. Preserve the [historical audit](art-runtime-audit-2026-10-03.md)
-for those exact production details.
+models are lost elsewhere. This comparison describes the six earlier captured
+families, not the later military pair's public procedural authoring sources.
+All eight new Complete-only families lack four matching lifecycle states
+(256 additional views); team treatment still needs per-view review. Live
+standards already carry ownership, so aligned masks are a production choice,
+not a blanket missing-file requirement. Destruction currently removes the
+visual group; collapse/ruins needs a separate presentation contract. Preserve
+the [historical audit](art-runtime-audit-2026-10-03.md) for its dated production
+details and [the architecture wiki](lore/frontier-architecture.md) for retained
+art evolution. No new art or private files are published by this reconciliation.
 
 ## Resources, terrain and audio
 
