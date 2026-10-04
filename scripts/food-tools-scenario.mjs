@@ -22,7 +22,17 @@ const map = { id:'mill-food-tools-proof', name:'Paid Mill food progression', wid
 const fixture = await createFortifiedFixture({mapPath:'maps/open-field.json',timeoutMs:120000});
 let clients, tokens, workers, sequence = 1;
 const records = [], cancellationLoss = {food:0,wood:0};
-const command = (team, value, notice) => clients[team].command({...value,clientOrderToken:sequence++},notice);
+async function command(team, value, notice) {
+  // These existing handlers publish uncorrelated notices. Bound the match to
+  // newly received messages instead of requiring an order token they omit.
+  if (['researchUpgrade', 'trainWorker', 'reset'].includes(value.type)) {
+    const client = clients[team], after = client.messages.length;
+    client.send(value);
+    return client.wait(message => message.type === 'notice' && notice.test(message.message),
+      `${value.type} notice`, after);
+  }
+  return clients[team].command({...value,clientOrderToken:sequence++},notice);
+}
 const find = (s,team,type) => s.state.buildings.find(b=>b.team===team&&b.type===type);
 const saved = async () => JSON.parse(await readFile(fixture.checkpointPath,'utf8'));
 const worker = (s,team) => s.state.units[workers[team][0]];
