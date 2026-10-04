@@ -57,7 +57,8 @@ export function createSkirmishTargetPolicy(seed = 0) {
       z: Math.max(-height / 2 + 1.5, Math.min(height / 2 - 1.5, Math.floor(point.z) + .5)) });
     const candidates = [];
     // Sixteen nearby frontier probes; neither authored spawns nor raw terrain are inputs.
-    for (const radius of expired ? [] : [10, 16]) for (let index = 0; index < 8; index++) {
+    const localRadii = expired ? [] : [10, 16];
+    for (const radius of localRadii) for (let index = 0; index < 8; index++) {
       const [dx, dz] = directions[(index + rotation) % 8], length = Math.hypot(dx, dz);
       const point = clamp({ x: center.x + dx / length * radius, z: center.z + dz / length * radius });
       const visibility = seen(point);
@@ -66,15 +67,22 @@ export function createSkirmishTargetPolicy(seed = 0) {
       candidates.push({ ...point, score: visibility * 100 + index });
     }
     rotation = (rotation + 1) % 8;
-    let point = candidates.sort((a, b) => a.score - b.score)[0];
-    // An unreached local goal must not starve the cursor behind unseen cliffs.
+    let point;
+    // Give global coverage first choice. A coprime stride
+    // visits every coarse cell without spending its early turns on one map edge.
     const columns = Math.ceil(width / 8), rows = Math.ceil(height / 8), count = columns * rows;
+    const gcd = (a, b) => { while (b) [a, b] = [b, a % b]; return a; };
+    let stride = columns + 1;
+    while (stride < count && gcd(stride, count) !== 1) stride++;
+    if (stride >= count) stride = 1;
     for (let i = 0; !point && i < Math.min(count, PVE_SKIRMISH_LIMITS.searchCandidates); i++) {
-      const cell = cursor++ % count;
+      const cell = cursor % count;
+      cursor = (cell + stride) % count;
       const candidate = clamp({ x: cell % columns * 8 + 4 - width / 2,
         z: Math.floor(cell / columns) * 8 + 4 - height / 2 });
       if (seen(candidate) !== 2 && Math.hypot(candidate.x - center.x, candidate.z - center.z) > 2) point = candidate;
     }
+    point ??= candidates.sort((a, b) => a.score - b.score)[0];
     if (!point) { search = null; return null; }
     search = { key: `search:${point.x}:${point.z}`, type: 'attackMove', x: point.x, z: point.z, tick };
     return search;

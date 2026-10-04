@@ -77,11 +77,29 @@ for (const team of [0, 1]) {
     const first = policy.next(state, soldiers)[0];
     state.tick = limits.searchTicks;
     const next = policy.next(state, soldiers)[0];
-    assert.deepEqual([next.x, next.z], [-35.5, -27.5], 'unknown local probes cannot starve bounded global search');
+    assert.deepEqual([next.x, next.z], [-27.5, -19.5], 'unknown local probes cannot starve bounded global search');
     assert.notDeepEqual([next.x, next.z], [first.x, first.z]);
     state.tick += limits.searchTicks;
     const third = policy.next(state, soldiers)[0];
-    assert.deepEqual([third.x, third.z], [-27.5, -27.5], 'subsequent expired goals advance the cursor');
+    assert.deepEqual([third.x, third.z], [-19.5, -11.5], 'subsequent expired goals distribute the cursor across rows');
+  });
+
+  test(`seat ${team}: arriving at successive frontiers advances global search across rows`, () => {
+    const state = observation(team), policy = createSkirmishTargetPolicy(0), soldiers = state.units.friendly;
+    state.buildings.visibleEnemies = [];
+    let command = policy.next(state, soldiers)[0];
+    const goals = [];
+    for (let index = 0; index < 4; index++) {
+      goals.push([command.x, command.z]);
+      for (const soldier of soldiers) { soldier.x = command.x; soldier.z = command.z; }
+      state.tick += 30;
+      const prior = command;
+      command = policy.next(state, soldiers)[0];
+      assert.ok(command, 'an arrived army receives another legal search order');
+      assert.notDeepEqual([command.x, command.z], [prior.x, prior.z]);
+    }
+    assert.deepEqual(goals, [[-35.5, -27.5], [-27.5, -19.5], [-19.5, -11.5], [-11.5, -3.5]],
+      'successfully reached goals also distribute search across rows');
   });
 
   test(`seat ${team}: recovery priorities exclude dead, friendly and water-only targets`, () => {
@@ -155,3 +173,25 @@ test('filtered observations and commands remain identical when hidden enemy stat
   assert.deepEqual(createSkirmishTargetPolicy(1).next(a, a.units.friendly),
     createSkirmishTargetPolicy(1).next(b, b.units.friendly));
 });
+
+for (const [width, height] of [[80, 64], [80, 88], [160, 160]]) {
+  test(`global search covers every coarse cell once on ${width}×${height}`, () => {
+    const state = observation(0), policy = createSkirmishTargetPolicy(0), soldiers = state.units.friendly;
+    state.map.width = width; state.map.height = height;
+    state.visibility = { columns: width, rows: height,
+      data: Buffer.alloc(Math.ceil(width * height / 4)).toString('base64') };
+    state.buildings.visibleEnemies = [];
+    for (const soldier of soldiers) { soldier.x = 0; soldier.z = 0; }
+    policy.next(state, soldiers);
+    const cells = new Set(), count = Math.ceil(width / 8) * Math.ceil(height / 8);
+    for (let index = 0; index < count; index++) {
+      state.tick += limits.searchTicks;
+      const command = policy.next(state, soldiers)[0];
+      assert.ok(command && command.type === 'attackMove');
+      assert.ok(command.x > -width / 2 && command.x < width / 2);
+      assert.ok(command.z > -height / 2 && command.z < height / 2);
+      cells.add(`${command.x}:${command.z}`);
+    }
+    assert.equal(cells.size, count, 'cursor cannot become trapped in a short stride cycle');
+  });
+}
