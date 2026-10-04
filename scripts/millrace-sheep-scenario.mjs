@@ -129,7 +129,7 @@ try {
   assert.equal(fresh.welcome.recoveredFromCheckpoint, false); assert.notEqual(fresh.welcome.matchId, matchId);
   checkOpening(fresh, 0);
   assert.equal((await readdir(fixture.directory)).filter(name => name.startsWith('match.json.rejected-')).length, 1);
-  console.log(JSON.stringify({ scenario: 'normal default Millrace Sheep', map: 'Bellweather · Millrace', sheep: 6, foodStock: 2800,
+  console.log(JSON.stringify({ scenario: 'explicit historical Millrace Sheep', map: 'Bellweather · Millrace', sheep: 6, foodStock: 2800,
     bothSeatOpeningVisibleAndStaticArtReady: true, bothSeatNaturalHarvestAndReturnCargo: true,
     exactLegacyMapStockCargoAndIdentityPreserved: true, currentRestartCreditsOnce: true,
     rematchRestoresSixSheep: true, unrelatedMapDriftRejectedAndArchived: true,

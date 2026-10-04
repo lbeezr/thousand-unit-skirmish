@@ -4,6 +4,7 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { runArmyAttackCase } from './army-attack-continuation-case.mjs';
 import { runUnqueuedFogLossCase } from './army-attack-fog-case.mjs';
+import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 
 for (const team of [0, 1]) {
   test(`seat ${team}: direct Attack loses fog target and engages only the nearby visible enemy`, async () => {
@@ -57,7 +58,7 @@ for (const team of [0, 1]) for (const control of ['keyboard', 'button']) for (co
     const commands = [], handlers = {}, canvasHandlers = {}, enemy = { id: 9, team: 1 - team };
     const canvas = { getBoundingClientRect: () => ({ left: 0, top: 0 }),
       addEventListener: (type, callback) => { canvasHandlers[type] = callback; } };
-    const context = vm.createContext({ localTeam: team, matchWinner: -1, selectedBuildingId: null,
+    const context = vm.createContext({ ...wildlifeClientBindings(), localTeam: team, matchWinner: -1, selectedBuildingId: null,
       attackMoveMode: false, persistentTargetMode: null, tapOrderArmed: false, buildPlacementActive: false,
       window: { addEventListener: (type, callback) => { handlers[type] = callback; }, matchMedia: () => ({ matches: false }) },
       document: { fullscreenElement: null }, appShell: {}, renderer: { domElement: canvas },
@@ -70,7 +71,7 @@ for (const team of [0, 1]) for (const control of ['keyboard', 'button']) for (co
       pickBuildingAt: () => null, pickResourceNodeAt: () => null, pickForestCellAt: () => null,
       keyboardTargetIsEditing: () => false, wallPlacementKeydown: () => false,
       cameraNavigationKeydown: () => false, controlGroupIndexFromKey: () => null });
-    vm.runInContext(slice('function setAttackMoveMode(', 'function setTapOrderArmed(')
+    vm.runInContext(wildlifeClientFunctionSource(client) + slice('function setAttackMoveMode(', 'function setTapOrderArmed(')
       + slice('function issueMove(', 'function issueBuildingRallyPoint(')
       + slice('function issueAttack(', 'function issueAttackBuilding(')
       + slice('function issueContextOrder(', 'function buildPlacementAt(')

@@ -1,4 +1,5 @@
 import { economyClientBindings } from './economy-client-fixture.mjs';
+import { wildlifeClientBindings, wildlifeClientFunctionSource } from './wildlife-client-fixture-bindings.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -8,6 +9,8 @@ import { createWaterStudyFishBinding } from '../src/water-study-fish-binding.mjs
 import { selectWaterStudyFish } from '../src/water-study-state.mjs';
 import { BUILDING_DEFINITIONS, UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 import { applyUnitStances } from '../src/combat-stance-ui.mjs';
+import * as THREE from 'three';
+import { createNeutralWildlifeRenderer } from '../src/neutral-wildlife-renderer.mjs';
 import { readWorkerPerformingAction } from '../src/worker-work-presentation.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
@@ -40,7 +43,7 @@ function fixture(team) {
     close() {}
   }
   const noop = () => {};
-  const context = vm.createContext({ ...economyClientBindings(), readWorkerPerformingAction, applyUnitStances, UNIT_DEFINITIONS,
+  const context = vm.createContext({ ...economyClientBindings(), ...wildlifeClientBindings(), readWorkerPerformingAction, applyUnitStances, UNIT_DEFINITIONS,
     applyLobby() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {}, updateChat() {} },
     waterStudyFishBinding: { update(state, options) { fishUpdates.push({ state, options }); }, clear() {} },
     WebSocket, URL, performance: {now: () => 1000}, location: {protocol:'http:',host:'localhost'},
@@ -52,6 +55,9 @@ function fixture(team) {
     activeMatchMode: {}, knownMaps: [], matchModeView: { update(value) { modeViews.push(value); } },
     latestMatchElapsedSeconds:0, matchResult:element('result'), TEAM_NAMES:['Azure','Ember'],
     buildPlacementActive:false, buildPlacementPending:false, attackMoveMode:false, tapOrderArmed:false,
+    persistentTargetMode:null,tapOrderPointer:null,selectedBuildingId:null,
+    activeControlGroup:null,lastControlGroupRecall:null,buildingVisuals:new Map(),
+    resourceNodeVisuals:new Map(),wildlifeRenderer:{reconcile(){},isAvailable:() => false,positionFor:() => null},
     units:[],teamUnits:[[],[]],selected:new Set(),controlGroups:[new Set()], MAX_UNITS:2000,MAX_PER_TEAM:1000,WORKERS_PER_TEAM:4,
     WORKER_TASK_STATES:new Set(['idle']),nextAttackFocusSlot:0,attackFocusDirty:false,selectionDirty:false,
     unitHealthBackground:{count:0},unitHealthFill:{count:0},
@@ -64,7 +70,7 @@ function fixture(team) {
     setUnitTint:noop,updateUnitTransform:noop,updateUnitCargoCueColor:noop,
     markUnitInstanceMatricesDirty:noop,flushUnitCargoPackColor:noop,
     clearControlGroups(){ for (const group of context.controlGroups) group.clear(); },
-    syncSelectionMesh:noop,updateSelectionUI:noop,updateCommandUI:noop,updateControlGroupUI:noop,
+    syncSelectionMesh:noop,updateSelectionUI:noop,updateCommandUI:noop,updateControlGroupUI:noop,updateBuildPlacementHint:noop,
     updateFogFromState:noop,applyForestState:noop,updateObjectives:noop,updateVictoryHoldCard:noop,
     updateScenarioEventCards(_events,elapsed){context.latestMatchElapsedSeconds = elapsed;},
     updateEconomyUI:noop,updateEnvironmentStateCaptureSnapshot:noop,revalidateControlGroups:noop,
@@ -72,6 +78,7 @@ function fixture(team) {
     zoom:1.7,defaultCameraZoom:0.91,cameraMinZoom:0.1,mapFitActive:false,resize:noop,centerCameraOnHomeBase:noop,
   });
   vm.runInContext([
+    wildlifeClientFunctionSource(source), declaration('clearActiveControlGroup','assignControlGroup'),
     declaration('syncMatchResultActions','updateMatchResult'),declaration('updateMatchResult','updateCommandUI'),
     declaration('setArmySize','updateSelectionUI'),declaration('appendUnitFromState','applyState'),
     declaration('applyState','updateEnvironmentStateCaptureSnapshot'),declaration('setPlayer','setMapCatalog'),socketSource,
@@ -103,9 +110,10 @@ function resourceFixture(team) {
   const f = fixture(team);
   const node = { id: 'formerly-depleted-sheep', type: 'food', wildlifeSpecies: 'bellweather-sheep',
     stock: 100, x: -0.5, z: -0.5 };
-  const definition = { ...map, resourceNodes: [node] };
+  const definition = { ...map, width: 16, height: 16, resourceNodes: [node] };
   Object.assign(f.context, { mapDefinition: definition, BUILDING_DEFINITIONS,
     MAP_WIDTH: 16, MAP_HEIGHT: 16, MAP_HALF_X: 8, MAP_HALF_Z: 8,
+    latestFogCells: new Uint8Array(256).fill(2),
     latestResourceStocks: new Map(), latestForestStocks: new Map(), latestForestEpoch: 7,
     forestTreeSlots: new Map(), setForestTreeVisual() {}, drawMinimap() {},
     resourceNodeVisuals: new Map(), wildlifeRenderer: { reconcile() {}, isAvailable: () => false },
@@ -126,11 +134,184 @@ function resourceFixture(team) {
     declaration('buildPlacementAt', 'updateBuildPlacementGhost'),
   ].join('\n'), f.context);
   const packet = (overrides = {}) => ({ ...snapshot(team, { elapsed: 100 }),
-    forestEpoch: 7, forestStocks: [], resourceNodes: [{ ...node, stock: 0, wildlifeState: 'depleted' }], ...overrides });
+    forestEpoch: 7, forestStocks: [], resourceNodes: [{ ...node, stock: 0, wildlifeState: 'depleted',
+      wildlifeTeam: null, wildlifeHeading: 0 }], ...overrides });
   f.connections[0].message(packet());
   assert.equal(f.context.latestResourceStocks.get(node.id), 0);
   assert.equal(f.context.buildPlacementAt(0, 0).valid, true);
   return { ...f, node, definition, packet };
+}
+
+function wildlifeFixture(team, t) {
+  const f = fixture(team);
+  const node = { id: 'recovery-sheep', type: 'food', wildlifeSpecies: 'bellweather-sheep',
+    stock: 100, x: 2.5, z: -3.5 };
+  const definition = { ...map, width: 16, height: 16, resourceNodes: [node] };
+  const disclosed = { ...node, x: -4.5, z: 3.5, wildlifeState: 'alive', wildlifeTeam: team,
+    wildlifeHeading: Math.PI / 2, wildlifeActivity: 'wandering' };
+  const scene = new THREE.Scene();
+  const wildlifeRenderer = createNeutralWildlifeRenderer({ THREE, scene, groundHeight: () => 0,
+    loadArt: () => Promise.reject(new Error('explicit CPU fallback')) });
+  wildlifeRenderer.reset(definition.resourceNodes, definition);
+  t.after(() => wildlifeRenderer.dispose());
+  function prepareMap(next) {
+    Object.assign(f.context, { MAP_WIDTH: next.width, MAP_HEIGHT: next.height,
+      MAP_HALF_X: next.width / 2, MAP_HALF_Z: next.height / 2,
+      fogMesh: { visible: true }, latestFogCells: null,
+      fogTexture: { image: { data: new Uint8Array(next.width * next.height * 4) } },
+      minimapFogImage: { data: new Uint8Array(next.width * next.height * 4) } });
+    wildlifeRenderer.reset(next.resourceNodes, next);
+  }
+  Object.assign(f.context, { mapDefinition: definition, atob, wildlifeRenderer,
+    latestResourceStocks: new Map(), latestForestStocks: new Map(), latestForestEpoch: null,
+    forestTreeSlots: new Map(), setForestTreeVisual() {}, drawMinimap() {},
+    minimapFogContext: { putImageData() {} }, latestBuildings: [],
+    cameraTarget: new THREE.Vector3(), buildMap: prepareMap,
+  });
+  prepareMap(definition);
+  vm.runInContext([
+    declaration('updateFogFromState', 'setForestTreeVisual'),
+    source.slice(source.indexOf('function applyForestState('), source.indexOf('\nlet terrainSurface')),
+  ].join('\n'), f.context);
+  const visibility = (stateCode = 2, point = disclosed) => {
+    const { MAP_WIDTH: width, MAP_HEIGHT: height } = f.context;
+    const bytes = Buffer.alloc(Math.ceil(width * height / 4));
+    const cell = Math.floor(point.z + height / 2) * width + Math.floor(point.x + width / 2);
+    bytes[cell >> 2] |= stateCode << ((cell & 3) * 2);
+    return { columns: width, rows: height, data: bytes.toString('base64') };
+  };
+  const packet = (overrides = {}) => ({ ...snapshot(f.context.localTeam, { elapsed: 100 }),
+    mapId: f.context.mapDefinition.id, forestEpoch: 7, forestStocks: [],
+    resourceNodes: [{ ...disclosed, wildlifeTeam: f.context.localTeam }], visibility: visibility(), ...overrides });
+  f.connections[0].message(packet());
+  const current = f.context.latestWildlifeView.rows.get(node.id);
+  assert.deepEqual({ x: current.x, z: current.z }, { x: disclosed.x, z: disclosed.z });
+  assert.equal(f.context.wildlifePointVisible(node), false, 'the authored cell supplies no sight');
+  assert.equal(f.context.wildlifePointVisible(current), true, 'accepted current fog reveals the moved pose');
+  f.context.selectWildlife(current);
+  assert.equal(f.context.selectedWildlifeId, node.id);
+  assert.equal(f.context.selected.size, 0, 'Sheep selection stays outside the unit Set');
+  f.context.tapOrderArmed = true;
+  f.context.tapOrderPointer = { id: 3 };
+  return { ...f, node, definition, disclosed, packet, visibility };
+}
+
+function assertWildlifeCleared(f) {
+  assert.equal(f.context.selectedWildlifeId, null);
+  assert.equal(f.context.selectedWildlifeView, null);
+  assert.equal(f.context.selectedWildlife(), null);
+  assert.equal(f.context.tapOrderArmed, false);
+  assert.equal(f.context.tapOrderPointer, null);
+}
+
+const wildlifeLosses = [
+  ['unseen current cell', f => ({ visibility: f.visibility(0) })],
+  ['explored current cell', f => ({ visibility: f.visibility(1) })],
+  ['omitted row', () => ({ resourceNodes: [] })],
+  ['missing resource table', () => ({ resourceNodes: undefined })],
+  ['recaptured row', f => ({ resourceNodes: [{ ...f.disclosed, wildlifeTeam: 1 - f.context.localTeam }] })],
+  ['neutral row', f => ({ resourceNodes: [{ ...f.disclosed, wildlifeTeam: null }] })],
+  ['harvested carcass', f => ({ resourceNodes: [{ ...f.disclosed, stock: 40, wildlifeState: 'carcass', wildlifeActivity: undefined }] })],
+  ['depleted food', f => ({ resourceNodes: [{ ...f.disclosed, stock: 0, wildlifeState: 'depleted', wildlifeActivity: undefined }] })],
+  ['malformed pose', f => ({ resourceNodes: [{ ...f.disclosed, x: null }] })],
+  ['resource epoch transition', () => ({ forestEpoch: 8, resourceNodes: [] })],
+];
+
+for (const team of [0, 1]) {
+  for (const [reason, change] of wildlifeLosses) test(`seat ${team}: accepted ${reason} clears selected Sheep without revival`, t => {
+    const f = wildlifeFixture(team, t), connection = f.connections[0];
+    const patch = change(f);
+    connection.message(f.packet(patch));
+    assertWildlifeCleared(f);
+    connection.message(f.packet({ forestEpoch: patch.forestEpoch ?? 7 }));
+    assert.equal(f.context.latestWildlifeView.rows.has(f.node.id), true, 'later disclosure can make the Sheep eligible again');
+    assertWildlifeCleared(f);
+  });
+
+  test(`seat ${team}: hidden relocated rows cannot update remembered construction positions`, t => {
+    const f = wildlifeFixture(team, t), connection = f.connections[0];
+    const remembered = f.context.wildlifePositionMemory.positions.get(f.node.id);
+    const hidden = { ...f.disclosed, x: 5.5, z: 5.5 };
+    connection.message(f.packet({ resourceNodes: [hidden], visibility: f.visibility(1, hidden) }));
+    assertWildlifeCleared(f);
+    assert.deepEqual(f.context.wildlifePositionMemory.positions.get(f.node.id), remembered);
+    assert.deepEqual({ x: f.context.constructionResourceNodes()[0].x, z: f.context.constructionResourceNodes()[0].z }, remembered);
+    assert.equal(f.context.latestWildlifeView.rows.size, 0);
+    connection.message(f.packet({ forestEpoch: 8, resourceNodes: [] }));
+    assert.equal(f.context.wildlifePositionMemory.positions.size, 0, 'epoch reset discards the prior moved position');
+  });
+
+  for (const visible of [false, true]) test(`seat ${team}: same-epoch ${visible ? 'visible' : 'hidden'} welcome clears Sheep selection and old socket authority`, t => {
+    const f = wildlifeFixture(team, t), old = f.connections[0], current = f.connect();
+    f.welcome(current, f.packet({ resourceNodes: visible ? [f.disclosed] : [] }), f.definition);
+    assert.equal(f.context.latestWildlifeView.resourceEpoch, 7, 'welcome can reuse a numeric epoch');
+    assertWildlifeCleared(f);
+    if (!visible) assert.equal(f.context.wildlifePositionMemory.positions.size, 0, 'hidden welcome clears old position knowledge');
+    const view = f.context.latestWildlifeView;
+    old.message(f.packet());
+    assert.equal(f.context.latestWildlifeView, view, 'stale socket cannot restore any disclosure');
+    current.message(f.packet());
+    assert.equal(f.context.latestWildlifeView.rows.has(f.node.id), true);
+    assertWildlifeCleared(f);
+  });
+
+  test(`seat ${team}: actual map-change receipt clears Sheep focus and position knowledge`, t => {
+    const f = wildlifeFixture(team, t), connection = f.connections[0];
+    const next = { ...f.definition, id: `${map.id}-new` };
+    connection.message({ type: 'mapChange', map: next, maps: [],
+      state: f.packet({ mapId: next.id, resourceNodes: [] }) });
+    assertWildlifeCleared(f);
+    assert.equal(f.context.latestWildlifeView.mapId, next.id);
+    assert.equal(f.context.wildlifePositionMemory.positions.size, 0);
+    connection.message(f.packet());
+    assert.equal(f.context.latestWildlifeView.rows.has(f.node.id), true);
+    assertWildlifeCleared(f);
+  });
+
+  test(`seat ${team}: same-size clock rewind clears Sheep focus without changing its numeric epoch`, t => {
+    const f = wildlifeFixture(team, t), connection = f.connections[0];
+    connection.message(f.packet({ matchElapsedSeconds: 0, tick: 0 }));
+    assert.equal(f.context.latestWildlifeView.resourceEpoch, 7);
+    assertWildlifeCleared(f);
+    connection.message(f.packet());
+    assertWildlifeCleared(f);
+  });
+
+  test(`seat ${team}: welcome seat reassignment clears Sheep selection before new ownership disclosure`, t => {
+    const f = wildlifeFixture(team, t), current = f.connect(), nextTeam = 1 - team;
+    const state = { ...snapshot(nextTeam), forestEpoch: 7, forestStocks: [], visibility: f.visibility(),
+      resourceNodes: [{ ...f.disclosed, wildlifeTeam: nextTeam }] };
+    current.message({ type: 'welcome', map: f.definition, maps: [], state, player: { team: nextTeam, isHost: nextTeam === 0 } });
+    assert.equal(f.context.localTeam, nextTeam);
+    assert.equal(f.context.latestWildlifeView.team, nextTeam);
+    assert.equal(f.context.latestWildlifeView.rows.get(f.node.id).wildlifeTeam, nextTeam);
+    assertWildlifeCleared(f);
+  });
+
+  test(`seat ${team}: spectator welcome and later seat return never restore selected Sheep`, t => {
+    const f = wildlifeFixture(team, t), current = f.connect();
+    current.message({ type: 'welcome', map: f.definition, maps: [], state: f.packet(),
+      player: { team: null, isHost: false } });
+    assert.equal(f.context.localTeam, null);
+    assert.equal(f.context.latestWildlifeView.team, null);
+    assertWildlifeCleared(f);
+    f.welcome(current, { ...snapshot(team), forestEpoch: 7, forestStocks: [],
+      resourceNodes: [f.disclosed], visibility: f.visibility() }, f.definition);
+    assert.equal(f.context.localTeam, team);
+    assert.equal(f.context.latestWildlifeView.rows.has(f.node.id), true);
+    assertWildlifeCleared(f);
+  });
+
+  test(`seat ${team}: rejected rules/map packets preserve current Sheep selection and fog`, t => {
+    const f = wildlifeFixture(team, t), connection = f.connections[0], view = f.context.latestWildlifeView;
+    const fog = f.context.latestFogCells;
+    for (const patch of [{ rulesetRevision: 'future-rules' }, { mapId: 'other-map' }]) {
+      connection.message(f.packet({ ...patch, forestEpoch: 8, resourceNodes: [], visibility: f.visibility(0) }));
+      assert.equal(f.context.selectedWildlifeId, f.node.id);
+      assert.equal(f.context.latestWildlifeView, view);
+      assert.equal(f.context.latestFogCells, fog);
+    }
+  });
 }
 
 for (const team of [0, 1]) {

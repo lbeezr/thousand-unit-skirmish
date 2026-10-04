@@ -131,7 +131,8 @@ export async function auditAssetAdoption({ registry, releaseFiles, main = null, 
         && runtime.teamCivilizations?.[0] === 'human' && runtime.roles.includes('human')
         && `assets/units/${spriteDirectory('human', runtime.roleSpriteVersions.human)}/sprite-atlas-pack-v1.json` === record.manifest;
       const clips = new Map(manifest.assets[0].clips.map(clip => [`${clip.stateId}|${clip.directionId}`, clip]));
-      const state = activeState({ kind: 'worker', hp: 100, task: 'gathering', workResourceVariant: 'shore-fish' }, 1000);
+      const state = activeState({ kind: 'worker', hp: 100, task: 'gathering',
+        workResourceVariant: 'shore-fish', performingAction: 'gather-food' }, 1000);
       assert.equal(state, 'gather-fish');
       assert.equal(spriteActionClip(clips, state, 'south-east', 'food', 'human')?.stateId, 'gather-fish');
     } else throw new Error(`${record.id}: unsupported default-binding probe ${record.probe}`);
