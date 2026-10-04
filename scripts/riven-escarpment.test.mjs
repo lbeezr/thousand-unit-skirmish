@@ -21,6 +21,7 @@ test('Medium authoring is deterministic, admitted in size and retains ordinary e
   assert.deepEqual([map.width, map.height, map.startingArmySize], [224, 224, 24]);
   assert.deepEqual(map.startingResources, { food: 150, wood: 250 });
   assert.equal(map.fogOfWar, true); assert.match(map.summary, /^Medium · 224/);
+  assert.ok(map.summary.length <= 120);
   assert.equal(map.economyProfileId, undefined);
   assert.deepEqual([map.triggers, map.scenarioEvents], [[], []]);
   assert.equal(map.timedVictory, undefined); assert.equal(map.victoryHoldSeconds, undefined);

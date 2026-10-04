@@ -66,7 +66,7 @@ export async function generateRivenEscarpment() {
   const audio = JSON.parse(await readFile(new URL('../maps/veyrholds-slate-saddle.json', import.meta.url))).audio;
   return {
     id: 'veyrholds-riven-escarpment', name: 'Veyrholds · Riven Escarpment', region: 'veyrholds',
-    summary: 'Medium · 224 × 224 · twin escarpments, low rift, two passes and high routes · three expansion pockets per seat · elimination',
+    summary: 'Medium · 224 × 224 · twin escarpments and four routes · three expansion pockets per seat · elimination',
     width, height, terrainSeed: 93027, fogOfWar: true, terrainBase: 'scree',
     terrainPatches: compressGroundLevels(paint, width, height).map(({ level, ...rect }) => ({ ...rect, material: materials[level] })),
     elevationPatches: compressGroundLevels(levels, width, height),
