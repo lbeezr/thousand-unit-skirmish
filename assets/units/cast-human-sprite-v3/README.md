@@ -139,3 +139,12 @@ Default CPU productive gating, Stop/resume, movement/attack and build↔repair
 reset checked on both seats.37 action-heading gaps and exact deployed/native
 acceptance remain; target-bearing integration stays with the animation owner.
 All nine keys in the East source sheet are admitted, with prior reviews retained.
+
+
+v0.28.0 adds three actual East pick keys (720ms loop) and three East defeat keys
+(840ms one-shot, prone terminal) from the preserved public-seed iteration.
+The aligned one-page/mask strip grows2560→3072x4096; every old RGBA pixel/frame,
+world scale and unrelated clip stays exact. Existing exact Stone consumer binds
+East by default. Full land actions are now3/8(E/SE/NW), Walk8/8;35 cells remain.
+See [land QA](../../../docs/qa-worker-land-art-2026-10-04.md) for sources/registration,
+release and open identified deployed/native acceptance.

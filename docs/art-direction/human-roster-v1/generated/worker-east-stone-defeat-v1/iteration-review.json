@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "rawSha256": "18b2bf7927ca05e819c738fa40df4c96bb9820d2e757d6b907e22bbcf6e1604e",
+  "acceptedSourceIndexes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "sourceReview": "All six complete same-character East silhouettes are usable; simple motion accepted for breadth. Pick is compact and distinct from axe/hammer. Defeat buckles, braces, becomes prone. Whole original sheet and dropped-pick component retained; extraction excludes detached tool but preserves whole characters.",
+  "scale": "one232/427 for all six; no per-key resizing",
+  "root": "fixed columns256/768/1280; pick519; fallen reviewed contact916/927/961",
+  "polish": "slight tool/foot contact drift and loop smoothing open; native ordinary match required",
+  "nativeStatus": "open; offline previews only"
+}

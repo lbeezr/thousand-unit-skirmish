@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "7455dc3bffb36272148add911ac36b7a88f9f740",
+  "originalFrames": 152,
+  "originalClips": 60,
+  "originalFrameMetadataSha256": "abf6fea25b64d2b88ea9fe567d6a0525b410bda2041982a389eefcd18b547e50",
+  "originalClipMetadataSha256": "9f54daf79872ad0aaecc430d88b71c898c7a8f652e82731a4bc47a6054995c1e",
+  "originalFrameRgbaSha256": "5506c2c6de6f4e7e747f20eee42e66b0f0c7022082c7a97192cc41642aeaed1c",
+  "originalRgbaSha256": "b20bcb31e4deadf45d1c5cb7fc0ee4e077012e466c2aae577de59299de98d2dd",
+  "originalTeamMaskSha256": "d740bcc5711c84da12c15abbbbd2bfa51113a1369a9214d2fb39ec73d6815fb0",
+  "originalTeamMaskPixelsSha256": "e5b844cc57f57094ea4585e235f36c78c1cd222262bb89d53c94dcb4d6b3e55d",
+  "originalDimensionsPx": {
+    "width": 2560,
+    "height": 4096
+  },
+  "worldUnitsPerPixel": 0.0052421832906788795,
+  "originalReplacedClips": [
+    {
+      "stateId": "defeat",
+      "directionId": "east",
+      "loop": false,
+      "sequence": [
+        {
+          "frameId": "idle-east-0",
+          "durationMs": 1000
+        }
+      ]
+    }
+  ]
+}

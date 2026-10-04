@@ -104,8 +104,8 @@ current-roster keys can also be admitted with the same manifest contract.
 | --- | --- | --- |
 | 1 | Retain all eight walk headings through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
 | 2 | Keep all eight authored walk headings functional; Carry/Return uses their existing cargo cue. | Default Three playback/registration is checked. Native root/turn/cargo observations identify further refinements; no walk heading input remains missing. |
-| 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **31 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
-| 4 | Six remaining readable dedicated Stone-work headings; retain PR263 default selector adoption. | SE and NW now have dedicated pick poses; the earlier broad eight-view attempt failed strike facing in the other rows. PR263 now enables exact authored Stone state/resource selection from productive receipts; missing headings retain their own idle. No economy edits. |
+| 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **30 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
+| 4 | Five remaining readable dedicated Stone-work headings; retain PR263 default selector adoption. | SE, NW and E now have dedicated pick poses; the earlier broad eight-view attempt failed strike facing in the other rows. PR263 now enables exact authored Stone state/resource selection from productive receipts; missing headings retain their own idle. No economy edits. |
 | 5 | Improve costume consistency, registration refinement and loop smoothing after usable breadth. | Functional native observations identify the needed refinements. Cosmetic perfection is not a gate for supplied usable keys. |
 
 There are now 8 of 8 walk headings, eight distinct idle headings, SE+NW land-action
@@ -754,3 +754,62 @@ actual packaged guarded HTTP/WebSocket/hash checks pass. [Clean East hammer rele
 measures `fa34b9d8d19efd85dc95db191196446aae210c51`, `sourceDirty:false`, 1178 files,
 `sha256:00602d6d95e91436ff5258e6fb0f55f5723bd79891654a051393a8498bb66ec0`. Receipt commits remain separate from measured code.
 Exact containing deployment/native acceptance remains open.
+
+
+## East dedicated Stone and terminal defeat — v0.28.0
+
+[PR269](https://github.com/lbeezr/thousand-unit-skirmish/pull/269) merged at
+`68a6fa9feff8d31ee108d1dc6e77964494a58ba2` after [independent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/269#pullrequestreview-5404349342).
+This next small true-heading slice completes East's remaining Stone and defeat.
+[Public-seed source iteration](art-direction/human-roster-v1/generated/worker-east-stone-defeat-v1/README.md)
+retains the approved actual East walk seed, exact built-in ImageGen prompt/raw,
+six extracted complete characters and review. No private pixels, external paid
+job or rigging. Legacy bearing/character mismatch was already inspected above;
+this keeps the actual down-right front-three-quarter camera throughout.
+
+[Admission](../scripts/admit-worker-stone-defeat-east.py) uses one232/427 scale,
+column roots[256,768,1280]. Pick uses baseline519,320x320 canvas/root[160,308],
+three240ms keys/720ms loop; tooltip strike and feet differ by at most10px in
+registration, awaiting native contact polish. Defeat uses reviewed physical
+contact lines916/927/961,512x256/root[256,244], three280ms keys/840ms one-shot;
+terminal is fully prone and stays fixed. A separate dropped-pick component in
+raw key3 is retained in the raw sheet, omitted by whole-character connected
+extraction. Every character/attached tool is complete; no invented pixels or
+per-pose recenter/scale. Body anatomy matches prior East at about232px;
+max silhouette stays272 and existing world units/pixel remain exact.
+
+The aligned page/mask grows2560→3072 width, height4096. Six cells use the new
+strip x2560: picks y0/320/640, defeat y960/1216/1472. [Preservation](qa-evidence/worker-land-art-2026-10-04/stone-defeat-east-preservation.json)
+hashes the **entire previous2560x4096 decoded RGBA**, all152 earlier frame records,
+60clips except explicit East defeat idle replacement, and retained encoded old
+mask. Decoded current mask remains zero, aligned; old mask preserved separately.
+[Registration](qa-evidence/worker-land-art-2026-10-04/stone-defeat-east-registration.json),
+[pick review](qa-evidence/worker-land-art-2026-10-04/gather-stone-east-keys.png) and
+[defeat review](qa-evidence/worker-land-art-2026-10-04/defeat-east-keys.png) are CPU
+source evidence, not game/GPU captures. Pack0.28.0 has158frames/61clips.
+
+[Default checks](../scripts/worker-east-stone-defeat-art.test.mjs) cover actual
+manifest/UVs/matrix scale; both Human seats selected/unselected; positive Stone
+loop/clear/Stop-resume, move/attack interruptions, food↔Stone and heading changes;
+death overrides work/movement/attack, advances and clamps terminal after840ms.
+Existing PR263 consumes exact new Stone automatically. No selector/shared clock/
+economy writes. Existing fishing source pixels, frozen ROI and behavior stay
+protected by their independent tests; no fishing coverage is claimed.
+
+Native recipe on an identified containing ordinary Human match: gather a Stone
+node screen-down-right/East; see distinct pick phases, contact/aim, positive
+resource/cargo/Return/deposit; Stop/resume, switch food/wood and turn, interrupt
+with move/attack. Kill a same-heading Worker during work/travel/attack; observe
+three phases ending prone without wrapping. Compare East/SE/NW, both seats,
+selected/unselected, ordinary/strategic zoom, consistent roots and body/tool
+scale. Record exact source/release/deployment/map. Parent Railway/Mac route is
+the capture receiver; local sandbox-unavailable provides no native evidence.
+Target-bearing integration remains animation01a103d4; deployed/native acceptance
+stays open and separate from source/release proof.
+
+Current [action-by-heading inventory](qa-evidence/worker-land-art-2026-10-04/land-action-coverage.json):
+Walk8/8; every Wood/Food/Build/Repair/Attack/Defeat/Stone action3/8(E,SE,NW).
+Authored29/64; **35 art cells remain**, N/NE/S/SW/W each7.
+Ranked next: one actual North family, then NE/S/SW/W, using independent public
+heading seeds, faithful same-heading axe attack and hammer repair reuse.
+Polish follows useful complete breadth; retain every iteration.

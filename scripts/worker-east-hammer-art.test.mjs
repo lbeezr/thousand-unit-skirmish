@@ -16,7 +16,7 @@ const registration = JSON.parse(readFileSync(new URL('hammer-east-registration.j
 
 test('East build/repair faithfully share three complete distinct hammer poses at the retained common scale', () => {
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', directory)));
-  assert.deepEqual([image.width, image.height], [2560, 4096]);
+  assert.deepEqual([image.width, image.height], [3072, 4096]);
   assert.equal(registration.sharedScale, 232 / 307);
   const build = spriteActionClip(clips, 'build', 'east', null, 'human', true);
   const repair = spriteActionClip(clips, 'repair', 'east', null, 'human', true);

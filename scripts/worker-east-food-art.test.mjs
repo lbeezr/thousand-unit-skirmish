@@ -16,7 +16,7 @@ const registration = JSON.parse(readFileSync(new URL('food-east-registration.jso
 
 test('East food has three complete distinct bare-hand keys at the same scale as its retained axe source', () => {
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', directory)));
-  assert.deepEqual([image.width, image.height], [2560, 4096]);
+  assert.deepEqual([image.width, image.height], [3072, 4096]);
   const clip = spriteActionClip(clips, 'gather', 'east', 'food', 'human', true);
   assert.equal(clip.stateId, 'gather-food'); assert.equal(clip.directionId, 'east');
   assert.equal(clip.loop, true); assert.equal(spriteClipDuration(clip), 720);

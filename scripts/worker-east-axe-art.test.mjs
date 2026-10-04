@@ -17,16 +17,16 @@ const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 
 test('East axe keys preserve all preceding art and use three distinct whole same-heading poses', () => {
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', directory)));
-  assert.deepEqual([image.width, image.height], [2560, 4096]);
+  assert.deepEqual([image.width, image.height], [3072, 4096]);
   assert.equal(hash(JSON.stringify(asset.frames.slice(0, preservation.originalFrames))), preservation.originalFrameMetadataSha256);
   const originalClips = structuredClone(asset.clips.slice(0, preservation.originalClips));
   const hammer = JSON.parse(readFileSync(new URL('hammer-east-preservation.json', evidence)));
-  for (const clip of [...preservation.originalReplacedClips, ...hammer.originalReplacedClips]) {
+  for (const clip of [...preservation.originalReplacedClips, ...hammer.originalReplacedClips, ...JSON.parse(readFileSync(new URL('stone-defeat-east-preservation.json', evidence))).originalReplacedClips]) {
     const index = originalClips.findIndex(c => c.stateId === clip.stateId && c.directionId === clip.directionId);
     originalClips[index] = clip;
   }
   assert.equal(hash(JSON.stringify(originalClips)), preservation.originalClipMetadataSha256);
-  assert.equal(hash(readFileSync(new URL('team-accent-mask.png', directory))), preservation.originalTeamMaskSha256);
+  assert.equal(hash(readFileSync(new URL('hammer-era-team-mask.png', evidence))), preservation.originalTeamMaskSha256);
   const oldPixels = createHash('sha256');
   for (const frame of asset.frames.slice(0, preservation.originalFrames)) {
     const r = frame.fallbackRectPx.rectPx;
