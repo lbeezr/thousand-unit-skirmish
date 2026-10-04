@@ -105,13 +105,30 @@ Configure each environment independently:
 
 ```sh
 railway up /path/to/release-directory --path-as-root --environment staging --service game
-npm run release:smoke -- --environment staging --project PROJECT_ID
+npm run release:smoke -- --environment staging --project PROJECT_ID --expected-source FULL_SHA --expected-digest sha256:DIGEST
 ```
 
-Replace both placeholders. The smoke script reads service credentials without
-printing the password and checks readiness, authentication, required assets,
-and WebSocket access. Use the same artifact for a separately approved production
+Use the source revision and digest from the reviewed pack's `release-manifest.json`
+and the intended project ID. The smoke script reads service credentials without
+printing the password and checks readiness, authentication, expected served identity,
+required assets and WebSocket access. Use the same artifact for a separately approved production
 promotion, then repeat with `--environment production`.
+
+Authenticated `/health` includes sanitized `buildIdentity`. Packed releases copy a
+private `src/server/release-identity.json` into Docker through the existing `src`
+COPY. This declaration and the root manifest are excluded from their own digest;
+the declared digest identifies the packer's listed files, not a fresh hash of the
+running image. Neither file nor the server identity module is a public asset.
+Public `/ready` remains only `{ "ok": true|false }`.
+
+For GitHub-triggered Railway deployments, the documented
+[`RAILWAY_GIT_COMMIT_SHA`](https://docs.railway.com/variables/reference#git-variables)
+provides source metadata when no packed sidecar exists. Supply `--expected-source
+FULL_SHA`; omit `--expected-digest` only when deliberately verifying source alone.
+Provider metadata leaves pack cleanliness and digest unknown. Missing, malformed,
+conflicting or wrong identity and dirty packed sources fail with exit 1; identity
+failures produce a sanitized JSON receipt before asset/WebSocket acceptance.
+Identity comparison does not establish rendered gameplay or deployment byte attestation.
 
 The supervisor refuses Railway startup without its required volume, password,
 and public origin configuration. `/ready` exposes readiness; `/health`, room
@@ -198,7 +215,7 @@ actual service before claiming backups, restore, or rollback are working now.
 
 Use `scripts/qa-staging-smoke.mjs` and `scripts/qa-staging-browser.mjs` with injected
 service variables for two-seat checks; see the [QA plan](qa-vertical-slice.md).
-`npm run release:smoke -- --environment staging --project PROJECT_ID` also
+`npm run release:smoke -- --environment staging --project PROJECT_ID --expected-source FULL_SHA` also
 checks every static module reachable from the served client entry point, using
 the same audit as the packed-release scenario. It rejects missing modules,
 HTML responses, empty modules, and imports outside the game origin. Dynamic

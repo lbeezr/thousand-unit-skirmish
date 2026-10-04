@@ -123,6 +123,9 @@ async function copyEntry(relative) {
 
 try {
   for (const entry of [...entries].sort()) await copyEntry(entry);
+  if (copied.includes('src/server/release-identity.json')) {
+    throw new Error('Release identity sidecar is generated; remove it from the source checkout');
+  }
   if (!allowDirty && git('status', '--porcelain') !== '') {
     throw new Error('Release checkout changed during packaging; retry from a clean checkout');
   }
@@ -138,6 +141,11 @@ try {
     files: copied,
   };
   await writeFile(path.join(destination, 'release-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+  // Like the root manifest, this declaration is outside its own digest to avoid
+  // a recursive hash. Docker already copies src; no source checkout is mutated.
+  await writeFile(path.join(destination, 'src/server/release-identity.json'), JSON.stringify({
+    sourceRevision: revision, sourceDirty: dirty, digest: manifest.digest,
+  }) + '\n');
   console.log(JSON.stringify({ directory: destination, ...manifest }));
 } catch (error) {
   await rm(destination, { recursive: true, force: true });
