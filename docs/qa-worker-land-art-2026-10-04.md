@@ -558,3 +558,11 @@ is derived from actual multi-key, non-idle clips. Authored cells22/64; remaining
 | Stone art (default state pending) | SE,NW | 2/8;6 |
 
 Per heading: SE8/8,NW8/8; N/NE/E/S/SW/W each1/8 (walk only).
+
+
+[Clean NW family release](qa-evidence/worker-land-art-2026-10-04/north-west-actions-clean-release.json)
+measures source `151d60e1653ad6092c6f582db41d85e763bde384` with `sourceDirty:false`,
+1177 files and `sha256:5ec0bd53cea52f8e326c4a796aead59c44f1ea3126d24717cba667a35f96ac51`. Guarded packaged HTTP/WebSocket and
+Worker runtime hashes pass at that source. After current main integration,
+21 affected client/CI checks also pass. The later receipt commit is distinct
+from this measured code revision. No deployment/native acceptance is claimed.
