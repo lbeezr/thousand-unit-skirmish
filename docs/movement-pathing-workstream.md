@@ -1,6 +1,6 @@
 # Movement and pathing workstream
 
-Updated 3 October 2026. This is the ranked execution backlog for the user-owned
+Updated 4 October 2026. This is the ranked execution backlog for the user-owned
 movement lane; the [roadmap](roadmap.md) remains the product priority source.
 Each slice owns its regression, review, normal authorized merge and acceptance.
 Evidence must name the source/workload and preserve failures.
@@ -22,7 +22,7 @@ Skiff owner; art, rendering and map rules remain with their respective lanes.
 | Rank / status | Outcome and next action | Write boundary / dependency | Acceptance |
 | --- | --- | --- | --- |
 | 1 · complete | Clock-independent service work merged in [PR #193](https://github.com/lbeezr/thousand-unit-skirmish/pull/193), `331df72`; [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#integration-and-remaining-evidence) pass. | Planning constants, queue-slice helper and diagnostics only. | 209 postmerge checks; nine route pairs preserve hashes; native large routes and recovery. Atomic-search overshoot remains explicit. |
-| 2 · integrating | The parked-formation stall reproduces with a one/two-tick older Move. Bound accumulated repulsion so it cannot reverse a route; finish independent review, normal merge and postmerge checks. | Only `getMoveVector`'s final force combination and focused tests/tools. Combat-owner targeting/stances remain untouched. | [Crowd QA](qa-crowd-forward-progress-2026-10-03.md): 228 checks; all eight headings on both seats; four large parked cases twice; nine terrain route pairs; native parked controls/restarts. |
+| 2 · complete | The parked-formation stall reproduces with a one/two-tick older Move. Bounded repulsion merged in [PR #209](https://github.com/lbeezr/thousand-unit-skirmish/pull/209), `64cc391`; independent review and [postmerge checks](qa-crowd-forward-progress-2026-10-03.md#4-october-postmerge-acceptance) pass. | Only `getMoveVector`'s final force combination and focused tests/tools. Combat-owner targeting/stances remain untouched. | 235 postmerge checks; all eight headings on both seats; four large parked cases twice; nine terrain route pairs; native parked controls and active/idle restarts at the exact merge source. |
 | 3 · pending dependency | Move completed path results into an agreed authoritative tick phase if the current asynchronous application contract needs correction. Inspect accepted-tick/result generations before proposing changes. | Shared command/tick pipeline with combat owner. | Same accepted command log gives the same committed outcomes; replacement/Stop cancels old results; FIFO/fair queue service and recovery remain correct. Do not equate fixed slice budgets with a completed tick-pipeline redesign. |
 | 4 · pending capture | Complete the corrected rendered 2,000-unit workload through paid economy, combat and restart. | Existing browser workload; identified sandboxed WebGL2/runtime and device/network profile. | Actual rendered run, authoritative goals/positions, paid work and recovery. Native/tool-only checks cannot close the render/deployed acceptance gap. |
 
@@ -65,3 +65,20 @@ The `game-dev` CLI is currently unavailable. Sealed hardware-comparison goals
 remain unavailable until the documented tool/evidence path is restored. Current
 correctness and operation counts use the repository's real-body/native adapters;
 they do not assert comparable CPU/GPU speedup or supported player capacity.
+
+## Next available work and dependencies
+
+The inspected route matrix has no remaining stranded order at `64cc391`. Do not
+select another steering rewrite from timing noise. The next read-only tick-phase
+investigation should record accepted command ticks and planned-result commit ticks,
+then propose a bounded interface if correction is needed. A proposed shared boundary
+is to queue generation/navigation-tagged path results and commit them before
+`simulateTick`; command intake, Stop/replacement invalidation, applied notices and
+checkpoint recovery need an agreed phase with the combat owner before shared edits.
+This is a proposed interface, not implemented or accepted behavior.
+
+The full rendered 2,000-unit workload remains blocked by the actual Linux browser
+sandbox/profile-storage failure. Resume with a provider runtime supporting that
+sandbox, or a parent-coordinated capture environment. Comparable performance goals
+also require the unavailable `game-dev` evidence path. Native progress tests do not
+close either dependency, and no deployed revision is asserted here.
