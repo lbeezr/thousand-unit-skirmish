@@ -40,14 +40,18 @@ During a declared human setup, the tested military receives ordinary No Attack
 and Hold Position. Workers continue their native jobs. Eight opposing Infantry
 Move from their real spawn toward a fixed public rendezvous. The raider selects
 a living Worker only from its current player-visible units, then issues focused
-Attack with the disclosed generation. There is no position, casualty, bank,
+Attack with the disclosed generation. Every ten seconds it reissues Attack only
+while that same Worker is visible, or Moves toward the retained last-visible
+position when sight is lost. Each Attack retains its current player view; each
+search Move retains the earlier view proving that coordinate was disclosed.
+There is no position, casualty, bank,
 stock, order, map or checkpoint edit.
 
 Actual native damage kills exactly one Worker with durable `forest-group` Wood
 intent. The raiders receive ordinary No Attack/retreat, the tested military
 returns to Aggressive, and the full deterministic seed 20260925 policy takes over.
 This comparable single-loss setup is not an unassisted or balanced raid-defense
-benchmark. Azure loses 3.766666667 carried Wood; Ember loses no carried Wood.
+benchmark. Both seats lose 10 carried Wood.
 Native stock/cargo/bank accounting includes that real cargo loss without refund.
 
 The policy pays the normal 50 Food for one Worker at 10 seconds after the loss;
@@ -60,10 +64,10 @@ all simultaneous deliveries match the native bank increase.
 
 | Seat / branch | Replacement's first qualified cargo | Replacement deposit after loss | New Wood-job deposit after loss |
 | --- | --- | --- | --- |
-| Azure warm | 10 Food | 50.9s | 134.633333s, 10 Wood |
-| Azure cold | 10 Wood | 94.7s | 81.333333s, 10 Wood |
-| Ember warm | 10 Wood | 78.1s | 78.1s, same 10 Wood |
-| Ember cold | 10 Wood | 78.1s | 78.1s, same 10 Wood |
+| Azure warm | 10 Wood | 64.6s | 28.2s, 10 Wood |
+| Azure cold | 10 Wood | 98.4s | 28.2s, 10 Wood |
+| Ember warm | 10 Wood | 66.966667s | 66.966667s, same 10 Wood |
+| Ember cold | 10 Wood | 86.133333s | 74.5s, 10 Wood |
 
 Each warm branch regenerates the entire paid loop and loss/recovery from its
 retained untouched opening. Cold saves just after the actual Worker purchase,
@@ -81,6 +85,16 @@ unchanged 180-second recovery bound. Other Workers' existing jobs can still
 produce income; these are precise causal negatives, not whole-bank-zero claims.
 Both controls exactly repeat and conserve Wood within 0.0001, including the
 small rounded-stock residue.
+
+The retained preintegration `ce05af94` run passed 178 focused checks, with
+earlier seat/branch timings. It used a single focused Attack. After integrating
+main `20580007`, that setup failed Ember's casualty prerequisite: the Worker
+left raider sight and native combat correctly cleared the target. The failed
+player views, commands, final route/checkpoint and log remain evidence; they are
+not a failed AI recovery or justification for changing fog or movement. The
+ordinary last-visible search above corrects that setup within the original
+180-second prelude and recovery bounds. Final-head checks and independent review
+are recorded separately in the PR receipt.
 
 ## CPU fixture correction and shared owners
 

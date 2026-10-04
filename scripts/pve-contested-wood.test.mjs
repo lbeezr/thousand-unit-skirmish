@@ -28,6 +28,16 @@ for (const team of [0, 1]) test(`Medium seat ${team}: native forest Worker loss,
       assert.equal(branch.loop.result.depositWitness.bankIncrease, 10, 'ordinary paid depletion/discovery/deposit precedes the raid');
       assert.equal(r.prepared.state.resourceNodes.find(n => n.id === `s${team}-home-wood`).stock, 0);
       assert.ok(r.focusWitness.raiderView.units.some(u => u[0] === r.casualty.id && u[8] === r.casualty.generation && u[4] > 0), 'focused Attack names a currently disclosed living generation');
+      for (const row of r.trace.slice(0,r.setupTraceLength)) {
+        if (row.command.type === 'attack') assert.ok(row.playerView.units.some(u => u[0] === row.command.targetId
+          && u[8] === row.command.targetGeneration && u[4] > 0), 'every raid Attack requires current player sight');
+        if (row.searchWitness) {
+          const { target, raiderView } = row.searchWitness;
+          assert.ok(row.searchWitness.tick <= row.tick);
+          assert.ok(raiderView.units.some(u => u[0] === target.id && u[8] === target.generation && u[2] === target.x && u[3] === target.z));
+          assert.deepEqual({x:row.command.x,z:row.command.z},{x:target.x,z:target.z}, 'search Move uses only the retained last-seen position');
+        }
+      }
       assert.equal(r.lossWitness.worker.workIntent.sourceKind, 'forest-group');
       assert.ok(r.lossWitness.worker.hp > 0);
       assert.ok(r.lossWitness.after.units.some(u => u[0] === r.casualty.id && u[8] === r.casualty.generation && u[4] === 0), 'native damage kills the actual forest Worker');

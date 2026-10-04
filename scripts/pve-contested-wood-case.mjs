@@ -39,6 +39,7 @@ export async function replayContestedWood(team, { loop = null, opening = null, c
     woodGather: null, woodDeposit: null, coldRestart: null };
   let focused = null, casualty = null, focusWitness = null, lossWitness = null,
     replacementDepositWitness = null, woodDepositWitness = null;
+  let lastSeen = null, lastSeenWitness = null, nextRaidOrder = 0;
   let restart = false, deadCargo = 0;
   const spent = { food: 0, wood: 0 };
   const order = async (seat, command, policyOrder = false) => {
@@ -47,6 +48,7 @@ export async function replayContestedWood(team, { loop = null, opening = null, c
     assert.ok(accepted || policyOrder, JSON.stringify({ command, notices }));
     const after = r.observe(seat), cost = { food: before.food[seat]-after.food[seat], wood: before.wood[seat]-after.wood[seat] };
     trace.push({ tick: before.tick, team: seat, command, notices, cost, accepted,
+      ...(policyOrder ? {} : { playerView: before }),
       ...(accepted ? {} : { rejectedView: before }) });
     spent.food += cost.food; spent.wood += cost.wood;
     return { cost, accepted };
@@ -60,19 +62,35 @@ export async function replayContestedWood(team, { loop = null, opening = null, c
     // A comparable ordinary human loss prelude, as in the existing paid-loss
     // scenarios. Native Workers continue their current jobs; no state is edited.
     for (let step = 0; step < 180*30 && !casualty; step++) {
-      if (step%30 === 0 && !focused) {
+      if (step%30 === 0) {
         const seen = view(enemy);
-          const target = seen.units.visibleEnemies.filter(u => u.kind === 'worker' && u.hp > 0)
+        const target = focused ? seen.units.visibleEnemies.find(u => u.id === focused.id
+          && u.generation === focused.generation && u.hp > 0)
+          : seen.units.visibleEnemies.filter(u => u.kind === 'worker' && u.hp > 0)
             .sort((a,b) => Math.hypot(a.x-rendezvous.x,a.z-rendezvous.z)-Math.hypot(b.x-rendezvous.x,b.z-rendezvous.z) || a.id-b.id)[0];
+        if (target) {
+          lastSeen = { x: target.x, z: target.z };
+          lastSeenWitness = { tick: seen.tick, target, raiderView: r.observe(enemy) };
+        }
+        if ((target || lastSeen) && step >= nextRaidOrder) {
+          const living = seen.units.friendly.filter(u => raiderKeys.has(key(u)) && u.hp > 0);
+          assert.ok(living.length);
           if (target) {
-            const living = seen.units.friendly.filter(u => raiderKeys.has(key(u)) && u.hp > 0);
-            assert.ok(living.length);
-            focused = { id: target.id, generation: target.generation };
-            focusWitness = { tick: seen.tick, target, raiderView: r.observe(enemy) };
+            if (!focused) {
+              focused = { id: target.id, generation: target.generation };
+              focusWitness = lastSeenWitness;
+              stages.focusedAttack = seen.tick;
+            }
             await order(enemy, selected(living, 'setStance', { stance: 'aggressive' }));
             await order(enemy, selected(living, 'attack', { targetId: target.id, targetGeneration: target.generation }));
-            stages.focusedAttack = seen.tick;
+          } else {
+            // A human can search a last-seen position, but cannot Attack an
+            // undisclosed generation. Native fog still controls reacquisition.
+            await order(enemy, selected(living, 'move', lastSeen));
+            trace.at(-1).searchWitness = lastSeenWitness;
           }
+          nextRaidOrder = step + 10*30;
+        }
       }
       const before=r.observe(team),checkpoint=r.checkpoint();r.step();const after=r.observe(team);
       const dying=focused && checkpoint.state.units.find(u => u.id===focused.id && u.generation===focused.generation);
@@ -82,7 +100,12 @@ export async function replayContestedWood(team, { loop = null, opening = null, c
         deadCargo=dying.cargoType==='wood' ? dying.cargo : 0;
       }
     }
-    assert.ok(casualty,'the bounded ordinary raid actually kills one Worker');
+    if (!casualty) {
+      const error=new Error('the bounded ordinary raid did not kill a Worker');
+      error.details={team,identity,initial,initialViews,rendezvous,focused,focusWitness,trace,
+        views:[r.observe(0),r.observe(1)],final:r.checkpoint()};
+      throw error;
+    }
     assert.equal(lossWitness.worker.workIntent?.kind,'gather');
     assert.equal(lossWitness.worker.workIntent?.resource,'wood');
     assert.equal(lossWitness.worker.workIntent?.sourceKind,'forest-group','the actual casualty interrupts durable forest work');
@@ -198,5 +221,10 @@ export async function replayContestedWood(team, { loop = null, opening = null, c
 
 if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
   const options=JSON.parse(await readFile(process.argv[3],'utf8'));
-  await writeFile(process.argv[4],JSON.stringify(await replayContestedWood(Number(process.argv[2]),options)));
+  try {
+    await writeFile(process.argv[4],JSON.stringify(await replayContestedWood(Number(process.argv[2]),options)));
+  } catch (error) {
+    if (error.details) await writeFile(process.argv[4],JSON.stringify({error:{message:error.message,details:error.details}}));
+    throw error;
+  }
 }
