@@ -1,6 +1,6 @@
 import { stopChild } from './temporary-resources.mjs';
 import { checkClientImports } from './check-client-imports.mjs';
-import { BROWSER_ENTRYPOINTS } from './check-runtime-imports.mjs';
+import { BROWSER_ENTRYPOINTS, RUNTIME_DOMAINS, RUNTIME_DOMAIN_HOSTS } from './check-runtime-imports.mjs';
 import { CLIENT_ASSET_PATHS, ENVIRONMENT_MODULE_PATH } from '../src/server/client-asset-paths.mjs';
 import assert from 'node:assert/strict';
 import { createHash, randomBytes } from 'node:crypto';
@@ -296,12 +296,17 @@ try {
         `${entry.path} must match its manifest hash`);
     }
   }
-  // Nested Node adapters must be packaged for offline consumers without becoming
-  // HTTP client modules. Keep the original compatibility path equally private.
-  for (const filename of ['src/pve-model-proposal.mjs', 'src/server/pve-model-proposal.mjs']) {
-    assert.ok((await stat(path.join(root, filename))).isFile(), `packed offline adapter: ${filename}`);
-    assert.equal((await fetch(`${base}/${filename}`, { headers: { authorization } })).status, 404,
-      `offline Node adapter must not be served: ${filename}`);
+  // Private host/transport files must be packaged for Node consumers while exact
+  // HTTP admission denies both methods, including pure negotiation and shims.
+  const privateModules = [...RUNTIME_DOMAINS.server,
+    ...Object.entries(RUNTIME_DOMAIN_HOSTS).filter(([, domain]) => domain === 'server').map(([filename]) => filename)];
+  for (const filename of privateModules) {
+    assert.ok((await stat(path.join(root, filename))).isFile(), `packed private runtime module: ${filename}`);
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
+      assert.equal(response.status, 404, `server-private module must not be served (${method}): ${filename}`);
+      if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
+    }
   }
   await checkClientImports(base, { authorization, entrypoints: BROWSER_ENTRYPOINTS.map(filename => `/${filename}`) });
   for (const file of ['water-study.html', 'src/water-study-preview.mjs', 'src/water-surface-study.mjs', 'src/water-study-state.mjs', 'src/water-study-fish-binding.mjs', 'src/shore-bank-shade.mjs']) {

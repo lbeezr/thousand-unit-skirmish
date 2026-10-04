@@ -4,11 +4,11 @@ import { mkdtemp, mkdir, readFile, writeFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
-import { BROWSER_ENTRYPOINTS, BROWSER_PACKAGE_IMPORTS, checkRuntimeImports, moduleImports, readRuntimeSources, runtimeImportGraph, cyclicEdges } from './check-runtime-imports.mjs';
+import { BROWSER_ENTRYPOINTS, BROWSER_PACKAGE_IMPORTS, RUNTIME_DOMAINS, RUNTIME_DOMAIN_HOSTS, checkRuntimeImports, moduleImports, readRuntimeSources, runtimeImportGraph, cyclicEdges } from './check-runtime-imports.mjs';
 
 function check(files, options = {}) {
   return checkRuntimeImports(new Map(Object.entries(files)), {
-    browserEntrypoints: [], serverEntrypoints: [], nodeOnlyModules: [], ...options,
+    browserEntrypoints: [], serverEntrypoints: [], nodeOnlyModules: [], requireDomainCoverage: false, ...options,
   });
 }
 
@@ -32,6 +32,126 @@ test('every shipped browser entry rejects both offline adapter paths', async () 
         `${entry} -> ${adapter}`);
     }
   }
+});
+
+test('every shipped browser entry rejects private manifest and transport paths, including pure negotiation', async () => {
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  for (const entry of BROWSER_ENTRYPOINTS) {
+    for (const privateModule of ['server/client-asset-paths.mjs',
+      'networking/websocket-deflate-offer.mjs', 'networking/websocket-frame.mjs']) {
+      const changed = new Map(sources);
+      changed.set(entry, `${sources.get(entry)}\nimport('./${privateModule}');`);
+      assert.throws(() => checkRuntimeImports(changed), /browser reaches a server-private module/,
+        `${entry} -> ${privateModule}`);
+    }
+  }
+});
+
+test('unreferenced simulation and AI modules reject client, authoring, presentation and transport imports', () => {
+  for (const root of ['formation-assignment', 'pve-regroup']) {
+    for (const target of ['resource-format', 'scenario-authoring', 'terrain-height', 'networking/websocket-deflate-offer']) {
+      const files = { [`src/${root}.mjs`]: `import './${target}.mjs';`, [`src/${target}.mjs`]: '' };
+      assert.throws(() => check(files), /(?:simulation|ai) domain cannot reach (?:client|authoring|presentation|server) domain/,
+        `${root} -> ${target}`);
+    }
+  }
+});
+
+test('unclassified intermediates cannot hide backward static, lazy or re-export edges', () => {
+  for (const source of ["import './resource-format.mjs';",
+    "export { label } from './resource-format.mjs';", "const later = () => import('./resource-format.mjs');"]) {
+    assert.throws(() => check({
+      'src/formation-assignment.mjs': "import './bridge.mjs';",
+      'src/bridge.mjs': source,
+      'src/resource-format.mjs': 'export const label = 1;',
+    }), /src\/formation-assignment.mjs -> src\/bridge.mjs -> src\/resource-format.mjs: simulation domain cannot reach client domain/);
+  }
+});
+
+test('rules and world cannot reach higher policy domains, including through unknown modules', () => {
+  assert.throws(() => check({
+    'src/gameplay-action-rules.mjs': "import './bridge.mjs';",
+    'src/bridge.mjs': "export * from './elevation.mjs';", 'src/elevation.mjs': '',
+  }), /rules domain cannot reach world domain/);
+  assert.throws(() => check({
+    'src/map-utils.mjs': "import './formation-assignment.mjs';", 'src/formation-assignment.mjs': '',
+  }), /world domain cannot reach simulation domain/);
+  assert.throws(() => check({
+    'src/formation-assignment.mjs': "import './pve-regroup.mjs';", 'src/pve-regroup.mjs': '',
+  }), /simulation domain cannot reach ai domain/);
+});
+
+test('lower domains reject rendering and Node packages even through declared adapters', () => {
+  for (const specifier of ['three', 'node:crypto', 'crypto']) {
+    assert.throws(() => check({
+      'src/formation-assignment.mjs': "import './bridge.mjs';",
+      'src/bridge.mjs': `import '${specifier}';`,
+    }, { nodeOnlyModules: ['src/bridge.mjs'] }),
+    /src\/formation-assignment.mjs -> src\/bridge.mjs -> (?:three|node:crypto|crypto): simulation domain cannot reach a host or rendering package/);
+  }
+});
+
+test('portable disclosed helpers remain shared while acquiring UI dependencies fails', () => {
+  const files = {
+    'src/game-entry.mjs': "import './wildlife-client-state.mjs';",
+    'src/pve-opponent.mjs': "import './wildlife-client-state.mjs';",
+    'src/wildlife-client-state.mjs': 'export const readDisclosedWildlife = () => [];',
+    'server.mjs': "import './src/pve-opponent.mjs'; import './src/worker-fishing-presentation.mjs';",
+    'src/worker-fishing-presentation.mjs': "import './shore-fishing.mjs';",
+    'src/shore-fishing.mjs': '',
+  };
+  const options = { browserEntrypoints: ['src/game-entry.mjs'], serverEntrypoints: ['server.mjs'] };
+  assert.deepEqual(check(files, options).sharedModules, ['src/wildlife-client-state.mjs']);
+  assert.throws(() => check({ ...files,
+    'src/wildlife-client-state.mjs': "import './room-lobby-ui.mjs';", 'src/room-lobby-ui.mjs': '',
+  }, options), /disclosed domain cannot reach client domain/);
+  assert.throws(() => check({ ...files,
+    'src/worker-fishing-presentation.mjs': "import './terrain-height.mjs';", 'src/terrain-height.mjs': '',
+  }, options), /disclosed domain cannot reach presentation domain/);
+});
+
+test('server host closure rejects package-free UI, renderer state and editor modules', () => {
+  for (const target of ['resource-format', 'terrain-height', 'scenario-authoring']) {
+    assert.throws(() => check({ 'server.mjs': "import './src/bridge.mjs';",
+      'src/bridge.mjs': `export * from './${target}.mjs';`, [`src/${target}.mjs`]: '',
+    }, { serverEntrypoints: ['server.mjs'] }), /server host reaches (?:client|presentation|authoring) domain/);
+  }
+});
+
+test('domain membership rejects duplicate ownership and supports exact canonical migration paths', () => {
+  assert.throws(() => check({}, { runtimeDomains: { rules: ['src/a.mjs'], world: ['src/a.mjs'] } }),
+    /duplicate runtime domain membership: src\/a.mjs/);
+  assert.throws(() => check({}, { runtimeDomains: { client: ['server.mjs'] } }),
+    /duplicate runtime domain membership: server.mjs/);
+  const files = { 'src/formation-assignment.mjs': "export * from './simulation/movement/formation-assignment.mjs';",
+    'src/simulation/movement/formation-assignment.mjs': "import '../../resource-format.mjs';", 'src/resource-format.mjs': '' };
+  const options = { runtimeDomains: { ...RUNTIME_DOMAINS, simulation: [...RUNTIME_DOMAINS.simulation,
+    'src/simulation/movement/formation-assignment.mjs'] } };
+  assert.throws(() => check(files, options), /simulation domain cannot reach client domain/);
+  assert.doesNotThrow(() => check({ ...files, 'src/simulation/movement/formation-assignment.mjs': '' }, options));
+});
+
+test('repository audits require new modules to have a reviewed responsibility', () => {
+  const files = { 'src/new-module.mjs': 'export const value = 1;' };
+  assert.throws(() => check(files, { requireDomainCoverage: true }),
+    /src\/new-module.mjs: unclassified runtime module; declare its reviewed responsibility/);
+  assert.doesNotThrow(() => check(files, { requireDomainCoverage: true,
+    runtimeDomains: { ...RUNTIME_DOMAINS, rules: [...RUNTIME_DOMAINS.rules, 'src/new-module.mjs'] } }));
+  assert.throws(() => check({ 'src/formation-assignment.mjs': "import './audio-event-profile.mjs';",
+    'src/audio-event-profile.mjs': '',
+  }), /simulation domain cannot reach audioProfile domain/);
+});
+
+test('actual responsibility inventory has no stale paths and retains the public audit result shape', async () => {
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  for (const filename of [...Object.values(RUNTIME_DOMAINS).flat(), ...Object.keys(RUNTIME_DOMAIN_HOSTS)]) {
+    assert.ok(sources.has(filename), `stale domain membership: ${filename}`);
+  }
+  const result = checkRuntimeImports(sources);
+  assert.deepEqual(Object.keys(result), ['modules', 'localEdges', 'browserModules', 'serverModules', 'sharedModules', 'cycleEdges']);
+  assert.deepEqual(result.cycleEdges, []);
+  assert.ok(result.sharedModules.includes('src/wildlife-client-state.mjs'));
+  assert.ok(result.sharedModules.includes('src/worker-performing-action.mjs'));
 });
 
 test('parse real imports, re-exports and nested lazy imports; ignore lookalike text', () => {
