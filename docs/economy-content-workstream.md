@@ -20,12 +20,15 @@ packed runtime digest is
 [shared intent contract](worker-resource-job-contract.md) are the implementation
 boundary.
 
-Parent's currently identified staging source is `53a47ee`, which does **not**
-contain `8200ec6c`. Wood continuation is therefore **not marked deployed or
-verified in ordinary staging gameplay**. The release delivery owner must identify a
-containing served release; the cloud testing owner retains actual rendered ordinary
-Worker selection, depletion, continuation, Stop/Move/Return and reconnect observation.
-These staged delivery and gameplay acceptance outcomes remain open.
+Earlier identified staging `53a47ee` lacked `8200ec6c`. The latest independent
+platform inspection records staging deployment `c487990a` **SUCCESS** at
+14:50:50 UTC on 4 October, source `1acaf9a4`, with one of one instances online.
+That source contains merged Wood continuation; production was unchanged.
+This confirms containing staged platform delivery, while served runtime bytes
+and actual rendered ordinary gameplay remain unverified. The release delivery
+owner retains served-source/release identification; the cloud testing owner
+retains Worker selection, depletion, continuation, Stop/Move/Return and reconnect
+observation. These served and rendered acceptance outcomes remain open.
 Construction-specific Gate/wall continuation remains
 with its separate owner and consumes the merged intent boundary.
 
@@ -35,9 +38,10 @@ Stone continuation [PR #305](https://github.com/lbeezr/thousand-unit-skirmish/pu
 explicitly extends the existing intent to finite
 Stone nodes within the original eight-unit circle, with visibility, reachability,
 typed cargo, manual/queued priority and cold recovery. [Stone continuation QA](qa-stone-job-continuation-2026-10-04.md)
-retains source evidence and acceptance. Staging `53a47ee` lacks both the merged
-Wood change and this later Stone implementation; Stone staged delivery and actual
-rendered cloud gameplay remain open with the same owner roles.
+retains source evidence and acceptance. Identified staging source `1acaf9a4`
+predates this Stone implementation; Stone containing staged delivery, served
+runtime-byte verification and actual rendered cloud gameplay remain open with
+the same owner roles. The earlier `53a47ee` observation is historical.
 Food/Farm/wildlife/fishing source-subtype policy still needs an explicit separate
 design. No stock/price/radius or construction policy is changed by this Stone slice.
 

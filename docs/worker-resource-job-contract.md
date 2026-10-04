@@ -17,10 +17,13 @@ validation, restore, external cancellation and Wood continuation. Construction
 reacquisition remains with its named owner; the shared field alone does not fix it.
 Source merge and a containing deployed build are recorded separately in QA evidence.
 
-Wood source merge is `8200ec6c`; parent identifies current staging as `53a47ee`,
-which does not contain it. Local source/release proof does not establish deployed
-continuation. The [economy/content queue](economy-content-workstream.md) retains
-identified delivery and ordinary gameplay acceptance.
+Wood source merge is `8200ec6c`. Earlier staging `53a47ee` lacked it; the latest
+independent platform record is staging `c487990a` SUCCESS at 14:50:50 UTC on
+4 October, source `1acaf9a4`, containing Wood with one of one instances online.
+This confirms platform delivery only. Served-byte identification and rendered
+ordinary gameplay remain open; that source predates this Stone extension.
+The [economy/content queue](economy-content-workstream.md) retains these outcomes
+with the release delivery and cloud testing owners.
 
 ## Exact durable field
 
