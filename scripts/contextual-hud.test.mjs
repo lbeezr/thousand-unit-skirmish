@@ -13,6 +13,7 @@ import { setHudActionAvailability, isHudActionUnavailable, bindContextualCommand
 import { livingIdleWorkerIds, livingUnitIdsOfKinds } from '../src/unit-selection.mjs';
 import { formatResourceStock, formatResourceRequirement } from '../src/resource-format.mjs';
 import { ownedPopulationReadout } from '../src/population-readout.mjs';
+import { objectiveSummary } from '../src/client/hud/objective-summary.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
@@ -587,6 +588,51 @@ for (const team of [0, 1]) test(`seat ${team}: a carrying Skiff exposes Return c
   assert.equal(f.bar.querySelector('[data-context-build]').hidden, true);
   f.click(button); assert.equal(orders[0].type, 'returnCargo'); assert.deepEqual([...orders[0].ids], [id]);
   f.w.units[id].cargo = 0; f.select([id]); assert.equal(button.hidden, true);
+});
+
+for (const team of [0, 1]) test(`seat ${team}: Objectives dismisses with focus and selection retained while closed urgency advances`, t => {
+  const f = fixture(team), w = f.w; t.after(() => f.dom.window.close());
+  const worker = team * 2;
+  const toggle = f.d.querySelector('#scenario-brief-toggle');
+  const close = f.d.querySelector('#scenario-brief-close');
+  const panel = f.d.querySelector('#scenario-brief-panel');
+  const urgent = f.d.querySelector('#objective-urgent');
+  const definition = JSON.parse(readFileSync(new URL('../maps/bellweather-millrace.json', import.meta.url)));
+  Object.assign(w, { scenarioBriefToggle: toggle, objectiveSummary, mapDefinition: definition,
+    latestObjectiveStates: new w.Map(), latestMatchElapsedSeconds: 880,
+    latestScenarioClockStarted: true, objectiveHoldSummary: null,
+    scenarioEventVisuals: new w.Map(), latestScenarioEventStates: new w.Map(), timedVictoryVisual: null,
+    lastScenarioEventUiUpdateAt: 0, scenarioClockSynchronizedAt: 1000 });
+  // Replace the general fixture's briefing stub with the shipped implementation
+  // and bind its actual open/close listeners. Renderer/network remain stubbed.
+  w.eval(fn('closeScenarioBrief', 'toggleHudPanel'));
+  w.eval(fn('renderScenarioEventCountdown', 'renderObjectiveSummary'));
+  w.eval(fn('renderObjectiveSummary', 'syncMatchResultActions'));
+  w.eval(between("scenarioBriefToggle.addEventListener('click'", "document.querySelector('#match-menu-close').addEventListener"));
+  f.select([worker]); w.renderScenarioEventCountdown(1000);
+  assert.equal(toggle.getAttribute('aria-controls'), panel.id);
+  assert.match(f.d.querySelector('#map-summary').textContent, /Objective Control · Capture/);
+  assert.equal(urgent.textContent, 'Deadline 20s · Crossing Watch');
+  assert.equal(urgent.hidden, false);
+  for (const dismiss of [() => f.escape(), () => f.click(close)]) {
+    f.click(toggle);
+    assert.equal(panel.hidden, false); assert.equal(toggle.getAttribute('aria-expanded'), 'true');
+    assert.equal(f.d.activeElement, close);
+    dismiss();
+    assert.equal(panel.hidden, true); assert.equal(toggle.getAttribute('aria-expanded'), 'false');
+    assert.equal(f.d.activeElement, toggle);
+    assert.deepEqual([...w.selected], [worker]);
+    assert.equal(w.selectedBuildingId, null); assert.equal(urgent.hidden, false);
+  }
+  for (const trigger of definition.triggers) w.latestObjectiveStates.set(trigger.id, { id: trigger.id, owner: team });
+  w.objectiveHoldSummary = { activeTeams: [team === 0, team === 1], progressSeconds: [0, 0] };
+  w.objectiveHoldSummary.progressSeconds[team] = 6;
+  w.renderScenarioEventCountdown(2000);
+  assert.equal(panel.hidden, true);
+  assert.equal(f.d.querySelector('#map-summary').textContent, 'Objective Control · Defend your victory zones');
+  assert.equal(urgent.textContent, `${team === 0 ? 'Azure' : 'Ember'} wins in 14s · Deadline 19s · Crossing Watch`);
+  assert.equal(urgent.hidden, false);
+  assert.deepEqual([...w.selected], [worker]); assert.equal(w.sentCommands.length, 0);
 });
 
 for (const team of [0, 1]) test(`seat ${team}: empty → Worker → army → building → empty preserves selections and essential access`, t => {

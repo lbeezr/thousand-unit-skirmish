@@ -292,6 +292,10 @@ Screenshots/logs must retain the build and the script's scope.
 
 ## Lightweight external playtest protocol
 
+Use the [first-play task protocol](novice-first-play.md) for repeatable ordinary
+menu/room/order/objective/result tasks and separate automated, heuristic and
+human evidence. Its current audit claims no human sessions or rendered results.
+
 Use two pairs of newcomers. Give each pair the URL, credentials, and room invite.
 Observe without coaching except to recover a broken test; log any intervention.
 Swap Azure/Ember for the second match.
