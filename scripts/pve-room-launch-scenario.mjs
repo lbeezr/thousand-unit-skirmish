@@ -7,6 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { selectPveMapId } from '../src/pve-match.mjs';
+import { NORMAL_MATCH_MAP_ID, NORMAL_HUMAN_MATCH_MODE } from '../src/match-modes.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const TIMEOUT_MS = 30_000;
@@ -219,8 +220,20 @@ try {
     body: JSON.stringify({ mode: 'pve', mapSeed: MAP_SEED, policySeed: POLICY_SEED }),
     cache: 'no-store',
   });
-  assert.equal(createdResponse.status, 400, 'fresh ordinary AI is blocked until the 160-map capability is accepted');
-  assert.match((await createdResponse.json()).error, /160.*Skirmish AI acceptance/);
+  assert.equal(createdResponse.status, 201, 'fresh ordinary AI selects the accepted 160-cell Skirmish preset');
+  const fresh = await createdResponse.json();
+  assert.deepEqual(fresh.launchOptions, { mode: 'pve', ...NORMAL_HUMAN_MATCH_MODE,
+    mapSeed: MAP_SEED, policySeed: POLICY_SEED });
+  const freshHuman = createClient(port, fresh.roomId); clients.push(freshHuman);
+  const freshWelcome = await freshHuman.waitForMessage(message => message.type === 'welcome');
+  assert.equal(freshWelcome.map.id, NORMAL_MATCH_MAP_ID);
+  assert.deepEqual([freshWelcome.map.width, freshWelcome.map.height], [160, 160]);
+  assert.equal(freshWelcome.state.matchModeId, 'skirmish');
+  assert.equal(freshWelcome.state.matchModeVersion, 1);
+  assert.equal(freshWelcome.state.connected, 2);
+  const freshMetadata = await waitForRoomMetadata(port, fresh.roomId);
+  assert.deepEqual(freshMetadata.roomMetadata, { mapId: NORMAL_MATCH_MAP_ID, ...NORMAL_HUMAN_MATCH_MODE });
+  await closeClient(freshHuman);
   const created = await (await fetch(`http://127.0.0.1:${port}/api/rooms/${legacyRoomId}`)).json();
   roomId = created.roomId;
   assert.match(roomId, /^[A-Za-z0-9_-]{32}$/);
@@ -282,7 +295,8 @@ try {
     mapSeed: MAP_SEED,
     policySeed: POLICY_SEED,
     teamOneReservedFor: 'deterministic-opponent',
-    freshOrdinaryAiUnavailable: true, legacySeededRoomStillPlayable: true,
+    freshOrdinaryAiMapId: NORMAL_MATCH_MAP_ID, freshOrdinaryAiIdentity: 'skirmish@1',
+    legacySeededRoomStillPlayable: true,
     rematchMapAndSeedsPreserved: true,
     newWorkerGenerationGathered: true,
   }));
