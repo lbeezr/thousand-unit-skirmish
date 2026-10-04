@@ -19,7 +19,7 @@ const secret = 'test-release-password-please-change';
 
 async function setupRelease() {
   // Exercise Docker COPY output so a source-only asset cannot hide a broken release.
-  const packed = spawnSync(process.execPath, ['scripts/pack-railway-release.mjs', '--allow-dirty'], {
+  const packed = spawnSync(process.execPath, ['scripts/release/pack-railway-release.mjs', '--allow-dirty'], {
     cwd: sourceRoot, encoding: 'utf8',
   });
   assert.equal(packed.status, 0, packed.stderr);
