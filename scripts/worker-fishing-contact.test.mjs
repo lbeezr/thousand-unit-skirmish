@@ -112,7 +112,7 @@ test('bank ring and water glyph pick the same land resource, retaining current f
   const fog = new Uint8Array(map.width * map.height).fill(2);
   const context = vm.createContext({ THREE, isShoreFish, localTeam: 0, mapDefinition: map,
     MAP_WIDTH: map.width, MAP_HEIGHT: map.height, camera, screenPoint: new THREE.Vector3(),
-    resourceNodeVisuals: new Map([[node.id, { fishingWater: water }]]), latestBuildings: [],
+    resourceNodeVisuals: new Map([[node.id, { fishingWater: water }]]), latestBuildings: [], latestResourceStocks: new Map(),
     latestFogCells: fog, farmHarvestNode: () => null, wildlifeRenderer: { isAvailable: () => true },
     groundHeight: () => 0, renderer: { domElement: { getBoundingClientRect: () => ({ width: 1280, height: 800 }) } },
   });

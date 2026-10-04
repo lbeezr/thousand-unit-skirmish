@@ -78,6 +78,7 @@ run(['--test', 'scripts/asset-readability.test.mjs'], 'Read-only asset catalog c
 run(['--test', 'scripts/oak-depletion-atlas-runtime.test.mjs'], 'Generic oak depletion atlas loading, fallback and registration');
 run(['--test', 'scripts/interactive-runtime-image.test.mjs'], 'Verified interactive image hash, dimensions and disposal');
 run(['--test', 'scripts/terrain-cliff-faces.test.mjs'], 'Painted scree cliff faces preserve terrain, UV joins and fallback');
+run(['--test', 'scripts/environment-instance-picking.test.mjs'], 'Actual tree alpha maps clicks to existing forest and wood-node Gather targets');
 run(['--test', 'scripts/audio-shipped-loader.test.mjs', 'scripts/audio-execution.test.mjs', 'scripts/audio-worker-snapshot.test.mjs', 'scripts/audio-music-lifecycle.test.mjs', 'scripts/audio-cue-lifecycle.test.mjs', 'scripts/audio-synthesis-lifecycle.test.mjs', 'scripts/audio-decoded-cache.test.mjs', 'scripts/audio-shared-decode.test.mjs', 'scripts/audio-settings.test.mjs', 'scripts/audio-roster-notices.test.mjs'], 'Verified shipped audio and execution gates');
 run(['--experimental-test-coverage', '--test-coverage-include=src/client/audio/audio-shipped-response.mjs',
   '--test-coverage-lines=100', '--test-coverage-branches=100', '--test-coverage-functions=100',
@@ -152,7 +153,7 @@ run(['--test', 'scripts/browser-preflight.test.mjs'], 'Browser preflight diagnos
 run(['--test', 'scripts/unit-displacement-animation.test.mjs'], 'Temporal sprite cells from actual displacement and heading');
 run(['--test', 'scripts/renderer-capability.test.mjs'], 'WebGL2 capability report contracts (CPU mocks)');
 run(['--test', 'scripts/worker-work-cycle-capture.test.mjs'], 'Packed Worker work-cycle adapter contracts (CPU mocks)');
-run(['--test', 'scripts/renderer-qualification.test.mjs'], 'Packed-game renderer qualification contracts (CPU mocks)');
+run(['--test', 'scripts/renderer-qualification.test.mjs', 'scripts/renderer-feature-capture.test.mjs', 'scripts/renderer-capture-context.test.mjs'], 'Packed-game renderer qualification contracts (CPU mocks)');
 run(['--test', 'scripts/temporary-resources.test.mjs'], 'Owned temporary resource cleanup');
 run(['--test', 'scripts/mature-settlement-scenario.test.mjs'], 'Paid settlement fixture ledger and layout');
 run(['scripts/mature-settlement-scenario.mjs'], 'Paid settlement construction, composition and recovery');
