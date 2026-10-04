@@ -121,6 +121,38 @@ function fixture(team = 0) {
   };
 }
 
+for (const team of [0, 1]) test(`seat ${team}: utility selection describes its actual role`, () => {
+  const f = fixture(team);
+  Object.assign(f.w, { matchMedia: () => ({ matches: false }), attackMoveMode: false,
+    updateBuildingResearchControls() {}, syncTargetOrderUI() {}, syncBattlefieldCursor() {} });
+  f.w.eval(fn('buildingSupportsRally', 'syncTargetOrderUI'));
+  const expectations = {
+    farm: /Food plot.*200.*food remaining/,
+    'palisade-wall': /Blocks land movement/,
+    'palisade-gate': /Gate closed.*both teams/,
+    watchtower: /Defends.*7.*range/,
+    house: /Population capacity \+8/,
+    mill: /Drop-off: food/,
+    storehouse: /Drop-off: food and wood/,
+  };
+  for (const [type, expected] of Object.entries(expectations)) {
+    const building = { id: 50, team, type, complete: true, progress: 1,
+      hp: BUILDING_DEFINITIONS[type].maxHp, maxHp: BUILDING_DEFINITIONS[type].maxHp, harvestStock: 200 };
+    f.select([], building); f.w.updateCommandUI();
+    assert.match(f.w.ui.selectedBuildingProduction.textContent, expected, type);
+    building.complete = false; f.select([], building); f.w.updateCommandUI();
+    assert.doesNotMatch(f.w.ui.selectedBuildingProduction.textContent, /unlock production/, type);
+    assert.match(f.w.ui.commandHint.textContent, /finish construction/, type);
+  }
+  const farm = { id: 50, team, type: 'farm', complete: true, progress: 1, hp: 600, maxHp: 600, harvestStock: 0 };
+  f.select([], farm); f.w.updateCommandUI();
+  assert.match(f.w.ui.selectedBuildingProduction.textContent, /exhausted.*new Farm/);
+  assert.match(f.w.ui.commandHint.textContent, /Clear exhausted Farm.*build a new Farm/);
+  const gate = { id: 50, team, type: 'palisade-gate', complete: true, progress: 1, hp: 300, maxHp: 300, gateOpen: true };
+  f.select([], gate); assert.match(f.w.ui.selectedBuildingProduction.textContent, /Gate open.*both teams/);
+  f.dom.window.close();
+});
+
 // Exercise selection with the actual economy/command handlers. The default
 // fixture deliberately lets other tests set availability independently.
 function economyFixture(team) {

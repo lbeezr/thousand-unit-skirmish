@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import vm from 'node:vm';
+import { isGameEntry } from '../src/game-entry-session.mjs';
 import { installReadbackProbe, qualifyRendererCapability, safeRequestPath, validateFrame, validateMotion, validateRelease } from './renderer-qualification.mjs';
 
 const source = { revision: 'a'.repeat(40), dirty: false };
@@ -79,6 +80,8 @@ test('readback runs after the actual animation callback and retains early failur
     querySelector: () => ({ getContext: () => gl, toDataURL: () => `data:image/png;base64,${png().toString('base64')}` }),
   } });
   vm.runInContext(`(${installReadbackProbe.toString()})()`, context);
+  assert.equal(window.__rtsCaptureDiagnostics, true);
+  assert.equal(isGameEntry('http://localhost/'), false);
   vm.runInContext("console.error('private-session-token')", context);
   errors[0]({ target: window });
   const capture = window.__rtsQualification.request(0);
@@ -87,6 +90,29 @@ test('readback runs after the actual animation callback and retains early failur
   validateFrame(actual, png(), Buffer.from(actual.canvasPng, 'base64')); assert.equal(reads, 48); assert.equal(actual.number, 1);
   assert.deepEqual(JSON.parse(JSON.stringify(window.__rtsQualification.errors)), [{ kind: 'console-error' }, { kind: 'exception' }]);
   assert.doesNotMatch(JSON.stringify(window.__rtsQualification.errors), /private-session-token/);
+});
+
+test('existing snapshot and asset diagnostics opt in without changing normal menu entry', async () => {
+  const main = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
+  const snapshot = main.slice(main.indexOf('function updateEnvironmentStateCaptureSnapshot('), main.indexOf('\nfunction applyWaypointQueueCounts('));
+  const assetCallback = main.slice(main.indexOf('resourceStateAssetsReady.then((status) => {'), main.indexOf('\nfunction buildFogOverlay('));
+  for (const [flag, query, enabled] of [[undefined, '', false], [false, '', false], [true, '', true],
+    ['true', '', false], [undefined, '?rendererCapture=environment-state', true]]) {
+    let callback;
+    const window = { __rtsCaptureDiagnostics: flag };
+    const context = vm.createContext({ window, roomPageUrl: new URL(`http://localhost/${query}`),
+      resourceStateAssetsReady: { then(fn) { callback = fn; } },
+      localTeam: 0, mapDefinition: {}, resourceNodeVisuals: new Map(), mapObjects: [],
+      constructionGroundMeshes: new Map(), RESOURCE_STATE_ASSET_STATUS: 'fixture',
+      sendCommand: () => true,
+    });
+    vm.runInContext(`${snapshot}\n${assetCallback}\nupdateEnvironmentStateCaptureSnapshot({mapId:'veyrholds-terraced-vale', units:[]})`, context);
+    callback({ ready: false });
+    assert.equal(Boolean(window.__rtsEnvironmentStateSnapshot), enabled);
+    assert.equal(Boolean(window.__rtsEnvironmentAssetStatus), enabled);
+    if (enabled) assert.equal(window.__rtsEnvironmentStateSnapshot.mapId, 'veyrholds-terraced-vale');
+    if (!query) assert.equal(isGameEntry(context.roomPageUrl), false);
+  }
 });
 
 test('hosted workflow is bounded, read-only, non-root and retains failures', async () => {
@@ -135,13 +161,15 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
   assert.match(code, /const port = await reservePort\(\)/);
   code = code.replace('const port = await reservePort()', 'const port = 4321');
   for (const mode of ['browser-fault', 'asset-timeout', 'spawn-fault', 'evidence-fault', 'missing-dependency',
-    'wrong-version', 'vendor-404', 'vendor-hash', 'room-404', 'optional-icon', 'icon-forbidden', 'saturated-icons']) {
-    let written, probeReads = 0, launches = 0; const cleanup = [], listeners = new Map();
+    'wrong-version', 'vendor-404', 'vendor-hash', 'room-404', 'optional-icon', 'icon-forbidden', 'saturated-icons',
+    'feature-pass', 'feature-blocked', 'feature-timeout', 'feature-private-assertion', 'feature-page-limit', 'second-page-fault']) {
+    let written, probeReads = 0, launches = 0, pageCount = 0, savedRuntime; const cleanup = [], listeners = new Map();
+    const featureMode = mode.startsWith('feature-') || mode === 'second-page-fault';
     const fault = Object.assign(new Error('private-token-in-error'), { code: mode === 'spawn-fault' ? 'ENOENT' : 'EPERM' });
     const server = { pid: 123, exitCode: null, stdout: { on() {} }, stderr: { on() {} },
       on(event, callback) { if (mode === 'spawn-fault' && event === 'error') callback(fault); } };
     const iconMode = ['optional-icon', 'icon-forbidden'].includes(mode);
-    const page = { errors: iconMode ? [] : ['private-browser-token'], wait: async () => { throw new Error('asset timeout: private-token'); }, cdp: {
+    const page = { errors: iconMode || featureMode ? [] : ['private-browser-token'], wait: async () => { throw new Error('asset timeout: private-token'); }, cdp: {
       on: (event, callback) => listeners.set(event, callback),
       call: async method => { assert.equal(method, 'Page.navigate');
         if (mode === 'saturated-icons') for (let i = 0; i < 100; i++) {
@@ -158,7 +186,7 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
         if (expression !== 'window.__rtsQualification.errors') return { entry: 'game', boot: 'ready', canvas: true,
           assets: { ready: false, state: 'load-failed', loaded: 0, reason: 'private-token' }, private: 'private-token' };
         probeReads++; cleanup.push('read-flags'); if (mode === 'evidence-fault') throw fault;
-        if (iconMode) return [];
+        if (iconMode || featureMode) return [];
         return [{ kind: 'console-error', payload: 'private-token' }, { kind: 'resource-error' }]; },
     } };
     const context = vm.createContext({ assert, createHash, Buffer, path, os, Date, setTimeout, AbortSignal, URL,
@@ -174,6 +202,7 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
       writeFile: async (_, text) => { written = JSON.parse(text); }, spawn: (_, args, options) => {
         assert.equal(args[0], '/pack/room-supervisor.mjs');
         assert.equal(options.env.RTS_ROOM_DATA_DIRECTORY, '/owned-temp/rooms');
+        assert.equal(options.env.RTS_MAP, featureMode ? undefined : 'maps/open-field.json');
         assert.equal(options.env.RTS_ACCESS_PASSWORD, undefined); return server;
       },
       stopChild: async (_, options) => { assert.equal(options.graceMs, 9000); cleanup.push('server'); },
@@ -182,16 +211,40 @@ test('actual orchestration retains early network/exception flags, safe OS codes 
         json: async () => ({ ok: true, enabled: true }),
         arrayBuffer: async () => mode === 'vendor-hash' && url.endsWith('/vendor/three.module.js') ? Buffer.from('different') : bytes }),
       createFortifiedBrowser: async () => { launches++; if (mode === 'browser-fault') throw fault;
-        return { version: { product: 'CPU mock' }, page: async url => { assert.equal(url, 'about:blank'); return page; },
+        return { version: { product: 'CPU mock' }, page: async url => { assert.equal(url, 'about:blank'); pageCount++;
+          return mode === 'second-page-fault' && pageCount === 2 ? { ...page, errors: ['private-second-page-token'] } : page; },
           dispose: async () => { cleanup.push('browser'); } }; },
     });
     vm.runInContext(code, context);
-    const report = JSON.parse(JSON.stringify(await context.qualifyPackedGame('/pack.json', '/evidence')));
-    assert.equal(report.status, 'failed'); assert.equal(written.status, 'failed');
+    const captureCase = featureMode ? { id: 'novice-flow', run: async runtime => {
+      savedRuntime = runtime;
+      assert.equal(runtime.origin, 'http://127.0.0.1:4321'); assert.equal(runtime.pack.sourceRevision, source.revision);
+      if (mode === 'second-page-fault') await runtime.openPage();
+      if (mode === 'feature-timeout') throw vm.runInContext('new CaptureCaseTimeoutError()', context);
+      if (mode === 'feature-private-assertion') assert.fail('private-session-token');
+      if (mode === 'feature-page-limit') for (let i = 0; i < 5; i++) await runtime.openPage();
+      return mode === 'feature-blocked' ? 'blocked' : 'passed';
+    } } : undefined;
+    const report = JSON.parse(JSON.stringify(await context.qualifyPackedGame('/pack.json', '/evidence', { captureCase })));
+    const expectedStatus = mode === 'feature-pass' ? 'passed' : mode === 'feature-blocked' ? 'blocked' : 'failed';
+    assert.equal(report.status, expectedStatus); assert.equal(written.status, expectedStatus);
     assert.ok(cleanup.includes('server'));
     if (!['missing-dependency', 'wrong-version'].includes(mode)) assert.ok(cleanup.includes('temp'));
     if (cleanup.includes('temp')) assert.ok(cleanup.indexOf('server') < cleanup.indexOf('temp'));
     assert.doesNotMatch(JSON.stringify(report), /private-.*token/);
+    if (featureMode) {
+      assert.equal(report.scope, 'ordinary-feature-novice-flow'); assert.equal(report.server.map, null);
+      assert.equal(report.pageBoots.length, mode === 'second-page-fault' ? 2 : mode === 'feature-page-limit' ? 5 : 1);
+      const previousPages = pageCount;
+      await assert.rejects(savedRuntime.openPage()); assert.equal(pageCount, previousPages);
+      if (mode === 'feature-private-assertion') {
+        assert.equal(report.issues[0].code, 'contract-failed');
+        assert.equal(report.issues[0].message, 'Qualification failed during scenario');
+      }
+      if (mode === 'feature-timeout') assert.equal(report.issues[0].code, 'scenario-timeout');
+      if (mode === 'second-page-fault') assert.ok(report.issues.some(issue => issue.code === 'browser-errors'));
+      continue;
+    }
     if (['missing-dependency', 'wrong-version', 'vendor-404', 'vendor-hash', 'room-404'].includes(mode)) {
       assert.equal(launches, 0);
       assert.equal(report.issues[0].stage, ['missing-dependency', 'wrong-version'].includes(mode) ? 'dependencies' : 'server');

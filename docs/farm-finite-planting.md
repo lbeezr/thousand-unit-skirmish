@@ -26,6 +26,14 @@ a drop-off. It grants no units, population, passive bank credit or gathering bon
 The existing per-Worker rate and 10-resource carry capacity apply; multiple
 Workers share the same finite stock without a separate reservation/gatherer cap.
 
+Farm is the plot itself, with no plot-production queue. Left-clicking it selects
+the building and clears Worker selection. To plant more, select Workers and
+choose Build Farm for another paid site. The
+[building action audit](gameplay-foundation-plan.md#canonical-building-action-coverage--4-october-2026)
+traces this path and its separate ordinary-game acceptance. Resource targeting
+uses the same visible owned completed Farm body as selection, so roof/edge clicks
+can harvest instead of silently becoming Move orders.
+
 Only the planting's owner can harvest it. Authored map nodes remain neutral under
 their existing rules. Enemy Farms can be attacked; their stock cannot be harvested
 or captured. An unfinished planting supplies nothing. Stop preserves cargo;
@@ -68,11 +76,14 @@ again from the authored map and initial banks.
 ## Prototype presentation and checks
 
 The renderer explicitly uses the existing procedural House as a **Farm placeholder**;
-the selected-building hint names that status, remaining stock and no regrowth.
+the selected-building card/hint names its finite plot role, stock, exhaustion
+and fresh paid planting. The placeholder status is retained here.
 No crop artwork or paid model is claimed. Distinct field art can follow the actual
 3 × 3 plot and its productive/exhausted stock states. The deterministic harvester
 sees and gathers existing owned Farms through the same bounded node policy;
-automatic AI planting/replanting is not part of this slice.
+bounded automatic AI starvation planting/replanting is implemented in the
+[later paid-Farm policy](qa-pve-paid-farm-2026-10-03.md). Broad farming strategy
+and optimization remain outside that slice.
 Owned Farm sources use owned-building visibility under fog; hidden neutral and
 enemy sources retain their existing filtering.
 

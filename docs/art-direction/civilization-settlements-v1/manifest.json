@@ -1,0 +1,255 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-04",
+  "sourceBaseline": "5d081ecf376f2e6e19331713bb5cc764bae75941",
+  "tool": "built-in image_gen.imagegen",
+  "purpose": "User-requested complete civilization-building and village/town/city visual reference sets",
+  "runtimeUse": false,
+  "coverage": {
+    "presentationFamilies": [
+      "frontier-human",
+      "boughward"
+    ],
+    "roleCountPerFamily": 13,
+    "settlementStudiesPerFamily": [
+      "village",
+      "town",
+      "city"
+    ],
+    "buildings": [
+      "town-center",
+      "house",
+      "storehouse",
+      "mill",
+      "farm",
+      "dock",
+      "stable",
+      "workshop",
+      "barracks",
+      "archery-range",
+      "watchtower",
+      "palisade-wall",
+      "palisade-gate"
+    ]
+  },
+  "outputs": [
+    {
+      "file": "frontier-building-family-v1.png",
+      "originalOutput": "exec-aba46f35-9cf8-4c47-af19-dc24f7893670.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2938377,
+      "sha256": "0a96c3fe4fc67eb87f7eacca1358751cf42065dbcef636ee245ca13dbba269c5",
+      "status": "exploratory-unselected",
+      "references": [
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/town-center.png",
+          "role": "selected civic hall",
+          "sha256": "180fc38469e67b414aa6d5c100b97bbd94f708f6c9d3ef904df493ac982e42f0"
+        },
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/house.png",
+          "role": "selected domestic architecture",
+          "sha256": "5a6bbc19ff710dccc14a9bc1d82412357c8988afd4a2517091f353331e185cb9"
+        },
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/barracks.png",
+          "role": "selected enclosed military architecture",
+          "sha256": "2b607b401d2e20c1eb586360590ab9cd1a2bfc1c60373675e5df3ec24e5f8557"
+        },
+        {
+          "path": "assets/buildings/frontier-civilization-concepts-v1/archery-range.png",
+          "role": "selected open military architecture",
+          "sha256": "728caf60da4e74d8c29d99b0503a0d0d08230e33f0866c202e795a74f141a910"
+        },
+        {
+          "path": "docs/art-direction/visual-development-studies-v1/economy-silhouette-explorations-v1.png",
+          "role": "unselected economy alternatives",
+          "sha256": "68be1b13696a47d0e04a2415f1a9f9f9efb8748e42e8744d51727973f7ff66ee"
+        }
+      ]
+    },
+    {
+      "file": "frontier-village-v1.png",
+      "originalOutput": "exec-7b0c31a0-626d-4df2-9fcd-428385db0903.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 3946641,
+      "sha256": "43b8d567b134240231ccae70a1c279a0203332ca1f2e875fec97b172e3261841",
+      "status": "exploratory-unselected",
+      "references": [
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/frontier-building-family-v1.png",
+          "role": "unselected complete architectural family study",
+          "sha256": "0a96c3fe4fc67eb87f7eacca1358751cf42065dbcef636ee245ca13dbba269c5"
+        },
+        {
+          "path": "docs/art-direction/vaelora-v1/bellweather-ecology.png",
+          "role": "selected Bellweather ecology",
+          "sha256": "043d3be76343e9e5c04850fe99be84333b977a7215e503152bf1ab9dc588ed40"
+        },
+        {
+          "path": "docs/art-direction/human-vaelora-sprites-v1/source/Idle/facings.png",
+          "role": "selected Human Worker identity",
+          "sha256": "323071be89e1fc6e181ec4c7b946d28048043380b4faaa285f368e6efe1c54ad"
+        }
+      ]
+    },
+    {
+      "file": "frontier-town-v1.png",
+      "originalOutput": "exec-5675b3e8-7d5a-4d88-9d12-f6e60418626b.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 3989429,
+      "sha256": "20eeb16a86d843ae2b80d9e73807f90a98200b9f0222711c7d3d1d2511aabf5a",
+      "status": "exploratory-unselected",
+      "references": [
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/frontier-building-family-v1.png",
+          "role": "unselected 13-role Frontier architectural family",
+          "sha256": "0a96c3fe4fc67eb87f7eacca1358751cf42065dbcef636ee245ca13dbba269c5"
+        },
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/frontier-village-v1.png",
+          "role": "preceding unselected settlement composition for shared craft",
+          "sha256": "43b8d567b134240231ccae70a1c279a0203332ca1f2e875fec97b172e3261841"
+        },
+        {
+          "path": "docs/art-direction/vaelora-v1/bellweather-ecology.png",
+          "role": "selected regional ecology",
+          "sha256": "043d3be76343e9e5c04850fe99be84333b977a7215e503152bf1ab9dc588ed40"
+        }
+      ]
+    },
+    {
+      "file": "frontier-city-v1.png",
+      "originalOutput": "exec-7b513830-1ddf-4c41-b34c-269a37eb7836.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 4157480,
+      "sha256": "42ee3008cf0170f19a2ecbcc2467674c17eeb3492b167bd942a57fb31685d03e",
+      "status": "exploratory-unselected",
+      "references": [
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/frontier-building-family-v1.png",
+          "role": "unselected complete Frontier architectural family",
+          "sha256": "0a96c3fe4fc67eb87f7eacca1358751cf42065dbcef636ee245ca13dbba269c5"
+        },
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/frontier-town-v1.png",
+          "role": "preceding unselected town organization and shared craft",
+          "sha256": "20eeb16a86d843ae2b80d9e73807f90a98200b9f0222711c7d3d1d2511aabf5a"
+        },
+        {
+          "path": "docs/art-direction/vaelora-v1/bellweather-ecology.png",
+          "role": "selected regional ecology",
+          "sha256": "043d3be76343e9e5c04850fe99be84333b977a7215e503152bf1ab9dc588ed40"
+        }
+      ]
+    },
+    {
+      "file": "boughward-building-family-v1.png",
+      "originalOutput": "exec-63e51154-31f2-4902-ae9b-c26a3c0231b7.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 3163431,
+      "sha256": "f25dfe93e78347ef0990239ab1da77a53314cb50ba5121cf6657de09b9801a17",
+      "status": "exploratory-unselected",
+      "references": [
+        {
+          "path": "docs/art-direction/boughward-roster-v1/direction-reference.png",
+          "role": "existing Boughward culture/architecture exploration, not expanded cast",
+          "sha256": "10abbace9a2525f16f9513e8e0d05ab70ef83866f33a43e1a582f473938ed9fc"
+        },
+        {
+          "path": "docs/art-direction/vaelora-v1/underbough-ecology.png",
+          "role": "selected Underbough regional ecology",
+          "sha256": "8a20fa0f121641e6066e144e80fa8f699c74a1884efab21c79c81bb5776cc264"
+        },
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/frontier-building-family-v1.png",
+          "role": "functional role/coverage comparison only",
+          "sha256": "0a96c3fe4fc67eb87f7eacca1358751cf42065dbcef636ee245ca13dbba269c5"
+        }
+      ]
+    },
+    {
+      "file": "boughward-village-v1.png",
+      "originalOutput": "exec-331e94a2-1f82-4624-bf1e-fa01c6bb6dc9.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 4044892,
+      "sha256": "d738b4e8d17edcb3c08e15ecf0936b6a7ca8adea8cc548a2bb3b2319d97d2f89",
+      "status": "exploratory-unselected",
+      "references": [
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/boughward-building-family-v1.png",
+          "role": "unselected proposed Boughward 13-role architectural family",
+          "sha256": "f25dfe93e78347ef0990239ab1da77a53314cb50ba5121cf6657de09b9801a17"
+        },
+        {
+          "path": "docs/art-direction/vaelora-v1/underbough-ecology.png",
+          "role": "selected regional ecology",
+          "sha256": "8a20fa0f121641e6066e144e80fa8f699c74a1884efab21c79c81bb5776cc264"
+        },
+        {
+          "path": "docs/art-direction/boughward-roster-v1/extracted/worker/00.png",
+          "role": "existing actual Boughward Worker identity",
+          "sha256": "7296c0b24ad61c02b65bfc9d6d88c8f46391bfa1efbaeba2e4c2615de07f9aa6"
+        }
+      ]
+    },
+    {
+      "file": "boughward-town-v1.png",
+      "originalOutput": "exec-6a7bd22e-0abf-40ce-a72a-36b0eee26a66.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 4102619,
+      "sha256": "0419017d5b41566d7f5f879b493feeee6b4b82150e34d41ef4d1fe776b23382a",
+      "status": "exploratory-unselected",
+      "references": [
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/boughward-building-family-v1.png",
+          "role": "unselected Boughward 13-role family",
+          "sha256": "f25dfe93e78347ef0990239ab1da77a53314cb50ba5121cf6657de09b9801a17"
+        },
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/boughward-village-v1.png",
+          "role": "preceding unselected woodland settlement study",
+          "sha256": "d738b4e8d17edcb3c08e15ecf0936b6a7ca8adea8cc548a2bb3b2319d97d2f89"
+        },
+        {
+          "path": "docs/art-direction/vaelora-v1/underbough-ecology.png",
+          "role": "selected regional ecology",
+          "sha256": "8a20fa0f121641e6066e144e80fa8f699c74a1884efab21c79c81bb5776cc264"
+        }
+      ]
+    },
+    {
+      "file": "boughward-city-v1.png",
+      "originalOutput": "exec-678fcae2-7fcd-4c25-b23a-f2d39540ca2b.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 4248127,
+      "sha256": "3315e8e0f58d2a1a7b28da27e83c5801628e6ddc0d712b486ef2846b585cc301",
+      "status": "exploratory-unselected",
+      "references": [
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/boughward-building-family-v1.png",
+          "role": "unselected proposed complete Boughward family",
+          "sha256": "f25dfe93e78347ef0990239ab1da77a53314cb50ba5121cf6657de09b9801a17"
+        },
+        {
+          "path": "docs/art-direction/civilization-settlements-v1/boughward-town-v1.png",
+          "role": "preceding unselected town composition",
+          "sha256": "0419017d5b41566d7f5f879b493feeee6b4b82150e34d41ef4d1fe776b23382a"
+        },
+        {
+          "path": "docs/art-direction/vaelora-v1/underbough-ecology.png",
+          "role": "selected Underbough ecology",
+          "sha256": "8a20fa0f121641e6066e144e80fa8f699c74a1884efab21c79c81bb5776cc264"
+        }
+      ]
+    }
+  ]
+}

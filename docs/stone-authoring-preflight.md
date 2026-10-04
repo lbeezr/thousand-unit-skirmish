@@ -85,16 +85,30 @@ and selects it through the ordinary `selectMap` command with both seats connecte
 It publishes no custom JSON and leaves the map's geometry unchanged.
 It never modifies saved banks, cargo or stock. Both seats start with zero Stone,
 recover real carried Stone after a restart, return it
-to their Town Center and exhaust their first 67-stock node. A Watchtower spends
+to their Town Center and exhaust their first 67-stock node. Stone jobs automatically
+continue within the original work area, so the fixture explicitly stops at first
+depletion, returns retained cargo, and checks the exact bank against the observed
+draw and deposit rather than assuming the bank is still 67. Stop/Return cannot
+draw more stock. A Watchtower spends
 50 food / 150 wood / 50 Stone. A restart preserves the frozen paid foundation;
 cancellation refunds only its unbuilt fraction, and replay cannot refund twice.
-Remaining nodes deplete to zero, with stock + cargo + bank + paid/lost construction
+One fresh Gather per seat continues through remaining nodes to zero, with stock + cargo + bank + paid/lost construction
 equal to 200 per seat through another restart. Food/wood nodes remain exact.
 Both seats then complete a paid Watchtower and recover the completed defenses
 and their debited banks through a final restart.
 This is an authoritative server/client-command proof, not a human match or ore-art
 acceptance. Room checkpoints are disposable; the map itself comes from the
 checked-in shipped catalog. No generated ore asset is added.
+
+The [main shard-2 failure](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/37215711574/job/111475908426)
+at `32b7179590f9cd8a0c59172bd9ebd9a8049c4fdf` timed out waiting for the obsolete
+67-per-seat bank after area continuation had begun. The unchanged isolated
+Practice test reproduced the same checkpoint timeout at line 306 on Node 24.19.0
+in 183.37 seconds. Retained checkpoints showed both banks at
+160.46666666666667, zero cargo and cleared work, with 39.5333333333369 Stone
+remaining per seat; checkpoint sequence and scenario clock continued advancing.
+The fixture correction respects the existing Stone-area contract and retains
+the original deadlines, exact spending/refunds, both seats and cold recoveries.
 
 ## Placement and visual brief for the later vertical slice
 
