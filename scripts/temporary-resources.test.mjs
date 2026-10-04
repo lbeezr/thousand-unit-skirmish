@@ -18,7 +18,8 @@ async function fixture(action) {
     await symlink(path.join(sourceRoot, 'node_modules'), path.join(root, 'node_modules'), 'dir');
     await mkdir(path.join(scratch, retained), { recursive: true });
     await writeFile(path.join(scratch, retained, 'screenshot.png'), 'unrelated screenshot bytes');
-    for (const script of ['pack-railway-release.mjs', 'railway-release-scenario.mjs', 'check-client-imports.mjs', 'check-served-build-identity.mjs', 'check-runtime-imports.mjs', 'module-imports.mjs', 'temporary-resources.mjs']) {
+    for (const script of ['pack-railway-release.mjs', 'release/pack-railway-release.mjs', 'railway-release-scenario.mjs', 'check-client-imports.mjs', 'check-served-build-identity.mjs', 'check-runtime-imports.mjs', 'module-imports.mjs', 'temporary-resources.mjs']) {
+      await mkdir(path.dirname(path.join(root, 'scripts', script)), { recursive: true });
       await copyFile(path.join(sourceRoot, 'scripts', script), path.join(root, 'scripts', script));
     }
     await mkdir(path.join(root, 'src', 'server'));
@@ -96,7 +97,7 @@ for (const stage of ['symlink', 'docker-assertion', 'after-volume']) {
       + 'await writeFile(path.join(directory, "Dockerfile"), ' + JSON.stringify(stage === 'docker-assertion' ? 'FROM scratch\n' : 'COPY origin-policy.mjs /app/\n') + ');\n'
       + 'await writeFile(path.join(directory, "room-supervisor.mjs"), "process.exit(0);\\n");\n'
       + 'console.log(JSON.stringify({directory}));\n';
-    await writeFile(path.join(root, 'scripts/pack-railway-release.mjs'), mock);
+    await writeFile(path.join(root, 'scripts/release/pack-railway-release.mjs'), mock);
     const result = run('railway-release-scenario.mjs');
     assert.ifError(result.error); assert.notEqual(result.status, 0);
     assert.match(result.stderr, stage === 'symlink' ? /EEXIST/ : /AssertionError/);

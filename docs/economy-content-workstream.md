@@ -9,6 +9,15 @@ remain planned decisions; artwork does not establish their rules.
 
 ## Current source and acceptance queue — 4 October 2026
 
+The newly approved match pacing/economy lane owns measurement and recommendations
+in the existing [balance guide](first-skirmish-balance.md#tiny-paid-match-baseline--4-october-2026),
+separately from resource job implementation and AI qualification. Its paid Tiny
+mirror repeats both seed assignments: one 2,393-second elimination and one
+unresolved 3,600-second bound, with home depletion and paid depots/expansion/Farms.
+Retain prices, stocks and quick-mode contracts. Next: matched paid expansion and
+army-growth decisions after the AI/movement owners diagnose the retained
+non-completion; ordinary rendered/served acceptance remains incomplete.
+
 Wood continuation [PR #283](https://github.com/lbeezr/thousand-unit-skirmish/pull/283)
 is merged at `8200ec6c`: visible reachable Wood within eight world units of the
 original assignment, typed cargo conservation and accepted external-order
