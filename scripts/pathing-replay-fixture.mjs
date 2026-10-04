@@ -119,7 +119,7 @@ export const replay = {
   snapshot(team) { return roomPayload(team); },
   checkpoint() { return captureMatchCheckpoint(1); },
   restore(snapshot) {
-    const migrated = migrateEconomyCheckpoint(migrateMatchCheckpoint(snapshot));
+    const migrated = migrateEconomyCheckpoint(migrateMatchCheckpoint(migrateFoodToolsCheckpoint(snapshot)));
     migrateWildlifeMotionCheckpoint(migrated);
     migrateCombatStanceCheckpoint(migrated, UNIT_DEFINITIONS);
     migrateWildlifeClaimsCheckpoint(migrated);
@@ -129,7 +129,7 @@ export const replay = {
     restoreMatchCheckpoint(migrated);
   },
   validate(snapshot) {
-    const migrated = migrateEconomyCheckpoint(migrateMatchCheckpoint(snapshot));
+    const migrated = migrateEconomyCheckpoint(migrateMatchCheckpoint(migrateFoodToolsCheckpoint(snapshot)));
     migrateWildlifeMotionCheckpoint(migrated);
     migrateCombatStanceCheckpoint(migrated, UNIT_DEFINITIONS);
     migrateWildlifeClaimsCheckpoint(migrated);

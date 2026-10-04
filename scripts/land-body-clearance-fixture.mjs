@@ -83,7 +83,9 @@ export async function runLandBodyCase(spec, { maxTicks = 1800, initialCheckpoint
   try {
     if (initialCheckpoint) {
       assert.deepEqual(initialCheckpoint.mapDefinition, r.checkpoint().mapDefinition);
-      assert.ok(r.validate(initialCheckpoint)); r.restore(structuredClone(initialCheckpoint));
+      // Production content migrations may mutate their input; preserve the
+      // retained checkpoint and its exact hash before validating/restoring.
+      assert.ok(r.validate(structuredClone(initialCheckpoint))); r.restore(structuredClone(initialCheckpoint));
     } else stage(r, spec);
     // Hash the checkpoint actually supplied, including its original timestamps.
     // A fresh capture would give the same restored actors a different input hash.

@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { LAND_BODY_STUDY } from './land-body-clearance.mjs';
 import { LAND_BODY_CASES, configureLandBodyReplay, runLandBodyCase } from './land-body-clearance-fixture.mjs';
+import { LAND_CLEARANCE_PROFILE } from '../src/unit-movement.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const selection = process.argv[2] ?? 'all', maxTicks = Number(process.argv[3] ?? 1800);
@@ -40,6 +41,8 @@ function summarize(record) {
 }
 const report = { ...before, node: process.version, platform: process.platform, selection, maxTicks,
   profile: LAND_BODY_STUDY, records,
+  productionClearance: { profile: LAND_CLEARANCE_PROFILE,
+    adopters: 'ordinary single-land-unit Move/queued Move; static footprints only; body pairs and other caller policies remain open' },
   scope: 'Candidate circles swept along admitted authoritative land substeps; diagnostic hypotheses, not production radii.',
   controls: { units: 'one world unit equals one tile; circles centered on authoritative x/z',
     pairs: 'directed moving capsule against each living land body at its current serial-executor position',
@@ -48,7 +51,7 @@ const report = { ...before, node: process.version, platform: process.platform, s
     replay: 'two fresh adapters from the same complete checkpoint; actual actor identity, no normalization',
     navigation: 'constant revision and occupancy hash; no harvest, construction or cliff patches',
     progress: 'longest consecutive ticks with no admitted displacement before first arrival; this is not route-progress fairness' },
-  limits: ['No production body, avoidance, planner, checkpoint, wire or presentation change.',
+  limits: ['The probe itself makes no production body, avoidance, planner, checkpoint, wire or presentation change.',
     'No dynamic occupancy/elevation-volume clearance, gate/bridge policy, naval hull, Sheep or all-caller acceptance.',
     'Fixed ticks with planning callbacks drained; no asynchronous intake/process restart guarantee.',
     'No hardware timing/capacity, clean release digest, deployed identity or ordinary-game pixels.'] };

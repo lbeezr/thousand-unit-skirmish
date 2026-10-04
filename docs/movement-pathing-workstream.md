@@ -27,6 +27,14 @@ records and this guide. It consumes the forest owner's gap map without editing
 forest jobs/frontiers, the existing 42-case cell-gap records or their fixture.
 Production movement, map admission, benchmark/report formats and renderer/CI
 interfaces remain outside this diagnostic slice.
+The following U4 runtime slice owns only static geometry/profile and ordinary
+Move points in `src/unit-movement.mjs`, the matching planner/publication/queue/
+repair sections and three existing land position admissions in `server.mjs`.
+It adapts existing registered fixtures. Combat acquisition/range/damage,
+Worker job/rate/scoring, group slots, interaction separation, map admission,
+wire tuples, benchmark formats and renderer/CI interfaces remain with their
+existing owners. Food Tools' productive-food grant/migration is disjoint, as
+recorded on [PR377](https://github.com/lbeezr/thousand-unit-skirmish/pull/377#issuecomment-5984362722).
 The parent allocated only `snapshotUnits`' base-row literal for the measured
 allocation experiment; its private fields, filters and visibility contract stay
 unchanged.
@@ -51,7 +59,7 @@ land executor, not command admission or whole journeys.
 
 | Caller / intent | Existing route / execution surface | Policy and evidence still required |
 | --- | --- | --- |
-| Manual Move, queued Move, formation slots | `assignFormationMove`, `advanceQueuedWaypoints`, sliced `findPathAStar` → `applyPlannedMoveAssignment` → `getMoveVector` / `simulateTick` | U3 adds exact legal points for one selected land unit's ordinary Move and queued Move. Groups keep distinct slots and reachable-component projection. [Retained Direct Move checks](qa-direct-open-ground-move-2026-10-04.md) document the historical cell-center milestone. |
+| Manual Move, queued Move, formation slots | `assignFormationMove`, `advanceQueuedWaypoints`, sliced `findPathAStar` → `applyPlannedMoveAssignment` → `getMoveVector` / `simulateTick` | U3 adds legal fractional points; U4's bounded ordinary single-unit adopter adds explicit static-circle projection/sweeps. Groups keep distinct slots and reachable-component projection; physical group adoption remains open. [Retained Direct Move checks](qa-direct-open-ground-move-2026-10-04.md) document the historical cell-center milestone. |
 | Gather, Farm, shore fish, drop-off, Return, return to work | `routeWorker`, `routeForestWorker`, `routeWorkerToDropoff`, `updateWorkerEconomy`; cached cardinal flow fields → land executor | Select a legal interaction endpoint and preserve cargo/job. Resource owner `01a101f7-5683-70da-8e3b-b87022e5a008` owns the urgent Worker-only direct-route patch. Retain selected `path.at(-1)`, never substitute `field.goal`; drop-off scoring uses original `path.length` before reduction. |
 | Forest group / region intent | `assignForestGather`, gather-work-area selection, `updateForestWorkerEconomy` → resource routes | Forest owner `01a1072a-4c42-7791-9dab-77b88425a021` owns the returning-forester/interior-click fix. A clicked interior tree names its selected forest group; choose its nearest reachable frontier. Distinguish exhausted, temporarily obstructed and unreachable. No unrelated global fallback or hidden-resource reveal. |
 | Build, repair, palisade sequence, site evacuation | Building access assignment → A* / land executor; construction and wall continuation | Preserve paid site IDs, revision, legal edge range and actual productive-work receipts. Completion of movement does not mean completion of work. |
@@ -136,7 +144,7 @@ target/interaction range, Worker flow routes and naval hull policies retain thei
 own semantics. AI/scenario/rally callers that issue an ordinary single-unit Move
 consume this same contract; this does not audit every AI decision or relocation.
 
-The optional private `moveGoalPoint` and queued `point` payloads have version 1,
+At the U3 milestone, optional private `moveGoalPoint` and queued `point` payloads have version 1,
 actor generation and order revision. Checkpoint schema 29 remains compatible with
 old saves lacking these fields, which retain cell-center semantics. Unknown,
 malformed, foreign or incoherent payloads reject. Capture/restore detach both
@@ -270,6 +278,111 @@ owner `01a101bc` retains validity reports; map `01a103e8` retains admission; CI
 `01a10378` retains capture interfaces. Movement owner `01a107ba` retains runtime
 adoption and actual identified-release rendered acceptance. No auth retry or
 denied hosted dispatch is attempted.
+
+### U4 bounded runtime adopter: ordinary Move static circles
+
+`land-static-circle-v1` adopts the study's authored radii for static clearance
+of ordinary single-land-unit Move and queued Move, including Worker and all
+six military kinds. Every radius is below half a tile: legal cardinal cell
+centers fit the existing one-row forest throat. The measured blocked corner
+motivates positive footprint clearance; sprite scale and soft separation do
+not set these values. This profile enforces static blocked-cell/map bounds,
+with the existing separate elevation/corner guard. It does not enforce body
+pairs, cliff volumes or universal movement clearance.
+
+Private point version 2 adds only `clearanceProfile` and `arrivalPolicy` to
+v1's eight fields. Clear requested circles retain the exact derived point.
+An overlapping circle chooses `cell-inset`: the nearest point inside the
+selected cell's radius-inset rectangle. This deliberately conservative goal
+region is explicit; it does not claim the globally nearest free point.
+Stop/new intent, identity and queue priority stay unchanged. Version 1 remains
+readable with its original derivation; unknown versions/profiles/policies,
+foreign identity and incoherent coordinates reject. Saved policy describes
+the selected arrival region, not the current occupancy mask. Publication/
+repair recompute the policy against live navigation; historical saves with
+no point retain their cell-center contract. The exact additive schema-29
+subsection is recorded with [recovery ownership](https://github.com/lbeezr/thousand-unit-skirmish/pull/361#issuecomment-5984336691).
+
+Planner shortcuts, fractional rejoin/final legs, steering, fallback and terminal
+snaps consume compatible static sweeps. A circle-unsafe center ray falls back
+to the existing cardinal/weighted route, preserving its original cost/length.
+Long checks visit the crossed cells and their one-cell neighborhoods rather
+than a whole-map bounding rectangle; the rectangular planned320 regression
+bounds occupancy queries and does not admit XL or claim a hardware budget.
+Only a short monotone escape can recover an old overlapped pose: no deeper
+existing penetration and no new footprint contact. This is explicit recovery,
+with no persistent escape flag or new order replacing the user's intent.
+
+The exact parked-stone-corner input now completes at `(0.22,0.22)` in eight
+ticks, traveling 0.67282 units with no repair revisions or static contact,
+from the preserved request `(0.001,0.001)`. The diagnostic-only predecessor
+took 234 ticks/19.13095 units and admitted 79 static-contact substeps. Opposing
+traffic remains unresolved: Infantry/Scout still reach coincident centers,
+and the 16+16 formation still records 5,183 candidate pair-contact substeps.
+The corner's remaining pair contact can be deeper during its shorter direct
+approach; this slice does not claim safe body-pair avoidance or all-natural
+movement. U5 retains deterministic yield/side selection, bounded neighbors,
+formation compression/reform and fairness.
+
+The [adopter summary](qa-evidence/ordinary-move-static-clearance-2026-10-04/summary.json)
+and [raw paired substeps](qa-evidence/ordinary-move-static-clearance-2026-10-04/substeps.json.gz)
+are measured at clean `0a320fa55989aeafce5a05cc7cd5d9441031dd4a`; all six complete
+records repeat exactly from retained checkpoints. The predecessor's original
+records above remain unchanged. Two additional actual-process/socket tests
+accept v2 ordinary Move/queued Move on both seats, save a pending projected
+waypoint, restart the real server, reclaim seats and observe the exact legal
+arrival with its original generation and requested coordinates. Their initial
+placement is trusted diagnostic setup, not paid unit-production acceptance.
+
+Existing registered movement/fractional/planner/palisade tests cover analytic
+sweeps, monotone recovery, bounded long queries, all seven kinds on both seats,
+pending queue checkpoint restore, exact safe points, projected unsafe points,
+legacy v1 upgrade during repair, Stop/replacement and a newly paid adjacent
+wall that changes the arrival without losing request/queue. Every observed
+selected substep must be statically clear; health and generation stay intact.
+Both seats also exercise a real Move from an inherited overlapping pose:
+short escape never deepens that overlap, reaches the projected point and
+preserves the accepted order revision. Those inherited escape substeps are
+reported as recovery, not zero-penetration starts.
+Independent review at `25ef0606` found an adjacent first-leg liveness failure:
+an Infantry reaches `(0.75,0.9)` through a real Move from spawn beside stone
+`[1,2]×[1,2]`, then Move to `(1.5,0.5)` freezes at
+`(0.8264705882,0.8592156863)` through 599 repairs in 600 ticks. All admitted
+substeps remain statically clear. The route's fractional-start sweep needs
+the same safe start-center rejoin even when its first cell is adjacent;
+distance alone cannot admit that first approach. Eight command-only regressions
+cover both seats, ordinary/queued continuation and pending-plan recovery;
+two explicit center controls pass before the fix. The fixed traversal must
+arrive within 30 ticks, keep every actual substep clear and introduce no
+traversal repairs. Pending recovery retains its existing one-time plan rebuild.
+The private study consumes production's exact geometry helpers while retaining
+its separate authored candidate profile and historical evidence. New study
+registration remains the [existing CI-owner handoff](https://github.com/lbeezr/thousand-unit-skirmish/pull/369#issuecomment-5984188895);
+the runtime regressions extend already registered test paths.
+After Food Tools' independent merge, the replay adapter follows the native
+content-migration pipeline for old saves. Validation operates on a copy of
+retained study input. A regression loads the exact pre-technology checkpoint
+and preserves its input hash, generations, commands and complete motion/contact
+record under the new source; it does not normalize identities or rewrite the
+historical measured files.
+
+The [preserved endpoint storyboard](qa-evidence/fractional-move-endpoints-2026-10-04/endpoint-storyboard.svg)
+and [travel/heading/idle reference](qa-direct-open-ground-move-2026-10-04.md)
+support the same visible treatment: accepted click, safe approach, legal arrival
+then queue handoff. No art, heading, gait or velocity curve changes. These
+sources and CPU trajectories are design backing, not actual gameplay frames.
+Movement owner `01a107ba` retains independent review, normal merge, clean
+packaging, identified deployment and ordinary-game rendered acceptance.
+The [cloud capability attempt](qa-evidence/ordinary-move-static-clearance-2026-10-04/renderer-capability.json)
+at that clean source is blocked: the Linux browser sandbox/profile storage
+cannot start, so it produced no WebGL readback, game frame or screenshot.
+No sandbox weakening, new provider service, auth retry or hosted dispatch is
+attempted. CI `01a10378` retains the provisioned capture interface; movement
+retains ordinary-game acceptance through it when available.
+Construction/combat/resource-owned access and productive range, interaction
+separation, group formation movement, naval/wildlife adapters, dynamic forest
+cuts, gates/bridges and native all-caller recovery still need their own adoption.
+Denied hosted dispatch and cancelled authentication remain paused.
 
 ### Forest cell-gap characterization — 4 October 2026
 
