@@ -59,11 +59,12 @@ entry owner branch `codex/match-mode-entry-ui-v1` owns the normal selectors and
 Practice entry. Agreement is recorded on [PR176](https://github.com/lbeezr/thousand-unit-skirmish/pull/176#issuecomment-5974560958)
 and [Practice PR155](https://github.com/lbeezr/thousand-unit-skirmish/pull/155#issuecomment-5974561478).
 Preserve one-human Practice, ready/start/rematch and current legacy room identity.
-Current seeded PvE maps are both smaller than 160. Fresh ordinary AI creation
-returns a clear unavailable explanation while qualifying Tiny AI acceptance is
-pending. Existing seeded rooms/checkpoints and their historical pool remain
-resumable. Status exposes `ordinarySetup.pve.available:false` and its reason for
-the entry owner; Tiny is not advertised as supported PvE.
+Historical seeded PvE maps are both smaller than 160 and remain resumable with
+their exact pool, identity and seeds. Fresh ordinary AI now selects only accepted
+Terraced Vale160/Skirmish@1. Status exposes `ordinarySetup.pve.available:true`,
+the exact map/pair and its one-entry `supportedMapIds`. Human-compatible Small
+does not acquire AI support. [Admission proof](qa-tiny-skirmish-pve-admission-2026-10-04.md)
+retains rendered/deployed acceptance as an incomplete owned step.
 
 ## Progressive authoring and capacity gates
 

@@ -3,7 +3,7 @@
 import { BANNERFALL_RULES } from './bannerfall-rules.mjs';
 export const NORMAL_MATCH_MAP_ID = 'veyrholds-terraced-vale';
 export const NORMAL_HUMAN_MATCH_MODE = Object.freeze({ matchModeId: 'skirmish', matchModeVersion: 1 });
-/** @type {ReadonlyArray<Readonly<{id:string, version:number, label:string, victoryPolicy:string, aiStrategyId:string, pveSupported:boolean, selectable:boolean, defaultMapId?:string, fixedArmySize?:number}>>} */
+/** @type {ReadonlyArray<Readonly<{id:string, version:number, label:string, victoryPolicy:string, aiStrategyId:string, pveSupported:boolean, pveMapIds?:ReadonlyArray<string>, selectable:boolean, defaultMapId?:string, fixedArmySize?:number}>>} */
 const definitions = Object.freeze([
   Object.freeze({ id: 'authored', version: 1, label: 'Authored Rules',
     victoryPolicy: 'authored', aiStrategyId: 'capture-posts',
@@ -13,7 +13,8 @@ const definitions = Object.freeze([
     pveSupported: true, selectable: true, defaultMapId: 'woodland-expanse' }),
   Object.freeze({ id: 'skirmish', version: 1, label: 'Skirmish',
     victoryPolicy: 'recovery-elimination', aiStrategyId: 'base-elimination',
-    pveSupported: false, selectable: true, defaultMapId: NORMAL_MATCH_MAP_ID }),
+    pveSupported: true, pveMapIds: Object.freeze([NORMAL_MATCH_MAP_ID]),
+    selectable: true, defaultMapId: NORMAL_MATCH_MAP_ID }),
   Object.freeze({ id: 'bannerfall', version: 1, label: 'Bannerfall',
     victoryPolicy: 'designated-stronghold', aiStrategyId: 'unsupported',
     defaultMapId: BANNERFALL_RULES.mapId, fixedArmySize: BANNERFALL_RULES.openingArmySize,
@@ -70,6 +71,16 @@ function mapCompatible(definition, map) {
   return definition.id !== 'skirmish' || skirmishMapIds.has(map.id);
 }
 
+function supportsPve(definition, map) {
+  return definition.pveSupported && (!definition.pveMapIds || definition.pveMapIds.includes(map.id));
+}
+
+// Catalog descriptors report the capability of this map, not another preset.
+function mapDescriptor(definition, map) {
+  const pveSupported = supportsPve(definition, map);
+  return pveSupported === definition.pveSupported ? definition : Object.freeze({ ...definition, pveSupported });
+}
+
 /** Return the descriptor on success; never silently substitute a mode or map. */
 export function assertMatchModeCompatibility(value, map, options) {
   const definition = matchModeDefinition(value);
@@ -78,11 +89,11 @@ export function assertMatchModeCompatibility(value, map, options) {
   if (!mapCompatible(definition, map)) {
     throw new Error(`${definition.label} is not compatible with map ${map.id || '(unnamed)'}.`);
   }
-  if (mode === 'pve' && !definition.pveSupported) {
+  if (mode === 'pve' && !supportsPve(definition, map)) {
     if (definition.id === 'bannerfall') throw new Error('Bannerfall supports human matches and Practice; its AI is not implemented.');
-    throw new Error(`${definition.label} does not support PvE until its base-elimination AI is accepted.`);
+    throw new Error(`${definition.label} does not support PvE on map ${map.id}; AI is accepted only on Terraced Vale (${NORMAL_MATCH_MAP_ID}).`);
   }
-  return definition;
+  return mapDescriptor(definition, map);
 }
 
 /** Project simulation rules without mutating or relabeling the canonical map. */
@@ -116,5 +127,6 @@ export function matchModeCatalog(map, options) {
   const { mode } = assertContext(options);
   assertMap(map);
   return definitions.filter(definition => mapCompatible(definition, map)
-    && (mode !== 'pve' || definition.pveSupported));
+    && (mode !== 'pve' || supportsPve(definition, map)))
+    .map(definition => mapDescriptor(definition, map));
 }

@@ -13,8 +13,8 @@ and `src/pve-match.mjs` are authoritative.
 | `PORT` | `4173` | Public supervisor port, or direct worker port. |
 | `RTS_HOST` | `127.0.0.1` | Listening interface; use `0.0.0.0` for LAN/container access. |
 | `RTS_PUBLIC_ORIGINS` | Local matching origins | Comma-separated browser-facing full origins. Required for non-loopback/custom hosts unless the Railway domain supplies one. |
-| `RTS_MATCH_MODE_ID`, `RTS_MATCH_MODE_VERSION` | Both unset | Direct worker mode pair; omission uses authored rules. Explicit `skirmish`/`1` supports Millrace/Rootways human PvP or Practice; PvE rejected pending AI. Supervisor clears inherited values and passes only explicit launch pairs. [Mode contract](match-mode-contract.md). |
-| `RTS_MAP` | `maps/bellweather-millrace.json` | Initial shipped map; existing checkpoints may restore another map. |
+| `RTS_MATCH_MODE_ID`, `RTS_MATCH_MODE_VERSION` | Both unset | Complete explicit worker pair. A no-map unconfigured human root uses Tiny Skirmish; an explicit `RTS_MAP` with omitted pair and saved/normalized omission retain Authored. Normal fresh REST human pregame/AI supplies Skirmish explicitly. PvE Skirmish supports only Terraced Vale; historical omitted/Authored direct PvE retains seeded selection. Supervisor clears inherited pairs and passes the room identity. [Mode contract](match-mode-contract.md). |
+| `RTS_MAP` | Mode preset; ordinary Terraced Vale | Initial shipped map; fresh room presets override inherited maps. Historical launch omission and saved canonical checkpoints retain their map. |
 | `RTS_MAX_ROOMS` | `4` | Invite-room cap in addition to the default room. |
 | `RTS_ROOM_IDLE_TTL_MS` | `21600000` | Six-hour idle expiry for invite-room data. |
 | `RTS_MAX_PEERS` | `32` | Connections per worker, including spectators; valid range 2–256. Compose defaults to 16. |
@@ -43,7 +43,7 @@ and `src/pve-match.mjs` are authoritative.
 | `RTS_SHARED_MOVE_PATHS=0` | Disable shared move paths for comparison. Normal runs leave this enabled. |
 | `RTS_MOVE_PLANNING_TURNS_PER_TICK` | Fixed planning reproduction controls at the tick boundary: 1, 4 or 8. Absent/0 retains callback scheduling after four turns failed [paid whole-tick qualification](qa-paid-battle-tick-budget-2026-10-04.md). See the earlier [comparison and limitations](qa-move-planning-tick-budget-2026-10-04.md); ordinary runs leave this unset. |
 | `RTS_GAME_MODE=pve` | Direct-worker deterministic opponent mode. Default is `pvp`. |
-| `RTS_PVE_MAP_SEED`, `RTS_PVE_POLICY_SEED` | Required unsigned 32-bit seeds for direct PvE launch. The normal Play vs AI flow supplies them. |
+| `RTS_PVE_MAP_SEED`, `RTS_PVE_POLICY_SEED` | Required unsigned 32-bit seeds for direct PvE launch. Normal Play vs AI supplies both; explicit Skirmish uses fixed Tiny while omitted/Authored/Objective direct identities keep the historical map seed pool. Policy seed still configures deterministic AI. |
 | `CHROME_PATH` | Browser executable for supported capture/scenario scripts. |
 
 Browser measurement budgets can be overridden with `RTS_FRAME_P95_BUDGET_MS`,
