@@ -6,7 +6,9 @@ import vm from 'node:vm';
 import { UnitLifecycleAudioGate, OrderAudioGate, workAudioEvents } from '../src/audio-policy.mjs';
 import { createWaterStudyFishBinding } from '../src/water-study-fish-binding.mjs';
 import { selectWaterStudyFish } from '../src/water-study-state.mjs';
-import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { BUILDING_DEFINITIONS, UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
+import { applyUnitStances } from '../src/combat-stance-ui.mjs';
+import { readWorkerPerformingAction } from '../src/worker-work-presentation.mjs';
 
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
 const declaration = (name, next) => source.slice(source.indexOf(`function ${name}(`), source.indexOf(`\nfunction ${next}(`));
@@ -37,7 +39,7 @@ function fixture(team) {
     close() {}
   }
   const noop = () => {};
-  const context = vm.createContext({ ...economyClientBindings(),
+  const context = vm.createContext({ ...economyClientBindings(), readWorkerPerformingAction, applyUnitStances, UNIT_DEFINITIONS,
     applyLobby() {}, updateLobbyHostControls() {}, roomLobby: { disconnect() {}, updateChat() {} },
     waterStudyFishBinding: { update(state, options) { fishUpdates.push({ state, options }); }, clear() {} },
     WebSocket, URL, performance: {now: () => 1000}, location: {protocol:'http:',host:'localhost'},

@@ -61,6 +61,7 @@ import {
   unitActionPoseAllowed, unitCargoVisualState, unitWorkerActionPose,
 } from './unit-visual-state.mjs';
 import { createUnitSpriteRuntime } from './unit-sprite-runtime.mjs';
+import { readWorkerPerformingAction, workerWorkAction } from './worker-work-presentation.mjs';
 import { createNeutralWildlifeRenderer } from './neutral-wildlife-renderer.mjs';
 import {
   MAX_ELEVATION_PATCHES, buildElevationGrid, capturePrerequisiteIds,
@@ -3513,11 +3514,11 @@ function updateUnitTransform(unit, now = performance.now()) {
   const bodyScale = isSiege ? 0 : isWorker ? visibleScale * 0.82 : isArcher ? visibleScale * 0.9 : visibleScale;
   const actionPoseAllowed = unitActionPoseAllowed(unit.hp, unit.defeatStartedAt);
   const workerActionPose = actionPoseAllowed && isWorker
-    ? unitWorkerActionPose(unit.kind, unit.visible, unit.task, unit.cargoType, unit.walking)
+    ? unitWorkerActionPose(unit.kind, unit.visible, unit.task, unit.performingAction, unit.walking)
     : 'none';
   const stride = actionPoseAllowed && unit.walking ? Math.sin(unit.motionPhase || 0) * 0.038 : 0;
   const idleBreath = actionPoseAllowed && !unit.walking
-    && unit.task !== 'gathering' && unit.task !== 'building' && unit.task !== 'repairing' && unit.attackStartedAt === 0
+    && workerActionPose === 'none' && unit.attackStartedAt === 0
     ? Math.sin(now * 0.0024 + unit.id * 1.7) * 0.018 : 0;
   const attackAge = actionPoseAllowed && unit.attackStartedAt > 0
     ? (now - unit.attackStartedAt) / ATTACK_POSE_MS : 1;
@@ -4439,6 +4440,7 @@ function appendUnitFromState(row, animateSpawn = false) {
     defeatStartedAt: 0, lastPlayedAttackTick: -1,
     damageFlashUntil: 0,
     kind, cargo, cargoType: economyResources(mapDefinition?.economyProfileId).includes(cargoType) ? cargoType : null,
+    performingAction: null,
     task: kind === 'worker' && WORKER_TASK_STATES.has(taskStatus) ? taskStatus
       : kind === 'worker' ? 'unknown' : null,
     queuedWaypointCount: 0,
@@ -4490,16 +4492,17 @@ function applyState(state, initial = false) {
   for (const row of state.units || []) {
     const [id, team, x, z, hp, kind, cargo, cargoType, generation = 0, taskStatus,
       targetedBy = 0, attackTick = -1, attackX = null, attackZ = null,
-      audioExecution = null, workHeading = null, workResourceVariant = null] = row;
+      audioExecution = null, workHeading = null, workResourceVariant = null, performingAction = null] = row;
     const existingUnit = units[id];
     const unit = existingUnit || appendUnitFromState(row, !initial);
     if (!unit || unit.team !== team) continue;
+    const generationChanged = Boolean(existingUnit && unit.generation !== generation);
     const wasVisible = unit.visible !== false;
     let cargoVisualMayChange = !existingUnit || !wasVisible;
     unit.visible = true;
     if (localTeam !== null && team !== localTeam) visibleEnemyIds.add(id);
     if (!existingUnit) changed = true;
-    if (existingUnit && unit.generation !== generation) {
+    if (generationChanged) {
       selected.delete(id);
       for (const group of controlGroups) {
         if (group.delete(id)) controlGroupsChanged = true;
@@ -4515,8 +4518,10 @@ function applyState(state, initial = false) {
       unit.hitStartedAt = 0;
       unit.defeatStartedAt = 0;
       unit.spriteClockState = null;
+      unit.spriteClockAction = null;
       unit.spriteClockStartedAt = null;
       unit.workResourceVariant = null;
+      unit.performingAction = null;
       unit.spawnStartedAt = initial ? 0 : performance.now();
       unit.lastPlayedAttackTick = -1;
       unit.angle = team === 0 ? Math.PI / 2 : -Math.PI / 2;
@@ -4596,6 +4601,15 @@ function applyState(state, initial = false) {
     if (initial || !wasVisible) {
       unit.renderX = x;
       unit.renderZ = z;
+      updateUnitTransform(unit);
+      changed = true;
+    }
+    const nextPerformingAction = generationChanged ? null : readWorkerPerformingAction(
+      state.workerPerformingActionVersion, unit.kind, unit.hp, unit.task, performingAction);
+    if (unit.performingAction !== nextPerformingAction) {
+      unit.performingAction = nextPerformingAction;
+      // A receipt clear can be the only change. Write idle/contact and dirty
+      // buffers now instead of retaining the last work key until a later frame.
       updateUnitTransform(unit);
       changed = true;
     }
@@ -10265,10 +10279,10 @@ function animate(now) {
       if (turning) unit.angle += THREE.MathUtils.clamp(turnDelta, -frameDelta * 9, frameDelta * 9);
       else unit.angle = unit.targetAngle;
     }
-    const working = !walking && unit.kind === 'worker'
-      && (unit.task === 'gathering' || unit.task === 'building' || unit.task === 'repairing');
+    const workAction = workerWorkAction(unit);
+    const working = !walking && workAction !== null;
     // Keep pose phase current in LOD so a zoom-in resumes without a swing reset.
-    if (working) unit.motionPhase += frameDelta * (['building', 'repairing'].includes(unit.task) ? 6 : 5);
+    if (working) unit.motionPhase += frameDelta * (['build', 'repair'].includes(workAction) ? 6 : 5);
     const activeAttack = unit.attackStartedAt > 0;
     const activeHit = unit.hitStartedAt > 0;
     const activeSpawn = unit.spawnStartedAt > 0;
