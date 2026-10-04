@@ -46,7 +46,7 @@ export function canTraverseCrowdBodySegment(from, to, radius, neighbors, { allow
 // terminal step keeps the exact point. Otherwise maximize waypoint progress,
 // with a stable right-hand preference when the two sides are equivalent.
 // A crowd-only wait is not a static route failure and must not trigger repair.
-export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTraverse, cellCenter }) {
+export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTraverse, cellCenter, targetOf = other => other.target }) {
   const radius = ordinaryCrowdBodyRadius(unit);
   if (!radius || !finitePoint(target) || !(stepDistance > 0 && stepDistance <= .25)) return null;
   if (neighbors.length > CROWD_NEIGHBOR_LIMIT)
@@ -57,16 +57,27 @@ export function selectCrowdStep({ unit, target, stepDistance, neighbors, canTrav
     && canTraverseCrowdBodySegment(unit, to, radius, neighbors, { allowEscape: true });
   if (distance <= stepDistance && clear(target)) return { target, reachedWaypoint: true, stepDistance: distance };
   const headingX = dx / distance, headingZ = dz / distance;
+  const opposed = neighbors.some(other => {
+    const goal = targetOf(other);
+    if (!finitePoint(goal) || Math.hypot(other.x - unit.x, other.z - unit.z) > 2) return false;
+    const ox = goal.x - other.x, oz = goal.z - other.z;
+    return ox * headingX + oz * headingZ < 0;
+  });
+  const laneAxis = Math.abs(headingX) >= Math.abs(headingZ) ? 'z' : 'x';
+  const laneSign = laneAxis === 'z' ? Math.sign(headingX) : -Math.sign(headingZ);
+  const lane = finitePoint(cellCenter) ? cellCenter[laneAxis] + laneSign * (.5 - radius) : null;
   const directLength = Math.min(stepDistance, distance);
   const direct = { x: unit.x + headingX * directLength, z: unit.z + headingZ * directLength };
-  if (clear(direct)) return { x: headingX, z: headingZ, target, stepDistance: directLength };
+  if ((!opposed || lane === null) && clear(direct)) return { x: headingX, z: headingZ, target, stepDistance: directLength };
   let best = null, bestScore = -Infinity;
   const consider = to => {
     const length = Math.hypot(to.x - unit.x, to.z - unit.z);
     if (length <= EPSILON || length > stepDistance + EPSILON || !clear(to)) return;
     const progress = distance - Math.hypot(target.x - to.x, target.z - to.z);
     const cross = headingX * (to.z - unit.z) - headingZ * (to.x - unit.x);
-    const score = progress + (cross > 0 ? 1e-7 : 0);
+    const laneProgress = opposed && lane !== null
+      ? Math.abs(unit[laneAxis] - lane) - Math.abs(to[laneAxis] - lane) : 0;
+    const score = progress + laneProgress + (cross > 0 ? 1e-7 : 0);
     if (score > bestScore) {
       bestScore = score;
       best = { x: (to.x - unit.x) / length, z: (to.z - unit.z) / length, target, stepDistance: length };

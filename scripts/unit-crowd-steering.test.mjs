@@ -94,3 +94,30 @@ test('a parked blocker is never mutated and an impassable local segment waits wi
   assert.equal(move.waitingForCrowd, true);
   assert.deepEqual([u, other], before);
 });
+
+for (const reverse of [false, true]) test(`opposed two-actor columns avoid initial gridlock, serial reverse=${reverse}`, () => {
+  const units = [-2, -2.5, 2, 2.5].map((x, id) => actor({ id, x,
+    target: { x: [3.5, 3, -3.5, -3][id], z: .5 } }));
+  const initial = structuredClone(units);
+  let maximumWait = 0;
+  const waits = new Map(units.map(u => [u.id, 0]));
+  for (let tick = 1; tick <= 180; tick++) {
+    for (const u of reverse ? units.toReversed() : units) {
+      if (u.pathIndex) continue;
+      const others = units.filter(v => v !== u);
+      const move = selectCrowdStep({ unit: u, target: u.target, stepDistance: .09, neighbors: others,
+        cellCenter: { x: Math.floor(u.x) + .5, z: .5 }, canTraverse: p => p.z >= .22 - 1e-9 && p.z <= .78 + 1e-9 });
+      if (move.waitingForCrowd) { waits.set(u.id, waits.get(u.id) + 1); continue; }
+      maximumWait = Math.max(maximumWait, waits.get(u.id)); waits.set(u.id, 0);
+      const to = move.reachedWaypoint ? move.target : { x: u.x + move.x * move.stepDistance, z: u.z + move.z * move.stepDistance };
+      assert.ok(canTraverseCrowdBodySegment(u, to, .22, others));
+      u.x = to.x; u.z = to.z;
+      if (move.reachedWaypoint) u.pathIndex++;
+    }
+    if (units.every(u => u.pathIndex)) break;
+  }
+  assert.ok(units.every(u => u.pathIndex === 1), JSON.stringify(units));
+  assert.ok(maximumWait < 30, `finite group no-progress window: ${maximumWait}`);
+  assert.deepEqual(units.map(u => [u.id, u.generation, u.orderRevision, u.target]),
+    initial.map(u => [u.id, u.generation, u.orderRevision, u.target]));
+});
