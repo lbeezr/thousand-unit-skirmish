@@ -148,6 +148,8 @@ try {
     const expectedSites = [...assigned.state.buildings.filter(b => !cancelled.includes(b.id)),
       ...beforeRestart.state.buildings.filter(b => houseIds.includes(b.id))].map(({ id, type, team }) => ({ id, type, team }));
     assertSites(beforeRestart, expectedSites);
+    assert.equal(beforeRestart.state.nextBuildingId, initial.state.nextBuildingId + 8 + excludedIds.length + houseIds.length,
+      'paid site identities advance monotonically across published case maps');
     const corruptionControls = [];
     if (mode === 'checkpoint-controls') {
       await fixture.stop();
@@ -209,7 +211,7 @@ try {
     }
     assertSites(settled, expectedSites);
     assert.deepEqual(settled.state.teamWood, paidWood, 'continuation/recovery does not pay again');
-    assert.equal(settled.state.nextBuildingId, mode === 'manual-replacement' ? 11 : 9 + excludedIds.length);
+    assert.equal(settled.state.nextBuildingId, beforeRestart.state.nextBuildingId, 'continuation allocates no additional paid identities');
     assert.deepEqual(progress(settled, excludedIds), progress(beforeRestart, excludedIds),
       'unassigned paid neighbors never join remembered construction');
     assert.ok(cancelled.every(id => !settled.state.buildings.some(b => b.id === id)), 'cancelled sites never return');
