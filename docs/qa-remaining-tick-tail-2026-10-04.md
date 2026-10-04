@@ -122,6 +122,13 @@ deployed revision remain unverified. The linked proposal retains the concrete
 sandboxed capture path and owner; native processes and VM probes do not close it.
 No new paid workload, credentials, deployment or sandbox override was used here.
 
+Independent review at `199df5c1` reports no findings. It reproduces the summary
+exactly and verifies the source/function/profile/probe hashes, six logs, maxima,
+counts, allocation arithmetic and qualifications. Docs, syntax and diff checks
+pass; no new performance workload is run by the reviewer. The
+[verification receipt](qa-evidence/remaining-tick-tail-2026-10-04/verification.json)
+records source-only checks. Source merge does not close the capture backlog.
+
 ## Reproduce retained arithmetic
 
 ```sh
