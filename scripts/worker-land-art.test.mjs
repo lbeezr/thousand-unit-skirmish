@@ -50,14 +50,14 @@ function assertExtendedZeroMask() {
     extension.originalTeamMaskPixelsSha256);
 }
 
-for (const preservationHeading of ['north-walk', 'south-walk', 'west-walks', 'stone-se', 'wood-north-west', 'food-north-west', 'north-west-actions', 'wood-east']) {
+for (const preservationHeading of ['north-walk', 'south-walk', 'west-walks', 'stone-se', 'wood-north-west', 'food-north-west', 'north-west-actions', 'wood-east', 'food-east']) {
 test(`${preservationHeading} admission preserves preceding frame records/pixels and team mask`, () => {
   const preservation = JSON.parse(readFileSync(new URL(
     `../docs/qa-evidence/worker-land-art-2026-10-04/${preservationHeading}-preservation.json`, import.meta.url)));
   const originals = asset.frames.slice(0, preservation.originalFrames);
   const hash = bytes => createHash('sha256').update(bytes).digest('hex');
   assert.equal(hash(JSON.stringify(originals)), preservation.originalFrameMetadataSha256);
-  assert.equal(hash(['food-north-west', 'north-west-actions', 'wood-east'].includes(preservationHeading)
+  assert.equal(hash(['food-north-west', 'north-west-actions', 'wood-east', 'food-east'].includes(preservationHeading)
     ? readFileSync(new URL('team-accent-mask.png', directory)) : originalMask),
     preservation.originalTeamMaskSha256);
   assertExtendedZeroMask();
@@ -74,12 +74,12 @@ test(`${preservationHeading} admission preserves preceding frame records/pixels 
     const originalClips = structuredClone(asset.clips.slice(0, preservation.originalClips));
     // Historical hashes predate these explicit, separately tested placeholder
     // replacements. The family receipt already includes the real NW attack.
-    if (!['north-west-actions', 'wood-east'].includes(preservationHeading)) {
+    if (!['north-west-actions', 'wood-east', 'food-east'].includes(preservationHeading)) {
       const index = originalClips.findIndex(c => c.stateId === 'attack' && c.directionId === 'north-west');
       originalClips[index] = attackReuse.originalAttackClip;
     }
-    const replacements = [...(preservationHeading === 'wood-east' ? [] : nwActions.originalReplacedClips),
-      ...eastAxes.originalReplacedClips];
+    const replacements = [...(['wood-east', 'food-east'].includes(preservationHeading) ? [] : nwActions.originalReplacedClips),
+      ...(preservationHeading === 'food-east' ? [] : eastAxes.originalReplacedClips)];
     for (const clip of replacements) {
       const index = originalClips.findIndex(c => c.stateId === clip.stateId && c.directionId === clip.directionId);
       if (index >= 0) originalClips[index] = clip;
@@ -244,7 +244,7 @@ test(`NW ${resource} adds three distinct complete work poses with unchanged worl
   assert.equal(asset.heightWorld / Math.max(...asset.frames.map(f => f.alphaBoundsPx.height)),
     extension.worldUnitsPerPixel);
   for (const heading of ['north', 'north-east', 'east', 'south', 'south-west', 'west']) {
-    if (resource === 'wood' && heading === 'east') continue; // Separately admitted, tested real East axe keys.
+    if (heading === 'east') continue; // Separately admitted/tested true East wood and food keys.
     assert.equal(spriteActionClip(clipMap, 'gather', heading, resource, 'human', true)
       .sequence[0].frameId, `idle-${heading}-0`, 'One new heading must not turn missing headings');
   }

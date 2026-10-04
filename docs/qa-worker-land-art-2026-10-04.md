@@ -104,12 +104,12 @@ current-roster keys can also be admitted with the same manifest contract.
 | --- | --- | --- |
 | 1 | Retain all eight walk headings through reviewed merges, releases, containing staging/native build and game checks. Art owner owns this pack/checkpoint. | Parent's existing delivery/Mac route runs the recipe below. Browser startup here fails with `sandbox-unavailable`, even with writable XDG storage. No bypass flags. |
 | 2 | Keep all eight authored walk headings functional; Carry/Return uses their existing cargo cue. | Default Three playback/registration is checked. Native root/turn/cargo observations identify further refinements; no walk heading input remains missing. |
-| 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **34 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
+| 3 | Fill the remaining wood/food/build/repair/attack/defeat headings: **33 cells**. Preserve working SE keys. | Same-character action keys. Build/repair target bearing remains a producer/animation-owner contract gap from PR222; art can proceed independently, but no guessed heading closes ordinary-game acceptance. |
 | 4 | Six remaining readable dedicated Stone-work headings; retain PR263 default selector adoption. | SE and NW now have dedicated pick poses; the earlier broad eight-view attempt failed strike facing in the other rows. PR263 now enables exact authored Stone state/resource selection from productive receipts; missing headings retain their own idle. No economy edits. |
 | 5 | Improve costume consistency, registration refinement and loop smoothing after usable breadth. | Functional native observations identify the needed refinements. Cosmetic perfection is not a gate for supplied usable keys. |
 
 There are now 8 of 8 walk headings, eight distinct idle headings, SE+NW land-action
-motion and default SE+NW Stone binding from PR263, with exact native/deployment acceptance open. **40 land-action/heading cells remain** (34+6).
+motion and default SE+NW Stone binding from PR263, with exact native/deployment acceptance open. **39 land-action/heading cells remain** (33+6).
 Fishing's seven missing headings are excluded and retained by its separate owner.
 The animation-owner ID is outside this executor's live collaboration tree; the
 manifest contract and retained dependencies are recorded here for parent routing.
@@ -644,3 +644,48 @@ retains28 real WebSocket→actual CPU client observations including productive
 Stone, clear/Stop/resource/depletion/repair/recovery. These are packet/UV checks,
 not native GPU/game captures. Later evidence commits are distinct from measured
 code; exact delivered/native acceptance remains open.
+
+
+## East food retained-source admission — v0.26.0
+
+PR264 is reviewed/merged at `83f4eb1b1bbf4b7df1c6e1c5c72afd65314f8a8e`
+([independent review](https://github.com/lbeezr/thousand-unit-skirmish/pull/264#pullrequestreview-5404265275)).
+The next full action-heading slice faithfully uses keys3..5 from the already
+retained [East public-seed iteration](art-direction/human-roster-v1/generated/worker-east-actions-v1/README.md):
+actual bare-hand reach/collect/stow with down-right front three-quarter bearing.
+Raw/extractions/earlier axe review remain; no new generation or paid job. Three
+hammer keys remain unadmitted, excluded from counts.
+
+[Admission](../scripts/admit-worker-food-east.py) uses the same232/307 scale as
+East axe, fixed source roots[384,784,1184], baseline670 and local pivot[128,244]
+in256x256 cells. Crouching naturally lowers height; no per-pose resizing or
+box recentering. Spare row3840 cellsx1280,1536,1792 beside Stone SE preserve every
+previous rectangle and fishing-era ROI. No new allocation/mask/dimension/world
+scale. Packv0.26.0 has149frames/59clips, food3x240ms720ms loop. [Preservation](qa-evidence/worker-land-art-2026-10-04/food-east-preservation.json)
+protects146 prior frame records/decoded RGBA and all58clips/exact mask;
+[registration](qa-evidence/worker-land-art-2026-10-04/food-east-registration.json)
+records raw/source/cell hashes/offsets and [key review](qa-evidence/worker-land-art-2026-10-04/food-east-keys.png)
+shows ordinary/strategic poses. These are offline pixel previews, not captures.
+
+[Default CPU checks](../scripts/worker-east-food-art.test.mjs) use both Human
+seats selected/unselected: productive activity/whole loop, E→missingNE idle→E
+phase continuity, food→wood→food clock reset, Stop/resume, attack→food resume and
+loaded Return→bank idle. Actual UVs/matrix scale, complete distinct keys and
+five exact missing-heading idles pass. The existing same-heading fishing food
+fallback now consumes East food, as designed; no dedicated fishing art or
+fishing coverage claimed. Runtime selector/clock/economy helpers are untouched.
+
+Native recipe on a containing ordinary Human map: approach berries/Farm from
+screen-upper-left so work faces E/down-right, watch bare-hand reach/collect/stow,
+Stop/resume, relocate/turn, switch food↔wood, load→Return→actual deposit. Compare
+E to SE/NW, both seats selected/unselected, ordinary/strategic scale and root.
+Record exact source/release/deployment/map. Parent Railway/Mac route remains the
+assigned capture receiver; local sandbox-unavailable yields no game/GPU proof.
+PR263 Stone binding remains integrated; target-bearing/native delivery stay open.
+
+Current [action-by-heading inventory](qa-evidence/worker-land-art-2026-10-04/land-action-coverage.json):
+Walk8/8; Wood/Food/Attack3/8(E,SE,NW); Build/Repair/Defeat/Stone2/8(SE,NW).
+Authored25/64; **39 art cells remain**: E4 plus N/NE/S/SW/W each7.
+Ranked next: admit the three complete retained East hammer keys for build/repair;
+supply East pick/defeat; continue other five actual headings. Keep exact delivered/
+native acceptance separate and preserve all iterations.

@@ -75,8 +75,8 @@ test('published atlas preserves prior action pixels/metadata and all four approv
   eastAttack.loop = true;
   eastAttack.sequence = [{ frameId: 'idle-east-0', durationMs: 1000 }];
   assert.equal(sha256(JSON.stringify(originalClips)), preservation.originalClipMetadataSha256);
-  assert.equal(asset.frames.length, preservation.originalFrames + 4 + 40 + 4 + 3 + 3 + 9 + 3);
-  assert.equal(asset.clips.length, preservation.originalClips + 7);
+  assert.equal(asset.frames.length, preservation.originalFrames + 4 + 40 + 4 + 3 + 3 + 9 + 3 + 3);
+  assert.equal(asset.clips.length, preservation.originalClips + 8);
   assert.equal(asset.heightWorld / Math.max(...asset.frames.map(f => f.alphaBoundsPx.height)), preservation.worldUnitsPerPixel);
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', manifest)));
   assert.deepEqual([image.width, image.height], [2560, 4096]);

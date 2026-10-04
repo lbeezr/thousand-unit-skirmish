@@ -117,3 +117,14 @@ strip cells fit with no dimension/mask/world-scale change.143 preceding frames
 remain exact, with only the declared East attack idle replacement. Default CPU
 wood/attack playback is checked.40 action-heading cells and exact containing
 native/deployed acceptance remain open; Stone state remains animation-owned.
+
+
+Version0.26.0 admits **East food** from the retained public-seed iteration:
+three bare-hand reach/collect/stow keys,720ms loop. Rebuild with
+`python3 scripts/admit-worker-food-east.py`. Same232/307 scale as East axe, fixed
+root[128,244], spare256x256 cells at y3840/x1280,1536,1792.146 previous frames,
+58clips, exact mask/dimensions/world scale remain. Default CPU food playback,
+resource switch and interruptions checked; five missing food headings keep idle.
+Existing East fishing food fallback remains; no dedicated fishing art supplied.
+39 action-heading gaps and exact native/deployed acceptance stay open. The three
+remaining East hammer candidates are retained for the next reviewed slice.
