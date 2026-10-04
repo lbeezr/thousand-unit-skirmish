@@ -10,30 +10,33 @@ import { matchModeCatalog, effectiveMapForMatchMode } from '../src/match-modes.m
 const json = (value, status = 200) => new Response(JSON.stringify(value), { status });
 const turn = () => new Promise(resolve => setImmediate(resolve));
 
-test('late AI entry lookups preserve actual main Bannerfall size controls, including a stale PvE URL', async () => {
+test('late AI entry lookups preserve actual main running-lobby and Bannerfall size controls, including a stale PvE URL', async () => {
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8');
   const hook = source.match(/function updateMatchArmySizeControls\(\) \{[\s\S]*?\n\}/)?.[0];
-  assert.ok(hook);
-  const map = JSON.parse(readFileSync(new URL('../maps/bannerfall-arena.json', import.meta.url)));
-  const identity = { matchModeId: 'bannerfall', matchModeVersion: 1 };
-  for (const stalePveUrl of [false, true]) {
+  const lobbyHook = source.match(/function updateLobbyHostControls\(\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(hook); assert.ok(lobbyHook);
+  for (const matchModeId of ['bannerfall', 'skirmish']) for (const stalePveUrl of [false, true]) {
+    const map = JSON.parse(readFileSync(new URL(`../maps/${matchModeId === 'bannerfall' ? 'bannerfall-arena' : 'veyrholds-terraced-vale'}.json`, import.meta.url)));
+    const identity = { matchModeId, matchModeVersion: 1 };
     const dom = new JSDOM(html, { url: `https://game.test/?room=${'R'.repeat(32)}${stalePveUrl ? '&mode=pve&mapSeed=1&policySeed=2' : ''}` });
     const doc = dom.window.document, pending = new Map(), buttons = [...doc.querySelectorAll('.size-options button')];
     doc.querySelector('#reset-army').disabled = false;
     createMatchModeControls({ root: doc.querySelector('#match-mode-view'), id: 'active-match-mode', onChange: () => false })
       .update({ identity, map: effectiveMapForMatchMode(map, identity), catalog: matchModeCatalog(map), online: true, editable: false });
     const context = vm.createContext({ document: doc, fixedMatchArmySize, activeMatchMode: identity, isHost: true,
-      updateLobbyHostControls() {} });
-    vm.runInContext(hook, context); context.updateMatchArmySizeControls();
+      latestLobby: { phase: 'running' }, ui: { mapSelect: doc.querySelector('#map-select'), mapStudioOpen: doc.querySelector('#map-studio-open') } });
+    vm.runInContext(lobbyHook, context); vm.runInContext(hook, context); context.updateMatchArmySizeControls();
     assert.ok(buttons.every(button => button.disabled));
+    assert.equal(doc.querySelector('#reset-army').disabled, false);
     mountPveEntry({ win: dom.window, fetchImpl: url => new Promise(resolve => pending.set(url, resolve)) });
     pending.get('/api/rooms/status')(json({ enabled: true, ordinarySetup: { pve: { available: true } } }));
-    await turn(); assert.ok(buttons.every(button => button.disabled), 'late service status cannot enable fixed sizes');
-    pending.get(`/api/rooms/${'R'.repeat(32)}`)(json({ launchOptions: { mode: 'pvp', practice: true, ...identity } }));
+    await turn(); assert.ok(buttons.every(button => button.disabled), 'late service status cannot enable running-lobby sizes');
+    pending.get(`/api/rooms/${'R'.repeat(32)}`)(json({ launchOptions: { mode: 'pvp', pregame: true, ...identity } }));
     await turn();
-    assert.ok(buttons.every(button => button.disabled && /16 total units/.test(button.title)),
-      'confirmed Practice identity retains the fixed opening without a later identity change');
+    assert.ok(buttons.every(button => button.disabled), 'confirmed human identity retains lobby authority without a later identity change');
+    if (matchModeId === 'bannerfall') assert.ok(buttons.every(button => /16 total units/.test(button.title)));
+    else if (stalePveUrl) assert.ok(buttons.every(button => /Reset to the lobby/.test(button.title)));
     assert.equal(doc.querySelector('#pve-start').hidden, false); dom.window.close();
   }
 });

@@ -125,7 +125,7 @@ export function mountPveEntry({ win = window, fetchImpl = (...args) => (win.fetc
   const location = new URL(win.location.href);
   let roomsEnabled = false;
   let capability = pveEntryCapability(null), creating = false;
-  let roomMode = null;
+  let roomMode = null, roomPregame = false;
   let currentOptions = launchOptionsFrom({
     mode: location.searchParams.get('mode'),
     mapSeed: location.searchParams.get('mapSeed'),
@@ -176,8 +176,9 @@ export function mountPveEntry({ win = window, fetchImpl = (...args) => (win.fetc
           });
         } catch { /* Keep the known room capability. */ }
         for (const button of document.querySelectorAll('.size-options button')) {
-          button.disabled = resetButton.disabled || Boolean(mode.fixedArmySize);
+          button.disabled = resetButton.disabled || roomPregame || Boolean(mode.fixedArmySize);
           button.title = mode.fixedArmySize ? `This mode fixes the opening army at ${mode.fixedArmySize} total units.`
+            : roomPregame ? 'Reset to the lobby to choose the opening army.'
             : resetButton.disabled ? 'Only the room host can change match size' : 'Change match size for both players';
         }
       }
@@ -258,9 +259,12 @@ export function mountPveEntry({ win = window, fetchImpl = (...args) => (win.fetc
     fetchImpl(`/api/rooms/${encodeURIComponent(location.searchParams.get('room'))}`, { cache: 'no-store' })
       .then((response) => response.ok ? response.json() : null)
       .then((room) => {
-        if (room) try {
-          roomMode = matchModeDefinition(room.matchModeId ? room : room.launchOptions || {});
-        } catch { roomMode = null; }
+        if (room) {
+          roomPregame = room.launchOptions?.pregame === true;
+          try {
+            roomMode = matchModeDefinition(room.matchModeId ? room : room.launchOptions || {});
+          } catch { roomMode = null; }
+        }
         const fromRoom = launchOptionsFrom(room);
         if (fromRoom) {
           setMode(fromRoom);
