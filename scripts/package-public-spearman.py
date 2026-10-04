@@ -3,6 +3,7 @@
 import colorsys, copy, hashlib, json, math
 from pathlib import Path
 from PIL import Image, ImageDraw
+from foot_sprite_world_bounds import placed_sprite_bounds
 
 ROOT=Path(__file__).resolve().parent.parent
 OUT=ROOT/'assets/units/spearman-sprite-v2'
@@ -44,8 +45,8 @@ camera_up=math.hypot(.78,.78)/math.sqrt(.78**2+1.12**2+.78**2)
 body_px=capture['sourceBodyHeight']*camera_up*256/capture['orthographicScale']
 world_per_pixel=1.2161865234375/body_px
 asset['heightWorld']=max(f['alphaBoundsPx']['height'] for f in asset['frames'])*world_per_pixel
-radius=max(f['alphaBoundsPx']['width'] for f in asset['frames'])*world_per_pixel/2
-asset['artBoundsWorld']={'min':[-radius,0,-radius],'max':[radius,asset['heightWorld'],radius]};asset['cullingBoundsWorld']=copy.deepcopy(asset['artBoundsWorld'])
+asset['artBoundsWorld']=placed_sprite_bounds(asset['frames'], world_per_pixel)
+asset['cullingBoundsWorld']=copy.deepcopy(asset['artBoundsWorld'])
 manifest['packId']='spearman-public-model-bake';manifest['packVersion']='0.1.0'
 manifest['provenance']={'license':'LicenseRef-Thousand-Unit-Skirmish-Internal-Review',
     'source':'Already-public frontier-glb-sample-v2/models/unit-art-v2.glb; original project geometry and palette; no private or third-party source',
