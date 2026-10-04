@@ -1,22 +1,24 @@
-# XL visibility index and cache design proposal — 4 October 2026
+# XL visibility index and bounded cache — 4 October 2026
 
-This is a separate future runtime slice. Keep the current 256-side server/editor/wall/water/catalog
+The original design was reviewed in [PR252](https://github.com/lbeezr/thousand-unit-skirmish/pull/252). Keep the current 256-side server/editor/wall/water/catalog
 bound until correctness and native/browser budgets are accepted. Source reference:
-`server.mjs:markVisionFrom`, `updateVisionMasks`, `ensureVisionMasks`; current cache is one Map per
-visited source cell, keyed by the requested sight. Cells at/above 65536 wrap in
-`Uint16Array.from(cells)`; merely widening the validator is invalid.
+`server.mjs:markVisionFrom`, `updateVisionMasks`, `ensureVisionMasks`; the preceding cache was one Map per
+visited source cell, keyed by requested sight, with 16-bit coverage indices. Merely widening the
+validator was invalid. The [runtime increment](qa-xl-visibility-runtime-2026-10-04.md) now integrates
+bounded 32-bit coverage under unchanged 256 admission. It is a prerequisite, not ordinary XL completion.
 
-## Proposed data contract
+## Data contract implemented under the existing admission limit
 
-Use `Uint32Array` for covered absolute cell indices on every map. Validate each computed cell as an
+Use `Uint32Array` for both current-visible and explored-forest-fringe absolute indices on every map. Validate each computed cell as an
 integer in `[0, width*height)`. Path/visibility consumers remain absolute grid indices. The proposal
 supports at most 320 per axis; do not infer unbounded larger grids. Boundary tests cover 65535,
 65536, 102399 and an invalid 102400, including 320 × 160 rectangles and the final row/column. The
 current 16-bit Manhattan heuristic still fits 320 (max 63,800); 384 would need separate treatment.
 
-Replace the per-cell unbounded Maps with one room-owned cache keyed by numeric `sourceCell*16 +
-sight` (current requested sights 8/10/11; effective raised radius 9/11/12). Key validation rejects
-unsupported sight and invalid source cells. Geometry and rules identity belong to a cache generation
+Replace the per-cell unbounded Maps with one room-owned cache keyed by numeric `sourceCell*17 +
+sight`. Current requested sights are 8/10/11 (effective raised radius 9/11/12), but the rules registry
+accepts 1–16. Stride 17 preserves that full contract without collisions; the original stride-16
+sketch would collide for sight 16. Key validation rejects unsupported sight and invalid source cells. Geometry and rules identity belong to a cache generation
 rather than being silently omitted from the key. A rebuild/reset creates a fresh cache object,
 preserving the existing `ensureVisionMasks` identity check, and increments an explicit geometry
 generation. Every geometry invalidation must replace that cache object; clearing
@@ -28,7 +30,8 @@ Cache limits: **8MiB live typed-array payload and 8,192 entries per room**, both
 insertion. Cache entries own exact-length Uint32 backing buffers, with zero byte
 offset and `coverage.byteLength === coverage.buffer.byteLength`; copy a foreign
 subarray before retention so a short view cannot hide a larger retained buffer.
-Count exact `coverage.byteLength`, not index count or an average. A cache hit moves its
+Count exact `visible.byteLength + fringe.byteLength`, not index count or an average. Both buffers
+are copied before retention, even overlapping views into a larger foreign buffer. A cache hit moves its
 entry to the end of insertion order. On insertion, evict oldest entries until both prospective
 bounds fit; add/replace/remove/clear maintain exact accounting. Eviction ordering uses access
 sequence, not wall-clock time. A single entry larger than the payload cap is returned for that
@@ -37,7 +40,8 @@ metadata are outside the payload bound; measure RSS/heap/arrayBuffers rather tha
 as total room memory. An entry cap separately bounds object/key overhead.
 
 The widest current raised radius 12 contains 441 cells on unobstructed interior ground, so one
-Uint32 payload is at most 1,764 bytes. All 102,400 sources at all current sight values could
+combined Uint32 visible/fringe payload is at most 1,764 bytes: every ray target enters at most one
+of visible or forest candidates, and fringe is a subset of the latter. All 102,400 sources at all current sight values could
 otherwise retain 438,681,600 bytes (about 418 MiB). The proposed live payload cap is 8,388,608
 bytes; cells that become relevant again are recomputed. The cache remains an optimization: an
 eviction must never change either seat's visible/explored masks or authoritative simulation
@@ -60,7 +64,7 @@ sources, explored fog or private units/resources/buildings. Cold recovery restor
 but rebuilds coverage; reset restores new initial fog. Legacy compact checkpoints remain canonical
 and are not remapped.
 
-## Observable acceptance for the separate implementation PR
+## Observable acceptance and remaining ordinary XL gates
 
 Pure tests compare cached versus uncached coverage for boundaries, rectangular maps,
 cliffs/forests/buildings/gates, high-ground bonus and all requested sights. Test exact accounting on
@@ -83,6 +87,10 @@ two-seat use on named browser hardware and hosting/network budgets. The 512 MiB 
 is not a supported memory budget. Ordinary Medium 224 and Large 256 source maps can continue before
 this future XL slice; quick custom modes and a massive Risk world remain separate products.
 
-Owner boundary: map-scale stream authors the design and fixture contracts. Runtime/path owner
-retains the eventual server cache integration and scheduler/performance changes. No hotspot code,
-limit, speed or permissions change is made by this proposal.
+Owner boundary: map-scale stream now owns the integrated visibility prerequisite and its
+[acceptance record](qa-xl-visibility-runtime-2026-10-04.md). Forest discovery semantics stay with
+the forest/visibility owner ([PR297](https://github.com/lbeezr/thousand-unit-skirmish/pull/297));
+the integration changes only its index width. Runtime/path owner retains route storage/work and
+planner/scheduler decisions ([PR285](https://github.com/lbeezr/thousand-unit-skirmish/pull/285)).
+Controlled performance and rendered ordinary-game acceptance remain with their active testing
+owners; no limit, speed, cell size, scheduler budget or permissions change is made here.

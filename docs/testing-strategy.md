@@ -297,7 +297,7 @@ PRs rather than folding them into this documentation change.
 | 4 — lane wiring implemented; workload acceptance separate | CI wiring owner; `package.json`, `scripts/ci.mjs`, `.github/` | #289 adds fast/simulation/visual/performance selection, exact registry/shard regressions and scoped JSON evidence while retaining the full CPU suite. Earlier executions retain renderer/performance diagnostics with their source provenance. Scheduled depth and qualified game visuals remain pending. |
 | 5 — cursor, generation and native rematch replay implemented; broader replay pending | Replay-contract owner; `scripts/accepted-command-replay.mjs` and existing registered pathing/native persistent-command tests | [PR #312](https://github.com/lbeezr/thousand-unit-skirmish/pull/312): `node --test scripts/pathing-replay.test.mjs` records an immutable seed/map/ruleset/generation trace through the existing authority handler, compares every fixed-tick checkpoint and both fog views, and resumes between same-tick commands. A duplicated accepted queued Move changes an intermediate queue yet disappears after Stop; the boundary oracle rejects it without field normalization. [PR #316](https://github.com/lbeezr/thousand-unit-skirmish/pull/316) adds both-seat host reset/checkpoint restore and stale-packet rejection; dropping the generation stamp moves the reused slot and fails boundary equality. [PR #321](https://github.com/lbeezr/thousand-unit-skirmish/pull/321): `node scripts/persistent-command-scenario.mjs` carries accepted Patrol packets through ordinary reset, untouched shutdown checkpoint, a new server process and real seat resume. Both stale and foreign-seat packets receive correlated rejection; a snapshot after those notices fences complete stopped-actor checkpoint equality. Restored-generation controls actually move both actors; seat/match/map identity and private banks/population/intent remain correct. This disposable authored-map native case adds no paid-production scenarios. Next: accepted-tick paid economy/production and interrupted-receipt trace replay with gameplay/network owners; dependency is their existing authority/checkpoint contracts. Native protocol and CPU evidence do not establish impaired-network/restart combinations, pixels, deployment or the full suite. |
 | 6 — identity contract implemented; hosted receipt pending | Release owner with cloud testing owner; existing package/hosted smoke | `build-identity.test.mjs` and the native packed release scenario reject wrong served SHA; hosted smoke requires an explicit SHA and optionally the declared pack digest. Parent deployment/auth owner must run it at the new deployed revision. Normal two-seat hosted capture and existing asset byte checks remain separate; unknown identity/access stays incomplete. |
-| 7 — pending controlled performance | Performance owner; existing load/measurement runners | Repeated comparable baseline/candidate metrics on a named cloud backend; meaningful regressions fail the declared budget. |
+| 7 — comparison guardrails implemented; controlled performance pending | Performance owner; existing load/measurement runners | The native checkpoint runner records source/runtime/map/seed, workload/window/warmup and sampled resource evidence. The comparison gate rejects missing/mismatched controls and resource-disrupted runs. Repeated controlled comparisons and rendered capacity remain pending; existing budgets retain failures. |
 
 Current browser defaults are frame interval p95 ≤33.333 ms, animate callback CPU
 p95 ≤8 ms and zero observed tasks over 50 ms. Native load checks tick/start-lag
@@ -319,6 +319,40 @@ order latency, queues, memory growth, allocation/GC, asset load and render cost.
 Mark unavailable metrics explicitly; function timing is not whole-tick timing.
 Use one sustained comparison per runner, bounded load and cleanup. Stop at an
 actual capability/resource/budget failure; no service upgrade is assumed approved.
+
+The [RAM-exhausted benchmark in this development report](https://www.reddit.com/r/aigamedev/comments/1wx403s/day_13_of_building_an_rpg_with_claude_i_stopped/)
+motivates an explicit validity check before interpreting a timing difference.
+`checkpoint-performance-scenario.mjs` adds `measurementEvidence` to its JSON and
+existing `game-dev` capture. It records the real source SHA and runtime/driver/map
+hashes, seed, Node/machine session, 2,000-unit workload, checkpoint/tick profile,
+unique run identity, requested/observed repetitions, no dedicated warmup, and
+one-second server RSS/host swap/root-cgroup observations.
+Observed Git SHA/dirtiness takes precedence over a separately recorded release
+declaration. The attack diagnostic keeps isolated temporary filenames and a stable
+map ID; only its exact owned untracked fixture is excluded from checkout dirtiness,
+while all map bytes remain hashed. Every resource timestamp, nonnegative value,
+finite memory limit and required environment/workload control is checked before
+matching two runs. Equal missing or `unknown` controls do not qualify.
+RSS values are [kernel-reported estimates](https://man7.org/linux/man-pages/man5/proc_pid_status.5.html).
+Shared [cgroup pressure counters](https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html#memory)
+are observations, not GPU memory or causal attribution; unavailable or unmatched
+target-cgroup scope stays unknown. Historical counters alone do not
+invalidate a new window. OOM events invalidate timings; observed limit pressure,
+swap activity or counter resets prevent comparison without a made-up RAM cutoff.
+Retain the original failed exit, budget message and collected raw samples even in
+an invalid run; invalid timings do not erase the observed failure.
+
+Check two saved native reports with
+`node scripts/compare-performance-runs.mjs BASELINE.json CANDIDATE.json BASELINE_SHA CANDIDATE_SHA`.
+Exit 0 means matching diagnostic controls with no observed resource disruption;
+exit 3 means not comparable with explicit reasons; exit 2 means malformed input.
+This gate establishes neither statistical significance, causal speedup nor
+consumer hardware capacity. Dirty or unidentified builds, changed instrumentation,
+seed/workload/window/warmup/machine controls and incomplete timing windows stay
+ineligible. Map/seed controls do not replace the separately owned accepted-command
+replay. For rendered comparisons, additionally identify actual camera, viewport/DPR,
+backend and artifact/pixels through the cloud renderer lane; software render
+correctness does not establish consumer GPU capacity.
 
 Execution entrypoints above are implemented. Further acceptance gates remain
 proposed: short qualified temporal visuals alongside relevant PR CPU/native/package
