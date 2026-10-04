@@ -171,6 +171,20 @@ try {
       exploredFogBytes: Buffer.from(client.current.visibility.data, 'base64').length };
   });
   report.finalEconomy = await Promise.all(journeys);
+  report.combat = await Promise.all(seats.map(async client => {
+    const before = client.current;
+    const target = before.buildings.find(row => row.home && row.team !== client.team);
+    const attacker = own(before, client.team, 'infantry')[0];
+    assert.ok(target && attacker, 'the cross-base Infantry must disclose the opposing home TC');
+    await order(client, { type: 'attackBuilding', buildingId: target.id, ids: [attacker[0]] }, 'ATTACK BUILDING ORDER');
+    const damaged = await client.state(state => state.tick > before.tick
+      && state.buildings.some(row => row.id === target.id && row.hp < target.hp), 30000);
+    const result = { team: client.team, targetId: target.id, beforeHP: target.hp,
+      afterHP: damaged.buildings.find(row => row.id === target.id).hp,
+      elapsedGameSeconds: (damaged.tick - before.tick) / 30 };
+    await order(client, { type: 'stop', ids: [attacker[0]] }, 'STOP ORDER');
+    emit('explicit-building-combat', result); return result;
+  }));
   const sessions = seats.map(client => client.welcome.player.sessionToken);
   await closeClients(); await stopServer(); await startServer(checkpoint);
   const recovered = [await connectClient(0, sessions[0]), await connectClient(1, sessions[1])];
