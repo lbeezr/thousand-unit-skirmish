@@ -74,6 +74,7 @@ export const replay = {
     migrateWildlifeMotionCheckpoint(migrated);
     migrateCombatStanceCheckpoint(migrated, UNIT_DEFINITIONS);
     migrateWildlifeClaimsCheckpoint(migrated);
+    migrateMatchModeCheckpoint(migrated);
     migrateWildlifeHerdCheckpoint(migrated);
     restoreMatchCheckpoint(migrated);
   },
@@ -82,6 +83,7 @@ export const replay = {
     migrateWildlifeMotionCheckpoint(migrated);
     migrateCombatStanceCheckpoint(migrated, UNIT_DEFINITIONS);
     migrateWildlifeClaimsCheckpoint(migrated);
+    migrateMatchModeCheckpoint(migrated);
     migrateWildlifeHerdCheckpoint(migrated);
     return validateMatchCheckpoint(migrated);
   },

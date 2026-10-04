@@ -165,10 +165,10 @@ export function stepWildlifeHerd(node, { map, canStep, gatherPending = false }) 
   return { status: 'moving', changed };
 }
 
-// Schema26 has bounded authored grazing and no Herd/anchor fields. Preserve
+// Schema 27 has bounded authored grazing and no Herd/anchor fields. Preserve
 // live motion's original anchor, and frozen current poses without repairing food.
 export function migrateWildlifeHerdCheckpoint(snapshot) {
-  if (snapshot?.schemaVersion !== 26 || !Array.isArray(snapshot.state?.resourceNodes)
+  if (snapshot?.schemaVersion !== 27 || !Array.isArray(snapshot.state?.resourceNodes)
     || !Array.isArray(snapshot.mapDefinition?.resourceNodes)
     || snapshot.state.resourceNodes.some(node => !node || node.wildlifeHerd !== undefined
       || node.wildlifeGrazeAnchor !== undefined)) return false;
@@ -177,6 +177,6 @@ export function migrateWildlifeHerdCheckpoint(snapshot) {
   for (const node of snapshot.state.resourceNodes) if (sheep(node)) {
     Object.assign(node, createWildlifeHerdState(node.wildlifeState === 'alive' ? definitions.get(node.id) : node));
   }
-  snapshot.schemaVersion = 27;
+  snapshot.schemaVersion = 28;
   return true;
 }

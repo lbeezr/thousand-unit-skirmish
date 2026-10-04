@@ -6,6 +6,20 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+// All authority must survive restart; presentation receipts intentionally do not.
+// Keep full snapshot equality and change only the documented transient slot.
+export function assertRecoveredWorkerObservation(actual, expected, message) {
+  const cleared = structuredClone(expected);
+  for (const row of cleared.units) {
+    if (row[5] === 'worker' && Object.hasOwn(row, 17)) {
+      const restored = actual.units.find(unit => unit[0] === row[0]);
+      assert.equal(restored?.[17], null, 'recovery clears disclosed Worker activity before new work');
+      row[17] = null;
+    }
+  }
+  assert.deepEqual(actual, cleared, message);
+}
+
 const root = fileURLToPath(new URL('..', import.meta.url));
 function replaceExactly(source, before, after, count = 1) {
   assert.equal(source.split(before).length - 1, count, `server entrypoint changed: ${before}`);

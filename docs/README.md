@@ -113,6 +113,8 @@ from source/candidate packs. Then use the relevant contract:
 - [Native water first-pass review](qa-water-surface-native-2026-10-03.md): Mac shader/appearance results, saved image provenance, resolved fallback comparison and remaining visual limits.
 - [Sprite-atlas format](sprite-atlas-contract-v1.md).
 - [Generated strip adoption](sprite-strip-adoption-contract.md): shared scale/ground anchors, exact color/mask seed lock, explicit timing and reviewed helper boundaries.
+- [Worker performing-action v1](worker-performing-action-contract.md): authoritative positive-progress receipt, wire privacy/lifetime, producer acceptance and remaining animation delivery.
+- [Economy/content workstream](economy-content-workstream.md): ranked bounded outcomes, write scopes, dependencies and delivery ledger.
 - [Worker fishing pilot](worker-fishing-animation.md): private crouched hand-net study, exact-heading default integration and unchanged food authority.
 - [First civilization style](frontier-civilization-art-style.md) and [illustrated architecture wiki](lore/frontier-architecture.md).
 - [Building atlas production plan](building-atlas-production-plan.md): roster, references, scale and generation order.

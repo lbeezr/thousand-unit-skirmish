@@ -33,7 +33,7 @@ async function fixtureFor(t, stock) {
   t.after(() => fixture.dispose());
   const r = fixture.replay;
   for (let index = 0; index < 4; index++) r.step();
-  assert.equal(r.checkpoint().schemaVersion, 27);
+  assert.equal(r.checkpoint().schemaVersion, 28);
   assert.ok(ids.every((id, team) => r.resources.get(id).wildlifeTeam === team), 'living nearby Workers naturally claim both Sheep');
   return { r, map, sourceSha256: fixture.sourceSha256 };
 }
@@ -205,16 +205,18 @@ for (const owner of [0, 1]) test(`seat ${owner}: an opposing visible Worker's sh
   conserved(r, map);
 });
 
-test('exact schema26 migration preserves real claims, live motion, partial corpse stock, cargo and banks', async t => {
+for (const schemaVersion of [26, 27]) test(`exact schema${schemaVersion} migration preserves real claims, live motion, partial corpse stock, cargo and banks`, async t => {
   const { r, map } = await fixtureFor(t), worker = workers(r, 0)[0];
   notice(unitOrder(r, 0, 'gather', [worker], { nodeId: ids[0] }), /^GATHER ORDER/);
   until(r, () => worker.cargo > .25 && r.resources.get(ids[0]).wildlifeState === 'carcass', 'real partial harvest');
   notice(unitOrder(r, 0, 'stop', [worker]), /^STOP ORDER/);
   until(r, () => r.resources.get(ids[1]).wildlifeMotion.activity === 'wandering', 'live saved grazing leg');
-  const legacy = r.checkpoint(); legacy.schemaVersion = 26;
+  const legacy = r.checkpoint(); legacy.schemaVersion = schemaVersion;
+  if (schemaVersion === 26) { delete legacy.matchModeId; delete legacy.matchModeVersion; }
   for (const node of legacy.state.resourceNodes) { delete node.wildlifeHerd; delete node.wildlifeGrazeAnchor; }
   const before = structuredClone(legacy), migrated = structuredClone(legacy);
-  r.validate(migrated); assert.equal(migrated.schemaVersion, 27);
+  r.validate(migrated); assert.equal(migrated.schemaVersion, 28);
+  assert.equal(migrated.matchModeId, 'authored'); assert.equal(migrated.matchModeVersion, 1);
   for (const field of ['units', 'teamFood', 'teamWood', 'teamStone', 'unitGenerationCounters']) {
     assert.deepEqual(migrated.state[field], before.state[field], `migration retains ${field}`);
   }
@@ -231,7 +233,7 @@ test('exact schema26 migration preserves real claims, live motion, partial corps
   assert.deepEqual(r.food, before.state.teamFood); conserved(r, map);
 });
 
-test('schema27 rejects malformed Herd/anchor and a structurally valid route through authored water', async t => {
+test('schema28 rejects malformed Herd/anchor and a structurally valid route through authored water', async t => {
   const { r } = await fixtureFor(t); startBoth(r);
   for (let index = 0; index < 71; index++) r.step();
   const saved = r.checkpoint(); r.validate(structuredClone(saved));

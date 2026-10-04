@@ -103,7 +103,7 @@ test('travel, returning cargo, dead units, other resources and forest work canno
 
 test('wire identity and water heading are seat-private and leave existing attack/audio offsets intact', () => {
   const unit = { ...worker(sites[0]), lastAttackTick: 10, lastAttackX: 7, lastAttackZ: 8, attackTargetId: -1 };
-  const context = vm.createContext({ units: [unit], mapDefinition: { ...map, fogOfWar: true },
+  const context = vm.createContext({ workerPerformingAction: () => null, units: [unit], mapDefinition: { ...map, fogOfWar: true },
     resourceNodeStates: new Map(map.resourceNodes.map(n => [n.id, n])), farmBuildingId, farmHarvestNode, buildingsById: new Map(),
     headingToTarget, workerFishingPresentation, workerTaskStatus: u => u.gatherPhase === 'gathering' ? 'gathering' : 'idle',
     workerAudioExecution: () => 'food', cellToWorld: () => ({ x: 0, z: 0 }),

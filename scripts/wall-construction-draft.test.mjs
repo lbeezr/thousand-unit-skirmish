@@ -1,3 +1,4 @@
+import { createWorkerPerformingActions } from '../src/worker-performing-action.mjs';
 import { validFarmStock } from '../src/farm-harvest.mjs';
 import { economyServerBindings, economyServerFunctions } from './economy-server-fixture.mjs';
 import { validGateState, buildingBlocksMovement } from '../src/palisade-gate.mjs';
@@ -42,7 +43,7 @@ function fixture(team = 0) {
     buildingTargetId: null, repairing: false, orderRevision: 0,
     attackTargetId: -1, attackBuildingTargetId: -1, path: [], pathIndex: 0,
     queuedWaypoints: [], moveGoalCell: -1, gatherForestCell: -1, gatherPhase: '' };
-  const context = vm.createContext({ validFarmStock, ...economyServerBindings(), validGateState, buildingBlocksMovement, BUILDING_DEFINITIONS: definitions, UNIT_DEFINITIONS,
+  const context = vm.createContext({ workerPerformingActions: createWorkerPerformingActions(), validFarmStock, ...economyServerBindings(), validGateState, buildingBlocksMovement, BUILDING_DEFINITIONS: definitions, UNIT_DEFINITIONS,
     MAP_WIDTH: 16, MAP_HEIGHT: 16, MAP_HALF_X: 8, MAP_HALF_Z: 8, CELL_COUNT: 256,
     blocked: new Uint8Array(256), buildingBlocked: new Uint8Array(256), townCenterBlocked: new Uint8Array(256),
     elevationLevelByCell: new Uint8Array(256), canTraverseElevation,

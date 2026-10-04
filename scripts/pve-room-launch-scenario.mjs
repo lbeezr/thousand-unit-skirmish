@@ -239,7 +239,7 @@ try {
   assert.deepEqual(room.launchOptions, created.launchOptions,
     'the room API retains the exact PvE seeds used to start the worker');
   assert.equal(room.mapId, MAP_ID);
-  assert.deepEqual(room.roomMetadata, { mapId: MAP_ID },
+  assert.deepEqual(room.roomMetadata, { mapId: MAP_ID, matchModeId: 'authored', matchModeVersion: 1 },
     'worker readiness publishes the selected map through room metadata');
   const persistedRoom = await waitForPersistedRoom(roomDataDirectory, roomId);
   assert.deepEqual(persistedRoom.launchOptions, created.launchOptions);

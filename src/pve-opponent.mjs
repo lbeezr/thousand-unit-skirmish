@@ -3,6 +3,7 @@ import { createHomeDefensePolicy } from './pve-home-defense.mjs';
 import { createRegroupPolicy } from './pve-regroup.mjs';
 import { createSkirmishTargetPolicy } from './pve-skirmish-targets.mjs';
 import { matchModeDefinition } from './match-modes.mjs';
+import { createObjectiveRotationPolicy } from './pve-objective-rotation.mjs';
 import { TECHNOLOGY_DEFINITIONS, BUILDING_DEFINITIONS } from './gameplay-definitions.mjs';
 import { farmHarvestNodeId } from './farm-harvest.mjs';
 /**
@@ -423,8 +424,8 @@ function objectivePrerequisitesMet(objective, team) {
   return owners.length === ids.length && owners.every((owner) => owner === team);
 }
 
-function nearestObjective(objectives, team, soldiers, map, lostObjectiveIds) {
-  if (soldiers.length === 0) return null;
+function rankedObjectives(objectives, team, soldiers, map, lostObjectiveIds) {
+  if (soldiers.length === 0) return [];
   const armyCenter = soldiers.reduce((center, unit) => ({
     x: center.x + unit.x / soldiers.length,
     z: center.z + unit.z / soldiers.length,
@@ -453,7 +454,7 @@ function nearestObjective(objectives, team, soldiers, map, lostObjectiveIds) {
     left.priority - right.priority
       || left.distance - right.distance
       || left.id.localeCompare(right.id)
-  ))[0] || null;
+  ));
 }
 
 /** Create a deterministic economy-and-tactics policy for an ordinary player seat. */
@@ -466,6 +467,7 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED, matchMod
   const homeDefensePolicy = createHomeDefensePolicy();
   const regroupPolicy = createRegroupPolicy();
   const skirmishPolicy = strategy === 'base-elimination' ? createSkirmishTargetPolicy(normalizedSeed) : null;
+  const objectiveRotationPolicy = createObjectiveRotationPolicy();
   const gatherAssignments = new Map();
   const objectiveOwners = new Map();
   const lostObjectiveIds = new Set();
@@ -705,9 +707,9 @@ export function createDeterministicPolicy(seed = DEFAULT_OPPONENT_SEED, matchMod
     for (const key of orderedSoldiers) if (!liveSoldiers.has(key)) orderedSoldiers.delete(key);
     const reinforcements = soldiers.filter((unit) => !orderedSoldiers.has(soldierKey(unit)));
     const objectives = Array.isArray(observation.objectives) ? observation.objectives : [];
-    const target = nearestObjective(
+    const target = objectiveRotationPolicy.next(observation, soldiers, rankedObjectives(
       objectives, observation.team, soldiers, observation.map, lostObjectiveIds,
-    );
+    ));
     if (target) {
       defenseRegroupId = null;
       const mustReissue = target.id !== tacticalObjectiveId || lostObjectiveIds.has(target.id);

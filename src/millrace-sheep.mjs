@@ -50,7 +50,7 @@ export function migrateMillraceSheepCheckpoint(snapshot, shipped, hashMap) {
     const definition = shipped.resourceNodes.find(item => item.id === node.id);
     node.wildlifeMotion = createWildlifeMotion(definition);
     if (snapshot.schemaVersion >= 26) node.wildlifeTeam = null;
-    if (snapshot.schemaVersion >= 27) Object.assign(node, createWildlifeHerdState(node));
+    if (snapshot.schemaVersion >= 28) Object.assign(node, createWildlifeHerdState(node));
     if (node.wildlifeState !== 'alive') freezeWildlifeMotion(node);
   }
   return true;

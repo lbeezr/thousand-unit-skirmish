@@ -275,23 +275,23 @@ test('old live motion initializes its authored anchor without resetting stock or
 });
 
 
-test('exact schema26 migration adds absent Herd fields without changing claims, motion or food', () => {
+test('exact schema27 migration adds absent Herd fields without changing claims, motion or food', () => {
   const live = nodeFor(1); live.x = .7; live.wildlifeMotion.targetX = .3;
   const corpse = nodeFor(0); corpse.id = 'corpse'; corpse.x = .7; corpse.stock = 42.5; corpse.wildlifeState = 'carcass';
   cancelWildlifeHerd(corpse);
   for (const node of [live, corpse]) { delete node.wildlifeGrazeAnchor; delete node.wildlifeHerd; }
   const ordinary = {id:'ordinary',type:'food',stock:25,x:-1.5,z:-1.5};
-  const original = {schemaVersion:26,mapDefinition:{resourceNodes:[
+  const original = {schemaVersion:27,mapDefinition:{resourceNodes:[
     {id:'sheep',x:.5,z:.5}, {id:'corpse',x:.5,z:.5}, ordinary]},
     state:{resourceNodes:[live,corpse,ordinary],teamFood:[150.125,151.25],units:[{cargoType:'food',cargo:1.625}]}};
   const migrated = structuredClone(original);
-  assert.equal(migrateWildlifeHerdCheckpoint(migrated),true); assert.equal(migrated.schemaVersion,27);
+  assert.equal(migrateWildlifeHerdCheckpoint(migrated),true); assert.equal(migrated.schemaVersion,28);
   assert.deepEqual(migrated.state.resourceNodes[0].wildlifeGrazeAnchor,{x:.5,z:.5},'live motion retains original authored anchor');
   assert.deepEqual(migrated.state.resourceNodes[1].wildlifeGrazeAnchor,{x:.7,z:.5},'frozen state anchors its actual position');
   for (const node of migrated.state.resourceNodes.filter(node=>node.wildlifeSpecies)) {
     assert.equal(node.wildlifeHerd,null);delete node.wildlifeHerd;delete node.wildlifeGrazeAnchor;
   }
-  migrated.schemaVersion=26;assert.deepEqual(migrated,original,'no owner/stock/cargo/bank/pose/target/wait repair');
+  migrated.schemaVersion=27;assert.deepEqual(migrated,original,'no owner/stock/cargo/bank/pose/target/wait repair');
   for (const field of ['wildlifeHerd','wildlifeGrazeAnchor']) {
     const invalid=structuredClone(original);invalid.state.resourceNodes[0][field]=null;
     const before=structuredClone(invalid);assert.equal(migrateWildlifeHerdCheckpoint(invalid),false);assert.deepEqual(invalid,before);

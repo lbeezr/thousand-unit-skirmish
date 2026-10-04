@@ -17,7 +17,7 @@ position. A persisted local anchor prevents return to authored position after
 arrival/cancellation. Shared food rights remain unchanged. Current positive
 food reserves current construction/spawn/rally/gate cells; exact zero releases
 them, while unknown runtime stock remains conservatively reserved.
-Schema 27 deep-copies private anchor/herd/path. Compatible schema 26 live motion
+Schema 28 deep-copies private anchor/herd/path. Compatible schema 27 live motion
 retains its authored anchor and frozen motion retains current pose, without
 changing claims, stock, cargo or banks. Malformed current fields reject.
 
@@ -39,6 +39,11 @@ natural claims, multi-cell travel, Stop/recapture/Gather cancellation and paid
 construction on the vacated cell. All 8.5 harvested food is returned once;
 the hidden 100-food Sheep remains untouched. These are authority checks;
 they do not assert ordinary client controls or rendered appearance.
+
+The integrated migration sequence preserves main’s schema 26 → 27 explicit
+match-mode step, then adds Herd fields at schema 28. Existing schema 27 saves
+retain their explicit mode identity. Final integrated evidence is recorded in
+[PR205](https://github.com/lbeezr/thousand-unit-skirmish/pull/205).
 
 ## Remaining player outcome
 

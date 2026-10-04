@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createDeterministicPolicy, toOpponentObservation } from '../src/pve-opponent.mjs';
-import { createPveHeadlessFixture } from './pve-headless-fixture.mjs';
+import { createPveHeadlessFixture, assertRecoveredWorkerObservation } from './pve-headless-fixture.mjs';
 import { BUILDING_DEFINITIONS as B } from '../src/gameplay-definitions.mjs';
 import { createProductionPolicy } from '../src/pve-production.mjs';
 import { farmHarvestNodeId } from '../src/farm-harvest.mjs';
@@ -52,7 +52,7 @@ async function starvationReplay(team, seed, initialCheckpoint) {
               : !restarts.includes('exhausted') && farms.some(f => f.complete && f.harvestStock === 0) ? 'exhausted' : null;
         if (restart) {
           const snapshot = r.checkpoint(); r.restore(snapshot);
-          assert.deepEqual(r.observe(team), before, 'authoritative restart preserves crop, bank, cargo, fog and identities');
+          assertRecoveredWorkerObservation(r.observe(team), before, 'authoritative restart preserves crop, bank, cargo, fog and identities');
           policy = createDeterministicPolicy(seed); shadow = createDeterministicPolicy(seed);
           restarts.push(restart); trace.push({ tick: before.tick, restart });
         }

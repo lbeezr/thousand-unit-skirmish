@@ -116,8 +116,8 @@ anchor, preventing travel back to the authored point. Carcasses freeze there.
 Current positive food reserves its actual cell for construction, gate occupancy,
 production and rally; depleted food releases it. New obstructions stop an
 intersecting herd route before a save, with feedback only while the owner sees
-the Sheep. Checkpoint schema 27 deep-copies the anchor, route object and path;
-exact schema 26 saves gain no travel intent and preserve claims/food/motion.
+the Sheep. Checkpoint schema 28 deep-copies the anchor, route object and path;
+exact schema 27 saves gain no travel intent and preserve claims/food/motion.
 Live old saves retain their authored grazing anchor; frozen saves use their
 actual pose. Invalid current shapes, land cells, routes or lifecycle reject.
 
@@ -201,7 +201,7 @@ verified delivery; useful small PRs ship independently.
    both-seat fog/tie/blocked/claim-reclaim tests. Art task
    `01a101a8-fba6-7323-a40c-27efd0112007` consumes the real team field for collars.
 3. **Controllable herding**. Server commands, bounded owner-only existing land
-   navigation, live food reservations and schema 27 recovery are implemented in
+   navigation, live food reservations and schema 28 recovery are implemented in
    [PR205](https://github.com/lbeezr/thousand-unit-skirmish/pull/205). Next: independent authority review/merge,
    agree ordinary string-ID selection/order binding with the UI owner, then
    finish cross-cell renderer/minimap/build-preview and AI disclosure. Preserve
