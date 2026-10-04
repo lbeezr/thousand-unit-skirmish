@@ -124,16 +124,18 @@ exact schema 27 saves gain no travel intent and preserve claims/food/motion.
 Live old saves retain their authored grazing anchor; frozen saves use their
 actual pose. Invalid current shapes, land cells, routes or lifecycle reject.
 
-**Ordinary game entry is incomplete.** The active HUD owner owns the separate
-string-ID selection/order binding proposed below; see the
-[HUD controls backlog](hud-controls-backlog.md). Renderer/client cross-cell
-pose admission, minimap fog, build/wall previews and disclosed-resource AI
-locations must use actual visible positions before default Herd controls ship.
-The existing authored-radius renderer guard is intentionally still present;
-this authority slice does not claim moved-Sheep client appearance. Wildlife
-worker retains this interface/in-game outcome and requires that concrete
-agreement before overlapping client changes. Deployment/native appearance also
-remain owned follow-ups; see [Herd evidence](qa-sheep-herding-2026-10-03.md).
+**Ordinary game entry is incomplete.** Wildlife worker now owns the separate
+string-ID selection/order binding through the agreed HUD interface; see the
+[HUD controls backlog](hud-controls-backlog.md). The default renderer admits
+actual disclosed poses throughout map bounds, and minimap fog checks that same
+current cell. Picking, rings and callouts follow the admitted pose. Hidden,
+omitted and depleted rows disappear regardless of ownership. The existing
+static artwork and carcass marker remain; this does not bind new animation.
+[Relocated-client evidence](qa-sheep-relocated-client-2026-10-04.md) records CPU
+and live-server checks. Herd selection/orders, build/wall previews and
+disclosed-resource AI positions remain the next owned client slice.
+Deployment/native appearance also remain owned follow-ups; see
+[Herd evidence](qa-sheep-herding-2026-10-03.md).
 
 Stop after depletion preserves a Worker's final cargo. Select that Worker and
 choose **Return cargo** to deliver it to a reachable completed owned food drop-off,
@@ -231,14 +233,13 @@ a stopped/arrived Sheep from returning to the original authored coordinate.
 Moving-node construction, gate occupancy, fog, gather and checkpoint checks
 remain part of the authority slice.
 
-The UI owner must agree the ordinary selection binding before overlapping
-client edits: separate `selectedWildlifeId: null|string`, owned alive Sheep
+The agreed ordinary selection binding is separate `selectedWildlifeId: null|string`, owned alive Sheep
 left-click selection, right-click/touch legal ground to herd, Stop, normal order
 acknowledgements, and immediate selection clearing on fog/omission, recapture
 or harvest. The renderer supplies only a currently disclosed selectable row;
 HUD code must not use environment-capture diagnostics as gameplay state. That
-client agreement is pending; pure authority/navigation/recovery work proceeds
-independently.
+client agreement authorizes the wildlife worker to implement this narrow path;
+the HUD owner retains layout and the Sheep art owner retains new frames.
 
 
 ## Observed source
