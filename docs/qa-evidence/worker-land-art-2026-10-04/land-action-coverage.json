@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "packVersion": "0.30.0",
+  "packVersion": "0.31.0",
   "scope": "Human Worker land art; excludes fishing; default source/package evidence, not deployed/native proof",
   "actions": [
     {
@@ -20,131 +20,131 @@
     },
     {
       "action": "gather-wood",
-      "authoredHeadingCount": 5,
+      "authoredHeadingCount": 6,
       "authoredHeadings": [
         "north",
         "north-east",
         "east",
         "south-east",
+        "south",
         "north-west"
       ],
       "missingHeadings": [
-        "south",
         "south-west",
         "west"
       ]
     },
     {
       "action": "gather-food",
-      "authoredHeadingCount": 5,
+      "authoredHeadingCount": 6,
       "authoredHeadings": [
         "north",
         "north-east",
         "east",
         "south-east",
+        "south",
         "north-west"
       ],
       "missingHeadings": [
-        "south",
         "south-west",
         "west"
       ]
     },
     {
       "action": "build",
-      "authoredHeadingCount": 5,
+      "authoredHeadingCount": 6,
       "authoredHeadings": [
         "north",
         "north-east",
         "east",
         "south-east",
+        "south",
         "north-west"
       ],
       "missingHeadings": [
-        "south",
         "south-west",
         "west"
       ]
     },
     {
       "action": "repair",
-      "authoredHeadingCount": 5,
+      "authoredHeadingCount": 6,
       "authoredHeadings": [
         "north",
         "north-east",
         "east",
         "south-east",
+        "south",
         "north-west"
       ],
       "missingHeadings": [
-        "south",
         "south-west",
         "west"
       ]
     },
     {
       "action": "attack",
-      "authoredHeadingCount": 5,
+      "authoredHeadingCount": 6,
       "authoredHeadings": [
         "north",
         "north-east",
         "east",
         "south-east",
+        "south",
         "north-west"
       ],
       "missingHeadings": [
-        "south",
         "south-west",
         "west"
       ]
     },
     {
       "action": "defeat",
-      "authoredHeadingCount": 5,
+      "authoredHeadingCount": 6,
       "authoredHeadings": [
         "north",
         "north-east",
         "east",
         "south-east",
+        "south",
         "north-west"
       ],
       "missingHeadings": [
-        "south",
         "south-west",
         "west"
       ]
     },
     {
       "action": "gather-stone",
-      "authoredHeadingCount": 5,
+      "authoredHeadingCount": 6,
       "authoredHeadings": [
         "north",
         "north-east",
         "east",
         "south-east",
+        "south",
         "north-west"
       ],
       "missingHeadings": [
-        "south",
         "south-west",
         "west"
       ]
     }
   ],
-  "authoredCells": 43,
+  "authoredCells": 50,
   "totalCells": 64,
-  "remainingCells": 21,
+  "remainingCells": 14,
   "byHeading": {
     "north": 8,
     "north-east": 8,
     "east": 8,
     "south-east": 8,
-    "south": 1,
+    "south": 8,
     "south-west": 1,
     "west": 1,
     "north-west": 8
   },
   "carryReturn": "all8 walks reused with existing cargo cue; no independent pose count",
-  "defaultStoneConsumer": "merged PR263 exact productive consumer binds SE/NW/E/N/NE; missing S/SW/W retain own idle",
+  "defaultStoneConsumer": "merged PR263 exact productive consumer binds SE/NW/E/N/NE/S; missing SW/W retain own idle",
   "nativeDeployment": "open; identified containing parent Railway/Mac route required"
 }

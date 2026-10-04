@@ -18,7 +18,7 @@ const preservation = JSON.parse(readFileSync(new URL(
 for (const group of registration.groups) {
 test(`NE ${group.state} has three complete distinct poses at one scale and fixed ground pivot`, () => {
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', directory)));
-  assert.deepEqual([image.width, image.height], [4096, 4096]);
+  assert.deepEqual([image.width, image.height], [4608, 4096]);
   assert.equal(registration.sharedScale, 232 / 278);
   const clip = spriteActionClip(clips, group.state, 'north-east', 'stone', 'human', false);
   assert.equal(clip.stateId, group.state);
@@ -133,16 +133,16 @@ test('NE strip preserves whole previous allocation, 172 frame records, 65 clips 
   const hash = b => createHash('sha256').update(b).digest('hex');
   assert.equal(hash(JSON.stringify(asset.frames.slice(0, preservation.originalFrames))), preservation.originalFrameMetadataSha256);
   const oldClips = structuredClone(asset.clips.slice(0, preservation.originalClips));
-  for (const c of preservation.originalReplacedClips) oldClips[oldClips.findIndex(v => v.stateId === c.stateId && v.directionId === c.directionId)] = c;
+  for (const c of [...preservation.originalReplacedClips, ...JSON.parse(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/south-actions-preservation.json', import.meta.url))).originalReplacedClips]) oldClips[oldClips.findIndex(v => v.stateId === c.stateId && v.directionId === c.directionId)] = c;
   assert.equal(hash(JSON.stringify(oldClips)), preservation.originalClipMetadataSha256);
   const image = decodeRgba8(readFileSync(new URL('cast-atlas-runtime.png', directory))), old = preservation.originalDimensionsPx, pixels = createHash('sha256');
   for (let y = 0; y < old.height; y++) pixels.update(image.pixels.subarray(y * image.width * 4, (y * image.width + old.width) * 4));
   assert.equal(pixels.digest('hex'), preservation.originalRgbaSha256);
   assert.equal(hash(readFileSync(new URL('../docs/qa-evidence/worker-land-art-2026-10-04/north-era-team-mask.png', import.meta.url))), preservation.originalTeamMaskSha256);
-  assert.deepEqual(page.dimensionsPx, { width: 4096, height: 4096 });
-  assert.equal(asset.frames.length, 187); assert.equal(asset.clips.length, 69);
+  assert.deepEqual(page.dimensionsPx, { width: 4608, height: 4096 });
+  assert.equal(asset.frames.length, 202); assert.equal(asset.clips.length, 73);
   const terminal = asset.frames.find(f => f.id === 'defeat-north-east-2'); assert.ok(terminal.alphaBoundsPx.height < asset.frames.find(f => f.id === 'build-north-east-2').alphaBoundsPx.height, 'Frontal prone body is foreshortened; no fake wide-profile requirement');
-  for (const heading of ['south', 'south-west', 'west']) {
+  for (const heading of ['south-west', 'west']) {
     assert.equal(spriteActionClip(clips, 'gather-stone', heading, 'stone', 'human', true).sequence[0].frameId, `idle-${heading}-0`);
   }
 });

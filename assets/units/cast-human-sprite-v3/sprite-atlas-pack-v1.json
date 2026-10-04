@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "packId": "cast-human-sprite",
-  "packVersion": "0.30.0",
+  "packVersion": "0.31.0",
   "maturity": "runtime-candidate",
   "provenance": {
     "license": "LicenseRef-Thousand-Unit-Skirmish-Internal-Review",
     "source": "Vaelora Human roster role and action sheets",
     "authoringTool": "OpenAI ImageGen; PNG atlas and mask packaging",
-    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four-key hand-net fishing pilot for the actual south-east heading, approved for public/default integration. Original four pose pixels preserved. Seven fishing headings remain unproduced; root/loop polish remains tracked in docs/worker-fishing-animation.md. East walk reuses eight retained current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. North walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. South walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. West walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. North-West walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. Stone SE walk reuses four dedicated pick-windup/strike/recovery keys; default selector adoption owned by animation owner; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. NW wood work adds three compact axe windup/strike/recovery keys, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. NW food work adds three bare-hand reach/pick/stow keys, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. NW attack faithfully reuses the public NW axe windup/strike/recovery pixels, 3x280ms one-shot; see docs/qa-worker-land-art-2026-10-04.md; six other attack headings remain absent. NW hammer build/repair, dedicated pick mining and terminal defeat add nine real left-profile keys; Stone state/bearing adoption and native acceptance remain open; see docs/qa-worker-land-art-2026-10-04.md. East adds three actual down-right front-three-quarter axe keys, with independent wood loop and attack one-shot timing; previous art/world scale preserved. See docs/qa-worker-land-art-2026-10-04.md. East food work adds three bare-hand reach/pick/stow keys, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. East hammer work adds three true down-right hammer windup/strike/recovery keys shared by build/repair, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. East dedicated pick mining and terminal prone defeat add six real front-three-quarter keys; Existing exact Stone default binding consumes the new East clip; target-bearing/native acceptance remain open; see docs/qa-worker-land-art-2026-10-04.md. North wood/food/hammer/pick/defeat add fourteen real down-left keys; attack reuses axe and repair reuses hammer; Existing exact Stone default binding consumes the new North clip; target-bearing/native acceptance remain open; see docs/qa-worker-land-art-2026-10-04.md. North-East wood/food/hammer/pick/defeat add fifteen real down-frontal keys; attack reuses axe and repair reuses hammer; Existing exact Stone default binding consumes the new North-East clip; target-bearing/native acceptance remain open; see docs/qa-worker-land-art-2026-10-04.md."
+    "notes": "Incomplete runtime preview: authored action candidates are packed; unproduced action/direction clips hold idle. Zero team mask remains pending. See docs/art-direction/human-roster-v1/review.json and coverage.json for limitations. Four-key hand-net fishing pilot for the actual south-east heading, approved for public/default integration. Original four pose pixels preserved. Seven fishing headings remain unproduced; root/loop polish remains tracked in docs/worker-fishing-animation.md. East walk reuses eight retained current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. North walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. South walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. West walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. North-West walk reuses eight approved-seed current-roster keys; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. Stone SE walk reuses four dedicated pick-windup/strike/recovery keys; default selector adoption owned by animation owner; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. NW wood work adds three compact axe windup/strike/recovery keys, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. NW food work adds three bare-hand reach/pick/stow keys, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. NW attack faithfully reuses the public NW axe windup/strike/recovery pixels, 3x280ms one-shot; see docs/qa-worker-land-art-2026-10-04.md; six other attack headings remain absent. NW hammer build/repair, dedicated pick mining and terminal defeat add nine real left-profile keys; Stone state/bearing adoption and native acceptance remain open; see docs/qa-worker-land-art-2026-10-04.md. East adds three actual down-right front-three-quarter axe keys, with independent wood loop and attack one-shot timing; previous art/world scale preserved. See docs/qa-worker-land-art-2026-10-04.md. East food work adds three bare-hand reach/pick/stow keys, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. East hammer work adds three true down-right hammer windup/strike/recovery keys shared by build/repair, preserving world scale and existing frame coordinates; see docs/qa-worker-land-art-2026-10-04.md for registration and remaining coverage. East dedicated pick mining and terminal prone defeat add six real front-three-quarter keys; Existing exact Stone default binding consumes the new East clip; target-bearing/native acceptance remain open; see docs/qa-worker-land-art-2026-10-04.md. North wood/food/hammer/pick/defeat add fourteen real down-left keys; attack reuses axe and repair reuses hammer; Existing exact Stone default binding consumes the new North clip; target-bearing/native acceptance remain open; see docs/qa-worker-land-art-2026-10-04.md. North-East wood/food/hammer/pick/defeat add fifteen real down-frontal keys; attack reuses axe and repair reuses hammer; Existing exact Stone default binding consumes the new North-East clip; target-bearing/native acceptance remain open; see docs/qa-worker-land-art-2026-10-04.md. South wood/food/hammer/pick/defeat add fifteen real up-right back-three-quarter keys; attack reuses axe and repair reuses hammer; Existing exact Stone default binding consumes the new South clip; target-bearing/native acceptance remain open; see docs/qa-worker-land-art-2026-10-04.md."
   },
   "files": [
     {
@@ -16,10 +16,10 @@
       "usage": "source",
       "format": "png",
       "dimensionsPx": {
-        "width": 4096,
+        "width": 4608,
         "height": 4096
       },
-      "sha256": "6e6c43d65e945fcf0b4829cafecd1a0605dbf3b935739f2775b710e78d1e55ad"
+      "sha256": "8784064fa19204391dc2b7174c70ea1e79a35d29204a10af4d93990cd2f287a4"
     },
     {
       "id": "cast-human-atlas-runtime",
@@ -27,10 +27,10 @@
       "usage": "runtime",
       "format": "png",
       "dimensionsPx": {
-        "width": 4096,
+        "width": 4608,
         "height": 4096
       },
-      "sha256": "6e6c43d65e945fcf0b4829cafecd1a0605dbf3b935739f2775b710e78d1e55ad"
+      "sha256": "8784064fa19204391dc2b7174c70ea1e79a35d29204a10af4d93990cd2f287a4"
     },
     {
       "id": "cast-human-team-mask",
@@ -38,10 +38,10 @@
       "usage": "team-mask",
       "format": "png",
       "dimensionsPx": {
-        "width": 4096,
+        "width": 4608,
         "height": 4096
       },
-      "sha256": "334c4a79f661f8f9c215b7fd06284d5fb3fe7fd3822f10dc8842f85f664c9a7f"
+      "sha256": "0887452ba949d7721a450753d86433de0e532bdeecbdcf5c5f5f23e482c33feb"
     }
   ],
   "pages": [
@@ -51,7 +51,7 @@
       "runtimeFileId": "cast-human-atlas-runtime",
       "maskFileId": "cast-human-team-mask",
       "dimensionsPx": {
-        "width": 4096,
+        "width": 4608,
         "height": 4096
       },
       "colorSpace": "srgb",
@@ -8164,6 +8164,651 @@
             }
           ],
           "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-wood-south-0",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 308
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 320
+          },
+          "alphaBoundsPx": {
+            "x": 69,
+            "y": 48,
+            "width": 135,
+            "height": 246
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 4096,
+              "y": 0,
+              "width": 256,
+              "height": 320
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 4096,
+                "y": 0,
+                "width": 256,
+                "height": 320
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-wood-south-1",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 308
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 320
+          },
+          "alphaBoundsPx": {
+            "x": 43,
+            "y": 104,
+            "width": 197,
+            "height": 192
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 4352,
+              "y": 0,
+              "width": 256,
+              "height": 320
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 4352,
+                "y": 0,
+                "width": 256,
+                "height": 320
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-wood-south-2",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 308
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 320
+          },
+          "alphaBoundsPx": {
+            "x": 73,
+            "y": 97,
+            "width": 136,
+            "height": 211
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 4096,
+              "y": 320,
+              "width": 256,
+              "height": 320
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 4096,
+                "y": 320,
+                "width": 256,
+                "height": 320
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-food-south-0",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 62,
+            "y": 14,
+            "width": 176,
+            "height": 224
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 4352,
+              "y": 320,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 4352,
+                "y": 320,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-food-south-1",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 67,
+            "y": 92,
+            "width": 152,
+            "height": 146
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 4096,
+              "y": 640,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 4096,
+                "y": 640,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-food-south-2",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 74,
+            "y": 13,
+            "width": 127,
+            "height": 231
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 4352,
+              "y": 640,
+              "width": 256,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 4352,
+                "y": 640,
+                "width": 256,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "build-south-0",
+          "groundPivotPx": {
+            "x": 122,
+            "y": 308
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 320
+          },
+          "alphaBoundsPx": {
+            "x": 64,
+            "y": 44,
+            "width": 127,
+            "height": 264
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 4096,
+              "y": 960,
+              "width": 256,
+              "height": 320
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 4096,
+                "y": 960,
+                "width": 256,
+                "height": 320
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "build-south-1",
+          "groundPivotPx": {
+            "x": 122,
+            "y": 308
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 320
+          },
+          "alphaBoundsPx": {
+            "x": 29,
+            "y": 117,
+            "width": 222,
+            "height": 188
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 4352,
+              "y": 960,
+              "width": 256,
+              "height": 320
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 4352,
+                "y": 960,
+                "width": 256,
+                "height": 320
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "build-south-2",
+          "groundPivotPx": {
+            "x": 122,
+            "y": 308
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 320
+          },
+          "alphaBoundsPx": {
+            "x": 69,
+            "y": 84,
+            "width": 144,
+            "height": 224
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 4096,
+              "y": 1280,
+              "width": 256,
+              "height": 320
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 4096,
+                "y": 1280,
+                "width": 256,
+                "height": 320
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-stone-south-0",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 308
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 320
+          },
+          "alphaBoundsPx": {
+            "x": 73,
+            "y": 38,
+            "width": 134,
+            "height": 270
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 4352,
+              "y": 1280,
+              "width": 256,
+              "height": 320
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 4352,
+                "y": 1280,
+                "width": 256,
+                "height": 320
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-stone-south-1",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 308
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 320
+          },
+          "alphaBoundsPx": {
+            "x": 33,
+            "y": 126,
+            "width": 220,
+            "height": 171
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 4096,
+              "y": 1600,
+              "width": 256,
+              "height": 320
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 4096,
+                "y": 1600,
+                "width": 256,
+                "height": 320
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "gather-stone-south-2",
+          "groundPivotPx": {
+            "x": 128,
+            "y": 308
+          },
+          "canvasPx": {
+            "width": 256,
+            "height": 320
+          },
+          "alphaBoundsPx": {
+            "x": 72,
+            "y": 73,
+            "width": 168,
+            "height": 229
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 4352,
+              "y": 1600,
+              "width": 256,
+              "height": 320
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 4352,
+                "y": 1600,
+                "width": 256,
+                "height": 320
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "defeat-south-0",
+          "groundPivotPx": {
+            "x": 256,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 512,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 191,
+            "y": 64,
+            "width": 180,
+            "height": 180
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 4096,
+              "y": 1920,
+              "width": 512,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 4096,
+                "y": 1920,
+                "width": 512,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "defeat-south-1",
+          "groundPivotPx": {
+            "x": 256,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 512,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 130,
+            "y": 93,
+            "width": 232,
+            "height": 151
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 4096,
+              "y": 2176,
+              "width": 512,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 4096,
+                "y": 2176,
+                "width": 512,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
+        },
+        {
+          "id": "defeat-south-2",
+          "groundPivotPx": {
+            "x": 256,
+            "y": 244
+          },
+          "canvasPx": {
+            "width": 512,
+            "height": 256
+          },
+          "alphaBoundsPx": {
+            "x": 129,
+            "y": 90,
+            "width": 239,
+            "height": 154
+          },
+          "fallbackRectPx": {
+            "pageId": "cast-human-color",
+            "rectPx": {
+              "x": 4096,
+              "y": 2432,
+              "width": 512,
+              "height": 256
+            }
+          },
+          "frameRectsPx": [
+            {
+              "layerId": "actor",
+              "pageId": "cast-human-color",
+              "rectPx": {
+                "x": 4096,
+                "y": 2432,
+                "width": 512,
+                "height": 256
+              },
+              "offsetPx": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "groundPivotStatus": "unreviewed-estimate"
         }
       ],
       "clips": [
@@ -8716,8 +9361,16 @@
           "loop": true,
           "sequence": [
             {
-              "frameId": "idle-south-0",
-              "durationMs": 1000
+              "frameId": "build-south-0",
+              "durationMs": 240
+            },
+            {
+              "frameId": "build-south-1",
+              "durationMs": 240
+            },
+            {
+              "frameId": "build-south-2",
+              "durationMs": 240
             }
           ]
         },
@@ -8822,11 +9475,19 @@
         {
           "stateId": "attack",
           "directionId": "south",
-          "loop": true,
+          "loop": false,
           "sequence": [
             {
-              "frameId": "idle-south-0",
-              "durationMs": 1000
+              "frameId": "gather-wood-south-0",
+              "durationMs": 280
+            },
+            {
+              "frameId": "gather-wood-south-1",
+              "durationMs": 280
+            },
+            {
+              "frameId": "gather-wood-south-2",
+              "durationMs": 280
             }
           ]
         },
@@ -8934,8 +9595,16 @@
           "loop": false,
           "sequence": [
             {
-              "frameId": "idle-south-0",
-              "durationMs": 1000
+              "frameId": "defeat-south-0",
+              "durationMs": 280
+            },
+            {
+              "frameId": "defeat-south-1",
+              "durationMs": 280
+            },
+            {
+              "frameId": "defeat-south-2",
+              "durationMs": 280
             }
           ]
         },
@@ -9554,6 +10223,82 @@
             },
             {
               "frameId": "gather-stone-north-east-2",
+              "durationMs": 240
+            }
+          ]
+        },
+        {
+          "stateId": "gather-wood",
+          "directionId": "south",
+          "loop": true,
+          "sequence": [
+            {
+              "frameId": "gather-wood-south-0",
+              "durationMs": 240
+            },
+            {
+              "frameId": "gather-wood-south-1",
+              "durationMs": 240
+            },
+            {
+              "frameId": "gather-wood-south-2",
+              "durationMs": 240
+            }
+          ]
+        },
+        {
+          "stateId": "gather-food",
+          "directionId": "south",
+          "loop": true,
+          "sequence": [
+            {
+              "frameId": "gather-food-south-0",
+              "durationMs": 240
+            },
+            {
+              "frameId": "gather-food-south-1",
+              "durationMs": 240
+            },
+            {
+              "frameId": "gather-food-south-2",
+              "durationMs": 240
+            }
+          ]
+        },
+        {
+          "stateId": "repair",
+          "directionId": "south",
+          "loop": true,
+          "sequence": [
+            {
+              "frameId": "build-south-0",
+              "durationMs": 240
+            },
+            {
+              "frameId": "build-south-1",
+              "durationMs": 240
+            },
+            {
+              "frameId": "build-south-2",
+              "durationMs": 240
+            }
+          ]
+        },
+        {
+          "stateId": "gather-stone",
+          "directionId": "south",
+          "loop": true,
+          "sequence": [
+            {
+              "frameId": "gather-stone-south-0",
+              "durationMs": 240
+            },
+            {
+              "frameId": "gather-stone-south-1",
+              "durationMs": 240
+            },
+            {
+              "frameId": "gather-stone-south-2",
               "durationMs": 240
             }
           ]

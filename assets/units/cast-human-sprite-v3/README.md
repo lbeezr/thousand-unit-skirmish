@@ -170,3 +170,14 @@ aligned4096x4096 page/mask (+10MiB decoded; color64MiB + mask16MiB).
 All seven work/combat actions now5/8(N/NE/E/SE/NW), Walk8/8;21 cells remain.
 See [land QA](../../../docs/qa-worker-land-art-2026-10-04.md) for preserved sources,
 source/default/release checks and open identified delivered/native acceptance.
+
+
+v0.31.0 adds fifteen complete actual South/up-right-back land poses from the
+[retained public seed iteration](../../../docs/art-direction/human-roster-v1/generated/worker-south-actions-v1/README.md).
+Wood/food/build/repair/Stone720ms loops, faithful axe attack and prone defeat840ms
+one-shots bind by default. One271/318 scale, stable pivots, unchanged world
+units/pixel; entire old4096x4096 RGBA/187records preserved, only three declared
+South idle clips replaced. Aligned page/mask4608x4096,202frames/73clips; decoded
+color72MiB plus mask18MiB. Walk8/8, seven land work/combat actions6/8;14 cells
+remain in SW/W. Native/deployed acceptance remains owned by the parent receiving
+Railway/Mac route; simple contact/loop polish is retained explicitly in land QA.
