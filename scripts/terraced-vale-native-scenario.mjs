@@ -10,11 +10,19 @@ import { fileURLToPath } from 'node:url';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const map = JSON.parse(await readFile(new URL('../maps/veyrholds-terraced-vale.json', import.meta.url)));
+// Default preserves the accepted Tiny reproduction; Small uses its authored pads.
+const mapId = process.argv[2] ?? 'veyrholds-terraced-vale';
+const layouts = {
+  'veyrholds-terraced-vale': { base: 57.5, park: 68.5, expansion: 39.5, expansionZ: -21.5, house: 31.5 },
+  'veyrholds-threefold-basin': { base: 70.5, park: 82.5, expansion: 46.5, expansionZ: -34.5, house: 38.5 },
+};
+assert.ok(Object.hasOwn(layouts, mapId), 'Specify one of the authored Tiny/Small map IDs.');
+const layout = layouts[mapId];
+const map = JSON.parse(await readFile(path.join(root, 'maps', `${mapId}.json`)));
 const temporary = await mkdtemp(path.join(os.tmpdir(), 'rts-terraced-vale-native-'));
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const report = { sourceCommit: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
-  mapSHA256: createHash('sha256').update(await readFile(path.join(root, 'maps/veyrholds-terraced-vale.json'))).digest('hex'),
+  mapId, mapSHA256: createHash('sha256').update(await readFile(path.join(root, 'maps', `${mapId}.json`))).digest('hex'),
   startedAt: new Date().toISOString(), arrivals: [], economy: [], browserVerified: false, deployedVerified: false };
 const emit = (stage, detail) => console.log(JSON.stringify({ stage, ...detail }));
 const unit = (state, id) => state.units.find(row => row[0] === id);
@@ -136,7 +144,7 @@ try {
   report.normalCatalogEntry = { id: entry.id, name: entry.name, summary: entry.summary };
   report.initialFog = seats.map(client => ({ team: client.team, bytes: Buffer.from(client.current.visibility.data, 'base64').length,
     enemyVisibleUnits: client.current.units.filter(row => row[1] !== client.team).length }));
-  for (const row of report.initialFog) { assert.equal(row.bytes, 6400); assert.equal(row.enemyVisibleUnits, 0); }
+  for (const row of report.initialFog) { assert.equal(row.bytes, Math.ceil(map.width * map.height / 4)); assert.equal(row.enemyVisibleUnits, 0); }
   emit('ordinary-entry', { mapId: map.id, initialFog: report.initialFog });
   const journeys = seats.map(async client => {
     const team = client.team, sign = team ? 1 : -1, workers = own(client.current, team, 'worker').map(row => row[0]);
@@ -144,29 +152,30 @@ try {
     // Keep the economy/travel measurement peaceful using a normal player command.
     // Aggressive idle actors otherwise attack the opposite seat's returning miners.
     await order(client, { type: 'setStance', stance: 'noAttack', ids: infantry }, 'STANCE ORDER');
-    client.send({ type: 'move', ids: infantry.slice(1), x: sign * 68.5, z: 14.5 });
-    const foot = tracked(travel(client, infantry[0], { x: -sign * 57.5, z: -2.5 }, 'infantry'));
-    const worker = tracked(travel(client, workers[0], { x: -sign * 57.5, z: 0.5 }, 'worker')
-      .then(() => travel(client, workers[0], { x: sign * 57.5, z: 0.5 }, 'worker-return'))
+    client.send({ type: 'move', ids: infantry.slice(1), x: sign * layout.park, z: 14.5 });
+    const foot = tracked(travel(client, infantry[0], { x: -sign * layout.base, z: -2.5 }, 'infantry'));
+    const worker = tracked(travel(client, workers[0], { x: -sign * layout.base, z: 0.5 }, 'worker')
+      .then(() => travel(client, workers[0], { x: sign * layout.base, z: 0.5 }, 'worker-return'))
       .then(() => order(client, { type: 'gather', ids: [workers[0]], nodeId: `s${team}-home-wood` }, 'GATHER ORDER')));
     await order(client, { type: 'gather', ids: [workers[3]], nodeId: `s${team}-home-wood` }, 'GATHER ORDER');
-    const stable = await build(client, 'stable', workers.slice(1, 3), { x: sign * 57.5, z: 10.5 });
+    const stable = await build(client, 'stable', workers.slice(1, 3), { x: sign * layout.base, z: 10.5 });
     await order(client, { type: 'gather', ids: [workers[1]], nodeId: `s${team}-home-food` }, 'GATHER ORDER');
     await order(client, { type: 'gather', ids: [workers[2]], nodeId: `s${team}-home-wood` }, 'GATHER ORDER');
     await order(client, { type: 'trainUnit', buildingId: stable.id, kind: 'scout' }, 'SCOUT QUEUED');
     const spawned = await client.state(state => own(state, team, 'scout').length === 1);
     await order(client, { type: 'setStance', stance: 'noAttack', ids: [own(spawned, team, 'scout')[0][0]] }, 'STANCE ORDER');
-    const scout = tracked(travel(client, own(spawned, team, 'scout')[0][0], { x: -sign * 57.5, z: 3.5 }, 'scout'));
+    const scout = tracked(travel(client, own(spawned, team, 'scout')[0][0], { x: -sign * layout.base, z: 3.5 }, 'scout'));
     const food = await client.state(state => state.tick >= spawned.tick && state.food[team] > 150 - 40);
     report.economy.push({ team, event: 'paid-food-deposit', stock: food.food[team], gameSeconds: food.matchElapsedSeconds });
     await order(client, { type: 'gather', ids: [workers[1]], nodeId: `s${team}-home-wood` }, 'GATHER ORDER');
     await Promise.all([foot, worker, scout]);
     const saved = await client.state(state => state.wood[team] >= 475 && state.food[team] >= 100, 240000);
     emit('expansion-funded', { team, food: saved.food[team], wood: saved.wood[team], gameSeconds: saved.matchElapsedSeconds });
-    await order(client, { type: 'move', ids: workers, x: sign * 39.5, z: -15.5 }, 'MOVE ORDER');
-    await client.state(state => workers.every(id => near(unit(state, id), { x: sign * 39.5, z: -15.5 }, 4)));
-    await build(client, 'town-center', workers, { x: sign * 39.5, z: -21.5 });
-    await build(client, 'house', workers.slice(0, 2), { x: sign * 31.5, z: -21.5 });
+    const approach = { x: sign * layout.expansion, z: layout.expansionZ + 6 };
+    await order(client, { type: 'move', ids: workers, ...approach }, 'MOVE ORDER');
+    await client.state(state => workers.every(id => near(unit(state, id), approach, 4)));
+    await build(client, 'town-center', workers, { x: sign * layout.expansion, z: layout.expansionZ });
+    await build(client, 'house', workers.slice(0, 2), { x: sign * layout.house, z: layout.expansionZ });
     return { team, food: client.current.food[team], wood: client.current.wood[team],
       exploredFogBytes: Buffer.from(client.current.visibility.data, 'base64').length };
   });
@@ -204,7 +213,7 @@ try {
   const start = practice.current;
   assert.equal(start.practice, true); assert.equal(start.connected, 1);
   const id = own(start, 0, 'worker')[0][0];
-  const moved = await travel(practice, id, { x: -48.5, z: 0.5 }, 'practice-worker');
+  const moved = await travel(practice, id, { x: -layout.base + 9, z: 0.5 }, 'practice-worker');
   assert.equal(moved.scenarioClockStarted, true); report.oneHumanPractice = true;
   report.passed = true;
 } catch (error) { report.passed = false; report.error = { name: error.name, message: error.message };

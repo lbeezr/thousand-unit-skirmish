@@ -19,6 +19,15 @@ selection filtering. The prior smaller files remain internal fixtures and legacy
 save identities. The dated roster below describes their prior ordinary entry;
 this map-only slice has not changed those server defaults.
 
+## Threefold Basin Small candidate
+
+**Veyrholds · Threefold Basin** is an authored 192 × 192 Small candidate with
+two valley passes, a raised southern causeway and a high northern flank.
+It adds three expansion pockets per seat and preserves short home access.
+The 157-unit base route targets 60.4 Worker seconds; opening units/banks remain
+ordinary. [Small evidence](qa-threefold-basin-2026-10-04.md) separates static,
+paid/native and capacity receipts from pending default/deployed/browser adoption.
+
 ## Vaelora default roster — 30 September 2026
 
 **Bellweather · Millrace** is the default two-seat map. Seeded solo play chooses
