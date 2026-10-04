@@ -2,7 +2,7 @@
 
 Production source `53a47ee3` contains selector PR #284, direct-ground trajectory
 PR #285, and the Infantry default restoration #286. A bounded cloud CPU run
-passes 64 cases: Worker/Spearman × eight bearings × both team tints × full/low
+passes 64 cases: Worker/Spearman × eight bearings × both teams × full/low
 detail. This adds the missing client update-loop and decoded source-cell links
 to the existing selector/clock tests; it does not repeat the 47-check suite.
 
