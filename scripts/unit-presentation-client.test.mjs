@@ -2,6 +2,102 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createUnitPresentationClientFixture, workerSnapshotRow as row } from './unit-presentation-client-fixture.mjs';
 
+for (const team of [0, 1]) for (const selected of [false, true]) {
+  test(`confirmed activity: seat ${team}, selected ${selected}, assigned waits use real idle frames`, async () => {
+    const f = await createUnitPresentationClientFixture({ localTeam: team });
+    try {
+      for (const task of ['gathering', 'building', 'repairing']) {
+        f.apply([row({ team, task, cargoType: 'wood', performingAction: null,
+          workHeading: 3 * Math.PI / 4 })], { initial: true });
+        const unit = f.unit(0); unit.angle = unit.targetAngle = 3 * Math.PI / 4;
+        if (selected) f.context.selected.add(0);
+        f.frame(1000, 0);
+        assert.equal(f.frameId(0), 'idle-south-east-0', `${task} intent is not productive work`);
+        assert.equal(unit.performingAction, null);
+      }
+    } finally { f.dispose(); }
+  });
+}
+
+test('confirmed activity: no-wood repair clear changes the actual buffer immediately with authority otherwise stable', async () => {
+  const f = await createUnitPresentationClientFixture();
+  try {
+    const data = { task: 'repairing', performingAction: 'repair' };
+    f.apply([row(data)], { initial: true });
+    f.unit(0).angle = f.unit(0).targetAngle = 3 * Math.PI / 4;
+    f.frame(1000, 0); f.frame(1300, 0.05);
+    assert.equal(f.frameId(0), 'repair-south-east-2');
+    f.clearObservations();
+    const version = f.mesh(0).geometry.getAttribute('instanceAtlasRect').version;
+    f.apply([row({ ...data, performingAction: null })], { now: 1320 });
+    assert.equal(f.frameId(0), 'idle-south-east-0', 'clear needs no movement, input or animation tick');
+    assert.ok(f.transformCalls.length > 0);
+    assert.ok(f.mesh(0).geometry.getAttribute('instanceAtlasRect').version > version);
+    assert.equal(f.unit(0).task, 'repairing', 'intent remains available to HUD');
+    const phase = f.unit(0).motionPhase;
+    f.frame(1330, 0.01); assert.equal(f.unit(0).motionPhase, phase, 'waiting does not keep work scheduling alive');
+    f.apply([row(data)], { now: 1400 });
+    assert.equal(f.frameId(0), 'repair-south-east-0');
+  } finally { f.dispose(); }
+});
+
+for (const team of [0, 1]) {
+  test(`confirmed activity: seat ${team}, productive resource selects existing frames rather than previous cargo`, async () => {
+    const f = await createUnitPresentationClientFixture({ localTeam: team });
+    try {
+      const data = { team, task: 'gathering', cargoType: 'wood', cargo: 1,
+        performingAction: 'gather-food', workHeading: 3 * Math.PI / 4 };
+      f.apply([row(data)], { initial: true });
+      const unit = f.unit(0); unit.angle = unit.targetAngle = data.workHeading;
+      f.frame(1000, 0);
+      assert.equal(f.frameId(0), 'gather-food-south-east-0');
+      f.frame(1300, 0.05);
+      assert.equal(f.frameId(0), `gather-food-south-east-${team ? 0 : 2}`);
+      const start = unit.spriteClockStartedAt;
+      f.apply([row(data)], { now: 1350 });
+      assert.equal(unit.spriteClockStartedAt, start, 'repeated positive snapshots preserve elapsed work');
+      f.apply([row({ ...data, cargoType: 'food', performingAction: 'gather-wood' })], { now: 1400 });
+      assert.equal(f.frameId(0), 'gather-wood-south-east-0', 'a different resource starts its own real clip');
+      assert.equal(unit.spriteClockStartedAt, 1400);
+      f.apply([row({ ...data, performingAction: 'gather-stone' })], { now: 1450 });
+      assert.equal(f.frameId(0), 'idle-south-east-0', 'missing Stone sprites cannot be wood artwork');
+    } finally { f.dispose(); }
+  });
+}
+
+test('confirmed activity: missing or unknown protocol and incompatible actions clear without intent fallback', async () => {
+  const f = await createUnitPresentationClientFixture();
+  try {
+    const data = { task: 'building', performingAction: 'build' };
+    f.apply([row(data)], { initial: true });
+    f.unit(0).angle = f.unit(0).targetAngle = 3 * Math.PI / 4;
+    f.frame(1000, 0);
+    for (const [action, version] of [['build', undefined], ['build', 2], ['build', '1'],
+      ['unknown', 1], ['repair', 1], [null, 1]]) {
+      f.apply([row({ ...data, performingAction: action })], { workerPerformingActionVersion: version });
+      assert.equal(f.frameId(0), 'idle-south-east-0');
+      assert.equal(f.unit(0).performingAction, null);
+    }
+    f.apply([row(data)]);
+    f.apply([row(data).slice(0, 17)]);
+    assert.equal(f.frameId(0), 'idle-south-east-0', 'a missing current action slot clears');
+  } finally { f.dispose(); }
+});
+
+test('confirmed activity: generation change clears a positive row until a subsequent matching-generation grant', async () => {
+  const f = await createUnitPresentationClientFixture();
+  try {
+    const data = { task: 'building', performingAction: 'build' };
+    f.apply([row(data)], { initial: true });
+    f.apply([row({ ...data, generation: 2 })], { now: 1200 });
+    assert.equal(f.unit(0).performingAction, null);
+    assert.equal(f.unit(0).spriteClockState, 'idle');
+    f.apply([row({ ...data, generation: 2 })], { now: 1300 });
+    assert.equal(f.unit(0).performingAction, 'build');
+    assert.equal(f.unit(0).spriteClockState, 'build');
+  } finally { f.dispose(); }
+});
+
 test('concurrent fixture construction preserves the caller fetch binding', async () => {
   const originalFetch = globalThis.fetch;
   const fixtures = await Promise.all([createUnitPresentationClientFixture(), createUnitPresentationClientFixture()]);
@@ -18,7 +114,7 @@ for (const team of [0, 1]) for (const selected of [false, true]) {
   test(`seat ${team}, selected ${selected}: actual snapshot/frame path advances work and resumes after task interruption`, async () => {
     const f = await createUnitPresentationClientFixture({ localTeam: team });
     try {
-      const data = { team, task: 'gathering', cargoType: 'wood', cargo: 1, audioExecution: 'wood',
+      const data = { team, task: 'gathering', cargoType: 'wood', cargo: 1, audioExecution: 'wood', performingAction: 'gather-wood',
         workHeading: 3 * Math.PI / 4 };
       f.apply([row(data)], { initial: true });
       if (selected) f.context.selected.add(0);
@@ -77,7 +173,7 @@ test('actual interpolation drives walk independently of task and preserves its c
 test('generation reuse clears selection and clocks; legacy snapshot clears fishing identity and heading', async () => {
   const f = await createUnitPresentationClientFixture();
   try {
-    const data = { task: 'gathering', cargoType: 'food', cargo: 1, audioExecution: 'food',
+    const data = { task: 'gathering', cargoType: 'food', cargo: 1, audioExecution: 'food', performingAction: 'gather-food',
       workResourceVariant: 'shore-fish', workHeading: 3 * Math.PI / 4 };
     f.apply([row(data)], { initial: true });
     f.context.selected.add(0); f.context.controlGroups[0].add(0);
@@ -93,14 +189,14 @@ test('generation reuse clears selection and clocks; legacy snapshot clears fishi
     f.apply([row({ ...data, generation: 2 })], { now: 1800 });
     f.apply([row({ ...data, generation: 2 }).slice(0, 14)], { now: 1850 });
     assert.equal(unit.workResourceVariant, null); assert.equal(unit.workHeading, null);
-    f.frame(1900, 0.05); assert.equal(unit.spriteClockState, 'gather');
+    f.frame(1900, 0.05); assert.equal(unit.spriteClockState, 'idle');
   } finally { f.dispose(); }
 });
 
 test('sprite LOD scheduling advances actual work buffers and cosmetics leave snapshot values unchanged', async () => {
   const f = await createUnitPresentationClientFixture();
   try {
-    const data = { task: 'gathering', cargoType: 'wood', cargo: 1, audioExecution: 'wood',
+    const data = { task: 'gathering', cargoType: 'wood', cargo: 1, audioExecution: 'wood', performingAction: 'gather-wood',
       workHeading: 3 * Math.PI / 4 };
     const input = Object.freeze(row(data)), before = JSON.stringify(input);
     f.apply([input], { initial: true });

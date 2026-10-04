@@ -1,6 +1,10 @@
 # Worker performing-action contract proposal
 
-**Proposed, not implemented or bound.** Animation integration owner requests the
+**Historical proposal, superseded by the [agreed v1 contract](worker-performing-action-contract.md)
+and [consumer binding](qa-worker-performing-action-consumer-2026-10-04.md).** The
+dated probe below describes its pre-producer source, not current behavior.
+
+At the proposal checkpoint, animation integration owner requested the
 parent to align this exact producer/consumer boundary with the assigned economy/
 content gameplay producer. The producer owns the actual-progress receipt in shared
 snapshot/work loops and will supply the exact schema, enum, tick/version and
@@ -44,7 +48,8 @@ After a repair consumes the last available wood, three subsequent fixture ticks
 retain `repairing` intent with zero progress and `dirty=false`. A receipt clear
 must request a broadcast to avoid leaving the previous work frame active.
 
-Reproduce with `node scripts/worker-performing-action-probe.mjs REPORT.json`.
+Reproduce at the recorded pre-producer source with
+`node scripts/worker-performing-action-probe.mjs REPORT.json`.
 This dated diagnostic is not a permanent CI assertion that incorrect presentation
 must remain. Normal syntax checks include it; future regression tests must assert
 the corrected producer/consumer behavior instead.

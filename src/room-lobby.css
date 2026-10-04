@@ -31,3 +31,9 @@
 #room-lobby .room-lobby-chat label { flex: 1; min-width: 0; margin: 0; }
 #lobby-chat-text { width: 100%; box-sizing: border-box; margin-top: 4px; padding: 8px; }
 #lobby-chat-status { color: #b5c2ad; font-size: 12px; }
+.match-mode-summary, .match-mode-controls details, .match-mode-controls [role="status"] { font-size: 12px; color: var(--muted, #b5c2ad); }
+.match-mode-controls details p { margin: 8px 0; }
+.match-mode-controls [role="status"]:empty { display: none; }
+.match-mode-controls label { display: block; margin-top: 12px; }
+.match-mode-controls select { display: block; box-sizing: border-box; width: 100%; min-height: 36px; margin-top: 4px; padding: 8px; border: 1px solid var(--line, #65715d); border-radius: 4px; background: var(--panel-soft, #19231c); color: var(--ink, #e5eadf); font: inherit; }
+.match-mode-controls select:focus-visible { outline: 2px solid var(--lime, #d5ef78); outline-offset: 2px; }

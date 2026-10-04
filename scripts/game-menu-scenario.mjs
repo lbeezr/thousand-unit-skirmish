@@ -98,7 +98,7 @@ async function peek(room, token) {
 async function startSupervisor() {
   child = spawn(process.execPath, ['room-supervisor.mjs'], { cwd: root,
     env: { ...process.env, PORT: String(port), RTS_HOST: '127.0.0.1', RTS_ROOM_DATA_DIRECTORY: data,
-      RTS_CUSTOM_MAP_DIRECTORY: path.join(data, 'default-maps'), RTS_MAX_ROOMS: '5',
+      RTS_CUSTOM_MAP_DIRECTORY: path.join(data, 'default-maps'), RTS_MAX_ROOMS: '6',
       RTS_ACCESS_USER: 'menu-test', RTS_ACCESS_PASSWORD: 'local-test-password-for-entry' }, stdio: ['ignore', 'pipe', 'pipe'] });
   child.stdout.on('data', chunk => { output += chunk; }); child.stderr.on('data', chunk => { output += chunk; });
   await until(async () => { try { return (await api('/ready')).ok; } catch { return false; } }, 'ready');
@@ -233,14 +233,35 @@ try {
   await savedPractice(saved => saved.sequence > beforeReset.sequence && saved.state.scenarioClockStarted && saved.state.matchElapsedSeconds > 0);
   await until(async () => { try { return JSON.parse(await readFile(path.join(data, 'default-match-state.json'))).matchId === oldMatch; } catch { return false; } }, 'old checkpoint retained');
   assert.equal((await (await api('/health')).json()).matchId, oldMatch);
+  const skirmishMenu = await menu();
+  const practiceMode = skirmishMenu.dom.window.document.querySelector('#practice-match-mode');
+  assert.ok([...practiceMode.options].some(option => option.value === 'skirmish@1'), 'real root menu offers the server-supported Practice mode');
+  practiceMode.value = 'skirmish@1'; practiceMode.dispatchEvent(new skirmishMenu.dom.window.Event('change'));
+  skirmishMenu.click('menu-practice');
+  await until(() => skirmishMenu.navigations.length, 'normal-menu Skirmish Practice creation');
+  const skirmishId = skirmishMenu.navigations[0].searchParams.get('room');
+  const skirmishPractice = await connect(skirmishId);
+  assert.equal(skirmishPractice.welcome.matchModeId, 'skirmish');
+  assert.equal(skirmishPractice.welcome.matchModeVersion, 1);
+  assert.equal(skirmishPractice.welcome.state.practice, true); assert.equal(skirmishPractice.welcome.state.connected, 1);
+  assert.equal(skirmishPractice.welcome.map.triggers.some(trigger => trigger.victory), false);
+  assert.equal(Object.hasOwn(skirmishPractice.welcome.map, 'timedVictory'), false);
+  const skirmishIdentity = skirmishPractice.welcome.player, skirmishMatch = skirmishPractice.welcome.matchId;
   const imports = await checkClientImports(base, { authorization, entrypoints: ['/src/game-entry.mjs'] });
   assert.ok(imports.some(entry => entry.path === '/src/main.js'), 'lazy game client is packaged and admitted');
+  const modeImports = await checkClientImports(base, { authorization, entrypoints: ['/src/match-mode-controls.mjs'] });
+  assert.ok(modeImports.some(entry => entry.path === '/src/match-modes.mjs'), 'prepared mode UI and registry are served through the existing authenticated worker');
   const practiceIdentity = practice.welcome.player, practiceMatch = practice.welcome.matchId;
   const storedIndex = JSON.parse(await readFile(path.join(data, 'rooms.json')));
   assert.deepEqual(storedIndex.rooms.find(room => room.id === practiceId).launchOptions, practiceOptions);
   for (const client of clients) client.socket.destroy();
   await stopChild(child); await startSupervisor();
   const recoveredPractice = await connect(practiceId, practiceIdentity.sessionToken, true);
+  const recoveredSkirmish = await connect(skirmishId, skirmishIdentity.sessionToken, true);
+  assert.equal(recoveredSkirmish.welcome.player.id, skirmishIdentity.id);
+  assert.equal(recoveredSkirmish.welcome.matchId, skirmishMatch);
+  assert.equal(recoveredSkirmish.welcome.matchModeId, 'skirmish');
+  assert.equal(recoveredSkirmish.welcome.state.practice, true);
   assert.equal(recoveredPractice.welcome.player.id, practiceIdentity.id);
   assert.equal(recoveredPractice.welcome.player.resumed, true);
   assert.equal(recoveredPractice.welcome.matchId, practiceMatch);
@@ -255,8 +276,8 @@ try {
   console.log(JSON.stringify({ passed: ['authenticated menu without automatic default admission', 'read-only active/stale session inspection',
     'interrupted authentication retains saved Resume without admission', 'strict Resume cannot allocate a new seat', 'departed menu ignores completed real Practice creation', 'fresh PvP lobby and both-seat launch', 'explicit saved-room Resume',
     'fresh AI and Map Studio rooms', 'one-player practice across all current lab maps and rematch',
-    'practice checkpoint/seat recovery and real Worker food deposit', 'actionable seeded AI map and army protection', 'old default identity/checkpoint retained', 'entry and lazy client import delivery'],
-    modules: imports.length, practiceLabMaps: labMaps.map(map => map.id) }));
+    'practice checkpoint/seat recovery and real Worker food deposit', 'normal-menu Skirmish Practice selection and same-mode recovery', 'actionable seeded AI map and army protection', 'old default identity/checkpoint retained', 'entry and lazy client import delivery'],
+    modules: imports.length, modeUiModules: modeImports.length, practiceLabMaps: labMaps.map(map => map.id) }));
 } finally {
   for (const client of clients) client.socket.destroy();
   await stopChild(child); await rm(data, { recursive: true, force: true });
