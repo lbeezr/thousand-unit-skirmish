@@ -357,16 +357,22 @@ PR8 waits for the asset/renderer owner's agreed lifetime interface.
 | Slice | Canonical boundary / current consumers | Retirement owner and criteria |
 | --- | --- | --- |
 | Map audio reference, [PR298](https://github.com/lbeezr/thousand-unit-skirmish/pull/298) | `src/world/map-audio-reference.mjs` contains the byte-identical validator and has no imports. The named export in `src/audio-event-profile.mjs` preserves binding identity; `server.mjs`, `src/main.js`, `src/audio-shipped-loader.mjs` and validator fixtures keep their old paths. Playback choice/cooldown code is unchanged. Canonical and legacy paths are exact HTTP entries. Initial extraction graph at `4fcf4f42`: 176 runtime modules, 320 edges, 119 browser / 76 server / 32 shared, zero cycles. Subsequent PR295 adds an independent renderer leaf; the PR records refreshed counts. | Audio/world boundary owner retains the compatibility export. Migrate known validator consumers through their owners, check tracked and external/release consumers, then prove canonical source and an identified served/packed release before removing only the named forwarding export. The playback module itself remains. No removal is scheduled in this slice. |
+| Pure action/base rules, candidate 3 | `src/rules/gameplay-action-rules.mjs` preserves all implementation bytes from `908d80f6`; `src/rules/base-lifecycle.mjs` changes only the relative import of the same definitions module. The old paths explicitly forward the same three/two named bindings. Production/research still consume the action shim; `server.mjs` still consumes the lifecycle shim. Both paths remain rules responsibilities. Action rules retain exact public canonical/legacy paths; lifecycle remains HTTP-private at both paths. | Rules/extraction owner retains both shims. Action consumers are `production-actions` and `research-actions`; lifecycle consumers are `server.mjs`, Worker action test/scenario/probe, Skiff contracts and wall-construction fixtures. The two matching contract tests now consume canonical exports and verify old-path binding identity. Later caller migration inventories tracked runtime/tools/tests/docs and supported external consumers through their owners. Remove each shim only after that inventory and owner confirmation, canonical implementation coverage, source/served/packed checks and an identified containing release succeed without it. Keep lifecycle HTTP denial; retain action-path reload safety under existing `no-store` behavior. No shim retirement occurs in this slice. |
 
-The next rules relocation first needs CI owner `01a10378` to coordinate the
+The parent authorized preparing candidate 3's source/tests/release in isolation
+while CI owner `01a10378` finishes the shared-file overlap. Its atomic PR must
+include the reviewed coverage retarget before integration; a prepared branch
+does not close that prerequisite. Coordinate the
 one-line registration change in `scripts/ci.mjs`: replace
 `--test-coverage-include=src/gameplay-action-rules.mjs` with
 `--test-coverage-include=src/rules/gameplay-action-rules.mjs`. Keep the test command
 and all three 100% line/branch/function floors unchanged; prove the canonical
 implementation is covered. A forwarding entry must not replace implementation coverage.
 Retarget the matching canonical-path expectation in `scripts/ci-lanes.test.mjs`
-without changing its coverage-floor or lane-partition assertions. Both shared CI
-files remain outside this architecture worker's write scope.
+without changing its coverage-floor or lane-partition assertions. Apply only the
+CI owner's handed-off delta in the same reviewed PR, retaining that owner's
+other registry and lane changes. Direct canonical coverage can run during source
+preparation; the registered check must cover that same implementation at merge.
 
 For each candidate, review a rename-aware diff and export list. A shim-only path
 move must keep the canonical implementation byte-identical apart from import
@@ -397,8 +403,8 @@ the testing owner's current strategy; this plan does not change that registry.
 
 The reviewed plan is integrated, with PR1's guard/check milestone recorded in
 PR294; PR298 records the first canonical metadata boundary with stable host
-imports. The next pure-rule relocation waits for canonical coverage registration
-to be coordinated. Formation and authoring moves remain with their existing
+imports. Candidate 3's pure-rule source preparation proceeds while canonical
+coverage registration is coordinated for its atomic PR. Formation and authoring moves remain with their existing
 owners, and caller migration stays a coordinated follow-up.
 
 Step 5's HUD owner moves the three pure text/projection implementations
@@ -651,8 +657,9 @@ The earlier pre-palisade revision retains its existing guarded migration.
 
 ### Base lifecycle commands
 
-`src/base-lifecycle.mjs` defines bounded proportional refunds and paid repair
-steps from validated lifecycle policy. Cancellation commands verify seat ownership
+`src/rules/base-lifecycle.mjs` defines bounded proportional refunds and paid repair
+steps from validated lifecycle policy; `src/base-lifecycle.mjs` retains its two
+named compatibility exports. Cancellation commands verify seat ownership
 and unfinished state before removing a foundation, queue entry or active research.
 Queue cancellation resets a replacement head's timer and releases precisely the
 removed reservation. Legacy Town Center Worker queues retain their compatibility
