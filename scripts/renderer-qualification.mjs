@@ -9,6 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createFortifiedBrowser } from './fortified-browser-fixture.mjs';
 import { checkRendererCapability } from './renderer-capability.mjs';
+import { captureBuildingOrientation } from './renderer-qualification-building-orientation.mjs';
 import { stopChild } from './temporary-resources.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -155,9 +156,9 @@ async function reservePort() {
 
 // Ordinary feature adapters share the qualified pack/server/browser ownership.
 // The default movement contract below remains independently available.
-export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCase } = {}) {
+export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCase, buildingPlacement = false } = {}) {
   await mkdir(evidenceDirectory, { recursive: true });
-  const report = { schemaVersion: 1, scope: 'local-packed-game-movement', status: 'failed', sandbox: 'enabled',
+  const report = { schemaVersion: 1, scope: buildingPlacement ? 'local-packed-game-movement-and-building-placement' : 'local-packed-game-movement', status: 'failed', sandbox: 'enabled',
     uid: process.getuid?.() ?? null, source: null, release: null, runtimeDependencies: [], frames: [], assets: [],
     browserEvents: [], droppedBrowserEvents: 0, unexpectedBrowserEvent: false, issues: [],
     cleanup: { maxAttempts: 3, attempts: 0, errors: [] } };
@@ -170,6 +171,7 @@ export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCa
     else report.droppedBrowserEvents++;
   };
   try {
+    assert.ok(!captureCase || !buildingPlacement, 'choose one feature capture path');
     if (captureCase) assert.ok(typeof captureCase.id === 'string' && /^[a-z][a-z-]{0,63}$/.test(captureCase.id) && typeof captureCase.run === 'function',
       'capture adapter identity and executable are required');
     if (captureCase) report.scope = `ordinary-feature-${captureCase.id}`;
@@ -302,7 +304,12 @@ export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCa
       validateMotion(start, report.frames); report.start = start; report.command = command;
       report.status = 'passed';
     }
+    if (buildingPlacement) {
+      stage = 'building-placement';
+      report.buildingPlacement = await captureBuildingOrientation(page, evidenceDirectory, { onStage: value => { stage = value; } });
+    }
   } catch (error) {
+    report.status = 'failed';
     report.issues.push({ stage, code: error instanceof CaptureCaseTimeoutError ? 'scenario-timeout'
       : error instanceof assert.AssertionError ? 'contract-failed' : 'execution-failed',
       systemCode: ['ENOENT', 'EACCES', 'EPERM', 'ENOSPC', 'ECONNREFUSED', 'EADDRINUSE', 'ETIMEDOUT'].includes(error.code) ? error.code : null,
@@ -351,11 +358,11 @@ export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCa
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  if (process.argv.length !== 4) { process.stderr.write('Usage: node scripts/renderer-qualification.mjs --preflight|PACK_JSON EVIDENCE_DIRECTORY\n'); process.exitCode = 2; }
+  if (process.argv.length !== 4 && !(process.argv.length === 5 && process.argv[4] === '--buildings' && process.argv[2] !== '--preflight')) { process.stderr.write('Usage: node scripts/renderer-qualification.mjs --preflight|PACK_JSON EVIDENCE_DIRECTORY [--buildings]\n'); process.exitCode = 2; }
   else if (process.argv[2] === '--preflight') {
     const report = await qualifyRendererCapability(); await mkdir(process.argv[3], { recursive: true });
     await writeFile(path.join(process.argv[3], 'preflight.json'), `${JSON.stringify(report, null, 2)}\n`);
     console.log(JSON.stringify(report)); process.exitCode = report.status === 'ready' ? 0 : 1;
   }
-  else { const report = await qualifyPackedGame(process.argv[2], process.argv[3]); console.log(JSON.stringify(report)); process.exitCode = report.status === 'passed' ? 0 : 1; }
+  else { const report = await qualifyPackedGame(process.argv[2], process.argv[3], { buildingPlacement: process.argv[4] === '--buildings' }); console.log(JSON.stringify(report)); process.exitCode = report.status === 'passed' ? 0 : 1; }
 }

@@ -85,6 +85,18 @@ testing owner supplies supported renderer/staging capability under the
 open. Mac testing is stopped and is not a dependency. Deployment metadata,
 source hashes and prior clean-release receipts do not close game appearance.
 
+## Manual building orientation follow-up
+
+The [orientation workstream](building-orientation.md) adds default-integrated manual
+quarter turns and a translucent actual Complete-image placement ghost for the
+eight approved square families. Original images/anchors, normal depth shader and
+paid occupancy/costs remain preserved. The orientation owner retains clean release,
+identified staging and actual preview/paid-building appearance acceptance; qualified
+cloud capture and layering fixes are independent supporting scopes. The retained
+preflight is blocked, so CPU/texture/native recovery results claim zero rendered
+frames. Exact-head PR checks and the qualified Actions artifact record subsequent
+source and rendered evidence separately.
+
 ## Buildings, wildlife, fishing and HUD
 
 Human foot-unit coverage is retained in the [owned workstream](human-foot-unit-coverage.md).

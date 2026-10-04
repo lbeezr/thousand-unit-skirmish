@@ -28,6 +28,7 @@ import { unfinishedRefund, buildingRepairStep } from './src/base-lifecycle.mjs';
 import { productionAction } from './src/production-actions.mjs';
 import { teamPopulation } from './src/population.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS, TECHNOLOGY_DEFINITIONS, GAMEPLAY_RULESET_REVISION, DEFAULT_FACTION_ID, UNIT_WIRE_IDS, missingGameplayPrerequisites } from './src/gameplay-definitions.mjs';
+import { validBuildingOrientation, orderedBuildingExitCells, legalBuildingExitCells, nearbyBuildingExitCell } from './src/building-orientation.mjs';
 import { validateMapAudioReference } from './src/audio-event-profile.mjs';
 import { createServer } from 'node:http';
 import { createHash, randomBytes } from 'node:crypto';
@@ -2746,7 +2747,7 @@ function roomPayload(viewTeam = null, includeWaypointCounts = true) {
       attackers: buildingAttackers.get(center.id) || 0,
     })),
     buildings: viewBuildings.map((building) => ({
-      id: building.id, team: building.team, type: building.type,
+      id: building.id, team: building.team, type: building.type, orientation: building.orientation ?? 0,
       ...(building.type === 'farm' ? { harvestStock: building.harvestStock,
         harvestCapacity: BUILDING_DEFINITIONS.farm.harvest.stock } : {}),
       ...(building.type === 'palisade-gate' ? { gateOpen: building.gateOpen } : {}),
@@ -3107,7 +3108,8 @@ function validateMatchCheckpoint(snapshot) {
     const rules = buildingRulesFor(building?.type);
     assertSnapshot(building && integerIn(building.id, 1, Number.MAX_SAFE_INTEGER)
       && !buildingIds.has(building.id) && integerIn(building.team, 0, 1)
-      && rules && validGateState(building) && finite(building.x) && finite(building.z)
+      && rules && validGateState(building) && validBuildingOrientation(building.type, building.orientation, BUILDING_DEFINITIONS)
+      && finite(building.x) && finite(building.z)
       && integerIn(building.rallyCell, -1, cellCount - 1)
       && Array.isArray(building.footprint) && building.footprint.length > 0
       && building.footprint.every((cell) => integerIn(cell, 0, cellCount - 1))
@@ -5870,6 +5872,9 @@ function buildBuilding(player, command) {
     resumeBuildingConstruction(player, command);
     return;
   }
+  if (!validBuildingOrientation(command.buildingType, command.orientation, BUILDING_DEFINITIONS)) {
+    rejectBuild(player, 'INVALID BUILDING ORIENTATION', command); return;
+  }
   if (command.buildingType === 'palisade-wall') {
     const x = Number(command.x), z = Number(command.z);
     if (!Number.isFinite(x) || !Number.isFinite(z) || Math.abs(x) >= MAP_HALF_X || Math.abs(z) >= MAP_HALF_Z) {
@@ -5939,7 +5944,7 @@ function buildBuilding(player, command) {
   const center = cellToWorld(centerCell);
   const id = nextBuildingId;
   const building = {
-    id, team: player.team, type: command.buildingType, x: center.x, z: center.z,
+    id, team: player.team, type: command.buildingType, x: center.x, z: center.z, orientation: command.orientation ?? 0,
     footprint, hp: BUILDING_DEFINITIONS[command.buildingType].maxHp, progress: 0, complete: false, queue: 0, productionQueue: [], trainingRemaining: 0,
     productionBlocked: false, rallyCell: -1,
     ...(command.buildingType === 'farm' ? { harvestStock: 0 } : {}),
@@ -6081,7 +6086,9 @@ function findProductionSpawnCell(building) {
       { reservedCells: waterUnitRuntime.reservations(units) }).accessAt(worldToCell(building.x, building.z));
     return berth.valid ? berth.spawnCell : -1;
   }
-  const accessCells = buildingAccessCells(building.footprint);
+  const legalExits = legalBuildingExitCells(building.footprint, buildingAccessCells(building.footprint), MAP_WIDTH,
+    (inside, outside) => canTraverseElevation(elevationLevelByCell, inside, outside));
+  const accessCells = orderedBuildingExitCells(building, legalExits, MAP_WIDTH, MAP_HEIGHT);
   if (accessCells.length === 0) return -1;
   const teamSpawn = spawnByTeam[building.team];
   const componentId = teamSpawn
@@ -6090,11 +6097,13 @@ function findProductionSpawnCell(building) {
   const occupied = new Set();
   for (const unit of units) if (unit.hp > 0) occupied.add(worldToCell(unit.x, unit.z));
   for (const node of reservedResourceNodes()) occupied.add(worldToCell(node.x, node.z));
+  // Prefer a free legal threshold before searching farther around the building.
   for (const cell of accessCells) {
-    const spawnCell = findAvailableCellNear(cell, componentId, occupied, 4);
-    if (spawnCell >= 0) return spawnCell;
+    if (walkableComponents[cell] === componentId && !occupied.has(cell)) return cell;
   }
-  return -1;
+  return nearbyBuildingExitCell(accessCells.filter(cell => walkableComponents[cell] === componentId), occupied, MAP_WIDTH,
+    (from, to) => to >= 0 && to < CELL_COUNT && walkableComponents[to] === componentId
+      && canTraverseUnitStep(from, to, MAP_WIDTH, elevationLevelByCell, isWalkable));
 }
 
 function trainArcher(player, command) {

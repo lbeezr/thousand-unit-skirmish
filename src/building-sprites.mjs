@@ -8,6 +8,9 @@ const roots = {
 };
 
 export function buildingSpriteUrl(building) {
+  // These legacy single-view images cannot represent a rotated building.
+  // Preserve the procedural construction/damage fallback at its actual yaw.
+  if (building.orientation) return null;
   const root = roots[building.type];
   if (!root) return null;
   if (building.type === 'town-center') return `${root}/town-center-view-01.webp`;

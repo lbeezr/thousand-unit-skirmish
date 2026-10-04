@@ -1,0 +1,832 @@
+{
+  "schemaVersion": 1,
+  "scope": "local-packed-game-movement-and-building-placement",
+  "status": "passed",
+  "sandbox": "enabled",
+  "uid": 1001,
+  "source": {
+    "revision": "2a4d070f7d85c5da5563bb10422c8185641a0729",
+    "dirty": false
+  },
+  "release": {
+    "sourceRevision": "2a4d070f7d85c5da5563bb10422c8185641a0729",
+    "digest": "sha256:ae5a497edf612fbe23771928420abcab1098fd7cdff771823fbf37e93705149c",
+    "files": 1213
+  },
+  "runtimeDependencies": [
+    {
+      "name": "three",
+      "version": "0.180.0",
+      "lockSha256": "bb3e172250ea0d91981e270371e9ac293f7b4f378370ae05e86b74ab81fc3499",
+      "files": [
+        {
+          "path": "vendor/three.module.js",
+          "sha256": "c8211c69345d2e9949dc7a8ac969380497aa0600a5a8ac6a459c8cd02dd9cb8a"
+        },
+        {
+          "path": "vendor/three.core.js",
+          "sha256": "eb077d2417f61d3e6d9264c317cabc4ea35769ed6b0ab533067292a550784c20"
+        }
+      ]
+    }
+  ],
+  "frames": [
+    {
+      "number": 45,
+      "time": 19664.5,
+      "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "contextLost": false,
+      "glError": 0,
+      "pixels": [
+        133,
+        145,
+        117,
+        255,
+        136,
+        151,
+        61,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        136,
+        151,
+        61,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        114,
+        127,
+        47,
+        255,
+        108,
+        123,
+        46,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        133,
+        145,
+        117,
+        255,
+        136,
+        151,
+        61,
+        255,
+        115,
+        128,
+        49,
+        255,
+        104,
+        69,
+        47,
+        255,
+        55,
+        35,
+        25,
+        255,
+        115,
+        127,
+        48,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        136,
+        151,
+        61,
+        255,
+        226,
+        194,
+        164,
+        255,
+        115,
+        127,
+        48,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255
+      ],
+      "canvasWidth": 1280,
+      "canvasHeight": 720,
+      "worker": {
+        "id": 0,
+        "team": 0,
+        "x": -19.34,
+        "z": -0.34,
+        "task": "moving"
+      },
+      "canvas": "canvas-1.png",
+      "canvasSha256": "d7ed4bee8a859c5f6825260d87522f03aec3acf6b3a02be6099361db048d3a42",
+      "png": "movement-1.png",
+      "pngSha256": "3cc3d7787991f050e95dc6273a6c63c83db1eb9e1ea88889aaa309878c200f34",
+      "readbackSha256": "87a368c4c9884b9232ac9eaf95fdeb0e2bc01733afd7891b287c86c1d37a5908"
+    },
+    {
+      "number": 51,
+      "time": 22131,
+      "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "contextLost": false,
+      "glError": 0,
+      "pixels": [
+        133,
+        145,
+        117,
+        255,
+        136,
+        151,
+        61,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        136,
+        151,
+        61,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        114,
+        127,
+        47,
+        255,
+        108,
+        123,
+        46,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        133,
+        145,
+        117,
+        255,
+        136,
+        151,
+        61,
+        255,
+        115,
+        128,
+        49,
+        255,
+        104,
+        69,
+        47,
+        255,
+        55,
+        35,
+        25,
+        255,
+        115,
+        127,
+        48,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        136,
+        151,
+        61,
+        255,
+        226,
+        194,
+        164,
+        255,
+        115,
+        127,
+        48,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        8,
+        14,
+        12,
+        255,
+        8,
+        14,
+        12,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255,
+        133,
+        145,
+        117,
+        255
+      ],
+      "canvasWidth": 1280,
+      "canvasHeight": 720,
+      "worker": {
+        "id": 0,
+        "team": 0,
+        "x": -16.58,
+        "z": 2.42,
+        "task": "moving"
+      },
+      "canvas": "canvas-2.png",
+      "canvasSha256": "6a0dafb2600d55e9214f3a76c937b720cd3985b6c779c4a88fb2f125e3e51c1c",
+      "png": "movement-2.png",
+      "pngSha256": "21e640a724a37a3784d73024dac6f2557b4dd67d0aa68dddae6aef328e354838",
+      "readbackSha256": "87a368c4c9884b9232ac9eaf95fdeb0e2bc01733afd7891b287c86c1d37a5908"
+    }
+  ],
+  "assets": [
+    {
+      "path": "index.html",
+      "sha256": "cce3da26fc74b2736faea7930d94ff78c439b94967284386eb1c19c59eb4f89d"
+    },
+    {
+      "path": "src/main.js",
+      "sha256": "6c661f9ea4a2d45d039569c7a32df583ac87bfc9af5389b7742aa800c04888c2"
+    },
+    {
+      "path": "assets/environment/frontier-oak-depletion-atlas-v1/oak-depletion-mip-0.webp",
+      "sha256": "0d0614752134b52633a85b778a95fc220e7894b612c8eb4ecf8664cabf47e6b0",
+      "dimensionsPx": {
+        "width": 3936,
+        "height": 1376
+      }
+    },
+    {
+      "path": "assets/environment/frontier-oak-depletion-atlas-v1/oak-depletion-mip-1.webp",
+      "sha256": "2abac6807ebf4cf23e0225c395d17bf5a03790fe690613ff10d58544f1efc4a5",
+      "dimensionsPx": {
+        "width": 1968,
+        "height": 688
+      }
+    },
+    {
+      "path": "assets/environment/frontier-oak-depletion-atlas-v1/oak-depletion-mip-2.webp",
+      "sha256": "f871c1877a25cba33bce584a922a90c8e029cf9c656705f1d12ffeb994aec12c",
+      "dimensionsPx": {
+        "width": 984,
+        "height": 344
+      }
+    },
+    {
+      "path": "assets/environment/frontier-oak-depletion-atlas-v1/oak-depletion-mip-3.webp",
+      "sha256": "0089b287b00aa815a4e6edc33a010de331f17c4cfb66e0b5e846084a80013ee0",
+      "dimensionsPx": {
+        "width": 492,
+        "height": 172
+      }
+    },
+    {
+      "path": "assets/environment/frontier-oak-depletion-atlas-v1/oak-depletion-mip-4.webp",
+      "sha256": "9004dea3590247ecd5fe24a8748e8a62b98e30e9211d2dd151889a1a20ca8b21",
+      "dimensionsPx": {
+        "width": 246,
+        "height": 86
+      }
+    },
+    {
+      "path": "assets/environment/frontier-oak-depletion-atlas-v1/oak-depletion-mip-5.webp",
+      "sha256": "5bb62b5ef483fad8853d60e4dd796e3d4368f9372b548733474d1d1a14c33409",
+      "dimensionsPx": {
+        "width": 123,
+        "height": 43
+      }
+    },
+    {
+      "path": "assets/environment/frontier-interactive-v1/oak-full.webp",
+      "sha256": "dca6d091bc585e501eb19f07dc969757f0bfddd629a0bf0a9adee0bcf621a35c",
+      "dimensionsPx": {
+        "width": 1226,
+        "height": 1283
+      }
+    },
+    {
+      "path": "assets/environment/frontier-interactive-v1/berries-full.webp",
+      "sha256": "6eb5d428b2fcb4ef4455dc17179f47125dd71ced0d8327885fa2fb8be54b9aae",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "path": "assets/environment/frontier-interactive-v1/berries-worked.webp",
+      "sha256": "c59dfd7bc613aaac578afdd92c324e0599d99fb6c6bbe76f80ee8f2029e6431a",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "path": "assets/environment/frontier-interactive-v1/berries-low.webp",
+      "sha256": "3cdb94a69f034462dfa78b33beb7090f29d4e1369f37f9d5d8cb4c518bba7a5c",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "path": "assets/environment/frontier-interactive-v1/berries-depleted.webp",
+      "sha256": "7c73dc51c13ceb0e4d9d30a799b69127e57dd4e8a1145e4f11ab9aab449e2865",
+      "dimensionsPx": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "path": "assets/environment/frontier-interactive-v1/construction-earthwork.webp",
+      "sha256": "8ee88b1f2fac1d30b93234fced31fd13d12e1a319d72d5340e14db570c14d08e",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "path": "assets/environment/frontier-interactive-v1/construction-foundation.webp",
+      "sha256": "08bbc9641af8289a50f21702c736150e82a4f23479bfea40006d7581c08f0f66",
+      "dimensionsPx": {
+        "width": 1254,
+        "height": 1254
+      }
+    }
+  ],
+  "browserEvents": [
+    {
+      "kind": "http-error",
+      "status": 404,
+      "path": "/favicon.ico",
+      "expected": true
+    },
+    {
+      "kind": "http-error",
+      "status": 404,
+      "path": "/favicon.ico",
+      "expected": true
+    }
+  ],
+  "droppedBrowserEvents": 0,
+  "unexpectedBrowserEvent": false,
+  "issues": [],
+  "cleanup": {
+    "maxAttempts": 3,
+    "attempts": 1,
+    "errors": []
+  },
+  "server": {
+    "entry": "room-supervisor.mjs",
+    "map": "open-field",
+    "logBytes": 195,
+    "listening": true
+  },
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Chrome/154.0.8037.57",
+    "revision": "@73c14f6228d7cd537c855007e8f88678969cc0eb",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+    "jsVersion": "15.4.80.11"
+  },
+  "start": {
+    "worker": {
+      "id": 0,
+      "team": 0,
+      "x": -20.5,
+      "z": -1.5,
+      "task": "idle"
+    },
+    "number": 39,
+    "time": 17634
+  },
+  "command": {
+    "type": "move",
+    "ids": [
+      0
+    ],
+    "x": -12.5,
+    "z": 6.5
+  },
+  "buildingPlacement": {
+    "scope": "ordinary-renderer-final-art-ghost-rotate-paid-placement",
+    "mapId": "rendered-building-orientation",
+    "buildingArtOverride": false,
+    "selectionAndBuild": "normal HUD controls",
+    "rotationAndPlacement": "native CDP input",
+    "ghost": {
+      "active": true,
+      "pending": false,
+      "type": "house",
+      "orientation": 0,
+      "visible": true,
+      "position": [
+        -0.5,
+        0,
+        -0.5
+      ],
+      "art": {
+        "visible": true,
+        "key": "complete:1:#5aa7d7",
+        "scale": [
+          8,
+          8,
+          1
+        ],
+        "center": [
+          0.5,
+          0.3680149096127905
+        ],
+        "position": [
+          0,
+          0.035,
+          0
+        ]
+      },
+      "valid": true,
+      "buildings": [
+        {
+          "id": 1000000000,
+          "type": "town-center",
+          "orientation": 0,
+          "x": -23,
+          "z": 0,
+          "complete": true,
+          "art": {
+            "visible": true,
+            "key": "complete:1:#5aa7d7",
+            "scale": [
+              8,
+              8,
+              1
+            ],
+            "center": [
+              0.5,
+              0.3680149096127905
+            ],
+            "position": [
+              0,
+              0.035,
+              0
+            ]
+          }
+        }
+      ]
+    },
+    "rotated": {
+      "active": true,
+      "pending": false,
+      "type": "house",
+      "orientation": 1,
+      "visible": true,
+      "position": [
+        -0.5,
+        0,
+        -0.5
+      ],
+      "art": {
+        "visible": true,
+        "key": "complete:7:#5aa7d7",
+        "scale": [
+          8,
+          8,
+          1
+        ],
+        "center": [
+          0.5,
+          0.3680149096127905
+        ],
+        "position": [
+          0,
+          0.035,
+          0
+        ]
+      },
+      "valid": true,
+      "buildings": [
+        {
+          "id": 1000000000,
+          "type": "town-center",
+          "orientation": 0,
+          "x": -23,
+          "z": 0,
+          "complete": true,
+          "art": {
+            "visible": true,
+            "key": "complete:1:#5aa7d7",
+            "scale": [
+              8,
+              8,
+              1
+            ],
+            "center": [
+              0.5,
+              0.3680149096127905
+            ],
+            "position": [
+              0,
+              0.035,
+              0
+            ]
+          }
+        }
+      ]
+    },
+    "placed": {
+      "id": 1,
+      "type": "house",
+      "orientation": 1,
+      "x": -0.5,
+      "z": -0.5,
+      "complete": true,
+      "art": {
+        "visible": true,
+        "key": "complete:7:#5aa7d7",
+        "scale": [
+          8,
+          8,
+          1
+        ],
+        "center": [
+          0.5,
+          0.3680149096127905
+        ],
+        "position": [
+          0,
+          0.035,
+          0
+        ]
+      }
+    },
+    "captures": [
+      {
+        "name": "building-ghost-default",
+        "number": 83,
+        "time": 32630.6,
+        "pngSha256": "003e301dbba348fa664fea124adf3013b01e06575d80ed846f428e093af9472c",
+        "canvasSha256": "128a5034fc84a2244bf275e26aa8470a14d840ce9b316df441a33eb024322709"
+      },
+      {
+        "name": "building-ghost-rotated",
+        "number": 95,
+        "time": 35997.1,
+        "pngSha256": "d61135f14f4228cb1ca5a35c7ea793e068c343a7f4752c157b39c325efb86b9e",
+        "canvasSha256": "325257ed13cae694bd1d92659bd590b62ded6805af9a8eb44a6be1d4e21fc4c6"
+      },
+      {
+        "name": "building-paid-complete",
+        "number": 142,
+        "time": 49029.9,
+        "pngSha256": "1b718adf868a99b307e47ab7f2c1907b13ba0749ded8190c144cf36a17d8c6f7",
+        "canvasSha256": "ddfb8d5611e5213949ef40030d890217c30205cb04b40fe0003f560c0450e294"
+      }
+    ],
+    "humanAppearanceReview": "pending"
+  },
+  "boot": {
+    "entry": "game",
+    "ready": true,
+    "canvas": true,
+    "assets": {
+      "state": "ready",
+      "ready": true,
+      "oakDepletionAtlas": true,
+      "loaded": 13
+    }
+  },
+  "pageBoots": [
+    {
+      "entry": "game",
+      "ready": true,
+      "canvas": true,
+      "assets": {
+        "state": "ready",
+        "ready": true,
+        "oakDepletionAtlas": true,
+        "loaded": 13
+      }
+    }
+  ]
+}

@@ -114,13 +114,13 @@ function findState(manifest, name) {
   return manifest.states?.find((state) => state.state === name) || null;
 }
 
-function nearestViewIndex(camera, position, azimuths) {
+function nearestViewIndex(camera, position, azimuths, orientation = 0) {
   if (!camera || !Array.isArray(azimuths) || azimuths.length === 0) return 0;
   // Orthographic view direction is shared across the map, including after pan.
   const towardCamera = camera.isOrthographicCamera ? camera.getWorldDirection(new THREE.Vector3()).negate() : null;
   const dx = towardCamera?.x ?? camera.position.x - position.x;
   const dz = towardCamera?.z ?? camera.position.z - position.z;
-  const cameraAzimuth = (Math.atan2(dx, dz) * 180 / Math.PI + 360) % 360;
+  const cameraAzimuth = (Math.atan2(dx, dz) * 180 / Math.PI - orientation * 90 + 720) % 360;
   let bestIndex = 0;
   let bestDelta = Infinity;
   for (let index = 0; index < azimuths.length; index++) {
@@ -211,6 +211,7 @@ function leaseFrame(view, teamColor, manifestUrl) {
 export function createCapturedBuildingSprite({
   manifestUrl = DEFAULT_MANIFEST_URL,
   teamColor = null,
+  preview = false,
 } = {}) {
   const material = new THREE.SpriteMaterial({
     map: null,
@@ -220,17 +221,20 @@ export function createCapturedBuildingSprite({
     depthTest: true,
     depthWrite: false,
     toneMapped: false,
+    opacity: preview ? 0.5 : 1,
   });
   applyBuildingGroundDepth(material);
   const sprite = new THREE.Sprite(material);
   sprite.visible = false;
   sprite.renderOrder = 0.9;
+  if (preview) sprite.raycast = () => {};
   const bodyDepth = new THREE.Sprite(new THREE.SpriteMaterial({
     transparent: false, alphaTest: 0.9, colorWrite: false,
     depthTest: true, depthWrite: true, toneMapped: false,
   }));
   applyBuildingGroundDepth(bodyDepth.material);
   bodyDepth.userData.buildingBodyDepth = true;
+  bodyDepth.visible = !preview;
   bodyDepth.raycast = () => {};
   // A child shares the parent's exact world transform; do not scale it again.
   sprite.add(bodyDepth);
@@ -298,7 +302,8 @@ function requestCurrentFrame(sprite, data) {
     return;
   }
   const position = sprite.parent?.getWorldPosition(data.worldPosition) || sprite.position;
-  const viewIndex = nearestViewIndex(data.camera, position, data.manifest.camera.azimuthDegrees);
+  const viewIndex = nearestViewIndex(data.camera, position, data.manifest.camera.azimuthDegrees,
+    typeof data.lifecycleInput === 'object' ? data.lifecycleInput?.orientation ?? 0 : 0);
   const view = state.views.find((candidate) => candidate.index === viewIndex) || state.views[viewIndex];
   if (!view) return;
   const requestKey = `${stateName}:${viewIndex}:${teamColorCss(data.teamColor) || 'plain'}`;
