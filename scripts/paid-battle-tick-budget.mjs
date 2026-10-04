@@ -5,6 +5,7 @@ import { execFileSync } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import { createFortifiedFixture } from './fortified-crossing-fixture.mjs';
+import { createTickAttributionAdapter } from './tick-attribution-adapter.mjs';
 import { clearAndBuildFortifiedSite, sendFortifiedCommand } from './fortified-site-clearance.mjs';
 import { BUILDING_DEFINITIONS as B, TECHNOLOGY_DEFINITIONS as T,
   UNIT_DEFINITIONS as U } from '../src/gameplay-definitions.mjs';
@@ -29,9 +30,15 @@ const quantiles = values => {
     ? sorted[Math.max(0, Math.ceil(sorted.length * q) - 1)] : null;
   return { count: sorted.length, p50: at(.5), p95: at(.95), max: at(1) };
 };
-const fixture = await createFortifiedFixture({ diagnostics: true, timeoutMs: 120000 });
+const attributionAdapter = process.env.PAID_BATTLE_ATTRIBUTION === '1' ? await createTickAttributionAdapter() : null;
+const fixture = await createFortifiedFixture({ diagnostics: true, timeoutMs: 120000,
+  entrypointPath: attributionAdapter?.filename });
 const spent = [{ food: 0, wood: 0 }, { food: 0, wood: 0 }], orders = [], ticks = new Map();
-let clients, token = 1, stage = 'startup', report;
+let clients, token = 1, stage = 'startup', report, attributionStart = null, attribution = null;
+const controlAttribution = async action => {
+  const response = await fetch(`http://127.0.0.1:${fixture.port}/__attribution/${action}`);
+  assert.ok(response.ok, 'disposable attribution control'); return response.json();
+};
 const own = (team, kind) => clients[team].latest.units.filter(u => u[1] === team && u[4] > 0 && u[5] === kind);
 const economyNode = (team, type) => map.resourceNodes.find(n => n.type === type && (team ? n.x > 20 : n.x < -20));
 async function order(team, command, expected) {
@@ -78,7 +85,7 @@ function healthObservation(health) {
   return { firstSampleTick: timing.samples[0]?.tickNumber,
     lastSampleTick: timing.samples.at(-1)?.tickNumber,
     startLagP95Ms: timing.startLagP95Ms, startLagMaxMs: timing.startLagMaxMs,
-    scheduler: timing.scheduler };
+    scheduler: timing.scheduler, transport: health.transport, checkpoint: health.checkpoint };
 }
 try {
   await fixture.start(); clients = [await fixture.connect(0), await fixture.connect(1)];
@@ -124,6 +131,7 @@ try {
   }
   console.error(JSON.stringify({ policy, size, stage: 'paid research/training and both-resource economy ready', tick: ready.state.tickNumber }));
   stage = 'measured movement, combat, fog and ongoing economy';
+  if (attributionAdapter) attributionStart = await controlAttribution('start');
   const initialHealth = await collect(); const startTick = ready.state.tickNumber, phases = [];
   for (let phase = 0; phase < 3; phase++) {
     const firstTick = Math.max(...ticks.keys()) + 1;
@@ -144,6 +152,7 @@ try {
   const observedEndTick = Math.max(...ticks.keys());
   const complete = await fixture.checkpoint(s => s.state.tickNumber >= observedEndTick);
   const completeHealth = await collect();
+  if (attributionAdapter) attribution = await controlAttribution('stop');
   // The economy and casualty witness is the exact end boundary. Capture through
   // it so later checkpoint work cannot qualify an earlier measured interval.
   const endTick = complete.state.tickNumber, measured = [...ticks.values()].filter(t => t.tickNumber > startTick && t.tickNumber <= endTick)
@@ -175,6 +184,8 @@ try {
     cpu: os.cpus()[0]?.model, map, spent, economyProgress, orders, startTick, endTick, phases, casualties, paidLedger: true,
     checkpointRecovery: true, summary, ticks: measured,
     healthObservations: { beforeCommands: healthObservation(initialHealth), afterWitness: healthObservation(completeHealth) },
+    attribution: attributionAdapter ? { originalSha256: attributionAdapter.originalSha256,
+      adapterSha256: attributionAdapter.adapterSha256, start: attributionStart, ...attribution } : null,
     limits: ['native two-seat loopback, 160x160 fog map padded from Fortified Crossing; no scripted rewards or actor injection',
       'whole outer tick includes planning, movement/combat/economy, vision, scenario, broadcast and synchronous checkpoint work',
       'three at-least-300-tick command phases; actual endpoints/checkpoint tail retained, all unique samples kept',
@@ -183,10 +194,12 @@ try {
       'shared cloud host and diagnostic polling overhead; no renderer, device capacity, timer-quality or causal speedup claim'] };
 } catch (error) {
   report = { schemaVersion: 1, head, sourceSha256, policy, size, stage, failure: error.message,
-    health: await fixture.health({ tickSamples: true }).catch(() => null), orders, spent };
+    health: await fixture.health({ tickSamples: true }).catch(() => null), orders, spent,
+    attribution: attribution ?? (attributionStart ? await controlAttribution('stop').catch(() => null) : null) };
   throw error;
 } finally {
   if (process.env.PAID_BATTLE_TICK_RECORD) await writeFile(process.env.PAID_BATTLE_TICK_RECORD, JSON.stringify(report, null, 2) + '\n');
   await fixture.dispose();
+  await attributionAdapter?.dispose();
 }
 console.log(JSON.stringify({ policy, size, casualties: report.casualties, summary: report.summary }));
