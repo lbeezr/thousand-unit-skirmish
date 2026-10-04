@@ -55,11 +55,13 @@ for (const [index, spec] of invalid.entries()) test(`actual importer rejects ${s
 });
 
 test('legacy and valid authored food Sheep keep the exact resource bytes', () => {
-  for (const wildlifeNoseYawDegrees of [undefined, 0, 90, 359.99]) {
+  const authored = [{}, { wildlifeSpecies: 'bellweather-sheep' },
+    ...[0, 90, 359.99].map(wildlifeNoseYawDegrees => ({ wildlifeSpecies: 'bellweather-sheep', wildlifeNoseYawDegrees }))];
+  for (const fields of authored) {
     const value = structuredClone(map);
     delete value.economyProfileId;
     value.resourceNodes = value.resourceNodes.filter(node => node.type !== 'stone');
-    if (wildlifeNoseYawDegrees !== undefined) Object.assign(value.resourceNodes[0], { wildlifeSpecies: 'bellweather-sheep', wildlifeNoseYawDegrees });
+    Object.assign(value.resourceNodes[0], fields);
     const bytes = JSON.stringify(value.resourceNodes), before = JSON.stringify(value);
     const imported = context.validateImportedMap(value);
     assert.equal(JSON.stringify(imported.resourceNodes), bytes);

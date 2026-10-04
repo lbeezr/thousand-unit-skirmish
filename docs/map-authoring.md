@@ -196,7 +196,16 @@ there is no second resource pool. Other species, wood wildlife and authored
 `wildlifeNoseYawDegrees`, finite in `[0,360)` with an omitted default of 0: nose
 yaw 0 faces +Z and positive yaw turns toward +X. This static presentation pose
 stays in map data through import/export and checkpoint recovery; it adds no
-simulation heading or movement. The normal renderer selects an available exact
+simulation heading or movement.
+
+Client import and native publication both consume the existing
+[`validWildlifeNodeDefinition`](../src/wildlife-state.mjs) contract. Authored
+nodes reject room-only ownership, lifecycle, motion, activity, heading, Herd and
+grazing-anchor fields; legal legacy nodes and optional Sheep nose poses retain
+their exact resource bytes. [Importer/publication evidence](qa-wildlife-import-parity-2026-10-04.md)
+records actual rejection and retained authoritative state.
+
+The normal renderer selects an available exact
 static direction, otherwise its rotated geometric Sheep proxy. The current
 public pack contains all eight static nose views; [current evidence](qa-sheep-eight-view-default-2026-10-03.md)
 records source, runtime and pending native appearance checks. Dedicated wildlife brushes and claim/herding remain future
