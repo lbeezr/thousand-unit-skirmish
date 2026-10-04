@@ -1,0 +1,822 @@
+{
+  "schemaVersion": 1,
+  "measuredCandidate": {
+    "root": "/workspace/thousand-unit-skirmish-tick-proposal",
+    "head": "140115496470a119cba2252e9d9de9275d65e59a",
+    "srcTree": "da951c91d5be97d6fd36f0b23326a15055510923",
+    "serverSha256": "269ba44cda8dc64434af811d06dbcd5ae81f9a1bb2bbf56ac8907c0687af409c",
+    "harnessSha256": "2995050e062a9b593d65b8943c95c4f2c982269a79c16df98562086866d99aed",
+    "observerSha256": "06a8efc6ab7b6880eda0a22effa1ae25e172f27890319dd6263923694e2c525b"
+  },
+  "maxima": {
+    "plain": {
+      "policy": 0,
+      "repeat": 2,
+      "profiled": false,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-plain-0-r2.json.gz",
+      "tickNumber": 2661,
+      "durationMs": 61.9,
+      "cpuMs": 61.905,
+      "simulationMs": 8.122,
+      "visionMs": 0.835,
+      "scenarioMs": 0.015,
+      "scenarioEvaluated": true,
+      "broadcastMs": 52.928,
+      "checkpointMs": 0.001,
+      "dominant": "broadcastMs"
+    },
+    "diagnostic": {
+      "policy": 0,
+      "repeat": 1,
+      "profiled": true,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-observed-0-r1.json.gz",
+      "tickNumber": 2067,
+      "durationMs": 154.99,
+      "cpuMs": 252.297,
+      "simulationMs": 143.217,
+      "visionMs": 5.97,
+      "scenarioMs": 0.038,
+      "scenarioEvaluated": true,
+      "broadcastMs": 5.765,
+      "checkpointMs": 0,
+      "dominant": "simulationMs"
+    }
+  },
+  "plainOverruns": [
+    {
+      "policy": 0,
+      "repeat": 1,
+      "profiled": false,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-plain-0-r1.json.gz",
+      "tickNumber": 2580,
+      "durationMs": 47.347,
+      "cpuMs": 24.635,
+      "simulationMs": 26.418,
+      "visionMs": 2.499,
+      "scenarioMs": 0.028,
+      "scenarioEvaluated": true,
+      "broadcastMs": 16.55,
+      "checkpointMs": 1.852,
+      "dominant": "simulationMs"
+    },
+    {
+      "policy": 0,
+      "repeat": 1,
+      "profiled": false,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-plain-0-r1.json.gz",
+      "tickNumber": 2691,
+      "durationMs": 36.536,
+      "cpuMs": 36.763,
+      "simulationMs": 5.289,
+      "visionMs": 1.131,
+      "scenarioMs": 0.02,
+      "scenarioEvaluated": true,
+      "broadcastMs": 30.094,
+      "checkpointMs": 0.002,
+      "dominant": "broadcastMs"
+    },
+    {
+      "policy": 0,
+      "repeat": 2,
+      "profiled": false,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-plain-0-r2.json.gz",
+      "tickNumber": 2661,
+      "durationMs": 61.9,
+      "cpuMs": 61.905,
+      "simulationMs": 8.122,
+      "visionMs": 0.835,
+      "scenarioMs": 0.015,
+      "scenarioEvaluated": true,
+      "broadcastMs": 52.928,
+      "checkpointMs": 0.001,
+      "dominant": "broadcastMs"
+    },
+    {
+      "policy": 0,
+      "repeat": 2,
+      "profiled": false,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-plain-0-r2.json.gz",
+      "tickNumber": 2688,
+      "durationMs": 36.061,
+      "cpuMs": 14.903,
+      "simulationMs": 20.747,
+      "visionMs": 5.378,
+      "scenarioMs": 0.252,
+      "scenarioEvaluated": true,
+      "broadcastMs": 9.683,
+      "checkpointMs": 0.001,
+      "dominant": "simulationMs"
+    },
+    {
+      "policy": 4,
+      "repeat": 1,
+      "profiled": false,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-plain-4-r1.json.gz",
+      "tickNumber": 2598,
+      "durationMs": 44.676,
+      "cpuMs": 16.074,
+      "simulationMs": 10.45,
+      "visionMs": 17.099,
+      "scenarioMs": 0.029,
+      "scenarioEvaluated": true,
+      "broadcastMs": 17.096,
+      "checkpointMs": 0.001,
+      "planningMs": 0.002,
+      "planningTurns": 0,
+      "planningWorkItems": 0,
+      "planningExpandedCells": 0,
+      "dominant": "visionMs"
+    },
+    {
+      "policy": 4,
+      "repeat": 2,
+      "profiled": false,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-plain-4-r2.json.gz",
+      "tickNumber": 2519,
+      "durationMs": 58.2,
+      "cpuMs": 58.207,
+      "simulationMs": 58.141,
+      "visionMs": 0,
+      "scenarioMs": 0,
+      "scenarioEvaluated": false,
+      "broadcastMs": 0.059,
+      "checkpointMs": 0,
+      "planningMs": 0.001,
+      "planningTurns": 0,
+      "planningWorkItems": 0,
+      "planningExpandedCells": 0,
+      "dominant": "simulationMs"
+    }
+  ],
+  "diagnosticOverruns": [
+    {
+      "policy": 0,
+      "repeat": 1,
+      "profiled": true,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-observed-0-r1.json.gz",
+      "tickNumber": 1968,
+      "durationMs": 38.067,
+      "cpuMs": 14.591,
+      "simulationMs": 11.298,
+      "visionMs": 2.278,
+      "scenarioMs": 0.03,
+      "scenarioEvaluated": true,
+      "broadcastMs": 24.46,
+      "checkpointMs": 0,
+      "dominant": "broadcastMs"
+    },
+    {
+      "policy": 0,
+      "repeat": 1,
+      "profiled": true,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-observed-0-r1.json.gz",
+      "tickNumber": 2067,
+      "durationMs": 154.99,
+      "cpuMs": 252.297,
+      "simulationMs": 143.217,
+      "visionMs": 5.97,
+      "scenarioMs": 0.038,
+      "scenarioEvaluated": true,
+      "broadcastMs": 5.765,
+      "checkpointMs": 0,
+      "dominant": "simulationMs"
+    },
+    {
+      "policy": 0,
+      "repeat": 1,
+      "profiled": true,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-observed-0-r1.json.gz",
+      "tickNumber": 2187,
+      "durationMs": 34.922,
+      "cpuMs": 91.246,
+      "simulationMs": 21.414,
+      "visionMs": 3.424,
+      "scenarioMs": 0.22,
+      "scenarioEvaluated": true,
+      "broadcastMs": 9.863,
+      "checkpointMs": 0.001,
+      "dominant": "simulationMs"
+    },
+    {
+      "policy": 0,
+      "repeat": 1,
+      "profiled": true,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-observed-0-r1.json.gz",
+      "tickNumber": 2403,
+      "durationMs": 33.909,
+      "cpuMs": 19.839,
+      "simulationMs": 11.625,
+      "visionMs": 2.319,
+      "scenarioMs": 0.027,
+      "scenarioEvaluated": true,
+      "broadcastMs": 19.937,
+      "checkpointMs": 0,
+      "dominant": "broadcastMs"
+    },
+    {
+      "policy": 0,
+      "repeat": 1,
+      "profiled": true,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-observed-0-r1.json.gz",
+      "tickNumber": 2406,
+      "durationMs": 39.027,
+      "cpuMs": 25.627,
+      "simulationMs": 16.429,
+      "visionMs": 4.394,
+      "scenarioMs": 0.036,
+      "scenarioEvaluated": true,
+      "broadcastMs": 18.168,
+      "checkpointMs": 0,
+      "dominant": "broadcastMs"
+    },
+    {
+      "policy": 0,
+      "repeat": 1,
+      "profiled": true,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-observed-0-r1.json.gz",
+      "tickNumber": 2427,
+      "durationMs": 123.724,
+      "cpuMs": 145.697,
+      "simulationMs": 41.537,
+      "visionMs": 2.833,
+      "scenarioMs": 0.02,
+      "scenarioEvaluated": true,
+      "broadcastMs": 79.334,
+      "checkpointMs": 0.001,
+      "dominant": "broadcastMs"
+    },
+    {
+      "policy": 0,
+      "repeat": 1,
+      "profiled": true,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-observed-0-r1.json.gz",
+      "tickNumber": 2580,
+      "durationMs": 41.55,
+      "cpuMs": 22.107,
+      "simulationMs": 15.731,
+      "visionMs": 1.47,
+      "scenarioMs": 0.028,
+      "scenarioEvaluated": true,
+      "broadcastMs": 17.644,
+      "checkpointMs": 6.677,
+      "dominant": "broadcastMs"
+    },
+    {
+      "policy": 0,
+      "repeat": 1,
+      "profiled": true,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-observed-0-r1.json.gz",
+      "tickNumber": 2583,
+      "durationMs": 36.57,
+      "cpuMs": 19.878,
+      "simulationMs": 15.888,
+      "visionMs": 1.628,
+      "scenarioMs": 0.029,
+      "scenarioEvaluated": true,
+      "broadcastMs": 19.025,
+      "checkpointMs": 0.001,
+      "dominant": "broadcastMs"
+    },
+    {
+      "policy": 0,
+      "repeat": 1,
+      "profiled": true,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-observed-0-r1.json.gz",
+      "tickNumber": 2584,
+      "durationMs": 37.125,
+      "cpuMs": 10.228,
+      "simulationMs": 37.124,
+      "visionMs": 0,
+      "scenarioMs": 0,
+      "scenarioEvaluated": false,
+      "broadcastMs": 0.001,
+      "checkpointMs": 0,
+      "dominant": "simulationMs"
+    },
+    {
+      "policy": 0,
+      "repeat": 1,
+      "profiled": true,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-observed-0-r1.json.gz",
+      "tickNumber": 2652,
+      "durationMs": 110.126,
+      "cpuMs": 117.259,
+      "simulationMs": 89.569,
+      "visionMs": 6.806,
+      "scenarioMs": 0.046,
+      "scenarioEvaluated": true,
+      "broadcastMs": 13.704,
+      "checkpointMs": 0.001,
+      "dominant": "simulationMs"
+    },
+    {
+      "policy": 4,
+      "repeat": 1,
+      "profiled": true,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-observed-4-r1.json.gz",
+      "tickNumber": 2550,
+      "durationMs": 36.786,
+      "cpuMs": 40.016,
+      "simulationMs": 17.105,
+      "visionMs": 3.926,
+      "scenarioMs": 0.058,
+      "scenarioEvaluated": true,
+      "broadcastMs": 11.142,
+      "checkpointMs": 4.555,
+      "planningMs": 0.004,
+      "planningTurns": 0,
+      "planningWorkItems": 0,
+      "planningExpandedCells": 0,
+      "dominant": "simulationMs"
+    },
+    {
+      "policy": 4,
+      "repeat": 1,
+      "profiled": true,
+      "sourceHead": "140115496470a119cba2252e9d9de9275d65e59a",
+      "filename": "snapshot-row-candidate-observed-4-r1.json.gz",
+      "tickNumber": 2697,
+      "durationMs": 33.453,
+      "cpuMs": 19.001,
+      "simulationMs": 16.86,
+      "visionMs": 1.492,
+      "scenarioMs": 0.028,
+      "scenarioEvaluated": true,
+      "broadcastMs": 15.073,
+      "checkpointMs": 0,
+      "planningMs": 0.002,
+      "planningTurns": 0,
+      "planningWorkItems": 0,
+      "planningExpandedCells": 0,
+      "dominant": "simulationMs"
+    }
+  ],
+  "profileHotspots": [
+    {
+      "policy": 0,
+      "filename": "snapshot-row-candidate-observed-0-r1.json.gz",
+      "sha256": "3db0bf611ed45c26519fc1fefaf00fdfb322c74cc033ecbbb74088ed223527a3",
+      "functions": {
+        "getMoveVector": {
+          "sampledIntervalWeightMs": 836.6220000000008,
+          "selfEstimatedBytes": 419839784,
+          "inclusiveEstimatedBytes": 453598840
+        },
+        "findAttackMoveTarget": {
+          "sampledIntervalWeightMs": 330.0330000000003,
+          "selfEstimatedBytes": 171475296,
+          "inclusiveEstimatedBytes": 174294912
+        },
+        "technologyCombatEffects": {
+          "sampledIntervalWeightMs": 160.16799999999998,
+          "selfEstimatedBytes": 81455192,
+          "inclusiveEstimatedBytes": 128201728
+        },
+        "canCombatTarget": {
+          "sampledIntervalWeightMs": 156.28000000000003,
+          "selfEstimatedBytes": 15346496,
+          "inclusiveEstimatedBytes": 15346496
+        }
+      },
+      "rowWindow": {
+        "start": {
+          "tickNumber": 1771,
+          "monotonicMs": 59432.9676
+        },
+        "end": {
+          "tickNumber": 2702,
+          "monotonicMs": 91030.089014
+        }
+      },
+      "profileWindows": {
+        "cpu": {
+          "startRequest": {
+            "tickNumber": 1771,
+            "monotonicMs": 59384.462087
+          },
+          "startCompletion": {
+            "tickNumber": 1771,
+            "monotonicMs": 59432.733202
+          },
+          "stopRequest": {
+            "tickNumber": 2702,
+            "monotonicMs": 91030.097265
+          },
+          "stopCompletion": {
+            "tickNumber": 2702,
+            "monotonicMs": 91040.158965
+          }
+        },
+        "allocation": {
+          "startRequest": {
+            "tickNumber": 1771,
+            "monotonicMs": 59432.792799
+          },
+          "startCompletion": {
+            "tickNumber": 1771,
+            "monotonicMs": 59432.923337
+          },
+          "stopRequest": {
+            "tickNumber": 2702,
+            "monotonicMs": 91040.165098
+          },
+          "stopCompletion": {
+            "tickNumber": 2702,
+            "monotonicMs": 91087.744333
+          }
+        }
+      },
+      "limitations": [
+        "Full profile windows, not per-overrun child attribution.",
+        "CPU deltas are sampled interval weights, not exact function CPU or causal attribution.",
+        "V8 allocation tree estimates include collected objects and omit some native/external allocation."
+      ]
+    },
+    {
+      "policy": 4,
+      "filename": "snapshot-row-candidate-observed-4-r1.json.gz",
+      "sha256": "c57d0e2362b0be8a29506d47c23bb8940cfe7a9a0b81f7a1bf8a74bba338489b",
+      "functions": {
+        "getMoveVector": {
+          "sampledIntervalWeightMs": 750.8940000000003,
+          "selfEstimatedBytes": 402260416,
+          "inclusiveEstimatedBytes": 431889448
+        },
+        "findAttackMoveTarget": {
+          "sampledIntervalWeightMs": 323.2819999999998,
+          "selfEstimatedBytes": 90941856,
+          "inclusiveEstimatedBytes": 140195272
+        },
+        "technologyCombatEffects": {
+          "sampledIntervalWeightMs": 97.63699999999997,
+          "selfEstimatedBytes": 59221872,
+          "inclusiveEstimatedBytes": 94560448
+        },
+        "canCombatTarget": {
+          "sampledIntervalWeightMs": 121.10300000000004,
+          "selfEstimatedBytes": 60074640,
+          "inclusiveEstimatedBytes": 60140304
+        }
+      },
+      "rowWindow": {
+        "start": {
+          "tickNumber": 1831,
+          "monotonicMs": 61475.755661
+        },
+        "end": {
+          "tickNumber": 2763,
+          "monotonicMs": 92716.071665
+        }
+      },
+      "profileWindows": {
+        "cpu": {
+          "startRequest": {
+            "tickNumber": 1831,
+            "monotonicMs": 61422.13275
+          },
+          "startCompletion": {
+            "tickNumber": 1831,
+            "monotonicMs": 61475.33035
+          },
+          "stopRequest": {
+            "tickNumber": 2763,
+            "monotonicMs": 92716.07879
+          },
+          "stopCompletion": {
+            "tickNumber": 2763,
+            "monotonicMs": 92726.244565
+          }
+        },
+        "allocation": {
+          "startRequest": {
+            "tickNumber": 1831,
+            "monotonicMs": 61475.391756
+          },
+          "startCompletion": {
+            "tickNumber": 1831,
+            "monotonicMs": 61475.746685
+          },
+          "stopRequest": {
+            "tickNumber": 2763,
+            "monotonicMs": 92726.249253
+          },
+          "stopCompletion": {
+            "tickNumber": 2763,
+            "monotonicMs": 92768.548829
+          }
+        }
+      },
+      "limitations": [
+        "Full profile windows, not per-overrun child attribution.",
+        "CPU deltas are sampled interval weights, not exact function CPU or causal attribution.",
+        "V8 allocation tree estimates include collected objects and omit some native/external allocation."
+      ]
+    }
+  ],
+  "probePairs": [
+    {
+      "repeat": 1,
+      "baselineEstimatedBytesPerCall": 457.60228,
+      "candidateEstimatedBytesPerCall": 444.8192,
+      "inclusiveReductionFraction": 0.027934913261358774
+    },
+    {
+      "repeat": 2,
+      "baselineEstimatedBytesPerCall": 477.60236,
+      "candidateEstimatedBytesPerCall": 457.6124,
+      "inclusiveReductionFraction": 0.04185481830533666
+    },
+    {
+      "repeat": 3,
+      "baselineEstimatedBytesPerCall": 450.3856,
+      "candidateEstimatedBytesPerCall": 459.56764,
+      "inclusiveReductionFraction": -0.020387063884813372
+    }
+  ],
+  "probes": [
+    {
+      "filename": "zero-separation-baseline-1.json.gz",
+      "sha256": "5ded0a6f17cdbc7099bd13ace0295924161c339c6b95ed8f8c97691bd9135b2f",
+      "storedSha256": "e853f827dcfb7e2ef2809eff1a92a0f1a7e4a0c251cf86d1547ac4bff6471a82",
+      "schemaVersion": 1,
+      "variant": "baseline",
+      "repeat": 1,
+      "node": "v24.19.0",
+      "calls": 200000,
+      "warmups": 10000,
+      "actors": 2000,
+      "movers": 1000,
+      "zeroSeparationMoverFraction": 0.7,
+      "sourceSha256": "269ba44cda8dc64434af811d06dbcd5ae81f9a1bb2bbf56ac8907c0687af409c",
+      "baselineBodySha256": "0a6fdee765b12ffe8289db9782b392d66e05bb84dc896c383684a461b6ad3499",
+      "candidateBodySha256": "d3aa41e7ac67f4581b63be814e6958dea7a0a07fa2a10523bda96d097fe91ae6",
+      "actorHash": "8dc8a301abc5449712203c29a3b7570be28105a7637f0bb74c3327d6d368db7a",
+      "resultHashes": [
+        "b14d8956ce27d6e4203e3fcdee4af2de4f0ba28e6d53bd98dbf5a1a3699b6125",
+        "b14d8956ce27d6e4203e3fcdee4af2de4f0ba28e6d53bd98dbf5a1a3699b6125"
+      ],
+      "counts": [
+        {
+          "zeroCalls": 700,
+          "totalHypotCalls": 3000
+        },
+        {
+          "zeroCalls": 0,
+          "totalHypotCalls": 2300
+        }
+      ],
+      "checksum": -100195.12007618272,
+      "selfEstimatedBytes": 75587680,
+      "inclusiveEstimatedBytes": 91520456,
+      "inclusiveEstimatedBytesPerCall": 457.60228,
+      "samplingIntervalBytes": 65536,
+      "limits": [
+        "Fixed VM actor fixture and actual production function with one local candidate expression replacement; runtime source unchanged.",
+        "Artificial70% zero-force/30% crowded mix is not a measured ordinary battle fraction.",
+        "Sampled collected-object estimates, not precise/native allocation or live heap occupancy.",
+        "No elapsed-time, maximum-tick, ordinary match, deployed or rendered acceptance claim."
+      ]
+    },
+    {
+      "filename": "zero-separation-candidate-1.json.gz",
+      "sha256": "9e7aad7072b37c9c42c985bf5b01d410bb710c79cd95ead32385f4956a07abb9",
+      "storedSha256": "ea94656c5b47defbb88f8e8201d4c70b8c2595f1988009677fa8584cbcfc3e62",
+      "schemaVersion": 1,
+      "variant": "candidate",
+      "repeat": 1,
+      "node": "v24.19.0",
+      "calls": 200000,
+      "warmups": 10000,
+      "actors": 2000,
+      "movers": 1000,
+      "zeroSeparationMoverFraction": 0.7,
+      "sourceSha256": "269ba44cda8dc64434af811d06dbcd5ae81f9a1bb2bbf56ac8907c0687af409c",
+      "baselineBodySha256": "0a6fdee765b12ffe8289db9782b392d66e05bb84dc896c383684a461b6ad3499",
+      "candidateBodySha256": "d3aa41e7ac67f4581b63be814e6958dea7a0a07fa2a10523bda96d097fe91ae6",
+      "actorHash": "8dc8a301abc5449712203c29a3b7570be28105a7637f0bb74c3327d6d368db7a",
+      "resultHashes": [
+        "b14d8956ce27d6e4203e3fcdee4af2de4f0ba28e6d53bd98dbf5a1a3699b6125",
+        "b14d8956ce27d6e4203e3fcdee4af2de4f0ba28e6d53bd98dbf5a1a3699b6125"
+      ],
+      "counts": [
+        {
+          "zeroCalls": 700,
+          "totalHypotCalls": 3000
+        },
+        {
+          "zeroCalls": 0,
+          "totalHypotCalls": 2300
+        }
+      ],
+      "checksum": -100195.12007618272,
+      "selfEstimatedBytes": 71326528,
+      "inclusiveEstimatedBytes": 88963840,
+      "inclusiveEstimatedBytesPerCall": 444.8192,
+      "samplingIntervalBytes": 65536,
+      "limits": [
+        "Fixed VM actor fixture and actual production function with one local candidate expression replacement; runtime source unchanged.",
+        "Artificial70% zero-force/30% crowded mix is not a measured ordinary battle fraction.",
+        "Sampled collected-object estimates, not precise/native allocation or live heap occupancy.",
+        "No elapsed-time, maximum-tick, ordinary match, deployed or rendered acceptance claim."
+      ]
+    },
+    {
+      "filename": "zero-separation-baseline-2.json.gz",
+      "sha256": "d5f0b339d19271b7debce033e63afc77bb53c016fd77913258d31578218da6e5",
+      "storedSha256": "350b907f91fa609b1f9d8774dc61c110a70207cbf973bb2f7fbc9dfb9c4aab51",
+      "schemaVersion": 1,
+      "variant": "baseline",
+      "repeat": 2,
+      "node": "v24.19.0",
+      "calls": 200000,
+      "warmups": 10000,
+      "actors": 2000,
+      "movers": 1000,
+      "zeroSeparationMoverFraction": 0.7,
+      "sourceSha256": "269ba44cda8dc64434af811d06dbcd5ae81f9a1bb2bbf56ac8907c0687af409c",
+      "baselineBodySha256": "0a6fdee765b12ffe8289db9782b392d66e05bb84dc896c383684a461b6ad3499",
+      "candidateBodySha256": "d3aa41e7ac67f4581b63be814e6958dea7a0a07fa2a10523bda96d097fe91ae6",
+      "actorHash": "8dc8a301abc5449712203c29a3b7570be28105a7637f0bb74c3327d6d368db7a",
+      "resultHashes": [
+        "b14d8956ce27d6e4203e3fcdee4af2de4f0ba28e6d53bd98dbf5a1a3699b6125",
+        "b14d8956ce27d6e4203e3fcdee4af2de4f0ba28e6d53bd98dbf5a1a3699b6125"
+      ],
+      "counts": [
+        {
+          "zeroCalls": 700,
+          "totalHypotCalls": 3000
+        },
+        {
+          "zeroCalls": 0,
+          "totalHypotCalls": 2300
+        }
+      ],
+      "checksum": -100195.12007618272,
+      "selfEstimatedBytes": 76965384,
+      "inclusiveEstimatedBytes": 95520472,
+      "inclusiveEstimatedBytesPerCall": 477.60236,
+      "samplingIntervalBytes": 65536,
+      "limits": [
+        "Fixed VM actor fixture and actual production function with one local candidate expression replacement; runtime source unchanged.",
+        "Artificial70% zero-force/30% crowded mix is not a measured ordinary battle fraction.",
+        "Sampled collected-object estimates, not precise/native allocation or live heap occupancy.",
+        "No elapsed-time, maximum-tick, ordinary match, deployed or rendered acceptance claim."
+      ]
+    },
+    {
+      "filename": "zero-separation-candidate-2.json.gz",
+      "sha256": "ec7b2b0f89864395f8ab467219196adffa7ed27855a088f4feffdea243e44a04",
+      "storedSha256": "c460d42c9a00bf541acfee3acd30fe6ac6290399d985ee4d7bf9e0594f9d6dbe",
+      "schemaVersion": 1,
+      "variant": "candidate",
+      "repeat": 2,
+      "node": "v24.19.0",
+      "calls": 200000,
+      "warmups": 10000,
+      "actors": 2000,
+      "movers": 1000,
+      "zeroSeparationMoverFraction": 0.7,
+      "sourceSha256": "269ba44cda8dc64434af811d06dbcd5ae81f9a1bb2bbf56ac8907c0687af409c",
+      "baselineBodySha256": "0a6fdee765b12ffe8289db9782b392d66e05bb84dc896c383684a461b6ad3499",
+      "candidateBodySha256": "d3aa41e7ac67f4581b63be814e6958dea7a0a07fa2a10523bda96d097fe91ae6",
+      "actorHash": "8dc8a301abc5449712203c29a3b7570be28105a7637f0bb74c3327d6d368db7a",
+      "resultHashes": [
+        "b14d8956ce27d6e4203e3fcdee4af2de4f0ba28e6d53bd98dbf5a1a3699b6125",
+        "b14d8956ce27d6e4203e3fcdee4af2de4f0ba28e6d53bd98dbf5a1a3699b6125"
+      ],
+      "counts": [
+        {
+          "zeroCalls": 700,
+          "totalHypotCalls": 3000
+        },
+        {
+          "zeroCalls": 0,
+          "totalHypotCalls": 2300
+        }
+      ],
+      "checksum": -100195.12007618272,
+      "selfEstimatedBytes": 72442856,
+      "inclusiveEstimatedBytes": 91522480,
+      "inclusiveEstimatedBytesPerCall": 457.6124,
+      "samplingIntervalBytes": 65536,
+      "limits": [
+        "Fixed VM actor fixture and actual production function with one local candidate expression replacement; runtime source unchanged.",
+        "Artificial70% zero-force/30% crowded mix is not a measured ordinary battle fraction.",
+        "Sampled collected-object estimates, not precise/native allocation or live heap occupancy.",
+        "No elapsed-time, maximum-tick, ordinary match, deployed or rendered acceptance claim."
+      ]
+    },
+    {
+      "filename": "zero-separation-baseline-3.json.gz",
+      "sha256": "9c46fee378378d487d105350abc60f5c8c35946cf03e5afd4f9ff859edf71aee",
+      "storedSha256": "bb2795f36eface09d4ff85b4d7be0447589a85238b534dff28681e7616287d06",
+      "schemaVersion": 1,
+      "variant": "baseline",
+      "repeat": 3,
+      "node": "v24.19.0",
+      "calls": 200000,
+      "warmups": 10000,
+      "actors": 2000,
+      "movers": 1000,
+      "zeroSeparationMoverFraction": 0.7,
+      "sourceSha256": "269ba44cda8dc64434af811d06dbcd5ae81f9a1bb2bbf56ac8907c0687af409c",
+      "baselineBodySha256": "0a6fdee765b12ffe8289db9782b392d66e05bb84dc896c383684a461b6ad3499",
+      "candidateBodySha256": "d3aa41e7ac67f4581b63be814e6958dea7a0a07fa2a10523bda96d097fe91ae6",
+      "actorHash": "8dc8a301abc5449712203c29a3b7570be28105a7637f0bb74c3327d6d368db7a",
+      "resultHashes": [
+        "b14d8956ce27d6e4203e3fcdee4af2de4f0ba28e6d53bd98dbf5a1a3699b6125",
+        "b14d8956ce27d6e4203e3fcdee4af2de4f0ba28e6d53bd98dbf5a1a3699b6125"
+      ],
+      "counts": [
+        {
+          "zeroCalls": 700,
+          "totalHypotCalls": 3000
+        },
+        {
+          "zeroCalls": 0,
+          "totalHypotCalls": 2300
+        }
+      ],
+      "checksum": -100195.12007618272,
+      "selfEstimatedBytes": 71194080,
+      "inclusiveEstimatedBytes": 90077120,
+      "inclusiveEstimatedBytesPerCall": 450.3856,
+      "samplingIntervalBytes": 65536,
+      "limits": [
+        "Fixed VM actor fixture and actual production function with one local candidate expression replacement; runtime source unchanged.",
+        "Artificial70% zero-force/30% crowded mix is not a measured ordinary battle fraction.",
+        "Sampled collected-object estimates, not precise/native allocation or live heap occupancy.",
+        "No elapsed-time, maximum-tick, ordinary match, deployed or rendered acceptance claim."
+      ]
+    },
+    {
+      "filename": "zero-separation-candidate-3.json.gz",
+      "sha256": "4b6da52b1984c28f1c85acf750b64329542e8c1ce75ac6f83a3bcd33ca2e4c43",
+      "storedSha256": "d4b3f236419000ab3d77a479eb09f4c04470057e07fe6392a35ec1ce95513688",
+      "schemaVersion": 1,
+      "variant": "candidate",
+      "repeat": 3,
+      "node": "v24.19.0",
+      "calls": 200000,
+      "warmups": 10000,
+      "actors": 2000,
+      "movers": 1000,
+      "zeroSeparationMoverFraction": 0.7,
+      "sourceSha256": "269ba44cda8dc64434af811d06dbcd5ae81f9a1bb2bbf56ac8907c0687af409c",
+      "baselineBodySha256": "0a6fdee765b12ffe8289db9782b392d66e05bb84dc896c383684a461b6ad3499",
+      "candidateBodySha256": "d3aa41e7ac67f4581b63be814e6958dea7a0a07fa2a10523bda96d097fe91ae6",
+      "actorHash": "8dc8a301abc5449712203c29a3b7570be28105a7637f0bb74c3327d6d368db7a",
+      "resultHashes": [
+        "b14d8956ce27d6e4203e3fcdee4af2de4f0ba28e6d53bd98dbf5a1a3699b6125",
+        "b14d8956ce27d6e4203e3fcdee4af2de4f0ba28e6d53bd98dbf5a1a3699b6125"
+      ],
+      "counts": [
+        {
+          "zeroCalls": 700,
+          "totalHypotCalls": 3000
+        },
+        {
+          "zeroCalls": 0,
+          "totalHypotCalls": 2300
+        }
+      ],
+      "checksum": -100195.12007618272,
+      "selfEstimatedBytes": 73292928,
+      "inclusiveEstimatedBytes": 91913528,
+      "inclusiveEstimatedBytesPerCall": 459.56764,
+      "samplingIntervalBytes": 65536,
+      "limits": [
+        "Fixed VM actor fixture and actual production function with one local candidate expression replacement; runtime source unchanged.",
+        "Artificial70% zero-force/30% crowded mix is not a measured ordinary battle fraction.",
+        "Sampled collected-object estimates, not precise/native allocation or live heap occupancy.",
+        "No elapsed-time, maximum-tick, ordinary match, deployed or rendered acceptance claim."
+      ]
+    }
+  ],
+  "decision": "Do not select a production optimization from these observations. Zero-separation hypot guard has no consistent allocation reduction across three favourable fixed-fixture pairs.",
+  "limitations": [
+    "Production server and default scheduler unchanged; private wire semantics untouched.",
+    "Unprofiled broadcast maximum has no matching child-function timing capture; diagnostic simulation maximum has no exact child timing attribution.",
+    "Fixed artificial70% zero-force workload is not an ordinary battle fraction; matched vectors here are not full movement/recovery acceptance.",
+    "No maximum-tick, capacity, deployed or rendered acceptance claim."
+  ]
+}
