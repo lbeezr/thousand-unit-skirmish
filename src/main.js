@@ -8273,10 +8273,16 @@ function syncBattlefieldCursor() {
     let farmHint = farmFacts ? `${farmFacts.stock} ${farmFacts.instruction}`
       : farm ? 'Enemy Farm · Your Workers cannot harvest this plot.' : '';
     if (ids.length) {
+      state.farmTargetMode = farm ? persistentTargetMode : null;
+      if (farm && persistentTargetMode === 'follow') {
+        const leader = pickAt(x, y, unit => unit.team === localTeam, { advance: false }).unit;
+        state.farmFollowTarget = Boolean(leader && ids.some(id => id !== leader.id));
+      }
       state.enemy = Boolean(pickAt(x, y, (unit) => unit.team !== localTeam, { advance: false }).unit);
       if (!state.enemy) state.enemyBuilding = Boolean(pickBuildingAt(x, y, (building) => building.team !== localTeam));
       if (!state.enemy && !state.enemyBuilding) {
-        state.farmConstruction = Boolean(farm?.team === localTeam && !farm.complete);
+        state.farmConstruction = Boolean(!cursorShift && !attackMoveMode && !persistentTargetMode
+          && !selectedWaterUnits() && state.workers && farm?.team === localTeam && !farm.complete);
         const tree = pickHarvestableTreeAt(x, y);
         state.exhaustedFarm = Boolean(!tree && farm?.team === localTeam && farm.complete && farm.harvestStock <= 0);
         if (tree && !state.farmConstruction) farmHint = '';
@@ -8284,6 +8290,8 @@ function syncBattlefieldCursor() {
         state.forest = tree?.forestCell !== undefined;
         if (!state.resource && !state.forest) state.forest = pickForestCellAt(x, y) !== null;
       }
+      if (farmFacts && ((!farm.complete && !state.farmConstruction)
+        || ['patrol', 'follow'].includes(persistentTargetMode))) farmHint = farmFacts.stock;
       if (state.enemy || (state.enemyBuilding && farm?.team === localTeam)) farmHint = '';
     }
     if (cursorShift) {

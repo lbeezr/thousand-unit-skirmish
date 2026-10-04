@@ -98,6 +98,10 @@ desktop uses selected Workers/right-click, touch uses Gather / move then tap.
 Enemy and hidden plots expose no private stock or assignment controls. The normal
 hover uses the same visible building picker, names the role and action, and
 marks exhausted harvest unavailable rather than suggesting a Gather can succeed.
+Construction hover follows the actual context-order eligibility: Shift queued
+Move, explicit Move, Patrol/Follow, attack-move and water selection retain their
+earlier behavior. Only an eligible selected Worker receives finish-construction
+help; a movement mode never advertises an impending Build command.
 
 Visual backing: the existing [Food symbol](../assets/ui/icons/food.svg),
 approved [Worker portrait treatment](../assets/ui/portraits/PROVENANCE.md) and
